@@ -64,19 +64,16 @@ function build_peacock()
     if [ ! "$skip_build_boost" ]; then
         options+=("-Dbuild_boost=true")
         options+=("-Dboost_version=1.57.0")
-        options+=("-Dboost_build_boost_atomic=true")
-        options+=("-Dboost_build_boost_chrono=true")
-        options+=("-Dboost_build_boost_date_time=true")
         options+=("-Dboost_build_boost_filesystem=true")
         options+=("-Dboost_build_boost_program_options=true")
-        options+=("-Dboost_build_boost_python=true")
-        options+=("-Dboost_build_boost_regex=true")
-        options+=("-Dboost_build_boost_serialization=true")
         options+=("-Dboost_build_boost_system=true")
         options+=("-Dboost_build_boost_test=true")
-        options+=("-Dboost_build_boost_thread=true")
-        options+=("-Dboost_build_boost_timer=true")
     fi
+
+
+    # pybind11
+    options+=("-Dbuild_pybind11=true")
+    options+=("-Dpybind11_version=1.8.0")
 
 
     # Docopt.
