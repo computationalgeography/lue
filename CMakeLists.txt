@@ -1,0 +1,24 @@
+cmake_minimum_required(VERSION 3.1)
+
+project(LUE)
+
+set(${PROJECT_NAME}_ORGANISATION_NAME "PCRaster R&D Team")
+set(${PROJECT_NAME}_COPYRIGHT "2015-now PCRaster owners")
+set(${PROJECT_NAME}_PROJECT_NAME "${PROJECT_NAME}")
+set(${PROJECT_NAME}_HOMEPAGE "http://www.pcraster.eu")
+set(${PROJECT_NAME}_MAJOR_VERSION "0")
+set(${PROJECT_NAME}_MINOR_VERSION "0")
+set(${PROJECT_NAME}_PATCH_VERSION "0")
+set(${PROJECT_NAME}_PRE_RELEASE_VERSION "-rc.1")
+set(${PROJECT_NAME}_VERSION
+    "${${PROJECT_NAME}_MAJOR_VERSION}.${${PROJECT_NAME}_MINOR_VERSION}.${${PROJECT_NAME}_PATCH_VERSION}${${PROJECT_NAME}_PRE_RELEASE_VERSION}")
+
+set(CMAKE_MODULE_PATH
+    $ENV{CMAKE_MODULE_PATH}
+    ${CMAKE_CURRENT_SOURCE_DIR}/devbase/cmake
+    ${CMAKE_CURRENT_SOURCE_DIR}/environment/cmake
+)
+include(Lue)
+
+add_subdirectory(document)
+add_subdirectory(source)
