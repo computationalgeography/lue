@@ -1,0 +1,4 @@
+#pragma once
+
+
+#cmakedefine LUE_WITH_MPI
