@@ -17,11 +17,11 @@ matrix:
                       - gcc-4.9
                       - libhdf5-serial-dev
           env:
-              # - TRAVIS_C_COMPILER=gcc-4.9
-              # - TRAVIS_CXX_COMPILER=g++-4.9
-              # - TRAVIS_BUILD_TYPE=Debug
-              # - TRAVIS_CMAKE_GENERATOR="Unix Makefiles"
-              - TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=gcc-4.9"
+              - CC=gcc-4.9
+              - TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Debug"
+
+
+
 
                 #         # clang-3.5
                 #         - compiler: clang
@@ -149,14 +149,5 @@ script:
     - mkdir build
     - cd build
     - cmake ${TRAVIS_LUE_CMAKE_ARGUMENTS} ..
-# - cmake
-#     -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER
-#     -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER
-#     -G"${TRAVIS_CMAKE_GENERATOR}"
-#     -DCMAKE_BUILD_TYPE=${TRAVIS_BUILD_TYPE}
-#     ${TRAVIS_LUE_CMAKE_ARGUMENTS}
-#     ..
-#     - cmake --build . --config ${TRAVIS_BUILD_TYPE} --target all
     - cmake --build . --target all
-#     - ctest -C ${TRAVIS_BUILD_TYPE}
     - ctest
