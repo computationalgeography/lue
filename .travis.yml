@@ -21,7 +21,7 @@ matrix:
               # - TRAVIS_CXX_COMPILER=g++-4.9
               # - TRAVIS_BUILD_TYPE=Debug
               # - TRAVIS_CMAKE_GENERATOR="Unix Makefiles"
-              - TRAVIS_LUE_CMAKE_ARGUMENTS="-G"Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=gcc-4.9"
+              - TRAVIS_LUE_CMAKE_ARGUMENTS="-G'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=gcc-4.9"
 
                 #         # clang-3.5
                 #         - compiler: clang
