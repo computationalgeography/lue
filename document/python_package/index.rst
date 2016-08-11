@@ -3,14 +3,18 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to LUE's documentation!
-===============================
+LUE Scientific Database
+=======================
 
 Contents:
 
 .. toctree::
    :maxdepth: 2
 
+
+`github_page`_
+
+.. _github_page: https://github.com/pcraster/lue
 
 
 Indices and tables
