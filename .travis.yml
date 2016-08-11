@@ -14,15 +14,15 @@ env:
 matrix:
     include:
         - compiler: gcc
-            addons:
-                apt:
-                    sources:
-                        - ubuntu-toolchain-r-test
-                    packages:
-                        - g++-4.9
-            env:
-                - TRAVIS_C_COMPILER=gcc-4.9
-                - TRAVIS_CXX_COMPILER=g++-4.9
+          addons:
+              apt:
+                  sources:
+                      - ubuntu-toolchain-r-test
+                  packages:
+                      - g++-4.9
+          env:
+              - TRAVIS_C_COMPILER=gcc-4.9
+              - TRAVIS_CXX_COMPILER=g++-4.9
 
 
 
