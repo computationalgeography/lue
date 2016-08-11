@@ -125,6 +125,44 @@ matrix:
           env:
               - TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=gcc-4.9 -DCMAKE_CXX_COMPILER=g++-4.9 -DLUE_BUILD_PYTHON_API:BOOL=TRUE"
 
+        # clang-3.5
+        - compiler: clang
+          addons:
+              apt:
+                  sources:
+                      - llvm-toolchain-precise-3.5
+                      - ubuntu-toolchain-r-test
+                  packages:
+                      - clang-3.5
+                      - libhdf5-serial-dev
+          env:
+              - TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=clang-3.5 -DCMAKE_CXX_COMPILER=clang++-3.5 -LUE_BUILD_PYTHON_API:BOOL=TRUE"
+
+        # Release builds
+        # gcc-4.9
+        - compiler: gcc
+          addons:
+              apt:
+                  sources:
+                      - ubuntu-toolchain-r-test
+                  packages:
+                      - g++-4.9
+                      - libhdf5-serial-dev
+          env:
+              - TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=gcc-4.9 -DCMAKE_CXX_COMPILER=g++-4.9 -LUE_BUILD_PYTHON_API:BOOL=TRUE"
+
+        # clang-3.5
+        - compiler: clang
+          addons:
+              apt:
+                  sources:
+                      - llvm-toolchain-precise-3.5
+                      - ubuntu-toolchain-r-test
+                  packages:
+                      - clang-3.5
+                      - libhdf5-serial-dev
+          env:
+              - TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=clang-3.5 -DCMAKE_CXX_COMPILER=clang++-3.5 -LUE_BUILD_PYTHON_API:BOOL=TRUE"
 
 
 
@@ -157,6 +195,15 @@ before_install:
     - tar zxf cmake-3.2.3-Linux-x86_64.tar.gz
     - export PATH=$PWD/cmake-3.2.3-Linux-x86_64/bin:$PATH
 
+    # Install pybind11. Required for building the LUE Python API.
+    - git clone --recursive https://github.com/geoneric/peacock.git
+    - cd peacock
+    - mkdir build
+    - cd build
+    - cmake -Dpeacock_prefix=$TRAVIS_BUILD_DIR/local -Dbuild_pybind11=true -Dpybind11_version=1.8.0 ..
+    - cmake --build . --target all
+    - cd ../..
+
 
 # Install dependencies required by the project, similar to what a user would
 # have to do.
@@ -172,6 +219,6 @@ before_install:
 script:
     - mkdir build
     - cd build
-    - cmake ${TRAVIS_LUE_CMAKE_ARGUMENTS} ..
+    - cmake -DPEACOCK_PREFIX:PATH=$TRAVIS_BUILD_DIR/local ${TRAVIS_LUE_CMAKE_ARGUMENTS} ..
     - cmake --build . --target all
-    - ctest
+    - cmake --build . --target test
