@@ -187,7 +187,6 @@ matrix:
 #             - libboost1.55-all-dev
 
 
-
 # Install/update dependencies required by the installation of the
 # requirements of the project.
 # Travis-specific stuff.
@@ -203,7 +202,7 @@ before_install:
     - mkdir build
     - cd build
     - cmake -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -Dpeacock_prefix=$TRAVIS_BUILD_DIR/local -Dbuild_pybind11=true -Dpybind11_version=1.8.0 ..
-    - cmake --build . --target all
+    - cmake -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER --build . --target all
     - cd ../..
 
 
