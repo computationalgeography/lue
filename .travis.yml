@@ -10,6 +10,8 @@ sudo: false
 #     - TRAVIS_BUILD_TYPE=Debug TRAVIS_CMAKE_GENERATOR="Unix Makefiles"
 #     - TRAVIS_BUILD_TYPE=Release TRAVIS_CMAKE_GENERATOR="Unix Makefiles"
 
+global:
+    - TRAVIS_CMAKE_GENERATOR="Unix Makefiles"
 
 matrix:
     include:
@@ -25,9 +27,25 @@ matrix:
               - TRAVIS_C_COMPILER=gcc-4.9
               - TRAVIS_CXX_COMPILER=g++-4.9
               - TRAVIS_BUILD_TYPE=Debug
-              - TRAVIS_CMAKE_GENERATOR="Unix Makefiles"
-              # - TRAVIS_BUILD_TYPE=Release
               # - TRAVIS_CMAKE_GENERATOR="Unix Makefiles"
+        - compiler: gcc
+          addons:
+              apt:
+                  sources:
+                      - ubuntu-toolchain-r-test
+                  packages:
+                      - g++-4.9
+                      - libhdf5-serial-dev
+          env:
+              - TRAVIS_C_COMPILER=gcc-4.9
+              - TRAVIS_CXX_COMPILER=g++-4.9
+              - TRAVIS_BUILD_TYPE=Release
+              # - TRAVIS_CMAKE_GENERATOR="Unix Makefiles"
+
+
+
+
+
 
 
 
