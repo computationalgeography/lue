@@ -204,7 +204,10 @@ before_install:
     - mkdir build
     - cd build
     - cmake -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -Dpeacock_prefix=$TRAVIS_BUILD_DIR/local -Dbuild_pybind11=true -Dpybind11_version=1.8.0 ..
-    - cmake -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER --build .
+    - ls ..
+    - ls .
+    - make help
+    - cmake -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER --build . --target all
     - cd ../..
 
 
