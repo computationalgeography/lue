@@ -222,4 +222,4 @@ script:
     - cd build
     - cmake -DPEACOCK_PREFIX:PATH=$TRAVIS_BUILD_DIR/local ${TRAVIS_LUE_CMAKE_ARGUMENTS} ..
     - cmake --build . --target all
-    - cmake --build . --target test
+    - if [[ ${TRAVIS_LUE_CMAKE_ARGUMENTS} == *"LUE_BUILD_TEST:BOOL=TRUE"* ]]; then cmake --build . --target test; fi
