@@ -19,8 +19,8 @@ Contents:
 
    introduction
    installation
-   changes
    quick_start
+   changes
 
 
 .. _PCRaster: http://www.pcraster.eu
