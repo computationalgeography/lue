@@ -4,6 +4,8 @@ sudo: false
 
 matrix:
     include:
+        # Default build, only C library.
+        # Debug builds.
         - compiler: gcc
           addons:
               apt:
@@ -17,6 +19,21 @@ matrix:
               - TRAVIS_CXX_COMPILER=g++-4.9
               - TRAVIS_BUILD_TYPE=Debug
               - TRAVIS_CMAKE_GENERATOR="Unix Makefiles"
+        - compiler: clang
+          addons:
+              apt:
+                  sources:
+                      - llvm-toolchain-precise-3.5
+                      - ubuntu-toolchain-r-test
+                  packages:
+                      - clang-3.5
+                      - libhdf5-serial-dev
+          env:
+              - TRAVIS_C_COMPILER=clang-3.5
+              - TRAVIS_CXX_COMPILER=clang++-3.5
+              - TRAVIS_BUILD_TYPE=Debug
+              - TRAVIS_CMAKE_GENERATOR="Unix Makefiles"
+        # Release builds.
         - compiler: gcc
           addons:
               apt:
@@ -30,6 +47,11 @@ matrix:
               - TRAVIS_CXX_COMPILER=g++-4.9
               - TRAVIS_BUILD_TYPE=Release
               - TRAVIS_CMAKE_GENERATOR="Unix Makefiles"
+
+
+
+
+
 
 
 
