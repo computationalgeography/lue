@@ -20,7 +20,7 @@ matrix:
                       - ubuntu-toolchain-r-test
                   packages:
                       - g++-4.9
-                      - libhdf5-dev
+                      - libhdf5-serial-dev
           env:
               - TRAVIS_C_COMPILER=gcc-4.9
               - TRAVIS_CXX_COMPILER=g++-4.9
