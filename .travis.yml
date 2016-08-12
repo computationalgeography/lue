@@ -220,7 +220,8 @@ before_install:
     - cd peacock
     - cmake --version
     - cmake -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -Dpeacock_prefix=$TRAVIS_BUILD_DIR/local -Dbuild_pybind11=true -Dpybind11_version=1.8.0 $TRAVIS_BUILD_DIR/tmp/source/peacock
-    - cmake -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER --build . --target all
+    - cmake --build . --target all
+    # - cmake -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER --build . --target all
     # ~
     - cd ../../..
 
