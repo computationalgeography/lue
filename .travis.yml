@@ -5,180 +5,30 @@ sudo: false
 matrix:
     include:
 
-        # C library
-        # Debug builds
-        # gcc-4.9
         - compiler: gcc
           addons:
               apt:
                   sources:
                       - ubuntu-toolchain-r-test
                   packages:
+                      - gcc-4.9
                       - g++-4.9
                       - libhdf5-serial-dev
           env:
-              - TRAVIS_C_COMPILER=gcc-4.9 TRAVIS_CXX_COMPILER=g++-4.9 TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER"
-
-        # clang-3.5
-        - compiler: clang
-          addons:
-              apt:
-                  sources:
-                      - llvm-toolchain-precise-3.5
-                      - ubuntu-toolchain-r-test
-                  packages:
-                      - clang-3.5
-                      - libhdf5-serial-dev
-          env:
-              - TRAVIS_C_COMPILER=clang-3.5 TRAVIS_CXX_COMPILER=clang++-3.5 TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER"
-
-        # Release builds
-        # gcc-4.9
+              - TRAVIS_C_COMPILER=gcc-4.9 TRAVIS_CXX_COMPILER=g++-4.9 TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER "
+        
         - compiler: gcc
           addons:
               apt:
                   sources:
                       - ubuntu-toolchain-r-test
                   packages:
+                      - gcc-4.9
                       - g++-4.9
                       - libhdf5-serial-dev
           env:
-              - TRAVIS_C_COMPILER=gcc-4.9 TRAVIS_CXX_COMPILER=g++-4.9 TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER"
-
-        # clang-3.5
-        - compiler: clang
-          addons:
-              apt:
-                  sources:
-                      - llvm-toolchain-precise-3.5
-                      - ubuntu-toolchain-r-test
-                  packages:
-                      - clang-3.5
-                      - libhdf5-serial-dev
-          env:
-              - TRAVIS_C_COMPILER=clang-3.5 TRAVIS_CXX_COMPILER=clang++-3.5 TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER"
-
-        # C++ library
-        # Debug builds
-        # gcc-4.9
-        - compiler: gcc
-          addons:
-              apt:
-                  sources:
-                      - ubuntu-toolchain-r-test
-                  packages:
-                      - g++-4.9
-                      - libhdf5-serial-dev
-          env:
-              - TRAVIS_C_COMPILER=gcc-4.9 TRAVIS_CXX_COMPILER=g++-4.9 TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DLUE_BUILD_CXX_API:BOOL=TRUE"
-
-        # clang-3.5
-        - compiler: clang
-          addons:
-              apt:
-                  sources:
-                      - llvm-toolchain-precise-3.5
-                      - ubuntu-toolchain-r-test
-                  packages:
-                      - clang-3.5
-                      - libhdf5-serial-dev
-          env:
-              - TRAVIS_C_COMPILER=clang-3.5 TRAVIS_CXX_COMPILER=clang++-3.5 TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DLUE_BUILD_CXX_API:BOOL=TRUE"
-
-        # Release builds
-        # gcc-4.9
-        - compiler: gcc
-          addons:
-              apt:
-                  sources:
-                      - ubuntu-toolchain-r-test
-                  packages:
-                      - g++-4.9
-                      - libhdf5-serial-dev
-          env:
-              - TRAVIS_C_COMPILER=gcc-4.9 TRAVIS_CXX_COMPILER=g++-4.9 TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DLUE_BUILD_CXX_API:BOOL=TRUE"
-
-        # clang-3.5
-        - compiler: clang
-          addons:
-              apt:
-                  sources:
-                      - llvm-toolchain-precise-3.5
-                      - ubuntu-toolchain-r-test
-                  packages:
-                      - clang-3.5
-                      - libhdf5-serial-dev
-          env:
-              - TRAVIS_C_COMPILER=clang-3.5 TRAVIS_CXX_COMPILER=clang++-3.5 TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DLUE_BUILD_CXX_API:BOOL=TRUE"
-
-        # Python library
-        # Debug builds
-        # gcc-4.9
-        - compiler: gcc
-          addons:
-              apt:
-                  sources:
-                      - ubuntu-toolchain-r-test
-                  packages:
-                      - g++-4.9
-                      - libhdf5-serial-dev
-          env:
-              - TRAVIS_C_COMPILER=gcc-4.9 TRAVIS_CXX_COMPILER=g++-4.9 TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DLUE_BUILD_PYTHON_API:BOOL=TRUE"
-
-        # clang-3.5
-        - compiler: clang
-          addons:
-              apt:
-                  sources:
-                      - llvm-toolchain-precise-3.5
-                      - ubuntu-toolchain-r-test
-                  packages:
-                      - clang-3.5
-                      - libhdf5-serial-dev
-          env:
-              - TRAVIS_C_COMPILER=clang-3.5 TRAVIS_CXX_COMPILER=clang++-3.5 TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DLUE_BUILD_PYTHON_API:BOOL=TRUE"
-
-        # Release builds
-        # gcc-4.9
-        - compiler: gcc
-          addons:
-              apt:
-                  sources:
-                      - ubuntu-toolchain-r-test
-                  packages:
-                      - g++-4.9
-                      - libhdf5-serial-dev
-          env:
-              - TRAVIS_C_COMPILER=gcc-4.9 TRAVIS_CXX_COMPILER=g++-4.9 TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DLUE_BUILD_PYTHON_API:BOOL=TRUE"
-
-        # clang-3.5
-        - compiler: clang
-          addons:
-              apt:
-                  sources:
-                      - llvm-toolchain-precise-3.5
-                      - ubuntu-toolchain-r-test
-                  packages:
-                      - clang-3.5
-                      - libhdf5-serial-dev
-          env:
-              - TRAVIS_C_COMPILER=clang-3.5 TRAVIS_CXX_COMPILER=clang++-3.5 TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DLUE_BUILD_PYTHON_API:BOOL=TRUE"
-
-
-# TODO with unit tests and without unit tests
-# TODO with python 2.7 and python 3.x
-
-
-#         sources:
-#             - boost-latest
-#             - llvm-toolchain-precise-3.5
-#             - ubuntu-toolchain-r-test
-#         packages:
-#             - clang-3.5
-#             - g++-4.9
-#             - g++-5
-#             - libboost1.55-all-dev
-
+              - TRAVIS_C_COMPILER=gcc-4.9 TRAVIS_CXX_COMPILER=g++-4.9 TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER "
+        
 
 # Install/update dependencies required by the installation of the
 # requirements of the project.
@@ -232,11 +82,12 @@ before_install:
 script:
     - mkdir build
     - cd build
-    - cmake -DPEACOCK_PREFIX:PATH=$TRAVIS_BUILD_DIR/local ${TRAVIS_LUE_CMAKE_ARGUMENTS} ..
+    - cmake -DPEACOCK_PREFIX:PATH=$TRAVIS_BUILD_DIR/local $TRAVIS_LUE_CMAKE_ARGUMENTS ..
     - cmake --build . --target all
-    - if [[ ${TRAVIS_LUE_CMAKE_ARGUMENTS} == *"LUE_BUILD_TEST:BOOL=TRUE"* ]]; then cmake --build . --target test; fi
+    - if [[ $TRAVIS_LUE_CMAKE_ARGUMENTS == *"LUE_BUILD_TEST:BOOL=TRUE"* ]]; then cmake --build . --target test; fi
 
 
 notifications:
     email:
         - k.dejong1@uu.nl
+
