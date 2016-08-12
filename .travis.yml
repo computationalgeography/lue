@@ -218,8 +218,9 @@ before_install:
     - mkdir peacock
     # ~/tmp/build/peacock
     - cd peacock
-    - cmake -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -Dpeacock_prefix=$TRAVIS_BUILD_DIR/local -Dbuild_pcraster_raster_format=true -Dpcraster_raster_format_version=1.3.1 -Dbuild_pybind11=true -Dpybind11_version=1.8.0 $TRAVIS_BUILD_DIR/tmp/source/peacock
-    - cmake -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER --build $TRAVIS_BUILD_DIR/peacock/build --target all
+    - cmake --version
+    - cmake -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -Dpeacock_prefix=$TRAVIS_BUILD_DIR/local -Dbuild_pybind11=true -Dpybind11_version=1.8.0 $TRAVIS_BUILD_DIR/tmp/source/peacock
+    - cmake -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER --build . --target all
     # ~
     - cd ../../..
 
