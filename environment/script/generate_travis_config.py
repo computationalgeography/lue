@@ -106,6 +106,8 @@ def builds():
     # A project depends on:
     # - name of packages to install
 
+
+    # These collections are lookup tables. -------------------------------------
     packages = [
         Package("libboost1.55-all-dev", ["boost-latest"]),
         Package("clang-3.5", [
@@ -118,8 +120,6 @@ def builds():
             ]),
         Package("gcc-4.9", ["ubuntu-toolchain-r-test"]),
         Package("g++-4.9", ["ubuntu-toolchain-r-test"]),
-        # Package("gcc-5", ["ubuntu-toolchain-r-test"]),
-        # Package("g++-5", ["ubuntu-toolchain-r-test"]),
         Package("gcc-6", ["ubuntu-toolchain-r-test"]),
         Package("g++-6", ["ubuntu-toolchain-r-test"]),
         Package("libhdf5-serial-dev", []),
@@ -130,7 +130,6 @@ def builds():
         "clang-3.5",
         "clang-3.8",
         "gcc-4.9", "g++-4.9",
-        # "gcc-5", "g++-5",
         "gcc-6", "g++-6",
     ]
     compilers = { compiler_name: Compiler(compiler_name,
@@ -140,19 +139,22 @@ def builds():
         packages["libhdf5-serial-dev"],
     ]
 
+
+    # These collections are used in the permutation. ---------------------------
     build_types = [
-        "Debug",
+        # "Debug",
         "Release"
     ]
 
+    # Tuples with names of C compiler and C++ compiler.
     compiler_families = {
         "gcc": [
                 ("gcc-4.9", "g++-4.9"),
-                ("gcc-6", "g++-6"),
+                # ("gcc-6", "g++-6"),
             ],
         "clang": [
                 ("clang-3.5", "clang-3.5"),
-                ("clang-3.8", "clang-3.8"),
+                # ("clang-3.8", "clang-3.8"),
             ],
     }
 
@@ -163,79 +165,79 @@ def builds():
             [
             ]
         ),
-        BuildConfiguration(
-            {
-                "LUE_BUILD_C_API:BOOL": "TRUE",
-            },
-            [
-            ]
-        ),
-        BuildConfiguration(
-            {
-                "LUE_BUILD_CXX_API:BOOL": "TRUE",
-            },
-            [
-            ]
-        ),
-        BuildConfiguration(
-            {
-                "LUE_BUILD_PYTHON_API:BOOL": "TRUE",
-            },
-            [
-            ]
-        ),
-        BuildConfiguration(
-            {
-                "LUE_BUILD_UTILITIES:BOOL": "TRUE",
-            },
-            [
-                packages["libboost1.55-all-dev"],
-            ]
-        ),
-        BuildConfiguration(
-            {
-                "LUE_BUILD_TEST:BOOL": "TRUE",
-            },
-            [
-                packages["libboost1.55-all-dev"],
-            ]
-        ),
-        BuildConfiguration(
-            {
-                "LUE_BUILD_C_API:BOOL": "TRUE",
-                "LUE_BUILD_TEST:BOOL": "TRUE",
-            },
-            [
-                packages["libboost1.55-all-dev"],
-            ]
-        ),
-        BuildConfiguration(
-            {
-                "LUE_BUILD_CXX_API:BOOL": "TRUE",
-                "LUE_BUILD_TEST:BOOL": "TRUE",
-            },
-            [
-                packages["libboost1.55-all-dev"],
-            ]
-        ),
-        BuildConfiguration(
-            {
-                "LUE_BUILD_PYTHON_API:BOOL": "TRUE",
-                "LUE_BUILD_TEST:BOOL": "TRUE",
-            },
-            [
-                packages["libboost1.55-all-dev"],
-            ]
-        ),
-        BuildConfiguration(
-            {
-                "LUE_BUILD_UTILITIES:BOOL": "TRUE",
-                "LUE_BUILD_TEST:BOOL": "TRUE",
-            },
-            [
-                packages["libboost1.55-all-dev"],
-            ]
-        ),
+        # BuildConfiguration(
+        #     {
+        #         "LUE_BUILD_C_API:BOOL": "TRUE",
+        #     },
+        #     [
+        #     ]
+        # ),
+        # BuildConfiguration(
+        #     {
+        #         "LUE_BUILD_CXX_API:BOOL": "TRUE",
+        #     },
+        #     [
+        #     ]
+        # ),
+        # BuildConfiguration(
+        #     {
+        #         "LUE_BUILD_PYTHON_API:BOOL": "TRUE",
+        #     },
+        #     [
+        #     ]
+        # ),
+        # BuildConfiguration(
+        #     {
+        #         "LUE_BUILD_UTILITIES:BOOL": "TRUE",
+        #     },
+        #     [
+        #         packages["libboost1.55-all-dev"],
+        #     ]
+        # ),
+        # BuildConfiguration(
+        #     {
+        #         "LUE_BUILD_TEST:BOOL": "TRUE",
+        #     },
+        #     [
+        #         packages["libboost1.55-all-dev"],
+        #     ]
+        # ),
+        # BuildConfiguration(
+        #     {
+        #         "LUE_BUILD_C_API:BOOL": "TRUE",
+        #         "LUE_BUILD_TEST:BOOL": "TRUE",
+        #     },
+        #     [
+        #         packages["libboost1.55-all-dev"],
+        #     ]
+        # ),
+        # BuildConfiguration(
+        #     {
+        #         "LUE_BUILD_CXX_API:BOOL": "TRUE",
+        #         "LUE_BUILD_TEST:BOOL": "TRUE",
+        #     },
+        #     [
+        #         packages["libboost1.55-all-dev"],
+        #     ]
+        # ),
+        # BuildConfiguration(
+        #     {
+        #         "LUE_BUILD_PYTHON_API:BOOL": "TRUE",
+        #         "LUE_BUILD_TEST:BOOL": "TRUE",
+        #     },
+        #     [
+        #         packages["libboost1.55-all-dev"],
+        #     ]
+        # ),
+        # BuildConfiguration(
+        #     {
+        #         "LUE_BUILD_UTILITIES:BOOL": "TRUE",
+        #         "LUE_BUILD_TEST:BOOL": "TRUE",
+        #     },
+        #     [
+        #         packages["libboost1.55-all-dev"],
+        #     ]
+        # ),
     ]
 
 
