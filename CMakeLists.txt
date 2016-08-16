@@ -22,3 +22,21 @@ include(Lue)
 
 add_subdirectory(document)
 add_subdirectory(source)
+
+
+if(LUE_BUILD_PYTHON_API)
+    install(
+        FILES document/python_package/introduction.rst
+        DESTINATION .
+        RENAME README.rst
+        COMPONENT python
+        # CMAKE >= 3.6 EXCLUDE_FROM_ALL
+    )
+
+    add_custom_target(lue_python_package_sources
+        # DEPENDS lue_python_package
+        COMMAND
+            "${CMAKE_COMMAND}" -DCMAKE_INSTALL_COMPONENT=python
+            -P "${CMAKE_BINARY_DIR}/cmake_install.cmake"
+    )
+endif()

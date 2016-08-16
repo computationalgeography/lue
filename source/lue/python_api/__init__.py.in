@@ -1,0 +1,4 @@
+from _lue import *
+
+
+__version__ = "${LUE_VERSION}"
