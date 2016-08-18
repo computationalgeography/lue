@@ -1,0 +1,11 @@
+/*!
+    @brief      Group containing the LUE APIs
+    @defgroup   lue_group LUE APIs
+
+
+    The I/O module is implemented in terms of the HDF5 C-API. Sometimes the
+    HDF5 data model terminology overlaps with our data model terminology, for
+    example in the case of 'dataset'. In these cases and in most other
+    cases we refer to the HDF5 data model, we prepend the HDF5-specific
+    terms with the word 'HDF5', as in 'HDF5 dataset'.
+*/
