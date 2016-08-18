@@ -35,6 +35,10 @@ if(LUE_BUILD_CXX_API)
     set(LUE_BUILD_C_API TRUE)
 endif()
 
+if(LUE_BUILD_TEST)
+    set(DEVBASE_BUILD_TEST TRUE)
+endif()
+
 
 if(LUE_WITH_ALL)
     # Turn on features when necessary.
@@ -72,7 +76,7 @@ endif()
 if(LUE_BUILD_PYTHON_API)
     set(DEVBASE_PYTHON_LIBS_REQUIRED TRUE)
     set(DEVBASE_REQUIRED_PYTHON_VERSION 2.7)
-
+    set(DEVBASE_NUMPY_REQUIRED TRUE)
     set(DEVBASE_PYBIND11_REQUIRED TRUE)
 endif()
 

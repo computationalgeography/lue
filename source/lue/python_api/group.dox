@@ -1,0 +1,10 @@
+/*!
+    @brief      Group containing LUE Python-API
+    @defgroup   lue_python_api_group Python-API
+    @ingroup    lue_group
+
+
+    @todo Turn collections into dictionaries. Support `for name in
+        collection`, and `collection[name]`, instead of `collection.names`
+        and `collection.item`.
+*/

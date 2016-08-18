@@ -1,0 +1,9 @@
+/*!
+    @brief      Group containing wrappers around the HDF5 C-API
+    @defgroup   lue_c_api_hdf5_group Wrappers around HDF5 C-API
+    @ingroup    lue_c_api_group
+
+
+    This group contains relatively low-level code that should not be of any
+    concern to the I/O library user.
+*/
