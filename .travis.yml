@@ -8,6 +8,7 @@ sudo: false
 matrix:
     include:
         - compiler: gcc
+          python: "2.7"
           addons:
               apt:
                   sources:
@@ -16,7 +17,7 @@ matrix:
                       - gcc-4.9
                       - g++-4.9
           env:
-              - TRAVIS_C_COMPILER=gcc-4.9 TRAVIS_CXX_COMPILER=g++-4.9 TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DTRAVIS_PYTHON_VERSION=2.7.3 -DLUE_BUILD_CXX_API:BOOL=TRUE"
+              - TRAVIS_C_COMPILER=gcc-4.9 TRAVIS_CXX_COMPILER=g++-4.9 TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DLUE_BUILD_CXX_API:BOOL=TRUE"
 
 
 # Install/update dependencies required by the installation of the
