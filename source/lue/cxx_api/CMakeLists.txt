@@ -32,7 +32,7 @@ target_link_libraries(lue_cxx
     lue_c
     # lue_cxx depends on lue_c which depends on hdf5
     # lue_cxx should not depend on hdf5
-    # ${HDF5_C_LIBRARIES}  Don't uncomment!
+    # ${HDF5_LIBRARIES}  Don't uncomment!
 )
 install(
     TARGETS lue_cxx

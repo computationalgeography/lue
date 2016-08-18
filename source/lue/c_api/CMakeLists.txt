@@ -25,6 +25,7 @@ add_library(lue_c STATIC
 )
 target_link_libraries(lue_c
     ${HDF5_C_LIBRARIES}
+    ${HDF5_LIBRARIES}
 )
 install(
     TARGETS lue_c
