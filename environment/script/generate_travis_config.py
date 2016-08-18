@@ -152,19 +152,19 @@ def builds():
                 ("gcc-4.9", "g++-4.9"),
                 # ("gcc-6", "g++-6"),
             ],
-        "clang": [
-                ("clang-3.5", "clang-3.5"),
-                # ("clang-3.8", "clang-3.8"),
-            ],
+        # "clang": [
+        #         ("clang-3.5", "clang-3.5"),
+        #         # ("clang-3.8", "clang-3.8"),
+        #     ],
     }
 
     build_configurations = [
-        BuildConfiguration(
-            {
-            },
-            [
-            ]
-        ),
+        # BuildConfiguration(
+        #     {
+        #     },
+        #     [
+        #     ]
+        # ),
         # BuildConfiguration(
         #     {
         #         "LUE_BUILD_C_API:BOOL": "TRUE",
@@ -172,13 +172,13 @@ def builds():
         #     [
         #     ]
         # ),
-        # BuildConfiguration(
-        #     {
-        #         "LUE_BUILD_CXX_API:BOOL": "TRUE",
-        #     },
-        #     [
-        #     ]
-        # ),
+        BuildConfiguration(
+            {
+                "LUE_BUILD_CXX_API:BOOL": "TRUE",
+            },
+            [
+            ]
+        ),
         # BuildConfiguration(
         #     {
         #         "LUE_BUILD_PYTHON_API:BOOL": "TRUE",
@@ -294,6 +294,21 @@ matrix:
 # requirements of the project.
 # Travis-specific stuff.
 before_install:
+    - python --version
+
+    # Install conda and some Python packages.
+    - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+    - bash miniconda.sh -b -p $HOME/miniconda
+    - export PATH="$HOME/miniconda/bin:$PATH"
+    - hash -r
+    - conda config --set always_yes yes --set changeps1 no
+    - conda update -q conda
+    - conda info -a  # Useful for debugging any issues with conda
+    - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION numpy
+    - source activate test-environment
+    - python setup.py install
+
+
     # Root of software we installed.
     - mkdir local
 
