@@ -136,7 +136,7 @@ def builds():
         packages[compiler_name]) for compiler_name in compilers }
 
     common_packages = [
-        packages["libhdf5-serial-dev"],
+        # packages["libhdf5-serial-dev"],
     ]
 
 
@@ -322,7 +322,7 @@ before_install:
     # ~/tmp/build/peacock
     - cd peacock
     - cmake --version
-    - CXX=$TRAVIS_CXX_COMPILER cmake -Dpeacock_prefix=$TRAVIS_BUILD_DIR/local -Dbuild_docopt=true -Ddocopt_version=0.6.1 -Dbuild_gdal=true -Dgdal_version=2.0.1 -Dbuild_pybind11=true -Dpybind11_version=1.8.0 $TRAVIS_BUILD_DIR/tmp/source/peacock
+    - CXX=$TRAVIS_CXX_COMPILER cmake -Dpeacock_prefix=$TRAVIS_BUILD_DIR/local -Dbuild_docopt=true -Ddocopt_version=0.6.1 -Dbuild_hdf5=true -Dhdf5_version=1.8.14 -Dbuild_gdal=true -Dgdal_version=2.0.1 -Dbuild_pybind11=true -Dpybind11_version=1.8.0 $TRAVIS_BUILD_DIR/tmp/source/peacock
     - CXX=$TRAVIS_CXX_COMPILER cmake --build . --target all
     # ~
     - cd ../../..
