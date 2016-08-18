@@ -40,12 +40,15 @@ install(
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
 )
-### # get_target_property(sources lue_cxx SOURCES)
-### # message(${sources})
-### install(
-###     FILES
-###         xxx
-###     DESTINATION _lue/lue/cxx_api
-###     COMPONENT python
-###     # CMAKE >= 3.6 EXCLUDE_FROM_ALL
-### )
+file(GLOB
+    SOURCES
+    RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+    *.cpp *.h *.hpp
+)
+install(
+    FILES
+        ${SOURCES}
+    DESTINATION _lue/lue/cxx_api
+    COMPONENT python
+    # CMAKE >= 3.6 EXCLUDE_FROM_ALL
+)

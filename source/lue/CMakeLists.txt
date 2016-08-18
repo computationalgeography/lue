@@ -126,3 +126,11 @@ if(LUE_BUILD_DOCUMENTATION)
 #     )
 
 endif()
+
+install(
+    FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/configure.h
+    DESTINATION _lue/lue
+    COMPONENT python
+    # CMAKE >= 3.6 EXCLUDE_FROM_ALL
+)

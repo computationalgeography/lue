@@ -57,9 +57,14 @@ install(
     COMPONENT python
     # CMAKE >= 3.6 EXCLUDE_FROM_ALL
 )
+file(GLOB
+    SOURCES
+    RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+    *.h *.cpp
+)
 install(
     FILES
-        python_extension.cpp
+        ${SOURCES}
     DESTINATION _lue/lue/python_api
     COMPONENT python
     # CMAKE >= 3.6 EXCLUDE_FROM_ALL
