@@ -34,7 +34,8 @@ before_install:
     - conda config --set always_yes yes --set changeps1 no
     - conda update -q conda
     - conda info -a  # Useful for debugging any issues with conda
-    - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION numpy
+    # conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION numpy
+    - conda create -q -n test-environment numpy
     - source activate test-environment
     - python setup.py install
 
