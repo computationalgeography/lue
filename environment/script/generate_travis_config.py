@@ -72,6 +72,7 @@ class Build(namedtuple("Build", (
 
         return """\
 - compiler: {compiler}
+  python: "2.7"
   addons:
       apt:
           sources:
@@ -86,6 +87,14 @@ class Build(namedtuple("Build", (
             packages="\n              - ".join(package_names),
             environment=" ".join(environment)
         )
+
+
+def merge_dicts(
+        dict1,
+        dict2):
+    result = dict1.copy()
+    result.update(dict2)
+    return result
 
 
 def builds():
@@ -156,6 +165,10 @@ def builds():
         #         ("clang-3.5", "clang-3.5"),
         #         # ("clang-3.8", "clang-3.8"),
         #     ],
+    }
+
+    common_environment = {
+        # "TRAVIS_PYTHON_VERSION": "2.7.3",
     }
 
     build_configurations = [
@@ -256,7 +269,8 @@ def builds():
                                     compilers[cxx_compiler_name]),
                                 build_type,
                                 common_packages + build_configuration.packages,
-                                build_configuration.environment
+                                merge_dicts(common_environment,
+                                    build_configuration.environment)
                             )
                         )
 
@@ -304,9 +318,10 @@ before_install:
     - conda config --set always_yes yes --set changeps1 no
     - conda update -q conda
     - conda info -a  # Useful for debugging any issues with conda
-    - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION numpy
+    # conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION numpy
+    - conda create -q -n test-environment numpy
     - source activate test-environment
-    - python setup.py install
+    # - python setup.py install
 
 
     # Root of software we installed.
