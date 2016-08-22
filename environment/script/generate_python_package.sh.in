@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 set -e
-set -x
 
 # It is best to run this script with no LUE project-specific environment
 # variables set. We don't want the test logic to pick up development files.
@@ -75,7 +74,7 @@ pip install numpy
 cd $tmp_prefix
 CPATH=$cpath \
     pip install --pre --no-index --find-links=file://$install_prefix/dist \
-        "lue==0.0.0.dev0"
+        "lue==@LUE_VERSION@"
 
 echo "********************************************************"
 python -c \
