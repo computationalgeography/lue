@@ -94,7 +94,7 @@ setuptools.setup(
         "Scientific Database, which is an HDF5 binary data format",
     long_description=long_description,
     author="PCRaster R&D Team",
-    author_email="info@pcraster.eu",
+    author_email="info at pcraster.eu",
     url="https://github.com/pcraster/lue",
     packages=setuptools.find_packages(),
     ext_modules=[
@@ -103,6 +103,7 @@ setuptools.setup(
             include_dirs=[
                 "_lue",
             ],
+            libraries = ["hdf5"],
             language="c++"
         )
     ],

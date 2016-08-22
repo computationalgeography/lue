@@ -71,6 +71,7 @@ LIBRARY_PATH="$local_prefix/*/*/*/*/lib" \
 # Install package in virtual environment and perform some tests.
 virtualenv $tmp_prefix/python
 source $tmp_prefix/python/bin/activate
+pip install numpy
 cd $tmp_prefix
 CPATH=$cpath \
     pip install --pre --no-index --find-links=file://$install_prefix/dist \
