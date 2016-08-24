@@ -1,6 +1,8 @@
 #include "lue/c_api/hdf5/hdf5_file.h"
-#include <assert.h>
 #include "lue/c_api/hdf5/hdf5_identifier.h"
+#include <assert.h>
+#include <stdlib.h>
+#include <string.h>
 
 
 /*!
@@ -80,4 +82,24 @@ bool hdf5_is_hdf5_file(
     char const* name)
 {
     return H5Fis_hdf5(name) > 0;
+}
+
+
+/*!
+    @ingroup    lue_c_api_hdf5_group
+*/
+ssize_t hdf5_file_pathname(
+    hid_t const id,
+    char** name)
+{
+    ssize_t nr_bytes = H5Fget_name(id, NULL, 0);
+
+    if(nr_bytes > 0) {
+        *name = (char*)malloc((nr_bytes + 1) * sizeof(char));
+        /* nr_bytes = */ H5Fget_name(id, *name, nr_bytes + 1);
+        assert((*name)[nr_bytes] == '\0');
+        assert(strlen(*name) == (size_t)nr_bytes);
+    }
+
+    return nr_bytes;
 }

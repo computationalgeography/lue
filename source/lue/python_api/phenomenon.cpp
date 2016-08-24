@@ -17,14 +17,40 @@ void init_phenomenon(
     BASE_COLLECTION(Phenomenon)
 
     py::class_<Phenomena>(module, "Phenomena", py::base<PhenomenonCollection>(),
-        "Phenomena docstring...")
+        R"(Collection of LUE phenomena
+
+    Zero of more Phenomenon instances can be stored in a Phenomenon
+    collection.
+
+    It is not possible to create Phenomena instances from scratch:
+    a constructor is not defined. Phenomenon collections can be obtained
+    from Dataset instances.
+)")
+        .def("__repr__",
+            [](Phenomena const& phenomena) {
+                return "Phenomena(size=" + std::to_string(
+                    phenomena.size()) + ")";
+            }
+        )
         .def("add", &Phenomena::add,
-            "add docstring...",
+            R"(Add new phenomenon to collection
+
+    :param str name: Name of phenomenon to create
+    :raises RuntimeError: In case the phenomenon cannot be created
+)",
+            "name"_a,
             py::return_value_policy::reference_internal)
     ;
 
+
     py::class_<Phenomenon>(module, "Phenomenon", py::base<hdf5::Group>(),
         "Phenomenon docstring...")
+        .def("__repr__",
+            [](Phenomenon const& phenomenon) {
+                return "Phenomenon(pathname='" +
+                    phenomenon.id().pathname() + "')";
+            }
+        )
         .def("add_property_set",
                 (PropertySet& (Phenomenon::*)
                     (std::string const&))

@@ -28,8 +28,12 @@ class Collection:
 
 public:
 
+    size_t         size                () const;
+
     std::vector<std::string>
                    names               () const;
+
+    bool           contains            (std::string const& name) const;
 
     T&             item                (std::string const& name) const;
 
@@ -95,6 +99,14 @@ inline Collection<T>::Collection(
 }
 
 
+template<
+    typename T>
+inline size_t Collection<T>::size() const
+{
+    return _items.size();
+}
+
+
 /*!
     @brief      Return names of items
 */
@@ -134,8 +146,23 @@ inline T& Collection<T>::add(
 
 
 /*!
+    @brief      Return whether or not the collection contains an item with
+                the name passed in
+    @param      name Name of item
+*/
+template<
+    typename T>
+inline bool Collection<T>::contains(
+    std::string const& name) const
+{
+    return _items.find(name) != _items.end();
+}
+
+
+/*!
     @brief      Return item
     @param      name Name of item
+    @exception  std::runtime_error In case the item does not exist
 */
 template<
     typename T>
@@ -143,7 +170,11 @@ inline T& Collection<T>::item(
     std::string const& name) const
 {
     auto iterator = _items.find(name);
-    assert(iterator != _items.end());
+
+    if(iterator == _items.end()) {
+        throw std::runtime_error("Item " + name + " does not exist");
+
+    }
 
     return *(*iterator).second;
 }

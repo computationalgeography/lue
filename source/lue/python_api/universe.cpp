@@ -4,6 +4,7 @@
 
 
 namespace py = pybind11;
+using namespace pybind11::literals;
 
 
 namespace lue {
@@ -16,11 +17,25 @@ void init_universe(
     BASE_COLLECTION(Universe)
 
     py::class_<Universes>(module, "Universes", py::base<UniverseCollection>(),
-        "Universes docstring...")
+        R"(Collection of LUE universes
+
+    Zero of more Universe instances can be stored in a Universe
+    collection.
+
+    It is not possible to create Universes instances from scratch:
+    a constructor is not defined. Universe collections can be obtained
+    from Dataset instances.
+)")
         .def("add", &Universes::add,
-            "add docstring...",
+            R"(Add new universe to collection
+
+    :param str name: Name of universe to create
+    :raises RuntimeError: In case the universe cannot be created
+)",
+            "name"_a,
             py::return_value_policy::reference_internal)
     ;
+
 
     py::class_<Universe>(module, "Universe", py::base<hdf5::Group>(),
         "Universe docstring...")

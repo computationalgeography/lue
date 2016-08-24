@@ -30,11 +30,9 @@ Phenomena::Phenomena(
 
 
 /*!
-    @brief      Create and add a Phenomenon instance
+    @brief      Add new phenomenon to collection
     @param      Name name of phenomenon
-    @exception  std::runtime_error In case the phenomenon set cannot
-                be created
-    @sa         Collection.add()
+    @sa         Collection.add(), create_phenomenon()
 */
 Phenomenon& Phenomena::add(
     std::string const& name)

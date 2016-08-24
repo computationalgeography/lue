@@ -1,4 +1,5 @@
 #include "lue/cxx_api/hdf5/file.h"
+#include "lue/c_api/hdf5/hdf5_file.h"
 #include <cassert>
 
 
@@ -40,6 +41,23 @@ File& File::operator=(
 Identifier const& File::id() const
 {
     return _id;
+}
+
+
+std::string File::pathname() const
+{
+    char* name;
+
+    auto nr_bytes = hdf5_file_pathname(_id, &name);
+
+    std::string result;
+
+    if(nr_bytes > 0) {
+        result = name;
+        ::free(name);
+    }
+
+    return result;
 }
 
 } // namespace hdf5

@@ -14,10 +14,14 @@ void init_file(
 {
 
     py::class_<hdf5::File>(module, "File",
-        "File docstring...")
+        R"(Class representing an HDF5 file)")
         .def_property_readonly("id", &hdf5::File::id,
             "id docstring...",
             py::return_value_policy::reference_internal)
+        .def_property_readonly("pathname", &hdf5::File::pathname,
+            "Return pathname of file\n"
+            "\n"
+            "...")
     ;
 
 }

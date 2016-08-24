@@ -29,6 +29,11 @@ Universes::Universes(
 }
 
 
+/*!
+    @brief      Create and add a Universe instance
+    @param      Name name of universe
+    @sa         Collection.add(), create_universe()
+*/
 Universe& Universes::add(
     std::string const& name)
 {

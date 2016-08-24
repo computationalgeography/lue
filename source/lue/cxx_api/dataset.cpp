@@ -29,6 +29,10 @@ Dataset::Dataset(
 }
 
 
+/*!
+    @brief      Add new universe to dataset
+    @sa         Universes::add()
+*/
 Universe& Dataset::add_universe(
     std::string const& name)
 {
@@ -36,6 +40,10 @@ Universe& Dataset::add_universe(
 }
 
 
+/*!
+    @brief      Add new phenomenon to dataset
+    @sa         Phenomena::add()
+*/
 Phenomenon& Dataset::add_phenomenon(
     std::string const& name)
 {

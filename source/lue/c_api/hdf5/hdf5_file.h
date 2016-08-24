@@ -24,6 +24,9 @@ herr_t             hdf5_close_file     (hid_t const file_id);
 
 bool               hdf5_is_hdf5_file   (char const* name);
 
+ssize_t            hdf5_file_pathname  (hid_t const id,
+                                        char** name);
+
 
 #ifdef __cplusplus
 }  // extern "C"

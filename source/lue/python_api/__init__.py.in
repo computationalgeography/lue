@@ -40,9 +40,12 @@ __version__ = "${LUE_VERSION}"
 
 def _api(property_set):
 
-    result = O_O_PropertySet(property_set)
+    # TODO
+    return property_set
 
-    return result
+    # result = O_O_PropertySet(property_set)
+
+    # return result
 
 
 def _decorated_add_property_set(
@@ -56,14 +59,14 @@ Phenomenon.add_property_set = _decorated_add_property_set(
     Phenomenon.add_property_set)
 
 
-def _decorated_item(
+def _decorated__getitem__(
         function):
-    def item(*args, **kwargs):
+    def __getitem__(*args, **kwargs):
         return _api(function(*args, **kwargs))
 
-    return item
+    return __getitem__
 
 
-PropertySets.item = _decorated_item(PropertySets.item)
+PropertySets.__getitem__ = _decorated__getitem__(PropertySets.__getitem__)
 
 Chunks = Shape

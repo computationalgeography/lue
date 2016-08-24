@@ -63,6 +63,17 @@ Phenomena& Universe::phenomena() const
 }
 
 
+/*!
+    @ingroup    lue_cxx_api_group
+    @brief      Add new universe
+    @param      Location Id of location of file or group to add
+                universe to
+    @param      Name name of universe
+    @exception  std::runtime_error In case a universe with the name
+                passed in already exists
+    @exception  std::runtime_error In case the universe cannot be
+                created
+*/
 Universe create_universe(
     hdf5::Identifier const& location,
     std::string const& name)

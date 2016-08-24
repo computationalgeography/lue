@@ -67,6 +67,12 @@ void init_property_set(
     py::class_<PropertySets>(module, "PropertySets",
             py::base<PropertySetCollection>(),
         "PropertySets docstring...")
+        .def("__repr__",
+            [](PropertySets const& property_sets) {
+                return "PropertySets(size=" + std::to_string(
+                    property_sets.size()) + ")";
+            }
+        )
         // .def("add", &PropertySets::add,
         //     "add docstring...",
         //     py::return_value_policy::reference_internal)
@@ -74,6 +80,12 @@ void init_property_set(
 
     py::class_<PropertySet>(module, "PropertySet", py::base<hdf5::Group>(),
         "PropertySet docstring...")
+        .def("__repr__",
+            [](PropertySet const& property_set) {
+                return "PropertySet(pathname='" +
+                    property_set.id().pathname() + "')";
+            }
+        )
         .def_property_readonly("domain", &PropertySet::domain,
             "domain docstring...",
             py::return_value_policy::reference_internal)

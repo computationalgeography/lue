@@ -84,6 +84,17 @@ PropertySets& Phenomenon::property_sets() const
 }
 
 
+/*!
+    @ingroup    lue_cxx_api_group
+    @brief      Add new phenomenon
+    @param      Location Id of location of file or group to add
+                phenomenon to
+    @param      Name name of phenomenon
+    @exception  std::runtime_error In case a phenomenon with the name
+                passed in already exists
+    @exception  std::runtime_error In case the phenomenon cannot be
+                created
+*/
 Phenomenon create_phenomenon(
     hdf5::Identifier const& location,
     std::string const& name)

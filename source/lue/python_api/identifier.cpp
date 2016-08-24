@@ -20,7 +20,7 @@ void init_identifier(
             "\n"
             "This identifier can be passed into other HDF5 APIs")
         .def_property_readonly("pathname", &hdf5::Identifier::pathname,
-            "Return pathname of HDF5 object\n"
+            "Return name of HDF5 object\n"
             "\n"
             "This name can be passed into other HDF5 APIs")
     ;

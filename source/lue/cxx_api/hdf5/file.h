@@ -28,6 +28,8 @@ public:
 
     Identifier const& id               () const;
 
+    std::string    pathname            () const;
+
 private:
 
     Identifier     _id;

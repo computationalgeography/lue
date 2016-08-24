@@ -14,21 +14,52 @@ void init_dataset(
 {
 
     py::class_<Dataset>(module, "Dataset", py::base<hdf5::File>(),
-        "Dataset class"
-        "\n"
-        "A LUE dataset can contain collections of universes,\n"
-        "phenomena, or property sets")
+        R"(LUE Dataset representing the scientific database
+
+    A LUE dataset can contain collections of universes, phenomena, and/or
+    property sets.
+
+    It is not possible to create Dataset instances from scratch:
+    a constructor is not defined. New datasets can be created with the
+    free function create_dataset(). Existing datasets can be opened
+    with open_dataset().
+
+    A LUE dataset is not similar to an HDF5 dataset. An HDF5 dataset
+    represents a multidimensional array in an HDF5 file. The HDF5 file
+    is managed by the LUE dataset.
+)")
+        .def("__repr__",
+            [](Dataset const& dataset) {
+                return "Dataset(name='" + dataset.pathname() + "')";
+            }
+        )
         .def("add_phenomenon", &Dataset::add_phenomenon,
-            "add_phenomenon docstring...",
+            R"(Add new phenomenon to dataset
+
+    :param str name: Name of phenomenon to create
+    :raises RuntimeError: In case the phenomenon cannot be created
+)",
+            "name"_a,
             py::return_value_policy::reference_internal)
         .def_property_readonly("phenomena", &Dataset::phenomena,
-            "phenomena docstring...",
+            R"(Return phenomena collection
+
+    :rtype: lue.Phenomena
+)",
             py::return_value_policy::reference_internal)
         .def("add_universe", &Dataset::add_universe,
-            "add_universe docstring...",
+            R"(Add new universe to dataset
+
+    :param str name: Name of universe to create
+    :raises RuntimeError: In case the universe cannot be created
+)",
+            "name"_a,
             py::return_value_policy::reference_internal)
         .def_property_readonly("universes", &Dataset::universes,
-            "universes docstring...",
+            R"(Return universes collection
+
+    :rtype: lue.Universes
+)",
             py::return_value_policy::reference_internal)
     ;
 
