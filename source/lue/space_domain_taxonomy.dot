@@ -1,0 +1,157 @@
+digraph domain_types {
+
+    graph [
+        bgcolor=transparent
+        splines=true
+        overlap=scale
+    ];
+
+    node [
+        fontname=Verdana
+        fontsize=8
+        style=filled
+        fillcolor=white
+        target=_parent
+    ];
+
+    edge [
+    ];
+
+
+    space_domain [
+        label=
+            "space domain"
+    ];
+    omnipresent_in_space [
+        label=
+            "omnipresent in space"
+    ];
+    located_in_space [
+        label=
+            "located in space"
+    ];
+
+
+    time_domain_type [
+        label=
+            "time domain\n" +
+            "type"
+    ];
+    omnipresent_in_time [
+        label=
+            "omnipresent\n" +
+            "in time"
+    ];
+    located_in_time [
+        label=
+            "located in time"
+    ];
+
+
+    space_index [
+        label=
+            "space index"
+    ];
+    indexed_in_space [
+        label=
+            "indexed in space"
+    ];
+    not_indexed_in_space [
+        label=
+            "not_indexed in space"
+    ];
+
+
+    space_topology [
+        label=
+            "space topology"
+    ];
+    topology_stored [
+        label=
+            "topology stored"
+    ];
+    topology_not_stored [
+        label=
+            "topology not stored"
+    ];
+
+
+    omnipresent_in_time_and_space [
+        fillcolor="#abdda4"
+        label=
+            "omnipresent in time\n" +
+            "omnipresent in space"
+        URL="md_domain.html#lue_domain_space_domain_types_omnipresent_in_time_space"
+    ];
+
+    blah1 [
+        // fillcolor="#abdda4"
+        fillcolor="#fdae61"
+        label=
+            "omnipresent in time\n" +
+            "omnipresent in space\n" +
+            "topology not stored\n" +
+            "not indexed in space"
+        // URL="md_domain.html#lue_domain_space_domain_types_omnipresent_in_space"
+    ];
+
+
+
+    // untopological_unindexed_in_space [
+    //     fillcolor="#fdae61"
+    //     label=
+    //         "untopological and\n" +
+    //         "unindexed in space"
+    //     URL="md_domain.html#lue_domain_space_domain_types_untopological_unindexed_in_space"
+    // ];
+
+    // topological_unindexed_in_space [
+    //     fillcolor="#d53e4f"
+    //     label=
+    //         "topological and\n" +
+    //         "unindexed in space"
+    //     URL="md_domain.html#lue_domain_space_domain_types_topological_unindexed_in_space"
+    // ];
+
+    // untopological_indexed_in_space [
+    //     fillcolor="#d53e4f"
+    //     label=
+    //         "untopological and\n" +
+    //         "indexed in space"
+    //     URL="md_domain.html#lue_domain_space_domain_types_untopological_indexed_in_space"
+    // ];
+
+    // topological_indexed_in_space [
+    //     fillcolor="#d53e4f"
+    //     label=
+    //         "topological and\n" +
+    //         "indexed in space"
+    //     URL="md_domain.html#lue_domain_space_domain_types_topological_indexed_in_space"
+    // ];
+
+
+    time_domain_type -> omnipresent_in_time;
+    time_domain_type -> located_in_time;
+
+    space_domain -> omnipresent_in_space;
+    space_domain -> located_in_space;
+
+    space_index -> indexed_in_space;
+    space_index -> not_indexed_in_space;
+
+    space_topology -> topology_stored;
+    space_topology -> topology_not_stored;
+
+    // located_in_space -> untopological_unindexed_in_space;
+    // located_in_space -> untopological_indexed_in_space;
+    // located_in_space -> topological_unindexed_in_space;
+    // located_in_space -> topological_indexed_in_space;
+
+    omnipresent_in_time -> omnipresent_in_time_and_space;
+    omnipresent_in_space -> omnipresent_in_time_and_space;
+
+    located_in_time -> blah1;
+    located_in_space -> blah1;
+    topology_not_stored -> blah1;
+    not_indexed_in_space -> blah1;
+}

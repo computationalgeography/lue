@@ -92,4 +92,10 @@ if(LUE_BUILD_DOCUMENTATION)
     set(DEVBASE_DOXYGEN_REQUIRED TRUE)
     set(DEVBASE_GRAPHVIZ_REQUIRED TRUE)
     set(DEVBASE_SPHINX_REQUIRED TRUE)
+
+    find_program(EDIT_DOT_GRAPH
+        edit_dot_graph.py
+        PATHS ${PROJECT_SOURCE_DIR}/devbase/script
+        NO_DEFAULT_PATH
+    )
 endif()

@@ -44,7 +44,7 @@ A LUE dataset contains universes and phenomena. Here, we will add a new phenomen
 
     >>> planets = dataset.add_phenomenon("planets")
 
-A phenomenon contains property sets. A property set is an aggregate of a domain and zero or more properties sharing the domain. A domain can be created given a domain configuration. A domain configuration is an aggregate of a time domain configuration and a space domain configuration. To keep things simple, we assume an omnipresent time and omnipresent space domain. This means we don't have to explicitly create a domain configuration since an omnipresent spatio-temporal domain is the default domain. The property-set created here is named 'omnipresent'.
+A phenomenon contains property sets. A property set is an aggregate of a domain and zero or more properties sharing the domain. A domain can be created given a domain configuration. A domain configuration is an aggregate of a time domain configuration and a space domain configuration. To keep things simple, we assume an omnipresent time and omnipresent space domain. This means we don't have to explicitly create a domain configuration since an omnipresent spatio-temporal domain is the default domain. The property set created here is named 'omnipresent'.
 
 ::
 
@@ -68,7 +68,7 @@ The ``Phenomena`` class inherits functionality from the Collection class, just l
 
     >>> planets = dataset.phenomena["planets"]
 
-A phenomenon has a ``property_sets`` attribute which represent the collection of property-sets in the phenomenon. Subscripting the ``property_sets`` attributes provides us with the property-set::
+A phenomenon has a ``property_sets`` attribute which represent the collection of property sets in the phenomenon. Subscripting the ``property_sets`` attributes provides us with the property set::
 
     >>> print(planets.property_sets.names)
     [u'omnipresent']

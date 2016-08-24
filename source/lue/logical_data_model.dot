@@ -1,0 +1,166 @@
+digraph logical_data_model {
+
+    // -------------------------------------------------------------------------
+    graph [
+        fontname=Verdana
+        fontsize=8
+        compound=true
+        bgcolor=transparent
+        splines=true
+        overlap=scale
+    ];
+
+    node [
+        shape=record
+        fontname=Verdana
+        fontsize=8
+        style=filled
+        fillcolor=white
+        target=_parent
+    ];
+
+    edge [
+        dir="both"
+        arrowtail=none
+        arrowhead=none
+        fontname=Verdana
+        fontsize=8
+    ];
+
+
+    // -------------------------------------------------------------------------
+    universe [
+        label="{" +
+            "universe|" +
+            "name" +
+        "}"
+        URL="md_universe.html"
+    ];
+
+    phenomenon [
+        label="{" +
+            "phenomenon|" +
+            "name" +
+        "}"
+        URL="md_phenomenon.html"
+    ];
+
+    property_set [
+        label="{" +
+            "property set|" +
+            "name" +
+        "}"
+        URL="md_property_set.html"
+    ];
+
+    property [
+        label="{" +
+            "property|" +
+            "name" +
+        "}"
+        URL="md_property.html"
+    ];
+
+    domain [
+        label="{" +
+            "domain|" +
+        "}"
+        URL="md_domain.html"
+    ];
+
+    time_domain [
+        label="{" +
+            "time domain|" +
+            "located in time or not\n" +
+            "constant collection of items or not\n" +
+            "shared or not\n" +
+        "}"
+        URL="md_domain.html#lue_domain_time_domain_types"
+    ];
+
+    space_domain [
+        label="{" +
+            "space domain|" +
+            "located in space or not\n" +
+            "indexed or not\n" +
+            "topological or not" +
+        "}"
+        URL="md_domain.html#lue_domain_space_domain_types"
+    ];
+
+    value [
+        label="{" +
+            "value|" +
+            "discretization?" +
+        "}"
+        URL="md_value.html"
+    ];
+
+
+    // -------------------------------------------------------------------------
+    universe -> phenomenon [
+        arrowtail=diamond
+        taillabel="1"
+        headlabel="*"
+    ];
+
+    phenomenon -> property_set [
+        arrowtail=diamond
+        taillabel="1"
+        headlabel="*"
+    ];
+
+    property_set -> domain [
+        arrowtail=diamond
+        taillabel="1"
+        headlabel="1"
+    ];
+
+
+    // subgraph cluster_space_domain {
+    //     label="space domain";
+    //     space_point;
+    //     space_box;
+    //     space_line;
+    //     space_region;
+    //     space_cell;
+    // }
+
+    // domain -> space_line [
+    //     lhead=cluster_space_domain
+    //     arrowtail="diamond"
+    //     taillabel="1"
+    //     headlabel="?"
+    // ];
+
+    domain -> time_domain [
+        arrowtail="diamond"
+        taillabel="1"
+        headlabel="?"
+    ];
+
+    domain -> space_domain [
+        arrowtail="diamond"
+        taillabel="1"
+        headlabel="?"
+    ];
+
+    property_set -> property [
+        arrowtail=diamond
+        taillabel="1"
+        headlabel="*"
+    ];
+
+    property -> domain [
+        arrowtail=odiamond
+        taillabel="1"
+        headlabel="1"
+    ];
+
+    property -> value [
+        arrowtail=diamond
+        taillabel="1"
+        headlabel="1"
+    ];
+
+}

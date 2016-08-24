@@ -4,7 +4,5 @@
     @ingroup    lue_group
 
 
-    @todo Turn collections into dictionaries. Support `for name in
-        collection`, and `collection[name]`, instead of `collection.names`
-        and `collection.item`.
+    Instead of documenting the Python API with Doxygen, the API is documented as a seperate project using Sphinx and put online at http://lue.readthedocs.io .
 */
