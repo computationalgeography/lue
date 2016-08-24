@@ -12,11 +12,11 @@ The help function can also be used to find out about classes and instances::
 
     help(lue.Dataset)
 
-    help(planets_dataset)  # Assuming the instance exists...
+    help(dataset)  # Assuming the instance exists...
 
 Instances of the various LUE classes can be printed. This results in a terse information message, e.g.::
 
-    >>> print(planets_dataset)
+    >>> print(dataset)
     Dataset(name='planets.lue')
 
 .. note::
@@ -38,18 +38,17 @@ Create a new LUE dataset
 ------------------------
 To create a new dataset from scratch we can use the free function called ``create_dataset()``, which takes the name of the new dataset as an argument::
 
-    >>> planets_dataset = lue.create_dataset("planets.lue")
+    >>> dataset = lue.create_dataset("planets.lue")
 
-A LUE dataset contains universes and phenomena. Here, we will add a new phenomenon, called 'planet', to the phenomena collection::
+A LUE dataset contains universes and phenomena. Here, we will add a new phenomenon, called 'planets', to the phenomena collection::
 
-    >>> planet_phenomenon = planets_dataset.add_phenomenon("planet")
+    >>> planets = dataset.add_phenomenon("planets")
 
 A phenomenon contains property sets. A property set is an aggregate of a domain and zero or more properties sharing the domain. A domain can be created given a domain configuration. A domain configuration is an aggregate of a time domain configuration and a space domain configuration. To keep things simple, we assume an omnipresent time and omnipresent space domain. This means we don't have to explicitly create a domain configuration since an omnipresent spatio-temporal domain is the default domain. The property-set created here is named 'omnipresent'.
 
 ::
 
-    >>> omnipresent_properties = planet_phenomenon.add_property_set(
-            "omnipresent")
+    >>> properties = planets.add_property_set("omnipresent")
 
 TODO: Add properties.
 
@@ -58,21 +57,21 @@ Query an existing LUE dataset
 -----------------------------
 In this section we will open de dataset created above and query it for its contents. To open an existing dataset we can use the free function called ``open_dataset()``::
 
-    >>> planets_dataset = lue.open_dataset("planets.lue")
+    >>> dataset = lue.open_dataset("planets.lue")
 
 To query the contents of a dataset, we can use the ``universes`` and ``phenomena`` attributes of the dataset instance. Here, we use the ``phenomena`` attribute to find out the names of the phenomena it contains::
 
-    >>> print(planets_dataset.phenomena.names)
-    [u'planet']
+    >>> print(dataset.phenomena.names)
+    [u'planets']
 
 The ``Phenomena`` class inherits functionality from the Collection class, just like the ``Universes``, ``PropertySets``, and ``Properties`` classes. To obtain an item from a collection we can use the subscript operator ``[]``, which takes the name of the item as an argument. Subscripting the ``phenomena`` attribute of the Dataset instance provides us with the phenomenon::
 
-    >>> planet_phenomenon = planets_dataset.phenomena["planet"]
+    >>> planets = dataset.phenomena["planets"]
 
 A phenomenon has a ``property_sets`` attribute which represent the collection of property-sets in the phenomenon. Subscripting the ``property_sets`` attributes provides us with the property-set::
 
-    >>> print(planet_phenomenon.property_sets.names)
+    >>> print(planets.property_sets.names)
     [u'omnipresent']
-    >>> omnipresent_properties = planet_phenomenon.property_sets["omnipresent"]
+    >>> properties = planets.property_sets["omnipresent"]
 
 TODO: Query properties.

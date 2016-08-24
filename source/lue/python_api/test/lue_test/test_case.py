@@ -2,6 +2,7 @@ import os
 import unittest
 import numpy
 import lue
+import lue_test
 
 
 class TestCase(unittest.TestCase):
@@ -31,3 +32,13 @@ class TestCase(unittest.TestCase):
         test cases programmatically at runtime.
         """
         setattr(cls, method.__name__, method)
+
+    @classmethod
+    def create_dataset(cls,
+            name):
+        """
+        Create dataset, removing an existing dataset first
+        """
+        lue_test.remove_file_if_existant(name)
+
+        return lue.create_dataset(name)

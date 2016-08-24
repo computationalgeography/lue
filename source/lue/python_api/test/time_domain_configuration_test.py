@@ -1,16 +1,18 @@
-import unittest
 import lue
+import lue_test
 
 
-class TimeDomainTest(unittest.TestCase):
+class TimeDomainTest(lue_test.TestCase):
 
     def test_default_construct(self):
+
         configuration = lue.TimeDomainConfiguration()
 
         self.assertEqual(configuration.type, lue.time_domain.omnipresent)
 
 
     def test_construct(self):
+
         configuration = lue.TimeDomainConfiguration(
             lue.time_domain.omnipresent)
 

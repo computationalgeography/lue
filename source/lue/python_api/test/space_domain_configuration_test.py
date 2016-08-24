@@ -1,10 +1,11 @@
-import unittest
 import lue
+import lue_test
 
 
-class SpaceDomainTest(unittest.TestCase):
+class SpaceDomainTest(lue_test.TestCase):
 
     def test_default_construct(self):
+
         configuration = lue.SpaceDomainConfiguration()
 
         self.assertEqual(configuration.type, lue.space_domain.omnipresent)
@@ -29,6 +30,7 @@ class SpaceDomainTest(unittest.TestCase):
 
 
     def test_construct2(self):
+
         configuration = lue.SpaceDomainConfiguration(
             lue.space_domain.omnipresent, lue.space_domain_item.none)
 
@@ -53,6 +55,7 @@ class SpaceDomainTest(unittest.TestCase):
 
 
     def test_construct2_error(self):
+
         # It is not OK to pass a located domain type, but not to specify a
         # domain item type.
         self.assertRaises(RuntimeError, lue.SpaceDomainConfiguration,

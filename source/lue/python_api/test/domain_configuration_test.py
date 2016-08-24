@@ -1,10 +1,11 @@
-import unittest
 import lue
+import lue_test
 
 
-class DomainTest(unittest.TestCase):
+class DomainTest(lue_test.TestCase):
 
     def test_default_construct(self):
+
         configuration = lue.DomainConfiguration()
 
         self.assertEqual(configuration.time.type, lue.time_domain.omnipresent)
@@ -14,6 +15,7 @@ class DomainTest(unittest.TestCase):
 
 
     def test_construct1(self):
+
         time_configuration = lue.TimeDomainConfiguration(
             lue.time_domain.shared_constant_collection)
         configuration = lue.DomainConfiguration(time_configuration)
@@ -26,6 +28,7 @@ class DomainTest(unittest.TestCase):
 
 
     def test_construct2(self):
+
         space_configuration = lue.SpaceDomainConfiguration(
             lue.space_domain.located, lue.space_domain_item.box)
         configuration = lue.DomainConfiguration(space_configuration)
@@ -37,6 +40,7 @@ class DomainTest(unittest.TestCase):
 
 
     def test_construct3(self):
+
         time_configuration = lue.TimeDomainConfiguration(
             lue.time_domain.shared_constant_collection)
         space_configuration = lue.SpaceDomainConfiguration(
