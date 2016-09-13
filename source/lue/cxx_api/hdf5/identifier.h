@@ -45,6 +45,8 @@ public:
 
     std::string    pathname            () const;
 
+    std::string    name                () const;
+
 private:
 
     //! HDF5 identifier.

@@ -1,4 +1,5 @@
 add_test_conditionally(test)
+add_subdirectory(data_type)
 add_subdirectory(hdf5)
 
 set(SOURCES
@@ -20,11 +21,13 @@ set(SOURCES
     time_domain_configuration
     universe
     universes
+    value
 )
 add_library(lue_cxx_api_objects OBJECT
     ${SOURCES}
 )
 add_library(lue_cxx STATIC
+    $<TARGET_OBJECTS:lue_cxx_api_data_type_objects>
     $<TARGET_OBJECTS:lue_cxx_api_hdf5_objects>
     $<TARGET_OBJECTS:lue_cxx_api_objects>
 )

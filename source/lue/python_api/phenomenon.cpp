@@ -45,6 +45,7 @@ void init_phenomenon(
 
     py::class_<Phenomenon>(module, "Phenomenon", py::base<hdf5::Group>(),
         "Phenomenon docstring...")
+
         .def("__repr__",
             [](Phenomenon const& phenomenon) {
                 return "Phenomenon(pathname='" +

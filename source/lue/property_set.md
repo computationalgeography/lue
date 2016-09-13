@@ -13,21 +13,10 @@
 
 
 # C++ API  {#lue_property_set_cxx_api}
-- @ref lue::PropertySets
 - @ref lue::PropertySet
 
 
 # C API  {#lue_property_set_c_api}
-
-## Property sets
-- @ref create_property_sets
-- @ref property_sets_exists
-- @ref open_property_sets
-- @ref nr_property_sets
-- @ref property_set_names
-- @ref close_property_sets
-
-## Property set
 - @ref create_property_set
 - @ref open_property_set
 - @ref close_property_set

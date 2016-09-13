@@ -46,6 +46,12 @@ Identifier const& Group::id() const
 }
 
 
+std::string Group::name() const
+{
+    return _id.name();
+}
+
+
 Attributes const& Group::attributes() const
 {
     return _attributes;

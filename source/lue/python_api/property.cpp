@@ -1,6 +1,6 @@
 #include "lue/python_api/collection.h"
 #include "lue/cxx_api/properties.h"
-// #include "lue/cxx_api/property_set_api.h"
+#include "lue/cxx_api/data_type.h"
 #include <pybind11/pybind11.h>
 
 
@@ -15,40 +15,51 @@ void init_property(
         py::module& module)
 {
 
-    // py::class_<api::Property>(module, "_Property",
-    //     "_Property docstring...")
+    py::class_<api::Property>(module, "_Property",
+        "_Property docstring...")
 
-    //     // Property API
-    //     .def_property_readonly("id", &api::Property::id,
-    //         "id docstring...",
-    //         py::return_value_policy::reference_internal)
-    // ;
+        // Property API
+        .def_property_readonly("id", &api::Property::id,
+            "id docstring...",
+            py::return_value_policy::reference_internal)
 
-    // py::class_<api::omnipresent::omnipresent::Property>(module,
-    //     "O_O_Property", py::base<api::Property>(),
-    //     "O_O_Property docstring...")
-    //     .def(py::init<Property&, hid_t const>(),
-    //         "__init__ docstring..."
-    //         "group"_a, "type"_a,
-    //         py::keep_alive<1, 2>())
-    //     .def("reserve_items",
-    //             &api::omnipresent::omnipresent::Property::reserve_items,
-    //         "reserve docstring...",
-    //         py::return_value_policy::reference_internal)
-    //     .def_property_readonly("items",
-    //             &api::omnipresent::omnipresent::Property::items,
-    //         "items docstring...",
-    //         py::return_value_policy::reference_internal)
-    // ;
+        .def_property_readonly("name", &api::Property::name,
+            "name docstring...",
+            py::return_value_policy::reference_internal)
+    ;
 
-    // BASE_COLLECTION(Property)
+    py::class_<api::time::omnipresent::constant_shape::Property>(
+            module,
+        "O_CS_Property", py::base<api::Property>(),
+        "O_CS_Property docstring...")
 
-    // py::class_<Properties>(module, "Properties", py::base<PropertyCollection>(),
-    //     "Properties docstring...")
-    //     .def("add", &Properties::add,
-    //         "add docstring...",
-    //         py::return_value_policy::reference_internal)
-    // ;
+        .def(py::init<Property&, hid_t const>(),
+            "__init__ docstring..."
+            "group"_a, "type"_a,
+            py::keep_alive<1, 2>())
+
+        .def("reserve_items",
+                &api::time::omnipresent::constant_shape::
+                    Property::reserve_items,
+            "reserve docstring...",
+            py::return_value_policy::reference_internal)
+
+        .def_property_readonly("values",
+                &api::time::omnipresent::constant_shape::Property::values,
+            "values docstring...",
+            py::return_value_policy::reference_internal)
+    ;
+
+    BASE_COLLECTION(Property)
+
+    py::class_<Properties>(module, "Properties",
+        py::base<PropertyCollection>(),
+        "Properties docstring...")
+
+        .def("add", &Properties::add,
+            "add docstring...",
+            py::return_value_policy::reference_internal)
+    ;
 
     py::class_<Property>(module, "Property", py::base<hdf5::Group>(),
         "Property docstring...")

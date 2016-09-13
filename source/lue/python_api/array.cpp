@@ -53,16 +53,35 @@ TYPE_TRAITS(double, H5T_NATIVE_DOUBLE, "float64")
 template<
     typename T>
 py::array create_array(
-    Shape const& shape,
-    size_t slice_length)
+    Shape const& shape)
 {
+    std::vector<size_t> extents(shape.size());
+    std::copy(shape.begin(), shape.end(), extents.begin());
+
+    // Fill collection with strides. E.g., in case of shape [500, 4, 5],
+    // the strides collection must be [20, 5, 1].
+    std::vector<size_t> strides(shape.size());
+    size_t stride = 1;
+    std::transform(shape.rbegin(), shape.rend(), strides.begin(),
+        [&stride](T const& v) {
+            size_t tmp_stride = stride;
+            stride *= v;
+            return tmp_stride;
+        }
+    );
+    std::reverse(strides.begin(), strides.end());
+    std::transform(strides.begin(), strides.end(), strides.begin(), [](T const& v) {
+            return v * sizeof(T);
+        }
+    );
+
     return py::array(py::buffer_info(
         nullptr,                          // Ask numpy to allocate
         sizeof(T),                        // Size of one item
         py::format_descriptor<T>::value,  // Buffer format
         shape.size(),                     // Rank
-        { slice_length },                 // Extents
-        { sizeof(T) }                     // Strides
+        extents,
+        strides
     ));
 }
 
@@ -125,20 +144,12 @@ void set_item(
 
     // TODO verify array can handle T's.
 
-    // This overload is intended for 1D arrays.
-
     // Verify that
-    // - the destination array is 1D
     // - the slice selects within the array bounds
-    // - the source array is 1D
     // - the length of the source array corresponds with the length
     //   of the selection
 
     Shape const shape{array.shape()};
-
-    if(shape.size() != 1) {
-        throw std::runtime_error("1D destination array expected");
-    }
 
     size_t start, stop, step, slice_length;
 
@@ -148,9 +159,10 @@ void set_item(
 
     auto const array_info = values.request();
 
-    if(array_info.ndim != 1) {
-        throw std::runtime_error("1D source array expected");
+    if(shape.size() != array_info.ndim) {
+        throw std::runtime_error("rank of arrays differ");
     }
+
 
     if(!H5Tequal(TypeTraits<T>::hdf5_type_id(), array.type_id())) {
         throw std::runtime_error(boost::str(boost::format(
@@ -170,7 +182,16 @@ void set_item(
             ));
     }
 
-    array.write(start, slice_length, step, static_cast<T*>(array_info.ptr));
+    std::vector<hsize_t> hyperslab_start(shape.size(), 0);
+    hyperslab_start[0] = start;
+
+    std::vector<hsize_t> hyperslab_count(shape);
+    hyperslab_count[0] = slice_length;
+
+    std::vector<hsize_t> hyperslab_stride(shape.size(), 1);
+
+    array.write(hyperslab_start, hyperslab_count, hyperslab_stride,
+        static_cast<T*>(array_info.ptr));
 }
 
 
@@ -266,13 +287,7 @@ void init_array(
                 Array const& array,
                 py::slice const& slice) -> py::array {
 
-            // This overload is intended for 1D arrays.
-
             Shape const shape{array.shape()};
-
-            if(shape.size() != 1) {
-                throw std::runtime_error("1D source array expected");
-            }
 
             size_t start, stop, step, slice_length;
 
@@ -280,6 +295,16 @@ void init_array(
                 throw py::error_already_set();
             }
 
+            std::vector<hsize_t> hyperslab_start(shape.size(), 0);
+            hyperslab_start[0] = start;
+
+            std::vector<hsize_t> hyperslab_count(shape);
+            hyperslab_count[0] = slice_length;
+
+            std::vector<hsize_t> hyperslab_stride(shape.size(), 1);
+
+            Shape slice_shape{shape};
+            slice_shape[0] = slice_length;
 
             // Create numpy array.
             py::array result;
@@ -287,16 +312,16 @@ void init_array(
             switch(H5Tget_class(array.type_id())) {
                 case H5T_INTEGER: {
                     if(H5Tequal(array.type_id(), H5T_NATIVE_UINT32)) {
-                        result = create_array<uint32_t>(shape, slice_length);
+                        result = create_array<uint32_t>(slice_shape);
                     }
                     else if(H5Tequal(array.type_id(), H5T_NATIVE_INT32)) {
-                        result = create_array<int32_t>(shape, slice_length);
+                        result = create_array<int32_t>(slice_shape);
                     }
                     else if(H5Tequal(array.type_id(), H5T_NATIVE_UINT64)) {
-                        result = create_array<uint64_t>(shape, slice_length);
+                        result = create_array<uint64_t>(slice_shape);
                     }
                     else if(H5Tequal(array.type_id(), H5T_NATIVE_INT64)) {
-                        result = create_array<int64_t>(shape, slice_length);
+                        result = create_array<int64_t>(slice_shape);
                     }
                     else {
                         throw std::runtime_error(
@@ -306,10 +331,10 @@ void init_array(
                 }
                 case H5T_FLOAT: {
                     if(H5Tequal(array.type_id(), H5T_NATIVE_FLOAT)) {
-                        result = create_array<float>(shape, slice_length);
+                        result = create_array<float>(slice_shape);
                     }
                     else if(H5Tequal(array.type_id(), H5T_NATIVE_DOUBLE)) {
-                        result = create_array<double>(shape, slice_length);
+                        result = create_array<double>(slice_shape);
                     }
                     else {
                         throw std::runtime_error(
@@ -326,7 +351,8 @@ void init_array(
 
             auto buffer = result.request().ptr;
 
-            array.read(start, slice_length, step, buffer);
+            array.read(hyperslab_start, hyperslab_count, hyperslab_stride,
+                buffer);
 
             return result;
         })

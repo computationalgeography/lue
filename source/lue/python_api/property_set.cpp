@@ -1,5 +1,5 @@
 #include "lue/cxx_api/property_sets.h"
-// #include "lue/cxx_api/property_set_api.h"
+#include "lue/cxx_api/data_type.h"
 #include "lue/python_api/collection.h"
 #include "lue/python_api/numpy.h"
 #include <pybind11/numpy.h>
@@ -97,32 +97,86 @@ void init_property_set(
             py::return_value_policy::reference_internal)
     ;
 
-    // // TODO Refactor Group and PropertySet API's into common base classes.
-    // //      Multiple classes implement the interfaces.
-    // py::class_<api::PropertySet>(module, "_PropertySet",
-    //     "_PropertySet docstring...")
+    // TODO Refactor Group and PropertySet API's into common base classes.
+    //      Multiple classes implement the interfaces.
+    py::class_<api::PropertySet>(module, "_PropertySet",
+        "_PropertySet docstring...")
 
-    //     // Group API
-    //     .def_property_readonly("id", &api::PropertySet::id,
-    //         "id docstring...",
-    //         py::return_value_policy::reference_internal)
-    //     .def_property_readonly("domain", &api::PropertySet::domain,
-    //         "domain docstring...",
-    //         py::return_value_policy::reference_internal)
+        // Group API
+        .def_property_readonly("id", &api::PropertySet::id,
+            "id docstring...",
+            py::return_value_policy::reference_internal)
+        .def_property_readonly("domain", &api::PropertySet::domain,
+            "domain docstring...",
+            py::return_value_policy::reference_internal)
 
-    //     // PropertySet API
-    //     // .def("add_property", &api::PropertySet::add_property,
-    //     //     "add_property docstring...",
-    //     //     py::return_value_policy::reference_internal)
-    //     .def_property_readonly("properties", &api::PropertySet::properties,
-    //         "properties docstring...",
-    //         py::return_value_policy::reference_internal)
-    // ;
+        // PropertySet API
+        // .def("add_property", &api::PropertySet::add_property,
+        //     "add_property docstring...",
+        //     py::return_value_policy::reference_internal)
+        .def_property_readonly("properties", &api::PropertySet::properties,
+            "properties docstring...",
+            py::return_value_policy::reference_internal)
+    ;
 
-    // py::class_<api::omnipresent::PropertySet>(module, "O_PropertySet",
-    //     py::base<api::PropertySet>(),
-    //     "O_PropertySet docstring...")
-    // ;
+    py::class_<api::time::omnipresent::PropertySet>(module, "O_PropertySet",
+        py::base<api::PropertySet>(),
+        "O_PropertySet docstring...")
+
+        .def(py::init<PropertySet&>(),
+            "__init__ docstring..."
+            "group"_a,
+            py::keep_alive<1, 2>())
+
+        .def("reserve_items",
+                &api::time::omnipresent::PropertySet::reserve_items,
+            "reserve docstring...",
+            py::return_value_policy::reference_internal)
+
+        .def_property_readonly("items",
+                &api::time::omnipresent::PropertySet::items,
+            "items docstring...",
+            py::return_value_policy::reference_internal)
+
+        .def("add_property", [](
+                    api::time::omnipresent::PropertySet& self,
+                    std::string const& name,
+                    py::tuple const& shape,
+                    py::handle const& numpy_type_id_object,
+                    py::tuple const& chunks) ->
+                        api::time::omnipresent::constant_shape::Property& {
+
+                int numpy_type_id = NPY_NOTYPE;
+                {
+                    PyArray_Descr* dtype;
+                    if(!PyArray_DescrConverter(numpy_type_id_object.ptr(),
+                            &dtype)) {
+                        throw py::error_already_set();
+                    }
+                    numpy_type_id = dtype->type_num;
+                    Py_DECREF(dtype);
+                }
+
+                Shape shape_(shape.size());
+
+                for(size_t i = 0; i < shape.size(); ++i) {
+                    shape_[i] = py::int_(shape[i]);
+                }
+
+                Chunks chunks_(chunks.size());
+
+                for(size_t i = 0; i < chunks.size(); ++i) {
+                    chunks_[i] = py::int_(chunks[i]);
+                }
+
+                return self.add_property(name,
+                    numpy_type_to_hdf5_type(numpy_type_id), shape_, chunks_);
+            },
+            // &api::omnipresent::omnipresent::PropertySet::add_property,
+            "add_property docstring...",
+            py::return_value_policy::reference_internal)
+    ;
+
 
 
 #define cast(object, type) \
@@ -156,58 +210,60 @@ void init_property_set(
     }
 
 
-    // py::class_<api::omnipresent::omnipresent::PropertySet>(module,
-    //     "O_O_PropertySet", py::base<api::omnipresent::PropertySet>(),
-    //     "O_O_PropertySet docstring...")
+    // py::class_<api::time::omnipresent::size_per_item::constant::PropertySet>(
+    //     module, "O_C_PropertySet",
+    //     py::base<api::time::omnipresent::PropertySet>(),
+    //     "O_C_PropertySet docstring...")
+
     //     .def(py::init<PropertySet&>(),
     //         "__init__ docstring..."
     //         "group"_a,
     //         py::keep_alive<1, 2>())
-    //     .def("add_property", [](
-    //                 api::omnipresent::omnipresent::PropertySet& self,
-    //                 std::string const& name,
-    //                 py::handle const& numpy_type_id_object,
-    //                 py::tuple const& shape,
-    //                 py::tuple const& chunks) ->
-    //                     api::omnipresent::omnipresent::Property& {
+    // //     .def("add_property", [](
+    // //                 api::omnipresent::omnipresent::PropertySet& self,
+    // //                 std::string const& name,
+    // //                 py::handle const& numpy_type_id_object,
+    // //                 py::tuple const& shape,
+    // //                 py::tuple const& chunks) ->
+    // //                     api::omnipresent::omnipresent::Property& {
 
-    //             int numpy_type_id = NPY_NOTYPE;
-    //             {
-    //                 PyArray_Descr* dtype;
-    //                 if(!PyArray_DescrConverter(numpy_type_id_object.ptr(),
-    //                         &dtype)) {
-    //                     throw py::error_already_set();
-    //                 }
-    //                 numpy_type_id = dtype->type_num;
-    //                 Py_DECREF(dtype);
-    //             }
+    // //             int numpy_type_id = NPY_NOTYPE;
+    // //             {
+    // //                 PyArray_Descr* dtype;
+    // //                 if(!PyArray_DescrConverter(numpy_type_id_object.ptr(),
+    // //                         &dtype)) {
+    // //                     throw py::error_already_set();
+    // //                 }
+    // //                 numpy_type_id = dtype->type_num;
+    // //                 Py_DECREF(dtype);
+    // //             }
 
-    //             Shape shape_(shape.size());
+    // //             Shape shape_(shape.size());
 
-    //             for(size_t i = 0; i < shape.size(); ++i) {
-    //                 shape_[i] = py::int_(shape[i]);
-    //             }
+    // //             for(size_t i = 0; i < shape.size(); ++i) {
+    // //                 shape_[i] = py::int_(shape[i]);
+    // //             }
 
-    //             Chunks chunks_(chunks.size());
+    // //             Chunks chunks_(chunks.size());
 
-    //             for(size_t i = 0; i < chunks.size(); ++i) {
-    //                 chunks[i] = chunks[i];
-    //             }
+    // //             for(size_t i = 0; i < chunks.size(); ++i) {
+    // //                 chunks[i] = chunks[i];
+    // //             }
 
-    //             return self.add_property(name,
-    //                 numpy_type_to_hdf5_type(numpy_type_id), shape_, chunks_);
-    //         },
-    //         // &api::omnipresent::omnipresent::PropertySet::add_property,
-    //         "add_property docstring...",
-    //         py::return_value_policy::reference_internal)
-    //     .def("reserve_items",
-    //             &api::omnipresent::omnipresent::PropertySet::reserve_items,
-    //         "reserve docstring...",
-    //         py::return_value_policy::reference_internal)
-    //     .def_property_readonly("items",
-    //             &api::omnipresent::omnipresent::PropertySet::items,
-    //         "items docstring...",
-    //         py::return_value_policy::reference_internal)
+    // //             return self.add_property(name,
+    // //                 numpy_type_to_hdf5_type(numpy_type_id), shape_, chunks_);
+    // //         },
+    // //         // &api::omnipresent::omnipresent::PropertySet::add_property,
+    // //         "add_property docstring...",
+    // //         py::return_value_policy::reference_internal)
+    // //     .def("reserve_items",
+    // //             &api::omnipresent::omnipresent::PropertySet::reserve_items,
+    // //         "reserve docstring...",
+    // //         py::return_value_policy::reference_internal)
+    // //     .def_property_readonly("items",
+    // //             &api::omnipresent::omnipresent::PropertySet::items,
+    // //         "items docstring...",
+    // //         py::return_value_policy::reference_internal)
     // ;
 
 }

@@ -35,6 +35,30 @@ if(LUE_BUILD_DOCUMENTATION)
             domain fillcolor \\\"${color}\\\"
     )
     add_custom_command(
+        OUTPUT logical_data_model_phenomena.dot
+        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/logical_data_model.dot
+        COMMAND ${EDIT_DOT_GRAPH} node add_attribute
+            --output logical_data_model_phenomena.dot
+            ${CMAKE_CURRENT_SOURCE_DIR}/logical_data_model.dot
+            phenomena fillcolor \\\"${color}\\\"
+    )
+    add_custom_command(
+        OUTPUT logical_data_model_phenomenon.dot
+        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/logical_data_model.dot
+        COMMAND ${EDIT_DOT_GRAPH} node add_attribute
+            --output logical_data_model_phenomenon.dot
+            ${CMAKE_CURRENT_SOURCE_DIR}/logical_data_model.dot
+            phenomenon fillcolor \\\"${color}\\\"
+    )
+    add_custom_command(
+        OUTPUT logical_data_model_properties.dot
+        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/logical_data_model.dot
+        COMMAND ${EDIT_DOT_GRAPH} node add_attribute
+            --output logical_data_model_properties.dot
+            ${CMAKE_CURRENT_SOURCE_DIR}/logical_data_model.dot
+            properties fillcolor \\\"${color}\\\"
+    )
+    add_custom_command(
         OUTPUT logical_data_model_property.dot
         DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/logical_data_model.dot
         COMMAND ${EDIT_DOT_GRAPH} node add_attribute
@@ -51,12 +75,20 @@ if(LUE_BUILD_DOCUMENTATION)
             property_set fillcolor \\\"${color}\\\"
     )
     add_custom_command(
-        OUTPUT logical_data_model_phenomenon.dot
+        OUTPUT logical_data_model_property_sets.dot
         DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/logical_data_model.dot
         COMMAND ${EDIT_DOT_GRAPH} node add_attribute
-            --output logical_data_model_phenomenon.dot
+            --output logical_data_model_property_sets.dot
             ${CMAKE_CURRENT_SOURCE_DIR}/logical_data_model.dot
-            phenomenon fillcolor \\\"${color}\\\"
+            property_sets fillcolor \\\"${color}\\\"
+    )
+    add_custom_command(
+        OUTPUT logical_data_model_universes.dot
+        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/logical_data_model.dot
+        COMMAND ${EDIT_DOT_GRAPH} node add_attribute
+            --output logical_data_model_universes.dot
+            ${CMAKE_CURRENT_SOURCE_DIR}/logical_data_model.dot
+            universes fillcolor \\\"${color}\\\"
     )
     add_custom_command(
         OUTPUT logical_data_model_universe.dot
@@ -79,10 +111,14 @@ if(LUE_BUILD_DOCUMENTATION)
 
     set(dot_sources
         ${CMAKE_CURRENT_BINARY_DIR}/logical_data_model_domain.dot
+        ${CMAKE_CURRENT_BINARY_DIR}/logical_data_model_properties.dot
         ${CMAKE_CURRENT_BINARY_DIR}/logical_data_model_property.dot
         ${CMAKE_CURRENT_BINARY_DIR}/logical_data_model_property_set.dot
+        ${CMAKE_CURRENT_BINARY_DIR}/logical_data_model_property_sets.dot
+        ${CMAKE_CURRENT_BINARY_DIR}/logical_data_model_phenomena.dot
         ${CMAKE_CURRENT_BINARY_DIR}/logical_data_model_phenomenon.dot
         ${CMAKE_CURRENT_BINARY_DIR}/logical_data_model_universe.dot
+        ${CMAKE_CURRENT_BINARY_DIR}/logical_data_model_universes.dot
         ${CMAKE_CURRENT_BINARY_DIR}/logical_data_model_value.dot
         conceptual_data_model.dot
         logical_data_model.dot

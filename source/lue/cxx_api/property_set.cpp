@@ -1,4 +1,5 @@
 #include "lue/cxx_api/property_set.h"
+#include "lue/cxx_api/data_type/time/omnipresent/property_set.h"
 #include "lue/cxx_api/domain_configuration.h"
 #include "lue/cxx_api/exception.h"
 #include "lue/c_api/domain.h"
@@ -81,8 +82,7 @@ Properties& PropertySet::properties() const
 PropertySet create_property_set(
     hdf5::Identifier const& location,
     std::string const& name,
-    DomainConfiguration const&
-        domain_configuration)
+    DomainConfiguration const& domain_configuration)
 {
     if(property_set_exists(location, name)) {
         throw std::runtime_error("Property set " + name + " already exists");
@@ -101,40 +101,38 @@ PropertySet create_property_set(
         ::close_domain);
     assert(domain.is_valid());
 
+
     auto const& time_configuration = domain_configuration.time();
     auto const& space_configuration = domain_configuration.space();
 
-    // switch(time_configuration.type()) {
-    //     case TimeDomainType::omnipresent: {
-    //         // Create collection for storing item ids.
-    //         hdf5::Identifier item_collection(::create_item_collection2(
-    //             domain, LUE_STD_ITEM), ::close_item_collection);
+    switch(time_configuration.type()) {
+        case TimeDomainType::omnipresent: {
+            lue::api::time::omnipresent::configure_property_set(
+                property_set_location, name.c_str(), space_configuration);
+            break;
+        }
+        case TimeDomainType::shared_constant_collection: {
 
-    //         if(!item_collection.is_valid()) {
-    //             throw std::runtime_error(
-    //                 "Item collection cannot be created");
-    //         }
-
-    //         break;
-    //     }
-    //     case TimeDomainType::shared_constant_collection: {
-    //         // Create collection for storing item ids.
-    //         hdf5::Identifier item_collection(::create_item_collection2(
-    //             domain, LUE_STD_ITEM), ::close_item_collection);
-
-    //         if(!item_collection.is_valid()) {
-    //             throw std::runtime_error(
-    //                 "Item collection cannot be created");
-    //         }
-
-    //         break;
-    //     }
-    //     case TimeDomainType::shared_variable_collection: {
-    //         throw_unsupported_error(
-    //             "Time domain: shared variable collection");
-    //         break;
-    //     }
-    // }
+            throw_unsupported_error(
+                "Time domain: shared constant collection");
+            break;
+        }
+        case TimeDomainType::shared_variable_collection: {
+            throw_unsupported_error(
+                "Time domain: shared variable collection");
+            break;
+        }
+        case TimeDomainType::unique_constant_collection: {
+            throw_unsupported_error(
+                "Time domain: unique variable collection");
+            break;
+        }
+        case TimeDomainType::unique_variable_collection: {
+            throw_unsupported_error(
+                "Time domain: unique variable collection");
+            break;
+        }
+    }
 
 
     {

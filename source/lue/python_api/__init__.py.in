@@ -40,12 +40,10 @@ __version__ = "${LUE_VERSION}"
 
 def _api(property_set):
 
-    # TODO
-    return property_set
+    # TODO Use dict.
+    result = O_PropertySet(property_set)
 
-    # result = O_O_PropertySet(property_set)
-
-    # return result
+    return result
 
 
 def _decorated_add_property_set(

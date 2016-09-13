@@ -13,22 +13,10 @@
 
 
 # C++ API  {#lue_phenomenon_cxx_api}
-- @ref lue::Phenomena
 - @ref lue::Phenomenon
 
 
 # C API  {#lue_phenomenon_c_api}
-
-## Phenomena
-- @ref create_phenomena
-- @ref phenomena_exists
-- @ref open_phenomena
-- @ref nr_phenomena
-- @ref phenomenon_names
-- @ref close_phenomena
-
-
-## Phenomenon
 - @ref create_phenomenon
 - @ref open_phenomenon
 - @ref close_phenomenon

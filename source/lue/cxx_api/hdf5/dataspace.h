@@ -39,5 +39,11 @@ private:
 
 };
 
+
+Dataspace          create_dataspace    (std::vector<hsize_t> const&
+                                            dimension_sizes,
+                                        std::vector<hsize_t> const&
+                                            max_dimension_sizes);
+
 } // namespace hdf5
 } // namespace lue

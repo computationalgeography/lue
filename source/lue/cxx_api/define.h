@@ -22,7 +22,7 @@ enum class TimeDomainTypeAspects: int
     located = 4,
 
     shared = 8,
-    non_shared = 16,
+    unique = 16,
 
     constant_size = 32,
     variable_size = 64
@@ -77,6 +77,16 @@ enum class TimeDomainType: int
     shared_variable_collection = static_cast<int>(
         TimeDomainTypeAspects::located |
         TimeDomainTypeAspects::shared |
+        TimeDomainTypeAspects::variable_size),
+
+    unique_constant_collection = static_cast<int>(
+        TimeDomainTypeAspects::located |
+        TimeDomainTypeAspects::unique |
+        TimeDomainTypeAspects::constant_size),
+
+    unique_variable_collection = static_cast<int>(
+        TimeDomainTypeAspects::located |
+        TimeDomainTypeAspects::unique |
         TimeDomainTypeAspects::variable_size)
 
 };

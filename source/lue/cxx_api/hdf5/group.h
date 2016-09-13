@@ -29,6 +29,8 @@ public:
 
     Identifier const& id               () const;
 
+    std::string    name                () const;
+
     Attributes const& attributes       () const;
 
 private:

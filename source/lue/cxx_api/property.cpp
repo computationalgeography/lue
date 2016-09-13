@@ -28,6 +28,9 @@ Property::Property(
     if(!id().is_valid()) {
         throw std::runtime_error("Property " + name + " cannot be opened");
     }
+
+    assert(value_exists(id()));
+    _value = std::make_unique<Value>(open_value(id()));
 }
 
 
@@ -38,6 +41,17 @@ Property::Property(
 
 {
     assert(id().is_valid());
+
+    // Open value.
+    assert(value_exists(id()));
+    _value = std::make_unique<Value>(open_value(id()));
+}
+
+
+Value& Property::value() const
+{
+    assert(_value);
+    return *_value;
 }
 
 
@@ -49,12 +63,17 @@ Property create_property(
         throw std::runtime_error("Property " + name + " already exists");
     }
 
+
     hdf5::Identifier property_location(::create_property(location,
         name.c_str()), ::close_property);
 
     if(!property_location.is_valid()) {
         throw std::runtime_error("Property " + name + " cannot be created");
     }
+
+
+    create_value(property_location);
+
 
     return Property(std::move(property_location));
 }

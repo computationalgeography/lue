@@ -12,7 +12,7 @@
 @endhtmlonly
 
 
-# C++ API  {#lue_universe_cxx_api}
+# C++ API  {#lue_dataset_cxx_api}
 - @ref lue::Dataset
 
 

@@ -1,5 +1,6 @@
 set(SOURCES
     hdf5_attribute
+    hdf5_dataset
     hdf5_dataspace
     hdf5_datatype
     hdf5_file

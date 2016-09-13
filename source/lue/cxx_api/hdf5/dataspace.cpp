@@ -22,6 +22,8 @@ Dataspace::Dataspace(
 {
     // Invalidate other.
     std::move(other);
+
+    assert(!other._id.is_valid());
 }
 
 
@@ -32,6 +34,8 @@ Dataspace& Dataspace::operator=(
 
     // Invalidate other.
     std::move(other);
+
+    assert(!other._id.is_valid());
 
     return *this;
 }
@@ -70,6 +74,24 @@ std::vector<hsize_t> Dataspace::dimension_extents() const
     }
 
     return std::vector<hsize_t>(extents, extents + nr_dimensions);
+}
+
+
+Dataspace create_dataspace(
+    std::vector<hsize_t> const& dimension_sizes,
+    std::vector<hsize_t> const& max_dimension_sizes)
+{
+    assert(dimension_sizes.size() == max_dimension_sizes.size());
+
+    Identifier dataspace_location(::H5Screate_simple(static_cast<int>(
+        dimension_sizes.size()), dimension_sizes.data(),
+        max_dimension_sizes.data()), H5Sclose);
+
+    if(!dataspace_location.is_valid()) {
+        throw std::runtime_error("Dataspace cannot be created");
+    }
+
+    return Dataspace(std::move(dataspace_location));
 }
 
 } // namespace hdf5
