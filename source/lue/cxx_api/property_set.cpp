@@ -1,6 +1,6 @@
 // #include "lue/cxx_api/property_set.h"
 
-#include "lue/cxx_api/data_type/omnipresent/property_set.h"
+#include "lue/cxx_api/time/omnipresent/property_set.h"
 #include "lue/cxx_api/domain_configuration.h"
 #include "lue/cxx_api/exception.h"
 #include "lue/c_api/domain.h"
@@ -104,25 +104,15 @@ PropertySet create_property_set(
             " cannot be created");
     }
 
-    // // create_domain(property_set_location, domain_configuration);
+    create_domain(property_set_location, domain_configuration);
 
     auto const& time_configuration = domain_configuration.time();
-    // // auto const& space_configuration = domain_configuration.space();
-    // std::unique_ptr<hdf5::Identifier> property_set_location;
-    // std::unique_ptr<PropertySet> property_set;
+    auto const& space_configuration = domain_configuration.space();
 
     switch(time_configuration.type()) {
         case TimeDomainType::omnipresent: {
-
-
-            // property_set = std::make_unique<omnipresent::PropertySet>(
-            //     lue::omnipresent::create_property_set(location, name));
-            //     // , space_configuration);
-
-            // auto property = omnipresent::create_property_set(
-            //     location, name.c_str()); // , space_configuration);
-            // property_set_location = std::make_unique<hdf5::Identifier>(
-            //     property.id());
+            time::omnipresent::configure_property_set(property_set_location,
+                name, space_configuration);
             break;
         }
         case TimeDomainType::shared_constant_collection: {
@@ -146,12 +136,6 @@ PropertySet create_property_set(
             break;
         }
     }
-
-    // // assert(property_set_location);
-    // // return PropertySet(std::move(*property_set_location));
-
-    // assert(property_set);
-    // return std::move(*property_set);
 
     return PropertySet(std::move(property_set_location));
 }

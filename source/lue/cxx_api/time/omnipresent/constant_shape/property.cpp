@@ -1,5 +1,5 @@
 // #include "lue/cxx_api/time/omnipresent/space/omnipresent/property.h"
-#include "lue/cxx_api/data_type/omnipresent/constant_shape/property.h"
+#include "lue/cxx_api/time/omnipresent/constant_shape/property.h"
 #include "lue/cxx_api/value.h"
 // #include <iostream>
 #include <cassert>

@@ -1,7 +1,7 @@
 #pragma once
-#include "lue/cxx_api/data_type/omnipresent/constant_shape/property.h"
-#include "lue/cxx_api/data_type/omnipresent/variable_shape/property.h"
-#include "lue/cxx_api/data_type/property_set.h"
+#include "lue/cxx_api/time/omnipresent/constant_shape/property.h"
+#include "lue/cxx_api/time/omnipresent/variable_shape/property.h"
+#include "lue/cxx_api/time/property_set.h"
 #include "lue/cxx_api/array.h"
 
 

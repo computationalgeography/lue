@@ -13,7 +13,7 @@ set(EXTENSION_SOURCES
     file
     group
     identifier
-    # item
+    item
     phenomenon
     property
     property_set

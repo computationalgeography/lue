@@ -1,4 +1,4 @@
-#include "lue/cxx_api/data_type/omnipresent/variable_shape/property.h"
+#include "lue/cxx_api/time/omnipresent/variable_shape/property.h"
 #include "lue/cxx_api/value.h"
 #include <cassert>
 
