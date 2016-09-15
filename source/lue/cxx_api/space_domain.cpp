@@ -28,6 +28,32 @@ SpaceDomainConfiguration const& SpaceDomain::configuration() const
 }
 
 
+SpaceDomain create_space_domain(
+    hdf5::Identifier const& location,
+    SpaceDomainConfiguration const& configuration)
+{
+    if(space_domain_exists(location)) {
+        throw std::runtime_error("Space domain already exists");
+    }
+
+    hdf5::Identifier space_domain_location(::create_space_domain(location),
+        ::close_space_domain);
+
+    if(!space_domain_location.is_valid()) {
+        throw std::runtime_error("Space domain cannot be created");
+    }
+
+    hdf5::Attributes space_domain_attributes(space_domain_location);
+
+    space_domain_attributes.write<std::string>("domain_type",
+        space_domain_type_to_string(configuration.type()));
+    space_domain_attributes.write<std::string>("domain_item_type",
+        space_domain_item_type_to_string(configuration.item_type()));
+
+    return SpaceDomain(std::move(space_domain_location));
+}
+
+
 SpaceDomain open_space_domain(
     hdf5::Identifier const& location)
 {

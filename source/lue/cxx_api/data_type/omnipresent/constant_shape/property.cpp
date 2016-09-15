@@ -1,14 +1,11 @@
 // #include "lue/cxx_api/time/omnipresent/space/omnipresent/property.h"
-#include "lue/cxx_api/data_type/time/omnipresent/constant_shape/property.h"
+#include "lue/cxx_api/data_type/omnipresent/constant_shape/property.h"
 #include "lue/cxx_api/value.h"
 // #include <iostream>
 #include <cassert>
 
 
 namespace lue {
-namespace api {
-// namespace omnipresent {
-// namespace omnipresent {
 namespace time {
 namespace omnipresent {
 namespace constant_shape {
@@ -17,7 +14,7 @@ Property::Property(
     lue::Property& group,
     hid_t const type_id)
 
-    : api::Property(group),
+    : time::Property(group),
       _value(std::make_unique<Value>(open_value(id()))),
       _items(std::make_unique<Array>(open_dataset(_value->id(), "item"),
           type_id))
@@ -132,10 +129,7 @@ void configure_property(
 
 }
 
-// } // namespace omnipresent
-// } // namespace omnipresent
 }  // namespace constant_shape
 }  // namespace omnipresent
 }  // namespace time
-}  // namespace api
 }  // namespace lue

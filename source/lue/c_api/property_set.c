@@ -26,20 +26,20 @@ hid_t create_property_set(
     }
 
 
-    // Create group for domain.
-    hid_t domain_id = create_domain(property_set_id);
+    // // Create group for domain.
+    // hid_t domain_id = create_domain(property_set_id);
 
-    if(domain_id < 0) {
-        hdf5_close_group(property_set_id);
-        return domain_id;
-    }
+    // if(domain_id < 0) {
+    //     hdf5_close_group(property_set_id);
+    //     return domain_id;
+    // }
 
-    herr_t status = close_domain(domain_id);
+    // herr_t status = close_domain(domain_id);
 
-    if(status < 0) {
-        hdf5_close_group(property_set_id);
-        return status;
-    }
+    // if(status < 0) {
+    //     hdf5_close_group(property_set_id);
+    //     return status;
+    // }
 
 
     // Create group for properties.
@@ -50,7 +50,7 @@ hid_t create_property_set(
         return properties_id;
     }
 
-    status = close_properties(properties_id);
+    herr_t status = close_properties(properties_id);
 
     if(status < 0) {
         hdf5_close_group(property_set_id);

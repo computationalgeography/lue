@@ -1,5 +1,6 @@
-#include "lue/cxx_api/property_set.h"
-#include "lue/cxx_api/data_type/time/omnipresent/property_set.h"
+// #include "lue/cxx_api/property_set.h"
+
+#include "lue/cxx_api/data_type/omnipresent/property_set.h"
 #include "lue/cxx_api/domain_configuration.h"
 #include "lue/cxx_api/exception.h"
 #include "lue/c_api/domain.h"
@@ -35,9 +36,11 @@ PropertySet::PropertySet(
     // Open domain and property collection.
     assert(domain_exists(id()));
     _domain = std::make_unique<Domain>(open_domain(id()));
+    assert(_domain->id().is_valid());
 
     assert(properties_exists(id()));
     _properties = std::make_unique<Properties>(id());
+    assert(_properties->id().is_valid());
 }
 
 
@@ -52,15 +55,18 @@ PropertySet::PropertySet(
     // Open domain and property collection.
     assert(domain_exists(id()));
     _domain = std::make_unique<Domain>(open_domain(id()));
+    assert(_domain->id().is_valid());
 
     assert(properties_exists(id()));
     _properties = std::make_unique<Properties>(id());
+    assert(_properties->id().is_valid());
 }
 
 
 Domain& PropertySet::domain() const
 {
     assert(_domain);
+    assert(_domain->id().is_valid());
     return *_domain;
 }
 
@@ -68,6 +74,7 @@ Domain& PropertySet::domain() const
 Property& PropertySet::add_property(
     std::string const& name)
 {
+    assert(_properties->id().is_valid());
     return properties().add(name);
 }
 
@@ -75,6 +82,7 @@ Property& PropertySet::add_property(
 Properties& PropertySet::properties() const
 {
     assert(_properties);
+    assert(_properties->id().is_valid());
     return *_properties;
 }
 
@@ -96,23 +104,28 @@ PropertySet create_property_set(
             " cannot be created");
     }
 
-
-    hdf5::Identifier domain(::open_domain(property_set_location),
-        ::close_domain);
-    assert(domain.is_valid());
-
+    // // create_domain(property_set_location, domain_configuration);
 
     auto const& time_configuration = domain_configuration.time();
-    auto const& space_configuration = domain_configuration.space();
+    // // auto const& space_configuration = domain_configuration.space();
+    // std::unique_ptr<hdf5::Identifier> property_set_location;
+    // std::unique_ptr<PropertySet> property_set;
 
     switch(time_configuration.type()) {
         case TimeDomainType::omnipresent: {
-            lue::api::time::omnipresent::configure_property_set(
-                property_set_location, name.c_str(), space_configuration);
+
+
+            // property_set = std::make_unique<omnipresent::PropertySet>(
+            //     lue::omnipresent::create_property_set(location, name));
+            //     // , space_configuration);
+
+            // auto property = omnipresent::create_property_set(
+            //     location, name.c_str()); // , space_configuration);
+            // property_set_location = std::make_unique<hdf5::Identifier>(
+            //     property.id());
             break;
         }
         case TimeDomainType::shared_constant_collection: {
-
             throw_unsupported_error(
                 "Time domain: shared constant collection");
             break;
@@ -124,7 +137,7 @@ PropertySet create_property_set(
         }
         case TimeDomainType::unique_constant_collection: {
             throw_unsupported_error(
-                "Time domain: unique variable collection");
+                "Time domain: unique constant collection");
             break;
         }
         case TimeDomainType::unique_variable_collection: {
@@ -134,32 +147,11 @@ PropertySet create_property_set(
         }
     }
 
+    // // assert(property_set_location);
+    // // return PropertySet(std::move(*property_set_location));
 
-    {
-        hdf5::Identifier time_domain(::open_time_domain(domain),
-            ::close_time_domain);
-        assert(time_domain.is_valid());
-
-        hdf5::Attributes time_domain_attributes(time_domain);
-
-        time_domain_attributes.write<std::string>("domain_type",
-            time_domain_type_to_string(time_configuration.type()));
-    }
-
-
-    {
-        hdf5::Identifier space_domain(::open_space_domain(domain),
-            ::close_space_domain);
-        assert(space_domain.is_valid());
-
-        hdf5::Attributes space_domain_attributes(space_domain);
-
-        space_domain_attributes.write<std::string>("domain_type",
-            space_domain_type_to_string(space_configuration.type()));
-        space_domain_attributes.write<std::string>("domain_item_type",
-            space_domain_item_type_to_string(space_configuration.item_type()));
-    }
-
+    // assert(property_set);
+    // return std::move(*property_set);
 
     return PropertySet(std::move(property_set_location));
 }

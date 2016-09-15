@@ -7,7 +7,7 @@
 
 
 namespace lue {
-namespace api {
+namespace time {
 
 /*!
     @ingroup    lue_cxx_api_group
@@ -48,5 +48,5 @@ private:
 
 };
 
-} // namespace api
+} // namespace time
 } // namespace lue

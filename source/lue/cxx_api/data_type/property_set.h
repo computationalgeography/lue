@@ -6,10 +6,17 @@
 
 
 namespace lue {
-namespace api {
+namespace time {
 
 /*!
     @ingroup    lue_cxx_api_group
+
+    Base class for instances providing a more specialized API to
+    manipulating a property set. That more specialized API is dependent
+    on the time domain configuration.
+
+    This class layers the more general lue::PropertySet for functionality
+    common to all property sets.
 */
 class PropertySet
 {
@@ -25,11 +32,6 @@ public:
                    attributes          () const;
 
     Domain&        domain              () const;
-
-    // virtual Property& add_property     (std::string const& name,
-    //                                     hid_t const type_id,
-    //                                     Shape const& shape,
-    //                                     Chunks const& chunks)=0;
 
     Properties&    properties          () const;
 
@@ -59,5 +61,5 @@ private:
 
 };
 
-} // namespace api
+} // namespace time
 } // namespace lue

@@ -50,6 +50,27 @@ DomainConfiguration const& Domain::configuration() const
 }
 
 
+Domain create_domain(
+    hdf5::Identifier const& location,
+    DomainConfiguration const& configuration)
+{
+    if(domain_exists(location)) {
+        throw std::runtime_error("Domain already exists");
+    }
+
+    hdf5::Identifier domain_location(::create_domain(location), ::close_domain);
+
+    if(!domain_location.is_valid()) {
+        throw std::runtime_error("Domain cannot be created");
+    }
+
+    create_time_domain(domain_location, configuration.time());
+    create_space_domain(domain_location, configuration.space());
+
+    return Domain(std::move(domain_location));
+}
+
+
 Domain open_domain(
     hdf5::Identifier const& location)
 {

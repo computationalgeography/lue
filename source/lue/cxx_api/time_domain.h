@@ -37,6 +37,9 @@ private:
 };
 
 
+TimeDomain         create_time_domain  (hdf5::Identifier const& location,
+                                        TimeDomainConfiguration const& configuration);
+
 TimeDomain         open_time_domain    (hdf5::Identifier const& location);
 
 } // namespace lue

@@ -13,6 +13,7 @@ void               init_domain         (py::module& module);
 void               init_file           (py::module& module);
 void               init_group          (py::module& module);
 void               init_identifier     (py::module& module);
+// void               init_item           (py::module& module);
 void               init_phenomenon     (py::module& module);
 void               init_property       (py::module& module);
 void               init_property_set   (py::module& module);
@@ -44,6 +45,7 @@ The classes are documented in alphabethical order. When creating or opening a LU
     init_identifier(module);
     init_file(module);
     init_group(module);
+    // init_item(module);
     init_dataset(module);
     init_domain(module);
     init_universe(module);

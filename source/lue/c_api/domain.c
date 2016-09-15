@@ -21,36 +21,36 @@ hid_t create_domain(
     }
 
 
-    // Create group for time domain.
-    hid_t time_domain_id = create_time_domain(domain_id);
+    // // Create group for time domain.
+    // hid_t time_domain_id = create_time_domain(domain_id);
 
-    if(time_domain_id < 0) {
-        hdf5_close_group(domain_id);
-        return time_domain_id;
-    }
+    // if(time_domain_id < 0) {
+    //     hdf5_close_group(domain_id);
+    //     return time_domain_id;
+    // }
 
-    herr_t status = close_time_domain(time_domain_id);
+    // herr_t status = close_time_domain(time_domain_id);
 
-    if(status < 0) {
-        hdf5_close_group(domain_id);
-        return status;
-    }
+    // if(status < 0) {
+    //     hdf5_close_group(domain_id);
+    //     return status;
+    // }
 
 
-    // Create group for space domain.
-    hid_t space_domain_id = create_space_domain(domain_id);
+    // // Create group for space domain.
+    // hid_t space_domain_id = create_space_domain(domain_id);
 
-    if(space_domain_id < 0) {
-        hdf5_close_group(domain_id);
-        return space_domain_id;
-    }
+    // if(space_domain_id < 0) {
+    //     hdf5_close_group(domain_id);
+    //     return space_domain_id;
+    // }
 
-    status = close_space_domain(space_domain_id);
+    // status = close_space_domain(space_domain_id);
 
-    if(status < 0) {
-        hdf5_close_group(domain_id);
-        return status;
-    }
+    // if(status < 0) {
+    //     hdf5_close_group(domain_id);
+    //     return status;
+    // }
 
 
     return domain_id;

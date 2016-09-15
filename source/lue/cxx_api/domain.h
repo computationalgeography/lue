@@ -49,6 +49,9 @@ private:
 };
 
 
+Domain             create_domain       (hdf5::Identifier const& location,
+                                        DomainConfiguration const& configuration);
+
 Domain             open_domain         (hdf5::Identifier const& location);
 
 } // namespace lue

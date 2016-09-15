@@ -37,6 +37,10 @@ private:
 };
 
 
-SpaceDomain         open_space_domain    (hdf5::Identifier const& location);
+SpaceDomain         create_space_domain(hdf5::Identifier const& location,
+                                        SpaceDomainConfiguration const&
+                                            configuration);
+
+SpaceDomain         open_space_domain  (hdf5::Identifier const& location);
 
 } // namespace lue

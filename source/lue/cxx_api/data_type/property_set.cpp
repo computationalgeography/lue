@@ -1,8 +1,8 @@
-#include "lue/cxx_api/data_type/time/property_set.h"
+#include "lue/cxx_api/data_type/property_set.h"
 
 
 namespace lue {
-namespace api {
+namespace time {
 
 PropertySet::PropertySet(
     lue::PropertySet& group)
@@ -55,5 +55,5 @@ lue::Property& PropertySet::add_property(
     return group().add_property(name);
 }
 
-} // namespace api
+} // namespace time
 } // namespace lue

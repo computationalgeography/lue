@@ -1,11 +1,11 @@
 #pragma once
-#include "lue/cxx_api/data_type/time/omnipresent/constant_shape/property.h"
-#include "lue/cxx_api/data_type/time/property_set.h"
+#include "lue/cxx_api/data_type/omnipresent/constant_shape/property.h"
+#include "lue/cxx_api/data_type/omnipresent/variable_shape/property.h"
+#include "lue/cxx_api/data_type/property_set.h"
 #include "lue/cxx_api/array.h"
 
 
 namespace lue {
-namespace api {
 namespace time {
 namespace omnipresent {
 
@@ -13,7 +13,7 @@ namespace omnipresent {
     @ingroup    lue_cxx_api_group
 */
 class PropertySet:
-    public api::PropertySet
+    public time::PropertySet
 {
 
 public:
@@ -40,12 +40,19 @@ public:
                                         Shape const& shape,
                                         Chunks const& chunks);
 
+    variable_shape::Property&
+                   add_property        (std::string const& name,
+                                        hid_t const type_id);
+
 private:
 
     std::unique_ptr<Array> _items;
 
     std::vector<std::unique_ptr<constant_shape::Property>>
         _constant_shape_properties;
+
+    std::vector<std::unique_ptr<variable_shape::Property>>
+        _variable_shape_properties;
 
 };
 
@@ -58,5 +65,4 @@ void               configure_property_set(
 
 }  // namespace omnipresent
 }  // namespace time
-}  // namespace api
 }  // namespace lue

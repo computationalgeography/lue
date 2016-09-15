@@ -99,28 +99,28 @@ void init_property_set(
 
     // TODO Refactor Group and PropertySet API's into common base classes.
     //      Multiple classes implement the interfaces.
-    py::class_<api::PropertySet>(module, "_PropertySet",
+    py::class_<time::PropertySet>(module, "_PropertySet",
         "_PropertySet docstring...")
 
         // Group API
-        .def_property_readonly("id", &api::PropertySet::id,
+        .def_property_readonly("id", &time::PropertySet::id,
             "id docstring...",
             py::return_value_policy::reference_internal)
-        .def_property_readonly("domain", &api::PropertySet::domain,
+        .def_property_readonly("domain", &time::PropertySet::domain,
             "domain docstring...",
             py::return_value_policy::reference_internal)
 
         // PropertySet API
-        // .def("add_property", &api::PropertySet::add_property,
+        // .def("add_property", &time::PropertySet::add_property,
         //     "add_property docstring...",
         //     py::return_value_policy::reference_internal)
-        .def_property_readonly("properties", &api::PropertySet::properties,
+        .def_property_readonly("properties", &time::PropertySet::properties,
             "properties docstring...",
             py::return_value_policy::reference_internal)
     ;
 
-    py::class_<api::time::omnipresent::PropertySet>(module, "O_PropertySet",
-        py::base<api::PropertySet>(),
+    py::class_<time::omnipresent::PropertySet>(module, "O_PropertySet",
+        py::base<time::PropertySet>(),
         "O_PropertySet docstring...")
 
         .def(py::init<PropertySet&>(),
@@ -129,22 +129,22 @@ void init_property_set(
             py::keep_alive<1, 2>())
 
         .def("reserve_items",
-                &api::time::omnipresent::PropertySet::reserve_items,
+                &time::omnipresent::PropertySet::reserve_items,
             "reserve docstring...",
             py::return_value_policy::reference_internal)
 
         .def_property_readonly("items",
-                &api::time::omnipresent::PropertySet::items,
+                &time::omnipresent::PropertySet::items,
             "items docstring...",
             py::return_value_policy::reference_internal)
 
         .def("add_property", [](
-                    api::time::omnipresent::PropertySet& self,
+                    time::omnipresent::PropertySet& self,
                     std::string const& name,
-                    py::tuple const& shape,
                     py::handle const& numpy_type_id_object,
+                    py::tuple const& shape,
                     py::tuple const& chunks) ->
-                        api::time::omnipresent::constant_shape::Property& {
+                        time::omnipresent::constant_shape::Property& {
 
                 int numpy_type_id = NPY_NOTYPE;
                 {
@@ -172,11 +172,32 @@ void init_property_set(
                 return self.add_property(name,
                     numpy_type_to_hdf5_type(numpy_type_id), shape_, chunks_);
             },
-            // &api::omnipresent::omnipresent::PropertySet::add_property,
+            "add_property docstring...",
+            py::return_value_policy::reference_internal)
+
+        .def("add_property", [](
+                    time::omnipresent::PropertySet& self,
+                    std::string const& name,
+                    py::handle const& numpy_type_id_object) ->
+                        time::omnipresent::variable_shape::Property& {
+
+                int numpy_type_id = NPY_NOTYPE;
+                {
+                    PyArray_Descr* dtype;
+                    if(!PyArray_DescrConverter(numpy_type_id_object.ptr(),
+                            &dtype)) {
+                        throw py::error_already_set();
+                    }
+                    numpy_type_id = dtype->type_num;
+                    Py_DECREF(dtype);
+                }
+
+                return self.add_property(name,
+                    numpy_type_to_hdf5_type(numpy_type_id));
+            },
             "add_property docstring...",
             py::return_value_policy::reference_internal)
     ;
-
 
 
 #define cast(object, type) \
@@ -210,9 +231,9 @@ void init_property_set(
     }
 
 
-    // py::class_<api::time::omnipresent::size_per_item::constant::PropertySet>(
+    // py::class_<time::omnipresent::size_per_item::constant::PropertySet>(
     //     module, "O_C_PropertySet",
-    //     py::base<api::time::omnipresent::PropertySet>(),
+    //     py::base<time::omnipresent::PropertySet>(),
     //     "O_C_PropertySet docstring...")
 
     //     .def(py::init<PropertySet&>(),
@@ -220,12 +241,12 @@ void init_property_set(
     //         "group"_a,
     //         py::keep_alive<1, 2>())
     // //     .def("add_property", [](
-    // //                 api::omnipresent::omnipresent::PropertySet& self,
+    // //                 time::omnipresent::omnipresent::PropertySet& self,
     // //                 std::string const& name,
     // //                 py::handle const& numpy_type_id_object,
     // //                 py::tuple const& shape,
     // //                 py::tuple const& chunks) ->
-    // //                     api::omnipresent::omnipresent::Property& {
+    // //                     time::omnipresent::omnipresent::Property& {
 
     // //             int numpy_type_id = NPY_NOTYPE;
     // //             {
@@ -253,15 +274,15 @@ void init_property_set(
     // //             return self.add_property(name,
     // //                 numpy_type_to_hdf5_type(numpy_type_id), shape_, chunks_);
     // //         },
-    // //         // &api::omnipresent::omnipresent::PropertySet::add_property,
+    // //         // &time::omnipresent::omnipresent::PropertySet::add_property,
     // //         "add_property docstring...",
     // //         py::return_value_policy::reference_internal)
     // //     .def("reserve_items",
-    // //             &api::omnipresent::omnipresent::PropertySet::reserve_items,
+    // //             &time::omnipresent::omnipresent::PropertySet::reserve_items,
     // //         "reserve docstring...",
     // //         py::return_value_policy::reference_internal)
     // //     .def_property_readonly("items",
-    // //             &api::omnipresent::omnipresent::PropertySet::items,
+    // //             &time::omnipresent::omnipresent::PropertySet::items,
     // //         "items docstring...",
     // //         py::return_value_policy::reference_internal)
     // ;

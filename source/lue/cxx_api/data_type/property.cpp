@@ -1,8 +1,8 @@
-#include "lue/cxx_api/data_type/time/property.h"
+#include "lue/cxx_api/data_type/property.h"
 
 
 namespace lue {
-namespace api {
+namespace time {
 
 Property::Property(
     lue::Property& group)
@@ -36,5 +36,5 @@ lue::Property& Property::group()
     return _group.get();
 }
 
-} // namespace api
+} // namespace time
 } // namespace lue

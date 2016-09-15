@@ -2,13 +2,12 @@
 // #include "lue/cxx_api/time/omnipresent/space/omnipresent/property.h"
 #include "lue/cxx_api/array.h"
 #include "lue/cxx_api/value.h"
-#include "lue/cxx_api/data_type/time/property.h"
+#include "lue/cxx_api/data_type/property.h"
 // #include "lue/c_api/define.h"
 #include <memory>
 
 
 namespace lue {
-namespace api {
 namespace time {
 namespace omnipresent {
 namespace constant_shape {
@@ -21,7 +20,7 @@ namespace constant_shape {
     @ingroup    lue_cxx_api_group
 */
 class Property:
-    api::Property
+    time::Property
 {
 
 public:
@@ -63,5 +62,4 @@ void               configure_property  (lue::Property const& location,
 }  // namespace constant_shape
 }  // namespace omnipresent
 }  // namespace time
-}  // namespace api
 }  // namespace lue
