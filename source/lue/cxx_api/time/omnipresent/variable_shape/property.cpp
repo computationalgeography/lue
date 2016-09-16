@@ -41,7 +41,8 @@ Property::Property(
 
 void configure_property(
     lue::Property const& property,
-    hid_t const type_id)
+    hid_t const file_type_id,
+    hid_t const memory_type_id)
 {
 //     auto const& value = property.value();
 // 

@@ -65,8 +65,10 @@ PropertySet::PropertySet(
     lue::PropertySet& group)
 
     : time::PropertySet(group),
-      _items{std::make_unique<Array>(std::move(hdf5::open_dataset(
-          domain().id(), "item")), LUE_NATIVE_ITEM)},
+      // _items{std::make_unique<Array>(std::move(hdf5::open_dataset(
+      //     domain().id(), "item")), LUE_NATIVE_ITEM)},
+      _ids{std::make_unique<constant_shape::Item>(domain().id(), "ids",
+          LUE_NATIVE_ITEM)},
       _constant_shape_properties{},
       _variable_shape_properties{}
 
@@ -87,33 +89,50 @@ PropertySet::PropertySet(
 }
 
 
-Array& PropertySet::reserve_items(
+// Array& PropertySet::reserve_items(
+//     hsize_t const nr_items)
+// {
+//     _items->resize({nr_items});
+// 
+//     return *_items;
+// }
+// 
+// 
+// Array& PropertySet::items()
+// {
+//     return *_items;
+// }
+
+
+constant_shape::Item& PropertySet::reserve_items(
     hsize_t const nr_items)
 {
-    _items->resize({nr_items});
+    _ids->reserve_items(nr_items);
 
-    return *_items;
+    return *_ids;
 }
 
 
-Array& PropertySet::items()
+constant_shape::Item& PropertySet::ids()
 {
-    return *_items;
+    return *_ids;
 }
 
 
 constant_shape::Property& PropertySet::add_property(
     std::string const& name,
-    hid_t const type_id,
+    hid_t const file_type_id,
+    hid_t const memory_type_id,
     Shape const& shape,
     Chunks const& chunks)
 {
     auto& property = time::PropertySet::add_property(name);
 
-    constant_shape::configure_property(property, type_id, shape, chunks);
+    constant_shape::configure_property(property, file_type_id,
+        memory_type_id, shape, chunks);
 
     _constant_shape_properties.emplace_back(
-        std::make_unique<constant_shape::Property>(property, type_id));
+        std::make_unique<constant_shape::Property>(property, memory_type_id));
 
     return *_constant_shape_properties.back();
 }
@@ -121,14 +140,15 @@ constant_shape::Property& PropertySet::add_property(
 
 variable_shape::Property& PropertySet::add_property(
     std::string const& name,
-    hid_t const type_id)
+    hid_t const file_type_id,
+    hid_t const memory_type_id)
 {
     auto& property = time::PropertySet::add_property(name);
 
-    variable_shape::configure_property(property, type_id);
+    variable_shape::configure_property(property, file_type_id, memory_type_id);
 
     _variable_shape_properties.emplace_back(
-        std::make_unique<variable_shape::Property>(property, type_id));
+        std::make_unique<variable_shape::Property>(property, memory_type_id));
 
     return *_variable_shape_properties.back();
 }
@@ -145,27 +165,15 @@ void configure_property_set(
         throw std::runtime_error("Domain cannot be opened");
     }
 
-    if(array_exists(domain_location, "item")) {
-        throw std::runtime_error("Item collection already exists");
-    }
+    // An omnipresent property set contains a constant collection of items
+    // identifying the items/object/individuals using an id. The shape of
+    // these item ids is the same for all items (a single 0D id).
+    hid_t const file_type_id = LUE_STD_ITEM;
+    hid_t const memory_type_id = LUE_NATIVE_ITEM;
 
-    auto dataspace = hdf5::create_dataspace({0}, {H5S_UNLIMITED});
+    constant_shape::create_item(domain_location, "ids", file_type_id,
+        memory_type_id);
 
-
-    hdf5::Identifier creation_property_list_location(::H5Pcreate(
-        H5P_DATASET_CREATE), ::H5Pclose);
-
-    if(!creation_property_list_location.is_valid()) {
-        throw std::runtime_error("Creation property list cannot be created");
-    }
-
-    std::vector<hsize_t> chunk_dimension_sizes{1000};
-    herr_t status = ::H5Pset_chunk(creation_property_list_location, 1,
-        chunk_dimension_sizes.data());
-    assert(status >= 0);
-
-    auto dataset = hdf5::create_dataset(domain_location, "item", LUE_STD_ITEM,
-        dataspace, creation_property_list_location);
 
     auto space_domain = open_space_domain(domain_location);
 

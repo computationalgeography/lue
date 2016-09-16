@@ -16,34 +16,41 @@ namespace python {
 DEFINE_INIT_NUMPY()
 
 
-hid_t numpy_type_to_hdf5_type(
+std::tuple<hid_t, hid_t> numpy_type_to_hdf5_types(
     int type_id)
 {
-    hid_t result = -1;
+    hid_t file_type_id = -1;
+    hid_t memory_type_id = -1;
 
     switch(type_id) {
         case NPY_UINT32: {
-            result = H5T_NATIVE_UINT32;
+            file_type_id = H5T_STD_U32LE;
+            memory_type_id = H5T_NATIVE_UINT32;
             break;
         }
         case NPY_INT32: {
-            result = H5T_NATIVE_INT32;
+            file_type_id = H5T_STD_I32LE;
+            memory_type_id = H5T_NATIVE_INT32;
             break;
         }
         case NPY_UINT64: {
-            result = H5T_NATIVE_UINT64;
+            file_type_id = H5T_STD_U64LE;
+            memory_type_id = H5T_NATIVE_UINT64;
             break;
         }
         case NPY_INT64: {
-            result = H5T_NATIVE_INT64;
+            file_type_id = H5T_STD_I64LE;
+            memory_type_id = H5T_NATIVE_INT64;
             break;
         }
         case NPY_FLOAT32: {
-            result = H5T_NATIVE_FLOAT;
+            file_type_id = H5T_IEEE_F32LE;
+            memory_type_id = H5T_NATIVE_FLOAT;
             break;
         }
         case NPY_FLOAT64: {
-            result = H5T_NATIVE_DOUBLE;
+            file_type_id = H5T_IEEE_F64LE;
+            memory_type_id = H5T_NATIVE_DOUBLE;
             break;
         }
         default: {
@@ -52,7 +59,7 @@ hid_t numpy_type_to_hdf5_type(
         }
     }
 
-    return result;
+    return std::make_tuple(file_type_id, memory_type_id);
 }
 
 
@@ -133,9 +140,14 @@ void init_property_set(
             "reserve docstring...",
             py::return_value_policy::reference_internal)
 
-        .def_property_readonly("items",
-                &time::omnipresent::PropertySet::items,
-            "items docstring...",
+        // .def_property_readonly("items",
+        //         &time::omnipresent::PropertySet::items,
+        //     "items docstring...",
+        //     py::return_value_policy::reference_internal)
+
+        .def_property_readonly("ids",
+                &time::omnipresent::PropertySet::ids,
+            "ids docstring...",
             py::return_value_policy::reference_internal)
 
         .def("add_property", [](
@@ -169,8 +181,12 @@ void init_property_set(
                     chunks_[i] = py::int_(chunks[i]);
                 }
 
-                return self.add_property(name,
-                    numpy_type_to_hdf5_type(numpy_type_id), shape_, chunks_);
+                hid_t file_type_id, memory_type_id;
+                std::tie(file_type_id, memory_type_id) =
+                    numpy_type_to_hdf5_types(numpy_type_id);
+
+                return self.add_property(name, file_type_id, memory_type_id,
+                    shape_, chunks_);
             },
             "add_property docstring...",
             py::return_value_policy::reference_internal)
@@ -192,8 +208,11 @@ void init_property_set(
                     Py_DECREF(dtype);
                 }
 
-                return self.add_property(name,
-                    numpy_type_to_hdf5_type(numpy_type_id));
+                hid_t file_type_id, memory_type_id;
+                std::tie(file_type_id, memory_type_id) =
+                    numpy_type_to_hdf5_types(numpy_type_id);
+
+                return self.add_property(name, file_type_id, memory_type_id);
             },
             "add_property docstring...",
             py::return_value_policy::reference_internal)

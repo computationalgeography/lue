@@ -3,13 +3,14 @@
 
 
 namespace lue {
+namespace time {
 namespace omnipresent {
 
 /*!
     @ingroup    lue_cxx_api_group
 */
 class Item:
-    lue::Item
+    time::Item
 {
 
 public:
@@ -18,10 +19,12 @@ public:
 
 protected:
 
-                   Item                (hdf5::Identifier const& location,
-                                        std::string const& name);
+                   Item                ();
 
-                   Item                (hdf5::Identifier&& location);
+                   // Item                (hdf5::Identifier const& location,
+                   //                      std::string const& name);
+
+                   // Item                (hdf5::Identifier&& location);
 
                    Item                (Item const& other)=delete;
 
@@ -36,4 +39,5 @@ private:
 };
 
 }  // namespace omnipresent
+}  // namespace time
 }  // namespace lue

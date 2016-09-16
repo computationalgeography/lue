@@ -24,7 +24,7 @@ public:
 
                    Dataset             (Dataset&& other)=default;
 
-                   ~Dataset            ()=default;
+    virtual        ~Dataset            ()=default;
 
     Dataset&       operator=           (Dataset const& other)=delete;
 

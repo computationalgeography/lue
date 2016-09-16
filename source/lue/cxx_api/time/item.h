@@ -1,11 +1,12 @@
 #pragma once
-#include "lue/cxx_api/hdf5/group.h"
+// #include "lue/cxx_api/hdf5/group.h"
 
 
 namespace lue {
+namespace time {
 
-bool               item_exists         (hdf5::Identifier const& location,
-                                        std::string const& name);
+// bool               item_exists         (hdf5::Identifier const& location,
+//                                         std::string const& name);
 
 
 /*!
@@ -28,20 +29,22 @@ bool               item_exists         (hdf5::Identifier const& location,
     Combining these aspects results in different storage strategies
     ranging from simple datasets to a dataset per time point and per item.
 */
-class Item:
-    public hdf5::Group
+class Item // :
+    // public hdf5::Group
 {
 
 public:
 
-                   ~Item               ()=default;
+    virtual        ~Item               ()=default;
 
 protected:
 
-                   Item                (hdf5::Identifier const& location,
-                                        std::string const& name);
+                   Item                ();
 
-                   Item                (hdf5::Identifier&& location);
+                   // Item                (hdf5::Identifier const& location,
+                   //                      std::string const& name);
+
+                   // Item                (hdf5::Identifier&& location);
 
                    Item                (Item const& other)=delete;
 
@@ -56,7 +59,8 @@ private:
 };
 
 
-hdf5::Identifier   create_item         (hdf5::Identifier const& location,
-                                        std::string const& name);
+// hdf5::Identifier   create_item         (hdf5::Identifier const& location,
+//                                         std::string const& name);
 
+}  // namespace time
 }  // namespace lue

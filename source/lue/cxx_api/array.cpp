@@ -79,11 +79,12 @@ void Array::write(
 // }
 
 
-// Array open_array(
-//     hdf5::Identifier const& location,
-//     std::string const& name)
-// {
-//     return Array(std::move(open_dataset(location, name)));
-// }
+Array open_array(
+    hdf5::Identifier const& location,
+    std::string const& name,
+    hid_t const type_id)
+{
+    return Array(std::move(open_dataset(location, name)), type_id);
+}
 
 } // namespace lue

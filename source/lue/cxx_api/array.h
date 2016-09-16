@@ -59,7 +59,8 @@ private:
 //                                         hid_t const datatype,
 //                                         hid_t const dataspace);
 
-// Array              open_array          (hdf5::Identifier const& location,
-//                                         std::string const& name);
+Array              open_array          (hdf5::Identifier const& location,
+                                        std::string const& name,
+                                        hid_t const type_id);
 
 } // namespace lue

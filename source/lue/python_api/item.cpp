@@ -1,4 +1,5 @@
 #include "lue/cxx_api/item.h"
+#include "lue/cxx_api/array.h"
 #include <pybind11/pybind11.h>
 
 
@@ -13,19 +14,20 @@ void init_item(
         py::module& module)
 {
 
-    py::class_<Item>(module,
-        "Item", py::base<hdf5::Group>(),
-        "Item docstring...")
-    ;
+    // py::class_<time::Item>(module,
+    //     "Item", // py::base<hdf5::Group>(),
+    //     "Item docstring...")
+    // ;
 
-    py::class_<omnipresent::Item>(module,
-        "O_Item", py::base<Item>(),
-        "O_Item docstring...")
-    ;
+    // py::class_<time::omnipresent::Item>(module,
+    //     "O_Item", py::base<time::Item>(),
+    //     "O_Item docstring...")
+    // ;
 
-    py::class_<omnipresent::constant_shape::Item>(module,
+    py::class_<time::omnipresent::constant_shape::Item>(module,
         "O_CS_Item",
-        py::base<omnipresent::Item>(),
+        // py::base<time::omnipresent::Item>(),
+        py::base<Array>(),
         "O_CS_Item docstring...")
 
         // .def(py::init<Property&, hid_t const>(),

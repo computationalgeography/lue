@@ -2,25 +2,35 @@
 
 
 namespace lue {
+namespace time {
 namespace omnipresent {
 
-Item::Item(
-    hdf5::Identifier const& location,
-    std::string const& name)
+Item::Item()
 
-    : lue::Item(location, name)
+    : time::Item()
 
 {
 }
 
 
-Item::Item(
-    hdf5::Identifier&& location)
-
-    : lue::Item(std::forward<hdf5::Identifier>(location))
-
-{
-}
+// Item::Item(
+//     hdf5::Identifier const& location,
+//     std::string const& name)
+// 
+//     : lue::Item(location, name)
+// 
+// {
+// }
+// 
+// 
+// Item::Item(
+//     hdf5::Identifier&& location)
+// 
+//     : lue::Item(std::forward<hdf5::Identifier>(location))
+// 
+// {
+// }
 
 }  // namespace omnipresent
+}  // namespace time
 }  // namespace lue

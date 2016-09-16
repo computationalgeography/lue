@@ -6,7 +6,7 @@ import lue_test
 class UseCaseTest(lue_test.TestCase):
 
 
-    def xxxxxtest_use_case_1(self):
+    def test_use_case_1(self):
 
         dataset_name = "o_vs_use_case_1.lue"
         dataset = self.create_dataset(dataset_name)
@@ -27,17 +27,17 @@ class UseCaseTest(lue_test.TestCase):
             lue.space_domain.located)
         self.assertEqual(property_set.domain.configuration.space.item_type,
             lue.space_domain_item.box)
-        self.assertEqual(property_set.items.dtype, numpy.uint64)
-        self.assertEqual(len(property_set.items.shape), 1)
-        self.assertEqual(property_set.items.shape[0], 0)
+        self.assertEqual(property_set.ids.dtype, numpy.uint64)
+        self.assertEqual(len(property_set.ids.shape), 1)
+        self.assertEqual(property_set.ids.shape[0], 0)
 
-        ### rank = 2
+        rank = 2
 
-        ### space_domain = property_set.domain.space_domain
-        ### self.assertEqual(space_domain.items.dtype, numpy.float64)
-        ### self.assertEqual(len(space_domain.items.shape), 2)
-        ### self.assertEqual(space_domain.items.shape[0], 0)
-        ### self.assertEqual(space_domain.items.shape[1], rank * 2**rank)
+        space_domain = property_set.domain.space_domain
+        # self.assertEqual(space_domain.coordinates.dtype, numpy.float64)
+        # self.assertEqual(len(space_domain.coordinates.shape), 2)
+        # self.assertEqual(space_domain.coordinates.shape[0], 0)
+        # self.assertEqual(space_domain.coordinates.shape[1], rank * 2**rank)
 
 
         ### self.assertEqual(property_set.domain.space_domain.reserve_items(nr_items))
