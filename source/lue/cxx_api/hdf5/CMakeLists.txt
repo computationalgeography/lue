@@ -2,6 +2,7 @@ set(SOURCES
     attributes
     dataset
     dataspace
+    datatype
     file
     group
     identifier

@@ -8,6 +8,25 @@
 namespace lue {
 
 SpaceDomain::SpaceDomain(
+    hdf5::Identifier const& location)
+
+    : hdf5::Group{hdf5::Identifier(::open_space_domain(location),
+        ::close_space_domain)},
+      _configuration{SpaceDomainConfiguration(
+          parse_space_domain_type(
+              attributes().read<std::string>("domain_type")),
+          parse_space_domain_item_type(
+              attributes().read<std::string>("domain_item_type")))
+      }
+
+{
+    if(!id().is_valid()) {
+        throw std::runtime_error("Space domain cannot be opened");
+    }
+}
+
+
+SpaceDomain::SpaceDomain(
     hdf5::Identifier&& location)
 
     : Group(std::forward<hdf5::Identifier>(location)),
@@ -51,20 +70,6 @@ SpaceDomain create_space_domain(
         space_domain_item_type_to_string(configuration.item_type()));
 
     return SpaceDomain(std::move(space_domain_location));
-}
-
-
-SpaceDomain open_space_domain(
-    hdf5::Identifier const& location)
-{
-    hdf5::Identifier domain_location(::open_space_domain(location),
-        ::close_space_domain);
-
-    if(!domain_location.is_valid()) {
-        throw std::runtime_error("Cannot open space domain");
-    }
-
-    return SpaceDomain(std::move(domain_location));
 }
 
 } // namespace lue

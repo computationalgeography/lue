@@ -137,7 +137,7 @@ void init_property_set(
 
         .def("reserve_items",
                 &time::omnipresent::PropertySet::reserve_items,
-            "reserve docstring...",
+            "reserve_items docstring...",
             py::return_value_policy::reference_internal)
 
         // .def_property_readonly("items",

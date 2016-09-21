@@ -1,8 +1,5 @@
 #include "lue/cxx_api/time/omnipresent/constant_shape/item.h"
 #include "lue/cxx_api/array.h"
-// #include "lue/cxx_api/time/omnipresent/space/omnipresent/property.h"
-// #include "lue/cxx_api/value.h"
-// // #include <iostream>
 #include <cassert>
 
 
@@ -11,15 +8,15 @@ namespace time {
 namespace omnipresent {
 namespace constant_shape {
 
-// /*!
-//     @ingroup    lue_cxx_api_group
-// */
-// bool item_exists(
-//     hdf5::Identifier const& location,
-//     std::string const& name)
-// {
-//     return lue::omnipresent::item_exists(location, name);
-// }
+Item::Item(
+    hdf5::Identifier const& location,
+    std::string const& name)
+
+    : // omnipresent::Item(),
+      Array(open_array(location, name))
+
+{
+}
 
 
 Item::Item(
@@ -29,7 +26,6 @@ Item::Item(
 
     : // omnipresent::Item(),
       Array(open_array(location, name, type_id))
-      // _array(std::make_unique<Array>(open_array(location, name, type_id)))
 
 {
 }
@@ -41,8 +37,6 @@ Item::Item(
 
     : // omnipresent::Item(),
       Array(std::forward<hdf5::Identifier>(location), type_id)
-      // _array(std::make_unique<Array>(std::forward<hdf5::Identifier>(location),
-      //     type_id))
 
 {
 }
@@ -54,8 +48,6 @@ Item::Item(
 
     : // omnipresent::Item(),
       Array(std::forward<hdf5::Dataset>(dataset), type_id)
-      // _array(std::make_unique<Array>(std::forward<hdf5::Dataset>(dataset),
-      //     type_id))
 
 {
 }
@@ -68,15 +60,7 @@ void Item::reserve_items(
     shape[0] = nr_items;
 
     resize(shape);
-
-    // resize({nr_items});
 }
-
-
-// Array& Item::array()
-// {
-//     return *_array;
-// }
 
 
 Item create_item(
@@ -98,14 +82,6 @@ Item create_item(
     Shape const& shape,
     Chunks const& chunks)
 {
-    // if(item_exists(location, name)) {
-    //     throw std::runtime_error("Item " + name + " already exists");
-    // }
-
-    // hdf5::Identifier item_location = lue::create_item(location, name);
-
-    // TODO
-
     if(array_exists(location, name)) {
         throw std::runtime_error("Item dataset " + name + " already exists");
     }

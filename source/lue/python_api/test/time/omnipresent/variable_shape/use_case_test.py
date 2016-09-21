@@ -23,6 +23,8 @@ class UseCaseTest(lue_test.TestCase):
 
         self.assertEqual(property_set.domain.configuration.time.type,
             lue.time_domain.omnipresent)
+        self.assertEqual(property_set.domain.configuration.time.item_type,
+            lue.time_domain_item.none)
         self.assertEqual(property_set.domain.configuration.space.type,
             lue.space_domain.located)
         self.assertEqual(property_set.domain.configuration.space.item_type,
@@ -34,35 +36,46 @@ class UseCaseTest(lue_test.TestCase):
         rank = 2
 
         space_domain = property_set.domain.space_domain
-        # self.assertEqual(space_domain.coordinates.dtype, numpy.float64)
-        # self.assertEqual(len(space_domain.coordinates.shape), 2)
-        # self.assertEqual(space_domain.coordinates.shape[0], 0)
-        # self.assertEqual(space_domain.coordinates.shape[1], rank * 2**rank)
+        self.assertEqual(space_domain.boxes.dtype, numpy.float64)
+        self.assertEqual(len(space_domain.boxes.shape), 2)
+        self.assertEqual(space_domain.boxes.shape[0], 0)
+        self.assertEqual(space_domain.boxes.shape[1], rank * 2**rank)
+
+        # self.assertEqual(property_set.domain.space_domain.reserve_items(
+        #     nr_items))
 
 
-        ### self.assertEqual(property_set.domain.space_domain.reserve_items(nr_items))
+        # Add items. This is independent of whether or there are properties
+        # added to the set.
+        nr_items = 500
+        items = property_set.reserve_items(nr_items)
+        space_domain.boxes.reserve_items(nr_items)
 
+        self.assertEqual(items.shape[0], nr_items)
+        self.assertEqual(space_domain.boxes.shape[0], nr_items)
 
-        ### # Add items. This is independent of whether or there are properties
-        ### # added to the set.
-        ### nr_items = 500
-        ### items = property_set.reserve_items(nr_items)
+        items_ = numpy.array([id for id in xrange(nr_items)], numpy.uint64)
+        items[:] = items_
 
-        ### self.assertEqual(items.shape[0], nr_items)
+        self.assertArraysEqual(items[:], items_)
 
-        ### items_ = numpy.array([id for id in xrange(nr_items)], numpy.uint64)
-        ### items[:] = items_
+        nr_coordinates_per_box = space_domain.boxes.shape[1]
+        box_shape = (nr_coordinates_per_box,)
+        boxes = numpy.arange(nr_items * nr_coordinates_per_box,
+            dtype=numpy.float64).reshape(nr_items, nr_coordinates_per_box)
+        space_domain.boxes[:] = boxes
 
-        ### self.assertArraysEqual(items[:], items_)
+        self.assertArraysEqual(space_domain.boxes[:], boxes)
 
-
-        ### # Now, add a property, whose values all have different shapes.
+        # Now, add a property, whose values all have different shapes.
         ### ### value_shape = (4, 5)
         ### ### chunk_shape = (4, 5)
-        ### value_type = numpy.int32
-        ### property = property_set.add_property("property", value_type)
-        ### self.assertEqual(property.name, "property")
-        ### # self.assertEqual(property.values.dtype, numpy.int32)
+        value_type = numpy.int32
+        property = property_set.add_property("property", value_type)
+        self.assertEqual(property.name, "property")
+        # self.assertEqual(property.values.dtype, numpy.int32)
+
+        # assert(False)
 
         ### ### self.assertEqual(len(property.values.shape), 3)
         ### ### self.assertEqual(property.values.shape[0], 0)

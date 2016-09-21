@@ -1,4 +1,13 @@
 set(SOURCES
+    domain
+    omnipresent/domain
+
+    omnipresent/space_box
+
+    space_domain
+    omnipresent/space_domain
+    omnipresent/space_box_domain
+
     item
     omnipresent/item
     omnipresent/constant_shape/item

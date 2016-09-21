@@ -1,10 +1,8 @@
-// #include "lue/cxx_api/property_set.h"
-
+#include "lue/cxx_api/property_set.h"
 #include "lue/cxx_api/time/omnipresent/property_set.h"
 #include "lue/cxx_api/domain_configuration.h"
 #include "lue/cxx_api/exception.h"
 #include "lue/c_api/domain.h"
-// #include "lue/c_api/properties.h"
 #include "lue/c_api/property_set.h"
 #include "lue/c_api/space_domain.h"
 #include "lue/c_api/time_domain.h"
@@ -13,6 +11,9 @@
 
 namespace lue {
 
+/*!
+    @ingroup    lue_cxx_api_group
+*/
 bool property_set_exists(
     hdf5::Identifier const& location,
     std::string const& name)
@@ -21,6 +22,14 @@ bool property_set_exists(
 }
 
 
+/*!
+    @brief      Construct an instance based on an existing property set
+    @param      location Location in dataset of property set named @a name
+    @param      name Name of property set to open
+    @exception  std::runtime_error In case property set cannot be opened
+    @warning    It is assumed that a domain and property set collection
+                exist in property set @a name at @a location
+*/
 PropertySet::PropertySet(
     hdf5::Identifier const& location,
     std::string const& name)
@@ -35,7 +44,7 @@ PropertySet::PropertySet(
 
     // Open domain and property collection.
     assert(domain_exists(id()));
-    _domain = std::make_unique<Domain>(open_domain(id()));
+    _domain = std::make_unique<Domain>(id());
     assert(_domain->id().is_valid());
 
     assert(properties_exists(id()));
@@ -44,6 +53,11 @@ PropertySet::PropertySet(
 }
 
 
+/*!
+    @brief      Construct an instance based on an existing property set
+    @param      location Location in dataset of property set
+    @warning    It is assumed that a property exists at @a location
+*/
 PropertySet::PropertySet(
     hdf5::Identifier&& location)
 
@@ -54,7 +68,7 @@ PropertySet::PropertySet(
 
     // Open domain and property collection.
     assert(domain_exists(id()));
-    _domain = std::make_unique<Domain>(open_domain(id()));
+    _domain = std::make_unique<Domain>(id());
     assert(_domain->id().is_valid());
 
     assert(properties_exists(id()));
@@ -63,6 +77,9 @@ PropertySet::PropertySet(
 }
 
 
+/*!
+    @brief      Return domain
+*/
 Domain& PropertySet::domain() const
 {
     assert(_domain);
@@ -71,6 +88,10 @@ Domain& PropertySet::domain() const
 }
 
 
+/*!
+    @brief      Add property to collection
+    @param      name Name of property to add
+*/
 Property& PropertySet::add_property(
     std::string const& name)
 {
@@ -79,6 +100,9 @@ Property& PropertySet::add_property(
 }
 
 
+/*!
+    @brief      Return property collection
+*/
 Properties& PropertySet::properties() const
 {
     assert(_properties);
@@ -87,6 +111,19 @@ Properties& PropertySet::properties() const
 }
 
 
+/*!
+    @ingroup    lue_cxx_api_group
+
+    @brief      Create a new property set in the dataset
+    @param      location Where to create property set
+    @param      name Name of property set to create
+    @param      domain_configuration Configuration of domain
+    @return     Instance refering to the new property set
+    @exception  std::runtime_error In case property set @a name already exists
+                at @a location
+    @exception  std::runtime_error In case property set cannot be created
+    @sa         PropertySets::add()
+*/
 PropertySet create_property_set(
     hdf5::Identifier const& location,
     std::string const& name,

@@ -36,9 +36,8 @@ void init_item(
         //     py::keep_alive<1, 2>())
 
         // .def("reserve_items",
-        //         &api::time::omnipresent::constant_shape::
-        //             Property::reserve_items,
-        //     "reserve docstring...",
+        //         &api::time::omnipresent::constant_shape::Item::reserve_items,
+        //     "reserve_items docstring...",
         //     py::return_value_policy::reference_internal)
 
         // .def_property_readonly("values",

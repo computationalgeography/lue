@@ -95,6 +95,8 @@ enum class TimeDomainType: int
 enum class TimeDomainItemType
 {
 
+    none,
+
     point,
 
     period,

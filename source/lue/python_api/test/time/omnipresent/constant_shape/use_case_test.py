@@ -20,8 +20,12 @@ class UseCaseTest(lue_test.TestCase):
 
         self.assertEqual(property_set.domain.configuration.time.type,
             lue.time_domain.omnipresent)
+        self.assertEqual(property_set.domain.configuration.time.item_type,
+            lue.time_domain_item.none)
         self.assertEqual(property_set.domain.configuration.space.type,
             lue.space_domain.omnipresent)
+        self.assertEqual(property_set.domain.configuration.space.item_type,
+            lue.space_domain_item.none)
 
         self.assertEqual(property_set.ids.dtype, numpy.uint64)
         self.assertEqual(len(property_set.ids.shape), 1)

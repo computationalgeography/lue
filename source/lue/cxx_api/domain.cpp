@@ -18,15 +18,32 @@ bool domain_exists(
 
 
 Domain::Domain(
-    hdf5::Identifier&& location)
+    hdf5::Identifier const& location)
 
-    : Group{std::forward<hdf5::Identifier>(location)},
-      _time_domain{std::make_unique<TimeDomain>(open_time_domain(id()))},
-      _space_domain{std::make_unique<SpaceDomain>(open_space_domain(id()))},
+    : hdf5::Group{hdf5::Identifier(::open_domain(location), ::close_domain)},
+      _time_domain{std::make_unique<TimeDomain>(id())},
+      _space_domain{std::make_unique<SpaceDomain>(id())},
       _configuration{_time_domain->configuration(),
           _space_domain->configuration()}
 
 {
+    if(!id().is_valid()) {
+        throw std::runtime_error("Domain cannot be opened");
+    }
+}
+
+
+Domain::Domain(
+    hdf5::Identifier&& location)
+
+    : Group{std::forward<hdf5::Identifier>(location)},
+      _time_domain{std::make_unique<TimeDomain>(id())},
+      _space_domain{std::make_unique<SpaceDomain>(id())},
+      _configuration{_time_domain->configuration(),
+          _space_domain->configuration()}
+
+{
+    assert(id().is_valid());
 }
 
 
@@ -50,6 +67,9 @@ DomainConfiguration const& Domain::configuration() const
 }
 
 
+/*!
+    @ingroup    lue_cxx_api_group
+*/
 Domain create_domain(
     hdf5::Identifier const& location,
     DomainConfiguration const& configuration)
@@ -58,7 +78,8 @@ Domain create_domain(
         throw std::runtime_error("Domain already exists");
     }
 
-    hdf5::Identifier domain_location(::create_domain(location), ::close_domain);
+    hdf5::Identifier domain_location(::create_domain(location),
+        ::close_domain);
 
     if(!domain_location.is_valid()) {
         throw std::runtime_error("Domain cannot be created");
@@ -66,19 +87,6 @@ Domain create_domain(
 
     create_time_domain(domain_location, configuration.time());
     create_space_domain(domain_location, configuration.space());
-
-    return Domain(std::move(domain_location));
-}
-
-
-Domain open_domain(
-    hdf5::Identifier const& location)
-{
-    hdf5::Identifier domain_location(::open_domain(location), ::close_domain);
-
-    if(!domain_location.is_valid()) {
-        throw std::runtime_error("Cannot open property set domain");
-    }
 
     return Domain(std::move(domain_location));
 }

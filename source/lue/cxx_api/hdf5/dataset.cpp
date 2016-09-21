@@ -1,6 +1,8 @@
 #include "lue/cxx_api/hdf5/dataset.h"
+#include "lue/cxx_api/hdf5/datatype.h"
 #include "lue/c_api/hdf5/hdf5_dataset.h"
 #include <cassert>
+#include <iostream>
 
 
 namespace lue {
@@ -78,6 +80,8 @@ void Dataset::read(
     std::vector<hsize_t> const& stride,
     void* buffer) const
 {
+    assert(is_native_datatype(type_id));
+
     // Select elements: create hyperslab
     auto dataspace = this->dataspace();
     hsize_t const* block = nullptr;
@@ -104,6 +108,8 @@ void Dataset::write(
     std::vector<hsize_t> const& stride,
     void const* buffer) const
 {
+    assert(is_native_datatype(type_id));
+
     // Select elements: create hyperslab
     auto dataspace = this->dataspace();
     hsize_t const* block = nullptr;
@@ -145,6 +151,8 @@ Dataset create_dataset(
     Dataspace const& dataspace,
     hid_t const creation_property_list)
 {
+    assert(is_standard_datatype(datatype));
+
     if(dataset_exists(location, name)) {
         throw std::runtime_error("Dataset " + name + " already exists");
     }
