@@ -3,6 +3,7 @@
 #include "lue/cxx_api/hdf5/datatype_traits.h"
 #include "lue/cxx_api/array.h"
 #include "lue/python_api/numpy.h"
+#include "lue/python_api/util.h"
 
 #include <boost/format.hpp>
 
@@ -162,13 +163,13 @@ void set_item(
     }
 
 
-    if(!datatypes_are_equal(MemoryDatatypeTraits<T>::type_id(),
+    if(!datatypes_are_equal(NativeDatatypeTraits<T>::type_id(),
             array.type_id())) {
         throw std::runtime_error(boost::str(boost::format(
             "Value type of array to assign from (%1%) must equal "
             "the value type of the array to assign to (%2%)")
-                % MemoryDatatypeTraits<T>::name()
-                % datatype_as_string(array.type_id())
+                % NativeDatatypeTraits<T>::name()
+                % native_datatype_as_string(array.type_id())
                 // % hdf5_type_name(array.type_id())
             ));
     }
@@ -248,75 +249,17 @@ void init_array(
         .def_property_readonly("shape", &Array::shape,
             "shape docstring...")
             // py::return_value_policy::reference_internal)
+
         .def_property_readonly("dtype", [](
                     Array const& self) {
-
-                std::string type_as_string;
-
-                switch(H5Tget_class(self.type_id())) {
-                    case H5T_INTEGER: {
-                        if(datatypes_are_equal(self.type_id(),
-                                H5T_NATIVE_UINT32)) {
-                            type_as_string = "uint32";
-                        }
-                        else if(datatypes_are_equal(self.type_id(),
-                                H5T_NATIVE_INT32)) {
-                            type_as_string = "int32";
-                        }
-                        else if(datatypes_are_equal(self.type_id(),
-                                H5T_NATIVE_UINT64)) {
-                            type_as_string = "uint64";
-                        }
-                        else if(datatypes_are_equal(self.type_id(),
-                                H5T_NATIVE_INT64)) {
-                            type_as_string = "int64";
-                        }
-                        else {
-                            throw std::runtime_error(
-                                "Unsupported integer self value type");
-                        }
-                        break;
-                    }
-                    case H5T_FLOAT: {
-                        if(datatypes_are_equal(self.type_id(),
-                                H5T_NATIVE_FLOAT)) {
-                            type_as_string = "float32";
-                        }
-                        else if(datatypes_are_equal(self.type_id(),
-                                H5T_NATIVE_DOUBLE)) {
-                            type_as_string = "float64";
-                        }
-                        else {
-                            throw std::runtime_error(
-                                "Unsupported float array value type");
-                        }
-                        break;
-                    }
-                    default: {
-                        throw std::runtime_error(
-                            "Unsupported array value type");
-                        break;
-                    }
-                }
-
-                assert(!type_as_string.empty());
-
-                py::object object(Py_BuildValue("s", type_as_string.c_str()),
-                    false);
-
-                if(object.ptr() == nullptr) {
-                    throw py::error_already_set();
-                }
-
-                PyArray_Descr* dtype;
-                if(!PyArray_DescrConverter(object.ptr(), &dtype)) {
-                    throw py::error_already_set();
-                }
-
-                return py::object(reinterpret_cast<PyObject*>(dtype), false);
+                py::object object = hdf5_type_id_to_numpy_dtype(
+                    self.type_id());
+                assert(object.ptr() != nullptr);
+                return object;
             },
             "dtype docstring..."
         )
+
         .def("__getitem__", [](
                 Array const& array,
                 py::slice const& slice) -> py::array {

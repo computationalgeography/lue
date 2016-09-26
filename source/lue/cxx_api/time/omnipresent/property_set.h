@@ -50,8 +50,9 @@ public:
 
     variable_shape::Property&
                    add_property        (std::string const& name,
-                                        hid_t const memory_type_id,
-                                        hid_t const file_type_id);
+                                        // hid_t const memory_type_id,
+                                        hid_t const file_type_id,
+                                        size_t const rank);
 
 private:
 

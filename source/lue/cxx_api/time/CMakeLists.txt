@@ -11,6 +11,7 @@ set(SOURCES
     item
     omnipresent/item
     omnipresent/constant_shape/item
+    omnipresent/variable_shape/item
 
     property
     omnipresent/constant_shape/property

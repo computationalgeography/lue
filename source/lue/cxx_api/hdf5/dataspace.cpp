@@ -78,8 +78,8 @@ std::vector<hsize_t> Dataspace::dimension_extents() const
 
 
 Dataspace create_dataspace(
-    std::vector<hsize_t> const& dimension_sizes,
-    std::vector<hsize_t> const& max_dimension_sizes)
+    std::vector<extent_t> const& dimension_sizes,
+    std::vector<extent_t> const& max_dimension_sizes)
 {
     assert(dimension_sizes.size() == max_dimension_sizes.size());
 

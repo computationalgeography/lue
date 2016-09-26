@@ -1,5 +1,5 @@
 #include "lue/cxx_api/time/omnipresent/variable_shape/property.h"
-#include "lue/cxx_api/value.h"
+// #include "lue/cxx_api/value.h"
 #include <cassert>
 
 
@@ -9,10 +9,11 @@ namespace omnipresent {
 namespace variable_shape {
 
 Property::Property(
-    lue::Property& group,
-    hid_t const type_id)
+    lue::Property& group)
+    // hid_t const type_id)
 
-    : time::Property(group) // ,
+    : time::Property(group),
+      _values(id(), "values")  // , type_id)
       // _value(std::make_unique<Value>(open_value(id()))),
       // _items(std::make_unique<Array>(open_dataset(_value->id(), "item"),
       //     type_id))
@@ -21,29 +22,33 @@ Property::Property(
 }
 
 
-// Array& Property::reserve_items(
-//     hsize_t const nr_items)
-// {
-//     auto shape = _items->shape();
-//     shape[0] = nr_items;
-// 
-//     _items->resize(shape);
-// 
-//     return *_items;
-// }
-// 
-// 
-// Array& Property::values()
-// {
-//     return *_items;
-// }
+Item& Property::reserve_items(
+    hsize_t const nr_items,
+    extent_t const* shapes)
+{
+    _values.reserve_items(nr_items, shapes);
+
+    return _values;
+}
+
+
+Item& Property::values()
+{
+    return _values;
+}
 
 
 void configure_property(
     lue::Property const& property,
     hid_t const file_type_id,
-    hid_t const memory_type_id)
+    // hid_t const memory_type_id,
+    size_t const rank)
 {
+    assert(property.id().is_valid());
+
+    variable_shape::create_item(property.id(), "values", file_type_id,
+        /* memory_type_id, */ rank);
+
 //     auto const& value = property.value();
 // 
 //     size_t const nr_dimensions = shape.size() + 1;

@@ -41,9 +41,6 @@ class UseCaseTest(lue_test.TestCase):
         self.assertEqual(space_domain.boxes.shape[0], 0)
         self.assertEqual(space_domain.boxes.shape[1], rank * 2**rank)
 
-        # self.assertEqual(property_set.domain.space_domain.reserve_items(
-        #     nr_items))
-
 
         # Add items. This is independent of whether or there are properties
         # added to the set.
@@ -67,28 +64,33 @@ class UseCaseTest(lue_test.TestCase):
 
         self.assertArraysEqual(space_domain.boxes[:], boxes)
 
+
         # Now, add a property, whose values all have different shapes.
-        ### ### value_shape = (4, 5)
-        ### ### chunk_shape = (4, 5)
+        rank = 2
         value_type = numpy.int32
-        property = property_set.add_property("property", value_type)
+
+        property = property_set.add_property("property", value_type, rank)
+
         self.assertEqual(property.name, "property")
-        # self.assertEqual(property.values.dtype, numpy.int32)
+        self.assertEqual(property.values.dtype, numpy.int32)
+        self.assertEqual(property.values.rank, 2)
+        self.assertEqual(len(property.values), 0)
 
-        # assert(False)
+        value_shapes = (10 * (numpy.random.rand(nr_items, rank) + 1)).astype(
+            numpy.uint64)
 
-        ### ### self.assertEqual(len(property.values.shape), 3)
-        ### ### self.assertEqual(property.values.shape[0], 0)
-        ### ### self.assertEqual(property.values.shape[1], 4)
-        ### ### self.assertEqual(property.values.shape[2], 5)
+        values = property.reserve_items(value_shapes)
 
-        ### ### values = property.reserve_items(nr_items)
+        self.assertEqual(len(values), nr_items)
 
-        ### ### self.assertEqual(values.shape[0], nr_items)
+        for i in xrange(nr_items):
+            for r in xrange(rank):
+                self.assertEqual(property.values[i].shape[r],
+                    value_shapes[i][r])
 
-        ### ### values_ = numpy.arange(nr_items * reduce(lambda x, y: x * y, value_shape),
-        ### ###     dtype=numpy.int32).reshape((nr_items,) + value_shape)
 
-        ### ### values[:] = values_
-
-        ### ### self.assertArraysEqual(values[:], values_)
+        for i in xrange(nr_items):
+            shape = property.values[i].shape
+            values_ = (10 * numpy.random.rand(*shape)).astype(value_type)
+            values[i][:] = values_
+            self.assertArraysEqual(values[i][:], values_)

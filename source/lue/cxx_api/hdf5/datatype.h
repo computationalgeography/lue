@@ -8,12 +8,18 @@ namespace lue {
 bool               datatypes_are_equal (hid_t const type_id1,
                                         hid_t const type_id2);
 
-std::string        datatype_as_string  (hid_t const type_id);
+std::string        native_datatype_as_string(
+                                        hid_t const type_id);
+
+std::string        standard_datatype_as_string(
+                                        hid_t const type_id);
+
+hid_t              parse_datatype      (std::string const& string);
 
 bool               is_standard_datatype(hid_t const type_id);
 
 bool               is_native_datatype  (hid_t const type_id);
 
-hid_t              memory_type_id      (hid_t const file_type_id);
+hid_t              native_type_id      (hid_t const file_type_id);
 
 }  // namespace lue

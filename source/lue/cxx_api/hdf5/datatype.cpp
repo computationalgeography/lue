@@ -2,6 +2,7 @@
 #include "lue/cxx_api/hdf5/datatype_traits.h"
 #include <algorithm>
 #include <cassert>
+#include <stdexcept>
 #include <iostream>
 #include <set>
 
@@ -19,31 +20,82 @@ bool datatypes_are_equal(
 }
 
 
-std::string datatype_as_string(
+std::string native_datatype_as_string(
     hid_t const type_id)
 {
     std::string result;
 
     if(datatypes_are_equal(type_id, H5T_NATIVE_FLOAT)) {
-        result = MemoryDatatypeTraits<float>::name();
+        result = NativeDatatypeTraits<float>::name();
     }
     else if(datatypes_are_equal(type_id, H5T_NATIVE_DOUBLE)) {
-        result = MemoryDatatypeTraits<double>::name();
+        result = NativeDatatypeTraits<double>::name();
     }
     else if(datatypes_are_equal(type_id, H5T_NATIVE_UINT32)) {
-        result = MemoryDatatypeTraits<uint32_t>::name();
+        result = NativeDatatypeTraits<uint32_t>::name();
     }
     else if(datatypes_are_equal(type_id, H5T_NATIVE_UINT64)) {
-        result = MemoryDatatypeTraits<uint64_t>::name();
+        result = NativeDatatypeTraits<uint64_t>::name();
     }
     else if(datatypes_are_equal(type_id, H5T_NATIVE_INT32)) {
-        result = MemoryDatatypeTraits<int32_t>::name();
+        result = NativeDatatypeTraits<int32_t>::name();
     }
     else if(datatypes_are_equal(type_id, H5T_NATIVE_INT64)) {
-        result = MemoryDatatypeTraits<int64_t>::name();
+        result = NativeDatatypeTraits<int64_t>::name();
     }
 
     assert(!result.empty());
+
+    return result;
+}
+
+
+std::string standard_datatype_as_string(
+    hid_t const type_id)
+{
+    std::string result;
+
+    if(datatypes_are_equal(type_id, H5T_STD_I32LE)) {
+        result = StandardDatatypeTraits<int32_t>::name();
+    }
+    else if(datatypes_are_equal(type_id, H5T_STD_I64LE)) {
+        result = StandardDatatypeTraits<int64_t>::name();
+    }
+    else if(datatypes_are_equal(type_id, H5T_STD_U32LE)) {
+        result = StandardDatatypeTraits<uint32_t>::name();
+    }
+    else if(datatypes_are_equal(type_id, H5T_STD_U64LE)) {
+        result = StandardDatatypeTraits<uint64_t>::name();
+    }
+    else if(datatypes_are_equal(type_id, H5T_IEEE_F32LE)) {
+        result = StandardDatatypeTraits<float>::name();
+    }
+    else if(datatypes_are_equal(type_id, H5T_IEEE_F64LE)) {
+        result = StandardDatatypeTraits<double>::name();
+    }
+
+    assert(!result.empty());
+
+    return result;
+}
+
+
+hid_t parse_datatype(
+    std::string const& string)
+{
+    hid_t result = -1;
+
+    if(string == StandardDatatypeTraits<int32_t>::name()) {
+        result = StandardDatatypeTraits<int32_t>::type_id();
+    }
+    else if(string == StandardDatatypeTraits<float>::name()) {
+        result = StandardDatatypeTraits<float>::type_id();
+    }
+    else {
+        throw std::runtime_error("Datatype " + string + " cannot be parsed");
+    }
+
+    assert(result >= 0);
 
     return result;
 }
@@ -95,7 +147,7 @@ bool is_native_datatype(
 }
 
 
-hid_t memory_type_id(
+hid_t native_type_id(
     hid_t const file_type_id)
 {
     assert(is_standard_datatype(file_type_id));
@@ -125,7 +177,6 @@ hid_t memory_type_id(
     assert(is_native_datatype(result));
 
     return result;
-
 }
 
 }  // namespace lue

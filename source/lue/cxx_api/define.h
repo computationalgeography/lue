@@ -1,8 +1,21 @@
 #pragma once
 #include "lue/cxx_api/bitmask_operators.hpp"
+#include <hdf5.h>
 
 
 namespace lue {
+
+using rank_t = uint16_t;
+
+//! Size of collections.
+using count_t = uint64_t;
+
+//! Size of collections.
+using index_t = count_t;
+
+//! Size of dimension.
+using extent_t = hsize_t;
+
 
 // enum class TypeId
 // {

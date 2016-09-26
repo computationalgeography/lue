@@ -30,7 +30,7 @@ public:
     template<
         typename T>
     void           write               (std::string const& name,
-                                        T const& value) const;
+                                        T const& value);
 
     template<
         typename T>
@@ -39,6 +39,12 @@ public:
 private:
 
     std::reference_wrapper<Identifier const> _location;
+
+    bool           exists              (std::string const& name) const;
+
+    template<
+        typename T>
+    void           create              (std::string const& name);
 
 };
 

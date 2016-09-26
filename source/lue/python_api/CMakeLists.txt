@@ -18,6 +18,7 @@ set(EXTENSION_SOURCES
     property
     property_set
     universe
+    util
     python_extension
 )
 add_library(_lue SHARED

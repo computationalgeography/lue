@@ -80,9 +80,16 @@ herr_t             hdf5_read_##type_name##_attribute(             \
                                         type* value);
 
 
+declare_attribute_functions(int8, int8_t)
+declare_attribute_functions(int16, int16_t)
 declare_attribute_functions(int32, int32_t)
+declare_attribute_functions(int64, int64_t)
+declare_attribute_functions(uint8, uint8_t)
+declare_attribute_functions(uint16, uint16_t)
 declare_attribute_functions(uint32, uint32_t)
 declare_attribute_functions(uint64, uint64_t)
+declare_attribute_functions(float, float)
+declare_attribute_functions(double, double)
 declare_attribute_functions(hsize, hsize_t)
 
 #undef declare_attribute_functions

@@ -142,14 +142,16 @@ constant_shape::Property& PropertySet::add_property(
 variable_shape::Property& PropertySet::add_property(
     std::string const& name,
     hid_t const file_type_id,
-    hid_t const memory_type_id)
+    // hid_t const memory_type_id,
+    size_t const rank)
 {
     auto& property = time::PropertySet::add_property(name);
 
-    variable_shape::configure_property(property, file_type_id, memory_type_id);
+    variable_shape::configure_property(property, file_type_id,
+        /* memory_type_id, */ rank);
 
     _variable_shape_properties.emplace_back(
-        std::make_unique<variable_shape::Property>(property, memory_type_id));
+        std::make_unique<variable_shape::Property>(property /* , memory_type_id */));
 
     return *_variable_shape_properties.back();
 }

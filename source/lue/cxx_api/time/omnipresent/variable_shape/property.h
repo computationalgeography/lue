@@ -1,8 +1,6 @@
 #pragma once
-#include "lue/cxx_api/array.h"
-#include "lue/cxx_api/value.h"
 #include "lue/cxx_api/time/property.h"
-#include <memory>
+#include "lue/cxx_api/time/omnipresent/variable_shape/item.h"
 
 
 namespace lue {
@@ -19,8 +17,8 @@ class Property:
 
 public:
 
-                   Property            (lue::Property& group,
-                                        hid_t const type_id);
+                   Property            (lue::Property& group);
+                                        // hid_t const type_id);
 
                    Property            (Property const& other)=delete;
 
@@ -32,22 +30,22 @@ public:
 
     Property&      operator=           (Property&& other)=default;
 
-    // Array&         reserve_items       (hsize_t const nr_items);
+    Item&          reserve_items       (hsize_t const nr_items,
+                                        extent_t const* shapes);
 
-    // Array&         values              ();
+    Item&          values              ();
 
 private:
 
-    // std::unique_ptr<Value> _value;
-
-    // std::unique_ptr<Array> _items;
+    variable_shape::Item _values;
 
 };
 
 
 void               configure_property  (lue::Property const& location,
                                         hid_t const file_type_id,
-                                        hid_t const memory_type_id);
+                                        // hid_t const memory_type_id,
+                                        size_t const rank);
 
 }  // namespace variable_shape
 }  // namespace omnipresent

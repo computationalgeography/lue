@@ -88,7 +88,7 @@ Array open_array(
     std::string const& name)
 {
     auto dataset = open_dataset(location, name);
-    auto type_id = memory_type_id(dataset.type_id());
+    auto type_id = native_type_id(dataset.type_id());
 
     return Array(std::move(dataset), type_id);
 }

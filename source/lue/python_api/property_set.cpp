@@ -194,7 +194,8 @@ void init_property_set(
         .def("add_property", [](
                     time::omnipresent::PropertySet& self,
                     std::string const& name,
-                    py::handle const& numpy_type_id_object) ->
+                    py::handle const& numpy_type_id_object,
+                    size_t const rank) ->
                         time::omnipresent::variable_shape::Property& {
 
                 int numpy_type_id = NPY_NOTYPE;
@@ -212,7 +213,8 @@ void init_property_set(
                 std::tie(file_type_id, memory_type_id) =
                     numpy_type_to_hdf5_types(numpy_type_id);
 
-                return self.add_property(name, file_type_id, memory_type_id);
+                return self.add_property(name, file_type_id, // memory_type_id,
+                    rank);
             },
             "add_property docstring...",
             py::return_value_policy::reference_internal)

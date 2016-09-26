@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/cxx_api/hdf5/identifier.h"
+#include "lue/cxx_api/define.h"
 #include <vector>
 
 
@@ -40,9 +41,9 @@ private:
 };
 
 
-Dataspace          create_dataspace    (std::vector<hsize_t> const&
+Dataspace          create_dataspace    (std::vector<extent_t> const&
                                             dimension_sizes,
-                                        std::vector<hsize_t> const&
+                                        std::vector<extent_t> const&
                                             max_dimension_sizes);
 
 } // namespace hdf5
