@@ -53,9 +53,9 @@ Shape Array::shape() const
 
 
 void Array::read(
-    std::vector<hsize_t> const& start,
-    std::vector<hsize_t> const& count,
-    std::vector<hsize_t> const& stride,
+    std::vector<extent_t> const& start,
+    std::vector<extent_t> const& count,
+    std::vector<extent_t> const& stride,
     void* buffer) const
 {
     Dataset::read(_type_id, start, count, stride, buffer);
@@ -63,12 +63,42 @@ void Array::read(
 
 
 void Array::write(
-    std::vector<hsize_t> const& start,
-    std::vector<hsize_t> const& count,
-    std::vector<hsize_t> const& stride,
+    extent_t const count,
+    void const* buffer)
+{
+    write({0}, {count}, {1}, buffer);
+}
+
+
+void Array::write(
+    std::vector<extent_t> const count,
+    void const* buffer)
+{
+    std::vector<extent_t> start(count.size(), 0);
+    std::vector<extent_t> stride(count.size(), 1);
+
+    write(start, count, stride, buffer);
+}
+
+
+void Array::write(
+    std::vector<extent_t> const& start,
+    std::vector<extent_t> const& count,
+    std::vector<extent_t> const& stride,
     void const* buffer)
 {
     Dataset::write(_type_id, start, count, stride, buffer);
+}
+
+
+void Array::write(
+    hdf5::Dataspace const& memory_dataspace,
+    std::vector<extent_t> const& start,
+    std::vector<extent_t> const& count,
+    std::vector<extent_t> const& stride,
+    void const* buffer)
+{
+    Dataset::write(_type_id, memory_dataspace, start, count, stride, buffer);
 }
 
 

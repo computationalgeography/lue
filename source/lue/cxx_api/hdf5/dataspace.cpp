@@ -78,6 +78,13 @@ std::vector<hsize_t> Dataspace::dimension_extents() const
 
 
 Dataspace create_dataspace(
+    std::vector<extent_t> const& dimension_sizes)
+{
+    return create_dataspace(dimension_sizes, dimension_sizes);
+}
+
+
+Dataspace create_dataspace(
     std::vector<extent_t> const& dimension_sizes,
     std::vector<extent_t> const& max_dimension_sizes)
 {

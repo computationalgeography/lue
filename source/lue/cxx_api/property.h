@@ -36,6 +36,9 @@ public:
 
     Value&         value               () const;
 
+    void           link_space_discretization(
+                                        Property const& discretization);
+
 private:
 
     std::unique_ptr<Value> _value;

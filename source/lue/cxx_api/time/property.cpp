@@ -25,6 +25,13 @@ std::string Property::name() const
 }
 
 
+void Property::link_space_discretization(
+    lue::Property const& discretization)
+{
+    group().link_space_discretization(discretization);
+}
+
+
 lue::Property const& Property::group() const
 {
     return _group.get();

@@ -10,57 +10,6 @@
 namespace lue {
 namespace time {
 namespace omnipresent {
-namespace {
-
-// /*!
-//     @brief      .
-//     @param      type_id Id of in-file type to use for storing coordinates
-//     @param      rank Rank of space to store boxes for
-//     @return     .
-//     @exception  .
-// 
-//     A dataset named 'item' is created with shape (nr_items, rank * 2**rank).
-//     The first dimension is configured to be H5S_UNLIMITED.
-// */
-// void configure_box(
-//     SpaceDomain const& space_domain,
-//     hid_t const type_id,
-//     size_t const rank)
-// {
-//     size_t const nr_dimensions = 2;
-// 
-//     std::vector<hsize_t> dimension_sizes(nr_dimensions);
-//     dimension_sizes[0] = 0;
-//     dimension_sizes[1] = rank * static_cast<hsize_t>(std::pow(2, rank));
-// 
-//     std::vector<hsize_t> max_dimension_sizes(nr_dimensions);
-//     max_dimension_sizes[0] = H5S_UNLIMITED;
-//     max_dimension_sizes[1] = dimension_sizes[1];
-// 
-//     std::vector<hsize_t> chunk_dimension_sizes(nr_dimensions);
-//     chunk_dimension_sizes[0] = 1000;
-//     chunk_dimension_sizes[1] = dimension_sizes[1];
-// 
-//     auto dataspace = hdf5::create_dataspace(dimension_sizes,
-//         max_dimension_sizes);
-// 
-//     hdf5::Identifier creation_property_list_location(::H5Pcreate(
-//         H5P_DATASET_CREATE), ::H5Pclose);
-// 
-//     if(!creation_property_list_location.is_valid()) {
-//         throw std::runtime_error("Creation property list cannot be created");
-//     }
-// 
-//     herr_t status = ::H5Pset_chunk(creation_property_list_location,
-//         chunk_dimension_sizes.size(), chunk_dimension_sizes.data());
-//     assert(status >= 0);
-// 
-//     auto dataset = hdf5::create_dataset(space_domain.id(), "item", type_id,
-//         dataspace, creation_property_list_location);
-// }
-
-}  // Anonymous namespace
-
 
 PropertySet::PropertySet(
     lue::PropertySet& group)

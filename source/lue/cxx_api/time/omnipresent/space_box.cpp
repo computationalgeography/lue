@@ -1,6 +1,5 @@
 #include "lue/cxx_api/time/omnipresent/space_box.h"
 #include <cassert>
-#include <cmath>
 
 
 namespace lue {
@@ -45,7 +44,10 @@ SpaceBox create_space_box(
     size_t rank)
 {
     std::string const name = "coordinates";
-    Shape shape = { rank * static_cast<hsize_t>(std::pow(2, rank)) };
+    // A box is defined by the coordinates of two opposite points
+    // (diagonally).
+    // Shape shape = { rank * static_cast<hsize_t>(std::pow(2, rank)) };
+    Shape shape = { 2 * rank };
     Chunks chunks = { shape[0] };
 
     auto item = constant_shape::create_item(location, name, file_type_id,

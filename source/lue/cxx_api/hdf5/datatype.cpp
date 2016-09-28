@@ -31,11 +31,23 @@ std::string native_datatype_as_string(
     else if(datatypes_are_equal(type_id, H5T_NATIVE_DOUBLE)) {
         result = NativeDatatypeTraits<double>::name();
     }
+    else if(datatypes_are_equal(type_id, H5T_NATIVE_UINT8)) {
+        result = NativeDatatypeTraits<uint8_t>::name();
+    }
+    else if(datatypes_are_equal(type_id, H5T_NATIVE_UINT16)) {
+        result = NativeDatatypeTraits<uint16_t>::name();
+    }
     else if(datatypes_are_equal(type_id, H5T_NATIVE_UINT32)) {
         result = NativeDatatypeTraits<uint32_t>::name();
     }
     else if(datatypes_are_equal(type_id, H5T_NATIVE_UINT64)) {
         result = NativeDatatypeTraits<uint64_t>::name();
+    }
+    else if(datatypes_are_equal(type_id, H5T_NATIVE_INT8)) {
+        result = NativeDatatypeTraits<int8_t>::name();
+    }
+    else if(datatypes_are_equal(type_id, H5T_NATIVE_INT16)) {
+        result = NativeDatatypeTraits<int16_t>::name();
     }
     else if(datatypes_are_equal(type_id, H5T_NATIVE_INT32)) {
         result = NativeDatatypeTraits<int32_t>::name();
@@ -55,11 +67,23 @@ std::string standard_datatype_as_string(
 {
     std::string result;
 
-    if(datatypes_are_equal(type_id, H5T_STD_I32LE)) {
+    if(datatypes_are_equal(type_id, H5T_STD_I8LE)) {
+        result = StandardDatatypeTraits<int8_t>::name();
+    }
+    else if(datatypes_are_equal(type_id, H5T_STD_I16LE)) {
+        result = StandardDatatypeTraits<int16_t>::name();
+    }
+    else if(datatypes_are_equal(type_id, H5T_STD_I32LE)) {
         result = StandardDatatypeTraits<int32_t>::name();
     }
     else if(datatypes_are_equal(type_id, H5T_STD_I64LE)) {
         result = StandardDatatypeTraits<int64_t>::name();
+    }
+    else if(datatypes_are_equal(type_id, H5T_STD_U8LE)) {
+        result = StandardDatatypeTraits<uint8_t>::name();
+    }
+    else if(datatypes_are_equal(type_id, H5T_STD_U16LE)) {
+        result = StandardDatatypeTraits<uint16_t>::name();
     }
     else if(datatypes_are_equal(type_id, H5T_STD_U32LE)) {
         result = StandardDatatypeTraits<uint32_t>::name();
@@ -80,16 +104,40 @@ std::string standard_datatype_as_string(
 }
 
 
-hid_t parse_datatype(
+hid_t parse_standard_datatype(
     std::string const& string)
 {
     hid_t result = -1;
 
-    if(string == StandardDatatypeTraits<int32_t>::name()) {
+    if(string == StandardDatatypeTraits<uint8_t>::name()) {
+        result = StandardDatatypeTraits<uint8_t>::type_id();
+    }
+    else if(string == StandardDatatypeTraits<uint16_t>::name()) {
+        result = StandardDatatypeTraits<uint16_t>::type_id();
+    }
+    else if(string == StandardDatatypeTraits<uint32_t>::name()) {
+        result = StandardDatatypeTraits<uint32_t>::type_id();
+    }
+    else if(string == StandardDatatypeTraits<uint64_t>::name()) {
+        result = StandardDatatypeTraits<uint64_t>::type_id();
+    }
+    else if(string == StandardDatatypeTraits<int8_t>::name()) {
+        result = StandardDatatypeTraits<int8_t>::type_id();
+    }
+    else if(string == StandardDatatypeTraits<int16_t>::name()) {
+        result = StandardDatatypeTraits<int16_t>::type_id();
+    }
+    else if(string == StandardDatatypeTraits<int32_t>::name()) {
         result = StandardDatatypeTraits<int32_t>::type_id();
+    }
+    else if(string == StandardDatatypeTraits<int64_t>::name()) {
+        result = StandardDatatypeTraits<int64_t>::type_id();
     }
     else if(string == StandardDatatypeTraits<float>::name()) {
         result = StandardDatatypeTraits<float>::type_id();
+    }
+    else if(string == StandardDatatypeTraits<double>::name()) {
+        result = StandardDatatypeTraits<double>::type_id();
     }
     else {
         throw std::runtime_error("Datatype " + string + " cannot be parsed");
@@ -119,8 +167,12 @@ bool is_standard_datatype(
     hid_t const type_id)
 {
     static std::set<hid_t> const standard_datatypes = {
+        H5T_STD_I8LE,
+        H5T_STD_I16LE,
         H5T_STD_I32LE,
         H5T_STD_I64LE,
+        H5T_STD_U8LE,
+        H5T_STD_U16LE,
         H5T_STD_U32LE,
         H5T_STD_U64LE,
         H5T_IEEE_F32LE,
@@ -137,8 +189,12 @@ bool is_native_datatype(
     static std::set<hid_t> const native_datatypes = {
         H5T_NATIVE_FLOAT,
         H5T_NATIVE_DOUBLE,
+        H5T_NATIVE_UINT8,
+        H5T_NATIVE_UINT16,
         H5T_NATIVE_UINT32,
         H5T_NATIVE_UINT64,
+        H5T_NATIVE_INT8,
+        H5T_NATIVE_INT16,
         H5T_NATIVE_INT32,
         H5T_NATIVE_INT64
     };
@@ -154,11 +210,23 @@ hid_t native_type_id(
 
     hid_t result = -1;
 
-    if(datatypes_are_equal(file_type_id, H5T_STD_I32LE)) {
+    if(datatypes_are_equal(file_type_id, H5T_STD_I8LE)) {
+        result = H5T_NATIVE_INT8;
+    }
+    else if(datatypes_are_equal(file_type_id, H5T_STD_I16LE)) {
+        result = H5T_NATIVE_INT16;
+    }
+    else if(datatypes_are_equal(file_type_id, H5T_STD_I32LE)) {
         result = H5T_NATIVE_INT32;
     }
     else if(datatypes_are_equal(file_type_id, H5T_STD_I64LE)) {
         result = H5T_NATIVE_INT64;
+    }
+    else if(datatypes_are_equal(file_type_id, H5T_STD_U8LE)) {
+        result = H5T_NATIVE_UINT8;
+    }
+    else if(datatypes_are_equal(file_type_id, H5T_STD_U16LE)) {
+        result = H5T_NATIVE_UINT16;
     }
     else if(datatypes_are_equal(file_type_id, H5T_STD_U32LE)) {
         result = H5T_NATIVE_UINT32;

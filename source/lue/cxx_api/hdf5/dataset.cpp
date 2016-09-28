@@ -129,6 +129,35 @@ void Dataset::write(
 }
 
 
+void Dataset::write(
+    hid_t const type_id,
+    Dataspace const& memory_dataspace,
+    std::vector<hsize_t> const& start,
+    std::vector<hsize_t> const& count,
+    std::vector<hsize_t> const& stride,
+    void const* buffer) const
+{
+    assert(is_native_datatype(type_id));
+
+    // Select elements: create hyperslab
+    auto file_dataspace = this->dataspace();
+    hsize_t const* block = nullptr;
+    auto status = H5Sselect_hyperslab(file_dataspace.id(), H5S_SELECT_SET,
+        start.data(), stride.data(), count.data(), block);
+
+    if(status < 0) {
+        throw std::runtime_error("Cannot create hyperslab");
+    }
+
+    status = H5Dwrite(_id, type_id, memory_dataspace.id(),
+        file_dataspace.id(), H5P_DEFAULT, buffer);
+
+    if(status < 0) {
+        throw std::runtime_error("Cannot write to dataset");
+    }
+}
+
+
 Dataset open_dataset(
     hdf5::Identifier const& location,
     std::string const& name)

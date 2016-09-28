@@ -32,7 +32,7 @@ SpaceBox& SpaceBoxDomain::boxes()
 }
 
 
-SpaceBox::Item& SpaceBoxDomain::reserve_items(
+SpaceBox& SpaceBoxDomain::reserve_items(
     hsize_t const nr_items)
 {
     _boxes.reserve_items(nr_items);

@@ -14,7 +14,8 @@ std::string        native_datatype_as_string(
 std::string        standard_datatype_as_string(
                                         hid_t const type_id);
 
-hid_t              parse_datatype      (std::string const& string);
+hid_t              parse_standard_datatype(
+                                        std::string const& string);
 
 bool               is_standard_datatype(hid_t const type_id);
 

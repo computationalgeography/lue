@@ -15,7 +15,8 @@ Item::Item(
     hdf5::Group&& group)
 
     : hdf5::Group(std::forward<hdf5::Group>(group)),
-      _type_id{parse_datatype(attributes().read<std::string>("datatype"))},
+      _type_id{parse_standard_datatype(attributes().read<std::string>(
+          "datatype"))},
       _rank{attributes().read<rank_t>("rank")},
       _nr_items{attributes().read<count_t>("nr_items")}
 
@@ -28,7 +29,8 @@ Item::Item(
     std::string const& name)
 
     : hdf5::Group(location, name),
-      _type_id{parse_datatype(attributes().read<std::string>("datatype"))},
+      _type_id{parse_standard_datatype(attributes().read<std::string>(
+          "datatype"))},
       _rank{attributes().read<rank_t>("rank")},
       _nr_items{attributes().read<count_t>("nr_items")}
 

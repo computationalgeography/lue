@@ -36,14 +36,26 @@ public:
 
     Shape          shape               () const;
 
-    void           read                (std::vector<hsize_t> const& start,
-                                        std::vector<hsize_t> const& count,
-                                        std::vector<hsize_t> const& stride,
+    void           read                (std::vector<extent_t> const& start,
+                                        std::vector<extent_t> const& count,
+                                        std::vector<extent_t> const& stride,
                                         void* buffer) const;
 
-    void           write               (std::vector<hsize_t> const& start,
-                                        std::vector<hsize_t> const& count,
-                                        std::vector<hsize_t> const& stride,
+    void           write               (extent_t const count,
+                                        void const* buffer);
+
+    void           write               (std::vector<extent_t> const count,
+                                        void const* buffer);
+
+    void           write               (std::vector<extent_t> const& start,
+                                        std::vector<extent_t> const& count,
+                                        std::vector<extent_t> const& stride,
+                                        void const* buffer);
+
+    void           write               (hdf5::Dataspace const& memory_dataspace,
+                                        std::vector<extent_t> const& start,
+                                        std::vector<extent_t> const& count,
+                                        std::vector<extent_t> const& stride,
                                         void const* buffer);
 
 private:

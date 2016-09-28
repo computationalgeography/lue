@@ -1,9 +1,12 @@
 #pragma once
 #include "lue/cxx_api/bitmask_operators.hpp"
+#include "lue/c_api/define.h"
 #include <hdf5.h>
 
 
 namespace lue {
+
+using item_t = lue_item_t;
 
 using rank_t = uint16_t;
 

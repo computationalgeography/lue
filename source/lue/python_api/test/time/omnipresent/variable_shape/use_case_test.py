@@ -39,7 +39,7 @@ class UseCaseTest(lue_test.TestCase):
         self.assertEqual(space_domain.boxes.dtype, numpy.float64)
         self.assertEqual(len(space_domain.boxes.shape), 2)
         self.assertEqual(space_domain.boxes.shape[0], 0)
-        self.assertEqual(space_domain.boxes.shape[1], rank * 2**rank)
+        self.assertEqual(space_domain.boxes.shape[1], 2 * rank)
 
 
         # Add items. This is independent of whether or there are properties
@@ -66,7 +66,6 @@ class UseCaseTest(lue_test.TestCase):
 
 
         # Now, add a property, whose values all have different shapes.
-        rank = 2
         value_type = numpy.int32
 
         property = property_set.add_property("property", value_type, rank)

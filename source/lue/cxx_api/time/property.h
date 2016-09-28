@@ -24,6 +24,15 @@ public:
 
     std::string    name                () const;
 
+    void           link_space_discretization(
+                                        lue::Property const& discretization);
+
+    lue::Property const&
+                   group               () const;
+
+    lue::Property&
+                   group               ();
+
 protected:
 
                    Property            (lue::Property& group);
@@ -35,12 +44,6 @@ protected:
     Property&      operator=           (Property const& other)=delete;
 
     Property&      operator=           (Property&& other)=default;
-
-    lue::Property const&
-                   group               () const;
-
-    lue::Property&
-                   group               ();
 
 private:
 

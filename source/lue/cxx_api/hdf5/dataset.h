@@ -51,6 +51,13 @@ public:
                                         std::vector<hsize_t> const& stride,
                                         void const* buffer) const;
 
+    void           write               (hid_t const type_id,
+                                        Dataspace const& memory_dataspace,
+                                        std::vector<hsize_t> const& start,
+                                        std::vector<hsize_t> const& count,
+                                        std::vector<hsize_t> const& stride,
+                                        void const* buffer) const;
+
 private:
 
     Identifier     _id;

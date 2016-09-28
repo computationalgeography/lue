@@ -12,7 +12,7 @@ namespace variable_shape {
     @ingroup    lue_cxx_api_group
 */
 class Property:
-    time::Property
+    public time::Property
 {
 
 public:

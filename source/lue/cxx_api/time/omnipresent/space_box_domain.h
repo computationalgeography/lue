@@ -33,7 +33,7 @@ public:
 
     SpaceBox&       boxes              ();
 
-    SpaceBox::Item& reserve_items      (hsize_t const nr_items);
+    SpaceBox&       reserve_items      (hsize_t const nr_items);
 
 private:
 
