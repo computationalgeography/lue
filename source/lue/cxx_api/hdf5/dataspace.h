@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/cxx_api/hdf5/identifier.h"
+#include "lue/cxx_api/define.h"
 #include <vector>
 
 
@@ -38,6 +39,15 @@ private:
     Identifier     _id;
 
 };
+
+
+Dataspace          create_dataspace    (std::vector<extent_t> const&
+                                            dimension_sizes);
+
+Dataspace          create_dataspace    (std::vector<extent_t> const&
+                                            dimension_sizes,
+                                        std::vector<extent_t> const&
+                                            max_dimension_sizes);
 
 } // namespace hdf5
 } // namespace lue

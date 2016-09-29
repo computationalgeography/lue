@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/cxx_api/collection.h"
+#include "lue/cxx_api/domain_configuration.h"
 #include "lue/cxx_api/property_set.h"
 
 

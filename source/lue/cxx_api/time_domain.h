@@ -14,6 +14,8 @@ class TimeDomain:
 
 public:
 
+                   TimeDomain          (hdf5::Identifier const& location);
+
                    TimeDomain          (hdf5::Identifier&& location);
 
                    TimeDomain          (TimeDomain const& other)=delete;
@@ -37,6 +39,8 @@ private:
 };
 
 
-TimeDomain         open_time_domain    (hdf5::Identifier const& location);
+TimeDomain         create_time_domain  (hdf5::Identifier const& location,
+                                        TimeDomainConfiguration const&
+                                            configuration);
 
 } // namespace lue

@@ -13,6 +13,15 @@ bool               property_set_exists (hdf5::Identifier const& location,
 
 /*!
     @ingroup    lue_cxx_api_group
+
+    Common property set class
+
+    Property sets are aggregates of a domain and a collection of zero
+    or more properties sharing that domain. This class contains the
+    functionality common to all kinds of property sets. Property sets
+    differ from each other depending on the properties of the time
+    domain in the layered domain. More specialized property set APIs
+    can be found in the lue::time namespace.
 */
 class PropertySet:
     public hdf5::Group
@@ -43,8 +52,10 @@ public:
 
 private:
 
+    //! The domain shared by the properties in the collection
     std::unique_ptr<Domain> _domain;
 
+    //! The collection of properties sharing a domain
     std::unique_ptr<Properties> _properties;
 
 };

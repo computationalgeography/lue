@@ -5,16 +5,24 @@
 
 namespace lue {
 
+bool               array_exists        (hdf5::Identifier const& location,
+                                        std::string const& name);
+
+
 /*!
     @ingroup    lue_cxx_api_group
 */
-class Array
+class Array:
+    public hdf5::Dataset
 {
 
 public:
 
-                   Array               (hdf5::Identifier&& location,
-                                        hid_t type_id);
+                   // Array               (hdf5::Identifier&& location,
+                   //                      hid_t const type_id);
+
+                   Array               (hdf5::Dataset&& dataset,
+                                        hid_t const type_id);
 
                    Array               (Array const& other)=delete;
 
@@ -26,31 +34,48 @@ public:
 
     Array&         operator=           (Array&& other)=default;
 
-    hid_t          type_id             () const;
-
-    hdf5::Identifier const&
-                   dataset_id          () const;
-
     Shape          shape               () const;
 
-    void           read                (hsize_t const start,
-                                        hsize_t const count,
-                                        hsize_t const stride,
+    void           read                (std::vector<extent_t> const& start,
+                                        std::vector<extent_t> const& count,
+                                        std::vector<extent_t> const& stride,
                                         void* buffer) const;
 
-    void           write               (hsize_t const start,
-                                        hsize_t const count,
-                                        hsize_t const stride,
+    void           write               (extent_t const count,
+                                        void const* buffer);
+
+    void           write               (std::vector<extent_t> const count,
+                                        void const* buffer);
+
+    void           write               (std::vector<extent_t> const& start,
+                                        std::vector<extent_t> const& count,
+                                        std::vector<extent_t> const& stride,
+                                        void const* buffer);
+
+    void           write               (hdf5::Dataspace const& memory_dataspace,
+                                        std::vector<extent_t> const& start,
+                                        std::vector<extent_t> const& count,
+                                        std::vector<extent_t> const& stride,
                                         void const* buffer);
 
 private:
-
-    //! HDF5 dataset.
-    hdf5::Dataset  _dataset;
 
     //! In-memory type-id.
     hid_t          _type_id;
 
 };
+
+
+// Array              create_array        (hdf5::Identifier const& location,
+//                                         std::string const& name,
+//                                         hid_t const datatype,
+//                                         hid_t const dataspace);
+
+Array              open_array          (hdf5::Identifier const& location,
+                                        std::string const& name);
+
+Array              open_array          (hdf5::Identifier const& location,
+                                        std::string const& name,
+                                        hid_t const type_id);
 
 } // namespace lue

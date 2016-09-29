@@ -36,8 +36,7 @@ PropertySets::PropertySets(
 PropertySet& PropertySets::add(
     std::string const& name)
 {
-    return Collection::add(name, create_property_set(id(), name,
-        DomainConfiguration()));
+    return add(name, DomainConfiguration());
 }
 
 

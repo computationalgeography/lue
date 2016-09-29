@@ -350,9 +350,16 @@ herr_t hdf5_read_##type_name##_attribute(                                     \
 }
 
 
+define_attribute_functions(int8, int8_t, H5T_STD_I8LE)
+define_attribute_functions(int16, int16_t, H5T_STD_I16LE)
 define_attribute_functions(int32, int32_t, H5T_STD_I32LE)
+define_attribute_functions(int64, int64_t, H5T_STD_I64LE)
+define_attribute_functions(uint8, uint8_t, H5T_STD_U8LE)
+define_attribute_functions(uint16, uint16_t, H5T_STD_U16LE)
 define_attribute_functions(uint32, uint32_t, H5T_STD_U32LE)
 define_attribute_functions(uint64, uint64_t, H5T_STD_U64LE)
+define_attribute_functions(float, float, H5T_IEEE_F32LE)
+define_attribute_functions(double, double, H5T_IEEE_F64LE)
 define_attribute_functions(hsize, hsize_t, H5T_STD_U64LE)
 
 #undef define_attribute_functions

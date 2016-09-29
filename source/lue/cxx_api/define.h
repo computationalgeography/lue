@@ -1,8 +1,24 @@
 #pragma once
 #include "lue/cxx_api/bitmask_operators.hpp"
+#include "lue/c_api/define.h"
+#include <hdf5.h>
 
 
 namespace lue {
+
+using item_t = lue_item_t;
+
+using rank_t = uint16_t;
+
+//! Size of collections.
+using count_t = uint64_t;
+
+//! Size of collections.
+using index_t = count_t;
+
+//! Size of dimension.
+using extent_t = hsize_t;
+
 
 // enum class TypeId
 // {
@@ -22,7 +38,7 @@ enum class TimeDomainTypeAspects: int
     located = 4,
 
     shared = 8,
-    non_shared = 16,
+    unique = 16,
 
     constant_size = 32,
     variable_size = 64
@@ -77,6 +93,16 @@ enum class TimeDomainType: int
     shared_variable_collection = static_cast<int>(
         TimeDomainTypeAspects::located |
         TimeDomainTypeAspects::shared |
+        TimeDomainTypeAspects::variable_size),
+
+    unique_constant_collection = static_cast<int>(
+        TimeDomainTypeAspects::located |
+        TimeDomainTypeAspects::unique |
+        TimeDomainTypeAspects::constant_size),
+
+    unique_variable_collection = static_cast<int>(
+        TimeDomainTypeAspects::located |
+        TimeDomainTypeAspects::unique |
         TimeDomainTypeAspects::variable_size)
 
 };
@@ -84,6 +110,8 @@ enum class TimeDomainType: int
 
 enum class TimeDomainItemType
 {
+
+    none,
 
     point,
 

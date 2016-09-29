@@ -1,36 +1,47 @@
 #include "lue/cxx_api/array.h"
+#include "lue/cxx_api/hdf5/datatype.h"
 #include <algorithm>
-// #include <iostream>
+#include <cassert>
+#include <iostream>
 
 
 namespace lue {
 
-Array::Array(
-    hdf5::Identifier&& location,
-    hid_t type_id)
+bool array_exists(
+    hdf5::Identifier const& location,
+    std::string const& name)
+{
+    return hdf5::dataset_exists(location, name);
+}
 
-    : _dataset{std::forward<hdf5::Identifier>(location)},
+
+// Array::Array(
+//     hdf5::Identifier&& location,
+//     hid_t const type_id)
+// 
+//     : Dataset(std::forward<hdf5::Identifier>(location)),
+//       _type_id{type_id}
+// 
+// {
+//     std::cout << datatype_as_string(_type_id) << " " << datatype_as_string(this->type_id()) << std::endl;
+// }
+
+
+Array::Array(
+    hdf5::Dataset&& dataset,
+    hid_t const type_id)
+
+    : Dataset(std::forward<hdf5::Dataset>(dataset)),
       _type_id{type_id}
 
 {
-}
-
-
-hid_t Array::type_id() const
-{
-    return _type_id;
-}
-
-
-hdf5::Identifier const& Array::dataset_id() const
-{
-    return _dataset.id();
+    assert(is_native_datatype(_type_id));
 }
 
 
 Shape Array::shape() const
 {
-    auto const dimension_extents = _dataset.dataspace().dimension_extents();
+    auto const dimension_extents = dataspace().dimension_extents();
 
     Shape shape(dimension_extents.size());
 
@@ -42,22 +53,83 @@ Shape Array::shape() const
 
 
 void Array::read(
-    hsize_t const start,
-    hsize_t const count,
-    hsize_t const stride,
+    std::vector<extent_t> const& start,
+    std::vector<extent_t> const& count,
+    std::vector<extent_t> const& stride,
     void* buffer) const
 {
-    _dataset.read(_type_id, start, count, stride, buffer);
+    Dataset::read(_type_id, start, count, stride, buffer);
 }
 
 
 void Array::write(
-    hsize_t const start,
-    hsize_t const count,
-    hsize_t const stride,
+    extent_t const count,
     void const* buffer)
 {
-    _dataset.write(_type_id, start, count, stride, buffer);
+    write({0}, {count}, {1}, buffer);
+}
+
+
+void Array::write(
+    std::vector<extent_t> const count,
+    void const* buffer)
+{
+    std::vector<extent_t> start(count.size(), 0);
+    std::vector<extent_t> stride(count.size(), 1);
+
+    write(start, count, stride, buffer);
+}
+
+
+void Array::write(
+    std::vector<extent_t> const& start,
+    std::vector<extent_t> const& count,
+    std::vector<extent_t> const& stride,
+    void const* buffer)
+{
+    Dataset::write(_type_id, start, count, stride, buffer);
+}
+
+
+void Array::write(
+    hdf5::Dataspace const& memory_dataspace,
+    std::vector<extent_t> const& start,
+    std::vector<extent_t> const& count,
+    std::vector<extent_t> const& stride,
+    void const* buffer)
+{
+    Dataset::write(_type_id, memory_dataspace, start, count, stride, buffer);
+}
+
+
+// Array create_array(
+//     hdf5::Identifier const& location,
+//     std::string const& name,
+//     hid_t const datatype,
+//     hid_t const dataspace)
+// {
+//     return Array(std::move(create_dataset(location, name, datatype,
+//         dataspace)));
+// }
+
+
+Array open_array(
+    hdf5::Identifier const& location,
+    std::string const& name)
+{
+    auto dataset = open_dataset(location, name);
+    auto type_id = native_type_id(dataset.type_id());
+
+    return Array(std::move(dataset), type_id);
+}
+
+
+Array open_array(
+    hdf5::Identifier const& location,
+    std::string const& name,
+    hid_t const type_id)
+{
+    return Array(std::move(open_dataset(location, name)), type_id);
 }
 
 } // namespace lue

@@ -122,5 +122,14 @@ std::string Identifier::pathname() const
     return result;
 }
 
+
+std::string Identifier::name() const
+{
+    auto const pathname = this->pathname();
+    auto const idx = pathname.find_last_of('/');
+
+    return idx == std::string::npos ? pathname : pathname.substr(idx + 1);
+}
+
 } // namespace hdf5
 } // namespace lue

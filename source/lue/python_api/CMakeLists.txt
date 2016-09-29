@@ -13,10 +13,12 @@ set(EXTENSION_SOURCES
     file
     group
     identifier
+    item
     phenomenon
     property
     property_set
     universe
+    util
     python_extension
 )
 add_library(_lue SHARED

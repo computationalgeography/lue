@@ -189,11 +189,11 @@ Attributes::Attributes(
 template<>
 void Attributes::write<std::string>(
     std::string const& name,
-    std::string const& value) const
+    std::string const& value)
 {
     assert(_location.get().is_valid());
 
-    herr_t status = ::hdf5_write_string_attribute(_location.get(),
+    auto status = ::hdf5_write_string_attribute(_location.get(),
         name.c_str(), value.c_str());
 
     if(status < 0) {
@@ -210,7 +210,7 @@ std::string Attributes::read<std::string>(
 
     char* value;
 
-    herr_t status = ::hdf5_read_string_attribute(_location.get(),
+    auto status = ::hdf5_read_string_attribute(_location.get(),
         name.c_str(), &value);
 
     if(status < 0) {
@@ -223,6 +223,86 @@ std::string Attributes::read<std::string>(
 
     return result;
 }
+
+
+bool Attributes::exists(
+    std::string const& name) const
+{
+    return hdf5_attribute_exists(_location.get(), name.c_str()) > 0;
+}
+
+
+#define ATTRIBUTE_METHODS(                                            \
+        type,                                                         \
+        type_name)                                                    \
+template<>                                                            \
+void Attributes::create<type>(                                        \
+    std::string const& name)                                          \
+{                                                                     \
+    assert(_location.get().is_valid());                               \
+                                                                      \
+    auto status = ::hdf5_create_##type_name##_attribute(              \
+        _location.get(), name.c_str());                               \
+                                                                      \
+    if(status < 0) {                                                  \
+        throw std::runtime_error("Cannot create attribute " + name);  \
+    }                                                                 \
+}                                                                     \
+                                                                      \
+                                                                      \
+template<>                                                            \
+void Attributes::write<type>(                                         \
+    std::string const& name,                                          \
+    type const& value)                                                \
+{                                                                     \
+    assert(_location.get().is_valid());                               \
+                                                                      \
+    if(!exists(name)) {                                               \
+        create<type>(name);                                           \
+    }                                                                 \
+                                                                      \
+    auto status = ::hdf5_write_##type_name##_attribute(               \
+        _location.get(), name.c_str(), value);                        \
+                                                                      \
+    if(status < 0) {                                                  \
+        throw std::runtime_error("Cannot write attribute " + name);   \
+    }                                                                 \
+}                                                                     \
+                                                                      \
+                                                                      \
+template<>                                                            \
+type Attributes::read<type>(                                          \
+    std::string const& name) const                                    \
+{                                                                     \
+    assert(_location.get().is_valid());                               \
+    assert(exists(name));                                             \
+                                                                      \
+    type value;                                                       \
+                                                                      \
+    auto status = ::hdf5_read_##type_name##_attribute(                \
+        _location.get(), name.c_str(), &value);                       \
+                                                                      \
+    if(status < 0) {                                                  \
+        throw std::runtime_error("Cannot read attribute " + name);    \
+    }                                                                 \
+                                                                      \
+    return value;                                                     \
+}
+
+
+ATTRIBUTE_METHODS(uint64_t, uint64)
+ATTRIBUTE_METHODS(uint32_t, uint32)
+ATTRIBUTE_METHODS(uint16_t, uint16)
+ATTRIBUTE_METHODS(uint8_t, uint8)
+ATTRIBUTE_METHODS(int64_t, int64)
+ATTRIBUTE_METHODS(int32_t, int32)
+ATTRIBUTE_METHODS(int16_t, int16)
+ATTRIBUTE_METHODS(int8_t, int8)
+ATTRIBUTE_METHODS(float, float)
+ATTRIBUTE_METHODS(double, double)
+
+
+#undef ATTRIBUTE_METHODS
 
 } // namespace hdf5
 } // namespace lue

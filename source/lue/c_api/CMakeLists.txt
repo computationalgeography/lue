@@ -15,6 +15,7 @@ set(SOURCES
     time_domain
     universe
     universes
+    value
 )
 add_library(lue_c_api_objects OBJECT
     ${SOURCES}

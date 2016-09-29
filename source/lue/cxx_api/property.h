@@ -1,5 +1,7 @@
 #pragma once
 #include "lue/cxx_api/hdf5/group.h"
+#include "lue/cxx_api/value.h"
+#include <memory>
 
 
 namespace lue {
@@ -32,7 +34,14 @@ public:
 
     Property&      operator=           (Property&& other)=default;
 
+    Value&         value               () const;
+
+    void           link_space_discretization(
+                                        Property const& discretization);
+
 private:
+
+    std::unique_ptr<Value> _value;
 
 };
 

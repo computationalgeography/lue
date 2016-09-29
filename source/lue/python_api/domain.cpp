@@ -1,4 +1,6 @@
 #include "lue/cxx_api/domain.h"
+#include "lue/cxx_api/time/omnipresent/domain.h"
+#include "lue/cxx_api/time/omnipresent/space_box_domain.h"
 #include <pybind11/pybind11.h>
 
 
@@ -21,6 +23,14 @@ void init_domain(
             TimeDomainType::shared_variable_collection)
     ;
 
+    py::enum_<TimeDomainItemType>(module, "time_domain_item",
+        "time_domain item docstring...")
+        .value("none", TimeDomainItemType::none)
+        .value("point", TimeDomainItemType::point)
+        .value("period", TimeDomainItemType::period)
+        .value("cell", TimeDomainItemType::cell)
+    ;
+
     py::enum_<SpaceDomainType>(module, "space_domain",
         "space_domain docstring...")
         .value("omnipresent", SpaceDomainType::omnipresent)
@@ -41,11 +51,15 @@ void init_domain(
         "TimeDomainConfiguration docstring...")
         .def(py::init<>(),
             "__init__ docstring...")
-        .def(py::init<TimeDomainType const&>(),
+        .def(py::init<TimeDomainType const&, TimeDomainItemType const&>(),
             "__init__ docstring...",
-            "type"_a)
+            "type"_a,
+            "item_type"_a)
         .def_property_readonly("type", &TimeDomainConfiguration::type,
             "type docstring...")
+        .def_property_readonly("item_type",
+            &TimeDomainConfiguration::item_type,
+            "item type docstring...")
     ;
 
     py::class_<SpaceDomainConfiguration>(module, "SpaceDomainConfiguration",
@@ -100,9 +114,11 @@ void init_domain(
 
     py::class_<SpaceDomain>(module, "SpaceDomain", py::base<hdf5::Group>(),
         "SpaceDomain docstring...")
+
         .def_property_readonly("configuration", &SpaceDomain::configuration,
             "configuration docstring...",
             py::return_value_policy::reference_internal)
+
     ;
 
     py::class_<Domain>(module, "Domain", py::base<hdf5::Group>(),
@@ -118,6 +134,79 @@ void init_domain(
             py::return_value_policy::reference_internal)
     ;
 
+    py::class_<time::Domain>(module, "_Domain",
+        "_Domain docstring...")
+
+        .def_property_readonly("configuration",
+                &time::Domain::configuration,
+            "configuration docstring...",
+            py::return_value_policy::reference_internal)
+
+        .def_property_readonly("time_domain",
+                &time::Domain::time_domain,
+            "time docstring...",
+            py::return_value_policy::reference_internal)
+
+        .def_property_readonly("space_domain",
+                &time::Domain::space_domain,
+            "space docstring...",
+            py::return_value_policy::reference_internal)
+    ;
+
+    py::class_<time::omnipresent::Domain>(module, "O_Domain",
+        py::base<time::Domain>(),
+        "O_Domain docstring...")
+
+        .def(py::init<Domain&>(),
+            "__init__ docstring..."
+            "group"_a,
+            py::keep_alive<1, 2>())
+
+        // .def_property_readonly("configuration",
+        //         &time::omnipresent::Domain::configuration,
+        //     "configuration docstring...",
+        //     py::return_value_policy::reference_internal)
+
+    ;
+
+    py::class_<time::SpaceDomain>(module, "_SpaceDomain",
+        "_SpaceDomain docstring...")
+    ;
+
+    py::class_<time::omnipresent::SpaceDomain>(module, "O_SpaceDomain",
+        py::base<time::SpaceDomain>(),
+        "O_SpaceDomain docstring...")
+
+        .def(py::init<SpaceDomain&>(),
+            "__init__ docstring..."
+            "group"_a,
+            py::keep_alive<1, 2>())
+    ;
+
+    py::class_<time::omnipresent::SpaceBox>(module, "O_SpaceBox",
+        py::base<time::omnipresent::constant_shape::Item>(),
+        "O_SpaceBox...")
+
+        .def("reserve_items",
+                &time::omnipresent::SpaceBox::reserve_items,
+            "reserve_items docstring...",
+            py::return_value_policy::reference_internal)
+    ;
+
+    py::class_<time::omnipresent::SpaceBoxDomain>(module, "O_SpaceBoxDomain",
+        py::base<time::omnipresent::SpaceDomain>(),
+        "O_SpaceBoxDomain docstring...")
+
+        .def(py::init<SpaceDomain&>(),
+            "__init__ docstring..."
+            "group"_a,
+            py::keep_alive<1, 2>())
+
+        .def_property_readonly("boxes",
+                &time::omnipresent::SpaceBoxDomain::boxes,
+            "boxes docstring...",
+            py::return_value_policy::reference_internal)
+    ;
 }
 
 }  // namespace python

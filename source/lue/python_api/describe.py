@@ -72,8 +72,8 @@ def _describe_properties(
 
     _describe_identifier(stream, properties.id, indent)
 
-    for name in properties.names():
-        property = properties.item(name)
+    for name in properties.names:
+        property = properties[name]
         _write(stream, u"property: {}".format(name), indent)
         _describe_property(stream, property, indent + 1)
 
@@ -112,8 +112,8 @@ def _describe_property_sets(
 
     _describe_identifier(stream, property_sets.id, indent)
 
-    for name in property_sets.names():
-        property_set = property_sets.item(name)
+    for name in property_sets.names:
+        property_set = property_sets[name]
         _write(stream, u"property_set: {}".format(name), indent)
         _describe_property_set(stream, property_set, indent + 1)
 
@@ -136,8 +136,8 @@ def _describe_phenomena(
 
     _describe_identifier(stream, phenomena.id, indent)
 
-    for name in phenomena.names():
-        phenomenon = phenomena.item(name)
+    for name in phenomena.names:
+        phenomenon = phenomena[name]
         _write(stream, u"phenomenon: {}".format(name), indent)
         _describe_phenomenon(stream, phenomenon, indent + 1)
 
@@ -160,8 +160,8 @@ def _describe_universes(
 
     _describe_identifier(stream, universes.id, indent)
 
-    for name in universes.names():
-        universe = universes.item(name)
+    for name in universes.names:
+        universe = universes[name]
         _write(stream, u"universe: {}".format(name), indent)
         _describe_universe(stream, universe, indent + 1)
 

@@ -29,12 +29,34 @@ digraph logical_data_model {
 
 
     // -------------------------------------------------------------------------
+    dataset [
+        label="{" +
+            "dataset|" +
+            "name" +
+        "}"
+        URL="md_dataset.html"
+    ];
+
+    universes [
+        label="{" +
+            "universes" +
+        "}"
+        URL="md_universes.html"
+    ];
+
     universe [
         label="{" +
             "universe|" +
             "name" +
         "}"
         URL="md_universe.html"
+    ];
+
+    phenomena [
+        label="{" +
+            "phenomena" +
+        "}"
+        URL="md_phenomena.html"
     ];
 
     phenomenon [
@@ -45,12 +67,26 @@ digraph logical_data_model {
         URL="md_phenomenon.html"
     ];
 
+    property_sets [
+        label="{" +
+            "property_sets" +
+        "}"
+        URL="md_property_sets.html"
+    ];
+
     property_set [
         label="{" +
             "property set|" +
             "name" +
         "}"
         URL="md_property_set.html"
+    ];
+
+    properties [
+        label="{" +
+            "properties" +
+        "}"
+        URL="md_properties.html"
     ];
 
     property [
@@ -98,13 +134,49 @@ digraph logical_data_model {
 
 
     // -------------------------------------------------------------------------
-    universe -> phenomenon [
+    dataset -> universes [
+        arrowtail=diamond
+        taillabel="1"
+        headlabel="1"
+    ];
+
+    dataset -> phenomena [
+        arrowtail=diamond
+        taillabel="1"
+        headlabel="1"
+    ];
+
+    universes -> universe [
         arrowtail=diamond
         taillabel="1"
         headlabel="*"
     ];
 
-    phenomenon -> property_set [
+    universe -> phenomena [
+        arrowtail=diamond
+        taillabel="1"
+        headlabel="1"
+    ];
+
+    // universe -> phenomenon [
+    //     arrowtail=diamond
+    //     taillabel="1"
+    //     headlabel="*"
+    // ];
+
+    phenomena -> phenomenon [
+        arrowtail=diamond
+        taillabel="1"
+        headlabel="*"
+    ];
+
+    phenomenon -> property_sets [
+        arrowtail=diamond
+        taillabel="1"
+        headlabel="1"
+    ];
+
+    property_sets -> property_set [
         arrowtail=diamond
         taillabel="1"
         headlabel="*"
@@ -114,6 +186,12 @@ digraph logical_data_model {
         arrowtail=diamond
         taillabel="1"
         headlabel="1"
+    ];
+
+    property_set -> properties [
+        arrowtail=diamond
+        taillabel="1"
+        headlabel="*"
     ];
 
 
@@ -145,10 +223,16 @@ digraph logical_data_model {
         headlabel="?"
     ];
 
-    property_set -> property [
+    // property_set -> property [
+    //     arrowtail=diamond
+    //     taillabel="1"
+    //     headlabel="*"
+    // ];
+
+    properties -> property [
         arrowtail=diamond
         taillabel="1"
-        headlabel="*"
+        headlabel="1"
     ];
 
     property -> domain [

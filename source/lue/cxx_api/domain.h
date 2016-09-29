@@ -19,6 +19,8 @@ class Domain:
 
 public:
 
+                   Domain              (hdf5::Identifier const& location);
+
                    Domain              (hdf5::Identifier&& location);
 
                    Domain              (Domain const& other)=delete;
@@ -49,6 +51,8 @@ private:
 };
 
 
-Domain             open_domain         (hdf5::Identifier const& location);
+Domain             create_domain       (hdf5::Identifier const& location,
+                                        DomainConfiguration const&
+                                            configuration);
 
 } // namespace lue

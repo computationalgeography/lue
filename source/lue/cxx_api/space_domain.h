@@ -14,6 +14,8 @@ class SpaceDomain:
 
 public:
 
+                   SpaceDomain         (hdf5::Identifier const& location);
+
                    SpaceDomain         (hdf5::Identifier&& location);
 
                    SpaceDomain         (SpaceDomain const& other)=delete;
@@ -37,6 +39,8 @@ private:
 };
 
 
-SpaceDomain         open_space_domain    (hdf5::Identifier const& location);
+SpaceDomain         create_space_domain(hdf5::Identifier const& location,
+                                        SpaceDomainConfiguration const&
+                                            configuration);
 
 } // namespace lue

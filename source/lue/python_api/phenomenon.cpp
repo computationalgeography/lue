@@ -45,12 +45,14 @@ void init_phenomenon(
 
     py::class_<Phenomenon>(module, "Phenomenon", py::base<hdf5::Group>(),
         "Phenomenon docstring...")
+
         .def("__repr__",
             [](Phenomenon const& phenomenon) {
                 return "Phenomenon(pathname='" +
                     phenomenon.id().pathname() + "')";
             }
         )
+
         .def("add_property_set",
                 (PropertySet& (Phenomenon::*)
                     (std::string const&))
@@ -58,6 +60,18 @@ void init_phenomenon(
             "add_property_set docstring...",
             "name"_a,
             py::return_value_policy::reference_internal)
+
+        .def("add_property_set",
+            [](Phenomenon& phenomenon, std::string const& name,
+                SpaceDomainConfiguration const& space_domain_configuration)
+                        -> PropertySet& {
+                    return phenomenon.add_property_set(name,
+                        space_domain_configuration);
+            },
+            "add_property_set docstring...",
+            "name"_a, "space_domain_configuration"_a,
+            py::return_value_policy::reference_internal)
+
         .def("add_property_set",
                 (PropertySet& (Phenomenon::*)
                     (std::string const&, DomainConfiguration const&))
@@ -65,6 +79,7 @@ void init_phenomenon(
             "add_property_set docstring...",
             "name"_a, "domain_configuration"_a,
             py::return_value_policy::reference_internal)
+
         .def_property_readonly("property_sets", &Phenomenon::property_sets,
             "property_sets docstring...",
             py::return_value_policy::reference_internal)

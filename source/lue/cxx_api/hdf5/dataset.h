@@ -6,6 +6,10 @@
 namespace lue {
 namespace hdf5 {
 
+bool               dataset_exists      (hdf5::Identifier const& location,
+                                        std::string const& name);
+
+
 /*!
     @ingroup    lue_cxx_api_hdf5_group
 */
@@ -20,7 +24,7 @@ public:
 
                    Dataset             (Dataset&& other)=default;
 
-                   ~Dataset            ()=default;
+    virtual        ~Dataset            ()=default;
 
     Dataset&       operator=           (Dataset const& other)=delete;
 
@@ -28,18 +32,30 @@ public:
 
     Identifier const& id               () const;
 
+    Identifier     type_id             () const;
+
     Dataspace      dataspace           () const;
 
+    void           resize              (std::vector<hsize_t> const&
+                                            new_dimension_sizes);
+
     void           read                (hid_t const type_id,
-                                        hsize_t const start,
-                                        hsize_t const count,
-                                        hsize_t const stride,
+                                        std::vector<hsize_t> const& start,
+                                        std::vector<hsize_t> const& count,
+                                        std::vector<hsize_t> const& stride,
                                         void* buffer) const;
 
     void           write               (hid_t const type_id,
-                                        hsize_t const start,
-                                        hsize_t const count,
-                                        hsize_t const stride,
+                                        std::vector<hsize_t> const& start,
+                                        std::vector<hsize_t> const& count,
+                                        std::vector<hsize_t> const& stride,
+                                        void const* buffer) const;
+
+    void           write               (hid_t const type_id,
+                                        Dataspace const& memory_dataspace,
+                                        std::vector<hsize_t> const& start,
+                                        std::vector<hsize_t> const& count,
+                                        std::vector<hsize_t> const& stride,
                                         void const* buffer) const;
 
 private:
@@ -47,6 +63,16 @@ private:
     Identifier     _id;
 
 };
+
+
+Dataset            open_dataset        (hdf5::Identifier const& location,
+                                        std::string const& name);
+
+Dataset            create_dataset      (hdf5::Identifier const& location,
+                                        std::string const& name,
+                                        hid_t const datatype,
+                                        Dataspace const& dataspace,
+                                        hid_t const creation_property_list);
 
 } // namespace hdf5
 } // namespace lue
