@@ -1,5 +1,4 @@
 #include "lue/cxx_api/time/omnipresent/variable_shape/property.h"
-// #include "lue/cxx_api/value.h"
 #include <cassert>
 
 
@@ -10,13 +9,9 @@ namespace variable_shape {
 
 Property::Property(
     lue::Property& group)
-    // hid_t const type_id)
 
     : time::Property(group),
-      _values(id(), "values")  // , type_id)
-      // _value(std::make_unique<Value>(open_value(id()))),
-      // _items(std::make_unique<Array>(open_dataset(_value->id(), "item"),
-      //     type_id))
+      _values(group.value().id(), "value")
 
 {
 }
@@ -41,70 +36,12 @@ Item& Property::values()
 void configure_property(
     lue::Property const& property,
     hid_t const file_type_id,
-    // hid_t const memory_type_id,
     size_t const rank)
 {
     assert(property.id().is_valid());
 
-    variable_shape::create_item(property.id(), "values", file_type_id,
-        /* memory_type_id, */ rank);
-
-//     auto const& value = property.value();
-// 
-//     size_t const nr_dimensions = shape.size() + 1;
-// 
-//     std::vector<hsize_t> dimension_sizes(nr_dimensions);
-//     dimension_sizes[0] = 0;
-//     for(size_t i = 0; i < shape.size(); ++i) {
-//         dimension_sizes[i + 1] = shape[i];
-//     }
-// 
-//     std::vector<hsize_t> max_dimension_sizes(nr_dimensions);
-//     max_dimension_sizes[0] = H5S_UNLIMITED;
-//     for(size_t i = 0; i < shape.size(); ++i) {
-//         max_dimension_sizes[i + 1] = shape[i];
-//     }
-// 
-//     std::vector<hsize_t> chunk_dimension_sizes(nr_dimensions);
-//     chunk_dimension_sizes[0] = 1000;
-//     for(size_t i = 0; i < chunks.size(); ++i) {
-//         chunk_dimension_sizes[i + 1] = chunks[i];
-//     }
-// 
-// 
-//     auto dataspace = hdf5::create_dataspace(dimension_sizes,
-//         max_dimension_sizes);
-// 
-//     hdf5::Identifier creation_property_list_location(::H5Pcreate(
-//         H5P_DATASET_CREATE), ::H5Pclose);
-// 
-//     if(!creation_property_list_location.is_valid()) {
-//         throw std::runtime_error("Creation property list cannot be created");
-//     }
-// 
-//     // std::vector<hsize_t> chunk_dimension_sizes{1000};
-//     herr_t status = ::H5Pset_chunk(creation_property_list_location,
-//         chunk_dimension_sizes.size(), chunk_dimension_sizes.data());
-//     assert(status >= 0);
-// 
-//     auto dataset = hdf5::create_dataset(value.id(), "item", type_id,
-//         dataspace, creation_property_list_location);
-// 
-// 
-//     // Array array = create_dataset(value.id(), "item"), LUE_NATIVE_ITEM)},
-// 
-//     // , type_id, shape.size(), shape.data(), chunks.data());
-// 
-//     // // Add our special stuff.
-//     // hdf5::Identifier value_location(::create_value(property.id(),
-//     //     type_id, shape.size(), shape.data(), chunks.data()), ::close_value);
-// 
-//     // if(!value_location.is_valid()) {
-//     //     throw std::runtime_error("Value for property " + name +
-//     //         " cannot be created");
-//     // }
-
-
+    variable_shape::create_item(property.value().id(), "value",
+        file_type_id, rank);
 }
 
 }  // namespace variable_shape

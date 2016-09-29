@@ -455,7 +455,8 @@ void translate_gdal_raster_to_lue(
     Chunks const chunks{ 2 };
 
     auto& discretization = o_property_set.add_property(
-        "discretization", file_type_id, memory_type_id, shape, chunks);
+        "space discretization", file_type_id, memory_type_id, shape,
+        chunks);
 
     {
         // Per item a 1D array of <rank> values representing the size of
@@ -496,7 +497,7 @@ void translate_gdal_raster_to_lue(
 
             auto& property = o_property_set.add_property(property_name(b),
                 file_type_id, rank);
-            property.link_space_discretization(discretization.group());
+            property.link_space_discretization(discretization);
             auto& item = property.reserve_items(nr_items, shapes);
 
 

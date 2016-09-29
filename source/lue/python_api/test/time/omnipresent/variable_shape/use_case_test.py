@@ -42,8 +42,8 @@ class UseCaseTest(lue_test.TestCase):
         self.assertEqual(space_domain.boxes.shape[1], 2 * rank)
 
 
-        # Add items. This is independent of whether or there are properties
-        # added to the set.
+        # Add items. This is independent of whether or not there are
+        # properties added to the set.
         nr_items = 500
         items = property_set.reserve_items(nr_items)
         space_domain.boxes.reserve_items(nr_items)
@@ -66,30 +66,54 @@ class UseCaseTest(lue_test.TestCase):
 
 
         # Now, add a property, whose values all have different shapes.
+        # To similate storing a number of spatial rasters, we first add
+        # a discretization property and link it from the value property.
+        value_shape = (2,)
+        chunk_shape = (2,)
+        value_type = numpy.uint32
+        discretization_property = property_set.add_property(
+            "space discretization", value_type, value_shape, chunk_shape)
+        self.assertEqual(discretization_property.name, "space discretization")
+        self.assertEqual(discretization_property.values.dtype, value_type)
+        self.assertEqual(len(discretization_property.values.shape), 2)
+        self.assertEqual(discretization_property.values.shape[0], 0)
+        self.assertEqual(discretization_property.values.shape[1], 2)
+
+        nr_cells = discretization_property.reserve_items(nr_items)
+        self.assertEqual(discretization_property.values.shape[0], nr_items)
+
+        nr_cells_ = numpy.arange(nr_items * 2, dtype=value_type).reshape(
+            (nr_items, 2))
+        nr_cells[:] = nr_cells_
+        self.assertArraysEqual(nr_cells[:], nr_cells_)
+
+
         value_type = numpy.int32
+        value_property = property_set.add_property("property", value_type,
+            rank)
 
-        property = property_set.add_property("property", value_type, rank)
+        self.assertEqual(value_property.name, "property")
+        self.assertEqual(value_property.values.dtype, numpy.int32)
+        self.assertEqual(value_property.values.rank, 2)
+        self.assertEqual(len(value_property.values), 0)
 
-        self.assertEqual(property.name, "property")
-        self.assertEqual(property.values.dtype, numpy.int32)
-        self.assertEqual(property.values.rank, 2)
-        self.assertEqual(len(property.values), 0)
+        value_property.link_space_discretization(discretization_property)
 
         value_shapes = (10 * (numpy.random.rand(nr_items, rank) + 1)).astype(
             numpy.uint64)
 
-        values = property.reserve_items(value_shapes)
+        values = value_property.reserve_items(value_shapes)
 
         self.assertEqual(len(values), nr_items)
 
         for i in xrange(nr_items):
             for r in xrange(rank):
-                self.assertEqual(property.values[i].shape[r],
+                self.assertEqual(value_property.values[i].shape[r],
                     value_shapes[i][r])
 
 
         for i in xrange(nr_items):
-            shape = property.values[i].shape
+            shape = value_property.values[i].shape
             values_ = (10 * numpy.random.rand(*shape)).astype(value_type)
             values[i][:] = values_
             self.assertArraysEqual(values[i][:], values_)

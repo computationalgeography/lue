@@ -12,7 +12,8 @@ Property::Property(
     hid_t const type_id)
 
     : time::Property(group),
-      _values{std::make_unique<constant_shape::Item>(id(), "values", type_id)}
+      _values{std::make_unique<constant_shape::Item>(group.value().id(),
+          "value", type_id)}
 
 {
 }
@@ -40,8 +41,8 @@ void configure_property(
     Shape const& shape,
     Chunks const& chunks)
 {
-    constant_shape::create_item(property.id(), "values", file_type_id,
-        memory_type_id, shape, chunks);
+    constant_shape::create_item(property.value().id(), "value",
+        file_type_id, memory_type_id, shape, chunks);
 }
 
 }  // namespace constant_shape

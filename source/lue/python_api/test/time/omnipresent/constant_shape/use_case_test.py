@@ -58,7 +58,6 @@ class UseCaseTest(lue_test.TestCase):
         self.assertEqual(property.values.shape[2], 5)
 
         values = property.reserve_items(nr_items)
-
         self.assertEqual(values.shape[0], nr_items)
 
         values_ = numpy.arange(nr_items * reduce(lambda x, y: x * y,
