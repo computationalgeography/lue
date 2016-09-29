@@ -26,12 +26,14 @@ void init_phenomenon(
     a constructor is not defined. Phenomenon collections can be obtained
     from Dataset instances.
 )")
+
         .def("__repr__",
             [](Phenomena const& phenomena) {
                 return "Phenomena(size=" + std::to_string(
                     phenomena.size()) + ")";
             }
         )
+
         .def("add", &Phenomena::add,
             R"(Add new phenomenon to collection
 
@@ -57,7 +59,16 @@ void init_phenomenon(
                 (PropertySet& (Phenomenon::*)
                     (std::string const&))
                         &Phenomenon::add_property_set,
-            "add_property_set docstring...",
+            R"(Add new property set to collection
+
+    This property set's domain will be:
+
+    - time: omnipresent
+    - space: omnipresent
+
+    The return type of the property set will reflect the kind of the domain
+    that is configured.
+)",
             "name"_a,
             py::return_value_policy::reference_internal)
 
@@ -68,7 +79,16 @@ void init_phenomenon(
                     return phenomenon.add_property_set(name,
                         space_domain_configuration);
             },
-            "add_property_set docstring...",
+            R"(Add new property set to collection
+
+    This property set's domain will be:
+
+    - time: omnipresent
+    - space: according to configuration passed in
+
+    The return type of the property set will reflect the kind of the domain
+    that is configured.
+)",
             "name"_a, "space_domain_configuration"_a,
             py::return_value_policy::reference_internal)
 
@@ -76,12 +96,22 @@ void init_phenomenon(
                 (PropertySet& (Phenomenon::*)
                     (std::string const&, DomainConfiguration const&))
                         &Phenomenon::add_property_set,
-            "add_property_set docstring...",
+            R"(Add new property set to collection
+
+    This property set's domain will be configured according to the
+    configuration passed in.
+
+    The return type of the property set will reflect the kind of the domain
+    that is configured.
+)",
             "name"_a, "domain_configuration"_a,
             py::return_value_policy::reference_internal)
 
         .def_property_readonly("property_sets", &Phenomenon::property_sets,
-            "property_sets docstring...",
+            R"(Return property sets collection
+
+    :rtype: lue.PropertySets
+)",
             py::return_value_policy::reference_internal)
     ;
 

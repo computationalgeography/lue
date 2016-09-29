@@ -1,3 +1,4 @@
+import sys
 import lue
 
 
@@ -78,7 +79,7 @@ def _describe_properties(
         _describe_property(stream, property, indent + 1)
 
 
-def _describe_o_o_property_set(
+def _describe_o_property_set(
         stream,
         property_set,
         indent=0):
@@ -93,8 +94,8 @@ def _describe_property_set(
 
     _describe_identifier(stream, property_set.id, indent)
 
-    if isinstance(property_set, lue._lue.O_O_PropertySet):
-        _describe_o_o_property_set(stream, property_set, indent)
+    if isinstance(property_set, lue._lue.O_PropertySet):
+        _describe_o_property_set(stream, property_set, indent)
     else:
         assert False, type(property_set)
 
@@ -167,8 +168,8 @@ def _describe_universes(
 
 
 def describe_dataset(
-        stream,
         dataset,
+        stream=sys.stdout,
         indent=0):
     """
     Print descriptive information about `dataset` on `stream`

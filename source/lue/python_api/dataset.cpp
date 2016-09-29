@@ -14,7 +14,7 @@ void init_dataset(
 {
 
     py::class_<Dataset>(module, "Dataset", py::base<hdf5::File>(),
-        R"(LUE Dataset representing the scientific database
+        R"(LUE dataset representing the scientific database
 
     A LUE dataset can contain collections of universes, phenomena, and/or
     property sets.

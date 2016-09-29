@@ -18,6 +18,7 @@ The number of agents for which information is stored is at least 1 (e.g.: a sing
 At the core, LUE manages item properties, where items are the indiviuals (sometimes named objects or agents) that can have zero or more properties, where all of these properties can have very different characteristics (vary through time or not, vary through space or not, etc). Also, the items can be linked to each other to allow the representation of networks, like social or physical networkѕ (e.g. family relations, road networks).
 
 The LUE data model is capable of representing many kinds of data. Some interesting aspects of LUE data are:
+
 - The data can optionally vary through time and/or space
 - The data can be optionally discretized through time and/or space.
 - The position in space of data can optionally vary through time.

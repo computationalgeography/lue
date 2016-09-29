@@ -15,8 +15,10 @@ The ``--pre`` argument is required because only pre-release versions of LUE are 
 
 During the installation a C++ compiler will be used to compiler some source files. The LUE C++ sources depend on the folowing packages to be installed:
 
-- `pybind11`_ C++ library (header-only)
+- `boost`_ C++ libraries (headers)
 - `hdf5`_ C library (library and headers)
+- `numpy`_ Python extension (headers)
+- `pybind11`_ C++ library (header-only)
 
 In case installation fails because pybind11's header files cannot be found, you can pass the location of these files explicitly on the command line::
 
@@ -26,6 +28,8 @@ In case installation fails because pybind11's header files cannot be found, you 
 .. _pip: https://pip.pypa.io/en/stable/
 .. _pybind11: https://github.com/pybind/pybind11
 .. _hdf5: https://www.hdfgroup.org/HDF5/
+.. _boost: http://www.boost.org
+.. _numpy: http://www.numpy.org
 
 
 Testing the installation

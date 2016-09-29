@@ -1,32 +1,24 @@
 """
 LUE Python package
 
-Among other things, LUE is the name of an API for performing I/O to the
-LUE scientific database. LUE can be used for storing information that
-is related to agents (AKA objects, individuals, items), e.g.:
-
-- the location of houses
-- GPS tracks of birds
-- elevation of a mountain range
-
-The number of agents for which information is stored is at least 1 (e.g.:
-a single research area, country, economy, planet) and is at most limited
-by the available computing resources.
+The LUE Python package allows you to perform I/O to the LUE Scientific
+Database, which is an HDF5 binary data format.
 
 LUE information is stored in a dataset (see lue.Dataset). Each dataset
-contains a collection of universes (lue.Universe) and a collection of
-phenomena (lue.Phenomenon). Each universe contains a collection of
-phenomena (lue.Phenomenon). Each phenomenon contains a collection of
-property sets (lue.PropertySet). Each property set is connected to
-a single domain (lue.Domain) and contains a collection of properties
-(lue.Property).
+contains a collection of universes (lue.Universes, lue.Universe)
+and a collection of phenomena (lue.Phenomena, lue.Phenomenon). Each
+universe contains a collection of phenomena (lue.Phenomenon). Each
+phenomenon contains a collection of property sets (lue.PropertySets,
+lue.PropertySet). Each property set is connected to a single domain
+(lue.Domain) and contains a collection of properties (lue.Properties,
+lue.Property).
 
 For more information about the API, see the help pages of the imported
 modules and the various classes, e.g.: help(lue._lue), help(lue.Dataset).
-Note that although the documentation mentions the subpackage name
+Note that, although the documentation mentions the subpackage name
 `lue._lue` in various places, the `lue._lue` module should not be used
-in code. All high-level symbols are imported in the main `lue` module.
-So, use `lue.Dataset` instead of `lue._lue.Dataset`, for example.
+directly in code. All high-level symbols are imported in the main `lue`
+module.  So, use `lue.Dataset` instead of `lue._lue.Dataset`, for example.
 
 For more information about LUE, see the LUE project page:
 https://github.com/pcraster/lue
@@ -269,8 +261,4 @@ def _install_api():
         O_Domain.space_domain))
 
 
-api_installed = False
-
-if not api_installed:
-    _install_api()
-    api_installed = True
+_install_api()
