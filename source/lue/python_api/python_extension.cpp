@@ -37,7 +37,7 @@ The classes are documented in alphabethical order. When creating or opening a LU
     - Array
         - Shape
         - Dataset
-    )");
+)");
 
     // Order matters!
     init_array(module);
