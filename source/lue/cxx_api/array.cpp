@@ -129,7 +129,7 @@ Array open_array(
     std::string const& name,
     hid_t const type_id)
 {
-    return Array(std::move(open_dataset(location, name)), type_id);
+    return Array(open_dataset(location, name), type_id);
 }
 
 } // namespace lue

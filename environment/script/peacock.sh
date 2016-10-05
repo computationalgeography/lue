@@ -44,6 +44,9 @@ function build_peacock()
         skip_build_boost=1
     fi
 
+    if [[ $hostname == "triklav" ]]; then
+        skip_build_gdal=1
+    fi
 
     if [[ $OSTYPE == "cygwin" ]]; then
         options+=("-GUnix Makefiles")
@@ -82,8 +85,10 @@ function build_peacock()
 
 
     # GDAL.
-    options+=("-Dbuild_gdal=true")
-    options+=("-Dgdal_version=2.0.1")
+    if [ ! "$skip_build_gdal" ]; then
+        options+=("-Dbuild_gdal=true")
+        options+=("-Dgdal_version=2.0.1")
+    fi
 
 
     cmake "${options[@]}" $source
