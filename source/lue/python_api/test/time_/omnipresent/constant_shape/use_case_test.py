@@ -1,3 +1,4 @@
+from functools import reduce
 import numpy
 import lue
 import lue_test
@@ -38,7 +39,7 @@ class UseCaseTest(lue_test.TestCase):
 
         self.assertEqual(ids.shape[0], nr_items)
 
-        ids_ = numpy.array([id for id in xrange(nr_items)], numpy.uint64)
+        ids_ = numpy.array([id for id in range(nr_items)], numpy.uint64)
         ids[:] = ids_
 
         self.assertArraysEqual(ids[:], ids_)

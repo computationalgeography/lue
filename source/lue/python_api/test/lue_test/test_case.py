@@ -20,7 +20,7 @@ class TestCase(unittest.TestCase):
         self.assertEqual(lhs.dtype, rhs.dtype)
         try:
             numpy.testing.assert_equal(lhs, rhs)
-        except AssertionError, exception:
+        except AssertionError as exception:
             self.fail(str(exception))
 
     @classmethod

@@ -75,7 +75,7 @@ endif()
 
 if(LUE_BUILD_PYTHON_API)
     set(DEVBASE_PYTHON_LIBS_REQUIRED TRUE)
-    set(DEVBASE_REQUIRED_PYTHON_VERSION 2.7)
+    set(DEVBASE_REQUIRED_PYTHON_VERSION 3)
     set(DEVBASE_NUMPY_REQUIRED TRUE)
     set(DEVBASE_PYBIND11_REQUIRED TRUE)
 endif()
@@ -98,4 +98,7 @@ if(LUE_BUILD_DOCUMENTATION)
         PATHS ${PROJECT_SOURCE_DIR}/devbase/script
         NO_DEFAULT_PATH
     )
+    if(NOT EDIT_DOT_GRAPH)
+        message(FATAL_ERROR "edit_dot_graph.py not found")
+    endif()
 endif()

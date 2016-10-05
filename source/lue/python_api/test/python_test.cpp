@@ -58,7 +58,13 @@ catch_out.write("\n".join(failures))
     py::object output(PyObject_GetAttrString(catcher.ptr(), "value"), false);
     assert(output);
 
+#if PY_MAJOR_VERSION >= 3
+    assert(PyUnicode_Check(output.ptr()));
+    std::string string = PyUnicode_AsUTF8(output.ptr());
+#else
+    assert(PyString_Check(output.ptr()));
     std::string string = PyString_AsString(output.ptr());
+#endif
 
     BOOST_CHECK_EQUAL(string, "");
 }
