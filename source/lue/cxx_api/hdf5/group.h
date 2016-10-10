@@ -42,6 +42,9 @@ public:
 
     Attributes&    attributes          ();
 
+    void           create_soft_link    (hdf5::Identifier const& location,
+                                        std::string const& name);
+
 private:
 
     Identifier     _id;

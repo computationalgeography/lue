@@ -46,19 +46,40 @@ enum class TimeDomainTypeAspects: int
 };
 
 
-enum class SpaceDomainTypeAspects: int
+enum class SpaceDomainTypeAspects: unsigned int
 {
 
-    omnipresent = 2,
-    located = 4,
+    omnipresent = 1u << 0,
+    located = 1u << 1,
 
-    indexed = 8,
-    not_indexed = 16,
+    stationary = 1u << 2,
+    mobile = 1u << 3,
 
-    topological = 32,
-    non_topological = 64
+    indexed = 1u << 4,
+    not_indexed = 1u << 5,
+
+    topological = 1u << 6,
+    non_topological = 1u << 7
 
 };
+
+
+// enum class ValueShapeAspect: int
+// {
+// 
+//     //! The shape of values does not change through time
+//     constant_through_time = 2,
+// 
+//     //! The shape of values changes through time.
+//     variable_through_time = 4,
+// 
+//     //! The shape of values is the same for all items.
+//     same_per_item = 8,
+// 
+//     //! The shape of values is different for each item.
+//     different_per_item = 16
+// 
+// };
 
 }  // namespace lue
 
@@ -122,14 +143,15 @@ enum class TimeDomainItemType
 };
 
 
-enum class SpaceDomainType: int
+enum class SpaceDomainType: unsigned int
 {
 
-    omnipresent = static_cast<int>(
+    omnipresent = static_cast<unsigned int>(
         SpaceDomainTypeAspects::omnipresent),
 
-    located = static_cast<int>(
+    stationary = static_cast<unsigned int>(
         SpaceDomainTypeAspects::located |
+        SpaceDomainTypeAspects::stationary |
         SpaceDomainTypeAspects::not_indexed |
         SpaceDomainTypeAspects::non_topological)
 
@@ -150,6 +172,36 @@ enum class SpaceDomainItemType
     region,
 
     cell
+
+};
+
+
+enum class TimeDiscretizationType
+{
+
+    regular_grid
+
+};
+
+
+enum class SpaceDiscretizationType
+{
+
+    /*!
+        @brief  {1,2,3}D Euclidian space.
+
+        Cells have equal sizes in each dimension.
+    */
+    cartesian_grid,
+
+    // /*!
+    //     @brief  {1,2,3}D Euclidian space.
+
+    //     Cells have different sizes in each dimension.
+    // */
+    // rectilinear_grid,
+
+    // curvilinear_grid,
 
 };
 

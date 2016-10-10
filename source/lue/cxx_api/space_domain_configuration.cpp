@@ -6,18 +6,18 @@
 namespace lue {
 namespace {
 
-static std::map<SpaceDomainType, std::string> const string_by_domain_type = {
+std::map<SpaceDomainType, std::string> const string_by_domain_type = {
     { SpaceDomainType::omnipresent, "omnipresent" },
-    { SpaceDomainType::located, "located" }
+    { SpaceDomainType::stationary, "stationary" }
 };
 
-static std::map<std::string, SpaceDomainType> const domain_type_by_string = {
+std::map<std::string, SpaceDomainType> const domain_type_by_string = {
     { "omnipresent", SpaceDomainType::omnipresent },
-    { "located", SpaceDomainType::located }
+    { "stationary", SpaceDomainType::stationary }
 };
 
 
-static std::map<SpaceDomainItemType, std::string> const
+std::map<SpaceDomainItemType, std::string> const
         string_by_domain_item_type = {
     { SpaceDomainItemType::none, "none" },
     { SpaceDomainItemType::point, "point" },
@@ -27,7 +27,7 @@ static std::map<SpaceDomainItemType, std::string> const
     { SpaceDomainItemType::cell, "cell" }
 };
 
-static std::map<std::string, SpaceDomainItemType> const
+std::map<std::string, SpaceDomainItemType> const
         domain_item_type_by_string = {
     { "none", SpaceDomainItemType::none },
     { "point", SpaceDomainItemType::point },
@@ -110,7 +110,7 @@ SpaceDomainConfiguration::SpaceDomainConfiguration()
 SpaceDomainConfiguration::SpaceDomainConfiguration(
      SpaceDomainItemType const item_type)
 
-    : _type{SpaceDomainType::located},
+    : _type{SpaceDomainType::stationary},
       _item_type{item_type}
 
 {

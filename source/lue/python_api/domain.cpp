@@ -34,7 +34,7 @@ void init_domain(
     py::enum_<SpaceDomainType>(module, "space_domain",
         "space_domain docstring...")
         .value("omnipresent", SpaceDomainType::omnipresent)
-        .value("located", SpaceDomainType::located)
+        .value("stationary", SpaceDomainType::stationary)
     ;
 
     py::enum_<SpaceDomainItemType>(module, "space_domain_item",

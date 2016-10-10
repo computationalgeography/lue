@@ -1,5 +1,4 @@
 #include "lue/cxx_api/property.h"
-#include "lue/c_api/hdf5/hdf5_link.h"
 #include "lue/c_api/property.h"
 #include <cassert>
 #include <stdexcept>
@@ -56,16 +55,11 @@ Value& Property::value() const
 }
 
 
-void Property::link_space_discretization(
-    Property const& discretization)
-{
-    auto status = ::hdf5_create_soft_link(discretization.id(),
-       "space discretization", id());
-
-    if(status < 0) {
-        throw std::runtime_error("Space discretization cannot be linked");
-    }
-}
+// void Property::link_space_discretization(
+//     Property const& discretization)
+// {
+//     create_soft_link(discretization.id(), "space discretization");
+// }
 
 
 Property create_property(

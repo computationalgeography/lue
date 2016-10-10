@@ -28,9 +28,10 @@ void init_property(
             "name docstring...",
             py::return_value_policy::reference_internal)
 
-        .def("link_space_discretization",
-                &time::Property::link_space_discretization,
-            "name docstring...")
+        // TODO
+        // .def("link_space_discretization",
+        //         &time::Property::link_space_discretization,
+        //     "name docstring...")
     ;
 
     py::class_<time::omnipresent::constant_shape::Property>(

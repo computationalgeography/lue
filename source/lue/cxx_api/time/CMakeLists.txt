@@ -19,7 +19,7 @@ set(SOURCES
 
     property_set
     omnipresent/property_set
-    # omnipresent/constant_shape/property_set
+    shared_constant/property_set
 )
 add_library(lue_cxx_api_time_objects OBJECT
     ${SOURCES}

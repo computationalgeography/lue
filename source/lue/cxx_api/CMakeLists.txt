@@ -15,8 +15,11 @@ set(SOURCES
     property
     property_set
     property_sets
+    space_discretization
     space_domain
     space_domain_configuration
+    time_discretization
+    # time_discretization_configuration
     time_domain
     time_domain_configuration
     universe

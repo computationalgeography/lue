@@ -1,5 +1,6 @@
 #include "lue/cxx_api/property_set.h"
 #include "lue/cxx_api/time/omnipresent/property_set.h"
+#include "lue/cxx_api/time/shared_constant/property_set.h"
 #include "lue/cxx_api/domain_configuration.h"
 #include "lue/cxx_api/exception.h"
 #include "lue/c_api/domain.h"
@@ -153,8 +154,8 @@ PropertySet create_property_set(
             break;
         }
         case TimeDomainType::shared_constant_collection: {
-            throw_unsupported_error(
-                "Time domain: shared constant collection");
+            time::shared_constant::configure_property_set(
+                property_set_location, name, space_configuration);
             break;
         }
         case TimeDomainType::shared_variable_collection: {

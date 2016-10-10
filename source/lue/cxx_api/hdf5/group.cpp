@@ -1,5 +1,6 @@
 #include "lue/cxx_api/hdf5/group.h"
 #include "lue/c_api/hdf5/hdf5_group.h"
+#include "lue/c_api/hdf5/hdf5_link.h"
 #include <cassert>
 
 
@@ -88,6 +89,18 @@ Attributes const& Group::attributes() const
 Attributes& Group::attributes()
 {
     return _attributes;
+}
+
+
+void Group::create_soft_link(
+    hdf5::Identifier const& target,
+    std::string const& name)
+{
+    auto status = ::hdf5_create_soft_link(target, name.c_str(), id());
+
+    if(status < 0) {
+        throw std::runtime_error("Soft link cannot be created");
+    }
 }
 
 

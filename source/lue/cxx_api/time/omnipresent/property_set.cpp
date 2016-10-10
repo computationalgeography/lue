@@ -127,7 +127,7 @@ void configure_property_set(
         case SpaceDomainType::omnipresent: {
             break;
         }
-        case SpaceDomainType::located: {
+        case SpaceDomainType::stationary: {
             switch(domain_configuration.item_type()) {
                 case SpaceDomainItemType::none: {
                     throw_unsupported_error("Space item type: none");

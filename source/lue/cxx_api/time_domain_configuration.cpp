@@ -6,7 +6,7 @@
 namespace lue {
 namespace {
 
-static std::map<TimeDomainType, std::string> const string_by_domain_type = {
+std::map<TimeDomainType, std::string> const string_by_domain_type = {
     { TimeDomainType::omnipresent, "omnipresent" },
     { TimeDomainType::shared_constant_collection,
         "shared_constant_collection" },
@@ -14,7 +14,7 @@ static std::map<TimeDomainType, std::string> const string_by_domain_type = {
         "shared_variable_collection" }
 };
 
-static std::map<std::string, TimeDomainType> const domain_type_by_string = {
+std::map<std::string, TimeDomainType> const domain_type_by_string = {
     { "omnipresent", TimeDomainType::omnipresent },
     { "shared_constant_collection",
         TimeDomainType::shared_constant_collection },
@@ -23,7 +23,7 @@ static std::map<std::string, TimeDomainType> const domain_type_by_string = {
 };
 
 
-static std::map<TimeDomainItemType, std::string> const
+std::map<TimeDomainItemType, std::string> const
         string_by_domain_item_type = {
     { TimeDomainItemType::none, "none" },
     { TimeDomainItemType::point, "point" },
@@ -31,7 +31,7 @@ static std::map<TimeDomainItemType, std::string> const
     { TimeDomainItemType::cell, "cell" }
 };
 
-static std::map<std::string, TimeDomainItemType> const
+std::map<std::string, TimeDomainItemType> const
         domain_item_type_by_string = {
     { "none", TimeDomainItemType::none },
     { "point", TimeDomainItemType::point },

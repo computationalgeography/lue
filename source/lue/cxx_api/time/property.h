@@ -24,8 +24,8 @@ public:
 
     std::string    name                () const;
 
-    void           link_space_discretization(
-                                        Property const& discretization);
+    // void           link_space_discretization(
+    //                                     Property const& discretization);
 
     lue::Property const&
                    group               () const;
