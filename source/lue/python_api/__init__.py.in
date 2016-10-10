@@ -23,8 +23,8 @@ module.  So, use `lue.Dataset` instead of `lue._lue.Dataset`, for example.
 For more information about LUE, see the LUE project page:
 https://github.com/pcraster/lue
 """
-from _lue import *
-from describe import describe_dataset
+from ._lue import *
+from .describe import describe_dataset
 
 
 __version__ = "${LUE_VERSION}"

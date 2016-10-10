@@ -490,8 +490,8 @@ void translate_gdal_raster_to_lue(
     // Add property set to the phenomenon. This one set will contain all
     // raster layers from the GDAL dataset.
     auto const property_set_name = "areas";
-    DomainConfiguration domain_configuration(
-        SpaceDomainConfiguration(SpaceDomainItemType::box));
+    DomainConfiguration domain_configuration{
+        SpaceDomainConfiguration(SpaceDomainItemType::box)};
     auto& areas = phenomenon.add_property_set(property_set_name,
         domain_configuration);
 

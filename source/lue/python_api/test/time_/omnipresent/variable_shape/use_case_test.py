@@ -51,7 +51,7 @@ class UseCaseTest(lue_test.TestCase):
         self.assertEqual(items.shape[0], nr_items)
         self.assertEqual(space_domain.boxes.shape[0], nr_items)
 
-        items_ = numpy.array([id for id in xrange(nr_items)], numpy.uint64)
+        items_ = numpy.array([id for id in range(nr_items)], numpy.uint64)
         items[:] = items_
 
         self.assertArraysEqual(items[:], items_)
@@ -106,13 +106,13 @@ class UseCaseTest(lue_test.TestCase):
 
         self.assertEqual(len(values), nr_items)
 
-        for i in xrange(nr_items):
-            for r in xrange(rank):
+        for i in range(nr_items):
+            for r in range(rank):
                 self.assertEqual(value_property.values[i].shape[r],
                     value_shapes[i][r])
 
 
-        for i in xrange(nr_items):
+        for i in range(nr_items):
             shape = value_property.values[i].shape
             values_ = (10 * numpy.random.rand(*shape)).astype(value_type)
             values[i][:] = values_
