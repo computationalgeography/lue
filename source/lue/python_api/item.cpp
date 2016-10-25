@@ -26,7 +26,7 @@ void init_item(
     // ;
 
 
-    py::class_<time::omnipresent::constant_shape::Item>(module,
+    py::class_<time::omnipresent::same_shape::Item>(module,
         "O_CS_Item",
         // py::base<time::omnipresent::Item>(),
         py::base<Array>(),
@@ -38,41 +38,41 @@ void init_item(
         //     py::keep_alive<1, 2>())
 
         // .def("reserve_items",
-        //         &api::time::omnipresent::constant_shape::Item::reserve_items,
+        //         &api::time::omnipresent::same_shape::Item::reserve_items,
         //     "reserve_items docstring...",
         //     py::return_value_policy::reference_internal)
 
         // .def_property_readonly("values",
-        //         &api::time::omnipresent::constant_shape::Property::values,
+        //         &api::time::omnipresent::same_shape::Property::values,
         //     "values docstring...",
         //     py::return_value_policy::reference_internal)
     ;
 
 
-    py::class_<time::omnipresent::variable_shape::Item>(module,
+    py::class_<time::omnipresent::different_shape::Item>(module,
         "O_VS_Item",
         // py::base<time::omnipresent::Item>(),
         // py::base<Array>(),
         "O_VS_Item docstring...")
 
         .def_property_readonly("dtype", [](
-                    time::omnipresent::variable_shape::Item const& self) {
+                    time::omnipresent::different_shape::Item const& self) {
                 return hdf5_type_id_to_numpy_dtype(self.type_id());
             },
             "dtype docstring..."
         )
 
         .def_property_readonly("rank",
-                &time::omnipresent::variable_shape::Item::rank,
+                &time::omnipresent::different_shape::Item::rank,
             "rank docstring..."
         )
 
         .def("__len__",
-            &time::omnipresent::variable_shape::Item::nr_items
+            &time::omnipresent::different_shape::Item::nr_items
         )
 
         .def("__getitem__", [](
-                time::omnipresent::variable_shape::Item const& values,
+                time::omnipresent::different_shape::Item const& values,
                 index_t const idx) {
             if(idx >= values.nr_items()) {
                 throw py::index_error();

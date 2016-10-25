@@ -1,7 +1,8 @@
 #pragma once
-#include "lue/cxx_api/hdf5/group.h"
 #include "lue/cxx_api/chunks.h"
 #include "lue/cxx_api/shape.h"
+#include "lue/cxx_api/value_configuration.h"
+#include "lue/cxx_api/hdf5/group.h"
 
 
 namespace lue {
@@ -30,12 +31,20 @@ public:
 
     Value&         operator=           (Value&& other)=default;
 
+    ValueConfiguration const&
+                   configuration       () const;
+
 private:
+
+    ValueConfiguration
+                   _configuration;
 
 };
 
 
-Value              create_value        (hdf5::Identifier const& location);
+Value              create_value        (hdf5::Identifier const& location,
+                                        ValueConfiguration const&
+                                            configuration);
 
 Value              open_value          (hdf5::Identifier const& location);
 

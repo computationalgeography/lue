@@ -1,6 +1,7 @@
 #pragma once
 #include <hdf5.h>
 #include <functional>
+#include <memory>
 #include <string>
 
 
@@ -13,6 +14,9 @@ namespace hdf5 {
 
     Scoping the identifier in this class ensures that the identifier is
     closed upon exiting the scope.
+
+    Copies can be made. Only when the last copy goes out of scope will the
+    identifier be closed.
 */
 class Identifier
 {
@@ -29,13 +33,13 @@ public:
                    Identifier          (hid_t id,
                                         Close const& close);
 
-                   Identifier          (Identifier const& other)=delete;
+                   Identifier          (Identifier const& other);
 
                    Identifier          (Identifier&& other);
 
     virtual        ~Identifier         ();
 
-    Identifier&    operator=           (Identifier const& other)=delete;
+    Identifier&    operator=           (Identifier const& other);
 
     Identifier&    operator=           (Identifier&& other);
 
@@ -50,10 +54,12 @@ public:
 private:
 
     //! HDF5 identifier.
-    hid_t          _id;
+    std::shared_ptr<hid_t> _id;
 
     //! Function to call when the identifier must be closed.
     Close          _close;
+
+    void           close_if_necessary  ();
 
 };
 

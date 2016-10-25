@@ -9,7 +9,7 @@ namespace omnipresent {
 SpaceBox::SpaceBox(
     hdf5::Identifier const& location)
 
-    : constant_shape::Item(location, "coordinates")
+    : same_shape::Item(location, "coordinates")
 
 {
 }
@@ -19,16 +19,16 @@ SpaceBox::SpaceBox(
     hdf5::Identifier const& location,
     hid_t const type_id)
 
-    : constant_shape::Item(location, "coordinates", type_id)
+    : same_shape::Item(location, "coordinates", type_id)
 
 {
 }
 
 
 SpaceBox::SpaceBox(
-    constant_shape::Item&& coordinates)
+    same_shape::Item&& coordinates)
 
-    : constant_shape::Item(std::forward<constant_shape::Item>(coordinates))
+    : same_shape::Item(std::forward<same_shape::Item>(coordinates))
 
 {
 }
@@ -50,7 +50,7 @@ SpaceBox create_space_box(
     Shape shape = { 2 * rank };
     Chunks chunks = { shape[0] };
 
-    auto item = constant_shape::create_item(location, name, file_type_id,
+    auto item = same_shape::create_item(location, name, file_type_id,
         memory_type_id, shape, chunks);
 
     return SpaceBox(std::move(item));

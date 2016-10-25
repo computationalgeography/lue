@@ -490,10 +490,12 @@ void translate_gdal_raster_to_lue(
     // Add property set to the phenomenon. This one set will contain all
     // raster layers from the GDAL dataset.
     auto const property_set_name = "areas";
+    PropertySetConfiguration property_set_configuration(
+        SizeOfItemCollectionType::constant_size);
     DomainConfiguration domain_configuration{
         SpaceDomainConfiguration(SpaceDomainItemType::box)};
     auto& areas = phenomenon.add_property_set(property_set_name,
-        domain_configuration);
+        property_set_configuration, domain_configuration);
 
     count_t const nr_items = 1;
     rank_t const rank = 2;
@@ -518,9 +520,9 @@ void translate_gdal_raster_to_lue(
             gdal_domain.north
         };
 
-        time::omnipresent::SpaceBoxDomain o_space_domain(
+        space::stationary::SpaceBoxDomain s_space_domain(
             areas.domain().space_domain());
-        auto& boxes = o_space_domain.reserve_items(nr_items);
+        auto& boxes = s_space_domain.reserve_items(nr_items);
         boxes.write({nr_items, 2 * rank}, box_coordinate);
     }
 
@@ -555,8 +557,8 @@ void translate_gdal_raster_to_lue(
 
             auto& property = o_property_set.add_property(property_name(b),
                 file_type_id, rank);
-            property.group().create_soft_link(space_discretization.id(),
-                "lue_space_discretization");
+            property.group().value().create_soft_link(
+                space_discretization.id(), "lue_space_discretization");
             auto& item = property.reserve_items(nr_items, shapes);
 
 
@@ -634,12 +636,14 @@ void translate_gdal_raster_stack_to_lue(
     // Add property set to the phenomenon. This one set will contain all
     // raster layers from the GDAL dataset.
     std::string property_set_name = "areas";
+    PropertySetConfiguration property_set_configuration(
+        SizeOfItemCollectionType::constant_size);
     DomainConfiguration domain_configuration(
-        TimeDomainConfiguration(TimeDomainType::shared_constant_collection,
+        TimeDomainConfiguration(TimeDomainType::shared,
             TimeDomainItemType::period),
         SpaceDomainConfiguration(SpaceDomainItemType::box));
     auto& areas = phenomenon.add_property_set(property_set_name,
-        domain_configuration);
+        property_set_configuration, domain_configuration);
 
     count_t const nr_items = 1;
     rank_t const rank = 2;
@@ -655,6 +659,37 @@ void translate_gdal_raster_stack_to_lue(
     }
 
 
+    // Write time period.
+    {
+        // The begin time point is passed in. The duration of the period is
+        // determined by the last slice available.
+        auto const file_extension = gdal_slice_filename_extension(
+            gdal_dataset.GetFileList(), raster_extensions);
+        std::set<size_t> slice_indices = stack_slice_indices(gdal_dataset_name,
+            file_extension);
+        assert(!slice_indices.empty());
+
+        size_t const first_slice = *slice_indices.begin();
+        size_t const last_slice = *(--slice_indices.end());
+        size_t const nr_slices = last_slice - first_slice + 1;
+
+        auto const stack_duration = nr_slices * slice_duration;
+
+        count_t const nr_time_domain_items = 1;
+        int32_t const period_coordinates[nr_time_domain_items * 3] = {
+            start_time_point.year(),
+            start_time_point.month(),
+            static_cast<int32_t>(stack_duration.count())
+        };
+
+        time::shared::TimePeriodDomain s_time_domain(
+            areas.domain().time_domain());
+
+        auto& periods = s_time_domain.reserve_items(nr_time_domain_items);
+        periods.write({nr_time_domain_items, 3}, period_coordinates);
+    }
+
+
     // Write space box.
     {
         double const box_coordinate[nr_items * 2 * rank] = {
@@ -664,13 +699,10 @@ void translate_gdal_raster_stack_to_lue(
             gdal_domain.north
         };
 
-        // TODO space::stationary?
-        // For all time domain items, a single space box. It doesn't move
-        // through time. It is stationary.
-        // For each item a different space box.
-        time::omnipresent::SpaceBoxDomain o_space_domain(
+        space::stationary::SpaceBoxDomain s_space_domain(
             areas.domain().space_domain());
-        auto& boxes = o_space_domain.reserve_items(nr_items);
+
+        auto& boxes = s_space_domain.reserve_items(nr_items);
         boxes.write({nr_items, 2 * rank}, box_coordinate);
     }
 
@@ -697,7 +729,6 @@ void translate_gdal_raster_stack_to_lue(
     // domain items has this layout:
     // - time domain
     // - space domain
-
 
 
     // auto time_discretization = create_time_discretization_property(sc_areas,
@@ -1191,7 +1222,7 @@ void translate_gdal_feature_stack_to_lue(
 //         auto const property_set_name = phenomenon_name +
 //             (gdal_domain.nr_layers > 1 ? ("_" + std::to_string(l)) : "");
 //         DomainConfiguration domain_configuration(
-//             TimeDomainConfiguration{TimeDomainType::shared_constant_collection},
+//             TimeDomainConfiguration{TimeDomainType::shared},
 //             // TODO This assumes points. We need to test this.
 //             SpaceDomainConfiguration{SpaceDomainItemType::point});
 //         auto& property_set = phenomenon.add_property_set(property_set_name,
@@ -1881,7 +1912,7 @@ void translate_gdal_track_to_lue(
     // // track points from the GDAL dataset.
     // // auto const point_property_set_name = "point";
     // DomainConfiguration domain_configuration(
-    //     TimeDomainConfiguration(TimeDomainType::shared_constant_collection),
+    //     TimeDomainConfiguration(TimeDomainType::shared),
     //     SpaceDomainConfiguration(SpaceDomainType::located));
     // // auto& point_property_set = point_phenomenon.add_property_set(
     // //     point_property_set_name, domain_configuration);
@@ -1902,7 +1933,7 @@ void translate_gdal_track_to_lue(
     // // track segments from the GDAL dataset.
     // // auto const segment_property_set_name = "segment";
     // domain_configuration = DomainConfiguration(
-    //     TimeDomainConfiguration(TimeDomainType::shared_constant_collection),
+    //     TimeDomainConfiguration(TimeDomainType::shared),
     //     SpaceDomainConfiguration(SpaceDomainType::located));
     // // auto& segment_property_set = segment_phenomenon.add_property_set(
     // //     segment_property_set_name, domain_configuration);
@@ -1923,7 +1954,7 @@ void translate_gdal_track_to_lue(
     // // tracks from the GDAL dataset.
     // auto const track_property_set_name = "track";
     // domain_configuration = DomainConfiguration(
-    //     TimeDomainConfiguration(TimeDomainType::shared_constant_collection),
+    //     TimeDomainConfiguration(TimeDomainType::shared),
     //     SpaceDomainConfiguration(SpaceDomainType::located));
     // // auto& track_property_set = track_phenomenon.add_property_set(
     // //     track_property_set_name, domain_configuration);

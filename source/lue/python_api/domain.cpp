@@ -17,34 +17,28 @@ void init_domain(
     py::enum_<TimeDomainType>(module, "time_domain",
         "time_domain docstring...")
         .value("omnipresent", TimeDomainType::omnipresent)
-        .value("shared_constant_collection",
-            TimeDomainType::shared_constant_collection)
-        .value("shared_variable_collection",
-            TimeDomainType::shared_variable_collection)
+        .value("shared", TimeDomainType::shared)
+        // # .value("unique", TimeDomainType:unique)
     ;
 
     py::enum_<TimeDomainItemType>(module, "time_domain_item",
         "time_domain item docstring...")
         .value("none", TimeDomainItemType::none)
-        .value("point", TimeDomainItemType::point)
+        // .value("point", TimeDomainItemType::point)
         .value("period", TimeDomainItemType::period)
-        .value("cell", TimeDomainItemType::cell)
+        // .value("cell", TimeDomainItemType::cell)
     ;
 
     py::enum_<SpaceDomainType>(module, "space_domain",
         "space_domain docstring...")
         .value("omnipresent", SpaceDomainType::omnipresent)
-        .value("stationary", SpaceDomainType::stationary)
+        .value("located", SpaceDomainType::located)
     ;
 
     py::enum_<SpaceDomainItemType>(module, "space_domain_item",
         "space_domain item docstring...")
         .value("none", SpaceDomainItemType::none)
-        .value("point", SpaceDomainItemType::point)
         .value("box", SpaceDomainItemType::box)
-        .value("line", SpaceDomainItemType::line)
-        .value("region", SpaceDomainItemType::region)
-        .value("cell", SpaceDomainItemType::cell)
     ;
 
     py::class_<TimeDomainConfiguration>(module, "TimeDomainConfiguration",
@@ -184,7 +178,7 @@ void init_domain(
     ;
 
     py::class_<time::omnipresent::SpaceBox>(module, "O_SpaceBox",
-        py::base<time::omnipresent::constant_shape::Item>(),
+        py::base<time::omnipresent::same_shape::Item>(),
         "O_SpaceBox...")
 
         .def("reserve_items",

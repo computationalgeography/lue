@@ -50,9 +50,10 @@ lue::PropertySet& PropertySet::group()
 
 
 lue::Property& PropertySet::add_property(
-    std::string const& name)
+    std::string const& name,
+    ValueConfiguration const& value_configuration)
 {
-    return group().add_property(name);
+    return group().add_property(name, value_configuration);
 }
 
 } // namespace time

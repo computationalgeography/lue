@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/cxx_api/bitmask_operators.hpp"
+// #include "lue/cxx_api/bitmask_operators.hpp"
 #include "lue/c_api/define.h"
 #include <hdf5.h>
 
@@ -31,37 +31,19 @@ using extent_t = hsize_t;
 // };
 
 
-enum class TimeDomainTypeAspects: int
-{
-
-    omnipresent = 2,
-    located = 4,
-
-    shared = 8,
-    unique = 16,
-
-    constant_size = 32,
-    variable_size = 64
-
-};
-
-
-enum class SpaceDomainTypeAspects: unsigned int
-{
-
-    omnipresent = 1u << 0,
-    located = 1u << 1,
-
-    stationary = 1u << 2,
-    mobile = 1u << 3,
-
-    indexed = 1u << 4,
-    not_indexed = 1u << 5,
-
-    topological = 1u << 6,
-    non_topological = 1u << 7
-
-};
+// enum class TimeDomainTypeAspects: int
+// {
+// 
+//     omnipresent = 2,
+//     located = 4,
+// 
+//     shared = 8,
+//     unique = 16,
+// 
+//     // constant_size = 32,
+//     // variable_size = 64
+// 
+// };
 
 
 // enum class ValueShapeAspect: int
@@ -84,47 +66,54 @@ enum class SpaceDomainTypeAspects: unsigned int
 }  // namespace lue
 
 
-template<>
-struct enable_bitmask_operators<lue::TimeDomainTypeAspects>
-{
-    static constexpr bool enable = true;
-};
+// template<>
+// struct enable_bitmask_operators<lue::TimeDomainTypeAspects>
+// {
+//     static constexpr bool enable = true;
+// };
 
 
-template<>
-struct enable_bitmask_operators<lue::SpaceDomainTypeAspects>
-{
-    static constexpr bool enable = true;
-};
+// template<>
+// struct enable_bitmask_operators<lue::SpaceDomainTypeAspects>
+// {
+//     static constexpr bool enable = true;
+// };
 
 
 namespace lue {
 
-enum class TimeDomainType: int
+// enum class TimeDomainType: int
+enum TimeDomainType  // : int
 {
 
-    omnipresent = static_cast<int>(
-        TimeDomainTypeAspects::omnipresent),
+    omnipresent,
 
-    shared_constant_collection = static_cast<int>(
-        TimeDomainTypeAspects::located |
-        TimeDomainTypeAspects::shared |
-        TimeDomainTypeAspects::constant_size),
+    shared,
 
-    shared_variable_collection = static_cast<int>(
-        TimeDomainTypeAspects::located |
-        TimeDomainTypeAspects::shared |
-        TimeDomainTypeAspects::variable_size),
+    // unique
 
-    unique_constant_collection = static_cast<int>(
-        TimeDomainTypeAspects::located |
-        TimeDomainTypeAspects::unique |
-        TimeDomainTypeAspects::constant_size),
+    // omnipresent = static_cast<int>(
+    //     TimeDomainTypeAspects::omnipresent),
 
-    unique_variable_collection = static_cast<int>(
-        TimeDomainTypeAspects::located |
-        TimeDomainTypeAspects::unique |
-        TimeDomainTypeAspects::variable_size)
+    // shared_constant_collection = static_cast<int>(
+    //     TimeDomainTypeAspects::located |
+    //     TimeDomainTypeAspects::shared) //  |
+    //     // TimeDomainTypeAspects::constant_size),
+
+    // shared_variable_collection = static_cast<int>(
+    //     TimeDomainTypeAspects::located |
+    //     TimeDomainTypeAspects::shared |
+    //     TimeDomainTypeAspects::variable_size),
+
+    // unique_constant_collection = static_cast<int>(
+    //     TimeDomainTypeAspects::located |
+    //     TimeDomainTypeAspects::unique |
+    //     TimeDomainTypeAspects::constant_size),
+
+    // unique_variable_collection = static_cast<int>(
+    //     TimeDomainTypeAspects::located |
+    //     TimeDomainTypeAspects::unique |
+    //     TimeDomainTypeAspects::variable_size)
 
 };
 
@@ -134,27 +123,37 @@ enum class TimeDomainItemType
 
     none,
 
-    point,
+    // point,
 
     period,
 
-    cell
+    // cell
 
 };
 
 
-enum class SpaceDomainType: unsigned int
+enum class SpaceDomainType
 {
 
-    omnipresent = static_cast<unsigned int>(
-        SpaceDomainTypeAspects::omnipresent),
+    omnipresent,
 
-    stationary = static_cast<unsigned int>(
-        SpaceDomainTypeAspects::located |
-        SpaceDomainTypeAspects::stationary |
-        SpaceDomainTypeAspects::not_indexed |
-        SpaceDomainTypeAspects::non_topological)
+    located
 
+};
+
+
+/*!
+    @brief      Space domain items can be stationary or mobile through time
+
+    This is only relevant in case the time domain is not omnipresent.
+*/
+enum class Mobility
+{
+    //! Space domain items stay in the same location for the whole time domain
+    stationary,
+
+    //! Space domain items move around through time
+    mobile
 };
 
 
@@ -163,15 +162,15 @@ enum class SpaceDomainItemType
 
     none,
 
-    point,
+    // point,
 
     box,
 
-    line,
+    // line,
 
-    region,
+    // region,
 
-    cell
+    // cell
 
 };
 
@@ -202,6 +201,63 @@ enum class SpaceDiscretizationType
     // rectilinear_grid,
 
     // curvilinear_grid,
+
+};
+
+
+enum class TimeResolution
+{
+
+    // millennium,
+    // century,
+    // decade,
+    // year,
+    month,
+    // week,
+    // day,
+    // hour,
+    // minute,
+    // second,
+    // decisecond,  // 1/10s
+    // centisecond,  // 1/100s
+    // millisecond,  // 1/1000s
+
+};
+
+
+/*!
+    @brief      The shape of the value of different items can be the
+                same or different
+
+    Whether or not the shape of the value of different items is the same
+    or different is independent of the time domain type.
+*/
+enum class ShapePerItemType
+{
+
+    //! The value of all items have the same shape
+    same_shape,
+
+    //! The value of all items have a different shape (potentially)
+    different_shape
+
+};
+
+
+/*!
+    @brief      The size of the item collection can be constant or variable
+                through time
+    @warning    The size of the item collection cannot be variable in
+                case the time domain type is omnipresent.
+*/
+enum class SizeOfItemCollectionType
+{
+
+    //! The collection of items remains constant through time
+    constant_size,
+
+    //! The collection of items is variable through time
+    variable_size
 
 };
 

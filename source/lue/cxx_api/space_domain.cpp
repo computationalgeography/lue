@@ -16,7 +16,9 @@ SpaceDomain::SpaceDomain(
           parse_space_domain_type(
               attributes().read<std::string>("domain_type")),
           parse_space_domain_item_type(
-              attributes().read<std::string>("domain_item_type")))
+              attributes().read<std::string>("domain_item_type")),
+          parse_mobility(
+              attributes().read<std::string>("mobility")))
       }
 
 {
@@ -34,7 +36,9 @@ SpaceDomain::SpaceDomain(
           parse_space_domain_type(
               attributes().read<std::string>("domain_type")),
           parse_space_domain_item_type(
-              attributes().read<std::string>("domain_item_type")))
+              attributes().read<std::string>("domain_item_type")),
+          parse_mobility(
+              attributes().read<std::string>("mobility")))
       }
 
 {
@@ -68,6 +72,8 @@ SpaceDomain create_space_domain(
         space_domain_type_to_string(configuration.type()));
     space_domain_attributes.write<std::string>("domain_item_type",
         space_domain_item_type_to_string(configuration.item_type()));
+    space_domain_attributes.write<std::string>("mobility",
+        mobility_to_string(configuration.mobility()));
 
     return SpaceDomain(std::move(space_domain_location));
 }

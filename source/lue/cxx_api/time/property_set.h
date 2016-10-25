@@ -53,7 +53,9 @@ protected:
     lue::PropertySet&
                    group               ();
 
-    lue::Property& add_property        (std::string const& name);
+    lue::Property& add_property        (std::string const& name,
+                                        ValueConfiguration const&
+                                            value_configuration);
 
 private:
 

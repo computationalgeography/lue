@@ -8,7 +8,8 @@ extern "C" {
 
 
 hid_t              create_property     (hid_t const location_id,
-                                        char const* name);
+                                        char const* name,
+                                        hid_t const domain_id);
 
 hid_t              open_property       (hid_t const location_id,
                                         char const* name);

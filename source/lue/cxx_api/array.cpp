@@ -35,7 +35,7 @@ Array::Array(
       _type_id{type_id}
 
 {
-    assert(is_native_datatype(_type_id));
+    assert(hdf5::is_native_datatype(_type_id));
 }
 
 

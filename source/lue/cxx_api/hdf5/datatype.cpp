@@ -8,6 +8,7 @@
 
 
 namespace lue {
+namespace hdf5 {
 
 bool datatypes_are_equal(
     hid_t const type_id1,
@@ -70,32 +71,62 @@ std::string standard_datatype_as_string(
     if(datatypes_are_equal(type_id, H5T_STD_I8LE)) {
         result = StandardDatatypeTraits<int8_t>::name();
     }
+    else if(datatypes_are_equal(type_id, H5T_STD_I8BE)) {
+        result = "H5T_STD_I8BE";
+    }
     else if(datatypes_are_equal(type_id, H5T_STD_I16LE)) {
         result = StandardDatatypeTraits<int16_t>::name();
+    }
+    else if(datatypes_are_equal(type_id, H5T_STD_I16BE)) {
+        result = "H5T_STD_I16BE";
     }
     else if(datatypes_are_equal(type_id, H5T_STD_I32LE)) {
         result = StandardDatatypeTraits<int32_t>::name();
     }
+    else if(datatypes_are_equal(type_id, H5T_STD_I32BE)) {
+        result = "H5T_STD_I32BE";
+    }
     else if(datatypes_are_equal(type_id, H5T_STD_I64LE)) {
         result = StandardDatatypeTraits<int64_t>::name();
+    }
+    else if(datatypes_are_equal(type_id, H5T_STD_I64BE)) {
+        result = "H5T_STD_I64BE";
     }
     else if(datatypes_are_equal(type_id, H5T_STD_U8LE)) {
         result = StandardDatatypeTraits<uint8_t>::name();
     }
+    else if(datatypes_are_equal(type_id, H5T_STD_U8BE)) {
+        result = "H5T_STD_U8BE";
+    }
     else if(datatypes_are_equal(type_id, H5T_STD_U16LE)) {
         result = StandardDatatypeTraits<uint16_t>::name();
+    }
+    else if(datatypes_are_equal(type_id, H5T_STD_U16BE)) {
+        result = "H5T_STD_U16BE";
     }
     else if(datatypes_are_equal(type_id, H5T_STD_U32LE)) {
         result = StandardDatatypeTraits<uint32_t>::name();
     }
+    else if(datatypes_are_equal(type_id, H5T_STD_U32BE)) {
+        result = "H5T_STD_U32BE";
+    }
     else if(datatypes_are_equal(type_id, H5T_STD_U64LE)) {
         result = StandardDatatypeTraits<uint64_t>::name();
+    }
+    else if(datatypes_are_equal(type_id, H5T_STD_U64BE)) {
+        result = "H5T_STD_U64BE";
     }
     else if(datatypes_are_equal(type_id, H5T_IEEE_F32LE)) {
         result = StandardDatatypeTraits<float>::name();
     }
+    else if(datatypes_are_equal(type_id, H5T_IEEE_F32BE)) {
+        result = "H5T_STD_F32BE";
+    }
     else if(datatypes_are_equal(type_id, H5T_IEEE_F64LE)) {
         result = StandardDatatypeTraits<double>::name();
+    }
+    else if(datatypes_are_equal(type_id, H5T_IEEE_F64BE)) {
+        result = "H5T_STD_F64BE";
     }
 
     assert(!result.empty());
@@ -247,4 +278,5 @@ hid_t native_type_id(
     return result;
 }
 
+}  // namespace hdf5
 }  // namespace lue

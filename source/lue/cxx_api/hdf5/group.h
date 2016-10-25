@@ -1,12 +1,15 @@
 #pragma once
 #include "lue/cxx_api/hdf5/attributes.h"
+#include "lue/cxx_api/hdf5/dataset.h"
+#include <cassert>
 #include <string>
+#include <vector>
 
 
 namespace lue {
 namespace hdf5 {
 
-bool               group_exists        (hdf5::Identifier const& location,
+bool               group_exists        (Identifier const& location,
                                         std::string const& name);
 
 
@@ -42,7 +45,19 @@ public:
 
     Attributes&    attributes          ();
 
-    void           create_soft_link    (hdf5::Identifier const& location,
+    template<
+        typename T>
+    T              attribute           (std::string const& name) const;
+
+    bool           contains_group      (std::string const& name) const;
+
+    bool           contains_dataset    (std::string const& name) const;
+
+    bool           contains_attribute  (std::string const& name) const;
+
+    bool           contains_soft_link  (std::string const& name) const;
+
+    void           create_soft_link    (Identifier const& location,
                                         std::string const& name);
 
 private:
@@ -54,8 +69,38 @@ private:
 };
 
 
-Group              create_group        (hdf5::Identifier const& location,
+template<
+    typename T>
+inline T Group::attribute(
+    std::string const& name) const
+{
+    assert(contains_attribute(name));
+
+    return _attributes.read<T>(name);
+}
+
+
+bool               operator==          (Group const& lhs,
+                                        Group const& rhs);
+
+bool               operator!=          (Group const& lhs,
+                                        Group const& rhs);
+
+Group              open_group          (Group const& group,
                                         std::string const& name);
+
+Group              open_group          (Identifier const& id,
+                                        std::string const& name);
+
+Group              create_group        (Identifier const& id,
+                                        std::string const& name);
+
+std::vector<std::string>
+                   group_names         (Group const& group);
+
+Dataset            open_dataset        (hdf5::Group const& group,
+                                        std::string const& name);
+
 
 } // namespace hdf5
 } // namespace lue

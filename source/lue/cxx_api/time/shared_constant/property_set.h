@@ -1,8 +1,8 @@
 #pragma once
-#include "lue/cxx_api/time/omnipresent/constant_shape/item.h"
-// #include "lue/cxx_api/time/shared_constant/constant_shape/item.h"
-// #include "lue/cxx_api/time/shared_constant/constant_shape/property.h"
-// #include "lue/cxx_api/time/shared_constant/variable_shape/property.h"
+#include "lue/cxx_api/time/omnipresent/same_shape/item.h"
+// #include "lue/cxx_api/time/shared_constant/same_shape/item.h"
+// #include "lue/cxx_api/time/shared_constant/same_shape/property.h"
+// #include "lue/cxx_api/time/shared_constant/different_shape/property.h"
 #include "lue/cxx_api/time/property_set.h"
 // #include "lue/cxx_api/array.h"
 
@@ -32,20 +32,20 @@ public:
 
     PropertySet&   operator=           (PropertySet&& other)=default;
 
-    omnipresent::constant_shape::Item&
+    omnipresent::same_shape::Item&
                    reserve_items       (hsize_t const nr_items);
 
-    // constant_shape::Item&
+    // same_shape::Item&
     //                ids                 ();
 
-    // constant_shape::Property&
+    // same_shape::Property&
     //                add_property        (std::string const& name,
     //                                     hid_t const file_type_id,
     //                                     hid_t const memory_type_id,
     //                                     Shape const& shape,
     //                                     Chunks const& chunks);
 
-    // variable_shape::Property&
+    // different_shape::Property&
     //                add_property        (std::string const& name,
     //                                     // hid_t const memory_type_id,
     //                                     hid_t const file_type_id,
@@ -53,13 +53,13 @@ public:
 
 private:
 
-    // std::unique_ptr<constant_shape::Item> _ids;
-    omnipresent::constant_shape::Item _ids;
+    // std::unique_ptr<same_shape::Item> _ids;
+    omnipresent::same_shape::Item _ids;
 
-    // std::vector<std::unique_ptr<constant_shape::Property>>
+    // std::vector<std::unique_ptr<same_shape::Property>>
     //     _constant_shape_properties;
 
-    // std::vector<std::unique_ptr<variable_shape::Property>>
+    // std::vector<std::unique_ptr<different_shape::Property>>
     //     _variable_shape_properties;
 
 };

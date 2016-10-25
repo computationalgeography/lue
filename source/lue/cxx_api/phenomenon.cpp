@@ -68,9 +68,10 @@ PropertySet& Phenomenon::add_property_set(
 
 PropertySet& Phenomenon::add_property_set(
     std::string const& name,
+    PropertySetConfiguration const& configuration,
     DomainConfiguration const& domain_configuration)
 {
-    return property_sets().add(name, domain_configuration);
+    return property_sets().add(name, configuration, domain_configuration);
 }
 
 

@@ -4,9 +4,7 @@ set(LIB_SOURCES
     file_stack
     gdal
     gdal_block
-    print_message
     progress_indicator
-    stopwatch
 )
 add_library(lue_translate_lib ${LIB_SOURCES})
 target_link_libraries(lue_translate_lib
@@ -15,10 +13,12 @@ target_link_libraries(lue_translate_lib
 
 set(SOURCES
     main
+    translate
 )
 add_executable(lue_translate ${SOURCES})
 
 target_link_libraries(lue_translate
+    lue_utility
     lue_translate_lib
     lue_cxx
     ${DOCOPT_LIBRARIES}

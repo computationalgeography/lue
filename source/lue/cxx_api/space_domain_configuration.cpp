@@ -1,40 +1,30 @@
 #include "lue/cxx_api/space_domain_configuration.h"
-#include <cassert>
-#include <map>
+#include "lue/cxx_api/enum_string_bimap.h"
 
 
 namespace lue {
 namespace {
 
-std::map<SpaceDomainType, std::string> const string_by_domain_type = {
+detail::EnumStringBimap<SpaceDomainType> const space_domain_type_map = {
     { SpaceDomainType::omnipresent, "omnipresent" },
-    { SpaceDomainType::stationary, "stationary" }
-};
-
-std::map<std::string, SpaceDomainType> const domain_type_by_string = {
-    { "omnipresent", SpaceDomainType::omnipresent },
-    { "stationary", SpaceDomainType::stationary }
+    { SpaceDomainType::located, "located" }
 };
 
 
-std::map<SpaceDomainItemType, std::string> const
-        string_by_domain_item_type = {
+detail::EnumStringBimap<SpaceDomainItemType> const
+        space_domain_item_type_map = {
     { SpaceDomainItemType::none, "none" },
-    { SpaceDomainItemType::point, "point" },
+    // { SpaceDomainItemType::point, "point" },
     { SpaceDomainItemType::box, "box" },
-    { SpaceDomainItemType::line, "line" },
-    { SpaceDomainItemType::region, "region" },
-    { SpaceDomainItemType::cell, "cell" }
+    // { SpaceDomainItemType::line, "line" },
+    // { SpaceDomainItemType::region, "region" },
+    // { SpaceDomainItemType::cell, "cell" }
 };
 
-std::map<std::string, SpaceDomainItemType> const
-        domain_item_type_by_string = {
-    { "none", SpaceDomainItemType::none },
-    { "point", SpaceDomainItemType::point },
-    { "box", SpaceDomainItemType::box },
-    { "line", SpaceDomainItemType::line },
-    { "region", SpaceDomainItemType::region },
-    { "cell", SpaceDomainItemType::cell }
+
+detail::EnumStringBimap<Mobility> const mobility_map = {
+    { Mobility::stationary, "stationary" },
+    { Mobility::mobile, "mobile" }
 };
 
 }  // Anonymous namespace
@@ -46,10 +36,7 @@ std::map<std::string, SpaceDomainItemType> const
 std::string space_domain_type_to_string(
     SpaceDomainType const type)
 {
-    auto const it = string_by_domain_type.find(type);
-    assert(it != string_by_domain_type.end());
-
-    return (*it).second;
+    return space_domain_type_map.as_string(type);
 }
 
 
@@ -59,13 +46,11 @@ std::string space_domain_type_to_string(
 SpaceDomainType parse_space_domain_type(
     std::string const& string)
 {
-    auto const it = domain_type_by_string.find(string);
-
-    if(it == domain_type_by_string.end()) {
+    if(!space_domain_type_map.contains(string)) {
         throw std::runtime_error("Unknown space domain type: " + string);
     }
 
-    return (*it).second;
+    return space_domain_type_map.as_value(string);
 }
 
 
@@ -75,10 +60,7 @@ SpaceDomainType parse_space_domain_type(
 std::string space_domain_item_type_to_string(
     SpaceDomainItemType const type)
 {
-    auto const it = string_by_domain_item_type.find(type);
-    assert(it != string_by_domain_item_type.end());
-
-    return (*it).second;
+    return space_domain_item_type_map.as_string(type);
 }
 
 
@@ -88,20 +70,37 @@ std::string space_domain_item_type_to_string(
 SpaceDomainItemType parse_space_domain_item_type(
     std::string const& string)
 {
-    auto const it = domain_item_type_by_string.find(string);
-
-    if(it == domain_item_type_by_string.end()) {
+    if(!space_domain_item_type_map.contains(string)) {
         throw std::runtime_error("Unknown space domain item type: " + string);
     }
 
-    return (*it).second;
+    return space_domain_item_type_map.as_value(string);
+}
+
+
+std::string mobility_to_string(
+    Mobility const mobility)
+{
+    return mobility_map.as_string(mobility);
+}
+
+
+Mobility parse_mobility(
+    std::string const& string)
+{
+    if(!mobility_map.contains(string)) {
+        throw std::runtime_error("Unknown mobility: " + string);
+    }
+
+    return mobility_map.as_value(string);
 }
 
 
 SpaceDomainConfiguration::SpaceDomainConfiguration()
 
     : _type{SpaceDomainType::omnipresent},
-      _item_type{SpaceDomainItemType::none}
+      _item_type{SpaceDomainItemType::none},
+      _mobility{Mobility::stationary}
 
 {
 }
@@ -110,8 +109,9 @@ SpaceDomainConfiguration::SpaceDomainConfiguration()
 SpaceDomainConfiguration::SpaceDomainConfiguration(
      SpaceDomainItemType const item_type)
 
-    : _type{SpaceDomainType::stationary},
-      _item_type{item_type}
+    : _type{SpaceDomainType::located},
+      _item_type{item_type},
+      _mobility{Mobility::stationary}
 
 {
     if(_item_type == SpaceDomainItemType::none) {
@@ -125,12 +125,34 @@ SpaceDomainConfiguration::SpaceDomainConfiguration(
     SpaceDomainItemType const item_type)
 
     : _type{type},
-      _item_type{item_type}
+      _item_type{item_type},
+      _mobility{Mobility::stationary}
 
 {
     if(_type == SpaceDomainType::omnipresent) {
         // Whatever the user passed in...
         _item_type = SpaceDomainItemType::none;
+    }
+    else if(_item_type == SpaceDomainItemType::none) {
+        throw std::runtime_error("Domain item type must be set");
+    }
+}
+
+
+SpaceDomainConfiguration::SpaceDomainConfiguration(
+    SpaceDomainType const type,
+    SpaceDomainItemType const item_type,
+    Mobility const mobility)
+
+    : _type{type},
+      _item_type{item_type},
+      _mobility{mobility}
+
+{
+    if(_type == SpaceDomainType::omnipresent) {
+        // Whatever the user passed in...
+        _item_type = SpaceDomainItemType::none;
+        _mobility = Mobility::stationary;
     }
     else if(_item_type == SpaceDomainItemType::none) {
         throw std::runtime_error("Domain item type must be set");
@@ -147,6 +169,12 @@ SpaceDomainType SpaceDomainConfiguration::type() const
 SpaceDomainItemType SpaceDomainConfiguration::item_type() const
 {
     return _item_type;
+}
+
+
+Mobility SpaceDomainConfiguration::mobility() const
+{
+    return _mobility;
 }
 
 }  // namespace lue

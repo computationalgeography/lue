@@ -6,6 +6,7 @@ set(SOURCES
     file
     group
     identifier
+    link
 )
 add_library(lue_cxx_api_hdf5_objects OBJECT
     ${SOURCES}

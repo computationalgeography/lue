@@ -34,7 +34,7 @@ void init_property(
         //     "name docstring...")
     ;
 
-    py::class_<time::omnipresent::constant_shape::Property>(
+    py::class_<time::omnipresent::same_shape::Property>(
             module,
         "O_CS_Property", py::base<time::Property>(),
         "O_CS_Property docstring...")
@@ -45,18 +45,18 @@ void init_property(
             py::keep_alive<1, 2>())
 
         .def("reserve_items",
-                &time::omnipresent::constant_shape::
+                &time::omnipresent::same_shape::
                     Property::reserve_items,
             "reserve docstring...",
             py::return_value_policy::reference_internal)
 
         .def_property_readonly("values",
-                &time::omnipresent::constant_shape::Property::values,
+                &time::omnipresent::same_shape::Property::values,
             "values docstring...",
             py::return_value_policy::reference_internal)
     ;
 
-    py::class_<time::omnipresent::variable_shape::Property>(
+    py::class_<time::omnipresent::different_shape::Property>(
             module,
         "O_VS_Property", py::base<time::Property>(),
         "O_VS_Property docstring...")
@@ -67,15 +67,15 @@ void init_property(
             py::keep_alive<1, 2>())
 
         // .def("reserve_items",
-        //         &time::omnipresent::variable_shape::
+        //         &time::omnipresent::different_shape::
         //             Property::reserve_items,
         //     "reserve docstring...",
         //     py::return_value_policy::reference_internal)
 
         .def("reserve_items", [](
-                    time::omnipresent::variable_shape::Property& property,
+                    time::omnipresent::different_shape::Property& property,
                     py::array_t<extent_t, py::array::c_style>& shapes) ->
-                        time::omnipresent::variable_shape::Item& {
+                        time::omnipresent::different_shape::Item& {
 
                 static_assert(sizeof(extent_t) == sizeof(uint64_t), "");
 
@@ -110,7 +110,7 @@ void init_property(
             py::return_value_policy::reference_internal)
 
         .def_property_readonly("values",
-                &time::omnipresent::variable_shape::Property::values,
+                &time::omnipresent::different_shape::Property::values,
             "values docstring...",
             py::return_value_policy::reference_internal)
     ;

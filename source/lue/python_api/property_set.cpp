@@ -156,7 +156,7 @@ void init_property_set(
                     py::handle const& numpy_type_id_object,
                     py::tuple const& shape,
                     py::tuple const& chunks) ->
-                        time::omnipresent::constant_shape::Property& {
+                        time::omnipresent::same_shape::Property& {
 
                 int numpy_type_id = NPY_NOTYPE;
                 {
@@ -196,7 +196,7 @@ void init_property_set(
                     std::string const& name,
                     py::handle const& numpy_type_id_object,
                     size_t const rank) ->
-                        time::omnipresent::variable_shape::Property& {
+                        time::omnipresent::different_shape::Property& {
 
                 int numpy_type_id = NPY_NOTYPE;
                 {

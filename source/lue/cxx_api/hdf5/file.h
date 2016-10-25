@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/cxx_api/hdf5/identifier.h"
+#include "lue/cxx_api/hdf5/group.h"
 
 
 namespace lue {
@@ -9,7 +9,8 @@ namespace hdf5 {
     @ingroup    lue_cxx_api_hdf5_group
     @brief      This class represents an HDF5 file.
 */
-class File
+class File:
+    public Group
 {
 
 public:
@@ -26,15 +27,14 @@ public:
 
     File&          operator=           (File&& other);
 
-    Identifier const& id               () const;
-
     std::string    pathname            () const;
 
 private:
 
-    Identifier     _id;
-
 };
+
+
+File               open_file           (std::string const& name);
 
 } // namespace hdf5
 } // namespace lue

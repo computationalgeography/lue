@@ -1,6 +1,7 @@
 #include "lue/c_api/property.h"
 #include "lue/c_api/hdf5/hdf5_group.h"
 #include "lue/c_api/hdf5/hdf5_identifier.h"
+#include "lue/c_api/hdf5/hdf5_link.h"
 
 
 /*!
@@ -14,9 +15,22 @@
 */
 hid_t create_property(
     hid_t const location_id,
-    char const* name)
+    char const* name,
+    hid_t const domain_id)
 {
-    return hdf5_create_group(location_id, name);
+    hid_t group_id = hdf5_create_group(location_id, name);
+
+    if(group_id < 0) {
+        return group_id;
+    }
+
+    herr_t status = hdf5_create_soft_link(domain_id, "domain", group_id);
+
+    if(status < 0) {
+        return status;
+    }
+
+    return group_id;
 }
 
 

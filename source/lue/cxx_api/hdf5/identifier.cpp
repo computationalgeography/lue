@@ -15,8 +15,18 @@ Identifier::Identifier(
     hid_t id,
     Close const& close)
 
-    : _id(id),
+    : _id(std::make_shared<hid_t>(id)),
       _close(close)
+
+{
+}
+
+
+Identifier::Identifier(
+    Identifier const& other)
+
+    : _id(other._id),
+      _close(other._close)
 
 {
 }
@@ -35,10 +45,32 @@ Identifier::Identifier(
 
 {
     // Invalidate other.
-    other._id = -1;
+    assert(!other._id);
     other._close = nullptr;
 
     assert(!other.is_valid());
+}
+
+
+/*!
+    @brief      Destruct the instance.
+
+    The close function is called on valid identifiers.
+*/
+Identifier::~Identifier()
+{
+    close_if_necessary();
+}
+
+
+Identifier& Identifier::operator=(
+    Identifier const& other)
+{
+    close_if_necessary();
+    _id = other._id;
+    _close = other._close;
+
+    return *this;
 }
 
 
@@ -50,15 +82,12 @@ Identifier::Identifier(
 Identifier& Identifier::operator=(
     Identifier&& other)
 {
-    if(is_valid()) {
-        _close(_id);
-    }
-
-    _id = other._id;
+    close_if_necessary();
+    _id = std::move(other._id);
     _close = other._close;
 
     // Invalidate other.
-    other._id = -1;
+    assert(!other._id);
     other._close = nullptr;
 
     assert(!other.is_valid());
@@ -67,17 +96,11 @@ Identifier& Identifier::operator=(
 }
 
 
-/*!
-    @brief      Destruct the instance.
-
-    The close function is called on valid identifiers.
-*/
-Identifier::~Identifier()
+void Identifier::close_if_necessary()
 {
-    // Only close identifiers with valid ids.
-    if(is_valid()) {
+    if(is_valid() && _id.unique()) {
         assert(_close != nullptr);
-        _close(_id);
+        _close(*_id);
     }
 }
 
@@ -87,10 +110,19 @@ Identifier::~Identifier()
 */
 bool Identifier::is_valid() const
 {
-    // In case an identifier is valid, the close function must be set.
-    assert(hdf5_is_valid(_id) <= 0 || _close != nullptr);
+    // Invariants.
+    assert(
+        // 'Empty' state.
+        (!_id && _close == nullptr) ||
 
-    return hdf5_is_valid(_id) > 0;
+        // Invalid id. Close function won't be used.
+        hdf5_is_valid(*_id) <= 0 ||
+
+        // Valid id and close function.
+        _close != nullptr
+    );
+
+    return _id && hdf5_is_valid(*_id) > 0;
 }
 
 
@@ -102,7 +134,7 @@ Identifier::operator hid_t() const
     // The caller should guard this call by is_valid().
     assert(is_valid());
 
-    return _id;
+    return *_id;
 }
 
 
@@ -110,7 +142,7 @@ std::string Identifier::pathname() const
 {
     char* name;
 
-    auto nr_bytes = hdf5_name(_id, &name);
+    auto nr_bytes = hdf5_name(*_id, &name);
 
     std::string result;
 

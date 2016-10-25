@@ -1,6 +1,7 @@
 #include "lue/cxx_api/property_set.h"
 #include "lue/cxx_api/time/omnipresent/property_set.h"
 #include "lue/cxx_api/time/shared_constant/property_set.h"
+#include "lue/cxx_api/time/shared/time_period_domain.h"
 #include "lue/cxx_api/domain_configuration.h"
 #include "lue/cxx_api/exception.h"
 #include "lue/c_api/domain.h"
@@ -36,7 +37,12 @@ PropertySet::PropertySet(
     std::string const& name)
 
     : hdf5::Group(hdf5::Identifier(::open_property_set(location,
-        name.c_str()), ::close_property_set))
+        name.c_str()), ::close_property_set)),
+      _configuration{PropertySetConfiguration(
+          parse_size_of_item_collection_type(
+              attributes().read<std::string>(
+                  "lue_size_of_item_collection_type")))
+      }
 
 {
     if(!id().is_valid()) {
@@ -62,7 +68,12 @@ PropertySet::PropertySet(
 PropertySet::PropertySet(
     hdf5::Identifier&& location)
 
-    : hdf5::Group(std::forward<hdf5::Identifier>(location))
+    : hdf5::Group(std::forward<hdf5::Identifier>(location)),
+      _configuration{PropertySetConfiguration(
+          parse_size_of_item_collection_type(
+              attributes().read<std::string>(
+                  "lue_size_of_item_collection_type")))
+      }
 
 {
     assert(id().is_valid());
@@ -75,6 +86,12 @@ PropertySet::PropertySet(
     assert(properties_exists(id()));
     _properties = std::make_unique<Properties>(id());
     assert(_properties->id().is_valid());
+}
+
+
+PropertySetConfiguration const& PropertySet::configuration() const
+{
+    return _configuration;
 }
 
 
@@ -94,10 +111,11 @@ Domain& PropertySet::domain() const
     @param      name Name of property to add
 */
 Property& PropertySet::add_property(
-    std::string const& name)
+    std::string const& name,
+    ValueConfiguration const& value_configuration)
 {
     assert(_properties->id().is_valid());
-    return properties().add(name);
+    return properties().add(name, domain().id(), value_configuration);
 }
 
 
@@ -128,6 +146,7 @@ Properties& PropertySet::properties() const
 PropertySet create_property_set(
     hdf5::Identifier const& location,
     std::string const& name,
+    PropertySetConfiguration const& configuration,
     DomainConfiguration const& domain_configuration)
 {
     if(property_set_exists(location, name)) {
@@ -142,10 +161,24 @@ PropertySet create_property_set(
             " cannot be created");
     }
 
-    create_domain(property_set_location, domain_configuration);
+
+    hdf5::Attributes property_set_attributes(property_set_location);
+
+    property_set_attributes.write<std::string>(
+        "lue_size_of_item_collection_type",
+        size_of_item_collection_type_to_string(
+            configuration.size_of_item_collection_type()));
+
+
+    auto const& domain = create_domain(property_set_location,
+        domain_configuration);
 
     auto const& time_configuration = domain_configuration.time();
     auto const& space_configuration = domain_configuration.space();
+
+    // TODO
+    assert(configuration.size_of_item_collection_type() ==
+        SizeOfItemCollectionType::constant_size);
 
     switch(time_configuration.type()) {
         case TimeDomainType::omnipresent: {
@@ -153,24 +186,16 @@ PropertySet create_property_set(
                 name, space_configuration);
             break;
         }
-        case TimeDomainType::shared_constant_collection: {
+        case TimeDomainType::shared: {
             time::shared_constant::configure_property_set(
                 property_set_location, name, space_configuration);
-            break;
-        }
-        case TimeDomainType::shared_variable_collection: {
-            throw_unsupported_error(
-                "Time domain: shared variable collection");
-            break;
-        }
-        case TimeDomainType::unique_constant_collection: {
-            throw_unsupported_error(
-                "Time domain: unique constant collection");
-            break;
-        }
-        case TimeDomainType::unique_variable_collection: {
-            throw_unsupported_error(
-                "Time domain: unique variable collection");
+
+            hid_t const file_type_id = H5T_STD_I32LE;
+            hid_t const memory_type_id = H5T_NATIVE_INT32;
+
+            time::shared::configure_time_period_domain(
+                domain.time_domain().id(), file_type_id, memory_type_id);
+
             break;
         }
     }

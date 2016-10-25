@@ -23,7 +23,7 @@ PropertySet::PropertySet(
 }
 
 
-omnipresent::constant_shape::Item& PropertySet::reserve_items(
+omnipresent::same_shape::Item& PropertySet::reserve_items(
     hsize_t const nr_items)
 {
     _ids.reserve_items(nr_items);
@@ -32,13 +32,13 @@ omnipresent::constant_shape::Item& PropertySet::reserve_items(
 }
 
 
-// constant_shape::Item& PropertySet::ids()
+// same_shape::Item& PropertySet::ids()
 // {
 //     return *_ids;
 // }
 // 
 // 
-// constant_shape::Property& PropertySet::add_property(
+// same_shape::Property& PropertySet::add_property(
 //     std::string const& name,
 //     hid_t const file_type_id,
 //     hid_t const memory_type_id,
@@ -47,17 +47,17 @@ omnipresent::constant_shape::Item& PropertySet::reserve_items(
 // {
 //     auto& property = time::PropertySet::add_property(name);
 // 
-//     constant_shape::configure_property(property, file_type_id,
+//     same_shape::configure_property(property, file_type_id,
 //         memory_type_id, shape, chunks);
 // 
 //     _constant_shape_properties.emplace_back(
-//         std::make_unique<constant_shape::Property>(property, memory_type_id));
+//         std::make_unique<same_shape::Property>(property, memory_type_id));
 // 
 //     return *_constant_shape_properties.back();
 // }
 // 
 // 
-// variable_shape::Property& PropertySet::add_property(
+// different_shape::Property& PropertySet::add_property(
 //     std::string const& name,
 //     hid_t const file_type_id,
 //     // hid_t const memory_type_id,
@@ -65,11 +65,11 @@ omnipresent::constant_shape::Item& PropertySet::reserve_items(
 // {
 //     auto& property = time::PropertySet::add_property(name);
 // 
-//     variable_shape::configure_property(property, file_type_id,
+//     different_shape::configure_property(property, file_type_id,
 //         /* memory_type_id, */ rank);
 // 
 //     _variable_shape_properties.emplace_back(
-//         std::make_unique<variable_shape::Property>(property /* , memory_type_id */));
+//         std::make_unique<different_shape::Property>(property /* , memory_type_id */));
 // 
 //     return *_variable_shape_properties.back();
 // }
@@ -82,13 +82,13 @@ void configure_property_set(
 {
     Domain domain(location);
 
-    // A constant_shape property set contains a constant collection of items
+    // A same_shape property set contains a constant collection of items
     // identifying the items/object/individuals using an id. The shape of
     // these item ids is the same for all items (a single 0D id).
     hid_t const file_type_id = LUE_STD_ITEM;
     hid_t const memory_type_id = LUE_NATIVE_ITEM;
 
-    omnipresent::constant_shape::create_item(domain.id(), "ids",
+    omnipresent::same_shape::create_item(domain.id(), "ids",
         file_type_id, memory_type_id);
 
 
@@ -96,16 +96,16 @@ void configure_property_set(
         case SpaceDomainType::omnipresent: {
             break;
         }
-        case SpaceDomainType::stationary: {
+        case SpaceDomainType::located: {
             switch(domain_configuration.item_type()) {
                 case SpaceDomainItemType::none: {
                     throw_unsupported_error("Space item type: none");
                     break;
                 }
-                case SpaceDomainItemType::point: {
-                    throw_unsupported_error("Space item type: point");
-                    break;
-                }
+                // case SpaceDomainItemType::point: {
+                //     throw_unsupported_error("Space item type: point");
+                //     break;
+                // }
                 case SpaceDomainItemType::box: {
                     hid_t const file_type_id = H5T_IEEE_F64LE;
                     hid_t const memory_type_id = H5T_NATIVE_DOUBLE;
@@ -117,18 +117,18 @@ void configure_property_set(
 
                     break;
                 }
-                case SpaceDomainItemType::line: {
-                    throw_unsupported_error("Space item type: line");
-                    break;
-                }
-                case SpaceDomainItemType::region: {
-                    throw_unsupported_error("Space item type: region");
-                    break;
-                }
-                case SpaceDomainItemType::cell: {
-                    throw_unsupported_error("Space item type: cell");
-                    break;
-                }
+                // case SpaceDomainItemType::line: {
+                //     throw_unsupported_error("Space item type: line");
+                //     break;
+                // }
+                // case SpaceDomainItemType::region: {
+                //     throw_unsupported_error("Space item type: region");
+                //     break;
+                // }
+                // case SpaceDomainItemType::cell: {
+                //     throw_unsupported_error("Space item type: cell");
+                //     break;
+                // }
             }
 
             break;
