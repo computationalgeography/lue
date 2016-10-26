@@ -31,6 +31,9 @@ public:
     hdf5::Attributes const&
                    attributes          () const;
 
+    PropertySetConfiguration const&
+                   configuration       () const;
+
     Domain&        domain              () const;
 
     Properties&    properties          () const;

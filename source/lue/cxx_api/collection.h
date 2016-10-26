@@ -28,6 +28,8 @@ class Collection:
 
 public:
 
+    bool           empty               () const;
+
     size_t         size                () const;
 
     std::vector<std::string>
@@ -96,6 +98,14 @@ inline Collection<T>::Collection(
     for(auto const& name: item_names(id())) {
         _items.insert(std::make_pair(name, std::make_unique<T>(id(), name)));
     }
+}
+
+
+template<
+    typename T>
+inline bool Collection<T>::empty() const
+{
+    return _items.empty();
 }
 
 

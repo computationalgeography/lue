@@ -16,9 +16,13 @@ class UseCaseTest(lue_test.TestCase):
 
 
         # Add a new property set. This returns a type with a special API,
-        # which is dependent on the item/time domain configuration.
+        # which is dependent on the property set and time domain
+        # configuration.
         property_set = phenomenon.add_property_set("property_set")
 
+        self.assertEqual(
+            property_set.configuration.size_of_item_collection_type,
+            lue.size_of_item_collection.constant)
         self.assertEqual(property_set.domain.configuration.time.type,
             lue.time_domain.omnipresent)
         self.assertEqual(property_set.domain.configuration.time.item_type,
@@ -32,8 +36,8 @@ class UseCaseTest(lue_test.TestCase):
         self.assertEqual(len(property_set.ids.shape), 1)
         self.assertEqual(property_set.ids.shape[0], 0)
 
-        # Add items. This is independent of whether or there are properties
-        # added to the set.
+        # Add items. This is independent of whether or not there are
+        # properties added to the set.
         nr_items = 500
         ids = property_set.reserve_items(nr_items)
 

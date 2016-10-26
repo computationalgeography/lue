@@ -19,6 +19,12 @@ hdf5::Identifier const& PropertySet::id() const
 }
 
 
+PropertySetConfiguration const& PropertySet::configuration() const
+{
+    return group().configuration();
+}
+
+
 hdf5::Attributes const& PropertySet::attributes() const
 {
     return group().attributes();

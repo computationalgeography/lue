@@ -111,6 +111,9 @@ void init_property_set(
                     property_set.id().pathname() + "')";
             }
         )
+        .def_property_readonly("configuration", &PropertySet::configuration,
+            "configuration docstring...",
+            py::return_value_policy::reference_internal)
         .def_property_readonly("domain", &PropertySet::domain,
             "domain docstring...",
             py::return_value_policy::reference_internal)
@@ -135,10 +138,16 @@ void init_property_set(
             "domain docstring...",
             py::return_value_policy::reference_internal)
 
+
+
         // PropertySet API
         // .def("add_property", &time::PropertySet::add_property,
         //     "add_property docstring...",
         //     py::return_value_policy::reference_internal)
+        .def_property_readonly("configuration",
+            &time::PropertySet::configuration,
+            "configuration docstring...",
+            py::return_value_policy::reference_internal)
         .def_property_readonly("properties", &time::PropertySet::properties,
             "properties docstring...",
             py::return_value_policy::reference_internal)

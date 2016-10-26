@@ -185,17 +185,17 @@ void describe_property_set(
     auto const size_of_item_collection_type =
         property_set.configuration().size_of_item_collection_type();
 
-    // switch(size_of_item_collection_type) {
-    //     case(SizeOfItemCollectionType::constant_size): {
-    //         describe_property_set(constant_size::PropertySet(property_set),
-    //             stream, indentation);
+    switch(size_of_item_collection_type) {
+        case(SizeOfItemCollectionType::constant_size): {
+            // describe_property_set(constant_size::PropertySet(property_set),
+            //     stream, indentation);
 
-    //         // constant_size::describe_property_set(property_set, stream,
-    //         //     indentation);
+            // constant_size::describe_property_set(property_set, stream,
+            //     indentation);
 
-    //         break;
-    //     }
-    // }
+            break;
+        }
+    }
 }
 
 
@@ -204,12 +204,13 @@ void describe_property_sets(
     std::ostream& stream,
     size_t indentation)
 {
-    print_message(stream, indentation, "property sets: ");
+    if(!property_sets.empty()) {
+        print_message(stream, indentation, "property sets: ");
 
-    for(auto const& name: property_sets.names()) {
-        describe_property_set(property_sets[name], stream, indentation);
+        for(auto const& name: property_sets.names()) {
+            describe_property_set(property_sets[name], stream, indentation);
+        }
     }
-
 }
 
 
@@ -231,12 +232,13 @@ void describe_phenomena(
     std::ostream& stream,
     size_t indentation)
 {
-    print_message(stream, indentation, "phenomena: ");
+    if(!phenomena.empty()) {
+        print_message(stream, indentation, "phenomena: ");
 
-    for(auto const& name: phenomena.names()) {
-        describe_phenomenon(phenomena[name], stream, indentation);
+        for(auto const& name: phenomena.names()) {
+            describe_phenomenon(phenomena[name], stream, indentation);
+        }
     }
-
 }
 
 
@@ -259,12 +261,13 @@ void describe_universes(
     std::ostream& stream,
     size_t indentation)
 {
-    print_message(stream, indentation, "universes: ");
+    if(!universes.empty()) {
+        print_message(stream, indentation, "universes: ");
 
-    for(auto const& name: universes.names()) {
-        describe_universe(universes[name], stream, indentation);
+        for(auto const& name: universes.names()) {
+            describe_universe(universes[name], stream, indentation);
+        }
     }
-
 }
 
 
