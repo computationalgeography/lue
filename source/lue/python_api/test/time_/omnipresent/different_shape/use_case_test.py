@@ -16,10 +16,12 @@ class UseCaseTest(lue_test.TestCase):
 
         # Add a new property set. This returns a type with a special API,
         # which is dependent on the item/time domain configuration.
+        property_set_configuration = lue.PropertySetConfiguration(
+            lue.size_of_item_collection.constant)
         space_configuration = lue.SpaceDomainConfiguration(
             lue.space_domain.located, lue.space_domain_item.box)
         property_set = phenomenon.add_property_set("property_set",
-            space_configuration)
+            property_set_configuration, space_configuration)
 
         self.assertEqual(property_set.domain.configuration.time.type,
             lue.time_domain.omnipresent)
@@ -66,7 +68,7 @@ class UseCaseTest(lue_test.TestCase):
 
 
         # Now, add a property, whose values all have different shapes.
-        # To similate storing a number of spatial rasters, we first add
+        # To simulate storing a number of spatial rasters, we first add
         # a discretization property and link it from the value property.
         value_shape = (2,)
         chunk_shape = (2,)

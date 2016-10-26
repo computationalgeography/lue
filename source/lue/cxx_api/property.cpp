@@ -55,11 +55,11 @@ Value& Property::value() const
 }
 
 
-// void Property::link_space_discretization(
-//     Property const& discretization)
-// {
-//     create_soft_link(discretization.id(), "space discretization");
-// }
+void Property::link_space_discretization(
+    Property const& discretization)
+{
+    create_soft_link(discretization.id(), "space discretization");
+}
 
 
 Property create_property(

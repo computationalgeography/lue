@@ -23,9 +23,9 @@ class TimeDomainTest(lue_test.TestCase):
 
 
         configuration = lue.TimeDomainConfiguration(
-            lue.time_domain.shared_constant_collection,
-            lue.time_domain_item.point)
+            lue.time_domain.shared,
+            lue.time_domain_item.period)
 
         self.assertEqual(configuration.type,
-            lue.time_domain.shared_constant_collection)
-        self.assertEqual(configuration.item_type, lue.time_domain_item.point)
+            lue.time_domain.shared)
+        self.assertEqual(configuration.item_type, lue.time_domain_item.period)

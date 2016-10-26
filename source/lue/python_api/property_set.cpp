@@ -85,6 +85,24 @@ void init_property_set(
         //     py::return_value_policy::reference_internal)
     ;
 
+
+    py::enum_<SizeOfItemCollectionType>(module, "size_of_item_collection",
+        "size_of_item_collection docstring...")
+        .value("constant", SizeOfItemCollectionType::constant_size)
+    ;
+
+
+    py::class_<PropertySetConfiguration>(module, "PropertySetConfiguration",
+        "PropertySetConfiguration docstring...")
+        .def(py::init<SizeOfItemCollectionType const>(),
+            "__init__ docstring...",
+            "type"_a)
+        .def_property_readonly("size_of_item_collection_type",
+                &PropertySetConfiguration::size_of_item_collection_type,
+            "size_of_item_collection_type docstring...")
+    ;
+
+
     py::class_<PropertySet>(module, "PropertySet", py::base<hdf5::Group>(),
         "PropertySet docstring...")
         .def("__repr__",

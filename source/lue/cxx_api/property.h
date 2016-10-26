@@ -36,8 +36,8 @@ public:
 
     Value&         value               () const;
 
-    // void           link_space_discretization(
-    //                                     Property const& discretization);
+    void           link_space_discretization(
+                                        Property const& discretization);
 
 private:
 

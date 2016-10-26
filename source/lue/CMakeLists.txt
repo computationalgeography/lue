@@ -14,8 +14,7 @@ if(LUE_BUILD_CXX_API)
 endif()
 
 if(LUE_BUILD_PYTHON_API)
-    # TODO
-    # add_subdirectory(python_api)
+    add_subdirectory(python_api)
 endif()
 
 if(LUE_BUILD_UTILITIES)

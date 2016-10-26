@@ -15,10 +15,10 @@ class SpaceDomainTest(lue_test.TestCase):
     def test_construct1(self):
 
         configuration = lue.SpaceDomainConfiguration(
-            lue.space_domain_item.point)
+            lue.space_domain_item.box)
 
         self.assertEqual(configuration.type, lue.space_domain.located)
-        self.assertEqual(configuration.item_type, lue.space_domain_item.point)
+        self.assertEqual(configuration.item_type, lue.space_domain_item.box)
 
 
     def test_construct1_error(self):
@@ -39,16 +39,16 @@ class SpaceDomainTest(lue_test.TestCase):
 
 
         configuration = lue.SpaceDomainConfiguration(
-            lue.space_domain.located, lue.space_domain_item.point)
+            lue.space_domain.located, lue.space_domain_item.box)
 
         self.assertEqual(configuration.type, lue.space_domain.located)
-        self.assertEqual(configuration.item_type, lue.space_domain_item.point)
+        self.assertEqual(configuration.item_type, lue.space_domain_item.box)
 
 
         # It is OK to pass a domain item type, but given that the domain type
         # is omnipresent, it will be reset to none.
         configuration = lue.SpaceDomainConfiguration(
-            lue.space_domain.omnipresent, lue.space_domain_item.point)
+            lue.space_domain.omnipresent, lue.space_domain_item.box)
 
         self.assertEqual(configuration.type, lue.space_domain.omnipresent)
         self.assertEqual(configuration.item_type, lue.space_domain_item.none)
