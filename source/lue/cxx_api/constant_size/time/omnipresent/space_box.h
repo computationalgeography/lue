@@ -3,14 +3,14 @@
 
 
 namespace lue {
-namespace space {
-namespace stationary {
+namespace time {
+namespace omnipresent {
 
 /*!
     @ingroup    lue_cxx_api_group
 */
 class SpaceBox:
-    public time::omnipresent::same_shape::Item
+    public same_shape::Item
 {
 
 public:
@@ -20,8 +20,7 @@ public:
                    SpaceBox            (hdf5::Identifier const& location,
                                         hid_t const type_id);
 
-                   SpaceBox            (time::omnipresent::same_shape::Item&&
-                                            coordinates);
+                   SpaceBox            (same_shape::Item&& coordinates);
 
                    SpaceBox            (SpaceBox const& other)=delete;
 
@@ -44,6 +43,6 @@ SpaceBox           create_space_box    (hdf5::Identifier const& location,
                                         hid_t const memory_type_id,
                                         size_t rank);
 
-}  // namespace stationary
-}  // namespace space
+}  // namespace omnipresent
+}  // namespace time
 }  // namespace lue

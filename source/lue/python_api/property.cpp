@@ -1,6 +1,6 @@
 #include "lue/python_api/collection.h"
+#include "lue/cxx_api/constant_size.h"
 #include "lue/cxx_api/properties.h"
-#include "lue/cxx_api/time.h"
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 

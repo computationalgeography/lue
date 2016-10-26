@@ -1,6 +1,6 @@
 #include "lue/cxx_api/domain.h"
-#include "lue/cxx_api/time/omnipresent/domain.h"
-#include "lue/cxx_api/time/omnipresent/space_box_domain.h"
+#include "lue/cxx_api/constant_size/time/omnipresent/domain.h"
+#include "lue/cxx_api/constant_size/time/omnipresent/space_box_domain.h"
 #include <pybind11/pybind11.h>
 
 
