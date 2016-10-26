@@ -2,6 +2,7 @@
 
 
 namespace lue {
+namespace constant_size {
 namespace time {
 namespace omnipresent {
 
@@ -33,4 +34,5 @@ Item::Item()
 
 }  // namespace omnipresent
 }  // namespace time
+}  // namespace constant_size
 }  // namespace lue

@@ -5,6 +5,7 @@
 
 
 namespace lue {
+namespace constant_size {
 namespace time {
 
 // /*!
@@ -68,4 +69,5 @@ Item::Item()
 // }
 
 }  // namespace time
+}  // namespace constant_size
 }  // namespace lue

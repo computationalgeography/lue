@@ -16,27 +16,27 @@ void init_property(
         py::module& module)
 {
 
-    py::class_<time::Property>(module, "_Property",
+    py::class_<constant_size::time::Property>(module, "_Property",
         "_Property docstring...")
 
         // Property API
-        .def_property_readonly("id", &time::Property::id,
+        .def_property_readonly("id", &constant_size::time::Property::id,
             "id docstring...",
             py::return_value_policy::reference_internal)
 
-        .def_property_readonly("name", &time::Property::name,
+        .def_property_readonly("name", &constant_size::time::Property::name,
             "name docstring...",
             py::return_value_policy::reference_internal)
 
         .def("link_space_discretization",
-                &time::Property::link_space_discretization,
+                &constant_size::time::Property::link_space_discretization,
             "name docstring...")
 
     ;
 
-    py::class_<time::omnipresent::same_shape::Property>(
+    py::class_<constant_size::time::omnipresent::same_shape::Property>(
             module,
-        "O_CS_Property", py::base<time::Property>(),
+        "O_CS_Property", py::base<constant_size::time::Property>(),
         "O_CS_Property docstring...")
 
         .def(py::init<Property&, hid_t const>(),
@@ -45,20 +45,20 @@ void init_property(
             py::keep_alive<1, 2>())
 
         .def("reserve_items",
-                &time::omnipresent::same_shape::
+                &constant_size::time::omnipresent::same_shape::
                     Property::reserve_items,
             "reserve docstring...",
             py::return_value_policy::reference_internal)
 
         .def_property_readonly("values",
-                &time::omnipresent::same_shape::Property::values,
+                &constant_size::time::omnipresent::same_shape::Property::values,
             "values docstring...",
             py::return_value_policy::reference_internal)
     ;
 
-    py::class_<time::omnipresent::different_shape::Property>(
+    py::class_<constant_size::time::omnipresent::different_shape::Property>(
             module,
-        "O_VS_Property", py::base<time::Property>(),
+        "O_VS_Property", py::base<constant_size::time::Property>(),
         "O_VS_Property docstring...")
 
         .def(py::init<Property& /* , hid_t const */>(),
@@ -73,9 +73,10 @@ void init_property(
         //     py::return_value_policy::reference_internal)
 
         .def("reserve_items", [](
-                    time::omnipresent::different_shape::Property& property,
+                    constant_size::time::omnipresent::different_shape::Property&
+                        property,
                     py::array_t<extent_t, py::array::c_style>& shapes) ->
-                        time::omnipresent::different_shape::Item& {
+                        constant_size::time::omnipresent::different_shape::Item& {
 
                 static_assert(sizeof(extent_t) == sizeof(uint64_t), "");
 
@@ -110,7 +111,7 @@ void init_property(
             py::return_value_policy::reference_internal)
 
         .def_property_readonly("values",
-                &time::omnipresent::different_shape::Property::values,
+                &constant_size::time::omnipresent::different_shape::Property::values,
             "values docstring...",
             py::return_value_policy::reference_internal)
     ;

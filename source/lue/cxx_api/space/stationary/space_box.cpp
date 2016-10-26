@@ -9,7 +9,8 @@ namespace stationary {
 SpaceBox::SpaceBox(
     hdf5::Identifier const& location)
 
-    : time::omnipresent::same_shape::Item(location, "coordinates")
+    : constant_size::time::omnipresent::same_shape::Item(location,
+        "coordinates")
 
 {
 }
@@ -19,17 +20,19 @@ SpaceBox::SpaceBox(
     hdf5::Identifier const& location,
     hid_t const type_id)
 
-    : time::omnipresent::same_shape::Item(location, "coordinates", type_id)
+    : constant_size::time::omnipresent::same_shape::Item(location,
+        "coordinates", type_id)
 
 {
 }
 
 
 SpaceBox::SpaceBox(
-    time::omnipresent::same_shape::Item&& coordinates)
+    constant_size::time::omnipresent::same_shape::Item&& coordinates)
 
-    : time::omnipresent::same_shape::Item(
-        std::forward<time::omnipresent::same_shape::Item>(coordinates))
+    : constant_size::time::omnipresent::same_shape::Item(
+        std::forward<constant_size::time::omnipresent::same_shape::Item>(
+            coordinates))
 
 {
 }
@@ -51,8 +54,8 @@ SpaceBox create_space_box(
     Shape shape = { 2 * rank };
     Chunks chunks = { shape[0] };
 
-    auto item = time::omnipresent::same_shape::create_item(location, name,
-        file_type_id, memory_type_id, shape, chunks);
+    auto item = constant_size::time::omnipresent::same_shape::create_item(
+        location, name, file_type_id, memory_type_id, shape, chunks);
 
     return SpaceBox(std::move(item));
 }

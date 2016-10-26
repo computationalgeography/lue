@@ -2,6 +2,7 @@
 
 
 namespace lue {
+namespace constant_size {
 namespace time {
 namespace shared {
 
@@ -51,4 +52,5 @@ void configure_time_period_domain(
 
 }  // namespace shared
 }  // namespace time
+}  // namespace constant_size
 }  // namespace lue

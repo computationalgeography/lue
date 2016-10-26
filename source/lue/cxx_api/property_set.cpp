@@ -182,18 +182,18 @@ PropertySet create_property_set(
 
     switch(time_configuration.type()) {
         case TimeDomainType::omnipresent: {
-            time::omnipresent::configure_property_set(property_set_location,
-                name, space_configuration);
+            constant_size::time::omnipresent::configure_property_set(
+                property_set_location, name, space_configuration);
             break;
         }
         case TimeDomainType::shared: {
-            time::shared::configure_property_set(
+            constant_size::time::shared::configure_property_set(
                 property_set_location, name, space_configuration);
 
             hid_t const file_type_id = H5T_STD_I32LE;
             hid_t const memory_type_id = H5T_NATIVE_INT32;
 
-            time::shared::configure_time_period_domain(
+            constant_size::time::shared::configure_time_period_domain(
                 domain.time_domain().id(), file_type_id, memory_type_id);
 
             break;

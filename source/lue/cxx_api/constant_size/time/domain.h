@@ -4,6 +4,7 @@
 
 
 namespace lue {
+namespace constant_size {
 namespace time {
 
 /*!
@@ -42,4 +43,5 @@ private:
 };
 
 } // namespace time
+}  // namespace constant_size
 } // namespace lue

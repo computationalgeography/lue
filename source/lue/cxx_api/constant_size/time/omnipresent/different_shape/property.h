@@ -4,6 +4,7 @@
 
 
 namespace lue {
+namespace constant_size {
 namespace time {
 namespace omnipresent {
 namespace different_shape {
@@ -50,4 +51,5 @@ void               configure_property  (lue::Property const& location,
 }  // namespace different_shape
 }  // namespace omnipresent
 }  // namespace time
+}  // namespace constant_size
 }  // namespace lue

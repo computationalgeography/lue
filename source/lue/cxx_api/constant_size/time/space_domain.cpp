@@ -2,6 +2,7 @@
 
 
 namespace lue {
+namespace constant_size {
 namespace time {
 
 SpaceDomain::SpaceDomain(
@@ -13,4 +14,5 @@ SpaceDomain::SpaceDomain(
 }
 
 } // namespace time
+}  // namespace constant_size
 } // namespace lue

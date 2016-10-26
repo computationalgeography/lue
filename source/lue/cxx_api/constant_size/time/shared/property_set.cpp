@@ -8,6 +8,7 @@
 
 
 namespace lue {
+namespace constant_size {
 namespace time {
 namespace shared {
 
@@ -138,4 +139,5 @@ void configure_property_set(
 
 }  // namespace shared
 }  // namespace time
+}  // namespace constant_size
 }  // namespace lue

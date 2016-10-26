@@ -3,6 +3,7 @@
 
 
 namespace lue {
+namespace constant_size {
 namespace time {
 namespace shared {
 
@@ -45,4 +46,5 @@ TimePeriod           create_time_period  (hdf5::Identifier const& location,
 
 }  // namespace shared
 }  // namespace time
+}  // namespace constant_size
 }  // namespace lue

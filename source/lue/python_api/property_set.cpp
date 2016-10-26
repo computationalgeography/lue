@@ -127,14 +127,14 @@ void init_property_set(
 
     // TODO Refactor Group and PropertySet API's into common base classes.
     //      Multiple classes implement the interfaces.
-    py::class_<time::PropertySet>(module, "_PropertySet",
+    py::class_<constant_size::time::PropertySet>(module, "_PropertySet",
         "_PropertySet docstring...")
 
         // Group API
-        .def_property_readonly("id", &time::PropertySet::id,
+        .def_property_readonly("id", &constant_size::time::PropertySet::id,
             "id docstring...",
             py::return_value_policy::reference_internal)
-        .def_property_readonly("domain", &time::PropertySet::domain,
+        .def_property_readonly("domain", &constant_size::time::PropertySet::domain,
             "domain docstring...",
             py::return_value_policy::reference_internal)
 
@@ -145,16 +145,16 @@ void init_property_set(
         //     "add_property docstring...",
         //     py::return_value_policy::reference_internal)
         .def_property_readonly("configuration",
-            &time::PropertySet::configuration,
+            &constant_size::time::PropertySet::configuration,
             "configuration docstring...",
             py::return_value_policy::reference_internal)
-        .def_property_readonly("properties", &time::PropertySet::properties,
+        .def_property_readonly("properties", &constant_size::time::PropertySet::properties,
             "properties docstring...",
             py::return_value_policy::reference_internal)
     ;
 
-    py::class_<time::omnipresent::PropertySet>(module, "O_PropertySet",
-        py::base<time::PropertySet>(),
+    py::class_<constant_size::time::omnipresent::PropertySet>(module, "O_PropertySet",
+        py::base<constant_size::time::PropertySet>(),
         "O_PropertySet docstring...")
 
         .def(py::init<PropertySet&>(),
@@ -163,7 +163,7 @@ void init_property_set(
             py::keep_alive<1, 2>())
 
         .def("reserve_items",
-                &time::omnipresent::PropertySet::reserve_items,
+                &constant_size::time::omnipresent::PropertySet::reserve_items,
             "reserve_items docstring...",
             py::return_value_policy::reference_internal)
 
@@ -173,17 +173,17 @@ void init_property_set(
         //     py::return_value_policy::reference_internal)
 
         .def_property_readonly("ids",
-                &time::omnipresent::PropertySet::ids,
+                &constant_size::time::omnipresent::PropertySet::ids,
             "ids docstring...",
             py::return_value_policy::reference_internal)
 
         .def("add_property", [](
-                    time::omnipresent::PropertySet& self,
+                    constant_size::time::omnipresent::PropertySet& self,
                     std::string const& name,
                     py::handle const& numpy_type_id_object,
                     py::tuple const& shape,
                     py::tuple const& chunks) ->
-                        time::omnipresent::same_shape::Property& {
+                        constant_size::time::omnipresent::same_shape::Property& {
 
                 int numpy_type_id = NPY_NOTYPE;
                 {
@@ -219,11 +219,11 @@ void init_property_set(
             py::return_value_policy::reference_internal)
 
         .def("add_property", [](
-                    time::omnipresent::PropertySet& self,
+                    constant_size::time::omnipresent::PropertySet& self,
                     std::string const& name,
                     py::handle const& numpy_type_id_object,
                     size_t const rank) ->
-                        time::omnipresent::different_shape::Property& {
+                        constant_size::time::omnipresent::different_shape::Property& {
 
                 int numpy_type_id = NPY_NOTYPE;
                 {

@@ -26,7 +26,7 @@ void init_item(
     // ;
 
 
-    py::class_<time::omnipresent::same_shape::Item>(module,
+    py::class_<constant_size::time::omnipresent::same_shape::Item>(module,
         "O_CS_Item",
         // py::base<time::omnipresent::Item>(),
         py::base<Array>(),
@@ -49,30 +49,32 @@ void init_item(
     ;
 
 
-    py::class_<time::omnipresent::different_shape::Item>(module,
+    py::class_<constant_size::time::omnipresent::different_shape::Item>(module,
         "O_VS_Item",
         // py::base<time::omnipresent::Item>(),
         // py::base<Array>(),
         "O_VS_Item docstring...")
 
         .def_property_readonly("dtype", [](
-                    time::omnipresent::different_shape::Item const& self) {
+                    constant_size::time::omnipresent::different_shape::Item
+                        const& self) {
                 return hdf5_type_id_to_numpy_dtype(self.type_id());
             },
             "dtype docstring..."
         )
 
         .def_property_readonly("rank",
-                &time::omnipresent::different_shape::Item::rank,
+                &constant_size::time::omnipresent::different_shape::Item::rank,
             "rank docstring..."
         )
 
         .def("__len__",
-            &time::omnipresent::different_shape::Item::nr_items
+            &constant_size::time::omnipresent::different_shape::Item::nr_items
         )
 
         .def("__getitem__", [](
-                time::omnipresent::different_shape::Item const& values,
+                constant_size::time::omnipresent::different_shape::Item const&
+                    values,
                 index_t const idx) {
             if(idx >= values.nr_items()) {
                 throw py::index_error();

@@ -2,6 +2,7 @@
 
 
 namespace lue {
+namespace constant_size {
 namespace time {
 
 PropertySet::PropertySet(
@@ -63,4 +64,5 @@ lue::Property& PropertySet::add_property(
 }
 
 } // namespace time
+}  // namespace constant_size
 } // namespace lue

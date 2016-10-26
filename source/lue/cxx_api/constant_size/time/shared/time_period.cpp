@@ -3,6 +3,7 @@
 
 
 namespace lue {
+namespace constant_size {
 namespace time {
 namespace shared {
 
@@ -56,4 +57,5 @@ TimePeriod create_time_period(
 
 }  // namespace shared
 }  // namespace time
+}  // namespace constant_size
 }  // namespace lue

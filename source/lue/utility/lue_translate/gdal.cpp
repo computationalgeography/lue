@@ -263,7 +263,7 @@ void copy_band(
 
 
 auto create_space_discretization_property(
-    time::omnipresent::PropertySet& o_property_set,
+    constant_size::time::omnipresent::PropertySet& o_property_set,
     GDALRasterDomain const& gdal_domain,
     count_t const nr_items)
 {
@@ -302,7 +302,7 @@ auto create_space_discretization_property(
 
 
 auto create_time_discretization_property(
-    time::shared::PropertySet /* sc_property_set */,
+    constant_size::time::shared::PropertySet /* sc_property_set */,
     // GDALRasterDomain const& gdal_domain,
     count_t const /* nr_items */)
 {
@@ -500,7 +500,7 @@ void translate_gdal_raster_to_lue(
     count_t const nr_items = 1;
     rank_t const rank = 2;
 
-    time::omnipresent::PropertySet o_property_set(areas);
+    constant_size::time::omnipresent::PropertySet o_property_set(areas);
 
     // Write property ids.
     {
@@ -648,7 +648,7 @@ void translate_gdal_raster_stack_to_lue(
     count_t const nr_items = 1;
     rank_t const rank = 2;
 
-    time::shared::PropertySet sc_areas(areas);
+    constant_size::time::shared::PropertySet sc_areas(areas);
 
     // Write property ids.
     item_t const item_id[nr_items] = { 0 };
@@ -682,7 +682,7 @@ void translate_gdal_raster_stack_to_lue(
             static_cast<int32_t>(stack_duration.count())
         };
 
-        time::shared::TimePeriodDomain s_time_domain(
+        constant_size::time::shared::TimePeriodDomain s_time_domain(
             areas.domain().time_domain());
 
         auto& periods = s_time_domain.reserve_items(nr_time_domain_items);
@@ -740,7 +740,7 @@ void translate_gdal_raster_stack_to_lue(
 
     property_set_name = "globals";
     auto& globals = phenomenon.add_property_set(property_set_name);
-    time::omnipresent::PropertySet o_globals(globals);
+    constant_size::time::omnipresent::PropertySet o_globals(globals);
 
     {
         auto& item = o_globals.reserve_items(nr_items);

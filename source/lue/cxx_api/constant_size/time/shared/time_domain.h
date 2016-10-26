@@ -3,6 +3,7 @@
 
 
 namespace lue {
+namespace constant_size {
 namespace time {
 namespace shared {
 
@@ -33,4 +34,5 @@ private:
 
 }  // namespace shared
 }  // namespace time
+}  // namespace constant_size
 }  // namespace lue

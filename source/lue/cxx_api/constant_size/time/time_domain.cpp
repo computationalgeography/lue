@@ -2,6 +2,7 @@
 
 
 namespace lue {
+namespace constant_size {
 namespace time {
 
 TimeDomain::TimeDomain(
@@ -13,4 +14,5 @@ TimeDomain::TimeDomain(
 }
 
 } // namespace time
+}  // namespace constant_size
 } // namespace lue

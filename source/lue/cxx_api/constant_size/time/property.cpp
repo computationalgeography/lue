@@ -2,6 +2,7 @@
 
 
 namespace lue {
+namespace constant_size {
 namespace time {
 
 Property::Property(
@@ -44,4 +45,5 @@ lue::Property& Property::group()
 }
 
 } // namespace time
+}  // namespace constant_size
 } // namespace lue

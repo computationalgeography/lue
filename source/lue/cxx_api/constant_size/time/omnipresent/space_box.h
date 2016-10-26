@@ -3,6 +3,7 @@
 
 
 namespace lue {
+namespace constant_size {
 namespace time {
 namespace omnipresent {
 
@@ -45,4 +46,5 @@ SpaceBox           create_space_box    (hdf5::Identifier const& location,
 
 }  // namespace omnipresent
 }  // namespace time
+}  // namespace constant_size
 }  // namespace lue

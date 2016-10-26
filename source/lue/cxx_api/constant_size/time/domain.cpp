@@ -2,6 +2,7 @@
 
 
 namespace lue {
+namespace constant_size {
 namespace time {
 
 Domain::Domain(
@@ -31,4 +32,5 @@ DomainConfiguration const& Domain::configuration() const
 }
 
 } // namespace time
+}  // namespace constant_size
 } // namespace lue

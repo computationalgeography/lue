@@ -3,6 +3,7 @@
 
 
 namespace lue {
+namespace constant_size {
 namespace time {
 
 // bool               item_exists         (hdf5::Identifier const& location,
@@ -63,4 +64,5 @@ private:
 //                                         std::string const& name);
 
 }  // namespace time
+}  // namespace constant_size
 }  // namespace lue

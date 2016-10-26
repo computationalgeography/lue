@@ -3,6 +3,7 @@
 
 
 namespace lue {
+namespace constant_size {
 namespace time {
 namespace omnipresent {
 
@@ -33,4 +34,5 @@ private:
 
 }  // namespace omnipresent
 }  // namespace time
+}  // namespace constant_size
 }  // namespace lue
