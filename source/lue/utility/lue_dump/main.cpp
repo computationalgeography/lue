@@ -6,7 +6,7 @@ namespace {
 std::string const usage = R"(lue_dump
 
 usage:
-    lue_validate [--verbose] [--verbose_dev] [--format=<format>] <input>
+    lue_validate [--verbose] [--verbose_dev] [--format=<format>] <input>...
     lue_validate (-h | --help)
     lue_validate --version
 

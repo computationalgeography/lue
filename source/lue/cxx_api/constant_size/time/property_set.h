@@ -24,7 +24,17 @@ class PropertySet
 
 public:
 
+                   PropertySet         (lue::PropertySet& group);
+
+                   PropertySet         (PropertySet const& other)=delete;
+
+                   PropertySet         (PropertySet&& other)=default;
+
     virtual        ~PropertySet        ()=default;
+
+    PropertySet&   operator=           (PropertySet const& other)=delete;
+
+    PropertySet&   operator=           (PropertySet&& other)=default;
 
     hdf5::Identifier const&
                    id                  () const;
@@ -40,16 +50,6 @@ public:
     Properties&    properties          () const;
 
 protected:
-
-                   PropertySet         (lue::PropertySet& group);
-
-                   PropertySet         (PropertySet const& other)=delete;
-
-                   PropertySet         (PropertySet&& other)=default;
-
-    PropertySet&   operator=           (PropertySet const& other)=delete;
-
-    PropertySet&   operator=           (PropertySet&& other)=default;
 
     lue::PropertySet const&
                    group               () const;

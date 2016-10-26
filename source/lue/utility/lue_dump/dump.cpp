@@ -19,12 +19,15 @@ Dump::Dump(
 
 void Dump::run_implementation()
 {
-    std::string const input_dataset_name = argument<std::string>("<input>");
-    std::string const format = argument<std::string>("--format");
+    auto const input_dataset_names = argument<std::vector<std::string>>(
+        "<input>");
+    auto const format = argument<std::string>("--format");
 
     if(format == "txt") {
-        auto const dataset = open_dataset(input_dataset_name);
-        describe_dataset(dataset, std::cout);
+        for(auto const& input_dataset_name: input_dataset_names) {
+            auto const dataset = open_dataset(input_dataset_name);
+            describe_dataset(dataset, std::cout);
+        }
     }
     else {
         throw std::runtime_error("unsupported format: " + format);

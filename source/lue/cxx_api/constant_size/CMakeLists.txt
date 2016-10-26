@@ -8,6 +8,7 @@ set(SOURCES
 
     time/omnipresent/domain
     time/omnipresent/item
+    time/omnipresent/property
     time/omnipresent/property_set
     time/omnipresent/space_box
     time/omnipresent/space_box_domain

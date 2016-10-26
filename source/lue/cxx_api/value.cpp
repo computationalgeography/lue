@@ -20,8 +20,10 @@ Value::Value(
 
     : hdf5::Group(std::forward<hdf5::Identifier>(location)),
       _configuration{ValueConfiguration(
-          parse_shape_per_item_type(
-              attributes().read<std::string>("lue_shape_per_item_type")))
+          parse_shape_through_time(attributes().read<std::string>(
+              "lue_shape_through_time")),
+          parse_shape_per_item(attributes().read<std::string>(
+              "lue_shape_per_item")))
       }
 
 {
@@ -53,8 +55,10 @@ Value create_value(
 
     hdf5::Attributes value_attributes(value_location);
 
-    value_attributes.write<std::string>("lue_shape_per_item_type",
-        shape_per_item_type_to_string(configuration.shape_per_item_type()));
+    value_attributes.write<std::string>("lue_shape_through_time",
+        shape_through_time_to_string(configuration.shape_through_time()));
+    value_attributes.write<std::string>("lue_shape_per_item",
+        shape_per_item_to_string(configuration.shape_per_item()));
 
     return Value(std::move(value_location));
 }

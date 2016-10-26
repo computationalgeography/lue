@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/cxx_api/constant_size/time/property.h"
+#include "lue/cxx_api/constant_size/time/omnipresent/property.h"
 #include "lue/cxx_api/constant_size/time/omnipresent/same_shape/item.h"
 #include <memory>
 
@@ -15,10 +15,12 @@ namespace same_shape {
     @ingroup    lue_cxx_api_group
 */
 class Property:
-    public time::Property
+    public time::omnipresent::Property
 {
 
 public:
+
+                   Property            (lue::Property& group);
 
                    Property            (lue::Property& group,
                                         hid_t const type_id);
@@ -34,6 +36,8 @@ public:
     Property&      operator=           (Property&& other)=default;
 
     Item&          reserve_items       (hsize_t const nr_items);
+
+    Item const&    values              () const;
 
     Item&          values              ();
 

@@ -32,6 +32,15 @@ std::string Application::argument<std::string>(
 
 
 template<>
+std::vector<std::string> Application::argument<std::vector<std::string>>(
+    std::string const& name) const
+{
+    assert(argument_passed(name));
+    return _arguments.at(name).asStringList();
+}
+
+
+template<>
 bool Application::argument<bool>(
     std::string const& name) const
 {

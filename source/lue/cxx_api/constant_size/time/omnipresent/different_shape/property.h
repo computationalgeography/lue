@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/cxx_api/constant_size/time/property.h"
+#include "lue/cxx_api/constant_size/time/omnipresent/property.h"
 #include "lue/cxx_api/constant_size/time/omnipresent/different_shape/item.h"
 
 
@@ -13,7 +13,7 @@ namespace different_shape {
     @ingroup    lue_cxx_api_group
 */
 class Property:
-    public time::Property
+    public time::omnipresent::Property
 {
 
 public:
@@ -34,11 +34,14 @@ public:
     Item&          reserve_items       (hsize_t const nr_items,
                                         extent_t const* shapes);
 
+    Item const&    values              () const;
+
     Item&          values              ();
 
 private:
 
-    different_shape::Item _values;
+    different_shape::Item
+                   _values;
 
 };
 

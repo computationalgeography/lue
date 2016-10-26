@@ -788,25 +788,28 @@ void Validate::o_validate_property(
     });
 
 
+    // TODO ShapeThroughTime
+
+
     if(group.contains_group("value")) {
         auto const value = hdf5::open_group(group, "value");
 
         assert_attributes_exist(value, {
-            "lue_shape_per_item_type"
+            "lue_shape_per_item"
         });
 
 
-        if(value.contains_attribute("lue_shape_per_item_type")) {
+        if(value.contains_attribute("lue_shape_per_item")) {
             try {
-                auto const shape_per_item_type = parse_shape_per_item_type(
-                    value.attribute<std::string>("lue_shape_per_item_type"));
+                auto const shape_per_item = parse_shape_per_item(
+                    value.attribute<std::string>("lue_shape_per_item"));
 
-                switch(shape_per_item_type) {
-                    case ShapePerItemType::same_shape: {
+                switch(shape_per_item) {
+                    case ShapePerItem::same: {
                         validate_cs_value(domain, value);
                         break;
                     }
-                    case ShapePerItemType::different_shape: {
+                    case ShapePerItem::different: {
                         validate_vs_value(domain, value);
                         break;
                     }

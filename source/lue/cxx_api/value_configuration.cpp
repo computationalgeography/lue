@@ -5,9 +5,14 @@
 namespace lue {
 namespace {
 
-detail::EnumStringBimap<ShapePerItemType> const shape_per_item_type_map = {
-    { ShapePerItemType::same_shape, "same_shape" },
-    { ShapePerItemType::different_shape, "different_shape" }
+detail::EnumStringBimap<ShapeThroughTime> const shape_through_time_map = {
+    { ShapeThroughTime::constant, "constant" },
+    { ShapeThroughTime::variable, "variable" }
+};
+
+detail::EnumStringBimap<ShapePerItem> const shape_per_item_map = {
+    { ShapePerItem::same, "same" },
+    { ShapePerItem::different, "different" }
 };
 
 }  // Anonymous namespace
@@ -16,39 +21,70 @@ detail::EnumStringBimap<ShapePerItemType> const shape_per_item_type_map = {
 /*!
     @ingroup    lue_cxx_api_group
 */
-std::string shape_per_item_type_to_string(
-    ShapePerItemType const type)
+std::string shape_through_time_to_string(
+    ShapeThroughTime const shape_through_time)
 {
-    return shape_per_item_type_map.as_string(type);
+    return shape_through_time_map.as_string(shape_through_time);
 }
 
 
 /*!
     @ingroup    lue_cxx_api_group
 */
-ShapePerItemType parse_shape_per_item_type(
+ShapeThroughTime parse_shape_through_time(
     std::string const& string)
 {
-    if(!shape_per_item_type_map.contains(string)) {
-        throw std::runtime_error("Unknown shape per item type: " + string);
+    if(!shape_through_time_map.contains(string)) {
+        throw std::runtime_error("Unknown shape through time: " + string);
     }
 
-    return shape_per_item_type_map.as_value(string);
+    return shape_through_time_map.as_value(string);
+}
+
+
+/*!
+    @ingroup    lue_cxx_api_group
+*/
+std::string shape_per_item_to_string(
+    ShapePerItem const shape_per_item)
+{
+    return shape_per_item_map.as_string(shape_per_item);
+}
+
+
+/*!
+    @ingroup    lue_cxx_api_group
+*/
+ShapePerItem parse_shape_per_item(
+    std::string const& string)
+{
+    if(!shape_per_item_map.contains(string)) {
+        throw std::runtime_error("Unknown shape per item: " + string);
+    }
+
+    return shape_per_item_map.as_value(string);
 }
 
 
 ValueConfiguration::ValueConfiguration(
-    ShapePerItemType const type)
+    ShapeThroughTime const shape_through_time,
+    ShapePerItem const shape_per_item)
 
-    : _shape_per_item_type{type}
+    : _shape_through_time{shape_through_time},
+      _shape_per_item{shape_per_item}
 
 {
 }
 
 
-ShapePerItemType ValueConfiguration::shape_per_item_type() const
+ShapeThroughTime ValueConfiguration::shape_through_time() const
 {
-    return _shape_per_item_type;
+    return _shape_through_time;
+}
+
+ShapePerItem ValueConfiguration::shape_per_item() const
+{
+    return _shape_per_item;
 }
 
 }  // namespace lue

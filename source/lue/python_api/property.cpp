@@ -34,9 +34,16 @@ void init_property(
 
     ;
 
+
+    py::class_<constant_size::time::omnipresent::Property>(module,
+        "O_Property", py::base<constant_size::time::Property>(),
+        "_Property docstring...")
+    ;
+
+
     py::class_<constant_size::time::omnipresent::same_shape::Property>(
             module,
-        "O_CS_Property", py::base<constant_size::time::Property>(),
+        "O_CS_Property", py::base<constant_size::time::omnipresent::Property>(),
         "O_CS_Property docstring...")
 
         .def(py::init<Property&, hid_t const>(),
@@ -51,14 +58,15 @@ void init_property(
             py::return_value_policy::reference_internal)
 
         .def_property_readonly("values",
-                &constant_size::time::omnipresent::same_shape::Property::values,
+                (constant_size::time::omnipresent::same_shape::Item const& (constant_size::time::omnipresent::same_shape::Property::*)() const) &constant_size::time::omnipresent::same_shape::Property::values,
+                // &constant_size::time::omnipresent::same_shape::Property::values,
             "values docstring...",
             py::return_value_policy::reference_internal)
     ;
 
     py::class_<constant_size::time::omnipresent::different_shape::Property>(
             module,
-        "O_VS_Property", py::base<constant_size::time::Property>(),
+        "O_VS_Property", py::base<constant_size::time::omnipresent::Property>(),
         "O_VS_Property docstring...")
 
         .def(py::init<Property& /* , hid_t const */>(),
@@ -111,7 +119,8 @@ void init_property(
             py::return_value_policy::reference_internal)
 
         .def_property_readonly("values",
-                &constant_size::time::omnipresent::different_shape::Property::values,
+                (constant_size::time::omnipresent::different_shape::Item const& (constant_size::time::omnipresent::different_shape::Property::*)() const) &constant_size::time::omnipresent::different_shape::Property::values,
+                // &constant_size::time::omnipresent::different_shape::Property::values,
             "values docstring...",
             py::return_value_policy::reference_internal)
     ;

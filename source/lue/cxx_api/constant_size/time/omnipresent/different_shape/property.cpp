@@ -11,7 +11,7 @@ namespace different_shape {
 Property::Property(
     lue::Property& group)
 
-    : time::Property(group),
+    : time::omnipresent::Property(group),
       _values(group.value().id(), "value")
 
 {
@@ -24,6 +24,12 @@ Item& Property::reserve_items(
 {
     _values.reserve_items(nr_items, shapes);
 
+    return _values;
+}
+
+
+Item const& Property::values() const
+{
     return _values;
 }
 

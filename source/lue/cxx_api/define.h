@@ -232,14 +232,26 @@ enum class TimeResolution
     Whether or not the shape of the value of different items is the same
     or different is independent of the time domain type.
 */
-enum class ShapePerItemType
+enum class ShapePerItem
 {
 
     //! The value of all items have the same shape
-    same_shape,
+    same,
 
     //! The value of all items have a different shape (potentially)
-    different_shape
+    different
+
+};
+
+
+enum class ShapeThroughTime
+{
+
+    //! The shape of each item's value does not change through time
+    constant,
+
+    //! The shape of each item's value changes through time
+    variable
 
 };
 

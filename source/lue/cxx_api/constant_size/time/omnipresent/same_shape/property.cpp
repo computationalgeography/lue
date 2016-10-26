@@ -9,10 +9,27 @@ namespace omnipresent {
 namespace same_shape {
 
 Property::Property(
+    lue::Property& group)
+
+    : time::omnipresent::Property(group),
+      _values{std::make_unique<same_shape::Item>(group.value().id(),
+          "value")}
+
+{
+}
+
+
+/*!
+    @brief      .
+    @param      type_id Type id of in-memory values
+    @return     .
+    @exception  .
+*/
+Property::Property(
     lue::Property& group,
     hid_t const type_id)
 
-    : time::Property(group),
+    : time::omnipresent::Property(group),
       _values{std::make_unique<same_shape::Item>(group.value().id(),
           "value", type_id)}
 
@@ -25,6 +42,12 @@ Item& Property::reserve_items(
 {
     _values->reserve_items(nr_items);
 
+    return *_values;
+}
+
+
+Item const& Property::values() const
+{
     return *_values;
 }
 

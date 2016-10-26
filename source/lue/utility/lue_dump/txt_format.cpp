@@ -1,5 +1,7 @@
 #include "lue/utility/lue_dump/txt_format.h"
+#include "lue/cxx_api/hdf5.h"
 #include "lue/cxx_api.h"
+#include <boost/algorithm/string/join.hpp>
 
 
 namespace lue {
@@ -168,9 +170,198 @@ void print_message(
 // }  // Namespace constant_size
 
 
-// namespace variable_size {
+// void describe_property_set(
+//     constant_size::time::omnipresent::Properties const& properties,
+//     std::ostream& stream,
+//     size_t indentation)
+// {
 // 
-// }  // variable_size
+// }
+
+
+void describe_property(
+    Property const& property,
+    std::ostream& stream,
+    size_t indentation)
+{
+    print_message(stream, indentation, "- " + property.name());
+}
+
+
+// void describe_property(
+//     constant_size::time::Property const& property,
+//     std::ostream& stream,
+//     size_t indentation)
+// {
+//     using namespace constant_size;
+// 
+//     describe_property(property.group(), stream, indentation);
+// }
+// 
+// 
+// void describe_property(
+//     constant_size::time::omnipresent::Property const& property,
+//     std::ostream& stream,
+//     size_t indentation)
+// {
+//     using namespace constant_size;
+// 
+//     describe_property(dynamic_cast<time::Property const&>(property),
+//         stream, indentation);
+// }
+
+
+void describe_shape(
+    Shape const& shape,
+    std::ostream& stream,
+    size_t indentation)
+{
+    std::vector<std::string> strings(shape.size());
+    std::transform(shape.begin(), shape.end(), strings.begin(),
+            [](Shape::value_type const& extent) {
+        return std::to_string(extent);
+    });
+
+    print_message(stream, indentation,
+        "shape: (" + boost::algorithm::join(strings, ", ") + ")");
+}
+
+
+void describe_value_type(
+    hid_t const type_id,
+    std::ostream& stream,
+    size_t indentation)
+{
+    print_message(stream, indentation, "value type: " +
+        hdf5::standard_datatype_as_string(type_id));
+}
+
+
+void describe_value_type(
+    hdf5::Identifier const& type_id,
+    std::ostream& stream,
+    size_t indentation)
+{
+    print_message(stream, indentation, "value type: " +
+        hdf5::standard_datatype_as_string(type_id));
+}
+
+
+void describe_item(
+    constant_size::time::omnipresent::same_shape::Item const& item,
+    std::ostream& stream,
+    size_t indentation)
+{
+    assert(item.shape().size() > 1);
+
+    print_message(stream, indentation,
+        "nr_items: " + std::to_string(item.shape()[0]));
+
+    auto const first = item.shape().begin() + 1;
+    auto const last = item.shape().end();
+    describe_shape(Shape(first, last), stream, indentation);
+    describe_value_type(item.type_id(), stream, indentation);
+}
+
+
+void describe_item(
+    constant_size::time::omnipresent::different_shape::Item const& item,
+    std::ostream& stream,
+    size_t indentation)
+{
+    print_message(stream, indentation,
+        "nr_items: " + std::to_string(item.nr_items()));
+    print_message(stream, indentation,
+        "rank: " + std::to_string(item.rank()));
+    describe_value_type(item.type_id(), stream, indentation);
+}
+
+
+void describe_property(
+    constant_size::time::omnipresent::same_shape::Property const& property,
+    std::ostream& stream,
+    size_t indentation)
+{
+    describe_item(property.values(), stream, indentation);
+}
+
+
+void describe_property(
+    constant_size::time::omnipresent::different_shape::Property const& property,
+    std::ostream& stream,
+    size_t indentation)
+{
+    describe_item(property.values(), stream, indentation);
+}
+
+
+void describe_domain(
+    constant_size::time::omnipresent::Domain const& domain,
+    std::ostream& stream,
+    size_t indentation)
+{
+    // describe_space_domain(domain.space_domain(), stream, indentation);
+}
+
+
+void describe_property_set(
+    constant_size::time::omnipresent::PropertySet const& property_set,
+    std::ostream& stream,
+    size_t indentation)
+{
+    using namespace constant_size::time::omnipresent;
+
+    // TODO Hier verder: property_set moet
+    //     constant_size::time::omnipresent::Domain teruggeven
+    // describe_domain(property_set.domain(), stream, indentation);
+
+    auto const& properties = property_set.properties();
+
+    if(!properties.empty()) {
+        print_message(stream, indentation, "properties: ");
+
+        for(auto const& name: properties.names()) {
+
+            auto const& property = properties[name];
+
+            describe_property(property, stream, indentation);
+
+            ++indentation;
+
+            auto const& value = property.value();
+            auto const shape_per_item = value.configuration().shape_per_item();
+
+            print_message(stream, indentation, "shape_per_item: " +
+                    shape_per_item_to_string(shape_per_item));
+
+            switch(shape_per_item) {
+                case ShapePerItem::same: {
+                    describe_property(
+                        same_shape::Property(const_cast<lue::Property&>(
+                            property)), stream, indentation);
+                    break;
+                }
+                case ShapePerItem::different: {
+                    describe_property(
+                        different_shape::Property(const_cast<lue::Property&>(
+                            property)), stream, indentation);
+                    break;
+                }
+            }
+
+            --indentation;
+        }
+    }
+}
+
+
+void describe_property_set(
+    constant_size::time::shared::PropertySet const& property_set,
+    std::ostream& stream,
+    size_t indentation)
+{
+    // describe_properties(property_set.properties(), stream, indentation);
+}
 
 
 void describe_property_set(
@@ -180,18 +371,34 @@ void describe_property_set(
 {
     print_message(stream, indentation, "- " + property_set.name());
 
-    ++indentation;
-
     auto const size_of_item_collection_type =
         property_set.configuration().size_of_item_collection_type();
+    auto const& time_domain = property_set.domain().time_domain();
+    auto const time_domain_type = time_domain.configuration().type();
+
+    ++indentation;
+
+    print_message(stream, indentation, "time domain type: " +
+        time_domain_type_to_string(time_domain_type));
 
     switch(size_of_item_collection_type) {
         case(SizeOfItemCollectionType::constant_size): {
-            // describe_property_set(constant_size::PropertySet(property_set),
-            //     stream, indentation);
-
-            // constant_size::describe_property_set(property_set, stream,
-            //     indentation);
+            switch(time_domain_type) {
+                case TimeDomainType::omnipresent: {
+                    describe_property_set(
+                        constant_size::time::omnipresent::PropertySet(
+                            const_cast<PropertySet&>(property_set)),
+                        stream, indentation);
+                    break;
+                }
+                case TimeDomainType::shared: {
+                    describe_property_set(
+                        constant_size::time::shared::PropertySet(
+                            const_cast<PropertySet&>(property_set)),
+                        stream, indentation);
+                    break;
+                }
+            }
 
             break;
         }

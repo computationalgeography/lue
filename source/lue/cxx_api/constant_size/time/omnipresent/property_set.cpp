@@ -77,7 +77,8 @@ same_shape::Property& PropertySet::add_property(
     Shape const& shape,
     Chunks const& chunks)
 {
-    ValueConfiguration value_configuration(ShapePerItemType::same_shape);
+    ValueConfiguration value_configuration(ShapeThroughTime::constant,
+        ShapePerItem::same);
 
     auto& property = time::PropertySet::add_property(name,
         value_configuration);
@@ -98,7 +99,8 @@ different_shape::Property& PropertySet::add_property(
     // hid_t const memory_type_id,
     size_t const rank)
 {
-    ValueConfiguration value_configuration(ShapePerItemType::different_shape);
+    ValueConfiguration value_configuration(ShapeThroughTime::constant,
+        ShapePerItem::different);
 
     auto& property = time::PropertySet::add_property(name,
         value_configuration);

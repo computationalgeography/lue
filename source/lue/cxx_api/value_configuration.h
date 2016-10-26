@@ -5,11 +5,17 @@
 
 namespace lue {
 
-std::string        shape_per_item_type_to_string(
-                                        ShapePerItemType const type);
+std::string        shape_through_time_to_string(
+                                        ShapeThroughTime const
+                                            shape_through_time);
 
-ShapePerItemType   parse_shape_per_item_type(
+ShapeThroughTime   parse_shape_through_time(
                                         std::string const& string);
+
+std::string        shape_per_item_to_string(
+                                        ShapePerItem const shape_per_item);
+
+ShapePerItem       parse_shape_per_item(std::string const& string);
 
 
 /*!
@@ -20,17 +26,23 @@ class ValueConfiguration
 
 public:
 
-                   ValueConfiguration  (ShapePerItemType const type);
+                   ValueConfiguration  (ShapeThroughTime const
+                                            shape_through_time,
+                                        ShapePerItem const shape_per_item);
 
                    ~ValueConfiguration ()=default;
 
-    ShapePerItemType
-                   shape_per_item_type () const;
+    ShapeThroughTime
+                   shape_through_time  () const;
+
+    ShapePerItem   shape_per_item      () const;
 
 private:
 
-    ShapePerItemType
-                   _shape_per_item_type;
+    ShapeThroughTime
+                   _shape_through_time;
+
+    ShapePerItem   _shape_per_item;
 
 };
 
