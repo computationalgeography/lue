@@ -1,6 +1,6 @@
 #include "lue/cxx_api/property_set.h"
 #include "lue/cxx_api/time/omnipresent/property_set.h"
-#include "lue/cxx_api/time/shared_constant/property_set.h"
+#include "lue/cxx_api/time/shared/property_set.h"
 #include "lue/cxx_api/time/shared/time_period_domain.h"
 #include "lue/cxx_api/domain_configuration.h"
 #include "lue/cxx_api/exception.h"
@@ -187,7 +187,7 @@ PropertySet create_property_set(
             break;
         }
         case TimeDomainType::shared: {
-            time::shared_constant::configure_property_set(
+            time::shared::configure_property_set(
                 property_set_location, name, space_configuration);
 
             hid_t const file_type_id = H5T_STD_I32LE;

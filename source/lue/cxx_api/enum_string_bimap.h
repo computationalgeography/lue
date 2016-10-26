@@ -1,5 +1,6 @@
 #pragma once
 #include <boost/bimap.hpp>
+#include <cassert>
 #include <string>
 
 

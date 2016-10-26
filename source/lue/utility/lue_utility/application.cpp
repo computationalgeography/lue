@@ -124,13 +124,17 @@ int Application::run() noexcept
         }
 
         stopwatch.stop();
-        print_verbose_message("finished at " + to_string(stopwatch.end()));
+        print_verbose_message("finished at: " + to_string(stopwatch.end()));
         print_verbose_message("elapsed time: " + std::to_string(
             stopwatch.elapsed_seconds()) + "s");
+
+        status = EXIT_SUCCESS;
     }
     catch(...) {
         print_error_message("unknown error");
     }
+
+    print_verbose_message("exit status: " + std::to_string(status));
 
     return status;
 }

@@ -256,8 +256,8 @@ enum class SizeOfItemCollectionType
     //! The collection of items remains constant through time
     constant_size,
 
-    //! The collection of items is variable through time
-    variable_size
+    // //! The collection of items is variable through time
+    // variable_size
 
 };
 

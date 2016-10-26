@@ -17,11 +17,10 @@ set(SOURCES
     omnipresent/same_shape/item
     omnipresent/same_shape/property
 
+    shared/property_set
     shared/time_domain
     shared/time_period
     shared/time_period_domain
-
-    shared_constant/property_set
 )
 add_library(lue_cxx_api_time_objects OBJECT
     ${SOURCES}

@@ -302,7 +302,7 @@ auto create_space_discretization_property(
 
 
 auto create_time_discretization_property(
-    time::shared_constant::PropertySet /* sc_property_set */,
+    time::shared::PropertySet /* sc_property_set */,
     // GDALRasterDomain const& gdal_domain,
     count_t const /* nr_items */)
 {
@@ -648,7 +648,7 @@ void translate_gdal_raster_stack_to_lue(
     count_t const nr_items = 1;
     rank_t const rank = 2;
 
-    time::shared_constant::PropertySet sc_areas(areas);
+    time::shared::PropertySet sc_areas(areas);
 
     // Write property ids.
     item_t const item_id[nr_items] = { 0 };

@@ -1,4 +1,4 @@
-#include "lue/cxx_api/time/shared_constant/property_set.h"
+#include "lue/cxx_api/time/shared/property_set.h"
 #include "lue/cxx_api/time/omnipresent/space_box_domain.h"
 // #include "lue/cxx_api/array.h"
 #include "lue/cxx_api/exception.h"
@@ -9,7 +9,7 @@
 
 namespace lue {
 namespace time {
-namespace shared_constant {
+namespace shared {
 
 PropertySet::PropertySet(
     lue::PropertySet& group)
@@ -136,6 +136,6 @@ void configure_property_set(
     }
 }
 
-}  // namespace shared_constant
+}  // namespace shared
 }  // namespace time
 }  // namespace lue

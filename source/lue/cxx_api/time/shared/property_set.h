@@ -1,15 +1,15 @@
 #pragma once
 #include "lue/cxx_api/time/omnipresent/same_shape/item.h"
-// #include "lue/cxx_api/time/shared_constant/same_shape/item.h"
-// #include "lue/cxx_api/time/shared_constant/same_shape/property.h"
-// #include "lue/cxx_api/time/shared_constant/different_shape/property.h"
+// #include "lue/cxx_api/time/shared/same_shape/item.h"
+// #include "lue/cxx_api/time/shared/same_shape/property.h"
+// #include "lue/cxx_api/time/shared/different_shape/property.h"
 #include "lue/cxx_api/time/property_set.h"
 // #include "lue/cxx_api/array.h"
 
 
 namespace lue {
 namespace time {
-namespace shared_constant {
+namespace shared {
 
 /*!
     @ingroup    lue_cxx_api_group
@@ -71,6 +71,6 @@ void               configure_property_set(
                                         SpaceDomainConfiguration const&
                                             domain_configuration);
 
-}  // namespace shared_constant
+}  // namespace shared
 }  // namespace time
 }  // namespace lue
