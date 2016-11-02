@@ -8,15 +8,24 @@ namespace lue {
 
 using item_t = lue_item_t;
 
+/*!
+    @brief      Number of dimensions in an HDF5 dataset
+*/
 using rank_t = uint16_t;
 
-//! Size of collections.
+/*!
+    @brief      Size of collections
+*/
 using count_t = uint64_t;
 
-//! Size of collections.
+/*!
+    @brief      Size of collections
+*/
 using index_t = count_t;
 
-//! Size of dimension.
+/*!
+    @brief      Size of dimensions
+*/
 using extent_t = hsize_t;
 
 
