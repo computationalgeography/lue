@@ -74,9 +74,10 @@ void init_phenomenon(
 
         .def("add_property_set",
             [](Phenomenon& phenomenon, std::string const& name,
+                PropertySetConfiguration const& configuration,
                 SpaceDomainConfiguration const& space_domain_configuration)
                         -> PropertySet& {
-                    return phenomenon.add_property_set(name,
+                    return phenomenon.add_property_set(name, configuration,
                         space_domain_configuration);
             },
             R"(Add new property set to collection
@@ -89,12 +90,13 @@ void init_phenomenon(
     The return type of the property set will reflect the kind of the domain
     that is configured.
 )",
-            "name"_a, "space_domain_configuration"_a,
+            "name"_a, "configuration"_a, "space_domain_configuration"_a,
             py::return_value_policy::reference_internal)
 
         .def("add_property_set",
-                (PropertySet& (Phenomenon::*)
-                    (std::string const&, DomainConfiguration const&))
+                (PropertySet& (Phenomenon::*) (std::string const&,
+                     PropertySetConfiguration const& configuration,
+                     DomainConfiguration const&))
                         &Phenomenon::add_property_set,
             R"(Add new property set to collection
 
@@ -104,7 +106,7 @@ void init_phenomenon(
     The return type of the property set will reflect the kind of the domain
     that is configured.
 )",
-            "name"_a, "domain_configuration"_a,
+            "name"_a, "configuration"_a, "domain_configuration"_a,
             py::return_value_policy::reference_internal)
 
         .def_property_readonly("property_sets", &Phenomenon::property_sets,

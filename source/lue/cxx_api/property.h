@@ -47,6 +47,9 @@ private:
 
 
 Property           create_property     (hdf5::Identifier const& location,
-                                        std::string const& name);
+                                        std::string const& name,
+                                        hdf5::Identifier const& domain_id,
+                                        ValueConfiguration const&
+                                            value_configuration);
 
 } // namespace lue

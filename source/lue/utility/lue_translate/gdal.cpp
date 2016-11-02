@@ -261,6 +261,87 @@ void copy_band(
     }
 }
 
+
+auto create_space_discretization_property(
+    constant_size::time::omnipresent::PropertySet& o_property_set,
+    GDALRasterDomain const& gdal_domain,
+    count_t const nr_items)
+{
+    // Discretization property.
+    // Domain of discretization is the same as of the band properties so
+    // they can all be part of the same property set. We need to set up
+    // a link between each band property value and the discretization
+    // property.
+    auto const file_type_id = H5T_STD_U64LE;
+    auto const memory_type_id = H5T_NATIVE_UINT64;
+    Shape const shape{ 2 };
+    Chunks const chunks{ 2 };
+
+    auto& discretization = o_property_set.add_property(
+        "space discretization", file_type_id, memory_type_id, shape,
+        chunks);
+
+    {
+        // Per item a 1D array of <rank> values representing the size of
+        // the dimensions.
+        uint64_t values[2] = {
+            static_cast<uint64_t>(gdal_domain.nr_rows),
+            static_cast<uint64_t>(gdal_domain.nr_cols)
+        };
+
+        auto& item = discretization.reserve_items(nr_items);
+        item.write({nr_items, 2}, values);
+    }
+
+    discretization.group().attributes().write<std::string>(
+        "lue_discretization_type", space_discretization_type_to_string(
+            SpaceDiscretizationType::cartesian_grid));
+
+    return std::move(discretization);
+}
+
+
+auto create_time_discretization_property(
+    constant_size::time::shared::PropertySet /* sc_property_set */,
+    // GDALRasterDomain const& gdal_domain,
+    count_t const /* nr_items */)
+{
+
+
+
+    // // Discretization property.
+    // // Domain of discretization is the same as of the band properties so
+    // // they can all be part of the same property set. We need to set up
+    // // a link between each band property value and the discretization
+    // // property.
+    // auto const file_type_id = H5T_STD_U64LE;
+    // auto const memory_type_id = H5T_NATIVE_UINT64;
+    // Shape const shape{ 2 };
+    // Chunks const chunks{ 2 };
+
+    // auto& discretization = o_property_set.add_property(
+    //     "space discretization", file_type_id, memory_type_id, shape,
+    //     chunks);
+
+    // {
+    //     // Per item a 1D array of <rank> values representing the size of
+    //     // the dimensions.
+    //     uint64_t values[2] = {
+    //         static_cast<uint64_t>(gdal_domain.nr_rows),
+    //         static_cast<uint64_t>(gdal_domain.nr_cols)
+    //     };
+
+    //     auto& item = discretization.reserve_items(nr_items);
+    //     item.write({nr_items, 2}, values);
+    // }
+
+    // discretization.group().attributes().write<std::string>(
+    //     "lue_discretization_type", space_discretization_type_to_string(
+    //         SpaceDiscretizationType::cartesian_grid));
+
+    // return std::move(discretization);
+}
+
 }  // anonymous namespace
 
 
@@ -408,16 +489,18 @@ void translate_gdal_raster_to_lue(
 
     // Add property set to the phenomenon. This one set will contain all
     // raster layers from the GDAL dataset.
-    auto const property_set_name = "area";
+    auto const property_set_name = "areas";
+    PropertySetConfiguration property_set_configuration(
+        SizeOfItemCollectionType::constant_size);
     DomainConfiguration domain_configuration{
         SpaceDomainConfiguration(SpaceDomainItemType::box)};
-    auto& property_set = phenomenon.add_property_set(property_set_name,
-        domain_configuration);
+    auto& areas = phenomenon.add_property_set(property_set_name,
+        property_set_configuration, domain_configuration);
 
     count_t const nr_items = 1;
     rank_t const rank = 2;
 
-    time::omnipresent::PropertySet o_property_set(property_set);
+    constant_size::time::omnipresent::PropertySet o_property_set(areas);
 
     // Write property ids.
     {
@@ -437,38 +520,15 @@ void translate_gdal_raster_to_lue(
             gdal_domain.north
         };
 
-        time::omnipresent::SpaceBoxDomain o_space_domain(
-            property_set.domain().space_domain());
-        auto& boxes = o_space_domain.reserve_items(nr_items);
+        space::stationary::SpaceBoxDomain s_space_domain(
+            areas.domain().space_domain());
+        auto& boxes = s_space_domain.reserve_items(nr_items);
         boxes.write({nr_items, 2 * rank}, box_coordinate);
     }
 
 
-    // Discretization property.
-    // Domain of discretization is the same as of the band properties so
-    // they can all be part of the same property set. We need to set up
-    // a link between each band property value and the discretization
-    // property.
-    auto const file_type_id = H5T_STD_U64LE;
-    auto const memory_type_id = H5T_NATIVE_UINT64;
-    Shape const shape{ 2 };
-    Chunks const chunks{ 2 };
-
-    auto& discretization = o_property_set.add_property(
-        "space discretization", file_type_id, memory_type_id, shape,
-        chunks);
-
-    {
-        // Per item a 1D array of <rank> values representing the size of
-        // the dimensions.
-        uint64_t values[2] = {
-            static_cast<uint64_t>(gdal_domain.nr_rows),
-            static_cast<uint64_t>(gdal_domain.nr_cols)
-        };
-
-        auto& item = discretization.reserve_items(nr_items);
-        item.write({nr_items, 2}, values);
-    }
+    auto space_discretization = create_space_discretization_property(
+        o_property_set, gdal_domain, nr_items);
 
 
     {
@@ -497,7 +557,8 @@ void translate_gdal_raster_to_lue(
 
             auto& property = o_property_set.add_property(property_name(b),
                 file_type_id, rank);
-            property.link_space_discretization(discretization);
+            property.group().value().create_soft_link(
+                space_discretization.id(), "lue_space_discretization");
             auto& item = property.reserve_items(nr_items, shapes);
 
 
@@ -555,33 +616,190 @@ void translate_gdal_raster_to_lue(
 // slice_duration Duration of time step
 // lue_dataset_name Name of dataset to write
 void translate_gdal_raster_stack_to_lue(
-    ::GDALDataset& /* gdal_dataset */,
-    std::string const& /* gdal_dataset_name */,
-    MonthTimePoint const& /* start_time_point */,
-    MonthDuration const& /* slice_duration */,
-    std::string const& /* lue_dataset_name */)
+    ::GDALDataset& gdal_dataset,
+    std::string const& gdal_dataset_name,
+    MonthTimePoint const& start_time_point,
+    MonthDuration const& slice_duration,
+    std::string const& lue_dataset_name)
 {
-//     GDALRasterDomain gdal_domain = gdal_raster_domain(gdal_dataset);
-// 
-// 
-//     // Create LUE dataset.
-//     auto lue_dataset = create_dataset(lue_dataset_name);
-// 
-//     // Add phenomenon to the LUE dataset. Name it after the GDAL dataset.
-//     auto const phenomenon_name =
-//         boost::filesystem::path(gdal_dataset_name).stem().string();
-//     auto& phenomenon = lue_dataset.add_phenomenon(phenomenon_name);
-// 
-//     // Add property set to the phenomenon. This one set will contain all
-//     // raster layers from the GDAL dataset.
-//     auto const property_set_name = "area";
-//     DomainConfiguration domain_configuration(
-//         TimeDomainConfiguration{TimeDomainType::shared_constant_collection},
-//         SpaceDomainConfiguration{SpaceDomainItemType::box});
-//     auto& property_set = phenomenon.add_property_set(property_set_name,
-//         domain_configuration);
-// 
-// 
+    GDALRasterDomain gdal_domain = gdal_raster_domain(gdal_dataset);
+
+
+    // Create LUE dataset.
+    auto lue_dataset = create_dataset(lue_dataset_name);
+
+    // Add phenomenon to the LUE dataset. Name it after the GDAL dataset.
+    auto const phenomenon_name =
+        boost::filesystem::path(gdal_dataset_name).stem().string();
+    auto& phenomenon = lue_dataset.add_phenomenon(phenomenon_name);
+
+    // Add property set to the phenomenon. This one set will contain all
+    // raster layers from the GDAL dataset.
+    std::string property_set_name = "areas";
+    PropertySetConfiguration property_set_configuration(
+        SizeOfItemCollectionType::constant_size);
+    DomainConfiguration domain_configuration(
+        TimeDomainConfiguration(TimeDomainType::shared,
+            TimeDomainItemType::period),
+        SpaceDomainConfiguration(SpaceDomainItemType::box));
+    auto& areas = phenomenon.add_property_set(property_set_name,
+        property_set_configuration, domain_configuration);
+
+    count_t const nr_items = 1;
+    rank_t const rank = 2;
+
+    constant_size::time::shared::PropertySet sc_areas(areas);
+
+    // Write property ids.
+    item_t const item_id[nr_items] = { 0 };
+
+    {
+        auto& item = sc_areas.reserve_items(nr_items);
+        item.write(nr_items, item_id);
+    }
+
+
+    // Write time period.
+    {
+        // The begin time point is passed in. The duration of the period is
+        // determined by the last slice available.
+        auto const file_extension = gdal_slice_filename_extension(
+            gdal_dataset.GetFileList(), raster_extensions);
+        std::set<size_t> slice_indices = stack_slice_indices(gdal_dataset_name,
+            file_extension);
+        assert(!slice_indices.empty());
+
+        size_t const first_slice = *slice_indices.begin();
+        size_t const last_slice = *(--slice_indices.end());
+        size_t const nr_slices = last_slice - first_slice + 1;
+
+        auto const stack_duration = nr_slices * slice_duration;
+
+        count_t const nr_time_domain_items = 1;
+        int32_t const period_coordinates[nr_time_domain_items * 3] = {
+            start_time_point.year(),
+            start_time_point.month(),
+            static_cast<int32_t>(stack_duration.count())
+        };
+
+        constant_size::time::shared::TimePeriodDomain s_time_domain(
+            areas.domain().time_domain());
+
+        auto& periods = s_time_domain.reserve_items(nr_time_domain_items);
+        periods.write({nr_time_domain_items, 3}, period_coordinates);
+    }
+
+
+    // Write space box.
+    {
+        double const box_coordinate[nr_items * 2 * rank] = {
+            gdal_domain.west,
+            gdal_domain.south,
+            gdal_domain.east,
+            gdal_domain.north
+        };
+
+        space::stationary::SpaceBoxDomain s_space_domain(
+            areas.domain().space_domain());
+
+        auto& boxes = s_space_domain.reserve_items(nr_items);
+        boxes.write({nr_items, 2 * rank}, box_coordinate);
+    }
+
+
+
+
+    // Flow when decoding a property's value:
+    // - If there is a time discretization link, open de property set
+    //   it points to
+
+
+    // Shared time domain:
+    // - All domain items are shared by all items.
+    // - Properties (time discretization) of the domain are shared by
+    //   all items.
+
+
+    // Time discretization.
+    // - Per domain item a different discretization.
+    // - Per item the same discretization.
+
+
+    // The property set to store discretization information for the time
+    // domain items has this layout:
+    // - time domain
+    // - space domain
+
+
+    // auto time_discretization = create_time_discretization_property(sc_areas,
+    //     /* gdal_domain, */ nr_items);
+
+
+
+
+
+    property_set_name = "globals";
+    auto& globals = phenomenon.add_property_set(property_set_name);
+    constant_size::time::omnipresent::PropertySet o_globals(globals);
+
+    {
+        auto& item = o_globals.reserve_items(nr_items);
+        item.write(nr_items, item_id);
+    }
+
+    auto space_discretization = create_space_discretization_property(o_globals,
+        gdal_domain, nr_items);
+
+
+
+
+    // property.group().create_soft_link(space_discretization.id(),
+    //     "lue_space_discretization");
+
+
+
+
+
+
+
+
+    // // Discretization property.
+    // // Domain of discretization is the same as of the band properties so
+    // // they can all be part of the same property set. We need to set up
+    // // a link between each band property value and the discretization
+    // // property.
+    // auto const file_type_id = H5T_STD_U64LE;
+    // auto const memory_type_id = H5T_NATIVE_UINT64;
+    // Shape const shape{ 2 };
+    // Chunks const chunks{ 2 };
+
+    // auto& discretization = o_globals.add_property(
+    //     "space discretization", file_type_id, memory_type_id, shape,
+    //     chunks);
+
+    // {
+    //     // Per item a 1D array of <rank> values representing the size of
+    //     // the dimensions.
+    //     uint64_t values[2] = {
+    //         static_cast<uint64_t>(gdal_domain.nr_rows),
+    //         static_cast<uint64_t>(gdal_domain.nr_cols)
+    //     };
+
+    //     auto& item = discretization.reserve_items(nr_items);
+    //     item.write({nr_items, 2}, values);
+    // }
+
+
+
+
+
+
+
+
+
+
+
+
 //     auto& domain = property_set.domain();
 //     hsize_t const nr_items = 1;
 // 
@@ -1004,7 +1222,7 @@ void translate_gdal_feature_stack_to_lue(
 //         auto const property_set_name = phenomenon_name +
 //             (gdal_domain.nr_layers > 1 ? ("_" + std::to_string(l)) : "");
 //         DomainConfiguration domain_configuration(
-//             TimeDomainConfiguration{TimeDomainType::shared_constant_collection},
+//             TimeDomainConfiguration{TimeDomainType::shared},
 //             // TODO This assumes points. We need to test this.
 //             SpaceDomainConfiguration{SpaceDomainItemType::point});
 //         auto& property_set = phenomenon.add_property_set(property_set_name,
@@ -1694,7 +1912,7 @@ void translate_gdal_track_to_lue(
     // // track points from the GDAL dataset.
     // // auto const point_property_set_name = "point";
     // DomainConfiguration domain_configuration(
-    //     TimeDomainConfiguration(TimeDomainType::shared_constant_collection),
+    //     TimeDomainConfiguration(TimeDomainType::shared),
     //     SpaceDomainConfiguration(SpaceDomainType::located));
     // // auto& point_property_set = point_phenomenon.add_property_set(
     // //     point_property_set_name, domain_configuration);
@@ -1715,7 +1933,7 @@ void translate_gdal_track_to_lue(
     // // track segments from the GDAL dataset.
     // // auto const segment_property_set_name = "segment";
     // domain_configuration = DomainConfiguration(
-    //     TimeDomainConfiguration(TimeDomainType::shared_constant_collection),
+    //     TimeDomainConfiguration(TimeDomainType::shared),
     //     SpaceDomainConfiguration(SpaceDomainType::located));
     // // auto& segment_property_set = segment_phenomenon.add_property_set(
     // //     segment_property_set_name, domain_configuration);
@@ -1736,7 +1954,7 @@ void translate_gdal_track_to_lue(
     // // tracks from the GDAL dataset.
     // auto const track_property_set_name = "track";
     // domain_configuration = DomainConfiguration(
-    //     TimeDomainConfiguration(TimeDomainType::shared_constant_collection),
+    //     TimeDomainConfiguration(TimeDomainType::shared),
     //     SpaceDomainConfiguration(SpaceDomainType::located));
     // // auto& track_property_set = track_phenomenon.add_property_set(
     // //     track_property_set_name, domain_configuration);

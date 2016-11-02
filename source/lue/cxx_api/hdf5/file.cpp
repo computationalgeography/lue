@@ -9,7 +9,7 @@ namespace hdf5 {
 File::File(
     Identifier&& id)
 
-    : _id{std::forward<Identifier>(id)}
+    : Group(std::forward<Identifier>(id))
 
 {
 }
@@ -18,29 +18,18 @@ File::File(
 File::File(
     File&& other)
 
-    : _id{std::move(other._id)}
+    : Group(std::forward<Group>(other))
 
 {
-    // Invalidate other.
-    std::move(other);
 }
 
 
 File& File::operator=(
     File&& other)
 {
-    _id = std::move(other._id);
-
-    // Invalidate other.
-    std::move(other);
+    Group::operator=(std::forward<Group>(other));
 
     return *this;
-}
-
-
-Identifier const& File::id() const
-{
-    return _id;
 }
 
 
@@ -48,7 +37,7 @@ std::string File::pathname() const
 {
     char* name;
 
-    auto nr_bytes = hdf5_file_pathname(_id, &name);
+    auto nr_bytes = hdf5_file_pathname(id(), &name);
 
     std::string result;
 
@@ -58,6 +47,21 @@ std::string File::pathname() const
     }
 
     return result;
+}
+
+
+File open_file(
+    std::string const& name)
+{
+    hdf5::Identifier file_id(
+        ::H5Fopen(name.c_str(), H5F_ACC_RDWR, H5P_DEFAULT),
+        ::H5Fclose);
+
+    if(!file_id.is_valid()) {
+        throw std::runtime_error("File " + name + " cannot be opened");
+    }
+
+    return File(std::move(file_id));
 }
 
 } // namespace hdf5

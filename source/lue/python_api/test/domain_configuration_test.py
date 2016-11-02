@@ -17,14 +17,14 @@ class DomainTest(lue_test.TestCase):
     def test_construct1(self):
 
         time_configuration = lue.TimeDomainConfiguration(
-            lue.time_domain.shared_constant_collection,
-            lue.time_domain_item.point)
+            lue.time_domain.shared,
+            lue.time_domain_item.period)
         configuration = lue.DomainConfiguration(time_configuration)
 
         self.assertEqual(configuration.time.type,
-            lue.time_domain.shared_constant_collection)
+            lue.time_domain.shared)
         self.assertEqual(configuration.time.item_type,
-            lue.time_domain_item.point)
+            lue.time_domain_item.period)
         self.assertEqual(configuration.space.type, lue.space_domain.omnipresent)
         self.assertEqual(configuration.space.item_type,
             lue.space_domain_item.none)
@@ -45,8 +45,8 @@ class DomainTest(lue_test.TestCase):
     def test_construct3(self):
 
         time_configuration = lue.TimeDomainConfiguration(
-            lue.time_domain.shared_constant_collection,
-            lue.time_domain_item.point)
+            lue.time_domain.shared,
+            lue.time_domain_item.period)
         space_configuration = lue.SpaceDomainConfiguration(
             lue.space_domain.located, lue.space_domain_item.box)
 
@@ -54,9 +54,9 @@ class DomainTest(lue_test.TestCase):
             space_configuration)
 
         self.assertEqual(configuration.time.type,
-            lue.time_domain.shared_constant_collection)
+            lue.time_domain.shared)
         self.assertEqual(configuration.time.item_type,
-            lue.time_domain_item.point)
+            lue.time_domain_item.period)
         self.assertEqual(configuration.space.type, lue.space_domain.located)
         self.assertEqual(configuration.space.item_type,
             lue.space_domain_item.box)

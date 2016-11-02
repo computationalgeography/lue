@@ -1,6 +1,7 @@
 #pragma once
 #include "lue/cxx_api/domain.h"
 #include "lue/cxx_api/properties.h"
+#include "lue/cxx_api/property_set_configuration.h"
 #include <memory>
 #include <string>
 
@@ -44,13 +45,21 @@ public:
 
     PropertySet&   operator=           (PropertySet&& other)=default;
 
+    PropertySetConfiguration const&
+                   configuration       () const;
+
     Domain&        domain              () const;
 
-    Property&      add_property        (std::string const& name);
+    Property&      add_property        (std::string const& name,
+                                        ValueConfiguration const&
+                                            value_configuration);
 
     Properties&    properties          () const;
 
 private:
+
+    PropertySetConfiguration
+                   _configuration;
 
     //! The domain shared by the properties in the collection
     std::unique_ptr<Domain> _domain;
@@ -63,6 +72,8 @@ private:
 
 PropertySet        create_property_set (hdf5::Identifier const& location,
                                         std::string const& name,
+                                        PropertySetConfiguration const&
+                                            configuration,
                                         DomainConfiguration const&
                                             domain_configuration);
 

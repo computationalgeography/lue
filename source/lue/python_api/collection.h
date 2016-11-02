@@ -23,7 +23,7 @@ namespace python {
     "\n"                                                                   \
     ":param str name: Name of item to find\n",                             \
             "name"_a)                                                      \
-        .def("__getitem__", &Item##Collection::item,                       \
+        .def("__getitem__", &Item##Collection::operator[],                 \
     "Return item\n"                                                        \
     "\n"                                                                   \
     ":param str name: Name of item to find\n"                              \

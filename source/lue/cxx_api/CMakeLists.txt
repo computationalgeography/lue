@@ -1,6 +1,7 @@
 add_test_conditionally(test)
 add_subdirectory(hdf5)
-add_subdirectory(time)
+add_subdirectory(space)
+add_subdirectory(constant_size)
 
 set(SOURCES
     array
@@ -14,14 +15,19 @@ set(SOURCES
     properties
     property
     property_set
+    property_set_configuration
     property_sets
+    space_discretization
     space_domain
     space_domain_configuration
+    time_discretization
+    # time_discretization_configuration
     time_domain
     time_domain_configuration
     universe
     universes
     value
+    value_configuration
 )
 add_library(lue_cxx_api_objects OBJECT
     ${SOURCES}
@@ -29,7 +35,8 @@ add_library(lue_cxx_api_objects OBJECT
 add_library(lue_cxx STATIC
     $<TARGET_OBJECTS:lue_cxx_api_hdf5_objects>
     $<TARGET_OBJECTS:lue_cxx_api_objects>
-    $<TARGET_OBJECTS:lue_cxx_api_time_objects>
+    $<TARGET_OBJECTS:lue_cxx_api_space_objects>
+    $<TARGET_OBJECTS:lue_cxx_api_constant_size_objects>
 )
 target_link_libraries(lue_cxx
     lue_c

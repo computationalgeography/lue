@@ -19,6 +19,7 @@ The LUE database lets you efficiently store huge amounts of attribute values of 
    installation
    quick_start
    user_manual
+   Case studies <case_study/index>
    changes
 
 

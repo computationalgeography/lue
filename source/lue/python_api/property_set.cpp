@@ -1,5 +1,5 @@
+#include "lue/cxx_api/constant_size.h"
 #include "lue/cxx_api/property_sets.h"
-#include "lue/cxx_api/time.h"
 #include "lue/python_api/collection.h"
 #include "lue/python_api/numpy.h"
 #include <pybind11/numpy.h>
@@ -85,6 +85,24 @@ void init_property_set(
         //     py::return_value_policy::reference_internal)
     ;
 
+
+    py::enum_<SizeOfItemCollectionType>(module, "size_of_item_collection",
+        "size_of_item_collection docstring...")
+        .value("constant", SizeOfItemCollectionType::constant_size)
+    ;
+
+
+    py::class_<PropertySetConfiguration>(module, "PropertySetConfiguration",
+        "PropertySetConfiguration docstring...")
+        .def(py::init<SizeOfItemCollectionType const>(),
+            "__init__ docstring...",
+            "type"_a)
+        .def_property_readonly("size_of_item_collection_type",
+                &PropertySetConfiguration::size_of_item_collection_type,
+            "size_of_item_collection_type docstring...")
+    ;
+
+
     py::class_<PropertySet>(module, "PropertySet", py::base<hdf5::Group>(),
         "PropertySet docstring...")
         .def("__repr__",
@@ -93,6 +111,9 @@ void init_property_set(
                     property_set.id().pathname() + "')";
             }
         )
+        .def_property_readonly("configuration", &PropertySet::configuration,
+            "configuration docstring...",
+            py::return_value_policy::reference_internal)
         .def_property_readonly("domain", &PropertySet::domain,
             "domain docstring...",
             py::return_value_policy::reference_internal)
@@ -106,28 +127,34 @@ void init_property_set(
 
     // TODO Refactor Group and PropertySet API's into common base classes.
     //      Multiple classes implement the interfaces.
-    py::class_<time::PropertySet>(module, "_PropertySet",
+    py::class_<constant_size::time::PropertySet>(module, "_PropertySet",
         "_PropertySet docstring...")
 
         // Group API
-        .def_property_readonly("id", &time::PropertySet::id,
+        .def_property_readonly("id", &constant_size::time::PropertySet::id,
             "id docstring...",
             py::return_value_policy::reference_internal)
-        .def_property_readonly("domain", &time::PropertySet::domain,
+        .def_property_readonly("domain", &constant_size::time::PropertySet::domain,
             "domain docstring...",
             py::return_value_policy::reference_internal)
+
+
 
         // PropertySet API
         // .def("add_property", &time::PropertySet::add_property,
         //     "add_property docstring...",
         //     py::return_value_policy::reference_internal)
-        .def_property_readonly("properties", &time::PropertySet::properties,
+        .def_property_readonly("configuration",
+            &constant_size::time::PropertySet::configuration,
+            "configuration docstring...",
+            py::return_value_policy::reference_internal)
+        .def_property_readonly("properties", &constant_size::time::PropertySet::properties,
             "properties docstring...",
             py::return_value_policy::reference_internal)
     ;
 
-    py::class_<time::omnipresent::PropertySet>(module, "O_PropertySet",
-        py::base<time::PropertySet>(),
+    py::class_<constant_size::time::omnipresent::PropertySet>(module, "O_PropertySet",
+        py::base<constant_size::time::PropertySet>(),
         "O_PropertySet docstring...")
 
         .def(py::init<PropertySet&>(),
@@ -136,7 +163,7 @@ void init_property_set(
             py::keep_alive<1, 2>())
 
         .def("reserve_items",
-                &time::omnipresent::PropertySet::reserve_items,
+                &constant_size::time::omnipresent::PropertySet::reserve_items,
             "reserve_items docstring...",
             py::return_value_policy::reference_internal)
 
@@ -146,17 +173,17 @@ void init_property_set(
         //     py::return_value_policy::reference_internal)
 
         .def_property_readonly("ids",
-                &time::omnipresent::PropertySet::ids,
+                &constant_size::time::omnipresent::PropertySet::ids,
             "ids docstring...",
             py::return_value_policy::reference_internal)
 
         .def("add_property", [](
-                    time::omnipresent::PropertySet& self,
+                    constant_size::time::omnipresent::PropertySet& self,
                     std::string const& name,
                     py::handle const& numpy_type_id_object,
                     py::tuple const& shape,
                     py::tuple const& chunks) ->
-                        time::omnipresent::constant_shape::Property& {
+                        constant_size::time::omnipresent::same_shape::Property& {
 
                 int numpy_type_id = NPY_NOTYPE;
                 {
@@ -192,11 +219,11 @@ void init_property_set(
             py::return_value_policy::reference_internal)
 
         .def("add_property", [](
-                    time::omnipresent::PropertySet& self,
+                    constant_size::time::omnipresent::PropertySet& self,
                     std::string const& name,
                     py::handle const& numpy_type_id_object,
                     size_t const rank) ->
-                        time::omnipresent::variable_shape::Property& {
+                        constant_size::time::omnipresent::different_shape::Property& {
 
                 int numpy_type_id = NPY_NOTYPE;
                 {

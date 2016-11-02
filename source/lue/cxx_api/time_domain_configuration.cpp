@@ -1,42 +1,22 @@
 #include "lue/cxx_api/time_domain_configuration.h"
-#include <cassert>
-#include <map>
+#include "lue/cxx_api/enum_string_bimap.h"
 
 
 namespace lue {
 namespace {
 
-static std::map<TimeDomainType, std::string> const string_by_domain_type = {
+detail::EnumStringBimap<TimeDomainType> const time_domain_type_map = {
     { TimeDomainType::omnipresent, "omnipresent" },
-    { TimeDomainType::shared_constant_collection,
-        "shared_constant_collection" },
-    { TimeDomainType::shared_variable_collection,
-        "shared_variable_collection" }
-};
-
-static std::map<std::string, TimeDomainType> const domain_type_by_string = {
-    { "omnipresent", TimeDomainType::omnipresent },
-    { "shared_constant_collection",
-        TimeDomainType::shared_constant_collection },
-    { "shared_variable_collection",
-        TimeDomainType::shared_variable_collection },
+    { TimeDomainType::shared, "shared" },
+    // { TimeDomainType::unique, "unique" }
 };
 
 
-static std::map<TimeDomainItemType, std::string> const
-        string_by_domain_item_type = {
+detail::EnumStringBimap<TimeDomainItemType> const time_domain_item_type_map = {
     { TimeDomainItemType::none, "none" },
-    { TimeDomainItemType::point, "point" },
+    // { TimeDomainItemType::point, "point" },
     { TimeDomainItemType::period, "period" },
-    { TimeDomainItemType::cell, "cell" }
-};
-
-static std::map<std::string, TimeDomainItemType> const
-        domain_item_type_by_string = {
-    { "none", TimeDomainItemType::none },
-    { "point", TimeDomainItemType::point },
-    { "period", TimeDomainItemType::period },
-    { "cell", TimeDomainItemType::cell }
+    // { TimeDomainItemType::cell, "cell" }
 };
 
 }  // Anonymous namespace
@@ -48,10 +28,7 @@ static std::map<std::string, TimeDomainItemType> const
 std::string time_domain_type_to_string(
     TimeDomainType const type)
 {
-    auto const it = string_by_domain_type.find(type);
-    assert(it != string_by_domain_type.end());
-
-    return (*it).second;
+    return time_domain_type_map.as_string(type);
 }
 
 
@@ -61,13 +38,11 @@ std::string time_domain_type_to_string(
 TimeDomainType parse_time_domain_type(
     std::string const& string)
 {
-    auto const it = domain_type_by_string.find(string);
-
-    if(it == domain_type_by_string.end()) {
+    if(!time_domain_type_map.contains(string)) {
         throw std::runtime_error("Unknown time domain type: " + string);
     }
 
-    return (*it).second;
+    return time_domain_type_map.as_value(string);
 }
 
 
@@ -77,10 +52,7 @@ TimeDomainType parse_time_domain_type(
 std::string time_domain_item_type_to_string(
     TimeDomainItemType const type)
 {
-    auto const it = string_by_domain_item_type.find(type);
-    assert(it != string_by_domain_item_type.end());
-
-    return (*it).second;
+    return time_domain_item_type_map.as_string(type);
 }
 
 
@@ -90,13 +62,11 @@ std::string time_domain_item_type_to_string(
 TimeDomainItemType parse_time_domain_item_type(
     std::string const& string)
 {
-    auto const it = domain_item_type_by_string.find(string);
-
-    if(it == domain_item_type_by_string.end()) {
+    if(!time_domain_item_type_map.contains(string)) {
         throw std::runtime_error("Unknown time domain item type: " + string);
     }
 
-    return (*it).second;
+    return time_domain_item_type_map.as_value(string);
 }
 
 

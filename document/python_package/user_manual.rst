@@ -5,4 +5,5 @@ User manual
    :maxdepth: 2
 
    concepts
+   discretization
    naming

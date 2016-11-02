@@ -36,11 +36,11 @@ public:
         typename T>
     T              read                (std::string const& name) const;
 
+    bool           exists              (std::string const& name) const;
+
 private:
 
     std::reference_wrapper<Identifier const> _location;
-
-    bool           exists              (std::string const& name) const;
 
     template<
         typename T>

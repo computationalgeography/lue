@@ -36,7 +36,11 @@ PropertySets::PropertySets(
 PropertySet& PropertySets::add(
     std::string const& name)
 {
-    return add(name, DomainConfiguration());
+    PropertySetConfiguration configuration(
+        SizeOfItemCollectionType::constant_size);
+    DomainConfiguration domain_configuration;
+
+    return add(name, configuration, domain_configuration);
 }
 
 
@@ -49,10 +53,11 @@ PropertySet& PropertySets::add(
 */
 PropertySet& PropertySets::add(
     std::string const& name,
+    PropertySetConfiguration const& configuration,
     DomainConfiguration const& domain_configuration)
 {
     return Collection::add(name, create_property_set(id(), name,
-        domain_configuration));
+        configuration, domain_configuration));
 }
 
 

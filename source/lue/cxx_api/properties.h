@@ -32,7 +32,10 @@ public:
 
     Properties&    operator=           (Properties&& other)=default;
 
-    Property&      add                 (std::string const& name);
+    Property&      add                 (std::string const& name,
+                                        hdf5::Identifier const& domain_id,
+                                        ValueConfiguration const&
+                                            value_configuration);
 
 private:
 

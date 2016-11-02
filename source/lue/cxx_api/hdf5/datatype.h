@@ -4,6 +4,7 @@
 
 
 namespace lue {
+namespace hdf5 {
 
 bool               datatypes_are_equal (hid_t const type_id1,
                                         hid_t const type_id2);
@@ -23,4 +24,5 @@ bool               is_native_datatype  (hid_t const type_id);
 
 hid_t              native_type_id      (hid_t const file_type_id);
 
+}  // namespace hdf5
 }  // namespace lue

@@ -33,6 +33,8 @@ public:
     PropertySet&   add                 (std::string const& name);
 
     PropertySet&   add                 (std::string const& name,
+                                        PropertySetConfiguration const&
+                                            configuration,
                                         DomainConfiguration const&
                                             domain_configuration);
 

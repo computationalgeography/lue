@@ -28,6 +28,8 @@ class Collection:
 
 public:
 
+    bool           empty               () const;
+
     size_t         size                () const;
 
     std::vector<std::string>
@@ -35,7 +37,7 @@ public:
 
     bool           contains            (std::string const& name) const;
 
-    T&             item                (std::string const& name) const;
+    T&             operator[]          (std::string const& name) const;
 
                    ~Collection         ()=default;
 
@@ -96,6 +98,14 @@ inline Collection<T>::Collection(
     for(auto const& name: item_names(id())) {
         _items.insert(std::make_pair(name, std::make_unique<T>(id(), name)));
     }
+}
+
+
+template<
+    typename T>
+inline bool Collection<T>::empty() const
+{
+    return _items.empty();
 }
 
 
@@ -166,14 +176,13 @@ inline bool Collection<T>::contains(
 */
 template<
     typename T>
-inline T& Collection<T>::item(
+inline T& Collection<T>::operator[](
     std::string const& name) const
 {
     auto iterator = _items.find(name);
 
     if(iterator == _items.end()) {
         throw std::runtime_error("Item " + name + " does not exist");
-
     }
 
     return *(*iterator).second;

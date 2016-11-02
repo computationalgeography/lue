@@ -25,9 +25,12 @@ Properties::Properties(
 
 
 Property& Properties::add(
-    std::string const& name)
+    std::string const& name,
+    hdf5::Identifier const& domain_id,
+    ValueConfiguration const& value_configuration)
 {
-    return Collection::add(name, create_property(id(), name));
+    return Collection::add(name, create_property(id(), name, domain_id,
+        value_configuration));
 }
 
 

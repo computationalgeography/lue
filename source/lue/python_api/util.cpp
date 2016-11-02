@@ -21,16 +21,16 @@ pybind11::object hdf5_type_id_to_numpy_dtype(
 
     switch(H5Tget_class(type_id)) {
         case H5T_INTEGER: {
-            if(datatypes_are_equal(type_id, H5T_NATIVE_UINT32)) {
+            if(hdf5::datatypes_are_equal(type_id, H5T_NATIVE_UINT32)) {
                 type_as_string = "uint32";
             }
-            else if(datatypes_are_equal(type_id, H5T_NATIVE_INT32)) {
+            else if(hdf5::datatypes_are_equal(type_id, H5T_NATIVE_INT32)) {
                 type_as_string = "int32";
             }
-            else if(datatypes_are_equal(type_id, H5T_NATIVE_UINT64)) {
+            else if(hdf5::datatypes_are_equal(type_id, H5T_NATIVE_UINT64)) {
                 type_as_string = "uint64";
             }
-            else if(datatypes_are_equal(type_id, H5T_NATIVE_INT64)) {
+            else if(hdf5::datatypes_are_equal(type_id, H5T_NATIVE_INT64)) {
                 type_as_string = "int64";
             }
             else {
@@ -41,10 +41,10 @@ pybind11::object hdf5_type_id_to_numpy_dtype(
             break;
         }
         case H5T_FLOAT: {
-            if(datatypes_are_equal(type_id, H5T_NATIVE_FLOAT)) {
+            if(hdf5::datatypes_are_equal(type_id, H5T_NATIVE_FLOAT)) {
                 type_as_string = "float32";
             }
-            else if(datatypes_are_equal(type_id, H5T_NATIVE_DOUBLE)) {
+            else if(hdf5::datatypes_are_equal(type_id, H5T_NATIVE_DOUBLE)) {
                 type_as_string = "float64";
             }
             else {
