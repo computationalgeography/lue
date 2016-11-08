@@ -232,6 +232,25 @@ bool Attributes::exists(
 }
 
 
+Identifier Attributes::type_id(
+    std::string const& name) const
+{
+    assert(_location.get().is_valid());
+    assert(exists(name));
+
+    Identifier attribute(::H5Aopen(_location.get(), name.c_str(),
+        H5P_DEFAULT), ::H5Aclose);
+    assert(attribute.is_valid());
+    Identifier datatype(::H5Aget_type(attribute), ::H5Tclose);
+
+    if(!datatype.is_valid()) {
+        throw std::runtime_error("Datatype cannot be obtained");
+    }
+
+    return datatype;
+}
+
+
 #define ATTRIBUTE_METHODS(                                            \
         type,                                                         \
         type_name)                                                    \

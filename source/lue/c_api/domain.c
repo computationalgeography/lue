@@ -4,7 +4,7 @@
 #include "lue/c_api/hdf5/hdf5_group.h"
 
 
-static char const* domain_name = "domain";
+static char const* domain_name = "lue_domain";
 
 
 /*!

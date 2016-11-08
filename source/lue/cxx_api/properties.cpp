@@ -11,14 +11,14 @@ namespace lue {
 bool properties_exists(
     hdf5::Identifier const& location)
 {
-    return collection_exists(location, "properties");
+    return collection_exists(location, "lue_properties");
 }
 
 
 Properties::Properties(
     hdf5::Identifier const& location)
 
-    : Collection(location, "properties")
+    : Collection(location, "lue_properties")
 
 {
 }
@@ -41,7 +41,7 @@ Properties create_properties(
     // on the already open properties group. But the constructor would
     // conflict with the existing one accepting a parent location.
 
-    create_collection(location, "properties");
+    create_collection(location, "lue_properties");
 
     return Properties(location);
 }

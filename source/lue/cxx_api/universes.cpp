@@ -11,7 +11,7 @@ namespace lue {
 bool universes_exists(
     hdf5::Identifier const& location)
 {
-    return collection_exists(location, "universes");
+    return collection_exists(location, "lue_universes");
 }
 
 
@@ -23,7 +23,7 @@ bool universes_exists(
 Universes::Universes(
     hdf5::Identifier const& location)
 
-    : Collection(location, "universes")
+    : Collection(location, "lue_universes")
 
 {
 }
@@ -56,7 +56,7 @@ Universes create_universes(
     // on the already open universes group. But the constructor would
     // conflict with the existing one accepting a parent location.
 
-    create_collection(location, "universes");
+    create_collection(location, "lue_universes");
 
     return Universes(location);
 }

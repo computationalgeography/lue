@@ -2,6 +2,7 @@
 #include "lue/cxx_api/hdf5.h"
 #include <functional>
 #include <string>
+#include <vector>
 
 
 namespace lue {
@@ -37,5 +38,8 @@ private:
     std::string    _message;
 
 };
+
+
+using Errors = std::vector<Error>;
 
 }  // namespace lue

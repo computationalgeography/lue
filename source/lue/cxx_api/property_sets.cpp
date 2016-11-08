@@ -9,7 +9,7 @@ namespace lue {
 bool property_sets_exists(
     hdf5::Identifier const& location)
 {
-    return collection_exists(location, "property_sets");
+    return collection_exists(location, "lue_property_sets");
 }
 
 
@@ -20,7 +20,7 @@ bool property_sets_exists(
 PropertySets::PropertySets(
     hdf5::Identifier const& location)
 
-    : Collection(location, "property_sets")
+    : Collection(location, "lue_property_sets")
 
 {
 }
@@ -68,7 +68,7 @@ PropertySets create_property_sets(
     // on the already open property_sets group. But the constructor would
     // conflict with the existing one accepting a parent location.
 
-    create_collection(location, "property_sets");
+    create_collection(location, "lue_property_sets");
 
     return PropertySets(location);
 }

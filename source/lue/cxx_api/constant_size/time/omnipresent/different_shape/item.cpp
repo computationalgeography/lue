@@ -17,9 +17,9 @@ Item::Item(
 
     : hdf5::Group(std::forward<hdf5::Group>(group)),
       _type_id{hdf5::parse_standard_datatype(attributes().read<std::string>(
-          "datatype"))},
-      _rank{attributes().read<rank_t>("rank")},
-      _nr_items{attributes().read<count_t>("nr_items")}
+          "lue_datatype"))},
+      _rank{attributes().read<rank_t>("lue_rank")},
+      _nr_items{attributes().read<count_t>("lue_nr_items")}
 
 {
 }
@@ -31,9 +31,9 @@ Item::Item(
 
     : hdf5::Group(location, name),
       _type_id{hdf5::parse_standard_datatype(attributes().read<std::string>(
-          "datatype"))},
-      _rank{attributes().read<rank_t>("rank")},
-      _nr_items{attributes().read<count_t>("nr_items")}
+          "lue_datatype"))},
+      _rank{attributes().read<rank_t>("lue_rank")},
+      _nr_items{attributes().read<count_t>("lue_nr_items")}
 
 {
 }
@@ -54,8 +54,8 @@ Item::Item(
 //     hdf5::Identifier&& location)
 // 
 //     : hdf5::Group(std::forward<hdf5::Identifier>(location)),
-//       _type_id{parse_datatype(attributes().read<std::string>("datatype"))},
-//       _rank{attributes().read<size_t>("rank")}
+//       _type_id{parse_datatype(attributes().read<std::string>("lue_datatype"))},
+//       _rank{attributes().read<size_t>("lue_rank")}
 // 
 // {
 // }
@@ -113,7 +113,7 @@ void Item::reserve_items(
     }
 
     _nr_items = nr_items;
-    attributes().write<count_t>("nr_items", nr_items);
+    attributes().write<count_t>("lue_nr_items", nr_items);
 }
 
 
@@ -140,10 +140,10 @@ Item create_item(
 
     // hdf5::Attributes attributes(group_location);
 
-    group.attributes().write<std::string>("datatype",
+    group.attributes().write<std::string>("lue_datatype",
         hdf5::standard_datatype_as_string(type_id));
-    group.attributes().write<rank_t>("rank", rank);
-    group.attributes().write<count_t>("nr_items", 0);
+    group.attributes().write<rank_t>("lue_rank", rank);
+    group.attributes().write<count_t>("lue_nr_items", 0);
 
     return Item(std::move(group));
 

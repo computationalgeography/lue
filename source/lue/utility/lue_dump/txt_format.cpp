@@ -318,7 +318,7 @@ void describe_property_set(
     auto const& properties = property_set.properties();
 
     if(!properties.empty()) {
-        print_message(stream, indentation, "properties: ");
+        // print_message(stream, indentation, "properties: ");
 
         for(auto const& name: properties.names()) {
 
@@ -375,11 +375,18 @@ void describe_property_set(
         property_set.configuration().size_of_item_collection_type();
     auto const& time_domain = property_set.domain().time_domain();
     auto const time_domain_type = time_domain.configuration().type();
+    auto const time_domain_item_type = time_domain.configuration().item_type();
 
     ++indentation;
 
-    print_message(stream, indentation, "time domain type: " +
+    print_message(stream, indentation, "- time domain:");
+
+    ++indentation;
+    print_message(stream, indentation, "type: " +
         time_domain_type_to_string(time_domain_type));
+    print_message(stream, indentation, "item type: " +
+        time_domain_item_type_to_string(time_domain_item_type));
+    --indentation;
 
     switch(size_of_item_collection_type) {
         case(SizeOfItemCollectionType::constant_size): {
@@ -412,7 +419,7 @@ void describe_property_sets(
     size_t indentation)
 {
     if(!property_sets.empty()) {
-        print_message(stream, indentation, "property sets: ");
+        // print_message(stream, indentation, "property sets: ");
 
         for(auto const& name: property_sets.names()) {
             describe_property_set(property_sets[name], stream, indentation);
@@ -440,7 +447,7 @@ void describe_phenomena(
     size_t indentation)
 {
     if(!phenomena.empty()) {
-        print_message(stream, indentation, "phenomena: ");
+        // print_message(stream, indentation, "phenomena: ");
 
         for(auto const& name: phenomena.names()) {
             describe_phenomenon(phenomena[name], stream, indentation);
@@ -469,7 +476,7 @@ void describe_universes(
     size_t indentation)
 {
     if(!universes.empty()) {
-        print_message(stream, indentation, "universes: ");
+        // print_message(stream, indentation, "universes: ");
 
         for(auto const& name: universes.names()) {
             describe_universe(universes[name], stream, indentation);

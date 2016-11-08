@@ -2,7 +2,7 @@
 #include "lue/c_api/hdf5/hdf5_group.h"
 
 
-static char const* name = "properties";
+static char const* name = "lue_properties";
 
 
 /*!

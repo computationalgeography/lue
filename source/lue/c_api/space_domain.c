@@ -2,7 +2,7 @@
 #include "lue/c_api/hdf5/hdf5_group.h"
 
 
-static char const* space_domain_name = "space";
+static char const* space_domain_name = "lue_space";
 
 
 /*!

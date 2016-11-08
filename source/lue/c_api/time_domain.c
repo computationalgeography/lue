@@ -2,7 +2,7 @@
 #include "lue/c_api/hdf5/hdf5_group.h"
 
 
-static char const* time_domain_name = "time";
+static char const* time_domain_name = "lue_time";
 
 
 /*!

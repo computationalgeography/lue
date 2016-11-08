@@ -6,14 +6,14 @@ namespace {
 std::string const usage = R"(lue_dump
 
 usage:
-    lue_validate [--verbose] [--verbose_dev] [--format=<format>] <input>...
+    lue_validate [--verbose] [--verbose-dev] [--format=<format>] <input>...
     lue_validate (-h | --help)
     lue_validate --version
 
 options:
     -h --help             Show this screen
     --verbose             Show info messages
-    --verbose_dev         Show info messages for developer (implies --verbose)
+    --verbose-dev         Show info messages for developer (implies --verbose)
     --version             Show version
     --format=<format>     Output format [default: txt]
 )";

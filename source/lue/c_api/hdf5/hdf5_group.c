@@ -132,6 +132,52 @@ size_t hdf5_nr_groups(
 }
 
 
+struct CountDatasets
+{
+    size_t nr_datasets;
+};
+
+
+herr_t count_datasets(
+    hid_t const loc_id,
+    char const* name,
+    H5L_info_t const* info,
+    void* data)
+{
+    struct CountDatasets* data_ = (struct CountDatasets*)data;
+
+    H5O_info_t infobuf;
+    herr_t status = H5Oget_info_by_name(loc_id, name, &infobuf, H5P_DEFAULT);
+
+    if(status < 0) {
+        return status;
+    }
+
+    if(infobuf.type == H5O_TYPE_DATASET) {
+        ++data_->nr_datasets;
+    }
+
+    return 0;
+}
+
+
+/*!
+    @ingroup    lue_c_api_hdf5_group
+*/
+size_t hdf5_nr_datasets(
+    hid_t const location_id)
+{
+    // Iterate over contents and return the number of datasets found.
+    struct CountDatasets data;
+    data.nr_datasets = 0;
+
+    H5Literate(location_id, H5_INDEX_NAME, H5_ITER_NATIVE, NULL,
+        count_datasets, (void*)&data);
+
+    return data.nr_datasets;
+}
+
+
 struct GroupNames
 {
     size_t nr_names;
@@ -182,6 +228,61 @@ herr_t hdf5_group_names(
 
     H5Literate(location_id, H5_INDEX_NAME, H5_ITER_NATIVE, NULL,
         group_names, (void*)&data);
+
+    return 1;
+}
+
+
+struct DatasetNames
+{
+    size_t nr_names;
+    char** names;
+};
+
+
+herr_t dataset_names(
+    hid_t const loc_id,
+    char const* name,
+    H5L_info_t const* info,
+    void* data)
+{
+    struct DatasetNames* data_ = (struct DatasetNames*)data;
+
+    H5O_info_t infobuf;
+    herr_t status = H5Oget_info_by_name(loc_id, name, &infobuf, H5P_DEFAULT);
+
+    if(status < 0) {
+        return status;
+    }
+
+    if(infobuf.type == H5O_TYPE_DATASET) {
+        data_->names[data_->nr_names] =
+            (char*)malloc(strlen(name) * sizeof(char));
+        strcpy(data_->names[data_->nr_names], name);
+        ++data_->nr_names;
+    }
+
+    return 0;
+}
+
+
+/*!
+    @ingroup    lue_c_api_hdf5_group
+*/
+herr_t hdf5_dataset_names(
+    hid_t const location_id,
+    char** const names)
+{
+    // Iterate over contents and return the names of the datasets found.
+    // It is assumed that the names array is large enough to hold names
+    // for all datasets. Memory for the names themselves is allocated by the
+    // function and must be freed by the caller.
+    struct DatasetNames data;
+    data.names = names;
+    data.nr_names = 0;
+
+    H5Literate(location_id, H5_INDEX_NAME, H5_ITER_NATIVE, NULL,
+        dataset_names, (void*)&data);
 
     return 1;
 }

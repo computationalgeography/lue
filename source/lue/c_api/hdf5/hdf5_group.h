@@ -21,6 +21,11 @@ size_t             hdf5_nr_groups      (hid_t const location_id);
 herr_t             hdf5_group_names    (hid_t const location_id,
                                         char** const names);
 
+size_t             hdf5_nr_datasets    (hid_t const location_id);
+
+herr_t             hdf5_dataset_names  (hid_t const location_id,
+                                        char** const names);
+
 herr_t             hdf5_close_group    (hid_t const id);
 
 

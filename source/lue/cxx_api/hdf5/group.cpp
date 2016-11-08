@@ -235,6 +235,30 @@ std::vector<std::string> group_names(
 }
 
 
+std::vector<std::string> dataset_names(
+    Group const& group)
+{
+    auto const nr_datasets = hdf5_nr_datasets(group.id());
+
+    char* names[nr_datasets];
+
+    auto status = hdf5_dataset_names(group.id(), names);
+
+    if(status < 0) {
+        throw std::runtime_error("Cannot determine dataset names");
+    }
+
+    std::vector<std::string> result(nr_datasets);
+
+    for(size_t d = 0; d < nr_datasets; ++d) {
+        result[d] = names[d];
+        free(names[d]);
+    }
+
+    return result;
+}
+
+
 Dataset open_dataset(
     hdf5::Group const& group,
     std::string const& name)

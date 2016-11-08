@@ -2,6 +2,7 @@ set(SOURCES
     error
     main
     validate
+    validator
 )
 add_executable(lue_validate ${SOURCES})
 

@@ -6,12 +6,12 @@ import lue_test
 class UseCaseTest(lue_test.TestCase):
 
 
-    def test_use_case_1(self):
+    def test_1(self):
 
-        dataset_name = "o_vs_use_case_1.lue"
+        dataset_name = "omnipresent_different_shape_1.lue"
         dataset = self.create_dataset(dataset_name)
-        universe = dataset.add_universe("universe")
-        phenomenon = universe.add_phenomenon("phenomenon")
+        universe = dataset.add_universe("my_universe")
+        phenomenon = universe.add_phenomenon("my_phenomenon")
 
 
         # Add a new property set. This returns a type with a special API,
@@ -20,7 +20,7 @@ class UseCaseTest(lue_test.TestCase):
             lue.size_of_item_collection.constant)
         space_configuration = lue.SpaceDomainConfiguration(
             lue.space_domain.located, lue.space_domain_item.box)
-        property_set = phenomenon.add_property_set("property_set",
+        property_set = phenomenon.add_property_set("my_property_set",
             property_set_configuration, space_configuration)
 
         self.assertEqual(property_set.domain.configuration.time.type,
@@ -67,39 +67,39 @@ class UseCaseTest(lue_test.TestCase):
         self.assertArraysEqual(space_domain.boxes[:], boxes)
 
 
-        # Now, add a property, whose values all have different shapes.
-        # To simulate storing a number of spatial rasters, we first add
-        # a discretization property and link it from the value property.
-        value_shape = (2,)
-        chunk_shape = (2,)
-        value_type = numpy.uint32
-        discretization_property = property_set.add_property(
-            "space discretization", value_type, value_shape, chunk_shape)
-        self.assertEqual(discretization_property.name, "space discretization")
-        self.assertEqual(discretization_property.values.dtype, value_type)
-        self.assertEqual(len(discretization_property.values.shape), 2)
-        self.assertEqual(discretization_property.values.shape[0], 0)
-        self.assertEqual(discretization_property.values.shape[1], 2)
+        #  # Now, add a property, whose values all have different shapes.
+        #  # To simulate storing a number of spatial rasters, we first add
+        #  # a discretization property and link it from the value property.
+        #  value_shape = (2,)
+        #  chunk_shape = (2,)
+        #  value_type = numpy.uint32
+        #  discretization_property = property_set.add_property(
+        #      "space discretization", value_type, value_shape, chunk_shape)
+        #  self.assertEqual(discretization_property.name, "space discretization")
+        #  self.assertEqual(discretization_property.values.dtype, value_type)
+        #  self.assertEqual(len(discretization_property.values.shape), 2)
+        #  self.assertEqual(discretization_property.values.shape[0], 0)
+        #  self.assertEqual(discretization_property.values.shape[1], 2)
 
-        nr_cells = discretization_property.reserve_items(nr_items)
-        self.assertEqual(discretization_property.values.shape[0], nr_items)
+        #  nr_cells = discretization_property.reserve_items(nr_items)
+        #  self.assertEqual(discretization_property.values.shape[0], nr_items)
 
-        nr_cells_ = numpy.arange(nr_items * 2, dtype=value_type).reshape(
-            (nr_items, 2))
-        nr_cells[:] = nr_cells_
-        self.assertArraysEqual(nr_cells[:], nr_cells_)
+        #  nr_cells_ = numpy.arange(nr_items * 2, dtype=value_type).reshape(
+        #      (nr_items, 2))
+        #  nr_cells[:] = nr_cells_
+        #  self.assertArraysEqual(nr_cells[:], nr_cells_)
 
 
         value_type = numpy.int32
-        value_property = property_set.add_property("property", value_type,
+        value_property = property_set.add_property("my_property", value_type,
             rank)
 
-        self.assertEqual(value_property.name, "property")
+        self.assertEqual(value_property.name, "my_property")
         self.assertEqual(value_property.values.dtype, numpy.int32)
         self.assertEqual(value_property.values.rank, 2)
         self.assertEqual(len(value_property.values), 0)
 
-        value_property.link_space_discretization(discretization_property)
+        #  value_property.link_space_discretization(discretization_property)
 
         value_shapes = (10 * (numpy.random.rand(nr_items, rank) + 1)).astype(
             numpy.uint64)
@@ -119,3 +119,53 @@ class UseCaseTest(lue_test.TestCase):
             values_ = (10 * numpy.random.rand(*shape)).astype(value_type)
             values[i][:] = values_
             self.assertArraysEqual(values[i][:], values_)
+
+
+        # To discretize the item values, we need to create a new phenomenon.
+        # This phenomenon will contain the information needed to decipher
+        # the value.
+        discr_phenomenon = universe.add_phenomenon("globals")
+        discr_property_set = discr_phenomenon.add_property_set("discretization")
+
+        self.assertEqual(discr_property_set.domain.configuration.time.type,
+            lue.time_domain.omnipresent)
+        self.assertEqual(discr_property_set.domain.configuration.time.item_type,
+            lue.time_domain_item.none)
+        self.assertEqual(discr_property_set.domain.configuration.space.type,
+            lue.space_domain.omnipresent)
+        self.assertEqual(discr_property_set.domain.configuration.space.item_type,
+            lue.space_domain_item.none)
+        self.assertEqual(discr_property_set.ids.dtype, numpy.uint64)
+        self.assertEqual(len(discr_property_set.ids.shape), 1)
+        self.assertEqual(discr_property_set.ids.shape[0], 0)
+
+        # Add the same number of ids as there are space domain items.
+        discr_nr_items = space_domain.boxes.shape[0]
+        discr_items = discr_property_set.reserve_items(discr_nr_items)
+        discr_items_ = numpy.array([id for id in range(discr_nr_items)],
+            numpy.uint64)
+        discr_items[:] = discr_items_
+
+        self.assertArraysEqual(discr_items[:], discr_items_)
+
+        discr_value_type = numpy.uint32
+        discr_value_shape = (2,)
+        discr_chunk_shape = (2,)
+        discr_property = discr_property_set.add_property("space discretization",
+            discr_value_type, discr_value_shape, discr_chunk_shape)
+
+        self.assertEqual(discr_property.name, "space discretization")
+        self.assertEqual(discr_property.values.dtype, discr_value_type)
+        self.assertEqual(len(discr_property.values.shape), 2)
+        self.assertEqual(discr_property.values.shape[0], 0)
+        self.assertEqual(discr_property.values.shape[1], 2)
+
+        shapes = discr_property.reserve_items(discr_nr_items)
+
+        self.assertEqual(discr_property.values.shape[0], discr_nr_items)
+
+        shapes_ = value_shapes.astype(discr_value_type)
+        shapes[:] = shapes_
+        self.assertArraysEqual(shapes[:], shapes_)
+
+        value_property.link_space_discretization(discr_property)

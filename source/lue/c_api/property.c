@@ -24,7 +24,7 @@ hid_t create_property(
         return group_id;
     }
 
-    herr_t status = hdf5_create_soft_link(domain_id, "domain", group_id);
+    herr_t status = hdf5_create_soft_link(domain_id, "lue_domain", group_id);
 
     if(status < 0) {
         return status;

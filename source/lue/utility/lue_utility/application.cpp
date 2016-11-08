@@ -58,7 +58,7 @@ Application::Application(
       _error_stream(std::cerr),
       _arguments(docopt::docopt(usage, { argv + 1, argv + argc }, true,
           "0.0.0")),
-      _verbose_dev(argument<bool>("--verbose_dev")),
+      _verbose_dev(argument<bool>("--verbose-dev")),
       _verbose(_verbose_dev || argument<bool>("--verbose"))
 
 {

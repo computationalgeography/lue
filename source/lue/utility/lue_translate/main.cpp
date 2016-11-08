@@ -6,8 +6,8 @@ namespace {
 std::string const usage = R"(lue_translate
 
 usage:
-    lue_translate [--verbose] [--verbose_dev] <input> <output>
-    lue_translate [--verbose] [--verbose_dev] --start=<time_point>
+    lue_translate [--verbose] [--verbose-dev] <input> <output>
+    lue_translate [--verbose] [--verbose-dev] --start=<time_point>
         --cell=<duration> <input> <output>
     lue_translate (-h | --help)
     lue_translate --version
@@ -15,7 +15,7 @@ usage:
 options:
     -h --help             Show this screen
     --verbose             Show info messages
-    --verbose_dev         Show info messages for developer (implies --verbose)
+    --verbose-dev         Show info messages for developer (implies --verbose)
     --version             Show version
     --start=<time_point>  Time point of first slice
     --cell=<duration>     Duration of time step

@@ -98,6 +98,9 @@ Group              create_group        (Identifier const& id,
 std::vector<std::string>
                    group_names         (Group const& group);
 
+std::vector<std::string>
+                   dataset_names       (Group const& group);
+
 Dataset            open_dataset        (hdf5::Group const& group,
                                         std::string const& name);
 

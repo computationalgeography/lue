@@ -12,7 +12,7 @@ namespace lue {
 bool phenomena_exists(
     hdf5::Identifier const& location)
 {
-    return collection_exists(location, "phenomena");
+    return collection_exists(location, "lue_phenomena");
 }
 
 
@@ -23,7 +23,7 @@ bool phenomena_exists(
 Phenomena::Phenomena(
     hdf5::Identifier const& location)
 
-    : Collection(location, "phenomena")
+    : Collection(location, "lue_phenomena")
 
 {
 }
@@ -48,7 +48,7 @@ Phenomena create_phenomena(
     // on the already open phenomena group. But the constructor would
     // conflict with the existing one accepting a parent location.
 
-    create_collection(location, "phenomena");
+    create_collection(location, "lue_phenomena");
 
     return Phenomena(location);
 }

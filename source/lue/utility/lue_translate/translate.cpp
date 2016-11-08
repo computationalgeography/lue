@@ -41,7 +41,7 @@ void Translate::print_format(
     std::string const& dataset_name,
     std::string const& format)
 {
-    print_info_message((boost::format("%1% format: %2%")
+    print_verbose_message((boost::format("%1% format: %2%")
         % dataset_name
         % format).str());
 }
@@ -56,7 +56,7 @@ void Translate::run_implementation()
 
     if(!stack_passed) {
 
-        print_info_message("translate dataset");
+        print_verbose_message("translate dataset");
 
         if(auto gdal_dataset = try_open_gdal_raster_dataset_for_read(
                 input_dataset_name)) {
@@ -90,7 +90,7 @@ void Translate::run_implementation()
     }
     else {
 
-        print_info_message("translate stack dataset");
+        print_verbose_message("translate stack dataset");
 
         if(auto gdal_dataset = try_open_gdal_raster_stack_for_read(
                 input_dataset_name)) {

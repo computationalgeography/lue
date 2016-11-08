@@ -263,22 +263,39 @@ void copy_band(
 
 
 auto create_space_discretization_property(
-    constant_size::time::omnipresent::PropertySet& o_property_set,
+    lue::Dataset& lue_dataset,
+    // constant_size::time::omnipresent::PropertySet& o_property_set,
     GDALRasterDomain const& gdal_domain,
     count_t const nr_items)
 {
-    // Discretization property.
-    // Domain of discretization is the same as of the band properties so
-    // they can all be part of the same property set. We need to set up
-    // a link between each band property value and the discretization
-    // property.
+    auto const phenomenon_name = "discretization";
+    auto& phenomenon = lue_dataset.add_phenomenon(phenomenon_name);
+
+    auto const property_set_name = "shape";
+    // PropertySetConfiguration property_set_configuration(
+    //     SizeOfItemCollectionType::constant_size);
+    // DomainConfiguration domain_configuration{
+    //     SpaceDomainConfiguration(SpaceDomainItemType::box)};
+    auto& cells = phenomenon.add_property_set(property_set_name);
+
+    constant_size::time::omnipresent::PropertySet o_property_set(cells);
+
+    // Write property ids.
+    {
+        assert(nr_items == 1);
+        item_t const item_id[nr_items] = { 0 };
+
+        auto& item = o_property_set.reserve_items(nr_items);
+        item.write(nr_items, item_id);
+    }
+
     auto const file_type_id = H5T_STD_U64LE;
     auto const memory_type_id = H5T_NATIVE_UINT64;
     Shape const shape{ 2 };
     Chunks const chunks{ 2 };
 
     auto& discretization = o_property_set.add_property(
-        "space discretization", file_type_id, memory_type_id, shape,
+        "space", file_type_id, memory_type_id, shape,
         chunks);
 
     {
@@ -449,7 +466,7 @@ GDALDatasetPtr try_open_gdal_track_dataset_for_read(
 
 // - Input:
 //     - Determine space domain of input
-//     - Determine ѕpace discretization of input
+//     - Determine space discretization of input
 //
 // - Output:
 //     - Create LUE dataset
@@ -528,7 +545,7 @@ void translate_gdal_raster_to_lue(
 
 
     auto space_discretization = create_space_discretization_property(
-        o_property_set, gdal_domain, nr_items);
+        lue_dataset, gdal_domain, nr_items);
 
 
     {
@@ -557,8 +574,8 @@ void translate_gdal_raster_to_lue(
 
             auto& property = o_property_set.add_property(property_name(b),
                 file_type_id, rank);
-            property.group().value().create_soft_link(
-                space_discretization.id(), "lue_space_discretization");
+            property.group().create_soft_link(space_discretization.id(),
+                "lue_space_discretization");
             auto& item = property.reserve_items(nr_items, shapes);
 
 
@@ -622,491 +639,510 @@ void translate_gdal_raster_stack_to_lue(
     MonthDuration const& slice_duration,
     std::string const& lue_dataset_name)
 {
-    GDALRasterDomain gdal_domain = gdal_raster_domain(gdal_dataset);
-
-
-    // Create LUE dataset.
-    auto lue_dataset = create_dataset(lue_dataset_name);
-
-    // Add phenomenon to the LUE dataset. Name it after the GDAL dataset.
-    auto const phenomenon_name =
-        boost::filesystem::path(gdal_dataset_name).stem().string();
-    auto& phenomenon = lue_dataset.add_phenomenon(phenomenon_name);
-
-    // Add property set to the phenomenon. This one set will contain all
-    // raster layers from the GDAL dataset.
-    std::string property_set_name = "areas";
-    PropertySetConfiguration property_set_configuration(
-        SizeOfItemCollectionType::constant_size);
-    DomainConfiguration domain_configuration(
-        TimeDomainConfiguration(TimeDomainType::shared,
-            TimeDomainItemType::period),
-        SpaceDomainConfiguration(SpaceDomainItemType::box));
-    auto& areas = phenomenon.add_property_set(property_set_name,
-        property_set_configuration, domain_configuration);
-
-    count_t const nr_items = 1;
-    rank_t const rank = 2;
-
-    constant_size::time::shared::PropertySet sc_areas(areas);
-
-    // Write property ids.
-    item_t const item_id[nr_items] = { 0 };
-
-    {
-        auto& item = sc_areas.reserve_items(nr_items);
-        item.write(nr_items, item_id);
-    }
-
-
-    // Write time period.
-    {
-        // The begin time point is passed in. The duration of the period is
-        // determined by the last slice available.
-        auto const file_extension = gdal_slice_filename_extension(
-            gdal_dataset.GetFileList(), raster_extensions);
-        std::set<size_t> slice_indices = stack_slice_indices(gdal_dataset_name,
-            file_extension);
-        assert(!slice_indices.empty());
-
-        size_t const first_slice = *slice_indices.begin();
-        size_t const last_slice = *(--slice_indices.end());
-        size_t const nr_slices = last_slice - first_slice + 1;
-
-        auto const stack_duration = nr_slices * slice_duration;
-
-        count_t const nr_time_domain_items = 1;
-        int32_t const period_coordinates[nr_time_domain_items * 3] = {
-            start_time_point.year(),
-            start_time_point.month(),
-            static_cast<int32_t>(stack_duration.count())
-        };
-
-        constant_size::time::shared::TimePeriodDomain s_time_domain(
-            areas.domain().time_domain());
-
-        auto& periods = s_time_domain.reserve_items(nr_time_domain_items);
-        periods.write({nr_time_domain_items, 3}, period_coordinates);
-    }
-
-
-    // Write space box.
-    {
-        double const box_coordinate[nr_items * 2 * rank] = {
-            gdal_domain.west,
-            gdal_domain.south,
-            gdal_domain.east,
-            gdal_domain.north
-        };
-
-        space::stationary::SpaceBoxDomain s_space_domain(
-            areas.domain().space_domain());
-
-        auto& boxes = s_space_domain.reserve_items(nr_items);
-        boxes.write({nr_items, 2 * rank}, box_coordinate);
-    }
-
-
-
-
-    // Flow when decoding a property's value:
-    // - If there is a time discretization link, open de property set
-    //   it points to
-
-
-    // Shared time domain:
-    // - All domain items are shared by all items.
-    // - Properties (time discretization) of the domain are shared by
-    //   all items.
-
-
-    // Time discretization.
-    // - Per domain item a different discretization.
-    // - Per item the same discretization.
-
-
-    // The property set to store discretization information for the time
-    // domain items has this layout:
-    // - time domain
-    // - space domain
-
-
-    // auto time_discretization = create_time_discretization_property(sc_areas,
-    //     /* gdal_domain, */ nr_items);
-
-
-
-
-
-    property_set_name = "globals";
-    auto& globals = phenomenon.add_property_set(property_set_name);
-    constant_size::time::omnipresent::PropertySet o_globals(globals);
-
-    {
-        auto& item = o_globals.reserve_items(nr_items);
-        item.write(nr_items, item_id);
-    }
-
-    auto space_discretization = create_space_discretization_property(o_globals,
-        gdal_domain, nr_items);
-
-
-
-
-    // property.group().create_soft_link(space_discretization.id(),
-    //     "lue_space_discretization");
-
-
-
-
-
-
-
-
-    // // Discretization property.
-    // // Domain of discretization is the same as of the band properties so
-    // // they can all be part of the same property set. We need to set up
-    // // a link between each band property value and the discretization
-    // // property.
-    // auto const file_type_id = H5T_STD_U64LE;
-    // auto const memory_type_id = H5T_NATIVE_UINT64;
-    // Shape const shape{ 2 };
-    // Chunks const chunks{ 2 };
-
-    // auto& discretization = o_globals.add_property(
-    //     "space discretization", file_type_id, memory_type_id, shape,
-    //     chunks);
-
-    // {
-    //     // Per item a 1D array of <rank> values representing the size of
-    //     // the dimensions.
-    //     uint64_t values[2] = {
-    //         static_cast<uint64_t>(gdal_domain.nr_rows),
-    //         static_cast<uint64_t>(gdal_domain.nr_cols)
-    //     };
-
-    //     auto& item = discretization.reserve_items(nr_items);
-    //     item.write({nr_items, 2}, values);
-    // }
-
-
-
-
-
-
-
-
-
-
-
-
-//     auto& domain = property_set.domain();
-//     hsize_t const nr_items = 1;
-// 
-//     herr_t status;
-// 
-//     // domain.attributes().write<std::string>("time_domain_type", "located");
-// 
-//     // Constant collection of shared domain items.
+//     GDALRasterDomain gdal_domain = gdal_raster_domain(gdal_dataset);
 // 
 // 
-//     // Item collection.
+//     // Create LUE dataset.
+//     auto lue_dataset = create_dataset(lue_dataset_name);
+// 
+//     // Add phenomenon to the LUE dataset. Name it after the GDAL dataset.
+//     auto const phenomenon_name =
+//         boost::filesystem::path(gdal_dataset_name).stem().string();
+//     auto& phenomenon = lue_dataset.add_phenomenon(phenomenon_name);
+// 
+//     // Add property set to the phenomenon. This one set will contain all
+//     // raster layers from the GDAL dataset.
+//     std::string property_set_name = "areas";
+//     PropertySetConfiguration property_set_configuration(
+//         SizeOfItemCollectionType::constant_size);
+//     DomainConfiguration domain_configuration(
+//         TimeDomainConfiguration(TimeDomainType::shared,
+//             TimeDomainItemType::period),
+//         SpaceDomainConfiguration(SpaceDomainItemType::box));
+//     auto& areas = phenomenon.add_property_set(property_set_name,
+//         property_set_configuration, domain_configuration);
+// 
+//     count_t const nr_items = 1;
+//     rank_t const rank = 2;
+// 
+//     constant_size::time::shared::PropertySet sc_areas(areas);
+// 
+//     // Write property ids.
+//     item_t const item_id[nr_items] = { 0 };
+// 
 //     {
-//         hdf5::Identifier item_collection(create_item_collection(domain.id(),
-//                 LUE_STD_ITEM, nr_items), close_item_collection);
-//         int const items[nr_items] = { 0 };
-//         status = write_item_collection(item_collection,
-//             LUE_NATIVE_ITEM, items);
-//         check_status(lue_dataset_name, status, "write item collection");
+//         auto& item = sc_areas.reserve_items(nr_items);
+//         item.write(nr_items, item_id);
 //     }
 // 
 // 
-//     // Time domain contains a single time extent. It is defined by the
-//     // begin time point and a duration.
-// 
-//     // In case the range of slices is continuous (no holes), we only
-//     // need to store a single time period. Otherwise we have to treat the
-//     // holes as periods with no-data, or store multiple periods. Probably
-//     // support no-data periods.
-// 
-//     // The begin time point is passed in. The duration of the period is
-//     // determined by the last slice available.
-// 
-//     auto const file_extension = gdal_slice_filename_extension(
-//         gdal_dataset.GetFileList(), raster_extensions);
-//     std::set<size_t> slice_indices = stack_slice_indices(gdal_dataset_name,
-//         file_extension);
-//     assert(!slice_indices.empty());
-// 
-//     size_t const first_slice = *slice_indices.begin();
-//     size_t const last_slice = *(--slice_indices.end());
-//     size_t const nr_slices = last_slice - first_slice + 1;
-// 
-//     auto const stack_duration = nr_slices * slice_duration;
-// 
-//     // First slice starts at the time point passed in. It ends after one
-//     // slice durations has passed.
-//     // {time_point, stack_duration}
-// 
-// 
-//     // Time point types.
-//     auto const year_file_type_id = H5T_STD_I32LE;
-//     auto const month_file_type_id = H5T_STD_I32LE;
-//     auto const year_memory_type_id = H5T_NATIVE_INT32;
-//     auto const month_memory_type_id = H5T_NATIVE_INT32;
-// 
-//     hdf5::Identifier const time_point_file_type(
-//         create_month_time_point_file_datatype(year_file_type_id,
-//             month_file_type_id), H5Tclose);
-//     hdf5::Identifier const time_point_memory_type(
-//         create_month_time_point_memory_datatype(year_memory_type_id,
-//             month_memory_type_id), H5Tclose);
-// 
-// 
-//     // Time duration types.
-//     auto const count_file_type_id = H5T_STD_I32LE;
-//     auto const count_memory_type_id = H5T_NATIVE_INT32;
-// 
-//     hdf5::Identifier const time_duration_file_type(
-//         create_month_time_duration_file_datatype(count_file_type_id),
-//             H5Tclose);
-//     hdf5::Identifier const time_duration_memory_type(
-//         create_month_time_duration_memory_datatype(count_memory_type_id),
-//             H5Tclose);
-// 
-// 
-//     // Time period types.
-//     hdf5::Identifier const time_domain_item_file_type(
-//         create_time_period_file_datatype(time_point_file_type,
-//             time_duration_file_type), H5Tclose);
-//     hdf5::Identifier const time_domain_item_memory_type(
-//         create_time_period_memory_datatype(time_point_memory_type,
-//             time_duration_memory_type), H5Tclose);
-// 
-// 
-//     // Time domain.
-//     hdf5::Identifier const time_domain(create_shared_time_domain(domain.id(),
-//         time_domain_item_file_type), close_shared_time_domain);
-// 
-//     status = reserve_time_domain_items_space(time_domain, 1);
-//     check_status(lue_dataset_name, status, "reserve time domain items space");
-// 
-// 
-//     // TODO Is the layout of TimePeriod guaranteed to be
-//     // {
-//     //     time_point
-//     //     time_duration
-//     // }
-//     // This is assumed by create_time_period_xxx_datatype().
-//     TimePeriod<MonthTimePoint, MonthDuration> time_period(start_time_point,
-//         stack_duration);
-//     status = write_time_domain_items(time_domain,
-//         time_domain_item_memory_type, &time_period, 1);
-//     check_status(lue_dataset_name, status, "write time domain items");
-// 
-// 
-//     // Space domain.
-//     // Domain items are space boxes.
+//     // Write time period.
 //     {
-//         // domain.attributes().write<std::string>("space_domain_type", "located");
+//         // The begin time point is passed in. The duration of the period is
+//         // determined by the last slice available.
+//         auto const file_extension = gdal_slice_filename_extension(
+//             gdal_dataset.GetFileList(), raster_extensions);
+//         std::set<size_t> slice_indices = stack_slice_indices(
+//             gdal_dataset_name, file_extension);
+//         assert(!slice_indices.empty());
 // 
-//         int const rank = 2;
+//         size_t const first_slice = *slice_indices.begin();
+//         size_t const last_slice = *(--slice_indices.end());
+//         size_t const nr_slices = last_slice - first_slice + 1;
 // 
-//         hdf5::Identifier space_domain_item_file_type(
-//             create_space_box_file_datatype(rank, H5T_IEEE_F64LE), H5Tclose);
-//         hdf5::Identifier space_domain_item_memory_type(
-//             create_space_box_memory_datatype(rank, H5T_NATIVE_DOUBLE),
-//             H5Tclose);
-//         hdf5::Identifier space_domain(create_simple_space_domain(domain.id(),
-//             space_domain_item_file_type, nr_items), close_simple_space_domain);
-//         // TODO test space_domain.id(), or raise exception
+//         auto const stack_duration = nr_slices * slice_duration;
 // 
-//         std::vector<BoxFloat64> space_domain_items(nr_items);
-//         space_domain_items[0].min.x = gdal_domain.west;
-//         space_domain_items[0].min.y = gdal_domain.south;
-//         space_domain_items[0].max.x = gdal_domain.east;
-//         space_domain_items[0].max.y = gdal_domain.north;
-// 
-//         // hdf5::Identifier item_dataset(hdf5_open_dataset(space_domain.id(),
-//         //     "item"), hdf5_close_dataset);
-//         // TODO test space_domain.id(), or raise exception
-// 
-//         status = write_simple_space_domain_items(space_domain,
-//             space_domain_item_memory_type, space_domain_items.data());
-//         check_status(lue_dataset_name, status, "write space domain items");
-//     }
-// 
-// 
-//     // Discretization property.
-//     // Domain of time and space discretizations is the same as of the
-//     // band properties so they can all be part of the same property
-//     // set. We need to set up a link between each band property value and
-//     // the time and space discretization properties.
-// 
-// 
-//     auto& time_discretization = property_set.add_property(
-//         "time discretization");
-//     check_id(lue_dataset_name, time_discretization, "create property");
-// 
-//     {
-//         // Per item a 1D array of <rank> values representing the size of
-//         // the dimensions.
-// 
-//         int const rank = 1;
-//         hsize_t const shape[rank] = { 1 };
-//         hsize_t const chunks[rank] = { 1 };
-// 
-//         hdf5::Identifier value(create_value(time_discretization.id(),
-//             H5T_STD_U64LE, rank, shape, chunks), close_value);
-//         check_id(lue_dataset_name, value, "create value");
-// 
-//         uint64_t values[1] = { static_cast<uint64_t>(nr_slices) };
-// 
-//         herr_t status = write_value(value, H5T_NATIVE_UINT64,
-//             values, nr_items);
-//         check_status(lue_dataset_name, status, "write value");
-//     }
-// 
-// 
-//     auto& space_discretization = property_set.add_property(
-//         "space discretization");
-//     check_id(lue_dataset_name, space_discretization, "create property");
-// 
-//     {
-//         // Per item a 1D array of <rank> values representing the size of
-//         // the dimensions.
-// 
-//         int const rank = 1;
-//         hsize_t const shape[rank] = { 2 };
-//         hsize_t const chunks[rank] = { 2 };
-// 
-//         hdf5::Identifier value(create_value(space_discretization.id(),
-//             H5T_STD_U64LE, rank, shape, chunks), close_value);
-//         check_id(lue_dataset_name, value, "create value");
-// 
-//         uint64_t values[2] = { static_cast<uint64_t>(gdal_domain.nr_rows),
-//             static_cast<uint64_t>(gdal_domain.nr_cols) };
-// 
-//         herr_t status = write_value(value, H5T_NATIVE_UINT64,
-//             values, nr_items);
-//         check_status(lue_dataset_name, status, "write value");
-//     }
-// 
-//     {
-//         int const value_rank = 2;
-//         hsize_t const shape[value_rank] = {
-//            static_cast<hsize_t>(gdal_domain.nr_rows),
-//            static_cast<hsize_t>(gdal_domain.nr_cols)
+//         count_t const nr_time_domain_items = 1;
+//         int32_t const period_coordinates[nr_time_domain_items * 3] = {
+//             start_time_point.year(),
+//             start_time_point.month(),
+//             static_cast<int32_t>(stack_duration.count())
 //         };
 // 
-//         // Use one row as the unit of chunking.
-//         // TODO Does this make sense?
-//         hsize_t const chunks[value_rank] = {
-//            1, static_cast<hsize_t>(gdal_domain.nr_cols) };
+//         constant_size::time::shared::TimePeriodDomain s_time_domain(
+//             areas.domain().time_domain());
 // 
-//         // There is only one item.
-//         hsize_t const* item_shapes = &shape[0];
-//         hsize_t const* item_chunks = &chunks[0];
-// 
-//         // Create a property for each layer in the GDAL raster dataset.
-//         for(int b = 1; b <= gdal_domain.nr_bands; ++b) {
-//             auto& property = create_band_property(lue_dataset_name,
-//                 property_set, b, time_discretization,
-//                 space_discretization);
-// 
-//             // Value API:
-//             // - constant collection of shared domain items
-//             // - variable size per item
-//             // - constant size through time
-// 
-//             // TODO
-//             // Switch on value type.
-// 
-//             hdf5::Identifier value(create_t_n_value(property.id(),
-//                 H5T_IEEE_F32LE, value_rank, &item_shapes, &item_chunks,
-//                 nr_items), close_t_n_value);
-//             check_id(lue_dataset_name, value, "create value");
-//         }
-// 
-// 
-//         boost::filesystem::path input_dataset_path;
-//         GDALDatasetPtr gdal_dataset_ptr;
-//         size_t const nr_bands_to_copy = nr_slices * gdal_domain.nr_bands;
-//         size_t band_to_copy = 0;
-// 
-// 
-//         ProgressIndicator progress_indicator(std::cout, "copying bands",
-//             nr_bands_to_copy);
-// 
-//         // Iterate over all slices and copy the contents to the LUE dataset.
-//         hsize_t time_idx{0};
-//         for(auto const& file_slice_index: slice_indices) {
-// 
-//             // Determine pathname to GDAL dataset containing bands for
-//             // current slice.
-//             // Open GDAL dataset.
-// 
-//             input_dataset_path = stack_slice_path(gdal_dataset_name,
-//                 file_slice_index, file_extension);
-// 
-//             gdal_dataset_ptr = try_open_gdal_raster_dataset_for_read(
-//                 input_dataset_path.native());
-//             // TODO error handling.
-//             assert(gdal_dataset_ptr);
-// 
-// 
-//             // TODO Verify properties of dataset match the one passed
-//             // into this function.
-// 
-//             // TODO Handle all possible value types.
-// 
-//             // Copy each band to its property value dataset.
-//             for(int b = 1; b <= gdal_domain.nr_bands; ++b) {
-// 
-//                 // Value API:
-//                 // - constant collection of shared domain items
-//                 // - variable size per item
-//                 // - constant size through time
-// 
-//                 // Write LUE property. -----------------------------------------
-//                 // Open property
-//                 std::string const property_name = "band_" +
-//                     std::to_string(b);
-//                 auto& property = property_set.properties().item(property_name);
-//                 check_id(lue_dataset_name, property, "open property");
-// 
-//                 // Open value
-//                 auto value = hdf5::Identifier(open_t_n_value(property.id()),
-//                     close_t_n_value);
-//                 check_id(lue_dataset_name, value, "open value");
-// 
-// 
-//                 // Make sure there is enough space in the dataset of each
-//                 // item (1 item in our case).
-//                 reserve_t_n_value(value);
-// 
-// 
-//                 // Given a dataset which is large enough, copy the GDAL raster
-//                 // band to the corresponding HDF5 dataset.
-//                 GDALRasterBand* raster_band =
-//                     gdal_dataset_ptr->GetRasterBand(b);
-// 
-//                 hdf5::Identifier dataset(t_n_value_dataset(value, 0),
-//                     ::hdf5_close_dataset);
-//                 check_id(lue_dataset_name, dataset, "obtain dataset");
-// 
-//                 copy_band_t_n(gdal_domain, *raster_band, dataset,
-//                     time_idx);
-// 
-//                 progress_indicator.update_progress(++band_to_copy);
-//             }
-// 
-//             ++time_idx;
-//         }
+//         auto& periods = s_time_domain.reserve_items(nr_time_domain_items);
+//         periods.write({nr_time_domain_items, 3}, period_coordinates);
 //     }
 // 
-//     // Write all metadata items in the GDAL dataset to the LUE dataset.
-//     // TODO ...
+// 
+//     // Write space box.
+//     {
+//         double const box_coordinate[nr_items * 2 * rank] = {
+//             gdal_domain.west,
+//             gdal_domain.south,
+//             gdal_domain.east,
+//             gdal_domain.north
+//         };
+// 
+//         space::stationary::SpaceBoxDomain s_space_domain(
+//             areas.domain().space_domain());
+// 
+//         auto& boxes = s_space_domain.reserve_items(nr_items);
+//         boxes.write({nr_items, 2 * rank}, box_coordinate);
+//     }
+// 
+// 
+//     property_set_name = "globals";
+//     auto& globals = phenomenon.add_property_set(property_set_name);
+//     constant_size::time::omnipresent::PropertySet o_globals(globals);
+// 
+//     {
+//         auto& item = o_globals.reserve_items(nr_items);
+//         item.write(nr_items, item_id);
+//     }
+// 
+//     auto space_discretization = create_space_discretization_property(o_globals,
+//         gdal_domain, nr_items);
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+//     // Flow when decoding a property's value:
+//     // - If there is a time discretization link, open de property set
+//     //   it points to
+// 
+// 
+//     // Shared time domain:
+//     // - All domain items are shared by all items.
+//     // - Properties (time discretization) of the domain are shared by
+//     //   all items.
+// 
+// 
+//     // Time discretization.
+//     // - Per domain item a different discretization.
+//     // - Per item the same discretization.
+// 
+// 
+//     // The property set to store discretization information for the time
+//     // domain items has this layout:
+//     // - time domain: omnipresent
+//     // - space domain: omnipresent
+// 
+// 
+//     auto time_discretization = create_time_discretization_property(sc_areas,
+//         /* gdal_domain, */ nr_items);
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+//     // property.group().create_soft_link(space_discretization.id(),
+//     //     "lue_space_discretization");
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+//     // // Discretization property.
+//     // // Domain of discretization is the same as of the band properties so
+//     // // they can all be part of the same property set. We need to set up
+//     // // a link between each band property value and the discretization
+//     // // property.
+//     // auto const file_type_id = H5T_STD_U64LE;
+//     // auto const memory_type_id = H5T_NATIVE_UINT64;
+//     // Shape const shape{ 2 };
+//     // Chunks const chunks{ 2 };
+// 
+//     // auto& discretization = o_globals.add_property(
+//     //     "space discretization", file_type_id, memory_type_id, shape,
+//     //     chunks);
+// 
+//     // {
+//     //     // Per item a 1D array of <rank> values representing the size of
+//     //     // the dimensions.
+//     //     uint64_t values[2] = {
+//     //         static_cast<uint64_t>(gdal_domain.nr_rows),
+//     //         static_cast<uint64_t>(gdal_domain.nr_cols)
+//     //     };
+// 
+//     //     auto& item = discretization.reserve_items(nr_items);
+//     //     item.write({nr_items, 2}, values);
+//     // }
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// //     auto& domain = property_set.domain();
+// //     hsize_t const nr_items = 1;
+// // 
+// //     herr_t status;
+// // 
+// //     // domain.attributes().write<std::string>("time_domain_type", "located");
+// // 
+// //     // Constant collection of shared domain items.
+// // 
+// // 
+// //     // Item collection.
+// //     {
+// //         hdf5::Identifier item_collection(create_item_collection(domain.id(),
+// //                 LUE_STD_ITEM, nr_items), close_item_collection);
+// //         int const items[nr_items] = { 0 };
+// //         status = write_item_collection(item_collection,
+// //             LUE_NATIVE_ITEM, items);
+// //         check_status(lue_dataset_name, status, "write item collection");
+// //     }
+// // 
+// // 
+// //     // Time domain contains a single time extent. It is defined by the
+// //     // begin time point and a duration.
+// // 
+// //     // In case the range of slices is continuous (no holes), we only
+// //     // need to store a single time period. Otherwise we have to treat the
+// //     // holes as periods with no-data, or store multiple periods. Probably
+// //     // support no-data periods.
+// // 
+// //     // The begin time point is passed in. The duration of the period is
+// //     // determined by the last slice available.
+// // 
+// //     auto const file_extension = gdal_slice_filename_extension(
+// //         gdal_dataset.GetFileList(), raster_extensions);
+// //     std::set<size_t> slice_indices = stack_slice_indices(gdal_dataset_name,
+// //         file_extension);
+// //     assert(!slice_indices.empty());
+// // 
+// //     size_t const first_slice = *slice_indices.begin();
+// //     size_t const last_slice = *(--slice_indices.end());
+// //     size_t const nr_slices = last_slice - first_slice + 1;
+// // 
+// //     auto const stack_duration = nr_slices * slice_duration;
+// // 
+// //     // First slice starts at the time point passed in. It ends after one
+// //     // slice durations has passed.
+// //     // {time_point, stack_duration}
+// // 
+// // 
+// //     // Time point types.
+// //     auto const year_file_type_id = H5T_STD_I32LE;
+// //     auto const month_file_type_id = H5T_STD_I32LE;
+// //     auto const year_memory_type_id = H5T_NATIVE_INT32;
+// //     auto const month_memory_type_id = H5T_NATIVE_INT32;
+// // 
+// //     hdf5::Identifier const time_point_file_type(
+// //         create_month_time_point_file_datatype(year_file_type_id,
+// //             month_file_type_id), H5Tclose);
+// //     hdf5::Identifier const time_point_memory_type(
+// //         create_month_time_point_memory_datatype(year_memory_type_id,
+// //             month_memory_type_id), H5Tclose);
+// // 
+// // 
+// //     // Time duration types.
+// //     auto const count_file_type_id = H5T_STD_I32LE;
+// //     auto const count_memory_type_id = H5T_NATIVE_INT32;
+// // 
+// //     hdf5::Identifier const time_duration_file_type(
+// //         create_month_time_duration_file_datatype(count_file_type_id),
+// //             H5Tclose);
+// //     hdf5::Identifier const time_duration_memory_type(
+// //         create_month_time_duration_memory_datatype(count_memory_type_id),
+// //             H5Tclose);
+// // 
+// // 
+// //     // Time period types.
+// //     hdf5::Identifier const time_domain_item_file_type(
+// //         create_time_period_file_datatype(time_point_file_type,
+// //             time_duration_file_type), H5Tclose);
+// //     hdf5::Identifier const time_domain_item_memory_type(
+// //         create_time_period_memory_datatype(time_point_memory_type,
+// //             time_duration_memory_type), H5Tclose);
+// // 
+// // 
+// //     // Time domain.
+// //     hdf5::Identifier const time_domain(create_shared_time_domain(domain.id(),
+// //         time_domain_item_file_type), close_shared_time_domain);
+// // 
+// //     status = reserve_time_domain_items_space(time_domain, 1);
+// //     check_status(lue_dataset_name, status, "reserve time domain items space");
+// // 
+// // 
+// //     // TODO Is the layout of TimePeriod guaranteed to be
+// //     // {
+// //     //     time_point
+// //     //     time_duration
+// //     // }
+// //     // This is assumed by create_time_period_xxx_datatype().
+// //     TimePeriod<MonthTimePoint, MonthDuration> time_period(start_time_point,
+// //         stack_duration);
+// //     status = write_time_domain_items(time_domain,
+// //         time_domain_item_memory_type, &time_period, 1);
+// //     check_status(lue_dataset_name, status, "write time domain items");
+// // 
+// // 
+// //     // Space domain.
+// //     // Domain items are space boxes.
+// //     {
+// //         // domain.attributes().write<std::string>("space_domain_type", "located");
+// // 
+// //         int const rank = 2;
+// // 
+// //         hdf5::Identifier space_domain_item_file_type(
+// //             create_space_box_file_datatype(rank, H5T_IEEE_F64LE), H5Tclose);
+// //         hdf5::Identifier space_domain_item_memory_type(
+// //             create_space_box_memory_datatype(rank, H5T_NATIVE_DOUBLE),
+// //             H5Tclose);
+// //         hdf5::Identifier space_domain(create_simple_space_domain(domain.id(),
+// //             space_domain_item_file_type, nr_items), close_simple_space_domain);
+// //         // TODO test space_domain.id(), or raise exception
+// // 
+// //         std::vector<BoxFloat64> space_domain_items(nr_items);
+// //         space_domain_items[0].min.x = gdal_domain.west;
+// //         space_domain_items[0].min.y = gdal_domain.south;
+// //         space_domain_items[0].max.x = gdal_domain.east;
+// //         space_domain_items[0].max.y = gdal_domain.north;
+// // 
+// //         // hdf5::Identifier item_dataset(hdf5_open_dataset(space_domain.id(),
+// //         //     "item"), hdf5_close_dataset);
+// //         // TODO test space_domain.id(), or raise exception
+// // 
+// //         status = write_simple_space_domain_items(space_domain,
+// //             space_domain_item_memory_type, space_domain_items.data());
+// //         check_status(lue_dataset_name, status, "write space domain items");
+// //     }
+// // 
+// // 
+// //     // Discretization property.
+// //     // Domain of time and space discretizations is the same as of the
+// //     // band properties so they can all be part of the same property
+// //     // set. We need to set up a link between each band property value and
+// //     // the time and space discretization properties.
+// // 
+// // 
+// //     auto& time_discretization = property_set.add_property(
+// //         "time discretization");
+// //     check_id(lue_dataset_name, time_discretization, "create property");
+// // 
+// //     {
+// //         // Per item a 1D array of <rank> values representing the size of
+// //         // the dimensions.
+// // 
+// //         int const rank = 1;
+// //         hsize_t const shape[rank] = { 1 };
+// //         hsize_t const chunks[rank] = { 1 };
+// // 
+// //         hdf5::Identifier value(create_value(time_discretization.id(),
+// //             H5T_STD_U64LE, rank, shape, chunks), close_value);
+// //         check_id(lue_dataset_name, value, "create value");
+// // 
+// //         uint64_t values[1] = { static_cast<uint64_t>(nr_slices) };
+// // 
+// //         herr_t status = write_value(value, H5T_NATIVE_UINT64,
+// //             values, nr_items);
+// //         check_status(lue_dataset_name, status, "write value");
+// //     }
+// // 
+// // 
+// //     auto& space_discretization = property_set.add_property(
+// //         "space discretization");
+// //     check_id(lue_dataset_name, space_discretization, "create property");
+// // 
+// //     {
+// //         // Per item a 1D array of <rank> values representing the size of
+// //         // the dimensions.
+// // 
+// //         int const rank = 1;
+// //         hsize_t const shape[rank] = { 2 };
+// //         hsize_t const chunks[rank] = { 2 };
+// // 
+// //         hdf5::Identifier value(create_value(space_discretization.id(),
+// //             H5T_STD_U64LE, rank, shape, chunks), close_value);
+// //         check_id(lue_dataset_name, value, "create value");
+// // 
+// //         uint64_t values[2] = { static_cast<uint64_t>(gdal_domain.nr_rows),
+// //             static_cast<uint64_t>(gdal_domain.nr_cols) };
+// // 
+// //         herr_t status = write_value(value, H5T_NATIVE_UINT64,
+// //             values, nr_items);
+// //         check_status(lue_dataset_name, status, "write value");
+// //     }
+// // 
+// //     {
+// //         int const value_rank = 2;
+// //         hsize_t const shape[value_rank] = {
+// //            static_cast<hsize_t>(gdal_domain.nr_rows),
+// //            static_cast<hsize_t>(gdal_domain.nr_cols)
+// //         };
+// // 
+// //         // Use one row as the unit of chunking.
+// //         // TODO Does this make sense?
+// //         hsize_t const chunks[value_rank] = {
+// //            1, static_cast<hsize_t>(gdal_domain.nr_cols) };
+// // 
+// //         // There is only one item.
+// //         hsize_t const* item_shapes = &shape[0];
+// //         hsize_t const* item_chunks = &chunks[0];
+// // 
+// //         // Create a property for each layer in the GDAL raster dataset.
+// //         for(int b = 1; b <= gdal_domain.nr_bands; ++b) {
+// //             auto& property = create_band_property(lue_dataset_name,
+// //                 property_set, b, time_discretization,
+// //                 space_discretization);
+// // 
+// //             // Value API:
+// //             // - constant collection of shared domain items
+// //             // - variable size per item
+// //             // - constant size through time
+// // 
+// //             // TODO
+// //             // Switch on value type.
+// // 
+// //             hdf5::Identifier value(create_t_n_value(property.id(),
+// //                 H5T_IEEE_F32LE, value_rank, &item_shapes, &item_chunks,
+// //                 nr_items), close_t_n_value);
+// //             check_id(lue_dataset_name, value, "create value");
+// //         }
+// // 
+// // 
+// //         boost::filesystem::path input_dataset_path;
+// //         GDALDatasetPtr gdal_dataset_ptr;
+// //         size_t const nr_bands_to_copy = nr_slices * gdal_domain.nr_bands;
+// //         size_t band_to_copy = 0;
+// // 
+// // 
+// //         ProgressIndicator progress_indicator(std::cout, "copying bands",
+// //             nr_bands_to_copy);
+// // 
+// //         // Iterate over all slices and copy the contents to the LUE dataset.
+// //         hsize_t time_idx{0};
+// //         for(auto const& file_slice_index: slice_indices) {
+// // 
+// //             // Determine pathname to GDAL dataset containing bands for
+// //             // current slice.
+// //             // Open GDAL dataset.
+// // 
+// //             input_dataset_path = stack_slice_path(gdal_dataset_name,
+// //                 file_slice_index, file_extension);
+// // 
+// //             gdal_dataset_ptr = try_open_gdal_raster_dataset_for_read(
+// //                 input_dataset_path.native());
+// //             // TODO error handling.
+// //             assert(gdal_dataset_ptr);
+// // 
+// // 
+// //             // TODO Verify properties of dataset match the one passed
+// //             // into this function.
+// // 
+// //             // TODO Handle all possible value types.
+// // 
+// //             // Copy each band to its property value dataset.
+// //             for(int b = 1; b <= gdal_domain.nr_bands; ++b) {
+// // 
+// //                 // Value API:
+// //                 // - constant collection of shared domain items
+// //                 // - variable size per item
+// //                 // - constant size through time
+// // 
+// //                 // Write LUE property. -----------------------------------------
+// //                 // Open property
+// //                 std::string const property_name = "band_" +
+// //                     std::to_string(b);
+// //                 auto& property = property_set.properties().item(property_name);
+// //                 check_id(lue_dataset_name, property, "open property");
+// // 
+// //                 // Open value
+// //                 auto value = hdf5::Identifier(open_t_n_value(property.id()),
+// //                     close_t_n_value);
+// //                 check_id(lue_dataset_name, value, "open value");
+// // 
+// // 
+// //                 // Make sure there is enough space in the dataset of each
+// //                 // item (1 item in our case).
+// //                 reserve_t_n_value(value);
+// // 
+// // 
+// //                 // Given a dataset which is large enough, copy the GDAL raster
+// //                 // band to the corresponding HDF5 dataset.
+// //                 GDALRasterBand* raster_band =
+// //                     gdal_dataset_ptr->GetRasterBand(b);
+// // 
+// //                 hdf5::Identifier dataset(t_n_value_dataset(value, 0),
+// //                     ::hdf5_close_dataset);
+// //                 check_id(lue_dataset_name, dataset, "obtain dataset");
+// // 
+// //                 copy_band_t_n(gdal_domain, *raster_band, dataset,
+// //                     time_idx);
+// // 
+// //                 progress_indicator.update_progress(++band_to_copy);
+// //             }
+// // 
+// //             ++time_idx;
+// //         }
+// //     }
+// // 
+// //     // Write all metadata items in the GDAL dataset to the LUE dataset.
+// //     // TODO ...
 }
 
 
@@ -1279,7 +1315,7 @@ void translate_gdal_feature_stack_to_lue(
 // 
 // 
 //         // hdf5::Identifier space_domain(hdf5_create_group(domain.id(),
-//         //     "space"), hdf5_close_group);
+//         //     "lue_space"), hdf5_close_group);
 //         // check_id(lue_dataset_name, space_domain, "create space domain");
 // 
 // 
@@ -1337,7 +1373,7 @@ void translate_gdal_feature_stack_to_lue(
 //         // domain.attributes().write<std::string>("space_domain_type", "located");
 // 
 //         hdf5::Identifier space_domain(hdf5_create_group(domain.id(),
-//             "space"), hdf5_close_group);
+//             "lue_space"), hdf5_close_group);
 //         check_id(lue_dataset_name, space_domain, "create space domain");
 // 
 //         {

@@ -7,18 +7,18 @@ import lue_test
 class UseCaseTest(lue_test.TestCase):
 
 
-    def test_use_case_1(self):
+    def test_1(self):
 
-        dataset_name = "o_cs_use_case_1.lue"
+        dataset_name = "omnipresent_same_shape_1.lue"
         dataset = self.create_dataset(dataset_name)
-        universe = dataset.add_universe("universe")
-        phenomenon = universe.add_phenomenon("phenomenon")
+        universe = dataset.add_universe("my_universe")
+        phenomenon = universe.add_phenomenon("my_phenomenon")
 
 
         # Add a new property set. This returns a type with a special API,
         # which is dependent on the property set and time domain
         # configuration.
-        property_set = phenomenon.add_property_set("property_set")
+        property_set = phenomenon.add_property_set("my_property_set")
 
         self.assertEqual(
             property_set.configuration.size_of_item_collection_type,
@@ -53,9 +53,9 @@ class UseCaseTest(lue_test.TestCase):
         value_shape = (4, 5)
         chunk_shape = (4, 5)
         value_type = numpy.int32
-        property = property_set.add_property("property", value_type,
+        property = property_set.add_property("my_property", value_type,
             value_shape, chunk_shape)
-        self.assertEqual(property.name, "property")
+        self.assertEqual(property.name, "my_property")
         self.assertEqual(property.values.dtype, numpy.int32)
         self.assertEqual(len(property.values.shape), 3)
         self.assertEqual(property.values.shape[0], 0)

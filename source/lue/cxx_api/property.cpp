@@ -58,7 +58,7 @@ Value& Property::value() const
 void Property::link_space_discretization(
     Property const& discretization)
 {
-    create_soft_link(discretization.id(), "space discretization");
+    create_soft_link(discretization.id(), "lue_space_discretization");
 }
 
 

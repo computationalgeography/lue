@@ -38,6 +38,8 @@ public:
 
     bool           exists              (std::string const& name) const;
 
+    Identifier     type_id             (std::string const& name) const;
+
 private:
 
     std::reference_wrapper<Identifier const> _location;
