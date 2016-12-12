@@ -153,8 +153,8 @@ void init_property_set(
             py::return_value_policy::reference_internal)
     ;
 
-    py::class_<constant_size::time::omnipresent::PropertySet>(module, "O_PropertySet",
-        py::base<constant_size::time::PropertySet>(),
+    py::class_<constant_size::time::omnipresent::PropertySet>(module,
+        "O_PropertySet", py::base<constant_size::time::PropertySet>(),
         "O_PropertySet docstring...")
 
         .def(py::init<PropertySet&>(),
