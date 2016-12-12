@@ -9,22 +9,27 @@ build_type="Debug"
 source_prefix="$PROJECTS/lue"
 tmp_prefix="$HOME/tmp/lue"
 build_prefix="$tmp_prefix/build"
-install_prefix="$tmp_prefix/install"
 local_prefix="$tmp_prefix/local"
-test_prefix="$tmp_prefix/test"
+install_prefix="$tmp_prefix/install"
 
 
-# Refresh temp location for our files.
-rm -fr $tmp_prefix
-mkdir -p $tmp_prefix/{build,install,local,test}
+mkdir -p tmp_prefix
+cd $tmp_prefix
 
 
 # Install prerequisites.
-cd $tmp_prefix
+rm -fr peacock
 git clone --recursive https://github.com/geoneric/peacock.git
+
+rm -fr $build_prefix
+mkdir $build_prefix
 cd $build_prefix
 mkdir peacock
 cd peacock
+
+rm -fr $local_prefix
+mkdir $local_prefix
+
 cmake -Dpeacock_prefix=$local_prefix \
     -Dbuild_boost=true -Dboost_version=1.57.0 \
         -Dboost_build_boost_test=TRUE \
@@ -36,17 +41,12 @@ cmake -Dpeacock_prefix=$local_prefix \
 cmake --build . --target all
 
 
-# cd $local_prefix
-# wget https://github.com/pybind/pybind11/archive/v1.8.1.tar.gz
-# tar zxf v1.8.1.tar.gz
-# cpath=$local_prefix/pybind11-1.8.1/include
-# cd ..
-
-
 # Build LUE.
+rm -fr $install_prefix
+mkdir $install_prefix
+
 cd $build_prefix
 cmake -DCMAKE_BUILD_TYPE=$build_type -DPEACOCK_PREFIX:PATH=$local_prefix -DCMAKE_INSTALL_PREFIX=$install_prefix -DLUE_BUILD_PYTHON_API:BOOL=TRUE $source_prefix
-# -DCMAKE_PREFIX_PATH=$cpath $source_prefix
 cmake --build . --target all
 
 
@@ -60,24 +60,25 @@ tree .
 
 
 # Create source distribution.
-# TODO: Add paths to peacock prefix stuff.
-# CPLUS_INCLUDE_PATH="$local_prefix/*/*/*/*/include" \
-export CPLUS_INCLUDE_PATH="$local_prefix/linux/linux/gcc-4/x86_64/include"
-LIBRARY_PATH="$local_prefix/*/*/*/*/lib" \
-    python setup.py sdist
+python setup.py sdist
 
 
 # Install package in virtual environment and perform some tests.
 virtualenv $tmp_prefix/python
 source $tmp_prefix/python/bin/activate
-pip install numpy
+# pip install numpy
 cd $tmp_prefix
-CPATH=$cpath \
-    pip install --pre --no-index --find-links=file://$install_prefix/dist \
-        "lue==@LUE_VERSION@"
+peacock_include_dir=`grep PYBIND11_INCLUDE_DIRS:PATH $build_prefix/CMakeCache.txt | cut -d "=" -f2`
+peacock_lib_dir=`dirname $(grep HDF5_C_LIBRARY:PATH $build_prefix/CMakeCache.txt | cut -d "=" -f2)`
+pip install --force-reinstall --upgrade --pre --no-index --find-links=file://$install_prefix/dist \
+    --global-option=build_ext \
+    --global-option="-I$peacock_include_dir" \
+    --global-option="-L$peacock_lib_dir" \
+    "lue==@LUE_VERSION@"
+
 
 echo "********************************************************"
-python -c \
+LD_LIBRARY_PATH=$peacock_lib_dir:$LD_LIBRARY_PATH python -c \
     "import lue; print(\"installed LUE version {}\".format(lue.__version__))"
 echo "********************************************************"
 
@@ -88,4 +89,6 @@ echo "********************************************************"
 
 
 # # Upload distributions.
+# cd $install_prefix
+# pip install twine
 # twine upload dist/*

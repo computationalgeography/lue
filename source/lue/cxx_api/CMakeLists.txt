@@ -62,3 +62,11 @@ install(
     COMPONENT python
     # CMAKE >= 3.6 EXCLUDE_FROM_ALL
 )
+install(
+    DIRECTORY
+        constant_size
+    DESTINATION _lue/lue/cxx_api
+    COMPONENT python
+    # FILES_MATCHING
+    PATTERN "CMakeLists.txt" EXCLUDE
+)
