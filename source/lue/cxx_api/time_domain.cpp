@@ -14,9 +14,9 @@ TimeDomain::TimeDomain(
         ::close_time_domain)},
       _configuration{TimeDomainConfiguration(
           parse_time_domain_type(
-              attributes().read<std::string>("domain_type")),
+              attributes().read<std::string>("lue_domain_type")),
           parse_time_domain_item_type(
-              attributes().read<std::string>("domain_item_type")))
+              attributes().read<std::string>("lue_domain_item_type")))
       }
 
 {
@@ -32,9 +32,9 @@ TimeDomain::TimeDomain(
     : Group(std::forward<hdf5::Identifier>(location)),
       _configuration{TimeDomainConfiguration(
           parse_time_domain_type(
-              attributes().read<std::string>("domain_type")),
+              attributes().read<std::string>("lue_domain_type")),
           parse_time_domain_item_type(
-              attributes().read<std::string>("domain_item_type")))
+              attributes().read<std::string>("lue_domain_item_type")))
       }
 
 {
@@ -64,9 +64,9 @@ TimeDomain create_time_domain(
 
     hdf5::Attributes time_domain_attributes(time_domain_location);
 
-    time_domain_attributes.write<std::string>("domain_type",
+    time_domain_attributes.write<std::string>("lue_domain_type",
         time_domain_type_to_string(configuration.type()));
-    time_domain_attributes.write<std::string>("domain_item_type",
+    time_domain_attributes.write<std::string>("lue_domain_item_type",
         time_domain_item_type_to_string(configuration.item_type()));
 
     return TimeDomain(std::move(time_domain_location));

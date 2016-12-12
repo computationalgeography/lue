@@ -96,6 +96,9 @@ Group              create_group        (Identifier const& id,
                                         std::string const& name);
 
 std::vector<std::string>
+                   object_names        (Group const& group);
+
+std::vector<std::string>
                    group_names         (Group const& group);
 
 std::vector<std::string>

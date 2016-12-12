@@ -1,4 +1,5 @@
 #include <pybind11/pybind11.h>
+#include <hdf5.h>
 
 
 namespace py = pybind11;
@@ -39,6 +40,11 @@ The classes are documented in alphabethical order. When creating or opening a LU
         - Shape
         - Dataset
 )");
+
+
+    // Prevent the dump of HDF5 error/warning messages. Our messages should
+    // be clear enough.
+    H5Eset_auto1(NULL, NULL);
 
     // Order matters!
     init_array(module);

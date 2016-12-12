@@ -12,13 +12,13 @@ namespace {
 
 std::map<SpaceDiscretizationType, std::string> const
     string_by_discretization_type = {
-        { SpaceDiscretizationType::cartesian_grid, "cartesian_grid" }
+        { SpaceDiscretizationType::cartesian_grid, "lue_cartesian_grid" }
 };
 
 
 std::map<std::string, SpaceDiscretizationType> const
     discretization_type_by_string = {
-        { "cartesian_grid", SpaceDiscretizationType::cartesian_grid }
+        { "lue_cartesian_grid", SpaceDiscretizationType::cartesian_grid }
 };
 
 }  // Anonymous namespace

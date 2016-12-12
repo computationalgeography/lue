@@ -51,7 +51,6 @@ void Validate::run_implementation()
         "<input>");
 
     for(auto const& input_dataset_name: input_dataset_names) {
-        // auto const dataset = open_dataset(input_dataset_name);
         auto const file = hdf5::open_file(input_dataset_name);
         Errors errors;
         validate_dataset(file, errors);
@@ -61,9 +60,9 @@ void Validate::run_implementation()
                 " contains a valid LUE dataset");
         }
         else {
-            print_errors(errors);
             print_info_message("File " + input_dataset_name +
-                " does not contain a valid LUE dataset");
+                " does not contain a valid LUE dataset:");
+            print_errors(errors);
         }
     }
 }

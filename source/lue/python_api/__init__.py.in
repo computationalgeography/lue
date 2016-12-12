@@ -150,6 +150,11 @@ _api = {
         },
     },
 
+    time_domain.shared: {
+        "property_set": None,
+        "domain": None,
+    },
+
     # time_domain.located: {
     #     # Information that is located in time.
 

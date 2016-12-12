@@ -14,11 +14,11 @@ SpaceDomain::SpaceDomain(
         ::close_space_domain)},
       _configuration{SpaceDomainConfiguration(
           parse_space_domain_type(
-              attributes().read<std::string>("domain_type")),
+              attributes().read<std::string>("lue_domain_type")),
           parse_space_domain_item_type(
-              attributes().read<std::string>("domain_item_type")),
+              attributes().read<std::string>("lue_domain_item_type")),
           parse_mobility(
-              attributes().read<std::string>("mobility")))
+              attributes().read<std::string>("lue_mobility")))
       }
 
 {
@@ -34,11 +34,11 @@ SpaceDomain::SpaceDomain(
     : Group(std::forward<hdf5::Identifier>(location)),
       _configuration{SpaceDomainConfiguration(
           parse_space_domain_type(
-              attributes().read<std::string>("domain_type")),
+              attributes().read<std::string>("lue_domain_type")),
           parse_space_domain_item_type(
-              attributes().read<std::string>("domain_item_type")),
+              attributes().read<std::string>("lue_domain_item_type")),
           parse_mobility(
-              attributes().read<std::string>("mobility")))
+              attributes().read<std::string>("lue_mobility")))
       }
 
 {
@@ -68,11 +68,11 @@ SpaceDomain create_space_domain(
 
     hdf5::Attributes space_domain_attributes(space_domain_location);
 
-    space_domain_attributes.write<std::string>("domain_type",
+    space_domain_attributes.write<std::string>("lue_domain_type",
         space_domain_type_to_string(configuration.type()));
-    space_domain_attributes.write<std::string>("domain_item_type",
+    space_domain_attributes.write<std::string>("lue_domain_item_type",
         space_domain_item_type_to_string(configuration.item_type()));
-    space_domain_attributes.write<std::string>("mobility",
+    space_domain_attributes.write<std::string>("lue_mobility",
         mobility_to_string(configuration.mobility()));
 
     return SpaceDomain(std::move(space_domain_location));

@@ -6,17 +6,17 @@ namespace lue {
 namespace {
 
 detail::EnumStringBimap<TimeDomainType> const time_domain_type_map = {
-    { TimeDomainType::omnipresent, "omnipresent" },
-    { TimeDomainType::shared, "shared" },
-    // { TimeDomainType::unique, "unique" }
+    { TimeDomainType::omnipresent, "lue_omnipresent" },
+    { TimeDomainType::shared, "lue_shared" },
+    // { TimeDomainType::unique, "lue_unique" }
 };
 
 
 detail::EnumStringBimap<TimeDomainItemType> const time_domain_item_type_map = {
-    { TimeDomainItemType::none, "none" },
-    // { TimeDomainItemType::point, "point" },
-    { TimeDomainItemType::period, "period" },
-    // { TimeDomainItemType::cell, "cell" }
+    { TimeDomainItemType::none, "lue_none" },
+    // { TimeDomainItemType::point, "lue_point" },
+    { TimeDomainItemType::period, "lue_period" },
+    // { TimeDomainItemType::cell, "lue_cell" }
 };
 
 }  // Anonymous namespace

@@ -6,13 +6,13 @@ namespace lue {
 namespace {
 
 detail::EnumStringBimap<ShapeThroughTime> const shape_through_time_map = {
-    { ShapeThroughTime::constant, "constant" },
-    { ShapeThroughTime::variable, "variable" }
+    { ShapeThroughTime::constant, "lue_constant" },
+    { ShapeThroughTime::variable, "lue_variable" }
 };
 
 detail::EnumStringBimap<ShapePerItem> const shape_per_item_map = {
-    { ShapePerItem::same, "same" },
-    { ShapePerItem::different, "different" }
+    { ShapePerItem::same, "lue_same" },
+    { ShapePerItem::different, "lue_different" }
 };
 
 }  // Anonymous namespace

@@ -16,6 +16,11 @@ htri_t             hdf5_group_exists   (hid_t const location_id,
 hid_t              hdf5_open_group     (hid_t const location_id,
                                         char const* name);
 
+size_t             hdf5_nr_objects     (hid_t const location_id);
+
+herr_t             hdf5_object_names   (hid_t const location_id,
+                                        char** const names);
+
 size_t             hdf5_nr_groups      (hid_t const location_id);
 
 herr_t             hdf5_group_names    (hid_t const location_id,

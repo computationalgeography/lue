@@ -6,16 +6,16 @@ namespace lue {
 namespace {
 
 detail::EnumStringBimap<SpaceDomainType> const space_domain_type_map = {
-    { SpaceDomainType::omnipresent, "omnipresent" },
-    { SpaceDomainType::located, "located" }
+    { SpaceDomainType::omnipresent, "lue_omnipresent" },
+    { SpaceDomainType::located, "lue_located" }
 };
 
 
 detail::EnumStringBimap<SpaceDomainItemType> const
         space_domain_item_type_map = {
-    { SpaceDomainItemType::none, "none" },
+    { SpaceDomainItemType::none, "lue_none" },
     // { SpaceDomainItemType::point, "point" },
-    { SpaceDomainItemType::box, "box" },
+    { SpaceDomainItemType::box, "lue_box" },
     // { SpaceDomainItemType::line, "line" },
     // { SpaceDomainItemType::region, "region" },
     // { SpaceDomainItemType::cell, "cell" }
@@ -23,8 +23,8 @@ detail::EnumStringBimap<SpaceDomainItemType> const
 
 
 detail::EnumStringBimap<Mobility> const mobility_map = {
-    { Mobility::stationary, "stationary" },
-    { Mobility::mobile, "mobile" }
+    { Mobility::stationary, "lue_stationary" },
+    { Mobility::mobile, "lue_mobile" }
 };
 
 }  // Anonymous namespace

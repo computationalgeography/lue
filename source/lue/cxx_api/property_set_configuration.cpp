@@ -7,8 +7,8 @@ namespace {
 
 detail::EnumStringBimap<SizeOfItemCollectionType> const
         size_of_item_collection_type_map = {
-    { SizeOfItemCollectionType::constant_size, "constant_size" },
-    // { SizeOfItemCollectionType::variable_size, "variable_size" }
+    { SizeOfItemCollectionType::constant_size, "lue_constant_size" },
+    // { SizeOfItemCollectionType::variable_size, "lue_variable_size" }
 };
 
 }  // Anonymous namespace

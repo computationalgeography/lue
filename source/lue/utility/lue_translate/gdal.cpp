@@ -639,43 +639,43 @@ void translate_gdal_raster_stack_to_lue(
     MonthDuration const& slice_duration,
     std::string const& lue_dataset_name)
 {
-//     GDALRasterDomain gdal_domain = gdal_raster_domain(gdal_dataset);
-// 
-// 
-//     // Create LUE dataset.
-//     auto lue_dataset = create_dataset(lue_dataset_name);
-// 
-//     // Add phenomenon to the LUE dataset. Name it after the GDAL dataset.
-//     auto const phenomenon_name =
-//         boost::filesystem::path(gdal_dataset_name).stem().string();
-//     auto& phenomenon = lue_dataset.add_phenomenon(phenomenon_name);
-// 
-//     // Add property set to the phenomenon. This one set will contain all
-//     // raster layers from the GDAL dataset.
-//     std::string property_set_name = "areas";
-//     PropertySetConfiguration property_set_configuration(
-//         SizeOfItemCollectionType::constant_size);
-//     DomainConfiguration domain_configuration(
-//         TimeDomainConfiguration(TimeDomainType::shared,
-//             TimeDomainItemType::period),
-//         SpaceDomainConfiguration(SpaceDomainItemType::box));
-//     auto& areas = phenomenon.add_property_set(property_set_name,
-//         property_set_configuration, domain_configuration);
-// 
-//     count_t const nr_items = 1;
-//     rank_t const rank = 2;
-// 
-//     constant_size::time::shared::PropertySet sc_areas(areas);
-// 
-//     // Write property ids.
-//     item_t const item_id[nr_items] = { 0 };
-// 
-//     {
-//         auto& item = sc_areas.reserve_items(nr_items);
-//         item.write(nr_items, item_id);
-//     }
-// 
-// 
+    GDALRasterDomain gdal_domain = gdal_raster_domain(gdal_dataset);
+
+
+    // Create LUE dataset.
+    auto lue_dataset = create_dataset(lue_dataset_name);
+
+    // Add phenomenon to the LUE dataset. Name it after the GDAL dataset.
+    auto const phenomenon_name =
+        boost::filesystem::path(gdal_dataset_name).stem().string();
+    auto& phenomenon = lue_dataset.add_phenomenon(phenomenon_name);
+
+    // Add property set to the phenomenon. This one set will contain all
+    // raster layers from the GDAL dataset.
+    std::string property_set_name = "areas";
+    PropertySetConfiguration property_set_configuration(
+        SizeOfItemCollectionType::constant_size);
+    DomainConfiguration domain_configuration(
+        TimeDomainConfiguration(TimeDomainType::shared,
+            TimeDomainItemType::period),
+        SpaceDomainConfiguration(SpaceDomainItemType::box));
+    auto& areas = phenomenon.add_property_set(property_set_name,
+        property_set_configuration, domain_configuration);
+
+    count_t const nr_items = 1;
+    rank_t const rank = 2;
+
+    constant_size::time::shared::PropertySet sc_areas(areas);
+
+    // Write property ids.
+    item_t const item_id[nr_items] = { 0 };
+
+    {
+        auto& item = sc_areas.reserve_items(nr_items);
+        item.write(nr_items, item_id);
+    }
+
+
 //     // Write time period.
 //     {
 //         // The begin time point is passed in. The duration of the period is

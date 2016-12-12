@@ -7,6 +7,9 @@
 #include "lue/cxx_api/time_discretization.h"
 #include "lue/cxx_api/value_configuration.h"
 #include <boost/format.hpp>
+#include <algorithm>
+#include <iostream>
+#include <iterator>
 #include <memory>
 // Use the LUE/HDF5 API as much as possible, not the LUE C++ API itself!
 
@@ -38,6 +41,15 @@ void missing_group(
     Errors& errors)
 {
     errors.emplace_back(id, "group '" + name + "' does not exist");
+}
+
+
+void superflouos_object(
+    hdf5::Identifier const& id,
+    std::string const& name,
+    Errors& errors)
+{
+    errors.emplace_back(id, "object '" + name + "' is superfluous");
 }
 
 
@@ -134,15 +146,54 @@ void invalid_shape_through_time(
 }
 
 
+template<
+    typename Collection>
+Collection difference(
+    Collection collection1,
+    Collection collection2)
+{
+    std::sort(collection1.begin(), collection1.end());
+    std::sort(collection2.begin(), collection2.end());
+
+    Collection result;
+
+    std::set_difference(collection1.begin(), collection1.end(),
+            collection2.begin(), collection2.end(),
+            std::inserter(result, result.begin()));
+
+    return result;
+}
+
+
+void assert_no_superfluous_objects_exist(
+    hdf5::Group const& group,
+    std::vector<std::string> const& expected_object_names,
+    Errors& errors)
+{
+    auto const object_names = hdf5::object_names(group);
+
+
+    // These objects are not expected.
+    auto superflouos_objects_names = difference(object_names,
+        expected_object_names);
+
+    for(auto const& name: superflouos_objects_names) {
+        superflouos_object(group.id(), name, errors);
+    }
+}
+
+
 void assert_groups_exist(
     hdf5::Group const& group,
     std::vector<std::string> const& names,
     Errors& errors)
 {
-    for(auto const& name: names) {
-        if(!group.contains_group(name)) {
-            missing_group(group.id(), name, errors);
-        }
+    auto const group_names = hdf5::group_names(group);
+    auto missing_groups_names = difference(names, group_names);
+
+    // These required groups are not found.
+    for(auto const& name: missing_groups_names) {
+        missing_group(group.id(), name, errors);
     }
 }
 
@@ -271,6 +322,8 @@ void assert_attributes_exist(
     Errors& errors)
 {
     for(auto const& name: names) {
+        assert(name.find("lue_") == 0);
+
         if(!group.contains_attribute(name)) {
             missing_attribute(group.id(), name, errors);
         }
@@ -284,6 +337,8 @@ void assert_soft_links_exist(
     Errors& errors)
 {
     for(auto const& name: names) {
+        assert(name.find("lue_") == 0);
+
         if(!group.contains_soft_link(name)) {
             missing_soft_link(group.id(), name, errors);
         }
@@ -314,16 +369,16 @@ void assert_link_points_to(
 // //     auto const space_domain = hdf5::open_group(group, "lue_space");
 // // 
 // //     auto const time_domain_type = parse_time_domain_type(
-// //         time_domain.attribute<std::string>("domain_type"));
+// //         time_domain.attribute<std::string>("lue_domain_type"));
 // //     // auto const time_domain_item_type = parse_time_domain_item_type(
-// //     //     time_domain.attribute<std::string>("domain_item_type"));
+// //     //     time_domain.attribute<std::string>("lue_domain_item_type"));
 // // 
 // //     // auto const space_domain_type = parse_space_domain_type(
-// //     //     space_domain.attribute<std::string>("domain_type"));
+// //     //     space_domain.attribute<std::string>("lue_domain_type"));
 // //     auto const mobility = parse_mobility(
-// //         space_domain.attribute<std::string>("mobility"));
+// //         space_domain.attribute<std::string>("lue_mobility"));
 // //     // auto const space_domain_item_type = parse_space_domain_item_type(
-// //     //     space_domain.attribute<std::string>("domain_item_type"));
+// //     //     space_domain.attribute<std::string>("lue_domain_item_type"));
 // // 
 // // 
 // //     // time_domain_type:
@@ -474,26 +529,26 @@ void assert_link_points_to(
 // //     hdf5::Group const& group)
 // // {
 // //     assert_attributes_exist(group, {
-// //         "domain_type",
-// //         "domain_item_type",
-// //         "mobility"
+// //         "lue_domain_type",
+// //         "lue_domain_item_type",
+// //         "lue_mobility"
 // //     });
 // // 
 // //     try {
-// //         if(group.contains_attribute("domain_type")) {
+// //         if(group.contains_attribute("lue_domain_type")) {
 // //             auto const domain_type_string = group.attribute<std::string>(
-// //                 "domain_type");
+// //                 "lue_domain_type");
 // //             auto const domain_type = parse_space_domain_type(
 // //                 domain_type_string);
 // // 
-// //             if(group.contains_attribute("mobility")) {
+// //             if(group.contains_attribute("lue_mobility")) {
 // //                 auto const mobility_string = group.attribute<std::string>(
-// //                     "mobility");
+// //                     "lue_mobility");
 // //                 auto const mobility = parse_mobility(mobility_string);
 // // 
-// //                 if(group.contains_attribute("domain_type")) {
+// //                 if(group.contains_attribute("lue_domain_type")) {
 // //                     auto const domain_item_type_string =
-// //                         group.attribute<std::string>("domain_item_type");
+// //                         group.attribute<std::string>("lue_domain_item_type");
 // //                     auto const domain_item_type =
 // //                         parse_space_domain_item_type(domain_item_type_string);
 // // 
@@ -594,21 +649,21 @@ void assert_link_points_to(
 // //     hdf5::Group const& group)
 // // {
 // //     assert_attributes_exist(group, {
-// //         "domain_type",
-// //         "domain_item_type"
+// //         "lue_domain_type",
+// //         "lue_domain_item_type"
 // //     });
 // // 
 // // 
 // //     try {
-// //         if(group.contains_attribute("domain_type")) {
+// //         if(group.contains_attribute("lue_domain_type")) {
 // //             auto const domain_type_string = group.attribute<std::string>(
-// //                 "domain_type");
+// //                 "lue_domain_type");
 // //             auto const domain_type = parse_time_domain_type(
 // //                 domain_type_string);
 // // 
-// //             if(group.contains_attribute("domain_type")) {
+// //             if(group.contains_attribute("lue_domain_type")) {
 // //                 auto const domain_item_type_string =
-// //                     group.attribute<std::string>("domain_item_type");
+// //                     group.attribute<std::string>("lue_domain_item_type");
 // //                 auto const domain_item_type = parse_time_domain_item_type(
 // //                     domain_item_type_string);
 // // 
@@ -720,12 +775,12 @@ void assert_link_points_to(
 //     //     - shape: (unlimited)
 //     //     - type: uint64_t
 //     assert_datasets_exist(domain, {
-//         "ids"
+//         "lue_ids"
 //     });
 // 
 // 
-//     if(domain.contains_dataset("ids")) {
-//         auto const dataset = open_dataset(domain, "ids");
+//     if(domain.contains_dataset("lue_ids")) {
+//         auto const dataset = open_dataset(domain, "lue_ids");
 //         assert_dataspace_equals(dataset, Shape{0});
 //         assert_dataset_has_datatype(dataset, H5T_STD_U64LE);
 //     }
@@ -941,14 +996,14 @@ std::vector<item_t> validate_items(
     //     - shape: (unlimited)
     //     - type: uint64_t
     assert_datasets_exist(domain, {
-            "ids"
+            "lue_idss"
         }, errors);
 
 
     std::vector<item_t> item_ids;
 
-    if(domain.contains_dataset("ids")) {
-        auto const dataset = open_dataset(domain, "ids");
+    if(domain.contains_dataset("lue_ids")) {
+        auto const dataset = open_dataset(domain, "lue_ids");
         auto const nr_errors = errors.size();
 
         assert_dataspace_equals(dataset, Shape{0}, errors);
@@ -1089,12 +1144,12 @@ void validate_constant_same_shape_value(
     Errors& errors)
 {
     assert_datasets_exist(value, {
-            "value"
+            "lue_value"
         }, errors);
 
 
-    if(value.contains_dataset("value")) {
-        auto const dataset = hdf5::open_dataset(value, "value");
+    if(value.contains_dataset("lue_value")) {
+        auto const dataset = hdf5::open_dataset(value, "lue_value");
 
         // Shape of dataset must be at least 2D. First dimension is
         // for items, subsequent dimensions are for values.
@@ -1148,18 +1203,18 @@ void validate_constant_different_shape_value(
     Errors& errors)
 {
     assert_groups_exist(value, {
-            "value"
+            "lue_value"
         }, errors);
 
 
     auto const nr_errors = errors.size();
 
-    if(value.contains_group("value")) {
+    if(value.contains_group("lue_value")) {
         // Per item a value. All values have:
         // - Same rank
         // - Different shape
 
-        auto const value_ = hdf5::open_group(value, "value");
+        auto const value_ = hdf5::open_group(value, "lue_value");
 
         assert_attributes_exist(value_, {
                 "lue_datatype",
@@ -1278,13 +1333,13 @@ void validate_constant_different_shape_value(
             auto const discretization_time_domain = hdf5::open_group(
                 discretization_domain, "lue_time");
 
-            if(!discretization_time_domain.contains_attribute("domain_type")) {
+            if(!discretization_time_domain.contains_attribute("lue_domain_type")) {
                 goto stop_validating;
             }
 
             auto const discretization_time_domain_type = parse_time_domain_type(
                 discretization_time_domain.attribute<std::string>(
-                    "domain_type"));
+                    "lue_domain_type"));
 
             if(discretization_time_domain_type != TimeDomainType::omnipresent) {
                 errors.emplace_back(property.id(), boost::str(boost::format(
@@ -1303,14 +1358,14 @@ void validate_constant_different_shape_value(
             auto const discretization_space_domain = hdf5::open_group(
                 discretization_domain, "lue_space");
 
-            if(!discretization_space_domain.contains_attribute("domain_type")) {
+            if(!discretization_space_domain.contains_attribute("lue_domain_type")) {
                 goto stop_validating;
             }
 
             auto const discretization_space_domain_type =
                 parse_space_domain_type(
                     discretization_space_domain.attribute<std::string>(
-                    "domain_type"));
+                    "lue_domain_type"));
 
             if(discretization_space_domain_type !=
                     SpaceDomainType::omnipresent) {
@@ -1348,12 +1403,12 @@ void validate_property(
     auto const domain = hdf5::open_group(property, "lue_domain");
 
     assert_groups_exist(property, {
-            "value"
+            "lue_value"
         }, errors);
 
 
-    if(property.contains_group("value")) {
-        auto const value = hdf5::open_group(property, "value");
+    if(property.contains_group("lue_value")) {
+        auto const value = hdf5::open_group(property, "lue_value");
         auto value_configuration = validate_value_configuration(value,
             errors);
 
@@ -1412,12 +1467,16 @@ void validate_properties(
 
 namespace shared {
 
-void validate_items(
+std::vector<item_t> validate_items(
     hdf5::Group const& domain,
     Errors& errors)
 {
-    validation_not_implemented(domain.id(),
-        "shared/items", errors);
+    // Items, constant_size/time/shared
+    // - There is one constant collection of items that is valid for all
+    //   phenomenon items and all time domain items
+    // - Same setup as in case of constant_size/time/omnipresent
+
+    return time::omnipresent::validate_items(domain, errors);
 }
 
 
@@ -1426,6 +1485,9 @@ void validate_space_domain(
     SpaceDomainConfiguration const& /* space_domain_configuration */,
     Errors& errors)
 {
+    // TODO hier verder
+
+
     validation_not_implemented(space_domain.id(),
         "shared/space domain", errors);
 }
@@ -1437,7 +1499,7 @@ void validate_properties(
     SpaceDomainConfiguration const& space_domain_configuration,
     Errors& errors)
 {
-    validate_items(domain, errors);
+    auto const item_ids = validate_items(domain, errors);
     validate_space_domain(hdf5::open_group(domain, "lue_space"),
         space_domain_configuration, errors);
 }
@@ -1502,9 +1564,10 @@ std::unique_ptr<PropertySetConfiguration> validate_property_set_configuration(
 {
     std::unique_ptr<PropertySetConfiguration> configuration;
 
-    assert_attributes_exist(property_set, {
+    std::vector<std::string> expected_attribute_names = {
             "lue_size_of_item_collection_type"
-        }, errors);
+        };
+    assert_attributes_exist(property_set, expected_attribute_names, errors);
 
 
     if(property_set.contains_attribute(
@@ -1533,20 +1596,21 @@ std::unique_ptr<TimeDomainConfiguration> validate_time_domain_configuration(
 {
     std::unique_ptr<TimeDomainConfiguration> configuration;
 
-    assert_attributes_exist(time_domain, {
-            "domain_type",
-            "domain_item_type",
-        }, errors);
+    std::vector<std::string> expected_attribute_names = {
+            "lue_domain_type",
+            "lue_domain_item_type",
+        };
+    assert_attributes_exist(time_domain, expected_attribute_names, errors);
 
 
-    if(time_domain.contains_attribute("domain_type") &&
-        time_domain.contains_attribute("domain_item_type")) {
+    if(time_domain.contains_attribute("lue_domain_type") &&
+        time_domain.contains_attribute("lue_domain_item_type")) {
 
         try {
             auto const time_domain_type = parse_time_domain_type(
-                time_domain.attribute<std::string>("domain_type"));
+                time_domain.attribute<std::string>("lue_domain_type"));
             auto const time_domain_item_type = parse_time_domain_item_type(
-                time_domain.attribute<std::string>("domain_item_type"));
+                time_domain.attribute<std::string>("lue_domain_item_type"));
 
             configuration = std::make_unique<TimeDomainConfiguration>(
                 time_domain_type, time_domain_item_type);
@@ -1566,26 +1630,27 @@ std::unique_ptr<SpaceDomainConfiguration> validate_space_domain_configuration(
 {
     std::unique_ptr<SpaceDomainConfiguration> configuration;
 
-    assert_attributes_exist(space_domain, {
-            "domain_type",
-            "domain_item_type",
-            "mobility"
-        }, errors);
+    std::vector<std::string> expected_attribute_names = {
+            "lue_domain_type",
+            "lue_domain_item_type",
+            "lue_mobility"
+        };
+    assert_attributes_exist(space_domain, expected_attribute_names, errors);
 
 
-    if(space_domain.contains_attribute("domain_type") &&
-        space_domain.contains_attribute("mobility") &&
-        space_domain.contains_attribute("domain_item_type")) {
+    if(space_domain.contains_attribute("lue_domain_type") &&
+        space_domain.contains_attribute("lue_mobility") &&
+        space_domain.contains_attribute("lue_domain_item_type")) {
 
         try {
             auto const space_domain_type = parse_space_domain_type(
-                space_domain.attribute<std::string>("domain_type"));
+                space_domain.attribute<std::string>("lue_domain_type"));
             auto const space_domain_item_type =
                 parse_space_domain_item_type(
                     space_domain.attribute<std::string>(
-                        "domain_item_type"));
+                        "lue_domain_item_type"));
             auto const mobility = parse_mobility(
-                space_domain.attribute<std::string>("mobility"));
+                space_domain.attribute<std::string>("lue_mobility"));
 
             configuration = std::make_unique<SpaceDomainConfiguration>(
                 space_domain_type, space_domain_item_type, mobility);
@@ -1609,10 +1674,11 @@ void validate_property_set(
         property_set, errors);
 
 
-    assert_groups_exist(property_set, {
+    std::vector<std::string> expected_group_names = {
             "lue_domain",
             "lue_properties"
-        }, errors);
+        };
+    assert_groups_exist(property_set, expected_group_names, errors);
 
 
     if(property_set.contains_group("lue_domain")) {
@@ -1682,6 +1748,11 @@ void validate_property_set(
             }
         }
     }
+
+
+    std::vector<std::string> expected_object_names = expected_group_names;
+    assert_no_superfluous_objects_exist(property_set,
+        expected_object_names, errors);
 }
 
 
@@ -1691,11 +1762,15 @@ void validate_property_sets(
 {
     // Collection of property sets. Each group must be a valid property set.
     // No other groups are allowed.
-    auto group_names = hdf5::group_names(group);
+    auto property_set_names = hdf5::group_names(group);
 
-    for(auto const& name: group_names) {
+    for(auto const& name: property_set_names) {
         validate_property_set(hdf5::open_group(group, name), errors);
     }
+
+
+    std::vector<std::string> expected_object_names = property_set_names;
+    assert_no_superfluous_objects_exist(group, expected_object_names, errors);
 }
 
 
@@ -1703,14 +1778,19 @@ void validate_phenomenon(
     hdf5::Group const& group,
     Errors& errors)
 {
-    assert_groups_exist(group, {
+    std::vector<std::string> expected_group_names = {
             "lue_property_sets"
-        }, errors);
+        };
+    assert_groups_exist(group, expected_group_names, errors);
 
     if(group.contains_group("lue_property_sets")) {
         validate_property_sets(hdf5::open_group(group, "lue_property_sets"),
             errors);
     }
+
+
+    std::vector<std::string> expected_object_names = expected_group_names;
+    assert_no_superfluous_objects_exist(group, expected_object_names, errors);
 }
 
 
@@ -1720,11 +1800,15 @@ void validate_phenomena(
 {
     // Collection of phenomena. Each group must be a valid phenomenon.
     // No other groups are allowed.
-    auto group_names = hdf5::group_names(group);
+    auto phenomenon_names = hdf5::group_names(group);
 
-    for(auto const& name: group_names) {
+    for(auto const& name: phenomenon_names) {
         validate_phenomenon(hdf5::open_group(group, name), errors);
     }
+
+
+    std::vector<std::string> expected_object_names = phenomenon_names;
+    assert_no_superfluous_objects_exist(group, expected_object_names, errors);
 }
 
 
@@ -1732,13 +1816,18 @@ void validate_universe(
     hdf5::Group const& group,
     Errors& errors)
 {
-    assert_groups_exist(group, {
+    std::vector<std::string> expected_group_names = {
             "lue_phenomena"
-        }, errors);
+        };
+    assert_groups_exist(group, expected_group_names, errors);
 
     if(group.contains_group("lue_phenomena")) {
         validate_phenomena(hdf5::open_group(group, "lue_phenomena"), errors);
     }
+
+
+    std::vector<std::string> expected_object_names = expected_group_names;
+    assert_no_superfluous_objects_exist(group, expected_object_names, errors);
 }
 
 
@@ -1748,11 +1837,15 @@ void validate_universes(
 {
     // Collection of universes. Each group must be a valid universe.
     // No other groups are allowed.
-    auto group_names = hdf5::group_names(group);
+    auto universe_names = hdf5::group_names(group);
 
-    for(auto const& name: group_names) {
+    for(auto const& name: universe_names) {
         validate_universe(hdf5::open_group(group, name), errors);
     }
+
+
+    std::vector<std::string> expected_object_names = universe_names;
+    assert_no_superfluous_objects_exist(group, expected_object_names, errors);
 }
 
 }  // Anonymous namespace
@@ -1762,10 +1855,11 @@ void validate_dataset(
     hdf5::File const& file,
     Errors& errors)
 {
-    assert_groups_exist(file, {
+    std::vector<std::string> expected_group_names = {
             "lue_universes",
             "lue_phenomena"
-        }, errors);
+        };
+    assert_groups_exist(file, expected_group_names, errors);
 
     if(file.contains_group("lue_universes")) {
         validate_universes(hdf5::open_group(file, "lue_universes"), errors);
@@ -1774,6 +1868,10 @@ void validate_dataset(
     if(file.contains_group("lue_phenomena")) {
         validate_phenomena(hdf5::open_group(file, "lue_phenomena"), errors);
     }
+
+
+    std::vector<std::string> expected_object_names = expected_group_names;
+    assert_no_superfluous_objects_exist(file, expected_object_names, errors);
 }
 
 }  // namespace lue

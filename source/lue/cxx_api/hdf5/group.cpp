@@ -211,6 +211,30 @@ Group create_group(
 }
 
 
+std::vector<std::string> object_names(
+    Group const& group)
+{
+    auto const nr_objects = hdf5_nr_objects(group.id());
+
+    char* names[nr_objects];
+
+    auto status = hdf5_object_names(group.id(), names);
+
+    if(status < 0) {
+        throw std::runtime_error("Cannot determine object names");
+    }
+
+    std::vector<std::string> result(nr_objects);
+
+    for(size_t g = 0; g < nr_objects; ++g) {
+        result[g] = names[g];
+        free(names[g]);
+    }
+
+    return result;
+}
+
+
 std::vector<std::string> group_names(
     Group const& group)
 {
