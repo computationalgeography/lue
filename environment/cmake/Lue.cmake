@@ -1,3 +1,6 @@
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_C_STANDARD 11)
+
 include(PeacockPlatform)
 include(DevBaseCompiler)
 include(LueConfiguration)
