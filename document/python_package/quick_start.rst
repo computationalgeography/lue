@@ -57,7 +57,7 @@ Query an existing LUE dataset
 -----------------------------
 In this section we will open de dataset created above and query it for its contents. To open an existing dataset we can use the free function called ``open_dataset()``::
 
-    >>> dataset = lue.open_dataset("planets.lue")
+    >>> dataset = lue.open_dataset("planets.lue", lue.access_flags.ro)
 
 To query the contents of a dataset, we can use the ``universes`` and ``phenomena`` attributes of the dataset instance. Here, we use the ``phenomena`` attribute to find out the names of the phenomena it contains::
 
