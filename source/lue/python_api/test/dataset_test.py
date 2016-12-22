@@ -30,7 +30,7 @@ class DatasetTest(lue_test.TestCase):
         dataset_name = "dataset_open.lue"
         dataset = self.create_dataset(dataset_name)
 
-        existing_dataset = lue.open_dataset(dataset_name)
+        existing_dataset = lue.open_dataset(dataset_name, lue.access_flag.ro)
 
 
     def test_add_universe(self):

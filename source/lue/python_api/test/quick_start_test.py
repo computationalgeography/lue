@@ -27,7 +27,7 @@ class QuickStartTest(lue_test.TestCase):
 
         self.quick_start_create_new_dataset()
 
-        dataset = lue.open_dataset("planets")
+        dataset = lue.open_dataset("planets", lue.access_flag.ro)
         dataset.phenomena.names
         planets = dataset.phenomena["planets"]
         properties = planets.property_sets["omnipresent"]
