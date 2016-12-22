@@ -25,7 +25,8 @@ void Dump::run_implementation()
 
     if(format == "txt") {
         for(auto const& input_dataset_name: input_dataset_names) {
-            auto const dataset = open_dataset(input_dataset_name);
+            auto const dataset = open_dataset(input_dataset_name,
+                H5F_ACC_RDONLY);
             describe_dataset(dataset, std::cout);
         }
     }

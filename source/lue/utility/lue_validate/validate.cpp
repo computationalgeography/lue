@@ -51,7 +51,7 @@ void Validate::run_implementation()
         "<input>");
 
     for(auto const& input_dataset_name: input_dataset_names) {
-        auto const file = hdf5::open_file(input_dataset_name);
+        auto const file = hdf5::open_file(input_dataset_name, H5F_ACC_RDONLY);
         Errors errors;
         validate_dataset(file, errors);
 

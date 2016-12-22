@@ -52,7 +52,8 @@ private:
 };
 
 
-Dataset            open_dataset        (std::string const& name);
+Dataset            open_dataset        (std::string const& name,
+                                        unsigned int const flags);
 
 Dataset            create_dataset      (std::string const& name);
 

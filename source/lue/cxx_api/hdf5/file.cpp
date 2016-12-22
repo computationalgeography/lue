@@ -50,11 +50,18 @@ std::string File::pathname() const
 }
 
 
+/*!
+    @brief      .
+    @param      flags File access flags: H5F_ACC_RDWR, H5F_ACC_RDONLY
+    @return     .
+    @exception  .
+*/
 File open_file(
-    std::string const& name)
+    std::string const& name,
+    unsigned int const flags)
 {
     hdf5::Identifier file_id(
-        ::H5Fopen(name.c_str(), H5F_ACC_RDWR, H5P_DEFAULT),
+        ::H5Fopen(name.c_str(), flags, H5P_DEFAULT),
         ::H5Fclose);
 
     if(!file_id.is_valid()) {

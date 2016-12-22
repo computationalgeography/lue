@@ -34,7 +34,8 @@ private:
 };
 
 
-File               open_file           (std::string const& name);
+File               open_file           (std::string const& name,
+                                        unsigned int const flags);
 
 } // namespace hdf5
 } // namespace lue

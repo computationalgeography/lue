@@ -64,8 +64,19 @@ void init_dataset(
     ;
 
 
+    py::enum_<unsigned int>(module, "access_flag",
+        "access_flag docstring...")
+        .value("rw", H5F_ACC_RDWR)
+        .value("ro", H5F_ACC_RDONLY)
+    ;
+
+
+    // TODO Support passing in access flags
     module.def("open_dataset", &open_dataset,
-        "name"_a,
+            // [](std::string const& name) {
+            //     return open_dataset(name, H5F_ACC_RDWR);
+            // },
+        "name"_a, "flags"_a,
         "Open existing LUE dataset\n",
         py::return_value_policy::move);
     module.def("create_dataset", &create_dataset,

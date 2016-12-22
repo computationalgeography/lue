@@ -79,16 +79,17 @@ Phenomena& Dataset::phenomena() const
     @ingroup    lue_cxx_api_group
     @brief      Open dataset
     @param      name Name of dataset
+    @param      flags File access flags: H5F_ACC_RDWR, H5F_ACC_RDONLY
     @return     Dataset instance
     @exception  std::runtime_error In case the dataset cannot be opened
-
-    The dataset will be opened in H5F_ACC_RDWR mode.
 */
 Dataset open_dataset(
-    std::string const& name)
+    std::string const& name,
+    unsigned int const flags)
 {
     hdf5::Identifier dataset_location(::open_dataset(name.c_str(),
-        H5F_ACC_RDWR), ::close_dataset);
+        flags), ::close_dataset);
+        // H5F_ACC_RDWR), ::close_dataset);
 
     if(!dataset_location.is_valid()) {
         throw std::runtime_error("Dataset " + name + " cannot be opened");
