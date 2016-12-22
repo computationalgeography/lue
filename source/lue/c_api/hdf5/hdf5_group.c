@@ -248,7 +248,7 @@ herr_t object_names(
 
     if(infobuf.type == H5O_TYPE_GROUP || infobuf.type == H5O_TYPE_DATASET) {
         data_->names[data_->nr_names] =
-            (char*)malloc(strlen(name) * sizeof(char));
+            (char*)malloc((strlen(name) + 1) * sizeof(char));
         strcpy(data_->names[data_->nr_names], name);
         ++data_->nr_names;
     }
@@ -303,7 +303,7 @@ herr_t group_names(
 
     if(infobuf.type == H5O_TYPE_GROUP) {
         data_->names[data_->nr_names] =
-            (char*)malloc(strlen(name) * sizeof(char));
+            (char*)malloc((strlen(name) + 1) * sizeof(char));
         strcpy(data_->names[data_->nr_names], name);
         ++data_->nr_names;
     }
@@ -358,7 +358,7 @@ herr_t dataset_names(
 
     if(infobuf.type == H5O_TYPE_DATASET) {
         data_->names[data_->nr_names] =
-            (char*)malloc(strlen(name) * sizeof(char));
+            (char*)malloc((strlen(name) + 1) * sizeof(char));
         strcpy(data_->names[data_->nr_names], name);
         ++data_->nr_names;
     }
