@@ -44,7 +44,8 @@ function build_peacock()
         skip_build_boost=1
     fi
 
-    if [[ $hostname == "triklav" ]]; then
+    if [[ $hostname == "triklav.soliscom.uu.nl" ]]; then
+        skip_build_boost=1
         skip_build_gdal=1
     fi
 
