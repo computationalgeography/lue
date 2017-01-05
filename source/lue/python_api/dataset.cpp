@@ -30,7 +30,10 @@ void init_dataset(
 )")
         .def("__repr__",
             [](Dataset const& dataset) {
-                return "Dataset(name='" + dataset.pathname() + "')";
+                // TODO Access flag to string.
+                return "Dataset("
+                    "name='" + dataset.pathname() + "', " +
+                    "flags='" + "TODO" + "')";
             }
         )
         .def("add_phenomenon", &Dataset::add_phenomenon,
