@@ -283,7 +283,8 @@ auto create_space_discretization_property(
     // Write property ids.
     {
         assert(nr_items == 1);
-        item_t const item_id[nr_items] = { 0 };
+        item_t item_id[nr_items];
+        item_id[0] = 0;
 
         auto& item = o_property_set.reserve_items(nr_items);
         item.write(nr_items, item_id);
