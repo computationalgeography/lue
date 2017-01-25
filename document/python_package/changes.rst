@@ -1,6 +1,13 @@
 Changes
 =======
 
+0.0.0.dev4
+----------
+- Like h5py, LUE uses (a subset of) the Python file modes to open
+  datasets. The HDF5 access flags are replaced by the file modes. Currently,
+  only ``"r"`` and ``"w"`` are supported.
+
+
 0.0.0.dev3
 ----------
 - Fix bug in memory allocation

@@ -10,11 +10,12 @@ namespace python {
                                                                            \
     using Item##Collection = Collection<Item>;                             \
                                                                            \
-    py::class_<Item##Collection>(module, #Item "Collection",               \
-            py::base<hdf5::Group>(),                                       \
+    py::class_<Item##Collection, hdf5::Group>(module, #Item "Collection",  \
         #Item "Collection docstring...")                                   \
+                                                                           \
         .def_property_readonly("names", &Item##Collection::names,          \
     "Return list of names of items in collection\n")                       \
+                                                                           \
         .def("__contains__", [](Item##Collection const& collection,        \
             std::string const& name) {                                     \
                 return collection.contains(name);                          \
@@ -23,6 +24,7 @@ namespace python {
     "\n"                                                                   \
     ":param str name: Name of item to find\n",                             \
             "name"_a)                                                      \
+                                                                           \
         .def("__getitem__", &Item##Collection::operator[],                 \
     "Return item\n"                                                        \
     "\n"                                                                   \
@@ -31,10 +33,12 @@ namespace python {
     "   item\n",                                                           \
             "name"_a,                                                      \
             py::return_value_policy::reference_internal)                   \
-        .def("__size__", &Item##Collection::size,                          \
+                                                                           \
+        .def("__len__", &Item##Collection::size,                           \
     "Return the number of items in the collection\n"                       \
     "\n"                                                                   \
     "...")                                                                 \
+                                                                           \
     ;
 
 

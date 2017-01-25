@@ -1,10 +1,11 @@
 set(SOURCES
-    time/domain
-    time/item
-    time/property
-    time/property_set
-    time/space_domain
-    time/time_domain
+    domain
+    property
+    property_set
+    space_domain
+    time_domain
+
+    item
 
     time/omnipresent/domain
     time/omnipresent/item

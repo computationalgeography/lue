@@ -1,9 +1,8 @@
-#include "lue/cxx_api/constant_size/time/space_domain.h"
+#include "lue/cxx_api/constant_size/space_domain.h"
 
 
 namespace lue {
 namespace constant_size {
-namespace time {
 
 SpaceDomain::SpaceDomain(
     lue::SpaceDomain& group)
@@ -13,6 +12,5 @@ SpaceDomain::SpaceDomain(
 {
 }
 
-} // namespace time
 }  // namespace constant_size
-} // namespace lue
+}  // namespace lue

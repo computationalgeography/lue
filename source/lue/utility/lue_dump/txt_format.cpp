@@ -295,13 +295,13 @@ void describe_property(
 }
 
 
-void describe_domain(
-    constant_size::time::omnipresent::Domain const& domain,
-    std::ostream& stream,
-    size_t indentation)
-{
-    // describe_space_domain(domain.space_domain(), stream, indentation);
-}
+// void describe_domain(
+//     constant_size::time::omnipresent::Domain const& /* domain */,
+//     std::ostream& /* stream */,
+//     size_t /* indentation */)
+// {
+//     // describe_space_domain(domain.space_domain(), stream, indentation);
+// }
 
 
 void describe_property_set(
@@ -356,9 +356,9 @@ void describe_property_set(
 
 
 void describe_property_set(
-    constant_size::time::shared::PropertySet const& property_set,
-    std::ostream& stream,
-    size_t indentation)
+    constant_size::time::shared::PropertySet const& /* property_set */,
+    std::ostream& /* stream */,
+    size_t /* indentation */)
 {
     // describe_properties(property_set.properties(), stream, indentation);
 }

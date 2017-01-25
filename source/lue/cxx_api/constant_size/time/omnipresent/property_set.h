@@ -2,7 +2,7 @@
 #include "lue/cxx_api/constant_size/time/omnipresent/same_shape/item.h"
 #include "lue/cxx_api/constant_size/time/omnipresent/same_shape/property.h"
 #include "lue/cxx_api/constant_size/time/omnipresent/different_shape/property.h"
-#include "lue/cxx_api/constant_size/time/property_set.h"
+#include "lue/cxx_api/constant_size/property_set.h"
 #include "lue/cxx_api/array.h"
 
 
@@ -15,7 +15,7 @@ namespace omnipresent {
     @ingroup    lue_cxx_api_group
 */
 class PropertySet:
-    public time::PropertySet
+    public constant_size::PropertySet
 {
 
 public:
@@ -41,6 +41,9 @@ public:
 
     same_shape::Item&
                    ids                 ();
+
+    // TODO
+    // Properties&    properties          () const;
 
     same_shape::Property&
                    add_property        (std::string const& name,

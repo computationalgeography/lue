@@ -42,3 +42,15 @@ class TestCase(unittest.TestCase):
         lue_test.remove_file_if_existant(name)
 
         return lue.create_dataset(name)
+
+    @classmethod
+    def relative_pathname(cls,
+            directory_pathname,
+            filename):
+        """
+        Return a relative pathname to *filename*, given that the test module
+        is located in *directory_pathname*.
+        """
+        return os.path.join(
+            lue_test.relative_pathname(__file__, directory_pathname),
+            filename)

@@ -1,4 +1,5 @@
 add_test_conditionally(test)
+add_subdirectory(constant_size)
 
 configure_file(__init__.py.in
     ${PROJECT_BINARY_DIR}/bin/lue/__init__.py
@@ -14,22 +15,27 @@ set(EXTENSION_SOURCES
     group
     identifier
     item
+    numpy
     phenomenon
     property
     property_set
     universe
-    util
     python_extension
 )
-add_library(_lue SHARED
+add_library(lue_python_api_objects OBJECT
     ${EXTENSION_SOURCES}
 )
-target_link_libraries(_lue
+add_library(lue_ SHARED
+    $<TARGET_OBJECTS:lue_python_api_objects>
+    # $<TARGET_OBJECTS:constant_size_objects>
+    ${lue_python_api_object_libraries}
+)
+target_link_libraries(lue_
     lue_cxx
     ${PYTHON_LIBRARIES}
 )
-configure_python_extension(_lue "_lue")
-set_target_properties(_lue
+configure_python_extension(lue_ "lue_")
+set_target_properties(lue_
     PROPERTIES
         LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin/lue
 )
@@ -70,4 +76,11 @@ install(
     DESTINATION _lue/lue/python_api
     COMPONENT python
     # CMAKE >= 3.6 EXCLUDE_FROM_ALL
+)
+install(
+    DIRECTORY
+        constant_size
+    DESTINATION _lue/lue/python_api
+    COMPONENT python
+    PATTERN "CMakeLists.txt" EXCLUDE
 )

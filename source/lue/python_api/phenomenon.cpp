@@ -16,7 +16,7 @@ void init_phenomenon(
 
     BASE_COLLECTION(Phenomenon)
 
-    py::class_<Phenomena>(module, "Phenomena", py::base<PhenomenonCollection>(),
+    py::class_<Phenomena, PhenomenonCollection>(module, "Phenomena",
         R"(Collection of LUE phenomena
 
     Zero of more Phenomenon instances can be stored in a Phenomenon
@@ -45,7 +45,7 @@ void init_phenomenon(
     ;
 
 
-    py::class_<Phenomenon>(module, "Phenomenon", py::base<hdf5::Group>(),
+    py::class_<Phenomenon, hdf5::Group>(module, "Phenomenon",
         "Phenomenon docstring...")
 
         .def("__repr__",

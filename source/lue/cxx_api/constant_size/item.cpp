@@ -1,4 +1,4 @@
-#include "lue/cxx_api/constant_size/time/item.h"
+#include "lue/cxx_api/constant_size/item.h"
 // #include "lue/c_api/hdf5/hdf5_group.h"
 #include <cassert>
 #include <stdexcept>
@@ -6,7 +6,6 @@
 
 namespace lue {
 namespace constant_size {
-namespace time {
 
 // /*!
 //     @ingroup    lue_cxx_api_group
@@ -68,6 +67,5 @@ Item::Item()
 //     return item_location;
 // }
 
-}  // namespace time
 }  // namespace constant_size
 }  // namespace lue

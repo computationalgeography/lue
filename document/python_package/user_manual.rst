@@ -5,5 +5,6 @@ User manual
    :maxdepth: 2
 
    concepts
+   taxonomy
    discretization
    naming

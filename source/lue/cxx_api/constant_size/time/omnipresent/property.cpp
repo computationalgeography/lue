@@ -9,7 +9,7 @@ namespace omnipresent {
 Property::Property(
     lue::Property& group)
 
-    : time::Property(group)
+    : constant_size::Property(group)
 
 {
 }

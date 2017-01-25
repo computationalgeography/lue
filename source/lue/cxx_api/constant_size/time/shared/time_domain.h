@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/cxx_api/constant_size/time/time_domain.h"
+#include "lue/cxx_api/constant_size/time_domain.h"
 
 
 namespace lue {
@@ -11,7 +11,7 @@ namespace shared {
     @ingroup    lue_cxx_api_group
 */
 class TimeDomain:
-    public time::TimeDomain
+    public constant_size::TimeDomain
 {
 
 public:

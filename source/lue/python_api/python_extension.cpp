@@ -1,5 +1,5 @@
-#include <pybind11/pybind11.h>
 #include <hdf5.h>
+#include <pybind11/pybind11.h>
 
 
 namespace py = pybind11;
@@ -8,25 +8,35 @@ namespace py = pybind11;
 namespace lue {
 namespace python {
 
-void               init_array          (py::module& module);
-void               init_dataset        (py::module& module);
-void               init_domain         (py::module& module);
-void               init_file           (py::module& module);
-void               init_group          (py::module& module);
-void               init_identifier     (py::module& module);
-void               init_item           (py::module& module);
-void               init_phenomenon     (py::module& module);
-void               init_property       (py::module& module);
-void               init_property_set   (py::module& module);
-void               init_universe       (py::module& module);
+void init_array(py::module& module);
+void init_dataset(py::module& module);
+void init_domain(py::module& module);
+void init_file(py::module& module);
+void init_group(py::module& module);
+void init_identifier(py::module& module);
+void init_item(py::module& module);
+void init_phenomenon(py::module& module);
+void init_property(py::module& module);
+void init_property_set(py::module& module);
+void init_universe(py::module& module);
+
+namespace constant_size {
+
+void init_submodule(py::module& module);
+
+}  // namespace constant_size
 
 
-PYBIND11_PLUGIN(_lue)
+PYBIND11_PLUGIN(lue_)
 {
-    py::module module("_lue", R"(
+    py::module module("lue_", R"(
+lue\_
+#####
 Python extension implementing most of the LUE Python package
 
-The classes are documented in alphabethical order. When creating or opening a LUE dataset, the order of the main classes that have to be used is more or less as follows:
+The classes are documented in alphabethical order. When creating or opening
+a LUE dataset, the order of the main classes that have to be used is more
+or less as follows:
 
 - Dataset
 - Universe
@@ -58,6 +68,9 @@ The classes are documented in alphabethical order. When creating or opening a LU
     init_phenomenon(module);
     init_property_set(module);
     init_property(module);
+
+    // Submodules.
+    constant_size::init_submodule(module);
 
     return module.ptr();
 }

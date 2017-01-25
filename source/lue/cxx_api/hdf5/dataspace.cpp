@@ -60,20 +60,21 @@ int Dataspace::nr_dimensions() const
 }
 
 
-
 std::vector<hsize_t> Dataspace::dimension_extents() const
 {
     int const nr_dimensions{this->nr_dimensions()};
-    hsize_t extents[nr_dimensions];
+    // hsize_t extents[nr_dimensions];
+    auto extents = std::make_unique<hsize_t[]>(nr_dimensions);
     hsize_t* max_extents = nullptr;
 
-    int nr_dimensions2{H5Sget_simple_extent_dims(_id, extents, max_extents)};
+    int nr_dimensions2{H5Sget_simple_extent_dims(_id, extents.get(),
+        max_extents)};
 
     if(nr_dimensions2 < 0) {
         throw std::runtime_error("Cannot obtain number of dataspace extents");
     }
 
-    return std::vector<hsize_t>(extents, extents + nr_dimensions);
+    return std::vector<hsize_t>(extents.get(), extents.get() + nr_dimensions);
 }
 
 

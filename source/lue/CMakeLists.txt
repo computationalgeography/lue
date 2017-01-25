@@ -13,6 +13,10 @@ if(LUE_BUILD_CXX_API)
     add_subdirectory(cxx_api)
 endif()
 
+if(LUE_BUILD_HL_API)
+    add_subdirectory(hl_api)
+endif()
+
 if(LUE_BUILD_PYTHON_API)
     add_subdirectory(python_api)
 endif()
