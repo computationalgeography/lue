@@ -215,10 +215,8 @@ std::vector<std::string> object_names(
     Group const& group)
 {
     auto const nr_objects = hdf5_nr_objects(group.id());
-
-    char* names[nr_objects];
-
-    auto status = hdf5_object_names(group.id(), names);
+    auto names = std::make_unique<char*[]>(nr_objects);
+    auto status = hdf5_object_names(group.id(), names.get());
 
     if(status < 0) {
         throw std::runtime_error("Cannot determine object names");
@@ -239,10 +237,8 @@ std::vector<std::string> group_names(
     Group const& group)
 {
     auto const nr_groups = hdf5_nr_groups(group.id());
-
-    char* names[nr_groups];
-
-    auto status = hdf5_group_names(group.id(), names);
+    auto names = std::make_unique<char*[]>(nr_groups);
+    auto status = hdf5_group_names(group.id(), names.get());
 
     if(status < 0) {
         throw std::runtime_error("Cannot determine group names");
@@ -263,10 +259,8 @@ std::vector<std::string> dataset_names(
     Group const& group)
 {
     auto const nr_datasets = hdf5_nr_datasets(group.id());
-
-    char* names[nr_datasets];
-
-    auto status = hdf5_dataset_names(group.id(), names);
+    auto names = std::make_unique<char*[]>(nr_datasets);
+    auto status = hdf5_dataset_names(group.id(), names.get());
 
     if(status < 0) {
         throw std::runtime_error("Cannot determine dataset names");

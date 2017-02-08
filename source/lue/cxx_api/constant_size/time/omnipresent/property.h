@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/cxx_api/constant_size/time/property.h"
+#include "lue/cxx_api/constant_size/property.h"
 
 
 namespace lue {
@@ -11,7 +11,7 @@ namespace omnipresent {
     @ingroup    lue_cxx_api_group
 */
 class Property:
-    public time::Property
+    public constant_size::Property
 {
 
 public:

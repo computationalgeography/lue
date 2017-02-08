@@ -6,9 +6,10 @@ option(LUE_WITH_ALL "Support all features, except for MPI" FALSE)
 
 option(LUE_BUILD_C_API "Build C-api" TRUE)
 option(LUE_BUILD_CXX_API "Build CXX-api (implies LUE_BUILD_C_API)" FALSE)
+option(LUE_BUILD_HL_API "Build HL-api (implies LUE_BUILD_CXX_API)" FALSE)
 option(LUE_BUILD_PYTHON_API "Build CXX-api (implies LUE_BUILD_CXX_API)" FALSE)
 option(LUE_BUILD_UTILITIES
-    "Build LUE command line utilites (implies LUE_BUILD_CXX_API)" FALSE)
+    "Build LUE command line utilites (implies LUE_BUILD_HL_API)" FALSE)
 option(LUE_BUILD_DOCUMENTATION "Build documentation" FALSE)
 option(LUE_BUILD_TEST "Build tests" FALSE)
 
@@ -28,6 +29,10 @@ if(LUE_BUILD_PYTHON_API)
 endif()
 
 if(LUE_BUILD_UTILITIES)
+    set(LUE_BUILD_HL_API TRUE)
+endif()
+
+if(LUE_BUILD_HL_API)
     set(LUE_BUILD_CXX_API TRUE)
 endif()
 

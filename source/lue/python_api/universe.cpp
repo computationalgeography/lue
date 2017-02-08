@@ -16,7 +16,7 @@ void init_universe(
 
     BASE_COLLECTION(Universe)
 
-    py::class_<Universes>(module, "Universes", py::base<UniverseCollection>(),
+    py::class_<Universes, UniverseCollection>(module, "Universes",
         R"(Collection of LUE universes
 
     Zero of more Universe instances can be stored in a Universe
@@ -37,7 +37,7 @@ void init_universe(
     ;
 
 
-    py::class_<Universe>(module, "Universe", py::base<hdf5::Group>(),
+    py::class_<Universe, hdf5::Group>(module, "Universe",
         R"(LUE universe representing a system's state
 
     A LUE universe contains phenomena that have something in common,

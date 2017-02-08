@@ -283,11 +283,11 @@ auto create_space_discretization_property(
     // Write property ids.
     {
         assert(nr_items == 1);
-        item_t item_id[nr_items];
+        auto item_id = std::make_unique<item_t[]>(nr_items);
         item_id[0] = 0;
 
         auto& item = o_property_set.reserve_items(nr_items);
-        item.write(nr_items, item_id);
+        item.write(nr_items, item_id.get());
     }
 
     auto const file_type_id = H5T_STD_U64LE;
@@ -319,46 +319,46 @@ auto create_space_discretization_property(
 }
 
 
-auto create_time_discretization_property(
-    constant_size::time::shared::PropertySet /* sc_property_set */,
-    // GDALRasterDomain const& gdal_domain,
-    count_t const /* nr_items */)
-{
-
-
-
-    // // Discretization property.
-    // // Domain of discretization is the same as of the band properties so
-    // // they can all be part of the same property set. We need to set up
-    // // a link between each band property value and the discretization
-    // // property.
-    // auto const file_type_id = H5T_STD_U64LE;
-    // auto const memory_type_id = H5T_NATIVE_UINT64;
-    // Shape const shape{ 2 };
-    // Chunks const chunks{ 2 };
-
-    // auto& discretization = o_property_set.add_property(
-    //     "space discretization", file_type_id, memory_type_id, shape,
-    //     chunks);
-
-    // {
-    //     // Per item a 1D array of <rank> values representing the size of
-    //     // the dimensions.
-    //     uint64_t values[2] = {
-    //         static_cast<uint64_t>(gdal_domain.nr_rows),
-    //         static_cast<uint64_t>(gdal_domain.nr_cols)
-    //     };
-
-    //     auto& item = discretization.reserve_items(nr_items);
-    //     item.write({nr_items, 2}, values);
-    // }
-
-    // discretization.group().attributes().write<std::string>(
-    //     "lue_discretization_type", space_discretization_type_to_string(
-    //         SpaceDiscretizationType::cartesian_grid));
-
-    // return std::move(discretization);
-}
+// auto create_time_discretization_property(
+//     constant_size::time::shared::PropertySet /* sc_property_set */,
+//     // GDALRasterDomain const& gdal_domain,
+//     count_t const /* nr_items */)
+// {
+// 
+// 
+// 
+//     // // Discretization property.
+//     // // Domain of discretization is the same as of the band properties so
+//     // // they can all be part of the same property set. We need to set up
+//     // // a link between each band property value and the discretization
+//     // // property.
+//     // auto const file_type_id = H5T_STD_U64LE;
+//     // auto const memory_type_id = H5T_NATIVE_UINT64;
+//     // Shape const shape{ 2 };
+//     // Chunks const chunks{ 2 };
+// 
+//     // auto& discretization = o_property_set.add_property(
+//     //     "space discretization", file_type_id, memory_type_id, shape,
+//     //     chunks);
+// 
+//     // {
+//     //     // Per item a 1D array of <rank> values representing the size of
+//     //     // the dimensions.
+//     //     uint64_t values[2] = {
+//     //         static_cast<uint64_t>(gdal_domain.nr_rows),
+//     //         static_cast<uint64_t>(gdal_domain.nr_cols)
+//     //     };
+// 
+//     //     auto& item = discretization.reserve_items(nr_items);
+//     //     item.write({nr_items, 2}, values);
+//     // }
+// 
+//     // discretization.group().attributes().write<std::string>(
+//     //     "lue_discretization_type", space_discretization_type_to_string(
+//     //         SpaceDiscretizationType::cartesian_grid));
+// 
+//     // return std::move(discretization);
+// }
 
 }  // anonymous namespace
 
@@ -636,8 +636,8 @@ void translate_gdal_raster_to_lue(
 void translate_gdal_raster_stack_to_lue(
     ::GDALDataset& gdal_dataset,
     std::string const& gdal_dataset_name,
-    MonthTimePoint const& start_time_point,
-    MonthDuration const& slice_duration,
+    MonthTimePoint const& /* start_time_point */,
+    MonthDuration const& /* slice_duration */,
     std::string const& lue_dataset_name)
 {
     GDALRasterDomain gdal_domain = gdal_raster_domain(gdal_dataset);
@@ -664,7 +664,7 @@ void translate_gdal_raster_stack_to_lue(
         property_set_configuration, domain_configuration);
 
     count_t const nr_items = 1;
-    rank_t const rank = 2;
+    // rank_t const rank = 2;
 
     constant_size::time::shared::PropertySet sc_areas(areas);
 

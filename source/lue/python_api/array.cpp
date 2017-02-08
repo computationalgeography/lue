@@ -3,7 +3,6 @@
 #include "lue/cxx_api/hdf5/datatype_traits.h"
 #include "lue/cxx_api/array.h"
 #include "lue/python_api/numpy.h"
-#include "lue/python_api/util.h"
 
 #include <boost/format.hpp>
 
@@ -26,33 +25,35 @@ namespace python {
 DEFINE_INIT_NUMPY()
 
 
-// template<
-//     typename T>
-// struct TypeTraits
-// {
-//     // static hid_t hdf5_type_id;
-// };
-// 
-// 
-// #define TYPE_TRAITS(  \
-//         type,  \
-//         hdf5_type_id_,  \
-//         name_)  \
-// template<>  \
-// struct TypeTraits<type>  \
-// {  \
-//     static hid_t hdf5_type_id() { return hdf5_type_id_; }  \
-//     static std::string name() { return name_; } \
-// };
-// 
-// TYPE_TRAITS(int32_t, H5T_NATIVE_INT32, "int32")
-// TYPE_TRAITS(int64_t, H5T_NATIVE_INT64, "int64")
-// TYPE_TRAITS(uint32_t, H5T_NATIVE_UINT32, "uint32")
-// TYPE_TRAITS(uint64_t, H5T_NATIVE_UINT64, "uint64")
-// TYPE_TRAITS(float, H5T_NATIVE_FLOAT, "float32")
-// TYPE_TRAITS(double, H5T_NATIVE_DOUBLE, "float64")
-// 
-// #undef TYPE_TRAITS
+/*
+template<
+    typename T>
+struct TypeTraits
+{
+    // static hid_t hdf5_type_id;
+};
+
+
+#define TYPE_TRAITS(  \
+        type,  \
+        hdf5_type_id_,  \
+        name_)  \
+template<>  \
+struct TypeTraits<type>  \
+{  \
+    static hid_t hdf5_type_id() { return hdf5_type_id_; }  \
+    static std::string name() { return name_; } \
+};
+
+TYPE_TRAITS(int32_t, H5T_NATIVE_INT32, "int32")
+TYPE_TRAITS(int64_t, H5T_NATIVE_INT64, "int64")
+TYPE_TRAITS(uint32_t, H5T_NATIVE_UINT32, "uint32")
+TYPE_TRAITS(uint64_t, H5T_NATIVE_UINT64, "uint64")
+TYPE_TRAITS(float, H5T_NATIVE_FLOAT, "float32")
+TYPE_TRAITS(double, H5T_NATIVE_DOUBLE, "float64")
+
+#undef TYPE_TRAITS
+*/
 
 
 template<

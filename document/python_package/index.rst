@@ -22,6 +22,12 @@ The LUE database lets you efficiently store huge amounts of attribute values of 
    Case studies <case_study/index>
    changes
 
+.. ifconfig:: apidoc_generated
+
+    .. toctree::
+       :maxdepth: 2
+
+       API <api/lue/modules>
 
 .. note::
 

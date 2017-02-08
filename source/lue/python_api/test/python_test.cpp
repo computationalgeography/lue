@@ -20,8 +20,10 @@ BOOST_AUTO_TEST_CASE(unit_test)
 
     BOOST_REQUIRE_NE(Py_IsInitialized(), 0);
 
-    py::object module(PyImport_AddModule("__main__"), false);
-    assert(module);
+    PyObject* result = PyImport_AddModule("__main__");
+    assert(result);
+    auto module = py::reinterpret_steal<py::object>(result);
+    result = nullptr;
 
     /* int status = */ PyRun_SimpleString(R"(
 import sys
@@ -51,12 +53,15 @@ catch_out.write("\n".join(failures))
 )");
     // assert(status == 0);
 
-    py::object catcher(PyObject_GetAttrString(module.ptr(), "catch_out"),
-        false);
-    assert(catcher);
+    result = PyObject_GetAttrString(module.ptr(), "catch_out");
+    assert(result);
+    auto catcher = py::reinterpret_steal<py::object>(result);
+    result = nullptr;
 
-    py::object output(PyObject_GetAttrString(catcher.ptr(), "value"), false);
-    assert(output);
+    result = PyObject_GetAttrString(catcher.ptr(), "value");
+    assert(result);
+    auto output = py::reinterpret_steal<py::object>(result);
+    result = nullptr;
 
 #if PY_MAJOR_VERSION >= 3
     assert(PyUnicode_Check(output.ptr()));

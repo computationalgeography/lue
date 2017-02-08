@@ -8,7 +8,7 @@ namespace omnipresent {
 
 Item::Item()
 
-    : time::Item()
+    : constant_size::Item()
 
 {
 }

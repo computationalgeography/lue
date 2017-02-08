@@ -1,9 +1,8 @@
-#include "lue/cxx_api/constant_size/time/property.h"
+#include "lue/cxx_api/constant_size/property.h"
 
 
 namespace lue {
 namespace constant_size {
-namespace time {
 
 Property::Property(
     lue::Property& group)
@@ -44,6 +43,5 @@ lue::Property& Property::group()
     return _group.get();
 }
 
-} // namespace time
 }  // namespace constant_size
-} // namespace lue
+}  // namespace lue

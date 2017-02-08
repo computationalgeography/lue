@@ -8,13 +8,49 @@ using namespace pybind11::literals;
 
 namespace lue {
 namespace python {
+namespace {
+
+
+unsigned int python_mode_to_hdf5_flag(
+    std::string const& mode)
+{
+    unsigned int flags = 0;
+
+    if(mode == "r") {
+        flags = H5F_ACC_RDONLY;
+    }
+    else if(mode == "w") {
+        flags = H5F_ACC_RDWR;
+    }
+    else {
+        throw py::value_error(
+            "mode string must begin with one of 'r' or 'w', not '" +
+            mode + "'");
+    }
+
+    return flags;
+}
+
+
+Dataset open_dataset(
+    std::string const& name,
+    std::string const& mode)
+{
+    auto flags = python_mode_to_hdf5_flag(mode);
+
+    return lue::open_dataset(name, flags);
+}
+
+}  // Anonymous namespace
+
 
 void init_dataset(
         py::module& module)
 {
 
-    py::class_<Dataset>(module, "Dataset", py::base<hdf5::File>(),
-        R"(LUE dataset representing the scientific database
+    py::class_<Dataset, hdf5::File>(module, "Dataset",
+        R"(
+    LUE dataset representing the scientific database
 
     A LUE dataset can contain collections of universes, phenomena, and/or
     property sets.
@@ -67,19 +103,8 @@ void init_dataset(
     ;
 
 
-    py::enum_<unsigned int>(module, "access_flag",
-        "access_flag docstring...")
-        .value("rw", H5F_ACC_RDWR)
-        .value("ro", H5F_ACC_RDONLY)
-    ;
-
-
-    // TODO Support passing in access flags
     module.def("open_dataset", &open_dataset,
-            // [](std::string const& name) {
-            //     return open_dataset(name, H5F_ACC_RDWR);
-            // },
-        "name"_a, "flags"_a,
+        "name"_a, "mode"_a,
         "Open existing LUE dataset\n",
         py::return_value_policy::move);
     module.def("create_dataset", &create_dataset,

@@ -91,6 +91,24 @@ using extent_t = hsize_t;
 
 namespace lue {
 
+/*!
+    @brief      The size of the item collection can be constant or variable
+                through time
+    @warning    The size of the item collection cannot be variable in
+                case the time domain type is omnipresent.
+*/
+enum class SizeOfItemCollectionType
+{
+
+    //! The collection of items remains constant through time
+    constant_size,
+
+    // //! The collection of items is variable through time
+    // variable_size
+
+};
+
+
 // enum class TimeDomainType: int
 enum TimeDomainType  // : int
 {
@@ -261,24 +279,6 @@ enum class ShapeThroughTime
 
     //! The shape of each item's value changes through time
     variable
-
-};
-
-
-/*!
-    @brief      The size of the item collection can be constant or variable
-                through time
-    @warning    The size of the item collection cannot be variable in
-                case the time domain type is omnipresent.
-*/
-enum class SizeOfItemCollectionType
-{
-
-    //! The collection of items remains constant through time
-    constant_size,
-
-    // //! The collection of items is variable through time
-    // variable_size
 
 };
 

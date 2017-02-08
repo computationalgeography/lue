@@ -15,5 +15,5 @@ add_unit_tests(
         lue_test_modules
         # The tests load the Python extension at runtime. Make sure it is
         # up to date.
-        _lue
+        lue_
 )

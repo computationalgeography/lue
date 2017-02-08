@@ -15,6 +15,10 @@ class DatasetTest(lue_test.TestCase):
         dataset = lue.create_dataset(dataset_name)
 
         self.assertTrue(os.path.isfile(dataset_name))
+        self.assertTrue(os.access(dataset_name, os.F_OK))
+        self.assertTrue(os.access(dataset_name, os.R_OK))
+        self.assertTrue(os.access(dataset_name, os.W_OK))
+        self.assertFalse(os.access(dataset_name, os.X_OK))
 
 
     def test_pathname(self):
@@ -30,7 +34,7 @@ class DatasetTest(lue_test.TestCase):
         dataset_name = "dataset_open.lue"
         dataset = self.create_dataset(dataset_name)
 
-        existing_dataset = lue.open_dataset(dataset_name, lue.access_flag.ro)
+        existing_dataset = lue.open_dataset(dataset_name, "r")
 
 
     def test_add_universe(self):

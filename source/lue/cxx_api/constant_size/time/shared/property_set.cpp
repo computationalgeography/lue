@@ -15,7 +15,7 @@ namespace shared {
 PropertySet::PropertySet(
     lue::PropertySet& group)
 
-    : time::PropertySet(group),
+    : constant_size::PropertySet(group),
       _ids(domain().id(), "ids", LUE_NATIVE_ITEM)  // ,
       // _constant_shape_properties{},
       // _variable_shape_properties{}
@@ -46,7 +46,7 @@ omnipresent::same_shape::Item& PropertySet::reserve_items(
 //     Shape const& shape,
 //     Chunks const& chunks)
 // {
-//     auto& property = time::PropertySet::add_property(name);
+//     auto& property = constant_size::PropertySet::add_property(name);
 // 
 //     same_shape::configure_property(property, file_type_id,
 //         memory_type_id, shape, chunks);
@@ -64,7 +64,7 @@ omnipresent::same_shape::Item& PropertySet::reserve_items(
 //     // hid_t const memory_type_id,
 //     size_t const rank)
 // {
-//     auto& property = time::PropertySet::add_property(name);
+//     auto& property = constant_size::PropertySet::add_property(name);
 // 
 //     different_shape::configure_property(property, file_type_id,
 //         /* memory_type_id, */ rank);
@@ -78,7 +78,7 @@ omnipresent::same_shape::Item& PropertySet::reserve_items(
 
 void configure_property_set(
     hdf5::Identifier const& location,
-    std::string const& name,
+    std::string const& /* name */,
     SpaceDomainConfiguration const& domain_configuration)
 {
     Domain domain(location);

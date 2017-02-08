@@ -77,7 +77,7 @@ function build_peacock()
 
     # pybind11
     options+=("-Dbuild_pybind11=true")
-    options+=("-Dpybind11_version=1.8.0")
+    options+=("-Dpybind11_version=2.0.1")
 
 
     # Docopt.

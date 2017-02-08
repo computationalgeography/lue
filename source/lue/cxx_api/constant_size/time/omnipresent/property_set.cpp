@@ -15,7 +15,7 @@ namespace omnipresent {
 PropertySet::PropertySet(
     lue::PropertySet& group)
 
-    : time::PropertySet(group),
+    : constant_size::PropertySet(group),
       // _items{std::make_unique<Array>(std::move(hdf5::open_dataset(
       //     domain().id(), "item")), LUE_NATIVE_ITEM)},
       _ids{std::make_unique<same_shape::Item>(domain().id(), "ids",
@@ -80,7 +80,7 @@ same_shape::Property& PropertySet::add_property(
     ValueConfiguration value_configuration(ShapeThroughTime::constant,
         ShapePerItem::same);
 
-    auto& property = time::PropertySet::add_property(name,
+    auto& property = constant_size::PropertySet::add_property(name,
         value_configuration);
 
     same_shape::configure_property(property, file_type_id,
@@ -102,7 +102,7 @@ different_shape::Property& PropertySet::add_property(
     ValueConfiguration value_configuration(ShapeThroughTime::constant,
         ShapePerItem::different);
 
-    auto& property = time::PropertySet::add_property(name,
+    auto& property = constant_size::PropertySet::add_property(name,
         value_configuration);
 
     different_shape::configure_property(property, file_type_id,
@@ -117,7 +117,7 @@ different_shape::Property& PropertySet::add_property(
 
 void configure_property_set(
     hdf5::Identifier const& location,
-    std::string const& name,
+    std::string const& /* name */,
     SpaceDomainConfiguration const& domain_configuration)
 {
     Domain domain(location);

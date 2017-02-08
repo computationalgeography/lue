@@ -1,9 +1,8 @@
-#include "lue/cxx_api/constant_size/time/domain.h"
+#include "lue/cxx_api/constant_size/domain.h"
 
 
 namespace lue {
 namespace constant_size {
-namespace time {
 
 Domain::Domain(
     lue::Domain& group)
@@ -31,6 +30,5 @@ DomainConfiguration const& Domain::configuration() const
     return _group.get().configuration();
 }
 
-} // namespace time
 }  // namespace constant_size
-} // namespace lue
+}  // namespace lue

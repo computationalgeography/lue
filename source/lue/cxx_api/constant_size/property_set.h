@@ -7,7 +7,6 @@
 
 namespace lue {
 namespace constant_size {
-namespace time {
 
 /*!
     @ingroup    lue_cxx_api_group
@@ -67,6 +66,5 @@ private:
 
 };
 
-} // namespace time
 }  // namespace constant_size
-} // namespace lue
+}  // namespace lue

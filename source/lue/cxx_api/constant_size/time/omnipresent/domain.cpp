@@ -9,7 +9,7 @@ namespace omnipresent {
 Domain::Domain(
     lue::Domain& group)
 
-    : time::Domain(group)
+    : constant_size::Domain(group)
 
 {
 }

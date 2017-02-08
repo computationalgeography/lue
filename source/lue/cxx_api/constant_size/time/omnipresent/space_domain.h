@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/cxx_api/constant_size/time/space_domain.h"
+#include "lue/cxx_api/constant_size/space_domain.h"
 
 
 namespace lue {
@@ -11,7 +11,7 @@ namespace omnipresent {
     @ingroup    lue_cxx_api_group
 */
 class SpaceDomain:
-    public time::SpaceDomain
+    public constant_size::SpaceDomain
 {
 
 public:

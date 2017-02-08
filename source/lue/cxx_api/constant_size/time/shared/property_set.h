@@ -3,7 +3,7 @@
 // #include "lue/cxx_api/constant_size/time/shared/same_shape/item.h"
 // #include "lue/cxx_api/constant_size/time/shared/same_shape/property.h"
 // #include "lue/cxx_api/constant_size/time/shared/different_shape/property.h"
-#include "lue/cxx_api/constant_size/time/property_set.h"
+#include "lue/cxx_api/constant_size/property_set.h"
 // #include "lue/cxx_api/array.h"
 
 
@@ -16,7 +16,7 @@ namespace shared {
     @ingroup    lue_cxx_api_group
 */
 class PropertySet:
-    public time::PropertySet
+    public constant_size::PropertySet
 {
 
 public:

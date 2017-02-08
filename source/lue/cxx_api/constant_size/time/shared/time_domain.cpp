@@ -9,7 +9,7 @@ namespace shared {
 TimeDomain::TimeDomain(
     lue::TimeDomain& group)
 
-    : time::TimeDomain(group)
+    : constant_size::TimeDomain(group)
 
 {
 }
