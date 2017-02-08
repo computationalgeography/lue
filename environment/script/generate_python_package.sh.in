@@ -13,7 +13,7 @@ local_prefix="$tmp_prefix/local"
 install_prefix="$tmp_prefix/install"
 
 
-mkdir -p tmp_prefix
+mkdir -p $tmp_prefix
 cd $tmp_prefix
 
 
@@ -64,7 +64,7 @@ python setup.py sdist
 
 
 # Install package in virtual environment and perform some tests.
-virtualenv $tmp_prefix/python
+virtualenv --system-site-package $tmp_prefix/python
 source $tmp_prefix/python/bin/activate
 # pip install numpy
 cd $tmp_prefix
@@ -88,7 +88,7 @@ echo "********************************************************"
 # python setup.py bdist_wheel
 
 
-# # Upload distributions.
-# cd $install_prefix
-# pip install twine
+# Upload distributions.
+cd $install_prefix
+pip install twine
 # twine upload dist/*
