@@ -178,13 +178,6 @@ def builds():
         #     [
         #     ]
         # ),
-        # BuildConfiguration(
-        #     {
-        #         "LUE_BUILD_C_API:BOOL": "TRUE",
-        #     },
-        #     [
-        #     ]
-        # ),
         BuildConfiguration(
             {
                 "LUE_BUILD_CXX_API:BOOL": "TRUE",
@@ -217,7 +210,6 @@ def builds():
         # ),
         # BuildConfiguration(
         #     {
-        #         "LUE_BUILD_C_API:BOOL": "TRUE",
         #         "LUE_BUILD_TEST:BOOL": "TRUE",
         #     },
         #     [

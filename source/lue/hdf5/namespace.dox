@@ -1,0 +1,12 @@
+namespace lue {
+
+/*!
+    @brief      Namespace containing C++ wrappers around the HDF5 C-API
+
+    This namespace contains relatively low-level code that should not
+    be of any concern to the LUE library user.
+*/
+namespace hdf5 {
+}
+
+}

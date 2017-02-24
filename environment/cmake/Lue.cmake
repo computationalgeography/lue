@@ -1,5 +1,6 @@
 set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_C_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 include(PeacockPlatform)
 include(DevBaseCompiler)
@@ -13,7 +14,6 @@ endif()
 
 
 message(STATUS "--------------------------------------------------------------")
-message(STATUS "Build C-api        : ${LUE_BUILD_C_API}")
 message(STATUS "Build C++-api      : ${LUE_BUILD_CXX_API}")
 message(STATUS "Build Python-api   : ${LUE_BUILD_PYTHON_API}")
 message(STATUS "Support MPI        : ${LUE_API_WITH_MPI}")

@@ -1,0 +1,6 @@
+/*!
+    @brief      Root namespace containing the C++ LUE API
+    @todo       Differentiate between the public and private API
+*/
+namespace lue {
+}

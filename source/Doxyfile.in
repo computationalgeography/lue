@@ -1,0 +1,10 @@
+PROJECT_NAME            = LUE
+${DOXYGEN_TEMPLATE}
+EXCLUDE_PATTERNS        = */detail/* \
+                          *_test.cc
+EXCLUDE_SYMBOLS         = *::detail \
+                          H5 \
+                          boost \
+                          std
+# EXAMPLE_PATH            = ${CMAKE_CURRENT_SOURCE_DIR}/c_api \
+#                           ${CMAKE_CURRENT_BINARY_DIR}/c_api

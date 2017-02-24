@@ -1,0 +1,14 @@
+set(SOURCES
+    value
+    property
+    submodule
+)
+add_library(luepy_constant_size_time_omnipresent_same_shape_objects
+        OBJECT
+    ${SOURCES}
+)
+set(luepy_object_libraries
+    ${luepy_object_libraries}
+    $<TARGET_OBJECTS:luepy_constant_size_time_omnipresent_same_shape_objects>
+    PARENT_SCOPE
+)

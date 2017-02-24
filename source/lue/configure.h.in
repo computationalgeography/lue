@@ -1,4 +1,5 @@
 #pragma once
 
 
+#cmakedefine LUE_VERSION "${LUE_VERSION}"
 #cmakedefine LUE_WITH_MPI

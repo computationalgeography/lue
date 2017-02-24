@@ -5,172 +5,70 @@ include_directories(
 
 configure_file(configure.h.in configure.h)
 
-if(LUE_BUILD_C_API)
-    add_subdirectory(c_api)
-endif()
+add_test_conditionally(test)
+add_subdirectory(hdf5)
+add_subdirectory(constant_size)
 
-if(LUE_BUILD_CXX_API)
-    add_subdirectory(cxx_api)
-endif()
-
-if(LUE_BUILD_HL_API)
-    add_subdirectory(hl_api)
-endif()
-
-if(LUE_BUILD_PYTHON_API)
-    add_subdirectory(python_api)
-endif()
-
-if(LUE_BUILD_UTILITIES)
-    add_subdirectory(utility)
-endif()
-
-
-if(LUE_BUILD_DOCUMENTATION)
-    # file(GLOB dot_sources "*.dot")
-    set(color \#3288bd)
-
-    add_custom_command(
-        OUTPUT logical_data_model_domain.dot
-        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/logical_data_model.dot
-        COMMAND ${EDIT_DOT_GRAPH} node add_attribute
-            --output logical_data_model_domain.dot
-            ${CMAKE_CURRENT_SOURCE_DIR}/logical_data_model.dot
-            domain fillcolor \\\"${color}\\\"
-    )
-    add_custom_command(
-        OUTPUT logical_data_model_phenomena.dot
-        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/logical_data_model.dot
-        COMMAND ${EDIT_DOT_GRAPH} node add_attribute
-            --output logical_data_model_phenomena.dot
-            ${CMAKE_CURRENT_SOURCE_DIR}/logical_data_model.dot
-            phenomena fillcolor \\\"${color}\\\"
-    )
-    add_custom_command(
-        OUTPUT logical_data_model_phenomenon.dot
-        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/logical_data_model.dot
-        COMMAND ${EDIT_DOT_GRAPH} node add_attribute
-            --output logical_data_model_phenomenon.dot
-            ${CMAKE_CURRENT_SOURCE_DIR}/logical_data_model.dot
-            phenomenon fillcolor \\\"${color}\\\"
-    )
-    add_custom_command(
-        OUTPUT logical_data_model_properties.dot
-        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/logical_data_model.dot
-        COMMAND ${EDIT_DOT_GRAPH} node add_attribute
-            --output logical_data_model_properties.dot
-            ${CMAKE_CURRENT_SOURCE_DIR}/logical_data_model.dot
-            properties fillcolor \\\"${color}\\\"
-    )
-    add_custom_command(
-        OUTPUT logical_data_model_property.dot
-        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/logical_data_model.dot
-        COMMAND ${EDIT_DOT_GRAPH} node add_attribute
-            --output logical_data_model_property.dot
-            ${CMAKE_CURRENT_SOURCE_DIR}/logical_data_model.dot
-            property fillcolor \\\"${color}\\\"
-    )
-    add_custom_command(
-        OUTPUT logical_data_model_property_set.dot
-        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/logical_data_model.dot
-        COMMAND ${EDIT_DOT_GRAPH} node add_attribute
-            --output logical_data_model_property_set.dot
-            ${CMAKE_CURRENT_SOURCE_DIR}/logical_data_model.dot
-            property_set fillcolor \\\"${color}\\\"
-    )
-    add_custom_command(
-        OUTPUT logical_data_model_property_sets.dot
-        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/logical_data_model.dot
-        COMMAND ${EDIT_DOT_GRAPH} node add_attribute
-            --output logical_data_model_property_sets.dot
-            ${CMAKE_CURRENT_SOURCE_DIR}/logical_data_model.dot
-            property_sets fillcolor \\\"${color}\\\"
-    )
-    add_custom_command(
-        OUTPUT logical_data_model_universes.dot
-        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/logical_data_model.dot
-        COMMAND ${EDIT_DOT_GRAPH} node add_attribute
-            --output logical_data_model_universes.dot
-            ${CMAKE_CURRENT_SOURCE_DIR}/logical_data_model.dot
-            universes fillcolor \\\"${color}\\\"
-    )
-    add_custom_command(
-        OUTPUT logical_data_model_universe.dot
-        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/logical_data_model.dot
-        COMMAND ${EDIT_DOT_GRAPH} node add_attribute
-            --output logical_data_model_universe.dot
-            ${CMAKE_CURRENT_SOURCE_DIR}/logical_data_model.dot
-            universe fillcolor \\\"${color}\\\"
-    )
-    add_custom_command(
-        OUTPUT logical_data_model_value.dot
-        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/logical_data_model.dot
-        COMMAND ${EDIT_DOT_GRAPH} node add_attribute
-            --output logical_data_model_value.dot
-            ${CMAKE_CURRENT_SOURCE_DIR}/logical_data_model.dot
-            value fillcolor \\\"${color}\\\"
-    )
-
-
-
-    set(dot_sources
-        ${CMAKE_CURRENT_BINARY_DIR}/logical_data_model_domain.dot
-        ${CMAKE_CURRENT_BINARY_DIR}/logical_data_model_properties.dot
-        ${CMAKE_CURRENT_BINARY_DIR}/logical_data_model_property.dot
-        ${CMAKE_CURRENT_BINARY_DIR}/logical_data_model_property_set.dot
-        ${CMAKE_CURRENT_BINARY_DIR}/logical_data_model_property_sets.dot
-        ${CMAKE_CURRENT_BINARY_DIR}/logical_data_model_phenomena.dot
-        ${CMAKE_CURRENT_BINARY_DIR}/logical_data_model_phenomenon.dot
-        ${CMAKE_CURRENT_BINARY_DIR}/logical_data_model_universe.dot
-        ${CMAKE_CURRENT_BINARY_DIR}/logical_data_model_universes.dot
-        ${CMAKE_CURRENT_BINARY_DIR}/logical_data_model_value.dot
-        conceptual_data_model.dot
-        logical_data_model.dot
-        space_domain_taxonomy.dot
-        time_domain_taxonomy.dot
-        value_taxonomy.dot
-    )
-
-    convert_dot(
-        TARGET lue_svg_files
-        DESTINATIONS svg_files
-        SOURCES ${dot_sources}
-    )
-
-    # NOTE: CMake 3.5 has copy that accepts multiple filenames. It can
-    # be used instead of this loop.
-    foreach(svg_file ${svg_files})
-        set(copied_svg_file ${CMAKE_BINARY_DIR}/html/${svg_file})
-
-        add_custom_command(
-            OUTPUT ${copied_svg_file}
-            DEPENDS lue_svg_files
-            COMMAND ${CMAKE_COMMAND} -E make_directory html
-            COMMAND ${CMAKE_COMMAND} -E copy ${svg_file} html
-        )
-
-        list(APPEND copied_svg_files ${copied_svg_file})
-    endforeach()
-
-    add_custom_target(
-        copy_svg_files
-        DEPENDS ${copied_svg_files}
-    )
-
-    set(DEVBASE_DOXYGEN_INPUT ${CMAKE_CURRENT_SOURCE_DIR})
-    include(DoxygenDoc)
-
-    add_dependencies(cpp_doc
-        copy_svg_files
-        # example_dumps
-    )
-
-endif()
-
-install(
-    FILES
-        ${CMAKE_CURRENT_BINARY_DIR}/configure.h
-    DESTINATION _lue/lue
-    COMPONENT python
-    # CMAKE >= 3.6 EXCLUDE_FROM_ALL
+set(SOURCES
+    array
+    collection
+    dataset
+    domain
+#     domain_configuration
+#     exception
+    phenomena
+    phenomenon
+    properties
+    property
+    property_set
+    property_sets
+#     space_discretization
+#     space_domain
+#     space_domain_configuration
+#     time_discretization
+#     # time_discretization_configuration
+#     time_domain
+#     time_domain_configuration
+    universe
+    universes
+#     value
+#     value_configuration
 )
+add_library(lue_objects OBJECT
+    ${SOURCES}
+)
+add_library(lue STATIC
+    ${lue_object_libraries}
+    $<TARGET_OBJECTS:lue_objects>
+)
+target_link_libraries(lue
+    ${HDF5_LIBRARIES}
+    ${Boost_FILESYSTEM_LIBRARY}
+    ${Boost_SYSTEM_LIBRARY}
+)
+# install(
+#     TARGETS lue
+#     RUNTIME DESTINATION bin
+#     LIBRARY DESTINATION lib
+#     ARCHIVE DESTINATION lib
+# )
+# file(GLOB
+#     SOURCES
+#     RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+#     *.cpp *.h *.hpp
+# )
+# install(
+#     FILES
+#         ${SOURCES}
+#     DESTINATION _lue/lue/cxx_api
+#     COMPONENT python
+#     # CMAKE >= 3.6 EXCLUDE_FROM_ALL
+# )
+# install(
+#     DIRECTORY
+#         constant_size
+#     DESTINATION _lue/lue/cxx_api
+#     COMPONENT python
+#     # FILES_MATCHING
+#     PATTERN "CMakeLists.txt" EXCLUDE
+# )

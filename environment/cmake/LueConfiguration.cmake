@@ -4,8 +4,7 @@ option(LUE_BUILD_ALL "Build everything, except for documentation and tests"
 option(LUE_WITH_ALL "Support all features, except for MPI" FALSE)
 
 
-option(LUE_BUILD_C_API "Build C-api" TRUE)
-option(LUE_BUILD_CXX_API "Build CXX-api (implies LUE_BUILD_C_API)" FALSE)
+option(LUE_BUILD_CXX_API "Build CXX-api" FALSE)
 option(LUE_BUILD_HL_API "Build HL-api (implies LUE_BUILD_CXX_API)" FALSE)
 option(LUE_BUILD_PYTHON_API "Build CXX-api (implies LUE_BUILD_CXX_API)" FALSE)
 option(LUE_BUILD_UTILITIES
@@ -18,7 +17,6 @@ option(LUE_API_WITH_MPI "Include support for MPI" FALSE)
 
 # Handle internal dependencies.
 if(LUE_BUILD_ALL)
-    set(LUE_BUILD_C_API TRUE)
     set(LUE_BUILD_CXX_API TRUE)
     set(LUE_BUILD_PYTHON_API TRUE)
     set(LUE_BUILD_UTILITIES TRUE)
@@ -36,10 +34,6 @@ if(LUE_BUILD_HL_API)
     set(LUE_BUILD_CXX_API TRUE)
 endif()
 
-if(LUE_BUILD_CXX_API)
-    set(LUE_BUILD_C_API TRUE)
-endif()
-
 if(LUE_BUILD_TEST)
     set(DEVBASE_BUILD_TEST TRUE)
 endif()
@@ -52,7 +46,7 @@ endif()
 
 
 # Handle external dependencies.
-if(LUE_BUILD_C_API)
+if(LUE_BUILD_CXX_API)
     set(DEVBASE_HDF5_REQUIRED TRUE)
     list(APPEND DEVBASE_REQUIRED_HDF5_COMPONENTS
         C)  # HL
