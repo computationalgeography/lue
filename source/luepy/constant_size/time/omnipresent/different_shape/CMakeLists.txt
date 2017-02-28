@@ -1,5 +1,5 @@
 set(SOURCES
-    item
+    value
     property
     submodule
 )

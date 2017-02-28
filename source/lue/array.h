@@ -35,6 +35,11 @@ public:
 
     Array&         operator=           (Array&& other)=default;
 
+    hdf5::Datatype const&
+                   memory_datatype     () const;
+
+    hdf5::Datatype file_datatype       () const;
+
     hdf5::Shape    shape               () const;
 
     void           read                (hdf5::Offset const& start,

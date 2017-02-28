@@ -1,4 +1,6 @@
 #include "lue/constant_size/time/omnipresent/property_set.h"
+#include "lue/constant_size/time/omnipresent/different_shape/property.h"
+#include "lue/constant_size/time/omnipresent/same_shape/property.h"
 // // #include "lue/cxx_api/constant_size.h"
 // // #include "lue/cxx_api/property_sets.h"
 // #include "lue/python_api/numpy.h"
@@ -53,6 +55,54 @@ void init_property_set_class(
             py::overload_cast<>(&PropertySet::ids),
             "ids docstring...",
             py::return_value_policy::reference_internal)
+
+        .def(
+            "__getitem__",
+            [](
+                PropertySet& self,
+                std::string const& name)
+            {
+                auto& properties = self.properties();
+                auto& property = properties[name];
+                auto& configuration = property.configuration();
+
+
+                /// auto& property_set = self[name];
+                /// auto const& configuration = property_set.configuration();
+
+                // TODO
+                //     Support registering of casters by specialized
+                //     PropertySet classes.
+                py::object object;
+
+                switch(configuration.shape_per_item_type()) {
+                    case ShapePerItemType::same: {
+                        auto file_datatype =
+                            same_shape::Property::file_datatype(
+                                property.id());
+                        object = py::cast(new same_shape::Property(
+                            property, memory_datatype(file_datatype)));
+                        break;
+                    }
+                    case ShapePerItemType::different: {
+                        auto file_datatype =
+                            different_shape::Property::file_datatype(
+                                property.id());
+                        object = py::cast(new different_shape::Property(
+                            property, memory_datatype(file_datatype)));
+                        break;
+                    }
+                }
+
+                return object;
+            },
+    "Return property\n"
+    "\n"
+    ":param str name: Name of property to find\n"
+    ":raises RuntimeError: In case the collection does not contain the\n"
+    "   property\n",
+            "name"_a
+        )
 
         // .def(
         //     "add_property",

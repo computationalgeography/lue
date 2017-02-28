@@ -15,6 +15,15 @@ Property::Property(
 }
 
 
+Property::Property(
+    lue::Property const& property)
+
+    : constant_size::Property(property)
+
+{
+}
+
+
 Property create_property(
     PropertySet& property_set,
     std::string const& name,

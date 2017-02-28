@@ -8,11 +8,11 @@ namespace lue {
 namespace constant_size {
 namespace time {
 namespace omnipresent {
-// namespace different_shape {
-// 
-// void init_submodule(py::module& module);
-// 
-// }  // namespace different_shape
+namespace different_shape {
+
+void init_submodule(py::module& module);
+
+}  // namespace different_shape
 
 
 namespace same_shape {
@@ -37,7 +37,7 @@ void init_submodule(
     init_property_class(submodule);
     init_property_set_class(submodule);
 
-    // different_shape::init_submodule(submodule);
+    different_shape::init_submodule(submodule);
     same_shape::init_submodule(submodule);
 
     // // Space box inherits same_shape::Item, so init the SpaceBox class after

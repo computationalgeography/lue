@@ -13,6 +13,14 @@ Property::Property(
 }
 
 
+Property::Property(
+    lue::Property const& property)
+
+    : lue::Property(property)
+
+{
+}
+
 
 Property create_property(
     hdf5::Group& group,

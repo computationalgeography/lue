@@ -28,19 +28,17 @@ void init_property_class(
         "Property",
         "Property docstring...")
 
-        // .def(
-        //     "reserve_items",
-        //     &lue::constant_size::time::omnipresent::same_shape::
-        //         Property::reserve_items,
-        //     "reserve docstring...",
-        //     py::return_value_policy::reference_internal)
+        .def(
+            "reserve_values",
+            &Property::reserve_values,
+            "reserve_values docstring...",
+            py::return_value_policy::reference_internal)
 
-        // .def_property_readonly(
-        //     "values",
-        //     (lue::constant_size::time::omnipresent::same_shape::Item const& (lue::constant_size::time::omnipresent::same_shape::Property::*)() const) &lue::constant_size::time::omnipresent::same_shape::Property::values,
-        //     // &lue::constant_size::time::omnipresent::same_shape::Property::values,
-        //     "values docstring...",
-        //     py::return_value_policy::reference_internal)
+        .def_property_readonly(
+            "values",
+            py::overload_cast<>(&Property::values),
+            "values docstring...",
+            py::return_value_policy::reference_internal)
 
         ;
 

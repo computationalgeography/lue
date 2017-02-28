@@ -14,8 +14,6 @@ public:
 //                    PropertySet         (Phenomenon& phenomenon,
 //                                         std::string const& name);
 
-                   PropertySet         (hdf5::Identifier const& id);
-
                    PropertySet         (lue::PropertySet&& property_set);
 
                    PropertySet         (PropertySet const& other)=delete;
@@ -27,6 +25,10 @@ public:
     PropertySet&   operator=           (PropertySet const& other)=delete;
 
     PropertySet&   operator=           (PropertySet&& other)=default;
+
+protected:
+
+                   PropertySet         (hdf5::Identifier const& id);
 
 private:
 

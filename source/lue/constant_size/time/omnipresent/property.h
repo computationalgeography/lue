@@ -16,6 +16,8 @@ public:
 
                    Property            (constant_size::Property&& property);
 
+                   Property            (lue::Property const& property);
+
                    Property            (Property const& other)=delete;
 
                    Property            (Property&& other)=default;

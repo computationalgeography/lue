@@ -2,6 +2,7 @@
 // #include "lue/cxx_api/hdf5/datatype.h"
 #include "lue/hdf5/datatype_traits.h"
 #include "lue/array.h"
+#include "luepy/conversion.h"
 #include "luepy/numpy.h"
 
 #include <boost/format.hpp>
@@ -235,15 +236,16 @@ void init_array_class(
             &Array::shape,
             "shape docstring...")
 
-        // .def_property_readonly("dtype", [](
-        //             Array const& self) {
-        //         py::object object = hdf5_type_id_to_numpy_dtype(
-        //             self.type_id());
-        //         assert(object.ptr() != nullptr);
-        //         return object;
-        //     },
-        //     "dtype docstring..."
-        // )
+        .def_property_readonly(
+            "dtype",
+            [](Array const& self) {
+                py::object object = hdf5_type_id_to_numpy_dtype(
+                    self.memory_datatype());
+                assert(object.ptr() != nullptr);
+                return object;
+            },
+            "dtype docstring..."
+        )
 
         .def("__getitem__", [](
                 Array const& array,

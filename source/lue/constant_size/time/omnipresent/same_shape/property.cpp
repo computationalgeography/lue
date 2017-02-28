@@ -1,4 +1,5 @@
 #include "lue/constant_size/time/omnipresent/same_shape/property.h"
+#include "lue/tag.h"
 #include <cassert>
 
 
@@ -8,13 +9,30 @@ namespace time {
 namespace omnipresent {
 namespace same_shape {
 
+hdf5::Datatype Property::file_datatype(
+    hdf5::Identifier const& id)
+{
+    return hdf5::Dataset(id, value_tag).datatype();
+}
+
 
 Property::Property(
     omnipresent::Property&& property,
     hdf5::Datatype const& memory_datatype)
 
     : omnipresent::Property(std::forward<omnipresent::Property>(property)),
-      _values(id(), "lue_values", memory_datatype)
+      _values(id(), value_tag, memory_datatype)
+
+{
+}
+
+
+Property::Property(
+    lue::Property const& property,
+    hdf5::Datatype const& memory_datatype)
+
+    : omnipresent::Property(property),
+      _values(id(), value_tag, memory_datatype)
 
 {
 }
@@ -124,16 +142,18 @@ same_shape::Value& Property::reserve_values(
 Property create_property(
     PropertySet& property_set,
     std::string const& name,
-    hdf5::Datatype const file_datatype,
-    hdf5::Datatype const memory_datatype,
+    hdf5::Datatype const& file_datatype,
+    hdf5::Datatype const& memory_datatype,
     hdf5::Shape const& value_shape,
     hdf5::Shape const& value_chunk)
 {
     Property::Configuration configuration(ShapePerItemType::same);
     auto property = omnipresent::create_property(property_set, name,
         configuration);
-    auto value = create_value(property.id(), "lue_value", file_datatype,
+    auto value = create_value(property.id(), value_tag, file_datatype,
         memory_datatype, value_shape, value_chunk);
+
+    assert(property.id().is_valid());
 
     return Property(std::move(property), memory_datatype);
 }

@@ -145,15 +145,15 @@ void init_property_set_class(
     //     //     "add_property docstring...",
     //     //     py::return_value_policy::reference_internal)
 
-        .def_property_readonly(
-            "properties",
-            py::overload_cast<>(&PropertySet::properties),
-            R"(
-    Return properties collection
-
-    :rtype: lue.Properties
-)",
-            py::return_value_policy::reference_internal)
+//         .def_property_readonly(
+//             "properties",
+//             py::overload_cast<>(&PropertySet::properties),
+//             R"(
+//     Return properties collection
+// 
+//     :rtype: lue.Properties
+// )",
+//             py::return_value_policy::reference_internal)
 
         ;
 

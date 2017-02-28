@@ -1,4 +1,5 @@
 add_test_conditionally(test)
+add_subdirectory(different_shape)
 add_subdirectory(same_shape)
 set(SOURCES
     domain

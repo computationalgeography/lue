@@ -20,7 +20,11 @@ public:
 
                    Configuration       (hdf5::Attributes const& attributes);
 
-                   ~Configuration()=default;
+                   Configuration       (Configuration const& other)=default;
+
+                   ~Configuration      ()=default;
+
+        Configuration& operator=       (Configuration const& other)=default;
 
         ShapePerItemType
                    shape_per_item_type () const;
@@ -41,13 +45,13 @@ public:
 
                    Property            (hdf5::Group&& group);
 
-                   Property            (Property const& other)=delete;
+                   Property            (Property const& other)=default;
 
                    Property            (Property&& other)=default;
 
                    ~Property           ()=default;
 
-    Property&      operator=           (Property const& other)=delete;
+    Property&      operator=           (Property const& other)=default;
 
     Property&      operator=           (Property&& other)=default;
 
@@ -65,5 +69,7 @@ Property           create_property     (hdf5::Group& group,
                                         std::string const& name,
                                         Property::Configuration const&
                                             configuration);
+                                        // hdf5::Datatype const& file_datatype,
+                                        // hdf5::Datatype const& memory_datatype);
 
 }  // namespace lue

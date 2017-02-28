@@ -21,6 +21,7 @@ Array::Array(
       _memory_datatype{memory_datatype}
 
 {
+    assert(id().is_valid());
 }
 
 
@@ -33,6 +34,7 @@ Array::Array(
       _memory_datatype{memory_datatype}
 
 {
+    assert(id().is_valid());
 }
 
 
@@ -69,6 +71,18 @@ Array::Array(
 // {
 //     assert(id().is_valid());
 // }
+
+
+hdf5::Datatype const& Array::memory_datatype() const
+{
+    return _memory_datatype;
+}
+
+
+hdf5::Datatype Array::file_datatype() const
+{
+    return datatype();
+}
 
 
 hdf5::Shape Array::shape() const

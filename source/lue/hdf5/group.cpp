@@ -223,11 +223,29 @@ Group::Group(
 }
 
 
+/*!
+    @brief      Construct a group based on an identifier
+    @param      id Identifier of group
+*/
 Group::Group(
     Identifier const& id)
 
     : _id{id},
       _attributes(_id)
+
+{
+}
+
+
+/*!
+    @brief      Construct a group based on an existing one
+    @param      other Group to copy
+*/
+Group::Group(
+    Group const& other)
+
+    : _id{other._id},
+      _attributes{other._attributes}
 
 {
 }

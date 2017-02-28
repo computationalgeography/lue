@@ -1,5 +1,4 @@
 #include "lue/hdf5/attribute.h"
-#include <cassert>
 
 
 namespace lue {
@@ -67,67 +66,40 @@ Datatype const& Attribute::datatype() const
 }
 
 
-template<>
-void Attribute::write<std::string>(
-    std::string const& value)
-{
-    auto status = H5Awrite(_id, _datatype.id(), value.c_str());
-
-    if(status < 0) {
-        throw std::runtime_error("Cannot write attribute");
-    }
-}
-
-
-template<>
-std::string Attribute::read<std::string>() const
-{
-    static_assert(std::is_same<std::string::value_type, char>::value,
-        "expect std::string::value_type to be char");
-
-    assert(_datatype.encoding() == ::H5T_CSET_UTF8);
-
-    auto nr_bytes = _datatype.size();
-
-    std::string result(nr_bytes, 'x');
-
-    auto status = ::H5Aread(_id, _datatype.id(),
-#if __cplusplus > 201402L
-        result.data()
-#else
-        const_cast<std::string::value_type*>(result.data())
-#endif
-    );
-    assert(result.size() == nr_bytes);
-
-    if(status < 0) {
-        throw std::runtime_error("Cannot read attribute");
-    }
-
-    return result;
-}
-
-
-Attribute create_attribute(
-    Identifier const& location,
-    std::string const& name,
-    std::string const& value)
-{
-    auto attribute = create_attribute(location, name, value.size());
-    attribute.write(value);
-
-    return attribute;
-}
-
-
-Attribute create_attribute(
-    Identifier const& location,
-    std::string const& name,
-    size_t const nr_bytes)
-{
-    return create_attribute(location, name, Datatype(nr_bytes),
-        Dataspace(::H5S_SCALAR));
-}
+// Attribute create_attribute(
+//     Identifier const& location,
+//     std::string const& name,
+//     std::string const& value)
+// {
+//     auto attribute = create_attribute(location, name, value.size());
+//     attribute.write(value);
+// 
+//     return attribute;
+// }
+// 
+// 
+// Attribute create_attribute(
+//     Identifier const& location,
+//     std::string const& name,
+//     std::vector<unsigned char> const& value)
+// {
+//     auto attribute = create_attribute(location, name,
+//         create_datatype(H5T_NATIVE_UCHAR, value.size()),
+//         Dataspace(::H5S_SCALAR));
+//     attribute.write(value);
+// 
+//     return attribute;
+// }
+// 
+// 
+// Attribute create_attribute(
+//     Identifier const& location,
+//     std::string const& name,
+//     size_t const nr_bytes)
+// {
+//     return create_attribute(location, name, create_datatype(nr_bytes),
+//         Dataspace(::H5S_SCALAR));
+// }
 
 
 Attribute create_attribute(

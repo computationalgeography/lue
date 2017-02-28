@@ -26,7 +26,7 @@ public:
 
                    Group               (Identifier&& id);
 
-                   Group               (Group const& other)=delete;
+                   Group               (Group const& other);
 
                    Group               (Group&& other);
 

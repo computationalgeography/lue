@@ -23,6 +23,10 @@ Dataset::Dataset(
     : _id(::H5Dopen(location, name.c_str(), H5P_DEFAULT), ::H5Dclose)
 
 {
+    if(!_id.is_valid()) {
+        throw std::runtime_error("Cannot open dataset " + name + " at " +
+            location.pathname());
+    }
 }
 
 
@@ -42,6 +46,11 @@ Identifier const& Dataset::id() const
 }
 
 
+/*!
+    @brief      Return the datatype of the dataset
+
+    The datatype returned is the in-file datatype of the dataset
+*/
 Datatype Dataset::datatype() const
 {
     return Datatype(Identifier(::H5Dget_type(_id), ::H5Tclose));

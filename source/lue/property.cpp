@@ -112,10 +112,16 @@ Property create_property(
     std::string const& name,
     Property::Configuration const&
         configuration)
+    // hdf5::Datatype const& file_datatype,
+    // hdf5::Datatype const& memory_datatype)
 {
     auto property = hdf5::create_group(group.id(), name);
 
     configuration.save(property.attributes());
+
+    // auto buffer = hdf5::encode_datatype(file_datatype);
+
+    // buffer = hdf5::encode_datatype(memory_datatype);
 
     return Property(std::move(property));
 }

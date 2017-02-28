@@ -154,28 +154,6 @@ std::string standard_datatype_as_string(
 }
 
 
-// TODO Turn into create_datatype()
-Datatype::Datatype(
-    size_t const nr_bytes)
-
-    : _id(::H5Tcopy(H5T_C_S1), ::H5Tclose)
-
-{
-    if(!_id.is_valid()) {
-        throw std::runtime_error("Cannot create datatype");
-    }
-
-
-    auto status = ::H5Tset_cset(_id, H5T_CSET_UTF8);
-
-    if(status < 0) {
-        throw std::runtime_error("Cannot set character set");
-    }
-
-    set_size(nr_bytes);
-}
-
-
 /*!
     @brief      .
     @param      .
@@ -296,6 +274,130 @@ bool operator!=(
     Datatype const& rhs)
 {
     return !datatypes_are_equal(lhs.id(), rhs.id());
+}
+
+
+std::vector<unsigned char> encode_datatype(
+    Datatype const& datatype)
+{
+    // Determine size of buffer.
+    size_t nr_bytes;
+    auto status = ::H5Tencode(datatype.id(), nullptr, &nr_bytes);
+
+    if(status < 0) {
+        throw std::runtime_error("Cannot encode data type");
+    }
+
+
+    // Encode data type.
+    std::vector<unsigned char> buffer(nr_bytes);
+
+    status = ::H5Tencode(datatype.id(), buffer.data(), &nr_bytes);
+
+    if(status < 0) {
+        throw std::runtime_error("Cannot encode data type");
+    }
+
+    return buffer;
+}
+
+
+Datatype decode_datatype(
+    std::vector<unsigned char> const& buffer)
+{
+    auto id = ::H5Tdecode(buffer.data());
+
+    if(id < 0) {
+        throw std::runtime_error("Cannot decode data type");
+    }
+
+    return Datatype(Identifier(id, ::H5Tclose));
+}
+
+
+/*!
+    @brief      Create a datatype for a UTF8-encoded string
+    @param      nr_bytes Total size of the datatype
+    @exception  std::runtime_error In case the datatype cannot be created
+    @exception  std::runtime_error In case the character set cannot be set
+*/
+Datatype create_datatype(
+    size_t const nr_bytes)
+{
+    auto datatype = create_datatype(H5T_C_S1, nr_bytes);
+    auto status = ::H5Tset_cset(datatype.id(), H5T_CSET_UTF8);
+
+    if(status < 0) {
+        throw std::runtime_error("Cannot set character set");
+    }
+
+    return datatype;
+}
+
+
+/*!
+    @brief      Create a datatype for a sequence of elements
+    @param      nr_bytes Total size of the datatype
+    @exception  std::runtime_error In case the datatype cannot be created
+*/
+Datatype create_datatype(
+    hid_t const type_id,
+    size_t const nr_bytes)
+{
+    auto id = Identifier(::H5Tcopy(type_id), ::H5Tclose);
+
+    if(!id.is_valid()) {
+        throw std::runtime_error("Cannot copy type-id");
+    }
+
+    Datatype datatype(std::move(id));
+    datatype.set_size(nr_bytes);
+
+    return datatype;
+}
+
+
+Datatype memory_datatype(
+    Datatype const& file_datatype)
+{
+    assert(file_datatype.is_standard());
+
+    hid_t type_id = -1;
+
+    if(file_datatype == H5T_STD_I8LE) {
+        type_id = H5T_NATIVE_INT8;
+    }
+    else if(file_datatype == H5T_STD_I16LE) {
+        type_id = H5T_NATIVE_INT16;
+    }
+    else if(file_datatype == H5T_STD_I32LE) {
+        type_id = H5T_NATIVE_INT32;
+    }
+    else if(file_datatype == H5T_STD_I64LE) {
+        type_id = H5T_NATIVE_INT64;
+    }
+    else if(file_datatype == H5T_STD_U8LE) {
+        type_id = H5T_NATIVE_UINT8;
+    }
+    else if(file_datatype == H5T_STD_U16LE) {
+        type_id = H5T_NATIVE_UINT16;
+    }
+    else if(file_datatype == H5T_STD_U32LE) {
+        type_id = H5T_NATIVE_UINT32;
+    }
+    else if(file_datatype == H5T_STD_U64LE) {
+        type_id = H5T_NATIVE_UINT64;
+    }
+    else if(file_datatype == H5T_IEEE_F32LE) {
+        type_id = H5T_NATIVE_FLOAT;
+    }
+    else if(file_datatype == H5T_IEEE_F64LE) {
+        type_id = H5T_NATIVE_DOUBLE;
+    }
+
+    assert(type_id >= 0);
+
+    return Datatype(type_id);
 }
 
 } // namespace hdf5

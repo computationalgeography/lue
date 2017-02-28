@@ -1,6 +1,7 @@
 #pragma once
 #include "lue/hdf5/identifier.h"
-#include "lue/hdf5/type_traits.h"
+// #include "lue/hdf5/type_traits.h"
+#include <vector>
 
 
 namespace lue {
@@ -10,8 +11,6 @@ class Datatype
 {
 
 public:
-
-                   Datatype            (size_t const nr_bytes);
 
     template<
         typename T>
@@ -50,15 +49,15 @@ private:
 };
 
 
-template<
-    typename T>
-inline Datatype::Datatype(
-    T const&)
-
-    : _id(TypeTraits<T>::datatype, [](hid_t){})
-
-{
-}
+// template<
+//     typename T>
+// inline Datatype::Datatype(
+//     T const&)
+// 
+//     : _id(Traits<T>::type_id, [](hid_t){})
+// 
+// {
+// }
 
 
 bool               operator==          (Datatype const& lhs,
@@ -68,11 +67,25 @@ bool               operator!=          (Datatype const& lhs,
                                         Datatype const& rhs);
 
 
+std::vector<unsigned char> encode_datatype(
+                                        Datatype const& datatype);
+
+Datatype           decode_datatype     (std::vector<unsigned char> const&
+                                            buffer);
+
+
 std::string        native_datatype_as_string(
                                         Datatype const& datatype);
 
 std::string        standard_datatype_as_string(
                                         Datatype const& datatype);
+
+Datatype           create_datatype     (size_t const nr_bytes);
+
+Datatype           create_datatype     (hid_t const type_id,
+                                        size_t const nr_bytes);
+
+Datatype           memory_datatype     (Datatype const& file_datatype);
 
 } // namespace hdf5
 } // namespace lue

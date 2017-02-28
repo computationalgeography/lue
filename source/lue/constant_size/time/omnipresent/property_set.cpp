@@ -16,6 +16,21 @@ namespace omnipresent {
 // }
 
 
+/*!
+    @brief      Create instance based on a identifier
+    @param      id Identifier of a property set
+*/
+PropertySet::PropertySet(
+    hdf5::Identifier const& id)
+
+    : constant_size::PropertySet(id),
+      _domain(this->id()),
+      _ids(this->id(), "lue_ids", H5T_NATIVE_HSIZE)
+
+{
+}
+
+
 PropertySet::PropertySet(
     constant_size::PropertySet&& property_set)
 

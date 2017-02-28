@@ -1,4 +1,4 @@
-# add_subdirectory(different_shape)
+add_subdirectory(different_shape)
 add_subdirectory(same_shape)
 set(SOURCES
     # domain

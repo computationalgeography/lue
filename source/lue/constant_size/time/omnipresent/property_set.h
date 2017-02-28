@@ -22,6 +22,8 @@ public:
                    PropertySet         (constant_size::PropertySet&&
                                             property_set);
 
+                   PropertySet         (hdf5::Identifier const& id);
+
                    PropertySet         (PropertySet const& other)=delete;
 
                    PropertySet         (PropertySet&& other)=default;
