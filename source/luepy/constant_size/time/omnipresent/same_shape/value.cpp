@@ -39,9 +39,9 @@ void init_value_class(
         //     "group"_a, "type"_a,
         //     py::keep_alive<1, 2>())
 
-        .def("reserve_values",
-            &Value::reserve_values,
-            "reserve_values docstring...",
+        .def("reserve",
+            &Value::reserve,
+            "reserve docstring...",
             py::return_value_policy::reference_internal)
 
         // .def_property_readonly("values",

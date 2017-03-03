@@ -1,4 +1,5 @@
 #include "lue/domain.h"
+#include "lue/tag.h"
 // #include <cassert>
 // #include <stdexcept>
 // #include <utility>
@@ -16,7 +17,7 @@ namespace lue {
 Domain::Domain(
     hdf5::Identifier const& location)
 
-    : hdf5::Group(location, "lue_domain")
+    : hdf5::Group(location, domain_tag)
       // _time_domain{std::make_unique<TimeDomain>(id())},
       // _space_domain{std::make_unique<SpaceDomain>(id())},
       // _configuration{_time_domain->configuration(),
@@ -67,7 +68,7 @@ Domain create_domain(
     hdf5::Identifier const& location)
     // DomainConfiguration const& configuration)
 {
-    auto domain = hdf5::create_group(location, "lue_domain");
+    auto domain = hdf5::create_group(location, domain_tag);
 
     // if(domain_exists(location)) {
     //     throw std::runtime_error("Domain already exists");

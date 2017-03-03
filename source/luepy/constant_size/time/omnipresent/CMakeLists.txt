@@ -1,10 +1,12 @@
 add_subdirectory(different_shape)
 add_subdirectory(same_shape)
 set(SOURCES
-    # domain
+    domain
     property
     property_set
-    # space_box
+    space_box
+    space_box_domain
+    space_domain
     submodule
 )
 add_library(luepy_constant_size_time_omnipresent_objects OBJECT

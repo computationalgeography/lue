@@ -1,4 +1,5 @@
 #include "property_set.h"
+#include "lue/tag.h"
 
 
 namespace lue {
@@ -25,22 +26,22 @@ PropertySet::PropertySet(
 
     : constant_size::PropertySet(id),
       _domain(this->id()),
-      _ids(this->id(), "lue_ids", H5T_NATIVE_HSIZE)
+      _ids(this->id(), ids_tag, H5T_NATIVE_HSIZE)
 
 {
 }
 
 
-PropertySet::PropertySet(
-    constant_size::PropertySet&& property_set)
-
-    : constant_size::PropertySet(std::forward<constant_size::PropertySet>(
-        property_set)),
-      _domain(id()),
-      _ids(id(), "lue_ids", H5T_NATIVE_HSIZE)
-
-{
-}
+// PropertySet::PropertySet(
+//     constant_size::PropertySet&& property_set)
+// 
+//     : constant_size::PropertySet(std::forward<constant_size::PropertySet>(
+//         property_set)),
+//       _domain(id()),
+//       _ids(id(), ids_tag, H5T_NATIVE_HSIZE)
+// 
+// {
+// }
 
 
 same_shape::Value const& PropertySet::ids() const
@@ -55,10 +56,22 @@ same_shape::Value& PropertySet::ids()
 }
 
 
-same_shape::Value& PropertySet::reserve_items(
+Domain const& PropertySet::domain() const
+{
+    return _domain;
+}
+
+
+Domain& PropertySet::domain()
+{
+    return _domain;
+}
+
+
+same_shape::Value& PropertySet::reserve(
     hsize_t const nr_items)
 {
-    _ids.reserve_values(nr_items);
+    _ids.reserve(nr_items);
 
     return _ids;
 }
@@ -72,12 +85,17 @@ PropertySet create_property_set(
     auto& property_set = property_sets.add(name, std::move(
         lue::constant_size::create_property_set(property_sets, name)));
 
-    create_domain(property_set.id());
-    same_shape::create_value(property_set.id(), "lue_ids",
+    auto domain = create_domain(property_set.id());
+
+    same_shape::create_value(property_set.id(), ids_tag,
         H5T_STD_U64LE, H5T_NATIVE_HSIZE);
 
-    return PropertySet(std::move(property_set));
+    return PropertySet(property_set.id());
 
+
+
+
+    // return PropertySet(std::move(property_set));
 
     // PropertySet::Configuration configuration();
 

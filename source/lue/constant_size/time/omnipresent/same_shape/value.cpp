@@ -65,7 +65,7 @@ Value::Value(
 // }
 
 
-void Value::reserve_values(
+void Value::reserve(
     hsize_t const nr_items)
 {
     auto shape = this->shape();
@@ -76,18 +76,18 @@ void Value::reserve_values(
 
 
 Value create_value(
-    hdf5::Identifier const& location,
+    hdf5::Group const& group,
     std::string const& name,
     hdf5::Datatype const& file_datatype,
     hdf5::Datatype const& memory_datatype)
 {
-    return create_value(location, name, file_datatype, memory_datatype,
+    return create_value(group, name, file_datatype, memory_datatype,
         hdf5::Shape{}, hdf5::Shape{});
 }
 
 
 Value create_value(
-    hdf5::Identifier const& location,
+    hdf5::Group const& group,
     std::string const& name,
     hdf5::Datatype const& file_datatype,
     hdf5::Datatype const& memory_datatype,
@@ -122,7 +122,7 @@ Value create_value(
         chunk_dimension_sizes.size(), chunk_dimension_sizes.data());
     assert(status >= 0);
 
-    auto dataset = hdf5::create_dataset(location, name, file_datatype,
+    auto dataset = hdf5::create_dataset(group.id(), name, file_datatype,
         dataspace, creation_property_list_location);
 
     return Value(std::move(dataset), memory_datatype);

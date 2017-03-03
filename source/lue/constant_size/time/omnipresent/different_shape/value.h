@@ -53,7 +53,7 @@ public:
     hdf5::Datatype const&
                    memory_datatype     () const;
 
-    void           reserve_values      (hsize_t const nr_items,
+    void           reserve             (hsize_t const nr_items,
                                         hsize_t const* shapes);
 
     Array          operator[]          (size_t const idx) const;

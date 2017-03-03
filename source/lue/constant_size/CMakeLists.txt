@@ -1,7 +1,9 @@
 add_subdirectory(time)
 set(SOURCES
+    domain
     property
     property_set
+    space_domain
 )
 add_library(lue_constant_size_objects OBJECT
     ${SOURCES}

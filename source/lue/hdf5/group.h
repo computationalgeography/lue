@@ -26,15 +26,15 @@ public:
 
                    Group               (Identifier&& id);
 
-                   Group               (Group const& other);
+                   Group               (Group const& other)=default;
 
-                   Group               (Group&& other);
+                   Group               (Group&& other)=default;
 
     virtual        ~Group              ()=default;
 
-    Group&         operator=           (Group const& other)=delete;
+    Group&         operator=           (Group const& other)=default;
 
-    Group&         operator=           (Group&& other);
+    Group&         operator=           (Group&& other)=default;
 
     Identifier const& id               () const;
 
@@ -93,6 +93,9 @@ bool               operator!=          (Group const& lhs,
 //                                         std::string const& name);
 
 Group              create_group        (Identifier const& id,
+                                        std::string const& name);
+
+Group              create_group        (Group const& group,
                                         std::string const& name);
 
 std::vector<std::string>

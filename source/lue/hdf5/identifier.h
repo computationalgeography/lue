@@ -34,13 +34,13 @@ public:
 
                    Identifier          (Identifier const& other);
 
-                   Identifier          (Identifier&& other);
+                   Identifier          (Identifier&& other)=default;
 
     virtual        ~Identifier         ();
 
     Identifier&    operator=           (Identifier const& other);
 
-    Identifier&    operator=           (Identifier&& other);
+    Identifier&    operator=           (Identifier&& other)=default;
 
     bool           is_valid            () const;
 

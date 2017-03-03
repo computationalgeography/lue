@@ -42,7 +42,7 @@ public:
 
 private:
 
-    std::reference_wrapper<Identifier const> _id;
+    Identifier     _id;
 
 };
 
@@ -52,7 +52,7 @@ template<
 inline T Attributes::read(
     std::string const& name) const
 {
-    assert(_id.get().is_valid());
+    assert(_id.is_valid());
     assert(exists(name));
 
     auto const attribute = Attribute(_id, name);
@@ -92,7 +92,7 @@ inline void Attributes::write(
     std::string const& name,
     T const& value)
 {
-    assert(_id.get().is_valid());
+    assert(_id.is_valid());
 
     if(!exists(name)) {
         create_attribute(_id, name, value);

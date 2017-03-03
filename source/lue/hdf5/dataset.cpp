@@ -9,10 +9,10 @@ namespace lue {
 namespace hdf5 {
 
 bool dataset_exists(
-    Identifier const& location,
+    Identifier const& identifier,
     std::string const& name)
 {
-    return link_exists(location, name) && link_is_dataset(location, name);
+    return link_exists(identifier, name) && link_is_dataset(identifier, name);
 }
 
 
@@ -180,7 +180,7 @@ Dataset open_dataset(
 
 
 Dataset create_dataset(
-    Identifier const& location,
+    Identifier const& identifier,
     std::string const& name,
     Datatype const& datatype,
     Dataspace const& dataspace,
@@ -188,11 +188,11 @@ Dataset create_dataset(
 {
     assert(datatype.is_standard());
 
-    if(dataset_exists(location, name)) {
+    if(dataset_exists(identifier, name)) {
         throw std::runtime_error("Dataset " + name + " already exists");
     }
 
-    Identifier dataset_location(::H5Dcreate(location, name.c_str(),
+    Identifier dataset_location(::H5Dcreate(identifier, name.c_str(),
         datatype.id(), dataspace.id(), H5P_DEFAULT, creation_property_list,
         H5P_DEFAULT), ::H5Dclose);
 

@@ -22,10 +22,12 @@ void init_submodule(py::module& module);
 }  // namespace same_shape
 
 
-// void init_domain_class(py::module& module);
+void init_domain_class(py::module& module);
 void init_property_class(py::module& module);
 void init_property_set_class(py::module& module);
-// void init_space_box_class(py::module& module);
+void init_space_box_class(py::module& module);
+void init_space_box_domain_class(py::module& module);
+void init_space_domain_class(py::module& module);
 
 
 void init_submodule(
@@ -33,16 +35,18 @@ void init_submodule(
 {
     py::module submodule = module.def_submodule("omnipresent");
 
-    // init_domain_class(submodule);
+    init_domain_class(submodule);
+    init_space_domain_class(submodule);
     init_property_class(submodule);
-    init_property_set_class(submodule);
 
     different_shape::init_submodule(submodule);
     same_shape::init_submodule(submodule);
 
-    // // Space box inherits same_shape::Item, so init the SpaceBox class after
-    // // the same_shape sub module is initialized.
-    // init_space_box_class(submodule);
+    // Space box inherits same_shape::Value, so init the SpaceBox class after
+    // the same_shape sub module is initialized.
+    init_property_set_class(submodule);
+    init_space_box_class(submodule);
+    init_space_box_domain_class(submodule);
 }
 
 } // namespace omnipresent

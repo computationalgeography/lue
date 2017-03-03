@@ -118,7 +118,7 @@ void Value::reserve_value(
 }
 
 
-void Value::reserve_values(
+void Value::reserve(
     hsize_t const nr_items,
     hsize_t const* shapes)
 {

@@ -220,6 +220,8 @@ Group::Group(
     if(!_id.is_valid()) {
         throw std::runtime_error("Cannot open group " + name);
     }
+
+    assert(_id.is_valid());
 }
 
 
@@ -234,21 +236,23 @@ Group::Group(
       _attributes(_id)
 
 {
+    assert(_id.is_valid());
 }
 
 
-/*!
-    @brief      Construct a group based on an existing one
-    @param      other Group to copy
-*/
-Group::Group(
-    Group const& other)
-
-    : _id{other._id},
-      _attributes{other._attributes}
-
-{
-}
+// /*!
+//     @brief      Construct a group based on an existing one
+//     @param      other Group to copy
+// */
+// Group::Group(
+//     Group const& other)
+// 
+//     : _id{other._id},
+//       _attributes{other._attributes}
+// 
+// {
+//     assert(_id.is_valid());
+// }
 
 
 /*!
@@ -262,31 +266,7 @@ Group::Group(
       _attributes(_id)
 
 {
-}
-
-
-Group::Group(
-    Group&& other)
-
-    : _id{std::move(other._id)},
-      _attributes(_id)
-
-{
-    // Invalidate other.
-    std::move(other);
-}
-
-
-Group& Group::operator=(
-    Group&& other)
-{
-    _id = std::move(other._id);
-    _attributes = Attributes{_id};
-
-    // Invalidate other.
-    std::move(other);
-
-    return *this;
+    assert(_id.is_valid());
 }
 
 
@@ -452,6 +432,20 @@ Group create_group(
     }
 
     return Group(std::move(group_id));
+}
+
+
+/*!
+    @brief      Create a group within @a group
+    @param      .
+    @return     .
+    @exception  .
+*/
+Group create_group(
+    Group const& group,
+    std::string const& name)
+{
+    return create_group(group.id(), name);
 }
 
 

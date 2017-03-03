@@ -14,6 +14,15 @@ Property::Property(
 
 
 Property::Property(
+    hdf5::Identifier const& id)
+
+    : lue::Property(id)
+
+{
+}
+
+
+Property::Property(
     lue::Property const& property)
 
     : lue::Property(property)

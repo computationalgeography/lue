@@ -62,7 +62,7 @@ BOOST_AUTO_TEST_CASE(string_attribute)
 
     {
         auto attribute = lue::hdf5::create_attribute(file.id(),
-            attribute_name, attribute_value.size());
+            attribute_name, attribute_value);
 
         attribute.write<std::string>(attribute_value);
     }

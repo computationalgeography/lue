@@ -39,12 +39,6 @@ public:
 
     Property&      operator=           (Property&& other)=default;
 
-    // Item&          reserve_items       (hsize_t const nr_items);
-
-    // Item const&    values              () const;
-
-    // Item&          values              ();
-
     same_shape::Value const&
                    values              () const;
 
@@ -52,7 +46,7 @@ public:
                    values              ();
 
     same_shape::Value&
-                   reserve_values      (hsize_t const nr_items);
+                   reserve             (hsize_t const nr_items);
 
 private:
 

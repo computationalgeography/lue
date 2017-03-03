@@ -1,6 +1,7 @@
 #pragma once
 // #include "../value.h"
 #include "lue/array.h"
+#include "lue/hdf5/group.h"
 // #include "lue/chunks.h"
 // #include <memory>
 
@@ -15,6 +16,8 @@ namespace same_shape {
     The property value is represented by a dataset where the first
     dimension represents the items and the subsequent dimensions represent
     the value per item.
+
+    @sa create_value
 */
 class Value:
     // public omnipresent::Value,
@@ -47,19 +50,19 @@ public:
 
     Value&         operator=           (Value&& other)=default;
 
-    void           reserve_values      (hsize_t const nr_items);
+    void           reserve             (hsize_t const nr_items);
 
 private:
 
 };
 
 
-Value              create_value        (hdf5::Identifier const& location,
+Value              create_value        (hdf5::Group const& group,
                                         std::string const& name,
                                         hdf5::Datatype const& file_datatype,
                                         hdf5::Datatype const& memory_datatype);
 
-Value              create_value        (hdf5::Identifier const& location,
+Value              create_value        (hdf5::Group const& group,
                                         std::string const& name,
                                         hdf5::Datatype const& file_datatype,
                                         hdf5::Datatype const& memory_datatype,

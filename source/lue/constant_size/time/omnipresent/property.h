@@ -14,7 +14,9 @@ class Property:
 
 public:
 
-                   Property            (constant_size::Property&& property);
+                   // Property            (constant_size::Property&& property);
+
+                   Property            (hdf5::Identifier const& id);
 
                    Property            (lue::Property const& property);
 

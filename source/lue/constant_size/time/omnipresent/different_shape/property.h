@@ -40,7 +40,7 @@ public:
                    values              ();
 
     different_shape::Value&
-                   reserve_values      (hsize_t const nr_items,
+                   reserve             (hsize_t const nr_items,
                                         hsize_t const* shapes);
 
 private:

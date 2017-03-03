@@ -39,14 +39,14 @@ void init_property_class(
         //     // "type"_a,
         //     py::keep_alive<1, 2>())
 
-        // // .def("reserve_items",
+        // // .def("reserve",
         // //         &time::omnipresent::different_shape::
-        // //             Property::reserve_items,
+        // //             Property::reserve,
         // //     "reserve docstring...",
         // //     py::return_value_policy::reference_internal)
 
         .def(
-            "reserve_values",
+            "reserve",
             [](
                 Property& property,
                 py::array_t<hsize_t, py::array::c_style>& shapes) -> Value&
@@ -79,10 +79,10 @@ void init_property_class(
 
                 hsize_t const nr_items = array_info.shape[0];
 
-                return property.reserve_values(nr_items,
+                return property.reserve(nr_items,
                     static_cast<hsize_t*>(array_info.ptr));
             },
-            "reserve_values docstring...",
+            "reserve docstring...",
             py::return_value_policy::reference_internal)
 
         .def_property_readonly(

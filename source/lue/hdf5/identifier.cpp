@@ -32,24 +32,24 @@ Identifier::Identifier(
 }
 
 
-/*!
-    @brief      Move-construct from the @a other instance.
-
-    The @a other instance's state is invalid() after the move.
-*/
-Identifier::Identifier(
-    Identifier&& other)
-
-    : _id(std::move(other._id)),
-      _close(std::move(other._close))
-
-{
-    // Invalidate other.
-    assert(!other._id);
-    other._close = nullptr;
-
-    assert(!other.is_valid());
-}
+// /*!
+//     @brief      Move-construct from the @a other instance.
+// 
+//     The @a other instance's state is invalid() after the move.
+// */
+// Identifier::Identifier(
+//     Identifier&& other)
+// 
+//     : _id(std::move(other._id)),
+//       _close(std::move(other._close))
+// 
+// {
+//     // Invalidate other.
+//     assert(!other._id);
+//     other._close = nullptr;
+// 
+//     assert(!other.is_valid());
+// }
 
 
 /*!
@@ -74,26 +74,26 @@ Identifier& Identifier::operator=(
 }
 
 
-/*!
-    @brief      Move-assign from the @a other instance.
-
-    The @a other instance's state is invalid() after the move.
-*/
-Identifier& Identifier::operator=(
-    Identifier&& other)
-{
-    close_if_necessary();
-    _id = std::move(other._id);
-    _close = other._close;
-
-    // Invalidate other.
-    assert(!other._id);
-    other._close = nullptr;
-
-    assert(!other.is_valid());
-
-    return *this;
-}
+// /*!
+//     @brief      Move-assign from the @a other instance.
+// 
+//     The @a other instance's state is invalid() after the move.
+// */
+// Identifier& Identifier::operator=(
+//     Identifier&& other)
+// {
+//     close_if_necessary();
+//     _id = std::move(other._id);
+//     _close = other._close;
+// 
+//     // Invalidate other.
+//     assert(!other._id);
+//     other._close = nullptr;
+// 
+//     assert(!other.is_valid());
+// 
+//     return *this;
+// }
 
 
 void Identifier::close_if_necessary()
@@ -117,7 +117,6 @@ bool Identifier::is_valid() const
 
         // Invalid id. Close function won't be used.
         ::H5Iis_valid(*_id) <= 0 ||
-
 
         // Valid id and close function.
         _close != nullptr

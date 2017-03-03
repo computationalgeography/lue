@@ -13,6 +13,8 @@ public:
 
                    Property            (lue::Property&& property);
 
+                   Property            (hdf5::Identifier const& id);
+
                    Property            (lue::Property const& property);
 
                    Property            (Property const& other)=delete;

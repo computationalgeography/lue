@@ -43,9 +43,12 @@ class UseCaseTest(lue_test.TestCase):
 
 
     def test_1(self):
-
+        """
+        - No space domain
+        - Property with 2D values of different shape
+        """
         dataset_name = self.relative_pathname(os.path.dirname(__file__),
-            "my_dataset.lue")
+            "my_dataset_test_1.lue")
         phenomenon_name = "my_phenomenon"
         property_set_name = "my_property_set"
         property_name = "my_property"
@@ -58,7 +61,7 @@ class UseCaseTest(lue_test.TestCase):
         self.assertEqual(property_set.name, property_set_name)
 
         nr_items = 500
-        ids = property_set.reserve_items(nr_items)
+        ids = property_set.reserve(nr_items)
         ids_ = numpy.array([id for id in range(nr_items)], numpy.uint64)
         ids[:] = ids_
 
@@ -75,7 +78,7 @@ class UseCaseTest(lue_test.TestCase):
 
         shapes = (10 * (numpy.random.rand(nr_items, rank) + 1)).astype(
             numpy.uint64)
-        values = property.reserve_values(shapes)
+        values = property.reserve(shapes)
 
         values_ = []
 

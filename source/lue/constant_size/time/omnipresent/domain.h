@@ -1,5 +1,6 @@
 #pragma once
-#include "lue/domain.h"
+#include "lue/constant_size/domain.h"
+#include "lue/constant_size/time/omnipresent/space_domain.h"
 
 
 namespace lue {
@@ -8,14 +9,14 @@ namespace time {
 namespace omnipresent {
 
 class Domain:
-    public lue::Domain
+    public constant_size::Domain
 {
 
 public:
 
                    Domain         (hdf5::Identifier const& location);
 
-                   Domain         (lue::Domain&& domain);
+                   Domain         (constant_size::Domain&& domain);
 
                    Domain         (Domain const& other)=delete;
 
@@ -27,7 +28,13 @@ public:
 
     Domain&        operator=      (Domain&& other)=default;
 
+    SpaceDomain const& space      () const;
+
+    SpaceDomain&   space          ();
+
 private:
+
+    SpaceDomain    _space;
 
 };
 

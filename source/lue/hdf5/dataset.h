@@ -68,10 +68,10 @@ private:
 };
 
 
-Dataset            open_dataset        (hdf5::Identifier const& location,
+Dataset            open_dataset        (Identifier const& location,
                                         std::string const& name);
 
-Dataset            create_dataset      (hdf5::Identifier const& location,
+Dataset            create_dataset      (Identifier const& identifier,
                                         std::string const& name,
                                         Datatype const& datatype,
                                         Dataspace const& dataspace,

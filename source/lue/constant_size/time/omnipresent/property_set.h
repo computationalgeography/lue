@@ -19,8 +19,8 @@ public:
 //                    PropertySet         (Phenomenon& phenomenon,
 //                                         std::string const& name);
 
-                   PropertySet         (constant_size::PropertySet&&
-                                            property_set);
+                   // PropertySet         (constant_size::PropertySet&&
+                   //                          property_set);
 
                    PropertySet         (hdf5::Identifier const& id);
 
@@ -40,8 +40,12 @@ public:
     same_shape::Value&
                    ids                 ();
 
+    Domain const&  domain              () const;
+
+    Domain&        domain              ();
+
     same_shape::Value&
-                   reserve_items       (hsize_t const nr_items);
+                   reserve             (hsize_t const nr_items);
 
 private:
 

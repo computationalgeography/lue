@@ -87,10 +87,10 @@ Property::Property(
 // // }
 // // 
 // // 
-// // Item& Property::reserve_items(
+// // Item& Property::reserve(
 // //     hsize_t const nr_items)
 // // {
-// //     _values->reserve_items(nr_items);
+// //     _values->reserve(nr_items);
 // // 
 // //     return *_values;
 // // }
@@ -132,11 +132,11 @@ different_shape::Value& Property::values()
 }
 
 
-different_shape::Value& Property::reserve_values(
+different_shape::Value& Property::reserve(
     hsize_t const nr_items,
     hsize_t const* shapes)
 {
-    _values.reserve_values(nr_items, shapes);
+    _values.reserve(nr_items, shapes);
 
     return _values;
 }

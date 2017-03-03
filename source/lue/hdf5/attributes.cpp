@@ -11,7 +11,7 @@ namespace hdf5 {
 Attributes::Attributes(
     Identifier const& id)
 
-    : _id{std::cref(id)}
+    : _id{id}
 
 {
 }
@@ -20,14 +20,14 @@ Attributes::Attributes(
 bool Attributes::exists(
     std::string const& name) const
 {
-    return ::H5Aexists(_id.get(), name.c_str()) > 0;
+    return ::H5Aexists(_id, name.c_str()) > 0;
 }
 
 
 Attribute Attributes::attribute(
     std::string const& name) const
 {
-    assert(_id.get().is_valid());
+    assert(_id.is_valid());
     assert(exists(name));
 
     return Attribute(_id, name);

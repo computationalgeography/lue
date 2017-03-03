@@ -14,7 +14,7 @@ set(EXTENSION_SOURCES
     array
     conversion
     dataset
-    # domain
+    domain
     # item
     # numpy
     phenomenon
@@ -22,6 +22,7 @@ set(EXTENSION_SOURCES
     property_set
     universe
     python_extension
+    space_domain
 )
 add_library(luepy_objects OBJECT
     ${EXTENSION_SOURCES}

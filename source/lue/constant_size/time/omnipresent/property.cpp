@@ -6,10 +6,19 @@ namespace constant_size {
 namespace time {
 namespace omnipresent {
 
-Property::Property(
-    constant_size::Property&& property)
+// Property::Property(
+//     constant_size::Property&& property)
+// 
+//     : constant_size::Property(std::forward<constant_size::Property>(property))
+// 
+// {
+// }
 
-    : constant_size::Property(std::forward<constant_size::Property>(property))
+
+Property::Property(
+    hdf5::Identifier const& id)
+
+    : constant_size::Property(id)
 
 {
 }
@@ -31,9 +40,9 @@ Property create_property(
 {
     auto& properties = property_set.properties();
     auto& property = properties.add(name, std::move(
-        lue::constant_size::create_property(properties, name, configuration)));
+        constant_size::create_property(properties, name, configuration)));
 
-    return Property(std::move(property));
+    return Property(property.id());
 }
 
 }  // namespace omnipresent

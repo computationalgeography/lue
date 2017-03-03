@@ -40,20 +40,21 @@ void init_property_set_class(
         //     py::keep_alive<1, 2>())
 
         .def(
-            "reserve_items",
-            &PropertySet::reserve_items,
-            "reserve_items docstring...",
+            "reserve",
+            &PropertySet::reserve,
+            "reserve docstring...",
             py::return_value_policy::reference_internal)
-
-        // // .def_property_readonly("items",
-        // //         &time::omnipresent::PropertySet::items,
-        // //     "items docstring...",
-        // //     py::return_value_policy::reference_internal)
 
         .def_property_readonly(
             "ids",
             py::overload_cast<>(&PropertySet::ids),
             "ids docstring...",
+            py::return_value_policy::reference_internal)
+
+        .def_property_readonly(
+            "domain",
+            py::overload_cast<>(&PropertySet::domain),
+            "domain docstring...",
             py::return_value_policy::reference_internal)
 
         .def(
@@ -226,8 +227,8 @@ void init_property_set_class(
 //     // //         // &time::omnipresent::omnipresent::PropertySet::add_property,
 //     // //         "add_property docstring...",
 //     // //         py::return_value_policy::reference_internal)
-//     // //     .def("reserve_items",
-//     // //             &time::omnipresent::omnipresent::PropertySet::reserve_items,
+//     // //     .def("reserve",
+//     // //             &time::omnipresent::omnipresent::PropertySet::reserve,
 //     // //         "reserve docstring...",
 //     // //         py::return_value_policy::reference_internal)
 //     // //     .def_property_readonly("items",

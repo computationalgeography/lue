@@ -13,8 +13,10 @@ void init_submodule(py::module& module);
 }  // namespace time
 
 
+void init_domain_class(py::module& module);
 void init_property_class(py::module& module);
 void init_property_set_class(py::module& module);
+void init_space_domain_class(py::module& module);
 
 
 void init_submodule(
@@ -22,6 +24,8 @@ void init_submodule(
 {
     py::module submodule = module.def_submodule("constant_size");
 
+    init_domain_class(submodule);
+    init_space_domain_class(submodule);
     init_property_class(submodule);
     init_property_set_class(submodule);
 

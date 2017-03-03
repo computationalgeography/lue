@@ -85,10 +85,10 @@ Property::Property(
 // }
 // 
 // 
-// Item& Property::reserve_items(
+// Item& Property::reserve(
 //     hsize_t const nr_items)
 // {
-//     _values->reserve_items(nr_items);
+//     _values->reserve(nr_items);
 // 
 //     return *_values;
 // }
@@ -130,10 +130,10 @@ same_shape::Value& Property::values()
 }
 
 
-same_shape::Value& Property::reserve_values(
+same_shape::Value& Property::reserve(
     hsize_t const nr_items)
 {
-    _values.reserve_values(nr_items);
+    _values.reserve(nr_items);
 
     return _values;
 }

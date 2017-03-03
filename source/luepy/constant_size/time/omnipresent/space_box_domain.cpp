@@ -1,4 +1,4 @@
-#include "lue/constant_size/time/omnipresent/same_shape/property.h"
+#include "lue/constant_size/time/omnipresent/space_box_domain.h"
 #include "luepy/conversion.h"
 #include "luepy/numpy.h"
 #include <pybind11/pybind11.h>
@@ -15,42 +15,39 @@ namespace lue {
 namespace constant_size {
 namespace time {
 namespace omnipresent {
-namespace same_shape {
 
-void init_property_class(
+void init_space_box_domain_class(
     py::module& module)
 {
 
     init_numpy();
 
-    py::class_<Property, omnipresent::Property>(
+    py::class_<SpaceBoxDomain, SpaceDomain>(
         module,
-        "Property",
-        "Property docstring...")
+        "SpaceBoxDomain",
+        "SpaceBoxDomain docstring...")
 
         .def(
             "reserve",
-            &Property::reserve,
+            &SpaceBoxDomain::reserve,
             "reserve docstring...",
             py::return_value_policy::reference_internal)
 
         .def_property_readonly(
-            "values",
-            py::overload_cast<>(&Property::values),
-            "values docstring...",
+            "boxes",
+            py::overload_cast<>(&SpaceBoxDomain::boxes),
+            "boxes docstring...",
             py::return_value_policy::reference_internal)
 
         ;
 
 
     module.def(
-        "create_property",
+        "create_space_box_domain",
         [](
-            PropertySet& self,
-            std::string const& name,
+            PropertySet& property_set,
             py::handle const& numpy_type_id_object,
-            py::tuple const& shape,
-            py::tuple const& chunks) -> Property
+            size_t const rank) // -> SpaceBoxDomain
         {
 
             int numpy_type_id = NPY_NOTYPE;
@@ -63,42 +60,28 @@ void init_property_class(
                 Py_DECREF(dtype);
             }
 
-            hdf5::Shape value_shape(shape.size());
-
-            for(size_t i = 0; i < shape.size(); ++i) {
-                value_shape[i] = py::int_(shape[i]);
-            }
-
-            hdf5::Shape value_chunk(chunks.size());
-
-            for(size_t i = 0; i < chunks.size(); ++i) {
-                value_chunk[i] = py::int_(chunks[i]);
-            }
-
             hid_t file_type_id, memory_type_id;
             std::tie(file_type_id, memory_type_id) =
                 numpy_type_to_hdf5_types(numpy_type_id);
 
-            return create_property(self, name, hdf5::Datatype(file_type_id),
-                hdf5::Datatype(memory_type_id), value_shape, value_chunk);
+            return configure_space_box_domain(property_set,
+                hdf5::Datatype(file_type_id), hdf5::Datatype(memory_type_id),
+                rank);
         },
         R"(
-    Create new property
+    Create new space box domain
 
-    The property will be added to the property set
+    The domain will be added to the domain of the property set
 )",
         "property_set"_a,
-        "name"_a,
         "dtype"_a,
-        "value_shape"_a,
-        "chunk_shape"_a,
+        "rank"_a,
         py::return_value_policy::move)
 
         ;
 
 }
 
-}  // namespace same_shape
 }  // namespace omnipresent
 }  // namespace time
 }  // namespace constant_size

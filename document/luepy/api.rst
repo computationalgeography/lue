@@ -30,3 +30,15 @@ lue.constant_size.time.omnipresent
 ----------------------------------
 .. inheritance-diagram:: lue.constant_size.time.omnipresent
 .. automodule:: lue.constant_size.time.omnipresent
+
+
+lue.constant_size.time.omnipresent.different_shape
+--------------------------------------------------
+.. inheritance-diagram:: lue.constant_size.time.omnipresent.different_shape
+.. automodule:: lue.constant_size.time.omnipresent.different_shape
+
+
+lue.constant_size.time.omnipresent.same_shape
+---------------------------------------------
+.. inheritance-diagram:: lue.constant_size.time.omnipresent.same_shape
+.. automodule:: lue.constant_size.time.omnipresent.same_shape

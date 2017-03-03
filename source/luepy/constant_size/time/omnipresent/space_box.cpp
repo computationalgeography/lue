@@ -1,4 +1,4 @@
-#include "lue/cxx_api/constant_size/time/omnipresent/space_box.h"
+#include "lue/constant_size/time/omnipresent/space_box.h"
 #include <pybind11/pybind11.h>
 
 
@@ -7,7 +7,6 @@ using namespace pybind11::literals;
 
 
 namespace lue {
-namespace python {
 namespace constant_size {
 namespace time {
 namespace omnipresent {
@@ -15,24 +14,22 @@ namespace omnipresent {
 void init_space_box_class(
     py::module& module)
 {
-    py::class_<
-            lue::constant_size::time::omnipresent::SpaceBox,
-            lue::constant_size::time::omnipresent::same_shape::Item>(
-                module,
-                "SpaceBox",
-                "SpaceBox...")
+    py::class_<SpaceBox, same_shape::Value>(
+        module,
+        "SpaceBox",
+        "SpaceBox...")
 
-        .def(
-            "reserve_items",
-            &lue::constant_size::time::omnipresent::SpaceBox::reserve_items,
-            "reserve_items docstring...",
-            py::return_value_policy::reference_internal)
-    ;
+        // .def(
+        //     "reserve",
+        //     &lue::constant_size::time::omnipresent::SpaceBox::reserve,
+        //     "reserve docstring...",
+        //     py::return_value_policy::reference_internal)
+
+        ;
 
 }
 
 }  // namespace omnipresent
 }  // namespace time
 }  // namespace constant_size
-}  // namespace python
 }  // namespace lue
