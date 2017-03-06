@@ -34,6 +34,7 @@ class UseCaseTest(lue_test.TestCase):
         - Property with 2D values of the same shape
         """
 
+        # Create and write a dataset. ------------------------------------------
         dataset_name = self.relative_pathname(os.path.dirname(__file__),
             "test_values.lue")
         phenomenon_name = "my_phenomenon"

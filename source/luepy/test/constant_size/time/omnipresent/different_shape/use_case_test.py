@@ -23,7 +23,7 @@ class UseCaseTest(lue_test.TestCase):
         self.assertEqual(type(property), omnipresent.different_shape.Property)
         self.assertEqual(property.values.rank, rank)
         self.assertEqual(len(property.values), nr_items)
-        self.assertEqual(property.values.dtype, numpy.int32)
+        self.assertEqual(property.values.dtype, dtype)
 
         for i in range(nr_items):
 
@@ -39,6 +39,7 @@ class UseCaseTest(lue_test.TestCase):
         - Property with 2D values of different shape
         """
 
+        # Create and write a dataset. ------------------------------------------
         dataset_name = self.relative_pathname(os.path.dirname(__file__),
             "test_values.lue")
         phenomenon_name = "my_phenomenon"

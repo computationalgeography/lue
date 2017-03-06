@@ -1,11 +1,8 @@
+#include "luepy/constant_size/time/omnipresent/property.h"
 #include "lue/constant_size/time/omnipresent/property_set.h"
 #include "lue/constant_size/time/omnipresent/different_shape/property.h"
 #include "lue/constant_size/time/omnipresent/same_shape/property.h"
-// // #include "lue/cxx_api/constant_size.h"
-// // #include "lue/cxx_api/property_sets.h"
-// #include "lue/python_api/numpy.h"
 #include <pybind11/pybind11.h>
-// #include <numpy/arrayobject.h>
 
 
 namespace py = pybind11;
@@ -17,14 +14,10 @@ namespace constant_size {
 namespace time {
 namespace omnipresent {
 
-// DEFINE_INIT_NUMPY()
-
 
 void init_property_set_class(
     py::module& module)
 {
-
-    // init_numpy();
 
     py::class_<PropertySet, constant_size::PropertySet>(
         module,
@@ -63,39 +56,8 @@ void init_property_set_class(
                 PropertySet& self,
                 std::string const& name)
             {
-                auto& properties = self.properties();
-                auto& property = properties[name];
-                auto& configuration = property.configuration();
-
-
-                /// auto& property_set = self[name];
-                /// auto const& configuration = property_set.configuration();
-
-                // TODO
-                //     Support registering of casters by specialized
-                //     PropertySet classes.
-                py::object object;
-
-                switch(configuration.shape_per_item_type()) {
-                    case ShapePerItemType::same: {
-                        auto file_datatype =
-                            same_shape::Property::file_datatype(
-                                property.id());
-                        object = py::cast(new same_shape::Property(
-                            property, memory_datatype(file_datatype)));
-                        break;
-                    }
-                    case ShapePerItemType::different: {
-                        auto file_datatype =
-                            different_shape::Property::file_datatype(
-                                property.id());
-                        object = py::cast(new different_shape::Property(
-                            property, memory_datatype(file_datatype)));
-                        break;
-                    }
-                }
-
-                return object;
+                return cast_to_specialized_property(
+                    self.properties()[name]);
             },
     "Return property\n"
     "\n"
