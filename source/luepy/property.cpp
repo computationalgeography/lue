@@ -54,6 +54,21 @@ void init_property_class(
             },
             "name docstring...")
 
+        .def("discretize_space",
+            &Property::discretize_space,
+            "discretize_space docstring...",
+            "property"_a)
+
+        .def_property_readonly(
+            "time_is_discretized",
+            &Property::time_is_discretized,
+            "time_is_discretized docstring...")
+
+        .def_property_readonly(
+            "space_is_discretized",
+            &Property::space_is_discretized,
+            "space_is_discretized docstring...")
+
         ;
 
 }

@@ -32,7 +32,8 @@ namespace python {
 )                                                                          \
                                                                            \
         .def(                                                              \
-            "__contains__", [](                                            \
+            "__contains__",                                                \
+            [](                                                            \
                     Item##Collection const& collection,                    \
                     std::string const& name) {                             \
                 return collection.contains(name);                          \

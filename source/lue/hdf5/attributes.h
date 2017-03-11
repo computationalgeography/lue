@@ -8,6 +8,10 @@
 namespace lue {
 namespace hdf5 {
 
+/*!
+    @brief      This class represents the collection of attributes attached
+                to an object
+*/
 class Attributes
 {
 
@@ -42,6 +46,7 @@ public:
 
 private:
 
+    //! Identifier of object owning the attributes
     Identifier     _id;
 
 };

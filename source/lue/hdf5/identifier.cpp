@@ -9,7 +9,7 @@ namespace hdf5 {
 
 /*!
     @brief      Construct an instance based on an HDF5 identifier and a
-                close function.
+                close function
 */
 Identifier::Identifier(
     hid_t id,
@@ -22,40 +22,10 @@ Identifier::Identifier(
 }
 
 
-Identifier::Identifier(
-    Identifier const& other)
-
-    : _id(other._id),
-      _close(other._close)
-
-{
-}
-
-
-// /*!
-//     @brief      Move-construct from the @a other instance.
-// 
-//     The @a other instance's state is invalid() after the move.
-// */
-// Identifier::Identifier(
-//     Identifier&& other)
-// 
-//     : _id(std::move(other._id)),
-//       _close(std::move(other._close))
-// 
-// {
-//     // Invalidate other.
-//     assert(!other._id);
-//     other._close = nullptr;
-// 
-//     assert(!other.is_valid());
-// }
-
-
 /*!
-    @brief      Destruct the instance.
+    @brief      Destruct the instance
 
-    The close function is called on valid identifiers.
+    If necessary, the close function is called.
 */
 Identifier::~Identifier()
 {
@@ -63,57 +33,36 @@ Identifier::~Identifier()
 }
 
 
-Identifier& Identifier::operator=(
-    Identifier const& other)
-{
-    close_if_necessary();
-    _id = other._id;
-    _close = other._close;
+/*!
+    @brief      Close the identifier if necessary
 
-    return *this;
-}
-
-
-// /*!
-//     @brief      Move-assign from the @a other instance.
-// 
-//     The @a other instance's state is invalid() after the move.
-// */
-// Identifier& Identifier::operator=(
-//     Identifier&& other)
-// {
-//     close_if_necessary();
-//     _id = std::move(other._id);
-//     _close = other._close;
-// 
-//     // Invalidate other.
-//     assert(!other._id);
-//     other._close = nullptr;
-// 
-//     assert(!other.is_valid());
-// 
-//     return *this;
-// }
-
-
+    The close function will be called if:
+    - the instance is being destructed (this is assumed to be true)
+    - the identifier is valid
+    - we are the only ones using it
+*/
 void Identifier::close_if_necessary()
 {
     if(is_valid() && _id.unique()) {
         assert(_close != nullptr);
-        _close(*_id);
+        auto status = _close(*_id);
+        assert(status >= 0);
+
+        // Why is this not the case???
+        // assert(!is_valid());
     }
 }
 
 
 /*!
-    @brief      Return whether the identifier is valid.
+    @brief      Return whether the identifier is valid
 */
 bool Identifier::is_valid() const
 {
     // Invariants.
     assert(
         // 'Empty' state.
-        (!_id && _close == nullptr) ||
+        ((!_id) && _close == nullptr) ||
 
         // Invalid id. Close function won't be used.
         ::H5Iis_valid(*_id) <= 0 ||
@@ -135,13 +84,21 @@ Identifier::operator hid_t() const
 }
 
 
+/*!
+    @brief      Return the pathname to the object
+    @sa         name()
+
+    There may be more than one pathname to an object. This function returns
+    one of them. When possible, it is the one with which the object was
+    opened.
+*/
 std::string Identifier::pathname() const
 {
     static_assert(std::is_same<std::string::value_type, char>::value,
         "expect std::string::value_type to be char");
 
     assert(is_valid());
-    auto nr_bytes = ::H5Iget_name(*_id, nullptr, 0);
+    auto const nr_bytes = ::H5Iget_name(*_id, nullptr, 0);
 
     std::string result(nr_bytes, 'x');
 
@@ -157,6 +114,17 @@ std::string Identifier::pathname() const
 }
 
 
+/*!
+    @brief      Return the name of the object
+    @sa         pathname()
+
+    The name is the part of the pathname after the last forward slash. If
+    there is no forward slash in the pathname, name equals the pathname.
+
+    An object may have multiple names. This function returns
+    one of them. When possible, it is the one with which the object was
+    opened.
+*/
 std::string Identifier::name() const
 {
     auto const pathname = this->pathname();

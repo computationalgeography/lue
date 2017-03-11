@@ -1,6 +1,6 @@
-#include "lue/constant_size/time/omnipresent/property.h"
+#include "luepy/constant_size/time/omnipresent/property.h"
+#include "lue/constant_size/time/omnipresent/different_shape/property.h"
 #include "lue/constant_size/time/omnipresent/same_shape/property.h"
-#include <pybind11/pybind11.h>
 
 
 namespace py = pybind11;
@@ -12,6 +12,40 @@ namespace constant_size {
 namespace time {
 namespace omnipresent {
 
+py::object cast_to_specialized_property(
+    Property const& property)
+{
+
+    auto& configuration = property.configuration();
+
+    // TODO
+    //     Support registering of casters by specialized
+    //     PropertySet classes.
+    py::object object;
+
+    switch(configuration.shape_per_item_type()) {
+        case ShapePerItemType::same: {
+            auto file_datatype =
+                same_shape::Property::file_datatype(
+                    property.id());
+            object = py::cast(new same_shape::Property(
+                property, memory_datatype(file_datatype)));
+            break;
+        }
+        case ShapePerItemType::different: {
+            auto file_datatype =
+                different_shape::Property::file_datatype(
+                    property.id());
+            object = py::cast(new different_shape::Property(
+                property, memory_datatype(file_datatype)));
+            break;
+        }
+    }
+
+    return object;
+}
+
+
 void init_property_class(
     py::module& module)
 {
@@ -20,6 +54,16 @@ void init_property_class(
         module,
         "Property",
         "Property docstring...")
+
+        .def_property_readonly(
+            "space_discretization",
+            [](
+                Property& self)
+            {
+                return cast_to_specialized_property(
+                    self.space_discretization());
+            },
+            "space_discretization docstring...")
 
         ;
 

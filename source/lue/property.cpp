@@ -1,5 +1,6 @@
 #include "lue/property.h"
 #include "lue/enum_string_bimap.h"
+#include "lue/tag.h"
 
 
 namespace lue {
@@ -104,6 +105,44 @@ Property::Property(
 Property::Configuration const& Property::configuration() const
 {
     return _configuration;
+}
+
+
+void Property::discretize_time(
+    Property const& property)
+{
+    create_soft_link(property.id(), time_discretization_tag);
+}
+
+
+void Property::discretize_space(
+    Property const& property)
+{
+    create_soft_link(property.id(), space_discretization_tag);
+}
+
+
+bool Property::time_is_discretized () const
+{
+    return contains_soft_link(time_discretization_tag);
+}
+
+
+bool Property::space_is_discretized() const
+{
+    return contains_soft_link(space_discretization_tag);
+}
+
+
+Property Property::time_discretization () const
+{
+    return Property(id(), time_discretization_tag);
+}
+
+
+Property Property::space_discretization() const
+{
+    return Property(id(), space_discretization_tag);
 }
 
 
