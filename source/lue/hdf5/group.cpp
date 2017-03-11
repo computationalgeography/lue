@@ -1,6 +1,7 @@
 #include "lue/hdf5/group.h"
 #include "lue/hdf5/link.h"
 #include <cstring>
+#include <cstdlib>
 
 
 namespace lue {
