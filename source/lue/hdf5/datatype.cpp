@@ -165,7 +165,7 @@ std::string standard_datatype_as_string(
 Datatype::Datatype(
     hid_t const id)
 
-    : _id(id, [](hid_t){})
+    : _id(id, [](hid_t){ return 0; })
 
 {
 }

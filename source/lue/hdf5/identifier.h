@@ -9,7 +9,8 @@ namespace lue {
 namespace hdf5 {
 
 /*!
-    @brief      This class represents an HDF5 identifier.
+    @brief      This class represents an HDF5 identifier
+    @sa         https://support.hdfgroup.org/HDF5/doc/RM/RM_H5I.html
 
     Scoping the identifier in this class ensures that the identifier is
     closed upon exiting the scope.
@@ -25,20 +26,23 @@ public:
 
     /*!
         @brief      Type of function to call when the identifier must
-                    be closed.
+                    be closed
+
+        For example, when an HDF5 group is opened, you would pass H5Gclose
+        as the close function into the constructor.
     */
-    using Close = std::function<void(hid_t)>;
+    using Close = std::function<herr_t (hid_t)>;
 
                    Identifier          (hid_t id,
                                         Close const& close);
 
-                   Identifier          (Identifier const& other);
+                   Identifier          (Identifier const& other)=default;
 
                    Identifier          (Identifier&& other)=default;
 
     virtual        ~Identifier         ();
 
-    Identifier&    operator=           (Identifier const& other);
+    Identifier&    operator=           (Identifier const& other)=default;
 
     Identifier&    operator=           (Identifier&& other)=default;
 
@@ -52,10 +56,10 @@ public:
 
 private:
 
-    //! HDF5 identifier.
+    //! HDF5 identifier
     std::shared_ptr<hid_t> _id;
 
-    //! Function to call when the identifier must be closed.
+    //! Function to call when the identifier must be closed
     Close          _close;
 
     void           close_if_necessary  ();

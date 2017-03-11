@@ -12,7 +12,7 @@ bool               group_exists        (Identifier const& location,
 
 
 /*!
-    @brief      This class represents an HDF5 group.
+    @brief      This class represents an HDF5 group
 */
 class Group
 {
@@ -62,8 +62,10 @@ public:
 
 private:
 
+    //! Identifier
     Identifier     _id;
 
+    //! Attributes
     Attributes     _attributes;
 
 };
@@ -86,29 +88,11 @@ bool               operator==          (Group const& lhs,
 bool               operator!=          (Group const& lhs,
                                         Group const& rhs);
 
-// Group              open_group          (Group const& group,
-//                                         std::string const& name);
-// 
-// Group              open_group          (Identifier const& id,
-//                                         std::string const& name);
-
-Group              create_group        (Identifier const& id,
+Group              create_group        (Identifier const& location,
                                         std::string const& name);
 
 Group              create_group        (Group const& group,
                                         std::string const& name);
-
-std::vector<std::string>
-                   object_names        (Group const& group);
-
-// std::vector<std::string>
-//                    group_names         (Group const& group);
-
-std::vector<std::string>
-                   dataset_names       (Group const& group);
-
-// Dataset            open_dataset        (Group const& group,
-//                                         std::string const& name);
 
 } // namespace hdf5
 } // namespace lue

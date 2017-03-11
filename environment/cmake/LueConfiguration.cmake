@@ -4,7 +4,7 @@ option(LUE_BUILD_ALL "Build everything, except for documentation and tests"
 option(LUE_WITH_ALL "Support all features, except for MPI" FALSE)
 
 
-option(LUE_BUILD_CXX_API "Build CXX-api" FALSE)
+option(LUE_BUILD_CXX_API "Build CXX-api" TRUE)
 option(LUE_BUILD_HL_API "Build HL-api (implies LUE_BUILD_CXX_API)" FALSE)
 option(LUE_BUILD_PYTHON_API "Build CXX-api (implies LUE_BUILD_CXX_API)" FALSE)
 option(LUE_BUILD_UTILITIES
