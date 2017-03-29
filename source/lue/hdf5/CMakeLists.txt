@@ -1,4 +1,12 @@
 add_test_conditionally(test)
+
+// TODO Determine how to test whether hsize_t equals some standard native
+//      type. Maybe using some C++ snippet with is_same static assert.
+
+configure_file(
+    configure.h.in
+    configure.h
+)
 set(SOURCES
     attribute
     attributes
