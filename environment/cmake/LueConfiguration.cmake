@@ -47,6 +47,10 @@ endif()
 
 # Handle external dependencies.
 if(LUE_BUILD_CXX_API)
+    set(DEVBASE_BOOST_REQUIRED TRUE)
+    list(APPEND DEVBASE_REQUIRED_BOOST_COMPONENTS
+        filesystem system)
+
     set(DEVBASE_HDF5_REQUIRED TRUE)
     list(APPEND DEVBASE_REQUIRED_HDF5_COMPONENTS
         C)  # HL
@@ -58,9 +62,6 @@ endif()
 
 
 if(LUE_BUILD_UTILITIES)
-    set(DEVBASE_BOOST_REQUIRED TRUE)
-    list(APPEND DEVBASE_REQUIRED_BOOST_COMPONENTS
-        filesystem system)
 
     set(DEVBASE_DOCOPT_REQUIRED TRUE)
     # set(DEVBASE_GDAL_USEFUL TRUE)

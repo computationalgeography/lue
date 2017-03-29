@@ -45,7 +45,6 @@ function build_peacock()
     fi
 
     if [[ $hostname == "triklav.soliscom.uu.nl" ]]; then
-        skip_build_boost=1
         skip_build_gdal=1
     fi
 
@@ -77,7 +76,7 @@ function build_peacock()
 
     # pybind11
     options+=("-Dbuild_pybind11=true")
-    options+=("-Dpybind11_version=2.0.1")
+    options+=("-Dpybind11_version=2.1.0")
 
 
     # Docopt.
