@@ -118,12 +118,10 @@ def builds():
 
     # These collections are lookup tables. -------------------------------------
     packages = [
-        Package("clang-3.9", [
-            "llvm-toolchain-trusty-3.9",
-        ]),
-        Package("clang-4.0", [
-            "llvm-toolchain-trusty-4.0",
-        ]),
+        Package("clang-3.9", ["llvm-toolchain-trusty-3.9"]),
+        Package("clang++-3.9", ["llvm-toolchain-trusty-3.9"]),
+        Package("clang-4.0", ["llvm-toolchain-trusty-4.0"]),
+        Package("clang++-4.0", ["llvm-toolchain-trusty-4.0"]),
         Package("gcc-4.9", ["ubuntu-toolchain-r-test"]),
         Package("g++-4.9", ["ubuntu-toolchain-r-test"]),
         Package("gcc-6", ["ubuntu-toolchain-r-test"]),
@@ -134,8 +132,8 @@ def builds():
     packages = { package.name: package for package in packages }
 
     compilers = [
-        "clang-3.9",
-        "clang-4.0",
+        "clang-3.9", "clang++-3.9",
+        "clang-4.0", "clang++-4.0",
         "gcc-4.9", "g++-4.9",
         "gcc-6", "g++-6",
     ]
@@ -161,8 +159,8 @@ def builds():
                 ("gcc-6", "g++-6"),
             ],
         "clang": [
-                ("clang-3.9", "clang-3.9"),
-                ("clang-4.0", "clang-4.0"),
+                ("clang-3.9", "clang++-3.9"),
+                ("clang-4.0", "clang++-4.0"),
             ],
     }
 
