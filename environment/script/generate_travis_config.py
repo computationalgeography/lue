@@ -145,6 +145,7 @@ def builds():
         packages[compiler_name]) for compiler_name in compilers }
 
     common_packages = [
+        packages["libboost-all-dev"],
         packages["libhdf5-dev"],
     ]
 
@@ -197,7 +198,6 @@ def builds():
         #         "LUE_BUILD_UTILITIES:BOOL": "TRUE",
         #     },
         #     [
-        #         packages["libboost1.55-all-dev"],
         #     ]
         # ),
         # BuildConfiguration(
@@ -205,7 +205,6 @@ def builds():
         #         "LUE_BUILD_TEST:BOOL": "TRUE",
         #     },
         #     [
-        #         packages["libboost1.55-all-dev"],
         #     ]
         # ),
         # BuildConfiguration(
@@ -213,7 +212,6 @@ def builds():
         #         "LUE_BUILD_TEST:BOOL": "TRUE",
         #     },
         #     [
-        #         packages["libboost1.55-all-dev"],
         #     ]
         # ),
         # BuildConfiguration(
@@ -222,7 +220,6 @@ def builds():
         #         "LUE_BUILD_TEST:BOOL": "TRUE",
         #     },
         #     [
-        #         packages["libboost1.55-all-dev"],
         #     ]
         # ),
         # BuildConfiguration(
@@ -231,7 +228,6 @@ def builds():
         #         "LUE_BUILD_TEST:BOOL": "TRUE",
         #     },
         #     [
-        #         packages["libboost1.55-all-dev"],
         #     ]
         # ),
         # BuildConfiguration(
@@ -240,7 +236,6 @@ def builds():
         #         "LUE_BUILD_TEST:BOOL": "TRUE",
         #     },
         #     [
-        #         packages["libboost1.55-all-dev"],
         #     ]
         # ),
     ]
