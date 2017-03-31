@@ -73,7 +73,7 @@ Identifier const& Dataspace::id() const
 
 int Dataspace::nr_dimensions() const
 {
-    auto const nr_dimensions{::H5Sget_simple_extent_ndims(_id)};
+    auto const nr_dimensions = ::H5Sget_simple_extent_ndims(_id);
 
     if(nr_dimensions < 0) {
         throw std::runtime_error(
@@ -86,7 +86,7 @@ int Dataspace::nr_dimensions() const
 
 Shape Dataspace::dimension_extents() const
 {
-    auto const nr_dimensions{this->nr_dimensions()};
+    auto const nr_dimensions = this->nr_dimensions();
     auto extents = std::make_unique<hsize_t[]>(nr_dimensions);
     hsize_t* max_extents = nullptr;
 
