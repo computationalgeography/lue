@@ -33,9 +33,9 @@ NATIVE_DATATYPE_TRAITS(uint8_t, H5T_NATIVE_UINT8)
 NATIVE_DATATYPE_TRAITS(uint16_t, H5T_NATIVE_UINT16)
 NATIVE_DATATYPE_TRAITS(uint32_t, H5T_NATIVE_UINT32)
 NATIVE_DATATYPE_TRAITS(uint64_t, H5T_NATIVE_UINT64)
-#ifndef LUE_HSIZE_T_EQUALS_STANDARD_NATIVE_TYPE
-// In case hsize_t is typedefed to be on of the standard native types,
-// takes precedence.
+#ifndef LUE_HSIZE_T_DEFINED_AS_UINT64_T
+// In case hsize_t is defined as uint64_t, this results in a redefinition.
+// This is the case on macOS.
 NATIVE_DATATYPE_TRAITS(hsize_t, H5T_NATIVE_HSIZE)
 #endif
 NATIVE_DATATYPE_TRAITS(float, H5T_NATIVE_FLOAT)

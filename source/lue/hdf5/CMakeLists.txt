@@ -1,7 +1,19 @@
 add_test_conditionally(test)
 
-# TODO Determine how to test whether hsize_t equals some standard native
-#      type. Maybe using some C++ snippet with is_same static assert.
+include(CheckCXXSourceCompiles)
+set(CMAKE_REQUIRED_FLAGS -std=c++14)
+set(CMAKE_REQUIRED_INCLUDES ${HDF5_INCLUDE_DIRS})
+check_cxx_source_compiles("
+    #include <hdf5.h>
+    #include <type_traits>
+
+    int main() {
+        static_assert(std::is_same<hsize_t, uint64_t>::value,
+            \"hsize_t not equal to uint64_t\");
+        return 0;
+    }"
+    LUE_HSIZE_T_DEFINED_AS_UINT64_T
+)
 
 configure_file(
     configure.h.in

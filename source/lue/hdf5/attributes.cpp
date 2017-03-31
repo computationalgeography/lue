@@ -17,6 +17,10 @@ Attributes::Attributes(
 }
 
 
+/*!
+    @brief      Return whether an attribute named @a name is present
+                in the layered object
+*/
 bool Attributes::exists(
     std::string const& name) const
 {
@@ -24,6 +28,9 @@ bool Attributes::exists(
 }
 
 
+/*!
+    @brief      Return the attribute named @a name
+*/
 Attribute Attributes::attribute(
     std::string const& name) const
 {
@@ -34,6 +41,9 @@ Attribute Attributes::attribute(
 }
 
 
+/*!
+    @brief      Return the datatype of the attribute named @a name
+*/
 Datatype Attributes::datatype(
     std::string const& name) const
 {

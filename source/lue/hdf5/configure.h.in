@@ -1,4 +1,4 @@
 #pragma once
 
 
-#cmakedefine LUE_HSIZE_T_EQUALS_STANDARD_NATIVE_TYPE
+#cmakedefine LUE_HSIZE_T_DEFINED_AS_UINT64_T

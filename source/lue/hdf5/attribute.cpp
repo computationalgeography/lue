@@ -54,12 +54,18 @@ Attribute::Attribute(
 }
 
 
+/*!
+    @brief      Return the id of the object containing the attribute
+*/
 Identifier const& Attribute::id() const
 {
     return _id;
 }
 
 
+/*!
+    @brief      Return the datatype of the attribute
+*/
 Datatype const& Attribute::datatype() const
 {
     return _datatype;
