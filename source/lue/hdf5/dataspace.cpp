@@ -90,8 +90,8 @@ Shape Dataspace::dimension_extents() const
     auto extents = std::make_unique<hsize_t[]>(nr_dimensions);
     hsize_t* max_extents = nullptr;
 
-    auto const nr_dimensions2{::H5Sget_simple_extent_dims(_id,
-        extents.get(), max_extents)};
+    auto const nr_dimensions2 = ::H5Sget_simple_extent_dims(_id,
+        extents.get(), max_extents);
 
     if(nr_dimensions2 < 0) {
         throw std::runtime_error("Cannot retrieve dataspace extents");
