@@ -118,28 +118,26 @@ def builds():
 
     # These collections are lookup tables. -------------------------------------
     packages = [
-        Package("libboost-all-dev", []),
-        # Package("clang-3.5", [
-        #         "llvm-toolchain-precise-3.5",
-        #         "ubuntu-toolchain-r-test",
-        #     ]),
-        # Package("clang-3.8", [
-        #         "llvm-toolchain-precise-3.8",
-        #         "ubuntu-toolchain-r-test",
-        #     ]),
+        Package("clang-3.9", [
+            "llvm-toolchain-trusty-3.9",
+        ]),
+        Package("clang-4.0", [
+            "llvm-toolchain-trusty-4.0",
+        ]),
         Package("gcc-4.9", ["ubuntu-toolchain-r-test"]),
         Package("g++-4.9", ["ubuntu-toolchain-r-test"]),
-        # Package("gcc-6", ["ubuntu-toolchain-r-test"]),
-        # Package("g++-6", ["ubuntu-toolchain-r-test"]),
+        Package("gcc-6", ["ubuntu-toolchain-r-test"]),
+        Package("g++-6", ["ubuntu-toolchain-r-test"]),
+        Package("libboost-all-dev", []),
         Package("libhdf5-dev", []),
     ]
     packages = { package.name: package for package in packages }
 
     compilers = [
-        # "clang-3.5",
-        # "clang-3.8",
+        "clang-3.9",
+        "clang-4.0",
         "gcc-4.9", "g++-4.9",
-        # "gcc-6", "g++-6",
+        "gcc-6", "g++-6",
     ]
     compilers = { compiler_name: Compiler(compiler_name,
         packages[compiler_name]) for compiler_name in compilers }
@@ -160,12 +158,12 @@ def builds():
     compiler_families = {
         "gcc": [
                 ("gcc-4.9", "g++-4.9"),
-                # ("gcc-6", "g++-6"),
+                ("gcc-6", "g++-6"),
             ],
-        # "clang": [
-        #         ("clang-3.5", "clang-3.5"),
-        #         # ("clang-3.8", "clang-3.8"),
-        #     ],
+        "clang": [
+                ("clang-3.9", "clang-3.9"),
+                ("clang-4.0", "clang-4.0"),
+            ],
     }
 
     common_environment = {
@@ -173,12 +171,24 @@ def builds():
     }
 
     build_configurations = [
+
+        # Default build (C++ library)
         BuildConfiguration(
             {
             },
             [
             ]
         ),
+
+        # Default build, including tests
+        BuildConfiguration(
+            {
+                "LUE_BUILD_TEST:BOOL": "TRUE",
+            },
+            [
+            ]
+        ),
+
         # BuildConfiguration(
         #     {
         #         "LUE_BUILD_CXX_API:BOOL": "TRUE",
@@ -196,13 +206,6 @@ def builds():
         # BuildConfiguration(
         #     {
         #         "LUE_BUILD_UTILITIES:BOOL": "TRUE",
-        #     },
-        #     [
-        #     ]
-        # ),
-        # BuildConfiguration(
-        #     {
-        #         "LUE_BUILD_TEST:BOOL": "TRUE",
         #     },
         #     [
         #     ]
