@@ -21,12 +21,14 @@ Options:
 Package = namedtuple("Package", (
         "name",
         "apt_sources",
+        "additional_packages",
     ))
 
 
 Compiler = namedtuple("Compiler", (
         "name",
         "package",
+        "flags",
     ))
 
 Compilers = namedtuple("Compilers", (
@@ -60,6 +62,7 @@ class Build(namedtuple("Build", (
         for package in self.packages:
             apt_sources += package.apt_sources
             package_names.append(package.name)
+            package_names += package.additional_packages
 
         apt_sources = list(set(apt_sources))
         package_names = list(set(package_names))
@@ -67,7 +70,8 @@ class Build(namedtuple("Build", (
         environment = [
             "TRAVIS_C_COMPILER={}".format(self.compilers.c_compiler.name),
             "TRAVIS_CXX_COMPILER={}".format(self.compilers.cxx_compiler.name),
-            "TRAVIS_LUE_CMAKE_ARGUMENTS=\"-DCMAKE_BUILD_TYPE={} -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER {}\"".format(self.build_type, " ".join(["-D{}={}".format(key, self.environment[key]) for key in self.environment]))
+            "TRAVIS_CXX_FLAGS=\"{}\"".format(self.compilers.cxx_compiler.flags),
+            "TRAVIS_LUE_CMAKE_ARGUMENTS=\"-DCMAKE_BUILD_TYPE={} -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS {}\"".format(self.build_type, " ".join(["-D{}={}".format(key, self.environment[key]) for key in self.environment]))
         ]
 
         return """\
@@ -118,27 +122,45 @@ def builds():
 
     # These collections are lookup tables. -------------------------------------
     packages = [
-        Package("clang-3.9", ["llvm-toolchain-trusty-3.9"]),
-        Package("clang++-3.9", ["llvm-toolchain-trusty-3.9"]),
-        Package("clang-4.0", ["llvm-toolchain-trusty-4.0"]),
-        Package("clang++-4.0", ["llvm-toolchain-trusty-4.0"]),
-        Package("gcc-4.9", ["ubuntu-toolchain-r-test"]),
-        Package("g++-4.9", ["ubuntu-toolchain-r-test"]),
-        Package("gcc-6", ["ubuntu-toolchain-r-test"]),
-        Package("g++-6", ["ubuntu-toolchain-r-test"]),
-        Package("libboost-all-dev", []),
-        Package("libhdf5-dev", []),
+        Package("clang-3.9", ["llvm-toolchain-trusty-3.9"], []),
+        Package("clang++-3.9", [
+            "llvm-toolchain-trusty-3.9",
+            "ubuntu-toolchain-r-test"
+        ], ["libc++-dev"]),
+        Package("clang-4.0", ["llvm-toolchain-trusty-4.0"], []),
+        Package("clang++-4.0", [
+            "llvm-toolchain-trusty-4.0",
+            "ubuntu-toolchain-r-test"
+        ], ["libc++-dev"]),
+        Package("gcc-4.9", ["ubuntu-toolchain-r-test"], []),
+        Package("g++-4.9", ["ubuntu-toolchain-r-test"], []),
+        Package("gcc-6", ["ubuntu-toolchain-r-test"], []),
+        Package("g++-6", ["ubuntu-toolchain-r-test"], []),
+        Package("libboost-all-dev", [], []),
+        Package("libhdf5-dev", [], []),
     ]
     packages = { package.name: package for package in packages }
 
+
+    flags = {
+        "clang++-3.9": "-stdlib=libc++"
+    }
+
+
     compilers = [
-        "clang-3.9", "clang++-3.9",
-        "clang-4.0", "clang++-4.0",
-        "gcc-4.9", "g++-4.9",
-        "gcc-6", "g++-6",
+        "clang-3.9",
+        "clang++-3.9",
+        "clang-4.0",
+        "clang++-4.0",
+        "gcc-4.9",
+        "g++-4.9",
+        "gcc-6",
+        "g++-6",
     ]
     compilers = { compiler_name: Compiler(compiler_name,
-        packages[compiler_name]) for compiler_name in compilers }
+        packages[compiler_name], flags.get(compiler_name, "")) \
+            for compiler_name in compilers }
+
 
     common_packages = [
         packages["libboost-all-dev"],
@@ -152,6 +174,7 @@ def builds():
         "Release"
     ]
 
+
     # Tuples with names of C compiler and C++ compiler.
     compiler_families = {
         "gcc": [
@@ -164,9 +187,11 @@ def builds():
             ],
     }
 
+
     common_environment = {
         # "TRAVIS_PYTHON_VERSION": "2.7.3",
     }
+
 
     build_configurations = [
 
@@ -256,7 +281,9 @@ def builds():
                                     compilers[c_compiler_name],
                                     compilers[cxx_compiler_name]),
                                 build_type,
-                                common_packages + build_configuration.packages,
+                                common_packages +
+                                    build_configuration.packages +
+                                    [compilers[cxx_compiler_name].package],
                                 merge_dicts(common_environment,
                                     build_configuration.environment)
                             )

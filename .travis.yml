@@ -7,6 +7,36 @@ language: cpp
 
 matrix:
     include:
+        - compiler: clang
+          python: "2.7"
+          addons:
+              apt:
+                  sources:
+                      - llvm-toolchain-trusty-3.9
+                      - ubuntu-toolchain-r-test
+                  packages:
+                      - libboost-all-dev
+                      - libc++-dev
+                      - clang-3.9
+                      - clang++-3.9
+                      - libhdf5-dev
+          env:
+              - TRAVIS_C_COMPILER=clang-3.9 TRAVIS_CXX_COMPILER=clang++-3.9 TRAVIS_CXX_FLAGS="-stdlib=libc++" TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS "
+        - compiler: clang
+          python: "2.7"
+          addons:
+              apt:
+                  sources:
+                      - ubuntu-toolchain-r-test
+                      - llvm-toolchain-trusty-4.0
+                  packages:
+                      - libboost-all-dev
+                      - libc++-dev
+                      - clang-4.0
+                      - libhdf5-dev
+                      - clang++-4.0
+          env:
+              - TRAVIS_C_COMPILER=clang-4.0 TRAVIS_CXX_COMPILER=clang++-4.0 TRAVIS_CXX_FLAGS="" TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS "
         - compiler: gcc
           python: "2.7"
           addons:
@@ -15,11 +45,11 @@ matrix:
                       - ubuntu-toolchain-r-test
                   packages:
                       - libboost-all-dev
-                      - g++-4.9
                       - gcc-4.9
                       - libhdf5-dev
+                      - g++-4.9
           env:
-              - TRAVIS_C_COMPILER=gcc-4.9 TRAVIS_CXX_COMPILER=g++-4.9 TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER "
+              - TRAVIS_C_COMPILER=gcc-4.9 TRAVIS_CXX_COMPILER=g++-4.9 TRAVIS_CXX_FLAGS="" TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS "
         - compiler: gcc
           python: "2.7"
           addons:
@@ -28,37 +58,41 @@ matrix:
                       - ubuntu-toolchain-r-test
                   packages:
                       - gcc-6
-                      - libhdf5-dev
-                      - g++-6
                       - libboost-all-dev
+                      - g++-6
+                      - libhdf5-dev
           env:
-              - TRAVIS_C_COMPILER=gcc-6 TRAVIS_CXX_COMPILER=g++-6 TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER "
+              - TRAVIS_C_COMPILER=gcc-6 TRAVIS_CXX_COMPILER=g++-6 TRAVIS_CXX_FLAGS="" TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS "
         - compiler: clang
           python: "2.7"
           addons:
               apt:
                   sources:
                       - llvm-toolchain-trusty-3.9
+                      - ubuntu-toolchain-r-test
                   packages:
                       - libboost-all-dev
+                      - libc++-dev
                       - clang-3.9
                       - clang++-3.9
                       - libhdf5-dev
           env:
-              - TRAVIS_C_COMPILER=clang-3.9 TRAVIS_CXX_COMPILER=clang++-3.9 TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER "
+              - TRAVIS_C_COMPILER=clang-3.9 TRAVIS_CXX_COMPILER=clang++-3.9 TRAVIS_CXX_FLAGS="-stdlib=libc++" TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS -DLUE_BUILD_TEST:BOOL=TRUE"
         - compiler: clang
           python: "2.7"
           addons:
               apt:
                   sources:
+                      - ubuntu-toolchain-r-test
                       - llvm-toolchain-trusty-4.0
                   packages:
                       - libboost-all-dev
-                      - clang++-4.0
+                      - libc++-dev
                       - clang-4.0
                       - libhdf5-dev
+                      - clang++-4.0
           env:
-              - TRAVIS_C_COMPILER=clang-4.0 TRAVIS_CXX_COMPILER=clang++-4.0 TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER "
+              - TRAVIS_C_COMPILER=clang-4.0 TRAVIS_CXX_COMPILER=clang++-4.0 TRAVIS_CXX_FLAGS="" TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS -DLUE_BUILD_TEST:BOOL=TRUE"
         - compiler: gcc
           python: "2.7"
           addons:
@@ -67,11 +101,11 @@ matrix:
                       - ubuntu-toolchain-r-test
                   packages:
                       - libboost-all-dev
-                      - g++-4.9
                       - gcc-4.9
                       - libhdf5-dev
+                      - g++-4.9
           env:
-              - TRAVIS_C_COMPILER=gcc-4.9 TRAVIS_CXX_COMPILER=g++-4.9 TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DLUE_BUILD_TEST:BOOL=TRUE"
+              - TRAVIS_C_COMPILER=gcc-4.9 TRAVIS_CXX_COMPILER=g++-4.9 TRAVIS_CXX_FLAGS="" TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS -DLUE_BUILD_TEST:BOOL=TRUE"
         - compiler: gcc
           python: "2.7"
           addons:
@@ -80,37 +114,11 @@ matrix:
                       - ubuntu-toolchain-r-test
                   packages:
                       - gcc-6
-                      - libhdf5-dev
+                      - libboost-all-dev
                       - g++-6
-                      - libboost-all-dev
-          env:
-              - TRAVIS_C_COMPILER=gcc-6 TRAVIS_CXX_COMPILER=g++-6 TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DLUE_BUILD_TEST:BOOL=TRUE"
-        - compiler: clang
-          python: "2.7"
-          addons:
-              apt:
-                  sources:
-                      - llvm-toolchain-trusty-3.9
-                  packages:
-                      - libboost-all-dev
-                      - clang-3.9
-                      - clang++-3.9
                       - libhdf5-dev
           env:
-              - TRAVIS_C_COMPILER=clang-3.9 TRAVIS_CXX_COMPILER=clang++-3.9 TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DLUE_BUILD_TEST:BOOL=TRUE"
-        - compiler: clang
-          python: "2.7"
-          addons:
-              apt:
-                  sources:
-                      - llvm-toolchain-trusty-4.0
-                  packages:
-                      - libboost-all-dev
-                      - clang++-4.0
-                      - clang-4.0
-                      - libhdf5-dev
-          env:
-              - TRAVIS_C_COMPILER=clang-4.0 TRAVIS_CXX_COMPILER=clang++-4.0 TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DLUE_BUILD_TEST:BOOL=TRUE"
+              - TRAVIS_C_COMPILER=gcc-6 TRAVIS_CXX_COMPILER=g++-6 TRAVIS_CXX_FLAGS="" TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS -DLUE_BUILD_TEST:BOOL=TRUE"
 
 
 # Install/update dependencies required by the installation of the
