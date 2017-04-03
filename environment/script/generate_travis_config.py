@@ -44,6 +44,7 @@ BuildConfiguration = namedtuple("BuildConfiguration", (
 
 class Build(namedtuple("Build", (
             "compilers",
+            "python_version",
             "build_type",
             "packages",
             "environment",
@@ -76,7 +77,7 @@ class Build(namedtuple("Build", (
 
         return """\
 - compiler: {compiler}
-  python: "2.7"
+  python: "{python_version}"
   addons:
       apt:
           sources:
@@ -87,6 +88,7 @@ class Build(namedtuple("Build", (
       - {environment}
 """.format(
             compiler=self.compilers.name,
+            python_version=self.python_version,
             apt_sources="\n              - ".join(apt_sources),
             packages="\n              - ".join(package_names),
             environment=" ".join(environment)
@@ -173,6 +175,12 @@ def builds():
     build_types = [
         # "Debug",
         "Release"
+    ]
+
+
+    python_versions = [
+        "2.7",
+        "3.5"
     ]
 
 
@@ -277,20 +285,22 @@ def builds():
         for compiler_family_name in compiler_families:
             for c_compiler_name, cxx_compiler_name in compiler_families[
                     compiler_family_name]:
-                for build_type in build_types:
-                    builds.append(
-                        Build(
-                                Compilers(compiler_family_name,
-                                    compilers[c_compiler_name],
-                                    compilers[cxx_compiler_name]),
-                                build_type,
-                                common_packages +
-                                    build_configuration.packages +
-                                    [compilers[cxx_compiler_name].package],
-                                merge_dicts(common_environment,
-                                    build_configuration.environment)
+                for python_version in python_versions:
+                    for build_type in build_types:
+                        builds.append(
+                            Build(
+                                    Compilers(compiler_family_name,
+                                        compilers[c_compiler_name],
+                                        compilers[cxx_compiler_name]),
+                                    python_version,
+                                    build_type,
+                                    common_packages +
+                                        build_configuration.packages +
+                                        [compilers[cxx_compiler_name].package],
+                                    merge_dicts(common_environment,
+                                        build_configuration.environment)
+                                )
                             )
-                        )
 
     return builds
 
@@ -306,7 +316,6 @@ def generate_travis_config():
 
 
 # TODO with unit tests and without unit tests
-# TODO with python 2.7 and python 3.x
 
 
     configuration = """\
