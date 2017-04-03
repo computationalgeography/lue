@@ -143,7 +143,8 @@ def builds():
 
 
     flags = {
-        "clang++-3.9": "-stdlib=libc++"
+        "clang++-3.9": "-stdlib=libc++",
+        "clang++-4.0": "-stdlib=libc++"
     }
 
 
@@ -203,14 +204,14 @@ def builds():
             ]
         ),
 
-        # Default build, including tests
-        BuildConfiguration(
-            {
-                "LUE_BUILD_TEST:BOOL": "TRUE",
-            },
-            [
-            ]
-        ),
+        # # Default build, including tests
+        # BuildConfiguration(
+        #     {
+        #         "LUE_BUILD_TEST:BOOL": "TRUE",
+        #     },
+        #     [
+        #     ]
+        # ),
 
         # BuildConfiguration(
         #     {
@@ -219,6 +220,7 @@ def builds():
         #     [
         #     ]
         # ),
+
         # BuildConfiguration(
         #     {
         #         "LUE_BUILD_PYTHON_API:BOOL": "TRUE",
@@ -226,6 +228,7 @@ def builds():
         #     [
         #     ]
         # ),
+
         # BuildConfiguration(
         #     {
         #         "LUE_BUILD_UTILITIES:BOOL": "TRUE",
