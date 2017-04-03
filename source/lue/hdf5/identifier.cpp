@@ -45,8 +45,13 @@ void Identifier::close_if_necessary()
 {
     if(is_valid() && _id.unique()) {
         assert(_close != nullptr);
-        auto status = _close(*_id);
+#ifndef NDEBUG
+        auto status =
+#endif
+            _close(*_id);
+#ifndef NDEBUG
         assert(status >= 0);
+#endif
 
         // Why is this not the case???
         // assert(!is_valid());

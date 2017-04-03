@@ -118,9 +118,14 @@ Value create_value(
     hdf5::Shape chunk_dimension_sizes(value_chunk);
     chunk_dimension_sizes.insert(chunk_dimension_sizes.begin(), 1000);
 
-    auto status = ::H5Pset_chunk(creation_property_list_location,
-        chunk_dimension_sizes.size(), chunk_dimension_sizes.data());
+#ifndef NDEBUG
+    auto status =
+#endif
+        ::H5Pset_chunk(creation_property_list_location,
+            chunk_dimension_sizes.size(), chunk_dimension_sizes.data());
+#ifndef NDEBUG
     assert(status >= 0);
+#endif
 
     auto dataset = hdf5::create_dataset(group.id(), name, file_datatype,
         dataspace, creation_property_list_location);
