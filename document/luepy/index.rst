@@ -13,6 +13,11 @@ The LUE database lets you efficiently store huge amounts of attribute values of 
     status.
 
 
+.. note::
+
+    LUE is pronounced as the French pronounce the name Louis (`LU-EE`).
+
+
 .. toctree::
    :maxdepth: 2
 
@@ -30,11 +35,6 @@ The LUE database lets you efficiently store huge amounts of attribute values of 
    :maxdepth: 2
 
    API <api>
-
-
-.. note::
-
-    LUE is pronounced as the French pronounce the name Louis (`LU-EE`).
 
 
 .. _PCRaster: http://www.pcraster.eu

@@ -1,6 +1,16 @@
 Changes
 =======
 
+0.1.0
+-----
+- Reworked the API to make it easier to add specialized property
+  sets. Instead of configuring a domain, you can now explicitly create
+  property sets of a specific type. All specialized code lives in separate
+  sub-packages. There are multiple ``create_property`` functions,
+  for example, which live in sub-packages and return specialized property
+  set types.
+
+
 0.0.0.dev4
 ----------
 - Like h5py, LUE uses (a subset of) the Python file modes to open
