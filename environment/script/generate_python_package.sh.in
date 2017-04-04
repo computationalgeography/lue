@@ -11,7 +11,6 @@ build_type="Debug"
 source_prefix="$PROJECTS/lue"
 tmp_prefix="$HOME/tmp/lue"
 build_prefix="$tmp_prefix/build"
-### local_prefix="$tmp_prefix/local"
 install_prefix="$tmp_prefix/install"
 
 peacock_prefix="$PEACOCK_PREFIX/lue"
@@ -30,36 +29,13 @@ mkdir -p $tmp_prefix
 cd $tmp_prefix
 
 
-### # Install prerequisites.
-### rm -fr peacock
-### git clone --recursive https://github.com/geoneric/peacock.git
-### 
+# Build LUE.
 rm -fr $build_prefix
 mkdir $build_prefix
-### cd $build_prefix
-### mkdir peacock
-### cd peacock
-### 
-### rm -fr $local_prefix
-### mkdir $local_prefix
-### 
-### cmake -Dpeacock_prefix=$local_prefix \
-###     -Dbuild_boost=true -Dboost_version=1.57.0 \
-###         -Dboost_build_boost_test=TRUE \
-###     -Dbuild_docopt=true -Ddocopt_version=0.6.1 \
-###     -Dbuild_gdal=true -Dgdal_version=2.0.1 \
-###     -Dbuild_hdf5=true -Dhdf5_version=1.8.14 \
-###     -Dbuild_pybind11=true -Dpybind11_version=2.1.0 \
-###     $tmp_prefix/peacock
-### cmake --build . --target all
-
-
-# Build LUE.
 rm -fr $install_prefix
 mkdir $install_prefix
 
 cd $build_prefix
-### cmake -DCMAKE_BUILD_TYPE=$build_type -DPEACOCK_PREFIX:PATH=$local_prefix -DCMAKE_INSTALL_PREFIX=$install_prefix -DLUE_BUILD_PYTHON_API:BOOL=TRUE $source_prefix
 cmake -DCMAKE_BUILD_TYPE=$build_type -DPEACOCK_PREFIX:PATH=$peacock_prefix -DCMAKE_INSTALL_PREFIX=$install_prefix -DLUE_BUILD_PYTHON_API:BOOL=TRUE $source_prefix
 cmake --build . --target all
 
@@ -82,8 +58,6 @@ virtualenv --system-site-package $tmp_prefix/python
 source $tmp_prefix/python/bin/activate
 # pip install numpy
 cd $tmp_prefix
-### peacock_include_dir=`grep PYBIND11_INCLUDE_DIRS:PATH $build_prefix/CMakeCache.txt | cut -d "=" -f2`
-### peacock_lib_dir=`dirname $(grep HDF5_C_LIBRARY:PATH $build_prefix/CMakeCache.txt | cut -d "=" -f2)`
 pip install --force-reinstall --upgrade --no-index --find-links=file://$install_prefix/dist \
     --global-option=build_ext \
     --global-option="-I$include_dirs" \
@@ -102,7 +76,7 @@ echo "********************************************************"
 # python setup.py bdist_wheel
 
 
-### # Upload distributions.
-### cd $install_prefix
-### pip install twine
-### # twine upload dist/*
+# Upload distributions.
+cd $install_prefix
+pip install twine
+# twine upload dist/*
