@@ -31,7 +31,15 @@ Combining these aspects results in many different concrete types of data that LU
 - Feature data, e.g.:
     - Roads
     - Countries
-- 
+    - ...
+- ...
+
+
+Links:
+
+- Documentation: http://lue.readthedocs.io
+- Source code: https://github.com/pcraster/lue
+
 
 .. _HDF5: https://www.hdfgroup.org/HDF5/
 .. _PCRaster: http://www.pcraster.eu
