@@ -46,29 +46,29 @@ target_link_libraries(lue
     ${Boost_FILESYSTEM_LIBRARY}
     ${Boost_SYSTEM_LIBRARY}
 )
+
+
 # install(
 #     TARGETS lue
 #     RUNTIME DESTINATION bin
 #     LIBRARY DESTINATION lib
 #     ARCHIVE DESTINATION lib
 # )
-# file(GLOB
-#     SOURCES
-#     RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-#     *.cpp *.h *.hpp
-# )
-# install(
-#     FILES
-#         ${SOURCES}
-#     DESTINATION _lue/lue/cxx_api
-#     COMPONENT python
-#     # CMAKE >= 3.6 EXCLUDE_FROM_ALL
-# )
-# install(
-#     DIRECTORY
-#         constant_size
-#     DESTINATION _lue/lue/cxx_api
-#     COMPONENT python
-#     # FILES_MATCHING
-#     PATTERN "CMakeLists.txt" EXCLUDE
-# )
+
+
+file(GLOB
+    SOURCES
+    RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+    *.cpp *.h
+)
+file(RELATIVE_PATH destination
+    ${LUE_SOURCE_PREFIX}
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
+install(
+    FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/configure.h
+        ${SOURCES}
+    DESTINATION ${destination}
+    COMPONENT python
+)

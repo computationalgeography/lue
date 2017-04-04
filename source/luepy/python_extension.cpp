@@ -54,6 +54,10 @@ PYBIND11_PLUGIN(lue)
         - Array
             - Shape
             - Dataset
+
+    .. automodule:: hdf5
+
+    .. automodule:: lue.constant_size
 )");
     module.attr("__version__") = py::str(LUE_VERSION);
 

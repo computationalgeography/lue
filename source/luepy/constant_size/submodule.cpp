@@ -22,7 +22,13 @@ void init_space_domain_class(py::module& module);
 void init_submodule(
     py::module& module)
 {
-    py::module submodule = module.def_submodule("constant_size");
+    py::module submodule = module.def_submodule(
+        "constant_size",
+        R"(
+    Meh
+
+    Mah
+)");
 
     init_domain_class(submodule);
     init_space_domain_class(submodule);

@@ -36,3 +36,27 @@ target_link_libraries(luepy
     ${PYTHON_LIBRARIES}
 )
 configure_python_extension(luepy "lue")
+
+
+install(
+    FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/setup.py
+        MANIFEST.in
+    DESTINATION .
+    COMPONENT python
+)
+file(GLOB
+    SOURCES
+    RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+    *.h *.cpp
+)
+file(RELATIVE_PATH destination
+    ${LUEPY_SOURCE_PREFIX}
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
+install(
+    FILES
+        ${SOURCES}
+    DESTINATION ${destination}
+    COMPONENT python
+)

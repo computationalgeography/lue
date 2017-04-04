@@ -14,3 +14,20 @@ set(luepy_object_libraries
     $<TARGET_OBJECTS:luepy_hdf5_objects>
     PARENT_SCOPE
 )
+
+
+file(GLOB
+    SOURCES
+    RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+    *.h *.cpp
+)
+file(RELATIVE_PATH destination
+    ${LUEPY_SOURCE_PREFIX}
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
+install(
+    FILES
+        ${SOURCES}
+    DESTINATION ${destination}
+    COMPONENT python
+)

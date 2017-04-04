@@ -38,15 +38,21 @@ set(lue_object_libraries
     $<TARGET_OBJECTS:lue_hdf5_objects>
     PARENT_SCOPE
 )
-# file(GLOB
-#     SOURCES
-#     RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-#     *.cpp *.h
-# )
-# install(
-#     FILES
-#         ${SOURCES}
-#     DESTINATION _lue/lue/hdf5
-#     COMPONENT python
-#     # CMAKE >= 3.6 EXCLUDE_FROM_ALL
-# )
+
+
+file(GLOB
+    SOURCES
+    RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+    *.cpp *.h
+)
+file(RELATIVE_PATH destination
+    ${LUE_SOURCE_PREFIX}
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
+install(
+    FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/configure.h
+        ${SOURCES}
+    DESTINATION ${destination}
+    COMPONENT python
+)
