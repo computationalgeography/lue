@@ -62,7 +62,9 @@ private:
     //! Function to call when the identifier must be closed
     Close          _close;
 
-    void           close_if_necessary  ();
+    bool           is_empty            () const;
+
+    void           assert_invariant    () const;
 
 };
 

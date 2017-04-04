@@ -19,6 +19,7 @@ Identifier::Identifier(
       _close(close)
 
 {
+    assert_invariant();
 }
 
 
@@ -26,25 +27,16 @@ Identifier::Identifier(
     @brief      Destruct the instance
 
     If necessary, the close function is called.
-*/
-Identifier::~Identifier()
-{
-    close_if_necessary();
-}
-
-
-/*!
-    @brief      Close the identifier if necessary
 
     The close function will be called if:
-    - the instance is being destructed (this is assumed to be true)
     - the identifier is valid
     - we are the only ones using it
 */
-void Identifier::close_if_necessary()
+Identifier::~Identifier()
 {
+    assert_invariant();
+
     if(is_valid() && _id.unique()) {
-        assert(_close != nullptr);
 #ifndef NDEBUG
         auto status =
 #endif
@@ -52,10 +44,28 @@ void Identifier::close_if_necessary()
 #ifndef NDEBUG
         assert(status >= 0);
 #endif
-
-        // Why is this not the case???
-        // assert(!is_valid());
+        _id.reset();
+        _close = nullptr;
     }
+
+    assert_invariant();
+}
+
+
+void Identifier::assert_invariant() const
+{
+    // An identifier is either empty, іnvalid, or valid.
+    // - An empty identifier has no id. In that case, the close function
+    //   must not be set.
+    // - An invalid identifier has an invalid id and a close function.
+    // - A valid identifier has a valid id and a close function.
+    assert((is_empty() && _close == nullptr) || _close != nullptr);
+}
+
+
+bool Identifier::is_empty() const
+{
+    return !_id;
 }
 
 
@@ -64,19 +74,9 @@ void Identifier::close_if_necessary()
 */
 bool Identifier::is_valid() const
 {
-    // Invariants.
-    assert(
-        // 'Empty' state.
-        ((!_id) && _close == nullptr) ||
+    assert_invariant();
 
-        // Invalid id. Close function won't be used.
-        ::H5Iis_valid(*_id) <= 0 ||
-
-        // Valid id and close function.
-        _close != nullptr
-    );
-
-    return _id && ::H5Iis_valid(*_id) > 0;
+    return !is_empty() && ::H5Iis_valid(*_id) > 0;
 }
 
 
@@ -85,6 +85,8 @@ bool Identifier::is_valid() const
 */
 Identifier::operator hid_t() const
 {
+    assert(!is_empty());
+
     return *_id;
 }
 
@@ -103,6 +105,7 @@ std::string Identifier::pathname() const
         "expect std::string::value_type to be char");
 
     assert(is_valid());
+
     auto const nr_bytes = ::H5Iget_name(*_id, nullptr, 0);
 
     std::string result(nr_bytes, 'x');
@@ -132,6 +135,8 @@ std::string Identifier::pathname() const
 */
 std::string Identifier::name() const
 {
+    assert(is_valid());
+
     auto const pathname = this->pathname();
     auto const idx = pathname.find_last_of('/');
 
