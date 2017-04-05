@@ -1,29 +1,49 @@
-# Configurable aspects.
-option(LUE_BUILD_ALL "Build everything, except for documentation and tests"
+# Short-cuts.
+option(LUE_BUILD_ALL
+    "Build everything, except for documentation and tests"
     FALSE)
-option(LUE_WITH_ALL "Support all features, except for MPI" FALSE)
+option(LUE_WITH_ALL
+    "Support all features, except for MPI"
+    FALSE)
 
-
-option(LUE_BUILD_CXX_API "Build CXX-api" TRUE)
-option(LUE_BUILD_HL_API "Build HL-api (implies LUE_BUILD_CXX_API)" FALSE)
-option(LUE_BUILD_PYTHON_API "Build CXX-api (implies LUE_BUILD_CXX_API)" FALSE)
+# High level targets.
+option(LUE_BUILD_PYTHON_API
+    "Build Python-API (implies LUE_BUILD_CXX_API)"
+    FALSE)
 option(LUE_BUILD_UTILITIES
-    "Build LUE command line utilites (implies LUE_BUILD_HL_API)" FALSE)
-option(LUE_BUILD_DOCUMENTATION "Build documentation" FALSE)
-option(LUE_BUILD_TEST "Build tests" FALSE)
+    "Build LUE command line utilites (implies LUE_BUILD_HL_API)"
+    TRUE)
 
-option(LUE_API_WITH_MPI "Include support for MPI" FALSE)
+# Lower level targets.
+option(LUE_BUILD_HL_API
+    "Build HL-API (implies LUE_BUILD_CXX_API)"
+    TRUE)
+option(LUE_BUILD_CXX_API
+    "Build CXX-API"
+    TRUE)
+
+# Targets relevant for developers.
+option(LUE_BUILD_DOCUMENTATION
+    "Build documentation"
+    FALSE)
+option(LUE_BUILD_TEST
+    "Build tests"
+    FALSE)
+
+# Optional features.
+option(LUE_API_WITH_MPI
+    "Include support for MPI"
+    FALSE)
 
 
 # Handle internal dependencies.
 if(LUE_BUILD_ALL)
-    set(LUE_BUILD_CXX_API TRUE)
     set(LUE_BUILD_PYTHON_API TRUE)
     set(LUE_BUILD_UTILITIES TRUE)
 endif()
 
 if(LUE_BUILD_PYTHON_API)
-    set(LUE_BUILD_CXX_API TRUE)
+    set(LUE_BUILD_HL_API TRUE)
 endif()
 
 if(LUE_BUILD_UTILITIES)
@@ -62,9 +82,7 @@ endif()
 
 
 if(LUE_BUILD_UTILITIES)
-
     set(DEVBASE_DOCOPT_REQUIRED TRUE)
-    # set(DEVBASE_GDAL_USEFUL TRUE)
     set(DEVBASE_GDAL_REQUIRED TRUE)
 
     set(LUE_BUILD_LUE_DUMP TRUE)

@@ -255,7 +255,7 @@ Group::Group(
       _attributes(_id)
 
 {
-    assert(_id.is_valid());
+    // assert(_id.is_valid());
 }
 
 
