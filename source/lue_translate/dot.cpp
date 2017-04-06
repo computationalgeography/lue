@@ -52,18 +52,66 @@ private:
 
 };
 
+
+void dump_node(
+    hdf5::Dataset const& dataset,
+    std::ostream& stream)
+{
+    stream << boost::str(boost::format(R"(
+    node_%1% [
+        label=<%2%>
+        shape="box"
+    ];
+)")
+        % dataset.id()
+        % dataset.id().name()
+        );
+}
+
+
+void dump_node(
+    hdf5::Group const& group,
+    std::ostream& stream)
+{
+    stream << boost::str(boost::format(R"(
+    node_%1% [
+        label=<%2%>
+    ];
+)")
+        % group.id()
+        % group.id().name()
+        );
+}
+
+
+template<
+    typename T1,
+    typename T2>
+void link_nodes(
+    T1 const& from_object,
+    T2 const& to_object,
+    std::ostream& stream)
+{
+    stream << boost::str(boost::format(R"(
+    node_%1% -> node_%2% [
+    ];
+)")
+        % from_object.id()
+        % to_object.id()
+        );
+}
+
+
 namespace constant_size {
 namespace time {
 namespace omnipresent {
+namespace same_shape {
 
 void to_dot(
-    Domain const& domain,
+    Value const& value,
     std::ostream& stream)
 {
-    Subgraph graph(stream, domain.id());
-
-    stream << "domain";
-
+    dump_node(value, stream);
 }
 
 
@@ -71,43 +119,49 @@ void to_dot(
     Property const& property,
     std::ostream& stream)
 {
-    Subgraph graph(stream, property.id());
+    dump_node(property, stream);
+    dump_node(property.values(), stream);
 
-    stream << "property";
-
-    // switch(configuration.shape_per_item_type()) {
-    //     case ShapePerItemType::same: {
-    //         auto file_datatype =
-    //             same_shape::Property::file_datatype(
-    //                 property.id());
-    //         object = py::cast(new same_shape::Property(
-    //             property, memory_datatype(file_datatype)));
-    //         break;
-    //     }
-    //     case ShapePerItemType::different: {
-    //         auto file_datatype =
-    //             different_shape::Property::file_datatype(
-    //                 property.id());
-    //         object = py::cast(new different_shape::Property(
-    //             property, memory_datatype(file_datatype)));
-    //         break;
-    //     }
-    // }
-
-    // for(auto const& name: properties.names()) {
-    //     to_dot(property[name], stream);
-    // }
+    link_nodes(property, property.values(), stream);
 }
+
+}  // namespace same_shape
+
+
+namespace different_shape {
+
+void to_dot(
+    Property const& property,
+    std::ostream& stream)
+{
+}
+
+}  // namespace different_shape
 
 
 void to_dot(
-    Properties const& properties,
+    Property const& property,
     std::ostream& stream)
 {
-    Subgraph graph(stream, properties.id());
+    auto const& configuration = property.configuration();
 
-    for(auto const& name: properties.names()) {
-        to_dot(properties[name], stream);
+    switch(configuration.shape_per_item_type()) {
+        case ShapePerItemType::same: {
+            auto file_datatype =
+                same_shape::Property::file_datatype(
+                    property.id());
+            to_dot(same_shape::Property(property,
+                memory_datatype(file_datatype)), stream);
+            break;
+        }
+        case ShapePerItemType::different: {
+            auto file_datatype =
+                different_shape::Property::file_datatype(
+                    property.id());
+            to_dot(different_shape::Property(property,
+                memory_datatype(file_datatype)), stream);
+            break;
+        }
     }
 }
 
@@ -116,8 +170,25 @@ void to_dot(
     PropertySet const& property_set,
     std::ostream& stream)
 {
-    to_dot(property_set.domain(), stream);
-    to_dot(property_set.properties(), stream);
+    dump_node(property_set, stream);
+
+    auto const& domain = property_set.domain();
+
+    {
+        // Subgraph graph(stream, domain.id());
+
+        dump_node(domain, stream);
+    }
+
+    auto const& properties = property_set.properties();
+
+    for(auto const& name: properties.names()) {
+        auto const& property = properties[name];
+
+        to_dot(property, stream);
+        link_nodes(property_set, property, stream);
+        link_nodes(property, domain, stream);
+    }
 }
 
 }  // namespace omnipresent
@@ -129,7 +200,7 @@ void to_dot(
     PropertySet const& property_set,
     std::ostream& stream)
 {
-    Subgraph graph(stream, property_set.id());
+    // Subgraph graph(stream, property_set.id());
 
     auto configuration = property_set.configuration();
 
@@ -146,35 +217,18 @@ void to_dot(
 
 
 void to_dot(
-    PropertySets const& property_sets,
-    std::ostream& stream)
-{
-    Subgraph graph(stream, property_sets.id());
-
-    for(auto const& name: property_sets.names()) {
-        to_dot(property_sets[name], stream);
-    }
-}
-
-
-void to_dot(
     Phenomenon const& phenomenon,
     std::ostream& stream)
 {
-    Subgraph graph(stream, phenomenon.id());
+    dump_node(phenomenon, stream);
 
-    to_dot(phenomenon.property_sets(), stream);
-}
+    auto const& property_sets = phenomenon.property_sets();
 
+    for(auto const& name: property_sets.names()) {
+        auto const& property_set = property_sets[name];
 
-void to_dot(
-    Phenomena const& phenomena,
-    std::ostream& stream)
-{
-    Subgraph graph(stream, phenomena.id());
-
-    for(auto const& name: phenomena.names()) {
-        to_dot(phenomena[name], stream);
+        to_dot(property_set, stream);
+        link_nodes(phenomenon, property_set, stream);
     }
 }
 
@@ -183,20 +237,10 @@ void to_dot(
     Universe const& universe,
     std::ostream& stream)
 {
-    Subgraph graph(stream, universe.id());
+    auto const& phenomena = universe.phenomena();
 
-    to_dot(universe.phenomena(), stream);
-}
-
-
-void to_dot(
-    Universes const& universes,
-    std::ostream& stream)
-{
-    Subgraph graph(stream, universes.id());
-
-    for(auto const& name: universes.names()) {
-        to_dot(universes[name], stream);
+    for(auto const& name: phenomena.names()) {
+        to_dot(phenomena[name], stream);
     }
 }
 
@@ -207,8 +251,17 @@ void to_dot(
 {
     Subgraph graph(stream, dataset.id(), dataset.pathname());
 
-    to_dot(dataset.universes(), stream);
-    to_dot(dataset.phenomena(), stream);
+    auto const& universes = dataset.universes();
+
+    for(auto const& name: universes.names()) {
+        to_dot(universes[name], stream);
+    }
+
+    auto const& phenomena = dataset.phenomena();
+
+    for(auto const& name: phenomena.names()) {
+        to_dot(phenomena[name], stream);
+    }
 }
 
 
@@ -282,6 +335,5 @@ void translate_lue_dataset_to_dot(
 {
     translate_lue_datasets_to_dot(DatasetRefs{dataset}, dot_filename);
 }
-
 
 } // namespace lue

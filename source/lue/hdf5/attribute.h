@@ -10,17 +10,12 @@ namespace lue {
 namespace hdf5 {
 
 /*!
-    @brief      This class represents an attribute attached to an object
+    @brief      This class represents an attribute
 */
 class Attribute
 {
 
 public:
-
-//                    Attribute           (Identifier const& location,
-//                                         std::string const& name,
-//                                         Datatype const& datatype,
-//                                         Dataspace const& dataspace);
 
                    Attribute           (Identifier&& id);
 
@@ -51,7 +46,7 @@ public:
 
 private:
 
-    //! Identifier of object owning the attribute
+    //! Identifier of attribute
     Identifier     _id;
 
     //! Datatype of attribute
@@ -108,6 +103,13 @@ inline std::vector<unsigned char>
 }
 
 
+/*!
+    @brief      Read attribute value
+    @tparam     T Type of value to read
+    @exception  std::runtime_error In case the attribute cannot be read
+    @warning    It is assumed that @a T corresponds with the attribute's
+                datatype
+*/
 template<
     typename T>
 inline T Attribute::read() const
@@ -147,6 +149,13 @@ inline void Attribute::write<std::vector<unsigned char>>(
 }
 
 
+/*!
+    @brief      Write attribute value
+    @tparam     T Type of value to write
+    @exception  std::runtime_error In case the attribute cannot be written
+    @warning    It is assumed that @a T corresponds with the attribute's
+                datatype
+*/
 template<
     typename T>
 inline void Attribute::write(
@@ -159,19 +168,6 @@ inline void Attribute::write(
     }
 }
 
-
-// Attribute          create_attribute    (Identifier const& location,
-//                                         std::string const& name,
-//                                         std::string const& value);
-// 
-// Attribute          create_attribute    (Identifier const& location,
-//                                         std::string const& name,
-//                                         std::vector<unsigned char> const& value);
-
-
-// Attribute          create_attribute    (Identifier const& location,
-//                                         std::string const& name,
-//                                         size_t const nr_bytes);
 
 Attribute          create_attribute    (Identifier const& location,
                                         std::string const& name,
@@ -215,6 +211,14 @@ inline Attribute create_attribute<std::vector<unsigned char>>(
 }
 
 
+/*!
+    @brief      Create attribute and initialize its value
+    @param      location Location
+    @param      name Name
+    @param      value Initial value
+    @sa         create_attribute(Identifier const&, std::string const&,
+                Datatype const&, Dataspace const&)
+*/
 template<
     typename T>
 inline Attribute create_attribute(

@@ -4,29 +4,10 @@
 namespace lue {
 namespace hdf5 {
 
-/*
-    @brief      Create new attribute named @name
-    @param      .
-    @return     .
-    @exception  std::runtime_error In case attribute cannot be created
-Attribute::Attribute(
-    Identifier const& location,
-    std::string const& name,
-    Datatype const& datatype,
-    Dataspace const& dataspace)
-
-    : _id(::H5Acreate(location, name.c_str(), datatype.id(), dataspace.id(),
-          H5P_DEFAULT, H5P_DEFAULT), ::H5Aclose),
-      _datatype{datatype}
-
-{
-    if(!_id.is_valid() < 0) {
-        throw std::runtime_error("Cannot create attribute");
-    }
-}
+/*!
+    @brief      Construct instance based on @a id
+    @param      id Identifier of attribute
 */
-
-
 Attribute::Attribute(
     Identifier&& id)
 
@@ -38,9 +19,9 @@ Attribute::Attribute(
 
 
 /*!
-    @brief      Open attribute named @name
-    @param      .
-    @return     .
+    @brief      Open attribute named @a name
+    @param      location Location of attribute
+    @param      name Name of attribute
     @exception  std::runtime_error In case attribute cannot be opened
 */
 Attribute::Attribute(
@@ -55,7 +36,7 @@ Attribute::Attribute(
 
 
 /*!
-    @brief      Return the id of the object containing the attribute
+    @brief      Return the id of the attribute
 */
 Identifier const& Attribute::id() const
 {
@@ -72,42 +53,14 @@ Datatype const& Attribute::datatype() const
 }
 
 
-// Attribute create_attribute(
-//     Identifier const& location,
-//     std::string const& name,
-//     std::string const& value)
-// {
-//     auto attribute = create_attribute(location, name, value.size());
-//     attribute.write(value);
-// 
-//     return attribute;
-// }
-// 
-// 
-// Attribute create_attribute(
-//     Identifier const& location,
-//     std::string const& name,
-//     std::vector<unsigned char> const& value)
-// {
-//     auto attribute = create_attribute(location, name,
-//         create_datatype(H5T_NATIVE_UCHAR, value.size()),
-//         Dataspace(::H5S_SCALAR));
-//     attribute.write(value);
-// 
-//     return attribute;
-// }
-// 
-// 
-// Attribute create_attribute(
-//     Identifier const& location,
-//     std::string const& name,
-//     size_t const nr_bytes)
-// {
-//     return create_attribute(location, name, create_datatype(nr_bytes),
-//         Dataspace(::H5S_SCALAR));
-// }
-
-
+/*!
+    @brief      Create attribute
+    @param      location Location
+    @param      name Name
+    @param      datatype Datatype
+    @param      dataspace Dataspace
+    @exception  std::runtime_error In case attribute cannot be created
+*/
 Attribute create_attribute(
     Identifier const& location,
     std::string const& name,
