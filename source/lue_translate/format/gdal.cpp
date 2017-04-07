@@ -3,6 +3,7 @@
 #include "lue_utility/progress_indicator.h"
 #include "luehl/raster.h"
 #include <boost/filesystem.hpp>
+#include <cmath>
 #include <iostream>
 
 
