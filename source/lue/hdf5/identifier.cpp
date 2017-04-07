@@ -41,9 +41,8 @@ Identifier::~Identifier()
         auto status =
 #endif
             _close(*_id);
-#ifndef NDEBUG
         assert(status >= 0);
-#endif
+
         _id.reset();
         _close = nullptr;
     }

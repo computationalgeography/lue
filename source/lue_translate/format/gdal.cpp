@@ -201,8 +201,11 @@ void write_band(
             ++block_y) {
         for(size_t block_x = 0; block_x < blocks.nr_blocks_x();
                 ++block_x) {
-            auto cpl_status = gdal_raster_band.ReadBlock(block_x, block_y,
-                values.data());
+#ifndef NDEBUG
+            auto cpl_status =
+#endif
+                gdal_raster_band.ReadBlock(block_x, block_y,
+                    values.data());
             assert(cpl_status == CE_None);  // TODO
 
             std::tie(nr_valid_cells_x, nr_valid_cells_y) =

@@ -123,9 +123,7 @@ Value create_value(
 #endif
         ::H5Pset_chunk(creation_property_list_location,
             chunk_dimension_sizes.size(), chunk_dimension_sizes.data());
-#ifndef NDEBUG
     assert(status >= 0);
-#endif
 
     auto dataset = hdf5::create_dataset(group.id(), name, file_datatype,
         dataspace, creation_property_list_location);
