@@ -1,10 +1,10 @@
 #pragma once
 #include "lue/dataset.h"
 #include <ostream>
-#include <string>
 
 
 namespace lue {
+namespace utility {
 
 using DatasetRef = std::reference_wrapper<Dataset const>;
 using DatasetRefs = std::vector<DatasetRef>;
@@ -22,4 +22,5 @@ void               translate_lue_dataset_to_dot(
                                         Dataset const& dataset,
                                         std::string const& dot_filename);
 
-} // namespace lue
+}  // namespace utility
+}  // namespace lue

@@ -1,8 +1,12 @@
 set(SOURCES
     application
     print_message
+    progress_indicator
     stopwatch
 )
 add_library(lue_utility
     ${SOURCES}
+)
+target_link_libraries(lue_utility
+    ${DOCOPT_LIBRARIES}
 )

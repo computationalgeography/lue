@@ -8,6 +8,7 @@
 
 
 namespace lue {
+namespace utility {
 namespace {
 
 // void MyErrorHandler(
@@ -76,21 +77,21 @@ Application::Application(
 void Application::print_info_message(
     std::string const& message) const
 {
-    lue::print_info_message(_info_stream, message);
+    lue::utility::print_info_message(_info_stream, message);
 }
 
 
 void Application::print_error_message(
     std::string const& message) const
 {
-    lue::print_error_message(_error_stream, message);
+    lue::utility::print_error_message(_error_stream, message);
 }
 
 
 void Application::print_verbose_message(
     std::string const& message) const
 {
-    lue::print_info_message(_verbose, _info_stream, message);
+    lue::utility::print_info_message(_verbose, _info_stream, message);
 }
 
 
@@ -147,4 +148,5 @@ int Application::run() noexcept
     return status;
 }
 
+}  // namespace utility
 }  // namespace lue

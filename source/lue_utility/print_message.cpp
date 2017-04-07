@@ -2,6 +2,7 @@
 
 
 namespace lue {
+namespace utility {
 
 void print_message(
     std::ostream& stream,
@@ -37,4 +38,5 @@ void print_error_message(
     print_message(stream, "error: " + message);
 }
 
+} // namespace utility
 } // namespace lue

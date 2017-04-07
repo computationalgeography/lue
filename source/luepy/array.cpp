@@ -198,10 +198,10 @@ void set_item(
     hdf5::Offset hyperslab_start(shape.size(), 0);
     hyperslab_start[0] = start;
 
+    hdf5::Stride hyperslab_stride(shape.size(), 1);
+
     hdf5::Count hyperslab_count(shape.begin(), shape.end());
     hyperslab_count[0] = slice_length;
-
-    hdf5::Stride hyperslab_stride(shape.size(), 1);
 
     array.write(hyperslab_start, hyperslab_stride, hyperslab_count,
         static_cast<T*>(array_info.ptr));

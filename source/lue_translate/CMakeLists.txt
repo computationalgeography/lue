@@ -1,19 +1,26 @@
+add_subdirectory(format)
+
 set(LIB_SOURCES
-    dot
 )
-add_library(lue_translate_lib ${LIB_SOURCES})
+add_library(lue_translate_lib STATIC
+    $<TARGET_OBJECTS:lue_translate_format_objects>
+    ${LIB_SOURCES}
+)
 
 set(SOURCES
     main
     translate
 )
-add_executable(lue_translate ${SOURCES})
+add_executable(lue_translate
+    ${SOURCES}
+)
 
 target_link_libraries(lue_translate
-    lue_utility
     lue_translate_lib
+    lue_utility
+    luehl
     lue
-    ${DOCOPT_LIBRARIES}
+    ${GDAL_LIBRARIES}
 )
 
 install(

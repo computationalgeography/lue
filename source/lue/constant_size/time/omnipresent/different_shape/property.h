@@ -52,6 +52,11 @@ private:
 
 Property           create_property     (PropertySet& property_set,
                                         std::string const& name,
+                                        hdf5::Datatype const& memory_datatype,
+                                        int const rank);
+
+Property           create_property     (PropertySet& property_set,
+                                        std::string const& name,
                                         hdf5::Datatype const& file_datatype,
                                         hdf5::Datatype const& memory_datatype,
                                         int const rank);

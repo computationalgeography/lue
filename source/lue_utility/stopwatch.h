@@ -4,6 +4,7 @@
 
 
 namespace lue {
+namespace utility {
 
 class Stopwatch
 {
@@ -45,4 +46,5 @@ private:
 
 std::string        to_string           (Stopwatch::TimePoint const& time_point);
 
+}  // namespace utility
 }  // namespace lue

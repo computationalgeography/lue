@@ -4,6 +4,7 @@
 
 
 namespace lue {
+namespace utility {
 
 Stopwatch::Stopwatch()
 {
@@ -62,4 +63,5 @@ std::string to_string(
     return string;
 }
 
+}  // namespace utility
 }  // namespace lue

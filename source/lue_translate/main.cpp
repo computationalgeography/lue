@@ -35,5 +35,5 @@ int main(
     int argc,
     char* argv[])
 {
-    return lue::Translate(argc, argv, usage).run();
+    return lue::utility::Translate(argc, argv, usage).run();
 }

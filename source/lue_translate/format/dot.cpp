@@ -1,4 +1,4 @@
-#include "lue_translate/dot.h"
+#include "lue_translate/format/dot.h"
 #include "lue/constant_size/time/omnipresent/different_shape/property.h"
 #include "lue/constant_size/time/omnipresent/property_set.h"
 #include "lue/constant_size/time/omnipresent/same_shape/property.h"
@@ -9,6 +9,7 @@
 
 
 namespace lue {
+namespace utility {
 
 class Subgraph
 {
@@ -101,7 +102,14 @@ void link_nodes(
         );
 }
 
+}  // namespace utility
 
+
+using namespace utility;
+
+
+// We are in the lue namespace now. This make the code below easier to write.
+// We need less explicit namespace qualifications.
 namespace constant_size {
 namespace time {
 namespace omnipresent {
@@ -131,9 +139,21 @@ void to_dot(
 namespace different_shape {
 
 void to_dot(
+    Value const& value,
+    std::ostream& stream)
+{
+    dump_node(value, stream);
+}
+
+
+void to_dot(
     Property const& property,
     std::ostream& stream)
 {
+    dump_node(property, stream);
+    dump_node(property.values(), stream);
+
+    link_nodes(property, property.values(), stream);
 }
 
 }  // namespace different_shape
@@ -307,6 +327,8 @@ void to_dot(
 }
 
 
+namespace utility {
+
 void translate_lue_datasets_to_dot(
     DatasetRefs const& datasets,
     std::string const& dot_filename)
@@ -336,4 +358,5 @@ void translate_lue_dataset_to_dot(
     translate_lue_datasets_to_dot(DatasetRefs{dataset}, dot_filename);
 }
 
-} // namespace lue
+}  // namespace utility
+}  // namespace lue

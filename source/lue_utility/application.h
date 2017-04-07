@@ -5,6 +5,7 @@
 
 
 namespace lue {
+namespace utility {
 
 class Application
 {
@@ -58,4 +59,5 @@ private:
 
 };
 
+}  // namespace utility
 }  // namespace lue

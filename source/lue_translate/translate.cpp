@@ -1,5 +1,5 @@
 #include "lue_translate/translate.h"
-#include "lue_translate/dot.h"
+#include "lue_translate/format.h"
 #include <boost/filesystem.hpp>
 #include <boost/format.hpp>
 #include <exception>
@@ -24,27 +24,7 @@
 
 
 namespace lue {
-namespace {
-
-using LUEDatasetPtr = std::unique_ptr<Dataset>;
-
-
-LUEDatasetPtr try_open_lue_dataset_for_read(
-    std::string const& dataset_name)
-{
-    LUEDatasetPtr result;
-
-    try {
-        result = std::make_unique<Dataset>(dataset_name, H5F_ACC_RDONLY);
-    }
-    catch(...) {
-    }
-
-    return result;
-}
-
-}  // Anonymous namespace
-
+namespace utility {
 
 namespace bfs = boost::filesystem;
 
@@ -57,7 +37,7 @@ Translate::Translate(
     : Application(argc, argv, usage)
 
 {
-    // GDALAllRegister();
+    GDALAllRegister();
 }
 
 
@@ -75,32 +55,47 @@ void Translate::run_implementation()
 {
     std::string const input_dataset_name = argument<std::string>("<input>");
     std::string const output_dataset_name = argument<std::string>("<output>");
+    bool const stack_passed = argument_passed("--start");
 
 
-    if(auto lue_dataset = try_open_lue_dataset_for_read(input_dataset_name)) {
-        // Input is a dataset that can be read by LUE.
-        // Assume we need to convert from the LUE format to some other format.
+    if(!stack_passed) {
+        if(auto lue_dataset = try_open_lue_dataset_for_read(
+                input_dataset_name)) {
 
-        if(bfs::path(output_dataset_name).extension() == ".dot") {
-            // Create a Graphviz DOT graph of the dataset.
-            translate_lue_dataset_to_dot(*lue_dataset, output_dataset_name);
+            // Input is a dataset that can be read by LUE.
+            // Assume we need to convert from the LUE format to some other
+            // format.
+
+            if(bfs::path(output_dataset_name).extension() == ".dot") {
+                // Create a Graphviz DOT graph of the dataset.
+                translate_lue_dataset_to_dot(*lue_dataset, output_dataset_name);
+            }
+            else {
+                throw std::runtime_error(
+                    "translation to " + output_dataset_name +
+                    " is not supported");
+            }
+        }
+        else if(auto gdal_dataset = try_open_gdal_raster_dataset_for_read(
+                input_dataset_name)) {
+
+            // Input is a dataset that can be read by GDAL.
+            // Assume we need to convert from a GDAL format to the LUE format.
+
+            translate_gdal_raster_dataset_to_lue(*gdal_dataset,
+                output_dataset_name);
         }
         else {
-            throw std::runtime_error("translation to " + output_dataset_name +
-                " is not supported");
+            throw std::runtime_error(
+                "translation from " + input_dataset_name +
+                " is not supported (does it exist?)");
         }
     }
     else {
-        // Input is a dataset that cannot be read  by LUE.
-        // Assume we need to convert from some other format to the LUE format.
-
-        // First, try using the GDAL API.
-
-
-
-        throw std::runtime_error("translation from " + input_dataset_name +
-            " is not supported (does it exist?)");
+        throw std::runtime_error(
+            "translation of temporal stacks is not supported yet");
     }
 }
 
+}  // namespace utility
 }  // namespace lue

@@ -87,5 +87,7 @@ Datatype           create_datatype     (hid_t const type_id,
 
 Datatype           memory_datatype     (Datatype const& file_datatype);
 
+Datatype           file_datatype       (Datatype const& memory_datatype);
+
 } // namespace hdf5
 } // namespace lue

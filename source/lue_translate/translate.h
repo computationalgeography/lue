@@ -3,6 +3,7 @@
 
 
 namespace lue {
+namespace utility {
 
 class Translate:
     public Application
@@ -24,4 +25,5 @@ private:
 
 };
 
+}  // namespace utility
 }  // namespace lue

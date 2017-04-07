@@ -35,6 +35,11 @@ endif()
 # endif()
 
 if(LUE_BUILD_DOCUMENTATION)
-    set(DEVBASE_DOXYGEN_INPUT ${CMAKE_CURRENT_SOURCE_DIR}/lue)
+    set(DEVBASE_DOXYGEN_INPUT
+        ${CMAKE_CURRENT_SOURCE_DIR}/lue
+        ${CMAKE_CURRENT_SOURCE_DIR}/luehl
+        ${CMAKE_CURRENT_SOURCE_DIR}/lue_utility
+        ${CMAKE_CURRENT_SOURCE_DIR}/lue_translate
+    )
     include(DoxygenDoc)
 endif()

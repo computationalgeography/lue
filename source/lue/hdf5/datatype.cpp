@@ -400,5 +400,49 @@ Datatype memory_datatype(
     return Datatype(type_id);
 }
 
+
+Datatype file_datatype(
+    Datatype const& memory_datatype)
+{
+    assert(memory_datatype.is_native());
+
+    hid_t type_id = -1;
+
+    if(memory_datatype == H5T_NATIVE_INT8) {
+        type_id = H5T_STD_I8LE;
+    }
+    else if(memory_datatype == H5T_NATIVE_INT16) {
+        type_id = H5T_STD_I16LE;
+    }
+    else if(memory_datatype == H5T_NATIVE_INT32) {
+        type_id = H5T_STD_I32LE;
+    }
+    else if(memory_datatype == H5T_NATIVE_INT64) {
+        type_id = H5T_STD_I64LE;
+    }
+    else if(memory_datatype == H5T_NATIVE_UINT8) {
+        type_id = H5T_STD_U8LE;
+    }
+    else if(memory_datatype == H5T_NATIVE_UINT16) {
+        type_id = H5T_STD_U16LE;
+    }
+    else if(memory_datatype == H5T_NATIVE_UINT32) {
+        type_id = H5T_STD_U32LE;
+    }
+    else if(memory_datatype == H5T_NATIVE_UINT64) {
+        type_id = H5T_STD_U64LE;
+    }
+    else if(memory_datatype == H5T_NATIVE_FLOAT) {
+        type_id = H5T_IEEE_F32LE;
+    }
+    else if(memory_datatype == H5T_NATIVE_DOUBLE) {
+        type_id = H5T_IEEE_F64LE;
+    }
+
+    assert(type_id >= 0);
+
+    return Datatype(type_id);
+}
+
 } // namespace hdf5
 } // namespace lue
