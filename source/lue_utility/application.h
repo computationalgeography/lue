@@ -34,13 +34,13 @@ public:
 
 protected:
 
-                   Application         (int argc,
-                                        char* argv[],
-                                        std::string const& usage);
+                   Application         (std::string const& usage,
+                                        std::vector<std::string> const&
+                                            arguments);
 
-                   Application         (int argc,
-                                        char* argv[],
-                                        std::string const& usage,
+                   Application         (std::string const& usage,
+                                        std::vector<std::string> const&
+                                            arguments,
                                         SubCommands const& sub_commands);
 
     // void           print_info_message  (std::string const& message) const;

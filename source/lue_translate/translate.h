@@ -12,19 +12,18 @@ class Translate:
 
 public:
 
-                   Translate            (int argc,
-                                        char* argv[],
-                                        std::string const& usage);
+                   Translate           (std::vector<std::string> const&
+                                            arguments);
 
     // void           run_implementation  () override;
 
 private:
 
-    static CommandPtr import_data      (int argc,
-                                        char* argv[]);
+    static CommandPtr import_data      (std::vector<std::string> const&
+                                            arguments);
 
-    static CommandPtr export_data      (int argc,
-                                        char* argv[]);
+    static CommandPtr export_data      (std::vector<std::string> const&
+                                            arguments);
 
     // void           print_format        (std::string const& dataset_name,
     //                                     std::string const& format);

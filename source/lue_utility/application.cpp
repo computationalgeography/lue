@@ -51,11 +51,10 @@ namespace {
 
 
 Application::Application(
-    int argc,
-    char* argv[],
-    std::string const& usage)
+    std::string const& usage,
+    std::vector<std::string> const& arguments)
 
-    : Command(argc, argv, usage)
+    : Command(usage, arguments)
       // _info_stream(std::cout),
       // _error_stream(std::cerr),
       // _arguments(docopt::docopt(usage, { argv + 1, argv + argc }, true,
@@ -76,12 +75,11 @@ Application::Application(
 
 
 Application::Application(
-    int argc,
-    char* argv[],
     std::string const& usage,
+    std::vector<std::string> const& arguments,
     SubCommands const& sub_commands)
 
-    : Command(argc, argv, usage, sub_commands)
+    : Command(usage, arguments, sub_commands)
 
 {
 }

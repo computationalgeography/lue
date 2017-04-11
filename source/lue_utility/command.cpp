@@ -1,7 +1,7 @@
 #include "lue_utility/command.h"
 #include "lue_utility/print_message.h"
 #include "lue_utility/stopwatch.h"
-#include <boost/format.hpp>
+#include "lue/configure.h"
 #include <cassert>
 #include <iostream>
 
@@ -37,11 +37,10 @@ bool Command::argument<bool>(
 
 
 Command::Command(
-    int argc,
-    char* argv[],
-    std::string const& usage)
+    std::string const& usage,
+    std::vector<std::string> const& arguments)
 
-    : Command(argc, argv, usage, {})
+    : Command(usage, arguments, {})
 
 {
     // print_arguments();
@@ -49,28 +48,28 @@ Command::Command(
 
 
 Command::Command(
-    int argc,
-    char* argv[],
     std::string const& usage,
+    std::vector<std::string> const& arguments,
     SubCommands const& sub_commands)
 
     : _info_stream(std::cout),
       _error_stream(std::cerr),
-      _arguments(docopt::docopt(usage, {argv + 1, argv + argc})),
+      _arguments(docopt::docopt(usage, arguments, true, LUE_VERSION, true)),
       _sub_commands{sub_commands},
       _sub_command()
 
 {
-    if(!_sub_commands.empty()) {
-        // assert(argument_passed("<command>"));
-        // auto const command_name = argument<std::string>("<command>");
-        // assert(_sub_commands.find(command_name) != _sub_commands.end());
+    for(auto const& sub_command: _sub_commands) {
+        auto const command_name = sub_command.first;
+        assert(argument_passed(command_name));
 
-        // assert(argument_passed("<arguments>"));
-        // auto const arguments = argument<std::string>("<arguments>");
+        if(argument<bool>(command_name)) {
+            assert(argument_passed("<arguments>"));
+            auto const arguments = argument<std::vector<std::string>>(
+                "<arguments>");
 
-        // TODO Hier verder
-        // _sub_command = _sub_commands[command_name](arguments);
+            _sub_command = _sub_commands[command_name](arguments);
+        }
     }
 }
 
@@ -111,12 +110,18 @@ void Command::print_error_message(
 bool Command::argument_passed(
     std::string const& name) const
 {
+    assert(_arguments.find(name) != _arguments.end());
+
     return static_cast<bool>(_arguments.find(name)->second);
 }
 
 
 void Command::run_implementation()
 {
+    // Either:
+    // - This method should be overridden in a specialization
+    // - A sub command should have been selected (while parsing the command
+    //   line) and its run_implementation() called
     assert(false);
 }
 

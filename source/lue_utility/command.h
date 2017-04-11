@@ -2,7 +2,9 @@
 #include <docopt/docopt.h>
 #include <functional>
 #include <map>
+#include <memory>
 #include <ostream>
+#include <vector>
 
 
 namespace lue {
@@ -14,7 +16,8 @@ class Command
 public:
 
     using CommandPtr = std::unique_ptr<Command>;
-    using SubCommand = std::function<CommandPtr(int, char*[])>;
+    using SubCommand = std::function<
+        CommandPtr(std::vector<std::string> const&)>;
     using SubCommands = std::map<std::string, SubCommand>;
 
                    Command             (Command const&)=delete;
@@ -37,13 +40,13 @@ public:
 
 protected:
 
-                   Command             (int argc,
-                                        char* argv[],
-                                        std::string const& usage);
+                   Command             (std::string const& usage,
+                                        std::vector<std::string> const&
+                                            arguments);
 
-                   Command             (int argc,
-                                        char* argv[],
-                                        std::string const& usage,
+                   Command             (std::string const& usage,
+                                        std::vector<std::string> const&
+                                            arguments,
                                         SubCommands const& sub_commands);
 
     void           print_info_message  (std::string const& message) const;

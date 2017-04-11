@@ -11,8 +11,8 @@ class Import
 
 public:
 
-                   Import              (int argc,
-                                        char* argv[]);
+                   Import              (std::vector<std::string> const&
+                                            arguments);
 
                    Import              (Import const& other)=default;
 

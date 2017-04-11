@@ -1,7 +1,8 @@
 #pragma once
-#include "lue/hdf5/configure.h"
+// #include "lue/hdf5/configure.h"
 #include <hdf5.h>
 #include <string>
+#include <type_traits>
 
 
 namespace lue {
@@ -33,15 +34,25 @@ NATIVE_DATATYPE_TRAITS(uint8_t, H5T_NATIVE_UINT8)
 NATIVE_DATATYPE_TRAITS(uint16_t, H5T_NATIVE_UINT16)
 NATIVE_DATATYPE_TRAITS(uint32_t, H5T_NATIVE_UINT32)
 NATIVE_DATATYPE_TRAITS(uint64_t, H5T_NATIVE_UINT64)
-#ifndef LUE_HSIZE_T_DEFINED_AS_UINT64_T
-// In case hsize_t is defined as uint64_t, this results in a redefinition.
-// This is the case on macOS.
-NATIVE_DATATYPE_TRAITS(hsize_t, H5T_NATIVE_HSIZE)
-#endif
 NATIVE_DATATYPE_TRAITS(float, H5T_NATIVE_FLOAT)
 NATIVE_DATATYPE_TRAITS(double, H5T_NATIVE_DOUBLE)
 
 #undef NATIVE_DATATYPE_TRAITS
+
+
+// If hsize_t is typedef-ed as uint64_t (macOS), we musn't ѕpecialize the
+// template for hsize_t.
+template<>
+struct NativeDatatypeTraits<
+    std::enable_if<
+        !std::is_same<hsize_t, uint64_t>::value,
+        hsize_t
+    >::type
+>
+{
+    static hid_t type_id() { return H5T_NATIVE_HSIZE; }
+    static std::string name() { return "H5T_NATIVE_HSIZE"; }
+};
 
 
 template<
@@ -74,6 +85,34 @@ STANDARD_DATATYPE_TRAITS(float, H5T_IEEE_F32LE)
 STANDARD_DATATYPE_TRAITS(double, H5T_IEEE_F64LE)
 
 #undef STANDARD_DATATYPE_TRAITS
+
+
+// In case hsize_t is not defined as being uint64_t (non-macOS), we must
+// specialize the template for hsize_t.
+template<>
+struct StandardDatatypeTraits<
+    std::enable_if<
+        !std::is_same<hsize_t, uint64_t>::value,
+        hsize_t
+    >::type
+>
+    : public StandardDatatypeTraits<uint64_t>
+{
+    // hsize_t is not defined as being uint64_t
+    // Here we assume that hsize_t
+    // - is of a type for which we haven't overloaded the template yet
+    // - is typedef-ed as unsigned long long int
+    // - is treated by the compiler the same as uint64_t
+    //
+    // If this is not the case, we want to know about it.
+
+    static_assert(sizeof(hsize_t) == 8,
+        "expecting size of hsize_t to be 8 bytes");
+    static_assert(std::is_unsigned<hsize_t>(),
+        "expecting hsize_t to be unsigned");
+    static_assert(std::is_same<hsize_t, unsigned long long int>(),
+        "expecting hsize_t to be unsigned long long int");
+};
 
 }  // namespace hdf5
 }  // namespace lue

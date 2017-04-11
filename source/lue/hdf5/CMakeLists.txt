@@ -1,24 +1,5 @@
 add_test_conditionally(test)
 
-include(CheckCXXSourceCompiles)
-set(CMAKE_REQUIRED_FLAGS -std=c++14)
-set(CMAKE_REQUIRED_INCLUDES ${HDF5_INCLUDE_DIRS})
-check_cxx_source_compiles("
-    #include <hdf5.h>
-    #include <type_traits>
-
-    int main() {
-        static_assert(std::is_same<hsize_t, uint64_t>::value,
-            \"hsize_t not equal to uint64_t\");
-        return 0;
-    }"
-    LUE_HSIZE_T_DEFINED_AS_UINT64_T
-)
-
-configure_file(
-    configure.h.in
-    configure.h
-)
 set(SOURCES
     attribute
     attributes
