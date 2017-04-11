@@ -9,7 +9,8 @@ namespace lue {
 namespace hdf5 {
 
 template<
-    typename T>
+    typename T,
+    typename Enable=void>
 struct NativeDatatypeTraits
 {
 };
@@ -44,7 +45,8 @@ NATIVE_DATATYPE_TRAITS(double, H5T_NATIVE_DOUBLE)
 // template for hsize_t.
 template<>
 struct NativeDatatypeTraits<
-    std::enable_if<(!std::is_same<hsize_t, uint64_t>()), hsize_t>
+    hsize_t,
+    std::enable_if<(!std::is_same<hsize_t, uint64_t>())>::type
 >
 {
     static hid_t type_id() { return H5T_NATIVE_HSIZE; }
