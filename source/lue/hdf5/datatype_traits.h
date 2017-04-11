@@ -44,10 +44,7 @@ NATIVE_DATATYPE_TRAITS(double, H5T_NATIVE_DOUBLE)
 // template for hsize_t.
 template<>
 struct NativeDatatypeTraits<
-    std::enable_if<
-        !std::is_same<hsize_t, uint64_t>::value,
-        hsize_t
-    >::type
+    std::enable_if<(!std::is_same<hsize_t, uint64_t>()), hsize_t>
 >
 {
     static hid_t type_id() { return H5T_NATIVE_HSIZE; }
@@ -91,10 +88,7 @@ STANDARD_DATATYPE_TRAITS(double, H5T_IEEE_F64LE)
 // specialize the template for hsize_t.
 template<>
 struct StandardDatatypeTraits<
-    std::enable_if<
-        !std::is_same<hsize_t, uint64_t>::value,
-        hsize_t
-    >::type
+    std::enable_if<!std::is_same<hsize_t, uint64_t>(), hsize_t>
 >
     : public StandardDatatypeTraits<uint64_t>
 {
