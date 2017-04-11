@@ -43,10 +43,13 @@ NATIVE_DATATYPE_TRAITS(double, H5T_NATIVE_DOUBLE)
 
 // If hsize_t is typedef-ed as uint64_t (macOS), we musn't ѕpecialize the
 // template for hsize_t.
-template<>
+template<
+    typename T>
 struct NativeDatatypeTraits<
-    hsize_t,
-    std::enable_if<(!std::is_same<hsize_t, uint64_t>())>::type
+    T,
+    typename std::enable_if<(
+        std::is_same<T, hsize_t>() &&
+        !std::is_same<hsize_t, uint64_t>())>::type
 >
 {
     static hid_t type_id() { return H5T_NATIVE_HSIZE; }
@@ -55,7 +58,8 @@ struct NativeDatatypeTraits<
 
 
 template<
-    typename T>
+    typename T,
+    typename Enable=void>
 struct StandardDatatypeTraits
 {
 };
@@ -88,9 +92,13 @@ STANDARD_DATATYPE_TRAITS(double, H5T_IEEE_F64LE)
 
 // In case hsize_t is not defined as being uint64_t (non-macOS), we must
 // specialize the template for hsize_t.
-template<>
+template<
+    typename T>
 struct StandardDatatypeTraits<
-    std::enable_if<!std::is_same<hsize_t, uint64_t>(), hsize_t>
+    T,
+    typename std::enable_if<(
+        std::is_same<T, hsize_t>() &&
+        !std::is_same<hsize_t, uint64_t>())>::type
 >
     : public StandardDatatypeTraits<uint64_t>
 {
