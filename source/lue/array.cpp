@@ -132,17 +132,18 @@ void Array::write(
 }
 
 
-// void Array::write(
-//     hdf5::Dataspace const& memory_dataspace,
-//     std::vector<extent_t> const& start,
-//     std::vector<extent_t> const& count,
-//     std::vector<extent_t> const& stride,
-//     void const* buffer)
-// {
-//     Dataset::write(_memory_datatype, memory_dataspace, start, count, stride, buffer);
-// }
-// 
-// 
+void Array::write(
+    hdf5::Dataspace const& memory_dataspace,
+    hdf5::Offset const& start,
+    hdf5::Stride const& stride,
+    hdf5::Count const& count,
+    void const* buffer)
+{
+    Dataset::write(_memory_datatype, memory_dataspace,
+        start, stride, count, buffer);
+}
+
+
 // // Array create_array(
 // //     hdf5::Identifier const& location,
 // //     std::string const& name,

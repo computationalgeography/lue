@@ -1,5 +1,6 @@
 set(SOURCES
     application
+    command
     print_message
     progress_indicator
     stopwatch

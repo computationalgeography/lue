@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/constant_size/time/omnipresent/different_shape/property.h"
 #include "lue/constant_size/time/omnipresent/same_shape/property.h"
 #include "lue/constant_size/time/omnipresent/property_set.h"
 #include "lue/dataset.h"
@@ -20,18 +21,18 @@ public:
 
     public:
 
-                   Discretization      (size_t const nr_rows,
-                                        size_t const nr_cols);
+                   Discretization      (hsize_t const nr_rows,
+                                        hsize_t const nr_cols);
 
-        size_t const* shape            () const;
+        hsize_t const* shape           () const;
 
-        size_t     nr_rows             () const;
+        hsize_t    nr_rows             () const;
 
-        size_t     nr_cols             () const;
+        hsize_t    nr_cols             () const;
 
     private:
 
-        size_t const _shape[2];
+        hsize_t const _shape[2];
 
     };
 
@@ -47,7 +48,7 @@ public:
                                         double const east,
                                         double const south);
 
-    double const*  coordinates         () const;
+        double const*  coordinates     () const;
 
     private:
 
@@ -57,10 +58,32 @@ public:
 
     };
 
+
+    class Band
+    {
+
+    public:
+
+                   Band                (omnipresent::different_shape::
+                                            Property&& property);
+
+        void       write               (hdf5::Dataspace const& memory_dataspace,
+                                        hdf5::Offset const& start,
+                                        hdf5::Stride const& stride,
+                                        hdf5::Count const& count,
+                                        void const* buffer);
+
+    private:
+
+        omnipresent::different_shape::Property _property;
+
+    };
+
                    Raster              (Dataset&& dataset,
                                         omnipresent::PropertySet&& property_set,
                                         omnipresent::same_shape::Property&&
-                                            discretization);
+                                            discretization_property,
+                                        Discretization const& discretization);
 
                    Raster              (Raster const& other)=delete;
 
@@ -72,9 +95,8 @@ public:
 
     Raster&        operator=           (Raster&& other)=default;
 
-    // void           write_band          (std::string const& name,
-    //                                     hdf5::Datatype const& datatype,
-    //                                     void const* buffer);
+    Band           add_band            (std::string const& name,
+                                        hdf5::Datatype const& datatype);
 
 private:
 
@@ -82,7 +104,9 @@ private:
 
     omnipresent::PropertySet _property_set;
 
-    omnipresent::same_shape::Property _discretization;
+    omnipresent::same_shape::Property _discretization_property;
+
+    Discretization _discretization;
 
 };
 

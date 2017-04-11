@@ -1,7 +1,27 @@
 #include "lue_translate/translate.h"
+#include <boost/format.hpp>
 
 
 namespace {
+
+// std::string const usage = boost::str(boost::format(R"(
+// Translate data into or from the LUE dataset format
+// 
+// usage:
+//     %1% <command> [<arguments>...]
+//     lue_translate (-h | --help) | --version
+// 
+// options:
+//     -h --help             Show this screen
+//     --version             Show version
+// 
+// commands:
+//     import      Import data into a LUE dataset
+//     export      Export data from a LUE dataset
+// 
+// See '%1% help <command>' for more information on a command.
+// )") % "lue_translate");
+
 
 std::string const usage = R"(lue_translate
 

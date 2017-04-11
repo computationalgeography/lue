@@ -58,11 +58,12 @@ public:
                                         hdf5::Count const& count,
                                         void const* buffer);
 
-    // void           write               (hdf5::Dataspace const& memory_dataspace,
-    //                                     std::vector<extent_t> const& start,
-    //                                     std::vector<extent_t> const& count,
-    //                                     std::vector<extent_t> const& stride,
-    //                                     void const* buffer);
+    void           write               (hdf5::Dataspace const&
+                                            memory_dataspace,
+                                        hdf5::Offset const& start,
+                                        hdf5::Stride const& stride,
+                                        hdf5::Count const& count,
+                                        void const* buffer);
 
 private:
 

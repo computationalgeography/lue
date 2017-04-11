@@ -16,12 +16,18 @@ public:
                                         char* argv[],
                                         std::string const& usage);
 
-    void           run_implementation  () override;
+    // void           run_implementation  () override;
 
 private:
 
-    void           print_format        (std::string const& dataset_name,
-                                        std::string const& format);
+    static CommandPtr import_data      (int argc,
+                                        char* argv[]);
+
+    static CommandPtr export_data      (int argc,
+                                        char* argv[]);
+
+    // void           print_format        (std::string const& dataset_name,
+    //                                     std::string const& format);
 
 };
 

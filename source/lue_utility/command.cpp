@@ -1,0 +1,164 @@
+#include "lue_utility/command.h"
+#include "lue_utility/print_message.h"
+#include "lue_utility/stopwatch.h"
+#include <boost/format.hpp>
+#include <cassert>
+#include <iostream>
+
+
+namespace lue {
+namespace utility {
+
+template<>
+std::string Command::argument<std::string>(
+    std::string const& name) const
+{
+    assert(argument_passed(name));
+    return _arguments.at(name).asString();
+}
+
+
+template<>
+std::vector<std::string> Command::argument<std::vector<std::string>>(
+    std::string const& name) const
+{
+    assert(argument_passed(name));
+    return _arguments.at(name).asStringList();
+}
+
+
+template<>
+bool Command::argument<bool>(
+    std::string const& name) const
+{
+    assert(argument_passed(name));
+    return _arguments.at(name).asBool();
+}
+
+
+Command::Command(
+    int argc,
+    char* argv[],
+    std::string const& usage)
+
+    : Command(argc, argv, usage, {})
+
+{
+    // print_arguments();
+}
+
+
+Command::Command(
+    int argc,
+    char* argv[],
+    std::string const& usage,
+    SubCommands const& sub_commands)
+
+    : _info_stream(std::cout),
+      _error_stream(std::cerr),
+      _arguments(docopt::docopt(usage, {argv + 1, argv + argc})),
+      _sub_commands{sub_commands},
+      _sub_command()
+
+{
+    if(!_sub_commands.empty()) {
+        // assert(argument_passed("<command>"));
+        // auto const command_name = argument<std::string>("<command>");
+        // assert(_sub_commands.find(command_name) != _sub_commands.end());
+
+        // assert(argument_passed("<arguments>"));
+        // auto const arguments = argument<std::string>("<arguments>");
+
+        // TODO Hier verder
+        // _sub_command = _sub_commands[command_name](arguments);
+    }
+}
+
+
+void Command::print_info_message(
+    std::string const& message) const
+{
+    lue::utility::print_info_message(_info_stream, message);
+}
+
+
+void Command::print_error_message(
+    std::string const& message) const
+{
+    lue::utility::print_error_message(_error_stream, message);
+}
+
+
+// void Command::print_verbose_message(
+//     std::string const& message) const
+// {
+//     lue::utility::print_info_message(_verbose, _info_stream, message);
+// }
+
+
+// void Command::print_arguments()
+// {
+//     print_verbose_message("commandline arguments:");
+// 
+//     for(auto const& pair: _arguments) {
+//         print_verbose_message((boost::format("    %1%: %2%")
+//             % pair.first
+//             % pair.second).str());
+//     }
+// }
+
+
+bool Command::argument_passed(
+    std::string const& name) const
+{
+    return static_cast<bool>(_arguments.find(name)->second);
+}
+
+
+void Command::run_implementation()
+{
+    assert(false);
+}
+
+
+int Command::run() noexcept
+{
+    int status = EXIT_FAILURE;
+
+    try {
+        Stopwatch stopwatch;
+        stopwatch.start();
+
+        try {
+            if(_sub_command) {
+                _sub_command->run_implementation();
+            }
+            else {
+                run_implementation();
+            }
+        }
+        catch(std::bad_alloc const& exception) {
+            print_error_message("not enough memory");
+        }
+        catch(std::exception const& exception) {
+            print_error_message(exception.what());
+        }
+
+        stopwatch.stop();
+        // print_verbose_message("finished at: " + to_string(stopwatch.end()));
+        // print_verbose_message("elapsed time: " + std::to_string(
+        //     stopwatch.elapsed_seconds()) + "s");
+
+        status = EXIT_SUCCESS;
+    }
+    catch(...) {
+        print_error_message("unknown error");
+    }
+
+    // print_verbose_message("exit status: " + std::to_string(status));
+
+    return status;
+}
+
+}  // namespace utility
+}  // namespace lue

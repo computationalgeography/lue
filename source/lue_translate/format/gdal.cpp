@@ -186,8 +186,7 @@ template<
 void write_band(
     GDALRasterBand& gdal_raster_band,
     GDALBlock const& blocks,
-    // TODO Make this a band, not a raster
-    hl::Raster& /* raster */)
+    hl::Raster::Band& raster_band)
 {
     ProgressIndicator progress_indicator(std::cout,
         "Copying blocks", blocks.nr_blocks());
@@ -201,12 +200,14 @@ void write_band(
             ++block_y) {
         for(size_t block_x = 0; block_x < blocks.nr_blocks_x();
                 ++block_x) {
-#ifndef NDEBUG
-            auto cpl_status =
-#endif
-                gdal_raster_band.ReadBlock(block_x, block_y,
-                    values.data());
-            assert(cpl_status == CE_None);  // TODO
+
+            auto cpl_status = gdal_raster_band.ReadBlock(block_x, block_y,
+                values.data());
+
+            if(cpl_status != CE_None) {
+                throw std::runtime_error(
+                    "Cannot read block from GDAL raster band");
+            }
 
             std::tie(nr_valid_cells_x, nr_valid_cells_y) =
                 blocks.nr_valid_cells(block_x, block_y);
@@ -221,9 +222,8 @@ void write_band(
             hdf5::Stride stride = { 1, 1 };
             hdf5::Count count = { nr_valid_cells_y, nr_valid_cells_x };
 
-            // TODO Write the block to the band, not to the raster.
-            // raster.write(memory_dataspace, offset, stride, count,
-            //     values.data());
+            raster_band.write(memory_dataspace, offset, stride, count,
+                values.data());
 
             progress_indicator.update_progress(++current_block);
         }
@@ -286,10 +286,6 @@ void translate_gdal_raster_dataset_to_lue(
     int const nr_bands = gdal_dataset.GetRasterCount();
     assert(nr_bands >= 0);
 
-    /// hid_t file_type_id;
-    /// hid_t memory_type_id;
-
-
     // Import all raster bands.
     for(int b = 1; b <= nr_bands; ++b) {
 
@@ -300,46 +296,46 @@ void translate_gdal_raster_dataset_to_lue(
         auto const memory_datatype = gdal_datatype_to_hdf5_datatype(
             gdal_datatype);
 
-        // TODO Add new band
-        // raster_band = raster.add_band(band_name, memory_datatype);
+        std::string const name = "band_" + std::to_string(b);
+
+        auto raster_band = raster.add_band(name, memory_datatype);
 
         int block_size_x, block_size_y;
         gdal_raster_band->GetBlockSize(&block_size_x, &block_size_y);
         GDALBlock blocks(discretization.nr_cols(), discretization.nr_rows(),
             block_size_x, block_size_y);
 
-        // TODO Write to the band, not to the raster
         switch(gdal_datatype) {
             case GDT_Byte: {
-                write_band<uint8_t>(*gdal_raster_band, blocks, raster);
+                write_band<uint8_t>(*gdal_raster_band, blocks, raster_band);
                 break;
             }
             case GDT_UInt16: {
-                write_band<uint16_t>(*gdal_raster_band, blocks, raster);
+                write_band<uint16_t>(*gdal_raster_band, blocks, raster_band);
                 break;
             }
             case GDT_Int16: {
-                write_band<int16_t>(*gdal_raster_band, blocks, raster);
+                write_band<int16_t>(*gdal_raster_band, blocks, raster_band);
                 break;
             }
             case GDT_UInt32: {
-                write_band<uint32_t>(*gdal_raster_band, blocks, raster);
+                write_band<uint32_t>(*gdal_raster_band, blocks, raster_band);
                 break;
             }
             case GDT_Int32: {
-                write_band<int32_t>(*gdal_raster_band, blocks, raster);
+                write_band<int32_t>(*gdal_raster_band, blocks, raster_band);
                 break;
             }
             case GDT_Float32: {
-                write_band<float>(*gdal_raster_band, blocks, raster);
+                write_band<float>(*gdal_raster_band, blocks, raster_band);
                 break;
             }
             case GDT_Float64: {
-                write_band<double>(*gdal_raster_band, blocks, raster);
+                write_band<double>(*gdal_raster_band, blocks, raster_band);
                 break;
             }
             default: {
-                assert(false);
+                throw std::runtime_error("Unsupported datatype");
                 break;
             }
         }

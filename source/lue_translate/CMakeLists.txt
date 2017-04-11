@@ -1,8 +1,10 @@
+add_subdirectory(command)
 add_subdirectory(format)
 
 set(LIB_SOURCES
 )
 add_library(lue_translate_lib STATIC
+    $<TARGET_OBJECTS:lue_translate_command_objects>
     $<TARGET_OBJECTS:lue_translate_format_objects>
     ${LIB_SOURCES}
 )
