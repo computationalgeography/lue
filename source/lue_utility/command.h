@@ -58,9 +58,9 @@ protected:
 
     virtual void   run_implementation  ();
 
-private:
+    void           print_arguments     ();
 
-    // void           print_arguments     ();
+private:
 
     std::ostream&  _info_stream;
 

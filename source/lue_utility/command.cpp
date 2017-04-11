@@ -2,6 +2,7 @@
 #include "lue_utility/print_message.h"
 #include "lue_utility/stopwatch.h"
 #include "lue/configure.h"
+#include <boost/format.hpp>
 #include <cassert>
 #include <iostream>
 
@@ -95,16 +96,16 @@ void Command::print_error_message(
 // }
 
 
-// void Command::print_arguments()
-// {
-//     print_verbose_message("commandline arguments:");
-// 
-//     for(auto const& pair: _arguments) {
-//         print_verbose_message((boost::format("    %1%: %2%")
-//             % pair.first
-//             % pair.second).str());
-//     }
-// }
+void Command::print_arguments()
+{
+    print_info_message("commandline arguments:");
+
+    for(auto const& pair: _arguments) {
+        print_info_message((boost::format("    %1%: %2%")
+            % pair.first
+            % pair.second).str());
+    }
+}
 
 
 bool Command::argument_passed(
@@ -141,6 +142,8 @@ int Command::run() noexcept
             else {
                 run_implementation();
             }
+
+            status = EXIT_SUCCESS;
         }
         catch(std::bad_alloc const& exception) {
             print_error_message("not enough memory");
@@ -154,7 +157,6 @@ int Command::run() noexcept
         // print_verbose_message("elapsed time: " + std::to_string(
         //     stopwatch.elapsed_seconds()) + "s");
 
-        status = EXIT_SUCCESS;
     }
     catch(...) {
         print_error_message("unknown error");

@@ -19,8 +19,8 @@ public:
 
 private:
 
-    static CommandPtr import_data      (std::vector<std::string> const&
-                                            arguments);
+    // static CommandPtr import_data      (std::vector<std::string> const&
+    //                                         arguments);
 
     static CommandPtr export_data      (std::vector<std::string> const&
                                             arguments);

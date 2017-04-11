@@ -29,7 +29,7 @@ std::string const usage = boost::str(boost::format(R"(
 Translate data into or from the LUE dataset format
 
 usage:
-    %1% (import | export) [<arguments>...]
+    %1% import [<arguments>...]
     lue_translate (-h | --help) | --version
 
 options:
@@ -72,26 +72,11 @@ See '%1% help <command>' for more information on a command.
 namespace lue {
 namespace utility {
 
-Translate::CommandPtr Translate::import_data(
-    std::vector<std::string> const& arguments)
-{
-    return std::make_unique<Import>(arguments);
-}
-
-
-Translate::CommandPtr Translate::export_data(
-    std::vector<std::string> const& arguments)
-{
-    return std::make_unique<Import>(arguments);
-}
-
-
 Translate::Translate(
     std::vector<std::string> const& arguments)
 
     : Application(usage, arguments, {
-          {"import", import_data},
-          {"export", export_data}
+          {Import::name, Import::command},
       })
 
 {

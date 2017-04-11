@@ -91,6 +91,11 @@ function build_peacock()
     fi
 
 
+    # nlohmann JSON.
+    options+=("-Dbuild_nlohmann_json=true")
+    options+=("-Dnlohmann_json_version=2.1.1")
+
+
     cmake "${options[@]}" $source
     cmake --build . --target all
 }

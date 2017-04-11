@@ -5,11 +5,19 @@
 namespace lue {
 namespace utility {
 
+using Metadata = int;
+
+
 class Import
     : public Command
 {
 
 public:
+
+    static std::string const name;
+
+    static CommandPtr command      (std::vector<std::string> const&
+                                            arguments);
 
                    Import              (std::vector<std::string> const&
                                             arguments);
@@ -29,6 +37,8 @@ protected:
    void            run_implementation  () override;
 
 private:
+
+   Metadata        parse_metadata      (std::string const& pathname);
 
 };
 

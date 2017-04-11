@@ -1,8 +1,11 @@
 #include "lue_translate/command/import.h"
 #include "lue_translate/format.h"
+#include <json.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/format.hpp>
 #include <cassert>
 #include <exception>
+#include <iostream>
 #include <string>
 
 
@@ -17,16 +20,19 @@ std::string const usage = R"(
 Translate data into the LUE dataset format
 
 usage:
-    import <input> <output>
+    import [-m <name>] <input> <output>
     import --start=<time_point> --cell=<duration> <input> <output>
     import (-h | --help)
 
+arguments:
+    <input>                Input dataset
+    <output>               Output dataset
+
 options:
-    -h --help             Show this screen
-    --start=<time_point>  Time point of first slice
-    --cell=<duration>     Duration of time step
-    <input>               Input dataset
-    <output>              Output dataset
+    -h --help              Show this screen
+    -m <name> --meta=<name>  File containing metadata to use during import
+    --start=<time_point>   Time point of first slice
+    --cell=<duration>      Duration of time step
 
 Time points must be formatted according to the ISO-8601 standard.
 
@@ -41,6 +47,16 @@ given a duration of months (P1M), the time point must be given as YYYY-MM
 }  // Anonymous namespace
 
 
+std::string const Import::name = "import";
+
+
+Command::CommandPtr Import::command(
+    std::vector<std::string> const& arguments)
+{
+    return std::make_unique<Import>(arguments);
+}
+
+
 Import::Import(
     std::vector<std::string> const& arguments)
 
@@ -50,11 +66,34 @@ Import::Import(
 }
 
 
+Metadata Import::parse_metadata(
+    std::string const& pathname)
+{
+    namespace bfs = boost::filesystem;
+
+    bfs::path path(pathname);
+
+    if(!bfs::exists(path)) {
+        throw std::runtime_error(boost::str(boost::format(
+            "File containing metadata (%1%) does not exist") % pathname));
+    }
+
+    // TODO hier verder
+}
+
+
 void Import::run_implementation()
 {
     std::string const input_dataset_name = argument<std::string>("<input>");
     std::string const output_dataset_name = argument<std::string>("<output>");
+
+    bool const metadata_passed = argument_passed("--meta");
     bool const stack_passed = argument_passed("--start");
+
+    if(metadata_passed) {
+        auto const pathname = argument<std::string>("--meta");
+        auto const metadata = parse_metadata(pathname);
+    }
 
 
     if(!stack_passed) {
