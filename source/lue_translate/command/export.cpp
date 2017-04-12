@@ -12,7 +12,7 @@ std::string const usage = R"(
 Translate data from the LUE dataset format
 
 usage:
-    export <input> <output>
+    export [-m <name>] <input> <output>
     export (-h | --help)
 
 arguments:
@@ -21,6 +21,7 @@ arguments:
 
 options:
     -h --help   Show this screen
+    -m <name> --meta=<name>  File containing metadata to use during import
 )";
 
 }  // Anonymous namespace
@@ -52,6 +53,13 @@ void Export::run_implementation()
     std::string const input_dataset_name = argument<std::string>("<input>");
     std::string const output_dataset_name = argument<std::string>("<output>");
 
+    bool const metadata_passed = argument_passed("--meta");
+
+    auto const metadata = metadata_passed
+        ? Metadata(argument<std::string>("--meta"))
+        : Metadata();
+
+
     if(auto lue_dataset = try_open_lue_dataset_for_read(input_dataset_name)) {
 
         // Input is a dataset that can be read by LUE.
@@ -59,7 +67,8 @@ void Export::run_implementation()
 
         if(bfs::path(output_dataset_name).extension() == ".dot") {
             // Create a Graphviz DOT graph of the dataset.
-            translate_lue_dataset_to_dot(*lue_dataset, output_dataset_name);
+            translate_lue_dataset_to_dot(*lue_dataset, output_dataset_name,
+                metadata);
         }
         else {
             throw std::runtime_error(

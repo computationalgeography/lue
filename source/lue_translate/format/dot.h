@@ -1,4 +1,5 @@
 #pragma once
+#include "lue_translate/metadata.h"
 #include "lue/dataset.h"
 #include <ostream>
 
@@ -12,15 +13,18 @@ using DatasetRefs = std::vector<DatasetRef>;
 
 void               translate_lue_dataset_to_dot(
                                         DatasetRefs const& datasets,
-                                        std::string const& dot_filename);
+                                        std::string const& dot_filename,
+                                        Metadata const& metadata);
 
 void               translate_lue_dataset_to_dot(
                                         Dataset const& dataset,
-                                        std::ostream& stream);
+                                        std::ostream& stream,
+                                        Metadata const& metadata);
 
 void               translate_lue_dataset_to_dot(
                                         Dataset const& dataset,
-                                        std::string const& dot_filename);
+                                        std::string const& dot_filename,
+                                        Metadata const& metadata);
 
 }  // namespace utility
 }  // namespace lue

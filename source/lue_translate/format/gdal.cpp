@@ -166,8 +166,8 @@ GDALDatasetPtr try_open_gdal_raster_dataset_for_read(
 
 
 /*!
-    @brief      Translate a GDAL raster dataset to a LUE dataset
-    @param      gdal_dataset GDAL raster dataset to translate
+    @brief      Translate GDAL raster datasets to a LUE dataset
+    @param      gdal_dataset_names Names of GDAL dataset to translate
     @param      lue_dataset_name Name of LUE dataset to create
     @exception  .
 
@@ -175,97 +175,217 @@ GDALDatasetPtr try_open_gdal_raster_dataset_for_read(
     be truncated.
 */
 void translate_gdal_raster_dataset_to_lue(
-    ::GDALDataset& gdal_dataset,
+    std::vector<std::string> const& gdal_dataset_names,
     std::string const& lue_dataset_name,
     Metadata const& metadata)
 {
-    std::string const gdal_dataset_pathname = gdal_dataset.GetDescription();
-    auto const gdal_dataset_name =
-        boost::filesystem::path(gdal_dataset_pathname).stem().string();
-    auto const phenomenon_name = metadata.value(
-        boost::str(boost::format("/%1%/phenomenon/name") % gdal_dataset_name),
-        gdal_dataset_name);
-    auto const property_set_name = metadata.value(
-        boost::str(boost::format("/%1%/phenomenon/property_set/name")
-            % gdal_dataset_name),
-        "area");
-
-    hl::Raster::Discretization const discretization = gdal_discretization(
-        gdal_dataset);
-    hl::Raster::Domain const domain = gdal_domain(gdal_dataset,
-        discretization);
-
-    auto raster = hl::create_raster(lue_dataset_name, phenomenon_name,
-        property_set_name, domain, discretization);
-
-
-    // Iterate over all bands and write them to the raster.
-    int const nr_bands = gdal_dataset.GetRasterCount();
-    assert(nr_bands >= 0);
-
-    // Import all raster bands.
-    for(int b = 1; b <= nr_bands; ++b) {
-
-        GDALRasterBand* gdal_raster_band = gdal_dataset.GetRasterBand(b);
-        assert(gdal_raster_band);
-        GDALDataType const gdal_datatype =
-            gdal_raster_band->GetRasterDataType();
-        auto const memory_datatype = gdal_datatype_to_hdf5_datatype(
-            gdal_datatype);
-
-        auto const name = metadata.value(
-            boost::str(boost::format("/%1%/raster/band/%2%/name")
-                % gdal_dataset_name % b),
-            "band_" + std::to_string(b));
-
-        auto raster_band = raster.add_band(name, memory_datatype);
-
-        int block_size_x, block_size_y;
-        gdal_raster_band->GetBlockSize(&block_size_x, &block_size_y);
-        GDALBlock blocks(discretization.nr_cols(), discretization.nr_rows(),
-            block_size_x, block_size_y);
-
-        switch(gdal_datatype) {
-            case GDT_Byte: {
-                write_band<uint8_t>(*gdal_raster_band, blocks, raster_band);
-                break;
-            }
-            case GDT_UInt16: {
-                write_band<uint16_t>(*gdal_raster_band, blocks, raster_band);
-                break;
-            }
-            case GDT_Int16: {
-                write_band<int16_t>(*gdal_raster_band, blocks, raster_band);
-                break;
-            }
-            case GDT_UInt32: {
-                write_band<uint32_t>(*gdal_raster_band, blocks, raster_band);
-                break;
-            }
-            case GDT_Int32: {
-                write_band<int32_t>(*gdal_raster_band, blocks, raster_band);
-                break;
-            }
-            case GDT_Float32: {
-                write_band<float>(*gdal_raster_band, blocks, raster_band);
-                break;
-            }
-            case GDT_Float64: {
-                write_band<double>(*gdal_raster_band, blocks, raster_band);
-                break;
-            }
-            default: {
-                throw std::runtime_error("Unsupported datatype");
-                break;
-            }
-        }
+    if(gdal_dataset_names.empty()) {
+        // Nothing to do.
+        return;
     }
 
-    // TODO Make sure the dataset version is in the dataset
-    // TODO Write description items from the metadata
-    // TODO Write metadata items
-    // TODO Handle various ways of handling no-data in GDAL
+    auto lue_dataset = create_dataset(lue_dataset_name);
+
+    for(auto gdal_dataset_name: gdal_dataset_names) {
+        auto gdal_dataset = try_open_gdal_raster_dataset_for_read(
+                gdal_dataset_name);
+
+        if(!gdal_dataset) {
+            throw std::runtime_error(
+                "Cannot open GDAL raster dataset " + gdal_dataset_name);
+        }
+
+        gdal_dataset_name =
+            boost::filesystem::path(gdal_dataset_name).stem().string();
+        auto const phenomenon_name = metadata.value(
+            boost::str(boost::format("/%1%/phenomenon/name")
+                % gdal_dataset_name),
+            gdal_dataset_name);
+        auto const property_set_name = metadata.value(
+            boost::str(boost::format("/%1%/phenomenon/property_set/name")
+                % gdal_dataset_name),
+            "area");
+
+        hl::Raster::Discretization const discretization =
+            gdal_discretization(*gdal_dataset);
+        hl::Raster::Domain const domain =
+            gdal_domain(*gdal_dataset, discretization);
+
+        auto raster = hl::create_raster(lue_dataset, phenomenon_name,
+            property_set_name, domain, discretization);
+
+        // Iterate over all bands and write them to the raster.
+        int const nr_bands = gdal_dataset->GetRasterCount();
+        assert(nr_bands >= 0);
+
+        // Import all raster bands.
+        for(int b = 1; b <= nr_bands; ++b) {
+
+            GDALRasterBand* gdal_raster_band = gdal_dataset->GetRasterBand(b);
+            assert(gdal_raster_band);
+            GDALDataType const gdal_datatype =
+                gdal_raster_band->GetRasterDataType();
+            auto const memory_datatype = gdal_datatype_to_hdf5_datatype(
+                gdal_datatype);
+
+            auto const name = metadata.value(
+                boost::str(boost::format("/%1%/raster/band/%2%/name")
+                    % gdal_dataset_name % b),
+                "band_" + std::to_string(b));
+
+            auto raster_band = raster.add_band(name, memory_datatype);
+
+            int block_size_x, block_size_y;
+            gdal_raster_band->GetBlockSize(&block_size_x, &block_size_y);
+            GDALBlock blocks(discretization.nr_cols(), discretization.nr_rows(),
+                block_size_x, block_size_y);
+
+            switch(gdal_datatype) {
+                case GDT_Byte: {
+                    write_band<uint8_t>(*gdal_raster_band, blocks, raster_band);
+                    break;
+                }
+                case GDT_UInt16: {
+                    write_band<uint16_t>(*gdal_raster_band, blocks, raster_band);
+                    break;
+                }
+                case GDT_Int16: {
+                    write_band<int16_t>(*gdal_raster_band, blocks, raster_band);
+                    break;
+                }
+                case GDT_UInt32: {
+                    write_band<uint32_t>(*gdal_raster_band, blocks, raster_band);
+                    break;
+                }
+                case GDT_Int32: {
+                    write_band<int32_t>(*gdal_raster_band, blocks, raster_band);
+                    break;
+                }
+                case GDT_Float32: {
+                    write_band<float>(*gdal_raster_band, blocks, raster_band);
+                    break;
+                }
+                case GDT_Float64: {
+                    write_band<double>(*gdal_raster_band, blocks, raster_band);
+                    break;
+                }
+                default: {
+                    throw std::runtime_error("Unsupported datatype");
+                    break;
+                }
+            }
+        }
+
+        // // TODO Make sure the dataset version is in the dataset
+        // // TODO Write description items from the metadata
+        // // TODO Write metadata items
+        // // TODO Handle various ways of handling no-data in GDAL
+
+    }
 }
+
+
+// /*!
+//     @brief      Translate a GDAL raster dataset to a LUE dataset
+//     @param      gdal_dataset GDAL raster dataset to translate
+//     @param      lue_dataset_name Name of LUE dataset to create
+//     @exception  .
+// 
+//     In case a LUE dataset named @a lue_dataset_name already exists, it will
+//     be truncated.
+// */
+// void translate_gdal_raster_dataset_to_lue(
+//     ::GDALDataset& gdal_dataset,
+//     std::string const& lue_dataset_name,
+//     Metadata const& metadata)
+// {
+//     std::string const gdal_dataset_pathname = gdal_dataset.GetDescription();
+//     auto const gdal_dataset_name =
+//         boost::filesystem::path(gdal_dataset_pathname).stem().string();
+//     auto const phenomenon_name = metadata.value(
+//         boost::str(boost::format("/%1%/phenomenon/name") % gdal_dataset_name),
+//         gdal_dataset_name);
+//     auto const property_set_name = metadata.value(
+//         boost::str(boost::format("/%1%/phenomenon/property_set/name")
+//             % gdal_dataset_name),
+//         "area");
+// 
+//     hl::Raster::Discretization const discretization = gdal_discretization(
+//         gdal_dataset);
+//     hl::Raster::Domain const domain = gdal_domain(gdal_dataset,
+//         discretization);
+// 
+//     auto raster = hl::create_raster(lue_dataset_name, phenomenon_name,
+//         property_set_name, domain, discretization);
+// 
+// 
+//     // Iterate over all bands and write them to the raster.
+//     int const nr_bands = gdal_dataset.GetRasterCount();
+//     assert(nr_bands >= 0);
+// 
+//     // Import all raster bands.
+//     for(int b = 1; b <= nr_bands; ++b) {
+// 
+//         GDALRasterBand* gdal_raster_band = gdal_dataset.GetRasterBand(b);
+//         assert(gdal_raster_band);
+//         GDALDataType const gdal_datatype =
+//             gdal_raster_band->GetRasterDataType();
+//         auto const memory_datatype = gdal_datatype_to_hdf5_datatype(
+//             gdal_datatype);
+// 
+//         auto const name = metadata.value(
+//             boost::str(boost::format("/%1%/raster/band/%2%/name")
+//                 % gdal_dataset_name % b),
+//             "band_" + std::to_string(b));
+// 
+//         auto raster_band = raster.add_band(name, memory_datatype);
+// 
+//         int block_size_x, block_size_y;
+//         gdal_raster_band->GetBlockSize(&block_size_x, &block_size_y);
+//         GDALBlock blocks(discretization.nr_cols(), discretization.nr_rows(),
+//             block_size_x, block_size_y);
+// 
+//         switch(gdal_datatype) {
+//             case GDT_Byte: {
+//                 write_band<uint8_t>(*gdal_raster_band, blocks, raster_band);
+//                 break;
+//             }
+//             case GDT_UInt16: {
+//                 write_band<uint16_t>(*gdal_raster_band, blocks, raster_band);
+//                 break;
+//             }
+//             case GDT_Int16: {
+//                 write_band<int16_t>(*gdal_raster_band, blocks, raster_band);
+//                 break;
+//             }
+//             case GDT_UInt32: {
+//                 write_band<uint32_t>(*gdal_raster_band, blocks, raster_band);
+//                 break;
+//             }
+//             case GDT_Int32: {
+//                 write_band<int32_t>(*gdal_raster_band, blocks, raster_band);
+//                 break;
+//             }
+//             case GDT_Float32: {
+//                 write_band<float>(*gdal_raster_band, blocks, raster_band);
+//                 break;
+//             }
+//             case GDT_Float64: {
+//                 write_band<double>(*gdal_raster_band, blocks, raster_band);
+//                 break;
+//             }
+//             default: {
+//                 throw std::runtime_error("Unsupported datatype");
+//                 break;
+//             }
+//         }
+//     }
+// 
+//     // TODO Make sure the dataset version is in the dataset
+//     // TODO Write description items from the metadata
+//     // TODO Write metadata items
+//     // TODO Handle various ways of handling no-data in GDAL
+// }
 
 }  // namespace utility
 }  // namespace lue

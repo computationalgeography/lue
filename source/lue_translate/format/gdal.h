@@ -39,9 +39,15 @@ GDALDatasetPtr     try_open_gdal_raster_dataset_for_read(
                                         std::string const& dataset_name);
 
 void               translate_gdal_raster_dataset_to_lue(
-                                        ::GDALDataset& dataset,
+                                        std::vector<std::string> const&
+                                            gdal_dataset_names,
                                         std::string const& lue_dataset_name,
                                         Metadata const& metadata);
+
+// void               translate_gdal_raster_dataset_to_lue(
+//                                         ::GDALDataset& dataset,
+//                                         std::string const& lue_dataset_name,
+//                                         Metadata const& metadata);
 
 }  // namespace utility
 }  // namespace lue

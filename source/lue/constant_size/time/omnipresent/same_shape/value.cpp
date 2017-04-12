@@ -75,6 +75,20 @@ void Value::reserve(
 }
 
 
+void Value::read(
+    void* buffer)
+{
+    auto const shape = this->shape();
+    size_t const rank = shape.size();
+
+    hdf5::Offset start(rank, 0);
+    hdf5::Stride stride(rank, 1);
+    hdf5::Count count(shape.begin(), shape.end());
+
+    Array::read(start, stride, count, buffer);
+}
+
+
 /*!
     @brief      Write buffer to underlying HDF5 dataset
     @param      buffer Buffer with elements for whole dataset

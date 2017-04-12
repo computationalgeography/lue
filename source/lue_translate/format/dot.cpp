@@ -56,31 +56,93 @@ private:
 
 void dump_node(
     hdf5::Dataset const& dataset,
-    std::ostream& stream)
+    std::ostream& stream,
+    Metadata const& metadata)
 {
     stream << boost::str(boost::format(R"(
     node_%1% [
         label=<%2%>
         shape="box"
+        fillcolor="%3%"
     ];
 )")
         % dataset.id().info().addr()
         % dataset.id().name()
+        % metadata.value("/dataset/fillcolor", "grey")
         );
 }
 
 
 void dump_node(
-    hdf5::Group const& group,
-    std::ostream& stream)
+    Domain const& domain,
+    std::ostream& stream,
+    Metadata const& metadata)
 {
     stream << boost::str(boost::format(R"(
     node_%1% [
         label=<%2%>
+        fillcolor="%3%"
+    ];
+)")
+        % domain.id().info().addr()
+        % domain.id().name()
+        % metadata.value("/domain/fillcolor", "grey")
+        );
+}
+
+
+void dump_node(
+    Property const& property,
+    std::ostream& stream,
+    Metadata const& metadata)
+{
+    stream << boost::str(boost::format(R"(
+    node_%1% [
+        label=<%2%>
+        fillcolor="%3%"
+    ];
+)")
+        % property.id().info().addr()
+        % property.id().name()
+        % metadata.value("/property/fillcolor", "grey")
+        );
+}
+
+
+// TODO Once all specialized values inherit from value, this will work
+
+// void dump_node(
+//     Value const& value,
+//     std::ostream& stream,
+//     Metadata const& metadata)
+// {
+//     stream << boost::str(boost::format(R"(
+//     node_%1% [
+//         label=<%2%>
+//         fillcolor="%3%"
+//     ];
+// )")
+//         % value.id().info().addr()
+//         % value.id().name()
+//         % metadata.value("/value/fillcolor", "grey")
+//         );
+// }
+
+
+void dump_node(
+    hdf5::Group const& group,
+    std::ostream& stream,
+    Metadata const& /* metadata */)
+{
+    stream << boost::str(boost::format(R"(
+    node_%1% [
+        label=<%2%>
+        fillcolor="%3%"
     ];
 )")
         % group.id().info().addr()
         % group.id().name()
+        % "grey"
         );
 }
 
@@ -91,14 +153,18 @@ template<
 void link_nodes(
     T1 const& from_object,
     T2 const& to_object,
-    std::ostream& stream)
+    std::ostream& stream,
+    Metadata const& /* metadata */,
+    double weight=1.0)
 {
     stream << boost::str(boost::format(R"(
     node_%1% -> node_%2% [
+        weight=%3%
     ];
 )")
         % from_object.id().info().addr()
         % to_object.id().info().addr()
+        % weight
         );
 }
 
@@ -117,20 +183,22 @@ namespace same_shape {
 
 void to_dot(
     Value const& value,
-    std::ostream& stream)
+    std::ostream& stream,
+    Metadata const& metadata)
 {
-    dump_node(value, stream);
+    dump_node(value, stream, metadata);
 }
 
 
 void to_dot(
     Property const& property,
-    std::ostream& stream)
+    std::ostream& stream,
+    Metadata const& metadata)
 {
-    dump_node(property, stream);
-    dump_node(property.values(), stream);
+    dump_node(property, stream, metadata);
+    dump_node(property.values(), stream, metadata);
 
-    link_nodes(property, property.values(), stream);
+    link_nodes(property, property.values(), stream, metadata);
 }
 
 }  // namespace same_shape
@@ -140,23 +208,26 @@ namespace different_shape {
 
 void to_dot(
     Value const& value,
-    std::ostream& stream)
+    std::ostream& stream,
+    Metadata const& metadata)
 {
-    dump_node(value, stream);
+    dump_node(value, stream, metadata);
 }
 
 
 void to_dot(
     Property const& property,
-    std::ostream& stream)
+    std::ostream& stream,
+    Metadata const& metadata)
 {
-    dump_node(property, stream);
-    dump_node(property.values(), stream);
+    dump_node(property, stream, metadata);
+    dump_node(property.values(), stream, metadata);
 
-    link_nodes(property, property.values(), stream);
+    link_nodes(property, property.values(), stream, metadata);
 
     if(property.space_is_discretized()) {
-        link_nodes(property, property.space_discretization(), stream);
+        link_nodes(property, property.space_discretization(), stream,
+            metadata, 0.0);
     }
 }
 
@@ -165,25 +236,24 @@ void to_dot(
 
 void to_dot(
     Property const& property,
-    std::ostream& stream)
+    std::ostream& stream,
+    Metadata const& metadata)
 {
     auto const& configuration = property.configuration();
 
     switch(configuration.shape_per_item_type()) {
         case ShapePerItemType::same: {
-            auto file_datatype =
-                same_shape::Property::file_datatype(
-                    property.id());
+            auto file_datatype = same_shape::Property::file_datatype(
+                property.id());
             to_dot(same_shape::Property(property,
-                memory_datatype(file_datatype)), stream);
+                memory_datatype(file_datatype)), stream, metadata);
             break;
         }
         case ShapePerItemType::different: {
-            auto file_datatype =
-                different_shape::Property::file_datatype(
-                    property.id());
+            auto file_datatype = different_shape::Property::file_datatype(
+                property.id());
             to_dot(different_shape::Property(property,
-                memory_datatype(file_datatype)), stream);
+                memory_datatype(file_datatype)), stream, metadata);
             break;
         }
     }
@@ -192,26 +262,31 @@ void to_dot(
 
 void to_dot(
     PropertySet const& property_set,
-    std::ostream& stream)
+    std::ostream& stream,
+    Metadata const& metadata)
 {
-    dump_node(property_set, stream);
+    dump_node(property_set, stream, metadata);
+
+    auto const& ids = property_set.ids();
+
+    dump_node(ids, stream, metadata);
+    link_nodes(property_set, ids, stream, metadata);
+
 
     auto const& domain = property_set.domain();
 
-    {
-        // Subgraph graph(stream, domain.id());
+    dump_node(domain, stream, metadata);
+    link_nodes(property_set, domain, stream, metadata);
 
-        dump_node(domain, stream);
-    }
 
     auto const& properties = property_set.properties();
 
     for(auto const& name: properties.names()) {
         auto const& property = properties[name];
 
-        to_dot(property, stream);
-        link_nodes(property_set, property, stream);
-        link_nodes(property, domain, stream);
+        to_dot(property, stream, metadata);
+        link_nodes(property_set, property, stream, metadata);
+        link_nodes(property, domain, stream, metadata, 0.0);
     }
 }
 
@@ -222,7 +297,8 @@ void to_dot(
 
 void to_dot(
     PropertySet const& property_set,
-    std::ostream& stream)
+    std::ostream& stream,
+    Metadata const& metadata)
 {
     // Subgraph graph(stream, property_set.id());
 
@@ -233,7 +309,7 @@ void to_dot(
 
         case(SizeOfItemCollectionType::constant_size): {
             to_dot(constant_size::time::omnipresent::PropertySet(
-                property_set.id()), stream);
+                property_set.id()), stream, metadata);
             break;
         }
     }
@@ -242,56 +318,60 @@ void to_dot(
 
 void to_dot(
     Phenomenon const& phenomenon,
-    std::ostream& stream)
+    std::ostream& stream,
+    Metadata const& metadata)
 {
-    dump_node(phenomenon, stream);
+    dump_node(phenomenon, stream, metadata);
 
     auto const& property_sets = phenomenon.property_sets();
 
     for(auto const& name: property_sets.names()) {
         auto const& property_set = property_sets[name];
 
-        to_dot(property_set, stream);
-        link_nodes(phenomenon, property_set, stream);
+        to_dot(property_set, stream, metadata);
+        link_nodes(phenomenon, property_set, stream, metadata);
     }
 }
 
 
 void to_dot(
     Universe const& universe,
-    std::ostream& stream)
+    std::ostream& stream,
+    Metadata const& metadata)
 {
     auto const& phenomena = universe.phenomena();
 
     for(auto const& name: phenomena.names()) {
-        to_dot(phenomena[name], stream);
+        to_dot(phenomena[name], stream, metadata);
     }
 }
 
 
 void to_dot(
     Dataset const& dataset,
-    std::ostream& stream)
+    std::ostream& stream,
+    Metadata const& metadata)
 {
     Subgraph graph(stream, dataset.id(), dataset.pathname());
 
     auto const& universes = dataset.universes();
 
     for(auto const& name: universes.names()) {
-        to_dot(universes[name], stream);
+        to_dot(universes[name], stream, metadata);
     }
 
     auto const& phenomena = dataset.phenomena();
 
     for(auto const& name: phenomena.names()) {
-        to_dot(phenomena[name], stream);
+        to_dot(phenomena[name], stream, metadata);
     }
 }
 
 
 void to_dot(
     DatasetRefs const& datasets,
-    std::ostream& stream)
+    std::ostream& stream,
+    Metadata const& metadata)
 {
     assert(!datasets.empty());
 
@@ -302,7 +382,7 @@ void to_dot(
     stream << boost::str(boost::format(R"(digraph g {
     fontname="Courier"
     fontsize=10
-    label=<%1%>
+    // label=<%1%>
 
     node [
         fontname="Courier"
@@ -323,7 +403,7 @@ void to_dot(
         );
 
     for(auto const& dataset: datasets) {
-        to_dot(dataset, stream);
+        to_dot(dataset, stream, metadata);
     }
 
     stream << R"(}
@@ -335,7 +415,8 @@ namespace utility {
 
 void translate_lue_datasets_to_dot(
     DatasetRefs const& datasets,
-    std::string const& dot_filename)
+    std::string const& dot_filename,
+    Metadata const& metadata)
 {
     std::ofstream stream(dot_filename);
 
@@ -343,23 +424,25 @@ void translate_lue_datasets_to_dot(
         throw std::runtime_error("cannot open file " + dot_filename);
     }
 
-    to_dot(datasets, stream);
+    to_dot(datasets, stream, metadata);
 }
 
 
 void translate_lue_dataset_to_dot(
     Dataset const& dataset,
-    std::ostream& stream)
+    std::ostream& stream,
+    Metadata const& metadata)
 {
-    to_dot(DatasetRefs{dataset}, stream);
+    to_dot(DatasetRefs{dataset}, stream, metadata);
 }
 
 
 void translate_lue_dataset_to_dot(
     Dataset const& dataset,
-    std::string const& dot_filename)
+    std::string const& dot_filename,
+    Metadata const& metadata)
 {
-    translate_lue_datasets_to_dot(DatasetRefs{dataset}, dot_filename);
+    translate_lue_datasets_to_dot(DatasetRefs{dataset}, dot_filename, metadata);
 }
 
 }  // namespace utility

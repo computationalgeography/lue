@@ -60,6 +60,8 @@ Command::Command(
       _sub_command()
 
 {
+    // print_arguments();
+
     for(auto const& sub_command: _sub_commands) {
         auto const command_name = sub_command.first;
         assert(argument_passed(command_name));

@@ -52,6 +52,8 @@ public:
 
     void           reserve             (hsize_t const nr_items);
 
+    void           read                (void* buffer);
+
     void           write               (void const* buffer);
 
 private:

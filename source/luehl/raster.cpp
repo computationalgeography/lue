@@ -43,6 +43,14 @@ omnipresent::same_shape::Property discretization_property(
 }  // Anonymous namespace
 
 
+Raster::Discretization::Discretization()
+
+    : _shape{0, 0}
+
+{
+}
+
+
 Raster::Discretization::Discretization(
     hsize_t const nr_rows,
     hsize_t const nr_cols)
@@ -54,6 +62,12 @@ Raster::Discretization::Discretization(
 
 
 hsize_t const* Raster::Discretization::shape() const
+{
+    return _shape;
+}
+
+
+hsize_t* Raster::Discretization::shape()
 {
     return _shape;
 }
@@ -113,19 +127,48 @@ void Raster::Band::write(
 
 
 Raster::Raster(
-    Dataset&& dataset,
-    omnipresent::PropertySet&& property_set,
-    omnipresent::same_shape::Property&& discretization_property,
-    Raster::Discretization const& discretization)
+    hdf5::Identifier const& id)
 
-    : _dataset{std::forward<Dataset>(dataset)},
-      _property_set{std::forward<omnipresent::PropertySet>(property_set)},
-      _discretization_property{std::forward<omnipresent::same_shape::Property>(
-          discretization_property)},
-      _discretization{discretization}
+    : _property_set(id),
+      _discretization_property(
+          _property_set.properties()["space_discretization"],
+          H5T_NATIVE_HSIZE),
+      _discretization()
 
 {
+    _discretization_property.values().read(_discretization.shape());
 }
+
+
+// Raster::Raster(
+//     Dataset& dataset,
+//     std::string const& phenomenon_name,
+//     std::string const& property_set_name)
+// 
+//     : _property_set(dataset.
+//         phenomena()[phenomenon_name].
+//         property_sets()[property_set_name])
+//       _ omnipresent::same_shape::Property _discretization_property;
+// 
+// {
+// 
+// }
+// 
+// 
+// Raster::Raster(
+//     // std::shared_ptr<Dataset> const& dataset,
+//     omnipresent::PropertySet&& property_set,
+//     omnipresent::same_shape::Property&& discretization_property,
+//     Raster::Discretization const& discretization)
+// 
+//     : // _dataset(dataset),
+//       _property_set{std::forward<omnipresent::PropertySet>(property_set)},
+//       _discretization_property{std::forward<omnipresent::same_shape::Property>(
+//           discretization_property)},
+//       _discretization{discretization}
+// 
+// {
+// }
 
 
 Raster::Band Raster::add_band(
@@ -144,6 +187,92 @@ Raster::Band Raster::add_band(
 }
 
 
+namespace {
+
+// Raster create_raster(
+//     PropertySet& property_set,
+//     Raster::Domain const& domain,
+//     Raster::Discretization const& discretization)
+// {
+// 
+// 
+// }
+
+
+hdf5::Identifier create_raster(
+    Phenomenon& phenomenon,
+    std::string const& property_set_name,
+    Raster::Domain const& domain,
+    Raster::Discretization const& discretization)
+{
+    if(!phenomenon.property_sets().contains(property_set_name)) {
+
+        auto property_set = omnipresent::create_property_set(
+            phenomenon, property_set_name);
+
+
+        hsize_t const nr_items = 1;
+
+        // Write item id to property set.
+        {
+            hsize_t const id = 0;
+            auto& ids = property_set.reserve(nr_items);
+            ids.write(&id);
+        }
+
+        // Write raster extent to space domain.
+        {
+            auto const file_datatype_id =
+                hdf5::StandardDatatypeTraits<double>::type_id();
+            auto const memory_datatype_id =
+                hdf5::NativeDatatypeTraits<double>::type_id();
+            size_t const rank = 2;
+            auto space_domain = omnipresent::configure_space_box_domain(
+                property_set, file_datatype_id, memory_datatype_id, rank);
+
+            auto& space_box = space_domain.reserve(nr_items);
+
+            space_box.write(domain.coordinates());
+        }
+
+        // Write property with discretization information to property set.
+        /* auto property = */ discretization_property(property_set, discretization);
+
+        // return Raster(std::move(property_set), std::move(property),
+        //     discretization);
+
+        // return create_raster(property_set, domain, discretization);
+
+        return property_set.id();
+    }
+    else {
+        return phenomenon.property_sets()[property_set_name].id();
+    }
+}
+
+}  // Anonymous namespace
+
+
+Raster create_raster(
+    Dataset& dataset,
+    std::string const& phenomenon_name,
+    std::string const& property_set_name,
+    Raster::Domain const& domain,
+    Raster::Discretization const& discretization)
+{
+    if(!dataset.phenomena().contains(phenomenon_name)) {
+        return Raster(create_raster(
+            dataset.add_phenomenon(phenomenon_name),
+            property_set_name, domain, discretization));
+    }
+    else {
+        return Raster(create_raster(
+            dataset.phenomena()[phenomenon_name],
+            property_set_name, domain, discretization));
+    }
+}
+
+
 /*!
     @brief      Create a raster in a new LUE dataset
     @exception  std::runtime_error In case the dataset cannot be created
@@ -156,52 +285,57 @@ Raster::Band Raster::add_band(
     - Add a [property set](@ref PropertySet) with a [domain](Domain)
       representing the time and space extent of the raster
 */
-Raster create_raster(
-    std::string const& dataset_name,
-    std::string const& phenomenon_name,
-    std::string const& property_set_name,
-    Raster::Domain const& domain,
-    Raster::Discretization const& discretization)
-{
-    auto dataset = create_dataset(dataset_name);
-    auto& phenomenon = dataset.add_phenomenon(phenomenon_name);
-    auto property_set = omnipresent::create_property_set(phenomenon,
-        property_set_name);
-    hsize_t const nr_items = 1;
 
 
-    // Write item id to property set.
-    {
-        hsize_t const id = 0;
-        auto& ids = property_set.reserve(nr_items);
-
-        ids.write(&id);
-    }
-
-
-    // Write raster extent to space domain.
-    {
-        auto const file_datatype_id =
-            hdf5::StandardDatatypeTraits<double>::type_id();
-        auto const memory_datatype_id =
-            hdf5::NativeDatatypeTraits<double>::type_id();
-        size_t const rank = 2;
-        auto space_domain = omnipresent::configure_space_box_domain(
-            property_set, file_datatype_id, memory_datatype_id, rank);
-
-        auto& space_box = space_domain.reserve(nr_items);
-
-        space_box.write(domain.coordinates());
-    }
-
-
-    // Write property with discretization information to property set.
-    auto property = discretization_property(property_set, discretization);
-
-
-    return Raster(std::move(dataset), std::move(property_set),
-       std::move(property), discretization);
-}
+// Raster create_raster(
+//     std::string const& dataset_name,
+//     std::string const& phenomenon_name,
+//     std::string const& property_set_name,
+//     Raster::Domain const& domain,
+//     Raster::Discretization const& discretization)
+// {
+//     return create_raster(create_dataset(dataset_name), phenomenon_name,
+//         property_set_name, domain, discretization);
+// 
+// 
+//     // auto& phenomenon = dataset.add_phenomenon(phenomenon_name);
+//     // auto property_set = omnipresent::create_property_set(phenomenon,
+//     //     property_set_name);
+//     // hsize_t const nr_items = 1;
+// 
+// 
+//     // // Write item id to property set.
+//     // {
+//     //     hsize_t const id = 0;
+//     //     auto& ids = property_set.reserve(nr_items);
+// 
+//     //     ids.write(&id);
+//     // }
+// 
+// 
+//     // // Write raster extent to space domain.
+//     // {
+//     //     auto const file_datatype_id =
+//     //         hdf5::StandardDatatypeTraits<double>::type_id();
+//     //     auto const memory_datatype_id =
+//     //         hdf5::NativeDatatypeTraits<double>::type_id();
+//     //     size_t const rank = 2;
+//     //     auto space_domain = omnipresent::configure_space_box_domain(
+//     //         property_set, file_datatype_id, memory_datatype_id, rank);
+// 
+//     //     auto& space_box = space_domain.reserve(nr_items);
+// 
+//     //     space_box.write(domain.coordinates());
+//     // }
+// 
+// 
+//     // // Write property with discretization information to property set.
+//     // auto property = discretization_property(property_set, discretization);
+// 
+// 
+//     // return Raster(std::move(dataset), std::move(property_set),
+//     //    std::move(property), discretization);
+// }
 
 }  // namespace hl
 }  // namespace lue

@@ -21,10 +21,14 @@ public:
 
     public:
 
+                   Discretization      ();
+
                    Discretization      (hsize_t const nr_rows,
                                         hsize_t const nr_cols);
 
         hsize_t const* shape           () const;
+
+        hsize_t*   shape               ();
 
         hsize_t    nr_rows             () const;
 
@@ -32,7 +36,7 @@ public:
 
     private:
 
-        hsize_t const _shape[2];
+        hsize_t    _shape[2];
 
     };
 
@@ -79,11 +83,17 @@ public:
 
     };
 
-                   Raster              (Dataset&& dataset,
-                                        omnipresent::PropertySet&& property_set,
-                                        omnipresent::same_shape::Property&&
-                                            discretization_property,
-                                        Discretization const& discretization);
+                   Raster              (hdf5::Identifier const& id);
+
+                   // Raster              (Dataset& dataset,
+                   //                      std::string const& phenomenon_name,
+                   //                      std::string const& property_set_name);
+
+                   // Raster              (// std::shared_ptr<Dataset> const& dataset,
+                   //                      omnipresent::PropertySet&& property_set,
+                   //                      omnipresent::same_shape::Property&&
+                   //                          discretization_property,
+                   //                      Discretization const& discretization);
 
                    Raster              (Raster const& other)=delete;
 
@@ -100,7 +110,7 @@ public:
 
 private:
 
-    Dataset        _dataset;
+    // std::shared_ptr<Dataset> _dataset;
 
     omnipresent::PropertySet _property_set;
 
@@ -111,12 +121,19 @@ private:
 };
 
 
-Raster             create_raster       (std::string const& dataset_name,
+Raster             create_raster       (Dataset& dataset,
                                         std::string const& phenomenon_name,
                                         std::string const& property_set_name,
                                         Raster::Domain const& domain,
                                         Raster::Discretization const&
                                             discretization);
+
+// Raster             create_raster       (std::string const& dataset_name,
+//                                         std::string const& phenomenon_name,
+//                                         std::string const& property_set_name,
+//                                         Raster::Domain const& domain,
+//                                         Raster::Discretization const&
+//                                             discretization);
 
 }  // namespace hl
 }  // namespace lue

@@ -12,15 +12,15 @@ std::string const usage = R"(
 Translate data into the LUE dataset format
 
 usage:
-    import [-m <name>] <input> <output>
+    import [-m <name>] <output> <inputs>...
     import (-h | --help)
 
 arguments:
-    <input>                Input dataset
-    <output>               Output dataset
+    <inputs>    Input dataset(s)
+    <output>    Output dataset
 
 options:
-    -h --help              Show this screen
+    -h --help   Show this screen
     -m <name> --meta=<name>  File containing metadata to use during import
 )";
 
@@ -79,8 +79,9 @@ void Import::run_implementation()
 {
     namespace bfs = boost::filesystem;
 
-    std::string const input_dataset_name = argument<std::string>("<input>");
-    std::string const output_dataset_name = argument<std::string>("<output>");
+    auto const input_dataset_names =
+        argument<std::vector<std::string>>("<inputs>");
+    auto const output_dataset_name = argument<std::string>("<output>");
 
     bool const metadata_passed = argument_passed("--meta");
     // bool const stack_passed = argument_passed("--start");
@@ -89,19 +90,19 @@ void Import::run_implementation()
         ? Metadata(argument<std::string>("--meta"))
         : Metadata();
 
-    // if(!stack_passed) {
-        if(auto gdal_dataset = try_open_gdal_raster_dataset_for_read(
-                input_dataset_name)) {
 
-            // Input is a dataset that can be read by GDAL.
+    // if(!stack_passed) {
+        if(try_open_gdal_raster_dataset_for_read(input_dataset_names[0])) {
+
+            // First input is a dataset that can be read by GDAL.
             // We need to convert from a GDAL format to the LUE format.
 
-            translate_gdal_raster_dataset_to_lue(*gdal_dataset,
+            translate_gdal_raster_dataset_to_lue(input_dataset_names,
                 output_dataset_name, metadata);
         }
         else {
             throw std::runtime_error(
-                "translation from " + input_dataset_name +
+                "translation from " + input_dataset_names[0] +
                 " is not supported (does it exist?)");
         }
     // }
