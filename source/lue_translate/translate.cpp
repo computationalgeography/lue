@@ -29,7 +29,7 @@ std::string const usage = boost::str(boost::format(R"(
 Translate data into or from the LUE dataset format
 
 usage:
-    %1% import [<arguments>...]
+    %1% (import | export) [<arguments>...]
     lue_translate (-h | --help) | --version
 
 options:
@@ -77,6 +77,7 @@ Translate::Translate(
 
     : Application(usage, arguments, {
           {Import::name, Import::command},
+          {Export::name, Export::command},
       })
 
 {

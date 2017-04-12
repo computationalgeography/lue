@@ -142,5 +142,39 @@ std::string Identifier::name() const
     return idx == std::string::npos ? pathname : pathname.substr(idx + 1);
 }
 
+
+ObjectInfo Identifier::info() const
+{
+    assert(is_valid());
+
+    return ObjectInfo(*_id);
+}
+
+
+/*!
+    @brief      Return whether two object identifiers are equal
+
+    Two identifiers are considered equal if they are pointing to the same
+    object in the HDF5 dataset.
+*/
+bool operator==(
+    Identifier const& lhs,
+    Identifier const& rhs)
+{
+    return lhs.info() == rhs.info();
+}
+
+
+/*!
+    @brief      Return whether two object identifiers are not equal
+    @sa         operator==(Identifier const&, Identifier const&)
+*/
+bool operator!=(
+    Identifier const& lhs,
+    Identifier const& rhs)
+{
+    return !(lhs == rhs);
+}
+
 } // namespace hdf5
 } // namespace lue

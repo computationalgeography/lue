@@ -5,7 +5,7 @@
 namespace lue {
 namespace utility {
 
-class Import
+class Export
     : public Command
 {
 
@@ -16,18 +16,18 @@ public:
     static CommandPtr command          (std::vector<std::string> const&
                                             arguments);
 
-                   Import              (std::vector<std::string> const&
+                   Export              (std::vector<std::string> const&
                                             arguments);
 
-                   Import              (Import const& other)=default;
+                   Export              (Export const& other)=default;
 
-                   Import              (Import&& other)=default;
+                   Export              (Export&& other)=default;
 
-                   ~Import             ()=default;
+                   ~Export             ()=default;
 
-   Import&         operator=           (Import const& other)=default;
+   Export&         operator=           (Export const& other)=default;
 
-   Import&         operator=           (Import&& other)=default;
+   Export&         operator=           (Export&& other)=default;
 
 protected:
 

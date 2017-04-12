@@ -1,4 +1,5 @@
 #pragma once
+#include "lue_translate/metadata.h"
 #include <memory>
 #include <gdal_priv.h>
 
@@ -39,7 +40,8 @@ GDALDatasetPtr     try_open_gdal_raster_dataset_for_read(
 
 void               translate_gdal_raster_dataset_to_lue(
                                         ::GDALDataset& dataset,
-                                        std::string const& lue_dataset_name);
+                                        std::string const& lue_dataset_name,
+                                        Metadata const& metadata);
 
 }  // namespace utility
 }  // namespace lue

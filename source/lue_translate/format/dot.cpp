@@ -28,7 +28,7 @@ public:
 subgraph cluster_%1% {
     label=<%2%>
 )")
-            % id
+            % id.info().addr()
             % label
             );
     }
@@ -64,7 +64,7 @@ void dump_node(
         shape="box"
     ];
 )")
-        % dataset.id()
+        % dataset.id().info().addr()
         % dataset.id().name()
         );
 }
@@ -79,7 +79,7 @@ void dump_node(
         label=<%2%>
     ];
 )")
-        % group.id()
+        % group.id().info().addr()
         % group.id().name()
         );
 }
@@ -97,8 +97,8 @@ void link_nodes(
     node_%1% -> node_%2% [
     ];
 )")
-        % from_object.id()
-        % to_object.id()
+        % from_object.id().info().addr()
+        % to_object.id().info().addr()
         );
 }
 
@@ -154,6 +154,10 @@ void to_dot(
     dump_node(property.values(), stream);
 
     link_nodes(property, property.values(), stream);
+
+    if(property.space_is_discretized()) {
+        link_nodes(property, property.space_discretization(), stream);
+    }
 }
 
 }  // namespace different_shape

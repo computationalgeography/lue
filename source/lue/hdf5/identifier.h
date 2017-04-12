@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/hdf5/object_info.h"
 #include <hdf5.h>
 #include <functional>
 #include <memory>
@@ -54,6 +55,8 @@ public:
 
     std::string    name                () const;
 
+    ObjectInfo     info                () const;
+
 private:
 
     //! HDF5 identifier
@@ -67,6 +70,13 @@ private:
     void           assert_invariant    () const;
 
 };
+
+
+bool               operator==          (Identifier const& lhs,
+                                        Identifier const& rhs);
+
+bool               operator!=          (Identifier const& lhs,
+                                        Identifier const& rhs);
 
 } // namespace hdf5
 } // namespace lue

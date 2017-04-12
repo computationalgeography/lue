@@ -1,6 +1,6 @@
 set(SOURCES
     import
-    # export
+    export
 )
 add_library(lue_translate_command_objects OBJECT
     ${SOURCES}

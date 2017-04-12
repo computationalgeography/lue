@@ -3,6 +3,7 @@
 #include "lue_utility/progress_indicator.h"
 #include "luehl/raster.h"
 #include <boost/filesystem.hpp>
+#include <boost/format.hpp>
 #include <cmath>
 #include <iostream>
 
@@ -54,96 +55,6 @@ hdf5::Datatype gdal_datatype_to_hdf5_datatype(
 
     return hdf5::Datatype(type_id);
 }
-
-
-// class GDALDomain
-// {
-// 
-// public:
-// 
-//     GDALDomain(
-//         std::string const& coordinate_reference_system)
-// 
-//         : coordinate_reference_system(coordinate_reference_system)
-// 
-//     {
-//     }
-// 
-//     virtual ~GDALDomain()=default;
-// 
-//     std::string const coordinate_reference_system;
-// 
-// };
-// 
-// 
-// class GDALRasterDomain:
-//     public GDALDomain
-// {
-// 
-// public:
-// 
-//     GDALRasterDomain(
-//         std::string const& coordinate_reference_system,
-//         // int const nr_bands,
-//         double const west,
-//         double const north,
-//         double const east,
-//         double const south,
-//         int const nr_rows,
-//         int const nr_cols)
-// 
-//         : GDALDomain(coordinate_reference_system),
-//           // nr_bands{nr_bands},
-//           west{west},
-//           north{north},
-//           east{east},
-//           south{south},
-//           nr_rows{nr_rows},
-//           nr_cols{nr_cols}
-// 
-//     {
-//     }
-// 
-//     // int nr_bands;
-// 
-//     double const west;
-//     double const north;
-//     double const east;
-//     double const south;
-// 
-//     int const nr_rows;
-//     int const nr_cols;
-// 
-// };
-// 
-// GDALRasterDomain gdal_raster_domain(
-//     GDALDataset& dataset)
-// {
-//     int const nr_rows = dataset.GetRasterYSize();
-//     assert(nr_rows > 0);
-//     int const nr_cols = dataset.GetRasterXSize();
-//     assert(nr_cols > 0);
-//     // int const nr_bands = dataset.GetRasterCount();
-//     // assert(nr_bands >= 0);
-//     // // assert(nr_bands == dataset.GetLayerCount());
-//     std::string const coordinate_reference_system = dataset.GetProjectionRef();
-// 
-//     double geo_transform[6];
-//     dataset.GetGeoTransform(geo_transform);
-// 
-//     double const west = geo_transform[0];
-//     double const north = geo_transform[3];
-//     double const cell_width = geo_transform[1];
-//     assert(cell_width > 0.0);
-//     double const cell_height = std::abs(geo_transform[5]);
-//     assert(cell_height > 0.0);
-//     double const east = west + (nr_cols * cell_width);
-//     double const south = north - (nr_rows * cell_height);
-// 
-//     return GDALRasterDomain(coordinate_reference_system, /* nr_bands, */
-//         west, north, east, south,
-//         nr_rows, nr_cols);
-// }
 
 
 hl::Raster::Discretization gdal_discretization(
@@ -265,13 +176,19 @@ GDALDatasetPtr try_open_gdal_raster_dataset_for_read(
 */
 void translate_gdal_raster_dataset_to_lue(
     ::GDALDataset& gdal_dataset,
-    // std::string const& gdal_dataset_name,
-    std::string const& lue_dataset_name)
+    std::string const& lue_dataset_name,
+    Metadata const& metadata)
 {
     std::string const gdal_dataset_pathname = gdal_dataset.GetDescription();
-    auto const phenomenon_name =
+    auto const gdal_dataset_name =
         boost::filesystem::path(gdal_dataset_pathname).stem().string();
-    std::string const property_set_name = "area";
+    auto const phenomenon_name = metadata.value(
+        boost::str(boost::format("/%1%/phenomenon/name") % gdal_dataset_name),
+        gdal_dataset_name);
+    auto const property_set_name = metadata.value(
+        boost::str(boost::format("/%1%/phenomenon/property_set/name")
+            % gdal_dataset_name),
+        "area");
 
     hl::Raster::Discretization const discretization = gdal_discretization(
         gdal_dataset);
@@ -296,7 +213,10 @@ void translate_gdal_raster_dataset_to_lue(
         auto const memory_datatype = gdal_datatype_to_hdf5_datatype(
             gdal_datatype);
 
-        std::string const name = "band_" + std::to_string(b);
+        auto const name = metadata.value(
+            boost::str(boost::format("/%1%/raster/band/%2%/name")
+                % gdal_dataset_name % b),
+            "band_" + std::to_string(b));
 
         auto raster_band = raster.add_band(name, memory_datatype);
 
@@ -341,7 +261,8 @@ void translate_gdal_raster_dataset_to_lue(
         }
     }
 
-
+    // TODO Make sure the dataset version is in the dataset
+    // TODO Write description items from the metadata
     // TODO Write metadata items
     // TODO Handle various ways of handling no-data in GDAL
 }

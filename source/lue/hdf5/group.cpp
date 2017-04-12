@@ -390,26 +390,7 @@ bool operator==(
     Group const& lhs,
     Group const& rhs)
 {
-    H5O_info_t lhs_info;
-    auto status = ::H5Oget_info(lhs.id(), &lhs_info);
-
-    if(status < 0) {
-        throw std::runtime_error("Cannot retrieve metadata for group " +
-            lhs.id().pathname());
-    }
-
-    H5O_info_t rhs_info;
-    status = H5Oget_info(rhs.id(), &rhs_info);
-
-    if(status < 0) {
-        throw std::runtime_error("Cannot retrieve metadata for group " +
-            rhs.id().pathname());
-    }
-
-    return
-        lhs_info.fileno == rhs_info.fileno &&
-        lhs_info.addr == rhs_info.addr
-        ;
+    return lhs.id() == rhs.id();
 }
 
 

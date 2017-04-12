@@ -138,6 +138,7 @@ Raster::Band Raster::add_band(
     size_t const nr_items = 1;
 
     property.reserve(nr_items, _discretization.shape());
+    property.discretize_space(_discretization_property);
 
     return Band(std::move(property));
 }
