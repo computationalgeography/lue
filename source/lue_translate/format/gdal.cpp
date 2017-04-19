@@ -242,31 +242,38 @@ void translate_gdal_raster_dataset_to_lue(
 
             switch(gdal_datatype) {
                 case GDT_Byte: {
-                    write_band<uint8_t>(*gdal_raster_band, blocks, raster_band);
+                    write_band<uint8_t>(
+                        *gdal_raster_band, blocks, raster_band);
                     break;
                 }
                 case GDT_UInt16: {
-                    write_band<uint16_t>(*gdal_raster_band, blocks, raster_band);
+                    write_band<uint16_t>(
+                        *gdal_raster_band, blocks, raster_band);
                     break;
                 }
                 case GDT_Int16: {
-                    write_band<int16_t>(*gdal_raster_band, blocks, raster_band);
+                    write_band<int16_t>(
+                        *gdal_raster_band, blocks, raster_band);
                     break;
                 }
                 case GDT_UInt32: {
-                    write_band<uint32_t>(*gdal_raster_band, blocks, raster_band);
+                    write_band<uint32_t>(
+                        *gdal_raster_band, blocks, raster_band);
                     break;
                 }
                 case GDT_Int32: {
-                    write_band<int32_t>(*gdal_raster_band, blocks, raster_band);
+                    write_band<int32_t>(
+                        *gdal_raster_band, blocks, raster_band);
                     break;
                 }
                 case GDT_Float32: {
-                    write_band<float>(*gdal_raster_band, blocks, raster_band);
+                    write_band<float>(
+                        *gdal_raster_band, blocks, raster_band);
                     break;
                 }
                 case GDT_Float64: {
-                    write_band<double>(*gdal_raster_band, blocks, raster_band);
+                    write_band<double>(
+                        *gdal_raster_band, blocks, raster_band);
                     break;
                 }
                 default: {

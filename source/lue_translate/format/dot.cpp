@@ -3,6 +3,7 @@
 #include "lue/constant_size/time/omnipresent/property_set.h"
 #include "lue/constant_size/time/omnipresent/same_shape/property.h"
 #include <boost/format.hpp>
+#include <boost/algorithm/string.hpp>
 #include <exception>
 #include <fstream>
 #include <functional>
@@ -10,6 +11,27 @@
 
 namespace lue {
 namespace utility {
+
+std::string dot_name(
+    hdf5::Identifier const& id)
+{
+    return "node_" + std::to_string(id.info().addr());
+}
+
+
+std::string dot_name(
+    hdf5::Dataset const& dataset)
+{
+    return dot_name(dataset.id());
+}
+
+
+std::string dot_name(
+    hdf5::Group const& group)
+{
+    return dot_name(group.id());
+}
+
 
 class Subgraph
 {
@@ -28,7 +50,7 @@ public:
 subgraph cluster_%1% {
     label=<%2%>
 )")
-            % id.info().addr()
+            % dot_name(id)
             % label
             );
     }
@@ -60,13 +82,13 @@ void dump_node(
     Metadata const& metadata)
 {
     stream << boost::str(boost::format(R"(
-    node_%1% [
+    %1% [
         label=<%2%>
         shape="box"
         fillcolor="%3%"
     ];
 )")
-        % dataset.id().info().addr()
+        % dot_name(dataset)
         % dataset.id().name()
         % metadata.value("/dataset/fillcolor", "grey")
         );
@@ -79,12 +101,12 @@ void dump_node(
     Metadata const& metadata)
 {
     stream << boost::str(boost::format(R"(
-    node_%1% [
+    %1% [
         label=<%2%>
         fillcolor="%3%"
     ];
 )")
-        % domain.id().info().addr()
+        % dot_name(domain)
         % domain.id().name()
         % metadata.value("/domain/fillcolor", "grey")
         );
@@ -97,12 +119,12 @@ void dump_node(
     Metadata const& metadata)
 {
     stream << boost::str(boost::format(R"(
-    node_%1% [
+    %1% [
         label=<%2%>
         fillcolor="%3%"
     ];
 )")
-        % property.id().info().addr()
+        % dot_name(property)
         % property.id().name()
         % metadata.value("/property/fillcolor", "grey")
         );
@@ -117,12 +139,12 @@ void dump_node(
 //     Metadata const& metadata)
 // {
 //     stream << boost::str(boost::format(R"(
-//     node_%1% [
+//     %1% [
 //         label=<%2%>
 //         fillcolor="%3%"
 //     ];
 // )")
-//         % value.id().info().addr()
+//         % dot_name(value)
 //         % value.id().name()
 //         % metadata.value("/value/fillcolor", "grey")
 //         );
@@ -135,12 +157,12 @@ void dump_node(
     Metadata const& /* metadata */)
 {
     stream << boost::str(boost::format(R"(
-    node_%1% [
+    %1% [
         label=<%2%>
         fillcolor="%3%"
     ];
 )")
-        % group.id().info().addr()
+        % dot_name(group)
         % group.id().name()
         % "grey"
         );
@@ -155,16 +177,19 @@ void link_nodes(
     T2 const& to_object,
     std::ostream& stream,
     Metadata const& /* metadata */,
-    double weight=1.0)
+    double weight=1.0,
+    std::string const& style="solid")
 {
     stream << boost::str(boost::format(R"(
-    node_%1% -> node_%2% [
+    %1% -> %2% [
         weight=%3%
+        style="%4%"
     ];
 )")
-        % from_object.id().info().addr()
-        % to_object.id().info().addr()
+        % dot_name(from_object)
+        % dot_name(to_object)
         % weight
+        % style
         );
 }
 
@@ -226,8 +251,8 @@ void to_dot(
     link_nodes(property, property.values(), stream, metadata);
 
     if(property.space_is_discretized()) {
-        link_nodes(property, property.space_discretization(), stream,
-            metadata, 0.0);
+        link_nodes(property, property.space_discretization(),
+            stream, metadata, 0.0, "dashed");
     }
 }
 
@@ -280,14 +305,23 @@ void to_dot(
 
 
     auto const& properties = property_set.properties();
+    std::vector<std::string> property_dot_names;
 
     for(auto const& name: properties.names()) {
         auto const& property = properties[name];
 
         to_dot(property, stream, metadata);
         link_nodes(property_set, property, stream, metadata);
-        link_nodes(property, domain, stream, metadata, 0.0);
+        link_nodes(property, domain, stream, metadata);
+
+        property_dot_names.push_back(dot_name(property));
     }
+
+    stream << boost::str(boost::format(R"(
+    { rank=same %1% }
+)")
+        % boost::join(property_dot_names, " ")
+        );
 }
 
 }  // namespace omnipresent
@@ -379,10 +413,9 @@ void to_dot(
     // write the data values. We do have to write the organization, in HDF5,
     // of the data values.
 
-    stream << boost::str(boost::format(R"(digraph g {
+    stream << boost::str(boost::format(R"(digraph {
     fontname="Courier"
     fontsize=10
-    // label=<%1%>
 
     node [
         fontname="Courier"
@@ -398,8 +431,6 @@ void to_dot(
     ];
 
 )")
-        // TODO Join names of all datasets.
-        % datasets[0].get().pathname()
         );
 
     for(auto const& dataset: datasets) {
