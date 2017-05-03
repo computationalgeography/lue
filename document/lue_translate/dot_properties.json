@@ -1,0 +1,11 @@
+{
+    "domain": {
+        "fillcolor": "green"
+    },
+    "dataset": {
+        "fillcolor": "blue"
+    },
+    "property": {
+        "fillcolor": "orange"
+    }
+}

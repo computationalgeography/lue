@@ -1,0 +1,74 @@
+{
+    "dem": {
+        "phenomenon": {
+            "name": "floodplains",
+            "description": "Various floodplains in the research area",
+            "property_set": {
+                "name": "areas",
+                "description": "Properties within spatial extents"
+            }
+        },
+        "raster": {
+            "band": {
+                "1": {
+                    "name": "NOx",
+                    "description": "bandje bandje bandje 1"
+                }
+            }
+        }
+    },
+    "dem2": {
+        "phenomenon": {
+            "name": "floodplains",
+            "description": "Various floodplains in the research area",
+            "property_set": {
+                "name": "areas",
+                "description": "Properties within spatial extents"
+            }
+        },
+        "raster": {
+            "band": {
+                "1": {
+                    "name": "NO2",
+                    "description": "bandje bandje bandje 1"
+                }
+            }
+        }
+    },
+    "dem3": {
+        "phenomenon": {
+            "name": "floodplains2",
+            "description": "Various floodplains in the research area",
+            "property_set": {
+                "name": "areas",
+                "description": "Properties within spatial extents"
+            }
+        },
+        "raster": {
+            "band": {
+                "1": {
+                    "name": "PM10",
+                    "description": "bandje bandje bandje 1"
+                }
+            }
+        }
+    },
+    "dem4": {
+        "phenomenon": {
+            "name": "floodplains2",
+            "description": "Various floodplains in the research area",
+            "property_set": {
+                "name": "areas2",
+                "description": "Properties within spatial extents"
+            }
+        },
+        "raster": {
+            "band": {
+                "1": {
+                    "name": "PM10",
+                    "description": "bandje bandje bandje 1"
+                }
+            }
+        }
+    }
+}
