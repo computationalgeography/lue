@@ -195,16 +195,36 @@ void translate_gdal_raster_dataset_to_lue(
                 "Cannot open GDAL raster dataset " + gdal_dataset_name);
         }
 
+        auto const& root_json = metadata.object();
+
         gdal_dataset_name =
             boost::filesystem::path(gdal_dataset_name).stem().string();
-        auto const phenomenon_name = metadata.value(
-            boost::str(boost::format("/%1%/phenomenon/name")
-                % gdal_dataset_name),
-            gdal_dataset_name);
-        auto const property_set_name = metadata.value(
-            boost::str(boost::format("/%1%/phenomenon/property_set/name")
-                % gdal_dataset_name),
-            "area");
+        std::string phenomenon_name = gdal_dataset_name;
+        std::string property_set_name = "area";
+
+        if(json::has_key(root_json, "datasets")) {
+            auto const datasets_json = json::object(root_json, "datasets");
+
+            auto const dataset_json_it = json::find(
+                datasets_json, "name", gdal_dataset_name);
+
+            if(dataset_json_it != datasets_json.end()) {
+                auto const dataset_json = *dataset_json_it;
+
+                if(json::has_key(dataset_json, "phenomenon")) {
+                    auto const phenomenon_pointer =
+                        json::pointer(dataset_json, "phenomenon");
+                    auto const phenomenon_json =
+                        json::object(root_json, phenomenon_pointer);
+                    phenomenon_name = json::string(phenomenon_json, "name");
+
+                    if(json::has_key(phenomenon_json, "property_set")) {
+                        property_set_name = json::string(phenomenon_json,
+                                JSON::json_pointer("/property_set/name"));
+                    }
+                }
+            }
+        }
 
         hl::Raster::Discretization const discretization =
             gdal_discretization(*gdal_dataset);
@@ -228,16 +248,23 @@ void translate_gdal_raster_dataset_to_lue(
             auto const memory_datatype = gdal_datatype_to_hdf5_datatype(
                 gdal_datatype);
 
-            auto const name = metadata.value(
-                boost::str(boost::format("/%1%/raster/band/%2%/name")
-                    % gdal_dataset_name % b),
+            auto const name = metadata.string(
+                // Object in list
+                "datasets", "name", gdal_dataset_name,
+                // Path in object
+                JSONPointer(boost::str(boost::format(
+                    "/raster/bands/%1%") % (b - 1))),
+                // Key of value to obtain
+                "name",
+                // Default value
                 "band_" + std::to_string(b));
 
             auto raster_band = raster.add_band(name, memory_datatype);
 
             int block_size_x, block_size_y;
             gdal_raster_band->GetBlockSize(&block_size_x, &block_size_y);
-            GDALBlock blocks(discretization.nr_cols(), discretization.nr_rows(),
+            GDALBlock blocks(
+                discretization.nr_cols(), discretization.nr_rows(),
                 block_size_x, block_size_y);
 
             switch(gdal_datatype) {

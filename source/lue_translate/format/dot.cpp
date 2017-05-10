@@ -90,7 +90,7 @@ void dump_node(
 )")
         % dot_name(dataset)
         % dataset.id().name()
-        % metadata.value("/dataset/fillcolor", "grey")
+        % metadata.string(JSONPointer("/dataset/fillcolor"), "grey")
         );
 }
 
@@ -108,7 +108,7 @@ void dump_node(
 )")
         % dot_name(domain)
         % domain.id().name()
-        % metadata.value("/domain/fillcolor", "grey")
+        % metadata.string(JSONPointer("/domain/fillcolor"), "grey")
         );
 }
 
@@ -126,7 +126,7 @@ void dump_node(
 )")
         % dot_name(property)
         % property.id().name()
-        % metadata.value("/property/fillcolor", "grey")
+        % metadata.string(JSONPointer("/property/fillcolor"), "grey")
         );
 }
 

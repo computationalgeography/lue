@@ -7,6 +7,41 @@
 namespace lue {
 namespace utility {
 
+using JSON = nlohmann::json;
+using JSONPointer = JSON::json_pointer;
+using JSONCIterator = JSON::const_iterator;
+
+
+namespace json {
+
+bool               has_key             (JSON const& object,
+                                        std::string const& name);
+
+bool               has_key             (JSON const& object,
+                                        JSONPointer const& pointer);
+
+JSON               object              (JSON const& object,
+                                        std::string const& name);
+
+JSON               object              (JSON const& object,
+                                        JSONPointer const& pointer);
+
+std::string        string              (JSON const& object,
+                                        std::string const& name);
+
+std::string        string              (JSON const& object,
+                                        JSONPointer const& pointer);
+
+JSONPointer        pointer             (JSON const& object,
+                                        std::string const& name);
+
+JSONCIterator      find                (JSON const& object,
+                                        std::string const& name,
+                                        std::string const& string);
+
+}  // namespace json
+
+
 /*!
     @brief      Class for representing a collection of metadata items
 */
@@ -31,35 +66,32 @@ public:
 
     Metadata&      operator=           (Metadata const& other)=delete;
 
-    template<
-        typename T>
-    T              value               (std::string const& path,
-                                        T const& default_value) const;
+    JSON const&    object              () const;
 
-    std::string    value               (std::string const& path,
-                                        std::string const& default_value) const;
+    std::string    string              (JSONPointer const& pointer,
+                                        std::string const& default_value)
+                                            const;
+
+    std::string    string              (std::string const& list_name,
+                                        std::string const& key,
+                                        std::string const& value,
+                                        JSONPointer const& pointer,
+                                        std::string const& default_value)
+                                            const;
+
+    std::string    string              (std::string const& list_name,
+                                        std::string const& key,
+                                        std::string const& value,
+                                        JSONPointer const& pointer,
+                                        std::string const& value_key,
+                                        std::string const& default_value)
+                                            const;
 
 private:
 
-    nlohmann::json _json;
+    JSON           _json;
 
 };
-
-
-/*!
-    @brief      Return the value pointed to by @a path, or @a
-                default_value in case no such value exists at that
-                location
-    @tparam     T Type of value to obtain
-*/
-template<
-    typename T>
-inline T Metadata::value(
-    std::string const& path,
-    T const& default_value) const
-{
-    return _json.value(nlohmann::json::json_pointer(path), default_value);
-}
 
 }  // namespace utility
 }  // namespace lue
