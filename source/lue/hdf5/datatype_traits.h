@@ -48,8 +48,8 @@ template<
 struct NativeDatatypeTraits<
     T,
     typename std::enable_if<(
-        std::is_same<T, hsize_t>() &&
-        !std::is_same<hsize_t, uint64_t>())>::type
+        std::is_same<T, hsize_t>::value &&
+        !std::is_same<hsize_t, uint64_t>::value)>::type
 >
 {
     static hid_t type_id() { return H5T_NATIVE_HSIZE; }
@@ -97,8 +97,8 @@ template<
 struct StandardDatatypeTraits<
     T,
     typename std::enable_if<(
-        std::is_same<T, hsize_t>() &&
-        !std::is_same<hsize_t, uint64_t>())>::type
+        std::is_same<T, hsize_t>::value &&
+        !std::is_same<hsize_t, uint64_t>::value)>::type
 >
     : public StandardDatatypeTraits<uint64_t>
 {
@@ -112,9 +112,9 @@ struct StandardDatatypeTraits<
 
     static_assert(sizeof(hsize_t) == 8,
         "expecting size of hsize_t to be 8 bytes");
-    static_assert(std::is_unsigned<hsize_t>(),
+    static_assert(std::is_unsigned<hsize_t>::value,
         "expecting hsize_t to be unsigned");
-    static_assert(std::is_same<hsize_t, unsigned long long int>(),
+    static_assert(std::is_same<hsize_t, unsigned long long int>::value,
         "expecting hsize_t to be unsigned long long int");
 };
 
