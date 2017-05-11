@@ -85,16 +85,6 @@ public:
 
                    Raster              (hdf5::Identifier const& id);
 
-                   // Raster              (Dataset& dataset,
-                   //                      std::string const& phenomenon_name,
-                   //                      std::string const& property_set_name);
-
-                   // Raster              (// std::shared_ptr<Dataset> const& dataset,
-                   //                      omnipresent::PropertySet&& property_set,
-                   //                      omnipresent::same_shape::Property&&
-                   //                          discretization_property,
-                   //                      Discretization const& discretization);
-
                    Raster              (Raster const& other)=delete;
 
                    Raster              (Raster&& other)=default;
@@ -109,8 +99,6 @@ public:
                                         hdf5::Datatype const& datatype);
 
 private:
-
-    // std::shared_ptr<Dataset> _dataset;
 
     omnipresent::PropertySet _property_set;
 
@@ -127,13 +115,6 @@ Raster             create_raster       (Dataset& dataset,
                                         Raster::Domain const& domain,
                                         Raster::Discretization const&
                                             discretization);
-
-// Raster             create_raster       (std::string const& dataset_name,
-//                                         std::string const& phenomenon_name,
-//                                         std::string const& property_set_name,
-//                                         Raster::Domain const& domain,
-//                                         Raster::Discretization const&
-//                                             discretization);
 
 }  // namespace hl
 }  // namespace lue

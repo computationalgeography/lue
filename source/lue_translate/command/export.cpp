@@ -70,6 +70,11 @@ void Export::run_implementation()
             translate_lue_dataset_to_dot(*lue_dataset, output_dataset_name,
                 metadata);
         }
+        else if(bfs::path(output_dataset_name).extension() == ".vtk") {
+            // Create a VTK file of the dataset.
+            translate_lue_dataset_to_vtk(*lue_dataset, output_dataset_name,
+                metadata);
+        }
         else {
             throw std::runtime_error(
                 "translation to " + output_dataset_name +

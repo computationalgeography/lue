@@ -12,7 +12,7 @@ bool has_key(
     JSON const& object,
     std::string const& name)
 {
-    return object.find(name) != object.end();
+    return !object.is_null() && object.find(name) != object.end();
 }
 
 
@@ -20,9 +20,7 @@ bool has_key(
     JSON const& object,
     JSONPointer const& pointer)
 {
-    auto const object_ = object.value(pointer, JSON());
-
-    return !object_.is_null();
+    return !object.is_null() && ! object.value(pointer, JSON()).is_null();
 }
 
 

@@ -310,11 +310,10 @@ void translate_gdal_raster_dataset_to_lue(
             }
         }
 
-        // // TODO Make sure the dataset version is in the dataset
-        // // TODO Write description items from the metadata
-        // // TODO Write metadata items
-        // // TODO Handle various ways of handling no-data in GDAL
-
+        // TODO Make sure the dataset version is in the dataset
+        // TODO Write description items from the metadata
+        // TODO Write metadata items
+        // TODO Handle various ways of handling no-data in GDAL
     }
 }
 

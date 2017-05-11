@@ -1,7 +1,6 @@
 #include "luehl/raster.h"
 #include "lue/constant_size/time/omnipresent/space_box_domain.h"
 #include "lue/hdf5/datatype_traits.h"
-#include <iostream>
 
 
 namespace lue {
@@ -117,37 +116,6 @@ Raster::Raster(
 }
 
 
-// Raster::Raster(
-//     Dataset& dataset,
-//     std::string const& phenomenon_name,
-//     std::string const& property_set_name)
-// 
-//     : _property_set(dataset.
-//         phenomena()[phenomenon_name].
-//         property_sets()[property_set_name])
-//       _ omnipresent::same_shape::Property _discretization_property;
-// 
-// {
-// 
-// }
-// 
-// 
-// Raster::Raster(
-//     // std::shared_ptr<Dataset> const& dataset,
-//     omnipresent::PropertySet&& property_set,
-//     omnipresent::same_shape::Property&& discretization_property,
-//     Raster::Discretization const& discretization)
-// 
-//     : // _dataset(dataset),
-//       _property_set{std::forward<omnipresent::PropertySet>(property_set)},
-//       _discretization_property{std::forward<omnipresent::same_shape::Property>(
-//           discretization_property)},
-//       _discretization{discretization}
-// 
-// {
-// }
-
-
 /*!
     @brief      Add a band to the raster
     @param      name Name of band to add
@@ -209,16 +177,6 @@ omnipresent::same_shape::Property discretization_property(
 
     return property;
 }
-
-
-// Raster create_raster(
-//     PropertySet& property_set,
-//     Raster::Domain const& domain,
-//     Raster::Discretization const& discretization)
-// {
-// 
-// 
-// }
 
 
 /*!
@@ -313,71 +271,6 @@ Raster create_raster(
             property_set_name, domain, discretization));
     }
 }
-
-
-// /*!
-//     @brief      Create a raster in a new LUE dataset
-//     @exception  std::runtime_error In case the dataset cannot be created
-// 
-//     If a dataset named @a dataset_name already exists, it is truncated.
-// 
-//     This function does the folowing:
-//     - Create a new empty [dataset](@ref Dataset), or truncate the existing one
-//     - Add a [phenomenon](@ref Phenomenon)
-//     - Add a [property set](@ref PropertySet) with a [domain](Domain)
-//       representing the time and space extent of the raster
-// */
-
-
-// Raster create_raster(
-//     std::string const& dataset_name,
-//     std::string const& phenomenon_name,
-//     std::string const& property_set_name,
-//     Raster::Domain const& domain,
-//     Raster::Discretization const& discretization)
-// {
-//     return create_raster(create_dataset(dataset_name), phenomenon_name,
-//         property_set_name, domain, discretization);
-// 
-// 
-//     // auto& phenomenon = dataset.add_phenomenon(phenomenon_name);
-//     // auto property_set = omnipresent::create_property_set(phenomenon,
-//     //     property_set_name);
-//     // hsize_t const nr_items = 1;
-// 
-// 
-//     // // Write item id to property set.
-//     // {
-//     //     hsize_t const id = 0;
-//     //     auto& ids = property_set.reserve(nr_items);
-// 
-//     //     ids.write(&id);
-//     // }
-// 
-// 
-//     // // Write raster extent to space domain.
-//     // {
-//     //     auto const file_datatype_id =
-//     //         hdf5::StandardDatatypeTraits<double>::type_id();
-//     //     auto const memory_datatype_id =
-//     //         hdf5::NativeDatatypeTraits<double>::type_id();
-//     //     size_t const rank = 2;
-//     //     auto space_domain = omnipresent::configure_space_box_domain(
-//     //         property_set, file_datatype_id, memory_datatype_id, rank);
-// 
-//     //     auto& space_box = space_domain.reserve(nr_items);
-// 
-//     //     space_box.write(domain.coordinates());
-//     // }
-// 
-// 
-//     // // Write property with discretization information to property set.
-//     // auto property = discretization_property(property_set, discretization);
-// 
-// 
-//     // return Raster(std::move(dataset), std::move(property_set),
-//     //    std::move(property), discretization);
-// }
 
 }  // namespace hl
 }  // namespace lue

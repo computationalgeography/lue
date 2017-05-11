@@ -33,6 +33,39 @@ std::string dot_name(
 }
 
 
+// Shapes are based on the HDF5 type -------------------------------------------
+std::string shape(
+    hdf5::Group const&,
+    Metadata const& metadata)
+{
+    return metadata.string(JSONPointer("/hdf5/group/shape"), "oval");
+}
+
+
+std::string shape(
+    hdf5::Dataset const&,
+    Metadata const& metadata)
+{
+    return metadata.string(JSONPointer("/hdf5/dataset/shape"), "box");
+}
+
+
+// Colors are based on the LUE type --------------------------------------------
+std::string default_fillcolor()
+{
+    return "transparent";
+}
+
+
+template<
+    typename T>
+std::string fillcolor(
+    T const&)
+{
+    return default_fillcolor();
+}
+
+
 class Subgraph
 {
 
@@ -77,21 +110,23 @@ private:
 
 
 void dump_node(
-    hdf5::Dataset const& dataset,
+    Phenomenon const& phenomenon,
     std::ostream& stream,
     Metadata const& metadata)
 {
     stream << boost::str(boost::format(R"(
     %1% [
         label=<%2%>
-        shape="box"
-        fillcolor="%3%"
+        shape="%3%"
+        fillcolor="%4%"
     ];
 )")
-        % dot_name(dataset)
-        % dataset.id().name()
-        % metadata.string(JSONPointer("/dataset/fillcolor"), "grey")
-        );
+        % dot_name(phenomenon)
+        % phenomenon.id().name()
+        % shape(phenomenon, metadata)
+        % metadata.string(
+            JSONPointer("/lue/phenomenon/fillcolor"), fillcolor(phenomenon))
+    );
 }
 
 
@@ -103,69 +138,38 @@ void dump_node(
     stream << boost::str(boost::format(R"(
     %1% [
         label=<%2%>
-        fillcolor="%3%"
+        shape="%3%"
+        fillcolor="%4%"
     ];
 )")
         % dot_name(domain)
         % domain.id().name()
-        % metadata.string(JSONPointer("/domain/fillcolor"), "grey")
-        );
+        % shape(domain, metadata)
+        % metadata.string(
+            JSONPointer("/lue/domain/fillcolor"), fillcolor(domain))
+    );
 }
 
 
 void dump_node(
-    Property const& property,
+    SpaceDomain const& space_domain,
     std::ostream& stream,
     Metadata const& metadata)
 {
     stream << boost::str(boost::format(R"(
     %1% [
         label=<%2%>
-        fillcolor="%3%"
+        shape="%3%"
+        fillcolor="%4%"
     ];
 )")
-        % dot_name(property)
-        % property.id().name()
-        % metadata.string(JSONPointer("/property/fillcolor"), "grey")
-        );
-}
-
-
-// TODO Once all specialized values inherit from value, this will work
-
-// void dump_node(
-//     Value const& value,
-//     std::ostream& stream,
-//     Metadata const& metadata)
-// {
-//     stream << boost::str(boost::format(R"(
-//     %1% [
-//         label=<%2%>
-//         fillcolor="%3%"
-//     ];
-// )")
-//         % dot_name(value)
-//         % value.id().name()
-//         % metadata.value("/value/fillcolor", "grey")
-//         );
-// }
-
-
-void dump_node(
-    hdf5::Group const& group,
-    std::ostream& stream,
-    Metadata const& /* metadata */)
-{
-    stream << boost::str(boost::format(R"(
-    %1% [
-        label=<%2%>
-        fillcolor="%3%"
-    ];
-)")
-        % dot_name(group)
-        % group.id().name()
-        % "grey"
-        );
+        % dot_name(space_domain)
+        % space_domain.id().name()
+        % shape(space_domain, metadata)
+        % metadata.string(
+            JSONPointer("/lue/space_domain/fillcolor"),
+            fillcolor(space_domain))
+    );
 }
 
 
@@ -206,12 +210,54 @@ namespace time {
 namespace omnipresent {
 namespace same_shape {
 
+void dump_node(
+    Value const& value,
+    std::ostream& stream,
+    Metadata const& metadata)
+{
+    stream << boost::str(boost::format(R"(
+    %1% [
+        label=<%2%>
+        shape="%3%"
+        fillcolor="%4%"
+    ];
+)")
+        % dot_name(value)
+        % value.id().name()
+        % shape(value, metadata)
+        % metadata.string(
+            JSONPointer("/lue/value/fillcolor"), fillcolor(value))
+    );
+}
+
+
 void to_dot(
     Value const& value,
     std::ostream& stream,
     Metadata const& metadata)
 {
     dump_node(value, stream, metadata);
+}
+
+
+void dump_node(
+    Property const& property,
+    std::ostream& stream,
+    Metadata const& metadata)
+{
+    stream << boost::str(boost::format(R"(
+    %1% [
+        label=<%2%>
+        shape="%3%"
+        fillcolor="%4%"
+    ];
+)")
+        % dot_name(property)
+        % property.id().name()
+        % shape(property, metadata)
+        % metadata.string(
+            JSONPointer("/lue/property/fillcolor"), fillcolor(property))
+    );
 }
 
 
@@ -231,12 +277,54 @@ void to_dot(
 
 namespace different_shape {
 
+void dump_node(
+    Value const& value,
+    std::ostream& stream,
+    Metadata const& metadata)
+{
+    stream << boost::str(boost::format(R"(
+    %1% [
+        label=<%2%>
+        shape="%3%"
+        fillcolor="%4%"
+    ];
+)")
+        % dot_name(value)
+        % value.id().name()
+        % shape(value, metadata)
+        % metadata.string(
+            JSONPointer("/lue/value/fillcolor"), fillcolor(value))
+    );
+}
+
+
 void to_dot(
     Value const& value,
     std::ostream& stream,
     Metadata const& metadata)
 {
     dump_node(value, stream, metadata);
+}
+
+
+void dump_node(
+    Property const& property,
+    std::ostream& stream,
+    Metadata const& metadata)
+{
+    stream << boost::str(boost::format(R"(
+    %1% [
+        label=<%2%>
+        shape="%3%"
+        fillcolor="%4%"
+    ];
+)")
+        % dot_name(property)
+        % property.id().name()
+        % shape(property, metadata)
+        % metadata.string(
+            JSONPointer("/lue/property/fillcolor"), fillcolor(property))
+    );
 }
 
 
@@ -286,6 +374,42 @@ void to_dot(
 
 
 void to_dot(
+    Domain const& domain,
+    std::ostream& stream,
+    Metadata const& metadata)
+{
+    dump_node(domain, stream, metadata);
+
+    // TODO handle space domain
+    auto const& space_domain = domain.space();
+
+    dump_node(space_domain, stream, metadata);
+    link_nodes(domain, space_domain, stream, metadata);
+}
+
+
+void dump_node(
+    PropertySet const& property_set,
+    std::ostream& stream,
+    Metadata const& metadata)
+{
+    stream << boost::str(boost::format(R"(
+    %1% [
+        label=<%2%>
+        shape="%3%"
+        fillcolor="%4%"
+    ];
+)")
+        % dot_name(property_set)
+        % property_set.id().name()
+        % shape(property_set, metadata)
+        % metadata.string(
+            JSONPointer("/lue/property_set/fillcolor"), fillcolor(property_set))
+    );
+}
+
+
+void to_dot(
     PropertySet const& property_set,
     std::ostream& stream,
     Metadata const& metadata)
@@ -300,7 +424,7 @@ void to_dot(
 
     auto const& domain = property_set.domain();
 
-    dump_node(domain, stream, metadata);
+    to_dot(domain, stream, metadata);
     link_nodes(property_set, domain, stream, metadata);
 
 
@@ -417,9 +541,14 @@ void to_dot(
     fontname="Courier"
     fontsize=10
 
+    graph [
+        bgcolor="transparent"
+    ];
+
     node [
         fontname="Courier"
         fontsize=10
+        fontcolor="%1%"
         style="filled"
     ];
 
@@ -431,7 +560,9 @@ void to_dot(
     ];
 
 )")
-        );
+        % metadata.string(
+            JSONPointer("/dot/node/fontcolor"), "black")
+    );
 
     for(auto const& dataset: datasets) {
         to_dot(dataset, stream, metadata);

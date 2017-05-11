@@ -1,11 +1,37 @@
 {
-    "domain": {
-        "fillcolor": "green"
+    "dot": {
+        "node": {
+            "fontcolor": "white"
+        }
     },
-    "dataset": {
-        "fillcolor": "blue"
+
+    "hdf5": {
+        "dataset": {
+            "shape": "oval"
+        },
+        "dataset": {
+            "shape": "box"
+        }
     },
-    "property": {
-        "fillcolor": "orange"
+
+    "lue": {
+        "phenomenon": {
+            "fillcolor": "#791d72"
+        },
+        "property_set": {
+            "fillcolor": "#9a0000"
+        },
+        "property": {
+            "fillcolor": "#419702"
+        },
+        "domain": {
+            "fillcolor": "#094d8e"
+        },
+        "space_domain": {
+            "fillcolor": "#36a2c9"
+        },
+        "value": {
+            "fillcolor": "#f08000"
+        }
     }
 }
