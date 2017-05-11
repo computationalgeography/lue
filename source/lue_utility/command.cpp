@@ -41,7 +41,7 @@ Command::Command(
     std::string const& usage,
     std::vector<std::string> const& arguments)
 
-    : Command(usage, arguments, {})
+    : Command(usage, arguments, SubCommands{})
 
 {
     // print_arguments();
