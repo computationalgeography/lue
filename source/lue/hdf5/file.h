@@ -1,12 +1,13 @@
 #pragma once
 #include "lue/hdf5/group.h"
+#include "lue/hdf5/property_list.h"
 
 
 namespace lue {
 namespace hdf5 {
 
 /*!
-    @brief      This class represents an HDF5 file.
+    @brief      This class represents an HDF5 file
 */
 class File:
     public Group
@@ -14,8 +15,25 @@ class File:
 
 public:
 
+    class AccessPropertyList:
+        public PropertyList
+    {
+
+    public:
+
+                   AccessPropertyList  ();
+
+        void       use_core_driver     ();
+
+    };
+
                    File                (std::string const& name,
                                         unsigned int const flags);
+
+                   File                (std::string const& name,
+                                        unsigned int const flags,
+                                        AccessPropertyList const&
+                                            access_property_list);
 
                    File                (Identifier&& id);
 
@@ -42,6 +60,9 @@ private:
 bool               file_exists         (std::string const& name);
 
 File               create_file         (std::string const& name);
+
+File               create_in_memory_file(
+                                        std::string const& name);
 
 void               remove_file         (std::string const& name);
 

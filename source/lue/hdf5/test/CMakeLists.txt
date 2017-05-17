@@ -1,5 +1,6 @@
 set(TEST_NAMES
     attribute_test
+    dataset_test
     datatype_test
 )
 add_unit_tests(

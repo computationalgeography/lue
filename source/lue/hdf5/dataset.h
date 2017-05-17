@@ -3,6 +3,7 @@
 #include "lue/hdf5/dataspace.h"
 #include "lue/hdf5/datatype.h"
 #include "lue/hdf5/offset.h"
+#include "lue/hdf5/property_list.h"
 #include "lue/hdf5/shape.h"
 #include "lue/hdf5/stride.h"
 
@@ -14,10 +15,25 @@ bool               dataset_exists      (Identifier const& location,
                                         std::string const& name);
 
 
+/*!
+    @brief      Class representing an HDF5 dataset
+*/
 class Dataset
 {
 
 public:
+
+    class CreationPropertyList:
+        public PropertyList
+    {
+
+    public:
+
+                   CreationPropertyList();
+
+        void       set_chunk           (Shape const& chunk);
+
+    };
 
                    Dataset             (Identifier const& location,
                                         std::string const& name);
@@ -43,10 +59,16 @@ public:
     void           resize              (Shape const& new_dimension_sizes);
 
     void           read                (Datatype const& datatype,
+                                        void* buffer) const;
+
+    void           read                (Datatype const& datatype,
                                         Offset const& start,
                                         Stride const& stride,
                                         Count const& count,
                                         void* buffer) const;
+
+    void           write               (Datatype const& datatype,
+                                        void const* buffer) const;
 
     void           write               (Datatype const& datatype,
                                         Offset const& start,
@@ -75,7 +97,8 @@ Dataset            create_dataset      (Identifier const& identifier,
                                         std::string const& name,
                                         Datatype const& datatype,
                                         Dataspace const& dataspace,
-                                        hid_t const creation_property_list);
+                                        Dataset::CreationPropertyList const&
+                                            creation_property_list);
 
 } // namespace hdf5
 } // namespace lue

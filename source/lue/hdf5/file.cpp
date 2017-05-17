@@ -6,6 +6,27 @@
 namespace lue {
 namespace hdf5 {
 
+File::AccessPropertyList::AccessPropertyList()
+
+    : PropertyList(H5P_FILE_ACCESS)
+
+{
+}
+
+
+void File::AccessPropertyList::use_core_driver()
+{
+    size_t const increment = 64000;  // 64k
+    hbool_t const backing_store = 0;  // false
+
+    auto status = ::H5Pset_fapl_core(id(), increment, backing_store);
+
+    if(status < 0) {
+        throw std::runtime_error("Cannot set core file driver");
+    }
+}
+
+
 /*!
     @brief      Open file
     @param      name Name of file
@@ -16,8 +37,25 @@ File::File(
     std::string const& name,
     unsigned int const flags)
 
-    : Group(Identifier(::H5Fopen(name.c_str(), flags, H5P_DEFAULT),
-        ::H5Fclose))
+    : File(name, flags, AccessPropertyList())
+
+    // : Group(Identifier(::H5Fopen(name.c_str(), flags, H5P_DEFAULT),
+    //     ::H5Fclose))
+
+{
+    // if(!id().is_valid()) {
+    //     throw std::runtime_error("Cannot open file " + name);
+    // }
+}
+
+
+File::File(
+    std::string const& name,
+    unsigned int const flags,
+    AccessPropertyList const& access_property_list)
+
+    : Group(Identifier(::H5Fopen(name.c_str(), flags,
+        access_property_list.id()), ::H5Fclose))
 
 {
     if(!id().is_valid()) {
@@ -126,6 +164,27 @@ File create_file(
 {
     Identifier id(::H5Fcreate(name.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT,
         H5P_DEFAULT), ::H5Fclose);
+
+    if(!id.is_valid()) {
+        throw std::runtime_error("Cannot create file " + name);
+    }
+
+    return File(std::move(id));
+}
+
+
+/*!
+    @brief      Create an in-memory file
+*/
+File create_in_memory_file(
+    std::string const& name)
+{
+    auto access_property_list = File::AccessPropertyList();
+
+    access_property_list.use_core_driver();
+
+    Identifier id(::H5Fcreate(name.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT,
+        access_property_list.id()), ::H5Fclose);
 
     if(!id.is_valid()) {
         throw std::runtime_error("Cannot create file " + name);

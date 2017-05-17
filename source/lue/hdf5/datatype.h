@@ -14,7 +14,7 @@ public:
 
     template<
         typename T>
-                   Datatype            (T const&);
+    explicit       Datatype            (T const&);
 
                    Datatype            (hid_t const id);
 

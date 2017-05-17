@@ -11,6 +11,7 @@ set(SOURCES
     identifier
     link
     object_info
+    property_list
 )
 add_library(lue_hdf5_objects OBJECT
     ${SOURCES}
