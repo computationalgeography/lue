@@ -8,6 +8,7 @@ set(SOURCES
     space_box
     space_box_domain
     space_domain
+    value
 )
 add_library(lue_constant_size_time_omnipresent_objects OBJECT
     ${SOURCES}

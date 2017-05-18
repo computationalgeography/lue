@@ -4,6 +4,7 @@
 #include "lue/constant_size/time/omnipresent/same_shape/property.h"
 #include <boost/format.hpp>
 #include <boost/algorithm/string.hpp>
+#include <boost/range/adaptor/transformed.hpp>
 #include <exception>
 #include <fstream>
 #include <functional>
@@ -11,6 +12,58 @@
 
 namespace lue {
 namespace utility {
+
+using Record = std::tuple<std::string, std::string>;
+using Table = std::vector<Record>;
+
+
+std::string to_dot(
+    Record const& record)
+{
+    return
+        "<tr>"
+            "<td align=\"left\">" +
+                std::get<0>(record) +
+            "</td>"
+            "<td align=\"left\">" +
+                std::get<1>(record) +
+            "</td>"
+        "</tr>"
+        ;
+}
+
+
+std::string to_dot(
+    Table const& table)
+{
+    std::string result = "<table"
+       " border=\"0\""
+    ">";
+
+    for(auto const& record: table) {
+        result += to_dot(record);
+    }
+
+    result += "</table>";
+
+    return result;
+}
+
+
+std::string to_string(
+    hdf5::Shape const& shape)
+{
+    auto to_string = [](hdf5::Shape::value_type const value) {
+        return std::to_string(value);
+    };
+
+    return
+        "[" +
+        boost::join(shape | boost::adaptors::transformed(to_string), ", ") +
+        "]"
+        ;
+}
+
 
 std::string dot_name(
     hdf5::Identifier const& id)
@@ -215,6 +268,22 @@ void dump_node(
     std::ostream& stream,
     Metadata const& metadata)
 {
+    std::string const label = metadata.boolean(
+            JSONPointer("/lue/value/show_details"), false)
+        ? to_dot(Table{
+                Record{ value.id().name(), "" },
+                Record{ "nr_items", std::to_string(value.nr_items()) },
+                Record{ "shape", to_string(value.value_shape()) },
+                Record{ "file_datatype",
+                    hdf5::standard_datatype_as_string(
+                        (value.file_datatype())) },
+                Record{ "memory_datatype",
+                    hdf5::native_datatype_as_string(
+                        (value.memory_datatype())) }
+            })
+        : value.id().name()
+        ;
+
     stream << boost::str(boost::format(R"(
     %1% [
         label=<%2%>
@@ -223,7 +292,7 @@ void dump_node(
     ];
 )")
         % dot_name(value)
-        % value.id().name()
+        % label
         % shape(value, metadata)
         % metadata.string(
             JSONPointer("/lue/value/fillcolor"), fillcolor(value))
@@ -282,6 +351,22 @@ void dump_node(
     std::ostream& stream,
     Metadata const& metadata)
 {
+    std::string const label = metadata.boolean(
+            JSONPointer("/lue/value/show_details"), false)
+        ? to_dot(Table{
+                Record{ value.id().name(), "" },
+                Record{ "nr_items", std::to_string(value.nr_items()) },
+                Record{ "rank", std::to_string(value.rank()) },
+                Record{ "file_datatype",
+                    hdf5::standard_datatype_as_string(
+                        (value.file_datatype())) },
+                Record{ "memory_datatype",
+                    hdf5::native_datatype_as_string(
+                        (value.memory_datatype())) }
+            })
+        : value.id().name()
+        ;
+
     stream << boost::str(boost::format(R"(
     %1% [
         label=<%2%>
@@ -290,7 +375,7 @@ void dump_node(
     ];
 )")
         % dot_name(value)
-        % value.id().name()
+        % label
         % shape(value, metadata)
         % metadata.string(
             JSONPointer("/lue/value/fillcolor"), fillcolor(value))
@@ -380,7 +465,8 @@ void to_dot(
 {
     dump_node(domain, stream, metadata);
 
-    // TODO handle space domain
+
+    // TODO Support space domain details (space_box, etc).
     auto const& space_domain = domain.space();
 
     dump_node(space_domain, stream, metadata);

@@ -50,6 +50,12 @@ namespace {
 }  // Anonymous namespace
 
 
+BOOST_AUTO_TEST_CASE(dummy)
+{
+    BOOST_CHECK(true);
+}
+
+
 // BOOST_AUTO_TEST_CASE(create_new_dataset)
 // {
 //     std::string const dataset_name = "create_new_dataset.lue";

@@ -3,6 +3,7 @@ add_test_conditionally(test)
 set(SOURCES
     attribute
     attributes
+    chunk
     dataset
     dataspace
     datatype
@@ -12,6 +13,7 @@ set(SOURCES
     link
     object_info
     property_list
+    shape
 )
 add_library(lue_hdf5_objects OBJECT
     ${SOURCES}

@@ -137,7 +137,7 @@ void init_dataset_class(
     Open existing LUE dataset
 )",
         "name"_a,
-        "mode"_a,
+        "mode"_a="r",
         py::return_value_policy::move);
 
     module.def(

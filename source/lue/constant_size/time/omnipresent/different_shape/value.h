@@ -1,4 +1,5 @@
 #pragma once
+#include "../value.h"
 #include "lue/hdf5/group.h"
 #include "lue/array.h"
 
@@ -14,7 +15,8 @@ namespace different_shape {
     have the same rank, but the size of each dimension may be different.
 */
 class Value:
-    public hdf5::Group
+    public hdf5::Group,
+    public omnipresent::Value
 {
 
 public:
@@ -43,7 +45,7 @@ public:
 
     Value&         operator=           (Value&& other)=default;
 
-    hsize_t        nr_items            () const;
+    hsize_t        nr_items            () const final;
 
     int            rank                () const;
 

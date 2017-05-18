@@ -26,7 +26,7 @@ set(SOURCES
 #     time_domain_configuration
     universe
     universes
-#     value
+    value
 #     value_configuration
 )
 add_library(lue_objects OBJECT

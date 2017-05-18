@@ -106,11 +106,10 @@ class DiscretizationTest(lue_test.TestCase):
         # property with two values per item: nr_rows, nr_cols.
         discretization_property_name = "space discretization"
         value_shape = (2,)
-        chunk_shape = (2,)
         discretization_value_type = numpy.uint32
         discretization_property = omnipresent.same_shape.create_property(
             property_set, discretization_property_name,
-            discretization_value_type, value_shape, chunk_shape)
+            discretization_value_type, value_shape)
 
         nr_cells = discretization_property.reserve(nr_items)
         nr_cells_ = numpy.arange(start=1, stop=nr_items * 2 + 1,

@@ -32,6 +32,9 @@ std::string        string              (JSON const& object,
 std::string        string              (JSON const& object,
                                         JSONPointer const& pointer);
 
+bool               boolean             (JSON const& object,
+                                        JSONPointer const& pointer);
+
 JSONPointer        pointer             (JSON const& object,
                                         std::string const& name);
 
@@ -86,6 +89,9 @@ public:
                                         std::string const& value_key,
                                         std::string const& default_value)
                                             const;
+
+    bool           boolean             (JSONPointer const& pointer,
+                                        bool const default_value) const;
 
 private:
 

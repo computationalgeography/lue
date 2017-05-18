@@ -58,9 +58,20 @@ private:
 Property           create_property     (PropertySet& property_set,
                                         std::string const& name,
                                         hdf5::Datatype const& file_datatype,
+                                        hdf5::Datatype const& memory_datatype);
+
+Property           create_property     (PropertySet& property_set,
+                                        std::string const& name,
+                                        hdf5::Datatype const& file_datatype,
                                         hdf5::Datatype const& memory_datatype,
-                                        hdf5::Shape const& value_shape,
-                                        hdf5::Shape const& value_chunk);
+                                        hdf5::Shape const& value_shape);
+
+// Property           create_property     (PropertySet& property_set,
+//                                         std::string const& name,
+//                                         hdf5::Datatype const& file_datatype,
+//                                         hdf5::Datatype const& memory_datatype,
+//                                         hdf5::Shape const& value_shape,
+//                                         hdf5::Shape const& value_chunk);
 
 // void               configure_property  (lue::Property const& location,
 //                                         hid_t const file_type_id,

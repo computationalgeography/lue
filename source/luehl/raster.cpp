@@ -57,12 +57,12 @@ hsize_t Raster::Discretization::nr_cols() const
 Raster::Domain::Domain(
     std::string const& crs,
     double const west,
-    double const north,
+    double const south,
     double const east,
-    double const south)
+    double const north)
 
     : _crs{crs},
-      _coordinates{west, north, east, south}
+      _coordinates{west, south, east, north}
 
 {
 }
@@ -160,7 +160,6 @@ omnipresent::same_shape::Property discretization_property(
 
     std::string const& property_name = discretization_property_name;
     hdf5::Shape const shape{nr_values_per_item};
-    hdf5::Shape const chunk{nr_values_per_item};
     auto const file_datatype_id =
         hdf5::StandardDatatypeTraits<hsize_t>::type_id();
     auto const memory_datatype_id =
@@ -168,8 +167,7 @@ omnipresent::same_shape::Property discretization_property(
 
     auto property = omnipresent::same_shape::create_property(
         property_set, property_name,
-        file_datatype_id, memory_datatype_id,
-        shape, chunk);
+        file_datatype_id, memory_datatype_id, shape);
 
     auto& nr_cells = property.reserve(nr_items);
 

@@ -143,20 +143,57 @@ Property create_property(
     PropertySet& property_set,
     std::string const& name,
     hdf5::Datatype const& file_datatype,
-    hdf5::Datatype const& memory_datatype,
-    hdf5::Shape const& value_shape,
-    hdf5::Shape const& value_chunk)
+    hdf5::Datatype const& memory_datatype)
 {
     Property::Configuration configuration(ShapePerItemType::same);
     auto property = omnipresent::create_property(property_set, name,
         configuration);
-    auto value = create_value(property.id(), value_tag, file_datatype,
-        memory_datatype, value_shape, value_chunk);
+    auto value = create_value(
+        property.id(), value_tag, file_datatype, memory_datatype);
 
     assert(property.id().is_valid());
 
     return Property(std::move(property), memory_datatype);
 }
+
+
+Property create_property(
+    PropertySet& property_set,
+    std::string const& name,
+    hdf5::Datatype const& file_datatype,
+    hdf5::Datatype const& memory_datatype,
+    hdf5::Shape const& value_shape)
+{
+    Property::Configuration configuration(ShapePerItemType::same);
+    auto property = omnipresent::create_property(property_set, name,
+        configuration);
+    auto value = create_value(property.id(), value_tag, file_datatype,
+        memory_datatype, value_shape);
+
+    assert(property.id().is_valid());
+
+    return Property(std::move(property), memory_datatype);
+}
+
+
+// Property create_property(
+//     PropertySet& property_set,
+//     std::string const& name,
+//     hdf5::Datatype const& file_datatype,
+//     hdf5::Datatype const& memory_datatype,
+//     hdf5::Shape const& value_shape,
+//     hdf5::Shape const& value_chunk)
+// {
+//     Property::Configuration configuration(ShapePerItemType::same);
+//     auto property = omnipresent::create_property(property_set, name,
+//         configuration);
+//     auto value = create_value(property.id(), value_tag, file_datatype,
+//         memory_datatype, value_shape, value_chunk);
+// 
+//     assert(property.id().is_valid());
+// 
+//     return Property(std::move(property), memory_datatype);
+// }
 
 }  // namespace same_shape
 }  // namespace omnipresent

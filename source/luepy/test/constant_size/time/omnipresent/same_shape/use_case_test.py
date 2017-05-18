@@ -50,10 +50,9 @@ class UseCaseTest(lue_test.TestCase):
 
         # Now, add a property, whose values all have the same shape.
         value_shape = (4, 5)
-        chunk_shape = (4, 5)
         value_type = numpy.int32
         property = omnipresent.same_shape.create_property(
-            property_set, property_name, value_type, value_shape, chunk_shape)
+            property_set, property_name, value_type, value_shape)
 
         values = property.reserve(nr_items)
         values_ = numpy.arange(nr_items * reduce(lambda x, y: x * y,

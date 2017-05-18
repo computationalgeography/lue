@@ -36,6 +36,7 @@ Value::Value(
     hdf5::Datatype const& memory_datatype)
 
     : Group(location, name),
+      omnipresent::Value(),
       _nr_items{attributes().read<hsize_t>(nr_items_tag)},
       _rank{attributes().read<int>(rank_tag)},
       _file_datatype{hdf5::decode_datatype(
@@ -51,6 +52,7 @@ Value::Value(
     hdf5::Datatype const& memory_datatype)
 
     : Group(std::forward<hdf5::Group>(group)),
+      omnipresent::Value(),
       _nr_items{attributes().read<hsize_t>(nr_items_tag)},
       _rank{attributes().read<int>(rank_tag)},
       _file_datatype{hdf5::decode_datatype(
@@ -112,9 +114,9 @@ void Value::reserve_value(
         max_dimension_sizes);
 
     // No chunking for now...
-    auto creation_property_list_location = H5P_DEFAULT;
+    hdf5::Dataset::CreationPropertyList creation_property_list;
     auto dataset = hdf5::create_dataset(id(), name, _file_datatype,
-        dataspace, creation_property_list_location);
+        dataspace, creation_property_list);
 }
 
 

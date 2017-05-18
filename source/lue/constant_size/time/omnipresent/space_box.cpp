@@ -52,13 +52,8 @@ SpaceBox create_space_box(
     // (diagonally). Two of them is enough.
     hdf5::Shape value_shape = { 2 * rank };
 
-    // TODO Fix the chunk size. Doing it like this will make each box a chunk.
-    //      This is too small. Maybe let Value heuristically pick a chunk
-    //      size, based on the shape passed in.
-    hdf5::Shape value_chunk = { value_shape[0] };
-
     auto value = same_shape::create_value(group, coordinates_tag,
-        file_datatype, memory_datatype, value_shape, value_chunk);
+        file_datatype, memory_datatype, value_shape);
 
     return SpaceBox(std::move(value));
 }

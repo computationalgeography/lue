@@ -1,9 +1,19 @@
 #include "value.h"
-// #include "lue/array.h"
 #include <cassert>
+#include "lue/hdf5/chunk.h"
 
 
 namespace lue {
+// namespace {
+// 
+// hdf5::Shape value_chunk(
+//     hdf5::Shape const& value_shape)
+// {
+// }
+// 
+// }  // Anonymous namespace
+
+
 namespace constant_size {
 namespace time {
 namespace omnipresent {
@@ -36,7 +46,8 @@ Value::Value(
     std::string const& name,
     hdf5::Datatype const& memory_datatype)
 
-    : Array(location, name, memory_datatype)
+    : Array(location, name, memory_datatype),
+    omnipresent::Value()
 
 {
 }
@@ -46,7 +57,8 @@ Value::Value(
     hdf5::Dataset&& dataset,
     hdf5::Datatype const& memory_datatype)
 
-    : Array(std::forward<hdf5::Dataset>(dataset), memory_datatype)
+    : Array(std::forward<hdf5::Dataset>(dataset), memory_datatype),
+      omnipresent::Value()
 
 {
 }
@@ -72,6 +84,22 @@ void Value::reserve(
     shape[0] = nr_items;
 
     resize(shape);
+}
+
+
+hsize_t Value::nr_items() const
+{
+    return shape()[0];
+}
+
+
+hdf5::Shape Value::value_shape() const
+{
+    auto const shape = this->shape();
+
+    assert(shape.begin() != shape.end());
+
+    return hdf5::Shape(shape.begin() + 1, shape.end());
 }
 
 
@@ -117,7 +145,7 @@ Value create_value(
     hdf5::Datatype const& memory_datatype)
 {
     return create_value(group, name, file_datatype, memory_datatype,
-        hdf5::Shape{}, hdf5::Shape{});
+        hdf5::Shape{});
 }
 
 
@@ -126,13 +154,8 @@ Value create_value(
     std::string const& name,
     hdf5::Datatype const& file_datatype,
     hdf5::Datatype const& memory_datatype,
-    hdf5::Shape const& value_shape,
-    hdf5::Shape const& value_chunk)
+    hdf5::Shape const& value_shape)
 {
-    // if(array_exists(location, name)) {
-    //     throw std::runtime_error("Value dataset " + name + " already exists");
-    // }
-
     hdf5::Shape dimension_sizes(value_shape);
     dimension_sizes.insert(dimension_sizes.begin(), 0);
 
@@ -142,29 +165,51 @@ Value create_value(
     auto dataspace = hdf5::create_dataspace(dimension_sizes,
         max_dimension_sizes);
 
-    hdf5::Identifier creation_property_list_location(::H5Pcreate(
-        H5P_DATASET_CREATE), ::H5Pclose);
-
-    if(!creation_property_list_location.is_valid()) {
-        throw std::runtime_error("Creation property list cannot be created");
-    }
-
-
-    hdf5::Shape chunk_dimension_sizes(value_chunk);
-    chunk_dimension_sizes.insert(chunk_dimension_sizes.begin(), 1000);
-
-#ifndef NDEBUG
-    auto status =
-#endif
-        ::H5Pset_chunk(creation_property_list_location,
-            chunk_dimension_sizes.size(), chunk_dimension_sizes.data());
-    assert(status >= 0);
+    hdf5::Dataset::CreationPropertyList creation_property_list;
+    auto chunk_dimension_sizes =
+        chunk_shape(value_shape, file_datatype.size());
+    // hdf5::Shape chunk_dimension_sizes(value_chunk);
+    // chunk_dimension_sizes.insert(chunk_dimension_sizes.begin(), 1000);
+    creation_property_list.set_chunk(chunk_dimension_sizes);
 
     auto dataset = hdf5::create_dataset(group.id(), name, file_datatype,
-        dataspace, creation_property_list_location);
+        dataspace, creation_property_list);
 
     return Value(std::move(dataset), memory_datatype);
 }
+
+
+// Value create_value(
+//     hdf5::Group const& group,
+//     std::string const& name,
+//     hdf5::Datatype const& file_datatype,
+//     hdf5::Datatype const& memory_datatype,
+//     hdf5::Shape const& value_shape,
+//     hdf5::Shape const& value_chunk)
+// {
+//     // if(array_exists(location, name)) {
+//     //     throw std::runtime_error("Value dataset " + name + " already exists");
+//     // }
+// 
+//     hdf5::Shape dimension_sizes(value_shape);
+//     dimension_sizes.insert(dimension_sizes.begin(), 0);
+// 
+//     hdf5::Shape max_dimension_sizes(value_shape);
+//     max_dimension_sizes.insert(max_dimension_sizes.begin(), H5S_UNLIMITED);
+// 
+//     auto dataspace = hdf5::create_dataspace(dimension_sizes,
+//         max_dimension_sizes);
+// 
+//     hdf5::Dataset::CreationPropertyList creation_property_list;
+//     hdf5::Shape chunk_dimension_sizes(value_chunk);
+//     chunk_dimension_sizes.insert(chunk_dimension_sizes.begin(), 1000);
+//     creation_property_list.set_chunk(chunk_dimension_sizes);
+// 
+//     auto dataset = hdf5::create_dataset(group.id(), name, file_datatype,
+//         dataspace, creation_property_list);
+// 
+//     return Value(std::move(dataset), memory_datatype);
+// }
 
 
 // Value create_value(

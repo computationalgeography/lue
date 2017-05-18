@@ -64,7 +64,9 @@ PYBIND11_PLUGIN(lue)
 
     // Prevent the dump of HDF5 error/warning messages. Our messages should
     // be clear enough.
+#ifndef NDEBUG
     H5Eset_auto1(NULL, NULL);
+#endif
 
 
     // Order matters!

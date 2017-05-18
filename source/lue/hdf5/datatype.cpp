@@ -186,7 +186,8 @@ Identifier const& Datatype::id() const
 }
 
 
-void Datatype::set_size(size_t const nr_bytes)
+void Datatype::set_size(
+    size_t const nr_bytes)
 {
     auto status = ::H5Tset_size(_id, nr_bytes);
 

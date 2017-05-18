@@ -2,7 +2,7 @@
 #include "lue/constant_size/time/omnipresent/property_set.h"
 #include "lue/constant_size/time/omnipresent/different_shape/property.h"
 #include "lue/constant_size/time/omnipresent/same_shape/property.h"
-#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 
 namespace py = pybind11;
@@ -49,6 +49,14 @@ void init_property_set_class(
             py::overload_cast<>(&PropertySet::domain),
             "domain docstring...",
             py::return_value_policy::reference_internal)
+
+        .def_property_readonly(
+            "property_names",
+            [](
+                    PropertySet const& property_set) {
+                return property_set.properties().names();
+            },
+            "property_names docstring...")
 
         .def(
             "__getitem__",

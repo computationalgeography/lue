@@ -4,6 +4,7 @@ set(SOURCES
     property
     property_set
     space_domain
+    value
 )
 add_library(lue_constant_size_objects OBJECT
     ${SOURCES}

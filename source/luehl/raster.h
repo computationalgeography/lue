@@ -48,9 +48,9 @@ public:
 
                    Domain              (std::string const& crs,
                                         double const west,
-                                        double const north,
+                                        double const south,
                                         double const east,
-                                        double const south);
+                                        double const north);
 
         double const*  coordinates     () const;
 

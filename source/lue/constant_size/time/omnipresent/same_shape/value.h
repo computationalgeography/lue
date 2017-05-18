@@ -1,5 +1,5 @@
 #pragma once
-// #include "../value.h"
+#include "../value.h"
 #include "lue/array.h"
 #include "lue/hdf5/group.h"
 // #include "lue/chunks.h"
@@ -20,8 +20,8 @@ namespace same_shape {
     @sa create_value
 */
 class Value:
-    // public omnipresent::Value,
-    public Array
+    public Array,
+    public omnipresent::Value
 {
 
 public:
@@ -52,6 +52,10 @@ public:
 
     void           reserve             (hsize_t const nr_items);
 
+    hsize_t        nr_items            () const final;
+
+    hdf5::Shape    value_shape         () const;
+
     void           read                (void* buffer);
 
     void           write               (void const* buffer);
@@ -70,8 +74,14 @@ Value              create_value        (hdf5::Group const& group,
                                         std::string const& name,
                                         hdf5::Datatype const& file_datatype,
                                         hdf5::Datatype const& memory_datatype,
-                                        hdf5::Shape const& value_shape,
-                                        hdf5::Shape const& value_chunk);
+                                        hdf5::Shape const& value_shape);
+
+// Value              create_value        (hdf5::Group const& group,
+//                                         std::string const& name,
+//                                         hdf5::Datatype const& file_datatype,
+//                                         hdf5::Datatype const& memory_datatype,
+//                                         hdf5::Shape const& value_shape,
+//                                         hdf5::Shape const& value_chunk);
 
 }  // namespace same_shape
 }  // namespace omnipresent

@@ -88,7 +88,7 @@ hl::Raster::Domain gdal_domain(
     double const east = west + (discretization.nr_cols() * cell_width);
     double const south = north - (discretization.nr_rows() * cell_height);
 
-    return hl::Raster::Domain(crs, west, north, east, south);
+    return hl::Raster::Domain(crs, west, south, east, north);
 }
 
 

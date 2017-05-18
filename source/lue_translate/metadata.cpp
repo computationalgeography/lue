@@ -83,6 +83,14 @@ std::string string(
 }
 
 
+bool boolean(
+    JSON const& object,
+    JSONPointer const& pointer)
+{
+    return json::object(object, pointer);
+}
+
+
 JSONPointer pointer(
     JSON const& object,
     std::string const& name)
@@ -161,6 +169,16 @@ std::string Metadata::string(
 {
     return json::has_key(_json, pointer)
         ? json::string(_json, pointer)
+        : default_value;
+}
+
+
+bool Metadata::boolean(
+    JSONPointer const& pointer,
+    bool const default_value) const
+{
+    return json::has_key(_json, pointer)
+        ? json::boolean(_json, pointer)
         : default_value;
 }
 
