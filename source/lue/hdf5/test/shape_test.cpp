@@ -9,7 +9,7 @@ using namespace lue::hdf5;
 BOOST_AUTO_TEST_CASE(shape_size_1)
 {
     // Empty shape
-    Shape const shape;
+    Shape const shape{};
     auto const size = size_of_shape(shape, 4);
     BOOST_CHECK_EQUAL(size, 4);
 }

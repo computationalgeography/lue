@@ -27,7 +27,7 @@ Shape test_chunk(
 BOOST_AUTO_TEST_CASE(chunk_shape_small_1)
 {
     // 0D values
-    Shape const value_shape;
+    Shape const value_shape{};
     test_chunk(value_shape);
 }
 
