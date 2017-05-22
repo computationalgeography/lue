@@ -43,6 +43,13 @@ public:
     hdf5::Shape    shape               () const;
 
     void           read                (hdf5::Offset const& start,
+                                        hdf5::Count const& count,
+                                        void* buffer) const;
+
+    void           read                (hdf5::Hyperslab const& hyperslab,
+                                        void* buffer) const;
+
+    void           read                (hdf5::Offset const& start,
                                         hdf5::Stride const& stride,
                                         hdf5::Count const& count,
                                         void* buffer) const;

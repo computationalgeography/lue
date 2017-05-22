@@ -10,7 +10,7 @@
 #include <pybind11/numpy.h>
 #include <pybind11/stl.h>
 #include <pybind11/pybind11.h>
-// 
+
 // #include <numpy/arrayobject.h>
 // #include <iostream>
 // #include <iterator>
@@ -61,8 +61,6 @@ py::array create_array(
     hdf5::Shape const& shape)
 {
     std::vector<size_t> extents(shape.begin(), shape.end());
-    // std::vector<size_t> extents(shape.size());
-    // std::copy(shape.begin(), shape.end(), extents.begin());
 
     // Fill collection with strides. E.g., in case of shape [500, 4, 5],
     // the strides collection must be [20, 5, 1].
@@ -90,6 +88,110 @@ py::array create_array(
         extents,
         strides
     ));
+}
+
+
+void update_hyperslab_by_index(
+    size_t const dimension_idx,
+    long index,
+    hdf5::Shape const& array_shape,
+    hdf5::Hyperslab& hyperslab,
+    hdf5::Shape& slice_shape,
+    size_t& nr_erased_dimensions)
+{
+    if(index < 0) {
+        index = array_shape[dimension_idx] + index;
+    }
+
+    // Hyperslab in source array
+    size_t const start = index;
+    size_t const step = 1;
+    size_t const slice_length = 1;
+
+    hyperslab.start()[dimension_idx] = start;
+    hyperslab.stride()[dimension_idx] = step;
+    hyperslab.count()[dimension_idx] = slice_length;
+
+    slice_shape[dimension_idx - nr_erased_dimensions] = slice_length;
+
+    // The target array has a dimension less than the array being indexed
+    assert(!slice_shape.empty());
+    assert(slice_shape[dimension_idx - nr_erased_dimensions] == 1);
+    slice_shape.erase(
+        slice_shape.begin() + dimension_idx - nr_erased_dimensions);
+    ++nr_erased_dimensions;
+}
+
+
+void update_hyperslab_by_slice(
+    size_t const dimension_idx,
+    py::slice const& slice,
+    hdf5::Shape const& array_shape,
+    hdf5::Hyperslab& hyperslab,
+    hdf5::Shape& slice_shape,
+    size_t const nr_erased_dimensions)
+{
+    // Hyperslab in source array
+    size_t start, stop, step, slice_length;
+
+    if(!slice.compute(
+            array_shape[dimension_idx], &start, &stop, &step, &slice_length)) {
+        throw py::error_already_set();
+    }
+
+    hyperslab.start()[dimension_idx] = start;
+    hyperslab.stride()[dimension_idx] = step;
+    hyperslab.count()[dimension_idx] = slice_length;
+
+    slice_shape[dimension_idx - nr_erased_dimensions] = slice_length;
+}
+
+
+py::array create_array(
+    hdf5::Datatype const& datatype,
+    hdf5::Shape const& shape)
+{
+    py::array array;
+
+    if(datatype == H5T_NATIVE_UINT32) {
+        array = create_array<uint32_t>(shape);
+    }
+    else if(datatype == H5T_NATIVE_INT32) {
+        array = create_array<int32_t>(shape);
+    }
+    else if(datatype == H5T_NATIVE_UINT64) {
+        array = create_array<uint64_t>(shape);
+    }
+    else if(datatype == H5T_NATIVE_INT64) {
+        array = create_array<int64_t>(shape);
+    }
+    else if(datatype == H5T_NATIVE_FLOAT) {
+        array = create_array<float>(shape);
+    }
+    else if(datatype == H5T_NATIVE_DOUBLE) {
+        array = create_array<double>(shape);
+    }
+    else {
+        throw std::runtime_error(
+            "Unsupported array value type");
+    }
+
+    return array;
+}
+
+
+py::array read_from_array(
+    Array const& array,
+    hdf5::Hyperslab const& hyperslab,
+    hdf5::Shape const& slice_shape)
+{
+    // Read hyperslab from source array into target array
+    auto result = create_array(array.datatype(), slice_shape);
+    auto buffer = result.request().ptr;
+
+    array.read(hyperslab, buffer);
+
+    return result;
 }
 
 
@@ -249,110 +351,118 @@ void init_array_class(
 
         .def("__getitem__", [](
                 Array const& array,
+                py::int_ const& index) -> py::array {
+
+            hdf5::Shape const shape{array.shape()};
+            hdf5::Hyperslab hyperslab(shape);
+            hdf5::Shape slice_shape{shape};
+            size_t nr_erased_dimensions = 0;
+
+            update_hyperslab_by_index(
+                0, index, shape, hyperslab, slice_shape, nr_erased_dimensions);
+
+            return read_from_array(array, hyperslab, slice_shape);
+        })
+
+        .def("__getitem__", [](
+                Array const& array,
                 py::slice const& slice) -> py::array {
 
             hdf5::Shape const shape{array.shape()};
-
-            size_t start, stop, step, slice_length;
-
-            if(!slice.compute(shape[0], &start, &stop, &step, &slice_length)) {
-                throw py::error_already_set();
-            }
-
-            hdf5::Offset hyperslab_start(shape.size(), 0);
-            hyperslab_start[0] = start;
-
-            hdf5::Count hyperslab_count(shape.begin(), shape.end());
-            hyperslab_count[0] = slice_length;
-
-            hdf5::Stride hyperslab_stride(shape.size(), 1);
-
+            hdf5::Hyperslab hyperslab(shape);
             hdf5::Shape slice_shape{shape};
-            slice_shape[0] = slice_length;
+            size_t nr_erased_dimensions = 0;
 
+            update_hyperslab_by_slice(
+                0, slice, shape, hyperslab, slice_shape, nr_erased_dimensions);
 
-            // Create numpy array.
-            py::array result;
-
-            if(array.datatype() == H5T_NATIVE_UINT32) {
-                result = create_array<uint32_t>(slice_shape);
-            }
-            else if(array.datatype() == H5T_NATIVE_INT32) {
-                result = create_array<int32_t>(slice_shape);
-            }
-            else if(array.datatype() == H5T_NATIVE_UINT64) {
-                result = create_array<uint64_t>(slice_shape);
-            }
-            else if(array.datatype() == H5T_NATIVE_INT64) {
-                result = create_array<int64_t>(slice_shape);
-            }
-            else if(array.datatype() == H5T_NATIVE_FLOAT) {
-                result = create_array<float>(slice_shape);
-            }
-            else if(array.datatype() == H5T_NATIVE_DOUBLE) {
-                result = create_array<double>(slice_shape);
-            }
-            else {
-                throw std::runtime_error(
-                    "Unsupported array value type");
-            }
-
-
-
-            // switch(H5Tget_class(array.type_id())) {
-            //     case H5T_INTEGER: {
-            //         if(datatypes_are_equal(array.type_id(),
-            //                 H5T_NATIVE_UINT32)) {
-            //             result = create_array<uint32_t>(slice_shape);
-            //         }
-            //         else if(datatypes_are_equal(array.type_id(),
-            //                 H5T_NATIVE_INT32)) {
-            //             result = create_array<int32_t>(slice_shape);
-            //         }
-            //         else if(datatypes_are_equal(array.type_id(),
-            //                 H5T_NATIVE_UINT64)) {
-            //             result = create_array<uint64_t>(slice_shape);
-            //         }
-            //         else if(datatypes_are_equal(array.type_id(),
-            //                 H5T_NATIVE_INT64)) {
-            //             result = create_array<int64_t>(slice_shape);
-            //         }
-            //         else {
-            //             throw std::runtime_error(
-            //                 "Unsupported integer array value type");
-            //         }
-            //         break;
-            //     }
-            //     case H5T_FLOAT: {
-            //         if(datatypes_are_equal(array.type_id(),
-            //                 H5T_NATIVE_FLOAT)) {
-            //             result = create_array<float>(slice_shape);
-            //         }
-            //         else if(datatypes_are_equal(array.type_id(),
-            //                 H5T_NATIVE_DOUBLE)) {
-            //             result = create_array<double>(slice_shape);
-            //         }
-            //         else {
-            //             throw std::runtime_error(
-            //                 "Unsupported float array value type");
-            //         }
-            //         break;
-            //     }
-            //     default: {
-            //         throw std::runtime_error(
-            //             "Unsupported array value type");
-            //         break;
-            //     }
-            // }
-
-            auto buffer = result.request().ptr;
-
-            array.read(hyperslab_start, hyperslab_stride, hyperslab_count,
-                buffer);
-
-            return result;
+            return read_from_array(array, hyperslab, slice_shape);
         })
 
+        .def("__getitem__", [](
+                Array const& array,
+                std::vector<py::object> const& indices) -> py::array {
+
+            // With each index, a selection is made along the corresponding
+            // dimension. The number of indices cannot be larger than
+            // the rank of the array. It can be smaller, in which case
+            // all values along the missing dimensions are selected.
+            // Indices can be:
+            // - a slice: selects a set of values
+            // - an integer: selects a single value
+            //
+            // When an integer is used to select values along a dimension,
+            // this dimension is removed from the result array.
+
+            hdf5::Shape const shape{array.shape()};
+
+            if(indices.size() > shape.size()) {
+                throw pybind11::index_error("too many indices for array");
+            }
+
+            // Hyperslab in source array
+            hdf5::Hyperslab hyperslab(shape);
+
+            // Shape of target array
+            hdf5::Shape slice_shape{shape};
+            size_t nr_erased_dimensions = 0;
+
+
+            for(size_t i = 0; i < indices.size(); ++i) {
+                auto const& index = indices[i];
+
+                // Strings are implicitly converted into a py::slice.
+                // The characters are used for start:count:step. To filter
+                // out strings, we test them first.
+                try {
+                    std::string string = py::cast<std::string>(index);
+                    throw pybind11::index_error(
+                        "only integers and slices (`:`) are valid indices");
+                }
+                catch(py::cast_error const&) {
+                }
+
+
+                try {
+                    long index_ = py::cast<long>(index);
+
+                    update_hyperslab_by_index(
+                        i, index_, shape, hyperslab, slice_shape,
+                        nr_erased_dimensions);
+
+                    continue;
+                }
+                catch(py::cast_error const&) {
+                }
+
+                try {
+                    py::slice slice = index;
+
+                    update_hyperslab_by_slice(
+                        i, slice, shape, hyperslab, slice_shape,
+                        nr_erased_dimensions);
+
+                    continue;
+                }
+                catch(py::cast_error const&) {
+                }
+
+                throw pybind11::index_error(
+                    "only integers and slices (`:`) are valid indices");
+            }
+
+            return read_from_array(array, hyperslab, slice_shape);
+        })
+
+        // Catch-all for when the argument is not a supported index type
+        .def("__getitem__", [](
+                Array const& /* array */,
+                py::object const& /* index */) -> py::array {
+
+            throw pybind11::index_error(
+                "only integers and slices (`:`) are valid indices");
+
+        })
 
         SETITEM(uint32_t)
         SETITEM(int32_t)

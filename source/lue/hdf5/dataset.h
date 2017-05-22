@@ -1,11 +1,8 @@
 #pragma once
-#include "lue/hdf5/count.h"
 #include "lue/hdf5/dataspace.h"
 #include "lue/hdf5/datatype.h"
-#include "lue/hdf5/offset.h"
+#include "lue/hdf5/hyperslab.h"
 #include "lue/hdf5/property_list.h"
-#include "lue/hdf5/shape.h"
-#include "lue/hdf5/stride.h"
 
 
 namespace lue {
@@ -59,6 +56,15 @@ public:
     void           resize              (Shape const& new_dimension_sizes);
 
     void           read                (Datatype const& datatype,
+                                        void* buffer) const;
+
+    void           read                (Datatype const& datatype,
+                                        Offset const& start,
+                                        Count const& count,
+                                        void* buffer) const;
+
+    void           read                (Datatype const& datatype,
+                                        Hyperslab const& hyperslab,
                                         void* buffer) const;
 
     void           read                (Datatype const& datatype,

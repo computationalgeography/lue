@@ -95,6 +95,23 @@ hdf5::Shape Array::shape() const
 
 void Array::read(
     hdf5::Offset const& start,
+    hdf5::Count const& count,
+    void* buffer) const
+{
+    Dataset::read(_memory_datatype, start, count, buffer);
+}
+
+
+void Array::read(
+    hdf5::Hyperslab const& hyperslab,
+    void* buffer) const
+{
+    Dataset::read(_memory_datatype, hyperslab, buffer);
+}
+
+
+void Array::read(
+    hdf5::Offset const& start,
     hdf5::Stride const& stride,
     hdf5::Count const& count,
     void* buffer) const

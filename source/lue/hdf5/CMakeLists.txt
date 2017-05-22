@@ -9,6 +9,7 @@ set(SOURCES
     datatype
     file
     group
+    hyperslab
     identifier
     link
     object_info

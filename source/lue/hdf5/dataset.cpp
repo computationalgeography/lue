@@ -123,6 +123,31 @@ void Dataset::read(
 void Dataset::read(
     Datatype const& datatype,
     Offset const& start,
+    Count const& count,
+    void* buffer) const
+{
+    auto const shape = dataspace().dimension_extents();
+
+    Stride const stride(shape.size(), 1);
+
+    read(datatype, start, stride, count, buffer);
+}
+
+
+void Dataset::read(
+    Datatype const& datatype,
+    Hyperslab const& hyperslab,
+    void* buffer) const
+{
+    read(
+        datatype, hyperslab.start(), hyperslab.stride(), hyperslab.count(),
+        buffer);
+}
+
+
+void Dataset::read(
+    Datatype const& datatype,
+    Offset const& start,
     Stride const& stride,
     Count const& count,
     void* buffer) const
