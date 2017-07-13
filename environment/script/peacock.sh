@@ -38,15 +38,25 @@ function parse_commandline()
 
 function build_peacock()
 {
+    # Don't build any support libraries...
+    skip_build_boost=1
+    skip_build_docopt=1
+    skip_build_gdal=1
+    skip_build_pybind11=1
+
+    # ...except for these machines
     hostname=`hostname`
+    skip_build_docopt=0
+    skip_build_pybind11=0
 
-    if [[ $hostname != "sonic.geo.uu.nl" ]]; then
-        skip_build_boost=1
+    if [[ $hostname == "sonic.geo.uu.nl" ]]; then
+        skip_build_boost=0
     fi
 
-    if [[ $hostname == "triklav.soliscom.uu.nl" ]]; then
-        skip_build_gdal=1
+    if [[ $hostname != "triklav.soliscom.uu.nl" ]]; then
+        skip_build_gdal=0
     fi
+
 
     if [[ $OSTYPE == "cygwin" ]]; then
         options+=("-GUnix Makefiles")
@@ -63,7 +73,6 @@ function build_peacock()
     options+=("-DCMAKE_VERBOSE_MAKEFILE=ON")
 
 
-    # Boost.
     if [ ! "$skip_build_boost" ]; then
         options+=("-Dbuild_boost=true")
         options+=("-Dboost_version=1.57.0")
@@ -74,17 +83,18 @@ function build_peacock()
     fi
 
 
-    # pybind11
-    options+=("-Dbuild_pybind11=true")
-    options+=("-Dpybind11_version=2.1.0")
+    if [ ! "$skip_build_pybind11" ]; then
+        options+=("-Dbuild_pybind11=true")
+        options+=("-Dpybind11_version=2.1.0")
+    fi
 
 
-    # Docopt.
-    options+=("-Dbuild_docopt=true")
-    options+=("-Ddocopt_version=0.6.1")
+    if [ ! "$skip_build_docopt" ]; then
+        options+=("-Dbuild_docopt=true")
+        options+=("-Ddocopt_version=0.6.1")
+    fi
 
 
-    # GDAL.
     if [ ! "$skip_build_gdal" ]; then
         options+=("-Dbuild_gdal=true")
         options+=("-Dgdal_version=2.0.1")
