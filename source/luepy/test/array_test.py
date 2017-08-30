@@ -180,9 +180,11 @@ class ArrayTest(lue_test.TestCase):
         with self.assertRaises(IndexError) as lue_context:
             self.lue_values[0, 0, 0, 0]
 
-        self.assertEqual(
-            str(lue_context.exception),
-            str(numpy_context.exception))
+        # Verify error message is similar to what numpy reports
+        self.assertTrue(
+            str(numpy_context.exception).startswith("too many indices"))
+        self.assertTrue(
+            str(lue_context.exception).startswith("too many indices"))
 
 
     def test_unsupported_index_type(self):
