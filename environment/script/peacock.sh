@@ -46,9 +46,15 @@ function build_peacock()
     build_pybind11=false
 
     # ...except for these machines
+    hostname=`hostname`
     build_docopt=true
     build_nlohmann_json=true
     build_pybind11=true
+
+    if [ $hostname == "sonic.geo.uu.nl" ]; then
+        build_boost=true
+        build_gdal=true
+    fi
 
 
     options+=("-Dpeacock_download_dir=$download_dir")
@@ -58,7 +64,7 @@ function build_peacock()
 
     if [ "$build_boost" = true ]; then
         options+=("-Dbuild_boost=true")
-        options+=("-Dboost_version=1.65.0")
+        options+=("-Dboost_version=1.63.0")
         options+=("-Dboost_build_boost_filesystem=true")
         options+=("-Dboost_build_boost_program_options=true")
         options+=("-Dboost_build_boost_system=true")
