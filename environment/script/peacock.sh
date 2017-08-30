@@ -38,44 +38,27 @@ function parse_commandline()
 
 function build_peacock()
 {
-    # Don't build any support libraries...
-    skip_build_boost=1
-    skip_build_docopt=1
-    skip_build_gdal=1
-    skip_build_pybind11=1
+    # Don't build any of the support libraries...
+    build_boost=false
+    build_docopt=false
+    build_gdal=false
+    build_nlohmann_json=false
+    build_pybind11=false
 
     # ...except for these machines
-    hostname=`hostname`
-    skip_build_docopt=0
-    skip_build_pybind11=0
+    build_docopt=true
+    build_nlohmann_json=true
+    build_pybind11=true
 
-    if [[ $hostname == "sonic.geo.uu.nl" ]]; then
-        skip_build_boost=0
-    fi
-
-    if [[ $hostname != "triklav.soliscom.uu.nl" ]]; then
-        skip_build_gdal=0
-    fi
-
-
-    if [[ $OSTYPE == "cygwin" ]]; then
-        options+=("-GUnix Makefiles")
-        options+=("-DCMAKE_MAKE_PROGRAM=mingw32-make")
-    fi
-
-    if [[ $OSTYPE == "linux-gnu" ]] && [[ "$CC" == *mingw* ]]; then
-        # Cross-compiling, need toolchain file.
-        options+=("-DCMAKE_TOOLCHAIN_FILE=$source/cmake/toolchain/mingw-linux.cmake")
-    fi
 
     options+=("-Dpeacock_download_dir=$download_dir")
     options+=("-Dpeacock_prefix=$prefix")
-    options+=("-DCMAKE_VERBOSE_MAKEFILE=ON")
+    # options+=("-DCMAKE_VERBOSE_MAKEFILE=ON")
 
 
-    if [ ! "$skip_build_boost" ]; then
+    if [ "$build_boost" = true ]; then
         options+=("-Dbuild_boost=true")
-        options+=("-Dboost_version=1.57.0")
+        options+=("-Dboost_version=1.65.0")
         options+=("-Dboost_build_boost_filesystem=true")
         options+=("-Dboost_build_boost_program_options=true")
         options+=("-Dboost_build_boost_system=true")
@@ -83,27 +66,28 @@ function build_peacock()
     fi
 
 
-    if [ ! "$skip_build_pybind11" ]; then
+    if [ "$build_pybind11" = true ]; then
         options+=("-Dbuild_pybind11=true")
-        options+=("-Dpybind11_version=2.1.0")
+        options+=("-Dpybind11_version=2.1.1")
     fi
 
 
-    if [ ! "$skip_build_docopt" ]; then
+    if [ "$build_docopt" = true ]; then
         options+=("-Dbuild_docopt=true")
-        options+=("-Ddocopt_version=0.6.1")
+        options+=("-Ddocopt_version=0.6.2")
     fi
 
 
-    if [ ! "$skip_build_gdal" ]; then
+    if [ "$build_gdal" = true ]; then
         options+=("-Dbuild_gdal=true")
         options+=("-Dgdal_version=2.0.1")
     fi
 
 
-    # nlohmann JSON.
-    options+=("-Dbuild_nlohmann_json=true")
-    options+=("-Dnlohmann_json_version=2.1.1")
+    if [ "$build_nlohmann_json" = true ]; then
+        options+=("-Dbuild_nlohmann_json=true")
+        options+=("-Dnlohmann_json_version=2.1.1")
+    fi
 
 
     cmake "${options[@]}" $source
