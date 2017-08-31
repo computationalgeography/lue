@@ -1,7 +1,7 @@
-#include "lue_utility/command.h"
-#include "lue_utility/print_message.h"
-#include "lue_utility/stopwatch.h"
-#include "lue/configure.h"
+#include "lue/utility/command.hpp"
+#include "lue/utility/print_message.hpp"
+#include "lue/utility/stopwatch.hpp"
+#include "lue/configure.hpp"
 #include <boost/format.hpp>
 #include <cassert>
 #include <iostream>

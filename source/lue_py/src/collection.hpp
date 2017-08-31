@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/collection.h"
+#include "lue/collection.hpp"
 #include <pybind11/stl.h>
 
 

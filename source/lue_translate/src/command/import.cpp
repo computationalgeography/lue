@@ -1,5 +1,5 @@
-#include "lue_translate/command/import.h"
-#include "lue_translate/format.h"
+#include "lue/translate/command/import.hpp"
+#include "lue/translate/format.hpp"
 #include <boost/filesystem.hpp>
 #include <exception>
 

@@ -1,4 +1,4 @@
-#include "lue/hdf5/file.h"
+#include "lue/hdf5/file.hpp"
 #include <pybind11/pybind11.h>
 
 

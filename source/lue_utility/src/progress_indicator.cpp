@@ -1,4 +1,4 @@
-#include "lue_utility/progress_indicator.h"
+#include "lue/utility/progress_indicator.hpp"
 #include <boost/format.hpp>
 
 

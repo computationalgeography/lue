@@ -1,4 +1,4 @@
-#include "lue/constant_size/domain.h"
+#include "lue/constant_size/domain.hpp"
 #include <pybind11/pybind11.h>
 
 

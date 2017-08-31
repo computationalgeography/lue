@@ -1,6 +1,6 @@
 #pragma once
-#include "lue_translate/metadata.h"
-#include "lue/dataset.h"
+#include "lue/translate/metadata.hpp"
+#include "lue/dataset.hpp"
 #include <ostream>
 
 

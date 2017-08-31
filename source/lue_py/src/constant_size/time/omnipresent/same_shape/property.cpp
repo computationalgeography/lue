@@ -1,6 +1,6 @@
-#include "lue/constant_size/time/omnipresent/same_shape/property.h"
-#include "luepy/conversion.h"
-#include "luepy/numpy.h"
+#include "lue/constant_size/time/omnipresent/same_shape/property.hpp"
+#include "lue/py/conversion.hpp"
+#include "lue/py/numpy.hpp"
 #include <pybind11/pybind11.h>
 #include <numpy/arrayobject.h>
 

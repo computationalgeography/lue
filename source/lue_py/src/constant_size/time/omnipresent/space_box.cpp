@@ -1,4 +1,4 @@
-#include "lue/constant_size/time/omnipresent/space_box.h"
+#include "lue/constant_size/time/omnipresent/space_box.hpp"
 #include <pybind11/pybind11.h>
 
 

@@ -1,3 +1,3 @@
 #pragma once
-#include "lue_utility/print_message.h"
-#include "lue_utility/verbose.h"
+#include "lue/utility/print_message.hpp"
+#include "lue/utility/verbose.hpp"

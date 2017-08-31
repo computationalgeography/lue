@@ -1,4 +1,4 @@
-#include "lue/hdf5/identifier.h"
+#include "lue/hdf5/identifier.hpp"
 #include <pybind11/pybind11.h>
 
 

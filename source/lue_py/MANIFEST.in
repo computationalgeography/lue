@@ -1,2 +1,1 @@
-recursive-include lue *.h
-recursive-include luepy *.h
+recursive-include src *.hpp

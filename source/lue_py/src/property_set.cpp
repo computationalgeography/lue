@@ -1,6 +1,6 @@
-#include "collection.h"
-#include "lue/property_sets.h"
-#include "lue/constant_size/time/omnipresent/property_set.h"
+#include "collection.hpp"
+#include "lue/property_sets.hpp"
+#include "lue/constant_size/time/omnipresent/property_set.hpp"
 #include <pybind11/pybind11.h>
 // #include <iostream>
 // #include "lue/python_api/numpy.h"

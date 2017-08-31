@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/constant_size/time/omnipresent/property.h"
+#include "lue/constant_size/time/omnipresent/property.hpp"
 #include <pybind11/pybind11.h>
 
 

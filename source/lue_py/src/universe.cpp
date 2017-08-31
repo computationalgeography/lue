@@ -1,5 +1,5 @@
-#include "lue/universes.h"
-#include "collection.h"
+#include "lue/universes.hpp"
+#include "collection.hpp"
 #include <pybind11/pybind11.h>
 
 

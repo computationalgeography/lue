@@ -1,5 +1,5 @@
-#include "collection.h"
-#include "lue/properties.h"
+#include "collection.hpp"
+#include "lue/properties.hpp"
 #include <pybind11/pybind11.h>
 
 

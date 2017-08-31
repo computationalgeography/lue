@@ -1,7 +1,7 @@
-#include "luepy/constant_size/time/omnipresent/property.h"
-#include "lue/constant_size/time/omnipresent/property_set.h"
-#include "lue/constant_size/time/omnipresent/different_shape/property.h"
-#include "lue/constant_size/time/omnipresent/same_shape/property.h"
+#include "property.hpp"
+#include "lue/constant_size/time/omnipresent/property_set.hpp"
+#include "lue/constant_size/time/omnipresent/different_shape/property.hpp"
+#include "lue/constant_size/time/omnipresent/same_shape/property.hpp"
 #include <pybind11/stl.h>
 
 

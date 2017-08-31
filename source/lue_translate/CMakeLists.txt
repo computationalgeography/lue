@@ -1,29 +1,40 @@
-add_subdirectory(command)
-add_subdirectory(format)
-
-set(LIB_SOURCES
-    metadata
-)
 add_library(lue_translate_lib STATIC
-    $<TARGET_OBJECTS:lue_translate_command_objects>
-    $<TARGET_OBJECTS:lue_translate_format_objects>
-    ${LIB_SOURCES}
+    src/metadata
+    src/translate
+
+    src/command/export
+    src/command/import
+
+    src/format/dot
+    src/format/gdal
+    src/format/gdal_block
+    src/format/lue
+    src/format/vtk
 )
 
-set(SOURCES
-    main
-    translate
+add_library(lue::translate ALIAS lue_translate_lib)
+
+target_include_directories(lue_translate_lib
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>
 )
+
+target_link_libraries(lue_translate_lib
+    PRIVATE
+        lue::hl
+        ${GDAL_LIBRARIES}
+    PUBLIC
+        lue::utility
+)
+
 add_executable(lue_translate
-    ${SOURCES}
+    src/main
 )
 
 target_link_libraries(lue_translate
-    lue_translate_lib
-    lue_utility
-    luehl
-    lue
-    ${GDAL_LIBRARIES}
+    PRIVATE
+        lue::translate
 )
 
 install(

@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/hdf5/datatype.h"
+#include "lue/hdf5/datatype.hpp"
 #include <pybind11/pybind11.h>
 #include <tuple>
 

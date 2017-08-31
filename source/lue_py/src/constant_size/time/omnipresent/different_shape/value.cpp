@@ -1,5 +1,5 @@
-#include "lue/constant_size/time/omnipresent/different_shape/value.h"
-#include "luepy/conversion.h"
+#include "lue/constant_size/time/omnipresent/different_shape/value.hpp"
+#include "lue/py/conversion.hpp"
 #include <pybind11/pybind11.h>
 
 

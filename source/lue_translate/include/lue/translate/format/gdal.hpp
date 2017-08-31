@@ -1,5 +1,5 @@
 #pragma once
-#include "lue_translate/metadata.h"
+#include "lue/translate/metadata.hpp"
 #include <memory>
 #include <gdal_priv.h>
 

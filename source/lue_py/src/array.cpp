@@ -1,9 +1,9 @@
 // #include "lue/c_api/hdf5/hdf5_attribute.h"
 // #include "lue/cxx_api/hdf5/datatype.h"
-#include "lue/hdf5/datatype_traits.h"
-#include "lue/array.h"
-#include "luepy/conversion.h"
-#include "luepy/numpy.h"
+#include "lue/hdf5/datatype_traits.hpp"
+#include "lue/array.hpp"
+#include "lue/py/conversion.hpp"
+#include "lue/py/numpy.hpp"
 
 #include <boost/format.hpp>
 

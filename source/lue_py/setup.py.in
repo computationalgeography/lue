@@ -101,9 +101,13 @@ setuptools.setup(
         setuptools.Extension("lue",
             sources=find_files("*.c*"),
             include_dirs=[
-                ".",
+                "src/include",
             ],
-            libraries = ["boost_filesystem", "boost_system", "hdf5"],
+            libraries = [
+                "boost_filesystem-mt",
+                "boost_system-mt",
+                "hdf5"
+            ],
             language="c++"
         )
     ],

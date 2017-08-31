@@ -1,5 +1,5 @@
-#include "lue_translate/translate.h"
-#include "lue_translate/command.h"
+#include "lue/translate/translate.hpp"
+#include "lue/translate/command.hpp"
 #include <gdal_priv.h>
 #include <hdf5.h>
 #include <boost/format.hpp>

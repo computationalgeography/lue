@@ -1,3 +1,3 @@
 #pragma once
-#include "lue_translate/command/export.h"
-#include "lue_translate/command/import.h"
+#include "lue/translate/command/export.hpp"
+#include "lue/translate/command/import.hpp"

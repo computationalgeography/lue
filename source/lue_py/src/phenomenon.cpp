@@ -1,5 +1,5 @@
-#include "lue/phenomena.h"
-#include "collection.h"
+#include "lue/phenomena.hpp"
+#include "collection.hpp"
 #include <pybind11/pybind11.h>
 
 

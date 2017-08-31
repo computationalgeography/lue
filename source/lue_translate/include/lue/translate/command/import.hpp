@@ -1,5 +1,5 @@
 #pragma once
-#include "lue_utility/command.h"
+#include "lue/utility/command.hpp"
 
 
 namespace lue {

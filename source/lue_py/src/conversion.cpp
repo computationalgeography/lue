@@ -1,5 +1,5 @@
-#include "luepy/conversion.h"
-#include "luepy/numpy.h"
+#include "lue/py/conversion.hpp"
+#include "lue/py/numpy.hpp"
 #include <numpy/arrayobject.h>
 
 

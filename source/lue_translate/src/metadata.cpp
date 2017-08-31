@@ -1,4 +1,4 @@
-#include "lue_translate/metadata.h"
+#include "lue/translate/metadata.hpp"
 #include <boost/filesystem.hpp>
 #include <boost/format.hpp>
 #include <exception>

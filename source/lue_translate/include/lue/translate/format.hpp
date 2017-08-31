@@ -1,5 +1,5 @@
 #pragma once
-#include "lue_translate/format/dot.h"
-#include "lue_translate/format/gdal.h"
-#include "lue_translate/format/lue.h"
-#include "lue_translate/format/vtk.h"
+#include "lue/translate/format/dot.hpp"
+#include "lue/translate/format/gdal.hpp"
+#include "lue/translate/format/lue.hpp"
+#include "lue/translate/format/vtk.hpp"

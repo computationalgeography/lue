@@ -1,4 +1,4 @@
-#include "lue/space_domain.h"
+#include "lue/space_domain.hpp"
 #include <pybind11/pybind11.h>
 
 

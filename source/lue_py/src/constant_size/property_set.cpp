@@ -1,4 +1,4 @@
-#include "lue/constant_size/property_set.h"
+#include "lue/constant_size/property_set.hpp"
 #include <pybind11/pybind11.h>
 
 

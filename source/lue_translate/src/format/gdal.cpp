@@ -1,7 +1,7 @@
-#include "lue_translate/format/gdal.h"
-#include "lue_translate/format/gdal_block.h"
-#include "lue_utility/progress_indicator.h"
-#include "luehl/raster.h"
+#include "lue/translate/format/gdal.hpp"
+#include "lue/translate/format/gdal_block.hpp"
+#include "lue/utility/progress_indicator.hpp"
+#include "lue/hl/raster.hpp"
 #include <boost/filesystem.hpp>
 #include <boost/format.hpp>
 #include <cmath>
