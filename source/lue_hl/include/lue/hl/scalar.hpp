@@ -1,10 +1,12 @@
 #pragma once
 
 
-namespace luehl {
+namespace lue {
+namespace hl {
 
 class Scalar
 {
 };
 
-}  // namespace luehl
+}  // namespace hl
+}  // namespace lue

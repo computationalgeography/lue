@@ -1,10 +1,8 @@
-set(TEST_NAMES
-    raster_test
-    scalar_test
-)
 add_unit_tests(
-    SCOPE luehl
-    NAMES ${TEST_NAMES}
+    SCOPE lue_hl
+    NAMES
+        raster_test
+        scalar_test
     LINK_LIBRARIES
-        luehl
+        lue::hl
 )

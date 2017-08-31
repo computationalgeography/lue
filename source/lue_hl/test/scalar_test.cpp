@@ -1,6 +1,6 @@
-#define BOOST_TEST_MODULE luehl scalar
+#define BOOST_TEST_MODULE lue hl scalar
 #include <boost/test/unit_test.hpp>
-#include "luehl/scalar.h"
+#include "lue/hl/scalar.hpp"
 
 
 namespace {

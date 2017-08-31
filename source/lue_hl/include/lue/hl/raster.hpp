@@ -1,8 +1,8 @@
 #pragma once
-#include "lue/constant_size/time/omnipresent/different_shape/property.h"
-#include "lue/constant_size/time/omnipresent/same_shape/property.h"
-#include "lue/constant_size/time/omnipresent/property_set.h"
-#include "lue/dataset.h"
+#include "lue/constant_size/time/omnipresent/different_shape/property.hpp"
+#include "lue/constant_size/time/omnipresent/same_shape/property.hpp"
+#include "lue/constant_size/time/omnipresent/property_set.hpp"
+#include "lue/dataset.hpp"
 
 
 namespace lue {

@@ -1,6 +1,6 @@
-#define BOOST_TEST_MODULE luehl raster
+#define BOOST_TEST_MODULE lue hl raster
 #include <boost/test/unit_test.hpp>
-#include "luehl/raster.h"
+#include "lue/hl/raster.hpp"
 
 
 namespace {

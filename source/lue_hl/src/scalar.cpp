@@ -1,6 +1,8 @@
-#include "luehl/scalar.h"
+#include "lue/hl/scalar.hpp"
 
 
-namespace luehl {
+namespace lue {
+namespace hl {
 
-}  // namespace luehl
+}  // namespace hl
+}  // namespace lue

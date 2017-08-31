@@ -1,28 +1,19 @@
 add_test_conditionally(test)
 
-set(SOURCES
-    raster
-    scalar
-)
-add_library(luehl STATIC
-    ${SOURCES}
-)
-target_link_libraries(luehl
-    lue
+add_library(lue_hl STATIC
+    src/raster
+    src/scalar
 )
 
-file(GLOB
-    SOURCES
-    RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-    *.cpp *.h
+add_library(lue::hl ALIAS lue_hl)
+
+target_include_directories(lue_hl
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>
 )
-file(RELATIVE_PATH destination
-    ${LUE_SOURCE_PREFIX}
-    ${CMAKE_CURRENT_SOURCE_DIR}
-)
-install(
-    FILES
-        ${SOURCES}
-    DESTINATION ${destination}
-    COMPONENT python
+
+target_link_libraries(lue_hl
+    PUBLIC
+        lue::lue
 )
