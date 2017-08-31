@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE lue constant_size time omnipresent property_set
 #include <boost/test/unit_test.hpp>
-#include "../property_set.h"
-#include "lue/dataset.h"
+#include "lue/constant_size/time/omnipresent/property_set.hpp"
+#include "lue/dataset.hpp"
 #include <iostream>
 
 

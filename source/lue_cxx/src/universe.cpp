@@ -1,4 +1,4 @@
-#include "lue/universe.h"
+#include "lue/universe.hpp"
 
 
 namespace lue {

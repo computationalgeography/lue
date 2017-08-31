@@ -1,7 +1,7 @@
 #pragma once
-#include "lue/hdf5/file.h"
-#include "lue/phenomena.h"
-#include "lue/universes.h"
+#include "lue/hdf5/file.hpp"
+#include "lue/phenomena.hpp"
+#include "lue/universes.hpp"
 
 
 namespace lue {

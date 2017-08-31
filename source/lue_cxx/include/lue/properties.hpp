@@ -1,6 +1,6 @@
 #pragma once
-#include "lue/collection.h"
-#include "lue/property.h"
+#include "lue/collection.hpp"
+#include "lue/property.hpp"
 
 
 namespace lue {

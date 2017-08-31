@@ -1,6 +1,6 @@
 #pragma once
-#include "lue/constant_size/time/omnipresent/property_set.h"
-#include "lue/constant_size/property.h"
+#include "lue/constant_size/time/omnipresent/property_set.hpp"
+#include "lue/constant_size/property.hpp"
 
 
 namespace lue {

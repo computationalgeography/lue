@@ -1,69 +1,68 @@
-configure_file(configure.h.in configure.h)
+configure_file(include/lue/configure.hpp.in
+    include/lue/configure.hpp)
 
 add_test_conditionally(test)
-add_subdirectory(hdf5)
-add_subdirectory(constant_size)
 
-set(SOURCES
-    array
-    collection
-    dataset
-    domain
-#     domain_configuration
-#     exception
-    phenomena
-    phenomenon
-    properties
-    property
-    property_set
-    property_sets
-#     space_discretization
-    space_domain
-#     space_domain_configuration
-#     time_discretization
-#     # time_discretization_configuration
-#     time_domain
-#     time_domain_configuration
-    universe
-    universes
-    value
-#     value_configuration
-)
-add_library(lue_objects OBJECT
-    ${SOURCES}
-)
 add_library(lue STATIC
-    ${lue_object_libraries}
-    $<TARGET_OBJECTS:lue_objects>
+    src/array
+    src/collection
+    src/dataset
+    src/domain
+#     src/domain_configuration
+#     src/exception
+    src/phenomena
+    src/phenomenon
+    src/properties
+    src/property
+    src/property_set
+    src/property_sets
+#     src/space_discretization
+    src/space_domain
+#     src/space_domain_configuration
+#     src/time_discretization
+#     # src/time_discretization_configuration
+#     src/time_domain
+#     src/time_domain_configuration
+    src/universe
+    src/universes
+    src/value
+#     src/value_configuration
+
+
+    src/constant_size/domain
+    src/constant_size/property
+    src/constant_size/property_set
+    src/constant_size/space_domain
+    src/constant_size/value
+
+    src/constant_size/time/omnipresent/domain
+    src/constant_size/time/omnipresent/property
+    src/constant_size/time/omnipresent/property_set
+    src/constant_size/time/omnipresent/space_box
+    src/constant_size/time/omnipresent/space_box_domain
+    src/constant_size/time/omnipresent/space_domain
+    src/constant_size/time/omnipresent/value
+
+    src/constant_size/time/omnipresent/different_shape/property
+    src/constant_size/time/omnipresent/different_shape/value
+
+    src/constant_size/time/omnipresent/same_shape/property
+    src/constant_size/time/omnipresent/same_shape/value
 )
+
+add_library(lue::lue ALIAS lue)
+
+target_include_directories(lue
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
+        $<INSTALL_INTERFACE:include>
+    PRIVATE
+        ${Boost_INCLUDE_DIRS}
+        ${HDF5_INCLUDE_DIRS}
+)
+
 target_link_libraries(lue
-    ${HDF5_LIBRARIES}
-    ${Boost_FILESYSTEM_LIBRARY}
-    ${Boost_SYSTEM_LIBRARY}
-)
-
-
-# install(
-#     TARGETS lue
-#     RUNTIME DESTINATION bin
-#     LIBRARY DESTINATION lib
-#     ARCHIVE DESTINATION lib
-# )
-
-
-file(GLOB
-    SOURCES
-    RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-    *.cpp *.h
-)
-file(RELATIVE_PATH destination
-    ${LUE_SOURCE_PREFIX}
-    ${CMAKE_CURRENT_SOURCE_DIR}
-)
-install(
-    FILES
-        ${CMAKE_CURRENT_BINARY_DIR}/configure.h
-        ${SOURCES}
-    DESTINATION ${destination}
-    COMPONENT python
+    PUBLIC
+        lue::hdf5
 )

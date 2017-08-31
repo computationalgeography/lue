@@ -1,7 +1,7 @@
 #pragma once
-#include "../value.h"
-#include "lue/array.h"
-#include "lue/hdf5/group.h"
+#include "lue/constant_size/time/omnipresent/value.hpp"
+#include "lue/array.hpp"
+#include "lue/hdf5/group.hpp"
 // #include "lue/chunks.h"
 // #include <memory>
 

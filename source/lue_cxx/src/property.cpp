@@ -1,6 +1,6 @@
-#include "lue/property.h"
-#include "lue/enum_string_bimap.h"
-#include "lue/tag.h"
+#include "lue/property.hpp"
+#include "lue/enum_string_bimap.hpp"
+#include "lue/tag.hpp"
 
 
 namespace lue {

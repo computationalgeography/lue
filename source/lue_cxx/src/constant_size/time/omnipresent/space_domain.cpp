@@ -1,4 +1,4 @@
-#include "lue/constant_size/time/omnipresent/space_domain.h"
+#include "lue/constant_size/time/omnipresent/space_domain.hpp"
 
 
 namespace lue {

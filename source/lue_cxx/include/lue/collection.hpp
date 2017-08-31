@@ -1,6 +1,6 @@
 #pragma once
 // #include "lue/c_api/collection.h"
-#include "lue/hdf5/group.h"
+#include "lue/hdf5/group.hpp"
 #include <cassert>
 #include <map>
 #include <memory>

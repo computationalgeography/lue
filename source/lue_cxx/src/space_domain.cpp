@@ -1,5 +1,5 @@
-#include "lue/space_domain.h"
-#include "lue/tag.h"
+#include "lue/space_domain.hpp"
+#include "lue/tag.hpp"
 
 
 namespace lue {

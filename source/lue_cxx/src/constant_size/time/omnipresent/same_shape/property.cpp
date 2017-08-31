@@ -1,5 +1,5 @@
-#include "lue/constant_size/time/omnipresent/same_shape/property.h"
-#include "lue/tag.h"
+#include "lue/constant_size/time/omnipresent/same_shape/property.hpp"
+#include "lue/tag.hpp"
 #include <cassert>
 
 

@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/hdf5/group.h"
+#include "lue/hdf5/group.hpp"
 
 
 namespace lue {

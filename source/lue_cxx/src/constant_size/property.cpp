@@ -1,4 +1,4 @@
-#include "lue/constant_size/property.h"
+#include "lue/constant_size/property.hpp"
 
 
 namespace lue {

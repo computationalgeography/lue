@@ -1,6 +1,6 @@
 #pragma once
-#include "lue/constant_size/domain.h"
-#include "lue/constant_size/time/omnipresent/space_domain.h"
+#include "lue/constant_size/domain.hpp"
+#include "lue/constant_size/time/omnipresent/space_domain.hpp"
 
 
 namespace lue {

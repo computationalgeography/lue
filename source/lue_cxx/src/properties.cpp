@@ -1,4 +1,4 @@
-#include "lue/properties.h"
+#include "lue/properties.hpp"
 
 
 namespace lue {

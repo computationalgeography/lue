@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/constant_size/value.h"
+#include "lue/constant_size/value.hpp"
 
 
 namespace lue {

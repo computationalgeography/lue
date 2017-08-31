@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE lue dataset
 #include <boost/test/unit_test.hpp>
-#include "lue/dataset.h"
+#include "lue/dataset.hpp"
 
 
 namespace {

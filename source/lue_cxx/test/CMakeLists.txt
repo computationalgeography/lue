@@ -1,9 +1,8 @@
-set(TEST_NAMES
-    dataset_test
-)
 add_unit_tests(
     SCOPE lue
-    NAMES ${TEST_NAMES}
+    NAMES
+        dataset_test
+        constant_size/time/omnipresent/property_set_test
     LINK_LIBRARIES
-        lue
+        lue::lue
 )

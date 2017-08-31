@@ -1,7 +1,7 @@
 #pragma once
-#include "lue/constant_size/time/omnipresent/property_set.h"
-#include "lue/constant_size/time/omnipresent/space_box.h"
-#include "lue/constant_size/time/omnipresent/space_domain.h"
+#include "lue/constant_size/time/omnipresent/property_set.hpp"
+#include "lue/constant_size/time/omnipresent/space_box.hpp"
+#include "lue/constant_size/time/omnipresent/space_domain.hpp"
 
 
 namespace lue {

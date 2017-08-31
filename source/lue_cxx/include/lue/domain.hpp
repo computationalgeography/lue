@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/hdf5/group.h"
+#include "lue/hdf5/group.hpp"
 // #include "lue/cxx_api/domain_configuration.h"
 // #include "lue/cxx_api/space_domain.h"
 // #include "lue/cxx_api/time_domain.h"

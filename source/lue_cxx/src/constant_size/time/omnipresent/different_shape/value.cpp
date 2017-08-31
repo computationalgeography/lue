@@ -1,5 +1,5 @@
-#include "lue/constant_size/time/omnipresent/different_shape/value.h"
-#include "lue/tag.h"
+#include "lue/constant_size/time/omnipresent/different_shape/value.hpp"
+#include "lue/tag.hpp"
 
 
 namespace lue {

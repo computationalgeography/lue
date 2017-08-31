@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/property.h"
+#include "lue/property.hpp"
 
 
 namespace lue {

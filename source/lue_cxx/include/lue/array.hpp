@@ -1,9 +1,9 @@
 #pragma once
-#include "lue/hdf5/dataset.h"
-#include "lue/hdf5/count.h"
-#include "lue/hdf5/offset.h"
-#include "lue/hdf5/shape.h"
-#include "lue/hdf5/stride.h"
+#include "lue/hdf5/dataset.hpp"
+#include "lue/hdf5/count.hpp"
+#include "lue/hdf5/offset.hpp"
+#include "lue/hdf5/shape.hpp"
+#include "lue/hdf5/stride.hpp"
 
 
 namespace lue {

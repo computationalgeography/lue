@@ -1,5 +1,5 @@
-#include "lue/constant_size/time/omnipresent/space_box.h"
-#include "lue/tag.h"
+#include "lue/constant_size/time/omnipresent/space_box.hpp"
+#include "lue/tag.hpp"
 #include <cassert>
 
 

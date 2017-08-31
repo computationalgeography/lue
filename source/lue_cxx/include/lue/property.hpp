@@ -1,6 +1,6 @@
 #pragma once
-#include "lue/define.h"
-#include "lue/hdf5/group.h"
+#include "lue/define.hpp"
+#include "lue/hdf5/group.hpp"
 
 
 namespace lue {

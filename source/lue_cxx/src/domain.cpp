@@ -1,5 +1,5 @@
-#include "lue/domain.h"
-#include "lue/tag.h"
+#include "lue/domain.hpp"
+#include "lue/tag.hpp"
 // #include <cassert>
 // #include <stdexcept>
 // #include <utility>

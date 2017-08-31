@@ -1,4 +1,4 @@
-#include "lue/dataset.h"
+#include "lue/dataset.hpp"
 #include <cassert>
 #include <stdexcept>
 

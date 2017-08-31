@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/phenomena.h"
+#include "lue/phenomena.hpp"
 
 
 namespace lue {

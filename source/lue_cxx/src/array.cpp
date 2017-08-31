@@ -1,5 +1,5 @@
-#include "lue/array.h"
-#include "lue/hdf5/datatype.h"
+#include "lue/array.hpp"
+#include "lue/hdf5/datatype.hpp"
 #include <cassert>
 
 

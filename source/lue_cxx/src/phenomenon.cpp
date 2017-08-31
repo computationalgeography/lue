@@ -1,4 +1,4 @@
-#include "lue/phenomenon.h"
+#include "lue/phenomenon.hpp"
 
 
 namespace lue {

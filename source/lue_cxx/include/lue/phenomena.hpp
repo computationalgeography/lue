@@ -1,6 +1,6 @@
 #pragma once
-#include "lue/collection.h"
-#include "lue/phenomenon.h"
+#include "lue/collection.hpp"
+#include "lue/phenomenon.hpp"
 
 
 namespace lue {

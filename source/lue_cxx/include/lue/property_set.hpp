@@ -1,8 +1,8 @@
 #pragma once
-#include "lue/define.h"
-#include "lue/hdf5/group.h"
+#include "lue/define.hpp"
+#include "lue/hdf5/group.hpp"
 // #include "lue/cxx_api/domain.h"
-#include "lue/properties.h"
+#include "lue/properties.hpp"
 // #include "lue/cxx_api/property_set_configuration.h"
 // #include <memory>
 // #include <string>

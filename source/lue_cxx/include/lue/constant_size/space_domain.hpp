@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/space_domain.h"
+#include "lue/space_domain.hpp"
 
 
 namespace lue {

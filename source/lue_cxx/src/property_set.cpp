@@ -1,5 +1,5 @@
-#include "lue/property_set.h"
-#include "lue/enum_string_bimap.h"
+#include "lue/property_set.hpp"
+#include "lue/enum_string_bimap.hpp"
 // #include "lue/cxx_api/constant_size/time/omnipresent/property_set.h"
 // #include "lue/cxx_api/constant_size/time/shared/property_set.h"
 // #include "lue/cxx_api/constant_size/time/shared/time_period_domain.h"
