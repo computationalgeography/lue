@@ -30,10 +30,10 @@ if(LUE_BUILD_PYTHON_API)
         FILES document/luepy/introduction.rst
         DESTINATION .
         RENAME README.rst
-        COMPONENT python
+        COMPONENT python EXCLUDE_FROM_ALL
     )
 
-    add_custom_target(luepy_sources
+    add_custom_target(install_lue_py_sources
         COMMAND
             "${CMAKE_COMMAND}" -DCMAKE_INSTALL_COMPONENT=python
             -P "${CMAKE_BINARY_DIR}/cmake_install.cmake"
