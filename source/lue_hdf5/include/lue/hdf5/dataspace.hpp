@@ -6,6 +6,11 @@
 namespace lue {
 namespace hdf5 {
 
+/*!
+    @brief      Class for representing the size and shape of a dataset or
+                attribute raw data
+    @sa         [H5S: Dataspace Interface](https://support.hdfgroup.org/HDF5/doc/RM/RM_H5S.html)
+*/
 class Dataspace
 {
 
@@ -35,6 +40,7 @@ public:
 
 private:
 
+    //! Id of dataspace
     Identifier     _id;
 
 };

@@ -5,6 +5,12 @@
 namespace lue {
 namespace hdf5 {
 
+/*!
+    @brief      Construct an instance of a particular @a type
+    @param      type Dataspace type
+    @exception  std::runtime_error In case the dataspace cannot be created
+    @sa         [H5Screate](https://support.hdfgroup.org/HDF5/doc/RM/RM_H5S.html#Dataspace-Create)
+*/
 Dataspace::Dataspace(
     ::H5S_class_t const type)
 
@@ -17,6 +23,11 @@ Dataspace::Dataspace(
 }
 
 
+/*!
+    @brief      Create an instance based on a dataspace identifier
+    @param      id Identifier of created dataspace
+    @exception  std::runtime_error In case the @a id is not valid
+*/
 Dataspace::Dataspace(
     hid_t const id)
 
@@ -29,12 +40,20 @@ Dataspace::Dataspace(
 }
 
 
+/*!
+    @brief      Create an instance based on a dataspace identifier
+    @param      id Identifier of created dataspace
+    @exception  std::runtime_error In case the @a id is not valid
+*/
 Dataspace::Dataspace(
     Identifier&& id)
 
     : _id{std::forward<Identifier>(id)}
 
 {
+    if(!_id.is_valid()) {
+        throw std::runtime_error("Dataspace is not valid");
+    }
 }
 
 
@@ -65,12 +84,20 @@ Dataspace& Dataspace::operator=(
 }
 
 
+/*!
+    @brief      Return the identifier
+*/
 Identifier const& Dataspace::id() const
 {
     return _id;
 }
 
 
+/*!
+    @brief      Return the number of dimensions
+    @exception  std::runtime_error In case the number of dimensions cannot
+                be determined
+*/
 int Dataspace::nr_dimensions() const
 {
     auto const nr_dimensions = ::H5Sget_simple_extent_ndims(_id);
@@ -84,6 +111,11 @@ int Dataspace::nr_dimensions() const
 }
 
 
+/*!
+    @brief      Return the dimension extents
+    @exception  std::runtime_error In case the dimension extents cannot
+                be determined
+*/
 Shape Dataspace::dimension_extents() const
 {
     auto const nr_dimensions = this->nr_dimensions();
@@ -97,10 +129,19 @@ Shape Dataspace::dimension_extents() const
         throw std::runtime_error("Cannot retrieve dataspace extents");
     }
 
+    assert(nr_dimensions2 == nr_dimensions);
+
     return Shape(extents.get(), extents.get() + nr_dimensions);
 }
 
 
+/*!
+    @brief      Create a new simple dataspace instance
+    @param      dimension_sizes Size of each dimension. This value will
+                also be used as the upper limit on the size of each
+                dimension
+    @sa         create_dataspace(Shape const&, Shape const&)
+*/
 Dataspace create_dataspace(
     Shape const& dimension_sizes)
 {
@@ -108,6 +149,14 @@ Dataspace create_dataspace(
 }
 
 
+/*!
+    @brief      Create a new simple dataspace instance
+    @param      dimension_sizes Size of each dimension
+    @param      max_dimension_sizes Upper limit on the size of each dimension
+    @exception  std::runtime_error In case the dataspace cannot be
+                created
+    @sa         [H5Screate_simple](https://support.hdfgroup.org/HDF5/doc/RM/RM_H5S.html#Dataspace-CreateSimple)
+*/
 Dataspace create_dataspace(
     Shape const& dimension_sizes,
     Shape const& max_dimension_sizes)

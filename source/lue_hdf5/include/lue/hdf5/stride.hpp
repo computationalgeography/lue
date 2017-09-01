@@ -3,6 +3,12 @@
 #include <vector>
 
 
+/*!
+    @brief      Class for instances representing strides in each dimension
+    @sa         Offset, Count
+
+    Using this class instead of HDF5's `hsize_t const*` is more type-safe.
+*/
 namespace lue {
 namespace hdf5 {
 
