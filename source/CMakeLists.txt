@@ -1,13 +1,16 @@
 if(LUE_BUILD_HDF5_API)
     add_subdirectory(lue_hdf5)
+    list(APPEND doxygen_input lue_hdf5)
 endif()
 
 if(LUE_BUILD_CXX_API)
     add_subdirectory(lue_cxx)
+    list(APPEND doxygen_input lue_cxx)
 endif()
 
 if(LUE_BUILD_HL_API)
     add_subdirectory(lue_hl)
+    list(APPEND doxygen_input lue_hl)
 endif()
 
 if(LUE_BUILD_PYTHON_API)
@@ -63,6 +66,7 @@ if(LUE_BUILD_PYTHON_API)
 
 if(LUE_BUILD_LUE_UTILITY)
     add_subdirectory(lue_utility)
+    list(APPEND doxygen_input lue_utility)
 endif()
 
 # if(LUE_BUILD_LUE_DUMP)
@@ -71,6 +75,7 @@ endif()
 
 if(LUE_BUILD_LUE_TRANSLATE)
     add_subdirectory(lue_translate)
+    list(APPEND doxygen_input lue_translate)
 endif()
 
 # if(LUE_BUILD_LUE_VALIDATE)
@@ -78,14 +83,9 @@ endif()
 # endif()
 
 if(LUE_BUILD_DOCUMENTATION)
-    set(DEVBASE_DOXYGEN_INPUT
-        ${CMAKE_CURRENT_SOURCE_DIR}/lue_hdf5
-        ${CMAKE_CURRENT_SOURCE_DIR}/lue_cxx
-        ${CMAKE_CURRENT_SOURCE_DIR}/lue_hl
-        ${CMAKE_CURRENT_SOURCE_DIR}/lue_utility
-        ${CMAKE_CURRENT_SOURCE_DIR}/lue_translate
+    doxygen_add_docs(cpp_doc
+        ${doxygen_input}
     )
-    include(DoxygenDoc)
 endif()
 
 install(EXPORT lue_targets

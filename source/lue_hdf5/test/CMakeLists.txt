@@ -7,5 +7,5 @@ add_unit_tests(
         datatype_test
         shape_test
     LINK_LIBRARIES
-        lue::hdf5
+        lue::lue_hdf5
 )
