@@ -87,3 +87,21 @@ if(LUE_BUILD_DOCUMENTATION)
     )
     include(DoxygenDoc)
 endif()
+
+install(EXPORT lue_targets
+    FILE lue_targets.cmake
+    NAMESPACE lue::
+    DESTINATION lib/cmake/lue
+)
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file("lue_config_version.cmake"
+    VERSION ${LUE_VERSION}
+    COMPATIBILITY SameMajorVersion
+)
+install(
+    FILES
+        "lue-config.cmake"
+        "${CMAKE_CURRENT_BINARY_DIR}/lue_config_version.cmake"
+    DESTINATION
+        lib/cmake/lue
+)

@@ -17,7 +17,7 @@ add_library(lue_hdf5 STATIC
     src/shape
 )
 
-add_library(lue::hdf5 ALIAS lue_hdf5)
+add_library(lue::lue_hdf5 ALIAS lue_hdf5)
 
 target_include_directories(lue_hdf5
     PUBLIC
@@ -34,27 +34,17 @@ target_link_libraries(lue_hdf5
         ${HDF5_C_LIBRARIES}
 )
 
+install(
+    TARGETS
+        lue_hdf5
+    EXPORT
+        lue_targets
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    RUNTIME DESTINATION bin
+)
 
-### set(lue_object_libraries
-###     ${lue_object_libraries}
-###     $<TARGET_OBJECTS:lue_hdf5_objects>
-###     PARENT_SCOPE
-### )
-
-
-### file(GLOB
-###     SOURCES
-###     RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-###     *.cpp *.h
-### )
-### file(RELATIVE_PATH destination
-###     ${LUE_SOURCE_PREFIX}
-###     ${CMAKE_CURRENT_SOURCE_DIR}
-### )
-### install(
-###     FILES
-###         ${CMAKE_CURRENT_BINARY_DIR}/configure.h
-###         ${SOURCES}
-###     DESTINATION ${destination}
-###     COMPONENT python
-### )
+install(
+    DIRECTORY include
+    DESTINATION .
+)

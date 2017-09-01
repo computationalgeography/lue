@@ -64,5 +64,20 @@ target_include_directories(lue
 
 target_link_libraries(lue
     PUBLIC
-        lue::hdf5
+        lue::lue_hdf5
+)
+
+install(
+    TARGETS
+        lue
+    EXPORT
+        lue_targets
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    RUNTIME DESTINATION bin
+)
+
+install(
+    DIRECTORY include
+    DESTINATION .
 )
