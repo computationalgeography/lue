@@ -65,6 +65,7 @@ function build_peacock()
     if [ "$build_boost" = true ]; then
         options+=("-Dbuild_boost=true")
         options+=("-Dboost_version=1.63.0")
+
         options+=("-Dboost_build_boost_filesystem=true")
         options+=("-Dboost_build_boost_program_options=true")
         options+=("-Dboost_build_boost_system=true")

@@ -23,9 +23,9 @@ target_include_directories(lue_hdf5
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>
+        ${HDF5_INCLUDE_DIRS}
     PRIVATE
         ${Boost_INCLUDE_DIRS}
-        ${HDF5_INCLUDE_DIRS}
 )
 
 target_link_libraries(lue_hdf5

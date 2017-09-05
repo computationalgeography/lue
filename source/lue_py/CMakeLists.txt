@@ -52,6 +52,7 @@ target_include_directories(lue_py
     SYSTEM
     PRIVATE
         ${PYBIND11_INCLUDE_DIRS}
+        ${NUMPY_INCLUDE_DIRS}
         ${PYTHON_INCLUDE_DIRS}
 )
 

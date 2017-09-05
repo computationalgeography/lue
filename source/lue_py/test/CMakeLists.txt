@@ -7,6 +7,7 @@ add_unit_tests(
     NAMES
         python_test
     INCLUDE_DIRS
+        ${PYBIND11_INCLUDE_DIRS}
         ${PYTHON_INCLUDE_DIRS}
     OBJECT_LIBRARIES
     LINK_LIBRARIES
