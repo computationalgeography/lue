@@ -55,7 +55,7 @@ PYBIND11_PLUGIN(lue)
             - Shape
             - Dataset
 
-    .. automodule:: hdf5
+    .. automodule:: lue.hdf5
 
     .. automodule:: lue.constant_size
 )");

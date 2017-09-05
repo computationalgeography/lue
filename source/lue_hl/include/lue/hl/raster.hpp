@@ -72,9 +72,7 @@ public:
                                             Property&& property);
 
         void       write               (hdf5::Dataspace const& memory_dataspace,
-                                        hdf5::Offset const& start,
-                                        hdf5::Stride const& stride,
-                                        hdf5::Count const& count,
+                                        hdf5::Hyperslab const& hyperslab,
                                         void const* buffer);
 
     private:

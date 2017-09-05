@@ -15,8 +15,6 @@ public:
                    Translate           (std::vector<std::string> const&
                                             arguments);
 
-    // void           run_implementation  () override;
-
 private:
 
     // static CommandPtr import_data      (std::vector<std::string> const&

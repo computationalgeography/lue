@@ -25,7 +25,8 @@ class Dataset:
 public:
 
                    Dataset             (std::string const& name,
-                                        unsigned int const flags);
+                                        unsigned int const
+                                            flags=H5F_ACC_RDONLY);
 
                    Dataset             (hdf5::Identifier&& location);
 

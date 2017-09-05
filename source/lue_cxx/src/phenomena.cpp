@@ -1,4 +1,5 @@
 #include "lue/phenomena.hpp"
+#include "lue/tag.hpp"
 
 
 namespace lue {
@@ -6,7 +7,7 @@ namespace lue {
 // bool phenomena_exists(
 //     hdf5::Identifier const& location)
 // {
-//     return collection_exists(location, "lue_phenomena");
+//     return collection_exists(location, phenomena_tag);
 // }
 
 
@@ -18,7 +19,7 @@ namespace lue {
 Phenomena::Phenomena(
     hdf5::Identifier const& location)
 
-    : Collection(location, "lue_phenomena")
+    : Collection(location, phenomena_tag)
 
 {
 }
@@ -64,7 +65,7 @@ Phenomenon& Phenomena::add(
 Phenomena create_phenomena(
     hdf5::Identifier const& location)
 {
-    return create_collection<Phenomenon>(location, "lue_phenomena");
+    return create_collection<Phenomenon>(location, phenomena_tag);
 }
 
 } // namespace lue

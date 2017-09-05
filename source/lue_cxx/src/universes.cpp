@@ -1,4 +1,5 @@
 #include "lue/universes.hpp"
+#include "lue/tag.hpp"
 
 
 namespace lue {
@@ -6,7 +7,7 @@ namespace lue {
 // bool universes_exists(
 //     hdf5::Identifier const& location)
 // {
-//     return collection_exists(location, "lue_universes");
+//     return collection_exists(location, universes_tag);
 // }
 
 
@@ -18,7 +19,7 @@ namespace lue {
 Universes::Universes(
     hdf5::Identifier const& location)
 
-    : Collection(location, "lue_universes")
+    : Collection(location, universes_tag)
 
 {
 }
@@ -64,7 +65,7 @@ Universe& Universes::add(
 Universes create_universes(
     hdf5::Identifier const& location)
 {
-    return create_collection<Universe>(location, "lue_universes");
+    return create_collection<Universe>(location, universes_tag);
 }
 
 } // namespace lue

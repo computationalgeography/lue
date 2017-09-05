@@ -55,7 +55,7 @@ struct Read2DDatasetFixture
         Stride const stride{1, 1};
         Count const count{1, nr_cols};
 
-        dataset->read(memory_datatype, start, stride, count,
+        dataset->read(memory_datatype, Hyperslab(start, stride, count),
             values_read.data());
 
         BOOST_CHECK_EQUAL_COLLECTIONS(
@@ -74,7 +74,7 @@ struct Read2DDatasetFixture
         Stride const stride{1, 1};
         Count const count{nr_rows, 1};
 
-        dataset->read(memory_datatype, start, stride, count,
+        dataset->read(memory_datatype, Hyperslab(start, stride, count),
             values_read.data());
 
         for(size_t r = 0; r < nr_rows; ++r) {
@@ -93,7 +93,8 @@ struct Read2DDatasetFixture
         Stride const stride{1, 1};
         Count const count{1, 1};
 
-        dataset->read(memory_datatype, start, stride, count, &value_read);
+        dataset->read(memory_datatype, Hyperslab(start, stride, count),
+            &value_read);
 
         BOOST_CHECK_EQUAL(value_read, values[row * nr_cols + col]);
     }

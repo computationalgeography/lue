@@ -126,15 +126,15 @@ void write_band(
             hdf5::Shape const shape = { nr_valid_cells_x * nr_valid_cells_y };
             auto const memory_dataspace = hdf5::create_dataspace(shape);
 
-            hdf5::Offset offset = {
+            hdf5::Offset start = {
                 block_y * blocks.block_size_y(),
                 block_x * blocks.block_size_x()
             };
             hdf5::Stride stride = { 1, 1 };
             hdf5::Count count = { nr_valid_cells_y, nr_valid_cells_x };
 
-            raster_band.write(memory_dataspace, offset, stride, count,
-                values.data());
+            raster_band.write(memory_dataspace,
+                hdf5::Hyperslab(start, stride, count), values.data());
 
             progress_indicator.update_progress(++current_block);
         }

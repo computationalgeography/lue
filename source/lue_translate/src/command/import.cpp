@@ -75,7 +75,7 @@ Import::Import(
 }
 
 
-void Import::run_implementation()
+int Import::run_implementation()
 {
     namespace bfs = boost::filesystem;
 
@@ -83,8 +83,8 @@ void Import::run_implementation()
         argument<std::vector<std::string>>("<inputs>");
     auto const output_dataset_name = argument<std::string>("<output>");
 
-    bool const metadata_passed = argument_passed("--meta");
-    // bool const stack_passed = argument_passed("--start");
+    bool const metadata_passed = argument_parsed("--meta");
+    // bool const stack_passed = argument_parsed("--start");
 
     auto const metadata = metadata_passed
         ? Metadata(argument<std::string>("--meta"))
@@ -110,6 +110,8 @@ void Import::run_implementation()
     //     throw std::runtime_error(
     //         "translation of temporal stacks is not supported yet");
     // }
+
+    return EXIT_SUCCESS;
 }
 
 }  // namespace utility

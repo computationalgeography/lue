@@ -46,14 +46,14 @@ Export::Export(
 }
 
 
-void Export::run_implementation()
+int Export::run_implementation()
 {
     namespace bfs = boost::filesystem;
 
     std::string const input_dataset_name = argument<std::string>("<input>");
     std::string const output_dataset_name = argument<std::string>("<output>");
 
-    bool const metadata_passed = argument_passed("--meta");
+    bool const metadata_passed = argument_parsed("--meta");
 
     auto const metadata = metadata_passed
         ? Metadata(argument<std::string>("--meta"))
@@ -70,6 +70,11 @@ void Export::run_implementation()
             translate_lue_dataset_to_dot(*lue_dataset, output_dataset_name,
                 metadata);
         }
+        else if(bfs::path(output_dataset_name).extension() == ".csv") {
+           // Create a CSV file of the dataset.
+           translate_lue_dataset_to_csv(*lue_dataset, output_dataset_name,
+               metadata);
+        }
         else if(bfs::path(output_dataset_name).extension() == ".vtk") {
             // Create a VTK file of the dataset.
             translate_lue_dataset_to_vtk(*lue_dataset, output_dataset_name,
@@ -81,6 +86,8 @@ void Export::run_implementation()
                 " is not supported");
         }
     }
+
+    return EXIT_SUCCESS;
 }
 
 }  // namespace utility

@@ -1,6 +1,17 @@
 Changes
 =======
 
+0.1.1
+-----
+- Improved support for indexing of LUE arrays, similar to how indexing of
+  Numpy arrays works. Currently arrays can be indexed using slices and
+  integers.
+- Improved ``lue_translate`` command. The ``import`` subcommand now accepts the
+  name of a JSON file with metadata to guide the import of foreign data.
+  The ``export`` to Graphviz dot format now accepts the name of a JSON file
+  with properties of the resulting graph.
+
+
 0.1.0
 -----
 - Reworked the API to make it easier to add specialized property

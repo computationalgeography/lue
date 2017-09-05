@@ -20,6 +20,11 @@ void init_dataset_class(
     Class representing an HDF5 dataset
 )")
 
+        .def_property_readonly(
+            "shape",
+            &Dataset::shape,
+            "shape docstring...")
+
         ;
 
 }
