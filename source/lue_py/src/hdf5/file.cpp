@@ -26,6 +26,18 @@ void init_file_class(
             R"(
     Return pathname of HDF5 file
 )")
+
+        .def(
+            "flush",
+            &File::flush,
+            R"(
+    Flush all buffers associated with the file to disk
+
+    This may be necessary when calling external processes from Python
+    that have to read the file. Without flushing the buffers such processes
+    may not see a valid HDF5 file.
+)")
+
         ;
 
 }

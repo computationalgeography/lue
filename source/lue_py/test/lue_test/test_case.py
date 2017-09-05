@@ -1,4 +1,7 @@
 import os
+import shlex
+import subprocess
+import sys
 import unittest
 import numpy
 import lue
@@ -14,6 +17,7 @@ class TestCase(unittest.TestCase):
         return "{}.lue".format(
             os.path.join(os.path.dirname(module_name), filename))
 
+
     def assertArraysEqual(self,
             lhs,
             rhs):
@@ -22,6 +26,7 @@ class TestCase(unittest.TestCase):
             numpy.testing.assert_equal(lhs, rhs)
         except AssertionError as exception:
             self.fail(str(exception))
+
 
     @classmethod
     def add_method(cls,
@@ -33,6 +38,7 @@ class TestCase(unittest.TestCase):
         """
         setattr(cls, method.__name__, method)
 
+
     @classmethod
     def create_dataset(cls,
             name):
@@ -42,6 +48,7 @@ class TestCase(unittest.TestCase):
         lue_test.remove_file_if_existant(name)
 
         return lue.create_dataset(name)
+
 
     @classmethod
     def relative_pathname(cls,
@@ -54,3 +61,17 @@ class TestCase(unittest.TestCase):
         return os.path.join(
             lue_test.relative_pathname(__file__, directory_pathname),
             filename)
+
+
+    def assertDatasetIsValid(self,
+            dataset_pathname):
+        """
+        Validate dataset *dataset_pathname*
+        """
+        self.assertTrue(os.path.exists(dataset_pathname))
+        command = "lue_validate {}".format(dataset_pathname)
+
+        try:
+            output = subprocess.check_output(shlex.split(command))
+        except CalledProcessError as exception:
+            self.assertEqual(exception.returncode, 0, exception.output)

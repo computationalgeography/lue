@@ -56,10 +56,6 @@ public:
 
     hdf5::Shape    value_shape         () const;
 
-    void           read                (void* buffer);
-
-    void           write               (void const* buffer);
-
 private:
 
 };

@@ -53,40 +53,31 @@ public:
 
     Dataspace      dataspace           () const;
 
+    Shape          shape               () const;
+
     void           resize              (Shape const& new_dimension_sizes);
 
     void           read                (Datatype const& datatype,
                                         void* buffer) const;
 
     void           read                (Datatype const& datatype,
-                                        Offset const& start,
-                                        Count const& count,
-                                        void* buffer) const;
-
-    void           read                (Datatype const& datatype,
                                         Hyperslab const& hyperslab,
-                                        void* buffer) const;
-
-    void           read                (Datatype const& datatype,
-                                        Offset const& start,
-                                        Stride const& stride,
-                                        Count const& count,
                                         void* buffer) const;
 
     void           write               (Datatype const& datatype,
                                         void const* buffer) const;
 
     void           write               (Datatype const& datatype,
-                                        Offset const& start,
-                                        Stride const& stride,
-                                        Count const& count,
+                                        Hyperslab const& hyperslab,
                                         void const* buffer) const;
 
     void           write               (Datatype const& datatype,
                                         Dataspace const& memory_dataspace,
-                                        Offset const& start,
-                                        Stride const& stride,
-                                        Count const& count,
+                                        Hyperslab const& hyperslab,
+                                        void const* buffer) const;
+
+    void           fill                (Datatype const& datatype,
+                                        Hyperslab const& hyperslab,
                                         void const* buffer) const;
 
 private:

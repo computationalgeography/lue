@@ -103,41 +103,6 @@ hdf5::Shape Value::value_shape() const
 }
 
 
-void Value::read(
-    void* buffer)
-{
-    auto const shape = this->shape();
-    size_t const rank = shape.size();
-
-    hdf5::Offset start(rank, 0);
-    hdf5::Stride stride(rank, 1);
-    hdf5::Count count(shape.begin(), shape.end());
-
-    Array::read(start, stride, count, buffer);
-}
-
-
-/*!
-    @brief      Write buffer to underlying HDF5 dataset
-    @param      buffer Buffer with elements for whole dataset
-
-    It is assumed that buffer contains elements for all elements of all
-    items.
-*/
-void Value::write(
-    void const* buffer)
-{
-    auto const shape = this->shape();
-    size_t const rank = shape.size();
-
-    hdf5::Offset start(rank, 0);
-    hdf5::Stride stride(rank, 1);
-    hdf5::Count count(shape.begin(), shape.end());
-
-    Array::write(start, stride, count, buffer);
-}
-
-
 Value create_value(
     hdf5::Group const& group,
     std::string const& name,

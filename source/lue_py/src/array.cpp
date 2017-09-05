@@ -195,6 +195,107 @@ py::array read_from_array(
 }
 
 
+template<
+    typename T>
+void verify_write(
+    Array const& array,
+    hdf5::Hyperslab const& hyperslab)
+{
+    // TODO Verify hyperslab makes sense with array.
+
+
+
+    // auto const array_info = values.request();
+
+    // if(shape.size() != array_info.ndim) {
+    //     throw std::runtime_error("rank of arrays differ");
+    // }
+
+
+    // if(hyperslab.count()[0] != array_info.shape[0]) {
+    //     throw std::runtime_error(boost::str(boost::format(
+    //         "Number of values to assign (%1%) must equal size "
+    //         "of selected slice (%2%)")
+    //             % array_info.shape[0]
+    //             % hyperslab.count()[0]
+    //         ));
+    // }
+
+    // // TODO Test hyperslab, not shape of array
+    // // if(array_info.shape != shape) {
+    // //     throw std::runtime_error(boost::str(boost::format(
+    // //         "Shape of values to assign %1% must be equal to "
+    // //         "shape of selected slice %2%")
+    // //             % shape_as_string(array_info.shape)
+    // //             % shape_as_string(shape)
+    // //         ));
+    // // }
+
+
+
+
+    // if(hdf5::NativeDatatypeTraits<T>::type_id() != array.datatype()) {
+    //     throw std::runtime_error(boost::str(boost::format(
+    //         "Value type of value(s) to assign from (%1%) must equal "
+    //         "the value type of the array to assign to (%2%)")
+    //             % hdf5::NativeDatatypeTraits<T>::name()
+    //             % hdf5::native_datatype_as_string(array.datatype())
+    //         ));
+    // }
+}
+
+
+template<
+    typename T>
+void write_to_array(
+    Array& array,
+    hdf5::Hyperslab const& hyperslab,
+    T const value)
+{
+    verify_write<T>(array, hyperslab);
+
+    // Write value into hyperslab target array
+    hdf5::Datatype memory_datatype{hdf5::NativeDatatypeTraits<T>::type_id()};
+    // Hier verder
+    // assert(false);
+    // dynamic_cast<hdf5::Dataset&>(array).fill(
+    //     memory_datatype, hyperslab, value);
+}
+
+
+template<
+    typename T>
+void write_to_array(
+    Array& array,
+    hdf5::Hyperslab const& hyperslab,
+    T const* values)
+{
+    verify_write<T>(array, hyperslab);
+
+    // Write source array into hyperslab target array
+    hdf5::Datatype memory_datatype{hdf5::NativeDatatypeTraits<T>::type_id()};
+    dynamic_cast<hdf5::Dataset&>(array).write(
+        memory_datatype, hyperslab, values);
+}
+
+
+template<
+    typename T>
+void write_to_array(
+    Array& array,
+    hdf5::Dataspace const& memory_dataspace,
+    hdf5::Hyperslab const& hyperslab,
+    T const* values)
+{
+    verify_write<T>(array, hyperslab);
+
+    // Write source array into hyperslab target array
+    hdf5::Datatype memory_datatype{hdf5::NativeDatatypeTraits<T>::type_id()};
+    dynamic_cast<hdf5::Dataset&>(array).write(
+        memory_datatype, memory_dataspace, hyperslab, values);
+}
+
+
 // // Required for comparing pybind11 shape and our shape. The value types of
 // // these collections differ slightly (long long unsigned int versus long
 // // unsigned int).
@@ -244,6 +345,110 @@ py::array read_from_array(
 // }
 
 
+
+
+template<
+    typename T>
+void set_item(
+    Array& array,
+    std::int64_t const index,
+    T const value)
+{
+    hdf5::Shape const shape{array.shape()};
+    hdf5::Hyperslab hyperslab{shape};
+    hdf5::Shape slice_shape{shape};
+    size_t nr_erased_dimensions = 0;
+
+    update_hyperslab_by_index(
+        0, index, shape, hyperslab, slice_shape, nr_erased_dimensions);
+
+    write_to_array(array, hyperslab, value);
+}
+
+
+template<
+    typename T>
+void set_item(
+    Array& array,
+    py::slice const& slice,
+    T const value)
+{
+    hdf5::Shape const shape{array.shape()};
+    hdf5::Hyperslab hyperslab{shape};
+    hdf5::Shape slice_shape{shape};
+    size_t nr_erased_dimensions = 0;
+
+    update_hyperslab_by_slice(
+        0, slice, shape, hyperslab, slice_shape, nr_erased_dimensions);
+
+    write_to_array(array, hyperslab, value);
+}
+
+
+template<
+    typename T>
+void set_item(
+    Array& array,
+    std::int64_t const index,
+    T const* values)
+{
+    hdf5::Shape const shape{array.shape()};
+    hdf5::Hyperslab hyperslab{shape};
+    hdf5::Shape slice_shape{shape};
+    size_t nr_erased_dimensions = 0;
+
+    update_hyperslab_by_index(
+        0, index, shape, hyperslab, slice_shape, nr_erased_dimensions);
+
+    write_to_array(array, hyperslab, values);
+}
+
+
+template<
+    typename T>
+void set_item(
+    Array& array,
+    std::int64_t const index,
+    py::array_t<T, py::array::c_style>& values)
+{
+    set_item(array, index, static_cast<T const*>(values.request().ptr));
+}
+
+
+template<
+    typename T>
+void set_item(
+    Array& array,
+    hdf5::Dataspace const& memory_dataspace,
+    py::slice const& slice,
+    T const* values)
+{
+    hdf5::Shape const shape{array.shape()};
+    hdf5::Hyperslab hyperslab{shape};
+    hdf5::Shape slice_shape{shape};
+    size_t nr_erased_dimensions = 0;
+
+    update_hyperslab_by_slice(
+        0, slice, shape, hyperslab, slice_shape, nr_erased_dimensions);
+
+    write_to_array(array, memory_dataspace, hyperslab, values);
+}
+
+
+/// template<
+///     typename T>
+/// void set_item(
+///     Array& array,
+///     py::slice const& slice,
+///     T const& value)
+/// {
+///     hdf5::Shape const sizes{1};
+///     auto const memory_dataspace = hdf5::create_dataspace(sizes);
+/// 
+///     set_item(array, memory_dataspace, slice, &value);
+/// }
+
+
 template<
     typename T>
 void set_item(
@@ -251,62 +456,23 @@ void set_item(
     py::slice const& slice,
     py::array_t<T, py::array::c_style>& values)
 {
-    hdf5::Shape const shape{array.shape()};
+    hdf5::Shape const sizes(values.shape(), values.shape() + values.ndim());
+    auto const memory_dataspace = hdf5::create_dataspace(sizes);
 
-    size_t start, stop, step, slice_length;
-
-    if(!slice.compute(shape[0], &start, &stop, &step, &slice_length)) {
-        throw py::error_already_set();
-    }
-
-    auto const array_info = values.request();
-
-    if(shape.size() != array_info.ndim) {
-        throw std::runtime_error("rank of arrays differ");
-    }
+    set_item(
+        array, memory_dataspace, slice,
+        static_cast<T const*>(values.request().ptr));
+}
 
 
-    // if(!datatypes_are_equal(hdf5::NativeDatatypeTraits<T>::type_id(),
-    //         array.datatype())) {
-    if(hdf5::NativeDatatypeTraits<T>::type_id() != array.datatype()) {
-        throw std::runtime_error(boost::str(boost::format(
-            "Value type of array to assign from (%1%) must equal "
-            "the value type of the array to assign to (%2%)")
-                % hdf5::NativeDatatypeTraits<T>::name()
-                % hdf5::native_datatype_as_string(array.datatype())
-                // % hdf5_type_name(array.datatype())
-            ));
-    }
-
-    if(slice_length != array_info.shape[0]) {
-        throw std::runtime_error(boost::str(boost::format(
-            "Number of values to assign (%1%) must equal size "
-            "of selected slice (%2%)")
-                % array_info.shape[0]
-                % slice_length
-            ));
-    }
-
-    // TODO Test hyperslab, not shape of array
-    // if(array_info.shape != shape) {
-    //     throw std::runtime_error(boost::str(boost::format(
-    //         "Shape of values to assign %1% must be equal to "
-    //         "shape of selected slice %2%")
-    //             % shape_as_string(array_info.shape)
-    //             % shape_as_string(shape)
-    //         ));
-    // }
-
-    hdf5::Offset hyperslab_start(shape.size(), 0);
-    hyperslab_start[0] = start;
-
-    hdf5::Stride hyperslab_stride(shape.size(), 1);
-
-    hdf5::Count hyperslab_count(shape.begin(), shape.end());
-    hyperslab_count[0] = slice_length;
-
-    array.write(hyperslab_start, hyperslab_stride, hyperslab_count,
-        static_cast<T*>(array_info.ptr));
+template<
+    typename T>
+void set_item(
+    Array& /* array */,
+    std::vector<py::object> const& /* indices */,
+    py::array_t<T, py::array::c_style>& /* values */)
+{
+    assert(false);
 }
 
 
@@ -315,28 +481,12 @@ void init_array_class(
 {
     init_numpy();
 
-
-#define SETITEM( \
-        T) \
-        .def("__setitem__", []( \
-                Array& array, \
-                py::slice const& slice, \
-                py::array_t<T, py::array::c_style>& values) { \
-            set_item<T>(array, slice, values); \
-})
-
-
     py::class_<
             Array,
             hdf5::Dataset>(
         module,
         "Array",
         "Array docstring...")
-
-        .def_property_readonly(
-            "shape",
-            &Array::shape,
-            "shape docstring...")
 
         .def_property_readonly(
             "dtype",
@@ -464,16 +614,94 @@ void init_array_class(
 
         })
 
-        SETITEM(uint32_t)
-        SETITEM(int32_t)
-        SETITEM(uint64_t)
-        SETITEM(int64_t)
-        SETITEM(float)
-        SETITEM(double)
+
+        .def("__setitem__", [](
+                Array& array,
+                std::int64_t const index,
+                py::int_ const& value) {
+            set_item(array, index, std::int64_t{value});
+        })
+
+        .def("__setitem__", [](
+                Array& array,
+                std::int64_t const index,
+                py::float_ const& value) {
+            set_item(array, index, double{value});
+        })
+
+        .def("__setitem__", [](
+                Array& array,
+                py::slice const& slice,
+                py::int_ const& value) {
+            set_item(array, slice, std::int64_t{value});
+        })
+
+        .def("__setitem__", [](
+                Array& array,
+                py::slice const& slice,
+                py::float_ const& value) {
+            set_item(array, slice, double{value});
+        })
+
+
+#define SETITEM_INTEGER(                                       \
+            T)                                                 \
+        .def("__setitem__", [](                                \
+                Array& array,                                  \
+                std::int64_t const index,                      \
+                py::array_t<T, py::array::c_style>& values) {  \
+            set_item<T>(array, index, values);                 \
+        })
+
+
+#define SETITEM_SLICE(                                         \
+        T)                                                     \
+        .def("__setitem__", [](                                \
+                Array& array,                                  \
+                py::slice const& slice,                        \
+                py::array_t<T, py::array::c_style>& values) {  \
+            set_item<T>(array, slice, values);                 \
+        })
+
+
+#define SETITEM_INDICES( \
+        T) \
+        .def("__setitem__", []( \
+                Array& array, \
+                std::vector<py::object> const& indices, \
+                py::array_t<T, py::array::c_style>& values) { \
+            set_item<T>(array, indices, values); \
+})
+
+
+        SETITEM_INTEGER(uint32_t)
+        SETITEM_INTEGER(int32_t)
+        SETITEM_INTEGER(uint64_t)
+        SETITEM_INTEGER(int64_t)
+        SETITEM_INTEGER(float)
+        SETITEM_INTEGER(double)
+
+#undef SET_ITEM_INTEGER
+
+        SETITEM_SLICE(uint32_t)
+        SETITEM_SLICE(int32_t)
+        SETITEM_SLICE(uint64_t)
+        SETITEM_SLICE(int64_t)
+        SETITEM_SLICE(float)
+        SETITEM_SLICE(double)
+
+#undef SETITEM_SLICE
+
+        SETITEM_INDICES(uint32_t)
+        SETITEM_INDICES(int32_t)
+        SETITEM_INDICES(uint64_t)
+        SETITEM_INDICES(int64_t)
+        SETITEM_INDICES(float)
+        SETITEM_INDICES(double)
+
+#undef SETITEM_INDICES
 
         ;
-
-#undef SETITEM
 
 }
 

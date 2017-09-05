@@ -8,10 +8,6 @@
 
 namespace lue {
 
-// bool               array_exists        (hdf5::Identifier const& location,
-//                                         std::string const& name);
-
-
 class Array:
     public hdf5::Dataset
 {
@@ -40,36 +36,19 @@ public:
 
     hdf5::Datatype file_datatype       () const;
 
-    hdf5::Shape    shape               () const;
-
-    void           read                (hdf5::Offset const& start,
-                                        hdf5::Count const& count,
-                                        void* buffer) const;
+    void           read                (void* buffer) const;
 
     void           read                (hdf5::Hyperslab const& hyperslab,
                                         void* buffer) const;
 
-    void           read                (hdf5::Offset const& start,
-                                        hdf5::Stride const& stride,
-                                        hdf5::Count const& count,
-                                        void* buffer) const;
+    void           write               (void const* buffer);
 
-    // void           write               (extent_t const count,
-    //                                     void const* buffer);
-
-    // void           write               (std::vector<extent_t> const count,
-    //                                     void const* buffer);
-
-    void           write               (hdf5::Offset const& start,
-                                        hdf5::Stride const& stride,
-                                        hdf5::Count const& count,
+    void           write               (hdf5::Hyperslab const& hyperslab,
                                         void const* buffer);
 
     void           write               (hdf5::Dataspace const&
                                             memory_dataspace,
-                                        hdf5::Offset const& start,
-                                        hdf5::Stride const& stride,
-                                        hdf5::Count const& count,
+                                        hdf5::Hyperslab const& hyperslab,
                                         void const* buffer);
 
 private:

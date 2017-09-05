@@ -49,6 +49,9 @@ public:
     std::vector<std::string>
                    group_names         () const;
 
+    std::vector<std::string>
+                   object_names        () const;
+
     bool           contains_group      (std::string const& name) const;
 
     bool           contains_dataset    (std::string const& name) const;

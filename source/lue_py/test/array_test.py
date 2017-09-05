@@ -21,16 +21,16 @@ class ArrayTest(lue_test.TestCase):
         self.nr_items = 5
         self.nr_rows = 3
         self.nr_cols = 2
-        value_shape = (self.nr_rows, self.nr_cols)
-        value_type = numpy.int32
+        self.value_shape = (self.nr_rows, self.nr_cols)
+        self.value_type = numpy.int32
         property = omnipresent.same_shape.create_property(
-            property_set, "my_property", value_type, value_shape)
+            property_set, "my_property", self.value_type, self.value_shape)
 
         self.lue_values = property.reserve(self.nr_items)
         self.numpy_values = numpy.arange(
             self.nr_items * reduce(
-                lambda x, y: x * y, value_shape),
-            dtype=value_type).reshape((self.nr_items,) + value_shape)
+                lambda x, y: x * y, self.value_shape),
+            dtype=self.value_type).reshape((self.nr_items,) + self.value_shape)
         self.lue_values[:] = self.numpy_values
 
 
@@ -42,12 +42,45 @@ class ArrayTest(lue_test.TestCase):
     def test_no_index(self):
 
         # Shape of values is: (nr_items, nr_rows, nr_cols)
-        self.assertArraysEqual(self.lue_values[:], self.numpy_values)
-        self.assertArraysEqual(self.lue_values[:], self.numpy_values[:])
+        def compare_values():
 
-        self.assertArraysEqual(
-            self.lue_values[::2],
-            self.numpy_values[::2])
+            # Verify current value
+            self.assertArraysEqual(self.lue_values[:], self.numpy_values)
+            self.assertArraysEqual(self.lue_values[:], self.numpy_values[:])
+
+
+            # With step
+            self.assertArraysEqual(
+                self.lue_values[::2],
+                self.numpy_values[::2])
+
+
+        compare_values()
+
+
+        # Update value, by array
+        self.numpy_values[:] = self.numpy_values + 5000
+        self.lue_values[:] = self.lue_values[:] + 5000
+        compare_values()
+
+
+        # With step
+        self.numpy_values[::2] = self.numpy_values[::2] + 5500
+        self.lue_values[::2] = self.lue_values[::2] + 5500
+        compare_values()
+
+
+        # Update value, by value
+        self.numpy_values[:] = 6000
+        self.lue_values[:] = 6000
+        # Hier verder
+        # compare_values()
+
+
+        # # With step
+        # self.numpy_values[::2] = 6500
+        # self.lue_values[::2] = 6500
+        # compare_values()
 
 
     def test_one_slice_index(self):
@@ -60,16 +93,46 @@ class ArrayTest(lue_test.TestCase):
             self.lue_values[0:1],
             self.numpy_values[0:1])
 
+
         # Values of all items
         self.assertArraysEqual(
             self.lue_values[0:self.nr_items],
             self.numpy_values[0:self.nr_items])
+
 
         # Value of last item
         # Negative index
         self.assertArraysEqual(
             self.lue_values[-1:self.nr_items],
             self.numpy_values[-1:self.nr_items])
+
+
+        # Update value
+        new_numpy_values = self.numpy_values + 5000
+
+
+        # Value of first item
+        self.lue_values[0:1] = new_numpy_values[0:1]
+
+        self.assertArraysEqual(
+            self.lue_values[0:1],
+            new_numpy_values[0:1])
+
+
+        # Value of last item
+        self.lue_values[-1:self.nr_items] = new_numpy_values[-1:self.nr_items]
+
+        self.assertArraysEqual(
+            self.lue_values[-1:self.nr_items],
+            new_numpy_values[-1:self.nr_items])
+
+
+        # Values of all items
+        self.lue_values[0:self.nr_items] = new_numpy_values[0:self.nr_items]
+
+        self.assertArraysEqual(
+            self.lue_values[0:self.nr_items],
+            new_numpy_values[0:self.nr_items])
 
 
     def test_one_integer_index(self):
@@ -85,25 +148,54 @@ class ArrayTest(lue_test.TestCase):
                 self.numpy_values[0 - i])
 
 
+        # Update value
+        new_numpy_values = self.numpy_values + 5000
+
+        # Value of an item
+        for i in range(self.nr_items):
+            self.lue_values[i] = new_numpy_values[i]
+
+            self.assertArraysEqual(
+                self.lue_values[i],
+                new_numpy_values[i])
+
+
+            self.lue_values[-i] = new_numpy_values[-i]
+
+            self.assertArraysEqual(
+                self.lue_values[0 - i],
+                new_numpy_values[0 - i])
+
+
     def test_two_slice_indices(self):
 
         nr_items = self.nr_items
         nr_rows = self.nr_rows
+
 
         # First row of first item
         self.assertArraysEqual(
             self.lue_values[0:1, 0:1],
             self.numpy_values[0:1, 0:1])
 
+
         # Last row of last item
         self.assertArraysEqual(
             self.lue_values[nr_items-1:nr_items, nr_rows-1:nr_rows],
             self.numpy_values[nr_items-1:nr_items, nr_rows-1:nr_rows])
 
+
         # Last row of last item
         self.assertArraysEqual(
             self.lue_values[-1:, -1:],
             self.numpy_values[-1:, -1:])
+
+
+        # Update value
+        new_numpy_values = self.numpy_values + 5000
+
+        # TODO Test assign
+
 
     def test_two_integer_indices(self):
 
@@ -124,6 +216,9 @@ class ArrayTest(lue_test.TestCase):
         self.assertArraysEqual(
             self.lue_values[-1, -1],
             self.numpy_values[-1, -1])
+
+        # Update value
+        # TODO Test assign
 
 
     def test_three_slice_indices(self):
@@ -149,6 +244,9 @@ class ArrayTest(lue_test.TestCase):
             self.lue_values[-1:, -1:, -1:],
             self.numpy_values[-1:, -1:, -1:])
 
+        # Update value
+        # TODO Test assign
+
 
     def test_three_integer_indices(self):
 
@@ -171,6 +269,9 @@ class ArrayTest(lue_test.TestCase):
             self.lue_values[-1, -1, -1],
             self.numpy_values[-1, -1, -1])
 
+        # Update value
+        # TODO Test assign
+
 
     def test_too_many_indices(self):
 
@@ -185,6 +286,9 @@ class ArrayTest(lue_test.TestCase):
             str(numpy_context.exception).startswith("too many indices"))
         self.assertTrue(
             str(lue_context.exception).startswith("too many indices"))
+
+        # Update value
+        # TODO Test assign
 
 
     def test_unsupported_index_type(self):
@@ -204,3 +308,8 @@ class ArrayTest(lue_test.TestCase):
         self.assertEqual(
             str(lue_context.exception),
             "only integers and slices (`:`) are valid indices")
+
+        # Update value
+        # TODO Test assign
+
+

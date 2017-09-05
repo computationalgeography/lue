@@ -34,27 +34,27 @@ struct CountObjects
 };
 
 
-// herr_t count_objects(
-//     hid_t const location,
-//     char const* name,
-//     ::H5L_info_t const* /* info */,
-//     void* data)
-// {
-//     CountObjects* data_ = static_cast<CountObjects*>(data);
-// 
-//     ::H5O_info_t infobuf;
-//     auto status = ::H5Oget_info_by_name(location, name, &infobuf, H5P_DEFAULT);
-// 
-//     if(status < 0) {
-//         return status;
-//     }
-// 
-//     if(infobuf.type == H5O_TYPE_GROUP || infobuf.type == H5O_TYPE_DATASET) {
-//         ++data_->nr_objects;
-//     }
-// 
-//     return 0;
-// }
+herr_t count_objects(
+    hid_t const location,
+    char const* name,
+    ::H5L_info_t const* /* info */,
+    void* data)
+{
+    CountObjects* data_ = static_cast<CountObjects*>(data);
+
+    ::H5O_info_t infobuf;
+    auto status = ::H5Oget_info_by_name(location, name, &infobuf, H5P_DEFAULT);
+
+    if(status < 0) {
+        return status;
+    }
+
+    if(infobuf.type == H5O_TYPE_GROUP || infobuf.type == H5O_TYPE_DATASET) {
+        ++data_->nr_objects;
+    }
+
+    return 0;
+}
 
 
 herr_t count_groups(
@@ -116,30 +116,30 @@ struct ObjectNames
 };
 
 
-// herr_t retrieve_object_names(
-//     ::hid_t const location,
-//     char const* name,
-//     ::H5L_info_t const* /* info */,
-//     void* data)
-// {
-//     ObjectNames* data_ = static_cast<ObjectNames*>(data);
-// 
-//     ::H5O_info_t infobuf;
-//     herr_t status = H5Oget_info_by_name(location, name, &infobuf, H5P_DEFAULT);
-// 
-//     if(status < 0) {
-//         return status;
-//     }
-// 
-//     if(infobuf.type == H5O_TYPE_GROUP || infobuf.type == H5O_TYPE_DATASET) {
-//         data_->_names[data_->_nr_names] =
-//             (char*)malloc((std::strlen(name) + 1) * sizeof(char));
-//         std::strcpy(data_->_names[data_->_nr_names], name);
-//         ++data_->_nr_names;
-//     }
-// 
-//     return 0;
-// }
+herr_t retrieve_object_names(
+    ::hid_t const location,
+    char const* name,
+    ::H5L_info_t const* /* info */,
+    void* data)
+{
+    ObjectNames* data_ = static_cast<ObjectNames*>(data);
+
+    ::H5O_info_t infobuf;
+    herr_t status = H5Oget_info_by_name(location, name, &infobuf, H5P_DEFAULT);
+
+    if(status < 0) {
+        return status;
+    }
+
+    if(infobuf.type == H5O_TYPE_GROUP || infobuf.type == H5O_TYPE_DATASET) {
+        data_->_names[data_->_nr_names] =
+            (char*)malloc((std::strlen(name) + 1) * sizeof(char));
+        std::strcpy(data_->_names[data_->_nr_names], name);
+        ++data_->_nr_names;
+    }
+
+    return 0;
+}
 
 
 herr_t retrieve_group_names(
@@ -302,6 +302,35 @@ std::vector<std::string> Group::group_names() const
     {
         ObjectNames data(names.get());
         iterate(_id, retrieve_group_names, data);
+    }
+
+    std::vector<std::string> result(nr_objects);
+
+    for(size_t o = 0; o < nr_objects; ++o) {
+        result[o] = names[o];
+        std::free(names[o]);
+    }
+
+    return result;
+}
+
+
+/*!
+    @brief      Return the names of the child-objects
+*/
+std::vector<std::string> Group::object_names() const
+{
+    size_t nr_objects = 0;
+    {
+        CountObjects data;
+        iterate(_id, count_objects, data);
+        nr_objects = data.nr_objects;
+    }
+
+    auto names = std::make_unique<char*[]>(nr_objects);
+    {
+        ObjectNames data(names.get());
+        iterate(_id, retrieve_object_names, data);
     }
 
     std::vector<std::string> result(nr_objects);

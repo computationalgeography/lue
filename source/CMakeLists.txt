@@ -78,9 +78,10 @@ if(LUE_BUILD_LUE_TRANSLATE)
     list(APPEND doxygen_input lue_translate)
 endif()
 
-# if(LUE_BUILD_LUE_VALIDATE)
-#     add_subdirectory(lue_validate)
-# endif()
+if(LUE_BUILD_LUE_VALIDATE)
+    add_subdirectory(lue_validate)
+    list(APPEND doxygen_input lue_validate)
+endif()
 
 if(LUE_BUILD_DOCUMENTATION)
     doxygen_add_docs(cpp_doc

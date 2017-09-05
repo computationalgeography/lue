@@ -49,6 +49,20 @@ File::File(
 }
 
 
+/*!
+    @brief      Open file
+    @param      name Name of file
+    @exception  std::runtime_error In case the file cannot be opened
+*/
+File::File(
+    std::string const& name)
+
+    : File(name, H5F_ACC_RDONLY, AccessPropertyList())
+
+{
+}
+
+
 File::File(
     std::string const& name,
     unsigned int const flags,
@@ -110,6 +124,16 @@ std::string File::pathname() const
         , nr_bytes + 1);
 
     return result;
+}
+
+
+void File::flush() const
+{
+    auto status = ::H5Fflush(id(), H5F_SCOPE_LOCAL);
+
+    if(status < 0) {
+        throw std::runtime_error("Cannot flush file " + pathname());
+    }
 }
 
 

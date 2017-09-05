@@ -85,13 +85,10 @@ Raster::Band::Band(
 
 void Raster::Band::write(
     hdf5::Dataspace const& memory_dataspace,
-    hdf5::Offset const& start,
-    hdf5::Stride const& stride,
-    hdf5::Count const& count,
+    hdf5::Hyperslab const& hyperslab,
     void const* buffer)
 {
-    _property.values()[0].write(memory_dataspace, start, stride, count,
-        buffer);
+    _property.values()[0].write(memory_dataspace, hyperslab, buffer);
 }
 
 

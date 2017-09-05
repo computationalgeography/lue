@@ -27,6 +27,8 @@ public:
 
     };
 
+                   File                (std::string const& name);
+
                    File                (std::string const& name,
                                         unsigned int const flags);
 
@@ -48,6 +50,8 @@ public:
     File&          operator=           (File&& other);
 
     std::string    pathname            () const;
+
+    void           flush               () const;
 
 private:
 

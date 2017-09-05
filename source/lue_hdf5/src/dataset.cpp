@@ -106,31 +106,19 @@ Dataspace Dataset::dataspace() const
 }
 
 
-void Dataset::read(
-    Datatype const& datatype,
-    void* buffer) const
+Shape Dataset::shape() const
 {
-    auto const shape = dataspace().dimension_extents();
+    assert(_id.is_valid());
 
-    Offset const start(shape.size(), 0);
-    Stride const stride(shape.size(), 1);
-    Count const count(shape.begin(), shape.end());
-
-    read(datatype, start, stride, count, buffer);
+    return dataspace().dimension_extents();
 }
 
 
 void Dataset::read(
     Datatype const& datatype,
-    Offset const& start,
-    Count const& count,
     void* buffer) const
 {
-    auto const shape = dataspace().dimension_extents();
-
-    Stride const stride(shape.size(), 1);
-
-    read(datatype, start, stride, count, buffer);
+    read(datatype, Hyperslab(shape()), buffer);
 }
 
 
@@ -139,26 +127,14 @@ void Dataset::read(
     Hyperslab const& hyperslab,
     void* buffer) const
 {
-    read(
-        datatype, hyperslab.start(), hyperslab.stride(), hyperslab.count(),
-        buffer);
-}
-
-
-void Dataset::read(
-    Datatype const& datatype,
-    Offset const& start,
-    Stride const& stride,
-    Count const& count,
-    void* buffer) const
-{
     assert(datatype.is_native());
 
     // Select elements: create hyperslab
     auto const file_dataspace = this->dataspace();
     hsize_t const* block = nullptr;
     auto status = ::H5Sselect_hyperslab(file_dataspace.id(), H5S_SELECT_SET,
-        start.data(), stride.data(), count.data(), block);
+        hyperslab.start().data(), hyperslab.stride().data(),
+        hyperslab.count().data(), block);
 
     if(status < 0) {
         throw std::runtime_error("Cannot create hyperslab");
@@ -168,8 +144,8 @@ void Dataset::read(
     assert(file_dataspace.id().is_valid());
 
 
-    auto const memory_dataspace = create_dataspace(Shape(count.begin(),
-        count.end()));
+    auto const memory_dataspace = create_dataspace(
+        Shape(hyperslab.count().begin(), hyperslab.count().end()));
 
     status = ::H5Dread(
         _id, datatype.id(),
@@ -182,40 +158,46 @@ void Dataset::read(
 }
 
 
+/*!
+    @brief      Write buffer to underlying HDF5 dataset
+    @param      datatype Data type of elements in @a buffer
+    @param      buffer Buffer with elements for whole dataset
+
+    In case the dataset contains values for multiple items, it is assumed
+    that it is large enough for all elements.
+*/
 void Dataset::write(
     Datatype const& datatype,
     void const* buffer) const
 {
-    auto const shape = dataspace().dimension_extents();
-
-    Offset const start(shape.size(), 0);
-    Stride const stride(shape.size(), 1);
-    Count const count(shape.begin(), shape.end());
-
-    write(datatype, start, stride, count, buffer);
+    write(datatype, Hyperslab(shape()), buffer);
 }
 
 
 void Dataset::write(
     Datatype const& datatype,
-    Offset const& start,
-    Stride const& stride,
-    Count const& count,
+    Hyperslab const& hyperslab,
     void const* buffer) const
 {
     assert(datatype.is_native());
 
     // Select elements: create hyperslab
-    auto const dataspace = this->dataspace();
+    auto const file_dataspace = this->dataspace();
     hsize_t const* block = nullptr;
-    auto status = ::H5Sselect_hyperslab(dataspace.id(), H5S_SELECT_SET,
-        start.data(), stride.data(), count.data(), block);
+    auto status = ::H5Sselect_hyperslab(file_dataspace.id(), H5S_SELECT_SET,
+        hyperslab.start().data(), hyperslab.stride().data(),
+        hyperslab.count().data(), block);
 
     if(status < 0) {
         throw std::runtime_error("Cannot create hyperslab");
     }
 
-    status = H5Dwrite(_id, datatype.id(), H5S_ALL, dataspace.id(),
+    auto const memory_dataspace = create_dataspace(
+        Shape(hyperslab.count().begin(), hyperslab.count().end()));
+
+    status = H5Dwrite(
+        _id, datatype.id(),
+        memory_dataspace.id(), file_dataspace.id(),
         H5P_DEFAULT, buffer);
 
     if(status < 0) {
@@ -227,9 +209,7 @@ void Dataset::write(
 void Dataset::write(
     Datatype const& datatype,
     Dataspace const& memory_dataspace,
-    Offset const& start,
-    Stride const& stride,
-    Count const& count,
+    Hyperslab const& hyperslab,
     void const* buffer) const
 {
     assert(datatype.is_native());
@@ -238,7 +218,8 @@ void Dataset::write(
     auto file_dataspace = this->dataspace();
     hsize_t const* block = nullptr;
     auto status = ::H5Sselect_hyperslab(file_dataspace.id(), H5S_SELECT_SET,
-        start.data(), stride.data(), count.data(), block);
+        hyperslab.start().data(), hyperslab.stride().data(),
+        hyperslab.count().data(), block);
 
     if(status < 0) {
         throw std::runtime_error("Cannot create hyperslab");
@@ -250,6 +231,37 @@ void Dataset::write(
     if(status < 0) {
         throw std::runtime_error("Cannot write to dataset");
     }
+}
+
+
+void Dataset::fill(
+    Datatype const& datatype,
+    Hyperslab const& hyperslab,
+    void const* buffer) const
+{
+    assert(false);
+    // TODO How to fill a region with a single value pointed to by buffer???
+
+
+    /// assert(datatype.is_native());
+
+    /// // Select elements: create hyperslab
+    /// auto file_dataspace = this->dataspace();
+    /// hsize_t const* block = nullptr;
+    /// auto status = ::H5Sselect_hyperslab(file_dataspace.id(), H5S_SELECT_SET,
+    ///     hyperslab.start().data(), hyperslab.stride().data(),
+    ///     hyperslab.count().data(), block);
+
+    /// if(status < 0) {
+    ///     throw std::runtime_error("Cannot create hyperslab");
+    /// }
+
+    /// status = ::H5Dfill(_id, datatype.id(), memory_dataspace.id(),
+    ///     file_dataspace.id(), H5P_DEFAULT, buffer);
+
+    /// if(status < 0) {
+    ///     throw std::runtime_error("Cannot write to dataset");
+    /// }
 }
 
 

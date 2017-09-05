@@ -5,14 +5,6 @@
 
 namespace lue {
 
-// bool array_exists(
-//     hdf5::Identifier const& location,
-//     std::string const& name)
-// {
-//     return hdf5::dataset_exists(location, name);
-// }
-
-
 Array::Array(
     hdf5::Dataset&& dataset,
     hdf5::Datatype const& memory_datatype)
@@ -85,20 +77,10 @@ hdf5::Datatype Array::file_datatype() const
 }
 
 
-hdf5::Shape Array::shape() const
-{
-    assert(id().is_valid());
-
-    return dataspace().dimension_extents();
-}
-
-
 void Array::read(
-    hdf5::Offset const& start,
-    hdf5::Count const& count,
     void* buffer) const
 {
-    Dataset::read(_memory_datatype, start, count, buffer);
+    Dataset::read(_memory_datatype, buffer);
 }
 
 
@@ -110,54 +92,27 @@ void Array::read(
 }
 
 
-void Array::read(
-    hdf5::Offset const& start,
-    hdf5::Stride const& stride,
-    hdf5::Count const& count,
-    void* buffer) const
+void Array::write(
+    void const* buffer)
 {
-    Dataset::read(_memory_datatype, start, stride, count, buffer);
+    Dataset::write(_memory_datatype, buffer);
 }
 
 
-// void Array::write(
-//     extent_t const count,
-//     void const* buffer)
-// {
-//     write({0}, {count}, {1}, buffer);
-// }
-// 
-// 
-// void Array::write(
-//     std::vector<extent_t> const count,
-//     void const* buffer)
-// {
-//     std::vector<extent_t> start(count.size(), 0);
-//     std::vector<extent_t> stride(count.size(), 1);
-// 
-//     write(start, count, stride, buffer);
-// }
-
-
 void Array::write(
-    hdf5::Offset const& start,
-    hdf5::Stride const& stride,
-    hdf5::Count const& count,
+    hdf5::Hyperslab const& hyperslab,
     void const* buffer)
 {
-    Dataset::write(_memory_datatype, start, stride, count, buffer);
+    Dataset::write(_memory_datatype, hyperslab, buffer);
 }
 
 
 void Array::write(
     hdf5::Dataspace const& memory_dataspace,
-    hdf5::Offset const& start,
-    hdf5::Stride const& stride,
-    hdf5::Count const& count,
+    hdf5::Hyperslab const& hyperslab,
     void const* buffer)
 {
-    Dataset::write(_memory_datatype, memory_dataspace,
-        start, stride, count, buffer);
+    Dataset::write(_memory_datatype, memory_dataspace, hyperslab, buffer);
 }
 
 
