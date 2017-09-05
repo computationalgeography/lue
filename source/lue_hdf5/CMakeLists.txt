@@ -29,9 +29,10 @@ target_include_directories(lue_hdf5
 )
 
 target_link_libraries(lue_hdf5
+    PUBLIC
+        ${HDF5_C_LIBRARIES}
     PRIVATE
         Boost::filesystem
-        ${HDF5_C_LIBRARIES}
 )
 
 install(

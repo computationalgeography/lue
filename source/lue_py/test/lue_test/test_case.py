@@ -73,5 +73,5 @@ class TestCase(unittest.TestCase):
 
         try:
             output = subprocess.check_output(shlex.split(command))
-        except CalledProcessError as exception:
+        except subprocess.CalledProcessError as exception:
             self.assertEqual(exception.returncode, 0, exception.output)
