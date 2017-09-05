@@ -31,7 +31,7 @@ public:
 
 protected:
 
-   void            run_implementation  () override;
+   int             run_implementation  () override;
 
 };
 

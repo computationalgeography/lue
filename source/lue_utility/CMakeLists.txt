@@ -1,6 +1,7 @@
 add_library(lue_utility
     src/application
     src/command
+    src/metadata
     src/print_message
     src/progress_indicator
     src/stopwatch

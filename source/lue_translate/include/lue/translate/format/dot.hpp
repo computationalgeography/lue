@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/translate/metadata.hpp"
+#include "lue/utility/metadata.hpp"
 #include "lue/dataset.hpp"
 #include <ostream>
 

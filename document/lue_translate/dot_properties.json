@@ -31,7 +31,8 @@
             "fillcolor": "#36a2c9"
         },
         "value": {
-            "fillcolor": "#f08000"
+            "fillcolor": "#f08000",
+            "show_details": false
         }
     }
 }

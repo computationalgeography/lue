@@ -30,7 +30,7 @@ Translate data into or from the LUE dataset format
 
 usage:
     %1% (import | export) [<arguments>...]
-    lue_translate (-h | --help) | --version
+    %1% (-h | --help) | --version
 
 options:
     -h --help             Show this screen

@@ -1,10 +1,10 @@
 add_library(lue_translate_lib STATIC
-    src/metadata
     src/translate
 
     src/command/export
     src/command/import
 
+    src/format/csv
     src/format/dot
     src/format/gdal
     src/format/gdal_block

@@ -14,7 +14,7 @@ template<>
 std::string Command::argument<std::string>(
     std::string const& name) const
 {
-    assert(argument_passed(name));
+    assert(argument_parsed(name));
     return _arguments.at(name).asString();
 }
 
@@ -23,7 +23,7 @@ template<>
 std::vector<std::string> Command::argument<std::vector<std::string>>(
     std::string const& name) const
 {
-    assert(argument_passed(name));
+    assert(argument_parsed(name));
     return _arguments.at(name).asStringList();
 }
 
@@ -32,51 +32,74 @@ template<>
 bool Command::argument<bool>(
     std::string const& name) const
 {
-    assert(argument_passed(name));
+    assert(argument_parsed(name));
     return _arguments.at(name).asBool();
 }
 
 
+/*!
+    @brief      Construct an instance without subcommands
+    @param      usage Usage string
+    @param      arguments Commandline arguments
+    @exception  In case of a commandline parsing error, the program will exit
+                with exit code -1
+*/
 Command::Command(
     std::string const& usage,
     std::vector<std::string> const& arguments)
 
-    : Command(usage, arguments, SubCommands{})
+    : Command(usage, arguments, SubcommandCreators{})
 
 {
     // print_arguments();
 }
 
 
+/*!
+    @brief      Construct an instance with subcommands
+    @param      usage Usage string
+    @param      arguments Commandline arguments
+    @param      subcommand_creators Collection of creator functions to use
+                when a subcommand is requested
+    @exception  In case of a commandline parsing error, the program will exit
+                with exit code -1
+
+    It is assumed that if a subcommand is requested, an argument named
+    `<arguments>` contains all arguments that need to be passed into the
+    subcommand creator function.
+*/
 Command::Command(
     std::string const& usage,
     std::vector<std::string> const& arguments,
-    SubCommands const& sub_commands)
+    SubcommandCreators const& subcommand_creators)
 
     : _info_stream(std::cout),
       _error_stream(std::cerr),
       _arguments(docopt::docopt(usage, arguments, true, LUE_VERSION, true)),
-      _sub_commands{sub_commands},
+      _subcommand_creators{subcommand_creators},
       _sub_command()
 
 {
     // print_arguments();
 
-    for(auto const& sub_command: _sub_commands) {
+    for(auto const& sub_command: _subcommand_creators) {
         auto const command_name = sub_command.first;
-        assert(argument_passed(command_name));
+        assert(argument_parsed(command_name));
 
         if(argument<bool>(command_name)) {
-            assert(argument_passed("<arguments>"));
+            assert(argument_parsed("<arguments>"));
             auto const arguments = argument<std::vector<std::string>>(
                 "<arguments>");
 
-            _sub_command = _sub_commands[command_name](arguments);
+            _sub_command = _subcommand_creators[command_name](arguments);
         }
     }
 }
 
 
+/*!
+    @brief      Write info message to info stream
+*/
 void Command::print_info_message(
     std::string const& message) const
 {
@@ -84,6 +107,9 @@ void Command::print_info_message(
 }
 
 
+/*!
+    @brief      Write error message to error stream
+*/
 void Command::print_error_message(
     std::string const& message) const
 {
@@ -91,26 +117,24 @@ void Command::print_error_message(
 }
 
 
-// void Command::print_verbose_message(
-//     std::string const& message) const
+// void Command::print_arguments()
 // {
-//     lue::utility::print_info_message(_verbose, _info_stream, message);
+//     print_info_message("commandline arguments:");
+// 
+//     for(auto const& pair: _arguments) {
+//         print_info_message((boost::format("    %1%: %2%")
+//             % pair.first
+//             % pair.second).str());
+//     }
 // }
 
 
-void Command::print_arguments()
-{
-    print_info_message("commandline arguments:");
-
-    for(auto const& pair: _arguments) {
-        print_info_message((boost::format("    %1%: %2%")
-            % pair.first
-            % pair.second).str());
-    }
-}
-
-
-bool Command::argument_passed(
+/*!
+    @brief      Test whether argument @a name is parsed
+    @warning    An argument with name @a name must be part of the usage of
+                the command
+*/
+bool Command::argument_parsed(
     std::string const& name) const
 {
     assert(_arguments.find(name) != _arguments.end());
@@ -119,33 +143,41 @@ bool Command::argument_passed(
 }
 
 
-void Command::run_implementation()
+/*!
+    @brief      Do whatever it takes to perform the command's action
+    @return     In case no exception is raised, this function should return
+                an integer status code, e.g.: EXIT_FAILURE or EXIT_SUCCESS
+    @warning    This function must be overridden by a specialization or
+                a subcommand
+*/
+int Command::run_implementation()
 {
-    // Either:
-    // - This method should be overridden in a specialization
-    // - A sub command should have been selected (while parsing the command
-    //   line) and its run_implementation() called
     assert(false);
+
+    return EXIT_FAILURE;
 }
 
 
+/*!
+    @brief      Do whatever it takes to perform the command's action
+    @return     EXIT_FAILURE in case an exception is thrown by
+                run_implementation(), otherwise the status code returned
+                by run_implementation()
+*/
 int Command::run() noexcept
 {
     int status = EXIT_FAILURE;
 
     try {
+
         Stopwatch stopwatch;
         stopwatch.start();
 
         try {
-            if(_sub_command) {
-                _sub_command->run_implementation();
-            }
-            else {
-                run_implementation();
-            }
-
-            status = EXIT_SUCCESS;
+            status = _sub_command
+                ? _sub_command->run_implementation()
+                : run_implementation()
+                ;
         }
         catch(std::bad_alloc const& exception) {
             print_error_message("not enough memory");
@@ -155,16 +187,15 @@ int Command::run() noexcept
         }
 
         stopwatch.stop();
-        // print_verbose_message("finished at: " + to_string(stopwatch.end()));
-        // print_verbose_message("elapsed time: " + std::to_string(
-        //     stopwatch.elapsed_seconds()) + "s");
+        print_info_message("finished at: " + to_string(stopwatch.end()));
+        print_info_message("elapsed time: " + std::to_string(
+            stopwatch.elapsed_seconds()) + "s");
 
     }
     catch(...) {
-        print_error_message("unknown error");
+        print_error_message("unexpected error");
+        status = EXIT_FAILURE;
     }
-
-    // print_verbose_message("exit status: " + std::to_string(status));
 
     return status;
 }
