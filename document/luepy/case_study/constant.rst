@@ -4,12 +4,12 @@ A constant is a single value that does not change through time and space. This i
 
 An example of a value that is often considered constant is the standard gravity. Examples of values that are always considered constant are the physical constants like the speed of light and the elementary charge.
 
-The next sections describe how a single constant can be captured by the LUE conceptual data model. The result is capable of capturing many constants (for multiple items).
+The next sections describe how a single constant can be captured by the LUE data model. The result is capable of capturing multiple constants for multiple items.
 
 
 time domain
 -----------
-A constant's location in space and value do not change over time, so the time domain is marked as omnipresent.
+A constant's location in space, and its value do not change over time, so the time domain is marked as omnipresent.
 
 
 space domain
@@ -20,3 +20,9 @@ A constant's value does not change over space, so the space domain is marked as 
 property
 --------
 The property holding a constant's value contains a single value.
+
+
+Example code
+------------
+.. literalinclude:: constant.py
+.. image:: constant.svg
