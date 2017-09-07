@@ -14,10 +14,10 @@ matrix:
                   sources:
                       - ubuntu-toolchain-r-test
                   packages:
-                      - g++-4.9
                       - gcc-4.9
-                      - libhdf5-dev
+                      - g++-4.9
                       - libboost-all-dev
+                      - libhdf5-dev
           env:
               - TRAVIS_C_COMPILER=gcc-4.9 TRAVIS_CXX_COMPILER=g++-4.9 TRAVIS_CXX_FLAGS="" TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS "
         - compiler: gcc
@@ -27,10 +27,10 @@ matrix:
                   sources:
                       - ubuntu-toolchain-r-test
                   packages:
-                      - g++-4.9
                       - gcc-4.9
-                      - libhdf5-dev
+                      - g++-4.9
                       - libboost-all-dev
+                      - libhdf5-dev
           env:
               - TRAVIS_C_COMPILER=gcc-4.9 TRAVIS_CXX_COMPILER=g++-4.9 TRAVIS_CXX_FLAGS="" TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS "
         - compiler: gcc
@@ -40,10 +40,10 @@ matrix:
                   sources:
                       - ubuntu-toolchain-r-test
                   packages:
-                      - g++-6
-                      - libhdf5-dev
                       - gcc-6
+                      - g++-6
                       - libboost-all-dev
+                      - libhdf5-dev
           env:
               - TRAVIS_C_COMPILER=gcc-6 TRAVIS_CXX_COMPILER=g++-6 TRAVIS_CXX_FLAGS="" TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS "
         - compiler: gcc
@@ -53,10 +53,10 @@ matrix:
                   sources:
                       - ubuntu-toolchain-r-test
                   packages:
-                      - g++-6
-                      - libhdf5-dev
                       - gcc-6
+                      - g++-6
                       - libboost-all-dev
+                      - libhdf5-dev
           env:
               - TRAVIS_C_COMPILER=gcc-6 TRAVIS_CXX_COMPILER=g++-6 TRAVIS_CXX_FLAGS="" TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS "
 
@@ -91,11 +91,11 @@ before_install:
     # Install a recent version of CMake. ---------------------------------------
     # ~/tmp
     - cd tmp
-    - wget --no-check-certificate http://www.cmake.org/files/v3.1/cmake-3.1.3-Linux-x86_64.tar.gz
+    - wget --no-check-certificate http://www.cmake.org/files/v3.9/cmake-3.9.1-Linux-x86_64.tar.gz
     # ~/local
     - cd ../local
-    - tar zxf ../tmp/cmake-3.1.3-Linux-x86_64.tar.gz
-    - export PATH=$PWD/cmake-3.1.3-Linux-x86_64/bin:$PATH
+    - tar zxf ../tmp/cmake-3.9.1-Linux-x86_64.tar.gz
+    - export PATH=$PWD/cmake-3.9.1-Linux-x86_64/bin:$PATH
     - cd ..
 
 
