@@ -10,6 +10,10 @@ namespace hdf5 {
 
 /*!
     @brief      Class representing a hyperslab selection of a dataspace
+    @sa         [Reading from or writing to a subset of a dataset](
+                https://support.hdfgroup.org/HDF5/Tutor/selectsimple.html)
+
+    A hyperslab defines a subset of a dataspace.
 */
 class Hyperslab
 {
@@ -44,6 +48,12 @@ public:
 
     Count&         count               ();
 
+    std::size_t    nr_dimensions       () const;
+
+    bool           empty               () const;
+
+    std::size_t    nr_elements         () const;
+
 private:
 
     //! Offset of the starting element
@@ -52,7 +62,7 @@ private:
     //! Amount of elements to move in each direction
     Stride         _stride;
 
-    //! Number of block to select
+    //! Number of blocks to select
     Count          _count;
 
 };

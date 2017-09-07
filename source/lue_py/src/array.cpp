@@ -256,10 +256,9 @@ void write_to_array(
 
     // Write value into hyperslab target array
     hdf5::Datatype memory_datatype{hdf5::NativeDatatypeTraits<T>::type_id()};
-    // Hier verder
-    // assert(false);
-    // dynamic_cast<hdf5::Dataset&>(array).fill(
-    //     memory_datatype, hyperslab, value);
+
+    dynamic_cast<hdf5::Dataset&>(array).fill(
+        memory_datatype, hyperslab, &value);
 }
 
 

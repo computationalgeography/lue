@@ -38,6 +38,8 @@ public:
 
     Shape          dimension_extents   () const;
 
+    hssize_t       nr_elements         () const;
+
 private:
 
     //! Id of dataspace

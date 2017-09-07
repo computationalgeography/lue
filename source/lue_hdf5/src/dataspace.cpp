@@ -135,6 +135,12 @@ Shape Dataspace::dimension_extents() const
 }
 
 
+hssize_t Dataspace::nr_elements() const
+{
+    return ::H5Sget_simple_extent_npoints(_id);
+}
+
+
 /*!
     @brief      Create a new simple dataspace instance
     @param      dimension_sizes Size of each dimension. This value will

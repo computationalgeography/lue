@@ -2,6 +2,7 @@
 #include "lue/hdf5/datatype.hpp"
 #include "lue/hdf5/link.hpp"
 #include <cassert>
+#include <cstring>
 #include <iostream>
 
 
@@ -234,34 +235,47 @@ void Dataset::write(
 }
 
 
+/*!
+    @brief      Fill the whole dataset with a single value
+    @param      datatype In-memory datatype of fill value
+    @param      hyperslab Selection of dataset to fill
+    @param      buffer Pointer to fill value
+    @exception  std::runtime_error In case the dataset cannot be filled
+*/
 void Dataset::fill(
     Datatype const& datatype,
     Hyperslab const& hyperslab,
     void const* buffer) const
 {
-    assert(false);
-    // TODO How to fill a region with a single value pointed to by buffer???
+    assert(datatype.is_native());
 
+    // We have to fill the dataset with a single value. But to do this
+    // it seems we have to have a memory buffer with the same number of
+    // values that we want to write to. There is no fill functionality
+    // in the HDF5 API.
 
-    /// assert(datatype.is_native());
+    // Create a buffer to hold the fill values.
+    using byte = unsigned char;
+    static_assert(sizeof(byte) == 1, "");
 
-    /// // Select elements: create hyperslab
-    /// auto file_dataspace = this->dataspace();
-    /// hsize_t const* block = nullptr;
-    /// auto status = ::H5Sselect_hyperslab(file_dataspace.id(), H5S_SELECT_SET,
-    ///     hyperslab.start().data(), hyperslab.stride().data(),
-    ///     hyperslab.count().data(), block);
+    std::size_t const nr_elements = hyperslab.nr_elements();
+    std::size_t const nr_bytes_per_element = datatype.size();
+    std::size_t const nr_bytes = nr_elements * nr_bytes_per_element;
+    auto memory_buffer = std::make_unique<byte[]>(nr_bytes);
 
-    /// if(status < 0) {
-    ///     throw std::runtime_error("Cannot create hyperslab");
-    /// }
+    // Fill the buffer with the fill value.
+    {
+        auto dst = memory_buffer.get();
 
-    /// status = ::H5Dfill(_id, datatype.id(), memory_dataspace.id(),
-    ///     file_dataspace.id(), H5P_DEFAULT, buffer);
+        for(std::size_t i = 0; i < nr_elements; ++i,
+                dst += nr_bytes_per_element) {
+            std::memcpy(dst, buffer, datatype.size());
+        }
+    }
 
-    /// if(status < 0) {
-    ///     throw std::runtime_error("Cannot write to dataset");
-    /// }
+    auto const memory_dataspace = create_dataspace(Shape{nr_elements});
+
+    write(datatype, memory_dataspace, hyperslab, memory_buffer.get());
 }
 
 

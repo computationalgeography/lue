@@ -73,8 +73,7 @@ class ArrayTest(lue_test.TestCase):
         # Update value, by value
         self.numpy_values[:] = 6000
         self.lue_values[:] = 6000
-        # Hier verder
-        # compare_values()
+        compare_values()
 
 
         # # With step
