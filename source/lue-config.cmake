@@ -3,4 +3,8 @@ find_dependency(Boost
     COMPONENTS
         filesystem
 )
+find_dependency(HDF5
+    COMPONENTS
+        C
+)
 include("${CMAKE_CURRENT_LIST_DIR}/lue_targets.cmake")

@@ -12,9 +12,9 @@ class Datatype
 
 public:
 
-    template<
-        typename T>
-    explicit       Datatype            (T const&);
+    // template<
+    //     typename T>
+    // explicit       Datatype            (T const&);
 
                    Datatype            (hid_t const id);
 
