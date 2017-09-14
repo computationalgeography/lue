@@ -17,3 +17,18 @@ target_link_libraries(lue_hl
     PUBLIC
         lue::lue
 )
+
+install(
+    TARGETS
+        lue_hl
+    EXPORT
+        lue_targets
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    RUNTIME DESTINATION bin
+)
+
+install(
+    DIRECTORY include
+    DESTINATION .
+)

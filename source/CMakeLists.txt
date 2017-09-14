@@ -47,6 +47,15 @@ if(LUE_BUILD_PYTHON_API)
     )
 
     install(
+        DIRECTORY lue_hl/src
+        DESTINATION src/lue_hl
+        COMPONENT python EXCLUDE_FROM_ALL
+        FILES_MATCHING
+            PATTERN "*.hpp"
+            PATTERN "*.cpp"
+    )
+
+    install(
         DIRECTORY lue_py/src
         DESTINATION src/lue_py
         COMPONENT python EXCLUDE_FROM_ALL

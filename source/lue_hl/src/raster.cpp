@@ -68,7 +68,7 @@ Raster::Domain::Domain(
 }
 
 
-double const* Raster::Domain::coordinates() const
+std::array<double, 4> const& Raster::Domain::coordinates() const
 {
     return _coordinates;
 }
@@ -218,7 +218,7 @@ hdf5::Identifier create_raster(
 
             auto& space_box = space_domain.reserve(nr_items);
 
-            space_box.write(domain.coordinates());
+            space_box.write(domain.coordinates().data());
         }
 
         // Write property with discretization information to property set.

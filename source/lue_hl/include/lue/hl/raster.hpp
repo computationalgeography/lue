@@ -3,6 +3,7 @@
 #include "lue/constant_size/time/omnipresent/same_shape/property.hpp"
 #include "lue/constant_size/time/omnipresent/property_set.hpp"
 #include "lue/dataset.hpp"
+#include <array>
 
 
 namespace lue {
@@ -52,13 +53,14 @@ public:
                                         double const east,
                                         double const north);
 
-        double const*  coordinates     () const;
+        std::array<double, 4> const&
+                   coordinates         () const;
 
     private:
 
         std::string const _crs;
 
-        double const _coordinates[4];
+        std::array<double, 4> _coordinates;
 
     };
 
