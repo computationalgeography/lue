@@ -103,6 +103,14 @@ hdf5::Shape Value::value_shape() const
 }
 
 
+// bool value_exists(
+//     hdf5::Group const& group,
+//     std::string const& name)
+// {
+//     return hdf5::dataset_exists(group.id(), name);
+// }
+
+
 Value create_value(
     hdf5::Group const& group,
     std::string const& name,

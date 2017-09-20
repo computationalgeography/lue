@@ -20,6 +20,8 @@ public:
                    Property            (omnipresent::Property&& property,
                                         hdf5::Datatype const& memory_datatype);
 
+                   Property            (lue::Property const& property);
+
                    Property            (lue::Property const& property,
                                         hdf5::Datatype const& memory_datatype);
 

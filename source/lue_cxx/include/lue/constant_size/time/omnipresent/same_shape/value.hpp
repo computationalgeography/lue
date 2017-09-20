@@ -61,6 +61,9 @@ private:
 };
 
 
+// bool               value_exists        (hdf5::Group const& group,
+//                                         std::string const& name);
+
 Value              create_value        (hdf5::Group const& group,
                                         std::string const& name,
                                         hdf5::Datatype const& file_datatype,

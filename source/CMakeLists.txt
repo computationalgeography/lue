@@ -1,3 +1,6 @@
+configure_file(include/lue/configure.hpp.in
+    include/lue/configure.hpp)
+
 if(LUE_BUILD_HDF5_API)
     add_subdirectory(lue_hdf5)
     list(APPEND doxygen_input lue_hdf5)
@@ -93,6 +96,7 @@ if(LUE_BUILD_LUE_VALIDATE)
 endif()
 
 if(LUE_BUILD_DOCUMENTATION)
+    set(DOXYGEN_ENABLE_PREPROCESSING FALSE)
     doxygen_add_docs(cpp_doc
         ${doxygen_input}
     )

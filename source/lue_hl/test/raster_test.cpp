@@ -26,11 +26,11 @@ public:
 
     ~Fixture()
     {
-        // Guarantees:
-        // - Dataset does not exist after teardown
-        remove_dataset();
+        // // Guarantees:
+        // // - Dataset does not exist after teardown
+        // remove_dataset();
 
-        BOOST_CHECK(!lue::dataset_exists(_dataset_name));
+        // BOOST_CHECK(!lue::dataset_exists(_dataset_name));
     }
 
 
@@ -61,9 +61,19 @@ BOOST_AUTO_TEST_CASE(create_raster)
     double const east = 11.5;
     hsize_t const nr_rows = 4;
     hsize_t const nr_cols = 3;
+    hsize_t const nr_cells = nr_rows * nr_cols;
+
+    std::string const band_name = "my_band";
+    lue::hdf5::Datatype const memory_datatype = H5T_NATIVE_DOUBLE;
+    std::array<double, nr_cells> values = {
+         0,  1,  2,
+        10, 11, 12,
+        20, 21, 22,
+        30, 31, 32,
+    };
 
 
-    // Create new dataset and add raster
+    // Create new dataset, add raster, add band, write values
     {
         auto dataset = lue::create_dataset(dataset_name);
 
@@ -74,13 +84,46 @@ BOOST_AUTO_TEST_CASE(create_raster)
         auto raster = lue::hl::create_raster(
             dataset, phenomenon_name, property_set_name, domain,
             discretization);
+
+        // Add a band
+        auto band = raster.add_band(band_name, memory_datatype);
+
+        // Write values
+        band.write(values.data());
     }
 
 
-    // Verify the results
-    BOOST_CHECK(lue::dataset_exists(dataset_name));
+    lue::hdf5::Datatype const file_datatype = H5T_IEEE_F64LE;
 
-    // TODO
+    // Open dataset, raster, band, read values
+    {
+        auto dataset = lue::Dataset(dataset_name);
+        auto raster = lue::hl::Raster(
+            dataset, phenomenon_name, property_set_name);
+
+        // Test discretization info
+        auto const discretization = raster.discretization();
+
+        BOOST_REQUIRE_EQUAL(discretization.nr_rows(), nr_rows);
+        BOOST_REQUIRE_EQUAL(discretization.nr_cols(), nr_cols);
+
+        auto band = raster.band(band_name);
+
+        // Test datatype
+        auto const file_datatype_read = band.file_datatype();
+        BOOST_REQUIRE(file_datatype_read == file_datatype);
+
+        auto const memory_datatype_read = band.memory_datatype();
+        BOOST_REQUIRE(memory_datatype_read == memory_datatype);
+
+        // Read values into new buffer, verify result
+        std::array<double, nr_cells> values_read;
+        band.read(values_read.data());
+
+        BOOST_CHECK_EQUAL_COLLECTIONS(
+            values_read.begin(), values_read.end(),
+            values.begin(), values.end());
+    }
 }
 
 }  // Anonymous namespace

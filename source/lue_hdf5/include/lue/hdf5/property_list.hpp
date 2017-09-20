@@ -7,6 +7,7 @@ namespace hdf5 {
 
 /*!
     @brief      This class represents an HDF5 property list.
+    @sa         [Property list interface](https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#FileAccessPropFuncs)
 */
 class PropertyList
 {

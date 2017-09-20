@@ -1,6 +1,3 @@
-configure_file(include/lue/configure.hpp.in
-    include/lue/configure.hpp)
-
 add_test_conditionally(test)
 
 add_library(lue STATIC

@@ -22,6 +22,7 @@ add_library(lue::lue_hdf5 ALIAS lue_hdf5)
 target_include_directories(lue_hdf5
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/../include>
         $<INSTALL_INTERFACE:include>
         ${HDF5_INCLUDE_DIRS}
     PRIVATE
@@ -34,6 +35,18 @@ target_link_libraries(lue_hdf5
     PRIVATE
         Boost::filesystem
 )
+
+if(LUE_API_WITH_MPI)
+    target_include_directories(lue_hdf5
+        PUBLIC
+            ${MPI_C_INCLUDE_PATH}
+    )
+    target_link_libraries(lue_hdf5
+        PRIVATE
+            ${MPI_CXX_LIBRARIES}  # Why link against C++ lib?
+            ${MPI_C_LIBRARIES}
+    )
+endif()
 
 install(
     TARGETS

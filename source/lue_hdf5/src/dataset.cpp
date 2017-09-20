@@ -9,14 +9,6 @@
 namespace lue {
 namespace hdf5 {
 
-bool dataset_exists(
-    Identifier const& identifier,
-    std::string const& name)
-{
-    return link_exists(identifier, name) && link_is_dataset(identifier, name);
-}
-
-
 Dataset::CreationPropertyList::CreationPropertyList()
 
     : PropertyList(H5P_DATASET_CREATE)
@@ -34,6 +26,34 @@ void Dataset::CreationPropertyList::set_chunk(
         throw std::runtime_error("Cannot set chunk size");
     }
 }
+
+
+Dataset::TransferPropertyList::TransferPropertyList()
+
+    : PropertyList(H5P_DATASET_XFER)
+
+{
+}
+
+
+#ifdef HDF5_IS_PARALLEL
+
+/*!
+    @brief      Set data transfer mode
+    @exception  std::runtime_error In case data transfer mode cannot be set
+    @sa         [H5Pset_dxpl_mpio](https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-SetDxplMpio)
+*/
+void Dataset::TransferPropertyList::set_transfer_mode(
+    H5FD_mpio_xfer_t const xfer_mode)
+{
+    auto status = ::H5Pset_dxpl_mpio(id(), xfer_mode);
+
+    if(status < 0) {
+        throw std::runtime_error("Cannot set data transfer mode");
+    }
+}
+
+#endif
 
 
 /*!
@@ -276,6 +296,14 @@ void Dataset::fill(
     auto const memory_dataspace = create_dataspace(Shape{nr_elements});
 
     write(datatype, memory_dataspace, hyperslab, memory_buffer.get());
+}
+
+
+bool dataset_exists(
+    Identifier const& identifier,
+    std::string const& name)
+{
+    return link_exists(identifier, name) && link_is_dataset(identifier, name);
 }
 
 

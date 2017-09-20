@@ -3,6 +3,7 @@
 #include "lue/hdf5/datatype.hpp"
 #include "lue/hdf5/hyperslab.hpp"
 #include "lue/hdf5/property_list.hpp"
+#include "lue/configure.hpp"
 
 
 namespace lue {
@@ -31,6 +32,22 @@ public:
         void       set_chunk           (Shape const& chunk);
 
     };
+
+
+    class TransferPropertyList:
+        public PropertyList
+    {
+
+    public:
+
+                   TransferPropertyList();
+
+#ifdef HDF5_IS_PARALLEL
+        void       set_transfer_mode   (H5FD_mpio_xfer_t const xfer_mode);
+#endif
+
+    };
+
 
                    Dataset             (Identifier const& location,
                                         std::string const& name);
@@ -86,6 +103,9 @@ private:
 
 };
 
+
+bool               dataset_exists      (Identifier const& location,
+                                        std::string const& name);
 
 Dataset            open_dataset        (Identifier const& location,
                                         std::string const& name);

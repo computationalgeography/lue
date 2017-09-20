@@ -83,3 +83,8 @@ We can now run the resulting executable:
 ~~~bash
 ./hello_hdf5
 ~~~
+
+
+# See also  {#lue_hdf5_see_also}
+- [Collective alling requirements in parallel HDF5 applications](https://support.hdfgroup.org/HDF5/doc/RM/CollectiveCalls.html)
+

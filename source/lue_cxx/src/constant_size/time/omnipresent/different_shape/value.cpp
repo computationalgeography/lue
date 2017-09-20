@@ -32,6 +32,22 @@ namespace different_shape {
 
 Value::Value(
     hdf5::Identifier const& location,
+    std::string const& name)
+
+    : Group(location, name),
+      omnipresent::Value(),
+      _nr_items{attributes().read<hsize_t>(nr_items_tag)},
+      _rank{attributes().read<int>(rank_tag)},
+      _file_datatype{hdf5::decode_datatype(
+          attributes().read<std::vector<unsigned char>>(datatype_tag))},
+      _memory_datatype{hdf5::memory_datatype(_file_datatype)}
+
+{
+}
+
+
+Value::Value(
+    hdf5::Identifier const& location,
     std::string const& name,
     hdf5::Datatype const& memory_datatype)
 

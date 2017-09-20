@@ -67,6 +67,16 @@ SpaceBox& SpaceBoxDomain::reserve(
 }
 
 
+// bool space_box_domain_exists(
+//     hdf5::Group const& group)
+//     // PropertySet const& property_set)
+// {
+//     auto const& space = property_set.domain().space();
+// 
+//     return space_box_exists(space);
+// }
+
+
 // void configure_space_box_domain(
 //     hdf5::Identifier const& location,
 //     hid_t const file_type_id,

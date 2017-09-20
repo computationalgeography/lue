@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/configure.hpp"
 #include "lue/hdf5/group.hpp"
 #include "lue/hdf5/property_list.hpp"
 
@@ -23,7 +24,13 @@ public:
 
                    AccessPropertyList  ();
 
-        void       use_core_driver     ();
+        void       use_core_driver     (std::size_t const increment=64000,
+                                        hbool_t const backing_store=0);
+
+#ifdef HDF5_IS_PARALLEL
+        void       use_mpi_communicator(MPI_Comm const& communicator,
+                                        MPI_Info const& info);
+#endif
 
     };
 

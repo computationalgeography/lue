@@ -9,6 +9,7 @@ namespace hdf5 {
 
 /*!
     @brief      Class representing an HDF5 datatype
+    @sa         [HDF5 predefined datatypes](https://support.hdfgroup.org/HDF5/doc/RM/PredefDTypes.html)
 */
 class Datatype
 {

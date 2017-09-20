@@ -73,6 +73,17 @@ public:
                    Band                (omnipresent::different_shape::
                                             Property&& property);
 
+        hdf5::Datatype file_datatype   () const;
+
+        hdf5::Datatype memory_datatype () const;
+
+        void       read                (void* buffer) const;
+
+        void       read                (hdf5::Hyperslab const& hyperslab,
+                                        void* buffer) const;
+
+        void       write               (void const* buffer);
+
         void       write               (hdf5::Dataspace const& memory_dataspace,
                                         hdf5::Hyperslab const& hyperslab,
                                         void const* buffer);
@@ -85,6 +96,10 @@ public:
 
                    Raster              (hdf5::Identifier const& id);
 
+                   Raster              (Dataset& dataset,
+                                        std::string const& phenomenon_name,
+                                        std::string const& property_set_name);
+
                    Raster              (Raster const& other)=delete;
 
                    Raster              (Raster&& other)=default;
@@ -95,8 +110,12 @@ public:
 
     Raster&        operator=           (Raster&& other)=default;
 
+    Discretization const& discretization() const;
+
     Band           add_band            (std::string const& name,
                                         hdf5::Datatype const& datatype);
+
+    Band           band                (std::string const& name) const;
 
 private:
 
@@ -108,6 +127,10 @@ private:
 
 };
 
+
+// bool               raster_exists       (Dataset const& dataset,
+//                                         std::string const& phenomenon_name,
+//                                         std::string const& property_set_name);
 
 Raster             create_raster       (Dataset& dataset,
                                         std::string const& phenomenon_name,

@@ -14,10 +14,17 @@ File::AccessPropertyList::AccessPropertyList()
 }
 
 
-void File::AccessPropertyList::use_core_driver()
+/*!
+    @brief      Use the H5D_CORE driver
+    @exception  std::runtime_error In case the H5D_CORE driver cannot be set
+    @sa         [H5Pset_fapl_core](https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-SetFaplCore)
+*/
+void File::AccessPropertyList::use_core_driver(
+    std::size_t const increment,
+    hbool_t const backing_store)
 {
-    size_t const increment = 64000;  // 64k
-    hbool_t const backing_store = 0;  // false
+    // size_t const increment = 64000;  // 64k
+    // hbool_t const backing_store = 0;  // false
 
     auto status = ::H5Pset_fapl_core(id(), increment, backing_store);
 
@@ -25,6 +32,26 @@ void File::AccessPropertyList::use_core_driver()
         throw std::runtime_error("Cannot set core file driver");
     }
 }
+
+
+#ifdef HDF5_IS_PARALLEL
+/*!
+    @brief      Use MPI communicator for creating/opening a file
+    @exception  std::runtime_error In case the communicator information cannot
+                be set
+    @sa         [H5Pset_fapl_mpio](https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-SetFaplMpio)
+*/
+void File::AccessPropertyList::use_mpi_communicator(
+    MPI_Comm const& communicator,
+    MPI_Info const& info)
+{
+    auto status = ::H5Pset_fapl_mpio(id(), communicator, info);
+
+    if(status < 0) {
+        throw std::runtime_error("Cannot set MPI communicator");
+    }
+}
+#endif
 
 
 /*!

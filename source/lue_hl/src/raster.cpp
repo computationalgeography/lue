@@ -83,6 +83,46 @@ Raster::Band::Band(
 }
 
 
+/*!
+    @brief      Return in-file datatype of the cell values
+*/
+hdf5::Datatype Raster::Band::file_datatype() const
+{
+    return _property.values().file_datatype();
+}
+
+
+/*!
+    @brief      Return in-memory datatype of the cell values
+*/
+hdf5::Datatype Raster::Band::memory_datatype() const
+{
+    return _property.values().memory_datatype();
+}
+
+
+void Raster::Band::read(
+    void* buffer) const
+{
+    _property.values()[0].read(buffer);
+}
+
+
+void Raster::Band::read(
+    hdf5::Hyperslab const& hyperslab,
+    void* buffer) const
+{
+    _property.values()[0].read(hyperslab, buffer);
+}
+
+
+void Raster::Band::write(
+    void const* buffer)
+{
+    _property.values()[0].write(buffer);
+}
+
+
 void Raster::Band::write(
     hdf5::Dataspace const& memory_dataspace,
     hdf5::Hyperslab const& hyperslab,
@@ -113,6 +153,31 @@ Raster::Raster(
 }
 
 
+Raster::Raster(
+    Dataset& dataset,
+    std::string const& phenomenon_name,
+    std::string const& property_set_name)
+
+    : _property_set(
+            dataset
+                .phenomena()[phenomenon_name]
+                    .property_sets()[property_set_name].id()),
+      _discretization_property(
+          _property_set.properties()[discretization_property_name],
+          H5T_NATIVE_HSIZE),
+      _discretization()
+
+{
+    _discretization_property.values().read(_discretization.shape());
+}
+
+
+Raster::Discretization const& Raster::discretization() const
+{
+    return _discretization;
+}
+
+
 /*!
     @brief      Add a band to the raster
     @param      name Name of band to add
@@ -131,6 +196,15 @@ Raster::Band Raster::add_band(
     property.discretize_space(_discretization_property);
 
     return Band(std::move(property));
+}
+
+
+Raster::Band Raster::band(
+    std::string const& name) const
+{
+    return Band(
+        omnipresent::different_shape::Property(
+            _property_set.properties()[name]));
 }
 
 
@@ -233,6 +307,31 @@ hdf5::Identifier create_raster(
 }
 
 }  // Anonymous namespace
+
+
+// bool raster_exists(
+//     Dataset const& dataset,
+//     std::string const& phenomenon_name,
+//     std::string const& property_set_name)
+// {
+//     bool result = false;
+// 
+//     if(dataset.phenomena().contains(phenomenon_name)) {
+//         auto const& phenomenon = dataset.phenomena()[phenomenon_name];
+// 
+//         if(phenomenon.property_sets().contains(property_set_name)) {
+//             auto const& property_set =
+//                 phenomenon.property_sets()[property_set_name];
+// 
+//             if(omnipresent::space_box_domain_exists(property_set) /* &&
+//                     discretization_property_exists(property_set) */) {
+//                 result = true;
+//             }
+//         }
+//     }
+// 
+//     return result;
+// }
 
 
 /*!

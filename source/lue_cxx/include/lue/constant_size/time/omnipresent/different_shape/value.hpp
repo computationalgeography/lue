@@ -22,6 +22,9 @@ class Value:
 public:
 
                    Value               (hdf5::Identifier const& location,
+                                        std::string const& name);
+
+                   Value               (hdf5::Identifier const& location,
                                         std::string const& name,
                                         hdf5::Datatype const& memory_datatype);
 // 

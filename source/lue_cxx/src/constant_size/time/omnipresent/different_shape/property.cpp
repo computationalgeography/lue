@@ -30,6 +30,16 @@ Property::Property(
 
 
 Property::Property(
+    lue::Property const& property)
+
+    : omnipresent::Property(property),
+      _values(id(), value_tag)
+
+{
+}
+
+
+Property::Property(
     lue::Property const& property,
     hdf5::Datatype const& memory_datatype)
 

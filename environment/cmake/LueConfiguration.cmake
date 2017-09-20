@@ -86,6 +86,7 @@ if(LUE_BUILD_CXX_API)
 
     if(LUE_API_WITH_MPI)
         set(DEVBASE_MPI_REQUIRED TRUE)
+        set(HDF5_PREFER_PARALLEL TRUE)
     endif()
 endif()
 

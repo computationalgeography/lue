@@ -48,6 +48,10 @@ private:
 };
 
 
+// bool               space_box_domain_exists(
+//                                         hdf5::Group const& group);
+//                                         // PropertySet const& property_set);
+
 SpaceBoxDomain     configure_space_box_domain(
                                         PropertySet& property_set,
                                         hdf5::Datatype const file_datatype,

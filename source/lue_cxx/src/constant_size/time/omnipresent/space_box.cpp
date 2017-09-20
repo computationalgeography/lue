@@ -36,6 +36,13 @@ SpaceBox::SpaceBox(
 }
 
 
+// bool space_box_exists(
+//     hdf5::Group const& group)
+// {
+//     return same_shape::value_exists(group, coordinates_tag);
+// }
+
+
 /*!
     @brief      .
     @param      rank Dimensionality of the space domain
