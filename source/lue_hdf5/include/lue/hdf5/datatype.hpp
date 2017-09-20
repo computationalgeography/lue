@@ -7,6 +7,9 @@
 namespace lue {
 namespace hdf5 {
 
+/*!
+    @brief      Class representing an HDF5 datatype
+*/
 class Datatype
 {
 
@@ -44,6 +47,7 @@ public:
 
 private:
 
+    //! Identifier of the datatype
     Identifier     _id;
 
 };
