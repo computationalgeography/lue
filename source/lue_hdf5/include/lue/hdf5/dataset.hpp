@@ -99,6 +99,7 @@ public:
 
 private:
 
+    //! Identifier of dataset
     Identifier     _id;
 
 };

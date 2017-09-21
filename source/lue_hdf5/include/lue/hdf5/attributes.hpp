@@ -52,18 +52,16 @@ private:
 };
 
 
+/*!
+    @brief      Return value of attribute @a name
+    @sa         Attribute::read(std::string const&)
+*/
 template<
     typename T>
 inline T Attributes::read(
     std::string const& name) const
 {
-    assert(_id.is_valid());
-    assert(exists(name));
-
-    auto const attribute = Attribute(_id, name);
-    auto value = attribute.read<T>();
-
-    return value;
+    return attribute(name).read<T>();
 }
 
 
@@ -91,6 +89,11 @@ inline T Attributes::read(
 // }
 
 
+/*!
+    @brief      Store @a value of attribute @a name
+
+    In case no attribute named @a name exists, it is created.
+*/
 template<
     typename T>
 inline void Attributes::write(
@@ -103,7 +106,7 @@ inline void Attributes::write(
         create_attribute(_id, name, value);
     }
     else {
-        this->attribute(name).write<T>(value);
+        attribute(name).write<T>(value);
     }
 }
 
