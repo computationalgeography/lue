@@ -54,6 +54,15 @@ hsize_t Raster::Discretization::nr_cols() const
 }
 
 
+Raster::Domain::Domain()
+
+    : _crs{},
+      _coordinates{0.0, 0.0, 0.0, 0.0}
+
+{
+}
+
+
 Raster::Domain::Domain(
     std::string const& crs,
     double const west,
@@ -65,6 +74,42 @@ Raster::Domain::Domain(
       _coordinates{west, south, east, north}
 
 {
+}
+
+
+std::string const& Raster::Domain::crs() const
+{
+    return _crs;
+}
+
+
+double Raster::Domain::west() const
+{
+    return _coordinates[0];
+}
+
+
+double Raster::Domain::south() const
+{
+    return _coordinates[1];
+}
+
+
+double Raster::Domain::east() const
+{
+    return _coordinates[2];
+}
+
+
+double Raster::Domain::north() const
+{
+    return _coordinates[3];
+}
+
+
+std::array<double, 4>& Raster::Domain::coordinates()
+{
+    return _coordinates;
 }
 
 
@@ -116,6 +161,13 @@ void Raster::Band::read(
 }
 
 
+/*!
+    @brief      Write values in @a buffer to raster band
+    @warning    The values pointed to by @a buffer must have the same type
+                as the memory_datatype()
+    @warning    The number of values pointed to by @a buffer must be at least
+                as large as the number of cells in the raster
+*/
 void Raster::Band::write(
     void const* buffer)
 {
@@ -123,6 +175,13 @@ void Raster::Band::write(
 }
 
 
+/*!
+    @brief      Write values to hyperslab
+    @warning    The values pointed to by @a buffer must have the same type
+                as the memory_datatype()
+    @warning    The number of values pointed to by @a buffer must be at least
+                as large as the size of the hyperslab
+*/
 void Raster::Band::write(
     hdf5::Dataspace const& memory_dataspace,
     hdf5::Hyperslab const& hyperslab,
@@ -146,10 +205,18 @@ Raster::Raster(
       _discretization_property(
           _property_set.properties()[discretization_property_name],
           H5T_NATIVE_HSIZE),
-      _discretization()
+      _discretization(),
+      _domain()
 
 {
     _discretization_property.values().read(_discretization.shape());
+
+    auto const& space_domain = _property_set.domain().space();
+    auto const space_box_domain = omnipresent::SpaceBoxDomain(space_domain,
+        hdf5::NativeDatatypeTraits<double>::type_id());
+    auto const& space_boxes = space_box_domain.boxes();
+    assert(space_boxes.nr_items() == 1);
+    space_boxes.read(_domain.coordinates().data());
 }
 
 
@@ -165,10 +232,24 @@ Raster::Raster(
       _discretization_property(
           _property_set.properties()[discretization_property_name],
           H5T_NATIVE_HSIZE),
-      _discretization()
+      _discretization(),
+      _domain()
 
 {
     _discretization_property.values().read(_discretization.shape());
+
+    auto const& space_domain = _property_set.domain().space();
+    auto const space_box_domain = omnipresent::SpaceBoxDomain(space_domain,
+        hdf5::NativeDatatypeTraits<double>::type_id());
+    auto const& space_boxes = space_box_domain.boxes();
+    assert(space_boxes.nr_items() == 1);
+    space_boxes.read(_domain.coordinates().data());
+}
+
+
+Raster::Domain const& Raster::domain() const
+{
+    return _domain;
 }
 
 

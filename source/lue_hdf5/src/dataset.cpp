@@ -191,6 +191,8 @@ void Dataset::write(
     Datatype const& datatype,
     void const* buffer) const
 {
+    // Select all values in the dataset. Assume the buffer contains
+    // values for all values in the dataset.
     write(datatype, Hyperslab(shape()), buffer);
 }
 
@@ -200,33 +202,20 @@ void Dataset::write(
     Hyperslab const& hyperslab,
     void const* buffer) const
 {
-    assert(datatype.is_native());
-
-    // Select elements: create hyperslab
-    auto const file_dataspace = this->dataspace();
-    hsize_t const* block = nullptr;
-    auto status = ::H5Sselect_hyperslab(file_dataspace.id(), H5S_SELECT_SET,
-        hyperslab.start().data(), hyperslab.stride().data(),
-        hyperslab.count().data(), block);
-
-    if(status < 0) {
-        throw std::runtime_error("Cannot create hyperslab");
-    }
-
+    // Assume values in memory are layed out contiguously in all dimensions
     auto const memory_dataspace = create_dataspace(
         Shape(hyperslab.count().begin(), hyperslab.count().end()));
 
-    status = H5Dwrite(
-        _id, datatype.id(),
-        memory_dataspace.id(), file_dataspace.id(),
-        H5P_DEFAULT, buffer);
-
-    if(status < 0) {
-        throw std::runtime_error("Cannot write to dataset");
-    }
+    write(datatype, memory_dataspace, hyperslab, buffer);
 }
 
 
+/*!
+    @brief      .
+    @param      hyperslab Selection of file dataspace to write to
+    @return     .
+    @exception  .
+*/
 void Dataset::write(
     Datatype const& datatype,
     Dataspace const& memory_dataspace,
@@ -246,8 +235,10 @@ void Dataset::write(
         throw std::runtime_error("Cannot create hyperslab");
     }
 
-    status = ::H5Dwrite(_id, datatype.id(), memory_dataspace.id(),
-        file_dataspace.id(), H5P_DEFAULT, buffer);
+    status = ::H5Dwrite(
+        _id, datatype.id(),
+        memory_dataspace.id(), file_dataspace.id(),
+        H5P_DEFAULT, buffer);
 
     if(status < 0) {
         throw std::runtime_error("Cannot write to dataset");

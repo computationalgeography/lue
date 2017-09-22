@@ -29,6 +29,27 @@ Hyperslab::Hyperslab(
 
 
 /*!
+    @brief      Construct an instance based on a @a start, and @a count
+
+    - The stride is initialized to 1 in all directions
+
+    The size of @a start, and @a count must be equal to the rank
+    of the dataset's dataspace.
+*/
+Hyperslab::Hyperslab(
+    Offset const& start,
+    Count const& count)
+
+    : _start{start},
+      _stride(start.size(), 1),
+      _count{count}
+
+{
+    assert(_start.size() == _count.size());
+}
+
+
+/*!
     @brief      Construct an instance based on a @a shape
 
     The instance represents the whole dataspace of the @a shape passed in:

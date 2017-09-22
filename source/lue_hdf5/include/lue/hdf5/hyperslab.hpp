@@ -24,6 +24,9 @@ public:
                                         Stride const& stride,
                                         Count const& count);
 
+                   Hyperslab           (Offset const& start,
+                                        Count const& count);
+
                    Hyperslab           (Shape const& shape);
 
                    Hyperslab           (Hyperslab const& other)=default;

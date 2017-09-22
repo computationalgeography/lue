@@ -23,6 +23,7 @@ if(LUE_BUILD_PYTHON_API)
         DIRECTORY
             lue_hdf5/include
             lue_cxx/include
+            ${CMAKE_CURRENT_BINARY_DIR}/include
             ${CMAKE_CURRENT_BINARY_DIR}/lue_cxx/include
             lue_py/include
         DESTINATION src
@@ -102,6 +103,11 @@ if(LUE_BUILD_DOCUMENTATION)
     )
 endif()
 
+install(
+    DIRECTORY
+        ${CMAKE_CURRENT_BINARY_DIR}/include
+    DESTINATION .
+)
 install(EXPORT lue_targets
     FILE lue_targets.cmake
     NAMESPACE lue::

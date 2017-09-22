@@ -47,11 +47,27 @@ public:
 
     public:
 
+                   Domain              ();
+
                    Domain              (std::string const& crs,
                                         double const west,
                                         double const south,
                                         double const east,
                                         double const north);
+
+        std::string const&
+                   crs                 () const;
+
+        double     west                () const;
+
+        double     south               () const;
+
+        double     east                () const;
+
+        double     north               () const;
+
+        std::array<double, 4>&
+                   coordinates         ();
 
         std::array<double, 4> const&
                    coordinates         () const;
@@ -110,6 +126,8 @@ public:
 
     Raster&        operator=           (Raster&& other)=default;
 
+    Domain const&  domain              () const;
+
     Discretization const& discretization() const;
 
     Band           add_band            (std::string const& name,
@@ -124,6 +142,8 @@ private:
     omnipresent::same_shape::Property _discretization_property;
 
     Discretization _discretization;
+
+    Domain         _domain;
 
 };
 

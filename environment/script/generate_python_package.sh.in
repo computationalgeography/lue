@@ -14,7 +14,7 @@ build_prefix="$tmp_prefix/build"
 install_prefix="$tmp_prefix/install"
 
 peacock_prefix="$PEACOCK_PREFIX/lue"
-platform_path="linux/linux/gcc-6/x86_64"
+platform_path="linux/linux/$CC/x86_64"
 peacock_include_dir="$peacock_prefix/$platform_path/include"
 peacock_lib_dir="$peacock_prefix/$platform_path/lib"
 

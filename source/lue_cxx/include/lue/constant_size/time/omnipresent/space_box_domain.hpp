@@ -19,6 +19,8 @@ public:
 
                    // SpaceBoxDomain      (lue::SpaceDomain& group);
 
+                   // SpaceBoxDomain      (PropertySet const& property_set);
+
                    SpaceBoxDomain      (SpaceDomain const& space_domain,
                                         hdf5::Datatype const& memory_datatype);
 

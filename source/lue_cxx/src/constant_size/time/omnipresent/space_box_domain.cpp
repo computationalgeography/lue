@@ -15,6 +15,16 @@ hdf5::Datatype SpaceBoxDomain::file_datatype(
 
 
 // SpaceBoxDomain::SpaceBoxDomain(
+//     PropertySet const& property_set)
+// 
+//     : SpaceDomain(property_set.domain().space()),
+//       _boxes(id())
+// 
+// {
+// }
+
+
+// SpaceBoxDomain::SpaceBoxDomain(
 //     lue::SpaceDomain& group)
 // 
 //     : SpaceDomain(group),
