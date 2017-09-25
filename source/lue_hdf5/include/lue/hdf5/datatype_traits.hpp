@@ -1,5 +1,4 @@
 #pragma once
-// #include "lue/hdf5/configure.hpp"
 #include <hdf5.h>
 #include <string>
 #include <type_traits>
@@ -8,11 +7,38 @@
 namespace lue {
 namespace hdf5 {
 
+/*!
+    @brief      Datatype traits of HDF5 native types corresponding to @a T
+
+    This template is implemented for:
+    - int8_t
+    - int16_t
+    - int32_t
+    - int64_t
+    - uint8_t
+    - uint16_t
+    - uint32_t
+    - uint64_t
+    - float
+    - double
+    - hsize_t
+*/
 template<
     typename T,
     typename Enable=void>
 struct NativeDatatypeTraits
 {
+
+    /*!
+        @brief      Return id of native HDF5 type
+    */
+    static hid_t   type_id             ();
+
+    /*!
+        @brief      Return name of native HDF5 type
+    */
+    static std::string name            ();
+
 };
 
 
@@ -41,6 +67,8 @@ NATIVE_DATATYPE_TRAITS(double, H5T_NATIVE_DOUBLE)
 #undef NATIVE_DATATYPE_TRAITS
 
 
+/// @cond INCLUDE_DETAILS
+
 // If hsize_t is typedef-ed as uint64_t (macOS), we musn't ѕpecialize the
 // template for hsize_t.
 template<
@@ -56,12 +84,41 @@ struct NativeDatatypeTraits<
     static std::string name() { return "H5T_NATIVE_HSIZE"; }
 };
 
+/// @endcond
 
+
+/*!
+    @brief      Datatype traits of HDF5 standard types corresponding to @a T
+
+    This template is implemented for:
+    - int8_t
+    - int16_t
+    - int32_t
+    - int64_t
+    - uint8_t
+    - uint16_t
+    - uint32_t
+    - uint64_t
+    - float
+    - double
+    - hsize_t
+*/
 template<
     typename T,
     typename Enable=void>
 struct StandardDatatypeTraits
 {
+
+    /*!
+        @brief      Return id of standard HDF5 type
+    */
+    static hid_t   type_id             ();
+
+    /*!
+        @brief      Return name of standard HDF5 type
+    */
+    static std::string name            ();
+
 };
 
 
@@ -90,6 +147,8 @@ STANDARD_DATATYPE_TRAITS(double, H5T_IEEE_F64LE)
 #undef STANDARD_DATATYPE_TRAITS
 
 
+/// @cond INCLUDE_DETAILS
+
 // In case hsize_t is not defined as being uint64_t (non-macOS), we must
 // specialize the template for hsize_t.
 template<
@@ -117,6 +176,8 @@ struct StandardDatatypeTraits<
     static_assert(std::is_same<hsize_t, unsigned long long int>::value,
         "expecting hsize_t to be unsigned long long int");
 };
+
+/// @endcond
 
 }  // namespace hdf5
 }  // namespace lue

@@ -57,7 +57,7 @@ hsize_t Raster::Discretization::nr_cols() const
 Raster::Domain::Domain()
 
     : _crs{},
-      _coordinates{0.0, 0.0, 0.0, 0.0}
+      _coordinates{{0.0, 0.0, 0.0, 0.0}}
 
 {
 }
@@ -71,7 +71,7 @@ Raster::Domain::Domain(
     double const north)
 
     : _crs{crs},
-      _coordinates{west, south, east, north}
+      _coordinates{{west, south, east, north}}
 
 {
 }

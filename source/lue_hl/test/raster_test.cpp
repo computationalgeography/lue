@@ -65,12 +65,12 @@ BOOST_AUTO_TEST_CASE(create_raster)
 
     std::string const band_name = "my_band";
     lue::hdf5::Datatype const memory_datatype = H5T_NATIVE_DOUBLE;
-    std::array<double, nr_cells> values = {
+    std::array<double, nr_cells> values = {{
          0,  1,  2,
         10, 11, 12,
         20, 21, 22,
         30, 31, 32,
-    };
+    }};
 
 
     // Create new dataset, add raster, add band, write values
@@ -157,12 +157,12 @@ BOOST_AUTO_TEST_CASE(write_hyperslab)
 
     std::string const band_name = "my_band";
     lue::hdf5::Datatype const memory_datatype = H5T_NATIVE_INT32;
-    std::array<std::int32_t, nr_cells> values = {
+    std::array<std::int32_t, nr_cells> values = {{
          0,  1,  2,
         10, 11, 12,
         20, 21, 22,
         30, 31, 32,
-    };
+    }};
 
 
     // Create new dataset, add raster, add band, write values

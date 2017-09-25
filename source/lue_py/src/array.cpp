@@ -198,8 +198,8 @@ py::array read_from_array(
 template<
     typename T>
 void verify_write(
-    Array const& array,
-    hdf5::Hyperslab const& hyperslab)
+    Array const& /* array */,
+    hdf5::Hyperslab const& /* hyperslab */)
 {
     // TODO Verify hyperslab makes sense with array.
 
