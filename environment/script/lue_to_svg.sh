@@ -12,7 +12,9 @@ for lue_pathname in `find . -name "*.lue"`; do
 
     echo "$lue_pathname → $svg_filename"
     if [ $name != "string_attribute" ]; then
-        lue_translate $lue_pathname $dot_filename
+        lue_translate export \
+            --meta $LUE/document/lue_translate/dot_properties.json \
+            $lue_pathname $dot_filename
         dot -Tsvg -o $svg_filename $dot_filename
     fi
 done

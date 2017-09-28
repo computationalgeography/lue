@@ -17,7 +17,13 @@ void init_submodule(py::module& module);
 void init_submodule(
     py::module& module)
 {
-    py::module submodule = module.def_submodule("time");
+    py::module submodule = module.def_submodule(
+        "time",
+        R"(
+    Parent module for modules implementing the different ways to handle time
+
+    .. automodule:: lue.constant_size.time.omnipresent
+)");
 
     omnipresent::init_submodule(submodule);
 }

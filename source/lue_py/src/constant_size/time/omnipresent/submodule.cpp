@@ -33,7 +33,15 @@ void init_space_domain_class(py::module& module);
 void init_submodule(
     py::module& module)
 {
-    py::module submodule = module.def_submodule("omnipresent");
+    py::module submodule = module.def_submodule(
+        "omnipresent",
+        R"(
+    Module implementing the API for information that is omnipresent
+    through time
+
+    .. automodule:: lue.constant_size.time.omnipresent.different_shape
+    .. automodule:: lue.constant_size.time.omnipresent.same_shape
+)");
 
     init_domain_class(submodule);
     init_space_domain_class(submodule);

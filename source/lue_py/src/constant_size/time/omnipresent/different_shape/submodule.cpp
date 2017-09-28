@@ -18,7 +18,12 @@ void init_property_class(py::module& module);
 void init_submodule(
     py::module& module)
 {
-    py::module submodule = module.def_submodule("different_shape");
+    py::module submodule = module.def_submodule(
+        "different_shape",
+        R"(
+    Module implementing the API for properties with a different shape
+    per item
+)");
 
     init_value_class(submodule);
     init_property_class(submodule);

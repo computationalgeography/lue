@@ -25,9 +25,10 @@ void init_submodule(
     py::module submodule = module.def_submodule(
         "constant_size",
         R"(
-    Meh
+    Module implementing the API for property sets with a constant number
+    of items
 
-    Mah
+    .. automodule:: lue.constant_size.time
 )");
 
     init_domain_class(submodule);

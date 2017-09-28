@@ -10,7 +10,7 @@
 <title>%3</title>
 <g id="clust1" class="cluster"><title>cluster_node_96</title>
 <polygon fill="none" stroke="black" points="8,-8 8,-367 204,-367 204,-8 8,-8"/>
-<text text-anchor="start" x="72.5" y="-355" font-family="Courier,monospace" font-size="10.00">planets.lue</text>
+<text text-anchor="start" x="66.5" y="-355" font-family="Courier,monospace" font-size="10.00">./planets.lue</text>
 </g>
 <!-- node_2536 -->
 <g id="node1" class="node"><title>node_2536</title>
