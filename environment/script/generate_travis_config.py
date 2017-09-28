@@ -138,6 +138,8 @@ def builds():
         Package("g++-4.9", ["ubuntu-toolchain-r-test"], []),
         Package("gcc-6", ["ubuntu-toolchain-r-test"], []),
         Package("g++-6", ["ubuntu-toolchain-r-test"], []),
+        Package("gcc-7", ["ubuntu-toolchain-r-test"], []),
+        Package("g++-7", ["ubuntu-toolchain-r-test"], []),
         Package("libboost-all-dev", [], []),
         Package("libhdf5-dev", [], []),
     ]
@@ -159,6 +161,8 @@ def builds():
         "g++-4.9",
         "gcc-6",
         "g++-6",
+        "gcc-7",
+        "g++-7",
     ]
     compilers = { compiler_name: Compiler(compiler_name,
         packages[compiler_name], flags.get(compiler_name, "")) \
@@ -189,6 +193,7 @@ def builds():
         "gcc": [
                 ("gcc-4.9", "g++-4.9"),
                 ("gcc-6", "g++-6"),
+                ("gcc-7", "g++-7"),
             ],
         # "clang": [
         #         ("clang-3.9", "clang++-3.9"),
