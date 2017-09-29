@@ -8,6 +8,16 @@ include(LueConfiguration)
 include(DevBaseExternal)
 include(DevBaseMacro)
 
+
+if(HDF5_IS_PARALLEL)
+    find_package(MPI REQUIRED)
+
+    if(NOT MPI_CXX_FOUND)
+        message(FATAL_ERROR "MPI for C++ not found")
+    endif()
+endif()
+
+
 if(LUE_BUILD_TEST)
     enable_testing()
 endif()
@@ -19,7 +29,8 @@ message(STATUS "Build Python-API   : ${LUE_BUILD_PYTHON_API}")
 message(STATUS "Build HL-API       : ${LUE_BUILD_HL_API}")
 message(STATUS "Build C++-API      : ${LUE_BUILD_CXX_API}")
 message(STATUS "Build HDF5-API     : ${LUE_BUILD_HDF5_API}")
-message(STATUS "Support MPI        : ${LUE_API_WITH_MPI}")
+# message(STATUS "Support MPI        : ${LUE_API_WITH_MPI}")
 message(STATUS "Build documentation: ${LUE_BUILD_DOCUMENTATION}")
 message(STATUS "Build tests        : ${LUE_BUILD_TEST}")
+message(STATUS "HDF5_IS_PARALLEL   : ${HDF5_IS_PARALLEL}")
 message(STATUS "--------------------------------------------------------------")

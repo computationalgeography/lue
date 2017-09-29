@@ -3,7 +3,7 @@ option(LUE_BUILD_ALL
     "Build everything, except for documentation and tests"
     FALSE)
 option(LUE_WITH_ALL
-    "Support all features, except for MPI"
+    "Support all features"  # , except for MPI"
     FALSE)
 
 # High level targets
@@ -34,9 +34,9 @@ option(LUE_BUILD_TEST
     FALSE)
 
 # Optional features
-option(LUE_API_WITH_MPI
-    "Include support for MPI"
-    FALSE)
+# option(LUE_API_WITH_MPI
+#     "Include support for MPI"
+#     FALSE)
 
 
 # Handle internal dependencies
@@ -84,10 +84,10 @@ if(LUE_BUILD_CXX_API)
     list(APPEND DEVBASE_REQUIRED_BOOST_COMPONENTS
         filesystem system)
 
-    if(LUE_API_WITH_MPI)
-        set(DEVBASE_MPI_REQUIRED TRUE)
+    # if(LUE_API_WITH_MPI)
+        # set(DEVBASE_MPI_REQUIRED TRUE)
         set(HDF5_PREFER_PARALLEL TRUE)
-    endif()
+    # endif()
 endif()
 
 

@@ -36,15 +36,14 @@ target_link_libraries(lue_hdf5
         Boost::filesystem
 )
 
-if(LUE_API_WITH_MPI)
+if(HDF5_IS_PARALLEL)
     target_include_directories(lue_hdf5
         PUBLIC
-            ${MPI_C_INCLUDE_PATH}
+            ${MPI_CXX_INCLUDE_PATH}
     )
     target_link_libraries(lue_hdf5
         PRIVATE
-            ${MPI_CXX_LIBRARIES}  # Why link against C++ lib?
-            ${MPI_C_LIBRARIES}
+            MPI::MPI_CXX
     )
 endif()
 

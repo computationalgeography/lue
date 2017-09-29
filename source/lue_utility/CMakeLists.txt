@@ -14,6 +14,7 @@ target_include_directories(lue_utility
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>
         ${DOCOPT_INCLUDE_DIRS}
+        ${JSON_INCLUDE_DIR}
 )
 
 target_link_libraries(lue_utility
