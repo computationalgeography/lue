@@ -2,7 +2,7 @@ add_test_conditionally(test)
 
 add_library(lue_hl STATIC
     src/raster
-    src/scalar
+    # src/scalar
 )
 
 add_library(lue::hl ALIAS lue_hl)

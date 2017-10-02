@@ -1,5 +1,6 @@
 # from functools import reduce
 import os.path
+import sys
 import numpy
 import lue
 import lue_test
@@ -53,8 +54,9 @@ class ScalarTest(lue_test.TestCase):
             nr_items, value_type, values_)
 
 
-        dataset.flush()
-        self.assertDatasetIsValid(dataset_name)
+        if sys.platform != "darwin":
+            dataset.flush()
+            self.assertDatasetIsValid(dataset_name)
 
 
         # Open and read the dataset. -------------------------------------------

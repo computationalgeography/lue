@@ -22,7 +22,7 @@ add_library(lue STATIC
 #     src/time_domain_configuration
     src/universe
     src/universes
-    src/value
+#     src/value
 #     src/value_configuration
 
 
@@ -30,7 +30,7 @@ add_library(lue STATIC
     src/constant_size/property
     src/constant_size/property_set
     src/constant_size/space_domain
-    src/constant_size/value
+    # src/constant_size/value
 
     src/constant_size/time/omnipresent/domain
     src/constant_size/time/omnipresent/property
@@ -38,7 +38,7 @@ add_library(lue STATIC
     src/constant_size/time/omnipresent/space_box
     src/constant_size/time/omnipresent/space_box_domain
     src/constant_size/time/omnipresent/space_domain
-    src/constant_size/time/omnipresent/value
+    # src/constant_size/time/omnipresent/value
 
     src/constant_size/time/omnipresent/different_shape/property
     src/constant_size/time/omnipresent/different_shape/value
@@ -49,14 +49,17 @@ add_library(lue STATIC
 
 add_library(lue::lue ALIAS lue)
 
+target_include_directories(lue SYSTEM
+    PRIVATE
+        ${Boost_INCLUDE_DIRS}
+        ${HDF5_INCLUDE_DIRS}
+)
+
 target_include_directories(lue
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
         $<INSTALL_INTERFACE:include>
-    PRIVATE
-        ${Boost_INCLUDE_DIRS}
-        ${HDF5_INCLUDE_DIRS}
 )
 
 target_link_libraries(lue

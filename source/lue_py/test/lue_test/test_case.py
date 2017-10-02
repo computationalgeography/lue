@@ -72,6 +72,10 @@ class TestCase(unittest.TestCase):
         command = "lue_validate {}".format(dataset_pathname)
 
         try:
-            output = subprocess.check_output(shlex.split(command))
+            output = subprocess.check_output(
+                shlex.split(command),
+                stderr=subprocess.STDOUT,
+                universal_newlines=True)
         except subprocess.CalledProcessError as exception:
-            self.assertEqual(exception.returncode, 0, exception.output)
+            self.assertEqual(exception.returncode, 0,
+                "\n{}".format(exception.output))
