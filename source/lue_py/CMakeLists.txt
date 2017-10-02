@@ -17,9 +17,10 @@ add_library(lue_py SHARED
     src/phenomenon
     src/property
     src/property_set
-    src/universe
     src/python_extension
     src/space_domain
+    src/universe
+    src/validate
 
     src/constant_size/domain
     src/constant_size/property

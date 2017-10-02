@@ -1,7 +1,6 @@
 import os
 import shlex
 import subprocess
-import sys
 import unittest
 import numpy
 import lue
@@ -69,13 +68,14 @@ class TestCase(unittest.TestCase):
         Validate dataset *dataset_pathname*
         """
         self.assertTrue(os.path.exists(dataset_pathname))
-        command = "lue_validate {}".format(dataset_pathname)
 
-        try:
-            output = subprocess.check_output(
-                shlex.split(command),
-                stderr=subprocess.STDOUT,
-                universal_newlines=True)
-        except subprocess.CalledProcessError as exception:
-            self.assertEqual(exception.returncode, 0,
-                "\n{}".format(exception.output))
+        issues = lue.validate(dataset_pathname)
+
+        self.assertFalse(
+            issues.errors_found,
+            "\n".join(
+                ["{}\n".format(issue.message) for issue in issues.errors]))
+        self.assertFalse(
+            issues.warnings_found,
+            "\n".join(
+                ["{}\n".format(issue.message) for issue in issues.warnings]))

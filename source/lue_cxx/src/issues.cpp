@@ -1,8 +1,7 @@
-#include "lue/validate/issues.hpp"
+#include "lue/issues.hpp"
 
 
 namespace lue {
-namespace utility {
 
 /*!
     @brief      Return collection of errors
@@ -61,5 +60,4 @@ bool Issues::warnings_found() const
     return !_warnings.empty();
 }
 
-}  // namespace utility
 }  // namespace lue

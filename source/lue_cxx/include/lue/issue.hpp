@@ -5,7 +5,6 @@
 
 
 namespace lue {
-namespace utility {
 
 /*!
     @brief      Information about issue found during validation
@@ -44,5 +43,4 @@ private:
 
 };
 
-}  // namespace utility
 }  // namespace lue

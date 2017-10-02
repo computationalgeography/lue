@@ -1,9 +1,8 @@
 #pragma once
-#include "lue/validate/issue.hpp"
+#include "lue/issue.hpp"
 
 
 namespace lue {
-namespace utility {
 
 /*!
     @brief      Collection for storing errors
@@ -63,5 +62,4 @@ private:
 
 };
 
-}  // namespace utility
 }  // namespace lue
