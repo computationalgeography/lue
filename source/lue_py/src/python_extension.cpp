@@ -43,17 +43,15 @@ PYBIND11_PLUGIN(lue)
     a LUE dataset, the order of the main classes that have to be used is more
     or less as follows:
 
-    - Dataset
-    - Universe
-    - Phenomenon
-    - PropertySet
-    - Domain
-        - TimeDomain
-        - SpaceDomain
-    - Property
-        - Array
-            - Shape
-            - Dataset
+    - :py:class:`Dataset`
+    - :py:class:`Universe`
+    - :py:class:`Phenomenon`
+    - :py:class:`PropertySet`
+    - :py:class:`Domain`
+        - :py:class:`TimeDomain`
+        - :py:class:`SpaceDomain`
+    - :py:class:`Property`
+        - :py:class:`Array`
 
     .. automodule:: lue.hdf5
 

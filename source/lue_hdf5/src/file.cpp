@@ -77,7 +77,7 @@ File::File(
 
 
 /*!
-    @brief      Open file
+    @brief      Open file in read-only mode
     @param      name Name of file
     @exception  std::runtime_error In case the file cannot be opened
 */

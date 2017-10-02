@@ -5,10 +5,23 @@
 namespace lue {
 namespace utility {
 
+/*!
+    @brief      Collection for storing errors
+*/
 using Errors = std::vector<Issue>;
+
+
+/*!
+    @brief      Collection for storing warnings
+*/
 using Warnings = std::vector<Issue>;
 
 
+/*!
+    @brief      Collections of issues (warnings and errors) found during
+                validation
+    @sa         Issue
+*/
 class Issues
 {
 
@@ -42,8 +55,10 @@ public:
 
 private:
 
+    //! Collection of errors
     Errors         _errors;
 
+    //! Collection of warnings
     Warnings       _warnings;
 
 };
