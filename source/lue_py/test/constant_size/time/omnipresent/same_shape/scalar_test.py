@@ -1,6 +1,5 @@
 # from functools import reduce
 import os.path
-import sys
 import numpy
 import lue
 import lue_test
@@ -41,6 +40,9 @@ class ScalarTest(lue_test.TestCase):
             property_set_name)
         nr_items = 500
 
+        ids = property_set.reserve(nr_items)
+        ids[:] = numpy.arange(nr_items)
+
         value_type = numpy.int32
         property = omnipresent.same_shape.create_property(
             property_set, property_name, value_type)
@@ -54,9 +56,8 @@ class ScalarTest(lue_test.TestCase):
             nr_items, value_type, values_)
 
 
-        if sys.platform != "darwin":
-            dataset.flush()
-            self.assertDatasetIsValid(dataset_name)
+        dataset.flush()
+        self.assertDatasetIsValid(dataset_name)
 
 
         # Open and read the dataset. -------------------------------------------

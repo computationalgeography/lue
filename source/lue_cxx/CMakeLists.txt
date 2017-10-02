@@ -7,6 +7,8 @@ add_library(lue STATIC
     src/domain
 #     src/domain_configuration
 #     src/exception
+    src/issue
+    src/issues
     src/phenomena
     src/phenomenon
     src/properties
@@ -20,6 +22,7 @@ add_library(lue STATIC
 #     # src/time_discretization_configuration
 #     src/time_domain
 #     src/time_domain_configuration
+    src/validate
     src/universe
     src/universes
 #     src/value

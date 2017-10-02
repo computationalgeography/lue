@@ -1,8 +1,7 @@
-#include "lue/validate/issue.hpp"
+#include "lue/issue.hpp"
 
 
 namespace lue {
-namespace utility {
 
 /*!
     @brief      Construct issue based on @a id of HDF5 object and @a message
@@ -35,5 +34,4 @@ std::string const& Issue::message() const
     return _message;
 }
 
-}  // namespace utility
 }  // namespace lue

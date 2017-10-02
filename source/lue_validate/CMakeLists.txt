@@ -1,6 +1,4 @@
 add_library(lue_validate_lib STATIC
-    src/issue
-    src/issues
     src/validate
 )
 
