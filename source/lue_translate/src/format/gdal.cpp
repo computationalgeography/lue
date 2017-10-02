@@ -263,6 +263,8 @@ void translate_gdal_raster_dataset_to_lue(
 
             int block_size_x, block_size_y;
             gdal_raster_band->GetBlockSize(&block_size_x, &block_size_y);
+            assert(block_size_x >= 0);
+            assert(block_size_y >= 0);
             GDALBlock blocks(
                 discretization.nr_cols(), discretization.nr_rows(),
                 block_size_x, block_size_y);
