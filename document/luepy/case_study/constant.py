@@ -12,8 +12,15 @@ constants = omnipresent.create_property_set(phenomenon, "constants")
 
 nr_planets = 3
 
-value_type = numpy.float32
+
+# Per planet a unique id
+ids = constants.reserve(nr_planets)
+ids[:] = [4, 29, 13]
+
+
+# Gravity constants
 gravity = omnipresent.same_shape.create_property(
-    constants, "gravity", value_type)
+    constants, "gravity", numpy.float32)
 values = gravity.reserve(nr_planets)
-values[:] = numpy.array([ 1.5, 2.5, 3.5 ], dtype=value_type)
+# Dummy data...
+values[:] = numpy.array([ 1.5, 2.5, 3.5 ], dtype=numpy.float32)

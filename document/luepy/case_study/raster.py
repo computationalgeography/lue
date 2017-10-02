@@ -13,6 +13,11 @@ nr_areas = 10
 rank = 2
 
 
+# Per area a unique id
+ids = areas.reserve(nr_areas)
+ids[:] = [2, 4, 6, 8, 10, 9, 7, 5, 3, 1]
+
+
 # Space domain
 space_domain = omnipresent.create_space_box_domain(
     areas, numpy.float64, rank)
