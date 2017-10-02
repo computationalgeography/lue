@@ -1,11 +1,10 @@
 #include "lue/validate/validate.hpp"
-// #include "lue/constant_size/time/omnipresent/different_shape/property.h"
-// #include "lue/constant_size/time/omnipresent/property_set.h"
-// #include "lue/constant_size/time/omnipresent/same_shape/property.h"
+#include "lue/constant_size/time/omnipresent/different_shape/property.hpp"
+#include "lue/constant_size/time/omnipresent/property_set.hpp"
+#include "lue/constant_size/time/omnipresent/same_shape/property.hpp"
 #include "lue/dataset.hpp"
 #include "lue/tag.hpp"
 #include <boost/format.hpp>
-#include <iostream>
 
 
 namespace {
@@ -105,142 +104,142 @@ bool assert_groups_exist(
 using namespace utility;
 
 
-// // We are in the lue namespace now. This make the code below easier to write.
-// // We need less explicit namespace qualifications.
-// namespace constant_size {
-// namespace time {
-// namespace omnipresent {
+// We are in the lue namespace now. This makes the code below easier to write.
+// We need less explicit namespace qualifications.
+namespace constant_size {
+namespace time {
+namespace omnipresent {
 // namespace same_shape {
 // 
 // }  // namespace same_shape
-// 
-// 
-// void validate(
-//     PropertySet const& property_set,
-//     Issues& issues)
-// {
-//     // TODO
-//     // - test Number of item ids equals number of values in each property
-// 
-//     auto const nr_ids = property_set.ids().nr_items();
-// 
-//     auto const& properties = property_set.properties();
-// 
-//     for(auto const& name: properties.names()) {
-//         auto const& property = properties[name];
-//         auto const& configuration = property.configuration();
-//         size_t nr_values;
-// 
-//         switch(configuration.shape_per_item_type()) {
-//             case ShapePerItemType::same: {
-//                 auto file_datatype = same_shape::Property::file_datatype(
-//                     property.id());
-//                 auto const property2 = same_shape::Property(
-//                     property, memory_datatype(file_datatype));
-//                 nr_values =  property2.values().nr_items();
-// 
-//                 // to_dot(same_shape::Property(property,
-//                 //     memory_datatype(file_datatype)), issues);
-// 
-//                 break;
-//             }
-//             case ShapePerItemType::different: {
-//                 auto file_datatype = different_shape::Property::file_datatype(
-//                     property.id());
-//                 auto const property2 = different_shape::Property(
-//                     property, memory_datatype(file_datatype));
-//                 nr_values =  property2.values().nr_items();
-// 
-//                 // to_dot(different_shape::Property(property,
-//                 //     memory_datatype(file_datatype)), issues);
-// 
-//                 break;
-//             }
-//         }
-// 
-//         if(nr_values != nr_ids) {
-//             issues.add_error(
-//                 property.id(),
-//                 boost::str(boost::format(
-//                     "property %1%: nr property values != nr property-set ids"
-//                     "(%2% != %3%)")
-//                     % name
-//                     % nr_values
-//                     % nr_ids
-//                 )
-//             );
-//         }
-//     }
-// }
-// 
-// }  // namespace omnipresent
-// }  // namespace time
-// }  // namespace constant_size
-// 
-// 
-// void validate(
-//     PropertySet const& property_set,
-//     Issues& issues)
-// {
-//     auto configuration = property_set.configuration();
-// 
-//     switch(configuration.size_of_item_collection_type()) {
-//         // TODO Switch on time domain, once possible.
-// 
-//         case(SizeOfItemCollectionType::constant_size): {
-//             validate(constant_size::time::omnipresent::PropertySet(
-//                 property_set.id()), issues);
-//             break;
-//         }
-//     }
-// }
-// 
-// 
-// void validate(
-//     Phenomenon const& phenomenon,
-//     Issues& issues)
-// {
-//     auto const& property_sets = phenomenon.property_sets();
-// 
-//     for(auto const& name: property_sets.names()) {
-//         validate(property_sets[name], issues);
-//     }
-// }
-// 
-// 
-// void validate(
-//     Universe const& universe,
-//     Issues& issues)
-// {
-//     auto const& phenomena = universe.phenomena();
-// 
-//     for(auto const& name: phenomena.names()) {
-//         validate(phenomena[name], issues);
-//     }
-// }
-// 
-// 
-// void validate(
-//     Dataset const& dataset,
-//     Issues& issues)
-// {
-//     // TODO
-//     // - test version attribute (error)
-//     // - test history attribute (warning)
-// 
-// 
-//     auto const& universes = dataset.universes();
-// 
-//     for(auto const& name: universes.names()) {
-//         validate(universes[name], issues);
-//     }
-// 
-//     auto const& phenomena = dataset.phenomena();
-// 
-//     for(auto const& name: phenomena.names()) {
-//         validate(phenomena[name], issues);
-//     }
-// }
+
+
+void validate(
+    PropertySet const& property_set,
+    Issues& issues)
+{
+    // TODO
+    // - test Number of item ids equals number of values in each property
+
+    auto const nr_ids = property_set.ids().nr_items();
+
+    auto const& properties = property_set.properties();
+
+    for(auto const& name: properties.names()) {
+        auto const& property = properties[name];
+        auto const& configuration = property.configuration();
+        size_t nr_values;
+
+        switch(configuration.shape_per_item_type()) {
+            case ShapePerItemType::same: {
+                auto file_datatype = same_shape::Property::file_datatype(
+                    property.id());
+                auto const property2 = same_shape::Property(
+                    property, memory_datatype(file_datatype));
+                nr_values =  property2.values().nr_items();
+
+    //             // to_dot(same_shape::Property(property,
+    //             //     memory_datatype(file_datatype)), issues);
+
+                break;
+            }
+            case ShapePerItemType::different: {
+                auto file_datatype = different_shape::Property::file_datatype(
+                    property.id());
+                auto const property2 = different_shape::Property(
+                    property, memory_datatype(file_datatype));
+                nr_values =  property2.values().nr_items();
+
+    //             // to_dot(different_shape::Property(property,
+    //             //     memory_datatype(file_datatype)), issues);
+
+                break;
+            }
+        }
+
+        if(nr_values != nr_ids) {
+            issues.add_error(
+                property.id(),
+                boost::str(boost::format(
+                    "property %1%: nr property values (%2%) != "
+                    "nr property-set ids (%3%)")
+                    % name
+                    % nr_values
+                    % nr_ids
+                )
+            );
+        }
+    }
+}
+
+}  // namespace omnipresent
+}  // namespace time
+}  // namespace constant_size
+
+
+void validate(
+    PropertySet const& property_set,
+    Issues& issues)
+{
+    auto configuration = property_set.configuration();
+
+    switch(configuration.size_of_item_collection_type()) {
+        // TODO Switch on time domain, once possible.
+
+        case(SizeOfItemCollectionType::constant_size): {
+            validate(constant_size::time::omnipresent::PropertySet(
+                property_set.id()), issues);
+            break;
+        }
+    }
+}
+
+
+void validate(
+    Phenomenon const& phenomenon,
+    Issues& issues)
+{
+    auto const& property_sets = phenomenon.property_sets();
+
+    for(auto const& name: property_sets.names()) {
+        validate(property_sets[name], issues);
+    }
+}
+
+
+void validate(
+    Universe const& universe,
+    Issues& issues)
+{
+    auto const& phenomena = universe.phenomena();
+
+    for(auto const& name: phenomena.names()) {
+        validate(phenomena[name], issues);
+    }
+}
+
+
+void validate(
+    Dataset const& dataset,
+    Issues& issues)
+{
+    // TODO
+    // - test version attribute (error)
+    // - test history attribute (warning)
+
+
+    auto const& universes = dataset.universes();
+
+    for(auto const& name: universes.names()) {
+        validate(universes[name], issues);
+    }
+
+    auto const& phenomena = dataset.phenomena();
+
+    for(auto const& name: phenomena.names()) {
+        validate(phenomena[name], issues);
+    }
+}
 
 
 void validate(
@@ -267,7 +266,7 @@ void validate(
 
     if(groups_exist) {
         try {
-            // validate(Dataset(file.pathname()), issues);
+            validate(Dataset(file.pathname()), issues);
         }
         catch(std::exception const& exception) {
             issues.add_error(file.id(), exception.what());
