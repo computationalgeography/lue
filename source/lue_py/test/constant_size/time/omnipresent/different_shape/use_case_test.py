@@ -52,6 +52,8 @@ class UseCaseTest(lue_test.TestCase):
             property_set_name)
         nr_items = 500
 
+        property_set.reserve(nr_items)[:] = numpy.arange(nr_items)
+
 
         # Now, add a property, whose values all have different shapes.
         rank = 2
@@ -71,6 +73,8 @@ class UseCaseTest(lue_test.TestCase):
 
         self.verify_property_values(property, property_name,
             nr_items, rank, shapes, value_type, values_)
+
+        self.assertDatasetIsValid(dataset)
 
 
         # Open and read the dataset. -------------------------------------------

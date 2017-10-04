@@ -24,3 +24,5 @@ gravity = omnipresent.same_shape.create_property(
 values = gravity.reserve(nr_planets)
 # Dummy data...
 values[:] = numpy.array([ 1.5, 2.5, 3.5 ], dtype=numpy.float32)
+
+lue.assert_is_valid(dataset)

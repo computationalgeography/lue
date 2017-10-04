@@ -52,3 +52,5 @@ for i in range(nr_areas):
 
 # Link elevation property with discretization property
 elevation.discretize_space(discretization)
+
+lue.assert_is_valid(dataset)

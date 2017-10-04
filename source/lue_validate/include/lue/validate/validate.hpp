@@ -20,8 +20,6 @@ public:
 
 private:
 
-    void           print_issues        (Issues const& issues) const;
-
 };
 
 }  // namespace utility

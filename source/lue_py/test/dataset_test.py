@@ -14,6 +14,7 @@ class DatasetTest(lue_test.TestCase):
 
         dataset = lue.create_dataset(dataset_name)
 
+        self.assertDatasetIsValid(dataset)
         self.assertTrue(os.path.isfile(dataset_name))
         self.assertTrue(os.access(dataset_name, os.F_OK))
         self.assertTrue(os.access(dataset_name, os.R_OK))
@@ -26,6 +27,7 @@ class DatasetTest(lue_test.TestCase):
         dataset_name = "dataset_object_name.lue"
         dataset = self.create_dataset(dataset_name)
 
+        self.assertDatasetIsValid(dataset)
         self.assertEqual(dataset.id.name, "")
 
 
@@ -34,6 +36,7 @@ class DatasetTest(lue_test.TestCase):
         dataset_name = "dataset_object_pathname.lue"
         dataset = self.create_dataset(dataset_name)
 
+        self.assertDatasetIsValid(dataset)
         self.assertEqual(dataset.id.pathname, "/")
 
 
@@ -42,6 +45,7 @@ class DatasetTest(lue_test.TestCase):
         dataset_name = "dataset_pathname.lue"
         dataset = self.create_dataset(dataset_name)
 
+        self.assertDatasetIsValid(dataset)
         self.assertEqual(dataset.pathname, dataset_name)
 
 

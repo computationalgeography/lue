@@ -47,6 +47,8 @@ class PropertySetTest(lue_test.TestCase):
 
         self.verify_property_set_ids(property_set, ids_)
 
+        self.assertDatasetIsValid(dataset)
+
 
         # Open and read the dataset. -------------------------------------------
         dataset = lue.open_dataset(dataset_name, "r")
@@ -111,6 +113,8 @@ class PropertySetTest(lue_test.TestCase):
 
         self.verify_space_domain_with_boxes(property_set,
             property_set_name, boxes_)
+
+        self.assertDatasetIsValid(dataset)
 
 
         # Open and read the dataset. -------------------------------------------

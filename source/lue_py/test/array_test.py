@@ -23,6 +23,9 @@ class ArrayTest(lue_test.TestCase):
         self.nr_cols = 2
         self.value_shape = (self.nr_rows, self.nr_cols)
         self.value_type = numpy.int32
+
+        property_set.reserve(self.nr_items)[:] = numpy.arange(self.nr_items)
+
         property = omnipresent.same_shape.create_property(
             property_set, "my_property", self.value_type, self.value_shape)
 
@@ -30,8 +33,11 @@ class ArrayTest(lue_test.TestCase):
         self.numpy_values = numpy.arange(
             self.nr_items * reduce(
                 lambda x, y: x * y, self.value_shape),
-            dtype=self.value_type).reshape((self.nr_items,) + self.value_shape)
+            dtype=self.value_type).reshape(
+                (self.nr_items,) + self.value_shape)
         self.lue_values[:] = self.numpy_values
+
+        lue.assert_is_valid(self.dataset)
 
 
     def tearDown(self):
