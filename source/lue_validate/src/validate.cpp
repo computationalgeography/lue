@@ -37,53 +37,6 @@ Validate::Validate(
 }
 
 
-void Validate::print_issues(
-    Issues const& issues) const
-{
-    // Aggregate all issues by id. Print issues per id.
-    // The idea is to print important messages first.
-
-    // Collection of ids, ordered by errors.
-    std::vector<hdf5::Identifier> ids;
-
-    // Mapping of id to messages.
-    std::map<hdf5::Identifier, std::vector<std::string>> messages;
-
-    // Handle all errors. These will be printed first.
-    for(auto const& error: issues.errors()) {
-        if(messages.find(error.id()) == messages.end()) {
-            ids.push_back(error.id());
-        }
-
-        messages[error.id()].push_back("error: " + error.message());
-    }
-
-    // Handle all warnings. Warnings will be added to the list of messages
-    // created above. For objects without errors, the warnings will be
-    // stored last.
-    for(auto const& warning: issues.warnings()) {
-        if(messages.find(warning.id()) == messages.end()) {
-            ids.push_back(warning.id());
-        }
-
-        messages[warning.id()].push_back("warning: " + warning.message());
-    }
-
-
-    // Print the issues. First the errors (and possibly warnings) are printed,
-    // and after that the warnings for objects without errors.
-    for(auto const& id: ids) {
-        print_info_message(id.pathname() + ":");
-
-        for(auto const& message: messages[id]) {
-            print_info_message("- " + message);
-        }
-
-        // print_info_message("");
-    }
-}
-
-
 int Validate::run_implementation()
 {
     // Verify that each dataset passed in is valid.
@@ -94,27 +47,20 @@ int Validate::run_implementation()
     auto const fail_on_warning = argument<bool>("--fail-on-warning");
 
     for(auto const& dataset_name: dataset_names) {
-        Issues issues;
+        try {
+            assert_is_valid(dataset_name, fail_on_warning);
 
-        // auto const file = hdf5::File(dataset_name);
-
-        // validate(hdf5::File(dataset_name), issues);
-
-        validate(dataset_name, issues);
-
-        if(issues.errors_found() || (
-                fail_on_warning && issues.warnings_found())) {
+            if(!only_print_issues) {
+                print_info_message("File " + dataset_name +
+                    " contains a valid LUE dataset");
+            }
+        }
+        catch(std::runtime_error const& exception) {
             print_info_message("File " + dataset_name +
                 " does not contain a valid LUE dataset:");
             errors_found = true;
+            print_info_message(exception.what());
         }
-        else if(!only_print_issues) {
-            print_info_message("File " + dataset_name +
-                " contains a valid LUE dataset");
-        }
-
-        // Print issues found, if any
-        print_issues(issues);
     }
 
     return errors_found ? EXIT_FAILURE : EXIT_SUCCESS;

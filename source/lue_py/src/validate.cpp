@@ -69,7 +69,27 @@ void init_validate(
             return issues;
         },
         R"(
-    Validate docstring...
+    validate docstring...
+)")
+        ;
+
+    module.def(
+        "assert_is_valid",
+        py::overload_cast<std::string const&, bool const>(&assert_is_valid),
+        py::arg("dataset_name"),
+        py::arg("fail_on_warning")=true,
+        R"(
+    assert_is_valid docstring...
+)")
+        ;
+
+    module.def(
+        "assert_is_valid",
+        py::overload_cast<hdf5::File const&, bool const>(&assert_is_valid),
+        py::arg("file"),
+        py::arg("fail_on_warning")=true,
+        R"(
+    assert_is_valid docstring...
 )")
         ;
 

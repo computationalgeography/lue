@@ -1,5 +1,6 @@
 #include "lue/translate/command/import.hpp"
 #include "lue/translate/format.hpp"
+#include "lue/validate.hpp"
 #include <boost/filesystem.hpp>
 #include <exception>
 
@@ -110,6 +111,8 @@ int Import::run_implementation()
     //     throw std::runtime_error(
     //         "translation of temporal stacks is not supported yet");
     // }
+
+    assert_is_valid(output_dataset_name);
 
     return EXIT_SUCCESS;
 }

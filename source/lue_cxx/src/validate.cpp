@@ -5,6 +5,7 @@
 #include "lue/dataset.hpp"
 #include "lue/tag.hpp"
 #include <boost/format.hpp>
+#include <sstream>
 
 
 namespace lue {
@@ -75,6 +76,55 @@ bool assert_groups_exist(
     }
 
     return missing_groups_names.empty();
+}
+
+
+std::string error_message(
+    Issues const& issues)
+{
+    std::stringstream stream;
+
+    // Aggregate all issues by id. Print issues per id.
+    // The idea is to print important messages first.
+
+    // Collection of ids, ordered by errors.
+    std::vector<hdf5::Identifier> ids;
+
+    // Mapping of id to messages.
+    std::map<hdf5::Identifier, std::vector<std::string>> messages;
+
+    // Handle all errors. These will be printed first.
+    for(auto const& error: issues.errors()) {
+        if(messages.find(error.id()) == messages.end()) {
+            ids.push_back(error.id());
+        }
+
+        messages[error.id()].push_back("error: " + error.message());
+    }
+
+    // Handle all warnings. Warnings will be added to the list of messages
+    // created above. For objects without errors, the warnings will be
+    // stored last.
+    for(auto const& warning: issues.warnings()) {
+        if(messages.find(warning.id()) == messages.end()) {
+            ids.push_back(warning.id());
+        }
+
+        messages[warning.id()].push_back("warning: " + warning.message());
+    }
+
+
+    // Print the issues. First the errors (and possibly warnings) are printed,
+    // and after that the warnings for objects without errors.
+    for(auto const& id: ids) {
+        stream << id.pathname() << ":\n";
+
+        for(auto const& message: messages[id]) {
+            stream << "- " << message << "\n";
+        }
+    }
+
+    return stream.str();
 }
 
 }  // Anonymous namespace
@@ -292,6 +342,28 @@ void validate(
     Issues& issues)
 {
     validate(hdf5::File(name), issues);
+}
+
+
+void assert_is_valid(
+    hdf5::File const& file,
+    bool const fail_on_warning)
+{
+    Issues issues;
+
+    validate(file, issues);
+
+    if(issues.errors_found() || (fail_on_warning && issues.warnings_found())) {
+        throw std::runtime_error(error_message(issues));
+    }
+}
+
+
+void assert_is_valid(
+    std::string const& dataset_name,
+    bool const fail_on_warning)
+{
+    assert_is_valid(hdf5::File(dataset_name), fail_on_warning);
 }
 
 }  // namespace lue

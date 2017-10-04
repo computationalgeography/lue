@@ -63,19 +63,17 @@ class TestCase(unittest.TestCase):
 
 
     def assertDatasetIsValid(self,
-            dataset_pathname):
+            dataset):
         """
-        Validate dataset *dataset_pathname*
+        Validate *dataset*
         """
-        self.assertTrue(os.path.exists(dataset_pathname))
 
-        issues = lue.validate(dataset_pathname)
+        if isinstance(dataset, str):
+            self.assertTrue(os.path.exists(dataset_pathname))
+            dataset = lue.open_dataset(dataset_pathname)
 
-        self.assertFalse(
-            issues.errors_found,
-            "\n".join(
-                ["{}\n".format(issue.message) for issue in issues.errors]))
-        self.assertFalse(
-            issues.warnings_found,
-            "\n".join(
-                ["{}\n".format(issue.message) for issue in issues.warnings]))
+        try:
+            lue.assert_is_valid(dataset, fail_on_warning=True)
+        except RuntimeError as exception:
+            self.fail("dataset {} is not valid\n{}".format(
+                dataset.pathname, exception))

@@ -55,9 +55,7 @@ class ScalarTest(lue_test.TestCase):
         self.verify_property_values(property, property_name,
             nr_items, value_type, values_)
 
-
-        dataset.flush()
-        self.assertDatasetIsValid(dataset_name)
+        self.assertDatasetIsValid(dataset)
 
 
         # Open and read the dataset. -------------------------------------------

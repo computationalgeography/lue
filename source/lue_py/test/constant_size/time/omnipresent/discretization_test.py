@@ -85,6 +85,8 @@ class DiscretizationTest(lue_test.TestCase):
             property_set_name)
         nr_items = 100
 
+        property_set.reserve(nr_items)[:] = numpy.arange(nr_items)
+
 
         # Space domain.
         coordinate_dtype = numpy.float32
@@ -139,6 +141,8 @@ class DiscretizationTest(lue_test.TestCase):
 
         self.verify_property_values(property, value_property_name,
             nr_items, rank, shapes, value_type, values_)
+
+        self.assertDatasetIsValid(dataset)
 
 
         # Open and read the dataset. -------------------------------------------

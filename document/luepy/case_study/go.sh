@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -e
 
 for script_name in `ls *.py`; do
     python $script_name
