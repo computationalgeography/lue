@@ -1,4 +1,5 @@
 #include "lue/hdf5/validate.hpp"
+#include <algorithm>
 
 
 namespace lue {
