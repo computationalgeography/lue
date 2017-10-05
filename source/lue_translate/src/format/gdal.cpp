@@ -422,5 +422,22 @@ void translate_gdal_raster_dataset_to_lue(
 //     // TODO Handle various ways of handling no-data in GDAL
 // }
 
+void translate_lue_dataset_to_shapefile(
+    Dataset const& /* dataset */,
+    std::string const& /* shapefile_name */,
+    Metadata const& /* metadata */)
+{
+    // TODO
+    // - Figure out which domains to dump
+    // - Find domains
+    // - Create Shapefile
+    // - Add feature layer (multiple possible?)
+    // - Skip properties for now
+
+
+
+
+}
+
 }  // namespace utility
 }  // namespace lue

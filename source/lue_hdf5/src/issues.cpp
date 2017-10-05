@@ -1,7 +1,8 @@
-#include "lue/issues.hpp"
+#include "lue/hdf5/issues.hpp"
 
 
 namespace lue {
+namespace hdf5 {
 
 /*!
     @brief      Return collection of errors
@@ -25,7 +26,7 @@ Warnings const& Issues::warnings() const
     @brief      Add an issue to the collection of errors
 */
 void Issues::add_error(
-    hdf5::Identifier const& id,
+    Identifier const& id,
     std::string const& message)
 {
     _errors.emplace_back(Issue(id, message));
@@ -36,7 +37,7 @@ void Issues::add_error(
     @brief      Add an issue to the collection of warnings
 */
 void Issues::add_warning(
-    hdf5::Identifier const& id,
+    Identifier const& id,
     std::string const& message)
 {
     _warnings.emplace_back(Issue(id, message));
@@ -60,4 +61,5 @@ bool Issues::warnings_found() const
     return !_warnings.empty();
 }
 
+}  // namespace hdf5
 }  // namespace lue

@@ -1,6 +1,14 @@
 Changes
 =======
 
+0.1.2
+-----
+- `Validate: verify that item-ids are unique <https://github.com/pcraster/lue/issues/14`>_
+- `Add assert_is_valid to lue_py <https://github.com/pcraster/lue/issues/16>`_
+- `Make validate function available in Python package <https://github.com/pcraster/lue/issues/13>`_
+- `Validate must report missing item ids <https://github.com/pcraster/lue/issues/12>`_
+
+
 0.1.1
 -----
 - Improved support for indexing of LUE arrays, similar to how indexing of

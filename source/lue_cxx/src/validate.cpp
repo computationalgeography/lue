@@ -1,9 +1,8 @@
 #include "lue/validate.hpp"
-#include "lue/constant_size/time/omnipresent/different_shape/property.hpp"
-#include "lue/constant_size/time/omnipresent/property_set.hpp"
-#include "lue/constant_size/time/omnipresent/same_shape/property.hpp"
+#include "lue/constant_size/validate.hpp"
 #include "lue/dataset.hpp"
 #include "lue/tag.hpp"
+#include "lue/hdf5/validate.hpp"
 #include <boost/format.hpp>
 #include <sstream>
 
@@ -11,76 +10,8 @@
 namespace lue {
 namespace {
 
-void missing_group(
-    hdf5::Identifier const& id,
-    std::string const& name,
-    Issues& issues)
-{
-    issues.add_error(id, "group '" + name + "' does not exist");
-}
-
-
-void superflouos_object(
-    hdf5::Identifier const& id,
-    std::string const& name,
-    Issues& issues)
-{
-    issues.add_error(id, "object '" + name + "' is superfluous");
-}
-
-
-template<
-    typename Collection>
-Collection difference(
-    Collection collection1,
-    Collection collection2)
-{
-    std::sort(collection1.begin(), collection1.end());
-    std::sort(collection2.begin(), collection2.end());
-
-    Collection result;
-
-    std::set_difference(
-        collection1.begin(), collection1.end(),
-        collection2.begin(), collection2.end(),
-        std::inserter(result, result.begin()));
-
-    return result;
-}
-
-
-void assert_no_superfluous_objects_exist(
-    hdf5::Group const& group,
-    std::vector<std::string> const& names,
-    Issues& issues)
-{
-    auto superflouos_objects_names = difference(group.object_names(), names);
-
-    // These objects are not expected.
-    for(auto const& name: superflouos_objects_names) {
-        superflouos_object(group.id(), name, issues);
-    }
-}
-
-
-bool assert_groups_exist(
-    hdf5::Group const& group,
-    std::vector<std::string> const& names,
-    Issues& issues)
-{
-    auto missing_groups_names = difference(names, group.group_names());
-
-    // These required groups are not found.
-    for(auto const& name: missing_groups_names) {
-        missing_group(group.id(), name, issues);
-    }
-
-    return missing_groups_names.empty();
-}
-
-
 std::string error_message(
-    Issues const& issues)
+    hdf5::Issues const& issues)
 {
     std::stringstream stream;
 
@@ -130,82 +61,9 @@ std::string error_message(
 }  // Anonymous namespace
 
 
-// We are in the lue namespace now. This makes the code below easier to write.
-// We need less explicit namespace qualifications.
-namespace constant_size {
-namespace time {
-namespace omnipresent {
-// namespace same_shape {
-// 
-// }  // namespace same_shape
-
-
 void validate(
     PropertySet const& property_set,
-    Issues& issues)
-{
-    // TODO
-    // - test Number of item ids equals number of values in each property
-
-    auto const nr_ids = property_set.ids().nr_items();
-
-    auto const& properties = property_set.properties();
-
-    for(auto const& name: properties.names()) {
-        auto const& property = properties[name];
-        auto const& configuration = property.configuration();
-        size_t nr_values;
-
-        switch(configuration.shape_per_item_type()) {
-            case ShapePerItemType::same: {
-                auto file_datatype = same_shape::Property::file_datatype(
-                    property.id());
-                auto const property2 = same_shape::Property(
-                    property, memory_datatype(file_datatype));
-                nr_values =  property2.values().nr_items();
-
-    //             // to_dot(same_shape::Property(property,
-    //             //     memory_datatype(file_datatype)), issues);
-
-                break;
-            }
-            case ShapePerItemType::different: {
-                auto file_datatype = different_shape::Property::file_datatype(
-                    property.id());
-                auto const property2 = different_shape::Property(
-                    property, memory_datatype(file_datatype));
-                nr_values =  property2.values().nr_items();
-
-    //             // to_dot(different_shape::Property(property,
-    //             //     memory_datatype(file_datatype)), issues);
-
-                break;
-            }
-        }
-
-        if(nr_values != nr_ids) {
-            issues.add_error(
-                property.id(),
-                boost::str(boost::format(
-                    "property %1%: nr property values (%2%) != "
-                    "nr property-set ids (%3%)")
-                    % name
-                    % nr_values
-                    % nr_ids
-                )
-            );
-        }
-    }
-}
-
-}  // namespace omnipresent
-}  // namespace time
-}  // namespace constant_size
-
-
-void validate(
-    PropertySet const& property_set,
-    Issues& issues)
+    hdf5::Issues& issues)
 {
     auto configuration = property_set.configuration();
 
@@ -213,7 +71,7 @@ void validate(
         // TODO Switch on time domain, once possible.
 
         case(SizeOfItemCollectionType::constant_size): {
-            validate(constant_size::time::omnipresent::PropertySet(
+            constant_size::validate(constant_size::PropertySet(
                 property_set.id()), issues);
             break;
         }
@@ -223,7 +81,7 @@ void validate(
 
 void validate(
     Phenomenon const& phenomenon,
-    Issues& issues)
+    hdf5::Issues& issues)
 {
     auto const& property_sets = phenomenon.property_sets();
 
@@ -235,7 +93,7 @@ void validate(
 
 void validate(
     Universe const& universe,
-    Issues& issues)
+    hdf5::Issues& issues)
 {
     auto const& phenomena = universe.phenomena();
 
@@ -247,7 +105,7 @@ void validate(
 
 void validate(
     Dataset const& dataset,
-    Issues& issues)
+    hdf5::Issues& issues)
 {
     // TODO
     // - test version attribute (error)
@@ -270,7 +128,7 @@ void validate(
 
 void validate(
     hdf5::File const& file,
-    Issues& issues)
+    hdf5::Issues& issues)
 {
     // TODO
     //     history attribute on all levels, maybe with only information
@@ -286,7 +144,7 @@ void validate(
         phenomena_tag,
         universes_tag,
     };
-    auto const groups_exist = assert_groups_exist(
+    auto const groups_exist = hdf5::assert_groups_exist(
         file, expected_group_names, issues);
 
 
@@ -301,7 +159,8 @@ void validate(
 
 
     std::vector<std::string> expected_object_names = expected_group_names;
-    assert_no_superfluous_objects_exist(file, expected_object_names, issues);
+    hdf5::assert_no_superfluous_objects_exist(
+        file, expected_object_names, issues);
 
 
 
@@ -339,7 +198,7 @@ void validate(
 
 void validate(
     std::string const& name,
-    Issues& issues)
+    hdf5::Issues& issues)
 {
     validate(hdf5::File(name), issues);
 }
@@ -349,7 +208,7 @@ void assert_is_valid(
     hdf5::File const& file,
     bool const fail_on_warning)
 {
-    Issues issues;
+    hdf5::Issues issues;
 
     validate(file, issues);
 

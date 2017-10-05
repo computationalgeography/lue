@@ -5,6 +5,7 @@
 
 
 namespace lue {
+namespace hdf5 {
 
 /*!
     @brief      Information about issue found during validation
@@ -14,7 +15,7 @@ class Issue
 
 public:
 
-                   Issue               (hdf5::Identifier const& id,
+                   Issue               (Identifier const& id,
                                         std::string const& message);
 
                    Issue               (Issue const&)=default;
@@ -27,8 +28,7 @@ public:
 
     Issue&         operator=           (Issue&&)=default;
 
-    hdf5::Identifier const&
-                   id                  () const;
+    Identifier const& id               () const;
 
     std::string const&
                    message             () const;
@@ -36,11 +36,12 @@ public:
 private:
 
     //! Id of HDF5 object related to the issue
-    hdf5::Identifier _id;
+    Identifier     _id;
 
     //! Message describing the issue
     std::string    _message;
 
 };
 
+}  // namespace hdf5
 }  // namespace lue

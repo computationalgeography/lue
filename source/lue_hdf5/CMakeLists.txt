@@ -11,10 +11,13 @@ add_library(lue_hdf5 STATIC
     src/group
     src/hyperslab
     src/identifier
+    src/issue
+    src/issues
     src/link
     src/object_info
     src/property_list
     src/shape
+    src/validate
 )
 
 add_library(lue::lue_hdf5 ALIAS lue_hdf5)

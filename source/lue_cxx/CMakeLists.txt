@@ -7,8 +7,6 @@ add_library(lue STATIC
     src/domain
 #     src/domain_configuration
 #     src/exception
-    src/issue
-    src/issues
     src/phenomena
     src/phenomenon
     src/properties
@@ -34,6 +32,7 @@ add_library(lue STATIC
     src/constant_size/property_set
     src/constant_size/space_domain
     # src/constant_size/value
+    src/constant_size/validate
 
     src/constant_size/time/omnipresent/domain
     src/constant_size/time/omnipresent/property
@@ -42,6 +41,7 @@ add_library(lue STATIC
     src/constant_size/time/omnipresent/space_box_domain
     src/constant_size/time/omnipresent/space_domain
     # src/constant_size/time/omnipresent/value
+    src/constant_size/time/omnipresent/validate
 
     src/constant_size/time/omnipresent/different_shape/property
     src/constant_size/time/omnipresent/different_shape/value

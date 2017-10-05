@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/utility/metadata.hpp"
+#include "lue/dataset.hpp"
 #include <memory>
 #include <gdal_priv.h>
 
@@ -48,6 +49,11 @@ void               translate_gdal_raster_dataset_to_lue(
 //                                         ::GDALDataset& dataset,
 //                                         std::string const& lue_dataset_name,
 //                                         Metadata const& metadata);
+
+void               translate_lue_dataset_to_shapefile(
+                                        Dataset const& dataset,
+                                        std::string const& shapefile_name,
+                                        Metadata const& metadata);
 
 }  // namespace utility
 }  // namespace lue

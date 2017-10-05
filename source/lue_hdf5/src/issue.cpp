@@ -1,13 +1,14 @@
-#include "lue/issue.hpp"
+#include "lue/hdf5/issue.hpp"
 
 
 namespace lue {
+namespace hdf5 {
 
 /*!
     @brief      Construct issue based on @a id of HDF5 object and @a message
 */
 Issue::Issue(
-    hdf5::Identifier const& id,
+    Identifier const& id,
     std::string const& message)
 
     : _id(id),
@@ -20,7 +21,7 @@ Issue::Issue(
 /*!
     @brief      Return id of HDF5 object related to the issue
 */
-hdf5::Identifier const& Issue::id() const
+Identifier const& Issue::id() const
 {
     return _id;
 }
@@ -34,4 +35,5 @@ std::string const& Issue::message() const
     return _message;
 }
 
+}  // namespace hdf5
 }  // namespace lue

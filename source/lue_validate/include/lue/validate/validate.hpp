@@ -1,6 +1,5 @@
 #pragma once
 #include "lue/utility/application.hpp"
-#include "lue/issues.hpp"
 
 
 namespace lue {

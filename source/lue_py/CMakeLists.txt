@@ -7,6 +7,7 @@ add_library(lue_py SHARED
     src/hdf5/identifier
     src/hdf5/shape
     src/hdf5/submodule
+    src/hdf5/validate
 
     src/array
     src/conversion

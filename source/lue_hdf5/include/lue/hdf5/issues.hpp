@@ -1,8 +1,9 @@
 #pragma once
-#include "lue/issue.hpp"
+#include "lue/hdf5/issue.hpp"
 
 
 namespace lue {
+namespace hdf5 {
 
 /*!
     @brief      Collection for storing errors
@@ -42,10 +43,10 @@ public:
 
     Warnings const& warnings           () const;
 
-    void           add_error           (hdf5::Identifier const& id,
+    void           add_error           (Identifier const& id,
                                         std::string const& message);
 
-    void           add_warning         (hdf5::Identifier const& id,
+    void           add_warning         (Identifier const& id,
                                         std::string const& message);
 
     bool           errors_found        () const;
@@ -62,4 +63,5 @@ private:
 
 };
 
+}  // namespace hdf5
 }  // namespace lue

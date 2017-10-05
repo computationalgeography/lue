@@ -1,15 +1,15 @@
 #pragma once
-#include "lue/issues.hpp"
 #include "lue/hdf5/file.hpp"
+#include "lue/hdf5/issues.hpp"
 
 
 namespace lue {
 
 void               validate            (hdf5::File const& file,
-                                        Issues& issues);
+                                        hdf5::Issues& issues);
 
 void               validate            (std::string const& name,
-                                        Issues& issues);
+                                        hdf5::Issues& issues);
 
 void               assert_is_valid     (hdf5::File const& file,
                                         bool const fail_on_warning=true);
