@@ -103,6 +103,14 @@ void update_hyperslab_by_index(
         index = array_shape[dimension_idx] + index;
     }
 
+    if(index >= array_shape[0]) {
+        throw pybind11::index_error(boost::str(boost::format(
+            "index %1% outside of range of valid indices [0, %2%)")
+            % index
+            % array_shape[0]
+        ));
+    }
+
     // Hyperslab in source array
     size_t const start = index;
     size_t const step = 1;

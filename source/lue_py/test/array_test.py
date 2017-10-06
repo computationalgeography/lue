@@ -16,7 +16,7 @@ class ArrayTest(lue_test.TestCase):
         lue_test.remove_file_if_existant(dataset_name)
         self.dataset = lue.create_dataset(dataset_name)
         phenomenon = self.dataset.add_phenomenon("my_phenomenon")
-        property_set = omnipresent.create_property_set(phenomenon,
+        self.property_set = omnipresent.create_property_set(phenomenon,
             "my_property_set")
         self.nr_items = 5
         self.nr_rows = 3
@@ -24,10 +24,10 @@ class ArrayTest(lue_test.TestCase):
         self.value_shape = (self.nr_rows, self.nr_cols)
         self.value_type = numpy.int32
 
-        property_set.reserve(self.nr_items)[:] = numpy.arange(self.nr_items)
+        self.property_set.reserve(self.nr_items)[:] = numpy.arange(self.nr_items)
 
         property = omnipresent.same_shape.create_property(
-            property_set, "my_property", self.value_type, self.value_shape)
+            self.property_set, "my_property", self.value_type, self.value_shape)
 
         self.lue_values = property.reserve(self.nr_items)
         self.numpy_values = numpy.arange(
@@ -138,6 +138,14 @@ class ArrayTest(lue_test.TestCase):
         self.assertArraysEqual(
             self.lue_values[0:self.nr_items],
             new_numpy_values[0:self.nr_items])
+
+
+        # Too negative index
+        # self.assertRaises(
+        self.lue_values[-self.nr_items]  # OK
+        # self.lue_values[-self.nr_items-1]  # NOT_OK
+        self.assertRaises(
+            IndexError, self.lue_values.__getitem__, -self.nr_items-1)
 
 
     def test_one_integer_index(self):
@@ -318,3 +326,11 @@ class ArrayTest(lue_test.TestCase):
         # TODO Test assign
 
 
+    def test_iterate(self):
+
+        # These used to fail
+        for _ in self.property_set.ids:
+            pass
+
+        for _ in self.lue_values:
+            pass
