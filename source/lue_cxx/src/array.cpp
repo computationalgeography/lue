@@ -92,6 +92,14 @@ void Array::read(
 }
 
 
+void Array::read(
+    hdf5::Dataspace const& memory_dataspace,
+    void* buffer) const
+{
+    Dataset::read(_memory_datatype, memory_dataspace, buffer);
+}
+
+
 void Array::write(
     void const* buffer)
 {

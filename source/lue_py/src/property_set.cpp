@@ -45,7 +45,7 @@ void init_property_set_class(
                 // TODO
                 //     Support registering of casters by specialized
                 //     PropertySet classes.
-                py::object object;
+                py::object object = py::none{};
 
                 switch(configuration.size_of_item_collection_type()) {
                     case SizeOfItemCollectionType::constant_size: {

@@ -2,6 +2,7 @@
 #include "lue/constant_size/time/omnipresent/different_shape/property.hpp"
 #include "lue/constant_size/time/omnipresent/property_set.hpp"
 #include "lue/constant_size/time/omnipresent/same_shape/property.hpp"
+#include "lue/space_domain.hpp"
 #include <boost/format.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/range/adaptor/transformed.hpp>
@@ -465,12 +466,12 @@ void to_dot(
 {
     dump_node(domain, stream, metadata);
 
+    if(space_domain_exists(domain)) {
+        auto const space_domain = SpaceDomain(domain);
 
-    // TODO Support space domain details (space_box, etc).
-    auto const& space_domain = domain.space();
-
-    dump_node(space_domain, stream, metadata);
-    link_nodes(domain, space_domain, stream, metadata);
+        dump_node(space_domain, stream, metadata);
+        link_nodes(domain, space_domain, stream, metadata);
+    }
 }
 
 

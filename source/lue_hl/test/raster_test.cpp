@@ -26,11 +26,11 @@ public:
 
     ~Fixture()
     {
-        // // Guarantees:
-        // // - Dataset does not exist after teardown
-        // remove_dataset();
+        // Guarantees:
+        // - Dataset does not exist after teardown
+        remove_dataset();
 
-        // BOOST_CHECK(!lue::dataset_exists(_dataset_name));
+        BOOST_CHECK(!lue::dataset_exists(_dataset_name));
     }
 
 
@@ -46,6 +46,7 @@ private:
     }
 
 };
+
 
 BOOST_AUTO_TEST_CASE(create_raster)
 {

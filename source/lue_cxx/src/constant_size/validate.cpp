@@ -9,8 +9,16 @@ void validate(
     PropertySet const& property_set,
     hdf5::Issues& issues)
 {
-    time::omnipresent::validate(
-        time::omnipresent::PropertySet(property_set.id()), issues);
+    auto const& configuration = property_set.domain().configuration();
+
+    switch(configuration.time_domain_type()) {
+        case(TimeDomainType::omnipresent): {
+            time::omnipresent::validate(
+                time::omnipresent::PropertySet(
+                    property_set.id()), issues);
+            break;
+        }
+    }
 }
 
 }  // namespace constant_size

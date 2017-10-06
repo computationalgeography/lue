@@ -59,7 +59,7 @@ void Property::Configuration::save(
     hdf5::Attributes& attributes) const
 {
     attributes.write<std::string>(
-        "lue_shape_per_item_type",
+        shape_per_item_type_tag,
         shape_per_item_type_to_string(_shape_per_item_type)
     );
 }
@@ -71,7 +71,7 @@ void Property::Configuration::load(
     _shape_per_item_type =
         parse_shape_per_item_type(
             attributes.read<std::string>(
-                "lue_shape_per_item_type"));
+                shape_per_item_type_tag));
 }
 
 
@@ -149,8 +149,7 @@ Property Property::space_discretization() const
 Property create_property(
     hdf5::Group& group,
     std::string const& name,
-    Property::Configuration const&
-        configuration)
+    Property::Configuration const& configuration)
     // hdf5::Datatype const& file_datatype,
     // hdf5::Datatype const& memory_datatype)
 {

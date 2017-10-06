@@ -15,7 +15,7 @@ public:
 
                    SpaceDomain         (lue::SpaceDomain&& domain);
 
-                   SpaceDomain         (SpaceDomain const& other);
+                   SpaceDomain         (SpaceDomain const& other)=default;
 
                    SpaceDomain         (SpaceDomain&& other)=default;
 
@@ -28,7 +28,9 @@ public:
 };
 
 
-SpaceDomain        create_space_domain (hdf5::Group const& group);
+SpaceDomain        create_space_domain (hdf5::Group const& group,
+                                        SpaceDomain::Configuration const&
+                                            configuration);
 
 }  // namespace constant_size
 }  // namespace lue

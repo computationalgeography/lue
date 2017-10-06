@@ -35,23 +35,26 @@ void init_domain_class(
             [](
                 Domain& self)
             {
-                assert(self.id().is_valid());
-                assert(self.space().id().is_valid());
-                auto const& space = self.space();
+                py::object object = py::none{};
 
-                py::object object;
+                if(space_domain_exists(self)) {
+                    auto const space_domain = SpaceDomain(self);
+                    auto const& configuration = space_domain.configuration();
 
-                // TODO switch on configuration
-                // auto const& configuration = space.configuration();
+                    auto const file_datatype =
+                        SpaceBoxDomain::file_datatype(space_domain.id());
 
-                assert(self.id().is_valid());
-                assert(space.id().is_valid());
-                auto file_datatype = SpaceBoxDomain::file_datatype(space.id());
-
-                object = py::cast(new SpaceBoxDomain(space,
-                    memory_datatype(file_datatype)));
+                    switch(configuration.item_type()) {
+                        case SpaceDomain::Configuration::ItemType::box: {
+                            object = py::cast(
+                                new SpaceBoxDomain(space_domain));
+                            break;
+                        }
+                    }
+                }
 
                 return object;
+
             },
             "space docstring...")
 

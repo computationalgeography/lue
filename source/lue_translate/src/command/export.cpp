@@ -1,5 +1,6 @@
 #include "lue/translate/command/export.hpp"
 #include "lue/translate/format.hpp"
+#include "lue/validate.hpp"
 #include <boost/filesystem.hpp>
 #include <exception>
 
@@ -61,6 +62,8 @@ int Export::run_implementation()
 
 
     if(auto lue_dataset = try_open_lue_dataset_for_read(input_dataset_name)) {
+
+        assert_is_valid(*lue_dataset);
 
         // Input is a dataset that can be read by LUE.
         // We need to convert from the LUE format to some other format.

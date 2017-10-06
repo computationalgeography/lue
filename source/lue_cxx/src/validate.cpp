@@ -65,11 +65,9 @@ void validate(
     PropertySet const& property_set,
     hdf5::Issues& issues)
 {
-    auto configuration = property_set.configuration();
+    auto const& configuration = property_set.configuration();
 
     switch(configuration.size_of_item_collection_type()) {
-        // TODO Switch on time domain, once possible.
-
         case(SizeOfItemCollectionType::constant_size): {
             constant_size::validate(constant_size::PropertySet(
                 property_set.id()), issues);

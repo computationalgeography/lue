@@ -211,8 +211,10 @@ Raster::Raster(
 {
     _discretization_property.values().read(_discretization.shape());
 
-    auto const& space_domain = _property_set.domain().space();
-    auto const space_box_domain = omnipresent::SpaceBoxDomain(space_domain,
+    // auto const& space_domain = _property_set.domain().space();
+    auto const space_box_domain = omnipresent::SpaceBoxDomain(
+        // space_domain,
+        _property_set.domain(),
         hdf5::NativeDatatypeTraits<double>::type_id());
     auto const& space_boxes = space_box_domain.boxes();
     assert(space_boxes.nr_items() == 1);
@@ -238,8 +240,10 @@ Raster::Raster(
 {
     _discretization_property.values().read(_discretization.shape());
 
-    auto const& space_domain = _property_set.domain().space();
-    auto const space_box_domain = omnipresent::SpaceBoxDomain(space_domain,
+    // auto const& space_domain = _property_set.domain().space();
+    auto const space_box_domain = omnipresent::SpaceBoxDomain(
+        // space_domain,
+        _property_set.domain(),
         hdf5::NativeDatatypeTraits<double>::type_id());
     auto const& space_boxes = space_box_domain.boxes();
     assert(space_boxes.nr_items() == 1);
@@ -350,6 +354,8 @@ hdf5::Identifier create_raster(
 
         auto property_set = omnipresent::create_property_set(
             phenomenon, property_set_name);
+            // SpaceDomain::Configuration(
+            //     SpaceDomain::Configuration::DomainType::located));
 
 
         hsize_t const nr_items = 1;
@@ -368,7 +374,7 @@ hdf5::Identifier create_raster(
             auto const memory_datatype_id =
                 hdf5::NativeDatatypeTraits<double>::type_id();
             size_t const rank = 2;
-            auto space_domain = omnipresent::configure_space_box_domain(
+            auto space_domain = omnipresent::create_space_box_domain(
                 property_set, file_datatype_id, memory_datatype_id, rank);
 
             auto& space_box = space_domain.reserve(nr_items);

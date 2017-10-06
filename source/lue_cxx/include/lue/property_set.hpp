@@ -1,9 +1,10 @@
 #pragma once
 #include "lue/define.hpp"
-#include "lue/hdf5/group.hpp"
 // #include "lue/cxx_api/domain.h"
+#include "lue/domain.hpp"
 #include "lue/properties.hpp"
 // #include "lue/cxx_api/property_set_configuration.h"
+#include "lue/hdf5/group.hpp"
 // #include <memory>
 // #include <string>
 
@@ -88,6 +89,8 @@ public:
     // Properties<Property>&
     //                properties          () const;
 
+    Domain const&  domain              () const;
+
     Properties const& properties       () const;
 
     Properties&    properties          ();
@@ -95,6 +98,8 @@ public:
 private:
 
     Configuration  _configuration;
+
+    Domain         _domain;
 
     Properties     _properties;
 
@@ -110,7 +115,9 @@ private:
 PropertySet        create_property_set (hdf5::Group const& group,
                                         std::string const& name,
                                         PropertySet::Configuration const&
-                                            configuration);
+                                            configuration,
+                                        Domain::Configuration const&
+                                            domain_configuration);
 
 // PropertySet        create_property_set (hdf5::Identifier const& location,
 //                                         std::string const& name);
