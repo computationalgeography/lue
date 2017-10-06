@@ -103,7 +103,7 @@ void update_hyperslab_by_index(
         index = array_shape[dimension_idx] + index;
     }
 
-    if(index >= array_shape[0]) {
+    if(static_cast<hdf5::Shape::value_type>(index) >= array_shape[0]) {
         throw pybind11::index_error(boost::str(boost::format(
             "index %1% outside of range of valid indices [0, %2%)")
             % index

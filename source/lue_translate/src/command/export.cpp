@@ -61,39 +61,45 @@ int Export::run_implementation()
         : Metadata();
 
 
-    if(auto lue_dataset = try_open_lue_dataset_for_read(input_dataset_name)) {
+    auto lue_dataset = try_open_lue_dataset_for_read(input_dataset_name);
 
-        assert_is_valid(*lue_dataset);
-
-        // Input is a dataset that can be read by LUE.
-        // We need to convert from the LUE format to some other format.
-
-        if(bfs::path(output_dataset_name).extension() == ".dot") {
-            // Create a Graphviz DOT graph of the dataset.
-            translate_lue_dataset_to_dot(
-                *lue_dataset, output_dataset_name, metadata);
-        }
-        else if(bfs::path(output_dataset_name).extension() == ".csv") {
-           // Create a CSV file of the dataset.
-           translate_lue_dataset_to_csv(
-               *lue_dataset, output_dataset_name, metadata);
-        }
-        else if(bfs::path(output_dataset_name).extension() == ".shp") {
-            // Create a Shapefile of the dataset.
-            translate_lue_dataset_to_shapefile(
-                *lue_dataset, output_dataset_name, metadata);
-        }
-        else if(bfs::path(output_dataset_name).extension() == ".vtk") {
-            // Create a VTK file of the dataset.
-            translate_lue_dataset_to_vtk(
-                *lue_dataset, output_dataset_name, metadata);
-        }
-        else {
-            throw std::runtime_error(
-                "translation to " + output_dataset_name +
-                " is not supported");
-        }
+    if(!lue_dataset) {
+        throw std::runtime_error(
+            "cannot open LUE dataset " + input_dataset_name);
     }
+
+
+    assert_is_valid(*lue_dataset);
+
+    // Input is a dataset that can be read by LUE.
+    // We need to convert from the LUE format to some other format.
+
+    if(bfs::path(output_dataset_name).extension() == ".dot") {
+        // Create a Graphviz DOT graph of the dataset.
+        translate_lue_dataset_to_dot(
+            *lue_dataset, output_dataset_name, metadata);
+    }
+    else if(bfs::path(output_dataset_name).extension() == ".csv") {
+       // Create a CSV file of the dataset.
+       translate_lue_dataset_to_csv(
+           *lue_dataset, output_dataset_name, metadata);
+    }
+    else if(bfs::path(output_dataset_name).extension() == ".shp") {
+        // Create a Shapefile of the dataset.
+        translate_lue_dataset_to_shapefile(
+            *lue_dataset, output_dataset_name, metadata);
+    }
+    else if(bfs::path(output_dataset_name).extension() == ".vtk") {
+        // Create a VTK file of the dataset.
+        translate_lue_dataset_to_vtk(
+            *lue_dataset, output_dataset_name, metadata);
+    }
+    else {
+        throw std::runtime_error(
+            "translation to " + output_dataset_name +
+            " is not supported");
+    }
+
 
     return EXIT_SUCCESS;
 }

@@ -4,6 +4,7 @@ Changes
 0.1.2
 -----
 - `xxx <xxx`>_
+- `Support space points <https://github.com/pcraster/lue/issues/24`>_
 - `Iteration on SpaceBox object fails <https://github.com/pcraster/lue/issues/21`>_
 - `Support export of domain to shapefile <https://github.com/pcraster/lue/issues/17`>_
 - `Validate: verify that item-ids are unique <https://github.com/pcraster/lue/issues/14`>_

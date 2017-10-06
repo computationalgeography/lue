@@ -32,7 +32,8 @@ SpaceDomain::Configuration::DomainType parse_domain_type(
 
 detail::EnumStringBimap<SpaceDomain::Configuration::ItemType> const
         item_type_map = {
-    { SpaceDomain::Configuration::ItemType::box, "lue_box" }
+    { SpaceDomain::Configuration::ItemType::box, "lue_box" },
+    { SpaceDomain::Configuration::ItemType::point, "lue_point" }
 };
 
 

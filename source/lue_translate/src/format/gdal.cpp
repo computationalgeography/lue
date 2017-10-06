@@ -2,6 +2,7 @@
 #include "lue/translate/format/gdal_block.hpp"
 #include "lue/utility/progress_indicator.hpp"
 #include "lue/constant_size/time/omnipresent/space_box_domain.hpp"
+#include "lue/constant_size/time/omnipresent/space_point_domain.hpp"
 #include "lue/hl/raster.hpp"
 #include <ogrsf_frmts.h>
 #include <boost/filesystem.hpp>
@@ -610,6 +611,62 @@ void translate_lue_dataset_to_shapefile(
                     polygon.addRing(&ring);
 
                     feature->SetGeometry(&polygon);
+
+                    if(layer->CreateFeature(feature.get()) != OGRERR_NONE) {
+                        throw std::runtime_error(
+                            "Cannot write feature to layer " + layer_name +
+                            " in Shapefile " + shapefile_name);
+                    }
+                }
+
+                break;
+            }
+            case SpaceDomain::Configuration::ItemType::point: {
+                constant_size::time::omnipresent::SpacePointDomain
+                    space_point_domain(space_domain);
+
+                OGRwkbGeometryType const geometry_type = wkbPoint;
+
+                // Create layer
+                auto layer = gdal_dataset->CreateLayer(
+                    layer_name.c_str(), nullptr, geometry_type, nullptr);
+
+                if(!layer) {
+                    throw std::runtime_error(
+                        "Cannot create layer " + layer_name +
+                        " in Shapefile " + shapefile_name);
+                }
+
+
+                // Create fields, but not now
+
+
+                // Iterate over LUE space domain items and write OGR
+                // features to layer
+
+                auto const& domain_items = space_point_domain.items();
+
+                assert(domain_items.memory_datatype() == H5T_NATIVE_DOUBLE);
+                assert(domain_items.value_shape().size() == 1);
+                assert(domain_items.value_shape()[0] == 2);
+                std::vector<double> coordinates(
+                    domain_items.nr_items() * domain_items.value_shape()[0]);
+                domain_items.read(
+                    hdf5::create_dataspace(hdf5::Shape(1, coordinates.size())),
+                    coordinates.data());
+
+                for(size_t item_idx = 0; item_idx < domain_items.nr_items();
+                        ++item_idx) {
+
+                    auto feature = OGRFeaturePtr(
+                        OGRFeature::CreateFeature(layer->GetLayerDefn()),
+                        OGRFeatureDeleter{});
+
+                    OGRPoint point(
+                        coordinates[item_idx * 2 + 0],
+                        coordinates[item_idx * 2 + 1]);
+
+                    feature->SetGeometry(&point);
 
                     if(layer->CreateFeature(feature.get()) != OGRERR_NONE) {
                         throw std::runtime_error(

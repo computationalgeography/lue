@@ -25,7 +25,9 @@ public:
         enum class ItemType
         {
 
-            box
+            box,
+
+            point
 
         };
 

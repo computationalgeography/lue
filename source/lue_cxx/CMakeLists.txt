@@ -40,6 +40,8 @@ add_library(lue STATIC
     src/constant_size/time/omnipresent/space_box
     src/constant_size/time/omnipresent/space_box_domain
     src/constant_size/time/omnipresent/space_domain
+    src/constant_size/time/omnipresent/space_point
+    src/constant_size/time/omnipresent/space_point_domain
     # src/constant_size/time/omnipresent/value
     src/constant_size/time/omnipresent/validate
 
