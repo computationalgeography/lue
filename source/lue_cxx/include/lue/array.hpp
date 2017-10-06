@@ -41,6 +41,9 @@ public:
     void           read                (hdf5::Hyperslab const& hyperslab,
                                         void* buffer) const;
 
+    void           read                (hdf5::Dataspace const& memory_dataspace,
+                                        void* buffer) const;
+
     void           write               (void const* buffer);
 
     void           write               (hdf5::Hyperslab const& hyperslab,

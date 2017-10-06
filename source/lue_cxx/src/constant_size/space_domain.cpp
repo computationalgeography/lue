@@ -23,19 +23,20 @@ SpaceDomain::SpaceDomain(
 }
 
 
-SpaceDomain::SpaceDomain(
-    SpaceDomain const& other)
-
-    : lue::SpaceDomain(other)
-
-{
-}
+// SpaceDomain::SpaceDomain(
+//     SpaceDomain const& other)
+// 
+//     : lue::SpaceDomain(other)
+// 
+// {
+// }
 
 
 SpaceDomain create_space_domain(
-    hdf5::Group const& group)
+    hdf5::Group const& group,
+    SpaceDomain::Configuration const& configuration)
 {
-    auto domain = lue::create_space_domain(group);
+    auto domain = lue::create_space_domain(group, configuration);
 
     return std::move(domain);
 }

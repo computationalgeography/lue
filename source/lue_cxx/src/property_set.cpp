@@ -108,6 +108,7 @@ PropertySet::PropertySet(
 
     : hdf5::Group(location, name),
       _configuration(attributes()),
+      _domain(id()),
       _properties(id())
 
 {
@@ -166,6 +167,7 @@ PropertySet::PropertySet(
 
     : hdf5::Group(std::forward<hdf5::Group>(group)),
       _configuration(attributes()),
+      _domain(id()),
       _properties(id())
 
 {
@@ -175,6 +177,15 @@ PropertySet::PropertySet(
 PropertySet::Configuration const& PropertySet::configuration() const
 {
     return _configuration;
+}
+
+
+/*!
+    @brief      Return the domain
+*/
+Domain const& PropertySet::domain() const
+{
+    return _domain;
 }
 
 
@@ -235,12 +246,15 @@ Properties& PropertySet::properties()
 PropertySet create_property_set(
     hdf5::Group const& group,
     std::string const& name,
-    PropertySet::Configuration const& configuration)
+    PropertySet::Configuration const& configuration,
+    Domain::Configuration const& domain_configuration)
 {
     auto property_set = hdf5::create_group(group.id(), name);
 
     configuration.save(property_set.attributes());
     create_properties(property_set.id());
+
+    create_domain(property_set.id(), domain_configuration);
 
     return PropertySet(std::move(property_set));
 }

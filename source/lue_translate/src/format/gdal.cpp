@@ -1,7 +1,9 @@
 #include "lue/translate/format/gdal.hpp"
 #include "lue/translate/format/gdal_block.hpp"
 #include "lue/utility/progress_indicator.hpp"
+#include "lue/constant_size/time/omnipresent/space_box_domain.hpp"
 #include "lue/hl/raster.hpp"
+#include <ogrsf_frmts.h>
 #include <boost/filesystem.hpp>
 #include <boost/format.hpp>
 #include <cmath>
@@ -140,6 +142,20 @@ void write_band(
         }
     }
 }
+
+
+struct OGRFeatureDeleter
+{
+    void operator()(::OGRFeature* feature) const
+    {
+        if(feature) {
+            ::OGRFeature::DestroyFeature(feature);
+        }
+    }
+};
+
+
+using OGRFeaturePtr = std::unique_ptr<::OGRFeature, OGRFeatureDeleter>;
 
 }  // Anonymous namespace
 
@@ -422,21 +438,194 @@ void translate_gdal_raster_dataset_to_lue(
 //     // TODO Handle various ways of handling no-data in GDAL
 // }
 
+
 void translate_lue_dataset_to_shapefile(
-    Dataset const& /* dataset */,
-    std::string const& /* shapefile_name */,
-    Metadata const& /* metadata */)
+    Dataset const& dataset,
+    std::string const& shapefile_name,
+    Metadata const& metadata)
 {
-    // TODO
-    // - Figure out which domains to dump
-    // - Find domains
-    // - Create Shapefile
-    // - Add feature layer (multiple possible?)
-    // - Skip properties for now
+    // The correspondence of a Shapefile to a LUE dataset is as folows:
+    // Single Shapefile: contains a single layer -> this function
+    // Directory of Shapefiles: contains multiple Shapefiles -> not supported
+    //
+    // A layer can store a subset of the information that is present in
+    // a LUE property set:
+    // - A domain
+    //     - no time
+    // - Multiple properties
+    //     - no discretized values
+    //     - no multidimensional values
 
 
+    // Figure out which property-sets to dump
+    auto const& root_json = metadata.object();
+    auto const lue_dataset_name =
+        boost::filesystem::path(dataset.pathname()).stem().string();
+    auto const dataset_json = json::object(root_json, lue_dataset_name);
+    std::vector<std::tuple<std::string, JSON>> property_set_jsons;
+
+    if(json::has_key(dataset_json, "phenomena")) {
+        auto const phenomena_json = json::object(dataset_json, "phenomena");
+
+        for(auto const& phenomenon_json: phenomena_json) {
+            if(json::has_key(phenomenon_json, "property_sets")) {
+
+            auto const property_sets_json = json::object(
+                phenomenon_json, "property_sets");
+
+                for(auto const& property_set_json: property_sets_json) {
+                    property_set_jsons.emplace_back(std::make_tuple(
+                        json::string(phenomenon_json, "name"),
+                        property_set_json
+                    ));
+                }
+            }
+        }
+    }
+
+    if(property_set_jsons.empty()) {
+        throw std::runtime_error("No property sets selected");
+    }
+
+    if(property_set_jsons.size() > 1) {
+        throw std::runtime_error("More than one property set selected");
+    }
+
+    auto const property_set_json = std::get<1>(property_set_jsons.front());
+    auto const property_set_name = json::string(property_set_json, "name");
+
+    auto const phenomenon_name = std::get<0>(property_set_jsons.front());
+    auto const& phenomenon = dataset.phenomena()[phenomenon_name];
+    auto const& property_set = phenomenon.property_sets()[property_set_name];
+    auto const& property_set_configuration = property_set.configuration();
+
+    if(property_set_configuration.size_of_item_collection_type() !=
+            SizeOfItemCollectionType::constant_size) {
+        throw std::runtime_error("Size of item collection must be constant");
+    }
+
+    auto const& domain_configuration = property_set.domain().configuration();
+
+    if(domain_configuration.time_domain_type() !=
+            TimeDomainType::omnipresent) {
+        throw std::runtime_error("Time domain type must be omnipresent");
+    }
 
 
+    // Create Shapefile
+    std::string const driver_name = "ESRI Shapefile";
+    auto driver = GetGDALDriverManager()->GetDriverByName(
+        driver_name.c_str());
+
+    if(driver == nullptr) {
+        throw std::runtime_error(
+            "Cannot obtain " + driver_name + " driver");
+    }
+
+    auto gdal_dataset = GDALDatasetPtr(
+        driver->Create(shapefile_name.c_str(), 0, 0, 0, GDT_Unknown, nullptr),
+        GDALDatasetDeleter{});
+
+    if(!gdal_dataset) {
+        throw std::runtime_error(
+            "Cannot create Shapefile " + shapefile_name);
+    }
+
+    std::string const layer_name = property_set_name;
+
+
+    // Create correct property set type
+    {
+        auto const property_set_ =
+           constant_size::time::omnipresent::PropertySet(property_set.id());
+        auto const& domain = property_set.domain();
+
+        if(!space_domain_exists(domain)) {
+            throw std::runtime_error("Space domain must exist");
+        }
+
+        auto const space_domain =
+           constant_size::time::omnipresent::SpaceDomain(domain);
+
+        if(space_domain.configuration().domain_type() !=
+                SpaceDomain::Configuration::DomainType::located) {
+            throw std::runtime_error("Space domain type must be located");
+        }
+
+        switch(space_domain.configuration().item_type()) {
+            case SpaceDomain::Configuration::ItemType::box: {
+                constant_size::time::omnipresent::SpaceBoxDomain
+                    space_box_domain(space_domain);
+
+                OGRwkbGeometryType const geometry_type = wkbPolygon;
+
+                // Create layer
+                auto layer = gdal_dataset->CreateLayer(
+                    layer_name.c_str(), nullptr, geometry_type, nullptr);
+
+                if(!layer) {
+                    throw std::runtime_error(
+                        "Cannot create layer " + layer_name +
+                        " in Shapefile " + shapefile_name);
+                }
+
+
+                // Create fields, but not now
+
+
+                // Iterate over LUE space domain items and write OGR
+                // features to layer
+
+                auto const& boxes = space_box_domain.boxes();
+
+                assert(boxes.memory_datatype() == H5T_NATIVE_DOUBLE);
+                assert(boxes.value_shape().size() == 1);
+                assert(boxes.value_shape()[0] == 4);
+                std::vector<double> coordinates(
+                    boxes.nr_items() * boxes.value_shape()[0]);
+                boxes.read(
+                    hdf5::create_dataspace(hdf5::Shape(1, coordinates.size())),
+                    coordinates.data());
+
+                for(size_t item_idx = 0; item_idx < boxes.nr_items();
+                        ++item_idx) {
+
+                    auto feature = OGRFeaturePtr(
+                        OGRFeature::CreateFeature(layer->GetLayerDefn()),
+                        OGRFeatureDeleter{});
+
+                    auto x_min = coordinates[item_idx * 4 + 0];
+                    auto y_min = coordinates[item_idx * 4 + 1];
+                    auto x_max = coordinates[item_idx * 4 + 2];
+                    auto y_max = coordinates[item_idx * 4 + 3];
+
+                    OGRLinearRing ring;
+                    ring.addPoint(x_min, y_min);
+                    ring.addPoint(x_max, y_min);
+                    ring.addPoint(x_max, y_max);
+                    ring.addPoint(x_min, y_max);
+                    ring.closeRings();
+
+                    OGRPolygon polygon;
+                    polygon.addRing(&ring);
+
+                    feature->SetGeometry(&polygon);
+
+                    if(layer->CreateFeature(feature.get()) != OGRERR_NONE) {
+                        throw std::runtime_error(
+                            "Cannot write feature to layer " + layer_name +
+                            " in Shapefile " + shapefile_name);
+                    }
+                }
+
+                break;
+            }
+            default: {
+                throw std::runtime_error(
+                    "Unsupported space domain item type");
+            }
+        }
+    }
 }
 
 }  // namespace utility

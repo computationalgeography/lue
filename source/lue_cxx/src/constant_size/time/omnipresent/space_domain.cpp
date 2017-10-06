@@ -25,19 +25,20 @@ SpaceDomain::SpaceDomain(
 }
 
 
-SpaceDomain::SpaceDomain(
-    SpaceDomain const& other)
-
-    : constant_size::SpaceDomain(other)
-
-{
-}
+// SpaceDomain::SpaceDomain(
+//     SpaceDomain const& other)
+// 
+//     : constant_size::SpaceDomain(other)
+// 
+// {
+// }
 
 
 SpaceDomain create_space_domain(
-    hdf5::Group const& group)
+    hdf5::Group const& group,
+    SpaceDomain::Configuration const& configuration)
 {
-    auto domain = constant_size::create_space_domain(group);
+    auto domain = constant_size::create_space_domain(group, configuration);
 
     return std::move(domain);
 }

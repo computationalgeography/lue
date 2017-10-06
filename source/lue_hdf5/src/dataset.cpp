@@ -148,6 +148,28 @@ void Dataset::read(
     Hyperslab const& hyperslab,
     void* buffer) const
 {
+    auto const memory_dataspace = create_dataspace(
+        Shape(hyperslab.count().begin(), hyperslab.count().end()));
+
+    read(datatype, memory_dataspace, hyperslab, buffer);
+}
+
+
+void Dataset::read(
+    Datatype const& datatype,
+    Dataspace const& memory_dataspace,
+    void* buffer) const
+{
+    read(datatype, memory_dataspace, Hyperslab(shape()), buffer);
+}
+
+
+void Dataset::read(
+    Datatype const& datatype,
+    Dataspace const& memory_dataspace,
+    Hyperslab const& hyperslab,
+    void* buffer) const
+{
     assert(datatype.is_native());
 
     // Select elements: create hyperslab
@@ -163,10 +185,6 @@ void Dataset::read(
 
     assert(_id.is_valid());
     assert(file_dataspace.id().is_valid());
-
-
-    auto const memory_dataspace = create_dataspace(
-        Shape(hyperslab.count().begin(), hyperslab.count().end()));
 
     status = ::H5Dread(
         _id, datatype.id(),

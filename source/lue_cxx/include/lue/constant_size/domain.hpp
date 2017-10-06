@@ -28,7 +28,9 @@ public:
 };
 
 
-Domain             create_domain       (hdf5::Identifier const& location);
+// Domain             create_domain       (hdf5::Identifier const& location,
+//                                         Domain::Configuration const&
+//                                             configuration);
 
 } // namespace constant_size
 } // namespace lue

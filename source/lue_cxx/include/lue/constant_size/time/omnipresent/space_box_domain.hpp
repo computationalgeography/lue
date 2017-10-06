@@ -21,6 +21,8 @@ public:
 
                    // SpaceBoxDomain      (PropertySet const& property_set);
 
+                   SpaceBoxDomain      (SpaceDomain const& space_domain);
+
                    SpaceBoxDomain      (SpaceDomain const& space_domain,
                                         hdf5::Datatype const& memory_datatype);
 
@@ -54,14 +56,14 @@ private:
 //                                         hdf5::Group const& group);
 //                                         // PropertySet const& property_set);
 
-SpaceBoxDomain     configure_space_box_domain(
+SpaceBoxDomain     create_space_box_domain(
                                         PropertySet& property_set,
                                         hdf5::Datatype const file_datatype,
                                         hdf5::Datatype const memory_datatype,
                                         size_t const rank);
 
 
-// void               configure_space_box_domain(
+// void               create_space_box_domain(
 //                                         hdf5::Identifier const& location,
 //                                         hid_t const file_type_id,
 //                                         hid_t const memory_type_id,

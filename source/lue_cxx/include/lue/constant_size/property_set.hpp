@@ -34,7 +34,9 @@ private:
 
 
 PropertySet        create_property_set (hdf5::Group& group,
-                                        std::string const& name);
+                                        std::string const& name,
+                                        Domain::Configuration const&
+                                            domain_configuration);
 
 }  // namespace constant_size
 }  // namespace lue

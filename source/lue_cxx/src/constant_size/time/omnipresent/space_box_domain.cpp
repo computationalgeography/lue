@@ -35,6 +35,16 @@ hdf5::Datatype SpaceBoxDomain::file_datatype(
 
 
 SpaceBoxDomain::SpaceBoxDomain(
+    SpaceDomain const& space_domain)
+
+    : SpaceDomain(space_domain),
+      _boxes(id(), hdf5::memory_datatype(file_datatype(space_domain.id())))
+
+{
+}
+
+
+SpaceBoxDomain::SpaceBoxDomain(
     SpaceDomain const& space_domain,
     hdf5::Datatype const& memory_datatype)
 
@@ -87,7 +97,7 @@ SpaceBox& SpaceBoxDomain::reserve(
 // }
 
 
-// void configure_space_box_domain(
+// void create_space_box_domain(
 //     hdf5::Identifier const& location,
 //     hid_t const file_type_id,
 //     hid_t const memory_type_id,
@@ -97,14 +107,21 @@ SpaceBox& SpaceBoxDomain::reserve(
 // }
 
 
-SpaceBoxDomain configure_space_box_domain(
+SpaceBoxDomain create_space_box_domain(
     PropertySet& property_set,
     hdf5::Datatype const file_datatype,
     hdf5::Datatype const memory_datatype,
     size_t const rank)
 {
     auto& domain = property_set.domain();
-    auto& space = domain.space();
+
+    auto space = omnipresent::create_space_domain(domain,
+        SpaceDomain::Configuration(
+            SpaceDomain::Configuration::DomainType::located,
+            SpaceDomain::Configuration::ItemType::box)
+    );
+
+    // auto& space = domain.space();
 
     create_space_box(space, file_datatype, memory_datatype, rank);
 

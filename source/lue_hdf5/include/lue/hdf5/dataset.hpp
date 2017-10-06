@@ -81,6 +81,15 @@ public:
                                         Hyperslab const& hyperslab,
                                         void* buffer) const;
 
+    void           read                (Datatype const& datatype,
+                                        Dataspace const& memory_dataspace,
+                                        void* buffer) const;
+
+    void           read                (Datatype const& datatype,
+                                        Dataspace const& memory_dataspace,
+                                        Hyperslab const& hyperslab,
+                                        void* buffer) const;
+
     void           write               (Datatype const& datatype,
                                         void const* buffer) const;
 

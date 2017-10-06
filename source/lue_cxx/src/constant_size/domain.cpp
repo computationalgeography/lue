@@ -22,13 +22,14 @@ Domain::Domain(
 }
 
 
-Domain create_domain(
-    hdf5::Identifier const& location)
-{
-    auto domain = lue::create_domain(location);
-
-    return Domain(std::move(domain));
-}
+// Domain create_domain(
+//     hdf5::Identifier const& location,
+//     Domain::Configuration const& configuration)
+// {
+//     auto domain = lue::create_domain(location, configuration);
+// 
+//     return Domain(std::move(domain));
+// }
 
 } // namespace constant_size
 } // namespace lue

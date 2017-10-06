@@ -107,12 +107,11 @@ enum class SizeOfItemCollectionType
 };
 
 
-// // enum class TimeDomainType: int
-// enum TimeDomainType  // : int
-// {
-// 
-//     omnipresent,
-// 
+enum class TimeDomainType  // : int
+{
+
+    omnipresent,
+
 //     shared,
 // 
 //     // unique
@@ -139,10 +138,10 @@ enum class SizeOfItemCollectionType
 //     //     TimeDomainTypeAspects::located |
 //     //     TimeDomainTypeAspects::unique |
 //     //     TimeDomainTypeAspects::variable_size)
-// 
-// };
-// 
-// 
+
+};
+
+
 // enum class TimeDomainItemType
 // {
 // 

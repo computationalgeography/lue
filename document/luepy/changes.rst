@@ -3,6 +3,8 @@ Changes
 
 0.1.2
 -----
+- `xxx <xxx`>_
+- `Support export of domain to shapefile <https://github.com/pcraster/lue/issues/17`>_
 - `Validate: verify that item-ids are unique <https://github.com/pcraster/lue/issues/14`>_
 - `Add assert_is_valid to lue_py <https://github.com/pcraster/lue/issues/16>`_
 - `Make validate function available in Python package <https://github.com/pcraster/lue/issues/13>`_

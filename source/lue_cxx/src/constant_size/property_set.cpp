@@ -34,10 +34,12 @@ PropertySet::PropertySet(
 
 PropertySet create_property_set(
     hdf5::Group& group,
-    std::string const& name)
+    std::string const& name,
+    Domain::Configuration const& domain_configuration)
 {
     auto property_set = lue::create_property_set(group, name,
-        PropertySet::Configuration(SizeOfItemCollectionType::constant_size));
+        PropertySet::Configuration(SizeOfItemCollectionType::constant_size),
+        domain_configuration);
 
     return PropertySet(std::move(property_set));
 }
