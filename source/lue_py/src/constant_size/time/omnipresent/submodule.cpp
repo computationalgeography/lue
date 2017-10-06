@@ -28,6 +28,8 @@ void init_property_set_class(py::module& module);
 void init_space_box_class(py::module& module);
 void init_space_box_domain_class(py::module& module);
 void init_space_domain_class(py::module& module);
+void init_space_point_class(py::module& module);
+void init_space_point_domain_class(py::module& module);
 
 
 void init_submodule(
@@ -55,6 +57,8 @@ void init_submodule(
     init_property_set_class(submodule);
     init_space_box_class(submodule);
     init_space_box_domain_class(submodule);
+    init_space_point_class(submodule);
+    init_space_point_domain_class(submodule);
 }
 
 } // namespace omnipresent

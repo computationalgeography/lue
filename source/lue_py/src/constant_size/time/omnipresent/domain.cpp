@@ -1,4 +1,5 @@
 #include "lue/constant_size/time/omnipresent/space_box_domain.hpp"
+#include "lue/constant_size/time/omnipresent/space_point_domain.hpp"
 #include <pybind11/pybind11.h>
 
 
@@ -48,6 +49,11 @@ void init_domain_class(
                         case SpaceDomain::Configuration::ItemType::box: {
                             object = py::cast(
                                 new SpaceBoxDomain(space_domain));
+                            break;
+                        }
+                        case SpaceDomain::Configuration::ItemType::point: {
+                            object = py::cast(
+                                new SpacePointDomain(space_domain));
                             break;
                         }
                     }
