@@ -8,7 +8,7 @@ option(LUE_WITH_ALL
 
 # High level targets
 option(LUE_BUILD_PYTHON_API
-    "Build Python-API (implies LUE_BUILD_CXX_API)"
+    "Build Python-API (implies LUE_BUILD_HL_API)"
     FALSE)
 option(LUE_BUILD_UTILITIES
     "Build LUE command line utilites (implies LUE_BUILD_HL_API)"
