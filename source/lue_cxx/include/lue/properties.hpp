@@ -5,6 +5,9 @@
 
 namespace lue {
 
+/*!
+    @brief      TODO
+*/
 class Properties:
     public Collection<Property>
 {

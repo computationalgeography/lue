@@ -34,9 +34,9 @@ void init_space_box_domain_class(
             py::return_value_policy::reference_internal)
 
         .def_property_readonly(
-            "boxes",
-            py::overload_cast<>(&SpaceBoxDomain::boxes),
-            "boxes docstring...",
+            "items",
+            py::overload_cast<>(&SpaceBoxDomain::items),
+            "items docstring...",
             py::return_value_policy::reference_internal)
 
         ;

@@ -1,0 +1,256 @@
+digraph logical_data_model {
+
+    // -------------------------------------------------------------------------
+    graph [
+        fontname=Verdana
+        fontsize=8
+        compound=true
+        bgcolor=transparent
+        splines=true
+        overlap=scale
+    ];
+
+    node [
+        shape=record
+        fontname=Verdana
+        fontsize=8
+        style=filled
+        fillcolor=white
+        target=_parent
+    ];
+
+    edge [
+        dir="both"
+        arrowtail=none
+        arrowhead=none
+        fontname=Verdana
+        fontsize=8
+    ];
+
+
+    // -------------------------------------------------------------------------
+    dataset [
+        label="{" +
+            "dataset" +
+            // "dataset|" +
+            // "name" +
+        "}"
+        URL="md_doc_dataset.html#details"
+    ];
+
+    universes [
+        label="{" +
+            "universes" +
+        "}"
+        URL="md_doc_universes.html#details"
+    ];
+
+    universe [
+        label="{" +
+            "universe" +
+            // "universe|" +
+            // "name" +
+        "}"
+        URL="md_doc_universe.html#details"
+    ];
+
+    phenomena [
+        label="{" +
+            "phenomena" +
+        "}"
+        URL="md_doc_phenomena.html#details"
+    ];
+
+    phenomenon [
+        label="{" +
+            "phenomenon" +
+            // "phenomenon|" +
+            // "name" +
+        "}"
+        URL="md_doc_phenomenon.html#details"
+    ];
+
+    property_sets [
+        label="{" +
+            "property_sets" +
+        "}"
+        URL="md_doc_property_sets.html#details"
+    ];
+
+    property_set [
+        label="{" +
+            "property set" +
+            // "property set|" +
+            // "name" +
+        "}"
+        URL="md_doc_property_set.html#details"
+    ];
+
+    properties [
+        label="{" +
+            "properties" +
+        "}"
+        URL="md_doc_properties.html#details"
+    ];
+
+    property [
+        label="{" +
+            "property" +
+            // "property|" +
+            // "name" +
+        "}"
+        URL="md_doc_property.html#details"
+    ];
+
+    domain [
+        label="{" +
+            "domain" +
+        "}"
+        URL="md_doc_domain.html#details"
+    ];
+
+    // time_domain [
+    //     label="{" +
+    //         "time domain|" +
+    //         "located in time or not\n" +
+    //         "constant collection of items or not\n" +
+    //         "shared or not\n" +
+    //     "}"
+    //     // URL="md_domain.html#lue_domain_time_domain_types"
+    // ];
+
+    // space_domain [
+    //     label="{" +
+    //         "space domain|" +
+    //         "located in space or not\n" +
+    //         "indexed or not\n" +
+    //         "topological or not" +
+    //     "}"
+    //     // URL="md_domain.html#lue_domain_space_domain_types"
+    // ];
+
+    value [
+        label="{" +
+            "value" +
+            // "value|" +
+            // "discretization?" +
+        "}"
+        URL="md_doc_value.html#details"
+    ];
+
+
+    // -------------------------------------------------------------------------
+    dataset -> universes [
+        arrowtail=diamond
+        taillabel="1"
+        headlabel="1"
+    ];
+
+    dataset -> phenomena [
+        arrowtail=diamond
+        taillabel="1"
+        headlabel="1"
+    ];
+
+    universes -> universe [
+        arrowtail=diamond
+        taillabel="1"
+        headlabel="*"
+    ];
+
+    universe -> phenomena [
+        arrowtail=diamond
+        taillabel="1"
+        headlabel="1"
+    ];
+
+    // universe -> phenomenon [
+    //     arrowtail=diamond
+    //     taillabel="1"
+    //     headlabel="*"
+    // ];
+
+    phenomena -> phenomenon [
+        arrowtail=diamond
+        taillabel="1"
+        headlabel="*"
+    ];
+
+    phenomenon -> property_sets [
+        arrowtail=diamond
+        taillabel="1"
+        headlabel="1"
+    ];
+
+    property_sets -> property_set [
+        arrowtail=diamond
+        taillabel="1"
+        headlabel="*"
+    ];
+
+    property_set -> domain [
+        arrowtail=diamond
+        taillabel="1"
+        headlabel="1"
+    ];
+
+    property_set -> properties [
+        arrowtail=diamond
+        taillabel="1"
+        headlabel="*"
+    ];
+
+
+    // subgraph cluster_space_domain {
+    //     label="space domain";
+    //     space_point;
+    //     space_box;
+    //     space_line;
+    //     space_region;
+    //     space_cell;
+    // }
+
+    // domain -> space_line [
+    //     lhead=cluster_space_domain
+    //     arrowtail="diamond"
+    //     taillabel="1"
+    //     headlabel="?"
+    // ];
+
+    // domain -> time_domain [
+    //     arrowtail="diamond"
+    //     taillabel="1"
+    //     headlabel="?"
+    // ];
+
+    // domain -> space_domain [
+    //     arrowtail="diamond"
+    //     taillabel="1"
+    //     headlabel="?"
+    // ];
+
+    // property_set -> property [
+    //     arrowtail=diamond
+    //     taillabel="1"
+    //     headlabel="*"
+    // ];
+
+    properties -> property [
+        arrowtail=diamond
+        taillabel="1"
+        headlabel="1"
+    ];
+
+    property -> domain [
+        arrowtail=odiamond
+        taillabel="1"
+        headlabel="1"
+    ];
+
+    property -> value [
+        arrowtail=diamond
+        taillabel="1"
+        headlabel="1"
+    ];
+
+}

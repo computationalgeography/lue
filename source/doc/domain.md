@@ -27,7 +27,7 @@ At the highest abstraction level, without taking the time domain item types into
 
 - 1: Does information change through time at all:
 
-    - no: → omnipresent in time
+    - no: → **omnipresent in time**
 
         The space domain and properties are valid at all time coordinates. In reality every piece of information is bounded in time, but given the study period and/or the accuracy with which information is recorded, it often makes sense to treat information as constant through time.
         information  | typical example
@@ -41,13 +41,13 @@ At the highest abstraction level, without taking the time domain item types into
 
         - 2: Does the collection of items change over time:
 
-            - no: → constant collection of items
+            - no: → **constant collection of items**
 
                 The collection of items does not change over time. No items are added to or removed from the collection over time. Once the collection of items is stored, there is no need to track the collection of items over time.
 
                     [id_1, id_2, ...]
 
-            - yes: → variable collection of items
+            - yes: → **variable collection of items**
 
                 The collection of items changes over time. Items are added to and/or old items removed from the collection over time. It is necessary to track the collection of items over time.
 
@@ -58,13 +58,13 @@ At the highest abstraction level, without taking the time domain item types into
 
         - 3: Is the variability of information unique per item, or not:
 
-            - no: → shared domain items
+            - no: → **shared domain items**
 
                 For all items, the space domain and property values change at the same time points. There is no need to keep track of time domain items for each item individually.
 
                     [domain_item_1, domain_item_2, ...]
 
-            - yes: → non shared domain items
+            - yes: → **non-shared domain items**
 
                 For each item, the space domain and property values change at unique time points. It is necessary to keep track of time domain items for each item individually.
 
@@ -74,7 +74,7 @@ At the highest abstraction level, without taking the time domain item types into
                     ...
 
 
-The HDF5-like fragments shown here are hints for implementating the physical data model.
+The HDF5-like fragments shown here are hints for implementing the physical data model.
 
 Combining these aspects results in five kinds of time domains. These will be described in the folowing subsections, including their inpact on the data model.
 
@@ -94,18 +94,6 @@ Collection of items:
 
 
     item: [id_1, id_2, ...]
-
-API:
-- @ref create_item_collection
-- @ref open_item_collection
-- @ref write_item_collection
-- @ref read_item_collection
-- @ref item_collection_size
-- @ref close_item_collection
-
-
-Example:
-- test/domain/time/item_collection_test.cc
 
 
 ### constant collection of shared domain items  {#lue_domain_time_domain_types_constant_collection_of_shared_domain_items}
@@ -137,23 +125,6 @@ Example:
         size: hsize_t,
         item: [domain_item-t_1, domain_item-t_2, ...]
     }
-
-
-API:
-- See API of [omnipresent_in_time](@ref lue_domain_time_domain_types_omnipresent_in_time)
-- @ref create_time_domain
-- @ref open_time_domain
-- @ref reserve_time_domain_items_space
-- @ref time_domain_capacity
-- @ref time_domain_size
-- @ref write_time_domain_items
-- @ref append_time_domain_item
-- @ref close_time_domain
-
-
-Example:
-- test/domain/time/item_collection_test.cc
-- test/domain/time/time_domain_test.cc
 
 
 ### constant collection of non-shared domain items  {#lue_domain_time_domain_types_constant_collection_of_non_shared_domain_items}
@@ -197,21 +168,6 @@ Note: The time domain items are non-shared, which means that each item varies ov
     ]
 
 
-API:
-- See API of [omnipresent_in_time](@ref lue_domain_time_domain_types_omnipresent_in_time)
-- @ref create_non_shared_time_domain
-- @ref reserve_non_shared_time_domain_items_space
-- @ref time_domain
-- @ref write_time_domain_items
-- @ref append_time_domain_item
-- @ref close_non_shared_time_domain
-
-@todo Implement
-
-Example:
-- test/domain/time/non_shared_time_domain_test.cc
-
-
 ### variable collection of shared domain items  {#lue_domain_time_domain_types_variable_collection_of_shared_domain_items}
 - For each time increment and item, an id must be stored. At each time increment, the collection of ids can be assumed to be known.
 - For each time increment, a time domain item must be stored. This domain item is shared by all items (at that time increment).
@@ -247,15 +203,6 @@ Example:
     }
 
 
-API:
-- TODO
-- @ref create_time_domain
-- @ref reserve_time_domain_items_space
-- @ref write_time_domain_items
-- @ref append_time_domain_item
-- @ref close_time_domain
-
-
 ### variable collection of non-shared domain items  {#lue_domain_time_domain_types_variable_collection_of_non_shared_domain_items}
 For each item and for each item-specific time increment, a time domain item must be stored. The number of domain items and the domain items themselves are unique per item.
 
@@ -288,17 +235,12 @@ Per item and per time increment, a time domain item:
     ]
 
 
-API:
-- See API of [constant collection of non-shared domain items](@ref lue_domain_time_domain_types_constant_collection_of_non_shared_domain_items)
-
-
 TODO
 - Searching in this data is very inefficient. Support a time index?
 
 
 ## Time domain item types  {#lue_domain_time_domain_item_types}
 Once we decided on the time domain type, we need to decide how the information we need to store is coupled to a location in time. There are different ways to do this.
-
 
 
 Common issues:
@@ -374,7 +316,7 @@ For each item a time discretization.
 
 - 1. Does information change through space at all:
 
-    - no: → omnipresent in space
+    - no: → **omnipresent in space**
 
         The properties are valid at all space coordinates. In reality every piece of information is bounded in space, but given the extent of the study area and/or the accuracy with which information is recorded, it often makes sense to treat information as constant through space.
         information  | typical example
@@ -382,25 +324,25 @@ For each item a time discretization.
         property     | standard gravity
         property     | height
 
-    - yes: located in space
+    - yes: **located in space**
 
         The properties are valid at specific space coordinates, which are stored in the space domain. Here we are only interested in the fact that information is coupled to locations in space, not how we want to define this coupling, which is handled by the [space domain item types](@ref lue_domain_space_domain_item_types).
 
         - 2: Are topological relations between space domain items stored:
 
-            - no: → spaghetti model
+            - no: → **spaghetti model**
 
                 The space items are stored as a flat collection of independent space items.
 
-            - yes: → related topological elements
+            - yes: → **related topological elements**
 
                 The space items are stored as related topological elements (nodes, edges, faces).
 
         - 3: Are the space domain items indexed according to space?
 
-            - no: → unindexed
+            - no: → **unindexed**
 
-            - yes: → indexed
+            - yes: → **indexed**
 
 
 On top of this the folowing aspects are relevant for the layout of the dataset:
@@ -461,13 +403,6 @@ If the time domain is shared, we know all space domain items for the current tim
 
     space: [domain_item-id_1, domain_item-id_2, ...]
 
-- @ref create_space_domain
-- @ref open_space_domain
-- @ref space_domain_size
-- @ref write_space_domain_items
-- @ref read_space_domain_items
-- @ref close_space_domain
-
 
 If the time domain іs not shared, we have to store the space item in a collection that is unique for the item. In general, the number of time domain items that will be written is unknown, so the collection must be unlimited.
 
@@ -475,16 +410,6 @@ If the time domain іs not shared, we have to store the space item in a collecti
         size: hsize_t,
         [domain_item-t_1, domain_item-t_2, ...]
     }
-
-API:
-- create_vl_space_domain
-- open_vl_space_domain
-- reserve_vl_space_domain_items_space
-- vl_space_domain_capacity
-- vl_space_domain_size
-- write_vl_space_domain_items
-- append_vl_space_domain_item
-- close_vl_space_domain
 
 
 ### topological and unindexed in space  {#lue_domain_space_domain_types_topological_unindexed_in_space}

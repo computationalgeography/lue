@@ -78,7 +78,7 @@ class PropertySetTest(lue_test.TestCase):
 
         self.assertEqual(property_set.name, name)
         self.assertEqual(type(property_set), omnipresent.PropertySet)
-        self.assertArraysEqual(property_set.domain.space.boxes[:], boxes)
+        self.assertArraysEqual(property_set.domain.space.items[:], boxes)
 
 
     def test_space_boxes(self):

@@ -39,15 +39,15 @@ public:
 
     SpaceBoxDomain& operator=          (SpaceBoxDomain&& other)=default;
 
-    SpaceBox const& boxes              () const;
+    SpaceBox const& items              () const;
 
-    SpaceBox&      boxes               ();
+    SpaceBox&      items               ();
 
     SpaceBox&      reserve             (hsize_t const nr_items);
 
 private:
 
-    SpaceBox       _boxes;
+    SpaceBox       _items;
 
 };
 

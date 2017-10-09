@@ -18,7 +18,7 @@ hdf5::Datatype SpaceBoxDomain::file_datatype(
 //     PropertySet const& property_set)
 // 
 //     : SpaceDomain(property_set.domain().space()),
-//       _boxes(id())
+//       _items(id())
 // 
 // {
 // }
@@ -28,7 +28,7 @@ hdf5::Datatype SpaceBoxDomain::file_datatype(
 //     lue::SpaceDomain& group)
 // 
 //     : SpaceDomain(group),
-//       _boxes(group.id())
+//       _items(group.id())
 // 
 // {
 // }
@@ -38,7 +38,7 @@ SpaceBoxDomain::SpaceBoxDomain(
     SpaceDomain const& space_domain)
 
     : SpaceDomain(space_domain),
-      _boxes(id(), hdf5::memory_datatype(file_datatype(space_domain.id())))
+      _items(id(), hdf5::memory_datatype(file_datatype(space_domain.id())))
 
 {
 }
@@ -49,7 +49,7 @@ SpaceBoxDomain::SpaceBoxDomain(
     hdf5::Datatype const& memory_datatype)
 
     : SpaceDomain(space_domain),
-      _boxes(id(), memory_datatype)
+      _items(id(), memory_datatype)
 
 {
 }
@@ -60,30 +60,30 @@ SpaceBoxDomain::SpaceBoxDomain(
     hdf5::Datatype const& memory_datatype)
 
     : SpaceDomain(std::forward<SpaceDomain>(space_domain)),
-      _boxes(id(), memory_datatype)
+      _items(id(), memory_datatype)
 
 {
 }
 
 
-SpaceBox const& SpaceBoxDomain::boxes() const
+SpaceBox const& SpaceBoxDomain::items() const
 {
-    return _boxes;
+    return _items;
 }
 
 
-SpaceBox& SpaceBoxDomain::boxes()
+SpaceBox& SpaceBoxDomain::items()
 {
-    return _boxes;
+    return _items;
 }
 
 
 SpaceBox& SpaceBoxDomain::reserve(
     hsize_t const nr_items)
 {
-    _boxes.reserve(nr_items);
+    _items.reserve(nr_items);
 
-    return _boxes;
+    return _items;
 }
 
 

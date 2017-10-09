@@ -16,9 +16,7 @@ namespace lue {
 
 
 /*!
-    @ingroup    lue_cxx_api_group
-
-    Common property set class
+    @brief      Common property set class
 
     Property sets are aggregates of a domain and a collection of zero
     or more properties sharing that domain. This class contains the

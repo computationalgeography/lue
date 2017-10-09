@@ -216,7 +216,7 @@ Raster::Raster(
         // space_domain,
         _property_set.domain(),
         hdf5::NativeDatatypeTraits<double>::type_id());
-    auto const& space_boxes = space_box_domain.boxes();
+    auto const& space_boxes = space_box_domain.items();
     assert(space_boxes.nr_items() == 1);
     space_boxes.read(_domain.coordinates().data());
 }
@@ -245,7 +245,7 @@ Raster::Raster(
         // space_domain,
         _property_set.domain(),
         hdf5::NativeDatatypeTraits<double>::type_id());
-    auto const& space_boxes = space_box_domain.boxes();
+    auto const& space_boxes = space_box_domain.items();
     assert(space_boxes.nr_items() == 1);
     space_boxes.read(_domain.coordinates().data());
 }

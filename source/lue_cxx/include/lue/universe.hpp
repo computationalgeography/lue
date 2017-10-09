@@ -8,6 +8,9 @@ namespace lue {
 //                                         std::string const& name);
 
 
+/*!
+    @brief      TODO
+*/
 class Universe:
     public hdf5::Group
 {

@@ -577,7 +577,7 @@ void translate_lue_dataset_to_shapefile(
                 // Iterate over LUE space domain items and write OGR
                 // features to layer
 
-                auto const& boxes = space_box_domain.boxes();
+                auto const& boxes = space_box_domain.items();
 
                 assert(boxes.memory_datatype() == H5T_NATIVE_DOUBLE);
                 assert(boxes.value_shape().size() == 1);

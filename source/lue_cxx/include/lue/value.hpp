@@ -4,6 +4,9 @@
 
 namespace lue {
 
+/*!
+    @brief      TODO
+*/
 class Value
 {
 

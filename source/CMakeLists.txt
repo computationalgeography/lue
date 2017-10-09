@@ -96,10 +96,50 @@ if(LUE_BUILD_LUE_VALIDATE)
     list(APPEND doxygen_input lue_validate)
 endif()
 
+
 if(LUE_BUILD_DOCUMENTATION)
+    edit_data_model_graphs(
+        TARGET data_model_graphs
+        DESTINATIONS editted_dot_graphs
+        TEMPLATE
+            logical_data_model
+        OBJECTS
+            dataset
+            universes
+            universe
+            phenomena
+            phenomenon
+            property_sets
+            property_set
+            properties
+            property
+            domain
+            value
+    )
+    convert_dot(
+        TARGET lue_svg_files
+        DESTINATIONS svg_files
+        SOURCES
+            doc/logical_data_model.dot
+            doc/space_domain_taxonomy.dot
+            doc/time_domain_taxonomy.dot
+            doc/value_taxonomy.dot
+            ${editted_dot_graphs}
+    )
+
+    add_custom_target(copy_svg_files
+        DEPENDS lue_svg_files
+        COMMAND ${CMAKE_COMMAND} -E make_directory html
+        COMMAND ${CMAKE_COMMAND} -E copy ${svg_files} html
+    )
+
     set(DOXYGEN_ENABLE_PREPROCESSING FALSE)
     doxygen_add_docs(cpp_doc
+        doc
         ${doxygen_input}
+    )
+    add_dependencies(cpp_doc
+        copy_svg_files
     )
 endif()
 

@@ -7,6 +7,7 @@ include(DevBaseCompiler)
 include(LueConfiguration)
 include(DevBaseExternal)
 include(DevBaseMacro)
+include(LueMacro)
 
 
 if(HDF5_IS_PARALLEL)

@@ -2,6 +2,7 @@
 
 [TOC]
 
+
 # Introduction  {#lue_introduction}
 
 @htmlonly
@@ -14,19 +15,6 @@
 @endhtmlonly
 
 Welcome to the LUE API documentation!
-
-*Everything related to LUE is subject to change.*
-
-
-# APIs  {#lue_apis}
-The LUE source code and documentation is grouped in language-specific APIs. For an overview of these APIs, see the [modules](modules.html) page, or directly folow one of the folowing links for the language specific API documentation.
-
-API:
-- [LUE APIs](@ref lue_group)
-    - [C-API](@ref lue_c_api_group)
-    - [CXX-API](@ref lue_cxx_api_group)
-    - [Python-API](@ref lue_python_api_group)
-- [examples](@ref lue_examples)
 
 
 # Data model  {#lue_data_model}
@@ -53,6 +41,3 @@ blue   | highlight
 green  | done
 orange | partly done
 red    | not done yet
-
-
-@todo Figure out how to handle projected and unprojected data. What to store in each case? Where to put each kind of information.

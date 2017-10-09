@@ -5,6 +5,9 @@
 
 namespace lue {
 
+/*!
+    @brief      TODO
+*/
 class Property:
     public hdf5::Group
 {

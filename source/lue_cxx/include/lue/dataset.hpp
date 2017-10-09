@@ -8,15 +8,14 @@ namespace lue {
 
 /*!
     @brief      This class is for managing LUE datasets.
+    @sa         dataset_exists(std::string const&),
+                create_dataset(std::string const&),
+                remove_dataset(std::string const&)
 
     A dataset represents everything that a LUE file contains. Datasets
     contain collections of:
     - universes, which together represent alternative states of a system
     - phenomena, which together represent one state of a system
-
-    @sa         dataset_exists(std::string const&),
-                create_dataset(std::string const&),
-                remove_dataset(std::string const&)
 */
 class Dataset:
     public hdf5::File

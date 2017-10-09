@@ -4,6 +4,7 @@ Changes
 0.1.2
 -----
 - `xxx <xxx`>_
+- Renamed `space_box_domain.boxes` to `space_box_domain.items`
 - `Support space points <https://github.com/pcraster/lue/issues/24`>_
 - `Iteration on SpaceBox object fails <https://github.com/pcraster/lue/issues/21`>_
 - `Support export of domain to shapefile <https://github.com/pcraster/lue/issues/17`>_

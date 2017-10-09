@@ -8,6 +8,9 @@ namespace lue {
 // bool               property_sets_exists(hdf5::Identifier const& location);
 
 
+/*!
+    @brief      TODO
+*/
 class PropertySets:
     public Collection<PropertySet>
 {

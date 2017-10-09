@@ -81,7 +81,7 @@ digraph domain_types {
         label=
             "omnipresent in time\n" +
             "omnipresent in space"
-        URL="md_domain.html#lue_domain_space_domain_types_omnipresent_in_time_space"
+        URL="md_doc_domain.html#lue_domain_space_domain_types_omnipresent_in_time_space"
     ];
 
     blah1 [
@@ -92,7 +92,7 @@ digraph domain_types {
             "omnipresent in space\n" +
             "topology not stored\n" +
             "not indexed in space"
-        // URL="md_domain.html#lue_domain_space_domain_types_omnipresent_in_space"
+        // URL="md_doc_domain.html#lue_domain_space_domain_types_omnipresent_in_space"
     ];
 
 
@@ -102,7 +102,7 @@ digraph domain_types {
     //     label=
     //         "untopological and\n" +
     //         "unindexed in space"
-    //     URL="md_domain.html#lue_domain_space_domain_types_untopological_unindexed_in_space"
+    //     URL="md_doc_domain.html#lue_domain_space_domain_types_untopological_unindexed_in_space"
     // ];
 
     // topological_unindexed_in_space [
@@ -110,7 +110,7 @@ digraph domain_types {
     //     label=
     //         "topological and\n" +
     //         "unindexed in space"
-    //     URL="md_domain.html#lue_domain_space_domain_types_topological_unindexed_in_space"
+    //     URL="md_doc_domain.html#lue_domain_space_domain_types_topological_unindexed_in_space"
     // ];
 
     // untopological_indexed_in_space [
@@ -118,7 +118,7 @@ digraph domain_types {
     //     label=
     //         "untopological and\n" +
     //         "indexed in space"
-    //     URL="md_domain.html#lue_domain_space_domain_types_untopological_indexed_in_space"
+    //     URL="md_doc_domain.html#lue_domain_space_domain_types_untopological_indexed_in_space"
     // ];
 
     // topological_indexed_in_space [
@@ -126,7 +126,7 @@ digraph domain_types {
     //     label=
     //         "topological and\n" +
     //         "indexed in space"
-    //     URL="md_domain.html#lue_domain_space_domain_types_topological_indexed_in_space"
+    //     URL="md_doc_domain.html#lue_domain_space_domain_types_topological_indexed_in_space"
     // ];
 
 

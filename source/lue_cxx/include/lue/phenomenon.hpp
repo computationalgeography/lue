@@ -8,6 +8,9 @@ namespace lue {
 //                                         std::string const& name);
 
 
+/*!
+    @brief      TODO
+*/
 class Phenomenon:
     public hdf5::Group
 {

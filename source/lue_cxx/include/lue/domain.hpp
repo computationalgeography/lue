@@ -12,6 +12,9 @@ namespace lue {
 // bool               domain_exists       (hdf5::Identifier const& location);
 
 
+/*!
+    @brief      TODO
+*/
 class Domain:
     public hdf5::Group
 {

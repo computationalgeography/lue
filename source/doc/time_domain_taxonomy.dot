@@ -27,7 +27,7 @@ digraph domain_types {
         fillcolor="#abdda4"
         label=
             "omnipresent in time"
-        URL="md_domain.html#lue_domain_time_domain_types_omnipresent_in_time"
+        URL="md_doc_domain.html#lue_domain_time_domain_types_omnipresent_in_time"
     ];
 
     located_in_time [
@@ -40,7 +40,7 @@ digraph domain_types {
         label=
             "constant collection of\n" +
             "shared domain items"
-        URL="md_domain.html#lue_domain_time_domain_types_constant_collection_of_shared_domain_items"
+        URL="md_doc_domain.html#lue_domain_time_domain_types_constant_collection_of_shared_domain_items"
     ];
 
     constant_collection_of_non_shared_domain_items [
@@ -48,7 +48,7 @@ digraph domain_types {
         label=
             "constant collection of\n" +
             "non-shared domain items"
-        URL="md_domain.html#lue_domain_time_domain_types_constant_collection_of_non_shared_domain_items"
+        URL="md_doc_domain.html#lue_domain_time_domain_types_constant_collection_of_non_shared_domain_items"
     ];
 
     variable_collection_of_shared_domain_items [
@@ -56,7 +56,7 @@ digraph domain_types {
         label=
             "variable collection of\n" +
             "shared domain items"
-        URL="md_domain.html#lue_domain_time_domain_types_variable_collection_of_shared_domain_items"
+        URL="md_doc_domain.html#lue_domain_time_domain_types_variable_collection_of_shared_domain_items"
     ];
 
     variable_collection_of_non_shared_domain_items [
@@ -64,7 +64,7 @@ digraph domain_types {
         label=
             "variable collection of\n" +
             "non-shared domain items"
-        URL="md_domain.html#lue_domain_time_domain_types_variable_collection_of_non_shared_domain_items"
+        URL="md_doc_domain.html#lue_domain_time_domain_types_variable_collection_of_non_shared_domain_items"
     ];
 
 
