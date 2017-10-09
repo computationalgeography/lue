@@ -10,6 +10,10 @@ namespace constant_size {
 namespace time {
 namespace omnipresent {
 
+/*!
+    @brief      TODO
+    @sa         create_property_set(Phenomenon&, std::string const&)
+*/
 class PropertySet:
     public constant_size::PropertySet
 {
@@ -58,6 +62,10 @@ private:
 
 PropertySet        create_property_set (Phenomenon& phenomenon,
                                         std::string const& name);
+
+PropertySet        create_property_set (Phenomenon& phenomenon,
+                                        std::string const& name,
+                                        same_shape::Value const& ids);
 
 }  // namespace omnipresent
 }  // namespace time

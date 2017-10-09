@@ -4,6 +4,11 @@
 
 namespace lue {
 
+/*!
+    @sa         create_space_domain(hdf5::Group const&,
+                SpaceDomain::Configuration const&),
+                space_domain_exists(hdf5::Group const&)
+*/
 class SpaceDomain:
     public hdf5::Group
 {

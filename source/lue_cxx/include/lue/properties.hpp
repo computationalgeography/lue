@@ -7,6 +7,7 @@ namespace lue {
 
 /*!
     @brief      TODO
+    @sa         create_properties(hdf5::Identifier const&)
 */
 class Properties:
     public Collection<Property>

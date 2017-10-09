@@ -54,7 +54,8 @@ void init_property_class(
             int numpy_type_id = NPY_NOTYPE;
             {
                 PyArray_Descr* dtype;
-                if(!PyArray_DescrConverter(numpy_type_id_object.ptr(), &dtype)) {
+                if(!PyArray_DescrConverter(
+                        numpy_type_id_object.ptr(), &dtype)) {
                     throw py::error_already_set();
                 }
                 numpy_type_id = dtype->type_num;
@@ -69,9 +70,9 @@ void init_property_class(
                 hdf5::Datatype(memory_type_id));
         },
         R"(
-    Create new property
+    Create new property for storing 0D (scalar) values
 
-    The property will be added to the property set
+    - The property will be added to *property_set*
 )",
         "property_set"_a,
         "name"_a,
@@ -113,9 +114,13 @@ void init_property_class(
                 hdf5::Datatype(memory_type_id), value_shape);
         },
         R"(
-    Create new property
+    Create new property for storing nD values
 
-    The property will be added to the property set
+    - The rank of the values is determined by the size of the *value_shape*
+      argument
+    - The shape of the values is determined by the contents of the
+      *value_shape* argument
+    - The property will be added to the property set
 )",
         "property_set"_a,
         "name"_a,

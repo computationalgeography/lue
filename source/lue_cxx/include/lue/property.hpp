@@ -7,6 +7,8 @@ namespace lue {
 
 /*!
     @brief      TODO
+    @sa         create_property(hdf5::Group&, std::string const&,
+                Property::Configuration const&)
 */
 class Property:
     public hdf5::Group

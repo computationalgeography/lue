@@ -14,6 +14,8 @@ namespace lue {
 
 /*!
     @brief      TODO
+    @sa         create_domain(hdf5::Identifier const&,
+                Domain::Configuration const&)
 */
 class Domain:
     public hdf5::Group

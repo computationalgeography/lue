@@ -60,7 +60,12 @@ public:
 
     bool           contains_soft_link  (std::string const& name) const;
 
+    bool           contains_hard_link  (std::string const& name) const;
+
     void           create_soft_link    (Identifier const& location,
+                                        std::string const& name);
+
+    void           create_hard_link    (Identifier const& location,
                                         std::string const& name);
 
 private:

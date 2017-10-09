@@ -33,6 +33,25 @@ bool soft_link_exists(
 }
 
 
+bool hard_link_exists(
+    Identifier const& id,
+    std::string const& name)
+{
+    bool result = false;
+
+    if(link_exists(id, name)) {
+        ::H5L_info_t info;
+        auto const status = ::H5Lget_info(id, name.c_str(), &info,
+            H5P_DEFAULT);
+        assert(status >= 0);
+
+        result = info.type == H5L_TYPE_HARD;
+    }
+
+    return result;
+}
+
+
 bool link_is_dataset(
     Identifier const& id,
     std::string const& name)

@@ -10,6 +10,7 @@ namespace lue {
 
 /*!
     @brief      TODO
+    @sa         create_universe(hdf5::Identifier const&, std::string const&)
 */
 class Universe:
     public hdf5::Group

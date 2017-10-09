@@ -117,6 +117,14 @@ void Array::write(
 
 void Array::write(
     hdf5::Dataspace const& memory_dataspace,
+    void const* buffer) const
+{
+    Dataset::write(_memory_datatype, memory_dataspace, buffer);
+}
+
+
+void Array::write(
+    hdf5::Dataspace const& memory_dataspace,
     hdf5::Hyperslab const& hyperslab,
     void const* buffer)
 {

@@ -10,6 +10,7 @@ namespace lue {
 
 /*!
     @brief      Collection of universes
+    @sa         create_universes(hdf5::Identifier const&)
 
     The collection is modeled using an HDF5 group.
 */

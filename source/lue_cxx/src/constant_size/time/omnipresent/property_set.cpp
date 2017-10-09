@@ -166,6 +166,28 @@ PropertySet create_property_set(
     // }
 }
 
+
+PropertySet create_property_set(
+    Phenomenon& phenomenon,
+    std::string const& name,
+    same_shape::Value const& ids)
+{
+    auto& property_sets = phenomenon.property_sets();
+    auto& property_set = property_sets.add(name, std::move(
+        lue::constant_size::create_property_set(
+            property_sets, name,
+            Domain::Configuration(TimeDomainType::omnipresent))
+    ));
+
+    // TODO assert
+    // same_shape::create_value(property_set.id(), ids_tag,
+    //     H5T_STD_U64LE, H5T_NATIVE_HSIZE);
+
+    property_set.create_hard_link(ids.id(), ids_tag);
+
+    return PropertySet(property_set.id());
+}
+
 }  // namespace omnipresent
 }  // namespace time
 }  // namespace constant_size

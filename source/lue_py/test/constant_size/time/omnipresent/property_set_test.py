@@ -71,6 +71,32 @@ class PropertySetTest(lue_test.TestCase):
         self.verify_property_set_ids(property_set, ids_)
 
 
+    def test_shared_ids(self):
+
+        dataset_name = self.relative_pathname(os.path.dirname(__file__),
+            "test_shared_ids.lue")
+        phenomenon_name = "my_phenomenon"
+        property_set_name1 = "my_property_set1"
+        property_set_name2 = "my_property_set2"
+
+        dataset = self.create_dataset(dataset_name)
+        phenomenon = dataset.add_phenomenon(phenomenon_name)
+        property_set1 = omnipresent.create_property_set(phenomenon,
+            property_set_name1)
+        property_set2 = omnipresent.create_property_set(phenomenon,
+            property_set_name2, property_set1.ids)
+
+        nr_items = 5
+
+        ids = numpy.array([5, 4, 3, 2, 1], numpy.uint64)
+        property_set1.reserve(nr_items)[:] = ids
+        self.assertArraysEqual(property_set2.ids[:], ids)
+
+        ids = numpy.array([15, 14, 13, 12, 11], numpy.uint64)
+        property_set2.ids[:] = ids
+        self.assertArraysEqual(property_set1.ids[:], ids)
+
+
     def verify_space_domain_with_boxes(self,
             property_set,
             name,
