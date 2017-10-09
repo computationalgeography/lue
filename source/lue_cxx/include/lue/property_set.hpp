@@ -17,6 +17,9 @@ namespace lue {
 
 /*!
     @brief      Common property set class
+    @sa         create_property_set(hdf5::Group const&, std::string const&,
+                PropertySet::Configuration const&,
+                Domain::Configuration const&)
 
     Property sets are aggregates of a domain and a collection of zero
     or more properties sharing that domain. This class contains the

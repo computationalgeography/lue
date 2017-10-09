@@ -12,6 +12,9 @@ bool               link_exists         (Identifier const& id,
 bool               soft_link_exists    (Identifier const& id,
                                         std::string const& name);
 
+bool               hard_link_exists    (Identifier const& id,
+                                        std::string const& name);
+
 bool               link_is_dataset     (Identifier const& id,
                                         std::string const& name);
 

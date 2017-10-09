@@ -10,6 +10,7 @@ namespace lue {
 
 /*!
     @brief      Collection for phenomena
+    @sa         create_phenomena(hdf5::Identifier const&)
 */
 class Phenomena:
     public Collection<Phenomenon>

@@ -99,6 +99,10 @@ public:
 
     void           write               (Datatype const& datatype,
                                         Dataspace const& memory_dataspace,
+                                        void const* buffer) const;
+
+    void           write               (Datatype const& datatype,
+                                        Dataspace const& memory_dataspace,
                                         Hyperslab const& hyperslab,
                                         void const* buffer) const;
 

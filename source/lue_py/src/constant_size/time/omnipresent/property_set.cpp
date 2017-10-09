@@ -210,7 +210,8 @@ void init_property_set_class(
 
     module.def(
         "create_property_set",
-        &create_property_set,
+        py::overload_cast<Phenomenon&, std::string const&>(
+            &create_property_set),
         R"(
     Create new property set
 
@@ -218,6 +219,23 @@ void init_property_set_class(
 )",
         "phenomenon"_a,
         "name"_a,
+        py::return_value_policy::move)
+
+        ;
+
+    module.def(
+        "create_property_set",
+        py::overload_cast<
+            Phenomenon&, std::string const&, same_shape::Value const&>(
+                &create_property_set),
+        R"(
+    Create new property set
+
+    The property set will be added to the phenomenon
+)",
+        "phenomenon"_a,
+        "name"_a,
+        "ids"_a,
         py::return_value_policy::move)
 
         ;

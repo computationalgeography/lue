@@ -10,6 +10,7 @@ namespace lue {
 
 /*!
     @brief      TODO
+    @sa         create_property_sets(hdf5::Identifier const&)
 */
 class PropertySets:
     public Collection<PropertySet>

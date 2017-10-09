@@ -389,6 +389,17 @@ bool Group::contains_soft_link(
 
 
 /*!
+    @brief      Return whether or not the group contains a hard-link named
+                @a name
+*/
+bool Group::contains_hard_link(
+    std::string const& name) const
+{
+    return hard_link_exists(id(), name);
+}
+
+
+/*!
     @brief      Add a soft-link named @a name to @a target to the group
     @param      target Identifier to object to link to
     @param      name Name of soft-link to create
@@ -401,7 +412,28 @@ void Group::create_soft_link(
         name.c_str(), H5P_DEFAULT, H5P_DEFAULT);
 
     if(status < 0) {
-        throw std::runtime_error("Cannot create softlink " + name +
+        throw std::runtime_error("Cannot create soft link " + name +
+            " at " + target.pathname());
+    }
+}
+
+
+/*!
+    @brief      Add a hard-link named @a name to @a target to the group
+    @param      target Identifier to object to link to
+    @param      name Name of hard-link to create
+*/
+void Group::create_hard_link(
+    Identifier const& target,
+    std::string const& name)
+{
+    auto status = ::H5Lcreate_hard(
+        target, target.pathname().c_str(),
+        id(), name.c_str(),
+        H5P_DEFAULT, H5P_DEFAULT);
+
+    if(status < 0) {
+        throw std::runtime_error("Cannot create hard link " + name +
             " at " + target.pathname());
     }
 }

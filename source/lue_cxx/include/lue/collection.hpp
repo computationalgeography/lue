@@ -15,6 +15,10 @@ namespace lue {
 
 
 /*!
+    @brief      A collection of HDF5 objects
+    @sa         create_collection(hdf5::Identifier const&, std::string const&)
+    @todo       Move to lue_hdf5(?)
+
     The collection is modeled using an HDF5 group.
 */
 template<

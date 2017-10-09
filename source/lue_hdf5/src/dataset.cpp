@@ -228,6 +228,15 @@ void Dataset::write(
 }
 
 
+void Dataset::write(
+    Datatype const& datatype,
+    Dataspace const& memory_dataspace,
+    void const* buffer) const
+{
+    write(datatype, memory_dataspace, Hyperslab(shape()), buffer);
+}
+
+
 /*!
     @brief      .
     @param      hyperslab Selection of file dataspace to write to
