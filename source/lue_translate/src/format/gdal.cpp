@@ -457,7 +457,6 @@ void translate_lue_dataset_to_shapefile(
     //     - no discretized values
     //     - no multidimensional values
 
-
     // Figure out which property-sets to dump
     auto const& root_json = metadata.object();
     auto const lue_dataset_name =
