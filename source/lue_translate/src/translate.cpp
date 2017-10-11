@@ -68,7 +68,6 @@ See '%1% help <command>' for more information on a command.
 } // Anonymous namespace
 
 
-
 namespace lue {
 namespace utility {
 
@@ -81,10 +80,6 @@ Translate::Translate(
       })
 
 {
-    // Turn off error stack traversal. The default functions prints
-    // lots of messages we usually don't care about.
-    H5Eset_auto1(NULL, NULL);
-
     GDALAllRegister();
 }
 

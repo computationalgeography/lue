@@ -7,6 +7,7 @@ add_library(lue_hdf5 STATIC
     src/dataset
     src/dataspace
     src/datatype
+    src/error_stack
     src/file
     src/group
     src/hyperslab
