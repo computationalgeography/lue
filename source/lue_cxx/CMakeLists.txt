@@ -31,6 +31,7 @@ add_library(lue STATIC
     src/constant_size/property
     src/constant_size/property_set
     src/constant_size/space_domain
+    src/constant_size/time_domain
     # src/constant_size/value
     src/constant_size/validate
 
@@ -56,6 +57,11 @@ add_library(lue STATIC
 
     src/constant_size/time/located/shared/domain
     src/constant_size/time/located/shared/property_set
+    src/constant_size/time/located/shared/time_box
+    # src/constant_size/time/located/shared/time_box_domain
+    src/constant_size/time/located/shared/time_domain
+
+    # src/constant_size/time/located/shared/constant_shape/same_shape/value
 )
 
 add_library(lue::lue ALIAS lue)
