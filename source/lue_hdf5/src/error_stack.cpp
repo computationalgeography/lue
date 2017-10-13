@@ -1,4 +1,5 @@
 #include "lue/hdf5/error_stack.hpp"
+#include <cassert>
 #include <stdexcept>
 
 
