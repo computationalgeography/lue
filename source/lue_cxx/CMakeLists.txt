@@ -18,7 +18,7 @@ add_library(lue STATIC
 #     src/space_domain_configuration
 #     src/time_discretization
 #     # src/time_discretization_configuration
-#     src/time_domain
+    src/time_domain
 #     src/time_domain_configuration
     src/validate
     src/universe
@@ -50,6 +50,12 @@ add_library(lue STATIC
 
     src/constant_size/time/omnipresent/same_shape/property
     src/constant_size/time/omnipresent/same_shape/value
+
+    src/constant_size/time/located/domain
+    src/constant_size/time/located/property_set
+
+    src/constant_size/time/located/shared/domain
+    src/constant_size/time/located/shared/property_set
 )
 
 add_library(lue::lue ALIAS lue)

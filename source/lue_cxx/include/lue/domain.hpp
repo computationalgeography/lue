@@ -1,16 +1,8 @@
 #pragma once
-#include "lue/define.hpp"
 #include "lue/hdf5/group.hpp"
-// #include "lue/cxx_api/domain_configuration.h"
-// #include "lue/cxx_api/space_domain.h"
-// #include "lue/cxx_api/time_domain.h"
-// #include <memory>
 
 
 namespace lue {
-
-// bool               domain_exists       (hdf5::Identifier const& location);
-
 
 /*!
     @brief      TODO
@@ -28,7 +20,16 @@ public:
 
     public:
 
-                   Configuration       (TimeDomainType const type);
+        enum class DomainType
+        {
+
+            omnipresent,
+
+            located
+
+        };
+
+                   Configuration       (DomainType const domain_type);
 
                    Configuration       (hdf5::Attributes const& attributes);
 
@@ -38,15 +39,13 @@ public:
 
         Configuration& operator=       (Configuration const& other)=default;
 
-        TimeDomainType
-                   time_domain_type    () const;
+        DomainType domain_type         () const;
 
         void       save                (hdf5::Attributes& attributes) const;
 
     private:
 
-        TimeDomainType
-                   _time_domain_type;
+        DomainType _domain_type;
 
         void       load                (hdf5::Attributes const& attributes);
 
@@ -61,7 +60,7 @@ public:
 
                    Domain              (Domain&& other)=default;
 
-                   ~Domain             ()=default;
+    virtual        ~Domain             ()=default;
 
     Domain&        operator=           (Domain const& other)=delete;
 
@@ -70,22 +69,9 @@ public:
     Configuration const&
                    configuration       () const;
 
-    // TimeDomain&    time_domain         () const;
-
-    // SpaceDomain&   space_domain        () const;
-
-    // DomainConfiguration const&
-    //                configuration       () const;
-
 private:
 
     Configuration  _configuration;
-
-    // std::unique_ptr<TimeDomain> _time_domain;
-
-    // std::unique_ptr<SpaceDomain> _space_domain;
-
-    // DomainConfiguration _configuration;
 
 };
 

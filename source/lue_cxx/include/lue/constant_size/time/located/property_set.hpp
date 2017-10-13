@@ -1,6 +1,5 @@
 #pragma once
 #include "lue/constant_size/time/omnipresent/same_shape/value.hpp"
-#include "lue/constant_size/time/omnipresent/domain.hpp"
 #include "lue/constant_size/property_set.hpp"
 #include "lue/property_sets.hpp"
 
@@ -8,25 +7,18 @@
 namespace lue {
 namespace constant_size {
 namespace time {
-namespace omnipresent {
+namespace located {
 
-/*!
-    @brief      TODO
-    @sa         create_property_set(Phenomenon&, std::string const&)
-*/
 class PropertySet:
     public constant_size::PropertySet
 {
 
 public:
 
-//                    PropertySet         (Phenomenon& phenomenon,
-//                                         std::string const& name);
+                   PropertySet         (hdf5::Identifier const& id);
 
                    // PropertySet         (constant_size::PropertySet&&
                    //                          property_set);
-
-                   PropertySet         (hdf5::Identifier const& id);
 
                    PropertySet         (PropertySet const& other)=delete;
 
@@ -38,36 +30,26 @@ public:
 
     PropertySet&   operator=           (PropertySet&& other)=default;
 
-    same_shape::Value const&
+    omnipresent::same_shape::Value const&
                    ids                 () const;
 
-    same_shape::Value&
+    omnipresent::same_shape::Value&
                    ids                 ();
 
-    Domain const&  domain              () const;
-
-    Domain&        domain              ();
-
-    same_shape::Value&
+    omnipresent::same_shape::Value&
                    reserve             (hsize_t const nr_items);
 
 private:
 
-    Domain         _domain;
-
-    same_shape::Value _ids;
+    omnipresent::same_shape::Value _ids;
 
 };
 
 
-PropertySet        create_property_set (PropertySets& property_sets,
+PropertySet        create_property_set (PropertySets& property_set,
                                         std::string const& name);
 
-PropertySet        create_property_set (PropertySets& property_sets,
-                                        std::string const& name,
-                                        same_shape::Value const& ids);
-
-}  // namespace omnipresent
+}  // namespace located
 }  // namespace time
 }  // namespace constant_size
 }  // namespace lue

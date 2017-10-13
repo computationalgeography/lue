@@ -68,7 +68,7 @@ BOOST_AUTO_TEST_CASE(create_new_property_set)
     BOOST_CHECK_EQUAL(phenomenon.property_sets().size(), 0);
 
     auto const property_set = omnipresent::create_property_set(
-        phenomenon, property_set_name);
+        phenomenon.property_sets(), property_set_name);
 
     BOOST_CHECK_EQUAL(phenomenon.property_sets().size(), 1);
     BOOST_CHECK(
@@ -98,9 +98,9 @@ BOOST_AUTO_TEST_CASE(share_item_ids)
     // Second property-set points to the same collection of item ids as
     // the first
     auto property_set1 = omnipresent::create_property_set(
-        phenomenon, property_set_name1);
+        phenomenon.property_sets(), property_set_name1);
     auto property_set2 = omnipresent::create_property_set(
-        phenomenon, property_set_name2, property_set1.ids());
+        phenomenon.property_sets(), property_set_name2, property_set1.ids());
 
     std::size_t const nr_items = 5;
 

@@ -22,9 +22,14 @@ static std::string const space_domain_item_type_tag =
 static std::string const space_domain_type_tag =
     "lue_space_domain_type";
 
-static std::string const time_domain_tag = "lue_time_domain";
-static std::string const time_domain_type_tag = "lue_time_domain_type";
-static std::string const time_discretization_tag = "lue_time_discretization";
+static std::string const time_discretization_tag =
+    "lue_time_discretization";
+static std::string const time_domain_tag =
+    "lue_time_domain";
+static std::string const time_domain_item_type_tag =
+    "lue_time_domain_item_type";
+static std::string const time_domain_type_tag =
+    "lue_time_domain_type";
 
 static std::string const universes_tag = "lue_universes";
 static std::string const value_tag = "lue_value";

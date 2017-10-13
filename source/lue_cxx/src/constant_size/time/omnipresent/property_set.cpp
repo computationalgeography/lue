@@ -78,15 +78,15 @@ same_shape::Value& PropertySet::reserve(
 
 
 PropertySet create_property_set(
-    Phenomenon& phenomenon,
+    PropertySets& property_sets,
     std::string const& name)
     // SpaceDomain::Configuration const& space_domain_configuration)
 {
-    auto& property_sets = phenomenon.property_sets();
     auto& property_set = property_sets.add(name, std::move(
         lue::constant_size::create_property_set(
             property_sets, name,
-            Domain::Configuration(TimeDomainType::omnipresent))
+            Domain::Configuration(
+                Domain::Configuration::DomainType::omnipresent))
     ));
 
     // omnipresent::create_space_domain(
@@ -168,15 +168,15 @@ PropertySet create_property_set(
 
 
 PropertySet create_property_set(
-    Phenomenon& phenomenon,
+    PropertySets& property_sets,
     std::string const& name,
     same_shape::Value const& ids)
 {
-    auto& property_sets = phenomenon.property_sets();
     auto& property_set = property_sets.add(name, std::move(
-        lue::constant_size::create_property_set(
+        constant_size::create_property_set(
             property_sets, name,
-            Domain::Configuration(TimeDomainType::omnipresent))
+            Domain::Configuration(
+                Domain::Configuration::DomainType::omnipresent))
     ));
 
     // TODO assert

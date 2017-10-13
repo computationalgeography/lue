@@ -6,27 +6,28 @@
 namespace lue {
 namespace {
 
-detail::EnumStringBimap<TimeDomainType> const
-        time_domain_type_map = {
-    { TimeDomainType::omnipresent, "lue_omnipresent" }
+detail::EnumStringBimap<Domain::Configuration::DomainType> const
+        domain_type_map = {
+    { Domain::Configuration::DomainType::omnipresent, "lue_omnipresent" },
+    { Domain::Configuration::DomainType::located, "lue_located" },
 };
 
 
-std::string time_domain_type_to_string(
-    TimeDomainType const type)
+std::string domain_type_to_string(
+    Domain::Configuration::DomainType const type)
 {
-    return time_domain_type_map.as_string(type);
+    return domain_type_map.as_string(type);
 }
 
 
-TimeDomainType parse_time_domain_type(
+Domain::Configuration::DomainType parse_domain_type(
     std::string const& string)
 {
-    if(!time_domain_type_map.contains(string)) {
+    if(!domain_type_map.contains(string)) {
         throw std::runtime_error("Unknown time domain type: " + string);
     }
 
-    return time_domain_type_map.as_value(string);
+    return domain_type_map.as_value(string);
 }
 
 }  // Anonymous namespace
@@ -40,9 +41,9 @@ TimeDomainType parse_time_domain_type(
 
 
 Domain::Configuration::Configuration(
-    TimeDomainType const type)
+    DomainType const domain_type)
 
-    : _time_domain_type{type}
+    : _domain_type{domain_type}
 
 {
 }
@@ -55,9 +56,10 @@ Domain::Configuration::Configuration(
 }
 
 
-TimeDomainType Domain::Configuration::time_domain_type() const
+Domain::Configuration::DomainType
+    Domain::Configuration::domain_type() const
 {
-    return _time_domain_type;
+    return _domain_type;
 }
 
 
@@ -66,7 +68,7 @@ void Domain::Configuration::save(
 {
     attributes.write<std::string>(
         time_domain_type_tag,
-        time_domain_type_to_string(_time_domain_type)
+        domain_type_to_string(_domain_type)
     );
 }
 
@@ -74,10 +76,8 @@ void Domain::Configuration::save(
 void Domain::Configuration::load(
     hdf5::Attributes const& attributes)
 {
-    _time_domain_type =
-        parse_time_domain_type(
-            attributes.read<std::string>(
-                time_domain_type_tag));
+    _domain_type = parse_domain_type(
+        attributes.read<std::string>(time_domain_type_tag));
 }
 
 
