@@ -1,5 +1,10 @@
-configure_file(include/lue/configure.hpp.in
-    include/lue/configure.hpp)
+configure_file(
+    include/lue/configure.hpp.in
+    include/lue/configure.hpp
+)
+
+add_subdirectory(lue_time)
+list(APPEND doxygen_input lue_time)
 
 if(LUE_BUILD_HDF5_API)
     add_subdirectory(lue_hdf5)
