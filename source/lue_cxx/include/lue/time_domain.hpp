@@ -49,13 +49,13 @@ public:
 
                    TimeDomain          (hdf5::Group&& group);
 
-                   TimeDomain          (TimeDomain const& other)=default;
+                   TimeDomain          (TimeDomain const& other)=delete;
 
                    TimeDomain          (TimeDomain&& other)=default;
 
                    ~TimeDomain         ()=default;
 
-    TimeDomain&    operator=           (TimeDomain const& other)=default;
+    TimeDomain&    operator=           (TimeDomain const& other)=delete;
 
     TimeDomain&    operator=           (TimeDomain&& other)=default;
 

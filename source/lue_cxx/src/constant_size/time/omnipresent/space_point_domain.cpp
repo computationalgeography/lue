@@ -15,21 +15,11 @@ hdf5::Datatype SpacePointDomain::file_datatype(
 
 
 SpacePointDomain::SpacePointDomain(
-    SpaceDomain const& space_domain)
+    SpaceDomain&& space_domain)
 
-    : SpaceDomain(space_domain),
-      _items(id(), hdf5::memory_datatype(file_datatype(space_domain.id())))
-
-{
-}
-
-
-SpacePointDomain::SpacePointDomain(
-    SpaceDomain const& space_domain,
-    hdf5::Datatype const& memory_datatype)
-
-    : SpaceDomain(space_domain),
-      _items(id(), memory_datatype)
+    : SpacePointDomain(
+        std::forward<SpaceDomain>(space_domain),
+        hdf5::memory_datatype(file_datatype(id())))
 
 {
 }
@@ -83,7 +73,7 @@ SpacePointDomain create_space_point_domain(
 
     create_space_point(space, file_datatype, memory_datatype, rank);
 
-    return SpacePointDomain(space, memory_datatype);
+    return SpacePointDomain(std::move(space), memory_datatype);
 }
 
 }  // namespace omnipresent

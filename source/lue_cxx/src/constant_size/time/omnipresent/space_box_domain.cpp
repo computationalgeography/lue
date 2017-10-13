@@ -14,42 +14,12 @@ hdf5::Datatype SpaceBoxDomain::file_datatype(
 }
 
 
-// SpaceBoxDomain::SpaceBoxDomain(
-//     PropertySet const& property_set)
-// 
-//     : SpaceDomain(property_set.domain().space()),
-//       _items(id())
-// 
-// {
-// }
-
-
-// SpaceBoxDomain::SpaceBoxDomain(
-//     lue::SpaceDomain& group)
-// 
-//     : SpaceDomain(group),
-//       _items(group.id())
-// 
-// {
-// }
-
-
 SpaceBoxDomain::SpaceBoxDomain(
-    SpaceDomain const& space_domain)
+    SpaceDomain&& space_domain)
 
-    : SpaceDomain(space_domain),
-      _items(id(), hdf5::memory_datatype(file_datatype(space_domain.id())))
-
-{
-}
-
-
-SpaceBoxDomain::SpaceBoxDomain(
-    SpaceDomain const& space_domain,
-    hdf5::Datatype const& memory_datatype)
-
-    : SpaceDomain(space_domain),
-      _items(id(), memory_datatype)
+    : SpaceBoxDomain(
+        std::forward<SpaceDomain>(space_domain),
+        hdf5::memory_datatype(file_datatype(id())))
 
 {
 }
@@ -125,7 +95,7 @@ SpaceBoxDomain create_space_box_domain(
 
     create_space_box(space, file_datatype, memory_datatype, rank);
 
-    return SpaceBoxDomain(space, memory_datatype);
+    return SpaceBoxDomain(std::move(space), memory_datatype);
 }
 
 }  // namespace omnipresent

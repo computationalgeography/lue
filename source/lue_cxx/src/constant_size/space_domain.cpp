@@ -22,15 +22,6 @@ SpaceDomain::SpaceDomain(
 }
 
 
-// SpaceDomain::SpaceDomain(
-//     SpaceDomain const& other)
-// 
-//     : lue::SpaceDomain(other)
-// 
-// {
-// }
-
-
 SpaceDomain create_space_domain(
     hdf5::Group const& group,
     SpaceDomain::Configuration const& configuration)
