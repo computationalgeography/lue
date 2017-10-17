@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/clock.hpp"
 #include "lue/hdf5/group.hpp"
 
 
@@ -22,7 +23,8 @@ public:
 
         };
 
-                   Configuration       (ItemType const item_type);
+                   Configuration       (Clock const& clock,
+                                        ItemType const item_type);
 
                    Configuration       (hdf5::Attributes const& attributes);
 
@@ -34,9 +36,13 @@ public:
 
         ItemType   item_type           () const;
 
+        Clock const& clock             () const;
+
         void       save                (hdf5::Attributes& attributes) const;
 
     private:
+
+        Clock      _clock;
 
         ItemType   _item_type;
 

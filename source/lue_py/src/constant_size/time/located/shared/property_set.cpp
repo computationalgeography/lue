@@ -26,19 +26,34 @@ void init_property_set(
         "PropertySet",
         "PropertySet docstring...")
 
-        .def(
-            "reserve",
-            &PropertySet::reserve,
-            "reserve docstring...",
-            py::return_value_policy::reference_internal)
+        // TODO Move this to shared::Domain
+        // .def_property_readonly(
+        //     "time",
+        //     [](
+        //         Domain& self)
+        //     {
+        //         py::object object = py::none{};
 
-        .def_property_readonly(
-            "ids",
-            py::overload_cast<>(&PropertySet::ids),
-            "ids docstring...",
-            py::return_value_policy::reference_internal)
+        //         if(time_domain_exists(self)) {
+        //             auto time_domain = TimeDomain(self);
+        //             auto const& configuration = time_domain.configuration();
 
-        ;
+        //             // auto const file_datatype =
+        //             //     SpaceBoxDomain::file_datatype(space_domain.id());
+
+        //             switch(configuration.item_type()) {
+        //                 case TimeDomain::Configuration::ItemType::box: {
+        //                     // object = py::cast(
+        //                     //     new TimeBoxDomain(std::move(time_domain)));
+        //                     break;
+        //                 }
+        //             }
+        //         }
+
+        //         return object;
+
+        //     },
+        //     "time docstring...")
 
         // .def_property_readonly(
         //     "domain",
@@ -46,14 +61,8 @@ void init_property_set(
         //     "domain docstring...",
         //     py::return_value_policy::reference_internal)
 
-//         .def_property_readonly(
-//             "property_names",
-//             [](
-//                     PropertySet const& property_set) {
-//                 return property_set.properties().names();
-//             },
-//             "property_names docstring...")
-// 
+        ;
+
 //         .def(
 //             "__getitem__",
 //             [](

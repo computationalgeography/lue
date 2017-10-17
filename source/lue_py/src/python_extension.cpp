@@ -9,6 +9,7 @@ namespace py = pybind11;
 namespace lue {
 
 void init_array_class(py::module& module);
+void init_clock(py::module& module);
 void init_dataset_class(py::module& module);
 void init_domain_class(py::module& module);
 void init_validate(py::module& module);
@@ -74,6 +75,7 @@ PYBIND11_PLUGIN(lue)
     hdf5::init_submodule(module);
 
     init_array_class(module);
+    init_clock(module);
     // init_item(module);
     // init_domain(module);
 

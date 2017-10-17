@@ -31,10 +31,6 @@ private:
 
 };
 
-
-// Domain             create_domain  (hdf5::Identifier const& location,
-//                                    Domain::Configuration const& configuration);
-
 }  // namespace omnipresent
 }  // namespace time
 }  // namespace constant_size

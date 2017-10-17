@@ -20,12 +20,6 @@ class PropertySet:
 
 public:
 
-//                    PropertySet         (Phenomenon& phenomenon,
-//                                         std::string const& name);
-
-                   // PropertySet         (constant_size::PropertySet&&
-                   //                          property_set);
-
                    PropertySet         (hdf5::Identifier const& id);
 
                    PropertySet         (PropertySet const& other)=delete;
@@ -38,24 +32,13 @@ public:
 
     PropertySet&   operator=           (PropertySet&& other)=default;
 
-    same_shape::Value const&
-                   ids                 () const;
-
-    same_shape::Value&
-                   ids                 ();
-
     Domain const&  domain              () const;
 
     Domain&        domain              ();
 
-    same_shape::Value&
-                   reserve             (hsize_t const nr_items);
-
 private:
 
     Domain         _domain;
-
-    same_shape::Value _ids;
 
 };
 

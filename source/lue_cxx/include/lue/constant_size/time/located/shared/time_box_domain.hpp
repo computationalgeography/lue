@@ -50,7 +50,8 @@ private:
 
 
 TimeBoxDomain      create_time_box_domain(
-                                        PropertySet& property_set);
+                                        PropertySet& property_set,
+                                        Clock const& clock);
 
 }  // namespace shared
 }  // namespace located

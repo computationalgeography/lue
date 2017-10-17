@@ -1,4 +1,5 @@
 #include "lue/time_domain.hpp"
+#include "lue/compound/clock.hpp"
 #include "lue/enum_string_bimap.hpp"
 #include "lue/tag.hpp"
 
@@ -29,13 +30,38 @@ TimeDomain::Configuration::ItemType parse_item_type(
     return item_type_map.as_value(string);
 }
 
+
+detail::EnumStringBimap<time::Unit> const
+        unit_map = {
+    { time::Unit::second, "second" },
+    { time::Unit::minute, "minute" },
+    { time::Unit::hour, "hour" },
+    { time::Unit::day, "day" },
+    { time::Unit::week, "week" },
+    { time::Unit::month, "month" },
+    { time::Unit::year, "year" }
+};
+
+
+time::Unit parse_unit_name(
+    std::string const& string)
+{
+    if(!unit_map.contains(string)) {
+        throw std::runtime_error("Unknown time unit: " + string);
+    }
+
+    return unit_map.as_value(string);
+}
+
 }  // Anonymous namespace
 
 
 TimeDomain::Configuration::Configuration(
+    Clock const& clock,
     ItemType const item_type)
 
-    : _item_type{item_type}
+    : _clock{clock},
+      _item_type{item_type}
 
 {
 }
@@ -43,8 +69,18 @@ TimeDomain::Configuration::Configuration(
 
 TimeDomain::Configuration::Configuration(
     hdf5::Attributes const& attributes)
+
+    : _clock(time::Unit::year, 1000),
+      _item_type{TimeDomain::Configuration::ItemType::box}
+
 {
     load(attributes);
+}
+
+
+Clock const& TimeDomain::Configuration::clock() const
+{
+    return _clock;
 }
 
 
@@ -58,6 +94,18 @@ TimeDomain::Configuration::ItemType
 void TimeDomain::Configuration::save(
     hdf5::Attributes& attributes) const
 {
+    {
+        auto const file_datatype = compound::create_clock_file_datatype();
+        hdf5::Dataspace dataspace{::H5S_SCALAR};
+        auto attribute = attributes.add(clock_tag, file_datatype, dataspace);
+
+        compound::Clock clock(_clock.unit(), _clock.nr_units());
+
+        auto const memory_datatype = compound::create_clock_memory_datatype();
+        attribute.write(memory_datatype, clock);
+    }
+
+
     attributes.write<std::string>(
         time_domain_item_type_tag,
         item_type_to_string(_item_type)
@@ -68,6 +116,16 @@ void TimeDomain::Configuration::save(
 void TimeDomain::Configuration::load(
     hdf5::Attributes const& attributes)
 {
+    {
+        auto attribute = attributes.attribute(clock_tag);
+        compound::Clock clock;
+        auto const memory_datatype = compound::create_clock_memory_datatype();
+        attribute.read(memory_datatype, clock);
+
+        _clock = Clock(parse_unit_name(clock.unit_name()), clock.nr_units());
+    }
+
+
     _item_type = parse_item_type(
         attributes.read<std::string>(time_domain_item_type_tag));
 }

@@ -134,6 +134,14 @@ void init_property_set_class(
             },
             "name docstring...")
 
+        .def_property_readonly(
+            "property_names",
+            [](
+                    PropertySet const& property_set) {
+                return property_set.properties().names();
+            },
+            "property_names docstring...")
+
 
     //     .def_property_readonly("configuration", &PropertySet::configuration,
     //         "configuration docstring...",

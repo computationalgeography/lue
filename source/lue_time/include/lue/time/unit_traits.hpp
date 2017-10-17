@@ -27,13 +27,13 @@ struct UnitTraits<unit>                            \
                                                    \
 };
 
-UNIT_TRAITS(Unit::second, s)
-UNIT_TRAITS(Unit::minute, m)
-UNIT_TRAITS(Unit::hour, h)
-UNIT_TRAITS(Unit::day, d)
-UNIT_TRAITS(Unit::week, w)
-UNIT_TRAITS(Unit::month, m)
-UNIT_TRAITS(Unit::year, y)
+UNIT_TRAITS(Unit::second, second)
+UNIT_TRAITS(Unit::minute, minute)
+UNIT_TRAITS(Unit::hour, hour)
+UNIT_TRAITS(Unit::day, day)
+UNIT_TRAITS(Unit::week, week)
+UNIT_TRAITS(Unit::month, month)
+UNIT_TRAITS(Unit::year, year)
 
 #undef UNIT_TRAITS
 

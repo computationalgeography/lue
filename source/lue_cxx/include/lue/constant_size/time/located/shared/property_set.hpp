@@ -1,6 +1,6 @@
 #pragma once
 #include "lue/constant_size/time/located/property_set.hpp"
-#include "lue/constant_size/time/located/shared/domain.hpp"
+// #include "lue/constant_size/time/located/shared/domain.hpp"
 #include "lue/property_sets.hpp"
 
 
@@ -42,9 +42,10 @@ private:
 PropertySet        create_property_set (PropertySets& property_sets,
                                         std::string const& name);
 
-// PropertySet        create_property_set (PropertySets& property_sets,
-//                                         std::string const& name,
-//                                         same_shape::Value const& ids);
+PropertySet        create_property_set (PropertySets& property_sets,
+                                        std::string const& name,
+                                        omnipresent::same_shape::Value const&
+                                            ids);
 
 }  // namespace shared
 }  // namespace located

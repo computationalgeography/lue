@@ -1,6 +1,5 @@
 #include "lue/constant_size/time/located/shared/time_box_domain.hpp"
 #include "lue/tag.hpp"
-#include "lue/time/duration.hpp"
 
 
 namespace lue {
@@ -90,13 +89,14 @@ TimeBox& TimeBoxDomain::reserve(
 
 
 TimeBoxDomain create_time_box_domain(
-    PropertySet& property_set)
+    PropertySet& property_set,
+    Clock const& clock)
 {
     auto& domain = property_set.domain();
 
     auto time = located::shared::create_time_domain(domain,
         TimeDomain::Configuration(
-            TimeDomain::Configuration::ItemType::box)
+            clock, TimeDomain::Configuration::ItemType::box)
     );
 
     hdf5::Datatype memory_datatype(

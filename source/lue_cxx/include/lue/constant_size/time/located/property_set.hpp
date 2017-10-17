@@ -1,5 +1,4 @@
 #pragma once
-#include "lue/constant_size/time/omnipresent/same_shape/value.hpp"
 #include "lue/constant_size/property_set.hpp"
 #include "lue/property_sets.hpp"
 
@@ -30,24 +29,18 @@ public:
 
     PropertySet&   operator=           (PropertySet&& other)=default;
 
-    omnipresent::same_shape::Value const&
-                   ids                 () const;
-
-    omnipresent::same_shape::Value&
-                   ids                 ();
-
-    omnipresent::same_shape::Value&
-                   reserve             (hsize_t const nr_items);
-
 private:
-
-    omnipresent::same_shape::Value _ids;
 
 };
 
 
 PropertySet        create_property_set (hdf5::Group& group,
                                         std::string const& name);
+
+PropertySet        create_property_set (hdf5::Group& group,
+                                        std::string const& name,
+                                        omnipresent::same_shape::Value const&
+                                            ids);
 
 }  // namespace located
 }  // namespace time

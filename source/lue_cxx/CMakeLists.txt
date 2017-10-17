@@ -2,8 +2,8 @@ add_test_conditionally(test)
 
 add_library(lue STATIC
     src/array
-    src/collection
     src/clock
+    src/collection
     src/dataset
     src/domain
 #     src/domain_configuration
@@ -27,6 +27,7 @@ add_library(lue STATIC
 #     src/value
 #     src/value_configuration
 
+    src/compound/clock
 
     src/constant_size/domain
     src/constant_size/property

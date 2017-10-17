@@ -10,6 +10,7 @@ add_library(lue_py SHARED
     src/hdf5/validate
 
     src/array
+    src/clock
     src/conversion
     src/dataset
     src/domain
@@ -54,6 +55,7 @@ add_library(lue_py SHARED
     src/constant_size/time/located/submodule
     src/constant_size/time/located/time_domain
 
+    # src/constant_size/time/located/shared/domain
     src/constant_size/time/located/shared/property_set
     src/constant_size/time/located/shared/submodule
     src/constant_size/time/located/shared/time_box

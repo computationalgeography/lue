@@ -1,9 +1,8 @@
-#define BOOST_TEST_MODULE lue clock
+#define BOOST_TEST_MODULE lue compound clock
 #include <boost/test/unit_test.hpp>
 #include "lue/hdf5/attribute.hpp"
 #include "lue/hdf5/file.hpp"
-#include "lue/clock.hpp"
-// #include "lue/time/clock.hpp"
+#include "lue/compound/clock.hpp"
 
 
 namespace {
@@ -61,26 +60,24 @@ private:
 
 BOOST_AUTO_TEST_CASE(write_clock)
 {
-    // using namespace lue;
-
     std::string const pathname = "write_clock.lue";
 
     std::string const attribute_name = "my_clock";
-    auto const file_datatype = lue::create_clock_file_datatype();
-    auto const memory_datatype = lue::create_clock_memory_datatype();
+    auto const file_datatype = lue::compound::create_clock_file_datatype();
+    auto const memory_datatype = lue::compound::create_clock_memory_datatype();
     lue::hdf5::Dataspace dataspace(::H5S_SCALAR);
 
     lue::time::Unit const unit = lue::time::Unit::second;
     lue::time::TickPeriodCount const nr_units = 10;
 
-    Fixture f(pathname, false);
+    Fixture f(pathname);
 
     {
         auto file = lue::hdf5::create_file(pathname);
         auto attribute = lue::hdf5::create_attribute(
             file.id(), attribute_name, file_datatype, dataspace);
 
-        lue::Clock clock_written(unit, nr_units);
+        lue::compound::Clock clock_written(unit, nr_units);
 
         attribute.write(memory_datatype, clock_written);
     }
@@ -89,11 +86,13 @@ BOOST_AUTO_TEST_CASE(write_clock)
         lue::hdf5::File file{pathname};
         auto attribute = lue::hdf5::Attribute(file.id(), attribute_name);
 
-        lue::Clock clock_read;
+        lue::compound::Clock clock_read;
 
         attribute.read(memory_datatype, clock_read);
 
-        BOOST_CHECK_EQUAL(clock_read._unit_name, "s");
+        BOOST_CHECK_EQUAL(
+            clock_read._unit_name,
+            lue::time::UnitTraits<lue::time::Unit::second>::name());
         BOOST_CHECK_EQUAL(clock_read._nr_units, nr_units);
     }
 }

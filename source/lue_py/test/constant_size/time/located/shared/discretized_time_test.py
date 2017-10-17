@@ -9,14 +9,18 @@ shared = lue.constant_size.time.located.shared
 
 class DiscretizedTimeTest(lue_test.TestCase):
 
-    # def verify_space_domain_with_boxes(self,
-    #         property_set,
-    #         name,
-    #         boxes):
+    def verify_time_domain_with_boxes(self,
+            property_set,
+            name,
+            boxes):
 
-    #     self.assertEqual(property_set.name, name)
-    #     self.assertEqual(type(property_set), omnipresent.PropertySet)
-    #     self.assertArraysEqual(property_set.domain.space.items[:], boxes)
+        self.assertEqual(property_set.name, name)
+        self.assertEqual(type(property_set), shared.PropertySet)
+        # print(property_set.domain)
+        # print(property_set.domain.time)
+        # print(property_set.domain.time.items)
+        # print(property_set.domain.time.items[:])
+        # self.assertArraysEqual(property_set.domain.time.items[:], boxes)
 
 
     # def verify_property_values(self,
@@ -88,26 +92,18 @@ class DiscretizedTimeTest(lue_test.TestCase):
 
 
         # Time domain
-        time_domain = shared.create_time_box_domain(property_set)
+        time_domain = shared.create_time_box_domain(
+            property_set, lue.Clock(lue.unit.day, 1))
 
+        boxes = time_domain.reserve(nr_items)
+        nr_coordinates_per_box = boxes.shape[1]
+        self.assertEqual(nr_coordinates_per_box, 2)
+        boxes_ = numpy.arange(nr_items * nr_coordinates_per_box,
+            dtype=boxes.dtype).reshape(nr_items, nr_coordinates_per_box)
+        boxes[:] = boxes_
 
-
-
-
-    #     # Space domain.
-    #     coordinate_dtype = numpy.float32
-    #     rank = 2
-    #     space_domain = omnipresent.create_space_box_domain(property_set,
-    #         coordinate_dtype, rank)
-
-    #     boxes = space_domain.reserve(nr_items)
-    #     nr_coordinates_per_box = boxes.shape[1]
-    #     boxes_ = numpy.arange(nr_items * nr_coordinates_per_box,
-    #         dtype=coordinate_dtype).reshape(nr_items, nr_coordinates_per_box)
-    #     boxes[:] = boxes_
-
-    #     self.verify_space_domain_with_boxes(property_set,
-    #         property_set_name, boxes_)
+        self.verify_time_domain_with_boxes(property_set,
+            property_set_name, boxes_)
 
 
     #     # Discretization property. In the case of rasters, this is a

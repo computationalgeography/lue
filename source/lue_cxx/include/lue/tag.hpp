@@ -5,6 +5,7 @@
 namespace lue {
 
 static std::string const coordinates_tag = "lue_coordinates";
+static std::string const clock_tag = "lue_clock";
 static std::string const datatype_tag = "lue_datatype";
 static std::string const domain_tag = "lue_domain";
 static std::string const ids_tag = "lue_ids";
