@@ -17,6 +17,7 @@ void init_phenomenon_class(py::module& module);
 void init_property_class(py::module& module);
 void init_property_set_class(py::module& module);
 void init_space_domain_class(py::module& module);
+void init_time_domain(py::module& module);
 void init_universe_class(py::module& module);
 
 namespace constant_size {
@@ -80,6 +81,7 @@ PYBIND11_PLUGIN(lue)
 
     init_domain_class(module);
     init_space_domain_class(module);
+    init_time_domain(module);
     init_property_class(module);
     init_property_set_class(module);
     init_phenomenon_class(module);

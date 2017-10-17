@@ -17,8 +17,8 @@ public:
 
                    PropertySet         (hdf5::Identifier const& id);
 
-                   // PropertySet         (constant_size::PropertySet&&
-                   //                          property_set);
+                   PropertySet         (constant_size::PropertySet&&
+                                            property_set);
 
                    PropertySet         (PropertySet const& other)=delete;
 
@@ -46,7 +46,7 @@ private:
 };
 
 
-PropertySet        create_property_set (PropertySets& property_set,
+PropertySet        create_property_set (hdf5::Group& group,
                                         std::string const& name);
 
 }  // namespace located

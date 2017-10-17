@@ -2,6 +2,7 @@
 #include "lue/constant_size/time/omnipresent/property_set.hpp"
 #include "lue/constant_size/time/omnipresent/different_shape/property.hpp"
 #include "lue/constant_size/time/omnipresent/same_shape/property.hpp"
+#include "lue/phenomenon.hpp"
 #include <pybind11/stl.h>
 
 
@@ -210,8 +211,14 @@ void init_property_set_class(
 
     module.def(
         "create_property_set",
-        py::overload_cast<Phenomenon&, std::string const&>(
-            &create_property_set),
+        // py::overload_cast<Phenomenon&, std::string const&>(
+        //     &create_property_set),
+        [](
+            Phenomenon& phenomenon,
+            std::string const& name)
+        {
+            return create_property_set(phenomenon.property_sets(), name);
+        },
         R"(
     Create new property set
 
@@ -225,9 +232,17 @@ void init_property_set_class(
 
     module.def(
         "create_property_set",
-        py::overload_cast<
-            Phenomenon&, std::string const&, same_shape::Value const&>(
-                &create_property_set),
+        // py::overload_cast<
+        //     Phenomenon&, std::string const&, same_shape::Value const&>(
+        //         &create_property_set),
+        [](
+            Phenomenon& phenomenon,
+            std::string const& name,
+            same_shape::Value const& ids)
+        {
+            return create_property_set(
+                phenomenon.property_sets(), name, ids);
+        },
         R"(
     Create new property set
 

@@ -47,7 +47,7 @@ Value::Value(
     hdf5::Datatype const& memory_datatype)
 
     : Array(location, name, memory_datatype),
-    omnipresent::Value()
+      omnipresent::Value()
 
 {
 }

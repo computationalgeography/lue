@@ -26,3 +26,25 @@ BOOST_AUTO_TEST_CASE(seconds)
 
     BOOST_CHECK(time_point.duration() == duration);
 }
+
+
+BOOST_AUTO_TEST_CASE(days)
+{
+    using namespace lue::time;
+
+    // Types for tracking days
+    using TickPeriod = TickPeriod<Day>;
+    using Clock = Clock<TickPeriod>;
+    using Duration = Clock::Duration;
+    using TimePoint = TimePoint<Clock>;
+
+    // Clock with a resolution of 2 days
+    TickPeriod tick_period{2};
+    Clock clock(tick_period);
+
+    // Select day 6 (3 * 2 days)
+    Duration duration{3};
+    TimePoint day_6{duration};
+
+    BOOST_CHECK_EQUAL(clock.nr_units(day_6), 6);
+}

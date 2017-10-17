@@ -1,84 +1,86 @@
-#include "lue/constant_size/time/omnipresent/space_box_domain.hpp"
+#include "lue/constant_size/time/located/shared/time_box_domain.hpp"
 #include "lue/tag.hpp"
+#include "lue/time/duration.hpp"
 
 
 namespace lue {
 namespace constant_size {
 namespace time {
-namespace omnipresent {
+namespace located {
+namespace shared {
 
-hdf5::Datatype SpaceBoxDomain::file_datatype(
-    hdf5::Identifier const& id)
-{
-    return hdf5::Dataset(id, coordinates_tag).datatype();
-}
+// hdf5::Datatype TimeBoxDomain::file_datatype(
+//     hdf5::Identifier const& id)
+// {
+//     return hdf5::Dataset(id, coordinates_tag).datatype();
+// }
 
 
-// SpaceBoxDomain::SpaceBoxDomain(
+// TimeBoxDomain::TimeBoxDomain(
 //     PropertySet const& property_set)
 // 
-//     : SpaceDomain(property_set.domain().space()),
+//     : TimeDomain(property_set.domain().time()),
 //       _items(id())
 // 
 // {
 // }
 
 
-// SpaceBoxDomain::SpaceBoxDomain(
-//     lue::SpaceDomain& group)
+// TimeBoxDomain::TimeBoxDomain(
+//     lue::TimeDomain& group)
 // 
-//     : SpaceDomain(group),
+//     : TimeDomain(group),
 //       _items(group.id())
 // 
 // {
 // }
 
 
-SpaceBoxDomain::SpaceBoxDomain(
-    SpaceDomain const& space_domain)
+// TimeBoxDomain::TimeBoxDomain(
+//     TimeDomain const& time_domain)
+// 
+//     : TimeDomain(time_domain),
+//       _items(id(), hdf5::memory_datatype(file_datatype(time_domain.id())))
+// 
+// {
+// }
+// 
+// 
+// TimeBoxDomain::TimeBoxDomain(
+//     TimeDomain const& time_domain,
+//     hdf5::Datatype const& memory_datatype)
+// 
+//     : TimeDomain(time_domain),
+//       _items(id(), memory_datatype)
+// 
+// {
+// }
 
-    : SpaceDomain(space_domain),
-      _items(id(), hdf5::memory_datatype(file_datatype(space_domain.id())))
 
-{
-}
-
-
-SpaceBoxDomain::SpaceBoxDomain(
-    SpaceDomain const& space_domain,
+TimeBoxDomain::TimeBoxDomain(
+    TimeDomain&& time_domain,
     hdf5::Datatype const& memory_datatype)
 
-    : SpaceDomain(space_domain),
+    : TimeDomain(std::forward<TimeDomain>(time_domain)),
       _items(id(), memory_datatype)
 
 {
 }
 
 
-SpaceBoxDomain::SpaceBoxDomain(
-    SpaceDomain&& space_domain,
-    hdf5::Datatype const& memory_datatype)
-
-    : SpaceDomain(std::forward<SpaceDomain>(space_domain)),
-      _items(id(), memory_datatype)
-
-{
-}
-
-
-SpaceBox const& SpaceBoxDomain::items() const
+TimeBox const& TimeBoxDomain::items() const
 {
     return _items;
 }
 
 
-SpaceBox& SpaceBoxDomain::items()
+TimeBox& TimeBoxDomain::items()
 {
     return _items;
 }
 
 
-SpaceBox& SpaceBoxDomain::reserve(
+TimeBox& TimeBoxDomain::reserve(
     hsize_t const nr_items)
 {
     _items.reserve(nr_items);
@@ -87,48 +89,28 @@ SpaceBox& SpaceBoxDomain::reserve(
 }
 
 
-// bool space_box_domain_exists(
-//     hdf5::Group const& group)
-//     // PropertySet const& property_set)
-// {
-//     auto const& space = property_set.domain().space();
-// 
-//     return space_box_exists(space);
-// }
-
-
-// void create_space_box_domain(
-//     hdf5::Identifier const& location,
-//     hid_t const file_type_id,
-//     hid_t const memory_type_id,
-//     size_t rank)
-// {
-//     create_space_box(location, file_type_id, memory_type_id, rank);
-// }
-
-
-SpaceBoxDomain create_space_box_domain(
-    PropertySet& property_set,
-    hdf5::Datatype const file_datatype,
-    hdf5::Datatype const memory_datatype,
-    size_t const rank)
+TimeBoxDomain create_time_box_domain(
+    PropertySet& property_set)
 {
     auto& domain = property_set.domain();
 
-    auto space = omnipresent::create_space_domain(domain,
-        SpaceDomain::Configuration(
-            SpaceDomain::Configuration::DomainType::located,
-            SpaceDomain::Configuration::ItemType::box)
+    auto time = located::shared::create_time_domain(domain,
+        TimeDomain::Configuration(
+            TimeDomain::Configuration::ItemType::box)
     );
 
-    // auto& space = domain.space();
+    hdf5::Datatype memory_datatype(
+        hdf5::NativeDatatypeTraits<lue::time::DurationCount>::type_id());
+    hdf5::Datatype file_datatype(
+        hdf5::StandardDatatypeTraits<lue::time::DurationCount>::type_id());
 
-    create_space_box(space, file_datatype, memory_datatype, rank);
+    create_time_box(time, file_datatype, memory_datatype);
 
-    return SpaceBoxDomain(space, memory_datatype);
+    return TimeBoxDomain(std::move(time), memory_datatype);
 }
 
-}  // namespace omnipresent
+}  // namespace shared
+}  // namespace located
 }  // namespace time
 }  // namespace constant_size
 }  // namespace lue

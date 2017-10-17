@@ -20,6 +20,7 @@ add_library(lue_py SHARED
     src/property_set
     src/python_extension
     src/space_domain
+    src/time_domain
     src/universe
     src/validate
 
@@ -48,6 +49,16 @@ add_library(lue_py SHARED
     src/constant_size/time/omnipresent/same_shape/value
     src/constant_size/time/omnipresent/same_shape/property
     src/constant_size/time/omnipresent/same_shape/submodule
+
+    src/constant_size/time/located/property_set
+    src/constant_size/time/located/submodule
+    src/constant_size/time/located/time_domain
+
+    src/constant_size/time/located/shared/property_set
+    src/constant_size/time/located/shared/submodule
+    src/constant_size/time/located/shared/time_box
+    src/constant_size/time/located/shared/time_box_domain
+    src/constant_size/time/located/shared/time_domain
 )
 
 add_library(lue::py ALIAS lue_py)

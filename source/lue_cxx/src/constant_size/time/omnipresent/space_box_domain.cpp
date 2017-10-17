@@ -19,7 +19,7 @@ SpaceBoxDomain::SpaceBoxDomain(
 
     : SpaceBoxDomain(
         std::forward<SpaceDomain>(space_domain),
-        hdf5::memory_datatype(file_datatype(id())))
+        hdf5::memory_datatype(file_datatype(space_domain.id())))
 
 {
 }

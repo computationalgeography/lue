@@ -5,6 +5,9 @@
 namespace lue {
 namespace time {
 
+using TickPeriodCount = std::size_t;
+
+
 /*!
     @brief      Class for representing the length of a tick period
     @tparam     Unit Unit of time
@@ -12,6 +15,15 @@ namespace time {
     A TickPeriod instance is represented by a number of time units. This
     determines the resolution of a Duration, Clock and of the TimePoint
     s with which locations in time can be represented.
+
+    Examples:
+
+    | Code                   | Meaning    |
+    | ---------------------- | ---------- |
+    | TickPeriod<Second>{10} | 10 seconds |
+    | TickPeriod<Day>{1}     | 1 day      |
+    | TickPeriod<Week>{4}    | 4 weeks    |
+    | TickPeriod<Year>{100}  | 100 years  |
 */
 template<
     typename Unit>
@@ -20,7 +32,7 @@ class TickPeriod
 
 public:
 
-    using Count = std::size_t;
+    using Count = TickPeriodCount;
 
                    TickPeriod          (Count const nr_units);
 

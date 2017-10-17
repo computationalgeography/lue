@@ -28,13 +28,13 @@ public:
 
     PropertySet&   operator=           (PropertySet&& other)=default;
 
-    Domain const&  domain              () const;
+    // Domain const&  domain              () const;
 
-    Domain&        domain              ();
+    // Domain&        domain              ();
 
 private:
 
-    Domain         _domain;
+    // Domain         _domain;
 
 };
 

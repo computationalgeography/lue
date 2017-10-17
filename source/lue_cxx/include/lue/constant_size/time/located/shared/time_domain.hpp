@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/constant_size/time_domain.hpp"
+#include "lue/constant_size/time/located/time_domain.hpp"
 
 
 namespace lue {
@@ -9,14 +9,15 @@ namespace located {
 namespace shared {
 
 class TimeDomain:
-    public constant_size::TimeDomain
+    public constant_size::time::located::TimeDomain
 {
 
 public:
 
                    TimeDomain          (hdf5::Group const& group);
 
-                   TimeDomain          (constant_size::TimeDomain&& domain);
+                   TimeDomain          (
+                           constant_size::time::located::TimeDomain&& domain);
 
                    TimeDomain          (TimeDomain const& other)=delete;
 

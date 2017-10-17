@@ -3,6 +3,7 @@ add_unit_tests(
     NAMES
         dataset_test
         constant_size/time/omnipresent/property_set_test
+        clock_test
     LINK_LIBRARIES
         lue::lue
 )

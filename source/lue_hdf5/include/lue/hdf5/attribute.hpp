@@ -42,7 +42,17 @@ public:
 
     template<
         typename T>
+    void           write               (Datatype const& memory_datatype,
+                                        T const& value);
+
+    template<
+        typename T>
     T              read                () const;
+
+    template<
+        typename T>
+    void           read                (Datatype const& memory_datatype,
+                                        T& value);
 
 private:
 
@@ -125,6 +135,20 @@ inline T Attribute::read() const
 }
 
 
+template<
+    typename T>
+inline void Attribute::read(
+    Datatype const& memory_datatype,
+    T& value)
+{
+    auto status = ::H5Aread(_id, memory_datatype.id(), &value);
+
+    if(status < 0) {
+        throw std::runtime_error("Cannot read attribute");
+    }
+}
+
+
 template<>
 inline void Attribute::write<std::string>(
     std::string const& value)
@@ -162,6 +186,20 @@ inline void Attribute::write(
     T const& value)
 {
     auto status = ::H5Awrite(_id, _datatype.id(), &value);
+
+    if(status < 0) {
+        throw std::runtime_error("Cannot write attribute");
+    }
+}
+
+
+template<
+    typename T>
+inline void Attribute::write(
+    Datatype const& memory_datatype,
+    T const& value)
+{
+    auto status = ::H5Awrite(_id, memory_datatype.id(), &value);
 
     if(status < 0) {
         throw std::runtime_error("Cannot write attribute");

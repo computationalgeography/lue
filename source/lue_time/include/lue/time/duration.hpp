@@ -1,8 +1,12 @@
 #pragma once
+#include <cstddef>
 
 
 namespace lue {
 namespace time {
+
+using DurationCount = std::size_t;
+
 
 /*!
     @brief      Class for representing an amount of time
@@ -10,6 +14,20 @@ namespace time {
                 tick period
 
     A Duration instance is represented by a number of TickPeriod units.
+    Note that, without the actual number of units in a tick period, the
+    number of units in a duration cannot be known. Both the tick period
+    and the duration instances are needed for that. Also, a duration
+    doesn't tell you anything about when something happened. It only
+    tells you how long it took.
+
+    Examples:
+
+    | Code                             | Meaning               |
+    | -------------------------------- | --------------------- |
+    | Duration<TickPeriod<Second>>{5}  | 5 ticks of n seconds  |
+    | Duration<TickPeriod<Day>>{1}     | 1 tick of n days      |
+    | Duration<TickPeriod<Week>>{4}    | 4 ticks of n weeks    |
+    | Duration<TickPeriod<Year>>{10}   | 10 ticks of n years   |
 */
 template<
     typename TickPeriod>
@@ -18,7 +36,7 @@ class Duration
 
 public:
 
-    using Count = std::size_t;
+    using Count = DurationCount;
 
                    Duration            (Count const nr_ticks);
 

@@ -82,11 +82,11 @@ PropertySet create_property_set(
     std::string const& name)
     // SpaceDomain::Configuration const& space_domain_configuration)
 {
-    auto& property_set = property_sets.add(name, std::move(
-        lue::constant_size::create_property_set(
+    auto& property_set = property_sets.add(name,
+        constant_size::create_property_set(
             property_sets, name,
             Domain::Configuration(
-                Domain::Configuration::DomainType::omnipresent))
+                Domain::Configuration::DomainType::omnipresent)
     ));
 
     // omnipresent::create_space_domain(
@@ -97,8 +97,8 @@ PropertySet create_property_set(
     // auto domain = omnipresent::create_domain(
     //     property_set.id(), Domain::Configuration(TimeDomainType::omnipresent));
 
-    same_shape::create_value(property_set.id(), ids_tag,
-        H5T_STD_U64LE, H5T_NATIVE_HSIZE);
+    same_shape::create_value(
+        property_set.id(), ids_tag, H5T_STD_U64LE, H5T_NATIVE_HSIZE);
 
     return PropertySet(property_set.id());
 
@@ -172,11 +172,11 @@ PropertySet create_property_set(
     std::string const& name,
     same_shape::Value const& ids)
 {
-    auto& property_set = property_sets.add(name, std::move(
+    auto& property_set = property_sets.add(name,
         constant_size::create_property_set(
             property_sets, name,
             Domain::Configuration(
-                Domain::Configuration::DomainType::omnipresent))
+                Domain::Configuration::DomainType::omnipresent)
     ));
 
     // TODO assert

@@ -4,6 +4,8 @@
 
 namespace lue {
 namespace constant_size {
+namespace time {
+namespace located {
 
 class TimeDomain:
     public lue::TimeDomain
@@ -32,5 +34,7 @@ TimeDomain        create_time_domain  (hdf5::Group const& group,
                                         TimeDomain::Configuration const&
                                             configuration);
 
+}  // namespace located
+}  // namespace time
 }  // namespace constant_size
 }  // namespace lue

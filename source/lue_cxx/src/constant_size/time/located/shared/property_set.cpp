@@ -11,8 +11,8 @@ namespace shared {
 PropertySet::PropertySet(
     hdf5::Identifier const& id)
 
-    : located::PropertySet(id),
-      _domain{this->id()}
+    : located::PropertySet(id) // ,
+      // _domain{this->id()}
 
 {
 }
@@ -24,16 +24,16 @@ PropertySet::PropertySet(
 // }
 
 
-Domain const& PropertySet::domain() const
-{
-    return _domain;
-}
-
-
-Domain& PropertySet::domain()
-{
-    return _domain;
-}
+// Domain const& PropertySet::domain() const
+// {
+//     return _domain;
+// }
+// 
+// 
+// Domain& PropertySet::domain()
+// {
+//     return _domain;
+// }
 
 
 // omnipresent::same_shape::Value& PropertySet::reserve(
@@ -49,11 +49,12 @@ PropertySet create_property_set(
     PropertySets& property_sets,
     std::string const& name)
 {
-    auto& property_set = property_sets.add(
-        name, std::move(located::create_property_set(property_sets, name)));
+    auto& property_set = property_sets.add(name,
+        located::create_property_set(property_sets, name)
+    );
 
-    omnipresent::same_shape::create_value(property_set.id(), ids_tag,
-        H5T_STD_U64LE, H5T_NATIVE_HSIZE);
+    // omnipresent::same_shape::create_value(property_set.id(), ids_tag,
+    //     H5T_STD_U64LE, H5T_NATIVE_HSIZE);
 
     return PropertySet(property_set.id());
 }

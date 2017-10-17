@@ -38,17 +38,17 @@ target_include_directories(lue_time
 ###     )
 ### endif()
 
-# install(
-#     TARGETS
-#         lue_time
-#     EXPORT
-#         lue_targets
-#     LIBRARY DESTINATION lib
-#     ARCHIVE DESTINATION lib
-#     RUNTIME DESTINATION bin
-# )
-# 
-# install(
-#     DIRECTORY include
-#     DESTINATION .
-# )
+install(
+    TARGETS
+        lue_time
+    EXPORT
+        lue_targets
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    RUNTIME DESTINATION bin
+)
+
+install(
+    DIRECTORY include
+    DESTINATION .
+)

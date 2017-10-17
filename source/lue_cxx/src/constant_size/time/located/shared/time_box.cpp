@@ -34,7 +34,10 @@ TimeBox create_time_box(
     hdf5::Datatype const& file_datatype,
     hdf5::Datatype const& memory_datatype)
 {
-    // A time box is defined by the start and end time points
+    // A time box is defined by the start and end time points. Given a clock,
+    // time points can be represented by durations since the clock's epoch.
+    // Durations can be represented by an amount of ticks, which is just a
+    // count.
     hdf5::Shape value_shape = { 2 };
 
     auto value = omnipresent::same_shape::create_value(

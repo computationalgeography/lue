@@ -18,6 +18,18 @@ PropertySet::PropertySet(
 }
 
 
+PropertySet::PropertySet(
+    constant_size::PropertySet&& property_set)
+
+    : constant_size::PropertySet(std::forward<constant_size::PropertySet>(
+        property_set)),
+      // _domain{this->id()}
+      _ids(this->id(), ids_tag, H5T_NATIVE_HSIZE)
+
+{
+}
+
+
 omnipresent::same_shape::Value const& PropertySet::ids() const
 {
     return _ids;
@@ -40,17 +52,18 @@ omnipresent::same_shape::Value& PropertySet::reserve(
 
 
 PropertySet create_property_set(
-    PropertySets& property_sets,
+    hdf5::Group& group,
     std::string const& name)
 {
-    auto& property_set = property_sets.add(name, std::move(
-        constant_size::create_property_set(
-            property_sets, name,
-            Domain::Configuration(
-                Domain::Configuration::DomainType::located))
-    ));
+    auto property_set = constant_size::create_property_set(group, name,
+        Domain::Configuration(
+            Domain::Configuration::DomainType::located)
+    );
 
-    return PropertySet(property_set.id());
+    omnipresent::same_shape::create_value(
+        property_set.id(), ids_tag, H5T_STD_U64LE, H5T_NATIVE_HSIZE);
+
+    return PropertySet(std::move(property_set));
 }
 
 }  // namespace located

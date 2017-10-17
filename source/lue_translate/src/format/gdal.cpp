@@ -506,8 +506,8 @@ void translate_lue_dataset_to_shapefile(
 
     auto const& domain_configuration = property_set.domain().configuration();
 
-    if(domain_configuration.time_domain_type() !=
-            TimeDomainType::omnipresent) {
+    if(domain_configuration.domain_type() !=
+            Domain::Configuration::DomainType::omnipresent) {
         throw std::runtime_error("Time domain type must be omnipresent");
     }
 
@@ -544,7 +544,7 @@ void translate_lue_dataset_to_shapefile(
             throw std::runtime_error("Space domain must exist");
         }
 
-        auto const space_domain =
+        auto space_domain =
            constant_size::time::omnipresent::SpaceDomain(domain);
 
         if(space_domain.configuration().domain_type() !=
@@ -555,7 +555,7 @@ void translate_lue_dataset_to_shapefile(
         switch(space_domain.configuration().item_type()) {
             case SpaceDomain::Configuration::ItemType::box: {
                 constant_size::time::omnipresent::SpaceBoxDomain
-                    space_box_domain(space_domain);
+                    space_box_domain(std::move(space_domain));
 
                 OGRwkbGeometryType const geometry_type = wkbPolygon;
 
@@ -622,7 +622,7 @@ void translate_lue_dataset_to_shapefile(
             }
             case SpaceDomain::Configuration::ItemType::point: {
                 constant_size::time::omnipresent::SpacePointDomain
-                    space_point_domain(space_domain);
+                    space_point_domain(std::move(space_domain));
 
                 OGRwkbGeometryType const geometry_type = wkbPoint;
 

@@ -14,6 +14,13 @@ void init_submodule(py::module& module);
 }  // namespace omnipresent
 
 
+namespace located {
+
+void init_submodule(py::module& module);
+
+}  // namespace located
+
+
 void init_submodule(
     py::module& module)
 {
@@ -26,6 +33,7 @@ void init_submodule(
 )");
 
     omnipresent::init_submodule(submodule);
+    located::init_submodule(submodule);
 }
 
 }  // namespace time

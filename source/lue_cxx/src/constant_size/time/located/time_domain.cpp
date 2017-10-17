@@ -1,8 +1,10 @@
-#include "lue/constant_size/time_domain.hpp"
+#include "lue/constant_size/time/located/time_domain.hpp"
 
 
 namespace lue {
 namespace constant_size {
+namespace time {
+namespace located {
 
 TimeDomain::TimeDomain(
     hdf5::Group const& group)
@@ -31,5 +33,7 @@ TimeDomain create_time_domain(
     return std::move(domain);
 }
 
+}  // namespace located
+}  // namespace time
 }  // namespace constant_size
 }  // namespace lue
