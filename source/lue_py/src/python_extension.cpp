@@ -9,6 +9,7 @@ namespace py = pybind11;
 namespace lue {
 
 void init_array_class(py::module& module);
+void init_clock(py::module& module);
 void init_dataset_class(py::module& module);
 void init_domain_class(py::module& module);
 void init_validate(py::module& module);
@@ -17,6 +18,7 @@ void init_phenomenon_class(py::module& module);
 void init_property_class(py::module& module);
 void init_property_set_class(py::module& module);
 void init_space_domain_class(py::module& module);
+void init_time_domain(py::module& module);
 void init_universe_class(py::module& module);
 
 namespace constant_size {
@@ -73,6 +75,7 @@ PYBIND11_PLUGIN(lue)
     hdf5::init_submodule(module);
 
     init_array_class(module);
+    init_clock(module);
     // init_item(module);
     // init_domain(module);
 
@@ -80,6 +83,7 @@ PYBIND11_PLUGIN(lue)
 
     init_domain_class(module);
     init_space_domain_class(module);
+    init_time_domain(module);
     init_property_class(module);
     init_property_set_class(module);
     init_phenomenon_class(module);

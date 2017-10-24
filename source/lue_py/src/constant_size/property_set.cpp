@@ -1,4 +1,6 @@
 #include "lue/constant_size/property_set.hpp"
+// #include "lue/constant_size/time/omnipresent/different_shape/property.hpp"
+// #include "lue/constant_size/time/omnipresent/same_shape/property.hpp"
 #include <pybind11/pybind11.h>
 
 
@@ -24,6 +26,41 @@ void init_property_set_class(
         //     "phenomenon"_a,
         //     "name"_a,
         //     py::keep_alive<1, 2>())
+
+        .def(
+            "reserve",
+            &PropertySet::reserve,
+            "reserve docstring...",
+            py::return_value_policy::reference_internal)
+
+        .def_property_readonly(
+            "ids",
+            py::overload_cast<>(&PropertySet::ids),
+            "ids docstring...",
+            py::return_value_policy::reference_internal)
+
+        // .def_property_readonly(
+        //     "domain",
+        //     py::overload_cast<>(&PropertySet::domain),
+        //     "domain docstring...",
+        //     py::return_value_policy::reference_internal)
+
+        // .def(
+        //     "__getitem__",
+        //     [](
+        //         PropertySet& self,
+        //         std::string const& name)
+        //     {
+        //         return cast_to_specialized_property(
+        //             self.properties()[name]);
+        //     },
+        //     "Return property\n"
+        //     "\n"
+        //     ":param str name: Name of property to find\n"
+        //     ":raises RuntimeError: In case the collection does not contain the\n"
+        //     "   property\n",
+        //             "name"_a
+        // )
 
         ;
 

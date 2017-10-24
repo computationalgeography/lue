@@ -2,7 +2,7 @@
 #include "lue/constant_size/time/omnipresent/same_shape/value.hpp"
 #include "lue/constant_size/time/omnipresent/domain.hpp"
 #include "lue/constant_size/property_set.hpp"
-#include "lue/phenomenon.hpp"
+#include "lue/property_sets.hpp"
 
 
 namespace lue {
@@ -20,12 +20,6 @@ class PropertySet:
 
 public:
 
-//                    PropertySet         (Phenomenon& phenomenon,
-//                                         std::string const& name);
-
-                   // PropertySet         (constant_size::PropertySet&&
-                   //                          property_set);
-
                    PropertySet         (hdf5::Identifier const& id);
 
                    PropertySet         (PropertySet const& other)=delete;
@@ -38,32 +32,21 @@ public:
 
     PropertySet&   operator=           (PropertySet&& other)=default;
 
-    same_shape::Value const&
-                   ids                 () const;
-
-    same_shape::Value&
-                   ids                 ();
-
     Domain const&  domain              () const;
 
     Domain&        domain              ();
-
-    same_shape::Value&
-                   reserve             (hsize_t const nr_items);
 
 private:
 
     Domain         _domain;
 
-    same_shape::Value _ids;
-
 };
 
 
-PropertySet        create_property_set (Phenomenon& phenomenon,
+PropertySet        create_property_set (PropertySets& property_sets,
                                         std::string const& name);
 
-PropertySet        create_property_set (Phenomenon& phenomenon,
+PropertySet        create_property_set (PropertySets& property_sets,
                                         std::string const& name,
                                         same_shape::Value const& ids);
 

@@ -64,15 +64,15 @@ public:
     Configuration const&
                    configuration       () const;
 
-    void           discretize_time     (Property const& property);
+    // void           discretize_time     (Property const& property);
 
     void           discretize_space    (Property const& property);
 
-    bool           time_is_discretized () const;
+    // bool           time_is_discretized () const;
 
     bool           space_is_discretized() const;
 
-    Property       time_discretization () const;
+    // Property       time_discretization () const;
 
     Property       space_discretization() const;
 

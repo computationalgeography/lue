@@ -17,10 +17,7 @@ public:
 
     static hdf5::Datatype file_datatype(hdf5::Identifier const& id);
 
-                   SpacePointDomain    (SpaceDomain const& space_domain);
-
-                   SpacePointDomain    (SpaceDomain const& space_domain,
-                                        hdf5::Datatype const& memory_datatype);
+                   SpacePointDomain    (SpaceDomain&& space_domain);
 
                    SpacePointDomain    (SpaceDomain&& space_domain,
                                         hdf5::Datatype const& memory_datatype);

@@ -1,4 +1,5 @@
 #include "lue/constant_size/validate.hpp"
+#include "lue/constant_size/time/located/validate.hpp"
 #include "lue/constant_size/time/omnipresent/validate.hpp"
 
 
@@ -11,10 +12,16 @@ void validate(
 {
     auto const& configuration = property_set.domain().configuration();
 
-    switch(configuration.time_domain_type()) {
-        case(TimeDomainType::omnipresent): {
+    switch(configuration.domain_type()) {
+        case(Domain::Configuration::DomainType::omnipresent): {
             time::omnipresent::validate(
                 time::omnipresent::PropertySet(
+                    property_set.id()), issues);
+            break;
+        }
+        case(Domain::Configuration::DomainType::located): {
+            time::located::validate(
+                time::located::PropertySet(
                     property_set.id()), issues);
             break;
         }

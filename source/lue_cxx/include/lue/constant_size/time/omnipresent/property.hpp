@@ -33,7 +33,7 @@ public:
 };
 
 
-Property           create_property     (PropertySet& property_set,
+Property           create_property     (hdf5::Group& group,
                                         std::string const& name,
                                         Property::Configuration const&
                                             configuration);

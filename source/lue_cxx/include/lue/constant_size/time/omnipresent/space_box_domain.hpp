@@ -21,10 +21,7 @@ public:
 
                    // SpaceBoxDomain      (PropertySet const& property_set);
 
-                   SpaceBoxDomain      (SpaceDomain const& space_domain);
-
-                   SpaceBoxDomain      (SpaceDomain const& space_domain,
-                                        hdf5::Datatype const& memory_datatype);
+                   SpaceBoxDomain      (SpaceDomain&& space_domain);
 
                    SpaceBoxDomain      (SpaceDomain&& space_domain,
                                         hdf5::Datatype const& memory_datatype);

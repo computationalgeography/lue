@@ -4,7 +4,6 @@
 namespace lue {
 namespace constant_size {
 
-
 SpaceDomain::SpaceDomain(
     hdf5::Group const& group)
 
@@ -21,15 +20,6 @@ SpaceDomain::SpaceDomain(
 
 {
 }
-
-
-// SpaceDomain::SpaceDomain(
-//     SpaceDomain const& other)
-// 
-//     : lue::SpaceDomain(other)
-// 
-// {
-// }
 
 
 SpaceDomain create_space_domain(

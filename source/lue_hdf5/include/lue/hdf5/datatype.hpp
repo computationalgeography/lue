@@ -46,6 +46,10 @@ public:
 
     bool           is_native           () const;
 
+    void           insert              (std::string const& name,
+                                        std::size_t offset,
+                                        Datatype const& datatype);
+
 private:
 
     //! Identifier of the datatype
@@ -88,6 +92,11 @@ std::string        standard_datatype_as_string(
 Datatype           create_datatype     (size_t const nr_bytes);
 
 Datatype           create_datatype     (hid_t const type_id,
+                                        size_t const nr_bytes);
+
+Datatype           create_string_datatype();
+
+Datatype           create_compound_datatype(
                                         size_t const nr_bytes);
 
 Datatype           memory_datatype     (Datatype const& file_datatype);

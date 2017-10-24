@@ -1,6 +1,6 @@
 #include "lue/constant_size/time/omnipresent/same_shape/value.hpp"
-#include <cassert>
 #include "lue/hdf5/chunk.hpp"
+#include <cassert>
 
 
 namespace lue {
@@ -47,7 +47,7 @@ Value::Value(
     hdf5::Datatype const& memory_datatype)
 
     : Array(location, name, memory_datatype),
-    omnipresent::Value()
+      omnipresent::Value()
 
 {
 }

@@ -68,13 +68,13 @@ public:
 
                    SpaceDomain         (hdf5::Group&& group);
 
-                   SpaceDomain         (SpaceDomain const& other)=default;
+                   SpaceDomain         (SpaceDomain const& other)=delete;
 
                    SpaceDomain         (SpaceDomain&& other)=default;
 
                    ~SpaceDomain        ()=default;
 
-    SpaceDomain&   operator=           (SpaceDomain const& other)=default;
+    SpaceDomain&   operator=           (SpaceDomain const& other)=delete;
 
     SpaceDomain&   operator=           (SpaceDomain&& other)=default;
 

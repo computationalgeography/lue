@@ -353,7 +353,7 @@ hdf5::Identifier create_raster(
     if(!phenomenon.property_sets().contains(property_set_name)) {
 
         auto property_set = omnipresent::create_property_set(
-            phenomenon, property_set_name);
+            phenomenon.property_sets(), property_set_name);
             // SpaceDomain::Configuration(
             //     SpaceDomain::Configuration::DomainType::located));
 

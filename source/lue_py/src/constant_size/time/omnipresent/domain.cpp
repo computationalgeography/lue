@@ -39,7 +39,7 @@ void init_domain_class(
                 py::object object = py::none{};
 
                 if(space_domain_exists(self)) {
-                    auto const space_domain = SpaceDomain(self);
+                    auto space_domain = SpaceDomain(self);
                     auto const& configuration = space_domain.configuration();
 
                     auto const file_datatype =
@@ -48,12 +48,12 @@ void init_domain_class(
                     switch(configuration.item_type()) {
                         case SpaceDomain::Configuration::ItemType::box: {
                             object = py::cast(
-                                new SpaceBoxDomain(space_domain));
+                                new SpaceBoxDomain(std::move(space_domain)));
                             break;
                         }
                         case SpaceDomain::Configuration::ItemType::point: {
                             object = py::cast(
-                                new SpacePointDomain(space_domain));
+                                new SpacePointDomain(std::move(space_domain)));
                             break;
                         }
                     }

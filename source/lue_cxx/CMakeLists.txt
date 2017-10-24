@@ -2,6 +2,7 @@ add_test_conditionally(test)
 
 add_library(lue STATIC
     src/array
+    src/clock
     src/collection
     src/dataset
     src/domain
@@ -18,7 +19,7 @@ add_library(lue STATIC
 #     src/space_domain_configuration
 #     src/time_discretization
 #     # src/time_discretization_configuration
-#     src/time_domain
+    src/time_domain
 #     src/time_domain_configuration
     src/validate
     src/universe
@@ -26,6 +27,7 @@ add_library(lue STATIC
 #     src/value
 #     src/value_configuration
 
+    src/compound/clock
 
     src/constant_size/domain
     src/constant_size/property
@@ -50,6 +52,23 @@ add_library(lue STATIC
 
     src/constant_size/time/omnipresent/same_shape/property
     src/constant_size/time/omnipresent/same_shape/value
+
+    src/constant_size/time/located/domain
+    src/constant_size/time/located/property
+    src/constant_size/time/located/property_set
+    src/constant_size/time/located/time_domain
+    src/constant_size/time/located/validate
+
+    src/constant_size/time/located/shared/domain
+    src/constant_size/time/located/shared/property_set
+    src/constant_size/time/located/shared/time_box
+    src/constant_size/time/located/shared/time_box_domain
+    src/constant_size/time/located/shared/time_domain
+
+    src/constant_size/time/located/shared/constant_shape/property
+
+    src/constant_size/time/located/shared/constant_shape/same_shape/property
+    src/constant_size/time/located/shared/constant_shape/same_shape/value
 )
 
 add_library(lue::lue ALIAS lue)
@@ -70,6 +89,7 @@ target_include_directories(lue
 target_link_libraries(lue
     PUBLIC
         lue::lue_hdf5
+        lue::lue_time
 )
 
 install(

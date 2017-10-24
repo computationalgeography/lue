@@ -1,0 +1,119 @@
+#include "lue/constant_size/time/located/shared/time_box_domain.hpp"
+#include "lue/tag.hpp"
+
+
+namespace lue {
+namespace constant_size {
+namespace time {
+namespace located {
+namespace shared {
+
+// hdf5::Datatype TimeBoxDomain::file_datatype(
+//     hdf5::Identifier const& id)
+// {
+//     return hdf5::Dataset(id, coordinates_tag).datatype();
+// }
+
+
+// TimeBoxDomain::TimeBoxDomain(
+//     PropertySet const& property_set)
+// 
+//     : TimeDomain(property_set.domain().time()),
+//       _items(id())
+// 
+// {
+// }
+
+
+// TimeBoxDomain::TimeBoxDomain(
+//     lue::TimeDomain& group)
+// 
+//     : TimeDomain(group),
+//       _items(group.id())
+// 
+// {
+// }
+
+
+// TimeBoxDomain::TimeBoxDomain(
+//     TimeDomain const& time_domain)
+// 
+//     : TimeDomain(time_domain),
+//       _items(id(), hdf5::memory_datatype(file_datatype(time_domain.id())))
+// 
+// {
+// }
+// 
+// 
+// TimeBoxDomain::TimeBoxDomain(
+//     TimeDomain const& time_domain,
+//     hdf5::Datatype const& memory_datatype)
+// 
+//     : TimeDomain(time_domain),
+//       _items(id(), memory_datatype)
+// 
+// {
+// }
+
+
+TimeBoxDomain::TimeBoxDomain(
+    TimeDomain&& time_domain)
+    // hdf5::Datatype const& memory_datatype)
+
+    : TimeDomain(std::forward<TimeDomain>(time_domain)),
+      _items(id(),  // memory_datatype)
+      hdf5::NativeDatatypeTraits<lue::time::DurationCount>::type_id())
+
+{
+}
+
+
+TimeBox const& TimeBoxDomain::items() const
+{
+    return _items;
+}
+
+
+TimeBox& TimeBoxDomain::items()
+{
+    return _items;
+}
+
+
+TimeBox& TimeBoxDomain::reserve(
+    hsize_t const nr_items)
+{
+    _items.reserve(nr_items);
+
+    return _items;
+}
+
+
+TimeBoxDomain create_time_box_domain(
+    PropertySet& property_set,
+    Clock const& clock)
+{
+    auto& domain = property_set.domain();
+
+    auto time = located::shared::create_time_domain(domain,
+        TimeDomain::Configuration(
+            clock,
+            TimeDomain::Configuration::Ownership::shared,
+            TimeDomain::Configuration::ItemType::box)
+    );
+
+    hdf5::Datatype memory_datatype(
+        hdf5::NativeDatatypeTraits<lue::time::DurationCount>::type_id());
+    hdf5::Datatype file_datatype(
+        hdf5::StandardDatatypeTraits<lue::time::DurationCount>::type_id());
+
+    create_time_box(time, file_datatype, memory_datatype);
+
+    return TimeBoxDomain(std::move(time)); // , memory_datatype);
+}
+
+}  // namespace shared
+}  // namespace located
+}  // namespace time
+}  // namespace constant_size
+}  // namespace lue

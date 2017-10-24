@@ -18,6 +18,21 @@ Attributes::Attributes(
 
 
 /*!
+    @brief      Add a new attribute to the set
+    @param      name Name of attribute
+    @param      datatype In-file datatype of the value
+    @param      dataspace Dataspace of the value
+*/
+Attribute Attributes::add(
+    std::string const& name,
+    Datatype const& datatype,
+    Dataspace const& dataspace)
+{
+    return create_attribute(_id, name, datatype, dataspace);
+}
+
+
+/*!
     @brief      Return whether an attribute named @a name is present
                 in the layered object
 */

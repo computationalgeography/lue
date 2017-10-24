@@ -119,30 +119,37 @@ struct StandardDatatypeTraits
     */
     static std::string name            ();
 
+    /*!
+        @brief      Return number of bytes occupied by the standard HDF5 type
+    */
+    static std::size_t nr_bytes        ();
+
 };
 
 
-#define STANDARD_DATATYPE_TRAITS(                    \
-    type,                                            \
-    type_id_)                                        \
-template<>                                           \
-struct StandardDatatypeTraits<type>                  \
-{                                                    \
-    static hid_t type_id() { return type_id_; }      \
-    static std::string name() { return #type_id_; }  \
+#define STANDARD_DATATYPE_TRAITS(                        \
+    type,                                                \
+    type_id_,                                            \
+    nr_bytes_)                                           \
+template<>                                               \
+struct StandardDatatypeTraits<type>                      \
+{                                                        \
+    static hid_t type_id() { return type_id_; }          \
+    static std::string name() { return #type_id_; }      \
+    static std::size_t nr_bytes() { return nr_bytes_; }  \
 };
 
 
-STANDARD_DATATYPE_TRAITS(int8_t, H5T_STD_I8LE)
-STANDARD_DATATYPE_TRAITS(int16_t, H5T_STD_I16LE)
-STANDARD_DATATYPE_TRAITS(int32_t, H5T_STD_I32LE)
-STANDARD_DATATYPE_TRAITS(int64_t, H5T_STD_I64LE)
-STANDARD_DATATYPE_TRAITS(uint8_t, H5T_STD_U8LE)
-STANDARD_DATATYPE_TRAITS(uint16_t, H5T_STD_U16LE)
-STANDARD_DATATYPE_TRAITS(uint32_t, H5T_STD_U32LE)
-STANDARD_DATATYPE_TRAITS(uint64_t, H5T_STD_U64LE)
-STANDARD_DATATYPE_TRAITS(float, H5T_IEEE_F32LE)
-STANDARD_DATATYPE_TRAITS(double, H5T_IEEE_F64LE)
+STANDARD_DATATYPE_TRAITS(int8_t, H5T_STD_I8LE, 1)
+STANDARD_DATATYPE_TRAITS(int16_t, H5T_STD_I16LE, 2)
+STANDARD_DATATYPE_TRAITS(int32_t, H5T_STD_I32LE, 4)
+STANDARD_DATATYPE_TRAITS(int64_t, H5T_STD_I64LE, 8)
+STANDARD_DATATYPE_TRAITS(uint8_t, H5T_STD_U8LE, 1)
+STANDARD_DATATYPE_TRAITS(uint16_t, H5T_STD_U16LE, 2)
+STANDARD_DATATYPE_TRAITS(uint32_t, H5T_STD_U32LE, 4)
+STANDARD_DATATYPE_TRAITS(uint64_t, H5T_STD_U64LE, 8)
+STANDARD_DATATYPE_TRAITS(float, H5T_IEEE_F32LE, 4)
+STANDARD_DATATYPE_TRAITS(double, H5T_IEEE_F64LE, 8)
 
 #undef STANDARD_DATATYPE_TRAITS
 

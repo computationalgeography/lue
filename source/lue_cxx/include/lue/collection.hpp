@@ -191,8 +191,11 @@ inline T& Collection<T>::add(
     std::string const& name,
     T&& item)
 {
-    auto pair = _items.insert(std::make_pair(name, std::make_unique<T>(
-        std::forward<T>(item))));
+    assert(!contains(name));
+
+    auto pair = _items.insert(
+        std::make_pair(name, std::make_unique<T>(std::forward<T>(item))));
+
     assert(pair.second);
 
     return *(*pair.first).second;

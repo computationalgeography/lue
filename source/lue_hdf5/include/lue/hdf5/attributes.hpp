@@ -29,6 +29,10 @@ public:
 
     Attributes&    operator=           (Attributes&& other)=default;
 
+    Attribute      add                 (std::string const& name,
+                                        Datatype const& file_datatype,
+                                        Dataspace const& dataspace);
+
     template<
         typename T>
     void           write               (std::string const& name,

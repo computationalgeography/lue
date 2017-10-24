@@ -262,6 +262,19 @@ bool Datatype::is_native() const
 }
 
 
+void Datatype::insert(
+    std::string const& name,
+    std::size_t offset,
+    Datatype const& datatype)
+{
+    auto status = ::H5Tinsert(_id, name.c_str(), offset, datatype.id());
+
+    if(status < 0) {
+        throw std::runtime_error("Cannot insert member to compound datatype");
+    }
+}
+
+
 bool operator==(
     Datatype const& lhs,
     Datatype const& rhs)
@@ -316,6 +329,41 @@ Datatype decode_datatype(
 }
 
 
+namespace {
+
+Datatype create_datatype_(
+    H5T_class_t const class_,
+    std::size_t const nr_bytes)
+{
+    auto id = Identifier(::H5Tcreate(class_, nr_bytes), ::H5Tclose);
+
+    if(!id.is_valid()) {
+        throw std::runtime_error("Cannot create compound data type");
+    }
+
+    Datatype datatype{std::move(id)};
+
+    return datatype;
+}
+
+
+Datatype copy_datatype(
+    hid_t const datatype_id)
+{
+    auto id = Identifier(::H5Tcopy(datatype_id), ::H5Tclose);
+
+    if(!id.is_valid()) {
+        throw std::runtime_error("Cannot copy data type");
+    }
+
+    Datatype datatype{std::move(id)};
+
+    return datatype;
+}
+
+}  // Anonymous namespace
+
+
 /*!
     @brief      Create a datatype for a UTF8-encoded string
     @param      nr_bytes Total size of the datatype
@@ -353,6 +401,34 @@ Datatype create_datatype(
 
     Datatype datatype(std::move(id));
     datatype.set_size(nr_bytes);
+
+    return datatype;
+}
+
+
+Datatype create_string_datatype()
+{
+    auto datatype = copy_datatype(H5T_C_S1);
+    auto status = ::H5Tset_cset(datatype.id(), H5T_CSET_UTF8);
+
+    if(status < 0) {
+        throw std::runtime_error("Cannot set character set");
+    }
+
+    datatype.set_size(H5T_VARIABLE);
+
+    return datatype;
+}
+
+
+Datatype create_compound_datatype(
+    std::size_t const nr_bytes)
+{
+    auto datatype = create_datatype_(H5T_COMPOUND, nr_bytes);
+
+    datatype.set_size(nr_bytes);
+
+    assert(datatype.id().is_valid());
 
     return datatype;
 }

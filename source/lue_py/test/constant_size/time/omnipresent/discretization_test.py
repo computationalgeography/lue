@@ -40,13 +40,13 @@ class DiscretizationTest(lue_test.TestCase):
             for r in range(rank):
                 self.assertEqual(property.values[i].shape[r], shapes[i][r])
 
-            self.assertArraysEqual(values[i][:], values[i])
+            self.assertArraysEqual(property.values[i][:], values[i])
 
-        self.assertTrue(not property.time_is_discretized)
         self.assertTrue(property.space_is_discretized)
 
         discretization_property = property.space_discretization
-        self.assertEqual(type(discretization_property),
+        self.assertEqual(
+            type(discretization_property),
             omnipresent.same_shape.Property)
 
 

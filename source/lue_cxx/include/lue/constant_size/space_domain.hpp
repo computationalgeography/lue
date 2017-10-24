@@ -15,7 +15,7 @@ public:
 
                    SpaceDomain         (lue::SpaceDomain&& domain);
 
-                   SpaceDomain         (SpaceDomain const& other)=default;
+                   SpaceDomain         (SpaceDomain const& other)=delete;
 
                    SpaceDomain         (SpaceDomain&& other)=default;
 
