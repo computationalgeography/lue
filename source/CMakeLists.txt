@@ -26,52 +26,29 @@ if(LUE_BUILD_PYTHON_API)
 
     install(
         DIRECTORY
+            ${CMAKE_CURRENT_BINARY_DIR}/include
             lue_hdf5/include
             lue_cxx/include
-            ${CMAKE_CURRENT_BINARY_DIR}/include
             ${CMAKE_CURRENT_BINARY_DIR}/lue_cxx/include
+            lue_hl/include
             lue_py/include
+            lue_time/include
         DESTINATION src
         COMPONENT python EXCLUDE_FROM_ALL
         FILES_MATCHING
             PATTERN "*.hpp"
     )
 
-    install(
-        DIRECTORY lue_hdf5/src
-        DESTINATION src/lue_hdf5
-        COMPONENT python EXCLUDE_FROM_ALL
-        FILES_MATCHING
-            PATTERN "*.hpp"
-            PATTERN "*.cpp"
-    )
-
-    install(
-        DIRECTORY lue_cxx/src
-        DESTINATION src/lue_cxx
-        COMPONENT python EXCLUDE_FROM_ALL
-        FILES_MATCHING
-            PATTERN "*.hpp"
-            PATTERN "*.cpp"
-    )
-
-    install(
-        DIRECTORY lue_hl/src
-        DESTINATION src/lue_hl
-        COMPONENT python EXCLUDE_FROM_ALL
-        FILES_MATCHING
-            PATTERN "*.hpp"
-            PATTERN "*.cpp"
-    )
-
-    install(
-        DIRECTORY lue_py/src
-        DESTINATION src/lue_py
-        COMPONENT python EXCLUDE_FROM_ALL
-        FILES_MATCHING
-            PATTERN "*.hpp"
-            PATTERN "*.cpp"
-    )
+    foreach(directory_name lue_hdf5 lue_cxx lue_hl lue_py lue_time)
+        install(
+            DIRECTORY ${directory_name}/src
+            DESTINATION src/${directory_name}
+            COMPONENT python EXCLUDE_FROM_ALL
+            FILES_MATCHING
+                PATTERN "*.hpp"
+                PATTERN "*.cpp"
+        )
+    endforeach()
 
     install(
         FILES

@@ -104,8 +104,8 @@ setuptools.setup(
                 "src/include",
             ],
             libraries = [
-                "boost_filesystem-mt",
-                "boost_system-mt",
+                "boost_filesystem",
+                "boost_system",
                 "hdf5"
             ],
             language="c++"

@@ -7,8 +7,8 @@ namespace time {
 namespace located {
 
 void validate(
-    PropertySet const& property_set,
-    hdf5::Issues& issues)
+    PropertySet const& /* property_set */,
+    hdf5::Issues& /* issues */)
 {
     // TODO
     // See omnipresent/validate.cpp
