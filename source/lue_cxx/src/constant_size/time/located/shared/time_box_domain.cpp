@@ -57,11 +57,12 @@ namespace shared {
 
 
 TimeBoxDomain::TimeBoxDomain(
-    TimeDomain&& time_domain,
-    hdf5::Datatype const& memory_datatype)
+    TimeDomain&& time_domain)
+    // hdf5::Datatype const& memory_datatype)
 
     : TimeDomain(std::forward<TimeDomain>(time_domain)),
-      _items(id(), memory_datatype)
+      _items(id(),  // memory_datatype)
+      hdf5::NativeDatatypeTraits<lue::time::DurationCount>::type_id())
 
 {
 }
@@ -96,7 +97,9 @@ TimeBoxDomain create_time_box_domain(
 
     auto time = located::shared::create_time_domain(domain,
         TimeDomain::Configuration(
-            clock, TimeDomain::Configuration::ItemType::box)
+            clock,
+            TimeDomain::Configuration::Ownership::shared,
+            TimeDomain::Configuration::ItemType::box)
     );
 
     hdf5::Datatype memory_datatype(
@@ -106,7 +109,7 @@ TimeBoxDomain create_time_box_domain(
 
     create_time_box(time, file_datatype, memory_datatype);
 
-    return TimeBoxDomain(std::move(time), memory_datatype);
+    return TimeBoxDomain(std::move(time)); // , memory_datatype);
 }
 
 }  // namespace shared

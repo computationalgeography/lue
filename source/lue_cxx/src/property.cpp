@@ -108,11 +108,11 @@ Property::Configuration const& Property::configuration() const
 }
 
 
-void Property::discretize_time(
-    Property const& property)
-{
-    create_soft_link(property.id(), time_discretization_tag);
-}
+// void Property::discretize_time(
+//     Property const& property)
+// {
+//     create_soft_link(property.id(), time_discretization_tag);
+// }
 
 
 void Property::discretize_space(
@@ -122,10 +122,10 @@ void Property::discretize_space(
 }
 
 
-bool Property::time_is_discretized () const
-{
-    return contains_soft_link(time_discretization_tag);
-}
+// bool Property::time_is_discretized () const
+// {
+//     return contains_soft_link(time_discretization_tag);
+// }
 
 
 bool Property::space_is_discretized() const
@@ -134,10 +134,10 @@ bool Property::space_is_discretized() const
 }
 
 
-Property Property::time_discretization () const
-{
-    return Property(id(), time_discretization_tag);
-}
+// Property Property::time_discretization () const
+// {
+//     return Property(id(), time_discretization_tag);
+// }
 
 
 Property Property::space_discretization() const
@@ -150,16 +150,10 @@ Property create_property(
     hdf5::Group& group,
     std::string const& name,
     Property::Configuration const& configuration)
-    // hdf5::Datatype const& file_datatype,
-    // hdf5::Datatype const& memory_datatype)
 {
     auto property = hdf5::create_group(group.id(), name);
 
     configuration.save(property.attributes());
-
-    // auto buffer = hdf5::encode_datatype(file_datatype);
-
-    // buffer = hdf5::encode_datatype(memory_datatype);
 
     return Property(std::move(property));
 }

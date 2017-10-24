@@ -9,21 +9,14 @@ namespace constant_size {
 namespace time {
 namespace located {
 namespace shared {
-// namespace different_shape {
-// 
-// void init_submodule(py::module& module);
-// 
-// }  // namespace different_shape
-// 
-// 
-// namespace same_shape {
-// 
-// void init_submodule(py::module& module);
-// 
-// }  // namespace same_shape
+namespace constant_shape {
+
+void init_submodule(py::module& module);
+
+}  // namespace constant_shape
 
 
-// void init_domain_class(py::module& module);
+void init_domain(py::module& module);
 // void init_property_class(py::module& module);
 void init_property_set(py::module& module);
 void init_time_box(py::module& module);
@@ -41,16 +34,15 @@ void init_submodule(
     where these changes happen at the same time for all items
 )");
 
-    // init_domain_class(submodule);
+    init_domain(submodule);
     init_time_domain(submodule);
     // init_property_class(submodule);
-
-    // different_shape::init_submodule(submodule);
-    // same_shape::init_submodule(submodule);
 
     init_property_set(submodule);
     init_time_box(submodule);
     init_time_box_domain(submodule);
+
+    constant_shape::init_submodule(submodule);
 }
 
 } // namespace shared

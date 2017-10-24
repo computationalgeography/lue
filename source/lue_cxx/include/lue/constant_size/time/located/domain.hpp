@@ -13,39 +13,39 @@ class Domain:
 
 public:
 
-    class Configuration
-    {
+    // class Configuration
+    // {
 
-    public:
+    // public:
 
-        enum class ItemType
-        {
+    //     enum class ItemType
+    //     {
 
-            box
+    //         box
 
-        };
+    //     };
 
-                   Configuration       (ItemType const item_type);
+    //                Configuration       (ItemType const item_type);
 
-                   Configuration       (hdf5::Attributes const& attributes);
+    //                Configuration       (hdf5::Attributes const& attributes);
 
-                   Configuration       (Configuration const& other)=default;
+    //                Configuration       (Configuration const& other)=default;
 
-                   ~Configuration      ()=default;
+    //                ~Configuration      ()=default;
 
-        Configuration& operator=       (Configuration const& other)=default;
+    //     Configuration& operator=       (Configuration const& other)=default;
 
-        ItemType   item_type           () const;
+    //     ItemType   item_type           () const;
 
-        void       save                (hdf5::Attributes& attributes) const;
+    //     void       save                (hdf5::Attributes& attributes) const;
 
-    private:
+    // private:
 
-        ItemType   _item_type;
+    //     ItemType   _item_type;
 
-        void       load                (hdf5::Attributes const& attributes);
+    //     void       load                (hdf5::Attributes const& attributes);
 
-    };
+    // };
 
 
                    Domain         (hdf5::Identifier const& location);
@@ -62,11 +62,11 @@ public:
 
     Domain&        operator=      (Domain&& other)=default;
 
-    Configuration const& configuration() const;
+    // Configuration const& configuration() const;
 
 private:
 
-    Configuration  _configuration;
+    // Configuration  _configuration;
 
 };
 

@@ -7,6 +7,54 @@
 namespace lue {
 namespace {
 
+detail::EnumStringBimap<time::Unit> const
+        unit_map = {
+    { time::Unit::second, "second" },
+    { time::Unit::minute, "minute" },
+    { time::Unit::hour, "hour" },
+    { time::Unit::day, "day" },
+    { time::Unit::week, "week" },
+    { time::Unit::month, "month" },
+    { time::Unit::year, "year" }
+};
+
+
+time::Unit parse_unit_name(
+    std::string const& string)
+{
+    if(!unit_map.contains(string)) {
+        throw std::runtime_error("Unknown time unit: " + string);
+    }
+
+    return unit_map.as_value(string);
+}
+
+
+detail::EnumStringBimap<TimeDomain::Configuration::Ownership> const
+        ownership_map = {
+    { TimeDomain::Configuration::Ownership::shared, "lue_shared" } // ,
+    // { TimeDomain::Configuration::Ownership::unique, "lue_unique" }
+};
+
+
+std::string ownership_to_string(
+    TimeDomain::Configuration::Ownership const ownership)
+{
+    return ownership_map.as_string(ownership);
+}
+
+
+TimeDomain::Configuration::Ownership parse_ownership(
+    std::string const& string)
+{
+    if(!ownership_map.contains(string)) {
+        throw std::runtime_error("Unknown time domain ownership: " + string);
+    }
+
+    return ownership_map.as_value(string);
+}
+
+
 detail::EnumStringBimap<TimeDomain::Configuration::ItemType> const
         item_type_map = {
     { TimeDomain::Configuration::ItemType::box, "lue_box" }
@@ -30,37 +78,16 @@ TimeDomain::Configuration::ItemType parse_item_type(
     return item_type_map.as_value(string);
 }
 
-
-detail::EnumStringBimap<time::Unit> const
-        unit_map = {
-    { time::Unit::second, "second" },
-    { time::Unit::minute, "minute" },
-    { time::Unit::hour, "hour" },
-    { time::Unit::day, "day" },
-    { time::Unit::week, "week" },
-    { time::Unit::month, "month" },
-    { time::Unit::year, "year" }
-};
-
-
-time::Unit parse_unit_name(
-    std::string const& string)
-{
-    if(!unit_map.contains(string)) {
-        throw std::runtime_error("Unknown time unit: " + string);
-    }
-
-    return unit_map.as_value(string);
-}
-
 }  // Anonymous namespace
 
 
 TimeDomain::Configuration::Configuration(
     Clock const& clock,
+    Ownership const ownership,
     ItemType const item_type)
 
     : _clock{clock},
+      _ownership{ownership},
       _item_type{item_type}
 
 {
@@ -71,6 +98,7 @@ TimeDomain::Configuration::Configuration(
     hdf5::Attributes const& attributes)
 
     : _clock(time::Unit::year, 1000),
+      _ownership{TimeDomain::Configuration::Ownership::shared},
       _item_type{TimeDomain::Configuration::ItemType::box}
 
 {
@@ -81,6 +109,13 @@ TimeDomain::Configuration::Configuration(
 Clock const& TimeDomain::Configuration::clock() const
 {
     return _clock;
+}
+
+
+TimeDomain::Configuration::Ownership
+    TimeDomain::Configuration::ownership() const
+{
+    return _ownership;
 }
 
 
@@ -107,6 +142,11 @@ void TimeDomain::Configuration::save(
 
 
     attributes.write<std::string>(
+        time_domain_ownership_tag,
+        ownership_to_string(_ownership)
+    );
+
+    attributes.write<std::string>(
         time_domain_item_type_tag,
         item_type_to_string(_item_type)
     );
@@ -126,6 +166,8 @@ void TimeDomain::Configuration::load(
     }
 
 
+    _ownership = parse_ownership(
+        attributes.read<std::string>(time_domain_ownership_tag));
     _item_type = parse_item_type(
         attributes.read<std::string>(time_domain_item_type_tag));
 }

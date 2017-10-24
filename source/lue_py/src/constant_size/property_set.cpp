@@ -1,9 +1,11 @@
 #include "lue/constant_size/property_set.hpp"
+// #include "lue/constant_size/time/omnipresent/different_shape/property.hpp"
+// #include "lue/constant_size/time/omnipresent/same_shape/property.hpp"
 #include <pybind11/pybind11.h>
 
 
 namespace py = pybind11;
-// using namespace pybind11::literals;
+using namespace pybind11::literals;
 
 
 namespace lue {
@@ -42,6 +44,23 @@ void init_property_set_class(
         //     py::overload_cast<>(&PropertySet::domain),
         //     "domain docstring...",
         //     py::return_value_policy::reference_internal)
+
+        // .def(
+        //     "__getitem__",
+        //     [](
+        //         PropertySet& self,
+        //         std::string const& name)
+        //     {
+        //         return cast_to_specialized_property(
+        //             self.properties()[name]);
+        //     },
+        //     "Return property\n"
+        //     "\n"
+        //     ":param str name: Name of property to find\n"
+        //     ":raises RuntimeError: In case the collection does not contain the\n"
+        //     "   property\n",
+        //             "name"_a
+        // )
 
         ;
 

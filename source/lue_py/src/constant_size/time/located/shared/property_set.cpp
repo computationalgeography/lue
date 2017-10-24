@@ -1,7 +1,6 @@
-/// #include "property.hpp"
 #include "lue/constant_size/time/located/shared/property_set.hpp"
-// #include "lue/constant_size/time/located/shared/different_shape/property.hpp"
-// #include "lue/constant_size/time/located/shared/same_shape/property.hpp"
+// #include "lue/constant_size/time/located/shared/constant_shape/different_shape/property.hpp"
+#include "lue/constant_size/time/located/shared/constant_shape/same_shape/property.hpp"
 #include "lue/phenomenon.hpp"
 // #include <pybind11/stl.h>
 #include <pybind11/pybind11.h>
@@ -17,6 +16,39 @@ namespace time {
 namespace located {
 namespace shared {
 
+py::object cast_to_specialized_property(
+    Property const& property)
+{
+
+    auto& configuration = property.configuration();
+
+    // TODO Assumes constant_shape
+
+    // TODO
+    //     Support registering of casters by specialized
+    //     PropertySet classes.
+    py::object object;
+
+    switch(configuration.shape_per_item_type()) {
+        case ShapePerItemType::same: {
+            auto file_datatype =
+                constant_shape::same_shape::Property::file_datatype(
+                    property.id());
+            object = py::cast(new constant_shape::same_shape::Property(
+                property.id(), memory_datatype(file_datatype)));
+            break;
+        }
+        case ShapePerItemType::different: {
+            assert(false);
+            break;
+        }
+    }
+
+    return object;
+}
+
+
+
 void init_property_set(
     py::module& module)
 {
@@ -26,59 +58,29 @@ void init_property_set(
         "PropertySet",
         "PropertySet docstring...")
 
-        // TODO Move this to shared::Domain
-        // .def_property_readonly(
-        //     "time",
-        //     [](
-        //         Domain& self)
-        //     {
-        //         py::object object = py::none{};
+        .def_property_readonly(
+            "domain",
+            py::overload_cast<>(&PropertySet::domain),
+            "domain docstring...",
+            py::return_value_policy::reference_internal)
 
-        //         if(time_domain_exists(self)) {
-        //             auto time_domain = TimeDomain(self);
-        //             auto const& configuration = time_domain.configuration();
-
-        //             // auto const file_datatype =
-        //             //     SpaceBoxDomain::file_datatype(space_domain.id());
-
-        //             switch(configuration.item_type()) {
-        //                 case TimeDomain::Configuration::ItemType::box: {
-        //                     // object = py::cast(
-        //                     //     new TimeBoxDomain(std::move(time_domain)));
-        //                     break;
-        //                 }
-        //             }
-        //         }
-
-        //         return object;
-
-        //     },
-        //     "time docstring...")
-
-        // .def_property_readonly(
-        //     "domain",
-        //     py::overload_cast<>(&PropertySet::domain),
-        //     "domain docstring...",
-        //     py::return_value_policy::reference_internal)
+        .def(
+            "__getitem__",
+            [](
+                PropertySet& self,
+                std::string const& name)
+            {
+                return cast_to_specialized_property(
+                    Property(self.properties()[name].id()));
+            },
+            "Return property\n"
+            "\n"
+            ":param str name: Name of property to find\n"
+            ":raises RuntimeError: In case the collection does not contain the\n"
+            "   property\n",
+            "name"_a)
 
         ;
-
-//         .def(
-//             "__getitem__",
-//             [](
-//                 PropertySet& self,
-//                 std::string const& name)
-//             {
-//                 return cast_to_specialized_property(
-//                     self.properties()[name]);
-//             },
-//     "Return property\n"
-//     "\n"
-//     ":param str name: Name of property to find\n"
-//     ":raises RuntimeError: In case the collection does not contain the\n"
-//     "   property\n",
-//             "name"_a
-//         )
 
 
     module.def(

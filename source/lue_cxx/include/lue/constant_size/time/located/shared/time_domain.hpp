@@ -9,15 +9,14 @@ namespace located {
 namespace shared {
 
 class TimeDomain:
-    public constant_size::time::located::TimeDomain
+    public located::TimeDomain
 {
 
 public:
 
                    TimeDomain          (hdf5::Group const& group);
 
-                   TimeDomain          (
-                           constant_size::time::located::TimeDomain&& domain);
+                   TimeDomain          (located::TimeDomain&& domain);
 
                    TimeDomain          (TimeDomain const& other)=delete;
 

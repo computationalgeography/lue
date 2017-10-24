@@ -11,23 +11,23 @@ namespace shared {
 PropertySet::PropertySet(
     hdf5::Identifier const& id)
 
-    : located::PropertySet(id)  // ,
-      // _domain{this->id()}
+    : located::PropertySet(id),
+      _domain{this->id()}
 
 {
 }
 
 
-// Domain const& PropertySet::domain() const
-// {
-//     return _domain;
-// }
-// 
-// 
-// Domain& PropertySet::domain()
-// {
-//     return _domain;
-// }
+Domain const& PropertySet::domain() const
+{
+    return _domain;
+}
+
+
+Domain& PropertySet::domain()
+{
+    return _domain;
+}
 
 
 PropertySet create_property_set(

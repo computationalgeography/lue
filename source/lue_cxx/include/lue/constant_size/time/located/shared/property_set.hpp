@@ -1,6 +1,6 @@
 #pragma once
 #include "lue/constant_size/time/located/property_set.hpp"
-// #include "lue/constant_size/time/located/shared/domain.hpp"
+#include "lue/constant_size/time/located/shared/domain.hpp"
 #include "lue/property_sets.hpp"
 
 
@@ -28,13 +28,13 @@ public:
 
     PropertySet&   operator=           (PropertySet&& other)=default;
 
-    // Domain const&  domain              () const;
+    Domain const&  domain              () const;
 
-    // Domain&        domain              ();
+    Domain&        domain              ();
 
 private:
 
-    // Domain         _domain;
+    Domain         _domain;
 
 };
 

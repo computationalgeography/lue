@@ -30,6 +30,8 @@ static std::string const time_domain_tag =
     "lue_time_domain";
 static std::string const time_domain_item_type_tag =
     "lue_time_domain_item_type";
+static std::string const time_domain_ownership_tag =
+    "lue_time_domain_ownership";
 static std::string const time_domain_type_tag =
     "lue_time_domain_type";
 

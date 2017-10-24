@@ -54,8 +54,10 @@ add_library(lue STATIC
     src/constant_size/time/omnipresent/same_shape/value
 
     src/constant_size/time/located/domain
+    src/constant_size/time/located/property
     src/constant_size/time/located/property_set
     src/constant_size/time/located/time_domain
+    src/constant_size/time/located/validate
 
     src/constant_size/time/located/shared/domain
     src/constant_size/time/located/shared/property_set
@@ -63,7 +65,10 @@ add_library(lue STATIC
     src/constant_size/time/located/shared/time_box_domain
     src/constant_size/time/located/shared/time_domain
 
-    # src/constant_size/time/located/shared/constant_shape/same_shape/value
+    src/constant_size/time/located/shared/constant_shape/property
+
+    src/constant_size/time/located/shared/constant_shape/same_shape/property
+    src/constant_size/time/located/shared/constant_shape/same_shape/value
 )
 
 add_library(lue::lue ALIAS lue)

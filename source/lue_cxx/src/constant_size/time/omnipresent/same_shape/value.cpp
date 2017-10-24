@@ -1,6 +1,6 @@
 #include "lue/constant_size/time/omnipresent/same_shape/value.hpp"
-#include <cassert>
 #include "lue/hdf5/chunk.hpp"
+#include <cassert>
 
 
 namespace lue {

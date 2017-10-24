@@ -23,8 +23,8 @@ public:
                    // TimeBoxDomain       (TimeDomain const& time_domain,
                    //                      hdf5::Datatype const& memory_datatype);
 
-                   TimeBoxDomain       (TimeDomain&& time_domain,
-                                        hdf5::Datatype const& memory_datatype);
+                   TimeBoxDomain       (TimeDomain&& time_domain);
+                                        // hdf5::Datatype const& memory_datatype);
 
                    TimeBoxDomain       (TimeBoxDomain const& other)=delete;
 

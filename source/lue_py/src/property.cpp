@@ -23,11 +23,6 @@ void init_property_class(
 )")
 
 
-
-
-
-
-
         // .def("add", &Properties<>::add,
         //     "add docstring...",
         //     py::return_value_policy::reference_internal)
@@ -59,10 +54,10 @@ void init_property_class(
             "discretize_space docstring...",
             "property"_a)
 
-        .def_property_readonly(
-            "time_is_discretized",
-            &Property::time_is_discretized,
-            "time_is_discretized docstring...")
+        // .def_property_readonly(
+        //     "time_is_discretized",
+        //     &Property::time_is_discretized,
+        //     "time_is_discretized docstring...")
 
         .def_property_readonly(
             "space_is_discretized",

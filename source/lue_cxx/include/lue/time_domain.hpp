@@ -16,14 +16,27 @@ public:
 
     public:
 
+        enum class Ownership
+        {
+
+            //! Time domain items are shared between items
+            shared,
+
+            // //! Each item has a time domain item
+            // unique
+
+        };
+
         enum class ItemType
         {
 
+            //! Extent in time (duration)
             box
 
         };
 
                    Configuration       (Clock const& clock,
+                                        Ownership const ownership,
                                         ItemType const item_type);
 
                    Configuration       (hdf5::Attributes const& attributes);
@@ -34,15 +47,19 @@ public:
 
         Configuration& operator=       (Configuration const& other)=default;
 
-        ItemType   item_type           () const;
-
         Clock const& clock             () const;
+
+        Ownership  ownership           () const;
+
+        ItemType   item_type           () const;
 
         void       save                (hdf5::Attributes& attributes) const;
 
     private:
 
         Clock      _clock;
+
+        Ownership  _ownership;
 
         ItemType   _item_type;
 

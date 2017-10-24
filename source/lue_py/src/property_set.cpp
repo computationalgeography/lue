@@ -1,5 +1,7 @@
 #include "collection.hpp"
 #include "lue/property_sets.hpp"
+#include "lue/time_domain.hpp"
+#include "lue/constant_size/time/located/shared/property_set.hpp"
 #include "lue/constant_size/time/omnipresent/property_set.hpp"
 #include <pybind11/pybind11.h>
 // #include <iostream>
@@ -41,6 +43,8 @@ void init_property_set_class(
             {
                 auto& property_set = self[name];
                 auto const& configuration = property_set.configuration();
+                auto const& domain = property_set.domain();
+                auto const& domain_configuration = domain.configuration();
 
                 // TODO
                 //     Support registering of casters by specialized
@@ -48,16 +52,49 @@ void init_property_set_class(
                 py::object object = py::none{};
 
                 switch(configuration.size_of_item_collection_type()) {
+
                     case SizeOfItemCollectionType::constant_size: {
 
-                        // TODO Switch on time domain time.
+                        switch(domain_configuration.domain_type()) {
 
+                            case Domain::Configuration::DomainType::
+                                    omnipresent: {
+                                object = py::cast(new
+                                    constant_size::time::omnipresent::
+                                        PropertySet(property_set.id()));
+                                break;
+                            }
 
-                        object = py::cast(new
-                                constant_size::time::omnipresent::PropertySet(
-                            property_set.id()));
+                            case Domain::Configuration::DomainType::
+                                    located: {
+
+                                constant_size::time::located::PropertySet
+                                    located_property_set(property_set.id());
+
+                                TimeDomain time_domain(domain);
+
+                                switch(time_domain.configuration()
+                                        .ownership()) {
+
+                                    case TimeDomain::Configuration::
+                                            Ownership::shared: {
+                                        object = py::cast(new
+                                            constant_size::time::located::
+                                                shared::PropertySet(
+                                                    property_set.id()));
+                                        break;
+                                    }
+
+                                }
+
+                                break;
+                            }
+
+                        }
+
                         break;
                     }
+
                 }
 
                 return object;
@@ -141,6 +178,25 @@ void init_property_set_class(
                 return property_set.properties().names();
             },
             "property_names docstring...")
+
+//         .def(
+//             "__getitem__",
+//             [](
+//                 PropertySet& self,
+//                 std::string const& name)
+//             {
+//                 return cast_to_specialized_property(
+//                     self.properties()[name]);
+//             },
+//             "Return property\n"
+//             "\n"
+//             ":param str name: Name of property to find\n"
+//             ":raises RuntimeError: In case the collection does not contain the\n"
+//             "   property\n",
+//             "name"_a)
+
+
+
 
 
     //     .def_property_readonly("configuration", &PropertySet::configuration,

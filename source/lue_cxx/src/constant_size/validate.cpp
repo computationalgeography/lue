@@ -1,4 +1,5 @@
 #include "lue/constant_size/validate.hpp"
+#include "lue/constant_size/time/located/validate.hpp"
 #include "lue/constant_size/time/omnipresent/validate.hpp"
 
 
@@ -19,8 +20,9 @@ void validate(
             break;
         }
         case(Domain::Configuration::DomainType::located): {
-            bool const implemented{false};
-            assert(implemented);
+            time::located::validate(
+                time::located::PropertySet(
+                    property_set.id()), issues);
             break;
         }
     }

@@ -61,7 +61,8 @@ PropertySet create_property_set(
     std::string const& name,
     Domain::Configuration const& domain_configuration)
 {
-    auto property_set = lue::create_property_set(group, name,
+    auto property_set = lue::create_property_set(
+        group, name,
         PropertySet::Configuration(SizeOfItemCollectionType::constant_size),
         domain_configuration);
 
@@ -78,7 +79,8 @@ PropertySet create_property_set(
     time::omnipresent::same_shape::Value const& ids,
     Domain::Configuration const& domain_configuration)
 {
-    auto property_set = lue::create_property_set(group, name,
+    auto property_set = lue::create_property_set(
+        group, name,
         PropertySet::Configuration(SizeOfItemCollectionType::constant_size),
         domain_configuration);
 

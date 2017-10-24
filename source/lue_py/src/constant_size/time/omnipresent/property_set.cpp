@@ -1,9 +1,9 @@
-#include "property.hpp"
+#include "lue/py/constant_size/time/omnipresent/property.hpp"
 #include "lue/constant_size/time/omnipresent/property_set.hpp"
 #include "lue/constant_size/time/omnipresent/different_shape/property.hpp"
 #include "lue/constant_size/time/omnipresent/same_shape/property.hpp"
 #include "lue/phenomenon.hpp"
-#include <pybind11/stl.h>
+// #include <pybind11/stl.h>
 
 
 namespace py = pybind11;
@@ -14,7 +14,6 @@ namespace lue {
 namespace constant_size {
 namespace time {
 namespace omnipresent {
-
 
 void init_property_set_class(
     py::module& module)
@@ -48,13 +47,13 @@ void init_property_set_class(
                 return cast_to_specialized_property(
                     self.properties()[name]);
             },
-    "Return property\n"
-    "\n"
-    ":param str name: Name of property to find\n"
-    ":raises RuntimeError: In case the collection does not contain the\n"
-    "   property\n",
-            "name"_a
-        )
+            "Return property\n"
+            "\n"
+            ":param str name: Name of property to find\n"
+            ":raises RuntimeError: In case the collection does not contain the\n"
+            "   property\n",
+            "name"_a)
+
 
         // .def(
         //     "add_property",

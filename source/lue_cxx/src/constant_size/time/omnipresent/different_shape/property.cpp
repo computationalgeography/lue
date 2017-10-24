@@ -170,9 +170,10 @@ Property create_property(
     hdf5::Datatype const& memory_datatype,
     int const rank)
 {
+    auto& properties = property_set.properties();
     Property::Configuration configuration(ShapePerItemType::different);
-    auto property = omnipresent::create_property(property_set, name,
-        configuration);
+    auto& property = properties.add(name,
+        omnipresent::create_property(properties, name, configuration));
     auto value = create_value(property.id(), value_tag, file_datatype,
         memory_datatype, rank);
 

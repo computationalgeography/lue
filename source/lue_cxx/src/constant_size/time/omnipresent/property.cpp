@@ -34,15 +34,12 @@ Property::Property(
 
 
 Property create_property(
-    PropertySet& property_set,
+    // PropertySet& property_set,
+    hdf5::Group& group,
     std::string const& name,
     Property::Configuration const& configuration)
 {
-    auto& properties = property_set.properties();
-    auto& property = properties.add(name, std::move(
-        constant_size::create_property(properties, name, configuration)));
-
-    return Property(property.id());
+    return constant_size::create_property(group, name, configuration);
 }
 
 }  // namespace omnipresent
