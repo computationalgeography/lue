@@ -3,13 +3,16 @@ Changes
 
 0.1.2
 -----
-- `xxx <xxx`>_
-- `Make it possible to share id collections between property sets <https://github.com/pcraster/lue/issues/18`>_
+- `xxx <xxx>`_
+- `Add support for discretizing time <https://github.com/pcraster/lue/issues/30>`_
+- `Add support for time_box time domain items <https://github.com/pcraster/lue/issues/28>`_
+- `Add support for time coordinates <https://github.com/pcraster/lue/issues/29>`_
+- `Make it possible to share id collections between property sets <https://github.com/pcraster/lue/issues/18>`_
 - Renamed `space_box_domain.boxes` to `space_box_domain.items`
-- `Support space points <https://github.com/pcraster/lue/issues/24`>_
-- `Iteration on SpaceBox object fails <https://github.com/pcraster/lue/issues/21`>_
-- `Support export of domain to shapefile <https://github.com/pcraster/lue/issues/17`>_
-- `Validate: verify that item-ids are unique <https://github.com/pcraster/lue/issues/14`>_
+- `Support space points <https://github.com/pcraster/lue/issues/24>`_
+- `Iteration on SpaceBox object fails <https://github.com/pcraster/lue/issues/21>`_
+- `Support export of domain to shapefile <https://github.com/pcraster/lue/issues/17>`_
+- `Validate: verify that item-ids are unique <https://github.com/pcraster/lue/issues/14>`_
 - `Add assert_is_valid to lue_py <https://github.com/pcraster/lue/issues/16>`_
 - `Make validate function available in Python package <https://github.com/pcraster/lue/issues/13>`_
 - `Validate must report missing item ids <https://github.com/pcraster/lue/issues/12>`_
