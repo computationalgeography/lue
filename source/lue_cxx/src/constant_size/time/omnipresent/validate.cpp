@@ -14,12 +14,11 @@ void validate(
     PropertySet const& property_set,
     hdf5::Issues& issues)
 {
-    // TODO
-    // - test Number of item ids equals number of values in each property
-
     auto const nr_ids = property_set.ids().nr_items();
 
-    hdf5::assert_unique_values(property_set.ids(), issues);
+    // if(performance_is_not_an_issue) {
+    //     hdf5::assert_unique_values(property_set.ids(), issues);
+    // }
 
     auto const& properties = property_set.properties();
 
@@ -29,6 +28,7 @@ void validate(
         size_t nr_values;
 
         switch(configuration.shape_per_item_type()) {
+
             case ShapePerItemType::same: {
                 auto file_datatype = same_shape::Property::file_datatype(
                     property.id());
@@ -36,11 +36,9 @@ void validate(
                     property, memory_datatype(file_datatype));
                 nr_values =  property2.values().nr_items();
 
-    //             // to_dot(same_shape::Property(property,
-    //             //     memory_datatype(file_datatype)), issues);
-
                 break;
             }
+
             case ShapePerItemType::different: {
                 auto file_datatype = different_shape::Property::file_datatype(
                     property.id());
@@ -48,11 +46,9 @@ void validate(
                     property, memory_datatype(file_datatype));
                 nr_values =  property2.values().nr_items();
 
-    //             // to_dot(different_shape::Property(property,
-    //             //     memory_datatype(file_datatype)), issues);
-
                 break;
             }
+
         }
 
         if(nr_values != nr_ids) {
