@@ -1,11 +1,12 @@
 #pragma once
 #include "lue/time/unit.hpp"
+#include <cstdint>
 
 
 namespace lue {
 namespace time {
 
-using TickPeriodCount = std::size_t;
+using TickPeriodCount = uint64_t;
 
 
 /*!
@@ -34,6 +35,8 @@ public:
 
     using Count = TickPeriodCount;
 
+                   TickPeriod          ();
+
                    TickPeriod          (Count const nr_units);
 
                    TickPeriod          (TickPeriod const&)=default;
@@ -54,6 +57,16 @@ private:
     Count          _nr_units;
 
 };
+
+
+template<
+    typename Unit>
+inline TickPeriod<Unit>::TickPeriod()
+
+    : _nr_units{1}
+
+{
+}
 
 
 template<
