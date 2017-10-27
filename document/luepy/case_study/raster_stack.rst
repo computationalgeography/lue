@@ -1,17 +1,17 @@
 Temporal stack of rasters
 =========================
-A temporal stack of rasters is an extension of the case of a raster where, besides discretizing space in raster cells, time is discretized in time steps. This can be used to capture the magnitude of some continuous varying field, like air pressure, both though space and time.
+A raster stack is an extension of the case of a raster where, besides discretizing space in raster cells, time is discretized in time steps. This can be used to capture the magnitude of some continuous varying field, like air pressure, both though space and time.
 
 A stack of rasters is a discretization of a value within a time and space extent. The next sections describe how a single temporal stack of rasters can be captured by the LUE conceptual data model. The result is capable of capturing many temporal stacks of rasters (for multiple items).
 
 time domain
 -----------
-A stack's location in time is modelled by a 1D time box. This is an extent defining the part of the time domain within which the stack's values are defined.
+A stack's location in time is modelled by a 1D time box. This is an extent, defining the part of the time domain within which the stack's values are defined.
 
 
 space domain
 ------------
-A stack's location is space is modelled by a 2D space box. This is an extent defining the part of the space domain within which the stack's values are defined.
+A stack's location in space is modelled by a 2D space box. This is an extent, defining the part of the space domain within which the stack's values are defined.
 
 
 property

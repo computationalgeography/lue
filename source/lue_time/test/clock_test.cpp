@@ -15,5 +15,5 @@ BOOST_AUTO_TEST_CASE(seconds)
     using Clock = Clock<TickPeriod>;
 
     TickPeriod tick_period(nr_seconds_per_tick);
-    Clock clock();
+    Clock clock;
 }

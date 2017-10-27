@@ -9,7 +9,7 @@ The LUE data model is capable of capuring many (all?) kinds of data. In this sec
    constant
    raster
    point
-   temporal_stack_of_rasters
+   raster_stack
    polygon
    road_network
    gps_track

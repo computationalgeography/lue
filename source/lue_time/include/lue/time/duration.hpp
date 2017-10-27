@@ -1,11 +1,11 @@
 #pragma once
-#include <cstddef>
+#include <cstdint>
 
 
 namespace lue {
 namespace time {
 
-using DurationCount = std::size_t;
+using DurationCount = uint64_t;
 
 
 /*!

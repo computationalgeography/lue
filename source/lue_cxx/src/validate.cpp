@@ -68,11 +68,13 @@ void validate(
     auto const& configuration = property_set.configuration();
 
     switch(configuration.size_of_item_collection_type()) {
+
         case(SizeOfItemCollectionType::constant_size): {
             constant_size::validate(constant_size::PropertySet(
                 property_set.id()), issues);
             break;
         }
+
     }
 }
 
@@ -105,16 +107,12 @@ void validate(
     Dataset const& dataset,
     hdf5::Issues& issues)
 {
-    // TODO
-    // - test version attribute (error)
-    // - test history attribute (warning)
-
-
     auto const& universes = dataset.universes();
 
     for(auto const& name: universes.names()) {
         validate(universes[name], issues);
     }
+
 
     auto const& phenomena = dataset.phenomena();
 
@@ -128,6 +126,10 @@ void validate(
     hdf5::File const& file,
     hdf5::Issues& issues)
 {
+    // TODO
+    // - test version attribute (error)
+    // - test history attribute (warning)
+
     // TODO
     //     history attribute on all levels, maybe with only information
     //     about the contained information?
