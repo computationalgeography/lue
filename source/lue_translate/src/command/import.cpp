@@ -98,8 +98,15 @@ int Import::run_implementation()
             // First input is a dataset that can be read by GDAL.
             // We need to convert from a GDAL format to the LUE format.
 
-            translate_gdal_raster_dataset_to_lue(input_dataset_names,
-                output_dataset_name, metadata);
+            translate_gdal_raster_dataset_to_lue(
+                input_dataset_names, output_dataset_name, metadata);
+        }
+        // TODO Support import of various file formats into a single
+        //      lue dataset
+        else if(bfs::path(input_dataset_names[0]).extension() == ".tss") {
+           assert(input_dataset_names.size() == 1);
+           translate_geo_eas_to_lue(
+               input_dataset_names[0], output_dataset_name, metadata);
         }
         else {
             throw std::runtime_error(

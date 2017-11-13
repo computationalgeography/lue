@@ -15,54 +15,25 @@ namespace shared {
 // }
 
 
-// TimeBoxDomain::TimeBoxDomain(
-//     PropertySet const& property_set)
-// 
-//     : TimeDomain(property_set.domain().time()),
-//       _items(id())
-// 
-// {
-// }
+TimeBoxDomain::TimeBoxDomain(
+    TimeDomain const& time_domain)
 
+    : TimeDomain{time_domain.id()},
+      _items{
+          id(),
+          hdf5::NativeDatatypeTraits<lue::time::DurationCount>::type_id()}
 
-// TimeBoxDomain::TimeBoxDomain(
-//     lue::TimeDomain& group)
-// 
-//     : TimeDomain(group),
-//       _items(group.id())
-// 
-// {
-// }
-
-
-// TimeBoxDomain::TimeBoxDomain(
-//     TimeDomain const& time_domain)
-// 
-//     : TimeDomain(time_domain),
-//       _items(id(), hdf5::memory_datatype(file_datatype(time_domain.id())))
-// 
-// {
-// }
-// 
-// 
-// TimeBoxDomain::TimeBoxDomain(
-//     TimeDomain const& time_domain,
-//     hdf5::Datatype const& memory_datatype)
-// 
-//     : TimeDomain(time_domain),
-//       _items(id(), memory_datatype)
-// 
-// {
-// }
+{
+}
 
 
 TimeBoxDomain::TimeBoxDomain(
     TimeDomain&& time_domain)
-    // hdf5::Datatype const& memory_datatype)
 
     : TimeDomain(std::forward<TimeDomain>(time_domain)),
-      _items(id(),  // memory_datatype)
-      hdf5::NativeDatatypeTraits<lue::time::DurationCount>::type_id())
+      _items{
+          id(),
+          hdf5::NativeDatatypeTraits<lue::time::DurationCount>::type_id()}
 
 {
 }

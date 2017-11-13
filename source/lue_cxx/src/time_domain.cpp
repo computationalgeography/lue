@@ -1,4 +1,5 @@
 #include "lue/time_domain.hpp"
+#include "lue/time_unit_util.hpp"
 #include "lue/compound/clock.hpp"
 #include "lue/enum_string_bimap.hpp"
 #include "lue/tag.hpp"
@@ -6,29 +7,6 @@
 
 namespace lue {
 namespace {
-
-detail::EnumStringBimap<time::Unit> const
-        unit_map = {
-    { time::Unit::second, "second" },
-    { time::Unit::minute, "minute" },
-    { time::Unit::hour, "hour" },
-    { time::Unit::day, "day" },
-    { time::Unit::week, "week" },
-    { time::Unit::month, "month" },
-    { time::Unit::year, "year" }
-};
-
-
-time::Unit parse_unit_name(
-    std::string const& string)
-{
-    if(!unit_map.contains(string)) {
-        throw std::runtime_error("Unknown time unit: " + string);
-    }
-
-    return unit_map.as_value(string);
-}
-
 
 detail::EnumStringBimap<TimeDomain::Configuration::Ownership> const
         ownership_map = {
@@ -162,7 +140,7 @@ void TimeDomain::Configuration::load(
         auto const memory_datatype = compound::create_clock_memory_datatype();
         attribute.read(memory_datatype, clock);
 
-        _clock = Clock(parse_unit_name(clock.unit_name()), clock.nr_units());
+        _clock = Clock(string_to_unit(clock.unit_name()), clock.nr_units());
     }
 
 

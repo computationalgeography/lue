@@ -18,7 +18,7 @@ public:
 
     // static hdf5::Datatype file_datatype(hdf5::Identifier const& id);
 
-                   // TimeBoxDomain       (TimeDomain const& time_domain);
+                   TimeBoxDomain       (TimeDomain const& time_domain);
 
                    // TimeBoxDomain       (TimeDomain const& time_domain,
                    //                      hdf5::Datatype const& memory_datatype);

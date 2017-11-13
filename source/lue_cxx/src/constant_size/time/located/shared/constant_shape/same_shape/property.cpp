@@ -63,7 +63,7 @@ same_shape::Value& Property::reserve(
 
 
 Property create_property(
-    PropertySet& property_set,
+    shared::PropertySet& property_set,
     std::string const& name,
     hdf5::Datatype const& file_datatype,
     hdf5::Datatype const& memory_datatype)
@@ -77,13 +77,12 @@ Property create_property(
 
     assert(property.id().is_valid());
 
-    // return Property(std::move(property), memory_datatype);
     return Property(property.id(), memory_datatype);
 }
 
 
 Property create_property(
-    PropertySet& property_set,
+    shared::PropertySet& property_set,
     std::string const& name,
     hdf5::Datatype const& file_datatype,
     hdf5::Datatype const& memory_datatype,
@@ -99,7 +98,6 @@ Property create_property(
 
     assert(property.id().is_valid());
 
-    // return Property(std::move(property), memory_datatype);
     return Property(property.id(), memory_datatype);
 }
 

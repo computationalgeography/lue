@@ -57,7 +57,12 @@ if(LUE_BUILD_PYTHON_API)
         DESTINATION .
         COMPONENT python EXCLUDE_FROM_ALL
     )
-    endif()
+endif()
+
+if(LUE_BUILD_LUE_TEST)
+    add_subdirectory(lue_test)
+    list(APPEND doxygen_input lue_test)
+endif()
 
 if(LUE_BUILD_LUE_UTILITY)
     add_subdirectory(lue_utility)

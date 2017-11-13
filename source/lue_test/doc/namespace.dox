@@ -1,0 +1,11 @@
+namespace lue {
+
+/*!
+    @brief      Namespace containing code to be used in testing
+
+    This namespace contains code that is useful when writing tests.
+*/
+namespace test {
+}
+
+}
