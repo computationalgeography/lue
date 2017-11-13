@@ -3,6 +3,8 @@ add_unit_tests(
     NAMES
         raster_test
         scalar_test
+        time_series_test
     LINK_LIBRARIES
         lue::hl
+        lue::test
 )

@@ -63,6 +63,7 @@ endif()
 
 if(LUE_BUILD_TEST)
     set(DEVBASE_BUILD_TEST TRUE)
+    set(LUE_BUILD_LUE_TEST TRUE)
 endif()
 
 

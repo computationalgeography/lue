@@ -153,7 +153,7 @@ class DiscretizedTimeTest(lue_test.TestCase):
         # - Per time box, per item, an nD value which is
         #   discretized according to nr_steps in discretization property
         # - The HDF5 dataset is shaped as folows:
-        #     [nr_time_domain_items, nr_items, value_rank]
+        #     [nr_time_domain_items, nr_items, value_shape]
         value_property_name = "my_value_property"
         value_type = numpy.float64
         value_shape = (nr_steps,)

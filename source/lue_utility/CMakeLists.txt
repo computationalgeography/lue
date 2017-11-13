@@ -19,6 +19,7 @@ target_include_directories(lue_utility
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>
+        lue::time
 )
 
 target_link_libraries(lue_utility

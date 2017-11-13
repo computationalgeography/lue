@@ -1,7 +1,8 @@
 #pragma once
 #include "lue/constant_size/time/located/shared/constant_shape/property.hpp"
 #include "lue/constant_size/time/located/shared/constant_shape/same_shape/value.hpp"
-#include "lue/property_set.hpp"
+#include "lue/constant_size/time/located/shared/property_set.hpp"
+// #include "lue/property_set.hpp"
 
 
 namespace lue {
@@ -56,12 +57,12 @@ private:
 };
 
 
-Property           create_property     (PropertySet& property_set,
+Property           create_property     (shared::PropertySet& property_set,
                                         std::string const& name,
                                         hdf5::Datatype const& file_datatype,
                                         hdf5::Datatype const& memory_datatype);
 
-Property           create_property     (PropertySet& property_set,
+Property           create_property     (shared::PropertySet& property_set,
                                         std::string const& name,
                                         hdf5::Datatype const& file_datatype,
                                         hdf5::Datatype const& memory_datatype,
@@ -73,4 +74,9 @@ Property           create_property     (PropertySet& property_set,
 }  // namespace located
 }  // namespace time
 }  // namespace constant_size
+// Property           meh     (PropertySet& property_set,
+//                                         std::string const& name,
+//                                         hdf5::Datatype const& file_datatype,
+//                                         hdf5::Datatype const& memory_datatype);
+// 
 }  // namespace lue

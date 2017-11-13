@@ -1,27 +1,25 @@
-add_test_conditionally(test)
+# add_test_conditionally(test)
 
-add_library(lue_hl STATIC
-    src/raster
-    # src/scalar
-    src/time_series
+add_library(lue_test STATIC
+    src/dataset_fixture
 )
 
-add_library(lue::hl ALIAS lue_hl)
+add_library(lue::test ALIAS lue_test)
 
-target_include_directories(lue_hl
+target_include_directories(lue_test
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>
 )
 
-target_link_libraries(lue_hl
+target_link_libraries(lue_test
     PUBLIC
         lue::lue
 )
 
 install(
     TARGETS
-        lue_hl
+        lue_test
     EXPORT
         lue_targets
     LIBRARY DESTINATION lib
