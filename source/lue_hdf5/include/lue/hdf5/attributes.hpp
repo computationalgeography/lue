@@ -17,7 +17,7 @@ class Attributes
 
 public:
 
-                   Attributes          (Identifier const& id);
+    explicit       Attributes          (Identifier const& id);
 
                    Attributes          (Attributes const& other)=default;
 

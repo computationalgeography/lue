@@ -10,11 +10,13 @@ class ObjectInfo
 
 public:
 
-                   ObjectInfo          (hid_t const id);
+    explicit       ObjectInfo          (hid_t id);
 
                    ObjectInfo          (ObjectInfo const& other)=delete;
 
                    ObjectInfo          (ObjectInfo&& other)=default;
+
+                   ~ObjectInfo         ()=default;
 
     ObjectInfo&    operator=           (ObjectInfo const& other)=delete;
 

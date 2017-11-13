@@ -1,17 +1,13 @@
 #pragma once
+#include "lue/configure.hpp"
 #include "lue/hdf5/dataspace.hpp"
 #include "lue/hdf5/datatype.hpp"
 #include "lue/hdf5/hyperslab.hpp"
 #include "lue/hdf5/property_list.hpp"
-#include "lue/configure.hpp"
 
 
 namespace lue {
 namespace hdf5 {
-
-bool               dataset_exists      (Identifier const& location,
-                                        std::string const& name);
-
 
 /*!
     @brief      Class representing an HDF5 dataset
@@ -52,7 +48,7 @@ public:
                    Dataset             (Identifier const& location,
                                         std::string const& name);
 
-                   Dataset             (Identifier&& id);
+    explicit       Dataset             (Identifier&& id);
 
                    Dataset             (Dataset const& other)=delete;
 
