@@ -22,7 +22,10 @@ Property create_property(
     std::string const& name,
     Property::Configuration const& configuration)
 {
-    auto property = located::create_property(group, name, configuration);
+    auto property = located::create_property(
+        group, name, configuration,
+        lue::time::PropertyConfiguration(
+            lue::time::PropertyConfiguration::ShapeVariability::constant));
 
     return Property(property.id());
 }

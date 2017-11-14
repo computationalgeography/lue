@@ -60,6 +60,9 @@ add_library(lue_py SHARED
     src/constant_size/time/located/shared/domain
     src/constant_size/time/located/shared/property_set
     src/constant_size/time/located/shared/submodule
+    src/constant_size/time/located/shared/space_box
+    src/constant_size/time/located/shared/space_box_domain
+    src/constant_size/time/located/shared/space_domain
     src/constant_size/time/located/shared/time_box
     src/constant_size/time/located/shared/time_box_domain
     src/constant_size/time/located/shared/time_domain
@@ -67,9 +70,9 @@ add_library(lue_py SHARED
     src/constant_size/time/located/shared/constant_shape/property
     src/constant_size/time/located/shared/constant_shape/submodule
 
-    # src/constant_size/time/located/shared/constant_shape/different_shape/value
-    # src/constant_size/time/located/shared/constant_shape/different_shape/property
-    # src/constant_size/time/located/shared/constant_shape/different_shape/submodule
+    src/constant_size/time/located/shared/constant_shape/different_shape/value
+    src/constant_size/time/located/shared/constant_shape/different_shape/property
+    src/constant_size/time/located/shared/constant_shape/different_shape/submodule
 
     src/constant_size/time/located/shared/constant_shape/same_shape/value
     src/constant_size/time/located/shared/constant_shape/same_shape/property

@@ -14,6 +14,7 @@ static std::string const nr_units_tag = "lue_nr_units";
 static std::string const phenomena_tag = "lue_phenomena";
 static std::string const rank_tag = "lue_rank";
 static std::string const shape_per_item_type_tag = "lue_shape_per_item_type";
+static std::string const shape_variability_tag = "lue_shape_variability";
 
 static std::string const space_discretization_tag =
     "lue_space_discretization";

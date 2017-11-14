@@ -222,7 +222,8 @@ Group::Group(
 
 {
     if(!_id.is_valid()) {
-        throw std::runtime_error("Cannot open group " + name);
+        throw std::runtime_error(
+            "Cannot open group " + name + " in " + location.pathname());
     }
 
     assert(_id.is_valid());
