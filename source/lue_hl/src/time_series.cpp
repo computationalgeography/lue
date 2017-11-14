@@ -150,8 +150,8 @@ TimeSeries::TimeSeries(
 
     // Space point domain
     {
-        auto& property_set{
-            _phenomenon.property_sets()[space_point_property_set_name]};
+        auto const& property_set = 
+            _phenomenon.property_sets()[space_point_property_set_name];
         omnipresent::SpacePointDomain space_point_domain{
             property_set.domain(),
             hdf5::NativeDatatypeTraits<double>::type_id()};
