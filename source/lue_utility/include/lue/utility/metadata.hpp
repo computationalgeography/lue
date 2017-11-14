@@ -1,4 +1,6 @@
 #pragma once
+#include "lue/clock.hpp"
+#include "lue/time/unit.hpp"
 #include <json.hpp>
 #include <fstream>
 #include <iostream>
@@ -26,6 +28,11 @@ JSON               object              (JSON const& object,
 JSON               object              (JSON const& object,
                                         JSONPointer const& pointer);
 
+JSON               object              (JSON const& object,
+                                        JSONPointer const& pointer,
+                                        std::string const& key,
+                                        std::string const& value);
+
 std::string        string              (JSON const& object,
                                         std::string const& name);
 
@@ -41,6 +48,8 @@ JSONPointer        pointer             (JSON const& object,
 JSONCIterator      find                (JSON const& object,
                                         std::string const& name,
                                         std::string const& string);
+
+Clock              clock               (JSON const& object);
 
 }  // namespace json
 
@@ -100,4 +109,12 @@ private:
 };
 
 }  // namespace utility
+
+
+namespace time {
+
+void               from_json           (utility::JSON const& object,
+                                        Unit& unit);
+
+}  // namespace time
 }  // namespace lue

@@ -16,11 +16,11 @@ class Dataspace
 
 public:
 
-                   Dataspace           (::H5S_class_t const type);
+    explicit       Dataspace           (::H5S_class_t type);
 
-                   Dataspace           (hid_t const id);
+    explicit       Dataspace           (hid_t id);
 
-                   Dataspace           (Identifier&& id);
+    explicit       Dataspace           (Identifier&& id);
 
                    Dataspace           (Dataspace const& other)=delete;
 

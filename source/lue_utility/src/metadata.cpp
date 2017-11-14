@@ -1,4 +1,5 @@
 #include "lue/utility/metadata.hpp"
+#include "lue/time_unit_util.hpp"
 #include <boost/filesystem.hpp>
 #include <boost/format.hpp>
 #include <exception>
@@ -67,6 +68,36 @@ JSON object(
 }
 
 
+/*!
+    @brief      Find object in list
+    @param      object Object to query
+    @param      pointer Pointer to list
+    @param      key Name of element to query
+    @param      value Value of element to compare
+    @exception  std::runtime_error In case the object cannot be found
+*/
+JSON object(
+    JSON const& object,
+    JSONPointer const& pointer,
+    std::string const& key,
+    std::string const& value)
+{
+    assert_has_key(object, pointer);
+
+    auto const& list_json = json::object(object, pointer);
+    auto const object_json_it = json::find(list_json, key, value);
+
+    if(object_json_it == list_json.end()) {
+        throw std::runtime_error(boost::str(boost::format(
+            "No object whose key %1% equals %2% exists at %3%")
+                % key % value % std::string(pointer)));
+
+    }
+
+    return *object_json_it;
+}
+
+
 std::string string(
     JSON const& object,
     std::string const& name)
@@ -99,23 +130,39 @@ JSONPointer pointer(
 }
 
 
+/*!
+    @brief      Find an object in a list of objects
+    @param      object List object to search
+    @param      key Name of element to check
+    @param      value Value of element to find
+*/
 JSONCIterator find(
     JSON const& object,
-    std::string const& name,
-    std::string const& string)
+    std::string const& key,
+    std::string const& value)
 {
     JSONCIterator it;
 
     for(it = object.begin(); it != object.end(); ++it) {
         // The key must exist.
-        assert_has_key(*it, name);
+        assert_has_key(*it, key);
 
-        if(json::string((*it), name) == string) {
+        if(json::string((*it), key) == value) {
             break;
         }
     }
 
     return it;
+}
+
+
+Clock clock(
+    JSON const& object)
+{
+    return Clock{
+        object.at("unit"),
+        object.at("nr_units")
+    };
 }
 
 }  // namespace json
@@ -253,4 +300,17 @@ std::string Metadata::string(
 }
 
 }  // namespace utility
+
+
+namespace time {
+
+void from_json(
+    utility::JSON const& object,
+    Unit& unit)
+{
+    unit = string_to_unit(object.get<std::string>());
+}
+
+}  // namespace time
+
 }  // namespace lue

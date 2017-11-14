@@ -1,8 +1,8 @@
 #pragma once
-#include "lue/hdf5/identifier.hpp"
 #include "lue/hdf5/dataspace.hpp"
 #include "lue/hdf5/datatype.hpp"
 #include "lue/hdf5/datatype_traits.hpp"
+#include "lue/hdf5/identifier.hpp"
 #include <cassert>
 
 
@@ -17,7 +17,7 @@ class Attribute
 
 public:
 
-                   Attribute           (Identifier&& id);
+    explicit       Attribute           (Identifier&& id);
 
                    Attribute           (Identifier const& location,
                                         std::string const& name);

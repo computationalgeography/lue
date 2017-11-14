@@ -20,9 +20,9 @@ public:
     //     typename T>
     // explicit       Datatype            (T const&);
 
-                   Datatype            (hid_t const id);
+                   Datatype            (hid_t id);
 
-                   Datatype            (Identifier&& id);
+    explicit       Datatype            (Identifier&& id);
 
                    Datatype            (Datatype const& other)=default;
 
@@ -36,7 +36,7 @@ public:
 
     Identifier const& id               () const;
 
-    void           set_size            (size_t const nr_bytes);
+    void           set_size            (size_t nr_bytes);
 
     size_t         size                () const;
 
@@ -89,15 +89,15 @@ std::string        native_datatype_as_string(
 std::string        standard_datatype_as_string(
                                         Datatype const& datatype);
 
-Datatype           create_datatype     (size_t const nr_bytes);
+Datatype           create_datatype     (size_t nr_bytes);
 
-Datatype           create_datatype     (hid_t const type_id,
-                                        size_t const nr_bytes);
+Datatype           create_datatype     (hid_t type_id,
+                                        size_t nr_bytes);
 
 Datatype           create_string_datatype();
 
 Datatype           create_compound_datatype(
-                                        size_t const nr_bytes);
+                                        size_t nr_bytes);
 
 Datatype           memory_datatype     (Datatype const& file_datatype);
 

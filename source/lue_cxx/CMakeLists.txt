@@ -21,6 +21,7 @@ add_library(lue STATIC
 #     # src/time_discretization_configuration
     src/time_domain
 #     src/time_domain_configuration
+    src/time_unit_util
     src/validate
     src/universe
     src/universes
