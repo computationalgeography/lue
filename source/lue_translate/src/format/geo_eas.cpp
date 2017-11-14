@@ -170,7 +170,7 @@ public:
         TableDefinition const& definition,
         Columns&& columns)
         : _definition{definition},
-          _columns{std::move(columns)}
+          _columns(std::move(columns))
     {
         assert(_columns.size() == _definition.nr_columns());
     }
@@ -192,7 +192,7 @@ public:
     {
         assert(idx < _columns.size());
 
-        return boost::get<Column<T> const&>(_columns[idx]);
+        return boost::get<Column<T>>(_columns[idx]);
     }
 
     std::size_t nr_columns() const
@@ -379,7 +379,7 @@ bool parse_table(
             using Column = Table::Column<int>;
 
             columns.emplace_back(Column{});
-            auto& column = boost::get<Column&>(columns.back());
+            auto& column = boost::get<Column>(columns.back());
 
             column_parsers.emplace_back(
                 qi::int_[phoenix::push_back(phoenix::ref(column), qi::_1)]);
@@ -388,7 +388,7 @@ bool parse_table(
             using Column = Table::Column<double>;
 
             columns.emplace_back(Column{});
-            auto& column = boost::get<Column&>(columns.back());
+            auto& column = boost::get<Column>(columns.back());
 
             column_parsers.emplace_back(
                 qi::double_[phoenix::push_back(phoenix::ref(column), qi::_1)]);
