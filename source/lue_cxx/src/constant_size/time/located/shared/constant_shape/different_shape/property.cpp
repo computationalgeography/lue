@@ -21,6 +21,16 @@ hdf5::Datatype Property::file_datatype(
 
 
 Property::Property(
+    hdf5::Identifier const& id)
+
+    : constant_shape::Property(id),
+      _values(this->id(), value_tag)
+
+{
+}
+
+
+Property::Property(
     hdf5::Identifier const& id,
     hdf5::Datatype const& memory_datatype)
 

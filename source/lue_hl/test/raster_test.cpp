@@ -34,8 +34,8 @@ BOOST_AUTO_TEST_CASE(create_raster)
     {
         auto dataset = lue::create_dataset(dataset_name);
 
-        lue::hl::Raster::Domain domain(crs, west, south, east, north);
-        lue::hl::Raster::Discretization discretization(nr_rows, nr_cols);
+        lue::hl::RasterDomain domain(crs, west, south, east, north);
+        lue::hl::RasterDiscretization discretization(nr_rows, nr_cols);
 
         // Add a raster
         auto raster = lue::hl::create_raster(
@@ -126,8 +126,8 @@ BOOST_AUTO_TEST_CASE(write_hyperslab)
     {
         auto dataset = lue::create_dataset(dataset_name);
 
-        lue::hl::Raster::Domain domain(crs, west, south, east, north);
-        lue::hl::Raster::Discretization discretization(nr_rows, nr_cols);
+        lue::hl::RasterDomain domain(crs, west, south, east, north);
+        lue::hl::RasterDiscretization discretization(nr_rows, nr_cols);
 
         // Add a raster
         auto raster = lue::hl::create_raster(

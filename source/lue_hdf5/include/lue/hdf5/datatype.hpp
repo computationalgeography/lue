@@ -19,6 +19,8 @@ public:
     //     typename T>
     // explicit       Datatype            (T const&);
 
+                   Datatype            ()=default;
+
                    Datatype            (hid_t id);
 
     explicit       Datatype            (Identifier&& id);

@@ -1,9 +1,9 @@
 #pragma once
-#include "lue/clock.hpp"
+#include "lue/hl/time_series_discretization.hpp"
+#include "lue/hl/time_series_domain.hpp"
 #include "lue/constant_size/time/located/shared/property_set.hpp"
 #include "lue/constant_size/time/located/shared/constant_shape/same_shape/property.hpp"
 #include "lue/dataset.hpp"
-#include <array>
 #include <vector>
 
 
@@ -17,54 +17,6 @@ class TimeSeries
 {
 
 public:
-
-    class TimeDomain
-    {
-
-    public:
-
-        using Coordinates = std::array<time::DurationCount, 2>;
-
-                   TimeDomain          ();
-
-                   TimeDomain          (Clock const& clock,
-                                        time::DurationCount const start,
-                                        time::DurationCount const end);
-
-        Clock const&
-                   clock               () const;
-
-        Coordinates const&
-                   coordinates         () const;
-
-    private:
-
-        Clock      _clock;
-
-        Coordinates _coordinates;
-
-    };
-
-
-    class TimeDiscretization
-    {
-
-    public:
-
-                   TimeDiscretization  ();
-
-                   TimeDiscretization  (hsize_t const nr_steps);
-
-        hsize_t const* shape           () const;
-
-        hsize_t    nr_steps            () const;
-
-    private:
-
-        hsize_t    _shape[1];
-
-    };
-
 
     class SpaceDomain
     {
@@ -114,9 +66,9 @@ public:
 
     hsize_t        nr_items            () const;
 
-    TimeDomain const& time_domain      () const;
+    TimeSeriesDomain const& time_domain() const;
 
-    TimeDiscretization const& time_discretization() const;
+    TimeSeriesDiscretization const& time_discretization() const;
 
     SpaceDomain const& space_domain    () const;
 
@@ -136,11 +88,11 @@ private:
 
     shared::constant_shape::same_shape::Property _value_property;
 
-    TimeDomain     _time_domain;
+    TimeSeriesDomain _time_domain;
 
     SpaceDomain    _space_domain;
 
-    TimeDiscretization _time_discretization;
+    TimeSeriesDiscretization _time_discretization;
 
 };
 
@@ -148,12 +100,11 @@ private:
 TimeSeries         create_time_series  (Dataset& dataset,
                                         std::string const& phenomenon_name,
                                         std::string const& property_set_name,
-                                        TimeSeries::TimeDomain const&
-                                            time_domain,
+                                        TimeSeriesDomain const& time_domain,
                                         TimeSeries::SpaceDomain const&
                                             space_domain,
                                         std::string const& property_name,
-                                        TimeSeries::TimeDiscretization const&
+                                        TimeSeriesDiscretization const&
                                             time_discretization);
 
 }  // namespace hl

@@ -20,6 +20,8 @@ public:
 
     static hdf5::Datatype file_datatype(hdf5::Identifier const& id);
 
+                   Property            (hdf5::Identifier const& id);
+
                    Property            (hdf5::Identifier const& id,
                                         hdf5::Datatype const& memory_datatype);
 

@@ -24,4 +24,11 @@ private:
 
 };
 
+
+bool               operator==          (Clock const& lhs,
+                                        Clock const& rhs);
+
+bool               operator<           (Clock const& lhs,
+                                        Clock const& rhs);
+
 }  // namespace lue

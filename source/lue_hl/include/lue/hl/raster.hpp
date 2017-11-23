@@ -1,9 +1,10 @@
 #pragma once
+#include "lue/hl/raster_discretization.hpp"
+#include "lue/hl/raster_domain.hpp"
 #include "lue/constant_size/time/omnipresent/different_shape/property.hpp"
 #include "lue/constant_size/time/omnipresent/same_shape/property.hpp"
 #include "lue/constant_size/time/omnipresent/property_set.hpp"
 #include "lue/dataset.hpp"
-#include <array>
 
 
 namespace lue {
@@ -16,70 +17,6 @@ class Raster
 {
 
 public:
-
-    class Discretization
-    {
-
-    public:
-
-                   Discretization      ();
-
-                   Discretization      (hsize_t const nr_rows,
-                                        hsize_t const nr_cols);
-
-        hsize_t const* shape           () const;
-
-        hsize_t*   shape               ();
-
-        hsize_t    nr_rows             () const;
-
-        hsize_t    nr_cols             () const;
-
-    private:
-
-        hsize_t    _shape[2];
-
-    };
-
-
-    class Domain
-    {
-
-    public:
-
-                   Domain              ();
-
-                   Domain              (std::string const& crs,
-                                        double const west,
-                                        double const south,
-                                        double const east,
-                                        double const north);
-
-        std::string const&
-                   crs                 () const;
-
-        double     west                () const;
-
-        double     south               () const;
-
-        double     east                () const;
-
-        double     north               () const;
-
-        std::array<double, 4>&
-                   coordinates         ();
-
-        std::array<double, 4> const&
-                   coordinates         () const;
-
-    private:
-
-        std::string const _crs;
-
-        std::array<double, 4> _coordinates;
-
-    };
-
 
     class Band
     {
@@ -126,9 +63,9 @@ public:
 
     Raster&        operator=           (Raster&& other)=default;
 
-    Domain const&  domain              () const;
+    RasterDomain const& domain         () const;
 
-    Discretization const& discretization() const;
+    RasterDiscretization const& discretization() const;
 
     Band           add_band            (std::string const& name,
                                         hdf5::Datatype const& datatype);
@@ -137,13 +74,19 @@ public:
 
 private:
 
+    void           read                ();
+
+    void           read_discretization ();
+
+    void           read_domain         ();
+
     omnipresent::PropertySet _property_set;
 
     omnipresent::same_shape::Property _discretization_property;
 
-    Discretization _discretization;
+    RasterDiscretization _discretization;
 
-    Domain         _domain;
+    RasterDomain   _domain;
 
 };
 
@@ -155,8 +98,8 @@ private:
 Raster             create_raster       (Dataset& dataset,
                                         std::string const& phenomenon_name,
                                         std::string const& property_set_name,
-                                        Raster::Domain const& domain,
-                                        Raster::Discretization const&
+                                        RasterDomain const& domain,
+                                        RasterDiscretization const&
                                             discretization);
 
 }  // namespace hl

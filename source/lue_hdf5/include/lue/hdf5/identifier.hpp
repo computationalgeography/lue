@@ -33,6 +33,8 @@ public:
     */
     using Close = std::function<herr_t (hid_t)>;
 
+                   Identifier          ();
+
                    Identifier          (hid_t id,
                                         Close const& close);
 
@@ -58,15 +60,17 @@ public:
 
 private:
 
+    void           close_if_necessary  ();
+
+    bool           is_empty            () const;
+
+    void           assert_invariant    () const;
+
     //! HDF5 identifier
     std::shared_ptr<hid_t> _id;
 
     //! Function to call when the identifier must be closed
     Close          _close;
-
-    bool           is_empty            () const;
-
-    void           assert_invariant    () const;
 
 };
 

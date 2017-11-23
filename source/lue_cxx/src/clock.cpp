@@ -25,4 +25,26 @@ time::TickPeriodCount Clock::nr_units() const
     return _nr_units;
 }
 
+
+bool operator==(
+    Clock const& lhs,
+    Clock const& rhs)
+{
+    return
+        lhs.unit() == rhs.unit() &&
+        lhs.nr_units() == rhs.nr_units()
+        ;
+}
+
+
+bool operator<(
+    Clock const& lhs,
+    Clock const& rhs)
+{
+    return
+        lhs.unit() < rhs.unit() ||
+        lhs.nr_units() < rhs.nr_units()
+        ;
+}
+
 }  // namespace lue

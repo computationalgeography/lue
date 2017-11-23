@@ -4,7 +4,6 @@
 #include "lue/constant_size/time/omnipresent/same_shape/property.hpp"
 #include "lue/constant_size/time/omnipresent/space_point_domain.hpp"
 #include <numeric>
-#include <iostream>
 
 
 namespace lue {
@@ -19,39 +18,6 @@ std::string const time_discretization_property_name = "nr_steps";
 }  // Anonymous namespace
 
 namespace omnipresent = constant_size::time::omnipresent;
-
-
-TimeSeries::TimeDomain::TimeDomain()
-
-    : _clock{time::Unit::second, 1},
-      _coordinates{{0, 0}}
-
-{
-}
-
-
-TimeSeries::TimeDomain::TimeDomain(
-    Clock const& clock,
-    time::DurationCount const start,
-    time::DurationCount const end)
-
-    : _clock{clock},
-      _coordinates{{start, end}}
-
-{
-}
-
-
-Clock const& TimeSeries::TimeDomain::clock() const
-{
-    return _clock;
-}
-
-
-TimeSeries::TimeDomain::Coordinates const& TimeSeries::TimeDomain::coordinates() const
-{
-    return _coordinates;
-}
 
 
 TimeSeries::SpaceDomain::SpaceDomain()
@@ -95,35 +61,6 @@ std::size_t TimeSeries::SpaceDomain::nr_points() const
 }
 
 
-TimeSeries::TimeDiscretization::TimeDiscretization()
-
-    : _shape{0}
-
-{
-}
-
-
-TimeSeries::TimeDiscretization::TimeDiscretization(
-    hsize_t const nr_steps)
-
-    : _shape{nr_steps}
-
-{
-}
-
-
-hsize_t const* TimeSeries::TimeDiscretization::shape() const
-{
-    return _shape;
-}
-
-
-hsize_t TimeSeries::TimeDiscretization::nr_steps() const
-{
-    return _shape[0];
-}
-
-
 TimeSeries::TimeSeries(
     hdf5::Identifier const& phenomenon_id,
     std::string const& property_set_name,
@@ -141,9 +78,9 @@ TimeSeries::TimeSeries(
     // Time box domain
     {
         shared::TimeBoxDomain time_box_domain{_property_set.domain()};
-        TimeDomain::Coordinates coordinates;
+        TimeSeriesDomain::Coordinates coordinates;
         time_box_domain.items().read(coordinates.data());
-        _time_domain = TimeDomain{
+        _time_domain = TimeSeriesDomain{
             time_box_domain.configuration().clock(),
                 coordinates[0], coordinates[1]};
     }
@@ -174,9 +111,8 @@ TimeSeries::TimeSeries(
         assert(discretization_property.values().nr_items() == 1);
         hsize_t nr_steps;
         discretization_property.values().read(&nr_steps);
-        _time_discretization = TimeDiscretization(nr_steps);
+        _time_discretization = TimeSeriesDiscretization{nr_steps};
     }
-
 }
 
 
@@ -194,13 +130,13 @@ hsize_t TimeSeries::nr_items() const
 }
 
 
-TimeSeries::TimeDomain const& TimeSeries::time_domain() const
+TimeSeriesDomain const& TimeSeries::time_domain() const
 {
     return _time_domain;
 }
 
 
-TimeSeries::TimeDiscretization const& TimeSeries::time_discretization() const
+TimeSeriesDiscretization const& TimeSeries::time_discretization() const
 {
     return _time_discretization;
 }
@@ -262,10 +198,10 @@ TimeSeries create_time_series(
     Phenomenon& phenomenon,
     Phenomenon& time_discretization_phenomenon,
     std::string const& property_set_name,
-    TimeSeries::TimeDomain const& time_domain,
+    TimeSeriesDomain const& time_domain,
     TimeSeries::SpaceDomain const& space_domain,
     std::string const& property_name,
-    TimeSeries::TimeDiscretization const& time_discretization)
+    TimeSeriesDiscretization const& time_discretization)
 {
     if(!phenomenon.property_sets().contains(property_set_name)) {
 
@@ -349,7 +285,7 @@ TimeSeries create_time_series(
                     memory_datatype_id,
                     shape);
             discretization_property.reserve(nr_items).write(
-                time_discretization.shape());
+                time_discretization.shape().data());
 
             // Create property for storing time series values
             {
@@ -392,10 +328,10 @@ TimeSeries create_time_series(
     Dataset& dataset,
     std::string const& phenomenon_name,
     std::string const& property_set_name,
-    TimeSeries::TimeDomain const& time_domain,
+    TimeSeriesDomain const& time_domain,
     TimeSeries::SpaceDomain const& space_domain,
     std::string const& property_name,
-    TimeSeries::TimeDiscretization const& time_discretization)
+    TimeSeriesDiscretization const& time_discretization)
 {
     assert(property_set_name != time_discretization_property_name);
 

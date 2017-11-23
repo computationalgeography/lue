@@ -8,6 +8,23 @@ namespace lue {
 namespace hdf5 {
 
 /*!
+    @brief      Default construct an instance
+    @sa         is_valid()
+
+    The resulting instance will not be valid.
+*/
+Identifier::Identifier()
+
+    : _id{},
+      _close{nullptr}
+
+{
+    assert(is_empty());
+    assert_invariant();
+}
+
+
+/*!
     @brief      Construct an instance based on an HDF5 identifier and a
                 close function
 */
@@ -36,6 +53,47 @@ Identifier::~Identifier()
 {
     assert_invariant();
 
+    close_if_necessary();
+
+    assert_invariant();
+}
+
+
+Identifier& Identifier::operator=(
+    Identifier const& other)
+{
+    assert_invariant();
+
+    close_if_necessary();
+    _id = other._id;
+    _close = other._close;
+
+    assert_invariant();
+
+    return *this;
+}
+
+
+Identifier& Identifier::operator=(
+    Identifier&& other)
+{
+    assert_invariant();
+
+    close_if_necessary();
+    _id = std::move(other._id);
+    _close = std::move(other._close);
+
+    assert_invariant();
+
+    return *this;
+}
+
+
+/*!
+    @brief      Close the HDF5 object pointed to by the instance
+*/
+void Identifier::close_if_necessary()
+{
     if(is_valid() && _id.unique()) {
 #ifndef NDEBUG
         auto status =
@@ -46,8 +104,6 @@ Identifier::~Identifier()
         _id.reset();
         _close = nullptr;
     }
-
-    assert_invariant();
 }
 
 
