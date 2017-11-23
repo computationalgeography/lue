@@ -44,9 +44,9 @@ public:
 
                    ~Identifier         ();
 
-    Identifier&    operator=           (Identifier const&)=default;
+    Identifier&    operator=           (Identifier const& other);
 
-    Identifier&    operator=           (Identifier&&)=default;
+    Identifier&    operator=           (Identifier&& other);
 
     bool           is_valid            () const;
 

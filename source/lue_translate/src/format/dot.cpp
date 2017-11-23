@@ -529,7 +529,7 @@ void to_dot(
     for(auto const& name: properties.names()) {
         auto const& property = properties[name];
 
-        to_dot(property, stream, metadata);
+        to_dot(omnipresent::Property{property.id()}, stream, metadata);
         link_nodes(property_set, property, stream, metadata);
         link_nodes(property, domain, stream, metadata);
 

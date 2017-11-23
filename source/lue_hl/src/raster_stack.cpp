@@ -131,10 +131,10 @@ RasterStack::RasterStack(
     : _phenomenon{phenomenon_id},
       _property_set{_phenomenon.property_sets()[property_set_name].id()},
       _time_discretization_property{
-          hdf5::Group{_property_set.id(), time_discretization_link_name},
+          hdf5::Group{_property_set.id(), time_discretization_link_name}.id(),
           hdf5::NativeDatatypeTraits<hsize_t>::type_id()},
       _space_discretization_property{
-          hdf5::Group{_property_set.id(), space_discretization_link_name},
+          hdf5::Group{_property_set.id(), space_discretization_link_name}.id(),
           hdf5::NativeDatatypeTraits<hsize_t>::type_id()},
       _domain{},
       _discretization{}
