@@ -35,6 +35,10 @@ public:
 
     RasterDomain&  operator=           (RasterDomain&&)=default;
 
+    bool           operator==          (RasterDomain const& other) const;
+
+    bool           operator<           (RasterDomain const& other) const;
+
     std::string const&
                    crs                 () const;
 
@@ -56,13 +60,6 @@ private:
     Coordinates    _coordinates;
 
 };
-
-
-bool               operator==          (RasterDomain const& lhs,
-                                        RasterDomain const& rhs);
-
-bool               operator<           (RasterDomain const& lhs,
-                                        RasterDomain const& rhs);
 
 }  // namespace hl
 }  // namespace lue

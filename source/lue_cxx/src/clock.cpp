@@ -26,24 +26,22 @@ time::TickPeriodCount Clock::nr_units() const
 }
 
 
-bool operator==(
-    Clock const& lhs,
-    Clock const& rhs)
+bool Clock::operator==(
+    Clock const& other) const
 {
     return
-        lhs.unit() == rhs.unit() &&
-        lhs.nr_units() == rhs.nr_units()
+        _unit == other._unit &&
+        _nr_units == other._nr_units
         ;
 }
 
 
-bool operator<(
-    Clock const& lhs,
-    Clock const& rhs)
+bool Clock::operator<(
+    Clock const& other) const
 {
     return
-        lhs.unit() < rhs.unit() ||
-        lhs.nr_units() < rhs.nr_units()
+        _unit < other._unit ||
+        _nr_units < other._nr_units
         ;
 }
 

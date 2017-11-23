@@ -27,6 +27,10 @@ public:
 
     RasterStackDomain& operator=       (RasterStackDomain&&)=default;
 
+    bool               operator==      (RasterStackDomain const& other) const;
+
+    bool               operator<       (RasterStackDomain const& other) const;
+
     TimeSeriesDomain const& time_series_domain() const;
 
     RasterDomain const& raster_domain  () const;
@@ -38,13 +42,6 @@ private:
     RasterDomain   _raster_domain;
 
 };
-
-
-bool               operator==          (RasterStackDomain const& lhs,
-                                        RasterStackDomain const& rhs);
-
-bool               operator<           (RasterStackDomain const& lhs,
-                                        RasterStackDomain const& rhs);
 
 }  // namespace hl
 }  // namespace lue

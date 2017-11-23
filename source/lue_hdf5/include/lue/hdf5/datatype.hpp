@@ -35,6 +35,10 @@ public:
 
     Datatype&      operator=           (Datatype&&)=default;
 
+    bool           operator==          (Datatype const& other) const;
+
+    bool           operator!=          (Datatype const& other) const;
+
     Identifier const& id               () const;
 
     void           set_size            (std::size_t nr_bytes);
@@ -68,13 +72,6 @@ private:
 // 
 // {
 // }
-
-
-bool               operator==          (Datatype const& lhs,
-                                        Datatype const& rhs);
-
-bool               operator!=          (Datatype const& lhs,
-                                        Datatype const& rhs);
 
 
 std::vector<unsigned char> encode_datatype(

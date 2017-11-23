@@ -48,24 +48,22 @@ TimeSeriesDomain::Coordinates const& TimeSeriesDomain::coordinates() const
 }
 
 
-bool operator==(
-    TimeSeriesDomain const& lhs,
-    TimeSeriesDomain const& rhs)
+bool TimeSeriesDomain::operator==(
+    TimeSeriesDomain const& other) const
 {
     return
-        lhs.clock() == rhs.clock() &&
-        lhs.coordinates() == rhs.coordinates()
+        _clock == other._clock &&
+        _coordinates == other._coordinates
         ;
 }
 
 
-bool operator<(
-    TimeSeriesDomain const& lhs,
-    TimeSeriesDomain const& rhs)
+bool TimeSeriesDomain::operator<(
+    TimeSeriesDomain const& other) const
 {
     return
-        lhs.clock() < rhs.clock() ||
-        lhs.coordinates() < rhs.coordinates()
+        _clock < other._clock ||
+        _coordinates < other._coordinates
         ;
 }
 

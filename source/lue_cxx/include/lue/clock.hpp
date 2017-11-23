@@ -12,6 +12,10 @@ public:
                    Clock               (time::Unit const unit,
                                         time::TickPeriodCount const nr_units);
 
+    bool           operator==          (Clock const& other) const;
+
+    bool           operator<           (Clock const& other) const;
+
     time::Unit     unit                () const;
 
     time::TickPeriodCount nr_units     () const;
@@ -24,11 +28,5 @@ private:
 
 };
 
-
-bool               operator==          (Clock const& lhs,
-                                        Clock const& rhs);
-
-bool               operator<           (Clock const& lhs,
-                                        Clock const& rhs);
 
 }  // namespace lue

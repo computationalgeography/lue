@@ -35,6 +35,12 @@ public:
 
     TimeSeriesDiscretization& operator=(TimeSeriesDiscretization&&)=default;
 
+    bool           operator==          (TimeSeriesDiscretization const& other)
+                                            const;
+
+    bool           operator<           (TimeSeriesDiscretization const& other)
+                                            const;
+
     Shape const&   shape               () const;
 
     hsize_t        nr_steps            () const;
@@ -44,13 +50,6 @@ private:
     Shape          _shape;
 
 };
-
-
-bool               operator==          (TimeSeriesDiscretization const& lhs,
-                                        TimeSeriesDiscretization const& rhs);
-
-bool               operator<           (TimeSeriesDiscretization const& lhs,
-                                        TimeSeriesDiscretization const& rhs);
 
 }  // namespace hl
 }  // namespace lue

@@ -31,6 +31,10 @@ public:
 
     RasterDiscretization& operator=    (RasterDiscretization&&)=default;
 
+    bool           operator==          (RasterDiscretization const& other) const;
+
+    bool           operator<           (RasterDiscretization const& other) const;
+
     Shape const&   shape               () const;
 
     hsize_t        nr_rows             () const;
@@ -42,13 +46,6 @@ private:
     Shape          _shape;
 
 };
-
-
-bool               operator==          (RasterDiscretization const& lhs,
-                                        RasterDiscretization const& rhs);
-
-bool               operator<           (RasterDiscretization const& lhs,
-                                        RasterDiscretization const& rhs);
 
 }  // namespace hl
 }  // namespace lue

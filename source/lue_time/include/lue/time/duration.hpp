@@ -50,6 +50,8 @@ public:
 
     Duration&      operator=           (Duration&&)=default;
 
+    bool           operator==          (Duration const& other) const;
+
     Count          nr_ticks            () const;
 
 private:
@@ -82,11 +84,10 @@ inline typename Duration<TickPeriod>::Count
 
 template<
     typename TickPeriod>
-inline bool operator==(
-        Duration<TickPeriod> const& lhs,
-        Duration<TickPeriod> const& rhs)
+inline bool Duration<TickPeriod>::operator==(
+    Duration const& other) const
 {
-    return lhs.nr_ticks() == rhs.nr_ticks();
+    return _nr_ticks == other._nr_ticks;
 }
 
 }  // namespace time

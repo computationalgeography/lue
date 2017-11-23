@@ -275,19 +275,17 @@ void Datatype::insert(
 }
 
 
-bool operator==(
-    Datatype const& lhs,
-    Datatype const& rhs)
+bool Datatype::operator==(
+    Datatype const& other) const
 {
-    return datatypes_are_equal(lhs.id(), rhs.id());
+    return datatypes_are_equal(_id, other._id);
 }
 
 
-bool operator!=(
-    Datatype const& lhs,
-    Datatype const& rhs)
+bool Datatype::operator!=(
+    Datatype const& other) const
 {
-    return !datatypes_are_equal(lhs.id(), rhs.id());
+    return !datatypes_are_equal(_id, other._id);
 }
 
 

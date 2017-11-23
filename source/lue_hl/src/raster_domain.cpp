@@ -74,24 +74,22 @@ RasterDomain::Coordinates const& RasterDomain::coordinates() const
 }
 
 
-bool operator==(
-    RasterDomain const& lhs,
-    RasterDomain const& rhs)
+bool RasterDomain::operator==(
+    RasterDomain const& other) const
 {
     return
-        lhs.crs() == rhs.crs() &&
-        lhs.coordinates() == rhs.coordinates()
+        _crs == _crs &&
+        _coordinates == other._coordinates
         ;
 }
 
 
-bool operator<(
-    RasterDomain const& lhs,
-    RasterDomain const& rhs)
+bool RasterDomain::operator<(
+    RasterDomain const& other) const
 {
     return
-        lhs.crs() < rhs.crs() ||
-        lhs.coordinates() < rhs.coordinates()
+        _crs < other._crs ||
+        _coordinates < other._coordinates
         ;
 }
 

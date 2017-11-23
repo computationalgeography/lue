@@ -41,19 +41,17 @@ hsize_t RasterDiscretization::nr_cols() const
 }
 
 
-bool operator==(
-    RasterDiscretization const& lhs,
-    RasterDiscretization const& rhs)
+bool RasterDiscretization::operator==(
+    RasterDiscretization const& other) const
 {
-    return lhs.shape() == rhs.shape();
+    return _shape == other._shape;
 }
 
 
-bool operator<(
-    RasterDiscretization const& lhs,
-    RasterDiscretization const& rhs)
+bool RasterDiscretization::operator<(
+    RasterDiscretization const& other) const
 {
-    return lhs.shape() < rhs.shape();
+    return _shape < other._shape;
 }
 
 }  // namespace hl

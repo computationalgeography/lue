@@ -448,23 +448,25 @@ void Group::create_hard_link(
     Two groups are considered equal if they are pointing to the same group in
     the HDF5 dataset.
 */
-bool operator==(
-    Group const& lhs,
-    Group const& rhs)
+bool Group::operator==(
+    Group const& other) const
 {
-    return lhs.id() == rhs.id();
+    return _id == other._id;
 }
 
 
 /*!
     @brief      Return whether two groups are not equal
-    @sa         operator==(Group const&, Group const&)
+    @exception  std::runtime_error In case the metadata for the groups
+                passed in cannot be retrieved
+
+    Two groups are considered equal if they are pointing to the same group in
+    the HDF5 dataset.
 */
-bool operator!=(
-    Group const& lhs,
-    Group const& rhs)
+bool Group::operator!=(
+    Group const& other) const
 {
-    return !(lhs == rhs);
+    return _id != other._id;
 }
 
 

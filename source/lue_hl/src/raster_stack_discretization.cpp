@@ -48,24 +48,22 @@ hdf5::Shape const& RasterStackDiscretization::shape() const
 }
 
 
-bool operator==(
-    RasterStackDiscretization const& lhs,
-    RasterStackDiscretization const& rhs)
+bool RasterStackDiscretization::operator==(
+    RasterStackDiscretization const& other) const
 {
     return
-        lhs.time_series_discretization() == rhs.time_series_discretization() &&
-        lhs.raster_discretization() == rhs.raster_discretization()
+        _time_series_discretization == other._time_series_discretization &&
+        _raster_discretization == other._raster_discretization
         ;
 }
 
 
-bool operator<(
-    RasterStackDiscretization const& lhs,
-    RasterStackDiscretization const& rhs)
+bool RasterStackDiscretization::operator<(
+    RasterStackDiscretization const& other) const
 {
     return
-        lhs.time_series_discretization() < rhs.time_series_discretization() ||
-        lhs.raster_discretization() < rhs.raster_discretization()
+        _time_series_discretization < other._time_series_discretization ||
+        _raster_discretization < other._raster_discretization
         ;
 }
 

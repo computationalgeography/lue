@@ -27,24 +27,22 @@ RasterDomain const& RasterStackDomain::raster_domain() const
 }
 
 
-bool operator==(
-    RasterStackDomain const& lhs,
-    RasterStackDomain const& rhs)
+bool RasterStackDomain::operator==(
+    RasterStackDomain const& other) const
 {
     return
-        lhs.time_series_domain() == rhs.time_series_domain() &&
-        lhs.raster_domain() == rhs.raster_domain()
+        _time_series_domain == other._time_series_domain &&
+        _raster_domain == other._raster_domain
         ;
 }
 
 
-bool operator<(
-    RasterStackDomain const& lhs,
-    RasterStackDomain const& rhs)
+bool RasterStackDomain::operator<(
+    RasterStackDomain const& other) const
 {
     return
-        lhs.time_series_domain() < rhs.time_series_domain() ||
-        lhs.raster_domain() < rhs.raster_domain()
+        _time_series_domain < other._time_series_domain ||
+        _raster_domain < other._raster_domain
         ;
 }
 

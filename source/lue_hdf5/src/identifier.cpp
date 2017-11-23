@@ -213,23 +213,23 @@ ObjectInfo Identifier::info() const
     Two identifiers are considered equal if they are pointing to the same
     object in the HDF5 dataset.
 */
-bool operator==(
-    Identifier const& lhs,
-    Identifier const& rhs)
+bool Identifier::operator==(
+    Identifier const& other) const
 {
-    return lhs.info() == rhs.info();
+    return info() == other.info();
 }
 
 
 /*!
     @brief      Return whether two object identifiers are not equal
-    @sa         operator==(Identifier const&, Identifier const&)
+
+    Two identifiers are considered equal if they are pointing to the same
+    object in the HDF5 dataset.
 */
-bool operator!=(
-    Identifier const& lhs,
-    Identifier const& rhs)
+bool Identifier::operator!=(
+    Identifier const& other) const
 {
-    return !(lhs == rhs);
+    return info() != other.info();
 }
 
 } // namespace hdf5

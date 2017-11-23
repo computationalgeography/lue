@@ -48,6 +48,10 @@ public:
 
     Identifier&    operator=           (Identifier&& other);
 
+    bool           operator==          (Identifier const& other) const;
+
+    bool           operator!=          (Identifier const& other) const;
+
     bool           is_valid            () const;
 
                    operator hid_t      () const;
@@ -73,13 +77,6 @@ private:
     Close          _close;
 
 };
-
-
-bool               operator==          (Identifier const& lhs,
-                                        Identifier const& rhs);
-
-bool               operator!=          (Identifier const& lhs,
-                                        Identifier const& rhs);
 
 } // namespace hdf5
 } // namespace lue

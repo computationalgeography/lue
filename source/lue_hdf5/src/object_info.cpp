@@ -34,28 +34,28 @@ haddr_t ObjectInfo::addr() const
     Two instances are considered equal if they are pointing to the same
     object in the HDF5 dataset.
 */
-bool operator==(
-    ObjectInfo const& lhs,
-    ObjectInfo const& rhs)
+bool ObjectInfo::operator==(
+    ObjectInfo const& other) const
 {
     return
-        lhs.fileno() == rhs.fileno() &&
-        lhs.addr() == rhs.addr()
+        fileno() == other.fileno() &&
+        addr() == other.addr()
         ;
 }
 
 
 /*!
     @brief      Return whether two instances are not equal
-    @sa         operator==(ObjectInfo const&, ObjectInfo const&)
-*/
-bool operator!=(
-    ObjectInfo const& lhs,
-    ObjectInfo const& rhs)
-{
-    return !(lhs == rhs);
-}
+    @sa         operator==(ObjectInfo const&) const
 
+    Two instances are considered equal if they are pointing to the same
+    object in the HDF5 dataset.
+*/
+bool ObjectInfo::operator!=(
+    ObjectInfo const& other) const
+{
+    return !(*this == other);
+}
 
 }  // namespace hdf5
 }  // namespace lue

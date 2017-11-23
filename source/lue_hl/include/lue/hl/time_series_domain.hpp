@@ -33,6 +33,10 @@ public:
 
     TimeSeriesDomain& operator=        (TimeSeriesDomain&&)=default;
 
+    bool           operator==          (TimeSeriesDomain const& other) const;
+
+    bool           operator<           (TimeSeriesDomain const& other) const;
+
     Clock const&   clock               () const;
 
     Coordinates const&
@@ -45,13 +49,6 @@ private:
     Coordinates    _coordinates;
 
 };
-
-
-bool               operator==          (TimeSeriesDomain const& lhs,
-                                        TimeSeriesDomain const& rhs);
-
-bool               operator<           (TimeSeriesDomain const& lhs,
-                                        TimeSeriesDomain const& rhs);
 
 }  // namespace hl
 }  // namespace lue

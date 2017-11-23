@@ -35,6 +35,12 @@ public:
     RasterStackDiscretization& operator=(
                                     RasterStackDiscretization&&)=default;
 
+    bool           operator==          (RasterStackDiscretization const& other)
+                                            const;
+
+    bool           operator<           (RasterStackDiscretization const& other)
+                                            const;
+
     TimeSeriesDiscretization const& time_series_discretization() const;
 
     RasterDiscretization const& raster_discretization() const;
@@ -50,13 +56,6 @@ private:
     hdf5::Shape    _shape;
 
 };
-
-
-bool               operator==          (RasterStackDiscretization const& lhs,
-                                        RasterStackDiscretization const& rhs);
-
-bool               operator<           (RasterStackDiscretization const& lhs,
-                                        RasterStackDiscretization const& rhs);
 
 }  // namespace hl
 }  // namespace lue

@@ -34,19 +34,17 @@ hsize_t TimeSeriesDiscretization::nr_steps() const
 }
 
 
-bool operator==(
-    TimeSeriesDiscretization const& lhs,
-    TimeSeriesDiscretization const& rhs)
+bool TimeSeriesDiscretization::operator==(
+    TimeSeriesDiscretization const& other) const
 {
-    return lhs.shape() == rhs.shape();
+    return _shape == other._shape;
 }
 
 
-bool operator<(
-    TimeSeriesDiscretization const& lhs,
-    TimeSeriesDiscretization const& rhs)
+bool TimeSeriesDiscretization::operator<(
+    TimeSeriesDiscretization const& other) const
 {
-    return lhs.shape() < rhs.shape();
+    return _shape < other._shape;
 }
 
 }  // namespace hl
