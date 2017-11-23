@@ -64,22 +64,22 @@ pybind11::object hdf5_type_id_to_numpy_dtype(
 
     std::string type_as_string;
 
-    if(datatype == H5T_NATIVE_UINT32) {
+    if(datatype == hdf5::Datatype{H5T_NATIVE_UINT32}) {
         type_as_string = "uint32";
     }
-    else if(datatype == H5T_NATIVE_INT32) {
+    else if(datatype == hdf5::Datatype{H5T_NATIVE_INT32}) {
         type_as_string = "int32";
     }
-    else if(datatype == H5T_NATIVE_UINT64) {
+    else if(datatype == hdf5::Datatype{H5T_NATIVE_UINT64}) {
         type_as_string = "uint64";
     }
-    else if(datatype == H5T_NATIVE_INT64) {
+    else if(datatype == hdf5::Datatype{H5T_NATIVE_INT64}) {
         type_as_string = "int64";
     }
-    else if(datatype == H5T_NATIVE_FLOAT) {
+    else if(datatype == hdf5::Datatype{H5T_NATIVE_FLOAT}) {
         type_as_string = "float32";
     }
-    else if(datatype == H5T_NATIVE_DOUBLE) {
+    else if(datatype == hdf5::Datatype{H5T_NATIVE_DOUBLE}) {
         type_as_string = "float64";
     }
     else {

@@ -94,8 +94,8 @@ hdf5::Datatype create_clock_memory_datatype()
     static_assert(std::is_standard_layout<Clock>::value, "");
 
     hdf5::Datatype const string_datatype = hdf5::create_string_datatype();
-    hdf5::Datatype const count_datatype =
-        hdf5::NativeDatatypeTraits<time::TickPeriodCount>::type_id();
+    hdf5::Datatype const count_datatype{
+        hdf5::NativeDatatypeTraits<time::TickPeriodCount>::type_id()};
     std::size_t const nr_bytes = sizeof(Clock);
     auto datatype = hdf5::create_compound_datatype(nr_bytes);
 
@@ -118,8 +118,8 @@ hdf5::Datatype create_clock_memory_datatype()
 hdf5::Datatype create_clock_file_datatype()
 {
     hdf5::Datatype const string_datatype = hdf5::create_string_datatype();
-    hdf5::Datatype const count_datatype =
-        hdf5::StandardDatatypeTraits<time::TickPeriodCount>::type_id();
+    hdf5::Datatype const count_datatype{
+        hdf5::StandardDatatypeTraits<time::TickPeriodCount>::type_id()};
 
     assert(
         count_datatype.size() ==

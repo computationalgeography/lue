@@ -51,7 +51,7 @@ BOOST_AUTO_TEST_CASE(create_raster_stack)
 
 
     std::string const band_name = "my_band";
-    hdf5::Datatype const memory_datatype = H5T_NATIVE_DOUBLE;
+    hdf5::Datatype const memory_datatype{H5T_NATIVE_DOUBLE};
     std::array<double, nr_steps * nr_cells> values = {{
         100, 101, 102,
         110, 111, 112,
@@ -81,7 +81,7 @@ BOOST_AUTO_TEST_CASE(create_raster_stack)
 
     assert_is_valid(dataset_name);
 
-    hdf5::Datatype const file_datatype = H5T_IEEE_F64LE;
+    hdf5::Datatype const file_datatype{H5T_IEEE_F64LE};
 
     // Open dataset, raster, band, read values
     {

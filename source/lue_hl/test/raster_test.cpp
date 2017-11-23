@@ -21,7 +21,7 @@ BOOST_AUTO_TEST_CASE(create_raster)
     hsize_t const nr_cells = nr_rows * nr_cols;
 
     std::string const band_name = "my_band";
-    lue::hdf5::Datatype const memory_datatype = H5T_NATIVE_DOUBLE;
+    lue::hdf5::Datatype const memory_datatype{H5T_NATIVE_DOUBLE};
     std::array<double, nr_cells> values = {{
          0,  1,  2,
         10, 11, 12,
@@ -50,7 +50,7 @@ BOOST_AUTO_TEST_CASE(create_raster)
     }
 
 
-    lue::hdf5::Datatype const file_datatype = H5T_IEEE_F64LE;
+    lue::hdf5::Datatype const file_datatype{H5T_IEEE_F64LE};
 
     // Open dataset, raster, band, read values
     {
@@ -113,7 +113,7 @@ BOOST_AUTO_TEST_CASE(write_hyperslab)
     hsize_t const nr_cells = nr_rows * nr_cols;
 
     std::string const band_name = "my_band";
-    lue::hdf5::Datatype const memory_datatype = H5T_NATIVE_INT32;
+    lue::hdf5::Datatype const memory_datatype{H5T_NATIVE_INT32};
     std::array<std::int32_t, nr_cells> values = {{
          0,  1,  2,
         10, 11, 12,
@@ -154,7 +154,7 @@ BOOST_AUTO_TEST_CASE(write_hyperslab)
     }
 
 
-    lue::hdf5::Datatype const file_datatype = H5T_STD_I32LE;
+    lue::hdf5::Datatype const file_datatype{H5T_STD_I32LE};
 
     // Open dataset, raster, band, read values
     {

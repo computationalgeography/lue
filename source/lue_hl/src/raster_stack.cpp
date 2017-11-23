@@ -77,19 +77,13 @@ void RasterStack::Band::write(
 }
 
 
-// void RasterStack::Band::write(
-//     std::size_t time_step_idx,
-//     void const* buffer)
-// {
-// }
-// 
-// 
-// void RasterStack::Band::write(
-//     hdf5::Dataspace const& memory_dataspace,
-//     hdf5::Hyperslab const& hyperslab,
-//     void const* buffer)
-// {
-// }
+void RasterStack::Band::write(
+    hdf5::Dataspace const& memory_dataspace,
+    hdf5::Hyperslab const& hyperslab,
+    void const* buffer)
+{
+    _property.values()[0].write(memory_dataspace, hyperslab, buffer);
+}
 
 
 // /*!
@@ -132,10 +126,10 @@ RasterStack::RasterStack(
       _property_set{_phenomenon.property_sets()[property_set_name].id()},
       _time_discretization_property{
           hdf5::Group{_property_set.id(), time_discretization_link_name}.id(),
-          hdf5::NativeDatatypeTraits<hsize_t>::type_id()},
+          hdf5::Datatype{hdf5::NativeDatatypeTraits<hsize_t>::type_id()}},
       _space_discretization_property{
           hdf5::Group{_property_set.id(), space_discretization_link_name}.id(),
-          hdf5::NativeDatatypeTraits<hsize_t>::type_id()},
+          hdf5::Datatype{hdf5::NativeDatatypeTraits<hsize_t>::type_id()}},
       _domain{},
       _discretization{}
 
@@ -183,7 +177,9 @@ void RasterStack::read()
             _phenomenon.property_sets()[space_box_property_set_name];
         omnipresent::SpaceBoxDomain space_box_domain{
             property_set.domain(),
-            hdf5::NativeDatatypeTraits<RasterDomain::Coordinate>::type_id()};
+            hdf5::Datatype{
+                hdf5::NativeDatatypeTraits<RasterDomain::Coordinate>
+                    ::type_id()}};
         RasterDomain::Coordinates space_coordinates;
         space_box_domain.items().read(space_coordinates.data());
         RasterDomain space_domain{"blah", std::move(space_coordinates)};
@@ -308,11 +304,12 @@ RasterStack create_raster_stack(
             // auto const& ids = property_set.ids();
             auto property_set = omnipresent::create_property_set(
                 phenomenon.property_sets(), space_box_property_set_name, ids);
-            file_datatype_id =
+            file_datatype_id = hdf5::Datatype{
                 hdf5::StandardDatatypeTraits<RasterDomain::Coordinate>::
-                    type_id();
-            memory_datatype_id =
-                hdf5::NativeDatatypeTraits<RasterDomain::Coordinate>::type_id();
+                    type_id()};
+            memory_datatype_id = hdf5::Datatype{
+                hdf5::NativeDatatypeTraits<RasterDomain::Coordinate>
+                    ::type_id()};
             auto space_domain = omnipresent::create_space_box_domain(
                 property_set, file_datatype_id, memory_datatype_id, 2);
             space_domain.reserve(nr_items).write(
@@ -345,8 +342,10 @@ RasterStack create_raster_stack(
         }
 
         // Add property
-        file_datatype_id = hdf5::StandardDatatypeTraits<hsize_t>::type_id();
-        memory_datatype_id = hdf5::NativeDatatypeTraits<hsize_t>::type_id();
+        file_datatype_id = hdf5::Datatype{
+            hdf5::StandardDatatypeTraits<hsize_t>::type_id()};
+        memory_datatype_id = hdf5::Datatype{
+            hdf5::NativeDatatypeTraits<hsize_t>::type_id()};
         auto time_discretization_property =
             omnipresent::same_shape::create_property(
                 time_discretization_property_set,
@@ -374,8 +373,10 @@ RasterStack create_raster_stack(
         }
 
         // Two values per item: nr_rows, nr_cols.
-        file_datatype_id = hdf5::StandardDatatypeTraits<hsize_t>::type_id();
-        memory_datatype_id = hdf5::NativeDatatypeTraits<hsize_t>::type_id();
+        file_datatype_id = hdf5::Datatype{
+            hdf5::StandardDatatypeTraits<hsize_t>::type_id()};
+        memory_datatype_id = hdf5::Datatype{
+            hdf5::NativeDatatypeTraits<hsize_t>::type_id()};
         auto space_discretization_property =
             omnipresent::same_shape::create_property(
                 space_discretization_property_set,

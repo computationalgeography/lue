@@ -42,8 +42,10 @@ hl::RasterDiscretization raster_discretization(
         static_cast<std::size_t>(nr_rows), static_cast<std::size_t>(nr_cols));
 }
 
+}  // Anonymous namespace
 
-hdf5::Datatype memory_datatype(
+
+hdf5::Datatype gdal_datatype_to_memory_datatype(
     GDALDataType const datatype)
 {
     hid_t type_id = -1;
@@ -86,56 +88,6 @@ hdf5::Datatype memory_datatype(
 
     return hdf5::Datatype(type_id);
 }
-
-
-template<
-    typename T>
-void write_band(
-    GDALRasterBand& gdal_raster_band,
-    GDALBlock const& blocks,
-    hl::Raster::Band& raster_band,
-    ProgressIndicator& progress_indicator)
-{
-    std::vector<T> values(blocks.block_size());
-    size_t nr_valid_cells_x;
-    size_t nr_valid_cells_y;
-    size_t current_block = 0;
-
-    for(size_t block_y = 0; block_y < blocks.nr_blocks_y();
-            ++block_y) {
-        for(size_t block_x = 0; block_x < blocks.nr_blocks_x();
-                ++block_x) {
-
-            auto cpl_status = gdal_raster_band.ReadBlock(block_x, block_y,
-                values.data());
-
-            if(cpl_status != CE_None) {
-                throw std::runtime_error(
-                    "Cannot read block from GDAL raster band");
-            }
-
-            std::tie(nr_valid_cells_x, nr_valid_cells_y) =
-                blocks.nr_valid_cells(block_x, block_y);
-
-            hdf5::Shape const shape = { nr_valid_cells_x * nr_valid_cells_y };
-            auto const memory_dataspace = hdf5::create_dataspace(shape);
-
-            hdf5::Offset start = {
-                block_y * blocks.block_size_y(),
-                block_x * blocks.block_size_x()
-            };
-            hdf5::Stride stride = { 1, 1 };
-            hdf5::Count count = { nr_valid_cells_y, nr_valid_cells_x };
-
-            raster_band.write(memory_dataspace,
-                hdf5::Hyperslab(start, stride, count), values.data());
-
-            progress_indicator.update_progress(++current_block);
-        }
-    }
-}
-
-}  // Anonymous namespace
 
 
 /*!
@@ -182,9 +134,15 @@ GDALRaster::Band::Band(
 }
 
 
+GDALDataType GDALRaster::Band::gdal_datatype() const
+{
+    return _band->GetRasterDataType();
+}
+
+
 hdf5::Datatype GDALRaster::Band::datatype() const
 {
-    return memory_datatype(_band->GetRasterDataType());
+    return gdal_datatype_to_memory_datatype(gdal_datatype());
 }
 
 
@@ -208,47 +166,91 @@ GDALBlock GDALRaster::Band::blocks() const
 }
 
 
+void GDALRaster::Band::read_block(
+    std::size_t block_x,
+    std::size_t block_y,
+    void* buffer)
+{
+    auto cpl_status = _band->ReadBlock(block_x, block_y, buffer);
+
+    if(cpl_status != CE_None) {
+        throw std::runtime_error("Cannot read block from GDAL raster band");
+    }
+}
+
+
+template<
+    typename T>
+void GDALRaster::Band::write(
+    hl::Raster::Band& raster_band,
+    ProgressIndicator& progress_indicator)
+{
+    auto const blocks = this->blocks();
+    std::vector<T> values(blocks.block_size());
+    size_t nr_valid_cells_x;
+    size_t nr_valid_cells_y;
+    size_t current_block = 0;
+
+    for(size_t block_y = 0; block_y < blocks.nr_blocks_y();
+            ++block_y) {
+        for(size_t block_x = 0; block_x < blocks.nr_blocks_x();
+                ++block_x) {
+
+            read_block(block_x, block_y, values.data());
+
+            std::tie(nr_valid_cells_x, nr_valid_cells_y) =
+                blocks.nr_valid_cells(block_x, block_y);
+
+            hdf5::Shape const shape = { nr_valid_cells_x * nr_valid_cells_y };
+            auto const memory_dataspace = hdf5::create_dataspace(shape);
+
+            hdf5::Offset offset = {
+                block_y * blocks.block_size_y(),
+                block_x * blocks.block_size_x()
+            };
+            hdf5::Count count = { nr_valid_cells_y, nr_valid_cells_x };
+
+            raster_band.write(
+                memory_dataspace, hdf5::Hyperslab(offset, count), values.data());
+
+            progress_indicator.update_progress(++current_block);
+        }
+    }
+}
+
 void GDALRaster::Band::write(
     hl::Raster::Band& raster_band,
     ProgressIndicator& progress_indicator)
 {
     auto datatype = _band->GetRasterDataType();
-    auto blocks = this->blocks();
 
     switch(datatype) {
         case GDT_Byte: {
-            write_band<uint8_t>(
-                *_band, blocks, raster_band, progress_indicator);
+            write<uint8_t>(raster_band, progress_indicator);
             break;
         }
         case GDT_UInt16: {
-            write_band<uint16_t>(
-                *_band, blocks, raster_band, progress_indicator);
+            write<uint16_t>(raster_band, progress_indicator);
             break;
         }
         case GDT_Int16: {
-            write_band<int16_t>(
-                *_band, blocks, raster_band, progress_indicator);
+            write<int16_t>(raster_band, progress_indicator);
             break;
         }
         case GDT_UInt32: {
-            write_band<uint32_t>(
-                *_band, blocks, raster_band, progress_indicator);
+            write<uint32_t>(raster_band, progress_indicator);
             break;
         }
         case GDT_Int32: {
-            write_band<int32_t>(
-                *_band, blocks, raster_band, progress_indicator);
+            write<int32_t>(raster_band, progress_indicator);
             break;
         }
         case GDT_Float32: {
-            write_band<float>(
-                *_band, blocks, raster_band, progress_indicator);
+            write<float>(raster_band, progress_indicator);
             break;
         }
         case GDT_Float64: {
-            write_band<double>(
-                *_band, blocks, raster_band, progress_indicator);
+            write<double>(raster_band, progress_indicator);
             break;
         }
         default: {

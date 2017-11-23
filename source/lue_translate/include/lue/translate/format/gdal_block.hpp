@@ -11,20 +11,22 @@ class GDALBlock
 
 public:
 
-                   GDALBlock           (size_t const raster_size_x,
-                                        size_t const raster_size_y,
-                                        size_t const block_size_x,
-                                        size_t const block_size_y);
+                   GDALBlock           ();
 
-                   GDALBlock           (GDALBlock const& other)=default;
+                   GDALBlock           (size_t raster_size_x,
+                                        size_t raster_size_y,
+                                        size_t block_size_x,
+                                        size_t block_size_y);
 
-                   GDALBlock           (GDALBlock&& other)=default;
+                   GDALBlock           (GDALBlock const&)=default;
+
+                   GDALBlock           (GDALBlock&&)=default;
 
                    ~GDALBlock          ()=default;
 
-   GDALBlock&      operator=           (GDALBlock const& other)=default;
+   GDALBlock&      operator=           (GDALBlock const&)=default;
 
-   GDALBlock&      operator=           (GDALBlock&& other)=default;
+   GDALBlock&      operator=           (GDALBlock&&)=default;
 
    size_t          block_size_x        () const;
 
@@ -39,18 +41,18 @@ public:
    size_t          nr_blocks           () const;
 
    std::tuple<size_t, size_t>
-                   nr_valid_cells      (size_t const block_index_x,
-                                        size_t const block_index_y) const;
+                   nr_valid_cells      (size_t block_index_x,
+                                        size_t block_index_y) const;
 
 private:
 
-   size_t const    _raster_size_x;
+   size_t          _raster_size_x;
 
-   size_t const    _raster_size_y;
+   size_t          _raster_size_y;
 
-   size_t const    _block_size_x;
+   size_t          _block_size_x;
 
-   size_t const    _block_size_y;
+   size_t          _block_size_y;
 
    size_t          _block_size;
 

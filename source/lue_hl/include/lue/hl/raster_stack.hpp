@@ -38,9 +38,6 @@ public:
 
         void       write               (void const* buffer);
 
-        void       write               (std::size_t time_step_idx,
-                                        void const* buffer);
-
         void       write               (hdf5::Dataspace const& memory_dataspace,
                                         hdf5::Hyperslab const& hyperslab,
                                         void const* buffer);

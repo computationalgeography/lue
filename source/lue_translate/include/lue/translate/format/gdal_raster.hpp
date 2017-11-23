@@ -11,6 +11,9 @@
 namespace lue {
 namespace utility {
 
+hdf5::Datatype     gdal_datatype_to_memory_datatype(
+                                        GDALDataType datatype);
+
 // This is nicer than the GDALDatasetDeleter below, but doesn't work
 // (gcc 4.9.3).
 //
@@ -69,14 +72,25 @@ public:
 
         Band&      operator=           (Band&&)=default;
 
+        GDALDataType gdal_datatype     () const;
+
         hdf5::Datatype datatype        () const;
 
         GDALBlock  blocks              () const;
+
+        void       read_block          (std::size_t block_x,
+                                        std::size_t block_y,
+                                        void* buffer);
 
         void       write               (hl::Raster::Band& raster_band,
                                         ProgressIndicator& progress_indicator);
 
     private:
+
+        template<
+            typename T>
+        void       write               (hl::Raster::Band& raster_band,
+                                        ProgressIndicator& progress_indicator);
 
         GDALRasterBand* _band;
 

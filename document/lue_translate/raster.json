@@ -1,3 +1,5 @@
+// NOTE: This file doesn't seem to be correct. See lue_translate docs.
+
 {
     "dem": {
         "phenomenon": {
@@ -9,12 +11,12 @@
             }
         },
         "raster": {
-            "band": {
-                "1": {
+            "bands": [
+                {
                     "name": "NOx",
                     "description": "bandje bandje bandje 1"
                 }
-            }
+            ]
         }
     },
     "dem2": {
@@ -27,12 +29,12 @@
             }
         },
         "raster": {
-            "band": {
-                "1": {
+            "bands": [
+                {
                     "name": "NO2",
                     "description": "bandje bandje bandje 1"
                 }
-            }
+            ]
         }
     },
     "dem3": {
@@ -45,12 +47,12 @@
             }
         },
         "raster": {
-            "band": {
-                "1": {
+            "bands": [
+                {
                     "name": "PM10",
                     "description": "bandje bandje bandje 1"
                 }
-            }
+            ]
         }
     },
     "dem4": {
@@ -63,12 +65,12 @@
             }
         },
         "raster": {
-            "band": {
-                "1": {
+            "bands": [
+                {
                     "name": "PM10",
                     "description": "bandje bandje bandje 1"
                 }
-            }
+            ]
         }
     }
 }

@@ -161,22 +161,22 @@ py::array create_array(
 {
     py::array array;
 
-    if(datatype == H5T_NATIVE_UINT32) {
+    if(datatype == hdf5::Datatype{H5T_NATIVE_UINT32}) {
         array = create_array<uint32_t>(shape);
     }
-    else if(datatype == H5T_NATIVE_INT32) {
+    else if(datatype == hdf5::Datatype{H5T_NATIVE_INT32}) {
         array = create_array<int32_t>(shape);
     }
-    else if(datatype == H5T_NATIVE_UINT64) {
+    else if(datatype == hdf5::Datatype{H5T_NATIVE_UINT64}) {
         array = create_array<uint64_t>(shape);
     }
-    else if(datatype == H5T_NATIVE_INT64) {
+    else if(datatype == hdf5::Datatype{H5T_NATIVE_INT64}) {
         array = create_array<int64_t>(shape);
     }
-    else if(datatype == H5T_NATIVE_FLOAT) {
+    else if(datatype == hdf5::Datatype{H5T_NATIVE_FLOAT}) {
         array = create_array<float>(shape);
     }
-    else if(datatype == H5T_NATIVE_DOUBLE) {
+    else if(datatype == hdf5::Datatype{H5T_NATIVE_DOUBLE}) {
         array = create_array<double>(shape);
     }
     else {

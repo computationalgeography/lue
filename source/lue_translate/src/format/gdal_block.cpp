@@ -5,6 +5,15 @@
 namespace lue {
 namespace utility {
 
+
+GDALBlock::GDALBlock()
+
+    : GDALBlock{0, 0, 0, 0}
+
+{
+}
+
+
 GDALBlock::GDALBlock(
     size_t const raster_size_x,
     size_t const raster_size_y,
@@ -14,7 +23,11 @@ GDALBlock::GDALBlock(
     : _raster_size_x{raster_size_x},
       _raster_size_y{raster_size_y},
       _block_size_x{block_size_x},
-      _block_size_y{block_size_y}
+      _block_size_y{block_size_y},
+      _block_size{0},
+      _nr_blocks_x{0},
+      _nr_blocks_y{0},
+      _nr_blocks{0}
 
 {
     assert(_block_size_x <= _raster_size_x);
@@ -22,8 +35,14 @@ GDALBlock::GDALBlock(
 
     _block_size = _block_size_x * _block_size_y;
 
-    _nr_blocks_x = (_raster_size_x + _block_size_x - 1) / _block_size_x;
-    _nr_blocks_y = (_raster_size_y + _block_size_y - 1) / _block_size_y;
+    if(_block_size_x > 0) {
+        _nr_blocks_x = (_raster_size_x + _block_size_x - 1) / _block_size_x;
+    }
+
+    if(_block_size_y > 0) {
+        _nr_blocks_y = (_raster_size_y + _block_size_y - 1) / _block_size_y;
+    }
+
     _nr_blocks = _nr_blocks_x * _nr_blocks_y;
 }
 

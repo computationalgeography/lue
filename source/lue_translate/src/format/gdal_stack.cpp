@@ -7,59 +7,7 @@ namespace lue {
 namespace utility {
 namespace {
 
-using SliceIndex = std::size_t;
-using Slice = SliceIndex;
-
-class Slices
-{
-
-public:
-
-    Slices()=default;
-
-    Slices(
-        std::vector<Slice> slices)
-        : _slices{std::forward<std::vector<Slice>>(slices)}
-    {
-        std::sort(_slices.begin(), _slices.end());
-    }
-
-    bool empty() const
-    {
-        return _slices.empty();
-    }
-
-    SliceIndex first_index() const
-    {
-        assert(!empty());
-        return _slices.front();
-    }
-
-    SliceIndex last_index() const
-    {
-        assert(!empty());
-        return _slices.back();
-    }
-
-    std::size_t nr_steps() const
-    {
-        // Don't use _slices.size():
-        // 1, 2, 3, 4 -> 4 steps
-        // 1, 2, 4 -> 4 steps, with one missing!
-        return !empty()
-            ? (last_index() - first_index()) + 1
-            : 0
-            ;
-    }
-
-private:
-
-    std::vector<Slice> _slices;
-
-};
-
-
-boost::spirit::qi::rule<std::string::iterator, SliceIndex()> stack_rule(
+boost::spirit::qi::rule<std::string::iterator, GDALStack::SliceIndex()> stack_rule(
     std::string const& stack_name)
 {
     return
@@ -116,7 +64,7 @@ bool stack_exists(
 }
 
 
-Slices slices(
+GDALStack::Slices slices(
     std::string const& dataset_name)
 {
     namespace qi = boost::spirit::qi;
@@ -124,9 +72,9 @@ Slices slices(
 
     auto const dataset_path = fs::path(dataset_name);
     auto const directory_path = dataset_path.parent_path();
-    std::vector<Slice> result;
+    GDALStack::Slices::Indices indices;
 
-    SliceIndex index;
+    GDALStack::SliceIndex index;
 
     for(auto const& directory_entry: fs::directory_iterator(directory_path)) {
         auto pathname = directory_entry.path().string();
@@ -134,17 +82,17 @@ Slices slices(
         auto last = pathname.end();
 
         if(qi::parse(first, last, stack_rule(dataset_name), index)) {
-            result.push_back(index);
+            indices.push_back(index);
         }
     }
 
-    return Slices{result};
+    return GDALStack::Slices{indices};
 }
 
 
 std::string slice_dataset_name(
     std::string const& dataset_name,
-    SliceIndex const slice_idx)
+    GDALStack::SliceIndex const slice_idx)
 {
     return dataset_name + "_" + std::to_string(slice_idx) + ".map";
 }
@@ -152,13 +100,32 @@ std::string slice_dataset_name(
 
 GDALDatasetPtr open_slice_for_read(
     std::string const& dataset_name,
-    SliceIndex const slice_idx)
+    GDALStack::SliceIndex const slice_idx)
 {
     return open_gdal_raster_dataset_for_read(
         slice_dataset_name(dataset_name, slice_idx));
 }
 
 }  // namespace underscore
+
+
+GDALDatasetPtr open_slice_for_read(
+    GDALStack::NamingConvention const naming_convention,
+    std::string const& dataset_name,
+    GDALStack::SliceIndex const slice_idx)
+{
+    GDALDatasetPtr result;
+
+    switch(naming_convention) {
+        case GDALStack::NamingConvention::underscore: {
+            result = underscore::open_slice_for_read(dataset_name, slice_idx);
+            break;
+        }
+    }
+
+    return result;
+}
+
 }  // Anonymous namespace
 
 
@@ -196,40 +163,254 @@ GDALStack::NamingConvention GDALStack::stack_naming_convention(
 }
 
 
+GDALStack::Slices::Slices(
+    Indices indices)
+    : _indices{std::forward<Indices>(indices)}
+{
+    std::sort(_indices.begin(), _indices.end());
+}
+
+
+bool GDALStack::Slices::empty() const
+{
+    return _indices.empty();
+}
+
+
+GDALStack::Slices::ConstIterator GDALStack::Slices::begin() const
+{
+    return _indices.begin();
+}
+
+
+GDALStack::Slices::ConstIterator GDALStack::Slices::end() const
+{
+    return _indices.end();
+}
+
+
+GDALStack::SliceIndex GDALStack::Slices::first_index() const
+{
+    assert(!empty());
+    return _indices.front();
+}
+
+
+GDALStack::SliceIndex GDALStack::Slices::last_index() const
+{
+    assert(!empty());
+    return _indices.back();
+}
+
+
+GDALStack::SliceIndex GDALStack::Slices::index(
+    std::size_t step_idx) const
+{
+    return first_index() + step_idx;
+}
+
+
+std::size_t GDALStack::Slices::size() const
+{
+    return _indices.size();
+}
+
+
+std::size_t GDALStack::Slices::nr_steps() const
+{
+    // Don't use _indices.size():
+    // 1, 2, 3, 4 -> 4 steps
+    // 1, 2, 4 -> 4 steps, with one missing!
+    return !empty()
+        ? (last_index() - first_index()) + 1
+        : 0
+        ;
+}
+
+
+bool GDALStack::Slices::step_available(
+    std::size_t const step_idx) const
+{
+    assert(step_idx < nr_steps());
+
+    return std::binary_search(
+        _indices.begin(), _indices.end(), index(step_idx));
+}
+
+
+GDALStack::Band::Band(
+    std::string const& dataset_name,
+    NamingConvention const naming_convention,
+    Slices const& slices,
+    int const band_nr)
+
+    : _dataset_name{dataset_name},
+      _naming_convention{naming_convention},
+      _slices{slices},
+      _band_nr{band_nr},
+      _gdal_datatype{},
+      _slice_blocks{}
+
+{
+    auto raster = GDALRaster{open_slice_for_read(
+        _naming_convention, _dataset_name, _slices.first_index())};
+    auto raster_band = raster.band(_band_nr);
+    _gdal_datatype = raster_band.gdal_datatype();
+    _slice_blocks = raster_band.blocks();
+}
+
+
+hdf5::Datatype GDALStack::Band::datatype() const
+{
+    return gdal_datatype_to_memory_datatype(_gdal_datatype);
+}
+
+
+GDALBlock const& GDALStack::Band::slice_blocks() const
+{
+    return _slice_blocks;
+}
+
+
+std::size_t GDALStack::Band::nr_blocks() const
+{
+    return _slices.size() * _slice_blocks.nr_blocks();
+}
+
+
+template<
+    typename T>
+void GDALStack::Band::write(
+    hl::RasterStack::Band& raster_stack_band,
+    ProgressIndicator& progress_indicator)
+{
+    auto const slice_blocks = this->slice_blocks();
+    std::vector<T> values(slice_blocks.block_size());
+    size_t nr_valid_cells_x;
+    size_t nr_valid_cells_y;
+    std::size_t current_block = 0;
+
+    for(std::size_t step_idx = 0; step_idx < _slices.nr_steps(); ++step_idx) {
+
+        if(_slices.step_available(step_idx)) {
+
+            // Open band from slice corresponding with current time step
+            auto gdal_raster = GDALRaster{open_slice_for_read(
+                _naming_convention, _dataset_name, _slices.index(step_idx))};
+            auto gdal_raster_band = gdal_raster.band(_band_nr);
+
+
+            // Copy blocks for current slice to lue dataset
+            for(size_t block_y = 0; block_y < slice_blocks.nr_blocks_y();
+                    ++block_y) {
+                for(size_t block_x = 0; block_x < slice_blocks.nr_blocks_x();
+                        ++block_x) {
+
+                    gdal_raster_band.read_block(
+                        block_x, block_y, values.data());
+
+                    std::tie(nr_valid_cells_x, nr_valid_cells_y) =
+                        slice_blocks.nr_valid_cells(block_x, block_y);
+
+                    hdf5::Shape const shape = {
+                        nr_valid_cells_x * nr_valid_cells_y
+                    };
+                    auto const memory_dataspace = hdf5::create_dataspace(shape);
+
+                    hdf5::Offset offset = {
+                        0,
+                        step_idx,
+                        block_y * slice_blocks.block_size_y(),
+                        block_x * slice_blocks.block_size_x()
+                    };
+                    hdf5::Count count = {
+                        1, 1, nr_valid_cells_y, nr_valid_cells_x };
+
+                    raster_stack_band.write(
+                        memory_dataspace,
+                        hdf5::Hyperslab{offset, count},
+                        values.data());
+
+                    progress_indicator.update_progress(++current_block);
+                }
+            }
+        }
+    }
+}
+
+
+void GDALStack::Band::write(
+    hl::RasterStack::Band& raster_stack_band,
+    ProgressIndicator& progress_indicator)
+{
+    switch(_gdal_datatype) {
+        case GDT_Byte: {
+            write<uint8_t>(raster_stack_band, progress_indicator);
+            break;
+        }
+        case GDT_UInt16: {
+            write<uint16_t>(raster_stack_band, progress_indicator);
+            break;
+        }
+        case GDT_Int16: {
+            write<int16_t>(raster_stack_band, progress_indicator);
+            break;
+        }
+        case GDT_UInt32: {
+            write<uint32_t>(raster_stack_band, progress_indicator);
+            break;
+        }
+        case GDT_Int32: {
+            write<int32_t>(raster_stack_band, progress_indicator);
+            break;
+        }
+        case GDT_Float32: {
+            write<float>(raster_stack_band, progress_indicator);
+            break;
+        }
+        case GDT_Float64: {
+            write<double>(raster_stack_band, progress_indicator);
+            break;
+        }
+        default: {
+            throw std::runtime_error("Unsupported datatype");
+            break;
+        }
+    }
+}
+
+
 GDALStack::GDALStack(
     std::string const& dataset_name)
 
     : _dataset_name{dataset_name},
       _name{boost::filesystem::path(_dataset_name).stem().string()},
       _naming_convention{stack_naming_convention(dataset_name)},
+      _slices{},
+      _nr_bands{},
       _domain{},
       _discretization{}
 
 {
     // Open the stack and read the domain and discretization information
-    Slices slices;
     GDALDatasetPtr raster_dataset;
 
     switch(_naming_convention) {
         case NamingConvention::underscore: {
-            slices = underscore::slices(_dataset_name);
+            _slices = underscore::slices(_dataset_name);
             raster_dataset = underscore::open_slice_for_read(
-                _dataset_name, slices.first_index());
+                _dataset_name, _slices.first_index());
             break;
         }
     }
 
-    assert(!slices.empty());
+    assert(!_slices.empty());
     assert(raster_dataset);
 
-    hl::TimeSeriesDiscretization time_series_discretization{slices.nr_steps()};
+    hl::TimeSeriesDiscretization time_series_discretization{_slices.nr_steps()};
     GDALRaster raster{std::move(raster_dataset)};
 
-    if(raster.nr_bands() > 1) {
-        throw std::runtime_error(
-            "GDAL raster stacks with more than 1 band are not supported yet");
-    }
-
+    _nr_bands = raster.nr_bands();
     _domain = raster.domain();
     _discretization = hl::RasterStackDiscretization{
         time_series_discretization,
@@ -246,6 +427,22 @@ std::string const& GDALStack::dataset_name() const
 std::string const& GDALStack::name() const
 {
     return _name;
+}
+
+
+std::size_t GDALStack::nr_bands() const
+{
+    return _nr_bands;
+}
+
+
+GDALStack::Band GDALStack::band(
+    int nr) const
+{
+    assert(nr > 0);
+    assert(nr <= int(nr_bands()));
+
+    return Band{_dataset_name, _naming_convention, _slices, nr};
 }
 
 

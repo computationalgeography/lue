@@ -97,7 +97,7 @@ Raster::Raster(
     : _property_set(id),
       _discretization_property(
           _property_set.properties()[discretization_property_name].id(),
-          H5T_NATIVE_HSIZE),
+          hdf5::Datatype{H5T_NATIVE_HSIZE}),
       _discretization(),
       _domain()
 
@@ -117,7 +117,7 @@ Raster::Raster(
                     .property_sets()[property_set_name].id()),
       _discretization_property(
           _property_set.properties()[discretization_property_name].id(),
-          H5T_NATIVE_HSIZE),
+          hdf5::Datatype{H5T_NATIVE_HSIZE}),
       _discretization(),
       _domain()
 
@@ -145,7 +145,7 @@ void Raster::read_domain()
 {
     auto const space_box_domain = omnipresent::SpaceBoxDomain{
         _property_set.domain(),
-        hdf5::NativeDatatypeTraits<double>::type_id()};
+        hdf5::Datatype{hdf5::NativeDatatypeTraits<double>::type_id()}};
     auto const& space_boxes = space_box_domain.items();
     assert(space_boxes.nr_items() == 1);
     RasterDomain::Coordinates coordinates;
@@ -221,9 +221,9 @@ omnipresent::same_shape::Property discretization_property(
     std::string const& property_name = discretization_property_name;
     hdf5::Shape const shape{nr_values_per_item};
     auto const file_datatype_id =
-        hdf5::StandardDatatypeTraits<hsize_t>::type_id();
+        hdf5::Datatype{hdf5::StandardDatatypeTraits<hsize_t>::type_id()};
     auto const memory_datatype_id =
-        hdf5::NativeDatatypeTraits<hsize_t>::type_id();
+        hdf5::Datatype{hdf5::NativeDatatypeTraits<hsize_t>::type_id()};
 
     auto property = omnipresent::same_shape::create_property(
         property_set, property_name,
@@ -274,9 +274,9 @@ hdf5::Identifier create_raster(
         // Write raster extent to space domain.
         {
             auto const file_datatype_id =
-                hdf5::StandardDatatypeTraits<double>::type_id();
+                hdf5::Datatype{hdf5::StandardDatatypeTraits<double>::type_id()};
             auto const memory_datatype_id =
-                hdf5::NativeDatatypeTraits<double>::type_id();
+                hdf5::Datatype{hdf5::NativeDatatypeTraits<double>::type_id()};
             size_t const rank = 2;
             auto space_domain = omnipresent::create_space_box_domain(
                 property_set, file_datatype_id, memory_datatype_id, rank);

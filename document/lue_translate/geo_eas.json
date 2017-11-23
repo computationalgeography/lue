@@ -1,0 +1,36 @@
+{
+    "phenomena": [
+        {
+            "name": "my_phenomenon",
+            "description": "My description",
+            "property_set": {
+                "name": "my_property_set",
+                "description": "My description"
+            }
+        }
+    ],
+    "datasets": [
+        {
+            "name": "rain",
+            "phenomenon": "/phenomena/0",
+            "property": {
+                "name": "precipitation"
+            },
+            "time": {
+                "clock": {
+                    "unit": "day",
+                    "nr_units": 5
+                },
+                "box": [6, 43]
+            },
+            "space": {
+                "crs": "FIXME",
+                "point": [
+                    [2.5, 3.5],
+                    [5.6, 9.3],
+                    [15.3, 3.9]
+                ]
+            }
+        }
+    ]
+}

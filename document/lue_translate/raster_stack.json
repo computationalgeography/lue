@@ -1,0 +1,58 @@
+{
+    "phenomena": [
+        {
+            "name": "my_phenomenon",
+            "description": "My description",
+            "property_set": {
+                "name": "my_property_set",
+                "description": "My description"
+            }
+        }
+    ],
+    "datasets": [
+        {
+            "name": "no2",
+            "phenomenon": "/phenomena/0",
+            "property": {
+                "name": "no2"
+            },
+            "time": {
+                "clock": {
+                    "unit": "day",
+                    "nr_units": 1
+                },
+                "box": [1, 31]
+            },
+            "raster": {
+                "bands": [
+                    {
+                        "name": "no2",
+                        "description": "no2 bandje bandje bandje 1"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "pm10",
+            "phenomenon": "/phenomena/0",
+            "property": {
+                "name": "pm10"
+            },
+            "time": {
+                "clock": {
+                    "unit": "day",
+                    "nr_units": 1
+                },
+                "box": [1, 31]
+            },
+            "raster": {
+                "bands": [
+                    {
+                        "name": "pm10",
+                        "description": "pm10 bandje bandje bandje 1"
+                    }
+                ]
+            }
+        }
+    ]
+}

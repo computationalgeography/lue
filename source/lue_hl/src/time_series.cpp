@@ -69,7 +69,8 @@ TimeSeries::TimeSeries(
     : _phenomenon{phenomenon_id},
       _property_set{_phenomenon.property_sets()[property_set_name].id()},
       _value_property{
-          _property_set.properties()[property_name].id(), H5T_NATIVE_DOUBLE},
+          _property_set.properties()[property_name].id(),
+          hdf5::Datatype{H5T_NATIVE_DOUBLE}},
       _time_domain{},
       _space_domain{},
       _time_discretization{}
@@ -91,7 +92,7 @@ TimeSeries::TimeSeries(
             _phenomenon.property_sets()[space_point_property_set_name];
         omnipresent::SpacePointDomain space_point_domain{
             property_set.domain(),
-            hdf5::NativeDatatypeTraits<double>::type_id()};
+            hdf5::Datatype{hdf5::NativeDatatypeTraits<double>::type_id()}};
 
         auto const& space_points = space_point_domain.items();
         hl::TimeSeries::SpaceDomain::Coordinates coordinates(
@@ -106,7 +107,7 @@ TimeSeries::TimeSeries(
         // This property is linked from the value property
         auto discretization_property = omnipresent::same_shape::Property{
             _value_property.time_discretization().id(),
-            hdf5::NativeDatatypeTraits<hsize_t>::type_id()
+            hdf5::Datatype{hdf5::NativeDatatypeTraits<hsize_t>::type_id()}
         };
         assert(discretization_property.values().nr_items() == 1);
         hsize_t nr_steps;
@@ -240,9 +241,9 @@ TimeSeries create_time_series(
             auto property_set = omnipresent::create_property_set(
                 phenomenon.property_sets(), space_point_property_set_name, ids);
             auto const file_datatype_id =
-                hdf5::StandardDatatypeTraits<double>::type_id();
+                hdf5::Datatype{hdf5::StandardDatatypeTraits<double>::type_id()};
             auto const memory_datatype_id =
-                hdf5::NativeDatatypeTraits<double>::type_id();
+                hdf5::Datatype{hdf5::NativeDatatypeTraits<double>::type_id()};
             size_t const rank = 2;
             auto space_domain_ = omnipresent::create_space_point_domain(
                 property_set, file_datatype_id, memory_datatype_id, rank);
@@ -274,9 +275,9 @@ TimeSeries create_time_series(
             // Add property
             hdf5::Shape const shape{1};
             auto const file_datatype_id =
-                hdf5::StandardDatatypeTraits<hsize_t>::type_id();
+                hdf5::Datatype{hdf5::StandardDatatypeTraits<hsize_t>::type_id()};
             auto const memory_datatype_id =
-                hdf5::NativeDatatypeTraits<hsize_t>::type_id();
+                hdf5::Datatype{hdf5::NativeDatatypeTraits<hsize_t>::type_id()};
             auto discretization_property =
                 omnipresent::same_shape::create_property(
                     discretization_property_set,
@@ -290,9 +291,11 @@ TimeSeries create_time_series(
             // Create property for storing time series values
             {
                 auto const file_datatype_id =
-                    hdf5::StandardDatatypeTraits<double>::type_id();
+                    hdf5::Datatype{hdf5::StandardDatatypeTraits<double>
+                        ::type_id()};
                 auto const memory_datatype_id =
-                    hdf5::NativeDatatypeTraits<double>::type_id();
+                    hdf5::Datatype{hdf5::NativeDatatypeTraits<double>
+                        ::type_id()};
                 auto value_property =
                     shared::constant_shape::same_shape::create_property(
                         property_set,
