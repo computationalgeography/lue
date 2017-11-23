@@ -19,6 +19,9 @@ void init_submodule(py::module& module);
 void init_domain(py::module& module);
 // void init_property_class(py::module& module);
 void init_property_set(py::module& module);
+void init_space_box_class(py::module& module);
+void init_space_box_domain_class(py::module& module);
+void init_space_domain_class(py::module& module);
 void init_time_box(py::module& module);
 void init_time_box_domain(py::module& module);
 void init_time_domain(py::module& module);
@@ -35,6 +38,7 @@ void init_submodule(
 )");
 
     init_domain(submodule);
+    init_space_domain_class(submodule);
     init_time_domain(submodule);
     // init_property_class(submodule);
 
@@ -43,6 +47,9 @@ void init_submodule(
     init_time_box_domain(submodule);
 
     constant_shape::init_submodule(submodule);
+
+    init_space_box_class(submodule);
+    init_space_box_domain_class(submodule);
 }
 
 } // namespace shared

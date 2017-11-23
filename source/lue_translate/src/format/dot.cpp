@@ -1,4 +1,7 @@
 #include "lue/translate/format/dot.hpp"
+#include "lue/constant_size/time/located/property_set.hpp"
+#include "lue/constant_size/time/located/shared/constant_shape/property.hpp"
+#include "lue/constant_size/time/located/shared/time_box_domain.hpp"
 #include "lue/constant_size/time/omnipresent/different_shape/property.hpp"
 #include "lue/constant_size/time/omnipresent/property_set.hpp"
 #include "lue/constant_size/time/omnipresent/same_shape/property.hpp"
@@ -259,6 +262,23 @@ using namespace utility;
 
 // We are in the lue namespace now. This make the code below easier to write.
 // We need less explicit namespace qualifications.
+
+void to_dot(
+    Domain const& domain,
+    std::ostream& stream,
+    Metadata const& metadata)
+{
+    dump_node(domain, stream, metadata);
+
+    if(space_domain_exists(domain)) {
+        auto const space_domain = SpaceDomain(domain);
+
+        dump_node(space_domain, stream, metadata);
+        link_nodes(domain, space_domain, stream, metadata);
+    }
+}
+
+
 namespace constant_size {
 namespace time {
 namespace omnipresent {
@@ -459,20 +479,176 @@ void to_dot(
 }
 
 
+// void to_dot(
+//     Domain const& domain,
+//     std::ostream& stream,
+//     Metadata const& metadata)
+// {
+//     dump_node(domain, stream, metadata);
+// 
+//     if(space_domain_exists(domain)) {
+//         auto const space_domain = SpaceDomain(domain);
+// 
+//         dump_node(space_domain, stream, metadata);
+//         link_nodes(domain, space_domain, stream, metadata);
+//     }
+// }
+
+
+// void dump_node(
+//     PropertySet const& property_set,
+//     std::ostream& stream,
+//     Metadata const& metadata)
+// {
+//     stream << boost::str(boost::format(R"(
+//     %1% [
+//         label=<%2%>
+//         shape="%3%"
+//         fillcolor="%4%"
+//     ];
+// )")
+//         % dot_name(property_set)
+//         % property_set.id().name()
+//         % shape(property_set, metadata)
+//         % metadata.string(
+//             JSONPointer("/lue/property_set/fillcolor"),
+//             fillcolor(property_set))
+//     );
+// }
+
+
 void to_dot(
-    Domain const& domain,
+    PropertySet const& property_set,
     std::ostream& stream,
     Metadata const& metadata)
 {
-    dump_node(domain, stream, metadata);
+    auto const& domain = property_set.domain();
+    auto const& properties = property_set.properties();
+    std::vector<std::string> property_dot_names;
 
-    if(space_domain_exists(domain)) {
-        auto const space_domain = SpaceDomain(domain);
+    for(auto const& name: properties.names()) {
+        auto const& property = properties[name];
 
-        dump_node(space_domain, stream, metadata);
-        link_nodes(domain, space_domain, stream, metadata);
+        to_dot(omnipresent::Property{property.id()}, stream, metadata);
+        link_nodes(property_set, property, stream, metadata);
+        link_nodes(property, domain, stream, metadata);
+
+        property_dot_names.push_back(dot_name(property));
+    }
+
+    stream << boost::str(boost::format(R"(
+    { rank=same %1% }
+)")
+        % boost::join(property_dot_names, " ")
+        );
+}
+
+}  // namespace omnipresent
+
+
+namespace located {
+
+// namespace same_shape {
+// 
+// }  // namespace same_shape
+// 
+// 
+// namespace different_shape {
+// 
+// }  // namespace same_shape
+
+
+
+void to_dot(
+    Property const& property,
+    std::ostream& stream,
+    Metadata const& metadata)
+{
+    auto const& configuration = property.configuration();
+
+    switch(configuration.shape_per_item_type()) {
+
+        case ShapePerItemType::same: {
+            // auto file_datatype = same_shape::Property::file_datatype(
+            //     property.id());
+            // to_dot(same_shape::Property(property,
+            //     memory_datatype(file_datatype)), stream, metadata);
+            break;
+        }
+
+        case ShapePerItemType::different: {
+            // auto file_datatype = different_shape::Property::file_datatype(
+            //     property.id());
+            // to_dot(different_shape::Property(property,
+            //     memory_datatype(file_datatype)), stream, metadata);
+            break;
+        }
+
     }
 }
+
+namespace shared {
+
+void to_dot(
+    PropertySet const& property_set,
+    std::ostream& stream,
+    Metadata const& metadata)
+{
+    auto const& domain = property_set.domain();
+    auto const& properties = property_set.properties();
+    std::vector<std::string> property_dot_names;
+
+    for(auto const& name: properties.names()) {
+        auto const property = located::Property(properties[name].id());
+
+        switch(property.configuration2().shape_variability()) {
+
+            case lue::time::PropertyConfiguration::ShapeVariability::constant: {
+                to_dot(
+                    constant_shape::Property(property.id()),
+                    stream, metadata);
+                break;
+            }
+        }
+
+        link_nodes(property_set, property, stream, metadata);
+        link_nodes(property, domain, stream, metadata);
+
+        property_dot_names.push_back(dot_name(property));
+    }
+
+    stream << boost::str(boost::format(R"(
+    { rank=same %1% }
+)")
+        % boost::join(property_dot_names, " ")
+        );
+}
+
+}  // namespace shared
+
+
+void to_dot(
+    PropertySet const& property_set,
+    std::ostream& stream,
+    Metadata const& metadata)
+{
+    auto const& domain = property_set.domain();
+
+    TimeDomain time_domain(domain.id());
+
+    switch(time_domain.configuration().ownership()) {
+
+        case TimeDomain::Configuration::Ownership::shared: {
+            to_dot(
+                shared::PropertySet(property_set.id()),
+                stream, metadata);
+            break;
+        }
+    }
+}
+
+}  // namespace located
+}  // namespace time
 
 
 void dump_node(
@@ -491,7 +667,8 @@ void dump_node(
         % property_set.id().name()
         % shape(property_set, metadata)
         % metadata.string(
-            JSONPointer("/lue/property_set/fillcolor"), fillcolor(property_set))
+            JSONPointer("/lue/property_set/fillcolor"),
+            fillcolor(property_set))
     );
 }
 
@@ -515,31 +692,59 @@ void to_dot(
     link_nodes(property_set, domain, stream, metadata);
 
 
-    auto const& properties = property_set.properties();
-    std::vector<std::string> property_dot_names;
+    switch(property_set.domain().configuration().domain_type()) {
 
-    for(auto const& name: properties.names()) {
-        auto const& property = properties[name];
+        case Domain::Configuration::DomainType::located: {
+            to_dot(
+                time::located::PropertySet(property_set.id()),
+                stream, metadata);
+            break;
+        }
 
-        to_dot(omnipresent::Property{property.id()}, stream, metadata);
-        link_nodes(property_set, property, stream, metadata);
-        link_nodes(property, domain, stream, metadata);
+        case Domain::Configuration::DomainType::omnipresent: {
 
-        property_dot_names.push_back(dot_name(property));
+            to_dot(
+                time::omnipresent::PropertySet(property_set.id()),
+                stream, metadata);
+            break;
+        }
+
     }
 
-    stream << boost::str(boost::format(R"(
-    { rank=same %1% }
-)")
-        % boost::join(property_dot_names, " ")
-        );
+
+
+//     auto const& domain = property_set.domain();
+// 
+//     to_dot(domain, stream, metadata);
+//     link_nodes(property_set, domain, stream, metadata);
+// 
+// 
+//     auto const& properties = property_set.properties();
+//     std::vector<std::string> property_dot_names;
+// 
+//     for(auto const& name: properties.names()) {
+//         auto const& property = properties[name];
+// 
+//         to_dot(property, stream, metadata);
+//         link_nodes(property_set, property, stream, metadata);
+//         link_nodes(property, domain, stream, metadata);
+// 
+//         property_dot_names.push_back(dot_name(property));
+//     }
+// 
+//     stream << boost::str(boost::format(R"(
+//     { rank=same %1% }
+// )")
+//         % boost::join(property_dot_names, " ")
+//         );
 }
 
-}  // namespace omnipresent
-}  // namespace time
 }  // namespace constant_size
 
 
+/*!
+    @brief      Translate the structure of a property-set to a DOT graph
+*/
 void to_dot(
     PropertySet const& property_set,
     std::ostream& stream,
@@ -550,17 +755,21 @@ void to_dot(
     auto configuration = property_set.configuration();
 
     switch(configuration.size_of_item_collection_type()) {
-        // TODO Switch on time domain, once possible.
 
         case(SizeOfItemCollectionType::constant_size): {
-            to_dot(constant_size::time::omnipresent::PropertySet(
-                property_set.id()), stream, metadata);
-            break;
+
+            to_dot(
+                constant_size::PropertySet(property_set.id()),
+                stream, metadata);
+
         }
     }
 }
 
 
+/*!
+    @brief      Translate the structure of a phenomenon to a DOT graph
+*/
 void to_dot(
     Phenomenon const& phenomenon,
     std::ostream& stream,
@@ -579,6 +788,9 @@ void to_dot(
 }
 
 
+/*!
+    @brief      Translate the structure of a universe to a DOT graph
+*/
 void to_dot(
     Universe const& universe,
     std::ostream& stream,
@@ -592,6 +804,12 @@ void to_dot(
 }
 
 
+/*!
+    @brief      Translate the structure of a LUE dataset to a DOT graph
+
+    Each dataset ends up in a sub-graph, to set it apart from other
+    datasets.
+*/
 void to_dot(
     Dataset const& dataset,
     std::ostream& stream,
@@ -613,6 +831,10 @@ void to_dot(
 }
 
 
+/*!
+    @brief      Translate the structure of multiple LUE datasets to a
+                DOT graph
+*/
 void to_dot(
     DatasetRefs const& datasets,
     std::ostream& stream,
@@ -662,6 +884,10 @@ void to_dot(
 
 namespace utility {
 
+/*!
+    @brief      Translate the structure of multiple LUE datasets to a
+                DOT graph
+*/
 void translate_lue_datasets_to_dot(
     DatasetRefs const& datasets,
     std::string const& dot_filename,
@@ -677,6 +903,9 @@ void translate_lue_datasets_to_dot(
 }
 
 
+/*!
+    @brief      Translate the structure of a LUE dataset to a DOT graph
+*/
 void translate_lue_dataset_to_dot(
     Dataset const& dataset,
     std::ostream& stream,
@@ -686,12 +915,16 @@ void translate_lue_dataset_to_dot(
 }
 
 
+/*!
+    @brief      Translate the structure of a LUE dataset to a DOT graph
+*/
 void translate_lue_dataset_to_dot(
     Dataset const& dataset,
     std::string const& dot_filename,
     Metadata const& metadata)
 {
-    translate_lue_datasets_to_dot(DatasetRefs{dataset}, dot_filename, metadata);
+    translate_lue_datasets_to_dot(
+        DatasetRefs{dataset}, dot_filename, metadata);
 }
 
 }  // namespace utility

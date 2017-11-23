@@ -21,7 +21,8 @@ TimeBoxDomain::TimeBoxDomain(
     : TimeDomain{time_domain.id()},
       _items{
           id(),
-          hdf5::NativeDatatypeTraits<lue::time::DurationCount>::type_id()}
+          hdf5::Datatype{
+              hdf5::NativeDatatypeTraits<lue::time::DurationCount>::type_id()}}
 
 {
 }
@@ -33,7 +34,8 @@ TimeBoxDomain::TimeBoxDomain(
     : TimeDomain(std::forward<TimeDomain>(time_domain)),
       _items{
           id(),
-          hdf5::NativeDatatypeTraits<lue::time::DurationCount>::type_id()}
+          hdf5::Datatype{
+              hdf5::NativeDatatypeTraits<lue::time::DurationCount>::type_id()}}
 
 {
 }

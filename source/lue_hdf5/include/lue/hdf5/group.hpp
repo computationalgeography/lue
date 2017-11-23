@@ -36,6 +36,10 @@ public:
 
     Group&         operator=           (Group&&)=default;
 
+    bool           operator==          (Group const& other) const;
+
+    bool           operator!=          (Group const& other) const;
+
     Identifier const& id               () const;
 
     Attributes const& attributes       () const;
@@ -89,12 +93,6 @@ inline T Group::attribute(
     return _attributes.read<T>(name);
 }
 
-
-bool               operator==          (Group const& lhs,
-                                        Group const& rhs);
-
-bool               operator!=          (Group const& lhs,
-                                        Group const& rhs);
 
 Group              create_group        (Identifier const& location,
                                         std::string const& name);

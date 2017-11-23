@@ -19,7 +19,9 @@ public:
     //     typename T>
     // explicit       Datatype            (T const&);
 
-                   Datatype            (hid_t id);
+                   Datatype            ()=default;
+
+    explicit       Datatype            (hid_t id);
 
     explicit       Datatype            (Identifier&& id);
 
@@ -32,6 +34,10 @@ public:
     Datatype&      operator=           (Datatype const&)=default;
 
     Datatype&      operator=           (Datatype&&)=default;
+
+    bool           operator==          (Datatype const& other) const;
+
+    bool           operator!=          (Datatype const& other) const;
 
     Identifier const& id               () const;
 
@@ -66,13 +72,6 @@ private:
 // 
 // {
 // }
-
-
-bool               operator==          (Datatype const& lhs,
-                                        Datatype const& rhs);
-
-bool               operator!=          (Datatype const& lhs,
-                                        Datatype const& rhs);
 
 
 std::vector<unsigned char> encode_datatype(

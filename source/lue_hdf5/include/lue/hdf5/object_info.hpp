@@ -22,6 +22,10 @@ public:
 
     ObjectInfo&    operator=           (ObjectInfo&&)=default;
 
+    bool           operator==          (ObjectInfo const& other) const;
+
+    bool           operator!=          (ObjectInfo const& other) const;
+
     unsigned long  fileno              () const;
 
     haddr_t        addr                () const;
@@ -31,13 +35,6 @@ private:
     H5O_info_t     _info;
 
 };
-
-
-bool               operator==          (ObjectInfo const& lhs,
-                                        ObjectInfo const& rhs);
-
-bool               operator!=          (ObjectInfo const& lhs,
-                                        ObjectInfo const& rhs);
 
 }  // namespace hdf5
 }  // namespace lue

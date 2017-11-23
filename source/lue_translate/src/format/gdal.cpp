@@ -1,149 +1,22 @@
 #include "lue/translate/format/gdal.hpp"
 #include "lue/translate/format/gdal_block.hpp"
+#include "lue/translate/format/gdal_stacks.hpp"
 #include "lue/utility/progress_indicator.hpp"
 #include "lue/constant_size/time/omnipresent/space_box_domain.hpp"
 #include "lue/constant_size/time/omnipresent/space_point_domain.hpp"
 #include "lue/hl/raster.hpp"
+#include "lue/hl/raster_stack.hpp"
 #include <ogrsf_frmts.h>
 #include <boost/filesystem.hpp>
 #include <boost/format.hpp>
 #include <cmath>
 #include <iostream>
+#include <map>
 
 
 namespace lue {
 namespace utility {
 namespace {
-
-hdf5::Datatype gdal_datatype_to_hdf5_datatype(
-    GDALDataType const datatype)
-{
-    hid_t type_id = -1;
-
-    switch(datatype) {
-        case GDT_Byte: {
-            type_id = H5T_NATIVE_UINT8;
-            break;
-        }
-        case GDT_UInt16: {
-            type_id = H5T_NATIVE_UINT16;
-            break;
-        }
-        case GDT_Int16: {
-            type_id = H5T_NATIVE_INT16;
-            break;
-        }
-        case GDT_UInt32: {
-            type_id = H5T_NATIVE_UINT32;
-            break;
-        }
-        case GDT_Int32: {
-            type_id = H5T_NATIVE_INT32;
-            break;
-        }
-        case GDT_Float32: {
-            type_id = H5T_NATIVE_FLOAT;
-            break;
-        }
-        case GDT_Float64: {
-            type_id = H5T_NATIVE_DOUBLE;
-            break;
-        }
-        default: {
-            assert(false);
-        }
-    }
-
-    assert(type_id >= 0);
-
-    return hdf5::Datatype(type_id);
-}
-
-
-hl::Raster::Discretization gdal_discretization(
-    GDALDataset& dataset)
-{
-    int const nr_rows = dataset.GetRasterYSize();
-    assert(nr_rows > 0);
-    int const nr_cols = dataset.GetRasterXSize();
-    assert(nr_cols > 0);
-
-    return hl::Raster::Discretization(
-        static_cast<size_t>(nr_rows), static_cast<size_t>(nr_cols));
-}
-
-
-hl::Raster::Domain gdal_domain(
-    GDALDataset& dataset,
-    hl::Raster::Discretization const& discretization)
-{
-    std::string const crs = dataset.GetProjectionRef();
-
-    double geo_transform[6];
-    dataset.GetGeoTransform(geo_transform);
-
-    double const west = geo_transform[0];
-    double const north = geo_transform[3];
-    double const cell_width = geo_transform[1];
-    assert(cell_width > 0.0);
-    double const cell_height = std::abs(geo_transform[5]);
-    assert(cell_height > 0.0);
-    double const east = west + (discretization.nr_cols() * cell_width);
-    double const south = north - (discretization.nr_rows() * cell_height);
-
-    return hl::Raster::Domain(crs, west, south, east, north);
-}
-
-
-template<
-    typename T>
-void write_band(
-    GDALRasterBand& gdal_raster_band,
-    GDALBlock const& blocks,
-    hl::Raster::Band& raster_band)
-{
-    ProgressIndicator progress_indicator(std::cout,
-        "Copying blocks", blocks.nr_blocks());
-
-    std::vector<T> values(blocks.block_size());
-    size_t nr_valid_cells_x;
-    size_t nr_valid_cells_y;
-    size_t current_block = 0;
-
-    for(size_t block_y = 0; block_y < blocks.nr_blocks_y();
-            ++block_y) {
-        for(size_t block_x = 0; block_x < blocks.nr_blocks_x();
-                ++block_x) {
-
-            auto cpl_status = gdal_raster_band.ReadBlock(block_x, block_y,
-                values.data());
-
-            if(cpl_status != CE_None) {
-                throw std::runtime_error(
-                    "Cannot read block from GDAL raster band");
-            }
-
-            std::tie(nr_valid_cells_x, nr_valid_cells_y) =
-                blocks.nr_valid_cells(block_x, block_y);
-
-            hdf5::Shape const shape = { nr_valid_cells_x * nr_valid_cells_y };
-            auto const memory_dataspace = hdf5::create_dataspace(shape);
-
-            hdf5::Offset start = {
-                block_y * blocks.block_size_y(),
-                block_x * blocks.block_size_x()
-            };
-            hdf5::Stride stride = { 1, 1 };
-            hdf5::Count count = { nr_valid_cells_y, nr_valid_cells_x };
-
-            raster_band.write(memory_dataspace,
-                hdf5::Hyperslab(start, stride, count), values.data());
-
-            progress_indicator.update_progress(++current_block);
-        }
-    }
-}
-
 
 struct OGRFeatureDeleter
 {
@@ -159,27 +32,6 @@ struct OGRFeatureDeleter
 using OGRFeaturePtr = std::unique_ptr<::OGRFeature, OGRFeatureDeleter>;
 
 }  // Anonymous namespace
-
-
-/*!
-    @brief      Try to open a raster dataset read-only
-    @return     A pointer to a ::GDALDataset instance if the dataset can be
-                opened. Otherwise a pointer containing nullptr.
-*/
-GDALDatasetPtr try_open_gdal_raster_dataset_for_read(
-    std::string const& dataset_name)
-{
-    CPLPushErrorHandler(CPLQuietErrorHandler);
-
-    auto result = GDALDatasetPtr(
-        static_cast<::GDALDataset*>(::GDALOpenEx(dataset_name.c_str(),
-            GDAL_OF_READONLY | GDAL_OF_RASTER, nullptr, nullptr, nullptr)),
-        GDALDatasetDeleter{});
-
-    CPLPopErrorHandler();
-
-    return result;
-}
 
 
 /*!
@@ -202,137 +54,190 @@ void translate_gdal_raster_dataset_to_lue(
     }
 
     auto lue_dataset = create_dataset(lue_dataset_name);
+    auto const& root_json = metadata.object();
 
     for(auto gdal_dataset_name: gdal_dataset_names) {
-        auto gdal_dataset = try_open_gdal_raster_dataset_for_read(
-                gdal_dataset_name);
-
-        if(!gdal_dataset) {
-            throw std::runtime_error(
-                "Cannot open GDAL raster dataset " + gdal_dataset_name);
-        }
-
-        auto const& root_json = metadata.object();
+        auto gdal_dataset =
+            open_gdal_raster_dataset_for_read(gdal_dataset_name);
 
         gdal_dataset_name =
             boost::filesystem::path(gdal_dataset_name).stem().string();
         std::string phenomenon_name = gdal_dataset_name;
         std::string property_set_name = "area";
 
-        if(json::has_key(root_json, "datasets")) {
-            auto const datasets_json = json::object(root_json, "datasets");
+        auto const dataset_json = json::object(
+            root_json, JSONPointer{"/datasets"}, "name", gdal_dataset_name);
 
-            auto const dataset_json_it = json::find(
-                datasets_json, "name", gdal_dataset_name);
+        if(json::has_key(dataset_json, "phenomenon")) {
+            auto const phenomenon_pointer =
+                json::pointer(dataset_json, "phenomenon");
+            auto const phenomenon_json =
+                json::object(root_json, phenomenon_pointer);
+            phenomenon_name = json::string(phenomenon_json, "name");
 
-            if(dataset_json_it != datasets_json.end()) {
-                auto const dataset_json = *dataset_json_it;
-
-                if(json::has_key(dataset_json, "phenomenon")) {
-                    auto const phenomenon_pointer =
-                        json::pointer(dataset_json, "phenomenon");
-                    auto const phenomenon_json =
-                        json::object(root_json, phenomenon_pointer);
-                    phenomenon_name = json::string(phenomenon_json, "name");
-
-                    if(json::has_key(phenomenon_json, "property_set")) {
-                        property_set_name = json::string(phenomenon_json,
-                                JSON::json_pointer("/property_set/name"));
-                    }
-                }
+            if(json::has_key(phenomenon_json, "property_set")) {
+                property_set_name = json::string(phenomenon_json,
+                        JSON::json_pointer("/property_set/name"));
             }
         }
 
-        hl::Raster::Discretization const discretization =
-            gdal_discretization(*gdal_dataset);
-        hl::Raster::Domain const domain =
-            gdal_domain(*gdal_dataset, discretization);
+        GDALRaster gdal_raster{std::move(gdal_dataset)};
 
-        auto raster = hl::create_raster(lue_dataset, phenomenon_name,
-            property_set_name, domain, discretization);
+        auto raster = hl::create_raster(
+            lue_dataset,
+            phenomenon_name,
+            property_set_name,
+            gdal_raster.domain(),
+            gdal_raster.discretization());
 
         // Iterate over all bands and write them to the raster.
-        int const nr_bands = gdal_dataset->GetRasterCount();
-        assert(nr_bands >= 0);
 
         // Import all raster bands.
-        for(int b = 1; b <= nr_bands; ++b) {
+        for(std::size_t b = 1; b <= gdal_raster.nr_bands(); ++b) {
+            std::string band_name = json::object(json::object(dataset_json,
+                JSONPointer("/raster/bands"))[b-1], "name");
 
-            GDALRasterBand* gdal_raster_band = gdal_dataset->GetRasterBand(b);
-            assert(gdal_raster_band);
-            GDALDataType const gdal_datatype =
-                gdal_raster_band->GetRasterDataType();
-            auto const memory_datatype = gdal_datatype_to_hdf5_datatype(
-                gdal_datatype);
+            auto gdal_raster_band = gdal_raster.band(b);
+            auto const memory_datatype = gdal_raster_band.datatype();
+            auto raster_band = raster.add_band(band_name, memory_datatype);
 
-            auto const name = metadata.string(
-                // Object in list
-                "datasets", "name", gdal_dataset_name,
-                // Path in object
-                JSONPointer(boost::str(boost::format(
-                    "/raster/bands/%1%") % (b - 1))),
-                // Key of value to obtain
-                "name",
-                // Default value
-                "band_" + std::to_string(b));
-
-            auto raster_band = raster.add_band(name, memory_datatype);
-
-            int block_size_x, block_size_y;
-            gdal_raster_band->GetBlockSize(&block_size_x, &block_size_y);
-            assert(block_size_x >= 0);
-            assert(block_size_y >= 0);
-            GDALBlock blocks(
-                discretization.nr_cols(), discretization.nr_rows(),
-                block_size_x, block_size_y);
-
-            switch(gdal_datatype) {
-                case GDT_Byte: {
-                    write_band<uint8_t>(
-                        *gdal_raster_band, blocks, raster_band);
-                    break;
-                }
-                case GDT_UInt16: {
-                    write_band<uint16_t>(
-                        *gdal_raster_band, blocks, raster_band);
-                    break;
-                }
-                case GDT_Int16: {
-                    write_band<int16_t>(
-                        *gdal_raster_band, blocks, raster_band);
-                    break;
-                }
-                case GDT_UInt32: {
-                    write_band<uint32_t>(
-                        *gdal_raster_band, blocks, raster_band);
-                    break;
-                }
-                case GDT_Int32: {
-                    write_band<int32_t>(
-                        *gdal_raster_band, blocks, raster_band);
-                    break;
-                }
-                case GDT_Float32: {
-                    write_band<float>(
-                        *gdal_raster_band, blocks, raster_band);
-                    break;
-                }
-                case GDT_Float64: {
-                    write_band<double>(
-                        *gdal_raster_band, blocks, raster_band);
-                    break;
-                }
-                default: {
-                    throw std::runtime_error("Unsupported datatype");
-                    break;
-                }
-            }
+            ProgressIndicator progress_indicator(std::cout,
+                "Copying blocks", gdal_raster_band.blocks().nr_blocks());
+            gdal_raster_band.write(raster_band, progress_indicator);
         }
 
         // TODO Make sure the dataset version is in the dataset
         // TODO Write description items from the metadata
         // TODO Write metadata items
         // TODO Handle various ways of handling no-data in GDAL
+    }
+}
+
+
+void translate_gdal_raster_stack_dataset_to_lue(
+    std::vector<std::string> const& gdal_dataset_names,
+    std::string const& lue_dataset_name,
+    Metadata const& metadata)
+{
+    if(gdal_dataset_names.empty()) {
+        // Nothing to do.
+        return;
+    }
+
+
+    // For now, assume each dataset points to a stack of rasters to
+    // be imported, all sharing the same temporal and spatial domain
+    // and discretization
+    GDALStacks gdal_stacks(gdal_dataset_names);
+
+
+    // Obtain temporal domain information from the metadata
+    auto const& root_json = metadata.object();
+
+    auto lue_dataset = create_dataset(lue_dataset_name);
+    std::map<std::string, std::string> phenomenon_name_by_dataset_name;
+    std::map<std::string, std::string> property_set_name_by_dataset_name;
+    std::map<std::string, std::string> property_name_by_dataset_name;
+    std::map<std::string, std::vector<std::string>> band_name_by_dataset_name;
+
+    // Obtain information about where to store the stack in the LUE dataset
+    // from the metadata, and create the raster stacks. Data will be copied
+    // later. Copying of data is expensive and we want to let the user know
+    // if something's wrong in the metadata ASAP.
+    for(auto const& gdal_stack: gdal_stacks) {
+        std::string phenomenon_name = gdal_stack.name();
+        std::string property_set_name = "area";
+        std::string property_name = gdal_stack.name();
+
+        auto const dataset_json = json::object(
+            root_json, JSONPointer{"/datasets"}, "name", gdal_stack.name());
+        if(json::has_key(dataset_json, "phenomenon")) {
+            auto const phenomenon_pointer =
+                json::pointer(dataset_json, "phenomenon");
+            auto const phenomenon_json =
+                json::object(root_json, phenomenon_pointer);
+            phenomenon_name = json::string(phenomenon_json, "name");
+
+            if(json::has_key(phenomenon_json, "property_set")) {
+                property_set_name = json::string(phenomenon_json,
+                        JSON::json_pointer("/property_set/name"));
+            }
+        }
+
+        if(json::has_key(dataset_json, "property")) {
+            property_name = json::string(dataset_json,
+                JSON::json_pointer("/property/name"));
+        }
+
+        phenomenon_name_by_dataset_name[gdal_stack.dataset_name()] =
+            phenomenon_name;
+        property_set_name_by_dataset_name[gdal_stack.dataset_name()] =
+            property_set_name;
+        property_name_by_dataset_name[gdal_stack.dataset_name()] =
+            property_name;
+
+        auto const time_json = json::object(dataset_json, "time");
+        auto const clock_json = json::object(time_json, "clock");
+        auto const clock = json::clock(clock_json);
+        auto const box_json = json::object(time_json, "box");
+        time::DurationCount const start_time_point = box_json.at(0);
+        time::DurationCount const end_time_point = box_json.at(1);
+
+        hl::TimeSeriesDomain time_series_domain{
+            clock, start_time_point, end_time_point};
+
+        if(!hl::raster_stack_exists(
+               lue_dataset, phenomenon_name, property_set_name)) {
+            hl::create_raster_stack(
+                lue_dataset,
+                phenomenon_name,
+                property_set_name,
+                hl::RasterStackDomain{time_series_domain, gdal_stacks.domain()},
+                gdal_stacks.discretization());
+        }
+
+
+        hl::RasterStack raster_stack{
+            lue_dataset.phenomena()[phenomenon_name].id(),
+            property_set_name};
+
+        for(std::size_t b = 1; b <= gdal_stack.nr_bands(); ++b) {
+            std::string band_name = json::object(json::object(dataset_json,
+                JSONPointer("/raster/bands"))[b-1], "name");
+            auto gdal_raster_stack_band = gdal_stack.band(b);
+            auto const memory_datatype = gdal_raster_stack_band.datatype();
+            auto raster_stack_band = raster_stack.add_band(
+                band_name, memory_datatype);
+
+            band_name_by_dataset_name[gdal_stack.dataset_name()].emplace_back(
+                band_name);
+        }
+    }
+
+
+    // For each stack, add a property to the dataset and the values themselves
+    for(auto const& gdal_stack: gdal_stacks) {
+        auto const phenomenon_name =
+            phenomenon_name_by_dataset_name[gdal_stack.dataset_name()];
+        auto const property_set_name =
+            property_set_name_by_dataset_name[gdal_stack.dataset_name()];
+        auto const property_name =
+            property_name_by_dataset_name[gdal_stack.dataset_name()];
+
+        hl::RasterStack raster_stack{
+            lue_dataset.phenomena()[phenomenon_name].id(), property_set_name};
+
+        // Import all raster bands.
+        for(std::size_t b = 1; b <= gdal_stack.nr_bands(); ++b) {
+            auto gdal_raster_stack_band = gdal_stack.band(b);
+            auto const band_name =
+                band_name_by_dataset_name[gdal_stack.dataset_name()][b-1];
+            auto raster_stack_band = raster_stack.band(band_name);
+
+            ProgressIndicator progress_indicator(std::cout,
+                "Copying blocks", gdal_raster_stack_band.nr_blocks());
+            gdal_raster_stack_band.write(raster_stack_band, progress_indicator);
+        }
     }
 }
 
@@ -578,7 +483,8 @@ void translate_lue_dataset_to_shapefile(
 
                 auto const& boxes = space_box_domain.items();
 
-                assert(boxes.memory_datatype() == H5T_NATIVE_DOUBLE);
+                assert(boxes.memory_datatype() ==
+                    hdf5::Datatype{H5T_NATIVE_DOUBLE});
                 assert(boxes.value_shape().size() == 1);
                 assert(boxes.value_shape()[0] == 4);
                 std::vector<double> coordinates(
@@ -645,7 +551,8 @@ void translate_lue_dataset_to_shapefile(
 
                 auto const& domain_items = space_point_domain.items();
 
-                assert(domain_items.memory_datatype() == H5T_NATIVE_DOUBLE);
+                assert(domain_items.memory_datatype() ==
+                   hdf5::Datatype{H5T_NATIVE_DOUBLE});
                 assert(domain_items.value_shape().size() == 1);
                 assert(domain_items.value_shape()[0] == 2);
                 std::vector<double> coordinates(

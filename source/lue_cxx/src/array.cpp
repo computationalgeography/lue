@@ -9,7 +9,7 @@ Array::Array(
     hdf5::Dataset&& dataset,
     hdf5::Datatype const& memory_datatype)
 
-    : Dataset(std::forward<hdf5::Dataset>(dataset)),
+    : hdf5::Dataset(std::forward<hdf5::Dataset>(dataset)),
       _memory_datatype{memory_datatype}
 
 {
@@ -22,7 +22,7 @@ Array::Array(
     std::string const& name,
     hdf5::Datatype const& memory_datatype)
 
-    : Dataset(location, name),
+    : hdf5::Dataset(location, name),
       _memory_datatype{memory_datatype}
 
 {
@@ -34,7 +34,7 @@ Array::Array(
 //     hdf5::Identifier&& location,
 //     hid_t const memory_datatype)
 // 
-//     : Dataset(std::forward<hdf5::Identifier>(location)),
+//     : hdf5::Dataset(std::forward<hdf5::Identifier>(location)),
 //       _memory_datatype{memory_datatype}
 // 
 // {
@@ -43,10 +43,10 @@ Array::Array(
 
 
 // Array::Array(
-//     hdf5::Dataset&& dataset,
+//     hdf5::hdf5::Dataset&& dataset,
 //     hid_t const memory_datatype)
 // 
-//     : Dataset(std::forward<hdf5::Dataset>(dataset)),
+//     : hdf5::Dataset(std::forward<hdf5::Dataset>(dataset)),
 //       _memory_datatype{memory_datatype}
 // 
 // {
@@ -80,7 +80,7 @@ hdf5::Datatype Array::file_datatype() const
 void Array::read(
     void* buffer) const
 {
-    Dataset::read(_memory_datatype, buffer);
+    hdf5::Dataset::read(_memory_datatype, buffer);
 }
 
 
@@ -88,7 +88,7 @@ void Array::read(
     hdf5::Hyperslab const& hyperslab,
     void* buffer) const
 {
-    Dataset::read(_memory_datatype, hyperslab, buffer);
+    hdf5::Dataset::read(_memory_datatype, hyperslab, buffer);
 }
 
 
@@ -96,14 +96,14 @@ void Array::read(
     hdf5::Dataspace const& memory_dataspace,
     void* buffer) const
 {
-    Dataset::read(_memory_datatype, memory_dataspace, buffer);
+    hdf5::Dataset::read(_memory_datatype, memory_dataspace, buffer);
 }
 
 
 void Array::write(
     void const* buffer)
 {
-    Dataset::write(_memory_datatype, buffer);
+    hdf5::Dataset::write(_memory_datatype, buffer);
 }
 
 
@@ -111,7 +111,7 @@ void Array::write(
     hdf5::Hyperslab const& hyperslab,
     void const* buffer)
 {
-    Dataset::write(_memory_datatype, hyperslab, buffer);
+    hdf5::Dataset::write(_memory_datatype, hyperslab, buffer);
 }
 
 
@@ -119,7 +119,7 @@ void Array::write(
     hdf5::Dataspace const& memory_dataspace,
     void const* buffer) const
 {
-    Dataset::write(_memory_datatype, memory_dataspace, buffer);
+    hdf5::Dataset::write(_memory_datatype, memory_dataspace, buffer);
 }
 
 
@@ -128,7 +128,7 @@ void Array::write(
     hdf5::Hyperslab const& hyperslab,
     void const* buffer)
 {
-    Dataset::write(_memory_datatype, memory_dataspace, hyperslab, buffer);
+    hdf5::Dataset::write(_memory_datatype, memory_dataspace, hyperslab, buffer);
 }
 
 

@@ -10,14 +10,11 @@ namespace time {
 namespace located {
 namespace shared {
 namespace constant_shape {
-// namespace different_shape {
-// 
-// void init_submodule(py::module& module);
-// 
-// }  // namespace different_shape
+namespace different_shape {
 
+void init_submodule(py::module& module);
 
-void init_property(py::module& module);
+}  // namespace different_shape
 
 
 namespace same_shape {
@@ -25,6 +22,9 @@ namespace same_shape {
 void init_submodule(py::module& module);
 
 }  // namespace same_shape
+
+
+void init_property(py::module& module);
 
 
 void init_submodule(
@@ -37,7 +37,7 @@ void init_submodule(
 )");
 
     constant_shape::init_property(submodule);
-    // constant_shape::different_shape::init_submodule(submodule);
+    constant_shape::different_shape::init_submodule(submodule);
     constant_shape::same_shape::init_submodule(submodule);
 }
 

@@ -29,7 +29,7 @@ struct Read2DDatasetFixture
         auto file = create_in_memory_file("my_dataset.lue");
         Dataset::CreationPropertyList creation_property_list;
         std::string const dataset_name = "my_dataset";
-        Datatype const file_datatype = H5T_STD_I32LE;
+        Datatype const file_datatype{H5T_STD_I32LE};
         Dataspace const dataspace = create_dataspace({nr_rows, nr_cols});
         dataset = std::make_unique<Dataset>(
             lue::hdf5::create_dataset(

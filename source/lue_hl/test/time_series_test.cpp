@@ -13,19 +13,15 @@ BOOST_AUTO_TEST_CASE(create_time_series)
     std::string const dataset_name = "create_time_series.lue";
     test::DatasetFixture fixture{dataset_name};
 
-    // Time box
+    // Time domain
     time::TickPeriodCount const nr_units = 1;
     Clock const clock{time::Unit::hour, nr_units};
     time::DurationCount const start_time_point{0};
     time::DurationCount const end_time_point{23};
-    hl::TimeSeries::TimeDomain const time_domain{
+    hl::TimeSeriesDomain const time_domain{
         clock, start_time_point, end_time_point};
 
-    // Time steps
-    std::size_t const nr_steps = 24;
-    hl::TimeSeries::TimeDiscretization const time_discretization{nr_steps};
-
-    // Space points
+    // Space domain
     std::size_t const nr_points = 5;
     std::string const crs = "blah";
 
@@ -39,6 +35,11 @@ BOOST_AUTO_TEST_CASE(create_time_series)
 
     hl::TimeSeries::SpaceDomain const space_domain{
         crs, hl::TimeSeries::SpaceDomain::Coordinates{coordinates}};
+
+    // Time discretization
+    std::size_t const nr_steps = 23;
+    hl::TimeSeriesDiscretization const time_discretization{nr_steps};
+
 
     std::string const phenomenon_name = "my_phenomenon";
     std::string const property_set_name = "my_property_set";

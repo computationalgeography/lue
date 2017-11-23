@@ -548,9 +548,9 @@ void translate_geo_eas_to_lue(
     auto const property_name = json::string(
         dataset_json, JSONPointer{"/property/name"});
 
-    hl::TimeSeries::TimeDomain const time_domain{
+    hl::TimeSeriesDomain const time_domain{
         clock, start_time_point, end_time_point};
-    hl::TimeSeries::TimeDiscretization const time_discretization{nr_steps};
+    hl::TimeSeriesDiscretization const time_discretization{nr_steps};
 
 
     auto time_series = hl::create_time_series(

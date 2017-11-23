@@ -275,19 +275,17 @@ void Datatype::insert(
 }
 
 
-bool operator==(
-    Datatype const& lhs,
-    Datatype const& rhs)
+bool Datatype::operator==(
+    Datatype const& other) const
 {
-    return datatypes_are_equal(lhs.id(), rhs.id());
+    return datatypes_are_equal(_id, other._id);
 }
 
 
-bool operator!=(
-    Datatype const& lhs,
-    Datatype const& rhs)
+bool Datatype::operator!=(
+    Datatype const& other) const
 {
-    return !datatypes_are_equal(lhs.id(), rhs.id());
+    return !datatypes_are_equal(_id, other._id);
 }
 
 
@@ -441,34 +439,34 @@ Datatype memory_datatype(
 
     hid_t type_id = -1;
 
-    if(file_datatype == H5T_STD_I8LE) {
+    if(file_datatype == Datatype{H5T_STD_I8LE}) {
         type_id = H5T_NATIVE_INT8;
     }
-    else if(file_datatype == H5T_STD_I16LE) {
+    else if(file_datatype == Datatype{H5T_STD_I16LE}) {
         type_id = H5T_NATIVE_INT16;
     }
-    else if(file_datatype == H5T_STD_I32LE) {
+    else if(file_datatype == Datatype{H5T_STD_I32LE}) {
         type_id = H5T_NATIVE_INT32;
     }
-    else if(file_datatype == H5T_STD_I64LE) {
+    else if(file_datatype == Datatype{H5T_STD_I64LE}) {
         type_id = H5T_NATIVE_INT64;
     }
-    else if(file_datatype == H5T_STD_U8LE) {
+    else if(file_datatype == Datatype{H5T_STD_U8LE}) {
         type_id = H5T_NATIVE_UINT8;
     }
-    else if(file_datatype == H5T_STD_U16LE) {
+    else if(file_datatype == Datatype{H5T_STD_U16LE}) {
         type_id = H5T_NATIVE_UINT16;
     }
-    else if(file_datatype == H5T_STD_U32LE) {
+    else if(file_datatype == Datatype{H5T_STD_U32LE}) {
         type_id = H5T_NATIVE_UINT32;
     }
-    else if(file_datatype == H5T_STD_U64LE) {
+    else if(file_datatype == Datatype{H5T_STD_U64LE}) {
         type_id = H5T_NATIVE_UINT64;
     }
-    else if(file_datatype == H5T_IEEE_F32LE) {
+    else if(file_datatype == Datatype{H5T_IEEE_F32LE}) {
         type_id = H5T_NATIVE_FLOAT;
     }
-    else if(file_datatype == H5T_IEEE_F64LE) {
+    else if(file_datatype == Datatype{H5T_IEEE_F64LE}) {
         type_id = H5T_NATIVE_DOUBLE;
     }
 
@@ -485,34 +483,34 @@ Datatype file_datatype(
 
     hid_t type_id = -1;
 
-    if(memory_datatype == H5T_NATIVE_INT8) {
+    if(memory_datatype == Datatype{H5T_NATIVE_INT8}) {
         type_id = H5T_STD_I8LE;
     }
-    else if(memory_datatype == H5T_NATIVE_INT16) {
+    else if(memory_datatype == Datatype{H5T_NATIVE_INT16}) {
         type_id = H5T_STD_I16LE;
     }
-    else if(memory_datatype == H5T_NATIVE_INT32) {
+    else if(memory_datatype == Datatype{H5T_NATIVE_INT32}) {
         type_id = H5T_STD_I32LE;
     }
-    else if(memory_datatype == H5T_NATIVE_INT64) {
+    else if(memory_datatype == Datatype{H5T_NATIVE_INT64}) {
         type_id = H5T_STD_I64LE;
     }
-    else if(memory_datatype == H5T_NATIVE_UINT8) {
+    else if(memory_datatype == Datatype{H5T_NATIVE_UINT8}) {
         type_id = H5T_STD_U8LE;
     }
-    else if(memory_datatype == H5T_NATIVE_UINT16) {
+    else if(memory_datatype == Datatype{H5T_NATIVE_UINT16}) {
         type_id = H5T_STD_U16LE;
     }
-    else if(memory_datatype == H5T_NATIVE_UINT32) {
+    else if(memory_datatype == Datatype{H5T_NATIVE_UINT32}) {
         type_id = H5T_STD_U32LE;
     }
-    else if(memory_datatype == H5T_NATIVE_UINT64) {
+    else if(memory_datatype == Datatype{H5T_NATIVE_UINT64}) {
         type_id = H5T_STD_U64LE;
     }
-    else if(memory_datatype == H5T_NATIVE_FLOAT) {
+    else if(memory_datatype == Datatype{H5T_NATIVE_FLOAT}) {
         type_id = H5T_IEEE_F32LE;
     }
-    else if(memory_datatype == H5T_NATIVE_DOUBLE) {
+    else if(memory_datatype == Datatype{H5T_NATIVE_DOUBLE}) {
         type_id = H5T_IEEE_F64LE;
     }
 

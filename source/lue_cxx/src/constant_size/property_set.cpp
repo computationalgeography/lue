@@ -19,7 +19,7 @@ PropertySet::PropertySet(
     hdf5::Identifier const& id)
 
     : lue::PropertySet{id},
-      _ids(this->id(), ids_tag, H5T_NATIVE_HSIZE)
+      _ids(this->id(), ids_tag, hdf5::Datatype{H5T_NATIVE_HSIZE})
 
 {
 }
@@ -29,7 +29,7 @@ PropertySet::PropertySet(
     lue::PropertySet&& property_set)
 
     : lue::PropertySet(std::forward<lue::PropertySet>(property_set)),
-      _ids(this->id(), ids_tag, H5T_NATIVE_HSIZE)
+      _ids(this->id(), ids_tag, hdf5::Datatype{H5T_NATIVE_HSIZE})
 
 {
 }
@@ -67,7 +67,8 @@ PropertySet create_property_set(
         domain_configuration);
 
     time::omnipresent::same_shape::create_value(
-        property_set, ids_tag, H5T_STD_U64LE, H5T_NATIVE_HSIZE);
+        property_set, ids_tag, hdf5::Datatype{H5T_STD_U64LE},
+        hdf5::Datatype{H5T_NATIVE_HSIZE});
 
     return PropertySet(std::move(property_set));
 }

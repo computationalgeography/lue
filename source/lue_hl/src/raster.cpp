@@ -12,113 +12,6 @@ std::string const discretization_property_name = "_space_discretization";
 }  // Anonymous namespace
 
 
-Raster::Discretization::Discretization()
-
-    : _shape{0, 0}
-
-{
-}
-
-
-Raster::Discretization::Discretization(
-    hsize_t const nr_rows,
-    hsize_t const nr_cols)
-
-    : _shape{nr_rows, nr_cols}
-
-{
-}
-
-
-hsize_t const* Raster::Discretization::shape() const
-{
-    return _shape;
-}
-
-
-hsize_t* Raster::Discretization::shape()
-{
-    return _shape;
-}
-
-
-hsize_t Raster::Discretization::nr_rows() const
-{
-    return _shape[0];
-}
-
-
-hsize_t Raster::Discretization::nr_cols() const
-{
-    return _shape[1];
-}
-
-
-Raster::Domain::Domain()
-
-    : _crs{},
-      _coordinates{{0.0, 0.0, 0.0, 0.0}}
-
-{
-}
-
-
-Raster::Domain::Domain(
-    std::string const& crs,
-    double const west,
-    double const south,
-    double const east,
-    double const north)
-
-    : _crs{crs},
-      _coordinates{{west, south, east, north}}
-
-{
-}
-
-
-std::string const& Raster::Domain::crs() const
-{
-    return _crs;
-}
-
-
-double Raster::Domain::west() const
-{
-    return _coordinates[0];
-}
-
-
-double Raster::Domain::south() const
-{
-    return _coordinates[1];
-}
-
-
-double Raster::Domain::east() const
-{
-    return _coordinates[2];
-}
-
-
-double Raster::Domain::north() const
-{
-    return _coordinates[3];
-}
-
-
-std::array<double, 4>& Raster::Domain::coordinates()
-{
-    return _coordinates;
-}
-
-
-std::array<double, 4> const& Raster::Domain::coordinates() const
-{
-    return _coordinates;
-}
-
-
 Raster::Band::Band(
     omnipresent::different_shape::Property&& property)
 
@@ -204,21 +97,12 @@ Raster::Raster(
     : _property_set(id),
       _discretization_property(
           _property_set.properties()[discretization_property_name].id(),
-          H5T_NATIVE_HSIZE),
+          hdf5::Datatype{H5T_NATIVE_HSIZE}),
       _discretization(),
       _domain()
 
 {
-    _discretization_property.values().read(_discretization.shape());
-
-    // auto const& space_domain = _property_set.domain().space();
-    auto const space_box_domain = omnipresent::SpaceBoxDomain(
-        // space_domain,
-        _property_set.domain(),
-        hdf5::NativeDatatypeTraits<double>::type_id());
-    auto const& space_boxes = space_box_domain.items();
-    assert(space_boxes.nr_items() == 1);
-    space_boxes.read(_domain.coordinates().data());
+    read();
 }
 
 
@@ -233,31 +117,51 @@ Raster::Raster(
                     .property_sets()[property_set_name].id()),
       _discretization_property(
           _property_set.properties()[discretization_property_name].id(),
-          H5T_NATIVE_HSIZE),
+          hdf5::Datatype{H5T_NATIVE_HSIZE}),
       _discretization(),
       _domain()
 
 {
-    _discretization_property.values().read(_discretization.shape());
-
-    // auto const& space_domain = _property_set.domain().space();
-    auto const space_box_domain = omnipresent::SpaceBoxDomain(
-        // space_domain,
-        _property_set.domain(),
-        hdf5::NativeDatatypeTraits<double>::type_id());
-    auto const& space_boxes = space_box_domain.items();
-    assert(space_boxes.nr_items() == 1);
-    space_boxes.read(_domain.coordinates().data());
+    read();
 }
 
 
-Raster::Domain const& Raster::domain() const
+void Raster::read()
+{
+    read_discretization();
+    read_domain();
+}
+
+
+void Raster::read_discretization()
+{
+    RasterDiscretization::Shape shape;
+    _discretization_property.values().read(shape.data());
+    _discretization = RasterDiscretization{std::move(shape)};
+}
+
+
+void Raster::read_domain()
+{
+    auto const space_box_domain = omnipresent::SpaceBoxDomain{
+        _property_set.domain(),
+        hdf5::Datatype{hdf5::NativeDatatypeTraits<double>::type_id()}};
+    auto const& space_boxes = space_box_domain.items();
+    assert(space_boxes.nr_items() == 1);
+    RasterDomain::Coordinates coordinates;
+    space_boxes.read(coordinates.data());
+    // TODO read crs
+    _domain = RasterDomain{"blah", std::move(coordinates)};
+}
+
+
+RasterDomain const& Raster::domain() const
 {
     return _domain;
 }
 
 
-Raster::Discretization const& Raster::discretization() const
+RasterDiscretization const& Raster::discretization() const
 {
     return _discretization;
 }
@@ -277,7 +181,7 @@ Raster::Band Raster::add_band(
         _property_set, name, datatype, rank);
     size_t const nr_items = 1;
 
-    property.reserve(nr_items, _discretization.shape());
+    property.reserve(nr_items, _discretization.shape().data());
     property.discretize_space(_discretization_property);
 
     return Band(std::move(property));
@@ -304,7 +208,7 @@ namespace {
 */
 omnipresent::same_shape::Property discretization_property(
     omnipresent::PropertySet& property_set,
-    Raster::Discretization const& discretization)
+    RasterDiscretization const& discretization)
 {
     size_t const nr_items = 1;
 
@@ -317,9 +221,9 @@ omnipresent::same_shape::Property discretization_property(
     std::string const& property_name = discretization_property_name;
     hdf5::Shape const shape{nr_values_per_item};
     auto const file_datatype_id =
-        hdf5::StandardDatatypeTraits<hsize_t>::type_id();
+        hdf5::Datatype{hdf5::StandardDatatypeTraits<hsize_t>::type_id()};
     auto const memory_datatype_id =
-        hdf5::NativeDatatypeTraits<hsize_t>::type_id();
+        hdf5::Datatype{hdf5::NativeDatatypeTraits<hsize_t>::type_id()};
 
     auto property = omnipresent::same_shape::create_property(
         property_set, property_name,
@@ -327,7 +231,7 @@ omnipresent::same_shape::Property discretization_property(
 
     auto& nr_cells = property.reserve(nr_items);
 
-    nr_cells.write(discretization.shape());
+    nr_cells.write(discretization.shape().data());
 
     return property;
 }
@@ -347,8 +251,8 @@ omnipresent::same_shape::Property discretization_property(
 hdf5::Identifier create_raster(
     Phenomenon& phenomenon,
     std::string const& property_set_name,
-    Raster::Domain const& domain,
-    Raster::Discretization const& discretization)
+    RasterDomain const& domain,
+    RasterDiscretization const& discretization)
 {
     if(!phenomenon.property_sets().contains(property_set_name)) {
 
@@ -370,9 +274,9 @@ hdf5::Identifier create_raster(
         // Write raster extent to space domain.
         {
             auto const file_datatype_id =
-                hdf5::StandardDatatypeTraits<double>::type_id();
+                hdf5::Datatype{hdf5::StandardDatatypeTraits<double>::type_id()};
             auto const memory_datatype_id =
-                hdf5::NativeDatatypeTraits<double>::type_id();
+                hdf5::Datatype{hdf5::NativeDatatypeTraits<double>::type_id()};
             size_t const rank = 2;
             auto space_domain = omnipresent::create_space_box_domain(
                 property_set, file_datatype_id, memory_datatype_id, rank);
@@ -436,8 +340,8 @@ Raster create_raster(
     Dataset& dataset,
     std::string const& phenomenon_name,
     std::string const& property_set_name,
-    Raster::Domain const& domain,
-    Raster::Discretization const& discretization)
+    RasterDomain const& domain,
+    RasterDiscretization const& discretization)
 {
     assert(property_set_name != discretization_property_name);
 
