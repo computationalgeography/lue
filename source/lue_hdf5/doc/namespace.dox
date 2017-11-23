@@ -3,8 +3,15 @@ namespace lue {
 /*!
     @brief      Namespace containing C++ wrappers around the HDF5 C-API
 
-    This namespace contains relatively low-level code that should not
-    be of any concern to the LUE library user.
+    This namespace contains relatively low-level code that is required
+    for the LUE library *developer* but not so much to the library *user*.
+    The code is useful in other contexts than LUE: lue::hdf5 doesn't depend on
+    anything specific to LUE.
+
+    More information about HDF5 can be found online:
+    - [HDF Group homepage](https://www.hdfgroup.org)
+    - [HDF5 C API reference](
+        https://www.hdfgroup.org/HDF5/doc/RM/RM_H5Front.html)
 */
 namespace hdf5 {
 }

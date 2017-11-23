@@ -6,15 +6,6 @@ namespace constant_size {
 namespace time {
 namespace omnipresent {
 
-// Property::Property(
-//     constant_size::Property&& property)
-// 
-//     : constant_size::Property(std::forward<constant_size::Property>(property))
-// 
-// {
-// }
-
-
 Property::Property(
     hdf5::Identifier const& id)
 
@@ -24,22 +15,13 @@ Property::Property(
 }
 
 
-Property::Property(
-    lue::Property const& property)
-
-    : constant_size::Property(property)
-
-{
-}
-
-
 Property create_property(
-    // PropertySet& property_set,
     hdf5::Group& group,
     std::string const& name,
     Property::Configuration const& configuration)
 {
-    return constant_size::create_property(group, name, configuration);
+    return Property{
+        constant_size::create_property(group, name, configuration).id()};
 }
 
 }  // namespace omnipresent

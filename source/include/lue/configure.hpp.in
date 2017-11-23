@@ -2,6 +2,3 @@
 
 
 #cmakedefine LUE_VERSION "${LUE_VERSION}"
-
-#cmakedefine HDF5_VERSION "${HDF5_VERSION}"
-#cmakedefine HDF5_IS_PARALLEL

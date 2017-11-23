@@ -29,7 +29,7 @@ py::object cast_to_specialized_property(
                 same_shape::Property::file_datatype(
                     property.id());
             object = py::cast(new same_shape::Property(
-                property, memory_datatype(file_datatype)));
+                property.id(), memory_datatype(file_datatype)));
             break;
         }
         case ShapePerItemType::different: {
@@ -37,7 +37,7 @@ py::object cast_to_specialized_property(
                 different_shape::Property::file_datatype(
                     property.id());
             object = py::cast(new different_shape::Property(
-                property, memory_datatype(file_datatype)));
+                property.id(), memory_datatype(file_datatype)));
             break;
         }
     }
@@ -61,7 +61,7 @@ void init_property_class(
                 Property& self)
             {
                 return cast_to_specialized_property(
-                    self.space_discretization());
+                    self.space_discretization().id());
             },
             "space_discretization docstring...")
 

@@ -1,6 +1,5 @@
 #pragma once
 #include "lue/hdf5/identifier.hpp"
-// #include "lue/hdf5/type_traits.hpp"
 #include <vector>
 
 
@@ -24,21 +23,21 @@ public:
 
     explicit       Datatype            (Identifier&& id);
 
-                   Datatype            (Datatype const& other)=default;
+                   Datatype            (Datatype const&)=default;
 
-                   Datatype            (Datatype&& other)=default;
+                   Datatype            (Datatype&&)=default;
 
                    ~Datatype           ()=default;
 
-    Datatype&      operator=           (Datatype const& other)=default;
+    Datatype&      operator=           (Datatype const&)=default;
 
-    Datatype&      operator=           (Datatype&& other)=default;
+    Datatype&      operator=           (Datatype&&)=default;
 
     Identifier const& id               () const;
 
-    void           set_size            (size_t nr_bytes);
+    void           set_size            (std::size_t nr_bytes);
 
-    size_t         size                () const;
+    std::size_t    size                () const;
 
     ::H5T_cset_t   encoding            () const;
 
@@ -89,15 +88,15 @@ std::string        native_datatype_as_string(
 std::string        standard_datatype_as_string(
                                         Datatype const& datatype);
 
-Datatype           create_datatype     (size_t nr_bytes);
+Datatype           create_datatype     (std::size_t nr_bytes);
 
 Datatype           create_datatype     (hid_t type_id,
-                                        size_t nr_bytes);
+                                        std::size_t nr_bytes);
 
 Datatype           create_string_datatype();
 
 Datatype           create_compound_datatype(
-                                        size_t nr_bytes);
+                                        std::size_t nr_bytes);
 
 Datatype           memory_datatype     (Datatype const& file_datatype);
 

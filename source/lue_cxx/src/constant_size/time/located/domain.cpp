@@ -78,7 +78,7 @@ namespace {
 Domain::Domain(
     hdf5::Identifier const& location)
 
-    : constant_size::Domain(location)  // ,
+    : constant_size::Domain{location}  // ,
       // _configuration(attributes())
 
 {

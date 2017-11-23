@@ -17,12 +17,9 @@ public:
 
     static hdf5::Datatype file_datatype(hdf5::Identifier const& id);
 
-                   Property            (omnipresent::Property&& property,
-                                        hdf5::Datatype const& memory_datatype);
+                   Property            (hdf5::Identifier const& id);
 
-                   Property            (lue::Property const& property);
-
-                   Property            (lue::Property const& property,
+                   Property            (hdf5::Identifier const& id,
                                         hdf5::Datatype const& memory_datatype);
 
                    Property            (Property const& other)=delete;

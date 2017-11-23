@@ -23,7 +23,7 @@ void File::AccessPropertyList::use_core_driver(
     std::size_t const increment,
     hbool_t const backing_store)
 {
-    // size_t const increment = 64000;  // 64k
+    // std::size_t const increment = 64000;  // 64k
     // hbool_t const backing_store = 0;  // false
 
     auto status = ::H5Pset_fapl_core(id(), increment, backing_store);

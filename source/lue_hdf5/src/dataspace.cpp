@@ -14,12 +14,9 @@ namespace hdf5 {
 Dataspace::Dataspace(
     ::H5S_class_t const type)
 
-    : _id(::H5Screate(type), H5Sclose)
+    : Dataspace(::H5Screate(type))
 
 {
-    if(!_id.is_valid()) {
-        throw std::runtime_error("Cannot create dataspace");
-    }
 }
 
 
@@ -31,7 +28,7 @@ Dataspace::Dataspace(
 Dataspace::Dataspace(
     hid_t const id)
 
-    : _id(id, ::H5Sclose)
+    : _id{id, ::H5Sclose}
 
 {
     if(!_id.is_valid()) {

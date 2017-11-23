@@ -11,6 +11,16 @@ namespace lue {
 // }
 
 
+Phenomenon::Phenomenon(
+    hdf5::Identifier const& id)
+
+    : hdf5::Group{id},
+      _property_sets{this->id()}
+
+{
+}
+
+
 /*!
     @brief      Construct an instance
     @param      location Location of group of phenomenon to open
@@ -45,8 +55,8 @@ Phenomenon::Phenomenon(
 Phenomenon::Phenomenon(
     hdf5::Group&& group)
 
-    : hdf5::Group(std::forward<hdf5::Group>(group)),
-      _property_sets(id())
+    : hdf5::Group{std::forward<hdf5::Group>(group)},
+      _property_sets{id()}
 
 {
 }
@@ -100,11 +110,11 @@ Phenomenon create_phenomenon(
     hdf5::Identifier const& location,
     std::string const& name)
 {
-    auto phenomenon = hdf5::create_group(location, name);
+    auto phenomenon_group = hdf5::create_group(location, name);
 
-    create_property_sets(phenomenon.id());
+    create_property_sets(phenomenon_group.id());
 
-    return Phenomenon(std::move(phenomenon));
+    return Phenomenon{std::move(phenomenon_group)};
 }
 
 } // namespace lue

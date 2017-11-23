@@ -14,19 +14,21 @@ class PropertyList
 
 public:
 
-    explicit       PropertyList        (hid_t const class_id);
+                   PropertyList        (PropertyList const&)=delete;
 
-                   PropertyList        (PropertyList const& other)=delete;
+                   PropertyList        (PropertyList&&)=default;
 
-                   PropertyList        (PropertyList&& other)=default;
+    virtual        ~PropertyList       ()=default;
 
-                   ~PropertyList       ()=default;
+    PropertyList&  operator=           (PropertyList const&)=delete;
 
-    PropertyList&  operator=           (PropertyList const& other)=delete;
-
-    PropertyList&  operator=           (PropertyList&& other)=default;
+    PropertyList&  operator=           (PropertyList&&)=default;
 
     Identifier const& id               () const;
+
+protected:
+
+    explicit       PropertyList        (hid_t class_id);
 
 private:
 

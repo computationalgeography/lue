@@ -18,6 +18,8 @@ class Phenomenon:
 
 public:
 
+                   Phenomenon          (hdf5::Identifier const& id);
+
                    Phenomenon          (hdf5::Identifier const& location,
                                         std::string const& name);
 

@@ -203,7 +203,7 @@ Raster::Raster(
 
     : _property_set(id),
       _discretization_property(
-          _property_set.properties()[discretization_property_name],
+          _property_set.properties()[discretization_property_name].id(),
           H5T_NATIVE_HSIZE),
       _discretization(),
       _domain()
@@ -232,7 +232,7 @@ Raster::Raster(
                 .phenomena()[phenomenon_name]
                     .property_sets()[property_set_name].id()),
       _discretization_property(
-          _property_set.properties()[discretization_property_name],
+          _property_set.properties()[discretization_property_name].id(),
           H5T_NATIVE_HSIZE),
       _discretization(),
       _domain()
@@ -288,8 +288,8 @@ Raster::Band Raster::band(
     std::string const& name) const
 {
     return Band(
-        omnipresent::different_shape::Property(
-            _property_set.properties()[name]));
+        omnipresent::different_shape::Property{
+            _property_set.properties()[name].id()});
 }
 
 

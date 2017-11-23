@@ -152,9 +152,9 @@ void TimeDomain::Configuration::load(
 
 
 TimeDomain::TimeDomain(
-    hdf5::Group const& group)
+    hdf5::Identifier const& id)
 
-    : hdf5::Group(group.id(), time_domain_tag),
+    : hdf5::Group(id, time_domain_tag),
       _configuration(attributes())
 
 {

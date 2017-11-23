@@ -1,5 +1,10 @@
 add_test_conditionally(test)
 
+configure_file(
+    include/lue/hdf5/configure.hpp.in
+    include/lue/hdf5/configure.hpp
+)
+
 add_library(lue_hdf5 STATIC
     src/attribute
     src/attributes
@@ -32,8 +37,9 @@ target_include_directories(lue_hdf5 SYSTEM
 
 target_include_directories(lue_hdf5
     PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/../include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
         $<INSTALL_INTERFACE:include>
 )
 

@@ -18,7 +18,7 @@ namespace constant_size {
 PropertySet::PropertySet(
     hdf5::Identifier const& id)
 
-    : lue::PropertySet(id),
+    : lue::PropertySet{id},
       _ids(this->id(), ids_tag, H5T_NATIVE_HSIZE)
 
 {
@@ -67,7 +67,7 @@ PropertySet create_property_set(
         domain_configuration);
 
     time::omnipresent::same_shape::create_value(
-        property_set.id(), ids_tag, H5T_STD_U64LE, H5T_NATIVE_HSIZE);
+        property_set, ids_tag, H5T_STD_U64LE, H5T_NATIVE_HSIZE);
 
     return PropertySet(std::move(property_set));
 }

@@ -28,7 +28,7 @@ void iterate(
 
 struct CountObjects
 {
-    size_t nr_objects;
+    std::size_t nr_objects;
 
     CountObjects() : nr_objects(0) { }
 };
@@ -105,7 +105,7 @@ herr_t count_groups(
 
 struct ObjectNames
 {
-    size_t _nr_names;
+    std::size_t _nr_names;
     char** _names;
 
     ObjectNames(char** const names)
@@ -291,7 +291,7 @@ Attributes& Group::attributes()
 */
 std::vector<std::string> Group::group_names() const
 {
-    size_t nr_objects = 0;
+    std::size_t nr_objects = 0;
     {
         CountObjects data;
         iterate(_id, count_groups, data);
@@ -306,7 +306,7 @@ std::vector<std::string> Group::group_names() const
 
     std::vector<std::string> result(nr_objects);
 
-    for(size_t o = 0; o < nr_objects; ++o) {
+    for(std::size_t o = 0; o < nr_objects; ++o) {
         result[o] = names[o];
         std::free(names[o]);
     }
@@ -320,7 +320,7 @@ std::vector<std::string> Group::group_names() const
 */
 std::vector<std::string> Group::object_names() const
 {
-    size_t nr_objects = 0;
+    std::size_t nr_objects = 0;
     {
         CountObjects data;
         iterate(_id, count_objects, data);
@@ -335,7 +335,7 @@ std::vector<std::string> Group::object_names() const
 
     std::vector<std::string> result(nr_objects);
 
-    for(size_t o = 0; o < nr_objects; ++o) {
+    for(std::size_t o = 0; o < nr_objects; ++o) {
         result[o] = names[o];
         std::free(names[o]);
     }

@@ -1,6 +1,5 @@
 #pragma once
 #include "lue/hdf5/object_info.hpp"
-#include <hdf5.h>
 #include <functional>
 #include <memory>
 #include <string>
@@ -37,15 +36,15 @@ public:
                    Identifier          (hid_t id,
                                         Close const& close);
 
-                   Identifier          (Identifier const& other)=default;
+                   Identifier          (Identifier const&)=default;
 
-                   Identifier          (Identifier&& other)=default;
+                   Identifier          (Identifier&&)=default;
 
-    virtual        ~Identifier         ();
+                   ~Identifier         ();
 
-    Identifier&    operator=           (Identifier const& other)=default;
+    Identifier&    operator=           (Identifier const&)=default;
 
-    Identifier&    operator=           (Identifier&& other)=default;
+    Identifier&    operator=           (Identifier&&)=default;
 
     bool           is_valid            () const;
 

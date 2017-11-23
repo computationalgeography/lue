@@ -1,9 +1,7 @@
 #include "lue/hdf5/dataset.hpp"
-#include "lue/hdf5/datatype.hpp"
 #include "lue/hdf5/link.hpp"
 #include <cassert>
 #include <cstring>
-#include <iostream>
 
 
 namespace lue {

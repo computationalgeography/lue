@@ -16,7 +16,7 @@ public:
 
                    ErrorStack          ();
 
-                   ErrorStack          (Identifier const& id);
+    explicit       ErrorStack          (Identifier const& id);
 
                    ErrorStack          (ErrorStack const&)=default;
 

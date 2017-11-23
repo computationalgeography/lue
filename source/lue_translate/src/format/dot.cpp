@@ -444,14 +444,14 @@ void to_dot(
         case ShapePerItemType::same: {
             auto file_datatype = same_shape::Property::file_datatype(
                 property.id());
-            to_dot(same_shape::Property(property,
+            to_dot(same_shape::Property(property.id(),
                 memory_datatype(file_datatype)), stream, metadata);
             break;
         }
         case ShapePerItemType::different: {
             auto file_datatype = different_shape::Property::file_datatype(
                 property.id());
-            to_dot(different_shape::Property(property,
+            to_dot(different_shape::Property(property.id(),
                 memory_datatype(file_datatype)), stream, metadata);
             break;
         }
@@ -521,7 +521,7 @@ void to_dot(
     for(auto const& name: properties.names()) {
         auto const& property = properties[name];
 
-        to_dot(property, stream, metadata);
+        to_dot(omnipresent::Property{property.id()}, stream, metadata);
         link_nodes(property_set, property, stream, metadata);
         link_nodes(property, domain, stream, metadata);
 

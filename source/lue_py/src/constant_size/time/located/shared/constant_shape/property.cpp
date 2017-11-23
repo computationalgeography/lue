@@ -65,7 +65,7 @@ void init_property(
                 Property& self)
             {
                 return omnipresent::cast_to_specialized_property(
-                    self.time_discretization());
+                    self.time_discretization().id());
             },
             "time_discretization docstring...")
 

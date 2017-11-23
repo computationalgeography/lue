@@ -71,7 +71,7 @@ void init_property_set_class(
                                 constant_size::time::located::PropertySet
                                     located_property_set(property_set.id());
 
-                                TimeDomain time_domain(domain);
+                                TimeDomain time_domain(domain.id());
 
                                 switch(time_domain.configuration()
                                         .ownership()) {

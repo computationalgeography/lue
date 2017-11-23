@@ -7,9 +7,9 @@ namespace time {
 namespace located {
 
 TimeDomain::TimeDomain(
-    hdf5::Group const& group)
+    hdf5::Identifier const& id)
 
-    : lue::TimeDomain(group)
+    : lue::TimeDomain{id}
 
 {
 }

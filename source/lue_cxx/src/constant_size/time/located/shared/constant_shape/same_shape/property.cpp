@@ -73,7 +73,7 @@ Property create_property(
     auto& property = properties.add(name,
         constant_shape::create_property(properties, name, configuration));
     auto value = create_value(
-        property.id(), value_tag, file_datatype, memory_datatype);
+        property, value_tag, file_datatype, memory_datatype);
 
     assert(property.id().is_valid());
 
@@ -93,8 +93,7 @@ Property create_property(
     auto& property = properties.add(name,
         constant_shape::create_property(properties, name, configuration));
     auto value = create_value(
-        property.id(), value_tag, file_datatype, memory_datatype,
-        value_shape);
+        property, value_tag, file_datatype, memory_datatype, value_shape);
 
     assert(property.id().is_valid());
 

@@ -10,7 +10,7 @@ namespace shared {
 TimeDomain::TimeDomain(
     hdf5::Group const& group)
 
-    : located::TimeDomain(group)
+    : located::TimeDomain{group.id()}
 
 {
 }

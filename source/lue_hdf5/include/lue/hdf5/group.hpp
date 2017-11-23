@@ -22,19 +22,19 @@ public:
                    Group               (Identifier const& location,
                                         std::string const& name);
 
-                   Group               (Identifier const& id);
+    explicit       Group               (Identifier const& id);
 
                    Group               (Identifier&& id);
 
-                   Group               (Group const& other)=default;
+                   Group               (Group const&)=default;
 
-                   Group               (Group&& other)=default;
+                   Group               (Group&&)=default;
 
     virtual        ~Group              ()=default;
 
-    Group&         operator=           (Group const& other)=default;
+    Group&         operator=           (Group const&)=default;
 
-    Group&         operator=           (Group&& other)=default;
+    Group&         operator=           (Group&&)=default;
 
     Identifier const& id               () const;
 

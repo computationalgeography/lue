@@ -12,15 +12,15 @@ public:
 
     explicit       ObjectInfo          (hid_t id);
 
-                   ObjectInfo          (ObjectInfo const& other)=delete;
+                   ObjectInfo          (ObjectInfo const&)=delete;
 
-                   ObjectInfo          (ObjectInfo&& other)=default;
+                   ObjectInfo          (ObjectInfo&&)=default;
 
                    ~ObjectInfo         ()=default;
 
-    ObjectInfo&    operator=           (ObjectInfo const& other)=delete;
+    ObjectInfo&    operator=           (ObjectInfo const&)=delete;
 
-    ObjectInfo&    operator=           (ObjectInfo&& other)=default;
+    ObjectInfo&    operator=           (ObjectInfo&&)=default;
 
     unsigned long  fileno              () const;
 

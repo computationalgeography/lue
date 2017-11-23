@@ -17,22 +17,11 @@ hdf5::Datatype Property::file_datatype(
 
 
 Property::Property(
-    omnipresent::Property&& property,
+    hdf5::Identifier const& id,
     hdf5::Datatype const& memory_datatype)
 
-    : omnipresent::Property(std::forward<omnipresent::Property>(property)),
-      _values(id(), value_tag, memory_datatype)
-
-{
-}
-
-
-Property::Property(
-    lue::Property const& property,
-    hdf5::Datatype const& memory_datatype)
-
-    : omnipresent::Property(property),
-      _values(id(), value_tag, memory_datatype)
+    : omnipresent::Property{id},
+      _values(this->id(), value_tag, memory_datatype)
 
 {
 }
@@ -70,11 +59,11 @@ Property create_property(
     auto& property = properties.add(name,
         omnipresent::create_property(properties, name, configuration));
     auto value = create_value(
-        property.id(), value_tag, file_datatype, memory_datatype);
+        property, value_tag, file_datatype, memory_datatype);
 
     assert(property.id().is_valid());
 
-    return Property(std::move(property), memory_datatype);
+    return Property{property.id(), memory_datatype};
 }
 
 
@@ -90,12 +79,12 @@ Property create_property(
     auto& property = properties.add(name,
         omnipresent::create_property(properties, name, configuration));
     auto value = create_value(
-        property.id(), value_tag, file_datatype, memory_datatype,
+        property, value_tag, file_datatype, memory_datatype,
         value_shape);
 
     assert(property.id().is_valid());
 
-    return Property(std::move(property), memory_datatype);
+    return Property{property.id(), memory_datatype};
 }
 
 }  // namespace same_shape

@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/configure.hpp"
+#include "lue/hdf5/configure.hpp"
 #include "lue/hdf5/group.hpp"
 #include "lue/hdf5/property_list.hpp"
 
@@ -24,8 +24,8 @@ public:
 
                    AccessPropertyList  ();
 
-        void       use_core_driver     (std::size_t const increment=64000,
-                                        hbool_t const backing_store=0);
+        void       use_core_driver     (std::size_t increment=64000,
+                                        hbool_t backing_store=0);
 
 #ifdef HDF5_IS_PARALLEL
         void       use_mpi_communicator(MPI_Comm const& communicator,
@@ -34,7 +34,7 @@ public:
 
     };
 
-                   File                (std::string const& name);
+    explicit       File                (std::string const& name);
 
                    File                (std::string const& name,
                                         unsigned int const flags);
@@ -46,13 +46,13 @@ public:
 
                    File                (Identifier&& id);
 
-                   File                (File const& other)=delete;
+                   File                (File const&)=delete;
 
                    File                (File&& other);
 
     virtual        ~File               ()=default;
 
-    File&          operator=           (File const& other)=delete;
+    File&          operator=           (File const&)=delete;
 
     File&          operator=           (File&& other);
 

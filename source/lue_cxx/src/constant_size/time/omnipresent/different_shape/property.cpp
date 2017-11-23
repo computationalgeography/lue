@@ -19,115 +19,25 @@ hdf5::Datatype Property::file_datatype(
 
 
 Property::Property(
-    omnipresent::Property&& property,
-    hdf5::Datatype const& memory_datatype)
+    hdf5::Identifier const& id)
 
-    : omnipresent::Property(std::forward<omnipresent::Property>(property)),
-      _values(id(), value_tag, memory_datatype)
-
-{
-}
-
-
-Property::Property(
-    lue::Property const& property)
-
-    : omnipresent::Property(property),
-      _values(id(), value_tag)
+    : omnipresent::Property{id},
+      _values(
+          this->id(), value_tag, memory_datatype(file_datatype(this->id())))
 
 {
 }
 
 
 Property::Property(
-    lue::Property const& property,
+    hdf5::Identifier const& id,
     hdf5::Datatype const& memory_datatype)
 
-    : omnipresent::Property(property),
-      _values(id(), value_tag, memory_datatype)
+    : omnipresent::Property{id},
+      _values(this->id(), value_tag, memory_datatype)
 
 {
 }
-
-
-// // // Property::Property(
-// // //     hdf5::Identifier const& location,
-// // //     std::string const& name)
-// // // 
-// // //     : time::omnipresent::Property(location, name),
-// // //       _values{std::make_unique<different_shape::Item>(group.value().id(),
-// // //           "value")}
-// // // 
-// // // {
-// // //     if(!id().is_valid()) {
-// // //         throw std::runtime_error("Property " + name + " cannot be opened");
-// // //     }
-// // // 
-// // //     assert(value_exists(id()));
-// // //     _value = std::make_unique<Value>(open_value(id()));
-// // // }
-// // 
-// // 
-// // Property::Property(
-// //     lue::Property& group)
-// // 
-// //     : time::omnipresent::Property(group),
-// //       _values{std::make_unique<different_shape::Item>(group.value().id(),
-// //           "value")}
-// // 
-// // {
-// // }
-// // 
-// // 
-// // /*!
-// //     @brief      .
-// //     @param      type_id Type id of in-memory values
-// //     @return     .
-// //     @exception  .
-// // */
-// // Property::Property(
-// //     lue::Property& group,
-// //     hid_t const type_id)
-// // 
-// //     : time::omnipresent::Property(group),
-// //       _values{std::make_unique<different_shape::Item>(group.value().id(),
-// //           "value", type_id)}
-// // 
-// // {
-// // }
-// // 
-// // 
-// // Item& Property::reserve(
-// //     hsize_t const nr_items)
-// // {
-// //     _values->reserve(nr_items);
-// // 
-// //     return *_values;
-// // }
-// // 
-// // 
-// // Item const& Property::values() const
-// // {
-// //     return *_values;
-// // }
-// // 
-// // 
-// // Item& Property::values()
-// // {
-// //     return *_values;
-// // }
-// 
-// 
-// // void configure_property(
-// //     lue::Property const& property,
-// //     hid_t const file_type_id,
-// //     hid_t const memory_type_id,
-// //     Shape const& shape,
-// //     Chunks const& chunks)
-// // {
-// //     different_shape::create_item(property.value().id(), "value",
-// //         file_type_id, memory_type_id, shape, chunks);
-// // }
 
 
 different_shape::Value const& Property::values() const
@@ -179,7 +89,7 @@ Property create_property(
 
     assert(property.id().is_valid());
 
-    return Property(std::move(property), memory_datatype);
+    return Property{property.id(), memory_datatype};
 }
 
 }  // namespace different_shape

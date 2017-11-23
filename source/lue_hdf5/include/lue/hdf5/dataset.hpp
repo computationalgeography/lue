@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/configure.hpp"
+#include "lue/hdf5/configure.hpp"
 #include "lue/hdf5/dataspace.hpp"
 #include "lue/hdf5/datatype.hpp"
 #include "lue/hdf5/hyperslab.hpp"
@@ -8,6 +8,9 @@
 
 namespace lue {
 namespace hdf5 {
+
+class Hyperslab;
+
 
 /*!
     @brief      Class representing an HDF5 dataset
@@ -39,7 +42,7 @@ public:
                    TransferPropertyList();
 
 #ifdef HDF5_IS_PARALLEL
-        void       set_transfer_mode   (H5FD_mpio_xfer_t const xfer_mode);
+        void       set_transfer_mode   (H5FD_mpio_xfer_t xfer_mode);
 #endif
 
     };
@@ -50,15 +53,15 @@ public:
 
     explicit       Dataset             (Identifier&& id);
 
-                   Dataset             (Dataset const& other)=delete;
+                   Dataset             (Dataset const&)=delete;
 
-                   Dataset             (Dataset&& other)=default;
+                   Dataset             (Dataset&&)=default;
 
     virtual        ~Dataset            ()=default;
 
-    Dataset&       operator=           (Dataset const& other)=delete;
+    Dataset&       operator=           (Dataset const&)=delete;
 
-    Dataset&       operator=           (Dataset&& other)=default;
+    Dataset&       operator=           (Dataset&&)=default;
 
     Identifier const& id               () const;
 

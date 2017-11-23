@@ -45,7 +45,7 @@ void init_property_set_class(
                 std::string const& name)
             {
                 return cast_to_specialized_property(
-                    self.properties()[name]);
+                    self.properties()[name].id());
             },
             "Return property\n"
             "\n"

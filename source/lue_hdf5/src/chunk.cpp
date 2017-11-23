@@ -1,6 +1,5 @@
 #include "lue/hdf5/chunk.hpp"
 #include <algorithm>
-#include <iostream>
 #include <cassert>
 #include <cmath>
 #include <numeric>
@@ -100,7 +99,7 @@ Shape chunk_shape(
         // Determine indices of the dimensions in this order.
         using ExtentIndexTuple = std::tuple<Shape::value_type, std::size_t>;
         std::vector<ExtentIndexTuple> tuples;
-        for(size_t i = 0; i < value_shape.size(); ++i) {
+        for(std::size_t i = 0; i < value_shape.size(); ++i) {
             tuples.push_back(ExtentIndexTuple(value_shape[i], i));
         }
 

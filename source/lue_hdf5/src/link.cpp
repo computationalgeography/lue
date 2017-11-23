@@ -1,5 +1,4 @@
 #include "lue/hdf5/link.hpp"
-#include <hdf5.h>
 #include <cassert>
 
 

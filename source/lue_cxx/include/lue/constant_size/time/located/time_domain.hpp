@@ -13,7 +13,7 @@ class TimeDomain:
 
 public:
 
-                   TimeDomain          (hdf5::Group const& group);
+                   TimeDomain          (hdf5::Identifier const& id);
 
                    TimeDomain          (lue::TimeDomain&& domain);
 

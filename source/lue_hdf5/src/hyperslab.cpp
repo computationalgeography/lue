@@ -168,7 +168,7 @@ std::size_t Hyperslab::nr_elements() const
     if(!empty()) {
         result = 1;
 
-        for(size_t i = 0; i < nr_dimensions(); ++i) {
+        for(std::size_t i = 0; i < nr_dimensions(); ++i) {
             result *= (_stride[i] * _count[i]);
         }
     }

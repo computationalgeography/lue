@@ -46,10 +46,12 @@ public:
     };
 
 
+                   Property            (hdf5::Identifier const& id);
+
                    Property            (hdf5::Identifier const& location,
                                         std::string const& name);
 
-                   Property            (hdf5::Group&& group);
+                   // Property            (hdf5::Group&& group);
 
                    Property            (Property const& other)=default;
 

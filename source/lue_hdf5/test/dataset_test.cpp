@@ -47,7 +47,7 @@ struct Read2DDatasetFixture
 
 
     void test_read_row(
-        size_t const row)
+        std::size_t const row)
     {
         std::vector<std::int32_t> values_read(nr_cols, 555);
 
@@ -66,7 +66,7 @@ struct Read2DDatasetFixture
 
 
     void test_read_col(
-        size_t const col)
+        std::size_t const col)
     {
         std::vector<std::int32_t> values_read(nr_rows, 555);
 
@@ -77,15 +77,15 @@ struct Read2DDatasetFixture
         dataset->read(memory_datatype, Hyperslab(start, stride, count),
             values_read.data());
 
-        for(size_t r = 0; r < nr_rows; ++r) {
+        for(std::size_t r = 0; r < nr_rows; ++r) {
             BOOST_CHECK_EQUAL(values_read[r], values[r * nr_cols + col]);
         }
     }
 
 
     void test_read_cell(
-        size_t const row,
-        size_t const col)
+        std::size_t const row,
+        std::size_t const col)
     {
         std::int32_t value_read{555};
 
@@ -100,9 +100,9 @@ struct Read2DDatasetFixture
     }
 
 
-    size_t const nr_rows;
-    size_t const nr_cols;
-    size_t const nr_cells;
+    std::size_t const nr_rows;
+    std::size_t const nr_cols;
+    std::size_t const nr_cells;
     std::vector<std::int32_t> values;
     Datatype const memory_datatype;
     std::unique_ptr<Dataset> dataset;
@@ -124,7 +124,7 @@ BOOST_FIXTURE_TEST_CASE(read_all, Read2DDatasetFixture)
 
 BOOST_FIXTURE_TEST_CASE(read_rows, Read2DDatasetFixture)
 {
-    for(size_t r = 0; r < nr_rows; ++r) {
+    for(std::size_t r = 0; r < nr_rows; ++r) {
         test_read_row(r);
     }
 }
@@ -132,7 +132,7 @@ BOOST_FIXTURE_TEST_CASE(read_rows, Read2DDatasetFixture)
 
 BOOST_FIXTURE_TEST_CASE(read_cols, Read2DDatasetFixture)
 {
-    for(size_t c = 0; c < nr_cols; ++c) {
+    for(std::size_t c = 0; c < nr_cols; ++c) {
         test_read_col(c);
     }
 }
@@ -140,8 +140,8 @@ BOOST_FIXTURE_TEST_CASE(read_cols, Read2DDatasetFixture)
 
 BOOST_FIXTURE_TEST_CASE(read_cell, Read2DDatasetFixture)
 {
-    for(size_t r = 0; r < nr_rows; ++r) {
-        for(size_t c = 0; c < nr_cols; ++c) {
+    for(std::size_t r = 0; r < nr_rows; ++r) {
+        for(std::size_t c = 0; c < nr_cols; ++c) {
             test_read_cell(r, c);
         }
     }

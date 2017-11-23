@@ -22,13 +22,13 @@ public:
 
     explicit       Dataspace           (Identifier&& id);
 
-                   Dataspace           (Dataspace const& other)=delete;
+                   Dataspace           (Dataspace const&)=delete;
 
                    Dataspace           (Dataspace&& other);
 
                    ~Dataspace          ()=default;
 
-    Dataspace&     operator=           (Dataspace const& other)=delete;
+    Dataspace&     operator=           (Dataspace const&)=delete;
 
     Dataspace&     operator=           (Dataspace&& other);
 

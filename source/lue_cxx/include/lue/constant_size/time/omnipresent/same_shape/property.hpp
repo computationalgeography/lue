@@ -17,17 +17,8 @@ public:
 
     static hdf5::Datatype file_datatype(hdf5::Identifier const& id);
 
-                   // Property            (hdf5::Identifier const& location,
-                   //                      std::string const& name);
-
-                   Property            (omnipresent::Property&& property,
+                   Property            (hdf5::Identifier const& id,
                                         hdf5::Datatype const& memory_datatype);
-
-                   Property            (lue::Property const& property,
-                                        hdf5::Datatype const& memory_datatype);
-
-                   // Property            (lue::Property& group,
-                   //                      hid_t const type_id);
 
                    Property            (Property const& other)=delete;
 
@@ -65,19 +56,6 @@ Property           create_property     (PropertySet& property_set,
                                         hdf5::Datatype const& file_datatype,
                                         hdf5::Datatype const& memory_datatype,
                                         hdf5::Shape const& value_shape);
-
-// Property           create_property     (PropertySet& property_set,
-//                                         std::string const& name,
-//                                         hdf5::Datatype const& file_datatype,
-//                                         hdf5::Datatype const& memory_datatype,
-//                                         hdf5::Shape const& value_shape,
-//                                         hdf5::Shape const& value_chunk);
-
-// void               configure_property  (lue::Property const& location,
-//                                         hid_t const file_type_id,
-//                                         hid_t const memory_type_id,
-//                                         Shape const& shape,
-//                                         Chunks const& chunks);
 
 }  // namespace same_shape
 }  // namespace omnipresent

@@ -2,7 +2,6 @@
 #include "lue/hdf5/dataspace.hpp"
 #include "lue/hdf5/datatype.hpp"
 #include "lue/hdf5/datatype_traits.hpp"
-#include "lue/hdf5/identifier.hpp"
 #include <cassert>
 
 
@@ -22,15 +21,15 @@ public:
                    Attribute           (Identifier const& location,
                                         std::string const& name);
 
-                   Attribute           (Attribute const& other)=delete;
+                   Attribute           (Attribute const&)=delete;
 
-                   Attribute           (Attribute&& other)=default;
+                   Attribute           (Attribute&&)=default;
 
                    ~Attribute          ()=default;
 
-    Attribute&     operator=           (Attribute const& other)=delete;
+    Attribute&     operator=           (Attribute const&)=delete;
 
-    Attribute&     operator=           (Attribute&& other)=default;
+    Attribute&     operator=           (Attribute&&)=default;
 
     Identifier const& id               () const;
 

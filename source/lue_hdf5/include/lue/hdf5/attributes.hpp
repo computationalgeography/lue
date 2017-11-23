@@ -1,8 +1,5 @@
 #pragma once
 #include "lue/hdf5/attribute.hpp"
-#include "lue/hdf5/datatype.hpp"
-#include "lue/hdf5/datatype_traits.hpp"
-#include <cassert>
 
 
 namespace lue {
@@ -19,15 +16,15 @@ public:
 
     explicit       Attributes          (Identifier const& id);
 
-                   Attributes          (Attributes const& other)=default;
+                   Attributes          (Attributes const&)=delete;
 
-                   Attributes          (Attributes&& other)=default;
+                   Attributes          (Attributes&&)=default;
 
                    ~Attributes         ()=default;
 
-    Attributes&    operator=           (Attributes const& other)=default;
+    Attributes&    operator=           (Attributes const&)=delete;
 
-    Attributes&    operator=           (Attributes&& other)=default;
+    Attributes&    operator=           (Attributes&&)=default;
 
     Attribute      add                 (std::string const& name,
                                         Datatype const& file_datatype,

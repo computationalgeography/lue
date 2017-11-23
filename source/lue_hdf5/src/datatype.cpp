@@ -187,7 +187,7 @@ Identifier const& Datatype::id() const
 
 
 void Datatype::set_size(
-    size_t const nr_bytes)
+    std::size_t const nr_bytes)
 {
     auto status = ::H5Tset_size(_id, nr_bytes);
 
@@ -197,7 +197,7 @@ void Datatype::set_size(
 }
 
 
-size_t Datatype::size() const
+std::size_t Datatype::size() const
 {
     return ::H5Tget_size(_id);
 }
@@ -295,7 +295,7 @@ std::vector<unsigned char> encode_datatype(
     Datatype const& datatype)
 {
     // Determine size of buffer.
-    size_t nr_bytes;
+    std::size_t nr_bytes;
     auto status = ::H5Tencode(datatype.id(), nullptr, &nr_bytes);
 
     if(status < 0) {
@@ -371,7 +371,7 @@ Datatype copy_datatype(
     @exception  std::runtime_error In case the character set cannot be set
 */
 Datatype create_datatype(
-    size_t const nr_bytes)
+    std::size_t const nr_bytes)
 {
     auto datatype = create_datatype(H5T_C_S1, nr_bytes);
     auto status = ::H5Tset_cset(datatype.id(), H5T_CSET_UTF8);
@@ -391,7 +391,7 @@ Datatype create_datatype(
 */
 Datatype create_datatype(
     hid_t const type_id,
-    size_t const nr_bytes)
+    std::size_t const nr_bytes)
 {
     auto id = Identifier(::H5Tcopy(type_id), ::H5Tclose);
 

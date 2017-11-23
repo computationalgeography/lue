@@ -75,6 +75,16 @@ void Property::Configuration::load(
 }
 
 
+Property::Property(
+    hdf5::Identifier const& id)
+
+    : hdf5::Group(id),
+      _configuration(attributes())
+
+{
+}
+
+
 /*!
     @brief      Construct an instance based on an existing property
     @param      location Location in dataset of property named @a name
@@ -92,14 +102,14 @@ Property::Property(
 }
 
 
-Property::Property(
-    hdf5::Group&& group)
-
-    : hdf5::Group(std::forward<hdf5::Group>(group)),
-      _configuration(attributes())
-
-{
-}
+// Property::Property(
+//     hdf5::Group&& group)
+// 
+//     : hdf5::Group(std::forward<hdf5::Group>(group)),
+//       _configuration(attributes())
+// 
+// {
+// }
 
 
 Property::Configuration const& Property::configuration() const
@@ -151,11 +161,11 @@ Property create_property(
     std::string const& name,
     Property::Configuration const& configuration)
 {
-    auto property = hdf5::create_group(group.id(), name);
+    auto property_group = hdf5::create_group(group.id(), name);
 
-    configuration.save(property.attributes());
+    configuration.save(property_group.attributes());
 
-    return Property(std::move(property));
+    return Property{property_group.id()};
 }
 
 }  // namespace lue

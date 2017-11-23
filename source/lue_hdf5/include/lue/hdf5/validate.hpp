@@ -1,10 +1,13 @@
 #pragma once
-#include "lue/hdf5/group.hpp"
 #include "lue/hdf5/issues.hpp"
 
 
 namespace lue {
 namespace hdf5 {
+
+class Dataset;
+class Group;
+
 
 void               assert_no_superfluous_objects_exist(
                                         Group const& group,

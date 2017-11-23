@@ -33,7 +33,7 @@ void validate(
                 auto file_datatype = same_shape::Property::file_datatype(
                     property.id());
                 auto const property2 = same_shape::Property(
-                    property, memory_datatype(file_datatype));
+                    property.id(), memory_datatype(file_datatype));
                 nr_values =  property2.values().nr_items();
 
                 break;
@@ -43,7 +43,7 @@ void validate(
                 auto file_datatype = different_shape::Property::file_datatype(
                     property.id());
                 auto const property2 = different_shape::Property(
-                    property, memory_datatype(file_datatype));
+                    property.id(), memory_datatype(file_datatype));
                 nr_values =  property2.values().nr_items();
 
                 break;

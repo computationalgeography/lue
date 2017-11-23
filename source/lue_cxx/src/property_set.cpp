@@ -127,15 +127,16 @@ PropertySet::PropertySet(
 }
 
 
-// PropertySet::PropertySet(
-//     hdf5::Identifier const& id)
-// 
-//     : hdf5::Group(id),
-//       _configuration(attributes()),
-//       _properties(this->id())
-// 
-// {
-// }
+PropertySet::PropertySet(
+    hdf5::Identifier const& id)
+
+    : hdf5::Group{id},
+      _configuration(attributes()),
+      _domain(this->id()),
+      _properties(this->id())
+
+{
+}
 
 
 // PropertySet::PropertySet(
@@ -162,16 +163,16 @@ PropertySet::PropertySet(
 // }
 
 
-PropertySet::PropertySet(
-    hdf5::Group&& group)
-
-    : hdf5::Group(std::forward<hdf5::Group>(group)),
-      _configuration(attributes()),
-      _domain(id()),
-      _properties(id())
-
-{
-}
+// PropertySet::PropertySet(
+//     hdf5::Group&& group)
+// 
+//     : hdf5::Group(std::forward<hdf5::Group>(group)),
+//       _configuration(attributes()),
+//       _domain(id()),
+//       _properties(id())
+// 
+// {
+// }
 
 
 PropertySet::Configuration const& PropertySet::configuration() const
@@ -249,14 +250,14 @@ PropertySet create_property_set(
     PropertySet::Configuration const& configuration,
     Domain::Configuration const& domain_configuration)
 {
-    auto property_set = hdf5::create_group(group.id(), name);
+    auto property_set_group = hdf5::create_group(group.id(), name);
 
-    configuration.save(property_set.attributes());
-    create_properties(property_set.id());
+    configuration.save(property_set_group.attributes());
+    create_properties(property_set_group.id());
 
-    create_domain(property_set.id(), domain_configuration);
+    create_domain(property_set_group.id(), domain_configuration);
 
-    return PropertySet(std::move(property_set));
+    return PropertySet{property_set_group.id()};
 }
 
 

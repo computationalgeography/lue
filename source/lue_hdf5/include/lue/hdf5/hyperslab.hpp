@@ -29,15 +29,15 @@ public:
 
                    Hyperslab           (Shape const& shape);
 
-                   Hyperslab           (Hyperslab const& other)=default;
+                   Hyperslab           (Hyperslab const&)=default;
 
-                   Hyperslab           (Hyperslab&& other)=default;
+                   Hyperslab           (Hyperslab&&)=default;
 
                    ~Hyperslab          ()=default;
 
-    Hyperslab&     operator=           (Hyperslab const& other)=default;
+    Hyperslab&     operator=           (Hyperslab const&)=default;
 
-    Hyperslab&     operator=           (Hyperslab&& other)=default;
+    Hyperslab&     operator=           (Hyperslab&&)=default;
 
     Offset const&  start               () const;
 
