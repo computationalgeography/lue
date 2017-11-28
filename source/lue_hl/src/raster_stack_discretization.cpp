@@ -15,8 +15,8 @@ RasterStackDiscretization::RasterStackDiscretization(
       _shape(3)
 
 {
-    auto const& time_series_shape{_time_series_discretization.shape()};
-    auto const& raster_shape{_raster_discretization.shape()};
+    auto const& time_series_shape = _time_series_discretization.shape();
+    auto const& raster_shape = _raster_discretization.shape();
 
     assert(time_series_shape.size() == 1);
     assert(raster_shape.size() == 2);
