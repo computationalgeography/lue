@@ -1,19 +1,11 @@
 #pragma once
 #include "lue/define.hpp"
-// #include "lue/cxx_api/domain.h"
 #include "lue/domain.hpp"
 #include "lue/properties.hpp"
-// #include "lue/cxx_api/property_set_configuration.h"
 #include "lue/hdf5/group.hpp"
-// #include <memory>
-// #include <string>
 
 
 namespace lue {
-
-// bool               property_set_exists (hdf5::Identifier const& location,
-//                                         std::string const& name);
-
 
 /*!
     @brief      Common property set class
@@ -43,7 +35,7 @@ public:
 
                    Configuration       (hdf5::Attributes const& attributes);
 
-                   ~Configuration()=default;
+                   ~Configuration      ()=default;
 
         SizeOfItemCollectionType
                    size_of_item_collection_type() const;
@@ -59,24 +51,24 @@ public:
 
     };
 
-                   PropertySet         (hdf5::Identifier const& location,
+                   PropertySet         (hdf5::Group const& parent,
                                         std::string const& name);
 
-                   PropertySet         (hdf5::Identifier const& id);
+                   // PropertySet         (hdf5::Identifier const& id);
 
                    // PropertySet         (hdf5::Identifier&& location);
 
-                   // PropertySet         (hdf5::Group&& group);
+                   PropertySet         (hdf5::Group&& group);
 
-                   PropertySet         (PropertySet const& other)=delete;
+                   PropertySet         (PropertySet const&)=delete;
 
-                   PropertySet         (PropertySet&& other)=default;
+                   PropertySet         (PropertySet&&)=default;
 
                    ~PropertySet        ()=default;
 
-    PropertySet&   operator=           (PropertySet const& other)=delete;
+    PropertySet&   operator=           (PropertySet const&)=delete;
 
-    PropertySet&   operator=           (PropertySet&& other)=default;
+    PropertySet&   operator=           (PropertySet&&)=default;
 
     Configuration const&
                    configuration       () const;

@@ -462,16 +462,15 @@ void to_dot(
 
     switch(configuration.shape_per_item_type()) {
         case ShapePerItemType::same: {
-            auto file_datatype = same_shape::Property::file_datatype(
-                property.id());
-            to_dot(same_shape::Property(property.id(),
+            auto file_datatype = same_shape::Property::file_datatype(property);
+            to_dot(same_shape::Property(hdf5::Group{property.id()},
                 memory_datatype(file_datatype)), stream, metadata);
             break;
         }
         case ShapePerItemType::different: {
             auto file_datatype = different_shape::Property::file_datatype(
-                property.id());
-            to_dot(different_shape::Property(property.id(),
+                property);
+            to_dot(different_shape::Property(hdf5::Group{property.id()},
                 memory_datatype(file_datatype)), stream, metadata);
             break;
         }
@@ -529,7 +528,9 @@ void to_dot(
     for(auto const& name: properties.names()) {
         auto const& property = properties[name];
 
-        to_dot(omnipresent::Property{property.id()}, stream, metadata);
+        to_dot(
+            omnipresent::Property{hdf5::Group{property.id()}},
+            stream, metadata);
         link_nodes(property_set, property, stream, metadata);
         link_nodes(property, domain, stream, metadata);
 
@@ -599,13 +600,14 @@ void to_dot(
     std::vector<std::string> property_dot_names;
 
     for(auto const& name: properties.names()) {
-        auto const property = located::Property(properties[name].id());
+        auto const property = located::Property{
+            hdf5::Group{properties[name].id()}};
 
         switch(property.configuration2().shape_variability()) {
 
             case lue::time::PropertyConfiguration::ShapeVariability::constant: {
                 to_dot(
-                    constant_shape::Property(property.id()),
+                    constant_shape::Property(hdf5::Group{property.id()}),
                     stream, metadata);
                 break;
             }
@@ -634,13 +636,13 @@ void to_dot(
 {
     auto const& domain = property_set.domain();
 
-    TimeDomain time_domain(domain.id());
+    TimeDomain time_domain{domain};
 
     switch(time_domain.configuration().ownership()) {
 
         case TimeDomain::Configuration::Ownership::shared: {
             to_dot(
-                shared::PropertySet(property_set.id()),
+                shared::PropertySet{hdf5::Group{property_set.id()}},
                 stream, metadata);
             break;
         }

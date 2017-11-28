@@ -15,25 +15,25 @@ namespace shared {
 // }
 
 
-TimeBoxDomain::TimeBoxDomain(
-    TimeDomain const& time_domain)
-
-    : TimeDomain{time_domain.id()},
-      _items{
-          id(),
-          hdf5::Datatype{
-              hdf5::NativeDatatypeTraits<lue::time::DurationCount>::type_id()}}
-
-{
-}
+// TimeBoxDomain::TimeBoxDomain(
+//     TimeDomain const& time_domain)
+// 
+//     : TimeDomain{time_domain.id()},
+//       _items{
+//           id(),
+//           hdf5::Datatype{
+//               hdf5::NativeDatatypeTraits<lue::time::DurationCount>::type_id()}}
+// 
+// {
+// }
 
 
 TimeBoxDomain::TimeBoxDomain(
     TimeDomain&& time_domain)
 
-    : TimeDomain(std::forward<TimeDomain>(time_domain)),
+    : TimeDomain{std::forward<TimeDomain>(time_domain)},
       _items{
-          id(),
+          *this,
           hdf5::Datatype{
               hdf5::NativeDatatypeTraits<lue::time::DurationCount>::type_id()}}
 
@@ -68,7 +68,7 @@ TimeBoxDomain create_time_box_domain(
 {
     auto& domain = property_set.domain();
 
-    auto time = located::shared::create_time_domain(domain,
+    auto time_domain = located::shared::create_time_domain(domain,
         TimeDomain::Configuration(
             clock,
             TimeDomain::Configuration::Ownership::shared,
@@ -80,9 +80,9 @@ TimeBoxDomain create_time_box_domain(
     hdf5::Datatype file_datatype(
         hdf5::StandardDatatypeTraits<lue::time::DurationCount>::type_id());
 
-    create_time_box(time, file_datatype, memory_datatype);
+    create_time_box(time_domain, file_datatype, memory_datatype);
 
-    return TimeBoxDomain(std::move(time)); // , memory_datatype);
+    return TimeBoxDomain{std::move(time_domain)}; // , memory_datatype);
 }
 
 }  // namespace shared

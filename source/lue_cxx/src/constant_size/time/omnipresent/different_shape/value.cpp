@@ -31,10 +31,10 @@ namespace different_shape {
 
 
 Value::Value(
-    hdf5::Identifier const& location,
+    hdf5::Group const& parent,
     std::string const& name)
 
-    : Group(location, name),
+    : Group(parent, name),
       omnipresent::Value(),
       _nr_items{attributes().read<hsize_t>(nr_items_tag)},
       _rank{attributes().read<int>(rank_tag)},
@@ -47,11 +47,11 @@ Value::Value(
 
 
 Value::Value(
-    hdf5::Identifier const& location,
+    hdf5::Group const& parent,
     std::string const& name,
     hdf5::Datatype const& memory_datatype)
 
-    : Group(location, name),
+    : Group(parent, name),
       omnipresent::Value(),
       _nr_items{attributes().read<hsize_t>(nr_items_tag)},
       _rank{attributes().read<int>(rank_tag)},
@@ -153,26 +153,26 @@ void Value::reserve(
 Array Value::operator[](
     size_t const idx) const
 {
-    return Array(id(), std::to_string(idx), _memory_datatype);
+    return Array(*this, std::to_string(idx), _memory_datatype);
 }
 
 
 Value create_value(
-    hdf5::Identifier const& location,
+    hdf5::Group const& parent,
     std::string const& name,
     hdf5::Datatype const& file_datatype,
     hdf5::Datatype const& memory_datatype,
     int const rank)
 {
 
-    auto group = hdf5::create_group(location, name);
+    auto group = hdf5::create_group(parent, name);
 
-    group.attributes().write<std::vector<unsigned char>>(datatype_tag,
-        hdf5::encode_datatype(file_datatype));
+    group.attributes().write<std::vector<unsigned char>>(
+        datatype_tag, hdf5::encode_datatype(file_datatype));
     group.attributes().write<int>(rank_tag, rank);
     group.attributes().write<hsize_t>(nr_items_tag, 0);
 
-    return Value(std::move(group), memory_datatype);
+    return Value{std::move(group), memory_datatype};
 
 
 

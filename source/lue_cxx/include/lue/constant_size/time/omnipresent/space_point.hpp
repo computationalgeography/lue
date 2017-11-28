@@ -13,20 +13,20 @@ class SpacePoint:
 
 public:
 
-                   SpacePoint          (hdf5::Identifier const& location,
+                   SpacePoint          (hdf5::Group const& parent,
                                         hdf5::Datatype const memory_datatype);
 
                    SpacePoint          (same_shape::Value&& value);
 
-                   SpacePoint          (SpacePoint const& other)=delete;
+                   SpacePoint          (SpacePoint const&)=delete;
 
-                   SpacePoint          (SpacePoint&& other)=default;
+                   SpacePoint          (SpacePoint&&)=default;
 
                    ~SpacePoint         ()=default;
 
-    SpacePoint&    operator=           (SpacePoint const& other)=delete;
+    SpacePoint&    operator=           (SpacePoint const&)=delete;
 
-    SpacePoint&    operator=           (SpacePoint&& other)=default;
+    SpacePoint&    operator=           (SpacePoint&&)=default;
 
 private:
 
@@ -34,7 +34,7 @@ private:
 };
 
 
-SpacePoint         create_space_point  (hdf5::Group const& group,
+SpacePoint         create_space_point  (hdf5::Group const& parent,
                                         hdf5::Datatype const& file_datatype,
                                         hdf5::Datatype const& memory_datatype,
                                         size_t const rank);

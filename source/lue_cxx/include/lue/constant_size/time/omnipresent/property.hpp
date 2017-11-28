@@ -14,7 +14,7 @@ class Property:
 
 public:
 
-                   Property            (hdf5::Identifier const& id);
+    explicit       Property            (hdf5::Group&& group);
 
                    Property            (Property const&)=delete;
 

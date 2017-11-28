@@ -52,19 +52,19 @@ public:
     };
 
 
-                   Domain              (hdf5::Identifier const& location);
+                   Domain              (hdf5::Group const& parent);
 
                    Domain              (hdf5::Group&& group);
 
-                   Domain              (Domain const& other)=delete;
+                   Domain              (Domain const&)=delete;
 
-                   Domain              (Domain&& other)=default;
+                   Domain              (Domain&&)=default;
 
     virtual        ~Domain             ()=default;
 
-    Domain&        operator=           (Domain const& other)=delete;
+    Domain&        operator=           (Domain const&)=delete;
 
-    Domain&        operator=           (Domain&& other)=default;
+    Domain&        operator=           (Domain&&)=default;
 
     Configuration const&
                    configuration       () const;
@@ -76,7 +76,7 @@ private:
 };
 
 
-Domain             create_domain       (hdf5::Identifier const& location,
+Domain             create_domain       (hdf5::Group const& parent,
                                         Domain::Configuration const&
                                             configuration);
 

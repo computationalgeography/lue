@@ -96,20 +96,20 @@ void PropertySet::Configuration::load(
 
 /*!
     @brief      Construct an instance based on an existing property set
-    @param      location Location in dataset of property set named @a name
+    @param      parent Parent group in dataset of property set named @a name
     @param      name Name of property set to open
     @exception  std::runtime_error In case property set cannot be opened
     @warning    It is assumed that a domain and property set collection
                 exist in property set @a name at @a location
 */
 PropertySet::PropertySet(
-    hdf5::Identifier const& location,
+    hdf5::Group const& parent,
     std::string const& name)
 
-    : hdf5::Group(location, name),
+    : hdf5::Group(parent, name),
       _configuration(attributes()),
-      _domain(id()),
-      _properties(id())
+      _domain(*this),
+      _properties(*this)
 
 {
     // if(!id().is_valid()) {
@@ -127,16 +127,16 @@ PropertySet::PropertySet(
 }
 
 
-PropertySet::PropertySet(
-    hdf5::Identifier const& id)
-
-    : hdf5::Group{id},
-      _configuration(attributes()),
-      _domain(this->id()),
-      _properties(this->id())
-
-{
-}
+// PropertySet::PropertySet(
+//     hdf5::Identifier const& id)
+// 
+//     : hdf5::Group{id},
+//       _configuration(attributes()),
+//       _domain(this->id()),
+//       _properties(this->id())
+// 
+// {
+// }
 
 
 // PropertySet::PropertySet(
@@ -163,16 +163,16 @@ PropertySet::PropertySet(
 // }
 
 
-// PropertySet::PropertySet(
-//     hdf5::Group&& group)
-// 
-//     : hdf5::Group(std::forward<hdf5::Group>(group)),
-//       _configuration(attributes()),
-//       _domain(id()),
-//       _properties(id())
-// 
-// {
-// }
+PropertySet::PropertySet(
+    hdf5::Group&& group)
+
+    : hdf5::Group(std::forward<hdf5::Group>(group)),
+      _configuration{attributes()},
+      _domain{*this},
+      _properties{*this}
+
+{
+}
 
 
 PropertySet::Configuration const& PropertySet::configuration() const
@@ -250,14 +250,14 @@ PropertySet create_property_set(
     PropertySet::Configuration const& configuration,
     Domain::Configuration const& domain_configuration)
 {
-    auto property_set_group = hdf5::create_group(group.id(), name);
+    auto property_set_group = hdf5::create_group(group, name);
 
     configuration.save(property_set_group.attributes());
-    create_properties(property_set_group.id());
+    create_properties(property_set_group);
 
-    create_domain(property_set_group.id(), domain_configuration);
+    create_domain(property_set_group, domain_configuration);
 
-    return PropertySet{property_set_group.id()};
+    return PropertySet{std::move(property_set_group)};
 }
 
 
@@ -340,4 +340,4 @@ PropertySet create_property_set(
 }
 */
 
-} // namespace lue
+}  // namespace lue

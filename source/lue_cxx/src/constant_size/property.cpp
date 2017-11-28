@@ -5,22 +5,22 @@ namespace lue {
 namespace constant_size {
 
 Property::Property(
-    hdf5::Identifier const& id)
+    hdf5::Group&& group)
 
-    : lue::Property{id}
+    : lue::Property{std::forward<hdf5::Group>(group)}
 
 {
 }
 
 
 Property create_property(
-    hdf5::Group& group,
+    hdf5::Group& parent,
     std::string const& name,
     Property::Configuration const& configuration)
 {
-    auto property = lue::create_property(group, name, configuration);
+    auto property = lue::create_property(parent, name, configuration);
 
-    return Property(property.id());
+    return Property{std::move(property)};
 }
 
 }  // namespace constant_size

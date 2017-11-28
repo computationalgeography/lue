@@ -5,9 +5,9 @@ namespace lue {
 namespace constant_size {
 
 Domain::Domain(
-    hdf5::Identifier const& location)
+    hdf5::Group const& parent)
 
-    : lue::Domain(location)
+    : lue::Domain(parent)
 
 {
 }

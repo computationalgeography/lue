@@ -15,25 +15,25 @@ class Properties:
 
 public:
 
-                   Properties        (hdf5::Identifier const& location);
+                   Properties        (hdf5::Group const& parent);
 
                    Properties        (Collection<Property>&& collection);
 
-                   Properties        (Properties const& other)=delete;
+                   Properties        (Properties const&)=delete;
 
-                   Properties        (Properties&& other)=default;
+                   Properties        (Properties&&)=default;
 
                    ~Properties       ()=default;
 
-    Properties&    operator=         (Properties const& other)=delete;
+    Properties&    operator=         (Properties const&)=delete;
 
-    Properties&    operator=         (Properties&& other)=default;
+    Properties&    operator=         (Properties&&)=default;
 
 private:
 
 };
 
 
-Properties         create_properties   (hdf5::Identifier const& location);
+Properties         create_properties   (hdf5::Group const& group);
 
 } // namespace lue

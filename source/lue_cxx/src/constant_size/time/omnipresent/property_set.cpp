@@ -14,7 +14,7 @@ PropertySet::PropertySet(
     hdf5::Identifier const& id)
 
     : constant_size::PropertySet(id),
-      _domain{this->id()}
+      _domain{*this}
 
 {
 }

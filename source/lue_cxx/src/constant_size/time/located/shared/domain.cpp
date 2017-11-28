@@ -8,9 +8,9 @@ namespace located {
 namespace shared {
 
 Domain::Domain(
-    hdf5::Identifier const& location)
+    hdf5::Group const& parent)
 
-    : located::Domain(location)
+    : located::Domain(parent)
 
 {
 }

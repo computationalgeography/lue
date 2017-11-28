@@ -19,25 +19,25 @@ class Value:
 
 public:
 
-                   Value               (hdf5::Identifier const& location,
+                   Value               (hdf5::Group const& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& memory_datatype);
 
                    Value               (hdf5::Dataset&& dataset,
                                         hdf5::Datatype const& memory_datatype);
 
-                   Value               (Value const& other)=delete;
+                   Value               (Value const&)=delete;
 
-                   Value               (Value&& other)=default;
+                   Value               (Value&&)=default;
 
                    ~Value              ()=default;
 
-    Value&         operator=           (Value const& other)=delete;
+    Value&         operator=           (Value const&)=delete;
 
-    Value&         operator=           (Value&& other)=default;
+    Value&         operator=           (Value&&)=default;
 
-    void           reserve             (hsize_t const nr_time_domain_items,
-                                        hsize_t const nr_items);
+    void           reserve             (hsize_t nr_time_domain_items,
+                                        hsize_t nr_items);
 
     hsize_t        nr_items            () const final;
 
@@ -48,12 +48,12 @@ private:
 };
 
 
-Value              create_value        (hdf5::Group const& group,
+Value              create_value        (hdf5::Group const& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& file_datatype,
                                         hdf5::Datatype const& memory_datatype);
 
-Value              create_value        (hdf5::Group const& group,
+Value              create_value        (hdf5::Group const& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& file_datatype,
                                         hdf5::Datatype const& memory_datatype,

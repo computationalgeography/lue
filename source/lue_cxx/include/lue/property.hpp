@@ -46,35 +46,27 @@ public:
     };
 
 
-                   Property            (hdf5::Identifier const& id);
-
-                   Property            (hdf5::Identifier const& location,
+                   Property            (hdf5::Group const& parent,
                                         std::string const& name);
 
-                   // Property            (hdf5::Group&& group);
+                   Property            (hdf5::Group&& group);
 
-                   Property            (Property const& other)=default;
+                   Property            (Property const&)=delete;
 
-                   Property            (Property&& other)=default;
+                   Property            (Property&&)=default;
 
                    ~Property           ()=default;
 
-    Property&      operator=           (Property const& other)=default;
+    Property&      operator=           (Property const&)=delete;
 
-    Property&      operator=           (Property&& other)=default;
+    Property&      operator=           (Property&&)=default;
 
     Configuration const&
                    configuration       () const;
 
-    // void           discretize_time     (Property const& property);
-
     void           discretize_space    (Property const& property);
 
-    // bool           time_is_discretized () const;
-
     bool           space_is_discretized() const;
-
-    // Property       time_discretization () const;
 
     Property       space_discretization() const;
 
@@ -85,11 +77,9 @@ private:
 };
 
 
-Property           create_property     (hdf5::Group& group,
+Property           create_property     (hdf5::Group const& group,
                                         std::string const& name,
                                         Property::Configuration const&
                                             configuration);
-                                        // hdf5::Datatype const& file_datatype,
-                                        // hdf5::Datatype const& memory_datatype);
 
 }  // namespace lue

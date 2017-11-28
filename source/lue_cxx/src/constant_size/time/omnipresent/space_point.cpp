@@ -9,10 +9,10 @@ namespace time {
 namespace omnipresent {
 
 SpacePoint::SpacePoint(
-    hdf5::Identifier const& location,
+    hdf5::Group const& parent,
     hdf5::Datatype const memory_datatype)
 
-    : same_shape::Value(location, coordinates_tag, memory_datatype)
+    : same_shape::Value{parent, coordinates_tag, memory_datatype}
 
 {
 }
@@ -21,7 +21,7 @@ SpacePoint::SpacePoint(
 SpacePoint::SpacePoint(
     same_shape::Value&& value)
 
-    : same_shape::Value(std::forward<same_shape::Value>(value))
+    : same_shape::Value{std::forward<same_shape::Value>(value)}
 
 {
 }
@@ -34,7 +34,7 @@ SpacePoint::SpacePoint(
     @exception  .
 */
 SpacePoint create_space_point(
-    hdf5::Group const& group,
+    hdf5::Group const& parent,
     hdf5::Datatype const& file_datatype,
     hdf5::Datatype const& memory_datatype,
     size_t const rank)
@@ -42,7 +42,7 @@ SpacePoint create_space_point(
     // A point is defined by the coordinates along each dimension
     hdf5::Shape value_shape = { rank };
 
-    auto value = same_shape::create_value(group, coordinates_tag,
+    auto value = same_shape::create_value(parent, coordinates_tag,
         file_datatype, memory_datatype, value_shape);
 
     return SpacePoint(std::move(value));

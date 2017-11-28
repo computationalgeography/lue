@@ -2,6 +2,7 @@
 #include "lue/hdf5/configure.hpp"
 #include "lue/hdf5/dataspace.hpp"
 #include "lue/hdf5/datatype.hpp"
+#include "lue/hdf5/group.hpp"
 #include "lue/hdf5/hyperslab.hpp"
 #include "lue/hdf5/property_list.hpp"
 
@@ -48,7 +49,7 @@ public:
     };
 
 
-                   Dataset             (Identifier const& location,
+                   Dataset             (Group const& parent,
                                         std::string const& name);
 
     explicit       Dataset             (Identifier&& id);

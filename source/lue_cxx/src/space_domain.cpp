@@ -114,9 +114,9 @@ void SpaceDomain::Configuration::load(
 
 
 SpaceDomain::SpaceDomain(
-    hdf5::Group const& group)
+    hdf5::Group const& parent)
 
-    : hdf5::Group(group.id(), space_domain_tag),
+    : hdf5::Group(parent, space_domain_tag),
       _configuration(attributes())
 
 {
@@ -149,21 +149,21 @@ SpaceDomain::Configuration const& SpaceDomain::configuration() const
 
 
 SpaceDomain create_space_domain(
-    hdf5::Group const& group,
+    hdf5::Group const& parent,
     SpaceDomain::Configuration const& configuration)
 {
-    auto domain = hdf5::create_group(group, space_domain_tag);
+    auto group = hdf5::create_group(parent, space_domain_tag);
 
-    configuration.save(domain.attributes());
+    configuration.save(group.attributes());
 
-    return std::move(domain);
+    return SpaceDomain{std::move(group)};
 }
 
 
 bool space_domain_exists(
-    hdf5::Group const& group)
+    hdf5::Group const& parent)
 {
-    return group.contains_group(space_domain_tag);
+    return parent.contains_group(space_domain_tag);
 }
 
 }  // namespace lue

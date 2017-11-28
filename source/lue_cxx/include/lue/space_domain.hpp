@@ -64,19 +64,19 @@ public:
     };
 
 
-                   SpaceDomain         (hdf5::Group const& group);
+                   SpaceDomain         (hdf5::Group const& parent);
 
                    SpaceDomain         (hdf5::Group&& group);
 
-                   SpaceDomain         (SpaceDomain const& other)=delete;
+                   SpaceDomain         (SpaceDomain const&)=delete;
 
-                   SpaceDomain         (SpaceDomain&& other)=default;
+                   SpaceDomain         (SpaceDomain&&)=default;
 
                    ~SpaceDomain        ()=default;
 
-    SpaceDomain&   operator=           (SpaceDomain const& other)=delete;
+    SpaceDomain&   operator=           (SpaceDomain const&)=delete;
 
-    SpaceDomain&   operator=           (SpaceDomain&& other)=default;
+    SpaceDomain&   operator=           (SpaceDomain&&)=default;
 
     Configuration const&
                    configuration       () const;
@@ -88,10 +88,10 @@ private:
 };
 
 
-SpaceDomain        create_space_domain (hdf5::Group const& group,
+SpaceDomain        create_space_domain (hdf5::Group const& parent,
                                         SpaceDomain::Configuration const&
                                             configuration);
 
-bool               space_domain_exists (hdf5::Group const& group);
+bool               space_domain_exists (hdf5::Group const& parent);
 
 }  // namespace lue

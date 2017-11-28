@@ -96,7 +96,8 @@ Raster::Raster(
 
     : _property_set(id),
       _discretization_property(
-          _property_set.properties()[discretization_property_name].id(),
+          hdf5::Group{
+              _property_set.properties()[discretization_property_name].id()},
           hdf5::Datatype{H5T_NATIVE_HSIZE}),
       _discretization(),
       _domain()
@@ -115,9 +116,10 @@ Raster::Raster(
             dataset
                 .phenomena()[phenomenon_name]
                     .property_sets()[property_set_name].id()),
-      _discretization_property(
-          _property_set.properties()[discretization_property_name].id(),
-          hdf5::Datatype{H5T_NATIVE_HSIZE}),
+      _discretization_property{
+          hdf5::Group{
+            _property_set.properties()[discretization_property_name].id()},
+          hdf5::Datatype{H5T_NATIVE_HSIZE}},
       _discretization(),
       _domain()
 
@@ -193,7 +195,7 @@ Raster::Band Raster::band(
 {
     return Band(
         omnipresent::different_shape::Property{
-            _property_set.properties()[name].id()});
+            hdf5::Group{_property_set.properties()[name].id()}});
 }
 
 

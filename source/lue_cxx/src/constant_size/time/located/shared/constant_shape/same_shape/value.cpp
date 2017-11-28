@@ -12,11 +12,11 @@ namespace constant_shape {
 namespace same_shape {
 
 Value::Value(
-    hdf5::Identifier const& location,
+    hdf5::Group const& parent,
     std::string const& name,
     hdf5::Datatype const& memory_datatype)
 
-    : Array(location, name, memory_datatype),
+    : Array(parent, name, memory_datatype),
       constant_size::Value()
 
 {
@@ -64,18 +64,18 @@ hdf5::Shape Value::value_shape() const
 
 
 Value create_value(
-    hdf5::Group const& group,
+    hdf5::Group const& parent,
     std::string const& name,
     hdf5::Datatype const& file_datatype,
     hdf5::Datatype const& memory_datatype)
 {
-    return create_value(group, name, file_datatype, memory_datatype,
+    return create_value(parent, name, file_datatype, memory_datatype,
         hdf5::Shape{});
 }
 
 
 Value create_value(
-    hdf5::Group const& group,
+    hdf5::Group const& parent,
     std::string const& name,
     hdf5::Datatype const& file_datatype,
     hdf5::Datatype const& memory_datatype,
@@ -97,7 +97,7 @@ Value create_value(
     creation_property_list.set_chunk(chunk_dimension_sizes);
 
     auto dataset = hdf5::create_dataset(
-        group.id(), name, file_datatype, dataspace, creation_property_list);
+        parent.id(), name, file_datatype, dataspace, creation_property_list);
 
     return Value(std::move(dataset), memory_datatype);
 }

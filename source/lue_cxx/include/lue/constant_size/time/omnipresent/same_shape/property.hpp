@@ -15,9 +15,9 @@ class Property:
 
 public:
 
-    static hdf5::Datatype file_datatype(hdf5::Identifier const& id);
+    static hdf5::Datatype file_datatype(hdf5::Group const& parent);
 
-                   Property            (hdf5::Identifier const& id,
+                   Property            (hdf5::Group&& group,
                                         hdf5::Datatype const& memory_datatype);
 
                    Property            (Property const& other)=delete;

@@ -7,9 +7,9 @@ namespace time {
 namespace located {
 
 TimeDomain::TimeDomain(
-    hdf5::Identifier const& id)
+    hdf5::Group const& parent)
 
-    : lue::TimeDomain{id}
+    : lue::TimeDomain{parent}
 
 {
 }
@@ -25,10 +25,10 @@ TimeDomain::TimeDomain(
 
 
 TimeDomain create_time_domain(
-    hdf5::Group const& group,
+    hdf5::Group const& parent,
     TimeDomain::Configuration const& configuration)
 {
-    auto domain = lue::create_time_domain(group, configuration);
+    auto domain = lue::create_time_domain(parent, configuration);
 
     return std::move(domain);
 }

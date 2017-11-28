@@ -26,18 +26,16 @@ py::object cast_to_specialized_property(
     switch(configuration.shape_per_item_type()) {
         case ShapePerItemType::same: {
             auto file_datatype =
-                same_shape::Property::file_datatype(
-                    property.id());
+                same_shape::Property::file_datatype(property);
             object = py::cast(new same_shape::Property(
-                property.id(), memory_datatype(file_datatype)));
+                hdf5::Group{property.id()}, memory_datatype(file_datatype)));
             break;
         }
         case ShapePerItemType::different: {
             auto file_datatype =
-                different_shape::Property::file_datatype(
-                    property.id());
+                different_shape::Property::file_datatype(property);
             object = py::cast(new different_shape::Property(
-                property.id(), memory_datatype(file_datatype)));
+                hdf5::Group{property.id()}, memory_datatype(file_datatype)));
             break;
         }
     }
@@ -61,7 +59,7 @@ void init_property_class(
                 Property& self)
             {
                 return cast_to_specialized_property(
-                    self.space_discretization().id());
+                    omnipresent::Property{self.space_discretization()});
             },
             "space_discretization docstring...")
 

@@ -61,15 +61,15 @@ void Dataset::TransferPropertyList::set_transfer_mode(
                 located at @a location cannot be opened
 */
 Dataset::Dataset(
-    Identifier const& location,
+    Group const& parent,
     std::string const& name)
 
-    : _id(::H5Dopen(location, name.c_str(), H5P_DEFAULT), ::H5Dclose)
+    : _id{::H5Dopen(parent.id(), name.c_str(), H5P_DEFAULT), ::H5Dclose}
 
 {
     if(!_id.is_valid()) {
         throw std::runtime_error("Cannot open dataset " + name + " at " +
-            location.pathname());
+            parent.id().pathname());
     }
 
     assert(_id.is_valid());

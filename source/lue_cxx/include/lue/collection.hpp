@@ -10,10 +10,6 @@
 
 namespace lue {
 
-// bool               collection_exists   (hdf5::Identifier const& location,
-//                                         std::string const& name);
-
-
 /*!
     @brief      A collection of HDF5 objects
     @sa         create_collection(hdf5::Identifier const&, std::string const&)
@@ -29,6 +25,21 @@ class Collection:
 
 public:
 
+                   Collection          (hdf5::Group const& parent,
+                                        std::string const& name);
+
+                   Collection          (Group&& group);
+
+                   Collection          (Collection const&)=delete;
+
+                   Collection          (Collection&&)=default;
+
+                   ~Collection         ()=default;
+
+    Collection&    operator=           (Collection const&)=delete;
+
+    Collection&    operator=           (Collection&&)=default;
+
     bool           empty               () const;
 
     size_t         size                () const;
@@ -40,31 +51,10 @@ public:
 
     T&             operator[]          (std::string const& name) const;
 
-                   Collection          (Group&& group);
-
-                   Collection          (Collection&& other)=default;
-
-                   ~Collection         ()=default;
-
     T&             add                 (std::string const& name,
                                         T&& item);
 
-protected:
-
-                   Collection          (hdf5::Identifier const& location,
-                                        std::string const& name);
-
-                   Collection          (hdf5::Identifier&& id);
-
-                   Collection          (Collection const& other)=delete;
-
-    Collection&    operator=           (Collection const& other)=delete;
-
-    Collection&    operator=           (Collection&& other)=default;
-
 private:
-
-    // std::string const& _name;
 
     std::vector<std::string>
                    item_names          () const;
@@ -74,13 +64,9 @@ private:
 };
 
 
-// std::vector<std::string>
-//                    item_names          (hdf5::Identifier const& location);
-
 template<
     typename T>
-Collection<T>      create_collection   (hdf5::Identifier const& location,
-                                        std::string const& name);
+Collection<T>      create_collection   (hdf5::Group const& group);
 
 
 /*!
@@ -91,11 +77,10 @@ Collection<T>      create_collection   (hdf5::Identifier const& location,
 template<
     typename T>
 inline Collection<T>::Collection(
-    hdf5::Identifier const& location,
+    hdf5::Group const& parent,
     std::string const& name)
 
-    : hdf5::Group(location, name.c_str()),
-      // _name(name),
+    : hdf5::Group(parent, name),
       _items{}
 
 {
@@ -105,25 +90,7 @@ inline Collection<T>::Collection(
 
     // Open items, if available.
     for(auto const& name: item_names()) {
-        _items.insert(std::make_pair(name, std::make_unique<T>(id(), name)));
-    }
-}
-
-
-template<
-    typename T>
-inline Collection<T>::Collection(
-    hdf5::Identifier&& id)
-
-    : hdf5::Group(std::forward<hdf5::Identifier>(id)),
-      // _name(name),
-      _items{}
-
-{
-    // Open items, if available.
-    for(auto const& name: item_names()) {
-        _items.insert(std::make_pair(name, std::make_unique<T>(this->id(),
-            name)));
+        _items.insert(std::make_pair(name, std::make_unique<T>(*this, name)));
     }
 }
 
@@ -139,8 +106,7 @@ inline Collection<T>::Collection(
 {
     // Open items, if available.
     for(auto const& name: item_names()) {
-        _items.insert(std::make_pair(name, std::make_unique<T>(this->id(),
-            name)));
+        _items.insert(std::make_pair(name, std::make_unique<T>(*this, name)));
     }
 }
 
@@ -247,10 +213,10 @@ inline std::vector<std::string> Collection<T>::item_names() const
 template<
     typename T>
 Collection<T> create_collection(
-    hdf5::Identifier const& location,
+    hdf5::Group const& group,
     std::string const& name)
 {
-    return hdf5::create_group(location, name);
+    return hdf5::create_group(group, name);
 }
 
 } // namespace lue

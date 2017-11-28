@@ -66,10 +66,11 @@ TimeSeries::TimeSeries(
     std::string const& property_set_name,
     std::string const& property_name)
 
-    : _phenomenon{phenomenon_id},
-      _property_set{_phenomenon.property_sets()[property_set_name].id()},
+    : _phenomenon{hdf5::Group{phenomenon_id}},
+      _property_set{
+          hdf5::Group{_phenomenon.property_sets()[property_set_name].id()}},
       _value_property{
-          _property_set.properties()[property_name].id(),
+          hdf5::Group{_property_set.properties()[property_name].id()},
           hdf5::Datatype{H5T_NATIVE_DOUBLE}},
       _time_domain{},
       _space_domain{},
@@ -88,7 +89,7 @@ TimeSeries::TimeSeries(
 
     // Space point domain
     {
-        auto const& property_set = 
+        auto const& property_set =
             _phenomenon.property_sets()[space_point_property_set_name];
         omnipresent::SpacePointDomain space_point_domain{
             property_set.domain(),
@@ -106,7 +107,7 @@ TimeSeries::TimeSeries(
         assert(_value_property.time_is_discretized());
         // This property is linked from the value property
         auto discretization_property = omnipresent::same_shape::Property{
-            _value_property.time_discretization().id(),
+            hdf5::Group{_value_property.time_discretization().id()},
             hdf5::Datatype{hdf5::NativeDatatypeTraits<hsize_t>::type_id()}
         };
         assert(discretization_property.values().nr_items() == 1);

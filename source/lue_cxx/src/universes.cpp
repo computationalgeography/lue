@@ -4,31 +4,15 @@
 
 namespace lue {
 
-// bool universes_exists(
-//     hdf5::Identifier const& location)
-// {
-//     return collection_exists(location, universes_tag);
-// }
-
-
 /*!
     @brief      Constructor
-    @param      location Identifier of group of group to open
+    @param      parent Parent group of group to open
     @exception  std::runtime_error In case the group cannot be opened
 */
 Universes::Universes(
-    hdf5::Identifier const& location)
+    hdf5::Group const& parent)
 
-    : Collection(location, universes_tag)
-
-{
-}
-
-
-Universes::Universes(
-    hdf5::Identifier&& id)
-
-    : Collection(std::forward<hdf5::Identifier>(id))
+    : Collection(parent, universes_tag)
 
 {
 }
@@ -51,21 +35,21 @@ Universes::Universes(
 Universe& Universes::add(
     std::string const& name)
 {
-    return Collection::add(name, create_universe(id(), name));
+    return Collection::add(name, create_universe(*this, name));
 }
 
 
 /*!
     @brief      Return new Universes instance
-    @param      location Identifier of group of group to create
+    @param      group Group to create collection in
     @exception  std::runtime_error In case a universes group already exists
     @exception  std::runtime_error In case a universes group cannot
                 be created
 */
 Universes create_universes(
-    hdf5::Identifier const& location)
+    hdf5::Group const& group)
 {
-    return create_collection<Universe>(location, universes_tag);
+    return create_collection<Universe>(group, universes_tag);
 }
 
 } // namespace lue

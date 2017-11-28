@@ -18,30 +18,25 @@ class Property:
 
 public:
 
-    static hdf5::Datatype file_datatype(hdf5::Identifier const& id);
+    static hdf5::Datatype file_datatype(hdf5::Group const& parent);
 
-                   Property            (hdf5::Identifier const& id);
+                   Property            (hdf5::Group&& parent);
 
-                   Property            (hdf5::Identifier const& id,
+                   Property            (hdf5::Group&& parent,
                                         hdf5::Datatype const& memory_datatype);
 
                    Property            (constant_shape::Property&& property,
                                         hdf5::Datatype const& memory_datatype);
 
-                   // Property            (lue::Property const& property);
+                   Property            (Property const&)=delete;
 
-                   // Property            (lue::Property const& property,
-                   //                      hdf5::Datatype const& memory_datatype);
-
-                   Property            (Property const& other)=delete;
-
-                   Property            (Property&& other)=default;
+                   Property            (Property&&)=default;
 
                    ~Property           ()=default;
 
-    Property&      operator=           (Property const& other)=delete;
+    Property&      operator=           (Property const&)=delete;
 
-    Property&      operator=           (Property&& other)=default;
+    Property&      operator=           (Property&&)=default;
 
     different_shape::Value const&
                    values              () const;

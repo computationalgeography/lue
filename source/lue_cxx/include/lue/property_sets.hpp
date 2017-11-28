@@ -5,12 +5,9 @@
 
 namespace lue {
 
-// bool               property_sets_exists(hdf5::Identifier const& location);
-
-
 /*!
     @brief      TODO
-    @sa         create_property_sets(hdf5::Identifier const&)
+    @sa         create_property_sets(hdf5::Group const&)
 */
 class PropertySets:
     public Collection<PropertySet>
@@ -18,33 +15,27 @@ class PropertySets:
 
 public:
 
-                   PropertySets        (hdf5::Identifier const& location);
+                   PropertySets        (hdf5::Group const& parent);
 
                    PropertySets        (Collection<PropertySet>&& collection);
 
-                   PropertySets        (PropertySets const& other)=delete;
+                   PropertySets        (PropertySets const&)=delete;
 
-                   PropertySets        (PropertySets&& other)=default;
+                   PropertySets        (PropertySets&&)=default;
 
                    ~PropertySets       ()=default;
 
-    PropertySets&  operator=           (PropertySets const& other)=delete;
+    PropertySets&  operator=           (PropertySets const&)=delete;
 
-    PropertySets&  operator=           (PropertySets&& other)=default;
+    PropertySets&  operator=           (PropertySets&&)=default;
 
     // PropertySet&   add                 (std::string const& name);
-
-    // PropertySet&   add                 (std::string const& name,
-    //                                     PropertySetConfiguration const&
-    //                                         configuration,
-    //                                     DomainConfiguration const&
-    //                                         domain_configuration);
 
 private:
 
 };
 
 
-PropertySets       create_property_sets(hdf5::Identifier const& location);
+PropertySets       create_property_sets(hdf5::Group const& group);
 
 } // namespace lue

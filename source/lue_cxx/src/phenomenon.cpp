@@ -3,50 +3,18 @@
 
 namespace lue {
 
-// bool phenomenon_exists(
-//     hdf5::Identifier const& location,
-//     std::string const& name)
-// {
-//     return ::phenomenon_exists(location, name.c_str()) > 0;
-// }
-
-
-Phenomenon::Phenomenon(
-    hdf5::Identifier const& id)
-
-    : hdf5::Group{id},
-      _property_sets{this->id()}
-
-{
-}
-
-
 /*!
     @brief      Construct an instance
-    @param      location Location of group of phenomenon to open
+    @param      parent Parent group of phenomenon to open
     @param      name Name of instance to open
     @exception  std::runtime_error In case the phenomenon cannot be opened
 */
 Phenomenon::Phenomenon(
-    hdf5::Identifier const& location,
+    hdf5::Group const& parent,
     std::string const& name)
 
-    : hdf5::Group(location, name.c_str()),
-      _property_sets(id())
-
-{
-}
-
-
-/*!
-    @brief      Construct an instance
-    @param      location Location of open phenomenon
-*/
-Phenomenon::Phenomenon(
-    hdf5::Identifier&& location)
-
-    : hdf5::Group(std::forward<hdf5::Identifier>(location)),
-      _property_sets(id())
+    : hdf5::Group(parent, name),
+      _property_sets{*this}
 
 {
 }
@@ -56,26 +24,10 @@ Phenomenon::Phenomenon(
     hdf5::Group&& group)
 
     : hdf5::Group{std::forward<hdf5::Group>(group)},
-      _property_sets{id()}
+      _property_sets{*this}
 
 {
 }
-
-
-// PropertySet& Phenomenon::add_property_set(
-//     std::string const& name)
-// {
-//     return _property_sets.add(name);
-// }
-
-
-// PropertySet& Phenomenon::add_property_set(
-//     std::string const& name,
-//     PropertySetConfiguration const& configuration,
-//     DomainConfiguration const& domain_configuration)
-// {
-//     return _property_sets.add(name, configuration, domain_configuration);
-// }
 
 
 /*!
@@ -107,14 +59,14 @@ PropertySets& Phenomenon::property_sets()
                 created
 */
 Phenomenon create_phenomenon(
-    hdf5::Identifier const& location,
+    hdf5::Group const& parent,
     std::string const& name)
 {
-    auto phenomenon_group = hdf5::create_group(location, name);
+    auto group = hdf5::create_group(parent, name);
 
-    create_property_sets(phenomenon_group.id());
+    create_property_sets(group);
 
-    return Phenomenon{std::move(phenomenon_group)};
+    return Phenomenon{std::move(group)};
 }
 
 } // namespace lue

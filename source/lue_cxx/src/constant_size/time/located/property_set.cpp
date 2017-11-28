@@ -7,9 +7,9 @@ namespace time {
 namespace located {
 
 PropertySet::PropertySet(
-    hdf5::Identifier const& id)
+    hdf5::Group&& group)
 
-    : constant_size::PropertySet(id)
+    : constant_size::PropertySet(std::forward<hdf5::Group>(group))
       // _domain{this->id()}
 
 {
@@ -28,10 +28,10 @@ PropertySet::PropertySet(
 
 
 PropertySet create_property_set(
-    hdf5::Group& group,
+    hdf5::Group& parent,
     std::string const& name)
 {
-    auto property_set = constant_size::create_property_set(group, name,
+    auto property_set = constant_size::create_property_set(parent, name,
         Domain::Configuration(
             Domain::Configuration::DomainType::located)
     );
@@ -41,11 +41,11 @@ PropertySet create_property_set(
 
 
 PropertySet create_property_set(
-    hdf5::Group& group,
+    hdf5::Group& parent,
     std::string const& name,
     omnipresent::same_shape::Value const& ids)
 {
-    auto property_set = constant_size::create_property_set(group, name, ids,
+    auto property_set = constant_size::create_property_set(parent, name, ids,
         Domain::Configuration(
             Domain::Configuration::DomainType::located)
     );

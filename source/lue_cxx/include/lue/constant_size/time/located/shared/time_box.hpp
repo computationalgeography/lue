@@ -24,7 +24,7 @@ class TimeBox:
 
 public:
 
-                   TimeBox             (hdf5::Identifier const& location,
+                   TimeBox             (hdf5::Group const& parent,
                                         hdf5::Datatype const memory_datatype);
 
                    TimeBox             (omnipresent::same_shape::Value&&
@@ -45,7 +45,7 @@ private:
 };
 
 
-TimeBox            create_time_box     (hdf5::Group const& group,
+TimeBox            create_time_box     (hdf5::Group const& parent,
                                         hdf5::Datatype const& file_datatype,
                                         hdf5::Datatype const& memory_datatype);
 

@@ -14,22 +14,22 @@ class Array:
 
 public:
 
-                   Array               (hdf5::Dataset&& dataset,
-                                        hdf5::Datatype const& memory_datatype);
-
-                   Array               (hdf5::Identifier const& location,
+                   Array               (hdf5::Group const& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& memory_datatype);
 
-                   Array               (Array const& other)=delete;
+                   Array               (hdf5::Dataset&& dataset,
+                                        hdf5::Datatype const& memory_datatype);
 
-                   Array               (Array&& other)=default;
+                   Array               (Array const&)=delete;
+
+                   Array               (Array&&)=default;
 
                    ~Array              ()=default;
 
-    Array&         operator=           (Array const& other)=delete;
+    Array&         operator=           (Array const&)=delete;
 
-    Array&         operator=           (Array&& other)=default;
+    Array&         operator=           (Array&&)=default;
 
     hdf5::Datatype const&
                    memory_datatype     () const;
@@ -63,13 +63,5 @@ private:
     hdf5::Datatype _memory_datatype;
 
 };
-
-
-// Array              open_array          (hdf5::Identifier const& location,
-//                                         std::string const& name);
-// 
-// Array              open_array          (hdf5::Identifier const& location,
-//                                         std::string const& name,
-//                                         hid_t const memory_datatype);
 
 } // namespace lue

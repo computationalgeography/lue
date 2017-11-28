@@ -20,21 +20,17 @@ public:
 
                    TimeBoxDomain       (TimeDomain const& time_domain);
 
-                   // TimeBoxDomain       (TimeDomain const& time_domain,
-                   //                      hdf5::Datatype const& memory_datatype);
-
                    TimeBoxDomain       (TimeDomain&& time_domain);
-                                        // hdf5::Datatype const& memory_datatype);
 
-                   TimeBoxDomain       (TimeBoxDomain const& other)=delete;
+                   TimeBoxDomain       (TimeBoxDomain const&)=delete;
 
-                   TimeBoxDomain       (TimeBoxDomain&& other)=default;
+                   TimeBoxDomain       (TimeBoxDomain&&)=default;
 
                    ~TimeBoxDomain      ()=default;
 
-    TimeBoxDomain& operator=           (TimeBoxDomain const& other)=delete;
+    TimeBoxDomain& operator=           (TimeBoxDomain const&)=delete;
 
-    TimeBoxDomain& operator=           (TimeBoxDomain&& other)=default;
+    TimeBoxDomain& operator=           (TimeBoxDomain&&)=default;
 
     TimeBox const& items               () const;
 

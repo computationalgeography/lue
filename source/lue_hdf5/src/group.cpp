@@ -1,4 +1,5 @@
 #include "lue/hdf5/group.hpp"
+#include "lue/hdf5/dataset.hpp"
 #include "lue/hdf5/link.hpp"
 #include <cstring>
 #include <cstdlib>
@@ -205,25 +206,22 @@ bool group_exists(
 
 
 /*!
-    @brief      Construct a group based on a @a location and a @a name
-    @param      location Location of group to open
+    @brief      Open group @a name in @a parent
+    @param      parent Parent group of group to open
     @param      name Name of group to open
     @exception  std::runtime_error In case the group cannot be opened
-
-    The @a location passed in represents the object in which group @a name
-    is located.
 */
 Group::Group(
-    Identifier const& location,
+    Group const& parent,
     std::string const& name)
 
-    : _id(::H5Gopen(location, name.c_str(), H5P_DEFAULT), ::H5Gclose),
-      _attributes(_id)
+    : _id(::H5Gopen(parent.id(), name.c_str(), H5P_DEFAULT), ::H5Gclose),
+      _attributes{_id}
 
 {
     if(!_id.is_valid()) {
         throw std::runtime_error(
-            "Cannot open group " + name + " in " + location.pathname());
+            "Cannot open group " + name + " in " + parent.id().pathname());
     }
 
     assert(_id.is_valid());
@@ -233,12 +231,15 @@ Group::Group(
 /*!
     @brief      Construct a group based on an identifier
     @param      id Identifier of group
+
+    The identifier passed in is the id of the group itself; no group
+    will be opened.
 */
 Group::Group(
     Identifier const& id)
 
     : _id{id},
-      _attributes(_id)
+      _attributes{_id}
 
 {
     assert(_id.is_valid());
@@ -253,7 +254,7 @@ Group::Group(
     Identifier&& id)
 
     : _id{std::forward<Identifier>(id)},
-      _attributes(_id)
+      _attributes{_id}
 
 {
     // assert(_id.is_valid());
@@ -471,33 +472,6 @@ bool Group::operator!=(
 
 
 /*!
-    @brief      Create a group named @a name within @a location
-    @param      location Location of object to create group in
-    @param      name Name of group to create
-    @exception  std::runtime_error In case such a group already exists
-    @exception  std::runtime_error In case such a group cannot be created
-*/
-Group create_group(
-    Identifier const& location,
-    std::string const& name)
-{
-    if(group_exists(location, name)) {
-        throw std::runtime_error("Group " + name + " already exists");
-    }
-
-    Identifier group_id(::H5Gcreate(location, name.c_str(), H5P_DEFAULT,
-        H5P_DEFAULT, H5P_DEFAULT), H5Gclose);
-
-    if(!group_id.is_valid()) {
-        throw std::runtime_error("Cannot create group " + name + " at " +
-            location.pathname());
-    }
-
-    return Group(std::move(group_id));
-}
-
-
-/*!
     @brief      Create a group named @a name within @a group
     @param      group Group to create group in
     @param      name Name of group to create
@@ -506,7 +480,19 @@ Group create_group(
     Group const& group,
     std::string const& name)
 {
-    return create_group(group.id(), name);
+    if(group_exists(group.id(), name)) {
+        throw std::runtime_error("Group " + name + " already exists");
+    }
+
+    Identifier group_id{::H5Gcreate(group.id(), name.c_str(), H5P_DEFAULT,
+        H5P_DEFAULT, H5P_DEFAULT), H5Gclose};
+
+    if(!group_id.is_valid()) {
+        throw std::runtime_error("Cannot create group " + name + " at " +
+            group.id().pathname());
+    }
+
+    return Group{std::move(group_id)};
 }
 
 } // namespace hdf5

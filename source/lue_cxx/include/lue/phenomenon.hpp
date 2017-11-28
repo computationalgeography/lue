@@ -4,10 +4,6 @@
 
 namespace lue {
 
-// bool               phenomenon_exists   (hdf5::Identifier const& location,
-//                                         std::string const& name);
-
-
 /*!
     @brief      TODO
     @sa         create_phenomenon(hdf5::Identifier const&, std::string const&)
@@ -18,32 +14,20 @@ class Phenomenon:
 
 public:
 
-                   Phenomenon          (hdf5::Identifier const& id);
-
-                   Phenomenon          (hdf5::Identifier const& location,
+                   Phenomenon          (hdf5::Group const& parent,
                                         std::string const& name);
-
-                   Phenomenon          (hdf5::Identifier&& location);
 
                    Phenomenon          (hdf5::Group&& group);
 
-                   Phenomenon          (Phenomenon const& other)=delete;
+                   Phenomenon          (Phenomenon const&)=delete;
 
-                   Phenomenon          (Phenomenon&& other)=default;
+                   Phenomenon          (Phenomenon&&)=default;
 
                    ~Phenomenon         ()=default;
 
-    Phenomenon&    operator=           (Phenomenon const& other)=delete;
+    Phenomenon&    operator=           (Phenomenon const&)=delete;
 
-    Phenomenon&    operator=           (Phenomenon&& other)=default;
-
-    // PropertySet&   add_property_set    (std::string const& name);
-
-    // PropertySet&   add_property_set    (std::string const& name,
-    //                                     PropertySetConfiguration const&
-    //                                         configuration,
-    //                                     DomainConfiguration const&
-    //                                         domain_configuration);
+    Phenomenon&    operator=           (Phenomenon&&)=default;
 
     PropertySets const& property_sets  () const;
 
@@ -56,7 +40,7 @@ private:
 };
 
 
-Phenomenon         create_phenomenon   (hdf5::Identifier const& location,
+Phenomenon         create_phenomenon   (hdf5::Group const& group,
                                         std::string const& name);
 
 } // namespace lue

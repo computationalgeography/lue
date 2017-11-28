@@ -122,13 +122,14 @@ RasterStack::RasterStack(
     // hdf5::Identifier const& time_discretization_property_id,
     // hdf5::Identifier const& space_discretization_property_id)
 
-    : _phenomenon{phenomenon_id},
-      _property_set{_phenomenon.property_sets()[property_set_name].id()},
+    : _phenomenon{hdf5::Group{phenomenon_id}},
+      _property_set{
+          hdf5::Group{_phenomenon.property_sets()[property_set_name].id()}},
       _time_discretization_property{
-          hdf5::Group{_property_set.id(), time_discretization_link_name}.id(),
+          hdf5::Group{_property_set, time_discretization_link_name},
           hdf5::Datatype{hdf5::NativeDatatypeTraits<hsize_t>::type_id()}},
       _space_discretization_property{
-          hdf5::Group{_property_set.id(), space_discretization_link_name}.id(),
+          hdf5::Group{_property_set, space_discretization_link_name},
           hdf5::Datatype{hdf5::NativeDatatypeTraits<hsize_t>::type_id()}},
       _domain{},
       _discretization{}
@@ -251,7 +252,7 @@ RasterStack::Band RasterStack::band(
     std::string const& name) const
 {
     return Band{shared::constant_shape::different_shape::Property{
-        _property_set.properties()[name].id()}};
+        hdf5::Group{_property_set.properties()[name].id()}}};
 }
 
 

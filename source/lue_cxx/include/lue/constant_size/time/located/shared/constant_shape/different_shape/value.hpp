@@ -23,25 +23,25 @@ class Value:
 
 public:
 
-                   Value               (hdf5::Identifier const& location,
+                   Value               (hdf5::Group const& parent,
                                         std::string const& name);
 
-                   Value               (hdf5::Identifier const& location,
+                   Value               (hdf5::Group const& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& memory_datatype);
 
                    Value               (hdf5::Group&& group,
                                         hdf5::Datatype const& memory_datatype);
 
-                   Value               (Value const& other)=delete;
+                   Value               (Value const&)=delete;
 
-                   Value               (Value&& other)=default;
+                   Value               (Value&&)=default;
 
                    ~Value              ()=default;
 
-    Value&         operator=           (Value const& other)=delete;
+    Value&         operator=           (Value const&)=delete;
 
-    Value&         operator=           (Value&& other)=default;
+    Value&         operator=           (Value&&)=default;
 
     hsize_t        nr_items            () const final;
 
@@ -76,7 +76,7 @@ private:
 };
 
 
-Value              create_value        (hdf5::Identifier const& location,
+Value              create_value        (hdf5::Group const& group,
                                         std::string const& name,
                                         hdf5::Datatype const& file_datatype,
                                         hdf5::Datatype const& memory_datatype,

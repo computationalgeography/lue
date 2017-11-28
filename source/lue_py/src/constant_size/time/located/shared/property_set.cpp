@@ -17,7 +17,7 @@ namespace located {
 namespace shared {
 
 py::object cast_to_specialized_property(
-    Property const& property)
+    located::Property const& property)
 {
 
     auto& configuration = property.configuration();
@@ -32,10 +32,9 @@ py::object cast_to_specialized_property(
     switch(configuration.shape_per_item_type()) {
         case ShapePerItemType::same: {
             auto file_datatype =
-                constant_shape::same_shape::Property::file_datatype(
-                    property.id());
+                constant_shape::same_shape::Property::file_datatype(property);
             object = py::cast(new constant_shape::same_shape::Property(
-                property.id(), memory_datatype(file_datatype)));
+                hdf5::Group{property.id()}, memory_datatype(file_datatype)));
             break;
         }
         case ShapePerItemType::different: {
@@ -71,7 +70,8 @@ void init_property_set(
                 std::string const& name)
             {
                 return cast_to_specialized_property(
-                    Property(self.properties()[name].id()));
+                    located::Property{
+                        hdf5::Group{self.properties()[name].id()}});
             },
             "Return property\n"
             "\n"

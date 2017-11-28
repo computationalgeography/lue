@@ -19,26 +19,23 @@ class Property:
 
 public:
 
-    static hdf5::Datatype file_datatype(hdf5::Identifier const& id);
+    static hdf5::Datatype file_datatype(hdf5::Group const& parent);
 
-                   Property            (hdf5::Identifier const& id,
+                   Property            (hdf5::Group&& group,
                                         hdf5::Datatype const& memory_datatype);
 
                    Property            (constant_shape::Property&& property,
                                         hdf5::Datatype const& memory_datatype);
 
-    //                Property            (lue::Property const& property,
-    //                                     hdf5::Datatype const& memory_datatype);
+                   Property            (Property const&)=delete;
 
-                   Property            (Property const& other)=delete;
-
-                   Property            (Property&& other)=default;
+                   Property            (Property&&)=default;
 
                    ~Property           ()=default;
 
-    Property&      operator=           (Property const& other)=delete;
+    Property&      operator=           (Property const&)=delete;
 
-    Property&      operator=           (Property&& other)=default;
+    Property&      operator=           (Property&&)=default;
 
     same_shape::Value const&
                    values              () const;
@@ -47,8 +44,8 @@ public:
                    values              ();
 
     same_shape::Value&
-                   reserve             (hsize_t const nr_time_domain_items,
-                                        hsize_t const nr_items);
+                   reserve             (hsize_t nr_time_domain_items,
+                                        hsize_t nr_items);
 
 private:
 
@@ -74,9 +71,4 @@ Property           create_property     (shared::PropertySet& property_set,
 }  // namespace located
 }  // namespace time
 }  // namespace constant_size
-// Property           meh     (PropertySet& property_set,
-//                                         std::string const& name,
-//                                         hdf5::Datatype const& file_datatype,
-//                                         hdf5::Datatype const& memory_datatype);
-// 
 }  // namespace lue

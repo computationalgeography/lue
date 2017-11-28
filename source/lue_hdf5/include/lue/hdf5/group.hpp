@@ -1,6 +1,5 @@
 #pragma once
 #include "lue/hdf5/attributes.hpp"
-#include "lue/hdf5/dataset.hpp"
 #include <cassert>
 
 
@@ -19,7 +18,7 @@ class Group
 
 public:
 
-                   Group               (Identifier const& location,
+                   Group               (Group const& parent,
                                         std::string const& name);
 
     explicit       Group               (Identifier const& id);
@@ -94,8 +93,8 @@ inline T Group::attribute(
 }
 
 
-Group              create_group        (Identifier const& location,
-                                        std::string const& name);
+// Group              create_group        (Identifier const& location,
+//                                         std::string const& name);
 
 Group              create_group        (Group const& group,
                                         std::string const& name);

@@ -10,31 +10,30 @@ namespace omnipresent {
 namespace different_shape {
 
 hdf5::Datatype Property::file_datatype(
-    hdf5::Identifier const& id)
+    hdf5::Group const& parent)
 {
     return hdf5::decode_datatype(
-        hdf5::Group(id, value_tag).attributes()
+        hdf5::Group{parent, value_tag}.attributes()
             .read<std::vector<unsigned char>>(datatype_tag));
 }
 
 
 Property::Property(
-    hdf5::Identifier const& id)
+    hdf5::Group&& group)
 
-    : omnipresent::Property{id},
-      _values(
-          this->id(), value_tag, memory_datatype(file_datatype(this->id())))
+    : omnipresent::Property{std::forward<hdf5::Group>(group)},
+      _values{*this, value_tag, memory_datatype(file_datatype(*this))}
 
 {
 }
 
 
 Property::Property(
-    hdf5::Identifier const& id,
+    hdf5::Group&& group,
     hdf5::Datatype const& memory_datatype)
 
-    : omnipresent::Property{id},
-      _values(this->id(), value_tag, memory_datatype)
+    : omnipresent::Property{std::forward<hdf5::Group>(group)},
+      _values(*this, value_tag, memory_datatype)
 
 {
 }
@@ -84,12 +83,12 @@ Property create_property(
     Property::Configuration configuration(ShapePerItemType::different);
     auto& property = properties.add(name,
         omnipresent::create_property(properties, name, configuration));
-    auto value = create_value(property.id(), value_tag, file_datatype,
-        memory_datatype, rank);
+    auto value = create_value(
+        property, value_tag, file_datatype, memory_datatype, rank);
 
     assert(property.id().is_valid());
 
-    return Property{property.id(), memory_datatype};
+    return Property{hdf5::Group{property.id()}, memory_datatype};
 }
 
 }  // namespace different_shape

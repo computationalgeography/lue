@@ -11,19 +11,19 @@ class Domain:
 
 public:
 
-                   Domain              (hdf5::Identifier const& location);
+                   Domain              (hdf5::Group const& parent);
 
                    Domain              (lue::Domain&& group);
 
-                   Domain              (Domain const& other)=delete;
+                   Domain              (Domain const&)=delete;
 
-                   Domain              (Domain&& other)=default;
+                   Domain              (Domain&&)=default;
 
                    ~Domain             ()=default;
 
-    Domain&        operator=           (Domain const& other)=delete;
+    Domain&        operator=           (Domain const&)=delete;
 
-    Domain&        operator=           (Domain&& other)=default;
+    Domain&        operator=           (Domain&&)=default;
 
 };
 

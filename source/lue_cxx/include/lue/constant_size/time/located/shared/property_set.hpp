@@ -16,17 +16,17 @@ class PropertySet:
 
 public:
 
-                   PropertySet         (hdf5::Identifier const& id);
+                   PropertySet         (hdf5::Group&& group);
 
-                   PropertySet         (PropertySet const& other)=delete;
+                   PropertySet         (PropertySet const&)=delete;
 
-                   PropertySet         (PropertySet&& other)=default;
+                   PropertySet         (PropertySet&&)=default;
 
                    ~PropertySet        ()=default;
 
-    PropertySet&   operator=           (PropertySet const& other)=delete;
+    PropertySet&   operator=           (PropertySet const&)=delete;
 
-    PropertySet&   operator=           (PropertySet&& other)=default;
+    PropertySet&   operator=           (PropertySet&&)=default;
 
     Domain const&  domain              () const;
 

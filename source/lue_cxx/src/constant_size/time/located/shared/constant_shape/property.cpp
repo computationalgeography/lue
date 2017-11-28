@@ -9,9 +9,9 @@ namespace shared {
 namespace constant_shape {
 
 Property::Property(
-    hdf5::Identifier const& id)
+    hdf5::Group&& group)
 
-    : located::Property(id)
+    : located::Property{std::forward<hdf5::Group>(group)}
 
 {
 }
@@ -27,7 +27,7 @@ Property create_property(
         lue::time::PropertyConfiguration(
             lue::time::PropertyConfiguration::ShapeVariability::constant));
 
-    return Property(property.id());
+    return Property(hdf5::Group{property.id()});
 }
 
 }  // namespace constant_shape

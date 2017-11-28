@@ -9,10 +9,10 @@ namespace located {
 namespace shared {
 
 PropertySet::PropertySet(
-    hdf5::Identifier const& id)
+    hdf5::Group&& group)
 
-    : located::PropertySet(id),
-      _domain{this->id()}
+    : located::PropertySet(std::forward<hdf5::Group>(group)),
+      _domain{*this}
 
 {
 }
@@ -38,7 +38,7 @@ PropertySet create_property_set(
         located::create_property_set(property_sets, name)
     );
 
-    return PropertySet(property_set.id());
+    return PropertySet(hdf5::Group{property_set.id()});
 }
 
 
@@ -51,7 +51,7 @@ PropertySet create_property_set(
         located::create_property_set(property_sets, name, ids)
     );
 
-    return PropertySet(property_set.id());
+    return PropertySet(hdf5::Group{property_set.id()});
 }
 
 }  // namespace shared

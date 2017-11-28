@@ -42,12 +42,12 @@ namespace same_shape {
 
 
 Value::Value(
-    hdf5::Identifier const& location,
+    hdf5::Group const& parent,
     std::string const& name,
     hdf5::Datatype const& memory_datatype)
 
-    : Array(location, name, memory_datatype),
-      omnipresent::Value()
+    : Array{parent, name, memory_datatype},
+      omnipresent::Value{}
 
 {
 }
@@ -57,8 +57,8 @@ Value::Value(
     hdf5::Dataset&& dataset,
     hdf5::Datatype const& memory_datatype)
 
-    : Array(std::forward<hdf5::Dataset>(dataset), memory_datatype),
-      omnipresent::Value()
+    : Array{std::forward<hdf5::Dataset>(dataset), memory_datatype},
+      omnipresent::Value{}
 
 {
 }

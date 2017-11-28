@@ -75,54 +75,47 @@ void Property::Configuration::load(
 }
 
 
-Property::Property(
-    hdf5::Identifier const& id)
-
-    : hdf5::Group(id),
-      _configuration(attributes())
-
-{
-}
-
-
-/*!
-    @brief      Construct an instance based on an existing property
-    @param      location Location in dataset of property named @a name
-    @param      name Name of property to open
-    @exception  std::runtime_error In case property cannot be opened
-*/
-Property::Property(
-    hdf5::Identifier const& location,
-    std::string const& name)
-
-    : hdf5::Group(location, name),
-      _configuration(attributes())
-
-{
-}
-
-
 // Property::Property(
-//     hdf5::Group&& group)
+//     hdf5::Identifier const& id)
 // 
-//     : hdf5::Group(std::forward<hdf5::Group>(group)),
+//     : hdf5::Group(id),
 //       _configuration(attributes())
 // 
 // {
 // }
 
 
+/*!
+    @brief      Construct an instance based on an existing property
+    @param      parent Parent group in dataset of property named @a name
+    @param      name Name of property to open
+    @exception  std::runtime_error In case property cannot be opened
+*/
+Property::Property(
+    hdf5::Group const& parent,
+    std::string const& name)
+
+    : hdf5::Group(parent, name),
+      _configuration{attributes()}
+
+{
+}
+
+
+Property::Property(
+    hdf5::Group&& group)
+
+    : hdf5::Group(std::forward<hdf5::Group>(group)),
+      _configuration{attributes()}
+
+{
+}
+
+
 Property::Configuration const& Property::configuration() const
 {
     return _configuration;
 }
-
-
-// void Property::discretize_time(
-//     Property const& property)
-// {
-//     create_soft_link(property.id(), time_discretization_tag);
-// }
 
 
 void Property::discretize_space(
@@ -132,40 +125,28 @@ void Property::discretize_space(
 }
 
 
-// bool Property::time_is_discretized () const
-// {
-//     return contains_soft_link(time_discretization_tag);
-// }
-
-
 bool Property::space_is_discretized() const
 {
     return contains_soft_link(space_discretization_tag);
 }
 
 
-// Property Property::time_discretization () const
-// {
-//     return Property(id(), time_discretization_tag);
-// }
-
-
 Property Property::space_discretization() const
 {
-    return Property(id(), space_discretization_tag);
+    return Property(*this, space_discretization_tag);
 }
 
 
 Property create_property(
-    hdf5::Group& group,
+    hdf5::Group const& parent,
     std::string const& name,
     Property::Configuration const& configuration)
 {
-    auto property_group = hdf5::create_group(group.id(), name);
+    auto group = hdf5::create_group(parent, name);
 
-    configuration.save(property_group.attributes());
+    configuration.save(group.attributes());
 
-    return Property{property_group.id()};
+    return Property{std::move(group)};
 }
 
 }  // namespace lue

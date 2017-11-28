@@ -15,17 +15,17 @@ class Property:
 
 public:
 
-                   Property            (hdf5::Identifier const& id);
+                   Property            (hdf5::Group&& group);
 
-                   Property            (Property const& other)=delete;
+                   Property            (Property const&)=delete;
 
-                   Property            (Property&& other)=default;
+                   Property            (Property&&)=default;
 
                    ~Property           ()=default;
 
-    Property&      operator=           (Property const& other)=delete;
+    Property&      operator=           (Property const&)=delete;
 
-    Property&      operator=           (Property&& other)=default;
+    Property&      operator=           (Property&&)=default;
 
 private:
 

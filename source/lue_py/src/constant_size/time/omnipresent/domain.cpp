@@ -43,7 +43,7 @@ void init_domain_class(
                     auto const& configuration = space_domain.configuration();
 
                     auto const file_datatype =
-                        SpaceBoxDomain::file_datatype(space_domain.id());
+                        SpaceBoxDomain::file_datatype(space_domain);
 
                     switch(configuration.item_type()) {
                         case SpaceDomain::Configuration::ItemType::box: {

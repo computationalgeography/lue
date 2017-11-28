@@ -4,10 +4,6 @@
 
 namespace lue {
 
-// bool               universe_exists     (hdf5::Identifier const& location,
-//                                         std::string const& name);
-
-
 /*!
     @brief      TODO
     @sa         create_universe(hdf5::Identifier const&, std::string const&)
@@ -18,22 +14,20 @@ class Universe:
 
 public:
 
-                   Universe            (hdf5::Identifier const& location,
+                   Universe            (hdf5::Group const& parent,
                                         std::string const& name);
-
-                   Universe            (hdf5::Identifier&& location);
 
                    Universe            (hdf5::Group&& group);
 
-                   Universe            (Universe const& other)=delete;
+                   Universe            (Universe const&)=delete;
 
-                   Universe            (Universe&& other)=default;
+                   Universe            (Universe&&)=default;
 
                    ~Universe           ()=default;
 
-    Universe&      operator=           (Universe const& other)=delete;
+    Universe&      operator=           (Universe const&)=delete;
 
-    Universe&      operator=           (Universe&& other)=default;
+    Universe&      operator=           (Universe&&)=default;
 
     Phenomenon&    add_phenomenon      (std::string const& name);
 
@@ -48,7 +42,7 @@ private:
 };
 
 
-Universe           create_universe     (hdf5::Identifier const& location,
+Universe           create_universe     (hdf5::Group const& parent,
                                         std::string const& name);
 
 } // namespace lue

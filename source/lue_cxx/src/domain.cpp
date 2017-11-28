@@ -82,10 +82,10 @@ void Domain::Configuration::load(
 
 
 Domain::Domain(
-    hdf5::Identifier const& location)
+    hdf5::Group const& parent)
 
-    : hdf5::Group(location, domain_tag),
-      _configuration(attributes())
+    : hdf5::Group(parent, domain_tag),
+      _configuration{attributes()}
 
       // _time_domain{std::make_unique<TimeDomain>(id())},
       // _space_domain{std::make_unique<SpaceDomain>(id())},
@@ -103,7 +103,7 @@ Domain::Domain(
     hdf5::Group&& group)
 
     : hdf5::Group{std::forward<hdf5::Group>(group)},
-      _configuration(attributes())
+      _configuration{attributes()}
 
       // _time_domain{std::make_unique<TimeDomain>(id())},
       // _space_domain{std::make_unique<SpaceDomain>(id())},
@@ -142,12 +142,12 @@ Domain::Configuration const& Domain::configuration() const
 
 
 Domain create_domain(
-    hdf5::Identifier const& location,
+    hdf5::Group const& parent,
     Domain::Configuration const& configuration)
 {
-    auto domain = hdf5::create_group(location, domain_tag);
+    auto group = hdf5::create_group(parent, domain_tag);
 
-    configuration.save(domain.attributes());
+    configuration.save(group.attributes());
 
     // if(domain_exists(location)) {
     //     throw std::runtime_error("Domain already exists");
@@ -163,7 +163,7 @@ Domain create_domain(
     // create_time_domain(domain_location, configuration.time());
     // create_space_domain(domain_location, configuration.space());
 
-    return Domain(std::move(domain));
+    return Domain{std::move(group)};
 }
 
 } // namespace lue

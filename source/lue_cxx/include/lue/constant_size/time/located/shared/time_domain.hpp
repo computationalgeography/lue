@@ -14,24 +14,24 @@ class TimeDomain:
 
 public:
 
-                   TimeDomain          (hdf5::Group const& group);
+                   TimeDomain          (hdf5::Group const& parent);
 
                    TimeDomain          (located::TimeDomain&& domain);
 
-                   TimeDomain          (TimeDomain const& other)=delete;
+                   TimeDomain          (TimeDomain const&)=delete;
 
-                   TimeDomain          (TimeDomain&& other)=default;
+                   TimeDomain          (TimeDomain&&)=default;
 
                    ~TimeDomain         ()=default;
 
-    TimeDomain&    operator=           (TimeDomain const& other)=delete;
+    TimeDomain&    operator=           (TimeDomain const&)=delete;
 
-    TimeDomain&    operator=           (TimeDomain&& other)=default;
+    TimeDomain&    operator=           (TimeDomain&&)=default;
 
 };
 
 
-TimeDomain        create_time_domain   (hdf5::Group const& group,
+TimeDomain        create_time_domain   (hdf5::Group const& parent,
                                         TimeDomain::Configuration const&
                                             configuration);
 

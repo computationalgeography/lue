@@ -6,10 +6,11 @@
 namespace lue {
 
 Array::Array(
-    hdf5::Dataset&& dataset,
+    hdf5::Group const& parent,
+    std::string const& name,
     hdf5::Datatype const& memory_datatype)
 
-    : hdf5::Dataset(std::forward<hdf5::Dataset>(dataset)),
+    : hdf5::Dataset{parent, name},
       _memory_datatype{memory_datatype}
 
 {
@@ -18,11 +19,10 @@ Array::Array(
 
 
 Array::Array(
-    hdf5::Identifier const& location,
-    std::string const& name,
+    hdf5::Dataset&& dataset,
     hdf5::Datatype const& memory_datatype)
 
-    : hdf5::Dataset(location, name),
+    : hdf5::Dataset{std::forward<hdf5::Dataset>(dataset)},
       _memory_datatype{memory_datatype}
 
 {

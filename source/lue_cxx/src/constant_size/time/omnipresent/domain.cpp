@@ -6,21 +6,19 @@ namespace constant_size {
 namespace time {
 namespace omnipresent {
 
-Domain::Domain(
-    hdf5::Identifier const& location)
-
-    : constant_size::Domain(location) // ,
-      // _space(id())
-
-{
-}
+// Domain::Domain(
+//     hdf5::Group const& parent)
+// 
+//     : constant_size::Domain(parent)
+// 
+// {
+// }
 
 
 Domain::Domain(
     constant_size::Domain&& domain)
 
-    : constant_size::Domain(std::forward<constant_size::Domain>(domain)) // ,
-      // _space(id())
+    : constant_size::Domain(std::forward<constant_size::Domain>(domain))
 
 {
 }

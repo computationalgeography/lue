@@ -3,30 +3,12 @@
 
 namespace lue {
 
-// bool universe_exists(
-//     hdf5::Identifier const& location,
-//     std::string const& name)
-// {
-//     return ::universe_exists(location, name.c_str()) > 0;
-// }
-
-
 Universe::Universe(
-    hdf5::Identifier const& location,
+    hdf5::Group const& parent,
     std::string const& name)
 
-    : hdf5::Group(location, name),
-      _phenomena(id())
-
-{
-}
-
-
-Universe::Universe(
-    hdf5::Identifier&& location)
-
-    : hdf5::Group(std::forward<hdf5::Identifier>(location)),
-      _phenomena(id())
+    : hdf5::Group(parent, name),
+      _phenomena{*this}
 
 {
 }
@@ -36,7 +18,7 @@ Universe::Universe(
     hdf5::Group&& group)
 
     : hdf5::Group(std::forward<hdf5::Group>(group)),
-      _phenomena(id())
+      _phenomena{*this}
 
 {
 }
@@ -63,8 +45,7 @@ Phenomena& Universe::phenomena()
 
 /*!
     @brief      Add new universe
-    @param      Location Id of location of file or group to add
-                universe to
+    @param      parent Group to create collection in
     @param      Name name of universe
     @exception  std::runtime_error In case a universe with the name
                 passed in already exists
@@ -72,14 +53,14 @@ Phenomena& Universe::phenomena()
                 created
 */
 Universe create_universe(
-    hdf5::Identifier const& location,
+    hdf5::Group const& parent,
     std::string const& name)
 {
-    auto universe = hdf5::create_group(location, name);
+    auto group = hdf5::create_group(parent, name);
 
-    create_phenomena(universe.id());
+    create_phenomena(group);
 
-    return Universe(std::move(universe));
+    return Universe{std::move(group)};
 }
 
 } // namespace lue

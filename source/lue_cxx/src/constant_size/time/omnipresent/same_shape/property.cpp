@@ -10,18 +10,18 @@ namespace omnipresent {
 namespace same_shape {
 
 hdf5::Datatype Property::file_datatype(
-    hdf5::Identifier const& id)
+    hdf5::Group const& parent)
 {
-    return hdf5::Dataset(id, value_tag).datatype();
+    return hdf5::Dataset(parent, value_tag).datatype();
 }
 
 
 Property::Property(
-    hdf5::Identifier const& id,
+    hdf5::Group&& group,
     hdf5::Datatype const& memory_datatype)
 
-    : omnipresent::Property{id},
-      _values(this->id(), value_tag, memory_datatype)
+    : omnipresent::Property{std::forward<hdf5::Group>(group)},
+      _values(*this, value_tag, memory_datatype)
 
 {
 }
@@ -63,7 +63,7 @@ Property create_property(
 
     assert(property.id().is_valid());
 
-    return Property{property.id(), memory_datatype};
+    return Property{hdf5::Group{property.id()}, memory_datatype};
 }
 
 
@@ -84,7 +84,7 @@ Property create_property(
 
     assert(property.id().is_valid());
 
-    return Property{property.id(), memory_datatype};
+    return Property{hdf5::Group{property.id()}, memory_datatype};
 }
 
 }  // namespace same_shape

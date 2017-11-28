@@ -1,23 +1,17 @@
 #include "lue/property_sets.hpp"
+#include "lue/tag.hpp"
 
 
 namespace lue {
 
-// bool property_sets_exists(
-//     hdf5::Identifier const& location)
-// {
-//     return collection_exists(location, "lue_property_sets");
-// }
-
-
 /*!
     @brief      Construct an instance
-    @param      location Location where collection is stored
+    @param      parent Parent group where collection is stored
 */
 PropertySets::PropertySets(
-    hdf5::Identifier const& location)
+    hdf5::Group const& parent)
 
-    : Collection(location, "lue_property_sets")
+    : Collection(parent, property_sets_tag)
 
 {
 }
@@ -44,45 +38,17 @@ PropertySets::PropertySets(
 // }
 
 
-// /*!
-//     @brief      Create and add a PropertySet instance
-//     @param      Name name of property set
-//     @exception  std::runtime_error In case the property set cannot
-//                 be created
-//     @sa         Collection.add()
-// */
-// PropertySet& PropertySets::add(
-//     std::string const& name)
-// {
-//     PropertySetConfiguration configuration(
-//         SizeOfItemCollectionType::constant_size);
-//     DomainConfiguration domain_configuration;
-// 
-//     return add(name, configuration, domain_configuration);
-// }
-// 
-// 
-// /*!
-//     @brief      Create and add a PropertySet instance
-//     @param      Name name of property set
-//     @exception  std::runtime_error In case the property set cannot
-//                 be created
-//     @sa         Collection.add()
-// */
-// PropertySet& PropertySets::add(
-//     std::string const& name,
-//     PropertySetConfiguration const& configuration,
-//     DomainConfiguration const& domain_configuration)
-// {
-//     return Collection::add(name, create_property_set(id(), name,
-//         configuration, domain_configuration));
-// }
-
-
+/*!
+    @brief      Return new PropertySets instance
+    @param      group Group to create collection in
+    @exception  std::runtime_error In case a property-sets group already exists
+    @exception  std::runtime_error In case a property-sets group cannot
+                be created
+*/
 PropertySets create_property_sets(
-    hdf5::Identifier const& location)
+    hdf5::Group const& group)
 {
-    return create_collection<PropertySet>(location, "lue_property_sets");
+    return create_collection<PropertySet>(group, property_sets_tag);
 }
 
 } // namespace lue

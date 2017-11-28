@@ -30,20 +30,20 @@ void validate(
         switch(configuration.shape_per_item_type()) {
 
             case ShapePerItemType::same: {
-                auto file_datatype = same_shape::Property::file_datatype(
-                    property.id());
+                auto file_datatype =
+                    same_shape::Property::file_datatype(property);
                 auto const property2 = same_shape::Property(
-                    property.id(), memory_datatype(file_datatype));
+                    hdf5::Group{property.id()}, memory_datatype(file_datatype));
                 nr_values =  property2.values().nr_items();
 
                 break;
             }
 
             case ShapePerItemType::different: {
-                auto file_datatype = different_shape::Property::file_datatype(
-                    property.id());
+                auto file_datatype =
+                    different_shape::Property::file_datatype(property);
                 auto const property2 = different_shape::Property(
-                    property.id(), memory_datatype(file_datatype));
+                    hdf5::Group{property.id()}, memory_datatype(file_datatype));
                 nr_values =  property2.values().nr_items();
 
                 break;

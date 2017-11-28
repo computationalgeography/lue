@@ -7,9 +7,9 @@ namespace time {
 namespace omnipresent {
 
 Property::Property(
-    hdf5::Identifier const& id)
+    hdf5::Group&& group)
 
-    : constant_size::Property(id)
+    : constant_size::Property(std::forward<hdf5::Group>(group))
 
 {
 }
@@ -21,7 +21,7 @@ Property create_property(
     Property::Configuration const& configuration)
 {
     return Property{
-        constant_size::create_property(group, name, configuration).id()};
+        constant_size::create_property(group, name, configuration)};
 }
 
 }  // namespace omnipresent

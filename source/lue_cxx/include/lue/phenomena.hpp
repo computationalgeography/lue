@@ -5,9 +5,6 @@
 
 namespace lue {
 
-// bool               phenomena_exists    (hdf5::Identifier const& location);
-
-
 /*!
     @brief      Collection for phenomena
     @sa         create_phenomena(hdf5::Identifier const&)
@@ -18,21 +15,19 @@ class Phenomena:
 
 public:
 
-                   Phenomena           (hdf5::Identifier const& location);
-
-                   Phenomena           (hdf5::Identifier&& id);
+                   Phenomena           (hdf5::Group const& parent);
 
                    Phenomena           (Collection<Phenomenon>&& collection);
 
-                   Phenomena           (Phenomena const& other)=delete;
+                   Phenomena           (Phenomena const&)=delete;
 
-                   Phenomena           (Phenomena&& other)=default;
+                   Phenomena           (Phenomena&&)=default;
 
                    ~Phenomena          ()=default;
 
-    Phenomena&     operator=           (Phenomena const& other)=delete;
+    Phenomena&     operator=           (Phenomena const&)=delete;
 
-    Phenomena&     operator=           (Phenomena&& other)=default;
+    Phenomena&     operator=           (Phenomena&&)=default;
 
     Phenomenon&    add                 (std::string const& name);
 
@@ -41,6 +36,6 @@ private:
 };
 
 
-Phenomena          create_phenomena    (hdf5::Identifier const& location);
+Phenomena          create_phenomena    (hdf5::Group const& group);
 
 } // namespace lue

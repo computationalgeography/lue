@@ -1,16 +1,17 @@
 #include "lue/properties.hpp"
+#include "lue/tag.hpp"
 
 
 namespace lue {
 
 /*!
     @brief      Construct an instance
-    @param      location Location where collection is stored
+    @param      parent Parent group where collection is stored
 */
 Properties::Properties(
-    hdf5::Identifier const& location)
+    hdf5::Group const& parent)
 
-    : Collection(location, "lue_properties")
+    : Collection(parent, properties_tag)
 
 {
 }
@@ -26,9 +27,9 @@ Properties::Properties(
 
 
 Properties create_properties(
-    hdf5::Identifier const& location)
+    hdf5::Group const& group)
 {
-    return create_collection<Property>(location, "lue_properties");
+    return create_collection<Property>(group, properties_tag);
 }
 
 } // namespace lue

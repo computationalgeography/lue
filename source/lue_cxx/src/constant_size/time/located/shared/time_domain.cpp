@@ -8,9 +8,9 @@ namespace located {
 namespace shared {
 
 TimeDomain::TimeDomain(
-    hdf5::Group const& group)
+    hdf5::Group const& parent)
 
-    : located::TimeDomain{group.id()}
+    : located::TimeDomain{parent}
 
 {
 }
@@ -27,11 +27,10 @@ TimeDomain::TimeDomain(
 
 
 TimeDomain create_time_domain(
-    hdf5::Group const& group,
+    hdf5::Group const& parent,
     TimeDomain::Configuration const& configuration)
 {
-    auto domain = located::create_time_domain(
-        group, configuration);
+    auto domain = located::create_time_domain(parent, configuration);
 
     return std::move(domain);
 }

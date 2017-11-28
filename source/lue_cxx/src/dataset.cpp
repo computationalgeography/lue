@@ -18,8 +18,8 @@ Dataset::Dataset(
     unsigned int const flags)
 
     : hdf5::File(name, flags),
-      _universes(id()),
-      _phenomena(id())
+      _universes(*this),
+      _phenomena(*this)
 
 {
 }
@@ -36,8 +36,8 @@ Dataset::Dataset(
     hdf5::Identifier&& location)
 
     : hdf5::File(std::forward<hdf5::Identifier>(location)),
-      _universes(id()),
-      _phenomena(id())
+      _universes(*this),
+      _phenomena(*this)
 
 {
 }
@@ -47,8 +47,8 @@ Dataset::Dataset(
     hdf5::File&& file)
 
     : hdf5::File(std::forward<hdf5::File>(file)),
-      _universes(id()),
-      _phenomena(id())
+      _universes(*this),
+      _phenomena(*this)
 
 {
 }
@@ -163,10 +163,10 @@ Dataset create_dataset(
 {
     auto file = hdf5::create_file(name);
 
-    create_universes(file.id());
-    create_phenomena(file.id());
+    create_universes(file);
+    create_phenomena(file);
 
-    return Dataset(std::move(file));
+    return Dataset{std::move(file)};
 }
 
 

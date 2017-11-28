@@ -9,11 +9,11 @@ namespace located {
 namespace shared {
 
 TimeBox::TimeBox(
-    hdf5::Identifier const& location,
+    hdf5::Group const& parent,
     hdf5::Datatype const memory_datatype)
 
-    : omnipresent::same_shape::Value(
-        location, coordinates_tag, memory_datatype)
+    : omnipresent::same_shape::Value{
+        parent, coordinates_tag, memory_datatype}
 
 {
 }
@@ -22,15 +22,15 @@ TimeBox::TimeBox(
 TimeBox::TimeBox(
     omnipresent::same_shape::Value&& value)
 
-    : omnipresent::same_shape::Value(
-        std::forward<omnipresent::same_shape::Value>(value))
+    : omnipresent::same_shape::Value{
+        std::forward<omnipresent::same_shape::Value>(value)}
 
 {
 }
 
 
 TimeBox create_time_box(
-    hdf5::Group const& group,
+    hdf5::Group const& parent,
     hdf5::Datatype const& file_datatype,
     hdf5::Datatype const& memory_datatype)
 {
@@ -41,7 +41,7 @@ TimeBox create_time_box(
     hdf5::Shape value_shape = { 2 };
 
     auto value = omnipresent::same_shape::create_value(
-        group, coordinates_tag, file_datatype, memory_datatype, value_shape);
+        parent, coordinates_tag, file_datatype, memory_datatype, value_shape);
 
     return TimeBox(std::move(value));
 }

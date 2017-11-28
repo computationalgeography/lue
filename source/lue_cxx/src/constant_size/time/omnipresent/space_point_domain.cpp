@@ -8,18 +8,18 @@ namespace time {
 namespace omnipresent {
 
 hdf5::Datatype SpacePointDomain::file_datatype(
-    hdf5::Identifier const& id)
+    hdf5::Group const& parent)
 {
-    return hdf5::Dataset(id, coordinates_tag).datatype();
+    return hdf5::Dataset(parent, coordinates_tag).datatype();
 }
 
 
 SpacePointDomain::SpacePointDomain(
     SpaceDomain&& space_domain)
 
-    : SpacePointDomain(
+    : SpacePointDomain{
         std::forward<SpaceDomain>(space_domain),
-        hdf5::memory_datatype(file_datatype(id())))
+        hdf5::memory_datatype(file_datatype(*this))}
 
 {
 }
@@ -29,8 +29,8 @@ SpacePointDomain::SpacePointDomain(
     SpaceDomain&& space_domain,
     hdf5::Datatype const& memory_datatype)
 
-    : SpaceDomain(std::forward<SpaceDomain>(space_domain)),
-      _items(id(), memory_datatype)
+    : SpaceDomain{std::forward<SpaceDomain>(space_domain)},
+      _items{*this, memory_datatype}
 
 {
 }

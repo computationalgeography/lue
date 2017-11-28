@@ -71,7 +71,7 @@ void init_property_set_class(
                                 constant_size::time::located::PropertySet
                                     located_property_set(property_set.id());
 
-                                TimeDomain time_domain(domain.id());
+                                TimeDomain time_domain{domain};
 
                                 switch(time_domain.configuration()
                                         .ownership()) {
@@ -81,7 +81,8 @@ void init_property_set_class(
                                         object = py::cast(new
                                             constant_size::time::located::
                                                 shared::PropertySet(
-                                                    property_set.id()));
+                                                    hdf5::Group{
+                                                        property_set.id()}));
                                         break;
                                     }
 

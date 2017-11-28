@@ -14,30 +14,30 @@ class PropertySet:
 
 public:
 
-                   PropertySet         (hdf5::Identifier const& id);
+                   PropertySet         (hdf5::Group&& group);
 
                    PropertySet         (constant_size::PropertySet&&
                                             property_set);
 
-                   PropertySet         (PropertySet const& other)=delete;
+                   PropertySet         (PropertySet const&)=delete;
 
-                   PropertySet         (PropertySet&& other)=default;
+                   PropertySet         (PropertySet&&)=default;
 
                    ~PropertySet        ()=default;
 
-    PropertySet&   operator=           (PropertySet const& other)=delete;
+    PropertySet&   operator=           (PropertySet const&)=delete;
 
-    PropertySet&   operator=           (PropertySet&& other)=default;
+    PropertySet&   operator=           (PropertySet&&)=default;
 
 private:
 
 };
 
 
-PropertySet        create_property_set (hdf5::Group& group,
+PropertySet        create_property_set (hdf5::Group& parent,
                                         std::string const& name);
 
-PropertySet        create_property_set (hdf5::Group& group,
+PropertySet        create_property_set (hdf5::Group& parent,
                                         std::string const& name,
                                         omnipresent::same_shape::Value const&
                                             ids);

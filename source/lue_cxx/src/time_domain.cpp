@@ -152,9 +152,9 @@ void TimeDomain::Configuration::load(
 
 
 TimeDomain::TimeDomain(
-    hdf5::Identifier const& id)
+    hdf5::Group const& parent)
 
-    : hdf5::Group(id, time_domain_tag),
+    : hdf5::Group(parent, time_domain_tag),
       _configuration(attributes())
 
 {
@@ -178,21 +178,21 @@ TimeDomain::Configuration const& TimeDomain::configuration() const
 
 
 TimeDomain create_time_domain(
-    hdf5::Group const& group,
+    hdf5::Group const& parent,
     TimeDomain::Configuration const& configuration)
 {
-    auto domain = hdf5::create_group(group, time_domain_tag);
+    auto group = hdf5::create_group(parent, time_domain_tag);
 
-    configuration.save(domain.attributes());
+    configuration.save(group.attributes());
 
-    return std::move(domain);
+    return TimeDomain{std::move(group)};
 }
 
 
 bool time_domain_exists(
-    hdf5::Group const& group)
+    hdf5::Group const& parent)
 {
-    return group.contains_group(time_domain_tag);
+    return parent.contains_group(time_domain_tag);
 }
 
 }  // namespace lue

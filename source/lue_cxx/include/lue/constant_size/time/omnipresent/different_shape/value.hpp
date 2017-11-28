@@ -21,10 +21,10 @@ class Value:
 
 public:
 
-                   Value               (hdf5::Identifier const& location,
+                   Value               (hdf5::Group const& parent,
                                         std::string const& name);
 
-                   Value               (hdf5::Identifier const& location,
+                   Value               (hdf5::Group const& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& memory_datatype);
 // 
@@ -38,15 +38,15 @@ public:
                    Value               (hdf5::Group&& group,
                                         hdf5::Datatype const& memory_datatype);
 
-                   Value               (Value const& other)=delete;
+                   Value               (Value const&)=delete;
 
-                   Value               (Value&& other)=default;
+                   Value               (Value&&)=default;
 
                    ~Value              ()=default;
 
-    Value&         operator=           (Value const& other)=delete;
+    Value&         operator=           (Value const&)=delete;
 
-    Value&         operator=           (Value&& other)=default;
+    Value&         operator=           (Value&&)=default;
 
     hsize_t        nr_items            () const final;
 
@@ -58,10 +58,10 @@ public:
     hdf5::Datatype const&
                    memory_datatype     () const;
 
-    void           reserve             (hsize_t const nr_items,
+    void           reserve             (hsize_t nr_items,
                                         hsize_t const* shapes);
 
-    Array          operator[]          (size_t const idx) const;
+    Array          operator[]          (size_t idx) const;
 
 private:
 
@@ -73,17 +73,17 @@ private:
 
     hdf5::Datatype const _memory_datatype;
 
-    void           reserve_value       (hsize_t const idx,
+    void           reserve_value       (hsize_t idx,
                                         hsize_t const* shape);
 
 };
 
 
-Value              create_value        (hdf5::Identifier const& location,
+Value              create_value        (hdf5::Group const& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& file_datatype,
                                         hdf5::Datatype const& memory_datatype,
-                                        int const rank);
+                                        int rank);
 // 
 // Value              create_value        (hdf5::Identifier const& location,
 //                                         std::string const& name,

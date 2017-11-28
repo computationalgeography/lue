@@ -15,22 +15,22 @@ class Property:
 
 public:
 
-    static hdf5::Datatype file_datatype(hdf5::Identifier const& id);
+    static hdf5::Datatype file_datatype(hdf5::Group const& parent);
 
-                   Property            (hdf5::Identifier const& id);
+                   Property            (hdf5::Group&& group);
 
-                   Property            (hdf5::Identifier const& id,
+                   Property            (hdf5::Group&& group,
                                         hdf5::Datatype const& memory_datatype);
 
-                   Property            (Property const& other)=delete;
+                   Property            (Property const&)=delete;
 
-                   Property            (Property&& other)=default;
+                   Property            (Property&&)=default;
 
                    ~Property           ()=default;
 
-    Property&      operator=           (Property const& other)=delete;
+    Property&      operator=           (Property const&)=delete;
 
-    Property&      operator=           (Property&& other)=default;
+    Property&      operator=           (Property&&)=default;
 
     different_shape::Value const&
                    values              () const;
@@ -39,7 +39,7 @@ public:
                    values              ();
 
     different_shape::Value&
-                   reserve             (hsize_t const nr_items,
+                   reserve             (hsize_t nr_items,
                                         hsize_t const* shapes);
 
 private:
@@ -52,13 +52,13 @@ private:
 Property           create_property     (PropertySet& property_set,
                                         std::string const& name,
                                         hdf5::Datatype const& memory_datatype,
-                                        int const rank);
+                                        int rank);
 
 Property           create_property     (PropertySet& property_set,
                                         std::string const& name,
                                         hdf5::Datatype const& file_datatype,
                                         hdf5::Datatype const& memory_datatype,
-                                        int const rank);
+                                        int rank);
 
 }  // namespace different_shape
 }  // namespace omnipresent
