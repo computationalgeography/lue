@@ -197,14 +197,6 @@ herr_t retrieve_group_names(
 }  // Anonymous namespace
 
 
-bool group_exists(
-    Identifier const& location,
-    std::string const& name)
-{
-    return link_exists(location, name) && link_is_group(location, name);
-}
-
-
 /*!
     @brief      Open group @a name in @a parent
     @param      parent Parent group of group to open
@@ -353,7 +345,7 @@ std::vector<std::string> Group::object_names() const
 bool Group::contains_group(
     std::string const& name) const
 {
-    return group_exists(id(), name);
+    return group_exists(*this, name);
 }
 
 
@@ -471,25 +463,36 @@ bool Group::operator!=(
 }
 
 
+bool group_exists(
+    Group const& parent,
+    std::string const& name)
+{
+    return
+        link_exists(parent.id(), name) &&
+        link_is_group(parent.id(), name)
+        ;
+}
+
+
 /*!
-    @brief      Create a group named @a name within @a group
-    @param      group Group to create group in
+    @brief      Create a group named @a name within @a parent
+    @param      parent Group to create group in
     @param      name Name of group to create
 */
 Group create_group(
-    Group const& group,
+    Group const& parent,
     std::string const& name)
 {
-    if(group_exists(group.id(), name)) {
+    if(group_exists(parent, name)) {
         throw std::runtime_error("Group " + name + " already exists");
     }
 
-    Identifier group_id{::H5Gcreate(group.id(), name.c_str(), H5P_DEFAULT,
+    Identifier group_id{::H5Gcreate(parent.id(), name.c_str(), H5P_DEFAULT,
         H5P_DEFAULT, H5P_DEFAULT), H5Gclose};
 
     if(!group_id.is_valid()) {
         throw std::runtime_error("Cannot create group " + name + " at " +
-            group.id().pathname());
+            parent.id().pathname());
     }
 
     return Group{std::move(group_id)};

@@ -7,7 +7,7 @@ namespace hl {
 RasterDiscretization::RasterDiscretization(
     Shape&& shape)
 
-    : _shape{std::forward<Shape>(shape)}
+    : _shape(std::forward<Shape>(shape))
 
 {
 }

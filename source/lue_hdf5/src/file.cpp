@@ -114,24 +114,6 @@ File::File(
 }
 
 
-File::File(
-    File&& other)
-
-    : Group(std::forward<Group>(other))
-
-{
-}
-
-
-File& File::operator=(
-    File&& other)
-{
-    Group::operator=(std::forward<Group>(other));
-
-    return *this;
-}
-
-
 std::string File::pathname() const
 {
     static_assert(std::is_same<std::string::value_type, char>::value,

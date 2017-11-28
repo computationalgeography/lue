@@ -44,17 +44,17 @@ public:
                                         AccessPropertyList const&
                                             access_property_list);
 
-                   File                (Identifier&& id);
+    explicit       File                (Identifier&& id);
 
                    File                (File const&)=delete;
 
-                   File                (File&& other);
+                   File                (File&&)=default;
 
     virtual        ~File               ()=default;
 
     File&          operator=           (File const&)=delete;
 
-    File&          operator=           (File&& other);
+    File&          operator=           (File&&)=default;
 
     std::string    pathname            () const;
 

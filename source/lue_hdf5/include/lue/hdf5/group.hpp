@@ -6,12 +6,10 @@
 namespace lue {
 namespace hdf5 {
 
-bool               group_exists        (Identifier const& location,
-                                        std::string const& name);
-
-
 /*!
-    @brief      This class represents an HDF5 group
+    @brief      This class represents an open HDF5 group
+
+    An HDF5 group can be opened multiple times.
 */
 class Group
 {
@@ -23,7 +21,7 @@ public:
 
     explicit       Group               (Identifier const& id);
 
-                   Group               (Identifier&& id);
+    explicit       Group               (Identifier&& id);
 
                    Group               (Group const&)=default;
 
@@ -93,10 +91,10 @@ inline T Group::attribute(
 }
 
 
-// Group              create_group        (Identifier const& location,
-//                                         std::string const& name);
+bool               group_exists        (Group const& parent,
+                                        std::string const& name);
 
-Group              create_group        (Group const& group,
+Group              create_group        (Group const& parent,
                                         std::string const& name);
 
 } // namespace hdf5

@@ -39,16 +39,24 @@ GDALDatasetPtr try_open_gdal_raster_stack_dataset_for_read(
     auto const directory_path = dataset_path.parent_path();
     GDALDatasetPtr result;
 
-    for(auto const& directory_entry: fs::directory_iterator(directory_path)) {
-        auto pathname = directory_entry.path().string();
-        auto first = pathname.begin();
-        auto last = pathname.end();
+    // This only works with Boost >= 1.62.0
+    // for(auto const& directory_entry: fs::directory_iterator(directory_path)) {
 
-        if(qi::parse(first, last, stack_rule(dataset_name))) {
-            // Found a file whose name matches the pattern we are
-            // looking for
-            result = try_open_gdal_raster_dataset_for_read(pathname);
-            break;
+    {
+        fs::directory_iterator end;
+
+        for(fs::directory_iterator it{directory_path}; it != end; ++it) {
+            auto const& directory_entry = *it;
+            auto pathname = directory_entry.path().string();
+            auto first = pathname.begin();
+            auto last = pathname.end();
+
+            if(qi::parse(first, last, stack_rule(dataset_name))) {
+                // Found a file whose name matches the pattern we are
+                // looking for
+                result = try_open_gdal_raster_dataset_for_read(pathname);
+                break;
+            }
         }
     }
 

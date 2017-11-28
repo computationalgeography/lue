@@ -9,8 +9,11 @@ namespace lue {
 namespace hdf5 {
 
 /*!
-    @brief      This class represents an HDF5 identifier
+    @brief      This class represents an HDF5 identifier of an open HDF5 object
     @sa         https://support.hdfgroup.org/HDF5/doc/RM/RM_H5I.html
+    @todo       Rename to SharedIdentifier? Also create UniqueIdentifier
+                and use that as much as possible. Or let copy re-open the
+                object?
 
     Scoping the identifier in this class ensures that the identifier is
     closed upon exiting the scope.
