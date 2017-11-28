@@ -28,7 +28,7 @@ public:
                    Collection          (hdf5::Group const& parent,
                                         std::string const& name);
 
-                   Collection          (Group&& group);
+    explicit       Collection          (Group&& group);
 
                    Collection          (Collection const&)=delete;
 
@@ -213,10 +213,10 @@ inline std::vector<std::string> Collection<T>::item_names() const
 template<
     typename T>
 Collection<T> create_collection(
-    hdf5::Group const& group,
+    hdf5::Group const& parent,
     std::string const& name)
 {
-    return hdf5::create_group(group, name);
+    return Collection<T>{hdf5::create_group(parent, name)};
 }
 
 } // namespace lue
