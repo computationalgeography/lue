@@ -1,7 +1,6 @@
 #pragma once
 #include "lue/hdf5/object_info.hpp"
 #include <functional>
-#include <memory>
 #include <string>
 
 
@@ -11,9 +10,6 @@ namespace hdf5 {
 /*!
     @brief      This class represents an HDF5 identifier of an open HDF5 object
     @sa         https://support.hdfgroup.org/HDF5/doc/RM/RM_H5I.html
-    @todo       Rename to SharedIdentifier? Also create UniqueIdentifier
-                and use that as much as possible. Or let copy re-open the
-                object?
 
     Scoping the identifier in this class ensures that the identifier is
     closed upon exiting the scope.
@@ -41,9 +37,9 @@ public:
                    Identifier          (hid_t id,
                                         Close const& close);
 
-                   Identifier          (Identifier const&)=default;
+                   Identifier          (Identifier const& other);
 
-                   Identifier          (Identifier&&)=default;
+                   Identifier          (Identifier&& other);
 
                    ~Identifier         ();
 
@@ -67,14 +63,16 @@ public:
 
 private:
 
-    void           close_if_necessary  ();
+    int            reference_count     () const;
 
-    bool           is_empty            () const;
+    int            increment_reference_count();
+
+    void           close_if_necessary  ();
 
     void           assert_invariant    () const;
 
     //! HDF5 identifier
-    std::shared_ptr<hid_t> _id;
+    hid_t          _id;
 
     //! Function to call when the identifier must be closed
     Close          _close;

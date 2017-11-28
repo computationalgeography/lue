@@ -15,11 +15,11 @@ namespace hdf5 {
 */
 Identifier::Identifier()
 
-    : _id{},
+    : _id{-1},
       _close{nullptr}
 
 {
-    assert(is_empty());
+    assert(!is_valid());
     assert_invariant();
 }
 
@@ -32,10 +32,40 @@ Identifier::Identifier(
     hid_t id,
     Close const& close)
 
-    : _id(std::make_shared<hid_t>(id)),
+    : _id{id},
       _close(close)
 
 {
+    assert_invariant();
+}
+
+
+Identifier::Identifier(
+    Identifier const& other)
+
+    : _id{other._id},
+      _close{other._close}
+
+{
+    if(is_valid()) {
+        increment_reference_count();
+    }
+
+    other.assert_invariant();
+    assert_invariant();
+}
+
+
+Identifier::Identifier(
+    Identifier&& other)
+
+    : _id{std::move(other._id)},
+      _close{std::move(other._close)}
+
+{
+    other._id = -1;
+
+    other.assert_invariant();
     assert_invariant();
 }
 
@@ -62,10 +92,17 @@ Identifier::~Identifier()
 Identifier& Identifier::operator=(
     Identifier const& other)
 {
+    // Copy-assign:
+    // - Clean-up this instance
+    // - Copy the other instance in
+
     assert_invariant();
 
     close_if_necessary();
+
     _id = other._id;
+    increment_reference_count();
+
     _close = other._close;
 
     assert_invariant();
@@ -77,15 +114,55 @@ Identifier& Identifier::operator=(
 Identifier& Identifier::operator=(
     Identifier&& other)
 {
+    // Move-assign:
+    // - Clean-up this instance
+    // - Move the other instance in
+
     assert_invariant();
 
     close_if_necessary();
+
     _id = std::move(other._id);
+    other._id = -1;
+
     _close = std::move(other._close);
 
+    other.assert_invariant();
     assert_invariant();
 
     return *this;
+}
+
+
+int Identifier::reference_count() const
+{
+    assert_invariant();
+    assert(is_valid());
+
+    auto count = ::H5Iget_ref(_id);
+
+    if(count < 0) {
+        throw std::runtime_error("Cannot retrieve object's reference count");
+    }
+
+    return count;
+}
+
+
+int Identifier::increment_reference_count()
+{
+    assert_invariant();
+    assert(is_valid());
+
+    auto count = ::H5Iinc_ref(_id);
+
+    if(count < 0) {
+        throw std::runtime_error("Cannot increment object's reference count");
+    }
+
+    assert_invariant();
+
+    return count;
 }
 
 
@@ -94,16 +171,14 @@ Identifier& Identifier::operator=(
 */
 void Identifier::close_if_necessary()
 {
-    if(is_valid() && _id.unique()) {
-#ifndef NDEBUG
-        auto status =
-#endif
-            _close(*_id);
-        assert(status >= 0);
+    assert_invariant();
 
-        _id.reset();
-        _close = nullptr;
+    if(is_valid()) {
+        assert(reference_count() > 0);
+        _close(_id);
     }
+
+    assert_invariant();
 }
 
 
@@ -114,13 +189,9 @@ void Identifier::assert_invariant() const
     //   must not be set.
     // - An invalid identifier has an invalid id and a close function.
     // - A valid identifier has a valid id and a close function.
-    assert((is_empty() && _close == nullptr) || _close != nullptr);
-}
+    // assert((is_empty() && _close == nullptr) || _close != nullptr);
 
-
-bool Identifier::is_empty() const
-{
-    return !_id;
+    assert(!(is_valid() && _close == nullptr));
 }
 
 
@@ -129,9 +200,14 @@ bool Identifier::is_empty() const
 */
 bool Identifier::is_valid() const
 {
-    assert_invariant();
+    auto status = ::H5Iis_valid(_id);
 
-    return !is_empty() && ::H5Iis_valid(*_id) > 0;
+    if(status < 0) {
+        throw std::runtime_error(
+            "Cannot determine whether identifier is valid");
+    }
+
+    return status > 0;
 }
 
 
@@ -140,9 +216,7 @@ bool Identifier::is_valid() const
 */
 Identifier::operator hid_t() const
 {
-    assert(!is_empty());
-
-    return *_id;
+    return _id;
 }
 
 
@@ -161,11 +235,11 @@ std::string Identifier::pathname() const
 
     assert(is_valid());
 
-    auto const nr_bytes = ::H5Iget_name(*_id, nullptr, 0);
+    auto const nr_bytes = ::H5Iget_name(_id, nullptr, 0);
 
     std::string result(nr_bytes, 'x');
 
-    /* nr_bytes = */ ::H5Iget_name(*_id,
+    /* nr_bytes = */ ::H5Iget_name(_id,
 #if __cplusplus > 201402L
         result.data()
 #else
@@ -203,7 +277,7 @@ ObjectInfo Identifier::info() const
 {
     assert(is_valid());
 
-    return ObjectInfo(*_id);
+    return ObjectInfo(_id);
 }
 
 

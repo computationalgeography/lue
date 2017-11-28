@@ -3,6 +3,7 @@
 #include "lue/hdf5/link.hpp"
 #include <cstring>
 #include <cstdlib>
+#include <memory>
 
 
 namespace lue {

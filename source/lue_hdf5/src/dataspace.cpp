@@ -1,5 +1,6 @@
 #include "lue/hdf5/dataspace.hpp"
 #include <cassert>
+#include <memory>
 
 
 namespace lue {

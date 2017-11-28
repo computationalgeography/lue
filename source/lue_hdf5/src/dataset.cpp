@@ -2,6 +2,7 @@
 #include "lue/hdf5/link.hpp"
 #include <cassert>
 #include <cstring>
+#include <memory>
 
 
 namespace lue {
