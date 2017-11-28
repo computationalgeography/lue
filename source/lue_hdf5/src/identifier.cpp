@@ -20,7 +20,6 @@ Identifier::Identifier()
 
 {
     assert(!is_valid());
-    assert_invariant();
 }
 
 
@@ -40,6 +39,11 @@ Identifier::Identifier(
 }
 
 
+/*!
+    @brief      Copy construct an instance
+
+    If the HDF5 identifier is valid, its reference count will be incremented.
+*/
 Identifier::Identifier(
     Identifier const& other)
 
@@ -51,11 +55,17 @@ Identifier::Identifier(
         increment_reference_count();
     }
 
-    other.assert_invariant();
     assert_invariant();
 }
 
 
+/*!
+    @brief      Move construct an instance
+
+    The resulting instance will be valid when @a other is valid, otherwise it
+    will be invalid. Once the new instance is constructed, @a other will be
+    invalid.
+*/
 Identifier::Identifier(
     Identifier&& other)
 
@@ -65,8 +75,8 @@ Identifier::Identifier(
 {
     other._id = -1;
 
-    other.assert_invariant();
     assert_invariant();
+    assert(!other.is_valid());
 }
 
 
@@ -74,21 +84,19 @@ Identifier::Identifier(
     @brief      Destruct the instance
 
     If necessary, the close function is called.
-
-    The close function will be called if:
-    - the identifier is valid
-    - we are the only ones using it
 */
 Identifier::~Identifier()
 {
-    assert_invariant();
-
     close_if_necessary();
-
-    assert_invariant();
 }
 
 
+/*!
+    @brief      Copy-assign @a other to this instance
+
+    If necessary, the close function is called on the layered HDF5
+    identifier before the assignment.
+*/
 Identifier& Identifier::operator=(
     Identifier const& other)
 {
@@ -96,12 +104,13 @@ Identifier& Identifier::operator=(
     // - Clean-up this instance
     // - Copy the other instance in
 
-    assert_invariant();
-
     close_if_necessary();
 
     _id = other._id;
-    increment_reference_count();
+
+    if(is_valid()) {
+        increment_reference_count();
+    }
 
     _close = other._close;
 
@@ -118,8 +127,6 @@ Identifier& Identifier::operator=(
     // - Clean-up this instance
     // - Move the other instance in
 
-    assert_invariant();
-
     close_if_necessary();
 
     _id = std::move(other._id);
@@ -127,8 +134,8 @@ Identifier& Identifier::operator=(
 
     _close = std::move(other._close);
 
-    other.assert_invariant();
     assert_invariant();
+    assert(!other.is_valid());
 
     return *this;
 }
@@ -136,7 +143,6 @@ Identifier& Identifier::operator=(
 
 int Identifier::reference_count() const
 {
-    assert_invariant();
     assert(is_valid());
 
     auto count = ::H5Iget_ref(_id);
@@ -151,7 +157,6 @@ int Identifier::reference_count() const
 
 int Identifier::increment_reference_count()
 {
-    assert_invariant();
     assert(is_valid());
 
     auto count = ::H5Iinc_ref(_id);
@@ -159,8 +164,6 @@ int Identifier::increment_reference_count()
     if(count < 0) {
         throw std::runtime_error("Cannot increment object's reference count");
     }
-
-    assert_invariant();
 
     return count;
 }
@@ -171,26 +174,15 @@ int Identifier::increment_reference_count()
 */
 void Identifier::close_if_necessary()
 {
-    assert_invariant();
-
     if(is_valid()) {
         assert(reference_count() > 0);
         _close(_id);
     }
-
-    assert_invariant();
 }
 
 
 void Identifier::assert_invariant() const
 {
-    // An identifier is either empty, іnvalid, or valid.
-    // - An empty identifier has no id. In that case, the close function
-    //   must not be set.
-    // - An invalid identifier has an invalid id and a close function.
-    // - A valid identifier has a valid id and a close function.
-    // assert((is_empty() && _close == nullptr) || _close != nullptr);
-
     assert(!(is_valid() && _close == nullptr));
 }
 
@@ -200,6 +192,8 @@ void Identifier::assert_invariant() const
 */
 bool Identifier::is_valid() const
 {
+    // Don't call assert_invariant here, since it uses is_valid in its
+    // implementation...
     auto status = ::H5Iis_valid(_id);
 
     if(status < 0) {
