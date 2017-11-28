@@ -7,7 +7,7 @@ namespace hl {
 TimeSeriesDiscretization::TimeSeriesDiscretization(
     Shape&& shape)
 
-    : _shape{std::forward<Shape>(shape)}
+    : _shape(std::forward<Shape>(shape))
 
 {
 }
