@@ -1,5 +1,5 @@
 #include "lue/hl/raster_stack_discretization.hpp"
-#include <algorithm>
+// #include <algorithm>
 #include <cassert>
 
 
@@ -22,9 +22,13 @@ RasterStackDiscretization::RasterStackDiscretization(
     assert(raster_shape.size() == 2);
     assert(_shape.size() == 3);
 
-    auto destination = std::copy(
-        time_series_shape.begin(), time_series_shape.end(), _shape.begin());
-    std::copy(raster_shape.begin(), raster_shape.end(), destination);
+    _shape[0] = time_series_shape[0];
+    _shape[1] = raster_shape[0];
+    _shape[2] = raster_shape[1];
+
+    // auto destination = std::copy(
+    //     time_series_shape.begin(), time_series_shape.end(), _shape.begin());
+    // std::copy(raster_shape.begin(), raster_shape.end(), destination);
 }
 
 
