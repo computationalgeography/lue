@@ -7,7 +7,7 @@ namespace hl {
 RasterDomain::RasterDomain()
 
     : _crs{},
-      _coordinates{}
+      _coordinates()
 
 {
 }
@@ -32,7 +32,7 @@ RasterDomain::RasterDomain(
     Coordinates&& coordinates)
 
     : _crs{crs},
-      _coordinates{std::forward<Coordinates>(coordinates)}
+      _coordinates(std::forward<Coordinates>(coordinates))
 
 {
 }

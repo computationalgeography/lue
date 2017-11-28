@@ -7,7 +7,8 @@ namespace lue {
 namespace utility {
 namespace {
 
-boost::spirit::qi::rule<std::string::iterator, GDALStack::SliceIndex()> stack_rule(
+boost::spirit::qi::rule<std::string::iterator, GDALStack::SliceIndex()>
+        stack_rule(
     std::string const& stack_name)
 {
     return
@@ -38,6 +39,7 @@ GDALDatasetPtr try_open_gdal_raster_stack_dataset_for_read(
     auto const dataset_path = fs::path(dataset_name);
     auto const directory_path = dataset_path.parent_path();
     GDALDatasetPtr result;
+    auto stack_rule = utility::stack_rule(dataset_name);
 
     // This only works with Boost >= 1.62.0
     // for(auto const& directory_entry: fs::directory_iterator(directory_path)) {
@@ -51,7 +53,7 @@ GDALDatasetPtr try_open_gdal_raster_stack_dataset_for_read(
             auto first = pathname.begin();
             auto last = pathname.end();
 
-            if(qi::parse(first, last, stack_rule(dataset_name))) {
+            if(qi::parse(first, last, stack_rule)) {
                 // Found a file whose name matches the pattern we are
                 // looking for
                 result = try_open_gdal_raster_dataset_for_read(pathname);
@@ -78,19 +80,28 @@ GDALStack::Slices slices(
     namespace qi = boost::spirit::qi;
     namespace fs = boost::filesystem;
 
+    auto stack_rule = utility::stack_rule(dataset_name);
     auto const dataset_path = fs::path(dataset_name);
     auto const directory_path = dataset_path.parent_path();
     GDALStack::Slices::Indices indices;
-
     GDALStack::SliceIndex index;
 
-    for(auto const& directory_entry: fs::directory_iterator(directory_path)) {
-        auto pathname = directory_entry.path().string();
-        auto first = pathname.begin();
-        auto last = pathname.end();
 
-        if(qi::parse(first, last, stack_rule(dataset_name), index)) {
-            indices.push_back(index);
+    // This only works with Boost >= 1.62.0
+    // for(auto const& directory_entry: fs::directory_iterator(directory_path)) {
+
+    {
+        fs::directory_iterator end;
+
+        for(fs::directory_iterator it{directory_path}; it != end; ++it) {
+            auto const& directory_entry = *it;
+            auto pathname = directory_entry.path().string();
+            auto first = pathname.begin();
+            auto last = pathname.end();
+
+            if(qi::parse(first, last, stack_rule, index)) {
+                indices.push_back(index);
+            }
         }
     }
 
