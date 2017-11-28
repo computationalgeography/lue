@@ -30,7 +30,7 @@ TimeSeriesDomain::TimeSeriesDomain(
     Coordinates&& coordinates)
 
     : _clock{clock},
-      _coordinates{std::forward<Coordinates>(coordinates)}
+      _coordinates(std::forward<Coordinates>(coordinates))
 
 {
 }
