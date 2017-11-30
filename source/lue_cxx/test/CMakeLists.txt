@@ -4,6 +4,8 @@ add_unit_tests(
         dataset_test
         compound/clock_test
         constant_size/time/omnipresent/property_set_test
+        item/constant_size/different_shape_test
+        item/constant_size/same_shape_test
     LINK_LIBRARIES
-        lue::lue
+        lue::test
 )

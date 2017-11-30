@@ -1,0 +1,85 @@
+#define BOOST_TEST_MODULE lue item constant_size different_shape
+#include <boost/test/unit_test.hpp>
+#include "lue/item/constant_size/different_shape.hpp"
+#include "lue/test/dataset_fixture.hpp"
+#include "lue/hdf5/file.hpp"
+#include <numeric>
+
+
+BOOST_AUTO_TEST_CASE(create_different_shape)
+{
+    std::string const filename = "create_different_shape.h5";
+    lue::test::DatasetFixture fixture{filename};
+
+    auto const dataset = lue::hdf5::create_file(filename);
+
+    std::string const value_name = "my_value";
+    lue::hdf5::Datatype datatype{
+        lue::hdf5::NativeDatatypeTraits<int32_t>::type_id()};
+    int const rank = 2;
+
+    auto value = lue::constant_size::create_different_shape(
+        dataset, value_name, datatype, rank);
+
+    BOOST_CHECK_EQUAL(value.nr_items(), 0);
+    BOOST_CHECK_EQUAL(value.rank(), rank);
+    BOOST_CHECK(value.memory_datatype() == datatype);
+    BOOST_CHECK(value.file_datatype() == lue::hdf5::file_datatype(datatype));
+
+
+    hsize_t const nr_items = 5;
+    std::vector<hsize_t> value_shapes = {
+        11, 12,
+        21, 22,
+        31, 32,
+        41, 42,
+        51, 52,
+    };
+    value.reserve(nr_items, value_shapes.data());
+
+    BOOST_CHECK_EQUAL(value.nr_items(), nr_items);
+
+    // Write and read values for each item
+    std::vector<std::vector<int32_t>> values(nr_items);
+    for(hsize_t i = 0; i < nr_items; ++i) {
+        lue::hdf5::Shape value_shape{
+            value_shapes[i * rank + 0], value_shapes[i * rank + 1]};
+        values[i].resize(value_shape[0] * value_shape[1]);
+        std::iota(values[i].begin(), values[i].end(), i);
+        value.write(i, values[i].data());
+    }
+
+    std::vector<std::vector<int32_t>> values_read(nr_items);
+    for(hsize_t i = 0; i < nr_items; ++i) {
+        lue::hdf5::Shape value_shape{
+            value_shapes[i * rank + 0], value_shapes[i * rank + 1]};
+        auto value_shape_read = value.value_shape(i);
+
+        BOOST_CHECK(value_shape_read == value_shape);
+
+        values_read[i].resize(value_shape[0] * value_shape[1]);
+        value.read(i, values_read[i].data());
+
+        BOOST_CHECK_EQUAL_COLLECTIONS(
+            values_read[i].begin(), values_read[i].end(),
+            values[i].begin(), values[i].end());
+    }
+
+    // Write and read value for item with idx 2
+    {
+        hsize_t item_idx = 2;
+        lue::hdf5::Shape value_shape{
+            value_shapes[item_idx * rank + 0],
+            value_shapes[item_idx * rank + 1]};
+        std::vector<int32_t> new_value(value_shape[0] * value_shape[1]);
+        std::iota(new_value.begin(), new_value.end(), 99);
+        value.write(item_idx, new_value.data());
+
+        std::vector<int32_t> value_read(value_shape[0] * value_shape[1]);
+        value.read(item_idx, value_read.data());
+
+        BOOST_CHECK_EQUAL_COLLECTIONS(
+            value_read.begin(), value_read.end(),
+            new_value.begin(), new_value.end());
+    }
+}
