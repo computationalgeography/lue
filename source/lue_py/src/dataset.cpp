@@ -1,4 +1,5 @@
 #include "lue/dataset.hpp"
+#include "lue/py/hdf5/file.hpp"
 #include <pybind11/pybind11.h>
 
 
@@ -7,41 +8,6 @@ using namespace pybind11::literals;
 
 
 namespace lue {
-namespace {
-
-
-unsigned int python_mode_to_hdf5_flag(
-    std::string const& mode)
-{
-    unsigned int flags = 0;
-
-    if(mode == "r") {
-        flags = H5F_ACC_RDONLY;
-    }
-    else if(mode == "w") {
-        flags = H5F_ACC_RDWR;
-    }
-    else {
-        throw py::value_error(
-            "mode string must begin with one of 'r' or 'w', not '" +
-            mode + "'");
-    }
-
-    return flags;
-}
-
-
-// Dataset open_dataset(
-//     std::string const& name,
-//     std::string const& mode)
-// {
-//     auto flags = python_mode_to_hdf5_flag(mode);
-// 
-//     return lue::open_dataset(name, flags);
-// }
-
-}  // Anonymous namespace
-
 
 void init_dataset_class(
         py::module& module)
@@ -131,7 +97,7 @@ void init_dataset_class(
             std::string const& name,
             std::string const& mode)
         {
-            return Dataset(name, python_mode_to_hdf5_flag(mode));
+            return Dataset(name, hdf5::python_mode_to_hdf5_flag(mode));
         },
         R"(
     Open existing LUE dataset

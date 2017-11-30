@@ -28,6 +28,7 @@ if(LUE_BUILD_PYTHON_API)
         DIRECTORY
             ${CMAKE_CURRENT_BINARY_DIR}/include
             lue_hdf5/include
+            ${CMAKE_CURRENT_BINARY_DIR}/lue_hdf5/include
             lue_cxx/include
             ${CMAKE_CURRENT_BINARY_DIR}/lue_cxx/include
             lue_hl/include

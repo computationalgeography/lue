@@ -155,27 +155,6 @@ void File::flush() const
 // }
 
 
-// /*!
-//     @brief      .
-//     @param      flags File access flags: H5F_ACC_RDWR, H5F_ACC_RDONLY
-//     @return     .
-//     @exception  .
-// */
-// File open_file(
-//     std::string const& name,
-//     unsigned int const flags)
-// {
-//     Identifier file_id(::H5Fopen(name.c_str(), flags, H5P_DEFAULT),
-//         ::H5Fclose);
-// 
-//     if(!file_id.is_valid()) {
-//         throw std::runtime_error("Cannot open file " + name);
-//     }
-// 
-//     return File(std::move(file_id));
-// }
-
-
 /*!
     @brief      Return whether or not a file exists
     @param      name Name of dataset
@@ -202,7 +181,7 @@ File create_file(
         throw std::runtime_error("Cannot create file " + name);
     }
 
-    return File(std::move(id));
+    return File{std::move(id)};
 }
 
 
@@ -223,7 +202,7 @@ File create_in_memory_file(
         throw std::runtime_error("Cannot create file " + name);
     }
 
-    return File(std::move(id));
+    return File{std::move(id)};
 }
 
 

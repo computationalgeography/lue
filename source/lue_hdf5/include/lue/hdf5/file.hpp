@@ -65,9 +65,6 @@ private:
 };
 
 
-// File               open_file           (std::string const& name,
-//                                         unsigned int const flags);
-
 bool               file_exists         (std::string const& name);
 
 File               create_file         (std::string const& name);
