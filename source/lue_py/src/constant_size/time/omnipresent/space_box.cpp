@@ -14,16 +14,10 @@ namespace omnipresent {
 void init_space_box_class(
     py::module& module)
 {
-    py::class_<SpaceBox, same_shape::Value>(
+    py::class_<SpaceBox, constant_size::SameShape>(
         module,
         "SpaceBox",
         "SpaceBox...")
-
-        // .def(
-        //     "reserve",
-        //     &lue::constant_size::time::omnipresent::SpaceBox::reserve,
-        //     "reserve docstring...",
-        //     py::return_value_policy::reference_internal)
 
         ;
 

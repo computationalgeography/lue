@@ -1,5 +1,5 @@
 #include "lue/constant_size/time/omnipresent/different_shape/value.hpp"
-#include "lue/py/conversion.hpp"
+/// #include "lue/py/conversion.hpp"
 #include <pybind11/pybind11.h>
 
 
@@ -17,46 +17,46 @@ void init_value_class(
     py::module& module)
 {
 
-    py::class_<Value>(
+    py::class_<Value, constant_size::DifferentShape>(
         module,
         "Value",
         "Value docstring...")
 
-        .def_property_readonly(
-            "dtype",
-            [](Value const& self)
-            {
-                py::object object = hdf5_type_id_to_numpy_dtype(
-                    self.memory_datatype());
-                assert(object.ptr() != nullptr);
-                return object;
-            },
-            "dtype docstring..."
-        )
+        // .def_property_readonly(
+        //     "dtype",
+        //     [](Value const& self)
+        //     {
+        //         py::object object = hdf5_type_id_to_numpy_dtype(
+        //             self.memory_datatype());
+        //         assert(object.ptr() != nullptr);
+        //         return object;
+        //     },
+        //     "dtype docstring..."
+        // )
 
-        .def_property_readonly(
-            "rank",
-            &Value::rank,
-            "rank docstring..."
-        )
+        // .def_property_readonly(
+        //     "rank",
+        //     &Value::rank,
+        //     "rank docstring..."
+        // )
 
-        .def(
-            "__len__",
-            &Value::nr_items,
-            "__len__ docstring..."
-        )
+        // .def(
+        //     "__len__",
+        //     &Value::nr_items,
+        //     "__len__ docstring..."
+        // )
 
-        .def(
-            "__getitem__",
-            [](Value const& values,
-                size_t const idx)
-            {
-                if(idx >= values.nr_items()) {
-                    throw py::index_error();
-                }
+        // .def(
+        //     "__getitem__",
+        //     [](Value const& values,
+        //         size_t const idx)
+        //     {
+        //         if(idx >= values.nr_items()) {
+        //             throw py::index_error();
+        //         }
 
-                return values[idx];
-            })
+        //         return values[idx];
+        //     })
 
         ;
 

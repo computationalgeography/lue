@@ -1,6 +1,5 @@
 #include "lue/constant_size/time/omnipresent/space_box.hpp"
 #include "lue/tag.hpp"
-#include <cassert>
 
 
 namespace lue {
@@ -8,39 +7,23 @@ namespace constant_size {
 namespace time {
 namespace omnipresent {
 
-// SpaceBox::SpaceBox(
-//     hdf5::Identifier const& location)
-// 
-//     : same_shape::Value(location, "coordinates")
-// 
-// {
-// }
-
-
 SpaceBox::SpaceBox(
     hdf5::Group const& parent,
     hdf5::Datatype const memory_datatype)
 
-    : same_shape::Value{parent, coordinates_tag, memory_datatype}
+    : constant_size::SameShape{parent, coordinates_tag, memory_datatype}
 
 {
 }
 
 
 SpaceBox::SpaceBox(
-    same_shape::Value&& value)
+    constant_size::SameShape&& dataset)
 
-    : same_shape::Value{std::forward<same_shape::Value>(value)}
+    : constant_size::SameShape{std::forward<constant_size::SameShape>(dataset)}
 
 {
 }
-
-
-// bool space_box_exists(
-//     hdf5::Group const& group)
-// {
-//     return same_shape::value_exists(group, coordinates_tag);
-// }
 
 
 /*!
@@ -59,10 +42,10 @@ SpaceBox create_space_box(
     // (diagonally). Two of them is enough.
     hdf5::Shape value_shape = { 2 * rank };
 
-    auto value = same_shape::create_value(parent, coordinates_tag,
+    auto dataset = constant_size::create_same_shape(parent, coordinates_tag,
         file_datatype, memory_datatype, value_shape);
 
-    return SpaceBox{std::move(value)};
+    return SpaceBox{std::move(dataset)};
 }
 
 }  // namespace omnipresent

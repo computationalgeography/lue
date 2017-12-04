@@ -25,6 +25,9 @@ add_library(lue_py SHARED
     src/universe
     src/validate
 
+    src/item/constant_size/different_shape
+    src/item/constant_size/same_shape
+
     src/constant_size/domain
     src/constant_size/property
     src/constant_size/property_set

@@ -11,7 +11,8 @@ namespace constant_size {
                 collections of values with a different shape
 
     Each item's value ends up in a seperate HDF5 dataset, named after the
-    item's index.
+    item's index. All datasets have the same rank, but the size of each
+    dimension may be different.
 */
 class DifferentShape:
     public hdf5::Group
@@ -22,9 +23,9 @@ public:
                    DifferentShape      (hdf5::Group const& parent,
                                         std::string const& name);
 
-                   // DifferentShape      (hdf5::Group const& parent,
-                   //                      std::string const& name,
-                   //                      hdf5::Datatype const& memory_datatype);
+                   DifferentShape      (hdf5::Group const& parent,
+                                        std::string const& name,
+                                        hdf5::Datatype const& memory_datatype);
 
                    DifferentShape      (hdf5::Group&& group,
                                         hdf5::Datatype const& memory_datatype);

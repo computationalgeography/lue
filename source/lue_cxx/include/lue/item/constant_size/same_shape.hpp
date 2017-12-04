@@ -9,6 +9,9 @@ namespace constant_size {
 /*!
     @brief      SameShape manages item values for constant sized
                 collections of values with the same shape
+
+    The underlying HDF5 dataset has one dimension more than the rank of the
+    individual values. This first dimension represents the items.
 */
 class SameShape:
     public Array

@@ -13,7 +13,7 @@ namespace omnipresent {
 void init_space_point_class(
     py::module& module)
 {
-    py::class_<SpacePoint, same_shape::Value>(
+    py::class_<SpacePoint, constant_size::SameShape>(
         module,
         "SpacePoint",
         "SpacePoint...")

@@ -26,21 +26,6 @@ void init_value(
             "Value",
             "Value docstring...")
 
-        // .def_property_readonly(
-        //     "shape_per_item_type",
-        //     [](
-        //         lue::constant_size::time::omnipresent::same_shape::Item& /* self */)
-        //     {
-        //         return lue::ShapePerItem::same;
-        //     },
-        //     "shape_per_item_type docstring...",
-        //     py::return_value_policy::reference_internal)
-
-        // .def(py::init<Property&, hid_t const>(),
-        //     "__init__ docstring..."
-        //     "group"_a, "type"_a,
-        //     py::keep_alive<1, 2>())
-
         .def("reserve",
             &Value::reserve,
             "reserve docstring...",

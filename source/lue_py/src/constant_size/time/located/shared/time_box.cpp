@@ -15,16 +15,10 @@ namespace shared {
 void init_time_box(
     py::module& module)
 {
-    py::class_<TimeBox, omnipresent::same_shape::Value>(
+    py::class_<TimeBox, constant_size::SameShape>(
         module,
         "TimeBox",
         "TimeBox...")
-
-        // .def(
-        //     "reserve",
-        //     &lue::constant_size::time::omnipresent::TimeBox::reserve,
-        //     "reserve docstring...",
-        //     py::return_value_policy::reference_internal)
 
         ;
 

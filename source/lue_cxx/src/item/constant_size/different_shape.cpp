@@ -24,20 +24,23 @@ DifferentShape::DifferentShape(
 }
 
 
-// DifferentShape::DifferentShape(
-//     hdf5::Group const& parent,
-//     std::string const& name,
-//     hdf5::Datatype const& memory_datatype)
-// 
-//     : Group{parent, name},
-//       _nr_items{attributes().read<hsize_t>(nr_items_tag)},
-//       _rank{attributes().read<int>(rank_tag)},
-//       _file_datatype{hdf5::decode_datatype(
-//           attributes().read<std::vector<unsigned char>>(datatype_tag))},
-//       _memory_datatype{memory_datatype}
-// 
-// {
-// }
+/*!
+    @brief      Open value @a name in @a parent
+*/
+DifferentShape::DifferentShape(
+    hdf5::Group const& parent,
+    std::string const& name,
+    hdf5::Datatype const& memory_datatype)
+
+    : Group{parent, name},
+      _nr_items{attributes().read<hsize_t>(nr_items_tag)},
+      _rank{attributes().read<int>(rank_tag)},
+      _file_datatype{hdf5::decode_datatype(
+          attributes().read<std::vector<unsigned char>>(datatype_tag))},
+      _memory_datatype{memory_datatype}
+
+{
+}
 
 
 /*!

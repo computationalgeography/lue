@@ -12,18 +12,16 @@ TimeBox::TimeBox(
     hdf5::Group const& parent,
     hdf5::Datatype const memory_datatype)
 
-    : omnipresent::same_shape::Value{
-        parent, coordinates_tag, memory_datatype}
+    : constant_size::SameShape{parent, coordinates_tag, memory_datatype}
 
 {
 }
 
 
 TimeBox::TimeBox(
-    omnipresent::same_shape::Value&& value)
+    constant_size::SameShape&& dataset)
 
-    : omnipresent::same_shape::Value{
-        std::forward<omnipresent::same_shape::Value>(value)}
+    : constant_size::SameShape{std::forward<constant_size::SameShape>(dataset)}
 
 {
 }
@@ -40,10 +38,10 @@ TimeBox create_time_box(
     // count.
     hdf5::Shape value_shape = { 2 };
 
-    auto value = omnipresent::same_shape::create_value(
+    auto dataset = constant_size::create_same_shape(
         parent, coordinates_tag, file_datatype, memory_datatype, value_shape);
 
-    return TimeBox(std::move(value));
+    return TimeBox{std::move(dataset)};
 }
 
 }  // namespace shared

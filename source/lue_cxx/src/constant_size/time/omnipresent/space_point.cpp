@@ -1,6 +1,5 @@
 #include "lue/constant_size/time/omnipresent/space_point.hpp"
 #include "lue/tag.hpp"
-#include <cassert>
 
 
 namespace lue {
@@ -12,16 +11,16 @@ SpacePoint::SpacePoint(
     hdf5::Group const& parent,
     hdf5::Datatype const memory_datatype)
 
-    : same_shape::Value{parent, coordinates_tag, memory_datatype}
+    : constant_size::SameShape{parent, coordinates_tag, memory_datatype}
 
 {
 }
 
 
 SpacePoint::SpacePoint(
-    same_shape::Value&& value)
+    constant_size::SameShape&& dataset)
 
-    : same_shape::Value{std::forward<same_shape::Value>(value)}
+    : constant_size::SameShape{std::forward<constant_size::SameShape>(dataset)}
 
 {
 }
@@ -42,10 +41,10 @@ SpacePoint create_space_point(
     // A point is defined by the coordinates along each dimension
     hdf5::Shape value_shape = { rank };
 
-    auto value = same_shape::create_value(parent, coordinates_tag,
+    auto dataset = constant_size::create_same_shape(parent, coordinates_tag,
         file_datatype, memory_datatype, value_shape);
 
-    return SpacePoint(std::move(value));
+    return SpacePoint{std::move(dataset)};
 }
 
 }  // namespace omnipresent

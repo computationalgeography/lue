@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/constant_size/time/omnipresent/same_shape/value.hpp"
+#include "lue/item/constant_size/same_shape.hpp"
 
 
 namespace lue {
@@ -8,17 +8,15 @@ namespace time {
 namespace omnipresent {
 
 class SpaceBox:
-    public same_shape::Value
+    public constant_size::SameShape
 {
 
 public:
 
-                   // SpaceBox            (hdf5::Identifier const& location);
-
                    SpaceBox            (hdf5::Group const& parent,
                                         hdf5::Datatype const memory_datatype);
 
-                   SpaceBox            (same_shape::Value&& value);
+                   SpaceBox            (constant_size::SameShape&& dataset);
 
                    SpaceBox            (SpaceBox const&)=delete;
 
@@ -36,12 +34,10 @@ private:
 };
 
 
-// bool               space_box_exists    (hdf5::Group const& group);
-
 SpaceBox           create_space_box    (hdf5::Group const& parent,
                                         hdf5::Datatype const& file_datatype,
                                         hdf5::Datatype const& memory_datatype,
-                                        size_t const rank);
+                                        size_t rank);
 
 }  // namespace omnipresent
 }  // namespace time

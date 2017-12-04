@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/constant_size/time/omnipresent/same_shape/value.hpp"
+#include "lue/item/constant_size/same_shape.hpp"
 
 
 namespace lue {
@@ -13,13 +13,9 @@ namespace shared {
 
     A time box is defined by a start and end time point. For each time
     domain item a pair of time points is stored.
-
-    From the perspective of a time domain, the items are omnipresent:
-    time domain information doesn't change over time(!).
-    Therefore, this class inherits from omnipresent::same_shape::Value.
 */
 class TimeBox:
-    public omnipresent::same_shape::Value
+    public constant_size::SameShape
 {
 
 public:
@@ -27,18 +23,17 @@ public:
                    TimeBox             (hdf5::Group const& parent,
                                         hdf5::Datatype const memory_datatype);
 
-                   TimeBox             (omnipresent::same_shape::Value&&
-                                            value);
+                   TimeBox             (constant_size::SameShape&& dataset);
 
-                   TimeBox             (TimeBox const& other)=delete;
+                   TimeBox             (TimeBox const&)=delete;
 
-                   TimeBox             (TimeBox&& other)=default;
+                   TimeBox             (TimeBox&&)=default;
 
                    ~TimeBox            ()=default;
 
-    TimeBox&       operator=           (TimeBox const& other)=delete;
+    TimeBox&       operator=           (TimeBox const&)=delete;
 
-    TimeBox&       operator=           (TimeBox&& other)=default;
+    TimeBox&       operator=           (TimeBox&&)=default;
 
 private:
 
