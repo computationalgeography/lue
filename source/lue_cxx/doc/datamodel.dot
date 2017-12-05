@@ -78,43 +78,6 @@ digraph datamodel {
     ];
 
 
-
-    // private_property_sets [
-    //     label="__property_sets__"
-    // ];
-
-    // private_property_sets [
-    //     label="__property_sets__"
-    // ];
-
-
-    // phenomenon -> private_property_sets [
-    //     label = "1"
-    // ];
-
-    // private_property_sets -> private_property_set [
-    //     label = "*"
-    // ];
-
-    // private_property_set -> private_item_collection [
-    // ];
-
-    // private_property_set -> private_domain [
-    // ];
-
-    // private_property_set -> private_properties [
-    //     label = "1"
-    // ];
-
-    // private_properties -> private_property [
-    //     label = "*"
-    // ];
-
-    // private_property -> private_domain [
-    //     label = "*"
-    // ];
-
-
     // Decissions --------------------------------------------------------------
     node [
         shape=diamond
@@ -123,78 +86,80 @@ digraph datamodel {
 
     collection_size_through_time [
         label="collection size\nthrough time"
-        fillcolor=red
+        style=""
     ];
 
     value_variability1 [
         label="value variability\nthrough time"
         shape=diamond
-        fillcolor=blue
+        fillcolor="#9a0000"
     ];
     value_variability2 [
         label="value variability\nthrough time"
         shape=diamond
-        fillcolor=blue
+        fillcolor="#9a0000"
     ];
 
     shape_variability1 [
         label="value shape variability\nthrough time"
         shape=diamond
-        fillcolor=green
+        fillcolor="#419702"
     ];
     shape_variability2 [
         label="value shape variability\nthrough time"
         shape=diamond
-        fillcolor=green
+        fillcolor="#419702"
     ];
 
 
     value_shape1 [
         label="value shape\nbetween items"
         shape=diamond
-        fillcolor=orange
+        fillcolor="#094d8e"
     ];
     value_shape2 [
         label="value shape\nbetween items"
         shape=diamond
-        fillcolor=orange
+        fillcolor="#094d8e"
     ];
     value_shape3 [
         label="value shape\nbetween items"
         shape=diamond
-        fillcolor=orange
+        fillcolor="#094d8e"
     ];
     value_shape4 [
         label="value shape\nbetween items"
         shape=diamond
-        fillcolor=orange
+        fillcolor="#094d8e"
     ];
     value_shape5 [
         label="value shape\nbetween items"
         shape=diamond
-        fillcolor=orange
+        fillcolor="#094d8e"
     ];
     value_shape6 [
         label="value shape\nbetween items"
         shape=diamond
-        fillcolor=orange
+        fillcolor="#094d8e"
     ];
 
 
     node [
         shape=""
-        style="";
     ];
 
     item [
         label="Item collection"
+        style=""
     ];
 
     same_shape1 [
         label="constant_size::\nconstant::\nsame_shape::\nCollection"
+        style=""
     ];
     different_shape1 [
         label="constant_size::\nconstant::\ndifferent_shape::\nCollection"
+        style=""
     ];
     same_shape2 [
         label="constant_size::\nvariable::\nconstant_shape::\nsame_shape::\nCollection"
@@ -228,8 +193,6 @@ digraph datamodel {
     different_shape6 [
         label="variable_size::\nvariable::\nvariable_shape::\ndifferent_shape::\nCollection"
     ];
-
-
 
 
     item -> collection_size_through_time [
@@ -322,7 +285,5 @@ digraph datamodel {
     value_shape6 -> same_shape6 [
         label="same"
     ];
-
-
 
 }
