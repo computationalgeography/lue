@@ -12,7 +12,7 @@ Value::Value(
     std::string const& name,
     hdf5::Datatype const& memory_datatype)
 
-    : constant_size::SameShape{parent, name, memory_datatype},
+    : constant::SameShape{parent, name, memory_datatype},
       omnipresent::Value{}
 
 {
@@ -20,9 +20,9 @@ Value::Value(
 
 
 Value::Value(
-    constant_size::SameShape&& item)
+    constant::SameShape&& collection)
 
-    : constant_size::SameShape{std::forward<constant_size::SameShape>(item)},
+    : constant::SameShape{std::forward<constant::SameShape>(collection)},
       omnipresent::Value{}
 
 {
@@ -31,7 +31,7 @@ Value::Value(
 
 hsize_t Value::nr_items() const
 {
-    return constant_size::SameShape::nr_items();
+    return constant::SameShape::nr_items();
 }
 
 
@@ -53,7 +53,7 @@ Value create_value(
     hdf5::Datatype const& memory_datatype,
     hdf5::Shape const& value_shape)
 {
-    return Value{constant_size::create_same_shape(
+    return Value{constant::create_same_shape(
         group, name, file_datatype, memory_datatype, value_shape)};
 }
 

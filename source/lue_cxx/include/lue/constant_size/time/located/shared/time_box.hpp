@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/item/constant_size/same_shape.hpp"
+#include "lue/item/constant_size/constant/same_shape.hpp"
 
 
 namespace lue {
@@ -15,7 +15,7 @@ namespace shared {
     domain item a pair of time points is stored.
 */
 class TimeBox:
-    public constant_size::SameShape
+    public constant::SameShape
 {
 
 public:
@@ -23,7 +23,7 @@ public:
                    TimeBox             (hdf5::Group const& parent,
                                         hdf5::Datatype const memory_datatype);
 
-                   TimeBox             (constant_size::SameShape&& dataset);
+                   TimeBox             (constant::SameShape&& collection);
 
                    TimeBox             (TimeBox const&)=delete;
 

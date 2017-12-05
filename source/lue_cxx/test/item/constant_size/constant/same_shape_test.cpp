@@ -1,6 +1,6 @@
-#define BOOST_TEST_MODULE lue item constant_size same_shape
+#define BOOST_TEST_MODULE lue item constant_size constant same_shape
 #include <boost/test/unit_test.hpp>
-#include "lue/item/constant_size/same_shape.hpp"
+#include "lue/item/constant_size/constant/same_shape.hpp"
 #include "lue/test/dataset_fixture.hpp"
 #include "lue/hdf5/file.hpp"
 
@@ -18,7 +18,7 @@ BOOST_AUTO_TEST_CASE(create_same_shape)
     lue::hdf5::Datatype datatype{
         lue::hdf5::NativeDatatypeTraits<int32_t>::type_id()};
 
-    auto value = lue::constant_size::create_same_shape(
+    auto value = lue::constant_size::constant::create_same_shape(
         dataset, value_name, datatype);
 
     BOOST_CHECK_EQUAL(value.nr_items(), 0);

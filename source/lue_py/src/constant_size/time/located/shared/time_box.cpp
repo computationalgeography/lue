@@ -15,7 +15,7 @@ namespace shared {
 void init_time_box(
     py::module& module)
 {
-    py::class_<TimeBox, constant_size::SameShape>(
+    py::class_<TimeBox, constant::SameShape>(
         module,
         "TimeBox",
         "TimeBox...")

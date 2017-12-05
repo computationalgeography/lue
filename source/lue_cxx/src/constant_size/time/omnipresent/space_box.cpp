@@ -11,16 +11,16 @@ SpaceBox::SpaceBox(
     hdf5::Group const& parent,
     hdf5::Datatype const memory_datatype)
 
-    : constant_size::SameShape{parent, coordinates_tag, memory_datatype}
+    : constant::SameShape{parent, coordinates_tag, memory_datatype}
 
 {
 }
 
 
 SpaceBox::SpaceBox(
-    constant_size::SameShape&& dataset)
+    constant::SameShape&& collection)
 
-    : constant_size::SameShape{std::forward<constant_size::SameShape>(dataset)}
+    : constant::SameShape{std::forward<constant::SameShape>(collection)}
 
 {
 }
@@ -42,10 +42,10 @@ SpaceBox create_space_box(
     // (diagonally). Two of them is enough.
     hdf5::Shape value_shape = { 2 * rank };
 
-    auto dataset = constant_size::create_same_shape(parent, coordinates_tag,
-        file_datatype, memory_datatype, value_shape);
+    auto collection = constant::create_same_shape(
+        parent, coordinates_tag, file_datatype, memory_datatype, value_shape);
 
-    return SpaceBox{std::move(dataset)};
+    return SpaceBox{std::move(collection)};
 }
 
 }  // namespace omnipresent

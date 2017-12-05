@@ -1,10 +1,11 @@
-#include "lue/item/constant_size/different_shape.hpp"
+#include "lue/item/constant_size/constant/different_shape.hpp"
 #include "lue/hdf5/chunk.hpp"
 #include "lue/tag.hpp"
 
 
 namespace lue {
 namespace constant_size {
+namespace constant {
 
 /*!
     @brief      Open value @a name in @a parent
@@ -216,5 +217,6 @@ DifferentShape create_different_shape(
     return DifferentShape{std::move(group), memory_datatype};
 }
 
+}  // namespace constant
 }  // namespace constant_size
 }  // namespace lue

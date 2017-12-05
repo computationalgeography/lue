@@ -14,7 +14,7 @@ namespace omnipresent {
 void init_space_box_class(
     py::module& module)
 {
-    py::class_<SpaceBox, constant_size::SameShape>(
+    py::class_<SpaceBox, constant::SameShape>(
         module,
         "SpaceBox",
         "SpaceBox...")

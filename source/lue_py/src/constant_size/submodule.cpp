@@ -6,6 +6,13 @@ namespace py = pybind11;
 
 namespace lue {
 namespace constant_size {
+namespace constant {
+
+void init_different_shape(py::module& module);
+void init_same_shape(py::module& module);
+
+}  // namespace constant
+
 namespace time {
 
 void init_submodule(py::module& module);
@@ -18,8 +25,6 @@ void init_property_class(py::module& module);
 void init_property_set_class(py::module& module);
 void init_space_domain_class(py::module& module);
 
-void init_different_shape(py::module& module);
-void init_same_shape(py::module& module);
 
 void init_submodule(
     py::module& module)
@@ -38,8 +43,8 @@ void init_submodule(
     init_property_class(submodule);
     init_property_set_class(submodule);
 
-    init_different_shape(submodule);
-    init_same_shape(submodule);
+    constant::init_different_shape(submodule);
+    constant::init_same_shape(submodule);
 
     time::init_submodule(submodule);
 }

@@ -1,6 +1,6 @@
-#define BOOST_TEST_MODULE lue item constant_size different_shape
+#define BOOST_TEST_MODULE lue item constant_size constant different_shape
 #include <boost/test/unit_test.hpp>
-#include "lue/item/constant_size/different_shape.hpp"
+#include "lue/item/constant_size/constant/different_shape.hpp"
 #include "lue/test/dataset_fixture.hpp"
 #include "lue/hdf5/file.hpp"
 #include <numeric>
@@ -18,7 +18,7 @@ BOOST_AUTO_TEST_CASE(create_different_shape)
         lue::hdf5::NativeDatatypeTraits<int32_t>::type_id()};
     int const rank = 2;
 
-    auto value = lue::constant_size::create_different_shape(
+    auto value = lue::constant_size::constant::create_different_shape(
         dataset, value_name, datatype, rank);
 
     BOOST_CHECK_EQUAL(value.nr_items(), 0);

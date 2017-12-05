@@ -5,9 +5,10 @@
 
 namespace lue {
 namespace constant_size {
+namespace constant {
 
 /*!
-    @brief      SameShape manages item values for constant sized
+    @brief      SameShape manages constant item values for constant sized
                 collections of values with the same shape
 
     The underlying HDF5 dataset has one dimension more than the rank of the
@@ -74,5 +75,6 @@ SameShape          create_same_shape   (hdf5::Group const& parent,
                                         hdf5::Datatype const& memory_datatype,
                                         hdf5::Shape const& value_shape);
 
+}  // namespace constant
 }  // namespace constant_size
 }  // namespace lue

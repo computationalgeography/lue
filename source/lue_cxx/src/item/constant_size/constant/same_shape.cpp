@@ -1,10 +1,11 @@
-#include "lue/item/constant_size/same_shape.hpp"
+#include "lue/item/constant_size/constant/same_shape.hpp"
 #include "lue/hdf5/chunk.hpp"
 #include <cassert>
 
 
 namespace lue {
 namespace constant_size {
+namespace constant {
 
 /*!
     @brief      Open value @a name in @a parent
@@ -165,5 +166,6 @@ SameShape create_same_shape(
     return SameShape{std::move(dataset), memory_datatype};
 }
 
+}  // namespace constant
 }  // namespace constant_size
 }  // namespace lue

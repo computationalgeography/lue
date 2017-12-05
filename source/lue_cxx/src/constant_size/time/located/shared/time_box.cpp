@@ -12,16 +12,16 @@ TimeBox::TimeBox(
     hdf5::Group const& parent,
     hdf5::Datatype const memory_datatype)
 
-    : constant_size::SameShape{parent, coordinates_tag, memory_datatype}
+    : constant::SameShape{parent, coordinates_tag, memory_datatype}
 
 {
 }
 
 
 TimeBox::TimeBox(
-    constant_size::SameShape&& dataset)
+    constant::SameShape&& collection)
 
-    : constant_size::SameShape{std::forward<constant_size::SameShape>(dataset)}
+    : constant::SameShape{std::forward<constant::SameShape>(collection)}
 
 {
 }
@@ -38,7 +38,7 @@ TimeBox create_time_box(
     // count.
     hdf5::Shape value_shape = { 2 };
 
-    auto dataset = constant_size::create_same_shape(
+    auto dataset = constant::create_same_shape(
         parent, coordinates_tag, file_datatype, memory_datatype, value_shape);
 
     return TimeBox{std::move(dataset)};

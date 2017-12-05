@@ -5,6 +5,7 @@
 
 namespace lue {
 namespace constant_size {
+namespace constant {
 
 /*!
     @brief      DifferentShape manages item values for constant sized
@@ -96,5 +97,6 @@ DifferentShape     create_different_shape(
                                         hdf5::Datatype const& memory_datatype,
                                         int rank);
 
+}  // namespace constant
 }  // namespace constant_size
 }  // namespace lue
