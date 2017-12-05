@@ -10,7 +10,7 @@ namespace omnipresent {
 namespace same_shape {
 
 class Value:
-    public constant::SameShape,
+    public constant::same_shape::Collection,
     public omnipresent::Value
 {
 
@@ -20,7 +20,7 @@ public:
                                         std::string const& name,
                                         hdf5::Datatype const& memory_datatype);
 
-                   Value               (SameShape&& collection);
+                   Value               (constant::same_shape::Collection&& collection);
 
                    Value               (Value const&)=delete;
 

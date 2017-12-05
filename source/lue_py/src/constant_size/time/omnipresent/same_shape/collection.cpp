@@ -9,18 +9,19 @@ using namespace pybind11::literals;
 namespace lue {
 namespace constant_size {
 namespace constant {
+namespace same_shape {
 
-void init_same_shape(
+void init_collection(
     py::module& module)
 {
 
-    py::class_<SameShape, lue::Array>(
+    py::class_<Collection, lue::Array>(
         module,
-        "SameShape",
-        "SameShape docstring...")
+        "Collection",
+        "Collection docstring...")
 
         .def("reserve",
-            &SameShape::reserve,
+            &Collection::reserve,
             "reserve docstring...",
             py::return_value_policy::reference_internal)
 
@@ -28,6 +29,7 @@ void init_same_shape(
 
 }
 
+}  // namespace same_shape
 }  // namespace constant
 }  // namespace constant_size
 }  // namespace lue

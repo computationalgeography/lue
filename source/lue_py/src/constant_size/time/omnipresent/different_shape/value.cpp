@@ -16,7 +16,7 @@ void init_value_class(
     py::module& module)
 {
 
-    py::class_<Value, constant::DifferentShape>(
+    py::class_<Value, constant::different_shape::Collection>(
         module,
         "Value",
         "Value docstring...")

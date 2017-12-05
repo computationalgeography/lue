@@ -6,40 +6,41 @@
 namespace lue {
 namespace constant_size {
 namespace constant {
+namespace different_shape {
 
 /*!
-    @brief      DifferentShape manages item values for constant sized
-                collections of values with a different shape
+    @brief      This collection manages item values for constant sized
+                collections of constant values with a different shape
 
     Each item's value ends up in a seperate HDF5 dataset, named after the
     item's index. All datasets have the same rank, but the size of each
     dimension may be different.
 */
-class DifferentShape:
+class Collection:
     public hdf5::Group
 {
 
 public:
 
-                   DifferentShape      (hdf5::Group const& parent,
+                   Collection          (hdf5::Group const& parent,
                                         std::string const& name);
 
-                   DifferentShape      (hdf5::Group const& parent,
+                   Collection          (hdf5::Group const& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& memory_datatype);
 
-                   DifferentShape      (hdf5::Group&& group,
+                   Collection          (hdf5::Group&& group,
                                         hdf5::Datatype const& memory_datatype);
 
-                   DifferentShape      (DifferentShape const&)=delete;
+                   Collection          (Collection const&)=delete;
 
-                   DifferentShape      (DifferentShape&&)=default;
+                   Collection          (Collection&&)=default;
 
-                   ~DifferentShape     ()=default;
+                   ~Collection         ()=default;
 
-    DifferentShape& operator=          (DifferentShape const&)=delete;
+    Collection&    operator=           (Collection const&)=delete;
 
-    DifferentShape& operator=          (DifferentShape&&)=default;
+    Collection&    operator=           (Collection&&)=default;
 
     hsize_t        nr_items            () const;
 
@@ -84,19 +85,18 @@ private:
 };
 
 
-DifferentShape     create_different_shape(
-                                        hdf5::Group const& parent,
+Collection     create_collection       (hdf5::Group const& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& memory_datatype,
                                         int rank);
 
-DifferentShape     create_different_shape(
-                                        hdf5::Group const& parent,
+Collection     create_collection       (hdf5::Group const& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& file_datatype,
                                         hdf5::Datatype const& memory_datatype,
                                         int rank);
 
+}  // namespace different_shape
 }  // namespace constant
 }  // namespace constant_size
 }  // namespace lue

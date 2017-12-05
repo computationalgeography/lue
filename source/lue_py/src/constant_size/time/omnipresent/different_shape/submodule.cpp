@@ -6,10 +6,18 @@ namespace py = pybind11;
 
 namespace lue {
 namespace constant_size {
+namespace constant {
+namespace different_shape {
+
+void init_collection(py::module& module);
+
+}  // namespace different_shape
+}  // namespace constant
+
+
 namespace time {
 namespace omnipresent {
 namespace different_shape {
-
 
 void init_value_class(py::module& module);
 void init_property_class(py::module& module);
@@ -25,6 +33,7 @@ void init_submodule(
     per item
 )");
 
+    constant::different_shape::init_collection(submodule);
     init_value_class(submodule);
     init_property_class(submodule);
 }

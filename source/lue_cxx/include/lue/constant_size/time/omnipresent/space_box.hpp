@@ -8,7 +8,7 @@ namespace time {
 namespace omnipresent {
 
 class SpaceBox:
-    public constant::SameShape
+    public constant::same_shape::Collection
 {
 
 public:
@@ -16,7 +16,8 @@ public:
                    SpaceBox            (hdf5::Group const& parent,
                                         hdf5::Datatype const memory_datatype);
 
-                   SpaceBox            (constant::SameShape&& collection);
+                   SpaceBox            (constant::same_shape::Collection&&
+                                            collection);
 
                    SpaceBox            (SpaceBox const&)=delete;
 

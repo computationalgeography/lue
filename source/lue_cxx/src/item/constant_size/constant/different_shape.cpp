@@ -6,11 +6,12 @@
 namespace lue {
 namespace constant_size {
 namespace constant {
+namespace different_shape {
 
 /*!
     @brief      Open value @a name in @a parent
 */
-DifferentShape::DifferentShape(
+Collection::Collection(
     hdf5::Group const& parent,
     std::string const& name)
 
@@ -28,7 +29,7 @@ DifferentShape::DifferentShape(
 /*!
     @brief      Open value @a name in @a parent
 */
-DifferentShape::DifferentShape(
+Collection::Collection(
     hdf5::Group const& parent,
     std::string const& name,
     hdf5::Datatype const& memory_datatype)
@@ -47,7 +48,7 @@ DifferentShape::DifferentShape(
 /*!
     @brief      Move in @a group
 */
-DifferentShape::DifferentShape(
+Collection::Collection(
     hdf5::Group&& group,
     hdf5::Datatype const& memory_datatype)
 
@@ -65,7 +66,7 @@ DifferentShape::DifferentShape(
 /*!
     @brief      Return number of items for which values are stored
 */
-hsize_t DifferentShape::nr_items() const
+hsize_t Collection::nr_items() const
 {
     return _nr_items;
 }
@@ -74,7 +75,7 @@ hsize_t DifferentShape::nr_items() const
 /*!
     @brief      Return rank of each of the item's value
 */
-int DifferentShape::rank() const
+int Collection::rank() const
 {
     return _rank;
 }
@@ -83,7 +84,7 @@ int DifferentShape::rank() const
 /*!
     @brief      Return in-file datatype
 */
-hdf5::Datatype const& DifferentShape::file_datatype() const
+hdf5::Datatype const& Collection::file_datatype() const
 {
     return _file_datatype;
 }
@@ -92,7 +93,7 @@ hdf5::Datatype const& DifferentShape::file_datatype() const
 /*!
     @brief      Return in-memory datatype
 */
-hdf5::Datatype const& DifferentShape::memory_datatype() const
+hdf5::Datatype const& Collection::memory_datatype() const
 {
     return _memory_datatype;
 }
@@ -105,7 +106,7 @@ hdf5::Datatype const& DifferentShape::memory_datatype() const
 
     The underlying HDF5 dataset is chunked according to hdf5::chunk_shape().
 */
-void DifferentShape::reserve(
+void Collection::reserve(
     hsize_t const idx,
     hdf5::Shape const& value_shape)
 {
@@ -128,7 +129,7 @@ void DifferentShape::reserve(
     @brief      Reserve space for @a nr_items item values shaped as
                 @a value_shapes
 */
-void DifferentShape::reserve(
+void Collection::reserve(
     hsize_t const nr_items,
     hsize_t const* value_shapes)
 {
@@ -146,21 +147,21 @@ void DifferentShape::reserve(
 /*!
     @brief      Return dataset corresponding to item @a idx
 */
-Array DifferentShape::operator[](
+Array Collection::operator[](
     size_t const idx) const
 {
     return Array{*this, std::to_string(idx), _memory_datatype};
 }
 
 
-hdf5::Shape DifferentShape::value_shape(
+hdf5::Shape Collection::value_shape(
     size_t idx)
 {
     return operator[](idx).shape();
 }
 
 
-void DifferentShape::read(
+void Collection::read(
     size_t const idx,
     void* buffer)
 {
@@ -168,7 +169,7 @@ void DifferentShape::read(
 }
 
 
-void DifferentShape::write(
+void Collection::write(
     size_t const idx,
     void const* buffer)
 {
@@ -177,18 +178,18 @@ void DifferentShape::write(
 
 
 /*!
-    @brief      Create value @a name in @a parent
+    @brief      Create collection @a name in @a parent
 
     The datatype is of the individual values. The @a rank passed in
     defines the dimensionality of the underlying datasets.
 */
-DifferentShape create_different_shape(
+Collection create_collection(
     hdf5::Group const& parent,
     std::string const& name,
     hdf5::Datatype const& memory_datatype,
     int const rank)
 {
-    return create_different_shape(
+    return create_collection(
         parent, name, hdf5::file_datatype(memory_datatype), memory_datatype,
         rank);
 }
@@ -200,7 +201,7 @@ DifferentShape create_different_shape(
     The datatypes are of the individual values. The @a rank passed in
     defines the dimensionality of the underlying datasets.
 */
-DifferentShape create_different_shape(
+Collection create_collection(
     hdf5::Group const& parent,
     std::string const& name,
     hdf5::Datatype const& file_datatype,
@@ -214,9 +215,10 @@ DifferentShape create_different_shape(
     group.attributes().write<int>(rank_tag, rank);
     group.attributes().write<hsize_t>(nr_items_tag, 0);
 
-    return DifferentShape{std::move(group), memory_datatype};
+    return Collection{std::move(group), memory_datatype};
 }
 
+}  // namespace different_shape
 }  // namespace constant
 }  // namespace constant_size
 }  // namespace lue

@@ -11,16 +11,17 @@ SpaceBox::SpaceBox(
     hdf5::Group const& parent,
     hdf5::Datatype const memory_datatype)
 
-    : constant::SameShape{parent, coordinates_tag, memory_datatype}
+    : constant::same_shape::Collection{parent, coordinates_tag, memory_datatype}
 
 {
 }
 
 
 SpaceBox::SpaceBox(
-    constant::SameShape&& collection)
+    constant::same_shape::Collection&& collection)
 
-    : constant::SameShape{std::forward<constant::SameShape>(collection)}
+    : constant::same_shape::Collection{
+          std::forward<constant::same_shape::Collection>(collection)}
 
 {
 }
@@ -42,7 +43,7 @@ SpaceBox create_space_box(
     // (diagonally). Two of them is enough.
     hdf5::Shape value_shape = { 2 * rank };
 
-    auto collection = constant::create_same_shape(
+    auto collection = constant::same_shape::create_collection(
         parent, coordinates_tag, file_datatype, memory_datatype, value_shape);
 
     return SpaceBox{std::move(collection)};

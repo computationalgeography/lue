@@ -10,24 +10,25 @@ using namespace pybind11::literals;
 namespace lue {
 namespace constant_size {
 namespace constant {
+namespace different_shape {
 
-void init_different_shape(
+void init_collection(
     py::module& module)
 {
 
-    py::class_<DifferentShape, hdf5::Group>(
+    py::class_<Collection, hdf5::Group>(
         module,
-        "DifferentShape",
-        "DifferentShape docstring...")
+        "Collection",
+        "Collection docstring...")
 
         // .def("reserve",
-        //     &DifferentShape::reserve,
+        //     &Collection::reserve,
         //     "reserve docstring...",
         //     py::return_value_policy::reference_internal)
 
         .def_property_readonly(
             "dtype",
-            [](DifferentShape const& self)
+            [](Collection const& self)
             {
                 py::object object = hdf5_type_id_to_numpy_dtype(
                     self.memory_datatype());
@@ -39,19 +40,19 @@ void init_different_shape(
 
         .def_property_readonly(
             "rank",
-            &DifferentShape::rank,
+            &Collection::rank,
             "rank docstring..."
         )
 
         .def(
             "__len__",
-            &DifferentShape::nr_items,
+            &Collection::nr_items,
             "__len__ docstring..."
         )
 
         .def(
             "__getitem__",
-            [](DifferentShape const& collection,
+            [](Collection const& collection,
                 size_t const idx)
             {
                 if(idx >= collection.nr_items()) {
@@ -65,6 +66,7 @@ void init_different_shape(
 
 }
 
+}  // namespace different_shape
 }  // namespace constant
 }  // namespace constant_size
 }  // namespace lue

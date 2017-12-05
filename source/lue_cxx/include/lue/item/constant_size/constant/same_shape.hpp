@@ -6,36 +6,37 @@
 namespace lue {
 namespace constant_size {
 namespace constant {
+namespace same_shape {
 
 /*!
-    @brief      SameShape manages constant item values for constant sized
-                collections of values with the same shape
+    @brief      This collection manages constant item values for
+                constant sized collections of values with the same shape
 
     The underlying HDF5 dataset has one dimension more than the rank of the
     individual values. This first dimension represents the items.
 */
-class SameShape:
+class Collection:
     public Array
 {
 
 public:
 
-                   SameShape           (hdf5::Group const& parent,
+                   Collection          (hdf5::Group const& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& memory_datatype);
 
-                   SameShape           (hdf5::Dataset&& dataset,
+                   Collection          (hdf5::Dataset&& dataset,
                                         hdf5::Datatype const& memory_datatype);
 
-                   SameShape           (SameShape const&)=delete;
+                   Collection          (Collection const&)=delete;
 
-                   SameShape           (SameShape&&)=default;
+                   Collection          (Collection&&)=default;
 
-                   ~SameShape          ()=default;
+                   ~Collection         ()=default;
 
-    SameShape&     operator=           (SameShape const&)=delete;
+    Collection&    operator=           (Collection const&)=delete;
 
-    SameShape&     operator=           (SameShape&&)=default;
+    Collection&    operator=           (Collection&&)=default;
 
     void           reserve             (hsize_t nr_items);
 
@@ -60,21 +61,22 @@ private:
 };
 
 
-SameShape          create_same_shape   (hdf5::Group const& parent,
+Collection          create_collection  (hdf5::Group const& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& memory_datatype);
 
-SameShape          create_same_shape   (hdf5::Group const& parent,
+Collection          create_collection  (hdf5::Group const& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& file_datatype,
                                         hdf5::Datatype const& memory_datatype);
 
-SameShape          create_same_shape   (hdf5::Group const& parent,
+Collection          create_collection  (hdf5::Group const& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& file_datatype,
                                         hdf5::Datatype const& memory_datatype,
                                         hdf5::Shape const& value_shape);
 
+}  // namespace same_shape
 }  // namespace constant
 }  // namespace constant_size
 }  // namespace lue

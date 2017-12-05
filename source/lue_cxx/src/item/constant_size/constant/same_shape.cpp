@@ -6,11 +6,12 @@
 namespace lue {
 namespace constant_size {
 namespace constant {
+namespace same_shape {
 
 /*!
-    @brief      Open value @a name in @a parent
+    @brief      Open collection @a name in @a parent
 */
-SameShape::SameShape(
+Collection::Collection(
     hdf5::Group const& parent,
     std::string const& name,
     hdf5::Datatype const& memory_datatype)
@@ -24,7 +25,7 @@ SameShape::SameShape(
 /*!
     @brief      Move in @a dataset
 */
-SameShape::SameShape(
+Collection::Collection(
     hdf5::Dataset&& dataset,
     hdf5::Datatype const& memory_datatype)
 
@@ -37,7 +38,7 @@ SameShape::SameShape(
 /*!
     @brief      Reserve space for @a nr_items item values
 */
-void SameShape::reserve(
+void Collection::reserve(
     hsize_t const nr_items)
 {
     auto shape = this->shape();
@@ -50,7 +51,7 @@ void SameShape::reserve(
 /*!
     @brief      Return number of items for which values are stored
 */
-hsize_t SameShape::nr_items() const
+hsize_t Collection::nr_items() const
 {
     return shape()[0];
 }
@@ -60,9 +61,9 @@ hsize_t SameShape::nr_items() const
     @brief      Return shape of an item value
 
     The shape returned is not the shape of the underlying HDF5 dataset. It
-    is the shape of each of the item values.
+    is the shape of each of the individual item values.
 */
-hdf5::Shape SameShape::value_shape() const
+hdf5::Shape Collection::value_shape() const
 {
     auto const shape = this->shape();
 
@@ -72,7 +73,7 @@ hdf5::Shape SameShape::value_shape() const
 }
 
 
-hdf5::Hyperslab SameShape::hyperslab(
+hdf5::Hyperslab Collection::hyperslab(
     hsize_t const idx) const
 {
     auto shape = this->shape();
@@ -87,7 +88,7 @@ hdf5::Hyperslab SameShape::hyperslab(
 }
 
 
-void SameShape::read(
+void Collection::read(
     hsize_t const idx,
     void* buffer)
 {
@@ -95,7 +96,7 @@ void SameShape::read(
 }
 
 
-void SameShape::write(
+void Collection::write(
     hsize_t const idx,
     void const* buffer)
 {
@@ -104,42 +105,42 @@ void SameShape::write(
 
 
 /*!
-    @brief      Create value @a name in @a parent
+    @brief      Create collection @a name in @a parent
 */
-SameShape create_same_shape(
+Collection create_collection(
     hdf5::Group const& parent,
     std::string const& name,
     hdf5::Datatype const& memory_datatype)
 {
-    return create_same_shape(
+    return create_collection(
         parent, name, file_datatype(memory_datatype), memory_datatype,
         hdf5::Shape{});
 }
 
 
 /*!
-    @brief      Create value @a name in @a parent
+    @brief      Create collection @a name in @a parent
 */
-SameShape create_same_shape(
+Collection create_collection(
     hdf5::Group const& parent,
     std::string const& name,
     hdf5::Datatype const& file_datatype,
     hdf5::Datatype const& memory_datatype)
 {
-    return create_same_shape(
+    return create_collection(
         parent, name, file_datatype, memory_datatype, hdf5::Shape{});
 }
 
 
 /*!
-    @brief      Create value @a name in @a parent
+    @brief      Create collection @a name in @a parent
 
     The @a value_shape passed in is the shape of each of the individual
     item values.
 
     The underlying HDF5 dataset is chunked according to hdf5::chunk_shape().
 */
-SameShape create_same_shape(
+Collection create_collection(
     hdf5::Group const& parent,
     std::string const& name,
     hdf5::Datatype const& file_datatype,
@@ -163,9 +164,10 @@ SameShape create_same_shape(
     auto dataset = hdf5::create_dataset(
         parent.id(), name, file_datatype, dataspace, creation_property_list);
 
-    return SameShape{std::move(dataset), memory_datatype};
+    return Collection{std::move(dataset), memory_datatype};
 }
 
+}  // namespace same_shape
 }  // namespace constant
 }  // namespace constant_size
 }  // namespace lue

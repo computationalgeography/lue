@@ -15,7 +15,7 @@ namespace shared {
     domain item a pair of time points is stored.
 */
 class TimeBox:
-    public constant::SameShape
+    public constant::same_shape::Collection
 {
 
 public:
@@ -23,7 +23,8 @@ public:
                    TimeBox             (hdf5::Group const& parent,
                                         hdf5::Datatype const memory_datatype);
 
-                   TimeBox             (constant::SameShape&& collection);
+                   TimeBox             (constant::same_shape::Collection&&
+                                            collection);
 
                    TimeBox             (TimeBox const&)=delete;
 

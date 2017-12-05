@@ -11,16 +11,17 @@ SpacePoint::SpacePoint(
     hdf5::Group const& parent,
     hdf5::Datatype const memory_datatype)
 
-    : constant::SameShape{parent, coordinates_tag, memory_datatype}
+    : constant::same_shape::Collection{parent, coordinates_tag, memory_datatype}
 
 {
 }
 
 
 SpacePoint::SpacePoint(
-    constant::SameShape&& collection)
+    constant::same_shape::Collection&& collection)
 
-    : constant::SameShape{std::forward<constant::SameShape>(collection)}
+    : constant::same_shape::Collection{
+          std::forward<constant::same_shape::Collection>(collection)}
 
 {
 }
@@ -41,7 +42,7 @@ SpacePoint create_space_point(
     // A point is defined by the coordinates along each dimension
     hdf5::Shape value_shape = { rank };
 
-    auto collection = constant::create_same_shape(
+    auto collection = constant::same_shape::create_collection(
         parent, coordinates_tag, file_datatype, memory_datatype, value_shape);
 
     return SpacePoint{std::move(collection)};

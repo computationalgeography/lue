@@ -18,7 +18,7 @@ BOOST_AUTO_TEST_CASE(create_same_shape)
     lue::hdf5::Datatype datatype{
         lue::hdf5::NativeDatatypeTraits<int32_t>::type_id()};
 
-    auto value = lue::constant_size::constant::create_same_shape(
+    auto value = lue::constant_size::constant::same_shape::create_collection(
         dataset, value_name, datatype);
 
     BOOST_CHECK_EQUAL(value.nr_items(), 0);

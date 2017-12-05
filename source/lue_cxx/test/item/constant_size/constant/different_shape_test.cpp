@@ -18,8 +18,8 @@ BOOST_AUTO_TEST_CASE(create_different_shape)
         lue::hdf5::NativeDatatypeTraits<int32_t>::type_id()};
     int const rank = 2;
 
-    auto value = lue::constant_size::constant::create_different_shape(
-        dataset, value_name, datatype, rank);
+    auto value = lue::constant_size::constant::different_shape::
+        create_collection(dataset, value_name, datatype, rank);
 
     BOOST_CHECK_EQUAL(value.nr_items(), 0);
     BOOST_CHECK_EQUAL(value.rank(), rank);
