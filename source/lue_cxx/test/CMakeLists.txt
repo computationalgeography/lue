@@ -6,6 +6,7 @@ add_unit_tests(
         constant_size/time/omnipresent/property_set_test
         item/constant_size/constant/different_shape_test
         item/constant_size/constant/same_shape_test
+        item/constant_size/variable/constant_shape/same_shape/collection_test
     LINK_LIBRARIES
         lue::test
 )

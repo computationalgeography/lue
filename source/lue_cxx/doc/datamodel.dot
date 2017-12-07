@@ -78,7 +78,11 @@ digraph datamodel {
     ];
 
 
-    // Decissions --------------------------------------------------------------
+
+
+    // -------------------------------------------------------------------------
+    // Item collection taxonomy
+    // -------------------------------------------------------------------------
     node [
         shape=diamond
         style=filled;
@@ -163,6 +167,7 @@ digraph datamodel {
     ];
     same_shape2 [
         label="constant_size::\nvariable::\nconstant_shape::\nsame_shape::\nCollection"
+        style=""
     ];
     different_shape2 [
         label="constant_size::\nvariable::\nconstant_shape::\ndifferent_shape::\nCollection"

@@ -37,25 +37,25 @@ hsize_t Value::nr_items() const
 
 
 Value create_value(
-    hdf5::Group const& group,
+    hdf5::Group const& parent,
     std::string const& name,
     hdf5::Datatype const& file_datatype,
     hdf5::Datatype const& memory_datatype)
 {
-    return create_value(group, name, file_datatype, memory_datatype,
+    return create_value(parent, name, file_datatype, memory_datatype,
         hdf5::Shape{});
 }
 
 
 Value create_value(
-    hdf5::Group const& group,
+    hdf5::Group const& parent,
     std::string const& name,
     hdf5::Datatype const& file_datatype,
     hdf5::Datatype const& memory_datatype,
     hdf5::Shape const& value_shape)
 {
     return Value{constant::same_shape::create_collection(
-        group, name, file_datatype, memory_datatype, value_shape)};
+        parent, name, file_datatype, memory_datatype, value_shape)};
 }
 
 }  // namespace same_shape

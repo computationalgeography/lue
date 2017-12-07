@@ -1,7 +1,6 @@
 #pragma once
 #include "lue/constant_size/value.hpp"
-#include "lue/array.hpp"
-#include "lue/hdf5/group.hpp"
+#include "lue/item/constant_size/variable/constant_shape/same_shape/collection.hpp"
 
 
 namespace lue {
@@ -13,7 +12,7 @@ namespace constant_shape {
 namespace same_shape {
 
 class Value:
-    public Array,
+    public variable::constant_shape::same_shape::Collection,
     public constant_size::Value
 {
 
@@ -23,8 +22,9 @@ public:
                                         std::string const& name,
                                         hdf5::Datatype const& memory_datatype);
 
-                   Value               (hdf5::Dataset&& dataset,
-                                        hdf5::Datatype const& memory_datatype);
+                   Value               (
+                            variable::constant_shape::same_shape::Collection&&
+                                collection);
 
                    Value               (Value const&)=delete;
 
@@ -36,12 +36,7 @@ public:
 
     Value&         operator=           (Value&&)=default;
 
-    void           reserve             (hsize_t nr_time_domain_items,
-                                        hsize_t nr_items);
-
     hsize_t        nr_items            () const final;
-
-    hdf5::Shape    value_shape         () const;
 
 private:
 
