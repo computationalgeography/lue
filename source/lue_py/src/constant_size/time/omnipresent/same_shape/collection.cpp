@@ -1,4 +1,4 @@
-#include "lue/item/constant_size/constant/same_shape.hpp"
+#include "lue/item/constant_size/constant/same_shape/collection.hpp"
 #include <pybind11/pybind11.h>
 
 

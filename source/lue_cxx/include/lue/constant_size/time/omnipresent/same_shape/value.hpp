@@ -1,6 +1,6 @@
 #pragma once
 #include "lue/constant_size/time/omnipresent/value.hpp"
-#include "lue/item/constant_size/constant/same_shape.hpp"
+#include "lue/item/constant_size/constant/same_shape/collection.hpp"
 
 
 namespace lue {

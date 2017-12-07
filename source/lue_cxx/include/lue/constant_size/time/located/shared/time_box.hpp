@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/item/constant_size/constant/same_shape.hpp"
+#include "lue/item/constant_size/constant/same_shape/collection.hpp"
 
 
 namespace lue {

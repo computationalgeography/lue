@@ -1,15 +1,15 @@
-#define BOOST_TEST_MODULE lue item constant_size constant same_shape
+#define BOOST_TEST_MODULE lue item constant_size constant same_shape collection
 #include <boost/test/unit_test.hpp>
-#include "lue/item/constant_size/constant/same_shape.hpp"
+#include "lue/item/constant_size/constant/same_shape/collection.hpp"
 #include "lue/test/dataset_fixture.hpp"
 #include "lue/hdf5/file.hpp"
 
 
-BOOST_AUTO_TEST_CASE(create_same_shape)
+BOOST_AUTO_TEST_CASE(create_collection)
 {
     // TODO Update test to use a 2D value instead of a 0D one.
 
-    std::string const filename = "create_same_shape.h5";
+    std::string const filename = "create_collection.h5";
     lue::test::DatasetFixture fixture{filename};
 
     auto const dataset = lue::hdf5::create_file(filename);

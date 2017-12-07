@@ -1,4 +1,4 @@
-#include "lue/item/constant_size/constant/different_shape.hpp"
+#include "lue/item/constant_size/constant/different_shape/collection.hpp"
 #include "lue/hdf5/chunk.hpp"
 #include "lue/tag.hpp"
 

@@ -10,7 +10,7 @@ BOOST_AUTO_TEST_CASE(create_collection)
     using namespace lue::constant_size::variable::constant_shape;
 
     std::string const filename = "create_collection.h5";
-    lue::test::DatasetFixture fixture{filename, false};
+    lue::test::DatasetFixture fixture{filename};
 
     auto const dataset = lue::hdf5::create_file(filename);
 
