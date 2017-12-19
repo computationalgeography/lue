@@ -257,7 +257,8 @@ Collection create_collection(
     int const rank)
 {
     return create_collection(
-        parent, name, hdf5::file_datatype(memory_datatype), rank);
+        parent, name, hdf5::file_datatype(memory_datatype), memory_datatype,
+        rank);
 }
 
 
