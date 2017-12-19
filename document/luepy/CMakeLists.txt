@@ -1,0 +1,22 @@
+add_subdirectory(case_study)
+
+configure_file(
+    conf.py.in
+    _build/conf.py
+    @ONLY
+)
+
+add_custom_target(
+    py_doc
+    DEPENDS case_study
+    # COMMAND ${SPHINX_API_DOC_EXECUTABLE}
+    #     -o ${CMAKE_CURRENT_BINARY_DIR}/_build/api
+    #     ${PROJECT_SOURCE_DIR}/source
+    COMMAND ${SPHINX_BUILD_EXECUTABLE}
+        -q -b html
+        -c ${CMAKE_CURRENT_BINARY_DIR}/_build
+        -d ${CMAKE_CURRENT_BINARY_DIR}/_build/doctrees
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_CURRENT_BINARY_DIR}/_build/html
+    COMMENT "Generating luepy documentation"
+)

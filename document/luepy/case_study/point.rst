@@ -19,5 +19,5 @@ The property holding a point's value contains a single value.
 
 Example code
 ------------
-.. literalinclude:: point.py
-.. image:: cities.svg
+.. literalinclude:: cities.py
+.. generated_image:: cities.svg

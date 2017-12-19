@@ -49,5 +49,5 @@ The discretization properties are linked to from the value property.
 
 Example code
 ------------
-.. literalinclude:: raster_stack.py
-.. image:: raster_stack.svg
+.. literalinclude:: elevation.py
+.. generated_image:: elevation.svg

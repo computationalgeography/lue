@@ -35,6 +35,7 @@ extensions = [
     "sphinx.ext.inheritance_diagram",
     "sphinx.ext.ifconfig",
     "sphinx.ext.intersphinx",
+    "ext.generated_image",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -390,6 +391,7 @@ apidoc_generated = can_access_python_extension()
 
 def setup(app):
     app.add_config_value("apidoc_generated", False, "env")
+    app.add_config_value("on_rtd", False, on_rtd)
 
     # if can_access_python_extension():
     #     app.connect("builder-inited", run_apidoc)

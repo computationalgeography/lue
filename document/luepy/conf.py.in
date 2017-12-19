@@ -1,0 +1,59 @@
+import os
+import sys
+
+sys.path.insert(0, "@CMAKE_CURRENT_SOURCE_DIR@")
+
+
+extensions = [
+    "sphinx.ext.autodoc",
+    "sphinx.ext.graphviz",
+    "sphinx.ext.inheritance_diagram",
+    "sphinx.ext.ifconfig",
+    "sphinx.ext.intersphinx",
+    "ext.generated_image",
+]
+
+templates_path = ['_templates']
+source_suffix = '.rst'
+master_doc = 'index'
+project = u'LUE'
+copyright = u'2015-now PCRaster Owners'
+author = u'PCRaster R&D Team'
+version = u'0.1'
+release = u'0.1.2'
+language = None
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+pygments_style = 'sphinx'
+todo_include_todos = False
+
+generated_image_root = "@CMAKE_CURRENT_BINARY_DIR@/case_study"
+
+on_rtd = os.environ.get("READTHEDOCS") == "True"
+
+if on_rtd:
+    html_theme = 'default'
+else:
+    html_theme = 'alabaster'
+html_theme = 'default'
+
+
+# html_static_path = ['_static']
+
+htmlhelp_basename = 'LUEdoc'
+
+
+def can_access_python_extension():
+    return not on_rtd
+
+
+apidoc_generated = can_access_python_extension()
+
+
+def setup(app):
+    app.add_config_value("apidoc_generated", False, "env")
+    app.add_config_value("on_rtd", False, on_rtd)
+
+
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/3.5", None)
+}

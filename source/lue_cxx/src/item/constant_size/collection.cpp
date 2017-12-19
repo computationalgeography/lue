@@ -9,24 +9,6 @@ namespace different_shape {
 /*!
     @brief      Create group @a name in @a parent
 
-    The datatype is of the individual values. The @a rank passed in
-    defines the dimensionality of the item values.
-*/
-hdf5::Group create_group(
-    hdf5::Group const& parent,
-    std::string const& name,
-    hdf5::Datatype const& memory_datatype,
-    int const rank)
-{
-    return create_group(
-        parent, name, hdf5::file_datatype(memory_datatype), memory_datatype,
-        rank);
-}
-
-
-/*!
-    @brief      Create group @a name in @a parent
-
     The datatypes are of the individual values. The @a rank passed in
     defines the dimensionality of the item values.
 */
@@ -34,7 +16,6 @@ hdf5::Group create_group(
     hdf5::Group const& parent,
     std::string const& name,
     hdf5::Datatype const& file_datatype,
-    hdf5::Datatype const& memory_datatype,
     int const rank)
 {
     auto group = hdf5::create_group(parent, name);

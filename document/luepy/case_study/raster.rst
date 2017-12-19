@@ -13,7 +13,7 @@ result is capable of capturing many rasters (for multiple items).
 
 time domain
 -----------
-A rasters location and cell values don't change through time, so the
+A raster's location and cell values don't change through time, so the
 time domain is marked as omnipresent.
 
 
@@ -46,5 +46,5 @@ The discretization property is linked to from the value property.
 
 Example code
 ------------
-.. literalinclude:: raster.py
-.. image:: areas.svg
+.. literalinclude:: areas.py
+.. generated_image:: areas.svg

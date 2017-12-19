@@ -20,7 +20,9 @@ set(CMAKE_MODULE_PATH
 )
 include(Lue)
 
-add_subdirectory(document)
+if(LUE_BUILD_DOCUMENTATION)
+    add_subdirectory(document)
+endif()
 add_subdirectory(environment)
 add_subdirectory(source)
 

@@ -24,5 +24,5 @@ The property holding a constant's value contains a single value.
 
 Example code
 ------------
-.. literalinclude:: constant.py
-.. image:: planets.svg
+.. literalinclude:: planets.py
+.. generated_image:: planets.svg
