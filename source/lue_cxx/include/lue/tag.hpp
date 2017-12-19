@@ -9,6 +9,7 @@ static std::string const clock_tag = "lue_clock";
 static std::string const datatype_tag = "lue_datatype";
 static std::string const domain_tag = "lue_domain";
 static std::string const ids_tag = "lue_ids";
+static std::string const nr_time_domain_items_tag = "lue_nr_time_domain_items";
 static std::string const nr_items_tag = "lue_nr_items";
 static std::string const nr_units_tag = "lue_nr_units";
 static std::string const phenomena_tag = "lue_phenomena";

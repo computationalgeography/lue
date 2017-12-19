@@ -36,7 +36,7 @@ std::size_t upper_chunk_size_limit()
 
     It is assumed here that multiple values are stored in a single HDF5
     dataset. The resulting shape has one additional dimension, representing
-    the items for which values are stored.
+    the (domain) items for which values are stored.
 
     The folowing guidelines are implemented:
     - Try to express the 'natural' access pattern

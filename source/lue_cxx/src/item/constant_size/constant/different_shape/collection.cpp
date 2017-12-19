@@ -1,4 +1,5 @@
 #include "lue/item/constant_size/constant/different_shape/collection.hpp"
+#include "lue/item/constant_size/collection.hpp"
 #include "lue/hdf5/chunk.hpp"
 #include "lue/tag.hpp"
 
@@ -189,9 +190,12 @@ Collection create_collection(
     hdf5::Datatype const& memory_datatype,
     int const rank)
 {
-    return create_collection(
-        parent, name, hdf5::file_datatype(memory_datatype), memory_datatype,
-        rank);
+    auto group = constant_size::different_shape::create_group(
+        parent, name, memory_datatype, rank);
+
+    group.attributes().write<hsize_t>(nr_time_domain_items_tag, 0);
+
+    return Collection{std::move(group), memory_datatype};
 }
 
 
@@ -208,12 +212,10 @@ Collection create_collection(
     hdf5::Datatype const& memory_datatype,
     int const rank)
 {
-    auto group = hdf5::create_group(parent, name);
+    auto group = constant_size::different_shape::create_group(
+        parent, name, file_datatype, memory_datatype, rank);
 
-    group.attributes().write<std::vector<unsigned char>>(
-        datatype_tag, hdf5::encode_datatype(file_datatype));
-    group.attributes().write<int>(rank_tag, rank);
-    group.attributes().write<hsize_t>(nr_items_tag, 0);
+    group.attributes().write<hsize_t>(nr_time_domain_items_tag, 0);
 
     return Collection{std::move(group), memory_datatype};
 }

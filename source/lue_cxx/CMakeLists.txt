@@ -76,8 +76,10 @@ add_library(lue STATIC
     src/constant_size/time/located/shared/constant_shape/same_shape/property
     src/constant_size/time/located/shared/constant_shape/same_shape/value
 
+    src/item/constant_size/collection
     src/item/constant_size/constant/different_shape/collection
     src/item/constant_size/constant/same_shape/collection
+    src/item/constant_size/variable/constant_shape/different_shape/collection
     src/item/constant_size/variable/constant_shape/same_shape/collection
 
     src/time/property_configuration

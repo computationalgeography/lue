@@ -171,6 +171,7 @@ digraph datamodel {
     ];
     different_shape2 [
         label="constant_size::\nvariable::\nconstant_shape::\ndifferent_shape::\nCollection"
+        style=""
     ];
     same_shape3 [
         label="constant_size::\nvariable::\nvariable_shape::\nsame_shape::\nCollection"
