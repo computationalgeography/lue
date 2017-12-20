@@ -32,6 +32,7 @@ function(preprocess_case_study)
         OUTPUT ${svg_name}
         DEPENDS
             ${script_name}
+            lue::py
             lue_validate
             lue_translate
             ${dot_properties_pathname}

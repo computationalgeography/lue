@@ -8,7 +8,9 @@ configure_file(
 
 add_custom_target(
     py_doc
-    DEPENDS case_study
+    DEPENDS
+        case_study
+        lue::py
     # COMMAND ${SPHINX_API_DOC_EXECUTABLE}
     #     -o ${CMAKE_CURRENT_BINARY_DIR}/_build/api
     #     ${PROJECT_SOURCE_DIR}/source
