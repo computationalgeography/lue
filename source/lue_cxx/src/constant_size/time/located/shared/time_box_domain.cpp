@@ -8,13 +8,6 @@ namespace time {
 namespace located {
 namespace shared {
 
-// hdf5::Datatype TimeBoxDomain::file_datatype(
-//     hdf5::Identifier const& id)
-// {
-//     return hdf5::Dataset(id, coordinates_tag).datatype();
-// }
-
-
 // TimeBoxDomain::TimeBoxDomain(
 //     TimeDomain const& time_domain)
 // 
@@ -34,6 +27,7 @@ TimeBoxDomain::TimeBoxDomain(
     : TimeDomain{std::forward<TimeDomain>(time_domain)},
       _items{
           *this,
+          coordinates_tag,
           hdf5::Datatype{
               hdf5::NativeDatatypeTraits<lue::time::DurationCount>::type_id()}}
 
@@ -41,19 +35,19 @@ TimeBoxDomain::TimeBoxDomain(
 }
 
 
-TimeBox const& TimeBoxDomain::items() const
+TimeBoxDomain::TimeBoxes const& TimeBoxDomain::items() const
 {
     return _items;
 }
 
 
-TimeBox& TimeBoxDomain::items()
+TimeBoxDomain::TimeBoxes& TimeBoxDomain::items()
 {
     return _items;
 }
 
 
-TimeBox& TimeBoxDomain::reserve(
+TimeBoxDomain::TimeBoxes& TimeBoxDomain::reserve(
     hsize_t const nr_items)
 {
     _items.reserve(nr_items);
@@ -80,7 +74,17 @@ TimeBoxDomain create_time_box_domain(
     hdf5::Datatype file_datatype(
         hdf5::StandardDatatypeTraits<lue::time::DurationCount>::type_id());
 
-    create_time_box(time_domain, file_datatype, memory_datatype);
+    // create_time_box(time_domain, file_datatype, memory_datatype);
+
+    // A time box is defined by the start and end time points. Given a clock,
+    // time points can be represented by durations since the clock's epoch.
+    // Durations can be represented by an amount of ticks, which is just a
+    // count.
+    hdf5::Shape value_shape = { 2 };
+
+    constant::same_shape::create_collection(
+        time_domain, coordinates_tag, file_datatype, memory_datatype,
+        value_shape);
 
     return TimeBoxDomain{std::move(time_domain)}; // , memory_datatype);
 }

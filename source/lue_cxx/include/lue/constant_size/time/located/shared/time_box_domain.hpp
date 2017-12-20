@@ -1,6 +1,6 @@
 #pragma once
+#include "lue/item/constant_size/constant/same_shape/collection.hpp"
 #include "lue/constant_size/time/located/shared/property_set.hpp"
-#include "lue/constant_size/time/located/shared/time_box.hpp"
 #include "lue/constant_size/time/located/shared/time_domain.hpp"
 
 
@@ -16,7 +16,7 @@ class TimeBoxDomain:
 
 public:
 
-    // static hdf5::Datatype file_datatype(hdf5::Identifier const& id);
+    using TimeBoxes = constant::same_shape::Collection;
 
                    TimeBoxDomain       (TimeDomain const& time_domain);
 
@@ -32,15 +32,15 @@ public:
 
     TimeBoxDomain& operator=           (TimeBoxDomain&&)=default;
 
-    TimeBox const& items               () const;
+    TimeBoxes const& items             () const;
 
-    TimeBox&       items               ();
+    TimeBoxes&     items               ();
 
-    TimeBox&       reserve             (hsize_t const nr_items);
+    TimeBoxes&     reserve             (hsize_t nr_items);
 
 private:
 
-    TimeBox        _items;
+    TimeBoxes      _items;
 
 };
 

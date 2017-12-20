@@ -59,10 +59,8 @@ add_library(lue STATIC
 
     src/constant_size/time/located/shared/domain
     src/constant_size/time/located/shared/property_set
-    src/constant_size/time/located/shared/space_box
     src/constant_size/time/located/shared/space_box_domain
     src/constant_size/time/located/shared/space_domain
-    src/constant_size/time/located/shared/time_box
     src/constant_size/time/located/shared/time_box_domain
     src/constant_size/time/located/shared/time_domain
 
