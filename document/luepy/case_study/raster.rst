@@ -8,7 +8,7 @@ topographic elevation, or surface temperature.
 A raster is a discretization of a value within a spatial extent. This
 value does not change through time. The next sections describe how a
 single raster can be captured by the LUE conceptual data model. The
-result is capable of capturing many rasters (for multiple items).
+result is capable of capturing multiple rasters for multiple items.
 
 
 time domain
