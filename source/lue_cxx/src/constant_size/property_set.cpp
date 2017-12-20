@@ -28,26 +28,26 @@ PropertySet::PropertySet(
 PropertySet::PropertySet(
     lue::PropertySet&& property_set)
 
-    : lue::PropertySet(std::forward<lue::PropertySet>(property_set)),
+    : lue::PropertySet{std::forward<lue::PropertySet>(property_set)},
       _ids{*this, ids_tag, hdf5::Datatype{H5T_NATIVE_HSIZE}}
 
 {
 }
 
 
-time::omnipresent::same_shape::Value const& PropertySet::ids() const
+PropertySet::Ids const& PropertySet::ids() const
 {
     return _ids;
 }
 
 
-time::omnipresent::same_shape::Value& PropertySet::ids()
+PropertySet::Ids& PropertySet::ids()
 {
     return _ids;
 }
 
 
-time::omnipresent::same_shape::Value& PropertySet::reserve(
+PropertySet::Ids& PropertySet::reserve(
     hsize_t const nr_items)
 {
     _ids.reserve(nr_items);
@@ -66,7 +66,7 @@ PropertySet create_property_set(
         PropertySet::Configuration{SizeOfItemCollectionType::constant_size},
         domain_configuration);
 
-    time::omnipresent::same_shape::create_value(
+    constant::same_shape::create_collection(
         property_set, ids_tag, hdf5::Datatype{H5T_STD_U64LE},
         hdf5::Datatype{H5T_NATIVE_HSIZE});
 
@@ -77,7 +77,7 @@ PropertySet create_property_set(
 PropertySet create_property_set(
     hdf5::Group& group,
     std::string const& name,
-    time::omnipresent::same_shape::Value const& ids,
+    PropertySet::Ids const& ids,
     Domain::Configuration const& domain_configuration)
 {
     auto property_set = lue::create_property_set(

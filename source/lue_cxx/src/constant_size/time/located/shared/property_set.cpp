@@ -45,7 +45,7 @@ PropertySet create_property_set(
 PropertySet create_property_set(
     PropertySets& property_sets,
     std::string const& name,
-    omnipresent::same_shape::Value const& ids)
+    PropertySet::Ids const& ids)
 {
     auto& property_set = property_sets.add(name,
         located::create_property_set(property_sets, name, ids)

@@ -43,7 +43,7 @@ PropertySet create_property_set(
 PropertySet create_property_set(
     hdf5::Group& parent,
     std::string const& name,
-    omnipresent::same_shape::Value const& ids)
+    PropertySet::Ids const& ids)
 {
     auto property_set = constant_size::create_property_set(parent, name, ids,
         Domain::Configuration(

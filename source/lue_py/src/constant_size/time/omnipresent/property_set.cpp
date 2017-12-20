@@ -218,7 +218,7 @@ void init_property_set_class(
         [](
             Phenomenon& phenomenon,
             std::string const& name,
-            same_shape::Value const& ids)
+            PropertySet::Ids const& ids)
         {
             return create_property_set(
                 phenomenon.property_sets(), name, ids);

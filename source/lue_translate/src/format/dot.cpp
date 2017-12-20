@@ -562,8 +562,8 @@ namespace located {
 
 void to_dot(
     Property const& property,
-    std::ostream& stream,
-    Metadata const& metadata)
+    std::ostream& /* stream */,
+    Metadata const& /* metadata */)
 {
     auto const& configuration = property.configuration();
 
@@ -682,10 +682,10 @@ void to_dot(
 {
     dump_node(property_set, stream, metadata);
 
-    auto const& ids = property_set.ids();
+    // TODO auto const& ids = property_set.ids();
 
-    dump_node(ids, stream, metadata);
-    link_nodes(property_set, ids, stream, metadata);
+    // TODO dump_node(ids, stream, metadata);
+    // TODO link_nodes(property_set, ids, stream, metadata);
 
 
     auto const& domain = property_set.domain();

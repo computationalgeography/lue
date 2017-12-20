@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/constant_size/time/omnipresent/same_shape/value.hpp"
+#include "lue/item/constant_size/constant/same_shape/collection.hpp"
 #include "lue/property_set.hpp"
 
 
@@ -12,35 +12,32 @@ class PropertySet:
 
 public:
 
-//                    PropertySet         (Phenomenon& phenomenon,
-//                                         std::string const& name);
+    using Ids = constant::same_shape::Collection;
 
                    PropertySet         (hdf5::Identifier const& id);
 
                    PropertySet         (lue::PropertySet&& property_set);
 
-                   PropertySet         (PropertySet const& other)=delete;
+                   PropertySet         (PropertySet const&)=delete;
 
-                   PropertySet         (PropertySet&& other)=default;
+                   PropertySet         (PropertySet&&)=default;
 
                    ~PropertySet        ()=default;
 
-    PropertySet&   operator=           (PropertySet const& other)=delete;
+    PropertySet&   operator=           (PropertySet const&)=delete;
 
-    PropertySet&   operator=           (PropertySet&& other)=default;
+    PropertySet&   operator=           (PropertySet&&)=default;
 
-    time::omnipresent::same_shape::Value const&
-                   ids                 () const;
+    Ids const&     ids                 () const;
 
-    time::omnipresent::same_shape::Value&
-                   ids                 ();
+    Ids&           ids                 ();
 
-    time::omnipresent::same_shape::Value&
-                   reserve             (hsize_t const nr_items);
+    Ids&           reserve             (hsize_t nr_items);
 
 private:
 
-    time::omnipresent::same_shape::Value _ids;
+    //! Collection of item-ids
+    constant::same_shape::Collection _ids;
 
 };
 
@@ -52,8 +49,7 @@ PropertySet        create_property_set (hdf5::Group& group,
 
 PropertySet        create_property_set (hdf5::Group& group,
                                         std::string const& name,
-                                        time::omnipresent::same_shape::Value
-                                            const& ids,
+                                        PropertySet::Ids const& ids,
                                         Domain::Configuration const&
                                             domain_configuration);
 

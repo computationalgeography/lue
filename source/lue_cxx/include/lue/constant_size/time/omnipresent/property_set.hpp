@@ -48,7 +48,7 @@ PropertySet        create_property_set (PropertySets& property_sets,
 
 PropertySet        create_property_set (PropertySets& property_sets,
                                         std::string const& name,
-                                        same_shape::Value const& ids);
+                                        PropertySet::Ids const& ids);
 
 }  // namespace omnipresent
 }  // namespace time

@@ -39,8 +39,7 @@ PropertySet        create_property_set (hdf5::Group& parent,
 
 PropertySet        create_property_set (hdf5::Group& parent,
                                         std::string const& name,
-                                        omnipresent::same_shape::Value const&
-                                            ids);
+                                        PropertySet::Ids const& ids);
 
 }  // namespace located
 }  // namespace time
