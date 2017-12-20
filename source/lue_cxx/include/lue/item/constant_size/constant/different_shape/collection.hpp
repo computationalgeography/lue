@@ -55,15 +55,15 @@ public:
     void           reserve             (hsize_t nr_items,
                                         hsize_t const* value_shapes);
 
-    hdf5::Shape    value_shape         (size_t idx);
+    hdf5::Shape    value_shape         (hsize_t idx);
 
-    void           read                (size_t idx,
+    void           read                (hsize_t idx,
                                         void* buffer);
 
-    void           write               (size_t idx,
+    void           write               (hsize_t idx,
                                         void const* buffer);
 
-    Array          operator[]          (size_t idx) const;
+    Array          operator[]          (hsize_t idx) const;
 
 private:
 

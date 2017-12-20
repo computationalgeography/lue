@@ -149,21 +149,21 @@ void Collection::reserve(
     @brief      Return dataset corresponding to item @a idx
 */
 Array Collection::operator[](
-    size_t const idx) const
+    hsize_t const idx) const
 {
     return Array{*this, std::to_string(idx), _memory_datatype};
 }
 
 
 hdf5::Shape Collection::value_shape(
-    size_t idx)
+    hsize_t idx)
 {
     return operator[](idx).shape();
 }
 
 
 void Collection::read(
-    size_t const idx,
+    hsize_t const idx,
     void* buffer)
 {
     operator[](idx).read(buffer);
@@ -171,7 +171,7 @@ void Collection::read(
 
 
 void Collection::write(
-    size_t const idx,
+    hsize_t const idx,
     void const* buffer)
 {
     operator[](idx).write(buffer);
