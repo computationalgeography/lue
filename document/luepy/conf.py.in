@@ -42,6 +42,15 @@ html_theme = 'default'
 htmlhelp_basename = 'LUEdoc'
 
 
+autodoc_default_flags = [
+    "inherited-members",
+    "members",
+    "show-inheritance",
+    # "special-members",
+    "undoc-members",
+]
+
+
 def can_access_python_extension():
     return not on_rtd
 
