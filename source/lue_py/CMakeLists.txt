@@ -36,10 +36,8 @@ add_library(lue_py SHARED
     src/constant_size/time/omnipresent/domain
     src/constant_size/time/omnipresent/property
     src/constant_size/time/omnipresent/property_set
-    src/constant_size/time/omnipresent/space_box
     src/constant_size/time/omnipresent/space_box_domain
     src/constant_size/time/omnipresent/space_domain
-    src/constant_size/time/omnipresent/space_point
     src/constant_size/time/omnipresent/space_point_domain
     src/constant_size/time/omnipresent/submodule
 

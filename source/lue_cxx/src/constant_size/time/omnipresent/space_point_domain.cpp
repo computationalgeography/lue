@@ -30,25 +30,25 @@ SpacePointDomain::SpacePointDomain(
     hdf5::Datatype const& memory_datatype)
 
     : SpaceDomain{std::forward<SpaceDomain>(space_domain)},
-      _items{*this, memory_datatype}
+      _items{*this, coordinates_tag, memory_datatype}
 
 {
 }
 
 
-SpacePoint const& SpacePointDomain::items() const
-{
-    return _items;
-}
-
-
-SpacePoint& SpacePointDomain::items()
+SpacePointDomain::SpacePoints const& SpacePointDomain::items() const
 {
     return _items;
 }
 
 
-SpacePoint& SpacePointDomain::reserve(
+SpacePointDomain::SpacePoints& SpacePointDomain::items()
+{
+    return _items;
+}
+
+
+SpacePointDomain::SpacePoints& SpacePointDomain::reserve(
     hsize_t const nr_items)
 {
     _items.reserve(nr_items);
@@ -71,7 +71,11 @@ SpacePointDomain create_space_point_domain(
             SpaceDomain::Configuration::ItemType::point)
     );
 
-    create_space_point(space, file_datatype, memory_datatype, rank);
+    // A point is defined by the coordinates along each dimension
+    hdf5::Shape value_shape = { rank };
+
+    constant::same_shape::create_collection(
+        space, coordinates_tag, file_datatype, memory_datatype, value_shape);
 
     return SpacePointDomain(std::move(space), memory_datatype);
 }

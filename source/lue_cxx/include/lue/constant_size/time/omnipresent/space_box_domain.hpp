@@ -1,6 +1,6 @@
 #pragma once
+#include "lue/item/constant_size/constant/same_shape/collection.hpp"
 #include "lue/constant_size/time/omnipresent/property_set.hpp"
-#include "lue/constant_size/time/omnipresent/space_box.hpp"
 #include "lue/constant_size/time/omnipresent/space_domain.hpp"
 
 
@@ -17,34 +17,32 @@ public:
 
     static hdf5::Datatype file_datatype(hdf5::Group const& parent);
 
-                   // SpaceBoxDomain      (lue::SpaceDomain& group);
-
-                   // SpaceBoxDomain      (PropertySet const& property_set);
+    using SpaceBoxes = constant::same_shape::Collection;
 
                    SpaceBoxDomain      (SpaceDomain&& space_domain);
 
                    SpaceBoxDomain      (SpaceDomain&& space_domain,
                                         hdf5::Datatype const& memory_datatype);
 
-                   SpaceBoxDomain      (SpaceBoxDomain const& other)=delete;
+                   SpaceBoxDomain      (SpaceBoxDomain const&)=delete;
 
-                   SpaceBoxDomain      (SpaceBoxDomain&& other)=default;
+                   SpaceBoxDomain      (SpaceBoxDomain&&)=default;
 
                    ~SpaceBoxDomain     ()=default;
 
-    SpaceBoxDomain& operator=          (SpaceBoxDomain const& other)=delete;
+    SpaceBoxDomain& operator=          (SpaceBoxDomain const&)=delete;
 
-    SpaceBoxDomain& operator=          (SpaceBoxDomain&& other)=default;
+    SpaceBoxDomain& operator=          (SpaceBoxDomain&&)=default;
 
-    SpaceBox const& items              () const;
+    SpaceBoxes const& items            () const;
 
-    SpaceBox&      items               ();
+    SpaceBoxes&    items               ();
 
-    SpaceBox&      reserve             (hsize_t const nr_items);
+    SpaceBoxes&    reserve             (hsize_t const nr_items);
 
 private:
 
-    SpaceBox       _items;
+    SpaceBoxes     _items;
 
 };
 

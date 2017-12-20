@@ -25,10 +25,8 @@ void init_submodule(py::module& module);
 void init_domain_class(py::module& module);
 void init_property_class(py::module& module);
 void init_property_set_class(py::module& module);
-void init_space_box_class(py::module& module);
 void init_space_box_domain_class(py::module& module);
 void init_space_domain_class(py::module& module);
-void init_space_point_class(py::module& module);
 void init_space_point_domain_class(py::module& module);
 
 
@@ -52,12 +50,8 @@ void init_submodule(
     different_shape::init_submodule(submodule);
     same_shape::init_submodule(submodule);
 
-    // Space box inherits same_shape::Value, so init the SpaceBox class after
-    // the same_shape sub module is initialized.
     init_property_set_class(submodule);
-    init_space_box_class(submodule);
     init_space_box_domain_class(submodule);
-    init_space_point_class(submodule);
     init_space_point_domain_class(submodule);
 }
 

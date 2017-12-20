@@ -30,25 +30,25 @@ SpaceBoxDomain::SpaceBoxDomain(
     hdf5::Datatype const& memory_datatype)
 
     : SpaceDomain{std::forward<SpaceDomain>(space_domain)},
-      _items{*this, memory_datatype}
+      _items{*this, coordinates_tag, memory_datatype}
 
 {
 }
 
 
-SpaceBox const& SpaceBoxDomain::items() const
-{
-    return _items;
-}
-
-
-SpaceBox& SpaceBoxDomain::items()
+SpaceBoxDomain::SpaceBoxes const& SpaceBoxDomain::items() const
 {
     return _items;
 }
 
 
-SpaceBox& SpaceBoxDomain::reserve(
+SpaceBoxDomain::SpaceBoxes& SpaceBoxDomain::items()
+{
+    return _items;
+}
+
+
+SpaceBoxDomain::SpaceBoxes& SpaceBoxDomain::reserve(
     hsize_t const nr_items)
 {
     _items.reserve(nr_items);
@@ -93,9 +93,16 @@ SpaceBoxDomain create_space_box_domain(
 
     // auto& space = domain.space();
 
-    create_space_box(space, file_datatype, memory_datatype, rank);
+    // create_space_box(space, file_datatype, memory_datatype, rank);
 
-    return SpaceBoxDomain(std::move(space), memory_datatype);
+    // A box is defined by the coordinates of two opposite points
+    // (diagonally). Two of them is enough.
+    hdf5::Shape value_shape = {2 * rank };
+
+    constant::same_shape::create_collection(
+        space, coordinates_tag, file_datatype, memory_datatype, value_shape);
+
+    return SpaceBoxDomain{std::move(space), memory_datatype};
 }
 
 }  // namespace omnipresent
