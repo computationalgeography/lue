@@ -65,7 +65,8 @@ void init_space_box_domain_class(
             std::tie(file_type_id, memory_type_id) =
                 numpy_type_to_hdf5_types(numpy_type_id);
 
-            return create_space_box_domain(property_set,
+            return create_space_box_domain(
+                property_set,
                 hdf5::Datatype(file_type_id), hdf5::Datatype(memory_type_id),
                 rank);
         },

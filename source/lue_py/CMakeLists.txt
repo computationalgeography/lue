@@ -25,6 +25,19 @@ add_library(lue_py SHARED
     src/universe
     src/validate
 
+    src/item/constant_size/constant/different_shape/submodule
+    src/item/constant_size/constant/different_shape/collection
+    src/item/constant_size/constant/same_shape/collection
+    src/item/constant_size/constant/same_shape/submodule
+    src/item/constant_size/constant/submodule
+
+    src/item/constant_size/variable/constant_shape/different_shape/submodule
+    src/item/constant_size/variable/constant_shape/different_shape/collection
+    src/item/constant_size/variable/constant_shape/same_shape/collection
+    src/item/constant_size/variable/constant_shape/same_shape/submodule
+    src/item/constant_size/variable/constant_shape/submodule
+    src/item/constant_size/variable/submodule
+
     src/constant_size/domain
     src/constant_size/property
     src/constant_size/property_set
@@ -41,12 +54,10 @@ add_library(lue_py SHARED
     src/constant_size/time/omnipresent/space_point_domain
     src/constant_size/time/omnipresent/submodule
 
-    src/constant_size/time/omnipresent/different_shape/collection
     src/constant_size/time/omnipresent/different_shape/property
     src/constant_size/time/omnipresent/different_shape/value
     src/constant_size/time/omnipresent/different_shape/submodule
 
-    src/constant_size/time/omnipresent/same_shape/collection
     src/constant_size/time/omnipresent/same_shape/property
     src/constant_size/time/omnipresent/same_shape/value
     src/constant_size/time/omnipresent/same_shape/submodule
