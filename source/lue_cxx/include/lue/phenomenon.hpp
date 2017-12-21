@@ -6,7 +6,7 @@ namespace lue {
 
 /*!
     @brief      TODO
-    @sa         create_phenomenon(hdf5::Identifier const&, std::string const&)
+    @sa         create_phenomenon(hdf5::Group const&, std::string const&)
 */
 class Phenomenon:
     public hdf5::Group

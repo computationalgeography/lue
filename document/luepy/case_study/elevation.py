@@ -11,8 +11,7 @@ nr_areas = 10
 
 
 # Per area a unique id
-ids = areas.reserve(nr_areas)
-ids[:] = [2, 4, 6, 8, 10, 9, 7, 5, 3, 1]
+areas.ids.reserve(nr_areas)[:] = [2, 4, 6, 8, 10, 9, 7, 5, 3, 1]
 
 
 # Time domain with resolution of 1 day
@@ -50,11 +49,11 @@ nr_time_steps = 5
 discretization_phenomenon = dataset.add_phenomenon("discretization")
 discretization_property_set = omnipresent.create_property_set(
     discretization_phenomenon, "discretization")
-discretization_property_set.reserve(1)[0] = 12345
+discretization_property_set.ids.reserve(1)[0] = 12345
 
 time_discretization = omnipresent.same_shape.create_property(
     discretization_property_set, "time", numpy.uint32)
-time_discretization.reserve(1)[:] = nr_time_steps
+time_discretization.values.reserve(1)[:] = nr_time_steps
 
 
 discretization_property_set = omnipresent.create_property_set(
@@ -63,7 +62,7 @@ space_discretization = omnipresent.same_shape.create_property(
     discretization_property_set, "space", numpy.uint32, (2,))
 nr_cells = numpy.arange(start=1, stop=nr_areas * 2 + 1, dtype=numpy.uint32)
 nr_cells = nr_cells.reshape(nr_areas, 2)
-space_discretization.reserve(nr_areas)[:] = nr_cells
+space_discretization.values.reserve(nr_areas)[:] = nr_cells
 
 # Re-use nr_cells array with shapes of spatial fields, but add information
 # about the number of time steps. The resulting values will be
@@ -75,7 +74,7 @@ nr_cells = numpy.insert(nr_cells, 0, nr_time_steps, axis=1)
 # Elevation fields
 elevation = shared.constant_shape.different_shape.create_property(
     areas, "elevation", numpy.float64, 3)
-values = elevation.reserve(nr_time_boxes, nr_cells)
+values = elevation.values.reserve(nr_time_boxes, nr_cells)
 assert len(values) == nr_areas, len(values)
 
 for i in range(nr_areas):

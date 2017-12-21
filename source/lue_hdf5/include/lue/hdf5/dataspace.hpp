@@ -22,15 +22,15 @@ public:
 
     explicit       Dataspace           (Identifier&& id);
 
-                   Dataspace           (Dataspace const&)=delete;
+                   Dataspace           (Dataspace const&)=default;
 
-                   Dataspace           (Dataspace&& other);
+                   Dataspace           (Dataspace&&)=default;
 
                    ~Dataspace          ()=default;
 
-    Dataspace&     operator=           (Dataspace const&)=delete;
+    Dataspace&     operator=           (Dataspace const&)=default;
 
-    Dataspace&     operator=           (Dataspace&& other);
+    Dataspace&     operator=           (Dataspace&&)=default;
 
     Identifier const& id               () const;
 

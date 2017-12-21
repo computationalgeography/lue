@@ -21,13 +21,13 @@ public:
                    Attribute           (Identifier const& location,
                                         std::string const& name);
 
-                   Attribute           (Attribute const&)=delete;
+                   Attribute           (Attribute const&)=default;
 
                    Attribute           (Attribute&&)=default;
 
                    ~Attribute          ()=default;
 
-    Attribute&     operator=           (Attribute const&)=delete;
+    Attribute&     operator=           (Attribute const&)=default;
 
     Attribute&     operator=           (Attribute&&)=default;
 

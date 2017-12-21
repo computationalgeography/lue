@@ -2,54 +2,8 @@
 #include <boost/test/unit_test.hpp>
 #include "lue/constant_size/time/omnipresent/property_set.hpp"
 #include "lue/dataset.hpp"
+#include "lue/test.hpp"
 #include <iostream>
-
-
-namespace {
-
-class Fixture
-{
-
-public:
-
-    Fixture(
-        std::string const& dataset_name)
-
-        : _dataset_name(dataset_name)
-
-    {
-        // Guarantees:
-        // - Dataset does not exist after setup
-        remove_dataset();
-
-        BOOST_REQUIRE(!lue::dataset_exists(_dataset_name));
-    }
-
-
-    ~Fixture()
-    {
-        // Guarantees:
-        // - Dataset does not exist after teardown
-        // remove_dataset();
-
-        // BOOST_CHECK(!lue::dataset_exists(_dataset_name));
-    }
-
-
-private:
-
-    std::string const _dataset_name;
-
-    void remove_dataset()
-    {
-        if(lue::dataset_exists(_dataset_name)) {
-            lue::remove_dataset(_dataset_name);
-        }
-    }
-
-};
-
-}  // Anonymous namespace
 
 
 namespace omnipresent = lue::constant_size::time::omnipresent;
@@ -60,7 +14,8 @@ BOOST_AUTO_TEST_CASE(create_new_property_set)
     std::string const dataset_name = "create_new_property_set.lue";
     std::string const phenomenon_name = "my_phenomenon";
     std::string const property_set_name = "my_property_set";
-    Fixture f(dataset_name);
+
+    lue::test::DatasetFixture fixture{dataset_name};
 
     auto dataset = lue::create_dataset(dataset_name);
     auto& phenomenon = dataset.add_phenomenon(phenomenon_name);
@@ -68,7 +23,7 @@ BOOST_AUTO_TEST_CASE(create_new_property_set)
     BOOST_CHECK_EQUAL(phenomenon.property_sets().size(), 0);
 
     auto const property_set = omnipresent::create_property_set(
-        phenomenon.property_sets(), property_set_name);
+        phenomenon, property_set_name);
 
     BOOST_CHECK_EQUAL(phenomenon.property_sets().size(), 1);
     BOOST_CHECK(
@@ -90,7 +45,8 @@ BOOST_AUTO_TEST_CASE(share_item_ids)
     std::string const phenomenon_name = "my_phenomenon";
     std::string const property_set_name1 = "my_property_set1";
     std::string const property_set_name2 = "my_property_set2";
-    Fixture f(dataset_name);
+
+    lue::test::DatasetFixture fixture{dataset_name};
 
     auto dataset = lue::create_dataset(dataset_name);
     auto& phenomenon = dataset.add_phenomenon(phenomenon_name);
@@ -98,15 +54,15 @@ BOOST_AUTO_TEST_CASE(share_item_ids)
     // Second property-set points to the same collection of item ids as
     // the first
     auto property_set1 = omnipresent::create_property_set(
-        phenomenon.property_sets(), property_set_name1);
+        phenomenon, property_set_name1);
     auto property_set2 = omnipresent::create_property_set(
-        phenomenon.property_sets(), property_set_name2, property_set1.ids());
+        phenomenon, property_set_name2, property_set1.ids());
 
     std::size_t const nr_items = 5;
 
     // Create and write item ids through first property-set and check whether
     // these ids can be read through the second property-set
-    property_set1.reserve(nr_items);
+    property_set1.ids().reserve(nr_items);
 
     std::vector<std::uint64_t> ids_written = { 5, 4, 3, 2, 1 };
     std::vector<std::uint64_t> ids_read(nr_items);

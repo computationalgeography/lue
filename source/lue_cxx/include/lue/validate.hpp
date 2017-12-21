@@ -12,9 +12,9 @@ void               validate            (std::string const& name,
                                         hdf5::Issues& issues);
 
 void               assert_is_valid     (hdf5::File const& file,
-                                        bool const fail_on_warning=true);
+                                        bool fail_on_warning=true);
 
 void               assert_is_valid     (std::string const& name,
-                                        bool const fail_on_warning=true);
+                                        bool fail_on_warning=true);
 
 }  // namespace lue

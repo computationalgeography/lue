@@ -2,7 +2,7 @@
 #include "lue/constant_size/time/omnipresent/same_shape/value.hpp"
 #include "lue/constant_size/time/omnipresent/domain.hpp"
 #include "lue/constant_size/property_set.hpp"
-#include "lue/property_sets.hpp"
+#include "lue/phenomenon.hpp"
 
 
 namespace lue {
@@ -12,7 +12,9 @@ namespace omnipresent {
 
 /*!
     @brief      TODO
-    @sa         create_property_set(Phenomenon&, std::string const&)
+    @sa         create_property_set(Phenomenon&, std::string const&),
+                create_property_set(Phenomenon&, std::string const&,
+                PropertySet::Ids const&)
 */
 class PropertySet:
     public constant_size::PropertySet
@@ -43,10 +45,10 @@ private:
 };
 
 
-PropertySet        create_property_set (PropertySets& property_sets,
+PropertySet        create_property_set (Phenomenon& phenomenon,
                                         std::string const& name);
 
-PropertySet        create_property_set (PropertySets& property_sets,
+PropertySet        create_property_set (Phenomenon& phenomenon,
                                         std::string const& name,
                                         PropertySet::Ids const& ids);
 

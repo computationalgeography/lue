@@ -16,13 +16,13 @@ public:
 
     explicit       Attributes          (Identifier const& id);
 
-                   Attributes          (Attributes const&)=delete;
+                   Attributes          (Attributes const&)=default;
 
                    Attributes          (Attributes&&)=default;
 
                    ~Attributes         ()=default;
 
-    Attributes&    operator=           (Attributes const&)=delete;
+    Attributes&    operator=           (Attributes const&)=default;
 
     Attributes&    operator=           (Attributes&&)=default;
 

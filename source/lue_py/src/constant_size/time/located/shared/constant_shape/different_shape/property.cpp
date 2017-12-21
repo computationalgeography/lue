@@ -31,48 +31,6 @@ void init_property(
         "Property",
         "Property docstring...")
 
-        .def(
-            "reserve",
-            [](
-                Property& property,
-                hsize_t const nr_time_domain_items,
-                py::array_t<hsize_t, py::array::c_style>& shapes) -> Value&
-            {
-                static_assert(sizeof(hsize_t) == sizeof(uint64_t), "");
-
-                // shapes must be an nD array where:
-                // - the number of dimensions must equal rank + 1
-                // - the first dimension corresponds with the nr_items
-                // - subsequent dimensions correspond with the extents of
-                //   each item's value
-
-                auto const array_info = shapes.request();
-
-                // if(static_cast<rank_t>(array_info.ndim) != 2) {
-                if(array_info.ndim != 2) {
-                    throw std::runtime_error(
-                        "rank of shapes array (" +
-                        std::to_string(array_info.ndim) + ") must equal 2");
-                }
-
-                if(static_cast<int>(array_info.shape[1]) !=
-                        property.values().rank()) {
-                    throw std::runtime_error(
-                        "extent of second dimension of shapes array (" +
-                        std::to_string(array_info.shape[1]) +
-                        ") must equal rank of values (" +
-                        std::to_string(property.values().rank()) + ")");
-                }
-
-                hsize_t const nr_items = array_info.shape[0];
-
-                return property.reserve(
-                    nr_time_domain_items, nr_items,
-                    static_cast<hsize_t*>(array_info.ptr));
-            },
-            "reserve docstring...",
-            py::return_value_policy::reference_internal)
-
         .def_property_readonly(
             "values",
             py::overload_cast<>(&Property::values),

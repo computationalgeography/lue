@@ -197,7 +197,7 @@ void init_property_set_class(
             Phenomenon& phenomenon,
             std::string const& name)
         {
-            return create_property_set(phenomenon.property_sets(), name);
+            return create_property_set(phenomenon, name);
         },
         R"(
     Create new property set
@@ -220,8 +220,7 @@ void init_property_set_class(
             std::string const& name,
             PropertySet::Ids const& ids)
         {
-            return create_property_set(
-                phenomenon.property_sets(), name, ids);
+            return create_property_set(phenomenon, name, ids);
         },
         R"(
     Create new property set

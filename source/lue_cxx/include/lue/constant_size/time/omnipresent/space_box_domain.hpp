@@ -38,7 +38,7 @@ public:
 
     SpaceBoxes&    items               ();
 
-    SpaceBoxes&    reserve             (hsize_t const nr_items);
+    SpaceBoxes&    reserve             (hsize_t nr_items);
 
 private:
 

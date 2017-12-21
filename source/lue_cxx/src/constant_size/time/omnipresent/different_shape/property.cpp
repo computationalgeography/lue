@@ -51,16 +51,6 @@ different_shape::Value& Property::values()
 }
 
 
-different_shape::Value& Property::reserve(
-    hsize_t const nr_items,
-    hsize_t const* shapes)
-{
-    _values.reserve(nr_items, shapes);
-
-    return _values;
-}
-
-
 Property create_property(
     PropertySet& property_set,
     std::string const& name,

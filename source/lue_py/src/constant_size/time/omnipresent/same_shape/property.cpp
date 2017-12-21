@@ -28,12 +28,6 @@ void init_property_class(
         "Property",
         "Property docstring...")
 
-        .def(
-            "reserve",
-            &Property::reserve,
-            "reserve docstring...",
-            py::return_value_policy::reference_internal)
-
         .def_property_readonly(
             "values",
             py::overload_cast<>(&Property::values),

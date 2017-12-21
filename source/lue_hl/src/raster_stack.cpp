@@ -237,10 +237,8 @@ RasterStack::Band RasterStack::add_band(
     hsize_t const nr_time_domain_items = 1;
     size_t const nr_items = 1;
 
-    property.reserve(
-        nr_time_domain_items,
-        nr_items,
-        _discretization.shape().data());
+    property.values().reserve(
+        nr_time_domain_items, nr_items, _discretization.shape().data());
     property.discretize_time(_time_discretization_property);
     property.discretize_space(_space_discretization_property);
 
@@ -287,7 +285,8 @@ RasterStack create_raster_stack(
         // Write item ids to property set
         auto ids_ = std::make_unique<hsize_t[]>(nr_items);
         std::iota(ids_.get(), ids_.get() + nr_items, 0);
-        auto& ids = property_set.reserve(nr_items);
+        auto& ids = property_set.ids();
+        ids.reserve(nr_items);
         ids.write(ids_.get());
 
 
@@ -304,7 +303,7 @@ RasterStack create_raster_stack(
         {
             // auto const& ids = property_set.ids();
             auto property_set = omnipresent::create_property_set(
-                phenomenon.property_sets(), space_box_property_set_name, ids);
+                phenomenon, space_box_property_set_name, ids);
             file_datatype_id = hdf5::Datatype{
                 hdf5::StandardDatatypeTraits<RasterDomain::Coordinate>::
                     type_id()};
@@ -333,13 +332,15 @@ RasterStack create_raster_stack(
         ///     discretization.time_series_discretization().shape().data());
 
         auto time_discretization_property_set = omnipresent::create_property_set(
-            time_discretization_phenomenon.property_sets(),
+            time_discretization_phenomenon,
             time_discretization_property_set_name);
 
         // Write item ids to property set
         {
             hsize_t const id = 0;
-            time_discretization_property_set.reserve(nr_items).write(&id);
+            auto& ids = time_discretization_property_set.ids();
+            ids.reserve(nr_items);
+            ids.write(&id);
         }
 
         // Add property
@@ -354,7 +355,8 @@ RasterStack create_raster_stack(
                 file_datatype_id,
                 memory_datatype_id,
                 hdf5::Shape{1});
-        time_discretization_property.reserve(1).write(
+        time_discretization_property.values().reserve(1);
+        time_discretization_property.values().write(
             discretization.time_series_discretization().shape().data());
         // time_discretization_property_id = time_discretization_property.id();
 
@@ -364,13 +366,14 @@ RasterStack create_raster_stack(
         // through time.
         auto space_discretization_property_set =
             omnipresent::create_property_set(
-                space_discretization_phenomenon.property_sets(),
+                space_discretization_phenomenon,
                 space_discretization_property_set_name);
 
         // Write item ids to property set
         {
             hsize_t const id = 0;
-            space_discretization_property_set.reserve(nr_items).write(&id);
+            space_discretization_property_set.ids().reserve(nr_items);
+            space_discretization_property_set.ids().write(&id);
         }
 
         // Two values per item: nr_rows, nr_cols.
@@ -383,7 +386,8 @@ RasterStack create_raster_stack(
                 space_discretization_property_set,
                 space_discretization_property_name,
                 file_datatype_id, memory_datatype_id, hdf5::Shape{2});
-        space_discretization_property.reserve(nr_items).write(
+        space_discretization_property.values().reserve(nr_items);
+        space_discretization_property.values().write(
             discretization.raster_discretization().shape().data());
         // space_discretization_property_id = space_discretization_property.id();
 

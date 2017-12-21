@@ -86,7 +86,7 @@ class DiscretizedTimeTest(lue_test.TestCase):
             phenomenon, property_set_name)
         nr_items = 100
 
-        property_set.reserve(nr_items)[:] = numpy.arange(nr_items)
+        property_set.ids.reserve(nr_items)[:] = numpy.arange(nr_items)
 
 
         # Time domain

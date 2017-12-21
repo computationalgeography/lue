@@ -27,12 +27,6 @@ void init_property_set_class(
         //     "name"_a,
         //     py::keep_alive<1, 2>())
 
-        .def(
-            "reserve",
-            &PropertySet::reserve,
-            "reserve docstring...",
-            py::return_value_policy::reference_internal)
-
         .def_property_readonly(
             "ids",
             py::overload_cast<>(&PropertySet::ids),

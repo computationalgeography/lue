@@ -43,9 +43,9 @@ public:
     same_shape::Value&
                    values              ();
 
-    same_shape::Value&
-                   reserve             (hsize_t nr_time_domain_items,
-                                        hsize_t nr_items);
+    // same_shape::Value&
+    //                reserve             (hsize_t nr_time_domain_items,
+    //                                     hsize_t nr_items);
 
 private:
 

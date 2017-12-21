@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE lue item constant_size constant same_shape collection
 #include <boost/test/unit_test.hpp>
 #include "lue/item/constant_size/constant/same_shape/collection.hpp"
-#include "lue/test/dataset_fixture.hpp"
+#include "lue/test.hpp"
 #include "lue/hdf5/file.hpp"
 
 

@@ -55,33 +55,6 @@ Dataspace::Dataspace(
 }
 
 
-Dataspace::Dataspace(
-    Dataspace&& other)
-
-    : _id{std::move(other._id)}
-
-{
-    // Invalidate other.
-    std::move(other);
-
-    assert(!other._id.is_valid());
-}
-
-
-Dataspace& Dataspace::operator=(
-    Dataspace&& other)
-{
-    _id = std::move(other._id);
-
-    // Invalidate other.
-    std::move(other);
-
-    assert(!other._id.is_valid());
-
-    return *this;
-}
-
-
 /*!
     @brief      Return the identifier
 */

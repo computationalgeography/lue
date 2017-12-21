@@ -38,10 +38,6 @@ public:
     different_shape::Value&
                    values              ();
 
-    different_shape::Value&
-                   reserve             (hsize_t nr_items,
-                                        hsize_t const* shapes);
-
 private:
 
     different_shape::Value _values;

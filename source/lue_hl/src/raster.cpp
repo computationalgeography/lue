@@ -183,7 +183,7 @@ Raster::Band Raster::add_band(
         _property_set, name, datatype, rank);
     size_t const nr_items = 1;
 
-    property.reserve(nr_items, _discretization.shape().data());
+    property.values().reserve(nr_items, _discretization.shape().data());
     property.discretize_space(_discretization_property);
 
     return Band(std::move(property));
@@ -231,8 +231,8 @@ omnipresent::same_shape::Property discretization_property(
         property_set, property_name,
         file_datatype_id, memory_datatype_id, shape);
 
-    auto& nr_cells = property.reserve(nr_items);
-
+    auto& nr_cells = property.values();
+    nr_cells.reserve(nr_items);
     nr_cells.write(discretization.shape().data());
 
     return property;
@@ -259,7 +259,7 @@ hdf5::Identifier create_raster(
     if(!phenomenon.property_sets().contains(property_set_name)) {
 
         auto property_set = omnipresent::create_property_set(
-            phenomenon.property_sets(), property_set_name);
+            phenomenon, property_set_name);
             // SpaceDomain::Configuration(
             //     SpaceDomain::Configuration::DomainType::located));
 
@@ -269,7 +269,8 @@ hdf5::Identifier create_raster(
         // Write item id to property set.
         {
             hsize_t const id = 0;
-            auto& ids = property_set.reserve(nr_items);
+            auto& ids = property_set.ids();
+            ids.reserve(nr_items);
             ids.write(&id);
         }
 

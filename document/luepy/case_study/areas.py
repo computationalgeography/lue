@@ -14,8 +14,7 @@ rank = 2
 
 
 # Per area a unique id
-ids = areas.reserve(nr_areas)
-ids[:] = [2, 4, 6, 8, 10, 9, 7, 5, 3, 1]
+areas.ids.reserve(nr_areas)[:] = [2, 4, 6, 8, 10, 9, 7, 5, 3, 1]
 
 
 # Space domain
@@ -32,7 +31,7 @@ boxes[:] = boxes_
 # Discretization property with two values per item: nr_rows, nr_cols
 discretization = omnipresent.same_shape.create_property(
     areas, "space discretization", numpy.uint32, (rank,))
-nr_cells = discretization.reserve(nr_areas)
+nr_cells = discretization.values.reserve(nr_areas)
 nr_cells_ = numpy.arange(  # Dummy data...
     start=1, stop=nr_areas * rank + 1, dtype=numpy.uint32)
 nr_cells_ = nr_cells_.reshape(nr_areas, rank)
@@ -42,7 +41,7 @@ nr_cells[:] = nr_cells_
 # Elevation fields
 elevation = omnipresent.different_shape.create_property(
     areas, "elevation", numpy.float64, rank)
-values = elevation.reserve(nr_cells_)
+values = elevation.values.reserve(nr_cells_)
 
 for i in range(nr_areas):
     shape = nr_cells_[i]

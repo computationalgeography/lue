@@ -44,11 +44,6 @@ public:
     different_shape::Value&
                    values              ();
 
-    different_shape::Value&
-                   reserve             (hsize_t const nr_time_domain_items,
-                                        hsize_t const nr_items,
-                                        hsize_t const* shapes);
-
 private:
 
     different_shape::Value _values;

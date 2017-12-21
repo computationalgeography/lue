@@ -9,6 +9,21 @@ namespace time {
 namespace omnipresent {
 namespace same_shape {
 
+/*!
+    @brief      .
+    @param      .
+    @return     .
+    @exception  .
+    @sa         create_property(PropertySet&, std::string const&,
+                    hdf5::Datatype const&)
+    @sa         create_property(PropertySet&, std::string const&,
+                    hdf5::Datatype const&, hdf5::Datatype const&),
+    @sa         create_property(PropertySet&, std::string const&,
+                    hdf5::Datatype const&, hdf5::Shape const&)
+    @sa         create_property(PropertySet&, std::string const&,
+                    hdf5::Datatype const&, hdf5::Datatype const&,
+                    hdf5::Shape const&)
+*/
 class Property:
     public omnipresent::Property
 {
@@ -36,9 +51,6 @@ public:
     same_shape::Value&
                    values              ();
 
-    same_shape::Value&
-                   reserve             (hsize_t const nr_items);
-
 private:
 
     same_shape::Value _values;
@@ -48,8 +60,17 @@ private:
 
 Property           create_property     (PropertySet& property_set,
                                         std::string const& name,
+                                        hdf5::Datatype const& memory_datatype);
+
+Property           create_property     (PropertySet& property_set,
+                                        std::string const& name,
                                         hdf5::Datatype const& file_datatype,
                                         hdf5::Datatype const& memory_datatype);
+
+Property           create_property     (PropertySet& property_set,
+                                        std::string const& name,
+                                        hdf5::Datatype const& memory_datatype,
+                                        hdf5::Shape const& value_shape);
 
 Property           create_property     (PropertySet& property_set,
                                         std::string const& name,

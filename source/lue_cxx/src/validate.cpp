@@ -204,6 +204,10 @@ void validate(
 }
 
 
+/*!
+    @brief      Assert that the dataset in @a file is valid
+    @exception  std::runtime_error In case the dataset is not valid
+*/
 void assert_is_valid(
     hdf5::File const& file,
     bool const fail_on_warning)
@@ -218,6 +222,10 @@ void assert_is_valid(
 }
 
 
+/*!
+    @brief      Assert that the dataset in @a dataset_name is valid
+    @exception  std::runtime_error In case the dataset is not valid
+*/
 void assert_is_valid(
     std::string const& dataset_name,
     bool const fail_on_warning)

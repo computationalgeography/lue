@@ -32,8 +32,6 @@ public:
 
     Ids&           ids                 ();
 
-    Ids&           reserve             (hsize_t nr_items);
-
 private:
 
     //! Collection of item-ids

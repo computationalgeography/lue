@@ -24,12 +24,13 @@ class ArrayTest(lue_test.TestCase):
         self.value_shape = (self.nr_rows, self.nr_cols)
         self.value_type = numpy.int32
 
-        self.property_set.reserve(self.nr_items)[:] = numpy.arange(self.nr_items)
+        self.property_set.ids.reserve(self.nr_items)[:] = \
+            numpy.arange(self.nr_items)
 
         property = omnipresent.same_shape.create_property(
             self.property_set, "my_property", self.value_type, self.value_shape)
 
-        self.lue_values = property.reserve(self.nr_items)
+        self.lue_values = property.values.reserve(self.nr_items)
         self.numpy_values = numpy.arange(
             self.nr_items * reduce(
                 lambda x, y: x * y, self.value_shape),

@@ -3,7 +3,6 @@
 
 
 namespace py = pybind11;
-using namespace pybind11::literals;
 
 
 namespace lue {
@@ -16,7 +15,9 @@ void init_value_class(
     py::module& module)
 {
 
-    py::class_<Value, constant::same_shape::Collection>(
+    py::class_<
+            Value,
+            constant::same_shape::Collection>(
         module,
         "Value",
         "Value docstring...")

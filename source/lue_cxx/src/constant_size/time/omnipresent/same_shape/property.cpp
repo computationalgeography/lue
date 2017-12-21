@@ -39,12 +39,14 @@ same_shape::Value& Property::values()
 }
 
 
-same_shape::Value& Property::reserve(
-    hsize_t const nr_items)
+Property create_property(
+    PropertySet& property_set,
+    std::string const& name,
+    hdf5::Datatype const& memory_datatype)
 {
-    _values.reserve(nr_items);
-
-    return _values;
+    return create_property(
+        property_set, name, hdf5::file_datatype(memory_datatype),
+        memory_datatype);
 }
 
 
@@ -66,6 +68,17 @@ Property create_property(
     return Property{hdf5::Group{property.id()}, memory_datatype};
 }
 
+
+Property create_property(
+    PropertySet& property_set,
+    std::string const& name,
+    hdf5::Datatype const& memory_datatype,
+    hdf5::Shape const& value_shape)
+{
+    return create_property(
+        property_set, name, hdf5::file_datatype(memory_datatype),
+        memory_datatype, value_shape);
+}
 
 Property create_property(
     PropertySet& property_set,

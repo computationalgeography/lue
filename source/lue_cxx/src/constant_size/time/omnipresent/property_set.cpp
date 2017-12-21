@@ -32,14 +32,20 @@ Domain& PropertySet::domain()
 }
 
 
+/*!
+    @brief      TODO
+    @param      .
+    @return     .
+    @exception  .
+*/
 PropertySet create_property_set(
-    PropertySets& property_sets,
+    Phenomenon& phenomenon,
     std::string const& name)
     // SpaceDomain::Configuration const& space_domain_configuration)
 {
-    auto& property_set = property_sets.add(name,
+    auto& property_set = phenomenon.property_sets().add(name,
         constant_size::create_property_set(
-            property_sets, name,
+            phenomenon.property_sets(), name,
             Domain::Configuration(
                 Domain::Configuration::DomainType::omnipresent)
     ));
@@ -52,7 +58,7 @@ PropertySet create_property_set(
     // auto domain = omnipresent::create_domain(
     //     property_set.id(), Domain::Configuration(TimeDomainType::omnipresent));
 
-    return PropertySet(property_set.id());
+    return PropertySet{property_set.id()};
 
 
 
@@ -119,19 +125,25 @@ PropertySet create_property_set(
 }
 
 
+/*!
+    @brief      TODO
+    @param      .
+    @return     .
+    @exception  .
+*/
 PropertySet create_property_set(
-    PropertySets& property_sets,
+    Phenomenon& phenomenon,
     std::string const& name,
     PropertySet::Ids const& ids)
 {
-    auto& property_set = property_sets.add(name,
+    auto& property_set = phenomenon.property_sets().add(name,
         constant_size::create_property_set(
-            property_sets, name, ids,
+            phenomenon.property_sets(), name, ids,
             Domain::Configuration(
                 Domain::Configuration::DomainType::omnipresent)
     ));
 
-    return PropertySet(property_set.id());
+    return PropertySet{property_set.id()};
 }
 
 }  // namespace omnipresent

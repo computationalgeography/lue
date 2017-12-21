@@ -14,8 +14,7 @@ rank = 2
 
 
 # Per area a unique id
-ids = cities.reserve(nr_cities)
-ids[:] = [2, 4, 6, 8, 10, 9, 7, 5, 3, 1]
+cities.ids.reserve(nr_cities)[:] = [2, 4, 6, 8, 10, 9, 7, 5, 3, 1]
 
 
 # Space domain
@@ -31,7 +30,7 @@ points[:] = points_
 # Property
 population = omnipresent.same_shape.create_property(
     cities, "population", numpy.int64)
-values = population.reserve(nr_cities)
+values = population.values.reserve(nr_cities)
 # Dummy data...
 values[:] = (numpy.random.rand(nr_cities) * 1e6).astype(numpy.int64)
 

@@ -1,7 +1,6 @@
 #pragma once
 #include "lue/constant_size/value.hpp"
-#include "lue/array.hpp"
-#include "lue/hdf5/group.hpp"
+#include "lue/item/constant_size/variable/constant_shape/different_shape/collection.hpp"
 
 
 namespace lue {
@@ -12,12 +11,8 @@ namespace shared {
 namespace constant_shape {
 namespace different_shape {
 
-/*!
-    The property value is represented by a dataset per item. All datasets
-    have the same rank, but the size of each dimension may be different.
-*/
 class Value:
-    public hdf5::Group,
+    public variable::constant_shape::different_shape::Collection,
     public constant_size::Value
 {
 
@@ -30,8 +25,9 @@ public:
                                         std::string const& name,
                                         hdf5::Datatype const& memory_datatype);
 
-                   Value               (hdf5::Group&& group,
-                                        hdf5::Datatype const& memory_datatype);
+                   Value               (
+                        variable::constant_shape::different_shape::Collection&&
+                            collection);
 
                    Value               (Value const&)=delete;
 
@@ -45,42 +41,16 @@ public:
 
     hsize_t        nr_items            () const final;
 
-    int            rank                () const;
-
-    hdf5::Datatype const&
-                   file_datatype       () const;
-
-    hdf5::Datatype const&
-                   memory_datatype     () const;
-
-    void           reserve             (hsize_t const nr_time_domain_items,
-                                        hsize_t const nr_items,
-                                        hsize_t const* shapes);
-
-    Array          operator[]          (size_t const idx) const;
-
 private:
-
-    hsize_t        _nr_items;
-
-    int            _rank;
-
-    hdf5::Datatype const _file_datatype;
-
-    hdf5::Datatype const _memory_datatype;
-
-    void           reserve_value       (hsize_t const idx,
-                                        hsize_t const nr_time_domain_items,
-                                        hsize_t const* shape);
 
 };
 
 
-Value              create_value        (hdf5::Group const& group,
+Value              create_value        (hdf5::Group const& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& file_datatype,
                                         hdf5::Datatype const& memory_datatype,
-                                        int const rank);
+                                        int rank);
 
 }  // namespace different_shape
 }  // namespace constant_shape

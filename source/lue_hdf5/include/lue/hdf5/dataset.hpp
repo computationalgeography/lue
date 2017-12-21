@@ -54,13 +54,13 @@ public:
 
     explicit       Dataset             (Identifier&& id);
 
-                   Dataset             (Dataset const&)=delete;
+                   Dataset             (Dataset const&)=default;
 
                    Dataset             (Dataset&&)=default;
 
     virtual        ~Dataset            ()=default;
 
-    Dataset&       operator=           (Dataset const&)=delete;
+    Dataset&       operator=           (Dataset const&)=default;
 
     Dataset&       operator=           (Dataset&&)=default;
 

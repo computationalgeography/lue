@@ -177,8 +177,9 @@ void TimeSeries::write(
     auto const nr_time_steps = _time_discretization.nr_steps();
     auto const nr_items = this->nr_items();
 
-    _value_property.reserve(nr_time_steps, nr_items).write(
-        hyperslab(item_idx), values);
+    auto& values_ = _value_property.values();
+    values_.reserve(nr_time_steps, nr_items);
+    values_.write(hyperslab(item_idx), values);
 }
 
 
@@ -186,11 +187,7 @@ void TimeSeries::read(
     std::size_t const item_idx,
     double* values)
 {
-    auto const nr_time_steps = _time_discretization.nr_steps();
-    auto const nr_items = this->nr_items();
-
-    _value_property.reserve(nr_time_steps, nr_items).read(
-        hyperslab(item_idx), values);
+    _value_property.values().read(hyperslab(item_idx), values);
 }
 
 
@@ -221,7 +218,8 @@ TimeSeries create_time_series(
             {
                 auto ids_ = std::make_unique<hsize_t[]>(nr_items);
                 std::iota(ids_.get(), ids_.get() + nr_items, 0);
-                auto& ids = property_set.reserve(nr_items);
+                auto& ids = property_set.ids();
+                ids.reserve(nr_items);
                 ids.write(ids_.get());
             }
 
@@ -240,7 +238,7 @@ TimeSeries create_time_series(
         {
             auto const& ids = property_set.ids();
             auto property_set = omnipresent::create_property_set(
-                phenomenon.property_sets(), space_point_property_set_name, ids);
+                phenomenon, space_point_property_set_name, ids);
             auto const file_datatype_id =
                 hdf5::Datatype{hdf5::StandardDatatypeTraits<double>::type_id()};
             auto const memory_datatype_id =
@@ -258,7 +256,7 @@ TimeSeries create_time_series(
         // and doesn't change over time.
         {
             auto discretization_property_set = omnipresent::create_property_set(
-                time_discretization_phenomenon.property_sets(),
+                time_discretization_phenomenon,
                 time_discretization_property_set_name);
 
             // For each time box a value representing the number of steps
@@ -269,7 +267,8 @@ TimeSeries create_time_series(
             {
                 auto ids_ = std::make_unique<hsize_t[]>(nr_items);
                 std::iota(ids_.get(), ids_.get() + nr_items, 0);
-                auto& ids = discretization_property_set.reserve(nr_items);
+                auto& ids = discretization_property_set.ids();
+                ids.reserve(nr_items);
                 ids.write(ids_.get());
             }
 
@@ -286,7 +285,8 @@ TimeSeries create_time_series(
                     file_datatype_id,
                     memory_datatype_id,
                     shape);
-            discretization_property.reserve(nr_items).write(
+            discretization_property.values().reserve(nr_items);
+            discretization_property.values().write(
                 time_discretization.shape().data());
 
             // Create property for storing time series values

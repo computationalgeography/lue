@@ -53,14 +53,14 @@ same_shape::Value& Property::values()
 }
 
 
-same_shape::Value& Property::reserve(
-    hsize_t const nr_time_domain_items,
-    hsize_t const nr_items)
-{
-    _values.reserve(nr_time_domain_items, nr_items);
-
-    return _values;
-}
+// same_shape::Value& Property::reserve(
+//     hsize_t const nr_time_domain_items,
+//     hsize_t const nr_items)
+// {
+//     _values.reserve(nr_time_domain_items, nr_items);
+// 
+//     return _values;
+// }
 
 
 Property create_property(

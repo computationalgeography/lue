@@ -8,7 +8,8 @@ namespace lue {
 namespace hdf5 {
 
 /*!
-    @brief      This class represents an HDF5 identifier of an open HDF5 object
+    @brief      This class represents an HDF5 identifier of an open
+                HDF5 object
     @sa         https://support.hdfgroup.org/HDF5/doc/RM/RM_H5I.html
 
     Scoping the identifier in this class ensures that the identifier is

@@ -14,13 +14,13 @@ class PropertyList
 
 public:
 
-                   PropertyList        (PropertyList const&)=delete;
+                   PropertyList        (PropertyList const&)=default;
 
                    PropertyList        (PropertyList&&)=default;
 
     virtual        ~PropertyList       ()=default;
 
-    PropertyList&  operator=           (PropertyList const&)=delete;
+    PropertyList&  operator=           (PropertyList const&)=default;
 
     PropertyList&  operator=           (PropertyList&&)=default;
 

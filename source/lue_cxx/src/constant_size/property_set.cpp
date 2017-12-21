@@ -47,15 +47,6 @@ PropertySet::Ids& PropertySet::ids()
 }
 
 
-PropertySet::Ids& PropertySet::reserve(
-    hsize_t const nr_items)
-{
-    _ids.reserve(nr_items);
-
-    return _ids;
-}
-
-
 PropertySet create_property_set(
     hdf5::Group& group,
     std::string const& name,

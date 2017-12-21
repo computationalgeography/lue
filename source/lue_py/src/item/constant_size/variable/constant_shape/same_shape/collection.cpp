@@ -20,10 +20,18 @@ void init_collection(
         "Collection",
         "Collection docstring...")
 
-        // .def("reserve",
-        //     &Collection::reserve,
-        //     "reserve docstring...",
-        //     py::return_value_policy::reference_internal)
+        .def("reserve",
+            // &Collection::reserve,
+            [](
+                Collection& self,
+                hsize_t nr_time_domain_items,
+                hsize_t nr_items) -> Collection&
+            {
+                self.reserve(nr_time_domain_items, nr_items);
+                return self;
+            },
+            "reserve docstring...",
+            py::return_value_policy::reference_internal)
 
         ;
 

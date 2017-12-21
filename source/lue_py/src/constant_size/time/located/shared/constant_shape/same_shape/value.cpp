@@ -3,7 +3,6 @@
 
 
 namespace py = pybind11;
-using namespace pybind11::literals;
 
 
 namespace lue {
@@ -20,16 +19,16 @@ void init_value(
 {
 
     py::class_<
-                Value,
-                Array>(
-            module,
-            "Value",
-            "Value docstring...")
+            Value,
+            variable::constant_shape::same_shape::Collection>(
+        module,
+        "Value",
+        "Value docstring...")
 
-        .def("reserve",
-            &Value::reserve,
-            "reserve docstring...",
-            py::return_value_policy::reference_internal)
+        // .def("reserve",
+        //     &Value::reserve,
+        //     "reserve docstring...",
+        //     py::return_value_policy::reference_internal)
 
         // .def_property_readonly("values",
         //         &api::time::omnipresent::same_shape::Property::values,
