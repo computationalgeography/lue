@@ -1,6 +1,9 @@
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+set(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 include(PeacockPlatform)
 include(DevBaseCompiler)
@@ -8,6 +11,15 @@ include(LueConfiguration)
 include(DevBaseExternal)
 include(DevBaseMacro)
 include(LueMacro)
+
+
+# Not yet (treat warnings as errors):
+#   MSVC: /WX
+#   GNU/Clang: -Werror
+add_compile_options(
+    "$<$<CXX_COMPILER_ID:MSVC>:/W3>"
+    "$<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>>:-W;-Wall;-fvisibility=hidden>"
+)
 
 
 if(HDF5_IS_PARALLEL)
