@@ -77,7 +77,7 @@ function build_peacock()
 
     if [ "$build_pybind11" = true ]; then
         options+=("-Dbuild_pybind11=true")
-        options+=("-Dpybind11_version=2.1.1")
+        options+=("-Dpybind11_version=2.2.1")
     fi
 
 
@@ -95,7 +95,7 @@ function build_peacock()
 
     if [ "$build_nlohmann_json" = true ]; then
         options+=("-Dbuild_nlohmann_json=true")
-        options+=("-Dnlohmann_json_version=2.1.1")
+        options+=("-Dnlohmann_json_version=3.0.1")
     fi
 
 

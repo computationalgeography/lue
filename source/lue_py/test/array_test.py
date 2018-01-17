@@ -329,9 +329,19 @@ class ArrayTest(lue_test.TestCase):
 
     def test_iterate(self):
 
-        # These used to fail
-        for _ in self.property_set.ids:
-            pass
+        with self.assertRaises(ValueError) as lue_context:
+            for _ in self.property_set.ids:
+                pass
 
-        for _ in self.lue_values:
-            pass
+        self.assertEqual(
+            str(lue_context.exception),
+            "on the fly iteration not supported, use the numpy array")
+
+        with self.assertRaises(ValueError) as lue_context:
+            for _ in self.lue_values:
+                pass
+
+        self.assertEqual(
+            str(lue_context.exception),
+            "on the fly iteration not supported, use the numpy array")
+

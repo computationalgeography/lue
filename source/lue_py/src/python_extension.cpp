@@ -35,10 +35,9 @@ void init_submodule(py::module& module);
 }  // namespace hdf5
 
 
-PYBIND11_PLUGIN(lue)
+PYBIND11_MODULE(lue, module)
 {
-    py::module module(
-        "lue",
+    module.doc() =
         R"(
     Python extension implementing most of the LUE Python package
 
@@ -59,7 +58,7 @@ PYBIND11_PLUGIN(lue)
     .. automodule:: lue.hdf5
 
     .. automodule:: lue.constant_size
-)");
+)";
     module.attr("__version__") = py::str(LUE_VERSION);
 
 
@@ -93,7 +92,7 @@ PYBIND11_PLUGIN(lue)
     constant_size::init_submodule(module);
 
 
-    return module.ptr();
+    module.ptr();
 }
 
 }  // namespace lue

@@ -92,7 +92,6 @@ add_library(lue::py ALIAS lue_py)
 
 target_include_directories(lue_py SYSTEM
     PRIVATE
-        ${PYBIND11_INCLUDE_DIRS}
         ${NUMPY_INCLUDE_DIRS}
         ${PYTHON_INCLUDE_DIRS}
 )
@@ -105,7 +104,9 @@ target_include_directories(lue_py
 
 target_link_libraries(lue_py
     PRIVATE
+        lue::test
         lue::lue
+        pybind11::pybind11
         ${PYTHON_LIBRARIES}
 )
 

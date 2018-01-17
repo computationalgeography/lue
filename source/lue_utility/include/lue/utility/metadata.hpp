@@ -1,7 +1,7 @@
 #pragma once
 #include "lue/clock.hpp"
 #include "lue/time/unit.hpp"
-#include <json.hpp>
+#include <nlohmann/json.hpp>
 #include <fstream>
 #include <iostream>
 
