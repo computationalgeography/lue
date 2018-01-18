@@ -12,10 +12,8 @@ constants = omnipresent.create_property_set(planets, "constants")
 
 nr_planets = 3
 
-
 # Per planet a unique id
 constants.ids.reserve(nr_planets)[:] = [4, 29, 13]
-
 
 # Gravity constants
 gravity = omnipresent.same_shape.create_property(
@@ -23,6 +21,5 @@ gravity = omnipresent.same_shape.create_property(
 values = gravity.values.reserve(nr_planets)
 # Dummy data...
 values[:] = numpy.array([ 1.5, 2.5, 3.5 ], dtype=numpy.float32)
-
 
 lue.assert_is_valid(dataset)

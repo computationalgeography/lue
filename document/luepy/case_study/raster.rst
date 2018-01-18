@@ -1,3 +1,5 @@
+.. _raster:
+
 Raster
 ======
 A raster is a 2-dimensional grid of cells, where each cell represents
@@ -14,12 +16,16 @@ result is capable of capturing multiple rasters for multiple items.
 time domain
 -----------
 A raster's location and cell values don't change through time, so the
-time domain is marked as omnipresent.
+time domain is marked as omnipresent. See the case of a
+:ref:`raster stack <raster_stack>` for information about storing rasters
+whose values do change through time.
 
 
 space domain
 ------------
-A raster's location is modelled by a 2D space box (an extent).
+A raster's location is modelled by a 2D space box. This is an extent,
+defining the part of the space domain within which the raster's values
+are defined.
 
 
 property

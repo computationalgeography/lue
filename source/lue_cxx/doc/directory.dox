@@ -1,0 +1,83 @@
+/*!
+    @dir    include/lue/item
+    @brief  This directory contains code for storing information per item
+
+    The information stored for a collection of items differs with
+    respect to various aspects, whatever the information is that needs
+    to bestored. For example, per item information may need to be
+    stored about its id, location in time, location in space, property
+    values, etc. This directory contains code for storing information for
+    collections of items, given a certain combination of aspects. Aspects
+    that differ between collection of items are:
+
+    - **→ Does the number of items change over time (collection size
+        variability)?**
+        - *no*
+            - **constant_size**
+        - *yes*
+            - **variable_size**
+
+    - **→ Do values change over time (value variability)?**
+
+        - *no*
+            - For each item there is a single value
+            - **constant**
+        - *yes*
+            - For each item there are multiple values. Each of these
+              values is somehow connected to a time domain item defining
+              for which moment(s) in time the value holds.
+            - The number time domain items may not be known in advance
+            - **variable**
+
+            - **→ Does the shape of the the values of each item change
+              through time?**
+                - *no*
+                    - The shape of all items remains the same through
+                      time. This does not mean that the shape of all
+                      items is the same (see below).
+                    - **constant_shape**
+                - *yes*
+                    - The shape of the items changes through time.
+                    - **variable_shape**
+
+    - **→ Does the shape of the nD values differ per item?**
+        - *no*
+            - **same_shape**
+            - For each item there is a value with the same shape
+            - For all items, the values can be stored in a single
+              HDF5 dataset
+        - *yes*
+            - **different_shape**
+            - For each item there is a value with a different shape
+            - For each item, the value must be stored in a different
+              HDF5 dataset
+
+
+    Resulting collection types of item-related information:
+
+    aspect | options
+    ------ | -------
+    collection size variability | constant_size, variable_size
+    value variability | constant, variable
+    shape variability | constant_shape, variable_shape
+    shape | same_shape, different_shape
+
+    Taxonomy of item values:
+    - <collection_size_variability>/<value_variability>/<shape_variability>/<shape>
+    - **In case value_variability is constant, shape_variability is absent**
+
+    A collection represents all item values. Collections differ because
+    of different combinations of aspects.
+    - lue::constant_size::constant::same_shape::Collection
+    - lue::constant_size::constant::different_shape::Collection
+    - lue::constant_size::variable::constant_shape::same_shape::Collection
+    - lue::constant_size::variable::constant_shape::different_shape::Collection
+    - lue::constant_size::variable::variable_shape::same_shape::Collection
+    - lue::constant_size::variable::variable_shape::different_shape::Collection
+    - lue::variable_size::constant::same_shape::Collection
+    - lue::variable_size::constant::different_shape::Collection
+    - lue::variable_size::variable::constant_shape::same_shape::Collection
+    - lue::variable_size::variable::constant_shape::different_shape::Collection
+    - lue::variable_size::variable::variable_shape::same_shape::Collection
+    - lue::variable_size::variable::variable_shape::different_shape::Collection
+*/

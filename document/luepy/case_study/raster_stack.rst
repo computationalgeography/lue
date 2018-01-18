@@ -1,8 +1,10 @@
+.. _raster_stack:
+
 Raster stack
 ============
-A raster stack is an extension of the case of a raster where, besides
-discretizing space in raster cells, time is discretized in time
-steps. This can be used to capture the magnitude of some continuous
+A raster stack is an extension of the case of a :ref:`raster <raster>`
+where, besides discretizing space in raster cells, time is discretized in
+time steps. This can be used to capture the magnitude of some continuous
 varying field, like air pressure, both though space and time.
 
 A stack of rasters is a discretization of a value within a time and
@@ -45,6 +47,9 @@ The discretization properties are linked to from the value property.
    individual cell value in the 3D array is mapped to a cubic cell in
    the cube. Whether or not the value is discretized is what makes these
    two kinds of data different.
+
+See the case of a :ref:`raster <raster>` for information about storing rasters
+whose values don't change through time.
 
 
 Example code
