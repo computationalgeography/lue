@@ -52,7 +52,7 @@ class UseCaseTest(lue_test.TestCase):
             property_set_name)
         nr_items = 500
 
-        property_set.reserve(nr_items)[:] = numpy.arange(nr_items)
+        property_set.ids.reserve(nr_items)[:] = numpy.arange(nr_items)
 
 
         # Now, add a property, whose values all have different shapes.
@@ -63,7 +63,7 @@ class UseCaseTest(lue_test.TestCase):
 
         shapes = (10 * (numpy.random.rand(nr_items, rank) + 1)).astype(
             numpy.uint64)
-        values = property.reserve(shapes)
+        values = property.values.reserve(shapes)
 
         values_ = []
         for i in range(nr_items):

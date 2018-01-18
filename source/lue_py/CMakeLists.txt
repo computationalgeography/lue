@@ -104,7 +104,6 @@ target_include_directories(lue_py
 
 target_link_libraries(lue_py
     PRIVATE
-        lue::test
         lue::lue
         pybind11::pybind11
         ${PYTHON_LIBRARIES}

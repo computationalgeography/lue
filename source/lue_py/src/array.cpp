@@ -4,7 +4,6 @@
 #include "lue/array.hpp"
 #include "lue/py/conversion.hpp"
 #include "lue/py/numpy.hpp"
-#include "lue/test/print.hpp"
 
 #include <boost/format.hpp>
 

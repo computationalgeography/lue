@@ -41,7 +41,7 @@ class PropertySetTest(lue_test.TestCase):
         self.assertEqual(property_set.name, property_set_name)
 
         nr_items = 500
-        ids = property_set.reserve(nr_items)
+        ids = property_set.ids.reserve(nr_items)
         ids_ = numpy.array([id for id in range(nr_items)], numpy.uint64)
         ids[:] = ids_
 
@@ -89,7 +89,7 @@ class PropertySetTest(lue_test.TestCase):
         nr_items = 5
 
         ids = numpy.array([5, 4, 3, 2, 1], numpy.uint64)
-        property_set1.reserve(nr_items)[:] = ids
+        property_set1.ids.reserve(nr_items)[:] = ids
         self.assertArraysEqual(property_set2.ids[:], ids)
 
         ids = numpy.array([15, 14, 13, 12, 11], numpy.uint64)

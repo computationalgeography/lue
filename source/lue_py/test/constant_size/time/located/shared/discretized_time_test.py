@@ -133,7 +133,7 @@ class DiscretizedTimeTest(lue_test.TestCase):
         discretization_property_set_name = "discretization"
         discretization_property_set = omnipresent.create_property_set(
             discretization_phenomenon, discretization_property_set_name)
-        discretization_property_set.reserve(1)[0] = 12345
+        discretization_property_set.ids.reserve(1)[0] = 12345
 
         discretization_property_name = "nr_steps"
         discretization_value_type = numpy.uint32
@@ -142,7 +142,7 @@ class DiscretizedTimeTest(lue_test.TestCase):
             discretization_value_type)
 
         nr_steps_ = numpy.array([nr_steps], discretization_value_type)
-        discretization_property.reserve(1)[:] = nr_steps
+        discretization_property.values.reserve(1)[:] = nr_steps
 
         self.verify_discretization_property_values(
             discretization_property, discretization_property_name,
@@ -161,7 +161,7 @@ class DiscretizedTimeTest(lue_test.TestCase):
             property_set, value_property_name, value_type, value_shape)
         property.discretize_time(discretization_property)
 
-        values = property.reserve(nr_boxes, nr_items)
+        values = property.values.reserve(nr_boxes, nr_items)
         values_ = numpy.array(
             [x * numpy.random.rand() for x in range(
                 nr_boxes * nr_items * nr_steps)],

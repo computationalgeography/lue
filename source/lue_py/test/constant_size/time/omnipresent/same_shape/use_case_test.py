@@ -47,7 +47,7 @@ class UseCaseTest(lue_test.TestCase):
             property_set_name)
         nr_items = 500
 
-        property_set.reserve(nr_items)[:] = numpy.arange(nr_items)
+        property_set.ids.reserve(nr_items)[:] = numpy.arange(nr_items)
 
 
         # Now, add a property, whose values all have the same shape.
@@ -56,7 +56,7 @@ class UseCaseTest(lue_test.TestCase):
         property = omnipresent.same_shape.create_property(
             property_set, property_name, value_type, value_shape)
 
-        values = property.reserve(nr_items)
+        values = property.values.reserve(nr_items)
         values_ = numpy.arange(nr_items * reduce(lambda x, y: x * y,
             value_shape), dtype=value_type).reshape((nr_items,) + value_shape)
         values[:] = values_

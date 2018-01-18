@@ -85,7 +85,7 @@ class DiscretizationTest(lue_test.TestCase):
             property_set_name)
         nr_items = 100
 
-        property_set.reserve(nr_items)[:] = numpy.arange(nr_items)
+        property_set.ids.reserve(nr_items)[:] = numpy.arange(nr_items)
 
 
         # Space domain.
@@ -113,7 +113,7 @@ class DiscretizationTest(lue_test.TestCase):
             property_set, discretization_property_name,
             discretization_value_type, value_shape)
 
-        nr_cells = discretization_property.reserve(nr_items)
+        nr_cells = discretization_property.values.reserve(nr_items)
         nr_cells_ = numpy.arange(start=1, stop=nr_items * 2 + 1,
             dtype=discretization_value_type).reshape((nr_items, 2))
         nr_cells[:] = nr_cells_
@@ -131,7 +131,7 @@ class DiscretizationTest(lue_test.TestCase):
         property.discretize_space(discretization_property)
 
         shapes = numpy.copy(nr_cells_)
-        values = property.reserve(shapes)
+        values = property.values.reserve(shapes)
 
         values_ = []
         for i in range(nr_items):

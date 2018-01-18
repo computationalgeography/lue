@@ -40,14 +40,14 @@ class ScalarTest(lue_test.TestCase):
             property_set_name)
         nr_items = 500
 
-        ids = property_set.reserve(nr_items)
+        ids = property_set.ids.reserve(nr_items)
         ids[:] = numpy.arange(nr_items)
 
         value_type = numpy.int32
         property = omnipresent.same_shape.create_property(
             property_set, property_name, value_type)
 
-        values = property.reserve(nr_items)
+        values = property.values.reserve(nr_items)
         values_ = numpy.arange(nr_items, dtype=value_type)
             # .reshape((nr_items, 1))
         values[:] = values_
@@ -110,7 +110,7 @@ class ScalarTest(lue_test.TestCase):
     #     property = omnipresent.same_shape.create_property(
     #         property_set, property_name, value_type, value_shape, chunk_shape)
 
-    #     values = property.reserve(nr_items)
+    #     values = property.values.reserve(nr_items)
     #     values_ = numpy.arange(nr_items * reduce(lambda x, y: x * y,
     #         value_shape), dtype=value_type).reshape((nr_items,) + value_shape)
     #     values[:] = values_

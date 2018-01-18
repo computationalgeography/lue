@@ -1,5 +1,6 @@
 #pragma once
 #include <ostream>
+#include <iterator>
 #include <string>
 #include <vector>
 #include "lue/hdf5.hpp"
