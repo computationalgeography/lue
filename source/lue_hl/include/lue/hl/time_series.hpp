@@ -1,7 +1,6 @@
 #pragma once
 #include "lue/hl/time_series_discretization.hpp"
 #include "lue/hl/time_series_domain.hpp"
-#include "lue/constant_size/time/located/shared/property_set.hpp"
 #include "lue/constant_size/time/located/shared/constant_shape/same_shape/property.hpp"
 #include "lue/dataset.hpp"
 #include <vector>
@@ -10,7 +9,7 @@
 namespace lue {
 namespace hl {
 
-namespace shared = constant_size::time::located::shared;
+namespace located = constant_size::time::located;
 
 
 class TimeSeries
@@ -84,9 +83,9 @@ private:
 
     Phenomenon     _phenomenon;
 
-    shared::PropertySet _property_set;
+    located::PropertySet _property_set;
 
-    shared::constant_shape::same_shape::Property _value_property;
+    located::shared::constant_shape::same_shape::Property _value_property;
 
     TimeSeriesDomain _time_domain;
 

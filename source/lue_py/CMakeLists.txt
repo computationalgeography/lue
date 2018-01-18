@@ -68,13 +68,11 @@ add_library(lue_py SHARED
     src/constant_size/time/located/submodule
     src/constant_size/time/located/time_domain
 
-    src/constant_size/time/located/shared/domain
-    src/constant_size/time/located/shared/property_set
+    src/constant_size/time/located/space_box_domain
+    src/constant_size/time/located/space_domain
+    src/constant_size/time/located/time_box_domain
+
     src/constant_size/time/located/shared/submodule
-    src/constant_size/time/located/shared/space_box_domain
-    src/constant_size/time/located/shared/space_domain
-    src/constant_size/time/located/shared/time_box_domain
-    src/constant_size/time/located/shared/time_domain
 
     src/constant_size/time/located/shared/constant_shape/property
     src/constant_size/time/located/shared/constant_shape/submodule

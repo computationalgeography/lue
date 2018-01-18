@@ -1,7 +1,7 @@
 #include "lue/translate/format/dot.hpp"
 #include "lue/constant_size/time/located/property_set.hpp"
 #include "lue/constant_size/time/located/shared/constant_shape/property.hpp"
-#include "lue/constant_size/time/located/shared/time_box_domain.hpp"
+#include "lue/constant_size/time/located/time_box_domain.hpp"
 #include "lue/constant_size/time/omnipresent/different_shape/property.hpp"
 #include "lue/constant_size/time/omnipresent/property_set.hpp"
 #include "lue/constant_size/time/omnipresent/same_shape/property.hpp"
@@ -588,7 +588,6 @@ void to_dot(
     }
 }
 
-namespace shared {
 
 void to_dot(
     PropertySet const& property_set,
@@ -607,7 +606,7 @@ void to_dot(
 
             case lue::time::PropertyConfiguration::ShapeVariability::constant: {
                 to_dot(
-                    constant_shape::Property(hdf5::Group{property.id()}),
+                    shared::constant_shape::Property(hdf5::Group{property.id()}),
                     stream, metadata);
                 break;
             }
@@ -624,29 +623,6 @@ void to_dot(
 )")
         % boost::join(property_dot_names, " ")
         );
-}
-
-}  // namespace shared
-
-
-void to_dot(
-    PropertySet const& property_set,
-    std::ostream& stream,
-    Metadata const& metadata)
-{
-    auto const& domain = property_set.domain();
-
-    TimeDomain time_domain{domain};
-
-    switch(time_domain.configuration().ownership()) {
-
-        case TimeDomain::Configuration::Ownership::shared: {
-            to_dot(
-                shared::PropertySet{hdf5::Group{property_set.id()}},
-                stream, metadata);
-            break;
-        }
-    }
 }
 
 }  // namespace located
@@ -698,7 +674,7 @@ void to_dot(
 
         case Domain::Configuration::DomainType::located: {
             to_dot(
-                time::located::PropertySet(property_set.id()),
+                time::located::PropertySet(hdf5::Group{property_set.id()}),
                 stream, metadata);
             break;
         }

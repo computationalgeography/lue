@@ -24,7 +24,7 @@ void validate(
         case(Domain::Configuration::DomainType::located): {
             time::located::validate(
                 time::located::PropertySet(
-                    property_set.id()), issues);
+                    hdf5::Group{property_set.id()}), issues);
             break;
         }
 

@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/constant_size/property_set.hpp"
+#include "lue/constant_size/time/located/domain.hpp"
 #include "lue/property_sets.hpp"
 
 
@@ -16,9 +17,6 @@ public:
 
                    PropertySet         (hdf5::Group&& group);
 
-                   PropertySet         (constant_size::PropertySet&&
-                                            property_set);
-
                    PropertySet         (PropertySet const&)=delete;
 
                    PropertySet         (PropertySet&&)=default;
@@ -29,15 +27,21 @@ public:
 
     PropertySet&   operator=           (PropertySet&&)=default;
 
+    Domain const&  domain              () const;
+
+    Domain&        domain              ();
+
 private:
+
+    Domain         _domain;
 
 };
 
 
-PropertySet        create_property_set (hdf5::Group& parent,
+PropertySet        create_property_set (PropertySets& property_sets,
                                         std::string const& name);
 
-PropertySet        create_property_set (hdf5::Group& parent,
+PropertySet        create_property_set (PropertySets& property_sets,
                                         std::string const& name,
                                         PropertySet::Ids const& ids);
 

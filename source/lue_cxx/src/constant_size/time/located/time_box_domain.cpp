@@ -1,4 +1,4 @@
-#include "lue/constant_size/time/located/shared/time_box_domain.hpp"
+#include "lue/constant_size/time/located/time_box_domain.hpp"
 #include "lue/tag.hpp"
 
 
@@ -6,7 +6,6 @@ namespace lue {
 namespace constant_size {
 namespace time {
 namespace located {
-namespace shared {
 
 // TimeBoxDomain::TimeBoxDomain(
 //     TimeDomain const& time_domain)
@@ -62,7 +61,7 @@ TimeBoxDomain create_time_box_domain(
 {
     auto& domain = property_set.domain();
 
-    auto time_domain = located::shared::create_time_domain(domain,
+    auto time_domain = located::create_time_domain(domain,
         TimeDomain::Configuration(
             clock,
             TimeDomain::Configuration::Ownership::shared,
@@ -89,7 +88,6 @@ TimeBoxDomain create_time_box_domain(
     return TimeBoxDomain{std::move(time_domain)}; // , memory_datatype);
 }
 
-}  // namespace shared
 }  // namespace located
 }  // namespace time
 }  // namespace constant_size

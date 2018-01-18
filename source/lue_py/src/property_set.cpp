@@ -1,7 +1,7 @@
 #include "collection.hpp"
 #include "lue/property_sets.hpp"
 #include "lue/time_domain.hpp"
-#include "lue/constant_size/time/located/shared/property_set.hpp"
+#include "lue/constant_size/time/located/property_set.hpp"
 #include "lue/constant_size/time/omnipresent/property_set.hpp"
 #include <pybind11/pybind11.h>
 // #include <iostream>
@@ -67,27 +67,9 @@ void init_property_set_class(
 
                             case Domain::Configuration::DomainType::
                                     located: {
-
-                                constant_size::time::located::PropertySet
-                                    located_property_set(property_set.id());
-
-                                TimeDomain time_domain{domain};
-
-                                switch(time_domain.configuration()
-                                        .ownership()) {
-
-                                    case TimeDomain::Configuration::
-                                            Ownership::shared: {
-                                        object = py::cast(new
-                                            constant_size::time::located::
-                                                shared::PropertySet(
-                                                    hdf5::Group{
-                                                        property_set.id()}));
-                                        break;
-                                    }
-
-                                }
-
+                                object = py::cast(new
+                                    constant_size::time::located::PropertySet(
+                                        hdf5::Group{property_set.id()}));
                                 break;
                             }
 

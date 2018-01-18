@@ -1,4 +1,4 @@
-#include "lue/constant_size/time/located/shared/space_box_domain.hpp"
+#include "lue/constant_size/time/located/space_box_domain.hpp"
 #include "lue/tag.hpp"
 
 
@@ -6,7 +6,6 @@ namespace lue {
 namespace constant_size {
 namespace time {
 namespace located {
-namespace shared {
 
 hdf5::Datatype SpaceBoxDomain::file_datatype(
     hdf5::Group const& parent)
@@ -67,7 +66,7 @@ SpaceBoxDomain create_space_box_domain(
 {
     auto& domain = property_set.domain();
 
-    auto space = shared::create_space_domain(domain,
+    auto space = located::create_space_domain(domain,
         SpaceDomain::Configuration(
             SpaceDomain::Configuration::DomainType::located,
             SpaceDomain::Configuration::ItemType::box)
@@ -83,7 +82,6 @@ SpaceBoxDomain create_space_box_domain(
     return SpaceBoxDomain(std::move(space), memory_datatype);
 }
 
-}  // namespace shared
 }  // namespace located
 }  // namespace time
 }  // namespace constant_size

@@ -1,7 +1,7 @@
 #pragma once
 #include "lue/constant_size/time/located/shared/constant_shape/different_shape/value.hpp"
 #include "lue/constant_size/time/located/shared/constant_shape/property.hpp"
-#include "lue/constant_size/time/located/shared/property_set.hpp"
+#include "lue/constant_size/time/located/property_set.hpp"
 
 
 namespace lue {

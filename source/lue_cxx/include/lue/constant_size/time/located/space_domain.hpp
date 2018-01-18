@@ -6,7 +6,6 @@ namespace lue {
 namespace constant_size {
 namespace time {
 namespace located {
-namespace shared {
 
 class SpaceDomain:
     public constant_size::SpaceDomain
@@ -35,7 +34,6 @@ SpaceDomain        create_space_domain (hdf5::Group const& group,
                                         SpaceDomain::Configuration const&
                                             configuration);
 
-}  // namespace shared
 }  // namespace located
 }  // namespace time
 }  // namespace constant_size

@@ -1,4 +1,5 @@
 #include "lue/constant_size/time/located/property_set.hpp"
+// #include "lue/tag.hpp"
 
 
 namespace lue {
@@ -9,48 +10,53 @@ namespace located {
 PropertySet::PropertySet(
     hdf5::Group&& group)
 
-    : constant_size::PropertySet(std::forward<hdf5::Group>(group))
-      // _domain{this->id()}
+    : constant_size::PropertySet(std::forward<hdf5::Group>(group)),
+      _domain{*this}
 
 {
 }
 
 
-PropertySet::PropertySet(
-    constant_size::PropertySet&& property_set)
-
-    : constant_size::PropertySet(std::forward<constant_size::PropertySet>(
-        property_set))
-      // _domain{this->id()}
-
+Domain const& PropertySet::domain() const
 {
+    return _domain;
+}
+
+
+Domain& PropertySet::domain()
+{
+    return _domain;
 }
 
 
 PropertySet create_property_set(
-    hdf5::Group& parent,
+    PropertySets& property_sets,
     std::string const& name)
 {
-    auto property_set = constant_size::create_property_set(parent, name,
-        Domain::Configuration(
-            Domain::Configuration::DomainType::located)
-    );
+    auto& property_set = property_sets.add(name,
+        constant_size::create_property_set(property_sets, name,
+            Domain::Configuration(
+                Domain::Configuration::DomainType::located)
+            )
+        );
 
-    return PropertySet(std::move(property_set));
+    return PropertySet(hdf5::Group{property_set.id()});
 }
 
 
 PropertySet create_property_set(
-    hdf5::Group& parent,
+    PropertySets& property_sets,
     std::string const& name,
     PropertySet::Ids const& ids)
 {
-    auto property_set = constant_size::create_property_set(parent, name, ids,
-        Domain::Configuration(
-            Domain::Configuration::DomainType::located)
-    );
+    auto& property_set = property_sets.add(name,
+        constant_size::create_property_set(property_sets, name, ids,
+            Domain::Configuration(
+                Domain::Configuration::DomainType::located)
+            )
+        );
 
-    return PropertySet(std::move(property_set));
+    return PropertySet(hdf5::Group{property_set.id()});
 }
 
 }  // namespace located

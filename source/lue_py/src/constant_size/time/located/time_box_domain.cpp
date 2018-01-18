@@ -1,4 +1,4 @@
-#include "lue/constant_size/time/located/shared/time_box_domain.hpp"
+#include "lue/constant_size/time/located/time_box_domain.hpp"
 #include <pybind11/pybind11.h>
 
 
@@ -10,7 +10,6 @@ namespace lue {
 namespace constant_size {
 namespace time {
 namespace located {
-namespace shared {
 
 void init_time_box_domain(
     py::module& module)
@@ -52,7 +51,6 @@ void init_time_box_domain(
 
 }
 
-}  // namespace shared
 }  // namespace located
 }  // namespace time
 }  // namespace constant_size

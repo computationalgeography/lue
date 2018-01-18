@@ -1,5 +1,5 @@
 #include "lue/hl/time_series.hpp"
-#include "lue/constant_size/time/located/shared/time_box_domain.hpp"
+#include "lue/constant_size/time/located/time_box_domain.hpp"
 #include "lue/constant_size/time/omnipresent/property_set.hpp"
 #include "lue/constant_size/time/omnipresent/same_shape/property.hpp"
 #include "lue/constant_size/time/omnipresent/space_point_domain.hpp"
@@ -79,7 +79,7 @@ TimeSeries::TimeSeries(
 {
     // Time box domain
     {
-        shared::TimeBoxDomain time_box_domain{_property_set.domain()};
+        located::TimeBoxDomain time_box_domain{_property_set.domain()};
         TimeSeriesDomain::Coordinates coordinates;
         time_box_domain.items().read(coordinates.data());
         _time_domain = TimeSeriesDomain{
@@ -210,7 +210,7 @@ TimeSeries create_time_series(
         hsize_t const nr_items = space_domain.nr_points();
 
         // Create property-set for time series values
-        auto property_set = shared::create_property_set(
+        auto property_set = located::create_property_set(
             phenomenon.property_sets(), property_set_name);
 
         {
@@ -225,7 +225,7 @@ TimeSeries create_time_series(
 
             // Create time-box domain
             {
-                auto time_box_domain = shared::create_time_box_domain(
+                auto time_box_domain = located::create_time_box_domain(
                     property_set, time_domain.clock());
                 auto& time_boxes = time_box_domain.reserve(nr_boxes);
                 time_boxes.write(time_domain.coordinates().data());
@@ -298,7 +298,7 @@ TimeSeries create_time_series(
                     hdf5::Datatype{hdf5::NativeDatatypeTraits<double>
                         ::type_id()};
                 auto value_property =
-                    shared::constant_shape::same_shape::create_property(
+                    located::shared::constant_shape::same_shape::create_property(
                         property_set,
                         property_name,
                         file_datatype_id,

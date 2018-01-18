@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/constant_size/time/located/shared/property_set.hpp"
+#include "lue/constant_size/time/located/property_set.hpp"
 #include "lue/constant_size/time/located/shared/constant_shape/different_shape/property.hpp"
 #include "lue/constant_size/time/omnipresent/same_shape/property.hpp"
 #include "lue/hl/raster_stack_discretization.hpp"
@@ -11,7 +11,7 @@ namespace lue {
 namespace hl {
 
 namespace omnipresent = constant_size::time::omnipresent;
-namespace shared = constant_size::time::located::shared;
+namespace located = constant_size::time::located;
 
 
 class RasterStack
@@ -24,7 +24,7 @@ public:
 
     public:
 
-                   Band                (shared::constant_shape::different_shape
+                   Band                (located::shared::constant_shape::different_shape
                                             ::Property&& property);
 
         hdf5::Datatype file_datatype   () const;
@@ -44,7 +44,7 @@ public:
 
     private:
 
-        shared::constant_shape::different_shape::Property _property;
+        located::shared::constant_shape::different_shape::Property _property;
 
     };
 
@@ -86,7 +86,7 @@ private:
 
     Phenomenon     _phenomenon;
 
-    shared::PropertySet _property_set;
+    located::PropertySet _property_set;
 
     omnipresent::same_shape::Property _time_discretization_property;
 

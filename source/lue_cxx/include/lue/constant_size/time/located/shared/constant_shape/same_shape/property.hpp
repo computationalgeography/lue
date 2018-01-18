@@ -1,8 +1,7 @@
 #pragma once
 #include "lue/constant_size/time/located/shared/constant_shape/property.hpp"
 #include "lue/constant_size/time/located/shared/constant_shape/same_shape/value.hpp"
-#include "lue/constant_size/time/located/shared/property_set.hpp"
-// #include "lue/property_set.hpp"
+#include "lue/constant_size/time/located/property_set.hpp"
 
 
 namespace lue {
@@ -43,10 +42,6 @@ public:
     same_shape::Value&
                    values              ();
 
-    // same_shape::Value&
-    //                reserve             (hsize_t nr_time_domain_items,
-    //                                     hsize_t nr_items);
-
 private:
 
     same_shape::Value _values;
@@ -54,12 +49,12 @@ private:
 };
 
 
-Property           create_property     (shared::PropertySet& property_set,
+Property           create_property     (PropertySet& property_set,
                                         std::string const& name,
                                         hdf5::Datatype const& file_datatype,
                                         hdf5::Datatype const& memory_datatype);
 
-Property           create_property     (shared::PropertySet& property_set,
+Property           create_property     (PropertySet& property_set,
                                         std::string const& name,
                                         hdf5::Datatype const& file_datatype,
                                         hdf5::Datatype const& memory_datatype,

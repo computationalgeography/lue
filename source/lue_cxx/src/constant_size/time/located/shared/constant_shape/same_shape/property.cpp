@@ -64,7 +64,7 @@ same_shape::Value& Property::values()
 
 
 Property create_property(
-    shared::PropertySet& property_set,
+    PropertySet& property_set,
     std::string const& name,
     hdf5::Datatype const& file_datatype,
     hdf5::Datatype const& memory_datatype)
@@ -83,7 +83,7 @@ Property create_property(
 
 
 Property create_property(
-    shared::PropertySet& property_set,
+    PropertySet& property_set,
     std::string const& name,
     hdf5::Datatype const& file_datatype,
     hdf5::Datatype const& memory_datatype,

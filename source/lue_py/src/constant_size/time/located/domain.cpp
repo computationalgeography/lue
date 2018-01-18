@@ -1,4 +1,5 @@
 #include "lue/constant_size/time/located/domain.hpp"
+#include "lue/constant_size/time/located/time_box_domain.hpp"
 #include <pybind11/pybind11.h>
 
 
@@ -19,6 +20,32 @@ void init_domain(
         module,
         "Domain",
         "Domain docstring...")
+
+        .def_property_readonly(
+            "time",
+            [](
+                Domain& self)
+            {
+                py::object object = py::none{};
+
+                if(time_domain_exists(self)) {
+                    auto time_domain = TimeDomain(self);
+                    auto const& configuration = time_domain.configuration();
+
+                    switch(configuration.item_type()) {
+                        case TimeDomain::Configuration::ItemType::box: {
+                            object = py::cast(
+                                new TimeBoxDomain(std::move(time_domain)));
+                            break;
+                        }
+                    }
+                }
+
+                return object;
+
+            },
+            "time docstring...")
+
 
         ;
 

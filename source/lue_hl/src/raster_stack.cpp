@@ -1,5 +1,5 @@
 #include "lue/hl/raster_stack.hpp"
-#include "lue/constant_size/time/located/shared/time_box_domain.hpp"
+#include "lue/constant_size/time/located/time_box_domain.hpp"
 #include "lue/constant_size/time/located/shared/constant_shape/same_shape/property.hpp"
 #include "lue/constant_size/time/omnipresent/property_set.hpp"
 #include "lue/constant_size/time/omnipresent/space_box_domain.hpp"
@@ -28,9 +28,9 @@ std::string const space_discretization_link_name = "space_discretization";
 
 
 RasterStack::Band::Band(
-    shared::constant_shape::different_shape::Property&& property)
+    located::shared::constant_shape::different_shape::Property&& property)
 
-    : _property{std::forward<shared::constant_shape::different_shape::Property>(
+    : _property{std::forward<located::shared::constant_shape::different_shape::Property>(
           property)}
 
 {
@@ -166,7 +166,7 @@ void RasterStack::read()
     // Domain
     {
         // Time box domain
-        shared::TimeBoxDomain time_box_domain{_property_set.domain()};
+        located::TimeBoxDomain time_box_domain{_property_set.domain()};
         TimeSeriesDomain::Coordinates time_coordinates;
         time_box_domain.items().read(time_coordinates.data());
         TimeSeriesDomain time_domain{
@@ -231,7 +231,7 @@ RasterStack::Band RasterStack::add_band(
     hdf5::Datatype const& datatype)
 {
     int const rank = 3;  // [nr_steps, nr_rows, nr_cols]
-    auto property = shared::constant_shape::different_shape::create_property(
+    auto property = located::shared::constant_shape::different_shape::create_property(
         _property_set, name, datatype, rank);
 
     hsize_t const nr_time_domain_items = 1;
@@ -249,7 +249,7 @@ RasterStack::Band RasterStack::add_band(
 RasterStack::Band RasterStack::band(
     std::string const& name) const
 {
-    return Band{shared::constant_shape::different_shape::Property{
+    return Band{located::shared::constant_shape::different_shape::Property{
         hdf5::Group{_property_set.properties()[name].id()}}};
 }
 
@@ -278,7 +278,7 @@ RasterStack create_raster_stack(
         // One space box
         hsize_t const nr_items = 1;
 
-        auto property_set = shared::create_property_set(
+        auto property_set = located::create_property_set(
             phenomenon.property_sets(), property_set_name);
 
 
@@ -291,7 +291,7 @@ RasterStack create_raster_stack(
 
 
         // Create time-box domain
-        auto time_box_domain = shared::create_time_box_domain(
+        auto time_box_domain = located::create_time_box_domain(
             property_set, domain.time_series_domain().clock());
         auto& time_boxes = time_box_domain.reserve(nr_time_boxes);
         time_boxes.write(domain.time_series_domain().coordinates().data());

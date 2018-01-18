@@ -1,11 +1,10 @@
-#include "lue/constant_size/time/located/shared/space_domain.hpp"
+#include "lue/constant_size/time/located/space_domain.hpp"
 
 
 namespace lue {
 namespace constant_size {
 namespace time {
 namespace located {
-namespace shared {
 
 SpaceDomain::SpaceDomain(
     hdf5::Group const& group)
@@ -35,7 +34,6 @@ SpaceDomain create_space_domain(
     return std::move(domain);
 }
 
-}  // namespace shared
 }  // namespace located
 }  // namespace time
 }  // namespace constant_size
