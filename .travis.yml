@@ -14,12 +14,12 @@ matrix:
                   sources:
                       - ubuntu-toolchain-r-test
                   packages:
-                      - libhdf5-dev
-                      - libboost-all-dev
                       - gcc-4.9
+                      - libboost-all-dev
+                      - libhdf5-dev
                       - g++-4.9
           env:
-              - TRAVIS_C_COMPILER=gcc-4.9 TRAVIS_CXX_COMPILER=g++-4.9 TRAVIS_CXX_FLAGS="" TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS LUE_BUILD_TEST:BOOL=TRUE "
+              - TRAVIS_C_COMPILER=gcc-4.9 TRAVIS_CXX_COMPILER=g++-4.9 TRAVIS_CXX_FLAGS="" TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS -DLUE_BUILD_TEST:BOOL=TRUE "
         - compiler: gcc
           python: "3.5"
           addons:
@@ -27,12 +27,12 @@ matrix:
                   sources:
                       - ubuntu-toolchain-r-test
                   packages:
-                      - libhdf5-dev
-                      - libboost-all-dev
                       - gcc-4.9
+                      - libboost-all-dev
+                      - libhdf5-dev
                       - g++-4.9
           env:
-              - TRAVIS_C_COMPILER=gcc-4.9 TRAVIS_CXX_COMPILER=g++-4.9 TRAVIS_CXX_FLAGS="" TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS LUE_BUILD_TEST:BOOL=TRUE "
+              - TRAVIS_C_COMPILER=gcc-4.9 TRAVIS_CXX_COMPILER=g++-4.9 TRAVIS_CXX_FLAGS="" TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS -DLUE_BUILD_TEST:BOOL=TRUE "
         - compiler: gcc
           python: "2.7"
           addons:
@@ -40,12 +40,12 @@ matrix:
                   sources:
                       - ubuntu-toolchain-r-test
                   packages:
-                      - libhdf5-dev
+                      - gcc-6
                       - libboost-all-dev
                       - g++-6
-                      - gcc-6
+                      - libhdf5-dev
           env:
-              - TRAVIS_C_COMPILER=gcc-6 TRAVIS_CXX_COMPILER=g++-6 TRAVIS_CXX_FLAGS="" TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS LUE_BUILD_TEST:BOOL=TRUE "
+              - TRAVIS_C_COMPILER=gcc-6 TRAVIS_CXX_COMPILER=g++-6 TRAVIS_CXX_FLAGS="" TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS -DLUE_BUILD_TEST:BOOL=TRUE "
         - compiler: gcc
           python: "3.5"
           addons:
@@ -53,12 +53,12 @@ matrix:
                   sources:
                       - ubuntu-toolchain-r-test
                   packages:
-                      - libhdf5-dev
+                      - gcc-6
                       - libboost-all-dev
                       - g++-6
-                      - gcc-6
+                      - libhdf5-dev
           env:
-              - TRAVIS_C_COMPILER=gcc-6 TRAVIS_CXX_COMPILER=g++-6 TRAVIS_CXX_FLAGS="" TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS LUE_BUILD_TEST:BOOL=TRUE "
+              - TRAVIS_C_COMPILER=gcc-6 TRAVIS_CXX_COMPILER=g++-6 TRAVIS_CXX_FLAGS="" TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS -DLUE_BUILD_TEST:BOOL=TRUE "
 
 
 # Install/update dependencies required by the installation of the
