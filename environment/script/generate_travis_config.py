@@ -72,7 +72,7 @@ class Build(namedtuple("Build", (
             "TRAVIS_C_COMPILER={}".format(self.compilers.c_compiler.name),
             "TRAVIS_CXX_COMPILER={}".format(self.compilers.cxx_compiler.name),
             "TRAVIS_CXX_FLAGS=\"{}\"".format(self.compilers.cxx_compiler.flags),
-            "TRAVIS_LUE_CMAKE_ARGUMENTS=\"-DCMAKE_BUILD_TYPE={} -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS {}\"".format(self.build_type, " ".join(["-D{}={}".format(key, self.environment[key]) for key in self.environment]))
+            "TRAVIS_LUE_CMAKE_ARGUMENTS=\"-DCMAKE_BUILD_TYPE={} -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS LUE_BUILD_TEST:BOOL=TRUE {}\"".format(self.build_type, " ".join(["-D{}={}".format(key, self.environment[key]) for key in self.environment]))
         ]
 
         return """\
@@ -384,7 +384,7 @@ before_install:
     # ~/tmp/build/peacock
     - cd peacock
     - cmake --version
-    - CXX=$TRAVIS_CXX_COMPILER cmake -Dpeacock_prefix=$TRAVIS_BUILD_DIR/local -Dbuild_docopt=true -Ddocopt_version=0.6.1 -Dbuild_gdal=true -Dgdal_version=2.0.1 -Dbuild_nlohmann_json=true -Dnlohmann_json_version=2.1.1 -Dbuild_pybind11=true -Dpybind11_version=2.1.0 $TRAVIS_BUILD_DIR/tmp/source/peacock
+    - CXX=$TRAVIS_CXX_COMPILER cmake -Dpeacock_prefix=$TRAVIS_BUILD_DIR/local -Dbuild_docopt=true -Ddocopt_version=0.6.2 -Dbuild_gdal=true -Dgdal_version=2.0.1 -Dbuild_nlohmann_json=true -Dnlohmann_json_version=3.0.1 -Dbuild_pybind11=true -Dpybind11_version=2.2.1 $TRAVIS_BUILD_DIR/tmp/source/peacock
     - CXX=$TRAVIS_CXX_COMPILER cmake --build . --target all
     # ~
     - cd ../../..
