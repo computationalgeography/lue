@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/item/constant_size/constant/same_shape/collection.hpp"
+#include "lue/item/constant_size/constant_shape/same_shape/constant.hpp"
 #include "lue/constant_size/time/located/property_set.hpp"
 #include "lue/constant_size/time/located/time_domain.hpp"
 
@@ -15,7 +15,7 @@ class TimeBoxDomain:
 
 public:
 
-    using TimeBoxes = constant::same_shape::Collection;
+    using TimeBoxes = constant_size::constant_shape::same_shape::Constant;
 
                    TimeBoxDomain       (TimeDomain const& time_domain);
 

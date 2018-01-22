@@ -67,10 +67,10 @@ add_library(lue STATIC
     src/constant_size/time/located/constant_shape/same_shape/value
 
     src/item/constant_size/collection
-    src/item/constant_size/constant/different_shape/collection
-    src/item/constant_size/constant/same_shape/collection
-    src/item/constant_size/variable/constant_shape/different_shape/collection
-    src/item/constant_size/variable/constant_shape/same_shape/collection
+    src/item/constant_size/constant_shape/different_shape/constant
+    src/item/constant_size/constant_shape/different_shape/variable
+    src/item/constant_size/constant_shape/same_shape/constant
+    src/item/constant_size/constant_shape/same_shape/variable
 
     src/time/property_configuration
 )

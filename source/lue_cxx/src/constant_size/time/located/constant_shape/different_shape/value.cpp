@@ -12,7 +12,7 @@ Value::Value(
     hdf5::Group const& parent,
     std::string const& name)
 
-    : variable::constant_shape::different_shape::Collection{parent, name},
+    : constant_size::constant_shape::different_shape::Variable{parent, name},
       constant_size::Value{}
 
 {
@@ -24,7 +24,7 @@ Value::Value(
     std::string const& name,
     hdf5::Datatype const& memory_datatype)
 
-    : variable::constant_shape::different_shape::Collection{
+    : constant_size::constant_shape::different_shape::Variable{
           parent, name, memory_datatype},
       constant_size::Value{}
 
@@ -33,10 +33,10 @@ Value::Value(
 
 
 Value::Value(
-    variable::constant_shape::different_shape::Collection&& collection)
+    constant_size::constant_shape::different_shape::Variable&& collection)
 
-    : variable::constant_shape::different_shape::Collection{
-          std::forward<variable::constant_shape::different_shape::Collection>(
+    : constant_size::constant_shape::different_shape::Variable{
+          std::forward<constant_size::constant_shape::different_shape::Variable>(
               collection)},
       constant_size::Value{}
 
@@ -46,7 +46,7 @@ Value::Value(
 
 hsize_t Value::nr_items() const
 {
-    return variable::constant_shape::different_shape::Collection::nr_items();
+    return constant_size::constant_shape::different_shape::Variable::nr_items();
 }
 
 
@@ -58,7 +58,7 @@ Value create_value(
     int const rank)
 {
     return Value{
-        variable::constant_shape::different_shape::create_collection(
+        constant_size::constant_shape::different_shape::create_variable(
             parent, name, file_datatype, memory_datatype, rank)};
 }
 

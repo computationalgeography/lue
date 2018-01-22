@@ -6,20 +6,12 @@ namespace py = pybind11;
 
 namespace lue {
 namespace constant_size {
-namespace constant {
+namespace constant_shape {
 
 // Implementation in item/ tree
 void init_submodule(py::module& module);
 
-}  // namespace constant
-
-
-namespace variable {
-
-// Implementation in item/ tree
-void init_submodule(py::module& module);
-
-}  // namespace variable
+}  // namespace constant_shape
 
 
 namespace time {
@@ -44,7 +36,7 @@ void init_submodule(
     Module implementing the API for property sets with a constant number
     of items
 
-    .. automodule:: lue.constant_size.constant
+    .. automodule:: lue.constant_size.constant_shape
     .. automodule:: lue.constant_size.time
 )");
     init_domain_class(submodule);
@@ -52,8 +44,7 @@ void init_submodule(
     init_property_class(submodule);
     init_property_set_class(submodule);
 
-    constant::init_submodule(submodule);
-    variable::init_submodule(submodule);
+    constant_shape::init_submodule(submodule);
     time::init_submodule(submodule);
 }
 

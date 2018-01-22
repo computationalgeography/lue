@@ -57,7 +57,7 @@ PropertySet create_property_set(
         PropertySet::Configuration{SizeOfItemCollectionType::constant_size},
         domain_configuration);
 
-    constant::same_shape::create_collection(
+    constant_shape::same_shape::create_constant(
         property_set, ids_tag, hdf5::Datatype{H5T_STD_U64LE},
         hdf5::Datatype{H5T_NATIVE_HSIZE});
 

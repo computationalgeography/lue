@@ -19,7 +19,7 @@ void init_value(
 
     py::class_<
             Value,
-            variable::constant_shape::same_shape::Collection>(
+            constant_size::constant_shape::same_shape::Variable>(
         module,
         "Value",
         "Value docstring...")

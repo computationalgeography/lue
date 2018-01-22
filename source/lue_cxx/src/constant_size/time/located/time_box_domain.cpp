@@ -81,7 +81,7 @@ TimeBoxDomain create_time_box_domain(
     // count.
     hdf5::Shape value_shape = { 2 };
 
-    constant::same_shape::create_collection(
+    constant_shape::same_shape::create_constant(
         time_domain, coordinates_tag, file_datatype, memory_datatype,
         value_shape);
 

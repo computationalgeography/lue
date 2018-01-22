@@ -74,7 +74,7 @@ SpacePointDomain create_space_point_domain(
     // A point is defined by the coordinates along each dimension
     hdf5::Shape value_shape = { rank };
 
-    constant::same_shape::create_collection(
+    constant_shape::same_shape::create_constant(
         space, coordinates_tag, file_datatype, memory_datatype, value_shape);
 
     return SpacePointDomain(std::move(space), memory_datatype);

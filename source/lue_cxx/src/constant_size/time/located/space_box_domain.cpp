@@ -76,7 +76,7 @@ SpaceBoxDomain create_space_box_domain(
     // (diagonally). Two of them is enough.
     hdf5::Shape value_shape = { 2 * rank };
 
-    variable::constant_shape::same_shape::create_collection(
+    constant_shape::same_shape::create_variable(
         space, coordinates_tag, file_datatype, memory_datatype, value_shape);
 
     return SpaceBoxDomain(std::move(space), memory_datatype);

@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/item/constant_size/constant/same_shape/collection.hpp"
+#include "lue/item/constant_size/constant_shape/same_shape/constant.hpp"
 #include "lue/property_set.hpp"
 
 
@@ -12,7 +12,7 @@ class PropertySet:
 
 public:
 
-    using Ids = constant::same_shape::Collection;
+    using Ids = constant_shape::same_shape::Constant;
 
                    PropertySet         (hdf5::Identifier const& id);
 
@@ -35,7 +35,7 @@ public:
 private:
 
     //! Collection of item-ids
-    constant::same_shape::Collection _ids;
+    constant_shape::same_shape::Constant _ids;
 
 };
 

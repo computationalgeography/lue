@@ -1,6 +1,6 @@
 #pragma once
 #include "lue/constant_size/value.hpp"
-#include "lue/item/constant_size/variable/constant_shape/different_shape/collection.hpp"
+#include "lue/item/constant_size/constant_shape/different_shape/variable.hpp"
 
 
 namespace lue {
@@ -11,7 +11,7 @@ namespace constant_shape {
 namespace different_shape {
 
 class Value:
-    public variable::constant_shape::different_shape::Collection,
+    public constant_size::constant_shape::different_shape::Variable,
     public constant_size::Value
 {
 
@@ -25,7 +25,7 @@ public:
                                         hdf5::Datatype const& memory_datatype);
 
                    Value               (
-                        variable::constant_shape::different_shape::Collection&&
+                        constant_size::constant_shape::different_shape::Variable&&
                             collection);
 
                    Value               (Value const&)=delete;
