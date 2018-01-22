@@ -70,21 +70,21 @@ private:
 };
 
 
-Variable           create_variable     (hdf5::Group const& parent,
+Variable           create_variable     (hdf5::Group& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& memory_datatype);
 
-Variable           create_variable     (hdf5::Group const& parent,
+Variable           create_variable     (hdf5::Group& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& memory_datatype,
                                         hdf5::Shape const& value_shape);
 
-Variable           create_variable     (hdf5::Group const& parent,
+Variable           create_variable     (hdf5::Group& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& file_datatype,
                                         hdf5::Datatype const& memory_datatype);
 
-Variable           create_variable     (hdf5::Group const& parent,
+Variable           create_variable     (hdf5::Group& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& file_datatype,
                                         hdf5::Datatype const& memory_datatype,

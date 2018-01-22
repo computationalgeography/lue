@@ -68,16 +68,20 @@
 
     A collection represents all item values. Collections differ because
     of different combinations of aspects.
-    - lue::constant_size::constant::same_shape::Collection
-    - lue::constant_size::constant::different_shape::Collection
-    - lue::constant_size::variable::constant_shape::same_shape::Collection
-    - lue::constant_size::variable::constant_shape::different_shape::Collection
-    - lue::constant_size::variable::variable_shape::same_shape::Collection
-    - lue::constant_size::variable::variable_shape::different_shape::Collection
-    - lue::variable_size::constant::same_shape::Collection
-    - lue::variable_size::constant::different_shape::Collection
-    - lue::variable_size::variable::constant_shape::same_shape::Collection
-    - lue::variable_size::variable::constant_shape::different_shape::Collection
-    - lue::variable_size::variable::variable_shape::same_shape::Collection
-    - lue::variable_size::variable::variable_shape::different_shape::Collection
+    - lue::constant_size::constant_shape::same_shape::Constant
+    - lue::constant_size::constant_shape::same_shape::Variable
+    - lue::constant_size::constant_shape::different_shape::Constant
+    - lue::constant_size::constant_shape::different_shape::Variable
+    - lue::constant_size::variable_shape::same_shape::Constant
+    - lue::constant_size::variable_shape::same_shape::Variable
+    - lue::constant_size::variable_shape::different_shape::Constant
+    - lue::constant_size::variable_shape::different_shape::Variable
+    - lue::variable_size::constant_shape::same_shape::Constant
+    - lue::variable_size::constant_shape::same_shape::Variable
+    - lue::variable_size::constant_shape::different_shape::Constant
+    - lue::variable_size::constant_shape::different_shape::Variable
+    - lue::variable_size::variable_shape::same_shape::Constant
+    - lue::variable_size::variable_shape::same_shape::Variable
+    - lue::variable_size::variable_shape::different_shape::Constant
+    - lue::variable_size::variable_shape::different_shape::Variable
 */

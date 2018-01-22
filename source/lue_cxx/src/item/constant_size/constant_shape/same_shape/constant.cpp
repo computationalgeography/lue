@@ -1,4 +1,5 @@
 #include "lue/item/constant_size/constant_shape/same_shape/constant.hpp"
+// #include "lue/tag.hpp"
 #include "lue/hdf5/chunk.hpp"
 #include <cassert>
 
@@ -108,7 +109,7 @@ void Constant::write(
     @brief      Create collection @a name in @a parent
 */
 Constant create_constant(
-    hdf5::Group const& parent,
+    hdf5::Group& parent,
     std::string const& name,
     hdf5::Datatype const& memory_datatype)
 {
@@ -122,7 +123,22 @@ Constant create_constant(
     @brief      Create collection @a name in @a parent
 */
 Constant create_constant(
-    hdf5::Group const& parent,
+    hdf5::Group& parent,
+    std::string const& name,
+    hdf5::Datatype const& memory_datatype,
+    hdf5::Shape const& value_shape)
+{
+    return create_constant(
+        parent, name, file_datatype(memory_datatype), memory_datatype,
+        value_shape);
+}
+
+
+/*!
+    @brief      Create collection @a name in @a parent
+*/
+Constant create_constant(
+    hdf5::Group& parent,
     std::string const& name,
     hdf5::Datatype const& file_datatype,
     hdf5::Datatype const& memory_datatype)
@@ -141,7 +157,7 @@ Constant create_constant(
     The underlying HDF5 dataset is chunked according to hdf5::chunk_shape().
 */
 Constant create_constant(
-    hdf5::Group const& parent,
+    hdf5::Group& parent,
     std::string const& name,
     hdf5::Datatype const& file_datatype,
     hdf5::Datatype const& memory_datatype,
@@ -163,6 +179,15 @@ Constant create_constant(
 
     auto dataset = hdf5::create_dataset(
         parent.id(), name, file_datatype, dataspace, creation_property_list);
+
+    // parent.attributes().write<std::string>(
+    //     lue::collection_variability_tag, "constant");
+    // parent.attributes().write<std::string>(
+    //     lue::shape_variability_tag, "constant");
+    // parent.attributes().write<std::string>(
+    //     lue::shape_per_item_tag, "same");
+    // parent.attributes().write<std::string>(
+    //     lue::value_variability_tag, "constant");
 
     return Constant{std::move(dataset), memory_datatype};
 }

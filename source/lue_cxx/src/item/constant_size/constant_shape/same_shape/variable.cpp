@@ -1,4 +1,5 @@
 #include "lue/item/constant_size/constant_shape/same_shape/variable.hpp"
+// #include "lue/tag.hpp"
 #include "lue/hdf5/chunk.hpp"
 #include <cassert>
 
@@ -125,7 +126,7 @@ void Variable::write(
     @brief      Create collection @a name in @a parent
 */
 Variable create_variable(
-    hdf5::Group const& parent,
+    hdf5::Group& parent,
     std::string const& name,
     hdf5::Datatype const& memory_datatype)
 {
@@ -139,7 +140,7 @@ Variable create_variable(
     @brief      Create collection @a name in @a parent
 */
 Variable create_variable(
-    hdf5::Group const& parent,
+    hdf5::Group& parent,
     std::string const& name,
     hdf5::Datatype const& memory_datatype,
     hdf5::Shape const& value_shape)
@@ -154,7 +155,7 @@ Variable create_variable(
     @brief      Create collection @a name in @a parent
 */
 Variable create_variable(
-    hdf5::Group const& parent,
+    hdf5::Group& parent,
     std::string const& name,
     hdf5::Datatype const& file_datatype,
     hdf5::Datatype const& memory_datatype)
@@ -173,7 +174,7 @@ Variable create_variable(
     The underlying HDF5 dataset is chunked according to hdf5::chunk_shape().
 */
 Variable create_variable(
-    hdf5::Group const& parent,
+    hdf5::Group& parent,
     std::string const& name,
     hdf5::Datatype const& file_datatype,
     hdf5::Datatype const& memory_datatype,
@@ -196,6 +197,15 @@ Variable create_variable(
 
     auto dataset = hdf5::create_dataset(
         parent.id(), name, file_datatype, dataspace, creation_property_list);
+
+    // parent.attributes().write<std::string>(
+    //     lue::collection_variability_tag, "constant");
+    // parent.attributes().write<std::string>(
+    //     lue::shape_variability_tag, "constant");
+    // parent.attributes().write<std::string>(
+    //     lue::shape_per_item_tag, "same");
+    // parent.attributes().write<std::string>(
+    //     lue::value_variability_tag, "variable");
 
     return Variable{std::move(dataset), memory_datatype};
 }

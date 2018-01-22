@@ -40,12 +40,12 @@ private:
 };
 
 
-Value              create_value        (hdf5::Group const& group,
+Value              create_value        (hdf5::Group& group,
                                         std::string const& name,
                                         hdf5::Datatype const& file_datatype,
                                         hdf5::Datatype const& memory_datatype);
 
-Value              create_value        (hdf5::Group const& group,
+Value              create_value        (hdf5::Group& group,
                                         std::string const& name,
                                         hdf5::Datatype const& file_datatype,
                                         hdf5::Datatype const& memory_datatype,

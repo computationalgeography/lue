@@ -22,7 +22,6 @@ DatasetFixture::DatasetFixture(
 
 DatasetFixture::~DatasetFixture()
 {
-    std::cout << _remove_dataset_upon_destruction << std::endl;
     if(_remove_dataset_upon_destruction) {
         // Guarantees:
         // - Dataset does not exist after teardown
