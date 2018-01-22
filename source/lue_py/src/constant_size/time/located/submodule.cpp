@@ -8,11 +8,11 @@ namespace lue {
 namespace constant_size {
 namespace time {
 namespace located {
-namespace shared {
+namespace constant_shape {
 
 void init_submodule(py::module& module);
 
-}  // namespace shared
+}  // namespace constant_shape
 
 
 void init_domain(py::module& module);
@@ -45,7 +45,7 @@ void init_submodule(
     init_property(submodule);
     init_property_set(submodule);
 
-    shared::init_submodule(submodule);
+    constant_shape::init_submodule(submodule);
 }
 
 } // namespace located

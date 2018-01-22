@@ -8,7 +8,6 @@ namespace lue {
 namespace constant_size {
 namespace time {
 namespace located {
-namespace shared {
 namespace constant_shape {
 namespace different_shape {
 
@@ -42,7 +41,6 @@ void init_submodule(
 }
 
 } // namespace constant_shape
-} // namespace shared
 } // namespace located
 } // namespace time
 } // namespace constant_size

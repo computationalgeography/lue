@@ -1,6 +1,6 @@
 #include "lue/translate/format/dot.hpp"
 #include "lue/constant_size/time/located/property_set.hpp"
-#include "lue/constant_size/time/located/shared/constant_shape/property.hpp"
+#include "lue/constant_size/time/located/constant_shape/property.hpp"
 #include "lue/constant_size/time/located/time_box_domain.hpp"
 #include "lue/constant_size/time/omnipresent/different_shape/property.hpp"
 #include "lue/constant_size/time/omnipresent/property_set.hpp"
@@ -606,7 +606,7 @@ void to_dot(
 
             case lue::time::PropertyConfiguration::ShapeVariability::constant: {
                 to_dot(
-                    shared::constant_shape::Property(hdf5::Group{property.id()}),
+                    constant_shape::Property(hdf5::Group{property.id()}),
                     stream, metadata);
                 break;
             }

@@ -1,5 +1,5 @@
 #include "lue/constant_size/time/located/property_set.hpp"
-#include "lue/constant_size/time/located/shared/constant_shape/same_shape/property.hpp"
+#include "lue/constant_size/time/located/constant_shape/same_shape/property.hpp"
 #include "lue/phenomenon.hpp"
 #include <pybind11/pybind11.h>
 
@@ -29,8 +29,8 @@ py::object cast_to_specialized_property(
     switch(configuration.shape_per_item_type()) {
         case ShapePerItemType::same: {
             auto file_datatype =
-                shared::constant_shape::same_shape::Property::file_datatype(property);
-            object = py::cast(new shared::constant_shape::same_shape::Property(
+                constant_shape::same_shape::Property::file_datatype(property);
+            object = py::cast(new constant_shape::same_shape::Property(
                 hdf5::Group{property.id()}, memory_datatype(file_datatype)));
             break;
         }

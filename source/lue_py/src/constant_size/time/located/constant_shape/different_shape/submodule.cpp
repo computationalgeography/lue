@@ -8,9 +8,9 @@ namespace lue {
 namespace constant_size {
 namespace time {
 namespace located {
-namespace shared {
 namespace constant_shape {
-namespace same_shape {
+namespace different_shape {
+
 
 void init_value(py::module& module);
 void init_property(py::module& module);
@@ -20,18 +20,18 @@ void init_submodule(
     py::module& module)
 {
     py::module submodule = module.def_submodule(
-        "same_shape",
+        "different_shape",
         R"(
-    Module implementing the API for properties with the same shape per item
+    Module implementing the API for properties with a different shape
+    per item
 )");
 
     init_value(submodule);
     init_property(submodule);
 }
 
-}  // namespace same_shape
+}  // namespace different_shape
 }  // namespace constant_shape
-}  // namespace shared
 }  // namespace located
 }  // namespace time
 }  // namespace constant_size

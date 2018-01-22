@@ -1,4 +1,4 @@
-#include "lue/constant_size/time/located/shared/constant_shape/same_shape/value.hpp"
+#include "lue/constant_size/time/located/constant_shape/same_shape/value.hpp"
 #include <pybind11/pybind11.h>
 
 
@@ -9,7 +9,6 @@ namespace lue {
 namespace constant_size {
 namespace time {
 namespace located {
-namespace shared {
 namespace constant_shape {
 namespace same_shape {
 
@@ -40,7 +39,6 @@ void init_value(
 
 }  // namespace same_shape
 }  // namespace constant_shape
-}  // namespace shared
 }  // namespace located
 }  // namespace time
 }  // namespace constant_size

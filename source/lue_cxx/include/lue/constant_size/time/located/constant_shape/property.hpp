@@ -6,7 +6,6 @@ namespace lue {
 namespace constant_size {
 namespace time {
 namespace located {
-namespace shared {
 namespace constant_shape {
 
 class Property:
@@ -38,7 +37,6 @@ Property        create_property        (hdf5::Group& group,
                                             configuration);
 
 }  // namespace constant_shape
-}  // namespace shared
 }  // namespace located
 }  // namespace time
 }  // namespace constant_size

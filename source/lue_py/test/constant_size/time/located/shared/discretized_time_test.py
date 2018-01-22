@@ -5,7 +5,7 @@ import lue_test
 
 
 omnipresent = lue.constant_size.time.omnipresent
-shared = lue.constant_size.time.located.shared
+located = lue.constant_size.time.located
 
 
 class DiscretizedTimeTest(lue_test.TestCase):
@@ -16,7 +16,7 @@ class DiscretizedTimeTest(lue_test.TestCase):
             boxes):
 
         self.assertEqual(property_set.name, name)
-        self.assertEqual(type(property_set), shared.PropertySet)
+        self.assertEqual(type(property_set), located.PropertySet)
         self.assertArraysEqual(property_set.domain.time.items[:], boxes)
 
 
@@ -31,7 +31,7 @@ class DiscretizedTimeTest(lue_test.TestCase):
 
         self.assertEqual(property.name, name)
         self.assertEqual(
-            type(property), shared.constant_shape.same_shape.Property)
+            type(property), located.constant_shape.same_shape.Property)
         self.assertEqual(len(property.values.shape), 2 + len(value_shape))
         self.assertEqual(property.values.shape[0], nr_domain_items)
         self.assertEqual(property.values.shape[1], nr_items)
@@ -82,7 +82,7 @@ class DiscretizedTimeTest(lue_test.TestCase):
 
         dataset = self.create_dataset(dataset_name)
         phenomenon = dataset.add_phenomenon(phenomenon_name)
-        property_set = shared.create_property_set(
+        property_set = located.create_property_set(
             phenomenon, property_set_name)
         nr_items = 100
 
@@ -90,7 +90,7 @@ class DiscretizedTimeTest(lue_test.TestCase):
 
 
         # Time domain
-        time_domain = shared.create_time_box_domain(
+        time_domain = located.create_time_box_domain(
             property_set, lue.Clock(lue.unit.day, 1))
 
         # A box is defined by a begin and end time point (two coordinates
@@ -157,7 +157,7 @@ class DiscretizedTimeTest(lue_test.TestCase):
         value_property_name = "my_value_property"
         value_type = numpy.float64
         value_shape = (nr_steps,)
-        property = shared.constant_shape.same_shape.create_property(
+        property = located.constant_shape.same_shape.create_property(
             property_set, value_property_name, value_type, value_shape)
         property.discretize_time(discretization_property)
 

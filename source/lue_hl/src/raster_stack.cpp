@@ -1,6 +1,6 @@
 #include "lue/hl/raster_stack.hpp"
 #include "lue/constant_size/time/located/time_box_domain.hpp"
-#include "lue/constant_size/time/located/shared/constant_shape/same_shape/property.hpp"
+#include "lue/constant_size/time/located/constant_shape/same_shape/property.hpp"
 #include "lue/constant_size/time/omnipresent/property_set.hpp"
 #include "lue/constant_size/time/omnipresent/space_box_domain.hpp"
 // #include "lue/hdf5/datatype_traits.hpp"
@@ -28,9 +28,9 @@ std::string const space_discretization_link_name = "space_discretization";
 
 
 RasterStack::Band::Band(
-    located::shared::constant_shape::different_shape::Property&& property)
+    located::constant_shape::different_shape::Property&& property)
 
-    : _property{std::forward<located::shared::constant_shape::different_shape::Property>(
+    : _property{std::forward<located::constant_shape::different_shape::Property>(
           property)}
 
 {
@@ -231,7 +231,7 @@ RasterStack::Band RasterStack::add_band(
     hdf5::Datatype const& datatype)
 {
     int const rank = 3;  // [nr_steps, nr_rows, nr_cols]
-    auto property = located::shared::constant_shape::different_shape::create_property(
+    auto property = located::constant_shape::different_shape::create_property(
         _property_set, name, datatype, rank);
 
     hsize_t const nr_time_domain_items = 1;
@@ -249,7 +249,7 @@ RasterStack::Band RasterStack::add_band(
 RasterStack::Band RasterStack::band(
     std::string const& name) const
 {
-    return Band{located::shared::constant_shape::different_shape::Property{
+    return Band{located::constant_shape::different_shape::Property{
         hdf5::Group{_property_set.properties()[name].id()}}};
 }
 
@@ -325,7 +325,7 @@ RasterStack create_raster_stack(
         /// file_datatype_id = hdf5::StandardDatatypeTraits<hsize_t>::type_id();
         /// memory_datatype_id = hdf5::NativeDatatypeTraits<hsize_t>::type_id();
         /// auto time_discretization_property =
-        ///     shared::constant_shape::same_shape::create_property(
+        ///     constant_shape::same_shape::create_property(
         ///         property_set, time_discretization_property_name,
         ///         file_datatype_id, memory_datatype_id);
         /// time_discretization_property.reserve(nr_time_boxes, nr_items).write(
@@ -396,7 +396,7 @@ RasterStack create_raster_stack(
         // file_datatype_id = hdf5::StandardDatatypeTraits<double>::type_id();
         // memory_datatype_id = hdf5::NativeDatatypeTraits<double>::type_id();
         // auto value_property =
-        //     shared::constant_shape::same_shape::create_property(
+        //     constant_shape::same_shape::create_property(
         //         property_set, property_name,
         //         file_datatype_id, memory_datatype_id);
 

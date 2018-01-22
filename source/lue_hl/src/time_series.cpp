@@ -298,7 +298,7 @@ TimeSeries create_time_series(
                     hdf5::Datatype{hdf5::NativeDatatypeTraits<double>
                         ::type_id()};
                 auto value_property =
-                    located::shared::constant_shape::same_shape::create_property(
+                    located::constant_shape::same_shape::create_property(
                         property_set,
                         property_name,
                         file_datatype_id,

@@ -1,6 +1,6 @@
 #pragma once
 #include "lue/constant_size/time/located/property_set.hpp"
-#include "lue/constant_size/time/located/shared/constant_shape/different_shape/property.hpp"
+#include "lue/constant_size/time/located/constant_shape/different_shape/property.hpp"
 #include "lue/constant_size/time/omnipresent/same_shape/property.hpp"
 #include "lue/hl/raster_stack_discretization.hpp"
 #include "lue/hl/raster_stack_domain.hpp"
@@ -24,7 +24,7 @@ public:
 
     public:
 
-                   Band                (located::shared::constant_shape::different_shape
+                   Band                (located::constant_shape::different_shape
                                             ::Property&& property);
 
         hdf5::Datatype file_datatype   () const;
@@ -44,7 +44,7 @@ public:
 
     private:
 
-        located::shared::constant_shape::different_shape::Property _property;
+        located::constant_shape::different_shape::Property _property;
 
     };
 

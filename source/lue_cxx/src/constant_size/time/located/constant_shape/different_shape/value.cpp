@@ -1,11 +1,10 @@
-#include "lue/constant_size/time/located/shared/constant_shape/different_shape/value.hpp"
+#include "lue/constant_size/time/located/constant_shape/different_shape/value.hpp"
 
 
 namespace lue {
 namespace constant_size {
 namespace time {
 namespace located {
-namespace shared {
 namespace constant_shape {
 namespace different_shape {
 
@@ -65,7 +64,6 @@ Value create_value(
 
 }  // namespace different_shape
 }  // namespace constant_shape
-}  // namespace shared
 }  // namespace located
 }  // namespace time
 }  // namespace constant_size

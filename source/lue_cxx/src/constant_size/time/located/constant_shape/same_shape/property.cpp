@@ -1,4 +1,4 @@
-#include "lue/constant_size/time/located/shared/constant_shape/same_shape/property.hpp"
+#include "lue/constant_size/time/located/constant_shape/same_shape/property.hpp"
 #include "lue/tag.hpp"
 #include <cassert>
 
@@ -7,7 +7,6 @@ namespace lue {
 namespace constant_size {
 namespace time {
 namespace located {
-namespace shared {
 namespace constant_shape {
 namespace same_shape {
 
@@ -103,7 +102,6 @@ Property create_property(
 
 }  // namespace same_shape
 }  // namespace constant_shape
-}  // namespace shared
 }  // namespace located
 }  // namespace time
 }  // namespace constant_size

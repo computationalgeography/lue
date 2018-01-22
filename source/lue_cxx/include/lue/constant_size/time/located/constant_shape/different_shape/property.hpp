@@ -1,6 +1,6 @@
 #pragma once
-#include "lue/constant_size/time/located/shared/constant_shape/different_shape/value.hpp"
-#include "lue/constant_size/time/located/shared/constant_shape/property.hpp"
+#include "lue/constant_size/time/located/constant_shape/different_shape/value.hpp"
+#include "lue/constant_size/time/located/constant_shape/property.hpp"
 #include "lue/constant_size/time/located/property_set.hpp"
 
 
@@ -8,7 +8,6 @@ namespace lue {
 namespace constant_size {
 namespace time {
 namespace located {
-namespace shared {
 namespace constant_shape {
 namespace different_shape {
 
@@ -64,7 +63,6 @@ Property           create_property     (PropertySet& property_set,
 
 }  // namespace different_shape
 }  // namespace constant_shape
-}  // namespace shared
 }  // namespace located
 }  // namespace time
 }  // namespace constant_size

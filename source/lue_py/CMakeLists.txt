@@ -72,18 +72,16 @@ add_library(lue_py SHARED
     src/constant_size/time/located/space_domain
     src/constant_size/time/located/time_box_domain
 
-    src/constant_size/time/located/shared/submodule
+    src/constant_size/time/located/constant_shape/property
+    src/constant_size/time/located/constant_shape/submodule
 
-    src/constant_size/time/located/shared/constant_shape/property
-    src/constant_size/time/located/shared/constant_shape/submodule
+    src/constant_size/time/located/constant_shape/different_shape/value
+    src/constant_size/time/located/constant_shape/different_shape/property
+    src/constant_size/time/located/constant_shape/different_shape/submodule
 
-    src/constant_size/time/located/shared/constant_shape/different_shape/value
-    src/constant_size/time/located/shared/constant_shape/different_shape/property
-    src/constant_size/time/located/shared/constant_shape/different_shape/submodule
-
-    src/constant_size/time/located/shared/constant_shape/same_shape/value
-    src/constant_size/time/located/shared/constant_shape/same_shape/property
-    src/constant_size/time/located/shared/constant_shape/same_shape/submodule
+    src/constant_size/time/located/constant_shape/same_shape/value
+    src/constant_size/time/located/constant_shape/same_shape/property
+    src/constant_size/time/located/constant_shape/same_shape/submodule
 )
 
 add_library(lue::py ALIAS lue_py)

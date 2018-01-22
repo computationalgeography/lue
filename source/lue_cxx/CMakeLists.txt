@@ -60,13 +60,11 @@ add_library(lue STATIC
     src/constant_size/time/located/time_box_domain
     src/constant_size/time/located/validate
 
-    src/constant_size/time/located/shared/constant_shape/property
-
-    src/constant_size/time/located/shared/constant_shape/different_shape/property
-    src/constant_size/time/located/shared/constant_shape/different_shape/value
-
-    src/constant_size/time/located/shared/constant_shape/same_shape/property
-    src/constant_size/time/located/shared/constant_shape/same_shape/value
+    src/constant_size/time/located/constant_shape/property
+    src/constant_size/time/located/constant_shape/different_shape/property
+    src/constant_size/time/located/constant_shape/different_shape/value
+    src/constant_size/time/located/constant_shape/same_shape/property
+    src/constant_size/time/located/constant_shape/same_shape/value
 
     src/item/constant_size/collection
     src/item/constant_size/constant/different_shape/collection
