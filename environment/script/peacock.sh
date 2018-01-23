@@ -42,12 +42,14 @@ function build_peacock()
     build_boost=false
     build_docopt=false
     build_gdal=false
+    build_google_benchmark=false
     build_nlohmann_json=false
     build_pybind11=false
 
     # ...except for these machines
     hostname=`hostname`
     build_docopt=true
+    build_google_benchmark=true
     build_nlohmann_json=true
     build_pybind11=true
 
