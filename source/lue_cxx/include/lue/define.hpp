@@ -249,23 +249,23 @@ enum class SizeOfItemCollectionType
 // };
 
 
-/*!
-    @brief      The shape of the value of different items can be the
-                same or different
-
-    Whether or not the shape of the value of different items is the same
-    or different is independent of the time domain type.
-*/
-enum class ShapePerItemType
-{
-
-    //! The value of all items have the same shape
-    same,
-
-    //! The value of all items have a different shape (potentially)
-    different
-
-};
+// /*!
+//     @brief      The shape of the value of different items can be the
+//                 same or different
+// 
+//     Whether or not the shape of the value of different items is the same
+//     or different is independent of the time domain type.
+// */
+// enum class ShapePerItemType
+// {
+// 
+//     //! The value of all items have the same shape
+//     same,
+// 
+//     //! The value of all items have a different shape (potentially)
+//     different
+// 
+// };
 
 
 // enum class ShapeThroughTime

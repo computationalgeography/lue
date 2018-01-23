@@ -19,12 +19,9 @@ Property::Property(
 Property create_property(
     hdf5::Group& group,
     std::string const& name,
-    Property::Configuration const& configuration)
+    Configuration const& configuration)
 {
-    auto property = located::create_property(
-        group, name, configuration,
-        lue::time::PropertyConfiguration(
-            lue::time::PropertyConfiguration::ShapeVariability::constant));
+    auto property = located::create_property(group, name, configuration);
 
     return Property(hdf5::Group{property.id()});
 }

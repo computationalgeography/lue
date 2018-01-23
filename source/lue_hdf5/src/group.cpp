@@ -208,16 +208,16 @@ Group::Group(
     Group const& parent,
     std::string const& name)
 
-    : _id(::H5Gopen(parent.id(), name.c_str(), H5P_DEFAULT), ::H5Gclose),
-      _attributes{_id}
+    : PrimaryDataObject{Identifier{
+        ::H5Gopen(parent.id(), name.c_str(), H5P_DEFAULT), ::H5Gclose}}
 
 {
-    if(!_id.is_valid()) {
+    if(!id().is_valid()) {
         throw std::runtime_error(
             "Cannot open group " + name + " in " + parent.id().pathname());
     }
 
-    assert(_id.is_valid());
+    assert(id().is_valid());
 }
 
 
@@ -231,11 +231,10 @@ Group::Group(
 Group::Group(
     Identifier const& id)
 
-    : _id{id},
-      _attributes{_id}
+    : PrimaryDataObject{id}
 
 {
-    assert(_id.is_valid());
+    assert(this->id().is_valid());
 }
 
 
@@ -246,38 +245,10 @@ Group::Group(
 Group::Group(
     Identifier&& id)
 
-    : _id{std::forward<Identifier>(id)},
-      _attributes{_id}
+    : PrimaryDataObject{std::forward<Identifier>(id)}
 
 {
-    // assert(_id.is_valid());
-}
-
-
-/*!
-    @brief      Return the group's identifier
-*/
-Identifier const& Group::id() const
-{
-    return _id;
-}
-
-
-/*!
-    @brief      Return the group's attributes
-*/
-Attributes const& Group::attributes() const
-{
-    return _attributes;
-}
-
-
-/*!
-    @brief      Return the group's attributes
-*/
-Attributes& Group::attributes()
-{
-    return _attributes;
+    // assert(id().is_valid());
 }
 
 
@@ -289,14 +260,14 @@ std::vector<std::string> Group::group_names() const
     std::size_t nr_objects = 0;
     {
         CountObjects data;
-        iterate(_id, count_groups, data);
+        iterate(id(), count_groups, data);
         nr_objects = data.nr_objects;
     }
 
     auto names = std::make_unique<char*[]>(nr_objects);
     {
         ObjectNames data(names.get());
-        iterate(_id, retrieve_group_names, data);
+        iterate(id(), retrieve_group_names, data);
     }
 
     std::vector<std::string> result(nr_objects);
@@ -318,14 +289,14 @@ std::vector<std::string> Group::object_names() const
     std::size_t nr_objects = 0;
     {
         CountObjects data;
-        iterate(_id, count_objects, data);
+        iterate(id(), count_objects, data);
         nr_objects = data.nr_objects;
     }
 
     auto names = std::make_unique<char*[]>(nr_objects);
     {
         ObjectNames data(names.get());
-        iterate(_id, retrieve_object_names, data);
+        iterate(id(), retrieve_object_names, data);
     }
 
     std::vector<std::string> result(nr_objects);
@@ -358,17 +329,6 @@ bool Group::contains_dataset(
     std::string const& name) const
 {
     return dataset_exists(id(), name);
-}
-
-
-/*!
-    @brief      Return whether or not the group contains an attribute named
-                @a name
-*/
-bool Group::contains_attribute(
-    std::string const& name) const
-{
-    return _attributes.exists(name);
 }
 
 
@@ -431,36 +391,6 @@ void Group::create_hard_link(
         throw std::runtime_error("Cannot create hard link " + name +
             " at " + location.pathname());
     }
-}
-
-
-/*!
-    @brief      Return whether two groups are equal
-    @exception  std::runtime_error In case the metadata for the groups
-                passed in cannot be retrieved
-
-    Two groups are considered equal if they are pointing to the same group in
-    the HDF5 dataset.
-*/
-bool Group::operator==(
-    Group const& other) const
-{
-    return _id == other._id;
-}
-
-
-/*!
-    @brief      Return whether two groups are not equal
-    @exception  std::runtime_error In case the metadata for the groups
-                passed in cannot be retrieved
-
-    Two groups are considered equal if they are pointing to the same group in
-    the HDF5 dataset.
-*/
-bool Group::operator!=(
-    Group const& other) const
-{
-    return _id != other._id;
 }
 
 

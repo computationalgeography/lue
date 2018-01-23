@@ -91,12 +91,12 @@ private:
 };
 
 
-Constant       create_constant         (hdf5::Group const& parent,
+Constant       create_constant         (hdf5::Group& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& memory_datatype,
                                         int rank);
 
-Constant       create_constant         (hdf5::Group const& parent,
+Constant       create_constant         (hdf5::Group& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& file_datatype,
                                         hdf5::Datatype const& memory_datatype,

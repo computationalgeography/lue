@@ -94,7 +94,14 @@ Property create_property(
     int const rank)
 {
     auto& properties = property_set.properties();
-    Property::Configuration configuration(ShapePerItemType::different);
+
+    Configuration configuration{
+        CollectionVariability::constant,
+        ShapeVariability::constant,
+        ShapePerItem::different,
+        ValueVariability::variable
+    };
+
     auto& property = properties.add(name,
         constant_shape::create_property(properties, name, configuration));
     auto value = create_value(property, value_tag, file_datatype,

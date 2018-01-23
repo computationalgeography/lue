@@ -26,15 +26,15 @@ py::object cast_to_specialized_property(
     //     PropertySet classes.
     py::object object;
 
-    switch(configuration.shape_per_item_type()) {
-        case ShapePerItemType::same: {
+    switch(configuration.shape_per_item()) {
+        case ShapePerItem::same: {
             auto file_datatype =
                 constant_shape::same_shape::Property::file_datatype(property);
             object = py::cast(new constant_shape::same_shape::Property(
                 hdf5::Group{property.id()}, memory_datatype(file_datatype)));
             break;
         }
-        case ShapePerItemType::different: {
+        case ShapePerItem::different: {
             assert(false);
             break;
         }

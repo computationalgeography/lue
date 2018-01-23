@@ -27,9 +27,9 @@ void validate(
         auto const& configuration = property.configuration();
         size_t nr_values;
 
-        switch(configuration.shape_per_item_type()) {
+        switch(configuration.shape_per_item()) {
 
-            case ShapePerItemType::same: {
+            case ShapePerItem::same: {
                 auto file_datatype =
                     same_shape::Property::file_datatype(property);
                 auto const property2 = same_shape::Property(
@@ -39,7 +39,7 @@ void validate(
                 break;
             }
 
-            case ShapePerItemType::different: {
+            case ShapePerItem::different: {
                 auto file_datatype =
                     different_shape::Property::file_datatype(property);
                 auto const property2 = different_shape::Property(

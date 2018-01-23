@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/define.hpp"
+#include "lue/item/configuration.hpp"
 #include "lue/hdf5/group.hpp"
 
 
@@ -8,43 +9,13 @@ namespace lue {
 /*!
     @brief      TODO
     @sa         create_property(hdf5::Group&, std::string const&,
-                Property::Configuration const&)
+                Configuration const&)
 */
 class Property:
     public hdf5::Group
 {
 
 public:
-
-    class Configuration
-    {
-
-    public:
-
-                   Configuration       (ShapePerItemType const type);
-
-                   Configuration       (hdf5::Attributes const& attributes);
-
-                   Configuration       (Configuration const& other)=default;
-
-                   ~Configuration      ()=default;
-
-        Configuration& operator=       (Configuration const& other)=default;
-
-        ShapePerItemType
-                   shape_per_item_type () const;
-
-        void       save                (hdf5::Attributes& attributes) const;
-
-    private:
-
-        ShapePerItemType
-                   _shape_per_item_type;
-
-        void       load                (hdf5::Attributes const& attributes);
-
-    };
-
 
                    Property            (hdf5::Group const& parent,
                                         std::string const& name);
@@ -79,7 +50,6 @@ private:
 
 Property           create_property     (hdf5::Group const& group,
                                         std::string const& name,
-                                        Property::Configuration const&
-                                            configuration);
+                                        Configuration const& configuration);
 
 }  // namespace lue

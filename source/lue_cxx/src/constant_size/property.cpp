@@ -16,7 +16,7 @@ Property::Property(
 Property create_property(
     hdf5::Group& parent,
     std::string const& name,
-    Property::Configuration const& configuration)
+    Configuration const& configuration)
 {
     auto property = lue::create_property(parent, name, configuration);
 

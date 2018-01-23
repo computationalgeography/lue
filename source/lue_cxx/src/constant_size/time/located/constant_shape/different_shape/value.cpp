@@ -51,7 +51,7 @@ hsize_t Value::nr_items() const
 
 
 Value create_value(
-    hdf5::Group const& parent,
+    hdf5::Group& parent,
     std::string const& name,
     hdf5::Datatype const& file_datatype,
     hdf5::Datatype const& memory_datatype,

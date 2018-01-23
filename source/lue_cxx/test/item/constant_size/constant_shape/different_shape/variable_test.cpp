@@ -13,7 +13,7 @@ BOOST_AUTO_TEST_CASE(create_collection)
     std::string const filename = "create_collection_meh.h5";
     lue::test::DatasetFixture fixture{filename};
 
-    auto const file = lue::hdf5::create_file(filename);
+    auto file = lue::hdf5::create_file(filename);
 
     std::string const value_name = "my_value";
     lue::hdf5::Datatype datatype{

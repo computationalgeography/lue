@@ -460,14 +460,14 @@ void to_dot(
 {
     auto const& configuration = property.configuration();
 
-    switch(configuration.shape_per_item_type()) {
-        case ShapePerItemType::same: {
+    switch(configuration.shape_per_item()) {
+        case ShapePerItem::same: {
             auto file_datatype = same_shape::Property::file_datatype(property);
             to_dot(same_shape::Property(hdf5::Group{property.id()},
                 memory_datatype(file_datatype)), stream, metadata);
             break;
         }
-        case ShapePerItemType::different: {
+        case ShapePerItem::different: {
             auto file_datatype = different_shape::Property::file_datatype(
                 property);
             to_dot(different_shape::Property(hdf5::Group{property.id()},
@@ -567,9 +567,9 @@ void to_dot(
 {
     auto const& configuration = property.configuration();
 
-    switch(configuration.shape_per_item_type()) {
+    switch(configuration.shape_per_item()) {
 
-        case ShapePerItemType::same: {
+        case ShapePerItem::same: {
             // auto file_datatype = same_shape::Property::file_datatype(
             //     property.id());
             // to_dot(same_shape::Property(property,
@@ -577,7 +577,7 @@ void to_dot(
             break;
         }
 
-        case ShapePerItemType::different: {
+        case ShapePerItem::different: {
             // auto file_datatype = different_shape::Property::file_datatype(
             //     property.id());
             // to_dot(different_shape::Property(property,
@@ -602,9 +602,9 @@ void to_dot(
         auto const property = located::Property{
             hdf5::Group{properties[name].id()}};
 
-        switch(property.configuration2().shape_variability()) {
+        switch(property.configuration().shape_variability()) {
 
-            case lue::time::PropertyConfiguration::ShapeVariability::constant: {
+            case ShapeVariability::constant: {
                 to_dot(
                     constant_shape::Property(hdf5::Group{property.id()}),
                     stream, metadata);

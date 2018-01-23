@@ -65,31 +65,26 @@ Dataset::Dataset(
     Group const& parent,
     std::string const& name)
 
-    : _id{::H5Dopen(parent.id(), name.c_str(), H5P_DEFAULT), ::H5Dclose}
+    : PrimaryDataObject{Identifier{
+        ::H5Dopen(parent.id(), name.c_str(), H5P_DEFAULT), ::H5Dclose}}
 
 {
-    if(!_id.is_valid()) {
+    if(!id().is_valid()) {
         throw std::runtime_error("Cannot open dataset " + name + " at " +
             parent.id().pathname());
     }
 
-    assert(_id.is_valid());
+    assert(id().is_valid());
 }
 
 
 Dataset::Dataset(
     Identifier&& id)
 
-    : _id{std::forward<Identifier>(id)}
+    : PrimaryDataObject{std::forward<Identifier>(id)}
 
 {
-    assert(_id.is_valid());
-}
-
-
-Identifier const& Dataset::id() const
-{
-    return _id;
+    assert(this->id().is_valid());
 }
 
 
@@ -100,7 +95,7 @@ Identifier const& Dataset::id() const
 */
 Datatype Dataset::datatype() const
 {
-    return Datatype(Identifier(::H5Dget_type(_id), ::H5Tclose));
+    return Datatype(Identifier(::H5Dget_type(id()), ::H5Tclose));
 }
 
 
@@ -110,7 +105,7 @@ void Dataset::resize(
     assert(static_cast<int>(new_dimension_sizes.size()) ==
         dataspace().nr_dimensions());
 
-    auto status = ::H5Dset_extent(_id, new_dimension_sizes.data());
+    auto status = ::H5Dset_extent(id(), new_dimension_sizes.data());
 
     if(status < 0) {
         throw std::runtime_error("Cannot resize dataset");
@@ -120,15 +115,15 @@ void Dataset::resize(
 
 Dataspace Dataset::dataspace() const
 {
-    assert(_id.is_valid());
+    assert(id().is_valid());
 
-    return Dataspace(::H5Dget_space(_id));
+    return Dataspace(::H5Dget_space(id()));
 }
 
 
 Shape Dataset::shape() const
 {
-    assert(_id.is_valid());
+    assert(id().is_valid());
 
     return dataspace().dimension_extents();
 }
@@ -182,11 +177,11 @@ void Dataset::read(
         throw std::runtime_error("Cannot create hyperslab");
     }
 
-    assert(_id.is_valid());
+    assert(id().is_valid());
     assert(file_dataspace.id().is_valid());
 
     status = ::H5Dread(
-        _id, datatype.id(),
+        id(), datatype.id(),
         memory_dataspace.id(), file_dataspace.id(),
         H5P_DEFAULT, buffer);
 
@@ -262,7 +257,7 @@ void Dataset::write(
     }
 
     status = ::H5Dwrite(
-        _id, datatype.id(),
+        id(), datatype.id(),
         memory_dataspace.id(), file_dataspace.id(),
         H5P_DEFAULT, buffer);
 

@@ -57,7 +57,14 @@ Property create_property(
     hdf5::Datatype const& memory_datatype)
 {
     auto& properties = property_set.properties();
-    Property::Configuration configuration(ShapePerItemType::same);
+
+    Configuration configuration{
+        CollectionVariability::constant,
+        ShapeVariability::constant,
+        ShapePerItem::same,
+        ValueVariability::constant
+    };
+
     auto& property = properties.add(name,
         omnipresent::create_property(properties, name, configuration));
     auto value = create_value(
@@ -80,6 +87,7 @@ Property create_property(
         memory_datatype, value_shape);
 }
 
+
 Property create_property(
     PropertySet& property_set,
     std::string const& name,
@@ -88,7 +96,14 @@ Property create_property(
     hdf5::Shape const& value_shape)
 {
     auto& properties = property_set.properties();
-    Property::Configuration configuration(ShapePerItemType::same);
+
+    Configuration configuration{
+        CollectionVariability::constant,
+        ShapeVariability::constant,
+        ShapePerItem::same,
+        ValueVariability::constant
+    };
+
     auto& property = properties.add(name,
         omnipresent::create_property(properties, name, configuration));
     auto value = create_value(

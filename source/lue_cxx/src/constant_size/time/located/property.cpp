@@ -10,16 +10,9 @@ namespace located {
 Property::Property(
     constant_size::Property&& property)
 
-    : constant_size::Property(std::forward<constant_size::Property>(property)),
-      _configuration{attributes()}
+    : constant_size::Property(std::forward<constant_size::Property>(property))
 
 {
-}
-
-
-lue::time::PropertyConfiguration const& Property::configuration2() const
-{
-    return _configuration;
 }
 
 
@@ -45,13 +38,9 @@ lue::Property Property::time_discretization () const
 Property create_property(
     hdf5::Group& parent,
     std::string const& name,
-    Property::Configuration const& configuration,
-    lue::time::PropertyConfiguration const& property_configuration)
+    Configuration const& configuration)
 {
-    auto property = constant_size::create_property(
-        parent, name, configuration);
-
-    property_configuration.save(property.attributes());
+    auto property = constant_size::create_property(parent, name, configuration);
 
     return Property{std::move(property)};
 }

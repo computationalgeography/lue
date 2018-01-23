@@ -252,7 +252,7 @@ void Variable::write(
     defines the dimensionality of the item values.
 */
 Variable create_variable(
-    hdf5::Group const& parent,
+    hdf5::Group& parent,
     std::string const& name,
     hdf5::Datatype const& memory_datatype,
     int const rank)
@@ -270,7 +270,7 @@ Variable create_variable(
     defines the dimensionality of the item values.
 */
 Variable create_variable(
-    hdf5::Group const& parent,
+    hdf5::Group& parent,
     std::string const& name,
     hdf5::Datatype const& file_datatype,
     hdf5::Datatype const& memory_datatype,

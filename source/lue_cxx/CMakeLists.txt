@@ -72,8 +72,6 @@ add_library(lue STATIC
     src/item/constant_size/constant_shape/different_shape/variable
     src/item/constant_size/constant_shape/same_shape/constant
     src/item/constant_size/constant_shape/same_shape/variable
-
-    src/time/property_configuration
 )
 
 add_library(lue::lue ALIAS lue)

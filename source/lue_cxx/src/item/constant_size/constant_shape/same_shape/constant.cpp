@@ -1,5 +1,4 @@
 #include "lue/item/constant_size/constant_shape/same_shape/constant.hpp"
-// #include "lue/tag.hpp"
 #include "lue/hdf5/chunk.hpp"
 #include <cassert>
 
@@ -179,15 +178,6 @@ Constant create_constant(
 
     auto dataset = hdf5::create_dataset(
         parent.id(), name, file_datatype, dataspace, creation_property_list);
-
-    // parent.attributes().write<std::string>(
-    //     lue::collection_variability_tag, "constant");
-    // parent.attributes().write<std::string>(
-    //     lue::shape_variability_tag, "constant");
-    // parent.attributes().write<std::string>(
-    //     lue::shape_per_item_tag, "same");
-    // parent.attributes().write<std::string>(
-    //     lue::value_variability_tag, "constant");
 
     return Constant{std::move(dataset), memory_datatype};
 }

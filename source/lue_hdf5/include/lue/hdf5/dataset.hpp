@@ -4,6 +4,7 @@
 #include "lue/hdf5/datatype.hpp"
 #include "lue/hdf5/group.hpp"
 #include "lue/hdf5/hyperslab.hpp"
+#include "lue/hdf5/primary_data_object.hpp"
 #include "lue/hdf5/property_list.hpp"
 
 
@@ -16,7 +17,8 @@ class Hyperslab;
 /*!
     @brief      Class representing an HDF5 dataset
 */
-class Dataset
+class Dataset:
+    public PrimaryDataObject
 {
 
 public:
@@ -58,13 +60,11 @@ public:
 
                    Dataset             (Dataset&&)=default;
 
-    virtual        ~Dataset            ()=default;
+                   ~Dataset            ()=default;
 
     Dataset&       operator=           (Dataset const&)=default;
 
     Dataset&       operator=           (Dataset&&)=default;
-
-    Identifier const& id               () const;
 
     Datatype       datatype            () const;
 
@@ -111,9 +111,6 @@ public:
                                         void const* buffer) const;
 
 private:
-
-    //! Identifier of dataset
-    Identifier     _id;
 
 };
 

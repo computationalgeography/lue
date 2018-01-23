@@ -21,6 +21,7 @@ add_library(lue_hdf5 STATIC
     src/issues
     src/link
     src/object_info
+    src/primary_data_object
     src/property_list
     src/shape
     src/validate

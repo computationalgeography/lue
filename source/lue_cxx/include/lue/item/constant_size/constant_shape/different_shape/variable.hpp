@@ -110,12 +110,12 @@ private:
 };
 
 
-Variable           create_variable     (hdf5::Group const& parent,
+Variable           create_variable     (hdf5::Group& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& memory_datatype,
                                         int rank);
 
-Variable           create_variable     (hdf5::Group const& parent,
+Variable           create_variable     (hdf5::Group& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& file_datatype,
                                         hdf5::Datatype const& memory_datatype,

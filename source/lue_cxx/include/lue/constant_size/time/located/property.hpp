@@ -1,6 +1,5 @@
 #pragma once
 #include "lue/constant_size/property.hpp"
-#include "lue/time/property_configuration.hpp"
 
 
 namespace lue {
@@ -26,9 +25,6 @@ public:
 
     Property&      operator=           (Property&&)=default;
 
-    lue::time::PropertyConfiguration const&
-                   configuration2      () const;
-
     void           discretize_time     (lue::Property const& property);
 
     bool           time_is_discretized () const;
@@ -37,17 +33,12 @@ public:
 
 private:
 
-    lue::time::PropertyConfiguration _configuration;
-
 };
 
 
 Property           create_property     (hdf5::Group& parent,
                                         std::string const& name,
-                                        Property::Configuration const&
-                                            configuration,
-                                        lue::time::PropertyConfiguration const&
-                                            property_configuration);
+                                        Configuration const& configuration);
 
 }  // namespace located
 }  // namespace time

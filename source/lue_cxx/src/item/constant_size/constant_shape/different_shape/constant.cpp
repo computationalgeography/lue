@@ -185,7 +185,7 @@ void Constant::write(
     defines the dimensionality of the underlying datasets.
 */
 Constant create_constant(
-    hdf5::Group const& parent,
+    hdf5::Group& parent,
     std::string const& name,
     hdf5::Datatype const& memory_datatype,
     int const rank)
@@ -203,7 +203,7 @@ Constant create_constant(
     defines the dimensionality of the underlying datasets.
 */
 Constant create_constant(
-    hdf5::Group const& parent,
+    hdf5::Group& parent,
     std::string const& name,
     hdf5::Datatype const& file_datatype,
     hdf5::Datatype const& memory_datatype,

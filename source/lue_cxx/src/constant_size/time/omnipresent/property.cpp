@@ -18,7 +18,7 @@ Property::Property(
 Property create_property(
     hdf5::Group& group,
     std::string const& name,
-    Property::Configuration const& configuration)
+    Configuration const& configuration)
 {
     return Property{
         constant_size::create_property(group, name, configuration)};

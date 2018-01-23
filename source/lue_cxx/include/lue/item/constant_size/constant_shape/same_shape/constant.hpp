@@ -67,25 +67,25 @@ private:
 };
 
 
-Constant            create_constant    (hdf5::Group& parent,
-                                        std::string const& name,
-                                        hdf5::Datatype const& memory_datatype);
+Constant           create_constant    (hdf5::Group& parent,
+                                       std::string const& name,
+                                       hdf5::Datatype const& memory_datatype);
 
-Constant            create_constant    (hdf5::Group& parent,
-                                        std::string const& name,
-                                        hdf5::Datatype const& memory_datatype,
-                                        hdf5::Shape const& value_shape);
+Constant           create_constant    (hdf5::Group& parent,
+                                       std::string const& name,
+                                       hdf5::Datatype const& memory_datatype,
+                                       hdf5::Shape const& value_shape);
 
-Constant            create_constant    (hdf5::Group& parent,
-                                        std::string const& name,
-                                        hdf5::Datatype const& file_datatype,
-                                        hdf5::Datatype const& memory_datatype);
+Constant           create_constant    (hdf5::Group& parent,
+                                       std::string const& name,
+                                       hdf5::Datatype const& file_datatype,
+                                       hdf5::Datatype const& memory_datatype);
 
-Constant            create_constant    (hdf5::Group& parent,
-                                        std::string const& name,
-                                        hdf5::Datatype const& file_datatype,
-                                        hdf5::Datatype const& memory_datatype,
-                                        hdf5::Shape const& value_shape);
+Constant           create_constant    (hdf5::Group& parent,
+                                       std::string const& name,
+                                       hdf5::Datatype const& file_datatype,
+                                       hdf5::Datatype const& memory_datatype,
+                                       hdf5::Shape const& value_shape);
 
 }  // namespace same_shape
 }  // namespace constant_shape
