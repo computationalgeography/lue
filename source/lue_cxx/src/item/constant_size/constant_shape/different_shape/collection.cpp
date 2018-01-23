@@ -1,9 +1,10 @@
-#include "lue/item/constant_size/collection.hpp"
+#include "lue/item/constant_size/constant_shape/different_shape/collection.hpp"
 #include "lue/tag.hpp"
 
 
 namespace lue {
 namespace constant_size {
+namespace constant_shape {
 namespace different_shape {
 
 /*!
@@ -29,5 +30,6 @@ hdf5::Group create_group(
 }
 
 }  // namespace different_shape
+}  // namespace constant_shape
 }  // namespace constant_size
 }  // namespace lue

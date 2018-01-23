@@ -4,6 +4,7 @@
 
 namespace lue {
 namespace constant_size {
+namespace constant_shape {
 namespace different_shape {
 
 hdf5::Group        create_group        (hdf5::Group const& parent,
@@ -12,5 +13,6 @@ hdf5::Group        create_group        (hdf5::Group const& parent,
                                         int rank);
 
 }  // namespace different_shape
+}  // namespace constant_shape
 }  // namespace constant_size
 }  // namespace lue

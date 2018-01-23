@@ -12,6 +12,12 @@ namespace different_shape {
     @brief      This collection manages variable item values for
                 constant sized collections of values with a different shape
 
+    Use this class if:
+    - The collection of items doesn't change through time
+    - The shape of the values don't change through time
+    - The shape of the each item's value can be different
+    - The values themselves change through time
+
     Each item's value ends up in a seperate HDF5 dataset, named after the
     item's index. All datasets have the same rank, but the size of each
     dimension may be different. Each dataset has one dimension more than the

@@ -1,5 +1,5 @@
 #include "lue/item/constant_size/constant_shape/different_shape/variable.hpp"
-#include "lue/item/constant_size/collection.hpp"
+#include "lue/item/constant_size/constant_shape/different_shape/collection.hpp"
 #include "lue/hdf5/chunk.hpp"
 #include "lue/tag.hpp"
 
@@ -276,8 +276,7 @@ Variable create_variable(
     hdf5::Datatype const& memory_datatype,
     int const rank)
 {
-    auto group = constant_size::different_shape::create_group(
-        parent, name, file_datatype, rank);
+    auto group = create_group(parent, name, file_datatype, rank);
 
     group.attributes().write<hsize_t>(nr_time_domain_items_tag, 0);
 

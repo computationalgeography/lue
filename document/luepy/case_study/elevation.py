@@ -3,17 +3,17 @@ import lue
 
 
 omnipresent = lue.constant_size.time.omnipresent
-shared = lue.constant_size.time.located.shared
+located = lue.constant_size.time.located
 
 dataset = lue.create_dataset("elevation.lue")
 phenomenon = dataset.add_phenomenon("areas")
-areas = shared.create_property_set(phenomenon, "areas")
+areas = located.create_property_set(phenomenon, "areas")
 nr_areas = 10
 
 areas.ids.reserve(nr_areas)[:] = [2, 4, 6, 8, 10, 9, 7, 5, 3, 1]
 
 # Time domain contains 1D boxes, with a resolution of 1 day
-time_domain = shared.create_time_box_domain(areas, lue.Clock(lue.unit.day, 1))
+time_domain = located.create_time_box_domain(areas, lue.Clock(lue.unit.day, 1))
 nr_time_boxes = 4
 time_boxes = time_domain.reserve(nr_time_boxes)
 # A box is defined by a begin and end time point (two coordinates per box)
@@ -26,7 +26,7 @@ time_boxes[:] = numpy.array([  # Dummy data...
         [70,  80],
     ], time_boxes.dtype)
 
-space_domain = shared.create_space_box_domain(areas, numpy.float64, rank=2)
+space_domain = located.create_space_box_domain(areas, numpy.float64, rank=2)
 space_domain.reserve(nr_areas)[:] = numpy.arange(  # Dummy data...
     nr_areas * 4, dtype=numpy.float64).reshape(nr_areas, 4)
 
@@ -56,7 +56,7 @@ space_discretization.values.reserve(nr_areas)[:] = nr_cells
 nr_cells = numpy.insert(nr_cells, 0, nr_time_steps, axis=1)
 
 # Elevation fields
-elevation = shared.constant_shape.different_shape.create_property(
+elevation = located.constant_shape.different_shape.create_property(
     areas, "elevation", numpy.float64, 3)
 values = elevation.values.reserve(nr_time_boxes, nr_cells)
 assert len(values) == nr_areas, len(values)

@@ -12,6 +12,12 @@ namespace same_shape {
     @brief      This collection manages constant item values for
                 constant sized collections of values with the same shape
 
+    Use this class if:
+    - The collection of items doesn't change through time
+    - The shape of the values don't change through time
+    - The values of all items have the same shape
+    - The values themselves don't change through time
+
     The underlying HDF5 dataset has one dimension more than the rank of the
     individual values. This first dimension represents the items.
 */
