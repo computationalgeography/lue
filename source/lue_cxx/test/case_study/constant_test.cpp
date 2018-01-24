@@ -6,7 +6,7 @@
 
 BOOST_AUTO_TEST_CASE(create_and_read_constant)
 {
-    namespace omnipresent = lue::constant_size::time::omnipresent;
+    namespace omnipresent = lue::constant_collection::time::omnipresent;
 
     std::string const dataset_name = "planets.lue";
     std::string const phenomenon_name = "planets";

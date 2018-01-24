@@ -2,8 +2,8 @@ import numpy
 import lue
 
 
-omnipresent = lue.constant_size.time.omnipresent
-located = lue.constant_size.time.located
+omnipresent = lue.constant_collection.time.omnipresent
+located = lue.constant_collection.time.located
 
 dataset = lue.create_dataset("elevation.lue")
 phenomenon = dataset.add_phenomenon("areas")

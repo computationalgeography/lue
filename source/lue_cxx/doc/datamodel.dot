@@ -158,26 +158,26 @@ digraph datamodel {
     ];
 
     same_shape1 [
-        label="constant_size::\nconstant::\nsame_shape::\nCollection"
+        label="constant_collection::\nconstant::\nsame_shape::\nCollection"
         style=""
     ];
     different_shape1 [
-        label="constant_size::\nconstant::\ndifferent_shape::\nCollection"
+        label="constant_collection::\nconstant::\ndifferent_shape::\nCollection"
         style=""
     ];
     same_shape2 [
-        label="constant_size::\nvariable::\nconstant_shape::\nsame_shape::\nCollection"
+        label="constant_collection::\nvariable::\nconstant_shape::\nsame_shape::\nCollection"
         style=""
     ];
     different_shape2 [
-        label="constant_size::\nvariable::\nconstant_shape::\ndifferent_shape::\nCollection"
+        label="constant_collection::\nvariable::\nconstant_shape::\ndifferent_shape::\nCollection"
         style=""
     ];
     same_shape3 [
-        label="constant_size::\nvariable::\nvariable_shape::\nsame_shape::\nCollection"
+        label="constant_collection::\nvariable::\nvariable_shape::\nsame_shape::\nCollection"
     ];
     different_shape3 [
-        label="constant_size::\nvariable::\nvariable_shape::\ndifferent_shape::\nCollection"
+        label="constant_collection::\nvariable::\nvariable_shape::\ndifferent_shape::\nCollection"
     ];
 
 

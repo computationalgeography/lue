@@ -29,49 +29,49 @@ add_library(lue STATIC
 
     src/compound/clock
 
-    src/constant_size/domain
-    src/constant_size/property
-    src/constant_size/property_set
-    src/constant_size/space_domain
-    # src/constant_size/value
-    src/constant_size/validate
+    src/constant_collection/domain
+    src/constant_collection/property
+    src/constant_collection/property_set
+    src/constant_collection/space_domain
+    # src/constant_collection/value
+    src/constant_collection/validate
 
-    src/constant_size/time/omnipresent/domain
-    src/constant_size/time/omnipresent/property
-    src/constant_size/time/omnipresent/property_set
-    src/constant_size/time/omnipresent/space_box_domain
-    src/constant_size/time/omnipresent/space_domain
-    src/constant_size/time/omnipresent/space_point_domain
-    # src/constant_size/time/omnipresent/value
-    src/constant_size/time/omnipresent/validate
+    src/constant_collection/time/omnipresent/domain
+    src/constant_collection/time/omnipresent/property
+    src/constant_collection/time/omnipresent/property_set
+    src/constant_collection/time/omnipresent/space_box_domain
+    src/constant_collection/time/omnipresent/space_domain
+    src/constant_collection/time/omnipresent/space_point_domain
+    # src/constant_collection/time/omnipresent/value
+    src/constant_collection/time/omnipresent/validate
 
-    src/constant_size/time/omnipresent/different_shape/property
-    src/constant_size/time/omnipresent/different_shape/value
+    src/constant_collection/time/omnipresent/different_shape/property
+    src/constant_collection/time/omnipresent/different_shape/value
 
-    src/constant_size/time/omnipresent/same_shape/property
-    src/constant_size/time/omnipresent/same_shape/value
+    src/constant_collection/time/omnipresent/same_shape/property
+    src/constant_collection/time/omnipresent/same_shape/value
 
-    src/constant_size/time/located/domain
-    src/constant_size/time/located/property
-    src/constant_size/time/located/property_set
-    src/constant_size/time/located/space_box_domain
-    src/constant_size/time/located/space_domain
-    src/constant_size/time/located/time_domain
-    src/constant_size/time/located/time_box_domain
-    src/constant_size/time/located/validate
+    src/constant_collection/time/located/domain
+    src/constant_collection/time/located/property
+    src/constant_collection/time/located/property_set
+    src/constant_collection/time/located/space_box_domain
+    src/constant_collection/time/located/space_domain
+    src/constant_collection/time/located/time_domain
+    src/constant_collection/time/located/time_box_domain
+    src/constant_collection/time/located/validate
 
-    src/constant_size/time/located/constant_shape/property
-    src/constant_size/time/located/constant_shape/different_shape/property
-    src/constant_size/time/located/constant_shape/different_shape/value
-    src/constant_size/time/located/constant_shape/same_shape/property
-    src/constant_size/time/located/constant_shape/same_shape/value
+    src/constant_collection/time/located/constant_shape/property
+    src/constant_collection/time/located/constant_shape/different_shape/property
+    src/constant_collection/time/located/constant_shape/different_shape/value
+    src/constant_collection/time/located/constant_shape/same_shape/property
+    src/constant_collection/time/located/constant_shape/same_shape/value
 
     src/item/configuration
-    src/item/constant_size/constant_shape/different_shape/collection
-    src/item/constant_size/constant_shape/different_shape/constant
-    src/item/constant_size/constant_shape/different_shape/variable
-    src/item/constant_size/constant_shape/same_shape/constant
-    src/item/constant_size/constant_shape/same_shape/variable
+    src/item/constant_collection/constant_shape/different_shape/collection
+    src/item/constant_collection/constant_shape/different_shape/constant
+    src/item/constant_collection/constant_shape/different_shape/variable
+    src/item/constant_collection/constant_shape/same_shape/constant
+    src/item/constant_collection/constant_shape/same_shape/variable
 )
 
 add_library(lue::lue ALIAS lue)

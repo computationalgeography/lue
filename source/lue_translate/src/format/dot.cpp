@@ -1,10 +1,10 @@
 #include "lue/translate/format/dot.hpp"
-#include "lue/constant_size/time/located/property_set.hpp"
-#include "lue/constant_size/time/located/constant_shape/property.hpp"
-#include "lue/constant_size/time/located/time_box_domain.hpp"
-#include "lue/constant_size/time/omnipresent/different_shape/property.hpp"
-#include "lue/constant_size/time/omnipresent/property_set.hpp"
-#include "lue/constant_size/time/omnipresent/same_shape/property.hpp"
+#include "lue/constant_collection/time/located/property_set.hpp"
+#include "lue/constant_collection/time/located/constant_shape/property.hpp"
+#include "lue/constant_collection/time/located/time_box_domain.hpp"
+#include "lue/constant_collection/time/omnipresent/different_shape/property.hpp"
+#include "lue/constant_collection/time/omnipresent/property_set.hpp"
+#include "lue/constant_collection/time/omnipresent/same_shape/property.hpp"
 #include "lue/space_domain.hpp"
 #include <boost/format.hpp>
 #include <boost/algorithm/string.hpp>
@@ -279,7 +279,7 @@ void to_dot(
 }
 
 
-namespace constant_size {
+namespace constant_collection {
 namespace time {
 namespace omnipresent {
 namespace same_shape {
@@ -717,7 +717,7 @@ void to_dot(
 //         );
 }
 
-}  // namespace constant_size
+}  // namespace constant_collection
 
 
 /*!
@@ -734,10 +734,10 @@ void to_dot(
 
     switch(configuration.size_of_item_collection_type()) {
 
-        case(SizeOfItemCollectionType::constant_size): {
+        case(SizeOfItemCollectionType::constant_collection): {
 
             to_dot(
-                constant_size::PropertySet(property_set.id()),
+                constant_collection::PropertySet(property_set.id()),
                 stream, metadata);
 
         }

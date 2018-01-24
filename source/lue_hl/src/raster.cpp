@@ -1,5 +1,5 @@
 #include "lue/hl/raster.hpp"
-#include "lue/constant_size/time/omnipresent/space_box_domain.hpp"
+#include "lue/constant_collection/time/omnipresent/space_box_domain.hpp"
 #include "lue/hdf5/datatype_traits.hpp"
 
 

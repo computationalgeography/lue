@@ -1,7 +1,7 @@
 #pragma once
-#include "lue/constant_size/time/located/property_set.hpp"
-#include "lue/constant_size/time/located/constant_shape/different_shape/property.hpp"
-#include "lue/constant_size/time/omnipresent/same_shape/property.hpp"
+#include "lue/constant_collection/time/located/property_set.hpp"
+#include "lue/constant_collection/time/located/constant_shape/different_shape/property.hpp"
+#include "lue/constant_collection/time/omnipresent/same_shape/property.hpp"
 #include "lue/hl/raster_stack_discretization.hpp"
 #include "lue/hl/raster_stack_domain.hpp"
 #include "lue/dataset.hpp"
@@ -10,8 +10,8 @@
 namespace lue {
 namespace hl {
 
-namespace omnipresent = constant_size::time::omnipresent;
-namespace located = constant_size::time::located;
+namespace omnipresent = constant_collection::time::omnipresent;
+namespace located = constant_collection::time::located;
 
 
 class RasterStack

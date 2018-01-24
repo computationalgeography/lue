@@ -4,7 +4,7 @@ import lue
 
 # In this example we assume that the collection of items remains constant,
 # and that the shape of all item-values is the same.
-omnipresent = lue.constant_size.time.omnipresent
+omnipresent = lue.constant_collection.time.omnipresent
 
 dataset = lue.create_dataset("planets.lue")
 planets = dataset.add_phenomenon("planets")

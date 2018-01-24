@@ -1,16 +1,16 @@
 #pragma once
 #include "lue/hl/raster_discretization.hpp"
 #include "lue/hl/raster_domain.hpp"
-#include "lue/constant_size/time/omnipresent/different_shape/property.hpp"
-#include "lue/constant_size/time/omnipresent/same_shape/property.hpp"
-#include "lue/constant_size/time/omnipresent/property_set.hpp"
+#include "lue/constant_collection/time/omnipresent/different_shape/property.hpp"
+#include "lue/constant_collection/time/omnipresent/same_shape/property.hpp"
+#include "lue/constant_collection/time/omnipresent/property_set.hpp"
 #include "lue/dataset.hpp"
 
 
 namespace lue {
 namespace hl {
 
-namespace omnipresent = constant_size::time::omnipresent;
+namespace omnipresent = constant_collection::time::omnipresent;
 
 
 class Raster

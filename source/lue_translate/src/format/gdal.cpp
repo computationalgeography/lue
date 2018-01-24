@@ -2,8 +2,8 @@
 #include "lue/translate/format/gdal_block.hpp"
 #include "lue/translate/format/gdal_stacks.hpp"
 #include "lue/utility/progress_indicator.hpp"
-#include "lue/constant_size/time/omnipresent/space_box_domain.hpp"
-#include "lue/constant_size/time/omnipresent/space_point_domain.hpp"
+#include "lue/constant_collection/time/omnipresent/space_box_domain.hpp"
+#include "lue/constant_collection/time/omnipresent/space_point_domain.hpp"
 #include "lue/hl/raster.hpp"
 #include "lue/hl/raster_stack.hpp"
 #include <ogrsf_frmts.h>
@@ -405,7 +405,7 @@ void translate_lue_dataset_to_shapefile(
     auto const& property_set_configuration = property_set.configuration();
 
     if(property_set_configuration.size_of_item_collection_type() !=
-            SizeOfItemCollectionType::constant_size) {
+            SizeOfItemCollectionType::constant_collection) {
         throw std::runtime_error("Size of item collection must be constant");
     }
 
@@ -442,7 +442,7 @@ void translate_lue_dataset_to_shapefile(
     // Create correct property set type
     {
         auto const property_set_ =
-           constant_size::time::omnipresent::PropertySet(property_set.id());
+           constant_collection::time::omnipresent::PropertySet(property_set.id());
         auto const& domain = property_set.domain();
 
         if(!space_domain_exists(domain)) {
@@ -450,7 +450,7 @@ void translate_lue_dataset_to_shapefile(
         }
 
         auto space_domain =
-           constant_size::time::omnipresent::SpaceDomain(domain);
+           constant_collection::time::omnipresent::SpaceDomain(domain);
 
         if(space_domain.configuration().domain_type() !=
                 SpaceDomain::Configuration::DomainType::located) {
@@ -459,7 +459,7 @@ void translate_lue_dataset_to_shapefile(
 
         switch(space_domain.configuration().item_type()) {
             case SpaceDomain::Configuration::ItemType::box: {
-                constant_size::time::omnipresent::SpaceBoxDomain
+                constant_collection::time::omnipresent::SpaceBoxDomain
                     space_box_domain(std::move(space_domain));
 
                 OGRwkbGeometryType const geometry_type = wkbPolygon;
@@ -527,7 +527,7 @@ void translate_lue_dataset_to_shapefile(
                 break;
             }
             case SpaceDomain::Configuration::ItemType::point: {
-                constant_size::time::omnipresent::SpacePointDomain
+                constant_collection::time::omnipresent::SpacePointDomain
                     space_point_domain(std::move(space_domain));
 
                 OGRwkbGeometryType const geometry_type = wkbPoint;

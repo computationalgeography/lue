@@ -21,11 +21,11 @@ void init_space_domain_class(py::module& module);
 void init_time_domain(py::module& module);
 void init_universe_class(py::module& module);
 
-namespace constant_size {
+namespace constant_collection {
 
 void init_submodule(py::module& module);
 
-}  // namespace constant_size
+}  // namespace constant_collection
 
 
 namespace hdf5 {
@@ -57,7 +57,7 @@ PYBIND11_MODULE(lue, module)
 
     .. automodule:: lue.hdf5
 
-    .. automodule:: lue.constant_size
+    .. automodule:: lue.constant_collection
 )";
     module.attr("__version__") = py::str(LUE_VERSION);
 
@@ -89,7 +89,7 @@ PYBIND11_MODULE(lue, module)
     init_universe_class(module);
     init_dataset_class(module);
 
-    constant_size::init_submodule(module);
+    constant_collection::init_submodule(module);
 
 
     module.ptr();

@@ -1,8 +1,8 @@
 #include "lue/hl/raster_stack.hpp"
-#include "lue/constant_size/time/located/time_box_domain.hpp"
-#include "lue/constant_size/time/located/constant_shape/same_shape/property.hpp"
-#include "lue/constant_size/time/omnipresent/property_set.hpp"
-#include "lue/constant_size/time/omnipresent/space_box_domain.hpp"
+#include "lue/constant_collection/time/located/time_box_domain.hpp"
+#include "lue/constant_collection/time/located/constant_shape/same_shape/property.hpp"
+#include "lue/constant_collection/time/omnipresent/property_set.hpp"
+#include "lue/constant_collection/time/omnipresent/space_box_domain.hpp"
 // #include "lue/hdf5/datatype_traits.hpp"
 #include <numeric>
 

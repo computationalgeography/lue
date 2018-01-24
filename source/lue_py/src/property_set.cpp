@@ -1,8 +1,8 @@
 #include "collection.hpp"
 #include "lue/property_sets.hpp"
 #include "lue/time_domain.hpp"
-#include "lue/constant_size/time/located/property_set.hpp"
-#include "lue/constant_size/time/omnipresent/property_set.hpp"
+#include "lue/constant_collection/time/located/property_set.hpp"
+#include "lue/constant_collection/time/omnipresent/property_set.hpp"
 #include <pybind11/pybind11.h>
 // #include <iostream>
 // #include "lue/python_api/numpy.h"
@@ -53,14 +53,14 @@ void init_property_set_class(
 
                 switch(configuration.size_of_item_collection_type()) {
 
-                    case SizeOfItemCollectionType::constant_size: {
+                    case SizeOfItemCollectionType::constant_collection: {
 
                         switch(domain_configuration.domain_type()) {
 
                             case Domain::Configuration::DomainType::
                                     omnipresent: {
                                 object = py::cast(new
-                                    constant_size::time::omnipresent::
+                                    constant_collection::time::omnipresent::
                                         PropertySet(property_set.id()));
                                 break;
                             }
@@ -68,7 +68,7 @@ void init_property_set_class(
                             case Domain::Configuration::DomainType::
                                     located: {
                                 object = py::cast(new
-                                    constant_size::time::located::PropertySet(
+                                    constant_collection::time::located::PropertySet(
                                         hdf5::Group{property_set.id()}));
                                 break;
                             }
@@ -105,7 +105,7 @@ void init_property_set_class(
 
     // py::enum_<SizeOfItemCollectionType>(module, "size_of_item_collection",
     //     "size_of_item_collection docstring...")
-    //     .value("constant", SizeOfItemCollectionType::constant_size)
+    //     .value("constant", SizeOfItemCollectionType::constant_collection)
     // ;
 
 

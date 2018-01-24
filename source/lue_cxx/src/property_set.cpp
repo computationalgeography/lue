@@ -1,8 +1,8 @@
 #include "lue/property_set.hpp"
 #include "lue/enum_string_bimap.hpp"
-// #include "lue/cxx_api/constant_size/time/omnipresent/property_set.h"
-// #include "lue/cxx_api/constant_size/time/shared/property_set.h"
-// #include "lue/cxx_api/constant_size/time/shared/time_period_domain.h"
+// #include "lue/cxx_api/constant_collection/time/omnipresent/property_set.h"
+// #include "lue/cxx_api/constant_collection/time/shared/property_set.h"
+// #include "lue/cxx_api/constant_collection/time/shared/time_period_domain.h"
 // #include "lue/cxx_api/domain_configuration.h"
 // #include "lue/cxx_api/exception.h"
 // #include "lue/c_api/domain.h"
@@ -17,8 +17,8 @@ namespace {
 
 detail::EnumStringBimap<SizeOfItemCollectionType> const
         size_of_item_collection_type_map = {
-    { SizeOfItemCollectionType::constant_size, "lue_constant_size" },
-    // { SizeOfItemCollectionType::variable_size, "lue_variable_size" }
+    { SizeOfItemCollectionType::constant_collection, "lue_constant_collection" },
+    // { SizeOfItemCollectionType::variable_collection, "lue_variable_size" }
 };
 
 
@@ -314,22 +314,22 @@ PropertySet create_property_set(
 
     // // TODO
     // assert(configuration.size_of_item_collection_type() ==
-    //     SizeOfItemCollectionType::constant_size);
+    //     SizeOfItemCollectionType::constant_collection);
 
     // switch(time_configuration.type()) {
     //     case TimeDomainType::omnipresent: {
-    //         constant_size::time::omnipresent::configure_property_set(
+    //         constant_collection::time::omnipresent::configure_property_set(
     //             property_set_location, name, space_configuration);
     //         break;
     //     }
     //     case TimeDomainType::shared: {
-    //         constant_size::time::shared::configure_property_set(
+    //         constant_collection::time::shared::configure_property_set(
     //             property_set_location, name, space_configuration);
 
     //         hid_t const file_type_id = H5T_STD_I32LE;
     //         hid_t const memory_type_id = H5T_NATIVE_INT32;
 
-    //         constant_size::time::shared::configure_time_period_domain(
+    //         constant_collection::time::shared::configure_time_period_domain(
     //             domain.time_domain().id(), file_type_id, memory_type_id);
 
     //         break;

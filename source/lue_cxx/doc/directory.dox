@@ -13,9 +13,9 @@
     - **→ Does the number of items change over time (collection size
         variability)?**
         - *no*
-            - **constant_size**
+            - **constant_collection**
         - *yes*
-            - **variable_size**
+            - **variable_collection**
 
     - **→ Do values change over time (value variability)?**
 
@@ -57,7 +57,7 @@
 
     aspect | options
     ------ | -------
-    collection size variability | constant_size, variable_size
+    collection size variability | constant_collection, variable_collection
     value variability | constant, variable
     shape variability | constant_shape, variable_shape
     shape | same_shape, different_shape
@@ -68,20 +68,20 @@
 
     A collection represents all item values. Collections differ because
     of different combinations of aspects.
-    - lue::constant_size::constant_shape::same_shape::Constant
-    - lue::constant_size::constant_shape::same_shape::Variable
-    - lue::constant_size::constant_shape::different_shape::Constant
-    - lue::constant_size::constant_shape::different_shape::Variable
-    - lue::constant_size::variable_shape::same_shape::Constant
-    - lue::constant_size::variable_shape::same_shape::Variable
-    - lue::constant_size::variable_shape::different_shape::Constant
-    - lue::constant_size::variable_shape::different_shape::Variable
-    - lue::variable_size::constant_shape::same_shape::Constant
-    - lue::variable_size::constant_shape::same_shape::Variable
-    - lue::variable_size::constant_shape::different_shape::Constant
-    - lue::variable_size::constant_shape::different_shape::Variable
-    - lue::variable_size::variable_shape::same_shape::Constant
-    - lue::variable_size::variable_shape::same_shape::Variable
-    - lue::variable_size::variable_shape::different_shape::Constant
-    - lue::variable_size::variable_shape::different_shape::Variable
+    - lue::constant_collection::constant_shape::same_shape::Constant
+    - lue::constant_collection::constant_shape::same_shape::Variable
+    - lue::constant_collection::constant_shape::different_shape::Constant
+    - lue::constant_collection::constant_shape::different_shape::Variable
+    - lue::constant_collection::variable_shape::same_shape::Constant
+    - lue::constant_collection::variable_shape::same_shape::Variable
+    - lue::constant_collection::variable_shape::different_shape::Constant
+    - lue::constant_collection::variable_shape::different_shape::Variable
+    - lue::variable_collection::constant_shape::same_shape::Constant
+    - lue::variable_collection::constant_shape::same_shape::Variable
+    - lue::variable_collection::constant_shape::different_shape::Constant
+    - lue::variable_collection::constant_shape::different_shape::Variable
+    - lue::variable_collection::variable_shape::same_shape::Constant
+    - lue::variable_collection::variable_shape::same_shape::Variable
+    - lue::variable_collection::variable_shape::different_shape::Constant
+    - lue::variable_collection::variable_shape::different_shape::Variable
 */

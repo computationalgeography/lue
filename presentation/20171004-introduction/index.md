@@ -99,7 +99,7 @@ phenomenon = dataset.add_phenomenon("planets")
 ```python
 # ... Stuff from previous slide ...
 
-omnipresent = lue.constant_size.time.omnipresent
+omnipresent = lue.constant_collection.time.omnipresent
 constants = omnipresent.create_property_set(phenomenon, "constants")
 nr_planets = 3
 

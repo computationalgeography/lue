@@ -1,5 +1,5 @@
 #include "lue/validate.hpp"
-#include "lue/constant_size/validate.hpp"
+#include "lue/constant_collection/validate.hpp"
 #include "lue/dataset.hpp"
 #include "lue/tag.hpp"
 #include "lue/hdf5/validate.hpp"
@@ -69,8 +69,8 @@ void validate(
 
     switch(configuration.size_of_item_collection_type()) {
 
-        case(SizeOfItemCollectionType::constant_size): {
-            constant_size::validate(constant_size::PropertySet(
+        case(SizeOfItemCollectionType::constant_collection): {
+            constant_collection::validate(constant_collection::PropertySet(
                 property_set.id()), issues);
             break;
         }

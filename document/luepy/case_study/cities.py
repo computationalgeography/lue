@@ -2,7 +2,7 @@ import numpy
 import lue
 
 
-omnipresent = lue.constant_size.time.omnipresent
+omnipresent = lue.constant_collection.time.omnipresent
 
 dataset = lue.create_dataset("cities.lue")
 phenomenon = dataset.add_phenomenon("cities")

@@ -7,14 +7,14 @@ namespace lue {
 /*!
     @brief      Code related to constant sized collections of items
 */
-namespace constant_size {
+namespace constant_collection {
 }
 
 
 /*!
     @brief      Code related to variable sized collections of items
 */
-namespace variable_size {
+namespace variable_collection {
 }
 
 }

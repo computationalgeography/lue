@@ -1,8 +1,8 @@
 #include "lue/hl/time_series.hpp"
-#include "lue/constant_size/time/located/time_box_domain.hpp"
-#include "lue/constant_size/time/omnipresent/property_set.hpp"
-#include "lue/constant_size/time/omnipresent/same_shape/property.hpp"
-#include "lue/constant_size/time/omnipresent/space_point_domain.hpp"
+#include "lue/constant_collection/time/located/time_box_domain.hpp"
+#include "lue/constant_collection/time/omnipresent/property_set.hpp"
+#include "lue/constant_collection/time/omnipresent/same_shape/property.hpp"
+#include "lue/constant_collection/time/omnipresent/space_point_domain.hpp"
 #include <numeric>
 
 
@@ -17,7 +17,7 @@ std::string const time_discretization_property_name = "nr_steps";
 
 }  // Anonymous namespace
 
-namespace omnipresent = constant_size::time::omnipresent;
+namespace omnipresent = constant_collection::time::omnipresent;
 
 
 TimeSeries::SpaceDomain::SpaceDomain()

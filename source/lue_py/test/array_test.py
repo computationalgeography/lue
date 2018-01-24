@@ -5,7 +5,7 @@ import lue
 import lue_test
 
 
-omnipresent = lue.constant_size.time.omnipresent
+omnipresent = lue.constant_collection.time.omnipresent
 
 
 class ArrayTest(lue_test.TestCase):

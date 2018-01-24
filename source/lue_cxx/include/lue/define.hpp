@@ -47,8 +47,8 @@ namespace lue {
 //     shared = 8,
 //     unique = 16,
 // 
-//     // constant_size = 32,
-//     // variable_size = 64
+//     // constant_collection = 32,
+//     // variable_collection = 64
 // 
 // };
 
@@ -99,10 +99,10 @@ enum class SizeOfItemCollectionType
 {
 
     //! The collection of items remains constant through time
-    constant_size,
+    constant_collection,
 
     // //! The collection of items is variable through time
-    // variable_size
+    // variable_collection
 
 };
 
@@ -122,22 +122,22 @@ enum class SizeOfItemCollectionType
 //     // shared_constant_collection = static_cast<int>(
 //     //     TimeDomainTypeAspects::located |
 //     //     TimeDomainTypeAspects::shared) //  |
-//     //     // TimeDomainTypeAspects::constant_size),
+//     //     // TimeDomainTypeAspects::constant_collection),
 // 
 //     // shared_variable_collection = static_cast<int>(
 //     //     TimeDomainTypeAspects::located |
 //     //     TimeDomainTypeAspects::shared |
-//     //     TimeDomainTypeAspects::variable_size),
+//     //     TimeDomainTypeAspects::variable_collection),
 // 
 //     // unique_constant_collection = static_cast<int>(
 //     //     TimeDomainTypeAspects::located |
 //     //     TimeDomainTypeAspects::unique |
-//     //     TimeDomainTypeAspects::constant_size),
+//     //     TimeDomainTypeAspects::constant_collection),
 // 
 //     // unique_variable_collection = static_cast<int>(
 //     //     TimeDomainTypeAspects::located |
 //     //     TimeDomainTypeAspects::unique |
-//     //     TimeDomainTypeAspects::variable_size)
+//     //     TimeDomainTypeAspects::variable_collection)
 // 
 // };
 

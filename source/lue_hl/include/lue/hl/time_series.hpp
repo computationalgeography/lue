@@ -1,7 +1,7 @@
 #pragma once
 #include "lue/hl/time_series_discretization.hpp"
 #include "lue/hl/time_series_domain.hpp"
-#include "lue/constant_size/time/located/constant_shape/same_shape/property.hpp"
+#include "lue/constant_collection/time/located/constant_shape/same_shape/property.hpp"
 #include "lue/dataset.hpp"
 #include <vector>
 
@@ -9,7 +9,7 @@
 namespace lue {
 namespace hl {
 
-namespace located = constant_size::time::located;
+namespace located = constant_collection::time::located;
 
 
 class TimeSeries
