@@ -1,6 +1,7 @@
 /*!
     @dir    include/lue/item
     @brief  This directory contains code for storing information per item
+    @todo   Update item hierarchy to support domain sharing?
 
     The information stored for a collection of items differs with
     respect to various aspects, whatever the information is that needs
@@ -8,10 +9,9 @@
     stored about its id, location in time, location in space, property
     values, etc. This directory contains code for storing information for
     collections of items, given a certain combination of aspects. Aspects
-    that differ between collection of items are:
+    that differ between collections of items are:
 
-    - **→ Does the number of items change over time (collection size
-        variability)?**
+    - **→ Does the item collection change over time (collection variability)?**
         - *no*
             - **constant_collection**
         - *yes*
@@ -58,9 +58,9 @@
     aspect | options
     ------ | -------
     collection size variability | constant_collection, variable_collection
-    value variability | constant, variable
     shape variability | constant_shape, variable_shape
     shape | same_shape, different_shape
+    value variability | constant, variable
 
     Taxonomy of item values:
     - <collection_size_variability>/<value_variability>/<shape_variability>/<shape>
@@ -84,4 +84,119 @@
     - lue::variable_collection::variable_shape::same_shape::Variable
     - lue::variable_collection::variable_shape::different_shape::Constant
     - lue::variable_collection::variable_shape::different_shape::Variable
+*/
+
+
+/*!
+    @dir    include/lue/space
+    @brief  This directory contains code for storing space domain items
+
+    Space domain items differs with respect to various aspects.
+    This directory contains code for storing space domain information for
+    collections of items, given a certain combination of aspects. Aspects
+    that differ between collections of space domain items are:
+
+    - **→ Does the item collection change over time (collection variability)?**
+        - *no*
+            - **constant_collection**
+        - *yes*
+            - **variable_collection**
+
+    - **→ Does each item have a unique location in time?  (time domain sharing)?**
+        - *no*
+            - **shared_time**
+        - *yes*
+            - **unique_time**
+
+    - **→ Does each item have a unique location in space?  (space domain sharing)?**
+        - *no*
+            - **shared_space**
+        - *yes*
+            - **unique_space**
+
+    - **→ Do items move through space (mobility)?**
+        - *no*
+            - **stationary**
+        - *yes*
+            - **mobile**
+
+
+    Resulting collection types of item-related information:
+
+    aspect | options
+    ------ | -------
+    collection size variability | constant_collection, variable_collection
+    time domain sharing | shared_time, unique_time
+    space domain sharing | shared_space, unique_space
+    mobility | stationary, mobile
+
+    Taxonomy of item values:
+    - <collection_size_variability>/<time_domain_sharing>/<space_domain_sharing>/<mobility>
+
+    A collection represents all space domain items. Collections differ because
+    of different combinations of aspects.
+    - lue::constant_collection::shared_time::shared_space::stationary::Point
+    - lue::constant_collection::shared_time::shared_space::mobile::Point
+    - lue::constant_collection::shared_time::unique_space::stationary::Point
+    - lue::constant_collection::shared_time::unique_space::mobile::Point
+    - lue::constant_collection::unique_time::shared_space::stationary::Point
+    - lue::constant_collection::unique_time::shared_space::mobile::Point
+    - lue::constant_collection::unique_time::unique_space::stationary::Point
+    - lue::constant_collection::unique_time::unique_space::mobile::Point
+    - lue::variable_collection::shared_time::shared_space::stationary::Point
+    - lue::variable_collection::shared_time::shared_space::mobile::Point
+    - lue::variable_collection::shared_time::unique_space::stationary::Point
+    - lue::variable_collection::shared_time::unique_space::mobile::Point
+    - lue::variable_collection::unique_time::shared_space::stationary::Point
+    - lue::variable_collection::unique_time::shared_space::mobile::Point
+    - lue::variable_collection::unique_time::unique_space::stationary::Point
+    - lue::variable_collection::unique_time::unique_space::mobile::Point
+*/
+
+
+/*!
+    @dir    include/lue/time
+    @brief  This directory contains code for storing time domain items
+
+    Time domain items differs with respect to various aspects.
+    This directory contains code for storing time domain information for
+    collections of items, given a certain combination of aspects. Aspects
+    that differ between collections of space domain items are:
+
+    - **→ Does the item collection change over time (collection variability)?**
+        - *no*
+            - **constant_collection**
+        - *yes*
+            - **variable_collection**
+
+    - **→ Does each item have a unique location in time?  (time domain sharing)?**
+        - *no*
+            - **shared_time**
+        - *yes*
+            - **unique_time**
+
+
+    Resulting collection types of item-related information:
+
+    aspect | options
+    ------ | -------
+    collection size variability | constant_collection, variable_collection
+    time domain sharing | shared_time, unique_time
+
+    Taxonomy of item values:
+    - <collection_size_variability>/<time_domain_sharing>
+
+    A collection represents all time domain items. Collections differ because
+    of different combinations of aspects.
+    - lue::constant_collection::shared_time::Point
+        - `nr_items (time domain) = 1`
+        - `nr_values = nr_time_points`
+        - Inherits lue::constant_collection::constant_shape::same_shape::Variable
+    - lue::constant_collection::unique_time::Point
+        - `nr_items (time domain) = nr_items (property set)`
+        - `nr_values (unique per item) = nr_time_points (unique per item)`
+        - Inherits lue::constant_collection::constant_shape::different_shape::Variable
+        - Different shape because the number of time items differs per item
+    - lue::variable_collection::shared_time::Point
+    - lue::variable_collection::unique_time::Point
 */
