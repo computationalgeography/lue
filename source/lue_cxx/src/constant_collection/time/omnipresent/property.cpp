@@ -18,7 +18,7 @@ Property::Property(
 Property create_property(
     hdf5::Group& group,
     std::string const& name,
-    Configuration const& configuration)
+    ItemConfiguration const& configuration)
 {
     return Property{
         constant_collection::create_property(group, name, configuration)};

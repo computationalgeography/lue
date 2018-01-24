@@ -53,7 +53,7 @@ void init_property_set_class(
 
                 switch(configuration.size_of_item_collection_type()) {
 
-                    case SizeOfItemCollectionType::constant_collection: {
+                    case CollectionVariability::constant: {
 
                         switch(domain_configuration.domain_type()) {
 
@@ -103,15 +103,15 @@ void init_property_set_class(
         ;
 
 
-    // py::enum_<SizeOfItemCollectionType>(module, "size_of_item_collection",
+    // py::enum_<CollectionVariability>(module, "size_of_item_collection",
     //     "size_of_item_collection docstring...")
-    //     .value("constant", SizeOfItemCollectionType::constant_collection)
+    //     .value("constant", CollectionVariability::constant)
     // ;
 
 
     // py::class_<PropertySetConfiguration>(module, "PropertySetConfiguration",
     //     "PropertySetConfiguration docstring...")
-    //     .def(py::init<SizeOfItemCollectionType const>(),
+    //     .def(py::init<CollectionVariability const>(),
     //         "__init__ docstring...",
     //         "type"_a)
     //     .def_property_readonly("size_of_item_collection_type",

@@ -54,7 +54,7 @@ PropertySet create_property_set(
 {
     auto property_set = lue::create_property_set(
         group, name,
-        PropertySet::Configuration{SizeOfItemCollectionType::constant_collection},
+        PropertySet::Configuration{CollectionVariability::constant},
         domain_configuration);
 
     constant_shape::same_shape::create_constant(
@@ -73,7 +73,7 @@ PropertySet create_property_set(
 {
     auto property_set = lue::create_property_set(
         group, name,
-        PropertySet::Configuration{SizeOfItemCollectionType::constant_collection},
+        PropertySet::Configuration{CollectionVariability::constant},
         domain_configuration);
 
     // TODO assert

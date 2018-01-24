@@ -31,7 +31,7 @@ Property::Property(
 }
 
 
-Configuration const& Property::configuration() const
+ItemConfiguration const& Property::configuration() const
 {
     return _configuration;
 }
@@ -59,7 +59,7 @@ Property Property::space_discretization() const
 Property create_property(
     hdf5::Group const& parent,
     std::string const& name,
-    Configuration const& configuration)
+    ItemConfiguration const& configuration)
 {
     auto group = hdf5::create_group(parent, name);
 

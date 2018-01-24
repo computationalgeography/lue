@@ -1,5 +1,4 @@
 #pragma once
-#include "lue/define.hpp"
 #include "lue/domain.hpp"
 #include "lue/properties.hpp"
 #include "lue/hdf5/group.hpp"
@@ -31,20 +30,20 @@ public:
 
     public:
 
-                   Configuration       (SizeOfItemCollectionType const type);
+                   Configuration       (CollectionVariability const type);
 
                    Configuration       (hdf5::Attributes const& attributes);
 
                    ~Configuration      ()=default;
 
-        SizeOfItemCollectionType
+        CollectionVariability
                    size_of_item_collection_type() const;
 
         void       save                (hdf5::Attributes& attributes) const;
 
     private:
 
-        SizeOfItemCollectionType
+        CollectionVariability
                    _size_of_item_collection_type;
 
         void       load                (hdf5::Attributes const& attributes);

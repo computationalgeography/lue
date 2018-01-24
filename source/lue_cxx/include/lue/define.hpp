@@ -1,8 +1,75 @@
 #pragma once
-#include <hdf5.h>
+// #include <hdf5.h>
 
 
 namespace lue {
+
+/*!
+    @brief      Does the collection of items change through time
+*/
+enum class CollectionVariability
+{
+
+    //! Collection of items doesn't change through time
+    constant
+
+};
+
+
+enum class ShapeVariability
+{
+
+    //! Shape of property values doesn't change through time
+    constant
+
+};
+
+
+/*!
+    @brief      The shape of the value of different items can be the
+                same or different
+*/
+enum class ShapePerItem
+{
+
+    //! The value of all items have the same shape
+    same,
+
+    //! The value of all items have a different shape (potentially)
+    different
+
+};
+
+
+/*!
+    @brief      Does the value of property values change through time
+*/
+enum class ValueVariability
+{
+
+    //! Item values don't change through time
+    constant,
+
+    //! Item values change through time
+    variable
+
+};
+
+
+/*!
+    @brief      Space domain items can be stationary or mobile through time
+
+    This is only relevant in case the time domain is not omnipresent.
+*/
+enum class Mobility
+{
+    //! Space domain items stay in the same location for the whole time domain
+    stationary,
+
+    // //! Space domain items move around through time
+    // mobile
+};
+
 
 // using item_t = lue_item_t;
 // 
@@ -70,7 +137,7 @@ namespace lue {
 // 
 // };
 
-}  // namespace lue
+// }  // namespace lue
 
 
 // template<>
@@ -87,24 +154,24 @@ namespace lue {
 // };
 
 
-namespace lue {
-
-/*!
-    @brief      The size of the item collection can be constant or variable
-                through time
-    @warning    The size of the item collection cannot be variable in
-                case the time domain type is omnipresent.
-*/
-enum class SizeOfItemCollectionType
-{
-
-    //! The collection of items remains constant through time
-    constant_collection,
-
-    // //! The collection of items is variable through time
-    // variable_collection
-
-};
+// namespace lue {
+// 
+// /*!
+//     @brief      The size of the item collection can be constant or variable
+//                 through time
+//     @warning    The size of the item collection cannot be variable in
+//                 case the time domain type is omnipresent.
+// */
+// enum class SizeOfItemCollectionType
+// {
+// 
+//     //! The collection of items remains constant through time
+//     constant_collection,
+// 
+//     // //! The collection of items is variable through time
+//     // variable_collection
+// 
+// };
 
 
 // enum class TimeDomainType  // : int
@@ -164,22 +231,6 @@ enum class SizeOfItemCollectionType
 //     located
 // 
 // };
-// 
-// 
-// /*!
-//     @brief      Space domain items can be stationary or mobile through time
-// 
-//     This is only relevant in case the time domain is not omnipresent.
-// */
-// enum class Mobility
-// {
-//     //! Space domain items stay in the same location for the whole time domain
-//     stationary,
-// 
-//     //! Space domain items move around through time
-//     mobile
-// };
-// 
 // 
 // enum class SpaceDomainItemType
 // {

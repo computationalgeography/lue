@@ -405,7 +405,7 @@ void translate_lue_dataset_to_shapefile(
     auto const& property_set_configuration = property_set.configuration();
 
     if(property_set_configuration.size_of_item_collection_type() !=
-            SizeOfItemCollectionType::constant_collection) {
+            CollectionVariability::constant) {
         throw std::runtime_error("Size of item collection must be constant");
     }
 

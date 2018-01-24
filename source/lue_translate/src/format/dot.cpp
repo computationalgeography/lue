@@ -734,7 +734,7 @@ void to_dot(
 
     switch(configuration.size_of_item_collection_type()) {
 
-        case(SizeOfItemCollectionType::constant_collection): {
+        case(CollectionVariability::constant): {
 
             to_dot(
                 constant_collection::PropertySet(property_set.id()),

@@ -15,21 +15,21 @@
 namespace lue {
 namespace {
 
-detail::EnumStringBimap<SizeOfItemCollectionType> const
+detail::EnumStringBimap<CollectionVariability> const
         size_of_item_collection_type_map = {
-    { SizeOfItemCollectionType::constant_collection, "lue_constant_collection" },
-    // { SizeOfItemCollectionType::variable_collection, "lue_variable_size" }
+    { CollectionVariability::constant, "lue_constant_collection" },
+    // { CollectionVariability::variable_collection, "lue_variable_size" }
 };
 
 
 std::string size_of_item_collection_type_to_string(
-    SizeOfItemCollectionType const type)
+    CollectionVariability const type)
 {
     return size_of_item_collection_type_map.as_string(type);
 }
 
 
-SizeOfItemCollectionType parse_size_of_item_collection_type(
+CollectionVariability parse_size_of_item_collection_type(
     std::string const& string)
 {
     if(!size_of_item_collection_type_map.contains(string)) {
@@ -44,7 +44,7 @@ SizeOfItemCollectionType parse_size_of_item_collection_type(
 
 
 PropertySet::Configuration::Configuration(
-    SizeOfItemCollectionType const type)
+    CollectionVariability const type)
 
     : _size_of_item_collection_type{type}
 
@@ -58,8 +58,7 @@ PropertySet::Configuration::Configuration(
     load(attributes);
 }
 
-
-SizeOfItemCollectionType
+CollectionVariability
     PropertySet::Configuration::size_of_item_collection_type() const
 {
     return _size_of_item_collection_type;
@@ -314,7 +313,7 @@ PropertySet create_property_set(
 
     // // TODO
     // assert(configuration.size_of_item_collection_type() ==
-    //     SizeOfItemCollectionType::constant_collection);
+    //     CollectionVariability::constant_collection);
 
     // switch(time_configuration.type()) {
     //     case TimeDomainType::omnipresent: {

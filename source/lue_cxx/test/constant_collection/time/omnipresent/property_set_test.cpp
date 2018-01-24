@@ -28,7 +28,7 @@ BOOST_AUTO_TEST_CASE(create_new_property_set)
     BOOST_CHECK_EQUAL(phenomenon.property_sets().size(), 1);
     BOOST_CHECK(
         property_set.configuration().size_of_item_collection_type() ==
-        lue::SizeOfItemCollectionType::constant_collection);
+        lue::CollectionVariability::constant);
 
 
     auto const& attributes = property_set.attributes();

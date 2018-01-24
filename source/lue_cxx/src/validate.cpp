@@ -69,7 +69,7 @@ void validate(
 
     switch(configuration.size_of_item_collection_type()) {
 
-        case(SizeOfItemCollectionType::constant_collection): {
+        case(CollectionVariability::constant): {
             constant_collection::validate(constant_collection::PropertySet(
                 property_set.id()), issues);
             break;

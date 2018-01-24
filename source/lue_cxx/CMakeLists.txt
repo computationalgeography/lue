@@ -66,12 +66,14 @@ add_library(lue STATIC
     src/constant_collection/time/located/constant_shape/same_shape/property
     src/constant_collection/time/located/constant_shape/same_shape/value
 
-    src/item/configuration
     src/item/constant_collection/constant_shape/different_shape/collection
     src/item/constant_collection/constant_shape/different_shape/constant
     src/item/constant_collection/constant_shape/different_shape/variable
     src/item/constant_collection/constant_shape/same_shape/constant
     src/item/constant_collection/constant_shape/same_shape/variable
+
+    src/space/constant_collection/stationary/box
+    src/space/constant_collection/stationary/point
 )
 
 add_library(lue::lue ALIAS lue)

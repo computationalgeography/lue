@@ -58,7 +58,7 @@ Property create_property(
 {
     auto& properties = property_set.properties();
 
-    Configuration configuration{
+    ItemConfiguration configuration{
         CollectionVariability::constant,
         ShapeVariability::constant,
         ShapePerItem::same,
@@ -97,7 +97,7 @@ Property create_property(
 {
     auto& properties = property_set.properties();
 
-    Configuration configuration{
+    ItemConfiguration configuration{
         CollectionVariability::constant,
         ShapeVariability::constant,
         ShapePerItem::same,

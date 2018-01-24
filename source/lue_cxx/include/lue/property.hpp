@@ -1,6 +1,5 @@
 #pragma once
-#include "lue/define.hpp"
-#include "lue/item/configuration.hpp"
+#include "lue/item/item_configuration.hpp"
 #include "lue/hdf5/group.hpp"
 
 
@@ -9,7 +8,7 @@ namespace lue {
 /*!
     @brief      TODO
     @sa         create_property(hdf5::Group&, std::string const&,
-                Configuration const&)
+                ItemConfiguration const&)
 */
 class Property:
     public hdf5::Group
@@ -32,7 +31,7 @@ public:
 
     Property&      operator=           (Property&&)=default;
 
-    Configuration const&
+    ItemConfiguration const&
                    configuration       () const;
 
     void           discretize_space    (Property const& property);
@@ -43,13 +42,13 @@ public:
 
 private:
 
-    Configuration  _configuration;
+    ItemConfiguration _configuration;
 
 };
 
 
 Property           create_property     (hdf5::Group const& group,
                                         std::string const& name,
-                                        Configuration const& configuration);
+                                        ItemConfiguration const& configuration);
 
 }  // namespace lue

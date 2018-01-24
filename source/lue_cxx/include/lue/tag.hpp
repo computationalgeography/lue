@@ -20,6 +20,7 @@ static std::string const property_sets_tag = "lue_property_sets";
 static std::string const rank_tag = "lue_rank";
 static std::string const shape_per_item_tag = "lue_shape_per_item";
 static std::string const shape_variability_tag = "lue_shape_variability";
+static std::string const mobility_tag = "lue_mobility";
 
 static std::string const space_discretization_tag =
     "lue_space_discretization";
