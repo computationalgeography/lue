@@ -24,7 +24,7 @@ SpaceDomain::SpaceDomain(
 
 SpaceDomain create_space_domain(
     hdf5::Group const& group,
-    SpaceDomain::Configuration const& configuration)
+    SpaceConfiguration const& configuration)
 {
     auto domain = lue::create_space_domain(group, configuration);
 

@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/space/space_configuration.hpp"
 #include "lue/hdf5/group.hpp"
 
 
@@ -15,55 +16,6 @@ class SpaceDomain:
 
 public:
 
-    class Configuration
-    {
-
-    public:
-
-        enum class DomainType
-        {
-
-            located
-
-        };
-
-        enum class ItemType
-        {
-
-            box,
-
-            point
-
-        };
-
-                   Configuration       (DomainType const domain_type,
-                                        ItemType const item_type);
-
-                   Configuration       (hdf5::Attributes const& attributes);
-
-                   Configuration       (Configuration const& other)=default;
-
-                   ~Configuration      ()=default;
-
-        Configuration& operator=       (Configuration const& other)=default;
-
-        DomainType domain_type         () const;
-
-        ItemType   item_type           () const;
-
-        void       save                (hdf5::Attributes& attributes) const;
-
-    private:
-
-        DomainType _domain_type;
-
-        ItemType   _item_type;
-
-        void       load                (hdf5::Attributes const& attributes);
-
-    };
-
-
                    SpaceDomain         (hdf5::Group const& parent);
 
                    SpaceDomain         (hdf5::Group&& group);
@@ -78,18 +30,18 @@ public:
 
     SpaceDomain&   operator=           (SpaceDomain&&)=default;
 
-    Configuration const&
+    SpaceConfiguration const&
                    configuration       () const;
 
 private:
 
-    Configuration  _configuration;
+    SpaceConfiguration _configuration;
 
 };
 
 
 SpaceDomain        create_space_domain (hdf5::Group const& parent,
-                                        SpaceDomain::Configuration const&
+                                        SpaceConfiguration const&
                                             configuration);
 
 bool               space_domain_exists (hdf5::Group const& parent);

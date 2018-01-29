@@ -452,13 +452,13 @@ void translate_lue_dataset_to_shapefile(
         auto space_domain =
            constant_collection::time::omnipresent::SpaceDomain(domain);
 
-        if(space_domain.configuration().domain_type() !=
-                SpaceDomain::Configuration::DomainType::located) {
-            throw std::runtime_error("Space domain type must be located");
-        }
+        // if(space_domain.configuration().domain_type() !=
+        //         SpaceDomain::Configuration::DomainType::located) {
+        //     throw std::runtime_error("Space domain type must be located");
+        // }
 
-        switch(space_domain.configuration().item_type()) {
-            case SpaceDomain::Configuration::ItemType::box: {
+        switch(space_domain.configuration().type<SpaceDomainItemType>()) {
+            case SpaceDomainItemType::box: {
                 constant_collection::time::omnipresent::SpaceBoxDomain
                     space_box_domain(std::move(space_domain));
 
@@ -526,7 +526,7 @@ void translate_lue_dataset_to_shapefile(
 
                 break;
             }
-            case SpaceDomain::Configuration::ItemType::point: {
+            case SpaceDomainItemType::point: {
                 constant_collection::time::omnipresent::SpacePointDomain
                     space_point_domain(std::move(space_domain));
 

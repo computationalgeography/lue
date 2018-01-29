@@ -45,13 +45,13 @@ void init_domain_class(
                     auto const file_datatype =
                         SpaceBoxDomain::file_datatype(space_domain);
 
-                    switch(configuration.item_type()) {
-                        case SpaceDomain::Configuration::ItemType::box: {
+                    switch(configuration.type<SpaceDomainItemType>()) {
+                        case SpaceDomainItemType::box: {
                             object = py::cast(
                                 new SpaceBoxDomain(std::move(space_domain)));
                             break;
                         }
-                        case SpaceDomain::Configuration::ItemType::point: {
+                        case SpaceDomainItemType::point: {
                             object = py::cast(
                                 new SpacePointDomain(std::move(space_domain)));
                             break;

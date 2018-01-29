@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/item/constant_collection/constant_shape/same_shape/variable.hpp"
+#include "lue/space/constant_collection/stationary/box.hpp"
 #include "lue/constant_collection/time/located/property_set.hpp"
 #include "lue/constant_collection/time/located/space_domain.hpp"
 
@@ -17,7 +17,7 @@ public:
 
     static hdf5::Datatype file_datatype(hdf5::Group const& parent);
 
-    using SpaceBoxes = constant_shape::same_shape::Variable;
+    using SpaceBoxes = stationary::Box;
 
                    SpaceBoxDomain      (SpaceDomain&& space_domain);
 

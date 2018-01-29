@@ -91,7 +91,7 @@
     @dir    include/lue/space
     @brief  This directory contains code for storing space domain items
 
-    Space domain items differs with respect to various aspects.
+    Space domain items differ with respect to various aspects.
     This directory contains code for storing space domain information for
     collections of items, given a certain combination of aspects. Aspects
     that differ between collections of space domain items are:
@@ -126,31 +126,17 @@
     aspect | options
     ------ | -------
     collection size variability | constant_collection, variable_collection
-    time domain sharing | shared_time, unique_time
-    space domain sharing | shared_space, unique_space
     mobility | stationary, mobile
+    item_type | point, box
 
     Taxonomy of item values:
-    - <collection_size_variability>/<time_domain_sharing>/<space_domain_sharing>/<mobility>
+    - <collection_size_variability>/<mobility>
 
     A collection represents all space domain items. Collections differ because
     of different combinations of aspects.
-    - lue::constant_collection::shared_time::shared_space::stationary::Point
-    - lue::constant_collection::shared_time::shared_space::mobile::Point
-    - lue::constant_collection::shared_time::unique_space::stationary::Point
-    - lue::constant_collection::shared_time::unique_space::mobile::Point
-    - lue::constant_collection::unique_time::shared_space::stationary::Point
-    - lue::constant_collection::unique_time::shared_space::mobile::Point
-    - lue::constant_collection::unique_time::unique_space::stationary::Point
-    - lue::constant_collection::unique_time::unique_space::mobile::Point
-    - lue::variable_collection::shared_time::shared_space::stationary::Point
-    - lue::variable_collection::shared_time::shared_space::mobile::Point
-    - lue::variable_collection::shared_time::unique_space::stationary::Point
-    - lue::variable_collection::shared_time::unique_space::mobile::Point
-    - lue::variable_collection::unique_time::shared_space::stationary::Point
-    - lue::variable_collection::unique_time::shared_space::mobile::Point
-    - lue::variable_collection::unique_time::unique_space::stationary::Point
-    - lue::variable_collection::unique_time::unique_space::mobile::Point
+
+    - lue::constant_collection::stationary::{Point,Box,...}
+    - lue::constant_collection::mobile::{Point,Box,...}
 */
 
 

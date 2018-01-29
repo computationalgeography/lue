@@ -30,7 +30,7 @@ SpacePointDomain::SpacePointDomain(
     hdf5::Datatype const& memory_datatype)
 
     : SpaceDomain{std::forward<SpaceDomain>(space_domain)},
-      _items{*this, coordinates_tag, memory_datatype}
+      _items{*this, memory_datatype}
 
 {
 }
@@ -65,19 +65,17 @@ SpacePointDomain create_space_point_domain(
 {
     auto& domain = property_set.domain();
 
-    auto space = omnipresent::create_space_domain(domain,
-        SpaceDomain::Configuration(
-            SpaceDomain::Configuration::DomainType::located,
-            SpaceDomain::Configuration::ItemType::point)
-    );
+    SpaceConfiguration configuration{
+        CollectionVariability::constant,
+        Mobility::stationary,
+        SpaceDomainItemType::point
+    };
 
-    // A point is defined by the coordinates along each dimension
-    hdf5::Shape value_shape = { rank };
+    auto space = omnipresent::create_space_domain(domain, configuration);
 
-    constant_shape::same_shape::create_constant(
-        space, coordinates_tag, file_datatype, memory_datatype, value_shape);
+    stationary::create_point(space, file_datatype, memory_datatype, rank);
 
-    return SpacePointDomain(std::move(space), memory_datatype);
+    return SpacePointDomain{std::move(space), memory_datatype};
 }
 
 }  // namespace omnipresent

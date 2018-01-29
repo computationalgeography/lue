@@ -7,9 +7,9 @@ namespace time {
 namespace located {
 
 SpaceDomain::SpaceDomain(
-    hdf5::Group const& group)
+    hdf5::Group const& parent)
 
-    : constant_collection::SpaceDomain(group)
+    : constant_collection::SpaceDomain{parent}
 
 {
 }
@@ -27,9 +27,10 @@ SpaceDomain::SpaceDomain(
 
 SpaceDomain create_space_domain(
     hdf5::Group const& group,
-    SpaceDomain::Configuration const& configuration)
+    SpaceConfiguration const& configuration)
 {
-    auto domain = constant_collection::create_space_domain(group, configuration);
+    auto domain = constant_collection::create_space_domain(
+        group, configuration);
 
     return std::move(domain);
 }

@@ -13,6 +13,13 @@ void init_submodule(py::module& module);
 
 }  // namespace constant_shape
 
+namespace stationary {
+
+// Implementation in space/ tree
+void init_submodule(py::module& module);
+
+}
+
 
 namespace time {
 
@@ -37,6 +44,7 @@ void init_submodule(
     of items
 
     .. automodule:: lue.constant_collection.constant_shape
+    .. automodule:: lue.constant_collection.stationary
     .. automodule:: lue.constant_collection.time
 )");
     init_domain_class(submodule);
@@ -45,6 +53,7 @@ void init_submodule(
     init_property_set_class(submodule);
 
     constant_shape::init_submodule(submodule);
+    stationary::init_submodule(submodule);
     time::init_submodule(submodule);
 }
 

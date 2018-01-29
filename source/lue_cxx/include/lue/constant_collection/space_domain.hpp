@@ -29,7 +29,7 @@ public:
 
 
 SpaceDomain        create_space_domain (hdf5::Group const& group,
-                                        SpaceDomain::Configuration const&
+                                        SpaceConfiguration const&
                                             configuration);
 
 }  // namespace constant_collection

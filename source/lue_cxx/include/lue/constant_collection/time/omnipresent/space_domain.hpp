@@ -13,9 +13,10 @@ class SpaceDomain:
 
 public:
 
-                   SpaceDomain         (hdf5::Group const& group);
+                   SpaceDomain         (hdf5::Group const& parent);
 
-                   SpaceDomain         (constant_collection::SpaceDomain&& domain);
+                   SpaceDomain         (constant_collection::SpaceDomain&&
+                                            domain);
 
                    SpaceDomain         (SpaceDomain const& other)=delete;
 
@@ -30,8 +31,8 @@ public:
 };
 
 
-SpaceDomain        create_space_domain (hdf5::Group const& group,
-                                        SpaceDomain::Configuration const&
+SpaceDomain        create_space_domain (hdf5::Group const& parent,
+                                        SpaceConfiguration const&
                                             configuration);
 
 }  // namespace omnipresent

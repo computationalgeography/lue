@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/item/constant_collection/constant_shape/same_shape/constant.hpp"
+#include "lue/space/constant_collection/stationary/point.hpp"
 #include "lue/constant_collection/time/omnipresent/property_set.hpp"
 #include "lue/constant_collection/time/omnipresent/space_domain.hpp"
 
@@ -17,7 +17,7 @@ public:
 
     static hdf5::Datatype file_datatype(hdf5::Group const& parent);
 
-    using SpacePoints = constant_shape::same_shape::Constant;
+    using SpacePoints = stationary::Point;
 
                    SpacePointDomain    (SpaceDomain&& space_domain);
 
@@ -51,7 +51,7 @@ SpacePointDomain     create_space_point_domain(
                                         PropertySet& property_set,
                                         hdf5::Datatype const file_datatype,
                                         hdf5::Datatype const memory_datatype,
-                                        size_t const rank);
+                                        size_t rank);
 
 }  // namespace omnipresent
 }  // namespace time

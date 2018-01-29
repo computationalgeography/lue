@@ -16,6 +16,14 @@ struct Tag
 };
 
 
+template<
+    typename T>
+struct AspectMap
+{
+    static detail::EnumStringBimap<T> const& value();
+};
+
+
 template<>
 struct Tag<CollectionVariability>
 {
@@ -23,54 +31,6 @@ struct Tag<CollectionVariability>
         static std::string const tag = collection_variability_tag;
         return tag;
     }
-};
-
-
-template<>
-struct Tag<ShapeVariability>
-{
-    static std::string const& value() {
-        static std::string const tag = shape_variability_tag;
-        return tag;
-    }
-};
-
-
-template<>
-struct Tag<ShapePerItem>
-{
-    static std::string const& value() {
-        static std::string const tag = shape_per_item_tag;
-        return tag;
-    }
-};
-
-
-template<>
-struct Tag<ValueVariability>
-{
-    static std::string const& value() {
-        static std::string const tag = value_variability_tag;
-        return tag;
-    }
-};
-
-
-template<>
-struct Tag<Mobility>
-{
-    static std::string const& value() {
-        static std::string const tag = mobility_tag;
-        return tag;
-    }
-};
-
-
-template<
-    typename T>
-struct AspectMap
-{
-    static detail::EnumStringBimap<T> const& value();
 };
 
 
@@ -89,6 +49,16 @@ struct AspectMap<CollectionVariability>
 
 
 template<>
+struct Tag<ShapeVariability>
+{
+    static std::string const& value() {
+        static std::string const tag = shape_variability_tag;
+        return tag;
+    }
+};
+
+
+template<>
 struct AspectMap<ShapeVariability>
 {
     static detail::EnumStringBimap<ShapeVariability> const& value()
@@ -98,6 +68,16 @@ struct AspectMap<ShapeVariability>
         };
 
         return map;
+    }
+};
+
+
+template<>
+struct Tag<ShapePerItem>
+{
+    static std::string const& value() {
+        static std::string const tag = shape_per_item_tag;
+        return tag;
     }
 };
 
@@ -118,6 +98,16 @@ struct AspectMap<ShapePerItem>
 
 
 template<>
+struct Tag<ValueVariability>
+{
+    static std::string const& value() {
+        static std::string const tag = value_variability_tag;
+        return tag;
+    }
+};
+
+
+template<>
 struct AspectMap<ValueVariability>
 {
     static detail::EnumStringBimap<ValueVariability> const& value()
@@ -133,6 +123,16 @@ struct AspectMap<ValueVariability>
 
 
 template<>
+struct Tag<Mobility>
+{
+    static std::string const& value() {
+        static std::string const tag = mobility_tag;
+        return tag;
+    }
+};
+
+
+template<>
 struct AspectMap<Mobility>
 {
     static detail::EnumStringBimap<Mobility> const& value()
@@ -140,6 +140,31 @@ struct AspectMap<Mobility>
         static detail::EnumStringBimap<Mobility> const map {
             // { Mobility::mobile, "lue_mobile" },
             { Mobility::stationary, "lue_stationary" },
+        };
+
+        return map;
+    }
+};
+
+
+template<>
+struct Tag<SpaceDomainItemType>
+{
+    static std::string const& value() {
+        static std::string const tag = space_domain_item_type_tag;
+        return tag;
+    }
+};
+
+
+template<>
+struct AspectMap<SpaceDomainItemType>
+{
+    static detail::EnumStringBimap<SpaceDomainItemType> const& value()
+    {
+        static detail::EnumStringBimap<SpaceDomainItemType> const map {
+            { SpaceDomainItemType::point, "lue_point" },
+            { SpaceDomainItemType::box, "lue_box" },
         };
 
         return map;

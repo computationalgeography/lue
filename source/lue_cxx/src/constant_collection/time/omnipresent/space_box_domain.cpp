@@ -30,7 +30,7 @@ SpaceBoxDomain::SpaceBoxDomain(
     hdf5::Datatype const& memory_datatype)
 
     : SpaceDomain{std::forward<SpaceDomain>(space_domain)},
-      _items{*this, coordinates_tag, memory_datatype}
+      _items{*this, memory_datatype}
 
 {
 }
@@ -57,26 +57,6 @@ SpaceBoxDomain::SpaceBoxes& SpaceBoxDomain::reserve(
 }
 
 
-// bool space_box_domain_exists(
-//     hdf5::Group const& group)
-//     // PropertySet const& property_set)
-// {
-//     auto const& space = property_set.domain().space();
-// 
-//     return space_box_exists(space);
-// }
-
-
-// void create_space_box_domain(
-//     hdf5::Identifier const& location,
-//     hid_t const file_type_id,
-//     hid_t const memory_type_id,
-//     size_t rank)
-// {
-//     create_space_box(location, file_type_id, memory_type_id, rank);
-// }
-
-
 SpaceBoxDomain create_space_box_domain(
     PropertySet& property_set,
     hdf5::Datatype const file_datatype,
@@ -85,22 +65,15 @@ SpaceBoxDomain create_space_box_domain(
 {
     auto& domain = property_set.domain();
 
-    auto space = omnipresent::create_space_domain(domain,
-        SpaceDomain::Configuration(
-            SpaceDomain::Configuration::DomainType::located,
-            SpaceDomain::Configuration::ItemType::box)
-    );
+    SpaceConfiguration const configuration{
+        CollectionVariability::constant,
+        Mobility::stationary,
+        SpaceDomainItemType::box
+    };
 
-    // auto& space = domain.space();
+    auto space = omnipresent::create_space_domain(domain, configuration);
 
-    // create_space_box(space, file_datatype, memory_datatype, rank);
-
-    // A box is defined by the coordinates of two opposite points
-    // (diagonally). Two of them is enough.
-    hdf5::Shape value_shape = {2 * rank };
-
-    constant_shape::same_shape::create_constant(
-        space, coordinates_tag, file_datatype, memory_datatype, value_shape);
+    stationary::create_box(space, file_datatype, memory_datatype, rank);
 
     return SpaceBoxDomain{std::move(space), memory_datatype};
 }

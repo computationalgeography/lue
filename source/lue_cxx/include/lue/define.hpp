@@ -231,25 +231,23 @@ enum class Mobility
 //     located
 // 
 // };
-// 
-// enum class SpaceDomainItemType
-// {
-// 
-//     none,
-// 
-//     // point,
-// 
-//     box,
-// 
-//     // line,
-// 
-//     // region,
-// 
-//     // cell
-// 
-// };
-// 
-// 
+
+enum class SpaceDomainItemType
+{
+
+    point,
+
+    box,
+
+    // line,
+
+    // region,
+
+    // cell
+
+};
+
+
 // enum class TimeDiscretizationType
 // {
 // 

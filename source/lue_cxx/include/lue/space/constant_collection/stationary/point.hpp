@@ -12,6 +12,9 @@ class Point:
 
 public:
 
+                   Point               (hdf5::Group const& parent,
+                                        hdf5::Datatype const& memory_datatype);
+
                    Point               (Point const&)=delete;
 
                    Point               (Point&&)=default;
@@ -26,6 +29,16 @@ private:
 
 };
 
-}  // namespace lue
-}  // namespace constant_collection
+
+Point              create_point        (hdf5::Group& parent,
+                                        hdf5::Datatype const& memory_datatype,
+                                        std::size_t rank);
+
+Point              create_point        (hdf5::Group& parent,
+                                        hdf5::Datatype const& file_datatype,
+                                        hdf5::Datatype const& memory_datatype,
+                                        std::size_t rank);
+
 }  // namespace stationary
+}  // namespace constant_collection
+}  // namespace lue
