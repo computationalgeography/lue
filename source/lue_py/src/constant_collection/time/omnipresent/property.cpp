@@ -23,7 +23,7 @@ py::object cast_to_specialized_property(
     //     PropertySet classes.
     py::object object;
 
-    switch(configuration.shape_per_item()) {
+    switch(configuration.type<ShapePerItem>()) {
         case ShapePerItem::same: {
             auto file_datatype =
                 same_shape::Property::file_datatype(property);

@@ -460,7 +460,7 @@ void to_dot(
 {
     auto const& configuration = property.configuration();
 
-    switch(configuration.shape_per_item()) {
+    switch(configuration.type<ShapePerItem>()) {
         case ShapePerItem::same: {
             auto file_datatype = same_shape::Property::file_datatype(property);
             to_dot(same_shape::Property(hdf5::Group{property.id()},
@@ -567,7 +567,7 @@ void to_dot(
 {
     auto const& configuration = property.configuration();
 
-    switch(configuration.shape_per_item()) {
+    switch(configuration.type<ShapePerItem>()) {
 
         case ShapePerItem::same: {
             // auto file_datatype = same_shape::Property::file_datatype(
@@ -602,7 +602,7 @@ void to_dot(
         auto const property = located::Property{
             hdf5::Group{properties[name].id()}};
 
-        switch(property.configuration().shape_variability()) {
+        switch(property.configuration().type<ShapeVariability>()) {
 
             case ShapeVariability::constant: {
                 to_dot(

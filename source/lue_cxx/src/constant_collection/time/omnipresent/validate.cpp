@@ -27,7 +27,7 @@ void validate(
         auto const& configuration = property.configuration();
         size_t nr_values;
 
-        switch(configuration.shape_per_item()) {
+        switch(configuration.type<ShapePerItem>()) {
 
             case ShapePerItem::same: {
                 auto file_datatype =
