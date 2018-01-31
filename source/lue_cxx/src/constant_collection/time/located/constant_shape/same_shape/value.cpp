@@ -13,7 +13,7 @@ Value::Value(
     std::string const& name,
     hdf5::Datatype const& memory_datatype)
 
-    : constant_collection::constant_shape::same_shape::Variable{
+    : constant_collection::constant_shape::same_shape::SynchronousVariable{
           parent, name, memory_datatype},
       constant_collection::Value()
 
@@ -22,10 +22,10 @@ Value::Value(
 
 
 Value::Value(
-    constant_collection::constant_shape::same_shape::Variable&& collection)
+    constant_collection::constant_shape::same_shape::SynchronousVariable&& collection)
 
-    : constant_collection::constant_shape::same_shape::Variable{
-          std::forward<constant_collection::constant_shape::same_shape::Variable>(
+    : constant_collection::constant_shape::same_shape::SynchronousVariable{
+          std::forward<constant_collection::constant_shape::same_shape::SynchronousVariable>(
               collection)},
       constant_collection::Value()
 
@@ -35,7 +35,7 @@ Value::Value(
 
 hsize_t Value::nr_items() const
 {
-    return constant_collection::constant_shape::same_shape::Variable::nr_items();
+    return constant_collection::constant_shape::same_shape::SynchronousVariable::nr_items();
 }
 
 
@@ -57,8 +57,9 @@ Value create_value(
     hdf5::Datatype const& memory_datatype,
     hdf5::Shape const& value_shape)
 {
-    return Value{constant_collection::constant_shape::same_shape::create_variable(
-        parent, name, file_datatype, memory_datatype, value_shape)};
+    return Value{
+        constant_collection::constant_shape::same_shape::create_synchronous_variable(
+            parent, name, file_datatype, memory_datatype, value_shape)};
 }
 
 }  // namespace same_shape

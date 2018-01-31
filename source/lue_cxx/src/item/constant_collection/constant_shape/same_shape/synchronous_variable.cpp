@@ -1,4 +1,4 @@
-#include "lue/item/constant_collection/constant_shape/same_shape/variable.hpp"
+#include "lue/item/constant_collection/constant_shape/same_shape/synchronous_variable.hpp"
 #include "lue/hdf5/chunk.hpp"
 #include <cassert>
 
@@ -11,7 +11,7 @@ namespace same_shape {
 /*!
     @brief      Open collection @a name in @a parent
 */
-Variable::Variable(
+SynchronousVariable::SynchronousVariable(
     hdf5::Group const& parent,
     std::string const& name,
     hdf5::Datatype const& memory_datatype)
@@ -25,7 +25,7 @@ Variable::Variable(
 /*!
     @brief      Move in @a dataset
 */
-Variable::Variable(
+SynchronousVariable::SynchronousVariable(
     hdf5::Dataset&& dataset,
     hdf5::Datatype const& memory_datatype)
 
@@ -39,7 +39,7 @@ Variable::Variable(
     @brief      Reserve space for @a nr_time_domain_items and @a nr_items
                 item values
 */
-void Variable::reserve(
+void SynchronousVariable::reserve(
     hsize_t const nr_time_domain_items,
     hsize_t const nr_items)
 {
@@ -54,7 +54,7 @@ void Variable::reserve(
 /*!
     @brief      Return number of time domain items for which values are stored
 */
-hsize_t Variable::nr_time_domain_items() const
+hsize_t SynchronousVariable::nr_time_domain_items() const
 {
     return shape()[0];
 }
@@ -63,7 +63,7 @@ hsize_t Variable::nr_time_domain_items() const
 /*!
     @brief      Return number of items for which values are stored
 */
-hsize_t Variable::nr_items() const
+hsize_t SynchronousVariable::nr_items() const
 {
     return shape()[1];
 }
@@ -75,7 +75,7 @@ hsize_t Variable::nr_items() const
     The shape returned is not the shape of the underlying HDF5 dataset. It
     is the shape of each of the individual item values.
 */
-hdf5::Shape Variable::value_shape() const
+hdf5::Shape SynchronousVariable::value_shape() const
 {
     auto const shape = this->shape();
 
@@ -85,7 +85,7 @@ hdf5::Shape Variable::value_shape() const
 }
 
 
-hdf5::Hyperslab Variable::hyperslab(
+hdf5::Hyperslab SynchronousVariable::hyperslab(
     hsize_t const time_idx,
     hsize_t const item_idx) const
 {
@@ -103,7 +103,7 @@ hdf5::Hyperslab Variable::hyperslab(
 }
 
 
-void Variable::read(
+void SynchronousVariable::read(
     hsize_t const time_idx,
     hsize_t const item_idx,
     void* buffer)
@@ -112,7 +112,7 @@ void Variable::read(
 }
 
 
-void Variable::write(
+void SynchronousVariable::write(
     hsize_t const time_idx,
     hsize_t const item_idx,
     void const* buffer)
@@ -124,12 +124,12 @@ void Variable::write(
 /*!
     @brief      Create collection @a name in @a parent
 */
-Variable create_variable(
+SynchronousVariable create_synchronous_variable(
     hdf5::Group& parent,
     std::string const& name,
     hdf5::Datatype const& memory_datatype)
 {
-    return create_variable(
+    return create_synchronous_variable(
         parent, name, file_datatype(memory_datatype), memory_datatype,
         hdf5::Shape{});
 }
@@ -138,13 +138,13 @@ Variable create_variable(
 /*!
     @brief      Create collection @a name in @a parent
 */
-Variable create_variable(
+SynchronousVariable create_synchronous_variable(
     hdf5::Group& parent,
     std::string const& name,
     hdf5::Datatype const& memory_datatype,
     hdf5::Shape const& value_shape)
 {
-    return create_variable(
+    return create_synchronous_variable(
         parent, name, file_datatype(memory_datatype), memory_datatype,
         value_shape);
 }
@@ -153,13 +153,13 @@ Variable create_variable(
 /*!
     @brief      Create collection @a name in @a parent
 */
-Variable create_variable(
+SynchronousVariable create_synchronous_variable(
     hdf5::Group& parent,
     std::string const& name,
     hdf5::Datatype const& file_datatype,
     hdf5::Datatype const& memory_datatype)
 {
-    return create_variable(
+    return create_synchronous_variable(
         parent, name, file_datatype, memory_datatype, hdf5::Shape{});
 }
 
@@ -172,7 +172,7 @@ Variable create_variable(
 
     The underlying HDF5 dataset is chunked according to hdf5::chunk_shape().
 */
-Variable create_variable(
+SynchronousVariable create_synchronous_variable(
     hdf5::Group& parent,
     std::string const& name,
     hdf5::Datatype const& file_datatype,
@@ -206,7 +206,7 @@ Variable create_variable(
     // parent.attributes().write<std::string>(
     //     lue::value_variability_tag, "variable");
 
-    return Variable{std::move(dataset), memory_datatype};
+    return SynchronousVariable{std::move(dataset), memory_datatype};
 }
 
 }  // namespace same_shape

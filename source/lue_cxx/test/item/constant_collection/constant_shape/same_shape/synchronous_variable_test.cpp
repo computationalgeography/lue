@@ -1,6 +1,6 @@
-#define BOOST_TEST_MODULE lue item constant_collection constant_shape same_shape variable
+#define BOOST_TEST_MODULE lue item constant_collection constant_shape same_shape synchronous_variable
 #include <boost/test/unit_test.hpp>
-#include "lue/item/constant_collection/constant_shape/same_shape/variable.hpp"
+#include "lue/item/constant_collection/constant_shape/same_shape/synchronous_variable.hpp"
 #include "lue/tag.hpp"
 #include "lue/test.hpp"
 #include "lue/hdf5/file.hpp"
@@ -23,8 +23,8 @@ BOOST_AUTO_TEST_CASE(create_collection)
     std::size_t const nr_cells = nr_rows * nr_cols;
     lue::hdf5::Shape value_shape{nr_rows, nr_cols};
 
-    auto collection =
-        same_shape::create_variable(file, value_name, datatype, value_shape);
+    auto collection = same_shape::create_synchronous_variable(
+        file, value_name, datatype, value_shape);
 
     BOOST_CHECK_EQUAL(collection.nr_items(), 0);
     BOOST_CHECK(collection.value_shape() == value_shape);

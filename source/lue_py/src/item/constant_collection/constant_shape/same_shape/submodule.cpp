@@ -10,7 +10,7 @@ namespace constant_shape {
 namespace same_shape {
 
 void init_constant(py::module& module);
-void init_variable(py::module& module);
+void init_synchronous_variable(py::module& module);
 
 
 void init_submodule(
@@ -23,7 +23,7 @@ void init_submodule(
 )");
 
     init_constant(submodule);
-    init_variable(submodule);
+    init_synchronous_variable(submodule);
 }
 
 }  // namespace same_shape

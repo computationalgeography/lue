@@ -1,6 +1,6 @@
-#define BOOST_TEST_MODULE lue item constant_collection constant_shape different_shape variable
+#define BOOST_TEST_MODULE lue item constant_collection constant_shape different_shape synchronous_variable
 #include <boost/test/unit_test.hpp>
-#include "lue/item/constant_collection/constant_shape/different_shape/variable.hpp"
+#include "lue/item/constant_collection/constant_shape/different_shape/synchronous_variable.hpp"
 #include "lue/test.hpp"
 #include "lue/hdf5/file.hpp"
 #include <numeric>
@@ -20,8 +20,8 @@ BOOST_AUTO_TEST_CASE(create_collection)
         lue::hdf5::NativeDatatypeTraits<int32_t>::type_id()};
     int const rank = 2;
 
-    auto collection =
-        different_shape::create_variable(file, value_name, datatype, rank);
+    auto collection = different_shape::create_synchronous_variable(
+        file, value_name, datatype, rank);
 
     BOOST_CHECK_EQUAL(collection.nr_items(), 0);
     BOOST_CHECK_EQUAL(collection.rank(), rank);

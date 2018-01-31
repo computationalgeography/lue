@@ -1,4 +1,4 @@
-#include "lue/item/constant_collection/constant_shape/different_shape/variable.hpp"
+#include "lue/item/constant_collection/constant_shape/different_shape/synchronous_variable.hpp"
 #include "lue/py/conversion.hpp"
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
@@ -16,17 +16,17 @@ void init_variable(
     py::module& module)
 {
 
-    py::class_<Variable, hdf5::Group>(
+    py::class_<SynchronousVariable, hdf5::Group>(
         module,
-        "Variable",
-        "Variable docstring...")
+        "SynchronousVariable",
+        "SynchronousVariable docstring...")
 
         .def(
             "reserve",
             [](
-                Variable& self,
+                SynchronousVariable& self,
                 hsize_t const nr_time_domain_items,
-                py::array_t<hsize_t, py::array::c_style>& shapes) -> Variable&
+                py::array_t<hsize_t, py::array::c_style>& shapes) -> SynchronousVariable&
             {
                 static_assert(sizeof(hsize_t) == sizeof(uint64_t), "");
 
@@ -66,7 +66,7 @@ void init_variable(
 
         .def_property_readonly(
             "dtype",
-            [](Variable const& self)
+            [](SynchronousVariable const& self)
             {
                 py::object object = hdf5_type_id_to_numpy_dtype(
                     self.memory_datatype());
@@ -78,20 +78,20 @@ void init_variable(
 
         .def_property_readonly(
             "rank",
-            &Variable::rank,
+            &SynchronousVariable::rank,
             "rank docstring..."
         )
 
         .def(
             "__len__",
-            &Variable::nr_items,
+            &SynchronousVariable::nr_items,
             "__len__ docstring..."
         )
 
         .def(
             "__getitem__",
             [](
-                Variable const& self,
+                SynchronousVariable const& self,
                 size_t const idx)
             {
                 if(idx >= self.nr_items()) {

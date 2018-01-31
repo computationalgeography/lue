@@ -23,31 +23,31 @@ namespace different_shape {
     dimension may be different. Each dataset has one dimension more than the
     rank of the individual values. This dimension represents time.
 */
-class Variable:
+class SynchronousVariable:
     public hdf5::Group
 {
 
 public:
 
-                     Variable          (hdf5::Group const& parent,
+                   SynchronousVariable (hdf5::Group const& parent,
                                         std::string const& name);
 
-                     Variable          (hdf5::Group const& parent,
+                   SynchronousVariable (hdf5::Group const& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& memory_datatype);
 
-                     Variable          (hdf5::Group&& group,
+                   SynchronousVariable (hdf5::Group&& group,
                                         hdf5::Datatype const& memory_datatype);
 
-                     Variable          (Variable const&)=delete;
+                   SynchronousVariable (SynchronousVariable const&)=delete;
 
-                     Variable          (Variable&&)=default;
+                   SynchronousVariable (SynchronousVariable&&)=default;
 
-                     ~Variable         ()=default;
+                   ~SynchronousVariable()=default;
 
-    Variable&      operator=           (Variable const&)=delete;
+    SynchronousVariable& operator=     (SynchronousVariable const&)=delete;
 
-    Variable&      operator=           (Variable&&)=default;
+    SynchronousVariable& operator=     (SynchronousVariable&&)=default;
 
     hdf5::Datatype const&
                    file_datatype       () const;
@@ -110,12 +110,14 @@ private:
 };
 
 
-Variable           create_variable     (hdf5::Group& parent,
+SynchronousVariable create_synchronous_variable(
+                                        hdf5::Group& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& memory_datatype,
                                         int rank);
 
-Variable           create_variable     (hdf5::Group& parent,
+SynchronousVariable create_synchronous_variable(
+                                        hdf5::Group& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& file_datatype,
                                         hdf5::Datatype const& memory_datatype,
