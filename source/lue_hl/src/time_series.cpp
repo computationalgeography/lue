@@ -178,7 +178,7 @@ void TimeSeries::write(
     auto const nr_items = this->nr_items();
 
     auto& values_ = _value_property.values();
-    values_.reserve(nr_time_steps, nr_items);
+    values_.reserve(nr_items, nr_time_steps);
     values_.write(hyperslab(item_idx), values);
 }
 

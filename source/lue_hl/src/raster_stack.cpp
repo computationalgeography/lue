@@ -238,7 +238,7 @@ RasterStack::Band RasterStack::add_band(
     size_t const nr_items = 1;
 
     property.values().reserve(
-        nr_time_domain_items, nr_items, _discretization.shape().data());
+        nr_items, nr_time_domain_items, _discretization.shape().data());
     property.discretize_time(_time_discretization_property);
     property.discretize_space(_space_discretization_property);
 

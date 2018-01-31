@@ -22,31 +22,33 @@ namespace same_shape {
     of the individual values. The first dimension represents the time,
     the second the items.
 */
-class Variable:
+class SynchronousVariable:
     public Array
 {
 
 public:
 
-                   Variable            (hdf5::Group const& parent,
+                   SynchronousVariable (hdf5::Group const& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& memory_datatype);
 
-                   Variable            (hdf5::Dataset&& dataset,
+                   SynchronousVariable (hdf5::Dataset&& dataset,
                                         hdf5::Datatype const& memory_datatype);
 
-                   Variable            (Variable const&)=delete;
+                   SynchronousVariable (SynchronousVariable const&)=delete;
 
-                   Variable            (Variable&&)=default;
+                   SynchronousVariable (SynchronousVariable&&)=default;
 
-                   ~Variable           ()=default;
+                   ~SynchronousVariable()=default;
 
-    Variable&      operator=           (Variable const&)=delete;
+    SynchronousVariable&
+                   operator=           (SynchronousVariable const&)=delete;
 
-    Variable&      operator=           (Variable&&)=default;
+    SynchronousVariable&
+                   operator=           (SynchronousVariable&&)=default;
 
-    void           reserve             (hsize_t nr_time_domain_items,
-                                        hsize_t nr_items);
+    void           reserve             (hsize_t nr_items,
+                                        hsize_t nr_time_domain_items);
 
     hsize_t        nr_time_domain_items() const;
 
@@ -56,41 +58,45 @@ public:
 
     using Array::read;
 
-    void           read                (hsize_t time_idx,
-                                        hsize_t item_idx,
+    void           read                (hsize_t item_idx,
+                                        hsize_t time_idx,
                                         void* buffer);
 
     using Array::write;
 
-    void           write               (hsize_t time_idx,
-                                        hsize_t item_idx,
+    void           write               (hsize_t item_idx,
+                                        hsize_t time_idx,
                                         void const* buffer);
 
 private:
 
     hdf5::Hyperslab hyperslab          (hsize_t item_idx) const;
 
-    hdf5::Hyperslab hyperslab          (hsize_t time_idx,
-                                        hsize_t item_idx) const;
+    hdf5::Hyperslab hyperslab          (hsize_t item_idx,
+                                        hsize_t time_idx) const;
 
 };
 
 
-Variable           create_variable     (hdf5::Group& parent,
+SynchronousVariable create_synchronous_variable(
+                                        hdf5::Group& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& memory_datatype);
 
-Variable           create_variable     (hdf5::Group& parent,
+SynchronousVariable create_synchronous_variable(
+                                        hdf5::Group& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& memory_datatype,
                                         hdf5::Shape const& value_shape);
 
-Variable           create_variable     (hdf5::Group& parent,
+SynchronousVariable create_synchronous_variable(
+                                        hdf5::Group& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& file_datatype,
                                         hdf5::Datatype const& memory_datatype);
 
-Variable           create_variable     (hdf5::Group& parent,
+SynchronousVariable create_synchronous_variable(
+                                        hdf5::Group& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& file_datatype,
                                         hdf5::Datatype const& memory_datatype,

@@ -29,7 +29,7 @@ add_library(lue_py SHARED
     src/item/constant_collection/constant_shape/different_shape/variable
     src/item/constant_collection/constant_shape/different_shape/submodule
     src/item/constant_collection/constant_shape/same_shape/constant
-    src/item/constant_collection/constant_shape/same_shape/variable
+    src/item/constant_collection/constant_shape/same_shape/synchronous_variable
     src/item/constant_collection/constant_shape/same_shape/submodule
     src/item/constant_collection/constant_shape/submodule
 

@@ -1,6 +1,6 @@
-#define BOOST_TEST_MODULE lue item constant_collection constant_shape same_shape variable
+#define BOOST_TEST_MODULE lue item constant_collection constant_shape same_shape synchronous_variable
 #include <boost/test/unit_test.hpp>
-#include "lue/item/constant_collection/constant_shape/same_shape/variable.hpp"
+#include "lue/item/constant_collection/constant_shape/same_shape/synchronous_variable.hpp"
 #include "lue/tag.hpp"
 #include "lue/test.hpp"
 #include "lue/hdf5/file.hpp"
@@ -23,8 +23,8 @@ BOOST_AUTO_TEST_CASE(create_collection)
     std::size_t const nr_cells = nr_rows * nr_cols;
     lue::hdf5::Shape value_shape{nr_rows, nr_cols};
 
-    auto collection =
-        same_shape::create_variable(file, value_name, datatype, value_shape);
+    auto collection = same_shape::create_synchronous_variable(
+        file, value_name, datatype, value_shape);
 
     BOOST_CHECK_EQUAL(collection.nr_items(), 0);
     BOOST_CHECK(collection.value_shape() == value_shape);
@@ -35,13 +35,13 @@ BOOST_AUTO_TEST_CASE(create_collection)
 
     hsize_t const nr_time_domain_items = 2;
     hsize_t const nr_items = 3;
-    collection.reserve(nr_time_domain_items, nr_items);
+    collection.reserve(nr_items, nr_time_domain_items);
 
     BOOST_CHECK_EQUAL(collection.nr_time_domain_items(), nr_time_domain_items);
     BOOST_CHECK_EQUAL(collection.nr_items(), nr_items);
 
     // Write and read values for all items
-    std::vector<int32_t> values = {
+    std::vector<int32_t> const values = {
         // First time step, first item, 6 values
         111, 112,
         113, 114,
@@ -83,10 +83,10 @@ BOOST_AUTO_TEST_CASE(create_collection)
         533, 534,
         535, 536,
     };
-    collection.write(0, 2, new_value.data());
+    collection.write(2, 0, new_value.data());
 
     std::vector<int32_t> value_read(nr_cells, 9);
-    collection.read(0, 2, value_read.data());
+    collection.read(2, 0, value_read.data());
 
     BOOST_CHECK_EQUAL_COLLECTIONS(
         value_read.begin(), value_read.end(),

@@ -1,4 +1,4 @@
-#include "lue/item/constant_collection/constant_shape/same_shape/variable.hpp"
+#include "lue/item/constant_collection/constant_shape/same_shape/synchronous_variable.hpp"
 #include <pybind11/pybind11.h>
 
 
@@ -10,23 +10,23 @@ namespace constant_collection {
 namespace constant_shape {
 namespace same_shape {
 
-void init_variable(
+void init_synchronous_variable(
     py::module& module)
 {
 
-    py::class_<Variable, lue::Array>(
+    py::class_<SynchronousVariable, lue::Array>(
         module,
-        "Variable",
-        "Variable docstring...")
+        "SynchronousVariable",
+        "SynchronousVariable docstring...")
 
         .def("reserve",
-            // &Variable::reserve,
+            // &SynchronousVariable::reserve,
             [](
-                Variable& self,
+                SynchronousVariable& self,
                 hsize_t nr_time_domain_items,
-                hsize_t nr_items) -> Variable&
+                hsize_t nr_items) -> SynchronousVariable&
             {
-                self.reserve(nr_time_domain_items, nr_items);
+                self.reserve(nr_items, nr_time_domain_items);
                 return self;
             },
             "reserve docstring...",
