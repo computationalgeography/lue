@@ -7,6 +7,7 @@ add_unit_tests(
         dataset_test
         item/constant_collection/constant_shape/different_shape/constant_test
         item/constant_collection/constant_shape/different_shape/synchronous_variable_test
+        item/constant_collection/constant_shape/same_shape/asynchronous_variable_test
         item/constant_collection/constant_shape/same_shape/constant_test
         item/constant_collection/constant_shape/same_shape/synchronous_variable_test
     LINK_LIBRARIES

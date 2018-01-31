@@ -6,48 +6,35 @@
 namespace lue {
 namespace constant_collection {
 namespace constant_shape {
-namespace different_shape {
+namespace same_shape {
 
-/*!
-    @brief      This collection manages variable item values for
-                constant sized collections of values with a different shape
-
-    Use this class if:
-    - The collection of items doesn't change through time
-    - The shape of the values don't change through time
-    - The shape of the each item's value can be different
-    - The values themselves change through time
-
-    Each item's value ends up in a seperate HDF5 dataset, named after the
-    item's index. All datasets have the same rank, but the size of each
-    dimension may be different. Each dataset has one dimension more than the
-    rank of the individual values. This dimension represents time.
-*/
-class SynchronousVariable:
+class AsynchronousVariable:
     public hdf5::Group
 {
 
 public:
 
-                   SynchronousVariable (hdf5::Group const& parent,
+                   AsynchronousVariable(hdf5::Group const& parent,
                                         std::string const& name);
 
-                   SynchronousVariable (hdf5::Group const& parent,
+                   AsynchronousVariable(hdf5::Group const& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& memory_datatype);
 
-                   SynchronousVariable (hdf5::Group&& group,
+                   AsynchronousVariable(hdf5::Group&& group,
                                         hdf5::Datatype const& memory_datatype);
 
-                   SynchronousVariable (SynchronousVariable const&)=delete;
+                   AsynchronousVariable(AsynchronousVariable const&)=delete;
 
-                   SynchronousVariable (SynchronousVariable&&)=default;
+                   AsynchronousVariable(AsynchronousVariable&&)=default;
 
-                   ~SynchronousVariable()=default;
+                   ~AsynchronousVariable()=default;
 
-    SynchronousVariable& operator=     (SynchronousVariable const&)=delete;
+    AsynchronousVariable&
+                   operator=           (AsynchronousVariable const&)=delete;
 
-    SynchronousVariable& operator=     (SynchronousVariable&&)=default;
+    AsynchronousVariable&
+                   operator=           (AsynchronousVariable&&)=default;
 
     hdf5::Datatype const&
                    file_datatype       () const;
@@ -56,10 +43,10 @@ public:
                    memory_datatype     () const;
 
     void           reserve             (hsize_t nr_items,
-                                        hsize_t nr_time_domain_items,
+                                        hsize_t const* nr_time_domain_items,
                                         hsize_t const* value_shapes);
 
-    hsize_t        nr_time_domain_items() const;
+    hsize_t        nr_time_domain_items(hsize_t item_idx) const;
 
     hsize_t        nr_items            () const;
 
@@ -92,14 +79,11 @@ private:
     hdf5::Hyperslab hyperslab          (hdf5::Shape const& dataset_shape,
                                         hsize_t time_idx) const;
 
-    //! Number of time domain items for which values are stored
-    hsize_t        _nr_time_domain_items;
-
     //! Number of items for which values are stored
     hsize_t        _nr_items;
 
     //! Rank of the values
-    int            _rank;
+    int const      _rank;
 
     //! In-file datatype
     hdf5::Datatype const _file_datatype;
@@ -110,20 +94,20 @@ private:
 };
 
 
-SynchronousVariable create_synchronous_variable(
+AsynchronousVariable create_asynchronous_variable(
                                         hdf5::Group& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& memory_datatype,
                                         int rank);
 
-SynchronousVariable create_synchronous_variable(
+AsynchronousVariable create_asynchronous_variable(
                                         hdf5::Group& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& file_datatype,
                                         hdf5::Datatype const& memory_datatype,
                                         int rank);
 
-}  // namespace different_shape
+}  // namespace same_shape
 }  // namespace constant_shape
 }  // namespace constant_collection
 }  // namespace lue

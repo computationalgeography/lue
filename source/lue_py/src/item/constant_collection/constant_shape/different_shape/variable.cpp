@@ -56,7 +56,7 @@ void init_variable(
                 hsize_t const nr_items = array_info.shape[0];
 
                 self.reserve(
-                    nr_time_domain_items, nr_items,
+                    nr_items, nr_time_domain_items,
                     static_cast<hsize_t const*>(array_info.ptr));
 
                 return self;

@@ -40,8 +40,8 @@ SynchronousVariable::SynchronousVariable(
                 item values
 */
 void SynchronousVariable::reserve(
-    hsize_t const nr_time_domain_items,
-    hsize_t const nr_items)
+    hsize_t const nr_items,
+    hsize_t const nr_time_domain_items)
 {
     auto shape = this->shape();
     shape[0] = nr_time_domain_items;
@@ -86,8 +86,8 @@ hdf5::Shape SynchronousVariable::value_shape() const
 
 
 hdf5::Hyperslab SynchronousVariable::hyperslab(
-    hsize_t const time_idx,
-    hsize_t const item_idx) const
+    hsize_t const item_idx,
+    hsize_t const time_idx) const
 {
     auto shape = this->shape();
 
@@ -104,20 +104,20 @@ hdf5::Hyperslab SynchronousVariable::hyperslab(
 
 
 void SynchronousVariable::read(
-    hsize_t const time_idx,
     hsize_t const item_idx,
+    hsize_t const time_idx,
     void* buffer)
 {
-    Array::read(hyperslab(time_idx, item_idx), buffer);
+    Array::read(hyperslab(item_idx, time_idx), buffer);
 }
 
 
 void SynchronousVariable::write(
-    hsize_t const time_idx,
     hsize_t const item_idx,
+    hsize_t const time_idx,
     void const* buffer)
 {
-    Array::write(hyperslab(time_idx, item_idx), buffer);
+    Array::write(hyperslab(item_idx, time_idx), buffer);
 }
 
 

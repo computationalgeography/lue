@@ -30,7 +30,7 @@ BOOST_AUTO_TEST_CASE(create_collection)
 
 
     hsize_t const nr_items = 5;
-    std::vector<hsize_t> value_shapes = {
+    std::vector<hsize_t> const value_shapes = {
         11, 12,
         21, 22,
         31, 32,

@@ -26,7 +26,7 @@ void init_synchronous_variable(
                 hsize_t nr_time_domain_items,
                 hsize_t nr_items) -> SynchronousVariable&
             {
-                self.reserve(nr_time_domain_items, nr_items);
+                self.reserve(nr_items, nr_time_domain_items);
                 return self;
             },
             "reserve docstring...",

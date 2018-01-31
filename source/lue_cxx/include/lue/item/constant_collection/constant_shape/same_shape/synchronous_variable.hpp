@@ -41,12 +41,14 @@ public:
 
                    ~SynchronousVariable()=default;
 
-    SynchronousVariable& operator=     (SynchronousVariable const&)=delete;
+    SynchronousVariable&
+                   operator=           (SynchronousVariable const&)=delete;
 
-    SynchronousVariable& operator=     (SynchronousVariable&&)=default;
+    SynchronousVariable&
+                   operator=           (SynchronousVariable&&)=default;
 
-    void           reserve             (hsize_t nr_time_domain_items,
-                                        hsize_t nr_items);
+    void           reserve             (hsize_t nr_items,
+                                        hsize_t nr_time_domain_items);
 
     hsize_t        nr_time_domain_items() const;
 
@@ -56,22 +58,22 @@ public:
 
     using Array::read;
 
-    void           read                (hsize_t time_idx,
-                                        hsize_t item_idx,
+    void           read                (hsize_t item_idx,
+                                        hsize_t time_idx,
                                         void* buffer);
 
     using Array::write;
 
-    void           write               (hsize_t time_idx,
-                                        hsize_t item_idx,
+    void           write               (hsize_t item_idx,
+                                        hsize_t time_idx,
                                         void const* buffer);
 
 private:
 
     hdf5::Hyperslab hyperslab          (hsize_t item_idx) const;
 
-    hdf5::Hyperslab hyperslab          (hsize_t time_idx,
-                                        hsize_t item_idx) const;
+    hdf5::Hyperslab hyperslab          (hsize_t item_idx,
+                                        hsize_t time_idx) const;
 
 };
 

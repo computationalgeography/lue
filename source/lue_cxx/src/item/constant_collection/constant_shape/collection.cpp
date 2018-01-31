@@ -1,11 +1,10 @@
-#include "lue/item/constant_collection/constant_shape/different_shape/collection.hpp"
+#include "lue/item/constant_collection/constant_shape/collection.hpp"
 #include "lue/tag.hpp"
 
 
 namespace lue {
 namespace constant_collection {
 namespace constant_shape {
-namespace different_shape {
 
 /*!
     @brief      Create group @a name in @a parent
@@ -29,7 +28,6 @@ hdf5::Group create_group(
     return group;
 }
 
-}  // namespace different_shape
 }  // namespace constant_shape
 }  // namespace constant_collection
 }  // namespace lue

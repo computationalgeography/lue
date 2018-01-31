@@ -1,4 +1,4 @@
-#include "lue/item/constant_collection/constant_shape/different_shape/synchronous_variable.hpp"
+#include "lue/item/constant_collection/constant_shape/same_shape/asynchronous_variable.hpp"
 #include "lue/item/constant_collection/constant_shape/collection.hpp"
 #include "lue/tag.hpp"
 #include "lue/hdf5/chunk.hpp"
@@ -7,18 +7,16 @@
 namespace lue {
 namespace constant_collection {
 namespace constant_shape {
-namespace different_shape {
+namespace same_shape {
 
 /*!
     @brief      Open collection @a name in @a parent
 */
-SynchronousVariable::SynchronousVariable(
+AsynchronousVariable::AsynchronousVariable(
     hdf5::Group const& parent,
     std::string const& name)
 
     : Group{parent, name},
-      _nr_time_domain_items{attributes().read<hsize_t>(
-          nr_time_domain_items_tag)},
       _nr_items{attributes().read<hsize_t>(nr_items_tag)},
       _rank{attributes().read<int>(rank_tag)},
       _file_datatype{hdf5::decode_datatype(
@@ -32,14 +30,12 @@ SynchronousVariable::SynchronousVariable(
 /*!
     @brief      Open collection @a name in @a parent
 */
-SynchronousVariable::SynchronousVariable(
+AsynchronousVariable::AsynchronousVariable(
     hdf5::Group const& parent,
     std::string const& name,
     hdf5::Datatype const& memory_datatype)
 
     : Group{parent, name},
-      _nr_time_domain_items{attributes().read<hsize_t>(
-          nr_time_domain_items_tag)},
       _nr_items{attributes().read<hsize_t>(nr_items_tag)},
       _rank{attributes().read<int>(rank_tag)},
       _file_datatype{hdf5::decode_datatype(
@@ -53,13 +49,11 @@ SynchronousVariable::SynchronousVariable(
 /*!
     @brief      Move in @a group
 */
-SynchronousVariable::SynchronousVariable(
+AsynchronousVariable::AsynchronousVariable(
     hdf5::Group&& group,
     hdf5::Datatype const& memory_datatype)
 
     : Group{std::forward<hdf5::Group>(group)},
-      _nr_time_domain_items{attributes().read<hsize_t>(
-          nr_time_domain_items_tag)},
       _nr_items{attributes().read<hsize_t>(nr_items_tag)},
       _rank{attributes().read<int>(rank_tag)},
       _file_datatype{hdf5::decode_datatype(
@@ -73,16 +67,19 @@ SynchronousVariable::SynchronousVariable(
 /*!
     @brief      Return number of time domain items for which values are stored
 */
-hsize_t SynchronousVariable::nr_time_domain_items() const
+hsize_t AsynchronousVariable::nr_time_domain_items(
+    hsize_t const item_idx) const
 {
-    return _nr_time_domain_items;
+    hdf5::Dataset const dataset{*this, std::to_string(item_idx)};
+
+    return dataset.shape()[0];
 }
 
 
 /*!
     @brief      Return number of items for which values are stored
 */
-hsize_t SynchronousVariable::nr_items() const
+hsize_t AsynchronousVariable::nr_items() const
 {
     return _nr_items;
 }
@@ -91,7 +88,7 @@ hsize_t SynchronousVariable::nr_items() const
 /*!
     @brief      Return rank of each of the item's value
 */
-int SynchronousVariable::rank() const
+int AsynchronousVariable::rank() const
 {
     return _rank;
 }
@@ -100,7 +97,7 @@ int SynchronousVariable::rank() const
 /*!
     @brief      Return in-file datatype
 */
-hdf5::Datatype const& SynchronousVariable::file_datatype() const
+hdf5::Datatype const& AsynchronousVariable::file_datatype() const
 {
     return _file_datatype;
 }
@@ -109,7 +106,7 @@ hdf5::Datatype const& SynchronousVariable::file_datatype() const
 /*!
     @brief      Return in-memory datatype
 */
-hdf5::Datatype const& SynchronousVariable::memory_datatype() const
+hdf5::Datatype const& AsynchronousVariable::memory_datatype() const
 {
     return _memory_datatype;
 }
@@ -122,7 +119,7 @@ hdf5::Datatype const& SynchronousVariable::memory_datatype() const
 
     The underlying HDF5 dataset is chunked according to hdf5::chunk_shape().
 */
-void SynchronousVariable::reserve_value(
+void AsynchronousVariable::reserve_value(
     hsize_t const item_idx,
     hsize_t const nr_time_domain_items,
     hdf5::Shape const& value_shape)
@@ -153,21 +150,20 @@ void SynchronousVariable::reserve_value(
     @brief      Reserve space for @a nr_time_domain_items and @a nr_items
                 item values shaped as @a value_shapes
 */
-void SynchronousVariable::reserve(
+void AsynchronousVariable::reserve(
     hsize_t const nr_items,
-    hsize_t const nr_time_domain_items,
+    hsize_t const* nr_time_domain_items,
     hsize_t const* value_shapes)
 {
     for(hsize_t i = 0; i < nr_items; ++i) {
+        auto const nr_time_domain_items_ = nr_time_domain_items[i];
         hsize_t const* shape_ptr = &(value_shapes[i * _rank]);
-        hdf5::Shape shape(shape_ptr, shape_ptr + _rank);
-        reserve_value(i, nr_time_domain_items, shape);
+        hdf5::Shape shape{shape_ptr, shape_ptr + _rank};
+        reserve_value(i, nr_time_domain_items_, shape);
     }
 
-    _nr_time_domain_items = nr_time_domain_items;
     _nr_items = nr_items;
 
-    attributes().write<hsize_t>(nr_time_domain_items_tag, nr_time_domain_items);
     attributes().write<hsize_t>(nr_items_tag, nr_items);
 }
 
@@ -175,14 +171,14 @@ void SynchronousVariable::reserve(
 /*!
     @brief      Return dataset corresponding to item @a item_idx
 */
-Array SynchronousVariable::operator[](
+Array AsynchronousVariable::operator[](
     hsize_t const item_idx) const
 {
     return Array{*this, std::to_string(item_idx), _memory_datatype};
 }
 
 
-hdf5::Shape SynchronousVariable::value_shape(
+hdf5::Shape AsynchronousVariable::value_shape(
     hsize_t item_idx)
 {
     auto const shape = operator[](item_idx).shape();
@@ -193,7 +189,7 @@ hdf5::Shape SynchronousVariable::value_shape(
 }
 
 
-hdf5::Hyperslab SynchronousVariable::hyperslab(
+hdf5::Hyperslab AsynchronousVariable::hyperslab(
     hdf5::Shape const& dataset_shape,
     hsize_t const time_idx) const
 {
@@ -207,7 +203,7 @@ hdf5::Hyperslab SynchronousVariable::hyperslab(
 }
 
 
-void SynchronousVariable::read(
+void AsynchronousVariable::read(
     hsize_t const item_idx,
     void* buffer)
 {
@@ -215,7 +211,7 @@ void SynchronousVariable::read(
 }
 
 
-void SynchronousVariable::read(
+void AsynchronousVariable::read(
     hsize_t const item_idx,
     hsize_t const time_idx,
     void* buffer)
@@ -226,7 +222,7 @@ void SynchronousVariable::read(
 }
 
 
-void SynchronousVariable::write(
+void AsynchronousVariable::write(
     hsize_t const item_idx,
     void const* buffer)
 {
@@ -234,7 +230,7 @@ void SynchronousVariable::write(
 }
 
 
-void SynchronousVariable::write(
+void AsynchronousVariable::write(
     hsize_t const item_idx,
     hsize_t const time_idx,
     void const* buffer)
@@ -251,13 +247,13 @@ void SynchronousVariable::write(
     The datatype is of the individual values. The @a rank passed in
     defines the dimensionality of the item values.
 */
-SynchronousVariable create_synchronous_variable(
+AsynchronousVariable create_asynchronous_variable(
     hdf5::Group& parent,
     std::string const& name,
     hdf5::Datatype const& memory_datatype,
     int const rank)
 {
-    return create_synchronous_variable(
+    return create_asynchronous_variable(
         parent, name, hdf5::file_datatype(memory_datatype), memory_datatype,
         rank);
 }
@@ -269,7 +265,7 @@ SynchronousVariable create_synchronous_variable(
     The datatypes are of the individual values. The @a rank passed in
     defines the dimensionality of the item values.
 */
-SynchronousVariable create_synchronous_variable(
+AsynchronousVariable create_asynchronous_variable(
     hdf5::Group& parent,
     std::string const& name,
     hdf5::Datatype const& file_datatype,
@@ -281,10 +277,10 @@ SynchronousVariable create_synchronous_variable(
 
     group.attributes().write<hsize_t>(nr_time_domain_items_tag, 0);
 
-    return SynchronousVariable{std::move(group), memory_datatype};
+    return AsynchronousVariable{std::move(group), memory_datatype};
 }
 
-}  // namespace different_shape
+}  // namespace same_shape
 }  // namespace constant_shape
 }  // namespace constant_collection
 }  // namespace lue
