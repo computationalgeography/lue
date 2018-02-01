@@ -61,7 +61,7 @@ SpaceBoxDomain create_space_box_domain(
     PropertySet& property_set,
     hdf5::Datatype const& file_datatype,
     hdf5::Datatype const& memory_datatype,
-    size_t const rank)
+    std::size_t const rank)
 {
     auto& domain = property_set.domain();
 

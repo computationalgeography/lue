@@ -12,7 +12,8 @@ Attribute::Attribute(
     Identifier&& id)
 
     : _id{std::forward<Identifier>(id)},
-      _datatype(::H5Aget_type(_id))
+      _datatype{::H5Aget_type(_id)},
+      _dataspace{::H5Aget_space(_id)}
 
 {
 }
@@ -29,7 +30,8 @@ Attribute::Attribute(
     std::string const& name)
 
     : _id(::H5Aopen(location, name.c_str(), H5P_DEFAULT), ::H5Aclose),
-      _datatype(::H5Aget_type(_id))
+      _datatype{::H5Aget_type(_id)},
+      _dataspace{::H5Aget_space(_id)}
 
 {
 }
@@ -50,6 +52,15 @@ Identifier const& Attribute::id() const
 Datatype const& Attribute::datatype() const
 {
     return _datatype;
+}
+
+
+/*!
+    @brief      Return the dataspace of the attribute
+*/
+Dataspace const& Attribute::dataspace() const
+{
+    return _dataspace;
 }
 
 

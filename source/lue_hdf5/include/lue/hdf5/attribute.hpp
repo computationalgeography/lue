@@ -3,10 +3,129 @@
 #include "lue/hdf5/datatype.hpp"
 #include "lue/hdf5/datatype_traits.hpp"
 #include <cassert>
+#include <type_traits>
 
 
 namespace lue {
 namespace hdf5 {
+namespace detail {
+
+template<
+    typename T>
+inline std::enable_if_t<!std::is_base_of<std::vector<hsize_t>, T>::value>
+        read_attribute(
+    Identifier const& id,
+    Datatype const& datatype,
+    Dataspace const& /* dataspace */,
+    T& value)
+{
+    auto status = ::H5Aread(id, datatype.id(), &value);
+
+    if(status < 0) {
+        throw std::runtime_error("Cannot read attribute");
+    }
+}
+
+
+template<>
+inline void read_attribute<std::string>(
+    Identifier const& id,
+    Datatype const& datatype,
+    Dataspace const& /* dataspace */,
+    std::string& value)
+{
+    static_assert(std::is_same<std::string::value_type, char>::value,
+        "expect std::string::value_type to be char");
+
+    assert(datatype.encoding() == ::H5T_CSET_UTF8);
+
+    auto const nr_bytes = datatype.size();
+
+    value.resize(nr_bytes, 'x');
+
+    auto status = ::H5Aread(id, datatype.id(),
+#if __cplusplus > 201402L
+        value.data()
+#else
+        const_cast<std::string::value_type*>(value.data())
+#endif
+    );
+    assert(value.size() == nr_bytes);
+
+    if(status < 0) {
+        throw std::runtime_error("Cannot read attribute");
+    }
+}
+
+
+template<
+    typename T>
+inline void read_attribute(
+    Identifier const& id,
+    Datatype const& datatype,
+    Dataspace const& dataspace,
+    std::vector<T>& value)
+{
+    auto const nr_elements = dataspace.nr_elements();
+
+    value.resize(nr_elements);
+
+    auto status = ::H5Aread(id, datatype.id(), value.data());
+    assert(value.size() == static_cast<std::size_t>(nr_elements));
+
+    if(status < 0) {
+        throw std::runtime_error("Cannot read attribute");
+    }
+}
+
+
+template<
+    typename T>
+inline std::enable_if_t<!std::is_base_of<std::vector<hsize_t>, T>::value>
+        write_attribute(
+    Identifier const& id,
+    Datatype const& datatype,
+    T const& value)
+{
+    auto status = ::H5Awrite(id, datatype.id(), &value);
+
+    if(status < 0) {
+        throw std::runtime_error("Cannot write attribute");
+    }
+}
+
+
+template<>
+inline void write_attribute<std::string>(
+    Identifier const& id,
+    Datatype const& datatype,
+    std::string const& value)
+{
+    auto status = ::H5Awrite(id, datatype.id(), value.c_str());
+
+    if(status < 0) {
+        throw std::runtime_error("Cannot write attribute");
+    }
+}
+
+
+template<
+    typename T>
+inline void write_attribute(
+    Identifier const& id,
+    Datatype const& datatype,
+    std::vector<T> const& value)
+{
+    auto status = ::H5Awrite(id, datatype.id(), value.data());
+
+    if(status < 0) {
+        throw std::runtime_error("Cannot write attribute");
+    }
+}
+
+}  // namespace detail
+
+
 
 /*!
     @brief      This class represents an attribute
@@ -35,6 +154,8 @@ public:
 
     Datatype const& datatype           () const;
 
+    Dataspace const& dataspace         () const;
+
     template<
         typename T>
     void           write               (T const& value);
@@ -61,55 +182,10 @@ private:
     //! Datatype of attribute
     Datatype       _datatype;
 
+    //! Dataspace of attribute
+    Dataspace      _dataspace;
+
 };
-
-
-template<>
-inline std::string Attribute::read<std::string>() const
-{
-    static_assert(std::is_same<std::string::value_type, char>::value,
-        "expect std::string::value_type to be char");
-
-    assert(_datatype.encoding() == ::H5T_CSET_UTF8);
-
-    auto const nr_bytes = _datatype.size();
-
-    std::string result(nr_bytes, 'x');
-
-    auto status = ::H5Aread(_id, _datatype.id(),
-#if __cplusplus > 201402L
-        result.data()
-#else
-        const_cast<std::string::value_type*>(result.data())
-#endif
-    );
-    assert(result.size() == nr_bytes);
-
-    if(status < 0) {
-        throw std::runtime_error("Cannot read attribute");
-    }
-
-    return result;
-}
-
-
-template<>
-inline std::vector<unsigned char>
-    Attribute::read<std::vector<unsigned char>>() const
-{
-    auto const nr_bytes = _datatype.size();
-
-    std::vector<unsigned char> result(nr_bytes);
-
-    auto status = ::H5Aread(_id, _datatype.id(), result.data());
-    assert(result.size() == nr_bytes);
-
-    if(status < 0) {
-        throw std::runtime_error("Cannot read attribute");
-    }
-
-    return result;
-}
 
 
 /*!
@@ -124,11 +200,7 @@ template<
 inline T Attribute::read() const
 {
     T value;
-    auto status = ::H5Aread(_id, _datatype.id(), &value);
-
-    if(status < 0) {
-        throw std::runtime_error("Cannot read attribute");
-    }
+    detail::read_attribute(id(), datatype(), dataspace(), value);
 
     return value;
 }
@@ -140,35 +212,7 @@ inline void Attribute::read(
     Datatype const& memory_datatype,
     T& value)
 {
-    auto status = ::H5Aread(_id, memory_datatype.id(), &value);
-
-    if(status < 0) {
-        throw std::runtime_error("Cannot read attribute");
-    }
-}
-
-
-template<>
-inline void Attribute::write<std::string>(
-    std::string const& value)
-{
-    auto status = ::H5Awrite(_id, _datatype.id(), value.c_str());
-
-    if(status < 0) {
-        throw std::runtime_error("Cannot write attribute");
-    }
-}
-
-
-template<>
-inline void Attribute::write<std::vector<unsigned char>>(
-    std::vector<unsigned char> const& value)
-{
-    auto status = ::H5Awrite(_id, _datatype.id(), value.data());
-
-    if(status < 0) {
-        throw std::runtime_error("Cannot write attribute");
-    }
+    detail::read_attribute(id(), memory_datatype, dataspace(), value);
 }
 
 
@@ -184,11 +228,7 @@ template<
 inline void Attribute::write(
     T const& value)
 {
-    auto status = ::H5Awrite(_id, _datatype.id(), &value);
-
-    if(status < 0) {
-        throw std::runtime_error("Cannot write attribute");
-    }
+    detail::write_attribute(id(), datatype(), value);
 }
 
 
@@ -198,11 +238,7 @@ inline void Attribute::write(
     Datatype const& memory_datatype,
     T const& value)
 {
-    auto status = ::H5Awrite(_id, memory_datatype.id(), &value);
-
-    if(status < 0) {
-        throw std::runtime_error("Cannot write attribute");
-    }
+    detail::write_attribute(id(), memory_datatype, value);
 }
 
 
@@ -212,11 +248,35 @@ Attribute          create_attribute    (Identifier const& location,
                                         Dataspace const& dataspace);
 
 
+/*!
+    @brief      Create attribute and initialize its value
+    @param      location Location
+    @param      name Name
+    @param      value Initial value
+    @sa         create_attribute(Identifier const&, std::string const&,
+                Datatype const&, Dataspace const&)
+
+    This overload is enabled for all types that don't enherit from
+    std::vector<hsize_t>. This is done to let the compiler pick the
+    overload for std::vector<T> for Shape, for example.
+*/
 template<
     typename T>
-Attribute          create_attribute    (Identifier const& location,
-                                        std::string const& name,
-                                        T const& value);
+inline std::enable_if_t<
+    !std::is_base_of<std::vector<hsize_t>, T>::value, Attribute>
+        create_attribute(
+    Identifier const& location,
+    std::string const& name,
+    T const& value)
+{
+    auto datatype = Datatype{NativeDatatypeTraits<T>::type_id()};
+    auto dataspace = Dataspace{::H5S_SCALAR};
+    auto attribute = create_attribute(location, name, datatype, dataspace);
+
+    attribute.write(value);
+
+    return attribute;
+}
 
 
 template<>
@@ -225,47 +285,27 @@ inline Attribute create_attribute(
     std::string const& name,
     std::string const& value)
 {
-    auto attribute = create_attribute(location, name,
-        create_datatype(value.size()), Dataspace(::H5S_SCALAR));
+    auto datatype = create_datatype(value.size());
+    auto dataspace = Dataspace{::H5S_SCALAR};
+    auto attribute = create_attribute(location, name, datatype, dataspace);
+
     attribute.write(value);
 
     return attribute;
 }
 
 
-template<>
-inline Attribute create_attribute<std::vector<unsigned char>>(
-    Identifier const& location,
-    std::string const& name,
-    std::vector<unsigned char> const& value)
-{
-    auto attribute = create_attribute(location, name,
-        create_datatype(H5T_NATIVE_UCHAR, value.size()),
-        Dataspace(::H5S_SCALAR));
-    attribute.write(value);
-
-    return attribute;
-}
-
-
-/*!
-    @brief      Create attribute and initialize its value
-    @param      location Location
-    @param      name Name
-    @param      value Initial value
-    @sa         create_attribute(Identifier const&, std::string const&,
-                Datatype const&, Dataspace const&)
-*/
 template<
     typename T>
 inline Attribute create_attribute(
     Identifier const& location,
     std::string const& name,
-    T const& value)
+    std::vector<T> const& value)
 {
-    auto attribute = create_attribute(location, name,
-        Datatype(NativeDatatypeTraits<T>::type_id()),
-        Dataspace(::H5S_SCALAR));
+    auto datatype = Datatype{NativeDatatypeTraits<T>::type_id()};
+    auto dataspace = create_dataspace(Shape{value.size()});
+    auto attribute = create_attribute(location, name, datatype, dataspace);
+
     attribute.write(value);
 
     return attribute;

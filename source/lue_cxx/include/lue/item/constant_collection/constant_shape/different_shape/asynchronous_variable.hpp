@@ -6,7 +6,7 @@
 namespace lue {
 namespace constant_collection {
 namespace constant_shape {
-namespace same_shape {
+namespace different_shape {
 
 class AsynchronousVariable:
     public hdf5::Group
@@ -43,14 +43,16 @@ public:
                    memory_datatype     () const;
 
     void           reserve             (hsize_t nr_items,
-                                        hsize_t const* nr_time_domain_items);
+                                        hsize_t const* nr_time_domain_items,
+                                        hsize_t const* value_shapes);
 
     hsize_t        nr_time_domain_items(hsize_t item_idx) const;
 
     hsize_t        nr_items            () const;
 
-    hdf5::Shape const&
-                   value_shape         ();
+    int            rank                () const;
+
+    hdf5::Shape    value_shape         (hsize_t item_idx);
 
     Array          operator[]          (hsize_t item_idx) const;
 
@@ -80,7 +82,8 @@ private:
     //! Number of items for which values are stored
     hsize_t        _nr_items;
 
-    hdf5::Shape const _value_shape;
+    //! Rank of the values
+    int const      _rank;
 
     //! In-file datatype
     hdf5::Datatype const _file_datatype;
@@ -95,16 +98,16 @@ AsynchronousVariable create_asynchronous_variable(
                                         hdf5::Group& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& memory_datatype,
-                                        hdf5::Shape const& value_shape);
+                                        int rank);
 
 AsynchronousVariable create_asynchronous_variable(
                                         hdf5::Group& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& file_datatype,
                                         hdf5::Datatype const& memory_datatype,
-                                        hdf5::Shape const& value_shape);
+                                        int rank);
 
-}  // namespace same_shape
+}  // namespace different_shape
 }  // namespace constant_shape
 }  // namespace constant_collection
 }  // namespace lue

@@ -28,6 +28,23 @@ hdf5::Group create_group(
     return group;
 }
 
+
+hdf5::Group create_group(
+    hdf5::Group const& parent,
+    std::string const& name,
+    hdf5::Datatype const& file_datatype,
+    hdf5::Shape const& value_shape)
+{
+    auto group = hdf5::create_group(parent, name);
+
+    group.attributes().write<std::vector<unsigned char>>(
+        datatype_tag, hdf5::encode_datatype(file_datatype));
+    group.attributes().write(shape_tag, value_shape);
+    group.attributes().write<hsize_t>(nr_items_tag, 0);
+
+    return group;
+}
+
 }  // namespace constant_shape
 }  // namespace constant_collection
 }  // namespace lue

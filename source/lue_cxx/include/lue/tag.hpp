@@ -18,6 +18,7 @@ static std::string const phenomena_tag = "lue_phenomena";
 static std::string const properties_tag = "lue_properties";
 static std::string const property_sets_tag = "lue_property_sets";
 static std::string const rank_tag = "lue_rank";
+static std::string const shape_tag = "lue_shape";
 static std::string const shape_per_item_tag = "lue_shape_per_item";
 static std::string const shape_variability_tag = "lue_shape_variability";
 static std::string const mobility_tag = "lue_mobility";

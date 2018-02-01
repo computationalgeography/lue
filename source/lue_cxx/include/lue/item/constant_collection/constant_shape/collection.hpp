@@ -8,8 +8,13 @@ namespace constant_shape {
 
 hdf5::Group        create_group        (hdf5::Group const& parent,
                                         std::string const& name,
-                                        hdf5::Datatype const& memory_datatype,
+                                        hdf5::Datatype const& file_datatype,
                                         int rank);
+
+hdf5::Group        create_group        (hdf5::Group const& parent,
+                                        std::string const& name,
+                                        hdf5::Datatype const& file_datatype,
+                                        hdf5::Shape const& value_shape);
 
 }  // namespace constant_shape
 }  // namespace constant_collection
