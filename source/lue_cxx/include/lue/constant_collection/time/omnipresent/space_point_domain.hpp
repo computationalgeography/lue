@@ -51,7 +51,7 @@ SpacePointDomain     create_space_point_domain(
                                         PropertySet& property_set,
                                         hdf5::Datatype const file_datatype,
                                         hdf5::Datatype const memory_datatype,
-                                        size_t rank);
+                                        std::size_t rank);
 
 }  // namespace omnipresent
 }  // namespace time

@@ -68,6 +68,7 @@ add_library(lue STATIC
 
     src/item/constant_collection/constant_shape/collection
     src/item/constant_collection/constant_shape/different_shape/constant
+    src/item/constant_collection/constant_shape/different_shape/asynchronous_variable
     src/item/constant_collection/constant_shape/different_shape/synchronous_variable
     src/item/constant_collection/constant_shape/same_shape/asynchronous_variable
     src/item/constant_collection/constant_shape/same_shape/constant
@@ -75,6 +76,10 @@ add_library(lue STATIC
 
     src/space/constant_collection/stationary/box
     src/space/constant_collection/stationary/point
+    src/space/constant_collection/mobile/asynchronous_box
+    src/space/constant_collection/mobile/asynchronous_point
+    src/space/constant_collection/mobile/synchronous_box
+    src/space/constant_collection/mobile/synchronous_point
 )
 
 add_library(lue::lue ALIAS lue)

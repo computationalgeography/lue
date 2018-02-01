@@ -1,48 +1,47 @@
-#include "lue/space/constant_collection/stationary/box.hpp"
+#include "lue/space/constant_collection/mobile/asynchronous_point.hpp"
 #include "lue/tag.hpp"
 
 
 namespace lue {
 namespace constant_collection {
-namespace stationary {
+namespace mobile {
 
-Box::Box(
+AsynchronousPoint::AsynchronousPoint(
     hdf5::Group const& parent,
     hdf5::Datatype const& memory_datatype)
 
-    : constant_shape::same_shape::Constant{
+    : constant_shape::same_shape::AsynchronousVariable{
         parent, coordinates_tag, memory_datatype}
 
 {
 }
 
 
-Box create_box(
+AsynchronousPoint create_asynchronous_point(
     hdf5::Group& parent,
     hdf5::Datatype const& memory_datatype,
     std::size_t const rank)
 {
-    return create_box(
+    return create_asynchronous_point(
         parent, file_datatype(memory_datatype), memory_datatype, rank);
 }
 
 
-Box create_box(
+AsynchronousPoint create_asynchronous_point(
     hdf5::Group& parent,
     hdf5::Datatype const& file_datatype,
     hdf5::Datatype const& memory_datatype,
     std::size_t const rank)
 {
-    // A box is defined by the coordinates of two opposite points
-    // (diagonally). Two of them is enough.
-    hdf5::Shape value_shape = {2 * rank};
+    // A point is defined by the coordinates along each dimension
+    hdf5::Shape value_shape{rank};
 
-    constant_shape::same_shape::create_constant(
+    constant_shape::same_shape::create_asynchronous_variable(
         parent, coordinates_tag, file_datatype, memory_datatype, value_shape);
 
-    return Box{std::move(parent), memory_datatype};
+    return AsynchronousPoint{std::move(parent), memory_datatype};
 }
 
-}  // namespace lue
+}  // namespace mobile
 }  // namespace constant_collection
-}  // namespace stationary
+}  // namespace lue

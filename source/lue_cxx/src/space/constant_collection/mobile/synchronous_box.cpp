@@ -1,33 +1,33 @@
-#include "lue/space/constant_collection/stationary/box.hpp"
+#include "lue/space/constant_collection/mobile/synchronous_box.hpp"
 #include "lue/tag.hpp"
 
 
 namespace lue {
 namespace constant_collection {
-namespace stationary {
+namespace mobile {
 
-Box::Box(
+SynchronousBox::SynchronousBox(
     hdf5::Group const& parent,
     hdf5::Datatype const& memory_datatype)
 
-    : constant_shape::same_shape::Constant{
+    : constant_shape::same_shape::SynchronousVariable{
         parent, coordinates_tag, memory_datatype}
 
 {
 }
 
 
-Box create_box(
+SynchronousBox create_synchronous_box(
     hdf5::Group& parent,
     hdf5::Datatype const& memory_datatype,
     std::size_t const rank)
 {
-    return create_box(
+    return create_synchronous_box(
         parent, file_datatype(memory_datatype), memory_datatype, rank);
 }
 
 
-Box create_box(
+SynchronousBox create_synchronous_box(
     hdf5::Group& parent,
     hdf5::Datatype const& file_datatype,
     hdf5::Datatype const& memory_datatype,
@@ -35,14 +35,14 @@ Box create_box(
 {
     // A box is defined by the coordinates of two opposite points
     // (diagonally). Two of them is enough.
-    hdf5::Shape value_shape = {2 * rank};
+    hdf5::Shape value_shape{2 * rank};
 
-    constant_shape::same_shape::create_constant(
+    constant_shape::same_shape::create_synchronous_variable(
         parent, coordinates_tag, file_datatype, memory_datatype, value_shape);
 
-    return Box{std::move(parent), memory_datatype};
+    return SynchronousBox{std::move(parent), memory_datatype};
 }
 
-}  // namespace lue
+}  // namespace mobile
 }  // namespace constant_collection
-}  // namespace stationary
+}  // namespace lue
