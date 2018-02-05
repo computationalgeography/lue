@@ -209,20 +209,16 @@ enum class Mobility
 // };
 
 
-// enum class TimeDomainItemType
-// {
-// 
-//     none,
-// 
-//     // point,
-// 
-//     period,
-// 
-//     // cell
-// 
-// };
-// 
-// 
+enum class TimeDomainItemType
+{
+
+    point,
+
+    box,
+
+};
+
+
 // enum class SpaceDomainType
 // {
 // 

@@ -20,6 +20,8 @@ add_library(lue STATIC
 #     # src/time_discretization_configuration
     src/time_domain
 #     src/time_domain_configuration
+    src/time_box
+    src/time_point
     src/time_unit_util
     src/validate
     src/universe
@@ -80,6 +82,7 @@ add_library(lue STATIC
     src/space/constant_collection/mobile/asynchronous_point
     src/space/constant_collection/mobile/synchronous_box
     src/space/constant_collection/mobile/synchronous_point
+
 )
 
 add_library(lue::lue ALIAS lue)

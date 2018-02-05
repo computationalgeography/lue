@@ -4,7 +4,7 @@ copy_python_unit_test_modules(
 )
 
 add_unit_tests(
-    SCOPE python_extension_lue
+    SCOPE lue_py
     NAMES
         python_test
     INCLUDE_DIRS

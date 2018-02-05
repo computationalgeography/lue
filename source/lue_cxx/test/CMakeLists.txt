@@ -1,11 +1,13 @@
 add_unit_tests(
-    SCOPE lue
+    SCOPE lue_cxx
     NAMES
 
         case_study/constant_test
         compound/clock_test
         constant_collection/time/omnipresent/property_set_test
         dataset_test
+        time_box_test
+        time_point_test
 
         item/constant_collection/constant_shape/different_shape/asynchronous_variable_test
         item/constant_collection/constant_shape/different_shape/constant_test

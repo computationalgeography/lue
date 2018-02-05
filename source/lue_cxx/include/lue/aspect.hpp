@@ -171,6 +171,31 @@ struct AspectMap<SpaceDomainItemType>
     }
 };
 
+
+template<>
+struct Tag<TimeDomainItemType>
+{
+    static std::string const& value() {
+        static std::string const tag = time_domain_item_type_tag;
+        return tag;
+    }
+};
+
+
+template<>
+struct AspectMap<TimeDomainItemType>
+{
+    static detail::EnumStringBimap<TimeDomainItemType> const& value()
+    {
+        static detail::EnumStringBimap<TimeDomainItemType> const map {
+            { TimeDomainItemType::point, "lue_point" },
+            { TimeDomainItemType::box, "lue_box" },
+        };
+
+        return map;
+    }
+};
+
 }  // namespace detail
 
 
