@@ -1,7 +1,7 @@
 #include "lue/hl/raster_stack.hpp"
+#include "lue/constant_collection/property_set.hpp"
 #include "lue/constant_collection/time/located/time_box_domain.hpp"
 #include "lue/constant_collection/time/located/constant_shape/same_shape/property.hpp"
-#include "lue/constant_collection/time/omnipresent/property_set.hpp"
 #include "lue/constant_collection/time/omnipresent/space_box_domain.hpp"
 // #include "lue/hdf5/datatype_traits.hpp"
 #include <numeric>
@@ -170,11 +170,11 @@ void RasterStack::read()
         TimeSeriesDomain::Coordinates time_coordinates;
         time_box_domain.items().read(time_coordinates.data());
         TimeSeriesDomain time_domain{
-            time_box_domain.configuration().clock(),
+            time_box_domain.clock(),
             std::move(time_coordinates)};
 
         // Space point domain
-        auto const& property_set = 
+        auto const& property_set =
             _phenomenon.property_sets()[space_box_property_set_name];
         omnipresent::SpaceBoxDomain space_box_domain{
             property_set.domain(),
@@ -278,8 +278,8 @@ RasterStack create_raster_stack(
         // One space box
         hsize_t const nr_items = 1;
 
-        auto property_set = located::create_property_set(
-            phenomenon.property_sets(), property_set_name);
+        auto property_set = constant_collection::create_property_set(
+            phenomenon, property_set_name);
 
 
         // Write item ids to property set
@@ -302,7 +302,7 @@ RasterStack create_raster_stack(
         // (omnipresent) than the one with the time series values (located).
         {
             // auto const& ids = property_set.ids();
-            auto property_set = omnipresent::create_property_set(
+            auto property_set = constant_collection::create_property_set(
                 phenomenon, space_box_property_set_name, ids);
             file_datatype_id = hdf5::Datatype{
                 hdf5::StandardDatatypeTraits<RasterDomain::Coordinate>::
@@ -331,9 +331,10 @@ RasterStack create_raster_stack(
         /// time_discretization_property.reserve(nr_time_boxes, nr_items).write(
         ///     discretization.time_series_discretization().shape().data());
 
-        auto time_discretization_property_set = omnipresent::create_property_set(
-            time_discretization_phenomenon,
-            time_discretization_property_set_name);
+        auto time_discretization_property_set =
+            constant_collection::create_property_set(
+                time_discretization_phenomenon,
+                time_discretization_property_set_name);
 
         // Write item ids to property set
         {
@@ -365,7 +366,7 @@ RasterStack create_raster_stack(
         // discretization information. This information does not change
         // through time.
         auto space_discretization_property_set =
-            omnipresent::create_property_set(
+            constant_collection::create_property_set(
                 space_discretization_phenomenon,
                 space_discretization_property_set_name);
 

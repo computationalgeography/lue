@@ -67,7 +67,7 @@ void validate(
 {
     auto const& configuration = property_set.configuration();
 
-    switch(configuration.size_of_item_collection_type()) {
+    switch(configuration.type<CollectionVariability>()) {
 
         case(CollectionVariability::constant): {
             constant_collection::validate(constant_collection::PropertySet(

@@ -1,9 +1,9 @@
 #pragma once
 #include "lue/hl/raster_discretization.hpp"
 #include "lue/hl/raster_domain.hpp"
+#include "lue/constant_collection/property_set.hpp"
 #include "lue/constant_collection/time/omnipresent/different_shape/property.hpp"
 #include "lue/constant_collection/time/omnipresent/same_shape/property.hpp"
-#include "lue/constant_collection/time/omnipresent/property_set.hpp"
 #include "lue/dataset.hpp"
 
 
@@ -80,7 +80,7 @@ private:
 
     void           read_domain         ();
 
-    omnipresent::PropertySet _property_set;
+    constant_collection::PropertySet _property_set;
 
     omnipresent::same_shape::Property _discretization_property;
 

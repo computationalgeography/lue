@@ -25,10 +25,11 @@ TimeDomain::TimeDomain(
 
 
 TimeDomain create_time_domain(
-    hdf5::Group const& parent,
-    TimeDomain::Configuration const& configuration)
+    hdf5::Group& parent,
+    Clock const& clock,
+    TimeConfiguration const& configuration)
 {
-    auto domain = lue::create_time_domain(parent, configuration);
+    auto domain = lue::create_time_domain(parent, clock, configuration);
 
     return std::move(domain);
 }

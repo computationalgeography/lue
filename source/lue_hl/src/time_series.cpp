@@ -1,6 +1,6 @@
 #include "lue/hl/time_series.hpp"
+#include "lue/constant_collection/property_set.hpp"
 #include "lue/constant_collection/time/located/time_box_domain.hpp"
-#include "lue/constant_collection/time/omnipresent/property_set.hpp"
 #include "lue/constant_collection/time/omnipresent/same_shape/property.hpp"
 #include "lue/constant_collection/time/omnipresent/space_point_domain.hpp"
 #include <numeric>
@@ -83,8 +83,7 @@ TimeSeries::TimeSeries(
         TimeSeriesDomain::Coordinates coordinates;
         time_box_domain.items().read(coordinates.data());
         _time_domain = TimeSeriesDomain{
-            time_box_domain.configuration().clock(),
-                coordinates[0], coordinates[1]};
+            time_box_domain.clock(), coordinates[0], coordinates[1]};
     }
 
     // Space point domain
@@ -210,8 +209,8 @@ TimeSeries create_time_series(
         hsize_t const nr_items = space_domain.nr_points();
 
         // Create property-set for time series values
-        auto property_set = located::create_property_set(
-            phenomenon.property_sets(), property_set_name);
+        auto property_set = constant_collection::create_property_set(
+            phenomenon, property_set_name);
 
         {
             // Write item ids to property set
@@ -237,7 +236,7 @@ TimeSeries create_time_series(
         // one with the time series values.
         {
             auto const& ids = property_set.ids();
-            auto property_set = omnipresent::create_property_set(
+            auto property_set = constant_collection::create_property_set(
                 phenomenon, space_point_property_set_name, ids);
             auto const file_datatype_id =
                 hdf5::Datatype{hdf5::StandardDatatypeTraits<double>::type_id()};
@@ -255,9 +254,10 @@ TimeSeries create_time_series(
         // information. This information is shared by all items,
         // and doesn't change over time.
         {
-            auto discretization_property_set = omnipresent::create_property_set(
-                time_discretization_phenomenon,
-                time_discretization_property_set_name);
+            auto discretization_property_set =
+                constant_collection::create_property_set(
+                    time_discretization_phenomenon,
+                    time_discretization_property_set_name);
 
             // For each time box a value representing the number of steps
             // used to discretize the box

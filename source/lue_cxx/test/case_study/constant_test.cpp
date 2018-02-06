@@ -13,69 +13,117 @@ BOOST_AUTO_TEST_CASE(create_and_read_constant)
     std::string const property_set_name = "constants";
     std::string const property_name = "gravity";
 
+    hsize_t const nr_planets = 3;
+    std::vector<hsize_t> const ids{4, 29, 13};
+
+    using ValueType = float;
+    lue::hdf5::Datatype const value_datatype{
+        lue::hdf5::NativeDatatypeTraits<ValueType>::type_id()};
+    std::vector<ValueType> gravity_values{1.5, 2.5, 3.5};
+
+    lue::test::DatasetFixture fixture{dataset_name};
+
     // Create
     {
-        // Dataset
-        lue::test::DatasetFixture fixture{dataset_name, false};
         auto dataset = lue::create_dataset(dataset_name);
-
-        // Phenomenon
         auto& planets = dataset.add_phenomenon(phenomenon_name);
+        auto constants = lue::constant_collection::create_property_set(
+            planets, property_set_name);
 
-        // Property-set
-        auto constants =
-            omnipresent::create_property_set(planets, property_set_name);
-
-        hsize_t const nr_planets = 3;
-
-        auto& ids = constants.ids();
-        ids.reserve(nr_planets);
-        std::vector<hsize_t> ids_ = {4, 29, 13};
-        ids.write(ids_.data());
+        // Ids
+        {
+            auto& ids_ = constants.ids();
+            ids_.reserve(nr_planets);
+            ids_.write(ids.data());
+        }
 
         // Property
-        auto gravity =
-            omnipresent::same_shape::create_property(
-                constants, property_name,
-                lue::hdf5::Datatype{H5T_NATIVE_FLOAT});
-
-        auto& values = gravity.values();
-        values.reserve(nr_planets);
-        std::vector<float> gravity_ = {1.5, 2.5, 3.5};
-        values.write(gravity_.data());
+        {
+            auto gravity =
+                omnipresent::same_shape::create_property(
+                    constants, property_name, value_datatype);
+            auto& gravity_values_ = gravity.values();
+            gravity_values_.reserve(nr_planets);
+            gravity_values_.write(gravity_values.data());
+        }
     }
 
     lue::assert_is_valid(dataset_name);
 
     // Read
     {
-        // // Dataset
-        // auto dataset = lue::Dataset(dataset_name);
+        auto const dataset = lue::Dataset(dataset_name);
+        auto const& planets = dataset.phenomena()[phenomenon_name];
+        auto const& property_set = planets.property_sets()[property_set_name];
 
-        // // Phenomenon
-        // auto& planets = dataset.phenomena()[phenomenon_name];
+        BOOST_CHECK(
+            property_set.configuration().type<lue::CollectionVariability>() ==
+            lue::CollectionVariability::constant);
 
-        // // Property-set
-        // auto& constants = planets.property_sets()[property_set_name];
+        lue::constant_collection::PropertySet constants{property_set.id()};
 
-        // // Property
-        // auto& gravity = constants.properties()[property_name];
+        // Ids
+        {
+            BOOST_CHECK_EQUAL(constants.ids().nr_items(), nr_planets);
 
+            std::vector<hsize_t> ids_(nr_planets);
+            constants.ids().read(ids_.data());
 
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                ids_.begin(), ids_.end(),
+                ids.begin(), ids.end());
+        }
 
-        // // TODO By-value return
-        // auto planets = dataset.phenomena()[phenomenon_name];
+        // Domain
+        {
+            auto const& domain = constants.domain();
 
-        // // TODO By-value return
-        // // TODO Wrapped omnipresent::PropertySet, with interface that all
-        // //      property-sets support
-        // auto constants = planets.property_sets()[property_set_name];
+            // Time domain
+            {
+                BOOST_CHECK(!time_domain_exists(domain));
+            }
 
-        // // TODO By-value return
-        // // TODO Wrapped omnipresent::same_shape::Value, with interface that
-        // //      all values support
-        // auto gravity = constants.properties()[property_name];
+            // Space domain
+            {
+                BOOST_CHECK(!space_domain_exists(domain));
+            }
+        }
 
+        // Property
+        {
+            auto const& property = constants.properties()[property_name];
 
+            BOOST_CHECK(
+                property.configuration().type<lue::CollectionVariability>() ==
+                lue::CollectionVariability::constant);
+            BOOST_CHECK(
+                property.configuration().type<lue::ShapeVariability>() ==
+                lue::ShapeVariability::constant);
+            BOOST_CHECK(
+                property.configuration().type<lue::ShapePerItem>() ==
+                lue::ShapePerItem::same);
+            BOOST_CHECK(
+                property.configuration().type<lue::ValueVariability>() ==
+                lue::ValueVariability::constant);
+
+            namespace omnipresent = lue::constant_collection::time::omnipresent;
+
+            BOOST_CHECK(
+                omnipresent::same_shape::Property::file_datatype(
+                    lue::hdf5::Group{property.id()}) ==
+                lue::hdf5::Datatype{H5T_IEEE_F32LE});
+
+            omnipresent::same_shape::Property gravity{
+                lue::hdf5::Group{property.id()}, value_datatype};
+
+            BOOST_CHECK_EQUAL(gravity.values().nr_items(), nr_planets);
+
+            std::vector<ValueType> gravity_values_(nr_planets);
+            gravity.values().read(gravity_values_.data());
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                gravity_values_.begin(), gravity_values_.end(),
+                gravity_values.begin(), gravity_values.end());
+        }
     }
 }

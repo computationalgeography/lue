@@ -15,7 +15,9 @@ class PropertySetTest(lue_test.TestCase):
             property_set,
             ids):
 
-        self.assertEqual(type(property_set), omnipresent.PropertySet)
+        self.assertEqual(
+            type(property_set),
+            lue.constant_collection.PropertySet)
         self.assertEqual(property_set.ids.dtype, numpy.uint64)
         self.assertEqual(len(property_set.ids.shape), 1)
         self.assertEqual(property_set.ids.shape[0], len(ids))
@@ -35,7 +37,7 @@ class PropertySetTest(lue_test.TestCase):
 
         dataset = self.create_dataset(dataset_name)
         phenomenon = dataset.add_phenomenon(phenomenon_name)
-        property_set = omnipresent.create_property_set(phenomenon,
+        property_set = lue.constant_collection.create_property_set(phenomenon,
             property_set_name)
 
         self.assertEqual(property_set.name, property_set_name)
@@ -81,9 +83,9 @@ class PropertySetTest(lue_test.TestCase):
 
         dataset = self.create_dataset(dataset_name)
         phenomenon = dataset.add_phenomenon(phenomenon_name)
-        property_set1 = omnipresent.create_property_set(phenomenon,
+        property_set1 = lue.constant_collection.create_property_set(phenomenon,
             property_set_name1)
-        property_set2 = omnipresent.create_property_set(phenomenon,
+        property_set2 = lue.constant_collection.create_property_set(phenomenon,
             property_set_name2, property_set1.ids)
 
         nr_items = 5
@@ -103,7 +105,9 @@ class PropertySetTest(lue_test.TestCase):
             boxes):
 
         self.assertEqual(property_set.name, name)
-        self.assertEqual(type(property_set), omnipresent.PropertySet)
+        self.assertEqual(
+            type(property_set),
+            lue.constant_collection.PropertySet)
         self.assertArraysEqual(property_set.domain.space.items[:], boxes)
 
 
@@ -122,7 +126,7 @@ class PropertySetTest(lue_test.TestCase):
 
         dataset = self.create_dataset(dataset_name)
         phenomenon = dataset.add_phenomenon(phenomenon_name)
-        property_set = omnipresent.create_property_set(phenomenon,
+        property_set = lue.constant_collection.create_property_set(phenomenon,
             property_set_name)
         nr_items = 500
 

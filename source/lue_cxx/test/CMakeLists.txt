@@ -3,8 +3,10 @@ add_unit_tests(
     NAMES
 
         case_study/constant_test
+        case_study/raster_test
+
         compound/clock_test
-        constant_collection/time/omnipresent/property_set_test
+        constant_collection/property_set_test
         dataset_test
         time_box_test
         time_point_test

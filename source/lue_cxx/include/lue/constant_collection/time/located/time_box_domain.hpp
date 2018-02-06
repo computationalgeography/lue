@@ -1,6 +1,6 @@
 #pragma once
 #include "lue/item/constant_collection/constant_shape/same_shape/constant.hpp"
-#include "lue/constant_collection/time/located/property_set.hpp"
+#include "lue/constant_collection/property_set.hpp"
 #include "lue/constant_collection/time/located/time_domain.hpp"
 
 

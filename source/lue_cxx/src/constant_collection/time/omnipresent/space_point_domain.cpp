@@ -14,11 +14,33 @@ hdf5::Datatype SpacePointDomain::file_datatype(
 }
 
 
+
+
 SpacePointDomain::SpacePointDomain(
-    SpaceDomain&& space_domain)
+    hdf5::Group const& parent)
+
+    : SpacePointDomain{parent, hdf5::memory_datatype(file_datatype(parent))}
+
+{
+}
+
+
+SpacePointDomain::SpacePointDomain(
+    hdf5::Group const& parent,
+    hdf5::Datatype const& memory_datatype)
+
+    : constant_collection::SpaceDomain{parent},
+      _items{*this, memory_datatype}
+
+{
+}
+
+
+SpacePointDomain::SpacePointDomain(
+    constant_collection::SpaceDomain&& space_domain)
 
     : SpacePointDomain{
-        std::forward<SpaceDomain>(space_domain),
+        std::forward<constant_collection::SpaceDomain>(space_domain),
         hdf5::memory_datatype(file_datatype(*this))}
 
 {
@@ -26,10 +48,11 @@ SpacePointDomain::SpacePointDomain(
 
 
 SpacePointDomain::SpacePointDomain(
-    SpaceDomain&& space_domain,
+    constant_collection::SpaceDomain&& space_domain,
     hdf5::Datatype const& memory_datatype)
 
-    : SpaceDomain{std::forward<SpaceDomain>(space_domain)},
+    : constant_collection::SpaceDomain{
+        std::forward<constant_collection::SpaceDomain>(space_domain)},
       _items{*this, memory_datatype}
 
 {
@@ -71,7 +94,8 @@ SpacePointDomain create_space_point_domain(
         SpaceDomainItemType::point
     };
 
-    auto space = omnipresent::create_space_domain(domain, configuration);
+    auto space =
+        constant_collection::create_space_domain(domain, configuration);
 
     stationary::create_point(space, file_datatype, memory_datatype, rank);
 

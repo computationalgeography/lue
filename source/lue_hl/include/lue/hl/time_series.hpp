@@ -83,7 +83,7 @@ private:
 
     Phenomenon     _phenomenon;
 
-    located::PropertySet _property_set;
+    constant_collection::PropertySet _property_set;
 
     located::constant_shape::same_shape::Property _value_property;
 

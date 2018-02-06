@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/constant_collection/time/omnipresent/property_set.hpp"
+#include "lue/constant_collection/property_set.hpp"
 #include "lue/hdf5/issues.hpp"
 
 

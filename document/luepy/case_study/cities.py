@@ -6,7 +6,7 @@ omnipresent = lue.constant_collection.time.omnipresent
 
 dataset = lue.create_dataset("cities.lue")
 phenomenon = dataset.add_phenomenon("cities")
-cities = omnipresent.create_property_set(phenomenon, "cities")
+cities = lue.constant_collection.create_property_set(phenomenon, "cities")
 
 nr_cities = 10
 rank = 2

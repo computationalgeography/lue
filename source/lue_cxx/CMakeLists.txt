@@ -31,18 +31,14 @@ add_library(lue STATIC
 
     src/compound/clock
 
-    src/constant_collection/domain
     src/constant_collection/property
     src/constant_collection/property_set
     src/constant_collection/space_domain
     # src/constant_collection/value
     src/constant_collection/validate
 
-    src/constant_collection/time/omnipresent/domain
     src/constant_collection/time/omnipresent/property
-    src/constant_collection/time/omnipresent/property_set
     src/constant_collection/time/omnipresent/space_box_domain
-    src/constant_collection/time/omnipresent/space_domain
     src/constant_collection/time/omnipresent/space_point_domain
     # src/constant_collection/time/omnipresent/value
     src/constant_collection/time/omnipresent/validate
@@ -53,11 +49,8 @@ add_library(lue STATIC
     src/constant_collection/time/omnipresent/same_shape/property
     src/constant_collection/time/omnipresent/same_shape/value
 
-    src/constant_collection/time/located/domain
     src/constant_collection/time/located/property
-    src/constant_collection/time/located/property_set
     src/constant_collection/time/located/space_box_domain
-    src/constant_collection/time/located/space_domain
     src/constant_collection/time/located/time_domain
     src/constant_collection/time/located/time_box_domain
     src/constant_collection/time/located/validate

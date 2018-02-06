@@ -48,33 +48,35 @@ PropertySet::Ids& PropertySet::ids()
 
 
 PropertySet create_property_set(
-    hdf5::Group& group,
-    std::string const& name,
-    Domain::Configuration const& domain_configuration)
+    Phenomenon& phenomenon,
+    std::string const& name)
 {
-    auto property_set = lue::create_property_set(
-        group, name,
-        PropertySet::Configuration{CollectionVariability::constant},
-        domain_configuration);
+    auto& property_set = phenomenon.property_sets().add(name,
+        lue::create_property_set(
+            phenomenon.property_sets(), name,
+            PropertySetConfiguration{CollectionVariability::constant}
+        )
+    );
 
     constant_shape::same_shape::create_constant(
         property_set, ids_tag, hdf5::Datatype{H5T_STD_U64LE},
         hdf5::Datatype{H5T_NATIVE_HSIZE});
 
-    return PropertySet{std::move(property_set)};
+    return PropertySet{hdf5::Group{property_set.id()}};
 }
 
 
 PropertySet create_property_set(
-    hdf5::Group& group,
+    Phenomenon& phenomenon,
     std::string const& name,
-    PropertySet::Ids const& ids,
-    Domain::Configuration const& domain_configuration)
+    PropertySet::Ids const& ids)
 {
-    auto property_set = lue::create_property_set(
-        group, name,
-        PropertySet::Configuration{CollectionVariability::constant},
-        domain_configuration);
+    auto& property_set = phenomenon.property_sets().add(name,
+        lue::create_property_set(
+            phenomenon.property_sets(), name,
+            PropertySetConfiguration{CollectionVariability::constant}
+        )
+    );
 
     // TODO assert
     // create_value(property_set.id(), ids_tag,
@@ -82,7 +84,7 @@ PropertySet create_property_set(
 
     property_set.create_hard_link(ids.id(), ids_tag);
 
-    return PropertySet{std::move(property_set)};
+    return PropertySet{hdf5::Group{property_set.id()}};
 }
 
 }  // namespace constant_collection

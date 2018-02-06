@@ -1,12 +1,8 @@
-#define BOOST_TEST_MODULE lue constant_collection time omnipresent property_set
+#define BOOST_TEST_MODULE lue constant_collection property_set
 #include <boost/test/unit_test.hpp>
-#include "lue/constant_collection/time/omnipresent/property_set.hpp"
+#include "lue/constant_collection/property_set.hpp"
 #include "lue/dataset.hpp"
 #include "lue/test.hpp"
-#include <iostream>
-
-
-namespace omnipresent = lue::constant_collection::time::omnipresent;
 
 
 BOOST_AUTO_TEST_CASE(create_new_property_set)
@@ -22,19 +18,19 @@ BOOST_AUTO_TEST_CASE(create_new_property_set)
 
     BOOST_CHECK_EQUAL(phenomenon.property_sets().size(), 0);
 
-    auto const property_set = omnipresent::create_property_set(
+    auto const property_set = lue::constant_collection::create_property_set(
         phenomenon, property_set_name);
 
     BOOST_CHECK_EQUAL(phenomenon.property_sets().size(), 1);
     BOOST_CHECK(
-        property_set.configuration().size_of_item_collection_type() ==
+        property_set.configuration().type<lue::CollectionVariability>() ==
         lue::CollectionVariability::constant);
 
 
     auto const& attributes = property_set.attributes();
-    BOOST_CHECK(attributes.exists("lue_size_of_item_collection_type"));
+    BOOST_CHECK(attributes.exists(lue::collection_variability_tag));
     BOOST_CHECK_EQUAL(attributes.read<std::string>(
-        "lue_size_of_item_collection_type"), "lue_constant_collection");
+        lue::collection_variability_tag), "lue_constant_collection");
 }
 
 
@@ -53,9 +49,9 @@ BOOST_AUTO_TEST_CASE(share_item_ids)
 
     // Second property-set points to the same collection of item ids as
     // the first
-    auto property_set1 = omnipresent::create_property_set(
+    auto property_set1 = lue::constant_collection::create_property_set(
         phenomenon, property_set_name1);
-    auto property_set2 = omnipresent::create_property_set(
+    auto property_set2 = lue::constant_collection::create_property_set(
         phenomenon, property_set_name2, property_set1.ids());
 
     std::size_t const nr_items = 5;

@@ -1,9 +1,8 @@
 #include "lue/translate/format/dot.hpp"
-#include "lue/constant_collection/time/located/property_set.hpp"
+#include "lue/constant_collection/property_set.hpp"
 #include "lue/constant_collection/time/located/constant_shape/property.hpp"
 #include "lue/constant_collection/time/located/time_box_domain.hpp"
 #include "lue/constant_collection/time/omnipresent/different_shape/property.hpp"
-#include "lue/constant_collection/time/omnipresent/property_set.hpp"
 #include "lue/constant_collection/time/omnipresent/same_shape/property.hpp"
 #include "lue/space_domain.hpp"
 #include <boost/format.hpp>
@@ -516,33 +515,33 @@ void to_dot(
 // }
 
 
-void to_dot(
-    PropertySet const& property_set,
-    std::ostream& stream,
-    Metadata const& metadata)
-{
-    auto const& domain = property_set.domain();
-    auto const& properties = property_set.properties();
-    std::vector<std::string> property_dot_names;
-
-    for(auto const& name: properties.names()) {
-        auto const& property = properties[name];
-
-        to_dot(
-            omnipresent::Property{hdf5::Group{property.id()}},
-            stream, metadata);
-        link_nodes(property_set, property, stream, metadata);
-        link_nodes(property, domain, stream, metadata);
-
-        property_dot_names.push_back(dot_name(property));
-    }
-
-    stream << boost::str(boost::format(R"(
-    { rank=same %1% }
-)")
-        % boost::join(property_dot_names, " ")
-        );
-}
+// void to_dot(
+//     PropertySet const& property_set,
+//     std::ostream& stream,
+//     Metadata const& metadata)
+// {
+//     auto const& domain = property_set.domain();
+//     auto const& properties = property_set.properties();
+//     std::vector<std::string> property_dot_names;
+// 
+//     for(auto const& name: properties.names()) {
+//         auto const& property = properties[name];
+// 
+//         to_dot(
+//             omnipresent::Property{hdf5::Group{property.id()}},
+//             stream, metadata);
+//         link_nodes(property_set, property, stream, metadata);
+//         link_nodes(property, domain, stream, metadata);
+// 
+//         property_dot_names.push_back(dot_name(property));
+//     }
+// 
+//     stream << boost::str(boost::format(R"(
+//     { rank=same %1% }
+// )")
+//         % boost::join(property_dot_names, " ")
+//         );
+// }
 
 }  // namespace omnipresent
 
@@ -589,41 +588,41 @@ void to_dot(
 }
 
 
-void to_dot(
-    PropertySet const& property_set,
-    std::ostream& stream,
-    Metadata const& metadata)
-{
-    auto const& domain = property_set.domain();
-    auto const& properties = property_set.properties();
-    std::vector<std::string> property_dot_names;
-
-    for(auto const& name: properties.names()) {
-        auto const property = located::Property{
-            hdf5::Group{properties[name].id()}};
-
-        switch(property.configuration().type<ShapeVariability>()) {
-
-            case ShapeVariability::constant: {
-                to_dot(
-                    constant_shape::Property(hdf5::Group{property.id()}),
-                    stream, metadata);
-                break;
-            }
-        }
-
-        link_nodes(property_set, property, stream, metadata);
-        link_nodes(property, domain, stream, metadata);
-
-        property_dot_names.push_back(dot_name(property));
-    }
-
-    stream << boost::str(boost::format(R"(
-    { rank=same %1% }
-)")
-        % boost::join(property_dot_names, " ")
-        );
-}
+// void to_dot(
+//     PropertySet const& property_set,
+//     std::ostream& stream,
+//     Metadata const& metadata)
+// {
+//     auto const& domain = property_set.domain();
+//     auto const& properties = property_set.properties();
+//     std::vector<std::string> property_dot_names;
+// 
+//     for(auto const& name: properties.names()) {
+//         auto const property = located::Property{
+//             hdf5::Group{properties[name].id()}};
+// 
+//         switch(property.configuration().type<ShapeVariability>()) {
+// 
+//             case ShapeVariability::constant: {
+//                 to_dot(
+//                     constant_shape::Property(hdf5::Group{property.id()}),
+//                     stream, metadata);
+//                 break;
+//             }
+//         }
+// 
+//         link_nodes(property_set, property, stream, metadata);
+//         link_nodes(property, domain, stream, metadata);
+// 
+//         property_dot_names.push_back(dot_name(property));
+//     }
+// 
+//     stream << boost::str(boost::format(R"(
+//     { rank=same %1% }
+// )")
+//         % boost::join(property_dot_names, " ")
+//         );
+// }
 
 }  // namespace located
 }  // namespace time
@@ -670,24 +669,24 @@ void to_dot(
     link_nodes(property_set, domain, stream, metadata);
 
 
-    switch(property_set.domain().configuration().domain_type()) {
+    // switch(property_set.domain().configuration().domain_type()) {
 
-        case Domain::Configuration::DomainType::located: {
-            to_dot(
-                time::located::PropertySet(hdf5::Group{property_set.id()}),
-                stream, metadata);
-            break;
-        }
+    //     case Domain::Configuration::DomainType::located: {
+    //         to_dot(
+    //             time::located::PropertySet(hdf5::Group{property_set.id()}),
+    //             stream, metadata);
+    //         break;
+    //     }
 
-        case Domain::Configuration::DomainType::omnipresent: {
+    //     case Domain::Configuration::DomainType::omnipresent: {
 
-            to_dot(
-                time::omnipresent::PropertySet(property_set.id()),
-                stream, metadata);
-            break;
-        }
+    //         to_dot(
+    //             time::omnipresent::PropertySet(property_set.id()),
+    //             stream, metadata);
+    //         break;
+    //     }
 
-    }
+    // }
 
 
 
@@ -732,7 +731,7 @@ void to_dot(
 
     auto configuration = property_set.configuration();
 
-    switch(configuration.size_of_item_collection_type()) {
+    switch(configuration.type<CollectionVariability>()) {
 
         case(CollectionVariability::constant): {
 

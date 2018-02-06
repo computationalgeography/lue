@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/constant_collection/time/located/property_set.hpp"
+#include "lue/constant_collection/property_set.hpp"
 #include "lue/constant_collection/time/located/constant_shape/different_shape/property.hpp"
 #include "lue/constant_collection/time/omnipresent/same_shape/property.hpp"
 #include "lue/hl/raster_stack_discretization.hpp"
@@ -86,7 +86,7 @@ private:
 
     Phenomenon     _phenomenon;
 
-    located::PropertySet _property_set;
+    constant_collection::PropertySet _property_set;
 
     omnipresent::same_shape::Property _time_discretization_property;
 

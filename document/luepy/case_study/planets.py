@@ -8,7 +8,7 @@ omnipresent = lue.constant_collection.time.omnipresent
 
 dataset = lue.create_dataset("planets.lue")
 planets = dataset.add_phenomenon("planets")
-constants = omnipresent.create_property_set(planets, "constants")
+constants = lue.constant_collection.create_property_set(planets, "constants")
 
 nr_planets = 3
 

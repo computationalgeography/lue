@@ -209,7 +209,7 @@ namespace {
     @exception  .
 */
 omnipresent::same_shape::Property discretization_property(
-    omnipresent::PropertySet& property_set,
+    constant_collection::PropertySet& property_set,
     RasterDiscretization const& discretization)
 {
     size_t const nr_items = 1;
@@ -258,7 +258,7 @@ hdf5::Identifier create_raster(
 {
     if(!phenomenon.property_sets().contains(property_set_name)) {
 
-        auto property_set = omnipresent::create_property_set(
+        auto property_set = constant_collection::create_property_set(
             phenomenon, property_set_name);
             // SpaceDomain::Configuration(
             //     SpaceDomain::Configuration::DomainType::located));
