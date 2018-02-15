@@ -4,9 +4,9 @@
 
 
 namespace lue {
-namespace constant_collection {
 namespace constant_shape {
 namespace different_shape {
+namespace constant_collection {
 
 /*!
     @brief      This collection manages variable item values for
@@ -22,32 +22,45 @@ namespace different_shape {
     item's index. All datasets have the same rank, but the size of each
     dimension may be different. Each dataset has one dimension more than the
     rank of the individual values. This dimension represents time.
+
+    - same number of different-shaped values per item
+    - an HDF5 dataset for each item
+    - no additional dimension for time domain
+
+        | obtain value | HDF5 dataset named after item id, index by time idx |
+        | add item     | not possible                                        |
+        | remove item  | not possible                                        |
+
+        `v_i_t = dataset_i[time_idx]`
+
+    - Optimization of `constant_shape/different_shape/SynchronousValue` in case
+        the collection of items doesn't change through time
 */
-class SynchronousVariable:
+class SynchronousValue:
     public hdf5::Group
 {
 
 public:
 
-                   SynchronousVariable (hdf5::Group const& parent,
+                   SynchronousValue    (hdf5::Group const& parent,
                                         std::string const& name);
 
-                   SynchronousVariable (hdf5::Group const& parent,
+                   SynchronousValue    (hdf5::Group const& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& memory_datatype);
 
-                   SynchronousVariable (hdf5::Group&& group,
+                   SynchronousValue    (hdf5::Group&& group,
                                         hdf5::Datatype const& memory_datatype);
 
-                   SynchronousVariable (SynchronousVariable const&)=delete;
+                   SynchronousValue    (SynchronousValue const&)=delete;
 
-                   SynchronousVariable (SynchronousVariable&&)=default;
+                   SynchronousValue    (SynchronousValue&&)=default;
 
-                   ~SynchronousVariable()=default;
+                   ~SynchronousValue   ()=default;
 
-    SynchronousVariable& operator=     (SynchronousVariable const&)=delete;
+    SynchronousValue& operator=        (SynchronousValue const&)=delete;
 
-    SynchronousVariable& operator=     (SynchronousVariable&&)=default;
+    SynchronousValue& operator=        (SynchronousValue&&)=default;
 
     hdf5::Datatype const&
                    file_datatype       () const;
@@ -110,20 +123,20 @@ private:
 };
 
 
-SynchronousVariable create_synchronous_variable(
+SynchronousValue create_synchronous_value(
                                         hdf5::Group& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& memory_datatype,
                                         int rank);
 
-SynchronousVariable create_synchronous_variable(
+SynchronousValue create_synchronous_value(
                                         hdf5::Group& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& file_datatype,
                                         hdf5::Datatype const& memory_datatype,
                                         int rank);
 
+}  // namespace constant_collection
 }  // namespace different_shape
 }  // namespace constant_shape
-}  // namespace constant_collection
 }  // namespace lue

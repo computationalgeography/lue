@@ -13,7 +13,7 @@ void init_point(
     py::module& module)
 {
 
-    py::class_<Point, constant_shape::same_shape::Constant>(
+    py::class_<Point, lue::constant_shape::same_shape::ContinuousValue>(
         module,
         "Point",
         "Point docstring...")

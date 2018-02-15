@@ -78,7 +78,7 @@ TimeBoxDomain create_time_box_domain(
     // count.
     hdf5::Shape value_shape = { 2 };
 
-    constant_shape::same_shape::create_constant(
+    lue::constant_shape::same_shape::create_continuous_value(
         time_domain, coordinates_tag, file_datatype, memory_datatype,
         value_shape);
 

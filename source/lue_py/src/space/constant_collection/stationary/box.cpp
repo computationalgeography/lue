@@ -13,7 +13,7 @@ void init_box(
     py::module& module)
 {
 
-    py::class_<Box, constant_shape::same_shape::Constant>(
+    py::class_<Box, lue::constant_shape::same_shape::ContinuousValue>(
         module,
         "Box",
         "Box docstring...")

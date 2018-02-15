@@ -4,12 +4,11 @@
 
 
 namespace lue {
-namespace constant_collection {
 namespace constant_shape {
 namespace different_shape {
 
 /*!
-    @brief      This collection manages item values for constant sized
+    @brief      This collection manages item values for
                 collections of constant values with a different shape
 
     Use this class if:
@@ -21,32 +20,42 @@ namespace different_shape {
     Each item's value ends up in a seperate HDF5 dataset, named after the
     item's index. All datasets have the same rank, but the size of each
     dimension may be different.
+
+    - a single, different-shaped value per item
+    - implies constant collection
+    - an HDF5 dataset for each item
+
+    | obtain value | HDF5 dataset named after item id |
+    | add item     | create HDF5 dataset              |
+    | remove item  | not applicable                   |
+
+    `v_i = dataset_i`
 */
-class Constant:
+class ContinuousValue:
     public hdf5::Group
 {
 
 public:
 
-                   Constant            (hdf5::Group const& parent,
+                   ContinuousValue     (hdf5::Group const& parent,
                                         std::string const& name);
 
-                   Constant            (hdf5::Group const& parent,
+                   ContinuousValue     (hdf5::Group const& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& memory_datatype);
 
-                   Constant            (hdf5::Group&& group,
+                   ContinuousValue     (hdf5::Group&& group,
                                         hdf5::Datatype const& memory_datatype);
 
-                   Constant            (Constant const&)=delete;
+                   ContinuousValue     (ContinuousValue const&)=delete;
 
-                   Constant            (Constant&&)=default;
+                   ContinuousValue     (ContinuousValue&&)=default;
 
-                   ~Constant           ()=default;
+                   ~ContinuousValue    ()=default;
 
-    Constant&      operator=           (Constant const&)=delete;
+    ContinuousValue& operator=         (ContinuousValue const&)=delete;
 
-    Constant&      operator=           (Constant&&)=default;
+    ContinuousValue& operator=         (ContinuousValue&&)=default;
 
     hsize_t        nr_items            () const;
 
@@ -91,12 +100,14 @@ private:
 };
 
 
-Constant       create_constant         (hdf5::Group& parent,
+ContinuousValue       create_continuous_value(
+                                        hdf5::Group& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& memory_datatype,
                                         int rank);
 
-Constant       create_constant         (hdf5::Group& parent,
+ContinuousValue       create_continuous_value(
+                                        hdf5::Group& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& file_datatype,
                                         hdf5::Datatype const& memory_datatype,
@@ -104,5 +115,4 @@ Constant       create_constant         (hdf5::Group& parent,
 
 }  // namespace different_shape
 }  // namespace constant_shape
-}  // namespace constant_collection
 }  // namespace lue

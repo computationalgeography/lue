@@ -106,8 +106,6 @@ BOOST_AUTO_TEST_CASE(create_and_read_constant)
                 property.configuration().type<lue::ValueVariability>() ==
                 lue::ValueVariability::constant);
 
-            namespace omnipresent = lue::constant_collection::time::omnipresent;
-
             BOOST_CHECK(
                 omnipresent::same_shape::Property::file_datatype(
                     lue::hdf5::Group{property.id()}) ==

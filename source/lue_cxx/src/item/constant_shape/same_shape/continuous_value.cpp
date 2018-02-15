@@ -1,17 +1,16 @@
-#include "lue/item/constant_collection/constant_shape/same_shape/constant.hpp"
+#include "lue/item/constant_shape/same_shape/continuous_value.hpp"
 #include "lue/hdf5/chunk.hpp"
 #include <cassert>
 
 
 namespace lue {
-namespace constant_collection {
 namespace constant_shape {
 namespace same_shape {
 
 /*!
     @brief      Open collection @a name in @a parent
 */
-Constant::Constant(
+ContinuousValue::ContinuousValue(
     hdf5::Group const& parent,
     std::string const& name,
     hdf5::Datatype const& memory_datatype)
@@ -25,7 +24,7 @@ Constant::Constant(
 /*!
     @brief      Move in @a dataset
 */
-Constant::Constant(
+ContinuousValue::ContinuousValue(
     hdf5::Dataset&& dataset,
     hdf5::Datatype const& memory_datatype)
 
@@ -38,7 +37,7 @@ Constant::Constant(
 /*!
     @brief      Reserve space for @a nr_items item values
 */
-void Constant::reserve(
+void ContinuousValue::reserve(
     hsize_t const nr_items)
 {
     auto shape = this->shape();
@@ -51,7 +50,7 @@ void Constant::reserve(
 /*!
     @brief      Return number of items for which values are stored
 */
-hsize_t Constant::nr_items() const
+hsize_t ContinuousValue::nr_items() const
 {
     return shape()[0];
 }
@@ -63,7 +62,7 @@ hsize_t Constant::nr_items() const
     The shape returned is not the shape of the underlying HDF5 dataset. It
     is the shape of each of the individual item values.
 */
-hdf5::Shape Constant::value_shape() const
+hdf5::Shape ContinuousValue::value_shape() const
 {
     auto const shape = this->shape();
 
@@ -73,7 +72,7 @@ hdf5::Shape Constant::value_shape() const
 }
 
 
-hdf5::Hyperslab Constant::hyperslab(
+hdf5::Hyperslab ContinuousValue::hyperslab(
     hsize_t const idx) const
 {
     auto shape = this->shape();
@@ -88,7 +87,7 @@ hdf5::Hyperslab Constant::hyperslab(
 }
 
 
-void Constant::read(
+void ContinuousValue::read(
     hsize_t const idx,
     void* buffer)
 {
@@ -96,7 +95,7 @@ void Constant::read(
 }
 
 
-void Constant::write(
+void ContinuousValue::write(
     hsize_t const idx,
     void const* buffer)
 {
@@ -107,12 +106,12 @@ void Constant::write(
 /*!
     @brief      Create collection @a name in @a parent
 */
-Constant create_constant(
+ContinuousValue create_continuous_value(
     hdf5::Group& parent,
     std::string const& name,
     hdf5::Datatype const& memory_datatype)
 {
-    return create_constant(
+    return create_continuous_value(
         parent, name, file_datatype(memory_datatype), memory_datatype,
         hdf5::Shape{});
 }
@@ -121,13 +120,13 @@ Constant create_constant(
 /*!
     @brief      Create collection @a name in @a parent
 */
-Constant create_constant(
+ContinuousValue create_continuous_value(
     hdf5::Group& parent,
     std::string const& name,
     hdf5::Datatype const& memory_datatype,
     hdf5::Shape const& value_shape)
 {
-    return create_constant(
+    return create_continuous_value(
         parent, name, file_datatype(memory_datatype), memory_datatype,
         value_shape);
 }
@@ -136,13 +135,13 @@ Constant create_constant(
 /*!
     @brief      Create collection @a name in @a parent
 */
-Constant create_constant(
+ContinuousValue create_continuous_value(
     hdf5::Group& parent,
     std::string const& name,
     hdf5::Datatype const& file_datatype,
     hdf5::Datatype const& memory_datatype)
 {
-    return create_constant(
+    return create_continuous_value(
         parent, name, file_datatype, memory_datatype, hdf5::Shape{});
 }
 
@@ -155,7 +154,7 @@ Constant create_constant(
 
     The underlying HDF5 dataset is chunked according to hdf5::chunk_shape().
 */
-Constant create_constant(
+ContinuousValue create_continuous_value(
     hdf5::Group& parent,
     std::string const& name,
     hdf5::Datatype const& file_datatype,
@@ -179,10 +178,9 @@ Constant create_constant(
     auto dataset = hdf5::create_dataset(
         parent.id(), name, file_datatype, dataspace, creation_property_list);
 
-    return Constant{std::move(dataset), memory_datatype};
+    return ContinuousValue{std::move(dataset), memory_datatype};
 }
 
 }  // namespace same_shape
 }  // namespace constant_shape
-}  // namespace constant_collection
 }  // namespace lue

@@ -217,9 +217,6 @@ BOOST_AUTO_TEST_CASE(create_and_read_raster)
 
                 BOOST_CHECK(property.space_is_discretized());
 
-                namespace omnipresent =
-                    lue::constant_collection::time::omnipresent;
-
                 BOOST_CHECK(
                     omnipresent::different_shape::Property::file_datatype(
                         lue::hdf5::Group{property.id()}) ==
@@ -272,9 +269,6 @@ BOOST_AUTO_TEST_CASE(create_and_read_raster)
                     BOOST_CHECK(
                         configuration.type<lue::ValueVariability>() ==
                         lue::ValueVariability::constant);
-
-                    namespace omnipresent =
-                        lue::constant_collection::time::omnipresent;
 
                     BOOST_CHECK(
                         omnipresent::same_shape::Property::file_datatype(

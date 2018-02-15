@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/item/constant_collection/constant_shape/same_shape/constant.hpp"
+#include "lue/item/constant_shape/same_shape/continuous_value.hpp"
 
 
 namespace lue {
@@ -7,7 +7,7 @@ namespace constant_collection {
 namespace stationary {
 
 class Box:
-    public constant_shape::same_shape::Constant
+    public lue::constant_shape::same_shape::ContinuousValue
 {
 
 public:

@@ -1,18 +1,17 @@
-#include "lue/item/constant_collection/constant_shape/different_shape/constant.hpp"
+#include "lue/item/constant_shape/different_shape/continuous_value.hpp"
 #include "lue/item/constant_collection/constant_shape/collection.hpp"
 #include "lue/hdf5/chunk.hpp"
 #include "lue/tag.hpp"
 
 
 namespace lue {
-namespace constant_collection {
 namespace constant_shape {
 namespace different_shape {
 
 /*!
     @brief      Open value @a name in @a parent
 */
-Constant::Constant(
+ContinuousValue::ContinuousValue(
     hdf5::Group const& parent,
     std::string const& name)
 
@@ -30,7 +29,7 @@ Constant::Constant(
 /*!
     @brief      Open value @a name in @a parent
 */
-Constant::Constant(
+ContinuousValue::ContinuousValue(
     hdf5::Group const& parent,
     std::string const& name,
     hdf5::Datatype const& memory_datatype)
@@ -49,7 +48,7 @@ Constant::Constant(
 /*!
     @brief      Move in @a group
 */
-Constant::Constant(
+ContinuousValue::ContinuousValue(
     hdf5::Group&& group,
     hdf5::Datatype const& memory_datatype)
 
@@ -67,7 +66,7 @@ Constant::Constant(
 /*!
     @brief      Return number of items for which values are stored
 */
-hsize_t Constant::nr_items() const
+hsize_t ContinuousValue::nr_items() const
 {
     return _nr_items;
 }
@@ -76,7 +75,7 @@ hsize_t Constant::nr_items() const
 /*!
     @brief      Return rank of each of the item's value
 */
-int Constant::rank() const
+int ContinuousValue::rank() const
 {
     return _rank;
 }
@@ -85,7 +84,7 @@ int Constant::rank() const
 /*!
     @brief      Return in-file datatype
 */
-hdf5::Datatype const& Constant::file_datatype() const
+hdf5::Datatype const& ContinuousValue::file_datatype() const
 {
     return _file_datatype;
 }
@@ -94,7 +93,7 @@ hdf5::Datatype const& Constant::file_datatype() const
 /*!
     @brief      Return in-memory datatype
 */
-hdf5::Datatype const& Constant::memory_datatype() const
+hdf5::Datatype const& ContinuousValue::memory_datatype() const
 {
     return _memory_datatype;
 }
@@ -107,7 +106,7 @@ hdf5::Datatype const& Constant::memory_datatype() const
 
     The underlying HDF5 dataset is chunked according to hdf5::chunk_shape().
 */
-void Constant::reserve(
+void ContinuousValue::reserve(
     hsize_t const idx,
     hdf5::Shape const& value_shape)
 {
@@ -130,7 +129,7 @@ void Constant::reserve(
     @brief      Reserve space for @a nr_items item values shaped as
                 @a value_shapes
 */
-void Constant::reserve(
+void ContinuousValue::reserve(
     hsize_t const nr_items,
     hsize_t const* value_shapes)
 {
@@ -148,21 +147,21 @@ void Constant::reserve(
 /*!
     @brief      Return dataset corresponding to item @a idx
 */
-Array Constant::operator[](
+Array ContinuousValue::operator[](
     hsize_t const idx) const
 {
     return Array{*this, std::to_string(idx), _memory_datatype};
 }
 
 
-hdf5::Shape Constant::value_shape(
+hdf5::Shape ContinuousValue::value_shape(
     hsize_t idx)
 {
     return operator[](idx).shape();
 }
 
 
-void Constant::read(
+void ContinuousValue::read(
     hsize_t const idx,
     void* buffer)
 {
@@ -170,7 +169,7 @@ void Constant::read(
 }
 
 
-void Constant::write(
+void ContinuousValue::write(
     hsize_t const idx,
     void const* buffer)
 {
@@ -184,13 +183,13 @@ void Constant::write(
     The datatype is of the individual values. The @a rank passed in
     defines the dimensionality of the underlying datasets.
 */
-Constant create_constant(
+ContinuousValue create_continuous_value(
     hdf5::Group& parent,
     std::string const& name,
     hdf5::Datatype const& memory_datatype,
     int const rank)
 {
-    return create_constant(
+    return create_continuous_value(
         parent, name, hdf5::file_datatype(memory_datatype), memory_datatype,
         rank);
 }
@@ -202,22 +201,21 @@ Constant create_constant(
     The datatypes are of the individual values. The @a rank passed in
     defines the dimensionality of the underlying datasets.
 */
-Constant create_constant(
+ContinuousValue create_continuous_value(
     hdf5::Group& parent,
     std::string const& name,
     hdf5::Datatype const& file_datatype,
     hdf5::Datatype const& memory_datatype,
     int const rank)
 {
-    auto group = constant_shape::create_group(
+    auto group = constant_collection::constant_shape::create_group(
         parent, name, file_datatype, rank);
 
     group.attributes().write<hsize_t>(nr_time_domain_items_tag, 0);
 
-    return Constant{std::move(group), memory_datatype};
+    return ContinuousValue{std::move(group), memory_datatype};
 }
 
 }  // namespace different_shape
 }  // namespace constant_shape
-}  // namespace constant_collection
 }  // namespace lue

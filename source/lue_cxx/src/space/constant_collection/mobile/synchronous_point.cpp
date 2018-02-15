@@ -10,7 +10,7 @@ SynchronousPoint::SynchronousPoint(
     hdf5::Group const& parent,
     hdf5::Datatype const& memory_datatype)
 
-    : constant_shape::same_shape::SynchronousVariable{
+    : lue::constant_shape::same_shape::constant_collection::SynchronousValue{
         parent, coordinates_tag, memory_datatype}
 
 {
@@ -36,7 +36,7 @@ SynchronousPoint create_synchronous_point(
     // A point is defined by the coordinates along each dimension
     hdf5::Shape value_shape = { rank };
 
-    constant_shape::same_shape::create_synchronous_variable(
+    lue::constant_shape::same_shape::constant_collection::create_synchronous_value(
         parent, coordinates_tag, file_datatype, memory_datatype, value_shape);
 
     return SynchronousPoint{std::move(parent), memory_datatype};

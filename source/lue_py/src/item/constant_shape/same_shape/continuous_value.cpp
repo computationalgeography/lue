@@ -1,4 +1,4 @@
-#include "lue/item/constant_collection/constant_shape/same_shape/constant.hpp"
+#include "lue/item/constant_shape/same_shape/continuous_value.hpp"
 #include <pybind11/pybind11.h>
 
 
@@ -6,22 +6,21 @@ namespace py = pybind11;
 
 
 namespace lue {
-namespace constant_collection {
 namespace constant_shape {
 namespace same_shape {
 
-void init_constant(
+void init_continuous_value(
     py::module& module)
 {
 
-    py::class_<Constant, lue::Array>(
+    py::class_<ContinuousValue, lue::Array>(
         module,
-        "Constant",
-        "Constant docstring...")
+        "ContinuousValue",
+        "ContinuousValue docstring...")
 
         .def("reserve",
-            // &Constant::reserve,
-            [](Constant& self, hsize_t const nr_items) -> Constant&
+            // &ContinuousValue::reserve,
+            [](ContinuousValue& self, hsize_t const nr_items) -> ContinuousValue&
             {
                 self.reserve(nr_items);
                 return self;
@@ -35,5 +34,4 @@ void init_constant(
 
 }  // namespace same_shape
 }  // namespace constant_shape
-}  // namespace constant_collection
 }  // namespace lue

@@ -58,7 +58,7 @@ PropertySet create_property_set(
         )
     );
 
-    constant_shape::same_shape::create_constant(
+    lue::constant_shape::same_shape::create_continuous_value(
         property_set, ids_tag, hdf5::Datatype{H5T_STD_U64LE},
         hdf5::Datatype{H5T_NATIVE_HSIZE});
 

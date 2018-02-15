@@ -1,6 +1,6 @@
-#define BOOST_TEST_MODULE lue item constant_collection constant_shape different_shape constant
+#define BOOST_TEST_MODULE lue item constant_shape different_shape continuous_value
 #include <boost/test/unit_test.hpp>
-#include "lue/item/constant_collection/constant_shape/different_shape/constant.hpp"
+#include "lue/item/constant_shape/different_shape/continuous_value.hpp"
 #include "lue/test.hpp"
 #include "lue/hdf5/file.hpp"
 #include <numeric>
@@ -19,7 +19,7 @@ BOOST_AUTO_TEST_CASE(create_collection)
     int const rank = 2;
 
     auto collection =
-        lue::constant_collection::constant_shape::different_shape::create_constant(
+        lue::constant_shape::different_shape::create_continuous_value(
             file, value_name, datatype, rank);
 
     BOOST_CHECK_EQUAL(collection.nr_items(), 0);

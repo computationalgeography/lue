@@ -25,13 +25,15 @@ add_library(lue_py SHARED
     src/universe
     src/validate
 
-    src/item/constant_collection/constant_shape/different_shape/constant
-    src/item/constant_collection/constant_shape/different_shape/variable
-    src/item/constant_collection/constant_shape/different_shape/submodule
-    src/item/constant_collection/constant_shape/same_shape/constant
-    src/item/constant_collection/constant_shape/same_shape/synchronous_variable
-    src/item/constant_collection/constant_shape/same_shape/submodule
-    src/item/constant_collection/constant_shape/submodule
+    src/item/constant_shape/different_shape/continuous_value
+    src/item/constant_shape/different_shape/submodule
+    src/item/constant_shape/different_shape/constant_collection/submodule
+    src/item/constant_shape/different_shape/constant_collection/synchronous_value
+    src/item/constant_shape/same_shape/continuous_value
+    src/item/constant_shape/same_shape/submodule
+    src/item/constant_shape/same_shape/constant_collection/submodule
+    src/item/constant_shape/same_shape/constant_collection/synchronous_value
+    src/item/constant_shape/submodule
 
     src/space/constant_collection/stationary/box
     src/space/constant_collection/stationary/point

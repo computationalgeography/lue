@@ -5,7 +5,6 @@ namespace py = pybind11;
 
 
 namespace lue {
-namespace constant_collection {
 namespace constant_shape {
 namespace different_shape {
 
@@ -29,8 +28,8 @@ void init_submodule(
         R"(
     TODO Docstring
 
-    .. automodule:: lue.constant_collection.constant_shape.different_shape
-    .. automodule:: lue.constant_collection.constant_shape.same_shape
+    .. automodule:: lue.constant_shape.different_shape
+    .. automodule:: lue.constant_shape.same_shape
 )");
 
     different_shape::init_submodule(submodule);
@@ -38,5 +37,4 @@ void init_submodule(
 }
 
 }  // namespace constant_shape
-}  // namespace constant_collection
 }  // namespace lue

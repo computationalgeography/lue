@@ -1,4 +1,4 @@
-#include "lue/item/constant_collection/constant_shape/different_shape/synchronous_variable.hpp"
+#include "lue/item/constant_shape/different_shape/continuous_value.hpp"
 #include "lue/py/conversion.hpp"
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
@@ -8,25 +8,23 @@ namespace py = pybind11;
 
 
 namespace lue {
-namespace constant_collection {
 namespace constant_shape {
 namespace different_shape {
 
-void init_variable(
+void init_continuous_value(
     py::module& module)
 {
 
-    py::class_<SynchronousVariable, hdf5::Group>(
+    py::class_<ContinuousValue, hdf5::Group>(
         module,
-        "SynchronousVariable",
-        "SynchronousVariable docstring...")
+        "ContinuousValue",
+        "ContinuousValue docstring...")
 
         .def(
             "reserve",
             [](
-                SynchronousVariable& self,
-                hsize_t const nr_time_domain_items,
-                py::array_t<hsize_t, py::array::c_style>& shapes) -> SynchronousVariable&
+                ContinuousValue& self,
+                py::array_t<hsize_t, py::array::c_style>& shapes) -> ContinuousValue&
             {
                 static_assert(sizeof(hsize_t) == sizeof(uint64_t), "");
 
@@ -56,8 +54,7 @@ void init_variable(
                 hsize_t const nr_items = array_info.shape[0];
 
                 self.reserve(
-                    nr_items, nr_time_domain_items,
-                    static_cast<hsize_t const*>(array_info.ptr));
+                    nr_items, static_cast<hsize_t const*>(array_info.ptr));
 
                 return self;
             },
@@ -66,7 +63,7 @@ void init_variable(
 
         .def_property_readonly(
             "dtype",
-            [](SynchronousVariable const& self)
+            [](ContinuousValue const& self)
             {
                 py::object object = hdf5_type_id_to_numpy_dtype(
                     self.memory_datatype());
@@ -78,20 +75,20 @@ void init_variable(
 
         .def_property_readonly(
             "rank",
-            &SynchronousVariable::rank,
+            &ContinuousValue::rank,
             "rank docstring..."
         )
 
         .def(
             "__len__",
-            &SynchronousVariable::nr_items,
+            &ContinuousValue::nr_items,
             "__len__ docstring..."
         )
 
         .def(
             "__getitem__",
             [](
-                SynchronousVariable const& self,
+                ContinuousValue const& self,
                 size_t const idx)
             {
                 if(idx >= self.nr_items()) {
@@ -107,5 +104,4 @@ void init_variable(
 
 }  // namespace different_shape
 }  // namespace constant_shape
-}  // namespace constant_collection
 }  // namespace lue

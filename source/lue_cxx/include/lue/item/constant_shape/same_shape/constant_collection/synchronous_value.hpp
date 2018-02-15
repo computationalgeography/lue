@@ -4,9 +4,9 @@
 
 
 namespace lue {
-namespace constant_collection {
 namespace constant_shape {
 namespace same_shape {
+namespace constant_collection {
 
 /*!
     @brief      This collection manages variable item values for constant
@@ -21,31 +21,44 @@ namespace same_shape {
     The underlying HDF5 dataset has two dimensions more than the rank
     of the individual values. The first dimension represents the time,
     the second the items.
+
+    - same number of same-shaped values per item
+    - a single HDF5 dataset for all items
+    - no additional dimension for time domain
+
+    | obtain value | index HDF5 dataset by item idx and time idx |
+    | add item     | not possible                                |
+    | remove item  | not applicable                              |
+
+    `v_i_t = dataset[time_idx][item_idx]`, order matters
+
+    - Optimization of `constant_shape/same_shape/SynchronousValue` in case
+        the collection of items doesn't change through time
 */
-class SynchronousVariable:
+class SynchronousValue:
     public Array
 {
 
 public:
 
-                   SynchronousVariable (hdf5::Group const& parent,
+                   SynchronousValue    (hdf5::Group const& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& memory_datatype);
 
-                   SynchronousVariable (hdf5::Dataset&& dataset,
+                   SynchronousValue    (hdf5::Dataset&& dataset,
                                         hdf5::Datatype const& memory_datatype);
 
-                   SynchronousVariable (SynchronousVariable const&)=delete;
+                   SynchronousValue    (SynchronousValue const&)=delete;
 
-                   SynchronousVariable (SynchronousVariable&&)=default;
+                   SynchronousValue    (SynchronousValue&&)=default;
 
-                   ~SynchronousVariable()=default;
+                   ~SynchronousValue   ()=default;
 
-    SynchronousVariable&
-                   operator=           (SynchronousVariable const&)=delete;
+    SynchronousValue&
+                   operator=           (SynchronousValue const&)=delete;
 
-    SynchronousVariable&
-                   operator=           (SynchronousVariable&&)=default;
+    SynchronousValue&
+                   operator=           (SynchronousValue&&)=default;
 
     void           reserve             (hsize_t nr_items,
                                         hsize_t nr_time_domain_items);
@@ -78,31 +91,31 @@ private:
 };
 
 
-SynchronousVariable create_synchronous_variable(
+SynchronousValue create_synchronous_value(
                                         hdf5::Group& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& memory_datatype);
 
-SynchronousVariable create_synchronous_variable(
+SynchronousValue create_synchronous_value(
                                         hdf5::Group& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& memory_datatype,
                                         hdf5::Shape const& value_shape);
 
-SynchronousVariable create_synchronous_variable(
+SynchronousValue create_synchronous_value(
                                         hdf5::Group& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& file_datatype,
                                         hdf5::Datatype const& memory_datatype);
 
-SynchronousVariable create_synchronous_variable(
+SynchronousValue create_synchronous_value(
                                         hdf5::Group& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& file_datatype,
                                         hdf5::Datatype const& memory_datatype,
                                         hdf5::Shape const& value_shape);
 
+}  // namespace constant_collection
 }  // namespace same_shape
 }  // namespace constant_shape
-}  // namespace constant_collection
 }  // namespace lue

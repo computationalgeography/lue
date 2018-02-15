@@ -1,4 +1,4 @@
-#include "lue/item/constant_collection/constant_shape/different_shape/constant.hpp"
+#include "lue/item/constant_shape/different_shape/constant_collection/synchronous_value.hpp"
 #include "lue/py/conversion.hpp"
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
@@ -8,24 +8,25 @@ namespace py = pybind11;
 
 
 namespace lue {
-namespace constant_collection {
 namespace constant_shape {
 namespace different_shape {
+namespace constant_collection {
 
-void init_constant(
+void init_synchronous_value(
     py::module& module)
 {
 
-    py::class_<Constant, hdf5::Group>(
+    py::class_<SynchronousValue, hdf5::Group>(
         module,
-        "Constant",
-        "Constant docstring...")
+        "SynchronousValue",
+        "SynchronousValue docstring...")
 
         .def(
             "reserve",
             [](
-                Constant& self,
-                py::array_t<hsize_t, py::array::c_style>& shapes) -> Constant&
+                SynchronousValue& self,
+                hsize_t const nr_time_domain_items,
+                py::array_t<hsize_t, py::array::c_style>& shapes) -> SynchronousValue&
             {
                 static_assert(sizeof(hsize_t) == sizeof(uint64_t), "");
 
@@ -55,7 +56,8 @@ void init_constant(
                 hsize_t const nr_items = array_info.shape[0];
 
                 self.reserve(
-                    nr_items, static_cast<hsize_t const*>(array_info.ptr));
+                    nr_items, nr_time_domain_items,
+                    static_cast<hsize_t const*>(array_info.ptr));
 
                 return self;
             },
@@ -64,7 +66,7 @@ void init_constant(
 
         .def_property_readonly(
             "dtype",
-            [](Constant const& self)
+            [](SynchronousValue const& self)
             {
                 py::object object = hdf5_type_id_to_numpy_dtype(
                     self.memory_datatype());
@@ -76,20 +78,20 @@ void init_constant(
 
         .def_property_readonly(
             "rank",
-            &Constant::rank,
+            &SynchronousValue::rank,
             "rank docstring..."
         )
 
         .def(
             "__len__",
-            &Constant::nr_items,
+            &SynchronousValue::nr_items,
             "__len__ docstring..."
         )
 
         .def(
             "__getitem__",
             [](
-                Constant const& self,
+                SynchronousValue const& self,
                 size_t const idx)
             {
                 if(idx >= self.nr_items()) {
@@ -103,7 +105,7 @@ void init_constant(
 
 }
 
+}  // namespace constant_collection
 }  // namespace different_shape
 }  // namespace constant_shape
-}  // namespace constant_collection
 }  // namespace lue
