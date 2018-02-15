@@ -62,12 +62,14 @@ add_library(lue STATIC
     src/constant_collection/time/located/constant_shape/same_shape/value
 
     src/item/constant_collection/constant_shape/collection
-    src/item/constant_collection/constant_shape/different_shape/asynchronous_variable
-    src/item/constant_collection/constant_shape/same_shape/asynchronous_variable
 
+    src/item/constant_shape/different_shape/asynchronous_value
     src/item/constant_shape/different_shape/continuous_value
+    src/item/constant_shape/different_shape/value
     src/item/constant_shape/different_shape/constant_collection/synchronous_value
+    src/item/constant_shape/same_shape/asynchronous_value
     src/item/constant_shape/same_shape/continuous_value
+    src/item/constant_shape/same_shape/value
     src/item/constant_shape/same_shape/constant_collection/synchronous_value
 
     src/space/constant_collection/stationary/box

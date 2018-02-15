@@ -7,7 +7,7 @@ namespace lue {
 TimeBox::TimeBox(
     hdf5::Group const& parent)
 
-    : constant_collection::constant_shape::same_shape::AsynchronousVariable{
+    : constant_shape::same_shape::AsynchronousValue{
         parent, coordinates_tag,
         hdf5::Datatype{
             hdf5::NativeDatatypeTraits<time::DurationCount>::type_id()}}
@@ -30,7 +30,7 @@ TimeBox create_time_box(
         hdf5::StandardDatatypeTraits<time::DurationCount>::type_id()};
     hdf5::Shape value_shape{2};
 
-    constant_collection::constant_shape::same_shape::create_asynchronous_variable(
+    constant_shape::same_shape::create_asynchronous_value(
         parent, coordinates_tag, file_datatype, memory_datatype, value_shape);
 
     return TimeBox{parent};

@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/item/constant_collection/constant_shape/same_shape/asynchronous_variable.hpp"
+#include "lue/item/constant_shape/same_shape/asynchronous_value.hpp"
 
 
 namespace lue {
@@ -7,7 +7,7 @@ namespace constant_collection {
 namespace mobile {
 
 class AsynchronousBox:
-    public constant_shape::same_shape::AsynchronousVariable
+    public lue::constant_shape::same_shape::AsynchronousValue
 {
 
 public:

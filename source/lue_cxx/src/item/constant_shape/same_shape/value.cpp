@@ -1,18 +1,17 @@
-#include "lue/item/constant_collection/constant_shape/same_shape/asynchronous_variable.hpp"
+#include "lue/item/constant_shape/same_shape/value.hpp"
 #include "lue/item/constant_collection/constant_shape/collection.hpp"
 #include "lue/tag.hpp"
 #include "lue/hdf5/chunk.hpp"
 
 
 namespace lue {
-namespace constant_collection {
 namespace constant_shape {
 namespace same_shape {
 
 /*!
     @brief      Open collection @a name in @a parent
 */
-AsynchronousVariable::AsynchronousVariable(
+Value::Value(
     hdf5::Group const& parent,
     std::string const& name)
 
@@ -30,7 +29,7 @@ AsynchronousVariable::AsynchronousVariable(
 /*!
     @brief      Open collection @a name in @a parent
 */
-AsynchronousVariable::AsynchronousVariable(
+Value::Value(
     hdf5::Group const& parent,
     std::string const& name,
     hdf5::Datatype const& memory_datatype)
@@ -49,7 +48,7 @@ AsynchronousVariable::AsynchronousVariable(
 /*!
     @brief      Move in @a group
 */
-AsynchronousVariable::AsynchronousVariable(
+Value::Value(
     hdf5::Group&& group,
     hdf5::Datatype const& memory_datatype)
 
@@ -67,7 +66,7 @@ AsynchronousVariable::AsynchronousVariable(
 /*!
     @brief      Return number of time domain items for which values are stored
 */
-hsize_t AsynchronousVariable::nr_time_domain_items(
+hsize_t Value::nr_time_domain_items(
     hsize_t const item_idx) const
 {
     hdf5::Dataset const dataset{*this, std::to_string(item_idx)};
@@ -79,7 +78,7 @@ hsize_t AsynchronousVariable::nr_time_domain_items(
 /*!
     @brief      Return number of items for which values are stored
 */
-hsize_t AsynchronousVariable::nr_items() const
+hsize_t Value::nr_items() const
 {
     return _nr_items;
 }
@@ -88,7 +87,7 @@ hsize_t AsynchronousVariable::nr_items() const
 /*!
     @brief      Return in-file datatype
 */
-hdf5::Datatype const& AsynchronousVariable::file_datatype() const
+hdf5::Datatype const& Value::file_datatype() const
 {
     return _file_datatype;
 }
@@ -97,7 +96,7 @@ hdf5::Datatype const& AsynchronousVariable::file_datatype() const
 /*!
     @brief      Return in-memory datatype
 */
-hdf5::Datatype const& AsynchronousVariable::memory_datatype() const
+hdf5::Datatype const& Value::memory_datatype() const
 {
     return _memory_datatype;
 }
@@ -110,7 +109,7 @@ hdf5::Datatype const& AsynchronousVariable::memory_datatype() const
 
     The underlying HDF5 dataset is chunked according to hdf5::chunk_shape().
 */
-void AsynchronousVariable::reserve_value(
+void Value::reserve_value(
     hsize_t const item_idx,
     hsize_t const nr_time_domain_items,
     hdf5::Shape const& value_shape)
@@ -137,7 +136,7 @@ void AsynchronousVariable::reserve_value(
 }
 
 
-void AsynchronousVariable::reserve(
+void Value::reserve(
     hsize_t const nr_items,
     hsize_t const* nr_time_domain_items)
 {
@@ -155,20 +154,20 @@ void AsynchronousVariable::reserve(
 /*!
     @brief      Return dataset corresponding to item @a item_idx
 */
-Array AsynchronousVariable::operator[](
+Array Value::operator[](
     hsize_t const item_idx) const
 {
     return Array{*this, std::to_string(item_idx), _memory_datatype};
 }
 
 
-hdf5::Shape const& AsynchronousVariable::value_shape()
+hdf5::Shape const& Value::value_shape()
 {
     return _value_shape;
 }
 
 
-hdf5::Hyperslab AsynchronousVariable::hyperslab(
+hdf5::Hyperslab Value::hyperslab(
     hdf5::Shape const& dataset_shape,
     hsize_t const time_idx) const
 {
@@ -182,7 +181,7 @@ hdf5::Hyperslab AsynchronousVariable::hyperslab(
 }
 
 
-void AsynchronousVariable::read(
+void Value::read(
     hsize_t const item_idx,
     void* buffer)
 {
@@ -190,7 +189,7 @@ void AsynchronousVariable::read(
 }
 
 
-void AsynchronousVariable::read(
+void Value::read(
     hsize_t const item_idx,
     hsize_t const time_idx,
     void* buffer)
@@ -201,7 +200,7 @@ void AsynchronousVariable::read(
 }
 
 
-void AsynchronousVariable::write(
+void Value::write(
     hsize_t const item_idx,
     void const* buffer)
 {
@@ -209,7 +208,7 @@ void AsynchronousVariable::write(
 }
 
 
-void AsynchronousVariable::write(
+void Value::write(
     hsize_t const item_idx,
     hsize_t const time_idx,
     void const* buffer)
@@ -220,34 +219,33 @@ void AsynchronousVariable::write(
 }
 
 
-AsynchronousVariable create_asynchronous_variable(
+Value create_value(
     hdf5::Group& parent,
     std::string const& name,
     hdf5::Datatype const& memory_datatype,
     hdf5::Shape const& value_shape)
 {
-    return create_asynchronous_variable(
+    return create_value(
         parent, name, hdf5::file_datatype(memory_datatype), memory_datatype,
         value_shape);
 }
 
 
-AsynchronousVariable create_asynchronous_variable(
+Value create_value(
     hdf5::Group& parent,
     std::string const& name,
     hdf5::Datatype const& file_datatype,
     hdf5::Datatype const& memory_datatype,
     hdf5::Shape const& value_shape)
 {
-    auto group = constant_shape::create_group(
+    auto group = lue::constant_collection::constant_shape::create_group(
         parent, name, file_datatype, value_shape);
 
     group.attributes().write<hsize_t>(nr_time_domain_items_tag, 0);
 
-    return AsynchronousVariable{std::move(group), memory_datatype};
+    return Value{std::move(group), memory_datatype};
 }
 
 }  // namespace same_shape
 }  // namespace constant_shape
-}  // namespace constant_collection
 }  // namespace lue

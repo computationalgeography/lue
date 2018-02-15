@@ -4,37 +4,35 @@
 
 
 namespace lue {
-namespace constant_collection {
 namespace constant_shape {
 namespace different_shape {
 
-class AsynchronousVariable:
+class Value:
     public hdf5::Group
 {
 
+    friend Value   create_value        (hdf5::Group& parent,
+                                        std::string const& name,
+                                        hdf5::Datatype const& memory_datatype,
+                                        int rank);
+
+    friend Value   create_value        (hdf5::Group& parent,
+                                        std::string const& name,
+                                        hdf5::Datatype const& file_datatype,
+                                        hdf5::Datatype const& memory_datatype,
+                                        int rank);
+
 public:
 
-                   AsynchronousVariable(hdf5::Group const& parent,
-                                        std::string const& name);
+                   Value               (Value const&)=delete;
 
-                   AsynchronousVariable(hdf5::Group const& parent,
-                                        std::string const& name,
-                                        hdf5::Datatype const& memory_datatype);
+                   Value               (Value&&)=default;
 
-                   AsynchronousVariable(hdf5::Group&& group,
-                                        hdf5::Datatype const& memory_datatype);
+                   ~Value              ()=default;
 
-                   AsynchronousVariable(AsynchronousVariable const&)=delete;
+    Value&         operator=           (Value const&)=delete;
 
-                   AsynchronousVariable(AsynchronousVariable&&)=default;
-
-                   ~AsynchronousVariable()=default;
-
-    AsynchronousVariable&
-                   operator=           (AsynchronousVariable const&)=delete;
-
-    AsynchronousVariable&
-                   operator=           (AsynchronousVariable&&)=default;
+    Value&         operator=           (Value&&)=default;
 
     hdf5::Datatype const&
                    file_datatype       () const;
@@ -70,6 +68,18 @@ public:
                                         hsize_t time_idx,
                                         void const* buffer);
 
+protected:
+
+                   Value               (hdf5::Group const& parent,
+                                        std::string const& name);
+
+                   Value               (hdf5::Group const& parent,
+                                        std::string const& name,
+                                        hdf5::Datatype const& memory_datatype);
+
+                   Value               (hdf5::Group&& group,
+                                        hdf5::Datatype const& memory_datatype);
+
 private:
 
     void           reserve_value       (hsize_t item_idx,
@@ -94,14 +104,12 @@ private:
 };
 
 
-AsynchronousVariable create_asynchronous_variable(
-                                        hdf5::Group& parent,
+Value              create_value        (hdf5::Group& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& memory_datatype,
                                         int rank);
 
-AsynchronousVariable create_asynchronous_variable(
-                                        hdf5::Group& parent,
+Value              create_value        (hdf5::Group& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& file_datatype,
                                         hdf5::Datatype const& memory_datatype,
@@ -109,5 +117,4 @@ AsynchronousVariable create_asynchronous_variable(
 
 }  // namespace different_shape
 }  // namespace constant_shape
-}  // namespace constant_collection
 }  // namespace lue
