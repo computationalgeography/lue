@@ -1,5 +1,5 @@
 #include "lue/item/constant_shape/different_shape/asynchronous_value.hpp"
-#include "lue/item/constant_collection/constant_shape/collection.hpp"
+#include "lue/item/constant_shape/collection.hpp"
 #include "lue/tag.hpp"
 #include "lue/hdf5/chunk.hpp"
 
@@ -271,8 +271,7 @@ Value create_value(
     hdf5::Datatype const& memory_datatype,
     int const rank)
 {
-    auto group = lue::constant_collection::constant_shape::create_group(
-        parent, name, file_datatype, rank);
+    auto group = create_group(parent, name, file_datatype, rank);
 
     group.attributes().write<hsize_t>(nr_time_domain_items_tag, 0);
 

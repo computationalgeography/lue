@@ -1,5 +1,5 @@
 #include "lue/item/constant_shape/same_shape/value.hpp"
-#include "lue/item/constant_collection/constant_shape/collection.hpp"
+#include "lue/item/constant_shape/collection.hpp"
 #include "lue/tag.hpp"
 #include "lue/hdf5/chunk.hpp"
 
@@ -238,8 +238,7 @@ Value create_value(
     hdf5::Datatype const& memory_datatype,
     hdf5::Shape const& value_shape)
 {
-    auto group = lue::constant_collection::constant_shape::create_group(
-        parent, name, file_datatype, value_shape);
+    auto group = create_group(parent, name, file_datatype, value_shape);
 
     group.attributes().write<hsize_t>(nr_time_domain_items_tag, 0);
 

@@ -1,9 +1,8 @@
-#include "lue/item/constant_collection/constant_shape/collection.hpp"
+#include "lue/item/constant_shape/collection.hpp"
 #include "lue/tag.hpp"
 
 
 namespace lue {
-namespace constant_collection {
 namespace constant_shape {
 
 /*!
@@ -13,7 +12,7 @@ namespace constant_shape {
     defines the dimensionality of the item values.
 */
 hdf5::Group create_group(
-    hdf5::Group const& parent,
+    hdf5::Group& parent,
     std::string const& name,
     hdf5::Datatype const& file_datatype,
     int const rank)
@@ -30,7 +29,7 @@ hdf5::Group create_group(
 
 
 hdf5::Group create_group(
-    hdf5::Group const& parent,
+    hdf5::Group& parent,
     std::string const& name,
     hdf5::Datatype const& file_datatype,
     hdf5::Shape const& value_shape)
@@ -46,5 +45,4 @@ hdf5::Group create_group(
 }
 
 }  // namespace constant_shape
-}  // namespace constant_collection
 }  // namespace lue
