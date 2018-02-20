@@ -20,12 +20,12 @@ add_unit_tests(
         item/constant_shape/same_shape/continuous_value_test
         item/constant_shape/same_shape/constant_collection/synchronous_value_test
 
-        space/constant_collection/mobile/asynchronous_box_test
-        space/constant_collection/mobile/asynchronous_point_test
-        space/constant_collection/mobile/synchronous_box_test
-        space/constant_collection/mobile/synchronous_point_test
-        space/constant_collection/stationary/box_test
-        space/constant_collection/stationary/point_test
+        space/mobile/asynchronous_box_test
+        space/mobile/asynchronous_point_test
+        space/mobile/constant_collection/synchronous_box_test
+        space/mobile/constant_collection/synchronous_point_test
+        space/stationary/box_test
+        space/stationary/point_test
 
     LINK_LIBRARIES
         lue::test

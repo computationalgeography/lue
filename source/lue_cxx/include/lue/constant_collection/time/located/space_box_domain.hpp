@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/space/constant_collection/stationary/box.hpp"
+#include "lue/space/stationary/box.hpp"
 #include "lue/constant_collection/property_set.hpp"
 #include "lue/constant_collection/space_domain.hpp"
 

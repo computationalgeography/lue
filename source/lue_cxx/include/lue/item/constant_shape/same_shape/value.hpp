@@ -7,6 +7,22 @@ namespace lue {
 namespace constant_shape {
 namespace same_shape {
 
+/*!
+    @brief      .
+    @param      .
+    @return     .
+    @exception  .
+
+    - different number of same-shaped values per item
+    - an HDF5 dataset for each item
+    - additional dimension for time domain
+
+    | obtain value | HDF5 dataset named after item id, index by time idx |
+    | add item     | create HDF5 dataset                                 |
+    | remove item  | don't write values for time idx                     |
+
+    `v_i_t = dataset_i[time_idx]`
+*/
 class Value:
     public hdf5::Group
 {

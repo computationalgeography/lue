@@ -24,11 +24,13 @@ namespace same_shape {
     - implies constant collection
     - a single HDF5 dataset for all items
 
-    | obtain value | index HDF5 dataset by item idx |
-    | add item     | expand HDF5 dataset            |
-    | remove item  | not applicable                 |
+    What         | How
+    ------------ | ---
+    obtain value | index HDF5 dataset by item idx
+    add item     | expand HDF5 dataset
+    remove item  | N/A
 
-    `v_i = dataset[i]`, order matters
+    `v_i = dataset[i]`, order of items in HDF5 dataset matters
 */
 class ContinuousValue:
     public Array

@@ -11,49 +11,47 @@ namespace different_shape {
     @param      .
     @return     .
     @exception  .
-
-    - Different number of different-shaped values per item
 */
-class AsynchronousValue:
+class SynchronousValue:
     public Value
 {
 
 public:
 
-                   AsynchronousValue   (hdf5::Group const& parent,
+                   SynchronousValue    (hdf5::Group const& parent,
                                         std::string const& name);
 
-                   AsynchronousValue   (hdf5::Group const& parent,
+                   SynchronousValue    (hdf5::Group const& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& memory_datatype);
 
-                   AsynchronousValue   (hdf5::Group&& group,
+                   SynchronousValue    (hdf5::Group&& group,
                                         hdf5::Datatype const& memory_datatype);
 
-                   AsynchronousValue   (AsynchronousValue const&)=delete;
+                   SynchronousValue    (SynchronousValue const&)=delete;
 
-                   AsynchronousValue   (AsynchronousValue&&)=default;
+                   SynchronousValue    (SynchronousValue&&)=default;
 
-                   ~AsynchronousValue  ()=default;
+                   ~SynchronousValue   ()=default;
 
-    AsynchronousValue&
-                   operator=           (AsynchronousValue const&)=delete;
+    SynchronousValue&
+                   operator=           (SynchronousValue const&)=delete;
 
-    AsynchronousValue&
-                   operator=           (AsynchronousValue&&)=default;
+    SynchronousValue&
+                   operator=           (SynchronousValue&&)=default;
 
 private:
 
 };
 
 
-AsynchronousValue create_asynchronous_value(
+SynchronousValue   create_synchronous_value(
                                         hdf5::Group& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& memory_datatype,
                                         int rank);
 
-AsynchronousValue create_asynchronous_value(
+SynchronousValue   create_synchronous_value(
                                         hdf5::Group& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& file_datatype,

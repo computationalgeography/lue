@@ -35,9 +35,9 @@ add_library(lue_py SHARED
     src/item/constant_shape/same_shape/constant_collection/synchronous_value
     src/item/constant_shape/submodule
 
-    src/space/constant_collection/stationary/box
-    src/space/constant_collection/stationary/point
-    src/space/constant_collection/stationary/submodule
+    src/space/stationary/box
+    src/space/stationary/point
+    src/space/stationary/submodule
 
     src/constant_collection/property
     src/constant_collection/property_set

@@ -65,19 +65,23 @@ add_library(lue STATIC
 
     src/item/constant_shape/different_shape/asynchronous_value
     src/item/constant_shape/different_shape/continuous_value
+    src/item/constant_shape/different_shape/synchronous_value
     src/item/constant_shape/different_shape/value
     src/item/constant_shape/different_shape/constant_collection/synchronous_value
     src/item/constant_shape/same_shape/asynchronous_value
     src/item/constant_shape/same_shape/continuous_value
+    src/item/constant_shape/same_shape/synchronous_value
     src/item/constant_shape/same_shape/value
     src/item/constant_shape/same_shape/constant_collection/synchronous_value
 
-    src/space/constant_collection/stationary/box
-    src/space/constant_collection/stationary/point
-    src/space/constant_collection/mobile/asynchronous_box
-    src/space/constant_collection/mobile/asynchronous_point
-    src/space/constant_collection/mobile/synchronous_box
-    src/space/constant_collection/mobile/synchronous_point
+    src/space/mobile/asynchronous_box
+    src/space/mobile/asynchronous_point
+    src/space/mobile/synchronous_box
+    src/space/mobile/synchronous_point
+    src/space/mobile/constant_collection/synchronous_box
+    src/space/mobile/constant_collection/synchronous_point
+    src/space/stationary/box
+    src/space/stationary/point
 
 )
 

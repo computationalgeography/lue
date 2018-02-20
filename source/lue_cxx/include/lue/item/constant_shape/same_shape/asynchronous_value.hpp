@@ -6,6 +6,12 @@ namespace lue {
 namespace constant_shape {
 namespace same_shape {
 
+/*!
+    @brief      .
+    @param      .
+    @return     .
+    @exception  .
+*/
 class AsynchronousValue:
     public Value
 {

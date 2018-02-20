@@ -7,6 +7,27 @@ namespace lue {
 namespace constant_shape {
 namespace different_shape {
 
+/*!
+    @brief      .
+    @param      .
+    @return     .
+    @exception  .
+
+    - Different number of different-shaped values per item
+    - additional dimension for time domain
+
+        | obtain value | HDF5 dataset named after item id, index by time idx |
+        | add item     | create HDF5 dataset                                 |
+        | remove item  | don't write values for time idx                     |
+
+        `v_i_t = dataset_i[time_idx]`
+
+    - works for `constant_collection` and `variable_collection`, but see
+        `constant_shape/different_shape/constant_collection/SynchronousValue`
+        for optimization
+    - Similar to `constant_shape/different_shape/AsynchronousValue`
+    - Inherit from `constant_shape/different_shape/Value`
+*/
 class Value:
     public hdf5::Group
 {
