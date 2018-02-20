@@ -12,13 +12,12 @@ add_unit_tests(
         time_box_test
         time_point_test
 
-
-        item/constant_shape/different_shape/asynchronous_value_test
-        item/constant_shape/different_shape/continuous_value_test
-        item/constant_shape/different_shape/constant_collection/synchronous_value_test
-        item/constant_shape/same_shape/asynchronous_value_test
-        item/constant_shape/same_shape/continuous_value_test
-        item/constant_shape/same_shape/constant_collection/synchronous_value_test
+        item/different_shape/constant_shape/asynchronous_value_test
+        item/different_shape/constant_shape/continuous_value_test
+        item/different_shape/constant_shape/constant_collection/synchronous_value_test
+        item/same_shape/constant_shape/asynchronous_value_test
+        item/same_shape/constant_shape/continuous_value_test
+        item/same_shape/constant_shape/constant_collection/synchronous_value_test
 
         space/mobile/asynchronous_box_test
         space/mobile/asynchronous_point_test

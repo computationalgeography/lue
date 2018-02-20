@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/item/constant_shape/same_shape/continuous_value.hpp"
+#include "lue/item/same_shape/constant_shape/continuous_value.hpp"
 #include "lue/phenomenon.hpp"
 
 
@@ -12,7 +12,7 @@ class PropertySet:
 
 public:
 
-    using Ids = lue::constant_shape::same_shape::ContinuousValue;
+    using Ids = lue::same_shape::constant_shape::ContinuousValue;
 
                    PropertySet         (hdf5::Identifier const& id);
 

@@ -6,12 +6,20 @@ namespace py = pybind11;
 
 namespace lue {
 
-namespace constant_shape {
+namespace different_shape {
 
-// Implementation in item/constant_shape tree
+// Implementation in item/different_shape tree
 void init_submodule(py::module& module);
 
-}  // namespace constant_shape
+}  // namespace different_shape
+
+
+namespace same_shape {
+
+// Implementation in item/same_shape tree
+void init_submodule(py::module& module);
+
+}  // namespace same_shape
 
 
 namespace stationary {
@@ -52,7 +60,8 @@ void init_submodule(
     init_property_class(submodule);
     init_property_set_class(submodule);
 
-    lue::constant_shape::init_submodule(submodule);
+    lue::different_shape::init_submodule(submodule);
+    lue::same_shape::init_submodule(submodule);
     lue::stationary::init_submodule(submodule);
     time::init_submodule(submodule);
 }

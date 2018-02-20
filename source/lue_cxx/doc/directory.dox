@@ -31,8 +31,8 @@
     in the 'active' collection must be stored.
 
     # Aspects
-    - Value *shape* variability through time
     - Value *shape* difference between items
+    - Value *shape* variability through time
     - Value *occurrence* through time
         - *continuous*
             - It is not possible to pin the value to specific locations
@@ -52,16 +52,50 @@
             - Not simultaneous in time
             - This implies that the value varies through time
 
-    Given the shape of the values
-    - Does the shape of values change over time?
-        - no: `constant_shape`
-            - Is the shape of different item values the same?
-                - yes: `same_shape`
-                - no: `different_shape`
-        - yes: `variable_shape`
-            - Is the shape of different item values the same?
-                - yes: `same_shape`
-                - no: `different_shape`
+
+    # Taxonomy / Identification key
+    - Does the shape differ between items?
+        - no: *same_shape*
+            - Does the value change over time?
+                - no
+                    - `lue::same_shape::ContinuousValue`
+                - yes
+                    - Does the value shape change over time?
+                        - no: *constant_shape*
+                            - Do the item values change at the same locations in time?
+                                - no
+                                    - `lue::same_shape::constant_shape::SynchronousValue`
+                                - yes
+                                    - `lue::same_shape::constant_shape::AsynchronousValue`
+                        - yes: *variable_shape*
+                            - Do the item values change at the same locations in time?
+                                - no
+                                    - `lue::same_shape::variable_shape::SynchronousValue`
+                                - yes
+                                    - `lue::same_shape::variable_shape::AsynchronousValue`
+                                    - Not needed?! This would implie items
+                                        having the same shape, that change
+                                        at unique locations in time. This can
+                                        be better modelled using
+                                        `different_shape::variable_shape::AsynchronousValue`
+        - yes: *different_shape*
+            - Does the value change over time?
+                - no
+                    - `lue::different_shape::ContinuousValue`
+                - yes
+                    - Does the value shape change over time?
+                        - no: *constant_shape*
+                            - Do the item values change at the same locations in time?
+                                - no
+                                    - `lue::different_shape::constant_shape::SynchronousValue`
+                                - yes
+                                    - `lue::different_shape::constant_shape::AsynchronousValue`
+                        - yes: *variable_shape*
+                            - Do the item values change at the same locations in time?
+                                - no
+                                    - `lue::different_shape::variable_shape::SynchronousValue`
+                                - yes
+                                    - `lue::different_shape::variable_shape::AsynchronousValue`
 
     For certain kinds of collection an optimization can be made by
     storing the values of all items in a single HDF5 dataset. These
@@ -74,20 +108,20 @@
     # Collection types
     Resulting collection types of item-related information:
 
-    - lue::constant_shape::same_shape::ContinuousValue
-    - lue::constant_shape::same_shape::constant_collection::SynchronousValue
-    - lue::constant_shape::different_shape::ContinuousValue
-    - lue::constant_shape::same_shape::SynchronousValue
-    - lue::constant_shape::same_shape::constant_collection::SynchronousValue
-    - lue::constant_shape::different_shape::SynchronousValue
-    - lue::constant_shape::same_shape::AsynchronousValue
-    - lue::constant_shape::different_shape::AsynchronousValue
-    - lue::variable_shape::same_shape::ContinuousValue
-    - lue::variable_shape::different_shape::ContinuousValue
-    - lue::variable_shape::same_shape::SynchronousValue
-    - lue::variable_shape::different_shape::SynchronousValue
-    - lue::variable_shape::same_shape::AsynchronousValue
-    - lue::variable_shape::different_shape::AsynchronousValue
+    - lue::same_shape::constant_shape::ContinuousValue
+    - lue::same_shape::constant_shape::SynchronousValue
+    - lue::same_shape::constant_shape::constant_collection::SynchronousValue
+    - lue::same_shape::constant_shape::AsynchronousValue
+    - lue::different_shape::constant_shape::ContinuousValue
+    - lue::different_shape::constant_shape::SynchronousValue
+    - lue::different_shape::constant_shape::constant_collection::SynchronousValue
+    - lue::different_shape::constant_shape::AsynchronousValue
+    - lue::same_shape::variable_shape::ContinuousValue
+    - lue::same_shape::variable_shape::SynchronousValue
+    - lue::same_shape::variable_shape::AsynchronousValue
+    - lue::different_shape::variable_shape::ContinuousValue
+    - lue::different_shape::variable_shape::SynchronousValue
+    - lue::different_shape::variable_shape::AsynchronousValue
 */
 
 

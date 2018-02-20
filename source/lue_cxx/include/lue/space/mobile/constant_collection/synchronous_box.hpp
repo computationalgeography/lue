@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/item/constant_shape/same_shape/constant_collection/synchronous_value.hpp"
+#include "lue/item/same_shape/constant_shape/constant_collection/synchronous_value.hpp"
 
 
 namespace lue {
@@ -7,7 +7,7 @@ namespace mobile {
 namespace constant_collection {
 
 class SynchronousBox:
-    public constant_shape::same_shape::constant_collection::SynchronousValue
+    public same_shape::constant_shape::constant_collection::SynchronousValue
 {
 
 public:

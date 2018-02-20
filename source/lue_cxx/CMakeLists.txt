@@ -62,16 +62,16 @@ add_library(lue STATIC
     src/constant_collection/time/located/constant_shape/same_shape/value
 
     src/item/constant_shape/collection
-    src/item/constant_shape/different_shape/asynchronous_value
-    src/item/constant_shape/different_shape/continuous_value
-    src/item/constant_shape/different_shape/synchronous_value
-    src/item/constant_shape/different_shape/value
-    src/item/constant_shape/different_shape/constant_collection/synchronous_value
-    src/item/constant_shape/same_shape/asynchronous_value
-    src/item/constant_shape/same_shape/continuous_value
-    src/item/constant_shape/same_shape/synchronous_value
-    src/item/constant_shape/same_shape/value
-    src/item/constant_shape/same_shape/constant_collection/synchronous_value
+    src/item/different_shape/constant_shape/asynchronous_value
+    src/item/different_shape/constant_shape/continuous_value
+    src/item/different_shape/constant_shape/synchronous_value
+    src/item/different_shape/constant_shape/value
+    src/item/different_shape/constant_shape/constant_collection/synchronous_value
+    src/item/same_shape/constant_shape/asynchronous_value
+    src/item/same_shape/constant_shape/continuous_value
+    src/item/same_shape/constant_shape/synchronous_value
+    src/item/same_shape/constant_shape/value
+    src/item/same_shape/constant_shape/constant_collection/synchronous_value
 
     src/space/mobile/asynchronous_box
     src/space/mobile/asynchronous_point

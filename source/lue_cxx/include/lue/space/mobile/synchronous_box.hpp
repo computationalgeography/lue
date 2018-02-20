@@ -1,12 +1,12 @@
 #pragma once
-#include "lue/item/constant_shape/same_shape/synchronous_value.hpp"
+#include "lue/item/same_shape/constant_shape/synchronous_value.hpp"
 
 
 namespace lue {
 namespace mobile {
 
 class SynchronousBox:
-    public constant_shape::same_shape::SynchronousValue
+    public same_shape::constant_shape::SynchronousValue
 {
 
 public:

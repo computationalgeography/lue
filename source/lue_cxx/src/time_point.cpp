@@ -7,7 +7,7 @@ namespace lue {
 TimePoint::TimePoint(
     hdf5::Group const& parent)
 
-    : constant_shape::same_shape::AsynchronousValue{
+    : same_shape::constant_shape::AsynchronousValue{
         parent, coordinates_tag,
         hdf5::Datatype{
             hdf5::NativeDatatypeTraits<time::DurationCount>::type_id()}}
@@ -29,7 +29,7 @@ TimePoint create_time_point(
         hdf5::StandardDatatypeTraits<time::DurationCount>::type_id()};
     hdf5::Shape value_shape{1};
 
-    constant_shape::same_shape::create_asynchronous_value(
+    same_shape::constant_shape::create_asynchronous_value(
         parent, coordinates_tag, file_datatype, memory_datatype, value_shape);
 
     return TimePoint{parent};

@@ -12,7 +12,7 @@ Value::Value(
     hdf5::Group const& parent,
     std::string const& name)
 
-    : lue::constant_shape::different_shape::constant_collection::SynchronousValue{
+    : lue::different_shape::constant_shape::constant_collection::SynchronousValue{
         parent, name},
       constant_collection::Value{}
 
@@ -25,7 +25,7 @@ Value::Value(
     std::string const& name,
     hdf5::Datatype const& memory_datatype)
 
-    : lue::constant_shape::different_shape::constant_collection::SynchronousValue{
+    : lue::different_shape::constant_shape::constant_collection::SynchronousValue{
           parent, name, memory_datatype},
       constant_collection::Value{}
 
@@ -34,10 +34,10 @@ Value::Value(
 
 
 Value::Value(
-    lue::constant_shape::different_shape::constant_collection::SynchronousValue&& collection)
+    lue::different_shape::constant_shape::constant_collection::SynchronousValue&& collection)
 
-    : lue::constant_shape::different_shape::constant_collection::SynchronousValue{
-          std::forward<lue::constant_shape::different_shape::constant_collection::SynchronousValue>(
+    : lue::different_shape::constant_shape::constant_collection::SynchronousValue{
+          std::forward<lue::different_shape::constant_shape::constant_collection::SynchronousValue>(
               collection)},
       constant_collection::Value{}
 
@@ -47,7 +47,7 @@ Value::Value(
 
 hsize_t Value::nr_items() const
 {
-    return lue::constant_shape::different_shape::constant_collection::SynchronousValue::nr_items();
+    return lue::different_shape::constant_shape::constant_collection::SynchronousValue::nr_items();
 }
 
 
@@ -59,7 +59,7 @@ Value create_value(
     int const rank)
 {
     return Value{
-        lue::constant_shape::different_shape::constant_collection::create_synchronous_value(
+        lue::different_shape::constant_shape::constant_collection::create_synchronous_value(
             parent, name, file_datatype, memory_datatype, rank)};
 }
 

@@ -9,7 +9,7 @@ AsynchronousPoint::AsynchronousPoint(
     hdf5::Group const& parent,
     hdf5::Datatype const& memory_datatype)
 
-    : constant_shape::same_shape::AsynchronousValue{
+    : same_shape::constant_shape::AsynchronousValue{
         parent, coordinates_tag, memory_datatype}
 
 {
@@ -35,7 +35,7 @@ AsynchronousPoint create_asynchronous_point(
     // A point is defined by the coordinates along each dimension
     hdf5::Shape value_shape{rank};
 
-    constant_shape::same_shape::create_asynchronous_value(
+    same_shape::constant_shape::create_asynchronous_value(
         parent, coordinates_tag, file_datatype, memory_datatype, value_shape);
 
     return AsynchronousPoint{std::move(parent), memory_datatype};

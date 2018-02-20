@@ -1,6 +1,6 @@
 #pragma once
 #include "lue/constant_collection/time/omnipresent/value.hpp"
-#include "lue/item/constant_shape/same_shape/continuous_value.hpp"
+#include "lue/item/same_shape/constant_shape/continuous_value.hpp"
 
 
 namespace lue {
@@ -10,7 +10,7 @@ namespace omnipresent {
 namespace same_shape {
 
 class Value:
-    public lue::constant_shape::same_shape::ContinuousValue,
+    public lue::same_shape::constant_shape::ContinuousValue,
     public omnipresent::Value
 {
 
@@ -21,7 +21,7 @@ public:
                                         hdf5::Datatype const& memory_datatype);
 
                    Value               (
-                            lue::constant_shape::same_shape::ContinuousValue&&
+                            lue::same_shape::constant_shape::ContinuousValue&&
                                 collection);
 
                    Value               (Value const&)=delete;

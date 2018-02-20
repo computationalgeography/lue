@@ -1,12 +1,12 @@
 #pragma once
-#include "lue/item/constant_shape/same_shape/asynchronous_value.hpp"
+#include "lue/item/same_shape/constant_shape/asynchronous_value.hpp"
 #include "lue/clock.hpp"
 
 
 namespace lue {
 
 class TimePoint:
-    public constant_shape::same_shape::AsynchronousValue
+    public same_shape::constant_shape::AsynchronousValue
 {
 
 public:

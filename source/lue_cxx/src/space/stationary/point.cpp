@@ -9,7 +9,7 @@ Point::Point(
     hdf5::Group const& parent,
     hdf5::Datatype const& memory_datatype)
 
-    : constant_shape::same_shape::ContinuousValue{
+    : same_shape::constant_shape::ContinuousValue{
         parent, coordinates_tag, memory_datatype}
 
 {
@@ -35,7 +35,7 @@ Point create_point(
     // A point is defined by the coordinates along each dimension
     hdf5::Shape value_shape = { rank };
 
-    constant_shape::same_shape::create_continuous_value(
+    same_shape::constant_shape::create_continuous_value(
         parent, coordinates_tag, file_datatype, memory_datatype, value_shape);
 
     return Point{std::move(parent), memory_datatype};

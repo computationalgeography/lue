@@ -9,7 +9,7 @@ SynchronousBox::SynchronousBox(
     hdf5::Group const& parent,
     hdf5::Datatype const& memory_datatype)
 
-    : constant_shape::same_shape::SynchronousValue{
+    : same_shape::constant_shape::SynchronousValue{
         parent, coordinates_tag, memory_datatype}
 
 {
@@ -36,7 +36,7 @@ SynchronousBox create_synchronous_box(
     // (diagonally). Two of them is enough.
     hdf5::Shape value_shape{2 * rank};
 
-    constant_shape::same_shape::create_synchronous_value(
+    same_shape::constant_shape::create_synchronous_value(
         parent, coordinates_tag, file_datatype, memory_datatype, value_shape);
 
     return SynchronousBox{std::move(parent), memory_datatype};
