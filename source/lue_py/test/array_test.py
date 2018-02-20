@@ -16,7 +16,7 @@ class ArrayTest(lue_test.TestCase):
         lue_test.remove_file_if_existant(dataset_name)
         self.dataset = lue.create_dataset(dataset_name)
         phenomenon = self.dataset.add_phenomenon("my_phenomenon")
-        self.property_set = omnipresent.create_property_set(phenomenon,
+        self.property_set = lue.constant_collection.create_property_set(phenomenon,
             "my_property_set")
         self.nr_items = 5
         self.nr_rows = 3

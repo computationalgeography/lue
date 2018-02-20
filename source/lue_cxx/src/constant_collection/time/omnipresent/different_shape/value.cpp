@@ -12,7 +12,7 @@ Value::Value(
     hdf5::Group const& parent,
     std::string const& name)
 
-    : constant_shape::different_shape::Constant{parent, name},
+    : lue::different_shape::constant_shape::ContinuousValue{parent, name},
       omnipresent::Value()
 
 {
@@ -24,7 +24,8 @@ Value::Value(
     std::string const& name,
     hdf5::Datatype const& memory_datatype)
 
-    : constant_shape::different_shape::Constant{parent, name, memory_datatype},
+    : lue::different_shape::constant_shape::ContinuousValue{
+        parent, name, memory_datatype},
       omnipresent::Value()
 
 {
@@ -32,10 +33,11 @@ Value::Value(
 
 
 Value::Value(
-    constant_shape::different_shape::Constant&& collection)
+    lue::different_shape::constant_shape::ContinuousValue&& collection)
 
-    : constant_shape::different_shape::Constant{
-          std::forward<constant_shape::different_shape::Constant>(collection)},
+    : lue::different_shape::constant_shape::ContinuousValue{
+          std::forward<lue::different_shape::constant_shape::ContinuousValue>(
+              collection)},
       omnipresent::Value()
 
 {
@@ -44,7 +46,7 @@ Value::Value(
 
 hsize_t Value::nr_items() const
 {
-    return constant_shape::different_shape::Constant::nr_items();
+    return lue::different_shape::constant_shape::ContinuousValue::nr_items();
 }
 
 
@@ -56,7 +58,7 @@ Value create_value(
     int const rank)
 {
     return Value{
-        constant_shape::different_shape::create_constant(
+        lue::different_shape::constant_shape::create_continuous_value(
             parent, name, file_datatype, memory_datatype, rank)};
 }
 

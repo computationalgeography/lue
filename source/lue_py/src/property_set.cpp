@@ -1,13 +1,12 @@
 #include "collection.hpp"
 #include "lue/property_sets.hpp"
 #include "lue/time_domain.hpp"
-#include "lue/constant_collection/time/located/property_set.hpp"
-#include "lue/constant_collection/time/omnipresent/property_set.hpp"
+#include "lue/constant_collection/property_set.hpp"
+#include "lue/constant_collection/time/omnipresent/different_shape/property.hpp"
+#include "lue/constant_collection/time/omnipresent/same_shape/property.hpp"
+#include "lue/constant_collection/time/located/constant_shape/different_shape/property.hpp"
+#include "lue/constant_collection/time/located/constant_shape/same_shape/property.hpp"
 #include <pybind11/pybind11.h>
-// #include <iostream>
-// #include "lue/python_api/numpy.h"
-// #include <pybind11/numpy.h>
-// #include <numpy/arrayobject.h>
 
 
 namespace py = pybind11;
@@ -16,14 +15,9 @@ using namespace pybind11::literals;
 
 namespace lue {
 
-// DEFINE_INIT_NUMPY()
-
-
 void init_property_set_class(
     py::module& module)
 {
-
-    // init_numpy();
 
     BASE_COLLECTION(PropertySets, PropertySet)
 
@@ -43,41 +37,16 @@ void init_property_set_class(
             {
                 auto& property_set = self[name];
                 auto const& configuration = property_set.configuration();
-                auto const& domain = property_set.domain();
-                auto const& domain_configuration = domain.configuration();
 
-                // TODO
-                //     Support registering of casters by specialized
-                //     PropertySet classes.
                 py::object object = py::none{};
 
-                switch(configuration.size_of_item_collection_type()) {
-
+                switch(configuration.type<CollectionVariability>()) {
                     case CollectionVariability::constant: {
-
-                        switch(domain_configuration.domain_type()) {
-
-                            case Domain::Configuration::DomainType::
-                                    omnipresent: {
-                                object = py::cast(new
-                                    constant_collection::time::omnipresent::
-                                        PropertySet(property_set.id()));
-                                break;
-                            }
-
-                            case Domain::Configuration::DomainType::
-                                    located: {
-                                object = py::cast(new
-                                    constant_collection::time::located::PropertySet(
-                                        hdf5::Group{property_set.id()}));
-                                break;
-                            }
-
-                        }
-
+                        object = py::cast(new
+                            constant_collection::PropertySet(
+                                property_set.id()));
                         break;
                     }
-
                 }
 
                 return object;
@@ -96,43 +65,8 @@ void init_property_set_class(
         //             property_sets.size()) + ")";
         //     }
         // )
-        // .def("add", &PropertySets::add,
-        //     "add docstring...",
-        //     py::return_value_policy::reference_internal)
 
         ;
-
-
-    // py::enum_<CollectionVariability>(module, "size_of_item_collection",
-    //     "size_of_item_collection docstring...")
-    //     .value("constant", CollectionVariability::constant)
-    // ;
-
-
-    // py::class_<PropertySetConfiguration>(module, "PropertySetConfiguration",
-    //     "PropertySetConfiguration docstring...")
-    //     .def(py::init<CollectionVariability const>(),
-    //         "__init__ docstring...",
-    //         "type"_a)
-    //     .def_property_readonly("size_of_item_collection_type",
-    //             &PropertySetConfiguration::size_of_item_collection_type,
-    //         "size_of_item_collection_type docstring...")
-    // ;
-
-
-    // py::class_<PropertySet::Configuration>(
-    //     module,
-    //     "PropertySetConfiguration",
-    //     "PropertySetConfiguration docstring...")
-
-    //     .def_property_readonly(
-    //         "size_of_item_collection_type",
-    //         &PropertySet::Configuration::size_of_item_collection_type,
-    //         "size_of_item_collection_type docstring..."
-    //     )
-
-    //     ;
-
 
     py::class_<PropertySet, hdf5::Group>(
         module,
@@ -162,137 +96,111 @@ void init_property_set_class(
             },
             "property_names docstring...")
 
-//         .def(
-//             "__getitem__",
-//             [](
-//                 PropertySet& self,
-//                 std::string const& name)
-//             {
-//                 return cast_to_specialized_property(
-//                     self.properties()[name]);
-//             },
-//             "Return property\n"
-//             "\n"
-//             ":param str name: Name of property to find\n"
-//             ":raises RuntimeError: In case the collection does not contain the\n"
-//             "   property\n",
-//             "name"_a)
+        .def(
+            "__getitem__",
+            [](
+                PropertySet& self,
+                std::string const& name)
+            {
+                auto& property = self.properties()[name];
+                auto const& configuration = property.configuration();
+                py::object object = py::none{};
 
+                switch(configuration.type<CollectionVariability>()) {
+                    case CollectionVariability::constant: {
+                        switch(configuration.type<ShapeVariability>()) {
+                            case ShapeVariability::constant: {
+                                switch(configuration.type<ShapePerItem>()) {
+                                    case ShapePerItem::different: {
+                                        switch(configuration.type<ValueVariability>()) {
+                                            case ValueVariability::constant: {
+                                                // constant_collection
+                                                // constant_shape
+                                                // different_shape
+                                                // constant
+        auto const file_datatype =
+            constant_collection::time::omnipresent::different_shape::Property::file_datatype(property);
+        object = py::cast(new
+            constant_collection::time::omnipresent::different_shape::Property{
+                hdf5::Group{property.id()},
+                memory_datatype(file_datatype)});
+                                                break;
+                                            }
+                                            case ValueVariability::variable: {
+                                                // constant_collection
+                                                // constant_shape
+                                                // different_shape
+                                                // variable
+        auto const file_datatype =
+            constant_collection::time::located::constant_shape::different_shape::Property::file_datatype(property);
+        object = py::cast(new
+            constant_collection::time::located::constant_shape::different_shape::Property{
+                hdf5::Group{property.id()},
+                memory_datatype(file_datatype)});
+                                                break;
+                                            }
+                                        }
 
+                                        break;
+                                    }
+                                    case ShapePerItem::same: {
+                                        switch(configuration.type<ValueVariability>()) {
+                                            case ValueVariability::constant: {
+                                                // constant_collection
+                                                // constant_shape
+                                                // same_shape
+                                                // constant
+        auto const file_datatype =
+            constant_collection::time::omnipresent::same_shape::Property::file_datatype(property);
+        object = py::cast(new
+            constant_collection::time::omnipresent::same_shape::Property{
+                hdf5::Group{property.id()},
+                memory_datatype(file_datatype)});
+                                                break;
+                                            }
+                                            case ValueVariability::variable: {
+                                                // constant_collection
+                                                // constant_shape
+                                                // same_shape
+                                                // variable
+        auto const file_datatype =
+            constant_collection::time::located::constant_shape::same_shape::Property::file_datatype(property);
+        object = py::cast(new
+            constant_collection::time::located::constant_shape::same_shape::Property{
+                hdf5::Group{property.id()},
+                memory_datatype(file_datatype)});
+                                                break;
+                                            }
+                                        }
 
+                                        break;
+                                    }
+                                }
 
+                                break;
+                            }
+                        }
 
-    //     .def_property_readonly("configuration", &PropertySet::configuration,
-    //         "configuration docstring...",
-    //         py::return_value_policy::reference_internal)
-    //     .def_property_readonly("domain", &PropertySet::domain,
-    //         "domain docstring...",
-    //         py::return_value_policy::reference_internal)
-    //     // .def("add_property", &PropertySet::add_property,
-    //     //     "add_property docstring...",
-    //     //     py::return_value_policy::reference_internal)
+                        break;
+                    }
+                }
 
-//         .def_property_readonly(
-//             "properties",
-//             py::overload_cast<>(&PropertySet::properties),
-//             R"(
-//     Return properties collection
-// 
-//     :rtype: lue.Properties
-// )",
-//             py::return_value_policy::reference_internal)
+                return object;
+            },
+            "Return property\n"
+            "\n"
+            ":param str name: Name of property to find\n"
+            ":raises RuntimeError: In case the collection does not contain the\n"
+            "   property\n",
+            "name"_a)
+
+        .def_property_readonly(
+            "domain",
+            py::overload_cast<>(&PropertySet::domain, py::const_),
+            "domain docstring...",
+            py::return_value_policy::reference_internal)
 
         ;
-
-
-    /*
-#define cast(object, type) \
-    try {  \
-        object.cast<type&>();  \
-        std::cout << " " #type "&\n";  \
-    }  \
-    catch(...) {  \
-        std::cout << "!" #type "&\n";  \
-    }  \
-    try {  \
-        object.cast<type*>();  \
-        std::cout << " " #type "*\n";  \
-    }  \
-    catch(...) {  \
-        std::cout << "!" #type "*\n";  \
-    }  \
-    try {  \
-        object.cast<type const&>();  \
-        std::cout << " " #type " const&\n";  \
-    }  \
-    catch(...) {  \
-        std::cout << "!" #type " const&\n";  \
-    }  \
-    try {  \
-        object.cast<type const*>();  \
-        std::cout << " " #type " const*\n";  \
-    }  \
-    catch(...) {  \
-        std::cout << "!" #type " const*\n";  \
-    }
-    */
-
-
-    // py::class_<time::omnipresent::size_per_item::constant::PropertySet>(
-    //     module, "O_C_PropertySet",
-    //     py::base<time::omnipresent::PropertySet>(),
-    //     "O_C_PropertySet docstring...")
-
-    //     .def(py::init<PropertySet&>(),
-    //         "__init__ docstring..."
-    //         "group"_a,
-    //         py::keep_alive<1, 2>())
-    // //     .def("add_property", [](
-    // //                 time::omnipresent::omnipresent::PropertySet& self,
-    // //                 std::string const& name,
-    // //                 py::handle const& numpy_type_id_object,
-    // //                 py::tuple const& shape,
-    // //                 py::tuple const& chunks) ->
-    // //                     time::omnipresent::omnipresent::Property& {
-
-    // //             int numpy_type_id = NPY_NOTYPE;
-    // //             {
-    // //                 PyArray_Descr* dtype;
-    // //                 if(!PyArray_DescrConverter(numpy_type_id_object.ptr(),
-    // //                         &dtype)) {
-    // //                     throw py::error_already_set();
-    // //                 }
-    // //                 numpy_type_id = dtype->type_num;
-    // //                 Py_DECREF(dtype);
-    // //             }
-
-    // //             Shape shape_(shape.size());
-
-    // //             for(size_t i = 0; i < shape.size(); ++i) {
-    // //                 shape_[i] = py::int_(shape[i]);
-    // //             }
-
-    // //             Chunks chunks_(chunks.size());
-
-    // //             for(size_t i = 0; i < chunks.size(); ++i) {
-    // //                 chunks[i] = chunks[i];
-    // //             }
-
-    // //             return self.add_property(name,
-    // //                 numpy_type_to_hdf5_type(numpy_type_id), shape_, chunks_);
-    // //         },
-    // //         // &time::omnipresent::omnipresent::PropertySet::add_property,
-    // //         "add_property docstring...",
-    // //         py::return_value_policy::reference_internal)
-    // //     .def("reserve_items",
-    // //             &time::omnipresent::omnipresent::PropertySet::reserve_items,
-    // //         "reserve docstring...",
-    // //         py::return_value_policy::reference_internal)
-    // //     .def_property_readonly("items",
-    // //             &time::omnipresent::omnipresent::PropertySet::items,
-    // //         "items docstring...",
-    // //         py::return_value_policy::reference_internal)
-    // ;
 
 }
 

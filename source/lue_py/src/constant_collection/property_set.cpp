@@ -20,18 +20,23 @@ void init_property_set_class(
         "PropertySet",
         "PropertySet docstring...")
 
+        .def_property_readonly(
+            "ids",
+            py::overload_cast<>(&PropertySet::ids),
+            "ids docstring...",
+            py::return_value_policy::reference_internal)
+
+
+
+
+
+
         // .def(
         //     py::init<lue::Phenomenon&, std::string const&>(),
         //     "__init__ docstring..."
         //     "phenomenon"_a,
         //     "name"_a,
         //     py::keep_alive<1, 2>())
-
-        .def_property_readonly(
-            "ids",
-            py::overload_cast<>(&PropertySet::ids),
-            "ids docstring...",
-            py::return_value_policy::reference_internal)
 
         // .def_property_readonly(
         //     "domain",
@@ -58,6 +63,50 @@ void init_property_set_class(
 
         ;
 
+    module.def(
+        "create_property_set",
+        // py::overload_cast<Phenomenon&, std::string const&>(
+        //     &create_property_set),
+        [](
+            Phenomenon& phenomenon,
+            std::string const& name)
+        {
+            return create_property_set(phenomenon, name);
+        },
+        R"(
+    Create new property set
+
+    The property set will be added to the phenomenon
+)",
+        "phenomenon"_a,
+        "name"_a,
+        py::return_value_policy::move)
+
+        ;
+
+    module.def(
+        "create_property_set",
+        // py::overload_cast<
+        //     Phenomenon&, std::string const&, same_shape::Value const&>(
+        //         &create_property_set),
+        [](
+            Phenomenon& phenomenon,
+            std::string const& name,
+            PropertySet::Ids const& ids)
+        {
+            return create_property_set(phenomenon, name, ids);
+        },
+        R"(
+    Create new property set
+
+    The property set will be added to the phenomenon
+)",
+        "phenomenon"_a,
+        "name"_a,
+        "ids"_a,
+        py::return_value_policy::move)
+
+        ;
 }
 
 }  // namespace constant_collection

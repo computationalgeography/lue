@@ -6,7 +6,7 @@ omnipresent = lue.constant_collection.time.omnipresent
 
 dataset = lue.create_dataset("areas.lue")
 phenomenon = dataset.add_phenomenon("areas")
-areas = omnipresent.create_property_set(phenomenon, "areas")
+areas = lue.constant_collection.create_property_set(phenomenon, "areas")
 
 nr_areas = 10
 rank = 2

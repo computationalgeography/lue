@@ -31,18 +31,14 @@ add_library(lue STATIC
 
     src/compound/clock
 
-    src/constant_collection/domain
     src/constant_collection/property
     src/constant_collection/property_set
     src/constant_collection/space_domain
     # src/constant_collection/value
     src/constant_collection/validate
 
-    src/constant_collection/time/omnipresent/domain
     src/constant_collection/time/omnipresent/property
-    src/constant_collection/time/omnipresent/property_set
     src/constant_collection/time/omnipresent/space_box_domain
-    src/constant_collection/time/omnipresent/space_domain
     src/constant_collection/time/omnipresent/space_point_domain
     # src/constant_collection/time/omnipresent/value
     src/constant_collection/time/omnipresent/validate
@@ -53,11 +49,8 @@ add_library(lue STATIC
     src/constant_collection/time/omnipresent/same_shape/property
     src/constant_collection/time/omnipresent/same_shape/value
 
-    src/constant_collection/time/located/domain
     src/constant_collection/time/located/property
-    src/constant_collection/time/located/property_set
     src/constant_collection/time/located/space_box_domain
-    src/constant_collection/time/located/space_domain
     src/constant_collection/time/located/time_domain
     src/constant_collection/time/located/time_box_domain
     src/constant_collection/time/located/validate
@@ -68,20 +61,26 @@ add_library(lue STATIC
     src/constant_collection/time/located/constant_shape/same_shape/property
     src/constant_collection/time/located/constant_shape/same_shape/value
 
-    src/item/constant_collection/constant_shape/collection
-    src/item/constant_collection/constant_shape/different_shape/constant
-    src/item/constant_collection/constant_shape/different_shape/asynchronous_variable
-    src/item/constant_collection/constant_shape/different_shape/synchronous_variable
-    src/item/constant_collection/constant_shape/same_shape/asynchronous_variable
-    src/item/constant_collection/constant_shape/same_shape/constant
-    src/item/constant_collection/constant_shape/same_shape/synchronous_variable
+    src/item/constant_shape/collection
+    src/item/different_shape/constant_shape/asynchronous_value
+    src/item/different_shape/constant_shape/continuous_value
+    src/item/different_shape/constant_shape/synchronous_value
+    src/item/different_shape/constant_shape/value
+    src/item/different_shape/constant_shape/constant_collection/synchronous_value
+    src/item/same_shape/constant_shape/asynchronous_value
+    src/item/same_shape/constant_shape/continuous_value
+    src/item/same_shape/constant_shape/synchronous_value
+    src/item/same_shape/constant_shape/value
+    src/item/same_shape/constant_shape/constant_collection/synchronous_value
 
-    src/space/constant_collection/stationary/box
-    src/space/constant_collection/stationary/point
-    src/space/constant_collection/mobile/asynchronous_box
-    src/space/constant_collection/mobile/asynchronous_point
-    src/space/constant_collection/mobile/synchronous_box
-    src/space/constant_collection/mobile/synchronous_point
+    src/space/mobile/asynchronous_box
+    src/space/mobile/asynchronous_point
+    src/space/mobile/synchronous_box
+    src/space/mobile/synchronous_point
+    src/space/mobile/constant_collection/synchronous_box
+    src/space/mobile/constant_collection/synchronous_point
+    src/space/stationary/box
+    src/space/stationary/point
 
 )
 

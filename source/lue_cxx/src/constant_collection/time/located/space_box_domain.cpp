@@ -15,10 +15,30 @@ hdf5::Datatype SpaceBoxDomain::file_datatype(
 
 
 SpaceBoxDomain::SpaceBoxDomain(
-    SpaceDomain&& space_domain)
+    hdf5::Group const& parent)
+
+    : SpaceBoxDomain{parent, hdf5::memory_datatype(file_datatype(parent))}
+
+{
+}
+
+
+SpaceBoxDomain::SpaceBoxDomain(
+    hdf5::Group const& parent,
+    hdf5::Datatype const& memory_datatype)
+
+    : constant_collection::SpaceDomain{parent},
+      _items{*this, memory_datatype}
+
+{
+}
+
+
+SpaceBoxDomain::SpaceBoxDomain(
+    constant_collection::SpaceDomain&& space_domain)
 
     : SpaceBoxDomain{
-        std::forward<SpaceDomain>(space_domain),
+        std::forward<constant_collection::SpaceDomain>(space_domain),
         hdf5::memory_datatype(file_datatype(space_domain))}
 
 {
@@ -26,10 +46,11 @@ SpaceBoxDomain::SpaceBoxDomain(
 
 
 SpaceBoxDomain::SpaceBoxDomain(
-    SpaceDomain&& space_domain,
+    constant_collection::SpaceDomain&& space_domain,
     hdf5::Datatype const& memory_datatype)
 
-    : SpaceDomain{std::forward<SpaceDomain>(space_domain)},
+    : constant_collection::SpaceDomain{
+        std::forward<constant_collection::SpaceDomain>(space_domain)},
       _items{*this, memory_datatype}
 
 {
@@ -71,7 +92,8 @@ SpaceBoxDomain create_space_box_domain(
         SpaceDomainItemType::box
     };
 
-    auto space = located::create_space_domain(domain, configuration);
+    auto space =
+        constant_collection::create_space_domain(domain, configuration);
 
     stationary::create_box(space, file_datatype, memory_datatype, rank);
 

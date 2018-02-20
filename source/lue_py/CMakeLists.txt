@@ -25,19 +25,21 @@ add_library(lue_py SHARED
     src/universe
     src/validate
 
-    src/item/constant_collection/constant_shape/different_shape/constant
-    src/item/constant_collection/constant_shape/different_shape/variable
-    src/item/constant_collection/constant_shape/different_shape/submodule
-    src/item/constant_collection/constant_shape/same_shape/constant
-    src/item/constant_collection/constant_shape/same_shape/synchronous_variable
-    src/item/constant_collection/constant_shape/same_shape/submodule
-    src/item/constant_collection/constant_shape/submodule
+    src/item/different_shape/submodule
+    src/item/different_shape/constant_shape/continuous_value
+    src/item/different_shape/constant_shape/submodule
+    src/item/different_shape/constant_shape/constant_collection/submodule
+    src/item/different_shape/constant_shape/constant_collection/synchronous_value
+    src/item/same_shape/submodule
+    src/item/same_shape/constant_shape/continuous_value
+    src/item/same_shape/constant_shape/submodule
+    src/item/same_shape/constant_shape/constant_collection/submodule
+    src/item/same_shape/constant_shape/constant_collection/synchronous_value
 
-    src/space/constant_collection/stationary/box
-    src/space/constant_collection/stationary/point
-    src/space/constant_collection/stationary/submodule
+    src/space/stationary/box
+    src/space/stationary/point
+    src/space/stationary/submodule
 
-    src/constant_collection/domain
     src/constant_collection/property
     src/constant_collection/property_set
     src/constant_collection/space_domain
@@ -45,11 +47,8 @@ add_library(lue_py SHARED
 
     src/constant_collection/time/submodule
 
-    src/constant_collection/time/omnipresent/domain
     src/constant_collection/time/omnipresent/property
-    src/constant_collection/time/omnipresent/property_set
     src/constant_collection/time/omnipresent/space_box_domain
-    src/constant_collection/time/omnipresent/space_domain
     src/constant_collection/time/omnipresent/space_point_domain
     src/constant_collection/time/omnipresent/submodule
 
@@ -61,14 +60,11 @@ add_library(lue_py SHARED
     src/constant_collection/time/omnipresent/same_shape/value
     src/constant_collection/time/omnipresent/same_shape/submodule
 
-    src/constant_collection/time/located/domain
     src/constant_collection/time/located/property
-    src/constant_collection/time/located/property_set
     src/constant_collection/time/located/submodule
     src/constant_collection/time/located/time_domain
 
     src/constant_collection/time/located/space_box_domain
-    src/constant_collection/time/located/space_domain
     src/constant_collection/time/located/time_box_domain
 
     src/constant_collection/time/located/constant_shape/property

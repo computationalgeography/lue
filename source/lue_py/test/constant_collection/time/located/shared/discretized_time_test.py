@@ -16,7 +16,9 @@ class DiscretizedTimeTest(lue_test.TestCase):
             boxes):
 
         self.assertEqual(property_set.name, name)
-        self.assertEqual(type(property_set), located.PropertySet)
+        self.assertEqual(
+            type(property_set),
+            lue.constant_collection.PropertySet)
         self.assertArraysEqual(property_set.domain.time.items[:], boxes)
 
 
@@ -82,7 +84,7 @@ class DiscretizedTimeTest(lue_test.TestCase):
 
         dataset = self.create_dataset(dataset_name)
         phenomenon = dataset.add_phenomenon(phenomenon_name)
-        property_set = located.create_property_set(
+        property_set = lue.constant_collection.create_property_set(
             phenomenon, property_set_name)
         nr_items = 100
 
@@ -131,7 +133,7 @@ class DiscretizedTimeTest(lue_test.TestCase):
         discretization_phenomenon = dataset.add_phenomenon(
             discretization_phenomenon_name)
         discretization_property_set_name = "discretization"
-        discretization_property_set = omnipresent.create_property_set(
+        discretization_property_set = lue.constant_collection.create_property_set(
             discretization_phenomenon, discretization_property_set_name)
         discretization_property_set.ids.reserve(1)[0] = 12345
 

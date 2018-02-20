@@ -2,6 +2,7 @@
 #include "lue/translate/format/gdal_block.hpp"
 #include "lue/translate/format/gdal_stacks.hpp"
 #include "lue/utility/progress_indicator.hpp"
+#include "lue/time_domain.hpp"
 #include "lue/constant_collection/time/omnipresent/space_box_domain.hpp"
 #include "lue/constant_collection/time/omnipresent/space_point_domain.hpp"
 #include "lue/hl/raster.hpp"
@@ -404,15 +405,16 @@ void translate_lue_dataset_to_shapefile(
     auto const& property_set = phenomenon.property_sets()[property_set_name];
     auto const& property_set_configuration = property_set.configuration();
 
-    if(property_set_configuration.size_of_item_collection_type() !=
+    if(property_set_configuration.type<CollectionVariability>() !=
             CollectionVariability::constant) {
         throw std::runtime_error("Size of item collection must be constant");
     }
 
-    auto const& domain_configuration = property_set.domain().configuration();
+    // auto const& domain_configuration = property_set.domain().configuration();
 
-    if(domain_configuration.domain_type() !=
-            Domain::Configuration::DomainType::omnipresent) {
+    if(time_domain_exists(property_set.domain())) {
+    // if(domain_configuration.domain_type() !=
+    //         Domain::Configuration::DomainType::omnipresent) {
         throw std::runtime_error("Time domain type must be omnipresent");
     }
 
@@ -442,15 +444,14 @@ void translate_lue_dataset_to_shapefile(
     // Create correct property set type
     {
         auto const property_set_ =
-           constant_collection::time::omnipresent::PropertySet(property_set.id());
+           constant_collection::PropertySet(property_set.id());
         auto const& domain = property_set.domain();
 
         if(!space_domain_exists(domain)) {
             throw std::runtime_error("Space domain must exist");
         }
 
-        auto space_domain =
-           constant_collection::time::omnipresent::SpaceDomain(domain);
+        auto space_domain = constant_collection::SpaceDomain(domain);
 
         // if(space_domain.configuration().domain_type() !=
         //         SpaceDomain::Configuration::DomainType::located) {

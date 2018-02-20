@@ -19,7 +19,7 @@ void init_value(
 
     py::class_<
             Value,
-            constant_collection::constant_shape::same_shape::SynchronousVariable>(
+            lue::same_shape::constant_shape::constant_collection::SynchronousValue>(
         module,
         "Value",
         "Value docstring...")

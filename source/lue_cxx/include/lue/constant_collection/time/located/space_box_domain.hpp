@@ -1,7 +1,7 @@
 #pragma once
-#include "lue/space/constant_collection/stationary/box.hpp"
-#include "lue/constant_collection/time/located/property_set.hpp"
-#include "lue/constant_collection/time/located/space_domain.hpp"
+#include "lue/space/stationary/box.hpp"
+#include "lue/constant_collection/property_set.hpp"
+#include "lue/constant_collection/space_domain.hpp"
 
 
 namespace lue {
@@ -10,7 +10,7 @@ namespace time {
 namespace located {
 
 class SpaceBoxDomain:
-    public SpaceDomain
+    public constant_collection::SpaceDomain
 {
 
 public:
@@ -19,9 +19,16 @@ public:
 
     using SpaceBoxes = stationary::Box;
 
-                   SpaceBoxDomain      (SpaceDomain&& space_domain);
+                   SpaceBoxDomain      (hdf5::Group const& parent);
 
-                   SpaceBoxDomain      (SpaceDomain&& space_domain,
+                   SpaceBoxDomain      (hdf5::Group const& parent,
+                                        hdf5::Datatype const& memory_datatype);
+
+                   SpaceBoxDomain      (constant_collection::SpaceDomain&&
+                                            space_domain);
+
+                   SpaceBoxDomain      (constant_collection::SpaceDomain&&
+                                            space_domain,
                                         hdf5::Datatype const& memory_datatype);
 
                    SpaceBoxDomain      (SpaceBoxDomain const&)=delete;

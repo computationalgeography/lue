@@ -7,81 +7,121 @@
     to be stored. For example, per item information may need to be
     stored about its id, location in time, location in space, property
     values, etc. This directory contains code for storing information for
-    multiple items, given a certain combination of aspects. Aspects
-    that differ between collections of items are:
+    multiple items, given a certain combination of aspects.
 
-    - **→ Does the item collection change over time (collection variability)?**
-        - *no*
-            - **constant_collection**
-        - *yes*
-            - **variable_collection**
+    # constant / variable collection
+    A constant collection means that the collection of items does not
+    change through time. Often, all items are known at the start of
+    a simulation.
 
-    - **→ Do values change over time (value variability)?**
+    A variable collection means that the collection of items changes
+    through time. Items are removed and added. Often, not all items are
+    known at the start of the simulation.
 
-        - *no*
-            - For each item there is a single value
-            - **constant**
-        - *yes*
-            - For each item there are multiple values. Each of these
-              values is somehow connected to a time domain item defining
-              for which moment(s) in time the value holds.
-            - The number time domain items may not be known in advance
-            - **variable**
-            - **→ Does the shape of the the values of each item change
-              through time? (shape variability)**
-                - *no*
-                    - The shape of all items remains the same through
-                      time. This does not mean that the shape of all
-                      items is the same (see below).
-                    - **constant_shape**
-                - *yes*
-                    - The shape of the items changes through time.
-                    - **variable_shape**
-            - **→ Do all items change at the same moments in
-                time? (occurrence)**
-                - *yes*
-                    - **synchronous**
-                    - For each item there is the same number of values
-                - *no*
-                    - **asynchronous**
-                    - For each item there is a different number of values
-    - **→ Does the shape of the nD values differ per item? (shape)**
-        - *no*
-            - **same_shape**
-            - For each item there is a value with the same shape
-            - For all items, the values can be stored in a single
-              HDF5 dataset
-        - *yes*
-            - **different_shape**
-            - For each item there is a value with a different shape
-            - For each item, the value must be stored in a different
-              HDF5 dataset
+    This distinction matters when information about multiple items is
+    stored in a single HDF5 dataset. This is an efficient, but rigid
+    format, which doesn't allow for items to be added or removed. But
+    whenever possible, this format should be used.
 
+    BTW, removing items from a collection does not mean that information
+    is removed! It means that after a certain point in time, the item
+    is not part of the 'active' collection anymore. Adding items means
+    that the item becomes part of the 'active' collection, untill it
+    is removed again. During a simulation, only information about items
+    in the 'active' collection must be stored.
+
+    # Aspects
+    - Value *shape* difference between items
+    - Value *shape* variability through time
+    - Value *occurrence* through time
+        - *continuous*
+            - It is not possible to pin the value to specific locations
+                in time
+            - There is no location in time where the value changes
+            - Uninterrupted extension in time
+            - This implies that the value is constant
+            - This implies that the collection of items is contant
+        - *synchronous*
+            - The value exists at specific moments in time
+            - There are locations in time where the value changes
+            - Existing at the same time
+            - This implies that the value varies through time
+        - *asynchronous*
+            - The value exists at specific moments in time
+            - There are locations in time where the value changes
+            - Not simultaneous in time
+            - This implies that the value varies through time
+
+
+    # Taxonomy / Identification key
+    - Does the shape differ between items?
+        - no: *same_shape*
+            - Does the value change over time?
+                - no
+                    - `lue::same_shape::ContinuousValue`
+                - yes
+                    - Does the value shape change over time?
+                        - no: *constant_shape*
+                            - Do the item values change at the same locations in time?
+                                - no
+                                    - `lue::same_shape::constant_shape::SynchronousValue`
+                                - yes
+                                    - `lue::same_shape::constant_shape::AsynchronousValue`
+                        - yes: *variable_shape*
+                            - Do the item values change at the same locations in time?
+                                - no
+                                    - `lue::same_shape::variable_shape::SynchronousValue`
+                                - yes
+                                    - `lue::same_shape::variable_shape::AsynchronousValue`
+                                    - Not needed?! This would implie items
+                                        having the same shape, that change
+                                        at unique locations in time. This can
+                                        be better modelled using
+                                        `different_shape::variable_shape::AsynchronousValue`
+        - yes: *different_shape*
+            - Does the value change over time?
+                - no
+                    - `lue::different_shape::ContinuousValue`
+                - yes
+                    - Does the value shape change over time?
+                        - no: *constant_shape*
+                            - Do the item values change at the same locations in time?
+                                - no
+                                    - `lue::different_shape::constant_shape::SynchronousValue`
+                                - yes
+                                    - `lue::different_shape::constant_shape::AsynchronousValue`
+                        - yes: *variable_shape*
+                            - Do the item values change at the same locations in time?
+                                - no
+                                    - `lue::different_shape::variable_shape::SynchronousValue`
+                                - yes
+                                    - `lue::different_shape::variable_shape::AsynchronousValue`
+
+    For certain kinds of collection an optimization can be made by
+    storing the values of all items in a single HDF5 dataset. These
+    optimized collections are stored in the `constant_collection` namespace.
+
+    *It must be possible to create items during the simulation!!!*
+
+    *It must be possible to remove temporal items during the simulation!!!*
+
+    # Collection types
     Resulting collection types of item-related information:
 
-    aspect | options
-    ------ | -------
-    collection size variability | constant_collection, variable_collection
-    shape variability | constant_shape, variable_shape
-    shape | same_shape, different_shape
-    occurrence | synchronous, asynchronous
-    value variability | constant, variable
-
-    In case value_variability is constant, shape_variability is
-    constant. In case value_variability is constant, occurence is absent.
-
-    - lue::constant_collection::constant_shape::same_shape::Constant
-    - lue::constant_collection::constant_shape::different_shape::Constant
-    - lue::constant_collection::constant_shape::same_shape::SynchronousVariable
-    - lue::constant_collection::constant_shape::same_shape::AsynchronousVariable
-    - lue::constant_collection::constant_shape::different_shape::SynchronousVariable
-    - lue::constant_collection::constant_shape::different_shape::AsynchronousVariable
-    - lue::variable_collection::constant_shape::same_shape::Constant
-    - lue::variable_collection::constant_shape::different_shape::Constant
-    - lue::variable_collection::constant_shape::same_shape::SynchronousVariable
-    - lue::variable_collection::constant_shape::same_shape::AsynchronousVariable
-    - lue::variable_collection::constant_shape::different_shape::SynchronousVariable
-    - lue::variable_collection::constant_shape::different_shape::AsynchronousVariable
+    - lue::same_shape::constant_shape::ContinuousValue
+    - lue::same_shape::constant_shape::SynchronousValue
+    - lue::same_shape::constant_shape::constant_collection::SynchronousValue
+    - lue::same_shape::constant_shape::AsynchronousValue
+    - lue::different_shape::constant_shape::ContinuousValue
+    - lue::different_shape::constant_shape::SynchronousValue
+    - lue::different_shape::constant_shape::constant_collection::SynchronousValue
+    - lue::different_shape::constant_shape::AsynchronousValue
+    - lue::same_shape::variable_shape::ContinuousValue
+    - lue::same_shape::variable_shape::SynchronousValue
+    - lue::same_shape::variable_shape::AsynchronousValue
+    - lue::different_shape::variable_shape::ContinuousValue
+    - lue::different_shape::variable_shape::SynchronousValue
+    - lue::different_shape::variable_shape::AsynchronousValue
 */
 
 

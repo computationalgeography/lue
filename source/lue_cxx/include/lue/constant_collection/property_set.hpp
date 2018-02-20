@@ -1,6 +1,6 @@
 #pragma once
-#include "lue/item/constant_collection/constant_shape/same_shape/constant.hpp"
-#include "lue/property_set.hpp"
+#include "lue/item/same_shape/constant_shape/continuous_value.hpp"
+#include "lue/phenomenon.hpp"
 
 
 namespace lue {
@@ -12,7 +12,7 @@ class PropertySet:
 
 public:
 
-    using Ids = constant_shape::same_shape::Constant;
+    using Ids = lue::same_shape::constant_shape::ContinuousValue;
 
                    PropertySet         (hdf5::Identifier const& id);
 
@@ -35,21 +35,17 @@ public:
 private:
 
     //! Collection of item-ids
-    constant_shape::same_shape::Constant _ids;
+    Ids            _ids;
 
 };
 
 
-PropertySet        create_property_set (hdf5::Group& group,
-                                        std::string const& name,
-                                        Domain::Configuration const&
-                                            domain_configuration);
+PropertySet        create_property_set (Phenomenon& phenomenon,
+                                        std::string const& name);
 
-PropertySet        create_property_set (hdf5::Group& group,
+PropertySet        create_property_set (Phenomenon& phenomenon,
                                         std::string const& name,
-                                        PropertySet::Ids const& ids,
-                                        Domain::Configuration const&
-                                            domain_configuration);
+                                        PropertySet::Ids const& ids);
 
 }  // namespace constant_collection
 }  // namespace lue

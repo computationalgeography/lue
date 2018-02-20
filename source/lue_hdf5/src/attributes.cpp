@@ -50,6 +50,12 @@ Attribute Attributes::attribute(
     std::string const& name) const
 {
     assert(_id.is_valid());
+
+    // if(!exists(name)) {
+    //     throw std::runtime_error(
+    //         name + ": no such attribute in " + _id.pathname());
+    // }
+
     assert(exists(name));
 
     return Attribute(_id, name);

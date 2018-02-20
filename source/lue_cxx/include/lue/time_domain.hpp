@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/clock.hpp"
+#include "lue/time/time_configuration.hpp"
 #include "lue/hdf5/group.hpp"
 
 
@@ -10,63 +11,6 @@ class TimeDomain:
 {
 
 public:
-
-    class Configuration
-    {
-
-    public:
-
-        enum class Ownership
-        {
-
-            //! Time domain items are shared between items
-            shared,
-
-            // //! Each item has a time domain item
-            // unique
-
-        };
-
-        enum class ItemType
-        {
-
-            //! Extent in time (duration)
-            box
-
-        };
-
-                   Configuration       (Clock const& clock,
-                                        Ownership const ownership,
-                                        ItemType const item_type);
-
-                   Configuration       (hdf5::Attributes const& attributes);
-
-                   Configuration       (Configuration const& other)=default;
-
-                   ~Configuration      ()=default;
-
-        Configuration& operator=       (Configuration const& other)=default;
-
-        Clock const& clock             () const;
-
-        Ownership  ownership           () const;
-
-        ItemType   item_type           () const;
-
-        void       save                (hdf5::Attributes& attributes) const;
-
-    private:
-
-        Clock      _clock;
-
-        Ownership  _ownership;
-
-        ItemType   _item_type;
-
-        void       load                (hdf5::Attributes const& attributes);
-
-    };
-
 
                    TimeDomain          (hdf5::Group const& parent);
 
@@ -82,20 +26,24 @@ public:
 
     TimeDomain&    operator=           (TimeDomain&&)=default;
 
-    Configuration const&
+    TimeConfiguration const&
                    configuration       () const;
+
+    Clock const&   clock               () const;
 
 private:
 
-    Configuration  _configuration;
+    TimeConfiguration  _configuration;
+
+    Clock      _clock;
 
 };
 
 
-TimeDomain         create_time_domain  (hdf5::Group const& parent,
-                                        TimeDomain::Configuration const&
-                                            configuration);
+TimeDomain         create_time_domain  (hdf5::Group& parent,
+                                        Clock const& clock,
+                                        TimeConfiguration const& configuration);
 
-bool               time_domain_exists (hdf5::Group const& parent);
+bool               time_domain_exists  (hdf5::Group const& parent);
 
 }  // namespace lue

@@ -59,13 +59,10 @@ TimeBoxDomain create_time_box_domain(
     PropertySet& property_set,
     Clock const& clock)
 {
-    auto& domain = property_set.domain();
-
-    auto time_domain = located::create_time_domain(domain,
-        TimeDomain::Configuration(
-            clock,
-            TimeDomain::Configuration::Ownership::shared,
-            TimeDomain::Configuration::ItemType::box)
+    auto time_domain = located::create_time_domain(property_set.domain(),
+        clock,
+        TimeConfiguration(
+            TimeDomainItemType::box)
     );
 
     hdf5::Datatype memory_datatype(
@@ -81,7 +78,7 @@ TimeBoxDomain create_time_box_domain(
     // count.
     hdf5::Shape value_shape = { 2 };
 
-    constant_shape::same_shape::create_constant(
+    lue::same_shape::constant_shape::create_continuous_value(
         time_domain, coordinates_tag, file_datatype, memory_datatype,
         value_shape);
 

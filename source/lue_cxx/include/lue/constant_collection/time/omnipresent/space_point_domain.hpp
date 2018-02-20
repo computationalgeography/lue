@@ -1,7 +1,7 @@
 #pragma once
-#include "lue/space/constant_collection/stationary/point.hpp"
-#include "lue/constant_collection/time/omnipresent/property_set.hpp"
-#include "lue/constant_collection/time/omnipresent/space_domain.hpp"
+#include "lue/space/stationary/point.hpp"
+#include "lue/constant_collection/property_set.hpp"
+#include "lue/constant_collection/space_domain.hpp"
 
 
 namespace lue {
@@ -10,7 +10,7 @@ namespace time {
 namespace omnipresent {
 
 class SpacePointDomain:
-    public SpaceDomain
+    public constant_collection::SpaceDomain
 {
 
 public:
@@ -19,9 +19,16 @@ public:
 
     using SpacePoints = stationary::Point;
 
-                   SpacePointDomain    (SpaceDomain&& space_domain);
+                   SpacePointDomain    (hdf5::Group const& parent);
 
-                   SpacePointDomain    (SpaceDomain&& space_domain,
+                   SpacePointDomain    (hdf5::Group const& parent,
+                                        hdf5::Datatype const& memory_datatype);
+
+                   SpacePointDomain    (constant_collection::SpaceDomain&&
+                                            space_domain);
+
+                   SpacePointDomain    (constant_collection::SpaceDomain&&
+                                            space_domain,
                                         hdf5::Datatype const& memory_datatype);
 
                    SpacePointDomain    (SpacePointDomain const&)=delete;

@@ -5,13 +5,22 @@ namespace py = pybind11;
 
 
 namespace lue {
-namespace constant_collection {
-namespace constant_shape {
 
-// Implementation in item/ tree
+namespace different_shape {
+
+// Implementation in item/different_shape tree
 void init_submodule(py::module& module);
 
-}  // namespace constant_shape
+}  // namespace different_shape
+
+
+namespace same_shape {
+
+// Implementation in item/same_shape tree
+void init_submodule(py::module& module);
+
+}  // namespace same_shape
+
 
 namespace stationary {
 
@@ -21,6 +30,7 @@ void init_submodule(py::module& module);
 }
 
 
+namespace constant_collection {
 namespace time {
 
 void init_submodule(py::module& module);
@@ -28,7 +38,6 @@ void init_submodule(py::module& module);
 }  // namespace time
 
 
-void init_domain_class(py::module& module);
 void init_property_class(py::module& module);
 void init_property_set_class(py::module& module);
 void init_space_domain_class(py::module& module);
@@ -44,16 +53,16 @@ void init_submodule(
     of items
 
     .. automodule:: lue.constant_collection.constant_shape
-    .. automodule:: lue.constant_collection.stationary
+    .. automodule:: lue.stationary
     .. automodule:: lue.constant_collection.time
 )");
-    init_domain_class(submodule);
     init_space_domain_class(submodule);
     init_property_class(submodule);
     init_property_set_class(submodule);
 
-    constant_shape::init_submodule(submodule);
-    stationary::init_submodule(submodule);
+    lue::different_shape::init_submodule(submodule);
+    lue::same_shape::init_submodule(submodule);
+    lue::stationary::init_submodule(submodule);
     time::init_submodule(submodule);
 }
 

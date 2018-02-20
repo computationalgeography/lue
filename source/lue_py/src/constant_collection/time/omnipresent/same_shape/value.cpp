@@ -17,7 +17,7 @@ void init_value_class(
 
     py::class_<
             Value,
-            constant_shape::same_shape::Constant>(
+            lue::same_shape::constant_shape::ContinuousValue>(
         module,
         "Value",
         "Value docstring...")

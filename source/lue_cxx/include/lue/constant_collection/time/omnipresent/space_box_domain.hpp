@@ -1,7 +1,7 @@
 #pragma once
-#include "lue/space/constant_collection/stationary/box.hpp"
-#include "lue/constant_collection/time/omnipresent/property_set.hpp"
-#include "lue/constant_collection/time/omnipresent/space_domain.hpp"
+#include "lue/space/stationary/box.hpp"
+#include "lue/constant_collection/property_set.hpp"
+#include "lue/constant_collection/space_domain.hpp"
 
 
 namespace lue {
@@ -10,7 +10,7 @@ namespace time {
 namespace omnipresent {
 
 class SpaceBoxDomain:
-    public SpaceDomain
+    public constant_collection::SpaceDomain
 {
 
 public:
@@ -19,9 +19,16 @@ public:
 
     using SpaceBoxes = stationary::Box;
 
-                   SpaceBoxDomain      (SpaceDomain&& space_domain);
+                   SpaceBoxDomain      (hdf5::Group const& parent);
 
-                   SpaceBoxDomain      (SpaceDomain&& space_domain,
+                   SpaceBoxDomain      (hdf5::Group const& parent,
+                                        hdf5::Datatype const& memory_datatype);
+
+                   SpaceBoxDomain      (constant_collection::SpaceDomain&&
+                                            space_domain);
+
+                   SpaceBoxDomain      (constant_collection::SpaceDomain&&
+                                            space_domain,
                                         hdf5::Datatype const& memory_datatype);
 
                    SpaceBoxDomain      (SpaceBoxDomain const&)=delete;
@@ -46,6 +53,11 @@ private:
 
 };
 
+
+SpaceBoxDomain     create_space_box_domain(
+                                        PropertySet& property_set,
+                                        hdf5::Datatype const memory_datatype,
+                                        std::size_t rank);
 
 SpaceBoxDomain     create_space_box_domain(
                                         PropertySet& property_set,

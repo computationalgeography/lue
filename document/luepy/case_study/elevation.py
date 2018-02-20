@@ -7,7 +7,7 @@ located = lue.constant_collection.time.located
 
 dataset = lue.create_dataset("elevation.lue")
 phenomenon = dataset.add_phenomenon("areas")
-areas = located.create_property_set(phenomenon, "areas")
+areas = lue.constant_collection.create_property_set(phenomenon, "areas")
 nr_areas = 10
 
 areas.ids.reserve(nr_areas)[:] = [2, 4, 6, 8, 10, 9, 7, 5, 3, 1]
@@ -33,7 +33,7 @@ space_domain.reserve(nr_areas)[:] = numpy.arange(  # Dummy data...
 # Given the 10 day time boxes, configure time steps to be 2 days long
 nr_time_steps = 5
 discretization_phenomenon = dataset.add_phenomenon("discretization")
-discretization_property_set = omnipresent.create_property_set(
+discretization_property_set = lue.constant_collection.create_property_set(
     discretization_phenomenon, "discretization")
 discretization_property_set.ids.reserve(1)[0] = 12345
 
@@ -41,7 +41,7 @@ time_discretization = omnipresent.same_shape.create_property(
     discretization_property_set, "time", numpy.uint32)
 time_discretization.values.reserve(1)[:] = nr_time_steps
 
-discretization_property_set = omnipresent.create_property_set(
+discretization_property_set = lue.constant_collection.create_property_set(
     phenomenon, "discretization", areas.ids)
 space_discretization = omnipresent.same_shape.create_property(
     discretization_property_set, "space", numpy.uint32, (2,))

@@ -36,7 +36,7 @@ class ScalarTest(lue_test.TestCase):
 
         dataset = self.create_dataset(dataset_name)
         phenomenon = dataset.add_phenomenon(phenomenon_name)
-        property_set = omnipresent.create_property_set(phenomenon,
+        property_set = lue.constant_collection.create_property_set(phenomenon,
             property_set_name)
         nr_items = 500
 
@@ -98,7 +98,7 @@ class ScalarTest(lue_test.TestCase):
 
     #     dataset = self.create_dataset(dataset_name)
     #     phenomenon = dataset.add_phenomenon(phenomenon_name)
-    #     property_set = omnipresent.create_property_set(phenomenon,
+    #     property_set = lue.constant_collection.create_property_set(phenomenon,
     #         property_set_name)
     #     nr_items = 500
 

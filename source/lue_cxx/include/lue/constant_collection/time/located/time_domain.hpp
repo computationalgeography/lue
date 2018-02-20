@@ -30,9 +30,9 @@ public:
 };
 
 
-TimeDomain        create_time_domain   (hdf5::Group const& parent,
-                                        TimeDomain::Configuration const&
-                                            configuration);
+TimeDomain        create_time_domain   (hdf5::Group& parent,
+                                        Clock const& clock,
+                                        TimeConfiguration const& configuration);
 
 }  // namespace located
 }  // namespace time
