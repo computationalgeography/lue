@@ -94,8 +94,8 @@ BOOST_AUTO_TEST_CASE(create_and_read_constant)
             auto const& property = constants.properties()[property_name];
 
             BOOST_CHECK(
-                property.configuration().type<lue::CollectionVariability>() ==
-                lue::CollectionVariability::constant);
+                property.configuration().type<lue::Occurrence>() ==
+                lue::Occurrence::continuous);
             BOOST_CHECK(
                 property.configuration().type<lue::ShapeVariability>() ==
                 lue::ShapeVariability::constant);
@@ -103,8 +103,8 @@ BOOST_AUTO_TEST_CASE(create_and_read_constant)
                 property.configuration().type<lue::ShapePerItem>() ==
                 lue::ShapePerItem::same);
             BOOST_CHECK(
-                property.configuration().type<lue::ValueVariability>() ==
-                lue::ValueVariability::constant);
+                property.configuration().type<lue::CollectionVariability>() ==
+                lue::CollectionVariability::constant);
 
             BOOST_CHECK(
                 omnipresent::same_shape::Property::file_datatype(

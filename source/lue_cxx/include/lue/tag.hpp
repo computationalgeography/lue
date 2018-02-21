@@ -14,6 +14,7 @@ static std::string const ids_tag = "lue_ids";
 static std::string const nr_time_domain_items_tag = "lue_nr_time_domain_items";
 static std::string const nr_items_tag = "lue_nr_items";
 static std::string const nr_units_tag = "lue_nr_units";
+static std::string const occurrence_tag = "lue_occurrence";
 static std::string const phenomena_tag = "lue_phenomena";
 static std::string const properties_tag = "lue_properties";
 static std::string const property_sets_tag = "lue_property_sets";
@@ -47,6 +48,5 @@ static std::string const unit_tag = "lue_unit";
 
 static std::string const universes_tag = "lue_universes";
 static std::string const value_tag = "lue_value";
-static std::string const value_variability_tag = "lue_value_variability";
 
 }  // namespace lue

@@ -203,8 +203,8 @@ BOOST_AUTO_TEST_CASE(create_and_read_raster)
                 auto const configuration = property.configuration();
 
                 BOOST_CHECK(
-                    configuration.type<lue::CollectionVariability>() ==
-                    lue::CollectionVariability::constant);
+                    configuration.type<lue::Occurrence>() ==
+                    lue::Occurrence::continuous);
                 BOOST_CHECK(
                     configuration.type<lue::ShapeVariability>() ==
                     lue::ShapeVariability::constant);
@@ -212,8 +212,8 @@ BOOST_AUTO_TEST_CASE(create_and_read_raster)
                     configuration.type<lue::ShapePerItem>() ==
                     lue::ShapePerItem::different);
                 BOOST_CHECK(
-                    configuration.type<lue::ValueVariability>() ==
-                    lue::ValueVariability::constant);
+                    configuration.type<lue::CollectionVariability>() ==
+                    lue::CollectionVariability::constant);
 
                 BOOST_CHECK(property.space_is_discretized());
 
@@ -258,8 +258,8 @@ BOOST_AUTO_TEST_CASE(create_and_read_raster)
                         property.configuration();
 
                     BOOST_CHECK(
-                        configuration.type<lue::CollectionVariability>() ==
-                        lue::CollectionVariability::constant);
+                        configuration.type<lue::Occurrence>() ==
+                        lue::Occurrence::continuous);
                     BOOST_CHECK(
                         configuration.type<lue::ShapeVariability>() ==
                         lue::ShapeVariability::constant);
@@ -267,8 +267,8 @@ BOOST_AUTO_TEST_CASE(create_and_read_raster)
                         configuration.type<lue::ShapePerItem>() ==
                         lue::ShapePerItem::same);
                     BOOST_CHECK(
-                        configuration.type<lue::ValueVariability>() ==
-                        lue::ValueVariability::constant);
+                        configuration.type<lue::CollectionVariability>() ==
+                        lue::CollectionVariability::constant);
 
                     BOOST_CHECK(
                         omnipresent::same_shape::Property::file_datatype(

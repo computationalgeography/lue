@@ -59,10 +59,10 @@ Property create_property(
     auto& properties = property_set.properties();
 
     ItemConfiguration configuration{
-        CollectionVariability::constant,
-        ShapeVariability::constant,
         ShapePerItem::same,
-        ValueVariability::constant
+        Occurrence::continuous,
+        ShapeVariability::constant,
+        CollectionVariability::constant
     };
 
     auto& property = properties.add(name,
@@ -98,10 +98,10 @@ Property create_property(
     auto& properties = property_set.properties();
 
     ItemConfiguration configuration{
-        CollectionVariability::constant,
-        ShapeVariability::constant,
         ShapePerItem::same,
-        ValueVariability::constant
+        Occurrence::continuous,
+        ShapeVariability::constant,
+        CollectionVariability::constant
     };
 
     auto& property = properties.add(name,

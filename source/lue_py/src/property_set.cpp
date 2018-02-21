@@ -7,6 +7,7 @@
 #include "lue/constant_collection/time/located/constant_shape/different_shape/property.hpp"
 #include "lue/constant_collection/time/located/constant_shape/same_shape/property.hpp"
 #include <pybind11/pybind11.h>
+#include <cassert>
 
 
 namespace py = pybind11;
@@ -106,72 +107,102 @@ void init_property_set_class(
                 auto const& configuration = property.configuration();
                 py::object object = py::none{};
 
-                switch(configuration.type<CollectionVariability>()) {
-                    case CollectionVariability::constant: {
-                        switch(configuration.type<ShapeVariability>()) {
-                            case ShapeVariability::constant: {
-                                switch(configuration.type<ShapePerItem>()) {
-                                    case ShapePerItem::different: {
-                                        switch(configuration.type<ValueVariability>()) {
-                                            case ValueVariability::constant: {
-                                                // constant_collection
-                                                // constant_shape
-                                                // different_shape
-                                                // constant
+                switch(configuration.type<ShapePerItem>()) {
+                    case ShapePerItem::different: {
+                        switch(configuration.type<Occurrence>()) {
+                            case Occurrence::continuous: {
+                                // different_shape
+                                // continuous
+                                assert(
+                                    configuration.type<ShapeVariability>() ==
+                                    ShapeVariability::constant);
+                                assert(
+                                    configuration.type<CollectionVariability>() ==
+                                    CollectionVariability::constant);
+
         auto const file_datatype =
             constant_collection::time::omnipresent::different_shape::Property::file_datatype(property);
         object = py::cast(new
             constant_collection::time::omnipresent::different_shape::Property{
                 hdf5::Group{property.id()},
                 memory_datatype(file_datatype)});
-                                                break;
-                                            }
-                                            case ValueVariability::variable: {
-                                                // constant_collection
-                                                // constant_shape
-                                                // different_shape
-                                                // variable
+
+                                break;
+                            }
+                            case Occurrence::asynchronous: {
+                                // TODO
+                                assert(false);
+                                break;
+                            }
+                            case Occurrence::synchronous: {
+                                switch(configuration.type<ShapeVariability>()) {
+                                    case ShapeVariability::constant: {
+                                        // different_shape
+                                        // synchronous
+                                        // constant_shape
+                                        assert(
+                                            configuration.type<CollectionVariability>() ==
+                                            CollectionVariability::constant);
+
         auto const file_datatype =
             constant_collection::time::located::constant_shape::different_shape::Property::file_datatype(property);
         object = py::cast(new
             constant_collection::time::located::constant_shape::different_shape::Property{
                 hdf5::Group{property.id()},
                 memory_datatype(file_datatype)});
-                                                break;
-                                            }
-                                        }
 
                                         break;
                                     }
-                                    case ShapePerItem::same: {
-                                        switch(configuration.type<ValueVariability>()) {
-                                            case ValueVariability::constant: {
-                                                // constant_collection
-                                                // constant_shape
-                                                // same_shape
-                                                // constant
+                                }
+
+                                break;
+                            }
+                        }
+
+                        break;
+                    }
+                    case ShapePerItem::same: {
+                        switch(configuration.type<Occurrence>()) {
+                            case Occurrence::continuous: {
+                                // same_shape
+                                // continuous
+                                assert(
+                                    configuration.type<ShapeVariability>() ==
+                                    ShapeVariability::constant);
+                                assert(
+                                    configuration.type<CollectionVariability>() ==
+                                    CollectionVariability::constant);
+
         auto const file_datatype =
             constant_collection::time::omnipresent::same_shape::Property::file_datatype(property);
         object = py::cast(new
             constant_collection::time::omnipresent::same_shape::Property{
                 hdf5::Group{property.id()},
                 memory_datatype(file_datatype)});
-                                                break;
-                                            }
-                                            case ValueVariability::variable: {
-                                                // constant_collection
-                                                // constant_shape
-                                                // same_shape
-                                                // variable
+
+                                break;
+                            }
+                            case Occurrence::asynchronous: {
+                                // TODO
+                                assert(false);
+                                break;
+                            }
+                            case Occurrence::synchronous: {
+                                switch(configuration.type<ShapeVariability>()) {
+                                    case ShapeVariability::constant: {
+                                        // same_shape
+                                        // synchronous
+                                        // constant_shape
+                                        assert(
+                                            configuration.type<CollectionVariability>() ==
+                                            CollectionVariability::constant);
+
         auto const file_datatype =
             constant_collection::time::located::constant_shape::same_shape::Property::file_datatype(property);
         object = py::cast(new
             constant_collection::time::located::constant_shape::same_shape::Property{
                 hdf5::Group{property.id()},
                 memory_datatype(file_datatype)});
-                                                break;
-                                            }
-                                        }
 
                                         break;
                                     }

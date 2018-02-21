@@ -5,10 +5,10 @@
 namespace lue {
 
 using ItemConfiguration = Configuration<
-    CollectionVariability,
-    ShapeVariability,
     ShapePerItem,
-    ValueVariability
+    Occurrence,
+    ShapeVariability,
+    CollectionVariability
 >;
 
 }  // namespace lue

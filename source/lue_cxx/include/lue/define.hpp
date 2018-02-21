@@ -4,6 +4,18 @@
 
 namespace lue {
 
+enum class Occurrence
+{
+
+    continuous,
+
+    asynchronous,
+
+    synchronous
+
+};
+
+
 /*!
     @brief      Does the collection of items change through time
 */
@@ -37,21 +49,6 @@ enum class ShapePerItem
 
     //! The value of all items have a different shape (potentially)
     different
-
-};
-
-
-/*!
-    @brief      Does the value of property values change through time
-*/
-enum class ValueVariability
-{
-
-    //! Item values don't change through time
-    constant,
-
-    //! Item values change through time
-    variable
 
 };
 

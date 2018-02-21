@@ -24,177 +24,73 @@ struct AspectMap
 };
 
 
-template<>
-struct Tag<CollectionVariability>
-{
-    static std::string const& value() {
-        static std::string const tag = collection_variability_tag;
-        return tag;
-    }
+#define TAG(EnumType, tag_name)                   \
+template<>                                        \
+struct Tag<EnumType>                              \
+{                                                 \
+    static std::string const& value() {           \
+        static std::string const tag = tag_name;  \
+        return tag;                               \
+    }                                             \
 };
 
 
-template<>
-struct AspectMap<CollectionVariability>
-{
-    static detail::EnumStringBimap<CollectionVariability> const& value()
-    {
-        static detail::EnumStringBimap<CollectionVariability> const map {
-            { CollectionVariability::constant, "lue_constant_collection" }
-        };
-
-        return map;
-    }
+#define MAP(EnumType, enum_pairs)                            \
+template<>                                                   \
+struct AspectMap<EnumType>                                   \
+{                                                            \
+    static detail::EnumStringBimap<EnumType> const& value()  \
+    {                                                        \
+        static detail::EnumStringBimap<EnumType> const map   \
+            enum_pairs                                       \
+        ;                                                    \
+                                                             \
+        return map;                                          \
+    }                                                        \
 };
 
 
-template<>
-struct Tag<ShapeVariability>
-{
-    static std::string const& value() {
-        static std::string const tag = shape_variability_tag;
-        return tag;
-    }
-};
+#define TAG_AND_MAP(EnumType, tag_name, enum_pairs)  \
+TAG(EnumType, tag_name)                              \
+MAP(EnumType, enum_pairs)
 
+TAG_AND_MAP(Occurrence, occurrence_tag, ({
+    { Occurrence::continuous, "lue_continuous" },
+    { Occurrence::asynchronous, "lue_asynchronous" },
+    { Occurrence::synchronous, "lue_synchronous" }
+}))
 
-template<>
-struct AspectMap<ShapeVariability>
-{
-    static detail::EnumStringBimap<ShapeVariability> const& value()
-    {
-        static detail::EnumStringBimap<ShapeVariability> const map {
-            { ShapeVariability::constant, "lue_constant_shape" }
-        };
+TAG_AND_MAP(CollectionVariability, collection_variability_tag, ({
+    { CollectionVariability::constant, "lue_constant_collection" }
+}))
 
-        return map;
-    }
-};
+TAG_AND_MAP(ShapeVariability, shape_variability_tag, ({
+    { ShapeVariability::constant, "lue_constant_shape" }
+}))
 
+TAG_AND_MAP(ShapePerItem, shape_per_item_tag, ({
+    { ShapePerItem::same, "lue_same_shape" },
+    { ShapePerItem::different, "lue_different_shape" }
+}))
 
-template<>
-struct Tag<ShapePerItem>
-{
-    static std::string const& value() {
-        static std::string const tag = shape_per_item_tag;
-        return tag;
-    }
-};
+TAG_AND_MAP(Mobility, mobility_tag, ({
+    // { Mobility::mobile, "lue_mobile" },
+    { Mobility::stationary, "lue_stationary" }
+}))
 
+TAG_AND_MAP(SpaceDomainItemType, space_domain_item_type_tag, ({
+    { SpaceDomainItemType::point, "lue_point" },
+    { SpaceDomainItemType::box, "lue_box" }
+}))
 
-template<>
-struct AspectMap<ShapePerItem>
-{
-    static detail::EnumStringBimap<ShapePerItem> const& value()
-    {
-        static detail::EnumStringBimap<ShapePerItem> const map {
-            { ShapePerItem::same, "lue_same_shape" },
-            { ShapePerItem::different, "lue_different_shape" },
-        };
+TAG_AND_MAP(TimeDomainItemType, time_domain_item_type_tag, ({
+    { TimeDomainItemType::point, "lue_point" },
+    { TimeDomainItemType::box, "lue_box" }
+}))
 
-        return map;
-    }
-};
-
-
-template<>
-struct Tag<ValueVariability>
-{
-    static std::string const& value() {
-        static std::string const tag = value_variability_tag;
-        return tag;
-    }
-};
-
-
-template<>
-struct AspectMap<ValueVariability>
-{
-    static detail::EnumStringBimap<ValueVariability> const& value()
-    {
-        static detail::EnumStringBimap<ValueVariability> const map {
-            { ValueVariability::constant, "lue_constant_value" },
-            { ValueVariability::variable, "lue_variable_value" },
-        };
-
-        return map;
-    }
-};
-
-
-template<>
-struct Tag<Mobility>
-{
-    static std::string const& value() {
-        static std::string const tag = mobility_tag;
-        return tag;
-    }
-};
-
-
-template<>
-struct AspectMap<Mobility>
-{
-    static detail::EnumStringBimap<Mobility> const& value()
-    {
-        static detail::EnumStringBimap<Mobility> const map {
-            // { Mobility::mobile, "lue_mobile" },
-            { Mobility::stationary, "lue_stationary" },
-        };
-
-        return map;
-    }
-};
-
-
-template<>
-struct Tag<SpaceDomainItemType>
-{
-    static std::string const& value() {
-        static std::string const tag = space_domain_item_type_tag;
-        return tag;
-    }
-};
-
-
-template<>
-struct AspectMap<SpaceDomainItemType>
-{
-    static detail::EnumStringBimap<SpaceDomainItemType> const& value()
-    {
-        static detail::EnumStringBimap<SpaceDomainItemType> const map {
-            { SpaceDomainItemType::point, "lue_point" },
-            { SpaceDomainItemType::box, "lue_box" },
-        };
-
-        return map;
-    }
-};
-
-
-template<>
-struct Tag<TimeDomainItemType>
-{
-    static std::string const& value() {
-        static std::string const tag = time_domain_item_type_tag;
-        return tag;
-    }
-};
-
-
-template<>
-struct AspectMap<TimeDomainItemType>
-{
-    static detail::EnumStringBimap<TimeDomainItemType> const& value()
-    {
-        static detail::EnumStringBimap<TimeDomainItemType> const map {
-            { TimeDomainItemType::point, "lue_point" },
-            { TimeDomainItemType::box, "lue_box" },
-        };
-
-        return map;
-    }
-};
+#undef TAG_AND_MAP
+#undef MAP
+#undef TAG
 
 }  // namespace detail
 
