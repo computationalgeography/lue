@@ -1,5 +1,5 @@
 /*!
-    @dir    include/lue/item
+    @dir    lue_cxx/include/lue/item
     @brief  This directory contains code for storing information per item
 
     The information stored for a collection of items differs with
@@ -126,7 +126,7 @@
 
 
 /*!
-    @dir    include/lue/time
+    @dir    lue_cxx/include/lue/time
     @brief  This directory contains code for storing time domain items
 
     For each item, a time domain item contains one or more locations in
@@ -134,44 +134,12 @@
 
     Time domain items differ with respect to various aspects.
     This directory contains code for storing time domain information for
-    collections of items, given a certain combination of aspects. Aspects
-    that differ between collections of time domain items are:
-
-    - **→ Does the item collection change over time (collection variability)?**
-        - *no*
-            - **constant_collection**
-        - *yes*
-            - **variable_collection**
-
-    - **→ Does each item have a unique location in time?  (time domain sharing)?**
-        - *no*
-            - **shared_time**
-        - *yes*
-            - **unique_time**
-
-    Resulting collection types of item-related information:
-
-    aspect | options
-    ------ | -------
-    collection size variability | constant_collection, variable_collection
-    time domain sharing | shared_time, unique_time
-
-    - lue::constant_collection::shared_time::Point
-        - `nr_items (time domain) = 1`
-        - `nr_values = nr_time_points`
-        - Inherits lue::constant_collection::constant_shape::same_shape::Variable
-    - lue::constant_collection::unique_time::Point
-        - `nr_items (time domain) = nr_items (property set)`
-        - `nr_values (unique per item) = nr_time_points (unique per item)`
-        - Inherits lue::constant_collection::constant_shape::different_shape::Variable
-        - Different shape because the number of time items differs per item
-    - lue::variable_collection::shared_time::Point
-    - lue::variable_collection::unique_time::Point
+    collections of items, given a certain combination of aspects.
 */
 
 
 /*!
-    @dir    include/lue/space
+    @dir    lue_cxx/include/lue/space
     @brief  This directory contains code for storing space domain items
 
     Space domain items differ with respect to various aspects.

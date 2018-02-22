@@ -5,6 +5,15 @@
 
 namespace lue {
 
+/*!
+    @brief      .
+    @param      .
+    @return     .
+    @exception  .
+
+    - Zero or more time boxes per item
+    - Each time box has a unique location in time
+*/
 class AsynchronousTimeBox:
     public same_shape::constant_shape::AsynchronousValue
 {

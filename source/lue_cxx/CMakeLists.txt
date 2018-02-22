@@ -82,6 +82,9 @@ add_library(lue STATIC
 
     src/time/asynchronous_time_box
     src/time/asynchronous_time_point
+    src/time/synchronous_time_box
+    src/time/synchronous_time_domain_item
+    src/time/synchronous_time_point
 )
 
 add_library(lue::lue ALIAS lue)
