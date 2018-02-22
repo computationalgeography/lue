@@ -88,8 +88,9 @@ add_library(lue::lue ALIAS lue)
 
 target_include_directories(lue SYSTEM
     PRIVATE
-        ${Boost_INCLUDE_DIRS}
         ${HDF5_INCLUDE_DIRS}
+    PUBLIC
+        ${Boost_INCLUDE_DIRS}
 )
 
 target_include_directories(lue

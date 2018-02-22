@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import os
 import lue.hdf5
 import lue_test
@@ -46,7 +47,7 @@ class FileTest(lue_test.TestCase):
         self.assertEqual(file.pathname, file_pathname)
 
         # Unicode
-        file_pathname = "ﬁlæ_¶åthnæmæ.h5"
+        file_pathname = u"ﬁlæ_¶åthnæmæ.h5"
         lue_test.remove_file_if_existant(file_pathname)
         file = lue.hdf5.create_file(file_pathname)
         self.assertEqual(file.pathname, file_pathname)
