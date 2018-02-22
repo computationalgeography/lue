@@ -1,6 +1,6 @@
-#define BOOST_TEST_MODULE lue time_box
+#define BOOST_TEST_MODULE lue time asynchronous_time_box
 #include <boost/test/unit_test.hpp>
-#include "lue/time_box.hpp"
+#include "lue/time/asynchronous_time_box.hpp"
 #include "lue/test.hpp"
 #include "lue/hdf5/file.hpp"
 #include <numeric>
@@ -17,7 +17,7 @@ BOOST_AUTO_TEST_CASE(create_collection)
 
     Clock clock(time::Unit::day, 1);
 
-    auto collection = create_time_box(file, clock);
+    auto collection = create_asynchronous_time_box(file, clock);
 
     BOOST_CHECK_EQUAL(collection.nr_items(), 0);
 

@@ -9,8 +9,6 @@ add_unit_tests(
         compound/clock_test
         constant_collection/property_set_test
         dataset_test
-        time_box_test
-        time_point_test
 
         item/different_shape/constant_shape/asynchronous_value_test
         item/different_shape/constant_shape/continuous_value_test
@@ -25,6 +23,9 @@ add_unit_tests(
         space/mobile/constant_collection/synchronous_point_test
         space/stationary/box_test
         space/stationary/point_test
+
+        time/asynchronous_time_box_test
+        time/asynchronous_time_point_test
 
     LINK_LIBRARIES
         lue::test
