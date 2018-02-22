@@ -5,6 +5,7 @@
 namespace lue {
 
 using TimeConfiguration = Configuration<
+    Occurrence,
     TimeDomainItemType
 >;
 

@@ -2,6 +2,7 @@
 #include "lue/define.hpp"
 #include "lue/enum_string_bimap.hpp"
 #include "lue/tag.hpp"
+// #include "lue/time/unit.hpp"
 #include "lue/hdf5/attributes.hpp"
 
 
@@ -87,6 +88,10 @@ TAG_AND_MAP(TimeDomainItemType, time_domain_item_type_tag, ({
     { TimeDomainItemType::point, "lue_point" },
     { TimeDomainItemType::box, "lue_box" }
 }))
+
+// TAG_AND_MAP(time::Unit, unit_tag, ({
+//     { time::Unit::second, "lue_second" }
+// }))
 
 #undef TAG_AND_MAP
 #undef MAP

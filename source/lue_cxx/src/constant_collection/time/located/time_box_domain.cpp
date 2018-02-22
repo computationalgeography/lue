@@ -62,6 +62,7 @@ TimeBoxDomain create_time_box_domain(
     auto time_domain = located::create_time_domain(property_set.domain(),
         clock,
         TimeConfiguration(
+            Occurrence::synchronous,
             TimeDomainItemType::box)
     );
 
