@@ -5,7 +5,6 @@
 
 namespace lue {
 namespace same_shape {
-namespace constant_shape {
 
 /*!
     @brief      This collection manages constant item values for
@@ -105,6 +104,5 @@ ContinuousValue    create_continuous_value(
                                        hdf5::Datatype const& memory_datatype,
                                        hdf5::Shape const& value_shape);
 
-}  // namespace constant_shape
 }  // namespace same_shape
 }  // namespace lue

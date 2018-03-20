@@ -10,11 +10,11 @@ add_unit_tests(
         constant_collection/property_set_test
         dataset_test
 
+        item/different_shape/continuous_value_test
         item/different_shape/constant_shape/asynchronous_value_test
-        item/different_shape/constant_shape/continuous_value_test
         item/different_shape/constant_shape/constant_collection/synchronous_value_test
+        item/same_shape/continuous_value_test
         item/same_shape/constant_shape/asynchronous_value_test
-        item/same_shape/constant_shape/continuous_value_test
         item/same_shape/constant_shape/constant_collection/synchronous_value_test
 
         space/mobile/asynchronous_box_test

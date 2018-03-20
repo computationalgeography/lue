@@ -13,6 +13,9 @@ void init_submodule(py::module& module);
 }  // namespace constant_shape
 
 
+void init_continuous_value(py::module& module);
+
+
 void init_submodule(
     py::module& module)
 {
@@ -23,6 +26,8 @@ void init_submodule(
 
     .. automodule:: lue.same_shape.constant_shape
 )");
+
+    init_continuous_value(submodule);
 
     constant_shape::init_submodule(submodule);
 }

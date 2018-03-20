@@ -1,6 +1,6 @@
 #pragma once
-#include "lue/item/same_shape/constant_shape/continuous_value.hpp"
 #include "lue/property_set.hpp"
+#include "lue/item/same_shape/continuous_value.hpp"
 
 
 namespace lue {
@@ -18,8 +18,6 @@ class ContinuousProperty:
 
 public:
 
-                   // ContinuousProperty  (hdf5::Identifier const& id);
-
                    ContinuousProperty  (hdf5::Group& parent,
                                         std::string const& name);
 
@@ -35,12 +33,12 @@ public:
     ContinuousProperty&
                    operator=           (ContinuousProperty&&)=default;
 
-    constant_shape::ContinuousValue&
+    ContinuousValue&
                    value               ();
 
 private:
 
-    constant_shape::ContinuousValue _value;
+    ContinuousValue _value;
 
 };
 
