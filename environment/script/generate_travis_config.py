@@ -129,17 +129,35 @@ def builds():
             "llvm-toolchain-trusty-3.9",
             "ubuntu-toolchain-r-test"
         ], ["libc++-dev"]),
+
         Package("clang-4.0", ["llvm-toolchain-trusty-4.0"], []),
         Package("clang++-4.0", [
             "llvm-toolchain-trusty-4.0",
             "ubuntu-toolchain-r-test"
         ], ["libc++-dev"]),
+
+        Package("clang-5.0", ["llvm-toolchain-trusty-5.0"], []),
+        Package("clang++-5.0", [
+            "llvm-toolchain-trusty-5.0",
+            "ubuntu-toolchain-r-test"
+        ], ["libc++-dev"]),
+
+        Package("clang-6.0", ["llvm-toolchain-trusty-6.0"], []),
+        Package("clang++-6.0", [
+            "llvm-toolchain-trusty-6.0",
+            "ubuntu-toolchain-r-test"
+        ], ["libc++-dev"]),
+
         Package("gcc-4.9", ["ubuntu-toolchain-r-test"], []),
         Package("g++-4.9", ["ubuntu-toolchain-r-test"], []),
+        Package("gcc-5", ["ubuntu-toolchain-r-test"], []),
+        Package("g++-5", ["ubuntu-toolchain-r-test"], []),
         Package("gcc-6", ["ubuntu-toolchain-r-test"], []),
         Package("g++-6", ["ubuntu-toolchain-r-test"], []),
         Package("gcc-7", ["ubuntu-toolchain-r-test"], []),
         Package("g++-7", ["ubuntu-toolchain-r-test"], []),
+        Package("gcc-8", ["ubuntu-toolchain-r-test"], []),
+        Package("g++-8", ["ubuntu-toolchain-r-test"], []),
         Package("libboost-all-dev", [], []),
         Package("libhdf5-dev", [], []),
     ]
@@ -148,7 +166,9 @@ def builds():
 
     flags = {
         "clang++-3.9": "-stdlib=libc++",
-        "clang++-4.0": "-stdlib=libc++"
+        "clang++-4.0": "-stdlib=libc++",
+        "clang++-5.0": "-stdlib=libc++",
+        "clang++-6.0": "-stdlib=libc++",
     }
 
 
@@ -157,12 +177,20 @@ def builds():
         "clang++-3.9",
         "clang-4.0",
         "clang++-4.0",
+        "clang-5.0",
+        "clang++-5.0",
+        "clang-6.0",
+        "clang++-6.0",
         "gcc-4.9",
         "g++-4.9",
+        "gcc-5",
+        "g++-5",
         "gcc-6",
         "g++-6",
         "gcc-7",
         "g++-7",
+        "gcc-8",
+        "g++-8",
     ]
     compilers = { compiler_name: Compiler(compiler_name,
         packages[compiler_name], flags.get(compiler_name, "")) \
@@ -184,7 +212,8 @@ def builds():
 
     python_versions = [
         "2.7",
-        "3.5"
+        "3.5",
+        "3.6",
     ]
 
 
@@ -192,13 +221,17 @@ def builds():
     compiler_families = {
         "gcc": [
                 ("gcc-4.9", "g++-4.9"),
+                ("gcc-5", "g++-5"),
                 ("gcc-6", "g++-6"),
-                # ("gcc-7", "g++-7"),
+                ("gcc-7", "g++-7"),
+                ("gcc-8", "g++-8"),
             ],
-        # "clang": [
-        #         ("clang-3.9", "clang++-3.9"),
-        #         ("clang-4.0", "clang++-4.0"),
-        #     ],
+        "clang": [
+                ("clang-3.9", "clang++-3.9"),
+                ("clang-4.0", "clang++-4.0"),
+                ("clang-5.0", "clang++-5.0"),
+                ("clang-6.0", "clang++-6.0"),
+            ],
     }
 
 
@@ -384,7 +417,7 @@ before_install:
     # ~/tmp/build/peacock
     - cd peacock
     - cmake --version
-    - CXX=$TRAVIS_CXX_COMPILER cmake -Dpeacock_prefix=$TRAVIS_BUILD_DIR/local -Dbuild_docopt=true -Ddocopt_version=0.6.2 -Dbuild_gdal=true -Dgdal_version=2.0.1 -Dbuild_nlohmann_json=true -Dnlohmann_json_version=3.0.1 -Dbuild_pybind11=true -Dpybind11_version=2.2.1 $TRAVIS_BUILD_DIR/tmp/source/peacock
+    - CXX=$TRAVIS_CXX_COMPILER cmake -Dpeacock_prefix=$TRAVIS_BUILD_DIR/local -Dbuild_docopt=true -Ddocopt_version=0.6.2 -Dbuild_gdal=true -Dgdal_version=2.0.1 -Dbuild_nlohmann_json=true -Dnlohmann_json_version=3.1.2 -Dbuild_pybind11=true -Dpybind11_version=2.2.2 $TRAVIS_BUILD_DIR/tmp/source/peacock
     - CXX=$TRAVIS_CXX_COMPILER cmake --build . --target all
     # ~
     - cd ../../..
