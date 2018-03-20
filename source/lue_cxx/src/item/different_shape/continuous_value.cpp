@@ -1,4 +1,4 @@
-#include "lue/item/different_shape/constant_shape/continuous_value.hpp"
+#include "lue/item/different_shape/continuous_value.hpp"
 #include "lue/item/constant_shape/collection.hpp"
 #include "lue/item/item_configuration.hpp"
 #include "lue/hdf5/chunk.hpp"
@@ -7,7 +7,6 @@
 
 namespace lue {
 namespace different_shape {
-namespace constant_shape {
 
 /*!
     @brief      Open value @a name in @a parent
@@ -224,6 +223,5 @@ ContinuousValue create_continuous_value(
     return ContinuousValue{std::move(group), memory_datatype};
 }
 
-}  // namespace constant_shape
 }  // namespace different_shape
 }  // namespace lue

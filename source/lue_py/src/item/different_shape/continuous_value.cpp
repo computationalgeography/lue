@@ -1,4 +1,4 @@
-#include "lue/item/different_shape/constant_shape/continuous_value.hpp"
+#include "lue/item/different_shape/continuous_value.hpp"
 #include "lue/py/conversion.hpp"
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
@@ -9,7 +9,6 @@ namespace py = pybind11;
 
 namespace lue {
 namespace different_shape {
-namespace constant_shape {
 
 void init_continuous_value(
     py::module& module)
@@ -102,6 +101,5 @@ void init_continuous_value(
 
 }
 
-}  // namespace constant_shape
 }  // namespace different_shape
 }  // namespace lue

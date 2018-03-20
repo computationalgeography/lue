@@ -108,18 +108,16 @@
     # Collection types
     Resulting collection types of item-related information:
 
-    - lue::same_shape::constant_shape::ContinuousValue
+    - lue::same_shape::ContinuousValue
     - lue::same_shape::constant_shape::SynchronousValue
     - lue::same_shape::constant_shape::constant_collection::SynchronousValue
     - lue::same_shape::constant_shape::AsynchronousValue
-    - lue::different_shape::constant_shape::ContinuousValue
+    - lue::same_shape::variable_shape::SynchronousValue
+    - lue::same_shape::variable_shape::AsynchronousValue
+    - lue::different_shape::ContinuousValue
     - lue::different_shape::constant_shape::SynchronousValue
     - lue::different_shape::constant_shape::constant_collection::SynchronousValue
     - lue::different_shape::constant_shape::AsynchronousValue
-    - lue::same_shape::variable_shape::ContinuousValue
-    - lue::same_shape::variable_shape::SynchronousValue
-    - lue::same_shape::variable_shape::AsynchronousValue
-    - lue::different_shape::variable_shape::ContinuousValue
     - lue::different_shape::variable_shape::SynchronousValue
     - lue::different_shape::variable_shape::AsynchronousValue
 */

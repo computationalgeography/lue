@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/item/same_shape/constant_shape/continuous_value.hpp"
+#include "lue/item/same_shape/continuous_value.hpp"
 #include "lue/constant_collection/property_set.hpp"
 #include "lue/constant_collection/time/located/time_domain.hpp"
 
@@ -15,7 +15,7 @@ class TimeBoxDomain:
 
 public:
 
-    using TimeBoxes = lue::same_shape::constant_shape::ContinuousValue;
+    using TimeBoxes = lue::same_shape::ContinuousValue;
 
                    TimeBoxDomain       (TimeDomain const& time_domain);
 

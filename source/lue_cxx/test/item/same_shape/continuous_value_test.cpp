@@ -1,6 +1,6 @@
-#define BOOST_TEST_MODULE lue item same_shape constant_shape continuous_value
+#define BOOST_TEST_MODULE lue item same_shape continuous_value
 #include <boost/test/unit_test.hpp>
-#include "lue/item/same_shape/constant_shape/continuous_value.hpp"
+#include "lue/item/same_shape/continuous_value.hpp"
 #include "lue/tag.hpp"
 #include "lue/test.hpp"
 #include "lue/hdf5/file.hpp"
@@ -22,7 +22,7 @@ BOOST_AUTO_TEST_CASE(create_collection)
     lue::hdf5::Shape value_shape{nr_rows, nr_cols};
 
     auto collection =
-        lue::same_shape::constant_shape::create_continuous_value(
+        lue::same_shape::create_continuous_value(
             file, value_name, datatype, value_shape);
 
     BOOST_CHECK_EQUAL(collection.nr_items(), 0);

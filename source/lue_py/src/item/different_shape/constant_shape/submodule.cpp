@@ -14,7 +14,6 @@ void init_submodule(py::module& module);
 }  // namespace constant_collection
 
 
-void init_continuous_value(py::module& module);
 
 
 void init_submodule(
@@ -27,8 +26,6 @@ void init_submodule(
 
     .. automodule:: lue.constant_shape.different_shape.constant_collection
 )");
-
-    init_continuous_value(submodule);
 
     constant_collection::init_submodule(submodule);
 }

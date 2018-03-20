@@ -5,7 +5,6 @@
 
 namespace lue {
 namespace different_shape {
-namespace constant_shape {
 
 /*!
     @brief      This collection manages item values for
@@ -113,6 +112,5 @@ ContinuousValue       create_continuous_value(
                                         hdf5::Datatype const& memory_datatype,
                                         int rank);
 
-}  // namespace constant_shape
 }  // namespace different_shape
 }  // namespace lue

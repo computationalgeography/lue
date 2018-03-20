@@ -1,12 +1,12 @@
 #pragma once
-#include "lue/item/same_shape/constant_shape/continuous_value.hpp"
+#include "lue/item/same_shape/continuous_value.hpp"
 
 
 namespace lue {
 namespace stationary {
 
 class Box:
-    public same_shape::constant_shape::ContinuousValue
+    public same_shape::ContinuousValue
 {
 
 public:
