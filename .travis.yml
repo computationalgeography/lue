@@ -12,14 +12,14 @@ matrix:
           addons:
               apt:
                   sources:
-                      - ubuntu-toolchain-r-test
                       - llvm-toolchain-trusty-3.9
+                      - ubuntu-toolchain-r-test
                   packages:
-                      - libboost-all-dev
-                      - clang-3.9
                       - clang++-3.9
                       - libc++-dev
                       - libhdf5-dev
+                      - clang-3.9
+                      - libboost-all-dev
           env:
               - TRAVIS_C_COMPILER=clang-3.9 TRAVIS_CXX_COMPILER=clang++-3.9 TRAVIS_CXX_FLAGS="-stdlib=libc++" TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS -DLUE_BUILD_TEST:BOOL=TRUE "
         - compiler: clang
@@ -27,14 +27,14 @@ matrix:
           addons:
               apt:
                   sources:
-                      - ubuntu-toolchain-r-test
                       - llvm-toolchain-trusty-3.9
+                      - ubuntu-toolchain-r-test
                   packages:
-                      - libboost-all-dev
-                      - clang-3.9
                       - clang++-3.9
                       - libc++-dev
                       - libhdf5-dev
+                      - clang-3.9
+                      - libboost-all-dev
           env:
               - TRAVIS_C_COMPILER=clang-3.9 TRAVIS_CXX_COMPILER=clang++-3.9 TRAVIS_CXX_FLAGS="-stdlib=libc++" TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS -DLUE_BUILD_TEST:BOOL=TRUE "
         - compiler: clang
@@ -42,14 +42,14 @@ matrix:
           addons:
               apt:
                   sources:
-                      - ubuntu-toolchain-r-test
                       - llvm-toolchain-trusty-3.9
+                      - ubuntu-toolchain-r-test
                   packages:
-                      - libboost-all-dev
-                      - clang-3.9
                       - clang++-3.9
                       - libc++-dev
                       - libhdf5-dev
+                      - clang-3.9
+                      - libboost-all-dev
           env:
               - TRAVIS_C_COMPILER=clang-3.9 TRAVIS_CXX_COMPILER=clang++-3.9 TRAVIS_CXX_FLAGS="-stdlib=libc++" TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS -DLUE_BUILD_TEST:BOOL=TRUE "
         - compiler: clang
@@ -57,14 +57,14 @@ matrix:
           addons:
               apt:
                   sources:
-                      - ubuntu-toolchain-r-test
                       - llvm-toolchain-trusty-4.0
+                      - ubuntu-toolchain-r-test
                   packages:
+                      - libc++-dev
+                      - clang-4.0
+                      - libhdf5-dev
                       - clang++-4.0
                       - libboost-all-dev
-                      - clang-4.0
-                      - libc++-dev
-                      - libhdf5-dev
           env:
               - TRAVIS_C_COMPILER=clang-4.0 TRAVIS_CXX_COMPILER=clang++-4.0 TRAVIS_CXX_FLAGS="-stdlib=libc++" TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS -DLUE_BUILD_TEST:BOOL=TRUE "
         - compiler: clang
@@ -72,14 +72,14 @@ matrix:
           addons:
               apt:
                   sources:
-                      - ubuntu-toolchain-r-test
                       - llvm-toolchain-trusty-4.0
+                      - ubuntu-toolchain-r-test
                   packages:
+                      - libc++-dev
+                      - clang-4.0
+                      - libhdf5-dev
                       - clang++-4.0
                       - libboost-all-dev
-                      - clang-4.0
-                      - libc++-dev
-                      - libhdf5-dev
           env:
               - TRAVIS_C_COMPILER=clang-4.0 TRAVIS_CXX_COMPILER=clang++-4.0 TRAVIS_CXX_FLAGS="-stdlib=libc++" TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS -DLUE_BUILD_TEST:BOOL=TRUE "
         - compiler: clang
@@ -87,14 +87,14 @@ matrix:
           addons:
               apt:
                   sources:
-                      - ubuntu-toolchain-r-test
                       - llvm-toolchain-trusty-4.0
+                      - ubuntu-toolchain-r-test
                   packages:
+                      - libc++-dev
+                      - clang-4.0
+                      - libhdf5-dev
                       - clang++-4.0
                       - libboost-all-dev
-                      - clang-4.0
-                      - libc++-dev
-                      - libhdf5-dev
           env:
               - TRAVIS_C_COMPILER=clang-4.0 TRAVIS_CXX_COMPILER=clang++-4.0 TRAVIS_CXX_FLAGS="-stdlib=libc++" TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS -DLUE_BUILD_TEST:BOOL=TRUE "
         - compiler: clang
@@ -105,11 +105,11 @@ matrix:
                       - ubuntu-toolchain-r-test
                       - llvm-toolchain-trusty-5.0
                   packages:
+                      - clang-5.0
+                      - libc++-dev
+                      - libhdf5-dev
                       - clang++-5.0
                       - libboost-all-dev
-                      - libc++-dev
-                      - clang-5.0
-                      - libhdf5-dev
           env:
               - TRAVIS_C_COMPILER=clang-5.0 TRAVIS_CXX_COMPILER=clang++-5.0 TRAVIS_CXX_FLAGS="-stdlib=libc++" TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS -DLUE_BUILD_TEST:BOOL=TRUE "
         - compiler: clang
@@ -120,11 +120,11 @@ matrix:
                       - ubuntu-toolchain-r-test
                       - llvm-toolchain-trusty-5.0
                   packages:
+                      - clang-5.0
+                      - libc++-dev
+                      - libhdf5-dev
                       - clang++-5.0
                       - libboost-all-dev
-                      - libc++-dev
-                      - clang-5.0
-                      - libhdf5-dev
           env:
               - TRAVIS_C_COMPILER=clang-5.0 TRAVIS_CXX_COMPILER=clang++-5.0 TRAVIS_CXX_FLAGS="-stdlib=libc++" TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS -DLUE_BUILD_TEST:BOOL=TRUE "
         - compiler: clang
@@ -135,11 +135,11 @@ matrix:
                       - ubuntu-toolchain-r-test
                       - llvm-toolchain-trusty-5.0
                   packages:
+                      - clang-5.0
+                      - libc++-dev
+                      - libhdf5-dev
                       - clang++-5.0
                       - libboost-all-dev
-                      - libc++-dev
-                      - clang-5.0
-                      - libhdf5-dev
           env:
               - TRAVIS_C_COMPILER=clang-5.0 TRAVIS_CXX_COMPILER=clang++-5.0 TRAVIS_CXX_FLAGS="-stdlib=libc++" TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS -DLUE_BUILD_TEST:BOOL=TRUE "
         - compiler: clang
@@ -150,11 +150,11 @@ matrix:
                       - ubuntu-toolchain-r-test
                       - llvm-toolchain-trusty-6.0
                   packages:
-                      - clang++-6.0
-                      - libboost-all-dev
                       - clang-6.0
                       - libc++-dev
                       - libhdf5-dev
+                      - clang++-6.0
+                      - libboost-all-dev
           env:
               - TRAVIS_C_COMPILER=clang-6.0 TRAVIS_CXX_COMPILER=clang++-6.0 TRAVIS_CXX_FLAGS="-stdlib=libc++" TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS -DLUE_BUILD_TEST:BOOL=TRUE "
         - compiler: clang
@@ -165,11 +165,11 @@ matrix:
                       - ubuntu-toolchain-r-test
                       - llvm-toolchain-trusty-6.0
                   packages:
-                      - clang++-6.0
-                      - libboost-all-dev
                       - clang-6.0
                       - libc++-dev
                       - libhdf5-dev
+                      - clang++-6.0
+                      - libboost-all-dev
           env:
               - TRAVIS_C_COMPILER=clang-6.0 TRAVIS_CXX_COMPILER=clang++-6.0 TRAVIS_CXX_FLAGS="-stdlib=libc++" TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS -DLUE_BUILD_TEST:BOOL=TRUE "
         - compiler: clang
@@ -180,11 +180,11 @@ matrix:
                       - ubuntu-toolchain-r-test
                       - llvm-toolchain-trusty-6.0
                   packages:
-                      - clang++-6.0
-                      - libboost-all-dev
                       - clang-6.0
                       - libc++-dev
                       - libhdf5-dev
+                      - clang++-6.0
+                      - libboost-all-dev
           env:
               - TRAVIS_C_COMPILER=clang-6.0 TRAVIS_CXX_COMPILER=clang++-6.0 TRAVIS_CXX_FLAGS="-stdlib=libc++" TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS -DLUE_BUILD_TEST:BOOL=TRUE "
         - compiler: gcc
@@ -194,10 +194,10 @@ matrix:
                   sources:
                       - ubuntu-toolchain-r-test
                   packages:
-                      - libboost-all-dev
                       - gcc-4.9
                       - libhdf5-dev
                       - g++-4.9
+                      - libboost-all-dev
           env:
               - TRAVIS_C_COMPILER=gcc-4.9 TRAVIS_CXX_COMPILER=g++-4.9 TRAVIS_CXX_FLAGS="" TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS -DLUE_BUILD_TEST:BOOL=TRUE "
         - compiler: gcc
@@ -207,10 +207,10 @@ matrix:
                   sources:
                       - ubuntu-toolchain-r-test
                   packages:
-                      - libboost-all-dev
                       - gcc-4.9
                       - libhdf5-dev
                       - g++-4.9
+                      - libboost-all-dev
           env:
               - TRAVIS_C_COMPILER=gcc-4.9 TRAVIS_CXX_COMPILER=g++-4.9 TRAVIS_CXX_FLAGS="" TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS -DLUE_BUILD_TEST:BOOL=TRUE "
         - compiler: gcc
@@ -220,10 +220,10 @@ matrix:
                   sources:
                       - ubuntu-toolchain-r-test
                   packages:
-                      - libboost-all-dev
                       - gcc-4.9
                       - libhdf5-dev
                       - g++-4.9
+                      - libboost-all-dev
           env:
               - TRAVIS_C_COMPILER=gcc-4.9 TRAVIS_CXX_COMPILER=g++-4.9 TRAVIS_CXX_FLAGS="" TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS -DLUE_BUILD_TEST:BOOL=TRUE "
         - compiler: gcc
@@ -233,10 +233,10 @@ matrix:
                   sources:
                       - ubuntu-toolchain-r-test
                   packages:
-                      - libboost-all-dev
                       - gcc-5
                       - g++-5
                       - libhdf5-dev
+                      - libboost-all-dev
           env:
               - TRAVIS_C_COMPILER=gcc-5 TRAVIS_CXX_COMPILER=g++-5 TRAVIS_CXX_FLAGS="" TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS -DLUE_BUILD_TEST:BOOL=TRUE "
         - compiler: gcc
@@ -246,10 +246,10 @@ matrix:
                   sources:
                       - ubuntu-toolchain-r-test
                   packages:
-                      - libboost-all-dev
                       - gcc-5
                       - g++-5
                       - libhdf5-dev
+                      - libboost-all-dev
           env:
               - TRAVIS_C_COMPILER=gcc-5 TRAVIS_CXX_COMPILER=g++-5 TRAVIS_CXX_FLAGS="" TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS -DLUE_BUILD_TEST:BOOL=TRUE "
         - compiler: gcc
@@ -259,10 +259,10 @@ matrix:
                   sources:
                       - ubuntu-toolchain-r-test
                   packages:
-                      - libboost-all-dev
                       - gcc-5
                       - g++-5
                       - libhdf5-dev
+                      - libboost-all-dev
           env:
               - TRAVIS_C_COMPILER=gcc-5 TRAVIS_CXX_COMPILER=g++-5 TRAVIS_CXX_FLAGS="" TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS -DLUE_BUILD_TEST:BOOL=TRUE "
         - compiler: gcc
@@ -272,10 +272,10 @@ matrix:
                   sources:
                       - ubuntu-toolchain-r-test
                   packages:
-                      - libboost-all-dev
-                      - g++-6
                       - gcc-6
                       - libhdf5-dev
+                      - g++-6
+                      - libboost-all-dev
           env:
               - TRAVIS_C_COMPILER=gcc-6 TRAVIS_CXX_COMPILER=g++-6 TRAVIS_CXX_FLAGS="" TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS -DLUE_BUILD_TEST:BOOL=TRUE "
         - compiler: gcc
@@ -285,10 +285,10 @@ matrix:
                   sources:
                       - ubuntu-toolchain-r-test
                   packages:
-                      - libboost-all-dev
-                      - g++-6
                       - gcc-6
                       - libhdf5-dev
+                      - g++-6
+                      - libboost-all-dev
           env:
               - TRAVIS_C_COMPILER=gcc-6 TRAVIS_CXX_COMPILER=g++-6 TRAVIS_CXX_FLAGS="" TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS -DLUE_BUILD_TEST:BOOL=TRUE "
         - compiler: gcc
@@ -298,10 +298,10 @@ matrix:
                   sources:
                       - ubuntu-toolchain-r-test
                   packages:
-                      - libboost-all-dev
-                      - g++-6
                       - gcc-6
                       - libhdf5-dev
+                      - g++-6
+                      - libboost-all-dev
           env:
               - TRAVIS_C_COMPILER=gcc-6 TRAVIS_CXX_COMPILER=g++-6 TRAVIS_CXX_FLAGS="" TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS -DLUE_BUILD_TEST:BOOL=TRUE "
         - compiler: gcc
@@ -311,10 +311,10 @@ matrix:
                   sources:
                       - ubuntu-toolchain-r-test
                   packages:
-                      - g++-7
                       - libboost-all-dev
-                      - libhdf5-dev
                       - gcc-7
+                      - libhdf5-dev
+                      - g++-7
           env:
               - TRAVIS_C_COMPILER=gcc-7 TRAVIS_CXX_COMPILER=g++-7 TRAVIS_CXX_FLAGS="" TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS -DLUE_BUILD_TEST:BOOL=TRUE "
         - compiler: gcc
@@ -324,10 +324,10 @@ matrix:
                   sources:
                       - ubuntu-toolchain-r-test
                   packages:
-                      - g++-7
                       - libboost-all-dev
-                      - libhdf5-dev
                       - gcc-7
+                      - libhdf5-dev
+                      - g++-7
           env:
               - TRAVIS_C_COMPILER=gcc-7 TRAVIS_CXX_COMPILER=g++-7 TRAVIS_CXX_FLAGS="" TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS -DLUE_BUILD_TEST:BOOL=TRUE "
         - compiler: gcc
@@ -337,10 +337,10 @@ matrix:
                   sources:
                       - ubuntu-toolchain-r-test
                   packages:
-                      - g++-7
                       - libboost-all-dev
-                      - libhdf5-dev
                       - gcc-7
+                      - libhdf5-dev
+                      - g++-7
           env:
               - TRAVIS_C_COMPILER=gcc-7 TRAVIS_CXX_COMPILER=g++-7 TRAVIS_CXX_FLAGS="" TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS -DLUE_BUILD_TEST:BOOL=TRUE "
         - compiler: gcc
@@ -350,10 +350,10 @@ matrix:
                   sources:
                       - ubuntu-toolchain-r-test
                   packages:
-                      - libboost-all-dev
                       - gcc-8
-                      - g++-8
                       - libhdf5-dev
+                      - g++-8
+                      - libboost-all-dev
           env:
               - TRAVIS_C_COMPILER=gcc-8 TRAVIS_CXX_COMPILER=g++-8 TRAVIS_CXX_FLAGS="" TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS -DLUE_BUILD_TEST:BOOL=TRUE "
         - compiler: gcc
@@ -363,10 +363,10 @@ matrix:
                   sources:
                       - ubuntu-toolchain-r-test
                   packages:
-                      - libboost-all-dev
                       - gcc-8
-                      - g++-8
                       - libhdf5-dev
+                      - g++-8
+                      - libboost-all-dev
           env:
               - TRAVIS_C_COMPILER=gcc-8 TRAVIS_CXX_COMPILER=g++-8 TRAVIS_CXX_FLAGS="" TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS -DLUE_BUILD_TEST:BOOL=TRUE "
         - compiler: gcc
@@ -376,10 +376,10 @@ matrix:
                   sources:
                       - ubuntu-toolchain-r-test
                   packages:
-                      - libboost-all-dev
                       - gcc-8
-                      - g++-8
                       - libhdf5-dev
+                      - g++-8
+                      - libboost-all-dev
           env:
               - TRAVIS_C_COMPILER=gcc-8 TRAVIS_CXX_COMPILER=g++-8 TRAVIS_CXX_FLAGS="" TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS -DLUE_BUILD_TEST:BOOL=TRUE "
 
@@ -432,7 +432,7 @@ before_install:
     # ~/tmp/build/peacock
     - cd peacock
     - cmake --version
-    - CXX=$TRAVIS_CXX_COMPILER cmake -Dpeacock_prefix=$TRAVIS_BUILD_DIR/local -Dbuild_docopt=true -Ddocopt_version=0.6.2 -Dbuild_gdal=true -Dgdal_version=2.0.1 -Dbuild_nlohmann_json=true -Dnlohmann_json_version=3.0.1 -Dbuild_pybind11=true -Dpybind11_version=2.2.1 $TRAVIS_BUILD_DIR/tmp/source/peacock
+    - CXX=$TRAVIS_CXX_COMPILER cmake -Dpeacock_prefix=$TRAVIS_BUILD_DIR/local -Dbuild_docopt=true -Ddocopt_version=0.6.2 -Dbuild_gdal=true -Dgdal_version=2.0.1 -Dbuild_nlohmann_json=true -Dnlohmann_json_version=3.1.2 -Dbuild_pybind11=true -Dpybind11_version=2.2.2 $TRAVIS_BUILD_DIR/tmp/source/peacock
     - CXX=$TRAVIS_CXX_COMPILER cmake --build . --target all
     # ~
     - cd ../../..
