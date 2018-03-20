@@ -4,6 +4,15 @@
 
 namespace lue {
 
+Property::Property(
+    hdf5::Identifier const& id)
+
+    : hdf5::Group(id)
+
+{
+}
+
+
 /*!
     @brief      Construct an instance based on an existing property
     @param      parent Parent group in dataset of property named @a name

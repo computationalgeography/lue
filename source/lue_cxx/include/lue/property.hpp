@@ -16,6 +16,8 @@ class Property:
 
 public:
 
+                   Property            (hdf5::Identifier const& id);
+
                    Property            (hdf5::Group const& parent,
                                         std::string const& name);
 

@@ -1,10 +1,10 @@
 #pragma once
 #include "lue/property_set.hpp"
-#include "lue/item/same_shape/continuous_value.hpp"
+#include "lue/item/different_shape/continuous_value.hpp"
 
 
 namespace lue {
-namespace same_shape {
+namespace different_shape {
 
 /*!
     @brief      .
@@ -17,8 +17,6 @@ class ContinuousProperty:
 {
 
 public:
-
-                   ContinuousProperty  (hdf5::Identifier const& id);
 
                    ContinuousProperty  (hdf5::Group& parent,
                                         std::string const& name);
@@ -48,13 +46,8 @@ private:
 ContinuousProperty create_continuous_property(
                                         PropertySet& property_set,
                                         std::string const& name,
-                                        hdf5::Datatype const& memory_datatype);
-
-ContinuousProperty create_continuous_property(
-                                        PropertySet& property_set,
-                                        std::string const& name,
                                         hdf5::Datatype const& memory_datatype,
-                                        hdf5::Shape const& value_shape);
+                                        int rank);
 
-}  // namespace same_shape
+}  // namespace different_shape
 }  // namespace lue

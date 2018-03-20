@@ -89,6 +89,7 @@ SpacePointDomain create_space_point_domain(
     auto& domain = property_set.domain();
 
     SpaceConfiguration configuration{
+        Occurrence::continuous,
         CollectionVariability::constant,
         Mobility::stationary,
         SpaceDomainItemType::point

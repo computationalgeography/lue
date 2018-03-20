@@ -98,6 +98,7 @@ SpaceBoxDomain create_space_box_domain(
     auto& domain = property_set.domain();
 
     SpaceConfiguration const configuration{
+        Occurrence::continuous,
         CollectionVariability::constant,
         Mobility::stationary,
         SpaceDomainItemType::box

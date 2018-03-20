@@ -1,6 +1,7 @@
 #pragma once
 #include "lue/id.hpp"
 #include "lue/property_set.hpp"
+#include "lue/property/different_shape/continuous_property.hpp"
 #include "lue/property/same_shape/continuous_property.hpp"
 
 
@@ -45,11 +46,6 @@ public:
 
     // ContinuousSpaceDomain
     //                set_continuous_space_domain();
-
-    // ContinuousProperty
-    //                add_continuous_property(
-    //                                    std::string const& name,
-    //                                    hdf5::Datatype const& datatype);
 
     Id const&      id                  () const;
 
