@@ -5,6 +5,7 @@
 namespace lue {
 
 using SpaceConfiguration = Configuration<
+    Occurrence,
     CollectionVariability,
     Mobility,
     SpaceDomainItemType

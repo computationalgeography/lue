@@ -5,6 +5,16 @@ namespace lue {
 namespace same_shape {
 
 ContinuousProperty::ContinuousProperty(
+    hdf5::Identifier const& id)
+
+    : Property{id},
+      _value{*this, value_tag}
+
+{
+}
+
+
+ContinuousProperty::ContinuousProperty(
     hdf5::Group& parent,
     std::string const& name)
 
@@ -30,6 +40,22 @@ ContinuousProperty create_continuous_property(
     auto& property = properties.add(name,
         create_property(properties, name));
     auto value = create_continuous_value(property, value_tag, memory_datatype);
+
+    return ContinuousProperty{properties, name};
+}
+
+
+ContinuousProperty create_continuous_property(
+    PropertySet& property_set,
+    std::string const& name,
+    hdf5::Datatype const& memory_datatype,
+    hdf5::Shape const& value_shape)
+{
+    auto& properties = property_set.properties();
+    auto& property = properties.add(name,
+        create_property(properties, name));
+    auto value = create_continuous_value(
+        property, value_tag, memory_datatype, value_shape);
 
     return ContinuousProperty{properties, name};
 }

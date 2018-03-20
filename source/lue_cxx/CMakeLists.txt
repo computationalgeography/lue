@@ -15,7 +15,7 @@ add_library(lue STATIC
     src/property_set.cpp
     src/property_sets
 #     src/space_discretization
-    src/space_domain
+    src/space_domain.cpp
 #     src/space_domain_configuration
 #     src/time_discretization
 #     # src/time_discretization_configuration
@@ -72,6 +72,7 @@ add_library(lue STATIC
     src/item/same_shape/constant_shape/value
     src/item/same_shape/constant_shape/constant_collection/synchronous_value
 
+    src/property/different_shape/continuous_property
     src/property/same_shape/continuous_property
 
     # src/property_set/asynchronous_property_set

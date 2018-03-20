@@ -11,6 +11,8 @@ class Box:
 
 public:
 
+                   Box                 (hdf5::Group const& parent);
+
                    Box                 (hdf5::Group const& parent,
                                         hdf5::Datatype const& memory_datatype);
 

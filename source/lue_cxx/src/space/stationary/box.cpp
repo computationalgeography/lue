@@ -6,6 +6,15 @@ namespace lue {
 namespace stationary {
 
 Box::Box(
+    hdf5::Group const& parent)
+
+    : same_shape::ContinuousValue{parent, coordinates_tag}
+
+{
+}
+
+
+Box::Box(
     hdf5::Group const& parent,
     hdf5::Datatype const& memory_datatype)
 

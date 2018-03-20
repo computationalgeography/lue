@@ -132,6 +132,7 @@ BOOST_AUTO_TEST_CASE(create_and_read_constant2)
     // - property_set
     //     - time
     //         - N/A (continuous)
+    //         - ContinuousPropertySet
     //     - space
     //         - N/A
     // - property
@@ -149,7 +150,7 @@ BOOST_AUTO_TEST_CASE(create_and_read_constant2)
     using ValueType = float;
     lue::hdf5::Datatype const value_datatype{
         lue::hdf5::NativeDatatypeTraits<ValueType>::type_id()};
-    std::vector<ValueType> gravity_values{1.5, 2.5, 3.5};
+    std::vector<ValueType> const gravity_values{1.5, 2.5, 3.5};
 
     lue::test::DatasetFixture fixture{dataset_name};
 
@@ -238,10 +239,7 @@ BOOST_AUTO_TEST_CASE(create_and_read_constant2)
             lue::same_shape::ContinuousProperty gravity{
                 constants.properties(), property_name};
 
-            BOOST_CHECK(
-                gravity.value().memory_datatype() ==
-                lue::hdf5::Datatype{H5T_IEEE_F32LE});
-
+            BOOST_CHECK(gravity.value().memory_datatype() == value_datatype);
             BOOST_CHECK_EQUAL(gravity.value().nr_items(), nr_planets);
 
             std::vector<ValueType> gravity_values_(nr_planets);
