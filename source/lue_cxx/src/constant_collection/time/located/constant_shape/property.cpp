@@ -18,10 +18,9 @@ Property::Property(
 
 Property create_property(
     hdf5::Group& group,
-    std::string const& name,
-    ItemConfiguration const& configuration)
+    std::string const& name)
 {
-    auto property = located::create_property(group, name, configuration);
+    auto property = located::create_property(group, name);
 
     return Property(hdf5::Group{property.id()});
 }

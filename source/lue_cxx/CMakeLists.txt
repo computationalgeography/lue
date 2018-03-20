@@ -5,13 +5,14 @@ add_library(lue STATIC
     src/clock
     src/dataset
     src/domain
+    src/id
 #     src/domain_configuration
 #     src/exception
     src/phenomena
     src/phenomenon
     src/properties
-    src/property
-    src/property_set
+    src/property.cpp
+    src/property_set.cpp
     src/property_sets
 #     src/space_discretization
     src/space_domain
@@ -70,6 +71,12 @@ add_library(lue STATIC
     src/item/same_shape/constant_shape/synchronous_value
     src/item/same_shape/constant_shape/value
     src/item/same_shape/constant_shape/constant_collection/synchronous_value
+
+    src/property/same_shape/continuous_property
+
+    # src/property_set/asynchronous_property_set
+    src/property_set/continuous_property_set
+    # src/property_set/synchronous_property_set
 
     src/space/mobile/asynchronous_box
     src/space/mobile/asynchronous_point

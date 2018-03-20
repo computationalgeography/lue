@@ -4,6 +4,18 @@
 namespace lue {
 namespace hdf5 {
 
+
+PrimaryDataObject::PrimaryDataObject(
+    Identifier const& location,
+    std::string const& name)
+
+    : _id{::H5Oopen(location, name.c_str(), H5P_DEFAULT), ::H5Oclose},
+      _attributes{_id}
+
+{
+}
+
+
 /*!
     @brief      Construct an object based on an identifier
 

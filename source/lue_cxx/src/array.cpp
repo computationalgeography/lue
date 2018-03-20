@@ -7,6 +7,18 @@ namespace lue {
 
 Array::Array(
     hdf5::Group const& parent,
+    std::string const& name)
+
+    : hdf5::Dataset{parent, name},
+      _memory_datatype{hdf5::memory_datatype(datatype())}
+
+{
+    assert(id().is_valid());
+}
+
+
+Array::Array(
+    hdf5::Group const& parent,
     std::string const& name,
     hdf5::Datatype const& memory_datatype)
 
@@ -27,6 +39,18 @@ Array::Array(
 
 {
     assert(id().is_valid());
+}
+
+
+Array::Array(
+    hdf5::Identifier const& id,
+    hdf5::Datatype const& memory_datatype)
+
+    : hdf5::Dataset{id},
+      _memory_datatype{memory_datatype}
+
+{
+    assert(this->id().is_valid());
 }
 
 

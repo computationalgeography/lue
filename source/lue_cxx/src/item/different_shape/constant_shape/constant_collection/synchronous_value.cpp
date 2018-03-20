@@ -1,5 +1,6 @@
 #include "lue/item/different_shape/constant_shape/constant_collection/synchronous_value.hpp"
 #include "lue/item/constant_shape/collection.hpp"
+#include "lue/item/item_configuration.hpp"
 #include "lue/tag.hpp"
 #include "lue/hdf5/chunk.hpp"
 
@@ -280,6 +281,13 @@ SynchronousValue create_synchronous_value(
         parent, name, file_datatype, rank);
 
     group.attributes().write<hsize_t>(nr_time_domain_items_tag, 0);
+
+    ItemConfiguration{
+        ShapePerItem::different,
+        Occurrence::synchronous,
+        ShapeVariability::constant,
+        CollectionVariability::constant
+    }.save(group.attributes());
 
     return SynchronousValue{std::move(group), memory_datatype};
 }

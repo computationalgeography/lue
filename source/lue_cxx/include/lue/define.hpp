@@ -23,7 +23,10 @@ enum class CollectionVariability
 {
 
     //! Collection of items doesn't change through time
-    constant
+    constant,
+
+    //! Collection of items changes through time
+    variable
 
 };
 

@@ -1,4 +1,5 @@
 #include "lue/item/same_shape/constant_shape/asynchronous_value.hpp"
+#include "lue/item/item_configuration.hpp"
 
 
 namespace lue {
@@ -66,6 +67,13 @@ AsynchronousValue create_asynchronous_value(
 {
     auto value = create_value(
         parent, name, file_datatype, memory_datatype, value_shape);
+
+    ItemConfiguration{
+        ShapePerItem::same,
+        Occurrence::asynchronous,
+        ShapeVariability::constant,
+        CollectionVariability::variable
+    }.save(value.attributes());
 
     return AsynchronousValue{std::move(value), memory_datatype};
 }

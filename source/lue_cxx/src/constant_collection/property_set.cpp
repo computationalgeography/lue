@@ -54,7 +54,9 @@ PropertySet create_property_set(
     auto& property_set = phenomenon.property_sets().add(name,
         lue::create_property_set(
             phenomenon.property_sets(), name,
-            PropertySetConfiguration{CollectionVariability::constant}
+            PropertySetConfiguration{
+                Occurrence::continuous
+            }
         )
     );
 
@@ -74,7 +76,9 @@ PropertySet create_property_set(
     auto& property_set = phenomenon.property_sets().add(name,
         lue::create_property_set(
             phenomenon.property_sets(), name,
-            PropertySetConfiguration{CollectionVariability::constant}
+            PropertySetConfiguration{
+                Occurrence::continuous
+            }
         )
     );
 

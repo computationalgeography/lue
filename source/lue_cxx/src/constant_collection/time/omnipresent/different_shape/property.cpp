@@ -70,16 +70,8 @@ Property create_property(
     int const rank)
 {
     auto& properties = property_set.properties();
-
-    ItemConfiguration configuration{
-        ShapePerItem::different,
-        Occurrence::continuous,
-        ShapeVariability::constant,
-        CollectionVariability::constant
-    };
-
     auto& property = properties.add(name,
-        omnipresent::create_property(properties, name, configuration));
+        omnipresent::create_property(properties, name));
     auto value = create_value(
         property, value_tag, file_datatype, memory_datatype, rank);
 

@@ -29,6 +29,8 @@ public:
                    PropertySet         (hdf5::Group const& parent,
                                         std::string const& name);
 
+                   PropertySet         (hdf5::Identifier const& id);
+
                    PropertySet         (hdf5::Group&& group);
 
                    PropertySet         (PropertySet const&)=delete;

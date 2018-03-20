@@ -30,8 +30,7 @@ public:
 
 
 Property           create_property     (hdf5::Group& group,
-                                        std::string const& name,
-                                        ItemConfiguration const& configuration);
+                                        std::string const& name);
 
 }  // namespace omnipresent
 }  // namespace time

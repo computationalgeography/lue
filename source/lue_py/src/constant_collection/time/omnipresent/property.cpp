@@ -16,7 +16,7 @@ py::object cast_to_specialized_property(
     Property const& property)
 {
 
-    auto& configuration = property.configuration();
+    auto configuration = property.configuration();
 
     // TODO
     //     Support registering of casters by specialized

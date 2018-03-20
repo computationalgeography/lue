@@ -25,6 +25,18 @@ PropertySet::PropertySet(
 
 
 PropertySet::PropertySet(
+    hdf5::Identifier const& id)
+
+    : hdf5::Group{id},
+      _configuration{attributes()},
+      _domain{*this},
+      _properties{*this}
+
+{
+}
+
+
+PropertySet::PropertySet(
     hdf5::Group&& group)
 
     : hdf5::Group{std::forward<hdf5::Group>(group)},

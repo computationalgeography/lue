@@ -31,7 +31,7 @@ public:
 
     Property&      operator=           (Property&&)=default;
 
-    ItemConfiguration const&
+    ItemConfiguration
                    configuration       () const;
 
     void           discretize_space    (Property const& property);
@@ -42,13 +42,10 @@ public:
 
 private:
 
-    ItemConfiguration _configuration;
-
 };
 
 
 Property           create_property     (hdf5::Group const& group,
-                                        std::string const& name,
-                                        ItemConfiguration const& configuration);
+                                        std::string const& name);
 
 }  // namespace lue

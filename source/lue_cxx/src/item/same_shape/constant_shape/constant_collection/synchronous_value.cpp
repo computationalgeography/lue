@@ -1,4 +1,5 @@
 #include "lue/item/same_shape/constant_shape/constant_collection/synchronous_value.hpp"
+#include "lue/item/item_configuration.hpp"
 #include "lue/hdf5/chunk.hpp"
 #include <cassert>
 
@@ -197,14 +198,12 @@ SynchronousValue create_synchronous_value(
     auto dataset = hdf5::create_dataset(
         parent.id(), name, file_datatype, dataspace, creation_property_list);
 
-    // parent.attributes().write<std::string>(
-    //     lue::collection_variability_tag, "constant");
-    // parent.attributes().write<std::string>(
-    //     lue::shape_variability_tag, "constant");
-    // parent.attributes().write<std::string>(
-    //     lue::shape_per_item_tag, "same");
-    // parent.attributes().write<std::string>(
-    //     lue::value_variability_tag, "variable");
+    ItemConfiguration{
+        ShapePerItem::same,
+        Occurrence::synchronous,
+        ShapeVariability::constant,
+        CollectionVariability::constant
+    }.save(dataset.attributes());
 
     return SynchronousValue{std::move(dataset), memory_datatype};
 }
