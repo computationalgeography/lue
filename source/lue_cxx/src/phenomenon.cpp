@@ -48,6 +48,18 @@ PropertySets& Phenomenon::property_sets()
 }
 
 
+ContinuousPropertySet Phenomenon::add_continuous_property_set(
+    std::string const& name)
+{
+    _property_sets.add(
+        name,
+        create_continuous_property_set(_property_sets, name)
+    );
+
+    return ContinuousPropertySet{_property_sets, name};
+}
+
+
 /*!
     @brief      Add new phenomenon
     @param      Location Id of location of file or group to add

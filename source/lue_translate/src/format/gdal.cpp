@@ -405,10 +405,10 @@ void translate_lue_dataset_to_shapefile(
     auto const& property_set = phenomenon.property_sets()[property_set_name];
     auto const& property_set_configuration = property_set.configuration();
 
-    if(property_set_configuration.type<CollectionVariability>() !=
-            CollectionVariability::constant) {
-        throw std::runtime_error("Size of item collection must be constant");
-    }
+    // if(property_set_configuration.type<CollectionVariability>() !=
+    //         CollectionVariability::constant) {
+    //     throw std::runtime_error("Size of item collection must be constant");
+    // }
 
     // auto const& domain_configuration = property_set.domain().configuration();
 

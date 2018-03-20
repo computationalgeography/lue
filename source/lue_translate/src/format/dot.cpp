@@ -731,16 +731,16 @@ void to_dot(
 
     auto configuration = property_set.configuration();
 
-    switch(configuration.type<CollectionVariability>()) {
+    // switch(configuration.type<CollectionVariability>()) {
 
-        case(CollectionVariability::constant): {
+    //     case(CollectionVariability::constant): {
 
-            to_dot(
-                constant_collection::PropertySet(property_set.id()),
-                stream, metadata);
+    //         to_dot(
+    //             constant_collection::PropertySet(property_set.id()),
+    //             stream, metadata);
 
-        }
-    }
+    //     }
+    // }
 }
 
 

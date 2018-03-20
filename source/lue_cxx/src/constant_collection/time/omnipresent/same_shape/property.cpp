@@ -58,15 +58,8 @@ Property create_property(
 {
     auto& properties = property_set.properties();
 
-    ItemConfiguration configuration{
-        ShapePerItem::same,
-        Occurrence::continuous,
-        ShapeVariability::constant,
-        CollectionVariability::constant
-    };
-
     auto& property = properties.add(name,
-        omnipresent::create_property(properties, name, configuration));
+        omnipresent::create_property(properties, name));
     auto value = create_value(
         property, value_tag, file_datatype, memory_datatype);
 
@@ -96,16 +89,8 @@ Property create_property(
     hdf5::Shape const& value_shape)
 {
     auto& properties = property_set.properties();
-
-    ItemConfiguration configuration{
-        ShapePerItem::same,
-        Occurrence::continuous,
-        ShapeVariability::constant,
-        CollectionVariability::constant
-    };
-
     auto& property = properties.add(name,
-        omnipresent::create_property(properties, name, configuration));
+        omnipresent::create_property(properties, name));
     auto value = create_value(
         property, value_tag, file_datatype, memory_datatype,
         value_shape);

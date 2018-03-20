@@ -5,7 +5,7 @@
 namespace lue {
 
 using PropertySetConfiguration = Configuration<
-    CollectionVariability
+    Occurrence
 >;
 
 }  // namespace lue

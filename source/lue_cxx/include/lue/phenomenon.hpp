@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/property_sets.hpp"
+#include "lue/property_set/continuous_property_set.hpp"
 
 
 namespace lue {
@@ -32,6 +33,10 @@ public:
     PropertySets const& property_sets  () const;
 
     PropertySets&  property_sets       ();
+
+    ContinuousPropertySet
+                   add_continuous_property_set(
+                                        std::string const& name);
 
 private:
 

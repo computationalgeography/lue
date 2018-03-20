@@ -134,8 +134,8 @@ BOOST_AUTO_TEST_CASE(create_and_read_raster)
         auto const& property_set = phenomenon.property_sets()[property_set_name];
 
         BOOST_CHECK(
-            property_set.configuration().type<lue::CollectionVariability>() ==
-            lue::CollectionVariability::constant);
+            property_set.configuration().type<lue::Occurrence>() ==
+            lue::Occurrence::continuous);
 
         lue::constant_collection::PropertySet areas{property_set.id()};
 

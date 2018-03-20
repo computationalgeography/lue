@@ -39,6 +39,9 @@ class ContinuousValue:
 public:
 
                    ContinuousValue     (hdf5::Group const& parent,
+                                        std::string const& name);
+
+                   ContinuousValue     (hdf5::Group const& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& memory_datatype);
 

@@ -15,6 +15,9 @@ class PrimaryDataObject
 
 public:
 
+                   PrimaryDataObject   (Identifier const& location,
+                                        std::string const& name);
+
                    PrimaryDataObject   (PrimaryDataObject const&)=default;
 
                    PrimaryDataObject   (PrimaryDataObject&&)=default;

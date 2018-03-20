@@ -37,10 +37,9 @@ lue::Property Property::time_discretization () const
 
 Property create_property(
     hdf5::Group& parent,
-    std::string const& name,
-    ItemConfiguration const& configuration)
+    std::string const& name)
 {
-    auto property = constant_collection::create_property(parent, name, configuration);
+    auto property = constant_collection::create_property(parent, name);
 
     return Property{std::move(property)};
 }

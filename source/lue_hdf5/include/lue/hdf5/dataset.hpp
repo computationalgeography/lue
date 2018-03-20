@@ -54,6 +54,8 @@ public:
                    Dataset             (Group const& parent,
                                         std::string const& name);
 
+    explicit       Dataset             (Identifier const& id);
+
     explicit       Dataset             (Identifier&& id);
 
                    Dataset             (Dataset const&)=default;

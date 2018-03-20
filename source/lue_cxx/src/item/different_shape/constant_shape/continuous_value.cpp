@@ -1,5 +1,6 @@
 #include "lue/item/different_shape/constant_shape/continuous_value.hpp"
 #include "lue/item/constant_shape/collection.hpp"
+#include "lue/item/item_configuration.hpp"
 #include "lue/hdf5/chunk.hpp"
 #include "lue/tag.hpp"
 
@@ -212,6 +213,13 @@ ContinuousValue create_continuous_value(
         parent, name, file_datatype, rank);
 
     group.attributes().write<hsize_t>(nr_time_domain_items_tag, 0);
+
+    ItemConfiguration{
+        ShapePerItem::different,
+        Occurrence::continuous,
+        ShapeVariability::constant,  // Implied
+        CollectionVariability::constant  // Implied
+    }.save(group.attributes());
 
     return ContinuousValue{std::move(group), memory_datatype};
 }

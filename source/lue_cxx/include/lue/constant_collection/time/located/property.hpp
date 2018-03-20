@@ -37,8 +37,7 @@ private:
 
 
 Property           create_property     (hdf5::Group& parent,
-                                        std::string const& name,
-                                        ItemConfiguration const& configuration);
+                                        std::string const& name);
 
 }  // namespace located
 }  // namespace time

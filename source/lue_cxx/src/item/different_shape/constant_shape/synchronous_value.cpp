@@ -1,4 +1,5 @@
 #include "lue/item/different_shape/constant_shape/synchronous_value.hpp"
+#include "lue/item/item_configuration.hpp"
 
 
 namespace lue {
@@ -78,6 +79,13 @@ SynchronousValue create_synchronous_value(
 {
     auto value = create_value(
         parent, name, file_datatype, memory_datatype, rank);
+
+    ItemConfiguration{
+        ShapePerItem::different,
+        Occurrence::synchronous,
+        ShapeVariability::constant,
+        CollectionVariability::variable
+    }.save(value.attributes());
 
     return SynchronousValue{std::move(value), memory_datatype};
 }

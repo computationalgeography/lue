@@ -14,8 +14,7 @@ Property::Property(
     hdf5::Group const& parent,
     std::string const& name)
 
-    : hdf5::Group(parent, name),
-      _configuration{attributes()}
+    : hdf5::Group(parent, name)
 
 {
 }
@@ -24,16 +23,16 @@ Property::Property(
 Property::Property(
     hdf5::Group&& group)
 
-    : hdf5::Group(std::forward<hdf5::Group>(group)),
-      _configuration{attributes()}
+    : hdf5::Group(std::forward<hdf5::Group>(group))
 
 {
 }
 
 
-ItemConfiguration const& Property::configuration() const
+ItemConfiguration Property::configuration() const
 {
-    return _configuration;
+    return ItemConfiguration{
+        hdf5::PrimaryDataObject{id(), value_tag}.attributes()};
 }
 
 
@@ -58,12 +57,9 @@ Property Property::space_discretization() const
 
 Property create_property(
     hdf5::Group const& parent,
-    std::string const& name,
-    ItemConfiguration const& configuration)
+    std::string const& name)
 {
     auto group = hdf5::create_group(parent, name);
-
-    configuration.save(group.attributes());
 
     return Property{std::move(group)};
 }

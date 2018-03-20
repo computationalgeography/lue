@@ -62,7 +62,8 @@ TAG_AND_MAP(Occurrence, occurrence_tag, ({
 }))
 
 TAG_AND_MAP(CollectionVariability, collection_variability_tag, ({
-    { CollectionVariability::constant, "lue_constant_collection" }
+    { CollectionVariability::constant, "lue_constant_collection" },
+    { CollectionVariability::variable, "lue_variable_collection" }
 }))
 
 TAG_AND_MAP(ShapeVariability, shape_variability_tag, ({

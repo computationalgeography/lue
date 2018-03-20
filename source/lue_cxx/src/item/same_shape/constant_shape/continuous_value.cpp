@@ -1,4 +1,5 @@
 #include "lue/item/same_shape/constant_shape/continuous_value.hpp"
+#include "lue/item/item_configuration.hpp"
 #include "lue/hdf5/chunk.hpp"
 #include <cassert>
 
@@ -6,6 +7,19 @@
 namespace lue {
 namespace same_shape {
 namespace constant_shape {
+
+/*!
+    @brief      Open collection @a name in @a parent
+*/
+ContinuousValue::ContinuousValue(
+    hdf5::Group const& parent,
+    std::string const& name)
+
+    : Array{parent, name}
+
+{
+}
+
 
 /*!
     @brief      Open collection @a name in @a parent
@@ -177,6 +191,13 @@ ContinuousValue create_continuous_value(
 
     auto dataset = hdf5::create_dataset(
         parent.id(), name, file_datatype, dataspace, creation_property_list);
+
+    ItemConfiguration{
+        ShapePerItem::same,
+        Occurrence::continuous,
+        ShapeVariability::constant,  // Implied
+        CollectionVariability::constant  // Implied
+    }.save(dataset.attributes());
 
     return ContinuousValue{std::move(dataset), memory_datatype};
 }

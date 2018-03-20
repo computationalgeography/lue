@@ -41,14 +41,25 @@ void init_property_set_class(
 
                 py::object object = py::none{};
 
-                switch(configuration.type<CollectionVariability>()) {
-                    case CollectionVariability::constant: {
-                        object = py::cast(new
-                            constant_collection::PropertySet(
-                                property_set.id()));
-                        break;
-                    }
-                }
+                object = py::cast(
+                    new constant_collection::PropertySet(property_set.id()));
+
+
+                // switch(configuration.type<Occurrence>()) {
+                //     case Occurrence::continuous: {
+                //         object = py::cast(new
+                //             ContinuousPropertySet{property_set, name});
+                //         break;
+                //     }
+                //     case Occurrence::synchronous: {
+                //         assert(false);
+                //         break;
+                //     }
+                //     case Occurrence::asynchronous: {
+                //         assert(false);
+                //         break;
+                //     }
+                // }
 
                 return object;
             },

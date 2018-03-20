@@ -67,15 +67,15 @@ void validate(
 {
     auto const& configuration = property_set.configuration();
 
-    switch(configuration.type<CollectionVariability>()) {
+    // switch(configuration.type<CollectionVariability>()) {
 
-        case(CollectionVariability::constant): {
-            constant_collection::validate(constant_collection::PropertySet(
-                property_set.id()), issues);
-            break;
-        }
+    //     case(CollectionVariability::constant): {
+    //         constant_collection::validate(constant_collection::PropertySet(
+    //             property_set.id()), issues);
+    //         break;
+    //     }
 
-    }
+    // }
 }
 
 

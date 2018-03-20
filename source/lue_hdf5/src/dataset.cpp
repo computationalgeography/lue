@@ -79,6 +79,16 @@ Dataset::Dataset(
 
 
 Dataset::Dataset(
+    Identifier const& id)
+
+    : PrimaryDataObject{id}
+
+{
+    assert(this->id().is_valid());
+}
+
+
+Dataset::Dataset(
     Identifier&& id)
 
     : PrimaryDataObject{std::forward<Identifier>(id)}
