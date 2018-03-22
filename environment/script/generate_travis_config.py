@@ -161,6 +161,7 @@ def builds():
         Package("g++-8", ["ubuntu-toolchain-r-test"], []),
         Package("libboost-all-dev", [], []),
         Package("libhdf5-dev", [], []),
+        Package("tree", [], []),
     ]
     packages = { package.name: package for package in packages }
 
@@ -201,6 +202,7 @@ def builds():
     common_packages = [
         packages["libboost-all-dev"],
         packages["libhdf5-dev"],
+        packages["tree"],
     ]
 
 
