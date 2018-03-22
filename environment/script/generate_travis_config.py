@@ -374,6 +374,7 @@ matrix:
 # requirements of the project.
 # Travis-specific stuff.
 before_install:
+    - pwd && ls -l
     - python --version
 
     # Install conda and some Python packages.
@@ -426,20 +427,23 @@ before_install:
 
 # Install dependencies required by the project, similar to what a user would
 # have to do.
-# install:
+install:
+    - pwd && ls -l
 
 
 # Commands which need to be executed before building the project.
 # Travis-specific stuff.
-# before_script:
+before_script:
+    - pwd && ls -l
     - pip install conan
     - mkdir build
     - cd build
-    - conan install .. -s build_type=$TRAVIS_BUILD_TYPE
+    - conan install .. -s build_type=$TRAVIS_BUILD_TYPE -e CXX=$TRAVIS_CXX_COMPILER
 
 
 # Build the project, similar to what a user would have to do.
 script:
+    - pwd && ls -l
     # - mkdir build
     - cd build
     - cmake -DPEACOCK_PREFIX:PATH=$TRAVIS_BUILD_DIR/local $TRAVIS_LUE_CMAKE_ARGUMENTS ..
