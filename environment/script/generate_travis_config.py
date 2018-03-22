@@ -230,7 +230,7 @@ def builds():
         "clang": [
                 # ("clang-3.9", "clang++-3.9"),
                 # ("clang-4.0", "clang++-4.0"),
-                # ("clang-5.0", "clang++-5.0"),
+                ("clang-5.0", "clang++-5.0"),
                 # ("clang-6.0", "clang++-6.0"),
             ],
     }
@@ -418,7 +418,7 @@ before_install:
     # ~/tmp/build/peacock
     - cd peacock
     - cmake --version
-    - CXX=$TRAVIS_CXX_COMPILER cmake -Dpeacock_prefix=$TRAVIS_BUILD_DIR/local -Dbuild_gdal=true -Dgdal_version=2.0.1 $TRAVIS_BUILD_DIR/tmp/source/peacock
+    - CXX=$TRAVIS_CXX_COMPILER cmake -Dpeacock_prefix=$TRAVIS_BUILD_DIR/local -Dbuild_gdal=true -Dgdal_version=2.0.1 -Dbuild_docopt=true -Ddocopt_version=0.6.2 $TRAVIS_BUILD_DIR/tmp/source/peacock
     - CXX=$TRAVIS_CXX_COMPILER cmake --build . --target all
     # ~
     - cd ../../..
