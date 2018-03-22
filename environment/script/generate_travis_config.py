@@ -374,7 +374,7 @@ matrix:
 # requirements of the project.
 # Travis-specific stuff.
 before_install:
-    - pwd && ls -l
+    # /home/travis/build/pcraster/lue
     - python --version
 
     # Install conda and some Python packages.
@@ -428,24 +428,27 @@ before_install:
 # Install dependencies required by the project, similar to what a user would
 # have to do.
 install:
-    - pwd && ls -l
+    # /home/travis/build/pcraster/lue
 
 
 # Commands which need to be executed before building the project.
 # Travis-specific stuff.
 before_script:
-    - pwd && ls -l
+    # /home/travis/build/pcraster/lue
     - pip install conan
     - mkdir build
     - cd build
-    - conan install .. -s build_type=$TRAVIS_BUILD_TYPE -e CXX=$TRAVIS_CXX_COMPILER
+    # When building ourselves use:
+    #     -s compiler=gcc compiler.version=7 -s build_type=$TRAVIS_BUILD_TYPE
+    - conan install ..
+    - cd ..
 
 
 # Build the project, similar to what a user would have to do.
 script:
-    - pwd && ls -l
-    # - mkdir build
+    # /home/travis/build/pcraster/lue
     - cd build
+    - tree -d $TRAVIS_BUILD_DIR/local
     - cmake -DPEACOCK_PREFIX:PATH=$TRAVIS_BUILD_DIR/local $TRAVIS_LUE_CMAKE_ARGUMENTS ..
     - cmake --build . --target all
     - if [[ $TRAVIS_LUE_CMAKE_ARGUMENTS == *"LUE_BUILD_TEST:BOOL=TRUE"* ]]; then cmake --build . --target test; fi
