@@ -72,7 +72,8 @@ class Build(namedtuple("Build", (
             "TRAVIS_C_COMPILER={}".format(self.compilers.c_compiler.name),
             "TRAVIS_CXX_COMPILER={}".format(self.compilers.cxx_compiler.name),
             "TRAVIS_CXX_FLAGS=\"{}\"".format(self.compilers.cxx_compiler.flags),
-            "TRAVIS_LUE_CMAKE_ARGUMENTS=\"-DCMAKE_BUILD_TYPE={} -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS -DLUE_BUILD_TEST:BOOL=TRUE {}\"".format(self.build_type, " ".join(["-D{}={}".format(key, self.environment[key]) for key in self.environment]))
+            "TRAVIS_BUILD_TYPE={}".format(self.build_type),
+            "TRAVIS_LUE_CMAKE_ARGUMENTS=\"-DCMAKE_BUILD_TYPE=$TRAVIS_BUILD_TYPE -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS -DLUE_BUILD_TEST:BOOL=TRUE {}\"".format(" ".join(["-D{}={}".format(key, self.environment[key]) for key in self.environment]))
         ]
 
         return """\
@@ -211,8 +212,8 @@ def builds():
 
 
     python_versions = [
-        "2.7",
-        "3.5",
+        # "2.7",
+        # "3.5",
         "3.6",
     ]
 
@@ -220,17 +221,17 @@ def builds():
     # Tuples with names of C compiler and C++ compiler.
     compiler_families = {
         "gcc": [
-                ("gcc-4.9", "g++-4.9"),
+                # ("gcc-4.9", "g++-4.9"),
                 ("gcc-5", "g++-5"),
-                ("gcc-6", "g++-6"),
-                ("gcc-7", "g++-7"),
-                ("gcc-8", "g++-8"),
+                # ("gcc-6", "g++-6"),
+                # ("gcc-7", "g++-7"),
+                # ("gcc-8", "g++-8"),
             ],
         "clang": [
-                ("clang-3.9", "clang++-3.9"),
-                ("clang-4.0", "clang++-4.0"),
-                ("clang-5.0", "clang++-5.0"),
-                ("clang-6.0", "clang++-6.0"),
+                # ("clang-3.9", "clang++-3.9"),
+                # ("clang-4.0", "clang++-4.0"),
+                # ("clang-5.0", "clang++-5.0"),
+                # ("clang-6.0", "clang++-6.0"),
             ],
     }
 
@@ -384,7 +385,7 @@ before_install:
     - conda update -q conda
     - conda info -a  # Useful for debugging any issues with conda
     # conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION numpy
-    - conda create -q -n test-environment numpy
+    - conda create -q -n test-environment conan numpy
     - source activate test-environment
     # - python setup.py install
 
@@ -417,7 +418,7 @@ before_install:
     # ~/tmp/build/peacock
     - cd peacock
     - cmake --version
-    - CXX=$TRAVIS_CXX_COMPILER cmake -Dpeacock_prefix=$TRAVIS_BUILD_DIR/local -Dbuild_docopt=true -Ddocopt_version=0.6.2 -Dbuild_gdal=true -Dgdal_version=2.0.1 -Dbuild_nlohmann_json=true -Dnlohmann_json_version=3.1.2 -Dbuild_pybind11=true -Dpybind11_version=2.2.2 $TRAVIS_BUILD_DIR/tmp/source/peacock
+    - CXX=$TRAVIS_CXX_COMPILER cmake -Dpeacock_prefix=$TRAVIS_BUILD_DIR/local -Dbuild_gdal=true -Dgdal_version=2.0.1 $TRAVIS_BUILD_DIR/tmp/source/peacock
     - CXX=$TRAVIS_CXX_COMPILER cmake --build . --target all
     # ~
     - cd ../../..
@@ -431,11 +432,15 @@ before_install:
 # Commands which need to be executed before building the project.
 # Travis-specific stuff.
 # before_script:
+    - pip install conan
+    - mkdir build
+    - cd build
+    - conan install .. -s build_type=$TRAVIS_BUILD_TYPE
 
 
 # Build the project, similar to what a user would have to do.
 script:
-    - mkdir build
+    # - mkdir build
     - cd build
     - cmake -DPEACOCK_PREFIX:PATH=$TRAVIS_BUILD_DIR/local $TRAVIS_LUE_CMAKE_ARGUMENTS ..
     - cmake --build . --target all
