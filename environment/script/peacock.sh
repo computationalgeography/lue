@@ -43,15 +43,11 @@ function build_peacock()
     build_docopt=false
     build_gdal=false
     build_google_benchmark=false
-    build_nlohmann_json=false
-    build_pybind11=false
 
     # ...except for these machines
     hostname=`hostname`
     build_docopt=true
     build_google_benchmark=true
-    build_nlohmann_json=true
-    build_pybind11=true
 
     if [ $hostname == "sonic.geo.uu.nl" ]; then
         build_boost=true
@@ -77,12 +73,6 @@ function build_peacock()
     fi
 
 
-    if [ "$build_pybind11" = true ]; then
-        options+=("-Dbuild_pybind11=true")
-        options+=("-Dpybind11_version=2.2.2")
-    fi
-
-
     if [ "$build_docopt" = true ]; then
         options+=("-Dbuild_docopt=true")
         options+=("-Ddocopt_version=0.6.2")
@@ -92,12 +82,6 @@ function build_peacock()
     if [ "$build_gdal" = true ]; then
         options+=("-Dbuild_gdal=true")
         options+=("-Dgdal_version=2.0.1")
-    fi
-
-
-    if [ "$build_nlohmann_json" = true ]; then
-        options+=("-Dbuild_nlohmann_json=true")
-        options+=("-Dnlohmann_json_version=3.1.2")
     fi
 
 
