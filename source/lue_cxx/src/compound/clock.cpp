@@ -2,6 +2,7 @@
 #include "lue/hdf5/datatype_traits.hpp"
 #include "lue/tag.hpp"
 #include <cassert>
+#include <cstdlib>
 #include <cstring>
 #include <type_traits>
 
