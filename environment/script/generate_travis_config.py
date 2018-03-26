@@ -223,10 +223,10 @@ def builds():
     # Tuples with names of C compiler and C++ compiler.
     compiler_families = {
         "gcc": [
-                ("gcc-4.9", "g++-4.9"),
+                # ("gcc-4.9", "g++-4.9"),
                 ("gcc-5", "g++-5"),
                 ("gcc-6", "g++-6"),
-                ("gcc-7", "g++-7"),
+                # ("gcc-7", "g++-7"),
                 # ("gcc-8", "g++-8"),
             ],
         "clang": [
