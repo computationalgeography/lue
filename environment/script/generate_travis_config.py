@@ -175,14 +175,14 @@ def builds():
 
 
     compilers = [
-        "clang-3.9",
-        "clang++-3.9",
-        "clang-4.0",
-        "clang++-4.0",
-        "clang-5.0",
-        "clang++-5.0",
-        "clang-6.0",
-        "clang++-6.0",
+        # "clang-3.9",
+        # "clang++-3.9",
+        # "clang-4.0",
+        # "clang++-4.0",
+        # "clang-5.0",
+        # "clang++-5.0",
+        # "clang-6.0",
+        # "clang++-6.0",
         "gcc-4.9",
         "g++-4.9",
         "gcc-5",
@@ -191,8 +191,8 @@ def builds():
         "g++-6",
         "gcc-7",
         "g++-7",
-        "gcc-8",
-        "g++-8",
+        # "gcc-8",
+        # "g++-8",
     ]
     compilers = { compiler_name: Compiler(compiler_name,
         packages[compiler_name], flags.get(compiler_name, "")) \
