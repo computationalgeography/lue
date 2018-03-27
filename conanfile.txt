@@ -1,7 +1,19 @@
 [requires]
 # docopt/0.6.2@conan/stable
+
+# boost/1.66.0@conan/stable
+# conan install Boost/1.64.0@bincrafters/testing
+
+# boost/1.66.0@bincrafters/stable
+
+# boost_python/1.66.0@bincrafters/stable
+# cmake_findboost_modular/1.66.0@bincrafters/stable
+
 jsonformoderncpp/3.1.2@vthiery/stable
 pybind11/2.2.2@conan/stable
+
+[options]
+# boost:shared=True
 
 [generators]
 cmake
