@@ -1,0 +1,41 @@
+/*!
+    @dir    lue_cxx/include/lue/array
+    @brief  Code related to object arrays
+
+    ## Design
+    - Seperate object array packing from active object tracking. Some
+        optimizations can be made, which should be handled at a higher
+        level. So, nothing in the interface should suggest how active
+        objects are tracked.
+    - Sometimes, it must be possible to determine what kind of object
+        array is stored. Sometimes this information is implied by the
+        context. How to determine the object array kind is outside of
+        the scope of this abstraction layer.
+*/
+
+
+/*!
+    @dir    lue_cxx/include/lue/info
+    @brief  Code related to spatio-temporal object information
+
+    In this directory, code is stored for handling spatio-temporal
+    object information:
+    - Identity
+    - Locations in time
+    - Locations in space
+    - Properties
+
+
+*/
+
+
+/*!
+    @dir    lue_cxx/include/lue/info
+    @brief  Code related to spatio-temporal objects
+
+    In this directory, code is stored for handling spatio-temporal
+    objects, in which spatio-temporal object information is combined,
+    according to the LUE data model.
+
+
+*/

@@ -1,7 +1,5 @@
-# add_test_conditionally(test)
-
 add_library(lue_test STATIC
-    src/dataset_fixture
+    src/file_fixture
 )
 
 add_library(lue::test ALIAS lue_test)
