@@ -1,8 +1,9 @@
-#include "lue/array/same_shape/value.hpp"
+#include "lue/array/same_shape/constant_shape/value.hpp"
 
 
 namespace lue {
 namespace same_shape {
+namespace constant_shape {
 
 /*!
     @brief      Open value @a name in @a parent
@@ -219,5 +220,6 @@ Value create_value(
     return Value{Array{std::move(dataset), memory_datatype}};
 }
 
+}  // namespace constant_shape
 }  // namespace same_shape
 }  // namespace lue

@@ -3,6 +3,7 @@ add_unit_tests(
     NAMES
 
         array/same_shape/value_test
+        array/same_shape/constant_shape/value_test
         # info/...
         # object/...
 
