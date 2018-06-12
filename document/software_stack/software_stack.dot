@@ -1,0 +1,967 @@
+digraph {
+    fontname="Courier"
+    fontsize=10
+    label=<LUE modeling software stack>
+    rankdir = BT;
+
+
+    node [
+        fontname="Courier"
+        fontsize=10
+        style=filled
+        shape=box
+    ];
+
+    edge [
+        fontname="Courier"
+        fontsize=10
+        arrowhead="open"
+        arrowtail="open"
+    ];
+
+    hdf5_c [
+        label=
+            "HDF5 C-API\l"
+    ];
+
+    lue_hdf5 [
+        label=
+            "lue_hdf5\l" +
+            "HDF5 C++-API\l"
+    ];
+
+    lue_cxx [
+        label=
+            "lue_cxx\l" +
+            "C++-API\l" +
+            "Support for:\l" +
+            "- multiple items\l" +
+            "- spatial point\l" +
+            "- spatial field\l" +
+            "- temporal field\l"
+    ];
+
+    lue_hl [
+        label=
+            "lue_hl\l" +
+            "high level C++-API\l" +
+            "Support for:\l" +
+            "- scalar\l" +
+            "- raster\l"
+    ];
+
+    lue_py [
+        label=
+            "lue_py\l" +
+            "Python-API\l"
+    ];
+
+    lue_in_memory_datatype_prototype [
+        label=
+            "In-memory datatype\l" +
+            "- Python\l"
+    ];
+
+    lue_algorithms_prototype [
+        label=
+            "Modeling algorithms\l" +
+            "- Python\l" +
+            "- By domain experts (for time being)\l"
+    ];
+
+    lue_modeling [
+        label=
+            "Modeling environment\l" +
+            "- Python\l" +
+            "- For domain experts\l"
+    ];
+
+    lue_algorithms [
+        label=
+            "Modeling algorithms\l" +
+            "- C++/HPX\l" +
+            "- Parallel, using HPX\l" +
+            "- Local operations\l" +
+            "- Delayed execution for\l" +
+            "   subset of locations\l"
+    ];
+
+    lue_in_memory_datatype [
+        label=
+            "In-memory datatype\l" +
+            "- C++\l"
+    ];
+
+    python_c [
+        label=
+            "Python C-API\l"
+    ];
+
+    geoneric_fern [
+        label=
+            "Geoneric Fern\l" +
+            "- C++ algorithms\l" +
+            "- parallel\l"
+    ];
+
+    pcraster_python [
+        label=
+            "PCRaster Python-API\l" +
+            "- For domain experts\l"
+    ];
+
+    pcraster_pcrcalc [
+        label=
+            "PCRaster pcrcalc-API\l" +
+            "- For domain experts\l"
+    ];
+
+    pcraster_raster_format [
+        label=
+            "PCRaster rasterformat\l" +
+            "- CSF\l"
+    ];
+
+    gdal [
+        label=
+            "GDAL C++-API\l"
+    ];
+
+    pcraster_cxx [
+        label=
+            "PCRaster C++-API\l"
+    ];
+
+    numpy_python [
+        label=
+            "Numpy Python-API\l"
+    ];
+
+    numpy_c [
+        label=
+            "Numpy C-API\l"
+    ];
+
+
+    hdf5_c -> lue_hdf5 [
+    ];
+
+    lue_hdf5 -> lue_cxx [
+    ];
+
+    lue_cxx -> lue_hl [
+    ];
+
+    lue_cxx -> lue_py [
+    ];
+
+    lue_hl -> lue_py [
+    ];
+
+    python_c -> lue_py [
+    ];
+
+    lue_py -> lue_in_memory_datatype_prototype [
+    ];
+
+
+    subgraph cluster_prototype {
+        label=<LUE modeling environment (prototype)>
+
+        lue_in_memory_datatype_prototype -> lue_algorithms_prototype [
+        ];
+    }
+
+    numpy_python -> lue_in_memory_datatype_prototype [
+    ];
+
+    numpy_python -> lue_algorithms_prototype [
+        label=
+            "Array operations"
+    ];
+
+    numpy_c -> lue_py [
+    ];
+
+    python_c -> numpy_c [
+    ];
+
+    python_c -> pcraster_python [
+    ];
+
+    geoneric_fern -> pcraster_python [
+    ];
+
+    subgraph cluster_pcraster {
+        label=<PCRaster modeling environment>
+
+        pcraster_cxx -> pcraster_python [
+        ];
+
+        pcraster_cxx -> pcraster_pcrcalc [
+        ];
+    }
+
+    pcraster_raster_format -> gdal [
+    ];
+
+    pcraster_raster_format -> pcraster_cxx [
+    ];
+
+    gdal -> pcraster_cxx [
+    ];
+
+    pcraster_python -> lue_algorithms_prototype [
+        label=
+            "Raster operations"
+    ];
+
+
+    lue_hl -> lue_algorithms [
+    ];
+
+    lue_cxx -> lue_algorithms [
+    ];
+
+
+    lue_algorithms -> lue_modeling [
+    ];
+
+    lue_in_memory_datatype -> lue_modeling [
+    ];
+
+
+    subgraph cluster_final {
+        label=<LUE modeling environment>
+
+        lue_modeling;
+
+        lue_in_memory_datatype;
+
+    }
+
+    python_c -> lue_modeling [
+    ];
+
+
+
+
+
+
+
+
+
+    // user [
+    //     label=<user>
+    //     shape=star
+    // ];
+
+
+    // subgraph cluster_web_app {
+    //     label=<nca web-app>
+
+    //     web_app_client [
+    //         label=<web-app client<br/>(in the browser)>
+    //     ];
+
+    //     web_app_server [
+    //         label=<web-app server<br/>(Drupal, on the webserver)>
+    //     ];
+
+    //     web_app_client -> web_app_server [
+    //     ];
+
+    // }
+
+
+    // subgraph cluster_services {
+    //     label=<nca services<br/>(in a Docker Swarm)>
+
+    //     reverse_proxy [
+    //         label=<reverse_proxy<br/>(Nginx)>
+    //     ];
+
+    //     nc_assessment [
+    //         label=<nc_assessment<br/>(API, Flask)>
+    //     ];
+
+    //     nc_plan [
+    //         label=<nc_plan<br/>(REST, Flask)>
+    //     ];
+
+    //     nc_user [
+    //         label=<nc_user<br/>(REST, Flask)>
+    //     ];
+
+    //     nc_assessment_request [
+    //         label=<assessment_request<br/>(REST, Flask)>
+    //     ];
+
+    //     nc_assessment_executor [
+    //         label=<assessment_executor<br/>(process, Flask)>
+    //     ];
+
+    //     nc_data_tools [
+    //         label=<nc_data_tools<br/>(process, Flask)>
+    //     ];
+
+    //     nc_gdx [
+    //         label=<nc_gdx<br/>(process, Flask)>
+    //     ];
+
+    //     nc_client_notifier [
+    //         label=<nc_client_notifier<br/>(SocketIO, Flask)>
+    //     ];
+
+    //     geoserver [
+    //         label=<geoserver<br/>(Geoserver)>
+    //     ];
+
+    //     message_broker [
+    //         label=<message broker<br/>(RabbitMQ)>
+    //     ];
+
+
+    //     // Post a plan
+    //     web_app_server -> reverse_proxy [
+    //         color="blue"
+    //         style="bold"
+    //         label=<a1: post plan dataset<br/>a7: return plan resource>
+    //     ];
+
+    //     reverse_proxy -> nc_assessment [
+    //         color="blue"
+    //         style="bold"
+    //         label=<a2: post plan dataset<br/>a6: return plan resource>
+    //     ];
+
+    //     nc_assessment -> nc_plan [
+    //         color="blue"
+    //         style="bold"
+    //         label=<a3: post plan resource<br/>a4: return plan resource>
+    //     ];
+
+    //     nc_assessment -> message_broker [
+    //         color="blue"
+    //         style="bold"
+    //         label=<a5: post register<br/>plan request>
+    //     ];
+
+
+    //     // Register a plan
+    //     message_broker -> nc_data_tools [
+    //         color="blue"
+    //         style="bold"
+    //         label=<b1: register<br/>plan>
+    //     ];
+
+    //     nc_data_tools -> geoserver [
+    //         color="blue"
+    //         style="bold"
+    //         label=<b2: register<br/>plan>
+    //     ];
+
+    //     nc_data_tools -> nc_plan [
+    //         color="blue"
+    //         style="bold"
+    //         label=<b3: patch>
+    //     ];
+
+
+    //     // Obtain WMS layer
+    //     web_app_server -> reverse_proxy [
+    //         color="red"
+    //         style="bold"
+    //         label=<c: obtain<br/>WMS layer>
+    //     ];
+
+    //     reverse_proxy -> geoserver [
+    //         color="red"
+    //         style="bold"
+    //         label=<c: obtain<br/>WMS layer>
+    //     ];
+
+
+    //     // Georeference plan
+    //     web_app_server -> reverse_proxy [
+    //         color="green"
+    //         style="bold"
+    //         label=<d1: post georeference<br/>plan request>
+    //     ];
+    //     reverse_proxy -> nc_assessment [
+    //         color="green"
+    //         style="bold"
+    //         label=<d2: post georeference<br/>plan request>
+    //     ];
+    //     nc_assessment -> message_broker [
+    //         color="green"
+    //         style="bold"
+    //         label=<d3: post georeference<br/>plan request>
+    //     ];
+
+
+    //     message_broker -> nc_data_tools [
+    //         color="green"
+    //         style="bold"
+    //         label=<e1: georeference<br/>plan>
+    //     ];
+
+    //     nc_data_tools -> geoserver [
+    //         color="green"
+    //         style="bold"
+    //         label=<e2: recreate<br/>layer>
+    //     ];
+
+    //     nc_data_tools -> nc_plan [
+    //         color="green"
+    //         style="bold"
+    //         label=<e3: patch>
+    //     ];
+
+
+    //     message_broker -> nc_assessment_executor [
+    //         label=<r1: perform assessment>
+    //     ];
+    //     nc_assessment_executor -> nc_assessment_request [
+    //         label=<r: post assessment<br/>result resource>
+    //     ];
+    //     nc_assessment_executor -> nc_assessment_request [
+    //         label=<r: post assessment<br/> indicator result resource>
+    //     ];
+    //     nc_assessment_executor -> nc_assessment_request [
+    //         label=<r: patch assessment<br/> request resource>
+    //     ];
+
+
+    //     // Register client
+    //     web_app_server -> reverse_proxy [
+    //         color="orange"
+    //         style="bold"
+    //         label=<f1: register<br/>f4: return client-id>
+    //     ];
+    //     reverse_proxy -> nc_client_notifier [
+    //         color="orange"
+    //         style="bold"
+    //         label=<f2: register<br/>f3: return client-id>
+    //     ];
+
+
+    //     // Request colors
+    //     web_app_server -> reverse_proxy [
+    //         color="purple"
+    //         style="bold"
+    //         label=<g1: post<br/>request colors>
+    //     ];
+    //     reverse_proxy -> nc_assessment [
+    //         color="purple"
+    //         style="bold"
+    //         label=<g2: post<br/>request colors>
+    //     ];
+
+    //     nc_assessment -> message_broker [
+    //         color="purple"
+    //         style="bold"
+    //         label=<g3: post<br/>request colors>
+    //     ];
+
+
+    //     message_broker -> nc_data_tools [
+    //         color="purple"
+    //         style="bold"
+    //         label=<h1: retrieve colors>
+    //     ];
+
+    //     nc_data_tools -> nc_client_notifier [
+    //         color="purple"
+    //         style="bold"
+    //         label=<h2: post colors>
+    //     ];
+
+    //     nc_client_notifier -> web_app_server [
+    //         weight=0
+    //         color="purple"
+    //         style="bold"
+    //         label=<h3: post colors>
+    //     ];
+
+
+    //     web_app_server -> reverse_proxy [
+    //         style="bold"
+    //         label=<i1: post request LU classes<br/>i4: return LU classes>
+    //     ];
+
+    //     reverse_proxy -> nc_assessment [
+    //         style="bold"
+    //         label=<i2: post request LU classes<br/>i3: return LU classes>
+    //     ];
+
+
+    //     // Classify plan
+    //     web_app_server -> reverse_proxy [
+    //         color="cyan"
+    //         style="bold"
+    //         label=<j1: post classify<br/>plan request>
+    //     ];
+    //     reverse_proxy -> nc_assessment [
+    //         color="cyan"
+    //         style="bold"
+    //         label=<j2: post classify<br/>plan request>
+    //     ];
+    //     nc_assessment -> message_broker [
+    //         color="cyan"
+    //         style="bold"
+    //         label=<j3: post classify<br/>plan request>
+    //     ];
+
+
+    //     message_broker -> nc_data_tools [
+    //         color="cyan"
+    //         style="bold"
+    //         label=<k1: classify<br/>plan>
+    //     ];
+
+    //     nc_data_tools -> geoserver [
+    //         color="cyan"
+    //         style="bold"
+    //         label=<k2: recreate<br/>layer>
+    //     ];
+
+    //     nc_data_tools -> nc_plan [
+    //         color="cyan"
+    //         style="bold"
+    //         label=<k3: patch>
+    //     ];
+
+
+    //     web_app_server -> reverse_proxy [
+    //         color="grey"
+    //         label=<p1: post user resource<br/>p6: return user resource>
+    //     ];
+    //     reverse_proxy -> nc_assessment [
+    //         color="grey"
+    //         label=<p2: post user resource<br/>p5: return user resource>
+    //     ];
+    //     nc_assessment -> nc_user [
+    //         color="grey"
+    //         label=<p3: post user resource<br/>p4: return user resource>
+    //     ];
+
+
+    //     web_app_server -> reverse_proxy [
+    //         color="grey"
+    //         label=<q1: post assessment request resource<br/>q6: return assessment request resource>
+    //     ];
+    //     reverse_proxy -> nc_assessment [
+    //         color="grey"
+    //         label=<q2: post assessment request resource<br/>q5: return assessment request resource>
+    //     ];
+    //     nc_assessment -> nc_assessment_request [
+    //         color="grey"
+    //         label=<q3: post assessment request resource<br/>q4: return assessment request resource>
+    //     ];
+
+
+    //     web_app_server -> reverse_proxy [
+    //         color="grey"
+    //         label=<l1: post assessment<br/>request>
+    //     ];
+    //     reverse_proxy -> nc_assessment [
+    //         color="grey"
+    //         label=<l2: post assessment<br/>request>
+    //     ];
+    //     nc_assessment -> message_broker [
+    //         color="grey"
+    //         label=<l3: post assessment<br/>request>
+    //     ];
+
+
+    //     message_broker -> nc_gdx [
+    //         color="grey"
+    //         label=<m1: assess<br/>effects>
+    //     ];
+
+    //     nc_gdx -> geoserver [
+    //         color="grey"
+    //         label=<m2: recreate<br/>layer>
+    //     ];
+
+    //     nc_gdx -> nc_plan [
+    //         color="grey"
+    //         label=<m3: patch>
+    //     ];
+
+
+    //     // Obtain assessment results
+    //     web_app_server -> reverse_proxy [
+    //         color="grey"
+    //         label=<n: obtain<br/>assessment results>
+    //     ];
+
+    //     reverse_proxy -> nc_assessment [
+    //         color="grey"
+    //         label=<n: obtain<br/>assessment results>
+    //     ];
+
+
+    //     // Download assessment results
+    //     web_app_server -> reverse_proxy [
+    //         color="grey"
+    //         label=<o: download<br/>assessment results>
+    //     ];
+
+    //     reverse_proxy -> nc_assessment [
+    //         color="grey"
+    //         label=<o: download<br/>assessment results>
+    //     ];
+
+    // }
+
+
+    // user -> web_app_client [
+    //     color="grey"
+    // ];
+
+    // nc_gdx -> user [
+    //     weight=0
+    //     color="grey"
+    //     label=<m4: notify user<br/>(e-mail)>
+    // ];
+
+
+    // edge [
+    //     weight=0
+    //     color=grey
+    //     style=dotted
+    // ];
+
+    // nc_upload_volume [
+    //     label=</upload>
+    //     shape=folder
+    // ];
+
+    // nc_assessment_result_volume [
+    //     label=</result>
+    //     shape=folder
+    // ];
+
+    // geoserver_volume [
+    //     label=</geoserver>
+    //     shape=folder
+    // ];
+
+    // nc_assessment -> nc_upload_volume [
+    // ];
+
+    // nc_data_tools -> nc_upload_volume [
+    // ];
+
+    // nc_gdx -> nc_upload_volume [
+    // ];
+
+    // nc_gdx -> nc_assessment_result_volume [
+    // ];
+
+    // geoserver -> geoserver_volume [
+    // ];
+
+}
+
+
+
+        // nc_assessment -> message_broker [
+        //     color="blue"
+        //     label=<a2: request plan dataset<br/>a7: return plan resource>
+
+        //     label=
+        //         "a2: register\n" +
+        //         "plan"
+        //         // "- user added\n" +
+        //         // "- plan uploaded\n" +
+        //         // "- reclassify plan\n" +
+        //         // "- ..."
+        // ];
+
+        // message_broker -> nc_data [
+        //     color="blue"
+        //     label=
+        //         "a3: register\n" +
+        //         "plan"
+        // ];
+
+        // nc_data -> geoserver [
+        //     color="blue"
+        //     label=
+        //         "a4: add plan to\n" +
+        //         "geoserver"
+        // ];
+
+        // nc_data -> message_broker [
+        //     color="blue"
+        //     label=
+        //         "a5: report result of\n" +
+        //         "registering plan"
+        // ];
+
+        // message_broker -> nc_assessment [
+        //     color="blue"
+        //     label=
+        //         "a6: report result of\n" +
+        //         "registering plan"
+        // ];
+
+
+        // // web_app_server -> nc_assessment [
+        // //     color="blue"
+        // //     label=
+        // //         "a7: query for result\n" +
+        // //         "of registering plan"
+        // // ];
+
+
+
+
+
+
+
+
+        // web_app_server -> nc_assessment [
+        //     color="green"
+        //     label=
+        //         "b1: georeference\n" +
+        //         "plan"
+        // ];
+
+        // web_app_server -> nc_assessment [
+        //     color="green"
+        //     label=
+        //         "b6: query for result\n" +
+        //         "of georeferencing plan"
+        // ];
+
+        // web_app_server -> nc_assessment [
+        //     color="red"
+        //     label=
+        //         "c6: query for result\n" +
+        //         "of reclassifying plan"
+        // ];
+
+        // web_app_server -> nc_assessment [
+        //     color="red"
+        //     label=
+        //         "c1: reclassify\n" +
+        //         "plan"
+        // ];
+
+        // web_app_server -> nc_assessment [
+        //     color="yellow"
+        //     label=
+        //         "d1: assess\n" +
+        //         "effects"
+        // ];
+
+
+        // nc_assessment -> message_broker [
+        //     color="green"
+        //     label=
+        //         "b2: georeference\n" +
+        //         "plan"
+        // ];
+
+        // message_broker -> nc_data_tools [
+        //     color="green"
+        //     label=
+        //         "b3: georeference\n" +
+        //         "plan"
+        // ];
+
+        // nc_data_tools -> message_broker [
+        //     color="green"
+        //     label=
+        //         "b4: report result of\n" +
+        //         "georeferencing plan"
+        // ];
+
+        // message_broker -> nc_assessment [
+        //     color="green"
+        //     label=
+        //         "b5: report result of\n" +
+        //         "georeferencing plan"
+        // ];
+
+
+        // nc_assessment -> message_broker [
+        //     color="red"
+        //     label=
+        //         "c2: reclassify\n" +
+        //         "plan"
+        // ];
+
+        // message_broker -> nc_data_tools [
+        //     color="red"
+        //     label=
+        //         "c3: reclassify\n" +
+        //         "plan"
+        // ];
+
+        // nc_data_tools -> message_broker [
+        //     color="red"
+        //     label=
+        //         "c4: report result of\n" +
+        //         "reclassifying plan"
+        // ];
+
+        // message_broker -> nc_assessment [
+        //     color="red"
+        //     label=
+        //         "c5: report result of\n" +
+        //         "reclassifying plan"
+        // ];
+
+
+        // nc_assessment -> message_broker [
+        //     color="yellow"
+        //     label=
+        //         "d2: assess\n" +
+        //         "effects"
+        // ];
+
+        // message_broker -> nc_calculate [
+        //     color="yellow"
+        //     label=
+        //         "d3: assess\n" +
+        //         "effects"
+        // ];
+
+        // nc_calculate -> message_broker [
+        //     color="yellow"
+        //     label=
+        //         "d4: report result of\n" +
+        //         "assessing effects"
+        // ];
+
+        // message_broker -> nc_data [
+        //     color="yellow"
+        //     label=
+        //         "d5: store result of\n" +
+        //         "assessing effects"
+        // ];
+
+        // nc_data -> message_broker [
+        //     color="yellow"
+        //     label=
+        //         "d6: report result of\n" +
+        //         "storing results of\n" +
+        //         "assessing effects"
+        // ];
+
+        // message_broker -> nc_notify [
+        //     color="yellow"
+        //     label=
+        //         "d7: report result of\n" +
+        //         "reclassifying plan"
+        // ];
+
+        // nc_notify -> smtp_server [
+        //     color="yellow"
+        //     label=
+        //         "d8: send e-mail with\n" +
+        //         "links about results"
+        // ]
+
+
+        // message_broker -> nc_monitoring [
+        // ];
+
+
+
+        // // nc_user [
+        // //     label=
+        // //         "nc_user\n" +
+        // //         "[e-mail, hash, ...]"
+        // // ];
+
+        // // nc_task [
+        // //     label=
+        // //         "task\n" +
+        // //         "que of tasks"
+        // // ];
+
+        // // nc_message_broker [
+        // //     label=
+        // //         "message broker"
+        // // ];
+
+
+
+        // // web_app_server -> nc_assessment [
+        // //     label=
+        // //         "query for WMS\n" +
+        // //         "end-point of plan"
+        // // ];
+
+        // // nc_assessment -> nc_user [
+        // // ];
+
+
+
+        // // nc_assessment -> message_broker [
+        // //     label=
+        // //         "query for WMS\n" +
+        // //         "end-point of plan"
+        // // ];
+
+        // // message_broker -> nc_data_tools [
+        // //     label=
+        // //         "convert graphics\n" +
+        // //         "file to GeoTIFF"
+        // // ];
+
+        // // message_broker -> nc_data [
+        // //     label=
+        // //         "query for WMS\n" +
+        // //         "end-point of plan"
+        // // ];
+
+
+
+
+        // nc_calculate [
+        //     label=
+        //         "nc_calculate\n" +
+        //         "assessment calculations\n" +
+        //         "(VITO scripts)"
+        // ];
+
+        // nc_monitoring [
+        //     label=
+        //         "monitor\n" +
+        //         "logging, ..."
+        // ];
+
+        // nc_notify [
+        //     label=
+        //         "nc_notify\n" +
+        //         "of user"
+        // ];
+
+
+    // subgraph cluster_smtp {
+    //     label=
+    //         "e-mail"
+
+    //     smtp_client [
+    //         label=
+    //             "e-mail client"
+    //     ];
+
+    //     smtp_server [
+    //         label=
+    //             "smtp server\n" +
+    //             "(stores e-mails)"
+    //     ];
+
+    //     smtp_client -> smtp_server [
+    //     ];
+
+    // }
+
