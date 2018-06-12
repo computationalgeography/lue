@@ -1,6 +1,6 @@
-#define BOOST_TEST_MODULE lue array same_shape value
+#define BOOST_TEST_MODULE lue array same_shape constant_shape value
 #include <boost/test/unit_test.hpp>
-#include "lue/array/same_shape/value.hpp"
+#include "lue/array/same_shape/constant_shape/value.hpp"
 #include "lue/test.hpp"
 
 
@@ -20,8 +20,8 @@ public:
           _array_shape{_nr_rows, _nr_cols},
           _file{std::make_unique<lue::hdf5::File>(
             lue::hdf5::create_file(_filename))},
-          _value{std::make_unique<lue::same_shape::Value>(
-            lue::same_shape::create_value(
+          _value{std::make_unique<lue::same_shape::constant_shape::Value>(
+            lue::same_shape::constant_shape::create_value(
                 *_file, _value_name, _datatype, _array_shape))}
     {
     }
@@ -60,7 +60,7 @@ private:
     std::size_t const _nr_cols = 2;
     lue::hdf5::Shape const _array_shape{_nr_rows, _nr_cols};
     std::unique_ptr<lue::hdf5::File> _file;
-    std::unique_ptr<lue::same_shape::Value> _value;
+    std::unique_ptr<lue::same_shape::constant_shape::Value> _value;
 
 };
 

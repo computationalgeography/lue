@@ -6,14 +6,16 @@
 
 namespace lue {
 namespace same_shape {
+namespace constant_shape {
 
 /*!
-    @brief      Class for storing same shape x constant value object arrays
-    @todo       Refactor the implementation with
-                same_shape::constant_shape::Value
+    @brief      Class for storing same shape x variable value x constant
+                shape object arrays
+    @todo       Refactor the implementation with same_shape::Value
 
     The underlying HDF5 dataset has one dimension more than the rank of the
-    individual object arrays. This first dimension represents the objects.
+    individual object arrays. This first dimension represents the objects
+    per active set.
 */
 class Value:
     public Array
@@ -91,5 +93,6 @@ Value              create_value        (hdf5::Group& parent,
                                         hdf5::Datatype const& memory_datatype,
                                         hdf5::Shape const& array_shape);
 
+}  // namespace constant_shape
 }  // namespace same_shape
 }  // namespace lue
