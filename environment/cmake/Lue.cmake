@@ -18,6 +18,7 @@ include(LueMacro)
 #   GNU/Clang: -Werror
 add_compile_options(
     "$<$<CXX_COMPILER_ID:MSVC>:/W3>"
+    "$<$<CXX_COMPILER_ID:Clang>:-Weverything>"
     "$<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>>:-W;-Wall;-fvisibility=hidden>"
 )
 
