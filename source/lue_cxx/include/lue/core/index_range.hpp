@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/core/index.hpp"
+#include "lue/core/define.hpp"
 
 
 namespace lue {

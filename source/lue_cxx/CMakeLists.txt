@@ -14,18 +14,18 @@ add_library(lue STATIC
     # alway 1, and so, this array is not necessary.
     # src/array/active_set_index
 
+    src/array/value_group
 
     src/array/same_shape/value
     src/array/same_shape/constant_shape/value
     src/array/same_shape/variable_shape/value
 
-    # src/array/same_shape/variable_shape/active_id
-
-
-    # src/array/different_shape/value
+    src/array/different_shape/value
     # src/array/different_shape/constant_shape/value
     # src/array/different_shape/variable_shape/value
 
+
+    # src/array/same_shape/variable_shape/active_id
 
     # src/array/different_shape/constant_shape/active_object_index  # per object in active set, idx of object array in value_o
 
