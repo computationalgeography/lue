@@ -13,11 +13,7 @@ Value::Value(
     hdf5::Group const& parent,
     std::string const& name)
 :
-    hdf5::Group{parent, name},
-    _file_datatype{hdf5::decode_datatype(
-        attributes().read<std::vector<unsigned char>>(datatype_tag))},
-    _memory_datatype{hdf5::memory_datatype(_file_datatype)},
-    _rank{attributes().read<Rank>(rank_tag)},
+    ValueGroup{parent, name},
     _nr_locations_in_time{attributes().read<Count>(nr_locations_in_time_tag)}
 
 {
@@ -32,11 +28,7 @@ Value::Value(
     std::string const& name,
     hdf5::Datatype const& memory_datatype)
 :
-    hdf5::Group{parent, name},
-    _file_datatype{hdf5::decode_datatype(
-        attributes().read<std::vector<unsigned char>>(datatype_tag))},
-    _memory_datatype{memory_datatype},
-    _rank{attributes().read<Rank>(rank_tag)},
+    ValueGroup{parent, name, memory_datatype},
     _nr_locations_in_time{attributes().read<Count>(nr_locations_in_time_tag)}
 
 {
@@ -44,35 +36,12 @@ Value::Value(
 
 
 Value::Value(
-    Group&& group,
-    hdf5::Datatype const& memory_datatype)
+    ValueGroup&& group)
 :
-    Group{std::forward<hdf5::Group>(group)},
-    _file_datatype{hdf5::decode_datatype(
-        attributes().read<std::vector<unsigned char>>(datatype_tag))},
-    _memory_datatype{memory_datatype},
-    _rank{attributes().read<Rank>(rank_tag)},
+    ValueGroup{std::forward<ValueGroup>(group)},
     _nr_locations_in_time{attributes().read<Count>(nr_locations_in_time_tag)}
 
 {
-}
-
-
-hdf5::Datatype const& Value::file_datatype() const
-{
-    return _file_datatype;
-}
-
-
-hdf5::Datatype const& Value::memory_datatype() const
-{
-    return _memory_datatype;
-}
-
-
-Rank Value::rank() const
-{
-    return _rank;
 }
 
 
@@ -94,7 +63,7 @@ same_shape::Value Value::reserve(
 {
     std::string const name = std::to_string(idx);
     auto value = same_shape::create_value(
-        *this, name, _file_datatype, _memory_datatype, array_shape);
+        *this, name, file_datatype(), memory_datatype(), array_shape);
     value.reserve(nr_arrays);
     attributes().write<Count>(
         nr_locations_in_time_tag, ++_nr_locations_in_time);
@@ -138,14 +107,12 @@ Value create_value(
     hdf5::Datatype const& memory_datatype,
     Rank const rank)
 {
-    auto group = hdf5::create_group(parent, name);
+    auto group = create_value_group(
+        parent, name, file_datatype, memory_datatype, rank);
 
-    group.attributes().write<std::vector<unsigned char>>(
-        datatype_tag, hdf5::encode_datatype(file_datatype));
-    group.attributes().write<Rank>(rank_tag, rank);
     group.attributes().write<Count>(nr_locations_in_time_tag, 0);
 
-    return Value{std::move(group), memory_datatype};
+    return Value{std::move(group)};
 }
 
 }  // namespace variable_shape

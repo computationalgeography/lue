@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/array/same_shape/value.hpp"
+#include "lue/array/value_group.hpp"
 
 
 namespace lue {
@@ -14,7 +15,7 @@ namespace variable_shape {
     an HDF5 dataset with the object arrays of the active objects.
 */
 class Value:
-    public hdf5::Group
+    public ValueGroup
 {
 
 public:
@@ -26,8 +27,7 @@ public:
                                         std::string const& name,
                                         hdf5::Datatype const& memory_datatype);
 
-                   Value               (Group&& group,
-                                        hdf5::Datatype const& memory_datatype);
+                   Value               (ValueGroup&& group);
 
                    Value               (Value const&)=delete;
 
@@ -38,14 +38,6 @@ public:
     Value&         operator=           (Value const&)=delete;
 
     Value&         operator=           (Value&&)=default;
-
-    hdf5::Datatype const&
-                   file_datatype       () const;
-
-    hdf5::Datatype const&
-                   memory_datatype     () const;
-
-    Rank           rank                () const;
 
     Count          nr_locations_in_time() const;
 
@@ -58,15 +50,6 @@ public:
                    operator[]          (Index idx);
 
 private:
-
-    //! In-file datatype
-    hdf5::Datatype const _file_datatype;
-
-    //! In-memory datatype
-    hdf5::Datatype const _memory_datatype;
-
-    //! Rank of the object arrays
-    Rank const     _rank;
 
     Count          _nr_locations_in_time;
 
