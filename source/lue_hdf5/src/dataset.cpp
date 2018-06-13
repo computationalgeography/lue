@@ -59,7 +59,7 @@ void Dataset::TransferPropertyList::set_transfer_mode(
     @brief      Construct a dataset instance based on an existing
                 HDF5 dataset
     @exception  std::runtime_error In case dataset named @a name and
-                located at @a location cannot be opened
+                located at @a parent cannot be opened
 */
 Dataset::Dataset(
     Group const& parent,
@@ -244,7 +244,6 @@ void Dataset::write(
 /*!
     @brief      .
     @param      hyperslab Selection of file dataspace to write to
-    @return     .
     @exception  .
 */
 void Dataset::write(
@@ -322,18 +321,18 @@ void Dataset::fill(
 
 
 bool dataset_exists(
-    Identifier const& identifier,
+    Identifier const& parent,
     std::string const& name)
 {
-    return link_exists(identifier, name) && link_is_dataset(identifier, name);
+    return link_exists(parent, name) && link_is_dataset(parent, name);
 }
 
 
 Dataset open_dataset(
-    Identifier const& location,
+    Identifier const& parent,
     std::string const& name)
 {
-    Identifier dataset_location(::H5Dopen(location, name.c_str(),
+    Identifier dataset_location(::H5Dopen(parent, name.c_str(),
         H5P_DEFAULT), ::H5Dclose);
 
     if(!dataset_location.is_valid()) {
@@ -347,16 +346,17 @@ Dataset open_dataset(
 /*!
     @brief      Add an HDF5 dataset and return the corresponding Dataset
                 instance
-    @param      identifier
-    @param      name
-    @param      datatype
-    @param      dataspace
-    @param      creation_property_list
-    @return     .
-    @exception  .
+    @param      parent Id of parent object of dataset
+    @param      name Name of dataset
+    @param      datatype Datatype of elements in dataset
+    @param      dataspace Dataspace of dataset
+    @param      creation_property_list Creation properties
+    @return     Newly created dataset
+    @exception  std::runtime_error In case dataset already exists,
+                or cannot be created
 */
 Dataset create_dataset(
-    Identifier const& identifier,
+    Identifier const& parent,
     std::string const& name,
     Datatype const& datatype,
     Dataspace const& dataspace,
@@ -364,11 +364,11 @@ Dataset create_dataset(
 {
     assert(datatype.is_standard());
 
-    if(dataset_exists(identifier, name)) {
+    if(dataset_exists(parent, name)) {
         throw std::runtime_error("Dataset " + name + " already exists");
     }
 
-    Identifier dataset_location(::H5Dcreate(identifier, name.c_str(),
+    Identifier dataset_location(::H5Dcreate(parent, name.c_str(),
         datatype.id(), dataspace.id(), H5P_DEFAULT,
         creation_property_list.id(), H5P_DEFAULT), ::H5Dclose);
 

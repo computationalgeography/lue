@@ -47,7 +47,7 @@ Value::Value(
     @brief      Reserve space for @a nr_arrays object arrays
 */
 void Value::reserve(
-    hsize_t const nr_arrays)
+    Count const nr_arrays)
 {
     auto shape = this->shape();
     shape[0] = nr_arrays;
@@ -59,7 +59,7 @@ void Value::reserve(
 /*!
     @brief      Return number of arrays for which space is reserved
 */
-hsize_t Value::nr_arrays() const
+Count Value::nr_arrays() const
 {
     return shape()[0];
 }

@@ -6,7 +6,7 @@
 using namespace lue::hdf5;
 
 
-Shape test_chunk(
+static Shape test_chunk(
     Shape const& value_shape)
 {
     using T = std::int32_t;

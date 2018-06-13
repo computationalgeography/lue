@@ -135,7 +135,7 @@ herr_t retrieve_object_names(
 
     if(infobuf.type == H5O_TYPE_GROUP || infobuf.type == H5O_TYPE_DATASET) {
         data_->_names[data_->_nr_names] =
-            (char*)malloc((std::strlen(name) + 1) * sizeof(char));
+            static_cast<char*>(malloc((std::strlen(name) + 1) * sizeof(char)));
         std::strcpy(data_->_names[data_->_nr_names], name);
         ++data_->_nr_names;
     }
@@ -161,7 +161,7 @@ herr_t retrieve_group_names(
 
     if(infobuf.type == H5O_TYPE_GROUP) {
         data_->_names[data_->_nr_names] =
-            (char*)malloc((std::strlen(name) + 1) * sizeof(char));
+            static_cast<char*>(malloc((std::strlen(name) + 1) * sizeof(char)));
         std::strcpy(data_->_names[data_->_nr_names], name);
         ++data_->_nr_names;
     }
