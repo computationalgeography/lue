@@ -15,9 +15,7 @@ public:
           _filename{"value.h5"},
           _value_name{"my_value"},
           _datatype{lue::hdf5::NativeDatatypeTraits<int32_t>::type_id()},
-          // _nr_locations_in_time{3},
           _rank{2},
-          // _array_shape{3, 2, 5, 4, 7, 6},
           _file{std::make_unique<lue::hdf5::File>(
             lue::hdf5::create_file(_filename))},
           _value{std::make_unique<lue::same_shape::variable_shape::Value>(
@@ -50,9 +48,7 @@ private:
     std::string const _filename;
     std::string const _value_name;
     lue::hdf5::Datatype const _datatype;
-    // hsize_t const _nr_locations_in_time;
     lue::Rank const _rank;
-    // lue::hdf5::Shape const _array_shape;
     std::unique_ptr<lue::hdf5::File> _file;
     std::unique_ptr<lue::same_shape::variable_shape::Value> _value;
 
@@ -63,12 +59,11 @@ BOOST_FIXTURE_TEST_CASE(create_value, Fixture)
 {
     auto const& value = this->value();
 
-    BOOST_CHECK_EQUAL(value.rank(), rank());
-    BOOST_CHECK_EQUAL(value.nr_locations_in_time(), 0);
-
     BOOST_CHECK(value.memory_datatype() == datatype());
     BOOST_CHECK(
         value.file_datatype() == lue::hdf5::file_datatype(datatype()));
+    BOOST_CHECK_EQUAL(value.rank(), rank());
+    BOOST_CHECK_EQUAL(value.nr_locations_in_time(), 0);
 }
 
 

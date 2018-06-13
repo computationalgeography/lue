@@ -7,6 +7,9 @@ namespace lue {
 
 using Index = hsize_t;
 
+using ID = hsize_t;
+using IDs = std::vector<ID>;
+
 using Rank = int;
 
 using Count = hsize_t;

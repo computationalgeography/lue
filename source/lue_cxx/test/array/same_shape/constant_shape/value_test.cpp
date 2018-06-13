@@ -52,13 +52,12 @@ public:
 
 private:
 
-    std::string const _filename{"value.h5"};
-    std::string const _value_name{"my_value"};
-    lue::hdf5::Datatype const _datatype{
-        lue::hdf5::NativeDatatypeTraits<int32_t>::type_id()};
-    std::size_t const _nr_rows = 3;
-    std::size_t const _nr_cols = 2;
-    lue::hdf5::Shape const _array_shape{_nr_rows, _nr_cols};
+    std::string const _filename;
+    std::string const _value_name;
+    lue::hdf5::Datatype const _datatype;
+    std::size_t const _nr_rows;
+    std::size_t const _nr_cols;
+    lue::hdf5::Shape const _array_shape;
     std::unique_ptr<lue::hdf5::File> _file;
     std::unique_ptr<lue::same_shape::constant_shape::Value> _value;
 
@@ -69,11 +68,11 @@ BOOST_FIXTURE_TEST_CASE(create_value, Fixture)
 {
     auto const& value = this->value();
 
-    BOOST_CHECK_EQUAL(value.nr_arrays(), 0);
-    BOOST_CHECK(value.array_shape() == array_shape());
     BOOST_CHECK(value.memory_datatype() == datatype());
     BOOST_CHECK(
         value.file_datatype() == lue::hdf5::file_datatype(datatype()));
+    BOOST_CHECK_EQUAL(value.nr_arrays(), 0);
+    BOOST_CHECK(value.array_shape() == array_shape());
 }
 
 

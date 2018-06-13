@@ -11,6 +11,7 @@ namespace lue {
 static std::string const datatype_tag = "lue_datatype";
 // static std::string const domain_tag = "lue_domain";
 // static std::string const ids_tag = "lue_ids";
+static std::string const nr_objects_tag = "lue_nr_objects";
 static std::string const nr_locations_in_time_tag = "lue_nr_locations_in_time";
 // static std::string const nr_items_tag = "lue_nr_items";
 // static std::string const nr_units_tag = "lue_nr_units";
