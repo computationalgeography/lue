@@ -205,8 +205,6 @@ std::size_t Datatype::size() const
 
 /*!
     @brief      Retrieve the encoding of a string datatype
-    @param      .
-    @return     .
     @exception  std::runtime_error In case the encoding cannot be
                 retrieved (no string datatype?)
 */

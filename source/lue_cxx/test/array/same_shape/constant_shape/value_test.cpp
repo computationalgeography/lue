@@ -81,7 +81,7 @@ BOOST_FIXTURE_TEST_CASE(update_all_object_arrays, Fixture)
 {
     auto& value = this->value();
 
-    hsize_t const nr_arrays = 3;
+    lue::Count const nr_arrays = 3;
     value.reserve(nr_arrays);
 
     BOOST_CHECK_EQUAL(value.nr_arrays(), nr_arrays);
@@ -117,7 +117,7 @@ BOOST_FIXTURE_TEST_CASE(update_range_of_object_arrays, Fixture)
 {
     auto& value = this->value();
 
-    hsize_t const nr_arrays = 3;
+    lue::Count const nr_arrays = 3;
     value.reserve(nr_arrays);
 
     BOOST_CHECK_EQUAL(value.nr_arrays(), nr_arrays);
@@ -147,7 +147,7 @@ BOOST_FIXTURE_TEST_CASE(update_individual_object_arrays, Fixture)
 {
     auto& value = this->value();
 
-    hsize_t const nr_arrays = 3;
+    lue::Count const nr_arrays = 3;
     value.reserve(nr_arrays);
 
     BOOST_CHECK_EQUAL(value.nr_arrays(), nr_arrays);

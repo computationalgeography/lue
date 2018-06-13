@@ -12,8 +12,9 @@ namespace same_shape {
     @todo       Refactor the implementation with
                 same_shape::constant_shape::Value
 
-    The underlying HDF5 dataset has one dimension more than the rank of the
-    individual object arrays. This first dimension represents the objects.
+    The implementation uses an HDF5 dataset with one dimension more than
+    the rank of the individual object arrays. This first dimension
+    represents the objects.
 */
 class Value:
     public Array
@@ -40,9 +41,9 @@ public:
 
     Value&         operator=           (Value&&)=default;
 
-    void           reserve             (hsize_t nr_arrays);
+    void           reserve             (Count nr_arrays);
 
-    hsize_t        nr_arrays           () const;
+    Count          nr_arrays           () const;
 
     hdf5::Shape    array_shape         () const;
 

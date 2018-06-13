@@ -117,13 +117,13 @@ private:
 };
 
 
-bool               dataset_exists      (Identifier const& location,
+bool               dataset_exists      (Identifier const& parent,
                                         std::string const& name);
 
-Dataset            open_dataset        (Identifier const& location,
+Dataset            open_dataset        (Identifier const& parent,
                                         std::string const& name);
 
-Dataset            create_dataset      (Identifier const& identifier,
+Dataset            create_dataset      (Identifier const& parent,
                                         std::string const& name,
                                         Datatype const& datatype,
                                         Dataspace const& dataspace,
