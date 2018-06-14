@@ -22,7 +22,7 @@ add_library(lue STATIC
 
     src/info/identity/active_id
     src/info/identity/active_set_index
-    # src/info/identity/active_object_index
+    src/info/identity/active_object_index
 
     # src/info/time/point
     # src/info/time/box
