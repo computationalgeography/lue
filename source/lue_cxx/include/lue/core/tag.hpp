@@ -15,6 +15,7 @@ static std::string const nr_objects_tag = "lue_nr_objects";
 static std::string const nr_locations_in_time_tag = "lue_nr_locations_in_time";
 static std::string const active_id_tag = "lue_active_id";
 static std::string const active_set_index_tag = "lue_active_set_index";
+static std::string const active_object_index_tag = "lue_active_object_index";
 // static std::string const nr_items_tag = "lue_nr_items";
 // static std::string const nr_units_tag = "lue_nr_units";
 // static std::string const occurrence_tag = "lue_occurrence";

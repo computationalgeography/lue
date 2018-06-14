@@ -12,6 +12,7 @@ add_unit_tests(
 
         info/identity/active_id_test
         info/identity/active_set_index_test
+        info/identity/active_object_index_test
 
         # info/...
         # object/...

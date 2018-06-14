@@ -22,6 +22,7 @@ namespace lue {
     - same shape x constant value
     - same shape x constant shape
     - same shape x variable shape
+    - different shape x constant shape
 */
 class ActiveID:
     public same_shape::constant_shape::Value

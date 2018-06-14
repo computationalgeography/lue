@@ -26,13 +26,6 @@
     @dir    lue_cxx/include/lue/info
     @brief  Code related to spatio-temporal object information
 
-    In this directory, code is stored for handling spatio-temporal
-    object information:
-    - Identity
-    - Locations in time
-    - Locations in space
-    - Properties
-
     # Identity
     ## Classes
     - lue::ActiveID
@@ -40,16 +33,13 @@
     - lue::ActiveObjectIndex
 
 
-    ## lue::info::ActiveObjectID
-    Per object in active set, idx of object array in value_o.
-
-    This is only needed for the different shape x constant shape case.
-
     # Locations in time
     ## Classes
 
+
     # Locations in space
     ## Classes
+
 
     # Properties
     ## Classes
