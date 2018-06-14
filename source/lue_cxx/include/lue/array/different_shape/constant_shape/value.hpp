@@ -1,17 +1,21 @@
 #pragma once
-#include "lue/core/array.hpp"
 #include "lue/array/value_group.hpp"
-#include "lue/core/define.hpp"
+#include "lue/array/same_shape/constant_shape/value.hpp"
 
 
 namespace lue {
 namespace different_shape {
+namespace constant_shape {
 
 /*!
-    @brief      Class for storing different shape x constant value
+    @brief      Class for storing different shape x constant shape
                 object arrays
 
-    The implementation uses an HDF5 dataset per object array.
+    The implementation uses an HDF5 dataset per object. This dataset has
+    one dimension more than the rank of the object arrays. This first
+    dimension represents the time. The first location in time for which
+    an object array is stored for an object is stored at the first index
+    in the object's corresponding HDF5 dataset, etc.
 */
 class Value:
     public ValueGroup
@@ -42,14 +46,23 @@ public:
 
     void           reserve             (Count nr_objects,
                                         ID const* ids,
-                                        hdf5::Shape const* shapes);
+                                        hdf5::Shape const* shapes,
+                                        Count const* nr_locations_in_time);
 
-    void           reserve             (ID id,
-                                        hdf5::Shape const& shape);
+    same_shape::constant_shape::Value
+                   reserve             (ID id,
+                                        hdf5::Shape const& shape,
+                                        Count const nr_locations_in_time);
 
-    Array          operator[]          (ID id);
+    same_shape::constant_shape::Value
+                   operator[]          (ID id);
 
 private:
+
+    same_shape::constant_shape::Value
+                   reserve_            (ID id,
+                                        hdf5::Shape const& shape,
+                                        Count const nr_locations_in_time);
 
     Count          _nr_objects;
 
@@ -67,5 +80,6 @@ Value              create_value        (hdf5::Group& parent,
                                         hdf5::Datatype const& memory_datatype,
                                         Rank rank);
 
+}  // namespace constant_shape
 }  // namespace different_shape
 }  // namespace lue

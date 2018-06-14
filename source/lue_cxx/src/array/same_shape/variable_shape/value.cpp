@@ -57,8 +57,8 @@ Count Value::nr_locations_in_time() const
                 be reserved
 */
 same_shape::Value Value::reserve(
-    Index idx,
-    Count nr_arrays,
+    Index const idx,
+    Count const nr_arrays,
     hdf5::Shape const& array_shape)
 {
     std::string const name = std::to_string(idx);
@@ -73,7 +73,7 @@ same_shape::Value Value::reserve(
 
 
 same_shape::Value Value::operator[](
-    Index idx)
+    Index const idx)
 {
     std::string const name = std::to_string(idx);
 
