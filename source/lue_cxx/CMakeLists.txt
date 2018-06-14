@@ -10,7 +10,7 @@ add_library(lue STATIC
     src/array/same_shape/variable_shape/value
     src/array/different_shape/value
     src/array/different_shape/constant_shape/value
-    # src/array/different_shape/variable_shape/value
+    src/array/different_shape/variable_shape/value
 
 
 
