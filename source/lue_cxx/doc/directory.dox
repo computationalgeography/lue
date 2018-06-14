@@ -34,24 +34,11 @@
     - Properties
 
     # Identity
-
     ## Classes
     - lue::ActiveID
-    - lue::ActiveSetID
-    - lue::ActiveObjectID
+    - lue::ActiveSetIndex
+    - lue::ActiveObjectIndex
 
-
-    ## lue::info::ActiveSetID
-    Per idx of location in time, idx of first object in active set.
-
-    In case of asynchronous occurrence, the size of the active set is alway
-    1, and so, this array is not necessary.
-
-    In case of a constant collection, only the IDs of a single active
-    set is stored and, hence, this dataset is not needed.
-
-    This is needed for the same shape x constant shape, and same shape x
-    variable shape cases.
 
     ## lue::info::ActiveObjectID
     Per object in active set, idx of object array in value_o.
@@ -59,10 +46,13 @@
     This is only needed for the different shape x constant shape case.
 
     # Locations in time
+    ## Classes
 
     # Locations in space
+    ## Classes
 
     # Properties
+    ## Classes
 
 */
 
