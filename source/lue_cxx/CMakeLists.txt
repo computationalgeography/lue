@@ -20,7 +20,7 @@ add_library(lue STATIC
     # - Locations in space
     # - Property
 
-    # src/info/identity/active_id
+    src/info/identity/active_id
     # src/info/identity/active_set_index
     # src/info/identity/active_object_index
 

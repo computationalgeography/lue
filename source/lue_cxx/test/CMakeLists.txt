@@ -10,6 +10,8 @@ add_unit_tests(
         array/different_shape/constant_shape/value_test
         array/different_shape/variable_shape/value_test
 
+        info/identity/active_id_test
+
         # info/...
         # object/...
 
