@@ -7,6 +7,8 @@ add_unit_tests(
         array/same_shape/variable_shape/value_test
 
         array/different_shape/value_test
+        array/different_shape/constant_shape/value_test
+        # array/different_shape/different_shape/value_test
 
         # info/...
         # object/...
