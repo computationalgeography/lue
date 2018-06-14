@@ -6,18 +6,16 @@ namespace lue {
 
 /*!
     @brief      An ID per object in the active set
-    @param      .
-    @return     .
-    @exception  .
 
     In the ActiveID dataset, IDs can be stored of objects that are active
     at a given location in time. Multiple sets of object IDs can be stored
     sequentially. The index of the ID of the first active object in a set
-    can be stored using the ActiveSetID class.
+    can be stored using the ActiveSetIndex class.
 
     In case related information (IDs of the active objects, locations
     in space, properties) does not change through time, only a single
-    set of IDs need to be stored.
+    set of IDs need to be stored. In that case, ActiveSetIndex is
+    not needed.
 
     Tracking the IDs of the active objects is needed in combination with
     the folowing object array kinds:
