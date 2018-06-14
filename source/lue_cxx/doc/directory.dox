@@ -36,17 +36,10 @@
     # Identity
 
     ## Classes
-    - lue::info::ActiveID
-    - lue::info::ActiveSetID
-    - lue::info::ActiveObjectID
+    - lue::ActiveID
+    - lue::ActiveSetID
+    - lue::ActiveObjectID
 
-    ## lue::info::ActiveID
-    Per object in active set, ID. In case related information does not
-    change through time, or when the collection of active objects does
-    not change through time, the IDs of a single active set are stored.
-
-    This is needed for the same shape x constant value, same shape x
-    constant shape, and same shape x variable shape cases.
 
     ## lue::info::ActiveSetID
     Per idx of location in time, idx of first object in active set.
