@@ -1,9 +1,9 @@
 /*!
     @dir    lue_cxx/include/lue/array
-    @brief  Code related to object arrays
+    @brief  Code related to storing object arrays
 
     ## Design
-    - Seperate object array packing from active object tracking. Some
+    - Seperate *object array packing* from *active object tracking*. Some
         optimizations can be made, which should be handled at a higher
         level. So, nothing in the interface should suggest how active
         objects are tracked.
@@ -11,6 +11,14 @@
         array is stored. Sometimes this information is implied by the
         context. How to determine the object array kind is outside of
         the scope of this abstraction layer.
+
+    ## Classes
+    - lue::same_shape::Value
+    - lue::same_shape::constant_shape::Value
+    - lue::same_shape::variable_shape::Value
+    - lue::different_shape::Value
+    - lue::different_shape::constant_shape::Value
+    - lue::different_shape::variable_shape::Value
 */
 
 
@@ -26,6 +34,11 @@
     - Properties
 
     # Identity
+
+    ## Classes
+    - lue::info::ActiveID
+    - lue::info::ActiveSetID
+    - lue::info::ActiveObjectID
 
     ## lue::info::ActiveID
     Per object in active set, ID. In case related information does not
