@@ -27,11 +27,11 @@ public:
 
     ~Fixture()
     {
-        // // Guarantees:
-        // // - File does not exist after teardown
-        // remove_file();
+        // Guarantees:
+        // - File does not exist after teardown
+        remove_file();
 
-        // BOOST_CHECK(!lue::hdf5::file_exists(_filename));
+        BOOST_CHECK(!lue::hdf5::file_exists(_filename));
     }
 
 
