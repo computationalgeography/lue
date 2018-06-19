@@ -1,9 +1,9 @@
-#include "lue/info/property/same_shape/property.hpp"
+#include "lue/info/property/different_shape/property.hpp"
 #include "lue/core/tag.hpp"
 
 
 namespace lue {
-namespace same_shape {
+namespace different_shape {
 
 Property::Property(
     hdf5::Group const& parent,
@@ -30,36 +30,24 @@ Property::Property(
 
 Property::Property(
     PropertyGroup&& group,
-    same_shape::Value&& value):
+    different_shape::Value&& value):
 
     PropertyGroup{std::forward<PropertyGroup>(group)},
-    _value{std::forward<same_shape::Value>(value)}
+    _value{std::forward<different_shape::Value>(value)}
 
 {
 }
 
 
-same_shape::Value const& Property::value() const
+different_shape::Value const& Property::value() const
 {
     return _value;
 }
 
 
-same_shape::Value& Property::value()
+different_shape::Value& Property::value()
 {
     return _value;
-}
-
-
-Property create_property(
-    hdf5::Group& parent,
-    std::string const& name,
-    hdf5::Datatype const& memory_datatype)
-{
-    return create_property(
-        parent, name,
-        file_datatype(memory_datatype), memory_datatype,
-        hdf5::Shape{});
 }
 
 
@@ -67,25 +55,12 @@ Property create_property(
     hdf5::Group& parent,
     std::string const& name,
     hdf5::Datatype const& memory_datatype,
-    hdf5::Shape const& array_shape)
+    Rank const rank)
 {
     return create_property(
         parent, name,
         file_datatype(memory_datatype), memory_datatype,
-        array_shape);
-}
-
-
-Property create_property(
-    hdf5::Group& parent,
-    std::string const& name,
-    hdf5::Datatype const& file_datatype,
-    hdf5::Datatype const& memory_datatype)
-{
-    return create_property(
-        parent, name,
-        file_datatype, memory_datatype,
-        hdf5::Shape{});
+        rank);
 }
 
 
@@ -94,14 +69,14 @@ Property create_property(
     std::string const& name,
     hdf5::Datatype const& file_datatype,
     hdf5::Datatype const& memory_datatype,
-    hdf5::Shape const& array_shape)
+    Rank const rank)
 {
     auto group = create_property_group(parent, name);
     auto value = create_value(
-        group, value_tag, file_datatype, memory_datatype, array_shape);
+        group, value_tag, file_datatype, memory_datatype, rank);
 
     return Property{std::move(group), std::move(value)};
 }
 
-}  // namespace same_shape
+}  // namespace different_shape
 }  // namespace lue
