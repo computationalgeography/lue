@@ -43,6 +43,8 @@
     ## Classes
     - lue::StationarySpacePoint
     - lue::MobileSpacePoint
+    - lue::StationarySpaceBox
+    - lue::MobileSpaceBox
 
 
     # Properties
