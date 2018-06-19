@@ -21,7 +21,7 @@ add_library(lue STATIC
     src/info/identity/active_object_index
 
     src/info/time/time_point
-    # src/info/time/time_box
+    src/info/time/time_box
     # src/info/time/time_grid
 
     # src/info/space/point
