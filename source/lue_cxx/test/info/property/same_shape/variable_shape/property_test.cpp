@@ -1,6 +1,6 @@
-#define BOOST_TEST_MODULE lue info property different_shape property
+#define BOOST_TEST_MODULE lue info property same_shape variable_shape property
 #include <boost/test/unit_test.hpp>
-#include "lue/info/property/different_shape/property.hpp"
+#include "lue/info/property/same_shape/variable_shape/property.hpp"
 #include "lue/test.hpp"
 
 
@@ -18,8 +18,8 @@ public:
         _rank{2},
         _file{std::make_unique<lue::hdf5::File>(
             lue::hdf5::create_file(_filename))},
-        _property{std::make_unique<lue::different_shape::Property>(
-            lue::different_shape::create_property(
+        _property{std::make_unique<lue::same_shape::variable_shape::Property>(
+            lue::same_shape::variable_shape::create_property(
                 *_file, _name, _datatype, _rank))}
     {
     }
@@ -55,7 +55,7 @@ private:
     lue::hdf5::Datatype const _datatype;
     lue::Rank const _rank;
     std::unique_ptr<lue::hdf5::File> _file;
-    std::unique_ptr<lue::different_shape::Property> _property;
+    std::unique_ptr<lue::same_shape::variable_shape::Property> _property;
 
 };
 
