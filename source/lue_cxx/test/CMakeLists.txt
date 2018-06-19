@@ -2,6 +2,11 @@ add_unit_tests(
     SCOPE lue_cxx
     NAMES
 
+        core/time/clock_test
+        core/time/duration_test
+        core/time/tick_period_test
+        core/time/time_point_test
+
         array/same_shape/value_test
         array/same_shape/constant_shape/value_test
         array/same_shape/variable_shape/value_test
@@ -13,8 +18,8 @@ add_unit_tests(
         info/identity/active_id_test
         info/identity/active_set_index_test
         info/identity/active_object_index_test
+        info/time/time_point_test
 
-        # info/...
         # object/...
 
     LINK_LIBRARIES

@@ -4,7 +4,7 @@
 
 namespace lue {
 
-// static std::string const coordinates_tag = "lue_coordinates";
+static std::string const coordinates_tag = "lue_coordinates";
 // static std::string const clock_tag = "lue_clock";
 // static std::string const collection_variability_tag =
 //     "lue_collection_variability";

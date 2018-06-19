@@ -2,8 +2,11 @@ add_test_conditionally(test)
 
 add_library(lue STATIC
 
+    # Core stuff ---------------------------------------------------------------
     src/core/array
+    src/core/clock
 
+    # Object arrays ------------------------------------------------------------
     src/array/value_group
     src/array/same_shape/value
     src/array/same_shape/constant_shape/value
@@ -12,21 +15,14 @@ add_library(lue STATIC
     src/array/different_shape/constant_shape/value
     src/array/different_shape/variable_shape/value
 
-
-
-    # Spatio-temporal object information: info
-    # - Identity
-    # - Locations in time
-    # - Locations in space
-    # - Property
-
+    # Spatio-temporal object information ---------------------------------------
     src/info/identity/active_id
     src/info/identity/active_set_index
     src/info/identity/active_object_index
 
-    # src/info/time/point
-    # src/info/time/box
-    # src/info/time/grid
+    src/info/time/time_point
+    # src/info/time/time_box
+    # src/info/time/time_grid
 
     # src/info/space/point
     # src/info/space/box
@@ -35,6 +31,7 @@ add_library(lue STATIC
     # src/info/property/...
 
 
+    # Spatio-temporal objects --------------------------------------------------
     # src/object/property_set
     # src/object/phenomenon
     # src/object/universe
