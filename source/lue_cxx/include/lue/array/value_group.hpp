@@ -11,13 +11,6 @@ class ValueGroup:
 
 public:
 
-                   ValueGroup          (hdf5::Group const& parent,
-                                        std::string const& name);
-
-                   ValueGroup          (hdf5::Group const& parent,
-                                        std::string const& name,
-                                        hdf5::Datatype const& memory_datatype);
-
                    ValueGroup          (Group&& group,
                                         hdf5::Datatype const& memory_datatype);
 
@@ -38,6 +31,15 @@ public:
                    memory_datatype     () const;
 
     Rank           rank                () const;
+
+protected:
+
+                   ValueGroup          (hdf5::Group const& parent,
+                                        std::string const& name);
+
+                   ValueGroup          (hdf5::Group const& parent,
+                                        std::string const& name,
+                                        hdf5::Datatype const& memory_datatype);
 
 private:
 
