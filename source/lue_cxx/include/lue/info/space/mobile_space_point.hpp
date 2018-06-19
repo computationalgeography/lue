@@ -1,0 +1,49 @@
+#pragma once
+#include "lue/array/same_shape/constant_shape/value.hpp"
+
+
+namespace lue {
+
+/*!
+    - Zero or more space points per item
+    - Each space point has a unique location in space
+*/
+class MobileSpacePoint:
+    public same_shape::constant_shape::Value
+{
+
+public:
+
+                   MobileSpacePoint    (hdf5::Group const& parent,
+                                        hdf5::Datatype const& memory_datatype);
+
+                   MobileSpacePoint    (MobileSpacePoint const&)=delete;
+
+                   MobileSpacePoint    (MobileSpacePoint&&)=default;
+
+                   MobileSpacePoint    (same_shape::constant_shape::Value&&
+                                            value);
+
+                   ~MobileSpacePoint   ()=default;
+
+    MobileSpacePoint& operator=        (MobileSpacePoint const&)=delete;
+
+    MobileSpacePoint& operator=        (MobileSpacePoint&&)=default;
+
+private:
+
+};
+
+
+MobileSpacePoint   create_mobile_space_point(
+                                        hdf5::Group& parent,
+                                        hdf5::Datatype const& memory_datatype,
+                                        std::size_t rank);
+
+MobileSpacePoint   create_mobile_space_point(
+                                        hdf5::Group& parent,
+                                        hdf5::Datatype const& file_datatype,
+                                        hdf5::Datatype const& memory_datatype,
+                                        std::size_t rank);
+
+}  // namespace lue
