@@ -29,7 +29,7 @@ add_unit_tests(
 
         info/property/same_shape/property_test
         info/property/same_shape/constant_shape/property_test
-        # info/property/same_shape/variable_shape/property_test
+        info/property/same_shape/variable_shape/property_test
 
         info/property/different_shape/property_test
         # info/property/different_shape/constant_shape/property_test
