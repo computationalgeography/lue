@@ -35,10 +35,14 @@
 
     # Locations in time
     ## Classes
+    - lue::TimePoint
+    - lue::TimeBox
 
 
     # Locations in space
     ## Classes
+    - lue::StationarySpacePoint
+    - lue::MobileSpacePoint
 
 
     # Properties

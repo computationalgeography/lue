@@ -21,7 +21,7 @@ add_unit_tests(
         info/time/time_point_test
         info/time/time_box_test
         info/space/mobile_space_point_test
-        # info/space/stationary_space_point_test
+        info/space/stationary_space_point_test
         # info/space/space_box_test
 
         # object/...

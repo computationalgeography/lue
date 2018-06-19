@@ -25,7 +25,7 @@ add_library(lue STATIC
     # src/info/time/time_grid
 
     src/info/space/mobile_space_point
-    # src/info/space/stationary_space_point
+    src/info/space/stationary_space_point
     # src/info/space/mobile_space_box
     # src/info/space/stationary_space_box
     # src/info/space/mobile_space_grid
