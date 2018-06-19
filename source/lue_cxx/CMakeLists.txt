@@ -31,8 +31,13 @@ add_library(lue STATIC
     # src/info/space/mobile_space_grid
     # src/info/space/stationary_space_grid
 
-    # src/info/property/...
-
+    src/info/property/property_group
+    src/info/property/same_shape/property
+    # src/info/property/same_shape/constant_shape/property
+    # src/info/property/same_shape/variable_shape/property
+    # src/info/property/different_shape/property
+    # src/info/property/different_shape/constant_shape/property
+    # src/info/property/different_shape/variable_shape/property
 
     # Spatio-temporal objects --------------------------------------------------
     # src/object/property_set
