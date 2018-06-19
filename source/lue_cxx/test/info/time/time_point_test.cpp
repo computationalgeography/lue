@@ -1,4 +1,4 @@
-#define BOOST_TEST_MODULE lue info time_point
+#define BOOST_TEST_MODULE lue info time time_point
 #include <boost/test/unit_test.hpp>
 #include "lue/info/time/time_point.hpp"
 #include "lue/core/tag.hpp"
