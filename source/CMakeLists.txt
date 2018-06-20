@@ -21,44 +21,44 @@ endif()
 ###     list(APPEND doxygen_input lue_hl)
 ### endif()
 
-### if(LUE_BUILD_PYTHON_API)
-###     add_subdirectory(lue_py)
-### 
-###     install(
-###         DIRECTORY
-###             ${CMAKE_CURRENT_BINARY_DIR}/include
-###             lue_hdf5/include
-###             ${CMAKE_CURRENT_BINARY_DIR}/lue_hdf5/include
-###             lue_cxx/include
-###             ${CMAKE_CURRENT_BINARY_DIR}/lue_cxx/include
-###             lue_hl/include
-###             lue_py/include
-###             lue_time/include
-###         DESTINATION src
-###         COMPONENT python EXCLUDE_FROM_ALL
-###         FILES_MATCHING
-###             PATTERN "*.hpp"
-###     )
-### 
-###     foreach(directory_name lue_hdf5 lue_cxx lue_hl lue_py lue_time)
-###         install(
-###             DIRECTORY ${directory_name}/src
-###             DESTINATION src/${directory_name}
-###             COMPONENT python EXCLUDE_FROM_ALL
-###             FILES_MATCHING
-###                 PATTERN "*.hpp"
-###                 PATTERN "*.cpp"
-###         )
-###     endforeach()
-### 
-###     install(
-###         FILES
-###             ${CMAKE_CURRENT_BINARY_DIR}/lue_py/setup.py
-###             lue_py/MANIFEST.in
-###         DESTINATION .
-###         COMPONENT python EXCLUDE_FROM_ALL
-###     )
-### endif()
+if(LUE_BUILD_PYTHON_API)
+    add_subdirectory(lue_py)
+
+    ### install(
+    ###     DIRECTORY
+    ###         ${CMAKE_CURRENT_BINARY_DIR}/include
+    ###         lue_hdf5/include
+    ###         ${CMAKE_CURRENT_BINARY_DIR}/lue_hdf5/include
+    ###         lue_cxx/include
+    ###         ${CMAKE_CURRENT_BINARY_DIR}/lue_cxx/include
+    ###         lue_hl/include
+    ###         lue_py/include
+    ###         lue_time/include
+    ###     DESTINATION src
+    ###     COMPONENT python EXCLUDE_FROM_ALL
+    ###     FILES_MATCHING
+    ###         PATTERN "*.hpp"
+    ### )
+
+    ### foreach(directory_name lue_hdf5 lue_cxx lue_hl lue_py lue_time)
+    ###     install(
+    ###         DIRECTORY ${directory_name}/src
+    ###         DESTINATION src/${directory_name}
+    ###         COMPONENT python EXCLUDE_FROM_ALL
+    ###         FILES_MATCHING
+    ###             PATTERN "*.hpp"
+    ###             PATTERN "*.cpp"
+    ###     )
+    ### endforeach()
+
+    ### install(
+    ###     FILES
+    ###         ${CMAKE_CURRENT_BINARY_DIR}/lue_py/setup.py
+    ###         lue_py/MANIFEST.in
+    ###     DESTINATION .
+    ###     COMPONENT python EXCLUDE_FROM_ALL
+    ### )
+endif()
 
 if(LUE_BUILD_LUE_TEST)
     add_subdirectory(lue_test)
