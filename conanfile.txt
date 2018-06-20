@@ -10,7 +10,7 @@
 # cmake_findboost_modular/1.66.0@bincrafters/stable
 
 jsonformoderncpp/3.1.2@vthiery/stable
-pybind11/2.2.2@conan/stable
+pybind11/2.2.3@conan/stable
 
 [options]
 # boost:shared=True
