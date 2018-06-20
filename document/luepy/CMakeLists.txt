@@ -1,4 +1,4 @@
-add_subdirectory(case_study)
+# TODO add_subdirectory(case_study)
 
 configure_file(
     conf.py.in
@@ -9,7 +9,7 @@ configure_file(
 add_custom_target(
     py_doc
     DEPENDS
-        case_study
+        # TODO case_study
         lue::py
     # COMMAND ${SPHINX_API_DOC_EXECUTABLE}
     #     -o ${CMAKE_CURRENT_BINARY_DIR}/_build/api

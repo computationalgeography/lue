@@ -1,9 +1,14 @@
 Changes
 =======
 
-0.1.2
+0.2.0
 -----
 - `xxx <xxx>`_
+- Rewrite of LUE code, based on new insights
+
+
+0.1.2
+-----
 - `Add support for discretizing time <https://github.com/pcraster/lue/issues/30>`_
 - `Add support for time_box time domain items <https://github.com/pcraster/lue/issues/28>`_
 - `Add support for time coordinates <https://github.com/pcraster/lue/issues/29>`_
