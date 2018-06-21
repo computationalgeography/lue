@@ -16,8 +16,8 @@ public:
           _filename{"value.h5"},
           _file{std::make_unique<lue::hdf5::File>(
             lue::hdf5::create_file(_filename))},
-          _value{std::make_unique<lue::ActiveID>(
-            lue::create_active_id(*_file))}
+          _value{std::make_unique<lue::info::ActiveID>(
+            lue::info::create_active_id(*_file))}
     {
     }
 
@@ -34,7 +34,7 @@ private:
 
     std::string const _filename;
     std::unique_ptr<lue::hdf5::File> _file;
-    std::unique_ptr<lue::ActiveID> _value;
+    std::unique_ptr<lue::info::ActiveID> _value;
 
 };
 

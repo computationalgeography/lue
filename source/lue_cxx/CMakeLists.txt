@@ -43,7 +43,7 @@ add_library(lue STATIC
     # Spatio-temporal objects --------------------------------------------------
     src/object/time/time_domain
     src/object/space/space_domain
-    # src/object/property/properties
+    src/object/property/properties
 
 )
 

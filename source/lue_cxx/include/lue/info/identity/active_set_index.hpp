@@ -3,6 +3,7 @@
 
 
 namespace lue {
+namespace info {
 
 /*!
     @brief      Per location in time, an index of first object in active set
@@ -28,11 +29,9 @@ class ActiveSetIndex:
 
 public:
 
-                   ActiveSetIndex      (hdf5::Group const& parent,
-                                        std::string const& name);
+    friend ActiveSetIndex create_active_set_index(hdf5::Group& parent);
 
-                   ActiveSetIndex      (same_shape::constant_shape::Value&&
-                                            value);
+                   ActiveSetIndex      (hdf5::Group const& parent);
 
                    ActiveSetIndex      (ActiveSetIndex const&)=delete;
 
@@ -46,10 +45,14 @@ public:
 
 private:
 
+                   ActiveSetIndex      (same_shape::constant_shape::Value&&
+                                            value);
+
 
 };
 
 
 ActiveSetIndex     create_active_set_index(hdf5::Group& parent);
 
+}  // namespace info
 }  // namespace lue
