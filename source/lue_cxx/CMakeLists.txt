@@ -16,6 +16,7 @@ add_library(lue STATIC
     src/array/different_shape/variable_shape/value
 
     # Spatio-temporal object information ---------------------------------------
+    src/info/identity/id
     src/info/identity/active_id
     src/info/identity/active_set_index
     src/info/identity/active_object_index
@@ -42,9 +43,7 @@ add_library(lue STATIC
     # Spatio-temporal objects --------------------------------------------------
     src/object/time/time_domain
     src/object/space/space_domain
-    # src/object/property_set
-    # src/object/phenomenon
-    # src/object/universe
+    # src/object/property/properties
 
 )
 

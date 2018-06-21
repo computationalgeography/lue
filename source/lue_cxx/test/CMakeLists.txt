@@ -15,6 +15,7 @@ add_unit_tests(
         array/different_shape/constant_shape/value_test
         array/different_shape/variable_shape/value_test
 
+        info/identity/id_test
         info/identity/active_id_test
         info/identity/active_set_index_test
         info/identity/active_object_index_test
@@ -37,6 +38,7 @@ add_unit_tests(
 
         object/time/time_domain_test
         object/space/space_domain_test
+        # object/property/properties_test
 
     LINK_LIBRARIES
         lue::test

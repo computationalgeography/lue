@@ -5,10 +5,9 @@
 namespace lue {
 
 ActiveID::ActiveID(
-    hdf5::Group const& parent,
-    std::string const& name)
+    hdf5::Group const& parent)
 :
-    same_shape::constant_shape::Value{parent, name}
+    same_shape::constant_shape::Value{parent, active_id_tag}
 
 {
 }
@@ -27,8 +26,10 @@ ActiveID::ActiveID(
 ActiveID create_active_id(
     hdf5::Group& parent)
 {
-    return ActiveID{same_shape::constant_shape::create_value(
-        parent, active_id_tag, hdf5::Datatype{H5T_NATIVE_HSIZE})};
+    auto value = same_shape::constant_shape::create_value(
+        parent, active_id_tag, hdf5::Datatype{H5T_NATIVE_HSIZE});
+
+    return ActiveID{std::move(value)};
 }
 
 }  // namespace lue

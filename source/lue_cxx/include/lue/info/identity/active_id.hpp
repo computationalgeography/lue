@@ -30,8 +30,7 @@ class ActiveID:
 
 public:
 
-                   ActiveID            (hdf5::Group const& parent,
-                                        std::string const& name);
+                   ActiveID            (hdf5::Group const& parent);
 
                    ActiveID            (same_shape::constant_shape::Value&&
                                             value);

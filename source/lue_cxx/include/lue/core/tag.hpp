@@ -13,6 +13,8 @@ static std::string const rank_tag =
     "lue_rank";
 
 // info
+static std::string const id_tag =
+    "lue_id";
 static std::string const active_id_tag =
     "lue_active_id";
 static std::string const active_set_index_tag =
@@ -37,6 +39,8 @@ static std::string const space_domain_item_type_tag =
     "lue_space_domain_item_type";
 static std::string const mobility_tag =
     "lue_mobility";
+static std::string const properties_tag =
+    "lue_properties";
 
 }  // namespace lue
 
