@@ -3,6 +3,7 @@
 
 
 namespace lue {
+namespace info {
 
 /*!
     @brief      An ID per object in the active set
@@ -30,10 +31,9 @@ class ActiveID:
 
 public:
 
-                   ActiveID            (hdf5::Group const& parent);
+    friend ActiveID create_active_id(hdf5::Group& parent);
 
-                   ActiveID            (same_shape::constant_shape::Value&&
-                                            value);
+                   ActiveID            (hdf5::Group const& parent);
 
                    ActiveID            (ActiveID const&)=delete;
 
@@ -47,10 +47,14 @@ public:
 
 private:
 
+                   ActiveID            (same_shape::constant_shape::Value&&
+                                            value);
+
 
 };
 
 
 ActiveID           create_active_id    (hdf5::Group& parent);
 
+}  // namespace info
 }  // namespace lue

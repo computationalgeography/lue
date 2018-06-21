@@ -3,6 +3,7 @@
 
 
 namespace lue {
+namespace info {
 
 ActiveID::ActiveID(
     hdf5::Group const& parent)
@@ -32,4 +33,5 @@ ActiveID create_active_id(
     return ActiveID{std::move(value)};
 }
 
+}  // namespace info
 }  // namespace lue

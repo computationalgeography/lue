@@ -3,12 +3,12 @@
 
 
 namespace lue {
+namespace info {
 
 ActiveObjectIndex::ActiveObjectIndex(
-    hdf5::Group const& parent,
-    std::string const& name)
+    hdf5::Group const& parent)
 :
-    same_shape::constant_shape::Value{parent, name}
+    same_shape::constant_shape::Value{parent, active_object_index_tag}
 
 {
 }
@@ -27,8 +27,11 @@ ActiveObjectIndex::ActiveObjectIndex(
 ActiveObjectIndex create_active_object_index(
     hdf5::Group& parent)
 {
-    return ActiveObjectIndex{same_shape::constant_shape::create_value(
-        parent, active_object_index_tag, hdf5::Datatype{H5T_NATIVE_HSIZE})};
+    auto value = same_shape::constant_shape::create_value(
+        parent, active_object_index_tag, hdf5::Datatype{H5T_NATIVE_HSIZE});
+
+    return ActiveObjectIndex{std::move(value)};
 }
 
+}  // namespace info
 }  // namespace lue

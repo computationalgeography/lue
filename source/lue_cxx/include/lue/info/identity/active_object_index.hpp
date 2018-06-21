@@ -3,6 +3,7 @@
 
 
 namespace lue {
+namespace info {
 
 /*!
     @brief      An index into the value array per object in the active set
@@ -22,11 +23,9 @@ class ActiveObjectIndex:
 
 public:
 
-                   ActiveObjectIndex   (hdf5::Group const& parent,
-                                        std::string const& name);
+    friend ActiveObjectIndex create_active_object_index(hdf5::Group& parent);
 
-                   ActiveObjectIndex   (same_shape::constant_shape::Value&&
-                                            value);
+                   ActiveObjectIndex   (hdf5::Group const& parent);
 
                    ActiveObjectIndex   (ActiveObjectIndex const&)=delete;
 
@@ -40,6 +39,8 @@ public:
 
 private:
 
+                   ActiveObjectIndex   (same_shape::constant_shape::Value&&
+                                            value);
 
 };
 
@@ -47,4 +48,5 @@ private:
 ActiveObjectIndex  create_active_object_index(
                                         hdf5::Group& parent);
 
+}  // namespace info
 }  // namespace lue

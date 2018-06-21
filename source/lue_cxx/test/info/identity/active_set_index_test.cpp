@@ -16,8 +16,8 @@ public:
           _filename{"value.h5"},
           _file{std::make_unique<lue::hdf5::File>(
             lue::hdf5::create_file(_filename))},
-          _value{std::make_unique<lue::ActiveSetIndex>(
-            lue::create_active_set_index(*_file))}
+          _value{std::make_unique<lue::info::ActiveSetIndex>(
+            lue::info::create_active_set_index(*_file))}
     {
     }
 
@@ -35,7 +35,7 @@ private:
     std::string const _filename;
     lue::hdf5::Datatype const _datatype;
     std::unique_ptr<lue::hdf5::File> _file;
-    std::unique_ptr<lue::ActiveSetIndex> _value;
+    std::unique_ptr<lue::info::ActiveSetIndex> _value;
 
 };
 
