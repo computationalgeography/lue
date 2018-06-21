@@ -74,6 +74,11 @@ MAP(EnumType, enum_pairs)
 //     { ShapePerItem::different, "lue_different_shape" }
 // }))
 
+TAG_AND_MAP(TimeDomainItemType, time_domain_item_type_tag, ({
+    { TimeDomainItemType::point, "lue_point" },
+    { TimeDomainItemType::box, "lue_box" }
+}))
+
 TAG_AND_MAP(Mobility, mobility_tag, ({
     { Mobility::mobile, "lue_mobile" },
     { Mobility::stationary, "lue_stationary" }
@@ -84,11 +89,6 @@ TAG_AND_MAP(SpaceDomainItemType, space_domain_item_type_tag, ({
     { SpaceDomainItemType::box, "lue_box" }
 }))
 
-// TAG_AND_MAP(TimeDomainItemType, time_domain_item_type_tag, ({
-//     { TimeDomainItemType::point, "lue_point" },
-//     { TimeDomainItemType::box, "lue_box" }
-// }))
-// 
 // // TAG_AND_MAP(time::Unit, unit_tag, ({
 // //     { time::Unit::second, "lue_second" }
 // // }))

@@ -35,6 +35,7 @@ add_unit_tests(
         info/property/different_shape/constant_shape/property_test
         info/property/different_shape/variable_shape/property_test
 
+        object/time/time_domain_test
         object/space/space_domain_test
 
     LINK_LIBRARIES
