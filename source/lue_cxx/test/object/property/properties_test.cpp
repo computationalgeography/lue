@@ -40,7 +40,14 @@ private:
 
 BOOST_FIXTURE_TEST_CASE(create, Fixture)
 {
-    /* auto const& properties = */ this->properties();
+    auto const& properties = this->properties();
 
-    // BOOST_CHECK(properties.configuration() == configuration());
+    // same_shape
+    {
+        auto const& collection =
+            properties.collection<lue::same_shape::Properties>();
+        BOOST_CHECK_EQUAL(collection.size(), 0);
+    }
+
+    // ...
 }
