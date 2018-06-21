@@ -14,11 +14,11 @@ matrix:
                   sources:
                       - ubuntu-toolchain-r-test
                   packages:
+                      - gcc-5
+                      - libhdf5-dev
+                      - g++-5
                       - libboost-all-dev
                       - tree
-                      - libhdf5-dev
-                      - gcc-5
-                      - g++-5
           env:
               - TRAVIS_C_COMPILER=gcc-5 TRAVIS_CXX_COMPILER=g++-5 TRAVIS_CXX_FLAGS="" TRAVIS_BUILD_TYPE=Release TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=$TRAVIS_BUILD_TYPE -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS -DLUE_BUILD_TEST:BOOL=TRUE "
         - compiler: gcc
@@ -29,10 +29,10 @@ matrix:
                       - ubuntu-toolchain-r-test
                   packages:
                       - gcc-6
-                      - tree
-                      - libboost-all-dev
                       - libhdf5-dev
                       - g++-6
+                      - libboost-all-dev
+                      - tree
           env:
               - TRAVIS_C_COMPILER=gcc-6 TRAVIS_CXX_COMPILER=g++-6 TRAVIS_CXX_FLAGS="" TRAVIS_BUILD_TYPE=Release TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=$TRAVIS_BUILD_TYPE -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS -DLUE_BUILD_TEST:BOOL=TRUE "
 
@@ -108,7 +108,7 @@ before_script:
     # When building ourselves use:
     #     -s compiler=gcc compiler.version=7 -s build_type=$TRAVIS_BUILD_TYPE
     - conan remote add conan-community https://api.bintray.com/conan/conan-community/conan
-    - conan install .. -s compiler=$TRAVIS_CXX_COMPILER
+    - conan install .. -s compiler=`echo $TRAVIS_CXX_COMPILER | cut -d'-' -f1` -s compiler.version=`echo $TRAVIS_CXX_COMPILER | cut -d'-' -f2`
     - cd ..
 
 
