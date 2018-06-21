@@ -40,6 +40,7 @@ add_library(lue STATIC
     src/info/property/different_shape/variable_shape/property
 
     # Spatio-temporal objects --------------------------------------------------
+    src/object/space/space_domain
     # src/object/property_set
     # src/object/phenomenon
     # src/object/universe
