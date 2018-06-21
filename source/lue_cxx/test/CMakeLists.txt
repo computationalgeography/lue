@@ -39,6 +39,7 @@ add_unit_tests(
         object/time/time_domain_test
         object/space/space_domain_test
         object/property/properties_test
+        object/property/same_shape/properties_test
 
     LINK_LIBRARIES
         lue::test

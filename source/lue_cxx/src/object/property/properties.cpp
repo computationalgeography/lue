@@ -11,24 +11,22 @@ Properties::Properties(
     _id{*this},
     _active_set_index{*this},
     _active_object_index{*this},
-    _active_id{*this}
+    _active_id{*this},
+    _same_shape_properties{*this}
 
 {
 }
 
 
 Properties::Properties(
-    hdf5::Group&& group,
-    info::ID&& id,
-    info::ActiveSetIndex&& active_set_index,
-    info::ActiveObjectIndex&& active_object_index,
-    info::ActiveID&& active_id):
+    hdf5::Group&& group):
 
     hdf5::Group{std::forward<hdf5::Group>(group)},
-    _id{std::forward<info::ID>(id)},
-    _active_set_index{std::forward<info::ActiveSetIndex>(active_set_index)},
-    _active_object_index{std::forward<info::ActiveObjectIndex>(active_object_index)},
-    _active_id{std::forward<info::ActiveID>(active_id)}
+    _id{*this},
+    _active_set_index{*this},
+    _active_object_index{*this},
+    _active_id{*this},
+    _same_shape_properties{*this}
 
 {
 }
@@ -61,15 +59,18 @@ info::ActiveID const& Properties::active_id() const
 Properties create_properties(
     hdf5::Group& parent)
 {
+    // Create all stuff. Pass the object ID tracking stuff to the
+    // specialized Properties classes. They will hard-link to it. That
+    // way this information can be shared.
     auto group = hdf5::create_group(parent, properties_tag);
-    auto id = info::create_id(parent);
-    auto active_set_index = info::create_active_set_index(parent);
-    auto active_object_index = info::create_active_object_index(parent);
-    auto active_id = info::create_active_id(parent);
+    auto id = info::create_id(group);
+    info::create_active_set_index(group);
+    info::create_active_object_index(group);
+    info::create_active_id(group);
 
-    return Properties{
-        std::move(group), std::move(id), std::move(active_set_index),
-        std::move(active_object_index), std::move(active_id)};
+    same_shape::create_properties(group, id);
+
+    return Properties{std::move(group)};
 }
 
 }  // namespace lue
