@@ -107,6 +107,7 @@ before_script:
     - cd build
     # When building ourselves use:
     #     -s compiler=gcc compiler.version=7 -s build_type=$TRAVIS_BUILD_TYPE
+    - conan remote add conan-community https://api.bintray.com/conan/conan-community/conan
     - conan install ..
     - cd ..
 
