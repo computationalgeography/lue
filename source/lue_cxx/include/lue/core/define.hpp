@@ -18,6 +18,16 @@ using Counts = std::vector<Count>;
 using Shapes = std::vector<hdf5::Shape>;
 
 
+enum class TimeDomainItemType
+{
+
+    point,
+
+    box
+
+};
+
+
 /*!
     @brief      Space domain items can be stationary or mobile through
                 time

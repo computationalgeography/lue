@@ -1,6 +1,6 @@
-#define BOOST_TEST_MODULE lue object space space_domain
+#define BOOST_TEST_MODULE lue object time time_domain
 #include <boost/test/unit_test.hpp>
-#include "lue/object/space/space_domain.hpp"
+#include "lue/object/time/time_domain.hpp"
 #include "lue/test.hpp"
 
 
@@ -16,10 +16,9 @@ public:
         _file{std::make_unique<lue::hdf5::File>(
             lue::hdf5::create_file(_filename))},
         _configuration{
-            lue::Mobility::stationary,
-            lue::SpaceDomainItemType::box},
-        _domain{std::make_unique<lue::SpaceDomain>(
-            lue::create_space_domain(*_file, _configuration))}
+            lue::TimeDomainItemType::box},
+        _domain{std::make_unique<lue::TimeDomain>(
+            lue::create_time_domain(*_file, _configuration))}
     {
     }
 
@@ -41,8 +40,8 @@ private:
 
     std::string const _filename;
     std::unique_ptr<lue::hdf5::File> _file;
-    lue::SpaceConfiguration const _configuration;
-    std::unique_ptr<lue::SpaceDomain> _domain;
+    lue::TimeConfiguration const _configuration;
+    std::unique_ptr<lue::TimeDomain> _domain;
 
 };
 
