@@ -5,9 +5,10 @@
 namespace lue {
 
 PropertySet::PropertySet(
-    hdf5::Group const& parent):
+    hdf5::Group const& parent,
+    std::string const& name):
 
-    hdf5::Group{parent, property_set_tag},
+    hdf5::Group{parent, name},
     _time_domain{*this},
     _space_domain{*this},
     _properties{*this}
@@ -48,10 +49,11 @@ Properties const& PropertySet::properties() const
 
 PropertySet create_property_set(
     hdf5::Group& parent,
+    std::string const& name,
     TimeConfiguration const& time_configuration,
     SpaceConfiguration const& space_configuration)
 {
-    auto group = hdf5::create_group(parent, property_set_tag);
+    auto group = hdf5::create_group(parent, name);
 
     create_time_domain(group, time_configuration);
     create_space_domain(group, space_configuration);
