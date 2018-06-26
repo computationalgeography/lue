@@ -51,6 +51,8 @@ static std::string const different_shape_tag =
     "lue_different_shape";
 static std::string const different_shape_constant_shape_tag =
     "lue_different_shape_constant_shape";
+static std::string const different_shape_variable_shape_tag =
+    "lue_different_shape_variable_shape";
 
 }  // namespace lue
 
