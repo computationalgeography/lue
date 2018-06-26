@@ -37,7 +37,27 @@ Properties::Properties(
     _different_shape_properties{*this},
     _different_shape_constant_shape_properties{*this},
     _different_shape_variable_shape_properties{*this}
+
 {
+}
+
+
+bool Properties::empty() const
+{
+    return size() == 0;
+}
+
+
+std::size_t Properties::size() const
+{
+    return
+        _same_shape_properties.size() +
+        _same_shape_constant_shape_properties.size() +
+        _same_shape_variable_shape_properties.size() +
+        _different_shape_properties.size() +
+        _different_shape_constant_shape_properties.size() +
+        _different_shape_variable_shape_properties.size()
+        ;
 }
 
 

@@ -44,6 +44,7 @@ add_library(lue STATIC
     src/object/time/time_domain
     src/object/space/space_domain
     src/object/property/properties
+    src/object/property/property_set
     src/object/property/same_shape/properties
     src/object/property/same_shape/constant_shape/properties
     src/object/property/same_shape/variable_shape/properties
