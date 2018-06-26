@@ -55,6 +55,8 @@ add_library(lue STATIC
     src/object/phenomena
     src/object/phenomenon
     src/object/property_sets
+    src/object/universe
+    src/object/universes
 
 )
 
