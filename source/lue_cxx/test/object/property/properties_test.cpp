@@ -44,9 +44,20 @@ BOOST_FIXTURE_TEST_CASE(create, Fixture)
 
     // same_shape
     {
-        auto const& collection =
-            properties.collection<lue::same_shape::Properties>();
+        using Properties = lue::same_shape::Properties;
+        auto const& collection = properties.collection<Properties>();
         BOOST_CHECK_EQUAL(collection.size(), 0);
+
+        // ...
+    }
+
+    // same_shape x constant_shape
+    {
+        using Properties = lue::same_shape::constant_shape::Properties;
+        auto const& collection = properties.collection<Properties>();
+        BOOST_CHECK_EQUAL(collection.size(), 0);
+
+        // ...
     }
 
     // ...
