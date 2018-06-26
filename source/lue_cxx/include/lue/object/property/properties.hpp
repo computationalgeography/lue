@@ -4,6 +4,7 @@
 #include "lue/object/property/same_shape/variable_shape/properties.hpp"
 #include "lue/object/property/different_shape/properties.hpp"
 #include "lue/object/property/different_shape/constant_shape/properties.hpp"
+#include "lue/object/property/different_shape/variable_shape/properties.hpp"
 #include "lue/info/identity/active_id.hpp"
 #include "lue/info/identity/active_object_index.hpp"
 #include "lue/info/identity/active_set_index.hpp"
@@ -71,6 +72,9 @@ private:
     different_shape::constant_shape::Properties
         _different_shape_constant_shape_properties;
 
+    different_shape::variable_shape::Properties
+        _different_shape_variable_shape_properties;
+
 };
 
 
@@ -114,6 +118,14 @@ inline different_shape::constant_shape::Properties const&
     Properties::collection<different_shape::constant_shape::Properties>() const
 {
     return _different_shape_constant_shape_properties;
+}
+
+
+template<>
+inline different_shape::variable_shape::Properties const&
+    Properties::collection<different_shape::variable_shape::Properties>() const
+{
+    return _different_shape_variable_shape_properties;
 }
 
 }  // namespace lue

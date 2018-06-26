@@ -16,7 +16,8 @@ Properties::Properties(
     _same_shape_constant_shape_properties{*this},
     _same_shape_variable_shape_properties{*this},
     _different_shape_properties{*this},
-    _different_shape_constant_shape_properties{*this}
+    _different_shape_constant_shape_properties{*this},
+    _different_shape_variable_shape_properties{*this}
 
 {
 }
@@ -34,8 +35,8 @@ Properties::Properties(
     _same_shape_constant_shape_properties{*this},
     _same_shape_variable_shape_properties{*this},
     _different_shape_properties{*this},
-    _different_shape_constant_shape_properties{*this}
-
+    _different_shape_constant_shape_properties{*this},
+    _different_shape_variable_shape_properties{*this}
 {
 }
 
@@ -84,6 +85,8 @@ Properties create_properties(
     different_shape::create_properties(group, id);
     different_shape::constant_shape::create_properties(
         group, active_id, active_set_index, active_object_index);
+    different_shape::variable_shape::create_properties(
+        group);
 
     return Properties{std::move(group)};
 }
