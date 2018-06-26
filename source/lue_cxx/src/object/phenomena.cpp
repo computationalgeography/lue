@@ -30,7 +30,7 @@ Phenomenon& Phenomena::add(
 
 
 Phenomena create_phenomena(
-    hdf5::Group const& parent)
+    hdf5::Group& parent)
 {
     auto collection = create_collection<Phenomenon>(parent, phenomena_tag);
 
