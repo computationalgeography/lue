@@ -18,9 +18,9 @@ class Properties:
 
 public:
 
-    friend Properties create_properties(hdf5::Group& parent);
-
     explicit       Properties          (hdf5::Group const& parent);
+
+                   Properties          (hdf5::Group&& group);
 
                    Properties          (Properties const&)=delete;
 
@@ -31,6 +31,10 @@ public:
     Properties&    operator=           (Properties const&)=delete;
 
     Properties&    operator=           (Properties&&)=default;
+
+    bool           empty               () const;
+
+    std::size_t    size                () const;
 
     info::ID const& id                 () const;
 
@@ -48,8 +52,6 @@ public:
     T const&       collection          () const;
 
 private:
-
-                   Properties          (hdf5::Group&& group);
 
     info::ID       _id;
 
