@@ -13,6 +13,7 @@ Properties::Properties(
     _active_set_index{*this},
     _active_object_index{*this},
     _same_shape_properties{*this},
+    _different_shape_properties{*this},
     _same_shape_constant_shape_properties{*this}
 
 {
@@ -28,6 +29,7 @@ Properties::Properties(
     _active_set_index{*this},
     _active_object_index{*this},
     _same_shape_properties{*this},
+    _different_shape_properties{*this},
     _same_shape_constant_shape_properties{*this}
 
 {
@@ -71,6 +73,7 @@ Properties create_properties(
     info::create_active_object_index(group);
 
     same_shape::create_properties(group, id);
+    different_shape::create_properties(group, id);
     same_shape::constant_shape::create_properties(
         group, active_id, active_set_index);
 
