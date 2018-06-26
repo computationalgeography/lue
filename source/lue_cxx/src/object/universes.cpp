@@ -30,7 +30,7 @@ Universe& Universes::add(
 
 
 Universes create_universes(
-    hdf5::Group const& parent)
+    hdf5::Group& parent)
 {
     auto collection = create_collection<Universe>(parent, universes_tag);
 
