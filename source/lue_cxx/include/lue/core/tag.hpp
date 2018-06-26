@@ -41,8 +41,8 @@ static std::string const mobility_tag =
     "lue_mobility";
 static std::string const properties_tag =
     "lue_properties";
-static std::string const property_set_tag =
-    "lue_property_set";
+// static std::string const property_set_tag =
+//     "lue_property_set";
 static std::string const same_shape_tag =
     "lue_same_shape";
 static std::string const same_shape_constant_shape_tag =
@@ -55,6 +55,10 @@ static std::string const different_shape_constant_shape_tag =
     "lue_different_shape_constant_shape";
 static std::string const different_shape_variable_shape_tag =
     "lue_different_shape_variable_shape";
+static std::string const phenomena_tag =
+    "lue_phenomena";
+static std::string const property_sets_tag =
+    "lue_property_sets";
 
 }  // namespace lue
 

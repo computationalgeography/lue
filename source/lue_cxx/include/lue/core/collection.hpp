@@ -2,7 +2,6 @@
 #include "lue/hdf5/group.hpp"
 #include <cassert>
 #include <map>
-#include <memory>
 #include <stdexcept>
 #include <vector>
 
@@ -57,7 +56,7 @@ private:
     std::vector<std::string>
                    item_names          () const;
 
-    std::map<std::string, std::unique_ptr<T>> _items;
+    std::map<std::string, T> _items;
 
 };
 
@@ -88,7 +87,7 @@ inline Collection<T>::Collection(
 
     // Open items, if available.
     for(auto const& name: item_names()) {
-        _items.insert(std::make_pair(name, std::make_unique<T>(*this, name)));
+        _items.insert(std::make_pair(name, T{*this, name}));
     }
 }
 
@@ -104,7 +103,7 @@ inline Collection<T>::Collection(
 {
     // Open items, if available.
     for(auto const& name: item_names()) {
-        _items.insert(std::make_pair(name, std::make_unique<T>(*this, name)));
+        _items.insert(std::make_pair(name, T{*this, name}));
     }
 }
 
@@ -157,12 +156,9 @@ inline T& Collection<T>::add(
 {
     assert(!contains(name));
 
-    auto pair = _items.insert(
-        std::make_pair(name, std::make_unique<T>(std::forward<T>(item))));
+    auto pair = _items.insert(std::make_pair(name, T{std::forward<T>(item)}));
 
-    assert(pair.second);
-
-    return *(*pair.first).second;
+    return (*pair.first).second;
 }
 
 

@@ -12,7 +12,8 @@ class PropertySet:
 
 public:
 
-    explicit       PropertySet         (hdf5::Group const& parent);
+                   PropertySet         (hdf5::Group const& parent,
+                                        std::string const& name);
 
                    PropertySet         (hdf5::Group&& group);
 
@@ -44,6 +45,7 @@ private:
 
 
 PropertySet        create_property_set (hdf5::Group& parent,
+                                        std::string const& name,
                                         TimeConfiguration const&
                                             time_configuration,
                                         SpaceConfiguration const&

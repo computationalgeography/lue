@@ -15,6 +15,7 @@ public:
         _filename{"property.h5"},
         _file{std::make_unique<lue::hdf5::File>(
             lue::hdf5::create_file(_filename))},
+        _property_set_name{"my_property_set"},
         _time_configuration{
             lue::TimeDomainItemType::box
         },
@@ -24,12 +25,19 @@ public:
         },
         _property_set{std::make_unique<lue::PropertySet>(
             lue::create_property_set(
-                *_file, _time_configuration, _space_configuration))}
+                *_file, _property_set_name,
+                _time_configuration, _space_configuration))}
     {
     }
 
     ~Fixture()
     {
+    }
+
+
+    auto const& property_set_name() const
+    {
+        return _property_set_name;
     }
 
     auto const& time_configuration() const
@@ -51,6 +59,7 @@ private:
 
     std::string const _filename;
     std::unique_ptr<lue::hdf5::File> _file;
+    std::string const _property_set_name;
     lue::TimeConfiguration _time_configuration;
     lue::SpaceConfiguration _space_configuration;
     std::unique_ptr<lue::PropertySet> _property_set;
@@ -65,6 +74,7 @@ BOOST_FIXTURE_TEST_CASE(create, Fixture)
     auto const& space_domain = property_set.space_domain();
     auto const& properties = property_set.properties();
 
+    BOOST_CHECK_EQUAL(property_set.id().name(), property_set_name());
     BOOST_CHECK(time_domain.configuration() == time_configuration());
     BOOST_CHECK(space_domain.configuration() == space_configuration());
     BOOST_CHECK(properties.empty());
