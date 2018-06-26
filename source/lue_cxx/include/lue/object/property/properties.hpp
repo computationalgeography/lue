@@ -1,6 +1,7 @@
 #pragma once
 #include "lue/object/property/same_shape/properties.hpp"
 #include "lue/object/property/same_shape/constant_shape/properties.hpp"
+#include "lue/object/property/different_shape/properties.hpp"
 #include "lue/info/identity/active_id.hpp"
 #include "lue/info/identity/active_object_index.hpp"
 #include "lue/info/identity/active_set_index.hpp"
@@ -57,6 +58,8 @@ private:
 
     same_shape::Properties _same_shape_properties;
 
+    different_shape::Properties _different_shape_properties;
+
     same_shape::constant_shape::Properties
         _same_shape_constant_shape_properties;
 
@@ -71,6 +74,14 @@ inline same_shape::Properties const&
     Properties::collection<same_shape::Properties>() const
 {
     return _same_shape_properties;
+}
+
+
+template<>
+inline different_shape::Properties const&
+    Properties::collection<different_shape::Properties>() const
+{
+    return _different_shape_properties;
 }
 
 
