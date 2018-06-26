@@ -9,10 +9,11 @@ Properties::Properties(
 
     hdf5::Group{parent, properties_tag},
     _id{*this},
+    _active_id{*this},
     _active_set_index{*this},
     _active_object_index{*this},
-    _active_id{*this},
-    _same_shape_properties{*this}
+    _same_shape_properties{*this},
+    _same_shape_constant_shape_properties{*this}
 
 {
 }
@@ -23,10 +24,11 @@ Properties::Properties(
 
     hdf5::Group{std::forward<hdf5::Group>(group)},
     _id{*this},
+    _active_id{*this},
     _active_set_index{*this},
     _active_object_index{*this},
-    _active_id{*this},
-    _same_shape_properties{*this}
+    _same_shape_properties{*this},
+    _same_shape_constant_shape_properties{*this}
 
 {
 }
@@ -35,6 +37,12 @@ Properties::Properties(
 info::ID const& Properties::id() const
 {
     return _id;
+}
+
+
+info::ActiveID const& Properties::active_id() const
+{
+    return _active_id;
 }
 
 
@@ -50,12 +58,6 @@ info::ActiveObjectIndex const& Properties::active_object_index() const
 }
 
 
-info::ActiveID const& Properties::active_id() const
-{
-    return _active_id;
-}
-
-
 Properties create_properties(
     hdf5::Group& parent)
 {
@@ -64,11 +66,13 @@ Properties create_properties(
     // way this information can be shared.
     auto group = hdf5::create_group(parent, properties_tag);
     auto id = info::create_id(group);
-    info::create_active_set_index(group);
+    auto active_id = info::create_active_id(group);
+    auto active_set_index = info::create_active_set_index(group);
     info::create_active_object_index(group);
-    info::create_active_id(group);
 
     same_shape::create_properties(group, id);
+    same_shape::constant_shape::create_properties(
+        group, active_id, active_set_index);
 
     return Properties{std::move(group)};
 }

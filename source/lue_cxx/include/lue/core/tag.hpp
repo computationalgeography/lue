@@ -43,6 +43,8 @@ static std::string const properties_tag =
     "lue_properties";
 static std::string const same_shape_tag =
     "lue_same_shape";
+static std::string const same_shape_constant_shape_tag =
+    "lue_same_shape_constant_shape";
 
 }  // namespace lue
 
