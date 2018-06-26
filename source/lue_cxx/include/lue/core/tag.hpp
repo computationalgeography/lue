@@ -59,6 +59,8 @@ static std::string const phenomena_tag =
     "lue_phenomena";
 static std::string const property_sets_tag =
     "lue_property_sets";
+static std::string const universes_tag =
+    "lue_universes";
 
 }  // namespace lue
 
