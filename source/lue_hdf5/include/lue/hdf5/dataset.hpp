@@ -4,15 +4,11 @@
 #include "lue/hdf5/datatype.hpp"
 #include "lue/hdf5/group.hpp"
 #include "lue/hdf5/hyperslab.hpp"
-#include "lue/hdf5/primary_data_object.hpp"
 #include "lue/hdf5/property_list.hpp"
 
 
 namespace lue {
 namespace hdf5 {
-
-class Hyperslab;
-
 
 /*!
     @brief      Class representing an HDF5 dataset
