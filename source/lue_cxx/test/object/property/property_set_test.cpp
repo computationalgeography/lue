@@ -78,4 +78,60 @@ BOOST_FIXTURE_TEST_CASE(create, Fixture)
     BOOST_CHECK(time_domain.configuration() == time_configuration());
     BOOST_CHECK(space_domain.configuration() == space_configuration());
     BOOST_CHECK(properties.empty());
+
+    // same_shape
+    {
+        using Properties = lue::same_shape::Properties;
+        auto const& collection = properties.collection<Properties>();
+        BOOST_CHECK_EQUAL(collection.size(), 0);
+
+        // ...
+    }
+
+    // same_shape x constant_shape
+    {
+        using Properties = lue::same_shape::constant_shape::Properties;
+        auto const& collection = properties.collection<Properties>();
+        BOOST_CHECK_EQUAL(collection.size(), 0);
+
+        // ...
+    }
+
+    // same_shape x variable_shape
+    {
+        using Properties = lue::same_shape::variable_shape::Properties;
+        auto const& collection = properties.collection<Properties>();
+        BOOST_CHECK_EQUAL(collection.size(), 0);
+
+        // ...
+    }
+
+    // different_shape
+    {
+        using Properties = lue::different_shape::Properties;
+        auto const& collection = properties.collection<Properties>();
+        BOOST_CHECK_EQUAL(collection.size(), 0);
+
+        // ...
+    }
+
+    // different_shape x constant_shape
+    {
+        using Properties = lue::different_shape::constant_shape::Properties;
+        auto const& collection = properties.collection<Properties>();
+        BOOST_CHECK_EQUAL(collection.size(), 0);
+
+        // ...
+    }
+
+    // different_shape x variable_shape
+    {
+        using Properties = lue::different_shape::constant_shape::Properties;
+        auto const& collection = properties.collection<Properties>();
+        BOOST_CHECK_EQUAL(collection.size(), 0);
+
+        // ...
+    }
+
+    // ...
 }

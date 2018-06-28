@@ -42,6 +42,8 @@ add_unit_tests(
         object/property/properties_test
         object/property/property_set_test
 
+        object/presence_in_time_test
+
     LINK_LIBRARIES
         lue::test
 )

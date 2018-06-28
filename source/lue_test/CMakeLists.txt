@@ -1,4 +1,5 @@
 add_library(lue_test STATIC
+    src/dataset_fixture
     src/file_fixture
 )
 

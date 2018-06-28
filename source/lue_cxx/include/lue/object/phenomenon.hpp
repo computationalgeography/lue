@@ -25,6 +25,14 @@ public:
 
     Phenomenon&    operator=           (Phenomenon&&)=default;
 
+    PropertySet&   add_property_set    (std::string const& name);
+
+    PropertySet&   add_property_set    (std::string const& name,
+                                        TimeConfiguration const&
+                                            time_configuration,
+                                        SpaceConfiguration const&
+                                            space_configuration);
+
     PropertySets const& property_sets  () const;
 
 private:

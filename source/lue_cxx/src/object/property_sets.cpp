@@ -23,6 +23,25 @@ PropertySets::PropertySets(
 }
 
 
+PropertySet& PropertySets::add(
+    std::string const& name)
+{
+    return Collection::add(name, create_property_set(*this, name));
+}
+
+
+PropertySet& PropertySets::add(
+    std::string const& name,
+    TimeConfiguration const& time_configuration,
+    SpaceConfiguration const& space_configuration)
+{
+    return Collection::add(
+        name,
+        create_property_set(
+            *this, name, time_configuration, space_configuration));
+}
+
+
 PropertySets create_property_sets(
     hdf5::Group& parent)
 {

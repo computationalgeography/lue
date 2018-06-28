@@ -30,6 +30,9 @@ public:
 
     Properties&    operator=           (Properties&&)=default;
 
+    Property&      add                 (std::string const& name,
+                                        hdf5::Datatype const& datatype);
+
 private:
 
     info::ID       _id;

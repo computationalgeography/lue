@@ -41,6 +41,7 @@ add_library(lue STATIC
     src/info/property/different_shape/variable_shape/property
 
     # Spatio-temporal objects --------------------------------------------------
+    src/object/identity/object_tracker
     src/object/time/time_domain
     src/object/space/space_domain
     src/object/property/properties

@@ -46,7 +46,9 @@ public:
 
     bool           contains            (std::string const& name) const;
 
-    T&             operator[]          (std::string const& name) const;
+    T const&       operator[]          (std::string const& name) const;
+
+    T&             operator[]          (std::string const& name);
 
     T&             add                 (std::string const& name,
                                         T&& item);
@@ -183,7 +185,7 @@ inline bool Collection<T>::contains(
 */
 template<
     typename T>
-inline T& Collection<T>::operator[](
+inline T const& Collection<T>::operator[](
     std::string const& name) const
 {
     auto iterator = _items.find(name);
@@ -192,7 +194,27 @@ inline T& Collection<T>::operator[](
         throw std::runtime_error("Item " + name + " does not exist");
     }
 
-    return *(*iterator).second;
+    return (*iterator).second;
+}
+
+
+/*!
+    @brief      Return item
+    @param      name Name of item
+    @exception  std::runtime_error In case the item does not exist
+*/
+template<
+    typename T>
+inline T& Collection<T>::operator[](
+    std::string const& name)
+{
+    auto iterator = _items.find(name);
+
+    if(iterator == _items.end()) {
+        throw std::runtime_error("Item " + name + " does not exist");
+    }
+
+    return (*iterator).second;
 }
 
 

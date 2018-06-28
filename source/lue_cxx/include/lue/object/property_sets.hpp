@@ -25,6 +25,14 @@ public:
 
     PropertySets&  operator=           (PropertySets&&)=default;
 
+    PropertySet&   add                 (std::string const& name);
+
+    PropertySet&   add                 (std::string const& name,
+                                        TimeConfiguration const&
+                                            time_configuration,
+                                        SpaceConfiguration const&
+                                            space_configuration);
+
 private:
 
 };

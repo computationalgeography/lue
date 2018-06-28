@@ -5,9 +5,7 @@
 #include "lue/object/property/different_shape/properties.hpp"
 #include "lue/object/property/different_shape/constant_shape/properties.hpp"
 #include "lue/object/property/different_shape/variable_shape/properties.hpp"
-#include "lue/info/identity/active_id.hpp"
-#include "lue/info/identity/active_object_index.hpp"
-#include "lue/info/identity/active_set_index.hpp"
+#include "lue/object/identity/object_tracker.hpp"
 
 
 namespace lue {
@@ -36,30 +34,14 @@ public:
 
     std::size_t    size                () const;
 
-    info::ID const& id                 () const;
-
-    info::ActiveSetIndex const&
-                   active_set_index    () const;
-
-    info::ActiveObjectIndex const&
-                   active_object_index () const;
-
-    info::ActiveID const&
-                   active_id           () const;
-
     template<
         typename T>
     T const&       collection          () const;
 
+    same_shape::Property& add          (std::string const& name,
+                                        hdf5::Datatype const& datatype);
+
 private:
-
-    info::ID       _id;
-
-    info::ActiveID _active_id;
-
-    info::ActiveSetIndex _active_set_index;
-
-    info::ActiveObjectIndex _active_object_index;
 
     same_shape::Properties _same_shape_properties;
 
@@ -80,7 +62,8 @@ private:
 };
 
 
-Properties         create_properties   (hdf5::Group& parent);
+Properties         create_properties   (hdf5::Group& parent,
+                                        ObjectTracker& object_tracker);
 
 
 template<>

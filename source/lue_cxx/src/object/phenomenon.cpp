@@ -24,6 +24,22 @@ Phenomenon::Phenomenon(
 }
 
 
+PropertySet& Phenomenon::add_property_set(
+    std::string const& name)
+{
+    return _property_sets.add(name);
+}
+
+
+PropertySet& Phenomenon::add_property_set(
+    std::string const& name,
+    TimeConfiguration const& time_configuration,
+    SpaceConfiguration const& space_configuration)
+{
+    return _property_sets.add(name, time_configuration, space_configuration);
+}
+
+
 PropertySets const& Phenomenon::property_sets() const
 {
     return _property_sets;
