@@ -443,7 +443,7 @@ before_script:
     # When building ourselves use:
     #     -s compiler=gcc compiler.version=7 -s build_type=$TRAVIS_BUILD_TYPE
     - conan remote add conan-community https://api.bintray.com/conan/conan-community/conan
-    - conan install .. -s compiler=`echo $TRAVIS_C_COMPILER | cut -d'-' -f1` -s compiler.version=`echo $TRAVIS_C_COMPILER | cut -d'-' -f2`
+    - conan install .. --setting compiler=`echo $TRAVIS_C_COMPILER | cut -d'-' -f1` --setting compiler.version=`echo $TRAVIS_C_COMPILER | cut -d'-' -f2` --build fmt
     - cd ..
 
 
