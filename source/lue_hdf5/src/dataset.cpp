@@ -1,5 +1,6 @@
 #include "lue/hdf5/dataset.hpp"
 #include "lue/hdf5/link.hpp"
+#include <fmt/format.h>
 #include <cassert>
 #include <cstring>
 #include <memory>
@@ -70,8 +71,10 @@ Dataset::Dataset(
 
 {
     if(!id().is_valid()) {
-        throw std::runtime_error("Cannot open dataset " + name + " at " +
-            parent.id().pathname());
+        throw std::runtime_error(fmt::format(
+                "Cannot open dataset {} at {}",
+                name, parent.id().pathname()
+            ));
     }
 
     assert(id().is_valid());
@@ -336,7 +339,10 @@ Dataset open_dataset(
         H5P_DEFAULT), ::H5Dclose);
 
     if(!dataset_location.is_valid()) {
-        throw std::runtime_error("Cannot open dataset " + name);
+        throw std::runtime_error(fmt::format(
+                "Cannot open dataset {}",
+                name
+            ));
     }
 
     return Dataset(std::move(dataset_location));
@@ -365,7 +371,10 @@ Dataset create_dataset(
     assert(datatype.is_standard());
 
     if(dataset_exists(parent, name)) {
-        throw std::runtime_error("Dataset " + name + " already exists");
+        throw std::runtime_error(fmt::format(
+                "Dataset {} already exists",
+                name
+            ));
     }
 
     Identifier dataset_location(::H5Dcreate(parent, name.c_str(),
@@ -373,7 +382,10 @@ Dataset create_dataset(
         creation_property_list.id(), H5P_DEFAULT), ::H5Dclose);
 
     if(!dataset_location.is_valid()) {
-        throw std::runtime_error("Cannot create dataset " + name);
+        throw std::runtime_error(fmt::format(
+                "Cannot create dataset {}",
+                name
+            ));
     }
 
     return Dataset(std::move(dataset_location));

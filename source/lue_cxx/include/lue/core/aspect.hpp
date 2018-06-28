@@ -3,6 +3,7 @@
 #include "lue/core/enum_string_bimap.hpp"
 #include "lue/core/tag.hpp"
 #include "lue/hdf5/attributes.hpp"
+#include <fmt/format.h>
 
 
 namespace lue {
@@ -112,7 +113,10 @@ inline T string_to_aspect(
     auto const& map = detail::AspectMap<T>::value();
 
     if(!map.contains(string)) {
-        throw std::runtime_error("Unknown aspect: " + string);
+        throw std::runtime_error(fmt::format(
+                "Unknown aspect: {}",
+                string
+            ));
     }
 
     return map.as_value(string);
