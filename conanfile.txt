@@ -1,16 +1,15 @@
 [requires]
-# docopt/0.6.2@conan/stable
 
+# Current CMake versions don't find the boost targets yet
 # boost/1.66.0@conan/stable
-# conan install Boost/1.64.0@bincrafters/testing
 
-# boost/1.66.0@bincrafters/stable
-
-# boost_python/1.66.0@bincrafters/stable
-# cmake_findboost_modular/1.66.0@bincrafters/stable
+# This package does not install FindDocopt.cmake. Also, it is not
+# available for gcc-7 (but can be built by Conan).
+# docopt/0.6.2@conan/stable
 
 jsonformoderncpp/3.1.2@vthiery/stable
 pybind11/2.2.2@conan/stable
+# range-v3
 
 [options]
 # boost:shared=True
