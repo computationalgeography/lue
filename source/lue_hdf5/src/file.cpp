@@ -1,4 +1,5 @@
 #include "lue/hdf5/file.hpp"
+#include <fmt/format.h>
 #include <boost/filesystem.hpp>
 #include <cassert>
 
@@ -100,7 +101,10 @@ File::File(
 
 {
     if(!id().is_valid()) {
-        throw std::runtime_error("Cannot open file " + name);
+        throw std::runtime_error(fmt::format(
+                "Cannot open file {}",
+                name
+            ));
     }
 }
 
@@ -141,7 +145,10 @@ void File::flush() const
     auto status = ::H5Fflush(id(), H5F_SCOPE_LOCAL);
 
     if(status < 0) {
-        throw std::runtime_error("Cannot flush file " + pathname());
+        throw std::runtime_error(fmt::format(
+                "Cannot flush file {}",
+                pathname()
+            ));
     }
 }
 
@@ -178,7 +185,10 @@ File create_file(
         H5P_DEFAULT), ::H5Fclose);
 
     if(!id.is_valid()) {
-        throw std::runtime_error("Cannot create file " + name);
+        throw std::runtime_error(fmt::format(
+                "Cannot create file {}",
+                name
+            ));
     }
 
     return File{std::move(id)};
@@ -199,7 +209,10 @@ File create_in_memory_file(
         access_property_list.id()), ::H5Fclose);
 
     if(!id.is_valid()) {
-        throw std::runtime_error("Cannot create file " + name);
+        throw std::runtime_error(fmt::format(
+                "Cannot create file {}",
+                name
+            ));
     }
 
     return File{std::move(id)};

@@ -25,7 +25,8 @@ void iterate(
     if(status < 0) {
         throw std::runtime_error(fmt::format(
             "Cannot iterate through links in group at {}",
-            location.pathname()));
+            location.pathname()
+        ));
     }
 }
 
@@ -215,8 +216,10 @@ Group::Group(
 
 {
     if(!id().is_valid()) {
-        throw std::runtime_error(
-            "Cannot open group " + name + " in " + parent.id().pathname());
+        throw std::runtime_error(fmt::format(
+            "Cannot open group {} in {}",
+            name, parent.id().pathname()
+        ));
     }
 
     assert(id().is_valid());
@@ -369,8 +372,10 @@ void Group::create_soft_link(
         name.c_str(), H5P_DEFAULT, H5P_DEFAULT);
 
     if(status < 0) {
-        throw std::runtime_error("Cannot create soft link " + name +
-            " at " + location.pathname());
+        throw std::runtime_error(fmt::format(
+            "Cannot create soft link {} at {}",
+            name, location.pathname()
+        ));
     }
 }
 
@@ -390,8 +395,10 @@ void Group::create_hard_link(
         H5P_DEFAULT, H5P_DEFAULT);
 
     if(status < 0) {
-        throw std::runtime_error("Cannot create hard link " + name +
-            " at " + location.pathname());
+        throw std::runtime_error(fmt::format(
+            "Cannot create hard link {} at {}",
+            name, location.pathname()
+        ));
     }
 }
 
@@ -417,15 +424,20 @@ Group create_group(
     std::string const& name)
 {
     if(group_exists(parent, name)) {
-        throw std::runtime_error("Group " + name + " already exists");
+        throw std::runtime_error(fmt::format(
+            "Group {} already exists",
+            name
+        ));
     }
 
     Identifier group_id{::H5Gcreate(parent.id(), name.c_str(), H5P_DEFAULT,
         H5P_DEFAULT, H5P_DEFAULT), H5Gclose};
 
     if(!group_id.is_valid()) {
-        throw std::runtime_error("Cannot create group " + name + " at " +
-            parent.id().pathname());
+        throw std::runtime_error(fmt::format(
+            "Cannot create group {} at {}",
+            name, parent.id().pathname()
+        ));
     }
 
     return Group{std::move(group_id)};

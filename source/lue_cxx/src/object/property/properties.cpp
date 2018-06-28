@@ -91,7 +91,9 @@ ShapePerObject Properties::shape_per_object(
 
     if(!result) {
         throw std::runtime_error(fmt::format(
-            "Property named {} does not exist", name));
+                "Property named {} does not exist",
+                name
+            ));
     }
 
     return *result;
@@ -120,7 +122,9 @@ ValueVariability Properties::value_variability(
 
     if(!result) {
         throw std::runtime_error(fmt::format(
-            "Property named {} does not exist", name));
+                "Property named {} does not exist",
+                name
+            ));
     }
 
     return *result;
@@ -148,8 +152,9 @@ ShapeVariability Properties::shape_variability(
 
     if(!result) {
         throw std::runtime_error(fmt::format(
-            "Property named {} does not exist or does not vary through time",
-            name));
+                "Property named {} does not exist or does not vary through time",
+                name
+            ));
     }
 
     return *result;
@@ -161,7 +166,10 @@ same_shape::Property& Properties::add(
     hdf5::Datatype const& datatype)
 {
     if(contains(name)) {
-        throw std::runtime_error("Property named " + name + " already exists");
+        throw std::runtime_error(fmt::format(
+                "Property named {} already exists",
+                name
+            ));
     }
 
     return _same_shape_properties.add(name, datatype);

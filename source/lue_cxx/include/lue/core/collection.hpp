@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/hdf5/group.hpp"
+#include <fmt/format.h>
 #include <cassert>
 #include <map>
 #include <stdexcept>
@@ -84,7 +85,10 @@ inline Collection<T>::Collection(
 
 {
     if(!id().is_valid()) {
-        throw std::runtime_error("Collection " + name + " cannot be opened");
+        throw std::runtime_error(fmt::format(
+                "Collection {} cannot be opened",
+                name
+            ));
     }
 
     // Open items, if available.
@@ -191,7 +195,10 @@ inline T const& Collection<T>::operator[](
     auto iterator = _items.find(name);
 
     if(iterator == _items.end()) {
-        throw std::runtime_error("Item " + name + " does not exist");
+        throw std::runtime_error(fmt::format(
+                "Item {} does not exist",
+                name
+            ));
     }
 
     return (*iterator).second;
@@ -211,7 +218,10 @@ inline T& Collection<T>::operator[](
     auto iterator = _items.find(name);
 
     if(iterator == _items.end()) {
-        throw std::runtime_error("Item " + name + " does not exist");
+        throw std::runtime_error(fmt::format(
+                "Item {} does not exist",
+                name
+            ));
     }
 
     return (*iterator).second;
