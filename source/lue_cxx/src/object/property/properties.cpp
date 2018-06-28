@@ -1,5 +1,7 @@
 #include "lue/object/property/properties.hpp"
 #include "lue/core/tag.hpp"
+#include <boost/optional.hpp>
+#include <fmt/core.h>
 
 
 namespace lue {
@@ -53,10 +55,115 @@ std::size_t Properties::size() const
 }
 
 
+bool Properties::contains(
+    std::string const& name) const
+{
+    return
+        _same_shape_properties.contains(name) ||
+        _same_shape_constant_shape_properties.contains(name) ||
+        _same_shape_variable_shape_properties.contains(name) ||
+        _different_shape_properties.contains(name) ||
+        _different_shape_constant_shape_properties.contains(name) ||
+        _different_shape_variable_shape_properties.contains(name)
+        ;
+}
+
+
+ShapePerObject Properties::shape_per_object(
+    std::string const& name) const
+{
+    boost::optional<ShapePerObject> result;
+
+    if(     _same_shape_properties.contains(name) ||
+            _same_shape_constant_shape_properties.contains(name) ||
+            _same_shape_variable_shape_properties.contains(name)) {
+
+        result = ShapePerObject::same;
+
+    }
+    else if(_different_shape_properties.contains(name) ||
+            _different_shape_constant_shape_properties.contains(name) ||
+            _different_shape_variable_shape_properties.contains(name)) {
+
+        result = ShapePerObject::different;
+
+    }
+
+    if(!result) {
+        throw std::runtime_error(fmt::format(
+            "Property named {} does not exist", name));
+    }
+
+    return *result;
+}
+
+
+ValueVariability Properties::value_variability(
+    std::string const& name) const
+{
+    boost::optional<ValueVariability> result;
+
+    if(     _same_shape_properties.contains(name) ||
+            _different_shape_properties.contains(name)) {
+
+        result = ValueVariability::constant;
+
+    }
+    else if(_same_shape_constant_shape_properties.contains(name) ||
+            _same_shape_variable_shape_properties.contains(name) ||
+            _different_shape_constant_shape_properties.contains(name) ||
+            _different_shape_variable_shape_properties.contains(name)) {
+
+        result = ValueVariability::variable;
+
+    }
+
+    if(!result) {
+        throw std::runtime_error(fmt::format(
+            "Property named {} does not exist", name));
+    }
+
+    return *result;
+}
+
+
+ShapeVariability Properties::shape_variability(
+    std::string const& name) const
+{
+    boost::optional<ShapeVariability> result;
+
+    if(
+            _same_shape_constant_shape_properties.contains(name) ||
+            _different_shape_constant_shape_properties.contains(name)) {
+
+        result = ShapeVariability::constant;
+
+    }
+    else if(_same_shape_variable_shape_properties.contains(name) ||
+            _different_shape_variable_shape_properties.contains(name)) {
+
+        result = ShapeVariability::variable;
+
+    }
+
+    if(!result) {
+        throw std::runtime_error(fmt::format(
+            "Property named {} does not exist or does not vary through time",
+            name));
+    }
+
+    return *result;
+}
+
+
 same_shape::Property& Properties::add(
     std::string const& name,
     hdf5::Datatype const& datatype)
 {
+    if(contains(name)) {
+        throw std::runtime_error("Property named " + name + " already exists");
+    }
+
     return _same_shape_properties.add(name, datatype);
 }
 

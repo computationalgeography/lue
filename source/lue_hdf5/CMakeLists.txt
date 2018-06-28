@@ -49,6 +49,7 @@ target_link_libraries(lue_hdf5
         ${HDF5_C_LIBRARIES}
     PRIVATE
         Boost::filesystem
+        fmt::fmt
 )
 
 if(HDF5_IS_PARALLEL)

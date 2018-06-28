@@ -57,4 +57,25 @@ enum class SpaceDomainItemType
 
 };
 
+
+enum class ShapePerObject
+{
+    same,
+    different
+};
+
+
+enum class ValueVariability
+{
+    constant,
+    variable
+};
+
+
+enum class ShapeVariability
+{
+    constant,
+    variable
+};
+
 } // namespace lue

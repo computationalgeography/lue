@@ -1,6 +1,7 @@
 #include "lue/hdf5/group.hpp"
 #include "lue/hdf5/dataset.hpp"
 #include "lue/hdf5/link.hpp"
+#include <fmt/format.h>
 #include <cstring>
 #include <cstdlib>
 #include <memory>
@@ -22,8 +23,9 @@ void iterate(
         ::H5_ITER_NATIVE, nullptr, callback, &data);
 
     if(status < 0) {
-        throw std::runtime_error("Cannot iterate through links in group at " +
-            location.pathname());
+        throw std::runtime_error(fmt::format(
+            "Cannot iterate through links in group at {}",
+            location.pathname()));
     }
 }
 

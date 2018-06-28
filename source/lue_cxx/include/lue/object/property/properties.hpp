@@ -34,6 +34,14 @@ public:
 
     std::size_t    size                () const;
 
+    bool           contains            (std::string const& name) const;
+
+    ShapePerObject shape_per_object    (std::string const& name) const;
+
+    ValueVariability value_variability (std::string const& name) const;
+
+    ShapeVariability shape_variability (std::string const& name) const;
+
     template<
         typename T>
     T const&       collection          () const;

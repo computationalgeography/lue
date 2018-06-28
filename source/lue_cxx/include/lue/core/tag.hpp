@@ -11,6 +11,12 @@ static std::string const nr_objects_tag =
     "lue_nr_objects";
 static std::string const rank_tag =
     "lue_rank";
+// static std::string const shape_per_object_tag =
+//     "lue_shape_per_object";
+// static std::string const value_variability_tag =
+//     "lue_value_variability";
+// static std::string const shape_variability_tag =
+//     "lue_shape_variability";
 
 // info
 static std::string const id_tag =
