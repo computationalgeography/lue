@@ -3,6 +3,7 @@
 #include <cassert>
 #include <numeric>
 #include <random>
+#include <type_traits>
 
 
 namespace lue {
@@ -86,11 +87,15 @@ inline void select_random_ids(
 
 template<
     typename Collection>
-inline void generate_random_counts(
+inline void generate_random_integral_values(
     Collection& values,
     typename Collection::value_type const min,
     typename Collection::value_type const max)
 {
+    using ValueType = typename Collection::value_type;
+
+    static_assert(std::is_integral<ValueType>(), "");
+
     // Fill collection with range of random integers within [min, max].
     // Some of the values might occur more than once.
 
@@ -98,7 +103,7 @@ inline void generate_random_counts(
     // The engine provides random numbers
     std::random_device random_device;
     std::mt19937 random_number_engine{random_device()};
-    std::uniform_int_distribution<typename Collection::value_type>
+    std::uniform_int_distribution<ValueType>
         distribution{min, max};
     std::generate(values.begin(), values.end(),
         [&distribution, &random_number_engine]() {
@@ -108,10 +113,86 @@ inline void generate_random_counts(
 }
 
 
+template<
+    typename Collection>
+inline void generate_random_real_values(
+    Collection& values,
+    typename Collection::value_type const min,
+    typename Collection::value_type const max)
+{
+    using ValueType = typename Collection::value_type;
+
+    static_assert(std::is_floating_point<ValueType>(), "");
+
+    // Fill collection with range of random reals within [min, max].
+    // Some of the values might occur more than once (unlikely).
+
+    // The device provides a seed
+    // The engine provides random numbers
+    std::random_device random_device;
+    std::mt19937 random_number_engine{random_device()};
+    std::uniform_real_distribution<ValueType>
+        distribution{min, max};
+    std::generate(values.begin(), values.end(),
+        [&distribution, &random_number_engine]() {
+            return distribution(random_number_engine);
+        }
+    );
+}
 
 
+template<
+    typename Collection>
+inline void generate_random_counts(
+    Collection& values,
+    typename Collection::value_type const min,
+    typename Collection::value_type const max)
+{
+    generate_random_integral_values(values, min, max);
+}
 
 
+// template<
+//     typename Collection,
+//     typename = std::enable_if_t<std::is_integral<typename Collection::value_type>::value>>
+// inline void generate_random_values(
+//     Collection& values,
+//     typename Collection::value_type const min,
+//     typename Collection::value_type const max)
+// {
+//     generate_random_integral_values(values, min, max);
+// }
+
+
+template<
+    typename Collection,
+    typename = std::enable_if_t<std::is_floating_point<typename Collection::value_type>::value>>
+inline void generate_random_values(
+    Collection& values,
+    typename Collection::value_type const min,
+    typename Collection::value_type const max)
+{
+    generate_random_real_values(values, min, max);
+}
+
+
+// C++17:
+// template<
+//     typename Collection>
+// inline void generate_random_values(
+//     Collection& values,
+//     typename Collection::value_type const min,
+//     typename Collection::value_type const max)
+// {
+//     using ValueType = typename Collection::value_type;
+// 
+//     if constexpr(std::is_integral<ValueType>()) {
+//         generate_random_integral_values(values, min, max);
+//     }
+//     else {
+//         generate_random_real_values(values, min, max);
+//     }
+// }
 
 }  // namespace test
 }  // namespace lue

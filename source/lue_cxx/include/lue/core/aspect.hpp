@@ -54,24 +54,19 @@ struct AspectMap<EnumType>                                   \
 TAG(EnumType, tag_name)                              \
 MAP(EnumType, enum_pairs)
 
-// TAG_AND_MAP(Occurrence, occurrence_tag, ({
-//     { Occurrence::continuous, "lue_continuous" },
-//     { Occurrence::asynchronous, "lue_asynchronous" },
-//     { Occurrence::synchronous, "lue_synchronous" }
+// TAG_AND_MAP(ShapePerObject, shape_per_object_tag, ({
+//     { ShapePerObject::same, "lue_same_shape" },
+//     { ShapePerObject::different, "lue_different_shape" }
 // }))
 // 
-// TAG_AND_MAP(CollectionVariability, collection_variability_tag, ({
-//     { CollectionVariability::constant, "lue_constant_collection" },
-//     { CollectionVariability::variable, "lue_variable_collection" }
+// TAG_AND_MAP(ValueVariability, value_variability_tag, ({
+//     { ValueVariability::constant, "lue_constant" },
+//     { ValueVariability::variable, "lue_variable" }
 // }))
 // 
 // TAG_AND_MAP(ShapeVariability, shape_variability_tag, ({
-//     { ShapeVariability::constant, "lue_constant_shape" }
-// }))
-// 
-// TAG_AND_MAP(ShapePerItem, shape_per_item_tag, ({
-//     { ShapePerItem::same, "lue_same_shape" },
-//     { ShapePerItem::different, "lue_different_shape" }
+//     { ShapeVariability::constant, "lue_constant_shape" },
+//     { ShapeVariability::variable, "lue_variable_shape" }
 // }))
 
 TAG_AND_MAP(TimeDomainItemType, time_domain_item_type_tag, ({

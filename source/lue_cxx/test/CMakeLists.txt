@@ -44,6 +44,8 @@ add_unit_tests(
 
         object/presence_in_time_test
 
+        scalar_test
+
     LINK_LIBRARIES
         lue::test
 )
