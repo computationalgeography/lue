@@ -25,7 +25,7 @@ public:
 
     friend ActiveObjectIndex create_active_object_index(hdf5::Group& parent);
 
-                   ActiveObjectIndex   (hdf5::Group const& parent);
+                   ActiveObjectIndex   (hdf5::Group& parent);
 
                    ActiveObjectIndex   (ActiveObjectIndex const&)=delete;
 

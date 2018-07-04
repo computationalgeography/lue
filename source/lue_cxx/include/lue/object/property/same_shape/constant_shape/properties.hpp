@@ -18,7 +18,7 @@ class Properties:
 
 public:
 
-    explicit       Properties          (hdf5::Group const& parent);
+    explicit       Properties          (hdf5::Group& parent);
 
                    Properties          (Collection<Property>&& collection);
 

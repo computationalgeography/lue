@@ -63,9 +63,9 @@ void File::AccessPropertyList::use_mpi_communicator(
 */
 File::File(
     std::string const& name,
-    unsigned int const flags)
+    unsigned int const flags):
 
-    : File(name, flags, AccessPropertyList())
+    File{name, flags, AccessPropertyList()}
 
     // : Group(Identifier(::H5Fopen(name.c_str(), flags, H5P_DEFAULT),
     //     ::H5Fclose))
@@ -83,9 +83,9 @@ File::File(
     @exception  std::runtime_error In case the file cannot be opened
 */
 File::File(
-    std::string const& name)
+    std::string const& name):
 
-    : File(name, H5F_ACC_RDONLY, AccessPropertyList())
+    File{name, H5F_ACC_RDONLY, AccessPropertyList()}
 
 {
 }
@@ -94,10 +94,13 @@ File::File(
 File::File(
     std::string const& name,
     unsigned int const flags,
-    AccessPropertyList const& access_property_list)
+    AccessPropertyList const& access_property_list):
 
-    : Group(Identifier(::H5Fopen(name.c_str(), flags,
-        access_property_list.id()), ::H5Fclose))
+    Group{
+            Identifier(
+                ::H5Fopen(name.c_str(), flags, access_property_list.id()),
+                ::H5Fclose)
+        }
 
 {
     if(!id().is_valid()) {
@@ -110,9 +113,9 @@ File::File(
 
 
 File::File(
-    Identifier&& id)
+    Identifier&& id):
 
-    : Group(std::forward<Identifier>(id))
+    Group{std::forward<Identifier>(id)}
 
 {
 }

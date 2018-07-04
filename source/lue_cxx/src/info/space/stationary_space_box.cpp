@@ -5,7 +5,7 @@
 namespace lue {
 
 StationarySpaceBox::StationarySpaceBox(
-    hdf5::Group const& parent,
+    hdf5::Group& parent,
     hdf5::Datatype const& memory_datatype):
 
     same_shape::Value{parent, coordinates_tag, memory_datatype}

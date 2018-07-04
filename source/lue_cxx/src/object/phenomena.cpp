@@ -5,7 +5,7 @@
 namespace lue {
 
 Phenomena::Phenomena(
-    hdf5::Group const& parent):
+    hdf5::Group& parent):
 
     Collection<Phenomenon>{parent, phenomena_tag}
 

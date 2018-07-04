@@ -11,7 +11,7 @@ class Universes:
 
 public:
 
-                   Universes           (hdf5::Group const& parent);
+                   Universes           (hdf5::Group& parent);
 
                    Universes           (Collection<Universe>&& collection);
 

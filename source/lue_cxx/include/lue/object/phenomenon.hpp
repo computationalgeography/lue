@@ -10,7 +10,7 @@ class Phenomenon:
 
 public:
 
-                   Phenomenon          (hdf5::Group const& parent,
+                   Phenomenon          (hdf5::Group& parent,
                                         std::string const& name);
 
                    Phenomenon          (hdf5::Group&& group);

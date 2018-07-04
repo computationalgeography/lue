@@ -11,7 +11,7 @@ class Phenomena:
 
 public:
 
-                   Phenomena           (hdf5::Group const& parent);
+                   Phenomena           (hdf5::Group& parent);
 
                    Phenomena           (Collection<Phenomenon>&& collection);
 

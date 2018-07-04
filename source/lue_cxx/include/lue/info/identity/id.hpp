@@ -14,7 +14,7 @@ class ID:
 
 public:
 
-                   ID                  (hdf5::Group const& parent);
+                   ID                  (hdf5::Group& parent);
 
                    ID                  (same_shape::Value&& value);
 

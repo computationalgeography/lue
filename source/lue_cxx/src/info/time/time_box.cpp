@@ -5,7 +5,7 @@
 namespace lue {
 
 TimeBox::TimeBox(
-    hdf5::Group const& parent)
+    hdf5::Group& parent)
 :
     same_shape::constant_shape::Value{
         parent, coordinates_tag,

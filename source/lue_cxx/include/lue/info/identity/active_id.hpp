@@ -33,7 +33,7 @@ public:
 
     friend ActiveID create_active_id(hdf5::Group& parent);
 
-                   ActiveID            (hdf5::Group const& parent);
+                   ActiveID            (hdf5::Group& parent);
 
                    ActiveID            (ActiveID const&)=delete;
 

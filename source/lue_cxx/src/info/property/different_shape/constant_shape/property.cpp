@@ -7,7 +7,7 @@ namespace different_shape {
 namespace constant_shape {
 
 Property::Property(
-    hdf5::Group const& parent,
+    hdf5::Group& parent,
     std::string const& name):
 
     PropertyGroup{parent, name},
@@ -18,7 +18,7 @@ Property::Property(
 
 
 Property::Property(
-    hdf5::Group const& parent,
+    hdf5::Group& parent,
     std::string const& name,
     hdf5::Datatype const& memory_datatype):
 

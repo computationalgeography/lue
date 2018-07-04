@@ -7,7 +7,7 @@
 namespace lue {
 
 Properties::Properties(
-    hdf5::Group const& parent):
+    hdf5::Group& parent):
 
     hdf5::Group{parent, properties_tag},
     _same_shape_properties{*this},

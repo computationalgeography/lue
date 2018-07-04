@@ -5,7 +5,7 @@
 namespace lue {
 
 PropertySet::PropertySet(
-    hdf5::Group const& parent,
+    hdf5::Group& parent,
     std::string const& name):
 
     hdf5::Group{parent, name},

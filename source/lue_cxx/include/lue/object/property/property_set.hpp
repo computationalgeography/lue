@@ -14,7 +14,7 @@ class PropertySet:
 
 public:
 
-                   PropertySet         (hdf5::Group const& parent,
+                   PropertySet         (hdf5::Group& parent,
                                         std::string const& name);
 
                    PropertySet         (hdf5::Group&& group);

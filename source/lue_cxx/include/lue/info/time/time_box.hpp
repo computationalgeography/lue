@@ -15,7 +15,7 @@ class TimeBox:
 
 public:
 
-                   TimeBox             (hdf5::Group const& parent);
+                   TimeBox             (hdf5::Group& parent);
 
                    TimeBox             (TimeBox const&)=delete;
 

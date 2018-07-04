@@ -5,7 +5,7 @@
 namespace lue {
 
 MobileSpacePoint::MobileSpacePoint(
-    hdf5::Group const& parent,
+    hdf5::Group& parent,
     hdf5::Datatype const& memory_datatype):
 
     same_shape::constant_shape::Value{

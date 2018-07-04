@@ -8,7 +8,7 @@ namespace same_shape {
     @brief      Open value @a name in @a parent
 */
 Value::Value(
-    hdf5::Group const& parent,
+    hdf5::Group& parent,
     std::string const& name)
 
     : Array{parent, name}
@@ -21,7 +21,7 @@ Value::Value(
     @brief      Open value @a name in @a parent
 */
 Value::Value(
-    hdf5::Group const& parent,
+    hdf5::Group& parent,
     std::string const& name,
     hdf5::Datatype const& memory_datatype)
 

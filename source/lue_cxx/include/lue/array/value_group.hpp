@@ -34,10 +34,10 @@ public:
 
 protected:
 
-                   ValueGroup          (hdf5::Group const& parent,
+                   ValueGroup          (hdf5::Group& parent,
                                         std::string const& name);
 
-                   ValueGroup          (hdf5::Group const& parent,
+                   ValueGroup          (hdf5::Group& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& memory_datatype);
 

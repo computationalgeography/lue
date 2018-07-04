@@ -5,7 +5,7 @@
 namespace lue {
 
 Universes::Universes(
-    hdf5::Group const& parent):
+    hdf5::Group& parent):
 
     Collection<Universe>{parent, universes_tag}
 
