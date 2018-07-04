@@ -47,10 +47,10 @@ public:
     };
 
 
-                   Dataset             (Group const& parent,
+                   Dataset             (Group& parent,
                                         std::string const& name);
 
-    explicit       Dataset             (Identifier const& id);
+    explicit       Dataset             (Identifier& id);
 
     explicit       Dataset             (Identifier&& id);
 
@@ -116,10 +116,10 @@ private:
 bool               dataset_exists      (Identifier const& parent,
                                         std::string const& name);
 
-Dataset            open_dataset        (Identifier const& parent,
+Dataset            open_dataset        (Identifier& parent,
                                         std::string const& name);
 
-Dataset            create_dataset      (Identifier const& parent,
+Dataset            create_dataset      (Identifier& parent,
                                         std::string const& name,
                                         Datatype const& datatype,
                                         Dataspace const& dataspace,

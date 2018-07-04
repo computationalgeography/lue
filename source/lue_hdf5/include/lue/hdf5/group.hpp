@@ -28,15 +28,15 @@ public:
                                         std::string const& name);
 
                    Group               (Group& parent,
-                                        Identifier const& id);
+                                        Identifier& id);
 
-                   Group               (Group const& other);
+                   Group               (Group& other);
 
                    Group               (Group&&)=default;
 
                    ~Group              ()=default;
 
-    Group&         operator=           (Group const& other);
+    Group&         operator=           (Group const& other)=delete;
 
     Group&         operator=           (Group&&)=default;
 
@@ -79,7 +79,7 @@ private:
 bool               group_exists        (Group const& parent,
                                         std::string const& name);
 
-Group              create_group        (Group parent,
+Group              create_group        (Group& parent,
                                         std::string const& name);
 
 } // namespace hdf5

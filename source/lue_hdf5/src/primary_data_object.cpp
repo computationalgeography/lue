@@ -7,10 +7,10 @@ namespace hdf5 {
 
 PrimaryDataObject::PrimaryDataObject(
     Identifier const& location,
-    std::string const& name)
+    std::string const& name):
 
-    : _id{::H5Oopen(location, name.c_str(), H5P_DEFAULT), ::H5Oclose},
-      _attributes{_id}
+    _id{::H5Oopen(location, name.c_str(), H5P_DEFAULT), ::H5Oclose},
+    _attributes{_id}
 
 {
 }
@@ -23,10 +23,10 @@ PrimaryDataObject::PrimaryDataObject(
     will be opened.
 */
 PrimaryDataObject::PrimaryDataObject(
-    Identifier const& id)
+    Identifier& id):
 
-    : _id{id},
-      _attributes{_id}
+    _id{id},
+    _attributes{_id}
 
 {
     assert(_id.is_valid());
@@ -51,6 +51,15 @@ PrimaryDataObject::PrimaryDataObject(
     @brief      Return the object's identifier
 */
 Identifier const& PrimaryDataObject::id() const
+{
+    return _id;
+}
+
+
+/*!
+    @brief      Return the object's identifier
+*/
+Identifier& PrimaryDataObject::id()
 {
     return _id;
 }

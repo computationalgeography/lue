@@ -34,6 +34,8 @@ public:
 
     Identifier const& id               () const;
 
+    Identifier&    id                  ();
+
     Attributes const& attributes       () const;
 
     Attributes&    attributes          ();
@@ -46,7 +48,7 @@ public:
 
 protected:
 
-    explicit       PrimaryDataObject   (Identifier const& id);
+    explicit       PrimaryDataObject   (Identifier& id);
 
     explicit       PrimaryDataObject   (Identifier&& id);
 

@@ -5,7 +5,7 @@
 namespace lue {
 
 Array::Array(
-    hdf5::Group const& parent,
+    hdf5::Group& parent,
     std::string const& name)
 
     : hdf5::Dataset{parent, name},
@@ -17,7 +17,7 @@ Array::Array(
 
 
 Array::Array(
-    hdf5::Group const& parent,
+    hdf5::Group& parent,
     std::string const& name,
     hdf5::Datatype const& memory_datatype)
 
@@ -42,7 +42,7 @@ Array::Array(
 
 
 Array::Array(
-    hdf5::Identifier const& id,
+    hdf5::Identifier& id,
     hdf5::Datatype const& memory_datatype)
 
     : hdf5::Dataset{id},

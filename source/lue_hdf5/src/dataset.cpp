@@ -63,7 +63,7 @@ void Dataset::TransferPropertyList::set_transfer_mode(
                 located at @a parent cannot be opened
 */
 Dataset::Dataset(
-    Group const& parent,
+    Group& parent,
     std::string const& name)
 
     : PrimaryDataObject{Identifier{
@@ -82,7 +82,7 @@ Dataset::Dataset(
 
 
 Dataset::Dataset(
-    Identifier const& id)
+    Identifier& id)
 
     : PrimaryDataObject{id}
 
@@ -332,7 +332,7 @@ bool dataset_exists(
 
 
 Dataset open_dataset(
-    Identifier const& parent,
+    Identifier& parent,
     std::string const& name)
 {
     Identifier dataset_location(::H5Dopen(parent, name.c_str(),
@@ -362,7 +362,7 @@ Dataset open_dataset(
                 or cannot be created
 */
 Dataset create_dataset(
-    Identifier const& parent,
+    Identifier& parent,
     std::string const& name,
     Datatype const& datatype,
     Dataspace const& dataspace,

@@ -233,7 +233,7 @@ Group::Group(
 
 Group::Group(
     Group& parent,
-    Identifier const& id):
+    Identifier& id):
 
     PrimaryDataObject{id},
     _parent{std::make_unique<Group>(parent)}
@@ -244,7 +244,7 @@ Group::Group(
 
 
 Group::Group(
-    Group const& other):
+    Group& other):
 
     PrimaryDataObject{other},
     _parent{}
@@ -256,21 +256,21 @@ Group::Group(
 }
 
 
-Group& Group::operator=(
-    Group const& other)
-
-{
-    PrimaryDataObject::operator=(other);
-
-    if(other._parent) {
-        _parent = std::make_unique<Group>(*other._parent);
-    }
-    else {
-        _parent.reset();
-    }
-
-    return *this;
-}
+// Group& Group::operator=(
+//     Group& other)
+// 
+// {
+//     PrimaryDataObject::operator=(other);
+// 
+//     if(other._parent) {
+//         _parent = std::make_unique<Group>(*other._parent);
+//     }
+//     else {
+//         _parent.reset();
+//     }
+// 
+//     return *this;
+// }
 
 
 /*!
@@ -467,7 +467,7 @@ bool group_exists(
     @param      name Name of group to create
 */
 Group create_group(
-    Group parent,
+    Group& parent,
     std::string const& name)
 {
     if(group_exists(parent, name)) {
