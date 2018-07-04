@@ -85,7 +85,7 @@ void Value::reserve(
 
 
 Array Value::operator[](
-    ID id)
+    ID const id)
 {
     std::string const name = std::to_string(id);
 

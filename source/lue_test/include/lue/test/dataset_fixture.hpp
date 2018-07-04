@@ -25,9 +25,13 @@ public:
 
    Dataset&        dataset             ();
 
+   void            keep_dataset_upon_destruction();
+
 private:
 
     std::string const _pathname;
+
+    bool           _remove_dataset_upon_destruction;
 
     std::unique_ptr<Dataset> _dataset;
 

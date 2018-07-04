@@ -16,7 +16,7 @@ BOOST_FIXTURE_TEST_CASE(omnipresent_in_time, lue::test::DatasetFixture)
     // Create and write
     {
         auto& phenomenon = dataset().add_phenomenon(phenomenon_name);
-        auto& property_set = phenomenon.add_property_set(property_set_name);
+        auto& property_set = phenomenon.property_sets().add(property_set_name);
         auto& object_tracker = property_set.object_tracker();
 
         object_tracker.id().reserve(nr_objects);

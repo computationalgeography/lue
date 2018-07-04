@@ -12,6 +12,11 @@ inline void save(
 }
 
 
+/*!
+    @brief      Save @a aspect in @a attributes and recurse on @a aspects
+
+    Recursion stops when there are no @a aspects left to save.
+*/
 template<
     typename Aspect,
     typename... Aspects>
@@ -25,6 +30,11 @@ inline void save(
 }
 
 
+/*!
+    @brief      Collection of configuration aspects that can be saved
+                and read from an hdf5::Attributes instance
+    @tparam     Ts Types of configuration aspect values
+*/
 template<
     typename... Ts>
 class Configuration
@@ -50,8 +60,15 @@ public:
 
     template<
         typename T>
-    T              type                () const;
+    T              value               () const;
 
+
+    /*!
+        @brief      Return wheter @a lhs equals @a rhs
+
+        Configuration instances are considered equal when their collections
+        of aspects are equal.
+    */
     friend bool operator==(
         Configuration<Ts...> const& lhs,
         Configuration<Ts...> const& rhs)
@@ -67,22 +84,32 @@ private:
                                         std::index_sequence<indices...> const&)
                                             const;
 
+    //! Configuration aspects
     std::tuple<Aspect<Ts>...> _aspects;
 
 };
 
 
+/*!
+    @brief      Construct instance based on @a Ts and @a values
+    @param      values Values representing the configuration aspects
+*/
 template<
     typename... Ts>
 inline Configuration<Ts...>::Configuration(
-    Ts... types)
+    Ts... values)
 
-    : _aspects{Aspect<Ts>{types}...}
+    : _aspects{Aspect<Ts>{values}...}
 
 {
 }
 
 
+/*!
+    @brief      Construct instance based on @a Ts and @a attributes
+    @param      attributes Collection of attributes to read configuration
+                aspect values from
+*/
 template<
     typename... Ts>
 inline Configuration<Ts...>::Configuration(
@@ -106,6 +133,9 @@ inline void Configuration<Ts...>::save(
 }
 
 
+/*!
+    @brief      Save configuration aspect values to @a attributes
+*/
 template<
     typename... Ts>
 inline void Configuration<Ts...>::save(
@@ -115,13 +145,17 @@ inline void Configuration<Ts...>::save(
 }
 
 
+/*!
+    @brief      Return configuration aspect value associated with type @a T
+    @tparam     T Type of configuration aspect value to return
+*/
 template<
     typename... Ts>
 template<
     typename T>
-inline T Configuration<Ts...>::type() const
+inline T Configuration<Ts...>::value() const
 {
-    return std::get<Aspect<T>>(_aspects).type();
+    return std::get<Aspect<T>>(_aspects).value();
 }
 
 }  // namespace lue

@@ -161,9 +161,8 @@ ShapeVariability Properties::shape_variability(
 }
 
 
-same_shape::Property& Properties::add(
-    std::string const& name,
-    hdf5::Datatype const& datatype)
+void Properties::verify_property_does_not_exist(
+    std::string const& name) const
 {
     if(contains(name)) {
         throw std::runtime_error(fmt::format(
@@ -171,8 +170,38 @@ same_shape::Property& Properties::add(
                 name
             ));
     }
+}
+
+
+same_shape::Property& Properties::add(
+    std::string const& name,
+    hdf5::Datatype const& datatype)
+{
+    verify_property_does_not_exist(name);
 
     return _same_shape_properties.add(name, datatype);
+}
+
+
+same_shape::Property& Properties::add(
+    std::string const& name,
+    hdf5::Datatype const& datatype,
+    hdf5::Shape const& shape)
+{
+    verify_property_does_not_exist(name);
+
+    return _same_shape_properties.add(name, datatype, shape);
+}
+
+
+different_shape::Property& Properties::add(
+    std::string const& name,
+    hdf5::Datatype const& datatype,
+    Rank const rank)
+{
+    verify_property_does_not_exist(name);
+
+    return _different_shape_properties.add(name, datatype, rank);
 }
 
 

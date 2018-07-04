@@ -33,6 +33,16 @@ Property& Properties::add(
 }
 
 
+Property& Properties::add(
+    std::string const& name,
+    hdf5::Datatype const& datatype,
+    hdf5::Shape const& shape)
+{
+    return Collection::add(
+        name, create_property(*this, name, datatype, shape));
+}
+
+
 Properties create_properties(
     hdf5::Group& parent,
     info::ID& id)

@@ -1,13 +1,13 @@
 #include "lue/object/property_sets.hpp"
-#include "lue/core/tag.hpp"
 
 
 namespace lue {
 
 PropertySets::PropertySets(
-    hdf5::Group& parent):
+    hdf5::Group& parent,
+    std::string const& name):
 
-    Collection<PropertySet>{parent, property_sets_tag}
+    Collection<PropertySet>{parent, name}
 
 {
 }
@@ -26,7 +26,21 @@ PropertySets::PropertySets(
 PropertySet& PropertySets::add(
     std::string const& name)
 {
-    return Collection::add(name, create_property_set(*this, name));
+    return Collection::add(
+        name,
+        create_property_set(
+            *this, name));
+}
+
+
+PropertySet& PropertySets::add(
+    std::string const& name,
+    SpaceConfiguration const& space_configuration)
+{
+    return Collection::add(
+        name,
+        create_property_set(
+            *this, name, space_configuration));
 }
 
 
@@ -43,10 +57,11 @@ PropertySet& PropertySets::add(
 
 
 PropertySets create_property_sets(
-    hdf5::Group& parent)
+    hdf5::Group& parent,
+    std::string const& name)
 {
     auto collection = create_collection<PropertySet>(
-        parent, property_sets_tag);
+        parent, name);
 
     return PropertySets{std::move(collection)};
 }

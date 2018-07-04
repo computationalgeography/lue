@@ -89,11 +89,9 @@ Properties const& PropertySet::properties() const
 }
 
 
-same_shape::Property& PropertySet::add_property(
-    std::string const& name,
-    hdf5::Datatype const& datatype)
+Properties& PropertySet::properties()
 {
-    return _properties.add(name, datatype);
+    return _properties;
 }
 
 
@@ -109,6 +107,20 @@ PropertySet create_property_set(
     return PropertySet{std::move(group)};
 }
 
+
+PropertySet create_property_set(
+    hdf5::Group& parent,
+    std::string const& name,
+    SpaceConfiguration const& space_configuration)
+{
+    auto group = hdf5::create_group(parent, name);
+
+    auto object_tracker = create_object_tracker(group);
+    create_space_domain(group, space_configuration);
+    create_properties(group, object_tracker);
+
+    return PropertySet{std::move(group)};
+}
 
 PropertySet create_property_set(
     hdf5::Group& parent,

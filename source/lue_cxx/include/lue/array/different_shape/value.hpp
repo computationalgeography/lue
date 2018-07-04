@@ -44,12 +44,14 @@ public:
                                         ID const* ids,
                                         hdf5::Shape const* shapes);
 
-    void           reserve             (ID id,
-                                        hdf5::Shape const& shape);
-
     Array          operator[]          (ID id);
 
 private:
+
+    // Refactor reserve functions when making this public
+    // Handle _nr_objects in public functions
+    void           reserve             (ID id,
+                                        hdf5::Shape const& shape);
 
     Count          _nr_objects;
 

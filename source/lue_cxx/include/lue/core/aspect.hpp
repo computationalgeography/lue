@@ -85,6 +85,10 @@ TAG_AND_MAP(SpaceDomainItemType, space_domain_item_type_tag, ({
     { SpaceDomainItemType::box, "lue_box" }
 }))
 
+TAG_AND_MAP(SpaceDiscretization, space_discretization_tag, ({
+    { SpaceDiscretization::cartesian_grid, "lue_cartesian_grid" }
+}))
+
 // // TAG_AND_MAP(time::Unit, unit_tag, ({
 // //     { time::Unit::second, "lue_second" }
 // // }))
@@ -99,9 +103,9 @@ TAG_AND_MAP(SpaceDomainItemType, space_domain_item_type_tag, ({
 template<
     typename T>
 inline std::string aspect_to_string(
-    T const type)
+    T const value)
 {
-    return detail::AspectMap<T>::value().as_string(type);
+    return detail::AspectMap<T>::value().as_string(value);
 }
 
 
@@ -130,7 +134,7 @@ class Aspect
 
 public:
 
-    explicit       Aspect              (T type);
+    explicit       Aspect              (T value);
 
     explicit       Aspect              (hdf5::Attributes const& attributes);
 
@@ -144,7 +148,7 @@ public:
 
     Aspect&        operator=           (Aspect&&)=default;
 
-    T              type                () const;
+    T              value               () const;
 
     void           save                (hdf5::Attributes& attributes) const;
 
@@ -152,7 +156,7 @@ public:
         Aspect<T> const& lhs,
         Aspect<T> const& rhs)
     {
-        return lhs._type == rhs._type;
+        return lhs._value == rhs._value;
     }
 
 protected:
@@ -161,7 +165,7 @@ protected:
 
 private:
 
-    T              _type;
+    T              _value;
 
 };
 
@@ -169,19 +173,27 @@ private:
 template<
     typename T>
 inline Aspect<T>::Aspect(
-    T const type)
+    T const value)
 
-    : _type{type}
+    : _value{value}
 {
 }
 
 
+/*!
+    @brief      Read configuration aspect from @a attributes
+    @sa         Tag, string_to_aspect(std::string const&)
+
+    The template parameter @a T is used to lookup a tag (a string),
+    which is used as the name of the attribute to read. The attribute value
+    is translated into an instance of @a T.
+*/
 template<
     typename T>
 inline Aspect<T>::Aspect(
     hdf5::Attributes const& attributes)
 
-    : _type{string_to_aspect<T>(
+    : _value{string_to_aspect<T>(
         attributes.read<std::string>(detail::Tag<T>::value()))}
 
 {
@@ -190,9 +202,9 @@ inline Aspect<T>::Aspect(
 
 template<
     typename T>
-inline T Aspect<T>::type() const
+inline T Aspect<T>::value() const
 {
-    return _type;
+    return _value;
 }
 
 
@@ -202,7 +214,7 @@ inline void Aspect<T>::save(
     hdf5::Attributes& attributes) const
 {
     attributes.write<std::string>(
-        detail::Tag<T>::value(), aspect_to_string<T>(_type));
+        detail::Tag<T>::value(), aspect_to_string<T>(_value));
 }
 
 
@@ -211,7 +223,7 @@ template<
 inline void Aspect<T>::load(
     hdf5::Attributes const& attributes)
 {
-    _type = string_to_aspect<T>(
+    _value = string_to_aspect<T>(
         attributes.read<std::string>(detail::Tag<T>::value()));
 }
 

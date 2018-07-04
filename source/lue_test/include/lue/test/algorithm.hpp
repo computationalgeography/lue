@@ -8,6 +8,20 @@
 
 namespace lue {
 namespace test {
+namespace detail {
+
+auto& random_number_engine()
+{
+    // The device provides a seed
+    // The engine provides random numbers
+    static std::random_device random_device;
+    static std::mt19937 random_number_engine{random_device()};
+
+    return random_number_engine;
+}
+
+}  // namespace detail
+
 
 template<
     typename Collection1,
@@ -36,13 +50,7 @@ inline void generate_random_ids(
     // collection
 
     std::iota(ids.begin(), ids.end(), 0);
-
-    // Shuffle the collection
-    // The device provides a seed
-    // The engine provides random numbers
-    std::random_device random_device;
-    std::mt19937 random_number_engine{random_device()};
-    std::shuffle(ids.begin(), ids.end(), random_number_engine);
+    std::shuffle(ids.begin(), ids.end(), detail::random_number_engine());
 }
 
 
@@ -64,8 +72,7 @@ inline void select_random_ids(
     Collection all_ids(max_count);
     generate_random_ids(all_ids);
 
-    std::random_device random_device;
-    std::mt19937 random_number_engine{random_device()};
+    auto& random_number_engine{detail::random_number_engine()};
     std::uniform_int_distribution<typename Collection::size_type>
         distribution{0, max_count - 1};
 
@@ -99,10 +106,7 @@ inline void generate_random_integral_values(
     // Fill collection with range of random integers within [min, max].
     // Some of the values might occur more than once.
 
-    // The device provides a seed
-    // The engine provides random numbers
-    std::random_device random_device;
-    std::mt19937 random_number_engine{random_device()};
+    auto& random_number_engine{detail::random_number_engine()};
     std::uniform_int_distribution<ValueType>
         distribution{min, max};
     std::generate(values.begin(), values.end(),
@@ -127,10 +131,7 @@ inline void generate_random_real_values(
     // Fill collection with range of random reals within [min, max].
     // Some of the values might occur more than once (unlikely).
 
-    // The device provides a seed
-    // The engine provides random numbers
-    std::random_device random_device;
-    std::mt19937 random_number_engine{random_device()};
+    auto& random_number_engine{detail::random_number_engine()};
     std::uniform_real_distribution<ValueType>
         distribution{min, max};
     std::generate(values.begin(), values.end(),
@@ -152,27 +153,47 @@ inline void generate_random_counts(
 }
 
 
-// template<
-//     typename Collection,
-//     typename = std::enable_if_t<std::is_integral<typename Collection::value_type>::value>>
-// inline void generate_random_values(
-//     Collection& values,
-//     typename Collection::value_type const min,
-//     typename Collection::value_type const max)
-// {
-//     generate_random_integral_values(values, min, max);
-// }
+template<
+    typename Collection,
+    std::enable_if_t<
+        std::is_integral<typename Collection::value_type>::value, int> = 0
+>
+inline void generate_random_values(
+    Collection& values,
+    typename Collection::value_type const min,
+    typename Collection::value_type const max)
+{
+    generate_random_integral_values(values, min, max);
+}
 
 
 template<
     typename Collection,
-    typename = std::enable_if_t<std::is_floating_point<typename Collection::value_type>::value>>
+    std::enable_if_t<
+        std::is_floating_point<typename Collection::value_type>::value, int> = 0
+>
 inline void generate_random_values(
     Collection& values,
     typename Collection::value_type const min,
     typename Collection::value_type const max)
 {
     generate_random_real_values(values, min, max);
+}
+
+
+template<
+    typename Collection,
+    std::enable_if_t<
+        !std::is_arithmetic<typename Collection::value_type>::value, int> = 0
+>
+inline void generate_random_values(
+    Collection& collection,
+    typename Collection::value_type::value_type const min,
+    typename Collection::value_type::value_type const max)
+{
+    for(auto& element: collection) {
+        generate_random_values(element, min, max);
+    }
 }
 
 
@@ -193,6 +214,31 @@ inline void generate_random_values(
 //         generate_random_real_values(values, min, max);
 //     }
 // }
+
+
+
+template<
+    typename Collection>
+inline void generate_random_shapes(
+    Collection& shapes,
+    typename Collection::size_type const rank,
+    typename Collection::value_type::value_type const min,
+    typename Collection::value_type::value_type const max)
+{
+    using ValueType = typename Collection::value_type::value_type;
+
+    auto& random_number_engine = detail::random_number_engine();
+    std::uniform_int_distribution<ValueType> distribution{min, max};
+
+    for(auto& shape: shapes) {
+        shape.resize(rank);
+        std::generate(shape.begin(), shape.end(),
+                [&distribution, &random_number_engine]() {
+                    return distribution(random_number_engine);
+                }
+            );
+    }
+}
 
 }  // namespace test
 }  // namespace lue

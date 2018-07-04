@@ -44,8 +44,7 @@ public:
 
     Properties const& properties       () const;
 
-    same_shape::Property& add_property (std::string const& name,
-                                        hdf5::Datatype const& datatype);
+    Properties&    properties          ();
 
 private:
 
@@ -65,9 +64,20 @@ PropertySet        create_property_set (hdf5::Group& parent,
 
 PropertySet        create_property_set (hdf5::Group& parent,
                                         std::string const& name,
+                                        SpaceConfiguration const&
+                                            space_configuration);
+
+PropertySet        create_property_set (hdf5::Group& parent,
+                                        std::string const& name,
                                         TimeConfiguration const&
                                             time_configuration,
                                         SpaceConfiguration const&
                                             space_configuration);
+
+// PropertySet        create_property_set (hdf5::Group& parent,
+//                                         std::string const& name,
+//                                         TimeDomain& time_domain,
+//                                         SpaceConfiguration const&
+//                                             space_configuration);
 
 }  // namespace lue

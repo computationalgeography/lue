@@ -63,10 +63,20 @@ static std::string const different_shape_variable_shape_tag =
     "lue_different_shape_variable_shape";
 static std::string const phenomena_tag =
     "lue_phenomena";
+static std::string const collection_property_sets_tag =
+    "lue_collection_property_sets";
 static std::string const property_sets_tag =
     "lue_property_sets";
 static std::string const universes_tag =
     "lue_universes";
+
+static std::string const space_discretization_tag =
+    "lue_space_discretization";
+static std::string const space_discretization_property_tag =
+    "lue_space_discretization_property";
+static std::string const time_discretization_tag =
+    "lue_time_discretization";
+
 
 }  // namespace lue
 

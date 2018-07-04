@@ -5,6 +5,9 @@
 
 namespace lue {
 
+/*!
+    @brief      Aspects that determine how locations in space are represented
+*/
 using SpaceConfiguration = Configuration<
     Mobility,
     SpaceDomainItemType
