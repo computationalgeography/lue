@@ -440,10 +440,8 @@ before_script:
     - pip install conan
     - mkdir build
     - cd build
-    # When building ourselves use:
-    #     -s compiler=gcc compiler.version=7 -s build_type=$TRAVIS_BUILD_TYPE
     - conan remote add conan-community https://api.bintray.com/conan/conan-community/conan
-    - conan install .. --setting compiler=`echo $TRAVIS_C_COMPILER | cut -d'-' -f1` --setting compiler.version=`echo $TRAVIS_C_COMPILER | cut -d'-' -f2` --build fmt
+    - CC=$TRAVIS_C_COMPILER CXX=$TRAVIS_CXX_COMPILER conan install .. --setting compiler=`echo $TRAVIS_C_COMPILER | cut -d'-' -f1` --setting compiler.version=`echo $TRAVIS_C_COMPILER | cut -d'-' -f2` --build fmt
     - cd ..
 
 
