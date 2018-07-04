@@ -17,7 +17,7 @@ class SpaceDomain:
 
 public:
 
-    explicit       SpaceDomain         (hdf5::Group const& parent);
+    explicit       SpaceDomain         (hdf5::Group& parent);
 
     explicit       SpaceDomain         (hdf5::Group&& group);
 

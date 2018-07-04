@@ -11,6 +11,22 @@ to LUE. See @ref lue_hdf5_example for an example CMake project using
 only the `lue_hdf5` library.
 
 
+# Design
+## Const correctness
+Many of the HDF5 classes represent something in the HDF5 file, like
+an HDF5 group or dataset. Think of these classes as pointers. Copying
+their instances allows someone else to make changes to the stuff in the
+file. Passing an instance to another function allows the other function
+to change the contents of the file (even if the instance passed in is
+const!). Therefore, passing in instances should normally be implemented
+using non-const references to instances. If all we have is a const
+instance, then we are not allowed to copy it.
+
+See also:
+- [C++ FAQ: Const correctness and logical vs physical state](
+    https://support.hdfgroup.org/HDF5/doc/RM/CollectiveCalls.html)
+
+
 # Example  {#lue_hdf5_example}
 Lets assume we need to write an empty HDF5 file called `hello_world.h5`:
 

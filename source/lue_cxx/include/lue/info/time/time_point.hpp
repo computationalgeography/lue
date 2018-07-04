@@ -15,7 +15,7 @@ class TimePoint:
 
 public:
 
-                   TimePoint           (hdf5::Group const& parent);
+                   TimePoint           (hdf5::Group& parent);
 
                    TimePoint           (TimePoint const&)=delete;
 

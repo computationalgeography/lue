@@ -4,7 +4,7 @@
 namespace lue {
 
 ObjectTracker::ObjectTracker(
-    hdf5::Group const& parent):
+    hdf5::Group& parent):
 
     _id{parent},
     _active_id{parent},

@@ -11,7 +11,7 @@ class PropertySets:
 
 public:
 
-    explicit       PropertySets        (hdf5::Group const& parent);
+    explicit       PropertySets        (hdf5::Group& parent);
 
                    PropertySets        (Collection<PropertySet>&& collection);
 

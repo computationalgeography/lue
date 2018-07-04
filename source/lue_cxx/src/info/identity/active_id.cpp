@@ -6,7 +6,7 @@ namespace lue {
 namespace info {
 
 ActiveID::ActiveID(
-    hdf5::Group const& parent)
+    hdf5::Group& parent)
 :
     same_shape::constant_shape::Value{parent, active_id_tag}
 

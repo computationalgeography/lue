@@ -7,7 +7,7 @@ namespace different_shape {
 namespace variable_shape {
 
 Properties::Properties(
-    hdf5::Group const& parent):
+    hdf5::Group& parent):
 
     Collection<Property>{parent, different_shape_variable_shape_tag}
 

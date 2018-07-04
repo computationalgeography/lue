@@ -10,7 +10,7 @@ class Universe:
 
 public:
 
-                   Universe            (hdf5::Group const& parent,
+                   Universe            (hdf5::Group& parent,
                                         std::string const& name);
 
                    Universe            (hdf5::Group&& group);

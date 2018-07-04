@@ -26,7 +26,7 @@ public:
 
 protected:
 
-                   PropertyGroup       (hdf5::Group const& parent,
+                   PropertyGroup       (hdf5::Group& parent,
                                         std::string const& name);
 
 private:

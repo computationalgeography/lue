@@ -208,11 +208,16 @@ herr_t retrieve_group_names(
     @exception  std::runtime_error In case the group cannot be opened
 */
 Group::Group(
-    Group const& parent,
-    std::string const& name)
+    Group& parent,
+    std::string const& name):
 
-    : PrimaryDataObject{Identifier{
-        ::H5Gopen(parent.id(), name.c_str(), H5P_DEFAULT), ::H5Gclose}}
+    PrimaryDataObject{
+            Identifier{
+                ::H5Gopen(parent.id(), name.c_str(), H5P_DEFAULT),
+                ::H5Gclose
+            }
+        },
+    _parent{std::make_unique<Group>(parent)}
 
 {
     if(!id().is_valid()) {
@@ -226,34 +231,76 @@ Group::Group(
 }
 
 
-/*!
-    @brief      Construct a group based on an identifier
-    @param      id Identifier of group
-
-    The identifier passed in is the id of the group itself; no group
-    will be opened.
-*/
 Group::Group(
-    Identifier const& id)
+    Group& parent,
+    Identifier const& id):
 
-    : PrimaryDataObject{id}
+    PrimaryDataObject{id},
+    _parent{std::make_unique<Group>(parent)}
 
 {
     assert(this->id().is_valid());
 }
 
 
+Group::Group(
+    Group const& other):
+
+    PrimaryDataObject{other},
+    _parent{}
+
+{
+    if(other._parent) {
+        _parent = std::make_unique<Group>(*other._parent);
+    }
+}
+
+
+Group& Group::operator=(
+    Group const& other)
+
+{
+    PrimaryDataObject::operator=(other);
+
+    if(other._parent) {
+        _parent = std::make_unique<Group>(*other._parent);
+    }
+    else {
+        _parent.reset();
+    }
+
+    return *this;
+}
+
+
 /*!
     @brief      Construct a group based on an identifier
     @param      id Identifier of group
+
+    Use this constructor for groups that have no parent.
 */
 Group::Group(
-    Identifier&& id)
+    Identifier&& id):
 
-    : PrimaryDataObject{std::forward<Identifier>(id)}
+    PrimaryDataObject{std::forward<Identifier>(id)},
+    _parent{}
 
 {
     // assert(id().is_valid());
+}
+
+
+bool Group::has_parent() const
+{
+    return _parent ? true : false;
+}
+
+
+Group& Group::parent()
+{
+    assert(_parent);
+
+    return *_parent;
 }
 
 
@@ -420,7 +467,7 @@ bool group_exists(
     @param      name Name of group to create
 */
 Group create_group(
-    Group const& parent,
+    Group parent,
     std::string const& name)
 {
     if(group_exists(parent, name)) {
@@ -430,8 +477,12 @@ Group create_group(
         ));
     }
 
-    Identifier group_id{::H5Gcreate(parent.id(), name.c_str(), H5P_DEFAULT,
-        H5P_DEFAULT, H5P_DEFAULT), H5Gclose};
+    Identifier group_id{
+            ::H5Gcreate(
+                parent.id(), name.c_str(), H5P_DEFAULT, H5P_DEFAULT,
+                H5P_DEFAULT),
+            ::H5Gclose
+        };
 
     if(!group_id.is_valid()) {
         throw std::runtime_error(fmt::format(
@@ -440,7 +491,7 @@ Group create_group(
         ));
     }
 
-    return Group{std::move(group_id)};
+    return Group{parent, group_id};
 }
 
 } // namespace hdf5

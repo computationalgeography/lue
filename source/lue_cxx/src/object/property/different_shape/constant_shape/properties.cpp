@@ -7,7 +7,7 @@ namespace different_shape {
 namespace constant_shape {
 
 Properties::Properties(
-    hdf5::Group const& parent):
+    hdf5::Group& parent):
 
     Collection<Property>{parent, different_shape_constant_shape_tag},
     _active_id{*this},

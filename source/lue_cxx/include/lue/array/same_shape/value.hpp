@@ -22,10 +22,10 @@ class Value:
 
 public:
 
-                   Value               (hdf5::Group const& parent,
+                   Value               (hdf5::Group& parent,
                                         std::string const& name);
 
-                   Value               (hdf5::Group const& parent,
+                   Value               (hdf5::Group& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& memory_datatype);
 

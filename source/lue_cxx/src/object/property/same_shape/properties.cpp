@@ -6,7 +6,7 @@ namespace lue {
 namespace same_shape {
 
 Properties::Properties(
-    hdf5::Group const& parent):
+    hdf5::Group& parent):
 
     Collection<Property>{parent, same_shape_tag},
     _id{*this}

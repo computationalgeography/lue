@@ -12,10 +12,10 @@ class Property:
 
 public:
 
-                   Property            (hdf5::Group const& parent,
+                   Property            (hdf5::Group& parent,
                                         std::string const& name);
 
-                   Property            (hdf5::Group const& parent,
+                   Property            (hdf5::Group& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& memory_datatype);
 

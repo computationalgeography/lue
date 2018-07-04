@@ -12,7 +12,7 @@ class ObjectTracker
 
 public:
 
-    explicit       ObjectTracker       (hdf5::Group const& parent);
+    explicit       ObjectTracker       (hdf5::Group& parent);
 
                    ObjectTracker       (ObjectTracker const&)=delete;
 

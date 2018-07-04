@@ -14,7 +14,7 @@ class MobileSpacePoint:
 
 public:
 
-                   MobileSpacePoint    (hdf5::Group const& parent,
+                   MobileSpacePoint    (hdf5::Group& parent,
                                         hdf5::Datatype const& memory_datatype);
 
                    MobileSpacePoint    (MobileSpacePoint const&)=delete;

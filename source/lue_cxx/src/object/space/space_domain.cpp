@@ -5,7 +5,7 @@
 namespace lue {
 
 SpaceDomain::SpaceDomain(
-    hdf5::Group const& parent):
+    hdf5::Group& parent):
 
     hdf5::Group{parent, space_domain_tag},
     _configuration{attributes()}

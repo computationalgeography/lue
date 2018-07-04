@@ -23,7 +23,7 @@ class Collection:
 
 public:
 
-                   Collection          (hdf5::Group const& parent,
+                   Collection          (hdf5::Group& parent,
                                         std::string const& name);
 
     explicit       Collection          (Group&& group);
@@ -77,7 +77,7 @@ Collection<T>      create_collection   (hdf5::Group const& group);
 template<
     typename T>
 inline Collection<T>::Collection(
-    hdf5::Group const& parent,
+    hdf5::Group& parent,
     std::string const& name)
 
     : hdf5::Group(parent, name),
@@ -239,7 +239,7 @@ inline std::vector<std::string> Collection<T>::item_names() const
 template<
     typename T>
 Collection<T> create_collection(
-    hdf5::Group const& parent,
+    hdf5::Group& parent,
     std::string const& name)
 {
     return Collection<T>{hdf5::create_group(parent, name)};

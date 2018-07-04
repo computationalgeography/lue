@@ -6,7 +6,7 @@ namespace lue {
 namespace info {
 
 ActiveObjectIndex::ActiveObjectIndex(
-    hdf5::Group const& parent)
+    hdf5::Group& parent)
 :
     same_shape::constant_shape::Value{parent, active_object_index_tag}
 

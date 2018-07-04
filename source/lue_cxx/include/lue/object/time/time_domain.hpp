@@ -16,7 +16,7 @@ class TimeDomain:
 
 public:
 
-    explicit       TimeDomain          (hdf5::Group const& parent);
+    explicit       TimeDomain          (hdf5::Group& parent);
 
     explicit       TimeDomain          (hdf5::Group&& group);
 

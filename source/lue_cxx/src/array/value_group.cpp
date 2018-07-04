@@ -5,7 +5,7 @@
 namespace lue {
 
 ValueGroup::ValueGroup(
-    hdf5::Group const& parent,
+    hdf5::Group& parent,
     std::string const& name)
 :
     hdf5::Group{parent, name},
@@ -19,7 +19,7 @@ ValueGroup::ValueGroup(
 
 
 ValueGroup::ValueGroup(
-    hdf5::Group const& parent,
+    hdf5::Group& parent,
     std::string const& name,
     hdf5::Datatype const& memory_datatype)
 :

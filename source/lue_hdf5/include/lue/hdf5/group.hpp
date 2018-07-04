@@ -1,9 +1,15 @@
 #pragma once
 #include "lue/hdf5/primary_data_object.hpp"
+#include <memory>
 
 
 namespace lue {
 namespace hdf5 {
+
+// Forward declare the File class to be able to declare it a friend of
+// the Group class
+class File;
+
 
 /*!
     @brief      This class represents an open HDF5 group
@@ -14,24 +20,29 @@ class Group:
     public PrimaryDataObject
 {
 
+    friend File;
+
 public:
 
-                   Group               (Group const& parent,
+                   Group               (Group& parent,
                                         std::string const& name);
 
-    explicit       Group               (Identifier const& id);
+                   Group               (Group& parent,
+                                        Identifier const& id);
 
-    explicit       Group               (Identifier&& id);
-
-                   Group               (Group const&)=default;
+                   Group               (Group const& other);
 
                    Group               (Group&&)=default;
 
                    ~Group              ()=default;
 
-    Group&         operator=           (Group const&)=default;
+    Group&         operator=           (Group const& other);
 
     Group&         operator=           (Group&&)=default;
+
+    bool           has_parent          () const;
+
+    Group&         parent              ();
 
     std::vector<std::string>
                    group_names         () const;
@@ -53,7 +64,14 @@ public:
     void           create_hard_link    (Identifier const& location,
                                         std::string const& name);
 
+protected:
+
 private:
+
+    explicit       Group               (Identifier&& id);
+
+    //! Parent group
+    std::unique_ptr<Group> _parent;
 
 };
 
@@ -61,7 +79,7 @@ private:
 bool               group_exists        (Group const& parent,
                                         std::string const& name);
 
-Group              create_group        (Group const& parent,
+Group              create_group        (Group parent,
                                         std::string const& name);
 
 } // namespace hdf5
