@@ -46,13 +46,13 @@ public:
 
     explicit       File                (Identifier&& id);
 
-                   File                (File const&)=default;
+                   File                (File const&)=delete;
 
                    File                (File&&)=default;
 
     virtual        ~File               ()=default;
 
-    File&          operator=           (File const&)=default;
+    File&          operator=           (File const&)=delete;
 
     File&          operator=           (File&&)=default;
 

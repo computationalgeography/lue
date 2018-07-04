@@ -22,7 +22,8 @@ void init_group(
 
         .def_property_readonly(
             "id",
-            &Group::id,
+            // Select non-const overload
+            py::overload_cast<>(&Group::id),
             R"(
     Return identifier
 

@@ -10,17 +10,17 @@ class Array:
 
 public:
 
-                   Array               (hdf5::Group const& parent,
+                   Array               (hdf5::Group& parent,
                                         std::string const& name);
 
-                   Array               (hdf5::Group const& parent,
+                   Array               (hdf5::Group& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& memory_datatype);
 
                    Array               (hdf5::Dataset&& dataset,
                                         hdf5::Datatype const& memory_datatype);
 
-                   Array               (hdf5::Identifier const& id,
+                   Array               (hdf5::Identifier& id,
                                         hdf5::Datatype const& memory_datatype);
 
                    Array               (Array const&)=delete;
