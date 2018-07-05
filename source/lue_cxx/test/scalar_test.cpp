@@ -1,4 +1,4 @@
-#define BOOST_TEST_MODULE lue hl scalar
+#define BOOST_TEST_MODULE lue scalar
 #include <boost/test/unit_test.hpp>
 #include "lue/test.hpp"
 
@@ -23,13 +23,13 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
     // Create and write
     {
         auto& planets = dataset().add_phenomenon(phenomenon_name);
-        auto& constants = planets.add_property_set(property_set_name);
+        auto& constants = planets.property_sets().add(property_set_name);
         auto& object_tracker = constants.object_tracker();
 
         object_tracker.id().reserve(nr_planets);
         object_tracker.id().write(ids.data());
 
-        auto& gravity = constants.add_property(property_name, datatype);
+        auto& gravity = constants.properties().add(property_name, datatype);
         auto& value = gravity.value();
 
         value.reserve(nr_planets);
@@ -48,8 +48,9 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
         auto value_variability =
             constants.properties().value_variability(property_name);
 
-        BOOST_REQUIRE(shape_per_object == lue::ShapePerObject::same);
-        BOOST_REQUIRE(value_variability == lue::ValueVariability::constant);
+        BOOST_REQUIRE_EQUAL(shape_per_object, lue::ShapePerObject::same);
+        BOOST_REQUIRE_EQUAL(
+            value_variability, lue::ValueVariability::constant);
 
         auto const& properties =
             constants.properties().collection<lue::same_shape::Properties>();
@@ -58,6 +59,7 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
         auto const& value = gravity.value();
 
         BOOST_REQUIRE_EQUAL(value.nr_arrays(), nr_planets);
+        BOOST_REQUIRE_EQUAL(value.memory_datatype(), datatype);
 
         std::vector<ValueType> values_read(nr_planets);
         value.read(values_read.data());

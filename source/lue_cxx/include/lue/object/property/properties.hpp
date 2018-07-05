@@ -46,10 +46,26 @@ public:
         typename T>
     T const&       collection          () const;
 
+    template<
+        typename T>
+    T&             collection          ();
+
     same_shape::Property& add          (std::string const& name,
                                         hdf5::Datatype const& datatype);
 
+    same_shape::Property& add          (std::string const& name,
+                                        hdf5::Datatype const& datatype,
+                                        hdf5::Shape const& shape);
+
+    different_shape::Property&
+                   add                 (std::string const& name,
+                                        hdf5::Datatype const& datatype,
+                                        Rank rank);
+
 private:
+
+    void           verify_property_does_not_exist(
+                                        std::string const& name) const;
 
     same_shape::Properties _same_shape_properties;
 
@@ -74,51 +90,40 @@ Properties         create_properties   (hdf5::Group& parent,
                                         ObjectTracker& object_tracker);
 
 
-template<>
-inline same_shape::Properties const&
-    Properties::collection<same_shape::Properties>() const
-{
-    return _same_shape_properties;
+#define COLLECTION(type, member)                         \
+template<>                                               \
+inline type const& Properties::collection<type>() const  \
+{                                                        \
+    return member;                                       \
+}                                                        \
+                                                         \
+                                                         \
+template<>                                               \
+inline type& Properties::collection<type>()              \
+{                                                        \
+    return member;                                       \
 }
 
 
-template<>
-inline same_shape::constant_shape::Properties const&
-    Properties::collection<same_shape::constant_shape::Properties>() const
-{
-    return _same_shape_constant_shape_properties;
-}
+COLLECTION(
+    same_shape::Properties,
+    _same_shape_properties)
+COLLECTION(
+    same_shape::constant_shape::Properties,
+    _same_shape_constant_shape_properties)
+COLLECTION(
+    same_shape::variable_shape::Properties,
+    _same_shape_variable_shape_properties)
+COLLECTION(
+    different_shape::Properties,
+    _different_shape_properties)
+COLLECTION(
+    different_shape::constant_shape::Properties,
+    _different_shape_constant_shape_properties)
+COLLECTION(
+    different_shape::variable_shape::Properties,
+    _different_shape_variable_shape_properties)
 
-
-template<>
-inline same_shape::variable_shape::Properties const&
-    Properties::collection<same_shape::variable_shape::Properties>() const
-{
-    return _same_shape_variable_shape_properties;
-}
-
-
-template<>
-inline different_shape::Properties const&
-    Properties::collection<different_shape::Properties>() const
-{
-    return _different_shape_properties;
-}
-
-
-template<>
-inline different_shape::constant_shape::Properties const&
-    Properties::collection<different_shape::constant_shape::Properties>() const
-{
-    return _different_shape_constant_shape_properties;
-}
-
-
-template<>
-inline different_shape::variable_shape::Properties const&
-    Properties::collection<different_shape::variable_shape::Properties>() const
-{
-    return _different_shape_variable_shape_properties;
-}
+#undef COLLECTION
 
 }  // namespace lue

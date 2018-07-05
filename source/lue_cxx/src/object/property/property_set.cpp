@@ -76,7 +76,21 @@ TimeDomain const& PropertySet::time_domain() const
 }
 
 
+TimeDomain& PropertySet::time_domain()
+{
+    assert(_time_domain);
+    return *_time_domain;
+}
+
+
 SpaceDomain const& PropertySet::space_domain() const
+{
+    assert(_space_domain);
+    return *_space_domain;
+}
+
+
+SpaceDomain& PropertySet::space_domain()
 {
     assert(_space_domain);
     return *_space_domain;
@@ -89,11 +103,9 @@ Properties const& PropertySet::properties() const
 }
 
 
-same_shape::Property& PropertySet::add_property(
-    std::string const& name,
-    hdf5::Datatype const& datatype)
+Properties& PropertySet::properties()
 {
-    return _properties.add(name, datatype);
+    return _properties;
 }
 
 
@@ -113,14 +125,34 @@ PropertySet create_property_set(
 PropertySet create_property_set(
     hdf5::Group& parent,
     std::string const& name,
+    SpaceConfiguration const& space_configuration,
+    hdf5::Datatype const& space_coordinate_datatype,
+    std::size_t const rank)
+{
+    auto group = hdf5::create_group(parent, name);
+
+    auto object_tracker = create_object_tracker(group);
+    create_space_domain(
+        group, space_configuration, space_coordinate_datatype, rank);
+    create_properties(group, object_tracker);
+
+    return PropertySet{std::move(group)};
+}
+
+PropertySet create_property_set(
+    hdf5::Group& parent,
+    std::string const& name,
     TimeConfiguration const& time_configuration,
-    SpaceConfiguration const& space_configuration)
+    SpaceConfiguration const& space_configuration,
+    hdf5::Datatype const& space_coordinate_datatype,
+    std::size_t const rank)
 {
     auto group = hdf5::create_group(parent, name);
 
     auto object_tracker = create_object_tracker(group);
     create_time_domain(group, time_configuration);
-    create_space_domain(group, space_configuration);
+    create_space_domain(
+        group, space_configuration, space_coordinate_datatype, rank);
     create_properties(group, object_tracker);
 
     return PropertySet{std::move(group)};

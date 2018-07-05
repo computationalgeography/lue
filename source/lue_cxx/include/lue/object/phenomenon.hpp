@@ -25,18 +25,20 @@ public:
 
     Phenomenon&    operator=           (Phenomenon&&)=default;
 
-    PropertySet&   add_property_set    (std::string const& name);
+    PropertySets const& collection_property_sets() const;
 
-    PropertySet&   add_property_set    (std::string const& name,
-                                        TimeConfiguration const&
-                                            time_configuration,
-                                        SpaceConfiguration const&
-                                            space_configuration);
+    PropertySets&  collection_property_sets();
 
     PropertySets const& property_sets  () const;
 
+    PropertySets&  property_sets       ();
+
 private:
 
+    //! Sets of properties of the collection of objects
+    PropertySets   _collection_property_sets;
+
+    //! Sets of properties of the objects in the collection
     PropertySets   _property_sets;
 
 };

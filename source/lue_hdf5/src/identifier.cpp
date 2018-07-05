@@ -246,15 +246,14 @@ std::string Identifier::pathname() const
 
 
 /*!
-    @brief      Return the name of the object
+    @brief      Return the name component of the pathname to the object
     @sa         pathname()
 
     The name is the part of the pathname after the last forward slash. If
     there is no forward slash in the pathname, name equals the pathname.
 
-    An object may have multiple names. This function returns
-    one of them. When possible, it is the one with which the object was
-    opened.
+    An HDF5 object itself does not have a name. It has a unique ID within
+    a file and at least one pathname pointing to it.
 */
 std::string Identifier::name() const
 {

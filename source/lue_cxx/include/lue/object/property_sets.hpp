@@ -11,7 +11,8 @@ class PropertySets:
 
 public:
 
-    explicit       PropertySets        (hdf5::Group& parent);
+                   PropertySets        (hdf5::Group& parent,
+                                        std::string const& name);
 
                    PropertySets        (Collection<PropertySet>&& collection);
 
@@ -28,16 +29,27 @@ public:
     PropertySet&   add                 (std::string const& name);
 
     PropertySet&   add                 (std::string const& name,
+                                        SpaceConfiguration const&
+                                            space_configuration,
+                                        hdf5::Datatype const&
+                                            space_coordinate_datatype,
+                                        std::size_t rank);
+
+    PropertySet&   add                 (std::string const& name,
                                         TimeConfiguration const&
                                             time_configuration,
                                         SpaceConfiguration const&
-                                            space_configuration);
+                                            space_configuration,
+                                        hdf5::Datatype const&
+                                            space_coordinate_datatype,
+                                        std::size_t rank);
 
 private:
 
 };
 
 
-PropertySets       create_property_sets(hdf5::Group& parent);
+PropertySets       create_property_sets(hdf5::Group& parent,
+                                        std::string const& name);
 
 } // namespace lue

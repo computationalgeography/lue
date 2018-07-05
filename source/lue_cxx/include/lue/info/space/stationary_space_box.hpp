@@ -14,6 +14,8 @@ class StationarySpaceBox:
 
 public:
 
+                   StationarySpaceBox  (hdf5::Group& parent);
+
                    StationarySpaceBox  (hdf5::Group& parent,
                                         hdf5::Datatype const& memory_datatype);
 

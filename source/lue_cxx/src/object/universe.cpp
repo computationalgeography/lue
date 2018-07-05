@@ -36,7 +36,7 @@ Universe create_universe(
 {
     auto group = hdf5::create_group(parent, name);
 
-    create_property_sets(group);
+    create_phenomena(group);
 
     return Universe{std::move(group)};
 }

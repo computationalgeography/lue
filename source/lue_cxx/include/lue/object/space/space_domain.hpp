@@ -5,6 +5,9 @@
 
 namespace lue {
 
+/*!
+    @brief      Aspects that determine how locations in space are represented
+*/
 using SpaceConfiguration = Configuration<
     Mobility,
     SpaceDomainItemType
@@ -34,6 +37,10 @@ public:
     SpaceConfiguration const&
                    configuration       () const;
 
+    template<
+        typename T>
+    T              value               ();
+
 private:
 
     SpaceConfiguration _configuration;
@@ -43,8 +50,18 @@ private:
 
 SpaceDomain        create_space_domain (hdf5::Group& parent,
                                         SpaceConfiguration const&
-                                            configuration);
+                                            configuration,
+                                        hdf5::Datatype const& datatype,
+                                        std::size_t const rank);
 
 bool               space_domain_exists (hdf5::Group const& parent);
+
+
+template<
+    typename T>
+inline T SpaceDomain::value()
+{
+    return T{*this};
+}
 
 }  // namespace lue

@@ -40,12 +40,15 @@ public:
 
     TimeDomain const& time_domain      () const;
 
+    TimeDomain&    time_domain         ();
+
     SpaceDomain const& space_domain    () const;
+
+    SpaceDomain&   space_domain        ();
 
     Properties const& properties       () const;
 
-    same_shape::Property& add_property (std::string const& name,
-                                        hdf5::Datatype const& datatype);
+    Properties&    properties          ();
 
 private:
 
@@ -65,9 +68,26 @@ PropertySet        create_property_set (hdf5::Group& parent,
 
 PropertySet        create_property_set (hdf5::Group& parent,
                                         std::string const& name,
+                                        SpaceConfiguration const&
+                                            space_configuration,
+                                        hdf5::Datatype const&
+                                            space_coordinate_datatype,
+                                        std::size_t rank);
+
+PropertySet        create_property_set (hdf5::Group& parent,
+                                        std::string const& name,
                                         TimeConfiguration const&
                                             time_configuration,
                                         SpaceConfiguration const&
-                                            space_configuration);
+                                            space_configuration,
+                                        hdf5::Datatype const&
+                                            space_coordinate_datatype,
+                                        std::size_t rank);
+
+// PropertySet        create_property_set (hdf5::Group& parent,
+//                                         std::string const& name,
+//                                         TimeDomain& time_domain,
+//                                         SpaceConfiguration const&
+//                                             space_configuration);
 
 }  // namespace lue

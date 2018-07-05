@@ -5,6 +5,15 @@
 namespace lue {
 
 MobileSpaceBox::MobileSpaceBox(
+    hdf5::Group& parent):
+
+    same_shape::constant_shape::Value{parent, coordinates_tag}
+
+{
+}
+
+
+MobileSpaceBox::MobileSpaceBox(
     hdf5::Group& parent,
     hdf5::Datatype const& memory_datatype):
 

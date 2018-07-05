@@ -78,4 +78,22 @@ enum class ShapeVariability
     variable
 };
 
+
+enum class SpaceDiscretization
+{
+    /*!
+        @brief  {1,2,3}D Euclidian space
+
+        Cells have equal sizes in each dimension.
+    */
+    cartesian_grid
+
+    // /*!
+    //     @brief  {1,2,3}D Euclidian space.
+
+    //     Cells have different sizes in each dimension.
+    // */
+    // rectilinear_grid,
+};
+
 } // namespace lue

@@ -1,6 +1,5 @@
 #include "lue/hdf5/group.hpp"
 #include "lue/hdf5/dataset.hpp"
-#include "lue/hdf5/link.hpp"
 #include <fmt/format.h>
 #include <cstring>
 #include <cstdlib>
@@ -391,7 +390,7 @@ bool Group::contains_dataset(
 bool Group::contains_soft_link(
     std::string const& name) const
 {
-    return soft_link_exists(id(), name);
+    return soft_link_exists(*this, name);
 }
 
 
@@ -402,7 +401,25 @@ bool Group::contains_soft_link(
 bool Group::contains_hard_link(
     std::string const& name) const
 {
-    return hard_link_exists(id(), name);
+    return hard_link_exists(*this, name);
+}
+
+
+SoftLink Group::soft_link(
+    std::string const& name)
+{
+    assert(contains_soft_link(name));
+
+    return SoftLink{*this, name};
+}
+
+
+HardLink Group::hard_link(
+    std::string const& name)
+{
+    assert(contains_hard_link(name));
+
+    return HardLink{*this, name};
 }
 
 
@@ -411,19 +428,11 @@ bool Group::contains_hard_link(
     @param      location Identifier to object to link to
     @param      name Name of soft-link to create
 */
-void Group::create_soft_link(
+SoftLink Group::create_soft_link(
     Identifier const& location,
     std::string const& name)
 {
-    auto status = ::H5Lcreate_soft(location.pathname().c_str(), id(),
-        name.c_str(), H5P_DEFAULT, H5P_DEFAULT);
-
-    if(status < 0) {
-        throw std::runtime_error(fmt::format(
-            "Cannot create soft link {} at {}",
-            name, location.pathname()
-        ));
-    }
+    return hdf5::create_soft_link(*this, location, name);
 }
 
 
@@ -432,21 +441,11 @@ void Group::create_soft_link(
     @param      location Identifier to object to link to
     @param      name Name of hard-link to create
 */
-void Group::create_hard_link(
+HardLink Group::create_hard_link(
     Identifier const& location,
     std::string const& name)
 {
-    auto status = ::H5Lcreate_hard(
-        location, location.pathname().c_str(),
-        id(), name.c_str(),
-        H5P_DEFAULT, H5P_DEFAULT);
-
-    if(status < 0) {
-        throw std::runtime_error(fmt::format(
-            "Cannot create hard link {} at {}",
-            name, location.pathname()
-        ));
-    }
+    return hdf5::create_hard_link(*this, location, name);
 }
 
 

@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/hdf5.hpp"
+#include "lue/core/define.hpp"
 
 
 namespace lue {
@@ -23,6 +24,19 @@ public:
     PropertyGroup& operator=           (PropertyGroup&&)=default;
 
     std::string    name                () const;
+
+    bool           space_is_discretized() const;
+
+    SpaceDiscretization
+                   space_discretization_type() const;
+
+    void           set_space_discretisation(
+                                    SpaceDiscretization type,
+                                    PropertyGroup& property);
+
+    PropertyGroup  space_discretization_property();
+
+    virtual hdf5::Group property_set_group();
 
 protected:
 

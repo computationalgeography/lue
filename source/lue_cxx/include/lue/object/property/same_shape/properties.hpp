@@ -33,6 +33,10 @@ public:
     Property&      add                 (std::string const& name,
                                         hdf5::Datatype const& datatype);
 
+    Property&      add                 (std::string const& name,
+                                        hdf5::Datatype const& datatype,
+                                        hdf5::Shape const& shape);
+
 private:
 
     info::ID       _id;
