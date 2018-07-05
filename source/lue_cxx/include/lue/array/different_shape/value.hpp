@@ -44,6 +44,10 @@ public:
                                         ID const* ids,
                                         hdf5::Shape const* shapes);
 
+    void           reserve             (Count nr_objects,
+                                        ID const* ids,
+                                        hdf5::Shape::value_type const* shapes);
+
     Array          operator[]          (ID id);
 
 private:

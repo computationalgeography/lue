@@ -23,17 +23,22 @@ public:
             lue::Mobility::stationary,
             lue::SpaceDomainItemType::point
         },
+        _space_coordinate_datatype{
+            lue::hdf5::NativeDatatypeTraits<double>::type_id()},
+        _space_rank{2},
         _property_set{std::make_unique<lue::PropertySet>(
-            lue::create_property_set(
-                *_file, _property_set_name,
-                _time_configuration, _space_configuration))}
+                lue::create_property_set(
+                    *_file, _property_set_name,
+                    _time_configuration,
+                    _space_configuration, _space_coordinate_datatype,
+                        _space_rank)
+            )}
     {
     }
 
     ~Fixture()
     {
     }
-
 
     auto const& property_set_name() const
     {
@@ -62,6 +67,8 @@ private:
     std::string const _property_set_name;
     lue::TimeConfiguration _time_configuration;
     lue::SpaceConfiguration _space_configuration;
+    lue::hdf5::Datatype const _space_coordinate_datatype;
+    std::size_t const _space_rank;
     std::unique_ptr<lue::PropertySet> _property_set;
 
 };
@@ -77,6 +84,9 @@ BOOST_FIXTURE_TEST_CASE(create, Fixture)
     BOOST_CHECK_EQUAL(property_set.id().name(), property_set_name());
     BOOST_CHECK(time_domain.configuration() == time_configuration());
     BOOST_CHECK(space_domain.configuration() == space_configuration());
+    // TODO Grab space domain and check it
+    // ...
+
     BOOST_CHECK(properties.empty());
 
     // same_shape

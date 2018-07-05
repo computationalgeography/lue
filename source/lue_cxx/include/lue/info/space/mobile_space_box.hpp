@@ -14,6 +14,8 @@ class MobileSpaceBox:
 
 public:
 
+                   MobileSpaceBox      (hdf5::Group& parent);
+
                    MobileSpaceBox      (hdf5::Group& parent,
                                         hdf5::Datatype const& memory_datatype);
 

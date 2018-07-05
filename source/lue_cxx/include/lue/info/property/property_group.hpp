@@ -36,6 +36,8 @@ public:
 
     PropertyGroup  space_discretization_property();
 
+    virtual hdf5::Group property_set_group();
+
 protected:
 
                    PropertyGroup       (hdf5::Group& parent,

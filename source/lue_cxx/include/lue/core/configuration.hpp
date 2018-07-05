@@ -56,12 +56,13 @@ public:
 
     Configuration& operator=           (Configuration&&)=default;
 
-    void           save                (hdf5::Attributes& attributes) const;
+    std::tuple<Aspect<Ts>...> aspects() const;
 
     template<
         typename T>
     T              value               () const;
 
+    void           save                (hdf5::Attributes& attributes) const;
 
     /*!
         @brief      Return wheter @a lhs equals @a rhs
@@ -142,6 +143,14 @@ inline void Configuration<Ts...>::save(
     hdf5::Attributes& attributes) const
 {
     save(attributes, std::index_sequence_for<Ts...>());
+}
+
+
+template<
+    typename... Ts>
+std::tuple<Aspect<Ts>...> Configuration<Ts...>::aspects() const
+{
+    return _aspects;
 }
 
 

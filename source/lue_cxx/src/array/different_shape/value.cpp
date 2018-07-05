@@ -66,6 +66,23 @@ void Value::reserve(
 
 
 void Value::reserve(
+    Count const nr_objects,
+    ID const* ids,
+    hdf5::Shape::value_type const* shapes)
+{
+    auto rank = this->rank();
+
+    for(std::size_t o = 0, s = 0; o < nr_objects; ++o, s +=rank) {
+        reserve(ids[o], hdf5::Shape{shapes[s], shapes[s + 1]});
+    }
+
+    _nr_objects += nr_objects;
+
+    attributes().write<Count>(nr_objects_tag, _nr_objects);
+}
+
+
+void Value::reserve(
     ID const id,
     hdf5::Shape const& shape)
 {

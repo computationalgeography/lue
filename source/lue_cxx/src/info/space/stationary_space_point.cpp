@@ -5,6 +5,15 @@
 namespace lue {
 
 StationarySpacePoint::StationarySpacePoint(
+    hdf5::Group& parent):
+
+    same_shape::Value{parent, coordinates_tag}
+
+{
+}
+
+
+StationarySpacePoint::StationarySpacePoint(
     hdf5::Group& parent,
     hdf5::Datatype const& memory_datatype):
 

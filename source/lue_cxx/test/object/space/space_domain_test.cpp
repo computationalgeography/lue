@@ -18,8 +18,11 @@ public:
         _configuration{
             lue::Mobility::stationary,
             lue::SpaceDomainItemType::box},
+        _datatype{
+            lue::hdf5::NativeDatatypeTraits<double>::type_id()},
+        _rank{2},
         _domain{std::make_unique<lue::SpaceDomain>(
-            lue::create_space_domain(*_file, _configuration))}
+            lue::create_space_domain(*_file, _configuration, _datatype, _rank))}
     {
     }
 
@@ -42,6 +45,8 @@ private:
     std::string const _filename;
     std::unique_ptr<lue::hdf5::File> _file;
     lue::SpaceConfiguration const _configuration;
+    lue::hdf5::Datatype _datatype;
+    std::size_t const _rank;
     std::unique_ptr<lue::SpaceDomain> _domain;
 
 };

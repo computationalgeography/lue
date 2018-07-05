@@ -30,13 +30,19 @@ public:
 
     PropertySet&   add                 (std::string const& name,
                                         SpaceConfiguration const&
-                                            space_configuration);
+                                            space_configuration,
+                                        hdf5::Datatype const&
+                                            space_coordinate_datatype,
+                                        std::size_t rank);
 
     PropertySet&   add                 (std::string const& name,
                                         TimeConfiguration const&
                                             time_configuration,
                                         SpaceConfiguration const&
-                                            space_configuration);
+                                            space_configuration,
+                                        hdf5::Datatype const&
+                                            space_coordinate_datatype,
+                                        std::size_t rank);
 
 private:
 

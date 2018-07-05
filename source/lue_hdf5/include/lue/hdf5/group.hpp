@@ -1,4 +1,6 @@
 #pragma once
+#include "lue/hdf5/hard_link.hpp"
+#include "lue/hdf5/soft_link.hpp"
 #include "lue/hdf5/primary_data_object.hpp"
 #include <memory>
 
@@ -58,10 +60,14 @@ public:
 
     bool           contains_hard_link  (std::string const& name) const;
 
-    void           create_soft_link    (Identifier const& location,
+    SoftLink       soft_link           (std::string const& name);
+
+    HardLink       hard_link           (std::string const& name);
+
+    SoftLink       create_soft_link    (Identifier const& location,
                                         std::string const& name);
 
-    void           create_hard_link    (Identifier const& location,
+    HardLink       create_hard_link    (Identifier const& location,
                                         std::string const& name);
 
 protected:

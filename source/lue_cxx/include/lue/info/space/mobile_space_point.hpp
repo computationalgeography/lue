@@ -14,6 +14,8 @@ class MobileSpacePoint:
 
 public:
 
+                   MobileSpacePoint    (hdf5::Group& parent);
+
                    MobileSpacePoint    (hdf5::Group& parent,
                                         hdf5::Datatype const& memory_datatype);
 

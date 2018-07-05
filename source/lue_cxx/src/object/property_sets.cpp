@@ -35,24 +35,30 @@ PropertySet& PropertySets::add(
 
 PropertySet& PropertySets::add(
     std::string const& name,
-    SpaceConfiguration const& space_configuration)
+    SpaceConfiguration const& space_configuration,
+    hdf5::Datatype const& space_coordinate_datatype,
+    std::size_t const rank)
 {
     return Collection::add(
         name,
         create_property_set(
-            *this, name, space_configuration));
+            *this, name,
+            space_configuration, space_coordinate_datatype, rank));
 }
 
 
 PropertySet& PropertySets::add(
     std::string const& name,
     TimeConfiguration const& time_configuration,
-    SpaceConfiguration const& space_configuration)
+    SpaceConfiguration const& space_configuration,
+    hdf5::Datatype const& space_coordinate_datatype,
+    std::size_t const rank)
 {
     return Collection::add(
         name,
         create_property_set(
-            *this, name, time_configuration, space_configuration));
+            *this, name, time_configuration,
+            space_configuration, space_coordinate_datatype, rank));
 }
 
 

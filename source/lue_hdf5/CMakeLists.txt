@@ -15,6 +15,7 @@ add_library(lue_hdf5 STATIC
     src/error_stack
     src/file
     src/group
+    src/hard_link
     src/hyperslab
     src/identifier
     src/issue
@@ -24,6 +25,7 @@ add_library(lue_hdf5 STATIC
     src/primary_data_object
     src/property_list
     src/shape
+    src/soft_link
     src/validate
 )
 
