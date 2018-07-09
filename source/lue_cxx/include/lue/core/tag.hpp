@@ -70,13 +70,17 @@ static std::string const property_sets_tag =
 static std::string const universes_tag =
     "lue_universes";
 
+static std::string const time_discretization_tag =
+    "lue_time_discretization";
+static std::string const time_discretization_property_tag =
+    "lue_time_discretization_property";
 static std::string const space_discretization_tag =
     "lue_space_discretization";
 static std::string const space_discretization_property_tag =
     "lue_space_discretization_property";
-static std::string const time_discretization_tag =
-    "lue_time_discretization";
 
+static std::string const time_unit_tag = "lue_time_unit";
+static std::string const nr_time_units_tag = "lue_nr_time_units";
 
 }  // namespace lue
 
@@ -87,7 +91,6 @@ static std::string const time_discretization_tag =
 // static std::string const domain_tag = "lue_domain";
 // static std::string const ids_tag = "lue_ids";
 // static std::string const nr_items_tag = "lue_nr_items";
-// static std::string const nr_units_tag = "lue_nr_units";
 // static std::string const occurrence_tag = "lue_occurrence";
 // static std::string const phenomena_tag = "lue_phenomena";
 // static std::string const properties_tag = "lue_properties";

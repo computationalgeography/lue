@@ -139,10 +139,27 @@ PropertySet create_property_set(
     return PropertySet{std::move(group)};
 }
 
+
+PropertySet create_property_set(
+    hdf5::Group& parent,
+    std::string const& name,
+    TimeDomain& domain)
+{
+    auto group = hdf5::create_group(parent, name);
+
+    auto object_tracker = create_object_tracker(group);
+    link_time_domain(group, domain);
+    create_properties(group, object_tracker);
+
+    return PropertySet{std::move(group)};
+}
+
+
 PropertySet create_property_set(
     hdf5::Group& parent,
     std::string const& name,
     TimeConfiguration const& time_configuration,
+    Clock const& clock,
     SpaceConfiguration const& space_configuration,
     hdf5::Datatype const& space_coordinate_datatype,
     std::size_t const rank)
@@ -150,7 +167,8 @@ PropertySet create_property_set(
     auto group = hdf5::create_group(parent, name);
 
     auto object_tracker = create_object_tracker(group);
-    create_time_domain(group, time_configuration);
+    create_time_domain(
+        group, time_configuration, clock);
     create_space_domain(
         group, space_configuration, space_coordinate_datatype, rank);
     create_properties(group, object_tracker);

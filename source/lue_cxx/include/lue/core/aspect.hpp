@@ -2,12 +2,12 @@
 #include "lue/core/define.hpp"
 #include "lue/core/enum_string_bimap.hpp"
 #include "lue/core/tag.hpp"
+#include "lue/core/time.hpp"
 #include "lue/hdf5/attributes.hpp"
 #include <fmt/format.h>
 
 
 namespace lue {
-namespace detail {
 
 template<
     typename T>
@@ -86,18 +86,26 @@ TAG_AND_MAP(SpaceDomainItemType, space_domain_item_type_tag, ({
 }))
 
 TAG_AND_MAP(SpaceDiscretization, space_discretization_tag, ({
-    { SpaceDiscretization::cartesian_grid, "lue_cartesian_grid" }
+    { SpaceDiscretization::regular_grid, "lue_regular_grid" }
 }))
 
-// // TAG_AND_MAP(time::Unit, unit_tag, ({
-// //     { time::Unit::second, "lue_second" }
-// // }))
+TAG_AND_MAP(TimeDiscretization, time_discretization_tag, ({
+    { TimeDiscretization::regular_grid, "lue_regular_grid" }
+}))
+
+TAG_AND_MAP(time::Unit, time_unit_tag, ({
+    { time::Unit::second, time::UnitTraits<time::Unit::second>::name() },
+    { time::Unit::minute, time::UnitTraits<time::Unit::minute>::name() },
+    { time::Unit::hour, time::UnitTraits<time::Unit::hour>::name() },
+    { time::Unit::day, time::UnitTraits<time::Unit::day>::name() },
+    { time::Unit::week, time::UnitTraits<time::Unit::week>::name() },
+    { time::Unit::month, time::UnitTraits<time::Unit::month>::name() },
+    { time::Unit::year, time::UnitTraits<time::Unit::year>::name() }
+}))
 
 #undef TAG_AND_MAP
 #undef MAP
 #undef TAG
-
-}  // namespace detail
 
 
 template<
@@ -105,7 +113,7 @@ template<
 inline std::string aspect_to_string(
     T const value)
 {
-    return detail::AspectMap<T>::value().as_string(value);
+    return AspectMap<T>::value().as_string(value);
 }
 
 
@@ -114,7 +122,7 @@ template<
 inline T string_to_aspect(
     std::string const& string)
 {
-    auto const& map = detail::AspectMap<T>::value();
+    auto const& map = AspectMap<T>::value();
 
     if(!map.contains(string)) {
         throw std::runtime_error(fmt::format(
@@ -194,7 +202,7 @@ inline Aspect<T>::Aspect(
     hdf5::Attributes const& attributes)
 
     : _value{string_to_aspect<T>(
-        attributes.read<std::string>(detail::Tag<T>::value()))}
+        attributes.read<std::string>(Tag<T>::value()))}
 
 {
 }
@@ -214,7 +222,7 @@ inline void Aspect<T>::save(
     hdf5::Attributes& attributes) const
 {
     attributes.write<std::string>(
-        detail::Tag<T>::value(), aspect_to_string<T>(_value));
+        Tag<T>::value(), aspect_to_string<T>(_value));
 }
 
 
@@ -224,7 +232,7 @@ inline void Aspect<T>::load(
     hdf5::Attributes const& attributes)
 {
     _value = string_to_aspect<T>(
-        attributes.read<std::string>(detail::Tag<T>::value()));
+        attributes.read<std::string>(Tag<T>::value()));
 }
 
 }  // namespace lue

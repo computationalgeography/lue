@@ -62,6 +62,17 @@ public:
                                         hdf5::Datatype const& datatype,
                                         Rank rank);
 
+    template<
+        typename Property>
+    Property&      add                 (std::string const& name,
+                                        hdf5::Datatype const& datatype);
+
+    template<
+        typename Property>
+    Property&      add                 (std::string const& name,
+                                        hdf5::Datatype const& datatype,
+                                        hdf5::Shape const& shape);
+
 private:
 
     void           verify_property_does_not_exist(
@@ -125,5 +136,30 @@ COLLECTION(
     _different_shape_variable_shape_properties)
 
 #undef COLLECTION
+
+
+template<>
+inline same_shape::constant_shape::Property&
+        Properties::add<same_shape::constant_shape::Property>(
+    std::string const& name,
+    hdf5::Datatype const& datatype)
+{
+    verify_property_does_not_exist(name);
+
+    return _same_shape_constant_shape_properties.add(name, datatype);
+}
+
+
+template<>
+inline same_shape::constant_shape::Property&
+        Properties::add<same_shape::constant_shape::Property>(
+    std::string const& name,
+    hdf5::Datatype const& datatype,
+    hdf5::Shape const& shape)
+{
+    verify_property_does_not_exist(name);
+
+    return _same_shape_constant_shape_properties.add(name, datatype, shape);
+}
 
 }  // namespace lue

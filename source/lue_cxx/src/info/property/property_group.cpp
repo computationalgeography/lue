@@ -33,9 +33,23 @@ std::string PropertyGroup::name() const
 }
 
 
+bool PropertyGroup::time_is_discretized() const
+{
+    return attributes().exists(time_discretization_tag);
+}
+
+
 bool PropertyGroup::space_is_discretized() const
 {
     return attributes().exists(space_discretization_tag);
+}
+
+
+TimeDiscretization PropertyGroup::time_discretization_type() const
+{
+    assert(time_is_discretized());
+
+    return Aspect<TimeDiscretization>(attributes()).value();
 }
 
 
@@ -47,12 +61,29 @@ SpaceDiscretization PropertyGroup::space_discretization_type() const
 }
 
 
+void PropertyGroup::set_time_discretisation(
+    TimeDiscretization type,
+    PropertyGroup& property)
+{
+    Aspect<TimeDiscretization>(type).save(attributes());
+    create_soft_link(property.id(), time_discretization_property_tag);
+}
+
+
 void PropertyGroup::set_space_discretisation(
     SpaceDiscretization type,
     PropertyGroup& property)
 {
     Aspect<SpaceDiscretization>(type).save(attributes());
     create_soft_link(property.id(), space_discretization_property_tag);
+}
+
+
+PropertyGroup PropertyGroup::time_discretization_property()
+{
+    assert(this->contains_soft_link(time_discretization_property_tag));
+
+    return PropertyGroup(*this, time_discretization_property_tag);
 }
 
 
@@ -100,7 +131,9 @@ hdf5::Group PropertyGroup::property_set_group()
         );
 
     // Determine number of groups between property and property set level
-    auto position = std::find_if(names.begin(), names.end(),
+    // position iterator points to either name that equals
+    // property_sets_tag or collection_property_sets_tag
+    auto const position = std::find_if(names.begin(), names.end(),
             [](auto const& name) {
                 return
                     name == property_sets_tag ||
@@ -108,6 +141,7 @@ hdf5::Group PropertyGroup::property_set_group()
         );
 
     if(position == names.end()) {
+        // This should never happen
         throw std::logic_error(fmt::format(
                 "Could not determine property set collection of {}",
                 path.string()
@@ -122,13 +156,33 @@ hdf5::Group PropertyGroup::property_set_group()
         parent = std::move(parent.parent());
     }
 
-    // parent is the group of the property set. Its parent is a collection
-    // of property sets.
-    assert(
-        parent.parent().id().name() == property_sets_tag ||
-        parent.parent().id().name() == collection_property_sets_tag);
+    // We are at the property set level
+    auto property_set_group = std::move(parent);
 
-    return parent;
+    if(property_set_group.parent().id().name() != *position) {
+        // A phenomenon has two property sets: one for the information per
+        // object and one for the information for the collection of objects.
+        // The property we are looking for is located in the other
+        // property set than the property we are in.
+
+        // For now we are assuming we are in property_sets and the
+        // property we are looking for is in collection_property_sets
+
+        // From phenomenon group, obtain collection property sets group
+        hdf5::Group property_sets_group{
+            property_set_group.parent().parent(), collection_property_sets_tag};
+
+        // From property sets group, obtain property group
+        auto const property_set_name = *(position + 1);
+        assert(property_sets_group.contains_group(property_set_name));
+        property_set_group = hdf5::Group{property_sets_group, property_set_name};
+    }
+
+    // property_set_group is the group of the property set. Its parent
+    // is a collection of property sets.
+    assert(property_set_group.parent().id().name() == *position);
+
+    return property_set_group;
 }
 
 
