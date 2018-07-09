@@ -1,5 +1,4 @@
 #include "lue/object/space/space_domain.hpp"
-#include "lue/info/space.hpp"
 #include "lue/core/tag.hpp"
 
 

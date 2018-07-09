@@ -54,8 +54,6 @@ BOOST_FIXTURE_TEST_CASE(create, Fixture)
             hdf5::NativeDatatypeTraits<time::DurationCount>::type_id()});
     BOOST_CHECK_EQUAL(value.nr_arrays(), 0);
     BOOST_CHECK(value.array_shape() == hdf5::Shape{1});
-
-    // TODO Test clock (later, clock isn't written yet)
 }
 
 

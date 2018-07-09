@@ -1,6 +1,5 @@
 #define BOOST_TEST_MODULE lue raster
 #include <boost/test/unit_test.hpp>
-#include "lue/info/space.hpp"
 #include "lue/test.hpp"
 
 
@@ -80,7 +79,7 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
         // Discretization property
         auto& discretization_property = area_boxes.properties().add(
             discretization_property_name, shape_datatype,
-            lue::hdf5::Shape{2});
+            lue::hdf5::Shape{2});  // nr rows, nr_cols
         {
             auto& value = discretization_property.value();
             value.reserve(nr_areas);
@@ -101,7 +100,7 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
 
         // Link from elevation property to discretization property
         elevation_property.set_space_discretisation(
-            lue::SpaceDiscretization::cartesian_grid,
+            lue::SpaceDiscretization::regular_grid,
             discretization_property);
     }
 
@@ -181,13 +180,14 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
             // Discretization property
 
             // Figure out whether property is discretized
+            BOOST_REQUIRE(!elevation_property.time_is_discretized());
             BOOST_REQUIRE(elevation_property.space_is_discretized());
 
             // Figure out how the property is discretized
             auto discretization_type =
                 elevation_property.space_discretization_type();
             BOOST_CHECK_EQUAL(
-                discretization_type, lue::SpaceDiscretization::cartesian_grid);
+                discretization_type, lue::SpaceDiscretization::regular_grid);
 
             // Verify discretization parameters
             auto discretization_property =

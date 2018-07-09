@@ -19,6 +19,7 @@ public:
         _time_configuration{
             lue::TimeDomainItemType::box
         },
+        _clock{lue::time::Unit::day, 1},
         _space_configuration{
             lue::Mobility::stationary,
             lue::SpaceDomainItemType::point
@@ -29,7 +30,7 @@ public:
         _property_set{std::make_unique<lue::PropertySet>(
                 lue::create_property_set(
                     *_file, _property_set_name,
-                    _time_configuration,
+                    _time_configuration, _clock,
                     _space_configuration, _space_coordinate_datatype,
                         _space_rank)
             )}
@@ -66,6 +67,7 @@ private:
     std::unique_ptr<lue::hdf5::File> _file;
     std::string const _property_set_name;
     lue::TimeConfiguration _time_configuration;
+    lue::Clock const _clock;
     lue::SpaceConfiguration _space_configuration;
     lue::hdf5::Datatype const _space_coordinate_datatype;
     std::size_t const _space_rank;

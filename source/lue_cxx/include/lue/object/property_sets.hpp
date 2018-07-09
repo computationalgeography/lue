@@ -36,8 +36,12 @@ public:
                                         std::size_t rank);
 
     PropertySet&   add                 (std::string const& name,
+                                        TimeDomain& domain);
+
+    PropertySet&   add                 (std::string const& name,
                                         TimeConfiguration const&
                                             time_configuration,
+                                        Clock const& clock,
                                         SpaceConfiguration const&
                                             space_configuration,
                                         hdf5::Datatype const&

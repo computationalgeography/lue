@@ -46,6 +46,7 @@ add_unit_tests(
 
         scalar_test
         raster_test
+        time_series_test
 
     LINK_LIBRARIES
         lue::test

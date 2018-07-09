@@ -132,6 +132,16 @@ inline std::ostream& operator<<(
 
 inline std::ostream& operator<<(
     std::ostream& stream,
+    ShapeVariability const kind)
+{
+    stream << kind;
+
+    return stream;
+}
+
+
+inline std::ostream& operator<<(
+    std::ostream& stream,
     Mobility const kind)
 {
     stream << kind;
@@ -152,6 +162,16 @@ inline std::ostream& operator<<(
 
 inline std::ostream& operator<<(
     std::ostream& stream,
+    TimeDiscretization const kind)
+{
+    stream << kind;
+
+    return stream;
+}
+
+
+inline std::ostream& operator<<(
+    std::ostream& stream,
     SpaceDiscretization const kind)
 {
     stream << kind;
@@ -160,11 +180,21 @@ inline std::ostream& operator<<(
 }
 
 
+inline std::ostream& operator<<(
+    std::ostream& stream,
+    TimeDomainItemType const kind)
+{
+    stream << kind;
+
+    return stream;
+}
+
+
 template<
-    typename Aspect>
+    typename T>
 inline std::ostream& write(
     std::ostream& stream,
-    Aspect const& aspect)
+    Aspect<T> const& aspect)
 {
     stream << aspect.value();
 
@@ -210,6 +240,30 @@ inline std::ostream& operator<<(
 {
     return write(
         stream, configuration, std::index_sequence_for<Ts...>());
+}
+
+
+namespace time {
+
+inline std::ostream& operator<<(
+    std::ostream& stream,
+    Unit const unit)
+{
+    stream << Aspect<Unit>(unit).value();
+
+    return stream;
+}
+
+}  // namespace time
+
+
+inline std::ostream& operator<<(
+    std::ostream& stream,
+    Clock const clock)
+{
+    stream << clock.nr_units() << "[" << clock.unit() << "]";
+
+    return stream;
 }
 
 }  // namespace lue

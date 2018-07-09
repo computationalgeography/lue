@@ -76,8 +76,13 @@ PropertySet        create_property_set (hdf5::Group& parent,
 
 PropertySet        create_property_set (hdf5::Group& parent,
                                         std::string const& name,
+                                        TimeDomain& domain);
+
+PropertySet        create_property_set (hdf5::Group& parent,
+                                        std::string const& name,
                                         TimeConfiguration const&
                                             time_configuration,
+                                        Clock const& clock,
                                         SpaceConfiguration const&
                                             space_configuration,
                                         hdf5::Datatype const&

@@ -25,14 +25,25 @@ public:
 
     std::string    name                () const;
 
+    bool           time_is_discretized () const;
+
     bool           space_is_discretized() const;
+
+    TimeDiscretization
+                   time_discretization_type() const;
 
     SpaceDiscretization
                    space_discretization_type() const;
 
+    void           set_time_discretisation(
+                                    TimeDiscretization type,
+                                    PropertyGroup& property);
+
     void           set_space_discretisation(
                                     SpaceDiscretization type,
                                     PropertyGroup& property);
+
+    PropertyGroup  time_discretization_property();
 
     PropertyGroup  space_discretization_property();
 

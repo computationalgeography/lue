@@ -79,21 +79,15 @@ enum class ShapeVariability
 };
 
 
+enum class TimeDiscretization
+{
+    regular_grid
+};
+
+
 enum class SpaceDiscretization
 {
-    /*!
-        @brief  {1,2,3}D Euclidian space
-
-        Cells have equal sizes in each dimension.
-    */
-    cartesian_grid
-
-    // /*!
-    //     @brief  {1,2,3}D Euclidian space.
-
-    //     Cells have different sizes in each dimension.
-    // */
-    // rectilinear_grid,
+    regular_grid
 };
 
 } // namespace lue

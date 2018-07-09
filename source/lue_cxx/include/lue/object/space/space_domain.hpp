@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/info/space.hpp"
 #include "lue/core/configuration.hpp"
 #include "lue/hdf5.hpp"
 
