@@ -8,7 +8,7 @@ namespace info {
 /*!
     @brief      An ID per object in the active set
 
-    In the ActiveID dataset, IDs can be stored of objects that are active
+    In the ActiveID dataset, IDs are stored of objects that are active
     at a given location in time. Multiple sets of object IDs can be stored
     sequentially. The index of the ID of the first active object in a set
     can be stored using the ActiveSetIndex class.
@@ -20,10 +20,9 @@ namespace info {
 
     Tracking the IDs of the active objects is needed in combination with
     the folowing object array kinds:
-    - same shape x constant value
-    - same shape x constant shape
-    - same shape x variable shape
-    - different shape x constant shape
+    - same_shape::constant_shape::Value
+    - same_shape::variable_shape::Value
+    - different_shape::constant_shape::Value
 */
 class ActiveID:
     public same_shape::constant_shape::Value

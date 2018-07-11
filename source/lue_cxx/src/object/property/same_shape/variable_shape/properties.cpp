@@ -28,6 +28,16 @@ Properties::Properties(
 }
 
 
+Property& Properties::add(
+    std::string const& name,
+    hdf5::Datatype const& datatype,
+    Rank const rank)
+{
+    return Collection::add(
+        name, create_property(*this, name, datatype, rank));
+}
+
+
 Properties create_properties(
     hdf5::Group& parent,
     info::ActiveID& active_id,

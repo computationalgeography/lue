@@ -32,6 +32,10 @@ public:
 
     Properties&    operator=           (Properties&&)=default;
 
+    Property&      add                 (std::string const& name,
+                                        hdf5::Datatype const& datatype,
+                                        Rank rank);
+
 private:
 
     info::ActiveID _active_id;

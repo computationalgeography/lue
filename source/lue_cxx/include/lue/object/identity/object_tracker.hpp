@@ -7,6 +7,19 @@
 
 namespace lue {
 
+/*!
+    @brief      Class for storing object tracking information for all
+                object array kinds
+
+    Object array kind | Tracking
+    ----------------- | --------
+    same_shape::Value | info::ID
+    different_shape::Value | info::ID
+    same_shape::constant_shape::Value | info::ActiveSetIndex, info::ActiveID
+    same_shape::variable_shape::Value | info::ActiveSetIndex, info::ActiveID
+    different_shape::constant_shape::Value | info::ActiveSetIndex, info::ActiveObjectIndex, info::ActiveID
+    different_shape::variable_shape::Value | -
+*/
 class ObjectTracker
 {
 

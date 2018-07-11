@@ -93,6 +93,80 @@ inline void select_random_ids(
 
 
 template<
+    typename ActiveSetSizes,
+    typename ActiveSetIdxs,
+    typename ActiveIDs,
+    typename Count>
+inline void select_random_ids(
+    ActiveSetSizes const& active_set_sizes,
+    ActiveSetIdxs& active_set_idxs,
+    ActiveIDs& active_ids,
+    Count const max_nr_objects)
+{
+    auto const nr_active_sets = active_set_sizes.size();
+    std::size_t const sum_active_set_sizes = std::accumulate(
+        active_set_sizes.begin(), active_set_sizes.end(), 0);
+
+    assert(active_set_idxs.size() == nr_active_sets);
+    assert(active_ids.size() == sum_active_set_sizes);
+    assert(std::all_of(
+        active_set_sizes.begin(), active_set_sizes.end(),
+        [max_nr_objects](typename ActiveSetSizes::value_type const count) {
+            return count <= max_nr_objects;
+        }
+    ));
+
+    // Create a collection of unique IDs with the size of the maximum
+    // number of IDs
+    ActiveIDs all_ids(max_nr_objects);
+    generate_random_ids(all_ids);
+
+    // For each active set, randomly selects IDs
+    {
+        auto& random_number_engine{detail::random_number_engine()};
+        std::uniform_int_distribution<typename ActiveIDs::size_type>
+            distribution{0, max_nr_objects - 1};
+
+        typename ActiveSetIdxs::value_type active_set_idx = 0;
+
+        for(std::size_t s = 0; s < nr_active_sets; ++s)
+        {
+            active_set_idxs[s] = active_set_idx;
+
+            auto const size_of_active_set = active_set_sizes[s];
+
+            std::generate(
+                active_ids.begin() + active_set_idx,
+                active_ids.begin() + active_set_idx + size_of_active_set,
+                [&all_ids, &random_number_engine, &distribution](){
+                    return all_ids[distribution(random_number_engine)];
+                }
+            );
+
+            active_set_idx += size_of_active_set;
+        }
+    }
+
+    // // For each collection, randomly select IDs
+    // // for(auto const& [id_collection, id_count]: boost::combine(id_collections, id_counts)) {
+    // for(std::size_t i = 0; i < id_collections.size(); ++i) {
+    //     auto& id_collection = id_collections[i];
+    //     auto& id_count = id_counts[i];
+
+    //     id_collection.resize(id_count);
+    //     std::generate(id_collection.begin(), id_collection.end(),
+    //         [&all_ids, &random_number_engine, &distribution](){
+    //             return all_ids[distribution(random_number_engine)];
+    //         }
+    //     );
+    // }
+
+
+
+}
+
+
+template<
     typename Collection>
 inline void generate_random_integral_values(
     Collection& values,

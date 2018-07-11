@@ -27,6 +27,13 @@ Phenomenon::Phenomenon(
 }
 
 
+/*!
+    @brief      Return collection of property sets for storing information
+                for the collection of objects as a whole
+    @param      .
+    @return     .
+    @exception  .
+*/
 PropertySets const& Phenomenon::collection_property_sets() const
 {
     return _collection_property_sets;
