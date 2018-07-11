@@ -10,12 +10,15 @@ namespace info {
 
     In the ActiveObjectIndex dataset, indices can be stored of objects
     that are active at a given location in time. Multiple sets of indices
-    can be stored sequentially. The index of the ID of the first active
+    can be stored sequentially. The index of the index of the first active
     object in a set can be stored using the ActiveSetIndex class.
 
-    Tracking the IDs of the active objects is needed in combination with
-    the folowing object array kinds:
-    - different shape x constant shape
+    Tracking the indices of the active objects is needed in combination
+    with the folowing object array kinds:
+    - different_shape::constant_shape::Value
+
+    The indices stored are the indices into the value array of each
+    active object.
 */
 class ActiveObjectIndex:
     public same_shape::constant_shape::Value

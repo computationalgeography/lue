@@ -7,6 +7,9 @@ namespace info {
 
 /*!
     @brief      An ID per object
+
+    An ID instance can be used to store the IDs of the active objects
+    when this collection of objects does not change through time.
 */
 class ID:
     public same_shape::Value
