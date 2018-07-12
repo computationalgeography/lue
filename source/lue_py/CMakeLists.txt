@@ -9,21 +9,51 @@ add_library(lue_py SHARED
     src/hdf5/submodule
     src/hdf5/validate
 
-    ### src/array
-    ### src/clock
-    ### src/conversion
-    ### src/dataset
+    src/property_group
+    src/value_group
+    src/different_shape/submodule
+    src/different_shape/properties
+    src/different_shape/property
+    src/different_shape/value
+    src/different_shape/constant_shape/submodule
+    src/different_shape/constant_shape/properties
+    src/different_shape/constant_shape/property
+    src/different_shape/constant_shape/value
+    src/different_shape/variable_shape/submodule
+    src/different_shape/variable_shape/properties
+    src/different_shape/variable_shape/property
+    src/different_shape/variable_shape/value
+    src/same_shape/submodule
+    src/same_shape/properties
+    src/same_shape/property
+    src/same_shape/value
+    src/same_shape/constant_shape/submodule
+    src/same_shape/constant_shape/properties
+    src/same_shape/constant_shape/property
+    src/same_shape/constant_shape/value
+    src/same_shape/variable_shape/submodule
+    src/same_shape/variable_shape/properties
+    src/same_shape/variable_shape/property
+    src/same_shape/variable_shape/value
+
+    src/core/array
+    src/core/clock
+    src/conversion
+    src/dataset
     ### src/domain
     ### # src/item
     ### # src/numpy
-    ### src/phenomenon
+    src/identity/id
+    src/identity/object_tracker
+    src/object/phenomenon
     ### src/property
-    ### src/property_set
+    src/object/property_set
     src/python_extension
-    ### src/space_domain
+    src/object/space_domain
+    src/object/time_domain
     ### src/time_domain
-    ### src/universe
-    ### src/validate
+    src/object/universe
+    src/validate
 
     ### src/item/different_shape/continuous_value
     ### src/item/different_shape/submodule

@@ -27,6 +27,10 @@ public:
 
     Phenomena const& phenomena         () const;
 
+    Phenomena&     phenomena           ();
+
+    Phenomenon&    add_phenomenon      (std::string const& name);
+
 private:
 
     Phenomena      _phenomena;

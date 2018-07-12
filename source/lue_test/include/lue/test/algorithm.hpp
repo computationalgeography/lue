@@ -104,11 +104,14 @@ inline void select_random_ids(
     Count const max_nr_objects)
 {
     auto const nr_active_sets = active_set_sizes.size();
+    assert(active_set_idxs.size() == nr_active_sets);
+
+#ifndef NDEBUG
     std::size_t const sum_active_set_sizes = std::accumulate(
         active_set_sizes.begin(), active_set_sizes.end(), 0);
-
-    assert(active_set_idxs.size() == nr_active_sets);
     assert(active_ids.size() == sum_active_set_sizes);
+#endif
+
     assert(std::all_of(
         active_set_sizes.begin(), active_set_sizes.end(),
         [max_nr_objects](typename ActiveSetSizes::value_type const count) {
