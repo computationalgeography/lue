@@ -60,6 +60,7 @@ add_library(lue STATIC
     src/object/universe
     src/object/universes
 
+    src/validate
 )
 
 add_library(lue::lue ALIAS lue)

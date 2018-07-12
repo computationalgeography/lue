@@ -8,18 +8,22 @@ namespace py = pybind11;
 
 namespace lue {
 
-/// void init_array_class(py::module& module);
-/// void init_clock(py::module& module);
-/// void init_dataset_class(py::module& module);
+void init_array(py::module& module);
+void init_clock(py::module& module);
+void init_dataset(py::module& module);
 /// void init_domain_class(py::module& module);
-/// void init_validate(py::module& module);
+void init_id(py::module& module);
+void init_object_tracker(py::module& module);
+void init_validate(py::module& module);
 /// // void init_item(py::module& module);
-/// void init_phenomenon_class(py::module& module);
+void init_phenomenon(py::module& module);
 /// void init_property_class(py::module& module);
-/// void init_property_set_class(py::module& module);
-/// void init_space_domain_class(py::module& module);
-/// void init_time_domain(py::module& module);
-/// void init_universe_class(py::module& module);
+void init_property_group(py::module& module);
+void init_property_set(py::module& module);
+void init_space_domain(py::module& module);
+void init_time_domain(py::module& module);
+void init_universe(py::module& module);
+void init_value_group(py::module& module);
 
 /// namespace constant_collection {
 /// 
@@ -33,6 +37,20 @@ namespace hdf5 {
 void init_submodule(py::module& module);
 
 }  // namespace hdf5
+
+
+namespace different_shape {
+
+void init_submodule(py::module& module);
+
+}  // namespace different_shape
+
+
+namespace same_shape {
+
+void init_submodule(py::module& module);
+
+}  // namespace same_shape
 
 
 PYBIND11_MODULE(lue, module)
@@ -57,21 +75,32 @@ PYBIND11_MODULE(lue, module)
 
     hdf5::init_submodule(module);
 
-    /// init_array_class(module);
-    /// init_clock(module);
+    init_array(module);
+    init_clock(module);
     /// // init_item(module);
     /// // init_domain(module);
 
-    /// init_validate(module);
+    init_property_group(module);
+    init_value_group(module);
+
+    different_shape::init_submodule(module);
+    same_shape::init_submodule(module);
+
+    init_id(module);
+    init_object_tracker(module);
+    init_property_set(module);
+    init_space_domain(module);
+    init_time_domain(module);
+
+    init_validate(module);
 
     /// init_domain_class(module);
-    /// init_space_domain_class(module);
     /// init_time_domain(module);
     /// init_property_class(module);
     /// init_property_set_class(module);
-    /// init_phenomenon_class(module);
-    /// init_universe_class(module);
-    /// init_dataset_class(module);
+    init_phenomenon(module);
+    init_universe(module);
+    init_dataset(module);
 
     /// constant_collection::init_submodule(module);
 

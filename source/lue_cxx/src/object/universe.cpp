@@ -30,6 +30,19 @@ Phenomena const& Universe::phenomena() const
 }
 
 
+Phenomena& Universe::phenomena()
+{
+    return _phenomena;
+}
+
+
+Phenomenon& Universe::add_phenomenon(
+    std::string const& name)
+{
+    return _phenomena.add(name);
+}
+
+
 Universe create_universe(
     hdf5::Group& parent,
     std::string const& name)

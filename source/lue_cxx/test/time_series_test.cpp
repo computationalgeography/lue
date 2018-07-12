@@ -11,8 +11,6 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
     //     - Located at fixed points in space
     //     - Variable number of outlets per time box
     //     - Discretized within multiple time boxes
-    keep_dataset_upon_destruction();
-
     std::string const phenomenon_name = "areas";
     std::string const property_set_name = "outlets";
     std::string const collection_property_set_name = "outlets_collection";
