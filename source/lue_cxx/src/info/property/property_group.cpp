@@ -61,7 +61,7 @@ SpaceDiscretization PropertyGroup::space_discretization_type() const
 }
 
 
-void PropertyGroup::set_time_discretisation(
+void PropertyGroup::set_time_discretization(
     TimeDiscretization type,
     PropertyGroup& property)
 {
@@ -70,7 +70,7 @@ void PropertyGroup::set_time_discretisation(
 }
 
 
-void PropertyGroup::set_space_discretisation(
+void PropertyGroup::set_space_discretization(
     SpaceDiscretization type,
     PropertyGroup& property)
 {

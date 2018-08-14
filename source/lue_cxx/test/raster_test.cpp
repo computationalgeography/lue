@@ -99,7 +99,7 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
         }
 
         // Link from elevation property to discretization property
-        elevation_property.set_space_discretisation(
+        elevation_property.set_space_discretization(
             lue::SpaceDiscretization::regular_grid,
             discretization_property);
     }

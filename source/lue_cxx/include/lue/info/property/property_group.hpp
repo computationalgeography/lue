@@ -35,11 +35,11 @@ public:
     SpaceDiscretization
                    space_discretization_type() const;
 
-    void           set_time_discretisation(
+    void           set_time_discretization(
                                     TimeDiscretization type,
                                     PropertyGroup& property);
 
-    void           set_space_discretisation(
+    void           set_space_discretization(
                                     SpaceDiscretization type,
                                     PropertyGroup& property);
 

@@ -29,6 +29,19 @@ void init_property_set(
 )",
             py::return_value_policy::reference_internal)
 
+        .def_property_readonly("has_space_domain",
+            &PropertySet::has_space_domain,
+            R"(
+    TODO
+)")
+
+        .def_property_readonly("space_domain",
+            py::overload_cast<>(&PropertySet::space_domain),
+            R"(
+    TODO
+)",
+            py::return_value_policy::reference_internal)
+
         .def(
             "add_property",
             [](
@@ -46,7 +59,7 @@ void init_property_set(
     Add new property to collection
 )",
             "name"_a,
-            "datatype"_a,
+            "dtype"_a,
             py::return_value_policy::reference_internal)
 
         .def(
@@ -69,8 +82,31 @@ void init_property_set(
     Add new property to collection
 )",
             "name"_a,
-            "datatype"_a,
+            "dtype"_a,
             "shape"_a,
+            py::return_value_policy::reference_internal)
+
+        .def(
+            "add_property",
+            [](
+                PropertySet& property_set,
+                std::string const& name,
+                py::handle const& datatype,
+                Rank const rank) -> different_shape::Property&
+            {
+                auto const datatype_ = numpy_type_to_memory_datatype(datatype);
+
+                return property_set.properties().add(
+                    name,
+                    datatype_,
+                    rank);
+            },
+            R"(
+    Add new property to collection
+)",
+            "name"_a,
+            "dtype"_a,
+            "rank"_a,
             py::return_value_policy::reference_internal)
 
         ;

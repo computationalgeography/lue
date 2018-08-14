@@ -228,7 +228,7 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
                     properties().collection<
                         lue::same_shape::constant_shape::Properties>()
                             [discretization_property_name];
-            discharge_property.set_time_discretisation(
+            discharge_property.set_time_discretization(
                 lue::TimeDiscretization::regular_grid,
                 discretization_property);
         }

@@ -33,6 +33,15 @@ void init_time_domain(
 
         ;
 
+    py::class_<TimeDomain, hdf5::Group>(
+        module,
+        "TimeDomain",
+        R"(
+    TODO
+)")
+
+        ;
+
 }
 
 }  // namespace lue

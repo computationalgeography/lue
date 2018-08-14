@@ -4,27 +4,27 @@
 
 namespace lue {
 
+/*!
+    @brief      Construct an instance based on a @a parent group and a
+                @a name
+    @param      parent Parent group of property set
+    @param      name Name of group within @a param that represents the
+                property set
+*/
 PropertySet::PropertySet(
     hdf5::Group& parent,
     std::string const& name):
 
-    hdf5::Group{parent, name},
-    _object_tracker{*this},
-    _time_domain{},
-    _space_domain{},
-    _properties{*this}
+    PropertySet{hdf5::Group{parent, name}}
 
 {
-    if(time_domain_exists(*this)) {
-        _time_domain = std::make_unique<TimeDomain>(*this);
-    }
-
-    if(space_domain_exists(*this)) {
-        _space_domain = std::make_unique<SpaceDomain>(*this);
-    }
 }
 
 
+/*!
+    @brief      Construct an instance based on a @a group
+    @param      group Group representing the property set
+*/
 PropertySet::PropertySet(
     hdf5::Group&& group):
 
@@ -45,30 +45,53 @@ PropertySet::PropertySet(
 }
 
 
+/*!
+    @brief      Return object tracker
+*/
 ObjectTracker const& PropertySet::object_tracker() const
 {
     return _object_tracker;
 }
 
 
+/*!
+    @overload
+*/
 ObjectTracker& PropertySet::object_tracker()
 {
     return _object_tracker;
 }
 
 
+/*!
+    @brief      Return whether the property set has a time domain
+
+    If the property set does not have a time domain, the information is
+    omnipresent through time.
+*/
 bool PropertySet::has_time_domain() const
 {
     return _time_domain ? true : false;
 }
 
 
+/*!
+    @brief      Return whether the property set has a space domain
+
+    If the property set does not have a space domain, the information is
+    omnipresent through space.
+*/
 bool PropertySet::has_space_domain() const
 {
     return _space_domain ? true : false;
 }
 
 
+/*!
+    @brief      Return time domain
+    @warning    Only call this member function when the property set
+                has a time domain (has_time_domain() returns true)
+*/
 TimeDomain const& PropertySet::time_domain() const
 {
     assert(_time_domain);
@@ -76,6 +99,9 @@ TimeDomain const& PropertySet::time_domain() const
 }
 
 
+/*!
+    @overload
+*/
 TimeDomain& PropertySet::time_domain()
 {
     assert(_time_domain);
@@ -83,6 +109,11 @@ TimeDomain& PropertySet::time_domain()
 }
 
 
+/*!
+    @brief      Return space domain
+    @warning    Only call this member function when the property set
+                has a space domain (has_space_domain() returns true)
+*/
 SpaceDomain const& PropertySet::space_domain() const
 {
     assert(_space_domain);
@@ -90,6 +121,9 @@ SpaceDomain const& PropertySet::space_domain() const
 }
 
 
+/*!
+    @overload
+*/
 SpaceDomain& PropertySet::space_domain()
 {
     assert(_space_domain);
@@ -97,12 +131,18 @@ SpaceDomain& PropertySet::space_domain()
 }
 
 
+/*!
+    @brief      Return collection of properties
+*/
 Properties const& PropertySet::properties() const
 {
     return _properties;
 }
 
 
+/*!
+    @overload
+*/
 Properties& PropertySet::properties()
 {
     return _properties;

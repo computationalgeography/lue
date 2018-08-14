@@ -21,7 +21,9 @@ void init_value(
 )")
 
         .def("reserve",
-            [](Value& value, Count const nr_arrays) -> Value&
+            [](
+                Value& value,
+                Count const nr_arrays) -> Value&
             {
                 value.reserve(nr_arrays);
                 return value;

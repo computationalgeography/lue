@@ -20,6 +20,10 @@ void init_property(
     Property docstring...
 )")
 
+        .def_property_readonly("value",
+            py::overload_cast<>(&Property::value),
+            py::return_value_policy::reference_internal)
+
         ;
 
 }

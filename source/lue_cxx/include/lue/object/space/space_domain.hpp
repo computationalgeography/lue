@@ -12,9 +12,13 @@ namespace lue {
 using SpaceConfiguration = Configuration<
     Mobility,
     SpaceDomainItemType
+
 >;
 
 
+/*!
+    @brief      Class representing the space domain
+*/
 class SpaceDomain:
     public hdf5::Group
 {
@@ -39,8 +43,8 @@ public:
                    configuration       () const;
 
     template<
-        typename T>
-    T              value               ();
+        typename Value>
+    Value          value               ();
 
 private:
 
@@ -58,11 +62,16 @@ SpaceDomain        create_space_domain (hdf5::Group& parent,
 bool               space_domain_exists (hdf5::Group const& parent);
 
 
+/*!
+    @brief      Return instance representing the collection of space
+                domain object arrays
+    @tparam     Value Class corresponding with the instance's configuration()
+*/
 template<
-    typename T>
-inline T SpaceDomain::value()
+    typename Value>
+inline Value SpaceDomain::value()
 {
-    return T{*this};
+    return Value{*this};
 }
 
 }  // namespace lue
