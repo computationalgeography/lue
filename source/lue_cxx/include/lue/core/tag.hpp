@@ -13,10 +13,10 @@ static std::string const rank_tag =
     "lue_rank";
 // static std::string const shape_per_object_tag =
 //     "lue_shape_per_object";
-// static std::string const value_variability_tag =
-//     "lue_value_variability";
-// static std::string const shape_variability_tag =
-//     "lue_shape_variability";
+static std::string const value_variability_tag =
+    "lue_value_variability";
+static std::string const shape_variability_tag =
+    "lue_shape_variability";
 
 // info
 static std::string const id_tag =
@@ -49,6 +49,8 @@ static std::string const properties_tag =
     "lue_properties";
 // static std::string const property_set_tag =
 //     "lue_property_set";
+static std::string const shape_per_object_tag =
+    "lue_shape_per_object";
 static std::string const same_shape_tag =
     "lue_same_shape";
 static std::string const same_shape_constant_shape_tag =

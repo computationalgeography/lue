@@ -110,86 +110,6 @@ inline std::ostream& operator<<(
 }  // namespace hdf5
 
 
-inline std::ostream& operator<<(
-    std::ostream& stream,
-    ShapePerObject const kind)
-{
-    stream << kind;
-
-    return stream;
-}
-
-
-inline std::ostream& operator<<(
-    std::ostream& stream,
-    ValueVariability const kind)
-{
-    stream << kind;
-
-    return stream;
-}
-
-
-inline std::ostream& operator<<(
-    std::ostream& stream,
-    ShapeVariability const kind)
-{
-    stream << kind;
-
-    return stream;
-}
-
-
-inline std::ostream& operator<<(
-    std::ostream& stream,
-    Mobility const kind)
-{
-    stream << kind;
-
-    return stream;
-}
-
-
-inline std::ostream& operator<<(
-    std::ostream& stream,
-    SpaceDomainItemType const kind)
-{
-    stream << kind;
-
-    return stream;
-}
-
-
-inline std::ostream& operator<<(
-    std::ostream& stream,
-    TimeDiscretization const kind)
-{
-    stream << kind;
-
-    return stream;
-}
-
-
-inline std::ostream& operator<<(
-    std::ostream& stream,
-    SpaceDiscretization const kind)
-{
-    stream << kind;
-
-    return stream;
-}
-
-
-inline std::ostream& operator<<(
-    std::ostream& stream,
-    TimeDomainItemType const kind)
-{
-    stream << kind;
-
-    return stream;
-}
-
-
 template<
     typename T>
 inline std::ostream& write(
@@ -200,6 +120,29 @@ inline std::ostream& write(
 
     return stream;
 }
+
+
+#define STREAM_ASPECT(T)               \
+inline std::ostream& operator<<(       \
+    std::ostream& stream,              \
+    T const kind)                      \
+{                                      \
+    stream << aspect_to_string(kind);  \
+                                       \
+    return stream;                     \
+}
+
+STREAM_ASPECT(ShapePerObject)
+STREAM_ASPECT(ValueVariability)
+STREAM_ASPECT(ShapeVariability)
+STREAM_ASPECT(Mobility)
+STREAM_ASPECT(SpaceDomainItemType)
+STREAM_ASPECT(TimeDiscretization)
+STREAM_ASPECT(SpaceDiscretization)
+STREAM_ASPECT(TimeDomainItemType)
+STREAM_ASPECT(time::Unit)
+
+#undef STREAM_ASPECT
 
 
 template<
@@ -241,20 +184,6 @@ inline std::ostream& operator<<(
     return write(
         stream, configuration, std::index_sequence_for<Ts...>());
 }
-
-
-namespace time {
-
-inline std::ostream& operator<<(
-    std::ostream& stream,
-    Unit const unit)
-{
-    stream << Aspect<Unit>(unit).value();
-
-    return stream;
-}
-
-}  // namespace time
 
 
 inline std::ostream& operator<<(

@@ -55,20 +55,20 @@ struct AspectMap<EnumType>                                   \
 TAG(EnumType, tag_name)                              \
 MAP(EnumType, enum_pairs)
 
-// TAG_AND_MAP(ShapePerObject, shape_per_object_tag, ({
-//     { ShapePerObject::same, "lue_same_shape" },
-//     { ShapePerObject::different, "lue_different_shape" }
-// }))
-// 
-// TAG_AND_MAP(ValueVariability, value_variability_tag, ({
-//     { ValueVariability::constant, "lue_constant" },
-//     { ValueVariability::variable, "lue_variable" }
-// }))
-// 
-// TAG_AND_MAP(ShapeVariability, shape_variability_tag, ({
-//     { ShapeVariability::constant, "lue_constant_shape" },
-//     { ShapeVariability::variable, "lue_variable_shape" }
-// }))
+TAG_AND_MAP(ShapePerObject, shape_per_object_tag, ({
+    { ShapePerObject::same, "lue_same_shape" },
+    { ShapePerObject::different, "lue_different_shape" }
+}))
+
+TAG_AND_MAP(ValueVariability, value_variability_tag, ({
+    { ValueVariability::constant, "lue_constant" },
+    { ValueVariability::variable, "lue_variable" }
+}))
+
+TAG_AND_MAP(ShapeVariability, shape_variability_tag, ({
+    { ShapeVariability::constant, "lue_constant_shape" },
+    { ShapeVariability::variable, "lue_variable_shape" }
+}))
 
 TAG_AND_MAP(TimeDomainItemType, time_domain_item_type_tag, ({
     { TimeDomainItemType::point, "lue_point" },
