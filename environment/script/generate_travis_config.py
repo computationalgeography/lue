@@ -73,7 +73,8 @@ class Build(namedtuple("Build", (
             "TRAVIS_CXX_COMPILER={}".format(self.compilers.cxx_compiler.name),
             "TRAVIS_CXX_FLAGS=\"{}\"".format(self.compilers.cxx_compiler.flags),
             "TRAVIS_BUILD_TYPE={}".format(self.build_type),
-            "TRAVIS_LUE_CMAKE_ARGUMENTS=\"-DCMAKE_BUILD_TYPE=$TRAVIS_BUILD_TYPE -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS -DLUE_BUILD_TEST:BOOL=TRUE {}\"".format(" ".join(["-D{}={}".format(key, self.environment[key]) for key in self.environment]))
+            "TRAVIS_LUE_CMAKE_ARGUMENTS=\"-DCMAKE_BUILD_TYPE=$TRAVIS_BUILD_TYPE -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS -DLUE_BUILD_TEST:BOOL=TRUE {}\"".format(" ".join(["-D{}={}".format(key, self.environment[key]) for key in self.environment])),
+            "TRAVIS_PYTHON_VERSION={}".format(self.python_version)
         ]
 
         return """\
@@ -387,8 +388,7 @@ before_install:
     - conda config --set always_yes yes --set changeps1 no
     - conda update -q conda
     - conda info -a  # Useful for debugging any issues with conda
-    # conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION numpy
-    - conda create -q -n test-environment numpy
+    - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION numpy
     - source activate test-environment
     # - python setup.py install
 
