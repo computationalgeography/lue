@@ -53,6 +53,7 @@ add_library(lue_py SHARED
     src/object/time_domain
     ### src/time_domain
     src/object/universe
+    src/stationary_space_box
     src/validate
 
     ### src/item/different_shape/continuous_value

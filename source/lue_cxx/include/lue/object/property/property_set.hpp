@@ -8,6 +8,10 @@
 
 namespace lue {
 
+/*!
+    @brief      Class representing a set of properties sharing a time
+                and space domain
+*/
 class PropertySet:
     public hdf5::Group
 {

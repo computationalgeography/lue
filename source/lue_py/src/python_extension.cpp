@@ -21,6 +21,7 @@ void init_phenomenon(py::module& module);
 void init_property_group(py::module& module);
 void init_property_set(py::module& module);
 void init_space_domain(py::module& module);
+void init_stationary_space_box(py::module& module);
 void init_time_domain(py::module& module);
 void init_universe(py::module& module);
 void init_value_group(py::module& module);
@@ -85,6 +86,8 @@ PYBIND11_MODULE(lue, module)
 
     different_shape::init_submodule(module);
     same_shape::init_submodule(module);
+
+    init_stationary_space_box(module);
 
     init_id(module);
     init_object_tracker(module);

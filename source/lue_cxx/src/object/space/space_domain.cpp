@@ -4,16 +4,24 @@
 
 namespace lue {
 
+/*!
+    @brief      Construct instance based on parent group
+    @parent     parent Parent group of group representing the space domain
+*/
 SpaceDomain::SpaceDomain(
     hdf5::Group& parent):
 
-    hdf5::Group{parent, space_domain_tag},
-    _configuration{attributes()}
+    SpaceDomain{hdf5::Group{parent, space_domain_tag}}
 
 {
 }
 
 
+/*!
+    @brief      Construct instance based on group that represents the
+                space domain
+    @param      group Group representing the space domain
+*/
 SpaceDomain::SpaceDomain(
     hdf5::Group&& group):
 
@@ -24,6 +32,9 @@ SpaceDomain::SpaceDomain(
 }
 
 
+/*!
+    @brief      Return space configuration
+*/
 SpaceConfiguration const& SpaceDomain::configuration() const
 {
     return _configuration;
