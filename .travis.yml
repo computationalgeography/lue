@@ -17,8 +17,8 @@ matrix:
                       - gcc-5
                       - libboost-all-dev
                       - libhdf5-dev
-                      - tree
                       - g++-5
+                      - tree
           env:
               - TRAVIS_C_COMPILER=gcc-5 TRAVIS_CXX_COMPILER=g++-5 TRAVIS_CXX_FLAGS="" TRAVIS_BUILD_TYPE=Release TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=$TRAVIS_BUILD_TYPE -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS -DLUE_BUILD_TEST:BOOL=TRUE " TRAVIS_PYTHON_VERSION=3.6
         - compiler: gcc
@@ -28,11 +28,11 @@ matrix:
                   sources:
                       - ubuntu-toolchain-r-test
                   packages:
-                      - gcc-6
                       - libboost-all-dev
                       - libhdf5-dev
-                      - tree
                       - g++-6
+                      - tree
+                      - gcc-6
           env:
               - TRAVIS_C_COMPILER=gcc-6 TRAVIS_CXX_COMPILER=g++-6 TRAVIS_CXX_FLAGS="" TRAVIS_BUILD_TYPE=Release TRAVIS_LUE_CMAKE_ARGUMENTS="-DCMAKE_BUILD_TYPE=$TRAVIS_BUILD_TYPE -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS -DLUE_BUILD_TEST:BOOL=TRUE " TRAVIS_PYTHON_VERSION=3.6
 
@@ -53,7 +53,6 @@ before_install:
     - conda update -q conda
     - conda info -a  # Useful for debugging any issues with conda
     - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION numpy
-    # - conda create -q -n test-environment numpy
     - source activate test-environment
     # - python setup.py install
 
@@ -105,7 +104,9 @@ before_script:
     - pip install conan
     - mkdir build
     - cd build
-    - conan remote add conan-community https://api.bintray.com/conan/conan-community/conan
+    # - conan remote add conan-community https://api.bintray.com/conan/conan-community/conan
+    - conan remote add public-conan https://api.bintray.com/conan/bincrafters/public-conan
+
     - CC=$TRAVIS_C_COMPILER CXX=$TRAVIS_CXX_COMPILER conan install .. --setting compiler=`echo $TRAVIS_C_COMPILER | cut -d'-' -f1` --setting compiler.version=`echo $TRAVIS_C_COMPILER | cut -d'-' -f2` --build fmt
     - cd ..
 
