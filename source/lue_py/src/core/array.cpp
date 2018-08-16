@@ -1,5 +1,7 @@
 #include "lue/hdf5/datatype_traits.hpp"
 #include "lue/core/array.hpp"
+#include "lue/core/define.hpp"
+#include "lue/core/time/tick_period.hpp"
 #include "lue/py/conversion.hpp"
 #include "lue/py/numpy.hpp"
 #include <fmt/format.h>
@@ -530,6 +532,20 @@ void init_array(
 {
     init_numpy();
 
+    {
+        py::module submodule = module.def_submodule(
+            "dtype",
+            R"(
+        TODO
+    )");
+
+        submodule.attr("ID") = py::dtype::of<ID>();
+        submodule.attr("Index") = py::dtype::of<Index>();
+        submodule.attr("Count") = py::dtype::of<Count>();
+        submodule.attr("TickPeriodCount") =
+            py::dtype::of<time::TickPeriodCount>();
+    }
+
     py::class_<
             Array,
             hdf5::Dataset>(
@@ -539,7 +555,8 @@ void init_array(
 
         .def_property_readonly(
             "dtype",
-            [](Array const& self) {
+            [](Array const& self)
+            {
                 py::object object = hdf5_type_id_to_numpy_dtype(
                     self.memory_datatype());
                 assert(object.ptr() != nullptr);

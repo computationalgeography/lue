@@ -13,8 +13,7 @@ class ArrayTest(lue_test.TestCase):
         lue_test.remove_file_if_existant(dataset_name)
         self.dataset = lue.create_dataset(dataset_name)
         phenomenon = self.dataset.add_phenomenon("my_phenomenon")
-        self.property_set = phenomenon.add_property_set(
-            "my_property_set")
+        self.property_set = phenomenon.property_sets.add("my_property_set")
 
         self.nr_objects = 5
         object_tracker = self.property_set.object_tracker
@@ -24,7 +23,7 @@ class ArrayTest(lue_test.TestCase):
         self.nr_rows = 3
         self.nr_cols = 2
         self.value_shape = (self.nr_rows, self.nr_cols)
-        self.value_type = numpy.int32
+        self.value_type = numpy.dtype(numpy.int32)
 
         property = self.property_set.add_property(
             "my_property", self.value_type, self.value_shape)

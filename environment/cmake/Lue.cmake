@@ -12,7 +12,6 @@ include(DevBaseExternal)
 include(DevBaseMacro)
 include(LueMacro)
 
-
 # Not yet (treat warnings as errors):
 #   MSVC: /WX
 #   GNU/Clang: -Werror

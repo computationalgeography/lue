@@ -14,8 +14,8 @@ void init_clock(
 
     py::enum_<time::Unit>(
         module,
-        "unit",
-        "unit docstring...")
+        "Unit",
+        "Unit docstring...")
         .value("second", time::Unit::second)
         .value("minute", time::Unit::minute)
         .value("hour", time::Unit::hour)

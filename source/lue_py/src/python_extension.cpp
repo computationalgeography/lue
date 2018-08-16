@@ -12,8 +12,13 @@ void init_array(py::module& module);
 void init_clock(py::module& module);
 void init_dataset(py::module& module);
 /// void init_domain_class(py::module& module);
+//
+void init_active_id(py::module& module);
+void init_active_object_index(py::module& module);
+void init_active_set_index(py::module& module);
 void init_id(py::module& module);
 void init_object_tracker(py::module& module);
+
 void init_validate(py::module& module);
 /// // void init_item(py::module& module);
 void init_phenomenon(py::module& module);
@@ -22,6 +27,8 @@ void init_property_group(py::module& module);
 void init_property_set(py::module& module);
 void init_space_domain(py::module& module);
 void init_stationary_space_box(py::module& module);
+void init_stationary_space_point(py::module& module);
+void init_time_box(py::module& module);
 void init_time_domain(py::module& module);
 void init_universe(py::module& module);
 void init_value_group(py::module& module);
@@ -52,6 +59,15 @@ namespace same_shape {
 void init_submodule(py::module& module);
 
 }  // namespace same_shape
+
+
+#ifdef LUE_BUILD_LUE_TEST
+namespace test {
+
+void init_submodule(py::module& module);
+
+}  // namespace test
+#endif
 
 
 PYBIND11_MODULE(lue, module)
@@ -87,10 +103,16 @@ PYBIND11_MODULE(lue, module)
     different_shape::init_submodule(module);
     same_shape::init_submodule(module);
 
+    init_time_box(module);
     init_stationary_space_box(module);
+    init_stationary_space_point(module);
 
+    init_active_id(module);
+    init_active_object_index(module);
+    init_active_set_index(module);
     init_id(module);
     init_object_tracker(module);
+
     init_property_set(module);
     init_space_domain(module);
     init_time_domain(module);
@@ -107,8 +129,11 @@ PYBIND11_MODULE(lue, module)
 
     /// constant_collection::init_submodule(module);
 
+#ifdef LUE_BUILD_LUE_TEST
+    test::init_submodule(module);
+#endif
 
-    module.ptr();
+    // module.ptr();
 }
 
 }  // namespace lue

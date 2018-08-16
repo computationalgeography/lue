@@ -1,4 +1,5 @@
 #include "lue/array/same_shape/variable_shape/value.hpp"
+#include "lue/py/conversion.hpp"
 #include <pybind11/pybind11.h>
 
 
@@ -21,6 +22,17 @@ void init_value(
     Value docstring...
 )")
 
+        .def("reserve",
+            [](
+                Value& value,
+                Index idx,
+                Count const nr_arrays,
+                py::tuple const& shape)
+            {
+                auto const shape_ = tuple_to_shape(shape);
+
+                return value.reserve(idx, nr_arrays, shape_);
+            })
         ;
 
 }

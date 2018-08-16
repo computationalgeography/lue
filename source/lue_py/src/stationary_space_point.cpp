@@ -1,4 +1,4 @@
-#include "lue/info/identity/id.hpp"
+#include "lue/info/space/stationary_space_point.hpp"
 #include <pybind11/pybind11.h>
 
 
@@ -8,15 +8,15 @@ using namespace pybind11::literals;
 
 namespace lue {
 
-void init_id(
+void init_stationary_space_point(
     py::module& module)
 {
 
-    py::class_<info::ID, same_shape::Value>(
+    py::class_<StationarySpacePoint, same_shape::Value>(
         module,
-        "ID",
+        "StationarySpacePoint",
         R"(
-    ID docstring...
+    TODO
 )")
 
         ;

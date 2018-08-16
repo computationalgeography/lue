@@ -1,154 +1,160 @@
 #include "lue/py/conversion.hpp"
-#include "lue/py/numpy.hpp"
 #include <numpy/arrayobject.h>
+#include <fmt/format.h>
+#include <map>
 
 
 namespace py = pybind11;
 
 namespace lue {
 
-DEFINE_INIT_NUMPY()
-
-
-int numpy_type_id(
-    py::handle const& numpy_type_id_object)
+hdf5::Datatype numpy_type_to_memory_datatype(
+      py::dtype const& dtype)
 {
-    init_numpy();
-
-    int numpy_type_id = NPY_NOTYPE;
-
-    {
-        PyArray_Descr* dtype;
-        if(!PyArray_DescrConverter(
-                numpy_type_id_object.ptr(), &dtype)) {
-            throw py::error_already_set();
-        }
-        numpy_type_id = dtype->type_num;
-        Py_DECREF(dtype);
-    }
-
-    return numpy_type_id;
-}
-
-
-std::tuple<hid_t, hid_t> numpy_type_to_hdf5_types(
-    int const type_id)
-{
-    hid_t file_type_id = -1;
+    auto const kind = dtype.kind();
+    auto const size = dtype.itemsize();  // bytes
     hid_t memory_type_id = -1;
 
-    switch(type_id) {
-        case NPY_UINT32: {
-            file_type_id = H5T_STD_U32LE;
-            memory_type_id = H5T_NATIVE_UINT32;
+    switch(kind) {
+        case 'i': {
+            // Signed integer
+            switch(size) {
+                case 1: {
+                    memory_type_id = H5T_NATIVE_INT8;
+                    break;
+                }
+                case 2: {
+                    memory_type_id = H5T_NATIVE_INT16;
+                    break;
+                }
+                case 4: {
+                    memory_type_id = H5T_NATIVE_INT32;
+                    break;
+                }
+                case 8: {
+                    memory_type_id = H5T_NATIVE_INT64;
+                    break;
+                }
+            }
+
             break;
         }
-        case NPY_INT32: {
-            file_type_id = H5T_STD_I32LE;
-            memory_type_id = H5T_NATIVE_INT32;
+        case 'u': {
+            // Unsigned integer
+            switch(size) {
+                case 1: {
+                    memory_type_id = H5T_NATIVE_UINT8;
+                    break;
+                }
+                case 2: {
+                    memory_type_id = H5T_NATIVE_UINT16;
+                    break;
+                }
+                case 4: {
+                    memory_type_id = H5T_NATIVE_UINT32;
+                    break;
+                }
+                case 8: {
+                    memory_type_id = H5T_NATIVE_UINT64;
+                    break;
+                }
+            }
+
             break;
         }
-        case NPY_UINT64: {
-            file_type_id = H5T_STD_U64LE;
-            memory_type_id = H5T_NATIVE_UINT64;
-            break;
-        }
-        case NPY_INT64: {
-            file_type_id = H5T_STD_I64LE;
-            memory_type_id = H5T_NATIVE_INT64;
-            break;
-        }
-        case NPY_FLOAT32: {
-            file_type_id = H5T_IEEE_F32LE;
-            memory_type_id = H5T_NATIVE_FLOAT;
-            break;
-        }
-        case NPY_FLOAT64: {
-            file_type_id = H5T_IEEE_F64LE;
-            memory_type_id = H5T_NATIVE_DOUBLE;
-            break;
-        }
-        default: {
-            throw std::runtime_error("Unsupported numpy type");
+        case 'f': {
+            // Floating-point
+            switch(size) {
+                case 4: {
+                    memory_type_id = H5T_NATIVE_FLOAT;
+                    break;
+                }
+                case 8: {
+                    memory_type_id = H5T_NATIVE_DOUBLE;
+                    break;
+                }
+            }
+
             break;
         }
     }
 
-    return std::make_tuple(file_type_id, memory_type_id);
-}
-
-
-hdf5::Datatype numpy_type_to_memory_datatype(
-    int const type_id)
-{
-    hid_t file_type_id, memory_type_id;
-
-    std::tie(file_type_id, memory_type_id) = numpy_type_to_hdf5_types(type_id);
+    if(memory_type_id < 0) {
+        throw std::runtime_error(fmt::format(
+            "Unsupported dtype (kind={}, itemsize={})", kind, size));
+    }
 
     return hdf5::Datatype{memory_type_id};
 }
 
 
-hdf5::Datatype numpy_type_to_memory_datatype(
-    py::handle const& numpy_type_id_object)
+struct CompareDatatypes
 {
-    auto const type_id = numpy_type_id(numpy_type_id_object);
+    bool operator()(hdf5::Datatype const& lhs, hdf5::Datatype const& rhs) const
+    {
+        // How to determine whether some data type is less than another one?
+        // Potentially, datatype with different addresses represent the
+        // same logical type (e.g. when a datatype is copied with H5Tcopy).
+        // For now, assume this does not happen. Also, datatype equality
+        // is tested using H5Tequal, which 'determines whether two
+        // datatype identifiers refer to the same datatype'. Let's use
+        // the same semantics.
+        return lhs.id().info().addr() < rhs.id().info().addr();
+    }
+};
 
-    return numpy_type_to_memory_datatype(type_id);
-}
 
-
-pybind11::object hdf5_type_id_to_numpy_dtype(
+py::dtype hdf5_type_id_to_numpy_dtype(
     hdf5::Datatype const datatype)
 {
-    init_numpy();
+    assert(datatype.is_native());
 
-    std::string type_as_string;
+    py::dtype dtype;
 
-    if(datatype == hdf5::Datatype{H5T_NATIVE_UINT32}) {
-        type_as_string = "uint32";
+    static hdf5::Datatype const uint8{H5T_NATIVE_UINT8};
+    static hdf5::Datatype const uint16{H5T_NATIVE_UINT16};
+    static hdf5::Datatype const uint32{H5T_NATIVE_UINT32};
+    static hdf5::Datatype const uint64{H5T_NATIVE_UINT64};
+    static hdf5::Datatype const int8{H5T_NATIVE_INT8};
+    static hdf5::Datatype const int16{H5T_NATIVE_INT16};
+    static hdf5::Datatype const int32{H5T_NATIVE_INT32};
+    static hdf5::Datatype const int64{H5T_NATIVE_INT64};
+    static hdf5::Datatype const float32{H5T_NATIVE_FLOAT};
+    static hdf5::Datatype const float64{H5T_NATIVE_DOUBLE};
+
+    // static auto compare_datatypes = [](
+    //     hdf5::Datatype const& lhs,
+    //     hdf5::Datatype const& rhs)
+    // {
+    //     return lhs.id().info().addr() < rhs.id().info().addr();
+    // };
+
+    // C++20 makes lambda closures default constructable
+    // using CompareDatatypes = decltype(compare_datatypes);
+
+    static std::map<hdf5::Datatype, py::dtype, CompareDatatypes>
+        dtype_by_datatype
+    {
+        {uint8, py::dtype::of<std::uint8_t>()},
+        {uint16, py::dtype::of<std::uint16_t>()},
+        {uint32, py::dtype::of<std::uint32_t>()},
+        {uint64, py::dtype::of<std::uint64_t>()},
+        {int8, py::dtype::of<std::int8_t>()},
+        {int16, py::dtype::of<std::int16_t>()},
+        {int32, py::dtype::of<std::int32_t>()},
+        {int64, py::dtype::of<std::int64_t>()},
+        {float32, py::dtype::of<float>()},
+        {float64, py::dtype::of<double>()}
+    };
+
+    if(dtype_by_datatype.find(datatype) == dtype_by_datatype.end()) {
+        throw std::runtime_error(fmt::format(
+            "Unsupported datatype ({})",
+            native_datatype_as_string(datatype))
+        );
     }
-    else if(datatype == hdf5::Datatype{H5T_NATIVE_INT32}) {
-        type_as_string = "int32";
-    }
-    else if(datatype == hdf5::Datatype{H5T_NATIVE_UINT64}) {
-        type_as_string = "uint64";
-    }
-    else if(datatype == hdf5::Datatype{H5T_NATIVE_INT64}) {
-        type_as_string = "int64";
-    }
-    else if(datatype == hdf5::Datatype{H5T_NATIVE_FLOAT}) {
-        type_as_string = "float32";
-    }
-    else if(datatype == hdf5::Datatype{H5T_NATIVE_DOUBLE}) {
-        type_as_string = "float64";
-    }
-    else {
-        throw std::runtime_error(
-            "Unsupported array value type");
-    }
 
-    assert(!type_as_string.empty());
-
-    PyObject* result = Py_BuildValue("s", type_as_string.c_str());
-
-    if(!result) {
-        throw py::error_already_set();
-    }
-
-    auto object = py::reinterpret_steal<py::object>(result);
-    result = nullptr;
-
-    PyArray_Descr* dtype = nullptr;
-
-    if(!PyArray_DescrConverter(object.ptr(), &dtype)) {
-        throw py::error_already_set();
-    }
-
-    assert(dtype);
-
-    return py::reinterpret_steal<py::object>(
-        reinterpret_cast<PyObject*>(dtype));
+    return dtype_by_datatype[datatype];
 }
 
 
