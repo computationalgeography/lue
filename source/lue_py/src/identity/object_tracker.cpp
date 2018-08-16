@@ -19,10 +19,32 @@ void init_object_tracker(
     ObjectTracker docstring...
 )")
 
-        .def_property_readonly("id",
+        .def_property_readonly(
+            "id",
             py::overload_cast<>(&ObjectTracker::id),
             R"(
     id docstring...
+)")
+
+        .def_property_readonly(
+            "active_set_index",
+            py::overload_cast<>(&ObjectTracker::active_set_index),
+            R"(
+    active_set_index docstring...
+)")
+
+        .def_property_readonly(
+            "active_object_index",
+            py::overload_cast<>(&ObjectTracker::active_object_index),
+            R"(
+    active_object_index docstring...
+)")
+
+        .def_property_readonly(
+            "active_id",
+            py::overload_cast<>(&ObjectTracker::active_id),
+            R"(
+    active_id docstring...
 )")
 
         ;

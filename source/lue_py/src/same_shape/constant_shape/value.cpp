@@ -21,6 +21,16 @@ void init_value(
     Value docstring...
 )")
 
+        .def(
+            "reserve",
+            [](
+                Value& value,
+                Count const nr_arrays) -> Value&
+            {
+                value.reserve(nr_arrays);
+                return value;
+            })
+
         ;
 
 }

@@ -181,4 +181,32 @@ inline same_shape::variable_shape::Property&
     return _same_shape_variable_shape_properties.add(name, datatype, rank);
 }
 
+
+template<>
+inline different_shape::constant_shape::Property&
+        Properties::add<different_shape::constant_shape::Property>(
+    std::string const& name,
+    hdf5::Datatype const& datatype,
+    Rank const rank)
+{
+    verify_property_does_not_exist(name);
+
+    return _different_shape_constant_shape_properties.add(
+        name, datatype, rank);
+}
+
+
+template<>
+inline different_shape::variable_shape::Property&
+        Properties::add<different_shape::variable_shape::Property>(
+    std::string const& name,
+    hdf5::Datatype const& datatype,
+    Rank const rank)
+{
+    verify_property_does_not_exist(name);
+
+    return _different_shape_variable_shape_properties.add(
+        name, datatype, rank);
+}
+
 }  // namespace lue

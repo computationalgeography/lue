@@ -14,8 +14,8 @@ void init_time_domain(
 
     py::enum_<TimeDomainItemType>(
         module,
-        "time_domain_item_type",
-        "time_domain_item_type docstring...")
+        "TimeDomainItemType",
+        "TimeDomainItemType docstring...")
         .value("box", TimeDomainItemType::box)
         .value("point", TimeDomainItemType::point)
         ;
@@ -38,6 +38,36 @@ void init_time_domain(
         "TimeDomain",
         R"(
     TODO
+)")
+
+        .def_property_readonly(
+            "value",
+            [](
+                TimeDomain& time_domain)
+            {
+                py::object collection = py::none();
+
+                auto const& configuration = time_domain.configuration();
+
+                switch(configuration.value<TimeDomainItemType>()) {
+                    case TimeDomainItemType::point: {
+                        using Value = TimePoint;
+                        collection = py::cast(new Value(
+                            time_domain.value<Value>()));
+                        break;
+                    }
+                    case TimeDomainItemType::box: {
+                        using Value = TimeBox;
+                        collection = py::cast(new Value(
+                            time_domain.value<Value>()));
+                        break;
+                    }
+                }
+
+                return collection;
+            },
+            R"(
+    Return instance representing the collection of time domain items
 )")
 
         ;

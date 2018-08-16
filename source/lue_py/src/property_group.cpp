@@ -12,6 +12,13 @@ void init_property_group(
     py::module& module)
 {
 
+    py::enum_<TimeDiscretization>(
+        module,
+        "TimeDiscretization",
+        "TimeDiscretization docstring...")
+        .value("regular_grid", TimeDiscretization::regular_grid)
+        ;
+
     py::enum_<SpaceDiscretization>(
         module,
         "SpaceDiscretization",
@@ -25,6 +32,10 @@ void init_property_group(
         R"(
     PropertyGroup docstring...
 )")
+
+        .def(
+            "set_time_discretization",
+            &PropertyGroup::set_time_discretization)
 
         .def(
             "set_space_discretization",

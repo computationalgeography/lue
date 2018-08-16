@@ -43,8 +43,13 @@ add_library(lue_py SHARED
     ### src/domain
     ### # src/item
     ### # src/numpy
+
+    src/identity/active_id
+    src/identity/active_object_index
+    src/identity/active_set_index
     src/identity/id
     src/identity/object_tracker
+
     src/object/phenomenon
     ### src/property
     src/object/property_set
@@ -54,6 +59,8 @@ add_library(lue_py SHARED
     ### src/time_domain
     src/object/universe
     src/stationary_space_box
+    src/stationary_space_point
+    src/time_box
     src/validate
 
     ### src/item/different_shape/continuous_value
@@ -108,6 +115,8 @@ add_library(lue_py SHARED
     ### src/constant_collection/time/located/constant_shape/same_shape/value
     ### src/constant_collection/time/located/constant_shape/same_shape/property
     ### src/constant_collection/time/located/constant_shape/same_shape/submodule
+
+    $<$<BOOL:LUE_BUILD_LUE_TEST>:src/test/submodule>
 )
 
 add_library(lue::py ALIAS lue_py)
@@ -116,6 +125,7 @@ target_include_directories(lue_py SYSTEM
     PRIVATE
         ${NUMPY_INCLUDE_DIRS}
         ${PYTHON_INCLUDE_DIRS}
+        ### ${GUIDELINE_SUPPORT_LIBRARY_INCLUDE_DIR}
 )
 
 target_include_directories(lue_py
@@ -126,6 +136,7 @@ target_include_directories(lue_py
 
 target_link_libraries(lue_py
     PRIVATE
+        $<$<BOOL:LUE_BUILD_LUE_TEST>:lue::test>
         lue::lue
         pybind11::pybind11
         ${PYTHON_LIBRARIES}

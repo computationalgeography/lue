@@ -3,6 +3,7 @@
 #include <cassert>
 #include <numeric>
 #include <random>
+#include <vector>
 #include <type_traits>
 
 
@@ -109,7 +110,8 @@ inline void select_random_ids(
 #ifndef NDEBUG
     std::size_t const sum_active_set_sizes = std::accumulate(
         active_set_sizes.begin(), active_set_sizes.end(), 0);
-    assert(active_ids.size() == sum_active_set_sizes);
+    assert(
+        static_cast<std::size_t>(active_ids.size()) == sum_active_set_sizes);
 #endif
 
     assert(std::all_of(
@@ -121,18 +123,21 @@ inline void select_random_ids(
 
     // Create a collection of unique IDs with the size of the maximum
     // number of IDs
-    ActiveIDs all_ids(max_nr_objects);
+    std::vector<typename ActiveIDs::value_type> all_ids(max_nr_objects);
     generate_random_ids(all_ids);
 
     // For each active set, randomly selects IDs
+    // TODO Within a set, an ID may occur multiple times. This must
+    //      be prevented!
     {
         auto& random_number_engine{detail::random_number_engine()};
-        std::uniform_int_distribution<typename ActiveIDs::size_type>
+        std::uniform_int_distribution<Count>
             distribution{0, max_nr_objects - 1};
 
         typename ActiveSetIdxs::value_type active_set_idx = 0;
 
-        for(std::size_t s = 0; s < nr_active_sets; ++s)
+        for(typename std::decay<decltype(nr_active_sets)>::type s = 0;
+                s < nr_active_sets; ++s)
         {
             active_set_idxs[s] = active_set_idx;
 
@@ -149,23 +154,6 @@ inline void select_random_ids(
             active_set_idx += size_of_active_set;
         }
     }
-
-    // // For each collection, randomly select IDs
-    // // for(auto const& [id_collection, id_count]: boost::combine(id_collections, id_counts)) {
-    // for(std::size_t i = 0; i < id_collections.size(); ++i) {
-    //     auto& id_collection = id_collections[i];
-    //     auto& id_count = id_counts[i];
-
-    //     id_collection.resize(id_count);
-    //     std::generate(id_collection.begin(), id_collection.end(),
-    //         [&all_ids, &random_number_engine, &distribution](){
-    //             return all_ids[distribution(random_number_engine)];
-    //         }
-    //     );
-    // }
-
-
-
 }
 
 

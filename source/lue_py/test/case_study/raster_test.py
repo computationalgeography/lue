@@ -13,9 +13,9 @@ class RasterTest(lue_test.TestCase):
             lue.Mobility.stationary,
             lue.SpaceDomainItemType.box
         )
-        coordinate_datatype = numpy.float32
+        coordinate_datatype = numpy.dtype(numpy.float32)
         rank = 2
-        area_boxes = areas.add_property_set(
+        area_boxes = areas.property_sets.add(
             "areas", space_configuration, coordinate_datatype, rank)
 
         nr_areas = 10
@@ -31,7 +31,7 @@ class RasterTest(lue_test.TestCase):
         space_domain.value.reserve(nr_areas)[:] = boxes
 
         # Discretization property
-        count_datatype = numpy.uint64
+        count_datatype = lue.dtype.Count
         discretization = area_boxes.add_property(
             "discretization", dtype=count_datatype, shape=(rank,))
         shapes = numpy.arange(
@@ -39,7 +39,7 @@ class RasterTest(lue_test.TestCase):
         discretization.value.reserve(nr_areas)[:] = shapes
 
         # Elevation property
-        elevation_datatype = numpy.float32
+        elevation_datatype = numpy.dtype(numpy.float32)
         elevation = area_boxes.add_property(
             "elevation", dtype=elevation_datatype, rank=rank)
         grids = elevation.value.reserve(ids, shapes)

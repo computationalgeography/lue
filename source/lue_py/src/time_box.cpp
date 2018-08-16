@@ -1,4 +1,4 @@
-#include "lue/info/identity/id.hpp"
+#include "lue/info/time/time_box.hpp"
 #include <pybind11/pybind11.h>
 
 
@@ -8,15 +8,15 @@ using namespace pybind11::literals;
 
 namespace lue {
 
-void init_id(
+void init_time_box(
     py::module& module)
 {
 
-    py::class_<info::ID, same_shape::Value>(
+    py::class_<TimeBox, same_shape::constant_shape::Value>(
         module,
-        "ID",
+        "TimeBox",
         R"(
-    ID docstring...
+    TODO
 )")
 
         ;
