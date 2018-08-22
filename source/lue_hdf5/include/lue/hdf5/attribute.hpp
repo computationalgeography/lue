@@ -44,11 +44,15 @@ inline void read_attribute<std::string>(
     value.resize(nr_bytes, 'x');
 
     auto status = ::H5Aread(id, datatype.id(),
-#if __cplusplus > 201402L
-        value.data()
-#else
+// This test seems correct (201402L corresponds with C++14, non-const data()
+// is introduced in C++17), but non-const data() does not seem to be
+// available in GCC-5 and 6.
+// #if __cplusplus > 201402L
+//         value.data()
+// #else
+//         const_cast<std::string::value_type*>(value.data())
+// #endif
         const_cast<std::string::value_type*>(value.data())
-#endif
     );
     assert(value.size() == nr_bytes);
 
