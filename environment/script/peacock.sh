@@ -52,8 +52,6 @@ function build_peacock()
     if [ $hostname == "sonic.geo.uu.nl" ]; then
         build_boost=true
         build_gdal=true
-    elif [ $hostname == "gransasso" ]; then
-        build_gdal=true
     fi
 
 
