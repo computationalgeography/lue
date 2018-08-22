@@ -24,6 +24,12 @@ ActiveID::ActiveID(
 }
 
 
+Count ActiveID::nr_ids() const
+{
+    return nr_arrays();
+}
+
+
 ActiveID create_active_id(
     hdf5::Group& parent)
 {

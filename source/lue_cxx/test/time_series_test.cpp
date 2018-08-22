@@ -44,7 +44,7 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
     lue::hdf5::Datatype const time_coordinate_datatype{
         lue::hdf5::NativeDatatypeTraits<TimeCoordinateValueType>::type_id()};
     std::vector<TimeCoordinateValueType> time_boxes(nr_time_boxes * 2);
-    lue::test::generate_random_values(time_boxes, 0, 1000);
+    lue::test::generate_random_strictly_increasing_values(time_boxes, 0, 1000);
 
     // Space domain
     // Points in space that don't change location:
@@ -233,6 +233,8 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
                 discretization_property);
         }
     }
+
+    lue::assert_is_valid(pathname());
 
     // Open and read
     {

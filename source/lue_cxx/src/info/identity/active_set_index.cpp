@@ -24,6 +24,12 @@ ActiveSetIndex::ActiveSetIndex(
 }
 
 
+Count ActiveSetIndex::nr_indices() const
+{
+    return nr_arrays();
+}
+
+
 ActiveSetIndex create_active_set_index(
     hdf5::Group& parent)
 {

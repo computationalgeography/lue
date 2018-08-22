@@ -36,6 +36,8 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
         value.write(values.data());
     }
 
+    BOOST_CHECK_NO_THROW(lue::assert_is_valid(pathname()));
+
     // Open and read
     {
         auto const& planets = dataset().phenomena()[phenomenon_name];

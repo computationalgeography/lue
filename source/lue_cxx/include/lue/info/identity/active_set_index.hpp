@@ -7,6 +7,7 @@ namespace info {
 
 /*!
     @brief      Per location in time, an index of first object in active set
+    @todo       Use private inheritance to hide the base class' API?
 
     In the ActiveSetIndex dataset, indices are stored of the first
     object of each active set. The ID of the active objects themselves
@@ -37,6 +38,8 @@ public:
     ActiveSetIndex& operator=          (ActiveSetIndex const&)=delete;
 
     ActiveSetIndex& operator=          (ActiveSetIndex&&)=default;
+
+    Count          nr_indices          () const;
 
 private:
 

@@ -32,6 +32,8 @@ public:
 
     MobileSpacePoint& operator=        (MobileSpacePoint&&)=default;
 
+    Count          nr_points           () const;
+
 private:
 
 };

@@ -23,6 +23,10 @@ class Collection:
 
 public:
 
+    using iterator = typename std::map<std::string, T>::iterator;
+
+    using const_iterator = typename std::map<std::string, T>::const_iterator;
+
                    Collection          (hdf5::Group& parent,
                                         std::string const& name);
 
@@ -53,6 +57,14 @@ public:
 
     T&             add                 (std::string const& name,
                                         T&& item);
+
+    iterator       begin               ();
+
+    const_iterator begin               () const;
+
+    iterator       end                 ();
+
+    const_iterator end                 () const;
 
 private:
 
@@ -225,6 +237,38 @@ inline T& Collection<T>::operator[](
     }
 
     return (*iterator).second;
+}
+
+
+template<
+    typename T>
+typename Collection<T>::iterator Collection<T>::begin()
+{
+    return _items.begin();
+}
+
+
+template<
+    typename T>
+typename Collection<T>::const_iterator Collection<T>::begin() const
+{
+    return _items.begin();
+}
+
+
+template<
+    typename T>
+typename Collection<T>::iterator Collection<T>::end()
+{
+    return _items.end();
+}
+
+
+template<
+    typename T>
+typename Collection<T>::const_iterator Collection<T>::end() const
+{
+    return _items.end();
 }
 
 

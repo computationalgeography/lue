@@ -34,6 +34,12 @@ MobileSpaceBox::MobileSpaceBox(
 }
 
 
+Count MobileSpaceBox::nr_boxes() const
+{
+    return nr_arrays();
+}
+
+
 MobileSpaceBox create_mobile_space_box(
     hdf5::Group& parent,
     hdf5::Datatype const& memory_datatype,

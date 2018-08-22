@@ -34,6 +34,9 @@ public:
 
     std::size_t    size                () const;
 
+    // std::vector<std::string>
+    //                names               () const;
+
     bool           contains            (std::string const& name) const;
 
     ShapePerObject shape_per_object    (std::string const& name) const;
@@ -153,6 +156,19 @@ inline same_shape::constant_shape::Property&
     verify_property_does_not_exist(name);
 
     return _same_shape_constant_shape_properties.add(name, datatype);
+}
+
+
+template<>
+inline same_shape::Property&
+        Properties::add<same_shape::Property>(
+    std::string const& name,
+    hdf5::Datatype const& datatype,
+    hdf5::Shape const& shape)
+{
+    verify_property_does_not_exist(name);
+
+    return _same_shape_properties.add(name, datatype, shape);
 }
 
 

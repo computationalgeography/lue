@@ -20,5 +20,6 @@ target_link_libraries(lue_utility
         docopt
         nlohmann_json
     PRIVATE
-        lue::hl
+        lue::lue
+    #     lue::hl
 )

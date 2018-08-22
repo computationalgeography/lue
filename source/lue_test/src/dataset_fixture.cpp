@@ -29,6 +29,12 @@ DatasetFixture::~DatasetFixture()
 }
 
 
+std::string const& DatasetFixture::pathname() const
+{
+    return _pathname;
+}
+
+
 Dataset& DatasetFixture::dataset()
 {
     return *_dataset;

@@ -23,6 +23,8 @@ public:
 
    DatasetFixture& operator=           (DatasetFixture&&)=delete;
 
+   std::string const& pathname         () const;
+
    Dataset&        dataset             ();
 
    void            keep_dataset_upon_destruction();

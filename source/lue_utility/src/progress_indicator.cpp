@@ -53,6 +53,7 @@ void ProgressIndicator::finish_stream()
 void ProgressIndicator::update_progress(
     size_t const task)
 {
+    // TODO Update to use fmt::format
     auto string = boost::str(boost::format("%s: %3i%%")
         % _label
         % ((100 * task) / _nr_tasks));

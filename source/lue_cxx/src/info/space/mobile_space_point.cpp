@@ -34,6 +34,12 @@ MobileSpacePoint::MobileSpacePoint(
 }
 
 
+Count MobileSpacePoint::nr_points() const
+{
+    return nr_arrays();
+}
+
+
 MobileSpacePoint create_mobile_space_point(
     hdf5::Group& parent,
     hdf5::Datatype const& memory_datatype,

@@ -111,17 +111,6 @@ py::dtype hdf5_type_id_to_numpy_dtype(
 
     py::dtype dtype;
 
-    static hdf5::Datatype const uint8{H5T_NATIVE_UINT8};
-    static hdf5::Datatype const uint16{H5T_NATIVE_UINT16};
-    static hdf5::Datatype const uint32{H5T_NATIVE_UINT32};
-    static hdf5::Datatype const uint64{H5T_NATIVE_UINT64};
-    static hdf5::Datatype const int8{H5T_NATIVE_INT8};
-    static hdf5::Datatype const int16{H5T_NATIVE_INT16};
-    static hdf5::Datatype const int32{H5T_NATIVE_INT32};
-    static hdf5::Datatype const int64{H5T_NATIVE_INT64};
-    static hdf5::Datatype const float32{H5T_NATIVE_FLOAT};
-    static hdf5::Datatype const float64{H5T_NATIVE_DOUBLE};
-
     // static auto compare_datatypes = [](
     //     hdf5::Datatype const& lhs,
     //     hdf5::Datatype const& rhs)
@@ -135,16 +124,16 @@ py::dtype hdf5_type_id_to_numpy_dtype(
     static std::map<hdf5::Datatype, py::dtype, CompareDatatypes>
         dtype_by_datatype
     {
-        {uint8, py::dtype::of<std::uint8_t>()},
-        {uint16, py::dtype::of<std::uint16_t>()},
-        {uint32, py::dtype::of<std::uint32_t>()},
-        {uint64, py::dtype::of<std::uint64_t>()},
-        {int8, py::dtype::of<std::int8_t>()},
-        {int16, py::dtype::of<std::int16_t>()},
-        {int32, py::dtype::of<std::int32_t>()},
-        {int64, py::dtype::of<std::int64_t>()},
-        {float32, py::dtype::of<float>()},
-        {float64, py::dtype::of<double>()}
+        {hdf5::native_uint8, py::dtype::of<std::uint8_t>()},
+        {hdf5::native_uint16, py::dtype::of<std::uint16_t>()},
+        {hdf5::native_uint32, py::dtype::of<std::uint32_t>()},
+        {hdf5::native_uint64, py::dtype::of<std::uint64_t>()},
+        {hdf5::native_int8, py::dtype::of<std::int8_t>()},
+        {hdf5::native_int16, py::dtype::of<std::int16_t>()},
+        {hdf5::native_int32, py::dtype::of<std::int32_t>()},
+        {hdf5::native_int64, py::dtype::of<std::int64_t>()},
+        {hdf5::native_float32, py::dtype::of<float>()},
+        {hdf5::native_float64, py::dtype::of<double>()}
     };
 
     if(dtype_by_datatype.find(datatype) == dtype_by_datatype.end()) {

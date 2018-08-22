@@ -6,6 +6,8 @@
 namespace lue {
 
 /*!
+    @todo       Privately inherit to hide base class' API?
+
     - Zero or more time points per item
     - Each time point has a unique location in time
 */
@@ -29,6 +31,8 @@ public:
     TimePoint&     operator=           (TimePoint const&)=delete;
 
     TimePoint&     operator=           (TimePoint&&)=default;
+
+    Count          nr_points           () const;
 
 private:
 

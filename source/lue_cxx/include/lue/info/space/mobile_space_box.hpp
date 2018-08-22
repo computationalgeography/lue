@@ -32,6 +32,8 @@ public:
 
     MobileSpaceBox& operator=          (MobileSpaceBox&&)=default;
 
+    Count          nr_boxes            () const;
+
 private:
 
 };

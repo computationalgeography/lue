@@ -7,6 +7,7 @@ namespace info {
 
 /*!
     @brief      An ID per object in the active set
+    @todo       Use private inheritance to hide the base class' API?
 
     In the ActiveID dataset, IDs are stored of objects that are active
     at a given location in time. Multiple sets of object IDs can be stored
@@ -43,6 +44,8 @@ public:
     ActiveID&      operator=           (ActiveID const&)=delete;
 
     ActiveID&      operator=           (ActiveID&&)=default;
+
+    Count          nr_ids              () const;
 
 private:
 

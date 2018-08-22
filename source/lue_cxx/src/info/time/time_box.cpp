@@ -26,6 +26,12 @@ TimeBox::TimeBox(
 }
 
 
+Count TimeBox::nr_boxes() const
+{
+    return nr_arrays();
+}
+
+
 TimeBox create_time_box(
     hdf5::Group& parent,
     lue::Clock const& /* clock */)

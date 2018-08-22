@@ -32,6 +32,12 @@ StationarySpaceBox::StationarySpaceBox(
 }
 
 
+Count StationarySpaceBox::nr_boxes() const
+{
+    return nr_arrays();
+}
+
+
 StationarySpaceBox create_stationary_space_box(
     hdf5::Group& parent,
     hdf5::Datatype const& memory_datatype,
