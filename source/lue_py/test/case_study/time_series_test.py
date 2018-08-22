@@ -135,7 +135,8 @@ class TimeSeriesTest(lue_test.TestCase):
 
             # Property
             discretization = collection.add_property(
-                "discretization", dtype=shape_datatype, shape=(1,))
+                "discretization", dtype=shape_datatype, shape=(1,),
+                value_variability=lue.ValueVariability.variable)
             discretization.value.reserve(nr_time_boxes)[:] = shapes
 
             return discretization

@@ -1,7 +1,7 @@
 #include "lue/utility/metadata.hpp"
-#include "lue/time_unit_util.hpp"
+#include "lue/core/aspect.hpp"
 #include <boost/filesystem.hpp>
-#include <boost/format.hpp>
+#include <fmt/format.h>
 #include <exception>
 
 
@@ -30,8 +30,9 @@ void assert_has_key(
     std::string const& name)
 {
     if(!has_key(object, name)) {
-        throw std::runtime_error(boost::str(boost::format(
-            "JSON object does not contain key %1%") % name));
+        throw std::runtime_error(fmt::format(
+            "JSON object does not contain key {}",
+            name));
     }
 }
 
@@ -41,9 +42,9 @@ void assert_has_key(
     JSONPointer const& pointer)
 {
     if(!has_key(object, pointer)) {
-        throw std::runtime_error(boost::str(boost::format(
-            "JSON object does not contain key %1%")
-                % std::string(pointer)));
+        throw std::runtime_error(fmt::format(
+            "JSON object does not contain key {}",
+            std::string(pointer)));
     }
 }
 
@@ -88,9 +89,9 @@ JSON object(
     auto const object_json_it = json::find(list_json, key, value);
 
     if(object_json_it == list_json.end()) {
-        throw std::runtime_error(boost::str(boost::format(
-            "No object whose key %1% equals %2% exists at %3%")
-                % key % value % std::string(pointer)));
+        throw std::runtime_error(fmt::format(
+            "No object whose key {} equals {} exists at {}",
+            key, value, std::string(pointer)));
 
     }
 
@@ -182,8 +183,9 @@ Metadata::Metadata(
     namespace bfs = boost::filesystem;
 
     if(!bfs::exists(pathname)) {
-        throw std::runtime_error(boost::str(boost::format(
-            "File containing metadata (%1%) does not exist") % pathname));
+        throw std::runtime_error(fmt::format(
+            "File containing metadata ({}) does not exist",
+            pathname));
     }
 
     std::ifstream(pathname) >> _json;
@@ -308,7 +310,8 @@ void from_json(
     utility::JSON const& object,
     Unit& unit)
 {
-    unit = string_to_unit(object.get<std::string>());
+    unit = string_to_aspect<Unit>(object.get<std::string>());
+    // unit = string_to_unit(object.get<std::string>());
 }
 
 }  // namespace time

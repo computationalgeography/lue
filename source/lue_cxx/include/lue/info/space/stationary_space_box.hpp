@@ -31,6 +31,8 @@ public:
 
     StationarySpaceBox& operator=      (StationarySpaceBox&&)=default;
 
+    Count          nr_boxes            () const;
+
 private:
 
 };

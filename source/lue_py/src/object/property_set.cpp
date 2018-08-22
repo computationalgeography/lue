@@ -30,6 +30,14 @@ void init_property_set(
         .value("variable", ShapeVariability::variable)
         ;
 
+    py::enum_<ValueVariability>(
+        module,
+        "ValueVariability",
+        "ValueVariability docstring...")
+        .value("constant", ValueVariability::constant)
+        .value("variable", ValueVariability::variable)
+        ;
+
 
     BASE_COLLECTION(PropertySets, PropertySet)
 
@@ -230,6 +238,57 @@ void init_property_set(
             "dtype"_a,
             "shape"_a,
             py::return_value_policy::reference_internal)
+
+        .def(
+            "add_property",
+            [](
+                PropertySet& property_set,
+                std::string const& name,
+                py::dtype const& dtype,
+                py::tuple const& shape,
+                ValueVariability const value_variability)
+            {
+                // In this overload:
+                // - Shape is the same per object
+                // - Shape is constant through time
+                // - Value is constant or variable
+                auto const datatype_ = numpy_type_to_memory_datatype(dtype);
+                auto const shape_ = tuple_to_shape(shape);
+
+                py::object property = py::none();
+
+                switch(value_variability) {
+                    case ValueVariability::constant: {
+                        using Property = same_shape::Property;
+                        property = py::cast(
+                            &property_set.properties().add<Property>(
+                                name,
+                                datatype_,
+                                shape_));
+                        break;
+                    }
+                    case ValueVariability::variable: {
+                        using Property = same_shape::constant_shape::Property;
+                        property = py::cast(
+                            &property_set.properties().add<Property>(
+                                name,
+                                datatype_,
+                                shape_));
+                        break;
+                    }
+                }
+
+                return property;
+            },
+            R"(
+    Add new property to collection
+)",
+            "name"_a,
+            "dtype"_a,
+            "shape"_a,
+            "value_variability"_a,
+            py::return_value_policy::reference_internal)
+
 
         .def(
             "add_property",

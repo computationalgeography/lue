@@ -26,6 +26,12 @@ TimePoint::TimePoint(
 }
 
 
+Count TimePoint::nr_points() const
+{
+    return nr_arrays();
+}
+
+
 TimePoint create_time_point(
     hdf5::Group& parent,
     lue::Clock const& /* clock */)

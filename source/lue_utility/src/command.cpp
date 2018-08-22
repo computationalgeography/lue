@@ -2,7 +2,6 @@
 #include "lue/utility/print_message.hpp"
 #include "lue/utility/stopwatch.hpp"
 #include "lue/configure.hpp"
-#include <boost/format.hpp>
 #include <cassert>
 #include <iostream>
 

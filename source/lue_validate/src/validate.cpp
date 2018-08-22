@@ -1,23 +1,23 @@
 #include "lue/validate/validate.hpp"
 #include "lue/validate.hpp"
-#include <boost/format.hpp>
+#include <fmt/format.h>
 
 
 namespace {
 
-std::string const usage = boost::str(boost::format(R"(
+std::string const usage = fmt::format(R"(
 Validate LUE datasets
 
 usage:
-    %1% [--issues] [--fail-on-warning] <dataset>...
-    %1% (-h | --help) | --version
+    {0} [--issues] [--fail-on-warning] <dataset>...
+    {0} (-h | --help) | --version
 
 options:
     -h --help   Show this screen
     --version   Show version
     --issues    Only print issues
     --fail-on-warning   Treat warnings as errors
-)") % "lue_validate");
+)", "lue_validate");
 
 } // Anonymous namespace
 

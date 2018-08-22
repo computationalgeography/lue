@@ -126,14 +126,8 @@ inline void select_random_ids(
     std::vector<typename ActiveIDs::value_type> all_ids(max_nr_objects);
     generate_random_ids(all_ids);
 
-    // For each active set, randomly selects IDs
-    // TODO Within a set, an ID may occur multiple times. This must
-    //      be prevented!
+    // For each active set, randomly select IDs
     {
-        auto& random_number_engine{detail::random_number_engine()};
-        std::uniform_int_distribution<Count>
-            distribution{0, max_nr_objects - 1};
-
         typename ActiveSetIdxs::value_type active_set_idx = 0;
 
         for(typename std::decay<decltype(nr_active_sets)>::type s = 0;
@@ -143,13 +137,13 @@ inline void select_random_ids(
 
             auto const size_of_active_set = active_set_sizes[s];
 
-            std::generate(
-                active_ids.begin() + active_set_idx,
-                active_ids.begin() + active_set_idx + size_of_active_set,
-                [&all_ids, &random_number_engine, &distribution](){
-                    return all_ids[distribution(random_number_engine)];
-                }
-            );
+            // Shuffle collection of IDs and select from the front of
+            // the collection. This guarantees that no ID occurs more
+            // than once in the current active set.
+            std::random_shuffle(all_ids.begin(), all_ids.end());
+            std::copy(
+                all_ids.begin(), all_ids.begin() + size_of_active_set,
+                active_ids.begin() + active_set_idx);
 
             active_set_idx += size_of_active_set;
         }
@@ -179,6 +173,31 @@ inline void generate_random_integral_values(
             return distribution(random_number_engine);
         }
     );
+}
+
+
+template<
+    typename Collection>
+inline void generate_random_strictly_increasing_integral_values(
+    Collection& values,
+    typename Collection::value_type const min,
+    typename Collection::value_type const max)
+{
+    using ValueType = typename Collection::value_type;
+
+    static_assert(std::is_integral<ValueType>(), "");
+
+    // TODO Update to make it impossible to generate duplicate values
+    auto& random_number_engine{detail::random_number_engine()};
+    std::uniform_int_distribution<ValueType>
+        distribution{min, max};
+    std::generate(values.begin(), values.end(),
+        [&distribution, &random_number_engine]() {
+            return distribution(random_number_engine);
+        }
+    );
+
+    std::sort(values.begin(), values.end());
 }
 
 
@@ -259,6 +278,20 @@ inline void generate_random_values(
     for(auto& element: collection) {
         generate_random_values(element, min, max);
     }
+}
+
+
+template<
+    typename Collection,
+    std::enable_if_t<
+        std::is_integral<typename Collection::value_type>::value, int> = 0
+>
+inline void generate_random_strictly_increasing_values(
+    Collection& values,
+    typename Collection::value_type const min,
+    typename Collection::value_type const max)
+{
+    generate_random_strictly_increasing_integral_values(values, min, max);
 }
 
 

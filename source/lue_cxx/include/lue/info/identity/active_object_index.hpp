@@ -7,6 +7,7 @@ namespace info {
 
 /*!
     @brief      An index into the value array per object in the active set
+    @todo       Use private inheritance to hide base class' API?
 
     In the ActiveObjectIndex dataset, indices can be stored of objects
     that are active at a given location in time. Multiple sets of indices
@@ -39,6 +40,8 @@ public:
     ActiveObjectIndex& operator=       (ActiveObjectIndex const&)=delete;
 
     ActiveObjectIndex& operator=       (ActiveObjectIndex&&)=default;
+
+    Count          nr_indices          () const;
 
 private:
 

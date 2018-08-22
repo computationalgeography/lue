@@ -8,7 +8,7 @@ namespace lue {
 void               validate            (hdf5::File const& file,
                                         hdf5::Issues& issues);
 
-void               validate            (std::string const& name,
+void               validate            (std::string const& pathname,
                                         hdf5::Issues& issues);
 
 void               assert_is_valid     (hdf5::File const& file,

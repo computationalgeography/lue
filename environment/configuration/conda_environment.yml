@@ -1,0 +1,11 @@
+name: lue
+channels:
+- conda-forge
+- defaults
+dependencies:
+- conan
+- docopt
+- numpy=1.12
+- python=3.6
+- setuptools
+- sphinx

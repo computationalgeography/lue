@@ -55,6 +55,26 @@ std::size_t Properties::size() const
 }
 
 
+// std::vector<std::string> Properties::names() const
+// {
+//     std::vector<std::string> names;
+// 
+//     {
+//         auto const names_ = _same_shape_properties.names();
+//         names.insert(names.end(), names_.begin(), names_.end());
+//     }
+// 
+// 
+//     // _same_shape_constant_shape_properties.size() +
+//     // _same_shape_variable_shape_properties.size() +
+//     // _different_shape_properties.size() +
+//     // _different_shape_constant_shape_properties.size() +
+//     // _different_shape_variable_shape_properties.size()
+// 
+//     return names;
+// }
+
+
 bool Properties::contains(
     std::string const& name) const
 {

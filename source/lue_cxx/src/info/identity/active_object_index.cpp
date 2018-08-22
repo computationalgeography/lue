@@ -24,6 +24,12 @@ ActiveObjectIndex::ActiveObjectIndex(
 }
 
 
+Count ActiveObjectIndex::nr_indices() const
+{
+    return nr_arrays();
+}
+
+
 ActiveObjectIndex create_active_object_index(
     hdf5::Group& parent)
 {

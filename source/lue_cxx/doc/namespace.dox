@@ -1,0 +1,5 @@
+/*!
+    @brief      Namespace containing all LUE code
+*/
+namespace lue {
+}

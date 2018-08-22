@@ -6,6 +6,8 @@
 namespace lue {
 
 /*!
+    @todo       Use private inheritance to hide base class' API?
+
     - Zero or more time boxes per item
     - Each time box has a unique location in time
 */
@@ -29,6 +31,8 @@ public:
     TimeBox&       operator=           (TimeBox const&)=delete;
 
     TimeBox&       operator=           (TimeBox&&)=default;
+
+    Count          nr_boxes            () const;
 
 private:
 

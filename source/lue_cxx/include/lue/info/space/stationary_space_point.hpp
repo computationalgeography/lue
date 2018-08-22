@@ -31,6 +31,8 @@ public:
 
     StationarySpacePoint& operator=    (StationarySpacePoint&&)=default;
 
+    Count          nr_points           () const;
+
 private:
 
 };

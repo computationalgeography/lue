@@ -1,6 +1,6 @@
 #pragma once
-#include "lue/clock.hpp"
-#include "lue/time/unit.hpp"
+#include "lue/core/clock.hpp"
+#include "lue/core/time/unit.hpp"
 #include <nlohmann/json.hpp>
 #include <fstream>
 #include <iostream>

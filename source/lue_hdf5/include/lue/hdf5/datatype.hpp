@@ -101,5 +101,28 @@ Datatype           memory_datatype     (Datatype const& file_datatype);
 
 Datatype           file_datatype       (Datatype const& memory_datatype);
 
+
+static Datatype const native_uint8{H5T_NATIVE_UINT8};
+static Datatype const native_uint16{H5T_NATIVE_UINT16};
+static Datatype const native_uint32{H5T_NATIVE_UINT32};
+static Datatype const native_uint64{H5T_NATIVE_UINT64};
+static Datatype const native_int8{H5T_NATIVE_INT8};
+static Datatype const native_int16{H5T_NATIVE_INT16};
+static Datatype const native_int32{H5T_NATIVE_INT32};
+static Datatype const native_int64{H5T_NATIVE_INT64};
+static Datatype const native_float32{H5T_NATIVE_FLOAT};
+static Datatype const native_float64{H5T_NATIVE_DOUBLE};
+
+static Datatype const std_uint8_le{H5T_STD_U8LE};
+static Datatype const std_uint16_le{H5T_STD_U16LE};
+static Datatype const std_uint32_le{H5T_STD_U32LE};
+static Datatype const std_uint64_le{H5T_STD_U64LE};
+static Datatype const std_int8_le{H5T_STD_I8LE};
+static Datatype const std_int16_le{H5T_STD_I16LE};
+static Datatype const std_int32_le{H5T_STD_I32LE};
+static Datatype const std_int64_le{H5T_STD_I64LE};
+static Datatype const ieee_float32_le{H5T_IEEE_F32LE};
+static Datatype const ieee_float64_le{H5T_IEEE_F64LE};
+
 } // namespace hdf5
 } // namespace lue

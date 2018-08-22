@@ -104,6 +104,8 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
             discretization_property);
     }
 
+    lue::assert_is_valid(pathname());
+
     // Open and read
     {
         // Phenomenon
