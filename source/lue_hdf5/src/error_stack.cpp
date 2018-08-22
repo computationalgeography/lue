@@ -84,8 +84,12 @@ bool ErrorStack::empty() const
 
 void ErrorStack::clear() const
 {
+#ifndef NDEBUG
     auto const result = ::H5Eclear2(_id);
     assert(result >= 0);
+#else
+    ::H5Eclear2(_id);
+#endif
 }
 
 
