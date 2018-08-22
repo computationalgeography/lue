@@ -103,9 +103,12 @@ std::vector<std::string> ErrorStack::messages() const
 {
     std::vector<std::string> result;
 
+#ifndef NDEBUG
     auto status = ::H5Ewalk2(_id, H5E_WALK_DOWNWARD, error_walker, &result);
-
     assert(status >= 0);
+#else
+    ::H5Ewalk2(_id, H5E_WALK_DOWNWARD, error_walker, &result);
+#endif
 
     return result;
 }

@@ -24,7 +24,11 @@ std::string SoftLink::path() const
     std::string name;
     name.resize(nr_bytes, 'x');
 
-    auto result = ::H5Lget_val(
+#ifndef NDEBUG
+    auto result =
+#endif
+
+    ::H5Lget_val(
         location_id(), this->name().c_str(),
 // This test seems correct (201402L corresponds with C++14, non-const data()
 // is introduced in C++17), but non-const data() does not seem to be
@@ -36,9 +40,12 @@ std::string SoftLink::path() const
 // #endif
         const_cast<std::string::value_type*>(name.data())
         , nr_bytes, H5P_DEFAULT);
-    name.resize(nr_bytes - 1);
 
+#ifndef NDEBUG
     assert(result >= 0);
+#endif
+
+    name.resize(nr_bytes - 1);
 
     return name;
 }
