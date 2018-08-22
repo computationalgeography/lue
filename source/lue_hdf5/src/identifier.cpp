@@ -234,11 +234,15 @@ std::string Identifier::pathname() const
     std::string result(nr_bytes, 'x');
 
     /* nr_bytes = */ ::H5Iget_name(_id,
-#if __cplusplus > 201402L
-        result.data()
-#else
+// This test seems correct (201402L corresponds with C++14, non-const data()
+// is introduced in C++17), but non-const data() does not seem to be
+// available in GCC-5 and 6.
+// #if __cplusplus > 201402L
+//         result.data()
+// #else
+//         const_cast<std::string::value_type*>(result.data())
+// #endif
         const_cast<std::string::value_type*>(result.data())
-#endif
         , nr_bytes + 1);
 
     return result;

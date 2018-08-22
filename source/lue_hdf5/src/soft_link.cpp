@@ -26,11 +26,15 @@ std::string SoftLink::path() const
 
     auto result = ::H5Lget_val(
         location_id(), this->name().c_str(),
-#if __cplusplus > 201402L
-        name.data()
-#else
+// This test seems correct (201402L corresponds with C++14, non-const data()
+// is introduced in C++17), but non-const data() does not seem to be
+// available in GCC-5 and 6.
+// #if __cplusplus > 201402L
+//         name.data()
+// #else
+//         const_cast<std::string::value_type*>(name.data())
+// #endif
         const_cast<std::string::value_type*>(name.data())
-#endif
         , nr_bytes, H5P_DEFAULT);
     name.resize(nr_bytes - 1);
 
