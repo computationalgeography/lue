@@ -73,7 +73,7 @@ class Build(namedtuple("Build", (
             "TRAVIS_CXX_COMPILER={}".format(self.compilers.cxx_compiler.name),
             "TRAVIS_CXX_FLAGS=\"{}\"".format(self.compilers.cxx_compiler.flags),
             "TRAVIS_BUILD_TYPE={}".format(self.build_type),
-            "TRAVIS_LUE_CMAKE_ARGUMENTS=\"-DCMAKE_BUILD_TYPE=$TRAVIS_BUILD_TYPE -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS -DLUE_BUILD_TEST:BOOL=TRUE {}\"".format(" ".join(["-D{}={}".format(key, self.environment[key]) for key in self.environment])),
+            "TRAVIS_LUE_CMAKE_ARGUMENTS=\"-DCMAKE_BUILD_TYPE=$TRAVIS_BUILD_TYPE -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS {}\"".format(" ".join(["-D{}={}".format(key, self.environment[key]) for key in self.environment])),
             "TRAVIS_PYTHON_VERSION={}".format(self.python_version)
         ]
 
@@ -246,77 +246,24 @@ def builds():
 
     build_configurations = [
 
-        # Default build (C++ library)
+        # Build C++ API (which depends on HDF5 API), including tests
         BuildConfiguration(
             {
+                "LUE_BUILD_TEST:BOOL": "TRUE",
             },
             [
             ]
         ),
 
-        # # Default build, including tests
-        # BuildConfiguration(
-        #     {
-        #         "LUE_BUILD_TEST:BOOL": "TRUE",
-        #     },
-        #     [
-        #     ]
-        # ),
-
-        # BuildConfiguration(
-        #     {
-        #         "LUE_BUILD_CXX_API:BOOL": "TRUE",
-        #     },
-        #     [
-        #     ]
-        # ),
-
-        # BuildConfiguration(
-        #     {
-        #         "LUE_BUILD_PYTHON_API:BOOL": "TRUE",
-        #     },
-        #     [
-        #     ]
-        # ),
-
-        # BuildConfiguration(
-        #     {
-        #         "LUE_BUILD_UTILITIES:BOOL": "TRUE",
-        #     },
-        #     [
-        #     ]
-        # ),
-        # BuildConfiguration(
-        #     {
-        #         "LUE_BUILD_TEST:BOOL": "TRUE",
-        #     },
-        #     [
-        #     ]
-        # ),
-        # BuildConfiguration(
-        #     {
-        #         "LUE_BUILD_CXX_API:BOOL": "TRUE",
-        #         "LUE_BUILD_TEST:BOOL": "TRUE",
-        #     },
-        #     [
-        #     ]
-        # ),
-        # BuildConfiguration(
-        #     {
-        #         "LUE_BUILD_PYTHON_API:BOOL": "TRUE",
-        #         "LUE_BUILD_TEST:BOOL": "TRUE",
-        #     },
-        #     [
-        #     ]
-        # ),
-        # BuildConfiguration(
-        #     {
-        #         "LUE_BUILD_UTILITIES:BOOL": "TRUE",
-        #         "LUE_BUILD_TEST:BOOL": "TRUE",
-        #     },
-        #     [
-        #     ]
-        # ),
+        # Build Python API (which depends on C++/HDF5 APIs), including tests
+        BuildConfiguration(
+            {
+                "LUE_BUILD_TEST:BOOL": "TRUE",
+                "LUE_BUILD_PYTHON_API:BOOL": "TRUE",
+            },
+            [
+            ]
+        ),
     ]
 
 
