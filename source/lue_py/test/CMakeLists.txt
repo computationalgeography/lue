@@ -3,6 +3,13 @@ copy_python_unit_test_modules(
     TARGET lue_test_modules
 )
 
+# get_target_property(
+#     LUE_PYTHON_PATH
+#     lue::py
+#     LIBRARY_OUTPUT_DIRECTORY
+# )
+message(STATUS ${LUE_PYTHON_PATH})
+
 add_unit_tests(
     SCOPE lue_py
     NAMES
@@ -18,4 +25,6 @@ add_unit_tests(
         # The tests load the Python extension at runtime. Make sure it is
         # up to date.
         lue::py
+    ENVIRONMENT
+        PYTHONPATH=$<TARGET_FILE_DIR:lue::py>
 )
