@@ -8,7 +8,7 @@ namespace test {
 DatasetFixture::DatasetFixture()
 
     : _pathname{"my_dataset.lue"},
-      _remove_dataset_upon_destruction{true},
+      _remove_dataset_upon_destruction{false},
       _dataset{std::make_unique<Dataset>(create_dataset(_pathname))}
 
 {

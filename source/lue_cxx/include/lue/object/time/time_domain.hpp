@@ -57,6 +57,9 @@ TimeDomain         create_time_domain  (hdf5::Group& parent,
 void               link_time_domain    (hdf5::Group& parent,
                                         TimeDomain& domain);
 
+bool               has_linked_time_domain(
+                                        hdf5::Group const& parent);
+
 bool               time_domain_exists  (hdf5::Group const& parent);
 
 

@@ -76,6 +76,18 @@ bool PropertySet::has_time_domain() const
 
 
 /*!
+    @brief      Return whether the property set owns the time domain or
+                shares another property set's time domain
+
+    False is returned in case the property set does not have a time domain.
+*/
+bool PropertySet::owns_time_domain() const
+{
+    return has_time_domain() && has_linked_time_domain(*this);
+}
+
+
+/*!
     @brief      Return whether the property set has a space domain
 
     If the property set does not have a space domain, the information is

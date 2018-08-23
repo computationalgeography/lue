@@ -93,35 +93,35 @@ int Import::run_implementation()
 
     auto first_input_dataset_name = input_dataset_names[0];
 
-    if(try_open_gdal_raster_stack_dataset_for_read(first_input_dataset_name)) {
+    // if(try_open_gdal_raster_stack_dataset_for_read(first_input_dataset_name)) {
 
-        // First input is a dataset that can be read by GDAL.
-        // We need to convert from a GDAL format to the LUE format.
+    //     // First input is a dataset that can be read by GDAL.
+    //     // We need to convert from a GDAL format to the LUE format.
 
-        translate_gdal_raster_stack_dataset_to_lue(
-            input_dataset_names, output_dataset_name, metadata);
+    //     translate_gdal_raster_stack_dataset_to_lue(
+    //         input_dataset_names, output_dataset_name, metadata);
 
-    }
-    else if(try_open_gdal_raster_dataset_for_read(first_input_dataset_name)) {
+    // }
+    // else if(try_open_gdal_raster_dataset_for_read(first_input_dataset_name)) {
 
-        // First input is a dataset that can be read by GDAL.
-        // We need to convert from a GDAL format to the LUE format.
+    //     // First input is a dataset that can be read by GDAL.
+    //     // We need to convert from a GDAL format to the LUE format.
 
-        translate_gdal_raster_dataset_to_lue(
-            input_dataset_names, output_dataset_name, metadata);
-    }
-    // TODO Support import of various file formats into a single
-    //      lue dataset
-    else if(bfs::path(first_input_dataset_name).extension() == ".tss") {
-       assert(input_dataset_names.size() == 1);
-       translate_geo_eas_to_lue(
-           first_input_dataset_name, output_dataset_name, metadata);
-    }
-    else {
+    //     translate_gdal_raster_dataset_to_lue(
+    //         input_dataset_names, output_dataset_name, metadata);
+    // }
+    // // TODO Support import of various file formats into a single
+    // //      lue dataset
+    // else if(bfs::path(first_input_dataset_name).extension() == ".tss") {
+    //    assert(input_dataset_names.size() == 1);
+    //    translate_geo_eas_to_lue(
+    //        first_input_dataset_name, output_dataset_name, metadata);
+    // }
+    // else {
         throw std::runtime_error(
             "translation from " + first_input_dataset_name +
             " is not supported (does it exist?)");
-    }
+    // }
 
     assert_is_valid(output_dataset_name);
 
