@@ -6,7 +6,7 @@
     },
 
     "hdf5": {
-        "dataset": {
+        "group": {
             "shape": "oval"
         },
         "dataset": {
@@ -21,14 +21,19 @@
         "property_set": {
             "fillcolor": "#9a0000"
         },
+        "object_tracker": {
+            "show": false
+        },
         "property": {
             "fillcolor": "#419702"
         },
-        "domain": {
-            "fillcolor": "#094d8e"
+        "time_domain": {
+            "fillcolor": "#36a2c9",
+            "show_details": false
         },
         "space_domain": {
-            "fillcolor": "#36a2c9"
+            "fillcolor": "#36a2c9",
+            "show_details": false
         },
         "value": {
             "fillcolor": "#f08000",

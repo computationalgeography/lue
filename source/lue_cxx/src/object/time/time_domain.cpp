@@ -92,6 +92,13 @@ void link_time_domain(
 }
 
 
+bool has_linked_time_domain(
+    hdf5::Group const& parent)
+{
+    return parent.contains_soft_link(time_domain_tag);
+}
+
+
 bool time_domain_exists(
     hdf5::Group const& parent)
 {

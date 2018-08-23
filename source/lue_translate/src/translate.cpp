@@ -2,7 +2,7 @@
 #include "lue/translate/command.hpp"
 #include <gdal_priv.h>
 #include <hdf5.h>
-#include <boost/format.hpp>
+#include <fmt/format.h>
 
 
 // - Support creation of new dataset.
@@ -25,19 +25,19 @@
 
 namespace {
 
-std::string const usage = boost::str(boost::format(R"(
+std::string const usage = fmt::format(R"(
 Translate data into or from the LUE dataset format
 
 usage:
-    %1% (import | export) [<arguments>...]
-    %1% (-h | --help) | --version
+    {0} (import | export) [<arguments>...]
+    {0} (-h | --help) | --version
 
 options:
     -h --help             Show this screen
     --version             Show version
 
-See '%1% help <command>' for more information on a command.
-)") % "lue_translate");
+See '{0} <command> --help' for more information on a command.
+)", "lue_translate");
 
 
 // std::string const usage = R"(lue_translate
@@ -73,8 +73,8 @@ namespace utility {
 
 Translate::Translate(
     std::vector<std::string> const& arguments)
-
-    : Application(usage, arguments, {
+:
+    Application(usage, arguments, {
           {Import::name, Import::command},
           {Export::name, Export::command},
       })

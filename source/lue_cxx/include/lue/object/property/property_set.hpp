@@ -40,6 +40,8 @@ public:
 
     bool           has_time_domain     () const;
 
+    bool           owns_time_domain    () const;
+
     bool           has_space_domain    () const;
 
     TimeDomain const& time_domain      () const;
