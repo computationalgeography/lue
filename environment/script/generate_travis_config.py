@@ -264,6 +264,15 @@ def builds():
             [
             ]
         ),
+
+        # Build Python API (which depends on C++/HDF5 APIs), without tests
+        BuildConfiguration(
+            {
+                "LUE_BUILD_PYTHON_API:BOOL": "TRUE",
+            },
+            [
+            ]
+        ),
     ]
 
 
