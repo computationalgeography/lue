@@ -12,8 +12,7 @@ namespace python {
                                                                            \
     py::class_<Item##Collection, hdf5::Group>(                             \
         module,                                                            \
-        #Item "Collection",                                                \
-    #Item "Collection docstring...\n"                                      \
+        #Item "Collection"                                                 \
 )                                                                          \
                                                                            \
         .def(                                                              \
@@ -28,7 +27,7 @@ namespace python {
         .def_property_readonly(                                            \
             "names",                                                       \
             &Item##Collection::names,                                      \
-    "Return list of names of items in collection\n"                        \
+    "Return collection of names of objects in collection\n"                \
 )                                                                          \
                                                                            \
         .def(                                                              \
@@ -38,27 +37,27 @@ namespace python {
                     std::string const& name) {                             \
                 return collection.contains(name);                          \
             },                                                             \
-    "Return whether or not the collection contains an item\n"              \
+    "Return whether or not the collection contains an object\n"            \
     "\n"                                                                   \
-    ":param str name: Name of item to find\n",                             \
+    ":param str name: Name of object to find\n",                           \
             "name"_a)                                                      \
                                                                            \
         .def(                                                              \
             "__getitem__",                                                 \
             py::overload_cast<std::string const&>(                         \
                 &Item##Collection::operator[]),                            \
-    "Return item\n"                                                        \
+    "Return object\n"                                                      \
     "\n"                                                                   \
-    ":param str name: Name of item to find\n"                              \
+    ":param str name: Name of object to find\n"                            \
     ":raises RuntimeError: In case the collection does not contain the\n"  \
-    "   item\n",                                                           \
+    "   object\n",                                                         \
             "name"_a,                                                      \
             py::return_value_policy::reference_internal)                   \
                                                                            \
         .def(                                                              \
             "__len__",                                                     \
             &Item##Collection::size,                                       \
-    "Return the number of items in the collection\n"                       \
+    "Return the number of objects in the collection\n"                     \
     "\n"                                                                   \
     "...")                                                                 \
                                                                            \

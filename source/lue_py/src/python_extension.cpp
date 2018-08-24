@@ -11,8 +11,7 @@ namespace lue {
 void init_array(py::module& module);
 void init_clock(py::module& module);
 void init_dataset(py::module& module);
-/// void init_domain_class(py::module& module);
-//
+
 void init_active_id(py::module& module);
 void init_active_object_index(py::module& module);
 void init_active_set_index(py::module& module);
@@ -20,9 +19,7 @@ void init_id(py::module& module);
 void init_object_tracker(py::module& module);
 
 void init_validate(py::module& module);
-/// // void init_item(py::module& module);
 void init_phenomenon(py::module& module);
-/// void init_property_class(py::module& module);
 void init_property_group(py::module& module);
 void init_property_set(py::module& module);
 void init_space_domain(py::module& module);
@@ -32,12 +29,6 @@ void init_time_box(py::module& module);
 void init_time_domain(py::module& module);
 void init_universe(py::module& module);
 void init_value_group(py::module& module);
-
-/// namespace constant_collection {
-/// 
-/// void init_submodule(py::module& module);
-/// 
-/// }  // namespace constant_collection
 
 
 namespace hdf5 {
@@ -74,8 +65,22 @@ PYBIND11_MODULE(lue, module)
 {
     module.doc() =
         R"(
-    Python extension implementing most of the LUE Python package
+    :mod:`lue` --- Manipulating LUE from Python
+    ===========================================
 
+    The :mod:`lue` package provides functionality for manipulating LUE
+    datasets from Python. These are the entry points for creating new
+    and opening existing datasets:
+
+    ===================== =========================
+    Create new dataset    :func:`lue.create_dataset`
+    Open existing dataset :func:`lue.open_dataset`
+    ===================== =========================
+
+    .. automodule:: lue.same_shape
+    .. automodule:: lue.different_shape
+    .. automodule:: lue.dtype
+    .. automodule:: lue.test
     .. automodule:: lue.hdf5
 )";
     module.attr("__version__") = py::str(LUE_VERSION);

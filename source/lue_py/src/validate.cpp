@@ -3,6 +3,7 @@
 
 
 namespace py = pybind11;
+using namespace pybind11::literals;
 
 
 namespace lue {
@@ -18,28 +19,47 @@ void init_validate(
             validate(name, issues);
             return issues;
         },
+        "name"_a,
         R"(
-    validate docstring...
+    Check whether a file contains a valid LUE dataset
+
+    :param str name: Name of file to check
+    :return: Collection of issues found
+    :rtype: hdf5.Issues
+
+    See also: :func:`assert_is_valid`
 )")
         ;
 
     module.def(
         "assert_is_valid",
         py::overload_cast<std::string const&, bool const>(&assert_is_valid),
-        py::arg("dataset_name"),
-        py::arg("fail_on_warning")=true,
+        "name"_a,
+        "fail_on_warning"_a=true,
         R"(
-    assert_is_valid docstring...
+    Check whether a file contains a valid LUE dataset
+
+    :param str name: Name of file to check
+    :param bool fail_on_warning: Whether or not to treat warnings as errors
+    :raises RuntimeError: If errors are found
+
+    See also: :func:`validate`
 )")
         ;
 
     module.def(
         "assert_is_valid",
         py::overload_cast<hdf5::File const&, bool const>(&assert_is_valid),
-        py::arg("file"),
-        py::arg("fail_on_warning")=true,
+        "file"_a,
+        "fail_on_warning"_a=true,
         R"(
-    assert_is_valid docstring...
+    Check whether a file contains a valid LUE dataset
+
+    :param hdf5.File file: File to check
+    :param bool fail_on_warning: Whether or not to treat warnings as errors
+    :raises RuntimeError: If errors are found
+
+    See also: :func:`validate`
 )")
         ;
 

@@ -15,15 +15,20 @@ void init_space_domain(
     py::enum_<Mobility>(
         module,
         "Mobility",
-        "mobility docstring...")
+        R"(
+    Objects can be stationary in space or mobile
+)")
         .value("mobile", Mobility::mobile)
         .value("stationary", Mobility::stationary)
         ;
 
+
     py::enum_<SpaceDomainItemType>(
         module,
         "SpaceDomainItemType",
-        "space_domain_item_type docstring...")
+        R"(
+    Locations in space can be represented by boxes or points
+)")
         .value("box", SpaceDomainItemType::box)
         .value("point", SpaceDomainItemType::point)
         ;
@@ -33,7 +38,7 @@ void init_space_domain(
         module,
         "SpaceConfiguration",
         R"(
-    TODO
+    Class for representing the aspects of the spatial domain
 )")
 
         .def(

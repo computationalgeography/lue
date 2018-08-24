@@ -17,19 +17,20 @@ void init_dataset(
         module,
         "Dataset",
         R"(
-    LUE dataset representing a scientific database
+    A class representing a scientific database stored in a file
 
-    A LUE dataset can contain collections of universes, phenomena, and/or
-    property sets.
+    A LUE dataset contains collections of :class:`universes <Universes>`
+    and :class:`phenomena <Phenomena>`.
 
-    It is not possible to create Dataset instances from scratch:
-    a constructor is not defined. New datasets can be created with the
-    free function create_dataset(). Existing datasets can be opened
-    with open_dataset().
+    New datasets can be created using :func:`create_dataset`. Existing
+    datasets can be opened with :func:`open_dataset`.
 
-    A LUE dataset is not similar to an HDF5 dataset. An HDF5 dataset
-    represents a multidimensional array in an HDF5 file. The HDF5 file
-    is managed by the LUE dataset.
+    .. note::
+
+        A LUE dataset is not similar to an HDF5 dataset. An HDF5 dataset
+        represents a multidimensional array in an HDF5 file. A LUE dataset
+        is an HDF5 file containing many HDF5 objects, including HDF5
+        datasets.
 )")
 
         .def(
@@ -91,7 +92,6 @@ void init_dataset(
 
     module.def(
         "open_dataset",
-        // &open_dataset,
         [](
             std::string const& name,
             std::string const& mode)
@@ -100,6 +100,20 @@ void init_dataset(
         },
         R"(
     Open existing LUE dataset
+
+    :param str name: Name of dataset to open
+    :param str mode: String that specifies the mode in which the dataset
+        is opened. The available modes are:
+
+        ========= =======
+        Character Meaning
+        ========= =======
+        r         Open dataset for reading (default)
+        w         Open dataset for writing, truncating the dataset first
+        ========= =======
+    :rtype: lue.Dataset
+
+    Updated datasets can be validated using :func:`lue.validate`.
 )",
         "name"_a,
         "mode"_a="r",
@@ -111,7 +125,11 @@ void init_dataset(
         R"(
     Create new LUE dataset
 
-    If the dataset already exists it is overwritten
+    :param str name: Name of dataset to create. If a file with this name
+        already exists it will be overwritten.
+    :rtype: lue.Dataset
+
+    Newly created datasets can be validated using :func:`lue.validate`.
 )",
         "name"_a,
         py::return_value_policy::move)

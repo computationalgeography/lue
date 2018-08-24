@@ -20,25 +20,23 @@ void init_phenomenon(
         module,
         "Phenomena",
         R"(
-    Collection of LUE phenomena
+    Collection of phenomena
 
-    Zero of more Phenomenon instances can be stored in a Phenomenon
-    collection.
-
-    It is not possible to create Phenomena instances from scratch:
-    a constructor is not defined. Phenomenon collections can be obtained
-    from Dataset instances.
+    Phenomenon collections can be obtained from :class:`Dataset` and
+    :class:`Universe` instances.
 )")
 
         .def("add",
             &Phenomena::add,
+            "name"_a,
             R"(
     Add new phenomenon to collection
 
     :param str name: Name of phenomenon to create
+    :return: Phenomenon created
+    :rtype: lue.Phenomenon
     :raises RuntimeError: In case the phenomenon cannot be created
 )",
-            "name"_a,
             py::return_value_policy::reference_internal)
 
         ;
@@ -48,7 +46,18 @@ void init_phenomenon(
         module,
         "Phenomenon",
         R"(
-    Phenomenon docstring...
+    Class for representing information about a collection of objects
+
+    A phenomenon contains two :class:`property set collections
+    <PropertySets>`. The :meth:`first <Phenomenon.property_sets>`
+    contains information about each object in a collection of objects. The
+    :meth:`second <Phenomenon.collection_property_sets>` second contains
+    information that is representable for the collection of objects as
+    a whole.
+
+    Phenomena are used to organize information about different collections
+    of objects. For example, information about cows, parcels and farmers
+    can be stored using three phenomena.
 )")
 
         .def(
@@ -64,7 +73,8 @@ void init_phenomenon(
             "property_sets",
             py::overload_cast<>(&Phenomenon::property_sets),
             R"(
-    Return property sets collection
+    Return property sets collection containing information about each
+    object in the collection of objects
 
     :rtype: lue.PropertySets
 )",
@@ -74,7 +84,8 @@ void init_phenomenon(
             "collection_property_sets",
             py::overload_cast<>(&Phenomenon::collection_property_sets),
             R"(
-    Return collection property sets collection
+    Return property sets collection containing information about the
+    collection of objects
 
     :rtype: lue.PropertySets
 )",
