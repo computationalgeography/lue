@@ -1,5 +1,6 @@
 #include "lue/hdf5/datatype.hpp"
 #include "lue/hdf5/datatype_traits.hpp"
+#include <boost/detail/endian.hpp>
 #include <algorithm>
 #include <cassert>
 #include <set>
@@ -19,20 +20,6 @@ bool datatypes_are_equal(
     return result > 0;
 }
 
-
-template<
-    typename Collection>
-bool datatype_in(
-    hid_t const type_id,
-    Collection const& datatypes)
-{
-    return std::any_of(datatypes.begin(), datatypes.end(),
-        [type_id](hid_t const a_type_id) {
-            return datatypes_are_equal(type_id, a_type_id);
-        }
-    );
-}
-
 }  // Anonymous namespace
 
 
@@ -43,34 +30,34 @@ std::string native_datatype_as_string(
 
     std::string result;
 
-    if(datatypes_are_equal(datatype.id(), H5T_NATIVE_FLOAT)) {
+    if(datatype == native_float32) {
         result = NativeDatatypeTraits<float>::name();
     }
-    else if(datatypes_are_equal(datatype.id(), H5T_NATIVE_DOUBLE)) {
+    else if(datatype == native_float64) {
         result = NativeDatatypeTraits<double>::name();
     }
-    else if(datatypes_are_equal(datatype.id(), H5T_NATIVE_UINT8)) {
+    else if(datatype == native_uint8) {
         result = NativeDatatypeTraits<uint8_t>::name();
     }
-    else if(datatypes_are_equal(datatype.id(), H5T_NATIVE_UINT16)) {
+    else if(datatype == native_uint16) {
         result = NativeDatatypeTraits<uint16_t>::name();
     }
-    else if(datatypes_are_equal(datatype.id(), H5T_NATIVE_UINT32)) {
+    else if(datatype == native_uint32) {
         result = NativeDatatypeTraits<uint32_t>::name();
     }
-    else if(datatypes_are_equal(datatype.id(), H5T_NATIVE_UINT64)) {
+    else if(datatype == native_uint64) {
         result = NativeDatatypeTraits<uint64_t>::name();
     }
-    else if(datatypes_are_equal(datatype.id(), H5T_NATIVE_INT8)) {
+    else if(datatype == native_int8) {
         result = NativeDatatypeTraits<int8_t>::name();
     }
-    else if(datatypes_are_equal(datatype.id(), H5T_NATIVE_INT16)) {
+    else if(datatype == native_int16) {
         result = NativeDatatypeTraits<int16_t>::name();
     }
-    else if(datatypes_are_equal(datatype.id(), H5T_NATIVE_INT32)) {
+    else if(datatype == native_int32) {
         result = NativeDatatypeTraits<int32_t>::name();
     }
-    else if(datatypes_are_equal(datatype.id(), H5T_NATIVE_INT64)) {
+    else if(datatype == native_int64) {
         result = NativeDatatypeTraits<int64_t>::name();
     }
 
@@ -87,61 +74,61 @@ std::string standard_datatype_as_string(
 
     std::string result;
 
-    if(datatypes_are_equal(datatype.id(), H5T_STD_I8LE)) {
+    if(datatype == std_int8_le) {
         result = StandardDatatypeTraits<int8_t>::name();
     }
     else if(datatypes_are_equal(datatype.id(), H5T_STD_I8BE)) {
         result = "H5T_STD_I8BE";
     }
-    else if(datatypes_are_equal(datatype.id(), H5T_STD_I16LE)) {
+    else if(datatype == std_int16_le) {
         result = StandardDatatypeTraits<int16_t>::name();
     }
     else if(datatypes_are_equal(datatype.id(), H5T_STD_I16BE)) {
         result = "H5T_STD_I16BE";
     }
-    else if(datatypes_are_equal(datatype.id(), H5T_STD_I32LE)) {
+    else if(datatype == std_int32_le) {
         result = StandardDatatypeTraits<int32_t>::name();
     }
     else if(datatypes_are_equal(datatype.id(), H5T_STD_I32BE)) {
         result = "H5T_STD_I32BE";
     }
-    else if(datatypes_are_equal(datatype.id(), H5T_STD_I64LE)) {
+    else if(datatype == std_int64_le) {
         result = StandardDatatypeTraits<int64_t>::name();
     }
     else if(datatypes_are_equal(datatype.id(), H5T_STD_I64BE)) {
         result = "H5T_STD_I64BE";
     }
-    else if(datatypes_are_equal(datatype.id(), H5T_STD_U8LE)) {
+    else if(datatype == std_uint8_le) {
         result = StandardDatatypeTraits<uint8_t>::name();
     }
     else if(datatypes_are_equal(datatype.id(), H5T_STD_U8BE)) {
         result = "H5T_STD_U8BE";
     }
-    else if(datatypes_are_equal(datatype.id(), H5T_STD_U16LE)) {
+    else if(datatype == std_uint16_le) {
         result = StandardDatatypeTraits<uint16_t>::name();
     }
     else if(datatypes_are_equal(datatype.id(), H5T_STD_U16BE)) {
         result = "H5T_STD_U16BE";
     }
-    else if(datatypes_are_equal(datatype.id(), H5T_STD_U32LE)) {
+    else if(datatype == std_uint32_le) {
         result = StandardDatatypeTraits<uint32_t>::name();
     }
     else if(datatypes_are_equal(datatype.id(), H5T_STD_U32BE)) {
         result = "H5T_STD_U32BE";
     }
-    else if(datatypes_are_equal(datatype.id(), H5T_STD_U64LE)) {
+    else if(datatype == std_uint64_le) {
         result = StandardDatatypeTraits<uint64_t>::name();
     }
     else if(datatypes_are_equal(datatype.id(), H5T_STD_U64BE)) {
         result = "H5T_STD_U64BE";
     }
-    else if(datatypes_are_equal(datatype.id(), H5T_IEEE_F32LE)) {
+    else if(datatype == ieee_float32_le) {
         result = StandardDatatypeTraits<float>::name();
     }
     else if(datatypes_are_equal(datatype.id(), H5T_IEEE_F32BE)) {
         result = "H5T_STD_F32BE";
     }
-    else if(datatypes_are_equal(datatype.id(), H5T_IEEE_F64LE)) {
+    else if(datatype == ieee_float64_le) {
         result = StandardDatatypeTraits<double>::name();
     }
     else if(datatypes_are_equal(datatype.id(), H5T_IEEE_F64BE)) {
@@ -222,41 +209,27 @@ std::size_t Datatype::size() const
 
 bool Datatype::is_standard() const
 {
-    static std::set<hid_t> const standard_datatypes = {
-        H5T_STD_I8LE,
-        H5T_STD_I16LE,
-        H5T_STD_I32LE,
-        H5T_STD_I64LE,
-        H5T_STD_U8LE,
-        H5T_STD_U16LE,
-        H5T_STD_U32LE,
-        H5T_STD_U64LE,
-        H5T_IEEE_F32LE,
-        H5T_IEEE_F64LE
-    };
+#if !defined(BOOST_LITTLE_ENDIAN)
+    // We assume little endian platforms in tests. This can be changed
+    // when necessary. In that case, first check whether the tests for
+    // standard data types are really necessary. Ideally, let HDF
+    // figure it all out.
+    BOOST_STATIC_ASSERT(false);
+#endif
 
-    return datatype_in(_id, standard_datatypes);
+    return
+        is_std_unsigned_integral_le(*this) ||
+        is_std_signed_integral_le(*this) ||
+        is_ieee_floating_point_le(*this);
 }
-
-
 
 
 bool Datatype::is_native() const
 {
-    static std::set<hid_t> const native_datatypes = {
-        H5T_NATIVE_FLOAT,
-        H5T_NATIVE_DOUBLE,
-        H5T_NATIVE_UINT8,
-        H5T_NATIVE_UINT16,
-        H5T_NATIVE_UINT32,
-        H5T_NATIVE_UINT64,
-        H5T_NATIVE_INT8,
-        H5T_NATIVE_INT16,
-        H5T_NATIVE_INT32,
-        H5T_NATIVE_INT64
-    };
-
-    return datatype_in(_id, native_datatypes);
+    return
+        is_native_unsigned_integral(*this) ||
+        is_native_signed_integral(*this) ||
+        is_native_floating_point(*this);
 }
 
 
@@ -515,6 +488,66 @@ Datatype file_datatype(
     assert(type_id >= 0);
 
     return Datatype(type_id);
+}
+
+
+bool is_native_unsigned_integral(
+    Datatype const& datatype)
+{
+    return std::find(
+        native_unsigned_integrals.begin(),
+        native_unsigned_integrals.end(),
+        datatype) != native_unsigned_integrals.end();
+}
+
+
+bool is_native_signed_integral(
+    Datatype const& datatype)
+{
+    return std::find(
+        native_signed_integrals.begin(),
+        native_signed_integrals.end(),
+        datatype) != native_signed_integrals.end();
+}
+
+
+bool is_native_floating_point(
+    Datatype const& datatype)
+{
+    return std::find(
+        native_floating_points.begin(),
+        native_floating_points.end(),
+        datatype) != native_floating_points.end();
+}
+
+
+bool is_std_unsigned_integral_le(
+    Datatype const& datatype)
+{
+    return std::find(
+        std_unsigned_integrals_le.begin(),
+        std_unsigned_integrals_le.end(),
+        datatype) != std_unsigned_integrals_le.end();
+}
+
+
+bool is_std_signed_integral_le(
+    Datatype const& datatype)
+{
+    return std::find(
+        std_signed_integrals_le.begin(),
+        std_signed_integrals_le.end(),
+        datatype) != std_signed_integrals_le.end();
+}
+
+
+bool is_ieee_floating_point_le(
+    Datatype const& datatype)
+{
+    return std::find(
+        ieee_floating_points_le.begin(),
+        ieee_floating_points_le.end(),
+        datatype) != ieee_floating_points_le.end();
 }
 
 } // namespace hdf5

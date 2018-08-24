@@ -1,9 +1,11 @@
 #include "lue/hdf5/group.hpp"
 #include "lue/hdf5/dataset.hpp"
 #include <fmt/format.h>
+#include <boost/filesystem.hpp>
 #include <cstring>
 #include <cstdlib>
 #include <memory>
+#include <iostream>
 
 
 namespace lue {
@@ -216,7 +218,7 @@ Group::Group(
                 ::H5Gclose
             }
         },
-    _parent{std::make_unique<Group>(parent)}
+    _parent{}
 
 {
     if(!id().is_valid()) {
@@ -225,6 +227,24 @@ Group::Group(
             name, parent.id().pathname()
         ));
     }
+
+    boost::filesystem::path path{id().pathname()};
+    assert(path.is_absolute());
+
+    if(parent.id().pathname() == path.parent_path().string()) {
+        // Parent passed in is our direct parent. Cool, use it.
+        _parent = std::make_unique<Group>(parent);
+    }
+    else if(path.has_parent_path()) {
+        // Direct parent is different from parent passed in. This happens
+        // when using absolute paths as group names and pass in an
+        // unrelated parent, which is OK. Here we build up the chain of
+        // direct parents.
+        _parent = std::make_unique<Group>(*this, path.parent_path().string());
+    }
+    // else {
+    //   Parent is root
+    // }
 
     assert(id().is_valid());
 }
@@ -253,23 +273,6 @@ Group::Group(
         _parent = std::make_unique<Group>(*other._parent);
     }
 }
-
-
-// Group& Group::operator=(
-//     Group& other)
-// 
-// {
-//     PrimaryDataObject::operator=(other);
-// 
-//     if(other._parent) {
-//         _parent = std::make_unique<Group>(*other._parent);
-//     }
-//     else {
-//         _parent.reset();
-//     }
-// 
-//     return *this;
-// }
 
 
 /*!

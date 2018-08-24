@@ -5,6 +5,7 @@ add_unit_tests(
         chunk_test
         dataset_test
         datatype_test
+        group_test
         hyperslab_test
         shape_test
     LINK_LIBRARIES
