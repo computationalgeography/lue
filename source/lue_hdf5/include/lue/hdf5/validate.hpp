@@ -2,6 +2,8 @@
 #include "lue/hdf5/issues.hpp"
 
 
+// TODO KDJ This module is not needed anymore, I think. Remove it if so.
+//      Move issue/issues modules to lue_cxx, where they belong.
 namespace lue {
 namespace hdf5 {
 

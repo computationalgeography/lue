@@ -16,15 +16,18 @@ void init_validate(
         module,
         "Issue",
         R"(
-    Issue docstring...
+    Details of an issue found during validation of a dataset
 )")
 
         .def_property_readonly(
             "message",
-            &Issue::message
-        )
+            &Issue::message,
+            R"(
+    Description of the issue
+)")
 
         ;
+
 
     py::bind_vector<std::vector<Issue>>(
         module,
@@ -37,28 +40,44 @@ void init_validate(
         module,
         "Issues",
         R"(
-    Issues docstring...
+    Collection of issues found during validation of a dataset
 )")
 
         .def_property_readonly(
             "errors_found",
-            &Issues::errors_found
-        )
+            &Issues::errors_found,
+            R"(
+    Return whether errors where found
+
+    :rtype: bool
+)")
 
         .def_property_readonly(
             "warnings_found",
-            &Issues::warnings_found
-        )
+            &Issues::warnings_found,
+            R"(
+    Return whether warnings where found
+
+    :rtype: bool
+)")
 
         .def_property_readonly(
             "errors",
-            &Issues::errors
-        )
+            &Issues::errors,
+            R"(
+    Return collection of errors
+
+    :rtype: Collection of Issue instances
+)")
 
         .def_property_readonly(
             "warnings",
-            &Issues::warnings
-        )
+            &Issues::warnings,
+            R"(
+    Return collection of warnings
+
+    :rtype: Collection of Issue instances
+)")
 
         ;
 

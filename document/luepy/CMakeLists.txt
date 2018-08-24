@@ -11,9 +11,11 @@ add_custom_target(
     DEPENDS
         # TODO case_study
         lue::py
-    # COMMAND ${SPHINX_API_DOC_EXECUTABLE}
-    #     -o ${CMAKE_CURRENT_BINARY_DIR}/_build/api
-    #     ${PROJECT_SOURCE_DIR}/source
+    # COMMAND
+    #     ${SPHINX_APIDOC_EXECUTABLE}
+    #         -o ${CMAKE_CURRENT_BINARY_DIR}/_build/api
+    #         --separate
+    #         ${PROJECT_SOURCE_DIR}/source
     COMMAND ${CMAKE_COMMAND} -E
         env PYTHONPATH=$<TARGET_FILE_DIR:lue::py>
         ${SPHINX_BUILD_EXECUTABLE}

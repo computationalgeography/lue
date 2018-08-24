@@ -15,7 +15,9 @@ void init_time_domain(
     py::enum_<TimeDomainItemType>(
         module,
         "TimeDomainItemType",
-        "TimeDomainItemType docstring...")
+        R"(
+    Locations in time can be represented by boxes or points
+)")
         .value("box", TimeDomainItemType::box)
         .value("point", TimeDomainItemType::point)
         ;
@@ -25,7 +27,7 @@ void init_time_domain(
         module,
         "TimeConfiguration",
         R"(
-    TODO
+    Class for representing the aspects of the time domain
 )")
 
         .def(

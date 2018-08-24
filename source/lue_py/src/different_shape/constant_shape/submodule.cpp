@@ -19,7 +19,12 @@ void init_submodule(
     py::module submodule = module.def_submodule(
         "constant_shape",
         R"(
-    TODO
+    :mod:`lue.different_shape.constant_shape` --- Object arrays
+    ===========================================================
+
+    The :mod:`lue.different_shape.constant_shape` package contains
+    functionality for manipulating object arrays with different shapes
+    that (the shapes) are constant through time.
 )");
 
     init_properties(submodule);

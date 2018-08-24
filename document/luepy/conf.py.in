@@ -19,12 +19,13 @@ master_doc = 'index'
 project = u'LUE'
 copyright = u'2015-now PCRaster Owners'
 author = u'PCRaster R&D Team'
-version = u'0.1'
-release = u'0.1.2'
+version = u'@LUE_MAJOR_VERSION@.@LUE_MINOR_VERSION@'
+release = u'@LUE_VERSION@'
 language = None
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 pygments_style = 'sphinx'
 todo_include_todos = False
+modindex_common_prefix = ["lue."]
 
 generated_image_root = "../../../case_study"
 

@@ -61,6 +61,16 @@ SpaceDiscretization PropertyGroup::space_discretization_type() const
 }
 
 
+/*!
+    @brief      Link a property containing information about the
+                discretization through time of this property's value
+    @param      type Kind of discretization
+    @param      property Property containing discretization information
+    @warning    It is assumed here that this property's value varies
+                through time
+    @todo       Can we change the API to enforce the precondition that
+                this property is temporal?
+*/
 void PropertyGroup::set_time_discretization(
     TimeDiscretization type,
     PropertyGroup& property)
@@ -70,6 +80,16 @@ void PropertyGroup::set_time_discretization(
 }
 
 
+/*!
+    @brief      Link a property containing information about the
+                discretization through space of this property's value
+    @param      type Kind of discretization
+    @param      property Property containing discretization information
+    @warning    It is assumed here that this property's value varies
+                through space
+    @todo       Can we change the API to enforce the precondition that
+                this property is spatial?
+*/
 void PropertyGroup::set_space_discretization(
     SpaceDiscretization type,
     PropertyGroup& property)
