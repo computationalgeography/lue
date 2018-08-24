@@ -14,11 +14,13 @@ add_custom_target(
     # COMMAND ${SPHINX_API_DOC_EXECUTABLE}
     #     -o ${CMAKE_CURRENT_BINARY_DIR}/_build/api
     #     ${PROJECT_SOURCE_DIR}/source
-    COMMAND ${SPHINX_BUILD_EXECUTABLE}
-        -q -b html
-        -c ${CMAKE_CURRENT_BINARY_DIR}/_build
-        -d ${CMAKE_CURRENT_BINARY_DIR}/_build/doctrees
-        ${CMAKE_CURRENT_SOURCE_DIR}
-        ${CMAKE_CURRENT_BINARY_DIR}/_build/html
+    COMMAND ${CMAKE_COMMAND} -E
+        env PYTHONPATH=$<TARGET_FILE_DIR:lue::py>
+        ${SPHINX_BUILD_EXECUTABLE}
+            -q -b html
+            -c ${CMAKE_CURRENT_BINARY_DIR}/_build
+            -d ${CMAKE_CURRENT_BINARY_DIR}/_build/doctrees
+            ${CMAKE_CURRENT_SOURCE_DIR}
+            ${CMAKE_CURRENT_BINARY_DIR}/_build/html
     COMMENT "Generating luepy documentation"
 )

@@ -8,6 +8,17 @@
 namespace lue {
 namespace {
 
+void throw_not_supported_yet(
+    std::string const& message)
+{
+    throw std::runtime_error(fmt::format(
+        "This feature is not supported yet: {}\n"
+        "You may want to open an issue here: "
+        "https://github.com/pcraster/lue/issues",
+        message));
+}
+
+
 std::string error_message(
     hdf5::Issues const& issues)
 {
@@ -190,8 +201,8 @@ void validate(
     different_shape::constant_shape::Value const& /* value */,
     hdf5::Issues& /* issues */)
 {
-    // TODO
-    assert(false);
+    throw_not_supported_yet(
+        "validation of different_shape::constant_shape::Value");
 }
 
 
@@ -258,8 +269,8 @@ void validate(
     different_shape::variable_shape::Value const& /* value */,
     hdf5::Issues& /* issues */)
 {
-    // TODO
-    assert(false);
+    throw_not_supported_yet(
+        "validation of different_shape::variable_shape::Value");
 }
 
 
@@ -617,37 +628,165 @@ void validate(
 
 void validate(
     ObjectTracker const& object_tracker,
-    same_shape::Property const& property,
+    same_shape::Property& property,
     hdf5::Issues& issues)
 {
     validate(object_tracker, property.value(), issues);
+
+    if(property.time_is_discretized()) {
+        throw_not_supported_yet(
+            "validation of discretization through time of "
+            "same_shape::Property");
+    }
+
+    if(property.space_is_discretized()) {
+        throw_not_supported_yet(
+            "validation of discretization through space of "
+            "same_shape::Property");
+    }
 }
 
 
 void validate(
     ObjectTracker const& object_tracker,
-    different_shape::Property const& property,
+    different_shape::Property& property,
     hdf5::Issues& issues)
 {
-    validate(object_tracker, property.value(), issues);
+    auto const& property_value = property.value();
+
+    validate(object_tracker, property_value, issues);
+
+    if(property.time_is_discretized()) {
+        throw_not_supported_yet(
+            "validation of discretization through time of "
+            "different_shape::Property");
+    }
+
+    if(property.space_is_discretized()) {
+        // Each property value is discretized through space
+        auto discretization_property = property.space_discretization_property();
+        auto const& discretization_property_name =
+            discretization_property.name();
+        PropertySet discretization_property_set{
+            discretization_property.property_set_group()};
+        auto const& properties = discretization_property_set.properties();
+        bool values_can_be_tested = false;
+
+
+        if(properties.value_variability(discretization_property_name) !=
+                ValueVariability::constant) {
+            issues.add_error(discretization_property.id(),
+                "Property values for discretization of constant "
+                "property values must be constant themselves");
+            values_can_be_tested = false;
+        }
+
+        switch(property.space_discretization_type()) {
+            case SpaceDiscretization::regular_grid: {
+                // For each dimension, the discretization property
+                // value contains a count
+                // - The discretization property must
+                //      - Be of type same_shape::Property
+                //      - Contain counts (integral values?)
+                // - These counts must match the value's shape.
+                // - The number of values in the discretization property
+                //   must match the number of values discretized.
+                if(properties.shape_per_object(discretization_property_name) !=
+                        ShapePerObject::same) {
+                    issues.add_error(property.id(),
+                        "Property values of regular grid must be "
+                        "the same for each object");
+                    values_can_be_tested = false;
+                }
+
+                if(values_can_be_tested) {
+                    auto const& discretization_value =
+                        properties.collection<same_shape::Properties>()[
+                            discretization_property_name].value();
+
+                    if(discretization_value.nr_arrays() !=
+                            property_value.nr_objects()) {
+                        issues.add_error(
+                                discretization_property.id(),
+                                fmt::format(
+                            "Number of values in discretization property "
+                            "must equal the number of values discretized "
+                            "({} != {})",
+                            discretization_value.nr_arrays(),
+                            property_value.nr_objects()));
+                    }
+
+                    if(!hdf5::is_native_unsigned_integral(
+                            discretization_value.memory_datatype())) {
+                        issues.add_error(
+                                discretization_property.id(),
+                                fmt::format(
+                            "Discretization property must contain unsigned "
+                            "integral values "
+                            "({} is not unsigned integral)",
+                            hdf5::native_datatype_as_string(
+                                discretization_value.memory_datatype())));
+                    }
+
+                    if(discretization_value.array_shape() !=
+                            hdf5::Shape{
+                                static_cast<Count>(property_value.rank())}) {
+                        issues.add_error(
+                                discretization_property.id(),
+                            "For each spatial dimension, the discretization "
+                            "property must contain a count");
+                    }
+
+                    // TODO Compare the counts. These must match the shapes
+                    //      of the values
+                }
+
+                break;
+            }
+        }
+    }
 }
 
 
 void validate(
     ObjectTracker const& object_tracker,
-    same_shape::constant_shape::Property const& property,
+    same_shape::constant_shape::Property& property,
     hdf5::Issues& issues)
 {
     validate(object_tracker, property.value(), issues);
+
+    if(property.time_is_discretized()) {
+        throw_not_supported_yet(
+            "validation of discretization through time of "
+            "same_shape::constant_shape::Property");
+    }
+
+    if(property.space_is_discretized()) {
+        throw_not_supported_yet(
+            "validation of discretization through space of "
+            "same_shape::constant_shape::Property");
+    }
 }
 
 
 void validate(
     ObjectTracker const& object_tracker,
-    different_shape::constant_shape::Property const& property,
+    different_shape::constant_shape::Property& property,
     hdf5::Issues& issues)
 {
     validate(object_tracker, property.value(), issues);
+
+    if(property.time_is_discretized()) {
+        throw_not_supported_yet(
+            "validation of discretization through time of "
+            "different_shape::constant_shape::Property");
+    }
+
+    if(property.space_is_discretized()) {
+        throw_not_supported_yet(
+            "validation of discretization through space of "
+            "different_shape::constant_shape::Property");
+    }
 }
 
 
@@ -656,16 +795,139 @@ void validate(
     same_shape::variable_shape::Property& property,
     hdf5::Issues& issues)
 {
-    validate(object_tracker, property.value(), issues);
+    auto& property_value = property.value();
+
+    validate(object_tracker, property_value, issues);
+
+    if(property.time_is_discretized()) {
+
+        // Each property value is discretized through time
+        auto discretization_property = property.time_discretization_property();
+        auto const& discretization_property_name =
+            discretization_property.name();
+        PropertySet discretization_property_set{
+            discretization_property.property_set_group()};
+        auto const& properties = discretization_property_set.properties();
+        bool values_can_be_tested = false;
+
+
+        if(properties.value_variability(discretization_property_name) !=
+                ValueVariability::variable) {
+            issues.add_error(discretization_property.id(),
+                "Property values for discretization of variable "
+                "property values must be variable themselves");
+            values_can_be_tested = false;
+        }
+
+        switch(property.time_discretization_type()) {
+            case TimeDiscretization::regular_grid: {
+                // Discretization property must be a collection property
+                // (nr objects == 1). For each location in time,
+                // the discretization property contains a count
+                // (same_shape::variable_shape::Value, unsigned integral).
+                // The number of counts in the discretization property
+                // must match the number of locations in time in the
+                // discretized property.
+
+                if(properties.shape_per_object(discretization_property_name) !=
+                        ShapePerObject::same) {
+                    issues.add_error(property.id(),
+                        "Property values of regular grid must be "
+                        "the same for each object");
+                    values_can_be_tested = false;
+                }
+
+                if(properties.shape_variability(discretization_property_name) !=
+                        ShapeVariability::constant) {
+                    issues.add_error(property.id(),
+                        "Shape of property values of regular grid must be "
+                        "constant through time");
+                    values_can_be_tested = false;
+                }
+
+                if(values_can_be_tested) {
+                    auto const& discretization_value =
+                        properties.collection<
+                            same_shape::constant_shape::Properties>()[
+                                discretization_property_name].value();
+
+                    if(discretization_value.nr_arrays() !=
+                            property_value.nr_locations_in_time()) {
+                        issues.add_error(
+                                discretization_property.id(),
+                                fmt::format(
+                            "Number of counts in discretization property "
+                            "must equal the number of locations in time "
+                            "for which values are discretized "
+                            "({} != {})",
+                            discretization_value.nr_arrays(),
+                            property_value.nr_locations_in_time()));
+                    }
+
+                    if(!hdf5::is_native_unsigned_integral(
+                            discretization_value.memory_datatype())) {
+                        issues.add_error(
+                                discretization_property.id(),
+                                fmt::format(
+                            "Discretization property must contain unsigned "
+                            "integral values "
+                            "({} is not unsigned integral)",
+                            hdf5::native_datatype_as_string(
+                                discretization_value.memory_datatype())));
+                    }
+
+                    if(discretization_value.array_shape().size() != 1) {
+                        issues.add_error(
+                            discretization_property.id(), fmt::format(
+                                "The rank of the discretization property "
+                                "values must be 1, but it currently is {}",
+                                discretization_value.array_shape().size()));
+                    }
+                    else if(discretization_value.array_shape()[0] !=
+                            property_value.nr_locations_in_time()) {
+                        issues.add_error(
+                            discretization_property.id(), fmt::format(
+                                "The number of counts in the discretization "
+                                "property must equal the number of locations "
+                                "in time in the discretized property "
+                                "({} != {})",
+                                discretization_value.array_shape()[0],
+                                property_value.nr_locations_in_time()));
+
+                    }
+                }
+
+                break;
+            }
+        }
+    }
+
+    if(property.space_is_discretized()) {
+        throw_not_supported_yet(
+            "validation of discretization through space of "
+            "same_shape::variable_shape::Property");
+    }
 }
 
 
 void validate(
     ObjectTracker const& object_tracker,
-    different_shape::variable_shape::Property const& property,
+    different_shape::variable_shape::Property& property,
     hdf5::Issues& issues)
 {
     validate(object_tracker, property.value(), issues);
+
+    if(property.time_is_discretized()) {
+        throw_not_supported_yet(
+            "validation of discretization through time of "
+            "different_shape::variable_shape::Property");
+    }
+
+    if(property.space_is_discretized()) {
+        throw_not_supported_yet(
+            "validation of discretization through space of "
+            "different_shape::variable_shape::Property");
+    }
 }
 
 
@@ -674,22 +936,22 @@ void validate(
     Properties& properties,
     hdf5::Issues& issues)
 {
-    for(auto const& property:
+    for(auto& property:
             properties.collection<same_shape::Properties>()) {
         validate(object_tracker, property.second, issues);
     }
 
-    for(auto const& property: properties.collection<
+    for(auto& property: properties.collection<
             different_shape::Properties>()) {
         validate(object_tracker, property.second, issues);
     }
 
-    for(auto const& property: properties.collection<
+    for(auto& property: properties.collection<
             same_shape::constant_shape::Properties>()) {
         validate(object_tracker, property.second, issues);
     }
 
-    for(auto const& property: properties.collection<
+    for(auto& property: properties.collection<
             different_shape::constant_shape::Properties>()) {
         validate(object_tracker, property.second, issues);
     }
@@ -699,7 +961,7 @@ void validate(
         validate(object_tracker, property.second, issues);
     }
 
-    for(auto const& property: properties.collection<
+    for(auto& property: properties.collection<
             different_shape::variable_shape::Properties>()) {
         validate(object_tracker, property.second, issues);
     }

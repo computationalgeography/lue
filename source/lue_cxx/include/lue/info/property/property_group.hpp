@@ -47,7 +47,7 @@ public:
 
     PropertyGroup  space_discretization_property();
 
-    virtual hdf5::Group property_set_group();
+    hdf5::Group    property_set_group  ();
 
 protected:
 

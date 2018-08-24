@@ -124,5 +124,68 @@ static Datatype const std_int64_le{H5T_STD_I64LE};
 static Datatype const ieee_float32_le{H5T_IEEE_F32LE};
 static Datatype const ieee_float64_le{H5T_IEEE_F64LE};
 
+
+static std::vector<Datatype> native_unsigned_integrals {
+    native_uint8,
+    native_uint16,
+    native_uint32,
+    native_uint64
+};
+
+
+static std::vector<Datatype> native_signed_integrals {
+    native_int8,
+    native_int16,
+    native_int32,
+    native_int64
+};
+
+
+static std::vector<Datatype> native_floating_points {
+    native_float32,
+    native_float64
+};
+
+
+static std::vector<Datatype> std_unsigned_integrals_le {
+    std_uint8_le,
+    std_uint16_le,
+    std_uint32_le,
+    std_uint64_le
+};
+
+
+static std::vector<Datatype> std_signed_integrals_le {
+    std_int8_le,
+    std_int16_le,
+    std_int32_le,
+    std_int64_le
+};
+
+
+static std::vector<Datatype> ieee_floating_points_le {
+    ieee_float32_le,
+    ieee_float64_le
+};
+
+
+bool               is_native_unsigned_integral(
+                                        Datatype const& datatype);
+
+bool               is_native_signed_integral(
+                                        Datatype const& datatype);
+
+bool               is_native_floating_point(
+                                        Datatype const& datatype);
+
+bool               is_std_unsigned_integral_le(
+                                        Datatype const& datatype);
+
+bool               is_std_signed_integral_le(
+                                        Datatype const& datatype);
+
+bool               is_ieee_floating_point_le(
+                                        Datatype const& datatype);
+
 } // namespace hdf5
 } // namespace lue
