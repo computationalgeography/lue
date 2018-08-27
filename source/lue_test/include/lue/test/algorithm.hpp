@@ -1,5 +1,6 @@
 #pragma once
 #include <boost/range/combine.hpp>
+#include <algorithm>
 #include <cassert>
 #include <numeric>
 #include <random>
@@ -140,7 +141,8 @@ inline void select_random_ids(
             // Shuffle collection of IDs and select from the front of
             // the collection. This guarantees that no ID occurs more
             // than once in the current active set.
-            std::random_shuffle(all_ids.begin(), all_ids.end());
+            std::shuffle(
+                all_ids.begin(), all_ids.end(), detail::random_number_engine());
             std::copy(
                 all_ids.begin(), all_ids.begin() + size_of_active_set,
                 active_ids.begin() + active_set_idx);
@@ -188,6 +190,9 @@ inline void generate_random_strictly_increasing_integral_values(
     static_assert(std::is_integral<ValueType>(), "");
 
     // TODO Update to make it impossible to generate duplicate values
+    //     - Generate 2 * value.size range of values
+    //     - Shuffle range of values
+    //     - Pick the first value.size values
     auto& random_number_engine{detail::random_number_engine()};
     std::uniform_int_distribution<ValueType>
         distribution{min, max};
