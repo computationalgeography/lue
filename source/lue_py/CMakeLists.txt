@@ -116,7 +116,7 @@ add_library(lue_py SHARED
     ### src/constant_collection/time/located/constant_shape/same_shape/property
     ### src/constant_collection/time/located/constant_shape/same_shape/submodule
 
-    $<$<BOOL:LUE_BUILD_LUE_TEST>:src/test/submodule>
+    $<$<TARGET_EXISTS:lue::test>:src/test/submodule>
 )
 
 add_library(lue::py ALIAS lue_py)
@@ -136,7 +136,7 @@ target_include_directories(lue_py
 
 target_link_libraries(lue_py
     PRIVATE
-        $<$<BOOL:LUE_BUILD_LUE_TEST>:lue::test>
+        $<$<TARGET_EXISTS:lue::test>:lue::test>
         lue::lue
         pybind11::pybind11
         ${PYTHON_LIBRARIES}

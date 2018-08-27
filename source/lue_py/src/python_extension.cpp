@@ -80,7 +80,6 @@ PYBIND11_MODULE(lue, module)
     .. automodule:: lue.same_shape
     .. automodule:: lue.different_shape
     .. automodule:: lue.dtype
-    .. automodule:: lue.test
     .. automodule:: lue.hdf5
 )";
     module.attr("__version__") = py::str(LUE_VERSION);

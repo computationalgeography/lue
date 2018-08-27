@@ -2,4 +2,4 @@
 
 
 #cmakedefine LUE_VERSION "${LUE_VERSION}"
-#cmakedefine01 LUE_BUILD_LUE_TEST
+#cmakedefine LUE_BUILD_LUE_TEST
