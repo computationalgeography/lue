@@ -372,13 +372,11 @@ before_install:
 
 
     # Install a recent version of CMake. ---------------------------------------
-    # ~/tmp
     - cd tmp
-    - wget --no-check-certificate http://www.cmake.org/files/v3.9/cmake-3.9.1-Linux-x86_64.tar.gz
-    # ~/local
+    - wget --no-check-certificate http://cmake.org/files/v3.12/cmake-3.12.1-Linux-x86_64.tar.gz
     - cd ../local
-    - tar zxf ../tmp/cmake-3.9.1-Linux-x86_64.tar.gz
-    - export PATH=$PWD/cmake-3.9.1-Linux-x86_64/bin:$PATH
+    - tar zxf ../tmp/cmake-3.12.1-Linux-x86_64.tar.gz
+    - export PATH=$PWD/cmake-3.12.1-Linux-x86_64/bin:$PATH
     - cd ..
 
 
