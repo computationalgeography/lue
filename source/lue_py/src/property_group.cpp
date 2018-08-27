@@ -15,31 +15,48 @@ void init_property_group(
     py::enum_<TimeDiscretization>(
         module,
         "TimeDiscretization",
-        "TimeDiscretization docstring...")
+        R"(
+    Time discretization can be regular grid
+)")
         .value("regular_grid", TimeDiscretization::regular_grid)
         ;
 
     py::enum_<SpaceDiscretization>(
         module,
         "SpaceDiscretization",
-        "SpaceDiscretization docstring...")
+        R"(
+    Space discretization can be regular grid
+)")
         .value("regular_grid", SpaceDiscretization::regular_grid)
         ;
 
     py::class_<PropertyGroup, hdf5::Group>(
         module,
-        "PropertyGroup",
-        R"(
-    PropertyGroup docstring...
-)")
+        "PropertyGroup")
 
         .def(
             "set_time_discretization",
-            &PropertyGroup::set_time_discretization)
+            &PropertyGroup::set_time_discretization,
+            "type"_a,
+            "property"_a,
+            R"(
+    Set the time discretization
+
+    :param TimeDiscretization type: Discretization type
+    :param PropertyGroup property: Discretization property
+)")
 
         .def(
             "set_space_discretization",
-            &PropertyGroup::set_space_discretization)
+            &PropertyGroup::set_space_discretization,
+            "type"_a,
+            "property"_a,
+            R"(
+    Set the space discretization
+
+    :param SpaceDiscretization type: Discretization type
+    :param PropertyGroup property: Discretization property
+)")
 
         ;
 
