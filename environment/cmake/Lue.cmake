@@ -18,7 +18,7 @@ include(LueMacro)
 add_compile_options(
     "$<$<CXX_COMPILER_ID:MSVC>:/W3>"
     # "$<$<CXX_COMPILER_ID:Clang>:-Weverything;-Wno-c++98-compat;-Wno-c++98-compat-pedantic;-Wno-documentation-unknown-command;-Wno-disabled-macro-expansion;-Wno-global-constructors>"
-    "$<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>>:-W;-Wall;-fvisibility=hidden>"
+    "$<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>>:-W;-Wall;-Wextra;-Werror;-fvisibility=hidden>"
 )
 
 

@@ -150,6 +150,7 @@ def builds():
             "ubuntu-toolchain-r-test"
         ], ["libc++-dev"]),
 
+        Package("doxygen", [], []),
         Package("gcc-4.9", ["ubuntu-toolchain-r-test"], []),
         Package("g++-4.9", ["ubuntu-toolchain-r-test"], []),
         Package("gcc-5", ["ubuntu-toolchain-r-test"], []),
@@ -160,6 +161,7 @@ def builds():
         Package("g++-7", ["ubuntu-toolchain-r-test"], []),
         Package("gcc-8", ["ubuntu-toolchain-r-test"], []),
         Package("g++-8", ["ubuntu-toolchain-r-test"], []),
+        Package("graphviz", [], []),
         Package("libboost-all-dev", [], []),
         Package("libhdf5-dev", [], []),
         Package("tree", [], []),
@@ -201,6 +203,8 @@ def builds():
 
 
     common_packages = [
+        packages["doxygen"],
+        packages["graphviz"],
         packages["libboost-all-dev"],
         packages["libhdf5-dev"],
         packages["tree"],
@@ -246,33 +250,44 @@ def builds():
 
     build_configurations = [
 
-        # Build C++ API (which depends on HDF5 API), including tests
+        # Default build
         BuildConfiguration(
             {
-                "LUE_BUILD_TEST:BOOL": "TRUE",
             },
             [
             ]
         ),
 
-        # Build Python API (which depends on C++/HDF5 APIs), including tests
+        # Default build, with tests and documentation
         BuildConfiguration(
             {
                 "LUE_BUILD_TEST:BOOL": "TRUE",
+                "LUE_BUILD_DOCUMENTATION:BOOL": "TRUE",
+            },
+            [
+            ]
+        ),
+
+        # Build Python API
+        BuildConfiguration(
+            {
                 "LUE_BUILD_PYTHON_API:BOOL": "TRUE",
             },
             [
             ]
         ),
 
-        # Build Python API (which depends on C++/HDF5 APIs), without tests
+        # Build Python API, with tests and documentation
         BuildConfiguration(
             {
                 "LUE_BUILD_PYTHON_API:BOOL": "TRUE",
+                "LUE_BUILD_TEST:BOOL": "TRUE",
+                "LUE_BUILD_DOCUMENTATION:BOOL": "TRUE",
             },
             [
             ]
         ),
+
     ]
 
 
@@ -344,7 +359,7 @@ before_install:
     - conda config --set always_yes yes --set changeps1 no
     - conda update -q conda
     - conda info -a  # Useful for debugging any issues with conda
-    - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION numpy
+    - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION numpy sphinx docopt
     - source activate test-environment
     # - python setup.py install
 

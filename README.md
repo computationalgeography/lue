@@ -27,7 +27,6 @@ The folowing CMake variables are used to determine which targets to build:
 | `LUE_BUILD_ALL` | `FALSE` | Build all targets |
 | `LUE_BUILD_PYTHON_API` | `FALSE` | Build Python package |
 | `LUE_BUILD_UTILITIES` | `TRUE` | Build commandline utilities |
-| `LUE_BUILD_HL_API` | `TRUE` | Build high-level C++ API |
 | `LUE_BUILD_CXX_API` | `TRUE` | Build C++ API |
 | `LUE_BUILD_HDF5_API` | `TRUE` | Build C++ HDF5 API |
 | `LUE_BUILD_DOCUMENTATION` | `FALSE` | Build C++ API documentation |
@@ -38,9 +37,8 @@ Setting some of these variables implies the setting of other variables:
 | Variable | Implies |
 | -------- | ------- |
 | `LUE_BUILD_ALL` | `LUE_BUILD_PYTHON_API`, `LUE_BUILD_UTILITIES` |
-| `LUE_BUILD_PYTHON_API` | `LUE_BUILD_HL_API` |
-| `LUE_BUILD_UTILITIES` | `LUE_BUILD_HL_API` |
-| `LUE_BUILD_HL_API` | `LUE_BUILD_CXX_API` |
+| `LUE_BUILD_PYTHON_API` | `LUE_BUILD_CXX_API` |
+| `LUE_BUILD_UTILITIES` | `LUE_BUILD_CXX_API` |
 | `LUE_BUILD_CXX_API` | `LUE_BUILD_HDF5_API` |
 
 
@@ -48,10 +46,11 @@ Depending on which targets are selected for building, some prerequisites libarie
 
 | Variable | Prerequisites |
 | -------- | ------------- |
-| `LUE_BUILD_HDF5_API` | HDF5 C-library |
+| `LUE_BUILD_HDF5_API` | HDF5 C, fmt libraries |
 | `LUE_BUILD_CXX_API` | Boost filesystem, system libraries |
 | `LUE_BUILD_UTILITIES` | Docopt, GDAL, Nlohmann JSON libraries |
-| `LUE_BUILD_PYTHON_API` | Python, pybind11, NumPy libraries |
+| `LUE_BUILD_PYTHON_API` | Python, pybind11, NumPy, Guidelines Support libraries |
+| `LUE_BUILD_TEST` | Boost unit-test framework library |
 | `LUE_BUILD_DOCUMENTATION` | Doxygen, Graphviz, Sphinx |
 
 
