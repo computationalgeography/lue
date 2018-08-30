@@ -358,6 +358,8 @@ before_install:
     - hash -r
     - conda config --set always_yes yes --set changeps1 no
     - conda update -q conda
+    - conda config --add channels conda-forge
+    - conda config --set show_channel_urls true
     - conda info -a  # Useful for debugging any issues with conda
     - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION conan numpy sphinx docopt
     - source activate test-environment
