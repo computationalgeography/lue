@@ -56,41 +56,41 @@ TAG(EnumType, tag_name)                              \
 MAP(EnumType, enum_pairs)
 
 TAG_AND_MAP(ShapePerObject, shape_per_object_tag, ({
-    { ShapePerObject::same, "lue_same_shape" },
-    { ShapePerObject::different, "lue_different_shape" }
+    { ShapePerObject::same, "same_shape" },
+    { ShapePerObject::different, "different_shape" }
 }))
 
 TAG_AND_MAP(ValueVariability, value_variability_tag, ({
-    { ValueVariability::constant, "lue_constant" },
-    { ValueVariability::variable, "lue_variable" }
+    { ValueVariability::constant, "constant" },
+    { ValueVariability::variable, "variable" }
 }))
 
 TAG_AND_MAP(ShapeVariability, shape_variability_tag, ({
-    { ShapeVariability::constant, "lue_constant_shape" },
-    { ShapeVariability::variable, "lue_variable_shape" }
+    { ShapeVariability::constant, "constant_shape" },
+    { ShapeVariability::variable, "variable_shape" }
 }))
 
 TAG_AND_MAP(TimeDomainItemType, time_domain_item_type_tag, ({
-    { TimeDomainItemType::point, "lue_point" },
-    { TimeDomainItemType::box, "lue_box" }
+    { TimeDomainItemType::point, "point" },
+    { TimeDomainItemType::box, "box" }
 }))
 
 TAG_AND_MAP(Mobility, mobility_tag, ({
-    { Mobility::mobile, "lue_mobile" },
-    { Mobility::stationary, "lue_stationary" }
+    { Mobility::mobile, "mobile" },
+    { Mobility::stationary, "stationary" }
 }))
 
 TAG_AND_MAP(SpaceDomainItemType, space_domain_item_type_tag, ({
-    { SpaceDomainItemType::point, "lue_point" },
-    { SpaceDomainItemType::box, "lue_box" }
+    { SpaceDomainItemType::point, "point" },
+    { SpaceDomainItemType::box, "box" }
 }))
 
 TAG_AND_MAP(SpaceDiscretization, space_discretization_tag, ({
-    { SpaceDiscretization::regular_grid, "lue_regular_grid" }
+    { SpaceDiscretization::regular_grid, "regular_grid" }
 }))
 
 TAG_AND_MAP(TimeDiscretization, time_discretization_tag, ({
-    { TimeDiscretization::regular_grid, "lue_regular_grid" }
+    { TimeDiscretization::regular_grid, "regular_grid" }
 }))
 
 TAG_AND_MAP(time::Unit, time_unit_tag, ({

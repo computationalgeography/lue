@@ -76,14 +76,14 @@ bool PropertySet::has_time_domain() const
 
 
 /*!
-    @brief      Return whether the property set owns the time domain or
+    @brief      Return whether the property set owns the time domain, or
                 shares another property set's time domain
 
-    False is returned in case the property set does not have a time domain.
+    In case the property set does not have a time domain false is returned.
 */
 bool PropertySet::owns_time_domain() const
 {
-    return has_time_domain() && has_linked_time_domain(*this);
+    return has_time_domain() && !has_linked_time_domain(*this);
 }
 
 

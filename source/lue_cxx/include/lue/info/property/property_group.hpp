@@ -11,6 +11,9 @@ class PropertyGroup:
 
 public:
 
+                   PropertyGroup       (hdf5::Group& parent,
+                                        std::string const& name);
+
                    PropertyGroup       (hdf5::Group&& group);
 
                    PropertyGroup       (PropertyGroup const&)=delete;
@@ -36,23 +39,18 @@ public:
                    space_discretization_type() const;
 
     void           set_time_discretization(
-                                    TimeDiscretization type,
-                                    PropertyGroup& property);
+                                        TimeDiscretization type,
+                                        PropertyGroup& property);
 
     void           set_space_discretization(
-                                    SpaceDiscretization type,
-                                    PropertyGroup& property);
+                                        SpaceDiscretization type,
+                                        PropertyGroup& property);
 
     PropertyGroup  time_discretization_property();
 
     PropertyGroup  space_discretization_property();
 
     hdf5::Group    property_set_group  ();
-
-protected:
-
-                   PropertyGroup       (hdf5::Group& parent,
-                                        std::string const& name);
 
 private:
 

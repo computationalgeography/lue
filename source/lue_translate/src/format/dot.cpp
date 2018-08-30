@@ -164,7 +164,7 @@ void link_nodes(
     T2 const& to_object,
     std::ostream& stream,
     Metadata const& /* metadata */,
-    double weight=1.0,
+    int weight=10,
     std::string const& style="solid",
     std::string const& label="")
 {
@@ -180,6 +180,21 @@ void link_nodes(
         weight,
         style,
         label);
+}
+
+
+template<
+    typename T1,
+    typename T2>
+void soft_link_nodes(
+    T1 const& from_object,
+    T2 const& to_object,
+    std::ostream& stream,
+    Metadata const& metadata,
+    std::string const& label="")
+{
+    link_nodes(
+        from_object, to_object, stream, metadata, 0, "dashed", label);
 }
 
 }  // namespace utility
@@ -294,12 +309,37 @@ void to_dot(
 
 
 void to_dot(
-    different_shape::constant_shape::Value const& /* value */,
-    std::ostream& /* stream */,
-    Metadata const& /* metadata */)
+    different_shape::constant_shape::Value const& value,
+    std::ostream& stream,
+    Metadata const& metadata)
 {
-    throw std::runtime_error(
-        "different_shape::constant_shape::Value not supported yet");
+    std::string const label = metadata.boolean(
+            JSONPointer("/lue/value/show_details"), false)
+        ? to_dot(Table{
+                Record{value.id().name(), ""},
+                Record{"shape_per_object", "different"},
+                Record{"shape_variability", "constant"},
+                Record{"nr_objects", std::to_string(value.nr_objects())},
+                Record{"rank", std::to_string(value.rank())},
+                Record{"file_datatype",
+                    hdf5::standard_datatype_as_string(
+                        (value.file_datatype()))},
+            })
+        : value.id().name()
+        ;
+
+    stream << fmt::format(R"(
+    {} [
+        label=<{}>
+        shape="{}"
+        fillcolor="{}"
+    ];
+)",
+        dot_name(value),
+        label,
+        shape(value, metadata),
+        metadata.string(
+            JSONPointer("/lue/value/fillcolor"), fillcolor(value)));
 }
 
 
@@ -340,12 +380,38 @@ void to_dot(
 
 
 void to_dot(
-    different_shape::variable_shape::Value const& /* value */,
-    std::ostream& /* stream */,
-    Metadata const& /* metadata */)
+    different_shape::variable_shape::Value const& value,
+    std::ostream& stream,
+    Metadata const& metadata)
 {
-    throw std::runtime_error(
-        "different_shape::variable_shape::Value not supported yet");
+    std::string const label = metadata.boolean(
+            JSONPointer("/lue/value/show_details"), false)
+        ? to_dot(Table{
+                Record{value.id().name(), ""},
+                Record{"shape_per_object", "different"},
+                Record{"shape_variability", "variable"},
+                Record{"nr_locations_in_time",
+                    std::to_string(value.nr_locations_in_time())},
+                Record{"rank", std::to_string(value.rank())},
+                Record{"file_datatype",
+                    hdf5::standard_datatype_as_string(
+                        (value.file_datatype()))},
+            })
+        : value.id().name()
+        ;
+
+    stream << fmt::format(R"(
+    {} [
+        label=<{}>
+        shape="{}"
+        fillcolor="{}"
+    ];
+)",
+        dot_name(value),
+        label,
+        shape(value, metadata),
+        metadata.string(
+            JSONPointer("/lue/value/fillcolor"), fillcolor(value)));
 }
 
 
@@ -372,8 +438,8 @@ void to_dot(
         auto const show_details =
             metadata.boolean(JSONPointer("/lue/time_domain/show_details"),
             false);
-        link_nodes(property, property.time_discretization_property(),
-            stream, metadata, 0.0, "dashed",
+        soft_link_nodes(property, property.time_discretization_property(),
+            stream, metadata,
             show_details
                 ? aspect_to_string(property.time_discretization_type())
                 : "");
@@ -383,8 +449,8 @@ void to_dot(
         auto const show_details =
             metadata.boolean(JSONPointer("/lue/space_domain/show_details"),
             false);
-        link_nodes(property, property.space_discretization_property(),
-            stream, metadata, 0.0, "dashed",
+        soft_link_nodes(property, property.space_discretization_property(),
+            stream, metadata,
             show_details
                 ? aspect_to_string(property.space_discretization_type())
                 : "");
@@ -463,13 +529,17 @@ void to_dot(
     std::ostream& stream,
     Metadata const& metadata)
 {
+    auto const configuration = time_domain.configuration();
+    auto const item_type = configuration.value<TimeDomainItemType>();
     auto const& clock = time_domain.clock();
+
     std::string const label = metadata.boolean(
             JSONPointer("/lue/time_domain/show_details"), false)
         ? to_dot(Table{
                 Record{time_domain.id().name(), ""},
                 Record{"unit", aspect_to_string(clock.unit())},
                 Record{"nr_units", std::to_string(clock.nr_units())},
+                Record{"item_type", aspect_to_string(item_type)},
             })
         : time_domain.id().name()
         ;
@@ -488,7 +558,6 @@ void to_dot(
             JSONPointer("/lue/time_domain/fillcolor"),
             fillcolor(time_domain)));
 
-    auto const configuration = time_domain.configuration();
 
     switch(configuration.value<TimeDomainItemType>()) {
         case TimeDomainItemType::box: {
@@ -512,6 +581,20 @@ void to_dot(
     std::ostream& stream,
     Metadata const& metadata)
 {
+    auto const configuration = space_domain.configuration();
+    auto const mobility = configuration.value<Mobility>();
+    auto const item_type = configuration.value<SpaceDomainItemType>();
+
+    std::string const label = metadata.boolean(
+            JSONPointer("/lue/space_domain/show_details"), false)
+        ? to_dot(Table{
+                Record{space_domain.id().name(), ""},
+                Record{"mobility", aspect_to_string(mobility)},
+                Record{"item_type", aspect_to_string(item_type)},
+            })
+        : space_domain.id().name()
+        ;
+
     stream << fmt::format(R"(
     {} [
         label=<{}>
@@ -520,15 +603,11 @@ void to_dot(
     ];
 )",
         dot_name(space_domain),
-        space_domain.id().name(),
+        label,
         shape(space_domain, metadata),
         metadata.string(
             JSONPointer("/lue/space_domain/fillcolor"),
             fillcolor(space_domain)));
-
-    auto const configuration = space_domain.configuration();
-    auto const mobility = configuration.value<Mobility>();
-    auto const item_type = configuration.value<SpaceDomainItemType>();
 
     switch(mobility) {
         case Mobility::mobile: {
@@ -633,8 +712,7 @@ void to_dot(
             link_nodes(property_set, time_domain, stream, metadata);
         }
         else {
-            link_nodes(
-                property_set, time_domain, stream, metadata, 0.0, "dashed");
+            soft_link_nodes(property_set, time_domain, stream, metadata);
         }
     }
 
@@ -642,6 +720,13 @@ void to_dot(
         auto& space_domain = property_set.space_domain();
         to_dot(space_domain, stream, metadata);
         link_nodes(property_set, space_domain, stream, metadata);
+
+        if(space_domain.presence_is_discretized()) {
+            auto const& discretized_presence =
+                space_domain.discretized_presence_property();
+            soft_link_nodes(
+                space_domain, discretized_presence, stream, metadata);
+        }
     }
 
     auto& properties = property_set.properties();

@@ -8,14 +8,29 @@
 namespace lue {
 namespace {
 
-void throw_not_supported_yet(
+// void throw_not_supported_yet(
+//     std::string const& message)
+// {
+//     throw std::runtime_error(fmt::format(
+//         "This feature is not supported yet: {}\n"
+//         "You may want to open an issue here: "
+//         "https://github.com/pcraster/lue/issues",
+//         message));
+// }
+
+
+void not_supported_yet(
+    hdf5::Identifier const& id,
+    hdf5::Issues& issues,
     std::string const& message)
 {
-    throw std::runtime_error(fmt::format(
-        "This feature is not supported yet: {}\n"
-        "You may want to open an issue here: "
-        "https://github.com/pcraster/lue/issues",
-        message));
+    issues.add_warning(
+        id,
+        fmt::format(
+            "this feature is not supported yet: {} -- "
+            "you may want to open an issue here: "
+            "https://github.com/pcraster/lue/issues",
+            message));
 }
 
 
@@ -197,12 +212,106 @@ void validate(
 
 
 void validate(
-    ObjectTracker const& /* object_tracker */,
-    different_shape::constant_shape::Value const& /* value */,
-    hdf5::Issues& /* issues */)
+    ObjectTracker const& object_tracker,
+    different_shape::constant_shape::Value& value,
+    hdf5::Issues& issues)
 {
-    throw_not_supported_yet(
-        "validation of different_shape::constant_shape::Value");
+    // For each object there is a single value array. An object's
+    // value array contains an object array for each location in time
+    // that the object was active.
+    //
+    // Object tracking is handle by
+    // - active_set_index
+    // - active_object_index
+    // - active_id
+
+    // - The number of value arrays must equal the size of the set of
+    //   objects tracked
+    // - For each object, there must be a value array
+    // - For each active set of objects, there must be corresponding
+    //   object arrays in the value arrays
+
+    auto const nr_value_arrays = value.nr_objects();
+
+    // Read IDs of all objects that have been active
+    auto& active_id = object_tracker.active_id();
+
+    std::vector<ID> object_ids(active_id.nr_ids());
+    active_id.read(object_ids.data());
+
+    // Determine the number of objects that have been active at least
+    // once
+    std::set<ID> unique_object_ids(object_ids.begin(), object_ids.end());
+    auto const nr_objects = unique_object_ids.size();
+
+    if(nr_value_arrays != nr_objects) {
+
+        issues.add_error(value.id(), fmt::format(
+            "Number of value arrays must be equal to the number of "
+            "objects that have been active ({} != {})",
+            nr_value_arrays, nr_objects
+        ));
+
+    }
+    else if(
+            // For each unique object ID, verify that a value array exists
+            auto it = std::find_if(
+                unique_object_ids.begin(), unique_object_ids.end(),
+                [&](auto const id) {
+                    return value.exists(id);
+                });
+            it == unique_object_ids.end()) {
+
+        issues.add_error(value.id(), fmt::format(
+            "Each active object must have a corresponding value array, "
+            "but at least value array for object with ID {} is missing",
+            *it
+        ));
+
+    }
+    else {
+
+        // Iterate over each active set and verify that a value is
+        // available for each object in the set
+        auto& active_set_index = object_tracker.active_set_index();
+        auto& active_object_index = object_tracker.active_object_index();
+
+        std::vector<Index> set_idxs(active_set_index.nr_indices());
+        active_set_index.read(set_idxs.data());
+
+        std::vector<Index> object_idxs(active_object_index.nr_indices());
+        active_object_index.read(object_idxs.data());
+
+        // Add an end index to ease the iteration over ranges of IDs
+        set_idxs.push_back(active_id.nr_ids());
+        auto begin_idx = set_idxs[0];
+
+        for(std::size_t i = 1; i < set_idxs.size(); ++i) {
+            auto const end_idx = set_idxs[i];
+            // auto const active_set_size = end_idx - begin_idx;
+
+            for(std::size_t o = begin_idx; o < end_idx; ++o) {
+                auto const object_id = object_ids[o];
+                auto const object_array_idx = object_idxs[o];
+
+                auto value_array = value[object_id];
+
+                if(object_array_idx >= value_array.nr_arrays()) {
+                    issues.add_error(value.id(), fmt::format(
+                        "Number of object arrays stored in each value array "
+                        "must equal the number of times the object is active "
+                        "(at least value array of object with ID {} does not "
+                        "have enough object arrays)",
+                        object_id
+                    ));
+
+                    break;
+                }
+            }
+
+            begin_idx = end_idx;
+        }
+    }
 }
 
 
@@ -266,11 +375,10 @@ void validate(
 
 void validate(
     ObjectTracker const& /* object_tracker */,
-    different_shape::variable_shape::Value const& /* value */,
-    hdf5::Issues& /* issues */)
+    different_shape::variable_shape::Value const& value,
+    hdf5::Issues& issues)
 {
-    throw_not_supported_yet(
-        "validation of different_shape::variable_shape::Value");
+    not_supported_yet(value.id(), issues, "validation");
 }
 
 
@@ -626,6 +734,78 @@ void validate(
 }
 
 
+template<
+    typename DiscretizedProperty>
+void validate_space_constant_regular_grid(
+    DiscretizedProperty const& discretized_property,
+    Properties const& properties,
+    std::string const& discretization_property_name,
+    hdf5::Issues& issues)
+{
+    // For each dimension, the discretization property value contains
+    // a count
+
+    assert(
+        properties.value_variability(discretization_property_name) ==
+        ValueVariability::constant);
+
+    if(properties.shape_per_object(discretization_property_name) !=
+            ShapePerObject::same) {
+        issues.add_error(discretized_property.id(),
+            "Shape of object arrays of regular grid must be "
+            "the same for each object");
+    }
+    else {
+        auto const& property_value = discretized_property.value();
+        auto const& discretization_property = 
+            properties.collection<same_shape::Properties>()[
+                discretization_property_name];
+        auto const& discretization_value = discretization_property.value();
+
+        // For each object array in the discretized property, the
+        // discretization property must contain an object array
+        if(discretization_value.nr_arrays() !=
+                property_value.nr_objects()) {
+            issues.add_error(
+                    discretization_property.id(),
+                    fmt::format(
+                "Number of object arrays in discretization property "
+                "must equal the number of object arrays discretized "
+                "({} != {})",
+                discretization_value.nr_arrays(),
+                property_value.nr_objects()));
+        }
+
+        // The discretization property's value must contain unsigned integers
+        if(!hdf5::is_native_unsigned_integral(
+                discretization_value.memory_datatype())) {
+            issues.add_error(
+                    discretization_property.id(),
+                    fmt::format(
+                "Discretization property must contain unsigned "
+                "integral values "
+                "({} is not unsigned integral)",
+                hdf5::native_datatype_as_string(
+                    discretization_value.memory_datatype())));
+        }
+
+        // The discretization property's value must contain object arrays
+        // with a 1D rank and shape (rank_of_space)
+        if(discretization_value.array_shape() !=
+                hdf5::Shape{
+                    static_cast<Count>(property_value.rank())}) {
+            issues.add_error(
+                    discretization_property.id(),
+                "For each spatial dimension, the discretization "
+                "property must contain a count");
+        }
+
+        // TODO Compare the counts. These must match the shapes
+        //      of the values
+    }
+}
+
+
 void validate(
     ObjectTracker const& object_tracker,
     same_shape::Property& property,
@@ -634,15 +814,15 @@ void validate(
     validate(object_tracker, property.value(), issues);
 
     if(property.time_is_discretized()) {
-        throw_not_supported_yet(
-            "validation of discretization through time of "
-            "same_shape::Property");
+        not_supported_yet(
+            property.id(), issues,
+            "validation of discretization through time");
     }
 
     if(property.space_is_discretized()) {
-        throw_not_supported_yet(
-            "validation of discretization through space of "
-            "same_shape::Property");
+        not_supported_yet(
+            property.id(), issues,
+            "validation of discretization through space");
     }
 }
 
@@ -657,9 +837,9 @@ void validate(
     validate(object_tracker, property_value, issues);
 
     if(property.time_is_discretized()) {
-        throw_not_supported_yet(
-            "validation of discretization through time of "
-            "different_shape::Property");
+        not_supported_yet(
+            property.id(), issues,
+            "validation of discretization through time");
     }
 
     if(property.space_is_discretized()) {
@@ -670,78 +850,23 @@ void validate(
         PropertySet discretization_property_set{
             discretization_property.property_set_group()};
         auto const& properties = discretization_property_set.properties();
-        bool values_can_be_tested = false;
-
 
         if(properties.value_variability(discretization_property_name) !=
                 ValueVariability::constant) {
             issues.add_error(discretization_property.id(),
                 "Property values for discretization of constant "
                 "property values must be constant themselves");
-            values_can_be_tested = false;
         }
+        else {
+            switch(property.space_discretization_type()) {
+                case SpaceDiscretization::regular_grid: {
+                    validate_space_constant_regular_grid(
+                        property,
+                        properties, discretization_property_name,
+                        issues);
 
-        switch(property.space_discretization_type()) {
-            case SpaceDiscretization::regular_grid: {
-                // For each dimension, the discretization property
-                // value contains a count
-                // - The discretization property must
-                //      - Be of type same_shape::Property
-                //      - Contain counts (integral values?)
-                // - These counts must match the value's shape.
-                // - The number of values in the discretization property
-                //   must match the number of values discretized.
-                if(properties.shape_per_object(discretization_property_name) !=
-                        ShapePerObject::same) {
-                    issues.add_error(property.id(),
-                        "Property values of regular grid must be "
-                        "the same for each object");
-                    values_can_be_tested = false;
+                    break;
                 }
-
-                if(values_can_be_tested) {
-                    auto const& discretization_value =
-                        properties.collection<same_shape::Properties>()[
-                            discretization_property_name].value();
-
-                    if(discretization_value.nr_arrays() !=
-                            property_value.nr_objects()) {
-                        issues.add_error(
-                                discretization_property.id(),
-                                fmt::format(
-                            "Number of values in discretization property "
-                            "must equal the number of values discretized "
-                            "({} != {})",
-                            discretization_value.nr_arrays(),
-                            property_value.nr_objects()));
-                    }
-
-                    if(!hdf5::is_native_unsigned_integral(
-                            discretization_value.memory_datatype())) {
-                        issues.add_error(
-                                discretization_property.id(),
-                                fmt::format(
-                            "Discretization property must contain unsigned "
-                            "integral values "
-                            "({} is not unsigned integral)",
-                            hdf5::native_datatype_as_string(
-                                discretization_value.memory_datatype())));
-                    }
-
-                    if(discretization_value.array_shape() !=
-                            hdf5::Shape{
-                                static_cast<Count>(property_value.rank())}) {
-                        issues.add_error(
-                                discretization_property.id(),
-                            "For each spatial dimension, the discretization "
-                            "property must contain a count");
-                    }
-
-                    // TODO Compare the counts. These must match the shapes
-                    //      of the values
-                }
-
-                break;
             }
         }
     }
@@ -756,15 +881,15 @@ void validate(
     validate(object_tracker, property.value(), issues);
 
     if(property.time_is_discretized()) {
-        throw_not_supported_yet(
-            "validation of discretization through time of "
-            "same_shape::constant_shape::Property");
+        not_supported_yet(
+            property.id(), issues,
+            "validation of discretization through time");
     }
 
     if(property.space_is_discretized()) {
-        throw_not_supported_yet(
-            "validation of discretization through space of "
-            "same_shape::constant_shape::Property");
+        not_supported_yet(
+            property.id(), issues,
+            "validation of discretization through space");
     }
 }
 
@@ -777,15 +902,37 @@ void validate(
     validate(object_tracker, property.value(), issues);
 
     if(property.time_is_discretized()) {
-        throw_not_supported_yet(
-            "validation of discretization through time of "
-            "different_shape::constant_shape::Property");
+        not_supported_yet(
+            property.id(), issues,
+            "validation of discretization through time");
     }
 
     if(property.space_is_discretized()) {
-        throw_not_supported_yet(
-            "validation of discretization through space of "
-            "different_shape::constant_shape::Property");
+        auto discretization_property = property.space_discretization_property();
+        auto const& discretization_property_name =
+            discretization_property.name();
+        PropertySet discretization_property_set{
+            discretization_property.property_set_group()};
+        auto const& properties = discretization_property_set.properties();
+
+        if(properties.value_variability(discretization_property_name) !=
+                ValueVariability::constant) {
+            issues.add_error(discretization_property.id(),
+                "Property values for discretization of constant "
+                "shaped values must be constant themselves");
+        }
+        else {
+            switch(property.space_discretization_type()) {
+                case SpaceDiscretization::regular_grid: {
+                    validate_space_constant_regular_grid(
+                        property,
+                        properties, discretization_property_name,
+                        issues);
+
+                    break;
+                }
+            }
+        }
     }
 }
 
@@ -903,9 +1050,9 @@ void validate(
     }
 
     if(property.space_is_discretized()) {
-        throw_not_supported_yet(
-            "validation of discretization through space of "
-            "same_shape::variable_shape::Property");
+        not_supported_yet(
+            property.id(), issues,
+            "validation of discretization through space");
     }
 }
 
@@ -918,15 +1065,15 @@ void validate(
     validate(object_tracker, property.value(), issues);
 
     if(property.time_is_discretized()) {
-        throw_not_supported_yet(
-            "validation of discretization through time of "
-            "different_shape::variable_shape::Property");
+        not_supported_yet(
+            property.id(), issues,
+            "validation of discretization through time");
     }
 
     if(property.space_is_discretized()) {
-        throw_not_supported_yet(
-            "validation of discretization through space of "
-            "different_shape::variable_shape::Property");
+        not_supported_yet(
+            property.id(), issues,
+            "validation of discretization through space");
     }
 }
 
@@ -984,7 +1131,88 @@ void validate(
         }
 
         if(property_set.has_space_domain()) {
-            validate(object_tracker, property_set.space_domain(), issues);
+            auto& space_domain = property_set.space_domain();
+            validate(object_tracker, space_domain, issues);
+
+            if(space_domain.presence_is_discretized()) {
+                auto const configuration = space_domain.configuration();
+                auto const mobility = configuration.value<Mobility>();
+                auto const item_type =
+                    configuration.value<SpaceDomainItemType>();
+
+                if(item_type != SpaceDomainItemType::box) {
+                    issues.add_error(space_domain.id(), fmt::format(
+                        "Discretization of presence in space is only supported "
+                        "for space domain item type {}, but it is {}",
+                        aspect_to_string(SpaceDomainItemType::box),
+                        aspect_to_string(item_type)
+                    ));
+                }
+                else {
+                    auto presence_property =
+                        space_domain.discretized_presence_property();
+                    auto const& presence_property_name =
+                        presence_property.name();
+                    PropertySet presence_property_set{
+                        presence_property.property_set_group()};
+                    auto const& properties =
+                        presence_property_set.properties();
+
+                    switch(mobility) {
+                        case Mobility::mobile: {
+                            not_supported_yet(
+                                space_domain.id(), issues,
+                                "validation of discretization of presence of "
+                                "mobile space domain items");
+
+                            break;
+                        }
+                        case Mobility::stationary: {
+                            // Stationary space boxes with discretized presence
+                            switch(properties.value_variability(
+                                    presence_property_name)) {
+                                case ValueVariability::constant: {
+                                    not_supported_yet(
+                                        space_domain.id(), issues,
+                                        "validation of discretization of presence of "
+                                        "stationary space domain items with constant "
+                                        "presence");
+
+                                    break;
+                                }
+                                case ValueVariability::variable: {
+                                    // Presence property is
+                                    // temporal. Verify its time domain
+                                    // equals the time domain of the space
+                                    // domain's property set
+                                    if(
+                                            presence_property_set.has_time_domain() &&
+                                            property_set.has_time_domain() &&
+                                            presence_property_set.time_domain().id() !=
+                                            property_set.time_domain().id()) {
+
+                                        issues.add_error(presence_property.id(), fmt::format(
+                                            "Time domain of presence property "
+                                            "must equal the time domain of the "
+                                            "property-set containing the "
+                                            "space domain ({} != {})",
+                                            presence_property_set.time_domain().id().pathname(),
+                                            property_set.time_domain().id().pathname()
+                                        ));
+                                    }
+
+                                    // TODO The presence property's value must contain
+                                    // unsigned integers (= convertable to boolean)
+
+                                    break;
+                                }
+                            }
+
+                            break;
+                        }
+                    }
+                }
+            }
         }
 
         validate(object_tracker, property_set.properties(), issues);
@@ -1250,7 +1478,13 @@ void assert_is_valid(
     validate(file, issues);
 
     if(issues.errors_found() || (fail_on_warning && issues.warnings_found())) {
-        throw std::runtime_error(error_message(issues));
+        throw std::runtime_error(fmt::format(
+            "{}"
+            "LUE is work in progress -- if you encounter "
+            "false-negatives, then please open an issue here: "
+            "https://github.com/pcraster/lue/issues",
+            error_message(issues)
+        ));
     }
 }
 

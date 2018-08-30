@@ -220,6 +220,14 @@ Value create_value(
     return Value{Array{std::move(dataset), memory_datatype}};
 }
 
+
+bool value_exists(
+    hdf5::Group const& parent,
+    std::string const& name)
+{
+    return hdf5::dataset_exists(parent.id(), name);
+}
+
 }  // namespace constant_shape
 }  // namespace same_shape
 }  // namespace lue

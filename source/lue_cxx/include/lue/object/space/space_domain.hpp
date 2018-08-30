@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/info/space.hpp"
+#include "lue/info/property/property_group.hpp"
 #include "lue/core/configuration.hpp"
 #include "lue/hdf5.hpp"
 
@@ -45,6 +46,13 @@ public:
     template<
         typename Value>
     Value          value               ();
+
+    bool           presence_is_discretized() const;
+
+    void           set_presence_discretization(
+                                        PropertyGroup& property);
+
+    PropertyGroup  discretized_presence_property();
 
 private:
 
