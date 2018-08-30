@@ -93,6 +93,9 @@ Value              create_value        (hdf5::Group& parent,
                                         hdf5::Datatype const& memory_datatype,
                                         hdf5::Shape const& array_shape);
 
+bool               value_exists        (hdf5::Group const& parent,
+                                        std::string const& name);
+
 }  // namespace constant_shape
 }  // namespace same_shape
 }  // namespace lue

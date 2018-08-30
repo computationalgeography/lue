@@ -51,6 +51,14 @@ Count Value::nr_objects() const
 }
 
 
+bool Value::exists(ID id) const
+{
+    std::string const name = std::to_string(id);
+
+    return same_shape::constant_shape::value_exists(*this, name);
+}
+
+
 void Value::reserve(
     Count const nr_objects,
     ID const* ids,

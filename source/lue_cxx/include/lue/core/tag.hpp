@@ -72,6 +72,9 @@ static std::string const property_sets_tag =
 static std::string const universes_tag =
     "lue_universes";
 
+static std::string const presence_discretization_property_tag =
+    "lue_presence_discretization_property";
+
 static std::string const time_discretization_tag =
     "lue_time_discretization";
 static std::string const time_discretization_property_tag =

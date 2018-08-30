@@ -25,7 +25,7 @@ void init_value(
         .def("reserve",
             [](
                 Value& value,
-                Index idx,
+                Index const idx,
                 Count const nr_arrays,
                 py::tuple const& shape)
             {
@@ -33,6 +33,7 @@ void init_value(
 
                 return value.reserve(idx, nr_arrays, shape_);
             })
+
         ;
 
 }

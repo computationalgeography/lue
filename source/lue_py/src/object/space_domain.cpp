@@ -53,6 +53,18 @@ void init_space_domain(
     TODO
 )")
 
+        .def(
+            "set_presence_discretization",
+            &SpaceDomain::set_presence_discretization)
+
+        .def_property_readonly(
+            "presence_is_discretized",
+            &SpaceDomain::presence_is_discretized)
+
+        .def_property_readonly(
+            "discretized_presence_property",
+            &SpaceDomain::discretized_presence_property)
+
         .def_property_readonly(
             "value",
             [](

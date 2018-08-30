@@ -41,6 +41,28 @@ SpaceConfiguration const& SpaceDomain::configuration() const
 }
 
 
+bool SpaceDomain::presence_is_discretized() const
+{
+    return contains_soft_link(presence_discretization_property_tag);
+}
+
+
+void SpaceDomain::set_presence_discretization(
+    PropertyGroup& property)
+{
+    create_soft_link(property.id(), presence_discretization_property_tag);
+}
+
+
+PropertyGroup SpaceDomain::discretized_presence_property()
+{
+    assert(this->contains_soft_link(presence_discretization_property_tag));
+
+    return PropertyGroup{*this,
+        hdf5::SoftLink{*this, presence_discretization_property_tag}.path()};
+}
+
+
 SpaceDomain create_space_domain(
     hdf5::Group& parent,
     SpaceConfiguration const& configuration,

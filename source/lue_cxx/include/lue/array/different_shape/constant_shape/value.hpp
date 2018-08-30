@@ -44,6 +44,8 @@ public:
 
     Count          nr_objects          () const;
 
+    bool           exists              (ID id) const;
+
     void           reserve             (Count nr_objects,
                                         ID const* ids,
                                         hdf5::Shape const* shapes,
