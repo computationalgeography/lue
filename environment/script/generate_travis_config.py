@@ -229,16 +229,16 @@ def builds():
     compiler_families = {
         "gcc": [
                 # ("gcc-4.9", "g++-4.9"),
-                ("gcc-5", "g++-5"),
-                ("gcc-6", "g++-6"),
+                # ("gcc-5", "g++-5"),
+                # ("gcc-6", "g++-6"),
                 ("gcc-7", "g++-7"),
                 # ("gcc-8", "g++-8"),
             ],
         "clang": [
                 # ("clang-3.9", "clang++-3.9"),
                 # ("clang-4.0", "clang++-4.0"),
-                # ("clang-5.0", "clang++-5.0"),
-                # ("clang-6.0", "clang++-6.0"),
+                ("clang-5.0", "clang++-5.0"),
+                ("clang-6.0", "clang++-6.0"),
             ],
     }
 
@@ -359,7 +359,7 @@ before_install:
     - conda config --set always_yes yes --set changeps1 no
     - conda update -q conda
     - conda info -a  # Useful for debugging any issues with conda
-    - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION numpy sphinx docopt
+    - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION conan numpy sphinx docopt
     - source activate test-environment
     # - python setup.py install
 
@@ -406,7 +406,7 @@ install:
 # Travis-specific stuff.
 before_script:
     # /home/travis/build/pcraster/lue
-    - pip install conan
+    # - pip install conan
     - mkdir build
     - cd build
     # - conan remote add conan-community https://api.bintray.com/conan/conan-community/conan
