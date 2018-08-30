@@ -237,8 +237,8 @@ def builds():
         "clang": [
                 # ("clang-3.9", "clang++-3.9"),
                 # ("clang-4.0", "clang++-4.0"),
-                ("clang-5.0", "clang++-5.0"),
-                ("clang-6.0", "clang++-6.0"),
+                # ("clang-5.0", "clang++-5.0"),
+                # ("clang-6.0", "clang++-6.0"),
             ],
     }
 
@@ -425,7 +425,7 @@ script:
     - tree -d $TRAVIS_BUILD_DIR/local
     - cmake -DPEACOCK_PREFIX:PATH=$TRAVIS_BUILD_DIR/local $TRAVIS_LUE_CMAKE_ARGUMENTS ..
     - cmake --build . --target all
-    - if [[ $TRAVIS_LUE_CMAKE_ARGUMENTS == *"LUE_BUILD_TEST:BOOL=TRUE"* ]]; then cmake --build . --target test; fi
+    - if [[ $TRAVIS_LUE_CMAKE_ARGUMENTS == *"LUE_BUILD_TEST:BOOL=TRUE"* ]]; then CTEST_OUTPUT_ON_FAILURE=1 cmake --build . --target test; fi
 
 
 notifications:
