@@ -71,32 +71,71 @@ BOOST_FIXTURE_TEST_CASE(update_all_object_arrays_per_location_in_time, Fixture)
 {
     auto& value = this->value();
 
-    lue::Count const nr_locations_in_time = 3;
-    lue::Counts const nr_active_objects{3, 4, 2};
-    lue::Shapes const array_shapes{{3, 2}, {5, 4}, {7, 6}};
+    lue::Count const nr_locations_in_time1 = 3;
+    lue::Counts const nr_active_objects1{3, 4, 2};
+    lue::Shapes const array_shapes1{{3, 2}, {5, 4}, {7, 6}};
 
-    for(std::size_t t = 0; t < nr_locations_in_time; ++t) {
-        auto t_value = value.reserve(
-            t, nr_active_objects[t], array_shapes[t]);
+    {
+        for(std::size_t t = 0; t < nr_locations_in_time1; ++t) {
+            auto t_value = value.expand(
+                t, nr_active_objects1[t], array_shapes1[t]);
 
-        BOOST_CHECK_EQUAL(t_value.nr_arrays(), nr_active_objects[t]);
-        BOOST_CHECK(t_value.array_shape() == array_shapes[t]);
-        BOOST_CHECK(t_value.memory_datatype() == datatype());
-        BOOST_CHECK(
-            t_value.file_datatype() == lue::hdf5::file_datatype(datatype()));
+            BOOST_CHECK_EQUAL(t_value.nr_arrays(), nr_active_objects1[t]);
+            BOOST_CHECK(t_value.array_shape() == array_shapes1[t]);
+            BOOST_CHECK(t_value.memory_datatype() == datatype());
+            BOOST_CHECK(
+                t_value.file_datatype() ==
+                lue::hdf5::file_datatype(datatype()));
+        }
+
+        BOOST_REQUIRE_EQUAL(
+            value.nr_locations_in_time(), nr_locations_in_time1);
+
+        for(std::size_t t = 0; t < nr_locations_in_time1; ++t) {
+            auto t_value = value[t];
+
+            BOOST_CHECK_EQUAL(t_value.nr_arrays(), nr_active_objects1[t]);
+            BOOST_CHECK(t_value.array_shape() == array_shapes1[t]);
+            BOOST_CHECK(t_value.memory_datatype() == datatype());
+            BOOST_CHECK(
+                t_value.file_datatype() ==
+                lue::hdf5::file_datatype(datatype()));
+        }
     }
 
-    BOOST_REQUIRE_EQUAL(value.nr_locations_in_time(), nr_locations_in_time);
+    lue::Count const nr_locations_in_time2 = 3;
+    lue::Counts const nr_active_objects2{8, 1, 3};
+    lue::Shapes const array_shapes2{{2, 3}, {4, 5}, {6, 7}};
 
-    for(std::size_t t = 0; t < nr_locations_in_time; ++t) {
-        auto t_value = value[t];
+    {
+        for(std::size_t t = 0; t < nr_locations_in_time2; ++t) {
+            auto t_value = value.expand(
+                t + nr_locations_in_time1, nr_active_objects2[t], array_shapes2[t]);
 
-        BOOST_CHECK_EQUAL(t_value.nr_arrays(), nr_active_objects[t]);
-        BOOST_CHECK(t_value.array_shape() == array_shapes[t]);
-        BOOST_CHECK(t_value.memory_datatype() == datatype());
-        BOOST_CHECK(
-            t_value.file_datatype() == lue::hdf5::file_datatype(datatype()));
+            BOOST_CHECK_EQUAL(t_value.nr_arrays(), nr_active_objects2[t]);
+            BOOST_CHECK(t_value.array_shape() == array_shapes2[t]);
+            BOOST_CHECK(t_value.memory_datatype() == datatype());
+            BOOST_CHECK(
+                t_value.file_datatype() ==
+                lue::hdf5::file_datatype(datatype()));
+        }
+
+        BOOST_REQUIRE_EQUAL(
+            value.nr_locations_in_time(),
+            nr_locations_in_time1 + nr_locations_in_time2);
+
+        for(std::size_t t = 0; t < nr_locations_in_time2; ++t) {
+            auto t_value = value[t + nr_locations_in_time1];
+
+            BOOST_CHECK_EQUAL(t_value.nr_arrays(), nr_active_objects2[t]);
+            BOOST_CHECK(t_value.array_shape() == array_shapes2[t]);
+            BOOST_CHECK(t_value.memory_datatype() == datatype());
+            BOOST_CHECK(
+                t_value.file_datatype() ==
+                lue::hdf5::file_datatype(datatype()));
+        }
     }
+
 
     // Reading and writing elements is handled by the same_shape::Value
     // instance returned by operator[]. This functionality is already

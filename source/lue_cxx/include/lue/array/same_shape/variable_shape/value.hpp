@@ -42,7 +42,7 @@ public:
     Count          nr_locations_in_time() const;
 
     same_shape::Value
-                   reserve             (Index idx,
+                   expand              (Index idx,
                                         Count nr_arrays,
                                         hdf5::Shape const& array_shape);
 

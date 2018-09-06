@@ -22,7 +22,7 @@ void init_value(
     Value docstring...
 )")
 
-        .def("reserve",
+        .def("expand",
             [](
                 Value& value,
                 Index const idx,
@@ -31,7 +31,7 @@ void init_value(
             {
                 auto const shape_ = tuple_to_shape(shape);
 
-                return value.reserve(idx, shape_, nr_locations_in_time);
+                return value.expand(idx, shape_, nr_locations_in_time);
             })
 
         ;

@@ -60,7 +60,7 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
 
         // IDs
         auto& object_tracker = area_boxes.object_tracker();
-        object_tracker.id().reserve(nr_areas);
+        object_tracker.id().expand(nr_areas);
         object_tracker.id().write(ids.data());
 
         // Time domain
@@ -72,7 +72,7 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
         {
             auto& space_domain = area_boxes.space_domain();
             auto value = space_domain.value<lue::StationarySpaceBox>();
-            value.reserve(nr_areas);
+            value.expand(nr_areas);
             value.write(boxes.data());
         }
 
@@ -82,7 +82,7 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
             lue::hdf5::Shape{2});  // nr rows, nr_cols
         {
             auto& value = discretization_property.value();
-            value.reserve(nr_areas);
+            value.expand(nr_areas);
             value.write(shapes.data());
         }
 
@@ -91,7 +91,7 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
             elevation_property_name, elevation_datatype, rank);
         {
             auto& value = elevation_property.value();
-            value.reserve(nr_areas, ids.data(), shapes.data());
+            value.expand(nr_areas, ids.data(), shapes.data());
 
             for(std::size_t o = 0; o < nr_areas; ++o) {
                 value[ids[o]].write(values[o].data());

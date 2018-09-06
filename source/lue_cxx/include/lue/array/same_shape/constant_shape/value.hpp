@@ -42,7 +42,7 @@ public:
 
     Value&         operator=           (Value&&)=default;
 
-    void           reserve             (Count nr_arrays);
+    void           expand              (Count nr_arrays);
 
     Count          nr_arrays           () const;
 

@@ -85,7 +85,7 @@ BOOST_FIXTURE_TEST_CASE(update_all_object_arrays_per_location_in_time, Fixture)
     };
 
     for(std::size_t t = 0; t < nr_locations_in_time; ++t) {
-        auto t_value = value.reserve(
+        auto t_value = value.expand(
             t, nr_active_objects[t], active_ids[t].data(),
             array_shapes[t].data());
 

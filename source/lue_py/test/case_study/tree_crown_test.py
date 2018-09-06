@@ -41,7 +41,7 @@ class TreeCrownTest(lue_test.TestCase):
 
 
             # IDs
-            stem_points.object_tracker.id.reserve(nr_trees)[:] = ids
+            stem_points.object_tracker.id.expand(nr_trees)[:] = ids
 
 
             # Space domain
@@ -49,13 +49,13 @@ class TreeCrownTest(lue_test.TestCase):
             space_points = numpy.arange(
                 nr_trees * rank, dtype=space_coordinate_datatype).reshape(
                     nr_trees, 2)
-            space_domain.value.reserve(nr_trees)[:] = space_points
+            space_domain.value.expand(nr_trees)[:] = space_points
 
 
             # Property
             tree_kind = stem_points.add_property(
                 "kind", dtype=numpy.dtype(numpy.uint8))
-            tree_kind.value.reserve(nr_trees)[:] = \
+            tree_kind.value.expand(nr_trees)[:] = \
                 (10 * numpy.random.rand(nr_trees)).astype(numpy.uint8)
 
             return stem_points
@@ -77,7 +77,7 @@ class TreeCrownTest(lue_test.TestCase):
             shapes = numpy.arange(
                 1, nr_trees * rank + 1, dtype=count_datatype) \
                     .reshape(nr_trees, 2)
-            discretization.value.reserve(nr_trees)[:] = shapes
+            discretization.value.expand(nr_trees)[:] = shapes
 
             # Presence property
             presence_datatype = numpy.dtype(numpy.uint8)
@@ -88,7 +88,7 @@ class TreeCrownTest(lue_test.TestCase):
 
             for t in range(nr_trees):
                 value_array = \
-                    presence.value.reserve(
+                    presence.value.expand(
                         ids[t], tuple(shapes[t]), nr_time_boxes)
                 for b in range(nr_time_boxes):
                     values = (10 * numpy.random.rand(*shapes[t])).astype(
@@ -130,24 +130,24 @@ class TreeCrownTest(lue_test.TestCase):
                 space_configuration, space_coordinate_datatype, rank)
 
             # IDs
-            crown_boxes.object_tracker.id.reserve(nr_trees)[:] = ids
+            crown_boxes.object_tracker.id.expand(nr_trees)[:] = ids
 
             # [0, nr_trees, 2 * nr_tree, ..., t * nr_trees]
-            crown_boxes.object_tracker.active_set_index.reserve(
+            crown_boxes.object_tracker.active_set_index.expand(
                     nr_time_boxes)[:] = \
                 numpy.array(
                     [t * nr_trees for t in range(nr_time_boxes)],
                     dtype=lue.dtype.Index)
 
             # [0, 0, 0, ..., nr_time_boxes-1, nr_time_boxes-1]
-            crown_boxes.object_tracker.active_object_index.reserve(
+            crown_boxes.object_tracker.active_object_index.expand(
                     nr_time_boxes * nr_trees)[:] = \
                 numpy.repeat(
                     numpy.arange(0, nr_time_boxes, dtype=lue.dtype.Index),
                     repeats=nr_trees)
 
             # [id1, id2, ..., idn, ..., id1, id2, ...idn]
-            crown_boxes.object_tracker.active_id.reserve(
+            crown_boxes.object_tracker.active_id.expand(
                     nr_time_boxes * nr_trees)[:] = \
                 numpy.repeat(
                     ids.reshape((1, nr_trees)),
@@ -160,7 +160,7 @@ class TreeCrownTest(lue_test.TestCase):
             boxes = numpy.arange(
                 nr_trees * rank * 2, dtype=space_coordinate_datatype) \
                     .reshape(nr_trees, 4)
-            space_domain.value.reserve(nr_trees)[:] = boxes
+            space_domain.value.expand(nr_trees)[:] = boxes
 
 
             # Time domain
@@ -169,7 +169,7 @@ class TreeCrownTest(lue_test.TestCase):
             boxes = numpy.arange(
                 nr_time_boxes * 2, dtype=time_coordinate_datatype) \
                     .reshape(nr_time_boxes, 2)
-            time_domain.value.reserve(nr_time_boxes)[:] = boxes
+            time_domain.value.expand(nr_time_boxes)[:] = boxes
 
 
             presence = discretized_presence(crown_boxes)

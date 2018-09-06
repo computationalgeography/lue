@@ -105,14 +105,14 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
                 auto& object_tracker = outlet_points.object_tracker();
 
                 auto& id = object_tracker.id();
-                id.reserve(nr_areas);
+                id.expand(nr_areas);
                 id.write(ids.data());
 
                 auto& active_set_index = object_tracker.active_set_index();
-                active_set_index.reserve(nr_time_boxes);
+                active_set_index.expand(nr_time_boxes);
 
                 auto& active_id = object_tracker.active_id();
-                active_id.reserve(active_ids.size());
+                active_id.expand(active_ids.size());
 
                 for(std::size_t s = 0, active_set_idx = 0;
                         s < nr_time_boxes; ++s) {
@@ -135,7 +135,7 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
             {
                 auto& time_domain = outlet_points.time_domain();
                 auto value = time_domain.value<lue::TimeBox>();
-                value.reserve(nr_time_boxes);
+                value.expand(nr_time_boxes);
                 value.write(time_boxes.data());
             }
 
@@ -143,7 +143,7 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
             {
                 auto& space_domain = outlet_points.space_domain();
                 auto value = space_domain.value<lue::StationarySpacePoint>();
-                value.reserve(nr_areas);
+                value.expand(nr_areas);
                 value.write(space_points.data());
             }
 
@@ -156,7 +156,7 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
 
                 for(std::size_t t = 0; t < nr_time_boxes; ++t) {
                     auto& value = discharge_property.value();
-                    auto value_t = value.reserve(
+                    auto value_t = value.expand(
                         t, active_set_sizes[t], {shapes[t]});
                     value_t.write(discharge_values[t].data());
                 }
@@ -183,9 +183,9 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
                 // location in time.
                 auto& object_tracker = collection.object_tracker();
                 auto& active_set_index = object_tracker.active_set_index();
-                active_set_index.reserve(nr_time_boxes);
+                active_set_index.expand(nr_time_boxes);
                 auto& active_id = object_tracker.active_id();
-                active_id.reserve(nr_time_boxes);
+                active_id.expand(nr_time_boxes);
 
                 lue::Index active_set_idx = 0;
                 for(std::size_t s = 0; s < nr_time_boxes; ++s) {
@@ -212,7 +212,7 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
                     discretization_property_name, shape_datatype,
                     lue::hdf5::Shape{1});  // nr time steps
                 auto& value = discretization_property.value();
-                value.reserve(nr_time_boxes);
+                value.expand(nr_time_boxes);
                 value.write(shapes.data());
             }
         }

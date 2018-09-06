@@ -17,7 +17,7 @@ class ArrayTest(lue_test.TestCase):
 
         self.nr_objects = 5
         object_tracker = self.property_set.object_tracker
-        object_tracker.id.reserve(self.nr_objects)[:] = \
+        object_tracker.id.expand(self.nr_objects)[:] = \
             numpy.arange(self.nr_objects)
 
         self.nr_rows = 3
@@ -28,7 +28,7 @@ class ArrayTest(lue_test.TestCase):
         property = self.property_set.add_property(
             "my_property", self.value_type, self.value_shape)
 
-        self.lue_values = property.value.reserve(self.nr_objects)
+        self.lue_values = property.value.expand(self.nr_objects)
         self.numpy_values = numpy.arange(
             self.nr_objects * reduce(
                 lambda x, y: x * y, self.value_shape),

@@ -22,13 +22,13 @@ class RasterTest(lue_test.TestCase):
 
         # IDs
         ids = numpy.arange(nr_areas, dtype=numpy.uint64)
-        area_boxes.object_tracker.id.reserve(nr_areas)[:] = ids
+        area_boxes.object_tracker.id.expand(nr_areas)[:] = ids
 
         # Space domain
         space_domain = area_boxes.space_domain
         boxes = numpy.arange(
             nr_areas * rank * 2, dtype=coordinate_datatype).reshape(nr_areas, 4)
-        space_domain.value.reserve(nr_areas)[:] = boxes
+        space_domain.value.expand(nr_areas)[:] = boxes
 
         # Discretization property
         count_datatype = lue.dtype.Count
@@ -36,13 +36,13 @@ class RasterTest(lue_test.TestCase):
             "discretization", dtype=count_datatype, shape=(rank,))
         shapes = numpy.arange(
             nr_areas * rank, dtype=count_datatype).reshape(nr_areas, 2)
-        discretization.value.reserve(nr_areas)[:] = shapes
+        discretization.value.expand(nr_areas)[:] = shapes
 
         # Elevation property
         elevation_datatype = numpy.dtype(numpy.float32)
         elevation = area_boxes.add_property(
             "elevation", dtype=elevation_datatype, rank=rank)
-        grids = elevation.value.reserve(ids, shapes)
+        grids = elevation.value.expand(ids, shapes)
         for a in range(nr_areas):
             grids[ids[a]][:] = \
                 (10 * numpy.random.rand(*shapes[a])).astype(elevation_datatype)

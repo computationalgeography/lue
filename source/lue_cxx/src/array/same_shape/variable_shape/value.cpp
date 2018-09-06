@@ -52,11 +52,15 @@ Count Value::nr_locations_in_time() const
 
 
 /*!
-    @brief      Reserve space for @a nr_arrays object arrays
-    @param      idx Index of location in time for which space must
-                be reserved
+    @brief      Make space for an additional number of object arrays
+    @param      idx Index of location in time
+    @param      nr_arrays Number of arrays
+    @param      array_shape Shape of an object array
+    @return     The created value representing the object arrays for
+                the location in time. It can be used to write the
+                object information.
 */
-same_shape::Value Value::reserve(
+same_shape::Value Value::expand(
     Index const idx,
     Count const nr_arrays,
     hdf5::Shape const& array_shape)
@@ -64,7 +68,7 @@ same_shape::Value Value::reserve(
     std::string const name = std::to_string(idx);
     auto value = same_shape::create_value(
         *this, name, file_datatype(), memory_datatype(), array_shape);
-    value.reserve(nr_arrays);
+    value.expand(nr_arrays);
     attributes().write<Count>(
         nr_locations_in_time_tag, ++_nr_locations_in_time);
 

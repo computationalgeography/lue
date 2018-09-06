@@ -20,12 +20,12 @@ void init_value(
     Value docstring...
 )")
 
-        .def("reserve",
+        .def("expand",
             [](
                 Value& value,
                 Count const nr_arrays) -> Value&
             {
-                value.reserve(nr_arrays);
+                value.expand(nr_arrays);
                 return value;
             })
 
