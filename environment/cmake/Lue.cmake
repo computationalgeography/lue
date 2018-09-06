@@ -12,13 +12,12 @@ include(DevBaseExternal)
 include(DevBaseMacro)
 include(LueMacro)
 
-# Not yet (treat warnings as errors):
-#   MSVC: /WX
-#   GNU/Clang: -Werror
+
 add_compile_options(
+    "$<$<CXX_COMPILER_ID:GNU>:-W;-Wall;-Wextra>"
+    "$<$<CXX_COMPILER_ID:Clang>:-Weverything>"
+    # "$<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>>:xxx>"
     "$<$<CXX_COMPILER_ID:MSVC>:/W3>"
-    # "$<$<CXX_COMPILER_ID:Clang>:-Weverything;-Wno-c++98-compat;-Wno-c++98-compat-pedantic;-Wno-documentation-unknown-command;-Wno-disabled-macro-expansion;-Wno-global-constructors>"
-    "$<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>>:-W;-Wall;-Wextra;-fvisibility=hidden>"
 )
 
 
