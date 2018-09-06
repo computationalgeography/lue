@@ -45,14 +45,18 @@ Value::Value(
 
 
 /*!
-    @brief      Reserve space for @a nr_arrays object arrays
+    @brief      Make space for an additional number of object arrays
+    @param      nr_arrays Number of object arrays
 */
-void Value::reserve(
+void Value::expand(
     Count const nr_arrays)
 {
+    // Get current shape of the underlying dataset, and update it for
+    // the new size
     auto shape = this->shape();
-    shape[0] = nr_arrays;
+    shape[0] += nr_arrays;
 
+    // Resize the dataset
     resize(shape);
 }
 

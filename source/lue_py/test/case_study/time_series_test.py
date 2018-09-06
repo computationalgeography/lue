@@ -47,9 +47,9 @@ class TimeSeriesTest(lue_test.TestCase):
             # IDs
             object_tracker = outlet_points.object_tracker
             ids = numpy.arange(nr_outlets, dtype=numpy.uint64)
-            object_tracker.id.reserve(nr_outlets)[:] = ids
+            object_tracker.id.expand(nr_outlets)[:] = ids
 
-            object_tracker.active_set_index.reserve(nr_time_boxes)
+            object_tracker.active_set_index.expand(nr_time_boxes)
 
             active_set_sizes = \
                 numpy.random.randint(0, nr_outlets, nr_time_boxes,
@@ -60,7 +60,7 @@ class TimeSeriesTest(lue_test.TestCase):
             lue.test.select_random_ids(
                 active_set_sizes, active_set_idxs, active_ids, nr_outlets);
 
-            object_tracker.active_id.reserve(len(active_ids))
+            object_tracker.active_id.expand(len(active_ids))
 
             active_set_idx = numpy.uint64(0)
 
@@ -78,14 +78,14 @@ class TimeSeriesTest(lue_test.TestCase):
             time_boxes = numpy.arange(
                 nr_time_boxes * 2, dtype=time_coordinate_datatype).reshape(
                     nr_time_boxes, 2)
-            time_domain.value.reserve(nr_time_boxes)[:] = time_boxes
+            time_domain.value.expand(nr_time_boxes)[:] = time_boxes
 
             # Space domain
             space_domain = outlet_points.space_domain
             space_points = numpy.arange(
                 nr_outlets * rank, dtype=space_coordinate_datatype).reshape(
                     nr_outlets, 2)
-            space_domain.value.reserve(nr_outlets)[:] = space_points
+            space_domain.value.expand(nr_outlets)[:] = space_points
 
             # Property
             discharge_datatype = numpy.dtype(numpy.float32)
@@ -102,7 +102,7 @@ class TimeSeriesTest(lue_test.TestCase):
             ]
 
             for t in range(nr_time_boxes):
-                discharge.value.reserve(
+                discharge.value.expand(
                         t, active_set_sizes[t], (shapes[t],))[:] = \
                     discharge_values[t]
 
@@ -119,8 +119,8 @@ class TimeSeriesTest(lue_test.TestCase):
 
             # IDs
             object_tracker = collection.object_tracker
-            object_tracker.active_set_index.reserve(nr_time_boxes)
-            object_tracker.active_id.reserve(nr_time_boxes)
+            object_tracker.active_set_index.expand(nr_time_boxes)
+            object_tracker.active_id.expand(nr_time_boxes)
 
             collection_id = 5
             active_set_idx = 0
@@ -137,7 +137,7 @@ class TimeSeriesTest(lue_test.TestCase):
             discretization = collection.add_property(
                 "discretization", dtype=shape_datatype, shape=(1,),
                 value_variability=lue.ValueVariability.variable)
-            discretization.value.reserve(nr_time_boxes)[:] = shapes
+            discretization.value.expand(nr_time_boxes)[:] = shapes
 
             return discretization
 

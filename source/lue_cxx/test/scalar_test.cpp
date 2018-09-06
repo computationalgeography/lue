@@ -26,13 +26,13 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
         auto& constants = planets.property_sets().add(property_set_name);
         auto& object_tracker = constants.object_tracker();
 
-        object_tracker.id().reserve(nr_planets);
+        object_tracker.id().expand(nr_planets);
         object_tracker.id().write(ids.data());
 
         auto& gravity = constants.properties().add(property_name, datatype);
         auto& value = gravity.value();
 
-        value.reserve(nr_planets);
+        value.expand(nr_planets);
         value.write(values.data());
     }
 

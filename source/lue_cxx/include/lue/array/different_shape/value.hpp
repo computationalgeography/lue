@@ -40,11 +40,11 @@ public:
 
     Count          nr_objects          () const;
 
-    void           reserve             (Count nr_objects,
+    void           expand              (Count nr_objects,
                                         ID const* ids,
                                         hdf5::Shape const* shapes);
 
-    void           reserve             (Count nr_objects,
+    void           expand              (Count nr_objects,
                                         ID const* ids,
                                         hdf5::Shape::value_type const* shapes);
 
@@ -52,9 +52,9 @@ public:
 
 private:
 
-    // Refactor reserve functions when making this public
+    // Refactor expand  functions when making this public
     // Handle _nr_objects in public functions
-    void           reserve             (ID id,
+    void           expand              (ID id,
                                         hdf5::Shape const& shape);
 
     Count          _nr_objects;

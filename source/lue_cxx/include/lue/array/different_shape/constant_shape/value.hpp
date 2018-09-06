@@ -46,13 +46,13 @@ public:
 
     bool           exists              (ID id) const;
 
-    void           reserve             (Count nr_objects,
+    void           expand              (Count nr_objects,
                                         ID const* ids,
                                         hdf5::Shape const* shapes,
                                         Count const* nr_locations_in_time);
 
     same_shape::constant_shape::Value
-                   reserve             (ID id,
+                   expand              (ID id,
                                         hdf5::Shape const& shape,
                                         Count const nr_locations_in_time);
 
@@ -62,7 +62,7 @@ public:
 private:
 
     same_shape::constant_shape::Value
-                   reserve_            (ID id,
+                   expand_             (ID id,
                                         hdf5::Shape const& shape,
                                         Count const nr_locations_in_time);
 

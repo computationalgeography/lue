@@ -50,13 +50,20 @@ Count Value::nr_objects() const
 }
 
 
-void Value::reserve(
+/*!
+    @brief      Make space for additional object arrays of objects
+    @param      nr_objects Number of objects (equals number of object
+                arrays and number of value arrays)
+    @param      ids For each object, the object ID
+    @param      shapes For each object, the shape of the object array
+*/
+void Value::expand(
     Count const nr_objects,
     ID const* ids,
     hdf5::Shape const* shapes)
 {
     for(std::size_t o = 0; o < nr_objects; ++o) {
-        reserve(ids[o], shapes[o]);
+        expand(ids[o], shapes[o]);
     }
 
     _nr_objects += nr_objects;
@@ -65,7 +72,15 @@ void Value::reserve(
 }
 
 
-void Value::reserve(
+/*!
+    @brief      Make space for additional object arrays of objects
+    @param      nr_objects Number of objects (equals number of object
+                arrays and number of value arrays)
+    @param      ids For each object, the object ID
+    @param      shapes For each object, the shape of the object array. For
+                each object, @a shapes must contain rank sizes.
+*/
+void Value::expand(
     Count const nr_objects,
     ID const* ids,
     hdf5::Shape::value_type const* shapes)
@@ -73,7 +88,7 @@ void Value::reserve(
     auto rank = this->rank();
 
     for(std::size_t o = 0, s = 0; o < nr_objects; ++o, s +=rank) {
-        reserve(ids[o], hdf5::Shape{shapes[s], shapes[s + 1]});
+        expand(ids[o], hdf5::Shape{shapes[s], shapes[s + 1]});
     }
 
     _nr_objects += nr_objects;
@@ -82,7 +97,12 @@ void Value::reserve(
 }
 
 
-void Value::reserve(
+/*!
+    @brief      Make space for an additional object array
+    @param      id The object ID
+    @param      shape The shape of the object array
+*/
+void Value::expand(
     ID const id,
     hdf5::Shape const& shape)
 {

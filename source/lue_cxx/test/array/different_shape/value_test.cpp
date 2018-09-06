@@ -71,18 +71,36 @@ BOOST_FIXTURE_TEST_CASE(update_all_object_arrays, Fixture)
 {
     auto& value = this->value();
 
-    lue::IDs const ids{5, 7, 9};
-    lue::Shapes const array_shapes{{3, 2}, {5, 4}, {7, 6}};
+    lue::IDs const ids1{5, 7, 9};
+    lue::Shapes const array_shapes1{{3, 2}, {5, 4}, {7, 6}};
 
-    value.reserve(ids.size(), ids.data(), array_shapes.data());
+    {
+        value.expand(ids1.size(), ids1.data(), array_shapes1.data());
 
-    BOOST_REQUIRE_EQUAL(value.nr_objects(), ids.size());
+        BOOST_REQUIRE_EQUAL(value.nr_objects(), ids1.size());
 
-    for(std::size_t o = 0; o < ids.size(); ++o) {
-        auto array = value[ids[o]];
+        for(std::size_t o = 0; o < ids1.size(); ++o) {
+            auto array = value[ids1[o]];
 
-        BOOST_CHECK(array.shape() == array_shapes[o]);
+            BOOST_CHECK(array.shape() == array_shapes1[o]);
+        }
     }
+
+    lue::IDs const ids2{6, 8, 1};
+    lue::Shapes const array_shapes2{{2, 3}, {4, 5}, {6, 7}};
+
+    {
+        value.expand(ids2.size(), ids2.data(), array_shapes2.data());
+
+        BOOST_REQUIRE_EQUAL(value.nr_objects(), ids1.size() + ids2.size());
+
+        for(std::size_t o = 0; o < ids2.size(); ++o) {
+            auto array = value[ids2[o]];
+
+            BOOST_CHECK(array.shape() == array_shapes2[o]);
+        }
+    }
+
 
     // Reading and writing elements is handled by the Array
     // instance returned by operator[]. This functionality is already

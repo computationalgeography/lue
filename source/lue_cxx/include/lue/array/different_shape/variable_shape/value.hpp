@@ -43,7 +43,7 @@ public:
     Count          nr_locations_in_time() const;
 
     different_shape::Value
-                   reserve             (Index idx,
+                   expand              (Index idx,
                                         Count nr_objects,
                                         ID const* ids,
                                         hdf5::Shape const* shapes);

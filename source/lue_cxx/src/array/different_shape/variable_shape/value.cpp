@@ -51,7 +51,16 @@ Count Value::nr_locations_in_time() const
 }
 
 
-different_shape::Value Value::reserve(
+/*!
+    @brief      Make space for additional object arrays of objects
+    @param      idx Index of location in time
+    @param      nr_objects Number of objects (equals number of object arrays)
+    @param      ids For each object, the object ID
+    @param      shapes For each object, the shape of the object array
+    @return     An instance representing the collection of object
+                arrays. It can be used to write object information.
+*/
+different_shape::Value Value::expand(
     Index const idx,
     Count const nr_objects,
     ID const* ids,
@@ -61,7 +70,7 @@ different_shape::Value Value::reserve(
     auto value = different_shape::create_value(
         *this, name, file_datatype(), memory_datatype(), rank());
 
-    value.reserve(nr_objects, ids, shapes);
+    value.expand(nr_objects, ids, shapes);
 
     attributes().write<Count>(
         nr_locations_in_time_tag, ++_nr_locations_in_time);

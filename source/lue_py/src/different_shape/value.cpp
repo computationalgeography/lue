@@ -26,7 +26,7 @@ void init_value(
             &Value::operator[]
         )
 
-        .def("reserve",
+        .def("expand",
             [](
                 Value& value,
                 py::array_t<ID> const& ids,
@@ -59,7 +59,7 @@ void init_value(
 
                 auto const nr_objects = ids.shape()[0];
 
-                value.reserve(nr_objects, ids.data(), shapes.data());
+                value.expand(nr_objects, ids.data(), shapes.data());
 
                 return value;
             })
