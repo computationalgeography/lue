@@ -72,9 +72,9 @@ class Build(namedtuple("Build", (
             "TRAVIS_C_COMPILER={}".format(self.compilers.c_compiler.name),
             "TRAVIS_CXX_COMPILER={}".format(self.compilers.cxx_compiler.name),
             "TRAVIS_CXX_FLAGS=\"{}\"".format(self.compilers.cxx_compiler.flags),
+            "TRAVIS_PYTHON_VERSION={}".format(self.python_version),
             "TRAVIS_BUILD_TYPE={}".format(self.build_type),
-            "TRAVIS_LUE_CMAKE_ARGUMENTS=\"-DCMAKE_BUILD_TYPE=$TRAVIS_BUILD_TYPE -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS {}\"".format(" ".join(["-D{}={}".format(key, self.environment[key]) for key in self.environment])),
-            "TRAVIS_PYTHON_VERSION={}".format(self.python_version)
+            "TRAVIS_LUE_CMAKE_ARGUMENTS=\"-DCMAKE_BUILD_TYPE=$TRAVIS_BUILD_TYPE -DCMAKE_C_COMPILER=$TRAVIS_C_COMPILER -DCMAKE_CXX_COMPILER=$TRAVIS_CXX_COMPILER -DCMAKE_CXX_FLAGS=$TRAVIS_CXX_FLAGS {}\"".format(" ".join(["-D{}={}".format(key, self.environment[key]) for key in self.environment]))
         ]
 
         return """\
@@ -272,6 +272,7 @@ def builds():
         BuildConfiguration(
             {
                 "LUE_BUILD_PYTHON_API:BOOL": "TRUE",
+                "PYBIND11_PYTHON_VERSION": "$TRAVIS_PYTHON_VERSION",
             },
             [
             ]
@@ -281,6 +282,7 @@ def builds():
         BuildConfiguration(
             {
                 "LUE_BUILD_PYTHON_API:BOOL": "TRUE",
+                "PYBIND11_PYTHON_VERSION": "$TRAVIS_PYTHON_VERSION",
                 "LUE_BUILD_TEST:BOOL": "TRUE",
                 "LUE_BUILD_DOCUMENTATION:BOOL": "TRUE",
             },
@@ -362,7 +364,7 @@ before_install:
     - conda config --set show_channel_urls true
     - conda info -a  # Useful for debugging any issues with conda
     - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION conan numpy sphinx docopt
-    - source activate test-environment
+    - conda activate test-environment
     # - python setup.py install
 
 
@@ -421,6 +423,7 @@ before_script:
 # Build the project, similar to what a user would have to do.
 script:
     # /home/travis/build/pcraster/lue
+    - python --version
     - cd build
     - tree -d $TRAVIS_BUILD_DIR/local
     - cmake -DPEACOCK_PREFIX:PATH=$TRAVIS_BUILD_DIR/local $TRAVIS_LUE_CMAKE_ARGUMENTS ..
