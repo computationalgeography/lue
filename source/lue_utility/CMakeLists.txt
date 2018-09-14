@@ -18,8 +18,7 @@ target_include_directories(lue_utility
 target_link_libraries(lue_utility
     PUBLIC
         docopt
-        nlohmann_json
+        nlohmann_json::nlohmann_json
     PRIVATE
         lue::lue
-    #     lue::hl
 )

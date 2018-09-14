@@ -108,8 +108,6 @@ endif()
 
 if(LUE_BUILD_PYTHON_API)
     set(DEVBASE_GUIDELINE_SUPPORT_LIBRARY_REQUIRED TRUE)
-    set(DEVBASE_PYTHON_LIBS_REQUIRED TRUE)
-    set(DEVBASE_NUMPY_REQUIRED TRUE)
     set(DEVBASE_PYBIND11_REQUIRED TRUE)
 endif()
 
@@ -122,7 +120,7 @@ endif()
 
 
 if(LUE_BUILD_DOCUMENTATION)
-    set(DEVBASE_DOXYGEN_REQUIRED TRUE)
+    find_package(Doxygen REQUIRED dot)
     set(DEVBASE_GRAPHVIZ_REQUIRED TRUE)
     set(DEVBASE_SPHINX_REQUIRED TRUE)
 
@@ -133,5 +131,40 @@ if(LUE_BUILD_DOCUMENTATION)
     )
     if(NOT EDIT_DOT_GRAPH)
         message(FATAL_ERROR "edit_dot_graph.py not found")
+    endif()
+endif()
+
+
+if(DEVBASE_BOOST_REQUIRED)
+    find_package(Boost REQUIRED
+        COMPONENTS ${DEVBASE_REQUIRED_BOOST_COMPONENTS})
+    unset(DEVBASE_BOOST_REQUIRED)
+endif()
+
+
+if(DEVBASE_PYBIND11_REQUIRED)
+    # Find Pybind11. It will look for Python.
+    find_package(pybind11 REQUIRED)
+    unset(DEVBASE_PYBIND11_REQUIRED)
+
+    # Given Python found, figure out where the NumPy headers are. We don't
+    # want to pick up headers from another prefix than the prefix of the
+    # Python interpreter.
+    execute_process(COMMAND "${PYTHON_EXECUTABLE}" -c
+        "import numpy as np; print(\"{};{}\".format(np.__version__, np.get_include()));"
+        RESULT_VARIABLE numpy_search_result
+        OUTPUT_VARIABLE numpy_search_output
+        ERROR_VARIABLE numpy_search_error
+        OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+    if(NOT numpy_search_result MATCHES 0)
+        message(FATAL_ERROR
+            "NumPy import failure:\n${numpy_search_error}")
+    else()
+        list(GET numpy_search_output -2 numpy_version)
+        list(GET numpy_search_output -1 NUMPY_INCLUDE_DIRS)
+
+        message(STATUS
+            "Found NumPy ${numpy_version} headers in ${NUMPY_INCLUDE_DIRS}")
     endif()
 endif()

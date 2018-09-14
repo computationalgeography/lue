@@ -43,15 +43,20 @@ function build_peacock()
     build_docopt=false
     build_gdal=false
     build_google_benchmark=false
+    build_hpx=false
 
     # ...except for these machines
     hostname=`hostname`
     build_docopt=true
-    build_google_benchmark=true
 
     if [ $hostname == "sonic.geo.uu.nl" ]; then
         build_boost=true
         build_gdal=true
+    fi
+
+    if [ $hostname == "gransasso" ]; then
+        build_google_benchmark=true
+        build_hpx=true
     fi
 
 
@@ -80,6 +85,18 @@ function build_peacock()
     if [ "$build_gdal" = true ]; then
         options+=("-Dbuild_gdal=true")
         options+=("-Dgdal_version=2.0.1")
+    fi
+
+
+    if [ "$build_google_benchmark" = true ]; then
+        options+=("-Dbuild_google_benchmark=true")
+        options+=("-Dhpx_version=1.4.1")
+    fi
+
+
+    if [ "$build_hpx" = true ]; then
+        options+=("-Dbuild_hpx=true")
+        options+=("-Dhpx_version=1.1.0")
     fi
 
 

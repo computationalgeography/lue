@@ -6,6 +6,6 @@ dependencies:
 - conan
 - docopt
 - numpy=1.12
-- python=3.6
+- python=2.7
 - setuptools
 - sphinx
