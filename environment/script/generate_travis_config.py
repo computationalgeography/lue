@@ -364,7 +364,7 @@ before_install:
     - conda config --set show_channel_urls true
     - conda info -a  # Useful for debugging any issues with conda
     - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION conan numpy sphinx docopt
-    - source test-environment
+    - source activate test-environment
     # - python setup.py install
 
 
