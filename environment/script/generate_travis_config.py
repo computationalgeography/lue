@@ -428,8 +428,8 @@ script:
     - tree -d $TRAVIS_BUILD_DIR/local
     - cmake -DPEACOCK_PREFIX:PATH=$TRAVIS_BUILD_DIR/local $TRAVIS_LUE_CMAKE_ARGUMENTS ..
     - cmake --build . --target all
-    # TODO Set CTEST_PARALLEL_LEVEL to some Travis variable
-    - if [[ $TRAVIS_LUE_CMAKE_ARGUMENTS == *"LUE_BUILD_TEST:BOOL=TRUE"* ]]; then CTEST_OUTPUT_ON_FAILURE=1 CTEST_PARALLEL_LEVEL=`python -c "import psutil; print(len(psutil.Process().cpu_affinity()))"` cmake --build . --target test; fi
+    # - if [[ $TRAVIS_LUE_CMAKE_ARGUMENTS == *"LUE_BUILD_TEST:BOOL=TRUE"* ]]; then CTEST_OUTPUT_ON_FAILURE=1 CTEST_PARALLEL_LEVEL=`python -c "import psutil; print(len(psutil.Process().cpu_affinity()))"` cmake --build . --target test; fi
+    - if [[ $TRAVIS_LUE_CMAKE_ARGUMENTS == *"LUE_BUILD_TEST:BOOL=TRUE"* ]]; then CTEST_OUTPUT_ON_FAILURE=1 cmake --build . --target test; fi
 
 
 notifications:
