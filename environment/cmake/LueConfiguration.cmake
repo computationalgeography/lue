@@ -157,12 +157,6 @@ if(DEVBASE_PYBIND11_REQUIRED)
         ERROR_VARIABLE numpy_search_error
         OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-    message(STATUS "- ${PYTHON_EXECUTABLE}")
-    message(STATUS "2 ${Python2_EXECUTABLE}")
-    message(STATUS "2 ${PYTHON2_EXECUTABLE}")
-    message(STATUS "3 ${Python3_EXECUTABLE}")
-    message(STATUS "3 ${PYTHON3_EXECUTABLE}")
-
     if(NOT numpy_search_result MATCHES 0)
         message(FATAL_ERROR
             "${PYTHON_EXECUTABLE} is unable to import numpy:\n${numpy_search_error}")

@@ -5,8 +5,14 @@ set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
+include(TestBigEndian)
+test_big_endian(IS_BIG_ENDIAN)
+if(IS_BIG_ENDIAN)
+    message(FATAL
+        "${PROJECT_NAME} currently assumes a little endian architecture")
+endif()
+
 include(PeacockPlatform)
-include(DevBaseCompiler)
 include(LueConfiguration)
 include(DevBaseExternal)
 include(DevBaseMacro)
@@ -15,7 +21,7 @@ include(LueMacro)
 
 add_compile_options(
     "$<$<CXX_COMPILER_ID:GNU>:-W;-Wall;-Wextra>"
-    "$<$<CXX_COMPILER_ID:Clang>:-Weverything>"
+    "$<$<CXX_COMPILER_ID:Clang>:-Weverything;-Wno-c++98-compat;-Wno-c++98-compat-pedantic;-Wno-documentation-unknown-command;-Wno-documentation;-Wno-exit-time-destructors;-Wno-global-constructors;-Wno-padded>"
     # "$<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>>:xxx>"
     "$<$<CXX_COMPILER_ID:MSVC>:/W3>"
 )
