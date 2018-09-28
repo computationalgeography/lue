@@ -1,20 +1,19 @@
-#include "lue/info/identity/id.hpp"
+#include "lue/info/identity/object_id.hpp"
 #include "lue/core/tag.hpp"
 
 
 namespace lue {
-namespace info {
 
-ID::ID(
+ObjectID::ObjectID(
     hdf5::Group& parent)
 :
-    same_shape::Value{parent, id_tag}
+    same_shape::Value{parent, object_id_tag}
 
 {
 }
 
 
-ID::ID(
+ObjectID::ObjectID(
     same_shape::Value&& value)
 :
     same_shape::Value{std::forward<same_shape::Value>(value)}
@@ -23,20 +22,19 @@ ID::ID(
 }
 
 
-Count ID::nr_objects() const
+Count ObjectID::nr_objects() const
 {
     return nr_arrays();
 }
 
 
-ID create_id(
+ObjectID create_object_id(
     hdf5::Group& parent)
 {
     auto value = same_shape::create_value(
-        parent, id_tag, hdf5::Datatype{H5T_NATIVE_HSIZE});
+        parent, object_id_tag, hdf5::Datatype{H5T_NATIVE_HSIZE});
 
-    return ID{std::move(value)};
+    return ObjectID{std::move(value)};
 }
 
-}  // namespace info
 }  // namespace lue

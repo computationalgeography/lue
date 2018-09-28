@@ -40,10 +40,6 @@ class TreeCrownTest(lue_test.TestCase):
                 space_configuration, space_coordinate_datatype, rank)
 
 
-            # IDs
-            stem_points.object_tracker.id.expand(nr_trees)[:] = ids
-
-
             # Space domain
             space_domain = stem_points.space_domain
             space_points = numpy.arange(
@@ -129,9 +125,6 @@ class TreeCrownTest(lue_test.TestCase):
                 time_configuration, clock,
                 space_configuration, space_coordinate_datatype, rank)
 
-            # IDs
-            crown_boxes.object_tracker.id.expand(nr_trees)[:] = ids
-
             # [0, nr_trees, 2 * nr_tree, ..., t * nr_trees]
             crown_boxes.object_tracker.active_set_index.expand(
                     nr_time_boxes)[:] = \
@@ -147,7 +140,7 @@ class TreeCrownTest(lue_test.TestCase):
                     repeats=nr_trees)
 
             # [id1, id2, ..., idn, ..., id1, id2, ...idn]
-            crown_boxes.object_tracker.active_id.expand(
+            crown_boxes.object_tracker.active_object_id.expand(
                     nr_time_boxes * nr_trees)[:] = \
                 numpy.repeat(
                     ids.reshape((1, nr_trees)),
@@ -180,6 +173,9 @@ class TreeCrownTest(lue_test.TestCase):
 
         dataset = lue.create_dataset("trees.lue")
         trees = dataset.add_phenomenon("trees")
+
+        trees.object_id.expand(nr_trees)[:] = ids
+
         stem_properties = add_stem_properties(trees)
         crown_properties = add_crown_properties(trees)
 

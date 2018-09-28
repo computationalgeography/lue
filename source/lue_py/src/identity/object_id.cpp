@@ -1,4 +1,4 @@
-#include "lue/info/identity/id.hpp"
+#include "lue/info/identity/object_id.hpp"
 #include <pybind11/pybind11.h>
 
 
@@ -8,15 +8,15 @@ using namespace pybind11::literals;
 
 namespace lue {
 
-void init_id(
+void init_object_id(
     py::module& module)
 {
 
-    py::class_<info::ID, same_shape::Value>(
+    py::class_<ObjectID, same_shape::Value>(
         module,
-        "ID",
+        "ObjectID",
         R"(
-    ID docstring...
+    ObjectID docstring...
 )")
 
         ;

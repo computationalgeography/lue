@@ -70,6 +70,13 @@ void init_phenomenon(
         )
 
         .def_property_readonly(
+            "object_id",
+            py::overload_cast<>(&Phenomenon::object_id),
+            R"(
+    object_id docstring...
+)")
+
+        .def_property_readonly(
             "property_sets",
             py::overload_cast<>(&Phenomenon::property_sets),
             R"(

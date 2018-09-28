@@ -12,10 +12,10 @@ void init_array(py::module& module);
 void init_clock(py::module& module);
 void init_dataset(py::module& module);
 
-void init_active_id(py::module& module);
+void init_active_object_id(py::module& module);
 void init_active_object_index(py::module& module);
 void init_active_set_index(py::module& module);
-void init_id(py::module& module);
+void init_object_id(py::module& module);
 void init_object_tracker(py::module& module);
 
 void init_validate(py::module& module);
@@ -111,10 +111,10 @@ PYBIND11_MODULE(lue, module)
     init_stationary_space_box(module);
     init_stationary_space_point(module);
 
-    init_active_id(module);
+    init_active_object_id(module);
     init_active_object_index(module);
     init_active_set_index(module);
-    init_id(module);
+    init_object_id(module);
     init_object_tracker(module);
 
     init_property_set(module);

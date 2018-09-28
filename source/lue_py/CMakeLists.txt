@@ -43,10 +43,10 @@ pybind11_add_module(lue_py MODULE THIN_LTO
     src/conversion
     src/dataset
 
-    src/identity/active_id
+    src/identity/active_object_id
     src/identity/active_object_index
     src/identity/active_set_index
-    src/identity/id
+    src/identity/object_id
     src/identity/object_tracker
 
     src/object/phenomenon

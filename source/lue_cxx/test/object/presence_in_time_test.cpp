@@ -16,25 +16,20 @@ BOOST_FIXTURE_TEST_CASE(omnipresent_in_time, lue::test::DatasetFixture)
     // Create and write
     {
         auto& phenomenon = dataset().add_phenomenon(phenomenon_name);
-        auto& property_set = phenomenon.property_sets().add(property_set_name);
-        auto& object_tracker = property_set.object_tracker();
 
-        object_tracker.id().expand(nr_objects);
-        object_tracker.id().write(ids.data());
+        phenomenon.object_id().expand(nr_objects);
+        phenomenon.object_id().write(ids.data());
     }
 
     // Open and read
     {
         auto const& phenomenon = dataset().phenomena()[phenomenon_name];
-        auto const& property_set =
-            phenomenon.property_sets()[property_set_name];
-        auto const& object_tracker = property_set.object_tracker();
 
-        BOOST_REQUIRE_EQUAL(object_tracker.id().nr_objects(), nr_objects);
+        BOOST_REQUIRE_EQUAL(phenomenon.object_id().nr_objects(), nr_objects);
 
         std::vector<lue::ID> ids_read(nr_objects);
 
-        object_tracker.id().read(ids_read.data());
+        phenomenon.object_id().read(ids_read.data());
         BOOST_CHECK_EQUAL_COLLECTIONS(
             ids_read.begin(), ids_read.end(),
             ids.begin(), ids.end());

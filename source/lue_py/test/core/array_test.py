@@ -12,12 +12,10 @@ class ArrayTest(lue_test.TestCase):
         dataset_name = "my_dataset.lue"
         lue_test.remove_file_if_existant(dataset_name)
         self.dataset = lue.create_dataset(dataset_name)
-        phenomenon = self.dataset.add_phenomenon("my_phenomenon")
-        self.property_set = phenomenon.property_sets.add("my_property_set")
+        self.phenomenon = self.dataset.add_phenomenon("my_phenomenon")
 
         self.nr_objects = 5
-        object_tracker = self.property_set.object_tracker
-        object_tracker.id.expand(self.nr_objects)[:] = \
+        self.phenomenon.object_id.expand(self.nr_objects)[:] = \
             numpy.arange(self.nr_objects)
 
         self.nr_rows = 3
@@ -25,6 +23,7 @@ class ArrayTest(lue_test.TestCase):
         self.value_shape = (self.nr_rows, self.nr_cols)
         self.value_type = numpy.dtype(numpy.int32)
 
+        self.property_set = self.phenomenon.property_sets.add("my_property_set")
         property = self.property_set.add_property(
             "my_property", self.value_type, self.value_shape)
 
@@ -328,7 +327,7 @@ class ArrayTest(lue_test.TestCase):
     def test_iterate(self):
 
         with self.assertRaises(ValueError) as lue_context:
-            for _ in self.property_set.object_tracker.id:
+            for _ in self.phenomenon.object_id:
                 pass
 
         self.assertEqual(

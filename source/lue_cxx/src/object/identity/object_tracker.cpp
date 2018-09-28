@@ -11,8 +11,7 @@ namespace lue {
 ObjectTracker::ObjectTracker(
     hdf5::Group& parent):
 
-    _id{parent},
-    _active_id{parent},
+    _active_object_id{parent},
     _active_set_index{parent},
     _active_object_index{parent}
 
@@ -21,38 +20,20 @@ ObjectTracker::ObjectTracker(
 
 
 /*!
-    @brief      Return ID instance storing object IDs
+    @brief      Return ActiveID instance for storing IDs of active sets
 */
-info::ID const& ObjectTracker::id() const
+ActiveObjectID const& ObjectTracker::active_object_id() const
 {
-    return _id;
-}
-
-
-/*!
-    @brief      Return ID instance storing object IDs
-*/
-info::ID& ObjectTracker::id()
-{
-    return _id;
+    return _active_object_id;
 }
 
 
 /*!
     @brief      Return ActiveID instance for storing IDs of active sets
 */
-info::ActiveID const& ObjectTracker::active_id() const
+ActiveObjectID& ObjectTracker::active_object_id()
 {
-    return _active_id;
-}
-
-
-/*!
-    @brief      Return ActiveID instance for storing IDs of active sets
-*/
-info::ActiveID& ObjectTracker::active_id()
-{
-    return _active_id;
+    return _active_object_id;
 }
 
 
@@ -102,8 +83,7 @@ info::ActiveObjectIndex& ObjectTracker::active_object_index()
 ObjectTracker create_object_tracker(
     hdf5::Group& parent)
 {
-    info::create_id(parent);
-    info::create_active_id(parent);
+    create_active_object_id(parent);
     info::create_active_set_index(parent);
     info::create_active_object_index(parent);
 

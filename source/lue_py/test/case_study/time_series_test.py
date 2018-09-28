@@ -24,6 +24,9 @@ class TimeSeriesTest(lue_test.TestCase):
 
             nr_outlets = 10
 
+            ids = numpy.arange(nr_outlets, dtype=numpy.uint64)
+            phenomenon.object_id.expand(nr_outlets)[:] = ids
+
             # Time domain
             time_configuration = lue.TimeConfiguration(
                 lue.TimeDomainItemType.box
@@ -46,8 +49,6 @@ class TimeSeriesTest(lue_test.TestCase):
 
             # IDs
             object_tracker = outlet_points.object_tracker
-            ids = numpy.arange(nr_outlets, dtype=numpy.uint64)
-            object_tracker.id.expand(nr_outlets)[:] = ids
 
             object_tracker.active_set_index.expand(nr_time_boxes)
 
@@ -55,21 +56,21 @@ class TimeSeriesTest(lue_test.TestCase):
                 numpy.random.randint(0, nr_outlets, nr_time_boxes,
                 dtype=lue.dtype.Count)
             active_set_idxs = numpy.empty(nr_time_boxes, dtype=lue.dtype.Index)
-            active_ids = numpy.empty(active_set_sizes.sum(), dtype=lue.dtype.ID)
+            active_object_ids = numpy.empty(active_set_sizes.sum(), dtype=lue.dtype.ID)
 
             lue.test.select_random_ids(
-                active_set_sizes, active_set_idxs, active_ids, nr_outlets);
+                active_set_sizes, active_set_idxs, active_object_ids, nr_outlets);
 
-            object_tracker.active_id.expand(len(active_ids))
+            object_tracker.active_object_id.expand(len(active_object_ids))
 
             active_set_idx = numpy.uint64(0)
 
             for s in range(nr_time_boxes):
                 active_set_size = active_set_sizes[s]
                 object_tracker.active_set_index[s] = active_set_idxs[s]
-                object_tracker.active_id[
+                object_tracker.active_object_id[
                         active_set_idx:active_set_idx + active_set_size] = \
-                    active_ids[active_set_idx:active_set_idx + active_set_size]
+                    active_object_ids[active_set_idx:active_set_idx + active_set_size]
                 active_set_idx += active_set_size;
 
             # Time domain
@@ -120,7 +121,7 @@ class TimeSeriesTest(lue_test.TestCase):
             # IDs
             object_tracker = collection.object_tracker
             object_tracker.active_set_index.expand(nr_time_boxes)
-            object_tracker.active_id.expand(nr_time_boxes)
+            object_tracker.active_object_id.expand(nr_time_boxes)
 
             collection_id = 5
             active_set_idx = 0
@@ -128,7 +129,7 @@ class TimeSeriesTest(lue_test.TestCase):
             for s in range(nr_time_boxes):
                 active_set_size = 1
                 object_tracker.active_set_index[s] = active_set_idx
-                object_tracker.active_id[
+                object_tracker.active_object_id[
                         active_set_idx:active_set_idx + active_set_size] = \
                     collection_id
                 active_set_idx += active_set_size;

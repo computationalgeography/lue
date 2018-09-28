@@ -9,6 +9,7 @@ Phenomenon::Phenomenon(
     std::string const& name):
 
     hdf5::Group{parent, name},
+    _object_id{*this},
     _collection_property_sets{*this, collection_property_sets_tag},
     _property_sets{*this, property_sets_tag}
 
@@ -20,10 +21,29 @@ Phenomenon::Phenomenon(
     hdf5::Group&& group):
 
     hdf5::Group{std::forward<hdf5::Group>(group)},
+    _object_id{*this},
     _collection_property_sets{*this, collection_property_sets_tag},
     _property_sets{*this, property_sets_tag}
 
 {
+}
+
+
+/*!
+    @brief      Return ID instance storing object IDs
+*/
+ObjectID const& Phenomenon::object_id() const
+{
+    return _object_id;
+}
+
+
+/*!
+    @brief      Return ID instance storing object IDs
+*/
+ObjectID& Phenomenon::object_id()
+{
+    return _object_id;
 }
 
 
@@ -64,6 +84,7 @@ Phenomenon create_phenomenon(
 {
     auto group = hdf5::create_group(parent, name);
 
+    create_object_id(group);
     create_property_sets(group, collection_property_sets_tag);
     create_property_sets(group, property_sets_tag);
 

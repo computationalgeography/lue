@@ -1,23 +1,20 @@
 #pragma once
-#include "lue/info/identity/active_id.hpp"
+#include "lue/info/identity/active_object_id.hpp"
 #include "lue/info/identity/active_object_index.hpp"
 #include "lue/info/identity/active_set_index.hpp"
-#include "lue/info/identity/id.hpp"
 
 
 namespace lue {
 
 /*!
     @brief      Class for storing object tracking information for all
-                object array kinds
+                temporal object array kinds
 
     Object array kind | Tracking
     ----------------- | --------
-    same_shape::Value | info::ID
-    different_shape::Value | info::ID
-    same_shape::constant_shape::Value | info::ActiveSetIndex, info::ActiveID
-    same_shape::variable_shape::Value | info::ActiveSetIndex, info::ActiveID
-    different_shape::constant_shape::Value | info::ActiveSetIndex, info::ActiveObjectIndex, info::ActiveID
+    same_shape::constant_shape::Value | info::ActiveSetIndex, ActiveObjectID
+    same_shape::variable_shape::Value | info::ActiveSetIndex, ActiveObjectID
+    different_shape::constant_shape::Value | info::ActiveSetIndex, info::ActiveObjectIndex, ActiveObjectID
     different_shape::variable_shape::Value | -
 */
 class ObjectTracker
@@ -37,10 +34,6 @@ public:
 
     ObjectTracker& operator=           (ObjectTracker&&)=default;
 
-    info::ID const& id                 () const;
-
-    info::ID&      id                  ();
-
     info::ActiveSetIndex const&
                    active_set_index    () const;
 
@@ -53,17 +46,15 @@ public:
     info::ActiveObjectIndex&
                    active_object_index ();
 
-    info::ActiveID const&
-                   active_id           () const;
+    ActiveObjectID const&
+                   active_object_id    () const;
 
-    info::ActiveID&
-                   active_id           ();
+    ActiveObjectID&
+                   active_object_id    ();
 
 private:
 
-    info::ID       _id;
-
-    info::ActiveID _active_id;
+    ActiveObjectID _active_object_id;
 
     info::ActiveSetIndex _active_set_index;
 

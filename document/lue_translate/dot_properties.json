@@ -37,7 +37,8 @@
         },
         "value": {
             "fillcolor": "#f08000",
-            "show_details": false
+            "show": false,
+            "show_details": true
         }
     }
 }

@@ -1,20 +1,19 @@
-#include "lue/info/identity/active_id.hpp"
+#include "lue/info/identity/active_object_id.hpp"
 #include "lue/core/tag.hpp"
 
 
 namespace lue {
-namespace info {
 
-ActiveID::ActiveID(
+ActiveObjectID::ActiveObjectID(
     hdf5::Group& parent)
 :
-    same_shape::constant_shape::Value{parent, active_id_tag}
+    same_shape::constant_shape::Value{parent, active_object_id_tag}
 
 {
 }
 
 
-ActiveID::ActiveID(
+ActiveObjectID::ActiveObjectID(
     same_shape::constant_shape::Value&& value)
 :
     same_shape::constant_shape::Value{
@@ -24,20 +23,19 @@ ActiveID::ActiveID(
 }
 
 
-Count ActiveID::nr_ids() const
+Count ActiveObjectID::nr_ids() const
 {
     return nr_arrays();
 }
 
 
-ActiveID create_active_id(
+ActiveObjectID create_active_object_id(
     hdf5::Group& parent)
 {
     auto value = same_shape::constant_shape::create_value(
-        parent, active_id_tag, hdf5::Datatype{H5T_NATIVE_HSIZE});
+        parent, active_object_id_tag, hdf5::Datatype{H5T_NATIVE_HSIZE});
 
-    return ActiveID{std::move(value)};
+    return ActiveObjectID{std::move(value)};
 }
 
-}  // namespace info
 }  // namespace lue

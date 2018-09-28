@@ -9,6 +9,13 @@ class RasterTest(lue_test.TestCase):
 
         dataset = lue.create_dataset("areas.lue")
         areas = dataset.add_phenomenon("areas")
+
+        nr_areas = 10
+
+        # IDs
+        ids = numpy.arange(nr_areas, dtype=numpy.uint64)
+        areas.object_id.expand(nr_areas)[:] = ids
+
         space_configuration = lue.SpaceConfiguration(
             lue.Mobility.stationary,
             lue.SpaceDomainItemType.box
@@ -17,12 +24,6 @@ class RasterTest(lue_test.TestCase):
         rank = 2
         area_boxes = areas.property_sets.add(
             "areas", space_configuration, coordinate_datatype, rank)
-
-        nr_areas = 10
-
-        # IDs
-        ids = numpy.arange(nr_areas, dtype=numpy.uint64)
-        area_boxes.object_tracker.id.expand(nr_areas)[:] = ids
 
         # Space domain
         space_domain = area_boxes.space_domain

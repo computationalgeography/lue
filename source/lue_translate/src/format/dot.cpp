@@ -464,8 +464,11 @@ void to_dot(
     Metadata const& metadata)
 {
     to_dot(dynamic_cast<PropertyGroup&>(property), stream, metadata);
-    to_dot(property.value(), stream, metadata);
-    link_nodes(property, property.value(), stream, metadata);
+
+    if(metadata.boolean(JSONPointer("/lue/value/show"), false)) {
+        to_dot(property.value(), stream, metadata);
+        link_nodes(property, property.value(), stream, metadata);
+    }
 }
 
 
@@ -475,8 +478,11 @@ void to_dot(
     Metadata const& metadata)
 {
     to_dot(dynamic_cast<PropertyGroup&>(property), stream, metadata);
-    to_dot(property.value(), stream, metadata);
-    link_nodes(property, property.value(), stream, metadata);
+
+    if(metadata.boolean(JSONPointer("/lue/value/show"), false)) {
+        to_dot(property.value(), stream, metadata);
+        link_nodes(property, property.value(), stream, metadata);
+    }
 }
 
 
@@ -486,8 +492,11 @@ void to_dot(
     Metadata const& metadata)
 {
     to_dot(dynamic_cast<PropertyGroup&>(property), stream, metadata);
-    to_dot(property.value(), stream, metadata);
-    link_nodes(property, property.value(), stream, metadata);
+
+    if(metadata.boolean(JSONPointer("/lue/value/show"), false)) {
+        to_dot(property.value(), stream, metadata);
+        link_nodes(property, property.value(), stream, metadata);
+    }
 }
 
 
@@ -497,8 +506,11 @@ void to_dot(
     Metadata const& metadata)
 {
     to_dot(dynamic_cast<PropertyGroup&>(property), stream, metadata);
-    to_dot(property.value(), stream, metadata);
-    link_nodes(property, property.value(), stream, metadata);
+
+    if(metadata.boolean(JSONPointer("/lue/value/show"), false)) {
+        to_dot(property.value(), stream, metadata);
+        link_nodes(property, property.value(), stream, metadata);
+    }
 }
 
 
@@ -508,8 +520,11 @@ void to_dot(
     Metadata const& metadata)
 {
     to_dot(dynamic_cast<PropertyGroup&>(property), stream, metadata);
-    to_dot(property.value(), stream, metadata);
-    link_nodes(property, property.value(), stream, metadata);
+
+    if(metadata.boolean(JSONPointer("/lue/value/show"), false)) {
+        to_dot(property.value(), stream, metadata);
+        link_nodes(property, property.value(), stream, metadata);
+    }
 }
 
 
@@ -519,8 +534,11 @@ void to_dot(
     Metadata const& metadata)
 {
     to_dot(dynamic_cast<PropertyGroup&>(property), stream, metadata);
-    to_dot(property.value(), stream, metadata);
-    link_nodes(property, property.value(), stream, metadata);
+
+    if(metadata.boolean(JSONPointer("/lue/value/show"), false)) {
+        to_dot(property.value(), stream, metadata);
+        link_nodes(property, property.value(), stream, metadata);
+    }
 }
 
 
@@ -559,18 +577,20 @@ void to_dot(
             fillcolor(time_domain)));
 
 
-    switch(configuration.value<TimeDomainItemType>()) {
-        case TimeDomainItemType::box: {
-            auto const& value = time_domain.value<TimeBox>();
-            to_dot(value, stream, metadata);
-            link_nodes(time_domain, value, stream, metadata);
-            break;
-        }
-        case TimeDomainItemType::point: {
-            auto const& value = time_domain.value<TimePoint>();
-            to_dot(value, stream, metadata);
-            link_nodes(time_domain, value, stream, metadata);
-            break;
+    if(metadata.boolean(JSONPointer("/lue/value/show"), false)) {
+        switch(configuration.value<TimeDomainItemType>()) {
+            case TimeDomainItemType::box: {
+                auto const& value = time_domain.value<TimeBox>();
+                to_dot(value, stream, metadata);
+                link_nodes(time_domain, value, stream, metadata);
+                break;
+            }
+            case TimeDomainItemType::point: {
+                auto const& value = time_domain.value<TimePoint>();
+                to_dot(value, stream, metadata);
+                link_nodes(time_domain, value, stream, metadata);
+                break;
+            }
         }
     }
 }
@@ -609,44 +629,46 @@ void to_dot(
             JSONPointer("/lue/space_domain/fillcolor"),
             fillcolor(space_domain)));
 
-    switch(mobility) {
-        case Mobility::mobile: {
-            switch(item_type) {
-                case SpaceDomainItemType::box: {
-                    auto const& value = space_domain.value<MobileSpaceBox>();
-                    to_dot(value, stream, metadata);
-                    link_nodes(space_domain, value, stream, metadata);
-                    break;
+    if(metadata.boolean(JSONPointer("/lue/value/show"), false)) {
+        switch(mobility) {
+            case Mobility::mobile: {
+                switch(item_type) {
+                    case SpaceDomainItemType::box: {
+                        auto const& value = space_domain.value<MobileSpaceBox>();
+                        to_dot(value, stream, metadata);
+                        link_nodes(space_domain, value, stream, metadata);
+                        break;
+                    }
+                    case SpaceDomainItemType::point: {
+                        auto const& value = space_domain.value<MobileSpacePoint>();
+                        to_dot(value, stream, metadata);
+                        link_nodes(space_domain, value, stream, metadata);
+                        break;
+                    }
                 }
-                case SpaceDomainItemType::point: {
-                    auto const& value = space_domain.value<MobileSpacePoint>();
-                    to_dot(value, stream, metadata);
-                    link_nodes(space_domain, value, stream, metadata);
-                    break;
-                }
-            }
 
-            break;
-        }
-        case Mobility::stationary: {
-            switch(item_type) {
-                case SpaceDomainItemType::box: {
-                    auto const& value =
-                        space_domain.value<StationarySpaceBox>();
-                    to_dot(value, stream, metadata);
-                    link_nodes(space_domain, value, stream, metadata);
-                    break;
-                }
-                case SpaceDomainItemType::point: {
-                    auto const& value =
-                        space_domain.value<StationarySpacePoint>();
-                    to_dot(value, stream, metadata);
-                    link_nodes(space_domain, value, stream, metadata);
-                    break;
-                }
+                break;
             }
+            case Mobility::stationary: {
+                switch(item_type) {
+                    case SpaceDomainItemType::box: {
+                        auto const& value =
+                            space_domain.value<StationarySpaceBox>();
+                        to_dot(value, stream, metadata);
+                        link_nodes(space_domain, value, stream, metadata);
+                        break;
+                    }
+                    case SpaceDomainItemType::point: {
+                        auto const& value =
+                            space_domain.value<StationarySpacePoint>();
+                        to_dot(value, stream, metadata);
+                        link_nodes(space_domain, value, stream, metadata);
+                        break;
+                    }
+                }
 
-            break;
+                break;
+            }
         }
     }
 }
@@ -678,11 +700,11 @@ void to_dot(
 
         auto const& object_tracker = property_set.object_tracker();
 
-        {
-            auto const& id = object_tracker.id();
-            to_dot(id, stream, metadata);
-            link_nodes(property_set, id, stream, metadata);
-        }
+        // {
+        //     auto const& id = object_tracker.id();
+        //     to_dot(id, stream, metadata);
+        //     link_nodes(property_set, id, stream, metadata);
+        // }
 
         {
             auto const& active_set_index = object_tracker.active_set_index();
@@ -698,9 +720,9 @@ void to_dot(
         }
 
         {
-            auto const& active_id = object_tracker.active_id();
-            to_dot(active_id, stream, metadata);
-            link_nodes(property_set, active_id, stream, metadata);
+            auto const& active_object_id = object_tracker.active_object_id();
+            to_dot(active_object_id, stream, metadata);
+            link_nodes(property_set, active_object_id, stream, metadata);
         }
     }
 
@@ -790,6 +812,12 @@ void to_dot(
         metadata.string(
             JSONPointer("/lue/phenomenon/fillcolor"), fillcolor(phenomenon))
     );
+
+    if(metadata.boolean(JSONPointer("/lue/object_tracker/show"), false)) {
+        auto const& object_id = phenomenon.object_id();
+        to_dot(object_id, stream, metadata);
+        link_nodes(phenomenon, object_id, stream, metadata);
+    }
 
     auto& property_sets = phenomenon.property_sets();
 
