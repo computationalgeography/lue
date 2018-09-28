@@ -59,9 +59,8 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
             );
 
         // IDs
-        auto& object_tracker = area_boxes.object_tracker();
-        object_tracker.id().expand(nr_areas);
-        object_tracker.id().write(ids.data());
+        areas.object_id().expand(nr_areas);
+        areas.object_id().write(ids.data());
 
         // Time domain
         {

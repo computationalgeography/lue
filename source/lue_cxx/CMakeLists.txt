@@ -16,10 +16,10 @@ add_library(lue STATIC
     src/array/different_shape/variable_shape/value
 
     # Spatio-temporal object information ---------------------------------------
-    src/info/identity/id
-    src/info/identity/active_id
-    src/info/identity/active_set_index
+    src/info/identity/object_id
+    src/info/identity/active_object_id
     src/info/identity/active_object_index
+    src/info/identity/active_set_index
 
     src/info/time/time_point
     src/info/time/time_box

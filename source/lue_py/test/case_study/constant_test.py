@@ -9,12 +9,12 @@ class ConstantTest(lue_test.TestCase):
 
         dataset = lue.create_dataset("planets.lue")
         planets = dataset.add_phenomenon("planets")
-        constants = planets.property_sets.add("constants")
 
         nr_planets = 3
-        constants.object_tracker.id.expand(nr_planets)[:] = \
+        planets.object_id.expand(nr_planets)[:] = \
             numpy.arange(nr_planets)
 
+        constants = planets.property_sets.add("constants")
         gravity = constants.add_property(
             "gravity", dtype=numpy.dtype(numpy.float32))
         gravity.value.expand(nr_planets)[:] = \

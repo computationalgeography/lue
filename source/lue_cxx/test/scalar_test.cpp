@@ -24,10 +24,9 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
     {
         auto& planets = dataset().add_phenomenon(phenomenon_name);
         auto& constants = planets.property_sets().add(property_set_name);
-        auto& object_tracker = constants.object_tracker();
 
-        object_tracker.id().expand(nr_planets);
-        object_tracker.id().write(ids.data());
+        planets.object_id().expand(nr_planets);
+        planets.object_id().write(ids.data());
 
         auto& gravity = constants.properties().add(property_name, datatype);
         auto& value = gravity.value();

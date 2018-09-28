@@ -88,6 +88,9 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
         // Phenomenon
         auto& areas = dataset().add_phenomenon(phenomenon_name);
 
+        areas.object_id().expand(nr_areas);
+        areas.object_id().write(ids.data());
+
         // Discharge property --------------------------------------------------
         {
             // Property set
@@ -104,15 +107,11 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
             {
                 auto& object_tracker = outlet_points.object_tracker();
 
-                auto& id = object_tracker.id();
-                id.expand(nr_areas);
-                id.write(ids.data());
-
                 auto& active_set_index = object_tracker.active_set_index();
                 active_set_index.expand(nr_time_boxes);
 
-                auto& active_id = object_tracker.active_id();
-                active_id.expand(active_ids.size());
+                auto& active_object_id = object_tracker.active_object_id();
+                active_object_id.expand(active_ids.size());
 
                 for(std::size_t s = 0, active_set_idx = 0;
                         s < nr_time_boxes; ++s) {
@@ -123,7 +122,7 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
                     active_set_index.write(s, &active_set_idxs[s]);
 
                     // Write IDs of the objects in this active set
-                    active_id.write(
+                    active_object_id.write(
                         {active_set_idx, active_set_idx + active_set_size},
                         active_ids.data() + active_set_idx);
 
@@ -184,8 +183,8 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
                 auto& object_tracker = collection.object_tracker();
                 auto& active_set_index = object_tracker.active_set_index();
                 active_set_index.expand(nr_time_boxes);
-                auto& active_id = object_tracker.active_id();
-                active_id.expand(nr_time_boxes);
+                auto& active_object_id = object_tracker.active_object_id();
+                active_object_id.expand(nr_time_boxes);
 
                 lue::Index active_set_idx = 0;
                 for(std::size_t s = 0; s < nr_time_boxes; ++s) {
@@ -196,7 +195,7 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
                     active_set_index.write(s, &active_set_idx);
 
                     // Write IDs of the objects in this active set
-                    active_id.write(
+                    active_object_id.write(
                         {active_set_idx, active_set_idx + active_set_size},
                         &collection_id);
 
@@ -241,6 +240,13 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
         // Phenomenon
         auto& areas = dataset().phenomena()[phenomenon_name];
 
+        BOOST_REQUIRE_EQUAL(areas.object_id().nr_objects(), nr_areas);
+        std::vector<lue::ID> ids_read(nr_areas);
+        areas.object_id().read(ids_read.data());
+        BOOST_CHECK_EQUAL_COLLECTIONS(
+            ids_read.begin(), ids_read.end(),
+            ids.begin(), ids.end());
+
         // Discharge property --------------------------------------------------
         {
             // Per time box:
@@ -257,14 +263,6 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
             {
                 auto& object_tracker = outlet_points.object_tracker();
 
-                auto& id = object_tracker.id();
-                BOOST_REQUIRE_EQUAL(id.nr_objects(), nr_areas);
-                std::vector<lue::ID> ids_read(nr_areas);
-                id.read(ids_read.data());
-                BOOST_CHECK_EQUAL_COLLECTIONS(
-                    ids_read.begin(), ids_read.end(),
-                    ids.begin(), ids.end());
-
                 auto& active_set_index = object_tracker.active_set_index();
                 BOOST_REQUIRE_EQUAL(
                     active_set_index.nr_arrays(), nr_time_boxes);
@@ -274,11 +272,11 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
                     active_set_idxs_read.begin(), active_set_idxs_read.end(),
                     active_set_idxs.begin(), active_set_idxs.end());
 
-                auto& active_id = object_tracker.active_id();
+                auto& active_object_id = object_tracker.active_object_id();
                 BOOST_REQUIRE_EQUAL(
-                    active_id.nr_arrays(), active_ids.size());
+                    active_object_id.nr_arrays(), active_ids.size());
                 std::vector<lue::ID> active_ids_read(active_ids.size());
-                active_id.read(active_ids_read.data());
+                active_object_id.read(active_ids_read.data());
                 BOOST_CHECK_EQUAL_COLLECTIONS(
                     active_ids_read.begin(), active_ids_read.end(),
                     active_ids.begin(), active_ids.end());
@@ -409,9 +407,6 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
             {
                 auto& object_tracker = property_set.object_tracker();
 
-                auto& id = object_tracker.id();
-                BOOST_CHECK_EQUAL(id.nr_objects(), 0);
-
                 auto& active_set_index = object_tracker.active_set_index();
                 BOOST_REQUIRE_EQUAL(
                     active_set_index.nr_arrays(), nr_time_boxes);
@@ -423,10 +418,10 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
                     active_set_idxs_read.begin(), active_set_idxs_read.end(),
                     active_set_idxs.begin(), active_set_idxs.end());
 
-                auto& active_id = object_tracker.active_id();
-                BOOST_REQUIRE_EQUAL(active_id.nr_arrays(), nr_time_boxes);
+                auto& active_object_id = object_tracker.active_object_id();
+                BOOST_REQUIRE_EQUAL(active_object_id.nr_arrays(), nr_time_boxes);
                 std::vector<lue::ID> active_ids_read(nr_time_boxes);
-                active_id.read(active_ids_read.data());
+                active_object_id.read(active_ids_read.data());
 
                 BOOST_CHECK(
                     std::all_of(

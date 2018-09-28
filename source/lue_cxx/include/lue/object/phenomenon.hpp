@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/object/property_sets.hpp"
+#include "lue/info/identity/object_id.hpp"
 
 
 namespace lue {
@@ -34,6 +35,10 @@ public:
 
     Phenomenon&    operator=           (Phenomenon&&)=default;
 
+    ObjectID const& object_id          () const;
+
+    ObjectID&      object_id           ();
+
     PropertySets const& collection_property_sets() const;
 
     PropertySets&  collection_property_sets();
@@ -43,6 +48,8 @@ public:
     PropertySets&  property_sets       ();
 
 private:
+
+    ObjectID       _object_id;
 
     //! Sets of properties of the collection of objects
     PropertySets   _collection_property_sets;

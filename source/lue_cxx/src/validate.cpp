@@ -142,30 +142,29 @@ bool assert_strictly_increasing(
 }
 
 
-void validate(
-    ObjectTracker const& object_tracker,
+void validate_value(
+    ObjectID const& object_id,
     same_shape::Value const& value,
     hdf5::Issues& issues)
 {
     // - Per object array, the object tracker contains an object ID.
     //   The number of object arrays must equal the number of IDs.
 
-    auto const nr_objects = object_tracker.id().nr_objects();
+    auto const nr_objects = object_id.nr_objects();
     auto const nr_object_arrays = value.nr_arrays();
 
     if(nr_object_arrays != nr_objects) {
         issues.add_error(value.id(), fmt::format(
             "Number of object arrays in value array does not equal "
-            "the number of IDs in object tracker "
-            "({} != {})",
+            "the number of IDs ({} != {})",
             nr_object_arrays, nr_objects
         ));
     }
 }
 
 
-void validate(
-    ObjectTracker const& object_tracker,
+void validate_value(
+    ObjectID const& object_id,
     different_shape::Value const& value,
     hdf5::Issues& issues)
 {
@@ -173,21 +172,20 @@ void validate(
     //   The number of object arrays (== number of value arrays) must
     //   equal the number of IDs.
 
-    auto const nr_objects = object_tracker.id().nr_objects();
+    auto const nr_objects = object_id.nr_objects();
     auto const nr_object_arrays = value.nr_objects();
 
     if(nr_object_arrays != nr_objects) {
         issues.add_error(value.id(), fmt::format(
             "Number of object arrays in value does not equal "
-            "the number of IDs in object tracker "
-            "({} != {})",
+            "the number of IDs ({} != {})",
             nr_object_arrays, nr_objects
         ));
     }
 }
 
 
-void validate(
+void validate_value(
     ObjectTracker const& object_tracker,
     same_shape::constant_shape::Value const& value,
     hdf5::Issues& issues)
@@ -196,7 +194,7 @@ void validate(
     //   about which objects are active. The sum of the sizes of the
     //   these active sets must equal the number of object arrays.
     {
-        auto const nr_active_objects = object_tracker.active_id().nr_ids();
+        auto const nr_active_objects = object_tracker.active_object_id().nr_ids();
         auto const nr_object_arrays = value.nr_arrays();
 
         if(nr_object_arrays != nr_active_objects) {
@@ -211,7 +209,7 @@ void validate(
 }
 
 
-void validate(
+void validate_value(
     ObjectTracker const& object_tracker,
     different_shape::constant_shape::Value& value,
     hdf5::Issues& issues)
@@ -223,7 +221,7 @@ void validate(
     // Object tracking is handle by
     // - active_set_index
     // - active_object_index
-    // - active_id
+    // - active_object_id
 
     // - The number of value arrays must equal the size of the set of
     //   objects tracked
@@ -234,10 +232,10 @@ void validate(
     auto const nr_value_arrays = value.nr_objects();
 
     // Read IDs of all objects that have been active
-    auto& active_id = object_tracker.active_id();
+    auto& active_object_id = object_tracker.active_object_id();
 
-    std::vector<ID> object_ids(active_id.nr_ids());
-    active_id.read(object_ids.data());
+    std::vector<ID> object_ids(active_object_id.nr_ids());
+    active_object_id.read(object_ids.data());
 
     // Determine the number of objects that have been active at least
     // once
@@ -283,7 +281,7 @@ void validate(
         active_object_index.read(object_idxs.data());
 
         // Add an end index to ease the iteration over ranges of IDs
-        set_idxs.push_back(active_id.nr_ids());
+        set_idxs.push_back(active_object_id.nr_ids());
         auto begin_idx = set_idxs[0];
 
         for(std::size_t i = 1; i < set_idxs.size(); ++i) {
@@ -315,7 +313,7 @@ void validate(
 }
 
 
-void validate(
+void validate_value(
     ObjectTracker const& object_tracker,
     same_shape::variable_shape::Value& value,
     hdf5::Issues& issues)
@@ -346,7 +344,7 @@ void validate(
         active_set_index.read(set_idxs.data());
 
         // Add an end index to ease the iteration over ranges of IDs
-        set_idxs.push_back(object_tracker.active_id().nr_ids());
+        set_idxs.push_back(object_tracker.active_object_id().nr_ids());
         auto begin_idx = set_idxs[0];
 
         for(std::size_t i = 1; i < set_idxs.size(); ++i) {
@@ -373,7 +371,7 @@ void validate(
 }
 
 
-void validate(
+void validate_value(
     ObjectTracker const& /* object_tracker */,
     different_shape::variable_shape::Value const& value,
     hdf5::Issues& issues)
@@ -382,32 +380,25 @@ void validate(
 }
 
 
-void validate(
-    info::ID const& id,
+void validate_id(
+    hdf5::Identifier const& id,
+    std::vector<ID> const& ids,
     hdf5::Issues& issues)
 {
-    std::vector<ID> ids(id.nr_objects());
-
-    id.read(ids.data());
-
-    assert_ids_are_unique(id.id(), std::move(ids), issues);
+    assert_ids_are_unique(id, ids, issues);
 }
 
 
-void validate(
-    info::ActiveSetIndex const& active_set_index,
-    info::ActiveID const& active_id,
+void validate_active_ids(
+    hdf5::Identifier const& active_set_index_id,
+    std::vector<Index> set_idxs,
+    hdf5::Identifier const& active_id_id,
+    std::vector<ID> const& object_ids,
     hdf5::Issues& issues)
 {
-    std::vector<Index> set_idxs(active_set_index.nr_indices());
-    std::vector<ID> object_ids(active_id.nr_ids());
-
-    active_set_index.read(set_idxs.data());
-    active_id.read(object_ids.data());
-
     if(set_idxs.empty()) {
         if(!object_ids.empty()) {
-            issues.add_error(active_set_index.id(), fmt::format(
+            issues.add_error(active_set_index_id, fmt::format(
                 "{} IDs of active objects are stored, "
                 "but indices of active sets are missing",
                 object_ids.size()
@@ -416,7 +407,7 @@ void validate(
     }
     else {
         if(object_ids.empty()) {
-            issues.add_error(active_set_index.id(), fmt::format(
+            issues.add_error(active_set_index_id, fmt::format(
                 "{} indices of active sets are stored, "
                 "but IDs of active objects are missing",
                 set_idxs.size()
@@ -433,7 +424,7 @@ void validate(
 
             // Validate active set indices are valid
             if(end_idx < begin_idx) {
-                issues.add_error(active_set_index.id(), fmt::format(
+                issues.add_error(active_set_index_id, fmt::format(
                     "Start indices of active sets must be "
                     "monotonic increasing, but "
                     "next index {} < current index {}",
@@ -445,7 +436,7 @@ void validate(
 
             // Validate active set is stored
             if(end_idx > object_ids.size()) {
-                issues.add_error(active_set_index.id(), fmt::format(
+                issues.add_error(active_set_index_id, fmt::format(
                     "Part of the collection of active object IDs is "
                     "missing (end index {} > collection size {})",
                     end_idx, object_ids.size()
@@ -456,9 +447,10 @@ void validate(
 
             // Validate active object IDs are valid
             if(!assert_ids_are_unique(
-                    active_id.id(),
+                    active_id_id,
                     std::vector<ID>(
-                        object_ids.begin() + begin_idx, object_ids.begin() + end_idx),
+                        object_ids.begin() + begin_idx,
+                        object_ids.begin() + end_idx),
                     issues)) {
                 break;
             }
@@ -469,20 +461,16 @@ void validate(
 }
 
 
-void validate(
-    info::ActiveSetIndex const& active_set_index,
-    info::ActiveObjectIndex const& active_object_index,
+void validate_active_object_idxs(
+    hdf5::Identifier const& active_set_index_id,
+    std::vector<Index> set_idxs,
+    hdf5::Identifier const& active_object_index_id,
+    std::vector<Index> const& object_idxs,
     hdf5::Issues& issues)
 {
-    std::vector<Index> set_idxs(active_set_index.nr_indices());
-    std::vector<Index> object_idxs(active_object_index.nr_indices());
-
-    active_set_index.read(set_idxs.data());
-    active_object_index.read(object_idxs.data());
-
     if(set_idxs.empty()) {
         if(!object_idxs.empty()) {
-            issues.add_error(active_set_index.id(), fmt::format(
+            issues.add_error(active_set_index_id, fmt::format(
                 "{} Indices of active objects are stored, "
                 "but indices of active sets are missing",
                 object_idxs.size()
@@ -500,7 +488,7 @@ void validate(
 
             // Validate active set indices are valid
             if(end_idx < begin_idx) {
-                issues.add_error(active_set_index.id(), fmt::format(
+                issues.add_error(active_set_index_id, fmt::format(
                     "Start indices of active sets must be "
                     "monotonic increasing, but "
                     "next index {} < current index {}",
@@ -512,7 +500,7 @@ void validate(
 
             // Validate active set is stored
             if(end_idx > object_idxs.size()) {
-                issues.add_error(active_set_index.id(), fmt::format(
+                issues.add_error(active_object_index_id, fmt::format(
                     "Part of the collection of active object indices is "
                     "missing (end index {} > collection size {})",
                     end_idx, object_idxs.size()
@@ -527,28 +515,56 @@ void validate(
 }
 
 
-void validate(
+void validate_object_tracker(
+    ObjectID const& object_id,
     ObjectTracker const& object_tracker,
     hdf5::Issues& issues)
 {
-    validate(object_tracker.id(), issues);
-    validate(
-        object_tracker.active_set_index(),
-        object_tracker.active_id(),
+    std::vector<ID> ids(object_id.nr_objects());
+    object_id.read(ids.data());
+
+    auto const& active_set_index{object_tracker.active_set_index()};
+    std::vector<Index> active_set_idxs(active_set_index.nr_indices());
+    active_set_index.read(active_set_idxs.data());
+
+    auto const& active_object_id{object_tracker.active_object_id()};
+    std::vector<ID> active_ids(active_object_id.nr_ids());
+    active_object_id.read(active_ids.data());
+
+    auto const& active_object_index{object_tracker.active_object_index()};
+    std::vector<Index> active_object_idxs(active_object_index.nr_indices());
+    active_object_index.read(active_object_idxs.data());
+
+    validate_id(object_id.id(), ids, issues);
+    validate_active_ids(
+        active_set_index.id(), active_set_idxs,
+        active_object_id.id(), active_ids,
         issues);
-    validate(
-        object_tracker.active_set_index(),
-        object_tracker.active_object_index(),
+    validate_active_object_idxs(
+        active_set_index.id(), active_set_idxs,
+        active_object_index.id(), active_object_idxs,
         issues);
 
-    // TODO Test whether the combination of tracking stuff makes sense
-    // - size of active sets (index or id) cannot exceed size of id collection
-    //     (but id collection can be empty in that case)
-    // auto const& id = object_tracker.id();
+    // If the collection of static IDs is not empty, all of the active
+    // IDs must also be part of the collection of static IDs
+    if(!ids.empty()) {
+        for(auto id: active_ids) {
+            if(std::find(ids.begin(), ids.end(), id) == ids.end()) {
+                issues.add_error(active_object_id.id(), fmt::format(
+                    "All active object IDs must also be part of the "
+                    "collection of static object IDs "
+                    "(at least {} is not)", id
+                ));
+
+                break;
+
+            }
+        }
+    }
 }
 
 
-void validate(
+void validate_time_box(
     ObjectTracker const& object_tracker,
     TimeBox const& time_box,
     hdf5::Issues& issues)
@@ -580,7 +596,7 @@ void validate(
 }
 
 
-void validate(
+void validate_time_point(
     ObjectTracker const& object_tracker,
     TimePoint const& time_point,
     hdf5::Issues& issues)
@@ -621,11 +637,13 @@ void validate(
 
     switch(configuration.value<TimeDomainItemType>()) {
         case TimeDomainItemType::box: {
-            validate(object_tracker, time_domain.value<TimeBox>(), issues);
+            validate_time_box(
+                object_tracker, time_domain.value<TimeBox>(), issues);
             break;
         }
         case TimeDomainItemType::point: {
-            validate(object_tracker, time_domain.value<TimePoint>(), issues);
+            validate_time_point(
+                object_tracker, time_domain.value<TimePoint>(), issues);
             break;
         }
     }
@@ -633,28 +651,26 @@ void validate(
 
 
 void validate(
-    ObjectTracker const& object_tracker,
+    ObjectID const& object_id,
     StationarySpaceBox const& space_box,
     hdf5::Issues& issues)
 {
     // A stationary space box is a same_shape::Value
     using Value = same_shape::Value;
 
-    validate(
-        object_tracker, dynamic_cast<Value const&>(space_box), issues);
+    validate_value(object_id, dynamic_cast<Value const&>(space_box), issues);
 }
 
 
 void validate(
-    ObjectTracker const& object_tracker,
+    ObjectID const& object_id,
     StationarySpacePoint const& space_point,
     hdf5::Issues& issues)
 {
     // A stationary space point is a same_shape::Value
     using Value = same_shape::Value;
 
-    validate(
-        object_tracker, dynamic_cast<Value const&>(space_point), issues);
+    validate_value(object_id, dynamic_cast<Value const&>(space_point), issues);
 }
 
 
@@ -666,7 +682,7 @@ void validate(
     // A mobile space box is a same_shape::constant_shape::Value
     using Value = same_shape::constant_shape::Value;
 
-    validate(
+    validate_value(
         object_tracker, dynamic_cast<Value const&>(space_box), issues);
 }
 
@@ -679,12 +695,13 @@ void validate(
     // A mobile space point is a same_shape::constant_shape::Value
     using Value = same_shape::constant_shape::Value;
 
-    validate(
+    validate_value(
         object_tracker, dynamic_cast<Value const&>(space_point), issues);
 }
 
 
 void validate(
+    ObjectID const& object_id,
     ObjectTracker const& object_tracker,
     SpaceDomain& space_domain,
     hdf5::Issues& issues)
@@ -716,13 +733,13 @@ void validate(
             switch(item_type) {
                 case SpaceDomainItemType::box: {
                     validate(
-                        object_tracker,
+                        object_id,
                         space_domain.value<StationarySpaceBox>(), issues);
                     break;
                 }
                 case SpaceDomainItemType::point: {
                     validate(
-                        object_tracker,
+                        object_id,
                         space_domain.value<StationarySpacePoint>(), issues);
                     break;
                 }
@@ -806,12 +823,12 @@ void validate_space_constant_regular_grid(
 }
 
 
-void validate(
-    ObjectTracker const& object_tracker,
+void validate_property(
+    ObjectID const& object_id,
     same_shape::Property& property,
     hdf5::Issues& issues)
 {
-    validate(object_tracker, property.value(), issues);
+    validate_value(object_id, property.value(), issues);
 
     if(property.time_is_discretized()) {
         not_supported_yet(
@@ -827,14 +844,14 @@ void validate(
 }
 
 
-void validate(
-    ObjectTracker const& object_tracker,
+void validate_property(
+    ObjectID const& object_id,
     different_shape::Property& property,
     hdf5::Issues& issues)
 {
     auto const& property_value = property.value();
 
-    validate(object_tracker, property_value, issues);
+    validate_value(object_id, property_value, issues);
 
     if(property.time_is_discretized()) {
         not_supported_yet(
@@ -873,12 +890,12 @@ void validate(
 }
 
 
-void validate(
+void validate_property(
     ObjectTracker const& object_tracker,
     same_shape::constant_shape::Property& property,
     hdf5::Issues& issues)
 {
-    validate(object_tracker, property.value(), issues);
+    validate_value(object_tracker, property.value(), issues);
 
     if(property.time_is_discretized()) {
         not_supported_yet(
@@ -894,12 +911,12 @@ void validate(
 }
 
 
-void validate(
+void validate_property(
     ObjectTracker const& object_tracker,
     different_shape::constant_shape::Property& property,
     hdf5::Issues& issues)
 {
-    validate(object_tracker, property.value(), issues);
+    validate_value(object_tracker, property.value(), issues);
 
     if(property.time_is_discretized()) {
         not_supported_yet(
@@ -937,14 +954,14 @@ void validate(
 }
 
 
-void validate(
+void validate_property(
     ObjectTracker const& object_tracker,
     same_shape::variable_shape::Property& property,
     hdf5::Issues& issues)
 {
     auto& property_value = property.value();
 
-    validate(object_tracker, property_value, issues);
+    validate_value(object_tracker, property_value, issues);
 
     if(property.time_is_discretized()) {
 
@@ -1057,12 +1074,12 @@ void validate(
 }
 
 
-void validate(
+void validate_property(
     ObjectTracker const& object_tracker,
     different_shape::variable_shape::Property& property,
     hdf5::Issues& issues)
 {
-    validate(object_tracker, property.value(), issues);
+    validate_value(object_tracker, property.value(), issues);
 
     if(property.time_is_discretized()) {
         not_supported_yet(
@@ -1078,50 +1095,52 @@ void validate(
 }
 
 
-void validate(
+void validate_properties(
+    ObjectID const& object_id,
     ObjectTracker const& object_tracker,
     Properties& properties,
     hdf5::Issues& issues)
 {
     for(auto& property:
             properties.collection<same_shape::Properties>()) {
-        validate(object_tracker, property.second, issues);
+        validate_property(object_id, property.second, issues);
     }
 
     for(auto& property: properties.collection<
             different_shape::Properties>()) {
-        validate(object_tracker, property.second, issues);
+        validate_property(object_id, property.second, issues);
     }
 
     for(auto& property: properties.collection<
             same_shape::constant_shape::Properties>()) {
-        validate(object_tracker, property.second, issues);
+        validate_property(object_tracker, property.second, issues);
     }
 
     for(auto& property: properties.collection<
             different_shape::constant_shape::Properties>()) {
-        validate(object_tracker, property.second, issues);
+        validate_property(object_tracker, property.second, issues);
     }
 
     for(auto& property: properties.collection<
             same_shape::variable_shape::Properties>()) {
-        validate(object_tracker, property.second, issues);
+        validate_property(object_tracker, property.second, issues);
     }
 
     for(auto& property: properties.collection<
             different_shape::variable_shape::Properties>()) {
-        validate(object_tracker, property.second, issues);
+        validate_property(object_tracker, property.second, issues);
     }
 }
 
 
-void validate(
+void validate_property_set(
+    ObjectID const& object_id,
     PropertySet& property_set,
     hdf5::Issues& issues)
 {
     auto const& object_tracker = property_set.object_tracker();
     auto nr_errors = issues.errors().size();
-    validate(object_tracker, issues);
+    validate_object_tracker(object_id, object_tracker, issues);
     bool const object_tracker_is_valid = issues.errors().size() == nr_errors;
 
     if(object_tracker_is_valid) {
@@ -1132,7 +1151,7 @@ void validate(
 
         if(property_set.has_space_domain()) {
             auto& space_domain = property_set.space_domain();
-            validate(object_tracker, space_domain, issues);
+            validate(object_id, object_tracker, space_domain, issues);
 
             if(space_domain.presence_is_discretized()) {
                 auto const configuration = space_domain.configuration();
@@ -1215,30 +1234,31 @@ void validate(
             }
         }
 
-        validate(object_tracker, property_set.properties(), issues);
+        validate_properties(object_id, object_tracker, property_set.properties(), issues);
     }
 }
 
 
-void validate(
+void validate_phenomenon(
     Phenomenon& phenomenon,
     hdf5::Issues& issues)
 {
+    // Validate property sets
     auto& property_sets = phenomenon.property_sets();
 
     for(auto const& name: property_sets.names()) {
-        validate(property_sets[name], issues);
+        auto& property_set = property_sets[name];
+        validate_property_set(phenomenon.object_id(), property_set, issues);
     }
 
-
+    // Validate collection property sets
     auto& collection_property_sets = phenomenon.collection_property_sets();
 
     for(auto const& name: collection_property_sets.names()) {
         auto& property_set = collection_property_sets[name];
+        validate_property_set(phenomenon.object_id(), property_set, issues);
+
         auto& properties = property_set.properties();
-
-        validate(property_set, issues);
-
 
         // Assert size of collection in each collection property set is 1
         auto const& object_tracker = property_set.object_tracker();
@@ -1258,21 +1278,26 @@ void validate(
                 check_ids.push_back(!collection.empty());
             }
 
-            if(std::any_of(check_ids.begin(), check_ids.end(),
-                    [](bool const b) { return b; })) {
+            // TODO Somehow verify that the object tracker of the
+            //   collection properties tracks only a single object (the
+            //   collection as a whole). The properties must store a
+            //   single value.
 
-                auto const nr_objects = object_tracker.id().nr_objects();
+            // if(std::any_of(check_ids.begin(), check_ids.end(),
+            //         [](bool const b) { return b; })) {
 
-                if(nr_objects != 1) {
-                    issues.add_error(object_tracker.id().id(), fmt::format(
-                        "Number of object IDs in object tracker "
-                        "of collection properties does not equal 1 "
-                        "({} != 1)",
-                        nr_objects
-                    ));
+            //     auto const nr_objects = object_tracker.id().nr_objects();
 
-                }
-            }
+            //     if(nr_objects != 1) {
+            //         issues.add_error(object_tracker.id().id(), fmt::format(
+            //             "Number of object IDs in object tracker "
+            //             "of collection properties does not equal 1 "
+            //             "({} != 1)",
+            //             nr_objects
+            //         ));
+
+            //     }
+            // }
         }
 
         {
@@ -1306,10 +1331,10 @@ void validate(
                 auto const nr_active_sets =
                     object_tracker.active_set_index().nr_arrays();
                 auto const nr_objects =
-                    object_tracker.active_id().nr_ids();
+                    object_tracker.active_object_id().nr_ids();
 
                 if(nr_active_sets != nr_objects) {
-                    issues.add_error(object_tracker.id().id(), fmt::format(
+                    issues.add_error(property_set.id(), fmt::format(
                         "Size of each active set in object tracker "
                         "of collection properties does not equal "
                         "the number of active object IDs "
@@ -1320,10 +1345,10 @@ void validate(
 
                 if(check_active_object_indices) {
                     auto const nr_objects =
-                        object_tracker.active_id().nr_ids();
+                        object_tracker.active_object_id().nr_ids();
 
                     if(nr_active_sets != nr_objects) {
-                        issues.add_error(object_tracker.id().id(), fmt::format(
+                        issues.add_error(property_set.id(), fmt::format(
                             "Size of each active set in object tracker "
                             "of collection properties does not equal "
                             "the number of active object indices "
@@ -1345,7 +1370,7 @@ void validate(
     auto& phenomena = universe.phenomena();
 
     for(auto const& name: phenomena.names()) {
-        validate(phenomena[name], issues);
+        validate_phenomenon(phenomena[name], issues);
     }
 }
 
@@ -1364,7 +1389,7 @@ void validate(
     auto& phenomena = dataset.phenomena();
 
     for(auto const& name: phenomena.names()) {
-        validate(phenomena[name], issues);
+        validate_phenomenon(phenomena[name], issues);
     }
 }
 

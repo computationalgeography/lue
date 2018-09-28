@@ -8,8 +8,7 @@ namespace same_shape {
 Properties::Properties(
     hdf5::Group& parent):
 
-    Collection<Property>{parent, same_shape_tag},
-    _id{*this}
+    Collection<Property>{parent, same_shape_tag}
 
 {
 }
@@ -18,8 +17,7 @@ Properties::Properties(
 Properties::Properties(
     Collection<Property>&& collection):
 
-    Collection<Property>{std::forward<Collection<Property>>(collection)},
-    _id{*this}
+    Collection<Property>{std::forward<Collection<Property>>(collection)}
 
 {
 }
@@ -44,12 +42,9 @@ Property& Properties::add(
 
 
 Properties create_properties(
-    hdf5::Group& parent,
-    info::ID& id)
+    hdf5::Group& parent)
 {
     auto collection = create_collection<Property>(parent, same_shape_tag);
-
-    collection.create_hard_link(id.id(), id_tag);
 
     return Properties{std::move(collection)};
 }

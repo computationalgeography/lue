@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/info/identity/active_id.hpp"
+#include "lue/info/identity/active_object_id.hpp"
 #include "lue/info/identity/active_set_index.hpp"
 #include "lue/info/property/same_shape/variable_shape/property.hpp"
 #include "lue/core/collection.hpp"
@@ -38,7 +38,7 @@ public:
 
 private:
 
-    info::ActiveID _active_id;
+    ActiveObjectID _active_object_id;
 
     info::ActiveSetIndex _active_set_index;
 
@@ -46,7 +46,7 @@ private:
 
 
 Properties         create_properties   (hdf5::Group& parent,
-                                        info::ActiveID& active_id,
+                                        ActiveObjectID& active_object_id,
                                         info::ActiveSetIndex& active_set_index);
 
 }  // namespace variable_shape

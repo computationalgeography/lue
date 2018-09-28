@@ -1,5 +1,4 @@
 #pragma once
-#include "lue/info/identity/id.hpp"
 #include "lue/info/property/different_shape/property.hpp"
 #include "lue/core/collection.hpp"
 
@@ -36,13 +35,10 @@ public:
 
 private:
 
-    info::ID       _id;
-
 };
 
 
-Properties         create_properties   (hdf5::Group& parent,
-                                        info::ID& id);
+Properties         create_properties   (hdf5::Group& parent);
 
 }  // namespace different_shape
 }  // namespace lue

@@ -1,4 +1,4 @@
-#include "lue/info/identity/active_id.hpp"
+#include "lue/info/identity/active_object_id.hpp"
 #include <pybind11/pybind11.h>
 
 
@@ -8,15 +8,15 @@ using namespace pybind11::literals;
 
 namespace lue {
 
-void init_active_id(
+void init_active_object_id(
     py::module& module)
 {
 
-    py::class_<info::ActiveID, same_shape::constant_shape::Value>(
+    py::class_<ActiveObjectID, same_shape::constant_shape::Value>(
         module,
-        "ActiveID",
+        "ActiveObjectID",
         R"(
-    ActiveID docstring...
+    ActiveObjectID docstring...
 )")
 
         ;

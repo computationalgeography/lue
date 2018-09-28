@@ -1,6 +1,6 @@
-#define BOOST_TEST_MODULE lue info identity active_id
+#define BOOST_TEST_MODULE lue info identity active_object_id
 #include <boost/test/unit_test.hpp>
-#include "lue/info/identity/active_id.hpp"
+#include "lue/info/identity/active_object_id.hpp"
 #include "lue/core/tag.hpp"
 #include "lue/test.hpp"
 
@@ -16,8 +16,8 @@ public:
           _filename{"value.h5"},
           _file{std::make_unique<lue::hdf5::File>(
             lue::hdf5::create_file(_filename))},
-          _value{std::make_unique<lue::info::ActiveID>(
-            lue::info::create_active_id(*_file))}
+          _value{std::make_unique<lue::ActiveObjectID>(
+            lue::create_active_object_id(*_file))}
     {
     }
 
@@ -34,7 +34,7 @@ private:
 
     std::string const _filename;
     std::unique_ptr<lue::hdf5::File> _file;
-    std::unique_ptr<lue::info::ActiveID> _value;
+    std::unique_ptr<lue::ActiveObjectID> _value;
 
 };
 
@@ -43,7 +43,7 @@ BOOST_FIXTURE_TEST_CASE(create, Fixture)
 {
     auto const& value = this->value();
 
-    BOOST_CHECK_EQUAL(value.id().name(), lue::active_id_tag);
+    BOOST_CHECK_EQUAL(value.id().name(), lue::active_object_id_tag);
     BOOST_CHECK(
         value.memory_datatype() == lue::hdf5::Datatype{H5T_NATIVE_HSIZE});
     BOOST_CHECK_EQUAL(value.nr_arrays(), 0);

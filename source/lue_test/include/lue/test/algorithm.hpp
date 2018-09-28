@@ -189,20 +189,30 @@ inline void generate_random_strictly_increasing_integral_values(
 
     static_assert(std::is_integral<ValueType>(), "");
 
-    // TODO Update to make it impossible to generate duplicate values
-    //     - Generate 2 * value.size range of values
-    //     - Shuffle range of values
-    //     - Pick the first value.size values
-    auto& random_number_engine{detail::random_number_engine()};
-    std::uniform_int_distribution<ValueType>
-        distribution{min, max};
-    std::generate(values.begin(), values.end(),
-        [&distribution, &random_number_engine]() {
-            return distribution(random_number_engine);
-        }
-    );
+    auto const nr_values_in_range = max - min + 1;
+    auto const nr_values_to_select = values.size();
+
+    assert(nr_values_to_select > 0);
+    assert(nr_values_to_select <= nr_values_in_range);
+
+    // - Generate collection with all possible numbers(!)
+    // - Shuffle this collection
+    // - Select the first number of required numbers
+    // - Sort the selection
+    std::vector<ValueType> unique_numbers(nr_values_in_range);
+    std::iota(unique_numbers.begin(), unique_numbers.end(), min);
+    std::shuffle(
+        unique_numbers.begin(), unique_numbers.end(),
+        detail::random_number_engine());
+    std::copy(
+        unique_numbers.begin(), unique_numbers.begin() + nr_values_to_select,
+        values.begin());
 
     std::sort(values.begin(), values.end());
+
+    assert(std::adjacent_find(values.begin(), values.end()) == values.end());
+    assert(values.front() >= min);
+    assert(values.back() <= max);
 }
 
 
