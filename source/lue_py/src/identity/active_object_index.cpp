@@ -12,7 +12,7 @@ void init_active_object_index(
     py::module& module)
 {
 
-    py::class_<info::ActiveObjectIndex, same_shape::constant_shape::Value>(
+    py::class_<ActiveObjectIndex, same_shape::constant_shape::Value>(
         module,
         "ActiveObjectIndex",
         R"(

@@ -3,7 +3,6 @@
 
 
 namespace lue {
-namespace info {
 
 /*!
     @brief      Per location in time, an index of first object in active set
@@ -52,5 +51,4 @@ private:
 
 ActiveSetIndex     create_active_set_index(hdf5::Group& parent);
 
-}  // namespace info
 }  // namespace lue

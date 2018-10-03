@@ -12,7 +12,7 @@ void init_active_set_index(
     py::module& module)
 {
 
-    py::class_<info::ActiveSetIndex, same_shape::constant_shape::Value>(
+    py::class_<ActiveSetIndex, same_shape::constant_shape::Value>(
         module,
         "ActiveSetIndex",
         R"(

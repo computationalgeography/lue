@@ -36,6 +36,7 @@ target_include_directories(lue_hdf5 SYSTEM
         ${HDF5_INCLUDE_DIRS}
     PRIVATE
         ${Boost_INCLUDE_DIRS}
+        fmt::fmt
 )
 
 target_include_directories(lue_hdf5

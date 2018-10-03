@@ -9,6 +9,8 @@ namespace lue {
 
     An ObjectID instance can be used to store the IDs of the active objects
     when this collection of objects does not change through time.
+
+    @sa         same_shape::Value, different_shape::Value
 */
 class ObjectID:
     public same_shape::Value

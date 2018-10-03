@@ -92,7 +92,7 @@ inline Collection<T>::Collection(
     hdf5::Group& parent,
     std::string const& name)
 
-    : hdf5::Group(parent, name),
+    : hdf5::Group{parent, name},
       _items{}
 
 {
@@ -104,8 +104,8 @@ inline Collection<T>::Collection(
     }
 
     // Open items, if available.
-    for(auto const& name: item_names()) {
-        _items.insert(std::make_pair(name, T{*this, name}));
+    for(auto const& name_: item_names()) {
+        _items.insert(std::make_pair(name_, T{*this, name_}));
     }
 }
 
@@ -115,13 +115,13 @@ template<
 inline Collection<T>::Collection(
     hdf5::Group&& group)
 
-    : hdf5::Group(std::forward<hdf5::Group>(group)),
+    : hdf5::Group{std::forward<hdf5::Group>(group)},
       _items{}
 
 {
     // Open items, if available.
-    for(auto const& name: item_names()) {
-        _items.insert(std::make_pair(name, T{*this, name}));
+    for(auto const& name_: item_names()) {
+        _items.insert(std::make_pair(name_, T{*this, name_}));
     }
 }
 

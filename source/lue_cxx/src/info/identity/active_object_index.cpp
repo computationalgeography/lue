@@ -3,7 +3,6 @@
 
 
 namespace lue {
-namespace info {
 
 ActiveObjectIndex::ActiveObjectIndex(
     hdf5::Group& parent)
@@ -39,5 +38,4 @@ ActiveObjectIndex create_active_object_index(
     return ActiveObjectIndex{std::move(value)};
 }
 
-}  // namespace info
 }  // namespace lue

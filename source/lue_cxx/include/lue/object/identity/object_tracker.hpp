@@ -12,9 +12,9 @@ namespace lue {
 
     Object array kind | Tracking
     ----------------- | --------
-    same_shape::constant_shape::Value | info::ActiveSetIndex, ActiveObjectID
-    same_shape::variable_shape::Value | info::ActiveSetIndex, ActiveObjectID
-    different_shape::constant_shape::Value | info::ActiveSetIndex, info::ActiveObjectIndex, ActiveObjectID
+    same_shape::constant_shape::Value | ActiveSetIndex, ActiveObjectID
+    same_shape::variable_shape::Value | ActiveSetIndex, ActiveObjectID
+    different_shape::constant_shape::Value | ActiveSetIndex, ActiveObjectIndex, ActiveObjectID
     different_shape::variable_shape::Value | -
 */
 class ObjectTracker
@@ -34,16 +34,16 @@ public:
 
     ObjectTracker& operator=           (ObjectTracker&&)=default;
 
-    info::ActiveSetIndex const&
+    ActiveSetIndex const&
                    active_set_index    () const;
 
-    info::ActiveSetIndex&
+    ActiveSetIndex&
                    active_set_index    ();
 
-    info::ActiveObjectIndex const&
+    ActiveObjectIndex const&
                    active_object_index () const;
 
-    info::ActiveObjectIndex&
+    ActiveObjectIndex&
                    active_object_index ();
 
     ActiveObjectID const&
@@ -56,9 +56,9 @@ private:
 
     ActiveObjectID _active_object_id;
 
-    info::ActiveSetIndex _active_set_index;
+    ActiveSetIndex _active_set_index;
 
-    info::ActiveObjectIndex _active_object_index;
+    ActiveObjectIndex _active_object_index;
 
 };
 

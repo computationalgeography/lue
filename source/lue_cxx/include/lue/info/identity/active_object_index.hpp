@@ -3,7 +3,6 @@
 
 
 namespace lue {
-namespace info {
 
 /*!
     @brief      An index into the value array per object in the active set
@@ -54,5 +53,4 @@ private:
 ActiveObjectIndex  create_active_object_index(
                                         hdf5::Group& parent);
 
-}  // namespace info
 }  // namespace lue

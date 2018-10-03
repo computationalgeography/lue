@@ -41,7 +41,7 @@ Property& Properties::add(
 Properties create_properties(
     hdf5::Group& parent,
     ActiveObjectID& active_object_id,
-    info::ActiveSetIndex& active_set_index)
+    ActiveSetIndex& active_set_index)
 {
     auto collection = create_collection<Property>(
         parent, same_shape_variable_shape_tag);

@@ -41,19 +41,17 @@ private:
 
     ActiveObjectID _active_object_id;
 
-    info::ActiveSetIndex _active_set_index;
+    ActiveSetIndex _active_set_index;
 
-    info::ActiveObjectIndex _active_object_index;
+    ActiveObjectIndex _active_object_index;
 
 };
 
 
 Properties         create_properties   (hdf5::Group& parent,
                                         ActiveObjectID& active_object_id,
-                                        info::ActiveSetIndex&
-                                            active_set_index,
-                                        info::ActiveObjectIndex&
-                                            active_object_index);
+                                        ActiveSetIndex& active_set_index,
+                                        ActiveObjectIndex& active_object_index);
 
 }  // namespace constant_shape
 }  // namespace different_shape

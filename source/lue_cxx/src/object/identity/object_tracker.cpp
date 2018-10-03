@@ -41,7 +41,7 @@ ActiveObjectID& ObjectTracker::active_object_id()
     @brief      Return ActiveSetIndex instance for storing indices of
                 active sets
 */
-info::ActiveSetIndex const& ObjectTracker::active_set_index() const
+ActiveSetIndex const& ObjectTracker::active_set_index() const
 {
     return _active_set_index;
 }
@@ -51,7 +51,7 @@ info::ActiveSetIndex const& ObjectTracker::active_set_index() const
     @brief      Return ActiveSetIndex instance for storing indices of
                 active sets
 */
-info::ActiveSetIndex& ObjectTracker::active_set_index()
+ActiveSetIndex& ObjectTracker::active_set_index()
 {
     return _active_set_index;
 }
@@ -61,7 +61,7 @@ info::ActiveSetIndex& ObjectTracker::active_set_index()
     @brief      Return ActiveObjectIndex instance for storing indices of
                 values in object arrays of active objects
 */
-info::ActiveObjectIndex const& ObjectTracker::active_object_index() const
+ActiveObjectIndex const& ObjectTracker::active_object_index() const
 {
     return _active_object_index;
 }
@@ -71,7 +71,7 @@ info::ActiveObjectIndex const& ObjectTracker::active_object_index() const
     @brief      Return ActiveObjectIndex instance for storing indices of
                 values in object arrays of active objects
 */
-info::ActiveObjectIndex& ObjectTracker::active_object_index()
+ActiveObjectIndex& ObjectTracker::active_object_index()
 {
     return _active_object_index;
 }
@@ -84,8 +84,8 @@ ObjectTracker create_object_tracker(
     hdf5::Group& parent)
 {
     create_active_object_id(parent);
-    info::create_active_set_index(parent);
-    info::create_active_object_index(parent);
+    create_active_set_index(parent);
+    create_active_object_index(parent);
 
     return ObjectTracker{parent};
 }
