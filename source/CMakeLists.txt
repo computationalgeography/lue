@@ -153,3 +153,8 @@ install(
     DESTINATION
         lib/cmake/lue
 )
+
+
+if(LUE_BUILD_ALGORITHM)
+    add_subdirectory(algorithm)
+endif()
