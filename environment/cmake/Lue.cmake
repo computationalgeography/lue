@@ -19,14 +19,6 @@ include(DevBaseMacro)
 include(LueMacro)
 
 
-add_compile_options(
-    "$<$<CXX_COMPILER_ID:GNU>:-W;-Wall;-Wextra>"
-    "$<$<CXX_COMPILER_ID:Clang>:-Weverything;-Wno-c++98-compat;-Wno-c++98-compat-pedantic;-Wno-documentation-unknown-command;-Wno-documentation;-Wno-exit-time-destructors;-Wno-global-constructors;-Wno-padded>"
-    # "$<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>>:xxx>"
-    "$<$<CXX_COMPILER_ID:MSVC>:/W3>"
-)
-
-
 if(HDF5_IS_PARALLEL)
     find_package(MPI REQUIRED)
 

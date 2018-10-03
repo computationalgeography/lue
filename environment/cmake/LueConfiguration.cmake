@@ -98,8 +98,7 @@ endif()
 
 if(LUE_BUILD_UTILITIES)
     set(DEVBASE_DOCOPT_REQUIRED TRUE)
-    set(DEVBASE_GDAL_REQUIRED TRUE)
-    set(DEVBASE_REQUIRED_GDAL_VERSION 2)
+    set(LUE_GDAL_REQUIRED TRUE)
     set(DEVBASE_NLOHMANN_JSON_REQUIRED TRUE)
 
     set(LUE_BUILD_LUE_DUMP TRUE)
@@ -221,4 +220,10 @@ if(DEVBASE_PYBIND11_REQUIRED)
         message(STATUS
             "Found NumPy ${numpy_version} headers in ${NUMPY_INCLUDE_DIRS}")
     endif()
+endif()
+
+
+if(LUE_GDAL_REQUIRED)
+    find_package(GDAL 2 REQUIRED)
+    unset(LUE_GDAL_REQUIRED)
 endif()
