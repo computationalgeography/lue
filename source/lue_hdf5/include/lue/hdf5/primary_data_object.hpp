@@ -22,7 +22,7 @@ public:
 
                    PrimaryDataObject   (PrimaryDataObject&&)=default;
 
-    /* virtual */  ~PrimaryDataObject  ()=default;
+    virtual        ~PrimaryDataObject  ()=default;
 
     PrimaryDataObject& operator=       (PrimaryDataObject const&)=default;
 
