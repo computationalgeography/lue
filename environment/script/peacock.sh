@@ -43,19 +43,21 @@ function build_peacock()
     build_docopt=false
     build_gdal=false
     build_google_benchmark=false
+    build_hdf5=false
     build_hpx=false
 
     # ...except for these machines
-    hostname=`hostname`
+    hostname=`hostname -s`
     build_docopt=true
 
-    if [ $hostname == "sonic.geo.uu.nl" ]; then
+    if [ $hostname == "sonic" ]; then
         build_boost=true
         build_gdal=true
     fi
 
     if [ $hostname == "gransasso" ]; then
         build_google_benchmark=true
+        build_hdf5=true  # System hdf5 is not good enough, see peacock
         build_hpx=true
     fi
 
@@ -91,6 +93,13 @@ function build_peacock()
     if [ "$build_google_benchmark" = true ]; then
         options+=("-Dbuild_google_benchmark=true")
         options+=("-Dhpx_version=1.4.1")
+    fi
+
+
+    if [ "$build_hdf5" = true ]; then
+        options+=("-Dbuild_hdf5=true")
+        options+=("-Dhdf5_cpp_lib=true")
+        options+=("-Dhdf5_version=1.8.14")
     fi
 
 

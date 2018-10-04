@@ -122,38 +122,6 @@ endif()
 
 
 if(LUE_BUILD_ALGORITHM)
-    # Build HPX with support for
-    # - boost (cxxflags=-std=c++11) (required)
-    # - hwloc (required, most recent version)
-    # - Google perftools (+ libunwind) (recommended)
-    # - OpenMPI (cluster) (recommended)
-    # - HDF5 (build with threadsafety, CFLAGS/CPPFLAGS='-DHDatexit=""')
-    # - PAPI (recommended)
-
-    # HPX_WITH_CXX0Y
-    # HPX_WITH_UNWRAPPED_COMPATIBILITY:BOOL=OFF
-    # HPX_WITH_VIM_YCM:BOOL=ON
-    # HPX_WITH_INCLUSIVE_SCAN_COMPATIBILITY:BOOL=OFF
-    # HPX_WITH_LOCAL_DATAFLOW_COMPATIBILITY:BOOL=OFF
-
-    # HPX_WITH_BUILD_EXAMPLES=ON
-    # HPX_WITH_BUILD_EXAMPLES_HDF5=ON
-    # HPX_WITH_EXAMPLES_OPENMP:BOOL=ON
-
-    # HPX_WITH_TESTS=ON
-    # HPX_WITH_TOOLS=ON
-
-    # HPX_WITH_PARCELPORT_ACTION_COUNTERS:BOOL=ON
-    # HPX_WITH_PARCELPORT_MPI:BOOL=ON
-
-    # HPX_WITH_GOOGLE_PERFTOOLS:BOOL=ON
-    # HPX_WITH_PAPI:BOOL=ON
-
-    # Check HPX_WITH_MALLOC
-
-    # TODO Build HPX yourself, using a seperate script. We probably need
-    #     various versions. Or use toolchain files for machines?
-
     find_package(HPX REQUIRED)
 
     if(HPX_FOUND)
