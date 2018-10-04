@@ -527,7 +527,7 @@ void set_item(
 }
 
 
-static void init_array(
+void init_array(
     py::module& module)
 {
     init_numpy();
