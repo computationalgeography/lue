@@ -68,8 +68,12 @@ add_library(lue::lue ALIAS lue)
 target_include_directories(lue SYSTEM
     PRIVATE
         ${HDF5_INCLUDE_DIRS}
+        # fmt::fmt
     PUBLIC
         ${Boost_INCLUDE_DIRS}
+        # TODO Shutup compiler, but use a different variable. fmt::fmt
+        # doesn't work here...
+        ${CONAN_INCLUDE_DIRS_FMT}
 )
 
 target_include_directories(lue

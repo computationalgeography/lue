@@ -80,7 +80,7 @@ py::array create_array(
 }
 
 
-void update_hyperslab_by_index(
+static void update_hyperslab_by_index(
     size_t const dimension_idx,
     long index,
     hdf5::Shape const& array_shape,
@@ -119,7 +119,7 @@ void update_hyperslab_by_index(
 }
 
 
-void update_hyperslab_by_slice(
+static void update_hyperslab_by_slice(
     size_t const dimension_idx,
     py::slice const& slice,
     hdf5::Shape const& array_shape,
@@ -143,7 +143,7 @@ void update_hyperslab_by_slice(
 }
 
 
-py::array create_array(
+static py::array create_array(
     Array const& array,
     hdf5::Hyperslab const& hyperslab,
     hdf5::Shape const& slice_shape)
@@ -199,7 +199,7 @@ py::object create_scalar(
 }
 
 
-py::object create_scalar(
+static py::object create_scalar(
     Array const& array,
     hdf5::Hyperslab const& hyperslab)
 {
@@ -235,7 +235,7 @@ py::object create_scalar(
 }
 
 
-py::object read_hyperslab_from_array(
+static py::object read_hyperslab_from_array(
     Array const& array,
     hdf5::Hyperslab const& hyperslab,
     hdf5::Shape const& slice_shape)
@@ -527,7 +527,7 @@ void set_item(
 }
 
 
-void init_array(
+static void init_array(
     py::module& module)
 {
     init_numpy();

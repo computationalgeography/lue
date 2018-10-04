@@ -18,7 +18,14 @@ namespace {
 // }
 
 
-extern "C" herr_t error_walker(
+extern "C"
+herr_t error_walker(
+    unsigned int /* idx */,
+    H5E_error2_t const* error,
+    void* client_data);
+
+
+herr_t error_walker(
     unsigned int /* idx */,
     H5E_error2_t const* error,
     void* client_data)

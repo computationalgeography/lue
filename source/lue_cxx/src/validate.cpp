@@ -85,7 +85,7 @@ std::string error_message(
 }  // Anonymous namespace
 
 
-bool assert_ids_are_unique(
+static bool assert_ids_are_unique(
     hdf5::Identifier const& id,
     std::vector<ID> ids,
     hdf5::Issues& issues)
@@ -142,7 +142,7 @@ bool assert_strictly_increasing(
 }
 
 
-void validate_value(
+static void validate_value(
     ObjectID const& object_id,
     same_shape::Value const& value,
     hdf5::Issues& issues)
@@ -163,7 +163,7 @@ void validate_value(
 }
 
 
-void validate_value(
+static void validate_value(
     ObjectID const& object_id,
     different_shape::Value const& value,
     hdf5::Issues& issues)
@@ -185,7 +185,7 @@ void validate_value(
 }
 
 
-void validate_value(
+static void validate_value(
     ObjectTracker const& object_tracker,
     same_shape::constant_shape::Value const& value,
     hdf5::Issues& issues)
@@ -209,7 +209,7 @@ void validate_value(
 }
 
 
-void validate_value(
+static void validate_value(
     ObjectTracker const& object_tracker,
     different_shape::constant_shape::Value& value,
     hdf5::Issues& issues)
@@ -313,7 +313,7 @@ void validate_value(
 }
 
 
-void validate_value(
+static void validate_value(
     ObjectTracker const& object_tracker,
     same_shape::variable_shape::Value& value,
     hdf5::Issues& issues)
@@ -371,7 +371,7 @@ void validate_value(
 }
 
 
-void validate_value(
+static void validate_value(
     ObjectTracker const& /* object_tracker */,
     different_shape::variable_shape::Value const& value,
     hdf5::Issues& issues)
@@ -380,7 +380,7 @@ void validate_value(
 }
 
 
-void validate_id(
+static void validate_id(
     hdf5::Identifier const& id,
     std::vector<ID> const& ids,
     hdf5::Issues& issues)
@@ -389,7 +389,7 @@ void validate_id(
 }
 
 
-void validate_active_ids(
+static void validate_active_ids(
     hdf5::Identifier const& active_set_index_id,
     std::vector<Index> set_idxs,
     hdf5::Identifier const& active_id_id,
@@ -461,7 +461,7 @@ void validate_active_ids(
 }
 
 
-void validate_active_object_idxs(
+static void validate_active_object_idxs(
     hdf5::Identifier const& active_set_index_id,
     std::vector<Index> set_idxs,
     hdf5::Identifier const& active_object_index_id,
@@ -515,7 +515,7 @@ void validate_active_object_idxs(
 }
 
 
-void validate_object_tracker(
+static void validate_object_tracker(
     ObjectID const& object_id,
     ObjectTracker const& object_tracker,
     hdf5::Issues& issues)
@@ -564,7 +564,7 @@ void validate_object_tracker(
 }
 
 
-void validate_time_box(
+static void validate_time_box(
     ObjectTracker const& object_tracker,
     TimeBox const& time_box,
     hdf5::Issues& issues)
@@ -596,7 +596,7 @@ void validate_time_box(
 }
 
 
-void validate_time_point(
+static void validate_time_point(
     ObjectTracker const& object_tracker,
     TimePoint const& time_point,
     hdf5::Issues& issues)
@@ -628,7 +628,7 @@ void validate_time_point(
 }
 
 
-void validate(
+static void validate(
     ObjectTracker const& object_tracker,
     TimeDomain& time_domain,
     hdf5::Issues& issues)
@@ -650,7 +650,7 @@ void validate(
 }
 
 
-void validate(
+static void validate(
     ObjectID const& object_id,
     StationarySpaceBox const& space_box,
     hdf5::Issues& issues)
@@ -662,7 +662,7 @@ void validate(
 }
 
 
-void validate(
+static void validate(
     ObjectID const& object_id,
     StationarySpacePoint const& space_point,
     hdf5::Issues& issues)
@@ -674,7 +674,7 @@ void validate(
 }
 
 
-void validate(
+static void validate(
     ObjectTracker const& object_tracker,
     MobileSpaceBox const& space_box,
     hdf5::Issues& issues)
@@ -687,7 +687,7 @@ void validate(
 }
 
 
-void validate(
+static void validate(
     ObjectTracker const& object_tracker,
     MobileSpacePoint const& space_point,
     hdf5::Issues& issues)
@@ -700,7 +700,7 @@ void validate(
 }
 
 
-void validate(
+static void validate(
     ObjectID const& object_id,
     ObjectTracker const& object_tracker,
     SpaceDomain& space_domain,
@@ -823,7 +823,7 @@ void validate_space_constant_regular_grid(
 }
 
 
-void validate_property(
+static void validate_property(
     ObjectID const& object_id,
     same_shape::Property& property,
     hdf5::Issues& issues)
@@ -844,7 +844,7 @@ void validate_property(
 }
 
 
-void validate_property(
+static void validate_property(
     ObjectID const& object_id,
     different_shape::Property& property,
     hdf5::Issues& issues)
@@ -890,7 +890,7 @@ void validate_property(
 }
 
 
-void validate_property(
+static void validate_property(
     ObjectTracker const& object_tracker,
     same_shape::constant_shape::Property& property,
     hdf5::Issues& issues)
@@ -911,7 +911,7 @@ void validate_property(
 }
 
 
-void validate_property(
+static void validate_property(
     ObjectTracker const& object_tracker,
     different_shape::constant_shape::Property& property,
     hdf5::Issues& issues)
@@ -954,7 +954,7 @@ void validate_property(
 }
 
 
-void validate_property(
+static void validate_property(
     ObjectTracker const& object_tracker,
     same_shape::variable_shape::Property& property,
     hdf5::Issues& issues)
@@ -1074,7 +1074,7 @@ void validate_property(
 }
 
 
-void validate_property(
+static void validate_property(
     ObjectTracker const& object_tracker,
     different_shape::variable_shape::Property& property,
     hdf5::Issues& issues)
@@ -1095,7 +1095,7 @@ void validate_property(
 }
 
 
-void validate_properties(
+static void validate_properties(
     ObjectID const& object_id,
     ObjectTracker const& object_tracker,
     Properties& properties,
@@ -1133,7 +1133,7 @@ void validate_properties(
 }
 
 
-void validate_property_set(
+static void validate_property_set(
     ObjectID const& object_id,
     PropertySet& property_set,
     hdf5::Issues& issues)
@@ -1239,7 +1239,7 @@ void validate_property_set(
 }
 
 
-void validate_phenomenon(
+static void validate_phenomenon(
     Phenomenon& phenomenon,
     hdf5::Issues& issues)
 {
@@ -1363,7 +1363,7 @@ void validate_phenomenon(
 }
 
 
-void validate(
+static void validate(
     Universe& universe,
     hdf5::Issues& issues)
 {
@@ -1375,7 +1375,7 @@ void validate(
 }
 
 
-void validate(
+static void validate(
     Dataset& dataset,
     hdf5::Issues& issues)
 {

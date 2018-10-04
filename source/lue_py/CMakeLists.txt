@@ -88,6 +88,8 @@ set_target_properties(lue_py
 target_include_directories(lue_py SYSTEM
     PRIVATE
         ${NUMPY_INCLUDE_DIRS}
+        # Remove line once SYSTEM works in pybind11_add_module
+        ${CONAN_INCLUDE_DIRS_PYBIND11}
 )
 
 target_include_directories(lue_py

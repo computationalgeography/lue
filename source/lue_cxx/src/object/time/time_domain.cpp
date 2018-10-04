@@ -4,7 +4,7 @@
 
 namespace lue {
 
-void write(
+static void write(
     lue::Clock const& clock,
     hdf5::Attributes& attributes)
 {
@@ -13,7 +13,7 @@ void write(
 }
 
 
-Clock read(
+static Clock read(
     hdf5::Attributes const& attributes)
 {
     auto const unit = Aspect<time::Unit>(attributes).value();
