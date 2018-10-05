@@ -2,88 +2,17 @@ configure_file(
     include/lue/configure.hpp.in
     include/lue/configure.hpp
 )
+include_directories(
+    ${CMAKE_CURRENT_BINARY_DIR}/include
+)
 
-### add_subdirectory(lue_time)
-### list(APPEND doxygen_input lue_time)
-
-if(LUE_BUILD_HDF5_API)
-    add_subdirectory(lue_hdf5)
-    list(APPEND doxygen_input lue_hdf5)
+if(LUE_BUILD_DATA_MODEL)
+    add_subdirectory(lue_data_model)
 endif()
 
-if(LUE_BUILD_CXX_API)
-    add_subdirectory(lue_cxx)
-    list(APPEND doxygen_input lue_cxx)
+if(LUE_BUILD_FRAMEWORK)
+    add_subdirectory(lue_framework)
 endif()
-
-### if(LUE_BUILD_HL_API)
-###     add_subdirectory(lue_hl)
-###     list(APPEND doxygen_input lue_hl)
-### endif()
-
-if(LUE_BUILD_PYTHON_API)
-    add_subdirectory(lue_py)
-
-    ### install(
-    ###     DIRECTORY
-    ###         ${CMAKE_CURRENT_BINARY_DIR}/include
-    ###         lue_hdf5/include
-    ###         ${CMAKE_CURRENT_BINARY_DIR}/lue_hdf5/include
-    ###         lue_cxx/include
-    ###         ${CMAKE_CURRENT_BINARY_DIR}/lue_cxx/include
-    ###         lue_hl/include
-    ###         lue_py/include
-    ###         lue_time/include
-    ###     DESTINATION src
-    ###     COMPONENT python EXCLUDE_FROM_ALL
-    ###     FILES_MATCHING
-    ###         PATTERN "*.hpp"
-    ### )
-
-    ### foreach(directory_name lue_hdf5 lue_cxx lue_hl lue_py lue_time)
-    ###     install(
-    ###         DIRECTORY ${directory_name}/src
-    ###         DESTINATION src/${directory_name}
-    ###         COMPONENT python EXCLUDE_FROM_ALL
-    ###         FILES_MATCHING
-    ###             PATTERN "*.hpp"
-    ###             PATTERN "*.cpp"
-    ###     )
-    ### endforeach()
-
-    ### install(
-    ###     FILES
-    ###         ${CMAKE_CURRENT_BINARY_DIR}/lue_py/setup.py
-    ###         lue_py/MANIFEST.in
-    ###     DESTINATION .
-    ###     COMPONENT python EXCLUDE_FROM_ALL
-    ### )
-endif()
-
-if(LUE_BUILD_LUE_TEST)
-    add_subdirectory(lue_test)
-    list(APPEND doxygen_input lue_test)
-endif()
-
-if(LUE_BUILD_LUE_UTILITY)
-    add_subdirectory(lue_utility)
-    list(APPEND doxygen_input lue_utility)
-endif()
-
-### # if(LUE_BUILD_LUE_DUMP)
-### #     add_subdirectory(lue_dump)
-### # endif()
-
-if(LUE_BUILD_LUE_TRANSLATE)
-    add_subdirectory(lue_translate)
-    list(APPEND doxygen_input lue_translate)
-endif()
-
-if(LUE_BUILD_LUE_VALIDATE)
-    add_subdirectory(lue_validate)
-    list(APPEND doxygen_input lue_validate)
-endif()
-
 
 if(LUE_BUILD_DOCUMENTATION)
     ### edit_data_model_graphs(
@@ -136,33 +65,24 @@ install(
         ${CMAKE_CURRENT_BINARY_DIR}/include
     DESTINATION .
 )
-install(EXPORT lue_targets
-    FILE lue_targets.cmake
-    NAMESPACE lue::
-    DESTINATION lib/cmake/lue
-)
-include(CMakePackageConfigHelpers)
-write_basic_package_version_file("lue_config_version.cmake"
-    VERSION ${LUE_VERSION}
-    COMPATIBILITY SameMajorVersion
-)
-install(
-    FILES
-        "lue-config.cmake"
-        "${CMAKE_CURRENT_BINARY_DIR}/lue_config_version.cmake"
-    DESTINATION
-        lib/cmake/lue
-)
 
-
-if(LUE_BUILD_ALGORITHM)
-    add_subdirectory(algorithm)
-endif()
-
-if(LUE_BUILD_DASHBOARD)
-    add_subdirectory(dashboard)
-endif()
-
-if(LUE_BUILD_IMGUI)
-    add_subdirectory(imgui)
+# Framework doesn't install anything yet
+if(LUE_BUILD_DATA_MODEL)
+    install(EXPORT lue_targets
+        FILE lue_targets.cmake
+        NAMESPACE lue::
+        DESTINATION lib/cmake/lue
+    )
+    include(CMakePackageConfigHelpers)
+    write_basic_package_version_file("lue_config_version.cmake"
+        VERSION ${LUE_VERSION}
+        COMPATIBILITY SameMajorVersion
+    )
+    install(
+        FILES
+            "lue-config.cmake"
+            "${CMAKE_CURRENT_BINARY_DIR}/lue_config_version.cmake"
+        DESTINATION
+            lib/cmake/lue
+    )
 endif()

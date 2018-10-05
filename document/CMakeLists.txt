@@ -1,3 +1,3 @@
-if(LUE_BUILD_PYTHON_API)
+if(LUE_BUILD_DATA_MODEL AND LUE_DATA_MODEL_WITH_PYTHON_API)
     add_subdirectory(luepy)
 endif()

@@ -1,9 +1,0 @@
-/*!
-    @brief      Group containing the LUE C-API
-    @defgroup   lue_c_api_group C-API
-    @ingroup    lue_group
-
-
-    For an overview of the LUE C-API, see the [C-API overview
-    page](lue_c_api_overview.html).
-*/

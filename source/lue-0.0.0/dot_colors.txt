@@ -1,6 +1,0 @@
-Color Brewer, spectral10
-https://github.com/aschn/gnuplot-colorbrewer/blob/master/diverging/Spectral.plt
-blue  : #3288bd
-red   : #d53e4f
-orange: #fdae61
-green : #abdda4

@@ -1,8 +1,0 @@
-/*!
-    @brief      Group containing LUE Python-API
-    @defgroup   lue_python_api_group Python-API
-    @ingroup    lue_group
-
-
-    Instead of documenting the Python API with Doxygen, the API is documented as a seperate project using Sphinx and put online at http://lue.readthedocs.io .
-*/

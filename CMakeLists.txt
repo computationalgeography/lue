@@ -27,7 +27,7 @@ add_subdirectory(environment)
 add_subdirectory(source)
 
 
-if(LUE_BUILD_PYTHON_API)
+if(LUE_BUILD_DATA_MODEL AND LUE_DATA_MODEL_WITH_PYTHON_API)
     install(
         FILES document/luepy/introduction.rst
         DESTINATION .

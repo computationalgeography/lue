@@ -1,9 +1,0 @@
-namespace lue {
-
-/*!
-    @brief      Namespace containing code for handling time
-*/
-namespace time {
-}
-
-}
