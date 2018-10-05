@@ -158,3 +158,11 @@ install(
 if(LUE_BUILD_ALGORITHM)
     add_subdirectory(algorithm)
 endif()
+
+if(LUE_BUILD_DASHBOARD)
+    add_subdirectory(dashboard)
+endif()
+
+if(LUE_BUILD_IMGUI)
+    add_subdirectory(imgui)
+endif()

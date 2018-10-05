@@ -13,8 +13,8 @@ option(LUE_BUILD_PYTHON_API
 option(LUE_BUILD_UTILITIES
     "Build LUE command line utilites"
     TRUE)
-option(LUE_BUILD_ALGORITHM
-    "Build LUE algorithm library"
+option(LUE_BUILD_FRAMEWORK
+    "Build LUE simulation framework"
     FALSE)
 
 # Lower level targets
@@ -40,6 +40,10 @@ option(LUE_BUILD_TEST
 # option(LUE_API_WITH_MPI
 #     "Include support for MPI"
 #     FALSE)
+
+option(LUE_FRAMEWORK_WITH_DASHBOARD
+    "Include dashboard for framework"
+    FALSE)
 
 
 # Handle internal dependencies
@@ -121,6 +125,15 @@ if(LUE_BUILD_TEST)
 endif()
 
 
+if(LUE_BUILD_FRAMEWORK)
+    set(LUE_BUILD_ALGORITHM TRUE)
+
+    if(LUE_FRAMEWORK_WITH_DASHBOARD)
+        set(LUE_BUILD_IMGUI TRUE)
+    endif()
+endif()
+
+
 if(LUE_BUILD_ALGORITHM)
     find_package(HPX REQUIRED)
 
@@ -137,6 +150,12 @@ if(LUE_BUILD_ALGORITHM)
                 "ABI compatibility is not guaranteed. Expect link errors.")
         endif()
     endif()
+endif()
+
+
+if(LUE_BUILD_IMGUI)
+    find_package(OpenGL REQUIRED)
+    find_package(SDL2 REQUIRED)
 endif()
 
 
