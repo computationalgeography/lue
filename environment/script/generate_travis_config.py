@@ -278,10 +278,11 @@ def builds():
             ]
         ),
 
-        # Build Python API, with tests and documentation
+        # Build Python API, utilities, with tests and documentation
         BuildConfiguration(
             {
                 "LUE_DATA_MODEL_WITH_PYTHON_API:BOOL": "TRUE",
+                "LUE_DATA_MODEL_WITH_UTILITIES:BOOL": "TRUE",
                 "PYBIND11_PYTHON_VERSION": "$TRAVIS_PYTHON_VERSION",
                 "LUE_BUILD_TEST:BOOL": "TRUE",
                 "LUE_BUILD_DOCUMENTATION:BOOL": "TRUE",
