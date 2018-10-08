@@ -13,7 +13,7 @@ target_include_directories(lue_test
 
 target_link_libraries(lue_test
     PUBLIC
-        lue::lue
+        lue::data_model
 )
 
 install(

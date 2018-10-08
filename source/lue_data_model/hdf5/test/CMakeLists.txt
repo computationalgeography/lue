@@ -9,5 +9,5 @@ add_unit_tests(
         hyperslab_test
         shape_test
     LINK_LIBRARIES
-        lue::lue_hdf5
+        lue::hdf5
 )

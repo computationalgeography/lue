@@ -20,5 +20,5 @@ target_link_libraries(lue_utility
         docopt
         nlohmann_json::nlohmann_json
     PRIVATE
-        lue::lue
+        lue::data_model
 )

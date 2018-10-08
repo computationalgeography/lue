@@ -1,6 +1,6 @@
 add_test_conditionally(test)
 
-add_library(lue STATIC
+add_library(lue_data_model STATIC
 
     # Core stuff ---------------------------------------------------------------
     src/core/array
@@ -63,9 +63,9 @@ add_library(lue STATIC
     src/validate
 )
 
-add_library(lue::lue ALIAS lue)
+add_library(lue::data_model ALIAS lue_data_model)
 
-target_include_directories(lue SYSTEM
+target_include_directories(lue_data_model SYSTEM
     PRIVATE
         ${HDF5_INCLUDE_DIRS}
         # fmt::fmt
@@ -76,21 +76,21 @@ target_include_directories(lue SYSTEM
         ${CONAN_INCLUDE_DIRS_FMT}
 )
 
-target_include_directories(lue
+target_include_directories(lue_data_model
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
         $<INSTALL_INTERFACE:include>
 )
 
-target_link_libraries(lue
+target_link_libraries(lue_data_model
     PUBLIC
-        lue::lue_hdf5
+        lue::hdf5
 )
 
 install(
     TARGETS
-        lue
+        lue_data_model
     EXPORT
         lue_targets
     LIBRARY DESTINATION lib

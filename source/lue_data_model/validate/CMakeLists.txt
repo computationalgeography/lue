@@ -12,8 +12,6 @@ target_include_directories(lue_validate_lib
 
 target_link_libraries(lue_validate_lib
     PUBLIC
-        lue::lue_hdf5
-        lue::lue
         lue::utility
 )
 

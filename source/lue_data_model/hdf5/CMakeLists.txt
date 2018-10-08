@@ -29,7 +29,7 @@ add_library(lue_hdf5 STATIC
     src/validate
 )
 
-add_library(lue::lue_hdf5 ALIAS lue_hdf5)
+add_library(lue::hdf5 ALIAS lue_hdf5)
 
 target_include_directories(lue_hdf5 SYSTEM
     PUBLIC

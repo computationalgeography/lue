@@ -101,7 +101,7 @@ target_include_directories(lue_py
 target_link_libraries(lue_py
     PRIVATE
         $<$<TARGET_EXISTS:lue::test>:lue::test>
-        lue::lue
+        lue::data_model
 )
 
 install(

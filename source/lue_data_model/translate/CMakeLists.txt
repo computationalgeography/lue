@@ -32,7 +32,7 @@ target_include_directories(lue_translate_lib SYSTEM
 target_link_libraries(lue_translate_lib
     PRIVATE
         # lue::hl
-        lue::lue
+        lue::data_model
         ${GDAL_LIBRARIES}
     PUBLIC
         lue::utility

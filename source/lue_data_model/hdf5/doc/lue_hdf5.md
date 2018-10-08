@@ -49,10 +49,7 @@ First we need to build and install the `lue_hdf5` library to some location
 mkdir -p /tmp/lue_build
 cd /tmp/lue_build
 cmake \
-    -DLUE_BUILD_CXX_API=FALSE\
-    -DLUE_BUILD_PYTHON_API=FALSE
-    -DLUE_BUILD_UTILITIES=FALSE
-    -DCMAKE_INSTALL_PREFIX=/tmp/lue_install
+    -DCMAKE_INSTALL_PREFIX=/tmp/lue_install \
     /tmp/lue_source
 cmake --build . --target install
 ~~~
@@ -72,12 +69,12 @@ add_executable(hello_hdf5
 
 target_link_libraries(hello_hdf5
     PRIVATE
-        lue::lue_hdf5
+        lue::hdf5
 )
 ~~~
 
 In this project, we tell CMake to try and find the `lue` package. When
-this succeeds, we can use the `lue::lue_hdf5` library target to link
+this succeeds, we can use the `lue::hdf5` library target to link
 against our application. Our application will now automatically depend
 on the public dependencies of `lue_hdf5`.
 
@@ -90,7 +87,7 @@ installed. Given the example above the folowing commands build our
 mkdir -p /tmp/hello_hdf5_build
 cd /tmp/hello_hdf5lue_build
 cmake \
-    -DCMAKE_PREFIX_PATH="/tmp/lue_install"
+    -DCMAKE_PREFIX_PATH="/tmp/lue_install" \
     /tmp/hello_hdf5
 cmake --build .
 ~~~
