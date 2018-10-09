@@ -12,6 +12,9 @@ option(LUE_DATA_MODEL_WITH_UTILITIES
 option(LUE_BUILD_FRAMEWORK
     "Build LUE simulation framework"
     FALSE)
+option(LUE_FRAMEWORK_WITH_OPENCL
+    "Include support for OpenCL"
+    FALSE)
 # option(LUE_FRAMEWORK_WITH_MPI
 #     "Include support for MPI"
 #     FALSE)
@@ -87,6 +90,10 @@ if(LUE_BUILD_FRAMEWORK)
     set(DEVBASE_FMT_REQUIRED TRUE)
     set(DEVBASE_HPX_REQUIRED TRUE)
 
+    if(LUE_FRAMEWORK_WITH_OPENCL)
+        set(DEVBASE_OPENCL_REQUIRED TRUE)
+    endif()
+
     if(LUE_FRAMEWORK_WITH_DASHBOARD)
         set(DEVBASE_OPENGL_REQUIRED TRUE)
         set(DEVBASE_SDL2_REQUIRED TRUE)
@@ -156,6 +163,12 @@ if(DEVBASE_HPX_REQUIRED)
     endif()
 
     unset(DEVBASE_HPX_REQUIRED)
+endif()
+
+
+if(DEVBASE_OPENCL_REQUIRED)
+    find_package(OpenCL REQUIRED)
+    unset(DEVBASE_OPENCL_REQUIRED)
 endif()
 
 
