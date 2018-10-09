@@ -1,10 +1,4 @@
-configure_file(
-    include/lue/configure.hpp.in
-    include/lue/configure.hpp
-)
-include_directories(
-    ${CMAKE_CURRENT_BINARY_DIR}/include
-)
+add_subdirectory(lue_shared)
 
 if(LUE_BUILD_DATA_MODEL)
     add_subdirectory(lue_data_model)
@@ -53,18 +47,13 @@ if(LUE_BUILD_DOCUMENTATION)
     set(DOXYGEN_ENABLE_PREPROCESSING FALSE)
     doxygen_add_docs(cpp_doc
         doc
+        lue_shared
         ${doxygen_input}
     )
     ### add_dependencies(cpp_doc
     ###     copy_svg_files
     ### )
 endif()
-
-install(
-    DIRECTORY
-        ${CMAKE_CURRENT_BINARY_DIR}/include
-    DESTINATION .
-)
 
 # Framework doesn't install anything yet
 if(LUE_BUILD_DATA_MODEL)

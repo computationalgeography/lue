@@ -50,6 +50,7 @@ target_include_directories(lue_hdf5
 target_link_libraries(lue_hdf5
     PUBLIC
         ${HDF5_C_LIBRARIES}
+        lue::shared
     PRIVATE
         Boost::filesystem
         fmt::fmt
