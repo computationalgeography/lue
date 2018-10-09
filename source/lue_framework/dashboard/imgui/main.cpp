@@ -162,6 +162,35 @@ static void simulate(
 
 static void model_demo()
 {
+    // *Simulation*
+    // - Visualize simulation
+    //     - State of variables
+    //     - ...
+    // - Change state of simulation
+    //     - Parameters
+    //     - ...
+
+    // *Execution environment*
+    // - Visualize execution environment
+    //     - Summaries
+    //         - Overall load
+    //         - Overall memory usage
+    //         - ...
+    //     - Per node
+    //         - Load per node
+    //         - Memory usage per node
+    //         - ...
+    // - Change state of execution environment
+    //     - Grain size
+    //     - ...
+
+    // TODO How to set this up
+    //     - Simulation can be visualized in some way. Doesn't have to
+    //       be done now.
+    //     - Execution environment can be set up using imgui. Windows
+    //       on top of simulation visualization (which can be empty
+    //       for now).
+
     std::atomic_size_t current_time_step;
     std::size_t nr_time_steps = 1e1;
     std::atomic_bool stop_simulation = false;
