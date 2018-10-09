@@ -48,7 +48,7 @@ cmake \
     -DCMAKE_BUILD_TYPE=$build_type \
     -DPEACOCK_PREFIX:PATH=$peacock_prefix \
     -DCMAKE_INSTALL_PREFIX=$install_prefix \
-    -DLUE_BUILD_PYTHON_API:BOOL=TRUE \
+    -DLUE_DATA_MODEL_WITH_PYTHON_API:BOOL=TRUE \
     $source_prefix
 cmake --build . --target all
 
