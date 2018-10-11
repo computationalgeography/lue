@@ -21,6 +21,9 @@ option(LUE_FRAMEWORK_WITH_OPENCL
 option(LUE_FRAMEWORK_WITH_DASHBOARD
     "Include dashboard for simulation framework"
     FALSE)
+option(LUE_FRAMEWORK_WITH_BENCHMARKS
+    "Include benchmarks"
+    FALSE)
 
 option(LUE_BUILD_DOCUMENTATION
     "Build documentation"
@@ -97,6 +100,9 @@ if(LUE_BUILD_FRAMEWORK)
     if(LUE_FRAMEWORK_WITH_DASHBOARD)
         set(DEVBASE_OPENGL_REQUIRED TRUE)
         set(DEVBASE_SDL2_REQUIRED TRUE)
+    endif()
+
+    if(LUE_FRAMEWORK_WITH_BENCHMARKS)
     endif()
 endif()
 
