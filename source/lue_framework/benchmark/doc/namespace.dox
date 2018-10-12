@@ -1,0 +1,9 @@
+namespace lue {
+
+/*!
+    @brief      Namespace containing all benchmark related code
+*/
+namespace benchmark {
+}
+
+}

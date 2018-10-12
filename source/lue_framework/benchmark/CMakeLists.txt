@@ -1,6 +1,7 @@
 add_library(lue_benchmark
     src/runtime_environment
     src/stopwatch
+    src/time_interval
 )
 
 add_library(lue::benchmark ALIAS lue_benchmark)

@@ -1,17 +1,23 @@
 #pragma once
 #include <chrono>
+#include "lue/framework/benchmark/time_interval.hpp"
 
 
 namespace lue {
 namespace benchmark {
 
+/*!
+    @brief      Class for timing things
+*/
 class Stopwatch
 {
 
 public:
 
-    using TimePoint = std::chrono::high_resolution_clock::time_point;
-    using Duration = std::chrono::high_resolution_clock::duration;
+    using TimePoint = TimeInterval::TimePoint;
+    using Duration = TimeInterval::Duration;
+
+    static TimePoint now               ();
 
                    Stopwatch           ();
 
@@ -44,6 +50,12 @@ private:
 };
 
 
+/*!
+    @brief      Return the duration casted to @a ToDuration
+
+    Use this function to convert the high resolution duration to some
+    courser unit, like seconds.
+*/
 template<
     typename ToDuration>
 inline ToDuration Stopwatch::elapsed() const

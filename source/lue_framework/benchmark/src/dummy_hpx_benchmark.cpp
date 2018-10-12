@@ -35,7 +35,7 @@ auto setup_benchmark(
         hpx::wait_all(futures);
     };
 
-    return lue::benchmark::Benchmark{description, count, std::move(callable)};
+    return lue::benchmark::Benchmark{std::move(callable), description, count};
 }
 
 
