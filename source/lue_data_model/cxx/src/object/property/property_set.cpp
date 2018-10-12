@@ -168,7 +168,7 @@ PropertySet create_property_set(
     auto group = hdf5::create_group(parent, name);
 
     auto object_tracker = create_object_tracker(group);
-    create_properties(group, object_tracker);
+    create_properties(group);
 
     return PropertySet{std::move(group)};
 }
@@ -186,7 +186,7 @@ PropertySet create_property_set(
     auto object_tracker = create_object_tracker(group);
     create_space_domain(
         group, space_configuration, space_coordinate_datatype, rank);
-    create_properties(group, object_tracker);
+    create_properties(group);
 
     return PropertySet{std::move(group)};
 }
@@ -201,7 +201,7 @@ PropertySet create_property_set(
 
     auto object_tracker = create_object_tracker(group);
     link_time_domain(group, domain);
-    create_properties(group, object_tracker);
+    create_properties(group);
 
     return PropertySet{std::move(group)};
 }
@@ -223,7 +223,7 @@ PropertySet create_property_set(
         group, time_configuration, clock);
     create_space_domain(
         group, space_configuration, space_coordinate_datatype, rank);
-    create_properties(group, object_tracker);
+    create_properties(group);
 
     return PropertySet{std::move(group)};
 }

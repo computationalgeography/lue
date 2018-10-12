@@ -5,7 +5,6 @@
 #include "lue/object/property/different_shape/properties.hpp"
 #include "lue/object/property/different_shape/constant_shape/properties.hpp"
 #include "lue/object/property/different_shape/variable_shape/properties.hpp"
-#include "lue/object/identity/object_tracker.hpp"
 
 
 namespace lue {
@@ -106,8 +105,7 @@ private:
 };
 
 
-Properties         create_properties   (hdf5::Group& parent,
-                                        ObjectTracker& object_tracker);
+Properties         create_properties   (hdf5::Group& parent);
 
 
 #define COLLECTION(type, member)                         \
