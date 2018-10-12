@@ -226,28 +226,16 @@ different_shape::Property& Properties::add(
 
 
 Properties create_properties(
-    hdf5::Group& parent,
-    ObjectTracker& object_tracker)
+    hdf5::Group& parent)
 {
-    // Pass the object ID tracking stuff to the
-    // specialized Properties classes. They will hard-link to it. That
-    // way this information can be shared.
     auto group = hdf5::create_group(parent, properties_tag);
 
-    auto& active_object_id = object_tracker.active_object_id();
-    auto& active_set_index = object_tracker.active_set_index();
-    auto& active_object_index = object_tracker.active_object_index();
-
     same_shape::create_properties(group);
-    same_shape::constant_shape::create_properties(
-        group, active_object_id, active_set_index);
-    same_shape::variable_shape::create_properties(
-        group, active_object_id, active_set_index);
+    same_shape::constant_shape::create_properties(group);
+    same_shape::variable_shape::create_properties(group);
     different_shape::create_properties(group);
-    different_shape::constant_shape::create_properties(
-        group, active_object_id, active_set_index, active_object_index);
-    different_shape::variable_shape::create_properties(
-        group);
+    different_shape::constant_shape::create_properties(group);
+    different_shape::variable_shape::create_properties(group);
 
     return Properties{std::move(group)};
 }

@@ -1,6 +1,4 @@
 #pragma once
-#include "lue/info/identity/active_object_id.hpp"
-#include "lue/info/identity/active_set_index.hpp"
 #include "lue/info/property/same_shape/constant_shape/property.hpp"
 #include "lue/core/collection.hpp"
 
@@ -41,16 +39,10 @@ public:
 
 private:
 
-    ActiveObjectID _active_object_id;
-
-    ActiveSetIndex _active_set_index;
-
 };
 
 
-Properties         create_properties   (hdf5::Group& parent,
-                                        ActiveObjectID& active_object_id,
-                                        ActiveSetIndex& active_set_index);
+Properties         create_properties   (hdf5::Group& parent);
 
 }  // namespace constant_shape
 }  // namespace same_shape
