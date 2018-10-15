@@ -21,9 +21,9 @@ add_library(lue_data_model STATIC
     src/info/identity/active_object_index
     src/info/identity/active_set_index
 
-    src/info/time/time_point
     src/info/time/time_box
-    # src/info/time/time_grid
+    src/info/time/time_cell
+    src/info/time/time_point
 
     src/info/space/mobile_space_point
     src/info/space/stationary_space_point

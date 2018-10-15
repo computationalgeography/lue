@@ -66,12 +66,16 @@ TimeDomain create_time_domain(
     auto group = hdf5::create_group(parent, time_domain_tag);
 
     switch(configuration.value<TimeDomainItemType>()) {
-        case TimeDomainItemType::point: {
-            create_time_point(group, clock);
-            break;
-        }
         case TimeDomainItemType::box: {
             create_time_box(group, clock);
+            break;
+        }
+        case TimeDomainItemType::cell: {
+            create_time_cell(group, clock);
+            break;
+        }
+        case TimeDomainItemType::point: {
+            create_time_point(group, clock);
             break;
         }
     }

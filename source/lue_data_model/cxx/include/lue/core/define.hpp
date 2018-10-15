@@ -23,7 +23,9 @@ enum class TimeDomainItemType
 
     point,
 
-    box
+    box,
+
+    cell
 
 };
 

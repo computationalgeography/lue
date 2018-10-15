@@ -20,8 +20,9 @@ add_unit_tests(
         info/identity/active_set_index_test
         info/identity/active_object_index_test
 
-        info/time/time_point_test
         info/time/time_box_test
+        info/time/time_cell_test
+        info/time/time_point_test
 
         info/space/mobile_space_point_test
         info/space/stationary_space_point_test
@@ -46,7 +47,8 @@ add_unit_tests(
 
         scalar_test
         raster_test
-        time_series_test
+        time_series_test-1
+        time_series_test-2
 
     LINK_LIBRARIES
         lue::test

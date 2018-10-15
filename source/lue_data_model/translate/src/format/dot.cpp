@@ -585,6 +585,14 @@ void to_dot(
                 link_nodes(time_domain, value, stream, metadata);
                 break;
             }
+            case TimeDomainItemType::cell: {
+                auto const& value = time_domain.value<TimeCell>();
+                to_dot(value, stream, metadata);
+                assert(false);
+                // TODO Handle cell counts too
+                link_nodes(time_domain, value, stream, metadata);
+                break;
+            }
             case TimeDomainItemType::point: {
                 auto const& value = time_domain.value<TimePoint>();
                 to_dot(value, stream, metadata);
