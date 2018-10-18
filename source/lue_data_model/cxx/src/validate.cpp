@@ -2,6 +2,7 @@
 #include "lue/object/dataset.hpp"
 #include "lue/hdf5/validate.hpp"
 #include <algorithm>
+#include <iostream>
 #include <sstream>
 
 
@@ -602,7 +603,7 @@ static void validate_time_point(
     hdf5::Issues& issues)
 {
     {
-        std::vector<time::DurationCount> points(2 * time_point.nr_points());
+        std::vector<time::DurationCount> points(time_point.nr_points());
         time_point.read(points.data());
 
         assert_strictly_increasing(time_point.id(), points, issues);

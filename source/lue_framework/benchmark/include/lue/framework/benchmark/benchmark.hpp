@@ -1,5 +1,7 @@
 #pragma once
+#include "lue/framework/benchmark/environment.hpp"
 #include "lue/framework/benchmark/stopwatch.hpp"
+#include "lue/framework/benchmark/timing.hpp"
 #include <iostream>
 #include <string>
 #include <vector>
@@ -62,9 +64,10 @@ class Benchmark
 public:
 
     using Duration = Stopwatch::Duration;
-    using Durations = std::vector<Duration>;
+    using Timings = std::vector<Timing>;
 
                    Benchmark           (Callable&& callable,
+                                        Environment const& environment,
                                         std::string const& description,
                                         std::size_t count);
 
@@ -78,16 +81,21 @@ public:
 
     Benchmark&     operator=           (Benchmark&&)=delete;
 
+    Environment const& environment     () const;
+
     int            run                 ();
 
     TimeInterval const& time_interval  () const;
 
-    Durations const& durations         () const;
+    Timings const& timings             () const;
 
 private:
 
     //! Callable representing the workload to time
     Callable       _callable;
+
+    //! Environment the benchmark runs in
+    Environment    _environment;
 
     //! Description of the benchmark
     std::string    _description;
@@ -98,8 +106,8 @@ private:
     //! Interval in which the benchmark ran
     TimeInterval   _time_interval;
 
-    //! Durations of the @a count benchmark runs
-    Durations      _durations;
+    //! Timings of the @a count benchmark runs
+    Timings        _timings;
 
 };
 
@@ -113,30 +121,42 @@ template<
     typename Callable>
 inline Benchmark<Callable>::Benchmark(
     Callable&& callable,
+    Environment const& environment,
     std::string const& description,
     std::size_t const count)
 :
     _callable{std::forward<Callable>(callable)},
+    _environment{environment},
     _description{description},
     _count{count},
     _time_interval{},
-    _durations{}
+    _timings{}
 {
 }
 
 
+template<
+    typename Callable>
+Environment const& Benchmark<Callable>::environment() const
+{
+    return _environment;
+}
+
+
 /*!
-    @brief      Run the benchmarks
+    @brief      Run the benchmarks @a count times
     @return     EXIT_SUCCESS or EXIT_FAILURE
 
     You can call this function multiple times, but any previous results
     will be overwritten in that case.
+
+    After calling this function, @a count timings will be available.
 */
 template<
     typename Callable>
 inline int Benchmark<Callable>::run()
 {
-    _durations.clear();
+    _timings.clear();
     Stopwatch stopwatch;
 
     std::cout << _description << ": " << std::flush;
@@ -146,7 +166,7 @@ inline int Benchmark<Callable>::run()
         stopwatch.start();
         _callable();
         stopwatch.stop();
-        _durations.push_back(stopwatch.elapsed());
+        _timings.push_back(Timing{stopwatch.time_interval()});
         std::cout << "." << std::flush;
     }
     std::cout << std::endl;
@@ -170,14 +190,14 @@ inline TimeInterval const& Benchmark<Callable>::time_interval() const
 
 
 /*!
-    @brief      Return the durations of each timing
+    @brief      Return the timings of each run
 */
 template<
     typename Callable>
-inline typename Benchmark<Callable>::Durations const&
-    Benchmark<Callable>::durations() const
+inline typename Benchmark<Callable>::Timings const&
+    Benchmark<Callable>::timings() const
 {
-    return _durations;
+    return _timings;
 }
 
 }  // namespace benchmark

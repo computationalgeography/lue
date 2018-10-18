@@ -16,10 +16,10 @@ HPX_PLAIN_ACTION(dummy, DummyAction);
 
 auto setup_benchmark(
         int /* argc */,
-        char* /* argv */[])
+        char* /* argv */[],
+        lue::benchmark::Environment const& environment)
 {
     std::string const description = "Dummy HPX benchmark";
-    // auto const environment = hpx_runtime_environment();
     std::size_t const count = 3;
     DummyAction dummy;
     auto node = hpx::find_here();
@@ -35,7 +35,8 @@ auto setup_benchmark(
         hpx::wait_all(futures);
     };
 
-    return lue::benchmark::Benchmark{std::move(callable), description, count};
+    return lue::benchmark::Benchmark{
+        std::move(callable), environment, description, count};
 }
 
 

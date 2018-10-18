@@ -12,14 +12,15 @@ void dummy()
 
 auto setup_benchmark(
         int /* argc */,
-        char* /* argv */[])
+        char* /* argv */[],
+        lue::benchmark::Environment const& environment)
 {
     std::string const description = "Dummy benchmark";
-    // auto const environment = runtime_environment();
     std::size_t const count = 3;
     auto callable = dummy;
 
-    return lue::benchmark::Benchmark{std::move(callable), description, count};
+    return lue::benchmark::Benchmark{
+        std::move(callable), environment, description, count};
 }
 
 

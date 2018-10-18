@@ -53,6 +53,15 @@ TimeInterval::TimePoint const& TimeInterval::stop() const
 }
 
 
+void TimeInterval::set_stop(
+    TimePoint const& time_point)
+{
+    _stop = time_point;
+
+    assert(_start <= _stop);
+}
+
+
 /*!
     @brief      Return the duration of the interval
 */

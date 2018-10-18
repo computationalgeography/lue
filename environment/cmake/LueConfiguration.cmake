@@ -103,6 +103,8 @@ if(LUE_BUILD_FRAMEWORK)
     endif()
 
     if(LUE_FRAMEWORK_WITH_BENCHMARKS)
+        set(DEVBASE_DOCOPT_REQUIRED TRUE)
+        set(DEVBASE_NLOHMANN_JSON_REQUIRED TRUE)
     endif()
 endif()
 

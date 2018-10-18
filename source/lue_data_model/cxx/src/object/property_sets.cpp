@@ -62,6 +62,19 @@ PropertySet& PropertySets::add(
 PropertySet& PropertySets::add(
     std::string const& name,
     TimeConfiguration const& time_configuration,
+    Clock const& clock)
+{
+    return Collection::add(
+        name,
+        create_property_set(
+            *this, name,
+            time_configuration, clock));
+}
+
+
+PropertySet& PropertySets::add(
+    std::string const& name,
+    TimeConfiguration const& time_configuration,
     Clock const& clock,
     SpaceConfiguration const& space_configuration,
     hdf5::Datatype const& space_coordinate_datatype,

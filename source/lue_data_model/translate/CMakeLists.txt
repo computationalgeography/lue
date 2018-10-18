@@ -12,6 +12,7 @@ add_library(lue_translate_lib STATIC
     # src/format/gdal_stack
     # src/format/gdal_stacks
     # src/format/geo_eas
+    src/format/json
     src/format/lue
     # src/format/vtk
 )

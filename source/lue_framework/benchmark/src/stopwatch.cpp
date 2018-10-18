@@ -5,15 +5,6 @@ namespace lue {
 namespace benchmark {
 
 /*!
-    @brief      Return the current value of the high resolution clock
-*/
-Stopwatch::TimePoint Stopwatch::now()
-{
-    return std::chrono::high_resolution_clock::now();
-}
-
-
-/*!
     @brief      Default construct an instance
 
     The start and stop time points will be initialized to the high
@@ -21,27 +12,20 @@ Stopwatch::TimePoint Stopwatch::now()
 */
 Stopwatch::Stopwatch()
 :
-    _start{},
-    _stop{}
+    _time_interval{}
 {
 }
 
 
-void Stopwatch::start()
+TimeInterval const& Stopwatch::time_interval() const
 {
-    _start = now();
-}
-
-
-void Stopwatch::stop()
-{
-    _stop = now();
+    return _time_interval;
 }
 
 
 Stopwatch::Duration Stopwatch::elapsed() const
 {
-    return _stop - _start;
+    return time_interval().duration();
 }
 
 }  // namespace benchmark

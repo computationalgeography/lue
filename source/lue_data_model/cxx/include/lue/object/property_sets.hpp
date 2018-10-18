@@ -41,6 +41,11 @@ public:
     PropertySet&   add                 (std::string const& name,
                                         TimeConfiguration const&
                                             time_configuration,
+                                        Clock const& clock);
+
+    PropertySet&   add                 (std::string const& name,
+                                        TimeConfiguration const&
+                                            time_configuration,
                                         Clock const& clock,
                                         SpaceConfiguration const&
                                             space_configuration,

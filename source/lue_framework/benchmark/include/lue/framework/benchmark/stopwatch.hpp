@@ -1,5 +1,4 @@
 #pragma once
-#include <chrono>
 #include "lue/framework/benchmark/time_interval.hpp"
 
 
@@ -35,6 +34,8 @@ public:
 
     void           stop                ();
 
+    TimeInterval const& time_interval  () const;
+
     Duration       elapsed             () const;
 
     template<
@@ -43,11 +44,32 @@ public:
 
 private:
 
-    TimePoint      _start;
-
-    TimePoint      _stop;
+    TimeInterval   _time_interval;
 
 };
+
+
+/*!
+    @brief      Return the current value of the high resolution clock
+*/
+inline Stopwatch::TimePoint Stopwatch::now()
+{
+    return std::chrono::high_resolution_clock::now();
+}
+
+
+inline void Stopwatch::start()
+{
+    auto const now = Stopwatch::now();
+    _time_interval = TimeInterval{now, now};
+}
+
+
+inline void Stopwatch::stop()
+{
+    auto const now = Stopwatch::now();
+    _time_interval.set_stop(now);
+}
 
 
 /*!

@@ -1,7 +1,9 @@
 add_library(lue_benchmark
+    src/environment
     src/runtime_environment
     src/stopwatch
     src/time_interval
+    src/timing
 )
 
 add_library(lue::benchmark ALIAS lue_benchmark)
@@ -12,7 +14,12 @@ target_include_directories(lue_benchmark
         ${HPX_INCLUDE_DIRS}
 )
 
-hpx_setup_target(lue_benchmark)
+hpx_setup_target(lue_benchmark
+    DEPENDENCIES
+        docopt
+        fmt::fmt
+        nlohmann_json::nlohmann_json
+)
 
 # target_link_libraries(lue_benchmark
 #     PUBLIC
@@ -27,6 +34,7 @@ add_executable(lue_dummy_benchmark
 target_link_libraries(lue_dummy_benchmark
     PRIVATE
         lue::benchmark
+        # nlohmann_json::nlohmann_json
 )
 
 add_executable(lue_dummy_hpx_benchmark

@@ -35,11 +35,13 @@ public:
 
     TimePoint const& stop              () const;
 
+    void           set_stop            (TimePoint const& time_point);
+
     Duration       duration            () const;
 
     template<
         typename ToDuration>
-    ToDuration     durationf            () const;
+    ToDuration     duration            () const;
 
 private:
 
@@ -58,7 +60,7 @@ private:
 */
 template<
     typename ToDuration>
-inline ToDuration TimeInterval::durationf() const
+inline ToDuration TimeInterval::duration() const
 {
     return std::chrono::duration_cast<ToDuration>(duration());
 }

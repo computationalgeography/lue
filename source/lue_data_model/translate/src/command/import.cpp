@@ -91,7 +91,15 @@ int Import::run_implementation()
         ? Metadata(argument<std::string>("--meta"))
         : Metadata();
 
-    auto first_input_dataset_name = input_dataset_names[0];
+    auto const first_input_dataset_name = input_dataset_names[0];
+
+    // if(input_dataset_names.size() == 1) {
+    //     auto const input_dataset_name = first_input_dataset_name;
+
+    //     if(try_open_json_file_for_read(first_input_dataset_name)) {
+    //     }
+
+    // }
 
     // if(try_open_gdal_raster_stack_dataset_for_read(first_input_dataset_name)) {
 
@@ -110,19 +118,20 @@ int Import::run_implementation()
     //     translate_gdal_raster_dataset_to_lue(
     //         input_dataset_names, output_dataset_name, metadata);
     // }
-    // // TODO Support import of various file formats into a single
-    // //      lue dataset
-    // else if(bfs::path(first_input_dataset_name).extension() == ".tss") {
-    //    assert(input_dataset_names.size() == 1);
-    //    translate_geo_eas_to_lue(
-    //        first_input_dataset_name, output_dataset_name, metadata);
-    // }
-    // else {
+
+    // Support import of various file formats into a single lue dataset
+    if(bfs::path(first_input_dataset_name).extension() == ".json") {
+       assert(input_dataset_names.size() == 1);
+       translate_json_to_lue(
+           first_input_dataset_name, output_dataset_name, metadata);
+    }
+    else {
         throw std::runtime_error(
             "translation from " + first_input_dataset_name +
             " is not supported (does it exist?)");
-    // }
+    }
 
+    // Verify that the dataset is usable
     assert_is_valid(output_dataset_name);
 
     return EXIT_SUCCESS;
