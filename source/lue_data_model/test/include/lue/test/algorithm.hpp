@@ -6,6 +6,7 @@
 #include <random>
 #include <vector>
 #include <type_traits>
+#include <iostream>
 
 
 namespace lue {
@@ -57,8 +58,32 @@ inline void generate_random_ids(
 
 
 template<
+    typename Collection,
+    typename Count,
+    typename = std::enable_if_t<std::is_arithmetic<Count>::value>>
+inline void select_random_ids(
+    Collection& id_collection,
+    Count const max_count)
+{
+    // IDs are numbered [0, max_count), so the number of IDs to select
+    // must be smaller than the maximum number of IDs to select from.
+    assert(static_cast<Count>(id_collection.size()) <= max_count);
+
+    // Collection with IDs of the population, shuffled
+    std::vector<typename Collection::value_type> all_ids(max_count);
+    generate_random_ids(all_ids);
+
+    // Select the requested number of IDs
+    std::copy(
+        all_ids.begin(), all_ids.begin() + id_collection.size(),
+        id_collection.begin());
+}
+
+
+template<
     typename Collections,
-    typename Counts>
+    typename Counts,
+    typename = std::enable_if_t<!std::is_arithmetic<Counts>::value>>
 inline void select_random_ids(
     Collections& id_collections,
     Counts const& id_counts)

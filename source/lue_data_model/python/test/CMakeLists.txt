@@ -3,13 +3,6 @@ copy_python_unit_test_modules(
     TARGET lue_test_modules
 )
 
-# get_target_property(
-#     LUE_PYTHON_PATH
-#     lue::py
-#     LIBRARY_OUTPUT_DIRECTORY
-# )
-message(STATUS ${LUE_PYTHON_PATH})
-
 add_unit_tests(
     SCOPE lue_py
     NAMES

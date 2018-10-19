@@ -26,7 +26,9 @@ void init_space_domain(py::module& module);
 void init_stationary_space_box(py::module& module);
 void init_stationary_space_point(py::module& module);
 void init_time_box(py::module& module);
+void init_time_cell(py::module& module);
 void init_time_domain(py::module& module);
+void init_time_point(py::module& module);
 void init_universe(py::module& module);
 void init_value_group(py::module& module);
 
@@ -108,6 +110,8 @@ PYBIND11_MODULE(lue, module)
     same_shape::init_submodule(module);
 
     init_time_box(module);
+    init_time_cell(module);
+    init_time_point(module);
     init_stationary_space_box(module);
     init_stationary_space_point(module);
 

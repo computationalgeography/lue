@@ -19,6 +19,7 @@ void init_time_domain(
     Locations in time can be represented by boxes or points
 )")
         .value("box", TimeDomainItemType::box)
+        .value("cell", TimeDomainItemType::cell)
         .value("point", TimeDomainItemType::point)
         ;
 
@@ -52,14 +53,20 @@ void init_time_domain(
                 auto const& configuration = time_domain.configuration();
 
                 switch(configuration.value<TimeDomainItemType>()) {
-                    case TimeDomainItemType::point: {
-                        using Value = TimePoint;
+                    case TimeDomainItemType::box: {
+                        using Value = TimeBox;
                         collection = py::cast(new Value(
                             time_domain.value<Value>()));
                         break;
                     }
-                    case TimeDomainItemType::box: {
-                        using Value = TimeBox;
+                    case TimeDomainItemType::cell: {
+                        using Value = TimeCell;
+                        collection = py::cast(new Value(
+                            time_domain.value<Value>()));
+                        break;
+                    }
+                    case TimeDomainItemType::point: {
+                        using Value = TimePoint;
                         collection = py::cast(new Value(
                             time_domain.value<Value>()));
                         break;

@@ -71,8 +71,9 @@ TAG_AND_MAP(ShapeVariability, shape_variability_tag, ({
 }))
 
 TAG_AND_MAP(TimeDomainItemType, time_domain_item_type_tag, ({
-    { TimeDomainItemType::point, "point" },
-    { TimeDomainItemType::box, "box" }
+    { TimeDomainItemType::box, "box" },
+    { TimeDomainItemType::cell, "cell" },
+    { TimeDomainItemType::point, "point" }
 }))
 
 TAG_AND_MAP(Mobility, mobility_tag, ({

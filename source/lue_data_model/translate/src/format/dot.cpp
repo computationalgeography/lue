@@ -416,6 +416,19 @@ void to_dot(
 
 
 void to_dot(
+    TimeCell const& time_cell,
+    std::ostream& stream,
+    Metadata const& metadata)
+{
+    to_dot(dynamic_cast<TimeBox const&>(time_cell), stream, metadata);
+
+    // Also dump the counts and link the boxes to the counts
+    to_dot(time_cell.count(), stream, metadata);
+    link_nodes(time_cell, time_cell.count(), stream, metadata);
+}
+
+
+void to_dot(
     PropertyGroup& property,
     std::ostream& stream,
     Metadata const& metadata)
@@ -581,6 +594,12 @@ void to_dot(
         switch(configuration.value<TimeDomainItemType>()) {
             case TimeDomainItemType::box: {
                 auto const& value = time_domain.value<TimeBox>();
+                to_dot(value, stream, metadata);
+                link_nodes(time_domain, value, stream, metadata);
+                break;
+            }
+            case TimeDomainItemType::cell: {
+                auto const& value = time_domain.value<TimeCell>();
                 to_dot(value, stream, metadata);
                 link_nodes(time_domain, value, stream, metadata);
                 break;

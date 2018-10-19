@@ -2,7 +2,8 @@
 #include "lue/object/dataset.hpp"
 #include "lue/hdf5/validate.hpp"
 #include <algorithm>
-#include <iostream>
+// #include <execution> Not in gcc 7 yet
+#include <numeric>
 #include <sstream>
 
 
@@ -117,7 +118,6 @@ bool assert_strictly_increasing(
     hdf5::Issues& issues)
 {
     using Value = typename Collection::value_type;
-    bool strictly_increasing = false;
 
     // Find two adjacent values where the first value is larger or equal to
     // the second. In that case the collection is not strictly increasing.
@@ -128,18 +128,51 @@ bool assert_strictly_increasing(
         }
     );
 
-    strictly_increasing = it == collection.end();
+    bool strictly_increasing = it == collection.end();
 
     if(!strictly_increasing) {
         issues.add_error(id, fmt::format(
             "Values must be strictly increasing, "
             "but at least two adjacent values where not "
-            "({} <= {})",
+            "({} >= {})",
             *it, *(it + 1)
         ));
     }
 
     return strictly_increasing;
+}
+
+
+template<
+    typename Collection>
+bool assert_increasing(
+    hdf5::Identifier const& id,
+    Collection const& collection,
+    hdf5::Issues& issues)
+{
+    using Value = typename Collection::value_type;
+
+    // Find two adjacent values where the first value is larger to
+    // the second. In that case the collection is not increasing.
+    auto const it = std::adjacent_find(
+        collection.begin(), collection.end(),
+        [](Value const& lhs, Value const& rhs) {
+            return lhs > rhs;
+        }
+    );
+
+    bool increasing = it == collection.end();
+
+    if(!increasing) {
+        issues.add_error(id, fmt::format(
+            "Values must be (nonstrictly) increasing, "
+            "but at least two adjacent values where not "
+            "({} > {})",
+            *it, *(it + 1)
+        ));
+    }
+
+    return increasing;
 }
 
 
@@ -570,20 +603,25 @@ static void validate_time_box(
     TimeBox const& time_box,
     hdf5::Issues& issues)
 {
+    auto const nr_boxes = time_box.nr_boxes();
+
     {
-        std::vector<time::DurationCount> boxes(2 * time_box.nr_boxes());
+        std::vector<time::DurationCount> boxes(2 * nr_boxes);
         time_box.read(boxes.data());
 
-        assert_strictly_increasing(time_box.id(), boxes, issues);
+        // TODO Actually, if we allow boxes to overlap, we should test the
+        //      start coordinates and end coordinates of the boxes
+        //      seperately. A start coordinate of a next box can be
+        //      smaller than an end coordinate of a previous box.
+        assert_increasing(time_box.id(), boxes, issues);
     }
 
-    // - Per location in time, the object tracker contains information
-    //   about which objects are active. The number of these active sets
-    //   must equal the number of object arrays.
+    // Per location in time, the object tracker contains information
+    // about which objects are active. The number of these active sets
+    // must equal the number of boxes.
     {
         auto const nr_active_sets =
             object_tracker.active_set_index().nr_indices();
-        auto const nr_boxes = time_box.nr_boxes();
 
         if(nr_boxes != nr_active_sets) {
             issues.add_error(time_box.id(), fmt::format(
@@ -591,6 +629,63 @@ static void validate_time_box(
                 "the number of active set indices in object tracker "
                 "({} != {})",
                 nr_boxes, nr_active_sets
+            ));
+        }
+    }
+}
+
+
+static void validate_time_cell(
+    ObjectTracker const& object_tracker,
+    TimeCell const& time_cell,
+    hdf5::Issues& issues)
+{
+    auto const nr_boxes = time_cell.nr_boxes();
+    auto const nr_counts = time_cell.nr_counts();
+
+    // The coordinates of the time boxes must be strictly increasing
+    {
+        std::vector<time::DurationCount> boxes(2 * nr_boxes);
+        time_cell.read(boxes.data());
+
+        // TODO Actually, if we allow boxes to overlap, we should test the
+        //      start coordinates and end coordinates of the boxes
+        //      seperately. A start coordinate of a next box can be
+        //      smaller than an end coordinate of a previous box.
+        assert_increasing(time_cell.id(), boxes, issues);
+    }
+
+    // The number of counts must equal the number of time boxes
+    if(nr_counts != nr_boxes) {
+        issues.add_error(time_cell.id(), fmt::format(
+            "For each box a count must be written, but "
+            "the number of counts does not equal the number of boxes "
+            "({} != {})",
+            nr_counts, nr_boxes
+        ));
+    }
+
+    // Per location in time, the object tracker contains information
+    // about which objects are active. The number of these active sets
+    // must equal the number of cells.
+    else {
+        std::vector<Count> count(nr_boxes);
+        time_cell.count().read(count.data());
+
+        // Not in gcc 7 yet
+        // auto nr_cells = std::reduce(
+        //     std::execution::par, count.begin(), count.end());
+        auto const nr_cells = std::accumulate(
+            count.begin(), count.end(), Count{0});
+        auto const nr_active_sets =
+            object_tracker.active_set_index().nr_indices();
+
+        if(nr_cells != nr_active_sets) {
+            issues.add_error(time_cell.id(), fmt::format(
+                "Number of cells in time domain does not equal "
+                "the number of active set indices in object tracker "
+                "({} != {})",
+                nr_cells, nr_active_sets
             ));
         }
     }
@@ -606,7 +701,7 @@ static void validate_time_point(
         std::vector<time::DurationCount> points(time_point.nr_points());
         time_point.read(points.data());
 
-        assert_strictly_increasing(time_point.id(), points, issues);
+        assert_increasing(time_point.id(), points, issues);
     }
 
     // - Per location in time, the object tracker contains information
@@ -640,6 +735,11 @@ static void validate(
         case TimeDomainItemType::box: {
             validate_time_box(
                 object_tracker, time_domain.value<TimeBox>(), issues);
+            break;
+        }
+        case TimeDomainItemType::cell: {
+            validate_time_cell(
+                object_tracker, time_domain.value<TimeCell>(), issues);
             break;
         }
         case TimeDomainItemType::point: {

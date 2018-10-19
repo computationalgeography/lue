@@ -31,11 +31,22 @@ void init_submodule(
             gsl::span<ID> active_ids_{
                 active_ids.mutable_data(), active_ids.size()};
 
-            return select_random_ids(
+            select_random_ids(
                 active_set_sizes_, active_set_idxs_, active_ids_,
                 max_nr_objects);
         });
 
+    submodule.def(
+        "select_random_ids",
+        [](
+            py::array_t<ID>& active_ids,
+            Count const max_nr_objects)
+        {
+            gsl::span<ID> active_ids_{
+                active_ids.mutable_data(), active_ids.size()};
+
+            select_random_ids(active_ids_, max_nr_objects);
+        });
 }
 
 }  // namespace test
