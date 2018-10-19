@@ -13,6 +13,16 @@ class TimeSeriesTest(lue_test.TestCase):
         #     - Variable number of outlets per time box
         #     - Discretized within multiple time boxes
 
+        # - Time domain contains time boxes
+        # - Space domain contains space points
+        # - Property values are same_shape::different_shape (shape of value is
+        #     related to what is stored per box and boxes likely have different
+        #     numbers of cells)
+        # - Property values are discretized
+        # - Per time box the set of active objects is tracked
+        # - Per time box active objects exist in all its cells
+        # - Use this approach if the active set is constant within a time box
+
         nr_time_boxes = 3;
         shape_datatype = lue.dtype.Count
         shapes = numpy.random.randint(
@@ -143,7 +153,7 @@ class TimeSeriesTest(lue_test.TestCase):
             return discretization
 
 
-        dataset = lue.create_dataset("outlets.lue")
+        dataset = lue.create_dataset("outlets1.lue")
         phenomenon = dataset.add_phenomenon("areas")
         discharge = discharge_property(phenomenon)
         discretization = discretization_property(phenomenon)

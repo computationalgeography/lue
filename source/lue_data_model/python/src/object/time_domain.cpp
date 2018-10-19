@@ -19,6 +19,7 @@ void init_time_domain(
     Locations in time can be represented by boxes or points
 )")
         .value("box", TimeDomainItemType::box)
+        .value("cell", TimeDomainItemType::cell)
         .value("point", TimeDomainItemType::point)
         ;
 

@@ -17,7 +17,7 @@ class TimeCell:
 
 public:
 
-    using Counts = same_shape::constant_shape::Value;
+    using Count = same_shape::constant_shape::Value;
 
                    TimeCell            (hdf5::Group& parent);
 
@@ -26,7 +26,7 @@ public:
                    TimeCell            (TimeCell&&)=default;
 
                    TimeCell            (TimeBox&& time_box,
-                                        Counts&& counts);
+                                        Count&& count);
 
                    ~TimeCell           ()=default;
 
@@ -34,16 +34,16 @@ public:
 
     TimeCell&      operator=           (TimeCell&&)=default;
 
-    Count          nr_counts           () const;
+    lue::Count     nr_counts           () const;
 
-    Counts const&  counts              () const;
+    Count const&   count               () const;
 
-    Counts&        counts              ();
+    Count&         count               ();
 
 private:
 
     //! For each time box a count
-    Counts _counts;
+    Count          _count;
 
 };
 

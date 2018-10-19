@@ -56,14 +56,14 @@ BOOST_FIXTURE_TEST_CASE(create, Fixture)
     BOOST_CHECK_EQUAL(value.nr_arrays(), 0);
     BOOST_CHECK(value.array_shape() == hdf5::Shape{2});
 
-    auto const& counts = value.counts();
+    auto const& count = value.count();
 
-    BOOST_CHECK_EQUAL(counts.id().name(), time_discretization_tag);
+    BOOST_CHECK_EQUAL(count.id().name(), time_discretization_tag);
     BOOST_CHECK(
-        counts.memory_datatype() ==
+        count.memory_datatype() ==
         hdf5::Datatype{hdf5::NativeDatatypeTraits<lue::Count>::type_id()});
-    BOOST_CHECK_EQUAL(counts.nr_arrays(), 0);
-    BOOST_CHECK(counts.array_shape() == hdf5::Shape{});
+    BOOST_CHECK_EQUAL(count.nr_arrays(), 0);
+    BOOST_CHECK(count.array_shape() == hdf5::Shape{});
 }
 
 

@@ -58,6 +58,8 @@ pybind11_add_module(lue_py MODULE THIN_LTO
     src/stationary_space_box
     src/stationary_space_point
     src/time_box
+    src/time_cell
+    src/time_point
     src/validate
 
     $<$<TARGET_EXISTS:lue::test>:src/test/submodule>

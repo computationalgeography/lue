@@ -19,6 +19,13 @@ void init_active_object_id(
     ActiveObjectID docstring...
 )")
 
+        .def_property_readonly(
+            "nr_ids",
+            &ActiveObjectID::nr_ids,
+            R"(
+    nr_ids docstring...
+)")
+
         ;
 
 }

@@ -42,7 +42,9 @@ sys.stderr = catch_out
 
 import unittest
 result = unittest.TestResult()
-unittest.defaultTestLoader.discover(".", pattern="*_test.py").run(result)
+test_suite = unittest.defaultTestLoader.discover(".", pattern="*_test.py")
+# print("\n".join([str(ts) for ts in test_suite]))
+test_suite.run(result)
 
 errors = [tuple[1] for tuple in result.errors]
 catch_out.write("\n".join(errors))

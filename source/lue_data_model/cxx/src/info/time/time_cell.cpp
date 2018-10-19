@@ -8,9 +8,9 @@ TimeCell::TimeCell(
     hdf5::Group& parent):
 
     TimeBox{parent},
-    _counts{
+    _count{
         parent, time_discretization_tag,
-        hdf5::Datatype{hdf5::NativeDatatypeTraits<Count>::type_id()}}
+        hdf5::Datatype{hdf5::NativeDatatypeTraits<lue::Count>::type_id()}}
 
 {
 }
@@ -18,30 +18,30 @@ TimeCell::TimeCell(
 
 TimeCell::TimeCell(
     TimeBox&& time_box,
-    TimeCell::Counts&& counts):
+    TimeCell::Count&& count):
 
     TimeBox{std::forward<TimeBox>(time_box)},
-    _counts{std::forward<TimeCell::Counts>(counts)}
+    _count{std::forward<TimeCell::Count>(count)}
 
 {
 }
 
 
-Count TimeCell::nr_counts() const
+lue::Count TimeCell::nr_counts() const
 {
-    return _counts.nr_arrays();
+    return _count.nr_arrays();
 }
 
 
-TimeCell::Counts const& TimeCell::counts() const
+TimeCell::Count const& TimeCell::count() const
 {
-    return _counts;
+    return _count;
 }
 
 
-TimeCell::Counts& TimeCell::counts()
+TimeCell::Count& TimeCell::count()
 {
-    return _counts;
+    return _count;
 }
 
 
@@ -53,12 +53,12 @@ TimeCell create_time_cell(
     auto time_box = create_time_box(parent, clock);
 
     hdf5::Datatype memory_datatype{
-        hdf5::NativeDatatypeTraits<Count>::type_id()};
+        hdf5::NativeDatatypeTraits<lue::Count>::type_id()};
 
-    auto counts = same_shape::constant_shape::create_value(
+    auto count = same_shape::constant_shape::create_value(
         parent, time_discretization_tag, memory_datatype);
 
-    return TimeCell{std::move(time_box), std::move(counts)};
+    return TimeCell{std::move(time_box), std::move(count)};
 }
 
 }  // namespace lue
