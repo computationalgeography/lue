@@ -242,7 +242,7 @@ inline T& Collection<T>::operator[](
 
 template<
     typename T>
-typename Collection<T>::iterator Collection<T>::begin()
+inline typename Collection<T>::iterator Collection<T>::begin()
 {
     return _items.begin();
 }
@@ -250,7 +250,7 @@ typename Collection<T>::iterator Collection<T>::begin()
 
 template<
     typename T>
-typename Collection<T>::const_iterator Collection<T>::begin() const
+inline typename Collection<T>::const_iterator Collection<T>::begin() const
 {
     return _items.begin();
 }
@@ -258,7 +258,7 @@ typename Collection<T>::const_iterator Collection<T>::begin() const
 
 template<
     typename T>
-typename Collection<T>::iterator Collection<T>::end()
+inline typename Collection<T>::iterator Collection<T>::end()
 {
     return _items.end();
 }
@@ -266,7 +266,7 @@ typename Collection<T>::iterator Collection<T>::end()
 
 template<
     typename T>
-typename Collection<T>::const_iterator Collection<T>::end() const
+inline typename Collection<T>::const_iterator Collection<T>::end() const
 {
     return _items.end();
 }
@@ -280,9 +280,17 @@ inline std::vector<std::string> Collection<T>::item_names() const
 }
 
 
+inline bool collection_exists(
+    hdf5::Group& parent,
+    std::string const& name)
+{
+    return hdf5::group_exists(parent, name);
+}
+
+
 template<
     typename T>
-Collection<T> create_collection(
+inline Collection<T> create_collection(
     hdf5::Group& parent,
     std::string const& name)
 {

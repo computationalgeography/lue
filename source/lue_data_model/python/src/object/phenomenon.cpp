@@ -1,6 +1,7 @@
 #include "lue/object/phenomena.hpp"
 #include "../core/collection.hpp"
 #include <pybind11/pybind11.h>
+#include <boost/algorithm/string/join.hpp>
 
 
 namespace py = pybind11;
@@ -8,6 +9,32 @@ using namespace pybind11::literals;
 
 
 namespace lue {
+namespace {
+
+static std::string formal_string_representation(
+    Phenomenon const& phenomenon)
+{
+    return fmt::format(
+        "Phenomenon(pathname='{}')",
+        phenomenon.id().pathname());
+}
+
+
+static std::string informal_string_representation(
+    Phenomenon const& phenomenon)
+{
+    return fmt::format(
+        "{}\n"
+        "    collection-property-sets: [{}]\n"
+        "    property-sets: [{}]",
+        formal_string_representation(phenomenon),
+        boost::algorithm::join(
+            phenomenon.collection_property_sets().names(), ", "),
+        boost::algorithm::join(phenomenon.property_sets().names(), ", "));
+}
+
+}  // Anonymous namespace
+
 
 void init_phenomenon(
     py::module& module)
@@ -62,10 +89,15 @@ void init_phenomenon(
 
         .def(
             "__repr__",
-            [](
-                    Phenomenon const& phenomenon) {
-                return "Phenomenon(pathname='" +
-                    phenomenon.id().pathname() + "')";
+            [](Phenomenon const& phenomenon) {
+                return formal_string_representation(phenomenon);
+            }
+        )
+
+        .def(
+            "__str__",
+            [](Phenomenon const& phenomenon) {
+                return informal_string_representation(phenomenon);
             }
         )
 

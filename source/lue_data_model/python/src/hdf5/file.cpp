@@ -31,6 +31,26 @@ unsigned int python_mode_to_hdf5_flag(
 }
 
 
+std::string intent_to_python_mode(
+    unsigned int const intent)
+{
+    std::string mode;
+
+    if(intent == H5F_ACC_RDONLY) {
+        mode = "r";
+    }
+    else if(intent == H5F_ACC_RDWR) {
+        mode = "w";
+    }
+    else {
+        throw py::value_error(
+            "intent expected to be H5F_ACC_RDONLY or H5F_ACC_RDWR");
+    }
+
+    return mode;
+}
+
+
 void init_file(
         py::module& module)
 {

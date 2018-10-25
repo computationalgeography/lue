@@ -32,6 +32,12 @@ Phenomenon& Phenomena::add(
 Phenomena create_phenomena(
     hdf5::Group& parent)
 {
+    if(collection_exists(parent, phenomena_tag)) {
+        throw std::runtime_error(fmt::format(
+            "Phenomena collection already exists at {}",
+            parent.id().pathname()));
+    }
+
     auto collection = create_collection<Phenomenon>(parent, phenomena_tag);
 
     return Phenomena{std::move(collection)};

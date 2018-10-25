@@ -60,6 +60,8 @@ public:
 
     void           flush               () const;
 
+    unsigned int   intent              () const;
+
 private:
 
 };

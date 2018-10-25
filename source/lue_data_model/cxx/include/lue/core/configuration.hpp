@@ -77,6 +77,13 @@ public:
         return lhs._aspects == rhs._aspects;
     }
 
+    friend bool operator!=(
+        Configuration<Ts...> const& lhs,
+        Configuration<Ts...> const& rhs)
+    {
+        return lhs._aspects != rhs._aspects;
+    }
+
 private:
 
     template<

@@ -16,12 +16,17 @@ std::string const usage = R"(
 Run a performance benchmark
 
 usage:
-    {0} --nr_localities=<nr_localities> --nr_threads=<nr_threads> [<output>]
+    {0}
+        --count=<count>
+        --nr_localities=<nr_localities> --nr_threads=<nr_threads>
+        --work_size=<work_size> [<output>]
     {0} (-h | --help) | --version
 
 options:
+    --count=<count>  Number of times the benchmark must be run
     --nr_localities=<nr_localities>  Maximum number of localities to use
-    --nr_threads=<nr_threads>  Maximum number of OS threads to use
+    --nr_threads=<nr_threads>  Maximum number of OS threads to use, per node
+    --work_size=<work-size>  Size of work to process
     -h --help      Show this screen
 
 Results will be written to the terminal if no output pathname is provided
@@ -35,10 +40,12 @@ Results will be written to the terminal if no output pathname is provided
 Environment create_environment(
     std::map<std::string, docopt::value> const& arguments)
 {
+    std::size_t const count = arguments.at("--count").asLong();
     std::size_t const nr_localities = arguments.at("--nr_localities").asLong();
     std::size_t const nr_threads = arguments.at("--nr_threads").asLong();
+    std::size_t const work_size = arguments.at("--work_size").asLong();
 
-    return Environment{nr_localities, nr_threads};
+    return Environment{count, nr_localities, nr_threads, work_size};
 }
 
 } // Namespace detail
@@ -49,7 +56,6 @@ template<
     typename Benchmark>
 inline int run_hpx_benchmark(
     Benchmark& benchmark,
-    Environment const& environment,
     std::ostream& stream)
 {
     int status = benchmark.run();
@@ -66,7 +72,7 @@ inline int run_hpx_benchmark(
         return EXIT_FAILURE;
     }
 
-    stream << format_as_json(benchmark, environment) << "\n";
+    stream << format_as_json(benchmark) << "\n";
 
     return EXIT_SUCCESS;
 }
@@ -94,10 +100,10 @@ int hpx_main(                                                                  \
     if(!pathname.empty()) {                                                    \
         std::fstream stream;                                                   \
         stream.open(pathname, std::ios::out);                                  \
-        status = run_hpx_benchmark(benchmark, environment, stream);            \
+        status = run_hpx_benchmark(benchmark, stream);                         \
     }                                                                          \
     else {                                                                     \
-        status = run_hpx_benchmark(benchmark, environment, std::cout);         \
+        status = run_hpx_benchmark(benchmark, std::cout);                      \
     }                                                                          \
                                                                                \
     return status;                                                             \

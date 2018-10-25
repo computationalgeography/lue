@@ -1,8 +1,7 @@
-#include "lue/object/property/property_set.hpp"
-#include "lue/object/property_sets.hpp"
-#include "../core/collection.hpp"
-#include "lue/py/conversion.hpp"
-#include <boost/algorithm/string/join.hpp>
+#include "lue/object/property/properties.hpp"
+// #include "../core/collection.hpp"
+// #include "lue/py/conversion.hpp"
+// #include <boost/algorithm/string/join.hpp>
 
 
 namespace py = pybind11;
@@ -10,62 +9,62 @@ using namespace pybind11::literals;
 
 
 namespace lue {
-namespace {
+// namespace {
+// 
+// static std::string formal_string_representation(
+//     PropertySet const& property_set)
+// {
+//     return fmt::format(
+//         "PropertySet(pathname='{}')",
+//         property_set.id().pathname());
+// }
+// 
+// 
+// static std::string informal_string_representation(
+//     PropertySet const& property_set)
+// {
+//     auto const& properties = property_set.properties();
+// 
+//     return fmt::format(
+//         "{}\n"
+//         "    same shape properties: [{}]\n"
+//         "    same shape/constant shape properties: [{}]\n"
+//         "    same shape/variable shape properties: [{}]\n"
+//         "    different shape properties: [{}]\n"
+//         "    different shape/constant shape properties: [{}]\n"
+//         "    different shape/variable shape properties: [{}]",
+//         formal_string_representation(property_set),
+//         boost::algorithm::join(
+//             properties.collection<
+//                 lue::same_shape::Properties>().names(),
+//             ", "),
+//         boost::algorithm::join(
+//             properties.collection<
+//                 lue::same_shape::constant_shape::Properties>().names(),
+//             ", "),
+//         boost::algorithm::join(
+//             properties.collection<
+//                 lue::same_shape::variable_shape::Properties>().names(),
+//             ", "),
+//         boost::algorithm::join(
+//             properties.collection<
+//                 lue::different_shape::Properties>().names(),
+//             ", "),
+//         boost::algorithm::join(
+//             properties.collection<
+//                 lue::different_shape::constant_shape::Properties>().names(),
+//             ", "),
+//         boost::algorithm::join(
+//             properties.collection<
+//                 lue::different_shape::variable_shape::Properties>().names(),
+//             ", ")
+//         );
+// }
+// 
+// }  // Anonymous namespace
 
-static std::string formal_string_representation(
-    PropertySet const& property_set)
-{
-    return fmt::format(
-        "PropertySet(pathname='{}')",
-        property_set.id().pathname());
-}
 
-
-static std::string informal_string_representation(
-    PropertySet const& property_set)
-{
-    auto const& properties = property_set.properties();
-
-    return fmt::format(
-        "{}\n"
-        "    same_shape properties: [{}]\n"
-        "    same_shape/constant_shape properties: [{}]\n"
-        "    same_shape/variable_shape properties: [{}]\n"
-        "    different_shape properties: [{}]\n"
-        "    different_shape/constant_shape properties: [{}]\n"
-        "    different_shape/variable_shape properties: [{}]",
-        formal_string_representation(property_set),
-        boost::algorithm::join(
-            properties.collection<
-                lue::same_shape::Properties>().names(),
-            ", "),
-        boost::algorithm::join(
-            properties.collection<
-                lue::same_shape::constant_shape::Properties>().names(),
-            ", "),
-        boost::algorithm::join(
-            properties.collection<
-                lue::same_shape::variable_shape::Properties>().names(),
-            ", "),
-        boost::algorithm::join(
-            properties.collection<
-                lue::different_shape::Properties>().names(),
-            ", "),
-        boost::algorithm::join(
-            properties.collection<
-                lue::different_shape::constant_shape::Properties>().names(),
-            ", "),
-        boost::algorithm::join(
-            properties.collection<
-                lue::different_shape::variable_shape::Properties>().names(),
-            ", ")
-        );
-}
-
-}  // Anonymous namespace
-
-
-void init_property_set(
+void init_property(
     py::module& module)
 {
 
@@ -236,99 +235,6 @@ void init_property_set(
     The property-set will have no space domain. Information stored in
     this property-set will be omnipresent through space.
 )",
-            py::return_value_policy::reference_internal)
-
-        ;
-
-
-    py::class_<Properties, hdf5::Group>(
-        module,
-        "Properties",
-        R"(
-    TODO docstring
-)")
-
-        .def(
-            "__getitem__",
-            [](
-                Properties& properties,
-                std::string const& name)
-            {
-
-                py::object property = py::none();
-                auto const shape_per_object =
-                    properties.shape_per_object(name);
-                auto const value_variability =
-                    properties.value_variability(name);
-
-                switch(value_variability) {
-                    case ValueVariability::constant: {
-                        switch(shape_per_object) {
-                            case ShapePerObject::same: {
-                                using Collection = same_shape::Properties;
-                                property = py::cast(&properties.collection<Collection>()[name]);
-                                break;
-                            }
-                            case ShapePerObject::different: {
-                                using Collection = different_shape::Properties;
-                                property = py::cast(&properties.collection<Collection>()[name]);
-                                break;
-                            }
-                        }
-
-                        break;
-                    }
-                    case ValueVariability::variable: {
-                        auto const shape_variability =
-                            properties.shape_variability(name);
-
-                        switch(shape_per_object) {
-                            case ShapePerObject::same: {
-
-                                switch(shape_variability) {
-                                    case ShapeVariability::constant: {
-                                        using Collection =
-                                            same_shape::constant_shape::Properties;
-                                        property = py::cast(&properties.collection<Collection>()[name]);
-                                        break;
-                                    }
-                                    case ShapeVariability::variable: {
-                                        using Collection = same_shape::variable_shape::Properties;
-                                        property = py::cast(&properties.collection<Collection>()[name]);
-                                        break;
-                                    }
-                                }
-
-                                break;
-                            }
-                            case ShapePerObject::different: {
-
-                                switch(shape_variability) {
-                                    case ShapeVariability::constant: {
-                                        using Collection =
-                                            different_shape::constant_shape::Properties;
-                                        property = py::cast(&properties.collection<Collection>()[name]);
-                                        break;
-                                    }
-                                    case ShapeVariability::variable: {
-                                        using Collection =
-                                            different_shape::variable_shape::Properties;
-                                        property = py::cast(&properties.collection<Collection>()[name]);
-
-                                        break;
-                                    }
-                                }
-
-                                break;
-                            }
-                        }
-
-                        break;
-                    }
-                }
-
-                return property;
-            },
             py::return_value_policy::reference_internal)
 
         ;

@@ -13,7 +13,7 @@ std::string const usage = R"(
 Translate data into the LUE dataset format
 
 usage:
-    import [-m <name>] <output> <inputs>...
+    import [-m <name>] [--add] <output> <inputs>...
     import (-h | --help)
 
 arguments:
@@ -23,6 +23,7 @@ arguments:
 options:
     -h --help   Show this screen
     -m <name> --meta=<name>  File containing metadata to use during import
+    --add       Add data to the output dataset instead of overwriting it
 )";
 
 
@@ -85,6 +86,7 @@ int Import::run_implementation()
     auto const output_dataset_name = argument<std::string>("<output>");
 
     bool const metadata_passed = argument_parsed("--meta");
+    bool const add_passed = argument_parsed("--add");
     // bool const stack_passed = argument_parsed("--start");
 
     auto const metadata = metadata_passed
@@ -123,7 +125,8 @@ int Import::run_implementation()
     if(bfs::path(first_input_dataset_name).extension() == ".json") {
        assert(input_dataset_names.size() == 1);
        translate_json_to_lue(
-           first_input_dataset_name, output_dataset_name, metadata);
+           first_input_dataset_name, output_dataset_name,
+           add_passed, metadata);
     }
     else {
         throw std::runtime_error(

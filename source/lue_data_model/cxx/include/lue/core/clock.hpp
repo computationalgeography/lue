@@ -14,6 +14,8 @@ public:
 
     bool           operator==          (Clock const& other) const;
 
+    bool           operator!=          (Clock const& other) const;
+
     bool           operator<           (Clock const& other) const;
 
     time::Unit     unit                () const;

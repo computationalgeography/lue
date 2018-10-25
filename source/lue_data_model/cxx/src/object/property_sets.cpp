@@ -93,8 +93,13 @@ PropertySets create_property_sets(
     hdf5::Group& parent,
     std::string const& name)
 {
-    auto collection = create_collection<PropertySet>(
-        parent, name);
+    if(collection_exists(parent, name)) {
+        throw std::runtime_error(fmt::format(
+            "Property-set collection {} already exists at {}",
+            name, parent.id().pathname()));
+    }
+
+    auto collection = create_collection<PropertySet>(parent, name);
 
     return PropertySets{std::move(collection)};
 }

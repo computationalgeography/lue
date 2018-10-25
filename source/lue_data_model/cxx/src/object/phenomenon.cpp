@@ -82,6 +82,12 @@ Phenomenon create_phenomenon(
     hdf5::Group& parent,
     std::string const& name)
 {
+    if(hdf5::group_exists(parent, name)) {
+        throw std::runtime_error(fmt::format(
+            "Phenomenon {} already exists at {}",
+            name, parent.id().pathname()));
+    }
+
     auto group = hdf5::create_group(parent, name);
 
     create_object_id(group);

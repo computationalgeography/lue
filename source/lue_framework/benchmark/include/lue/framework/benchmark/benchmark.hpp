@@ -68,8 +68,8 @@ public:
 
                    Benchmark           (Callable&& callable,
                                         Environment const& environment,
-                                        std::string const& description,
-                                        std::size_t count);
+                                        std::string const& name,
+                                        std::string const& description);
 
                    Benchmark           (Benchmark const&)=delete;
 
@@ -80,6 +80,10 @@ public:
     Benchmark&     operator=           (Benchmark const&)=delete;
 
     Benchmark&     operator=           (Benchmark&&)=delete;
+
+    std::string const& name            () const;
+
+    std::string const& description     () const;
 
     Environment const& environment     () const;
 
@@ -97,11 +101,11 @@ private:
     //! Environment the benchmark runs in
     Environment    _environment;
 
+    //! Name of the benchmark
+    std::string    _name;
+
     //! Description of the benchmark
     std::string    _description;
-
-    //! Number of times a measurement must be taken
-    std::size_t    _count;
 
     //! Interval in which the benchmark ran
     TimeInterval   _time_interval;
@@ -122,16 +126,32 @@ template<
 inline Benchmark<Callable>::Benchmark(
     Callable&& callable,
     Environment const& environment,
-    std::string const& description,
-    std::size_t const count)
+    std::string const& name,
+    std::string const& description)
 :
     _callable{std::forward<Callable>(callable)},
     _environment{environment},
+    _name{name},
     _description{description},
-    _count{count},
     _time_interval{},
     _timings{}
 {
+}
+
+
+template<
+    typename Callable>
+std::string const& Benchmark<Callable>::name() const
+{
+    return _name;
+}
+
+
+template<
+    typename Callable>
+std::string const& Benchmark<Callable>::description() const
+{
+    return _description;
 }
 
 
@@ -159,12 +179,12 @@ inline int Benchmark<Callable>::run()
     _timings.clear();
     Stopwatch stopwatch;
 
-    std::cout << _description << ": " << std::flush;
+    std::cout << _name << ": " << std::flush;
 
     auto const start = Stopwatch::now();
-    for(std::size_t i = 0; i < _count; ++i) {
+    for(std::size_t i = 0; i < _environment.count(); ++i) {
         stopwatch.start();
-        _callable();
+        _callable(_environment);
         stopwatch.stop();
         _timings.push_back(Timing{stopwatch.time_interval()});
         std::cout << "." << std::flush;

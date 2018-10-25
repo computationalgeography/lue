@@ -14,7 +14,7 @@ namespace benchmark {
     The string is formatted according to ISO 8601: yyyy-mm-ddThh:mm:ss+zzzz.
     Example: 2018-10-11T15:55:59+0200
 */
-std::string to_iso_string(
+inline std::string to_iso_string(
     TimeInterval::TimePoint const& time_point)
 {
     static std::size_t const max_nr_characters = 30;
@@ -66,9 +66,8 @@ std::string to_iso_string(
 */
 template<
     typename Benchmark>
-std::string format_as_json(
-    Benchmark const& benchmark,
-    Environment const& environment)
+inline std::string format_as_json(
+    Benchmark const& benchmark)
 {
     using json = nlohmann::json;
 
@@ -83,12 +82,17 @@ std::string format_as_json(
     j["start"] = to_iso_string(time_interval.start());
     // j["stop"] = to_iso_string(time_interval.stop());
     j["duration"] = time_interval.duration().count();
+    j["name"] = benchmark.name();
+    j["description"] = benchmark.description();
+
+    auto const& environment = benchmark.environment();
 
     {
         auto environment_json = json::object();
 
         environment_json["nr_localities"] = environment.nr_localities();
         environment_json["nr_threads"] = environment.nr_threads();
+        environment_json["work_size"] = environment.work_size();
 
         j["environment"] = environment_json;
     }
@@ -99,12 +103,6 @@ std::string format_as_json(
         auto o = json::object();
         o["start"] = to_iso_string(timing.time_interval().start());
         o["duration"] = timing.time_interval().duration().count();
-
-        // std::cout
-        //     << to_iso_string(timing.time_interval().start()) << ": "
-        //     << std::chrono::duration_cast<Units>(
-        //         timing.time_interval().duration()).count()
-        //     << " microseconds" << std::endl;
 
         a.emplace_back(o);
     }

@@ -36,6 +36,13 @@ bool Clock::operator==(
 }
 
 
+bool Clock::operator!=(
+    Clock const& other) const
+{
+    return !(*this == other);
+}
+
+
 bool Clock::operator<(
     Clock const& other) const
 {

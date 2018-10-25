@@ -228,6 +228,12 @@ different_shape::Property& Properties::add(
 Properties create_properties(
     hdf5::Group& parent)
 {
+    if(hdf5::group_exists(parent, properties_tag)) {
+        throw std::runtime_error(fmt::format(
+            "Properties group already exists at {}",
+            parent.id().pathname()));
+    }
+
     auto group = hdf5::create_group(parent, properties_tag);
 
     same_shape::create_properties(group);

@@ -160,6 +160,22 @@ void File::flush() const
 }
 
 
+unsigned int File::intent() const
+{
+    unsigned int intent;
+    auto status = ::H5Fget_intent(id(), &intent);
+
+    if(status < 0) {
+        throw std::runtime_error(fmt::format(
+                "Cannot determine intent of file {}",
+                pathname()
+            ));
+    }
+
+    return intent;
+}
+
+
 // std::string File::name() const
 // {
 //     auto const pathname = this->pathname();

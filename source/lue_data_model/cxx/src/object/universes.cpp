@@ -32,6 +32,12 @@ Universe& Universes::add(
 Universes create_universes(
     hdf5::Group& parent)
 {
+    if(collection_exists(parent, universes_tag)) {
+        throw std::runtime_error(fmt::format(
+            "Universes collection already exists at {}",
+            parent.id().pathname()));
+    }
+
     auto collection = create_collection<Universe>(parent, universes_tag);
 
     return Universes{std::move(collection)};

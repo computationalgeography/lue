@@ -1,6 +1,7 @@
 #include "lue/object/dataset.hpp"
 #include "lue/py/hdf5/file.hpp"
 #include <pybind11/pybind11.h>
+#include <boost/algorithm/string/join.hpp>
 
 
 namespace py = pybind11;
@@ -8,6 +9,32 @@ using namespace pybind11::literals;
 
 
 namespace lue {
+namespace {
+
+static std::string formal_string_representation(
+    Dataset const& dataset)
+{
+    return fmt::format(
+        "Dataset(name='{}', flags='{}')",
+        dataset.pathname(),
+        hdf5::intent_to_python_mode(dataset.intent()));
+}
+
+
+static std::string informal_string_representation(
+    Dataset const& dataset)
+{
+    return fmt::format(
+        "{}\n"
+        "    universes: [{}]\n"
+        "    phenomena: [{}]",
+        formal_string_representation(dataset),
+        boost::algorithm::join(dataset.universes().names(), ", "),
+        boost::algorithm::join(dataset.phenomena().names(), ", "));
+}
+
+}  // Anonymous namespace
+
 
 void init_dataset(
         py::module& module)
@@ -36,10 +63,14 @@ void init_dataset(
         .def(
             "__repr__",
             [](Dataset const& dataset) {
-                // TODO Access flag to string.
-                return "Dataset("
-                    "name='" + dataset.pathname() + "', " +
-                    "flags='" + "TODO" + "')";
+                return formal_string_representation(dataset);
+            }
+        )
+
+        .def(
+            "__str__",
+            [](Dataset const& dataset) {
+                return informal_string_representation(dataset);
             }
         )
 
