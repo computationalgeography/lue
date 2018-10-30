@@ -5,6 +5,8 @@ set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
+include(FetchContent)
+
 include(PeacockPlatform)
 include(LueConfiguration)
 include(DevBaseExternal)

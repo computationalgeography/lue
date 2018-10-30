@@ -1,5 +1,3 @@
-include(FetchContent)
-
 FetchContent_Declare(imgui
     // MIT License, see ${imgui_SOURCE_DIR}/LICENSE.txt
     GIT_REPOSITORY https://github.com/ocornut/imgui.git

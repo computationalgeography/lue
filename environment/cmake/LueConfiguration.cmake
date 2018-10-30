@@ -33,6 +33,15 @@ option(LUE_BUILD_TEST
     FALSE)
 
 
+# Options related to external software used by the project
+option(LUE_BUILD_DOCOPT
+    "If Docopt is required, build it instead of relying on the environment"
+    FALSE)
+option(LUE_BUILD_HPX
+    "If HPX is required, build it instead of relying on the environment"
+    FALSE)
+
+
 # Handle internal dependencies -------------------------------------------------
 if(LUE_BUILD_DATA_MODEL)
     if(LUE_DATA_MODEL_WITH_UTILITIES)
@@ -141,6 +150,29 @@ if(DEVBASE_BOOST_REQUIRED)
 endif()
 
 
+if(DEVBASE_DOCOPT_REQUIRED)
+    if(LUE_BUILD_DOCOPT)
+        # Build Docopt ourselves
+        FetchContent_Declare(docopt
+            GIT_REPOSITORY https://github.com/docopt/docopt.cpp
+            GIT_TAG 18110222dc9cb57ec880ce24fbbd7291b2d1046e  # 0.6.2
+        )
+
+        FetchContent_GetProperties(docopt)
+
+        if(NOT docopt_POPULATED)
+            FetchContent_Populate(docopt)
+            add_subdirectory(${docopt_SOURCE_DIR} ${docopt_BINARY_DIR})
+        endif()
+    else()
+        # Use Docopt from the environment
+        find_package(Docopt REQUIRED)
+    endif()
+
+    unset(DEVBASE_DOCOPT_REQUIRED)
+endif()
+
+
 if(DEVBASE_DOXYGEN_REQUIRED)
     find_package(Doxygen REQUIRED dot)
     unset(DEVBASE_DOXYGEN_REQUIRED)
@@ -154,19 +186,56 @@ endif()
 
 
 if(DEVBASE_HPX_REQUIRED)
-    find_package(HPX REQUIRED)
+    if(LUE_BUILD_HPX)
+        # Build HPX ourselves
+        FetchContent_Declare(hpx
+            GIT_REPOSITORY https://github.com/STEllAR-GROUP/hpx
+            GIT_TAG 3a95a3cd5f00d7b957b06b3d8047387a7d775bd4  # 1.1.0
+            # GIT_TAG 38ecfb0ec6cd2470c15bc64feb0b505310489ccc  # 1.2.0-rc1
+        )
 
-    if(HPX_FOUND)
-        message(STATUS "Found HPX")
-        message(STATUS "  includes : ${HPX_INCLUDE_DIRS}")
-        message(STATUS "  libraries: ${HPX_LIBRARIES}")
+        FetchContent_GetProperties(hpx)
 
-        # Check whether we are using the same build type as HPX
-        if (NOT "${HPX_BUILD_TYPE}" STREQUAL "${CMAKE_BUILD_TYPE}")
-            message(WARNING
-                "CMAKE_BUILD_TYPE does not match HPX_BUILD_TYPE: "
-                "\"${CMAKE_BUILD_TYPE}\" != \"${HPX_BUILD_TYPE}\"\n"
-                "ABI compatibility is not guaranteed. Expect link errors.")
+        if(NOT hpx_POPULATED)
+            FetchContent_Populate(hpx)
+
+            set(HPX_WITH_MALLOC:STRING JEMALLOC)
+            set(HPX_WITH_HWLOC:BOOL ON)
+            set(HPX_WITH_THREAD_IDLE_RATES:BOOL ON)
+
+            set(HPX_WITH_PAPI:BOOL ON)
+            set(HPX_WITH_GOOGLE_PERFTOOLS:BOOL ON)
+
+            set(HPX_WITH_TOOLS:BOOL ON)
+            set(HPX_WITH_TESTS:BOOL ON)
+            set(HPX_WITH_EXAMPLES:BOOL OFF)  # TODO Compiler error. Boost.Config.
+            set(HPX_WITH_EXAMPLES_HDF5:BOOL OFF)  # TODO threadsafe hdf5 is not picked up
+            set(HPX_WITH_EXAMPLES_OPENMP:BOOL ON)
+
+            set(HPX_WITH_CXX0Y:BOOL ON)
+            set(HPX_WITH_UNWRAPPED_COMPATIBILITY:BOOL OFF)
+            set(HPX_WITH_INCLUSIVE_SCAN_COMPATIBILITY:BOOL OFF)
+            set(HPX_WITH_LOCAL_DATAFLOW_COMPATIBILITY:BOOL OFF)
+            set(HPX_WITH_PARCELPORT_ACTION_COUNTERS:BOOL ON)
+
+            add_subdirectory(${hpx_SOURCE_DIR} ${hpx_BINARY_DIR})
+        endif()
+    else()
+        # Use HPX from the environment
+        find_package(HPX REQUIRED)
+
+        if(HPX_FOUND)
+            message(STATUS "Found HPX")
+            message(STATUS "  includes : ${HPX_INCLUDE_DIRS}")
+            message(STATUS "  libraries: ${HPX_LIBRARIES}")
+
+            # Check whether we are using the same build type as HPX
+            if (NOT "${HPX_BUILD_TYPE}" STREQUAL "${CMAKE_BUILD_TYPE}")
+                message(WARNING
+                    "CMAKE_BUILD_TYPE does not match HPX_BUILD_TYPE: "
+                    "\"${CMAKE_BUILD_TYPE}\" != \"${HPX_BUILD_TYPE}\"\n"
+                    "ABI compatibility is not guaranteed. Expect link errors.")
+            endif()
         endif()
     endif()
 
