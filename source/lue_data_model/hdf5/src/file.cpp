@@ -67,13 +67,7 @@ File::File(
 
     File{name, flags, AccessPropertyList()}
 
-    // : Group(Identifier(::H5Fopen(name.c_str(), flags, H5P_DEFAULT),
-    //     ::H5Fclose))
-
 {
-    // if(!id().is_valid()) {
-    //     throw std::runtime_error("Cannot open file " + name);
-    // }
 }
 
 
@@ -86,6 +80,16 @@ File::File(
     std::string const& name):
 
     File{name, H5F_ACC_RDONLY, AccessPropertyList()}
+
+{
+}
+
+
+File::File(
+    std::string const& name,
+    AccessPropertyList const& access_property_list):
+
+    File{name, H5F_ACC_RDONLY, access_property_list}
 
 {
 }

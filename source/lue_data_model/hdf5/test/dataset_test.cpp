@@ -162,7 +162,8 @@ BOOST_AUTO_TEST_CASE(dataset_utf8)
     };
 
     {
-        auto file = create_in_memory_file(filename);
+        // TODO Use a fixture to get rid of the file afterwards
+        auto file = create_file(filename);
 
         Dataset::CreationPropertyList creation_property_list;
         auto const file_datatype{lue::hdf5::create_string_datatype()};

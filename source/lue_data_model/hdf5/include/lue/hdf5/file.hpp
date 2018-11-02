@@ -40,6 +40,10 @@ public:
                                         unsigned int const flags);
 
                    File                (std::string const& name,
+                                        AccessPropertyList const&
+                                            access_property_list);
+
+                   File                (std::string const& name,
                                         unsigned int const flags,
                                         AccessPropertyList const&
                                             access_property_list);
