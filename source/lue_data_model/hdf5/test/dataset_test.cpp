@@ -2,6 +2,7 @@
 #include <boost/test/unit_test.hpp>
 #include "lue/hdf5/dataset.hpp"
 #include "lue/hdf5/file.hpp"
+#include "lue/hdf5/vlen_memory.hpp"
 
 
 using namespace lue::hdf5;
@@ -143,6 +144,61 @@ BOOST_FIXTURE_TEST_CASE(read_cell, Read2DDatasetFixture)
     for(std::size_t r = 0; r < nr_rows; ++r) {
         for(std::size_t c = 0; c < nr_cols; ++c) {
             test_read_cell(r, c);
+        }
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE(dataset_utf8)
+{
+    std::string const filename = "my_utf8_dataset.lue";
+    std::string const dataset_name = "my_dataset";
+    std::size_t const nr_rows = 3;
+    std::size_t const nr_cols = 2;
+    char const* values[nr_rows][nr_cols] = {
+        {"ôû=€",   "-111111111111111111111111111"},
+        {   "",    "9"},
+        {"ñahè",  "ßßß"}
+    };
+
+    {
+        auto file = create_in_memory_file(filename);
+
+        Dataset::CreationPropertyList creation_property_list;
+        auto const file_datatype{lue::hdf5::create_string_datatype()};
+
+        Dataspace const dataspace = create_dataspace({nr_rows, nr_cols});
+
+        auto dataset = lue::hdf5::create_dataset(
+            file.id(), dataset_name, file_datatype, dataspace,
+            creation_property_list);
+
+        dataset.write(file_datatype, values);
+    }
+
+    {
+        lue::hdf5::File file{filename};
+        lue::hdf5::Dataset dataset{file, dataset_name};
+
+        auto shape = dataset.shape();
+        BOOST_REQUIRE_EQUAL(shape.size(), 2);
+        BOOST_REQUIRE_EQUAL(shape[0], nr_rows);
+        BOOST_REQUIRE_EQUAL(shape[1], nr_cols);
+        BOOST_REQUIRE(dataset.datatype().is_string());
+        auto const memory_datatype{lue::hdf5::create_string_datatype()};
+
+        char* values_read[nr_rows][nr_cols];
+        lue::hdf5::VLenMemory vlen{
+            memory_datatype, dataset.dataspace(), values_read};
+
+        dataset.read(memory_datatype, values_read);
+
+        for(std::size_t r = 0; r < nr_rows; ++r) {
+            for(std::size_t c = 0; c < nr_cols; ++c) {
+                BOOST_CHECK_EQUAL(
+                    std::string{values[r][c]},
+                    std::string{values_read[r][c]});
+            }
         }
     }
 }

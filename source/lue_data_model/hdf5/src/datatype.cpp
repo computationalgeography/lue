@@ -1,6 +1,7 @@
 #include "lue/hdf5/datatype.hpp"
 #include "lue/hdf5/datatype_traits.hpp"
 #include <boost/detail/endian.hpp>
+#include <fmt/format.h>
 #include <algorithm>
 #include <cassert>
 #include <set>
@@ -26,7 +27,7 @@ bool datatypes_are_equal(
 std::string native_datatype_as_string(
     Datatype const& datatype)
 {
-    assert(datatype.is_native());
+    assert(datatype.is_native() || datatype.is_string());
 
     std::string result;
 
@@ -60,6 +61,9 @@ std::string native_datatype_as_string(
     else if(datatype == native_int64) {
         result = NativeDatatypeTraits<int64_t>::name();
     }
+    else if(datatype.is_string()) {
+        result = NativeDatatypeTraits<std::string>::name();
+    }
 
     assert(!result.empty());
 
@@ -70,69 +74,42 @@ std::string native_datatype_as_string(
 std::string standard_datatype_as_string(
     Datatype const& datatype)
 {
-    assert(datatype.is_standard());
+    assert(datatype.is_standard() || datatype.is_string());
 
     std::string result;
 
     if(datatype == std_int8_le) {
         result = StandardDatatypeTraits<int8_t>::name();
     }
-    else if(datatypes_are_equal(datatype.id(), H5T_STD_I8BE)) {
-        result = "H5T_STD_I8BE";
-    }
     else if(datatype == std_int16_le) {
         result = StandardDatatypeTraits<int16_t>::name();
-    }
-    else if(datatypes_are_equal(datatype.id(), H5T_STD_I16BE)) {
-        result = "H5T_STD_I16BE";
     }
     else if(datatype == std_int32_le) {
         result = StandardDatatypeTraits<int32_t>::name();
     }
-    else if(datatypes_are_equal(datatype.id(), H5T_STD_I32BE)) {
-        result = "H5T_STD_I32BE";
-    }
     else if(datatype == std_int64_le) {
         result = StandardDatatypeTraits<int64_t>::name();
-    }
-    else if(datatypes_are_equal(datatype.id(), H5T_STD_I64BE)) {
-        result = "H5T_STD_I64BE";
     }
     else if(datatype == std_uint8_le) {
         result = StandardDatatypeTraits<uint8_t>::name();
     }
-    else if(datatypes_are_equal(datatype.id(), H5T_STD_U8BE)) {
-        result = "H5T_STD_U8BE";
-    }
     else if(datatype == std_uint16_le) {
         result = StandardDatatypeTraits<uint16_t>::name();
-    }
-    else if(datatypes_are_equal(datatype.id(), H5T_STD_U16BE)) {
-        result = "H5T_STD_U16BE";
     }
     else if(datatype == std_uint32_le) {
         result = StandardDatatypeTraits<uint32_t>::name();
     }
-    else if(datatypes_are_equal(datatype.id(), H5T_STD_U32BE)) {
-        result = "H5T_STD_U32BE";
-    }
     else if(datatype == std_uint64_le) {
         result = StandardDatatypeTraits<uint64_t>::name();
-    }
-    else if(datatypes_are_equal(datatype.id(), H5T_STD_U64BE)) {
-        result = "H5T_STD_U64BE";
     }
     else if(datatype == ieee_float32_le) {
         result = StandardDatatypeTraits<float>::name();
     }
-    else if(datatypes_are_equal(datatype.id(), H5T_IEEE_F32BE)) {
-        result = "H5T_STD_F32BE";
-    }
     else if(datatype == ieee_float64_le) {
         result = StandardDatatypeTraits<double>::name();
     }
-    else if(datatypes_are_equal(datatype.id(), H5T_IEEE_F64BE)) {
-        result = "H5T_STD_F64BE";
+    else if(datatype.is_string()) {
+        result = StandardDatatypeTraits<std::string>::name();
     }
 
     assert(!result.empty());
@@ -155,6 +132,7 @@ Datatype::Datatype(
     : _id(id, [](hid_t){ return 0; })
 
 {
+    assert(_id.type() == H5I_DATATYPE);
 }
 
 
@@ -164,12 +142,19 @@ Datatype::Datatype(
     : _id(std::forward<Identifier>(id))
 
 {
+    assert(_id.type() == H5I_DATATYPE);
 }
 
 
 Identifier const& Datatype::id() const
 {
     return _id;
+}
+
+
+::H5T_class_t Datatype::class_() const
+{
+    return ::H5Tget_class(_id);
 }
 
 
@@ -230,6 +215,12 @@ bool Datatype::is_native() const
         is_native_unsigned_integral(*this) ||
         is_native_signed_integral(*this) ||
         is_native_floating_point(*this);
+}
+
+
+bool Datatype::is_string() const
+{
+    return class_() == H5T_STRING;
 }
 
 
@@ -375,6 +366,15 @@ Datatype create_datatype(
 }
 
 
+/*!
+    @brief      Create a datatype for variable length UTF8 encoded strings
+
+    The string datatype used is H5T_C_S1, not H5T_FORTRAN_S1.
+
+    Variable-length strings will always be NULL-terminated, so the buffer
+    to hold such a string must be one byte larger than the string itself
+    to accommodate the NULL terminator.
+*/
 Datatype create_string_datatype()
 {
     auto datatype = copy_datatype(H5T_C_S1);
@@ -406,88 +406,191 @@ Datatype create_compound_datatype(
 Datatype memory_datatype(
     Datatype const& file_datatype)
 {
-    assert(file_datatype.is_standard());
+    assert(file_datatype.is_standard() || file_datatype.is_string());
 
-    hid_t type_id = -1;
+    std::optional<Datatype> result;
 
-    if(file_datatype == Datatype{H5T_STD_I8LE}) {
-        type_id = H5T_NATIVE_INT8;
+    if(file_datatype == std_uint8_le) {
+        result = native_uint8;
     }
-    else if(file_datatype == Datatype{H5T_STD_I16LE}) {
-        type_id = H5T_NATIVE_INT16;
+    else if(file_datatype == std_uint16_le) {
+        result = native_uint16;
     }
-    else if(file_datatype == Datatype{H5T_STD_I32LE}) {
-        type_id = H5T_NATIVE_INT32;
+    else if(file_datatype == std_uint32_le) {
+        result = native_uint32;
     }
-    else if(file_datatype == Datatype{H5T_STD_I64LE}) {
-        type_id = H5T_NATIVE_INT64;
+    else if(file_datatype == std_uint64_le) {
+        result = native_uint64;
     }
-    else if(file_datatype == Datatype{H5T_STD_U8LE}) {
-        type_id = H5T_NATIVE_UINT8;
+    else if(file_datatype == std_int8_le) {
+        result = native_int8;
     }
-    else if(file_datatype == Datatype{H5T_STD_U16LE}) {
-        type_id = H5T_NATIVE_UINT16;
+    else if(file_datatype == std_int16_le) {
+        result = native_int16;
     }
-    else if(file_datatype == Datatype{H5T_STD_U32LE}) {
-        type_id = H5T_NATIVE_UINT32;
+    else if(file_datatype == std_int32_le) {
+        result = native_int32;
     }
-    else if(file_datatype == Datatype{H5T_STD_U64LE}) {
-        type_id = H5T_NATIVE_UINT64;
+    else if(file_datatype == std_int64_le) {
+        result = native_int64;
     }
-    else if(file_datatype == Datatype{H5T_IEEE_F32LE}) {
-        type_id = H5T_NATIVE_FLOAT;
+    else if(file_datatype == ieee_float32_le) {
+        result = native_float32;
     }
-    else if(file_datatype == Datatype{H5T_IEEE_F64LE}) {
-        type_id = H5T_NATIVE_DOUBLE;
+    else if(file_datatype == ieee_float64_le) {
+        result = native_float64;
+    }
+    else if(file_datatype.is_string()) {
+        result = file_datatype;
     }
 
-    assert(type_id >= 0);
+    if(!result) {
+        throw std::runtime_error(fmt::format(
+            "No memory datatype for file datatype ({})",
+            standard_datatype_as_string(file_datatype))
+        );
+    }
 
-    return Datatype(type_id);
+    return *result;
+
+
+    // std::map<Datatype, Datatype, CompareDatatypes_>
+    //     memory_datatype_by_file_datatype
+    // {
+    //     {Datatype{H5T_STD_U8LE}, Datatype{H5T_NATIVE_UINT8}},
+    //     {Datatype{H5T_STD_U16LE}, Datatype{H5T_NATIVE_UINT16}},
+    //     {Datatype{H5T_STD_U32LE}, Datatype{H5T_NATIVE_UINT32}},
+    //     {Datatype{H5T_STD_U64LE}, Datatype{H5T_NATIVE_UINT64}},
+    //     {Datatype{H5T_STD_I8LE}, Datatype{H5T_NATIVE_INT8}},
+    //     {Datatype{H5T_STD_I16LE}, Datatype{H5T_NATIVE_INT16}},
+    //     {Datatype{H5T_STD_I32LE}, Datatype{H5T_NATIVE_INT32}},
+    //     {Datatype{H5T_STD_I64LE}, Datatype{H5T_NATIVE_INT64}},
+    //     {Datatype{H5T_IEEE_F32LE}, Datatype{H5T_NATIVE_FLOAT}},
+    //     {Datatype{H5T_IEEE_F64LE}, Datatype{H5T_NATIVE_DOUBLE}}  // ,
+    //     // {create_string_datatype(), create_string_datatype()}
+    // };
+    // assert(memory_datatype_by_file_datatype.size() == 10);
+
+    // std::cout
+    //     << standard_datatype_as_string(file_datatype)
+    //     << ": " << file_datatype.id().is_valid()
+    //     << "- " << ::H5Iobject_verify(file_datatype.id(), H5I_DATATYPE)
+    //     << std::endl
+    //     << "-------------------------------------------------\n"
+    //     ;
+
+    // for(auto const tuple: memory_datatype_by_file_datatype) {
+    //     assert(tuple.first.is_standard() || tuple.first.is_string());
+    //     assert(tuple.second.is_native() || tuple.second.is_string());
+
+    //     auto const file_datatype = tuple.first;
+
+    //     std::cout
+    //         << standard_datatype_as_string(file_datatype)
+    //         << ": " << file_datatype.id().is_valid()
+    //         << "- " << ::H5Iobject_verify(file_datatype.id(), H5I_DATATYPE)
+    //         << std::endl
+    //         ;
+    // }
+
+
+    //     // auto object1 = ::H5Iobject_verify(lhs.id(), H5I_DATATYPE);
+    //     // auto object2 = ::H5Iobject_verify(rhs.id(), H5I_DATATYPE);
+
+    //     // assert((lhs.id().is_valid() && object1) || (!lhs.id().is_valid() && !object1));
+    //     // assert((rhs.id().is_valid() && object2) || (!rhs.id().is_valid() && !object2));
+
+
+    // auto const it = memory_datatype_by_file_datatype.find(file_datatype);
+
+    // if(it == memory_datatype_by_file_datatype.end()) {
+    //     throw std::runtime_error(fmt::format(
+    //         "No memory datatype for file datatype ({})",
+    //         standard_datatype_as_string(file_datatype))
+    //     );
+    // }
+
+    // return it->second;
 }
 
 
 Datatype file_datatype(
     Datatype const& memory_datatype)
 {
-    assert(memory_datatype.is_native());
+    assert(memory_datatype.is_native() || memory_datatype.is_string());
 
-    hid_t type_id = -1;
+    std::optional<Datatype> result;
 
-    if(memory_datatype == Datatype{H5T_NATIVE_INT8}) {
-        type_id = H5T_STD_I8LE;
+    if(memory_datatype == native_uint8) {
+        result = std_uint8_le;
     }
-    else if(memory_datatype == Datatype{H5T_NATIVE_INT16}) {
-        type_id = H5T_STD_I16LE;
+    else if(memory_datatype == native_uint16) {
+        result = std_uint16_le;
     }
-    else if(memory_datatype == Datatype{H5T_NATIVE_INT32}) {
-        type_id = H5T_STD_I32LE;
+    else if(memory_datatype == native_uint32) {
+        result = std_uint32_le;
     }
-    else if(memory_datatype == Datatype{H5T_NATIVE_INT64}) {
-        type_id = H5T_STD_I64LE;
+    else if(memory_datatype == native_uint64) {
+        result = std_uint64_le;
     }
-    else if(memory_datatype == Datatype{H5T_NATIVE_UINT8}) {
-        type_id = H5T_STD_U8LE;
+    else if(memory_datatype == native_int8) {
+        result = std_int8_le;
     }
-    else if(memory_datatype == Datatype{H5T_NATIVE_UINT16}) {
-        type_id = H5T_STD_U16LE;
+    else if(memory_datatype == native_int16) {
+        result = std_int16_le;
     }
-    else if(memory_datatype == Datatype{H5T_NATIVE_UINT32}) {
-        type_id = H5T_STD_U32LE;
+    else if(memory_datatype == native_int32) {
+        result = std_int32_le;
     }
-    else if(memory_datatype == Datatype{H5T_NATIVE_UINT64}) {
-        type_id = H5T_STD_U64LE;
+    else if(memory_datatype == native_int64) {
+        result = std_int64_le;
     }
-    else if(memory_datatype == Datatype{H5T_NATIVE_FLOAT}) {
-        type_id = H5T_IEEE_F32LE;
+    else if(memory_datatype == native_float32) {
+        result = ieee_float32_le;
     }
-    else if(memory_datatype == Datatype{H5T_NATIVE_DOUBLE}) {
-        type_id = H5T_IEEE_F64LE;
+    else if(memory_datatype == native_float64) {
+        result = ieee_float64_le;
+    }
+    else if(memory_datatype.is_string()) {
+        result = memory_datatype;
     }
 
-    assert(type_id >= 0);
+    if(!result) {
+        throw std::runtime_error(fmt::format(
+            "No file datatype for memory datatype ({})",
+            native_datatype_as_string(memory_datatype))
+        );
+    }
 
-    return Datatype(type_id);
+    return *result;
+
+
+    // std::map<Datatype, Datatype, CompareDatatypes_>
+    //     file_datatype_by_memory_datatype
+    // {
+    //     {Datatype{H5T_NATIVE_UINT8},  Datatype{H5T_STD_U8LE}},
+    //     {Datatype{H5T_NATIVE_UINT16}, Datatype{H5T_STD_U16LE}},
+    //     {Datatype{H5T_NATIVE_UINT32}, Datatype{H5T_STD_U32LE}},
+    //     {Datatype{H5T_NATIVE_UINT64}, Datatype{H5T_STD_U64LE}},
+    //     {Datatype{H5T_NATIVE_INT8},   Datatype{H5T_STD_I8LE}},
+    //     {Datatype{H5T_NATIVE_INT16},  Datatype{H5T_STD_I16LE}},
+    //     {Datatype{H5T_NATIVE_INT32},  Datatype{H5T_STD_I32LE}},
+    //     {Datatype{H5T_NATIVE_INT64},  Datatype{H5T_STD_I64LE}},
+    //     {Datatype{H5T_NATIVE_FLOAT},  Datatype{H5T_IEEE_F32LE}},
+    //     {Datatype{H5T_NATIVE_DOUBLE}, Datatype{H5T_IEEE_F64LE}},
+    //     {create_string_datatype(), create_string_datatype()}
+    // };
+
+    // auto const it = file_datatype_by_memory_datatype.find(memory_datatype);
+
+    // if(it == file_datatype_by_memory_datatype.end()) {
+    //     throw std::runtime_error(fmt::format(
+    //         "No file datatype for memory datatype ({})",
+    //         native_datatype_as_string(memory_datatype))
+    //     );
+    // }
+
+    // return it->second;
 }
 
 
@@ -548,6 +651,28 @@ bool is_ieee_floating_point_le(
         ieee_floating_points_le.begin(),
         ieee_floating_points_le.end(),
         datatype) != ieee_floating_points_le.end();
+}
+
+
+// TODO Add'm all
+template<>
+Datatype native_datatype<std::uint32_t>()
+{
+    return native_uint32;
+}
+
+
+template<>
+Datatype native_datatype<std::uint64_t>()
+{
+    return native_uint64;
+}
+
+
+template<>
+Datatype native_datatype<std::string>()
+{
+    return create_string_datatype();
 }
 
 } // namespace hdf5

@@ -23,7 +23,6 @@ class Identifier
 
 public:
 
-
     /*!
         @brief      Type of function to call when the identifier must
                     be closed
@@ -53,6 +52,10 @@ public:
     bool           operator!=          (Identifier const& other) const;
 
     bool           is_valid            () const;
+
+    ::H5I_type_t   type                () const;
+
+    void*          object              ();
 
                    operator hid_t      () const;
 

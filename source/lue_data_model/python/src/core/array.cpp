@@ -1,4 +1,5 @@
 #include "lue/hdf5/datatype_traits.hpp"
+#include "lue/hdf5/vlen_memory.hpp"
 #include "lue/core/array.hpp"
 #include "lue/core/define.hpp"
 #include "lue/core/time/tick_period.hpp"
@@ -8,6 +9,7 @@
 #include <pybind11/numpy.h>
 #include <pybind11/stl.h>
 #include <pybind11/pybind11.h>
+#include <boost/algorithm/string/trim.hpp>
 
 
 namespace py = pybind11;
@@ -49,10 +51,9 @@ TYPE_TRAITS(double, H5T_NATIVE_DOUBLE, "float64")
 */
 
 
-template<
-    typename T>
-py::array create_array(
-    hdf5::Shape const& shape)
+std::vector<size_t> create_strides(
+    hdf5::Shape const& shape,
+    std::size_t size_of_element)
 {
     assert(!shape.empty());
 
@@ -60,23 +61,56 @@ py::array create_array(
 
     // Fill collection with strides. E.g., in case of shape [500, 4, 5],
     // the strides collection must be [20, 5, 1].
-    std::vector<size_t> strides(shape.size());
-    size_t stride = 1;
+    std::vector<std::size_t> strides(shape.size());
+    std::size_t stride = 1;
     std::transform(shape.rbegin(), shape.rend(), strides.begin(),
-        [&stride](T const& v) {
+        [&stride](std::size_t const& v) {
             size_t tmp_stride = stride;
             stride *= v;
             return tmp_stride;
         }
     );
     std::reverse(strides.begin(), strides.end());
-    std::transform(strides.begin(), strides.end(), strides.begin(), [](
-                T const& v) {
-            return v * sizeof(T);
+    std::transform(strides.begin(), strides.end(), strides.begin(),
+        [size_of_element](std::size_t const& v) {
+            return v * size_of_element;
         }
     );
 
-    return py::array_t<T>(shape, strides);
+    return strides;
+}
+
+
+template<
+    typename T>
+py::array create_array(
+    hdf5::Shape const& shape)
+{
+    // assert(!shape.empty());
+
+    // std::vector<size_t> extents(shape.begin(), shape.end());
+
+    // // Fill collection with strides. E.g., in case of shape [500, 4, 5],
+    // // the strides collection must be [20, 5, 1].
+    // std::vector<size_t> strides(shape.size());
+    // size_t stride = 1;
+    // std::transform(shape.rbegin(), shape.rend(), strides.begin(),
+    //     [&stride](T const& v) {
+    //         size_t tmp_stride = stride;
+    //         stride *= v;
+    //         return tmp_stride;
+    //     }
+    // );
+    // std::reverse(strides.begin(), strides.end());
+    // std::transform(strides.begin(), strides.end(), strides.begin(), [](
+    //             T const& v) {
+    //         return v * sizeof(T);
+    //     }
+    // );
+
+    // return py::array_t<T>(shape, strides);
+
+    return py::array_t<T>(shape, create_strides(shape, sizeof(T)));
 }
 
 
@@ -153,30 +187,113 @@ static py::array create_array(
     py::array result;
     auto const& datatype = array.datatype();
 
-    if(datatype == hdf5::Datatype{H5T_NATIVE_UINT32}) {
-        result = create_array<uint32_t>(slice_shape);
-    }
-    else if(datatype == hdf5::Datatype{H5T_NATIVE_INT32}) {
-        result = create_array<int32_t>(slice_shape);
-    }
-    else if(datatype == hdf5::Datatype{H5T_NATIVE_UINT64}) {
-        result = create_array<uint64_t>(slice_shape);
-    }
-    else if(datatype == hdf5::Datatype{H5T_NATIVE_INT64}) {
-        result = create_array<int64_t>(slice_shape);
-    }
-    else if(datatype == hdf5::Datatype{H5T_NATIVE_FLOAT}) {
-        result = create_array<float>(slice_shape);
-    }
-    else if(datatype == hdf5::Datatype{H5T_NATIVE_DOUBLE}) {
-        result = create_array<double>(slice_shape);
+    if(datatype.is_string()) {
+        // HDF5 array contains variable length UTF8 strings. The
+        // destination array must contain fixed length Unicode strings
+        // (measured in code points). Shorter strings are padded with
+        // nulls.
+
+        assert(slice_shape.size() == 1);
+        auto const nr_strings = slice_shape[0];
+
+        // Read the strings in a data structure of our own
+        auto const memory_datatype{lue::hdf5::create_string_datatype()};
+
+        char* values_read[nr_strings];
+        lue::hdf5::VLenMemory vlen{
+            memory_datatype, array.dataspace(), values_read};
+
+        array.read(hyperslab, values_read);
+
+        // We now have variable length UTF8 encoded Unicode strings in
+        // values_read. These must end up as fixed length Unicode strings
+        // in the Numpy array.
+
+        std::size_t max_nr_bytes_utf8 = 0;
+
+        for(size_t i = 0; i < nr_strings; ++i) {
+            max_nr_bytes_utf8 =
+                std::max(max_nr_bytes_utf8, strlen(values_read[i]));
+        }
+
+        // Number of bytes used to represent a code point
+        std::size_t const nr_bytes_per_code_point = 4;
+
+        // Number of code points per string
+        std::size_t const nr_code_points = max_nr_bytes_utf8;
+
+        // Number of bytes per string
+        std::size_t const nr_bytes_unicode =
+            nr_code_points * nr_bytes_per_code_point;
+
+        // Number of ordinals per string, to store the encoded Unicode
+        // string on the Python side
+        assert(nr_bytes_unicode % sizeof(Py_UNICODE) == 0);
+        std::size_t const nr_ordinals = nr_bytes_unicode / sizeof(Py_UNICODE);
+
+        // Buffer for all Unicode strings, back to back
+        auto py_buffer = std::make_unique<Py_UNICODE[]>(
+            nr_strings * nr_ordinals);
+        std::fill(
+            py_buffer.get(), py_buffer.get() + nr_strings * nr_ordinals, '\0');
+
+        py::str py_string;
+        Py_ssize_t data_size;
+        char const* data;
+        Py_UNICODE* it = py_buffer.get();
+
+        for(std::size_t i = 0; i < nr_strings; ++i) {
+
+            // Decode UTF8 string as read from LUE array
+            py_string = py::reinterpret_steal<py::str>(
+                ::PyUnicode_FromString(values_read[i]));
+
+            if(!py_string) {
+                throw py::error_already_set();
+            }
+
+            // Copy Unicode string into the slot in the Numpy array
+            data_size = PyUnicode_GET_DATA_SIZE(py_string.ptr());  // Bytes
+            data = PyUnicode_AS_DATA(py_string.ptr());
+            std::memcpy(it, data, data_size);
+            it += nr_ordinals;
+        }
+
+        py::capsule free_when_done(py_buffer.get(), [](void* buffer)
+            {
+                delete[] static_cast<Py_UNICODE*>(buffer);
+            });
+
+        py::dtype dtype{"U" + std::to_string(nr_code_points)};
+        hdf5::Shape shape{nr_strings};
+        result = py::array(dtype, shape, py_buffer.release(), free_when_done);
     }
     else {
-        throw std::runtime_error(
-            "Unsupported array value type");
-    }
+        if(datatype == hdf5::Datatype{H5T_NATIVE_UINT32}) {
+            result = create_array<uint32_t>(slice_shape);
+        }
+        else if(datatype == hdf5::Datatype{H5T_NATIVE_INT32}) {
+            result = create_array<int32_t>(slice_shape);
+        }
+        else if(datatype == hdf5::Datatype{H5T_NATIVE_UINT64}) {
+            result = create_array<uint64_t>(slice_shape);
+        }
+        else if(datatype == hdf5::Datatype{H5T_NATIVE_INT64}) {
+            result = create_array<int64_t>(slice_shape);
+        }
+        else if(datatype == hdf5::Datatype{H5T_NATIVE_FLOAT}) {
+            result = create_array<float>(slice_shape);
+        }
+        else if(datatype == hdf5::Datatype{H5T_NATIVE_DOUBLE}) {
+            result = create_array<double>(slice_shape);
+        }
+        else {
+            throw std::runtime_error(
+                "Unsupported array value type");
+        }
 
-    array.read(hyperslab, result.request().ptr);
+        array.read(hyperslab, result.request().ptr);
+    }
 
     return result;
 }
@@ -536,8 +653,8 @@ void init_array(
         py::module submodule = module.def_submodule(
             "dtype",
             R"(
-        TODO
-    )");
+    TODO
+)");
 
         submodule.attr("ID") = py::dtype::of<ID>();
         submodule.attr("Index") = py::dtype::of<Index>();
@@ -745,87 +862,184 @@ void init_array(
 })
 
 
+        SETITEM_INTEGER(uint8_t)
+        SETITEM_INTEGER(int8_t)
+        SETITEM_INTEGER(uint16_t)
+        SETITEM_INTEGER(int16_t)
         SETITEM_INTEGER(uint32_t)
         SETITEM_INTEGER(int32_t)
         SETITEM_INTEGER(uint64_t)
         SETITEM_INTEGER(int64_t)
         SETITEM_INTEGER(float)
         SETITEM_INTEGER(double)
+        // SETITEM_INTEGER(std::string)
 
 #undef SET_ITEM_INTEGER
 
+        SETITEM_SLICE(uint8_t)
+        SETITEM_SLICE(int8_t)
+        SETITEM_SLICE(uint16_t)
+        SETITEM_SLICE(int16_t)
         SETITEM_SLICE(uint32_t)
         SETITEM_SLICE(int32_t)
         SETITEM_SLICE(uint64_t)
         SETITEM_SLICE(int64_t)
         SETITEM_SLICE(float)
         SETITEM_SLICE(double)
+        // SETITEM_SLICE(std::string)
 
 #undef SETITEM_SLICE
 
+        SETITEM_INDICES(uint8_t)
+        SETITEM_INDICES(int8_t)
+        SETITEM_INDICES(uint16_t)
+        SETITEM_INDICES(int16_t)
         SETITEM_INDICES(uint32_t)
         SETITEM_INDICES(int32_t)
         SETITEM_INDICES(uint64_t)
         SETITEM_INDICES(int64_t)
         SETITEM_INDICES(float)
         SETITEM_INDICES(double)
+        // SETITEM_INDICES(std::string)
 
 #undef SETITEM_INDICES
+
+        .def("__setitem__", [](
+            Array& array,
+            py::slice const& slice,
+            py::array& values)
+        {
+            auto const info = values.request();
+
+            // Verify values are strings
+            // s : ascii chars or utf8 encoded unicode string
+            // w : unicode - 4 bytes per code point (and on windows 2?!)
+
+            assert(!info.format.empty());
+            bool utf8_encoded_strings = info.format.back() == 's';
+            bool unicode_strings = info.format.back() == 'w';
+
+            if(!utf8_encoded_strings && !unicode_strings) {
+                throw std::runtime_error(fmt::format(
+                    "Expected array with utf8 encoded strings or "
+                    "Unicode strings, but got array with format {}",
+                    info.format));
+            }
+
+            hdf5::Shape const shape{array.shape()};
+            hdf5::Hyperslab hyperslab{shape};
+            hdf5::Shape slice_shape{shape};
+            size_t nr_erased_dimensions = 0;
+
+            update_hyperslab_by_slice(
+                0, slice, shape, hyperslab, slice_shape, nr_erased_dimensions);
+
+            if(slice_shape.size() != 1) {
+                throw std::runtime_error(
+                    "Currently, only 1-D string arrays are supported");
+            }
+
+            auto const nr_strings = slice_shape[0];
+
+            // Copy strings to new buffer that is compatible with HDF5
+            // variable length strings
+            auto hdf5_buffer = std::make_unique<char*[]>(nr_strings);
+
+            if(utf8_encoded_strings) {
+                // ASCII and UTF8 encoded strings
+
+                // Length in bytes of each individual string
+                std::size_t const nr_bytes_utf8 = info.itemsize;
+                assert(nr_bytes_utf8 == std::stoul(info.format));
+
+                // Buffer is a 1-D array with all strings back to back. The
+                // maximum length of each string is the same:
+                // nr_bytes_utf8. Shorter strings are padded with nulls.
+                char const* py_buffer = static_cast<char const*>(info.ptr);
+
+                for(std::size_t i = 0; i < nr_strings; ++i) {
+
+                    // Point it at start of Python string in buffer
+                    auto const it = py_buffer + (i * nr_bytes_utf8);
+
+                    // Copy bytes and trim tailing null characters
+                    std::string utf8_string{it, nr_bytes_utf8};
+                    boost::algorithm::trim_right_if(utf8_string, [](char c)
+                        {
+                            return c == '\0';
+                        });
+
+                    // Make space for the UTF8 encoded string + null
+                    // character. Copy the string and append with a null.
+                    hdf5_buffer.get()[i] = new char[utf8_string.size() + 1];
+                    auto hdf5_string = hdf5_buffer.get()[i];
+                    std::copy(
+                        utf8_string.begin(), utf8_string.end(), hdf5_string);
+                    hdf5_string[utf8_string.size()] = '\0';
+                }
+            }
+            else {
+                // Unicode strings
+
+                // Length in bytes of each individual string
+                std::size_t const nr_bytes_unicode = info.itemsize;
+
+                // Number of bytes used to represent a code point
+                std::size_t const nr_bytes_per_code_point = 4;
+                assert(nr_bytes_unicode % nr_bytes_per_code_point == 0);
+
+                // Length in code points of each individual string
+                std::size_t const nr_code_points =
+                    nr_bytes_unicode / nr_bytes_per_code_point;
+                assert(nr_code_points == std::stoul(info.format));
+
+                // assert(nr_bytes_unicode % sizeof(Py_UNICODE) == 0);
+                // auto const max_nr_ordinals_string =
+                //     nr_bytes_unicode / sizeof(Py_UNICODE);
+
+                // Buffer is a 1-D array with all strings back to back. The
+                // maximum length of each string is the same:
+                // nr_code_points. Shorter strings are padded with nulls.
+                Py_UNICODE const* py_buffer =
+                    static_cast<Py_UNICODE const*>(info.ptr);
+
+                for(std::size_t i = 0; i < nr_strings; ++i) {
+                    // Point it at start of Python Unicode string in buffer
+                    auto const it = py_buffer + i * nr_code_points;
+
+                    // Encode string in UTF8, which is how strings are stored
+                    // in LUE. Remove any trailing null characters.
+                    py::str py_utf8_string =
+                        py::reinterpret_steal<py::str>(
+                            ::PyUnicode_EncodeUTF8(
+                                it, nr_code_points, nullptr));
+                    std::string utf8_string =
+                        py_utf8_string.cast<std::string>();
+                    boost::algorithm::trim_right_if(utf8_string, [](char c)
+                        {
+                            return c == '\0';
+                        });
+
+                    // Make space for the UTF8 encoded string + null
+                    // character. Copy the string and append with a null.
+                    hdf5_buffer.get()[i] = new char[utf8_string.size() + 1];
+                    auto hdf5_string = hdf5_buffer.get()[i];
+                    std::copy(
+                        utf8_string.begin(), utf8_string.end(), hdf5_string);
+                    hdf5_string[utf8_string.size()] = '\0';
+                }
+            }
+
+            array.write(hdf5_buffer.get());
+
+            // TODO Make sure this happens also in case of errors
+            for(std::size_t i = 0; i < nr_strings; ++i) {
+                delete[] hdf5_buffer.get()[i];
+            }
+        })
 
         ;
 
 }
 
 }  // namespace lue
-
-
-
-// std::string hdf5_type_name(
-//         hid_t type_id)
-// {
-//     std::string result;
-// 
-//     switch(H5Tget_class(type_id)) {
-//         case H5T_INTEGER: {
-//             if(H5Tequal(type_id, H5T_NATIVE_UINT32)) {
-//                 result = "uint32";
-//             }
-//             else if(H5Tequal(type_id, H5T_NATIVE_INT32)) {
-//                 result = "int32";
-//             }
-//             else if(H5Tequal(type_id, H5T_NATIVE_UINT64)) {
-//                 result = "uint64";
-//             }
-//             else if(H5Tequal(type_id, H5T_NATIVE_INT64)) {
-//                 result = "int64";
-//             }
-//             else {
-//                 throw std::runtime_error(
-//                     "Unsupported integer array value type");
-//             }
-//             break;
-//         }
-//         case H5T_FLOAT: {
-//             if(H5Tequal(type_id, H5T_NATIVE_FLOAT)) {
-//                 result = "float32";
-//             }
-//             else if(H5Tequal(type_id, H5T_NATIVE_DOUBLE)) {
-//                 result = "float64";
-//             }
-//             else {
-//                 throw std::runtime_error(
-//                     "Unsupported float array value type");
-//             }
-//             break;
-//         }
-//         default: {
-//             throw std::runtime_error(
-//                 "Unsupported array value type");
-//             break;
-//         }
-//     }
-// 
-//     return result;
-// }
-
-

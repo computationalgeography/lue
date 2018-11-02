@@ -99,10 +99,7 @@ void add_same_shape_property(
     }
 
     auto const nr_elements_in_object_array = size_of_shape(shape, 1);
-
-    auto const datatype = hdf5::Datatype{
-        hdf5::NativeDatatypeTraits<Datatype>::type_id()};
-
+    auto const datatype = hdf5::native_datatype<Datatype>();
     std::vector<Datatype> const values = property_json.at("value");
 
     if(values.size() % nr_elements_in_object_array != 0) {
@@ -327,6 +324,18 @@ void add_property(
                 add_same_shape_property<Datatype>(
                     property_json, properties.collection<Properties>());
             }
+            else if(datatype_json == "uint64") {
+                using Datatype = std::uint64_t;
+
+                add_same_shape_property<Datatype>(
+                    property_json, properties.collection<Properties>());
+            }
+            else if(datatype_json == "string") {
+                using Datatype = std::string;
+
+                add_same_shape_property<Datatype>(
+                    property_json, properties.collection<Properties>());
+            }
             else {
                 throw std::runtime_error(fmt::format(
                     "Datatype {} not supported yet",
@@ -340,6 +349,12 @@ void add_property(
 
             if(datatype_json == "uint32") {
                 using Datatype = std::uint32_t;
+
+                add_same_shape_constant_shape_property<Datatype>(
+                    property_json, properties.collection<Properties>());
+            }
+            else if(datatype_json == "uint64") {
+                using Datatype = std::uint64_t;
 
                 add_same_shape_constant_shape_property<Datatype>(
                     property_json, properties.collection<Properties>());

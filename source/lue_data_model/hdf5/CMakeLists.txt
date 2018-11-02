@@ -27,6 +27,7 @@ add_library(lue_hdf5 STATIC
     src/shape
     src/soft_link
     src/validate
+    src/vlen_memory
 )
 
 add_library(lue::hdf5 ALIAS lue_hdf5)

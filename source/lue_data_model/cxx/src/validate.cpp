@@ -1357,7 +1357,35 @@ static void validate_phenomenon(
 
     for(auto const& name: collection_property_sets.names()) {
         auto& property_set = collection_property_sets[name];
-        validate_property_set(phenomenon.object_id(), property_set, issues);
+
+        // Collection property-sets don't need the object-id
+        // collection. For non-temporal information there will be only one
+        // ID stored anyway, representing the collection as a whole.
+        // To be able to validate property sets in a uniform way, whether
+        // or not they are collection property sets or regular ones,
+        // we create an ad-hoc ObjectID collection here, containing a
+        // single ID.
+
+        auto tmp_file = hdf5::create_in_memory_file("tmp_file");
+        auto tmp_object_id = create_object_id(tmp_file);
+        tmp_object_id.expand(1);
+        ID id{999};
+
+        {
+            // If the object tracker contains an ID, it must be used here.
+            // Otherwise validation fails because of different IDs
+            // representing the collection as a whole.
+            auto const& object_tracker = property_set.object_tracker();
+            auto const& active_object_id = object_tracker.active_object_id();
+
+            if(active_object_id.nr_ids() > 0) {
+                active_object_id.read(&id);
+            }
+        }
+
+        tmp_object_id.write(&id);
+
+        validate_property_set(tmp_object_id, property_set, issues);
 
         auto& properties = property_set.properties();
 

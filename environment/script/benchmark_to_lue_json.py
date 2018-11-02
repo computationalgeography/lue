@@ -12,6 +12,7 @@ Translate a benchmark result formatted as JSON into a LUE JSON file
 
 Usage:
     {command} [--epoch=<epoch>] <benchmark_file> <lue_file>
+    {command} --meta <benchmark_file> <lue_file>
 
 Options:
     benchmark_file  Pathname to existing file containing benchmark JSON
@@ -23,8 +24,49 @@ The resulting file can be imported into a LUE dataset using the
 lue_translate command. With lue_translate multiple JSON files can be
 imported. In that case it can be useful to use the --epoch option to
 synchronize the epochs from the different JSON files.
+
+Use the --meta option to only write the meta information to a LUE
+JSON file. This information does not change between benchmark runs,
+so it should be generated and translated only once.
 """.format(
     command = os.path.basename(sys.argv[0]))
+
+
+def benchmark_meta_to_lue_json(
+        benchmark_pathname,
+        lue_pathname):
+
+    # Read benchmark JSON
+    benchmark_json = json.loads(file(benchmark_pathname).read())
+
+    lue_json = {
+        "dataset": {
+            "phenomena": [
+                {
+                    "name": "benchmark",
+                    "collection_property_sets": [
+                        {
+                            "name": "meta_information",
+                            "properties": [
+                                {
+                                    "name": "name",
+                                    "shape_per_object": "same_shape",
+                                    "value_variability": "constant",
+                                    "datatype": "string",
+                                    "value": ["{}".format(
+                                        benchmark_json["name"])]
+                                },
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+
+    # Write results
+    file(lue_pathname, "w").write(
+        json.dumps(lue_json, sort_keys=False, indent=4))
 
 
 def benchmark_to_lue_json(
@@ -34,10 +76,6 @@ def benchmark_to_lue_json(
 
     # Read benchmark JSON
     benchmark_json = json.loads(file(benchmark_pathname).read())
-
-    phenomenon_name = "benchmark"
-    property_set_name = "measurement"
-    property_set_description = "Information per benchmark measurement"
 
     time_units = "second"
     benchmark_epoch = dateutil.parser.parse(benchmark_json["start"])
@@ -78,7 +116,7 @@ def benchmark_to_lue_json(
         "dataset": {
             "phenomena": [
                 {
-                    "name": phenomenon_name,
+                    "name": "benchmark",
                     # "collection_property_sets": [
                     #     {
                     #         "name": "meta_information",
@@ -88,16 +126,17 @@ def benchmark_to_lue_json(
                     #                 "shape_per_object": "same_shape",
                     #                 "value_variability": "constant",
                     #                 "datatype": "string",
-                    #                 "value": "\"{}\"".format(
-                    #                     benchmark_json["name"])
+                    #                 "value": ["{}".format(
+                    #                     benchmark_json["name"])]
                     #             },
                     #         ]
                     #     }
                     # ],
                     "property_sets": [
                         {
-                            "name": property_set_name,
-                            "description": property_set_description,
+                            "name": "measurement",
+                            "description":
+                                "Information per benchmark measurement",
                             "object_tracker": {
                                 "active_set_index": active_set_idx,
                                 "active_object_id": active_object_id
@@ -164,7 +203,10 @@ if __name__ == "__main__":
 
     benchmark_pathname = arguments["<benchmark_file>"]
     lue_pathname = arguments["<lue_file>"]
-    epoch = arguments["--epoch"]
-    epoch = dateutil.parser.parse(epoch) if epoch else epoch
 
-    benchmark_to_lue_json(benchmark_pathname, lue_pathname, epoch=epoch)
+    if arguments["--meta"]:
+        benchmark_meta_to_lue_json(benchmark_pathname, lue_pathname)
+    else:
+        epoch = arguments["--epoch"]
+        epoch = dateutil.parser.parse(epoch) if epoch else epoch
+        benchmark_to_lue_json(benchmark_pathname, lue_pathname, epoch=epoch)

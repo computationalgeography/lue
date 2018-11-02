@@ -13,26 +13,27 @@ hdf5::Datatype numpy_type_to_memory_datatype(
 {
     auto const kind = dtype.kind();
     auto const size = dtype.itemsize();  // bytes
-    hid_t memory_type_id = -1;
+
+    std::optional<hdf5::Datatype> datatype;
 
     switch(kind) {
         case 'i': {
             // Signed integer
             switch(size) {
                 case 1: {
-                    memory_type_id = H5T_NATIVE_INT8;
+                    datatype = hdf5::native_int8;
                     break;
                 }
                 case 2: {
-                    memory_type_id = H5T_NATIVE_INT16;
+                    datatype = hdf5::native_int16;
                     break;
                 }
                 case 4: {
-                    memory_type_id = H5T_NATIVE_INT32;
+                    datatype = hdf5::native_int32;
                     break;
                 }
                 case 8: {
-                    memory_type_id = H5T_NATIVE_INT64;
+                    datatype = hdf5::native_int64;
                     break;
                 }
             }
@@ -43,19 +44,19 @@ hdf5::Datatype numpy_type_to_memory_datatype(
             // Unsigned integer
             switch(size) {
                 case 1: {
-                    memory_type_id = H5T_NATIVE_UINT8;
+                    datatype = hdf5::native_uint8;
                     break;
                 }
                 case 2: {
-                    memory_type_id = H5T_NATIVE_UINT16;
+                    datatype = hdf5::native_uint16;
                     break;
                 }
                 case 4: {
-                    memory_type_id = H5T_NATIVE_UINT32;
+                    datatype = hdf5::native_uint32;
                     break;
                 }
                 case 8: {
-                    memory_type_id = H5T_NATIVE_UINT64;
+                    datatype = hdf5::native_uint64;
                     break;
                 }
             }
@@ -66,42 +67,31 @@ hdf5::Datatype numpy_type_to_memory_datatype(
             // Floating-point
             switch(size) {
                 case 4: {
-                    memory_type_id = H5T_NATIVE_FLOAT;
+                    datatype = hdf5::native_float32;
                     break;
                 }
                 case 8: {
-                    memory_type_id = H5T_NATIVE_DOUBLE;
+                    datatype = hdf5::native_float64;
                     break;
                 }
             }
 
             break;
         }
+        case 'U': {
+            // Unicode string
+            datatype = hdf5::create_string_datatype();
+            break;
+        }
     }
 
-    if(memory_type_id < 0) {
+    if(!datatype) {
         throw std::runtime_error(fmt::format(
             "Unsupported dtype (kind={}, itemsize={})", kind, size));
     }
 
-    return hdf5::Datatype{memory_type_id};
+    return *datatype;
 }
-
-
-struct CompareDatatypes
-{
-    bool operator()(hdf5::Datatype const& lhs, hdf5::Datatype const& rhs) const
-    {
-        // How to determine whether some data type is less than another one?
-        // Potentially, datatype with different addresses represent the
-        // same logical type (e.g. when a datatype is copied with H5Tcopy).
-        // For now, assume this does not happen. Also, datatype equality
-        // is tested using H5Tequal, which 'determines whether two
-        // datatype identifiers refer to the same datatype'. Let's use
-        // the same semantics.
-        return lhs.id().info().addr() < rhs.id().info().addr();
-    }
-};
 
 
 py::dtype hdf5_type_id_to_numpy_dtype(
@@ -111,17 +101,7 @@ py::dtype hdf5_type_id_to_numpy_dtype(
 
     py::dtype dtype;
 
-    // static auto compare_datatypes = [](
-    //     hdf5::Datatype const& lhs,
-    //     hdf5::Datatype const& rhs)
-    // {
-    //     return lhs.id().info().addr() < rhs.id().info().addr();
-    // };
-
-    // C++20 makes lambda closures default constructable
-    // using CompareDatatypes = decltype(compare_datatypes);
-
-    static std::map<hdf5::Datatype, py::dtype, CompareDatatypes>
+    static std::map<hdf5::Datatype, py::dtype, hdf5::CompareDatatypes>
         dtype_by_datatype
     {
         {hdf5::native_uint8, py::dtype::of<std::uint8_t>()},

@@ -26,6 +26,7 @@ Options:
 
 
 def post_process_strong_scaling_benchmarks(
+        name,
         environment,
         durations):
 
@@ -54,9 +55,10 @@ def post_process_strong_scaling_benchmarks(
     max_nr_threads = environment["nr_threads"].max()
 
     figure, axes = plt.subplots(
-        nrows=3, ncols=1,
-        figsize=(5, 8),  # Inches...
-        sharex=True)
+            nrows=1, ncols=3,
+            figsize=(15, 5)
+            # sharex=False
+        )  # Inches...
 
     # grid = sns.relplot(x="nr_threads", y="duration", kind="line", data=data,
     #     legend="full", ci="sd", ax=axes[0, 0])
@@ -69,6 +71,7 @@ def post_process_strong_scaling_benchmarks(
         x="nr_threads", y="duration", data=data,
         ax=axes[0])
     axes[0].set_ylabel("duration ({})".format("todo"))
+    axes[0].set_xlabel("number of threads")
 
     # speedup by nr_threads
     grid = sns.lineplot(
@@ -79,6 +82,7 @@ def post_process_strong_scaling_benchmarks(
         ax=axes[1])
     axes[1].set_ylim(0, max_nr_threads + 1)
     axes[1].set_ylabel("relative speedup")
+    axes[1].set_xlabel("number of threads")
 
     # efficiency by nr_threads
     grid = sns.lineplot(
@@ -92,11 +96,13 @@ def post_process_strong_scaling_benchmarks(
     axes[2].set_xlabel("number of threads")
 
     # plt.setp(axes, xlabel="meh")
+    figure.suptitle(name)
 
     plt.savefig("benchmark.pdf")
 
 
 def post_process_weak_scaling_benchmarks(
+        name,
         environment,
         durations):
 
@@ -109,8 +115,16 @@ def post_process_benchmarks(
 
     lue_dataset = lue.open_dataset(lue_pathname)
     lue_benchmark = lue_dataset.phenomena["benchmark"]
-    lue_measurement = lue_benchmark.property_sets["measurement"]
 
+    lue_meta_information = \
+        lue_benchmark.collection_property_sets["meta_information"]
+    lue_name = lue_meta_information = lue_meta_information.properties["name"]
+
+    benchmark_name = lue_name.value[:]
+    assert(len(benchmark_name) == 1)
+    benchmark_name = benchmark_name[0]
+
+    lue_measurement = lue_benchmark.property_sets["measurement"]
     lue_nr_localities = lue_measurement.properties["nr_localities"]
     lue_nr_threads = lue_measurement.properties["nr_threads"]
     lue_work_size = lue_measurement.properties["work_size"]
@@ -153,9 +167,11 @@ def post_process_benchmarks(
     constant_work_size = nr_equal_work_sizes == nr_measurements
 
     if constant_work_size:
-        post_process_strong_scaling_benchmarks(environment, durations)
+        post_process_strong_scaling_benchmarks(
+            benchmark_name, environment, durations)
     else:
-        post_process_weak_scaling_benchmarks(environment, durations)
+        post_process_weak_scaling_benchmarks(
+            benchmark_name, environment, durations)
 
 
 if __name__ == "__main__":

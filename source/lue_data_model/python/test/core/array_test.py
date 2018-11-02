@@ -1,6 +1,6 @@
 from functools import reduce
 import os
-import numpy
+import numpy as np
 import lue
 import lue_test
 
@@ -16,24 +16,35 @@ class ArrayTest(lue_test.TestCase):
 
         self.nr_objects = 5
         self.phenomenon.object_id.expand(self.nr_objects)[:] = \
-            numpy.arange(self.nr_objects)
+            np.arange(self.nr_objects)
 
         self.nr_rows = 3
         self.nr_cols = 2
         self.value_shape = (self.nr_rows, self.nr_cols)
-        self.value_type = numpy.dtype(numpy.int32)
+        self.numeric_value_type = np.dtype(np.int32)
+        self.string_value_type = np.dtype(np.unicode_)
 
-        self.property_set = self.phenomenon.property_sets.add("my_property_set")
-        property = self.property_set.add_property(
-            "my_property", self.value_type, self.value_shape)
+        self.property_set = \
+            self.phenomenon.property_sets.add("my_property_set")
+        numeric_property = self.property_set.add_property(
+            "my_numeric_property", self.numeric_value_type, self.value_shape)
+        string_property = self.property_set.add_property(
+            "my_string_property", self.string_value_type, self.value_shape)
 
-        self.lue_values = property.value.expand(self.nr_objects)
-        self.numpy_values = numpy.arange(
+        self.lue_numeric_values = \
+            numeric_property.value.expand(self.nr_objects)
+        self.numpy_numeric_values = np.arange(
             self.nr_objects * reduce(
                 lambda x, y: x * y, self.value_shape),
-            dtype=self.value_type).reshape(
+            dtype=self.numeric_value_type).reshape(
                 (self.nr_objects,) + self.value_shape)
-        self.lue_values[:] = self.numpy_values
+        self.lue_numeric_values[:] = self.numpy_numeric_values
+
+        self.lue_string_values = \
+            string_property.value.expand(self.nr_objects)
+        self.numpy_string_values = \
+            self.numpy_numeric_values.astype(self.string_value_type)
+        # self.lue_string_values[:] = self.numpy_string_values
 
         lue.assert_is_valid(self.dataset)
 
@@ -49,40 +60,42 @@ class ArrayTest(lue_test.TestCase):
         def compare_values():
 
             # Verify current value
-            self.assertArraysEqual(self.lue_values[:], self.numpy_values)
-            self.assertArraysEqual(self.lue_values[:], self.numpy_values[:])
+            self.assertArraysEqual(
+                self.lue_numeric_values[:], self.numpy_numeric_values)
+            self.assertArraysEqual(
+                self.lue_numeric_values[:], self.numpy_numeric_values[:])
 
 
             # With step
             self.assertArraysEqual(
-                self.lue_values[::2],
-                self.numpy_values[::2])
+                self.lue_numeric_values[::2],
+                self.numpy_numeric_values[::2])
 
 
         compare_values()
 
 
         # Update value, by array
-        self.numpy_values[:] = self.numpy_values + 5000
-        self.lue_values[:] = self.lue_values[:] + 5000
+        self.numpy_numeric_values[:] = self.numpy_numeric_values + 5000
+        self.lue_numeric_values[:] = self.lue_numeric_values[:] + 5000
         compare_values()
 
 
         # With step
-        self.numpy_values[::2] = self.numpy_values[::2] + 5500
-        self.lue_values[::2] = self.lue_values[::2] + 5500
+        self.numpy_numeric_values[::2] = self.numpy_numeric_values[::2] + 5500
+        self.lue_numeric_values[::2] = self.lue_numeric_values[::2] + 5500
         compare_values()
 
 
         # Update value, by value
-        self.numpy_values[:] = 6000
-        self.lue_values[:] = 6000
+        self.numpy_numeric_values[:] = 6000
+        self.lue_numeric_values[:] = 6000
         compare_values()
 
 
         # # With step
-        # self.numpy_values[::2] = 6500
-        # self.lue_values[::2] = 6500
+        # self.numpy_numeric_values[::2] = 6500
+        # self.lue_numeric_values[::2] = 6500
         # compare_values()
 
 
@@ -93,57 +106,60 @@ class ArrayTest(lue_test.TestCase):
         #  [2 3]
         #  [4 5]]
         self.assertArraysEqual(
-            self.lue_values[0:1],
-            self.numpy_values[0:1])
+            self.lue_numeric_values[0:1],
+            self.numpy_numeric_values[0:1])
 
 
         # Values of all items
         self.assertArraysEqual(
-            self.lue_values[0:self.nr_objects],
-            self.numpy_values[0:self.nr_objects])
+            self.lue_numeric_values[0:self.nr_objects],
+            self.numpy_numeric_values[0:self.nr_objects])
 
 
         # Value of last item
         # Negative index
         self.assertArraysEqual(
-            self.lue_values[-1:self.nr_objects],
-            self.numpy_values[-1:self.nr_objects])
+            self.lue_numeric_values[-1:self.nr_objects],
+            self.numpy_numeric_values[-1:self.nr_objects])
 
 
         # Update value
-        new_numpy_values = self.numpy_values + 5000
+        new_numpy_values = self.numpy_numeric_values + 5000
 
 
         # Value of first item
-        self.lue_values[0:1] = new_numpy_values[0:1]
+        self.lue_numeric_values[0:1] = new_numpy_values[0:1]
 
         self.assertArraysEqual(
-            self.lue_values[0:1],
+            self.lue_numeric_values[0:1],
             new_numpy_values[0:1])
 
 
         # Value of last item
-        self.lue_values[-1:self.nr_objects] = new_numpy_values[-1:self.nr_objects]
+        self.lue_numeric_values[-1:self.nr_objects] = \
+            new_numpy_values[-1:self.nr_objects]
 
         self.assertArraysEqual(
-            self.lue_values[-1:self.nr_objects],
+            self.lue_numeric_values[-1:self.nr_objects],
             new_numpy_values[-1:self.nr_objects])
 
 
         # Values of all items
-        self.lue_values[0:self.nr_objects] = new_numpy_values[0:self.nr_objects]
+        self.lue_numeric_values[0:self.nr_objects] = \
+            new_numpy_values[0:self.nr_objects]
 
         self.assertArraysEqual(
-            self.lue_values[0:self.nr_objects],
+            self.lue_numeric_values[0:self.nr_objects],
             new_numpy_values[0:self.nr_objects])
 
 
         # Too negative index
         # self.assertRaises(
-        self.lue_values[-self.nr_objects]  # OK
-        # self.lue_values[-self.nr_objects-1]  # NOT_OK
+        self.lue_numeric_values[-self.nr_objects]  # OK
+        # self.lue_numeric_values[-self.nr_objects-1]  # NOT_OK
         self.assertRaises(
-            IndexError, self.lue_values.__getitem__, -self.nr_objects-1)
+            IndexError, self.lue_numeric_values.__getitem__,
+            -self.nr_objects-1)
 
 
     def test_one_integer_index(self):
@@ -151,30 +167,30 @@ class ArrayTest(lue_test.TestCase):
         # Value of an item
         for i in range(self.nr_objects):
             self.assertArraysEqual(
-                self.lue_values[i],
-                self.numpy_values[i])
+                self.lue_numeric_values[i],
+                self.numpy_numeric_values[i])
 
             self.assertArraysEqual(
-                self.lue_values[0 - i],
-                self.numpy_values[0 - i])
+                self.lue_numeric_values[0 - i],
+                self.numpy_numeric_values[0 - i])
 
 
         # Update value
-        new_numpy_values = self.numpy_values + 5000
+        new_numpy_values = self.numpy_numeric_values + 5000
 
         # Value of an item
         for i in range(self.nr_objects):
-            self.lue_values[i] = new_numpy_values[i]
+            self.lue_numeric_values[i] = new_numpy_values[i]
 
             self.assertArraysEqual(
-                self.lue_values[i],
+                self.lue_numeric_values[i],
                 new_numpy_values[i])
 
 
-            self.lue_values[-i] = new_numpy_values[-i]
+            self.lue_numeric_values[-i] = new_numpy_values[-i]
 
             self.assertArraysEqual(
-                self.lue_values[0 - i],
+                self.lue_numeric_values[0 - i],
                 new_numpy_values[0 - i])
 
 
@@ -186,24 +202,26 @@ class ArrayTest(lue_test.TestCase):
 
         # First row of first item
         self.assertArraysEqual(
-            self.lue_values[0:1, 0:1],
-            self.numpy_values[0:1, 0:1])
+            self.lue_numeric_values[0:1, 0:1],
+            self.numpy_numeric_values[0:1, 0:1])
 
 
         # Last row of last item
         self.assertArraysEqual(
-            self.lue_values[nr_objects-1:nr_objects, nr_rows-1:nr_rows],
-            self.numpy_values[nr_objects-1:nr_objects, nr_rows-1:nr_rows])
+            self.lue_numeric_values[
+                nr_objects-1:nr_objects, nr_rows-1:nr_rows],
+            self.numpy_numeric_values[
+                nr_objects-1:nr_objects, nr_rows-1:nr_rows])
 
 
         # Last row of last item
         self.assertArraysEqual(
-            self.lue_values[-1:, -1:],
-            self.numpy_values[-1:, -1:])
+            self.lue_numeric_values[-1:, -1:],
+            self.numpy_numeric_values[-1:, -1:])
 
 
         # Update value
-        new_numpy_values = self.numpy_values + 5000
+        new_numpy_values = self.numpy_numeric_values + 5000
 
         # TODO Test assign
 
@@ -215,18 +233,18 @@ class ArrayTest(lue_test.TestCase):
 
         # First row of first item
         self.assertArraysEqual(
-            self.lue_values[0, 0],
-            self.numpy_values[0, 0])
+            self.lue_numeric_values[0, 0],
+            self.numpy_numeric_values[0, 0])
 
         # Last row of last item
         self.assertArraysEqual(
-            self.lue_values[nr_objects-1, nr_rows-1],
-            self.numpy_values[nr_objects-1, nr_rows-1])
+            self.lue_numeric_values[nr_objects-1, nr_rows-1],
+            self.numpy_numeric_values[nr_objects-1, nr_rows-1])
 
         # Last row of last item
         self.assertArraysEqual(
-            self.lue_values[-1, -1],
-            self.numpy_values[-1, -1])
+            self.lue_numeric_values[-1, -1],
+            self.numpy_numeric_values[-1, -1])
 
         # Update value
         # TODO Test assign
@@ -240,20 +258,22 @@ class ArrayTest(lue_test.TestCase):
 
         # First cell of first item
         self.assertArraysEqual(
-            self.lue_values[0:1, 0:1, 0:1],
-            self.numpy_values[0:1, 0:1, 0:1])
+            self.lue_numeric_values[0:1, 0:1, 0:1],
+            self.numpy_numeric_values[0:1, 0:1, 0:1])
 
         # Last cell of last item
         self.assertArraysEqual(
-            self.lue_values[nr_objects-1:nr_objects, nr_rows-1:nr_rows,
+            self.lue_numeric_values[
+                nr_objects-1:nr_objects, nr_rows-1:nr_rows,
                 nr_cols-1:nr_cols],
-            self.numpy_values[nr_objects-1:nr_objects, nr_rows-1:nr_rows,
+            self.numpy_numeric_values[
+                nr_objects-1:nr_objects, nr_rows-1:nr_rows,
                 nr_cols-1:nr_cols])
 
         # Last cell of last item
         self.assertArraysEqual(
-            self.lue_values[-1:, -1:, -1:],
-            self.numpy_values[-1:, -1:, -1:])
+            self.lue_numeric_values[-1:, -1:, -1:],
+            self.numpy_numeric_values[-1:, -1:, -1:])
 
         # Update value
         # TODO Test assign
@@ -267,18 +287,18 @@ class ArrayTest(lue_test.TestCase):
 
         # First cell of first item
         self.assertArraysEqual(
-            self.lue_values[0, 0, 0],
-            self.numpy_values[0, 0, 0])
+            self.lue_numeric_values[0, 0, 0],
+            self.numpy_numeric_values[0, 0, 0])
 
         # Last cell of last item
         self.assertArraysEqual(
-            self.lue_values[nr_objects-1, nr_rows-1, nr_cols-1],
-            self.numpy_values[nr_objects-1, nr_rows-1, nr_cols-1])
+            self.lue_numeric_values[nr_objects-1, nr_rows-1, nr_cols-1],
+            self.numpy_numeric_values[nr_objects-1, nr_rows-1, nr_cols-1])
 
         # Last cell of last item
         self.assertArraysEqual(
-            self.lue_values[-1, -1, -1],
-            self.numpy_values[-1, -1, -1])
+            self.lue_numeric_values[-1, -1, -1],
+            self.numpy_numeric_values[-1, -1, -1])
 
         # Update value
         # TODO Test assign
@@ -287,10 +307,10 @@ class ArrayTest(lue_test.TestCase):
     def test_too_many_indices(self):
 
         with self.assertRaises(IndexError) as numpy_context:
-            self.numpy_values[0, 0, 0, 0]
+            self.numpy_numeric_values[0, 0, 0, 0]
 
         with self.assertRaises(IndexError) as lue_context:
-            self.lue_values[0, 0, 0, 0]
+            self.lue_numeric_values[0, 0, 0, 0]
 
         # Verify error message is similar to what numpy reports
         self.assertTrue(
@@ -306,7 +326,7 @@ class ArrayTest(lue_test.TestCase):
 
         # String
         with self.assertRaises(IndexError) as lue_context:
-            self.lue_values["meh"]
+            self.lue_numeric_values["meh"]
 
         self.assertEqual(
             str(lue_context.exception),
@@ -314,7 +334,7 @@ class ArrayTest(lue_test.TestCase):
 
         # Float
         with self.assertRaises(IndexError) as lue_context:
-            self.lue_values[5.5]
+            self.lue_numeric_values[5.5]
 
         self.assertEqual(
             str(lue_context.exception),
@@ -335,7 +355,7 @@ class ArrayTest(lue_test.TestCase):
             "on the fly iteration not supported, use the numpy array")
 
         with self.assertRaises(ValueError) as lue_context:
-            for _ in self.lue_values:
+            for _ in self.lue_numeric_values:
                 pass
 
         self.assertEqual(

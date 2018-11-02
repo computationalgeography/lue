@@ -205,6 +205,32 @@ bool Identifier::is_valid() const
 }
 
 
+::H5I_type_t Identifier::type() const
+{
+    auto result = ::H5Iget_type(_id);
+
+    if(result == ::H5I_BADID) {
+        throw std::runtime_error(
+            "Cannot determine type of object identifier");
+    }
+
+    return result;
+}
+
+
+void* Identifier::object()
+{
+    auto result = ::H5Iobject_verify(_id, type());
+
+    if(!result) {
+        throw std::runtime_error(
+            "Cannot obtain pointer to object");
+    }
+
+    return result;
+}
+
+
 /*!
     @brief      Return the layered HDF5 identifier.
 */

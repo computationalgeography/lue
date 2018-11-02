@@ -87,6 +87,13 @@ struct NativeDatatypeTraits<
 /// @endcond
 
 
+template<>
+struct NativeDatatypeTraits<std::string>
+{
+    static std::string name() { return "string"; }
+};
+
+
 /*!
     @brief      Datatype traits of HDF5 standard types corresponding to @a T
 
@@ -185,6 +192,13 @@ struct StandardDatatypeTraits<
 };
 
 /// @endcond
+
+
+template<>
+struct StandardDatatypeTraits<std::string>
+{
+    static std::string name() { return "string"; }
+};
 
 }  // namespace hdf5
 }  // namespace lue

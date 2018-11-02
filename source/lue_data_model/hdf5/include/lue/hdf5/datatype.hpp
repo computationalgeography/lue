@@ -41,6 +41,8 @@ public:
 
     Identifier const& id               () const;
 
+    ::H5T_class_t  class_              () const;
+
     void           set_size            (std::size_t nr_bytes);
 
     std::size_t    size                () const;
@@ -51,6 +53,8 @@ public:
 
     bool           is_native           () const;
 
+    bool           is_string           () const;
+
     void           insert              (std::string const& name,
                                         std::size_t offset,
                                         Datatype const& datatype);
@@ -60,6 +64,35 @@ private:
     //! Identifier of the datatype
     Identifier     _id;
 
+};
+
+
+// static auto compare_datatypes = [](
+//     hdf5::Datatype const& lhs,
+//     hdf5::Datatype const& rhs)
+// {
+//     return lhs.id().info().addr() < rhs.id().info().addr();
+// };
+
+// C++20 makes lambda closures default constructable
+// using CompareDatatypes = decltype(compare_datatypes);
+
+
+struct CompareDatatypes
+{
+    bool operator()(Datatype const& lhs, Datatype const& rhs) const
+    {
+        // How to determine whether some data type is less than another one?
+        // Potentially, datatype with different addresses represent the
+        // same logical type (e.g. when a datatype is copied with H5Tcopy).
+        // For now, assume this does not happen. Also, datatype equality
+        // is tested using H5Tequal, which 'determines whether two
+        // datatype identifiers refer to the same datatype'. Let's use
+        // the same semantics.
+        // return lhs.id().info().addr() < rhs.id().info().addr();
+
+        return lhs != rhs && lhs.id() < rhs.id();
+    }
 };
 
 
@@ -186,6 +219,10 @@ bool               is_std_signed_integral_le(
 
 bool               is_ieee_floating_point_le(
                                         Datatype const& datatype);
+
+template<
+    typename T>
+Datatype           native_datatype     ();
 
 } // namespace hdf5
 } // namespace lue

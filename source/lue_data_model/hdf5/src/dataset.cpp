@@ -177,7 +177,7 @@ void Dataset::read(
     Hyperslab const& hyperslab,
     void* buffer) const
 {
-    assert(datatype.is_native());
+    assert(datatype.is_native() || datatype.is_string());
 
     // Select elements: create hyperslab
     auto const file_dataspace = this->dataspace();
@@ -255,7 +255,7 @@ void Dataset::write(
     Hyperslab const& hyperslab,
     void const* buffer) const
 {
-    assert(datatype.is_native());
+    assert(datatype.is_native() || datatype.is_string());
 
     // Select elements: create hyperslab
     auto file_dataspace = this->dataspace();
@@ -368,7 +368,7 @@ Dataset create_dataset(
     Dataspace const& dataspace,
     Dataset::CreationPropertyList const& creation_property_list)
 {
-    assert(datatype.is_standard());
+    assert(datatype.is_standard() || datatype.is_string());
 
     if(dataset_exists(parent, name)) {
         throw std::runtime_error(fmt::format(
