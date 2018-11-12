@@ -1,4 +1,13 @@
-#include "lue/configure.hpp"
+#include "python_extension.hpp"
+#include "lue/configure.hpp"  // LUE_BUILD_TEST
+#include "different_shape/submodule.hpp"
+#include "same_shape/submodule.hpp"
+
+#ifdef LUE_BUILD_TEST
+#include "test/submodule.hpp"
+#endif
+
+#include "hdf5/submodule.hpp"
 #include <hdf5.h>
 #include <pybind11/pybind11.h>
 
@@ -7,61 +16,6 @@ namespace py = pybind11;
 
 
 namespace lue {
-
-void init_array(py::module& module);
-void init_clock(py::module& module);
-void init_dataset(py::module& module);
-
-void init_active_object_id(py::module& module);
-void init_active_object_index(py::module& module);
-void init_active_set_index(py::module& module);
-void init_object_id(py::module& module);
-void init_object_tracker(py::module& module);
-
-void init_validate(py::module& module);
-void init_phenomenon(py::module& module);
-void init_property_group(py::module& module);
-void init_property_set(py::module& module);
-void init_space_domain(py::module& module);
-void init_stationary_space_box(py::module& module);
-void init_stationary_space_point(py::module& module);
-void init_time_box(py::module& module);
-void init_time_cell(py::module& module);
-void init_time_domain(py::module& module);
-void init_time_point(py::module& module);
-void init_universe(py::module& module);
-void init_value_group(py::module& module);
-
-
-namespace hdf5 {
-
-void init_submodule(py::module& module);
-
-}  // namespace hdf5
-
-
-namespace different_shape {
-
-void init_submodule(py::module& module);
-
-}  // namespace different_shape
-
-
-namespace same_shape {
-
-void init_submodule(py::module& module);
-
-}  // namespace same_shape
-
-
-#ifdef LUE_BUILD_TEST
-namespace test {
-
-void init_submodule(py::module& module);
-
-}  // namespace test
-#endif
-
 
 PYBIND11_MODULE(lue, module)
 {
@@ -90,7 +44,7 @@ PYBIND11_MODULE(lue, module)
     // Prevent the dump of HDF5 error/warning messages. Our messages should
     // be clear enough.
 #ifndef NDEBUG
-    H5Eset_auto1(NULL, NULL);
+    H5Eset_auto1(nullptr, nullptr);
 #endif
 
 

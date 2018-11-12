@@ -1,3 +1,4 @@
+#include "../python_extension.hpp"
 #include "lue/hdf5/datatype_traits.hpp"
 #include "lue/hdf5/vlen_memory.hpp"
 #include "lue/core/array.hpp"
@@ -51,7 +52,7 @@ TYPE_TRAITS(double, H5T_NATIVE_DOUBLE, "float64")
 */
 
 
-std::vector<size_t> create_strides(
+static std::vector<size_t> create_strides(
     hdf5::Shape const& shape,
     std::size_t size_of_element)
 {

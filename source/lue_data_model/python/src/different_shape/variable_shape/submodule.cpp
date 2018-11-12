@@ -1,3 +1,4 @@
+#include "submodule.hpp"
 #include <pybind11/pybind11.h>
 
 
@@ -7,11 +8,6 @@ namespace py = pybind11;
 namespace lue {
 namespace different_shape {
 namespace variable_shape {
-
-void init_properties(py::module& module);
-void init_property(py::module& module);
-void init_value(py::module& module);
-
 
 void init_submodule(
     py::module& module)

@@ -1,3 +1,4 @@
+#include "submodule.hpp"
 #include "lue/object/property/different_shape/constant_shape/properties.hpp"
 #include "../../core/collection.hpp"
 #include <pybind11/pybind11.h>

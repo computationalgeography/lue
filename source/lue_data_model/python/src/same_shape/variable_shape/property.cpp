@@ -1,3 +1,4 @@
+#include "submodule.hpp"
 #include "lue/info/property/same_shape/variable_shape/property.hpp"
 #include <pybind11/pybind11.h>
 #include <fmt/format.h>

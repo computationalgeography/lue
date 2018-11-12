@@ -1,3 +1,4 @@
+#include "../python_extension.hpp"
 #include "lue/core/clock.hpp"
 #include <pybind11/pybind11.h>
 

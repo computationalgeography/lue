@@ -1,3 +1,4 @@
+#include "../python_extension.hpp"
 #include "lue/object/property/property_set.hpp"
 #include "lue/object/property_sets.hpp"
 #include "../core/collection.hpp"
@@ -611,7 +612,6 @@ void init_property_set(
                                     "Pass in shape of object array if "
                                     "these don't differ per object and "
                                     "are constant through time");
-                                break;
                             }
                             case ShapeVariability::variable: {
                                 using Property = same_shape::variable_shape::Property;

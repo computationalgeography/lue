@@ -4,6 +4,7 @@
 #include <fmt/format.h>
 #include <algorithm>
 #include <cassert>
+#include <optional>
 #include <set>
 
 
@@ -654,25 +655,77 @@ bool is_ieee_floating_point_le(
 }
 
 
-// TODO Add'm all
-template<>
-Datatype native_datatype<std::uint32_t>()
-{
-    return native_uint32;
+#define NATIVE_DATATYPE(          \
+        type,                     \
+        datatype)                 \
+template<>                        \
+Datatype native_datatype<type>()  \
+{                                 \
+    return native_##datatype;     \
 }
 
+NATIVE_DATATYPE(std::uint8_t, uint8)
+NATIVE_DATATYPE(std::uint16_t, uint16)
+NATIVE_DATATYPE(std::uint32_t, uint32)
+NATIVE_DATATYPE(std::uint64_t, uint64)
+NATIVE_DATATYPE(std::int8_t, int8)
+NATIVE_DATATYPE(std::int16_t, int16)
+NATIVE_DATATYPE(std::int32_t, int32)
+NATIVE_DATATYPE(std::int64_t, int64)
+NATIVE_DATATYPE(float, float32)
+NATIVE_DATATYPE(double, float64)
 
-template<>
-Datatype native_datatype<std::uint64_t>()
-{
-    return native_uint64;
-}
-
+#undef NATIVE_DATATYPE
 
 template<>
 Datatype native_datatype<std::string>()
 {
-    return create_string_datatype();
+    static auto const datatype = create_string_datatype();
+    return datatype;
+}
+
+
+#define STD_DATATYPE_LE(          \
+        type,                     \
+        datatype)                 \
+template<>                        \
+Datatype std_datatype_le<type>()  \
+{                                 \
+    return std_##datatype;        \
+}
+
+STD_DATATYPE_LE(std::uint8_t, uint8_le)
+STD_DATATYPE_LE(std::uint16_t, uint16_le)
+STD_DATATYPE_LE(std::uint32_t, uint32_le)
+STD_DATATYPE_LE(std::uint64_t, uint64_le)
+STD_DATATYPE_LE(std::int8_t, int8_le)
+STD_DATATYPE_LE(std::int16_t, int16_le)
+STD_DATATYPE_LE(std::int32_t, int32_le)
+STD_DATATYPE_LE(std::int64_t, int64_le)
+
+#undef STD_DATATYPE_LE
+
+
+#define IEEE_DATATYPE_LE(          \
+        type,                      \
+        datatype)                  \
+template<>                         \
+Datatype ieee_datatype_le<type>()  \
+{                                  \
+    return ieee_##datatype;        \
+}
+
+IEEE_DATATYPE_LE(float, float32_le)
+IEEE_DATATYPE_LE(double, float64_le)
+
+#undef IEEE_DATATYPE_LE
+
+
+template<>
+Datatype std_datatype<std::string>()
+{
+    static auto const datatype = create_string_datatype();
+    return datatype;
 }
 
 } // namespace hdf5

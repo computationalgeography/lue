@@ -1,3 +1,4 @@
+#include "python_extension.hpp"
 #include "lue/info/space/stationary_space_point.hpp"
 #include <pybind11/pybind11.h>
 

@@ -1459,30 +1459,30 @@ static void validate_phenomenon(
                 // the number of active sets equals the number of ids
                 auto const nr_active_sets =
                     object_tracker.active_set_index().nr_arrays();
-                auto const nr_objects =
+                auto const nr_objects1 =
                     object_tracker.active_object_id().nr_ids();
 
-                if(nr_active_sets != nr_objects) {
+                if(nr_active_sets != nr_objects1) {
                     issues.add_error(property_set.id(), fmt::format(
                         "Size of each active set in object tracker "
                         "of collection properties does not equal "
                         "the number of active object IDs "
                         "({} != {})",
-                        nr_active_sets, nr_objects
+                        nr_active_sets, nr_objects1
                     ));
                 }
 
                 if(check_active_object_indices) {
-                    auto const nr_objects =
+                    auto const nr_objects2 =
                         object_tracker.active_object_id().nr_ids();
 
-                    if(nr_active_sets != nr_objects) {
+                    if(nr_active_sets != nr_objects2) {
                         issues.add_error(property_set.id(), fmt::format(
                             "Size of each active set in object tracker "
                             "of collection properties does not equal "
                             "the number of active object indices "
                             "({} != {})",
-                            nr_active_sets, nr_objects
+                            nr_active_sets, nr_objects2
                         ));
                     }
                 }

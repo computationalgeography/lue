@@ -1,3 +1,4 @@
+#include "submodule.hpp"
 #include "lue/hdf5/shape.hpp"
 #include <pybind11/stl_bind.h>
 

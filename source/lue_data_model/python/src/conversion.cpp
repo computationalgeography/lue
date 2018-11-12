@@ -1,6 +1,7 @@
 #include "lue/py/conversion.hpp"
 #include <numpy/arrayobject.h>
 #include <fmt/format.h>
+#include <optional>
 #include <map>
 
 

@@ -1,3 +1,6 @@
+#include "submodule.hpp"
+#include "constant_shape/submodule.hpp"
+#include "variable_shape/submodule.hpp"
 #include <pybind11/pybind11.h>
 
 
@@ -6,25 +9,6 @@ namespace py = pybind11;
 
 namespace lue {
 namespace different_shape {
-
-void init_properties(py::module& module);
-void init_property(py::module& module);
-void init_value(py::module& module);
-
-
-namespace constant_shape {
-
-void init_submodule(py::module& module);
-
-}  // namespace constant_shape
-
-
-namespace variable_shape {
-
-void init_submodule(py::module& module);
-
-}  // namespace variable_shape
-
 
 void init_submodule(
     py::module& module)

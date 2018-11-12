@@ -1,3 +1,4 @@
+#include "python_extension.hpp"
 #include "lue/object/dataset.hpp"
 #include "lue/py/hdf5/file.hpp"
 #include <pybind11/pybind11.h>

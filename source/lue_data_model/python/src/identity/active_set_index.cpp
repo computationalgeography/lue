@@ -1,3 +1,4 @@
+#include "../python_extension.hpp"
 #include "lue/info/identity/active_set_index.hpp"
 #include <pybind11/pybind11.h>
 

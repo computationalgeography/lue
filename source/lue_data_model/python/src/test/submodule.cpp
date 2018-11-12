@@ -1,3 +1,4 @@
+#include "submodule.hpp"
 #include <lue/core/define.hpp>
 #include <lue/test/algorithm.hpp>
 #include <pybind11/numpy.h>

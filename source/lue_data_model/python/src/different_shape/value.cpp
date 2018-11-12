@@ -1,3 +1,4 @@
+#include "submodule.hpp"
 #include "lue/array/different_shape/value.hpp"
 #include <pybind11/numpy.h>
 #include <fmt/format.h>

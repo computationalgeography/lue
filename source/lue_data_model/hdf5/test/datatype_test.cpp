@@ -145,21 +145,21 @@ BOOST_AUTO_TEST_CASE(is_valid)
 
     // native types
     {
-        for(auto const datatype: native_unsigned_integrals) {
+        for(auto const& datatype: native_unsigned_integrals) {
             BOOST_CHECK(!datatype.id().is_valid());
 
             auto datatype_copy = datatype;
             BOOST_CHECK(!datatype.id().is_valid());
         }
 
-        for(auto const datatype: native_signed_integrals) {
+        for(auto const& datatype: native_signed_integrals) {
             BOOST_CHECK(!datatype.id().is_valid());
 
             auto datatype_copy = datatype;
             BOOST_CHECK(!datatype.id().is_valid());
         }
 
-        for(auto const datatype: native_floating_points) {
+        for(auto const& datatype: native_floating_points) {
             BOOST_CHECK(!datatype.id().is_valid());
 
             auto datatype_copy = datatype;
@@ -169,21 +169,21 @@ BOOST_AUTO_TEST_CASE(is_valid)
 
     // std le types
     {
-        for(auto const datatype: std_unsigned_integrals_le) {
+        for(auto const& datatype: std_unsigned_integrals_le) {
             BOOST_CHECK(!datatype.id().is_valid());
 
             auto datatype_copy = datatype;
             BOOST_CHECK(!datatype.id().is_valid());
         }
 
-        for(auto const datatype: std_signed_integrals_le) {
+        for(auto const& datatype: std_signed_integrals_le) {
             BOOST_CHECK(!datatype.id().is_valid());
 
             auto datatype_copy = datatype;
             BOOST_CHECK(!datatype.id().is_valid());
         }
 
-        for(auto const datatype: ieee_floating_points_le) {
+        for(auto const& datatype: ieee_floating_points_le) {
             BOOST_CHECK(!datatype.id().is_valid());
 
             auto datatype_copy = datatype;

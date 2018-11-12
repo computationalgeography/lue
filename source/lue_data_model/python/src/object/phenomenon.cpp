@@ -1,3 +1,4 @@
+#include "../python_extension.hpp"
 #include "lue/object/phenomena.hpp"
 #include "../core/collection.hpp"
 #include <pybind11/pybind11.h>

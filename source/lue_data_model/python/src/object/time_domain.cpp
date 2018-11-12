@@ -1,3 +1,4 @@
+#include "../python_extension.hpp"
 #include "lue/object/time/time_domain.hpp"
 #include <pybind11/pybind11.h>
 

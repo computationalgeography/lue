@@ -1,3 +1,4 @@
+#include "submodule.hpp"
 #include "lue/array/same_shape/variable_shape/value.hpp"
 #include "lue/py/conversion.hpp"
 #include <pybind11/pybind11.h>

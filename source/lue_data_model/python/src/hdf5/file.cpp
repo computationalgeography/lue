@@ -1,3 +1,4 @@
+#include "submodule.hpp"
 #include "lue/py/hdf5/file.hpp"
 #include "lue/hdf5/file.hpp"
 #include <pybind11/pybind11.h>

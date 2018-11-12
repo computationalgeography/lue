@@ -15,10 +15,6 @@ class Datatype
 
 public:
 
-    // template<
-    //     typename T>
-    // explicit       Datatype            (T const&);
-
                    Datatype            ()=default;
 
     explicit       Datatype            (hid_t id);
@@ -94,17 +90,6 @@ struct CompareDatatypes
         return lhs != rhs && lhs.id() < rhs.id();
     }
 };
-
-
-// template<
-//     typename T>
-// inline Datatype::Datatype(
-//     T const&)
-// 
-//     : _id(Traits<T>::type_id, [](hid_t){})
-// 
-// {
-// }
 
 
 std::vector<unsigned char> encode_datatype(
@@ -223,6 +208,18 @@ bool               is_ieee_floating_point_le(
 template<
     typename T>
 Datatype           native_datatype     ();
+
+template<
+    typename T>
+Datatype           std_datatype_le     ();
+
+template<
+    typename T>
+Datatype           ieee_datatype_le    ();
+
+template<
+    typename T>
+Datatype           std_datatype        ();
 
 } // namespace hdf5
 } // namespace lue

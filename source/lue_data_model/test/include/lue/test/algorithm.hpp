@@ -13,7 +13,7 @@ namespace lue {
 namespace test {
 namespace detail {
 
-static auto& random_number_engine()
+static inline auto& random_number_engine()
 {
     // The device provides a seed
     // The engine provides random numbers

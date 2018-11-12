@@ -1,3 +1,4 @@
+#include "../python_extension.hpp"
 #include "lue/object/property/properties.hpp"
 // #include "../core/collection.hpp"
 // #include "lue/py/conversion.hpp"

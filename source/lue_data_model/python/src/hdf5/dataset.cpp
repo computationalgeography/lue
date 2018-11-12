@@ -1,3 +1,4 @@
+#include "submodule.hpp"
 #include "lue/hdf5/dataset.hpp"
 #include <pybind11/pybind11.h>
 

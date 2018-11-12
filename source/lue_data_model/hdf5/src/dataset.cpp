@@ -20,7 +20,8 @@ Dataset::CreationPropertyList::CreationPropertyList()
 void Dataset::CreationPropertyList::set_chunk(
     Shape const& chunk)
 {
-    auto status = ::H5Pset_chunk(id(), chunk.size(), chunk.data());
+    auto status =
+        ::H5Pset_chunk(id(), static_cast<int>(chunk.size()), chunk.data());
 
     if(status < 0) {
         throw std::runtime_error("Cannot set chunk size");

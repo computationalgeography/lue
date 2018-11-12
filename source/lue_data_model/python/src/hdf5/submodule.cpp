@@ -1,3 +1,4 @@
+#include "submodule.hpp"
 #include <pybind11/pybind11.h>
 
 
@@ -6,15 +7,6 @@ namespace py = pybind11;
 
 namespace lue {
 namespace hdf5 {
-
-void init_dataset(py::module& module);
-// void init_datatype(py::module& module);
-void init_file(py::module& module);
-void init_group(py::module& module);
-void init_identifier(py::module& module);
-void init_shape(py::module& module);
-void init_validate(py::module& module);
-
 
 void init_submodule(
     py::module& module)
@@ -37,7 +29,6 @@ void init_submodule(
     init_identifier(submodule);
     init_group(submodule);
     init_file(submodule);
-    // init_datatype(submodule);
     init_dataset(submodule);
     init_validate(submodule);
 }
