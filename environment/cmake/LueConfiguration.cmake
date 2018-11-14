@@ -207,24 +207,33 @@ if(DEVBASE_HPX_REQUIRED)
 
             set(HPX_WITH_MALLOC:STRING TCMALLOC)
             set(HPX_WITH_HWLOC:BOOL ON)
-            set(HPX_WITH_THREAD_IDLE_RATES:BOOL ON)
+            ### set(HPX_WITH_THREAD_IDLE_RATES:BOOL ON)
 
-            set(HPX_WITH_PAPI:BOOL ON)
+            ### set(HPX_WITH_PAPI:BOOL ON)
             set(HPX_WITH_GOOGLE_PERFTOOLS:BOOL ON)
 
-            set(HPX_WITH_TOOLS:BOOL ON)
-            set(HPX_WITH_TESTS:BOOL ON)
+            set(HPX_WITH_TOOLS:BOOL OFF)
+            set(HPX_WITH_TESTS:BOOL OFF)
             set(HPX_WITH_EXAMPLES:BOOL OFF)  # TODO Compiler error. Boost.Config.
             set(HPX_WITH_EXAMPLES_HDF5:BOOL OFF)  # TODO threadsafe hdf5 is not picked up
-            set(HPX_WITH_EXAMPLES_OPENMP:BOOL ON)
+            set(HPX_WITH_EXAMPLES_OPENMP:BOOL OFF)
 
-            set(HPX_WITH_CXX0Y:BOOL ON)
-            set(HPX_WITH_UNWRAPPED_COMPATIBILITY:BOOL OFF)
-            set(HPX_WITH_INCLUSIVE_SCAN_COMPATIBILITY:BOOL OFF)
-            set(HPX_WITH_LOCAL_DATAFLOW_COMPATIBILITY:BOOL OFF)
-            set(HPX_WITH_PARCELPORT_ACTION_COUNTERS:BOOL ON)
+            ### set(HPX_WITH_CXX0Y:BOOL ON)
+            ### set(HPX_WITH_UNWRAPPED_COMPATIBILITY:BOOL OFF)
+            ### set(HPX_WITH_INCLUSIVE_SCAN_COMPATIBILITY:BOOL OFF)
+            ### set(HPX_WITH_LOCAL_DATAFLOW_COMPATIBILITY:BOOL OFF)
+            ### set(HPX_WITH_PARCELPORT_ACTION_COUNTERS:BOOL ON)
 
             add_subdirectory(${hpx_SOURCE_DIR} ${hpx_BINARY_DIR})
+
+            # message(STATUS "Built HPX")
+            # message(STATUS "  source: ${hpx_SOURCE_DIR}")
+            # message(STATUS "  binary: ${hpx_BINARY_DIR}")
+
+            set(HPX_INCLUDE_DIRS
+                ${hpx_SOURCE_DIR}
+                ${PROJECT_BINARY_DIR}
+            )
         endif()
     else()
         # Use HPX from the environment
