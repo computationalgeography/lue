@@ -2,4 +2,13 @@
     @brief      Namespace containing all LUE code
 */
 namespace lue {
+
+/*!
+    @brief      Namespace containing time related code
+*/
+namespace time {
 }
+
+}
+
+
