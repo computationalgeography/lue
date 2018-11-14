@@ -58,7 +58,6 @@ function build_peacock()
     if [ $hostname == "gransasso" ]; then
         build_google_benchmark=true
         build_hdf5=true  # System hdf5 is not good enough, see peacock
-        build_hpx=true
     fi
 
 
@@ -92,20 +91,20 @@ function build_peacock()
 
     if [ "$build_google_benchmark" = true ]; then
         options+=("-Dbuild_google_benchmark=true")
-        options+=("-Dhpx_version=1.4.1")
+        options+=("-Dgoogle_benchmark_version=1.4.1")
     fi
 
 
     if [ "$build_hdf5" = true ]; then
         options+=("-Dbuild_hdf5=true")
-        options+=("-Dhdf5_cpp_lib=true")
-        options+=("-Dhdf5_version=1.8.14")
+        options+=("-Dhdf5_cpp_lib=false")
+        options+=("-Dhdf5_version=1.8.21")
     fi
 
 
     if [ "$build_hpx" = true ]; then
         options+=("-Dbuild_hpx=true")
-        options+=("-Dhpx_version=1.1.0")
+        options+=("-Dhpx_version=1.2.0")
     fi
 
 
