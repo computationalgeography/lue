@@ -10,11 +10,11 @@ class Environment
 
 public:
 
-    explicit       Environment         (std::size_t count,
+                   Environment         (std::size_t count,
                                         std::size_t nr_threads,
                                         std::size_t work_size);
 
-    explicit       Environment         (std::size_t count,
+                   Environment         (std::size_t count,
                                         std::size_t nr_localities,
                                         std::size_t nr_threads,
                                         std::size_t work_size);

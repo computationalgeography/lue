@@ -56,6 +56,14 @@ def benchmark_meta_to_lue_json(
                                     "value": ["{}".format(
                                         benchmark_json["name"])]
                                 },
+                                {
+                                    "name": "system_name",
+                                    "shape_per_object": "same_shape",
+                                    "value_variability": "constant",
+                                    "datatype": "string",
+                                    "value": ["{}".format(
+                                        benchmark_json["system_name"])]
+                                },
                             ]
                         }
                     ]

@@ -1,5 +1,6 @@
 #include "lue/framework/benchmark/benchmark.hpp"
 #include "lue/framework/benchmark/main.hpp"
+#include <boost/asio/ip/host_name.hpp>
 #include <iostream>
 #include <random>
 #include <thread>
@@ -43,10 +44,11 @@ auto setup_benchmark(
 {
     auto callable = dummy;
     std::string const name = "dummy";
+    std::string const hostname = boost::asio::ip::host_name();
     std::string const description = "Dummy benchmark";
 
     return lue::benchmark::Benchmark{
-        std::move(callable), environment, name, description};
+        std::move(callable), hostname, environment, name, description};
 }
 
 

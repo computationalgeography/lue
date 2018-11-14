@@ -67,6 +67,7 @@ public:
     using Timings = std::vector<Timing>;
 
                    Benchmark           (Callable&& callable,
+                                        std::string const& system_name,
                                         Environment const& environment,
                                         std::string const& name,
                                         std::string const& description);
@@ -80,6 +81,8 @@ public:
     Benchmark&     operator=           (Benchmark const&)=delete;
 
     Benchmark&     operator=           (Benchmark&&)=delete;
+
+    std::string const& system_name     () const;
 
     std::string const& name            () const;
 
@@ -98,14 +101,17 @@ private:
     //! Callable representing the workload to time
     Callable       _callable;
 
+    //! Name of system the benchmark runs on: hostname or cluster name
+    std::string const _system_name;
+
     //! Environment the benchmark runs in
-    Environment    _environment;
+    Environment const _environment;
 
     //! Name of the benchmark
-    std::string    _name;
+    std::string const _name;
 
     //! Description of the benchmark
-    std::string    _description;
+    std::string const _description;
 
     //! Interval in which the benchmark ran
     TimeInterval   _time_interval;
@@ -125,17 +131,28 @@ template<
     typename Callable>
 inline Benchmark<Callable>::Benchmark(
     Callable&& callable,
+    std::string const& system_name,
     Environment const& environment,
     std::string const& name,
-    std::string const& description)
-:
+    std::string const& description):
+
     _callable{std::forward<Callable>(callable)},
+    _system_name{system_name},
     _environment{environment},
     _name{name},
     _description{description},
     _time_interval{},
     _timings{}
+
 {
+}
+
+
+template<
+    typename Callable>
+std::string const& Benchmark<Callable>::system_name() const
+{
+    return _system_name;
 }
 
 

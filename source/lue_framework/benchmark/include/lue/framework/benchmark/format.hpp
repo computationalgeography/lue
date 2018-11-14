@@ -83,6 +83,7 @@ inline std::string format_as_json(
     // j["stop"] = to_iso_string(time_interval.stop());
     j["duration"] = time_interval.duration().count();
     j["name"] = benchmark.name();
+    j["system_name"] = benchmark.system_name();
     j["description"] = benchmark.description();
 
     auto const& environment = benchmark.environment();

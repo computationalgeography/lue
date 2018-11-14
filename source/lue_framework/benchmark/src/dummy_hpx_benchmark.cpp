@@ -22,6 +22,15 @@ auto setup_benchmark(
 {
     DummyAction dummy;
     std::string const name = "dummy_hpx";
+    // Possible root to cluster name:
+    // - HPX
+    //     - find_root_locality (is this useful?)
+    //     - Figure out how to obtain the hostname given a locality
+    //       id. See implementation of get_error_host_name, which does
+    //       something similar.
+    // - SLURM
+    //     - ???
+    std::string const cluster_name = "cluster_name";
     std::string const description = "Dummy HPX benchmark";
     auto node = hpx::find_here();
 
@@ -39,7 +48,7 @@ auto setup_benchmark(
     };
 
     return lue::benchmark::Benchmark{
-        std::move(callable), environment, name, description};
+        std::move(callable), cluster_name, environment, name, description};
 }
 
 
