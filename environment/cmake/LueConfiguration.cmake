@@ -190,8 +190,8 @@ if(DEVBASE_HPX_REQUIRED)
         # Build HPX ourselves
         FetchContent_Declare(hpx
             GIT_REPOSITORY https://github.com/STEllAR-GROUP/hpx
-            GIT_TAG 3a95a3cd5f00d7b957b06b3d8047387a7d775bd4  # 1.1.0
-            # GIT_TAG 38ecfb0ec6cd2470c15bc64feb0b505310489ccc  # 1.2.0-rc1
+            # GIT_TAG 3a95a3cd5f00d7b957b06b3d8047387a7d775bd4  # 1.1.0
+            GIT_TAG a40fc75290d3d821f042a965726c47d7b0c1b35f  # 1.2.0
         )
 
         FetchContent_GetProperties(hpx)
@@ -199,7 +199,13 @@ if(DEVBASE_HPX_REQUIRED)
         if(NOT hpx_POPULATED)
             FetchContent_Populate(hpx)
 
-            set(HPX_WITH_MALLOC:STRING JEMALLOC)
+            # If you are building HPX for a system with more
+            # than 64 processing units you must change the CMake
+            # variables HPX_WITH_MORE_THAN_64_THREADS (to On) and
+            # HPX_WITH_MAX_CPU_COUNT (to a value at least as big as the
+            # number of (virtual) cores on your system).
+
+            set(HPX_WITH_MALLOC:STRING TCMALLOC)
             set(HPX_WITH_HWLOC:BOOL ON)
             set(HPX_WITH_THREAD_IDLE_RATES:BOOL ON)
 
