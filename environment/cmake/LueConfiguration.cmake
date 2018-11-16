@@ -224,6 +224,8 @@ if(DEVBASE_HPX_REQUIRED)
             ### set(HPX_WITH_LOCAL_DATAFLOW_COMPATIBILITY:BOOL OFF)
             ### set(HPX_WITH_PARCELPORT_ACTION_COUNTERS:BOOL ON)
 
+            set(HPX_TLL_PUBLIC PUBLIC)
+
             add_subdirectory(${hpx_SOURCE_DIR} ${hpx_BINARY_DIR})
 
             # message(STATUS "Built HPX")
