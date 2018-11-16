@@ -194,8 +194,7 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
             auto discretization_property =
                 elevation_property.space_discretization_property();
 
-            lue::PropertySet property_set{
-                discretization_property.property_set_group()};
+            auto property_set{lue::property_set(discretization_property)};
 
             BOOST_CHECK(
                 property_set.properties().contains(

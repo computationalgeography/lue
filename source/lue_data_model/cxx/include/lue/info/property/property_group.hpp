@@ -50,8 +50,6 @@ public:
 
     PropertyGroup  space_discretization_property();
 
-    hdf5::Group    property_set_group  ();
-
 private:
 
 };

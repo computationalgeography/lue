@@ -48,6 +48,8 @@ public:
 
     hdf5::Shape    array_shape         () const;
 
+    Rank           rank                () const;
+
     using Array::read;
 
     void           read                (Index idx,

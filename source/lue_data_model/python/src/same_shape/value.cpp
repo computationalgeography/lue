@@ -21,6 +21,9 @@ void init_value(
     Value docstring...
 )")
 
+        .def("__len__",
+            &Value::nr_arrays)
+
         .def("expand",
             [](
                 Value& value,

@@ -53,6 +53,14 @@ public:
                                             space_coordinate_datatype,
                                         std::size_t rank);
 
+    PropertySet&   add                 (std::string const& name,
+                                        TimeDomain& time_domain,
+                                        SpaceConfiguration const&
+                                            space_configuration,
+                                        hdf5::Datatype const&
+                                            space_coordinate_datatype,
+                                        std::size_t rank);
+
 private:
 
 };

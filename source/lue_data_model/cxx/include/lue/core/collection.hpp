@@ -30,7 +30,7 @@ public:
                    Collection          (hdf5::Group& parent,
                                         std::string const& name);
 
-    explicit       Collection          (Group&& group);
+    explicit       Collection          (hdf5::Group&& group);
 
                    Collection          (Collection const&)=delete;
 

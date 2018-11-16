@@ -897,6 +897,17 @@ void to_dot(
     for(auto const& name: phenomena.names()) {
         to_dot(phenomena[name], stream, metadata);
     }
+
+
+    if(universes.empty() && phenomena.empty()) {
+        // In this case, the subgraph won't be visualized. Just dump
+        // something to signal the user that the dataset is empty.
+        stream << R"(
+    "<empty>" [
+        shape="plaintext"
+    ];
+)";
+    }
 }
 
 

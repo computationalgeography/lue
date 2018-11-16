@@ -22,6 +22,9 @@ void init_value(
     Value docstring...
 )")
 
+        .def("__len__",
+            &Value::nr_objects)
+
         .def(
             "__getitem__",
             &Value::operator[]

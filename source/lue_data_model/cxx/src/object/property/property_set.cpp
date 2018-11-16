@@ -165,6 +165,12 @@ PropertySet create_property_set(
     hdf5::Group& parent,
     std::string const& name)
 {
+    if(hdf5::group_exists(parent, name)) {
+        throw std::runtime_error(fmt::format(
+            "Property-set {} already exists at {}",
+            name, parent.id().pathname()));
+    }
+
     auto group = hdf5::create_group(parent, name);
 
     create_object_tracker(group);
@@ -181,6 +187,12 @@ PropertySet create_property_set(
     hdf5::Datatype const& space_coordinate_datatype,
     std::size_t const rank)
 {
+    if(hdf5::group_exists(parent, name)) {
+        throw std::runtime_error(fmt::format(
+            "Property-set {} already exists at {}",
+            name, parent.id().pathname()));
+    }
+
     auto group = hdf5::create_group(parent, name);
 
     create_object_tracker(group);
@@ -219,6 +231,12 @@ PropertySet create_property_set(
     TimeConfiguration const& time_configuration,
     Clock const& clock)
 {
+    if(hdf5::group_exists(parent, name)) {
+        throw std::runtime_error(fmt::format(
+            "Property-set {} already exists at {}",
+            name, parent.id().pathname()));
+    }
+
     auto group = hdf5::create_group(parent, name);
 
     create_object_tracker(group);
@@ -238,11 +256,43 @@ PropertySet create_property_set(
     hdf5::Datatype const& space_coordinate_datatype,
     std::size_t const rank)
 {
+    if(hdf5::group_exists(parent, name)) {
+        throw std::runtime_error(fmt::format(
+            "Property-set {} already exists at {}",
+            name, parent.id().pathname()));
+    }
+
     auto group = hdf5::create_group(parent, name);
 
     create_object_tracker(group);
     create_time_domain(
         group, time_configuration, clock);
+    create_space_domain(
+        group, space_configuration, space_coordinate_datatype, rank);
+    create_properties(group);
+
+    return PropertySet{std::move(group)};
+}
+
+
+PropertySet create_property_set(
+    hdf5::Group& parent,
+    std::string const& name,
+    TimeDomain& time_domain,
+    SpaceConfiguration const& space_configuration,
+    hdf5::Datatype const& space_coordinate_datatype,
+    std::size_t rank)
+{
+    if(hdf5::group_exists(parent, name)) {
+        throw std::runtime_error(fmt::format(
+            "Property-set {} already exists at {}",
+            name, parent.id().pathname()));
+    }
+
+    auto group = hdf5::create_group(parent, name);
+
+    create_object_tracker(group);
+    link_time_domain(group, time_domain);
     create_space_domain(
         group, space_configuration, space_coordinate_datatype, rank);
     create_properties(group);

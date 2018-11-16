@@ -89,6 +89,22 @@ PropertySet& PropertySets::add(
 }
 
 
+PropertySet& PropertySets::add(
+    std::string const& name,
+    TimeDomain& time_domain,
+    SpaceConfiguration const& space_configuration,
+    hdf5::Datatype const& space_coordinate_datatype,
+    std::size_t rank)
+{
+    return Collection::add(
+        name,
+        create_property_set(
+            *this, name,
+            time_domain,
+            space_configuration, space_coordinate_datatype, rank));
+}
+
+
 PropertySets create_property_sets(
     hdf5::Group& parent,
     std::string const& name)

@@ -400,7 +400,7 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
 
             // Property set
             auto property = discharge_property.time_discretization_property();
-            lue::PropertySet property_set{property.property_set_group()};
+            auto property_set{lue::property_set(property)};
 
             // IDs
             {

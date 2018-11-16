@@ -27,7 +27,7 @@ struct Read2DDatasetFixture
         // +----+----+
         // |  1 |  2 |
         // +----+----+
-        auto file = create_in_memory_file("my_dataset.lue");
+        auto file = create_in_memory_file("my_dataset.h5");
         Dataset::CreationPropertyList creation_property_list;
         std::string const dataset_name = "my_dataset";
         Datatype const file_datatype{H5T_STD_I32LE};
@@ -151,7 +151,7 @@ BOOST_FIXTURE_TEST_CASE(read_cell, Read2DDatasetFixture)
 
 BOOST_AUTO_TEST_CASE(dataset_utf8)
 {
-    std::string const filename = "my_utf8_dataset.lue";
+    std::string const filename = "my_utf8_dataset.h5";
     std::string const dataset_name = "my_dataset";
     std::size_t const nr_rows = 3;
     std::size_t const nr_cols = 2;

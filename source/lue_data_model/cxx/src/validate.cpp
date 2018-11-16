@@ -1,4 +1,5 @@
 #include "lue/validate.hpp"
+#include "lue/navigate.hpp"
 #include "lue/object/dataset.hpp"
 #include "lue/hdf5/validate.hpp"
 #include <algorithm>
@@ -73,15 +74,33 @@ std::string error_message(
 
     // Print the issues. First the errors (and possibly warnings) are printed,
     // and after that the warnings for objects without errors.
-    for(auto const& id: ids) {
-        stream << id.pathname() << ":\n";
+    {
+        std::size_t issue_count = 0;
+        std::size_t const nr_issues =
+            issues.errors().size() + issues.warnings().size();
 
-        for(auto const& message: messages[id]) {
-            stream << "- " << message << "\n";
+        for(auto const& id: ids) {
+            stream << fmt::format("{}:\n", id.pathname());
+
+            for(auto const& message: messages[id]) {
+                stream << fmt::format(
+                        "- [{}/{}] {}\n",
+                        ++issue_count, nr_issues, message
+                    );
+            }
         }
     }
 
     return stream.str();
+}
+
+
+template<
+    typename Property>
+static bool is_collection_property(
+    Property& property)
+{
+    return property_sets(property).id().name() == collection_property_sets_tag;
 }
 
 }  // Anonymous namespace
@@ -268,12 +287,13 @@ static void validate_value(
     // Read IDs of all objects that have been active
     auto& active_object_id = object_tracker.active_object_id();
 
-    std::vector<ID> object_ids(active_object_id.nr_ids());
-    active_object_id.read(object_ids.data());
+    std::vector<ID> active_object_ids(active_object_id.nr_ids());
+    active_object_id.read(active_object_ids.data());
 
     // Determine the number of objects that have been active at least
-    // once
-    std::set<ID> unique_object_ids(object_ids.begin(), object_ids.end());
+    // once. *The set of unique_object_ids can be empty.*
+    std::set<ID> unique_object_ids(
+        active_object_ids.begin(), active_object_ids.end());
     auto const nr_objects = unique_object_ids.size();
 
     if(nr_value_arrays != nr_objects) {
@@ -290,9 +310,9 @@ static void validate_value(
             auto it = std::find_if(
                 unique_object_ids.begin(), unique_object_ids.end(),
                 [&](auto const id) {
-                    return value.exists(id);
+                    return !value.exists(id);
                 });
-            it == unique_object_ids.end()) {
+            it != unique_object_ids.end()) { // && !unique_object_ids.empty()) {
 
         issues.add_error(value.id(), fmt::format(
             "Each active object must have a corresponding value array, "
@@ -308,24 +328,33 @@ static void validate_value(
         auto& active_set_index = object_tracker.active_set_index();
         auto& active_object_index = object_tracker.active_object_index();
 
-        std::vector<Index> set_idxs(active_set_index.nr_indices());
-        active_set_index.read(set_idxs.data());
+        std::vector<Index> active_set_idxs(active_set_index.nr_indices());
+        active_set_index.read(active_set_idxs.data());
 
-        std::vector<Index> object_idxs(active_object_index.nr_indices());
-        active_object_index.read(object_idxs.data());
+        std::vector<Index> active_object_idxs(active_object_index.nr_indices());
+        active_object_index.read(active_object_idxs.data());
 
         // Add an end index to ease the iteration over ranges of IDs
-        set_idxs.push_back(active_object_id.nr_ids());
-        auto begin_idx = set_idxs[0];
+        active_set_idxs.push_back(active_object_id.nr_ids());
+        auto begin_idx = active_set_idxs[0];
 
-        for(std::size_t i = 1; i < set_idxs.size(); ++i) {
-            auto const end_idx = set_idxs[i];
-            // auto const active_set_size = end_idx - begin_idx;
+        // TODO This happens when the active object idxs are empty. In
+        // that case, validation of the object tracker succeeded, because
+        // it doesn't now that this collection mustn't be empty, because
+        // it doesn't know it is required. It is required in the case of
+        // different_shape::constant_shape::Value. Not sure how to fix
+        // this conveniently yet.
+        assert(active_object_ids.size() == active_object_idxs.size());
+
+        for(std::size_t i = 1; i < active_set_idxs.size(); ++i) {
+            auto const end_idx = active_set_idxs[i];
 
             for(std::size_t o = begin_idx; o < end_idx; ++o) {
-                auto const object_id = object_ids[o];
-                auto const object_array_idx = object_idxs[o];
+                assert(o < active_object_ids.size());
+                assert(o < active_object_idxs.size());
 
+                auto const object_id = active_object_ids[o];
+                auto const object_array_idx = active_object_idxs[o];
                 auto value_array = value[object_id];
 
                 if(object_array_idx >= value_array.nr_arrays()) {
@@ -374,15 +403,15 @@ static void validate_value(
 
         // Iterate over each active set and verify that the size of the
         // value array equals the size of the set
-        std::vector<Index> set_idxs(active_set_index.nr_indices());
-        active_set_index.read(set_idxs.data());
+        std::vector<Index> active_set_idxs(active_set_index.nr_indices());
+        active_set_index.read(active_set_idxs.data());
 
         // Add an end index to ease the iteration over ranges of IDs
-        set_idxs.push_back(object_tracker.active_object_id().nr_ids());
-        auto begin_idx = set_idxs[0];
+        active_set_idxs.push_back(object_tracker.active_object_id().nr_ids());
+        auto begin_idx = active_set_idxs[0];
 
-        for(std::size_t i = 1; i < set_idxs.size(); ++i) {
-            auto const end_idx = set_idxs[i];
+        for(std::size_t i = 1; i < active_set_idxs.size(); ++i) {
+            auto const end_idx = active_set_idxs[i];
             auto const active_set_size = end_idx - begin_idx;
 
             auto const value_array = value[i - 1];
@@ -425,12 +454,12 @@ static void validate_id(
 
 static void validate_active_ids(
     hdf5::Identifier const& active_set_index_id,
-    std::vector<Index> set_idxs,
+    std::vector<Index> active_set_idxs,
     hdf5::Identifier const& active_id_id,
     std::vector<ID> const& object_ids,
     hdf5::Issues& issues)
 {
-    if(set_idxs.empty()) {
+    if(active_set_idxs.empty()) {
         if(!object_ids.empty()) {
             issues.add_error(active_set_index_id, fmt::format(
                 "{} IDs of active objects are stored, "
@@ -444,17 +473,17 @@ static void validate_active_ids(
             issues.add_error(active_set_index_id, fmt::format(
                 "{} indices of active sets are stored, "
                 "but IDs of active objects are missing",
-                set_idxs.size()
+                active_set_idxs.size()
             ));
         }
 
         // Validate indices of active sets and IDs of active objects
         // Add an end index to ease the iteration over ranges of IDs
-        set_idxs.push_back(object_ids.size());
-        auto begin_idx = set_idxs[0];
+        active_set_idxs.push_back(object_ids.size());
+        auto begin_idx = active_set_idxs[0];
 
-        for(std::size_t i = 1; i < set_idxs.size(); ++i) {
-            auto const end_idx = set_idxs[i];
+        for(std::size_t i = 1; i < active_set_idxs.size(); ++i) {
+            auto const end_idx = active_set_idxs[i];
 
             // Validate active set indices are valid
             if(end_idx < begin_idx) {
@@ -497,28 +526,28 @@ static void validate_active_ids(
 
 static void validate_active_object_idxs(
     hdf5::Identifier const& active_set_index_id,
-    std::vector<Index> set_idxs,
+    std::vector<Index> active_set_idxs,
     hdf5::Identifier const& active_object_index_id,
-    std::vector<Index> const& object_idxs,
+    std::vector<Index> const& active_object_idxs,
     hdf5::Issues& issues)
 {
-    if(set_idxs.empty()) {
-        if(!object_idxs.empty()) {
+    if(active_set_idxs.empty()) {
+        if(!active_object_idxs.empty()) {
             issues.add_error(active_set_index_id, fmt::format(
                 "{} Indices of active objects are stored, "
                 "but indices of active sets are missing",
-                object_idxs.size()
+                active_object_idxs.size()
             ));
         }
     }
-    else if(!object_idxs.empty()) {
+    else if(!active_object_idxs.empty()) {
         // Validate indices of active sets and indices of active objects
         // Add an end index to ease the iteration over ranges of indices
-        set_idxs.push_back(object_idxs.size());
-        auto begin_idx = set_idxs[0];
+        active_set_idxs.push_back(active_object_idxs.size());
+        auto begin_idx = active_set_idxs[0];
 
-        for(std::size_t i = 1; i < set_idxs.size(); ++i) {
-            auto const end_idx = set_idxs[i];
+        for(std::size_t i = 1; i < active_set_idxs.size(); ++i) {
+            auto const end_idx = active_set_idxs[i];
 
             // Validate active set indices are valid
             if(end_idx < begin_idx) {
@@ -533,11 +562,11 @@ static void validate_active_object_idxs(
             }
 
             // Validate active set is stored
-            if(end_idx > object_idxs.size()) {
+            if(end_idx > active_object_idxs.size()) {
                 issues.add_error(active_object_index_id, fmt::format(
                     "Part of the collection of active object indices is "
                     "missing (end index {} > collection size {})",
-                    end_idx, object_idxs.size()
+                    end_idx, active_object_idxs.size()
                 ));
 
                 break;
@@ -554,6 +583,20 @@ static void validate_object_tracker(
     ObjectTracker const& object_tracker,
     hdf5::Issues& issues)
 {
+    // active set index
+    // - for each active set an index
+    // - the size equals the number of active sets
+    //
+    // active object id
+    // - For each object in each active set an ID
+    // - The size equals the sum of all active object in each active set.
+    //     Active objects can be active in multiple active sets.
+    //
+    // active object index
+    // - For each object in each active set an index into its value array.
+    // - The size equals the sum of all active object in each active set.
+    //     Active objects can be active in multiple active sets.
+
     std::vector<ID> ids(object_id.nr_objects());
     object_id.read(ids.data());
 
@@ -562,8 +605,8 @@ static void validate_object_tracker(
     active_set_index.read(active_set_idxs.data());
 
     auto const& active_object_id{object_tracker.active_object_id()};
-    std::vector<ID> active_ids(active_object_id.nr_ids());
-    active_object_id.read(active_ids.data());
+    std::vector<ID> active_object_ids(active_object_id.nr_ids());
+    active_object_id.read(active_object_ids.data());
 
     auto const& active_object_index{object_tracker.active_object_index()};
     std::vector<Index> active_object_idxs(active_object_index.nr_indices());
@@ -572,7 +615,7 @@ static void validate_object_tracker(
     validate_id(object_id.id(), ids, issues);
     validate_active_ids(
         active_set_index.id(), active_set_idxs,
-        active_object_id.id(), active_ids,
+        active_object_id.id(), active_object_ids,
         issues);
     validate_active_object_idxs(
         active_set_index.id(), active_set_idxs,
@@ -582,7 +625,7 @@ static void validate_object_tracker(
     // If the collection of static IDs is not empty, all of the active
     // IDs must also be part of the collection of static IDs
     if(!ids.empty()) {
-        for(auto id: active_ids) {
+        for(auto id: active_object_ids) {
             if(std::find(ids.begin(), ids.end(), id) == ids.end()) {
                 issues.add_error(active_object_id.id(), fmt::format(
                     "All active object IDs must also be part of the "
@@ -856,7 +899,59 @@ template<
     typename DiscretizedProperty>
 void validate_space_constant_regular_grid(
     DiscretizedProperty const& discretized_property,
-    Properties const& properties,
+    same_shape::Property const& discretization_property,
+    hdf5::Issues& issues)
+{
+    auto const& discretized_property_value = discretized_property.value();
+    auto const& discretization_property_value =
+        discretization_property.value();
+
+    // The discretization property must contain a value for each object
+    // array in the discretized property
+    if(discretization_property_value.nr_arrays() !=
+            discretized_property_value.nr_objects()) {
+        issues.add_error(
+                discretization_property.id(),
+                fmt::format(
+            "Number of object arrays in discretization property "
+            "must equal the number of object arrays discretized "
+            "({} != {})",
+            discretization_property_value.nr_arrays(),
+            discretized_property_value.nr_objects()));
+    }
+}
+
+
+template<>
+void validate_space_constant_regular_grid<same_shape::constant_shape::Property>(
+    same_shape::constant_shape::Property const& /* discretized_property */,
+    same_shape::Property const& discretization_property,
+    hdf5::Issues& issues)
+{
+    auto const& discretization_property_value =
+        discretization_property.value();
+
+    // The discretization property must contain a single value that is valid
+    // for all object arrays. They all have the same shape which is
+    // constant.
+    if(discretization_property_value.nr_arrays() != 1) {
+        issues.add_error(
+                discretization_property.id(),
+                fmt::format(
+            "When discretizing a same_shape::constant_shape property "
+            "the number of object arrays in the discretization property must "
+            "equal 1 "
+            "({} != 1)",
+            discretization_property_value.nr_arrays()));
+    }
+}
+
+
+template<
+    typename DiscretizedProperty>
+void validate_space_constant_regular_grid(
+    DiscretizedProperty const& discretized_property,
+    Properties& properties,
     std::string const& discretization_property_name,
     hdf5::Issues& issues)
 {
@@ -875,23 +970,39 @@ void validate_space_constant_regular_grid(
     }
     else {
         auto const& property_value = discretized_property.value();
-        auto const& discretization_property = 
+        auto& discretization_property =
             properties.collection<same_shape::Properties>()[
                 discretization_property_name];
         auto const& discretization_value = discretization_property.value();
 
+        // Validate the counts -------------------------------------------------
+
         // For each object array in the discretized property, the
-        // discretization property must contain an object array
-        if(discretization_value.nr_arrays() !=
-                property_value.nr_objects()) {
-            issues.add_error(
-                    discretization_property.id(),
-                    fmt::format(
-                "Number of object arrays in discretization property "
-                "must equal the number of object arrays discretized "
-                "({} != {})",
-                discretization_value.nr_arrays(),
-                property_value.nr_objects()));
+        // discretization property must contain enough information
+        // - In case discretization property is a collection property,
+        //     it contains information for a single object (the collection
+        //     as a whole). The information must be valid for all objects
+        //     in the discretized property.
+        // - In case the discretization property is not a collection property,
+        //     it contains information for each object in the discretized
+        //     property.
+
+        if(is_collection_property(discretization_property)) {
+            // The discretization property must contain a single value
+            // that is valid for all object arrays in the discretized
+            // property
+            if(discretization_value.nr_arrays() != 1) {
+                issues.add_error(
+                        discretization_property.id(),
+                        fmt::format(
+                    "Number of object arrays in discretization property "
+                    "must be 1 ({} != 1)",
+                    discretization_value.nr_arrays()));
+            }
+        }
+        else {
+            validate_space_constant_regular_grid(
+                discretized_property, discretization_property, issues);
         }
 
         // The discretization property's value must contain unsigned integers
@@ -918,8 +1029,8 @@ void validate_space_constant_regular_grid(
                 "property must contain a count");
         }
 
-        // TODO Compare the counts. These must match the shapes
-        //      of the values
+        // TODO Compare the counts in the discretization property. These
+        // must match the shapes of the values.
     }
 }
 
@@ -962,12 +1073,13 @@ static void validate_property(
 
     if(property.space_is_discretized()) {
         // Each property value is discretized through space
-        auto discretization_property = property.space_discretization_property();
+        auto discretization_property =
+            property.space_discretization_property();
         auto const& discretization_property_name =
             discretization_property.name();
-        PropertySet discretization_property_set{
-            discretization_property.property_set_group()};
-        auto const& properties = discretization_property_set.properties();
+        auto discretization_property_set{
+            property_set(discretization_property)};
+        auto& properties = discretization_property_set.properties();
 
         if(properties.value_variability(discretization_property_name) !=
                 ValueVariability::constant) {
@@ -1005,9 +1117,36 @@ static void validate_property(
     }
 
     if(property.space_is_discretized()) {
-        not_supported_yet(
-            property.id(), issues,
-            "validation of discretization through space");
+        // Each property value is discretized through space
+        auto discretization_property =
+            property.space_discretization_property();
+        auto const& discretization_property_name =
+            discretization_property.name();
+        auto discretization_property_set{
+            property_set(discretization_property)};
+        auto& properties = discretization_property_set.properties();
+
+        // Discretization property can be constant or variable
+        auto const value_variability =
+            properties.value_variability(discretization_property_name);
+
+        if(value_variability == ValueVariability::constant) {
+            switch(property.space_discretization_type()) {
+                case SpaceDiscretization::regular_grid: {
+                    validate_space_constant_regular_grid(
+                        property,
+                        properties, discretization_property_name,
+                        issues);
+
+                    break;
+                }
+            }
+        }
+        else {
+            not_supported_yet(
+                discretization_property.id(), issues,
+                "validation of variable discretization through space");
+        }
     }
 }
 
@@ -1029,9 +1168,9 @@ static void validate_property(
         auto discretization_property = property.space_discretization_property();
         auto const& discretization_property_name =
             discretization_property.name();
-        PropertySet discretization_property_set{
-            discretization_property.property_set_group()};
-        auto const& properties = discretization_property_set.properties();
+        auto discretization_property_set{
+            property_set(discretization_property)};
+        auto& properties = discretization_property_set.properties();
 
         if(properties.value_variability(discretization_property_name) !=
                 ValueVariability::constant) {
@@ -1070,8 +1209,8 @@ static void validate_property(
         auto discretization_property = property.time_discretization_property();
         auto const& discretization_property_name =
             discretization_property.name();
-        PropertySet discretization_property_set{
-            discretization_property.property_set_group()};
+        auto discretization_property_set{
+            property_set(discretization_property)};
         auto const& properties = discretization_property_set.properties();
         bool values_can_be_tested = false;
 
@@ -1273,8 +1412,8 @@ static void validate_property_set(
                         space_domain.discretized_presence_property();
                     auto const& presence_property_name =
                         presence_property.name();
-                    PropertySet presence_property_set{
-                        presence_property.property_set_group()};
+                    auto presence_property_set{
+                        lue::property_set(presence_property)};
                     auto const& properties =
                         presence_property_set.properties();
 
@@ -1335,7 +1474,8 @@ static void validate_property_set(
             }
         }
 
-        validate_properties(object_id, object_tracker, property_set.properties(), issues);
+        validate_properties(
+            object_id, object_tracker, property_set.properties(), issues);
     }
 }
 

@@ -227,7 +227,7 @@ void init_property_set(
     Add new property-set to collection
 
     :param str name: Name of property-set to create
-    :param TimeDomain time_domain: Another property-set's ttime domain
+    :param TimeDomain time_domain: Another property-set's time domain
         to use. Sharing time domains makes sense when the locations in
         time are the same. This saves space in the dataset.
     :return: Property-set created
@@ -238,6 +238,48 @@ void init_property_set(
     this property-set will be omnipresent through space.
 )",
             py::return_value_policy::reference_internal)
+
+        .def(
+            "add",
+            [](
+                PropertySets& property_sets,
+                std::string const& name,
+                TimeDomain& time_domain,
+                SpaceConfiguration const& space_configuration,
+                py::dtype const& space_coordinate_dtype,
+                Rank const rank) -> PropertySet&
+            {
+                auto const datatype =
+                    numpy_type_to_memory_datatype(space_coordinate_dtype);
+
+                return property_sets.add(
+                    name,
+                    time_domain,
+                    space_configuration, datatype, rank);
+            },
+            "name"_a,
+            "time_domain"_a,
+            "space_configuration"_a,
+            "space_coordinate_dtype"_a,
+            "rank"_a,
+            R"(
+    Add new property-set to collection
+
+    :param str name: Name of property-set to create
+    :param TimeDomain time_domain: Another property-set's time domain
+        to use. Sharing time domains makes sense when the locations in
+        time are the same. This saves space in the dataset.
+    :param SpaceConfiguration space_configuration: Configuration of
+        space domain
+    :param numpy.dtype space_coordinate_dtype: Datatype of the spatial
+        coordinates
+    :param int rank: Number of spatial dimensions
+    :return: Property-set created
+    :rtype: lue.PropertySet
+    :raises RuntimeError: In case the property-set cannot be created
+)",
+            py::return_value_policy::reference_internal)
+
 
         ;
 

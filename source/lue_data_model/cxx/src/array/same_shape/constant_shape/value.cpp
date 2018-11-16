@@ -86,6 +86,12 @@ hdf5::Shape Value::array_shape() const
 }
 
 
+Rank Value::rank() const
+{
+    return array_shape().size();
+}
+
+
 hdf5::Hyperslab Value::hyperslab(
     IndexRange const& range) const
 {
