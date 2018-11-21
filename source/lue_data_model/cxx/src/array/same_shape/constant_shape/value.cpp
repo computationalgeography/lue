@@ -116,7 +116,7 @@ hdf5::Hyperslab Value::hyperslab(
 
 void Value::read(
     Index const idx,
-    void* buffer)
+    void* buffer) const
 {
     Array::read(hyperslab(idx), buffer);
 }
@@ -124,7 +124,7 @@ void Value::read(
 
 void Value::read(
     IndexRange const& range,
-    void* buffer)
+    void* buffer) const
 {
     Array::read(hyperslab(range), buffer);
 }

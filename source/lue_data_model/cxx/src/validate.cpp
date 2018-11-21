@@ -1519,7 +1519,7 @@ static void validate_phenomenon(
             auto const& active_object_id = object_tracker.active_object_id();
 
             if(active_object_id.nr_ids() > 0) {
-                active_object_id.read(&id);
+                active_object_id.read(0, &id);
             }
         }
 

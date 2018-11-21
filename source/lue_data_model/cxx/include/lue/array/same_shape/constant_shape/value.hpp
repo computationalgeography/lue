@@ -53,10 +53,10 @@ public:
     using Array::read;
 
     void           read                (Index idx,
-                                        void* buffer);
+                                        void* buffer) const;
 
     void           read                (IndexRange const& range,
-                                        void* buffer);
+                                        void* buffer) const;
 
     using Array::write;
 
