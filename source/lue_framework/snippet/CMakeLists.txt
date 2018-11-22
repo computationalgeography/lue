@@ -1,0 +1,1 @@
+add_subdirectory(main_at_each_locality)
