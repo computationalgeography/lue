@@ -188,6 +188,7 @@ endif()
 if(DEVBASE_HPX_REQUIRED)
     if(LUE_BUILD_HPX)
         # Build HPX ourselves
+
         FetchContent_Declare(hpx
             GIT_REPOSITORY https://github.com/STEllAR-GROUP/hpx
             # GIT_TAG 3a95a3cd5f00d7b957b06b3d8047387a7d775bd4  # 1.1.0
@@ -199,38 +200,11 @@ if(DEVBASE_HPX_REQUIRED)
         if(NOT hpx_POPULATED)
             FetchContent_Populate(hpx)
 
-            # If you are building HPX for a system with more
-            # than 64 processing units you must change the CMake
-            # variables HPX_WITH_MORE_THAN_64_THREADS (to On) and
-            # HPX_WITH_MAX_CPU_COUNT (to a value at least as big as the
-            # number of (virtual) cores on your system).
-
-            set(HPX_WITH_MALLOC:STRING TCMALLOC)
-            set(HPX_WITH_HWLOC:BOOL ON)
-            ### set(HPX_WITH_THREAD_IDLE_RATES:BOOL ON)
-
-            ### set(HPX_WITH_PAPI:BOOL ON)
-            set(HPX_WITH_GOOGLE_PERFTOOLS:BOOL ON)
-
-            set(HPX_WITH_TOOLS:BOOL OFF)
-            set(HPX_WITH_TESTS:BOOL OFF)
-            set(HPX_WITH_EXAMPLES:BOOL OFF)  # TODO Compiler error. Boost.Config.
-            set(HPX_WITH_EXAMPLES_HDF5:BOOL OFF)  # TODO threadsafe hdf5 is not picked up
-            set(HPX_WITH_EXAMPLES_OPENMP:BOOL OFF)
-
-            ### set(HPX_WITH_CXX0Y:BOOL ON)
-            ### set(HPX_WITH_UNWRAPPED_COMPATIBILITY:BOOL OFF)
-            ### set(HPX_WITH_INCLUSIVE_SCAN_COMPATIBILITY:BOOL OFF)
-            ### set(HPX_WITH_LOCAL_DATAFLOW_COMPATIBILITY:BOOL OFF)
-            ### set(HPX_WITH_PARCELPORT_ACTION_COUNTERS:BOOL ON)
-
+            # Hack to make the build succeed. Remove when using version
+            # of HPX that fixes this.
             set(HPX_TLL_PUBLIC PUBLIC)
 
             add_subdirectory(${hpx_SOURCE_DIR} ${hpx_BINARY_DIR})
-
-            # message(STATUS "Built HPX")
-            # message(STATUS "  source: ${hpx_SOURCE_DIR}")
-            # message(STATUS "  binary: ${hpx_BINARY_DIR}")
 
             set(HPX_INCLUDE_DIRS
                 ${hpx_SOURCE_DIR}

@@ -44,7 +44,7 @@ PYBIND11_MODULE(lue, module)
     // Prevent the dump of HDF5 error/warning messages. Our messages should
     // be clear enough.
 #ifndef NDEBUG
-    H5Eset_auto1(nullptr, nullptr);
+    H5Eset_auto(H5E_DEFAULT, nullptr, nullptr);
 #endif
 
 

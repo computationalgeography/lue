@@ -33,7 +33,7 @@ Validate::Validate(
 {
     // Turn off error stack traversal. The default functions prints
     // lots of messages we usually don't care about.
-    H5Eset_auto1(NULL, NULL);
+    H5Eset_auto(H5E_DEFAULT, nullptr, nullptr);
 }
 
 

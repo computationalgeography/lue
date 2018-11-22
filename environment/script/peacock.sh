@@ -45,10 +45,11 @@ function build_peacock()
     build_google_benchmark=false
     build_hdf5=false
     build_hpx=false
+    build_gperftools=false
 
     # ...except for these machines
     hostname=`hostname -s`
-    build_docopt=true
+    # build_docopt=true
 
     if [ $hostname == "sonic" ]; then
         build_boost=true
@@ -60,6 +61,12 @@ function build_peacock()
         build_hdf5=true  # System hdf5 is not good enough, see peacock
     fi
 
+    if [ $hostname == "login01" ]; then
+        build_google_benchmark=true
+        build_gdal=true
+        build_gperftools=true
+        build_hdf5=true
+    fi
 
     options+=("-Dpeacock_download_dir=$download_dir")
     options+=("-Dpeacock_prefix=$prefix")
@@ -95,10 +102,27 @@ function build_peacock()
     fi
 
 
+    if [ "$build_gperftools" = true ]; then
+        options+=("-Dbuild_gperftools=true")
+        options+=("-Dgperftools_version=2.7")
+    fi
+
+
     if [ "$build_hdf5" = true ]; then
         options+=("-Dbuild_hdf5=true")
         options+=("-Dhdf5_cpp_lib=false")
-        options+=("-Dhdf5_version=1.8.21")
+        options+=("-Dhdf5_version=1.8.14")
+        options+=("-Dhdf5_deprecated_symbols=false")
+
+        if [ $hostname == "login01" ]; then
+            # Requires MPI
+            options+=("-Dhdf5_parallel=true")
+        fi
+
+        # Required by HPX
+        options+=("-Dhdf5_thread_safe=true")
+        export CFLAGS="-DHDatexit=\"\" $CFLAGS"
+        export CPPFLAGS="-DHDatexit=\"\" $CPPFLAGS"
     fi
 
 
