@@ -9,6 +9,7 @@ add_hpx_executable(lue_hardware_topology
 target_include_directories(lue_hardware_topology_exe SYSTEM
     PRIVATE
         ${HPX_INCLUDE_DIRS}
+        ${Boost_INCLUDE_DIRS}
 )
 target_link_libraries(lue_hardware_topology_exe
     PRIVATE

@@ -1,6 +1,7 @@
 add_subdirectory(futurization)
 
 add_hpx_executable(lue_hello_world
+    ESSENTIAL
     SOURCES
         hello_world
     COMPONENT_DEPENDENCIES
@@ -10,4 +11,5 @@ add_hpx_executable(lue_hello_world
 target_include_directories(lue_hello_world_exe SYSTEM
     PRIVATE
         ${HPX_INCLUDE_DIRS}
+        ${Boost_INCLUDE_DIRS}
 )
