@@ -164,6 +164,7 @@ def builds():
         Package("graphviz", [], []),
         Package("libboost-all-dev", [], []),
         Package("libhdf5-dev", [], []),
+        Package("libsdl2-dev", [], []),
         Package("tree", [], []),
     ]
     packages = { package.name: package for package in packages }
@@ -207,6 +208,7 @@ def builds():
         packages["graphviz"],
         packages["libboost-all-dev"],
         packages["libhdf5-dev"],
+        packages["libsdl2-dev"],
         packages["tree"],
     ]
 
