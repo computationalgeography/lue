@@ -8,6 +8,10 @@ if(LUE_BUILD_FRAMEWORK)
     add_subdirectory(lue_framework)
 endif()
 
+if(LUE_BUILD_IMGUI)
+    add_subdirectory(imgui)
+endif()
+
 if(LUE_BUILD_DOCUMENTATION)
     ### edit_data_model_graphs(
     ###     TARGET data_model_graphs

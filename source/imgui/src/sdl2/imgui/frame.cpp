@@ -1,4 +1,4 @@
-#include "sdl2/imgui/frame.hpp"
+#include "lue/gui/sdl2/imgui/frame.hpp"
 #include "imgui.h"
 #include "imgui_impl_opengl2.h"
 #include "imgui_impl_sdl.h"

@@ -1,6 +1,7 @@
 #include "lue/translate/format/json.hpp"
-#include "lue/lue.hpp"
+#include "lue/data_model.hpp"
 #include <nlohmann/json.hpp>
+#include <optional>
 
 
 using json = nlohmann::json;

@@ -1,13 +1,5 @@
-#include "sdl2/api.hpp"
-#include "sdl2/imgui_binding.hpp"
-#include "sdl2/imgui/frame.hpp"
-#include "sdl2/imgui/window.hpp"
-
-#include "imgui_impl_opengl2.h"
-#include "imgui_impl_sdl.h"
-#include <SDL_opengl.h>
+#include "lue/gui.hpp"
 #include <fmt/format.h>
-
 #include <chrono>
 #include <future>
 #include <iostream>

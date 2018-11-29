@@ -1,4 +1,4 @@
-#include "sdl2/window.hpp"
+#include "lue/gui/sdl2/window.hpp"
 #include <SDL_opengl.h>
 #include <cassert>
 

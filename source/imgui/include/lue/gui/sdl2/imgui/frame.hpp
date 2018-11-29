@@ -1,5 +1,5 @@
 #pragma once
-#include "sdl2/window.hpp"
+#include "lue/gui/sdl2/window.hpp"
 
 
 namespace sdl2 {
