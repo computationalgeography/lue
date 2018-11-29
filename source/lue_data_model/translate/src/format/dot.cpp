@@ -197,6 +197,27 @@ void soft_link_nodes(
         from_object, to_object, stream, metadata, 0, "dashed", label);
 }
 
+
+template<
+    typename Object>
+static void mark_as_empty(
+    Object const& object,
+    std::ostream& stream)
+{
+    // Dump something to notify the user that this part of the dataset
+    // is empty
+    stream << fmt::format(R"(
+    {} [
+        label="<empty>"
+        shape="plaintext"
+        fillcolor="red"
+    ];
+)",
+        dot_name(object))
+        // fillcolor(object))
+        ;
+}
+
 }  // namespace utility
 
 
@@ -865,10 +886,16 @@ void to_dot(
     std::ostream& stream,
     Metadata const& metadata)
 {
+    Subgraph graph(stream, universe.id(), universe.id().name());
+
     auto& phenomena = universe.phenomena();
 
     for(auto const& name: phenomena.names()) {
         to_dot(phenomena[name], stream, metadata);
+    }
+
+    if(phenomena.empty()) {
+        mark_as_empty(universe, stream);
     }
 }
 
@@ -902,11 +929,7 @@ void to_dot(
     if(universes.empty() && phenomena.empty()) {
         // In this case, the subgraph won't be visualized. Just dump
         // something to signal the user that the dataset is empty.
-        stream << R"(
-    "<empty>" [
-        shape="plaintext"
-    ];
-)";
+        mark_as_empty(dataset, stream);
     }
 }
 

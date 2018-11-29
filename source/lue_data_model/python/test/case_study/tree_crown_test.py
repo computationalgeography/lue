@@ -391,7 +391,7 @@ class TreeCrownTest(lue_test.TestCase):
                 crowns_active_object_id.expand(nr_active_trees)[object_index:] = \
                     active_tree_ids
 
-                # For all active tree, calculate new biomass values and
+                # For all active trees, calculate new biomass values and
                 # write them to the biomass property
                 crowns_biomass_values = \
                     np.arange(
