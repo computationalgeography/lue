@@ -48,6 +48,8 @@ public:
                                         ID const* ids,
                                         hdf5::Shape::value_type const* shapes);
 
+    bool           contains            (ID const id) const;
+
     Array          operator[]          (ID id);
 
 private:

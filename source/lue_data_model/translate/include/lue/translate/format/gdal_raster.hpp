@@ -1,7 +1,8 @@
 #pragma once
 #include "lue/translate/format/gdal_block.hpp"
-#include "lue/utility/progress_indicator.hpp"
-#include "lue/hl/raster.hpp"
+// #include "lue/utility/progress_indicator.hpp"
+#include "lue/translate/format/raster_discretization.hpp"
+#include "lue/translate/format/raster_domain.hpp"
 #include "lue/hdf5/datatype.hpp"
 #include <gdal_priv.h>
 #include <memory>
@@ -11,8 +12,8 @@
 namespace lue {
 namespace utility {
 
-hdf5::Datatype     gdal_datatype_to_memory_datatype(
-                                        GDALDataType datatype);
+// hdf5::Datatype     gdal_datatype_to_memory_datatype(
+//                                         GDALDataType datatype);
 
 // This is nicer than the GDALDatasetDeleter below, but doesn't work
 // (gcc 4.9.3).
@@ -82,15 +83,17 @@ public:
                                         std::size_t block_y,
                                         void* buffer);
 
-        void       write               (hl::Raster::Band& raster_band,
-                                        ProgressIndicator& progress_indicator);
+        void       read                (void* buffer);
+
+        // void       write               (hl::Raster::Band& raster_band,
+        //                                 ProgressIndicator& progress_indicator);
 
     private:
 
-        template<
-            typename T>
-        void       write               (hl::Raster::Band& raster_band,
-                                        ProgressIndicator& progress_indicator);
+        // template<
+        //     typename T>
+        // void       write               (hl::Raster::Band& raster_band,
+        //                                 ProgressIndicator& progress_indicator);
 
         GDALRasterBand* _band;
 

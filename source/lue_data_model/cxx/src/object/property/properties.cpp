@@ -2,6 +2,7 @@
 #include "lue/core/tag.hpp"
 #include <boost/optional.hpp>
 #include <fmt/core.h>
+#include <functional>
 
 
 namespace lue {
@@ -175,6 +176,44 @@ ShapeVariability Properties::shape_variability(
                 "Property named {} does not exist or does not vary through time",
                 name
             ));
+    }
+
+    return *result;
+}
+
+
+/*!
+    @brief      Return the collection group containing the property
+                named @a name
+*/
+hdf5::Group& Properties::collection_group(
+    std::string const& name)
+{
+    using GroupReference = std::reference_wrapper<hdf5::Group>;
+    boost::optional<GroupReference> result;
+
+    if(_same_shape_properties.contains(name)) {
+        result = _same_shape_properties;
+    }
+    else if(_same_shape_constant_shape_properties.contains(name)) {
+        result = _same_shape_constant_shape_properties;
+    }
+    else if(_same_shape_variable_shape_properties.contains(name)) {
+        result = _same_shape_variable_shape_properties;
+    }
+    else if(_different_shape_properties.contains(name)) {
+        result = _different_shape_properties;
+    }
+    else if(_different_shape_constant_shape_properties.contains(name)) {
+        result = _different_shape_constant_shape_properties;
+    }
+    else if(_different_shape_variable_shape_properties.contains(name)) {
+        result = _different_shape_variable_shape_properties;
+    }
+
+    if(!result) {
+        throw std::runtime_error(fmt::format(
+            "Property named {} does not exist", name));
     }
 
     return *result;

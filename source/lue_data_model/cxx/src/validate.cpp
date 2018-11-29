@@ -235,6 +235,21 @@ static void validate_value(
             nr_object_arrays, nr_objects
         ));
     }
+    else {
+        // For each object ID stored in the object tracker, the value
+        // must contain a values array
+        std::vector<ID> ids(object_id.nr_objects());
+        object_id.read(ids.data());
+
+        for(auto const id: ids) {
+            if(!value.contains(id)) {
+                issues.add_error(value.id(), fmt::format(
+                    "For at least one object, no value is stored (id={})",
+                    id
+                ));
+            }
+        }
+    }
 }
 
 

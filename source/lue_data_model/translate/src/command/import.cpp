@@ -13,7 +13,7 @@ std::string const usage = R"(
 Translate data into the LUE dataset format
 
 usage:
-    import [-m <name>] [--add] <output> <inputs>...
+    import [-m <name>] [--add] [--skip-validate] <output> <inputs>...
     import (-h | --help)
 
 arguments:
@@ -24,6 +24,7 @@ options:
     -h --help   Show this screen
     -m <name> --meta=<name>  File containing metadata to use during import
     --add       Add data to the output dataset instead of overwriting it
+    --skip-validate  Skip validating the resulting LUE dataset
 )";
 
 
@@ -86,7 +87,8 @@ int Import::run_implementation()
     auto const output_dataset_name = argument<std::string>("<output>");
 
     bool const metadata_passed = argument_parsed("--meta");
-    bool const add_passed = argument_parsed("--add");
+    bool const add_passed = argument<bool>("--add");
+    bool const skip_validate = argument<bool>("--skip-validate");
     // bool const stack_passed = argument_parsed("--start");
 
     auto const metadata = metadata_passed
@@ -134,8 +136,10 @@ int Import::run_implementation()
             " is not supported (does it exist?)");
     }
 
-    // Verify that the dataset is usable
-    assert_is_valid(output_dataset_name);
+    if(!skip_validate) {
+        // Verify that the dataset is usable
+        assert_is_valid(output_dataset_name);
+    }
 
     return EXIT_SUCCESS;
 }
