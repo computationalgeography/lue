@@ -455,31 +455,33 @@ static void validate_id(
 static void validate_active_ids(
     hdf5::Identifier const& active_set_index_id,
     std::vector<Index> active_set_idxs,
-    hdf5::Identifier const& active_id_id,
-    std::vector<ID> const& object_ids,
+    hdf5::Identifier const& active_object_id_id,
+    std::vector<ID> const& active_object_ids,
     hdf5::Issues& issues)
 {
     if(active_set_idxs.empty()) {
-        if(!object_ids.empty()) {
+        if(!active_object_ids.empty()) {
             issues.add_error(active_set_index_id, fmt::format(
                 "{} IDs of active objects are stored, "
                 "but indices of active sets are missing",
-                object_ids.size()
+                active_object_ids.size()
             ));
         }
     }
     else {
-        if(object_ids.empty()) {
-            issues.add_error(active_set_index_id, fmt::format(
-                "{} indices of active sets are stored, "
-                "but IDs of active objects are missing",
-                active_set_idxs.size()
-            ));
-        }
+        // Actually, this is not an error. It is allowed to only
+        // store empty active sets.
+        // if(active_object_ids.empty()) {
+        //     issues.add_error(active_set_index_id, fmt::format(
+        //         "{} indices of active sets are stored, "
+        //         "but IDs of active objects are missing",
+        //         active_set_idxs.size()
+        //     ));
+        // }
 
         // Validate indices of active sets and IDs of active objects
         // Add an end index to ease the iteration over ranges of IDs
-        active_set_idxs.push_back(object_ids.size());
+        active_set_idxs.push_back(active_object_ids.size());
         auto begin_idx = active_set_idxs[0];
 
         for(std::size_t i = 1; i < active_set_idxs.size(); ++i) {
@@ -498,11 +500,11 @@ static void validate_active_ids(
             }
 
             // Validate active set is stored
-            if(end_idx > object_ids.size()) {
+            if(end_idx > active_object_ids.size()) {
                 issues.add_error(active_set_index_id, fmt::format(
                     "Part of the collection of active object IDs is "
                     "missing (end index {} > collection size {})",
-                    end_idx, object_ids.size()
+                    end_idx, active_object_ids.size()
                 ));
 
                 break;
@@ -510,10 +512,10 @@ static void validate_active_ids(
 
             // Validate active object IDs are valid
             if(!assert_ids_are_unique(
-                    active_id_id,
+                    active_object_id_id,
                     std::vector<ID>(
-                        object_ids.begin() + begin_idx,
-                        object_ids.begin() + end_idx),
+                        active_object_ids.begin() + begin_idx,
+                        active_object_ids.begin() + end_idx),
                     issues)) {
                 break;
             }

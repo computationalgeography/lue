@@ -53,7 +53,6 @@ private:
                    ActiveObjectID      (same_shape::constant_shape::Value&&
                                             value);
 
-
 };
 
 

@@ -131,6 +131,44 @@ void init_phenomenon(
 )",
             py::return_value_policy::reference_internal)
 
+        .def(
+            "__getattr__",
+            [](
+                Phenomenon& phenomenon,
+                std::string const& property_set_name)
+            {
+                auto const property_set_found =
+                    phenomenon.property_sets().contains(property_set_name);
+                auto const collection_property_set_found =
+                    phenomenon.collection_property_sets().contains(
+                        property_set_name);
+
+
+                if(!property_set_found && !collection_property_set_found) {
+                    // TODO We are throwing a KeyError here. Should be
+                    // an AttributeError, but pybind11 does not seem to
+                    // support that yet.
+                    //
+                    // Python message:
+                    // AttributeError: 'x' object has no attribute 'y'
+                    // Ours is a little bit different:
+                    throw pybind11::key_error(fmt::format(
+                        "Phenomenon does not contain (collection) "
+                        "property-set '{}'",
+                        property_set_name));
+                }
+
+                assert(property_set_found || collection_property_set_found);
+
+                auto& property_sets = property_set_found
+                    ? phenomenon.property_sets()
+                    : phenomenon.collection_property_sets()
+                    ;
+
+                return py::cast(&property_sets[property_set_name]);
+            },
+            py::return_value_policy::reference_internal)
+
         ;
 
 }

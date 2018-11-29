@@ -12,6 +12,7 @@ target_include_directories(lue_benchmark
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         ${HPX_INCLUDE_DIRS}
+        ${Boost_INCLUDE_DIRS}
 )
 
 hpx_setup_target(lue_benchmark

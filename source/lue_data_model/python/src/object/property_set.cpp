@@ -63,6 +63,86 @@ static std::string informal_string_representation(
         );
 }
 
+
+py::object property(
+    Properties& properties,
+    std::string const& name)
+{
+    py::object property = py::none();
+    auto const shape_per_object =
+        properties.shape_per_object(name);
+    auto const value_variability =
+        properties.value_variability(name);
+
+    switch(value_variability) {
+        case ValueVariability::constant: {
+            switch(shape_per_object) {
+                case ShapePerObject::same: {
+                    using Collection = same_shape::Properties;
+                    property = py::cast(&properties.collection<Collection>()[name]);
+                    break;
+                }
+                case ShapePerObject::different: {
+                    using Collection = different_shape::Properties;
+                    property = py::cast(&properties.collection<Collection>()[name]);
+                    break;
+                }
+            }
+
+            break;
+        }
+        case ValueVariability::variable: {
+            auto const shape_variability =
+                properties.shape_variability(name);
+
+            switch(shape_per_object) {
+                case ShapePerObject::same: {
+
+                    switch(shape_variability) {
+                        case ShapeVariability::constant: {
+                            using Collection =
+                                same_shape::constant_shape::Properties;
+                            property = py::cast(&properties.collection<Collection>()[name]);
+                            break;
+                        }
+                        case ShapeVariability::variable: {
+                            using Collection = same_shape::variable_shape::Properties;
+                            property = py::cast(&properties.collection<Collection>()[name]);
+                            break;
+                        }
+                    }
+
+                    break;
+                }
+                case ShapePerObject::different: {
+
+                    switch(shape_variability) {
+                        case ShapeVariability::constant: {
+                            using Collection =
+                                different_shape::constant_shape::Properties;
+                            property = py::cast(&properties.collection<Collection>()[name]);
+                            break;
+                        }
+                        case ShapeVariability::variable: {
+                            using Collection =
+                                different_shape::variable_shape::Properties;
+                            property = py::cast(&properties.collection<Collection>()[name]);
+
+                            break;
+                        }
+                    }
+
+                    break;
+                }
+            }
+
+            break;
+        }
+    }
+
+    return property;
+}
+
 }  // Anonymous namespace
 
 
@@ -297,80 +377,7 @@ void init_property_set(
                 Properties& properties,
                 std::string const& name)
             {
-
-                py::object property = py::none();
-                auto const shape_per_object =
-                    properties.shape_per_object(name);
-                auto const value_variability =
-                    properties.value_variability(name);
-
-                switch(value_variability) {
-                    case ValueVariability::constant: {
-                        switch(shape_per_object) {
-                            case ShapePerObject::same: {
-                                using Collection = same_shape::Properties;
-                                property = py::cast(&properties.collection<Collection>()[name]);
-                                break;
-                            }
-                            case ShapePerObject::different: {
-                                using Collection = different_shape::Properties;
-                                property = py::cast(&properties.collection<Collection>()[name]);
-                                break;
-                            }
-                        }
-
-                        break;
-                    }
-                    case ValueVariability::variable: {
-                        auto const shape_variability =
-                            properties.shape_variability(name);
-
-                        switch(shape_per_object) {
-                            case ShapePerObject::same: {
-
-                                switch(shape_variability) {
-                                    case ShapeVariability::constant: {
-                                        using Collection =
-                                            same_shape::constant_shape::Properties;
-                                        property = py::cast(&properties.collection<Collection>()[name]);
-                                        break;
-                                    }
-                                    case ShapeVariability::variable: {
-                                        using Collection = same_shape::variable_shape::Properties;
-                                        property = py::cast(&properties.collection<Collection>()[name]);
-                                        break;
-                                    }
-                                }
-
-                                break;
-                            }
-                            case ShapePerObject::different: {
-
-                                switch(shape_variability) {
-                                    case ShapeVariability::constant: {
-                                        using Collection =
-                                            different_shape::constant_shape::Properties;
-                                        property = py::cast(&properties.collection<Collection>()[name]);
-                                        break;
-                                    }
-                                    case ShapeVariability::variable: {
-                                        using Collection =
-                                            different_shape::variable_shape::Properties;
-                                        property = py::cast(&properties.collection<Collection>()[name]);
-
-                                        break;
-                                    }
-                                }
-
-                                break;
-                            }
-                        }
-
-                        break;
-                    }
-                }
-
-                return property;
+                return property(properties, name);
             },
             py::return_value_policy::reference_internal)
 
@@ -475,6 +482,29 @@ void init_property_set(
             R"(
     TODO docstring
 )",
+            py::return_value_policy::reference_internal)
+
+        .def(
+            "__getattr__",
+            [](
+                PropertySet& property_set,
+                std::string const& property_name)
+            {
+                if(!property_set.properties().contains(property_name)) {
+                    // TODO We are throwing a KeyError here. Should be
+                    // an AttributeError, but pybind11 does not seem to
+                    // support that yet.
+                    //
+                    // Python message:
+                    // AttributeError: 'x' object has no attribute 'y'
+                    // Ours is a little bit different:
+                    throw pybind11::key_error(fmt::format(
+                        "Property set does not contain property '{}'",
+                        property_name));
+                }
+
+                return property(property_set.properties(), property_name);
+            },
             py::return_value_policy::reference_internal)
 
         .def(

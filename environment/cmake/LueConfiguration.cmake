@@ -107,6 +107,7 @@ endif()
 if(LUE_BUILD_FRAMEWORK)
     # TODO Add all dependencies of framework
     # - boost, fmt, ...
+    set(DEVBASE_DOCOPT_REQUIRED TRUE)
     set(DEVBASE_FMT_REQUIRED TRUE)
     set(DEVBASE_HPX_REQUIRED TRUE)
 
@@ -121,7 +122,6 @@ if(LUE_BUILD_FRAMEWORK)
     endif()
 
     if(LUE_FRAMEWORK_WITH_BENCHMARKS)
-        set(DEVBASE_DOCOPT_REQUIRED TRUE)
         set(DEVBASE_NLOHMANN_JSON_REQUIRED TRUE)
     endif()
 endif()
