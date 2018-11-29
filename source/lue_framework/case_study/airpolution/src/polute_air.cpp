@@ -1,6 +1,6 @@
 #include "polute_air.hpp"
 #include <hpx/config.hpp>
-#include "lue/lue.hpp"
+#include "lue/data_model.hpp"
 #include <hpx/runtime.hpp>
 
 

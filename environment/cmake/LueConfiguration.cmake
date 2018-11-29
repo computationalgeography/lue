@@ -92,9 +92,6 @@ if(LUE_BUILD_DATA_MODEL)
 
         # view
         set(DEVBASE_IMGUI_REQUIRED TRUE)
-        set(DEVBASE_OPENGL_REQUIRED TRUE)
-        set(DEVBASE_SDL2_REQUIRED TRUE)
-
     endif()
 
     if(LUE_DATA_MODEL_WITH_PYTHON_API)
@@ -117,8 +114,6 @@ if(LUE_BUILD_FRAMEWORK)
 
     if(LUE_FRAMEWORK_WITH_DASHBOARD)
         set(DEVBASE_IMGUI_REQUIRED TRUE)
-        set(DEVBASE_OPENGL_REQUIRED TRUE)
-        set(DEVBASE_SDL2_REQUIRED TRUE)
     endif()
 
     if(LUE_FRAMEWORK_WITH_BENCHMARKS)
@@ -255,6 +250,9 @@ endif()
 
 
 if(DEVBASE_IMGUI_REQUIRED)
+    find_package(OpenGL REQUIRED)
+    find_package(SDL2 REQUIRED)
+
     FetchContent_Declare(imgui
         // MIT License, see ${imgui_SOURCE_DIR}/LICENSE.txt
         GIT_REPOSITORY https://github.com/ocornut/imgui.git
@@ -299,10 +297,6 @@ if(DEVBASE_IMGUI_REQUIRED)
         #     PRIVATE
         #         $<$<CXX_COMPILER_ID:Clang>:-Wno-c++98-compat-pedantic;-Wno-zero-as-null-pointer-constant;-Wno-double-promotion;-Wno-padded;-Wno-old-style-cast;-Wno-sign-conversion;-Wno-float-equal;-Wno-unused-macros>
         # )
-
-        # message(STATUS "imgui_SOURCE_DIR: ${imgui_SOURCE_DIR}")
-        # message(STATUS "imgui_BINARY_DIR: ${imgui_BINARY_DIR}")
-
     endif()
 
     unset(DEVBASE_IMGUI_REQUIRED)
@@ -312,12 +306,6 @@ endif()
 if(DEVBASE_OPENCL_REQUIRED)
     find_package(OpenCL REQUIRED)
     unset(DEVBASE_OPENCL_REQUIRED)
-endif()
-
-
-if(DEVBASE_OPENGL_REQUIRED)
-    find_package(OpenGL REQUIRED)
-    unset(DEVBASE_OPENGL_REQUIRED)
 endif()
 
 
@@ -346,10 +334,4 @@ if(DEVBASE_PYBIND11_REQUIRED)
         message(STATUS
             "Found NumPy ${numpy_version} headers in ${NUMPY_INCLUDE_DIRS}")
     endif()
-endif()
-
-
-if(DEVBASE_SDL2_REQUIRED)
-    find_package(SDL2 REQUIRED)
-    unset(DEVBASE_SDL2_REQUIRED)
 endif()
