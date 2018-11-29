@@ -125,6 +125,15 @@ File::File(
 }
 
 
+File::File(
+    Group&& group):
+
+    Group{std::forward<Group>(group)}
+
+{
+}
+
+
 std::string File::pathname() const
 {
     static_assert(std::is_same<std::string::value_type, char>::value,

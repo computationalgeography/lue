@@ -117,14 +117,20 @@ void show_property_set(
     PropertySet const& property_set)
 {
     if(ImGui::TreeNode("time domain")) {
-        auto const& domain = property_set.time_domain();
-        show_time_domain(domain);
+        if(property_set.has_time_domain()) {
+            auto const& domain = property_set.time_domain();
+            show_time_domain(domain);
+        }
+
         ImGui::TreePop();
     }
 
     if(ImGui::TreeNode("space domain")) {
-        auto const& domain = property_set.space_domain();
-        show_space_domain(domain);
+        if(property_set.has_space_domain()) {
+            auto const& domain = property_set.space_domain();
+            show_space_domain(domain);
+        }
+
         ImGui::TreePop();
     }
 

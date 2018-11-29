@@ -44,6 +44,8 @@ public:
 
     ShapeVariability shape_variability (std::string const& name) const;
 
+    hdf5::Group&   collection_group    (std::string const& name);
+
     template<
         typename T>
     T const&       collection          () const;

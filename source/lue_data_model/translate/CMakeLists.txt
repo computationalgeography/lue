@@ -7,13 +7,15 @@ add_library(lue_translate_lib STATIC
     # src/format/csv
     src/format/dot
     # src/format/gdal
-    # src/format/gdal_block
-    # src/format/gdal_raster
+    src/format/gdal_block
+    src/format/gdal_raster
     # src/format/gdal_stack
     # src/format/gdal_stacks
     # src/format/geo_eas
     src/format/json
     src/format/lue
+    src/format/raster_discretization
+    src/format/raster_domain
     # src/format/vtk
 )
 

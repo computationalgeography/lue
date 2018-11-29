@@ -50,6 +50,8 @@ public:
 
     explicit       File                (Identifier&& id);
 
+    explicit       File                (Group&& group);
+
                    File                (File const&)=delete;
 
                    File                (File&&)=default;

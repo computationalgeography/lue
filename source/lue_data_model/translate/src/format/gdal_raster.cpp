@@ -179,86 +179,105 @@ void GDALRaster::Band::read_block(
 }
 
 
-template<
-    typename T>
-void GDALRaster::Band::write(
-    hl::Raster::Band& raster_band,
-    ProgressIndicator& progress_indicator)
+void GDALRaster::Band::read(
+    void* buffer)
 {
-    auto const blocks = this->blocks();
-    std::vector<T> values(blocks.block_size());
-    size_t nr_valid_cells_x;
-    size_t nr_valid_cells_y;
-    size_t current_block = 0;
+    int const nr_rows = _band->GetYSize();
+    int const nr_cols = _band->GetXSize();
+    auto const datatype = this->gdal_datatype();
 
-    for(size_t block_y = 0; block_y < blocks.nr_blocks_y();
-            ++block_y) {
-        for(size_t block_x = 0; block_x < blocks.nr_blocks_x();
-                ++block_x) {
+    auto cpl_status =
+        _band->RasterIO(
+            GF_Read, 0, 0, nr_cols, nr_rows,
+            buffer, nr_cols, nr_rows,
+            datatype, 0, 0, nullptr);
 
-            read_block(block_x, block_y, values.data());
-
-            std::tie(nr_valid_cells_x, nr_valid_cells_y) =
-                blocks.nr_valid_cells(block_x, block_y);
-
-            hdf5::Shape const shape = { nr_valid_cells_x * nr_valid_cells_y };
-            auto const memory_dataspace = hdf5::create_dataspace(shape);
-
-            hdf5::Offset offset = {
-                block_y * blocks.block_size_y(),
-                block_x * blocks.block_size_x()
-            };
-            hdf5::Count count = { nr_valid_cells_y, nr_valid_cells_x };
-
-            raster_band.write(
-                memory_dataspace, hdf5::Hyperslab(offset, count), values.data());
-
-            progress_indicator.update_progress(++current_block);
-        }
+    if(cpl_status != CE_None) {
+        throw std::runtime_error("Cannot read from GDAL raster band");
     }
 }
 
-void GDALRaster::Band::write(
-    hl::Raster::Band& raster_band,
-    ProgressIndicator& progress_indicator)
-{
-    auto datatype = _band->GetRasterDataType();
 
-    switch(datatype) {
-        case GDT_Byte: {
-            write<uint8_t>(raster_band, progress_indicator);
-            break;
-        }
-        case GDT_UInt16: {
-            write<uint16_t>(raster_band, progress_indicator);
-            break;
-        }
-        case GDT_Int16: {
-            write<int16_t>(raster_band, progress_indicator);
-            break;
-        }
-        case GDT_UInt32: {
-            write<uint32_t>(raster_band, progress_indicator);
-            break;
-        }
-        case GDT_Int32: {
-            write<int32_t>(raster_band, progress_indicator);
-            break;
-        }
-        case GDT_Float32: {
-            write<float>(raster_band, progress_indicator);
-            break;
-        }
-        case GDT_Float64: {
-            write<double>(raster_band, progress_indicator);
-            break;
-        }
-        default: {
-            throw std::runtime_error("Unsupported datatype");
-            break;
-        }
-    }
-}
+// template<
+//     typename T>
+// void GDALRaster::Band::write(
+//     hl::Raster::Band& raster_band,
+//     ProgressIndicator& progress_indicator)
+// {
+//     auto const blocks = this->blocks();
+//     std::vector<T> values(blocks.block_size());
+//     size_t nr_valid_cells_x;
+//     size_t nr_valid_cells_y;
+//     size_t current_block = 0;
+// 
+//     for(size_t block_y = 0; block_y < blocks.nr_blocks_y();
+//             ++block_y) {
+//         for(size_t block_x = 0; block_x < blocks.nr_blocks_x();
+//                 ++block_x) {
+// 
+//             read_block(block_x, block_y, values.data());
+// 
+//             std::tie(nr_valid_cells_x, nr_valid_cells_y) =
+//                 blocks.nr_valid_cells(block_x, block_y);
+// 
+//             hdf5::Shape const shape = { nr_valid_cells_x * nr_valid_cells_y };
+//             auto const memory_dataspace = hdf5::create_dataspace(shape);
+// 
+//             hdf5::Offset offset = {
+//                 block_y * blocks.block_size_y(),
+//                 block_x * blocks.block_size_x()
+//             };
+//             hdf5::Count count = { nr_valid_cells_y, nr_valid_cells_x };
+// 
+//             raster_band.write(
+//                 memory_dataspace, hdf5::Hyperslab(offset, count), values.data());
+// 
+//             progress_indicator.update_progress(++current_block);
+//         }
+//     }
+// }
+// 
+// void GDALRaster::Band::write(
+//     hl::Raster::Band& raster_band,
+//     ProgressIndicator& progress_indicator)
+// {
+//     auto datatype = _band->GetRasterDataType();
+// 
+//     switch(datatype) {
+//         case GDT_Byte: {
+//             write<uint8_t>(raster_band, progress_indicator);
+//             break;
+//         }
+//         case GDT_UInt16: {
+//             write<uint16_t>(raster_band, progress_indicator);
+//             break;
+//         }
+//         case GDT_Int16: {
+//             write<int16_t>(raster_band, progress_indicator);
+//             break;
+//         }
+//         case GDT_UInt32: {
+//             write<uint32_t>(raster_band, progress_indicator);
+//             break;
+//         }
+//         case GDT_Int32: {
+//             write<int32_t>(raster_band, progress_indicator);
+//             break;
+//         }
+//         case GDT_Float32: {
+//             write<float>(raster_band, progress_indicator);
+//             break;
+//         }
+//         case GDT_Float64: {
+//             write<double>(raster_band, progress_indicator);
+//             break;
+//         }
+//         default: {
+//             throw std::runtime_error("Unsupported datatype");
+//             break;
+//         }
+//     }
+// }
 
 
 GDALRaster::GDALRaster(

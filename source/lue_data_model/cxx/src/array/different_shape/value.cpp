@@ -106,6 +106,8 @@ void Value::expand(
     ID const id,
     hdf5::Shape const& shape)
 {
+    assert(!contains(id));
+
     std::string const name = std::to_string(id);
     hdf5::Shape max_dimension_sizes{shape};
     auto dataspace = hdf5::create_dataspace(shape, max_dimension_sizes);
@@ -121,9 +123,20 @@ void Value::expand(
 }
 
 
+bool Value::contains(
+    ID const id) const
+{
+    std::string const name = std::to_string(id);
+
+    return hdf5::dataset_exists(this->id(), name);
+}
+
+
 Array Value::operator[](
     ID const id)
 {
+    assert(contains(id));
+
     std::string const name = std::to_string(id);
 
     return Array{*this, name, memory_datatype()};
