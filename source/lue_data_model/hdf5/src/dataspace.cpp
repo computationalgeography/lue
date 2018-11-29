@@ -1,5 +1,6 @@
 #include "lue/hdf5/dataspace.hpp"
 #include <cassert>
+#include <cstring>
 #include <memory>
 
 
@@ -91,6 +92,7 @@ Shape Dataspace::dimension_extents() const
 {
     auto const nr_dimensions = this->nr_dimensions();
     auto extents = std::make_unique<hsize_t[]>(nr_dimensions);
+
     hsize_t* max_extents = nullptr;
 
     auto const nr_dimensions2 = ::H5Sget_simple_extent_dims(_id,
@@ -102,7 +104,17 @@ Shape Dataspace::dimension_extents() const
 
     assert(nr_dimensions2 == nr_dimensions);
 
-    return Shape(extents.get(), extents.get() + nr_dimensions);
+    Shape shape(nr_dimensions);
+    std::copy(extents.get(), extents.get() + nr_dimensions, shape.begin());
+
+    std::memcpy(
+        shape.data(), extents.get(),
+        nr_dimensions * sizeof(Shape::value_type));
+
+    return shape;
+
+    // Link error with gcc/release on eejit... Undefined allocator()... Why?
+    // return Shape(extents.get(), extents.get() + nr_dimensions);
 }
 
 

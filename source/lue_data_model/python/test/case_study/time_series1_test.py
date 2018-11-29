@@ -26,7 +26,7 @@ class TimeSeriesTest(lue_test.TestCase):
         nr_time_boxes = 3;
         shape_datatype = lue.dtype.Count
         shapes = numpy.random.randint(
-            10, 20, size=nr_time_boxes, dtype=shape_datatype)
+            10, 20, size=nr_time_boxes).astype(dtype=shape_datatype)
 
 
         def discharge_property(
@@ -62,9 +62,8 @@ class TimeSeriesTest(lue_test.TestCase):
 
             object_tracker.active_set_index.expand(nr_time_boxes)
 
-            active_set_sizes = \
-                numpy.random.randint(0, nr_outlets, nr_time_boxes,
-                dtype=lue.dtype.Count)
+            active_set_sizes = numpy.random.randint(
+                0, nr_outlets, nr_time_boxes).astype(dtype=lue.dtype.Count)
             active_set_idxs = numpy.empty(nr_time_boxes, dtype=lue.dtype.Index)
             active_object_ids = numpy.empty(active_set_sizes.sum(), dtype=lue.dtype.ID)
 

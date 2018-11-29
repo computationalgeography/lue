@@ -49,7 +49,7 @@ function build_peacock()
 
     # ...except for these machines
     hostname=`hostname -s`
-    # build_docopt=true
+    build_docopt=true
 
     if [ $hostname == "sonic" ]; then
         build_boost=true
@@ -77,8 +77,11 @@ function build_peacock()
         options+=("-Dbuild_boost=true")
         options+=("-Dboost_version=1.63.0")
 
+        options+=("-Dboost_build_boost_asio=true")
+        options+=("-Dboost_build_boost_atomic=true")
         options+=("-Dboost_build_boost_filesystem=true")
         options+=("-Dboost_build_boost_program_options=true")
+        options+=("-Dboost_build_boost_regex=true")
         options+=("-Dboost_build_boost_system=true")
         options+=("-Dboost_build_boost_test=true")
     fi
