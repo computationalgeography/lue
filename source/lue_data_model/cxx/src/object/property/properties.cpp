@@ -189,26 +189,25 @@ ShapeVariability Properties::shape_variability(
 hdf5::Group& Properties::collection_group(
     std::string const& name)
 {
-    using GroupReference = std::reference_wrapper<hdf5::Group>;
-    boost::optional<GroupReference> result;
+    hdf5::Group* result = nullptr;
 
     if(_same_shape_properties.contains(name)) {
-        result = _same_shape_properties;
+        result = &_same_shape_properties;
     }
     else if(_same_shape_constant_shape_properties.contains(name)) {
-        result = _same_shape_constant_shape_properties;
+        result = &_same_shape_constant_shape_properties;
     }
     else if(_same_shape_variable_shape_properties.contains(name)) {
-        result = _same_shape_variable_shape_properties;
+        result = &_same_shape_variable_shape_properties;
     }
     else if(_different_shape_properties.contains(name)) {
-        result = _different_shape_properties;
+        result = &_different_shape_properties;
     }
     else if(_different_shape_constant_shape_properties.contains(name)) {
-        result = _different_shape_constant_shape_properties;
+        result = &_different_shape_constant_shape_properties;
     }
     else if(_different_shape_variable_shape_properties.contains(name)) {
-        result = _different_shape_variable_shape_properties;
+        result = &_different_shape_variable_shape_properties;
     }
 
     if(!result) {
