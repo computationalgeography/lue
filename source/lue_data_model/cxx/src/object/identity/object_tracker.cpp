@@ -90,4 +90,20 @@ ObjectTracker create_object_tracker(
     return ObjectTracker{parent};
 }
 
+
+// TODO forward to id/index trackers? or turn the tracker into a group itself?
+// void link_object_tracker(
+//     hdf5::Group& parent,
+//     ObjectTracker& tracker)
+// {
+//     parent.create_soft_link(tracker.id(), object_tracker_tag);
+// }
+// 
+// 
+// bool has_linked_object_tracker(
+//     hdf5::Group const& parent)
+// {
+//     return parent.contains_soft_link(object_tracker_tag);
+// }
+
 }  // namespace lue

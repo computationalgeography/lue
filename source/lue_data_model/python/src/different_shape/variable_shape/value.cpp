@@ -1,5 +1,6 @@
 #include "submodule.hpp"
 #include "lue/array/different_shape/variable_shape/value.hpp"
+#include "lue/py/conversion.hpp"
 #include <pybind11/pybind11.h>
 
 
@@ -21,6 +22,23 @@ void init_value(
         R"(
     Value docstring...
 )")
+
+        .def(
+            "__getitem__",
+            &Value::operator[]
+        )
+
+        .def("expand",
+            [](
+                Value& value,
+                Index const idx,
+                ID const& id,
+                py::tuple const& shape)
+            {
+                auto const shape_ = tuple_to_shape(shape);
+
+                return value.expand(idx, 1, &id, &shape_);
+            })
 
         ;
 

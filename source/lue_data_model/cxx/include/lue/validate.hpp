@@ -5,6 +5,8 @@
 
 namespace lue {
 
+std::string        message             (hdf5::Issues const& issues);
+
 void               validate            (hdf5::File const& file,
                                         hdf5::Issues& issues);
 

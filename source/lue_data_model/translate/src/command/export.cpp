@@ -69,7 +69,19 @@ int Export::run_implementation()
     }
 
 
-    assert_is_valid(*lue_dataset);
+    // First see if the input is valid
+    {
+        hdf5::Issues issues;
+        validate(*lue_dataset, issues);
+
+        if(issues.errors_found()) {
+            throw std::runtime_error(message(issues));
+        }
+        else if(issues.warnings_found()) {
+            // Let's assume nothing bad will happen...
+            print_info_message(message(issues));
+        }
+    }
 
     // Input is a dataset that can be read by LUE.
     // We need to convert from the LUE format to some other format.

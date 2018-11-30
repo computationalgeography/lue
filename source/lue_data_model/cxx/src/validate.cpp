@@ -30,14 +30,25 @@ void not_supported_yet(
     issues.add_warning(
         id,
         fmt::format(
-            "this feature is not supported yet: {} -- "
+            "validation of this feature is not supported yet: {} -- "
             "you may want to open an issue here: "
             "https://github.com/pcraster/lue/issues",
             message));
 }
 
 
-std::string error_message(
+template<
+    typename Property>
+static bool is_collection_property(
+    Property& property)
+{
+    return property_sets(property).id().name() == collection_property_sets_tag;
+}
+
+}  // Anonymous namespace
+
+
+std::string message(
     hdf5::Issues const& issues)
 {
     std::stringstream stream;
@@ -93,17 +104,6 @@ std::string error_message(
 
     return stream.str();
 }
-
-
-template<
-    typename Property>
-static bool is_collection_property(
-    Property& property)
-{
-    return property_sets(property).id().name() == collection_property_sets_tag;
-}
-
-}  // Anonymous namespace
 
 
 static bool assert_ids_are_unique(
@@ -454,6 +454,7 @@ static void validate_value(
     different_shape::variable_shape::Value const& value,
     hdf5::Issues& issues)
 {
+    // TODO
     not_supported_yet(value.id(), issues, "validation");
 }
 
@@ -1338,12 +1339,14 @@ static void validate_property(
 {
     validate_value(object_tracker, property.value(), issues);
 
+    // TODO
     if(property.time_is_discretized()) {
         not_supported_yet(
             property.id(), issues,
             "validation of discretization through time");
     }
 
+    // TODO
     if(property.space_is_discretized()) {
         not_supported_yet(
             property.id(), issues,
@@ -1794,7 +1797,7 @@ void assert_is_valid(
             "LUE is work in progress -- if you encounter "
             "false-negatives, then please open an issue here: "
             "https://github.com/pcraster/lue/issues",
-            error_message(issues)
+            message(issues)
         ));
     }
 }

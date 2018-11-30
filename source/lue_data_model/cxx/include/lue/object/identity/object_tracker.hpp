@@ -66,4 +66,10 @@ private:
 ObjectTracker         create_object_tracker(
                                         hdf5::Group& parent);
 
+// void               link_object_tracker (hdf5::Group& parent,
+//                                         TimeDomain& domain);
+// 
+// bool               has_linked_object_tracker(
+//                                         hdf5::Group const& parent);
+
 }  // namespace lue

@@ -149,7 +149,11 @@ void show_property_set(
 void show_phenomenon(
     Phenomenon const& phenomenon)
 {
-    if(ImGui::TreeNode("collection property-sets")) {
+    if(ImGui::TreeNode(fmt::format(
+                "collection property-sets ({})",
+                phenomenon.collection_property_sets().size()
+            ).c_str())) {
+
         auto const& property_sets = phenomenon.collection_property_sets();
 
         for(std::string const& name: property_sets.names()) {
@@ -162,7 +166,10 @@ void show_phenomenon(
         ImGui::TreePop();
     }
 
-    if(ImGui::TreeNode("property-sets")) {
+    if(ImGui::TreeNode(fmt::format(
+                "property-sets ({})",
+                phenomenon.property_sets().size()
+            ).c_str())) {
 
         auto const& property_sets = phenomenon.property_sets();
 
@@ -295,7 +302,7 @@ int View::run_implementation()
         for(auto const& dataset: datasets_to_visualize) {
             auto const& source = dataset.dataset();
             auto const dataset_path =
-                boost::filesystem::absolute(source.pathname());
+                boost::filesystem::canonical(source.pathname());
             auto const dataset_pathname = dataset_path.string();
             auto const dataset_filename = dataset_path.filename().string();
             auto const dataset_parent_pathname =
@@ -307,12 +314,18 @@ int View::run_implementation()
 
                 ImGui::TextUnformatted(dataset_pathname.c_str());
 
-                if(ImGui::TreeNode("phenomena")) {
+                if(ImGui::TreeNode(fmt::format(
+                            "phenomena ({})",
+                            source.phenomena().size()
+                        ).c_str())) {
                     show_phenomena(source.phenomena());
                     ImGui::TreePop();
                 }
 
-                if(ImGui::TreeNode("universes")) {
+                if(ImGui::TreeNode(fmt::format(
+                            "universes ({})",
+                            source.universes().size()
+                        ).c_str())) {
                     show_universes(source.universes());
                     ImGui::TreePop();
                 }
