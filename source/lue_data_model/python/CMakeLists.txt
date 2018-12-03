@@ -1,8 +1,10 @@
 add_test_conditionally(test)
 
-# Add SYSTEM argument once pybind11 version is bumped. To get rid of
-# python/pybind11 warnings.
-pybind11_add_module(lue_py MODULE THIN_LTO
+# TODO Add SYSTEM argument once pybind11 version is bumped. To get rid
+#      of python/pybind11 warnings.
+# TODO Prefer without NO_EXTRAS, but this results in link errors on some
+#      platforms (sonic, eejit)
+pybind11_add_module(lue_py MODULE NO_EXTRAS THIN_LTO
     src/hdf5/dataset
     src/hdf5/file
     src/hdf5/group
