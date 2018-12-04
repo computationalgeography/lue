@@ -36,7 +36,6 @@ def raster_to_lue_json(
         discretization):
 
     object_id = 5
-
     properties = [
             {
                 "name": os.path.splitext(os.path.basename(pathname))[0],
