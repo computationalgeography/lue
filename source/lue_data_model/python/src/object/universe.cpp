@@ -2,6 +2,7 @@
 #include "lue/object/universes.hpp"
 #include "../core/collection.hpp"
 #include <pybind11/pybind11.h>
+#include <boost/algorithm/string/join.hpp>
 
 
 namespace py = pybind11;
@@ -9,6 +10,29 @@ using namespace pybind11::literals;
 
 
 namespace lue {
+namespace {
+
+static std::string formal_string_representation(
+    Universe const& universe)
+{
+    return fmt::format(
+        "Universe(pathname='{}')",
+        universe.id().pathname());
+}
+
+
+static std::string informal_string_representation(
+    Universe const& universe)
+{
+    return fmt::format(
+        "{}\n"
+        "    phenomena: [{}]",
+        formal_string_representation(universe),
+        boost::algorithm::join(universe.phenomena().names(), ", "));
+}
+
+}  // Anonymous namespace
+
 
 void init_universe(
     py::module& module)
@@ -62,10 +86,15 @@ void init_universe(
 
         .def(
             "__repr__",
-            [](
-                    Universe const& universe) {
-                return "Universe(pathname='" +
-                    universe.id().pathname() + "')";
+            [](Universe const& universe) {
+                return formal_string_representation(universe);
+            }
+        )
+
+        .def(
+            "__str__",
+            [](Universe const& universe) {
+                return informal_string_representation(universe);
             }
         )
 
@@ -91,6 +120,29 @@ void init_universe(
 
     :rtype: lue.Phenomena
 )",
+            py::return_value_policy::reference_internal)
+
+        .def(
+            "__getattr__",
+            [](
+                Universe& universe,
+                std::string const& phenomenon_name)
+            {
+                if(!universe.phenomena().contains(phenomenon_name)) {
+                    // TODO We are throwing a KeyError here. Should be
+                    // an AttributeError, but pybind11 does not seem to
+                    // support that yet.
+                    //
+                    // Python message:
+                    // AttributeError: 'x' object has no attribute 'y'
+                    // Ours is a little bit different:
+                    throw pybind11::key_error(fmt::format(
+                        "Universe does not contain phenomenon '{}'",
+                        phenomenon_name));
+                }
+
+                return py::cast(universe.phenomena()[phenomenon_name]);
+            },
             py::return_value_policy::reference_internal)
 
         ;
