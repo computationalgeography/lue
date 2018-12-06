@@ -5,8 +5,8 @@
 namespace lue {
 
 ObjectID::ObjectID(
-    hdf5::Group& parent)
-:
+    hdf5::Group& parent):
+
     same_shape::Value{parent, object_id_tag}
 
 {

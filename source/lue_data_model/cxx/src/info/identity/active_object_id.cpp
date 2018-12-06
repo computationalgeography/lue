@@ -14,8 +14,8 @@ ActiveObjectID::ActiveObjectID(
 
 
 ActiveObjectID::ActiveObjectID(
-    same_shape::constant_shape::Value&& value)
-:
+    same_shape::constant_shape::Value&& value):
+
     same_shape::constant_shape::Value{
         std::forward<same_shape::constant_shape::Value>(value)}
 
