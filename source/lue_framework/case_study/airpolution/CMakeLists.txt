@@ -1,19 +1,36 @@
-add_hpx_executable(lue_airpolution
+add_subdirectory(benchmark)
+
+add_library(lue_airpolution
+    src/polute_air
+)
+
+add_library(lue::airpolution ALIAS lue_airpolution)
+
+hpx_setup_target(lue_airpolution
+    TYPE LIBRARY
+)
+
+target_include_directories(lue_airpolution
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+)
+
+target_link_libraries(lue_airpolution
+    PUBLIC
+        lue::framework_core
+)
+
+add_hpx_executable(lue_polute_air
     ESSENTIAL
     SOURCES
         src/main
-        src/polute_air
-    COMPONENT_DEPENDENCIES
-        iostreams
+        # src/polute_air
+    # COMPONENT_DEPENDENCIES
+    #     iostreams
 )
 
-target_include_directories(lue_airpolution_exe SYSTEM
+target_link_libraries(lue_polute_air_exe
     PRIVATE
-        ${HPX_INCLUDE_DIRS}
-)
-
-target_link_libraries(lue_airpolution_exe
-    PRIVATE
-        lue::data_model
-        docopt
+        lue::airpolution
+        fmt::fmt
 )

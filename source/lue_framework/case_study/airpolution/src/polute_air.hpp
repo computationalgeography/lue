@@ -4,6 +4,14 @@
 
 namespace lue {
 
-void               polute_air          (std::string const& dataset_pathname);
+// void               polute_air          (std::string const& dataset_pathname,
+//                                         std::uint64_t nr_time_steps,
+//                                         std::uint64_t nr_partitions);
+
+void               polute_air          (std::uint64_t nr_time_steps,
+                                        std::uint64_t nr_rows,
+                                        std::uint64_t nr_cols,
+                                        std::uint64_t nr_rows_grain,
+                                        std::uint64_t nr_cols_grain);
 
 }  // namespace lue

@@ -1,55 +1,36 @@
 #pragma once
 #include "lue/framework/benchmark/environment.hpp"
 #include "lue/framework/benchmark/format.hpp"
+#include "lue/framework/core/configuration_entry.hpp"
 #include <hpx/hpx_finalize.hpp>
 #include <hpx/hpx_init.hpp>
-#include <docopt.h>
-#include <fmt/format.h>
 #include <fstream>
+#include <iostream>
 
 
 namespace lue {
 namespace benchmark {
 namespace detail {
 
-std::string const usage = R"(
-Run a performance benchmark
-
-usage:
-    {0}
-        --count=<count>
-        --nr_localities=<nr_localities> --nr_threads=<nr_threads>
-        --work_size=<work_size> [<output>]
-    {0} (-h | --help) | --version
-
-options:
-    --count=<count>  Number of times the benchmark must be run
-    --nr_localities=<nr_localities>  Maximum number of localities to use
-    --nr_threads=<nr_threads>  Maximum number of OS threads to use, per node
-    --work_size=<work-size>  Size of work to process
-    -h --help      Show this screen
-
-Results will be written to the terminal if no output pathname is provided
-)";
-
-
 /*!
     @brief      Return an object representing the environment in which the
                 benchmark is run
 */
-Environment create_environment(
-    std::map<std::string, docopt::value> const& arguments)
+Environment create_environment()
 {
-    std::size_t const count = arguments.at("--count").asLong();
-    std::size_t const nr_localities = arguments.at("--nr_localities").asLong();
-    std::size_t const nr_threads = arguments.at("--nr_threads").asLong();
-    std::size_t const work_size = arguments.at("--work_size").asLong();
+    std::uint64_t const count =
+        required_configuration_entry<std::uint64_t>("benchmark.count");
+    std::uint64_t const nr_localities =
+        required_configuration_entry<std::uint64_t>("hpx", "localities");
+    std::uint64_t const nr_threads =
+        required_configuration_entry<std::uint64_t>("hpx", "os_threads");
+    std::uint64_t const work_size =
+        required_configuration_entry<std::uint64_t>("benchmark.work_size");
 
     return Environment{count, nr_localities, nr_threads, work_size};
 }
 
 } // Namespace detail
-
 
 
 template<
@@ -78,20 +59,18 @@ inline int run_hpx_benchmark(
 }
 
 
-#define LUE_CONFIGURE_HPX_BENCHMARK()                                          \
+#define LUE_CONFIGURE_HPX_BENCHMARK( \
+    configuration)                                          \
 int hpx_main(                                                                  \
     int argc,                                                                  \
     char* argv[])                                                              \
 {                                                                              \
-    std::map<std::string, docopt::value> arguments =                           \
-        docopt::docopt(                                                        \
-            fmt::format(lue::benchmark::detail::usage, argv[0]),               \
-            {argv + 1, argv + argc});                                          \
+    std::string const pathname =                                               \
+        lue::optional_configuration_entry<std::string>(                        \
+            "benchmark.output", "");                                           \
                                                                                \
-    std::string const pathname = arguments["<output>"]                         \
-        ? arguments.at("<output>").asString() : "";                            \
     auto const environment{                                                    \
-        lue::benchmark::detail::create_environment(arguments)};                \
+        lue::benchmark::detail::create_environment()};                         \
                                                                                \
     auto benchmark = setup_benchmark(argc, argv, environment);                 \
                                                                                \
@@ -114,9 +93,11 @@ int main(                                                                      \
     int argc,                                                                  \
     char* argv[])                                                              \
 {                                                                              \
-    auto status = hpx::init(argc, argv);                                       \
+    std::vector<std::string> cfg = {                                           \
+        configuration                                                          \
+    };                                                                         \
                                                                                \
-    return status;                                                             \
+    return hpx::init(argc, argv, cfg);                                         \
 }
 
 }  // namespace benchmark
