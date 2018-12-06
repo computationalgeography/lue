@@ -41,40 +41,47 @@ def post_process_strong_scaling_benchmarks(
 
     data = pd.merge(environment, durations, left_index=True, right_index=True)
 
+    # Either the benchmarks scales over threads, or over localities
+    scale_over_threads = data["nr_threads"].min() != data["nr_threads"].max()
+    scale_over_localities = \
+        data["nr_localities"].min() != data["nr_localities"].max()
+    assert scale_over_threads != scale_over_localities  # xor
+    group_by_column = "nr_threads" if scale_over_threads else "nr_localities"
+
     # Group measurements by benchmark and calculate the mean
-    durations_by_nr_threads = \
-        data[["nr_threads", "duration"]].groupby("nr_threads").mean()
-    t1 = durations_by_nr_threads.at[1, "duration"]
+    aggregated_durations = \
+        data[[group_by_column, "duration"]].groupby([group_by_column]).mean()
+
+    # t1 = aggregated_durations.at[1, "duration"]
+    t1 = aggregated_durations.iat[0, 0]
+    nr_workers = aggregated_durations.index.get_level_values(group_by_column)
 
     # Best case: duration scales perfect with the number of threads
     # 100% parallel code, but without parallelization overhead
-    durations_by_nr_threads["linear_duration"] = \
-        t1 / durations_by_nr_threads.index
+    assert nr_workers[0] == 1
+    aggregated_durations["linear_duration"] = t1 / nr_workers
 
     # Worst case: duration does not scale with the number of threads
     # 100% serial code, but without parallelization overhead
-    durations_by_nr_threads["serial_duration"] = t1
+    aggregated_durations["serial_duration"] = t1
 
     # speedup = t1 / tn
-    durations_by_nr_threads["relative_speedup"] = \
-        t1 / durations_by_nr_threads["duration"]
-    durations_by_nr_threads["linear_relative_speedup"] = \
-        t1 / durations_by_nr_threads["linear_duration"]
-    durations_by_nr_threads["serial_relative_speedup"] = \
-        t1 / durations_by_nr_threads["serial_duration"]
+    aggregated_durations["relative_speedup"] = \
+        t1 / aggregated_durations["duration"]
+    aggregated_durations["linear_relative_speedup"] = \
+        t1 / aggregated_durations["linear_duration"]
+    aggregated_durations["serial_relative_speedup"] = \
+        t1 / aggregated_durations["serial_duration"]
 
     # efficiency = 100% * speedup / nr_workers
-    durations_by_nr_threads["efficiency"] = \
-        100 * durations_by_nr_threads["relative_speedup"] / \
-        durations_by_nr_threads.index
-    durations_by_nr_threads["linear_efficiency"] = \
-        100 * durations_by_nr_threads["linear_relative_speedup"] / \
-        durations_by_nr_threads.index
-    durations_by_nr_threads["serial_efficiency"] = \
-        100 * durations_by_nr_threads["serial_relative_speedup"] / \
-        durations_by_nr_threads.index
+    aggregated_durations["efficiency"] = \
+        100 * aggregated_durations["relative_speedup"] / nr_workers
+    aggregated_durations["linear_efficiency"] = \
+        100 * aggregated_durations["linear_relative_speedup"] / nr_workers
+    aggregated_durations["serial_efficiency"] = \
+        100 * aggregated_durations["serial_relative_speedup"] / nr_workers
 
-    max_nr_threads = environment["nr_threads"].max()
+    max_nr_workers = nr_workers.max()
 
     figure, axes = plt.subplots(
             nrows=1, ncols=3,
@@ -92,44 +99,44 @@ def post_process_strong_scaling_benchmarks(
 
     # duration by nr_threads
     sns.lineplot(
-        data=durations_by_nr_threads["linear_duration"],
+        data=aggregated_durations["linear_duration"],
         ax=axes[0], color=linear_color)
     sns.lineplot(
-        data=durations_by_nr_threads["serial_duration"],
+        data=aggregated_durations["serial_duration"],
         ax=axes[0], color=serial_color)
     sns.lineplot(
-        x="nr_threads", y="duration", data=data,
+        x=group_by_column, y="duration", data=data,
         ax=axes[0], color=actual_color)
     axes[0].set_ylabel(u"duration ± 1 std ({})".format("todo"))
-    axes[0].set_xlabel("number of threads")
+    axes[0].set_xlabel(group_by_column)
 
     # speedup by nr_threads
     sns.lineplot(
-        data=durations_by_nr_threads["linear_relative_speedup"],
+        data=aggregated_durations["linear_relative_speedup"],
         ax=axes[1], color=linear_color)
     sns.lineplot(
-        data=durations_by_nr_threads["serial_relative_speedup"],
+        data=aggregated_durations["serial_relative_speedup"],
         ax=axes[1], color=serial_color)
     sns.lineplot(
-        data=durations_by_nr_threads["relative_speedup"],
+        data=aggregated_durations["relative_speedup"],
         ax=axes[1], color=actual_color)
-    axes[1].set_ylim(0, max_nr_threads + 1)
+    axes[1].set_ylim(0, max_nr_workers + 1)
     axes[1].set_ylabel("relative speedup (-)")
-    axes[1].set_xlabel("number of threads")
+    axes[1].set_xlabel(group_by_column)
 
     # efficiency by nr_threads
     sns.lineplot(
-        data=durations_by_nr_threads["linear_efficiency"],
+        data=aggregated_durations["linear_efficiency"],
         ax=axes[2], color=linear_color)
     sns.lineplot(
-        data=durations_by_nr_threads["serial_efficiency"],
+        data=aggregated_durations["serial_efficiency"],
         ax=axes[2], color=serial_color)
     sns.lineplot(
-        data=durations_by_nr_threads["efficiency"],
+        data=aggregated_durations["efficiency"],
         ax=axes[2], color=actual_color)
     axes[2].set_ylim(0, 110)
     axes[2].set_ylabel("efficiency (%)")
-    axes[2].set_xlabel("number of threads")
+    axes[2].set_xlabel(group_by_column)
 
     figure.legend(labels=["linear", "serial", "actual"])
 
