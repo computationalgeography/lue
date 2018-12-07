@@ -1,4 +1,5 @@
 #include "lue/object/identity/object_tracker.hpp"
+#include "lue/core/tag.hpp"
 
 
 namespace lue {
@@ -11,9 +12,22 @@ namespace lue {
 ObjectTracker::ObjectTracker(
     hdf5::Group& parent):
 
-    _active_object_id{parent},
-    _active_set_index{parent},
-    _active_object_index{parent}
+    hdf5::Group{parent, object_tracker_tag},
+    _active_object_id{*this},
+    _active_set_index{*this},
+    _active_object_index{*this}
+
+{
+}
+
+
+ObjectTracker::ObjectTracker(
+    hdf5::Group&& group):
+
+    hdf5::Group{std::forward<hdf5::Group>(group)},
+    _active_object_id{*this},
+    _active_set_index{*this},
+    _active_object_index{*this}
 
 {
 }
@@ -83,27 +97,28 @@ ActiveObjectIndex& ObjectTracker::active_object_index()
 ObjectTracker create_object_tracker(
     hdf5::Group& parent)
 {
-    create_active_object_id(parent);
-    create_active_set_index(parent);
-    create_active_object_index(parent);
+    auto group = hdf5::create_group(parent, object_tracker_tag);
 
-    return ObjectTracker{parent};
+    create_active_object_id(group);
+    create_active_set_index(group);
+    create_active_object_index(group);
+
+    return ObjectTracker{std::move(group)};
 }
 
 
-// TODO forward to id/index trackers? or turn the tracker into a group itself?
-// void link_object_tracker(
-//     hdf5::Group& parent,
-//     ObjectTracker& tracker)
-// {
-//     parent.create_soft_link(tracker.id(), object_tracker_tag);
-// }
-// 
-// 
-// bool has_linked_object_tracker(
-//     hdf5::Group const& parent)
-// {
-//     return parent.contains_soft_link(object_tracker_tag);
-// }
+void link_object_tracker(
+    hdf5::Group& parent,
+    ObjectTracker& tracker)
+{
+    parent.create_soft_link(tracker.id(), object_tracker_tag);
+}
+
+
+bool has_linked_object_tracker(
+    hdf5::Group const& parent)
+{
+    return parent.contains_soft_link(object_tracker_tag);
+}
 
 }  // namespace lue

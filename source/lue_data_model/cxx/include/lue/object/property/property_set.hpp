@@ -38,6 +38,8 @@ public:
 
     ObjectTracker& object_tracker      ();
 
+    bool           owns_object_tracker () const;
+
     bool           has_time_domain     () const;
 
     bool           owns_time_domain    () const;
@@ -82,13 +84,18 @@ PropertySet        create_property_set (hdf5::Group& parent,
 
 PropertySet        create_property_set (hdf5::Group& parent,
                                         std::string const& name,
+                                        TimeConfiguration const&
+                                            time_configuration,
+                                        Clock const& clock);
+
+PropertySet        create_property_set (hdf5::Group& parent,
+                                        std::string const& name,
                                         TimeDomain& domain);
 
 PropertySet        create_property_set (hdf5::Group& parent,
                                         std::string const& name,
-                                        TimeConfiguration const&
-                                            time_configuration,
-                                        Clock const& clock);
+                                        TimeDomain& domain,
+                                        ObjectTracker& object_tracker);
 
 PropertySet        create_property_set (hdf5::Group& parent,
                                         std::string const& name,
@@ -110,15 +117,15 @@ PropertySet        create_property_set (hdf5::Group& parent,
                                             space_coordinate_datatype,
                                         std::size_t rank);
 
-// PropertySet        create_property_set (hdf5::Group& parent,
-//                                         std::string const& name,
-//                                         TimeDomain& time_domain,
-//                                         ObjectTracker& object_tracker,
-//                                         SpaceConfiguration const&
-//                                             space_configuration,
-//                                         hdf5::Datatype const&
-//                                             space_coordinate_datatype,
-//                                         std::size_t rank);
+PropertySet        create_property_set (hdf5::Group& parent,
+                                        std::string const& name,
+                                        TimeDomain& time_domain,
+                                        ObjectTracker& object_tracker,
+                                        SpaceConfiguration const&
+                                            space_configuration,
+                                        hdf5::Datatype const&
+                                            space_coordinate_datatype,
+                                        std::size_t rank);
 
 // PropertySet        create_property_set (hdf5::Group& parent,
 //                                         std::string const& name,

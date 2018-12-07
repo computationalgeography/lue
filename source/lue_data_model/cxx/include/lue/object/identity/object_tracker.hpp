@@ -17,12 +17,15 @@ namespace lue {
     different_shape::constant_shape::Value | ActiveSetIndex, ActiveObjectIndex, ActiveObjectID
     different_shape::variable_shape::Value | -
 */
-class ObjectTracker
+class ObjectTracker:
+    public hdf5::Group
 {
 
 public:
 
     explicit       ObjectTracker       (hdf5::Group& parent);
+
+                   ObjectTracker       (hdf5::Group&& group);
 
                    ObjectTracker       (ObjectTracker const&)=delete;
 
@@ -63,13 +66,13 @@ private:
 };
 
 
-ObjectTracker         create_object_tracker(
+ObjectTracker      create_object_tracker(
                                         hdf5::Group& parent);
 
-// void               link_object_tracker (hdf5::Group& parent,
-//                                         TimeDomain& domain);
-// 
-// bool               has_linked_object_tracker(
-//                                         hdf5::Group const& parent);
+void               link_object_tracker (hdf5::Group& parent,
+                                        ObjectTracker& object_tracker);
+
+bool               has_linked_object_tracker(
+                                        hdf5::Group const& parent);
 
 }  // namespace lue
