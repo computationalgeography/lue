@@ -49,6 +49,19 @@ PropertySet& PropertySets::add(
 
 PropertySet& PropertySets::add(
     std::string const& name,
+    TimeConfiguration const& time_configuration,
+    Clock const& clock)
+{
+    return Collection::add(
+        name,
+        create_property_set(
+            *this, name,
+            time_configuration, clock));
+}
+
+
+PropertySet& PropertySets::add(
+    std::string const& name,
     TimeDomain& domain)
 {
     return Collection::add(
@@ -61,14 +74,14 @@ PropertySet& PropertySets::add(
 
 PropertySet& PropertySets::add(
     std::string const& name,
-    TimeConfiguration const& time_configuration,
-    Clock const& clock)
+    TimeDomain& domain,
+    ObjectTracker& object_tracker)
 {
     return Collection::add(
         name,
         create_property_set(
             *this, name,
-            time_configuration, clock));
+            domain, object_tracker));
 }
 
 
@@ -101,6 +114,23 @@ PropertySet& PropertySets::add(
         create_property_set(
             *this, name,
             time_domain,
+            space_configuration, space_coordinate_datatype, rank));
+}
+
+
+PropertySet& PropertySets::add(
+    std::string const& name,
+    TimeDomain& time_domain,
+    ObjectTracker& object_tracker,
+    SpaceConfiguration const& space_configuration,
+    hdf5::Datatype const& space_coordinate_datatype,
+    std::size_t rank)
+{
+    return Collection::add(
+        name,
+        create_property_set(
+            *this, name,
+            time_domain, object_tracker,
             space_configuration, space_coordinate_datatype, rank));
 }
 

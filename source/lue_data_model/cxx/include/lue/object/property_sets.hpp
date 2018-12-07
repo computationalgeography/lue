@@ -36,12 +36,16 @@ public:
                                         std::size_t rank);
 
     PropertySet&   add                 (std::string const& name,
-                                        TimeDomain& domain);
-
-    PropertySet&   add                 (std::string const& name,
                                         TimeConfiguration const&
                                             time_configuration,
                                         Clock const& clock);
+
+    PropertySet&   add                 (std::string const& name,
+                                        TimeDomain& domain);
+
+    PropertySet&   add                 (std::string const& name,
+                                        TimeDomain& domain,
+                                        ObjectTracker& object_tracker);
 
     PropertySet&   add                 (std::string const& name,
                                         TimeConfiguration const&
@@ -55,6 +59,15 @@ public:
 
     PropertySet&   add                 (std::string const& name,
                                         TimeDomain& time_domain,
+                                        SpaceConfiguration const&
+                                            space_configuration,
+                                        hdf5::Datatype const&
+                                            space_coordinate_datatype,
+                                        std::size_t rank);
+
+    PropertySet&   add                 (std::string const& name,
+                                        TimeDomain& time_domain,
+                                        ObjectTracker& object_tracker,
                                         SpaceConfiguration const&
                                             space_configuration,
                                         hdf5::Datatype const&

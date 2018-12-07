@@ -19,6 +19,8 @@ static std::string const shape_variability_tag =
     "lue_shape_variability";
 
 // info
+static std::string const object_tracker_tag =
+    "lue_object_tracker";
 static std::string const object_id_tag =
     "lue_object_id";
 static std::string const active_object_id_tag =

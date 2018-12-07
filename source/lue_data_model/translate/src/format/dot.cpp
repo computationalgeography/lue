@@ -714,6 +714,48 @@ void to_dot(
 }
 
 
+void to_dot(
+    ObjectTracker const& object_tracker,
+    std::ostream& stream,
+    Metadata const& metadata)
+{
+    stream << fmt::format(R"(
+    {} [
+        label=<{}>
+        shape="{}"
+        fillcolor="{}"
+    ];
+)",
+        dot_name(object_tracker),
+        object_tracker.id().name(),
+        shape(object_tracker, metadata),
+        metadata.string(
+            JSONPointer("/lue/object_tracker/fillcolor"),
+            fillcolor(object_tracker)));
+
+    if(metadata.boolean(JSONPointer("/lue/value/show"), false)) {
+        {
+            auto const& active_set_index = object_tracker.active_set_index();
+            to_dot(active_set_index, stream, metadata);
+            link_nodes(object_tracker, active_set_index, stream, metadata);
+        }
+
+        {
+            auto const& active_object_index =
+                object_tracker.active_object_index();
+            to_dot(active_object_index, stream, metadata);
+            link_nodes(object_tracker, active_object_index, stream, metadata);
+        }
+
+        {
+            auto const& active_object_id = object_tracker.active_object_id();
+            to_dot(active_object_id, stream, metadata);
+            link_nodes(object_tracker, active_object_id, stream, metadata);
+        }
+    }
+}
+
+
 /*!
     @brief      Translate the structure of a property-set to a DOT graph
 */
@@ -737,32 +779,14 @@ void to_dot(
             fillcolor(property_set)));
 
     if(metadata.boolean(JSONPointer("/lue/object_tracker/show"), false)) {
-
         auto const& object_tracker = property_set.object_tracker();
 
-        // {
-        //     auto const& id = object_tracker.id();
-        //     to_dot(id, stream, metadata);
-        //     link_nodes(property_set, id, stream, metadata);
-        // }
-
-        {
-            auto const& active_set_index = object_tracker.active_set_index();
-            to_dot(active_set_index, stream, metadata);
-            link_nodes(property_set, active_set_index, stream, metadata);
+        if(property_set.owns_object_tracker()) {
+            to_dot(object_tracker, stream, metadata);
+            link_nodes(property_set, object_tracker, stream, metadata);
         }
-
-        {
-            auto const& active_object_index =
-                object_tracker.active_object_index();
-            to_dot(active_object_index, stream, metadata);
-            link_nodes(property_set, active_object_index, stream, metadata);
-        }
-
-        {
-            auto const& active_object_id = object_tracker.active_object_id();
-            to_dot(active_object_id, stream, metadata);
-            link_nodes(property_set, active_object_id, stream, metadata);
+        else {
+            soft_link_nodes(property_set, object_tracker, stream, metadata);
         }
     }
 
@@ -854,9 +878,11 @@ void to_dot(
     );
 
     if(metadata.boolean(JSONPointer("/lue/object_tracker/show"), false)) {
-        auto const& object_id = phenomenon.object_id();
-        to_dot(object_id, stream, metadata);
-        link_nodes(phenomenon, object_id, stream, metadata);
+        if(metadata.boolean(JSONPointer("/lue/value/show"), false)) {
+            auto const& object_id = phenomenon.object_id();
+            to_dot(object_id, stream, metadata);
+            link_nodes(phenomenon, object_id, stream, metadata);
+        }
     }
 
     auto& property_sets = phenomenon.property_sets();
