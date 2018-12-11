@@ -64,6 +64,16 @@ ObjectTracker& PropertySet::object_tracker()
 
 
 /*!
+    @brief      Return whether the property set owns the object tracker, or
+                shares another property set's object tracker
+*/
+bool PropertySet::owns_object_tracker() const
+{
+    return !has_linked_object_tracker(*this);
+}
+
+
+/*!
     @brief      Return whether the property set has a time domain
 
     If the property set does not have a time domain, the information is
@@ -250,6 +260,28 @@ PropertySet create_property_set(
 PropertySet create_property_set(
     hdf5::Group& parent,
     std::string const& name,
+    TimeDomain& domain,
+    ObjectTracker& object_tracker)
+{
+    if(hdf5::group_exists(parent, name)) {
+        throw std::runtime_error(fmt::format(
+            "Property-set {} already exists at {}",
+            name, parent.id().pathname()));
+    }
+
+    auto group = hdf5::create_group(parent, name);
+
+    link_object_tracker(group, object_tracker);
+    link_time_domain(group, domain);
+    create_properties(group);
+
+    return PropertySet{std::move(group)};
+}
+
+
+PropertySet create_property_set(
+    hdf5::Group& parent,
+    std::string const& name,
     TimeConfiguration const& time_configuration,
     Clock const& clock,
     SpaceConfiguration const& space_configuration,
@@ -301,30 +333,30 @@ PropertySet create_property_set(
 }
 
 
-// PropertySet create_property_set(
-//     hdf5::Group& parent,
-//     std::string const& name,
-//     TimeDomain& time_domain,
-//     ObjectTracker& object_tracker,
-//     SpaceConfiguration const& space_configuration,
-//     hdf5::Datatype const& space_coordinate_datatype,
-//     std::size_t rank)
-// {
-//     if(hdf5::group_exists(parent, name)) {
-//         throw std::runtime_error(fmt::format(
-//             "Property-set {} already exists at {}",
-//             name, parent.id().pathname()));
-//     }
-// 
-//     auto group = hdf5::create_group(parent, name);
-// 
-//     link_object_tracker(group, object_tracker);
-//     link_time_domain(group, time_domain);
-//     create_space_domain(
-//         group, space_configuration, space_coordinate_datatype, rank);
-//     create_properties(group);
-// 
-//     return PropertySet{std::move(group)};
-// }
+PropertySet create_property_set(
+    hdf5::Group& parent,
+    std::string const& name,
+    TimeDomain& time_domain,
+    ObjectTracker& object_tracker,
+    SpaceConfiguration const& space_configuration,
+    hdf5::Datatype const& space_coordinate_datatype,
+    std::size_t rank)
+{
+    if(hdf5::group_exists(parent, name)) {
+        throw std::runtime_error(fmt::format(
+            "Property-set {} already exists at {}",
+            name, parent.id().pathname()));
+    }
+
+    auto group = hdf5::create_group(parent, name);
+
+    link_object_tracker(group, object_tracker);
+    link_time_domain(group, time_domain);
+    create_space_domain(
+        group, space_configuration, space_coordinate_datatype, rank);
+    create_properties(group);
+
+    return PropertySet{std::move(group)};
+}
 
 }  // namespace lue

@@ -13,7 +13,7 @@ void init_object_tracker(
     py::module& module)
 {
 
-    py::class_<ObjectTracker>(
+    py::class_<ObjectTracker, hdf5::Group>(
         module,
         "ObjectTracker",
         R"(
