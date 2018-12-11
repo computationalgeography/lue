@@ -24,7 +24,6 @@ add_hpx_executable(lue_polute_air
     ESSENTIAL
     SOURCES
         src/main
-        # src/polute_air
     # COMPONENT_DEPENDENCIES
     #     iostreams
 )

@@ -1,3 +1,5 @@
+add_test_conditionally(test)
+
 add_library(lue_framework_core
     src/configuration_entry
 )

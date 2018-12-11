@@ -115,16 +115,26 @@ T optional_configuration_entry(
 #define REQUIRED_CONFIGURATION_ENTRY(              \
     Type)                                          \
 template Type required_configuration_entry<Type>(  \
+    std::string const& section,                    \
+    std::string const& key);                       \
+                                                   \
+template Type required_configuration_entry<Type>(  \
     std::string const& key);
 
-#define OPTIONAL_CONFIGURATION_ENTRY(              \
-    Type)                                          \
-template Type optional_configuration_entry<Type>(  \
+
+#define OPTIONAL_CONFIGURATION_ENTRY(                      \
+    Type)                                                  \
+template Type optional_configuration_entry<Type>(          \
+    std::string const&, std::string const&, Type const&);  \
+                                                           \
+template Type optional_configuration_entry<Type>(          \
     std::string const&, Type const&);
 
+REQUIRED_CONFIGURATION_ENTRY(std::uint32_t);
 REQUIRED_CONFIGURATION_ENTRY(std::uint64_t);
 REQUIRED_CONFIGURATION_ENTRY(std::string);
 
+OPTIONAL_CONFIGURATION_ENTRY(std::uint32_t);
 OPTIONAL_CONFIGURATION_ENTRY(std::uint64_t);
 OPTIONAL_CONFIGURATION_ENTRY(std::string);
 

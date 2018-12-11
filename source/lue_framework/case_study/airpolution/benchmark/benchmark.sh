@@ -23,7 +23,11 @@ program_pathname="$LUE_OBJECTS/bin/$program_name"
 
 # partition_name="defq"
 partition_name="allq"
-max_duration=5
+max_duration=10
+
+# terminate called after throwing an instance of 'hpx::detail::exception_with_info<hpx::exception>'
+#   what():  <unknown>: HPX(network_error)
+spawn_interval=1  # This has to be larger than zero: why?
 
 
 # TODO Also scale over localities
@@ -60,8 +64,8 @@ epoch="2018-12-06T00:00:00+02:00"
 
 
 # Scale over nodes and scale over threads
-min_nr_nodes=1
-max_nr_nodes=8
+min_nr_nodes=1  # 1
+max_nr_nodes=8  # 8
 min_nr_threads=48
 max_nr_threads=48
 
@@ -88,7 +92,6 @@ function create_benchmark_dataset()
             output_filename="$basename.txt"
             benchmark_result_filename="$basename.json"
 
-
             # Create batch-file
             cat > $batch_filename <<END
 #!/usr/bin/env bash
@@ -100,7 +103,13 @@ function create_benchmark_dataset()
 #SBATCH --partition $partition_name
 #SBATCH --time $max_duration
 
+
+# module load userspace/all
+# module load mpich/gcc72/mlnx/3.2.1
+
+
 srun $program_pathname \
+    --hpx:ini="hpx.parcel.mpi.enable=0" \
     --hpx:ini="application.${program_name}.benchmark.count!=$count" \
     --hpx:ini="application.${program_name}.benchmark.work_size!=$work_size" \
     --hpx:ini="application.${program_name}.benchmark.output!=$benchmark_result_filename" \
@@ -109,12 +118,16 @@ srun $program_pathname \
     --hpx:ini="application.${program_name}.nr_cols!=$nr_cols" \
     --hpx:ini="application.${program_name}.nr_rows_grain!=$nr_rows_grain" \
     --hpx:ini="application.${program_name}.nr_cols_grain!=$nr_cols_grain"
+echo "DONE!"
 END
 
             # Run benchmark (asynchronous!), storing results in
             # $benchmark_result_filename
             sbatch $batch_filename
-            sleep ${max_duration}m
+
+            # Sleep a bit. Ideally, the spawned benchmark is done.
+            echo "Sleep for ${spawn_interval}m..."
+            sleep ${spawn_interval}m
 
         done
     done
@@ -175,8 +188,8 @@ function post_process_benchmarks()
 }
 
 
-# build_software
+build_software
 
 # Pick one of these:
 # create_benchmark_dataset
-# post_process_benchmarks
+post_process_benchmarks

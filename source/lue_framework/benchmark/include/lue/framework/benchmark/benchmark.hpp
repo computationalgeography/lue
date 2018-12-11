@@ -196,7 +196,7 @@ inline int Benchmark<Callable>::run()
     _timings.clear();
     Stopwatch stopwatch;
 
-    std::cout << _name << ": " << std::flush;
+    // Stream << _name << ": ";  // << std::flush;
 
     auto const start = Stopwatch::now();
     for(std::size_t i = 0; i < _environment.count(); ++i) {
@@ -204,9 +204,9 @@ inline int Benchmark<Callable>::run()
         _callable(_environment);
         stopwatch.stop();
         _timings.push_back(Timing{stopwatch.time_interval()});
-        std::cout << "." << std::flush;
+        // Stream << ".";  // << std::flush;
     }
-    std::cout << std::endl;
+    // Stream << "\n";  // std::endl;
     auto const stop = Stopwatch::now();
 
     _time_interval = TimeInterval{start, stop};
