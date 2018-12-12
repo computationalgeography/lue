@@ -71,7 +71,37 @@ BOOST_AUTO_TEST_CASE(nr_grains)
 }
 
 
-BOOST_AUTO_TEST_CASE(linear_to_shape_index)
+BOOST_AUTO_TEST_CASE(linear_to_1d_shape_index)
+{
+    using T = std::uint64_t;
+    std::size_t const rank = 1;
+    using Shape = lue::Shape<T, rank>;
+    using Indices = lue::Indices<T, rank>;
+
+    Shape area_shape{10};
+    T index;
+
+    {
+        index = 0;
+        auto indices = lue::linear_to_shape_index(area_shape, index);
+        BOOST_CHECK(indices == (Indices{0}));
+    }
+
+    {
+        index = 5;
+        auto indices = lue::linear_to_shape_index(area_shape, index);
+        BOOST_CHECK(indices == (Indices{5}));
+    }
+
+    {
+        index = 9;
+        auto indices = lue::linear_to_shape_index(area_shape, index);
+        BOOST_CHECK(indices == (Indices{9}));
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE(linear_to_2d_shape_index)
 {
     using T = std::uint64_t;
     std::size_t const rank = 2;
@@ -99,5 +129,33 @@ BOOST_AUTO_TEST_CASE(linear_to_shape_index)
         BOOST_CHECK(indices == (Indices{1, 0}));
     }
 
+    {
+        index = 23;
+        auto indices = lue::linear_to_shape_index(area_shape, index);
+        BOOST_CHECK(indices == (Indices{5, 3}));
+    }
+}
 
+
+BOOST_AUTO_TEST_CASE(linear_to_3d_shape_index)
+{
+    using T = std::uint64_t;
+    std::size_t const rank = 3;
+    using Shape = lue::Shape<T, rank>;
+    using Indices = lue::Indices<T, rank>;
+
+    Shape area_shape{2, 6, 4};
+    T index;
+
+    {
+        index = 0;
+        auto indices = lue::linear_to_shape_index(area_shape, index);
+        BOOST_CHECK(indices == (Indices{0, 0, 0}));
+    }
+
+    {
+        index = 47;
+        auto indices = lue::linear_to_shape_index(area_shape, index);
+        BOOST_CHECK(indices == (Indices{1, 5, 3}));
+    }
 }

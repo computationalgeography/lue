@@ -41,35 +41,35 @@ inline Indices<T, rank> linear_to_shape_index(
     Shape<T, rank> const& shape,
     T idx)
 {
-    // Give a shape and a linear index, return the corresponding indices
-    // along each dimension
+    static_assert(rank > 0);
+    assert(
+        idx < std::accumulate(
+            shape.begin(), shape.end(), T{1}, std::multiplies<T>()));
 
-    // For each dimension, subtract the index by the division of the
-    // current index by the dimension extent
+    // Give a shape and a linear index, return the corresponding cell
+    // indices along each dimension
 
     Indices<T, rank> result;
-    result.fill(0);
 
-    for(std::size_t i = shape.size() - 1; i > 0; --i) {
+    {
+        auto result_ptr = result.begin();
 
-        if(shape[i] > idx) {
-            result_ptr = shape[i] / idx;
-            idx -= result_ptr * shape[i];
+        // Iterate over all dimensions
+        for(auto shape_ptr = shape.begin(); shape_ptr != shape.end();
+                ++shape_ptr) {
+
+            // Determine the number of cells represented by a single increment
+            // along the current dimension
+            auto const nr_cells = std::accumulate(
+                shape_ptr + 1, shape.end(), T{1}, std::multiplies<T>());
+
+            auto& dimension_index = *result_ptr;
+
+            dimension_index = idx / nr_cells;  // Integer division: floors
+            idx -= dimension_index * nr_cells;
+
+            ++result_ptr;
         }
-        else {
-            result_ptr* = idx;
-        }
-
-        // assert(shape[i] >= idx);
-        // result[i] = shape[i] / idx;
-        // idx -= result[i] * shape[i];
-
-    }
-
-    for(std::size_t i = 0; i < shape.size() && idx > 0; ++i) {
-        assert(shape[i] >= idx);
-        result[i] = shape[i] / idx;
-        idx -= result[i] * shape[i];
     }
 
     return result;
