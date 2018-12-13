@@ -1,4 +1,5 @@
 #include "polute_air.hpp"
+#include "lue/framework/core/domain_decomposition.hpp"
 // #include <hpx/config.hpp>
 #include <hpx/hpx.hpp>
 // #include <hpx/lcos/gather.hpp>
@@ -11,43 +12,43 @@
 
 namespace {
 
-char const* gather_basename()
-{
-    // static char const* basename = "/polute_air/gather/";
-    // static auto const nr_localities = hpx::get_num_localities().get();
-    // static std::string const basename =
-    //     fmt::format("/{}/polute_air/gather/", nr_localities);
+// char const* gather_basename()
+// {
+//     // static char const* basename = "/polute_air/gather/";
+//     // static auto const nr_localities = hpx::get_num_localities().get();
+//     // static std::string const basename =
+//     //     fmt::format("/{}/polute_air/gather/", nr_localities);
+// 
+//     static std::string const basename = "/polute_air/gather/";
+// 
+//     return basename.c_str();
+// }
 
-    static std::string const basename = "/polute_air/gather/";
 
-    return basename.c_str();
-}
-
-
-hpx::future<double> max_airpolution(
-    std::uint64_t const /* nr_time_steps */,
-    std::uint64_t const /* nr_rows */,
-    std::uint64_t const /* nr_cols */,
-    std::uint64_t const /* nr_rows_grain */,
-    std::uint64_t const /* nr_cols_grain */)
-{
-    // TODO Perform some real HPX work
-
-    using namespace std::chrono_literals;
-
-    // auto const nr_localities = hpx::get_num_localities().get();
-
-    // std::this_thread::sleep_for(10s / nr_localities);
-
-    std::this_thread::sleep_for(10s);
-
-    return hpx::make_ready_future<double>(5.0);
-}
+// hpx::future<double> max_airpolution(
+//     std::uint64_t const /* nr_time_steps */,
+//     std::uint64_t const /* nr_rows */,
+//     std::uint64_t const /* nr_cols */,
+//     std::uint64_t const /* nr_rows_grain */,
+//     std::uint64_t const /* nr_cols_grain */)
+// {
+//     // TODO Perform some real HPX work
+// 
+//     using namespace std::chrono_literals;
+// 
+//     // auto const nr_localities = hpx::get_num_localities().get();
+// 
+//     // std::this_thread::sleep_for(10s / nr_localities);
+// 
+//     std::this_thread::sleep_for(10s);
+// 
+//     return hpx::make_ready_future<double>(5.0);
+// }
 
 }  // Anonymous namespace
 
 
-HPX_REGISTER_GATHER(double, max_airpolution_gatherer);
+// HPX_REGISTER_GATHER(double, max_airpolution_gatherer);
 
 
 namespace lue {
@@ -67,19 +68,17 @@ void polute_air(
     assert(nr_rows_grain < nr_rows);
     assert(nr_cols_grain < nr_cols);
 
+    using Shape = lue::Shape<std::uint64_t, 2>;
 
-    // Determine which part of the world we need to handle
+    Shape area_shape{{nr_rows, nr_cols}};
+    Shape grain_shape{{nr_rows_grain, nr_cols_grain}};
 
+    // Determine which part of the world we need to handle. We need the
+    // location of the grains.
+    auto grains = lue::grains(
+        area_shape, grain_shape, hpx::get_num_localities(hpx::launch::sync),
+        hpx::get_locality_id());
 
-
-    // Allocate memory for the data values for the current state and
-    // the next state
-
-
-    // Iterate through time
-
-
-    // 
 
 
 
