@@ -207,7 +207,7 @@ void init_property_set(
 
     :param str name: Name of property-set to create
     :return: Property-set created
-    :rtype: lue.PropertySet
+    :rtype: PropertySet
     :raises RuntimeError: In case the property-set cannot be created
 
     The property-set will have no time domain and no space
@@ -246,7 +246,7 @@ void init_property_set(
         coordinates
     :param int rank: Number of spatial dimensions
     :return: Property-set created
-    :rtype: lue.PropertySet
+    :rtype: PropertySet
     :raises RuntimeError: In case the property-set cannot be created
 
     The property-set returned will have no time domain. Information
@@ -272,7 +272,7 @@ void init_property_set(
         time domain
     :param lue.Clock clock: Clock for locations in time
     :return: Property-set created
-    :rtype: lue.PropertySet
+    :rtype: PropertySet
     :raises RuntimeError: In case the property-set cannot be created
 )",
             py::return_value_policy::reference_internal)
@@ -315,7 +315,7 @@ void init_property_set(
         coordinates
     :param int rank: Number of spatial dimensions
     :return: Property-set created
-    :rtype: lue.PropertySet
+    :rtype: PropertySet
     :raises RuntimeError: In case the property-set cannot be created
 )",
             py::return_value_policy::reference_internal)
@@ -334,7 +334,7 @@ void init_property_set(
         to use. Sharing time domains makes sense when the locations in
         time are the same. This saves space in the dataset.
     :return: Property-set created
-    :rtype: lue.PropertySet
+    :rtype: PropertySet
     :raises RuntimeError: In case the property-set cannot be created
 
     The property-set will have no space domain. Information stored in
@@ -360,7 +360,7 @@ void init_property_set(
         tracker to use. Sharing object trackers makes sense when the
         active set in different property-sets are the same.
     :return: Property-set created
-    :rtype: lue.PropertySet
+    :rtype: PropertySet
     :raises RuntimeError: In case the property-set cannot be created
 
     The property-set will have no space domain. Information stored in
@@ -404,7 +404,7 @@ void init_property_set(
         coordinates
     :param int rank: Number of spatial dimensions
     :return: Property-set created
-    :rtype: lue.PropertySet
+    :rtype: PropertySet
     :raises RuntimeError: In case the property-set cannot be created
 )",
             py::return_value_policy::reference_internal)
@@ -450,7 +450,7 @@ void init_property_set(
         coordinates
     :param int rank: Number of spatial dimensions
     :return: Property-set created
-    :rtype: lue.PropertySet
+    :rtype: PropertySet
     :raises RuntimeError: In case the property-set cannot be created
 )",
             py::return_value_policy::reference_internal)
@@ -492,7 +492,7 @@ void init_property_set(
     for each property a value is stored.
 
     Which objects are active at each location in time is tracked by the
-    :attr:`object tracker`.
+    :attr:`object_tracker`.
 )")
 
         .def(
@@ -514,7 +514,7 @@ void init_property_set(
             R"(
     Return the active objects tracker
 
-    :rtype: lue.ObjectTracker
+    :rtype: ObjectTracker
 )",
             py::return_value_policy::reference_internal)
 
@@ -538,7 +538,7 @@ void init_property_set(
             R"(
     Return the time domain
 
-    :rtype: lue.TimeDomain
+    :rtype: TimeDomain
     :raises RuntimeError: In case the property-set does not have a
         time domain
 )",
@@ -564,7 +564,7 @@ void init_property_set(
             R"(
     Return the space domain
 
-    :rtype: lue.SpaceDomain
+    :rtype: SpaceDomain
     :raises RuntimeError: In case the property-set does not have a
         space domain
 )",
@@ -622,7 +622,7 @@ void init_property_set(
     :param str name: Name of property to create
     :param dtype numpy.dtype: Datatype of object array elements
     :return: Property created
-    :rtype: lue.same_shape.Property
+    :rtype: same_shape.Property
     :raises RuntimeError: In case the property cannot be created
 )",
             py::return_value_policy::reference_internal)
@@ -653,7 +653,7 @@ void init_property_set(
     :param dtype numpy.dtype: Datatype of object array elements
     :param tuple shape: Shape of object arrays
     :return: Property created
-    :rtype: lue.same_shape.Property
+    :rtype: same_shape.Property
     :raises RuntimeError: In case the property cannot be created
 )",
             py::return_value_policy::reference_internal)
@@ -711,7 +711,7 @@ void init_property_set(
     :param tuple shape: Shape of object arrays
     :param ValueVariability value_variability: Value variability
     :return: Property created
-    :rtype: lue.same_shape.Property or
+    :rtype: same_shape.Property or
         lue.same_shape.constant_shape.Property, depending on the
         *value_variability* passed in
     :raises RuntimeError: In case the property cannot be created
@@ -747,7 +747,7 @@ void init_property_set(
     :param dtype numpy.dtype: Datatype of object array elements
     :param int rank: Rank of object arrays
     :return: Property created
-    :rtype: lue.different_shape.Property
+    :rtype: different_shape.Property
     :raises RuntimeError: In case the property cannot be created
 )",
             py::return_value_policy::reference_internal)
@@ -834,9 +834,9 @@ void init_property_set(
     :param ShapePerObject shape_per_object: Shape per object
     :param ShapeVariability shape_variability: Shape variability
     :return: Property created
-    :rtype: lue.same_shape::variable_shape::Property,
-        lue.different_shape::constant_shape::Property or
-        lue.different_shape::variable_shape::Property depending on
+    :rtype: same_shape::variable_shape::Property,
+        different_shape::constant_shape::Property or
+        different_shape::variable_shape::Property depending on
         *shape_per_object* and *shape_variability* passed in
     :raises RuntimeError: In case the property cannot be created
 )",

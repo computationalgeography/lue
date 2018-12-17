@@ -83,6 +83,7 @@ void init_dataset(
 
     :param str name: Name of phenomenon to create
     :raises RuntimeError: In case the phenomenon cannot be created
+    :rtype: Phenomenon
 )",
             "name"_a,
             py::return_value_policy::reference_internal)
@@ -93,7 +94,7 @@ void init_dataset(
             R"(
     Return phenomena collection
 
-    :rtype: lue.Phenomena
+    :rtype: Phenomena
 )",
             py::return_value_policy::reference_internal)
 
@@ -105,6 +106,7 @@ void init_dataset(
 
     :param str name: Name of universe to create
     :raises RuntimeError: In case the universe cannot be created
+    :rtype: Universe
 )",
             "name"_a,
             py::return_value_policy::reference_internal)
@@ -115,7 +117,7 @@ void init_dataset(
             R"(
     Return universes collection
 
-    :rtype: lue.Universes
+    :rtype: Universes
 )",
             py::return_value_policy::reference_internal)
 

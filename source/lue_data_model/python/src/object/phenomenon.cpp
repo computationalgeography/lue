@@ -62,7 +62,7 @@ void init_phenomenon(
 
     :param str name: Name of phenomenon to create
     :return: Phenomenon created
-    :rtype: lue.Phenomenon
+    :rtype: Phenomenon
     :raises RuntimeError: In case the phenomenon cannot be created
 )",
             py::return_value_policy::reference_internal)
@@ -116,7 +116,7 @@ void init_phenomenon(
     Return property sets collection containing information about each
     object in the collection of objects
 
-    :rtype: lue.PropertySets
+    :rtype: PropertySets
 )",
             py::return_value_policy::reference_internal)
 
@@ -127,7 +127,7 @@ void init_phenomenon(
     Return property sets collection containing information about the
     collection of objects
 
-    :rtype: lue.PropertySets
+    :rtype: PropertySets
 )",
             py::return_value_policy::reference_internal)
 

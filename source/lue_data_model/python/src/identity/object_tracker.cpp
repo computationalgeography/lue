@@ -17,28 +17,41 @@ void init_object_tracker(
         module,
         "ObjectTracker",
         R"(
-    ObjectTracker docstring...
+    A class for storing IDs of objects in active sets and indices of
+    information related to those objects and stored elsewhere
+
+    In the data model we can store object-related information that
+    changes through time. This information is stored as compact as
+    possible in value arrays. For each location in time, an object
+    tracker contains information about which objects were active and
+    where information about these objects is stored in the value arrays.
 )")
 
         .def_property_readonly(
             "active_set_index",
             py::overload_cast<>(&ObjectTracker::active_set_index),
             R"(
-    active_set_index docstring...
+    Return active set indices
+
+    :rtype: ActiveSetIndex
 )")
 
         .def_property_readonly(
             "active_object_index",
             py::overload_cast<>(&ObjectTracker::active_object_index),
             R"(
-    active_object_index docstring...
+    Return active object indices
+
+    :rtype: ActiveObjectIndex
 )")
 
         .def_property_readonly(
             "active_object_id",
             py::overload_cast<>(&ObjectTracker::active_object_id),
             R"(
-    active_object_id docstring...
+    Return active object IDs
+
+    :rtype: ActiveObjectID
 )")
 
         ;
