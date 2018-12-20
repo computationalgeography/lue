@@ -1,6 +1,7 @@
 #include "../python_extension.hpp"
 #include "lue/info/identity/active_object_index.hpp"
 #include <pybind11/pybind11.h>
+#include <fmt/format.h>
 
 
 namespace py = pybind11;
@@ -8,6 +9,26 @@ using namespace pybind11::literals;
 
 
 namespace lue {
+namespace {
+
+static std::string formal_string_representation(
+    ActiveObjectIndex const& index)
+{
+    return fmt::format(
+            "ActiveObjectIndex(pathname='{}')",
+            index.id().pathname()
+        );
+}
+
+
+static std::string informal_string_representation(
+    ActiveObjectIndex const& index)
+{
+    return formal_string_representation(index);
+}
+
+}  // Anonymous namespace
+
 
 void init_active_object_index(
     py::module& module)
@@ -34,6 +55,20 @@ void init_active_object_index(
     You never have to create an :class:`ActiveObjectIndex` instance
     yourself. :class:`ObjectTracker` instances provide one.
 )")
+
+        .def(
+            "__repr__",
+            [](ActiveObjectIndex const& index) {
+                return formal_string_representation(index);
+            }
+        )
+
+        .def(
+            "__str__",
+            [](ActiveObjectIndex const& index) {
+                return informal_string_representation(index);
+            }
+        )
 
         ;
 

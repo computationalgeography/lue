@@ -8,6 +8,42 @@ using namespace pybind11::literals;
 
 
 namespace lue {
+namespace {
+
+static std::string formal_string_representation(
+    TimeConfiguration const& configuration)
+{
+    return fmt::format(
+            "TimeConfiguration(item_type='{}')",
+            aspect_to_string(configuration.value<TimeDomainItemType>())
+        );
+}
+
+
+static std::string informal_string_representation(
+    TimeConfiguration const& configuration)
+{
+    return formal_string_representation(configuration);
+}
+
+
+static std::string formal_string_representation(
+    TimeDomain const& domain)
+{
+    return fmt::format(
+        "TimeDomain(pathname='{}')",
+        domain.id().pathname());
+}
+
+
+static std::string informal_string_representation(
+    TimeDomain const& domain)
+{
+    return formal_string_representation(domain);
+}
+
+}  // Anonymous namespace
+
 
 void init_time_domain(
     py::module& module)
@@ -35,6 +71,24 @@ void init_time_domain(
         .def(
             py::init<TimeDomainItemType>())
 
+        .def(
+            "__repr__",
+            [](TimeConfiguration const& configuration) {
+                return formal_string_representation(configuration);
+            }
+        )
+
+        .def(
+            "__str__",
+            [](TimeConfiguration const& configuration) {
+                return informal_string_representation(configuration);
+            }
+        )
+
+        .def_property_readonly(
+            "item_type",
+            &TimeConfiguration::value<TimeDomainItemType>)
+
         ;
 
     py::class_<TimeDomain, hdf5::Group>(
@@ -43,6 +97,24 @@ void init_time_domain(
         R"(
     TODO
 )")
+
+        .def(
+            "__repr__",
+            [](TimeDomain const& domain) {
+                return formal_string_representation(domain);
+            }
+        )
+
+        .def(
+            "__str__",
+            [](TimeDomain const& domain) {
+                return informal_string_representation(domain);
+            }
+        )
+
+        .def_property_readonly(
+            "configuration",
+            &TimeDomain::configuration)
 
         .def_property_readonly(
             "value",

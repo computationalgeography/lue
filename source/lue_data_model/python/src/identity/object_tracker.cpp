@@ -1,6 +1,7 @@
 #include "../python_extension.hpp"
 #include "lue/object/identity/object_tracker.hpp"
 #include <pybind11/pybind11.h>
+#include <fmt/format.h>
 
 
 namespace py = pybind11;
@@ -8,6 +9,26 @@ using namespace pybind11::literals;
 
 
 namespace lue {
+namespace {
+
+static std::string formal_string_representation(
+    ObjectTracker const& tracker)
+{
+    return fmt::format(
+            "ObjectTracker(pathname='{}')",
+            tracker.id().pathname()
+        );
+}
+
+
+static std::string informal_string_representation(
+    ObjectTracker const& tracker)
+{
+    return formal_string_representation(tracker);
+}
+
+}  // Anonymous namespace
+
 
 void init_object_tracker(
     py::module& module)
@@ -26,6 +47,20 @@ void init_object_tracker(
     tracker contains information about which objects were active and
     where information about these objects is stored in the value arrays.
 )")
+
+        .def(
+            "__repr__",
+            [](ObjectTracker const& tracker) {
+                return formal_string_representation(tracker);
+            }
+        )
+
+        .def(
+            "__str__",
+            [](ObjectTracker const& tracker) {
+                return informal_string_representation(tracker);
+            }
+        )
 
         .def_property_readonly(
             "active_set_index",
