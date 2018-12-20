@@ -121,6 +121,37 @@ void init_dataset(
 )",
             py::return_value_policy::reference_internal)
 
+        .def(
+            "__getattr__",
+            [](
+                Dataset& dataset,
+                std::string const& name)
+            {
+                py::object result = py::none();
+
+                if(dataset.universes().contains(name)) {
+                    result = py::cast(&dataset.universes()[name]);
+                }
+                else if(dataset.phenomena().contains(name)) {
+                    result = py::cast(&dataset.phenomena()[name]);
+                }
+                else {
+                    // TODO We are throwing a KeyError here. Should be
+                    // an AttributeError, but pybind11 does not seem to
+                    // support that yet.
+                    //
+                    // Python message:
+                    // AttributeError: 'x' object has no attribute 'y'
+                    // Ours is a little bit different:
+                    throw pybind11::key_error(fmt::format(
+                        "Dataset does not contain universe or phenomenon '{}'",
+                        name));
+                }
+
+                return result;
+            },
+            py::return_value_policy::reference_internal)
+
         ;
 
 

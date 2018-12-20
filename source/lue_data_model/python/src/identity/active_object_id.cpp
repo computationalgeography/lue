@@ -1,6 +1,7 @@
 #include "../python_extension.hpp"
 #include "lue/info/identity/active_object_id.hpp"
 #include <pybind11/pybind11.h>
+#include <fmt/format.h>
 
 
 namespace py = pybind11;
@@ -8,6 +9,31 @@ using namespace pybind11::literals;
 
 
 namespace lue {
+namespace {
+
+static std::string formal_string_representation(
+    ActiveObjectID const& id)
+{
+    return fmt::format(
+            "ActiveObjectID(pathname='{}')",
+            id.id().pathname()
+        );
+}
+
+
+static std::string informal_string_representation(
+    ActiveObjectID const& id)
+{
+    return fmt::format(
+            "{}\n"
+            "   nr_ids: {}",
+            formal_string_representation(id),
+            id.nr_ids()
+        );
+}
+
+}  // Anonymous namespace
+
 
 void init_active_object_id(
     py::module& module)
@@ -40,6 +66,20 @@ void init_active_object_id(
             R"(
     Return the total number of object IDs stored
 )")
+
+        .def(
+            "__repr__",
+            [](ActiveObjectID const& id) {
+                return formal_string_representation(id);
+            }
+        )
+
+        .def(
+            "__str__",
+            [](ActiveObjectID const& id) {
+                return informal_string_representation(id);
+            }
+        )
 
         ;
 

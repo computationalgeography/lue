@@ -8,6 +8,44 @@ using namespace pybind11::literals;
 
 
 namespace lue {
+namespace {
+
+static std::string formal_string_representation(
+    SpaceConfiguration const& configuration)
+{
+    return fmt::format(
+            "SpaceConfiguration(mobility='{}', item_type='{}')",
+            aspect_to_string(configuration.value<Mobility>()),
+            aspect_to_string(configuration.value<SpaceDomainItemType>())
+        );
+}
+
+
+static std::string informal_string_representation(
+    SpaceConfiguration const& configuration)
+{
+    return formal_string_representation(configuration);
+}
+
+
+static std::string formal_string_representation(
+    SpaceDomain const& domain)
+{
+    return fmt::format(
+            "SpaceDomain(pathname='{}')",
+            domain.id().pathname()
+        );
+}
+
+
+static std::string informal_string_representation(
+    SpaceDomain const& domain)
+{
+    return formal_string_representation(domain);
+}
+
+}  // Anonymous namespace
+
 
 void init_space_domain(
     py::module& module)
@@ -45,6 +83,28 @@ void init_space_domain(
         .def(
             py::init<Mobility, SpaceDomainItemType>())
 
+        .def(
+            "__repr__",
+            [](SpaceConfiguration const& configuration) {
+                return formal_string_representation(configuration);
+            }
+        )
+
+        .def(
+            "__str__",
+            [](SpaceConfiguration const& configuration) {
+                return informal_string_representation(configuration);
+            }
+        )
+
+        .def_property_readonly(
+            "mobility",
+            &SpaceConfiguration::value<Mobility>)
+
+        .def_property_readonly(
+            "item_type",
+            &SpaceConfiguration::value<SpaceDomainItemType>)
+
         ;
 
     py::class_<SpaceDomain, hdf5::Group>(
@@ -53,6 +113,20 @@ void init_space_domain(
         R"(
     TODO
 )")
+
+        .def(
+            "__repr__",
+            [](SpaceDomain const& domain) {
+                return formal_string_representation(domain);
+            }
+        )
+
+        .def(
+            "__str__",
+            [](SpaceDomain const& domain) {
+                return informal_string_representation(domain);
+            }
+        )
 
         .def(
             "set_presence_discretization",
@@ -65,6 +139,10 @@ void init_space_domain(
         .def_property_readonly(
             "discretized_presence_property",
             &SpaceDomain::discretized_presence_property)
+
+        .def_property_readonly(
+            "configuration",
+            &SpaceDomain::configuration)
 
         .def_property_readonly(
             "value",

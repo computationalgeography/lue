@@ -1,6 +1,7 @@
 #include "../python_extension.hpp"
 #include "lue/info/identity/active_set_index.hpp"
 #include <pybind11/pybind11.h>
+#include <fmt/format.h>
 
 
 namespace py = pybind11;
@@ -8,6 +9,31 @@ using namespace pybind11::literals;
 
 
 namespace lue {
+namespace {
+
+static std::string formal_string_representation(
+    ActiveSetIndex const& index)
+{
+    return fmt::format(
+            "ActiveSetIndex(pathname='{}')",
+            index.id().pathname()
+        );
+}
+
+
+static std::string informal_string_representation(
+    ActiveSetIndex const& index)
+{
+    return fmt::format(
+            "{}\n"
+            "   nr_indices: {}",
+            formal_string_representation(index),
+            index.nr_indices()
+        );
+}
+
+}  // Anonymous namespace
+
 
 void init_active_set_index(
     py::module& module)
@@ -32,6 +58,24 @@ void init_active_set_index(
     You never have to create an :class:`ActiveSetIndex` instance
     yourself. :class:`ObjectTracker` instances provide one.
 )")
+
+        .def(
+            "__repr__",
+            [](ActiveSetIndex const& index) {
+                return formal_string_representation(index);
+            }
+        )
+
+        .def(
+            "__str__",
+            [](ActiveSetIndex const& index) {
+                return informal_string_representation(index);
+            }
+        )
+
+        .def_property_readonly(
+            "nr_indices",
+            &ActiveSetIndex::nr_indices)
 
         ;
 
