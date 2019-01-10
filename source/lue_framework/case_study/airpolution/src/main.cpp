@@ -34,8 +34,8 @@ int main(
     // H5Eset_auto(H5E_DEFAULT, nullptr, nullptr);
 
     std::vector<std::string> cfg = {
-        // Run hpx_main on all localities
-        "hpx.run_hpx_main!=1",
+        // // Run hpx_main on all localities
+        // "hpx.run_hpx_main!=1",
         // "application.lue_polute_air.mah!=1"
     };
 

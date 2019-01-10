@@ -1,10 +1,12 @@
 #include "polute_air.hpp"
+#include "lue/framework/core/debug.hpp"
 #include "lue/framework/core/domain_decomposition.hpp"
 // #include <hpx/config.hpp>
 #include <hpx/hpx.hpp>
 // #include <hpx/lcos/gather.hpp>
 // #include "lue/data_model.hpp"
 // #include <hpx/runtime.hpp>
+#include <hpx/include/iostreams.hpp>
 #include <fmt/format.h>
 #include <iostream>
 #include <cassert>
@@ -70,16 +72,17 @@ void polute_air(
 
     using Shape = lue::Shape<std::uint64_t, 2>;
 
-    Shape area_shape{{nr_rows, nr_cols}};
-    Shape grain_shape{{nr_rows_grain, nr_cols_grain}};
+    // Shape area_shape{{nr_rows, nr_cols}};
+    // Shape grain_shape{{nr_rows_grain, nr_cols_grain}};
 
-    // Determine which part of the world we need to handle. We need the
-    // location of the grains.
-    auto grains = lue::grains(
-        area_shape, grain_shape, hpx::get_num_localities(hpx::launch::sync),
-        hpx::get_locality_id());
+    // // Determine which part of the world we need to handle. We need the
+    // // location of the grains.
+    // auto grains = lue::grains(
+    //     area_shape, grain_shape, hpx::get_num_localities(hpx::launch::sync),
+    //     hpx::get_locality_id());
 
 
+    hpx::cout << system_description().get();
 
 
 

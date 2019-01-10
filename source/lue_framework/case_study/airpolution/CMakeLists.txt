@@ -8,6 +8,8 @@ add_library(lue::airpolution ALIAS lue_airpolution)
 
 hpx_setup_target(lue_airpolution
     TYPE LIBRARY
+    COMPONENT_DEPENDENCIES
+        iostreams
 )
 
 target_include_directories(lue_airpolution
@@ -24,8 +26,6 @@ add_hpx_executable(lue_polute_air
     ESSENTIAL
     SOURCES
         src/main
-    # COMPONENT_DEPENDENCIES
-    #     iostreams
 )
 
 target_link_libraries(lue_polute_air_exe
