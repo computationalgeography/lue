@@ -48,8 +48,8 @@ spawn_interval=1  # This has to be larger than zero: why?
 nr_time_steps=100
 nr_rows=60
 nr_cols=40
-nr_rows_grain=5
-nr_cols_grain=5
+nr_rows_partition=5
+nr_cols_partition=5
 
 # Benchmark parameters
 count=5
@@ -116,8 +116,8 @@ srun $program_pathname \
     --hpx:ini="application.${program_name}.nr_time_steps!=$nr_time_steps" \
     --hpx:ini="application.${program_name}.nr_rows!=$nr_rows" \
     --hpx:ini="application.${program_name}.nr_cols!=$nr_cols" \
-    --hpx:ini="application.${program_name}.nr_rows_grain!=$nr_rows_grain" \
-    --hpx:ini="application.${program_name}.nr_cols_grain!=$nr_cols_grain"
+    --hpx:ini="application.${program_name}.nr_rows_partition!=$nr_rows_partition" \
+    --hpx:ini="application.${program_name}.nr_cols_partition!=$nr_cols_partition"
 echo "DONE!"
 END
 

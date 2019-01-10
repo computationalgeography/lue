@@ -5,8 +5,8 @@
 namespace lue {
 
 template<
-    typename T,
+    typename Index,
     std::size_t rank>
-using Indices = std::array<T, rank>;
+using Indices = std::array<Index, rank>;
 
 }  // namespace lue

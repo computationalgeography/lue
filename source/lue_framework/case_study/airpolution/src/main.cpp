@@ -13,13 +13,13 @@ int hpx_main(
         lue::required_configuration_entry<std::uint64_t>("nr_rows");
     std::uint64_t const nr_cols =
         lue::required_configuration_entry<std::uint64_t>("nr_cols");
-    std::uint64_t const nr_rows_grain =
-        lue::required_configuration_entry<std::uint64_t>("nr_rows_grain");
-    std::uint64_t const nr_cols_grain =
-        lue::required_configuration_entry<std::uint64_t>("nr_cols_grain");
+    std::uint64_t const nr_rows_partition =
+        lue::required_configuration_entry<std::uint64_t>("nr_rows_partition");
+    std::uint64_t const nr_cols_partition =
+        lue::required_configuration_entry<std::uint64_t>("nr_cols_partition");
 
     lue::polute_air(
-        nr_time_steps, nr_rows, nr_cols, nr_rows_grain, nr_cols_grain);
+        nr_time_steps, nr_rows, nr_cols, nr_rows_partition, nr_cols_partition);
 
     return hpx::finalize();
 }

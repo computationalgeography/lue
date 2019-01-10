@@ -11,7 +11,7 @@ namespace lue {
 void               polute_air          (std::uint64_t nr_time_steps,
                                         std::uint64_t nr_rows,
                                         std::uint64_t nr_cols,
-                                        std::uint64_t nr_rows_grain,
-                                        std::uint64_t nr_cols_grain);
+                                        std::uint64_t nr_rows_partition,
+                                        std::uint64_t nr_cols_partition);
 
 }  // namespace lue

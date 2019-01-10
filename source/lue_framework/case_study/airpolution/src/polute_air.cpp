@@ -62,18 +62,18 @@ void polute_air(
     std::uint64_t const nr_time_steps,
     std::uint64_t const nr_rows,
     std::uint64_t const nr_cols,
-    std::uint64_t const nr_rows_grain,
-    std::uint64_t const nr_cols_grain)
+    std::uint64_t const nr_rows_partition,
+    std::uint64_t const nr_cols_partition)
 {
     assert(nr_rows > 0);
     assert(nr_cols > 0);
-    assert(nr_rows_grain < nr_rows);
-    assert(nr_cols_grain < nr_cols);
+    assert(nr_rows_partition < nr_rows);
+    assert(nr_cols_partition < nr_cols);
 
     using Shape = lue::Shape<std::uint64_t, 2>;
 
-    // Shape area_shape{{nr_rows, nr_cols}};
-    // Shape grain_shape{{nr_rows_grain, nr_cols_grain}};
+    Shape area_shape{{nr_rows, nr_cols}};
+    Shape partition_shape{{nr_rows_partition, nr_cols_partition}};
 
     // // Determine which part of the world we need to handle. We need the
     // // location of the grains.
@@ -85,7 +85,11 @@ void polute_air(
     hpx::cout << system_description().get();
 
 
+    // For each raster input parameter, we need to setup a spatial
+    // index with raster partitions. This will make it possible to
+    // perform spatial queries.
 
+    
 
 
 

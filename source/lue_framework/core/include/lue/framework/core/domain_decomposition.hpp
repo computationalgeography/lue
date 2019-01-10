@@ -1,6 +1,6 @@
 #pragma once
 #include "lue/framework/core/indices.hpp"
-#include "lue/framework/core/grain.hpp"
+#include "lue/framework/core/partition_definition.hpp"
 #include <algorithm>
 #include <cassert>
 #include <cmath>
@@ -11,22 +11,22 @@
 namespace lue {
 
 template<
-    typename T,
+    typename Index,
     std::size_t rank>
-inline Shape<T, rank> shape_in_grains(
-    Shape<T, rank> const& area_shape,
-    Shape<T, rank> const& grain_shape)
+inline Shape<Index, rank> shape_in_partitions(
+    Shape<Index, rank> const& area_shape,
+    Shape<Index, rank> const& partition_shape)
 {
-    Shape<T, rank> result;
+    Shape<Index, rank> result;
 
     std::transform(
-        area_shape.begin(), area_shape.end(), grain_shape.begin(),
+        area_shape.begin(), area_shape.end(), partition_shape.begin(),
         result.begin(),
-        [](T const area_extent, T const grain_extent)
+        [](Index const area_extent, Index const partition_extent)
         {
             return
-                static_cast<T>(std::ceil(
-                    double(area_extent) / double(grain_extent)));
+                static_cast<Index>(std::ceil(
+                    double(area_extent) / double(partition_extent)));
         });
 
     return result;
@@ -34,13 +34,13 @@ inline Shape<T, rank> shape_in_grains(
 
 
 template<
-    typename T,
+    typename Index,
     std::size_t rank>
-inline std::size_t nr_grains(
-    Shape<T, rank> const& area_shape,
-    Shape<T, rank> const& grain_shape)
+inline std::size_t nr_partitions(
+    Shape<Index, rank> const& area_shape,
+    Shape<Index, rank> const& partition_shape)
 {
-    auto const shape = shape_in_grains(area_shape, grain_shape);
+    auto const shape = shape_in_partitions(area_shape, partition_shape);
 
     return std::accumulate(
         shape.begin(), shape.end(), std::size_t(1),
@@ -49,21 +49,21 @@ inline std::size_t nr_grains(
 
 
 template<
-    typename T,
+    typename Index,
     std::size_t rank>
-inline Indices<T, rank> linear_to_shape_index(
-    Shape<T, rank> const& shape,
-    T idx)
+inline Indices<Index, rank> linear_to_shape_index(
+    Shape<Index, rank> const& shape,
+    Index idx)
 {
     static_assert(rank > 0);
     assert(
         idx < std::accumulate(
-            shape.begin(), shape.end(), T{1}, std::multiplies<T>()));
+            shape.begin(), shape.end(), Index{1}, std::multiplies<Index>()));
 
     // Give a shape and a linear index, return the corresponding cell
     // indices along each dimension
 
-    Indices<T, rank> result;
+    Indices<Index, rank> result;
 
     {
         auto result_ptr = result.begin();
@@ -75,7 +75,7 @@ inline Indices<T, rank> linear_to_shape_index(
             // Determine the number of cells represented by a single increment
             // along the current dimension
             auto const nr_cells = std::accumulate(
-                shape_ptr + 1, shape.end(), T{1}, std::multiplies<T>());
+                shape_ptr + 1, shape.end(), Index{1}, std::multiplies<Index>());
 
             auto& dimension_index = *result_ptr;
 
@@ -91,33 +91,37 @@ inline Indices<T, rank> linear_to_shape_index(
 
 
 template<
-    typename T,
+    typename Index,
     std::size_t rank>
-inline Grain<T, rank> grain(
-    Shape<T, rank> const& area_shape,
-    Shape<T, rank> const& grain_shape,
-    Shape<T, rank> const& shape_in_grains,
+inline PartitionDefinition<Index, rank> partition(
+    Shape<Index, rank> const& area_shape,
+    Shape<Index, rank> const& partition_shape,
+    Shape<Index, rank> const& shape_in_partitions,
     std::size_t const idx)
 {
-    typename Grain<T, rank>::Start start;
+    typename PartitionDefinition<Index, rank>::Start start;
 
     {
-        // Determine indices of cell at start of grain
-        // Convert between shape_in_grains to area_shape indices
-        auto const indices = lue::linear_to_shape_index(shape_in_grains, idx);
+        // Determine indices of cell at start of partition
+        // Convert between shape_in_partitions to area_shape indices
+        auto const indices = lue::linear_to_shape_index(
+            shape_in_partitions, idx);
 
         std::transform(
-            indices.begin(), indices.end(), grain_shape.begin(), start.begin(),
-            [](T const grain_dimension_index, T const grain_dimension_extent)
+            indices.begin(), indices.end(), partition_shape.begin(),
+            start.begin(),
+            [](
+                Index const partition_dimension_index,
+                Index const partition_dimension_extent)
             {
-                return grain_dimension_index * grain_dimension_extent;
+                return partition_dimension_index * partition_dimension_extent;
             });
     }
 
-    Grain<T, rank> result{start, grain_shape};
+    PartitionDefinition<Index, rank> result{start, partition_shape};
 
-    // Determine final shape of grain, taking into account that the
-    // grain must not extent beyond the area's shape
+    // Determine final shape of partition, taking into account that the
+    // partition must not extent beyond the area's shape
     for(std::size_t i = 0; i < rank; ++i) {
         auto const extent =
             std::min(result.start()[i] + result.shape()[i], area_shape[i]);
@@ -130,26 +134,26 @@ inline Grain<T, rank> grain(
 
 
 template<
-    typename T,
+    typename Index,
     std::size_t rank>
-inline Shape<T, rank> clamp_area_shape(
-    Shape<T, rank> const& area_shape,
-    Shape<T, rank> const& grain_shape)
+inline Shape<Index, rank> clamp_area_shape(
+    Shape<Index, rank> const& area_shape,
+    Shape<Index, rank> const& partition_shape)
 {
-    // Iterate over each extent and divide the area extent by the grain
+    // Iterate over each extent and divide the area extent by the partition
     // extent (rounded up). Create a new area shape in which along each
-    // extent a whole number of grains fit.
-    Shape<T, rank> result;
+    // extent a whole number of partitions fit.
+    Shape<Index, rank> result;
 
     std::transform(
-        area_shape.begin(), area_shape.end(), grain_shape.begin(),
+        area_shape.begin(), area_shape.end(), partition_shape.begin(),
         result.begin(),
-        [](T const area_extent, T const grain_extent)
+        [](Index const area_extent, Index const partition_extent)
         {
             return
-                static_cast<T>(std::ceil(
-                    double(area_extent) / double(grain_extent))) *
-                grain_extent;
+                static_cast<Index>(std::ceil(
+                    double(area_extent) / double(partition_extent))) *
+                partition_extent;
         });
 
     return result;
@@ -157,85 +161,91 @@ inline Shape<T, rank> clamp_area_shape(
 
 
 template<
-    typename T,
+    typename Index,
     std::size_t rank>
-inline std::vector<Grain<T, rank>> grains(
-    Shape<T, rank> const& area_shape,
-    Shape<T, rank> const& grain_shape,
+inline std::vector<PartitionDefinition<Index, rank>> partitions(
+    Shape<Index, rank> const& area_shape,
+    Shape<Index, rank> const& partition_shape,
     std::size_t const nr_localities,
     std::uint32_t const locality_id)
 {
     assert(nr_localities > 0);
     assert(locality_id < nr_localities);
 
-    auto const shape_in_grains_ = shape_in_grains(area_shape, grain_shape);
-    auto const nr_grains = std::accumulate(
-        shape_in_grains_.begin(), shape_in_grains_.end(), std::size_t(1),
-        std::multiplies<std::size_t>());
+    auto const shape_in_partitions_ =
+        shape_in_partitions(area_shape, partition_shape);
+    auto const nr_partitions = std::accumulate(
+        shape_in_partitions_.begin(), shape_in_partitions_.end(),
+        std::size_t(1), std::multiplies<std::size_t>());
 
-    std::vector<Grain<T, rank>> result;
+    std::vector<PartitionDefinition<Index, rank>> result;
 
     // TODO
-    // Pick grains according to the Hilbert curve. This way, grains
+    // Pick partitions according to the Hilbert curve. This way, partitions
     // within a locality are close to each other.
 
-    if(nr_grains <= nr_localities) {
-        // The first nr_grains localities will get a single grain. The
+    if(nr_partitions <= nr_localities) {
+        // The first nr_partitions localities will get a single partition. The
         // rest will get none. This is a waste of resources. We seem
         // to have more localities than we need.
-        if(locality_id < nr_grains) {
+        if(locality_id < nr_partitions) {
             result.emplace_back(
-                grain(area_shape, grain_shape, shape_in_grains_, locality_id));
+                partition(area_shape, partition_shape, shape_in_partitions_,
+                    locality_id));
         }
     }
     else {
-        // Try to assign an equal amount of grains to each locality. This
+        // Try to assign an equal amount of partitions to each locality. This
         // is not always possible. The last n localities might have one
-        // grain less than ones before that.
-        auto const max_nr_grains_per_locality =
+        // partition less than ones before that.
+        auto const max_nr_partitions_per_locality =
             static_cast<std::size_t>(
-                std::ceil(double(nr_grains) / double(nr_localities)));
-        auto const nr_localities_with_less_grains =
-            (nr_localities * max_nr_grains_per_locality) - nr_grains;
-        std::uint32_t const first_locality_with_less_grains =
-            nr_localities - nr_localities_with_less_grains;
+                std::ceil(double(nr_partitions) / double(nr_localities)));
+        auto const nr_localities_with_less_partitions =
+            (nr_localities * max_nr_partitions_per_locality) - nr_partitions;
+        std::uint32_t const first_locality_with_less_partitions =
+            nr_localities - nr_localities_with_less_partitions;
 
-        std::size_t begin_grain_idx;
-        std::size_t end_grain_idx;
+        std::size_t begin_partition_idx;
+        std::size_t end_partition_idx;
 
-        // Determine indices of grains to assign to current locality
+        // Determine indices of partitions to assign to current locality
         {
-            if(locality_id < first_locality_with_less_grains) {
+            if(locality_id < first_locality_with_less_partitions) {
                 // Current locality is one of those that get the regular
-                // amount of grains assigned
-                begin_grain_idx = locality_id * max_nr_grains_per_locality;
-                end_grain_idx = begin_grain_idx + max_nr_grains_per_locality;
+                // amount of partitions assigned
+                begin_partition_idx =
+                    locality_id * max_nr_partitions_per_locality;
+                end_partition_idx =
+                    begin_partition_idx + max_nr_partitions_per_locality;
             }
             else {
-                // Current locality is one of those that get one grain
+                // Current locality is one of those that get one partition
                 // less assigned
-                begin_grain_idx =
-                    first_locality_with_less_grains *
-                    max_nr_grains_per_locality;
-                begin_grain_idx +=
-                    (locality_id - first_locality_with_less_grains) *
-                    (max_nr_grains_per_locality - 1);
-                end_grain_idx =
-                    begin_grain_idx + (max_nr_grains_per_locality - 1);
+                begin_partition_idx =
+                    first_locality_with_less_partitions *
+                    max_nr_partitions_per_locality;
+                begin_partition_idx +=
+                    (locality_id - first_locality_with_less_partitions) *
+                    (max_nr_partitions_per_locality - 1);
+                end_partition_idx =
+                    begin_partition_idx + (max_nr_partitions_per_locality - 1);
             }
         }
 
-        // Iterate over grain indices and obtain actual grain definitions
+        // Iterate over partition indices and obtain actual partition
+        // definitions
         {
-            auto const nr_grains = end_grain_idx - begin_grain_idx;
-            result.reserve(nr_grains);
+            auto const nr_partitions = end_partition_idx - begin_partition_idx;
+            result.reserve(nr_partitions);
 
-            for(std::uint32_t grain_id = begin_grain_idx;
-                    grain_id < end_grain_idx; ++grain_id) {
+            for(std::uint32_t partition_id = begin_partition_idx;
+                    partition_id < end_partition_idx; ++partition_id) {
 
                 result.emplace_back(
-                    grain(
-                        area_shape, grain_shape, shape_in_grains_, grain_id));
+                    partition(
+                        area_shape, partition_shape, shape_in_partitions_,
+                        partition_id));
 
             }
         }
