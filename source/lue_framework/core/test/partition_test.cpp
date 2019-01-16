@@ -1,5 +1,5 @@
-#define BOOST_TEST_MODULE lue framework component partition
-#include "lue/framework/component/partition.hpp"
+#define BOOST_TEST_MODULE lue framework core component partition
+#include "lue/framework/core/component/partition.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 #include "lue/framework/test/stream.hpp"
 

@@ -1,4 +1,4 @@
-#include "lue/framework/component/partition.hpp"
+#include "lue/framework/core/component/partition.hpp"
 
 
 namespace lue {

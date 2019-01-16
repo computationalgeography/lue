@@ -1,9 +1,6 @@
 add_subdirectory(core)
 list(APPEND doxygen_input ${CMAKE_CURRENT_SOURCE_DIR}/core)
 
-add_subdirectory(component)
-list(APPEND doxygen_input ${CMAKE_CURRENT_SOURCE_DIR}/component)
-
 add_subdirectory(algorithm)
 list(APPEND doxygen_input ${CMAKE_CURRENT_SOURCE_DIR}/algorithm)
 

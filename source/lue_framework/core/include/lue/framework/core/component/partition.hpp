@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/framework/component/server/partition.hpp"
+#include "lue/framework/core/component/server/partition.hpp"
 #include "lue/framework/core/serialize/partition_definition.hpp"
 
 

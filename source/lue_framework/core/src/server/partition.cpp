@@ -1,4 +1,4 @@
-#include "lue/framework/component/server/partition.hpp"
+#include "lue/framework/core/component/server/partition.hpp"
 #include <type_traits>
 
 
