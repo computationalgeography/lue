@@ -32,7 +32,7 @@ public:
 
     PartitionDefinition& operator=     (PartitionDefinition&&)=default;
 
-    bool           operator==          (PartitionDefinition const& other);
+    bool           operator==          (PartitionDefinition const& other) const;
 
     Start const&   start               () const;
 
@@ -82,7 +82,7 @@ template<
     typename Index,
     std::size_t rank>
 inline bool PartitionDefinition<Index, rank>::operator==(
-    PartitionDefinition const& other)
+    PartitionDefinition const& other) const
 {
     return _start == other._start && _shape == other._shape;
 }

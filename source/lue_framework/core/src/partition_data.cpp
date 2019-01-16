@@ -54,6 +54,17 @@ template<
     typename Index,
     typename Value,
     std::size_t rank>
+inline bool PartitionData<Index, Value, rank>::operator==(
+    PartitionData const& other) const
+{
+    return _definition == other._definition && _values == other._values;
+}
+
+
+template<
+    typename Index,
+    typename Value,
+    std::size_t rank>
 typename PartitionData<Index, Value, rank>::Definition const&
     PartitionData<Index, Value, rank>::definition() const
 {
@@ -137,6 +148,7 @@ typename PartitionData<Index, Value, rank>::Values&
 
 
 template class PartitionData<std::uint64_t, bool, 2>;
+template class PartitionData<std::uint64_t, std::int32_t, 2>;
 template class PartitionData<std::uint64_t, double, 2>;
 
 }  // namespace lue

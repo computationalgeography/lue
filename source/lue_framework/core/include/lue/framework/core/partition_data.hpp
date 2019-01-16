@@ -35,6 +35,8 @@ public:
 
     PartitionData& operator=           (PartitionData&&)=default;
 
+    bool           operator==          (PartitionData const& other) const;
+
     Definition const& definition       () const;
 
     Values const&  values              () const;
