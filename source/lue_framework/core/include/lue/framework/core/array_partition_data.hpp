@@ -9,7 +9,7 @@ template<
     typename Index,
     typename Value,
     std::size_t rank>
-class PartitionData
+class ArrayPartitionData
 {
 
 public:
@@ -18,24 +18,24 @@ public:
 
     using Values = boost::multi_array<Value, rank>;
 
-                   PartitionData       ();
+                   ArrayPartitionData  ();
 
-                   PartitionData       (Definition const& definition);
+                   ArrayPartitionData  (Definition const& definition);
 
-                   PartitionData       (Definition const& definition,
+                   ArrayPartitionData  (Definition const& definition,
                                         Value const& value);
 
-                   PartitionData       (PartitionData const&)=default;
+                   ArrayPartitionData  (ArrayPartitionData const&)=default;
 
-                   PartitionData       (PartitionData&&)=default;
+                   ArrayPartitionData  (ArrayPartitionData&&)=default;
 
-                   ~PartitionData      ()=default;
+                   ~ArrayPartitionData ()=default;
 
-    PartitionData& operator=           (PartitionData const&)=default;
+    ArrayPartitionData& operator=      (ArrayPartitionData const&)=default;
 
-    PartitionData& operator=           (PartitionData&&)=default;
+    ArrayPartitionData& operator=      (ArrayPartitionData&&)=default;
 
-    bool           operator==          (PartitionData const& other) const;
+    bool           operator==          (ArrayPartitionData const& other) const;
 
     Definition const& definition       () const;
 

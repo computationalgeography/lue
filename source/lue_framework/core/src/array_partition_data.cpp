@@ -1,5 +1,5 @@
 #include <hpx/config.hpp>
-#include "lue/framework/core/partition_data.hpp"
+#include "lue/framework/core/array_partition_data.hpp"
 #include <hpx/parallel/algorithms/fill.hpp>
 
 
@@ -9,7 +9,7 @@ template<
     typename Index,
     typename Value,
     std::size_t rank>
-PartitionData<Index, Value, rank>::PartitionData():
+ArrayPartitionData<Index, Value, rank>::ArrayPartitionData():
 
     _definition{},
     _values{}
@@ -22,7 +22,7 @@ template<
     typename Index,
     typename Value,
     std::size_t rank>
-PartitionData<Index, Value, rank>::PartitionData(
+ArrayPartitionData<Index, Value, rank>::ArrayPartitionData(
     Definition const& definition):
 
     _definition{definition},
@@ -36,7 +36,7 @@ template<
     typename Index,
     typename Value,
     std::size_t rank>
-PartitionData<Index, Value, rank>::PartitionData(
+ArrayPartitionData<Index, Value, rank>::ArrayPartitionData(
     Definition const& definition,
     Value const& value):
 
@@ -54,8 +54,8 @@ template<
     typename Index,
     typename Value,
     std::size_t rank>
-inline bool PartitionData<Index, Value, rank>::operator==(
-    PartitionData const& other) const
+inline bool ArrayPartitionData<Index, Value, rank>::operator==(
+    ArrayPartitionData const& other) const
 {
     return _definition == other._definition && _values == other._values;
 }
@@ -65,8 +65,8 @@ template<
     typename Index,
     typename Value,
     std::size_t rank>
-typename PartitionData<Index, Value, rank>::Definition const&
-    PartitionData<Index, Value, rank>::definition() const
+typename ArrayPartitionData<Index, Value, rank>::Definition const&
+    ArrayPartitionData<Index, Value, rank>::definition() const
 {
     return _definition;
 }
@@ -76,8 +76,8 @@ template<
     typename Index,
     typename Value,
     std::size_t rank>
-typename PartitionData<Index, Value, rank>::Values const&
-    PartitionData<Index, Value, rank>::values() const
+typename ArrayPartitionData<Index, Value, rank>::Values const&
+    ArrayPartitionData<Index, Value, rank>::values() const
 {
     return _values;
 }
@@ -87,8 +87,8 @@ template<
     typename Index,
     typename Value,
     std::size_t rank>
-typename PartitionData<Index, Value, rank>::Values&
-    PartitionData<Index, Value, rank>::values()
+typename ArrayPartitionData<Index, Value, rank>::Values&
+    ArrayPartitionData<Index, Value, rank>::values()
 {
     return _values;
 }
@@ -97,7 +97,7 @@ typename PartitionData<Index, Value, rank>::Values&
 // template<
 //     typename Value,
 //     std::size_t rank>
-// Value PartitionData<Index, Value, rank>::value(
+// Value ArrayPartitionData<Index, Value, rank>::value(
 //     std::size_t const row_idx,
 //     std::size_t const col_idx) const
 // {
@@ -124,7 +124,7 @@ typename PartitionData<Index, Value, rank>::Values&
 // template<
 //     typename Value,
 //     std::size_t rank>
-// void PartitionData<Index, Value, rank>::set_value(
+// void ArrayPartitionData<Index, Value, rank>::set_value(
 //     std::size_t const row_idx,
 //     std::size_t const col_idx,
 //     Value const& value)
@@ -147,8 +147,8 @@ typename PartitionData<Index, Value, rank>::Values&
 // }
 
 
-template class PartitionData<std::uint64_t, bool, 2>;
-template class PartitionData<std::uint64_t, std::int32_t, 2>;
-template class PartitionData<std::uint64_t, double, 2>;
+template class ArrayPartitionData<std::uint64_t, bool, 2>;
+template class ArrayPartitionData<std::uint64_t, std::int32_t, 2>;
+template class ArrayPartitionData<std::uint64_t, double, 2>;
 
 }  // namespace lue

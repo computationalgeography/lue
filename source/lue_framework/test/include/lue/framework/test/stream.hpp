@@ -44,7 +44,7 @@ template<
     std::size_t rank>
 std::ostream& operator<<(
     std::ostream& stream,
-    PartitionData<Index, Value, rank> const& data)
+    ArrayPartitionData<Index, Value, rank> const& data)
 {
     stream << data.definition() << ", [";
 

@@ -1,5 +1,5 @@
-#define BOOST_TEST_MODULE lue framework core component partition
-#include "lue/framework/core/component/partition.hpp"
+#define BOOST_TEST_MODULE lue framework core component array_partition
+#include "lue/framework/core/component/array_partition.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 #include "lue/framework/test/stream.hpp"
 
@@ -9,7 +9,7 @@ namespace {
 using Index = std::uint64_t;
 using Value = std::int32_t;
 static std::size_t const rank = 2;
-using PartitionClient = lue::client::Partition<Index, Value, rank>;
+using PartitionClient = lue::client::ArrayPartition<Index, Value, rank>;
 using PartitionServer = typename PartitionClient::Server;
 using Data = typename PartitionClient::Data;
 using Definition = typename PartitionClient::Definition;

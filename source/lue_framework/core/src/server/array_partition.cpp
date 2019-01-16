@@ -1,4 +1,4 @@
-#include "lue/framework/core/component/server/partition.hpp"
+#include "lue/framework/core/component/server/array_partition.hpp"
 #include <type_traits>
 
 
@@ -9,7 +9,7 @@ template<
     typename Index,
     typename Value,
     std::size_t rank>
-Partition<Index, Value, rank>::Partition(
+ArrayPartition<Index, Value, rank>::ArrayPartition(
     Definition const& definition):
 
     _data{definition}
@@ -22,7 +22,7 @@ template<
     typename Index,
     typename Value,
     std::size_t rank>
-Partition<Index, Value, rank>::Partition(
+ArrayPartition<Index, Value, rank>::ArrayPartition(
     Definition const& definition,
     Value value):
 
@@ -37,16 +37,16 @@ template<
     typename Index,
     typename Value,
     std::size_t rank>
-typename Partition<Index, Value, rank>::Data const&
-    Partition<Index, Value, rank>::data() const
+typename ArrayPartition<Index, Value, rank>::Data const&
+    ArrayPartition<Index, Value, rank>::data() const
 {
     return _data;
 }
 
 
-template class Partition<std::uint64_t, bool, 2>;
-template class Partition<std::uint64_t, int32_t, 2>;
-template class Partition<std::uint64_t, double, 2>;
+template class ArrayPartition<std::uint64_t, bool, 2>;
+template class ArrayPartition<std::uint64_t, int32_t, 2>;
+template class ArrayPartition<std::uint64_t, double, 2>;
 
 }  // namespace server
 }  // namespace lue
@@ -57,7 +57,8 @@ template<
     typename Value,
     std::size_t rank>
 using PartitionServer =
-    hpx::components::component<lue::server::Partition<Index, Value, rank>>;
+    hpx::components::component<
+        lue::server::ArrayPartition<Index, Value, rank>>;
 
 
 using PartitionServer1 = PartitionServer<std::uint64_t, bool, 2>;
