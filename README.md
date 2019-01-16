@@ -1,5 +1,10 @@
 # LUE
-LUE Scientific Database
+LUE scientific database and environmental modelling framework
+
+**The LUE software is currently in development and not ready to be used
+in general. Information shown here and pointed to might be
+outdated. Unless you are involved in the project we suggest that you come
+back here once in a while to check on the project's status.**
 
 
 More information about LUE:
@@ -9,7 +14,6 @@ More information about LUE:
 | Documentation    | http://lue.readthedocs.io/en/latest/ |
 | Python package   | https://pypi.python.org/pypi/lue     |
 | Development team | http://www.pcraster.eu               |
-
 
 
 [![Linux build Status](https://travis-ci.org/pcraster/lue.svg?branch=master)](https://travis-ci.org/pcraster/lue) [![Documentation Status](https://readthedocs.org/projects/docs/badge/)](https://lue.readthedocs.io/en/latest)
@@ -33,6 +37,7 @@ The folowing CMake variables are used to determine which targets to build:
 | Variable | Default | Effect |
 | -------- | ------  | ------ |
 | `LUE_BUILD_DATA_MODEL` | `TRUE` | Build data model C++ API |
+| `LUE_BUILD_FRAMEWORK` | `FALSE` | Build modelling framework |
 | `LUE_BUILD_DOCUMENTATION` | `FALSE` | Build C++ API documentation |
 | `LUE_BUILD_TEST` | `FALSE` | Build test targets |
 
@@ -49,10 +54,21 @@ libaries and tools must be installed:
 | Variable | Prerequisites |
 | -------- | ------------- |
 | `LUE_BUILD_DATA_MODEL` | HDF5 C, Boost (filesystem, system), fmt libraries |
+| `LUE_BUILD_FRAMEWORK` | Boost, Docopt, fmt, HPX libraries |
 | `LUE_DATA_MODEL_WITH_PYTHON_API` | Python, pybind11, NumPy, Guidelines Support libraries |
 | `LUE_DATA_MODEL_WITH_UTILITIES` | Docopt, GDAL, Nlohmann JSON libraries |
 | `LUE_BUILD_TEST` | Boost unit-test framework library |
 | `LUE_BUILD_DOCUMENTATION` | Doxygen, Graphviz, Sphinx |
+
+Some prerequisite libraries can be built by the LUE project itself. The
+folowing variables are used to decide whether or not that is the case. By
+default, they are not set.
+
+| Variable | Effect when set |
+| -------- | --------------- |
+| `LUE_BUILD_DOCOPT` | Build the Docopt library |
+| `LUE_BUILD_HPX` | Build the HPX library |
+
 
 Here is an example session of building the default LUE targets and installing them in `$HOME/lue_install`:
 
