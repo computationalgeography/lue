@@ -102,10 +102,7 @@ endif()
 
 
 if(LUE_BUILD_FRAMEWORK)
-    # TODO Add all dependencies of framework
-    # - boost, fmt, ...
     set(DEVBASE_BOOST_REQUIRED TRUE)
-
     set(DEVBASE_DOCOPT_REQUIRED TRUE)
     set(DEVBASE_FMT_REQUIRED TRUE)
     set(DEVBASE_HPX_REQUIRED TRUE)
