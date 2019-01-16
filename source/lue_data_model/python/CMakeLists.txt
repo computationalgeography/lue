@@ -64,7 +64,7 @@ pybind11_add_module(lue_py MODULE NO_EXTRAS THIN_LTO
     src/time_point
     src/validate
 
-    $<$<TARGET_EXISTS:lue::test>:src/test/submodule>
+    $<$<TARGET_EXISTS:lue::data_model_test>:src/test/submodule>
 )
 
 add_library(lue::py ALIAS lue_py)
@@ -104,7 +104,7 @@ target_include_directories(lue_py
 
 target_link_libraries(lue_py
     PRIVATE
-        $<$<TARGET_EXISTS:lue::test>:lue::test>
+        $<$<TARGET_EXISTS:lue::data_model_test>:lue::data_model_test>
         lue::data_model
 )
 

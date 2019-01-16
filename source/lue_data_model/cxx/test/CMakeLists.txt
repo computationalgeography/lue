@@ -51,5 +51,5 @@ add_unit_tests(
         time_series_test-2
 
     LINK_LIBRARIES
-        lue::test
+        lue::data_model_test
 )
