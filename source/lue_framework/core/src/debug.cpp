@@ -1,4 +1,5 @@
 #include "lue/framework/core/debug.hpp"
+#include <hpx/include/compute.hpp>
 #include <hpx/include/lcos.hpp>
 #include <hpx/parallel/algorithms/transform.hpp>
 #include <fmt/format.h>
@@ -77,6 +78,7 @@ std::vector<hpx::future<std::string>> all_locality_names()
 
 hpx::future<std::string> system_description()
 {
+    // Locality where this function is called on
     hpx::naming::id_type const this_locality_id = hpx::find_here();
     hpx::future<std::string> this_locality_name = id_to_str(this_locality_id);
 
@@ -89,6 +91,8 @@ hpx::future<std::string> system_description()
 
     // Number of localities currently registered for the running application
     auto current_nr_localities = hpx::get_num_localities();
+
+    auto numa_domains = hpx::compute::host::numa_domains();
 
     // Number of worker OS-threads in use by this locality
     auto const nr_os_threads = hpx::get_os_thread_count();
@@ -105,6 +109,7 @@ hpx::future<std::string> system_description()
     auto format_message = [
             this_locality_nr,
             initial_nr_localities,
+            numa_domains{move(numa_domains)},
             nr_os_threads,
             thread_name,
             this_worker_thread_nr
@@ -123,6 +128,7 @@ hpx::future<std::string> system_description()
                     "initial_nr_localities: {}\n"
                     "current_nr_localities: {}\n"
                     "all_locality_names   : {}\n"
+                    "nr_numa_domains      : {}\n"
                     "----------------------\n"
                     "nr_os_threads        : {}\n"
                     "thread_name          : {}\n"
@@ -134,6 +140,7 @@ hpx::future<std::string> system_description()
                 initial_nr_localities,
                 current_nr_localities,
                 all_locality_names,
+                numa_domains.size(),
                 nr_os_threads,
                 thread_name,
                 this_worker_thread_nr
