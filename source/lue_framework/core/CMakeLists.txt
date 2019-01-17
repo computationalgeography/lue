@@ -5,8 +5,7 @@ add_library(lue_framework_core
     src/debug
     src/array_partition
     src/partitioned_array
-    src/array_partition_data
-    src/serialize/partition_definition
+    src/serialize/array_partition_definition
     src/server/array_partition
 )
 

@@ -26,10 +26,8 @@ BOOST_AUTO_TEST_CASE(default_construct)
 
     BOOST_REQUIRE(partition_server);
 
-    // Since the data values are uninitialized, we cannot assume anything
-    // about them. Therefore, only look at the definition.
-    Definition definition{};
-    BOOST_CHECK_EQUAL(partition_server->data().definition(), definition);
+    Data data{};
+    BOOST_CHECK_EQUAL(partition_server->data(), data);
 }
 
 

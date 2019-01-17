@@ -1,82 +1,64 @@
 #define BOOST_TEST_MODULE lue framework core partitioned_array
 #include "lue/framework/core/partitioned_array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
-// #include "lue/framework/test/stream.hpp"
+#include "lue/framework/test/stream.hpp"
 
 
 namespace {
 
-// using Index = std::uint64_t;
-// using Value = std::int32_t;
-// static std::size_t const rank = 2;
+using Index = std::uint64_t;
+using Value = std::int32_t;
+static std::size_t const rank = 2;
+using PartitionedArray = lue::PartitionedArray<Index, Value, rank>;
+
 // using PartitionClient = lue::client::Partition<Index, Value, rank>;
 // using PartitionServer = typename PartitionClient::Server;
 // using Data = typename PartitionClient::Data;
-// using Definition = typename PartitionClient::Definition;
+using Definition = typename PartitionedArray::Definition;
+using Shape = typename Definition::Shape;
 
 }  // Anonymous namespace
 
 
 BOOST_AUTO_TEST_CASE(default_construct)
 {
-    // array
-    // array partitions
+    // Default initialization
+    {
+        PartitionedArray array;
 
-    // A collection of partitions represents a whole, by a number of
-    // partitions. Upon construction, the 
-    // lue::Partitions partitions{definition};
+        BOOST_CHECK_EQUAL(array.nr_elements(), 0);
 
+        Definition definition{};
+        BOOST_CHECK_EQUAL(array.definition(), definition);
 
+        BOOST_CHECK_EQUAL(array.nr_partitions(), 0);
+    }
+
+    // Value initialization
+    {
+        PartitionedArray array{};
+
+        BOOST_CHECK_EQUAL(array.nr_elements(), 0);
+
+        Definition definition{};
+        BOOST_CHECK_EQUAL(array.definition(), definition);
+
+        BOOST_CHECK_EQUAL(array.nr_partitions(), 0);
+    }
 }
-//     PartitionClient partition_client =
-//         hpx::new_<PartitionClient>(hpx::find_here());
-//     std::shared_ptr<PartitionServer> partition_server =
-//         partition_client.component();
-// 
-//     BOOST_REQUIRE(partition_server);
-// 
-//     // Since the data values are uninitialized, we cannot assume anything
-//     // about them. Therefore, only look at the definition.
-//     Definition definition{};
-//     BOOST_CHECK_EQUAL(partition_server->data().definition(), definition);
-// }
-// 
-// 
-// BOOST_AUTO_TEST_CASE(construct_uninitialized)
-// {
-//     Definition definition{
-//         typename Definition::Start{{3, 4}},
-//         typename Definition::Shape{{5, 6}}
-//     };
-// 
-//     PartitionClient partition_client =
-//         hpx::new_<PartitionClient>(hpx::find_here(), definition);
-//     std::shared_ptr<PartitionServer> partition_server =
-//         partition_client.component();
-// 
-//     BOOST_REQUIRE(partition_server);
-// 
-//     // Since the data values are uninitialized, we cannot assume anything
-//     // about them. Therefore, only look at the definition.
-//     BOOST_CHECK_EQUAL(partition_server->data().definition(), definition);
-// }
-// 
-// 
-// BOOST_AUTO_TEST_CASE(construct_initialized_with_single_value)
-// {
-//     Definition definition{
-//         typename Definition::Start{{3, 4}},
-//         typename Definition::Shape{{5, 6}}
-//     };
-//     Value value{9};
-// 
-//     PartitionClient partition_client =
-//         hpx::new_<PartitionClient>(hpx::find_here(), definition, value);
-//     std::shared_ptr<PartitionServer> partition_server =
-//         partition_client.component();
-// 
-//     BOOST_REQUIRE(partition_server);
-// 
-//     Data data{definition, value};
-//     BOOST_CHECK_EQUAL(partition_server->data(), data);
-// }
+
+
+BOOST_AUTO_TEST_CASE(construct_with_definition)
+{
+    Index nr_rows = 300;
+    Index nr_cols = 400;
+    Shape shape{{nr_rows, nr_cols}};
+    Definition definition{shape};
+
+    PartitionedArray array{definition};
+
+    BOOST_CHECK_EQUAL(array.nr_elements(), nr_rows * nr_cols);
+    BOOST_CHECK_EQUAL(array.definition(), definition);
+
+    BOOST_CHECK_EQUAL(array.nr_partitions(), hpx::get_num_localities().get());
+}

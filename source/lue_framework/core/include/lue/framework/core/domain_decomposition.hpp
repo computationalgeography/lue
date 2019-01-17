@@ -1,6 +1,6 @@
 #pragma once
 #include "lue/framework/core/indices.hpp"
-#include "lue/framework/core/partition_definition.hpp"
+#include "lue/framework/core/array_partition_definition.hpp"
 #include <algorithm>
 #include <cassert>
 #include <cmath>
@@ -93,13 +93,13 @@ inline Indices<Index, rank> linear_to_shape_index(
 template<
     typename Index,
     std::size_t rank>
-inline PartitionDefinition<Index, rank> partition(
+inline ArrayPartitionDefinition<Index, rank> partition(
     Shape<Index, rank> const& area_shape,
     Shape<Index, rank> const& partition_shape,
     Shape<Index, rank> const& shape_in_partitions,
     std::size_t const idx)
 {
-    typename PartitionDefinition<Index, rank>::Start start;
+    typename ArrayPartitionDefinition<Index, rank>::Start start;
 
     {
         // Determine indices of cell at start of partition
@@ -118,7 +118,7 @@ inline PartitionDefinition<Index, rank> partition(
             });
     }
 
-    PartitionDefinition<Index, rank> result{start, partition_shape};
+    ArrayPartitionDefinition<Index, rank> result{start, partition_shape};
 
     // Determine final shape of partition, taking into account that the
     // partition must not extent beyond the area's shape
@@ -163,7 +163,7 @@ inline Shape<Index, rank> clamp_area_shape(
 template<
     typename Index,
     std::size_t rank>
-inline std::vector<PartitionDefinition<Index, rank>> partitions(
+inline std::vector<ArrayPartitionDefinition<Index, rank>> partitions(
     Shape<Index, rank> const& area_shape,
     Shape<Index, rank> const& partition_shape,
     std::size_t const nr_localities,
@@ -178,7 +178,7 @@ inline std::vector<PartitionDefinition<Index, rank>> partitions(
         shape_in_partitions_.begin(), shape_in_partitions_.end(),
         std::size_t(1), std::multiplies<std::size_t>());
 
-    std::vector<PartitionDefinition<Index, rank>> result;
+    std::vector<ArrayPartitionDefinition<Index, rank>> result;
 
     // TODO
     // Pick partitions according to the Hilbert curve. This way, partitions

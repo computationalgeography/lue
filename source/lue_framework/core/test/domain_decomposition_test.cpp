@@ -223,7 +223,7 @@ BOOST_AUTO_TEST_CASE(partitions)
 {
     using Index = std::uint64_t;
     std::size_t const rank = 2;
-    using Partition = lue::PartitionDefinition<Index, rank>;
+    using Partition = lue::ArrayPartitionDefinition<Index, rank>;
     using Start = typename Partition::Start;
     using Shape = typename Partition::Shape;
 

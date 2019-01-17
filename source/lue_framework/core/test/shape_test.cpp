@@ -5,22 +5,22 @@
 
 BOOST_AUTO_TEST_CASE(construct)
 {
-    using T = std::uint32_t;
+    using Index = std::uint32_t;
     std::size_t const rank = 2;
-    using Shape = lue::Shape<T, rank>;
+    using Shape = lue::Shape<Index, rank>;
 
     {
         Shape shape{};
         BOOST_CHECK_EQUAL(shape.size(), 2);
-        BOOST_CHECK_EQUAL(shape[0], T{0});
-        BOOST_CHECK_EQUAL(shape[1], T{0});
+        BOOST_CHECK_EQUAL(shape[0], Index{0});
+        BOOST_CHECK_EQUAL(shape[1], Index{0});
     }
 
     {
         Shape shape{30, 40};
         BOOST_CHECK_EQUAL(shape.size(), 2);
-        BOOST_CHECK_EQUAL(shape[0], T{30});
-        BOOST_CHECK_EQUAL(shape[1], T{40});
+        BOOST_CHECK_EQUAL(shape[0], Index{30});
+        BOOST_CHECK_EQUAL(shape[1], Index{40});
     }
 }
 

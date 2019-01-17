@@ -25,7 +25,7 @@ public:
 
     using Data = ArrayPartitionData<Index, Value, rank>;
 
-    using Definition = PartitionDefinition<Index, rank>;
+    using Definition = ArrayPartitionDefinition<Index, rank>;
 
                    ArrayPartition      ()=default;
 

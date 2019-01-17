@@ -1,4 +1,4 @@
-#include "lue/framework/core/serialize/partition_definition.hpp"
+#include "lue/framework/core/serialize/array_partition_definition.hpp"
 #include <hpx/runtime/serialization/array.hpp>
 
 
@@ -38,10 +38,10 @@ template<
     std::size_t rank>
 void serialize(
     input_archive& archive,
-    lue::PartitionDefinition<Index, rank>& definition,
+    lue::ArrayPartitionDefinition<Index, rank>& definition,
     unsigned int const /* version */)
 {
-    using Definition = lue::PartitionDefinition<Index, rank>;
+    using Definition = lue::ArrayPartitionDefinition<Index, rank>;
 
     typename Definition::Start start;
     typename Definition::Shape shape;
@@ -57,28 +57,22 @@ template<
     std::size_t rank>
 void serialize(
     output_archive& archive,
-    lue::PartitionDefinition<Index, rank> const& definition,
+    lue::ArrayPartitionDefinition<Index, rank> const& definition,
     unsigned int const /* version */)
 {
     archive & definition.start() & definition.shape();
 }
 
 
-// template void serialize<1>(
-//     input_archive&, lue::PartitionDefinition<1>&, unsigned int const);
+template void serialize<std::uint64_t, 2>(
+    input_archive&,
+    lue::ArrayPartitionDefinition<std::uint64_t, 2>&,
+    unsigned int const);
 
 template void serialize<std::uint64_t, 2>(
-    input_archive&, lue::PartitionDefinition<std::uint64_t, 2>&, unsigned int const);
-
-// template void serialize<3>(
-//     input_archive&, lue::PartitionDefinition<3>&, unsigned int const);
-
-// template void serialize<1>(
-//     output_archive&, lue::PartitionDefinition<1> const&, unsigned int const);
-template void serialize<std::uint64_t, 2>(
-    output_archive&, lue::PartitionDefinition<std::uint64_t, 2> const&, unsigned int const);
-// template void serialize<3>(
-//     output_archive&, lue::PartitionDefinition<3> const&, unsigned int const);
+    output_archive&,
+    lue::ArrayPartitionDefinition<std::uint64_t, 2> const&,
+    unsigned int const);
 
 }  // namespace serialization
 }  // namespace hpx

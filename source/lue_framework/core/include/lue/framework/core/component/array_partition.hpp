@@ -1,6 +1,6 @@
 #pragma once
 #include "lue/framework/core/component/server/array_partition.hpp"
-#include "lue/framework/core/serialize/partition_definition.hpp"
+#include "lue/framework/core/serialize/array_partition_definition.hpp"
 
 
 namespace lue {
