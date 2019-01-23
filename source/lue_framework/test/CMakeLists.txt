@@ -12,5 +12,5 @@ target_include_directories(lue_framework_test
 
 # target_link_libraries(lue_framework_test
 #     PUBLIC
-#         lue::data_model
+#         lue::framework
 # )
