@@ -5,23 +5,19 @@ namespace lue {
 namespace client {
 
 template<
-    typename Index,
-    typename Value,
-    std::size_t rank>
-ArrayPartition<Index, Value, rank>::ArrayPartition(
-    hpx::id_type const& gid):
+    typename Data>
+ArrayPartition<Data>::ArrayPartition(
+    hpx::id_type const& id):
 
-    Base{gid}
+    Base{id}
 
 {
 }
 
 
 template<
-    typename Index,
-    typename Value,
-    std::size_t rank>
-ArrayPartition<Index, Value, rank>::ArrayPartition(
+    typename Data>
+ArrayPartition<Data>::ArrayPartition(
     hpx::future<hpx::id_type>&& id):
 
     Base{std::move(id)}
@@ -31,10 +27,8 @@ ArrayPartition<Index, Value, rank>::ArrayPartition(
 
 
 template<
-    typename Index,
-    typename Value,
-    std::size_t rank>
-ArrayPartition<Index, Value, rank>::ArrayPartition(
+    typename Data>
+ArrayPartition<Data>::ArrayPartition(
     hpx::id_type const& where,
     Definition const& definition):
 
@@ -45,10 +39,8 @@ ArrayPartition<Index, Value, rank>::ArrayPartition(
 
 
 template<
-    typename Index,
-    typename Value,
-    std::size_t rank>
-ArrayPartition<Index, Value, rank>::ArrayPartition(
+    typename Data>
+ArrayPartition<Data>::ArrayPartition(
     hpx::id_type const& where,
     Definition const& definition,
     Value value):
@@ -60,19 +52,17 @@ ArrayPartition<Index, Value, rank>::ArrayPartition(
 
 
 template<
-    typename Index,
-    typename Value,
-    std::size_t rank>
-std::shared_ptr<typename ArrayPartition<Index, Value, rank>::Server>
-    ArrayPartition<Index, Value, rank>::component() const
+    typename Data>
+std::shared_ptr<typename ArrayPartition<Data>::Server>
+    ArrayPartition<Data>::component() const
 {
     return hpx::get_ptr<Server>(this->get_id()).get();
 }
 
 
-template class ArrayPartition<std::uint64_t, bool, 2>;
-template class ArrayPartition<std::uint64_t, std::int32_t, 2>;
-template class ArrayPartition<std::uint64_t, double, 2>;
+// template class ArrayPartition<std::uint64_t, bool, 2>;
+// template class ArrayPartition<std::uint64_t, std::int32_t, 2>;
+// template class ArrayPartition<std::uint64_t, double, 2>;
 
 }  // namespace client
 }  // namespace lue

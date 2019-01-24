@@ -14,5 +14,7 @@ add_unit_tests(
 
 # Targets that depend on HPX
 hpx_setup_target(lue_framework_core_array_partition_test)
-hpx_setup_target(lue_framework_core_array_partition_data_test)
 hpx_setup_target(lue_framework_core_partitioned_array_test)
+
+# set_target_properties(lue_framework_core_array_partition_test PROPERTIES COMPILE_FLAGS "-E")
+# set_target_properties(lue_framework_core_partitioned_array_test PROPERTIES COMPILE_FLAGS "-E")

@@ -8,10 +8,9 @@
 namespace lue {
 
 template<
-    typename Index,
     typename Value,
-    std::size_t rank>
-PartitionedArray<Index, Value, rank>::PartitionedArray(
+    typename Data>
+PartitionedArray<Value, Data>::PartitionedArray(
     Definition const& definition):
 
     _definition{definition},
@@ -23,13 +22,12 @@ PartitionedArray<Index, Value, rank>::PartitionedArray(
 
 
 template<
-    typename Index,
     typename Value,
-    std::size_t rank>
+    typename Data>
 template<
     typename DistributionPolicy,
     typename Creator>
-void PartitionedArray<Index, Value, rank>::create(
+void PartitionedArray<Value, Data>::create(
     DistributionPolicy const& distribution_policy,
     Creator&& creator)
 {
@@ -123,12 +121,11 @@ void PartitionedArray<Index, Value, rank>::create(
 
 
 template<
-    typename Index,
     typename Value,
-    std::size_t rank>
+    typename Data>
 template<
     typename DistributionPolicy>
-void PartitionedArray<Index, Value, rank>::create(
+void PartitionedArray<Value, Data>::create(
     DistributionPolicy const& distribution_policy)
 {
     // Use distribution_policy to instantiate count array partitions of
@@ -179,42 +176,40 @@ void PartitionedArray<Index, Value, rank>::create(
 
 
 template<
-    typename Index,
     typename Value,
-    std::size_t rank>
-Index PartitionedArray<Index, Value, rank>::nr_elements() const
+    typename Data>
+typename PartitionedArray<Value, Data>::Index
+    PartitionedArray<Value, Data>::nr_elements() const
 {
     return _definition.nr_elements();
 }
 
 
 template<
-    typename Index,
     typename Value,
-    std::size_t rank>
-typename PartitionedArray<Index, Value, rank>::Definition const&
-    PartitionedArray<Index, Value, rank>::definition() const
+    typename Data>
+typename PartitionedArray<Value, Data>::Definition const&
+    PartitionedArray<Value, Data>::definition() const
 {
     return _definition;
 }
 
 
 template<
-    typename Index,
     typename Value,
-    std::size_t rank>
-Index PartitionedArray<Index, Value, rank>::nr_partitions() const
+    typename Data>
+typename PartitionedArray<Value, Data>::Index
+    PartitionedArray<Value, Data>::nr_partitions() const
 {
     return _partitions.definition().nr_elements();
 }
 
 
 template<
-    typename Index,
     typename Value,
-    std::size_t rank>
-typename PartitionedArray<Index, Value, rank>::Partitions const&
-    PartitionedArray<Index, Value, rank>::partitions() const
+    typename Data>
+typename PartitionedArray<Value, Data>::Partitions const&
+    PartitionedArray<Value, Data>::partitions() const
 {
     return _partitions;
 }
@@ -244,6 +239,7 @@ typename PartitionedArray<Index, Value, rank>::Partitions const&
 // }
 
 
+/*
 #define INSTANTIATE(                                           \
         Index,                                                 \
         Value,                                                 \
@@ -255,5 +251,6 @@ INSTANTIATE(std::uint64_t, std::int32_t, 2)
 INSTANTIATE(std::uint64_t, double, 2)
 
 #undef INSTANTIATE
+*/
 
 }  // namespace lue

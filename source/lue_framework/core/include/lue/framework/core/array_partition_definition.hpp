@@ -5,12 +5,14 @@
 namespace lue {
 
 template<
-    typename Index,
+    typename Index_,
     std::size_t rank>
 class ArrayPartitionDefinition
 {
 
 public:
+
+    using Index = Index_;
 
     using Start = lue::Shape<Index, rank>;
 

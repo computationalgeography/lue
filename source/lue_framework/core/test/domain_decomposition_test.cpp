@@ -1,6 +1,7 @@
 #define BOOST_TEST_MODULE lue framework core domain_decomposition
 #include <boost/test/unit_test.hpp>
 #include "lue/framework/core/domain_decomposition.hpp"
+#include "lue/framework/test/stream.hpp"
 
 
 BOOST_AUTO_TEST_CASE(nr_2d_partitions)
@@ -344,5 +345,121 @@ BOOST_AUTO_TEST_CASE(partitions)
         BOOST_CHECK(partitions[1] == (Partition{Start{55, 11}, Shape{5, 11}}));
         BOOST_CHECK(partitions[2] == (Partition{Start{55, 22}, Shape{5, 11}}));
         BOOST_CHECK(partitions[3] == (Partition{Start{55, 33}, Shape{5,  7}}));
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE(max_partition_shape_1d)
+{
+    using Shape = lue::Shape<std::uint32_t, 1>;
+
+    {
+        Shape const shape{10};
+        Shape const shape_we_got = lue::max_partition_shape(shape, 1u);
+        Shape const shape_we_want = Shape{10};
+
+        BOOST_CHECK_EQUAL(shape_we_got, shape_we_want);
+    }
+
+    {
+        Shape const shape{10};
+        Shape const shape_we_got = lue::max_partition_shape(shape, 2u);
+        Shape const shape_we_want = Shape{5};
+
+        BOOST_CHECK_EQUAL(shape_we_got, shape_we_want);
+    }
+
+    {
+        Shape const shape{10};
+        Shape const shape_we_got = lue::max_partition_shape(shape, 3u);
+        Shape const shape_we_want = Shape{3};
+
+        BOOST_CHECK_EQUAL(shape_we_got, shape_we_want);
+    }
+
+    {
+        Shape const shape{10};
+        Shape const shape_we_got = lue::max_partition_shape(shape, 4u);
+        Shape const shape_we_want = Shape{2};
+
+        BOOST_CHECK_EQUAL(shape_we_got, shape_we_want);
+    }
+
+    {
+        Shape const shape{10};
+        Shape const shape_we_got = lue::max_partition_shape(shape, 5u);
+        Shape const shape_we_want = Shape{2};
+
+        BOOST_CHECK_EQUAL(shape_we_got, shape_we_want);
+    }
+
+    {
+        Shape const shape{10};
+        Shape const shape_we_got = lue::max_partition_shape(shape, 6u);
+        Shape const shape_we_want = Shape{1};
+
+        BOOST_CHECK_EQUAL(shape_we_got, shape_we_want);
+    }
+
+    {
+        Shape const shape{10};
+        Shape const shape_we_got = lue::max_partition_shape(shape, 10u);
+        Shape const shape_we_want = Shape{1};
+
+        BOOST_CHECK_EQUAL(shape_we_got, shape_we_want);
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE(max_partition_shape_2d)
+{
+    using Shape = lue::Shape<std::uint32_t, 2>;
+
+    {
+        Shape const shape{10, 10};
+        Shape const shape_we_got = lue::max_partition_shape(shape, 1u);
+        Shape const shape_we_want = Shape{10, 10};
+
+        BOOST_CHECK_EQUAL(shape_we_got, shape_we_want);
+    }
+
+    {
+        Shape const shape{10, 10};
+        Shape const shape_we_got = lue::max_partition_shape(shape, 2u);
+        Shape const shape_we_want = Shape{5, 10};
+
+        BOOST_CHECK_EQUAL(shape_we_got, shape_we_want);
+    }
+
+    {
+        Shape const shape{10, 10};
+        Shape const shape_we_got = lue::max_partition_shape(shape, 3u);
+        Shape const shape_we_want = Shape{5, 5};
+
+        BOOST_CHECK_EQUAL(shape_we_got, shape_we_want);
+    }
+
+    {
+        Shape const shape{10, 10};
+        Shape const shape_we_got = lue::max_partition_shape(shape, 4u);
+        Shape const shape_we_want = Shape{5, 5};
+
+        BOOST_CHECK_EQUAL(shape_we_got, shape_we_want);
+    }
+
+    {
+        Shape const shape{10, 10};
+        Shape const shape_we_got = lue::max_partition_shape(shape, 25u);
+        Shape const shape_we_want = Shape{2, 2};
+
+        BOOST_CHECK_EQUAL(shape_we_got, shape_we_want);
+    }
+
+    {
+        Shape const shape{10, 10};
+        Shape const shape_we_got = lue::max_partition_shape(shape, 100u);
+        Shape const shape_we_want = Shape{1, 1};
+
+        BOOST_CHECK_EQUAL(shape_we_got, shape_we_want);
     }
 }

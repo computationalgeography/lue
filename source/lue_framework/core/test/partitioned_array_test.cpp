@@ -1,23 +1,26 @@
 #define BOOST_TEST_MODULE lue framework core partitioned_array
-#include "lue/framework/core/partitioned_array.hpp"
+#include "lue/framework/core/component/partitioned_array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 #include "lue/framework/test/stream.hpp"
 
 
 namespace {
 
-using Index = std::uint64_t;
 using Value = std::int32_t;
 static std::size_t const rank = 2;
-using PartitionedArray = lue::PartitionedArray<Index, Value, rank>;
+using Data = lue::ArrayPartitionData<Value, rank>;
+using PartitionedArray = lue::PartitionedArray<Value, Data>;
 
 // using PartitionClient = lue::client::Partition<Index, Value, rank>;
 // using PartitionServer = typename PartitionClient::Server;
 // using Data = typename PartitionClient::Data;
 using Definition = typename PartitionedArray::Definition;
+using Index = typename Definition::Index;
 using Shape = typename Definition::Shape;
 
 }  // Anonymous namespace
+
+LUE_REGISTER_ARRAY_PARTITION(int32_t, 2)
 
 
 BOOST_AUTO_TEST_CASE(default_construct)
@@ -61,4 +64,9 @@ BOOST_AUTO_TEST_CASE(construct_with_definition)
     BOOST_CHECK_EQUAL(array.definition(), definition);
 
     BOOST_CHECK_EQUAL(array.nr_partitions(), hpx::get_num_localities().get());
+
+    // std::cout << "nr_partitions : " << array.nr_partitions() << std::endl;
+    // std::cout << "num_localities: " << hpx::get_num_localities().get() << std::endl;
+
+    // BOOST_CHECK(false);
 }

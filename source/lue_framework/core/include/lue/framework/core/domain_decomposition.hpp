@@ -6,6 +6,7 @@
 #include <cmath>
 #include <numeric>
 #include <vector>
+#include <iostream>
 
 
 namespace lue {
@@ -13,7 +14,7 @@ namespace lue {
 template<
     typename Index,
     std::size_t rank>
-inline Shape<Index, rank> shape_in_partitions(
+Shape<Index, rank> shape_in_partitions(
     Shape<Index, rank> const& area_shape,
     Shape<Index, rank> const& partition_shape)
 {
@@ -36,7 +37,7 @@ inline Shape<Index, rank> shape_in_partitions(
 template<
     typename Index,
     std::size_t rank>
-inline std::size_t nr_partitions(
+std::size_t nr_partitions(
     Shape<Index, rank> const& area_shape,
     Shape<Index, rank> const& partition_shape)
 {
@@ -48,10 +49,59 @@ inline std::size_t nr_partitions(
 }
 
 
+/*!
+    @brief      Return a partition shape that can be used to partition
+                @a array_shape in at least @a min_nr_partitions partitions
+    @param      array_shape Shape of the array to partition. This shape
+                must not be empty.
+    @param      min_nr_partitions Minimum number of partitions
+                requested. This number must lie in the range [1,
+                nr_elements(@a shape)].
+
+    When partitioning the array using the partition shape returned,
+    the partitions at the borders of the array may not be fully part of
+    the array. In that case, those partitions will have to be resized
+    to match the array's extent.
+*/
 template<
     typename Index,
     std::size_t rank>
-inline Indices<Index, rank> linear_to_shape_index(
+Shape<Index, rank> max_partition_shape(
+    Shape<Index, rank> const& array_shape,
+    Index const min_nr_partitions)
+{
+    static_assert(rank > 0);
+
+    assert(nr_elements(array_shape) > 0);
+    assert(min_nr_partitions > 0);
+    assert(min_nr_partitions <= nr_elements(array_shape));
+
+    Shape<Index, rank> partition_shape{array_shape};
+
+    Index const nr_partitions_per_dimension =
+        static_cast<Index>(std::ceil(std::pow(min_nr_partitions, 1.0 / rank)));
+
+    Index nr_partitions = 0;
+
+    for(auto& extent: partition_shape) {
+        if(nr_partitions < min_nr_partitions) {
+            extent /= nr_partitions_per_dimension;
+            nr_partitions += nr_partitions_per_dimension;
+        }
+    }
+
+    assert(nr_elements(partition_shape) > 0);
+    assert(nr_elements(shape_in_partitions(array_shape, partition_shape)) >=
+        min_nr_partitions);
+
+    return partition_shape;
+}
+
+
+template<
+    typename Index,
+    std::size_t rank>
+Indices<Index, rank> linear_to_shape_index(
     Shape<Index, rank> const& shape,
     Index idx)
 {
@@ -60,7 +110,7 @@ inline Indices<Index, rank> linear_to_shape_index(
         idx < std::accumulate(
             shape.begin(), shape.end(), Index{1}, std::multiplies<Index>()));
 
-    // Give a shape and a linear index, return the corresponding cell
+    // Given a shape and a linear index, return the corresponding cell
     // indices along each dimension
 
     Indices<Index, rank> result;
@@ -93,7 +143,7 @@ inline Indices<Index, rank> linear_to_shape_index(
 template<
     typename Index,
     std::size_t rank>
-inline ArrayPartitionDefinition<Index, rank> partition(
+ArrayPartitionDefinition<Index, rank> partition(
     Shape<Index, rank> const& area_shape,
     Shape<Index, rank> const& partition_shape,
     Shape<Index, rank> const& shape_in_partitions,
@@ -104,8 +154,7 @@ inline ArrayPartitionDefinition<Index, rank> partition(
     {
         // Determine indices of cell at start of partition
         // Convert between shape_in_partitions to area_shape indices
-        auto const indices = lue::linear_to_shape_index(
-            shape_in_partitions, idx);
+        auto const indices = linear_to_shape_index(shape_in_partitions, idx);
 
         std::transform(
             indices.begin(), indices.end(), partition_shape.begin(),
@@ -136,7 +185,7 @@ inline ArrayPartitionDefinition<Index, rank> partition(
 template<
     typename Index,
     std::size_t rank>
-inline Shape<Index, rank> clamp_area_shape(
+Shape<Index, rank> clamp_area_shape(
     Shape<Index, rank> const& area_shape,
     Shape<Index, rank> const& partition_shape)
 {
@@ -163,7 +212,7 @@ inline Shape<Index, rank> clamp_area_shape(
 template<
     typename Index,
     std::size_t rank>
-inline std::vector<ArrayPartitionDefinition<Index, rank>> partitions(
+std::vector<ArrayPartitionDefinition<Index, rank>> partitions(
     Shape<Index, rank> const& area_shape,
     Shape<Index, rank> const& partition_shape,
     std::size_t const nr_localities,

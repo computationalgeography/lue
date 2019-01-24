@@ -3,10 +3,10 @@ add_test_conditionally(test)
 add_library(lue_framework_core
     src/configuration_entry
     src/debug
-    src/array_partition
-    src/partitioned_array
-    src/serialize/array_partition_definition
-    src/server/array_partition
+    # src/array_partition
+    # src/partitioned_array
+    # src/serialize/array_partition_definition
+    # src/server/array_partition
 )
 
 add_library(lue::framework_core ALIAS lue_framework_core)
