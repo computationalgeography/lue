@@ -19,18 +19,15 @@ init:
 install:
     - cmd: |
         git submodule update --init --recursive
-        python --version
-        echo %PATH%
-        pip install --user conan
-        conan user
-        conan --version
+        pip install --upgrade pip
+        pip install conan
         conan remote add public-conan https://api.bintray.com/conan/bincrafters/public-conan
-        conan install .
 
 before_build:
     - cmd: |
         echo "before_build..."
         dir
+        conan install .
         mkdir build
         cd build
         cmake --version
@@ -40,7 +37,7 @@ build_script:
     - cmd: |
         echo "build_script..."
         dir
-        cmake --config %CONFIGURATION% --target all
+        cmake --build . --config %CONFIGURATION% --target all
 
 test_script:
     - cmd: |
