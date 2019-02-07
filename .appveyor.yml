@@ -2,7 +2,7 @@ version: '{branch}-{build}'
 
 environment:
     matrix:
-        - APPVEYOR_WORKER_IMAGE: Visual Studio 2017
+        - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
           LUE_MSVC_GENERATOR: Visual Studio 15 2017
           LUE_MSVC_GENERATOR_SHORT: VS2017
 
