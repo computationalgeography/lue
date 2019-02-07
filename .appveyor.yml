@@ -20,7 +20,7 @@ install:
     - cmd: |
         git submodule update --init --recursive
         pip install --upgrade pip
-        pip install conan
+        pip install --user conan
         conan remote add public-conan https://api.bintray.com/conan/bincrafters/public-conan
 
 before_build:
