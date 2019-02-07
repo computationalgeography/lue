@@ -19,6 +19,12 @@ init:
 install:
     - cmd: |
         echo "install..."
+        git submodule update --init --recursive
+        python --version
+        echo %PATH%
+        pip install conan
+        conan user
+        conan --version
 
 before_build:
     - cmd: |
