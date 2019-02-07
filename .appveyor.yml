@@ -1,0 +1,34 @@
+version: '{branch}-{build}'
+
+configuration:
+    - Debug
+
+platform:
+    - x64
+
+init:
+    - cmd: |
+        echo "init..."
+        dir
+
+install:
+    - cmd: |
+        echo "install..."
+        dir
+
+before_build:
+    - cmd: |
+        echo "before_build..."
+        cmake --version
+        cmake -G"%MSVC_GENERATOR%" -A%PLATFORM% -DCMAKE_BUILD_TYPE=%CONFIGURATION% .
+
+build_script:
+    - cmd: |
+        echo "build_script..."
+        cmake --config %CONFIGURATION% --target all
+
+
+test_script:
+    - cmd: |
+        echo "test_script..."
+        CTEST_OUTPUT_ON_FAILURE=1 cmake --build . --target test

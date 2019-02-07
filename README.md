@@ -16,7 +16,7 @@ More information about LUE:
 | Development team | http://www.pcraster.eu               |
 
 
-[![Linux build Status](https://travis-ci.org/pcraster/lue.svg?branch=master)](https://travis-ci.org/pcraster/lue) [![Documentation Status](https://readthedocs.org/projects/docs/badge/)](https://lue.readthedocs.io/en/latest)
+[![Linux build Status](https://travis-ci.org/pcraster/lue.svg?branch=master)](https://travis-ci.org/pcraster/lue) [![Windows build Status](https://ci.appveyor.com/api/projects/status/8qpm4qi44ctbfb7k/branch/master?svg=true)](https://ci.appveyor.com/project/kordejong/lue) [![Documentation Status](https://readthedocs.org/projects/docs/badge/)](https://lue.readthedocs.io/en/latest)
 
 
 ## Installation
