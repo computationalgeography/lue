@@ -28,11 +28,10 @@ before_build:
     - cmd: |
         echo "before_build..."
         dir
-        conan install .
         mkdir build
         cd build
-        cmake --version
-        cmake -G"%LUE_MSVC_GENERATOR%" -A%PLATFORM% -DCMAKE_BUILD_TYPE=%CONFIGURATION% ..
+        conan install .
+        cmake -G"%LUE_MSVC_GENERATOR%" -A%PLATFORM% -DCMAKE_BUILD_TYPE=%CONFIGURATION% -DBOOST_ROOT=C:\Libraries\boost_1_67_0 ..
 
 build_script:
     - cmd: |
