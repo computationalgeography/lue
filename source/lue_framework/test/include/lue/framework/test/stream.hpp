@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/core/array_partition_data.hpp"
+#include "lue/framework/core/array_partition_definition.hpp"
 #include <boost/multi_array.hpp>
 #include <experimental/iterator>
 
@@ -90,7 +91,7 @@ std::ostream& operator<<(
     std::ostream& stream,
     ArrayPartitionData<Value, rank> const& data)
 {
-    stream << data.definition() << ", " << data.values();
+    stream << data.shape() << ", " << data.values();
 
     return stream;
 }

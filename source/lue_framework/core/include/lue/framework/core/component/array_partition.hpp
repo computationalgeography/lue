@@ -1,6 +1,6 @@
 #pragma once
 #include "lue/framework/core/component/server/array_partition.hpp"
-#include "lue/framework/core/serialize/array_partition_definition.hpp"
+// #include "lue/framework/core/serialize/array_partition_definition.hpp"
 
 
 namespace lue {
@@ -25,7 +25,7 @@ class ArrayPartition:
 
 {
 
-    static_assert(std::is_same_v<Value, typename Data::value_type>);
+    static_assert(std::is_same_v<Value, typename Data::ValueType>);
 
 public:
 
@@ -34,7 +34,7 @@ public:
     using Base =
         hpx::components::client_base<ArrayPartition<Value, Data>, Server>;
 
-    using Definition = typename Data::Definition;
+    using Shape = typename Data::Shape;
 
                    ArrayPartition      ();
 
@@ -43,21 +43,21 @@ public:
                    ArrayPartition      (hpx::future<hpx::id_type>&& id);
 
                    ArrayPartition      (hpx::id_type const& where,
-                                        Definition const& definition);
+                                        Shape const& shape);
 
                    ArrayPartition      (hpx::id_type const& where,
-                                        Definition const& definition,
+                                        Shape const& shape,
                                         Value value);
 
-                   ArrayPartition      (ArrayPartition const&)=delete;
+                   ArrayPartition      (ArrayPartition const&)=default;
 
-                   ArrayPartition      (ArrayPartition&&)=delete;
+                   ArrayPartition      (ArrayPartition&&)=default;
 
                    ~ArrayPartition     ()=default;
 
-    ArrayPartition& operator=          (ArrayPartition const&)=delete;
+    ArrayPartition& operator=          (ArrayPartition const&)=default;
 
-    ArrayPartition& operator=          (ArrayPartition&&)=delete;
+    ArrayPartition& operator=          (ArrayPartition&&)=default;
 
     std::shared_ptr<Server> component  () const;
 
@@ -106,9 +106,9 @@ template<
     typename Data>
 ArrayPartition<Value, Data>::ArrayPartition(
     hpx::id_type const& where,
-    Definition const& definition):
+    Shape const& shape):
 
-    Base{hpx::new_<Server>(where, definition)}
+    Base{hpx::new_<Server>(where, shape)}
 
 {
 }
@@ -119,10 +119,10 @@ template<
     typename Data>
 ArrayPartition<Value, Data>::ArrayPartition(
     hpx::id_type const& where,
-    Definition const& definition,
+    Shape const& shape,
     Value value):
 
-    Base{hpx::new_<Server>(where, definition, value)}
+    Base{hpx::new_<Server>(where, shape, value)}
 
 {
 }

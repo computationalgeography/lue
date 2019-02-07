@@ -24,3 +24,15 @@ BOOST_AUTO_TEST_CASE(construct)
     }
 }
 
+
+BOOST_AUTO_TEST_CASE(scalar)
+{
+    using Index = std::uint32_t;
+    std::size_t const rank = 0;
+    using Shape = lue::Shape<Index, rank>;
+
+    {
+        Shape shape{};
+        BOOST_CHECK_EQUAL(shape.size(), 0);
+    }
+}

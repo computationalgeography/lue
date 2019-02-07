@@ -20,7 +20,7 @@ public:
 
                    ArrayPartitionDefinition();
 
-                   ArrayPartitionDefinition(
+    explicit       ArrayPartitionDefinition(
                                         Shape const& shape);
 
                    ArrayPartitionDefinition(
