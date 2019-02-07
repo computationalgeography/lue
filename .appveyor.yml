@@ -21,6 +21,7 @@ install:
         git submodule update --init --recursive
         pip install --user --upgrade pip
         pip install --user conan
+        set PATH=%PATH%;C:\Users\appveyor\AppData\Roaming\Python\Scripts
         conan remote add public-conan https://api.bintray.com/conan/bincrafters/public-conan
 
 before_build:
