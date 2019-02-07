@@ -24,13 +24,13 @@ install:
         pip install --user conan
         conan remote add public-conan https://api.bintray.com/conan/bincrafters/public-conan
 
+# TODO Install hdf5 or build it ourselves
+# TODO Continue with any other missing dependencies
 before_build:
     - cmd: |
         mkdir build
         cd build
         conan install ..
-        # TODO Install hdf5 or build it ourselves
-        # TODO Continue with any other missing dependencies
         cmake -G"%LUE_MSVC_GENERATOR%" -A%PLATFORM% -DCMAKE_BUILD_TYPE=%CONFIGURATION% -DBOOST_ROOT=C:\Libraries\boost_1_67_0 ..
 
 build_script:
