@@ -18,23 +18,28 @@ init:
 
 install:
     - cmd: |
-        echo "install..."
         git submodule update --init --recursive
         python --version
         echo %PATH%
-        pip install conan
+        pip install --user conan
         conan user
         conan --version
+        conan remote add public-conan https://api.bintray.com/conan/bincrafters/public-conan
+        conan install .
 
 before_build:
     - cmd: |
         echo "before_build..."
+        dir
+        mkdir build
+        cd build
         cmake --version
-        cmake -G"%LUE_MSVC_GENERATOR%" -A%PLATFORM% -DCMAKE_BUILD_TYPE=%CONFIGURATION% .
+        cmake -G"%LUE_MSVC_GENERATOR%" -A%PLATFORM% -DCMAKE_BUILD_TYPE=%CONFIGURATION% ..
 
 build_script:
     - cmd: |
         echo "build_script..."
+        dir
         cmake --config %CONFIGURATION% --target all
 
 test_script:
