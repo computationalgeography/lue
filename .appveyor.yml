@@ -19,27 +19,25 @@ init:
 install:
     - cmd: |
         git submodule update --init --recursive
+        set PATH=%PATH%;C:\Users\appveyor\AppData\Roaming\Python\Scripts
         pip install --user --upgrade pip
         pip install --user conan
-        set PATH=%PATH%;C:\Users\appveyor\AppData\Roaming\Python\Scripts
         conan remote add public-conan https://api.bintray.com/conan/bincrafters/public-conan
 
 before_build:
     - cmd: |
-        echo "before_build..."
-        dir
         mkdir build
         cd build
         conan install ..
+        # TODO Install hdf5 or build it ourselves
+        # TODO Continue with any other missing dependencies
         cmake -G"%LUE_MSVC_GENERATOR%" -A%PLATFORM% -DCMAKE_BUILD_TYPE=%CONFIGURATION% -DBOOST_ROOT=C:\Libraries\boost_1_67_0 ..
 
 build_script:
     - cmd: |
-        echo "build_script..."
         dir
         cmake --build . --config %CONFIGURATION% --target all
 
 test_script:
     - cmd: |
-        echo "test_script..."
         CTEST_OUTPUT_ON_FAILURE=1 cmake --build . --target test
