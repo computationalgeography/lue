@@ -1,5 +1,11 @@
 version: '{branch}-{build}'
 
+environment:
+    matrix:
+        - APPVEYOR_WORKER_IMAGE: Visual Studio 2017
+          LUE_MSVC_GENERATOR: Visual Studio 15 2017
+          LUE_MSVC_GENERATOR_SHORT: VS2017
+
 configuration:
     - Debug
 
@@ -9,24 +15,21 @@ platform:
 init:
     - cmd: |
         echo "init..."
-        dir
 
 install:
     - cmd: |
         echo "install..."
-        dir
 
 before_build:
     - cmd: |
         echo "before_build..."
         cmake --version
-        cmake -G"%MSVC_GENERATOR%" -A%PLATFORM% -DCMAKE_BUILD_TYPE=%CONFIGURATION% .
+        cmake -G"%LUE_MSVC_GENERATOR%" -A%PLATFORM% -DCMAKE_BUILD_TYPE=%CONFIGURATION% .
 
 build_script:
     - cmd: |
         echo "build_script..."
         cmake --config %CONFIGURATION% --target all
-
 
 test_script:
     - cmd: |
