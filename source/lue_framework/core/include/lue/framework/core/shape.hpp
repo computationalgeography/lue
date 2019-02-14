@@ -11,6 +11,29 @@ template<
 using Shape = std::array<Index, rank>;
 
 
+// template<
+//     typename Index,
+//     std::size_t rank>
+// class Shape
+// {
+// 
+// public:
+// 
+//     // using std::array<Index, rank>::array;
+// 
+//     Shape()
+//         _array{}
+//     {
+// 
+//     }
+// 
+// private:
+// 
+//     std::array<Index, rank> _array;
+// 
+// };
+
+
 template<
     typename Index,
     std::size_t rank>

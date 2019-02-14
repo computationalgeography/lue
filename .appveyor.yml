@@ -1,0 +1,43 @@
+version: '{branch}-{build}'
+
+environment:
+    matrix:
+        - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+          LUE_MSVC_GENERATOR: Visual Studio 15 2017
+          LUE_MSVC_GENERATOR_SHORT: VS2017
+
+configuration:
+    - Debug
+
+platform:
+    - x64
+
+init:
+    - cmd: |
+        echo "init..."
+
+install:
+    - cmd: |
+        git submodule update --init --recursive
+        set PATH=%PATH%;C:\Users\appveyor\AppData\Roaming\Python\Scripts
+        pip install --user --upgrade pip
+        pip install --user conan
+        conan remote add public-conan https://api.bintray.com/conan/bincrafters/public-conan
+
+# TODO Install hdf5 or build it ourselves
+# TODO Continue with any other missing dependencies
+before_build:
+    - cmd: |
+        mkdir build
+        cd build
+        conan install ..
+        cmake -G"%LUE_MSVC_GENERATOR%" -A%PLATFORM% -DCMAKE_BUILD_TYPE=%CONFIGURATION% -DBOOST_ROOT=C:\Libraries\boost_1_67_0 ..
+
+build_script:
+    - cmd: |
+        dir
+        cmake --build . --config %CONFIGURATION% --target all
+
+test_script:
+    - cmd: |
+        CTEST_OUTPUT_ON_FAILURE=1 cmake --build . --target test

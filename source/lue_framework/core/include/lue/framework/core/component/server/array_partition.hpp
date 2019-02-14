@@ -20,7 +20,7 @@ class ArrayPartition:
 
 private:
 
-    static_assert(std::is_same_v<Value, typename Data::value_type>);
+    static_assert(std::is_same_v<Value, typename Data::ValueType>);
 
     using Base =
         hpx::components::locking_hook<
@@ -28,15 +28,15 @@ private:
 
 public:
 
-    using Definition = typename Data::Definition;
+    using Shape = typename Data::Shape;
 
-    using size_type = typename Data::size_type;
+    using SizeType = typename Data::SizeType;
 
                    ArrayPartition      ();
 
-    explicit       ArrayPartition      (Definition const& definition);
+    explicit       ArrayPartition      (Shape const& shape);
 
-                   ArrayPartition      (Definition const& definition,
+                   ArrayPartition      (Shape const& shape,
                                         Value value);
 
                    ArrayPartition      (ArrayPartition const& other);
@@ -49,7 +49,7 @@ public:
 
     ArrayPartition& operator=          (ArrayPartition&&)=delete;
 
-    size_type      size                () const;
+    SizeType       size                () const;
 
     Data const&    data                () const;
 
@@ -143,10 +143,10 @@ public:
 
 // Forward
 #define LUE_REGISTER_ARRAY_PARTITION_2(Value, rank)                     \
-    using DefaultData = ::lue::ArrayPartitionData<Value, rank>;         \
+    using HPX_PP_CAT(DefaultData, rank) = ::lue::ArrayPartitionData<Value, rank>;         \
     LUE_REGISTER_ARRAY_PARTITION_4(                                     \
         Value, rank,                                                    \
-        DefaultData,                                                    \
+        HPX_PP_CAT(DefaultData, rank),                                                  \
         HPX_PP_CAT(  \
             HPX_PP_CAT(HPX_PP_CAT(lue_ArrayPartitionData_, Value), _), rank))
 
@@ -191,18 +191,18 @@ ArrayPartition<Value, Data>::ArrayPartition():
 
 /*!
     @brief      Construct an instance based on an array partition @a
-                definition
+                shape
 
-    The @a definition passed in will be passed to the constructor of @a Data.
+    The @a shape passed in will be passed to the constructor of @a Data.
 */
 template<
     typename Value,
     typename Data>
 ArrayPartition<Value, Data>::ArrayPartition(
-    Definition const& definition):
+    Shape const& shape):
 
     Base{},
-    _data{definition}
+    _data{shape}
 
 {
 }
@@ -210,20 +210,20 @@ ArrayPartition<Value, Data>::ArrayPartition(
 
 /*!
     @brief      Construct an instance based on an array partition @a
-                definition and an initial @a value
+                shape and an initial @a value
 
-    The @a definition and the @a value passed in will be passed to the
+    The @a shape and the @a value passed in will be passed to the
     constructor of @a Data.
 */
 template<
     typename Value,
     typename Data>
 ArrayPartition<Value, Data>::ArrayPartition(
-    Definition const& definition,
+    Shape const& shape,
     Value value):
 
     Base{},
-    _data{definition, value}
+    _data{shape, value}
 
 {
     // Value is assumed to be a trivial type. Otherwise, don't pass
@@ -261,7 +261,7 @@ ArrayPartition<Value, Data>::ArrayPartition(
 template<
     typename Value,
     typename Data>
-typename ArrayPartition<Value, Data>::size_type
+typename ArrayPartition<Value, Data>::SizeType
     ArrayPartition<Value, Data>::size() const
 {
     return _data.size();

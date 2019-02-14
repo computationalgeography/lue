@@ -1,7 +1,8 @@
 #pragma once
 #include "lue/framework/core/component/array_partition.hpp"
-#include "lue/framework/core/component/server/partitioned_array_metadata.hpp"
+// #include "lue/framework/core/component/server/partitioned_array_metadata.hpp"
 #include "lue/framework/core/array_partition_data.hpp"
+#include "lue/framework/core/array_partition_definition.hpp"
 #include "lue/framework/core/domain_decomposition.hpp"
 #include "lue/framework/core/spatial_index.hpp"
 #include <hpx/components/containers/container_distribution_policy.hpp>
@@ -18,105 +19,115 @@ namespace lue {
 template<
     typename Value,
     typename Data>
-class PartitionedArray:
-    public hpx::components::client_base<
-        PartitionedArray<Value, Data>,
-        hpx::components::server::distributed_metadata_base<
-            server::PartitionedArrayMetadata<
-                typename Data::Definition::Index, Data::rank>>>
+class PartitionedArray // :
+    // public hpx::components::client_base<
+    //     PartitionedArray<Value, Data>,
+    //     server::PartitionedArray<Value, Data>>
+
+        // hpx::components::server::distributed_metadata_base<
+        //     server::PartitionedArrayMetadata<
+        //         typename Data::Definition::Index, Data::rank>>>
 
 {
 
 public:
 
-    using Definition = typename Data::Definition;
+    static_assert(std::is_same_v<Value, typename Data::ValueType>);
+    using ValueType = typename Data::ValueType;
 
-    using Index = typename Definition::Index;
+    using Shape = typename Data::Shape;
 
-    using Shape = typename Definition::Shape;
+    // using Definition = lue::ArrayPartitionDefinition<typename Data::Index, Data::rank>;
+
+    using Index = typename Data::Index;
 
 private:
 
-    using Base = hpx::components::client_base<
-        PartitionedArray<Value, Data>,
-        hpx::components::server::distributed_metadata_base<
-            server::PartitionedArrayMetadata<
-                typename Data::Definition::Index, Data::rank>>>;
+    // using Base = hpx::components::client_base<
+    //     PartitionedArray<Value, Data>,
+    //     server::PartitionedArray<Value, Data>>;
 
-    using PartitionClient = client::ArrayPartition<Value, Data>;
+    // using Base = hpx::components::client_base<
+    //     PartitionedArray<Value, Data>,
+    //     hpx::components::server::distributed_metadata_base<
+    //         server::PartitionedArrayMetadata<
+    //             typename Data::Definition::Index, Data::rank>>>;
+
+    using PartitionClient = client::ArrayPartition<ValueType, Data>;
 
     using PartitionServer = typename PartitionClient::Server;
 
 
-    class Partition:
-        public server::PartitionedArrayMetadata<Index, Data::rank>::Partition
-    {
+    // class Partition:
+    //     public server::PartitionedArrayMetadata<Index, Data::rank>::Partition
+    // {
 
-    private:
+    // private:
 
-        using Base =
-            typename server::PartitionedArrayMetadata<Index, Data::rank>::
-                Partition;
+    //     using Base =
+    //         typename server::PartitionedArrayMetadata<Index, Data::rank>::
+    //             Partition;
 
-    public:
+    // public:
 
-        Partition():
+    //     Partition():
 
-            Base{},
-            _local_data{}
+    //         Base{},
+    //         _local_data{}
 
-        {
-        }
+    //     {
+    //     }
 
-        /*!
-            @brief      .
-            @param      partition_id Global id of the partition server
-                        object
-            @param      definition Array definition of the partition
-            @param      locality_nr Number of locality the server is
-                        located on
-            @return     .
-            @exception  .
-        */
-        Partition(
-            hpx::id_type const& id,
-            Definition const& definition,
-            std::uint32_t const locality):
+    //     /*!
+    //         @brief      .
+    //         @param      partition_id Global id of the partition server
+    //                     object
+    //         @param      definition Array definition of the partition
+    //         @param      locality_nr Number of locality the server is
+    //                     located on
+    //         @return     .
+    //         @exception  .
+    //     */
+    //     Partition(
+    //         hpx::id_type const& id,
+    //         Definition const& definition,
+    //         std::uint32_t const locality):
 
-            Base{id, definition, locality},
-            _local_data{}
+    //         Base{id, definition, locality},
+    //         _local_data{}
 
-        {
-        }
+    //     {
+    //     }
 
-        Partition(
-            Base&& other):
+    //     Partition(
+    //         Base&& other):
 
-            Base{std::move(other)},
-            _local_data{}
+    //         Base{std::move(other)},
+    //         _local_data{}
 
-        {
-        }
+    //     {
+    //     }
 
-        void set_local_data(
-            std::shared_ptr<PartitionServer> const& local_data)
-        {
-            _local_data = local_data;
-        }
+    //     void set_local_data(
+    //         std::shared_ptr<PartitionServer> const& local_data)
+    //     {
+    //         _local_data = local_data;
+    //     }
 
-    private:
+    // private:
 
-        std::shared_ptr<PartitionServer> _local_data;
+    //     std::shared_ptr<PartitionServer> _local_data;
 
-    };
+    // };
 
+    using Partition = PartitionClient;
 
     using Partitions = ArrayPartitionData<Partition, Data::rank>;
     // using Partitions = ArrayPartitionData<int, Data::rank>;
 
 
-    //! Definition of the partitioned array
-    Definition     _definition;
+    //! Shape of the partitioned array
+    Shape          _shape;
 
     //! Shape of most partitions (possibly except for the ones at the border)
     Shape          _partition_shape;
@@ -129,6 +140,10 @@ private:
     // Index          _index;
 
 public:
+
+    using Iterator = typename Partitions::Iterator;
+
+    using ConstIterator = typename Partitions::ConstIterator;
 
     // using Value = std::tuple<
     //     Envelope<double, 2>,
@@ -145,9 +160,9 @@ public:
 
     // static auto const& partition(Value const& v) { return std::get<2>(v); }
 
-                   PartitionedArray    ()=default;
+                   PartitionedArray    ();
 
-                   PartitionedArray    (Definition const& definition);
+    explicit       PartitionedArray    (Shape const& shape);
 
     // template<
     //     typename DistributionPolicy>
@@ -171,7 +186,9 @@ public:
 
     Index             nr_elements      () const;
 
-    Definition const& definition       () const;
+    // Definition const& definition       () const;
+
+    Shape const&      shape            () const;
 
     Index             nr_partitions    () const;
 
@@ -184,9 +201,13 @@ public:
 
     // bool           valid               () const;
 
-    // const_iterator begin               () const;
+    ConstIterator  begin               () const;
 
-    // const_iterator end                 () const;
+    Iterator       begin               ();
+
+    ConstIterator  end                 () const;
+
+    Iterator       end                 ();
 
 private:
 
@@ -213,10 +234,22 @@ private:
 template<
     typename Value,
     typename Data>
-PartitionedArray<Value, Data>::PartitionedArray(
-    Definition const& definition):
+PartitionedArray<Value, Data>::PartitionedArray():
 
-    _definition{definition},
+    _shape{},
+    _partitions{}
+
+{
+}
+
+
+template<
+    typename Value,
+    typename Data>
+PartitionedArray<Value, Data>::PartitionedArray(
+    Shape const& shape):
+
+    _shape{shape},
     _partitions{}
 
 {
@@ -248,7 +281,7 @@ void PartitionedArray<Value, Data>::create(
     // Given the number of partitions to create and the shape of the
     // array, determine the maximum shape of the individual partitions
     auto const max_partition_shape =
-        lue::max_partition_shape(_definition.shape(), nr_partitions);
+        lue::max_partition_shape(_shape, nr_partitions);
 
     // Create the array partitions that, together make up the partitioned
     // array. Note that the extent of this array might be too large,
@@ -273,13 +306,14 @@ void PartitionedArray<Value, Data>::create(
     // std::size_t l = 0;
 
     auto const shape_in_partitions =
-        lue::shape_in_partitions(_definition.shape(), max_partition_shape);
+        lue::shape_in_partitions(_shape, max_partition_shape);
 // std::cout << max_partition_shape << std::endl;
 // std::cout << shape_in_partitions << std::endl;
 
-    _partitions = Partitions{
-        Definition{_definition.start(), shape_in_partitions}};
-    typename Partitions::index partition_idx = 0;
+
+    _partitions = Partitions{shape_in_partitions};
+        // Definition{_definition.start(), shape_in_partitions}};
+    typename Partitions::Index partition_idx = 0;
 
     // Iterate over all localities that got array partition components
     // instantiated on them
@@ -298,18 +332,19 @@ void PartitionedArray<Value, Data>::create(
         for(hpx::id_type const& id: r.second) {
 
             // Assign this partition to a cell in the partitions array
-            _partitions.data()[partition_idx] =
-                Partition{id, max_partition_shape, locality_nr};
+            _partitions.data()[partition_idx] = PartitionClient{id};
+            //     // Partition{5};
+            //     // Partition{id, max_partition_shape, locality_nr};
 
-            if(locality_nr == this_locality_nr) {
-                ptrs.push_back(
-                    hpx::get_ptr<PartitionServer>(id).then(
-                        [this, partition_idx](auto&& future)
-                        {
-                            _partitions.data()[partition_idx].set_local_data(
-                                future.get());
-                        }));
-            }
+            // if(locality_nr == this_locality_nr) {
+            //     ptrs.push_back(
+            //         hpx::get_ptr<PartitionServer>(id).then(
+            //             [this, partition_idx](auto&& future)
+            //             {
+            //                 _partitions.data()[partition_idx].set_local_data(
+            //                     future.get());
+            //             }));
+            // }
         }
 
         ++partition_idx;
@@ -317,67 +352,67 @@ void PartitionedArray<Value, Data>::create(
 
     HPX_ASSERT(partition_idx == nr_partitions);
 
-    // TODO
-    // Shrink partitions at the border of the array. They might be too large.
-    // This happens when the extents of the array are not a multiple of the
-    // corresponding extents in max_partition_shape.
-    {
-        // ArrayPartitionDefinition<Index, rank> partition(
-        //     Shape<Index, rank> const& area_shape,
-        //     Shape<Index, rank> const& partition_shape,
-        //     Shape<Index, rank> const& shape_in_partitions,
-        //     std::size_t const idx)
+    // // TODO
+    // // Shrink partitions at the border of the array. They might be too large.
+    // // This happens when the extents of the array are not a multiple of the
+    // // corresponding extents in max_partition_shape.
+    // {
+    //     // ArrayPartitionDefinition<Index, rank> partition(
+    //     //     Shape<Index, rank> const& area_shape,
+    //     //     Shape<Index, rank> const& partition_shape,
+    //     //     Shape<Index, rank> const& shape_in_partitions,
+    //     //     std::size_t const idx)
 
-        // TODO Here we iterate over all partitions, calculating the
-        //     partition shape it should have. This can be improved by
-        //     only iterating over bordering partitions.
-        //     Possibly integrate with logic above.
+    //     // TODO Here we iterate over all partitions, calculating the
+    //     //     partition shape it should have. This can be improved by
+    //     //     only iterating over bordering partitions.
+    //     //     Possibly integrate with logic above.
 
-        for(std::size_t p = 0; p < nr_partitions; ++p) {
-            auto const& partition{_partitions.data()[p]};
-            auto const current_partition_definition = partition.definition();
-            auto const required_partition_definition =
-                lue::partition(
-                    _definition.shape(), max_partition_shape,
-                    _partitions.definition().shape(), p);
+    //     for(std::size_t p = 0; p < nr_partitions; ++p) {
+    //         auto const& partition{_partitions.data()[p]};
+    //         auto const current_partition_definition = partition.definition();
+    //         auto const required_partition_definition =
+    //             lue::partition(
+    //                 _definition.shape(), max_partition_shape,
+    //                 _partitions.definition().shape(), p);
 
-            HPX_ASSERT(
-                current_partition_definition.start() ==
-                required_partition_definition.start());
+    //         HPX_ASSERT(
+    //             current_partition_definition.start() ==
+    //             required_partition_definition.start());
 
-            if(current_partition_definition.shape() !=
-                    required_partition_definition.shape()) {
-                PartitionClient client{partition.id()};
+    //         if(current_partition_definition.shape() !=
+    //                 required_partition_definition.shape()) {
+    //             PartitionClient client{partition.id()};
 
-                // TODO Fix on machine with multiple localities
-                assert(false);
-                // client.resize(required_partition_definition.shape());
-            }
+    //             // TODO Fix on machine with multiple localities
+    //             assert(false);
+    //             // client.resize(required_partition_definition.shape());
+    //         }
 
-        }
-
-
-        // std::vector<std::pair<std::size_t, std::size_t>> indices(Data::rank);
-
-        // // Begin and end indices along each dimension of the array
-        // for(std::size_t d = 0; d < Data::rank; ++d) {
-        //     indices[d] = std::make_pair(0, _definition.shape()[d]);
-        // }
-
-        // // Iterate over all dimensions
-        // for(std::size_t d = 0; d < Data::rank; ++d) {
-        //     auto const nr_partitions = _definition.shape()[d];
-        //     auto const required_extent = _definition.shape()[d];
-        //     auto const current_extent = max_partition_shape[d];
-
-        //     if(current_extent != required_extent) {
-        //         auto indices2 = indices;
-        //         indices2[d].first = indices2[d].second - 1;
+    //     }
 
 
-        //     }
-        // }
-    }
+    //     // std::vector<std::pair<std::size_t, std::size_t>> indices(Data::rank);
+
+    //     // // Begin and end indices along each dimension of the array
+    //     // for(std::size_t d = 0; d < Data::rank; ++d) {
+    //     //     indices[d] = std::make_pair(0, _definition.shape()[d]);
+    //     // }
+
+    //     // // Iterate over all dimensions
+    //     // for(std::size_t d = 0; d < Data::rank; ++d) {
+    //     //     auto const nr_partitions = _definition.shape()[d];
+    //     //     auto const required_extent = _definition.shape()[d];
+    //     //     auto const current_extent = max_partition_shape[d];
+
+    //     //     if(current_extent != required_extent) {
+    //     //         auto indices2 = indices;
+    //     //         indices2[d].first = indices2[d].second - 1;
+
+
+    //     //     }
+    //     // }
+    // }
 
 
 
@@ -515,17 +550,27 @@ template<
 typename PartitionedArray<Value, Data>::Index
     PartitionedArray<Value, Data>::nr_elements() const
 {
-    return _definition.nr_elements();
+    return lue::nr_elements(_shape);
 }
+
+
+// template<
+//     typename Value,
+//     typename Data>
+// typename PartitionedArray<Value, Data>::Definition const&
+//     PartitionedArray<Value, Data>::definition() const
+// {
+//     return _definition;
+// }
 
 
 template<
     typename Value,
     typename Data>
-typename PartitionedArray<Value, Data>::Definition const&
-    PartitionedArray<Value, Data>::definition() const
+typename PartitionedArray<Value, Data>::Shape const&
+    PartitionedArray<Value, Data>::shape() const
 {
-    return _definition;
+    return _shape;
 }
 
 
@@ -535,7 +580,7 @@ template<
 typename PartitionedArray<Value, Data>::Index
     PartitionedArray<Value, Data>::nr_partitions() const
 {
-    return _partitions.definition().nr_elements();
+    return _partitions.size();
 }
 
 
@@ -546,6 +591,46 @@ typename PartitionedArray<Value, Data>::Partitions const&
     PartitionedArray<Value, Data>::partitions() const
 {
     return _partitions;
+}
+
+
+template<
+    typename Value,
+    typename Data>
+typename PartitionedArray<Value, Data>::ConstIterator
+    PartitionedArray<Value, Data>::begin() const
+{
+    return _partitions.begin();
+}
+
+
+template<
+    typename Value,
+    typename Data>
+typename PartitionedArray<Value, Data>::Iterator
+    PartitionedArray<Value, Data>::begin()
+{
+    return _partitions.begin();
+}
+
+
+template<
+    typename Value,
+    typename Data>
+typename PartitionedArray<Value, Data>::ConstIterator
+    PartitionedArray<Value, Data>::end() const
+{
+    return _partitions.end();
+}
+
+
+template<
+    typename Value,
+    typename Data>
+typename PartitionedArray<Value, Data>::Iterator
+    PartitionedArray<Value, Data>::end()
+{
+    return _partitions.end();
 }
 
 
