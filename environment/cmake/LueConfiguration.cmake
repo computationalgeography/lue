@@ -206,7 +206,8 @@ if(DEVBASE_HPX_REQUIRED)
         FetchContent_Declare(hpx
             GIT_REPOSITORY https://github.com/STEllAR-GROUP/hpx
             # GIT_TAG 3a95a3cd5f00d7b957b06b3d8047387a7d775bd4  # 1.1.0
-            GIT_TAG a40fc75290d3d821f042a965726c47d7b0c1b35f  # 1.2.0
+            # GIT_TAG a40fc75290d3d821f042a965726c47d7b0c1b35f  # 1.2.0
+            GIT_TAG b26d3ba5ed54289ee311acd27bdc49e02a4bb33b  # 1.2.1
         )
 
         FetchContent_GetProperties(hpx)
@@ -216,6 +217,8 @@ if(DEVBASE_HPX_REQUIRED)
 
             # Hack to make the build succeed. Remove when using version
             # of HPX that fixes this.
+            #     The keyword signature for target_link_libraries has
+            #     already been used with...
             set(HPX_TLL_PUBLIC PUBLIC)
 
             add_subdirectory(${hpx_SOURCE_DIR} ${hpx_BINARY_DIR})
