@@ -1,4 +1,6 @@
-add_subdirectory(benchmark)
+if(LUE_FRAMEWORK_WITH_BENCHMARKS)
+    add_subdirectory(benchmark)
+endif()
 
 add_library(lue_airpolution
     src/polute_air
