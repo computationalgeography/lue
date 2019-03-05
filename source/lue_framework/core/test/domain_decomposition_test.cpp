@@ -1,4 +1,5 @@
 #define BOOST_TEST_MODULE lue framework core domain_decomposition
+#include <hpx/config.hpp>
 #include <boost/test/unit_test.hpp>
 #include "lue/framework/core/domain_decomposition.hpp"
 #include "lue/framework/test/stream.hpp"

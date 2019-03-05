@@ -3,21 +3,37 @@
 #include "lue/framework/core/shape.hpp"
 
 
-BOOST_AUTO_TEST_CASE(construct)
-{
-    using Index = std::uint32_t;
-    std::size_t const rank = 2;
-    using Shape = lue::Shape<Index, rank>;
+namespace {
 
+using Index = std::uint32_t;
+
+template<
+    std::size_t rank>
+using Shape = lue::Shape<Index, rank>;
+
+}  // Anonymous namespace
+
+
+BOOST_AUTO_TEST_CASE(construct_0d)
+{
     {
-        Shape shape{};
+        Shape<0> shape{};
+        BOOST_CHECK_EQUAL(shape.size(), 0);
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE(construct_2d)
+{
+    {
+        Shape<2> shape{};
         BOOST_CHECK_EQUAL(shape.size(), 2);
         BOOST_CHECK_EQUAL(shape[0], Index{0});
         BOOST_CHECK_EQUAL(shape[1], Index{0});
     }
 
     {
-        Shape shape{30, 40};
+        Shape<2> shape{30, 40};
         BOOST_CHECK_EQUAL(shape.size(), 2);
         BOOST_CHECK_EQUAL(shape[0], Index{30});
         BOOST_CHECK_EQUAL(shape[1], Index{40});
@@ -25,14 +41,20 @@ BOOST_AUTO_TEST_CASE(construct)
 }
 
 
-BOOST_AUTO_TEST_CASE(scalar)
+BOOST_AUTO_TEST_CASE(nr_elements)
 {
-    using Index = std::uint32_t;
-    std::size_t const rank = 0;
-    using Shape = lue::Shape<Index, rank>;
+    {
+        Shape<0> shape{};
+        BOOST_CHECK_EQUAL(lue::nr_elements(shape), 0);
+    }
 
     {
-        Shape shape{};
-        BOOST_CHECK_EQUAL(shape.size(), 0);
+        Shape<2> shape{};
+        BOOST_CHECK_EQUAL(lue::nr_elements(shape), 0);
+    }
+
+    {
+        Shape<2> shape{30, 40};
+        BOOST_CHECK_EQUAL(lue::nr_elements(shape), 1200);
     }
 }

@@ -1,11 +1,25 @@
 #pragma once
 #include "lue/framework/core/shape.hpp"
+#include <hpx/runtime/serialization/serialize.hpp>
 #include <boost/multi_array.hpp>
 #include <algorithm>
+#include <memory>
 
 
 namespace lue {
 
+/*!
+    @brief      Class for keeping track of array partition data values
+
+    The values are stored in a multidimensional array, which is pointed to
+    by a shared pointer. Copying instances results in both copies pointing
+    to same values. This is cheap, but might be suprising. The goal is to
+    make obtaining the data from a partitioned array component client
+    instance cheap.
+
+    There is a specialization for array scalars (arrays with rank ==
+    0). This allows scalars to be handled the same as arrays.
+*/
 template<
     typename Value,
     std::size_t rank_>
@@ -73,15 +87,26 @@ public:
 
     Iterator       end                 ();
 
-    // Value&         operator[]          (Index idx);
+    Value&         operator[]          (Index idx);
 
-    // Value const&   operator[]          (Index idx) const;
+    Value const&   operator[]          (Index idx) const;
 
 private:
 
+    // All arguments passed to actions must support serialization,
+    // even if they are never actually communicated between localities
+    friend class hpx::serialization::access;
+
+    template<typename Archive>
+    void serialize(Archive& /* archive */, unsigned int const /* version */)
+    {
+        // For now, we do nothing. Revisit later.
+        HPX_ASSERT(false);
+    }
+
     Shape          _shape;
 
-    Values         _values;
+    std::shared_ptr<Values> _values;
 
 };
 
@@ -92,7 +117,7 @@ template<
 ArrayPartitionData<Value, rank>::ArrayPartitionData():
 
     _shape{},
-    _values{}
+    _values{std::make_shared<Values>()}
 
 {
 }
@@ -105,7 +130,7 @@ ArrayPartitionData<Value, rank>::ArrayPartitionData(
     Shape const& shape):
 
     _shape{shape},
-    _values{shape}
+    _values{std::make_shared<Values>(shape)}
 
 {
 }
@@ -119,10 +144,10 @@ ArrayPartitionData<Value, rank>::ArrayPartitionData(
     Value const& value):
 
     _shape{shape},
-    _values{shape}
+    _values{std::make_shared<Values>(shape)}
 
 {
-    std::fill_n(_values.data(), _values.num_elements(), value);
+    std::fill_n(_values->data(), _values->num_elements(), value);
 
     // hpx::parallel::fill_n(
     //     hpx::parallel::execution::par,
@@ -140,17 +165,17 @@ ArrayPartitionData<Value, rank>::ArrayPartitionData(
     ArrayPartitionData const& other):
 
     _shape{other._shape},
-    _values{other._shape}
+    _values{other._values}
 
 {
-    auto const src_begin = other._values.data();
-    auto const src_end = src_begin + other._values.num_elements();
-    auto dst_begin = _values.data();
+    // auto const src_begin = other._values.data();
+    // auto const src_end = src_begin + other._values.num_elements();
+    // auto dst_begin = _values.data();
 
-    std::copy(src_begin, src_end, dst_begin);
+    // std::copy(src_begin, src_end, dst_begin);
 
-    // hpx::parallel::copy(
-    //     hpx::parallel::execution::par, src_begin, src_end, dst_begin);
+    // // hpx::parallel::copy(
+    // //     hpx::parallel::execution::par, src_begin, src_end, dst_begin);
 }
 
 
@@ -182,16 +207,18 @@ ArrayPartitionData<Value, rank>&
     ArrayPartitionData const& other)
 {
     _shape = other._shape;
-    _values.resize(other._shape);
+    _values = other._values;
 
-    auto const src_begin = other._values.data();
-    auto const src_end = src_begin + other._values.num_elements();
-    auto dst_begin = _values.data();
+    // _values.resize(other._shape);
 
-    std::copy(src_begin, src_end, dst_begin);
+    // auto const src_begin = other._values.data();
+    // auto const src_end = src_begin + other._values.num_elements();
+    // auto dst_begin = _values.data();
 
-    // hpx::parallel::copy(
-    //     hpx::parallel::execution::par, src_begin, src_end, dst_begin);
+    // std::copy(src_begin, src_end, dst_begin);
+
+    // // hpx::parallel::copy(
+    // //     hpx::parallel::execution::par, src_begin, src_end, dst_begin);
 
     return *this;
 }
@@ -208,22 +235,23 @@ ArrayPartitionData<Value, rank>&
     ArrayPartitionData&& other)
 {
     _shape = std::move(other._shape);
+    _values = std::move(other._values);
 
-    // Copy values and empty the source array afterwards
-    _values.resize(_shape);
+    // // Copy values and empty the source array afterwards
+    // _values.resize(_shape);
 
-    auto const src_begin = other._values.data();
-    auto const src_end = src_begin + other._values.num_elements();
-    auto dst_begin = _values.data();
+    // auto const src_begin = other._values.data();
+    // auto const src_end = src_begin + other._values.num_elements();
+    // auto dst_begin = _values.data();
 
-    std::copy(src_begin, src_end, dst_begin);
+    // std::copy(src_begin, src_end, dst_begin);
 
-    // hpx::parallel::copy(
-    //     hpx::parallel::execution::par, src_begin, src_end, dst_begin);
+    // // hpx::parallel::copy(
+    // //     hpx::parallel::execution::par, src_begin, src_end, dst_begin);
 
-    std::array<Index, rank> empty_shape;
-    empty_shape.fill(0);
-    other._values.resize(empty_shape);
+    // std::array<Index, rank> empty_shape;
+    // empty_shape.fill(0);
+    // other._values.resize(empty_shape);
 
     return *this;
 }
@@ -235,7 +263,7 @@ template<
 bool ArrayPartitionData<Value, rank>::operator==(
     ArrayPartitionData const& other) const
 {
-    return _shape == other._shape && _values == other._values;
+    return _shape == other._shape && *_values == *other._values;
 }
 
 
@@ -255,6 +283,8 @@ template<
 typename ArrayPartitionData<Value, rank>::SizeType
     ArrayPartitionData<Value, rank>::size() const
 {
+    assert(nr_elements(_shape) == _values->num_elements());
+
     return nr_elements(_shape);
 }
 
@@ -265,7 +295,7 @@ template<
 typename ArrayPartitionData<Value, rank>::Values const&
     ArrayPartitionData<Value, rank>::values() const
 {
-    return _values;
+    return *_values;
 }
 
 
@@ -275,7 +305,7 @@ template<
 typename ArrayPartitionData<Value, rank>::Values&
     ArrayPartitionData<Value, rank>::values()
 {
-    return _values;
+    return *_values;
 }
 
 
@@ -284,7 +314,7 @@ template<
     std::size_t rank>
 Value* ArrayPartitionData<Value, rank>::data()
 {
-    return _values.data();
+    return _values->data();
 }
 
 
@@ -293,7 +323,7 @@ template<
     std::size_t rank>
 Value const* ArrayPartitionData<Value, rank>::data() const
 {
-    return _values.data();
+    return _values->data();
 }
 
 
@@ -303,7 +333,7 @@ template<
 typename ArrayPartitionData<Value, rank>::ConstIterator
     ArrayPartitionData<Value, rank>::begin() const
 {
-    return _values.begin();
+    return _values->begin();
 }
 
 
@@ -313,7 +343,7 @@ template<
 typename ArrayPartitionData<Value, rank>::Iterator
     ArrayPartitionData<Value, rank>::begin()
 {
-    return _values.begin();
+    return _values->begin();
 }
 
 
@@ -323,7 +353,7 @@ template<
 typename ArrayPartitionData<Value, rank>::ConstIterator
     ArrayPartitionData<Value, rank>::end() const
 {
-    return _values.end();
+    return _values->end();
 }
 
 
@@ -333,28 +363,32 @@ template<
 typename ArrayPartitionData<Value, rank>::Iterator
     ArrayPartitionData<Value, rank>::end()
 {
-    return _values.end();
+    return _values->end();
 }
 
 
-// template<
-//     typename Value,
-//     std::size_t rank>
-// Value& ArrayPartitionData<Value, rank>::operator[](
-//     Index const idx)
-// {
-//     return *(_values.data() + idx);
-// }
-// 
-// 
-// template<
-//     typename Value,
-//     std::size_t rank>
-// Value const& ArrayPartitionData<Value, rank>::operator[](
-//     Index const idx) const
-// {
-//     return *(_values.data() + idx);
-// }
+template<
+    typename Value,
+    std::size_t rank>
+Value& ArrayPartitionData<Value, rank>::operator[](
+    Index const idx)
+{
+    assert(idx < size());
+
+    return *(this->data() + idx);
+}
+
+
+template<
+    typename Value,
+    std::size_t rank>
+Value const& ArrayPartitionData<Value, rank>::operator[](
+    Index const idx) const
+{
+    assert(idx < size());
+
+    return *(this->data() + idx);
+}
 
 
 template<
@@ -411,6 +445,10 @@ public:
 
     Values&        values              ();
 
+    Value*         data                ();
+
+    Value const*   data                () const;
+
     ConstIterator  begin               () const;
 
     Iterator       begin               ();
@@ -420,6 +458,17 @@ public:
     Iterator       end                 ();
 
 private:
+
+    // All arguments passed to actions must support serialization,
+    // even if they are never actually communicated between localities
+    friend class hpx::serialization::access;
+
+    template<typename Archive>
+    void serialize(Archive& /* archive */, unsigned int const /* version */)
+    {
+        // For now, we do nothing. Revisit later.
+        HPX_ASSERT(false);
+    }
 
     Shape          _shape;
 
@@ -493,7 +542,10 @@ template<
 typename ArrayPartitionData<Value, 0>::SizeType
     ArrayPartitionData<Value, 0>::size() const
 {
-    return nr_elements(_shape);
+    assert(nr_elements(_shape) == 0);
+    assert(_values.size() == 1);
+
+    return 1;
 }
 
 
@@ -512,6 +564,22 @@ typename ArrayPartitionData<Value, 0>::Values&
     ArrayPartitionData<Value, 0>::values()
 {
     return _values;
+}
+
+
+template<
+    typename Value>
+Value* ArrayPartitionData<Value, 0>::data()
+{
+    return _values.begin();
+}
+
+
+template<
+    typename Value>
+Value const* ArrayPartitionData<Value, 0>::data() const
+{
+    return _values.begin();
 }
 
 

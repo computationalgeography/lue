@@ -24,9 +24,24 @@ BOOST_AUTO_TEST_CASE(array_1d)
     lue::PartitionedArray<Value, Data> array{shape};
     hpx::shared_future<Value> fill_value = hpx::make_ready_future<Value>(5);
 
-    /* array = */ lue::fill(array, fill_value);
+    hpx::future<void> result = lue::fill(array, fill_value);
 
-    auto sum = lue::sum(array);
+    for(auto const& partition: array.partitions()) {
+        auto server = *partition.component();
 
-    BOOST_CHECK_EQUAL(sum.get(), nr_elements * fill_value.get());
+        for(auto const v: server.data()) {
+            BOOST_REQUIRE_EQUAL(v, fill_value.get());
+        }
+    }
+
+    // TODO Use this one sum is ready
+
+    // auto sum = result.then(
+    //     // hpx::launch::async,
+    //     [&array](auto&& result) {
+    //         return lue::sum(array);
+    //     }
+    // );
+
+    // BOOST_CHECK_EQUAL(sum.get(), nr_elements * fill_value.get());
 }

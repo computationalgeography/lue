@@ -40,9 +40,20 @@ template<
 inline typename Shape<Index, rank>::value_type nr_elements(
     Shape<Index, rank> const& shape)
 {
+    static_assert(!shape.empty());
+
     return std::accumulate(
         shape.begin(), shape.end(), 1,
         std::multiplies<typename Shape<Index, rank>::value_type>());
+}
+
+
+template<
+    typename Index>
+inline constexpr typename Shape<Index, 0>::value_type nr_elements(
+    Shape<Index, 0> const& /* shape */)
+{
+    return 0;
 }
 
 }  // namespace lue

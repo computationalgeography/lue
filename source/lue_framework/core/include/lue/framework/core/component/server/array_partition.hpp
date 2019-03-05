@@ -39,6 +39,8 @@ public:
                    ArrayPartition      (Shape const& shape,
                                         Value value);
 
+                   ArrayPartition      (Data const& data);
+
                    ArrayPartition      (ArrayPartition const& other);
 
                    ArrayPartition      (ArrayPartition&& other);
@@ -49,9 +51,13 @@ public:
 
     ArrayPartition& operator=          (ArrayPartition&&)=delete;
 
-    SizeType       size                () const;
+    Data           data                () const;
 
-    Data const&    data                () const;
+    void           fill                (Value value);
+
+    Shape          shape               () const;
+
+    SizeType       size                () const;
 
 private:
 
@@ -61,7 +67,10 @@ private:
 public:
 
     // Macros to define HPX component actions for all exported functions
-    HPX_DEFINE_COMPONENT_DIRECT_ACTION(ArrayPartition, size);
+    HPX_DEFINE_COMPONENT_DIRECT_ACTION(ArrayPartition, data, DataAction);
+    HPX_DEFINE_COMPONENT_DIRECT_ACTION(ArrayPartition, fill, FillAction);
+    HPX_DEFINE_COMPONENT_DIRECT_ACTION(ArrayPartition, shape, ShapeAction);
+    HPX_DEFINE_COMPONENT_DIRECT_ACTION(ArrayPartition, size, SizeAction);
 
 };
 
@@ -134,11 +143,17 @@ public:
 
 // Implementation of LUE_REGISTER_ARRAY_PARTITION macro
 // for a array partition type
-#define LUE_REGISTER_ARRAY_PARTITION_IMPL(Server, name) \
-    HPX_REGISTER_ACTION(Server::size_action,             \
-        HPX_PP_CAT(__ArrayPartition_size_action_, name))     \
-    using HPX_PP_CAT(__ArrayPartition_, name) =                  \
-        ::hpx::components::component<Server>;            \
+#define LUE_REGISTER_ARRAY_PARTITION_IMPL(Server, name)   \
+    HPX_REGISTER_ACTION(Server::DataAction,               \
+        HPX_PP_CAT(__ArrayPartition_DataAction_, name))   \
+    HPX_REGISTER_ACTION(Server::FillAction,               \
+        HPX_PP_CAT(__ArrayPartition_FillAction_, name))   \
+    HPX_REGISTER_ACTION(Server::ShapeAction,              \
+        HPX_PP_CAT(__ArrayPartition_shape_action_, name))  \
+    HPX_REGISTER_ACTION(Server::SizeAction,               \
+        HPX_PP_CAT(__ArrayPartition_size_action_, name))  \
+    using HPX_PP_CAT(__ArrayPartition_, name) =           \
+        ::hpx::components::component<Server>;             \
     HPX_REGISTER_COMPONENT(HPX_PP_CAT(__ArrayPartition_, name))
 
 // Forward
@@ -232,6 +247,22 @@ ArrayPartition<Value, Data>::ArrayPartition(
 }
 
 
+/*!
+    @brief      Construct an instance based on initial partition @a data
+*/
+template<
+    typename Value,
+    typename Data>
+ArrayPartition<Value, Data>::ArrayPartition(
+    Data const& data):
+
+    Base{},
+    _data{data}
+
+{
+}
+
+
 template<
     typename Value,
     typename Data>
@@ -258,6 +289,38 @@ ArrayPartition<Value, Data>::ArrayPartition(
 }
 
 
+/*!
+    @brief      Return this partition's data
+*/
+template<
+    typename Value,
+    typename Data>
+Data ArrayPartition<Value, Data>::data() const
+{
+    return _data;
+}
+
+
+template<
+    typename Value,
+    typename Data>
+void ArrayPartition<Value, Data>::fill(
+    Value value)
+{
+    std::fill(_data.data(), _data.data() + _data.size(), value);
+}
+
+
+template<
+    typename Value,
+    typename Data>
+typename ArrayPartition<Value, Data>::Shape
+    ArrayPartition<Value, Data>::shape() const
+{
+    return _data.shape();
+}
+
+
 template<
     typename Value,
     typename Data>
@@ -265,18 +328,6 @@ typename ArrayPartition<Value, Data>::SizeType
     ArrayPartition<Value, Data>::size() const
 {
     return _data.size();
-}
-
-
-/*!
-    @brief      Return a reference to this partition's data
-*/
-template<
-    typename Value,
-    typename Data>
-Data const& ArrayPartition<Value, Data>::data() const
-{
-    return _data;
 }
 
 }  // namespace server

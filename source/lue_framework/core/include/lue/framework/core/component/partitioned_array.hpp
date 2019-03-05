@@ -41,6 +41,16 @@ public:
 
     using Index = typename Data::Index;
 
+
+    using PartitionClient = client::ArrayPartition<ValueType, Data>;
+
+    using PartitionServer = typename PartitionClient::Server;
+
+    using Partition = PartitionClient;
+
+    using Partitions = ArrayPartitionData<Partition, Data::rank>;
+    // using Partitions = ArrayPartitionData<int, Data::rank>;
+
 private:
 
     // using Base = hpx::components::client_base<
@@ -52,10 +62,6 @@ private:
     //     hpx::components::server::distributed_metadata_base<
     //         server::PartitionedArrayMetadata<
     //             typename Data::Definition::Index, Data::rank>>>;
-
-    using PartitionClient = client::ArrayPartition<ValueType, Data>;
-
-    using PartitionServer = typename PartitionClient::Server;
 
 
     // class Partition:
@@ -120,17 +126,11 @@ private:
 
     // };
 
-    using Partition = PartitionClient;
-
-    using Partitions = ArrayPartitionData<Partition, Data::rank>;
-    // using Partitions = ArrayPartitionData<int, Data::rank>;
-
-
     //! Shape of the partitioned array
     Shape          _shape;
 
-    //! Shape of most partitions (possibly except for the ones at the border)
-    Shape          _partition_shape;
+    // //! Shape of most partitions (possibly except for the ones at the border)
+    // Shape          _partition_shape;
 
     //! Array of array partitions
     Partitions     _partitions;
@@ -164,6 +164,9 @@ public:
 
     explicit       PartitionedArray    (Shape const& shape);
 
+                   PartitionedArray    (Shape const& shape,
+                                        Partitions&& partitions);
+
     // template<
     //     typename DistributionPolicy>
     //                PartitionedArray    (Definition const& definition,
@@ -182,15 +185,17 @@ public:
 
     // PartitionedArray& operator=        (PartitionedArray&& other)=default;
 
-    // void           insert              (Value const& value);
+    // void        insert              (Value const& value);
 
-    Index             nr_elements      () const;
+    Index          nr_elements         () const;
 
     // Definition const& definition       () const;
 
-    Shape const&      shape            () const;
+    Shape const&   shape               () const;
 
-    Index             nr_partitions    () const;
+    Index          nr_partitions       () const;
+
+    Partitions&    partitions          ();
 
     Partitions const& partitions       () const;
 
@@ -210,7 +215,6 @@ public:
     Iterator       end                 ();
 
 private:
-
 
     //! For a locality ID a list of array partition component IDs
     using BulkLocalityResult =
@@ -254,6 +258,23 @@ PartitionedArray<Value, Data>::PartitionedArray(
 
 {
     create(hpx::container_layout);
+
+    // TODO Assert shape and partitions are in sync
+}
+
+
+template<
+    typename Value,
+    typename Data>
+PartitionedArray<Value, Data>::PartitionedArray(
+    Shape const& shape,
+    Partitions&& partitions):
+
+    _shape{shape},
+    _partitions{std::move(partitions)}
+
+{
+    // TODO Assert shape and partitions are in sync
 }
 
 
@@ -297,7 +318,7 @@ void PartitionedArray<Value, Data>::create(
     // Next adjust the border partitions and position them
 
     // // now initialize our data structures
-    std::uint32_t const this_locality_nr = hpx::get_locality_id();
+    // std::uint32_t const this_locality_nr = hpx::get_locality_id();
     std::vector<hpx::future<void>> ptrs;
 
     // std::size_t num_part = 0;
@@ -324,8 +345,8 @@ void PartitionedArray<Value, Data>::create(
 
         // Obtain locality number from locality id
         // TODO Why not use the locality id itself?
-        std::uint32_t const locality_nr =
-            hpx::naming::get_locality_id_from_id(r.first);
+        // std::uint32_t const locality_nr =
+        //     hpx::naming::get_locality_id_from_id(r.first);
 
         // Iterate over all IDs of server components started on the
         // locality currently iterated over
@@ -428,8 +449,8 @@ void PartitionedArray<Value, Data>::create(
 
     hpx::wait_all(ptrs);
 
-    // Cache the partition shape
-    _partition_shape = max_partition_shape;
+    // // Cache the partition shape
+    // _partition_shape = max_partition_shape;
 
 
 
@@ -581,6 +602,16 @@ typename PartitionedArray<Value, Data>::Index
     PartitionedArray<Value, Data>::nr_partitions() const
 {
     return _partitions.size();
+}
+
+
+template<
+    typename Value,
+    typename Data>
+typename PartitionedArray<Value, Data>::Partitions&
+    PartitionedArray<Value, Data>::partitions()
+{
+    return _partitions;
 }
 
 
