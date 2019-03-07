@@ -18,7 +18,7 @@ template<
     typename PartitionedArray,
     typename Value
 >
-hpx::future<void> fill(
+[[nodiscard]] hpx::future<void> fill(
     PartitionedArray& array,
     hpx::shared_future<Value>& value)
 {

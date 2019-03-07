@@ -1,6 +1,7 @@
 add_test_conditionally(test)
 
 add_library(lue_framework_core
+    src/component/array_partition
     src/configuration_entry
     src/debug
 )

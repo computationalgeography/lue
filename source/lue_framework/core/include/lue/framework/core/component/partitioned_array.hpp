@@ -35,7 +35,13 @@ public:
     static_assert(std::is_same_v<Value, typename Data::ValueType>);
     using ValueType = typename Data::ValueType;
 
+    using ElementType = ValueType;
+
+    static constexpr std::size_t rank = Data::rank;
+
     using Shape = typename Data::Shape;
+
+    using ShapeType = Shape;
 
     // using Definition = lue::ArrayPartitionDefinition<typename Data::Index, Data::rank>;
 

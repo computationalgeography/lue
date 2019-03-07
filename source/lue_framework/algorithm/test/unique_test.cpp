@@ -6,9 +6,6 @@
 // #include "lue/framework/test/stream.hpp"
 
 
-// LUE_REGISTER_ARRAY_PARTITION(int32_t, 1)
-
-
 BOOST_AUTO_TEST_CASE(array_1d)
 {
     BOOST_CHECK(true);

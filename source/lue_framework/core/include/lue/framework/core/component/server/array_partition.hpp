@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/framework/core/array_partition_data.hpp"
 #include <hpx/config.hpp>
 #include <hpx/include/components.hpp>
 
@@ -142,7 +143,7 @@ public:
     )
 
 // Implementation of LUE_REGISTER_ARRAY_PARTITION macro
-// for a array partition type
+// for an array partition type
 #define LUE_REGISTER_ARRAY_PARTITION_IMPL(Server, name)   \
     HPX_REGISTER_ACTION(Server::DataAction,               \
         HPX_PP_CAT(__ArrayPartition_DataAction_, name))   \
@@ -158,10 +159,11 @@ public:
 
 // Forward
 #define LUE_REGISTER_ARRAY_PARTITION_2(Value, rank)                     \
-    using HPX_PP_CAT(DefaultData, rank) = ::lue::ArrayPartitionData<Value, rank>;         \
+    using HPX_PP_CAT(HPX_PP_CAT(HPX_PP_CAT(DefaultData_, Value), _), rank) = \
+        ::lue::ArrayPartitionData<Value, rank>;         \
     LUE_REGISTER_ARRAY_PARTITION_4(                                     \
         Value, rank,                                                    \
-        HPX_PP_CAT(DefaultData, rank),                                                  \
+        HPX_PP_CAT(HPX_PP_CAT(HPX_PP_CAT(DefaultData_, Value), _), rank), \
         HPX_PP_CAT(  \
             HPX_PP_CAT(HPX_PP_CAT(lue_ArrayPartitionData_, Value), _), rank))
 

@@ -16,9 +16,6 @@ using Shape = typename PartitionClient::Shape;
 
 }  // Anonymous namespace
 
-LUE_REGISTER_ARRAY_PARTITION(int32_t, 0)
-LUE_REGISTER_ARRAY_PARTITION(int32_t, 2)
-
 
 // BOOST_AUTO_TEST_CASE(default_construct)
 // {

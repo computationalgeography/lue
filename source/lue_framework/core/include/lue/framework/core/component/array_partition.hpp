@@ -29,12 +29,16 @@ class ArrayPartition:
 
 public:
 
+    using DataType = Data;
+
     using Server = server::ArrayPartition<Value, Data>;
 
     using Base =
         hpx::components::client_base<ArrayPartition<Value, Data>, Server>;
 
     using Shape = typename Data::Shape;
+
+    using ShapeType = Shape;
 
                    ArrayPartition      ();
 

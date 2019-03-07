@@ -48,7 +48,7 @@ if(LUE_BUILD_DOCUMENTATION)
     ###     COMMAND ${CMAKE_COMMAND} -E copy ${svg_files} html
     ### )
 
-    set(DOXYGEN_ENABLE_PREPROCESSING FALSE)
+    # set(DOXYGEN_ENABLE_PREPROCESSING FALSE)
     doxygen_add_docs(cpp_doc
         doc
         lue_shared

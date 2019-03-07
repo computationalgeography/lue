@@ -21,8 +21,6 @@ using Shape = typename Data::Shape;
 
 }  // Anonymous namespace
 
-LUE_REGISTER_ARRAY_PARTITION(int32_t, 2)
-
 
 BOOST_AUTO_TEST_CASE(default_construct)
 {
