@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/core/shape.hpp"
+#include "lue/framework/core/type_traits.hpp"
 #include <hpx/runtime/serialization/serialize.hpp>
 #include <boost/multi_array.hpp>
 #include <algorithm>
@@ -35,6 +36,8 @@ public:
     using ValueType = typename Values::element;
     static_assert(std::is_same_v<ValueType, Value>);
 
+    using ElementType = ValueType;
+
     static_assert(std::is_unsigned_v<typename Values::size_type>);
     using SizeType = typename Values::size_type;
     static_assert(std::is_unsigned_v<SizeType>);
@@ -43,6 +46,7 @@ public:
     static_assert(std::is_unsigned_v<Index>);
 
     using Shape = lue::Shape<Index, rank>;
+    using ShapeType = Shape;
 
     using Iterator = typename Values::iterator;
 
@@ -188,11 +192,11 @@ template<
 ArrayPartitionData<Value, rank>::ArrayPartitionData(
     ArrayPartitionData&& other):
 
-    _shape{},
-    _values{}
+    _shape{std::move(other._shape)},
+    _values{std::move(other._values)}
 
 {
-    *this = std::move(other);
+    // *this = std::move(other);
 }
 
 
@@ -618,5 +622,30 @@ typename ArrayPartitionData<Value, 0>::Iterator
     return _values.end();
 }
 
+
+template<
+    typename Element,
+    std::size_t rank_>
+class ArrayPartitionDataTypeTraits<ArrayPartitionData<Element, rank_>>
+{
+
+private:
+
+    // Use template parameters to create Data type
+    using Data = ArrayPartitionData<Element, rank_>;
+
+public:
+
+    // Only use Data, not the template parameters
+    using ElementType = typename Data::ElementType;
+    using ShapeType = typename Data::ShapeType;
+
+    constexpr static std::size_t rank = Data::rank;
+
+    template<
+        typename ElementType>
+    using DataTemplate = ArrayPartitionData<ElementType, Data::rank>;
+
+};
 
 }  // namespace lue

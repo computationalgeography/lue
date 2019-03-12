@@ -694,4 +694,99 @@ typename PartitionedArray<Value, Data>::Iterator
 //     return all_valid(_index);
 // }
 
+
+template<
+    typename Element,
+    typename Data>
+class ArrayPartitionsTypeTraits<
+        ArrayPartitionData<
+            client::ArrayPartition<Element, Data>, Data::rank>>
+{
+
+private:
+
+    // Use template parameters to create Partitions type
+
+    using Partitions =
+        ArrayPartitionData<client::ArrayPartition<Element, Data>, Data::rank>;
+
+public:
+
+    // Only use Partitions, not the template parameters
+
+    using PartitionType = typename Partitions::ElementType;
+
+    template<
+        typename ElementType>
+    using PartitionsTemplate =
+        ArrayPartitionData<
+            typename ArrayPartitionTypeTraits<PartitionType>::
+                template PartitionTemplate<ElementType>,
+            Data::rank>;
+
+};
+
+
+template<
+    typename Element,
+    typename Data>
+class PartitionedArrayTypeTraits<PartitionedArray<Element, Data>>
+{
+
+private:
+
+    // Use template parameters to create Array type
+
+    using Array = PartitionedArray<Element, Data>;
+
+public:
+
+    // Only use Partition, not the template parameters
+
+    using ElementType = typename Array::ElementType;
+    using ShapeType = typename Array::ShapeType;
+    using PartitionsType = typename Array::Partitions;
+    using PartitionType = typename Array::Partition;
+
+    template<
+        typename Element_>
+    using PartitionsTemplate =
+        typename ArrayPartitionsTypeTraits<PartitionsType>::
+            template PartitionsTemplate<Element_>;
+
+};
+
+
+template<
+    typename Element,
+    typename Data>
+constexpr std::size_t rank(
+    PartitionedArray<Element, Data> const& /* array */) noexcept
+{
+    // For this array type, rank is a compile time constant, so the
+    // instance is not used
+    return PartitionedArray<Element, Data>::rank;
+}
+
+
+template<
+    typename Element,
+    typename Data>
+typename PartitionedArrayTypeTraits<PartitionedArray<Element, Data>>::ShapeType
+        shape_in_partitions(
+    PartitionedArray<Element, Data> const& array)
+{
+    return array.partitions().shape();
+}
+
+
+template<
+    typename Element,
+    typename Data>
+std::size_t nr_partitions(
+    PartitionedArray<Element, Data> const& array)
+{
+    return array.nr_partitions();
+}
+
 }  // namespace lue

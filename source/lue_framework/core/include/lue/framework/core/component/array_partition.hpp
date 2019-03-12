@@ -44,15 +44,16 @@ public:
 
                    ArrayPartition      (hpx::id_type const& id);
 
-                   ArrayPartition      (hpx::future<hpx::id_type>&& id);
+                   ArrayPartition      (hpx::future<hpx::id_type>&&
+                                            component_id);
 
                    ArrayPartition      (hpx::future<ArrayPartition>&&
-                                            partition);
+                                            component);
 
-                   ArrayPartition      (hpx::id_type const& where,
+                   ArrayPartition      (hpx::id_type const& locality_id,
                                         Shape const& shape);
 
-                   ArrayPartition      (hpx::id_type const& where,
+                   ArrayPartition      (hpx::id_type const& locality_id,
                                         Shape const& shape,
                                         Value value);
 
@@ -105,13 +106,18 @@ ArrayPartition<Value, Data>::ArrayPartition(
 }
 
 
+/*!
+    @brief      Construct an instance based on a, possibly remote,
+                component
+    @param      component_id ID of component
+*/
 template<
     typename Value,
     typename Data>
 ArrayPartition<Value, Data>::ArrayPartition(
-    hpx::future<hpx::id_type>&& id):
+    hpx::future<hpx::id_type>&& component_id):
 
-    Base{std::move(id)}
+    Base{std::move(component_id)}
 
 {
 }
@@ -123,7 +129,6 @@ ArrayPartition<Value, Data>::ArrayPartition(
 
     A partition already holds a future to the id of the referenced object.
     Unwrapping accesses this inner future.
-
 */
 template<
     typename Value,
@@ -141,10 +146,10 @@ template<
     typename Value,
     typename Data>
 ArrayPartition<Value, Data>::ArrayPartition(
-    hpx::id_type const& where,
+    hpx::id_type const& locality_id,
     Shape const& shape):
 
-    Base{hpx::new_<Server>(where, shape)}
+    Base{hpx::new_<Server>(locality_id, shape)}
 
 {
 }
@@ -154,11 +159,11 @@ template<
     typename Value,
     typename Data>
 ArrayPartition<Value, Data>::ArrayPartition(
-    hpx::id_type const& where,
+    hpx::id_type const& locality_id,
     Shape const& shape,
     Value value):
 
-    Base{hpx::new_<Server>(where, shape, value)}
+    Base{hpx::new_<Server>(locality_id, shape, value)}
 
 {
 }
@@ -293,4 +298,38 @@ hpx::future<void> ArrayPartition<Value, Data>::fill(
 }
 
 }  // namespace client
+
+
+template<
+    typename Element,
+    typename Data>
+class ArrayPartitionTypeTraits<client::ArrayPartition<Element, Data>>
+{
+
+private:
+
+    // Use template parameters to create Partition type
+
+    using Partition = client::ArrayPartition<Element, Data>;
+
+public:
+
+    // Only use Partition, not the template parameters
+
+    using DataType = typename Partition::DataType;
+    using ShapeType = typename Partition::ShapeType;
+
+    template<
+        typename ElementType>
+    using DataTemplate =
+        typename ArrayPartitionDataTypeTraits<Data>::
+            template DataTemplate<ElementType>;
+
+    template<
+        typename ElementType>
+    using PartitionTemplate =
+        client::ArrayPartition<ElementType, DataTemplate<ElementType>>;
+
+};
+
 }  // namespace lue
