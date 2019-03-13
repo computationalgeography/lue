@@ -23,8 +23,11 @@ typename ArrayPartitionTypeTraits<Partition>::
         template PartitionTemplate<ResultElement> sum_partition(
     Partition const& partition)
 {
-    // Assert the current locality equals the one of the server
-    assert(hpx::get_colocation_id(partition.get_id()).get() == hpx::find_here());
+    // Assert the locality of the partition is the same as the locality
+    // this code runs on
+    assert(
+        hpx::get_colocation_id(partition.get_id()).get() ==
+        hpx::find_here());
 
     using Data = typename ArrayPartitionTypeTraits<Partition>::DataType;
     using ResultPartition =
@@ -228,6 +231,10 @@ hpx::future<ResultElement> sum(
     SumsPartitions sums_partitions{nr_elements(shape_in_partitions(array))};
     SumPartitionAction sum_partition_action;
 
+    // Attach a continuation to each array partition that calculates
+    // the sum of the values in that partition. These continuations run
+    // on the same localities as where the partitions themselves are
+    // located.
     for(std::size_t p = 0; p < nr_partitions(array); ++p) {
 
         // TODO How does this work? What is being passed to the action?
@@ -238,20 +245,33 @@ hpx::future<ResultElement> sum(
         sums_partitions[p] = hpx::dataflow(
             hpx::launch::async,
             sum_partition_action,
+            // TODO Is this efficient?
             hpx::get_colocation_id(hpx::launch::sync, partition.get_id()),
+            // TODO This partition client instance is copied here isn't it?
+            //     Does that make sense?
+            //     Partition clients must be like shared futures. Are they?
             partition
         );
     }
 
+    // The partition sums are being determined on their respective
+    // localities. Attach a continuation that sums the sums once the
+    // partition sums are ready. This continuation runs on our own
+    // locality.
     return hpx::dataflow(
         hpx::launch::async,
         hpx::util::unwrapping(
+
+            // IDs of the partitions containing the partition sums
             [](auto&& sums_partitions_ids) {
+
                 // Sum all partition sums and return the result
                 ResultElement result{};
 
                 for(auto const& partition_id: sums_partitions_ids) {
 
+                    // Create partition component client and obtain the
+                    // single value representing the sum of the partition
                     SumPartition partition{partition_id};
                     auto data = partition.data().get();
                     assert(data.size() == 1);
@@ -261,6 +281,7 @@ hpx::future<ResultElement> sum(
                 }
 
                 return result;
+
             }
         ),
         std::move(sums_partitions)

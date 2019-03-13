@@ -1,11 +1,11 @@
-add_subdirectory(lue_shared)
+add_subdirectory(shared)
 
 if(LUE_BUILD_DATA_MODEL)
-    add_subdirectory(lue_data_model)
+    add_subdirectory(data_model)
 endif()
 
 if(LUE_BUILD_FRAMEWORK)
-    add_subdirectory(lue_framework)
+    add_subdirectory(framework)
 endif()
 
 if(LUE_BUILD_IMGUI)
@@ -51,7 +51,7 @@ if(LUE_BUILD_DOCUMENTATION)
     # set(DOXYGEN_ENABLE_PREPROCESSING FALSE)
     doxygen_add_docs(cpp_doc
         doc
-        lue_shared
+        shared
         ${doxygen_input}
     )
     ### add_dependencies(cpp_doc
