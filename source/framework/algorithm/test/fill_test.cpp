@@ -10,27 +10,27 @@ BOOST_AUTO_TEST_CASE(array_1d)
 {
     using Value = std::int32_t;
     std::size_t const rank = 1;
-    using Data = lue::ArrayPartitionData<Value, rank>;
-    using Array = lue::PartitionedArray<Value, Data>;
+    using Array = lue::PartitionedArray<Value, rank>;
+    using Data = typename Array::Partition::Data;
     using Shape = typename Data::Shape;
     using Index = typename Data::Index;
 
     Index const nr_elements = 100;
     Shape const shape{{nr_elements}};
 
-    lue::PartitionedArray<Value, Data> array{shape};
+    Array array{shape};
     hpx::shared_future<Value> fill_value = hpx::make_ready_future<Value>(5);
 
     // Request the filling of the array and wait for it to finish
     lue::fill(array, fill_value).wait();
 
 
-
     // ----- REMOVE -----
     for(auto const& partition: array.partitions()) {
-        auto server = *partition.component();
 
-        for(auto const v: server.data()) {
+        auto const data = partition.data().get();
+
+        for(auto const v: data) {
             BOOST_REQUIRE_EQUAL(v, fill_value.get());
         }
     }

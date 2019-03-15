@@ -2,79 +2,21 @@
 #include "lue/framework/algorithm/fill.hpp"
 #include "lue/framework/algorithm/sum.hpp"
 #include "lue/framework/core/component/partitioned_array.hpp"
+#include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
-#include "lue/framework/test/stream.hpp"
 
 
-BOOST_AUTO_TEST_CASE(array_1d_int32_int32)
+namespace detail {
+
+template<
+    typename Element,
+    typename ResultElement,
+    std::size_t rank>
+void test_array()
 {
-    using Value = std::int32_t;
-    std::size_t const rank = 1;
-    using Data = lue::ArrayPartitionData<Value, rank>;
-    using Array = lue::PartitionedArray<std::int32_t, Data>;
-    using Shape = typename Data::Shape;
-    using Index = typename Data::Index;
+    using Array = lue::PartitionedArray<Element, rank>;
 
-    Index const nr_elements = 100;
-    Shape const shape{{nr_elements}};
-
-    lue::PartitionedArray<Value, Data> array{shape};
-    hpx::shared_future<Value> fill_value = hpx::make_ready_future<Value>(5);
-
-    // Request the filling of the array and wait for it to finish
-    lue::fill(array, fill_value).wait();
-
-    // Request the sumation of the array
-    auto sum = lue::sum(array);
-
-    BOOST_CHECK_EQUAL(sum.get(), nr_elements * fill_value.get());
-}
-
-
-// BOOST_AUTO_TEST_CASE(array_1d_int64_int64)
-// {
-//     using Element = std::int64_t;
-//     using ResultElement = std::int64_t;
-//     std::size_t const rank = 1;
-//     using Data = lue::ArrayPartitionData<Element, rank>;
-//     using Array = lue::PartitionedArray<Element, Data>;
-//     using Shape = typename Data::Shape;
-//     using Index = typename Data::Index;
-// 
-//     Index const nr_elements = 100;
-//     Shape const shape{{nr_elements}};
-// 
-//     lue::PartitionedArray<Element, Data> array{shape};
-//     hpx::shared_future<Element> fill_value =
-//         hpx::make_ready_future<Element>(5);
-// 
-//     // Request the filling of the array and wait for it to finish
-//     lue::fill(array, fill_value).wait();
-// 
-//     // Request the sumation of the array
-//     auto sum = lue::sum<Array, ResultElement>(array);
-// 
-//     using TypeWeGot = decltype(sum);
-//     using TypeWeWant = hpx::future<ResultElement>;
-//     static_assert(std::is_same_v<TypeWeGot, TypeWeWant>);
-// 
-//     // TODO Booom!
-//     BOOST_CHECK_EQUAL(sum.get(), nr_elements * fill_value.get());
-// }
-
-
-BOOST_AUTO_TEST_CASE(array_1d_int32_int64)
-{
-    using Element = std::int32_t;
-    using ResultElement = std::int64_t;
-    std::size_t const rank = 1;
-    using Data = lue::ArrayPartitionData<Element, rank>;
-    using Array = lue::PartitionedArray<Element, Data>;
-    using Shape = typename Data::Shape;
-    using Index = typename Data::Index;
-
-    Index const nr_elements = 100;
-    Shape const shape{{nr_elements}};
+    auto const shape{lue::Test<Array>::shape()};
 
     Array array{shape};
     hpx::shared_future<Element> fill_value =
@@ -90,5 +32,45 @@ BOOST_AUTO_TEST_CASE(array_1d_int32_int64)
     using TypeWeWant = hpx::future<ResultElement>;
     static_assert(std::is_same_v<TypeWeGot, TypeWeWant>);
 
-    BOOST_CHECK_EQUAL(sum.get(), nr_elements * fill_value.get());
+    BOOST_CHECK_EQUAL(sum.get(), lue::nr_elements(shape) * fill_value.get());
 }
+
+
+template<
+    typename Element,
+    typename ResultElement>
+void test_array_1d()
+{
+    test_array<Element, ResultElement, 1>();
+}
+
+
+template<
+    typename Element,
+    typename ResultElement>
+void test_array_2d()
+{
+    test_array<Element, ResultElement, 2>();
+}
+
+}  // namespace detail
+
+
+#define TEST_CASE(                                                 \
+    rank,                                                          \
+    Element,                                                       \
+    ResultElement)                                                 \
+                                                                   \
+BOOST_AUTO_TEST_CASE(array_##rank##d_##Element##_##ResultElement)  \
+{                                                                  \
+    detail::test_array_##rank##d<Element, ResultElement>();        \
+}
+
+TEST_CASE(1, int32_t, int32_t)
+TEST_CASE(2, int32_t, int32_t)
+TEST_CASE(1, int64_t, int64_t)
+TEST_CASE(2, int64_t, int64_t)
+TEST_CASE(1, int32_t, int64_t)
+TEST_CASE(2, int32_t, int64_t)
+
+#undef TEST_CASE

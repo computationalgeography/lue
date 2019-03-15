@@ -9,36 +9,35 @@ namespace server {
 
 /*!
     @brief      Component server class for partioned array partitions
-    @tparam     Data Class representing the array data of a single partition
 */
 template<
-    typename Value,
-    typename Data>
+    typename Element,
+    std::size_t rank>
 class ArrayPartition:
     public hpx::components::locking_hook<
-        hpx::components::component_base<ArrayPartition<Value, Data>>>
+        hpx::components::component_base<ArrayPartition<Element, rank>>>
 {
 
 private:
 
-    static_assert(std::is_same_v<Value, typename Data::ValueType>);
-
     using Base =
         hpx::components::locking_hook<
-            hpx::components::component_base<ArrayPartition<Value, Data>>>;
+            hpx::components::component_base<ArrayPartition<Element, rank>>>;
 
 public:
 
+    using Data = ArrayPartitionData<Element, rank>;
+
     using Shape = typename Data::Shape;
 
-    using SizeType = typename Data::SizeType;
+    using Size = typename Data::Size;
 
                    ArrayPartition      ();
 
     explicit       ArrayPartition      (Shape const& shape);
 
                    ArrayPartition      (Shape const& shape,
-                                        Value value);
+                                        Element value);
 
                    ArrayPartition      (Data const& data);
 
@@ -54,11 +53,11 @@ public:
 
     Data           data                () const;
 
-    void           fill                (Value value);
+    void           fill                (Element value);
 
     Shape          shape               () const;
 
-    SizeType       size                () const;
+    Size           size                () const;
 
 private:
 
@@ -68,10 +67,10 @@ private:
 public:
 
     // Macros to define HPX component actions for all exported functions
-    HPX_DEFINE_COMPONENT_DIRECT_ACTION(ArrayPartition, data, DataAction);
-    HPX_DEFINE_COMPONENT_DIRECT_ACTION(ArrayPartition, fill, FillAction);
-    HPX_DEFINE_COMPONENT_DIRECT_ACTION(ArrayPartition, shape, ShapeAction);
-    HPX_DEFINE_COMPONENT_DIRECT_ACTION(ArrayPartition, size, SizeAction);
+    HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, data, DataAction);
+    HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, fill, FillAction);
+    HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, shape, ShapeAction);
+    HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, size, SizeAction);
 
 };
 
@@ -79,124 +78,85 @@ public:
 }  // namespace lue
 
 
-// HPX_REGISTER_ACTION_DECLARATION calls ---------------------------------------
-
-/*
-// Forward
-#define LUE_REGISTER_ARRAY_PARTITION_DECLARATION(...)       \
-    LUE_REGISTER_ARRAY_PARTITION_DECLARATION_(__VA_ARGS__)
-
-// Forward
-#define LUE_REGISTER_ARRAY_PARTITION_DECLARATION_(...)  \
-    HPX_PP_EXPAND(                                      \
-        HPX_PP_CAT(                                     \
-            LUE_REGISTER_ARRAY_PARTITION_DECLARATION_,  \
-            HPX_PP_NARGS(__VA_ARGS__))(                 \
-                __VA_ARGS__))
-
-// Implementation of LUE_REGISTER_ARRAY_PARTITION_DECLARATION macro
-// for a array partition type
-#define LUE_REGISTER_ARRAY_PARTITION_DECLARATION_IMPL(Type, name)
-//     HPX_REGISTER_ACTION_DECLARATION(Type::size_action,             \
-//             HPX_PP_CAT(__ArrayPartition_size_action, name));
-
-// Forward
-#define LUE_REGISTER_ARRAY_PARTITION_DECLARATION_2(Value, rank)  \
-    LUE_REGISTER_ARRAY_PARTITION_DECLARATION_3(                  \
-        Value, rank,                                             \
-        ArrayPartitionData<Value, rank>)
-
-// Forward
-#define LUE_REGISTER_ARRAY_PARTITION_DECLARATION_3(Value, rank, Data)  \
-    static_assert(rank == Data::rank);                                 \
-    LUE_REGISTER_ARRAY_PARTITION_DECLARATION_4(                        \
-        Value, rank,                                                   \
-        Data,                                                          \
-        Value)
-
-// Call implementation
-#define LUE_REGISTER_ARRAY_PARTITION_DECLARATION_4(Value, Data, rank, name)  \
-    using HPX_PP_CAT(                                                        \
-            __ArrayPartition_,                                               \
-            HPX_PP_CAT(HPX_PP_CAT(Value, rank), name)) =                     \
-                ::lue::server::ArrayPartition<Value, Data>;                  \
-    LUE_REGISTER_ARRAY_PARTITION_DECLARATION_IMPL(                           \
-        HPX_PP_CAT(                                                          \
-            __ArrayPartition_,                                               \
-            HPX_PP_CAT(HPX_PP_CAT(Value, rank), name)), name)
-*/
+#define LUE_REGISTER_ARRAY_PARTITION_ACTION_DECLARATIONS(        \
+    Element,                                                     \
+    rank)                                                        \
+                                                                 \
+namespace lue {                                                  \
+namespace detail {                                               \
+                                                                 \
+using ArrayPartition_##Element##_##rank =                        \
+    server::ArrayPartition<Element, rank>;                       \
+                                                                 \
+}                                                                \
+}                                                                \
+                                                                 \
+HPX_REGISTER_ACTION_DECLARATION(                                 \
+    lue::detail::ArrayPartition_##Element##_##rank::DataAction,  \
+    ArrayPartition_##Element##_##rank##_DataAction)              \
+                                                                 \
+HPX_REGISTER_ACTION_DECLARATION(                                 \
+    lue::detail::ArrayPartition_##Element##_##rank::FillAction,  \
+    ArrayPartition_##Element##_##rank##_FillAction)              \
+                                                                 \
+HPX_REGISTER_ACTION_DECLARATION(                                 \
+    lue::detail::ArrayPartition_##Element##_##rank::ShapeAction, \
+    ArrayPartition_##Element##_##rank##_ShapeAction)             \
+                                                                 \
+HPX_REGISTER_ACTION_DECLARATION(                                 \
+    lue::detail::ArrayPartition_##Element##_##rank::SizeAction,  \
+    ArrayPartition_##Element##_##rank##_SizeAction)
 
 
-// HPX_REGISTER_ACTION calls and HPX_REGISTER_COMPONENT call -------------------
+#define LUE_REGISTER_ARRAY_PARTITIONS_ACTION_DECLARATIONS(    \
+    Element)                                                  \
+                                                              \
+LUE_REGISTER_ARRAY_PARTITION_ACTION_DECLARATIONS(Element, 0)  \
+LUE_REGISTER_ARRAY_PARTITION_ACTION_DECLARATIONS(Element, 1)  \
+LUE_REGISTER_ARRAY_PARTITION_ACTION_DECLARATIONS(Element, 2)
 
-// Forward
-#define LUE_REGISTER_ARRAY_PARTITION(...)       \
-    LUE_REGISTER_ARRAY_PARTITION_(__VA_ARGS__)
+LUE_REGISTER_ARRAY_PARTITIONS_ACTION_DECLARATIONS(/* std:: */ int32_t)
+LUE_REGISTER_ARRAY_PARTITIONS_ACTION_DECLARATIONS(/* std:: */ int64_t)
 
-// Forward
-#define LUE_REGISTER_ARRAY_PARTITION_(...)  \
-    HPX_PP_EXPAND(                          \
-        HPX_PP_CAT(                         \
-            LUE_REGISTER_ARRAY_PARTITION_,  \
-            HPX_PP_NARGS(__VA_ARGS__)       \
-        )(__VA_ARGS__)                      \
-    )
+#undef LUE_REGISTER_ARRAY_PARTITION_ACTION_DECLARATIONS
+#undef LUE_REGISTER_ARRAY_PARTITIONS_ACTION_DECLARATIONS
 
-// Implementation of LUE_REGISTER_ARRAY_PARTITION macro
-// for an array partition type
-#define LUE_REGISTER_ARRAY_PARTITION_IMPL(Server, name)   \
-    HPX_REGISTER_ACTION(Server::DataAction,               \
-        HPX_PP_CAT(__ArrayPartition_DataAction_, name))   \
-    HPX_REGISTER_ACTION(Server::FillAction,               \
-        HPX_PP_CAT(__ArrayPartition_FillAction_, name))   \
-    HPX_REGISTER_ACTION(Server::ShapeAction,              \
-        HPX_PP_CAT(__ArrayPartition_shape_action_, name))  \
-    HPX_REGISTER_ACTION(Server::SizeAction,               \
-        HPX_PP_CAT(__ArrayPartition_size_action_, name))  \
-    using HPX_PP_CAT(__ArrayPartition_, name) =           \
-        ::hpx::components::component<Server>;             \
-    HPX_REGISTER_COMPONENT(HPX_PP_CAT(__ArrayPartition_, name))
 
-// Forward
-#define LUE_REGISTER_ARRAY_PARTITION_2(Value, rank)                     \
-    using HPX_PP_CAT(HPX_PP_CAT(HPX_PP_CAT(DefaultData_, Value), _), rank) = \
-        ::lue::ArrayPartitionData<Value, rank>;         \
-    LUE_REGISTER_ARRAY_PARTITION_4(                                     \
-        Value, rank,                                                    \
-        HPX_PP_CAT(HPX_PP_CAT(HPX_PP_CAT(DefaultData_, Value), _), rank), \
-        HPX_PP_CAT(  \
-            HPX_PP_CAT(HPX_PP_CAT(lue_ArrayPartitionData_, Value), _), rank))
+#define LUE_DEFINE_ARRAY_PARTITION_COMPONENT_ACTION_TEMPLATE(          \
+        name)                                                          \
+                                                                       \
+namespace lue {                                                        \
+                                                                       \
+template<                                                              \
+    typename Element,                                                  \
+    std::size_t rank>                                                  \
+class ArrayPartition##name##Action                                     \
+{                                                                      \
+                                                                       \
+public:                                                                \
+                                                                       \
+    using Type =                                                       \
+        typename server::ArrayPartition<Element, rank>::name##Action;  \
+                                                                       \
+};                                                                     \
+                                                                       \
+}
 
-// Forward
-#define LUE_REGISTER_ARRAY_PARTITION_3(Value, rank, Data)  \
-    static_assert(rank == Data::rank);                     \
-    LUE_REGISTER_ARRAY_PARTITION_4(                        \
-        Value, rank,                                       \
-        Data,                                              \
-        HPX_PP_CAT(HPX_PP_CAT(Data, Value)_, rank))
+LUE_DEFINE_ARRAY_PARTITION_COMPONENT_ACTION_TEMPLATE(Data)
+LUE_DEFINE_ARRAY_PARTITION_COMPONENT_ACTION_TEMPLATE(Fill)
+LUE_DEFINE_ARRAY_PARTITION_COMPONENT_ACTION_TEMPLATE(Shape)
+LUE_DEFINE_ARRAY_PARTITION_COMPONENT_ACTION_TEMPLATE(Size)
 
-// Call implementation
-// Value: Value type of array elements
-// Data: Array type for storing array elements
-// name: Label for Data. This label will be uniqified using Value and rank
-#define LUE_REGISTER_ARRAY_PARTITION_4(Value, rank, Data, name)  \
-    using HPX_PP_CAT(                                            \
-            __ArrayPartition_,                                   \
-            HPX_PP_CAT(HPX_PP_CAT(Value, _), name)) =            \
-        ::lue::server::ArrayPartition<Value, Data>;              \
-    LUE_REGISTER_ARRAY_PARTITION_IMPL(                           \
-        HPX_PP_CAT(                                              \
-            __ArrayPartition_,                                   \
-            HPX_PP_CAT(HPX_PP_CAT(Value, _), name)), name)
+#undef LUE_DEFINE_ARRAY_PARTITION_COMPONENT_ACTION_TEMPLATE
 
 
 namespace lue {
 namespace server {
 
 template<
-    typename Value,
-    typename Data>
-ArrayPartition<Value, Data>::ArrayPartition():
+    typename Element,
+    std::size_t rank>
+ArrayPartition<Element, rank>::ArrayPartition():
 
     Base{},
     _data{}
@@ -213,9 +173,9 @@ ArrayPartition<Value, Data>::ArrayPartition():
     The @a shape passed in will be passed to the constructor of @a Data.
 */
 template<
-    typename Value,
-    typename Data>
-ArrayPartition<Value, Data>::ArrayPartition(
+    typename Element,
+    std::size_t rank>
+ArrayPartition<Element, rank>::ArrayPartition(
     Shape const& shape):
 
     Base{},
@@ -233,19 +193,19 @@ ArrayPartition<Value, Data>::ArrayPartition(
     constructor of @a Data.
 */
 template<
-    typename Value,
-    typename Data>
-ArrayPartition<Value, Data>::ArrayPartition(
+    typename Element,
+    std::size_t rank>
+ArrayPartition<Element, rank>::ArrayPartition(
     Shape const& shape,
-    Value value):
+    Element value):
 
     Base{},
     _data{shape, value}
 
 {
-    // Value is assumed to be a trivial type. Otherwise, don't pass
+    // Element is assumed to be a trivial type. Otherwise, don't pass
     // in value by value.
-    static_assert(std::is_trivial_v<Value>);
+    static_assert(std::is_trivial_v<Element>);
 }
 
 
@@ -253,9 +213,9 @@ ArrayPartition<Value, Data>::ArrayPartition(
     @brief      Construct an instance based on initial partition @a data
 */
 template<
-    typename Value,
-    typename Data>
-ArrayPartition<Value, Data>::ArrayPartition(
+    typename Element,
+    std::size_t rank>
+ArrayPartition<Element, rank>::ArrayPartition(
     Data const& data):
 
     Base{},
@@ -266,9 +226,9 @@ ArrayPartition<Value, Data>::ArrayPartition(
 
 
 template<
-    typename Value,
-    typename Data>
-ArrayPartition<Value, Data>::ArrayPartition(
+    typename Element,
+    std::size_t rank>
+ArrayPartition<Element, rank>::ArrayPartition(
     ArrayPartition const& other):
 
     Base{other},
@@ -279,9 +239,9 @@ ArrayPartition<Value, Data>::ArrayPartition(
 
 
 template<
-    typename Value,
-    typename Data>
-ArrayPartition<Value, Data>::ArrayPartition(
+    typename Element,
+    std::size_t rank>
+ArrayPartition<Element, rank>::ArrayPartition(
     ArrayPartition&& other):
 
     Base{std::move(other)},
@@ -295,39 +255,40 @@ ArrayPartition<Value, Data>::ArrayPartition(
     @brief      Return this partition's data
 */
 template<
-    typename Value,
-    typename Data>
-Data ArrayPartition<Value, Data>::data() const
+    typename Element,
+    std::size_t rank>
+typename ArrayPartition<Element, rank>::Data
+    ArrayPartition<Element, rank>::data() const
 {
     return _data;
 }
 
 
 template<
-    typename Value,
-    typename Data>
-void ArrayPartition<Value, Data>::fill(
-    Value value)
+    typename Element,
+    std::size_t rank>
+void ArrayPartition<Element, rank>::fill(
+    Element value)
 {
     std::fill(_data.data(), _data.data() + _data.size(), value);
 }
 
 
 template<
-    typename Value,
-    typename Data>
-typename ArrayPartition<Value, Data>::Shape
-    ArrayPartition<Value, Data>::shape() const
+    typename Element,
+    std::size_t rank>
+typename ArrayPartition<Element, rank>::Shape
+    ArrayPartition<Element, rank>::shape() const
 {
     return _data.shape();
 }
 
 
 template<
-    typename Value,
-    typename Data>
-typename ArrayPartition<Value, Data>::SizeType
-    ArrayPartition<Value, Data>::size() const
+    typename Element,
+    std::size_t rank>
+typename ArrayPartition<Element, rank>::Size
+    ArrayPartition<Element, rank>::size() const
 {
     return _data.size();
 }

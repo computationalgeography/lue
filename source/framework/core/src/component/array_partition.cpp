@@ -1,27 +1,51 @@
 #include "lue/framework/core/component/array_partition.hpp"
 
 
-// Instantiate ArrayPartition component template class for various value
-// types and ranks
+#define LUE_REGISTER_ARRAY_PARTITION_ACTIONS(                       \
+        Element,                                                    \
+        rank)                                                       \
+                                                                    \
+namespace lue {                                                     \
+namespace detail {                                                  \
+                                                                    \
+using ArrayPartitionServerType_##Element##_##rank =                 \
+    hpx::components::component<ArrayPartition_##Element##_##rank>;  \
+                                                                    \
+}                                                                   \
+}                                                                   \
+                                                                    \
+HPX_REGISTER_COMPONENT(                                             \
+    lue::detail::ArrayPartitionServerType_##Element##_##rank,       \
+    ArrayPartitionServer_##Element##_##rank)                        \
+                                                                    \
+HPX_REGISTER_ACTION(                                                \
+    lue::detail::ArrayPartition_##Element##_##rank::DataAction,     \
+    ArrayPartition_##Element##_##rank##_DataAction)                 \
+                                                                    \
+HPX_REGISTER_ACTION(                                                \
+    lue::detail::ArrayPartition_##Element##_##rank::FillAction,     \
+    ArrayPartition_##Element##_##rank##_FillAction)                 \
+                                                                    \
+HPX_REGISTER_ACTION(                                                \
+    lue::detail::ArrayPartition_##Element##_##rank::ShapeAction,    \
+    ArrayPartition_##Element##_##rank##_ShapeAction)                \
+                                                                    \
+HPX_REGISTER_ACTION(                                                \
+    lue::detail::ArrayPartition_##Element##_##rank::SizeAction,     \
+    ArrayPartition_##Element##_##rank##_SizeAction)
 
-#define LUE_REGISTER_ARRAY_PARTITIONS(type)  \
-LUE_REGISTER_ARRAY_PARTITION(type, 0)        \
-LUE_REGISTER_ARRAY_PARTITION(type, 1)        \
-LUE_REGISTER_ARRAY_PARTITION(type, 2)
 
-LUE_REGISTER_ARRAY_PARTITIONS(bool)
+// For an element type, register array partition actions for a number
+// of ranks
+#define LUE_REGISTER_ARRAY_PARTITIONS_ACTIONS(    \
+        Element)                                  \
+                                                  \
+LUE_REGISTER_ARRAY_PARTITION_ACTIONS(Element, 0)  \
+LUE_REGISTER_ARRAY_PARTITION_ACTIONS(Element, 1)  \
+LUE_REGISTER_ARRAY_PARTITION_ACTIONS(Element, 2)
 
-// LUE_REGISTER_ARRAY_PARTITIONS(/* std:: */ int8_t)
-// LUE_REGISTER_ARRAY_PARTITIONS(/* std:: */ int16_t)
-LUE_REGISTER_ARRAY_PARTITIONS(/* std:: */ int32_t)
-LUE_REGISTER_ARRAY_PARTITIONS(/* std:: */ int64_t)
+LUE_REGISTER_ARRAY_PARTITIONS_ACTIONS(/* std:: */ int32_t)
+LUE_REGISTER_ARRAY_PARTITIONS_ACTIONS(/* std:: */ int64_t)
 
-// LUE_REGISTER_ARRAY_PARTITIONS(/* std:: */ uint8_t)
-// LUE_REGISTER_ARRAY_PARTITIONS(/* std:: */ uint16_t)
-// LUE_REGISTER_ARRAY_PARTITIONS(/* std:: */ uint32_t)
-// LUE_REGISTER_ARRAY_PARTITIONS(/* std:: */ uint64_t)
-
-// LUE_REGISTER_ARRAY_PARTITIONS(float)
-// LUE_REGISTER_ARRAY_PARTITIONS(double)
-
-#undef LUE_REGISTER_ARRAY_PARTITIONS
+#undef LUE_REGISTER_ARRAY_PARTITION_ACTIONS
+#undef LUE_REGISTER_ARRAY_PARTITIONS_ACTIONS

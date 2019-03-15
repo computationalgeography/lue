@@ -8,8 +8,8 @@ namespace {
 
 using Value = std::int32_t;
 static std::size_t const rank = 2;
-using Data = lue::ArrayPartitionData<Value, rank>;
-using PartitionedArray = lue::PartitionedArray<Value, Data>;
+using PartitionedArray = lue::PartitionedArray<Value, rank>;
+using Data = typename PartitionedArray::Partition::Data;
 
 // using PartitionClient = lue::client::Partition<Index, Value, rank>;
 // using PartitionServer = typename PartitionClient::Server;

@@ -9,10 +9,9 @@ namespace {
 
 using Value = std::int32_t;
 static std::size_t const rank = 2;
-using Data = lue::ArrayPartitionData<Value, rank>;
-using PartitionClient = lue::client::ArrayPartition<Value, Data>;
-using PartitionServer = typename PartitionClient::Server;
-using Shape = typename PartitionClient::Shape;
+using PartitionClient = lue::ArrayPartition<Value, rank>;
+using Data = typename PartitionClient::Data;
+using Shape = typename Data::Shape;
 
 }  // Anonymous namespace
 
@@ -35,16 +34,13 @@ BOOST_AUTO_TEST_CASE(construct_uninitialized)
 {
     Shape shape{{5, 6}};
 
-    PartitionClient partition_client =
+    PartitionClient partition =
         hpx::new_<PartitionClient>(hpx::find_here(), shape);
-    std::shared_ptr<PartitionServer> partition_server =
-        partition_client.component();
-
-    BOOST_REQUIRE(partition_server);
+    Data data_we_got = partition.data().get();
 
     // Since the data values are uninitialized, we cannot assume anything
     // about them. Therefore, only look at the definition.
-    BOOST_CHECK_EQUAL(partition_server->data().shape(), shape);
+    BOOST_CHECK_EQUAL(data_we_got.shape(), shape);
 }
 
 
@@ -53,36 +49,29 @@ BOOST_AUTO_TEST_CASE(construct_initialized_with_single_value)
     Shape shape{{5, 6}};
     Value value{9};
 
-    PartitionClient partition_client =
+    PartitionClient partition =
         hpx::new_<PartitionClient>(hpx::find_here(), shape, value);
-    std::shared_ptr<PartitionServer> partition_server =
-        partition_client.component();
+    Data data_we_got = partition.data().get();
 
-    BOOST_REQUIRE(partition_server);
-
-    Data data{shape, value};
-    BOOST_CHECK_EQUAL(partition_server->data(), data);
+    Data data_we_want{shape, value};
+    BOOST_CHECK_EQUAL(data_we_got, data_we_want);
 }
 
 
 BOOST_AUTO_TEST_CASE(scalar_array)
 {
     std::size_t const rank = 0;
-    using Data = lue::ArrayPartitionData<Value, rank>;
-    using PartitionClient = lue::client::ArrayPartition<Value, Data>;
-    using PartitionServer = typename PartitionClient::Server;
+    using PartitionClient = lue::ArrayPartition<Value, rank>;
+    using Data = typename PartitionClient::Data;
     using Shape = Data::Shape;
 
     Shape shape{};
     Value value{9};
 
-    PartitionClient partition_client =
+    PartitionClient partition =
         hpx::new_<PartitionClient>(hpx::find_here(), shape, value);
-    std::shared_ptr<PartitionServer> partition_server =
-        partition_client.component();
+    Data data_we_got = partition.data().get();
 
-    BOOST_REQUIRE(partition_server);
-
-    Data data{shape, value};
-    BOOST_CHECK_EQUAL(partition_server->data(), data);
+    Data data_we_want{shape, value};
+    BOOST_CHECK_EQUAL(data_we_got, data_we_want);
 }

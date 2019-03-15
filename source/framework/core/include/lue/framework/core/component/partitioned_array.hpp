@@ -17,12 +17,12 @@ namespace lue {
                 distributed array partitions
 */
 template<
-    typename Value,
-    typename Data>
+    typename Element,
+    std::size_t rank>
 class PartitionedArray // :
     // public hpx::components::client_base<
-    //     PartitionedArray<Value, Data>,
-    //     server::PartitionedArray<Value, Data>>
+    //     PartitionedArray<Element, Data>,
+    //     server::PartitionedArray<Element, Data>>
 
         // hpx::components::server::distributed_metadata_base<
         //     server::PartitionedArrayMetadata<
@@ -32,39 +32,28 @@ class PartitionedArray // :
 
 public:
 
-    static_assert(std::is_same_v<Value, typename Data::ValueType>);
-    using ValueType = typename Data::ValueType;
-
-    using ElementType = ValueType;
-
-    static constexpr std::size_t rank = Data::rank;
-
-    using Shape = typename Data::Shape;
-
-    using ShapeType = Shape;
-
-    // using Definition = lue::ArrayPartitionDefinition<typename Data::Index, Data::rank>;
-
-    using Index = typename Data::Index;
-
-
-    using PartitionClient = client::ArrayPartition<ValueType, Data>;
+    using PartitionClient = ArrayPartition<Element, rank>;
 
     using PartitionServer = typename PartitionClient::Server;
 
     using Partition = PartitionClient;
 
-    using Partitions = ArrayPartitionData<Partition, Data::rank>;
-    // using Partitions = ArrayPartitionData<int, Data::rank>;
+    using Partitions = ArrayPartitionData<Partition, rank>;
+
+    using Shape = typename Partitions::Shape;
+
+    // using Definition = lue::ArrayPartitionDefinition<typename Data::Index, Data::rank>;
+
+    using Index = typename Partitions::Index;
 
 private:
 
     // using Base = hpx::components::client_base<
-    //     PartitionedArray<Value, Data>,
-    //     server::PartitionedArray<Value, Data>>;
+    //     PartitionedArray<Element, Data>,
+    //     server::PartitionedArray<Element, Data>>;
 
     // using Base = hpx::components::client_base<
-    //     PartitionedArray<Value, Data>,
+    //     PartitionedArray<Element, Data>,
     //     hpx::components::server::distributed_metadata_base<
     //         server::PartitionedArrayMetadata<
     //             typename Data::Definition::Index, Data::rank>>>;
@@ -151,20 +140,20 @@ public:
 
     using ConstIterator = typename Partitions::ConstIterator;
 
-    // using Value = std::tuple<
+    // using Element = std::tuple<
     //     Envelope<double, 2>,
     //     hpx::id_type,
-    //     client::ArrayPartition<T, 2>>;
+    //     ArrayPartition<T, 2>>;
 
-    // using Index = SpatialIndex<Value>;
+    // using Index = SpatialIndex<Element>;
 
     // using const_iterator = typename Index::const_iterator;
 
-    // static auto const& envelope(Value const& v) { return std::get<0>(v); }
+    // static auto const& envelope(Element const& v) { return std::get<0>(v); }
 
-    // static auto locality(Value const& v) { return std::get<1>(v); }
+    // static auto locality(Element const& v) { return std::get<1>(v); }
 
-    // static auto const& partition(Value const& v) { return std::get<2>(v); }
+    // static auto const& partition(Element const& v) { return std::get<2>(v); }
 
                    PartitionedArray    ();
 
@@ -191,7 +180,7 @@ public:
 
     // PartitionedArray& operator=        (PartitionedArray&& other)=default;
 
-    // void        insert              (Value const& value);
+    // void        insert              (Element const& value);
 
     Index          nr_elements         () const;
 
@@ -242,9 +231,9 @@ private:
 
 
 template<
-    typename Value,
-    typename Data>
-PartitionedArray<Value, Data>::PartitionedArray():
+    typename Element,
+    std::size_t rank>
+PartitionedArray<Element, rank>::PartitionedArray():
 
     _shape{},
     _partitions{}
@@ -254,9 +243,9 @@ PartitionedArray<Value, Data>::PartitionedArray():
 
 
 template<
-    typename Value,
-    typename Data>
-PartitionedArray<Value, Data>::PartitionedArray(
+    typename Element,
+    std::size_t rank>
+PartitionedArray<Element, rank>::PartitionedArray(
     Shape const& shape):
 
     _shape{shape},
@@ -270,9 +259,9 @@ PartitionedArray<Value, Data>::PartitionedArray(
 
 
 template<
-    typename Value,
-    typename Data>
-PartitionedArray<Value, Data>::PartitionedArray(
+    typename Element,
+    std::size_t rank>
+PartitionedArray<Element, rank>::PartitionedArray(
     Shape const& shape,
     Partitions&& partitions):
 
@@ -285,12 +274,12 @@ PartitionedArray<Value, Data>::PartitionedArray(
 
 
 template<
-    typename Value,
-    typename Data>
+    typename Element,
+    std::size_t rank>
 template<
     typename DistributionPolicy,
     typename Creator>
-void PartitionedArray<Value, Data>::create(
+void PartitionedArray<Element, rank>::create(
     DistributionPolicy const& distribution_policy,
     Creator&& creator)
 {
@@ -517,11 +506,11 @@ void PartitionedArray<Value, Data>::create(
 
 
 template<
-    typename Value,
-    typename Data>
+    typename Element,
+    std::size_t rank>
 template<
     typename DistributionPolicy>
-void PartitionedArray<Value, Data>::create(
+void PartitionedArray<Element, rank>::create(
     DistributionPolicy const& distribution_policy)
 {
     // Use distribution_policy to instantiate count array partitions of
@@ -565,107 +554,107 @@ void PartitionedArray<Value, Data>::create(
 // template<
 //     typename T>
 // void PartitionedArray<T>::insert(
-//     Value const& value)
+//     Element const& value)
 // {
 //     _index.insert(value);
 // }
 
 
 template<
-    typename Value,
-    typename Data>
-typename PartitionedArray<Value, Data>::Index
-    PartitionedArray<Value, Data>::nr_elements() const
+    typename Element,
+    std::size_t rank>
+typename PartitionedArray<Element, rank>::Index
+    PartitionedArray<Element, rank>::nr_elements() const
 {
     return lue::nr_elements(_shape);
 }
 
 
 // template<
-//     typename Value,
+//     typename Element,
 //     typename Data>
-// typename PartitionedArray<Value, Data>::Definition const&
-//     PartitionedArray<Value, Data>::definition() const
+// typename PartitionedArray<Element, Data>::Definition const&
+//     PartitionedArray<Element, Data>::definition() const
 // {
 //     return _definition;
 // }
 
 
 template<
-    typename Value,
-    typename Data>
-typename PartitionedArray<Value, Data>::Shape const&
-    PartitionedArray<Value, Data>::shape() const
+    typename Element,
+    std::size_t rank>
+typename PartitionedArray<Element, rank>::Shape const&
+    PartitionedArray<Element, rank>::shape() const
 {
     return _shape;
 }
 
 
 template<
-    typename Value,
-    typename Data>
-typename PartitionedArray<Value, Data>::Index
-    PartitionedArray<Value, Data>::nr_partitions() const
+    typename Element,
+    std::size_t rank>
+typename PartitionedArray<Element, rank>::Index
+    PartitionedArray<Element, rank>::nr_partitions() const
 {
     return _partitions.size();
 }
 
 
 template<
-    typename Value,
-    typename Data>
-typename PartitionedArray<Value, Data>::Partitions&
-    PartitionedArray<Value, Data>::partitions()
+    typename Element,
+    std::size_t rank>
+typename PartitionedArray<Element, rank>::Partitions&
+    PartitionedArray<Element, rank>::partitions()
 {
     return _partitions;
 }
 
 
 template<
-    typename Value,
-    typename Data>
-typename PartitionedArray<Value, Data>::Partitions const&
-    PartitionedArray<Value, Data>::partitions() const
+    typename Element,
+    std::size_t rank>
+typename PartitionedArray<Element, rank>::Partitions const&
+    PartitionedArray<Element, rank>::partitions() const
 {
     return _partitions;
 }
 
 
 template<
-    typename Value,
-    typename Data>
-typename PartitionedArray<Value, Data>::ConstIterator
-    PartitionedArray<Value, Data>::begin() const
+    typename Element,
+    std::size_t rank>
+typename PartitionedArray<Element, rank>::ConstIterator
+    PartitionedArray<Element, rank>::begin() const
 {
     return _partitions.begin();
 }
 
 
 template<
-    typename Value,
-    typename Data>
-typename PartitionedArray<Value, Data>::Iterator
-    PartitionedArray<Value, Data>::begin()
+    typename Element,
+    std::size_t rank>
+typename PartitionedArray<Element, rank>::Iterator
+    PartitionedArray<Element, rank>::begin()
 {
     return _partitions.begin();
 }
 
 
 template<
-    typename Value,
-    typename Data>
-typename PartitionedArray<Value, Data>::ConstIterator
-    PartitionedArray<Value, Data>::end() const
+    typename Element,
+    std::size_t rank>
+typename PartitionedArray<Element, rank>::ConstIterator
+    PartitionedArray<Element, rank>::end() const
 {
     return _partitions.end();
 }
 
 
 template<
-    typename Value,
-    typename Data>
-typename PartitionedArray<Value, Data>::Iterator
-    PartitionedArray<Value, Data>::end()
+    typename Element,
+    std::size_t rank>
+typename PartitionedArray<Element, rank>::Iterator
+    PartitionedArray<Element, rank>::end()
 {
     return _partitions.end();
 }
@@ -697,10 +686,9 @@ typename PartitionedArray<Value, Data>::Iterator
 
 template<
     typename Element,
-    typename Data>
+    std::size_t rank>
 class ArrayPartitionsTypeTraits<
-        ArrayPartitionData<
-            client::ArrayPartition<Element, Data>, Data::rank>>
+    ArrayPartitionData<ArrayPartition<Element, rank>, rank>>
 {
 
 private:
@@ -708,13 +696,13 @@ private:
     // Use template parameters to create Partitions type
 
     using Partitions =
-        ArrayPartitionData<client::ArrayPartition<Element, Data>, Data::rank>;
+        ArrayPartitionData<ArrayPartition<Element, rank>, rank>;
 
 public:
 
     // Only use Partitions, not the template parameters
 
-    using PartitionType = typename Partitions::ElementType;
+    using PartitionType = typename Partitions::Element;
 
     template<
         typename ElementType>
@@ -722,29 +710,29 @@ public:
         ArrayPartitionData<
             typename ArrayPartitionTypeTraits<PartitionType>::
                 template PartitionTemplate<ElementType>,
-            Data::rank>;
+            rank>;
 
 };
 
 
 template<
     typename Element,
-    typename Data>
-class PartitionedArrayTypeTraits<PartitionedArray<Element, Data>>
+    std::size_t rank>
+class PartitionedArrayTypeTraits<PartitionedArray<Element, rank>>
 {
 
 private:
 
     // Use template parameters to create Array type
 
-    using Array = PartitionedArray<Element, Data>;
+    using Array = PartitionedArray<Element, rank>;
 
 public:
 
-    // Only use Partition, not the template parameters
+    using ElementType = Element;
 
-    using ElementType = typename Array::ElementType;
-    using ShapeType = typename Array::ShapeType;
+    // Only use Partition, not the template parameters
+    using ShapeType = typename Array::Shape;
     using PartitionsType = typename Array::Partitions;
     using PartitionType = typename Array::Partition;
 
@@ -759,22 +747,22 @@ public:
 
 template<
     typename Element,
-    typename Data>
+    std::size_t rank_>
 constexpr std::size_t rank(
-    PartitionedArray<Element, Data> const& /* array */) noexcept
+    PartitionedArray<Element, rank_> const& /* array */) noexcept
 {
     // For this array type, rank is a compile time constant, so the
     // instance is not used
-    return PartitionedArray<Element, Data>::rank;
+    return rank_;
 }
 
 
 template<
     typename Element,
-    typename Data>
-typename PartitionedArrayTypeTraits<PartitionedArray<Element, Data>>::ShapeType
+    std::size_t rank>
+typename PartitionedArrayTypeTraits<PartitionedArray<Element, rank>>::ShapeType
         shape_in_partitions(
-    PartitionedArray<Element, Data> const& array)
+    PartitionedArray<Element, rank> const& array)
 {
     return array.partitions().shape();
 }
@@ -782,9 +770,9 @@ typename PartitionedArrayTypeTraits<PartitionedArray<Element, Data>>::ShapeType
 
 template<
     typename Element,
-    typename Data>
+    std::size_t rank>
 std::size_t nr_partitions(
-    PartitionedArray<Element, Data> const& array)
+    PartitionedArray<Element, rank> const& array)
 {
     return array.nr_partitions();
 }

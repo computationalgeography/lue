@@ -11,12 +11,16 @@ namespace lue {
 
 /*!
     @brief      Class for keeping track of array partition data values
+    @warning    Copies of ArrayPartitionData instances shared the
+                underlying array with elements
 
     The values are stored in a multidimensional array, which is pointed to
     by a shared pointer. Copying instances results in both copies pointing
-    to same values. This is cheap, but might be suprising. The goal is to
-    make obtaining the data from a partitioned array component client
-    instance cheap.
+    to the same values. This is cheap, but might be surprising. The goal
+    is to make obtaining the data from a partitioned array component
+    client instance cheap. The client obtains it from the server and when
+    the server exists on the same locality as the client, no copying of
+    elements needs to happen.
 
     There is a specialization for array scalars (arrays with rank ==
     0). This allows scalars to be handled the same as arrays.
@@ -37,10 +41,13 @@ public:
     static_assert(std::is_same_v<ValueType, Value>);
 
     using ElementType = ValueType;
+    using Element = ElementType;
 
     static_assert(std::is_unsigned_v<typename Values::size_type>);
     using SizeType = typename Values::size_type;
     static_assert(std::is_unsigned_v<SizeType>);
+
+    using Size = SizeType;
 
     using Index = SizeType;  // typename Values::index;
     static_assert(std::is_unsigned_v<Index>);
@@ -48,9 +55,13 @@ public:
     using Shape = lue::Shape<Index, rank>;
     using ShapeType = Shape;
 
-    using Iterator = typename Values::iterator;
+    // using Iterator = typename Values::iterator;
 
-    using ConstIterator = typename Values::const_iterator;
+    // using ConstIterator = typename Values::const_iterator;
+
+    using Iterator = ElementType*;
+
+    using ConstIterator = ElementType const*;
 
                    ArrayPartitionData  ();
 
@@ -104,7 +115,7 @@ private:
     template<typename Archive>
     void serialize(Archive& /* archive */, unsigned int const /* version */)
     {
-        // For now, we do nothing. Revisit later.
+        // For now, we do nothing. Revisit later, when distributing data
         HPX_ASSERT(false);
     }
 
@@ -160,7 +171,7 @@ ArrayPartitionData<Value, rank>::ArrayPartitionData(
 
 
 /*!
-    @brief      Copy-construct and instance based on @a other
+    @brief      Copy-construct an instance based on @a other
 */
 template<
     typename Value,
@@ -234,8 +245,7 @@ ArrayPartitionData<Value, rank>&
 template<
     typename Value,
     std::size_t rank>
-ArrayPartitionData<Value, rank>&
-        ArrayPartitionData<Value, rank>::operator=(
+ArrayPartitionData<Value, rank>& ArrayPartitionData<Value, rank>::operator=(
     ArrayPartitionData&& other)
 {
     _shape = std::move(other._shape);
@@ -337,7 +347,8 @@ template<
 typename ArrayPartitionData<Value, rank>::ConstIterator
     ArrayPartitionData<Value, rank>::begin() const
 {
-    return _values->begin();
+    // return _values->begin();
+    return _values->data();
 }
 
 
@@ -347,7 +358,8 @@ template<
 typename ArrayPartitionData<Value, rank>::Iterator
     ArrayPartitionData<Value, rank>::begin()
 {
-    return _values->begin();
+    // return _values->begin();
+    return _values->data();
 }
 
 
@@ -357,7 +369,8 @@ template<
 typename ArrayPartitionData<Value, rank>::ConstIterator
     ArrayPartitionData<Value, rank>::end() const
 {
-    return _values->end();
+    // return _values->end();
+    return _values->data() + _values->num_elements();
 }
 
 
@@ -367,7 +380,8 @@ template<
 typename ArrayPartitionData<Value, rank>::Iterator
     ArrayPartitionData<Value, rank>::end()
 {
-    return _values->end();
+    // return _values->end();
+    return _values->data() + _values->num_elements();
 }
 
 
@@ -412,6 +426,8 @@ public:
     static_assert(std::is_unsigned_v<typename Values::size_type>);
     using SizeType = typename Values::size_type;
     static_assert(std::is_unsigned_v<SizeType>);
+
+    using Size = SizeType;
 
     using Index = SizeType;
     static_assert(std::is_unsigned_v<Index>);

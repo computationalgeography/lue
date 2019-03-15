@@ -1,8 +1,6 @@
 #pragma once
-#include "lue/framework/core/array_partition_data.hpp"
 #include "lue/framework/core/component/array_partition.hpp"
-#include "lue/framework/define.hpp"
-#include <hpx/hpx.hpp>
+#include <hpx/dataflow.hpp>
 
 
 namespace lue {
@@ -74,123 +72,79 @@ typename ArrayPartitionTypeTraits<Partition>::
 }
 
 
-#define LUE_SUM_PARTITION_SPECIALIZATION(                          \
-    T1, t1,                                                        \
-    ResultElement, result_element,                                 \
-    rank)                                                          \
-decltype(auto) sum_partition_##t1##_##result_element##_##rank(     \
-        client::ArrayPartition<                                    \
-            T1,                                                    \
-            ArrayPartitionData<T1, rank>> const& partition)        \
-{                                                                  \
-    using Partition =                                              \
-        client::ArrayPartition<T1, ArrayPartitionData<T1, rank>>;  \
-                                                                   \
-    return sum_partition<Partition, ResultElement>(partition);     \
-}
-
-LUE_SUM_PARTITION_SPECIALIZATION(
-    std::int32_t, int32_t,
-    std::int32_t, int32_t,
-    1)
-LUE_SUM_PARTITION_SPECIALIZATION(
-    std::int32_t, int32_t,
-    std::int32_t, int32_t,
-    2)
-
-LUE_SUM_PARTITION_SPECIALIZATION(
-    std::int32_t, int32_t,
-    std::int64_t, int64_t,
-    1)
-LUE_SUM_PARTITION_SPECIALIZATION(
-    std::int32_t, int32_t,
-    std::int64_t, int64_t,
-    2)
-
-#undef LUE_SUM_PARTITION_SPECIALIZATION
+template<
+    typename Element,
+    typename ResultElement,
+    std::size_t rank>
+struct SumPartitionAction
+{
+};
 
 }  // namespace detail
 }  // namespace lue
 
 
-#define LUE_SUM_PARTITION_PLAIN_ACTION(        \
-    T1, t1,                                    \
-    ResultElement, result_element,             \
-    rank)                                      \
-HPX_PLAIN_ACTION(                              \
-    lue::detail::sum_partition_##t1##_##result_element##_##rank,  \
-    SumPartitionAction_##t1##_##result_element##_##rank);
+#define LUE_SUM_PLAIN_ACTION(                                         \
+    Element,                                                          \
+    ResultElement,                                                    \
+    rank)                                                             \
+                                                                      \
+namespace lue {                                                       \
+namespace detail {                                                    \
+                                                                      \
+decltype(auto) sum_partition_##Element##_##ResultElement##_##rank(    \
+    ArrayPartition<Element, rank> const& partition)                   \
+{                                                                     \
+    using Partition = ArrayPartition<Element, rank>;                  \
+                                                                      \
+    return sum_partition<Partition, ResultElement>(partition);        \
+}                                                                     \
+                                                                      \
+}                                                                     \
+}                                                                     \
+                                                                      \
+                                                                      \
+HPX_PLAIN_ACTION(                                                     \
+    lue::detail::sum_partition_##Element##_##ResultElement##_##rank,  \
+    SumPartitionAction_##Element##_##ResultElement##_##rank)          \
+                                                                      \
+                                                                      \
+namespace lue {                                                       \
+namespace detail {                                                    \
+                                                                      \
+template<>                                                            \
+class SumPartitionAction<Element, ResultElement, rank>                \
+{                                                                     \
+                                                                      \
+public:                                                               \
+                                                                      \
+    using Type =                                                      \
+        SumPartitionAction_##Element##_##ResultElement##_##rank;      \
+                                                                      \
+};                                                                    \
+                                                                      \
+}                                                                     \
+}
 
-LUE_SUM_PARTITION_PLAIN_ACTION(
-    std::int32_t, int32_t,
-    std::int32_t, int32_t,
-    1)
-LUE_SUM_PARTITION_PLAIN_ACTION(
-    std::int32_t, int32_t,
-    std::int32_t, int32_t,
-    2)
 
-LUE_SUM_PARTITION_PLAIN_ACTION(
-    std::int32_t, int32_t,
-    std::int64_t, int64_t,
-    1)
-LUE_SUM_PARTITION_PLAIN_ACTION(
-    std::int32_t, int32_t,
-    std::int64_t, int64_t,
-    2)
-
-#undef LUE_SUM_PARTITION_PLAIN_ACTION
+#define LUE_SUM_PLAIN_ACTIONS(                   \
+    Element,                                     \
+    ResultElement)                               \
+                                                 \
+LUE_SUM_PLAIN_ACTION(Element, ResultElement, 1)  \
+LUE_SUM_PLAIN_ACTION(Element, ResultElement, 2)
 
 
-#define LUE_SUM_PARTITION_PLAIN_ACTION_PRIMARY_TEMPLATE()  \
-template<                                                  \
-    typename T1,                                           \
-    typename ResultElement,                                \
-    std::size_t rank>                                      \
-struct SumPartitionAction                                  \
-{                                                          \
-};
+LUE_SUM_PLAIN_ACTIONS(/* std:: */ int32_t, /* std:: */ int32_t)
+LUE_SUM_PLAIN_ACTIONS(/* std:: */ int64_t, /* std:: */ int64_t)
+LUE_SUM_PLAIN_ACTIONS(/* std:: */ int32_t, /* std:: */ int64_t)
 
 
-#define LUE_SUM_PARTITION_PLAIN_ACTION_TEMPLATE(    \
-    T1, t1,                                         \
-    ResultElement, result_element,                  \
-    rank)                                           \
-template<>                                          \
-struct SumPartitionAction<T1, ResultElement, rank>  \
-{                                                   \
-    using Type = SumPartitionAction_##t1##_##result_element##_##rank;  \
-};
+#undef LUE_SUM_PLAIN_ACTION
+#undef LUE_SUM_PLAIN_ACTIONS
 
 
 namespace lue {
-namespace detail {
-
-LUE_SUM_PARTITION_PLAIN_ACTION_PRIMARY_TEMPLATE()
-
-LUE_SUM_PARTITION_PLAIN_ACTION_TEMPLATE(
-    std::int32_t, int32_t,
-    std::int32_t, int32_t,
-    1)
-LUE_SUM_PARTITION_PLAIN_ACTION_TEMPLATE(
-    std::int32_t, int32_t,
-    std::int32_t, int32_t,
-    2)
-
-LUE_SUM_PARTITION_PLAIN_ACTION_TEMPLATE(
-    std::int32_t, int32_t,
-    std::int64_t, int64_t,
-    1)
-LUE_SUM_PARTITION_PLAIN_ACTION_TEMPLATE(
-    std::int32_t, int32_t,
-    std::int64_t, int64_t,
-    2)
-
-#undef LUE_SUM_PARTITION_PLAIN_ACTION_PRIMARY_TEMPLATE
-#undef LUE_SUM_PARTITION_PLAIN_ACTION_TEMPLATE
-
-}  // namespace detail
-
 
 template<
     typename Element,
@@ -207,39 +161,28 @@ template<
 hpx::future<ResultElement> sum(
     Array const& array)
 {
-    // TODO Calling lue::rank(array) triggers a compiler error
-    static std::size_t const rank = Array::rank;
-
     using ArrayTraits = PartitionedArrayTypeTraits<Array>;
-    using Partitions = typename ArrayTraits::PartitionsType;
     using Partition = typename ArrayTraits::PartitionType;
     using Element = typename ArrayTraits::ElementType;
-    using SumPartitionAction =
-        SumPartitionActionType<Element, ResultElement, rank>;
 
-    // TODO Make this work
-    // using SumsPartitions =
-    //     typename ArrayTraits:: template PartitionsTemplate<ResultElement>;
-
+    using SumsPartitions =
+        typename ArrayTraits:: template PartitionsTemplate<ResultElement>;
     using SumPartition =
-        client::ArrayPartition<
-            ResultElement,
-            ArrayPartitionData<ResultElement, rank>
-        >;
-    using SumsPartitions = std::vector<SumPartition>;
+        typename ArrayPartitionTypeTraits<Partition>::
+            template PartitionTemplate<ResultElement>;
 
-    SumsPartitions sums_partitions{nr_elements(shape_in_partitions(array))};
+    using SumPartitionAction =
+        SumPartitionActionType<Element, ResultElement, rank(array)>;
+
+    SumsPartitions sums_partitions{shape_in_partitions(array)};
     SumPartitionAction sum_partition_action;
 
-    // Attach a continuation to each array partition that calculates
+    // Attach a continuation to each array partition, that calculates
     // the sum of the values in that partition. These continuations run
     // on the same localities as where the partitions themselves are
     // located.
     for(std::size_t p = 0; p < nr_partitions(array); ++p) {
 
-        // TODO How does this work? What is being passed to the action?
-        //     Partition is a component client. Is its ID passed and
-        //     wrapped in a new client instance which is passed into the action?
         Partition const& partition = array.partitions()[p];
 
         sums_partitions[p] = hpx::dataflow(
@@ -247,44 +190,34 @@ hpx::future<ResultElement> sum(
             sum_partition_action,
             // TODO Is this efficient?
             hpx::get_colocation_id(hpx::launch::sync, partition.get_id()),
-            // TODO This partition client instance is copied here isn't it?
-            //     Does that make sense?
-            //     Partition clients must be like shared futures. Are they?
             partition
         );
+
     }
+
 
     // The partition sums are being determined on their respective
     // localities. Attach a continuation that sums the sums once the
     // partition sums are ready. This continuation runs on our own
     // locality.
-    return hpx::dataflow(
-        hpx::launch::async,
-        hpx::util::unwrapping(
+    return hpx::when_all(sums_partitions.begin(), sums_partitions.end()).then(
+        [](auto&& f) {
+            auto const sums_partitions = f.get();
 
-            // IDs of the partitions containing the partition sums
-            [](auto&& sums_partitions_ids) {
+            // Sum all partition sums and return the result
+            ResultElement result{};
 
-                // Sum all partition sums and return the result
-                ResultElement result{};
+            for(auto const& sums_partition: sums_partitions) {
 
-                for(auto const& partition_id: sums_partitions_ids) {
+                auto const data = sums_partition.data().get();
+                assert(data.size() == 1);
 
-                    // Create partition component client and obtain the
-                    // single value representing the sum of the partition
-                    SumPartition partition{partition_id};
-                    auto data = partition.data().get();
-                    assert(data.size() == 1);
-
-                    result += data[0];
-
-                }
-
-                return result;
+                result += data[0];
 
             }
-        ),
-        std::move(sums_partitions)
+
+            return result;
+        }
     );
 }
 
