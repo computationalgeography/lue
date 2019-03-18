@@ -45,7 +45,8 @@ spawn_interval=1  # This has to be larger than zero: why?
 
 
 # Program parameters
-nr_time_steps=100
+max_tree_depth=100
+nr_time_steps=1000
 nr_rows=60
 nr_cols=40
 nr_rows_partition=5
@@ -60,12 +61,12 @@ lue_dataset="$program_name.lue"
 
 
 epoch=`date --iso-8601=seconds`
-epoch="2018-12-06T00:00:00+02:00"
+# epoch="2018-12-06T00:00:00+02:00"
 
 
 # Scale over nodes and scale over threads
 min_nr_nodes=1  # 1
-max_nr_nodes=8  # 8
+max_nr_nodes=4  # 8
 min_nr_threads=48
 max_nr_threads=48
 
@@ -109,10 +110,12 @@ function create_benchmark_dataset()
 
 
 srun $program_pathname \
-    --hpx:ini="hpx.parcel.mpi.enable=0" \
+    --hpx:ini="hpx.parcel.mpi.enable=1" \
+    --hpx:ini="hpx.parcel.tcp.enable=0" \
     --hpx:ini="application.${program_name}.benchmark.count!=$count" \
     --hpx:ini="application.${program_name}.benchmark.work_size!=$work_size" \
     --hpx:ini="application.${program_name}.benchmark.output!=$benchmark_result_filename" \
+    --hpx:ini="application.${program_name}.max_tree_depth!=$max_tree_depth" \
     --hpx:ini="application.${program_name}.nr_time_steps!=$nr_time_steps" \
     --hpx:ini="application.${program_name}.nr_rows!=$nr_rows" \
     --hpx:ini="application.${program_name}.nr_cols!=$nr_cols" \
@@ -191,5 +194,5 @@ function post_process_benchmarks()
 build_software
 
 # Pick one of these:
-# create_benchmark_dataset
-post_process_benchmarks
+create_benchmark_dataset
+# post_process_benchmarks

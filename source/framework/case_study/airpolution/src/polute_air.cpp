@@ -59,6 +59,7 @@ namespace lue {
     @brief      Calculate average airpolution based on synthetic data
 */
 void polute_air(
+    std::uint64_t const max_tree_depth,
     std::uint64_t const nr_time_steps,
     std::uint64_t const nr_rows,
     std::uint64_t const nr_cols,

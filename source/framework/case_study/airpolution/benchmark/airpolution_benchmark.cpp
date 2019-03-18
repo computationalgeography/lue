@@ -19,6 +19,8 @@ auto setup_benchmark(
     auto callable = [](
         lue::benchmark::Environment const& /* environment */)
     {
+        std::uint64_t const max_tree_depth =
+            lue::required_configuration_entry<std::uint64_t>("max_tree_depth");
         std::uint64_t const nr_time_steps =
             lue::required_configuration_entry<std::uint64_t>("nr_time_steps");
         std::uint64_t const nr_rows =
@@ -33,6 +35,7 @@ auto setup_benchmark(
                 "nr_cols_partition");
 
         lue::polute_air(
+            max_tree_depth,
             nr_time_steps, nr_rows, nr_cols,
             nr_rows_partition, nr_cols_partition);
     };

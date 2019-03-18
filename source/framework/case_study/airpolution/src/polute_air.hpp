@@ -8,7 +8,8 @@ namespace lue {
 //                                         std::uint64_t nr_time_steps,
 //                                         std::uint64_t nr_partitions);
 
-void               polute_air          (std::uint64_t nr_time_steps,
+void               polute_air          (std::uint64_t max_tree_depth,
+                                        std::uint64_t nr_time_steps,
                                         std::uint64_t nr_rows,
                                         std::uint64_t nr_cols,
                                         std::uint64_t nr_rows_partition,
