@@ -2,6 +2,7 @@ add_unit_tests(
     SCOPE lue_framework_algorithm
     NAMES
         add_test
+        copy_test
         equal_to_test
         fill_test
         sum_test
@@ -14,6 +15,7 @@ add_unit_tests(
 
 # Targets that depend on HPX
 hpx_setup_target(lue_framework_algorithm_add_test)
+hpx_setup_target(lue_framework_algorithm_copy_test)
 hpx_setup_target(lue_framework_algorithm_equal_to_test)
 hpx_setup_target(lue_framework_algorithm_fill_test)
 hpx_setup_target(lue_framework_algorithm_sum_test)

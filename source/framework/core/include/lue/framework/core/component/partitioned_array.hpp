@@ -761,6 +761,17 @@ template<
     typename Element,
     std::size_t rank>
 typename PartitionedArrayTypeTraits<PartitionedArray<Element, rank>>::ShapeType
+        shape(
+    PartitionedArray<Element, rank> const& array)
+{
+    return array.shape();
+}
+
+
+template<
+    typename Element,
+    std::size_t rank>
+typename PartitionedArrayTypeTraits<PartitionedArray<Element, rank>>::ShapeType
         shape_in_partitions(
     PartitionedArray<Element, rank> const& array)
 {

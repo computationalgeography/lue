@@ -1,0 +1,9 @@
+{
+    "max_tree_depth": 100,
+    "max_duration": 10,
+    "nr_time_steps": 1000,
+    "array_shape": [6000, 4000],
+    "min_partition_shape": [480, 480],
+    "max_partition_shape": [500, 500],
+    "partition_shape_step": 10
+}

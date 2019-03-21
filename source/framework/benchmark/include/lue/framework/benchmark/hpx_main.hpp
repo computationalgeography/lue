@@ -46,6 +46,9 @@ inline void run_hpx_benchmark(
     }
 }
 
+}  // namespace benchmark
+}  // namespace lue
+
 
 #define LUE_CONFIGURE_HPX_BENCHMARK(                                           \
     configuration)                                                             \
@@ -65,10 +68,10 @@ int hpx_main(                                                                  \
     if(!pathname.empty()) {                                                    \
         std::fstream stream;                                                   \
         stream.open(pathname, std::ios::out);                                  \
-        run_hpx_benchmark(benchmark, stream);                                  \
+        lue::benchmark::run_hpx_benchmark(benchmark, stream);                  \
     }                                                                          \
     else {                                                                     \
-        run_hpx_benchmark(benchmark, std::cout);                               \
+        lue::benchmark::run_hpx_benchmark(benchmark, std::cout);               \
     }                                                                          \
                                                                                \
     return hpx::finalize();                                                    \
@@ -85,6 +88,3 @@ int main(                                                                      \
                                                                                \
     return hpx::init(argc, argv, cfg);                                         \
 }
-
-}  // namespace benchmark
-}  // namespace lue
