@@ -2,7 +2,6 @@
 #include <hpx/include/compute.hpp>
 #include <hpx/include/lcos.hpp>
 #include <hpx/parallel/algorithms/transform.hpp>
-#include <fmt/format.h>
 #include <algorithm>
 
 
@@ -154,6 +153,13 @@ hpx::future<std::string> system_description()
             current_nr_localities, all_locality_names);
 
     return description;
+}
+
+
+void write_debug_message(
+    std::string const& message)
+{
+    std::cerr << "LUE DEBUG: " << message << '\n';
 }
 
 }  // namespace lue

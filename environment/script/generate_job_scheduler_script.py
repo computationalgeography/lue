@@ -2,9 +2,9 @@
 import os.path
 import sys
 sys.path = [
-    os.path.join(os.path.split(__file__)[0], "..", "..", "benchmark")
+    os.path.join(os.path.split(__file__)[0], "..", "..", "benchmark", "lue")
 ] + sys.path
-import lue.benchmark
+import benchmark
 import docopt
 import json
 
@@ -243,10 +243,10 @@ if __name__ == "__main__":
     command_pathname = arguments["<command>"]
 
     if arguments["partition_shape"]:
-        lue.benchmark.partition_shape(
+        benchmark.partition_shape.generate_script(
             cluster_settings, benchmark_settings, experiment_settings,
             script_pathname, command_pathname)
     elif arguments["strong_scaling"]:
-        lue.benchmark.strong_scaling()
+        benchmark.strong_scaling.generate_script()
     elif arguments["weak_scaling"]:
-        lue.benchmark.weak_scaling()
+        benchmark.weak_scaling.generate_script()

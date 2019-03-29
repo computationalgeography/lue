@@ -18,16 +18,34 @@ namespace detail {
 */
 Environment create_environment()
 {
+    // std::string const cluster_name =
+    //     required_configuration_entry<std::string>("benchmark.cluster_name");
     std::uint64_t const count =
         required_configuration_entry<std::uint64_t>("benchmark.count");
     std::uint64_t const nr_localities =
         required_configuration_entry<std::uint64_t>("hpx", "localities");
     std::uint64_t const nr_threads =
         required_configuration_entry<std::uint64_t>("hpx", "os_threads");
-    std::uint64_t const work_size =
-        required_configuration_entry<std::uint64_t>("benchmark.work_size");
+    std::uint64_t const max_tree_depth =
+        required_configuration_entry<std::uint64_t>("benchmark.max_tree_depth");
+    // std::uint64_t const work_size =
+    //     required_configuration_entry<std::uint64_t>("benchmark.work_size");
 
-    return Environment{count, nr_localities, nr_threads, work_size};
+    return Environment{
+        /* cluster_name, */ count, nr_localities, nr_threads, max_tree_depth};  // , work_size};
+}
+
+
+Task create_task()
+{
+    std::uint64_t const nr_time_steps =
+        required_configuration_entry<std::uint64_t>("nr_time_steps");
+    Task::Shape const array_shape =
+        required_configuration_entry<Task::Shape>("array_shape");
+    Task::Shape const partition_shape =
+        required_configuration_entry<Task::Shape>("partition_shape");
+
+    return Task{nr_time_steps, array_shape, partition_shape};
 }
 
 } // Namespace detail
@@ -62,8 +80,10 @@ int hpx_main(                                                                  \
                                                                                \
     auto const environment{                                                    \
         lue::benchmark::detail::create_environment()};                         \
+    auto const task{                                                           \
+        lue::benchmark::detail::create_task()};                                \
                                                                                \
-    auto benchmark = setup_benchmark(argc, argv, environment);                 \
+    auto benchmark = setup_benchmark(argc, argv, environment, task);           \
                                                                                \
     if(!pathname.empty()) {                                                    \
         std::fstream stream;                                                   \

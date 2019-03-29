@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/framework/benchmark/environment.hpp"
+#include "lue/framework/benchmark/benchmark.hpp"
 #include <nlohmann/json.hpp>
 #include <array>
 #include <cassert>
@@ -82,20 +82,32 @@ inline std::string format_as_json(
     j["start"] = to_iso_string(time_interval.start());
     // j["stop"] = to_iso_string(time_interval.stop());
     j["duration"] = time_interval.duration().count();
-    j["name"] = benchmark.name();
-    j["system_name"] = benchmark.system_name();
-    j["description"] = benchmark.description();
+    // j["name"] = benchmark.name();
+    // j["description"] = benchmark.description();
 
-    auto const& environment = benchmark.environment();
 
     {
+        auto const& environment = benchmark.environment();
         auto environment_json = json::object();
 
+        // environment_json["system_name"] = environment.system_name();
         environment_json["nr_localities"] = environment.nr_localities();
         environment_json["nr_threads"] = environment.nr_threads();
-        environment_json["work_size"] = environment.work_size();
+        environment_json["max_tree_depth"] = environment.max_tree_depth();
+        // environment_json["work_size"] = environment.work_size();
 
         j["environment"] = environment_json;
+    }
+
+    {
+        auto const& task = benchmark.task();
+        auto task_json = json::object();
+
+        task_json["nr_time_steps"] = task.nr_time_steps();
+        task_json["array_shape"] = task.array_shape();
+        task_json["partition_shape"] = task.partition_shape();
+
+        j["task"] = task_json;
     }
 
     auto a = json::array();

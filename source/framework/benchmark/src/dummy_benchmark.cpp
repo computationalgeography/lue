@@ -1,19 +1,19 @@
 #include "lue/framework/benchmark/benchmark.hpp"
 #include "lue/framework/benchmark/main.hpp"
-#include <boost/asio/ip/host_name.hpp>
 #include <iostream>
 #include <random>
 #include <thread>
 
 
 static void dummy(
-    lue::benchmark::Environment const& environment)
+    lue::benchmark::Environment const& environment,
+    lue::benchmark::Task const& task)
 {
     using namespace std::chrono_literals;
 
     auto const nr_localities = environment.nr_localities();
     auto const nr_threads = environment.nr_threads();
-    auto const work_size = environment.work_size();
+    auto const work_size = task.nr_elements();
 
     std::random_device device;
     std::default_random_engine engine(device());
@@ -40,15 +40,15 @@ static void dummy(
 auto setup_benchmark(
         int /* argc */,
         char* /* argv */[],
-        lue::benchmark::Environment const& environment)
+        lue::benchmark::Environment const& environment,
+        lue::benchmark::Task const& task)
 {
     auto callable = dummy;
-    std::string const name = "dummy";
-    std::string const hostname = boost::asio::ip::host_name();
-    std::string const description = "Dummy benchmark";
+    // std::string const name = "dummy";
+    // std::string const description = "Dummy benchmark";
 
     return lue::benchmark::Benchmark{
-        std::move(callable), hostname, environment, name, description};
+        std::move(callable), environment, task};  // , name, description};
 }
 
 

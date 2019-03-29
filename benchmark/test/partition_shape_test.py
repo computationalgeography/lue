@@ -3,10 +3,7 @@ import sys
 sys.path = [
     os.path.join(os.path.split(__file__)[0], "..")
 ] + sys.path
-from lue.benchmark.partition_shape import \
-    partition_shape_multipliers, \
-    ranges_of_partition_shape_multipliers, \
-    partition_shape_ranges
+from lue.benchmark.partition_shape.shape import *
 import unittest
 
 
@@ -63,13 +60,25 @@ class PartitionShapeTest(unittest.TestCase):
         self.assertEqual(multiplier_ranges[1], range(2, 2, -1))
 
 
-    def test_ranges_of_partition_shapes(self):
+    def test_ranges_of_shapes(self):
 
-        min_partition_shape = (1, 1)
-        max_partition_shape = (10, 10)
+        min_shape = (1, 1)
+        max_shape = (10, 10)
         step = 1
-        ranges = partition_shape_ranges(
-            min_partition_shape, max_partition_shape, step)
+        ranges = shape_ranges(min_shape, max_shape, step)
 
         self.assertEqual(ranges[0], range(1, 11, step))
         self.assertEqual(ranges[1], range(1, 11, step))
+
+
+    def test_partition_shapes(self):
+
+        min_shape = (480, 480)
+        max_shape = (500, 500)
+        step = 10
+        shapes = partition_shapes(min_shape, max_shape, step)
+
+        self.assertEqual(len(shapes), 3)
+        self.assertEqual(shapes[0], (480, 480))
+        self.assertEqual(shapes[1], (490, 490))
+        self.assertEqual(shapes[2], (500, 500))

@@ -3,6 +3,7 @@
 // #include "lue/framework/core/component/server/partitioned_array_metadata.hpp"
 #include "lue/framework/core/array_partition_data.hpp"
 #include "lue/framework/core/array_partition_definition.hpp"
+#include "lue/framework/core/debug.hpp"
 #include "lue/framework/core/domain_decomposition.hpp"
 #include "lue/framework/core/spatial_index.hpp"
 #include <hpx/components/containers/container_distribution_policy.hpp>
@@ -160,6 +161,9 @@ public:
     explicit       PartitionedArray    (Shape const& shape);
 
                    PartitionedArray    (Shape const& shape,
+                                        Shape const& max_partition_shape);
+
+                   PartitionedArray    (Shape const& shape,
                                         Partitions&& partitions);
 
     // template<
@@ -211,21 +215,40 @@ public:
 
 private:
 
+    void           create              ();
+
+    void           create              (Shape const& max_partition_shape);
+
+    void           create              (Shape const& shape_in_partitions,
+                                        Shape const& max_partition_shape);
+
+    void           assert_invariants   () const;
+
     //! For a locality ID a list of array partition component IDs
     using BulkLocalityResult =
         std::pair<hpx::id_type, std::vector<hpx::id_type>>;
 
-    template<
-        typename DistributionPolicy,
-        typename Creator>
-    void           create              (DistributionPolicy const&
-                                            distribution_policy,
-                                        Creator&& creator);
 
-    template<
-        typename DistributionPolicy>
-    void           create              (DistributionPolicy const&
-                                            distribution_policy);
+    // template<
+    //     typename DistributionPolicy,
+    //     typename Creator>
+    // void           create              (DistributionPolicy const&
+    //                                         distribution_policy,
+    //                                     Creator&& creator,
+    //                                     Index const nr_partitions,
+    //                                     Shape const& max_partition_shape);
+
+    // template<
+    //     typename DistributionPolicy,
+    //     typename Creator>
+    // void           create              (DistributionPolicy const&
+    //                                         distribution_policy,
+    //                                     Creator&& creator);
+
+    // template<
+    //     typename DistributionPolicy>
+    // void           create              (DistributionPolicy const&
+    //                                         distribution_policy);
 
 };
 
@@ -252,9 +275,28 @@ PartitionedArray<Element, rank>::PartitionedArray(
     _partitions{}
 
 {
-    create(hpx::container_layout);
+    create();
 
-    // TODO Assert shape and partitions are in sync
+    // create(hpx::container_layout);
+
+    assert_invariants();
+}
+
+
+template<
+    typename Element,
+    std::size_t rank>
+PartitionedArray<Element, rank>::PartitionedArray(
+    Shape const& shape,
+    Shape const& max_partition_shape):
+
+    _shape{shape},
+    _partitions{}
+
+{
+    create(max_partition_shape);
+
+    assert_invariants();
 }
 
 
@@ -269,46 +311,53 @@ PartitionedArray<Element, rank>::PartitionedArray(
     _partitions{std::move(partitions)}
 
 {
-    // TODO Assert shape and partitions are in sync
+    assert_invariants();
 }
 
 
 template<
     typename Element,
     std::size_t rank>
-template<
-    typename DistributionPolicy,
-    typename Creator>
 void PartitionedArray<Element, rank>::create(
-    DistributionPolicy const& distribution_policy,
-    Creator&& creator)
+    Shape const& shape_in_partitions,
+    Shape const& max_partition_shape)
 {
     // The distribution_policy contains a collection of localities to place
     // partitions on and a strategy for distributing these partitions
     // over them. It does not know anything about array partitions and
     // how to create them. That is what the creator is for.
-
-    // Given the distribution policy, determine the number of partitions
-    // to create
-    Index const nr_partitions =
-        hpx::traits::num_container_partitions<DistributionPolicy>::call(
-           distribution_policy);
-
-    // Given the number of partitions to create and the shape of the
-    // array, determine the maximum shape of the individual partitions
-    auto const max_partition_shape =
-        lue::max_partition_shape(_shape, nr_partitions);
+    auto const& distribution_policy = hpx::container_layout;
 
     // Create the array partitions that, together make up the partitioned
     // array. Note that the extent of this array might be too large,
     // given that we use max_partition_shape.
 
+    // Use distribution_policy to instantiate count array partitions of
+    // shape shape. Return a future to a collection containing, for each
+    // locality used, a collection of GIDs of the array partitions
+    // instantiated
+
+    // The elements in the array partitions will not be initialized. Use
+    // this creator for partitions that will be assigned to later.
+    // template<
+    //     typename DistributionPolicy>
+    auto creator =
+        [](
+            // DistributionPolicy const& distribution_policy,
+            auto const& distribution_policy,
+            std::size_t const count,
+            Shape const& shape)
+        {
+            return distribution_policy.template
+                bulk_create<PartitionServer>(count, shape);
+        };
+
+    auto const nr_partitions = lue::nr_elements(shape_in_partitions);
+
     // For one or more localities a list of array partition component IDs
     // vector<pair<id_type, vector<id_type>>
     hpx::future<std::vector<BulkLocalityResult>> f =
         creator(distribution_policy, nr_partitions, max_partition_shape);
-
-
 
     // Next adjust the border partitions and position them
 
@@ -321,10 +370,10 @@ void PartitionedArray<Element, rank>::create(
 
     // std::size_t l = 0;
 
-    auto const shape_in_partitions =
-        lue::shape_in_partitions(_shape, max_partition_shape);
-// std::cout << max_partition_shape << std::endl;
-// std::cout << shape_in_partitions << std::endl;
+    // auto const shape_in_partitions =
+    //     lue::shape_in_partitions(_shape, max_partition_shape);
+    // std::cout << max_partition_shape << std::endl;
+    // std::cout << shape_in_partitions << std::endl;
 
 
     _partitions = Partitions{shape_in_partitions};
@@ -361,18 +410,114 @@ void PartitionedArray<Element, rank>::create(
             //                     future.get());
             //             }));
             // }
-        }
 
-        ++partition_idx;
+            ++partition_idx;
+        }
     }
 
     HPX_ASSERT(partition_idx == nr_partitions);
 
-    // // TODO
+
     // // Shrink partitions at the border of the array. They might be too large.
     // // This happens when the extents of the array are not a multiple of the
     // // corresponding extents in max_partition_shape.
     // {
+    //     // Resize partitions at the sides of the array that are too large
+
+    //     // // Offset to iterate over partition along one of the dimensions
+    //     Index partition_idx_offset;
+
+    //     // Iterate over all dimensions
+    //     for(std::size_t d = 0; d < rank; ++d) {
+    //         auto const array_extent = _shape[d];
+    //         auto const max_partitions_extent =
+    //             shape_in_partitions[d] * max_partition_shape[d];
+
+    //         auto const excess_cells = max_partitions_extent - array_extent;
+
+    //         if(excess_cells > 0) {
+    //             // Resize current dimension of all partitions at currently
+    //             // considered side of array
+
+    //             // Iterate over all these partitions. Ask them for their
+    //             // current shape, reset the current dimension's extent,
+    //             // and ask them to resize according to the new shape.
+
+    //             // Iterate over all partitions at the end of the current
+    //             // dimension. This means iterating over all current d's
+    //             // and maximizing the indices of the other dimensions.
+
+    //             auto const new_extent = max_partition_shape[d] - excess_cells;
+    //             auto new_shape = max_partition_shape;
+    //             new_shape[d] = new_extent;
+
+    //             Index partition_idx = 0;
+    //             Index partition_idx_offset = _partitions.shape()[d];
+
+    //             // How to iterate over the correct cells?
+    //             // recursion!
+    //             // [d1_min, d2_min, d2_min]
+    //             // [d1_max, d2_max, d2_max]
+    //             // [d1_extent, d2_extent, d3_extent]
+    //             // Calculate linear indices using a recursive function
+    //             // Pass in the logic that needs to be called at the
+    //             // deepest level. Somehow get the result out!
+
+    //             // Index 
+
+    //             // nr_partitions_in_side = xxx;
+
+    //             // for(std::size_t i = 0; i < nr_partitions_in_side; ++i) {
+    //             //     partition_idx += partition_idx_offset;
+    //             //     auto& partition = _partitions[partition_idx];
+    //             //     // TODO blocks
+    //             //     partition.reshape(new_shape).get();
+    //             // }
+    //         }
+    //     }
+
+
+    //     //     // Linear index of partition
+    //     //     Index partition_idx = 0;
+
+    //     //     // Extents of partitions untill now, in two adjacent partitions
+    //     //     Index old_extent = 0;
+    //     //     Index new_extent;
+
+    //     //     // Iterate over all partitions
+    //     //     for(std::size_t p = 0; p < _partitions.shape()[d]; ++p) {
+
+    //     //         auto const partition = _partitions[partition_idx];
+
+    //     //         // Note: blocks for shape to be retrieved
+    //     //         new_extent = old_extent + partition.shape().get()[d];
+
+    //     //         // Last element in this partition must not extent beyond
+    //     //         // the array
+    //     //         LUE_ASSERT(
+    //     //             new_extent <= _shape[d],
+    //     //             "Along dimension {}, the last element of partition {} "
+    //     //             "extents beyond the array ({} > {})",
+    //     //             d, p, new_extent, _shape[d]);
+
+    //     //         old_extent = new_extent;
+    //     //         partition_idx += partition_idx_offset;
+    //     //     }
+
+    //     //     // Last element of the last partition must be the last element
+    //     //     // of the array
+    //     //     LUE_ASSERT(
+    //     //         new_extent == _shape[d],
+    //     //         "exents of partitions along dimension {} "
+    //     //         "do not sum up to extent of array ({} != {})",
+    //     //         d, old_extent, _shape[d]);
+
+    //     //     partition_idx_offset *= _partitions.shape()[d];
+
+
+    // }
+
+
     //     // ArrayPartitionDefinition<Index, rank> partition(
     //     //     Shape<Index, rank> const& area_shape,
     //     //     Shape<Index, rank> const& partition_shape,
@@ -432,17 +577,9 @@ void PartitionedArray<Element, rank>::create(
 
 
 
-
-
-    // TODO
-    // Verify that the definitions of all partitions correspond with
-    // the definition of the partitioned array. The partitions must fit
-    // like a puzzle.
-
-
-
-
+    // TODO Move up?
     hpx::wait_all(ptrs);
+
 
     // // Cache the partition shape
     // _partition_shape = max_partition_shape;
@@ -502,37 +639,178 @@ void PartitionedArray<Element, rank>::create(
 
     // // cache our partition size
     // partition_size_ = get_partition_size();
+
+    assert_invariants();
+}
+
+
+// template<
+//     typename Element,
+//     std::size_t rank>
+// template<
+//     typename DistributionPolicy,
+//     typename Creator>
+// void PartitionedArray<Element, rank>::create(
+//     DistributionPolicy const& distribution_policy,
+//     Creator&& creator,
+//     Index const nr_partitions,
+//     Shape const& max_partition_shape)
+// {
+//     // The distribution_policy contains a collection of localities to place
+//     // partitions on and a strategy for distributing these partitions
+//     // over them. It does not know anything about array partitions and
+//     // how to create them. That is what the creator is for.
+// 
+// 
+// }
+
+
+// template<
+//     typename Element,
+//     std::size_t rank>
+// template<
+//     typename DistributionPolicy,
+//     typename Creator>
+// void PartitionedArray<Element, rank>::create(
+//     DistributionPolicy const& distribution_policy,
+//     Creator&& creator)
+// {
+//     // Given the distribution policy, determine the number of partitions
+//     // to create
+//     Index const nr_partitions =
+//         hpx::traits::num_container_partitions<DistributionPolicy>::call(
+//            distribution_policy);
+// 
+//     // Given the number of partitions to create and the shape of the
+//     // array, determine the maximum shape of the individual partitions
+//     auto const max_partition_shape =
+//         lue::max_partition_shape(_shape, nr_partitions);
+// 
+//     create(distribution_policy, creator, nr_partitions, max_partition_shape);
+// }
+
+
+template<
+    typename Element,
+    std::size_t rank>
+void PartitionedArray<Element, rank>::create()
+{
+    // Given the shape of the array and the number of localities,
+    // determine the maximum partition shape and the shape of the array
+    // in partitions
+
+    // TODO blocks
+    Index const nr_localities = hpx::get_num_localities().get();
+    Shape const max_partition_shape =
+        lue::max_partition_shape(_shape, nr_localities);
+    auto const shape_in_partitions =
+        lue::shape_in_partitions(_shape, max_partition_shape);
+
+    create(shape_in_partitions, max_partition_shape);
 }
 
 
 template<
     typename Element,
     std::size_t rank>
-template<
-    typename DistributionPolicy>
 void PartitionedArray<Element, rank>::create(
-    DistributionPolicy const& distribution_policy)
+    Shape const& max_partition_shape)
 {
-    // Use distribution_policy to instantiate count array partitions of
-    // shape shape. Return a future to a collection containing, for each
-    // locality used, a collection of GIDs of the array partitions
-    // instantiated
+    // Given the shape of the array and the shape of the array partitions,
+    // determine the shape of the array in partitions
 
-    // The elements in the array partitions will not be initialized. Use
-    // this creator for partitions that will be assigned to later.
-    auto creator =
-        [](
-            DistributionPolicy const& distribution_policy,
-            std::size_t const count,
-            Shape const& shape)
-        {
-            return distribution_policy.template
-                bulk_create<PartitionServer>(count, shape);
-        };
+    auto const shape_in_partitions =
+        lue::shape_in_partitions(_shape, max_partition_shape);
 
-    create(distribution_policy, creator);
+    create(shape_in_partitions, max_partition_shape);
 }
 
+
+// template<
+//     typename Element,
+//     std::size_t rank>
+// template<
+//     typename DistributionPolicy>
+// void PartitionedArray<Element, rank>::create(
+//     DistributionPolicy const& distribution_policy)
+// {
+//     // Use distribution_policy to instantiate count array partitions of
+//     // shape shape. Return a future to a collection containing, for each
+//     // locality used, a collection of GIDs of the array partitions
+//     // instantiated
+// 
+//     // The elements in the array partitions will not be initialized. Use
+//     // this creator for partitions that will be assigned to later.
+//     auto creator =
+//         [](
+//             DistributionPolicy const& distribution_policy,
+//             std::size_t const count,
+//             Shape const& shape)
+//         {
+//             return distribution_policy.template
+//                 bulk_create<PartitionServer>(count, shape);
+//         };
+// 
+//     create(distribution_policy, creator);
+// }
+
+
+template<
+    typename Element,
+    std::size_t rank>
+void PartitionedArray<Element, rank>::assert_invariants() const
+{
+#ifndef NDEBUG
+
+    // TODO
+    return;
+
+    // Offset to iterate over partition along one of the dimensions
+    Index partition_idx_offset = 1;
+
+    // Iterate over all dimensions
+    for(std::size_t d = 0; d < rank; ++d) {
+
+        // Linear index of partition
+        Index partition_idx = 0;
+
+        // Extents of partitions untill now, in two adjacent partitions
+        Index old_extent = 0;
+        Index new_extent;
+
+        // Iterate over all partitions
+        for(std::size_t p = 0; p < _partitions.shape()[d]; ++p) {
+
+            auto const& partition = _partitions[partition_idx];
+
+            // Note: blocks for shape to be retrieved
+            new_extent = old_extent + partition.shape().get()[d];
+
+            // Last element in this partition must not extent beyond
+            // the array
+            LUE_ASSERT(
+                new_extent <= _shape[d],
+                "Along dimension {}, the last element of partition {} "
+                "extents beyond the array ({} > {})",
+                d, p, new_extent, _shape[d]);
+
+            old_extent = new_extent;
+            partition_idx += partition_idx_offset;
+        }
+
+        // Last element of the last partition must be the last element
+        // of the array
+        LUE_ASSERT(
+            new_extent == _shape[d],
+            "exents of partitions along dimension {} "
+            "do not sum up to extent of array ({} != {})",
+            d, old_extent, _shape[d]);
+
+        partition_idx_offset *= _partitions.shape()[d];
+    }
+
+#endif
+}
 
 
 // template<

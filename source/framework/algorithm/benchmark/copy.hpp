@@ -1,16 +1,14 @@
 #pragma once
 #include <cstdint>
+#include <vector>
+#include "lue/framework/benchmark/task.hpp"
 
 
 namespace lue {
 namespace benchmark {
 
 void               copy                (std::uint64_t max_tree_depth,
-                                        std::uint64_t nr_time_steps,
-                                        std::uint64_t nr_rows,
-                                        std::uint64_t nr_cols,
-                                        std::uint64_t nr_rows_partition,
-                                        std::uint64_t nr_cols_partition);
+                                        Task const& task);
 
 }  // namespace benchmark
 }  // namespace lue

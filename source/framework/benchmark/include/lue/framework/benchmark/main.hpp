@@ -2,6 +2,7 @@
 #include "lue/framework/benchmark/environment.hpp"
 #include "lue/framework/benchmark/format.hpp"
 #include <docopt.h>
+// #include <boost/asio/ip/host_name.hpp>
 #include <fmt/format.h>
 #include <fstream>
 
@@ -14,17 +15,15 @@ std::string const usage = R"(
 Run a performance benchmark
 
 usage:
-    {0}
-        --count=<count>
-        --nr_threads=<nr_threads>
-        --work_size=<work_size> [<output>]
+    {0} --count=<count> --nr_threads=<nr_threads>
+        --max_tree_depth=<max_tree_depth> [<output>]
     {0} (-h | --help) | --version
 
 options:
     --count=<count>  Number of times the benchmark must be run
     --nr_threads=<nr_threads>  Maximum number of OS threads to use
-    --work_size=<work-size>  Size of work to process
-    -h --help      Show this screen
+    --max_tree_depth=<max_tree_depth>  Maximum depth of task tree
+    -h --help        Show this screen
 
 Results will be written to the terminal if no output pathname is provided
 )";
@@ -37,11 +36,28 @@ Results will be written to the terminal if no output pathname is provided
 Environment create_environment(
     std::map<std::string, docopt::value> const& arguments)
 {
+
+    // std::string const hostname = boost::asio::ip::host_name();
     std::size_t const count = arguments.at("--count").asLong();
     std::size_t const nr_threads = arguments.at("--nr_threads").asLong();
-    std::size_t const work_size = arguments.at("--work_size").asLong();
+    std::size_t const max_tree_depth = arguments.at("--nr_threads").asLong();
+    // std::size_t const work_size = arguments.at("--work_size").asLong();
 
-    return Environment{count, nr_threads, work_size};
+    return Environment{/* hostname, */ count, nr_threads, max_tree_depth};  // , work_size};
+}
+
+
+Task create_task(
+    std::map<std::string, docopt::value> const& /* arguments */)
+{
+    assert(false);
+
+    // TODO
+    std::uint64_t const nr_time_steps{0};
+    Task::Shape array_shape{};
+    Task::Shape partition_shape{};
+
+    return Task{nr_time_steps, array_shape, partition_shape};
 }
 
 } // Namespace detail
@@ -80,8 +96,10 @@ int main(                                                                      \
         ? arguments.at("<output>").asString() : "";                            \
     auto const environment{                                                    \
         lue::benchmark::detail::create_environment(arguments)};                \
+    auto const task{                                                           \
+        lue::benchmark::detail::create_task(arguments)};                       \
                                                                                \
-    auto benchmark = setup_benchmark(argc, argv, environment);                 \
+    auto benchmark = setup_benchmark(argc, argv, environment, task);           \
                                                                                \
     int status = EXIT_FAILURE;                                                 \
                                                                                \

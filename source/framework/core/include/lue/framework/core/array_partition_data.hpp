@@ -11,7 +11,7 @@ namespace lue {
 
 /*!
     @brief      Class for keeping track of array partition data values
-    @warning    Copies of ArrayPartitionData instances shared the
+    @warning    Copies of ArrayPartitionData instances share the
                 underlying array with elements
 
     The values are stored in a multidimensional array, which is pointed to

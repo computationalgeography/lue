@@ -2,6 +2,7 @@ add_library(lue_benchmark
     src/environment
     src/runtime_environment
     src/stopwatch
+    src/task
     src/time_interval
     src/timing
 )

@@ -1,4 +1,5 @@
 {
+    "name": "eejit",
     "job_scheduler": "slurm",
     "partition_name": "allq"
 }

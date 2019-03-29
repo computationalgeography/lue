@@ -1,6 +1,7 @@
 #pragma once
 #include "lue/framework/benchmark/environment.hpp"
 #include "lue/framework/benchmark/stopwatch.hpp"
+#include "lue/framework/benchmark/task.hpp"
 #include "lue/framework/benchmark/timing.hpp"
 #include <iostream>
 #include <string>
@@ -67,10 +68,14 @@ public:
     using Timings = std::vector<Timing>;
 
                    Benchmark           (Callable&& callable,
-                                        std::string const& system_name,
                                         Environment const& environment,
-                                        std::string const& name,
-                                        std::string const& description);
+                                        Task const& task);
+                                        // std::string const& name);
+                                        // std::string const& description);
+                                        // std::vector<std::uint64_t> const&
+                                        //     array_shape,
+                                        // std::vector<std::uint64_t> const&
+                                        //     partition_shape);
 
                    Benchmark           (Benchmark const&)=delete;
 
@@ -82,13 +87,19 @@ public:
 
     Benchmark&     operator=           (Benchmark&&)=delete;
 
-    std::string const& system_name     () const;
+    // std::string const& name            () const;
 
-    std::string const& name            () const;
+    // std::string const& description     () const;
 
-    std::string const& description     () const;
+    // std::vector<std::uint64_t> const&
+    //                array_shape         () const;
+
+    // std::vector<std::uint64_t> const&
+    //                partition_shape     () const;
 
     Environment const& environment     () const;
+
+    Task const&    task                () const;
 
     int            run                 ();
 
@@ -101,17 +112,22 @@ private:
     //! Callable representing the workload to time
     Callable       _callable;
 
-    //! Name of system the benchmark runs on: hostname or cluster name
-    std::string const _system_name;
-
     //! Environment the benchmark runs in
     Environment const _environment;
+
+    Task const     _task;
 
     //! Name of the benchmark
     std::string const _name;
 
-    //! Description of the benchmark
-    std::string const _description;
+    // //! Description of the benchmark
+    // std::string const _description;
+
+    // //! Shape of the arrays
+    // std::vector<std::uint64_t> const _array_shape;
+
+    // //! Shape of the array partitions
+    // std::vector<std::uint64_t> const _partition_shape;
 
     //! Interval in which the benchmark ran
     TimeInterval   _time_interval;
@@ -131,45 +147,59 @@ template<
     typename Callable>
 inline Benchmark<Callable>::Benchmark(
     Callable&& callable,
-    std::string const& system_name,
     Environment const& environment,
-    std::string const& name,
-    std::string const& description):
+    Task const& task):
+    // std::string const& name):
+    // std::string const& description):
+    // std::vector<std::uint64_t> const& array_shape,
+    // std::vector<std::uint64_t> const& partition_shape):
 
     _callable{std::forward<Callable>(callable)},
-    _system_name{system_name},
     _environment{environment},
-    _name{name},
-    _description{description},
+    _task{task},
+    // _name{name},
+    // _description{description},
+    // _array_shape{array_shape},
+    // _partition_shape{partition_shape},
     _time_interval{},
     _timings{}
 
 {
+    // assert(!_array_shape.empty());
+    // assert(std::size(_array_shape) == std::size(_partition_shape));
 }
 
 
-template<
-    typename Callable>
-std::string const& Benchmark<Callable>::system_name() const
-{
-    return _system_name;
-}
+// template<
+//     typename Callable>
+// std::string const& Benchmark<Callable>::name() const
+// {
+//     return _name;
+// }
 
 
-template<
-    typename Callable>
-std::string const& Benchmark<Callable>::name() const
-{
-    return _name;
-}
+// template<
+//     typename Callable>
+// std::string const& Benchmark<Callable>::description() const
+// {
+//     return _description;
+// }
 
 
-template<
-    typename Callable>
-std::string const& Benchmark<Callable>::description() const
-{
-    return _description;
-}
+// template<
+//     typename Callable>
+// std::vector<std::uint64_t> const& array_shape() const
+// {
+//     return _array_shape;
+// }
+// 
+// 
+// template<
+//     typename Callable>
+// std::vector<std::uint64_t> const& partition_shape() const
+// {
+//     return _partition_shape;
+// }
 
 
 template<
@@ -177,6 +207,14 @@ template<
 Environment const& Benchmark<Callable>::environment() const
 {
     return _environment;
+}
+
+
+template<
+    typename Callable>
+Task const& Benchmark<Callable>::task() const
+{
+    return _task;
 }
 
 
@@ -201,7 +239,7 @@ inline int Benchmark<Callable>::run()
     auto const start = Stopwatch::now();
     for(std::size_t i = 0; i < _environment.count(); ++i) {
         stopwatch.start();
-        _callable(_environment);
+        _callable(_environment, _task);
         stopwatch.stop();
         _timings.push_back(Timing{stopwatch.time_interval()});
         // Stream << ".";  // << std::flush;

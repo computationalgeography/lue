@@ -1,0 +1,5 @@
+{
+    "count": 5,
+    "nr_workers": 4,
+    "worker_type": "thread"
+}

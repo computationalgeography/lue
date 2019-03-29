@@ -2,6 +2,7 @@
 #include <fmt/format.h>
 #include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
+#include <regex>
 
 
 namespace lue {
@@ -55,6 +56,37 @@ std::string cast<std::string>(
     std::string const& value)
 {
     return value;
+}
+
+
+template<>
+std::vector<std::uint64_t> cast<std::vector<std::uint64_t>>(
+    std::string const& value)
+{
+    // parse value into a vector of unsigned integers
+    std::string const pattern{
+        "\\[([[:digit:]]+)(?:,[[:space:]]([[:digit:]]+))*\\]"};
+    std::regex expression{pattern};
+    std::smatch match;
+
+    std::vector<std::uint64_t> result;
+
+    if(std::regex_match(value, match, expression)) {
+        result.reserve(match.size());
+
+        for(std::size_t i = 1; i < match.size(); ++i) {
+            result.push_back(cast<std::uint64_t>(match[i]));
+        }
+    }
+    else {
+        throw std::runtime_error(
+            fmt::format(
+                "Configuration entry {} cannot be parsed into "
+                "a vector of unsigned integers (using pattern {})",
+                value, pattern));
+    }
+
+    return result;
 }
 
 }  // Anonymous namespace
@@ -133,10 +165,12 @@ template Type optional_configuration_entry<Type>(          \
 REQUIRED_CONFIGURATION_ENTRY(std::uint32_t);
 REQUIRED_CONFIGURATION_ENTRY(std::uint64_t);
 REQUIRED_CONFIGURATION_ENTRY(std::string);
+REQUIRED_CONFIGURATION_ENTRY(std::vector<std::uint64_t>);
 
 OPTIONAL_CONFIGURATION_ENTRY(std::uint32_t);
 OPTIONAL_CONFIGURATION_ENTRY(std::uint64_t);
 OPTIONAL_CONFIGURATION_ENTRY(std::string);
+OPTIONAL_CONFIGURATION_ENTRY(std::vector<std::uint64_t>);
 
 #undef REQUIRED_CONFIGURATION_ENTRY
 #undef OPTIONAL_CONFIGURATION_ENTRY
