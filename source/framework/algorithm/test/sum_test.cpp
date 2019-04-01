@@ -68,9 +68,9 @@ BOOST_AUTO_TEST_CASE(array_##rank##d_##Element##_##ResultElement)  \
 
 TEST_CASE(1, int32_t, int32_t)
 TEST_CASE(2, int32_t, int32_t)
-TEST_CASE(1, int64_t, int64_t)
-TEST_CASE(2, int64_t, int64_t)
-TEST_CASE(1, int32_t, int64_t)
-TEST_CASE(2, int32_t, int64_t)
+// TEST_CASE(1, int64_t, int64_t)
+// TEST_CASE(2, int64_t, int64_t)
+// TEST_CASE(1, int32_t, int64_t)
+// TEST_CASE(2, int32_t, int64_t)
 
 #undef TEST_CASE

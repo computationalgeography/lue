@@ -92,8 +92,8 @@ LUE_COPY_PLAIN_ACTION(Element, 2)
 
 
 LUE_COPY_PLAIN_ACTIONS(/* std:: */ int32_t)
-LUE_COPY_PLAIN_ACTIONS(/* std:: */ int64_t)
-LUE_COPY_PLAIN_ACTIONS(float)
+// LUE_COPY_PLAIN_ACTIONS(/* std:: */ int64_t)
+// LUE_COPY_PLAIN_ACTIONS(float)
 LUE_COPY_PLAIN_ACTIONS(double)
 
 

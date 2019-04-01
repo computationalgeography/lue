@@ -136,11 +136,11 @@ LUE_SUM_PLAIN_ACTION(Element, ResultElement, 2)
 
 
 LUE_SUM_PLAIN_ACTIONS(/* std:: */ int32_t, /* std:: */ int32_t)
-LUE_SUM_PLAIN_ACTIONS(/* std:: */ int64_t, /* std:: */ int64_t)
-LUE_SUM_PLAIN_ACTIONS(/* std:: */ int32_t, /* std:: */ int64_t)
-LUE_SUM_PLAIN_ACTIONS(float, float)
+// LUE_SUM_PLAIN_ACTIONS(/* std:: */ int64_t, /* std:: */ int64_t)
+// LUE_SUM_PLAIN_ACTIONS(/* std:: */ int32_t, /* std:: */ int64_t)
+// LUE_SUM_PLAIN_ACTIONS(float, float)
 LUE_SUM_PLAIN_ACTIONS(double, double)
-LUE_SUM_PLAIN_ACTIONS(float, double)
+// LUE_SUM_PLAIN_ACTIONS(float, double)
 
 
 #undef LUE_SUM_PLAIN_ACTION
