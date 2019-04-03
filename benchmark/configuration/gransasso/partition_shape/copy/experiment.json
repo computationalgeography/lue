@@ -3,7 +3,7 @@
     "max_duration": 10,
     "nr_time_steps": 1000,
     "array_shape": [60000, 40000],
-    "min_partition_shape": [4000, 4000],
+    "min_partition_shape": [1000, 1000],
     "max_partition_shape": [10000, 10000],
     "partition_shape_step": 1000
 }
