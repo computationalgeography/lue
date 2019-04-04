@@ -5,28 +5,24 @@ namespace lue {
 namespace benchmark {
 
 /*!
-    @brief      Default construct an instance
+    @brief      .
+    @param      .
+    @return     .
+    @exception  .
 
-    The start and stop time points will be initialized to the high
-    resolution clock's epoch.
+    Unless start has been pressed on the stopwatch, the value returned
+    makes no sense.
 */
-Stopwatch::Stopwatch()
-:
-    _time_interval{}
+Stopwatch::SystemTimePoint const& Stopwatch::start() const
 {
+    return _start;
 }
 
 
-TimeInterval const& Stopwatch::time_interval() const
-{
-    return _time_interval;
-}
-
-
-Stopwatch::Duration Stopwatch::elapsed() const
-{
-    return time_interval().duration();
-}
+// Stopwatch::Duration Stopwatch::duration() const
+// {
+//     return _time_interval.duration();
+// }
 
 }  // namespace benchmark
 }  // namespace lue

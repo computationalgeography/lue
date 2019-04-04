@@ -13,12 +13,19 @@ class Stopwatch
 
 public:
 
+    using Clock = TimeInterval::Clock;
+
     using TimePoint = TimeInterval::TimePoint;
+
     using Duration = TimeInterval::Duration;
+
+    using SystemClock = std::chrono::system_clock;
+
+    using SystemTimePoint = SystemClock::time_point;
 
     static TimePoint now               ();
 
-                   Stopwatch           ();
+                   Stopwatch           ()=default;
 
                    Stopwatch           (Stopwatch const&)=default;
 
@@ -34,32 +41,41 @@ public:
 
     void           stop                ();
 
-    TimeInterval const& time_interval  () const;
+    SystemTimePoint const& start       () const;
 
-    Duration       elapsed             () const;
+    // Duration       duration            () const;
 
     template<
         typename ToDuration>
-    ToDuration     elapsed             () const;
+    ToDuration     duration            () const;
 
 private:
 
+    //! Time point according to the system clock at start of measurement
+    SystemTimePoint _start;
+
+    //! Amount of time after a start and stop of the stopwatch
     TimeInterval   _time_interval;
 
 };
 
 
 /*!
-    @brief      Return the current value of the high resolution clock
+    @brief      Return the current value of the clock
+
+    Note that the time point returned is relative to the clock's
+    epoch. For example, this might be the number of ticks since the
+    last reboot.
 */
 inline Stopwatch::TimePoint Stopwatch::now()
 {
-    return std::chrono::high_resolution_clock::now();
+    return Clock::now();
 }
 
 
 inline void Stopwatch::start()
 {
+    _start = SystemClock::now();
     auto const now = Stopwatch::now();
     _time_interval = TimeInterval{now, now};
 }
@@ -80,9 +96,9 @@ inline void Stopwatch::stop()
 */
 template<
     typename ToDuration>
-inline ToDuration Stopwatch::elapsed() const
+inline ToDuration Stopwatch::duration() const
 {
-    return std::chrono::duration_cast<ToDuration>(elapsed());
+    return std::chrono::duration_cast<ToDuration>(_time_interval.duration());
 }
 
 }  // namespace benchmark

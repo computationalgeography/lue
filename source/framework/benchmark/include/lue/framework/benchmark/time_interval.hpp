@@ -13,10 +13,17 @@ class TimeInterval
 
 public:
 
-    using TimePoint = std::chrono::high_resolution_clock::time_point;
-    using Duration = std::chrono::high_resolution_clock::duration;
+    // We need a steady clock for measuring time intervals. The time
+    // points cannot be related to wall clock time, though. But they
+    // are fine for measuring intervals.
+    using Clock = std::chrono::steady_clock;
+    static_assert(Clock::is_steady);
 
-                   TimeInterval        ();
+    using TimePoint = Clock::time_point;
+
+    using Duration = Clock::duration;
+
+                   TimeInterval        ()=default;
 
                    TimeInterval        (TimePoint const& start,
                                         TimePoint const& stop);
@@ -31,10 +38,6 @@ public:
 
     TimeInterval&  operator=           (TimeInterval&&)=default;
 
-    TimePoint const& start             () const;
-
-    TimePoint const& stop              () const;
-
     void           set_stop            (TimePoint const& time_point);
 
     Duration       duration            () const;
@@ -45,8 +48,10 @@ public:
 
 private:
 
+    //! Start of interval
     TimePoint      _start;
 
+    //! End of interval
     TimePoint      _stop;
 
 };
@@ -55,8 +60,8 @@ private:
 /*!
     @brief      Return the duration casted to @a ToDuration
 
-    Use this function to convert the high resolution duration to some
-    courser unit, like seconds.
+    Use this function to convert the duration to some courser unit,
+    like seconds.
 */
 template<
     typename ToDuration>

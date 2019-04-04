@@ -15,7 +15,7 @@ namespace benchmark {
     Example: 2018-10-11T15:55:59+0200
 */
 inline std::string to_iso_string(
-    TimeInterval::TimePoint const& time_point)
+    Stopwatch::SystemTimePoint const& time_point)
 {
     static std::size_t const max_nr_characters = 30;
     static std::array<char, max_nr_characters> buffer;
@@ -73,15 +73,16 @@ inline std::string format_as_json(
 
     json j;
 
-    // using Units = std::chrono::microseconds;
+    // TODO This can be passed in from the benchmark
+    using Unit = std::chrono::seconds;
+    std::string unit = "second";
 
-    auto const& time_interval = benchmark.time_interval();
+    Stopwatch const& timing = benchmark.timing();
 
-    // auto meh = time_interval.duration<Units>();
-
-    j["start"] = to_iso_string(time_interval.start());
+    j["start"] = to_iso_string(benchmark.timing().start());
     // j["stop"] = to_iso_string(time_interval.stop());
-    j["duration"] = time_interval.duration().count();
+    j["duration"] = timing.duration<Unit>().count();
+    j["unit"] = unit;
     // j["name"] = benchmark.name();
     // j["description"] = benchmark.description();
 
@@ -112,10 +113,10 @@ inline std::string format_as_json(
 
     auto a = json::array();
 
-    for(auto const& timing: benchmark.timings()) {
+    for(Stopwatch const& timing: benchmark.timings()) {
         auto o = json::object();
-        o["start"] = to_iso_string(timing.time_interval().start());
-        o["duration"] = timing.time_interval().duration().count();
+        o["start"] = to_iso_string(timing.start());
+        o["duration"] = timing.duration<Unit>().count();
 
         a.emplace_back(o);
     }

@@ -18,7 +18,7 @@ BOOST_AUTO_TEST_CASE(seconds)
 
     BOOST_CHECK(clock.epoch().kind() == Epoch::Kind::anno_domini);
     BOOST_REQUIRE(clock.epoch().origin());
-    BOOST_CHECK_EQUAL(*clock.epoch().origin(), "1970-01-01");
+    BOOST_CHECK_EQUAL(*clock.epoch().origin(), "1970-01-01T00:00:00+00:00");
     BOOST_REQUIRE(clock.epoch().calendar());
     BOOST_CHECK(*clock.epoch().calendar() == Calendar::gregorian);
 }

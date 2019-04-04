@@ -30,15 +30,32 @@ class Experiment(object):
             self.partition_shape_step)
 
 
+    def result_basename(self,
+            cluster_name):
+        return "{}-{}".format(
+            cluster_name,
+            self.program_name)
+
+
     def benchmark_result_pathname(self,
+            cluster_name,
             partition_shape):
 
         return "{}-{}.json".format(
-            self.program_name,
+            self.result_basename(cluster_name),
             "-".join([str(extent) for extent in partition_shape]))
 
 
-    def result_pathname(self):
+    def result_pathname(self,
+            cluster_name,
+            extension,
+            kind=None):
 
-        return "{}.lue".format(
-            self.program_name)
+        basename = self.result_basename(cluster_name)
+
+        if kind is not None:
+            basename = "{}-{}".format(basename, kind)
+
+        return "{}.{}".format(
+            basename,
+            extension)

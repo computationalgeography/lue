@@ -2,6 +2,7 @@
 #include "lue/framework/benchmark/environment.hpp"
 #include "lue/framework/benchmark/format.hpp"
 #include "lue/framework/core/configuration_entry.hpp"
+#include "lue/framework/core/debug.hpp"
 #include <hpx/hpx_finalize.hpp>
 #include <hpx/hpx_init.hpp>
 #include <fstream>
@@ -74,6 +75,8 @@ int hpx_main(                                                                  \
     int argc,                                                                  \
     char* argv[])                                                              \
 {                                                                              \
+    std::cout << lue::system_description().get() << std::endl;                 \
+                                                                               \
     std::string const pathname =                                               \
         lue::optional_configuration_entry<std::string>(                        \
             "benchmark.output", "");                                           \

@@ -682,18 +682,26 @@ void add_property_set(
     else {
         auto const& time_domain_json = property_set_json.at("time_domain");
         auto const& clock_json = time_domain_json.at("clock");
+        auto const& epoch_json = clock_json.at("epoch");
 
-        std::string const epoch = clock_json.at("epoch");
+        // TODO origin and calendar are optional
+        time::Epoch::Kind const epoch_kind =
+            string_to_aspect<time::Epoch::Kind>(epoch_json.at("kind"));
+        std::string const epoch_origin = epoch_json.at("origin");
+        time::Calendar const epoch_calendar =
+            string_to_aspect<time::Calendar>(epoch_json.at("calendar"));
+        time::Epoch const epoch{epoch_kind, epoch_origin, epoch_calendar};
+
         time::DurationCount const tick_period_count =
             clock_json.at("tick_period_count");
         std::string const unit = clock_json.at("unit");
 
         // TODO Read the time domain item type from the json
-        // TODO Store epoch!!!
         TimeConfiguration const time_configuration{
                 TimeDomainItemType::point
             };
         Clock const clock{
+                epoch,
                 string_to_aspect<time::Unit>(unit),
                 tick_period_count
             };

@@ -13,6 +13,7 @@ import matplotlib
 # matplotlib.use("PDF")
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -21,6 +22,33 @@ import json
 import shlex
 import subprocess
 import tempfile
+
+
+
+# import math
+# 
+# millnames = ['',' thousand',' Million',' Billion',' Trillion']
+# 
+# def millify(n):
+#     n = float(n)
+#     millidx = max(0,min(len(millnames)-1,
+#     int(math.floor(0 if n == 0 else math.log10(abs(n))/3))))
+# 
+#     return '{:.0f}{}'.format(n / 10**(3 * millidx), millnames[millidx])
+
+
+def format_duration(
+        duration):
+    # TODO Pass in units and be smarter
+
+    return "{:,}".format(int(duration))
+
+
+def format_partition_size(
+        size):
+    # TODO Use powers of 3, 6, 9, etc
+
+    return "{:,}".format(int(size))
 
 
 def lue_translate():
@@ -125,14 +153,13 @@ def benchmark_meta_to_lue_json(
 def benchmark_to_lue_json(
         benchmark_pathname,
         lue_json_pathname,
-        epoch=None):
+        epoch):
 
     # Read benchmark JSON
     benchmark_json = json.loads(open(benchmark_pathname).read())
 
     time_units = "second"
-    benchmark_epoch = dateutil.parser.parse(benchmark_json["start"])
-    epoch = benchmark_epoch if epoch is None else epoch
+    benchmark_epoch = dateutil.parser.isoparse(benchmark_json["start"])
     epoch_offset = int((benchmark_epoch - epoch).total_seconds())
 
     if epoch_offset < 0:
@@ -142,7 +169,7 @@ def benchmark_to_lue_json(
 
     # Calculate number of seconds sinds the epoch
     time_points = [
-        dateutil.parser.parse(timing["start"])
+        dateutil.parser.isoparse(timing["start"])
             for timing in benchmark_json["timings"]]
     time_points = [
         epoch_offset + int((time_point - benchmark_epoch).total_seconds())
@@ -178,9 +205,13 @@ def benchmark_to_lue_json(
                             },
                             "time_domain": {
                                 "clock": {
+                                    "epoch": {
+                                        "kind": "anno_domini",
+                                        "origin": epoch.isoformat(),
+                                        "calendar": "gregorian"
+                                    },
                                     "unit": time_units,
-                                    "tick_period_count": 1,
-                                    "epoch": epoch.isoformat()
+                                    "tick_period_count": 1
                                 },
                                 "time_point": time_points
                             },
@@ -237,6 +268,32 @@ def import_lue_json(
     execute_command(command)
 
 
+def determine_epoch(
+        cluster,
+        benchmark,
+        experiment):
+
+    partition_shapes = experiment.partition_shapes()
+
+    epoch = None
+
+    for partition_shape in partition_shapes:
+
+        benchmark_pathname = experiment.benchmark_result_pathname(
+            cluster.name, partition_shape)
+        assert os.path.exists(benchmark_pathname), benchmark_pathname
+
+        benchmark_json = json.loads(open(benchmark_pathname).read())
+        benchmark_start = dateutil.parser.isoparse(benchmark_json["start"])
+
+        if epoch is None:
+            epoch = benchmark_start
+        else:
+            epoch = epoch if epoch < benchmark_start else benchmark_start
+
+    return epoch
+
+
 def import_raw_results(
         cluster,
         benchmark,
@@ -248,14 +305,20 @@ def import_raw_results(
     1. Translate each raw benchmark result into a LUE JSON file
     2. Import all LUE JSON files into a single LUE file
     """
-    # TODO Handle epoch
-    ### The resulting file can be imported into a LUE dataset using the
-    ### lue_translate command. With lue_translate multiple JSON files can be
-    ### imported. In that case it can be useful to use the --epoch option to
-    ### synchronize the epochs from the different JSON files.
-    epoch = None
+    # Each benchmark containing timings has a start location in time and
+    # an overall duration. The location in time can be used to position
+    # the benchmark in time. Most likely, all benchmarks are started at
+    # different locations in time. The duration is not that relevant.
 
-    lue_dataset_pathname = experiment.result_pathname()
+    # The timings are represented by a location in time and a
+    # duration. The location in time is not that relevant. Duration is.
+
+    # To position all benchmarks in time, we need a single starting time
+    # point to use as the clock's epoch and calculate the distance of
+    # each benchmark's start time point from this epoch.
+    epoch = determine_epoch(cluster, benchmark, experiment)
+
+    lue_dataset_pathname = experiment.result_pathname(cluster.name, "lue")
 
     if os.path.exists(lue_dataset_pathname):
         os.remove(lue_dataset_pathname)
@@ -265,12 +328,10 @@ def import_raw_results(
 
     for partition_shape in partition_shapes:
 
-        result_pathname = experiment.benchmark_result_pathname(partition_shape)
+        result_pathname = experiment.benchmark_result_pathname(
+            cluster.name, partition_shape)
         assert os.path.exists(result_pathname), result_pathname
 
-        # TODO In case of partition shape experiments, this LUE dataset
-        #      must be set up differently than when performing other
-        #      experiments!
         if not metadata_written:
             with tempfile.NamedTemporaryFile(suffix=".json") as lue_json_file:
                 benchmark_meta_to_lue_json(
@@ -284,16 +345,17 @@ def import_raw_results(
 
 
 def create_dot_graph(
+        cluster,
         experiment):
     """
     Create a dot graph of the LUE file containing the experiment results
     """
 
-    lue_dataset_pathname = experiment.result_pathname()
+    lue_dataset_pathname = experiment.result_pathname(cluster.name, "lue")
     dot_properties_pathname = os.path.expandvars(
         "$LUE/document/lue_translate/dot_properties.json")
-    pdf_graph_pathname = "{}.pdf".format(
-        os.path.splitext(os.path.basename(lue_dataset_pathname))[0])
+    pdf_graph_pathname = experiment.result_pathname(
+        cluster.name, "pdf", kind="graph")
 
     with tempfile.NamedTemporaryFile(suffix=".dot") as dot_graph_file:
         commands = []
@@ -361,10 +423,7 @@ def post_process_raw_results(
     """
     Create plots and tables from raw benchmark results
     """
-
-    # TODO Pass in parameters for output file naming
-
-    lue_dataset_pathname = experiment.result_pathname()
+    lue_dataset_pathname = experiment.result_pathname(cluster.name, "lue")
     lue_dataset = lue.open_dataset(lue_dataset_pathname)
     lue_benchmark = lue_dataset.phenomena["benchmark"]
     lue_meta_information = \
@@ -400,7 +459,20 @@ def post_process_raw_results(
         np.repeat([v for v in partition["partition_size"]], count),
         inplace=True)
 
-    time_point = "todo"
+    # The time point at which the experiment was performed is the epoch
+    # of the time domain used to store the durations
+    lue_clock = lue_measurement.time_domain.clock
+    assert lue_clock.nr_units == 1
+    time_point_units = lue_clock.unit
+
+    lue_epoch = lue_clock.epoch
+    assert lue_epoch.kind == lue.Epoch.Kind.anno_domini
+    assert lue_epoch.calendar == lue.Calendar.gregorian
+    time_point = dateutil.parser.isoparse(lue_epoch.origin)
+
+
+    # String containing time point in local time zone and conventions
+    time_point = time_point.astimezone().strftime("%c")
 
     figure, axes = plt.subplots(
             nrows=1, ncols=1,
@@ -414,14 +486,23 @@ def post_process_raw_results(
 
     sns.lineplot(data=duration, ax=axes, color=actual_color, legend=False)
 
-    axes.set_ylabel(u"duration ± 1 std ({})".format("todo"))
+    axes.set_ylabel(u"duration ± 1 std ({})".format(time_point_units))
+    axes.yaxis.set_major_formatter(
+        ticker.FuncFormatter(
+            lambda y, pos: format_duration(y)))
+
     axes.set_xlabel(u"partition size")
+    axes.xaxis.set_major_formatter(
+        ticker.FuncFormatter(
+            lambda x, pos: format_partition_size(x)))
 
     figure.suptitle(
         "{}\nPartition shape scaling experiment performed at {}, on {}"
             .format(name, time_point, system_name))
 
-    plt.savefig("benchmark.pdf")
+    plot_pathname = experiment.result_pathname(
+        cluster.name, "pdf", kind="plot")
+    plt.savefig(plot_pathname)
 
 
 def post_process_results(
@@ -455,5 +536,5 @@ def post_process_results(
     #      later on
     # add_plot_data()
 
-    create_dot_graph(experiment)
+    create_dot_graph(cluster, experiment)
     post_process_raw_results(cluster, benchmark, experiment)

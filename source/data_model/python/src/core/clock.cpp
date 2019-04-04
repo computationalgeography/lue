@@ -12,11 +12,18 @@ using namespace pybind11::literals;
 
 namespace lue {
 
+std::string informal_string_representation(
+    time::Unit const unit)
+{
+    return aspect_to_string(unit);
+}
+
+
 std::string formal_string_representation(
     Clock const& clock)
 {
     return fmt::format(
-            "Clock(epoch='{}', unit='{}', nr_units='{}')",
+            "Clock(epoch={}, unit={}, nr_units={})",
             formal_string_representation(clock.epoch()),
             aspect_to_string(clock.unit()),
             clock.nr_units());
@@ -51,6 +58,14 @@ void init_clock(
         .value("week", time::Unit::week)
         .value("month", time::Unit::month)
         .value("year", time::Unit::year)
+
+        .def(
+            "__str__",
+            [](time::Unit const unit) {
+                return informal_string_representation(unit);
+            }
+        )
+
         ;
 
 

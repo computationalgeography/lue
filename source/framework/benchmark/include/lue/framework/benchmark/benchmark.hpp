@@ -2,7 +2,6 @@
 #include "lue/framework/benchmark/environment.hpp"
 #include "lue/framework/benchmark/stopwatch.hpp"
 #include "lue/framework/benchmark/task.hpp"
-#include "lue/framework/benchmark/timing.hpp"
 #include <iostream>
 #include <string>
 #include <vector>
@@ -65,17 +64,12 @@ class Benchmark
 public:
 
     using Duration = Stopwatch::Duration;
+    using Timing = Stopwatch;
     using Timings = std::vector<Timing>;
 
                    Benchmark           (Callable&& callable,
                                         Environment const& environment,
                                         Task const& task);
-                                        // std::string const& name);
-                                        // std::string const& description);
-                                        // std::vector<std::uint64_t> const&
-                                        //     array_shape,
-                                        // std::vector<std::uint64_t> const&
-                                        //     partition_shape);
 
                    Benchmark           (Benchmark const&)=delete;
 
@@ -87,23 +81,13 @@ public:
 
     Benchmark&     operator=           (Benchmark&&)=delete;
 
-    // std::string const& name            () const;
-
-    // std::string const& description     () const;
-
-    // std::vector<std::uint64_t> const&
-    //                array_shape         () const;
-
-    // std::vector<std::uint64_t> const&
-    //                partition_shape     () const;
-
     Environment const& environment     () const;
 
     Task const&    task                () const;
 
     int            run                 ();
 
-    TimeInterval const& time_interval  () const;
+    Timing const&  timing              () const;
 
     Timings const& timings             () const;
 
@@ -120,17 +104,7 @@ private:
     //! Name of the benchmark
     std::string const _name;
 
-    // //! Description of the benchmark
-    // std::string const _description;
-
-    // //! Shape of the arrays
-    // std::vector<std::uint64_t> const _array_shape;
-
-    // //! Shape of the array partitions
-    // std::vector<std::uint64_t> const _partition_shape;
-
-    //! Interval in which the benchmark ran
-    TimeInterval   _time_interval;
+    Timing         _timing;
 
     //! Timings of the @a count benchmark runs
     Timings        _timings;
@@ -149,57 +123,17 @@ inline Benchmark<Callable>::Benchmark(
     Callable&& callable,
     Environment const& environment,
     Task const& task):
-    // std::string const& name):
-    // std::string const& description):
-    // std::vector<std::uint64_t> const& array_shape,
-    // std::vector<std::uint64_t> const& partition_shape):
 
     _callable{std::forward<Callable>(callable)},
     _environment{environment},
     _task{task},
-    // _name{name},
-    // _description{description},
-    // _array_shape{array_shape},
-    // _partition_shape{partition_shape},
-    _time_interval{},
+    _timing{},
     _timings{}
 
 {
     // assert(!_array_shape.empty());
     // assert(std::size(_array_shape) == std::size(_partition_shape));
 }
-
-
-// template<
-//     typename Callable>
-// std::string const& Benchmark<Callable>::name() const
-// {
-//     return _name;
-// }
-
-
-// template<
-//     typename Callable>
-// std::string const& Benchmark<Callable>::description() const
-// {
-//     return _description;
-// }
-
-
-// template<
-//     typename Callable>
-// std::vector<std::uint64_t> const& array_shape() const
-// {
-//     return _array_shape;
-// }
-// 
-// 
-// template<
-//     typename Callable>
-// std::vector<std::uint64_t> const& partition_shape() const
-// {
-//     return _partition_shape;
-// }
 
 
 template<
@@ -236,31 +170,27 @@ inline int Benchmark<Callable>::run()
 
     // Stream << _name << ": ";  // << std::flush;
 
-    auto const start = Stopwatch::now();
+    _timing.start();
     for(std::size_t i = 0; i < _environment.count(); ++i) {
         stopwatch.start();
         _callable(_environment, _task);
         stopwatch.stop();
-        _timings.push_back(Timing{stopwatch.time_interval()});
+        _timings.push_back(stopwatch);
         // Stream << ".";  // << std::flush;
     }
     // Stream << "\n";  // std::endl;
-    auto const stop = Stopwatch::now();
-
-    _time_interval = TimeInterval{start, stop};
+    _timing.stop();
 
     return EXIT_SUCCESS;
 }
 
 
-/*!
-    @brief      Return the time interval the experiment ran
-*/
 template<
     typename Callable>
-inline TimeInterval const& Benchmark<Callable>::time_interval() const
+inline typename Benchmark<Callable>::Timing const&
+    Benchmark<Callable>::timing() const
 {
-    return _time_interval;
+    return _timing;
 }
 
 
