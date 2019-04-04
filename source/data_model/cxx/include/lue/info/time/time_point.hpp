@@ -1,18 +1,15 @@
 #pragma once
-#include "lue/array/same_shape/constant_shape/value.hpp"
-#include "lue/core/clock.hpp"
+#include "lue/info/time/location_in_time.hpp"
 
 
 namespace lue {
 
 /*!
-    @todo       Privately inherit to hide base class' API?
-
     - Zero or more time points per item
     - Each time point has a unique location in time
 */
 class TimePoint:
-    public same_shape::constant_shape::Value
+    public LocationInTime
 {
 
 public:
@@ -23,8 +20,7 @@ public:
 
                    TimePoint           (TimePoint&&)=default;
 
-                   TimePoint           (
-                                    same_shape::constant_shape::Value&& value);
+                   TimePoint           (LocationInTime&& value);
 
                    ~TimePoint          ()=default;
 
@@ -39,7 +35,6 @@ private:
 };
 
 
-TimePoint          create_time_point   (hdf5::Group& parent,
-                                        lue::Clock const& clock);
+TimePoint          create_time_point   (hdf5::Group& parent);
 
 }  // namespace lue

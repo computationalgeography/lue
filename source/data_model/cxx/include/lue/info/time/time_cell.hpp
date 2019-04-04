@@ -48,7 +48,6 @@ private:
 };
 
 
-TimeCell            create_time_cell   (hdf5::Group& parent,
-                                        lue::Clock const& clock);
+TimeCell            create_time_cell   (hdf5::Group& parent);
 
 }  // namespace lue

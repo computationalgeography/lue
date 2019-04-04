@@ -42,6 +42,7 @@ pybind11_add_module(lue_py MODULE NO_EXTRAS THIN_LTO
 
     src/core/array
     src/core/clock
+    src/core/time/epoch
     src/conversion
     src/dataset
 
@@ -51,6 +52,7 @@ pybind11_add_module(lue_py MODULE NO_EXTRAS THIN_LTO
     src/identity/object_id
     src/identity/object_tracker
 
+    src/location_in_time
     src/object/phenomenon
     src/object/property_set
     src/python_extension

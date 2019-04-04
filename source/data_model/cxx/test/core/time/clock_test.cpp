@@ -7,7 +7,7 @@ BOOST_AUTO_TEST_CASE(seconds)
 {
     using namespace lue::time;
 
-    // Clock with a tick period of 10 seconds
+    // Clock with a Unix time epoch and a tick period of 10 seconds
     std::size_t const nr_seconds_per_tick = 10;
 
     using TickPeriod = TickPeriod<Second>;
@@ -15,4 +15,10 @@ BOOST_AUTO_TEST_CASE(seconds)
 
     TickPeriod tick_period(nr_seconds_per_tick);
     Clock clock;
+
+    BOOST_CHECK(clock.epoch().kind() == Epoch::Kind::anno_domini);
+    BOOST_REQUIRE(clock.epoch().origin());
+    BOOST_CHECK_EQUAL(*clock.epoch().origin(), "1970-01-01");
+    BOOST_REQUIRE(clock.epoch().calendar());
+    BOOST_CHECK(*clock.epoch().calendar() == Calendar::gregorian);
 }

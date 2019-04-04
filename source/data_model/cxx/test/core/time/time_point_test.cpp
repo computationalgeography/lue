@@ -18,7 +18,7 @@ BOOST_AUTO_TEST_CASE(seconds)
     using TimePoint = TimePoint<Clock>;
 
     TickPeriod tick_period{nr_seconds_per_tick};
-    Clock clock{tick_period};
+    Clock clock{Epoch{}, tick_period};
     Duration duration{nr_ticks};
     TimePoint time_point{duration};
 
@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE(days)
 
     // Clock with a resolution of 2 days
     TickPeriod tick_period{2};
-    Clock clock(tick_period);
+    Clock clock(Epoch{}, tick_period);
 
     // Select day 6 (3 * 2 days)
     Duration duration{3};

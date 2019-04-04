@@ -17,9 +17,8 @@ public:
           _filename{"value.h5"},
           _file{std::make_unique<lue::hdf5::File>(
             lue::hdf5::create_file(_filename))},
-          _clock{lue::time::Unit::day, 1},
           _value{std::make_unique<lue::TimeCell>(
-            lue::create_time_cell(*_file, _clock))}
+            lue::create_time_cell(*_file))}
     {
     }
 
@@ -36,7 +35,6 @@ private:
 
     std::string const _filename;
     std::unique_ptr<lue::hdf5::File> _file;
-    lue::Clock const _clock;
     std::unique_ptr<lue::TimeCell> _value;
 
 };

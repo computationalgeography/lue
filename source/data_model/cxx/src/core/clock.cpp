@@ -5,12 +5,30 @@ namespace lue {
 
 Clock::Clock(
     time::Unit const unit,
-    time::TickPeriodCount const nr_units)
+    time::TickPeriodCount const nr_units):
 
-    : _unit{unit},
-      _nr_units{nr_units}
+    Clock{time::Epoch{}, unit, nr_units}
 
 {
+}
+
+
+Clock::Clock(
+    time::Epoch const& epoch,
+    time::Unit const unit,
+    time::TickPeriodCount const nr_units):
+
+    _epoch{epoch},
+    _unit{unit},
+    _nr_units{nr_units}
+
+{
+}
+
+
+time::Epoch const& Clock::epoch() const
+{
+    return _epoch;
 }
 
 

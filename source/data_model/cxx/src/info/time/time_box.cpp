@@ -1,26 +1,21 @@
 #include "lue/info/time/time_box.hpp"
-#include "lue/core/tag.hpp"
 
 
 namespace lue {
 
 TimeBox::TimeBox(
-    hdf5::Group& parent)
-:
-    same_shape::constant_shape::Value{
-        parent, coordinates_tag,
-        hdf5::Datatype{
-            hdf5::NativeDatatypeTraits<time::DurationCount>::type_id()}}
+    hdf5::Group& parent):
+
+    LocationInTime{parent}
 
 {
 }
 
 
 TimeBox::TimeBox(
-    same_shape::constant_shape::Value&& value)
-:
-    same_shape::constant_shape::Value{
-        std::forward<same_shape::constant_shape::Value>(value)}
+    LocationInTime&& value):
+
+    LocationInTime{std::forward<LocationInTime>(value)}
 
 {
 }
@@ -28,26 +23,14 @@ TimeBox::TimeBox(
 
 Count TimeBox::nr_boxes() const
 {
-    return nr_arrays();
+    return nr_locations();
 }
 
 
 TimeBox create_time_box(
-    hdf5::Group& parent,
-    lue::Clock const& /* clock */)
+    hdf5::Group& parent)
 {
-    // A time box is defined by the start and end time points.
-    // Given a clock, time points can be represented by durations since
-    // the clock's epoch. Durations can be represented by an amount of
-    // ticks, which is just a count.
-    hdf5::Datatype memory_datatype{
-        hdf5::NativeDatatypeTraits<time::DurationCount>::type_id()};
-    hdf5::Datatype file_datatype{
-        hdf5::StandardDatatypeTraits<time::DurationCount>::type_id()};
-    hdf5::Shape value_shape{2};
-
-    auto value = same_shape::constant_shape::create_value(
-        parent, coordinates_tag, file_datatype, memory_datatype, value_shape);
+    auto value = create_location_in_time(parent, hdf5::Shape{2});
 
     return TimeBox{std::move(value)};
 }

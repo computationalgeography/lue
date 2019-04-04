@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/info/time.hpp"
+#include "lue/core/clock.hpp"
 #include "lue/core/configuration.hpp"
 #include "lue/hdf5.hpp"
 
