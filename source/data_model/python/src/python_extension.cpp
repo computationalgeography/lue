@@ -53,6 +53,7 @@ PYBIND11_MODULE(lue, module)
     hdf5::init_submodule(module);
 
     init_array(module);
+    init_epoch(module);
     init_clock(module);
     /// // init_item(module);
     /// // init_domain(module);
@@ -63,6 +64,7 @@ PYBIND11_MODULE(lue, module)
     different_shape::init_submodule(module);
     same_shape::init_submodule(module);
 
+    init_location_in_time(module);
     init_time_box(module);
     init_time_cell(module);
     init_time_point(module);

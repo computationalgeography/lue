@@ -5,6 +5,7 @@ add_library(lue_data_model STATIC
     # Core stuff ---------------------------------------------------------------
     src/core/array
     src/core/clock
+    src/core/time/epoch
 
     # Object arrays ------------------------------------------------------------
     src/array/value_group
@@ -21,6 +22,7 @@ add_library(lue_data_model STATIC
     src/info/identity/active_object_index
     src/info/identity/active_set_index
 
+    src/info/time/location_in_time
     src/info/time/time_box
     src/info/time/time_cell
     src/info/time/time_point

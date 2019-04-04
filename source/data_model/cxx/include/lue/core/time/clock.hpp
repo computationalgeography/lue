@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/core/time/duration.hpp"
+#include "lue/core/time/epoch.hpp"
 
 
 namespace lue {
@@ -8,8 +9,6 @@ namespace time {
 /*!
     @brief      Class for representing a period of time since an epoch
     @tparam     TickPeriod Type for representing the length of a tick period
-
-    The epoch is undefined for now.
 */
 template<
     typename TickPeriod>
@@ -20,9 +19,10 @@ public:
 
     using Duration = time::Duration<TickPeriod>;
 
-                   Clock               (TickPeriod const& tick_period);
-
                    Clock               ()=default;
+
+                   Clock               (Epoch const& epoch,
+                                        TickPeriod const& tick_period);
 
                    Clock               (Clock const&)=default;
 
@@ -34,6 +34,8 @@ public:
 
     Clock&         operator=           (Clock&&)=default;
 
+    Epoch const&   epoch               () const;
+
     TickPeriod const& tick_period      () const;
 
     template<
@@ -43,6 +45,8 @@ public:
 
 private:
 
+    Epoch          _epoch;
+
     TickPeriod     _tick_period;
 
 };
@@ -51,11 +55,21 @@ private:
 template<
     typename TickPeriod>
 inline Clock<TickPeriod>::Clock(
-    TickPeriod const& tick_period)
+    Epoch const& epoch,
+    TickPeriod const& tick_period):
 
-    : _tick_period{tick_period}
+    _epoch{epoch},
+    _tick_period{tick_period}
 
 {
+}
+
+
+template<
+    typename TickPeriod>
+inline Epoch const& Clock<TickPeriod>::epoch() const
+{
+    return _epoch;
 }
 
 
@@ -68,7 +82,8 @@ inline TickPeriod const& Clock<TickPeriod>::tick_period() const
 
 
 /*!
-    @brief      Return the time point's number of units since the Clock's epoch
+    @brief      Return the time point's number of units since the
+                Clock's epoch
     @tparam     TimePoint Class template for representing time points
                 in this clock
 */

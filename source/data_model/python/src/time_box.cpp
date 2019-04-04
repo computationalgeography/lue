@@ -13,7 +13,7 @@ void init_time_box(
     py::module& module)
 {
 
-    py::class_<TimeBox, same_shape::constant_shape::Value>(
+    py::class_<TimeBox, LocationInTime>(
         module,
         "TimeBox",
         R"(

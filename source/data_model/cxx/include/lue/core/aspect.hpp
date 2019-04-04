@@ -104,6 +104,15 @@ TAG_AND_MAP(time::Unit, time_unit_tag, ({
     { time::Unit::year, time::UnitTraits<time::Unit::year>::name() }
 }))
 
+TAG_AND_MAP(time::Calendar, epoch_calendar_tag, ({
+    { time::Calendar::gregorian, "gregorian"}
+}))
+
+TAG_AND_MAP(time::Epoch::Kind, epoch_kind_tag, ({
+    { time::Epoch::Kind::anno_domini, "anno_domini"},
+    { time::Epoch::Kind::formation_of_earth, "formation_of_earth"}
+}))
+
 #undef TAG_AND_MAP
 #undef MAP
 #undef TAG

@@ -46,11 +46,10 @@ TimeCell::Count& TimeCell::count()
 
 
 TimeCell create_time_cell(
-    hdf5::Group& parent,
-    lue::Clock const& clock)
+    hdf5::Group& parent)
 {
     // A time cell is defined by a time box and a count per box.
-    auto time_box = create_time_box(parent, clock);
+    auto time_box = create_time_box(parent);
 
     hdf5::Datatype memory_datatype{
         hdf5::NativeDatatypeTraits<lue::Count>::type_id()};

@@ -1,6 +1,9 @@
 #include "../python_extension.hpp"
+#include "lue/py/core/time/epoch.hpp"
+#include "lue/core/aspect.hpp"
 #include "lue/core/clock.hpp"
 #include <pybind11/pybind11.h>
+#include <fmt/format.h>
 
 
 namespace py = pybind11;
@@ -8,6 +11,24 @@ using namespace pybind11::literals;
 
 
 namespace lue {
+
+std::string formal_string_representation(
+    Clock const& clock)
+{
+    return fmt::format(
+            "Clock(epoch='{}', unit='{}', nr_units='{}')",
+            formal_string_representation(clock.epoch()),
+            aspect_to_string(clock.unit()),
+            clock.nr_units());
+}
+
+
+std::string informal_string_representation(
+    Clock const& clock)
+{
+    return formal_string_representation(clock);
+}
+
 
 void init_clock(
     py::module& module)
@@ -53,7 +74,40 @@ void init_clock(
 )")
 
         .def(
-            py::init<time::Unit const, time::TickPeriodCount const>())
+            py::init<
+                time::Unit const,
+                time::TickPeriodCount const>())
+        .def(
+            py::init<
+                time::Epoch const&,
+                time::Unit const,
+                time::TickPeriodCount const>())
+
+        .def(
+            "__repr__",
+            [](Clock const& clock) {
+                return formal_string_representation(clock);
+            }
+        )
+
+        .def(
+            "__str__",
+            [](Clock const& clock) {
+                return informal_string_representation(clock);
+            }
+        )
+
+        .def_property_readonly(
+            "epoch",
+            &Clock::epoch)
+
+        .def_property_readonly(
+            "unit",
+            &Clock::unit)
+
+        .def_property_readonly(
+            "nr_units",
+            &Clock::nr_units)
 
         ;
 

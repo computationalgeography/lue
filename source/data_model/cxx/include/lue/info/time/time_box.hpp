@@ -1,18 +1,15 @@
 #pragma once
-#include "lue/array/same_shape/constant_shape/value.hpp"
-#include "lue/core/clock.hpp"
+#include "lue/info/time/location_in_time.hpp"
 
 
 namespace lue {
 
 /*!
-    @todo       Use private inheritance to hide base class' API?
-
     - Zero or more time boxes per item
     - Each time box has a unique location in time
 */
 class TimeBox:
-    public same_shape::constant_shape::Value
+    public LocationInTime
 {
 
 public:
@@ -23,8 +20,7 @@ public:
 
                    TimeBox             (TimeBox&&)=default;
 
-                   TimeBox             (
-                                    same_shape::constant_shape::Value&& value);
+                   TimeBox             (LocationInTime&& value);
 
                    ~TimeBox            ()=default;
 
@@ -39,7 +35,6 @@ private:
 };
 
 
-TimeBox            create_time_box     (hdf5::Group& parent,
-                                        lue::Clock const& clock);
+TimeBox            create_time_box     (hdf5::Group& parent);
 
 }  // namespace lue

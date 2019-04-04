@@ -42,7 +42,9 @@ class TimeSeriesTest(lue_test.TestCase):
         time_configuration = lue.TimeConfiguration(
             lue.TimeDomainItemType.cell
         )
-        clock = lue.Clock(lue.Unit.day, 1)
+        epoch = lue.Epoch(
+            lue.Epoch.Kind.anno_domini, "2019-01-01", lue.Calendar.gregorian)
+        clock = lue.Clock(epoch, lue.Unit.day, 1)
         time_coordinate_datatype = lue.dtype.TickPeriodCount
 
         # Space domain
@@ -100,3 +102,17 @@ class TimeSeriesTest(lue_test.TestCase):
                     discharge_values
 
         lue.assert_is_valid(dataset)
+
+        del dataset
+
+        dataset = lue.open_dataset("outlets2.lue")
+        phenomenon = dataset.phenomena["areas"]
+        outlet_points = phenomenon.property_sets["outlets"]
+        time_domain = outlet_points.time_domain
+        clock = time_domain.clock
+
+        self.assertEqual(clock.epoch.kind, lue.Epoch.Kind.anno_domini)
+        self.assertEqual(clock.epoch.origin, "2019-01-01")
+        self.assertEqual(clock.epoch.calendar, lue.Calendar.gregorian)
+        self.assertEqual(clock.unit, lue.Unit.day)
+        self.assertEqual(clock.nr_units, 1)

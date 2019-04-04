@@ -35,6 +35,12 @@ static std::string const nr_locations_in_time_tag =
     "lue_nr_locations_in_time";
 static std::string const value_tag =
     "lue_value";
+static std::string const epoch_kind_tag =
+    "lue_epoch_kind";
+static std::string const epoch_calendar_tag =
+    "lue_epoch_calendar";
+static std::string const epoch_origin_tag =
+    "lue_epoch_origin";
 
 // object
 static std::string const time_domain_tag =

@@ -117,6 +117,10 @@ void init_time_domain(
             &TimeDomain::configuration)
 
         .def_property_readonly(
+            "clock",
+            &TimeDomain::clock)
+
+        .def_property_readonly(
             "value",
             [](
                 TimeDomain& time_domain)

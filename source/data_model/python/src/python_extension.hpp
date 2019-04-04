@@ -16,6 +16,8 @@ void               init_clock          (pybind11::module& module);
 
 void               init_dataset        (pybind11::module& module);
 
+void               init_epoch          (pybind11::module& module);
+
 void               init_active_object_id(
                                         pybind11::module& module);
 
@@ -23,6 +25,9 @@ void               init_active_object_index(
                                         pybind11::module& module);
 
 void               init_active_set_index(
+                                        pybind11::module& module);
+
+void               init_location_in_time(
                                         pybind11::module& module);
 
 void               init_object_id      (pybind11::module& module);
