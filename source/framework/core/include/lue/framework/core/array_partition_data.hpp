@@ -2,6 +2,10 @@
 #include "lue/framework/core/shape.hpp"
 #include "lue/framework/core/type_traits.hpp"
 #include <hpx/runtime/serialization/serialize.hpp>
+#ifndef NDEBUG
+    #define BOOST_DISABLE_ASSERTS
+#endif
+#define BOOST_MULTI_ARRAY_NO_GENERATORS
 #include <boost/multi_array.hpp>
 #include <algorithm>
 #include <memory>
@@ -85,6 +89,8 @@ public:
     Shape const&   shape               () const;
 
     SizeType       size                () const;
+
+    void           resize              (Shape const& shape);
 
     Values const&  values              () const;
 
@@ -306,6 +312,17 @@ typename ArrayPartitionData<Value, rank>::SizeType
 template<
     typename Value,
     std::size_t rank>
+void ArrayPartitionData<Value, rank>::resize(
+    Shape const& shape)
+{
+    _values->resize(shape);
+    _shape = shape;
+}
+
+
+template<
+    typename Value,
+    std::size_t rank>
 typename ArrayPartitionData<Value, rank>::Values const&
     ArrayPartitionData<Value, rank>::values() const
 {
@@ -461,6 +478,8 @@ public:
 
     SizeType       size                () const;
 
+    void           resize              (Shape const& shape);
+
     Values const&  values              () const;
 
     Values&        values              ();
@@ -554,6 +573,16 @@ typename ArrayPartitionData<Value, 0>::Shape const&
     ArrayPartitionData<Value, 0>::shape() const
 {
     return _shape;
+}
+
+
+template<
+    typename Value>
+void ArrayPartitionData<Value, 0>::resize(
+    Shape const& /* shape */)
+{
+    // Cannot resize a scalar array
+    HPX_ASSERT(false);
 }
 
 

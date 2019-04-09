@@ -31,6 +31,10 @@ HPX_REGISTER_ACTION(                                                \
     ArrayPartition_##Element##_##rank##_ShapeAction)                \
                                                                     \
 HPX_REGISTER_ACTION(                                                \
+    lue::detail::ArrayPartition_##Element##_##rank::ResizeAction,   \
+    ArrayPartition_##Element##_##rank##_ResizeAction)               \
+                                                                    \
+HPX_REGISTER_ACTION(                                                \
     lue::detail::ArrayPartition_##Element##_##rank::SizeAction,     \
     ArrayPartition_##Element##_##rank##_SizeAction)
 

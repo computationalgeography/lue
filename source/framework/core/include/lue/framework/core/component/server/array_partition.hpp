@@ -57,6 +57,8 @@ public:
 
     Shape          shape               () const;
 
+    void           resize              (Shape const& shape);
+
     Size           size                () const;
 
 private:
@@ -70,6 +72,7 @@ public:
     HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, data, DataAction);
     HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, fill, FillAction);
     HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, shape, ShapeAction);
+    HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, resize, ResizeAction);
     HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, size, SizeAction);
 
 };
@@ -78,35 +81,38 @@ public:
 }  // namespace lue
 
 
-#define LUE_REGISTER_ARRAY_PARTITION_ACTION_DECLARATIONS(        \
-    Element,                                                     \
-    rank)                                                        \
-                                                                 \
-namespace lue {                                                  \
-namespace detail {                                               \
-                                                                 \
-using ArrayPartition_##Element##_##rank =                        \
-    server::ArrayPartition<Element, rank>;                       \
-                                                                 \
-}                                                                \
-}                                                                \
-                                                                 \
-HPX_REGISTER_ACTION_DECLARATION(                                 \
-    lue::detail::ArrayPartition_##Element##_##rank::DataAction,  \
-    ArrayPartition_##Element##_##rank##_DataAction)              \
-                                                                 \
-HPX_REGISTER_ACTION_DECLARATION(                                 \
-    lue::detail::ArrayPartition_##Element##_##rank::FillAction,  \
-    ArrayPartition_##Element##_##rank##_FillAction)              \
-                                                                 \
-HPX_REGISTER_ACTION_DECLARATION(                                 \
-    lue::detail::ArrayPartition_##Element##_##rank::ShapeAction, \
-    ArrayPartition_##Element##_##rank##_ShapeAction)             \
-                                                                 \
-HPX_REGISTER_ACTION_DECLARATION(                                 \
-    lue::detail::ArrayPartition_##Element##_##rank::SizeAction,  \
+#define LUE_REGISTER_ARRAY_PARTITION_ACTION_DECLARATIONS(          \
+    Element,                                                       \
+    rank)                                                          \
+                                                                   \
+namespace lue {                                                    \
+namespace detail {                                                 \
+                                                                   \
+using ArrayPartition_##Element##_##rank =                          \
+    server::ArrayPartition<Element, rank>;                         \
+                                                                   \
+}                                                                  \
+}                                                                  \
+                                                                   \
+HPX_REGISTER_ACTION_DECLARATION(                                   \
+    lue::detail::ArrayPartition_##Element##_##rank::DataAction,    \
+    ArrayPartition_##Element##_##rank##_DataAction)                \
+                                                                   \
+HPX_REGISTER_ACTION_DECLARATION(                                   \
+    lue::detail::ArrayPartition_##Element##_##rank::FillAction,    \
+    ArrayPartition_##Element##_##rank##_FillAction)                \
+                                                                   \
+HPX_REGISTER_ACTION_DECLARATION(                                   \
+    lue::detail::ArrayPartition_##Element##_##rank::ShapeAction,   \
+    ArrayPartition_##Element##_##rank##_ShapeAction)               \
+                                                                   \
+HPX_REGISTER_ACTION_DECLARATION(                                   \
+    lue::detail::ArrayPartition_##Element##_##rank::ResizeAction,  \
+    ArrayPartition_##Element##_##rank##_ResizeAction)              \
+                                                                   \
+HPX_REGISTER_ACTION_DECLARATION(                                   \
+    lue::detail::ArrayPartition_##Element##_##rank::SizeAction,    \
     ArrayPartition_##Element##_##rank##_SizeAction)
-
 
 #define LUE_REGISTER_ARRAY_PARTITIONS_ACTION_DECLARATIONS(    \
     Element)                                                  \
@@ -147,6 +153,7 @@ public:                                                                \
 LUE_DEFINE_ARRAY_PARTITION_COMPONENT_ACTION_TEMPLATE(Data)
 LUE_DEFINE_ARRAY_PARTITION_COMPONENT_ACTION_TEMPLATE(Fill)
 LUE_DEFINE_ARRAY_PARTITION_COMPONENT_ACTION_TEMPLATE(Shape)
+LUE_DEFINE_ARRAY_PARTITION_COMPONENT_ACTION_TEMPLATE(Resize)
 LUE_DEFINE_ARRAY_PARTITION_COMPONENT_ACTION_TEMPLATE(Size)
 
 #undef LUE_DEFINE_ARRAY_PARTITION_COMPONENT_ACTION_TEMPLATE
@@ -283,6 +290,16 @@ typename ArrayPartition<Element, rank>::Shape
     ArrayPartition<Element, rank>::shape() const
 {
     return _data.shape();
+}
+
+
+template<
+    typename Element,
+    std::size_t rank>
+void ArrayPartition<Element, rank>::resize(
+    Shape const& shape)
+{
+    _data.resize(shape);
 }
 
 

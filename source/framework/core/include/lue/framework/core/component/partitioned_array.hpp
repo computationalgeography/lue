@@ -1,14 +1,8 @@
 #pragma once
 #include "lue/framework/core/component/array_partition.hpp"
-// #include "lue/framework/core/component/server/partitioned_array_metadata.hpp"
 #include "lue/framework/core/array_partition_data.hpp"
-#include "lue/framework/core/array_partition_definition.hpp"
 #include "lue/framework/core/debug.hpp"
 #include "lue/framework/core/domain_decomposition.hpp"
-#include "lue/framework/core/spatial_index.hpp"
-#include <hpx/components/containers/container_distribution_policy.hpp>
-
-// #include "lue/framework/test/stream.hpp"
 
 
 namespace lue {
@@ -215,6 +209,13 @@ public:
 
 private:
 
+    void           shrink_partitions   (Shape const& begin_indices,
+                                        Shape const& end_indices,
+                                        Shape const& new_shape);
+
+    void           clamp_array         (Shape const& shape_in_partitions,
+                                        Shape const& max_partition_shape);
+
     void           create              ();
 
     void           create              (Shape const& max_partition_shape);
@@ -222,11 +223,13 @@ private:
     void           create              (Shape const& shape_in_partitions,
                                         Shape const& max_partition_shape);
 
+    void           print_partitions    () const;
+
     void           assert_invariants   () const;
 
-    //! For a locality ID a list of array partition component IDs
-    using BulkLocalityResult =
-        std::pair<hpx::id_type, std::vector<hpx::id_type>>;
+    /// //! For a locality ID a list of array partition component IDs
+    /// using BulkLocalityResult =
+    ///     std::pair<hpx::id_type, std::vector<hpx::id_type>>;
 
 
     // template<
@@ -277,8 +280,6 @@ PartitionedArray<Element, rank>::PartitionedArray(
 {
     create();
 
-    // create(hpx::container_layout);
-
     assert_invariants();
 }
 
@@ -316,6 +317,277 @@ PartitionedArray<Element, rank>::PartitionedArray(
 
 
 template<
+    std::size_t rank,
+    typename Iterator,
+    typename Visitor
+>
+void visit_array(
+    Iterator begin_idx,
+    Iterator end_idx,
+    Visitor visitor)
+{
+    if constexpr (rank == 0) {
+
+        // We have visited all array dimensions and can now notify the
+        // visitor that we have arrived at one of the selected cells. It
+        // should do its thing, whatever that is.
+
+        visitor();
+
+    }
+    else {
+
+        // We are still visiting locations along array dimensions. The
+        // last dimensions vary fastest.
+
+        std::size_t idx = *begin_idx;
+
+        visitor.enter_next_dimension();
+        visitor.visit_first_cell(idx);
+
+        assert(idx <= *end_idx);
+
+        for(; idx < *end_idx; ++idx) {
+
+            // Recurse into next dimension
+            visit_array<rank - 1>(begin_idx + 1, end_idx + 1, visitor);
+
+            visitor.visit_next_cell(idx);
+
+        }
+    }
+}
+
+
+template<
+    typename Shape,
+    typename Visitor
+>
+void visit_array(
+    Shape const& begin_indices,
+    Shape const& end_indices,
+    Visitor const& visitor)
+{
+    static_assert(begin_indices.size() == end_indices.size());
+
+    auto const rank = begin_indices.size();
+
+    visit_array<rank>(begin_indices.begin(), end_indices.begin(), visitor);
+}
+
+
+// template<
+//     typename Shape>
+// void print_shape(
+//     Shape const& shape)
+// {
+//     std::cout << "(";
+// 
+//     for(auto e: shape) {
+//         std::cout << e << ", ";
+//     }
+// 
+//     std::cout << ")";
+// }
+// 
+// 
+// template<
+//     typename Partition>
+// void print_partition(
+//     Partition const& partition)
+// {
+//     std::cout << "    shape: ";
+//     print_shape(partition.shape().get());
+//     std::cout << "\n";
+// }
+// 
+// 
+// template<
+//     typename Element,
+//     std::size_t rank>
+// void PartitionedArray<Element, rank>::print_partitions() const
+// {
+//     for(std::size_t i = 0; i < _partitions.size(); ++i) {
+//         std::cout << "partition " << i << ":\n";
+//         print_partition(_partitions[i]);
+//     }
+// }
+
+
+template<
+    typename Partitions>
+class ShrinkVisitor
+{
+
+public:
+
+    using Shape = typename Partitions::Shape;
+
+    ShrinkVisitor(
+        Partitions& partitions,
+        Shape const& new_shape):
+
+        _partitions{partitions},
+        _new_shape{new_shape},
+        _dimension_idx{0},
+        _linear_idx{0},
+        _nr_cells_in_subsequent_dimensions{0}
+
+    {
+    }
+
+    void enter_next_dimension()
+    {
+        ++_dimension_idx;
+
+        auto const shape = _partitions.shape();
+
+        assert(
+            std::distance(shape.begin(), shape.end()) >= _dimension_idx);
+
+        _nr_cells_in_subsequent_dimensions =
+            std::accumulate(
+                shape.begin() + _dimension_idx, shape.end(),
+                1, std::multiplies<typename Shape::value_type>());
+    }
+
+    void visit_first_cell(
+        std::size_t const idx)
+    {
+        _linear_idx += idx * _nr_cells_in_subsequent_dimensions;
+    }
+
+    void visit_next_cell(
+        std::size_t const idx)
+    {
+        _linear_idx += _nr_cells_in_subsequent_dimensions;
+    }
+
+    void operator()()
+    {
+        assert(_linear_idx < _partitions.size());
+
+        auto& partition = _partitions[_linear_idx];
+
+        Shape shrinked_partition_shape{partition.shape().get()};
+
+        auto const rank = Partitions::rank;
+
+        for(std::size_t i = 0; i < rank; ++i) {
+            shrinked_partition_shape[i] =
+                std::min(shrinked_partition_shape[i], _new_shape[i]);
+        }
+
+        partition.resize(shrinked_partition_shape).wait();
+    }
+
+private:
+
+    //! Array containing partitions being visited
+    Partitions&    _partitions;
+
+    //! New shape to use for partitions visited
+    Shape const    _new_shape;
+
+    //! Current dimension being visited
+    std::size_t    _dimension_idx;
+
+    //! Linear index of cell being visited
+    std::size_t    _linear_idx;
+
+    //! Cells to skip when iterating over cells
+    std::size_t    _nr_cells_in_subsequent_dimensions;
+
+};
+
+
+template<
+    typename Element,
+    std::size_t rank>
+void PartitionedArray<Element, rank>::shrink_partitions(
+    Shape const& begin_indices,
+    Shape const& end_indices,
+    Shape const& new_shape)
+{
+    // Iterate over all partitions and resize each of them.
+    // Array shape is not changed! It is assumed that the shape of
+    // the partitioned array after resizing corresponds with the cached
+    // array shape (_shape).
+    // The new_shape passed in is taken to be the max size to use. If
+    // one or more dimensions of a partition is smaller than the extens
+    // in new_shape, then those dimensions of the partition are not
+    // resized. Partition extents are made smaller, not larger.
+
+    ShrinkVisitor shrink{_partitions, new_shape};
+
+    visit_array(begin_indices, end_indices, shrink);
+}
+
+
+template<
+    typename Element,
+    std::size_t rank>
+void PartitionedArray<Element, rank>::clamp_array(
+    Shape const& shape_in_partitions,
+    Shape const& max_partition_shape)
+{
+    // Shrink partitions at the border of the array. They might be too large.
+    // This happens when the extents of the array are not a multiple of the
+    // corresponding extents in max_partition_shape.
+
+    // Resize partitions at the sides of the array that are too large
+
+    // // Offset to iterate over partition along one of the dimensions
+    // Index partition_idx_offset;
+
+    // Begin and end indices of all partitions in the array
+    Shape begin_indices;
+    begin_indices.fill(0);
+    Shape const end_indices{shape_in_partitions};
+
+    // Iterate over all dimensions
+    for(std::size_t d = 0; d < rank; ++d) {
+        auto const array_extent = _shape[d];
+        auto const max_partitions_extent =
+            shape_in_partitions[d] * max_partition_shape[d];
+        auto const excess_cells = max_partitions_extent - array_extent;
+
+        // We are assuming here that only the last partition needs to
+        // be resized. All other partitions must be positioned within
+        // the array's extent.
+        assert(excess_cells < max_partitions_extent);
+
+        if(excess_cells > 0) {
+            // Resize current dimension of all partitions at currently
+            // considered side of array
+            // These partitions form a hyperslab of the array. We can
+            // select this slab using start indices and end indices along
+            // all dimensions. For the current dimension we set these
+            // to the same value: the index of the last partition. In
+            // case of the other dimension we set the start indices
+            // to zero and the end indices to the last index along each
+            // of these dimensions.
+
+            Shape begin_indices_hyperslab{begin_indices};
+            Shape end_indices_hyperslab{end_indices};
+
+            begin_indices_hyperslab[d] = shape_in_partitions[d] - 1;
+            end_indices_hyperslab[d] = shape_in_partitions[d];
+
+            Shape partition_shape{max_partition_shape};
+            partition_shape[d] -= excess_cells;
+
+            shrink_partitions(
+                begin_indices_hyperslab, end_indices_hyperslab,
+                partition_shape);
+        }
+    }
+}
+
+
+
+
+template<
     typename Element,
     std::size_t rank>
 void PartitionedArray<Element, rank>::create(
@@ -326,7 +598,7 @@ void PartitionedArray<Element, rank>::create(
     // partitions on and a strategy for distributing these partitions
     // over them. It does not know anything about array partitions and
     // how to create them. That is what the creator is for.
-    auto const& distribution_policy = hpx::container_layout;
+    /// auto const& distribution_policy = hpx::container_layout;
 
     // Create the array partitions that, together make up the partitioned
     // array. Note that the extent of this array might be too large,
@@ -341,140 +613,122 @@ void PartitionedArray<Element, rank>::create(
     // this creator for partitions that will be assigned to later.
     // template<
     //     typename DistributionPolicy>
-    auto creator =
-        [](
-            // DistributionPolicy const& distribution_policy,
-            auto const& distribution_policy,
-            std::size_t const count,
-            Shape const& shape)
-        {
-            return distribution_policy.template
-                bulk_create<PartitionServer>(count, shape);
-        };
+    /// auto creator =
+    ///     [](
+    ///         // DistributionPolicy const& distribution_policy,
+    ///         auto const& distribution_policy,
+    ///         std::size_t const count,
+    ///         Shape const& shape)
+    ///     {
+    ///         return distribution_policy.template
+    ///             bulk_create<PartitionServer>(count, shape);
+    ///     };
 
-    auto const nr_partitions = lue::nr_elements(shape_in_partitions);
+    std::size_t const nr_partitions = lue::nr_elements(shape_in_partitions);
 
-    // For one or more localities a list of array partition component IDs
-    // vector<pair<id_type, vector<id_type>>
-    hpx::future<std::vector<BulkLocalityResult>> f =
-        creator(distribution_policy, nr_partitions, max_partition_shape);
+    /// // For one or more localities a list of array partition component IDs
+    /// // vector<pair<id_type, vector<id_type>>
+    /// hpx::future<std::vector<BulkLocalityResult>> f =
+    ///     creator(distribution_policy, nr_partitions, max_partition_shape);
 
-    // Next adjust the border partitions and position them
 
-    // // now initialize our data structures
-    // std::uint32_t const this_locality_nr = hpx::get_locality_id();
-    std::vector<hpx::future<void>> ptrs;
+    /// // Next adjust the border partitions and position them
 
-    // std::size_t num_part = 0;
-    // std::size_t allocated_size = 0;
+    /// // // now initialize our data structures
+    /// // std::uint32_t const this_locality_nr = hpx::get_locality_id();
+    /// std::vector<hpx::future<void>> ptrs;
 
-    // std::size_t l = 0;
+    /// // std::size_t num_part = 0;
+    /// // std::size_t allocated_size = 0;
 
-    // auto const shape_in_partitions =
-    //     lue::shape_in_partitions(_shape, max_partition_shape);
-    // std::cout << max_partition_shape << std::endl;
-    // std::cout << shape_in_partitions << std::endl;
+    /// // std::size_t l = 0;
+
+    /// // auto const shape_in_partitions =
+    /// //     lue::shape_in_partitions(_shape, max_partition_shape);
+    /// // std::cout << max_partition_shape << std::endl;
+    /// // std::cout << shape_in_partitions << std::endl;
 
 
     _partitions = Partitions{shape_in_partitions};
         // Definition{_definition.start(), shape_in_partitions}};
-    typename Partitions::Index partition_idx = 0;
 
-    // Iterate over all localities that got array partition components
-    // instantiated on them
-    for(BulkLocalityResult& r: f.get()) {
-        assert(partition_idx < _partitions.size());
+    std::vector<hpx::id_type> const localities = hpx::find_all_localities();
+    std::size_t const nr_localities = localities.size();
 
-        // r: pair<id_type, vector<id_type>>
+    assert(nr_localities > 0);
+    assert(nr_partitions >= nr_localities);
 
-        // Obtain locality number from locality id
-        // TODO Why not use the locality id itself?
-        // std::uint32_t const locality_nr =
-        //     hpx::naming::get_locality_id_from_id(r.first);
+    auto locality_idx =
+        [nr_partitions, nr_localities](
+            std::size_t const i)
+        {
+            // Mapping of partitions to localities
+            assert(nr_partitions >= nr_localities);
 
-        // Iterate over all IDs of server components started on the
-        // locality currently iterated over
-        for(hpx::id_type const& id: r.second) {
+            // std::size_t const result = std::min(
+            //     i / (nr_partitions / nr_localities),
+            //     nr_localities - 1);
 
-            // Assign this partition to a cell in the partitions array
-            _partitions.data()[partition_idx] = PartitionClient{id};
-            //     // Partition{5};
-            //     // Partition{id, max_partition_shape, locality_nr};
+            std::size_t const result = i / (nr_partitions / nr_localities);
 
-            // if(locality_nr == this_locality_nr) {
-            //     ptrs.push_back(
-            //         hpx::get_ptr<PartitionServer>(id).then(
-            //             [this, partition_idx](auto&& future)
-            //             {
-            //                 _partitions.data()[partition_idx].set_local_data(
-            //                     future.get());
-            //             }));
-            // }
+            assert(result < nr_localities);
 
-            ++partition_idx;
-        }
+            return result;
+        };
+
+
+    // Create array partitions. Each of them will be located on a certain
+    // locality. Which one exactly is determined by locality_idx.
+    for(std::size_t i = 0; i < nr_partitions; ++i) {
+        _partitions[i] =
+            Partition(localities[locality_idx(i)], max_partition_shape);
     }
 
-    HPX_ASSERT(partition_idx == nr_partitions);
+
+    /// typename Partitions::Index partition_idx = 0;
+
+    /// // Iterate over all localities that got array partition components
+    /// // instantiated on them
+    /// for(BulkLocalityResult& r: f.get()) {
+    ///     assert(partition_idx < _partitions.size());
+
+    ///     // r: pair<id_type, vector<id_type>>
+
+    ///     // Obtain locality number from locality id
+    ///     // TODO Why not use the locality id itself?
+    ///     // std::uint32_t const locality_nr =
+    ///     //     hpx::naming::get_locality_id_from_id(r.first);
+
+    ///     // Iterate over all IDs of server components started on the
+    ///     // locality currently iterated over
+    ///     for(hpx::id_type const& id: r.second) {
+
+    ///         // Assign this partition to a cell in the partitions array
+    ///         _partitions.data()[partition_idx] = PartitionClient{id};
+    ///         //     // Partition{5};
+    ///         //     // Partition{id, max_partition_shape, locality_nr};
+
+    ///         // if(locality_nr == this_locality_nr) {
+    ///         //     ptrs.push_back(
+    ///         //         hpx::get_ptr<PartitionServer>(id).then(
+    ///         //             [this, partition_idx](auto&& future)
+    ///         //             {
+    ///         //                 _partitions.data()[partition_idx].set_local_data(
+    ///         //                     future.get());
+    ///         //             }));
+    ///         // }
+
+    ///         ++partition_idx;
+    ///     }
+    /// }
+
+    /// HPX_ASSERT(partition_idx == nr_partitions);
+
+    clamp_array(shape_in_partitions, max_partition_shape);
 
 
-    // // Shrink partitions at the border of the array. They might be too large.
-    // // This happens when the extents of the array are not a multiple of the
-    // // corresponding extents in max_partition_shape.
-    // {
-    //     // Resize partitions at the sides of the array that are too large
 
-    //     // // Offset to iterate over partition along one of the dimensions
-    //     Index partition_idx_offset;
 
-    //     // Iterate over all dimensions
-    //     for(std::size_t d = 0; d < rank; ++d) {
-    //         auto const array_extent = _shape[d];
-    //         auto const max_partitions_extent =
-    //             shape_in_partitions[d] * max_partition_shape[d];
-
-    //         auto const excess_cells = max_partitions_extent - array_extent;
-
-    //         if(excess_cells > 0) {
-    //             // Resize current dimension of all partitions at currently
-    //             // considered side of array
-
-    //             // Iterate over all these partitions. Ask them for their
-    //             // current shape, reset the current dimension's extent,
-    //             // and ask them to resize according to the new shape.
-
-    //             // Iterate over all partitions at the end of the current
-    //             // dimension. This means iterating over all current d's
-    //             // and maximizing the indices of the other dimensions.
-
-    //             auto const new_extent = max_partition_shape[d] - excess_cells;
-    //             auto new_shape = max_partition_shape;
-    //             new_shape[d] = new_extent;
-
-    //             Index partition_idx = 0;
-    //             Index partition_idx_offset = _partitions.shape()[d];
-
-    //             // How to iterate over the correct cells?
-    //             // recursion!
-    //             // [d1_min, d2_min, d2_min]
-    //             // [d1_max, d2_max, d2_max]
-    //             // [d1_extent, d2_extent, d3_extent]
-    //             // Calculate linear indices using a recursive function
-    //             // Pass in the logic that needs to be called at the
-    //             // deepest level. Somehow get the result out!
-
-    //             // Index 
-
-    //             // nr_partitions_in_side = xxx;
-
-    //             // for(std::size_t i = 0; i < nr_partitions_in_side; ++i) {
-    //             //     partition_idx += partition_idx_offset;
-    //             //     auto& partition = _partitions[partition_idx];
-    //             //     // TODO blocks
-    //             //     partition.reshape(new_shape).get();
-    //             // }
-    //         }
-    //     }
 
 
     //     //     // Linear index of partition
@@ -577,8 +831,8 @@ void PartitionedArray<Element, rank>::create(
 
 
 
-    // TODO Move up?
-    hpx::wait_all(ptrs);
+    /// // TODO Move up?
+    /// hpx::wait_all(ptrs);
 
 
     // // Cache the partition shape
@@ -756,58 +1010,116 @@ void PartitionedArray<Element, rank>::create(
 
 
 template<
+    typename Partitions>
+class ValidateVisitor
+{
+
+public:
+
+    using Shape = typename Partitions::Shape;
+
+    ValidateVisitor(
+        Partitions& partitions,
+        Shape const& shape):
+
+        _partitions{partitions},
+        _shape{shape},
+        _dimension_idx{0},
+        _linear_idx{0},
+        _nr_cells_in_subsequent_dimensions{0}
+
+    {
+    }
+
+    void enter_next_dimension()
+    {
+        ++_dimension_idx;
+
+        auto const partition_shape = _partitions.shape();
+
+        assert(
+            std::distance(
+                partition_shape.begin(), partition_shape.end()) >=
+                _dimension_idx);
+
+        _nr_cells_in_subsequent_dimensions =
+            std::accumulate(
+                partition_shape.begin() + _dimension_idx,
+                partition_shape.end(), 1,
+                std::multiplies<typename Shape::value_type>());
+    }
+
+    void visit_first_cell(
+        std::size_t const idx)
+    {
+        _linear_idx += idx * _nr_cells_in_subsequent_dimensions;
+    }
+
+    void visit_next_cell(
+        std::size_t const idx)
+    {
+        _linear_idx += _nr_cells_in_subsequent_dimensions;
+    }
+
+    void operator()()
+    {
+        // Given a cell, verify it is located within the array's shape
+
+        assert(_linear_idx < _partitions.size());
+
+        auto& partition = _partitions[_linear_idx];
+
+        // TODO Add check
+
+        // auto const& definition = partition.definition();
+
+        // LUE_ASSERT(
+        //     definition.is_within(_shape),
+        //     "Partition at index {} is not positioned within "
+        //     "the array's shape {}",
+        //     _linear_idx, _shape);
+
+    }
+
+private:
+
+    //! Array containing partitions being visited
+    Partitions&    _partitions;
+
+    //! Shape of the array
+    Shape const    _shape;
+
+    //! Current dimension being visited
+    std::size_t    _dimension_idx;
+
+    //! Linear index of cell being visited
+    std::size_t    _linear_idx;
+
+    //! Cells to skip when iterating over cells
+    std::size_t    _nr_cells_in_subsequent_dimensions;
+
+};
+
+
+
+
+template<
     typename Element,
     std::size_t rank>
 void PartitionedArray<Element, rank>::assert_invariants() const
 {
 #ifndef NDEBUG
 
-    // TODO
-    return;
+    // Visit all partitions and see whether they fit exactly within
+    // the shape of the array
 
-    // Offset to iterate over partition along one of the dimensions
-    Index partition_idx_offset = 1;
+    Shape begin_indices;
+    begin_indices.fill(0);
+    Shape const end_indices{_partitions.shape()};
 
-    // Iterate over all dimensions
-    for(std::size_t d = 0; d < rank; ++d) {
+    ValidateVisitor validate{_partitions, _shape};
 
-        // Linear index of partition
-        Index partition_idx = 0;
-
-        // Extents of partitions untill now, in two adjacent partitions
-        Index old_extent = 0;
-        Index new_extent;
-
-        // Iterate over all partitions
-        for(std::size_t p = 0; p < _partitions.shape()[d]; ++p) {
-
-            auto const& partition = _partitions[partition_idx];
-
-            // Note: blocks for shape to be retrieved
-            new_extent = old_extent + partition.shape().get()[d];
-
-            // Last element in this partition must not extent beyond
-            // the array
-            LUE_ASSERT(
-                new_extent <= _shape[d],
-                "Along dimension {}, the last element of partition {} "
-                "extents beyond the array ({} > {})",
-                d, p, new_extent, _shape[d]);
-
-            old_extent = new_extent;
-            partition_idx += partition_idx_offset;
-        }
-
-        // Last element of the last partition must be the last element
-        // of the array
-        LUE_ASSERT(
-            new_extent == _shape[d],
-            "exents of partitions along dimension {} "
-            "do not sum up to extent of array ({} != {})",
-            d, old_extent, _shape[d]);
-
-        partition_idx_offset *= _partitions.shape()[d];
-    }
+    visit_array(begin_indices, end_indices, validate);
 
 #endif
 }

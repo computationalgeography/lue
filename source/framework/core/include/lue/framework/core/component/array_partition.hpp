@@ -73,6 +73,8 @@ public:
 
     hpx::future<Shape> shape           () const;
 
+    hpx::future<void> resize           (Shape const& shape);
+
 private:
 
 };
@@ -292,6 +294,22 @@ hpx::future<void> ArrayPartition<Element, rank>::fill(
 
     // this->get_id() identifies the server instance
     return hpx::async(action, this->get_id(), value);
+}
+
+
+/*!
+    @brief      Asynchronously resize the partition with @a value
+*/
+template<
+    typename Element,
+    std::size_t rank>
+hpx::future<void> ArrayPartition<Element, rank>::resize(
+    Shape const& shape)
+{
+    typename Server::ResizeAction action;
+
+    // this->get_id() identifies the server instance
+    return hpx::async(action, this->get_id(), shape);
 }
 
 
