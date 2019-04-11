@@ -95,6 +95,12 @@ TAG_AND_MAP(TimeDiscretization, time_discretization_tag, ({
 }))
 
 TAG_AND_MAP(time::Unit, time_unit_tag, ({
+    { time::Unit::nanosecond,
+        time::UnitTraits<time::Unit::nanosecond>::name() },
+    { time::Unit::microsecond,
+        time::UnitTraits<time::Unit::microsecond>::name() },
+    { time::Unit::millisecond,
+        time::UnitTraits<time::Unit::millisecond>::name() },
     { time::Unit::second, time::UnitTraits<time::Unit::second>::name() },
     { time::Unit::minute, time::UnitTraits<time::Unit::minute>::name() },
     { time::Unit::hour, time::UnitTraits<time::Unit::hour>::name() },

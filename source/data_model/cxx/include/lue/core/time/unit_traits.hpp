@@ -27,6 +27,9 @@ struct UnitTraits<unit>                           \
                                                   \
 };
 
+UNIT_TRAITS(Unit::nanosecond, nanosecond)
+UNIT_TRAITS(Unit::microsecond, microsecond)
+UNIT_TRAITS(Unit::millisecond, millisecond)
 UNIT_TRAITS(Unit::second, second)
 UNIT_TRAITS(Unit::minute, minute)
 UNIT_TRAITS(Unit::hour, hour)

@@ -14,5 +14,3 @@ class Benchmark(object):
             self.nr_nodes = self.nr_workers
             assert False
             self.nr_threads = json["nr_threads"]
-
-

@@ -25,6 +25,7 @@ def configuration(
         cluster,
         benchmark,
         experiment,
+        array_shape,
         partition_shape):
 
     return \
@@ -41,10 +42,12 @@ def configuration(
                 count=benchmark.count,
                 max_tree_depth=experiment.max_tree_depth,
                 nr_time_steps=experiment.nr_time_steps,
-                array_shape=list(experiment.array_shape),
+                array_shape=list(array_shape),
                 partition_shape=list(partition_shape),
                 result_pathname=experiment.benchmark_result_pathname(
-                    cluster.name, partition_shape),
+                    cluster.name, array_shape,
+                    "x".join([str(extent) for extent in partition_shape]),
+                    "json")
             )
 
 
@@ -55,24 +58,26 @@ def generate_script_slurm(
         script_pathname):
 
     output_filename = job_output_pathname(script_pathname)
-    partition_shapes = experiment.partition_shapes()
 
-    # Iterate over all partition shapes we need to benchmark and format
-    # a snippet of bash script for executing it
+    # Iterate over all combinations of array shapes and partition shapes
+    # we need to benchmark and format a snippet of bash script for
+    # executing the benchmark
     commands = []
 
-    for partition_shape in partition_shapes:
-        commands.append(
-            "srun {command_pathname} "
-                '--hpx:ini="hpx.parcel.mpi.enable=1" '
-                '--hpx:ini="hpx.parcel.tcp.enable=0" '
-                '{configuration}'
-            .format(
-                command_pathname=experiment.command_pathname,
-                configuration=configuration(
-                    cluster, benchmark, experiment, partition_shape),
+    for array_shape in experiment.array.shapes():
+        for partition_shape in experiment.partition.shapes():
+            commands.append(
+                "srun {command_pathname} "
+                    '--hpx:ini="hpx.parcel.mpi.enable=1" '
+                    '--hpx:ini="hpx.parcel.tcp.enable=0" '
+                    '{configuration}'
+                .format(
+                    command_pathname=experiment.command_pathname,
+                    configuration=configuration(
+                        cluster, benchmark, experiment,
+                        array_shape, partition_shape),
+                )
             )
-        )
 
     # HPX doc:
     # You can change the number of localities started per node
@@ -86,15 +91,17 @@ def generate_script_slurm(
     # automatically extracted from the SLURM environment by the
     # HPX startup code.
 
-    # The srun documentation explicitly states: “If -c is
+    # The srun documentation explicitly states: "If -c is
     # specified without -n as many tasks will be allocated per node
     # as possible while satisfying the -c restriction. For instance
     # on a cluster with 8 CPUs per node, a job request for 4 nodes
     # and 3 CPUs per task may be allocated 3 or 6 CPUs per node (1
     # or 2 tasks per node) depending upon resource consumption by
-    # other jobs.” For this reason, we suggest to always specify
+    # other jobs." For this reason, we suggest to always specify
     # -n <number-of-instances>, even if <number-of-instances>
     # is equal to one (1).
+
+    assert False, "Create directories!"
 
     with open(script_pathname, "w") as script:
         script.write("""\
@@ -133,26 +140,36 @@ def generate_script_shell(
         experiment,
         script_pathname):
 
-    partition_shapes = experiment.partition_shapes()
-
-    # Iterate over all partition shapes we need to benchmark and format
-    # a snippet of bash script for executing it
+    # Iterate over all combinations of array shapes and partition shapes
+    # we need to benchmark and format a snippet of bash script for
+    # executing the benchmark
     commands = []
 
-    # TODO Pass in the hpx arguments for setting the number of threads
+    for array_shape in experiment.array.shapes():
+        for partition_shape in experiment.partition.shapes():
+            commands += [
+                # Create directory for the resulting json file
+                "mkdir -p {}"
+                    .format(
+                        os.path.dirname(
+                            experiment.benchmark_result_pathname(
+                                cluster.name, array_shape,
+                                "x".join([str(extent) for extent in partition_shape]),
+                                "json"))
+                    ),
 
-    for partition_shape in partition_shapes:
-        commands.append(
-            "{command_pathname} "
-                '--hpx:ini="hpx.os_threads={nr_threads}" '
-                '{configuration}'
-            .format(
-                command_pathname=experiment.command_pathname,
-                nr_threads=benchmark.nr_threads,
-                configuration=configuration(
-                    cluster, benchmark, experiment, partition_shape),
-            )
-        )
+                # Run the benchmark, resulting in a json file
+                "{command_pathname} "
+                    '--hpx:ini="hpx.os_threads={nr_threads}" '
+                    '{configuration}'
+                    .format(
+                        command_pathname=experiment.command_pathname,
+                        nr_threads=benchmark.nr_threads,
+                        configuration=configuration(
+                            cluster, benchmark, experiment,
+                            array_shape, partition_shape)
+                    )
+            ]
 
     with open(script_pathname, "w") as script:
         script.write("""\
@@ -184,7 +201,8 @@ def generate_script(
     assert job_scheduler in ["shell", "slurm"]
 
     benchmark = Benchmark(benchmark_settings_json)
-    experiment = Experiment(experiment_settings_json, command_pathname)
+    experiment = Experiment(
+        experiment_settings_json, "partition_shape", command_pathname)
 
     if job_scheduler == "slurm":
         cluster = SlurmCluster(cluster_settings_json)

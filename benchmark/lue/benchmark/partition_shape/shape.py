@@ -72,6 +72,24 @@ def partition_shapes(
         max_shape,
         step):
 
+    # TODO Rename this function. Related to shapes, not partition shapes
+
     shape_ranges_ = shape_ranges(min_shape, max_shape, step)
 
     return zip(*shape_ranges_)
+
+
+class Shape(object):
+
+    def __init__(self,
+            json):
+
+        self.min_shape = tuple(json["min_shape"])
+        self.max_shape = tuple(json["max_shape"])
+        self.shape_step = json["shape_step"]
+
+
+    def shapes(self):
+
+        return partition_shapes(
+            self.min_shape, self.max_shape, self.shape_step)

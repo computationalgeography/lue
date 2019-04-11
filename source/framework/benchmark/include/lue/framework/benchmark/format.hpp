@@ -74,8 +74,8 @@ inline std::string format_as_json(
     json j;
 
     // TODO This can be passed in from the benchmark
-    using Unit = std::chrono::seconds;
-    std::string unit = "second";
+    using Unit = std::chrono::milliseconds;
+    std::string unit = "millisecond";
 
     Stopwatch const& timing = benchmark.timing();
 

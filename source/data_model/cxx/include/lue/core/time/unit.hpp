@@ -19,6 +19,12 @@ class Year{};
 enum class Unit
 {
 
+    nanosecond,
+
+    microsecond,
+
+    millisecond,
+
     second,
 
     minute,
