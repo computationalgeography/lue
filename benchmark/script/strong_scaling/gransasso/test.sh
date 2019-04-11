@@ -5,7 +5,7 @@
 # - Postprocessing experiment results
 
 cluster_name=gransasso
-benchmark_kind=partition_shape
+benchmark_kind=strong_scaling
 benchmark_name=test
 
 configuration=$LUE/benchmark/configuration

@@ -2,7 +2,7 @@
     "count": 5,
     "worker": {
         "type": "thread",
-        "min_nr": 4,
+        "min_nr": 1,
         "max_nr": 4
     }
 }

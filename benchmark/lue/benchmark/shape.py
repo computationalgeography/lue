@@ -84,12 +84,41 @@ class Shape(object):
     def __init__(self,
             json):
 
-        self.min_shape = tuple(json["min_shape"])
-        self.max_shape = tuple(json["max_shape"])
-        self.shape_step = json["shape_step"]
+        if "shape" in json:
+            # Fixed size shape
+            self.min_shape = tuple(json["shape"])
+            self.max_shape = self.min_shape
+            self.shape_step = None
+        else:
+            # Range of shapes
+            self.min_shape = tuple(json["min_shape"])
+            self.max_shape = tuple(json["max_shape"])
+            self.shape_step = json["shape_step"]
+
+
+    def is_fixed(self):
+
+        return self.shape_step is None
 
 
     def shapes(self):
+        if self.is_fixed():
+            assert self.min_shape == self.max_shape
+            result = [self.min_shape]
+        else:
+            # Range of shapes
+            result = partition_shapes(
+                self.min_shape, self.max_shape, self.shape_step)
 
-        return partition_shapes(
-            self.min_shape, self.max_shape, self.shape_step)
+        return result
+
+    def shape(self):
+        """
+        Return shape
+
+        It is assumed that this instance represents a fixed shape,
+        not a range of shapes.
+        """
+        assert self.is_fixed()
+
+        return self.min_shape

@@ -1,24 +1,8 @@
-from .benchmark import *
-from .experiment import *
+from ..benchmark import *
+from .partition_shape_experiment import *
 from ..cluster import *
+from .. import job
 import os.path
-
-
-def job_output_pathname(
-        job_script_pathname):
-
-    return "{}.out".format(job_script_pathname)
-
-    # template = "{}-{{}}.out".format(job_script_pathname)
-
-    # i = 0
-    # result = template.format(i)
-
-    # while os.path.exists(result):
-    #     i += 1
-    #     result = template.format(i)
-
-    # return result
 
 
 def configuration(
@@ -57,15 +41,24 @@ def generate_script_slurm(
         experiment,
         script_pathname):
 
-    output_filename = job_output_pathname(script_pathname)
+    assert benchmark.worker.type == "thread"
+
+    output_filename = job.output_pathname(script_pathname)
 
     # Iterate over all combinations of array shapes and partition shapes
     # we need to benchmark and format a snippet of bash script for
     # executing the benchmark
     commands = []
 
+    assert False, "Create directories!"
+
     for array_shape in experiment.array.shapes():
         for partition_shape in experiment.partition.shapes():
+
+            result_pathname = experiment.benchmark_result_pathname(
+                cluster.name, array_shape,
+                "x".join([str(extent) for extent in partition_shape]), "json")
+
             commands.append(
                 "srun {command_pathname} "
                     '--hpx:ini="hpx.parcel.mpi.enable=1" '
@@ -73,9 +66,10 @@ def generate_script_slurm(
                     '{configuration}'
                 .format(
                     command_pathname=experiment.command_pathname,
-                    configuration=configuration(
+                    configuration=job.configuration(
                         cluster, benchmark, experiment,
-                        array_shape, partition_shape),
+                        array_shape, partition_shape,
+                        result_pathname),
                 )
             )
 
@@ -101,8 +95,6 @@ def generate_script_slurm(
     # -n <number-of-instances>, even if <number-of-instances>
     # is equal to one (1).
 
-    assert False, "Create directories!"
-
     with open(script_pathname, "w") as script:
         script.write("""\
 #!/usr/bin/env bash
@@ -123,8 +115,8 @@ module load mpich/gcc72/mlnx/3.2.1
 
 {commands}
 """.format(
-            nr_nodes=benchmark.nr_nodes,
-            nr_threads=benchmark.nr_threads,
+            nr_nodes=benchmark.worker.nr_nodes(),
+            nr_threads=benchmark.worker.nr_threads(),
             output_filename=output_filename,
             partition_name=cluster.partition_name,
             max_duration=experiment.max_duration,
@@ -140,6 +132,8 @@ def generate_script_shell(
         experiment,
         script_pathname):
 
+    assert benchmark.worker.type == "thread"
+
     # Iterate over all combinations of array shapes and partition shapes
     # we need to benchmark and format a snippet of bash script for
     # executing the benchmark
@@ -147,16 +141,14 @@ def generate_script_shell(
 
     for array_shape in experiment.array.shapes():
         for partition_shape in experiment.partition.shapes():
+
+            result_pathname = experiment.benchmark_result_pathname(
+                cluster.name, array_shape,
+                "x".join([str(extent) for extent in partition_shape]), "json")
+
             commands += [
                 # Create directory for the resulting json file
-                "mkdir -p {}"
-                    .format(
-                        os.path.dirname(
-                            experiment.benchmark_result_pathname(
-                                cluster.name, array_shape,
-                                "x".join([str(extent) for extent in partition_shape]),
-                                "json"))
-                    ),
+                "mkdir -p {}".format(os.path.dirname(result_pathname)),
 
                 # Run the benchmark, resulting in a json file
                 "{command_pathname} "
@@ -164,10 +156,11 @@ def generate_script_shell(
                     '{configuration}'
                     .format(
                         command_pathname=experiment.command_pathname,
-                        nr_threads=benchmark.nr_threads,
-                        configuration=configuration(
+                        nr_threads=benchmark.worker.nr_threads(),
+                        configuration=job.configuration(
                             cluster, benchmark, experiment,
-                            array_shape, partition_shape)
+                            array_shape, partition_shape,
+                            result_pathname)
                     )
             ]
 
@@ -191,8 +184,8 @@ def generate_script(
         script_pathname,
         command_pathname):
     """
-    Given a set of workers, iterate over shape sizes and capture
-    benchmark results
+    Given a fixed set of workers, iterate over a range of array shapes
+    and a range of partition shapes and capture benchmark results
 
     A shell script is created that submits jobs to the scheduler. Each
     job executes a benchmark and writes results to a JSON file.
@@ -201,8 +194,12 @@ def generate_script(
     assert job_scheduler in ["shell", "slurm"]
 
     benchmark = Benchmark(benchmark_settings_json)
-    experiment = Experiment(
-        experiment_settings_json, "partition_shape", command_pathname)
+    assert benchmark.worker.nr_benchmarks() == 1
+    assert benchmark.worker.nr_nodes_range() == 0
+    assert benchmark.worker.nr_threads_range() == 0
+
+    experiment = PartitionShapeExperiment(
+        experiment_settings_json, command_pathname)
 
     if job_scheduler == "slurm":
         cluster = SlurmCluster(cluster_settings_json)

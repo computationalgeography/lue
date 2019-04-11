@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- encoding: utf8 -*-
+# TODO Use the lue dataset for obtaining information, instead of the json files
 import lue
 import matplotlib
 # matplotlib.use("PDF")

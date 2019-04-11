@@ -48,6 +48,10 @@ if __name__ == "__main__":
             cluster_settings, benchmark_settings, experiment_settings,
             command_pathname)
     elif arguments["strong_scaling"]:
-        benchmark.strong_scaling.post_process_results()
+        benchmark.strong_scaling.post_process_results(
+            cluster_settings, benchmark_settings, experiment_settings,
+            command_pathname)
     elif arguments["weak_scaling"]:
-        benchmark.weak_scaling.post_process_results()
+        benchmark.weak_scaling.post_process_results(
+            cluster_settings, benchmark_settings, experiment_settings,
+            command_pathname)

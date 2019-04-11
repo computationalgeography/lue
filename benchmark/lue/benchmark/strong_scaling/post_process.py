@@ -1,6 +1,7 @@
 # -*- encoding: utf8 -*-
 from ..benchmark import *
-from .partition_shape_experiment import *
+# TODO Use the lue dataset for obtaining information, instead of the json files
+from .strong_scaling_experiment import *
 from ..cluster import *
 from ..util import *
 
@@ -17,10 +18,8 @@ import matplotlib.ticker as ticker
 import numpy as np
 import pandas as pd
 import seaborn as sns
-# import tzlocal
 
 import json
-import math
 import tempfile
 
 
@@ -28,13 +27,11 @@ def benchmark_meta_to_lue_json(
         benchmark_pathname,
         lue_pathname,
         cluster,
+        benchmark,
         experiment):
 
-    # Read benchmark JSON
-    benchmark_json = json.loads(open(benchmark_pathname).read())
-    environment_json = benchmark_json["environment"]
-    nr_localities = [environment_json["nr_localities"]]
-    nr_threads = [environment_json["nr_threads"]]
+    array_shape = experiment.array.shape()
+    partition_shape = experiment.partition.shape()
 
     lue_json = {
         "dataset": {
@@ -81,18 +78,27 @@ def benchmark_meta_to_lue_json(
                                     "value": [experiment.description]
                                 },
                                 {
-                                    "name": "nr_localities",
+                                    "name": "array_shape",
                                     "shape_per_object": "same_shape",
                                     "value_variability": "constant",
                                     "datatype": "uint64",
-                                    "value": nr_localities
+                                    "shape": [len(array_shape)],
+                                    "value": array_shape
                                 },
                                 {
-                                    "name": "nr_threads",
+                                    "name": "partition_shape",
                                     "shape_per_object": "same_shape",
                                     "value_variability": "constant",
                                     "datatype": "uint64",
-                                    "value": nr_threads
+                                    "shape": [len(partition_shape)],
+                                    "value": partition_shape
+                                },
+                                {
+                                    "name": "worker_type",
+                                    "shape_per_object": "same_shape",
+                                    "value_variability": "constant",
+                                    "datatype": "string",
+                                    "value": [benchmark.worker.type]
                                 },
                             ]
                         }
@@ -110,7 +116,8 @@ def benchmark_meta_to_lue_json(
 def benchmark_to_lue_json(
         benchmark_pathname,
         lue_json_pathname,
-        epoch):
+        epoch,
+        benchmark):
 
     # Read benchmark JSON
     benchmark_json = json.loads(open(benchmark_pathname).read())
@@ -148,8 +155,13 @@ def benchmark_to_lue_json(
     active_set_idx = list(range(nr_active_sets))
     active_object_id = nr_active_sets * [5]
 
-    array_shape = list(benchmark_json["task"]["array_shape"])
-    partition_shape = list(benchmark_json["task"]["partition_shape"])
+    # array_shape = list(benchmark_json["task"]["array_shape"])
+    # partition_shape = list(benchmark_json["task"]["partition_shape"])
+
+    nr_localities = benchmark_json["environment"]["nr_localities"]
+    nr_threads = benchmark_json["environment"]["nr_threads"]
+    nr_workers = \
+        nr_localities if benchmark.worker.type == "node" else nr_threads
 
     lue_json = {
         "dataset": {
@@ -189,22 +201,12 @@ def benchmark_to_lue_json(
                                     "value": durations
                                 },
                                 {
-                                    "name": "array_shape",
+                                    "name": "nr_workers",
                                     "shape_per_object": "same_shape",
                                     "value_variability": "variable",
                                     "shape_variability": "constant_shape",
                                     "datatype": "uint64",
-                                    "shape": [len(array_shape)],
-                                    "value": array_shape
-                                },
-                                {
-                                    "name": "partition_shape",
-                                    "shape_per_object": "same_shape",
-                                    "value_variability": "variable",
-                                    "shape_variability": "constant_shape",
-                                    "datatype": "uint64",
-                                    "shape": [len(partition_shape)],
-                                    "value": partition_shape
+                                    "value": [nr_workers]
                                 },
                             ]
                         }
@@ -221,35 +223,32 @@ def benchmark_to_lue_json(
 
 def determine_epoch(
         cluster,
+        benchmark,
         experiment):
-
-    array_shapes = experiment.array.shapes()
-    partition_shapes = experiment.partition.shapes()
 
     epoch = None
 
-    for array_shape in array_shapes:
-        for partition_shape in partition_shapes:
+    for nr_workers in \
+            range(benchmark.worker.min_nr, benchmark.worker.max_nr + 1):
 
-            benchmark_pathname = experiment.benchmark_result_pathname(
-                cluster.name, array_shape,
-                "x".join([str(extent) for extent in partition_shape]),
-                "json")
-            assert os.path.exists(benchmark_pathname), benchmark_pathname
+        benchmark_pathname = experiment.benchmark_result_pathname(
+            cluster.name, nr_workers, "json")
+        assert os.path.exists(benchmark_pathname), benchmark_pathname
 
-            benchmark_json = json.loads(open(benchmark_pathname).read())
-            benchmark_start = dateutil.parser.isoparse(benchmark_json["start"])
+        benchmark_json = json.loads(open(benchmark_pathname).read())
+        benchmark_start = dateutil.parser.isoparse(benchmark_json["start"])
 
-            if epoch is None:
-                epoch = benchmark_start
-            else:
-                epoch = epoch if epoch < benchmark_start else benchmark_start
+        if epoch is None:
+            epoch = benchmark_start
+        else:
+            epoch = epoch if epoch < benchmark_start else benchmark_start
 
     return epoch
 
 
 def import_raw_results(
         cluster,
+        benchmark,
         experiment):
     """
     Import all raw benchmark results into a new LUE file
@@ -269,7 +268,7 @@ def import_raw_results(
     # To position all benchmarks in time, we need a single starting time
     # point to use as the clock's epoch and calculate the distance of
     # each benchmark's start time point from this epoch.
-    epoch = determine_epoch(cluster, experiment)
+    epoch = determine_epoch(cluster, benchmark, experiment)
 
     lue_dataset_pathname = experiment.result_pathname(
         cluster.name, "data", "lue")
@@ -277,29 +276,27 @@ def import_raw_results(
     if os.path.exists(lue_dataset_pathname):
         os.remove(lue_dataset_pathname)
 
-    array_shapes = experiment.array.shapes()
-    partition_shapes = experiment.partition.shapes()
     metadata_written = False
 
-    for array_shape in array_shapes:
-        for partition_shape in partition_shapes:
+    for nr_workers in \
+            range(benchmark.worker.min_nr, benchmark.worker.max_nr + 1):
 
-            result_pathname = experiment.benchmark_result_pathname(
-                cluster.name, array_shape,
-                "x".join([str(extent) for extent in partition_shape]),
-                "json")
-            assert os.path.exists(result_pathname), result_pathname
+        result_pathname = experiment.benchmark_result_pathname(
+            cluster.name, nr_workers, "json")
+        assert os.path.exists(result_pathname), result_pathname
 
-            if not metadata_written:
-                with tempfile.NamedTemporaryFile(suffix=".json") as lue_json_file:
-                    benchmark_meta_to_lue_json(
-                        result_pathname, lue_json_file.name, cluster, experiment)
-                    import_lue_json(lue_json_file.name, lue_dataset_pathname)
-                metadata_written = True
-
+        if not metadata_written:
             with tempfile.NamedTemporaryFile(suffix=".json") as lue_json_file:
-                benchmark_to_lue_json(result_pathname, lue_json_file.name, epoch)
+                benchmark_meta_to_lue_json(
+                    result_pathname, lue_json_file.name,
+                    cluster, benchmark, experiment)
                 import_lue_json(lue_json_file.name, lue_dataset_pathname)
+            metadata_written = True
+
+        with tempfile.NamedTemporaryFile(suffix=".json") as lue_json_file:
+            benchmark_to_lue_json(
+                result_pathname, lue_json_file.name, epoch, benchmark)
+            import_lue_json(lue_json_file.name, lue_dataset_pathname)
 
     lue.assert_is_valid(lue_dataset_pathname)
 
@@ -307,24 +304,35 @@ def import_raw_results(
 def meta_information_dataframe(
         lue_meta_information):
 
-    # TODO: BUG: double delete
-    # lue_meta_information.properties["kind"].value[0:0]
-
     assert \
-        lue_meta_information.properties["kind"].value[:] == ["partition_shape"]
+        lue_meta_information.properties["kind"].value[:] == ["strong_scaling"]
 
     name = lue_meta_information.properties["name"].value[:]
     system_name = lue_meta_information.properties["system_name"].value[:]
+    worker_type = lue_meta_information.properties["worker_type"].value[:]
 
-    # # Pandas does not support nD array elements. Convert (each) shape
-    # # to string.
-    # assert array_shape.dtype == np.uint64
-    # array_shape = [str(shape) for shape in array_shape]
+    array_shape = lue_meta_information.properties["array_shape"].value[:]
+    assert len(array_shape) == 1
+    partition_shape = \
+        lue_meta_information.properties["partition_shape"].value[:]
+    assert len(partition_shape) == 1
+
+    rank = len(partition_shape[0])
 
     meta_information = pd.DataFrame({
             "name": name,
             "system_name": system_name,
+            "worker_type": worker_type,
         })
+    array_shape = pd.DataFrame(
+        array_shape,
+        columns=["array_shape_{}".format(i) for i in range(rank)])
+    partition_shape = pd.DataFrame(
+        partition_shape,
+        columns=["partition_shape_{}".format(i) for i in range(rank)])
+
+    meta_information = pd.concat(
+        [meta_information, array_shape, partition_shape], axis=1)
 
     return meta_information
 
@@ -332,33 +340,25 @@ def meta_information_dataframe(
 def measurement_dataframe(
         lue_measurement):
 
-    array_shape = lue_measurement.properties["array_shape"].value[:]
-    partition_shape = lue_measurement.properties["partition_shape"].value[:]
+    nr_workers = lue_measurement.properties["nr_workers"].value[:]
     duration = lue_measurement.properties["duration"].value[:]
-    assert len(duration) == len(partition_shape) == len(array_shape)
+    assert len(duration) == len(nr_workers)
+
+    count = duration.shape[1]
 
     # count durations per benchmark
-    duration = pd.DataFrame(duration)
+    duration = pd.DataFrame(
+        duration,
+        columns=["duration_{}".format(i) for i in range(count)])
 
-    # array shape per benchmark
-    array_shape = pd.DataFrame(array_shape)
+    # nr_workers per benchmark
+    nr_workers = pd.DataFrame(
+        nr_workers,
+        columns=["nr_workers"])
 
-    # partition shape per benchmark
-    partition_shape = pd.DataFrame(partition_shape)
+    assert (duration.index == nr_workers.index).all()
 
-    assert (duration.index == partition_shape.index).all()
-    assert (duration.index == array_shape.index).all()
-
-    measurement = pd.concat([array_shape, partition_shape, duration], axis=1)
-
-    rank = len(array_shape.columns)
-    count = len(duration.columns)
-    labels = \
-        ["array_shape_{}".format(i) for i in range(rank)] + \
-        ["partition_shape_{}".format(i) for i in range(rank)] + \
-        ["duration_{}".format(i) for i in range(count)]
-
-    measurement.columns = labels
+    measurement = pd.concat([nr_workers, duration], axis=1)
 
     return measurement
 
@@ -381,20 +381,10 @@ def post_process_raw_results(
     name = meta_information.name[0]
     system_name = meta_information.system_name[0]
 
-    rank = lue_measurement.properties["array_shape"].value.shape[1]
-    count = lue_measurement.properties["duration"].value.shape[1]
+    rank = lue_meta_information.properties["array_shape"].value.shape[1]
+    nr_benchmarks, count = lue_measurement.properties["duration"].value.shape
 
     measurement = measurement_dataframe(lue_measurement)
-
-    array_shape_labels = \
-        ["array_shape_{}".format(i) for i in range(rank)]
-    partition_shape_labels = \
-        ["partition_shape_{}".format(i) for i in range(rank)]
-
-    measurement.insert(0, "array_size",
-        measurement.filter(items=array_shape_labels).product(axis=1))
-    measurement.insert(0, "partition_size",
-        measurement.filter(items=partition_shape_labels).product(axis=1))
 
     # The time point at which the experiment was performed is the epoch
     # of the time domain used to store the durations
@@ -407,145 +397,146 @@ def post_process_raw_results(
     assert lue_epoch.calendar == lue.Calendar.gregorian
     time_point = dateutil.parser.isoparse(lue_epoch.origin)
 
-
     # String containing time point in local time zone and conventions
     # time_point = time_point.astimezone(tzlocal.get_localzone()).strftime("%c")
     time_point = time_point.strftime("%c")
 
 
-    actual_color = sns.xkcd_rgb["denim blue"]
+    # Calculate mean duration
+    duration_labels = ["duration_{}".format(i) for i in range(count)]
+    measurement["duration"] = \
+        measurement.filter(items=duration_labels).mean(axis=1)
 
+    # t1 = mean duration using one worker
+    nr_workers = measurement["nr_workers"]
+    t1 = measurement.loc[nr_workers == 1]["duration"][0]
 
-    # --------------------------------------------------------------------------
-    # For each array shape (size) a line plot with, for a given array
-    # size, the spread of durations per partition size
-    for array_shape in experiment.array.shapes():
+    # Best case: duration scales perfect with the number of workers
+    # 100% parallel code, but without parallelization overhead
+    measurement["linear_duration"] = t1 / nr_workers
 
-        # Given shape of array, ѕelect data to plot
-        expression = " and ".join([
-            "array_shape_{} == {}".format(i, array_shape[i])
-                for i in range(rank)])
-        measurement_per_array_shape = measurement.query(expression)
+    # Worst case: duration does not scale with the number of threads
+    # 100% serial code, but without parallelization overhead
+    measurement["serial_duration"] = [t1 for i in range(nr_benchmarks)]
 
-        # Select data needed for plotting
-        measurement_per_array_shape = measurement_per_array_shape.filter(
-            items=
-                ["partition_size"] +
-                ["duration_{}".format(i) for i in range(count)])
+    # speedup = t1 / tn
+    measurement["relative_speedup"] = \
+        t1 / measurement["duration"]
+    measurement["linear_relative_speedup"] = \
+        t1 / measurement["linear_duration"]
+    measurement["serial_relative_speedup"] = \
+        t1 / measurement["serial_duration"]
 
-        # Durations per partition size
-        measurement_per_array_shape = \
-            measurement_per_array_shape.set_index(keys="partition_size")
-        measurement_per_array_shape = pd.DataFrame(
-            data=measurement_per_array_shape.stack(),
-            columns=["duration"])
+    # efficiency = 100% * speedup / nr_workers
+    measurement["efficiency"] = \
+        100 * measurement["relative_speedup"] / nr_workers
+    measurement["linear_efficiency"] = \
+        100 * measurement["linear_relative_speedup"] / nr_workers
+    measurement["serial_efficiency"] = \
+        100 * measurement["serial_relative_speedup"] / nr_workers
 
-        measurement_per_array_shape.index = \
-            measurement_per_array_shape.index.droplevel(1)
-
-        # Create a new index, moving partition_size index level into columns
-        measurement_per_array_shape = measurement_per_array_shape.reset_index()
-
-        figure, axes = plt.subplots(
-                nrows=1, ncols=1,
-                figsize=(15, 5)
-            )  # Inches...
-
-        sns.lineplot(
-            data=measurement_per_array_shape,
-            x="partition_size", y="duration",
-            ax=axes, color=actual_color,
-            legend=False)
-
-        # Annotation
-        axes.set_ylabel(u"duration ± 1 std ({})".format(time_point_units))
-        axes.yaxis.set_major_formatter(
-            ticker.FuncFormatter(
-                lambda y, pos: format_duration(y)))
-
-        axes.set_xlabel(u"partition size")
-        axes.xaxis.set_major_formatter(
-            ticker.FuncFormatter(
-                lambda x, pos: format_partition_size(x)))
-
-        figure.suptitle(
-            "{}\nPartition shape scaling experiment on {} array, "
-            "performed on {}, at {}"
-                .format(
-                    name,
-                    "x".join([str(extent) for extent in array_shape]),
-                    system_name,
-                    time_point,
-                )
-            )
-
-        plot_pathname = experiment.benchmark_result_pathname(
-            cluster.name, array_shape, "plot", "pdf")
-        plt.savefig(plot_pathname)
-
-
-    # --------------------------------------------------------------------------
-    # Create a grid of line plots
 
     # Select data needed for plotting
-    measurement = measurement.filter(
+    durations = measurement.filter(
         items=
-            ["array_size", "partition_size"] +
+            ["nr_workers"] +
             ["duration_{}".format(i) for i in range(count)])
 
-    # Durations per array size x partition size
-    measurement = measurement.set_index(keys=["array_size", "partition_size"])
-    measurement = pd.DataFrame(
-        data=measurement.stack(),
+    # Durations per partition size
+    durations = durations.set_index(keys="nr_workers")
+    durations = pd.DataFrame(
+        data=durations.stack(),
         columns=["duration"])
 
-    # Get rid of the column name (duration_i) index level
-    measurement.index = measurement.index.droplevel(2)
+    # Get rid of introduced level of index
+    durations.index = durations.index.droplevel(1)
 
-    # Create a new index, moving array_size and partition_size index
-    # levels into columns
-    measurement = measurement.reset_index()
+    # Create a new index, moving nr_workers index level into columns
+    durations = durations.reset_index()
 
-    # Now we have:
-    # <index> | array_size | partition_size | duration |
-    # This is 'tidy' data: each column is a variable and each row an
-    # observation
 
-    nr_plots = measurement["array_size"].nunique()
-    grid = sns.FacetGrid(measurement,
-        col="array_size", col_wrap=int(math.floor(math.sqrt(nr_plots))),
-        height=5, aspect=3)
-    grid.map(sns.lineplot, "partition_size", "duration", color=actual_color)
+    # https://xkcd.com/color/rgb/
+    serial_color = sns.xkcd_rgb["pale red"]
+    linear_color = sns.xkcd_rgb["medium green"]
+    actual_color = sns.xkcd_rgb["denim blue"]
 
-    # Annotation
-    # TODO: Get rid of array_size = .... Replace with '... x ... array' like
-    #       on the individual plots
-    grid.set_axis_labels(
-        u"partition size",
-        u"duration ± 1 std ({})".format(time_point_units)
-    )
+    figure, axes = plt.subplots(
+            nrows=3, ncols=1,
+            figsize=(15, 15),
+            sharex=True
+        )  # Inches...
 
-    axes = grid.axes[0]
-
-    axes.yaxis.set_major_formatter(
+    # duration by nr_workers
+    sns.lineplot(
+        data=measurement, x="nr_workers", y="linear_duration",
+        ax=axes[0], color=linear_color)
+    sns.lineplot(
+        data=measurement, x="nr_workers", y="serial_duration",
+        ax=axes[0], color=serial_color)
+    sns.lineplot(
+        data=durations, x="nr_workers", y="duration",
+        ax=axes[0], color=actual_color)
+    axes[0].set_ylabel(u"duration ± 1 std ({})".format("time_point_units"))
+    axes[0].yaxis.set_major_formatter(
         ticker.FuncFormatter(
             lambda y, pos: format_duration(y)))
-
-    axes.xaxis.set_major_formatter(
+    axes[0].xaxis.set_major_formatter(
         ticker.FuncFormatter(
-            lambda x, pos: format_partition_size(x)))
+            lambda x, pos: format_nr_workers(x)))
 
-    grid.fig.suptitle(
-        "{}\nPartition shape scaling experiment performed on {}, at {}"
-            .format(name, system_name, time_point))
+    # speedup by nr_workers
+    sns.lineplot(
+        data=measurement, x="nr_workers", y="linear_relative_speedup",
+        ax=axes[1], color=linear_color)
+    sns.lineplot(
+        data=measurement, x="nr_workers", y="serial_relative_speedup",
+        ax=axes[1], color=serial_color)
+    sns.lineplot(
+        data=measurement, x="nr_workers", y="relative_speedup",
+        ax=axes[1], color=actual_color)
+    # axes[1].set_ylim(0, max_nr_workers + 1)
+    axes[1].set_ylabel("relative speedup (-)")
+    # axes[1].set_xlabel(group_by_column)
+    axes[1].xaxis.set_major_formatter(
+        ticker.FuncFormatter(
+            lambda x, pos: format_nr_workers(x)))
+
+    # efficiency by nr_workers
+    sns.lineplot(
+        data=measurement, x="nr_workers", y="linear_efficiency",
+        ax=axes[2], color=linear_color)
+    sns.lineplot(
+        data=measurement, x="nr_workers", y="serial_efficiency",
+        ax=axes[2], color=serial_color)
+    sns.lineplot(
+        data=measurement, x="nr_workers", y="efficiency",
+        ax=axes[2], color=actual_color)
+    axes[2].set_ylim(0, 110)
+    axes[2].set_ylabel("efficiency (%)")
+    # axes[2].set_xlabel(group_by_column)
+    axes[2].xaxis.set_major_formatter(
+        ticker.FuncFormatter(
+            lambda x, pos: format_nr_workers(x)))
+
+    figure.legend(labels=["linear", "serial", "actual"])
+
+    array_shape = experiment.array.shape()
+    partition_shape = experiment.partition.shape()
+
+    figure.suptitle(
+        "{}\nStrong scaling experiment on {} array and {} partitions, "
+        "performed on {}, at {}"
+            .format(
+                name,
+                "x".join([str(extent) for extent in array_shape]),
+                "x".join([str(extent) for extent in partition_shape]),
+                system_name,
+                time_point,
+            )
+        )
 
     plot_pathname = experiment.result_pathname(cluster.name, "plot", "pdf")
     plt.savefig(plot_pathname)
-
-
-    # --------------------------------------------------------------------------
-    # Create surface plot
-    # TODO When really needed
 
 
 def post_process_results(
@@ -565,11 +556,11 @@ def post_process_results(
     elif job_scheduler == "shell":
         cluster = ShellCluster(cluster_settings_json)
 
-    # benchmark = Benchmark(benchmark_settings_json)
-    experiment = PartitionShapeExperiment(
+    benchmark = Benchmark(benchmark_settings_json)
+    experiment = StrongScalingExperiment(
         experiment_settings_json, command_pathname)
 
-    import_raw_results(cluster, experiment)
+    import_raw_results(cluster, benchmark, experiment)
     create_dot_graph(
         experiment.result_pathname(cluster.name, "data", "lue"),
         experiment.result_pathname(cluster.name, "graph", "pdf"))

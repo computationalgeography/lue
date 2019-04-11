@@ -1,5 +1,2 @@
-
-
-
-def generate_script():
+def post_process_results():
     print("yeah! weak_scaling")

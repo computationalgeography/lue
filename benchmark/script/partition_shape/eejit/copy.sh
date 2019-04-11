@@ -34,7 +34,7 @@ function parse_commandline()
 
 function generate_script()
 {
-    generate_job_scheduler_script.py partition_shape \
+    generate_job_scheduler_script.py $benchmark_kind \
         $cluster_settings $benchmark_settings $experiment_settings \
         $cluster_name-$benchmark_kind-$benchmark_name.sh \
         $benchmark_exe
@@ -43,7 +43,7 @@ function generate_script()
 
 function post_process()
 {
-    post_process_benchmark_results.py partition_shape \
+    post_process_benchmark_results.py $benchmark_kind \
         $cluster_settings $benchmark_settings $experiment_settings \
         $benchmark_exe
 }
