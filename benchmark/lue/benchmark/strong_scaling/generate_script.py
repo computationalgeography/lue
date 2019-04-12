@@ -12,6 +12,7 @@ import os.path
 ###         script_pathname):
 ### 
 ###     assert benchmark.worker.type == "thread"
+###     assert experiment.max_duration is not None
 ### 
 ###     output_filename = job.output_pathname(script_pathname)
 ### 
@@ -131,16 +132,7 @@ def generate_script_shell(
                 )
         ]
 
-    with open(script_pathname, "w") as script:
-        script.write("""\
-#!/usr/bin/env bash
-set -e
-
-{commands}
-""".format(
-            commands="\n".join(commands)
-        ))
-
+    job.write_script(commands, script_pathname)
     print("bash ./{}".format(script_pathname))
 
 

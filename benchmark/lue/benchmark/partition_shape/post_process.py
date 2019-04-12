@@ -469,13 +469,13 @@ def post_process_raw_results(
                 lambda x, pos: format_partition_size(x)))
 
         figure.suptitle(
-            "{}\nPartition shape scaling experiment on {} array, "
-            "performed on {}, at {}"
+            "{}, {}, {}\n"
+            "Partition shape scaling experiment on {} array"
                 .format(
                     name,
-                    "x".join([str(extent) for extent in array_shape]),
                     system_name,
                     time_point,
+                    "x".join([str(extent) for extent in array_shape]),
                 )
             )
 
@@ -536,8 +536,14 @@ def post_process_raw_results(
             lambda x, pos: format_partition_size(x)))
 
     grid.fig.suptitle(
-        "{}\nPartition shape scaling experiment performed on {}, at {}"
-            .format(name, system_name, time_point))
+        "{}, {}, {}\n"
+        "Partition shape scaling experiment"
+            .format(
+                name,
+                system_name,
+                time_point,
+            )
+        )
 
     plot_pathname = experiment.result_pathname(cluster.name, "plot", "pdf")
     plt.savefig(plot_pathname)

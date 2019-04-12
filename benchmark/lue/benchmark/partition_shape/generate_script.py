@@ -5,36 +5,6 @@ from .. import job
 import os.path
 
 
-def configuration(
-        cluster,
-        benchmark,
-        experiment,
-        array_shape,
-        partition_shape):
-
-    return \
-        '--hpx:ini="application.{program_name}.benchmark.cluster_name!={cluster_name}" ' \
-        '--hpx:ini="application.{program_name}.benchmark.count!={count}" ' \
-        '--hpx:ini="application.{program_name}.benchmark.max_tree_depth!={max_tree_depth}" ' \
-        '--hpx:ini="application.{program_name}.benchmark.output!={result_pathname}" ' \
-        '--hpx:ini="application.{program_name}.nr_time_steps!={nr_time_steps}" ' \
-        '--hpx:ini="application.{program_name}.array_shape!={array_shape}" ' \
-        '--hpx:ini="application.{program_name}.partition_shape!={partition_shape}" ' \
-            .format(
-                program_name=experiment.program_name,
-                cluster_name=cluster.name,
-                count=benchmark.count,
-                max_tree_depth=experiment.max_tree_depth,
-                nr_time_steps=experiment.nr_time_steps,
-                array_shape=list(array_shape),
-                partition_shape=list(partition_shape),
-                result_pathname=experiment.benchmark_result_pathname(
-                    cluster.name, array_shape,
-                    "x".join([str(extent) for extent in partition_shape]),
-                    "json")
-            )
-
-
 def generate_script_slurm(
         cluster,
         benchmark,
@@ -42,6 +12,7 @@ def generate_script_slurm(
         script_pathname):
 
     assert benchmark.worker.type == "thread"
+    assert experiment.max_duration is not None
 
     output_filename = job.output_pathname(script_pathname)
 
@@ -164,16 +135,7 @@ def generate_script_shell(
                     )
             ]
 
-    with open(script_pathname, "w") as script:
-        script.write("""\
-#!/usr/bin/env bash
-set -e
-
-{commands}
-""".format(
-            commands="\n".join(commands)
-        ))
-
+    job.write_script(commands, script_pathname)
     print("bash ./{}".format(script_pathname))
 
 

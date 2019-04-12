@@ -442,7 +442,7 @@ def post_process_raw_results(
             ["nr_workers"] +
             ["duration_{}".format(i) for i in range(count)])
 
-    # Durations per partition size
+    # Durations per nr workers
     durations = durations.set_index(keys="nr_workers")
     durations = pd.DataFrame(
         data=durations.stack(),
@@ -476,7 +476,7 @@ def post_process_raw_results(
     sns.lineplot(
         data=durations, x="nr_workers", y="duration",
         ax=axes[0], color=actual_color)
-    axes[0].set_ylabel(u"duration ± 1 std ({})".format("time_point_units"))
+    axes[0].set_ylabel(u"duration ± 1 std ({})".format(time_point_units))
     axes[0].yaxis.set_major_formatter(
         ticker.FuncFormatter(
             lambda y, pos: format_duration(y)))
@@ -524,14 +524,14 @@ def post_process_raw_results(
     partition_shape = experiment.partition.shape()
 
     figure.suptitle(
-        "{}\nStrong scaling experiment on {} array and {} partitions, "
-        "performed on {}, at {}"
+        "{}, {}, {}\n"
+        "Strong scaling experiment on {} array and {} partitions"
             .format(
                 name,
-                "x".join([str(extent) for extent in array_shape]),
-                "x".join([str(extent) for extent in partition_shape]),
                 system_name,
                 time_point,
+                "x".join([str(extent) for extent in array_shape]),
+                "x".join([str(extent) for extent in partition_shape]),
             )
         )
 

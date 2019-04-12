@@ -14,7 +14,9 @@ class PartitionShapeExperiment(experiment.Experiment):
             "partition_shape",
             json.get(
                 "description",
-                "Scaling experiment relating runtime of {} to partition size"
+                "Partition size scaling experiment of {} "
+                "for increasing problem sizes, "
+                "relating runtime to increasing partition sizes"
                     .format(os.path.basename(command_pathname))
                 ),
             command_pathname

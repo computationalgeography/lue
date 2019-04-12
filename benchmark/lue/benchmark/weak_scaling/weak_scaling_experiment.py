@@ -3,7 +3,7 @@ from .. import shape
 import os.path
 
 
-class StrongScalingExperiment(experiment.Experiment):
+class WeakScalingExperiment(experiment.Experiment):
 
     def __init__(self,
             json,
@@ -11,12 +11,12 @@ class StrongScalingExperiment(experiment.Experiment):
 
         experiment.Experiment.__init__(self,
             json,
-            "strong_scaling",
+            "weak_scaling",
             json.get(
                 "description",
-                "Strong scaling experiment of {}, "
+                "Weak scaling experiment of {}, "
                 "relating runtime to an increasing number of workers, "
-                "while keeping the total problem size fixed"
+                "while keeping the problem size per worker constant"
                     .format(os.path.basename(command_pathname))),
             command_pathname
         )

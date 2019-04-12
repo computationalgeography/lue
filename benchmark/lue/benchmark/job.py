@@ -44,3 +44,18 @@ def configuration(
                 partition_shape=list(partition_shape),
                 result_pathname=result_pathname,
             )
+
+
+def write_script(
+        commands,
+        script_pathname):
+
+    with open(script_pathname, "w") as script:
+        script.write("""\
+#!/usr/bin/env bash
+set -e
+
+{commands}
+""".format(
+            commands="\n".join(commands)
+        ))

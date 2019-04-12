@@ -1,6 +1,5 @@
 {
     "max_tree_depth": 100,
-    "max_duration": 10,
     "nr_time_steps": 100,
     "array": {
         "min_shape": [6000, 4000],
