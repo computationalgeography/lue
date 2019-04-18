@@ -820,37 +820,37 @@ void to_dot(
     for(auto& property:
             properties.collection<same_shape::Properties>()) {
         to_dot(property.second, stream, metadata);
-        link_nodes(property_set, property.second, stream, metadata);
+        link_nodes(property_set, property.second, stream, metadata, 0);
     }
 
     for(auto& property: properties.collection<
             different_shape::Properties>()) {
         to_dot(property.second, stream, metadata);
-        link_nodes(property_set, property.second, stream, metadata);
+        link_nodes(property_set, property.second, stream, metadata, 0);
     }
 
     for(auto& property: properties.collection<
             same_shape::constant_shape::Properties>()) {
         to_dot(property.second, stream, metadata);
-        link_nodes(property_set, property.second, stream, metadata);
+        link_nodes(property_set, property.second, stream, metadata, 0);
     }
 
     for(auto& property: properties.collection<
             different_shape::constant_shape::Properties>()) {
         to_dot(property.second, stream, metadata);
-        link_nodes(property_set, property.second, stream, metadata);
+        link_nodes(property_set, property.second, stream, metadata, 0);
     }
 
     for(auto& property: properties.collection<
             same_shape::variable_shape::Properties>()) {
         to_dot(property.second, stream, metadata);
-        link_nodes(property_set, property.second, stream, metadata);
+        link_nodes(property_set, property.second, stream, metadata, 0);
     }
 
     for(auto& property: properties.collection<
             different_shape::variable_shape::Properties>()) {
         to_dot(property.second, stream, metadata);
-        link_nodes(property_set, property.second, stream, metadata);
+        link_nodes(property_set, property.second, stream, metadata, 0);
     }
 }
 
@@ -890,7 +890,7 @@ void to_dot(
     for(auto const& name: property_sets.names()) {
         auto& property_set = property_sets[name];
         to_dot(property_set, stream, metadata);
-        link_nodes(phenomenon, property_set, stream, metadata);
+        link_nodes(phenomenon, property_set, stream, metadata, 0);
     }
 
 
@@ -899,7 +899,7 @@ void to_dot(
     for(auto const& name: collection_property_sets.names()) {
         auto& property_set = collection_property_sets[name];
         to_dot(property_set, stream, metadata);
-        link_nodes(phenomenon, property_set, stream, metadata);
+        link_nodes(phenomenon, property_set, stream, metadata, 0);
     }
 }
 
