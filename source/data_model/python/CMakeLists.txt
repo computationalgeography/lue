@@ -53,6 +53,8 @@ pybind11_add_module(lue_py MODULE NO_EXTRAS THIN_LTO
     src/identity/object_tracker
 
     src/location_in_time
+    src/mobile_space_box
+    src/mobile_space_point
     src/object/phenomenon
     src/object/property_set
     src/python_extension

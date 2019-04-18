@@ -65,6 +65,8 @@ PYBIND11_MODULE(lue, module)
     same_shape::init_submodule(module);
 
     init_location_in_time(module);
+    init_mobile_space_box(module);
+    init_mobile_space_point(module);
     init_time_box(module);
     init_time_cell(module);
     init_time_point(module);

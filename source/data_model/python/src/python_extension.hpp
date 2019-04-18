@@ -30,6 +30,12 @@ void               init_active_set_index(
 void               init_location_in_time(
                                         pybind11::module& module);
 
+void               init_mobile_space_box(
+                                        pybind11::module& module);
+
+void               init_mobile_space_point(
+                                        pybind11::module& module);
+
 void               init_object_id      (pybind11::module& module);
 
 void               init_object_tracker (pybind11::module& module);
