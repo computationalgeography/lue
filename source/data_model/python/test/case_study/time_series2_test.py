@@ -56,7 +56,7 @@ class TimeSeriesTest(lue_test.TestCase):
         rank = 2
 
         # Property set
-        outlet_points = phenomenon.property_sets.add(
+        outlet_points = phenomenon.add_property_set(
             "outlets",
             time_configuration, clock,
             space_configuration, space_coordinate_datatype, rank)

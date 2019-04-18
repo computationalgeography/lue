@@ -15,7 +15,7 @@ class ConstantTest(lue_test.TestCase):
         planets.object_id.expand(nr_planets)[:] = \
             np.arange(nr_planets)
 
-        constants = planets.property_sets.add("constants")
+        constants = planets.add_property_set("constants")
 
         name = constants.add_property(
             "name", dtype=np.dtype(np.unicode_))

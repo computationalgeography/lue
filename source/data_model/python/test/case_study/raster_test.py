@@ -22,7 +22,7 @@ class RasterTest(lue_test.TestCase):
         )
         coordinate_datatype = numpy.dtype(numpy.float32)
         rank = 2
-        area_boxes = areas.property_sets.add(
+        area_boxes = areas.add_property_set(
             "areas", space_configuration, coordinate_datatype, rank)
 
         # Space domain

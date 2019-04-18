@@ -1,6 +1,7 @@
 #include "../python_extension.hpp"
 #include "lue/object/phenomena.hpp"
 #include "../core/collection.hpp"
+#include "lue/py/conversion.hpp"
 #include <pybind11/pybind11.h>
 #include <boost/algorithm/string/join.hpp>
 
@@ -34,6 +35,117 @@ static std::string informal_string_representation(
         boost::algorithm::join(phenomenon.property_sets().names(), ", "));
 }
 
+
+PropertySet& add_property_set(
+    PropertySets& property_sets,
+    std::string const& name)
+{
+    return property_sets.add(name);
+}
+
+
+PropertySet& add_property_set(
+    PropertySets& property_sets,
+    std::string const& name,
+    SpaceConfiguration const& space_configuration,
+    py::dtype const& space_coordinate_dtype,
+    Rank const rank)
+{
+    auto const datatype =
+        numpy_type_to_memory_datatype(space_coordinate_dtype);
+
+    return property_sets.add(
+        name,
+        space_configuration, datatype, rank);
+}
+
+
+PropertySet& add_property_set(
+    PropertySets& property_sets,
+    std::string const& name,
+    TimeConfiguration const& time_configuration,
+    Clock const& clock)
+{
+    return property_sets.add(
+        name,
+        time_configuration, clock);
+}
+
+
+PropertySet& add_property_set(
+    PropertySets& property_sets,
+    std::string const& name,
+    TimeConfiguration const& time_configuration,
+    Clock const& clock,
+    SpaceConfiguration const& space_configuration,
+    py::dtype const& space_coordinate_dtype,
+    Rank const rank)
+{
+    auto const datatype =
+        numpy_type_to_memory_datatype(space_coordinate_dtype);
+
+    return property_sets.add(
+        name,
+        time_configuration, clock,
+        space_configuration, datatype, rank);
+}
+
+
+PropertySet& add_property_set(
+    PropertySets& property_sets,
+    std::string const& name,
+    TimeDomain& time_domain)
+{
+    return property_sets.add(name, time_domain);
+}
+
+
+PropertySet& add_property_set(
+    PropertySets& property_sets,
+    std::string const& name,
+    TimeDomain& time_domain,
+    ObjectTracker& object_tracker)
+{
+    return property_sets.add(name, time_domain, object_tracker);
+}
+
+
+PropertySet& add_property_set(
+    PropertySets& property_sets,
+    std::string const& name,
+    TimeDomain& time_domain,
+    SpaceConfiguration const& space_configuration,
+    py::dtype const& space_coordinate_dtype,
+    Rank const rank)
+{
+    auto const datatype =
+        numpy_type_to_memory_datatype(space_coordinate_dtype);
+
+    return property_sets.add(
+        name,
+        time_domain,
+        space_configuration, datatype, rank);
+}
+
+
+PropertySet& add_property_set(
+    PropertySets& property_sets,
+    std::string const& name,
+    TimeDomain& time_domain,
+    ObjectTracker& object_tracker,
+    SpaceConfiguration const& space_configuration,
+    py::dtype const& space_coordinate_dtype,
+    Rank const rank)
+{
+    auto const datatype =
+        numpy_type_to_memory_datatype(space_coordinate_dtype);
+
+    return property_sets.add(
+        name,
+        time_domain, object_tracker,
+        space_configuration, datatype, rank);
+}
+
 }  // Anonymous namespace
 
 
@@ -53,19 +165,6 @@ void init_phenomenon(
     Phenomenon collections can be obtained from :class:`Dataset` and
     :class:`Universe` instances.
 )")
-
-        .def("add",
-            &Phenomena::add,
-            "name"_a,
-            R"(
-    Add new phenomenon to collection
-
-    :param str name: Name of phenomenon to create
-    :return: Phenomenon created
-    :rtype: Phenomenon
-    :raises RuntimeError: In case the phenomenon cannot be created
-)",
-            py::return_value_policy::reference_internal)
 
         ;
 
@@ -167,6 +266,329 @@ void init_phenomenon(
 
                 return py::cast(&property_sets[property_set_name]);
             },
+            py::return_value_policy::reference_internal)
+
+        .def(
+            "add_property_set",
+            [](
+                Phenomenon& phenomenon,
+                std::string const& name) -> PropertySet&
+            {
+                return add_property_set(phenomenon.property_sets(), name);
+            },
+            "name"_a,
+            R"(
+    Add new property-set to collection
+
+    :param str name: Name of property-set to create
+    :return: Property-set created
+    :rtype: PropertySet
+    :raises RuntimeError: In case the property-set cannot be created
+
+    The property-set will have no time domain and no space
+    domain. Information stored in this property-set will be omnipresent
+    through time and space.
+)",
+            py::return_value_policy::reference_internal)
+
+        .def(
+            "add_collection_property_set",
+            [](
+                Phenomenon& phenomenon,
+                std::string const& name) -> PropertySet&
+            {
+                return add_property_set(
+                    phenomenon.collection_property_sets(), name);
+            },
+            "name"_a,
+            R"(
+    Add new property-set to collection
+
+    :param str name: Name of property-set to create
+    :return: Property-set created
+    :rtype: PropertySet
+    :raises RuntimeError: In case the property-set cannot be created
+
+    The property-set will have no time domain and no space
+    domain. Information stored in this property-set will be omnipresent
+    through time and space.
+)",
+            py::return_value_policy::reference_internal)
+
+        .def(
+            "add_property_set",
+            [](
+                Phenomenon& phenomenon,
+                std::string const& name,
+                SpaceConfiguration const& space_configuration,
+                py::dtype const& space_coordinate_dtype,
+                Rank const rank) -> PropertySet&
+            {
+                return add_property_set(
+                    phenomenon.property_sets(), name,
+                    space_configuration, space_coordinate_dtype, rank);
+            },
+            "name"_a,
+            "space_configuration"_a,
+            "space_coordinate_dtype"_a,
+            "rank"_a,
+            R"(
+    Add new property-set to collection
+
+    :param str name: Name of property-set to create
+    :param SpaceConfiguration space_configuration: Configuration of
+        space domain
+    :param numpy.dtype space_coordinate_dtype: Datatype of the spatial
+        coordinates
+    :param int rank: Number of spatial dimensions
+    :return: Property-set created
+    :rtype: PropertySet
+    :raises RuntimeError: In case the property-set cannot be created
+
+    The property-set returned will have no time domain. Information
+    stored in this property-set will be omnipresent through time.
+)",
+            py::return_value_policy::reference_internal)
+
+        .def(
+            "add_property_set",
+            [](
+                Phenomenon& phenomenon,
+                std::string const& name,
+                TimeConfiguration const& time_configuration,
+                Clock const& clock) -> PropertySet&
+            {
+                return add_property_set(
+                    phenomenon.property_sets(), name,
+                    time_configuration, clock);
+            },
+            "name"_a,
+            "time_configuration"_a,
+            "clock"_a,
+            R"(
+    Add new property-set to collection
+
+    :param str name: Name of property-set to create
+    :param TimeConfiguration time_configuration: Configuration of
+        time domain
+    :param lue.Clock clock: Clock for locations in time
+    :return: Property-set created
+    :rtype: PropertySet
+    :raises RuntimeError: In case the property-set cannot be created
+)",
+            py::return_value_policy::reference_internal)
+
+        .def(
+            "add_property_set",
+            [](
+                Phenomenon& phenomenon,
+                std::string const& name,
+                TimeConfiguration const& time_configuration,
+                Clock const& clock,
+                SpaceConfiguration const& space_configuration,
+                py::dtype const& space_coordinate_dtype,
+                Rank const rank) -> PropertySet&
+            {
+                return add_property_set(
+                    phenomenon.property_sets(), name,
+                    time_configuration, clock,
+                    space_configuration, space_coordinate_dtype, rank);
+            },
+            "name"_a,
+            "time_configuration"_a,
+            "clock"_a,
+            "space_configuration"_a,
+            "space_coordinate_dtype"_a,
+            "rank"_a,
+            R"(
+    Add new property-set to collection
+
+    :param str name: Name of property-set to create
+    :param TimeConfiguration time_configuration: Configuration of
+        time domain
+    :param lue.Clock clock: Clock for locations in time
+    :param SpaceConfiguration space_configuration: Configuration of
+        space domain
+    :param numpy.dtype space_coordinate_dtype: Datatype of the spatial
+        coordinates
+    :param int rank: Number of spatial dimensions
+    :return: Property-set created
+    :rtype: PropertySet
+    :raises RuntimeError: In case the property-set cannot be created
+)",
+            py::return_value_policy::reference_internal)
+
+        .def(
+            "add_property_set",
+            [](
+                Phenomenon& phenomenon,
+                std::string const& name,
+                TimeDomain& time_domain) -> PropertySet&
+            {
+                return add_property_set(
+                    phenomenon.property_sets(), name,
+                    time_domain);
+            },
+            "name"_a,
+            "time_domain"_a,
+            R"(
+    Add new property-set to collection
+
+    :param str name: Name of property-set to create
+    :param TimeDomain time_domain: Another property-set's time domain
+        to use. Sharing time domains makes sense when the locations in
+        time are the same. This saves space in the dataset.
+    :return: Property-set created
+    :rtype: PropertySet
+    :raises RuntimeError: In case the property-set cannot be created
+
+    The property-set will have no space domain. Information stored in
+    this property-set will be omnipresent through space.
+)",
+            py::return_value_policy::reference_internal)
+
+        .def(
+            "add_collection_property_set",
+            [](
+                Phenomenon& phenomenon,
+                std::string const& name,
+                TimeDomain& time_domain) -> PropertySet&
+            {
+                return add_property_set(
+                    phenomenon.collection_property_sets(), name,
+                    time_domain);
+            },
+            "name"_a,
+            "time_domain"_a,
+            R"(
+    Add new property-set to collection
+
+    :param str name: Name of property-set to create
+    :param TimeDomain time_domain: Another property-set's time domain
+        to use. Sharing time domains makes sense when the locations in
+        time are the same. This saves space in the dataset.
+    :return: Property-set created
+    :rtype: PropertySet
+    :raises RuntimeError: In case the property-set cannot be created
+
+    The property-set will have no space domain. Information stored in
+    this property-set will be omnipresent through space.
+)",
+            py::return_value_policy::reference_internal)
+
+        .def(
+            "add_property_set",
+            [](
+                Phenomenon& phenomenon,
+                std::string const& name,
+                TimeDomain& time_domain,
+                ObjectTracker& object_tracker) -> PropertySet&
+            {
+                return add_property_set(
+                    phenomenon.property_sets(), name,
+                    time_domain, object_tracker);
+            },
+            "name"_a,
+            "time_domain"_a,
+            "object_tracker"_a,
+            R"(
+    Add new property-set to collection
+
+    :param str name: Name of property-set to create
+    :param TimeDomain time_domain: Another property-set's time domain
+        to use. Sharing time domains makes sense when the locations in
+        time are the same. This saves space in the dataset.
+    :param ObjectTracker object_tracker: Another property-set's object
+        tracker to use. Sharing object trackers makes sense when the
+        active set in different property-sets are the same.
+    :return: Property-set created
+    :rtype: PropertySet
+    :raises RuntimeError: In case the property-set cannot be created
+
+    The property-set will have no space domain. Information stored in
+    this property-set will be omnipresent through space.
+)",
+            py::return_value_policy::reference_internal)
+
+        .def(
+            "add_property_set",
+            [](
+                Phenomenon& phenomenon,
+                std::string const& name,
+                TimeDomain& time_domain,
+                SpaceConfiguration const& space_configuration,
+                py::dtype const& space_coordinate_dtype,
+                Rank const rank) -> PropertySet&
+            {
+                return add_property_set(
+                    phenomenon.property_sets(), name,
+                    time_domain,
+                    space_configuration, space_coordinate_dtype, rank);
+            },
+            "name"_a,
+            "time_domain"_a,
+            "space_configuration"_a,
+            "space_coordinate_dtype"_a,
+            "rank"_a,
+            R"(
+    Add new property-set to collection
+
+    :param str name: Name of property-set to create
+    :param TimeDomain time_domain: Another property-set's time domain
+        to use. Sharing time domains makes sense when the locations in
+        time are the same. This saves space in the dataset.
+    :param SpaceConfiguration space_configuration: Configuration of
+        space domain
+    :param numpy.dtype space_coordinate_dtype: Datatype of the spatial
+        coordinates
+    :param int rank: Number of spatial dimensions
+    :return: Property-set created
+    :rtype: PropertySet
+    :raises RuntimeError: In case the property-set cannot be created
+)",
+            py::return_value_policy::reference_internal)
+
+        .def(
+            "add_property_set",
+            [](
+                Phenomenon& phenomenon,
+                std::string const& name,
+                TimeDomain& time_domain,
+                ObjectTracker& object_tracker,
+                SpaceConfiguration const& space_configuration,
+                py::dtype const& space_coordinate_dtype,
+                Rank const rank) -> PropertySet&
+            {
+                return add_property_set(
+                    phenomenon.property_sets(), name,
+                    time_domain, object_tracker,
+                    space_configuration, space_coordinate_dtype, rank);
+            },
+            "name"_a,
+            "time_domain"_a,
+            "object_tracker"_a,
+            "space_configuration"_a,
+            "space_coordinate_dtype"_a,
+            "rank"_a,
+            R"(
+    Add new property-set to collection
+
+    :param str name: Name of property-set to create
+    :param TimeDomain time_domain: Another property-set's time domain
+        to use. Sharing time domains makes sense when the locations in
+        time are the same. This saves space in the dataset.
+    :param ObjectTracker object_tracker: Another property-set's object
+        tracker to use. Sharing object trackers makes sense when the
+        active set in different property-sets are the same.
+    :param SpaceConfiguration space_configuration: Configuration of
+        space domain
+    :param numpy.dtype space_coordinate_dtype: Datatype of the spatial
+        coordinates
+    :param int rank: Number of spatial dimensions
+    :return: Property-set created
+    :rtype: PropertySet
+    :raises RuntimeError: In case the property-set cannot be created
+)",
             py::return_value_policy::reference_internal)
 
         ;

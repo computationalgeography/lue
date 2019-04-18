@@ -52,7 +52,7 @@ class TimeSeriesTest(lue_test.TestCase):
             rank = 2
 
             # Property set
-            outlet_points = phenomenon.property_sets.add(
+            outlet_points = phenomenon.add_property_set(
                 "outlets",
                 time_configuration, clock,
                 space_configuration, space_coordinate_datatype, rank)
@@ -123,7 +123,7 @@ class TimeSeriesTest(lue_test.TestCase):
                 phenomenon):
 
             # Property set
-            collection = phenomenon.collection_property_sets.add(
+            collection = phenomenon.add_collection_property_set(
                 "outlets_collection",
                 phenomenon.property_sets["outlets"].time_domain)
 

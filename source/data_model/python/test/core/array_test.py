@@ -25,7 +25,7 @@ class ArrayTest(lue_test.TestCase):
         self.string_value_type = np.dtype(np.unicode_)
 
         self.property_set = \
-            self.phenomenon.property_sets.add("my_property_set")
+            self.phenomenon.add_property_set("my_property_set")
         numeric_property = self.property_set.add_property(
             "my_numeric_property", self.numeric_value_type, self.value_shape)
         string_property = self.property_set.add_property(

@@ -31,7 +31,7 @@ class TreeCrownTest(lue_test.TestCase):
                 lue.SpaceDomainItemType.point
             )
             space_coordinate_datatype = np.dtype(np.float32)
-            stem_points = phenomenon.property_sets.add(
+            stem_points = phenomenon.add_property_set(
                 "stems",
                 space_configuration, space_coordinate_datatype, rank)
 
@@ -116,7 +116,7 @@ class TreeCrownTest(lue_test.TestCase):
             )
             space_coordinate_datatype = np.dtype(np.float32)
 
-            crown_boxes = phenomenon.property_sets.add(
+            crown_boxes = phenomenon.add_property_set(
                 "crowns",
                 time_configuration, clock,
                 space_configuration, space_coordinate_datatype, rank)
@@ -212,11 +212,11 @@ class TreeCrownTest(lue_test.TestCase):
 
         # Trees ----------------------------------------------------------------
         trees = dataset.add_phenomenon("trees")
-        stems = trees.property_sets.add(
+        stems = trees.add_property_set(
             "stems",
             stationary_space_point_configuration,
             space_coordinate_datatype, space_rank)
-        crowns = trees.property_sets.add(
+        crowns = trees.add_property_set(
             "crowns",
             time_cell_configuration, clock,
             stationary_space_box_configuration, space_coordinate_datatype,
@@ -235,7 +235,7 @@ class TreeCrownTest(lue_test.TestCase):
         # crown extent. This value is the same for each crown and does
         # not change through time. It can therefore be stored as a static
         # property in the collection property sets of the trees phenomenon.
-        trees_globals = trees.collection_property_sets.add("globals")
+        trees_globals = trees.add_collection_property_set("globals")
         crowns_biomass_discretization = trees_globals.add_property(
             "biomass_discretization", dtype=count_datatype,
             shape=(space_rank,))
@@ -253,7 +253,7 @@ class TreeCrownTest(lue_test.TestCase):
         #    grid in the property set. If this is not necessary, biomass
         #    can be a discretized property within an extent.
         forests = dataset.add_phenomenon("forests")
-        areas = forests.property_sets.add(
+        areas = forests.add_property_set(
             "areas",
             crowns.time_domain,
             stationary_space_box_configuration, space_coordinate_datatype,
@@ -264,7 +264,7 @@ class TreeCrownTest(lue_test.TestCase):
             shape_variability=lue.ShapeVariability.constant)
 
         # Forest biomass discretization
-        forests_globals = forests.collection_property_sets.add("globals")
+        forests_globals = forests.add_collection_property_set("globals")
         forests_biomass_discretization = forests_globals.add_property(
             "biomass_discretization", dtype=count_datatype,
             shape=(space_rank,))
