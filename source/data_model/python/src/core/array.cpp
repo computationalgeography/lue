@@ -270,7 +270,13 @@ static py::array create_array(
         result = py::array(dtype, shape, py_buffer.release(), free_when_done);
     }
     else {
-        if(datatype == hdf5::Datatype{H5T_NATIVE_UINT32}) {
+        if(datatype == hdf5::Datatype{H5T_NATIVE_UINT8}) {
+            result = create_array<uint8_t>(slice_shape);
+        }
+        else if(datatype == hdf5::Datatype{H5T_NATIVE_INT8}) {
+            result = create_array<int8_t>(slice_shape);
+        }
+        else if(datatype == hdf5::Datatype{H5T_NATIVE_UINT32}) {
             result = create_array<uint32_t>(slice_shape);
         }
         else if(datatype == hdf5::Datatype{H5T_NATIVE_INT32}) {
@@ -326,7 +332,13 @@ static py::object create_scalar(
     py::object result;
     auto const& datatype = array.datatype();
 
-    if(datatype == hdf5::Datatype{H5T_NATIVE_UINT32}) {
+    if(datatype == hdf5::Datatype{H5T_NATIVE_UINT8}) {
+        result = create_scalar<uint8_t>(array, hyperslab);
+    }
+    else if(datatype == hdf5::Datatype{H5T_NATIVE_INT8}) {
+        result = create_scalar<int8_t>(array, hyperslab);
+    }
+    else if(datatype == hdf5::Datatype{H5T_NATIVE_UINT32}) {
         result = create_scalar<uint32_t>(array, hyperslab);
     }
     else if(datatype == hdf5::Datatype{H5T_NATIVE_INT32}) {
