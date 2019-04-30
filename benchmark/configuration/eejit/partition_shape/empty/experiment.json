@@ -1,5 +1,5 @@
 {
-    "max_duration": 5,
+    "max_duration": 1,
     "max_tree_depth": 100,
     "nr_time_steps": 1000,
     "array": {

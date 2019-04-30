@@ -1,5 +1,17 @@
 {
     "name": "eejit",
     "job_scheduler": "slurm",
-    "partition_name": "allq"
+    "partition_name": "allq",
+    "node": {
+        "nr_packages": 2,
+        "package": {
+            "nr_numa_domains": 4,
+            "numa_domain": {
+                "nr_cores": 6,
+                "core": {
+                    "nr_threads": 2
+                }
+            }
+        }
+    }
 }

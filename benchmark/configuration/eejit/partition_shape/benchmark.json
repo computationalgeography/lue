@@ -1,5 +1,8 @@
 {
     "count": 5,
-    "nr_workers": 96,
-    "worker_type": "thread"
+    "worker": {
+        "type": "thread",
+        "min_nr": 96,
+        "max_nr": 96
+    }
 }

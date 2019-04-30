@@ -5,13 +5,122 @@ from .. import job
 import os.path
 
 
-### def generate_script_slurm(
-###         cluster,
-###         benchmark,
-###         experiment,
-###         script_pathname):
-### 
-###     assert benchmark.worker.type == "thread"
+def generate_script_slurm_threads(
+        cluster,
+        benchmark,
+        experiment,
+        script_pathname):
+    """
+    Scale over threads in a single node
+    """
+    assert benchmark.worker.nr_nodes_range() == 0
+    assert benchmark.worker.nr_threads_range() >= 1
+
+    assert False, "Not implemented yet"
+
+    # TODO very similar to shell script
+
+
+def generate_script_slurm_nodes(
+        cluster,
+        benchmark,
+        experiment,
+        script_pathname):
+    """
+    Scale over nodes in a cluster of nodes
+    """
+    assert benchmark.worker.nr_nodes_range() >= 1
+    assert benchmark.worker.nr_threads_range() == 0
+
+    # Given a problem size, measure the duration of executing an
+    # executable on increasingly more nodes. For each number of nodes
+    # to use, we create a SLURM script containing the job steps for that
+    # partition. Then we create a shell script that executes the SLURM
+    # scripts, passing jobs to the scheduler.
+
+    # Iterate over all sets of workers we need to benchmark and format
+    # a snippet of bash script for executing the benchmark
+
+    commands = []
+    array_shape = experiment.array.shape()
+    partition_shape = experiment.partition.shape()
+
+    for nr_workers in \
+            range(benchmark.worker.min_nr, benchmark.worker.max_nr + 1):
+
+        result_pathname = experiment.benchmark_result_pathname(
+            cluster.name, nr_workers, "json")
+
+        job_steps = [
+            # Run the benchmark, resulting in a json file
+            "srun {command_pathname} "
+                '--hpx:ini="hpx.parcel.mpi.enable=1" '
+                '--hpx:ini="hpx.parcel.tcp.enable=0" '
+                '{configuration}'
+                .format(
+                    command_pathname=experiment.command_pathname,
+                    configuration=job.configuration(
+                        cluster, benchmark, experiment,
+                        array_shape, partition_shape,
+                        result_pathname),
+                )
+        ]
+
+        slurm_script = job.create_slurm_script(
+            nr_nodes=nr_workers,
+            nr_threads=benchmark.worker.nr_threads(),
+            output_filename=experiment.benchmark_result_pathname(
+                cluster.name, nr_workers, "out"),
+            partition_name=cluster.partition_name,
+            max_duration=experiment.max_duration,
+            job_steps=job_steps)
+
+        job_name = "{name}-{program_name}-{nr_workers}".format(
+            name=experiment.name,
+            program_name=experiment.program_name,
+            nr_workers=nr_workers)
+        delimiter = "END_OF_SLURM_SCRIPT_{}".format(nr_workers)
+
+        commands += [
+            # Create a snippet of bash script that creates a SLURM script
+            # for this partition. Note that this has to be done at runtime
+            # because there is no directory structure yet for storing
+            # SLURM scripts.
+
+            "# Number of nodes: {}".format(nr_workers),
+
+            # Create directory for storing SLURM script and benchmark
+            # results
+            "mkdir -p {}".format(os.path.dirname(result_pathname)),
+
+            # Submit SLURM script to scheduler
+            "sbatch --job-name {job_name} << {delimiter}".format(
+                job_name=job_name, delimiter=delimiter),
+            slurm_script,
+            "{delimiter}".format(delimiter=delimiter),
+            "",
+        ]
+
+    job.write_script(commands, script_pathname)
+    print("bash ./{}".format(script_pathname))
+
+
+def generate_script_slurm(
+        cluster,
+        benchmark,
+        experiment,
+        script_pathname):
+
+    assert benchmark.worker.type in ["node", "thread"]
+
+    if benchmark.worker.nr_nodes_range() == 0:
+        generate_script_slurm_threads(
+            cluster, benchmark, experiment, script_pathname)
+    else:
+        generate_script_slurm_nodes(
+            cluster, benchmark, experiment, script_pathname)
+
+
 ###     assert experiment.max_duration is not None
 ### 
 ###     output_filename = job.output_pathname(script_pathname)
@@ -23,6 +132,7 @@ import os.path
 ### 
 ###     for array_shape in experiment.array.shapes():
 ###         for partition_shape in experiment.partition.shapes():
+### 
 ###             commands.append(
 ###                 "srun {command_pathname} "
 ###                     '--hpx:ini="hpx.parcel.mpi.enable=1" '
@@ -152,7 +262,12 @@ def generate_script(
     job_scheduler = cluster_settings_json["job_scheduler"]
     assert job_scheduler in ["shell", "slurm"]
 
-    benchmark = Benchmark(benchmark_settings_json)
+    if job_scheduler == "slurm":
+        cluster = SlurmCluster(cluster_settings_json)
+    elif job_scheduler == "shell":
+        cluster = ShellCluster(cluster_settings_json)
+
+    benchmark = Benchmark(benchmark_settings_json, cluster)
     assert \
         (benchmark.worker.nr_nodes_range() > 0 and not
             benchmark.worker.nr_threads_range() > 0) or \
@@ -164,12 +279,6 @@ def generate_script(
         experiment_settings_json, command_pathname)
 
     if job_scheduler == "slurm":
-        cluster = SlurmCluster(cluster_settings_json)
-        generate_script_slurm(
-            cluster, benchmark, experiment,
-            script_pathname)
+        generate_script_slurm(cluster, benchmark, experiment, script_pathname)
     elif job_scheduler == "shell":
-        cluster = ShellCluster(cluster_settings_json)
-        generate_script_shell(
-            cluster, benchmark, experiment,
-            script_pathname)
+        generate_script_shell(cluster, benchmark, experiment, script_pathname)

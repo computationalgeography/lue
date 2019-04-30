@@ -442,8 +442,12 @@ public:
 
         auto const shape = _partitions.shape();
 
-        assert(
-            std::distance(shape.begin(), shape.end()) >= _dimension_idx);
+#ifndef NDEBUG
+        auto distance = std::distance(
+            shape.begin(), shape.end());
+        assert(distance >= 0);
+        assert(static_cast<std::size_t>(distance) >= _dimension_idx);
+#endif
 
         _nr_cells_in_subsequent_dimensions =
             std::accumulate(
@@ -1037,10 +1041,12 @@ public:
 
         auto const partition_shape = _partitions.shape();
 
-        assert(
-            std::distance(
-                partition_shape.begin(), partition_shape.end()) >=
-                _dimension_idx);
+#ifndef NDEBUG
+        auto distance = std::distance(
+            partition_shape.begin(), partition_shape.end());
+        assert(distance >= 0);
+        assert(static_cast<std::size_t>(distance) >= _dimension_idx);
+#endif
 
         _nr_cells_in_subsequent_dimensions =
             std::accumulate(
@@ -1067,7 +1073,7 @@ public:
 
         assert(_linear_idx < _partitions.size());
 
-        auto& partition = _partitions[_linear_idx];
+        // auto& partition = _partitions[_linear_idx];
 
         // TODO Add check
 

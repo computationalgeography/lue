@@ -9,7 +9,9 @@ class Experiment(object):
             description,
             command_pathname):
 
+        # Name (kind) of the experiment
         self.name = name
+
         self.description = description
         self.command_pathname = command_pathname
         self.program_name = os.path.basename(self.command_pathname)

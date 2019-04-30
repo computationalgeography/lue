@@ -1,6 +1,6 @@
 class Worker(object):
 
-    def __init__(self, json):
+    def __init__(self, json, cluster):
         """
         Class for storing information about the workers to be used
         in scaling experiments
@@ -29,10 +29,8 @@ class Worker(object):
             # Scaling over nodes. Within each node, all threads are used.
             self.min_nr_nodes = self.min_nr
             self.max_nr_nodes = self.max_nr
-            assert False
-            # Number of threads auto dectected, or obtain from json...
-            # self.min_nr_threads = ...
-            # self.max_nr_threads = ...
+            self.min_nr_threads = cluster.node.nr_threads()
+            self.max_nr_threads = self.min_nr_threads
 
 
     def __str__(self):

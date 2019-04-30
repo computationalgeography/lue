@@ -3,7 +3,7 @@ from . import worker
 
 class Benchmark(object):
 
-    def __init__(self, json):
+    def __init__(self, json, cluster):
         """
         Class for storing information about the configuration of the
         scaling experiment benchmarks
@@ -13,7 +13,7 @@ class Benchmark(object):
         """
 
         self.count = json["count"]
-        self.worker = worker.Worker(json["worker"])
+        self.worker = worker.Worker(json["worker"], cluster)
 
 
     def __str__(self):
