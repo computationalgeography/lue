@@ -31,7 +31,9 @@ void test_array()
     // Request the sumation of the array
     auto sum = lue::sum(copy);
 
-    BOOST_CHECK_EQUAL(sum.get(), lue::nr_elements(shape) * fill_value.get());
+    BOOST_CHECK_EQUAL(
+        sum.get(),
+        static_cast<Element>(lue::nr_elements(shape) * fill_value.get()));
 }
 
 }  // namespace detail

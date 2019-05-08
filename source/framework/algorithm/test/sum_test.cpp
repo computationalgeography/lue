@@ -32,7 +32,9 @@ void test_array()
     using TypeWeWant = hpx::future<ResultElement>;
     static_assert(std::is_same_v<TypeWeGot, TypeWeWant>);
 
-    BOOST_CHECK_EQUAL(sum.get(), lue::nr_elements(shape) * fill_value.get());
+    BOOST_CHECK_EQUAL(
+        sum.get(),
+        static_cast<Element>(lue::nr_elements(shape) * fill_value.get()));
 }
 
 

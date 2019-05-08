@@ -28,24 +28,24 @@ BOOST_AUTO_TEST_CASE(default_construct)
     {
         PartitionedArray array;
 
-        BOOST_CHECK_EQUAL(array.nr_elements(), 0);
+        BOOST_CHECK_EQUAL(array.nr_elements(), 0u);
 
         Shape shape{};
         BOOST_CHECK_EQUAL(array.shape(), shape);
 
-        BOOST_CHECK_EQUAL(array.nr_partitions(), 0);
+        BOOST_CHECK_EQUAL(array.nr_partitions(), 0u);
     }
 
     // Value initialization
     {
         PartitionedArray array{};
 
-        BOOST_CHECK_EQUAL(array.nr_elements(), 0);
+        BOOST_CHECK_EQUAL(array.nr_elements(), 0u);
 
         Shape shape{};
         BOOST_CHECK_EQUAL(array.shape(), shape);
 
-        BOOST_CHECK_EQUAL(array.nr_partitions(), 0);
+        BOOST_CHECK_EQUAL(array.nr_partitions(), 0u);
     }
 }
 
@@ -79,7 +79,7 @@ BOOST_AUTO_TEST_CASE(construct_with_max_partition_shape)
 
         BOOST_CHECK_EQUAL(array.nr_elements(), nr_rows * nr_cols);
         BOOST_CHECK_EQUAL(array.shape(), shape);
-        BOOST_CHECK_EQUAL(array.nr_partitions(), 100);
+        BOOST_CHECK_EQUAL(array.nr_partitions(), 100u);
     }
 
     {
@@ -91,7 +91,7 @@ BOOST_AUTO_TEST_CASE(construct_with_max_partition_shape)
 
         BOOST_CHECK_EQUAL(array.nr_elements(), nr_rows * nr_cols);
         BOOST_CHECK_EQUAL(array.shape(), shape);
-        BOOST_CHECK_EQUAL(array.nr_partitions(), 1);
+        BOOST_CHECK_EQUAL(array.nr_partitions(), 1u);
     }
 
     {
@@ -103,7 +103,7 @@ BOOST_AUTO_TEST_CASE(construct_with_max_partition_shape)
 
         BOOST_CHECK_EQUAL(array.nr_elements(), nr_rows * nr_cols);
         BOOST_CHECK_EQUAL(array.shape(), shape);
-        BOOST_CHECK_EQUAL(array.nr_partitions(), 4);
+        BOOST_CHECK_EQUAL(array.nr_partitions(), 4u);
 
         auto const& partitions = array.partitions();
         BOOST_CHECK_EQUAL(partitions[0].shape().get(), max_partition_shape);
