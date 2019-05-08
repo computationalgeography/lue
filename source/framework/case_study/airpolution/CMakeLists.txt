@@ -30,7 +30,7 @@ add_hpx_executable(lue_polute_air
         src/main
 )
 
-target_link_libraries(lue_polute_air_exe
+target_link_libraries(lue_polute_air
     PRIVATE
         lue::airpolution
         fmt::fmt

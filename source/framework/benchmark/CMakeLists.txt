@@ -35,7 +35,7 @@ add_hpx_executable(lue_dummy_hpx_benchmark
         src/dummy_hpx_benchmark
 )
 
-target_link_libraries(lue_dummy_hpx_benchmark_exe
+target_link_libraries(lue_dummy_hpx_benchmark
     PRIVATE
         lue::benchmark
 )

@@ -3,7 +3,7 @@ add_hpx_executable(lue_airpolution_benchmark
         airpolution_benchmark
 )
 
-target_link_libraries(lue_airpolution_benchmark_exe
+target_link_libraries(lue_airpolution_benchmark
     PRIVATE
         lue::airpolution
         lue::benchmark

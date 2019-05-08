@@ -2,7 +2,7 @@ cmake_minimum_required(
     VERSION 3.12)
 project(LUE
     VERSION 0.2.0
-    LANGUAGES CXX)
+    LANGUAGES C CXX)
 
 set(${PROJECT_NAME}_ORGANISATION_NAME "PCRaster R&D Team")
 set(${PROJECT_NAME}_COPYRIGHT "2015-now PCRaster owners")

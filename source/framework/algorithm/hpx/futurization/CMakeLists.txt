@@ -4,7 +4,7 @@ add_hpx_executable(lue_1d_stencil_4
         1d_stencil_4
 )
 
-target_include_directories(lue_1d_stencil_4_exe SYSTEM
+target_include_directories(lue_1d_stencil_4 SYSTEM
     PRIVATE
         ${HPX_INCLUDE_DIRS}
         ${Boost_INCLUDE_DIRS}

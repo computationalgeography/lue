@@ -8,7 +8,7 @@ add_hpx_executable(lue_hello_world
         iostreams
 )
 
-target_include_directories(lue_hello_world_exe SYSTEM
+target_include_directories(lue_hello_world SYSTEM
     PRIVATE
         ${HPX_INCLUDE_DIRS}
         ${Boost_INCLUDE_DIRS}
