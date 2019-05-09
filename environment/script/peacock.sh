@@ -64,7 +64,7 @@ function build_peacock()
     if [ $hostname == "login01" ]; then
         build_google_benchmark=true
         build_gdal=true
-        build_gperftools=true
+        # build_gperftools=true
         build_hdf5=true
     fi
 
