@@ -204,78 +204,71 @@ endif()
 
 
 if(DEVBASE_HPX_REQUIRED)
-    if(LUE_FRAMEWORK_WITH_OTF2)
-        if(LUE_BUILD_OTF2)
+    if(HPX_WITH_APEX)
+        if(APEX_WITH_OTF2)
+            if(LUE_BUILD_OTF2)
 
-            set(OTF2_ROOT ${PROJECT_BINARY_DIR}/otf2)
+                set(OTF2_ROOT ${PROJECT_BINARY_DIR}/otf2)
 
-            FetchContent_Declare(otf2
-                URL https://www.vi-hps.org/cms/upload/packages/otf2/otf2-2.1.1.tar.gz
-                URL_HASH MD5=e51ad0d8ca374d25f47426746ca629e7
-            )
-
-            FetchContent_GetProperties(otf2)
-
-            if(NOT otf2_POPULATED)
-                FetchContent_Populate(otf2)
-
-                set(otf2_system_type
-                    "${CMAKE_HOST_SYSTEM_PROCESSOR}-pc-${CMAKE_HOST_SYSTEM_NAME}")
-                string(TOLOWER ${otf2_system_type} otf2_system_type)
-
-                message(STATUS "Build OTF2")
-                message(STATUS "  otf2_SOURCE_DIR: ${otf2_SOURCE_DIR}")
-                message(STATUS "  otf2_BINARY_DIR: ${otf2_BINARY_DIR}")
-                message(STATUS "  OTF2_ROOT      : ${OTF2_ROOT}")
-                message(STATUS "  system-type    : ${otf2_system_type}")
-
-                execute_process(
-                    COMMAND
-                        ${otf2_SOURCE_DIR}/configure
-                            --prefix ${OTF2_ROOT}
-                            --build=${otf2_system_type}
-                            --host=${otf2_system_type}
-                            --target=${otf2_system_type}
-                            CC=${CMAKE_C_COMPILER} CXX=${CMAKE_CXX_COMPILER}
-                            PYTHON=: PYTHON_FOR_GENERATOR=:
-                    WORKING_DIRECTORY
-                        ${otf2_BINARY_DIR}
+                FetchContent_Declare(otf2
+                    URL https://www.vi-hps.org/cms/upload/packages/otf2/otf2-2.1.1.tar.gz
+                    URL_HASH MD5=e51ad0d8ca374d25f47426746ca629e7
                 )
 
-                include(ProcessorCount)
-                ProcessorCount(nr_cores)
-                math(EXPR nr_cores_to_use "${nr_cores} / 2")
+                FetchContent_GetProperties(otf2)
 
-                execute_process(
-                    COMMAND
-                        make -j${nr_cores_to_use}
-                    WORKING_DIRECTORY
-                        ${otf2_BINARY_DIR}
-                )
-                execute_process(
-                    COMMAND
-                        make install
-                    WORKING_DIRECTORY
-                        ${otf2_BINARY_DIR}
-                )
+                if(NOT otf2_POPULATED)
+                    FetchContent_Populate(otf2)
+
+                    set(otf2_system_type
+                        "${CMAKE_HOST_SYSTEM_PROCESSOR}-pc-${CMAKE_HOST_SYSTEM_NAME}")
+                    string(TOLOWER ${otf2_system_type} otf2_system_type)
+
+                    message(STATUS "Build OTF2")
+                    message(STATUS "  otf2_SOURCE_DIR: ${otf2_SOURCE_DIR}")
+                    message(STATUS "  otf2_BINARY_DIR: ${otf2_BINARY_DIR}")
+                    message(STATUS "  OTF2_ROOT      : ${OTF2_ROOT}")
+                    message(STATUS "  system-type    : ${otf2_system_type}")
+
+                    execute_process(
+                        COMMAND
+                            ${otf2_SOURCE_DIR}/configure
+                                --prefix ${OTF2_ROOT}
+                                --build=${otf2_system_type}
+                                --host=${otf2_system_type}
+                                --target=${otf2_system_type}
+                                CC=${CMAKE_C_COMPILER} CXX=${CMAKE_CXX_COMPILER}
+                                PYTHON=: PYTHON_FOR_GENERATOR=:
+                        WORKING_DIRECTORY
+                            ${otf2_BINARY_DIR}
+                    )
+
+                    include(ProcessorCount)
+                    ProcessorCount(nr_cores)
+                    math(EXPR nr_cores_to_use "${nr_cores} / 2")
+
+                    execute_process(
+                        COMMAND
+                            make -j${nr_cores_to_use}
+                        WORKING_DIRECTORY
+                            ${otf2_BINARY_DIR}
+                    )
+                    execute_process(
+                        COMMAND
+                            make install
+                        WORKING_DIRECTORY
+                            ${otf2_BINARY_DIR}
+                    )
+                endif()
+            else()
+                # Set OTF2_ROOT, or OTF2_LIBRARY and OTF2_INCLUDE_DIR
+                message(FATAL_ERROR "Add logic to find OTF2")
             endif()
-        else()
-            message(FATAL_ERROR "Add logic to find OTF2")
         endif()
     endif()
 
     if(LUE_BUILD_HPX)
         # Build HPX ourselves
-
-        if(LUE_FRAMEWORK_WITH_OTF2)
-            set(HPX_WITH_APEX TRUE CACHE BOOL "")
-            set(APEX_WITH_OTF2 TRUE CACHE BOOL "")
-            set(OTF2_ROOT ${OTF2_ROOT})
-
-            # Pick a recent APEX
-            set(HPX_WITH_APEX_NO_UPDATE TRUE CACHE BOOL "")
-            # set(HPX_WITH_APEX_TAG v2.1.3 CACHE STRING "")
-        endif()
 
         FetchContent_Declare(hpx
             GIT_REPOSITORY https://github.com/STEllAR-GROUP/hpx
@@ -298,7 +291,7 @@ if(DEVBASE_HPX_REQUIRED)
             # Hack to make the build succeed. Otherwise building APEX as
             # part of HPX fails because APEX cannot find its own
             # headers...
-            if(LUE_FRAMEWORK_WITH_OTF2 AND LUE_BUILD_OTF2)
+            if(HPX_WITH_APEX)
                 include_directories(
                     ${hpx_SOURCE_DIR}/apex/src/apex
                     ${hpx_SOURCE_DIR}/apex/src/contrib)
