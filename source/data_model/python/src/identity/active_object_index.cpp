@@ -70,6 +70,10 @@ void init_active_object_index(
             }
         )
 
+        .def_property_readonly(
+            "nr_indices",
+            &ActiveObjectIndex::nr_indices)
+
         ;
 
 }
