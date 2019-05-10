@@ -1,4 +1,5 @@
 #include "python_extension.hpp"
+#include "lue/py/conversion.hpp"
 #include "lue/array/value_group.hpp"
 #include <pybind11/pybind11.h>
 
@@ -19,6 +20,18 @@ void init_value_group(
         R"(
     ValueGroup docstring...
 )")
+
+        .def_property_readonly(
+            "dtype",
+            [](ValueGroup const& self)
+            {
+                py::object object = hdf5_type_id_to_numpy_dtype(
+                    self.memory_datatype());
+                assert(object.ptr() != nullptr);
+                return object;
+            },
+            "dtype docstring..."
+        )
 
         ;
 
