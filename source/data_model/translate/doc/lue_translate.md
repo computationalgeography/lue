@@ -264,7 +264,6 @@ folowing example, (the domain of) `my_property_set` is selected.
                 "property_sets": [
                     {
                         "name": "my_property_set"
-
                     }
                 ]
             }
