@@ -28,7 +28,7 @@ enum class Calendar
     origin the user can refine this by marking a certain location in
     time within the era as the real epoch of the time points. For example,
     the anno domini epoch defines the year zero as the starting point
-    of its era. This class supports using, for example, the first they
+    of its era. This class supports using, for example, the first day
     of this year as the epoch, or 'now'.
 */
 class Epoch

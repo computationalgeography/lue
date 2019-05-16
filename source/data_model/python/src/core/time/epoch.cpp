@@ -66,13 +66,71 @@ void init_epoch(
         module,
         "Epoch",
         R"(
-    TODO
+    Location in time that marks the start of an era
+
+    All time points are at a distance in time (duration) relative to
+    an epoch.
+
+    An epoch is defined by an epoch kind, of which there are multiple. An
+    epoch kind is a well known point in time, like when the earth
+    was formed. As an extension, an origin kan be passed in,
+    which defines a location in time after the epoch kind. This allows
+    one to define epoch as the start of the current year by using the
+    :py:class:`Kind.anno_domini` epoch kind and a date string formatted
+    as an `ISO 8601 string <https://en.wikipedia.org/wiki/ISO_8601>`_. If
+    necessary, to be able to interpret the origin string, a calendar
+    can be passed in also.
+
+    The origin and calendar are not used internally. They are usefull for
+    clients that need to translate locations in time to more user-friendly
+    formats.
 )");
 
     epoch
 
         .def(
-            py::init<time::Epoch::Kind, std::string const&, time::Calendar>())
+            py::init<>(),
+            R"(
+    Default construct an instance
+
+    This instance is set to Unix time epoch: kind is
+    :py:class:`Kind.anno_domini`, origin is "1970-01-01T00:00:00+00:00",
+    and calendar is :py:class:`Calendar.gregorian`.
+)"
+        )
+
+        .def(
+            py::init<time::Epoch::Kind>(),
+            R"(
+    Construct an instance base on epoch kind
+
+    :param Kind kind: Epoch kind
+)",
+            "kind"_a
+        )
+
+        .def(
+            py::init<time::Epoch::Kind, std::string const&>(),
+            R"(
+    Construct an instance base on epoch kind and origin
+
+    :param Kind kind: Epoch kind
+    :param str origin: Location in time after epoch kind
+)",
+            "kind"_a,
+            "origin"_a
+        )
+
+        .def(
+            py::init<time::Epoch::Kind, std::string const&, time::Calendar>(),
+            R"(
+    Construct an instance base on epoch kind, origin and calendar
+
+    :param Kind kind: Epoch kind
+    :param str origin: Location in time after epoch kind
+    :param str calendar: Calender for interpreting locations in time
+)"
+        )
 
         .def(
             "__repr__",
@@ -114,18 +172,17 @@ void init_epoch(
 
     py::enum_<time::Epoch::Kind>(
         epoch,
-        "Kind",
-        R"(
-    TODO
-)")
+        "Kind")
 
         .value(
             aspect_to_string(time::Epoch::Kind::anno_domini).c_str(),
-            time::Epoch::Kind::anno_domini)
+            time::Epoch::Kind::anno_domini
+        )
 
         .value(
             aspect_to_string(time::Epoch::Kind::formation_of_earth).c_str(),
-            time::Epoch::Kind::formation_of_earth)
+            time::Epoch::Kind::formation_of_earth
+        )
 
         ;
 

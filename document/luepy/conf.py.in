@@ -43,13 +43,13 @@ html_theme = 'default'
 htmlhelp_basename = 'LUEdoc'
 
 
-autodoc_default_flags = [
-    "inherited-members",
-    "members",
-    "show-inheritance",
-    # "special-members",
-    "undoc-members",
-]
+autodoc_default_options = {
+    "inherited-members": True,
+    # "members": True,
+    "show-inheritance": True,
+    "special-members": "__init__",
+    "undoc-members": True,
+}
 
 
 def can_access_python_extension():
@@ -59,9 +59,16 @@ def can_access_python_extension():
 apidoc_generated = can_access_python_extension()
 
 
+### def skip(app, what, name, obj, would_skip, options):
+###     if name == "__init__":
+###         return False
+###     return would_skip
+
+
 def setup(app):
     app.add_config_value("apidoc_generated", False, "env")
     app.add_config_value("on_rtd", False, on_rtd)
+    ### app.connect("autodoc-skip-member", skip)
 
 
 intersphinx_mapping = {
