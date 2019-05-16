@@ -9,7 +9,7 @@
 
 fmt/5.2.1@bincrafters/stable
 gsl_microsoft/2.0.0@bincrafters/stable
-jsonformoderncpp/3.5.0@vthiery/stable
+jsonformoderncpp/3.6.1@vthiery/stable
 pybind11/2.2.4@conan/stable
 # range-v3
 
