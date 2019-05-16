@@ -6,7 +6,7 @@ add_library(lue_translate_lib STATIC
 
     # src/format/csv
     src/format/dot
-    # src/format/gdal
+    src/format/gdal
     src/format/gdal_block
     src/format/gdal_raster
     # src/format/gdal_stack

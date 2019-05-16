@@ -47,6 +47,10 @@ public:
         typename Value>
     Value          value               ();
 
+    template<
+        typename Value>
+    Value          value               (hdf5::Datatype const& datatype);
+
     bool           presence_is_discretized() const;
 
     void           set_presence_discretization(
@@ -80,6 +84,21 @@ template<
 inline Value SpaceDomain::value()
 {
     return Value{*this};
+}
+
+
+/*!
+    @brief      Return instance representing the collection of space
+                domain object arrays
+    @tparam     Value Class corresponding with the instance's configuration()
+    @param      datatype In-memory datatype of the space domain items
+*/
+template<
+    typename Value>
+inline Value SpaceDomain::value(
+    hdf5::Datatype const& datatype)
+{
+    return Value{*this, datatype};
 }
 
 }  // namespace lue

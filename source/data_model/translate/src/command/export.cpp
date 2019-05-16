@@ -96,11 +96,11 @@ int Export::run_implementation()
     //    translate_lue_dataset_to_csv(
     //        *lue_dataset, output_dataset_name, metadata);
     // }
-    // else if(bfs::path(output_dataset_name).extension() == ".shp") {
-    //     // Create a Shapefile of the dataset.
-    //     translate_lue_dataset_to_shapefile(
-    //         *lue_dataset, output_dataset_name, metadata);
-    // }
+    else if(bfs::path(output_dataset_name).extension() == ".shp") {
+        // Write information from the dataset to one or more Shapefiles
+        translate_lue_dataset_to_shapefile(
+            *lue_dataset, output_dataset_name, metadata);
+    }
     // else if(bfs::path(output_dataset_name).extension() == ".vtk") {
     //     // Create a VTK file of the dataset.
     //     translate_lue_dataset_to_vtk(
