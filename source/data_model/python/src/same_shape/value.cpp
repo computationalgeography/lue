@@ -33,6 +33,16 @@ void init_value(
                 return value;
             })
 
+        .def_property_readonly(
+            "nr_arrays",
+            &Value::nr_arrays
+        )
+
+        .def_property_readonly(
+            "array_shape",
+            &Value::array_shape
+        )
+
         ;
 
 }

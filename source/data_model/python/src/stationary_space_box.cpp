@@ -20,6 +20,11 @@ void init_stationary_space_box(
     TODO
 )")
 
+        .def_property_readonly(
+            "nr_boxes",
+            &StationarySpaceBox::nr_boxes
+        )
+
         ;
 
 }

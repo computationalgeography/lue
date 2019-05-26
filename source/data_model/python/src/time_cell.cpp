@@ -20,6 +20,11 @@ void init_time_cell(
     TODO
 )")
 
+        .def_property_readonly(
+            "nr_counts",
+            &TimeCell::nr_counts
+        )
+
         .def_property_readonly("count",
             py::overload_cast<>(&TimeCell::count),
             py::return_value_policy::reference_internal)

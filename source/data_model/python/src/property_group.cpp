@@ -1,5 +1,6 @@
 #include "python_extension.hpp"
 #include "lue/info/property/property_group.hpp"
+#include "lue/navigate.hpp"
 #include <pybind11/pybind11.h>
 
 
@@ -8,6 +9,12 @@ using namespace pybind11::literals;
 
 
 namespace lue {
+
+// Defined in property_set.cpp...
+// TODO Reorganize this in a header / module
+py::object         property_new        (Properties& properties,
+                                        std::string const& name);
+
 
 void init_property_group(
     py::module& module)
@@ -59,6 +66,36 @@ void init_property_group(
     :param PropertyGroup property: Discretization property
 )")
 
+        .def_property_readonly(
+            "time_is_discretized",
+            &PropertyGroup::time_is_discretized)
+
+        .def_property_readonly(
+            "space_is_discretized",
+            &PropertyGroup::space_is_discretized)
+
+        .def(
+            "space_discretization_property",
+            [](
+                PropertyGroup& property)
+            {
+                assert(property.space_is_discretized());
+
+                auto discretization_property =
+                    property.space_discretization_property();
+
+                // Property-set the discretization property is member of.
+                // New, local instance.
+                auto property_set =
+                    PropertySet{lue::property_set(discretization_property)};
+
+                assert(property_set.properties().contains(
+                        discretization_property.name()));
+
+                // Return a new instance of a property of the right type
+                return lue::property_new(
+                    property_set.properties(), discretization_property.name());
+            })
         ;
 
 }

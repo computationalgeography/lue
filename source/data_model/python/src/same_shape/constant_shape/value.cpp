@@ -22,6 +22,21 @@ void init_value(
     Value docstring...
 )")
 
+        .def_property_readonly(
+            "nr_arrays",
+            &Value::nr_arrays
+        )
+
+        .def_property_readonly(
+            "array_shape",
+            &Value::array_shape
+        )
+
+        .def_property_readonly(
+            "rank",
+            &Value::rank
+        )
+
         .def(
             "expand",
             [](

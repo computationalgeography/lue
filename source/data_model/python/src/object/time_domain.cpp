@@ -53,7 +53,7 @@ void init_time_domain(
         module,
         "TimeDomainItemType",
         R"(
-    Locations in time can be represented by boxes or points
+    Locations in time can be represented by boxes, cells or points
 )")
         .value("box", TimeDomainItemType::box)
         .value("cell", TimeDomainItemType::cell)

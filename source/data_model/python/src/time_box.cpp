@@ -20,6 +20,11 @@ void init_time_box(
     TODO
 )")
 
+        .def_property_readonly(
+            "nr_boxes",
+            &TimeBox::nr_boxes
+        )
+
         ;
 
 }

@@ -63,8 +63,132 @@ static std::string informal_string_representation(
         );
 }
 
+}  // Anonymous namespace
 
-py::object property(
+
+// Return a py::object to a property of the right type. Note that a
+// new instance of the property is stored.
+// TODO Refactor this with property_reference
+py::object property_new(
+    Properties& properties,
+    std::string const& name)
+{
+    py::object property = py::none();
+    auto const shape_per_object =
+        properties.shape_per_object(name);
+    auto const value_variability =
+        properties.value_variability(name);
+
+    switch(value_variability) {
+        case ValueVariability::constant: {
+            switch(shape_per_object) {
+                case ShapePerObject::same: {
+                    using Collection = same_shape::Properties;
+                    using Property = same_shape::Property;
+                    property = py::cast(new
+                        Property{
+                            properties.collection<Collection>()[name].parent(),
+                            name
+                        }
+                    );
+                    break;
+                }
+                case ShapePerObject::different: {
+                    using Collection = different_shape::Properties;
+                    using Property = different_shape::Property;
+                    property = py::cast(new
+                        Property{
+                            properties.collection<Collection>()[name].parent(),
+                            name
+                        }
+                    );
+                    break;
+                }
+            }
+
+            break;
+        }
+        case ValueVariability::variable: {
+            auto const shape_variability =
+                properties.shape_variability(name);
+
+            switch(shape_per_object) {
+                case ShapePerObject::same: {
+
+                    switch(shape_variability) {
+                        case ShapeVariability::constant: {
+                            using Collection =
+                                same_shape::constant_shape::Properties;
+                            using Property = same_shape::constant_shape::Property;
+                            property = py::cast(new
+                                Property{
+                                    properties.collection<Collection>()[name].parent(),
+                                    name
+                                }
+                            );
+                            break;
+                        }
+                        case ShapeVariability::variable: {
+                            using Collection = same_shape::variable_shape::Properties;
+                            using Property = same_shape::variable_shape::Property;
+                            property = py::cast(new
+                                Property{
+                                    properties.collection<Collection>()[name].parent(),
+                                    name
+                                }
+                            );
+                            break;
+                        }
+                    }
+
+                    break;
+                }
+                case ShapePerObject::different: {
+
+                    switch(shape_variability) {
+                        case ShapeVariability::constant: {
+                            using Collection =
+                                different_shape::constant_shape::Properties;
+                            using Property = different_shape::constant_shape::Property;
+                            property = py::cast(new
+                                Property{
+                                    properties.collection<Collection>()[name].parent(),
+                                    name
+                                }
+                            );
+                            break;
+                        }
+                        case ShapeVariability::variable: {
+                            using Collection =
+                                different_shape::variable_shape::Properties;
+                            using Property = different_shape::variable_shape::Property;
+                            property = py::cast(new
+                                Property{
+                                    properties.collection<Collection>()[name].parent(),
+                                    name
+                                }
+                            );
+                            break;
+                        }
+                    }
+
+                    break;
+                }
+            }
+
+            break;
+        }
+    }
+
+    return property;
+}
+
+
+// Return a py::object to a property of the right type. Note that a
+// reference to the property is stored. The lifetime of this object
+// is tied to the properties instance passed in.
+// TODO Refactor this with property_new
+py::object property_reference(
     Properties& properties,
     std::string const& name)
 {
@@ -143,8 +267,6 @@ py::object property(
     return property;
 }
 
-}  // Anonymous namespace
-
 
 void init_property_set(
     py::module& module)
@@ -214,7 +336,7 @@ void init_property_set(
                 Properties& properties,
                 std::string const& name)
             {
-                return property(properties, name);
+                return property_reference(properties, name);
             },
             py::return_value_policy::reference_internal)
 
@@ -340,7 +462,8 @@ void init_property_set(
                         property_name));
                 }
 
-                return property(property_set.properties(), property_name);
+                return property_reference(
+                    property_set.properties(), property_name);
             },
             py::return_value_policy::reference_internal)
 
