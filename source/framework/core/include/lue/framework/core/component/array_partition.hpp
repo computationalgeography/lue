@@ -1,6 +1,5 @@
 #pragma once
 #include "lue/framework/core/component/server/array_partition.hpp"
-// #include "lue/framework/core/serialize/array_partition_definition.hpp"
 
 
 namespace lue {
@@ -28,10 +27,10 @@ public:
 
     using Server = server::ArrayPartition<Element, rank>;
 
-    using Data = typename Server::Data;
-
     using Base =
         hpx::components::client_base<ArrayPartition<Element, rank>, Server>;
+
+    using Data = typename Server::Data;
 
     using Shape = typename Data::Shape;
 
@@ -45,10 +44,10 @@ public:
                    ArrayPartition      (hpx::future<ArrayPartition>&&
                                             component);
 
-                   ArrayPartition      (hpx::id_type const& locality_id,
+                   ArrayPartition      (hpx::id_type locality_id,
                                         Shape const& shape);
 
-                   ArrayPartition      (hpx::id_type const& locality_id,
+                   ArrayPartition      (hpx::id_type locality_id,
                                         Shape const& shape,
                                         Element value);
 
@@ -64,8 +63,6 @@ public:
     ArrayPartition& operator=          (ArrayPartition const&)=default;
 
     ArrayPartition& operator=          (ArrayPartition&&)=default;
-
-    // std::shared_ptr<Server> component  () const;
 
     hpx::future<Data> data             () const;
 
@@ -107,6 +104,10 @@ ArrayPartition<Element, rank>::ArrayPartition(
     @brief      Construct an instance based on an existing and possibly
                 remote component with ID @a component_id
     @param      component_id ID of component
+
+    A non-shared future is a unique future. No two unique futures can
+    refer to the same data. Here, an r-value reference to a unique future
+    is passed in. This instance will take over ownership of the ID.
 */
 template<
     typename Element,
@@ -121,29 +122,38 @@ ArrayPartition<Element, rank>::ArrayPartition(
 
 
 /*!
-    @brief      Construct an instance based on an existing @a component
-    @param      component A future to a component
+    @brief      Construct an instance based on a future to an instance
+    @param      partition A future to an instance
 
-    A partition already holds a future to the id of the referenced object.
+    A partition already holds a future to the ID of the referenced object.
     Unwrapping accesses this inner future.
+
+    A non-shared future is a unique future. No two unique futures can
+    refer to the same data. Here, an r-value reference to a unique future
+    is passed in. This instance will take over ownership of the partition.
 */
 template<
     typename Element,
     std::size_t rank>
 ArrayPartition<Element, rank>::ArrayPartition(
-    hpx::future<ArrayPartition>&& component):
+    hpx::future<ArrayPartition>&& partition):
 
-    Base{std::move(component)}
+    Base{std::move(partition)}
 
 {
 }
 
 
+/*!
+    @brief      Construct an instance on locality @a locality_id
+    @param      locality_id ID of locality to create instance on
+    @param      shape Shape of partition to create
+*/
 template<
     typename Element,
     std::size_t rank>
 ArrayPartition<Element, rank>::ArrayPartition(
-    hpx::id_type const& locality_id,
+    hpx::id_type locality_id,
     Shape const& shape):
 
     Base{hpx::new_<Server>(locality_id, shape)}
@@ -152,11 +162,17 @@ ArrayPartition<Element, rank>::ArrayPartition(
 }
 
 
+/*!
+    @brief      Construct an instance on locality @a locality_id
+    @param      locality_id ID of locality to create instance on
+    @param      shape Shape of partition to create
+    @param      value Initial value used to fill the partition
+*/
 template<
     typename Element,
     std::size_t rank>
 ArrayPartition<Element, rank>::ArrayPartition(
-    hpx::id_type const& locality_id,
+    hpx::id_type locality_id,
     Shape const& shape,
     Element const value):
 
@@ -168,7 +184,7 @@ ArrayPartition<Element, rank>::ArrayPartition(
 
 /*!
     @brief      Construct an instance on the same locality as an existing
-                component's id and initial @a data
+                component's ID and initial @a data
     @param      component_id ID of an existing component
     @param      data Initial data
 */
@@ -249,11 +265,6 @@ ArrayPartition<Element, rank>::ArrayPartition(
 
 /*!
     @brief      Return underlying data
-
-    Although a future to a copy is returned, the underlying Data instance
-    is an ArrayPartitionedData, which contains a shared pointer to
-    the actual multidimensional array. These are cheap to copy (but
-    possibly surprising to use).
 */
 template<
     typename Element,

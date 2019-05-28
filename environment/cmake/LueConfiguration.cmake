@@ -272,8 +272,7 @@ if(DEVBASE_HPX_REQUIRED)
 
         FetchContent_Declare(hpx
             GIT_REPOSITORY https://github.com/STEllAR-GROUP/hpx
-            # GIT_TAG b26d3ba5ed54289ee311acd27bdc49e02a4bb33b  # 1.2.1
-            GIT_TAG c91c75253812d4084131ef328e64b67260b7f1a0  # 1.3.0-rc1
+            GIT_TAG a943fd2c5d8b90d2f45be919850eefa9c31788e8  # 1.3.0
         )
 
         FetchContent_GetProperties(hpx)
@@ -281,21 +280,14 @@ if(DEVBASE_HPX_REQUIRED)
         if(NOT hpx_POPULATED)
             FetchContent_Populate(hpx)
 
-            # Hack to make the build succeed. Remove when using version
-            # of HPX that fixes this.
-            #
-            #     The keyword signature for target_link_libraries has
-            #     already been used with ...
-            set(HPX_TLL_PUBLIC PUBLIC)
-
-            # Hack to make the build succeed. Otherwise building APEX as
-            # part of HPX fails because APEX cannot find its own
-            # headers...
-            if(HPX_WITH_APEX)
-                include_directories(
-                    ${hpx_SOURCE_DIR}/apex/src/apex
-                    ${hpx_SOURCE_DIR}/apex/src/contrib)
-            endif()
+            ### # Hack to make the build succeed. Otherwise building APEX as
+            ### # part of HPX fails because APEX cannot find its own
+            ### # headers...
+            ### if(HPX_WITH_APEX)
+            ###     include_directories(
+            ###         ${hpx_SOURCE_DIR}/apex/src/apex
+            ###         ${hpx_SOURCE_DIR}/apex/src/contrib)
+            ### endif()
 
             add_subdirectory(${hpx_SOURCE_DIR} ${hpx_BINARY_DIR})
 

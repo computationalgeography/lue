@@ -49,8 +49,7 @@ typename ArrayPartitionTypeTraits<Partition>::
             [shape](Data const& partition_data)
             {
                 ResultElement result = std::accumulate(
-                    partition_data.data(),
-                    partition_data.data() + partition_data.size(), 0);
+                    partition_data.begin(), partition_data.end(), 0);
 
                 return ResultData{shape, result};
             }

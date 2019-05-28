@@ -131,7 +131,7 @@ LUE_REGISTER_ARRAY_PARTITIONS_ACTION_DECLARATIONS(double)
 
 
 #define LUE_DEFINE_ARRAY_PARTITION_COMPONENT_ACTION_TEMPLATE(          \
-        name)                                                          \
+    name)                                                              \
                                                                        \
 namespace lue {                                                        \
                                                                        \
@@ -279,7 +279,7 @@ template<
 void ArrayPartition<Element, rank>::fill(
     Element value)
 {
-    std::fill(_data.data(), _data.data() + _data.size(), value);
+    std::fill(_data.begin(), _data.end(), value);
 }
 
 

@@ -2,8 +2,10 @@
 #include "lue/framework/benchmark/environment.hpp"
 #include "lue/framework/benchmark/stopwatch.hpp"
 #include "lue/framework/benchmark/task.hpp"
+#include <chrono>
 #include <iostream>
 #include <string>
+#include <thread>
 #include <vector>
 
 
@@ -165,10 +167,10 @@ template<
     typename Callable>
 inline int Benchmark<Callable>::run()
 {
+    using namespace std::chrono_literals;
+
     _timings.clear();
     Stopwatch stopwatch;
-
-    // Stream << _name << ": ";  // << std::flush;
 
     _timing.start();
     for(std::size_t i = 0; i < _environment.count(); ++i) {
@@ -176,9 +178,11 @@ inline int Benchmark<Callable>::run()
         _callable(_environment, _task);
         stopwatch.stop();
         _timings.push_back(stopwatch);
-        // Stream << ".";  // << std::flush;
+
+        if(i < _environment.count() - 1) {
+            std::this_thread::sleep_for(20s);
+        }
     }
-    // Stream << "\n";  // std::endl;
     _timing.stop();
 
     return EXIT_SUCCESS;

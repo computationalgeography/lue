@@ -29,6 +29,7 @@ void copy(
         task.partition_shape().begin(), task.partition_shape().end(),
         partition_shape.begin());
 
+    // → Create first array
     Array current_state{shape, partition_shape};
 
     for(std::size_t i = 0; i < task.nr_time_steps(); ++i) {
@@ -37,6 +38,7 @@ void copy(
         // state...
         // new_state is a newly allocated array containing array
         // partitions containing elements copied from current_state
+        // → Create second array on each iteration. Moved from copy result.
         auto new_state = copy(current_state);
 
         // Prepare for the next iteration
@@ -49,7 +51,8 @@ void copy(
     }
 }
 
-}
+}  // namespace detail
+
 
 void copy(
     std::uint64_t max_tree_depth,

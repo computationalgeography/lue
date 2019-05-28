@@ -556,7 +556,7 @@ def post_process_results(
     elif job_scheduler == "shell":
         cluster = ShellCluster(cluster_settings_json)
 
-    benchmark = Benchmark(benchmark_settings_json)
+    benchmark = Benchmark(benchmark_settings_json, cluster)
     experiment = StrongScalingExperiment(
         experiment_settings_json, command_pathname)
 

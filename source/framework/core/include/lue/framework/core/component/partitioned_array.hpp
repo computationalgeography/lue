@@ -14,15 +14,7 @@ namespace lue {
 template<
     typename Element,
     std::size_t rank>
-class PartitionedArray // :
-    // public hpx::components::client_base<
-    //     PartitionedArray<Element, Data>,
-    //     server::PartitionedArray<Element, Data>>
-
-        // hpx::components::server::distributed_metadata_base<
-        //     server::PartitionedArrayMetadata<
-        //         typename Data::Definition::Index, Data::rank>>>
-
+class PartitionedArray
 {
 
 public:
@@ -37,118 +29,21 @@ public:
 
     using Shape = typename Partitions::Shape;
 
-    // using Definition = lue::ArrayPartitionDefinition<typename Data::Index, Data::rank>;
-
     using Index = typename Partitions::Index;
 
 private:
 
-    // using Base = hpx::components::client_base<
-    //     PartitionedArray<Element, Data>,
-    //     server::PartitionedArray<Element, Data>>;
-
-    // using Base = hpx::components::client_base<
-    //     PartitionedArray<Element, Data>,
-    //     hpx::components::server::distributed_metadata_base<
-    //         server::PartitionedArrayMetadata<
-    //             typename Data::Definition::Index, Data::rank>>>;
-
-
-    // class Partition:
-    //     public server::PartitionedArrayMetadata<Index, Data::rank>::Partition
-    // {
-
-    // private:
-
-    //     using Base =
-    //         typename server::PartitionedArrayMetadata<Index, Data::rank>::
-    //             Partition;
-
-    // public:
-
-    //     Partition():
-
-    //         Base{},
-    //         _local_data{}
-
-    //     {
-    //     }
-
-    //     /*!
-    //         @brief      .
-    //         @param      partition_id Global id of the partition server
-    //                     object
-    //         @param      definition Array definition of the partition
-    //         @param      locality_nr Number of locality the server is
-    //                     located on
-    //         @return     .
-    //         @exception  .
-    //     */
-    //     Partition(
-    //         hpx::id_type const& id,
-    //         Definition const& definition,
-    //         std::uint32_t const locality):
-
-    //         Base{id, definition, locality},
-    //         _local_data{}
-
-    //     {
-    //     }
-
-    //     Partition(
-    //         Base&& other):
-
-    //         Base{std::move(other)},
-    //         _local_data{}
-
-    //     {
-    //     }
-
-    //     void set_local_data(
-    //         std::shared_ptr<PartitionServer> const& local_data)
-    //     {
-    //         _local_data = local_data;
-    //     }
-
-    // private:
-
-    //     std::shared_ptr<PartitionServer> _local_data;
-
-    // };
-
     //! Shape of the partitioned array
     Shape          _shape;
 
-    // //! Shape of most partitions (possibly except for the ones at the border)
-    // Shape          _partition_shape;
-
     //! Array of array partitions
     Partitions     _partitions;
-
-    // Envelope<double, 2> _envelope;
-
-    // Index          _index;
 
 public:
 
     using Iterator = typename Partitions::Iterator;
 
     using ConstIterator = typename Partitions::ConstIterator;
-
-    // using Element = std::tuple<
-    //     Envelope<double, 2>,
-    //     hpx::id_type,
-    //     ArrayPartition<T, 2>>;
-
-    // using Index = SpatialIndex<Element>;
-
-    // using const_iterator = typename Index::const_iterator;
-
-    // static auto const& envelope(Element const& v) { return std::get<0>(v); }
-
-    // static auto locality(Element const& v) { return std::get<1>(v); }
-
-    // static auto const& partition(Element const& v) { return std::get<2>(v); }
 
                    PartitionedArray    ();
 
@@ -160,29 +55,9 @@ public:
                    PartitionedArray    (Shape const& shape,
                                         Partitions&& partitions);
 
-    // template<
-    //     typename DistributionPolicy>
-    //                PartitionedArray    (Definition const& definition,
-    //                                     DistributionPolicy const& distribution_policy);
-
-    //                PartitionedArray    (Definition const& definition,
-    //                                     Envelope<double, 2> const& envelope);
-
-    //                PartitionedArray    (PartitionedArray const& other)=default;
-
-    //                PartitionedArray    (PartitionedArray&& other)=default;
-
-    //                ~PartitionedArray   ()=default;
-
-    // PartitionedArray& operator=        (PartitionedArray const& other)=default;
-
-    // PartitionedArray& operator=        (PartitionedArray&& other)=default;
-
-    // void        insert              (Element const& value);
+                   ~PartitionedArray   ()=default;
 
     Index          nr_elements         () const;
-
-    // Definition const& definition       () const;
 
     Shape const&   shape               () const;
 
@@ -191,13 +66,6 @@ public:
     Partitions&    partitions          ();
 
     Partitions const& partitions       () const;
-
-    // Envelope<double, 2> const&
-    //                envelope            () const;
-
-    // // void           wait                ();
-
-    // bool           valid               () const;
 
     ConstIterator  begin               () const;
 
@@ -226,32 +94,6 @@ private:
     void           print_partitions    () const;
 
     void           assert_invariants   () const;
-
-    /// //! For a locality ID a list of array partition component IDs
-    /// using BulkLocalityResult =
-    ///     std::pair<hpx::id_type, std::vector<hpx::id_type>>;
-
-
-    // template<
-    //     typename DistributionPolicy,
-    //     typename Creator>
-    // void           create              (DistributionPolicy const&
-    //                                         distribution_policy,
-    //                                     Creator&& creator,
-    //                                     Index const nr_partitions,
-    //                                     Shape const& max_partition_shape);
-
-    // template<
-    //     typename DistributionPolicy,
-    //     typename Creator>
-    // void           create              (DistributionPolicy const&
-    //                                         distribution_policy,
-    //                                     Creator&& creator);
-
-    // template<
-    //     typename DistributionPolicy>
-    // void           create              (DistributionPolicy const&
-    //                                         distribution_policy);
 
 };
 
@@ -589,8 +431,6 @@ void PartitionedArray<Element, rank>::clamp_array(
 }
 
 
-
-
 template<
     typename Element,
     std::size_t rank>
@@ -654,7 +494,7 @@ void PartitionedArray<Element, rank>::create(
 
 
     _partitions = Partitions{shape_in_partitions};
-        // Definition{_definition.start(), shape_in_partitions}};
+
 
     std::vector<hpx::id_type> const localities = hpx::find_all_localities();
     std::size_t const nr_localities = localities.size();
@@ -664,7 +504,7 @@ void PartitionedArray<Element, rank>::create(
 
     auto locality_idx =
         [nr_partitions, nr_localities](
-            std::size_t const i)
+            std::size_t const i) -> std::size_t
         {
             // Mapping of partitions to localities
             assert(nr_partitions >= nr_localities);
@@ -685,9 +525,8 @@ void PartitionedArray<Element, rank>::create(
     // locality. Which one exactly is determined by locality_idx.
     for(std::size_t i = 0; i < nr_partitions; ++i) {
         _partitions[i] =
-            Partition(localities[locality_idx(i)], max_partition_shape);
+            Partition{localities[locality_idx(i)], max_partition_shape};
     }
-
 
     /// typename Partitions::Index partition_idx = 0;
 

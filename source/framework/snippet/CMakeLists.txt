@@ -1,2 +1,3 @@
 add_subdirectory(hardware_topology)
+add_subdirectory(lifetime)
 add_subdirectory(main_at_each_locality)
