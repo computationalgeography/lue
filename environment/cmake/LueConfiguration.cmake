@@ -260,36 +260,55 @@ if(DEVBASE_HPX_REQUIRED)
                             ${otf2_BINARY_DIR}
                     )
                 endif()
-            else()
-                # Set OTF2_ROOT, or OTF2_LIBRARY and OTF2_INCLUDE_DIR
-                message(FATAL_ERROR "Add logic to find OTF2")
+            ### else()
+            ###     # Set OTF2_ROOT, or OTF2_LIBRARY and OTF2_INCLUDE_DIR
+            ###     message(FATAL_ERROR "Add logic to find OTF2")
             endif()
         endif()
     endif()
 
     if(LUE_BUILD_HPX)
         # Build HPX ourselves
+        if(LUE_REPOSITORY_CACHE AND EXISTS ${LUE_REPOSITORY_CACHE}/hpx)
+            set(hpx_repository ${LUE_REPOSITORY_CACHE}/hpx)
+        else()
+            set(hpx_repository https://github.com/STEllAR-GROUP/hpx)
+        endif()
 
         FetchContent_Declare(hpx
-            GIT_REPOSITORY https://github.com/STEllAR-GROUP/hpx
+            GIT_REPOSITORY ${hpx_repository}
             GIT_TAG a943fd2c5d8b90d2f45be919850eefa9c31788e8  # 1.3.0
         )
 
         FetchContent_GetProperties(hpx)
 
         if(NOT hpx_POPULATED)
+
             FetchContent_Populate(hpx)
 
-            ### # Hack to make the build succeed. Otherwise building APEX as
-            ### # part of HPX fails because APEX cannot find its own
-            ### # headers...
-            ### if(HPX_WITH_APEX)
-            ###     include_directories(
-            ###         ${hpx_SOURCE_DIR}/apex/src/apex
-            ###         ${hpx_SOURCE_DIR}/apex/src/contrib)
-            ### endif()
+            # TEMP HACK
+            # Current APEX CMake logic gets the include paths wrong.
+            if(HPX_WITH_APEX)
+                include_directories(
+                    ${hpx_SOURCE_DIR}/libs/preprocessor/include
+                    ${hpx_SOURCE_DIR}/apex/src/apex
+                    ${hpx_SOURCE_DIR}/apex/src/contrib
+                )
+            endif()
+            # /TEMP HACK
 
             add_subdirectory(${hpx_SOURCE_DIR} ${hpx_BINARY_DIR})
+
+            # TEMP HACK
+            if(HPX_WITH_APEX AND HPX_WITH_APEX_TAG)
+                # Current APEX CMake logic resets the commit to the
+                # latest on the develop branch... Reset it back to the
+                # commit we want.
+                execute_process(
+                    COMMAND git checkout ${HPX_WITH_APEX_TAG}
+                    WORKING_DIRECTORY ${hpx_SOURCE_DIR}/apex)
+            endif()
+            # /TEMP HACK
 
             # Use HPX from this project's binary directory
             set(HPX_INCLUDE_DIRS
@@ -324,9 +343,15 @@ if(DEVBASE_IMGUI_REQUIRED)
     find_package(OpenGL REQUIRED)
     find_package(SDL2 REQUIRED)
 
+    if(LUE_REPOSITORY_CACHE AND EXISTS ${LUE_REPOSITORY_CACHE}/imgui)
+        set(imgui_repository ${LUE_REPOSITORY_CACHE}/imgui)
+    else()
+        set(imgui_repository https://github.com/ocornut/imgui.git)
+    endif()
+
     FetchContent_Declare(imgui
         // MIT License, see ${imgui_SOURCE_DIR}/LICENSE.txt
-        GIT_REPOSITORY https://github.com/ocornut/imgui.git
+        GIT_REPOSITORY ${imgui_repository}
         GIT_TAG v1.65
     )
 
