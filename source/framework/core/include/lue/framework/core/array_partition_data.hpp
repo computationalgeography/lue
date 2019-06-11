@@ -332,7 +332,8 @@ template<
 typename ArrayPartitionData<Value, rank>::SizeType
     ArrayPartitionData<Value, rank>::size() const
 {
-    assert(nr_elements(_shape) == values().num_elements());
+    // assert(nr_elements(_shape) == values().num_elements());
+    assert(nr_elements(_shape) == values().size());
 
     return nr_elements(_shape);
 }
