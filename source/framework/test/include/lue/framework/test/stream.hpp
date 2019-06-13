@@ -8,12 +8,12 @@
 // namespace boost {
 // 
 // template<
-//     typename Value,
+//     typename Element,
 //     std::size_t rank,
 //     typename Allocator>
 // std::ostream& operator<<(
 //     std::ostream& stream,
-//     multi_array<Value, rank, Allocator> const& array)
+//     multi_array<Element, rank, Allocator> const& array)
 // {
 //     stream << '[';
 //     auto joiner = std::experimental::make_ostream_joiner(stream, ", ");
@@ -85,16 +85,16 @@ std::ostream& operator<<(
 
 
 template<
-    typename Value,
+    typename Element,
     std::size_t rank>
 std::ostream& operator<<(
     std::ostream& stream,
-    ArrayPartitionData<Value, rank> const& data)
+    ArrayPartitionData<Element, rank> const& data)
 {
     stream
         << data.shape()
         << ", "
-        << '[';
+        << "[\n";
 
     auto joiner = std::experimental::make_ostream_joiner(stream, ", ");
 
@@ -116,7 +116,42 @@ std::ostream& operator<<(
         std::copy(end - halo, end, joiner);
     }
 
-    stream << ']';
+    stream << "]\n";
+
+    return stream;
+}
+
+
+template<
+    typename Element,
+    std::size_t rank>
+std::ostream& operator<<(
+    std::ostream& stream,
+    ArrayPartition<Element, rank> const& partition)
+{
+    stream
+        << "    shape     : " << partition.shape().get() << "\n"
+        << "    size      : " << partition.size().get() << "\n"
+        << partition.data().get()
+        ;
+
+    return stream;
+}
+
+
+template<
+    typename Element,
+    std::size_t rank>
+std::ostream& operator<<(
+    std::ostream& stream,
+    PartitionedArray<Element, rank> const& array)
+{
+    stream
+        << "nr_partitions: " << array.nr_partitions() << "\n"
+        << "nr_elements  : " << array.nr_elements() << "\n"
+        << "shape        : " << array.shape() << "\n"
+        << array.partitions()
+        ;
 
     return stream;
 }

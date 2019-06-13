@@ -32,7 +32,9 @@ public:
 
     using Data = typename Server::Data;
 
-    using Shape = typename Data::Shape;
+    using Shape = typename Server::Shape;
+
+    using Size = typename Server::Size;
 
                    ArrayPartition      ();
 
@@ -68,9 +70,13 @@ public:
 
     hpx::future<void> fill             (Element value);
 
+    hpx::future<void> set_data         (Data const& data);
+
     hpx::future<Shape> shape           () const;
 
     hpx::future<void> resize           (Shape const& shape);
+
+    hpx::future<Size> size             () const;
 
 private:
 
@@ -282,6 +288,19 @@ hpx::future<typename ArrayPartition<Element, rank>::Data>
 template<
     typename Element,
     std::size_t rank>
+hpx::future<typename ArrayPartition<Element, rank>::Size>
+    ArrayPartition<Element, rank>::size() const
+{
+    typename Server::SizeAction action;
+
+    // this->get_id() identifies the server instance
+    return hpx::async(action, this->get_id());
+}
+
+
+template<
+    typename Element,
+    std::size_t rank>
 hpx::future<typename ArrayPartition<Element, rank>::Shape>
     ArrayPartition<Element, rank>::shape() const
 {
@@ -309,6 +328,22 @@ hpx::future<void> ArrayPartition<Element, rank>::fill(
 
 
 /*!
+    @brief      Asynchronously assign @a data to the partition
+*/
+template<
+    typename Element,
+    std::size_t rank>
+hpx::future<void> ArrayPartition<Element, rank>::set_data(
+    Data const& data)
+{
+    typename Server::SetDataAction action;
+
+    // this->get_id() identifies the server instance
+    return hpx::async(action, this->get_id(), data);
+}
+
+
+/*!
     @brief      Asynchronously resize the partition with @a value
 */
 template<
@@ -324,36 +359,43 @@ hpx::future<void> ArrayPartition<Element, rank>::resize(
 }
 
 
+namespace detail {
+
 template<
-    typename Element,
-    std::size_t rank>
-class ArrayPartitionTypeTraits<ArrayPartition<Element, rank>>
+    typename E,
+    std::size_t r>
+class ArrayTraits<ArrayPartition<E, r>>
 {
-
-private:
-
-    // Use template parameters to create Partition type
-
-    using Partition = ArrayPartition<Element, rank>;
 
 public:
 
-    // Only use Partition, not the template parameters
+    using Element = E;
 
-    using ServerType = typename Partition::Server;
-    using DataType = typename Partition::Data;
-    using ShapeType = typename Partition::Shape;
+    constexpr static std::size_t rank = r;
 
-    template<
-        typename ElementType>
-    using DataTemplate =
-        typename ArrayPartitionDataTypeTraits<DataType>::
-            template DataTemplate<ElementType>;
+    using Shape = typename ArrayPartition<E, r>::Shape;
 
     template<
-        typename ElementType>
-    using PartitionTemplate = ArrayPartition<ElementType, rank>;
+        typename E_,
+        std::size_t r_>
+    using Partition = ArrayPartition<E_, r_>;
+
+    template<
+        typename E_,
+        std::size_t r_>
+    using Data = typename ArrayPartition<E_, r_>::Data;
 
 };
 
+
+template<
+    typename Element,
+    std::size_t rank>
+typename ArrayPartition<Element, rank>::Size nr_elements(
+    ArrayPartition<Element, rank> const& partition)
+{
+    return partition.nr_elements();
+}
+
+}  // namespace detail
 }  // namespace lue

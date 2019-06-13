@@ -1,6 +1,6 @@
 #pragma once
 #include "lue/framework/core/component/array_partition.hpp"
-#include <hpx/dataflow.hpp>
+#include <hpx/include/lcos.hpp>
 
 
 namespace lue {
@@ -115,12 +115,11 @@ template<
 Array copy(
     Array const& array)
 {
-    using ArrayTraits = PartitionedArrayTypeTraits<Array>;
-    using Partition = typename ArrayTraits::PartitionType;
-    using Partitions = typename ArrayTraits::PartitionsType;
-    using Element = typename ArrayTraits::ElementType;
+    using Partition = PartitionT<Array>;
+    using Partitions = PartitionsT<Array>;
+    using Element = ElementT<Array>;
 
-    using CopyPartitionAction = CopyPartitionActionType<Element, rank(array)>;
+    using CopyPartitionAction = CopyPartitionActionType<Element, rank<Array>>;
     CopyPartitionAction copy_partition_action;
 
     // Create a new array for storing the new partitions. These partitions

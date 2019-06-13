@@ -1,38 +1,68 @@
-#define BOOST_TEST_MODULE lue framework algorithm unique_id
-// #include "lue/framework/algorithm/unique_id.hpp"
-// #include "lue/framework/algorithm/unique.hpp"
-// #include "lue/framework/core/component/partitioned_array.hpp"
+#define BOOST_TEST_MODULE lue framework algorithm unique
+#include "lue/framework/algorithm/fill.hpp"
+#include "lue/framework/algorithm/unique.hpp"
+#include "lue/framework/algorithm/unique_id.hpp"
+#include "lue/framework/core/component/partitioned_array.hpp"
+#include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
-// #include "lue/framework/test/stream.hpp"
 
 
-BOOST_AUTO_TEST_CASE(array_1d)
+namespace detail {
+
+template<
+    typename Element,
+    std::size_t rank>
+void test_array()
 {
-    BOOST_CHECK(true);
+    using Array = lue::PartitionedArray<Element, rank>;
 
-    // using Value = std::int32_t;
-    // std::size_t const rank = 1;
-    // using Data = lue::ArrayPartitionData<Value, rank>;
-    // using Array = lue::PartitionedArray<std::int32_t, Data>;
-    // // using Definition = typename Array::Definition;
-    // using Shape = typename Array::Shape;
+    auto const shape{lue::Test<Array>::shape()};
 
-    // typename Data::Index const nr_elements = 100;
+    Array array{shape};
 
-    // Shape shape{Shape{{nr_elements}}};
+    // All the same values
+    {
+        hpx::shared_future<Element> fill_value =
+            hpx::make_ready_future<Element>(5);
+        lue::fill(array, fill_value).wait();
 
-    // // Create input array
-    // lue::PartitionedArray<std::int32_t, Data> array{shape};
+        auto unique = lue::unique(array).get();
 
-    // // Update array partitions such that all elements in the array
-    // // contain a unique value
-    // lue::unique_id(array);
+        BOOST_REQUIRE_EQUAL(unique.nr_elements(), 1);
+        BOOST_CHECK_EQUAL(
+            unique.partitions()[0].data().get()[0], fill_value.get());
+    }
 
-    // // // Find the unique elements in an array
-    // // auto const unique_elements = lue::unique(array);
+    // All different values
+    {
+        lue::unique_id(array).wait();
+        auto unique = lue::unique(array).get();
 
-    // // // Assert that the number of unique values equals the number of
-    // // // elements in the original array
-    // // auto const nr_elements = lue::size(unique_elements);
-    // // BOOST_CHECK_EQUAL(
+        BOOST_REQUIRE_EQUAL(unique.nr_elements(), lue::nr_elements(array));
+    }
 }
+
+}  // namespace detail
+
+
+#define TEST_CASE(                               \
+    rank,                                        \
+    Element)                                     \
+                                                 \
+BOOST_AUTO_TEST_CASE(array_##rank##d_##Element)  \
+{                                                \
+    detail::test_array<Element, rank>();         \
+}
+
+// TEST_CASE(1, bool) Test uses unique_id, which doesn't support bool
+// TEST_CASE(2, bool)
+TEST_CASE(1, int32_t)
+TEST_CASE(2, int32_t)
+// TEST_CASE(1, int64_t)
+// TEST_CASE(2, int64_t)
+// TEST_CASE(1, float)
+// TEST_CASE(2, float)
+// TEST_CASE(1, double) // Test uses unique_id, which doesn't support float
+// TEST_CASE(2, double)
+
+#undef TEST_CASE

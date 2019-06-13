@@ -1,43 +1,64 @@
 #define BOOST_TEST_MODULE lue framework algorithm add
 #include "lue/framework/algorithm/add.hpp"
 #include "lue/framework/algorithm/fill.hpp"
+#include "lue/framework/algorithm/sum.hpp"
 #include "lue/framework/core/component/partitioned_array.hpp"
+#include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
-#include "lue/framework/test/stream.hpp"
 
 
-BOOST_AUTO_TEST_CASE(array_array_1d)
+namespace detail {
+
+template<
+    typename Element,
+    std::size_t rank>
+void test_array()
 {
-    using Value = std::int32_t;
-    std::size_t const rank = 1;
-    using Array = lue::PartitionedArray<std::int32_t, rank>;
-    using Data = typename Array::Partition::Data;
-    using Shape = typename Data::Shape;
-    using Index = typename Data::Index;
+    using Array = lue::PartitionedArray<Element, rank>;
 
-    Index const nr_elements = 100;
-    Shape const shape{{nr_elements}};
+    auto const shape{lue::Test<Array>::shape()};
 
     Array array1{shape};
     Array array2{shape};
 
-    hpx::shared_future<Value> fill_value1 = hpx::make_ready_future<Value>(5);
-    hpx::shared_future<Value> fill_value2 = hpx::make_ready_future<Value>(6);
+    hpx::shared_future<Element> fill_value1 =
+        hpx::make_ready_future<Element>(5);
+    hpx::shared_future<Element> fill_value2 =
+        hpx::make_ready_future<Element>(6);
 
-    // // Request the filling of the arrays and wait for it to finish
-    // hpx::future<void> filled1 = lue::fill(array1, fill_value1);
-    // hpx::future<void> filled2 = lue::fill(array2, fill_value2);
-    // hpx::wait_all(filled1, filled2);
+    hpx::wait_all(
+        lue::fill(array1, fill_value1),
+        lue::fill(array2, fill_value2));
 
-    // auto result = lue::add(array1, array2);
+    auto add = lue::add(array1, array2);
+    auto sum = lue::sum(add);
 
-    // for(auto const& partition: result.partitions()) {
-    //     auto partition_data = partition.data().get();
-
-    //     BOOST_CHECK_EQUAL(
-    //         std::accumulate(
-    //             partition_data.data(),
-    //             partition_data.data() + partition_data.size(), 0),
-    //         nr_elements * (5 + 6));
-    // }
+    BOOST_CHECK_EQUAL(
+        sum.get(),
+        static_cast<Element>(
+            lue::nr_elements(shape) *
+            (fill_value1.get() + fill_value2.get())));
 }
+
+}  // namespace detail
+
+
+#define TEST_CASE(                               \
+    rank,                                        \
+    Element)                                     \
+                                                 \
+BOOST_AUTO_TEST_CASE(array_##rank##d_##Element)  \
+{                                                \
+    detail::test_array<Element, rank>();         \
+}
+
+TEST_CASE(1, int32_t)
+TEST_CASE(2, int32_t)
+// TEST_CASE(1, int64_t)
+// TEST_CASE(2, int64_t)
+// TEST_CASE(1, float)
+// TEST_CASE(2, float)
+TEST_CASE(1, double)
+TEST_CASE(2, double)
+
+#undef TEST_CASE

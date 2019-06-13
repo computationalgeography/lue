@@ -7,6 +7,7 @@
 // #endif
 // #define BOOST_MULTI_ARRAY_NO_GENERATORS
 // #include <boost/multi_array.hpp>
+#include <boost/container/vector.hpp>
 #include <algorithm>
 #include <iostream>
 #include <memory>
@@ -39,7 +40,8 @@ class ArrayPartitionData
 private:
 
     // using Values = boost::multi_array<Value, rank>;
-    using Values = std::vector<Value>;
+    // using Values = std::vector<Value>;
+    using Values = boost::container::vector<Value>;
 
 public:
 
@@ -756,29 +758,21 @@ Value const& ArrayPartitionData<Value, 0>::operator[](
 }
 
 
+namespace detail {
+
 template<
-    typename Element,
-    std::size_t rank_>
-class ArrayPartitionDataTypeTraits<ArrayPartitionData<Element, rank_>>
+    typename E,
+    std::size_t r>
+class ArrayTraits<ArrayPartitionData<E, r>>
 {
-
-private:
-
-    // Use template parameters to create Data type
-    using Data = ArrayPartitionData<Element, rank_>;
 
 public:
 
-    // Only use Data, not the template parameters
-    using ElementType = typename Data::ElementType;
-    using ShapeType = typename Data::ShapeType;
+    using Element = E;
 
-    constexpr static std::size_t rank = Data::rank;
-
-    template<
-        typename ElementType>
-    using DataTemplate = ArrayPartitionData<ElementType, Data::rank>;
+    constexpr static std::size_t rank = r;
 
 };
 
+}  // namespace detail
 }  // namespace lue

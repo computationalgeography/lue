@@ -18,8 +18,7 @@ class Test<PartitionedArray<Element, 1>>
 public:
 
     using Array = PartitionedArray<Element, 1>;
-    using ArrayTraits = PartitionedArrayTypeTraits<Array>;
-    using Shape = typename ArrayTraits::ShapeType;
+    using Shape = ShapeT<Array>;
     using Index = typename Shape::value_type;
 
     static Index const nr_elements = 100;
@@ -40,8 +39,7 @@ class Test<PartitionedArray<Element, 2>>
 public:
 
     using Array = PartitionedArray<Element, 2>;
-    using ArrayTraits = PartitionedArrayTypeTraits<Array>;
-    using Shape = typename ArrayTraits::ShapeType;
+    using Shape = ShapeT<Array>;
     using Index = typename Shape::value_type;
 
     static Index const nr_rows = 60;

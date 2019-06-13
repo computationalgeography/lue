@@ -2,35 +2,133 @@
 
 
 namespace lue {
+namespace detail {
 
+/*!
+    @brief      Primary template for traits of an array-like type
+    @tparam     Array-like type
+
+    Specializations add traits that are relevant for the actual array-like
+    type. Some of these traits are relevant for all array-like types
+    (value-type of the elements, rank, ...).
+*/
 template<
-    typename ArrayPartitionData>
-class ArrayPartitionDataTypeTraits
+    typename Array>
+class ArrayTraits
 {
 };
 
+}  // namespace detail
 
-// Default array partition type traits
+
+// Alias templates cannot be specialized, so the implementations below use
+// a class template (detail::ArrayTraits), which can be specialized.
+
+
+/*!
+    @brief      Alias template of type aliases for the element types
+    @tparam     Array Array-like type
+
+    Given @a Array, this template generates a type alias for the
+    element type.
+*/
 template<
-    typename ArrayPartition>
-class ArrayPartitionTypeTraits
-{
-};
+    typename Array>
+using ElementT = typename detail::ArrayTraits<Array>::Element;
 
 
+/*!
+    @brief      Rank of an array-like type
+    @tparam     Array-like type
+*/
 template<
-    typename ArrayPartitions>
-class ArrayPartitionsTypeTraits
-{
-};
+    typename Array>
+static constexpr std::size_t rank = detail::ArrayTraits<Array>::rank;
 
 
-// core/array_type_traits.hpp
-// Default array type traits
+/*!
+    @brief      Alias template of type aliases for the shape types
+    @tparam     Array Array-like type
+
+    Given @a Array, this template generates a type alias for the
+    shape type.
+*/
 template<
-    typename PartitionedArray>
-class PartitionedArrayTypeTraits
-{
-};
+    typename Array>
+using ShapeT = typename detail::ArrayTraits<Array>::Shape;
+
+
+/*!
+    @brief      Alias template of type aliases for container types of
+                array elements, instantiated for a given element type
+                and rank
+    @tparam     Array Array-like type
+    @tparam     Element Element type
+    @tparam     rank rank
+
+    Given @a Array, @a Element and @a rank, this template generates a
+    type alias for the container type.
+*/
+template<
+    typename Array,
+    typename Element=ElementT<Array>,
+    std::size_t rank=rank<Array>>
+using DataT =
+    typename detail::ArrayTraits<Array>::template Data<Element, rank>;
+
+
+/*!
+    @brief      Alias template of type aliases for partition types,
+                instantiated for a given element type
+    @tparam     Array Partitioned array-like type
+    @tparam     Element Element type
+    @tparam     rank rank
+
+    Given @a Array, @a Element and @a rank, this template generates a type
+    alias for the partition type.
+*/
+template<
+    typename Array,
+    typename Element=ElementT<Array>,
+    std::size_t rank=rank<Array>>
+using PartitionT =
+    typename detail::ArrayTraits<Array>::template Partition<Element, rank>;
+
+
+/*!
+    @brief      Alias template of type aliases for partition collection
+                types, instantiated for a given element type and rank
+    @tparam     Array Partitioned array-like type
+    @tparam     Element Element type
+    @tparam     rank rank
+
+    Given @a Array, @a Element and @a rank, this template generates a
+    type alias for the partition collection.
+*/
+template<
+    typename Array,
+    typename Element=ElementT<Array>,
+    std::size_t rank=rank<Array>>
+using PartitionsT =
+    typename detail::ArrayTraits<Array>::template Partitions<Element, rank>;
+
+
+/*!
+    @brief      Alias template of type aliases for partitioned array
+                types, instantiated for a given element type and rank
+    @tparam     Array Partitioned array-like type
+    @tparam     Element Element type
+    @tparam     rank rank
+
+    Given @a Array, @a Element and @a rank, this template generates a
+    type alias for the partitioned array.
+*/
+template<
+    typename Array,
+    typename Element=ElementT<Array>,
+    std::size_t rank=rank<Array>>
+using PartitionedArrayT =
+    typename detail::ArrayTraits<Array>::
+        template PartitionedArray<Element, rank>;
 
 }  // namespace lue

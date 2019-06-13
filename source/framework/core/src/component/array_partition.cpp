@@ -27,6 +27,10 @@ HPX_REGISTER_ACTION(                                                \
     ArrayPartition_##Element##_##rank##_FillAction)                 \
                                                                     \
 HPX_REGISTER_ACTION(                                                \
+    lue::detail::ArrayPartition_##Element##_##rank::SetDataAction,  \
+    ArrayPartition_##Element##_##rank##_SetDataAction)              \
+                                                                    \
+HPX_REGISTER_ACTION(                                                \
     lue::detail::ArrayPartition_##Element##_##rank::ShapeAction,    \
     ArrayPartition_##Element##_##rank##_ShapeAction)                \
                                                                     \
@@ -48,8 +52,9 @@ LUE_REGISTER_ARRAY_PARTITION_ACTIONS(Element, 0)  \
 LUE_REGISTER_ARRAY_PARTITION_ACTIONS(Element, 1)  \
 LUE_REGISTER_ARRAY_PARTITION_ACTIONS(Element, 2)
 
+LUE_REGISTER_ARRAY_PARTITIONS_ACTIONS(bool)
 LUE_REGISTER_ARRAY_PARTITIONS_ACTIONS(/* std:: */ int32_t)
-// LUE_REGISTER_ARRAY_PARTITIONS_ACTIONS(/* std:: */ int64_t)
+LUE_REGISTER_ARRAY_PARTITIONS_ACTIONS(/* std:: */ int64_t)
 // LUE_REGISTER_ARRAY_PARTITIONS_ACTIONS(float)
 LUE_REGISTER_ARRAY_PARTITIONS_ACTIONS(double)
 

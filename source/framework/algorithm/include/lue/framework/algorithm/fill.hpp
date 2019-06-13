@@ -1,6 +1,6 @@
 #pragma once
 #include "lue/framework/core/component/partitioned_array.hpp"
-#include <hpx/lcos/when_all.hpp>
+#include <hpx/include/lcos.hpp>
 
 
 namespace lue {
@@ -19,19 +19,17 @@ template<
 >
 [[nodiscard]] hpx::future<void> fill(
     Array& array,
-    hpx::shared_future<
-        typename PartitionedArrayTypeTraits<Array>::ElementType>& fill_value)
+    hpx::shared_future<ElementT<Array>>& fill_value)
 {
-    using ArrayTraits = PartitionedArrayTypeTraits<Array>;
-    using Partition = typename ArrayTraits::PartitionType;
-    using Element = typename ArrayTraits::ElementType;
+    using Partition = PartitionT<Array>;
+    using Element = ElementT<Array>;
 
     // Attach a continuation to each partition that fills all elements with
     // the value passed in
     std::vector<hpx::future<void>> fill_partitions(nr_partitions(array));
 
     using FillAction =
-        typename ArrayPartitionFillAction<Element, rank(array)>::Type;
+        typename ArrayPartitionFillAction<Element, rank<Array>>::Type;
     FillAction action;
 
     for(std::size_t p = 0; p < nr_partitions(array); ++p) {
@@ -41,6 +39,7 @@ template<
         fill_partitions[p] = hpx::dataflow(
             hpx::launch::async,
             hpx::util::unwrapping(action),
+            // TODO ID of partition?
             partition.get_id(),
             fill_value
         );

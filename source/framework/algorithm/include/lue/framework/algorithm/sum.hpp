@@ -1,6 +1,6 @@
 #pragma once
 #include "lue/framework/core/component/array_partition.hpp"
-#include <hpx/dataflow.hpp>
+#include <hpx/include/lcos.hpp>
 
 
 namespace lue {
@@ -15,25 +15,20 @@ namespace detail {
 */
 template<
     typename Partition,
-    typename ResultElement=
-        typename PartitionedArrayTypeTraits<Partition>::ElementType>
-typename ArrayPartitionTypeTraits<Partition>::
-        template PartitionTemplate<ResultElement> sum_partition(
+    typename ResultElement=ElementT<Partition>>
+PartitionT<Partition, ResultElement> sum_partition(
     Partition const& partition)
 {
-    // Assert the locality of the partition is the same as the locality
-    // this code runs on
-    assert(
-        hpx::get_colocation_id(partition.get_id()).get() ==
-        hpx::find_here());
+    // // Assert the locality of the partition is the same as the locality
+    // // this code runs on
+    // assert(
+    //     hpx::get_colocation_id(partition.get_id()).get() ==
+    //     hpx::find_here());
 
-    using Data = typename ArrayPartitionTypeTraits<Partition>::DataType;
-    using ResultPartition =
-        typename ArrayPartitionTypeTraits<Partition>::
-            template PartitionTemplate<ResultElement>;
-    using ResultData =
-        typename ArrayPartitionTypeTraits<ResultPartition>::DataType;
-    using Shape = typename ArrayPartitionTypeTraits<Partition>::ShapeType;
+    using Data = DataT<Partition>;
+    using ResultPartition = PartitionT<Partition, ResultElement>;
+    using ResultData = DataT<ResultPartition>;
+    using Shape = ShapeT<Partition>;
 
     // Retrieve the partition data
     hpx::shared_future<Data> partition_data = partition.data();
@@ -158,23 +153,18 @@ using SumPartitionActionType =
 
 template<
     typename Array,
-    typename ResultElement=
-        typename PartitionedArrayTypeTraits<Array>::ElementType>
+    typename ResultElement=ElementT<Array>>
 hpx::future<ResultElement> sum(
     Array const& array)
 {
-    using ArrayTraits = PartitionedArrayTypeTraits<Array>;
-    using Partition = typename ArrayTraits::PartitionType;
-    using Element = typename ArrayTraits::ElementType;
+    using Partition = PartitionT<Array>;
+    using Element = ElementT<Array>;
 
-    using SumsPartitions =
-        typename ArrayTraits:: template PartitionsTemplate<ResultElement>;
-    using SumPartition =
-        typename ArrayPartitionTypeTraits<Partition>::
-            template PartitionTemplate<ResultElement>;
+    using SumsPartitions = PartitionsT<Array, ResultElement>;
+    using SumPartition = PartitionT<Array, ResultElement>;
 
     using SumPartitionAction =
-        SumPartitionActionType<Element, ResultElement, rank(array)>;
+        SumPartitionActionType<Element, ResultElement, rank<Array>>;
 
     SumsPartitions sums_partitions{shape_in_partitions(array)};
     SumPartitionAction sum_partition_action;

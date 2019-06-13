@@ -1,39 +1,48 @@
 #define BOOST_TEST_MODULE lue framework algorithm unique_id
-// #include "lue/framework/algorithm/unique_id.hpp"
-// #include "lue/framework/algorithm/unique.hpp"
-// #include "lue/framework/core/component/partitioned_array.hpp"
+#include "lue/framework/algorithm/unique_id.hpp"
+#include "lue/framework/algorithm/unique.hpp"
+#include "lue/framework/core/component/partitioned_array.hpp"
+#include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
-// #include "lue/framework/test/stream.hpp"
+#include "lue/framework/test/stream.hpp"
 
 
-BOOST_AUTO_TEST_CASE(array_1d)
+namespace detail {
+
+template<
+    typename Element,
+    std::size_t rank>
+void test_array()
 {
-    BOOST_CHECK(true);
+    using Array = lue::PartitionedArray<Element, rank>;
 
-    // using Value = std::int32_t;
-    // std::size_t const rank = 1;
-    // using Data = lue::ArrayPartitionData<Value, rank>;
-    // using Array = lue::PartitionedArray<std::int32_t, Data>;
-    // // using Definition = typename Array::Definition;
-    // using Shape = typename Array::Shape;
+    auto const shape{lue::Test<Array>::shape()};
 
-    // typename Array::Index const nr_elements = 100;
+    Array array{shape};
 
-    // Shape shape{{nr_elements}};
+    {
+        lue::unique_id(array).wait();
+        auto unique = lue::unique(array).get();
 
-    // // Create input array
-    // lue::PartitionedArray<std::int32_t, Data> array{shape};
-
-    // // Update array partitions such that all elements in the array
-    // // contain a unique value
-    // lue::unique_id(array);
-
-    // // // Find the unique elements in an array
-    // // auto const unique_elements = lue::unique(array);
-
-    // // // Assert that the number of unique values equals the number of
-    // // // elements in the original array
-    // // auto const nr_elements = lue::size(unique_elements);
-    // // BOOST_CHECK_EQUAL(lue::size(unique_elements), lue::size(array));
-
+        BOOST_REQUIRE_EQUAL(unique.nr_elements(), lue::nr_elements(array));
+    }
 }
+
+}  // namespace detail
+
+
+#define TEST_CASE(                               \
+    rank,                                        \
+    Element)                                     \
+                                                 \
+BOOST_AUTO_TEST_CASE(array_##rank##d_##Element)  \
+{                                                \
+    detail::test_array<Element, rank>();         \
+}
+
+TEST_CASE(1, int32_t)
+TEST_CASE(2, int32_t)
+TEST_CASE(1, int64_t)
+TEST_CASE(2, int64_t)
+
+#undef TEST_CASE
