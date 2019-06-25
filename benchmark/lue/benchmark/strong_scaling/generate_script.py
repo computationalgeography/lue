@@ -53,13 +53,13 @@ def generate_script_slurm_nodes(
 
         job_steps = [
             # Run the benchmark, resulting in a json file
-            "srun {command_pathname} "
+            "srun {srun_configuration} {command_pathname} "
                 '--hpx:ini="hpx.parcel.mpi.enable=1" '
-                '--hpx:ini="hpx.parcel.tcp.enable=0" '
-                '{configuration}'
+                '{program_configuration}'
                 .format(
+                    srun_configuration=job.srun_configuration(),
                     command_pathname=experiment.command_pathname,
-                    configuration=job.configuration(
+                    program_configuration=job.program_configuration(
                         cluster, benchmark, experiment,
                         array_shape, partition_shape,
                         result_pathname),
@@ -137,10 +137,10 @@ def generate_script_slurm(
 ###                 "srun {command_pathname} "
 ###                     '--hpx:ini="hpx.parcel.mpi.enable=1" '
 ###                     '--hpx:ini="hpx.parcel.tcp.enable=0" '
-###                     '{configuration}'
+###                     '{program_configuration}'
 ###                 .format(
 ###                     command_pathname=experiment.command_pathname,
-###                     configuration=job.configuration(
+###                     program_configuration=job.program_configuration(
 ###                         cluster, benchmark, experiment,
 ###                         array_shape, partition_shape),
 ###                 )
@@ -231,11 +231,11 @@ def generate_script_shell(
             # Run the benchmark, resulting in a json file
             "{command_pathname} "
                 '--hpx:ini="hpx.os_threads={nr_threads}" '
-                '{configuration}'
+                '{program_configuration}'
                 .format(
                     command_pathname=experiment.command_pathname,
                     nr_threads=nr_workers,
-                    configuration=job.configuration(
+                    program_configuration=job.program_configuration(
                         cluster, benchmark, experiment,
                         array_shape, partition_shape,
                         result_pathname)

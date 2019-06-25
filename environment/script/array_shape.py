@@ -7,6 +7,7 @@ sys.path = [
 ] + sys.path
 import benchmark
 import docopt
+import functools
 import math
 
 
@@ -37,7 +38,7 @@ if __name__ == "__main__":
 
     array_shape = benchmark.array_shape(
         memory_available, rank, nr_arrays, size_of_element)
-    elements_per_array = reduce(lambda e1, e2: e1 * e2, array_shape)
+    elements_per_array = functools.reduce(lambda e1, e2: e1 * e2, array_shape)
     memory_required_per_array = elements_per_array * size_of_element
     memory_required = (nr_arrays * memory_required_per_array)
 

@@ -18,7 +18,20 @@ import os.path
 ###     # return result
 
 
-def configuration(
+def srun_configuration():
+    """
+    Return common arguments to the srun command used to start the program
+    being benchmarked
+    """
+    # The mpi switch is needed because support for mpich is not built-in
+    # to slurm, it seems
+
+    return \
+        "--kill-on-bad-exit " \
+        "--mpi=pmi2 "
+
+
+def program_configuration(
         cluster,
         benchmark,
         experiment,
