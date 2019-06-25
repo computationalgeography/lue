@@ -65,84 +65,17 @@ Partition add_partition(
     );
 }
 
-
-template<
-    typename Element,
-    std::size_t rank>
-struct AddPartitionAction
-{
-};
-
 }  // namespace detail
-}  // namespace lue
 
-
-#define LUE_ADD_PLAIN_ACTION(                                         \
-    Element,                                                          \
-    rank)                                                             \
-                                                                      \
-namespace lue {                                                       \
-namespace detail {                                                    \
-                                                                      \
-decltype(auto) add_partition_##Element##_##rank(                      \
-    ArrayPartition<Element, rank> const& partition1,                  \
-    ArrayPartition<Element, rank> const& partition2)                  \
-{                                                                     \
-    using Partition = ArrayPartition<Element, rank>;                  \
-                                                                      \
-    return add_partition<Partition>(partition1, partition2);          \
-}                                                                     \
-                                                                      \
-}                                                                     \
-}                                                                     \
-                                                                      \
-                                                                      \
-HPX_PLAIN_ACTION(                                                     \
-    lue::detail::add_partition_##Element##_##rank,                    \
-    AddPartitionAction_##Element##_##rank)                            \
-                                                                      \
-                                                                      \
-namespace lue {                                                       \
-namespace detail {                                                    \
-                                                                      \
-template<>                                                            \
-class AddPartitionAction<Element, rank>                               \
-{                                                                     \
-                                                                      \
-public:                                                               \
-                                                                      \
-    using Type = AddPartitionAction_##Element##_##rank;               \
-                                                                      \
-};                                                                    \
-                                                                      \
-}                                                                     \
-}
-
-
-#define LUE_ADD_PLAIN_ACTIONS(    \
-    Element)                      \
-                                  \
-LUE_ADD_PLAIN_ACTION(Element, 1)  \
-LUE_ADD_PLAIN_ACTION(Element, 2)
-
-
-LUE_ADD_PLAIN_ACTIONS(/* std:: */ int32_t)
-// LUE_ADD_PLAIN_ACTIONS(/* std:: */ int64_t)
-// LUE_ADD_PLAIN_ACTIONS(float)
-LUE_ADD_PLAIN_ACTIONS(double)
-
-
-#undef LUE_ADD_PLAIN_ACTION
-#undef LUE_ADD_PLAIN_ACTIONS
-
-
-namespace lue {
 
 template<
-    typename Element,
-    std::size_t rank>
-using AddPartitionActionType =
-    typename detail::AddPartitionAction<Element, rank>::Type;
+    typename Partition>
+struct AddPartitionAction:
+    hpx::actions::make_action<
+        decltype(&detail::add_partition<Partition>),
+        &detail::add_partition<Partition>,
+        AddPartitionAction<Partition>>
+{};
 
 
 template<
@@ -155,9 +88,8 @@ Array add(
 
     using Partitions = PartitionsT<Array>;
     using Partition = PartitionT<Array>;
-    using Element = ElementT<Array>;
 
-    AddPartitionActionType<Element, rank<Array>> add_partition_action;
+    AddPartitionAction<Partition> add_partition_action;
 
     Partitions partitions{shape_in_partitions(array1)};
 

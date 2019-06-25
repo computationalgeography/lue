@@ -1,6 +1,7 @@
 #pragma once
 #include "lue/framework/core/component/array_partition.hpp"
 #include "lue/framework/core/array_partition_data.hpp"
+#include "lue/framework/core/array_partition_visitor.hpp"
 #include "lue/framework/core/debug.hpp"
 #include "lue/framework/core/domain_decomposition.hpp"
 
@@ -98,6 +99,71 @@ private:
 };
 
 
+namespace detail {
+
+// Specialization for PartitionedArray::Partitions
+template<
+    typename E,
+    std::size_t r>
+class ArrayTraits<ArrayPartitionData<ArrayPartition<E, r>, r>>
+{
+
+public:
+
+    using Element = E;
+
+    constexpr static std::size_t rank = r;
+
+    using Shape = typename ArrayPartitionData<ArrayPartition<E, r>, r>::Shape;
+
+    template<
+        typename E_,
+        std::size_t r_>
+    using Partition = ArrayPartition<E_, r_>;
+
+    template<
+        typename E_,
+        std::size_t r_>
+    using Partitions = ArrayPartitionData<ArrayPartition<E_, r_>, r_>;
+
+};
+
+
+// Specialization for PartitionedArray
+template<
+    typename E,
+    std::size_t r>
+class ArrayTraits<PartitionedArray<E, r>>
+{
+
+public:
+
+    using Element = E;
+
+    constexpr static std::size_t rank = r;
+
+    using Shape = typename PartitionedArray<E, r>::Shape;
+
+    template<
+        typename E_,
+        std::size_t r_>
+    using Partition = typename PartitionedArray<E_, r_>::Partition;
+
+    template<
+        typename E_,
+        std::size_t r_>
+    using Partitions = typename PartitionedArray<E_, r_>::Partitions;
+
+    template<
+        typename E_,
+        std::size_t r_>
+    using PartitionedArray = PartitionedArray<E_, r_>;
+
+};
+
+}  // namespace detail
+
+
 template<
     typename Element,
     std::size_t rank>
@@ -169,66 +235,6 @@ PartitionedArray<Element, rank>::PartitionedArray(
 }
 
 
-template<
-    std::size_t rank,
-    typename Iterator,
-    typename Visitor
->
-void visit_array(
-    Iterator begin_idx,
-    Iterator end_idx,
-    Visitor visitor)
-{
-    if constexpr (rank == 0) {
-
-        // We have visited all array dimensions and can now notify the
-        // visitor that we have arrived at one of the selected cells. It
-        // should do its thing, whatever that is.
-
-        visitor();
-
-    }
-    else {
-
-        // We are still visiting locations along array dimensions. The
-        // last dimensions vary fastest.
-
-        std::size_t idx = *begin_idx;
-
-        visitor.enter_next_dimension();
-        visitor.visit_first_cell(idx);
-
-        assert(idx <= *end_idx);
-
-        for(; idx < *end_idx; ++idx) {
-
-            // Recurse into next dimension
-            visit_array<rank - 1>(begin_idx + 1, end_idx + 1, visitor);
-
-            visitor.visit_next_cell(idx);
-
-        }
-    }
-}
-
-
-template<
-    typename Shape,
-    typename Visitor
->
-void visit_array(
-    Shape const& begin_indices,
-    Shape const& end_indices,
-    Visitor const& visitor)
-{
-    static_assert(begin_indices.size() == end_indices.size());
-
-    auto const rank = begin_indices.size();
-
-    visit_array<rank>(begin_indices.begin(), end_indices.begin(), visitor);
-}
-
-
 // template<
 //     typename Shape>
 // void print_shape(
@@ -269,64 +275,31 @@ void visit_array(
 
 template<
     typename Partitions>
-class ShrinkVisitor
+class ShrinkVisitor:
+    public PartitionVisitor<Partitions>
 {
+
+private:
+
+    using Base = PartitionVisitor<Partitions>;
 
 public:
 
-    using Shape = typename Partitions::Shape;
-
     ShrinkVisitor(
         Partitions& partitions,
-        Shape const& new_shape):
+        ShapeT<Partitions> const& new_shape):
 
-        _partitions{partitions},
-        _new_shape{new_shape},
-        _dimension_idx{0},
-        _linear_idx{0},
-        _nr_cells_in_subsequent_dimensions{0}
+        Base{partitions},
+        _new_shape{new_shape}
 
     {
-    }
-
-    void enter_next_dimension()
-    {
-        ++_dimension_idx;
-
-        auto const shape = _partitions.shape();
-
-#ifndef NDEBUG
-        auto distance = std::distance(
-            shape.begin(), shape.end());
-        assert(distance >= 0);
-        assert(static_cast<std::size_t>(distance) >= _dimension_idx);
-#endif
-
-        _nr_cells_in_subsequent_dimensions =
-            std::accumulate(
-                shape.begin() + _dimension_idx, shape.end(),
-                1, std::multiplies<typename Shape::value_type>());
-    }
-
-    void visit_first_cell(
-        std::size_t const idx)
-    {
-        _linear_idx += idx * _nr_cells_in_subsequent_dimensions;
-    }
-
-    void visit_next_cell(
-        std::size_t const idx)
-    {
-        _linear_idx += _nr_cells_in_subsequent_dimensions;
     }
 
     void operator()()
     {
-        assert(_linear_idx < _partitions.size());
+        PartitionT<Partitions>& partition = this->partition();
 
-        auto& partition = _partitions[_linear_idx];
-
-        Shape shrinked_partition_shape{partition.shape().get()};
+        ShapeT<Partitions> shrinked_partition_shape{partition.shape().get()};
 
         auto const rank = Partitions::rank;
 
@@ -335,25 +308,14 @@ public:
                 std::min(shrinked_partition_shape[i], _new_shape[i]);
         }
 
+        // TODO Blocks current thread. Maybe wait in destructor?
         partition.resize(shrinked_partition_shape).wait();
     }
 
 private:
 
-    //! Array containing partitions being visited
-    Partitions&    _partitions;
-
     //! New shape to use for partitions visited
-    Shape const    _new_shape;
-
-    //! Current dimension being visited
-    std::size_t    _dimension_idx;
-
-    //! Linear index of cell being visited
-    std::size_t    _linear_idx;
-
-    //! Cells to skip when iterating over cells
-    std::size_t    _nr_cells_in_subsequent_dimensions;
+    ShapeT<Partitions> const _new_shape;
 
 };
 
@@ -371,7 +333,7 @@ void PartitionedArray<Element, rank>::shrink_partitions(
     // the partitioned array after resizing corresponds with the cached
     // array shape (_shape).
     // The new_shape passed in is taken to be the max size to use. If
-    // one or more dimensions of a partition is smaller than the extens
+    // one or more dimensions of a partition is smaller than the extents
     // in new_shape, then those dimensions of the partition are not
     // resized. Partition extents are made smaller, not larger.
 
@@ -404,15 +366,23 @@ void PartitionedArray<Element, rank>::clamp_array(
 
     // Iterate over all dimensions
     for(std::size_t d = 0; d < rank; ++d) {
+        // Extent of current dimension in partitioned array
         auto const array_extent = _shape[d];
+
+        // Maximum extent of current dimension in partitioned array, given
+        // the number of partitions and the max extent
         auto const max_partitions_extent =
             shape_in_partitions[d] * max_partition_shape[d];
+
+        // Excess cells along current dimension in partitioned
+        // array. These cells need to be removed.
         auto const excess_cells = max_partitions_extent - array_extent;
 
         // We are assuming here that only the last partition needs to
         // be resized. All other partitions must be positioned within
         // the array's extent.
-        assert(excess_cells < max_partitions_extent);
+        // Typo? assert(excess_cells < max_partitions_extent);
+        assert(excess_cells < max_partition_shape[d]);
 
         if(excess_cells > 0) {
             // Resize current dimension of all partitions at currently
@@ -865,65 +835,30 @@ void PartitionedArray<Element, rank>::create(
 
 template<
     typename Partitions>
-class ValidateVisitor
+class ValidateVisitor:
+    public ConstPartitionVisitor<Partitions>
 {
+
+private:
+
+    using Base = ConstPartitionVisitor<Partitions>;
 
 public:
 
-    using Shape = typename Partitions::Shape;
-
     ValidateVisitor(
-        Partitions& partitions,
-        Shape const& shape):
+        Partitions const& partitions,
+        ShapeT<Partitions> const& shape):
 
-        _partitions{partitions},
-        _shape{shape},
-        _dimension_idx{0},
-        _linear_idx{0},
-        _nr_cells_in_subsequent_dimensions{0}
+        Base{partitions},
+        _shape{shape}
 
     {
-    }
-
-    void enter_next_dimension()
-    {
-        ++_dimension_idx;
-
-        auto const partition_shape = _partitions.shape();
-
-#ifndef NDEBUG
-        auto distance = std::distance(
-            partition_shape.begin(), partition_shape.end());
-        assert(distance >= 0);
-        assert(static_cast<std::size_t>(distance) >= _dimension_idx);
-#endif
-
-        _nr_cells_in_subsequent_dimensions =
-            std::accumulate(
-                partition_shape.begin() + _dimension_idx,
-                partition_shape.end(), 1,
-                std::multiplies<typename Shape::value_type>());
-    }
-
-    void visit_first_cell(
-        std::size_t const idx)
-    {
-        _linear_idx += idx * _nr_cells_in_subsequent_dimensions;
-    }
-
-    void visit_next_cell(
-        std::size_t const idx)
-    {
-        _linear_idx += _nr_cells_in_subsequent_dimensions;
     }
 
     void operator()()
     {
         // Given a cell, verify it is located within the array's shape
-
-        assert(_linear_idx < _partitions.size());
-
-        // auto& partition = _partitions[_linear_idx];
+        // PartitionT<Partitions> const& partition = this->partition();
 
         // TODO Add check
 
@@ -939,24 +874,10 @@ public:
 
 private:
 
-    //! Array containing partitions being visited
-    Partitions&    _partitions;
-
-    //! Shape of the array
-    Shape const    _shape;
-
-    //! Current dimension being visited
-    std::size_t    _dimension_idx;
-
-    //! Linear index of cell being visited
-    std::size_t    _linear_idx;
-
-    //! Cells to skip when iterating over cells
-    std::size_t    _nr_cells_in_subsequent_dimensions;
+    //! Shape of the array we are validating
+    ShapeT<Partitions> const _shape;
 
 };
-
-
 
 
 template<
@@ -1128,42 +1049,6 @@ typename PartitionedArray<Element, rank>::Iterator
 // {
 //     return all_valid(_index);
 // }
-
-
-namespace detail {
-
-template<
-    typename E,
-    std::size_t r>
-class ArrayTraits<PartitionedArray<E, r>>
-{
-
-public:
-
-    using Element = E;
-
-    constexpr static std::size_t rank = r;
-
-    using Shape = typename PartitionedArray<E, r>::Shape;
-
-    template<
-        typename E_,
-        std::size_t r_>
-    using Partition = typename PartitionedArray<E_, r_>::Partition;
-
-    template<
-        typename E_,
-        std::size_t r_>
-    using Partitions = typename PartitionedArray<E_, r_>::Partitions;
-
-    template<
-        typename E_,
-        std::size_t r_>
-    using PartitionedArray = PartitionedArray<E_, r_>;
-
-};
-
-}  // namespace detail
 
 
 template<

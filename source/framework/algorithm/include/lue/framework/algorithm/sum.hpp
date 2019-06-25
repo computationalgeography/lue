@@ -15,7 +15,7 @@ namespace detail {
 */
 template<
     typename Partition,
-    typename ResultElement=ElementT<Partition>>
+    typename ResultElement>  /// =ElementT<Partition>>
 PartitionT<Partition, ResultElement> sum_partition(
     Partition const& partition)
 {
@@ -65,90 +65,18 @@ PartitionT<Partition, ResultElement> sum_partition(
     );
 }
 
-
-template<
-    typename Element,
-    typename ResultElement,
-    std::size_t rank>
-struct SumPartitionAction
-{
-};
-
 }  // namespace detail
-}  // namespace lue
 
-
-#define LUE_SUM_PLAIN_ACTION(                                         \
-    Element,                                                          \
-    ResultElement,                                                    \
-    rank)                                                             \
-                                                                      \
-namespace lue {                                                       \
-namespace detail {                                                    \
-                                                                      \
-decltype(auto) sum_partition_##Element##_##ResultElement##_##rank(    \
-    ArrayPartition<Element, rank> const& partition)                   \
-{                                                                     \
-    using Partition = ArrayPartition<Element, rank>;                  \
-                                                                      \
-    return sum_partition<Partition, ResultElement>(partition);        \
-}                                                                     \
-                                                                      \
-}                                                                     \
-}                                                                     \
-                                                                      \
-                                                                      \
-HPX_PLAIN_ACTION(                                                     \
-    lue::detail::sum_partition_##Element##_##ResultElement##_##rank,  \
-    SumPartitionAction_##Element##_##ResultElement##_##rank)          \
-                                                                      \
-                                                                      \
-namespace lue {                                                       \
-namespace detail {                                                    \
-                                                                      \
-template<>                                                            \
-class SumPartitionAction<Element, ResultElement, rank>                \
-{                                                                     \
-                                                                      \
-public:                                                               \
-                                                                      \
-    using Type =                                                      \
-        SumPartitionAction_##Element##_##ResultElement##_##rank;      \
-                                                                      \
-};                                                                    \
-                                                                      \
-}                                                                     \
-}
-
-
-#define LUE_SUM_PLAIN_ACTIONS(                   \
-    Element,                                     \
-    ResultElement)                               \
-                                                 \
-LUE_SUM_PLAIN_ACTION(Element, ResultElement, 1)  \
-LUE_SUM_PLAIN_ACTION(Element, ResultElement, 2)
-
-
-LUE_SUM_PLAIN_ACTIONS(/* std:: */ int32_t, /* std:: */ int32_t)
-// LUE_SUM_PLAIN_ACTIONS(/* std:: */ int64_t, /* std:: */ int64_t)
-// LUE_SUM_PLAIN_ACTIONS(/* std:: */ int32_t, /* std:: */ int64_t)
-// LUE_SUM_PLAIN_ACTIONS(float, float)
-LUE_SUM_PLAIN_ACTIONS(double, double)
-// LUE_SUM_PLAIN_ACTIONS(float, double)
-
-
-#undef LUE_SUM_PLAIN_ACTION
-#undef LUE_SUM_PLAIN_ACTIONS
-
-
-namespace lue {
 
 template<
-    typename Element,
-    typename ResultElement,
-    std::size_t rank>
-using SumPartitionActionType =
-    typename detail::SumPartitionAction<Element, ResultElement, rank>::Type;
+    typename Partition,
+    typename ResultElement>
+struct SumPartitionAction:
+    hpx::actions::make_action<
+        decltype(&detail::sum_partition<Partition, ResultElement>),
+        &detail::sum_partition<Partition, ResultElement>,
+        SumPartitionAction<Partition, ResultElement>>
+{};
 
 
 template<
@@ -163,11 +91,8 @@ hpx::future<ResultElement> sum(
     using SumsPartitions = PartitionsT<Array, ResultElement>;
     using SumPartition = PartitionT<Array, ResultElement>;
 
-    using SumPartitionAction =
-        SumPartitionActionType<Element, ResultElement, rank<Array>>;
-
     SumsPartitions sums_partitions{shape_in_partitions(array)};
-    SumPartitionAction sum_partition_action;
+    SumPartitionAction<Partition, ResultElement> sum_partition_action;
 
     // Attach a continuation to each array partition, that calculates
     // the sum of the values in that partition. These continuations run
