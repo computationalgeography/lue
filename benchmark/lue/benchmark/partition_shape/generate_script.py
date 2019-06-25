@@ -33,13 +33,13 @@ def generate_script_slurm(
                     .format(os.path.dirname(result_pathname)),
 
                 # Run the benchmark, resulting in a json file
-                "srun {command_pathname} "
-                    '--hpx:ini="hpx.parcel.mpi.enable=1" '
-                    '--hpx:ini="hpx.parcel.tcp.enable=0" '
-                    '{configuration}'
+                "srun {srun_configuration} {command_pathname} "
+                        '--hpx:ini="hpx.parcel.mpi.enable=1" '
+                        '{program_configuration}'
                     .format(
+                        srun_configuration=job.srun_configuration(),
                         command_pathname=experiment.command_pathname,
-                        configuration=job.configuration(
+                        program_configuration=job.program_configuration(
                             cluster, benchmark, experiment,
                             array_shape, partition_shape,
                             result_pathname),
@@ -49,7 +49,6 @@ def generate_script_slurm(
     slurm_script = job.create_slurm_script(
         nr_nodes=benchmark.worker.nr_nodes(),
         nr_threads=benchmark.worker.nr_threads(),
-        # output_filename=job.output_pathname(script_pathname),
         output_filename=experiment.result_pathname(
             cluster.name,
             os.path.basename(os.path.splitext(script_pathname)[0]), "out"),
@@ -104,11 +103,11 @@ def generate_script_shell(
                 # Run the benchmark, resulting in a json file
                 "{command_pathname} "
                     '--hpx:ini="hpx.os_threads={nr_threads}" '
-                    '{configuration}'
+                    '{program_configuration}'
                     .format(
                         command_pathname=experiment.command_pathname,
                         nr_threads=benchmark.worker.nr_threads(),
-                        configuration=job.configuration(
+                        program_configuration=job.program_configuration(
                             cluster, benchmark, experiment,
                             array_shape, partition_shape,
                             result_pathname)
