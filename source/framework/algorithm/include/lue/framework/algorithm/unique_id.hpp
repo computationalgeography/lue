@@ -63,74 +63,16 @@ struct UniqueIDPartitionAction
 };
 
 }  // namespace detail
-}  // namespace lue
 
-
-#define LUE_UNIQUE_ID_PLAIN_ACTION(                       \
-    Element,                                              \
-    rank)                                                 \
-                                                          \
-namespace lue {                                           \
-namespace detail {                                        \
-                                                          \
-decltype(auto) unique_id_partition_##Element##_##rank(    \
-    ArrayPartition<Element, rank> partition,              \
-    Element const start_value)                            \
-{                                                         \
-    using Partition = ArrayPartition<Element, rank>;      \
-    return unique_id_partition<Partition>(                \
-        partition, start_value);                          \
-}                                                         \
-                                                          \
-}                                                         \
-}                                                         \
-                                                          \
-                                                          \
-HPX_PLAIN_ACTION(                                         \
-    lue::detail::unique_id_partition_##Element##_##rank,  \
-    UniqueIDPartitionAction_##Element##_##rank)           \
-                                                          \
-                                                          \
-namespace lue {                                           \
-namespace detail {                                        \
-                                                          \
-template<>                                                \
-class UniqueIDPartitionAction<Element, rank>              \
-{                                                         \
-                                                          \
-public:                                                   \
-                                                          \
-    using Type =                                          \
-        UniqueIDPartitionAction_##Element##_##rank;       \
-                                                          \
-};                                                        \
-                                                          \
-}                                                         \
-}
-
-
-#define LUE_UNIQUE_ID_PLAIN_ACTIONS(    \
-    Element)                            \
-                                        \
-LUE_UNIQUE_ID_PLAIN_ACTION(Element, 1)  \
-LUE_UNIQUE_ID_PLAIN_ACTION(Element, 2)
-
-
-LUE_UNIQUE_ID_PLAIN_ACTIONS(/* std:: */ int32_t)
-LUE_UNIQUE_ID_PLAIN_ACTIONS(/* std:: */ int64_t)
-
-
-#undef LUE_UNIQUE_ID_PLAIN_ACTION
-#undef LUE_UNIQUE_ID_PLAIN_ACTIONS
-
-
-namespace lue {
 
 template<
-    typename Element,
-    std::size_t rank>
-using UniqueIDPartitionActionType =
-    typename detail::UniqueIDPartitionAction<Element, rank>::Type;
+    typename Partition>
+struct UniqueIDPartitionAction:
+    hpx::actions::make_action<
+        decltype(&detail::unique_id_partition<Partition>),
+        &detail::unique_id_partition<Partition>,
+        UniqueIDPartitionAction<Partition>>
+{};
 
 
 template<
@@ -151,7 +93,7 @@ template<
 
     std::vector<hpx::future<void>> unique_id_partitions(nr_partitions(array));
 
-    UniqueIDPartitionActionType<Element, rank<Array>> action;
+    UniqueIDPartitionAction<Partition> action;
 
     Element start_value = 0;
 

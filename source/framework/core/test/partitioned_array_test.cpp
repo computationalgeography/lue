@@ -71,6 +71,7 @@ BOOST_AUTO_TEST_CASE(construct_with_max_partition_shape)
     Shape shape{{nr_rows, nr_cols}};
 
     {
+        // 10 x 10 partitions, without clamping
         Index nr_rows_partition = 3;
         Index nr_cols_partition = 4;
         Shape max_partition_shape{{nr_rows_partition, nr_cols_partition}};
@@ -83,6 +84,7 @@ BOOST_AUTO_TEST_CASE(construct_with_max_partition_shape)
     }
 
     {
+        // 1 x 1 partition, without clamping
         Index nr_rows_partition = 30;
         Index nr_cols_partition = 40;
         Shape max_partition_shape{{nr_rows_partition, nr_cols_partition}};
@@ -95,6 +97,7 @@ BOOST_AUTO_TEST_CASE(construct_with_max_partition_shape)
     }
 
     {
+        // 2 x 2 partitions, with clamping
         Index nr_rows_partition = 20;
         Index nr_cols_partition = 30;
         Shape max_partition_shape{{nr_rows_partition, nr_cols_partition}};

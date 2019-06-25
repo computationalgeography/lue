@@ -731,11 +731,7 @@ typename ArrayPartitionData<Value, 0>::Iterator
 template<
     typename Value>
 Value& ArrayPartitionData<Value, 0>::operator[](
-    Index
-#ifndef NDEBUG
-        idx
-#endif
-    )
+    [[maybe_unused]] Index idx)
 {
     assert(idx == 0);
 
@@ -746,11 +742,7 @@ Value& ArrayPartitionData<Value, 0>::operator[](
 template<
     typename Value>
 Value const& ArrayPartitionData<Value, 0>::operator[](
-    Index
-#ifndef NDEBUG
-        idx
-#endif
-    ) const
+    [[maybe_unused]] Index idx) const
 {
     assert(idx == 0);
 

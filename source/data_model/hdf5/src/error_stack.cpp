@@ -91,12 +91,8 @@ bool ErrorStack::empty() const
 
 void ErrorStack::clear() const
 {
-#ifndef NDEBUG
-    auto const result = ::H5Eclear2(_id);
+    [[maybe_unused]] auto const result = ::H5Eclear2(_id);
     assert(result >= 0);
-#else
-    ::H5Eclear2(_id);
-#endif
 }
 
 
@@ -110,12 +106,9 @@ std::vector<std::string> ErrorStack::messages() const
 {
     std::vector<std::string> result;
 
-#ifndef NDEBUG
-    auto status = ::H5Ewalk2(_id, H5E_WALK_DOWNWARD, error_walker, &result);
+    [[maybe_unused]] auto const status =
+        ::H5Ewalk2(_id, H5E_WALK_DOWNWARD, error_walker, &result);
     assert(status >= 0);
-#else
-    ::H5Ewalk2(_id, H5E_WALK_DOWNWARD, error_walker, &result);
-#endif
 
     return result;
 }

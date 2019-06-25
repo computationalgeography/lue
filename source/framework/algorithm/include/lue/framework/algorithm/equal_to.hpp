@@ -68,84 +68,17 @@ PartitionT<Partition, bool> equal_to_partition(
     );
 }
 
-
-template<
-    typename Element,
-    std::size_t rank>
-struct EqualToPartitionAction
-{
-};
-
 }  // namespace detail
-}  // namespace lue
 
-
-#define LUE_EQUAL_TO_PLAIN_ACTION(                                 \
-    Element,                                                       \
-    rank)                                                          \
-                                                                   \
-namespace lue {                                                    \
-namespace detail {                                                 \
-                                                                   \
-decltype(auto) equal_to_partition_##Element##_##rank(              \
-    ArrayPartition<Element, rank> const& partition1,               \
-    ArrayPartition<Element, rank> const& partition2)               \
-{                                                                  \
-    using Partition = ArrayPartition<Element, rank>;               \
-                                                                   \
-    return equal_to_partition<Partition>(partition1, partition2);  \
-}                                                                  \
-                                                                   \
-}                                                                  \
-}                                                                  \
-                                                                   \
-                                                                   \
-HPX_PLAIN_ACTION(                                                  \
-    lue::detail::equal_to_partition_##Element##_##rank,            \
-    EqualToPartitionAction_##Element##_##rank)                     \
-                                                                   \
-                                                                   \
-namespace lue {                                                    \
-namespace detail {                                                 \
-                                                                   \
-template<>                                                         \
-class EqualToPartitionAction<Element, rank>                        \
-{                                                                  \
-                                                                   \
-public:                                                            \
-                                                                   \
-    using Type = EqualToPartitionAction_##Element##_##rank;        \
-                                                                   \
-};                                                                 \
-                                                                   \
-}                                                                  \
-}
-
-
-#define LUE_EQUAL_TO_PLAIN_ACTIONS(    \
-    Element)                           \
-                                       \
-LUE_EQUAL_TO_PLAIN_ACTION(Element, 1)  \
-LUE_EQUAL_TO_PLAIN_ACTION(Element, 2)
-
-
-LUE_EQUAL_TO_PLAIN_ACTIONS(/* std:: */ int32_t)
-// LUE_EQUAL_TO_PLAIN_ACTIONS(/* std:: */ int64_t)
-// LUE_EQUAL_TO_PLAIN_ACTIONS(float)
-LUE_EQUAL_TO_PLAIN_ACTIONS(double)
-
-
-#undef LUE_EQUAL_TO_PLAIN_ACTION
-#undef LUE_EQUAL_TO_PLAIN_ACTIONS
-
-
-namespace lue {
 
 template<
-    typename Element,
-    std::size_t rank>
-using EqualToPartitionActionType =
-    typename detail::EqualToPartitionAction<Element, rank>::Type;
+    typename Partition>
+struct EqualToPartitionAction:
+    hpx::actions::make_action<
+        decltype(&detail::equal_to_partition<Partition>),
+        &detail::equal_to_partition<Partition>,
+        EqualToPartitionAction<Partition>>
+{};
 
 
 template<
@@ -157,15 +90,12 @@ PartitionedArrayT<Array, bool> equal_to(
     assert(nr_partitions(array1) == nr_partitions(array2));
 
     using InputPartition = PartitionT<Array>;
-    using InputElement = ElementT<Array>;
 
     using OutputArray = PartitionedArrayT<Array, bool>;
     using OutputPartitions = PartitionsT<OutputArray>;
     using OutputPartition = PartitionT<OutputArray>;
 
-    using EqualToPartitionAction =
-        EqualToPartitionActionType<InputElement, rank<Array>>;
-    EqualToPartitionAction equal_to_partition_action;
+    EqualToPartitionAction<InputPartition> equal_to_partition_action;
 
     OutputPartitions output_partitions{shape_in_partitions(array1)};
 

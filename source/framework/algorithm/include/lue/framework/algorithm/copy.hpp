@@ -31,83 +31,17 @@ Partition copy_partition(
     return Partition{partition};
 }
 
-
-template<
-    typename Element,
-    std::size_t rank>
-struct CopyPartitionAction
-{
-};
-
 }  // namespace detail
-}  // namespace lue
 
-
-#define LUE_COPY_PLAIN_ACTION(                                        \
-    Element,                                                          \
-    rank)                                                             \
-                                                                      \
-namespace lue {                                                       \
-namespace detail {                                                    \
-                                                                      \
-decltype(auto) copy_partition_##Element##_##rank(                     \
-    ArrayPartition<Element, rank> const& partition)                   \
-{                                                                     \
-    using Partition = ArrayPartition<Element, rank>;                  \
-                                                                      \
-    return copy_partition<Partition>(partition);                      \
-}                                                                     \
-                                                                      \
-}                                                                     \
-}                                                                     \
-                                                                      \
-                                                                      \
-HPX_PLAIN_ACTION(                                                     \
-    lue::detail::copy_partition_##Element##_##rank,                   \
-    CopyPartitionAction_##Element##_##rank)                           \
-                                                                      \
-                                                                      \
-namespace lue {                                                       \
-namespace detail {                                                    \
-                                                                      \
-template<>                                                            \
-class CopyPartitionAction<Element, rank>                              \
-{                                                                     \
-                                                                      \
-public:                                                               \
-                                                                      \
-    using Type = CopyPartitionAction_##Element##_##rank;              \
-                                                                      \
-};                                                                    \
-                                                                      \
-}                                                                     \
-}
-
-
-#define LUE_COPY_PLAIN_ACTIONS(    \
-    Element)                       \
-                                   \
-LUE_COPY_PLAIN_ACTION(Element, 1)  \
-LUE_COPY_PLAIN_ACTION(Element, 2)
-
-
-LUE_COPY_PLAIN_ACTIONS(/* std:: */ int32_t)
-// LUE_COPY_PLAIN_ACTIONS(/* std:: */ int64_t)
-// LUE_COPY_PLAIN_ACTIONS(float)
-LUE_COPY_PLAIN_ACTIONS(double)
-
-
-#undef LUE_COPY_PLAIN_ACTION
-#undef LUE_COPY_PLAIN_ACTIONS
-
-
-namespace lue {
 
 template<
-    typename Element,
-    std::size_t rank>
-using CopyPartitionActionType =
-    typename detail::CopyPartitionAction<Element, rank>::Type;
+    typename Partition>
+struct CopyPartitionAction:
+    hpx::actions::make_action<
+        decltype(&detail::copy_partition<Partition>),
+        &detail::copy_partition<Partition>,
+        CopyPartitionAction<Partition>>
+{};
 
 
 template<
@@ -117,10 +51,8 @@ Array copy(
 {
     using Partition = PartitionT<Array>;
     using Partitions = PartitionsT<Array>;
-    using Element = ElementT<Array>;
 
-    using CopyPartitionAction = CopyPartitionActionType<Element, rank<Array>>;
-    CopyPartitionAction copy_partition_action;
+    CopyPartitionAction<Partition> copy_partition_action;
 
     // Create a new array for storing the new partitions. These partitions
     // will contain the copied elements.

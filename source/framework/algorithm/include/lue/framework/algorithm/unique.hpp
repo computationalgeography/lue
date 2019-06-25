@@ -41,85 +41,17 @@ PartitionT<Partition, ElementT<Partition>, 1> unique_partition(
     );
 }
 
-
-template<
-    typename Element,
-    std::size_t rank>
-struct UniquePartitionAction
-{
-};
-
 }  // namespace detail
-}  // namespace lue
 
-
-#define LUE_UNIQUE_PLAIN_ACTION(                                         \
-    Element,                                                             \
-    rank)                                                                \
-                                                                         \
-namespace lue {                                                          \
-namespace detail {                                                       \
-                                                                         \
-decltype(auto) unique_partition_##Element##_##rank(                      \
-    ArrayPartition<Element, rank> const& partition)                      \
-{                                                                        \
-    using Partition = ArrayPartition<Element, rank>;                     \
-                                                                         \
-    return unique_partition<Partition>(partition);                       \
-}                                                                        \
-                                                                         \
-}                                                                        \
-}                                                                        \
-                                                                         \
-                                                                         \
-HPX_PLAIN_ACTION(                                                        \
-    lue::detail::unique_partition_##Element##_##rank,                    \
-    UniquePartitionAction_##Element##_##rank)                            \
-                                                                         \
-                                                                         \
-namespace lue {                                                          \
-namespace detail {                                                       \
-                                                                         \
-template<>                                                               \
-class UniquePartitionAction<Element, rank>                               \
-{                                                                        \
-                                                                         \
-public:                                                                  \
-                                                                         \
-    using Type =                                                         \
-        UniquePartitionAction_##Element##_##rank;                        \
-                                                                         \
-};                                                                       \
-                                                                         \
-}                                                                        \
-}
-
-
-#define LUE_UNIQUE_PLAIN_ACTIONS(    \
-    Element)                         \
-                                     \
-LUE_UNIQUE_PLAIN_ACTION(Element, 1)  \
-LUE_UNIQUE_PLAIN_ACTION(Element, 2)
-
-
-LUE_UNIQUE_PLAIN_ACTIONS(bool)
-LUE_UNIQUE_PLAIN_ACTIONS(/* std:: */ int32_t)
-LUE_UNIQUE_PLAIN_ACTIONS(/* std:: */ int64_t)
-// LUE_UNIQUE_PLAIN_ACTIONS(float)
-LUE_UNIQUE_PLAIN_ACTIONS(double)
-
-
-#undef LUE_UNIQUE_PLAIN_ACTION
-#undef LUE_UNIQUE_PLAIN_ACTIONS
-
-
-namespace lue {
 
 template<
-    typename Element,
-    std::size_t rank>
-using UniquePartitionActionType =
-    typename detail::UniquePartitionAction<Element, rank>::Type;
+    typename Partition>
+struct UniquePartitionAction:
+    hpx::actions::make_action<
+        decltype(&detail::unique_partition<Partition>),
+        &detail::unique_partition<Partition>,
+        UniquePartitionAction<Partition>>
+{};
 
 
 template<
@@ -143,11 +75,8 @@ hpx::future<PartitionedArrayT<Array, ElementT<Array>, 1>> unique(
 
     using OutputData = DataT<OutputPartition>;
 
-    using UniquePartitionAction =
-        UniquePartitionActionType<Element, rank<Array>>;
-
     OutputPartitions unique_partitions{OutputShape{{nr_partitions(array)}}};
-    UniquePartitionAction unique_partition_action;
+    UniquePartitionAction<InputPartition> unique_partition_action;
 
     // Attach a continuation to each array partition, that determines
     // the unique values in that partition. These continuations run
