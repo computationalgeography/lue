@@ -38,8 +38,8 @@ function(preprocess_case_study)
             ${dot_properties_pathname}
         COMMAND ${PYTHON_EXECUTABLE}
             ${CMAKE_CURRENT_SOURCE_DIR}/${script_name}
-        COMMAND lue_validate --issues ${dataset_name}
-        COMMAND lue_translate export
+        COMMAND ${CMAKE_BINARY_DIR}/bin/lue_validate --issues ${dataset_name}
+        COMMAND ${CMAKE_BINARY_DIR}/bin/lue_translate export
             --meta ${dot_properties_pathname} ${dataset_name} ${dot_name}
         COMMAND ${GRAPHVIZ_DOT_EXECUTABLE} -Tsvg -o ${svg_name} ${dot_name}
     )
@@ -69,6 +69,6 @@ preprocess_case_studies(
     SCRIPTS
         areas.py
         cities.py
-        elevation.py
+        # elevation.py
         planets.py
 )

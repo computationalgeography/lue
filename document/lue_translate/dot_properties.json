@@ -22,6 +22,7 @@
             "fillcolor": "#9a0000"
         },
         "object_tracker": {
+            "fillcolor": "#f08000",
             "show": false
         },
         "property": {

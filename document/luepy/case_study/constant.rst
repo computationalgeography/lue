@@ -16,24 +16,25 @@ speed of light and the elementary charge.
 
 The next sections describe how a single constant can be captured by the
 LUE data model. The result is capable of capturing multiple constants
-for multiple items.
+for multiple objects.
 
 
 time domain
 -----------
 A constant's location in space, and its value do not change over time,
-so the time domain is marked as omnipresent.
+so the time domain is not configured.
 
 
 space domain
 ------------
 A constant's value does not change over space, so the space domain is
-marked as omnipresent.
+not configured.
 
 
 property
 --------
-The property holding a constant's value contains a single value per item.
+The property holding a constant's value contains a single 0D value
+per object.
 
 
 Example code

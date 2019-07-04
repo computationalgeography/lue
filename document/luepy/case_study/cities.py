@@ -1,30 +1,27 @@
-import numpy
+import numpy as np
 import lue
 
-
-omnipresent = lue.constant_collection.time.omnipresent
-
-dataset = lue.create_dataset("cities.lue")
-phenomenon = dataset.add_phenomenon("cities")
-cities = lue.constant_collection.create_property_set(phenomenon, "cities")
 
 nr_cities = 10
 rank = 2
 
-cities.ids.reserve(nr_cities)[:] = [2, 4, 6, 8, 10, 9, 7, 5, 3, 1]
+dataset = lue.create_dataset("cities.lue")
+city = dataset.add_phenomenon("city")
 
-# Space domain contains 2D points
-space_domain = omnipresent.create_space_point_domain(
-    cities, numpy.float64, rank)
-points = space_domain.reserve(nr_cities)
-points[:] = numpy.arange(  # Dummy data...
-    nr_cities * rank, dtype=numpy.float64).reshape(nr_cities, rank)
+id = [2, 4, 6, 8, 10, 9, 7, 5, 3, 1]
+city.object_id.expand(nr_cities)[:] = id
 
-# Property
-population = omnipresent.same_shape.create_property(
-    cities, "population", numpy.int64)
-values = population.values.reserve(nr_cities)
-# Dummy data...
-values[:] = (numpy.random.rand(nr_cities) * 1e6).astype(numpy.int64)
+space_configuration = lue.SpaceConfiguration(
+    lue.Mobility.stationary,
+    lue.SpaceDomainItemType.point
+)
+constant = city.add_property_set(
+    "constant", space_configuration,
+    space_coordinate_dtype=np.dtype(np.float32), rank=rank)
 
-lue.assert_is_valid(dataset)
+point = np.arange(nr_cities * rank, dtype=np.float32).reshape(nr_cities, rank)
+constant.space_domain.value.expand(nr_cities)[:] = point
+
+population = constant.add_property("population", dtype=np.dtype(np.int64))
+population.value.expand(nr_cities)[:] = (  # Dummy data
+    np.random.rand(nr_cities) * 1e6).astype(np.int64)

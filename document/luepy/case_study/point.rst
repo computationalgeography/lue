@@ -1,20 +1,24 @@
+.. _point:
+
 Point
 =====
 
 
 time domain
 -----------
-A point's location and property values don't change through time, so the time domain is marked as omnipresent.
+A point's location and property values don't change through time, so
+the time domain is not configured.
 
 
 space domain
 ------------
-A point's location is modelled by a 2D space point, using a coordinate in each dimension.
+A point's location is modelled by a 2D space point.
 
 
 property
 --------
-The property holding a point's value contains a single value.
+In this case, the property holding a point's value contains a single
+value.
 
 
 Example code

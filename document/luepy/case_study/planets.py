@@ -1,25 +1,16 @@
-import numpy
+import numpy as np
 import lue
 
 
-# In this example we assume that the collection of items remains constant,
-# and that the shape of all item-values is the same.
-omnipresent = lue.constant_collection.time.omnipresent
-
-dataset = lue.create_dataset("planets.lue")
-planets = dataset.add_phenomenon("planets")
-constants = lue.constant_collection.create_property_set(planets, "constants")
-
 nr_planets = 3
 
-# Per planet a unique id
-constants.ids.reserve(nr_planets)[:] = [4, 29, 13]
+dataset = lue.create_dataset("planets.lue")
+planet = dataset.add_phenomenon("planet")
 
-# Gravity constants
-gravity = omnipresent.same_shape.create_property(
-    constants, "gravity", numpy.float32)
-values = gravity.values.reserve(nr_planets)
-# Dummy data...
-values[:] = numpy.array([ 1.5, 2.5, 3.5 ], dtype=numpy.float32)
+planet.object_id.expand(nr_planets)[:] = [4, 29, 13]
 
-lue.assert_is_valid(dataset)
+constant = planet.add_property_set("constant")
+gravity = constant.add_property("gravity", dtype=np.dtype(np.float32))
+
+gravity.value.expand(nr_planets)[:] = \
+    np.array([ 1.5, 2.5, 3.5 ], dtype=np.float32)

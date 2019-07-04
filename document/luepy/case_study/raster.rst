@@ -10,15 +10,15 @@ topographic elevation, or surface temperature.
 A raster is a discretization of a value within a spatial extent. This
 value does not change through time. The next sections describe how a
 single raster can be captured by the LUE conceptual data model. The
-result is capable of capturing multiple rasters for multiple items.
+result is capable of capturing multiple rasters for multiple objects.
 
 
 time domain
 -----------
 A raster's location and cell values don't change through time, so the
-time domain is marked as omnipresent. See the case of a
-:ref:`raster stack <raster_stack>` for information about storing rasters
-whose values do change through time.
+time domain is not configured. See the case of a :ref:`raster stack
+<raster_stack>` for information about storing rasters whose values do
+change through time.
 
 
 space domain

@@ -1,4 +1,4 @@
-# TODO add_subdirectory(case_study)
+add_subdirectory(case_study)
 
 configure_file(
     conf.py.in
