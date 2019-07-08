@@ -44,8 +44,6 @@ add_library(lue_data_model STATIC
 
     # Spatio-temporal objects --------------------------------------------------
     src/object/identity/object_tracker
-    src/object/time/time_domain
-    src/object/space/space_domain
     src/object/property/properties
     src/object/property/property_set
     src/object/property/same_shape/properties
@@ -59,6 +57,8 @@ add_library(lue_data_model STATIC
     src/object/phenomena
     src/object/phenomenon
     src/object/property_sets
+    src/object/space_domain
+    src/object/time_domain
     src/object/universe
     src/object/universes
 

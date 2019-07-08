@@ -1,6 +1,6 @@
-#define BOOST_TEST_MODULE lue object time time_domain
+#define BOOST_TEST_MODULE lue object time_domain
 #include <boost/test/unit_test.hpp>
-#include "lue/object/time/time_domain.hpp"
+#include "lue/object/time_domain.hpp"
 #include "lue/test.hpp"
 
 

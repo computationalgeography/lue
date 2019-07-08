@@ -1,5 +1,5 @@
 #include "../python_extension.hpp"
-#include "lue/object/space/space_domain.hpp"
+#include "lue/object/space_domain.hpp"
 #include <pybind11/pybind11.h>
 
 

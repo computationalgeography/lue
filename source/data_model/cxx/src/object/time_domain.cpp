@@ -1,4 +1,4 @@
-#include "lue/object/time/time_domain.hpp"
+#include "lue/object/time_domain.hpp"
 
 
 namespace lue {

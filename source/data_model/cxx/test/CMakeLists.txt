@@ -38,12 +38,11 @@ add_unit_tests(
         info/property/different_shape/variable_shape/property_test
 
         object/dataset_test
-        object/time/time_domain_test
-        object/space/space_domain_test
+        object/presence_in_time_test
         object/property/properties_test
         object/property/property_set_test
-
-        object/presence_in_time_test
+        object/space_domain_test
+        object/time_domain_test
 
         scalar_test
         raster_test

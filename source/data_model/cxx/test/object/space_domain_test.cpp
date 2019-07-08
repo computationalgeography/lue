@@ -1,6 +1,6 @@
-#define BOOST_TEST_MODULE lue object space space_domain
+#define BOOST_TEST_MODULE lue object space_domain
 #include <boost/test/unit_test.hpp>
-#include "lue/object/space/space_domain.hpp"
+#include "lue/object/space_domain.hpp"
 #include "lue/test.hpp"
 
 

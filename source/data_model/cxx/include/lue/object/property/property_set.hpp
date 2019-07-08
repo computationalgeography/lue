@@ -1,8 +1,8 @@
 #pragma once
 #include "lue/object/identity/object_tracker.hpp"
 #include "lue/object/property/properties.hpp"
-#include "lue/object/space/space_domain.hpp"
-#include "lue/object/time/time_domain.hpp"
+#include "lue/object/space_domain.hpp"
+#include "lue/object/time_domain.hpp"
 #include <memory>
 
 
