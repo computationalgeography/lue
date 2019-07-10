@@ -25,13 +25,14 @@ int hpx_main(
 
 
 int main(
-    int /* argc */,
-    char* /* argv */ [])
+    int argc,
+    char* argv[])
     // char* envp[])
 {
+    // Blocks until HPX runtime system exists
+
     // TODO For some reason HPX complains about test specific arguments not
     //     being supported. It should skip unsupported arguments and pass them
     //     on to hpx_main. Not sure why it doesn't in this case.
-    // return hpx::init(argc, argv);
-    return hpx::init();
+    return hpx::init(argc, argv);
 }

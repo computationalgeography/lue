@@ -1,5 +1,7 @@
 add_unit_tests(
     SCOPE lue_framework_algorithm
+    # Tests that use HPX must separate UTF arguments from HPX arguments
+    UTF_ARGUMENTS_SEPARATOR "--"
     NAMES
         add_test
         copy_test
