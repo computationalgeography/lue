@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/framework/core/buffer.hpp"
 #include "lue/framework/core/shape.hpp"
 #include "lue/framework/core/type_traits.hpp"
 #include <hpx/runtime/serialization/serialize.hpp>
@@ -7,7 +8,7 @@
 // #endif
 // #define BOOST_MULTI_ARRAY_NO_GENERATORS
 // #include <boost/multi_array.hpp>
-#include <boost/container/vector.hpp>
+// #include <boost/container/vector.hpp>
 #include <algorithm>
 #include <iostream>
 #include <memory>
@@ -19,14 +20,6 @@ namespace lue {
     @brief      Class for keeping track of array partition data values
     @warning    Copies of ArrayPartitionData instances share the
                 underlying array with elements
-
-    The values are stored in a multidimensional array, which is pointed to
-    by a shared pointer. Copying instances results in both copies pointing
-    to the same values. This is cheap, but might be surprising. The goal
-    is to make obtaining the data from a partitioned array component
-    client instance cheap. The client obtains it from the server and when
-    the server exists on the same locality as the client, no copying of
-    elements needs to happen.
 
     There is a specialization for array scalars (arrays with rank ==
     0). This allows scalars to be handled the same as arrays.
@@ -41,7 +34,8 @@ private:
 
     // using Values = boost::multi_array<Value, rank>;
     // using Values = std::vector<Value>;
-    using Values = boost::container::vector<Value>;
+    // using Values = boost::container::vector<Value>;
+    using Values = Buffer<Value>;
 
 public:
 
@@ -452,9 +446,11 @@ template<
 Value& ArrayPartitionData<Value, rank>::operator[](
     Index const idx)
 {
-    assert(idx < size());
+    // assert(idx < size());
 
-    return *(this->begin() + idx);
+    // return *(this->begin() + idx);
+
+    return _values[idx];
 }
 
 
@@ -464,9 +460,11 @@ template<
 Value const& ArrayPartitionData<Value, rank>::operator[](
     Index const idx) const
 {
-    assert(idx < size());
+    // assert(idx < size());
 
-    return *(this->begin() + idx);
+    // return *(this->begin() + idx);
+
+    return _values[idx];
 }
 
 

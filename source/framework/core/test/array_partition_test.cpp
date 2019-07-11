@@ -75,3 +75,48 @@ BOOST_AUTO_TEST_CASE(scalar_array)
     Data data_we_want{shape, value};
     BOOST_CHECK_EQUAL(data_we_got, data_we_want);
 }
+
+
+BOOST_AUTO_TEST_CASE(assignment_operator)
+{
+    // Construct an empty client instance and assign a new instance to it
+
+    Shape shape{{5, 6}};
+    Value value{9};
+
+    {
+        PartitionClient partition =
+            hpx::new_<PartitionClient>(hpx::find_here(), shape);
+        PartitionClient other =
+            hpx::new_<PartitionClient>(hpx::find_here(), shape, value);
+        partition = other;
+
+        Data data_we_got = partition.data().get();
+        Data data_we_want{shape, value};
+        BOOST_CHECK_EQUAL(data_we_got, data_we_want);
+    }
+
+    {
+        // Default initialization
+        PartitionClient partition;
+        PartitionClient other =
+            hpx::new_<PartitionClient>(hpx::find_here(), shape, value);
+        partition = other;
+
+        Data data_we_got = partition.data().get();
+        Data data_we_want{shape, value};
+        BOOST_CHECK_EQUAL(data_we_got, data_we_want);
+    }
+
+    {
+        // Value initialization
+        PartitionClient partition{};
+        PartitionClient other =
+            hpx::new_<PartitionClient>(hpx::find_here(), shape, value);
+        partition = other;
+
+        Data data_we_got = partition.data().get();
+        Data data_we_want{shape, value};
+        BOOST_CHECK_EQUAL(data_we_got, data_we_want);
+    }
+}

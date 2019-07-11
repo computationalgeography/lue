@@ -115,3 +115,27 @@ BOOST_AUTO_TEST_CASE(construct_with_max_partition_shape)
         BOOST_CHECK_EQUAL(partitions[3].shape().get(), Shape({{10, 10}}));
     }
 }
+
+
+BOOST_AUTO_TEST_CASE(array_with_array_partitions)
+{
+    using Partitions = PartitionedArray::Partitions;
+    using Partition = PartitionedArray::Partition;
+
+    Index nr_rows = 300;
+    Index nr_cols = 400;
+    Shape shape_in_partitions{{nr_rows, nr_cols}};
+
+    Partitions partitions{};
+    partitions = Partitions{shape_in_partitions};
+
+    for(auto& partition: partitions) {
+        partition = Partition{};
+    }
+
+    std::size_t const nr_partitions = partitions.size();
+
+    for(std::size_t i = 0; i < nr_partitions; ++i) {
+        partitions[i] = Partition{};
+    }
+}

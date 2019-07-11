@@ -4,6 +4,7 @@ add_unit_tests(
         array_partition_data_test
         array_partition_definition_test
         array_visitor_test
+        buffer_test
         domain_decomposition_test
         shape_test
     LINK_LIBRARIES

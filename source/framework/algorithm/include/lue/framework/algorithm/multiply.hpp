@@ -5,7 +5,7 @@
 
 namespace lue {
 namespace detail {
-namespace equal_to {
+namespace multiply {
 
 template<
     typename T1,
@@ -27,7 +27,7 @@ class OverloadPicker<
 
 public:
 
-    static PartitionT<Partition, bool> equal_to_partition(
+    static Partition multiply_partition(
         Partition const& partition1,
         Partition const& partition2)
     {
@@ -40,9 +40,7 @@ public:
         // we do, this copying is not necessary.
         // TODO Optimize for this
 
-        using ResultPartition = PartitionT<Partition, bool>;
         using Data = DataT<Partition>;
-        using ResultData = DataT<Partition, bool>;
         using Element = ElementT<Partition>;
 
         // Asynchronously retrieve the partition data from the array partition
@@ -50,8 +48,8 @@ public:
         hpx::shared_future<Data> partition_data1 = partition1.data();
         hpx::shared_future<Data> partition_data2 = partition2.data();
 
-        // Once the data has arrived, compare the values
-        hpx::future<ResultData> result_data = hpx::dataflow(
+        // Once the data has arrived, multiply the values
+        hpx::future<Data> multiplication = hpx::dataflow(
             hpx::launch::async,
             hpx::util::unwrapping([](
                 Data const& partition_data1,
@@ -59,13 +57,13 @@ public:
             {
                 assert(partition_data1.shape() == partition_data2.shape());
 
-                ResultData result{partition_data1.shape()};
+                Data result{partition_data1.shape()};
 
                 std::transform(
                     partition_data1.begin(),
                     partition_data1.end(),
                     partition_data2.begin(),
-                    result.begin(), std::equal_to<Element>{});
+                    result.begin(), std::multiplies<Element>{});
 
                 return result;
             }),
@@ -73,24 +71,23 @@ public:
             partition_data2
         );
 
-        // Once the result has been calculated, create a new component
-        // containing the data, on the same locality as the first partition
+        // Once the multiplication has been calculated, create a new component
+        // containing the result, on the same locality as the first partition
         // passed in
-        return result_data.then(
+        return multiplication.then(
             // TODO Pass in ref to partition?
             hpx::util::unwrapping([partition1](
-                ResultData&& data)
+                Data&& multiplication_data)
             {
-                return ResultPartition(
-                    partition1.get_id(), data);
+                return Partition(partition1.get_id(), multiplication_data);
             })
         );
     }
 
     struct Action:
         hpx::actions::make_action<
-            decltype(&equal_to_partition),
-            &equal_to_partition,
+            decltype(&multiply_partition),
+            &multiply_partition,
             Action>
     {};
 
@@ -107,41 +104,42 @@ class OverloadPicker<
 
 public:
 
-    static PartitionT<Partition, bool> equal_to_partition(
+    static Partition multiply_partition(
         Partition const& partition,
         hpx::shared_future<ElementT<Partition>> scalar)
     {
-        using Element = ElementT<Partition>;
+        using InputElement = ElementT<Partition>;
         using InputPartition = Partition;
         using InputData = DataT<InputPartition>;
 
-        using ResultPartition = PartitionT<InputPartition, bool>;
-        using ResultData = DataT<ResultPartition, bool>;
+        using OutputPartition = InputPartition;
+        using OutputData = InputData;
 
-        // Asynchronously retrieve the partition data from the array partition
-        // components
-        hpx::shared_future<InputData> partition_data = partition.data();
+        // Asynchronously retrieve the partition data from the array
+        // partition component
+        hpx::shared_future<InputData> input_partition_data = partition.data();
 
         // Once the data has arrived, compare the values
-        hpx::future<ResultData> result_data = hpx::dataflow(
+        hpx::future<OutputData> result_data = hpx::dataflow(
             hpx::launch::async,
             hpx::util::unwrapping([](
-                InputData const& partition_data,
-                Element const scalar)
+                InputData const& input_partition_data,
+                InputElement const scalar)
             {
-                ResultData result{partition_data.shape()};
+                OutputData result{input_partition_data.shape()};
 
                 std::transform(
-                    partition_data.begin(), partition_data.end(), result.begin(),
+                    input_partition_data.begin(), input_partition_data.end(),
+                    result.begin(),
                     [scalar](
-                        Element const element)
+                        InputElement const input_element)
                     {
-                        return element == scalar;
+                        return input_element * scalar;
                     });
 
                 return result;
             }),
-            partition_data,
+            input_partition_data,
             scalar
         );
 
@@ -151,9 +149,9 @@ public:
         return result_data.then(
             // TODO Pass in ref to partition?
             hpx::util::unwrapping([partition](
-                ResultData&& data)
+                OutputData&& data)
             {
-                return ResultPartition(
+                return OutputPartition(
                     partition.get_id(), data);
             })
         );
@@ -161,49 +159,57 @@ public:
 
     struct Action:
         hpx::actions::make_action<
-            decltype(&equal_to_partition),
-            &equal_to_partition,
+            decltype(&multiply_partition),
+            &multiply_partition,
             Action>
     {};
 
 };
 
-}  // namespace equal_to
+}  // namespace multiply
 }  // namespace detail
 
 
 template<
     typename T1,
     typename T2>
-using EqualToPartitionAction =
-    typename detail::equal_to::OverloadPicker<T1, T2>::Action;
+using MultiplyPartitionAction =
+    typename detail::multiply::OverloadPicker<T1, T2>::Action;
+
+
+// template<
+//     typename Partition>
+// struct MultiplyPartitionAction:
+//     hpx::actions::make_action<
+//         decltype(&detail::multiply_partition<Partition>),
+//         &detail::multiply_partition<Partition>,
+//         MultiplyPartitionAction<Partition>>
+// {};
 
 
 template<
     typename Array>
-PartitionedArrayT<Array, bool> equal_to(
+Array multiply(
     Array const& array1,
     Array const& array2)
 {
     assert(nr_partitions(array1) == nr_partitions(array2));
 
-    using InputPartition = PartitionT<Array>;
+    using Partitions = PartitionsT<Array>;
+    using Partition = PartitionT<Array>;
 
-    using OutputArray = PartitionedArrayT<Array, bool>;
-    using OutputPartitions = PartitionsT<OutputArray>;
-    using OutputPartition = PartitionT<OutputArray>;
+    MultiplyPartitionAction<Partition, Partition> action;
 
-    EqualToPartitionAction<InputPartition, InputPartition> action;
-    OutputPartitions output_partitions{shape_in_partitions(array1)};
+    Partitions partitions{shape_in_partitions(array1)};
 
-    // Attach a continuation to each pair of input partitions that compares
+    // Attach a continuation to each pair of input partitions that multiplies
     // all elements in those partitions and assigns the result to the
     // output partition
     for(std::size_t p = 0; p < nr_partitions(array1); ++p) {
 
-        InputPartition const& input_partition1 = array1.partitions()[p];
-        InputPartition const& input_partition2 = array2.partitions()[p];
-        OutputPartition& output_partition = output_partitions[p];
+        Partition const& input_partition1 = array1.partitions()[p];
+        Partition const& input_partition2 = array2.partitions()[p];
+        Partition& output_partition = partitions[p];
 
         output_partition = hpx::dataflow(
             hpx::launch::async,
@@ -212,10 +218,9 @@ PartitionedArrayT<Array, bool> equal_to(
                 hpx::launch::sync, input_partition1.get_id()),
             input_partition1,
             input_partition2);
-
     }
 
-    return OutputArray{shape(array1), std::move(output_partitions)};
+    return Array{shape(array1), std::move(partitions)};
 }
 
 
@@ -223,22 +228,22 @@ template<
     typename Element,
     std::size_t rank,
     template<typename, std::size_t> typename Array>
-PartitionedArrayT<Array<bool, rank>, bool> equal_to(
+Array<Element, rank> multiply(
     Array<Element, rank> const& array,
     hpx::shared_future<Element> const& scalar)
 {
-    using InputArray = Array<Element, rank>;
     using InputScalar = hpx::shared_future<Element>;
+    using InputArray = Array<Element, rank>;
     using InputPartition = PartitionT<InputArray>;
 
-    using OutputArray = PartitionedArrayT<InputArray, bool>;
+    using OutputArray = Array<Element, rank>;
     using OutputPartitions = PartitionsT<OutputArray>;
     using OutputPartition = PartitionT<OutputArray>;
 
-    EqualToPartitionAction<InputPartition, InputScalar> action;
+    MultiplyPartitionAction<InputPartition, InputScalar> action;
     OutputPartitions output_partitions{shape_in_partitions(array)};
 
-    // Attach a continuation to each input partition that compares
+    // Attach a continuation to each input partitions that multiplies
     // all elements to the scalar and assigns the result to the
     // output partition
     for(std::size_t p = 0; p < nr_partitions(array); ++p) {
@@ -264,11 +269,11 @@ template<
     typename Element,
     std::size_t rank,
     template<typename, std::size_t> typename Array>
-PartitionedArrayT<Array<Element, rank>, bool> equal_to(
+Array<Element, rank> multiply(
     hpx::shared_future<Element> const& scalar,
     Array<Element, rank> const& array)
 {
-    return equal_to(array, scalar);
+    return multiply(array, scalar);
 }
 
 }  // namespace lue

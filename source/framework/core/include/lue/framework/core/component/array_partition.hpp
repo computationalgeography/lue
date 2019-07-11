@@ -397,5 +397,20 @@ typename ArrayPartition<Element, rank>::Size nr_elements(
     return partition.nr_elements();
 }
 
+
+template<
+    typename Element,
+    std::size_t rank>
+class IsArrayPartition<ArrayPartition<Element, rank>>:
+    public std::true_type
+{};
+
 }  // namespace detail
+
+
+template<
+    typename Array>
+inline constexpr bool is_array_partition_v =
+    detail::IsArrayPartition<Array>::value;
+
 }  // namespace lue

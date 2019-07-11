@@ -48,6 +48,27 @@ void test_array()
         BOOST_REQUIRE_EQUAL(unique.nr_elements(), 1);
         BOOST_CHECK_EQUAL(unique.partitions()[0].data().get()[0], true);
     }
+
+    // Compare array with scalar
+    // array == scalar
+    {
+        auto equal_to = lue::equal_to(array1, fill_value1);
+        auto unique = lue::unique(equal_to).get();
+
+        BOOST_REQUIRE_EQUAL(unique.nr_elements(), 1);
+        BOOST_CHECK_EQUAL(unique.partitions()[0].data().get()[0], true);
+
+    }
+
+    // Compare array with scalar
+    // scalar == array
+    {
+        auto equal_to = lue::equal_to(fill_value1, array1);
+        auto unique = lue::unique(equal_to).get();
+
+        BOOST_REQUIRE_EQUAL(unique.nr_elements(), 1);
+        BOOST_CHECK_EQUAL(unique.partitions()[0].data().get()[0], true);
+    }
 }
 
 }  // namespace detail

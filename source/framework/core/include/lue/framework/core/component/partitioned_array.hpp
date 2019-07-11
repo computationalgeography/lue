@@ -248,8 +248,8 @@ PartitionedArray<Element, rank>::PartitionedArray(
 // 
 //     std::cout << ")";
 // }
-// 
-// 
+
+
 // template<
 //     typename Partition>
 // void print_partition(
@@ -474,7 +474,11 @@ void PartitionedArray<Element, rank>::create(
     /// // std::cout << shape_in_partitions << std::endl;
 
 
+    // Create array containing partitions. Each of these partitions will be
+    // a component client instance referring to a, possibly remote,
+    // component server instance.
     _partitions = Partitions{shape_in_partitions};
+    assert(_partitions.size() == nr_partitions);
 
 
     std::vector<hpx::id_type> const localities = hpx::find_all_localities();
@@ -500,7 +504,6 @@ void PartitionedArray<Element, rank>::create(
 
             return result;
         };
-
 
     // Create array partitions. Each of them will be located on a certain
     // locality. Which one exactly is determined by locality_idx.
