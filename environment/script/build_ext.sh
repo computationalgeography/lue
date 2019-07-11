@@ -167,7 +167,6 @@ function install_tau()
     # -c++=<compiler>
     # -cc=<compiler>
     # -fortran=<compiler>
-    # -pdt=<directory>
     # -otf=<directory>
     # -scalasca=<directory>
     # -papithreads(?)
