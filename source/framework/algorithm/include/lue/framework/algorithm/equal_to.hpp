@@ -31,6 +31,13 @@ public:
         Partition const& partition1,
         Partition const& partition2)
     {
+        assert(
+            hpx::get_colocation_id(partition1.get_id()).get() ==
+            hpx::find_here());
+        assert(
+            hpx::get_colocation_id(partition2.get_id()).get() ==
+            hpx::find_here());
+
         // Obtain the data from both partitions and calculate the values
         // for the new partition
 
@@ -47,8 +54,10 @@ public:
 
         // Asynchronously retrieve the partition data from the array partition
         // components
-        hpx::shared_future<Data> partition_data1 = partition1.data();
-        hpx::shared_future<Data> partition_data2 = partition2.data();
+        hpx::shared_future<Data> partition_data1 =
+            partition1.data(CopyMode::share);
+        hpx::shared_future<Data> partition_data2 =
+            partition2.data(CopyMode::share);
 
         // Once the data has arrived, compare the values
         hpx::future<ResultData> result_data = hpx::dataflow(
@@ -111,6 +120,10 @@ public:
         Partition const& partition,
         hpx::shared_future<ElementT<Partition>> scalar)
     {
+        assert(
+            hpx::get_colocation_id(partition.get_id()).get() ==
+            hpx::find_here());
+
         using Element = ElementT<Partition>;
         using InputPartition = Partition;
         using InputData = DataT<InputPartition>;
@@ -120,7 +133,8 @@ public:
 
         // Asynchronously retrieve the partition data from the array partition
         // components
-        hpx::shared_future<InputData> partition_data = partition.data();
+        hpx::shared_future<InputData> partition_data =
+            partition.data(CopyMode::share);
 
         // Once the data has arrived, compare the values
         hpx::future<ResultData> result_data = hpx::dataflow(

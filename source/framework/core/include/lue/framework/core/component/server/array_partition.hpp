@@ -51,11 +51,12 @@ public:
 
     ArrayPartition& operator=          (ArrayPartition&&)=delete;
 
-    Data           data                () const;
+    Data           data                ([[maybe_unused]] CopyMode mode) const;
 
     void           fill                (Element value);
 
-    void           set_data            (Data const& data);
+    void           set_data            (Data const& data,
+                                        [[maybe_unused]] CopyMode mode);
 
     Shape          shape               () const;
 
@@ -237,7 +238,7 @@ ArrayPartition<Element, rank>::ArrayPartition(
     Data const& data):
 
     Base{},
-    _data{data}
+    _data{data, CopyMode::copy}
 
 {
 }
@@ -276,9 +277,15 @@ template<
     typename Element,
     std::size_t rank>
 typename ArrayPartition<Element, rank>::Data
-    ArrayPartition<Element, rank>::data() const
+    ArrayPartition<Element, rank>::data(
+        CopyMode const mode) const
 {
-    return _data;
+    if constexpr (rank == 0) {
+        return _data;
+    }
+    else {
+        return Data{_data, mode};
+    }
 }
 
 
@@ -296,9 +303,15 @@ template<
     typename Element,
     std::size_t rank>
 void ArrayPartition<Element, rank>::set_data(
-    Data const& data)
+    Data const& data,
+    CopyMode const mode)
 {
-    _data = data;
+    if constexpr (rank == 0) {
+        _data = data;
+    }
+    else {
+        _data = Data{data, mode};
+    }
 }
 
 

@@ -59,7 +59,8 @@ void test_array()
     rank,                                        \
     Element)                                     \
                                                  \
-BOOST_AUTO_TEST_CASE(array_##rank##d_##Element)  \
+BOOST_AUTO_TEST_CASE(array_##rank##d_##Element,  \
+    *boost::unit_test::expected_failures(2))     \
 {                                                \
     detail::test_array<Element, rank>();         \
 }

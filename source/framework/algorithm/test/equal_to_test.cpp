@@ -37,7 +37,8 @@ void test_array()
         auto unique = lue::unique(equal_to).get();
 
         BOOST_REQUIRE_EQUAL(unique.nr_elements(), 1);
-        BOOST_CHECK_EQUAL(unique.partitions()[0].data().get()[0], false);
+        BOOST_CHECK_EQUAL(
+            unique.partitions()[0].data(lue::CopyMode::copy).get()[0], false);
     }
 
     // Compare two arrays with the same values
@@ -46,7 +47,8 @@ void test_array()
         auto unique = lue::unique(equal_to).get();
 
         BOOST_REQUIRE_EQUAL(unique.nr_elements(), 1);
-        BOOST_CHECK_EQUAL(unique.partitions()[0].data().get()[0], true);
+        BOOST_CHECK_EQUAL(
+            unique.partitions()[0].data(lue::CopyMode::copy).get()[0], true);
     }
 
     // Compare array with scalar
@@ -56,7 +58,8 @@ void test_array()
         auto unique = lue::unique(equal_to).get();
 
         BOOST_REQUIRE_EQUAL(unique.nr_elements(), 1);
-        BOOST_CHECK_EQUAL(unique.partitions()[0].data().get()[0], true);
+        BOOST_CHECK_EQUAL(
+            unique.partitions()[0].data(lue::CopyMode::copy).get()[0], true);
 
     }
 
@@ -67,7 +70,8 @@ void test_array()
         auto unique = lue::unique(equal_to).get();
 
         BOOST_REQUIRE_EQUAL(unique.nr_elements(), 1);
-        BOOST_CHECK_EQUAL(unique.partitions()[0].data().get()[0], true);
+        BOOST_CHECK_EQUAL(
+            unique.partitions()[0].data(lue::CopyMode::copy).get()[0], true);
     }
 }
 

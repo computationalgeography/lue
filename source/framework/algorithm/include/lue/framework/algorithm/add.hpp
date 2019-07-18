@@ -112,8 +112,10 @@ public:
 
         // Asynchronously retrieve the partition data from the array partition
         // components
-        hpx::shared_future<Data> partition_data1 = partition1.data();
-        hpx::shared_future<Data> partition_data2 = partition2.data();
+        hpx::shared_future<Data> partition_data1 =
+            partition1.data(CopyMode::share);
+        hpx::shared_future<Data> partition_data2 =
+            partition2.data(CopyMode::share);
 
         // // Once the data has arrived, multiply the values
         // hpx::future<Data> multiplication = hpx::dataflow(
@@ -141,22 +143,27 @@ public:
         // Once the data has arrived, sum the values
         hpx::future<Data> addition = hpx::dataflow(
             hpx::launch::async,
-            hpx::util::unwrapping([](
-                Data const& partition_data1,
-                Data const& partition_data2)
-            {
-                assert(partition_data1.shape() == partition_data2.shape());
+            hpx::util::unwrapping(
+                [](
+                    Data const& partition_data1,
+                    Data const& partition_data2)
+                {
+                    assert(partition_data1.shape() == partition_data2.shape());
 
-                Data result{partition_data1.shape()};
+                    Data result{partition_data1.shape()};
 
-                std::transform(
-                    partition_data1.begin(),
-                    partition_data1.end(),
-                    partition_data2.begin(),
-                    result.begin(), std::plus<Element>{});
+                    std::transform(
+                        partition_data1.begin(),
+                        partition_data1.end(),
+                        partition_data2.begin(),
+                        result.begin(),
+                        [](Element const lhs, Element const rhs)
+                        {
+                            return lhs + rhs;
+                        });
 
-                return result;
-            }),
+                    return result;
+                }),
             partition_data1,
             partition_data2
         );
@@ -173,13 +180,16 @@ public:
         // Once the addition has been calculated, create a new component
         // containing the result, on the same locality as the first partition
         // passed in
+        hpx::id_type partition_id = partition1.get_id();
+
         return addition.then(
-            // TODO Pass in ref to partition?
-            hpx::util::unwrapping([partition1](
-                Data&& addition_data)
-            {
-                return Partition(partition1.get_id(), addition_data);
-            })
+            hpx::util::unwrapping(
+                [partition_id](
+                    Data&& addition_data)
+                {
+                    return Partition(partition_id, addition_data);
+                }
+            )
         );
     }
 
@@ -236,13 +246,21 @@ Array add(
         Partition const& input_partition2 = array2.partitions()[p];
         Partition& output_partition = partitions[p];
 
-        output_partition = hpx::dataflow(
-            hpx::launch::async,
-            action,
-            hpx::get_colocation_id(
-                hpx::launch::sync, input_partition1.get_id()),
-            input_partition1,
-            input_partition2);
+        output_partition =
+            hpx::get_colocation_id(input_partition1.get_id()).then(
+                hpx::util::unwrapping(
+                    [=](
+                        hpx::naming::id_type const locality_id)
+                    {
+                        return hpx::dataflow(
+                            hpx::launch::async,
+                            action,
+                            locality_id,
+                            input_partition1,
+                            input_partition2);
+                    }
+                )
+            );
     }
 
     return Array{shape(array1), std::move(partitions)};

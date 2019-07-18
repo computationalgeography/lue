@@ -38,7 +38,7 @@ PartitionT<InputPartition, OutputElement> cast_partition(
 
             return output_partition_data;
         }),
-        input_partition.data()
+        input_partition.data(CopyMode::share)
     );
 
     return hpx::dataflow(

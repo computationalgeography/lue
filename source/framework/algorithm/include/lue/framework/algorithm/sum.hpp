@@ -19,11 +19,9 @@ template<
 PartitionT<Partition, ResultElement> sum_partition(
     Partition const& partition)
 {
-    // // Assert the locality of the partition is the same as the locality
-    // // this code runs on
-    // assert(
-    //     hpx::get_colocation_id(partition.get_id()).get() ==
-    //     hpx::find_here());
+    assert(
+        hpx::get_colocation_id(partition.get_id()).get() ==
+        hpx::find_here());
 
     using Data = DataT<Partition>;
     using ResultPartition = PartitionT<Partition, ResultElement>;
@@ -31,7 +29,7 @@ PartitionT<Partition, ResultElement> sum_partition(
     using Shape = ShapeT<Partition>;
 
     // Retrieve the partition data
-    hpx::shared_future<Data> partition_data = partition.data();
+    hpx::shared_future<Data> partition_data = partition.data(CopyMode::share);
 
     // Aggregate nD array partition to nD array partition
     // containing a single value
@@ -126,7 +124,7 @@ hpx::future<ResultElement> sum(
 
             for(auto const& sums_partition: sums_partitions) {
 
-                auto const data = sums_partition.data().get();
+                auto const data = sums_partition.data(CopyMode::copy).get();
                 assert(data.size() == 1);
 
                 result += data[0];

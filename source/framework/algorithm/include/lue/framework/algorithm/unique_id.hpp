@@ -35,7 +35,7 @@ template<
                 std::iota(data.begin(), data.end(), start_value);
 
                 // This runs asynchronous and returns a future<void>
-                return partition.set_data(data);
+                return partition.set_data(std::move(data)); // data, CopyMode::share);
             }));
 
     // auto assigned = data.then(
