@@ -1,4 +1,5 @@
 #include "lue/framework/core/configuration_entry.hpp"
+#include "lue/framework/core/shape.hpp"
 #include <fmt/format.h>
 #include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
@@ -89,7 +90,57 @@ std::vector<std::uint64_t> cast<std::vector<std::uint64_t>>(
     return result;
 }
 
+
+template<>
+lue::Shape<std::uint64_t, 2> cast<lue::Shape<std::uint64_t, 2>>(
+    std::string const& value)
+{
+    std::vector<std::uint64_t> values = cast<std::vector<std::uint64_t>>(value);
+
+    if(values.size() != 2) {
+        throw std::runtime_error(
+            fmt::format(
+                "Configuration entry {} must contain 2 values, "
+                "but {} where found",
+                value, values.size()));
+    }
+
+    lue::Shape<std::uint64_t, 2> result;
+    std::copy(values.begin(), values.end(), result.begin());
+
+    return result;
+}
+
+
 }  // Anonymous namespace
+
+
+namespace detail {
+
+// Using this template to get at the type passed into a macro, allows
+// passing instantiated templates with multiple arguments to be passed.
+// See below for use.
+template<
+    typename T>
+struct ArgumentType
+{
+};
+
+
+// Passing an template type instantiated with multiple arguments requires
+// the use of parenthesis. This template is a trick to get at the type in
+// the parenthesis, for use in the macro.
+// In macro, use ArgumentType<void(T)>::Type to get at the actual type
+// passed in, without the parenthesis.
+template<
+    typename T,
+    typename U>
+struct ArgumentType<T(U)>
+{
+   using Type = U;
+};
+
+}  // namespace detail
 
 
 template<
@@ -144,33 +195,40 @@ T optional_configuration_entry(
 }
 
 
-#define REQUIRED_CONFIGURATION_ENTRY(              \
-    Type)                                          \
-template Type required_configuration_entry<Type>(  \
-    std::string const& section,                    \
-    std::string const& key);                       \
-                                                   \
-template Type required_configuration_entry<Type>(  \
+#define REQUIRED_CONFIGURATION_ENTRY(                                       \
+    T)                                                                      \
+template detail::ArgumentType<void(T)>::Type                                \
+        required_configuration_entry<detail::ArgumentType<void(T)>::Type>(  \
+    std::string const& section,                                             \
+    std::string const& key);                                                \
+                                                                            \
+template detail::ArgumentType<void(T)>::Type                                \
+        required_configuration_entry<detail::ArgumentType<void(T)>::Type>(  \
     std::string const& key);
 
 
-#define OPTIONAL_CONFIGURATION_ENTRY(                      \
-    Type)                                                  \
-template Type optional_configuration_entry<Type>(          \
-    std::string const&, std::string const&, Type const&);  \
-                                                           \
-template Type optional_configuration_entry<Type>(          \
-    std::string const&, Type const&);
+#define OPTIONAL_CONFIGURATION_ENTRY(                                       \
+    T)                                                                      \
+template detail::ArgumentType<void(T)>::Type                                \
+        optional_configuration_entry<detail::ArgumentType<void(T)>::Type>(  \
+    std::string const&, std::string const&,                                 \
+    detail::ArgumentType<void(T)>::Type const&);                            \
+                                                                            \
+template detail::ArgumentType<void(T)>::Type                                \
+        optional_configuration_entry<detail::ArgumentType<void(T)>::Type>(  \
+    std::string const&, detail::ArgumentType<void(T)>::Type const&);
 
 REQUIRED_CONFIGURATION_ENTRY(std::uint32_t);
 REQUIRED_CONFIGURATION_ENTRY(std::uint64_t);
 REQUIRED_CONFIGURATION_ENTRY(std::string);
 REQUIRED_CONFIGURATION_ENTRY(std::vector<std::uint64_t>);
+REQUIRED_CONFIGURATION_ENTRY((lue::Shape<std::uint64_t, 2>));
 
 OPTIONAL_CONFIGURATION_ENTRY(std::uint32_t);
 OPTIONAL_CONFIGURATION_ENTRY(std::uint64_t);
 OPTIONAL_CONFIGURATION_ENTRY(std::string);
 OPTIONAL_CONFIGURATION_ENTRY(std::vector<std::uint64_t>);
+OPTIONAL_CONFIGURATION_ENTRY((lue::Shape<std::uint64_t, 2>));
 
 #undef REQUIRED_CONFIGURATION_ENTRY
 #undef OPTIONAL_CONFIGURATION_ENTRY

@@ -4,6 +4,7 @@
 #include "lue/framework/core/array_partition_visitor.hpp"
 #include "lue/framework/core/debug.hpp"
 #include "lue/framework/core/domain_decomposition.hpp"
+#include "lue/framework/core/math.hpp"
 
 
 namespace lue {
@@ -248,8 +249,8 @@ PartitionedArray<Element, rank>::PartitionedArray(
 // 
 //     std::cout << ")";
 // }
-// 
-// 
+
+
 // template<
 //     typename Partition>
 // void print_partition(
@@ -474,10 +475,15 @@ void PartitionedArray<Element, rank>::create(
     /// // std::cout << shape_in_partitions << std::endl;
 
 
+    // Create array containing partitions. Each of these partitions will be
+    // a component client instance referring to a, possibly remote,
+    // component server instance.
     _partitions = Partitions{shape_in_partitions};
+    assert(_partitions.size() == nr_partitions);
 
 
-    std::vector<hpx::id_type> const localities = hpx::find_all_localities();
+    std::vector<hpx::naming::id_type> const localities =
+        hpx::find_all_localities();
     std::size_t const nr_localities = localities.size();
 
     assert(nr_localities > 0);
@@ -485,28 +491,20 @@ void PartitionedArray<Element, rank>::create(
 
     auto locality_idx =
         [nr_partitions, nr_localities](
-            std::size_t const i) -> std::size_t
+            std::size_t const p) -> std::size_t
         {
-            // Mapping of partitions to localities
-            assert(nr_partitions >= nr_localities);
-
-            // std::size_t const result = std::min(
-            //     i / (nr_partitions / nr_localities),
-            //     nr_localities - 1);
-
-            std::size_t const result = i / (nr_partitions / nr_localities);
-
-            assert(result < nr_localities);
-
-            return result;
+            return map_to_range(
+                0lu, nr_partitions - 1, 0lu, nr_localities - 1, p);
         };
-
 
     // Create array partitions. Each of them will be located on a certain
     // locality. Which one exactly is determined by locality_idx.
-    for(std::size_t i = 0; i < nr_partitions; ++i) {
-        _partitions[i] =
-            Partition{localities[locality_idx(i)], max_partition_shape};
+    for(std::size_t partition_idx = 0; partition_idx < nr_partitions;
+            ++partition_idx) {
+
+        _partitions[partition_idx] = Partition{
+            localities[locality_idx(partition_idx)], max_partition_shape};
+
     }
 
     /// typename Partitions::Index partition_idx = 0;

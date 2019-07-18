@@ -11,6 +11,10 @@ template<
 PartitionT<Partition, ElementT<Partition>, 1> unique_partition(
     Partition const& partition)
 {
+    assert(
+        hpx::get_colocation_id(partition.get_id()).get() ==
+        hpx::find_here());
+
     using InputData = DataT<Partition>;
     using Element = ElementT<Partition>;
 
@@ -18,7 +22,7 @@ PartitionT<Partition, ElementT<Partition>, 1> unique_partition(
     using OutputData = DataT<OutputPartition>;
     using OutputShape = ShapeT<OutputPartition>;
 
-    return partition.data().then(
+    return partition.data(CopyMode::share).then(
         hpx::util::unwrapping(
             // TODO Pass by copy?
             [partition](InputData const& partition_data)
@@ -114,7 +118,7 @@ hpx::future<PartitionedArrayT<Array, ElementT<Array>, 1>> unique(
                 for(auto const& unique_partition: unique_partitions) {
 
                     OutputData const& unique_partition_values =
-                        unique_partition.data().get();
+                        unique_partition.data(CopyMode::copy).get();
 
                     unique_values.insert(
                         unique_partition_values.begin(),

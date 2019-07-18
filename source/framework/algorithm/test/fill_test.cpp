@@ -79,7 +79,7 @@ void test_array()
     // ----- REMOVE -----
     for(auto const& partition: array.partitions()) {
 
-        auto const data = partition.data().get();
+        auto const data = partition.data(lue::CopyMode::copy).get();
 
         for(auto const v: data) {
             BOOST_REQUIRE_EQUAL(v, fill_value.get());

@@ -36,6 +36,8 @@ template<
 
         Partition& partition = array.partitions()[p];
 
+        // hpx::get_colocation_id(partition.get_id()).then(
+
         fill_partitions[p] = hpx::dataflow(
             hpx::launch::async,
             hpx::util::unwrapping(action),

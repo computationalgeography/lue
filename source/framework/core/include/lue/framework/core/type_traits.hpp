@@ -16,7 +16,14 @@ template<
     typename Array>
 class ArrayTraits
 {
+
 };
+
+
+template<class T>
+class IsArrayPartition:
+    public std::false_type
+{};
 
 }  // namespace detail
 

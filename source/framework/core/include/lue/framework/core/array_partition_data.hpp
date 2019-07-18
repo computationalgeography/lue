@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/core/shape.hpp"
+#include "lue/framework/core/serialize/shared_buffer.hpp"
 #include "lue/framework/core/type_traits.hpp"
 #include <hpx/runtime/serialization/serialize.hpp>
 // #ifndef NDEBUG
@@ -7,7 +8,7 @@
 // #endif
 // #define BOOST_MULTI_ARRAY_NO_GENERATORS
 // #include <boost/multi_array.hpp>
-#include <boost/container/vector.hpp>
+// #include <boost/container/vector.hpp>
 #include <algorithm>
 #include <iostream>
 #include <memory>
@@ -19,14 +20,6 @@ namespace lue {
     @brief      Class for keeping track of array partition data values
     @warning    Copies of ArrayPartitionData instances share the
                 underlying array with elements
-
-    The values are stored in a multidimensional array, which is pointed to
-    by a shared pointer. Copying instances results in both copies pointing
-    to the same values. This is cheap, but might be surprising. The goal
-    is to make obtaining the data from a partitioned array component
-    client instance cheap. The client obtains it from the server and when
-    the server exists on the same locality as the client, no copying of
-    elements needs to happen.
 
     There is a specialization for array scalars (arrays with rank ==
     0). This allows scalars to be handled the same as arrays.
@@ -41,7 +34,8 @@ private:
 
     // using Values = boost::multi_array<Value, rank>;
     // using Values = std::vector<Value>;
-    using Values = boost::container::vector<Value>;
+    // using Values = boost::container::vector<Value>;
+    using Values = SharedBuffer<Value>;
 
 public:
 
@@ -81,7 +75,8 @@ public:
                    ArrayPartitionData  (Shape const& shape,
                                         Value const& value);
 
-                   ArrayPartitionData  (ArrayPartitionData const& other);
+                   ArrayPartitionData  (ArrayPartitionData const& other,
+                                        CopyMode mode=CopyMode::copy);
 
                    ArrayPartitionData  (ArrayPartitionData&& other);
 
@@ -128,10 +123,11 @@ private:
     friend class hpx::serialization::access;
 
     template<typename Archive>
-    void serialize(Archive& /* archive */, unsigned int const /* version */)
+    void serialize(
+        Archive& archive,
+        unsigned int const /* version */)
     {
-        // For now, we do nothing. Revisit later, when distributing data
-        HPX_ASSERT(false);
+        archive & _shape & _values;
     }
 
     Shape          _shape;
@@ -142,6 +138,11 @@ private:
 };
 
 
+/*!
+    @brief      Default-construct an instance
+
+    The instance will be an empty partition.
+*/
 template<
     typename Value,
     std::size_t rank>
@@ -156,6 +157,10 @@ ArrayPartitionData<Value, rank>::ArrayPartitionData():
 }
 
 
+/*!
+    @brief      Construct an instance with shape @a shape
+    @param      shape Shape of data array
+*/
 template<
     typename Value,
     std::size_t rank>
@@ -165,13 +170,18 @@ ArrayPartitionData<Value, rank>::ArrayPartitionData(
     _shape{shape},
     // _values{std::make_shared<Values>(shape)}
     // _values{shape}
-    _values(nr_elements(shape))
+    _values{nr_elements(shape)}
 
 {
     assert(_values.size() == nr_elements(_shape));
 }
 
 
+/*!
+    @brief      Construct an instance with a certain shape and fill-value
+    @param      shape Shape of data array to create
+    @param      value Value to fill array with
+*/
 template<
     typename Value,
     std::size_t rank>
@@ -196,7 +206,6 @@ ArrayPartitionData<Value, rank>::ArrayPartitionData(
     // //     _values.data(), _values.num_elements(), value);
 
     assert(_values.size() == nr_elements(_shape));
-
 }
 
 
@@ -207,10 +216,14 @@ template<
     typename Value,
     std::size_t rank>
 ArrayPartitionData<Value, rank>::ArrayPartitionData(
-    ArrayPartitionData const& other):
+    ArrayPartitionData const& other,
+    CopyMode const mode):
 
     _shape{other._shape},
-    _values{other._values}
+    _values{other._values, mode}
+
+    // _values{Values{
+    //     other._values.data(), other._values.size(), Values::Mode::copy}}
 
 {
     // auto const src_begin = other._values.data();
@@ -222,8 +235,11 @@ ArrayPartitionData<Value, rank>::ArrayPartitionData(
     // // hpx::parallel::copy(
     // //     hpx::parallel::execution::par, src_begin, src_end, dst_begin);
 
+    assert(
+        (mode == CopyMode::copy && (_values.data() != other._values.data())) ||
+        (mode == CopyMode::share && (_values.data() == other._values.data()))
+    );
     assert(_values.size() == nr_elements(_shape));
-
 }
 
 
@@ -240,6 +256,7 @@ ArrayPartitionData<Value, rank>::ArrayPartitionData(
     _values{std::move(other._values)}
 
 {
+    assert(_values.data() != other._values.data());
     assert(_values.size() == nr_elements(_shape));
 }
 
@@ -255,7 +272,8 @@ ArrayPartitionData<Value, rank>&
     ArrayPartitionData const& other)
 {
     _shape = other._shape;
-    _values = other._values;
+    _values = Values{
+        other._values.data(), other._values.size(), Values::Mode::copy};
 
     // _values.resize(other._shape);
 
@@ -268,6 +286,7 @@ ArrayPartitionData<Value, rank>&
     // // hpx::parallel::copy(
     // //     hpx::parallel::execution::par, src_begin, src_end, dst_begin);
 
+    assert(_values.data() != other._values.data());
     assert(_values.size() == nr_elements(_shape));
 
     return *this;
@@ -302,6 +321,7 @@ ArrayPartitionData<Value, rank>& ArrayPartitionData<Value, rank>::operator=(
     // empty_shape.fill(0);
     // other._values.resize(empty_shape);
 
+    assert(_values.data() != other._values.data());
     assert(_values.size() == nr_elements(_shape));
 
     return *this;
@@ -452,9 +472,11 @@ template<
 Value& ArrayPartitionData<Value, rank>::operator[](
     Index const idx)
 {
-    assert(idx < size());
+    // assert(idx < size());
 
-    return *(this->begin() + idx);
+    // return *(this->begin() + idx);
+
+    return _values[idx];
 }
 
 
@@ -464,9 +486,11 @@ template<
 Value const& ArrayPartitionData<Value, rank>::operator[](
     Index const idx) const
 {
-    assert(idx < size());
+    // assert(idx < size());
 
-    return *(this->begin() + idx);
+    // return *(this->begin() + idx);
+
+    return _values[idx];
 }
 
 

@@ -66,11 +66,14 @@ public:
 
     ArrayPartition& operator=          (ArrayPartition&&)=default;
 
-    hpx::future<Data> data             () const;
+    hpx::future<Data> data             (CopyMode mode) const;
 
     hpx::future<void> fill             (Element value);
 
-    hpx::future<void> set_data         (Data const& data);
+    hpx::future<void> set_data         (Data const& data,
+                                        CopyMode mode);
+
+    hpx::future<void> set_data         (Data&& data);
 
     hpx::future<Shape> shape           () const;
 
@@ -276,12 +279,21 @@ template<
     typename Element,
     std::size_t rank>
 hpx::future<typename ArrayPartition<Element, rank>::Data>
-    ArrayPartition<Element, rank>::data() const
+    ArrayPartition<Element, rank>::data(
+        CopyMode const mode) const
 {
+    assert(
+        // In case copy mode is share, we and the server instance must be
+        // located on the same locality
+        (mode == CopyMode::share &&
+            (hpx::get_colocation_id(this->get_id()).get() ==
+                hpx::find_here())) ||
+        mode != CopyMode::share);
+
     typename Server::DataAction action;
 
     // this->get_id() identifies the server instance
-    return hpx::async(action, this->get_id());
+    return hpx::async(action, this->get_id(), mode);
 }
 
 
@@ -334,12 +346,34 @@ template<
     typename Element,
     std::size_t rank>
 hpx::future<void> ArrayPartition<Element, rank>::set_data(
-    Data const& data)
+    Data const& data,
+    CopyMode const mode)
 {
+    assert(
+        // In case copy mode is share, we and the server instance must be
+        // located on the same locality
+        (mode == CopyMode::share &&
+            (hpx::get_colocation_id(this->get_id()).get() ==
+                hpx::find_here())) ||
+        mode != CopyMode::share);
+
     typename Server::SetDataAction action;
 
     // this->get_id() identifies the server instance
-    return hpx::async(action, this->get_id(), data);
+    return hpx::async(action, this->get_id(), data, mode);
+}
+
+
+/*!
+    @brief      Asynchronously assign @a data to the partition
+*/
+template<
+    typename Element,
+    std::size_t rank>
+hpx::future<void> ArrayPartition<Element, rank>::set_data(
+    Data&& data)
+{
+    return set_data(data, CopyMode::share);
 }
 
 
@@ -397,5 +431,20 @@ typename ArrayPartition<Element, rank>::Size nr_elements(
     return partition.nr_elements();
 }
 
+
+template<
+    typename Element,
+    std::size_t rank>
+class IsArrayPartition<ArrayPartition<Element, rank>>:
+    public std::true_type
+{};
+
 }  // namespace detail
+
+
+template<
+    typename Array>
+inline constexpr bool is_array_partition_v =
+    detail::IsArrayPartition<Array>::value;
+
 }  // namespace lue

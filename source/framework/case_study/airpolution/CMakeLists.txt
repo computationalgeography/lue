@@ -21,7 +21,8 @@ target_include_directories(lue_airpolution
 
 target_link_libraries(lue_airpolution
     PUBLIC
-        lue::framework_core
+        lue::framework_algorithm
+        # lue::framework_core
 )
 
 add_hpx_executable(lue_polute_air

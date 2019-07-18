@@ -1,5 +1,7 @@
 #pragma once
+#include "lue/framework/core/shape.hpp"
 #include <string>
+#include <vector>
 
 
 namespace lue {
@@ -10,9 +12,9 @@ namespace lue {
 
 void               polute_air          (std::uint64_t max_tree_depth,
                                         std::uint64_t nr_time_steps,
-                                        std::uint64_t nr_rows,
-                                        std::uint64_t nr_cols,
-                                        std::uint64_t nr_rows_partition,
-                                        std::uint64_t nr_cols_partition);
+                                        Shape<std::uint64_t, 2> const&
+                                            array_shape,
+                                        Shape<std::uint64_t, 2> const&
+                                            partition_shape);
 
 }  // namespace lue

@@ -5,6 +5,8 @@ add_unit_tests(
         array_partition_definition_test
         array_visitor_test
         domain_decomposition_test
+        math_test
+        shared_buffer_test
         shape_test
     LINK_LIBRARIES
         lue::framework_core
