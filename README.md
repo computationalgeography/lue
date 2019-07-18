@@ -12,25 +12,20 @@ More information about LUE:
 |                  |                                      |
 | -----------------|--------------------------------------|
 | Documentation    | http://lue.readthedocs.io/en/latest/ |
-| Python package   | https://pypi.python.org/pypi/lue     |
 | Development team | http://www.pcraster.eu               |
 
+The Python package documentation at Read the Docs is not complete. Most
+importantly, it lacks information about the API. For that, generate the
+documentation yourself while building LUE (see below).
 
 [![Linux build Status](https://travis-ci.org/pcraster/lue.svg?branch=master)](https://travis-ci.org/pcraster/lue) [![Windows build Status](https://ci.appveyor.com/api/projects/status/8qpm4qi44ctbfb7k/branch/master?svg=true)](https://ci.appveyor.com/project/kordejong/lue) [![Documentation Status](https://readthedocs.org/projects/docs/badge/)](https://lue.readthedocs.io/en/latest)
 
 
 ## Installation
 Here, we describe how to configure, build and install the LUE
-targets using CMake. This is useful in case you want to use targets
-that are not installed when installing the LUE Python package (like
-API documentation and commandline utilities). In case you are only
-interested in using the LUE Python package, [installing LUE using
-pip](https://lue.readthedocs.io/en/latest/installation.html) is probably
-more convenient.
-
-The LUE source code can be obtained from the [LUE Github project
-page](https://github.com/pcraster/lue). CMake is used to configure and
-generate project files for building LUE.
+targets using CMake. The LUE source code can be obtained from the [LUE
+Github project page](https://github.com/pcraster/lue). CMake is used to
+configure and generate project files for building LUE.
 
 The folowing CMake variables are used to determine which targets to build:
 
@@ -38,7 +33,7 @@ The folowing CMake variables are used to determine which targets to build:
 | -------- | ------  | ------ |
 | `LUE_BUILD_DATA_MODEL` | `TRUE` | Build data model C++ API |
 | `LUE_BUILD_FRAMEWORK` | `FALSE` | Build modelling framework |
-| `LUE_BUILD_DOCUMENTATION` | `FALSE` | Build C++ API documentation |
+| `LUE_BUILD_DOCUMENTATION` | `FALSE` | Build API documentation |
 | `LUE_BUILD_TEST` | `FALSE` | Build test targets |
 
 Some targets have optional features:
