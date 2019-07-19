@@ -22,10 +22,12 @@ PartitionT<Partition, ElementT<Partition>, 1> unique_partition(
     using OutputData = DataT<OutputPartition>;
     using OutputShape = ShapeT<OutputPartition>;
 
+    hpx::id_type partition_id = partition.get_id();
+
     return partition.data(CopyMode::share).then(
         hpx::util::unwrapping(
-            // TODO Pass by copy?
-            [partition](InputData const& partition_data)
+            [partition_id](
+                InputData const& partition_data)
             {
                 // Copy values from input array into a set
                 std::set<Element> unique_values(
@@ -33,13 +35,13 @@ PartitionT<Partition, ElementT<Partition>, 1> unique_partition(
                 assert(unique_values.size() <= partition_data.size());
 
                 // Copy unique values from set into output array
-                OutputData result{OutputShape{{unique_values.size()}}};
-                assert(result.size() == unique_values.size());
+                OutputData output_data{OutputShape{{unique_values.size()}}};
+                assert(output_data.size() == unique_values.size());
                 std::copy(
                     unique_values.begin(), unique_values.end(),
-                    result.begin());
+                    output_data.begin());
 
-                return OutputPartition{partition.get_id(), result};
+                return OutputPartition{partition_id, output_data};
             }
         )
     );
@@ -59,44 +61,49 @@ struct UniquePartitionAction:
 
 
 template<
-    typename Array>
-hpx::future<PartitionedArrayT<Array, ElementT<Array>, 1>> unique(
-    Array const& array)
+    typename Element,
+    std::size_t rank,
+    template<typename, std::size_t> typename Array>
+hpx::future<Array<Element, 1>> unique(
+    Array<Element, rank> const& array)
 {
+
     // - Determine unique values per partition
     // - Collect these values and determine overall collection of
     //     unique values
     // - The result is a 1-dimensional array with a single partition,
     //     located on the current locality
 
-    using InputPartition = PartitionT<Array>;
-    using Element = ElementT<Array>;
+    using InputArray = Array<Element, rank>;
+    using InputPartition = PartitionT<InputArray>;
 
-    using OutputArray = PartitionedArrayT<Array, Element, 1>;
-    using OutputPartition = PartitionT<OutputArray>;
+    using OutputArray = Array<Element, 1>;
     using OutputPartitions = PartitionsT<OutputArray>;
+    using OutputPartition = PartitionT<OutputArray>;
+    using OutputData = DataT<OutputPartition>;
     using OutputShape = ShapeT<OutputArray>;
 
-    using OutputData = DataT<OutputPartition>;
+    OutputPartitions output_partitions{OutputShape{{nr_partitions(array)}}};
+    UniquePartitionAction<InputPartition> action;
 
-    OutputPartitions unique_partitions{OutputShape{{nr_partitions(array)}}};
-    UniquePartitionAction<InputPartition> unique_partition_action;
-
-    // Attach a continuation to each array partition, that determines
-    // the unique values in that partition. These continuations run
-    // on the same localities as where the partitions themselves are
-    // located.
     for(std::size_t p = 0; p < nr_partitions(array); ++p) {
 
-       InputPartition const& input_partition = array.partitions()[p];
+        InputPartition const& input_partition = array.partitions()[p];
 
-       unique_partitions[p] = hpx::dataflow(
-           hpx::launch::async,
-           unique_partition_action,
-           // TODO Is this efficient?
-           hpx::get_colocation_id(hpx::launch::sync, input_partition.get_id()),
-           input_partition
-       );
+        output_partitions[p] =
+            hpx::get_colocation_id(input_partition.get_id()).then(
+                hpx::util::unwrapping(
+                    [=](
+                        hpx::naming::id_type const locality_id)
+                    {
+                        return hpx::dataflow(
+                            hpx::launch::async,
+                            action,
+                            locality_id,
+                            input_partition);
+                    }
+                )
+            );
 
     }
 
@@ -107,22 +114,21 @@ hpx::future<PartitionedArrayT<Array, ElementT<Array>, 1>> unique(
     // the unique values in the whole array once the partitions are
     // ready. This continuation runs on our own locality. This implies
     // data is transported from remote localities to us.
-    return hpx::when_all(unique_partitions.begin(), unique_partitions.end())
-        .then(
-            [](auto&& f) {
-                auto const unique_partitions = f.get();
+    return hpx::when_all(
+            output_partitions.begin(), output_partitions.end()).then(
+        hpx::util::unwrapping(
+            [](auto const& partitions) {
 
                 // Collection of unique values of all partition results
                 std::set<Element> unique_values;
 
-                for(auto const& unique_partition: unique_partitions) {
+                for(auto const& partition: partitions) {
 
-                    OutputData const& unique_partition_values =
-                        unique_partition.data(CopyMode::copy).get();
+                    auto const data = partition.data(CopyMode::share).get();
 
                     unique_values.insert(
-                        unique_partition_values.begin(),
-                        unique_partition_values.end());
+                        data.begin(),
+                        data.end());
 
                 }
 
@@ -153,6 +159,7 @@ hpx::future<PartitionedArrayT<Array, ElementT<Array>, 1>> unique(
 
                 return result_array;
             }
+        )
     );
 }
 

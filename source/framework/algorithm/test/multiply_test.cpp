@@ -41,7 +41,7 @@ void test_array()
             hpx::make_ready_future<Element>(5 * 6);
         auto equal_to = lue::equal_to(multiply, expected_result);
 
-        auto cast = lue::cast<decltype(equal_to), std::int32_t>(equal_to);
+        auto cast = lue::cast<std::int32_t>(equal_to);
         auto sum = lue::sum(cast);
 
         BOOST_CHECK_EQUAL(sum.get(), lue::nr_elements(shape));
@@ -55,7 +55,7 @@ void test_array()
             hpx::make_ready_future<Element>(5 * 5);
         auto equal_to = lue::equal_to(multiply, expected_result);
 
-        auto cast = lue::cast<decltype(equal_to), std::int32_t>(equal_to);
+        auto cast = lue::cast<std::int32_t>(equal_to);
         auto sum = lue::sum(cast);
 
         BOOST_CHECK_EQUAL(sum.get(), lue::nr_elements(shape));
@@ -69,7 +69,7 @@ void test_array()
             hpx::make_ready_future<Element>(5 * 5);
         auto equal_to = lue::equal_to(multiply, expected_result);
 
-        auto cast = lue::cast<decltype(equal_to), std::int32_t>(equal_to);
+        auto cast = lue::cast<std::int32_t>(equal_to);
         auto sum = lue::sum(cast);
 
         BOOST_CHECK_EQUAL(sum.get(), lue::nr_elements(shape));

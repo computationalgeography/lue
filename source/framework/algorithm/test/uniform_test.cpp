@@ -48,7 +48,7 @@ void test_array()
     // BOOST_CHECK(all_smaller.get());
 
     auto equal_to = lue::equal_to(array1, array2);
-    auto sum = lue::sum(lue::cast<decltype(equal_to), Element>(equal_to));
+    auto sum = lue::sum(lue::cast<Element>(equal_to));
     BOOST_CHECK_EQUAL(sum.get(), 0);
 }
 

@@ -282,6 +282,10 @@ hpx::future<typename ArrayPartition<Element, rank>::Data>
     ArrayPartition<Element, rank>::data(
         CopyMode const mode) const
 {
+    // TODO Is there every a reason not to use 'share'? If the server
+    // is not located on the same locality, the data is sent over the
+    // wire and we get a copy anyway...
+
     assert(
         // In case copy mode is share, we and the server instance must be
         // located on the same locality

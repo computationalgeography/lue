@@ -27,7 +27,7 @@ void test_array()
     lue::fill(array, fill_value).wait();
 
     // Request the cast of the array
-    auto cast = lue::cast<InputArray, OutputElement>(array);
+    auto cast = lue::cast<OutputElement>(array);
 
     // Request the sumation of the array
     auto sum = lue::sum(cast);

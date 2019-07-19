@@ -23,11 +23,11 @@ Partition copy_partition(
         hpx::get_colocation_id(partition.get_id()).get() ==
         hpx::find_here());
 
-    // TODO Generalize. It is possible this code runs on a different
-    //     partition than the one the partition passed in is located on.
-    //     In that case the default copy doesn't work, does it? Implement
-    //     the copy constructor.
+    // Does a copy of a component create a copy on the locality the
+    // original component is located on? In that case, this code
+    // seems fine.
 
+    // Deep copy
     return Partition{partition};
 }
 
@@ -45,38 +45,40 @@ struct CopyPartitionAction:
 
 
 template<
-    typename Array>
-Array copy(
-    Array const& array)
+    typename Element,
+    std::size_t rank,
+    template<typename, std::size_t> typename Array_>
+Array_<Element, rank> copy(
+    Array_<Element, rank> const& array)
 {
+    using Array = Array_<Element, rank>;
     using Partition = PartitionT<Array>;
     using Partitions = PartitionsT<Array>;
 
-    CopyPartitionAction<Partition> copy_partition_action;
+    CopyPartitionAction<Partition> action;
+    Partitions output_partitions{shape_in_partitions(array)};
 
-    // Create a new array for storing the new partitions. These partitions
-    // will contain the copied elements.
-    Partitions partitions{shape_in_partitions(array)};
-
-    // Attach a continuation to each partition that copies all input
-    // elements to the output elements. These continuations run on the
-    // same localities as where the partitions themselves are located.
     for(std::size_t p = 0; p < nr_partitions(array); ++p) {
 
-        Partition const& source_partition = array.partitions()[p];
-        Partition& destination_partition = partitions[p];
+        Partition const& input_partition = array.partitions()[p];
 
-        destination_partition = hpx::dataflow(
-            hpx::launch::async,
-            copy_partition_action,
-            hpx::get_colocation_id(
-                hpx::launch::sync, source_partition.get_id()),
-            source_partition
-        );
-
+        output_partitions[p] =
+            hpx::get_colocation_id(input_partition.get_id()).then(
+                hpx::util::unwrapping(
+                    [=](
+                        hpx::naming::id_type const locality_id)
+                    {
+                        return hpx::dataflow(
+                            hpx::launch::async,
+                            action,
+                            locality_id,
+                            input_partition);
+                    }
+                )
+            );
     }
 
-    return Array{shape(array), std::move(partitions)};
+    return Array{shape(array), std::move(output_partitions)};
 }
 
 }  // namespace lue

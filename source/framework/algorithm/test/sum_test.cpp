@@ -26,7 +26,7 @@ void test_array()
     lue::fill(array, fill_value).wait();
 
     // Request the sumation of the array
-    auto sum = lue::sum<Array, ResultElement>(array);
+    auto sum = lue::sum<ResultElement>(array);
 
     using TypeWeGot = decltype(sum);
     using TypeWeWant = hpx::future<ResultElement>;
