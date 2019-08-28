@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/framework/core/component/array_partition.hpp"
+#include "lue/framework/core/type_traits.hpp"
 #include <hpx/include/lcos.hpp>
 
 
@@ -41,7 +41,8 @@ PartitionT<Partition, ElementT<Partition>, 1> unique_partition(
                     unique_values.begin(), unique_values.end(),
                     output_data.begin());
 
-                return OutputPartition{partition_id, output_data};
+                return OutputPartition{
+                    hpx::find_here(), output_data, std::string{"meh"}};
             }
         )
     );
@@ -60,6 +61,18 @@ struct UniquePartitionAction:
 {};
 
 
+/*!
+    @brief      Return the unique values in a partitioned array
+    @tparam     Element Type of elements in the input array
+    @tparam     rank Rank of the input array
+    @tparam     Array Class template of the type of the array
+    @param      array Partitioned array
+    @return     Future to collection with unique values that becomes
+                ready once the algorithm has finished
+
+    The returned collection is a one dimensional partitioned array with
+    a single partition located on the current locality.
+*/
 template<
     typename Element,
     std::size_t rank,
@@ -94,7 +107,7 @@ hpx::future<Array<Element, 1>> unique(
             hpx::get_colocation_id(input_partition.get_id()).then(
                 hpx::util::unwrapping(
                     [=](
-                        hpx::naming::id_type const locality_id)
+                        hpx::id_type const locality_id)
                     {
                         return hpx::dataflow(
                             hpx::launch::async,
@@ -124,7 +137,7 @@ hpx::future<Array<Element, 1>> unique(
 
                 for(auto const& partition: partitions) {
 
-                    auto const data = partition.data(CopyMode::share).get();
+                    auto const data = partition.data(CopyMode::copy).get();
 
                     unique_values.insert(
                         data.begin(),
@@ -146,9 +159,7 @@ hpx::future<Array<Element, 1>> unique(
 
                 // Store array data in partition component
                 OutputPartition result_partition{
-                    // TODO Does this work? colocated is called on the
-                    //     result of find_here. What does that mean?
-                    hpx::find_here(), result_values};
+                    hpx::find_here(), result_values, std::string{"meh"}};
 
                 // Store partition component in a collection
                 OutputPartitions result_partitions{

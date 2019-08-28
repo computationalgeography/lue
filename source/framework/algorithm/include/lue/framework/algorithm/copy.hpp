@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/framework/core/component/array_partition.hpp"
+#include "lue/framework/core/type_traits.hpp"
 #include <hpx/include/lcos.hpp>
 
 
@@ -44,16 +44,24 @@ struct CopyPartitionAction:
 {};
 
 
+/*!
+    @brief      Return the result of copying a partitioned array
+    @tparam     Element Type of elements in the arrays
+    @tparam     rank Rank of the input array
+    @tparam     Array Class template of the type of the arrays
+    @param      array Partitioned array
+    @return     New partitioned array
+*/
 template<
     typename Element,
     std::size_t rank,
-    template<typename, std::size_t> typename Array_>
-Array_<Element, rank> copy(
-    Array_<Element, rank> const& array)
+    template<typename, std::size_t> typename Array>
+Array<Element, rank> copy(
+    Array<Element, rank> const& array)
 {
-    using Array = Array_<Element, rank>;
-    using Partition = PartitionT<Array>;
-    using Partitions = PartitionsT<Array>;
+    using Array_ = Array<Element, rank>;
+    using Partition = PartitionT<Array_>;
+    using Partitions = PartitionsT<Array_>;
 
     CopyPartitionAction<Partition> action;
     Partitions output_partitions{shape_in_partitions(array)};
@@ -66,7 +74,7 @@ Array_<Element, rank> copy(
             hpx::get_colocation_id(input_partition.get_id()).then(
                 hpx::util::unwrapping(
                     [=](
-                        hpx::naming::id_type const locality_id)
+                        hpx::id_type const locality_id)
                     {
                         return hpx::dataflow(
                             hpx::launch::async,
@@ -78,7 +86,7 @@ Array_<Element, rank> copy(
             );
     }
 
-    return Array{shape(array), std::move(output_partitions)};
+    return Array_{shape(array), std::move(output_partitions)};
 }
 
 }  // namespace lue

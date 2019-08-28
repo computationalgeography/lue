@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/framework/core/component/array_partition.hpp"
+#include "lue/framework/core/type_traits.hpp"
 #include <hpx/include/lcos.hpp>
 
 
@@ -46,17 +46,20 @@ PartitionT<InputPartition, OutputElement> cast_partition(
         input_partition.data(CopyMode::share)
     );
 
-    hpx::id_type partition_id = input_partition.get_id();
+    return hpx::when_all(
+            hpx::get_colocation_id(input_partition.get_id()), cast)
+        .then(
+            hpx::util::unwrapping(
+                [](
+                    auto&& futures)
+                {
+                    auto const locality_id = hpx::util::get<0>(futures).get();
+                    auto&& data = hpx::util::get<1>(futures).get();
 
-    return cast.then(
-        hpx::util::unwrapping(
-            [partition_id](
-                OutputData&& output_partition_data)
-            {
-                return OutputPartition{partition_id, output_partition_data};
-            }
-        )
-    );
+                    return OutputPartition{locality_id, data, std::string{"meh"}};
+                }
+            )
+        );
 }
 
 }  // namespace detail
@@ -73,6 +76,16 @@ struct CastPartitionAction:
 {};
 
 
+/*!
+    @brief      Return the result of casting a partitioned array to
+                another type
+    @tparam     OutputElement Type of elements in the output array
+    @tparam     InputElement Type of elements in the input array
+    @tparam     rank Rank of the input array
+    @tparam     Array Class template of the type of the arrays
+    @param      array Partitioned array
+    @return     New partitioned array
+*/
 template<
     typename OutputElement,
     typename InputElement,
@@ -98,7 +111,7 @@ Array<OutputElement, rank> cast(
             hpx::get_colocation_id(input_partition.get_id()).then(
                 hpx::util::unwrapping(
                     [=](
-                        hpx::naming::id_type const locality_id)
+                        hpx::id_type const locality_id)
                     {
                         return hpx::dataflow(
                             hpx::launch::async,

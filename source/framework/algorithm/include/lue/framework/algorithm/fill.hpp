@@ -1,13 +1,16 @@
 #pragma once
-#include "lue/framework/core/component/partitioned_array.hpp"
+#include "lue/framework/core/type_traits.hpp"
 #include <hpx/include/lcos.hpp>
 
 
 namespace lue {
 
 /*!
-    @brief      Fill @a array in-place with @a fill_value
-    @param      array Array to fill
+    @brief      Fill a partitioned array in-place with @a fill_value
+    @tparam     Element Type of elements in the arrays
+    @tparam     rank Rank of the input arrays
+    @tparam     Array Class template of the type of the arrays
+    @param      array Partitioned array
     @param      fill_value Value to assign to each cell in @a array
     @return     Future that becomes ready once the algorithm has finished
 
@@ -27,8 +30,7 @@ template<
 
     std::vector<hpx::future<void>> fill_partitions(nr_partitions(array));
 
-    using Action = typename ArrayPartitionFillAction<Element, rank>::Type;
-    Action action;
+    typename ArrayPartitionFillAction<Element, rank>::Type action;
 
     for(std::size_t p = 0; p < nr_partitions(array); ++p) {
 
@@ -43,6 +45,8 @@ template<
 
     }
 
+    // when_all takes an r-value reference. Why don't we have to move
+    // the vector of futures in here?
     return hpx::when_all(fill_partitions);
 }
 

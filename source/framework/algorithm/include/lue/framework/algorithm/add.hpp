@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/framework/core/component/array_partition.hpp"
+#include "lue/framework/core/type_traits.hpp"
 #include <hpx/include/lcos.hpp>
 
 
@@ -80,17 +80,21 @@ public:
         // Once the addition has been calculated, create a new component
         // containing the result, on the same locality as the first partition
         // passed in
-        hpx::id_type partition_id = partition1.get_id();
+        return hpx::when_all(
+                hpx::get_colocation_id(partition1.get_id()), addition)
+            .then(
+                hpx::util::unwrapping(
+                    [](
+                        auto&& futures)
+                    {
+                        auto const locality_id =
+                            hpx::util::get<0>(futures).get();
+                        auto&& data = hpx::util::get<1>(futures).get();
 
-        return addition.then(
-            hpx::util::unwrapping(
-                [partition_id](
-                    Data&& addition_data)
-                {
-                    return Partition{partition_id, addition_data};
-                }
-            )
-        );
+                        return Partition{locality_id, data, std::string{"meh"}};
+                    }
+                )
+            );
     }
 
     struct Action:
@@ -113,6 +117,15 @@ using AddPartitionAction =
     typename detail::add::OverloadPicker<T1, T2>::Action;
 
 
+/*!
+    @brief      Return the result of adding two partitioned arrays
+    @tparam     Element Type of elements in the arrays
+    @tparam     rank Rank of the input arrays
+    @tparam     Array Class template of the type of the arrays
+    @param      array1 Partitioned array
+    @param      array2 Partitioned array
+    @return     New partitioned array
+*/
 template<
     typename Element,
     std::size_t rank,
@@ -144,7 +157,7 @@ Array<Element, rank> add(
             hpx::get_colocation_id(input_partition1.get_id()).then(
                 hpx::util::unwrapping(
                     [=](
-                        hpx::naming::id_type const locality_id)
+                        hpx::id_type const locality_id)
                     {
                         return hpx::dataflow(
                             hpx::launch::async,

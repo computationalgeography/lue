@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/framework/core/component/array_partition.hpp"
+#include "lue/framework/core/type_traits.hpp"
 #include <hpx/include/lcos.hpp>
 #include <numeric>
 
@@ -75,38 +75,76 @@ struct UniqueIDPartitionAction:
 {};
 
 
-template<
-    typename Array>
-[[nodiscard]] hpx::future<void> unique_id(
-    Array& array)
-{
-    // - Assign a unique value to each cell in the array
+/*!
+    @brief      Fill a partitioned array in-place with unique IDs
+    @tparam     Element Type of elements in the array
+    @tparam     rank Rank of the array
+    @tparam     Array Class template of the type of the array
+    @param      array Partitioned array
+    @return     Future that becomes ready once the algorithm has finished
 
+    The existing @a array passed in is updated. Use the returned future if
+    you need to know when the filling is done.
+*/
+template<
+    typename Element,
+    std::size_t rank,
+    template<typename, std::size_t> typename Array>
+[[nodiscard]] hpx::future<void> unique_id(
+    Array<Element, rank>& array)
+{
     // - Iterate over all partitions
     //     - Determine first value for partition
     //     - Call action that fills the partition with unique IDs
     // - Return future that becomes ready once all partitions are done
     //     assigning values to all cells
 
-    using Element = ElementT<Array>;
-    using Partition = PartitionT<Array>;
+    using Array_ = Array<Element, rank>;
+    using Partition = PartitionT<Array_>;
 
-    std::vector<hpx::future<void>> unique_id_partitions(nr_partitions(array));
+    auto const nr_partitions = lue::nr_partitions(array);
+
+    std::vector<hpx::future<void>> unique_id_partitions(nr_partitions);
 
     UniqueIDPartitionAction<Partition> action;
 
+    std::vector<hpx::future<typename Partition::Size>>
+        partition_sizes(nr_partitions);
+
+    {
+        // Request the sizes of all partitions and wait until they are
+        // available
+        for(std::size_t p = 0; p < nr_partitions; ++p) {
+            Partition& partition = array.partitions()[p];
+            partition_sizes[p] = partition.size();
+        }
+
+        hpx::wait_all(partition_sizes);
+    }
+
     Element start_value = 0;
 
-    for(std::size_t p = 0; p < nr_partitions(array); ++p) {
+    for(std::size_t p = 0; p < nr_partitions; ++p) {
+
         Partition& partition = array.partitions()[p];
 
-        unique_id_partitions[p] = hpx::dataflow(
-            hpx::launch::async, action,
-            // TODO Is this efficient?
-            hpx::get_colocation_id(hpx::launch::sync, partition.get_id()),
-            partition, start_value);
+        unique_id_partitions[p] =
+            hpx::get_colocation_id(partition.get_id()).then(
+                hpx::util::unwrapping(
+                    [=](
+                        hpx::id_type const locality_id)
+                    {
+                        return hpx::dataflow(
+                            hpx::launch::async,
+                            action,
+                            locality_id,
+                            partition,
+                            start_value);
+                    }
+                )
+            );
 
-        start_value += partition.size().get();  // TODO blocks
+        start_value += partition_sizes[p].get();
     }
 
     return hpx::when_all(unique_id_partitions);

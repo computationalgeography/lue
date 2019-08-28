@@ -38,13 +38,13 @@ public:
 
                    ArrayPartition      ();
 
-                   ArrayPartition      (hpx::id_type const& id);
+    explicit       ArrayPartition      (hpx::id_type const& component_id);
 
-                   ArrayPartition      (hpx::future<hpx::id_type>&&
+    explicit       ArrayPartition      (hpx::future<hpx::id_type>&&
                                             component_id);
 
                    ArrayPartition      (hpx::future<ArrayPartition>&&
-                                            component);
+                                            partition);
 
                    ArrayPartition      (hpx::id_type locality_id,
                                         Shape const& shape);
@@ -53,8 +53,12 @@ public:
                                         Shape const& shape,
                                         Element value);
 
-                   ArrayPartition      (hpx::id_type component_id,
-                                        Data const& data);
+                   ArrayPartition      (hpx::id_type locality_id,
+                                        Data const& data,
+                                        std::string);
+
+    //                ArrayPartition      (hpx::id_type component_id,
+    //                                     Data const& data);
 
                    ArrayPartition      (ArrayPartition const&)=default;
 
@@ -97,6 +101,17 @@ ArrayPartition<Element, rank>::ArrayPartition():
 }
 
 
+/*!
+    @brief      Construct a client instance based on an existing and possibly
+                remote component server instance with ID @a component_id
+    @param      component_id ID of component server instance
+
+    When calling hpx::new_<Client>(...), this constructor is
+    called by the underlying code once the component server has been
+    constructed.
+
+    This instance will take ownership of the ID.
+*/
 template<
     typename Element,
     std::size_t rank>
@@ -110,9 +125,14 @@ ArrayPartition<Element, rank>::ArrayPartition(
 
 
 /*!
-    @brief      Construct an instance based on an existing and possibly
-                remote component with ID @a component_id
-    @param      component_id ID of component
+    @brief      Construct a component client instance based on an existing
+                and possibly remote component server instance with ID
+                @a component_id
+    @param      component_id ID of component server instance
+
+    When calling hpx::new_<Client>(...), this constructor is
+    called by the underlying code once the component server has been
+    constructed.
 
     A non-shared future is a unique future. No two unique futures can
     refer to the same data. Here, an r-value reference to a unique future
@@ -135,7 +155,9 @@ ArrayPartition<Element, rank>::ArrayPartition(
     @param      partition A future to an instance
 
     A partition already holds a future to the ID of the referenced object.
-    Unwrapping accesses this inner future.
+    This means that the object passed in is a future to a future to
+    the ID. Unwrapping accesses this inner future. This constructor acts
+    like an 'unwrapping move constructor'.
 
     A non-shared future is a unique future. No two unique futures can
     refer to the same data. Here, an r-value reference to a unique future
@@ -154,7 +176,7 @@ ArrayPartition<Element, rank>::ArrayPartition(
 
 
 /*!
-    @brief      Construct an instance on locality @a locality_id
+    @brief      Construct a server instance on locality @a locality_id
     @param      locality_id ID of locality to create instance on
     @param      shape Shape of partition to create
 */
@@ -162,7 +184,7 @@ template<
     typename Element,
     std::size_t rank>
 ArrayPartition<Element, rank>::ArrayPartition(
-    hpx::id_type locality_id,
+    hpx::id_type const locality_id,
     Shape const& shape):
 
     Base{hpx::new_<Server>(locality_id, shape)}
@@ -172,7 +194,7 @@ ArrayPartition<Element, rank>::ArrayPartition(
 
 
 /*!
-    @brief      Construct an instance on locality @a locality_id
+    @brief      Construct a server instance on locality @a locality_id
     @param      locality_id ID of locality to create instance on
     @param      shape Shape of partition to create
     @param      value Initial value used to fill the partition
@@ -181,7 +203,7 @@ template<
     typename Element,
     std::size_t rank>
 ArrayPartition<Element, rank>::ArrayPartition(
-    hpx::id_type locality_id,
+    hpx::id_type const locality_id,
     Shape const& shape,
     Element const value):
 
@@ -192,22 +214,41 @@ ArrayPartition<Element, rank>::ArrayPartition(
 
 
 /*!
-    @brief      Construct an instance on the same locality as an existing
-                component's ID and initial @a data
-    @param      component_id ID of an existing component
+    @brief      Construct a server instance on locality @a locality_id
+    @param      locality_id ID of locality to create instance on
     @param      data Initial data
 */
 template<
     typename Element,
     std::size_t rank>
 ArrayPartition<Element, rank>::ArrayPartition(
-    hpx::id_type component_id,
-    Data const& data):
+    hpx::id_type const locality_id,
+    Data const& data,
+    std::string):
 
-    Base{hpx::new_<Server>(hpx::colocated(component_id), data)}
+    Base{hpx::new_<Server>(locality_id, data)}
 
 {
 }
+
+
+// /*!
+//     @brief      Construct a server instance on the same locality as an existing
+//                 component's ID and initial @a data
+//     @param      component_id ID of an existing component
+//     @param      data Initial data
+// */
+// template<
+//     typename Element,
+//     std::size_t rank>
+// ArrayPartition<Element, rank>::ArrayPartition(
+//     hpx::id_type component_id,
+//     Data const& data):
+// 
+//     Base{hpx::new_<Server>(hpx::colocated(component_id), data)}
+// 
+// {
+// }
 
 
 // template<
@@ -282,10 +323,6 @@ hpx::future<typename ArrayPartition<Element, rank>::Data>
     ArrayPartition<Element, rank>::data(
         CopyMode const mode) const
 {
-    // TODO Is there every a reason not to use 'share'? If the server
-    // is not located on the same locality, the data is sent over the
-    // wire and we get a copy anyway...
-
     assert(
         // In case copy mode is share, we and the server instance must be
         // located on the same locality

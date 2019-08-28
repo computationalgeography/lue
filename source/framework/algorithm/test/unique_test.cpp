@@ -1,8 +1,8 @@
 #define BOOST_TEST_MODULE lue framework algorithm unique
+#include "lue/framework/core/component/partitioned_array.hpp"
 #include "lue/framework/algorithm/fill.hpp"
 #include "lue/framework/algorithm/unique.hpp"
 #include "lue/framework/algorithm/unique_id.hpp"
-#include "lue/framework/core/component/partitioned_array.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
@@ -30,7 +30,7 @@ void test_array()
 
         BOOST_REQUIRE_EQUAL(unique.nr_elements(), 1);
         BOOST_CHECK_EQUAL(
-            unique.partitions()[0].data(lue::CopyMode::copy).get()[0],
+            unique.partitions()[0].data(lue::CopyMode::share).get()[0],
             fill_value.get());
     }
 

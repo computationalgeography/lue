@@ -1,8 +1,8 @@
 #define BOOST_TEST_MODULE lue framework algorithm cast
+#include "lue/framework/core/component/partitioned_array.hpp"
 #include "lue/framework/algorithm/cast.hpp"
 #include "lue/framework/algorithm/fill.hpp"
 #include "lue/framework/algorithm/sum.hpp"
-#include "lue/framework/core/component/partitioned_array.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 

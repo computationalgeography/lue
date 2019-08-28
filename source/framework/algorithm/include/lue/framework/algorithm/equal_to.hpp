@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/framework/core/component/array_partition.hpp"
+#include "lue/framework/core/type_traits.hpp"
 #include <hpx/include/lcos.hpp>
 
 
@@ -78,17 +78,20 @@ public:
             partition_data2
         );
 
-        hpx::id_type partition_id = partition1.get_id();
+        return hpx::when_all(
+                hpx::get_colocation_id(partition1.get_id()), result_data)
+            .then(
+                hpx::util::unwrapping(
+                    [](
+                        auto&& futures)
+                    {
+                        auto const locality_id = hpx::util::get<0>(futures).get();
+                        auto&& data = hpx::util::get<1>(futures).get();
 
-        return result_data.then(
-            hpx::util::unwrapping(
-                [partition_id](
-                    OutputData&& data)
-                {
-                    return OutputPartition{partition_id, data};
-                }
-            )
-        );
+                        return OutputPartition{locality_id, data, std::string{"meh"}};
+                    }
+                )
+            );
     }
 
     struct Action:
@@ -154,17 +157,20 @@ public:
             scalar
         );
 
-        hpx::id_type partition_id = partition.get_id();
+        return hpx::when_all(
+                hpx::get_colocation_id(partition.get_id()), result_data)
+            .then(
+                hpx::util::unwrapping(
+                    [](
+                        auto&& futures)
+                    {
+                        auto const locality_id = hpx::util::get<0>(futures).get();
+                        auto&& data = hpx::util::get<1>(futures).get();
 
-        return result_data.then(
-            hpx::util::unwrapping(
-                [partition_id](
-                    OutputData&& data)
-                {
-                    return OutputPartition{partition_id, data};
-                }
-            )
-        );
+                        return OutputPartition{locality_id, data, std::string{"meh"}};
+                    }
+                )
+            );
     }
 
     struct Action:
@@ -187,17 +193,29 @@ using EqualToPartitionAction =
     typename detail::equal_to::OverloadPicker<T1, T2>::Action;
 
 
+/*!
+    @brief      Return the result of comparing two partitioned arrays
+    @tparam     Element Type of elements in the arrays
+    @tparam     rank Rank of the input arrays
+    @tparam     Array Class template of the type of the arrays
+    @param      array1 Partitioned array
+    @param      array2 Partitioned array
+    @return     New partitioned array
+*/
 template<
-    typename Array>
-PartitionedArrayT<Array, bool> equal_to(
-    Array const& array1,
-    Array const& array2)
+    typename Element,
+    std::size_t rank,
+    template<typename, std::size_t> typename Array>
+PartitionedArrayT<Array<bool, rank>, bool> equal_to(
+    Array<Element, rank> const& array1,
+    Array<Element, rank> const& array2)
 {
     assert(nr_partitions(array1) == nr_partitions(array2));
 
-    using InputPartition = PartitionT<Array>;
+    using InputArray = Array<Element, rank>;
+    using InputPartition = PartitionT<InputArray>;
 
-    using OutputArray = PartitionedArrayT<Array, bool>;
+    using OutputArray = PartitionedArrayT<InputArray, bool>;
     using OutputPartitions = PartitionsT<OutputArray>;
 
     EqualToPartitionAction<InputPartition, InputPartition> action;
@@ -212,7 +230,7 @@ PartitionedArrayT<Array, bool> equal_to(
             hpx::get_colocation_id(input_partition1.get_id()).then(
                 hpx::util::unwrapping(
                     [=](
-                        hpx::naming::id_type const locality_id)
+                        hpx::id_type const locality_id)
                     {
                         return hpx::dataflow(
                             hpx::launch::async,
@@ -229,6 +247,9 @@ PartitionedArrayT<Array, bool> equal_to(
 }
 
 
+/*!
+    @overload
+*/
 template<
     typename Element,
     std::size_t rank,
@@ -255,7 +276,7 @@ PartitionedArrayT<Array<bool, rank>, bool> equal_to(
             hpx::get_colocation_id(input_partition.get_id()).then(
                 hpx::util::unwrapping(
                     [=](
-                        hpx::naming::id_type const locality_id)
+                        hpx::id_type const locality_id)
                     {
                         return hpx::dataflow(
                             hpx::launch::async,
@@ -272,6 +293,9 @@ PartitionedArrayT<Array<bool, rank>, bool> equal_to(
 }
 
 
+/*!
+    @overload
+*/
 template<
     typename Element,
     std::size_t rank,

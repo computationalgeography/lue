@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/framework/core/component/array_partition.hpp"
+#include "lue/framework/core/type_traits.hpp"
 #include <hpx/include/lcos.hpp>
 
 
@@ -53,17 +53,19 @@ PartitionT<Partition, OutputElement> sum_partition(
 
     // Once the sum has been calculated, create a component containing
     // the result, on the same locality as the summed partition
-    return sum.then(
-        hpx::util::unwrapping(
-            [partition](
-                OutputData&& sum_data)
-            {
-                assert(sum_data.size() == 1);
+    return hpx::when_all(hpx::get_colocation_id(partition.get_id()), sum)
+        .then(
+            hpx::util::unwrapping(
+                [](
+                    auto&& futures)
+                {
+                    auto const locality_id = hpx::util::get<0>(futures).get();
+                    auto&& data = hpx::util::get<1>(futures).get();
 
-                return OutputPartition(partition.get_id(), sum_data);
-            }
-        )
-    );
+                    return Partition{locality_id, data, std::string{"meh"}};
+                }
+            )
+        );
 }
 
 }  // namespace detail
@@ -80,6 +82,16 @@ struct SumPartitionAction:
 {};
 
 
+/*!
+    @brief      Return the result of summing the elements in a partitioned
+                array
+    @tparam     InputElement Type of elements in the input array
+    @tparam     OutputElement Type of result value
+    @tparam     rank Rank of the input array
+    @tparam     Array Class template of the type of the array
+    @param      array Partitioned array
+    @return     Future that becomes ready once the algorithm has finished
+*/
 template<
     typename InputElement,
     typename OutputElement=InputElement,
@@ -104,7 +116,7 @@ hpx::future<OutputElement> sum(
             hpx::get_colocation_id(partition.get_id()).then(
                 hpx::util::unwrapping(
                     [=](
-                        hpx::naming::id_type const locality_id)
+                        hpx::id_type const locality_id)
                     {
                         return hpx::dataflow(
                             hpx::launch::async,
@@ -129,7 +141,7 @@ hpx::future<OutputElement> sum(
 
                 for(auto const& partition: partitions) {
 
-                    auto const data = partition.data(CopyMode::share).get();
+                    auto const data = partition.data(CopyMode::copy).get();
                     assert(data.size() == 1);
 
                     result += data[0];
