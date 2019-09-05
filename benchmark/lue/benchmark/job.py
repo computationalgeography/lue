@@ -42,7 +42,7 @@ def program_configuration(
     return \
         '--hpx:ini="application.{program_name}.benchmark.cluster_name!={cluster_name}" ' \
         '--hpx:ini="application.{program_name}.benchmark.count!={count}" ' \
-        '--hpx:ini="application.{program_name}.benchmark.max_tree_depth!={max_tree_depth}" ' \
+        '{max_tree_depth} ' \
         '--hpx:ini="application.{program_name}.benchmark.output!={result_pathname}" ' \
         '--hpx:ini="application.{program_name}.nr_time_steps!={nr_time_steps}" ' \
         '--hpx:ini="application.{program_name}.array_shape!={array_shape}" ' \
@@ -51,7 +51,9 @@ def program_configuration(
                 program_name=experiment.program_name,
                 cluster_name=cluster.name,
                 count=benchmark.count,
-                max_tree_depth=experiment.max_tree_depth,
+                max_tree_depth=
+                    '--hpx:ini="application.{program_name}.benchmark.max_tree_depth!={max_tree_depth}" ' \
+                        if experiment.max_tree_depth is not None else "",
                 nr_time_steps=experiment.nr_time_steps,
                 array_shape=list(array_shape),
                 partition_shape=list(partition_shape),

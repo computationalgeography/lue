@@ -3,7 +3,7 @@ import sys
 sys.path = [
     os.path.join(os.path.split(__file__)[0], "..")
 ] + sys.path
-from lue.benchmark.partition_shape.shape import *
+from lue.benchmark.shape import *
 import unittest
 
 
@@ -76,7 +76,7 @@ class PartitionShapeTest(unittest.TestCase):
         min_shape = (480, 480)
         max_shape = (500, 500)
         step = 10
-        shapes = partition_shapes(min_shape, max_shape, step)
+        shapes = list(partition_shapes(min_shape, max_shape, step))
 
         self.assertEqual(len(shapes), 3)
         self.assertEqual(shapes[0], (480, 480))

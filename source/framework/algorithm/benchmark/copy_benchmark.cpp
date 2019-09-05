@@ -17,7 +17,8 @@ auto setup_benchmark(
         lue::benchmark::Environment const& environment,
         lue::benchmark::Task const& task)
     {
-        lue::benchmark::copy(environment.max_tree_depth(), task);
+        assert(!environment.max_tree_depth());
+        lue::benchmark::copy(task);
     };
 
     return lue::benchmark::Benchmark{std::move(callable), environment, task};

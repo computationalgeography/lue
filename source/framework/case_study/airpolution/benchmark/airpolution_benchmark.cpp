@@ -24,8 +24,9 @@ auto setup_benchmark(
         std::copy(task.partition_shape().begin(), task.partition_shape().end(),
             partition_shape.begin());
 
+        assert(!environment.max_tree_depth());
         lue::polute_air(
-            environment.max_tree_depth(), task.nr_time_steps(),
+            task.nr_time_steps(),
             array_shape, partition_shape);
     };
 

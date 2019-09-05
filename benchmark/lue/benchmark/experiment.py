@@ -18,7 +18,8 @@ class Experiment(object):
 
         self.max_duration = \
             json["max_duration"] if "max_duration" in json else None
-        self.max_tree_depth = json["max_tree_depth"]
+        self.max_tree_depth = \
+            json["max_tree_depth"] if "max_tree_depth" in json else None
         self.nr_time_steps = json["nr_time_steps"]
 
     def workspace_pathname(self,

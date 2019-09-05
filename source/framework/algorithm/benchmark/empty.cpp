@@ -6,7 +6,6 @@ namespace lue {
 namespace benchmark {
 
 void empty(
-    std::uint64_t const /* max_tree_depth */,
     Task const& task)
 {
     // There is no state to manipulate

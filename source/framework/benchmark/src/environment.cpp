@@ -8,7 +8,7 @@ Environment::Environment(
     // std::string const& system_name,
     std::size_t const count,
     std::size_t const nr_threads,
-    std::size_t const max_tree_depth):
+    std::optional<std::size_t> const& max_tree_depth):
     // std::size_t const work_size):
 
     Environment{/* system_name, */ count, 1, nr_threads, max_tree_depth} // , work_size}
@@ -22,7 +22,7 @@ Environment::Environment(
     std::size_t const count,
     std::size_t const nr_localities,
     std::size_t const nr_threads,
-    std::size_t const max_tree_depth):
+    std::optional<std::size_t> const& max_tree_depth):
     // std::size_t const work_size):
 
     // _system_name{system_name},
@@ -60,7 +60,7 @@ std::size_t Environment::nr_threads() const
 }
 
 
-std::size_t Environment::max_tree_depth() const
+std::optional<std::size_t> const& Environment::max_tree_depth() const
 {
     return _max_tree_depth;
 }

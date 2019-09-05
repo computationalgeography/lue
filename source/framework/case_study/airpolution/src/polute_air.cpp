@@ -140,17 +140,14 @@ namespace lue {
     @brief      Calculate average airpolution based on synthetic data
 */
 void polute_air(
-    std::uint64_t const max_tree_depth,
     std::uint64_t const nr_time_steps,
     Shape<std::uint64_t, 2> const& array_shape,
     Shape<std::uint64_t, 2> const& partition_shape)
 {
     hpx::cout
         << fmt::format(
-                "max_tree_depth        : {}\n"
                 "array_shape           : {}\n"
                 "partition_shape       : {}\n",
-            max_tree_depth,
             array_shape,
             partition_shape)
         << std::flush;

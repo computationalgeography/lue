@@ -16,7 +16,7 @@ Run a performance benchmark
 
 usage:
     {0} --count=<count> --nr_threads=<nr_threads>
-        --max_tree_depth=<max_tree_depth> [<output>]
+        [--max_tree_depth=<max_tree_depth>] [<output>]
     {0} (-h | --help) | --version
 
 options:
@@ -40,10 +40,16 @@ Environment create_environment(
     // std::string const hostname = boost::asio::ip::host_name();
     std::size_t const count = arguments.at("--count").asLong();
     std::size_t const nr_threads = arguments.at("--nr_threads").asLong();
-    std::size_t const max_tree_depth = arguments.at("--nr_threads").asLong();
+
+    std::optional<std::size_t> max_tree_depth;
+
+    if(arguments.at("--max_tree_depth")) {
+        max_tree_depth = arguments.at("--max_tree_depth").asLong();
+    }
+
     // std::size_t const work_size = arguments.at("--work_size").asLong();
 
-    return Environment{/* hostname, */ count, nr_threads, max_tree_depth};  // , work_size};
+    return Environment{count, nr_threads, max_tree_depth};  // , work_size};
 }
 
 

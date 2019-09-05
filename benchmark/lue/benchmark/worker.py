@@ -1,6 +1,9 @@
+from . import pool
+
+
 class Worker(object):
 
-    def __init__(self, json, cluster):
+    def __init__(self, data, cluster):
         """
         Class for storing information about the workers to be used
         in scaling experiments
@@ -10,35 +13,30 @@ class Worker(object):
         - node: used in scaling experiments on a cluster
         """
 
-        self.type = json["type"]
+        self.type = data["type"]
         assert self.type in ["thread", "node"]
 
-        self.min_nr = json["min_nr"]
-        self.max_nr = json["max_nr"]
-
-        assert self.min_nr > 0
-        assert self.min_nr <= self.max_nr
+        self.pool = pool.Pool(data["pool"])
 
         if self.type == "thread":
             # Scaling over threads. This only makes sense on a single node.
             self.min_nr_nodes = 1
             self.max_nr_nodes = 1
-            self.min_nr_threads = self.min_nr
-            self.max_nr_threads = self.max_nr
+            self.min_nr_threads = self.pool.min_size
+            self.max_nr_threads = self.pool.max_size
         elif self.type == "node":
             # Scaling over nodes. Within each node, all threads are used.
-            self.min_nr_nodes = self.min_nr
-            self.max_nr_nodes = self.max_nr
+            self.min_nr_nodes = self.pool.min_size
+            self.max_nr_nodes = self.pool.max_size
             self.min_nr_threads = cluster.node.nr_threads()
             self.max_nr_threads = self.min_nr_threads
 
 
     def __str__(self):
-        return "Worker(type={}, min_nr={}, max_nr={})" \
+        return "Worker(type={}, pool={})" \
             .format(
                 self.type,
-                self.min_nr,
-                self.max_nr,
+                self.pool,
             )
 
 
@@ -58,9 +56,9 @@ class Worker(object):
 
     def nr_benchmarks(self):
         """
-        Return number of benchmark to perform for benchmark
+        Return number of benchmarks to perform for benchmark
         """
-        return self.max_nr - self.min_nr + 1
+        return self.pool.nr_permutations()
 
 
     def nr_workers(self,
@@ -68,9 +66,7 @@ class Worker(object):
         """
         Return number of workers to use in benchmark with the index passed in
         """
-        assert benchmark_idx in range(self.nr_benchmarks()), benchmark_idx
-
-        return self.min_nr + benchmark_idx
+        return self.pool.permutation_size(benchmark_idx)
 
 
     def nr_nodes(self):

@@ -6,7 +6,6 @@ sys.path = [
 ] + sys.path
 import benchmark
 import docopt
-import json
 
 
 usage = """\
@@ -47,13 +46,13 @@ if __name__ == "__main__":
     arguments = docopt.docopt(usage)
 
     cluster_settings_pathname = arguments["<cluster_settings>"]
-    cluster_settings = json.load(open(cluster_settings_pathname))
+    cluster_settings = benchmark.json_to_data(cluster_settings_pathname)
 
     benchmark_settings_pathname = arguments["<benchmark_settings>"]
-    benchmark_settings = json.load(open(benchmark_settings_pathname))
+    benchmark_settings = benchmark.json_to_data(benchmark_settings_pathname)
 
     experiment_settings_pathname = arguments["<experiment_settings>"]
-    experiment_settings = json.load(open(experiment_settings_pathname))
+    experiment_settings = benchmark.json_to_data(experiment_settings_pathname)
 
     script_pathname = arguments["<script>"]
     command_pathname = arguments["<command>"]

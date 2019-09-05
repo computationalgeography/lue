@@ -28,12 +28,17 @@ Environment create_environment()
     std::uint64_t const nr_threads =
         required_configuration_entry<std::uint64_t>("hpx", "os_threads");
     std::uint64_t const max_tree_depth =
-        required_configuration_entry<std::uint64_t>("benchmark.max_tree_depth");
+        optional_configuration_entry<std::uint64_t>(
+            "benchmark.max_tree_depth", 0);
     // std::uint64_t const work_size =
     //     required_configuration_entry<std::uint64_t>("benchmark.work_size");
 
     return Environment{
-        /* cluster_name, */ count, nr_localities, nr_threads, max_tree_depth};  // , work_size};
+        count, nr_localities, nr_threads,
+        max_tree_depth > 0
+            ? std::optional<std::size_t>{max_tree_depth}
+            : std::optional<std::size_t>{}
+    };
 }
 
 

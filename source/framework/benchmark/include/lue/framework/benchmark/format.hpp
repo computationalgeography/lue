@@ -94,7 +94,9 @@ inline std::string format_as_json(
         // environment_json["system_name"] = environment.system_name();
         environment_json["nr_localities"] = environment.nr_localities();
         environment_json["nr_threads"] = environment.nr_threads();
-        environment_json["max_tree_depth"] = environment.max_tree_depth();
+        if(environment.max_tree_depth()) {
+            environment_json["max_tree_depth"] = *environment.max_tree_depth();
+        }
         // environment_json["work_size"] = environment.work_size();
 
         j["environment"] = environment_json;

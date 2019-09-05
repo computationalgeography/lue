@@ -11,7 +11,6 @@ template<
     typename Element,
     std::size_t rank>
 void copy(
-    std::uint64_t max_tree_depth,
     Task const& task)
 {
     using Array = PartitionedArray<Element, rank>;
@@ -55,14 +54,13 @@ void copy(
 
 
 void copy(
-    std::uint64_t max_tree_depth,
     Task const& task)
 {
     using Element = std::int32_t;
 
     switch(task.rank()) {
         case 2: {
-            detail::copy<Element, 2>(max_tree_depth, task);
+            detail::copy<Element, 2>(task);
             break;
         }
     }

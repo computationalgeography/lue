@@ -11,8 +11,8 @@ int hpx_main(
     using Shape = lue::Shape<std::uint64_t, 2>;
 
     // Runtime configuration
-    std::uint64_t const max_tree_depth =
-        lue::required_configuration_entry<std::uint64_t>("max_tree_depth");
+    // std::uint64_t const max_tree_depth =
+    //     lue::required_configuration_entry<std::uint64_t>("max_tree_depth");
 
     // Simulation configuration
     std::uint64_t const nr_time_steps =
@@ -24,7 +24,7 @@ int hpx_main(
         "partition_shape");
 
     lue::polute_air(
-        max_tree_depth, nr_time_steps, array_shape, partition_shape);
+        nr_time_steps, array_shape, partition_shape);
 
     return hpx::finalize();
 }

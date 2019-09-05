@@ -45,8 +45,11 @@ def generate_script_slurm_nodes(
     array_shape = experiment.array.shape()
     partition_shape = experiment.partition.shape()
 
-    for nr_workers in \
-            range(benchmark.worker.min_nr, benchmark.worker.max_nr + 1):
+    # for nr_workers in \
+    #         range(benchmark.worker.min_nr, benchmark.worker.max_nr + 1):
+    for benchmark_idx in range(benchmark.worker.nr_benchmarks()):
+
+        nr_workers = benchmark.worker.nr_workers(benchmark_idx)
 
         result_pathname = experiment.benchmark_result_pathname(
             cluster.name, nr_workers, "json")
@@ -218,8 +221,11 @@ def generate_script_shell(
     array_shape = experiment.array.shape()
     partition_shape = experiment.partition.shape()
 
-    for nr_workers in \
-            range(benchmark.worker.min_nr, benchmark.worker.max_nr + 1):
+    # for nr_workers in \
+    #         range(benchmark.worker.min_nr, benchmark.worker.max_nr + 1):
+    for benchmark_idx in range(benchmark.worker.nr_benchmarks()):
+
+        nr_workers = benchmark.worker.nr_workers(benchmark_idx)
 
         result_pathname = experiment.benchmark_result_pathname(
             cluster.name, nr_workers, "json")
