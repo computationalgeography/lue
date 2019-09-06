@@ -1,5 +1,5 @@
 {
-    "count": 1,
+    "count": 3,
     "worker": {
         "type": "node",
         "pool": {

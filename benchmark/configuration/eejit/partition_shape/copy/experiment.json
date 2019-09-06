@@ -1,16 +1,28 @@
 {
-    "nr_time_steps": 1000,
+    "nr_time_steps": 100,
     "array": {
-        "min_shape": [50000, 50000],
-        "max_shape": [50000, 50000],
+        "min_shape": [100000, 100000],
+        "max_shape": [100000, 100000],
         "shape_step": 50000
     },
     "partition": {
         "min_shape": [1000, 1000],
-        "max_shape": [9000, 9000],
-        "shape_step": 2000
+        "max_shape": [13000, 13000],
+        "shape_step": 3000
     }
-# array_shape.py 180 2 2 4 → 150000 x 150000 cells
+#     # array_shape.py 200 2 2 4 16
+#     "nr_time_steps": 1000,
+#     "array": {
+#         "min_shape": [600000, 600000],
+#         "max_shape": [600000, 600000],
+#         "shape_step": 50000
+#     },
+#     "partition": {
+#         "min_shape": [1000, 1000],
+#         "max_shape": [15000, 15000],
+#         "shape_step": 2000
+#     }
+#     # array_shape.py 180 2 2 4 → 150000 x 150000 cells
 #     "array": {
 #         "min_shape": [50000, 50000],
 #         "max_shape": [150000, 150000],
