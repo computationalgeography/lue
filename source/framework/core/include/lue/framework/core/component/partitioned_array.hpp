@@ -2,7 +2,7 @@
 #include "lue/framework/core/component/array_partition.hpp"
 #include "lue/framework/core/array_partition_data.hpp"
 #include "lue/framework/core/array_partition_visitor.hpp"
-#include "lue/framework/core/debug.hpp"
+// #include "lue/framework/core/debug.hpp"
 #include "lue/framework/core/domain_decomposition.hpp"
 #include "lue/framework/core/math.hpp"
 
@@ -501,7 +501,6 @@ void PartitionedArray<Element, rank>::create(
     // locality. Which one exactly is determined by locality_idx.
     for(std::size_t partition_idx = 0; partition_idx < nr_partitions;
             ++partition_idx) {
-
         _partitions[partition_idx] = Partition{
             localities[locality_idx(partition_idx)], max_partition_shape};
 

@@ -1,6 +1,6 @@
 #include "copy.hpp"
-#include "lue/framework/algorithm/copy.hpp"
 #include "lue/framework/core/component/partitioned_array.hpp"
+#include "lue/framework/algorithm/copy.hpp"
 
 
 namespace lue {
@@ -31,6 +31,12 @@ void copy(
     // → Create first array
     Array current_state{shape, partition_shape};
 
+    assert(current_state.shape() == shape);
+
+    // FIXME
+    // auto fill_value = hpx::make_ready_future<Element>(5).share();
+    // fill(current_state, fill_value).wait();
+
     for(std::size_t i = 0; i < task.nr_time_steps(); ++i) {
 
         // A very simple model: the new state is a copy of the current
@@ -47,7 +53,15 @@ void copy(
         // anymore. Moving from a partitioned array should not explicitly
         // destruct component server instances.
         current_state = std::move(new_state);
+
     }
+
+    // FIXME
+    // // Test whether all values in the output array are equal to the fill
+    // // value used to fill the input array
+    // auto equal_to = lue::equal_to(current_state, fill_value);
+    // auto all = lue::all(equal_to);
+    // assert(all.get());
 }
 
 }  // namespace detail

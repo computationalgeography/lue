@@ -29,7 +29,7 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
     std::vector<lue::Index> active_set_idxs(nr_time_boxes);
     std::vector<lue::ID> active_ids(
         std::accumulate(
-            active_set_sizes.begin(), active_set_sizes.end(), 0));
+            active_set_sizes.begin(), active_set_sizes.end(), 0u));
     lue::test::select_random_ids(
         active_set_sizes, active_set_idxs, active_ids, nr_areas);
 

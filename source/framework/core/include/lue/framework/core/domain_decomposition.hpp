@@ -44,7 +44,7 @@ std::size_t nr_partitions(
     auto const shape = shape_in_partitions(area_shape, partition_shape);
 
     return std::accumulate(
-        shape.begin(), shape.end(), std::size_t(1),
+        shape.begin(), shape.end(), std::size_t{1},
         std::multiplies<std::size_t>());
 }
 

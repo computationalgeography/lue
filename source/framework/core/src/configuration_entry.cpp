@@ -66,7 +66,7 @@ std::vector<std::uint64_t> cast<std::vector<std::uint64_t>>(
 {
     // parse value into a vector of unsigned integers
     std::string const pattern{
-        "\\[([[:digit:]]+)(?:,[[:space:]]([[:digit:]]+))*\\]"};
+        "\\[([[:digit:]]+)(?:,[[:space:]]*([[:digit:]]+))*\\]"};
     std::regex expression{pattern};
     std::smatch match;
 

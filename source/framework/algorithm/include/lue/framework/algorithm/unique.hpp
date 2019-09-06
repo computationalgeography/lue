@@ -41,8 +41,8 @@ PartitionT<Partition, ElementT<Partition>, 1> unique_partition(
                     unique_values.begin(), unique_values.end(),
                     output_data.begin());
 
-                return OutputPartition{
-                    hpx::find_here(), output_data, std::string{"meh"}};
+                // FIXME Move / own instead of copy
+                return OutputPartition{hpx::find_here(), output_data};
             }
         )
     );
@@ -158,8 +158,9 @@ hpx::future<Array<Element, 1>> unique(
                     result_values.begin());
 
                 // Store array data in partition component
+                // FIXME Move / own the data
                 OutputPartition result_partition{
-                    hpx::find_here(), result_values, std::string{"meh"}};
+                    hpx::find_here(), result_values};
 
                 // Store partition component in a collection
                 OutputPartitions result_partitions{

@@ -42,9 +42,11 @@ inline typename Shape<Index, rank>::value_type nr_elements(
 {
     static_assert(!shape.empty());
 
+    using T = typename Shape<Index, rank>::value_type;
+
     return std::accumulate(
-        shape.begin(), shape.end(), 1,
-        std::multiplies<typename Shape<Index, rank>::value_type>());
+        shape.begin(), shape.end(), T{1},
+        std::multiplies<T>());
 }
 
 

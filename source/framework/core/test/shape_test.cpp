@@ -57,4 +57,9 @@ BOOST_AUTO_TEST_CASE(nr_elements)
         Shape<2> shape{30, 40};
         BOOST_CHECK_EQUAL(lue::nr_elements(shape), 1200);
     }
+
+    {
+        Shape<2> shape{57926, 57926};
+        BOOST_CHECK_EQUAL(lue::nr_elements(shape), 3355421476);
+    }
 }

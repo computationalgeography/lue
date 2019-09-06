@@ -54,8 +54,7 @@ public:
                                         Element value);
 
                    ArrayPartition      (hpx::id_type locality_id,
-                                        Data const& data,
-                                        std::string);
+                                        Data const& data);
 
     //                ArrayPartition      (hpx::id_type component_id,
     //                                     Data const& data);
@@ -223,8 +222,7 @@ template<
     std::size_t rank>
 ArrayPartition<Element, rank>::ArrayPartition(
     hpx::id_type const locality_id,
-    Data const& data,
-    std::string):
+    Data const& data):
 
     Base{hpx::new_<Server>(locality_id, data)}
 
@@ -252,9 +250,9 @@ ArrayPartition<Element, rank>::ArrayPartition(
 
 
 // template<
-//     typename Value,
-//     typename Data>
-// ArrayPartition<Value, Data>::ArrayPartition(
+//     typename Element,
+//     std::size_t rank>
+// ArrayPartition<Element, rank>::ArrayPartition(
 //     ArrayPartition const& other):
 // 
 //     Base{other}

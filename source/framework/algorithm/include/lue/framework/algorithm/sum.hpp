@@ -44,7 +44,8 @@ PartitionT<Partition, OutputElement> sum_partition(
                 InputData const& partition_data)
             {
                 OutputElement result = std::accumulate(
-                    partition_data.begin(), partition_data.end(), 0);
+                    partition_data.begin(), partition_data.end(),
+                    OutputElement{0});
 
                 return OutputData{shape, result};
             }
@@ -62,7 +63,8 @@ PartitionT<Partition, OutputElement> sum_partition(
                     auto const locality_id = hpx::util::get<0>(futures).get();
                     auto&& data = hpx::util::get<1>(futures).get();
 
-                    return Partition{locality_id, data, std::string{"meh"}};
+                    // FIXME Move / own instead of copy
+                    return Partition{locality_id, data};
                 }
             )
         );

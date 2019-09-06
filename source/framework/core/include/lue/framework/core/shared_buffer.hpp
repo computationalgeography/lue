@@ -51,8 +51,14 @@ public:
 private:
 
     static void do_not_delete(
-        Element*)
+        Element* /* ptr */)
     {
+    }
+
+    static void do_delete(
+        Element* ptr)
+    {
+        delete[] ptr;
     }
 
     // template<
@@ -67,7 +73,7 @@ private:
 
 public:
 
-    using Pointer = std::shared_ptr<Element[]>;
+    using Pointer = std::shared_ptr<Element>;
 
     // Some standard types
     using value_type = Element;
@@ -224,7 +230,8 @@ public:
                 // Use the elements passed in, and delete at the end
                 // auto do_delete = std::bind(
                 //     SharedBuffer::do_delete<Allocator>, _1, _allocator, _size);
-                _ptr = Pointer{elements};  // , do_delete};
+                // _ptr = Pointer{elements};  // , do_delete};
+                _ptr = Pointer{elements, do_delete};
                 break;
             }
         }
@@ -382,7 +389,7 @@ public:
     {
         assert(idx < _size);
 
-        return _ptr[idx];
+        return _ptr.get()[idx];
     }
 
     /*!
@@ -393,7 +400,8 @@ public:
     {
         assert(idx < _size);
 
-        return _ptr[idx];
+        // return _ptr[idx];
+        return _ptr.get()[idx];
     }
 
     /*!
@@ -456,7 +464,10 @@ private:
         // _ptr.reset(_allocator.allocate(size));  // , do_delete);
         // _ptr = std::make_shared<Element>(size);
 
-        _ptr.reset(new Element[size]);
+        // _ptr.reset(new Element[size]);
+
+        // Default construct all elements
+        _ptr.reset(new Element[size](), do_delete);
     }
 
     void assert_invariants()

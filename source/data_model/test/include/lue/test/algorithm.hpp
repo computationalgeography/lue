@@ -6,7 +6,6 @@
 #include <random>
 #include <vector>
 #include <type_traits>
-#include <iostream>
 
 
 namespace lue {
@@ -135,7 +134,7 @@ inline void select_random_ids(
 
 #ifndef NDEBUG
     std::size_t const sum_active_set_sizes = std::accumulate(
-        active_set_sizes.begin(), active_set_sizes.end(), 0);
+        active_set_sizes.begin(), active_set_sizes.end(), 0u);
     assert(
         static_cast<std::size_t>(active_ids.size()) == sum_active_set_sizes);
 #endif

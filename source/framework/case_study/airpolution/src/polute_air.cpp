@@ -10,7 +10,7 @@
 // // #include "lue/data_model.hpp"
 // // #include <hpx/runtime.hpp>
 #include <hpx/include/iostreams.hpp>
-// #include <fmt/format.h>
+#include <fmt/format.h>
 // #include <iostream>
 // #include <cassert>
 

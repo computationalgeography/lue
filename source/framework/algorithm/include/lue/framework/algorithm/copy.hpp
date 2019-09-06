@@ -23,12 +23,11 @@ Partition copy_partition(
         hpx::get_colocation_id(partition.get_id()).get() ==
         hpx::find_here());
 
-    // Does a copy of a component create a copy on the locality the
-    // original component is located on? In that case, this code
-    // seems fine.
+    // Implement copy constructor that does a deep copy?
+    // return Partition{partition};
 
-    // Deep copy
-    return Partition{partition};
+    return Partition{
+        hpx::find_here(), partition.data(CopyMode::share).get()};
 }
 
 }  // namespace detail

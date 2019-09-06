@@ -56,7 +56,8 @@ PartitionT<InputPartition, OutputElement> cast_partition(
                     auto const locality_id = hpx::util::get<0>(futures).get();
                     auto&& data = hpx::util::get<1>(futures).get();
 
-                    return OutputPartition{locality_id, data, std::string{"meh"}};
+                    // FIXME Move / own instead of copy
+                    return OutputPartition{locality_id, data};
                 }
             )
         );

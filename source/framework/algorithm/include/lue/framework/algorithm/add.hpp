@@ -89,9 +89,10 @@ public:
                     {
                         auto const locality_id =
                             hpx::util::get<0>(futures).get();
+                        // FIXME Move / own instead of copy
                         auto&& data = hpx::util::get<1>(futures).get();
 
-                        return Partition{locality_id, data, std::string{"meh"}};
+                        return Partition{locality_id, data};
                     }
                 )
             );
