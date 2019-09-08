@@ -48,14 +48,12 @@ if __name__ == "__main__":
     memory_required_per_array = elements_per_array * size_of_element
     memory_required = (nr_arrays * memory_required_per_array)
 
-    # print("memory available: {:.2E} bytes".format(memory_available))
-    # print("memory required : {:.2E} bytes".format(memory_required))
-
     assert memory_required - (nr_nodes * memory_available) < 1e-4
 
     # assert all([math.fmod(extent, nr_nodes) == 0 for extent in array_shape])
 
-    array_shape_per_node = tuple([extent / nr_nodes for extent in array_shape])
+    array_shape_per_node = \
+        tuple([float(extent) / nr_nodes for extent in array_shape])
 
     assert all([isinstance(extent, float) for extent in array_shape_per_node])
 
