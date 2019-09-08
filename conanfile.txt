@@ -7,7 +7,7 @@
 # available for gcc-7 (but can be built by Conan).
 # docopt/0.6.2@conan/stable
 
-fmt/5.2.1@bincrafters/stable
+fmt/5.3.0@bincrafters/stable
 gsl_microsoft/2.0.0@bincrafters/stable
 jsonformoderncpp/3.6.1@vthiery/stable
 pybind11/2.2.4@conan/stable
