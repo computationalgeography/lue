@@ -2,7 +2,7 @@
 #include "lue/framework/core/component/array_partition.hpp"
 #include "lue/framework/core/array_partition_data.hpp"
 #include "lue/framework/core/array_partition_visitor.hpp"
-// #include "lue/framework/core/debug.hpp"
+#include "lue/framework/core/debug.hpp"  // describe
 #include "lue/framework/core/domain_decomposition.hpp"
 #include "lue/framework/core/math.hpp"
 
@@ -1085,6 +1085,49 @@ typename PartitionedArray<Element, rank>::Size nr_elements(
     PartitionedArray<Element, rank> const& array)
 {
     return array.nr_elements();
+}
+
+
+template<
+    typename Element,
+    std::size_t rank>
+std::string describe(
+    Shape<Element, rank> const& shape)
+{
+    // FIXME Requires fmt >= 6
+    // return fmt::format("({})", shape);
+
+    static_assert(rank > 0);
+
+    auto it = shape.begin();
+    std::string result = fmt::format("({}", *it);
+
+    for(++it; it < shape.end(); ++it) {
+        result += fmt::format(", {}", *it);
+    }
+
+    result += ")";
+
+    return result;
+}
+
+
+template<
+    typename Element,
+    std::size_t rank>
+std::string describe(
+    PartitionedArray<Element, rank> const& array)
+{
+    return fmt::format(
+        "- PartitionedArray:\n"
+        "    - shape              : {} ({} elements)\n"
+        "    - partitions         : {} ({} partitions)\n"
+        ,
+        describe(array.shape()),
+        array.nr_elements(),
+        describe(array.partitions().shape()),
+        array.partitions().size()
+    );
 }
 
 }  // namespace lue

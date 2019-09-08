@@ -10,6 +10,10 @@ hpx::future<std::string> system_description();
 
 void               write_debug_message (std::string const& message);
 
+template<
+    typename Class>
+std::string        describe            (Class const& instance);
+
 }  // namespace lue
 
 

@@ -180,7 +180,7 @@ inline int Benchmark<Callable>::run()
         _timings.push_back(stopwatch);
 
         if(i < _environment.count() - 1) {
-            std::this_thread::sleep_for(20s);
+            std::this_thread::sleep_for(5s);
         }
     }
     _timing.stop();
