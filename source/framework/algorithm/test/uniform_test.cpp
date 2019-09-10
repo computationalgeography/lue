@@ -1,9 +1,11 @@
 #define BOOST_TEST_MODULE lue framework algorithm uniform
 #include "lue/framework/core/component/partitioned_array.hpp"
-#include "lue/framework/algorithm/cast.hpp"
+#include "lue/framework/algorithm/all.hpp"
 #include "lue/framework/algorithm/equal_to.hpp"
+#include "lue/framework/algorithm/greater_equal.hpp"
+#include "lue/framework/algorithm/less.hpp"
+#include "lue/framework/algorithm/none.hpp"
 #include "lue/framework/algorithm/uniform.hpp"
-#include "lue/framework/algorithm/sum.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
@@ -31,25 +33,21 @@ void test_array()
     // - All cells in these arrays are < max_value
     // - All cells in these arrays are different
 
-    auto uniform1 = lue::uniform_real(array1, min_value, max_value);
+    lue::uniform_real(array1, min_value, max_value).wait();
 
-    // TODO
-    // auto all_greater_equal = lue::all(lue::greater_equal(array1, min_value));
-    // auto all_smaller = lue::all(lue::smaller(array1, max_value));
-    // BOOST_CHECK(all_greater_equal.get());
-    // BOOST_CHECK(all_smaller.get());
+    // min_value <= array1 < max_value
+    BOOST_CHECK(lue::all(lue::greater_equal(array1, min_value)).get());
+    BOOST_CHECK(lue::all(lue::less(array1, max_value)).get());
 
-    auto uniform2 = lue::uniform_real(array2, min_value, max_value);
+    lue::uniform_real(array2, min_value, max_value).wait();
 
-    // TODO
-    // auto all_greater_equal = lue::all(lue::greater_equal(array2, min_value));
-    // auto all_smaller = lue::all(lue::smaller(array2, max_value));
-    // BOOST_CHECK(all_greater_equal.get());
-    // BOOST_CHECK(all_smaller.get());
+    // min_value <= array2 < max_value
+    BOOST_CHECK(lue::all(lue::greater_equal(array2, min_value)).get());
+    BOOST_CHECK(lue::all(lue::less(array2, max_value)).get());
 
+    // array1 != array2 (or at least very unlikely)
     auto equal_to = lue::equal_to(array1, array2);
-    auto sum = lue::sum(lue::cast<Element>(equal_to));
-    BOOST_CHECK_EQUAL(sum.get(), 0);
+    BOOST_CHECK(lue::none(equal_to).get());
 }
 
 }  // namespace detail

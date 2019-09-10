@@ -26,8 +26,11 @@ Partition copy_partition(
     // Implement copy constructor that does a deep copy?
     // return Partition{partition};
 
-    return Partition{
-        hpx::find_here(), partition.data(CopyMode::share).get()};
+    // return Partition{
+    //     hpx::find_here(), partition.data(CopyMode::share).get()};
+
+    return hpx::new_<Partition>(
+        hpx::find_here(), partition.data(CopyMode::share).get());
 }
 
 }  // namespace detail
