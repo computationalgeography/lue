@@ -27,14 +27,12 @@ class OverloadPicker<
 
 public:
 
-    static hpx::future<void> uniform_real_partition(
+    static hpx::future<void> uniform_partition(
         Partition const& partition,
         ElementT<Partition> const min_value,
         ElementT<Partition> const max_value)
     {
         using Element = ElementT<Partition>;
-
-        static_assert(std::is_floating_point_v<Element>);
 
         assert(
             hpx::get_colocation_id(partition.get_id()).get() ==
@@ -50,8 +48,16 @@ public:
         // Standard mersenne_twister_engine seeded with the random_device
         std::mt19937 random_number_engine(random_device());
 
-        std::uniform_real_distribution<Element> distribution(
-            min_value, max_value);
+        auto distribution = [min_value, max_value]() {
+            if constexpr(std::is_floating_point_v<Element>) {
+                return std::uniform_real_distribution<Element>{
+                    min_value, max_value};
+            }
+            else if constexpr(std::is_integral_v<Element>) {
+                return std::uniform_int_distribution<Element>{
+                    min_value, max_value};
+            }
+        }();
 
         std::generate(
             partition_data.begin(), partition_data.end(),
@@ -64,11 +70,11 @@ public:
         return hpx::make_ready_future();
     }
 
-    struct RealAction:
+    struct Action:
         hpx::actions::make_action<
-            decltype(&uniform_real_partition),
-            &uniform_real_partition,
-            RealAction>
+            decltype(&uniform_partition),
+            &uniform_partition,
+            Action>
     {};
 
 };
@@ -79,14 +85,8 @@ public:
 
 template<
     typename T>
-using UniformIntAction =
-    typename detail::uniform::OverloadPicker<T>::IntAction;
-
-
-template<
-    typename T>
-using UniformRealAction =
-    typename detail::uniform::OverloadPicker<T>::RealAction;
+using UniformAction =
+    typename detail::uniform::OverloadPicker<T>::Action;
 
 
 /*!
@@ -113,16 +113,15 @@ template<
     typename Element,
     std::size_t rank,
     template<typename, std::size_t> typename Array>
-[[nodiscard]] hpx::future<void> uniform_real(
+[[nodiscard]] hpx::future<void> uniform(
     Array<Element, rank>& array,
     hpx::shared_future<Element> const& min_value,
     hpx::shared_future<Element> const& max_value)
 {
-    static_assert(std::is_floating_point_v<Element>);
-
     using Partition = PartitionT<Array<Element, rank>>;
 
-    UniformRealAction<Partition> action;
+    UniformAction<Partition> action;
+
     std::vector<hpx::future<void>> futures(nr_partitions(array));
 
     for(std::size_t p = 0; p < nr_partitions(array); ++p) {

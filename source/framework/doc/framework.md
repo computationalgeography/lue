@@ -27,7 +27,7 @@ lue::less | Return the result of comparing something with a partitioned array
 lue::multiply | Return the result of multiplying something with a partitioned array
 lue::none | Return whether a partitioned array contains no elements that evaluate to true
 lue::sum | Return the result of summing the elements in a partitioned array
-lue::uniform_real | Fill a partitioned array in-place with a uniform random value
+lue::uniform | Fill a partitioned array in-place with a uniform random value
 lue::unique | Return the unique values in a partitioned array
 lue::unique_id | Fill a partitioned array in-place with unique IDs
 

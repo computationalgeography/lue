@@ -4,7 +4,6 @@
 #include "lue/framework/algorithm/equal_to.hpp"
 #include "lue/framework/algorithm/greater_equal.hpp"
 #include "lue/framework/algorithm/less.hpp"
-#include "lue/framework/algorithm/none.hpp"
 #include "lue/framework/algorithm/uniform.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
@@ -33,21 +32,17 @@ void test_array()
     // - All cells in these arrays are < max_value
     // - All cells in these arrays are different
 
-    lue::uniform_real(array1, min_value, max_value).wait();
+    lue::uniform(array1, min_value, max_value).wait();
 
     // min_value <= array1 < max_value
     BOOST_CHECK(lue::all(lue::greater_equal(array1, min_value)).get());
     BOOST_CHECK(lue::all(lue::less(array1, max_value)).get());
 
-    lue::uniform_real(array2, min_value, max_value).wait();
+    lue::uniform(array2, min_value, max_value).wait();
 
     // min_value <= array2 < max_value
     BOOST_CHECK(lue::all(lue::greater_equal(array2, min_value)).get());
     BOOST_CHECK(lue::all(lue::less(array2, max_value)).get());
-
-    // array1 != array2 (or at least very unlikely)
-    auto equal_to = lue::equal_to(array1, array2);
-    BOOST_CHECK(lue::none(equal_to).get());
 }
 
 }  // namespace detail
@@ -57,11 +52,13 @@ void test_array()
     rank,                                        \
     Element)                                     \
                                                  \
-BOOST_AUTO_TEST_CASE(array_##rank##d_##Element,  \
-    *boost::unit_test::expected_failures(2))     \
+BOOST_AUTO_TEST_CASE(array_##rank##d_##Element)  \
 {                                                \
     detail::test_array<Element, rank>();         \
 }
+
+TEST_CASE(1, int32_t)
+TEST_CASE(2, int32_t)
 
 TEST_CASE(1, double)
 TEST_CASE(2, double)
