@@ -229,7 +229,7 @@ void polute_air(
     }
 
     hpx::cout << " waiting..." << hpx::flush;
-    hpx::wait_all(array.begin(), array.end());
+    hpx::wait_all_n(array.begin(), array.nr_partitions());
     hpx::cout << hpx::endl;
 
     {

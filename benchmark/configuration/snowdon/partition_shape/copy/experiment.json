@@ -1,0 +1,25 @@
+{
+#   "nr_time_steps": 10,
+    "nr_time_steps": 50,
+    "array": {
+        "min_shape": [20000, 20000],
+        "max_shape": [20000, 20000],
+        "shape_step": 5000
+    },
+# Shape 1000, 1000 takes way more mem than 500, 500: why???
+# Besides that, the memory usage increases with nr_time_steps: why???
+    "partition": {
+# (40, 40) (1600 partitions)
+        "min_shape": [500, 500],
+        "max_shape": [500, 500],
+# (20, 20) (400 partitions)
+        # "min_shape": [1000, 1000],
+        # "max_shape": [1000, 1000],
+        "shape_step": 500
+    }
+#     "partition": {
+#         "min_shape": [500, 500],
+#         "max_shape": [2500, 2500],
+#         "shape_step": 500
+#     }
+}

@@ -24,3 +24,17 @@ target_link_libraries(lue_framework_algorithm_empty_benchmark
         lue::framework_algorithm
         lue::benchmark
 )
+
+
+add_hpx_executable(lue_framework_algorithm_iterate_per_element_benchmark
+    SOURCES
+        iterate_per_element_benchmark
+    COMPONENT_DEPENDENCIES
+        iostreams
+)
+
+target_link_libraries(lue_framework_algorithm_iterate_per_element_benchmark
+    PRIVATE
+        lue::framework_algorithm
+        lue::benchmark
+)

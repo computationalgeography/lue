@@ -23,6 +23,7 @@ lue::copy | Return the result of copying a partitioned array
 lue::equal_to | Return the result of comparing something with a partitioned array
 lue::fill | Fill a partitioned array in-place with a value
 lue::greater_equal | Return the result of comparing something with a partitioned array
+lue::iterate_per_element | Per cell in a partitioned array, iterate a number of times
 lue::less | Return the result of comparing something with a partitioned array
 lue::multiply | Return the result of multiplying something with a partitioned array
 lue::none | Return whether a partitioned array contains no elements that evaluate to true

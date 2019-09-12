@@ -420,67 +420,17 @@ void PartitionedArray<Element, rank>::create(
     Shape const& shape_in_partitions,
     Shape const& max_partition_shape)
 {
-    // The distribution_policy contains a collection of localities to place
-    // partitions on and a strategy for distributing these partitions
-    // over them. It does not know anything about array partitions and
-    // how to create them. That is what the creator is for.
-    /// auto const& distribution_policy = hpx::container_layout;
-
     // Create the array partitions that, together make up the partitioned
     // array. Note that the extent of this array might be too large,
     // given that we use max_partition_shape.
 
-    // Use distribution_policy to instantiate count array partitions of
-    // shape shape. Return a future to a collection containing, for each
-    // locality used, a collection of GIDs of the array partitions
-    // instantiated
-
-    // The elements in the array partitions will not be initialized. Use
-    // this creator for partitions that will be assigned to later.
-    // template<
-    //     typename DistributionPolicy>
-    /// auto creator =
-    ///     [](
-    ///         // DistributionPolicy const& distribution_policy,
-    ///         auto const& distribution_policy,
-    ///         std::size_t const count,
-    ///         Shape const& shape)
-    ///     {
-    ///         return distribution_policy.template
-    ///             bulk_create<PartitionServer>(count, shape);
-    ///     };
-
     std::size_t const nr_partitions = lue::nr_elements(shape_in_partitions);
-
-    /// // For one or more localities a list of array partition component IDs
-    /// // vector<pair<id_type, vector<id_type>>
-    /// hpx::future<std::vector<BulkLocalityResult>> f =
-    ///     creator(distribution_policy, nr_partitions, max_partition_shape);
-
-
-    /// // Next adjust the border partitions and position them
-
-    /// // // now initialize our data structures
-    /// // std::uint32_t const this_locality_nr = hpx::get_locality_id();
-    /// std::vector<hpx::future<void>> ptrs;
-
-    /// // std::size_t num_part = 0;
-    /// // std::size_t allocated_size = 0;
-
-    /// // std::size_t l = 0;
-
-    /// // auto const shape_in_partitions =
-    /// //     lue::shape_in_partitions(_shape, max_partition_shape);
-    /// // std::cout << max_partition_shape << std::endl;
-    /// // std::cout << shape_in_partitions << std::endl;
-
 
     // Create array containing partitions. Each of these partitions will be
     // a component client instance referring to a, possibly remote,
     // component server instance.
     _partitions = Partitions{shape_in_partitions};
     assert(_partitions.size() == nr_partitions);
-
 
     std::vector<hpx::naming::id_type> const localities =
         hpx::find_all_localities();
@@ -489,22 +439,42 @@ void PartitionedArray<Element, rank>::create(
     assert(nr_localities > 0);
     assert(nr_partitions >= nr_localities);
 
+    assert(hpx::find_here() == hpx::find_root_locality());
+    assert(localities[0] == hpx::find_root_locality());
+
+    // Don't put partitions on the root locality where the main tasks
+    // are created. This might be faster.
     auto locality_idx =
         [nr_partitions, nr_localities](
             std::size_t const p) -> std::size_t
         {
-            return map_to_range(
-                0lu, nr_partitions - 1, 0lu, nr_localities - 1, p);
+            return nr_localities == 1 ? 0 :
+                map_to_range(0lu, nr_partitions - 1, 1lu, nr_localities - 1, p);
+
+            // return map_to_range(
+            //     0lu, nr_partitions - 1, 0lu, nr_localities - 1, p);
         };
 
     // Create array partitions. Each of them will be located on a certain
     // locality. Which one exactly is determined by locality_idx.
     for(std::size_t partition_idx = 0; partition_idx < nr_partitions;
             ++partition_idx) {
+
+        auto idx = locality_idx(partition_idx);
+
+        assert((nr_localities == 1 && idx == 0) || idx > 0);
+
         _partitions[partition_idx] = Partition{
-            localities[locality_idx(partition_idx)], max_partition_shape};
+            localities[idx], max_partition_shape};
 
     }
+
+
+
+
+
+
+
 
     /// typename Partitions::Index partition_idx = 0;
 

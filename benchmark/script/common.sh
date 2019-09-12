@@ -1,3 +1,6 @@
+# FIXME update for eejit: only set cluster_name if not already set
+cluster_name=`hostname --short`
+
 configuration=$LUE/benchmark/configuration
 cluster=$configuration/$cluster_name
 benchmark=$cluster/$benchmark_kind
