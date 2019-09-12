@@ -1,10 +1,9 @@
-#define BOOST_TEST_MODULE lue framework algorithm copy
+#define BOOST_TEST_MODULE lue framework algorithm iterate_per_element
 #include "lue/framework/core/component/partitioned_array.hpp"
 #include "lue/framework/algorithm/all.hpp"
-#include "lue/framework/algorithm/copy.hpp"
 #include "lue/framework/algorithm/equal_to.hpp"
-#include "lue/framework/algorithm/fill.hpp"
-#include "lue/framework/algorithm/sum.hpp"
+#include "lue/framework/algorithm/iterate_per_element.hpp"
+#include "lue/framework/algorithm/uniform.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
@@ -21,17 +20,19 @@ void test_array()
     auto const shape{lue::Test<Array>::shape()};
 
     Array array{shape};
-    hpx::shared_future<Element> fill_value =
-        hpx::make_ready_future<Element>(5);
+    hpx::shared_future<Element> min_nr_iterations =
+        hpx::make_ready_future<Element>(100);
+    hpx::shared_future<Element> max_nr_iterations =
+        hpx::make_ready_future<Element>(500);
 
     // Request the filling of the array and wait for it to finish
-    lue::fill(array, fill_value).wait();
+    lue::uniform(array, min_nr_iterations, max_nr_iterations).wait();
 
-    // Request the copy of the array
-    auto copy = lue::copy(array);
+    auto copy = lue::iterate_per_element(array);
 
     BOOST_CHECK(lue::all(lue::equal_to(copy, array)).get());
 }
+
 
 }  // namespace detail
 
@@ -47,11 +48,5 @@ BOOST_AUTO_TEST_CASE(array_##rank##d_##Element)  \
 
 TEST_CASE(1, int32_t)
 TEST_CASE(2, int32_t)
-// TEST_CASE(1, int64_t)
-// TEST_CASE(2, int64_t)
-// TEST_CASE(1, float)
-// TEST_CASE(2, float)
-TEST_CASE(1, double)
-TEST_CASE(2, double)
 
 #undef TEST_CASE

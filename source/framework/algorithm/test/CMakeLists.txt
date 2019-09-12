@@ -10,6 +10,7 @@ add_unit_tests(
         equal_to_test
         fill_test
         greater_equal_test
+        iterate_per_element_test
         less_test
         multiply_test
         none_test
@@ -30,6 +31,7 @@ hpx_setup_target(lue_framework_algorithm_copy_test)
 hpx_setup_target(lue_framework_algorithm_equal_to_test)
 hpx_setup_target(lue_framework_algorithm_fill_test)
 hpx_setup_target(lue_framework_algorithm_greater_equal_test)
+hpx_setup_target(lue_framework_algorithm_iterate_per_element_test)
 hpx_setup_target(lue_framework_algorithm_less_test)
 hpx_setup_target(lue_framework_algorithm_multiply_test)
 hpx_setup_target(lue_framework_algorithm_none_test)
