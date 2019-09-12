@@ -45,7 +45,9 @@ void copy(
     }
 
     hpx::cout << "!" << hpx::flush;
+
     hpx::wait_all_n(state.begin(), state.nr_partitions());
+
     hpx::cout << hpx::endl;
 }
 

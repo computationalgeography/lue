@@ -38,9 +38,9 @@ void iterate_per_element(
 
     // Fill array with random numbers
     hpx::shared_future<Element> min_nr_iterations =
-        hpx::make_ready_future<Element>(200);
+        hpx::make_ready_future<Element>(20);
     hpx::shared_future<Element> max_nr_iterations =
-        hpx::make_ready_future<Element>(1000);
+        hpx::make_ready_future<Element>(100);
 
     auto f = uniform(state, min_nr_iterations, max_nr_iterations);
 
