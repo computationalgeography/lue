@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 set -e
 
-dirname="$( cd "$(dirname "$0")" ; pwd -P )"
-
-benchmark_kind=strong_scaling
-benchmark_name=copy
+dirname="$( cd "$(dirname "$BASH_SOURCE")" ; pwd -P )"
 
 source $dirname/common.sh

@@ -1,0 +1,17 @@
+{
+    "nr_time_steps": 10,
+    "array": {
+        "min_shape": [10000, 10000],
+        "max_shape": [10000, 10000],
+        "shape_step": 20000
+        # "max_shape": [510000, 510000],
+        # "max_shape": [90000, 90000],
+    },
+    "partition": {
+        "min_shape": [100, 100],
+        "max_shape": [700, 700],
+        "shape_step": 100
+        # Crashes...
+        # "max_shape": [5000, 5000],
+    }
+}

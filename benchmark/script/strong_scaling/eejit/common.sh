@@ -1,5 +1,5 @@
-dirname="$( cd "$(dirname "$0")" ; pwd -P )"
+dirname="$( cd "$(dirname "$BASH_SOURCE")" ; pwd -P )"
+script_name=`basename "$0"`
+benchmark_name="${script_name%.*}"
 
-cluster_name=eejit
-
-source $dirname/../../common.sh
+source $dirname/../common.sh

@@ -1,5 +1,5 @@
 dirname="$( cd "$(dirname "$BASH_SOURCE")" ; pwd -P )"
-script_name=`basename "$0"`
-benchmark_name="${script_name%.*}"
+
+benchmark_kind=weak_scaling
 
 source $dirname/../common.sh

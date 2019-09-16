@@ -277,8 +277,8 @@ def import_raw_results(
     if os.path.exists(lue_dataset_pathname):
         os.remove(lue_dataset_pathname)
 
-    array_shapes = experiment.array.shapes()
-    partition_shapes = experiment.partition.shapes()
+    array_shapes = list(experiment.array.shapes())
+    partition_shapes = list(experiment.partition.shapes())
     metadata_written = False
 
     for array_shape in array_shapes:

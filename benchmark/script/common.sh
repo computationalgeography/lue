@@ -1,5 +1,8 @@
-# FIXME update for eejit: only set cluster_name if not already set
 cluster_name=`hostname --short`
+
+if [[ $cluster_name == "login01" ]]; then
+    cluster_name="eejit"
+fi
 
 configuration=$LUE/benchmark/configuration
 cluster=$configuration/$cluster_name
