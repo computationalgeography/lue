@@ -51,6 +51,13 @@ IndexT<Shape> linear_idx(
 
 namespace detail {
 
+/*!
+    @brief      Class for representing a cursor in an nD array
+
+    A cursor knows about the shape of the array and has a notion of the
+    current location visited. This location can be queried and manipulated
+    using the cursor's API.
+*/
 template<
     typename Shape>
 class ArrayVisitorCursor
@@ -185,6 +192,7 @@ private:
     //! Cell indices of start of hyperslab
     Shape          _start;
 
+    //! Extent of hyperslab in all dimensions
     Shape          _count;
 
     //! Cell indices of currently selected cell
@@ -198,6 +206,10 @@ private:
 }  // namespace detail
 
 
+/*!
+    @brief      Base class for visitors used to visit (a subset of)
+                the elements in an array
+*/
 template<
     typename Shape>
 class ArrayVisitor
@@ -207,6 +219,9 @@ class ArrayVisitor
 
 public:
 
+    /*!
+        @brief      Construct an instance based on the array shape
+    */
     ArrayVisitor(
         Shape const& shape):
 
@@ -215,6 +230,10 @@ public:
     {
     }
 
+    /*!
+        @brief      Initialize the visit using the start indices and
+                    extents of the hyperslab
+    */
     void init(
         Shape const& start,
         Shape const& count)
@@ -222,16 +241,25 @@ public:
         _cursor.init(start, count);
     }
 
+    /*!
+        @sa         Cursor::enter_next_dimension()
+    */
     void enter_next_dimension()
     {
         _cursor.enter_next_dimension();
     }
 
+    /*!
+        @sa         Cursor::leave_current_dimension()
+    */
     void leave_current_dimension()
     {
         _cursor.leave_current_dimension();
     }
 
+    /*!
+        @sa         Cursor::operator++()
+    */
     ArrayVisitor& operator++()
     {
         ++_cursor;
@@ -239,6 +267,9 @@ public:
         return *this;
     }
 
+    /*!
+        @brief      Return the cursor
+    */
     Cursor const& cursor() const
     {
         return _cursor;
@@ -246,6 +277,7 @@ public:
 
 private:
 
+    //! Cursor used during visit
     Cursor         _cursor;
 
 };
@@ -255,7 +287,7 @@ namespace detail {
 
 /*!
     @brief      Visit a range of cells defined by indices
-    @param      visitor Visitor to manipulated/call during the visit of
+    @param      visitor Visitor to manipulate/call during the visit of
                 selected cells
 */
 template<
@@ -267,9 +299,9 @@ void visit_array(
 {
     if constexpr (rank == 0) {
 
-        // We have navigated along all array dimensions and can now notify the
-        // visitor that we have arrived at one of the selected cells. It
-        // should do its thing, whatever that is.
+        // We have navigated along all array dimensions and can now
+        // notify the visitor that we have arrived at one of the selected
+        // cells. It should do its thing, whatever that is.
 
         visitor();
 
@@ -295,12 +327,20 @@ void visit_array(
 
             ++visitor;
         }
+
     }
 }
 
 }  // namespace detail
 
 
+/*!
+    @brief      Visit (a subset of) the elements in an array
+    @param      begin_indices Begin indices along all dimensions of
+                hyperslab to visit
+    @param      end_indices End indices along all dimensions of hyperslab
+                to visit
+*/
 template<
     typename Index,
     std::size_t rank,

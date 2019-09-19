@@ -85,8 +85,7 @@ public:
                             hpx::util::get<0>(futures).get();
                         auto&& data = hpx::util::get<1>(futures).get();
 
-                        // FIXME Move / own instead of copy
-                        return Partition{locality_id, data};
+                        return Partition{locality_id, std::move(data)};
                     }
                 )
             );
@@ -166,8 +165,7 @@ public:
                             hpx::util::get<0>(futures).get();
                         auto&& data = hpx::util::get<1>(futures).get();
 
-                        // FIXME Move / own the data
-                        return Partition{locality_id, data};
+                        return Partition{locality_id, std::move(data)};
                     }
                 )
             );

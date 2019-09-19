@@ -90,8 +90,7 @@ public:
                         auto const locality_id = hpx::util::get<0>(futures).get();
                         auto&& data = hpx::util::get<1>(futures).get();
 
-                        // FIXME Move / own instead of copy
-                        return hpx::new_<OutputPartition>(locality_id, data);
+                        return OutputPartition{locality_id, std::move(data)};
                     }
                 )
             );
@@ -170,8 +169,7 @@ public:
                         auto const locality_id = hpx::util::get<0>(futures).get();
                         auto&& data = hpx::util::get<1>(futures).get();
 
-                        // FIXME Move / own the data
-                        return hpx::new_<OutputPartition>(locality_id, data);
+                        return OutputPartition{locality_id, std::move(data)};
                     }
                 )
             );
@@ -250,8 +248,7 @@ public:
                         auto const locality_id = hpx::util::get<0>(futures).get();
                         auto&& data = hpx::util::get<1>(futures).get();
 
-                        // FIXME Move / own the data
-                        return hpx::new_<OutputPartition>(locality_id, data);
+                        return OutputPartition{locality_id, std::move(data)};
                     }
                 )
             );

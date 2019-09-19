@@ -18,8 +18,7 @@ using Shape = typename Data::Shape;
 
 // BOOST_AUTO_TEST_CASE(default_construct)
 // {
-//     PartitionClient partition_client =
-//         hpx::new_<PartitionClient>(hpx::find_here());
+//     PartitionClient partition_client{hpx::find_here()};
 //     std::shared_ptr<PartitionServer> partition_server =
 //         partition_client.component();
 // 
@@ -34,8 +33,7 @@ BOOST_AUTO_TEST_CASE(construct_uninitialized)
 {
     Shape shape{{5, 6}};
 
-    PartitionClient partition =
-        hpx::new_<PartitionClient>(hpx::find_here(), shape);
+    PartitionClient partition{hpx::find_here(), shape};
     Data data_we_got = partition.data(lue::CopyMode::share).get();
 
     // Since the data values are uninitialized, we cannot assume anything
@@ -49,8 +47,7 @@ BOOST_AUTO_TEST_CASE(construct_initialized_with_single_value)
     Shape shape{{5, 6}};
     Value value{9};
 
-    PartitionClient partition =
-        hpx::new_<PartitionClient>(hpx::find_here(), shape, value);
+    PartitionClient partition{hpx::find_here(), shape, value};
     Data data_we_got = partition.data(lue::CopyMode::share).get();
 
     Data data_we_want{shape, value};
@@ -68,8 +65,7 @@ BOOST_AUTO_TEST_CASE(scalar_array)
     Shape shape{};
     Value value{9};
 
-    PartitionClient partition =
-        hpx::new_<PartitionClient>(hpx::find_here(), shape, value);
+    PartitionClient partition{hpx::find_here(), shape, value};
     Data data_we_got = partition.data(lue::CopyMode::share).get();
 
     Data data_we_want{shape, value};
@@ -85,10 +81,8 @@ BOOST_AUTO_TEST_CASE(assignment_operator)
     Value value{9};
 
     {
-        PartitionClient partition =
-            hpx::new_<PartitionClient>(hpx::find_here(), shape);
-        PartitionClient other =
-            hpx::new_<PartitionClient>(hpx::find_here(), shape, value);
+        PartitionClient partition{hpx::find_here(), shape};
+        PartitionClient other{hpx::find_here(), shape, value};
         partition = other;
 
         Data data_we_got = partition.data(lue::CopyMode::share).get();
@@ -99,8 +93,7 @@ BOOST_AUTO_TEST_CASE(assignment_operator)
     {
         // Default initialization
         PartitionClient partition;
-        PartitionClient other =
-            hpx::new_<PartitionClient>(hpx::find_here(), shape, value);
+        PartitionClient other{hpx::find_here(), shape, value};
         partition = other;
 
         Data data_we_got = partition.data(lue::CopyMode::share).get();
@@ -111,8 +104,7 @@ BOOST_AUTO_TEST_CASE(assignment_operator)
     {
         // Value initialization
         PartitionClient partition{};
-        PartitionClient other =
-            hpx::new_<PartitionClient>(hpx::find_here(), shape, value);
+        PartitionClient other{hpx::find_here(), shape, value};
         partition = other;
 
         Data data_we_got = partition.data(lue::CopyMode::share).get();

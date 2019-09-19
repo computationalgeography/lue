@@ -17,6 +17,8 @@ template<
 class ArrayTraits
 {
 
+public:
+
 };
 
 

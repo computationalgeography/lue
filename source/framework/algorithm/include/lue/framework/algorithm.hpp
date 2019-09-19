@@ -2,6 +2,7 @@
 #include "lue/framework/algorithm/add.hpp"
 #include "lue/framework/algorithm/all.hpp"
 #include "lue/framework/algorithm/cast.hpp"
+#include "lue/framework/algorithm/convolve.hpp"
 #include "lue/framework/algorithm/copy.hpp"
 #include "lue/framework/algorithm/empty.hpp"
 #include "lue/framework/algorithm/equal_to.hpp"

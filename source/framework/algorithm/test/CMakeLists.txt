@@ -6,11 +6,13 @@ add_unit_tests(
         add_test
         all_test
         cast_test
+        convolve_test
         copy_test
         equal_to_test
         fill_test
         greater_equal_test
         iterate_per_element_test
+        kernel_test
         less_test
         multiply_test
         none_test
@@ -27,6 +29,7 @@ add_unit_tests(
 hpx_setup_target(lue_framework_algorithm_add_test)
 hpx_setup_target(lue_framework_algorithm_all_test)
 hpx_setup_target(lue_framework_algorithm_cast_test)
+hpx_setup_target(lue_framework_algorithm_convolve_test)
 hpx_setup_target(lue_framework_algorithm_copy_test)
 hpx_setup_target(lue_framework_algorithm_equal_to_test)
 hpx_setup_target(lue_framework_algorithm_fill_test)

@@ -53,8 +53,11 @@ public:
                                         Shape const& shape,
                                         Element value);
 
+    //                ArrayPartition      (hpx::id_type locality_id,
+    //                                     Data const& data);
+
                    ArrayPartition      (hpx::id_type locality_id,
-                                        Data const& data);
+                                        Data&& data);
 
     //                ArrayPartition      (hpx::id_type component_id,
     //                                     Data const& data);
@@ -212,19 +215,39 @@ ArrayPartition<Element, rank>::ArrayPartition(
 }
 
 
+// /*!
+//     @brief      Construct a server instance on locality @a locality_id
+//     @param      locality_id ID of locality to create instance on
+//     @param      data Initial data
+// */
+// template<
+//     typename Element,
+//     std::size_t rank>
+// ArrayPartition<Element, rank>::ArrayPartition(
+//     hpx::id_type const locality_id,
+//     Data const& data):
+// 
+//     Base{hpx::new_<Server>(locality_id, data)}
+// 
+// {
+// }
+
+
 /*!
     @brief      Construct a server instance on locality @a locality_id
     @param      locality_id ID of locality to create instance on
     @param      data Initial data
+
+    The @data passed in is moved from.
 */
 template<
     typename Element,
     std::size_t rank>
 ArrayPartition<Element, rank>::ArrayPartition(
     hpx::id_type const locality_id,
-    Data const& data):
+    Data&& data):
 
-    Base{hpx::new_<Server>(locality_id, data)}
+    Base{hpx::new_<Server>(locality_id, std::move(data))}
 
 {
 }

@@ -1,4 +1,5 @@
 #pragma once
+#include <algorithm>
 #include <array>
 #include <numeric>
 
@@ -56,6 +57,18 @@ inline constexpr typename Shape<Index, 0>::value_type nr_elements(
     Shape<Index, 0> const& /* shape */)
 {
     return 0;
+}
+
+
+template<
+    typename Index,
+    std::size_t rank>
+inline constexpr bool is_hypercube(
+    Shape<Index, rank> const& shape)
+{
+    return shape.empty() ? false :
+        std::count(shape.begin(), shape.end(), *shape.begin()) ==
+        shape.size();
 }
 
 }  // namespace lue

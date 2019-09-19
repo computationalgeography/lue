@@ -19,6 +19,7 @@ Name   | Description
 lue::add | Return the result of adding something to a partitioned array
 lue::all | Return whether a partitioned array contains only elements that evaluate to true
 lue::cast | Return the result of casting a partitioned array to another type
+lue::convolve | Return the result of convolving a kernel with weights with a partitioned array
 lue::copy | Return the result of copying a partitioned array
 lue::equal_to | Return the result of comparing something with a partitioned array
 lue::fill | Fill a partitioned array in-place with a value

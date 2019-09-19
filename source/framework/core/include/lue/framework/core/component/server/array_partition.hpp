@@ -41,6 +41,8 @@ public:
 
                    ArrayPartition      (Data const& data);
 
+                   ArrayPartition      (Data&& data);
+
                    ArrayPartition      (ArrayPartition const& other);
 
                    ArrayPartition      (ArrayPartition&& other);
@@ -230,6 +232,8 @@ ArrayPartition<Element, rank>::ArrayPartition(
 
 /*!
     @brief      Construct an instance based on initial partition @a data
+
+    The @a data passed in is copied.
 */
 template<
     typename Element,
@@ -239,6 +243,24 @@ ArrayPartition<Element, rank>::ArrayPartition(
 
     Base{},
     _data{data, CopyMode::copy}
+
+{
+}
+
+
+/*!
+    @brief      Construct an instance based on initial partition @a data
+
+    The @a data passed in is moved from.
+*/
+template<
+    typename Element,
+    std::size_t rank>
+ArrayPartition<Element, rank>::ArrayPartition(
+    Data&& data):
+
+    Base{},
+    _data{std::move(data)}
 
 {
 }
@@ -264,7 +286,7 @@ ArrayPartition<Element, rank>::ArrayPartition(
     ArrayPartition&& other):
 
     Base{std::move(other)},
-    _data{std::move(other._data)}
+    _data{std::move(other._data)}  // ← other is already move from...
 
 {
 }

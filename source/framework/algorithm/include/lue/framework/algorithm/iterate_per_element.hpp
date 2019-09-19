@@ -19,8 +19,7 @@ Partition iterate_per_element_partition(
     using InputPartition = Partition;
     using InputData = DataT<InputPartition>;
 
-    hpx::shared_future<InputData> partition_data =
-        partition.data(CopyMode::share);
+    hpx::future<InputData> partition_data = partition.data(CopyMode::share);
 
     return hpx::dataflow(
         hpx::launch::async,
@@ -38,7 +37,8 @@ Partition iterate_per_element_partition(
                     }
                 }
 
-                return hpx::new_<Partition>(hpx::find_here(), partition_data);
+                // Copy the data and move it into a new partition
+                return Partition{hpx::find_here(), InputData{partition_data}};
             }
         ),
         partition_data

@@ -63,8 +63,7 @@ PartitionT<Partition, OutputElement> sum_partition(
                     auto const locality_id = hpx::util::get<0>(futures).get();
                     auto&& data = hpx::util::get<1>(futures).get();
 
-                    // FIXME Move / own instead of copy
-                    return Partition{locality_id, data};
+                    return Partition{locality_id, std::move(data)};
                 }
             )
         );
