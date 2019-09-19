@@ -13,7 +13,7 @@ function perform_experiment()
     fi
 
     for name in $names; do
-        $LUE/benchmark/script/$experiment_kind/$hostname/$name.sh generate_script
+        $LUE/benchmark/script/$experiment_kind/$name.sh generate_script
         bash ./$hostname-$experiment_kind-$name.sh
     done
 }
@@ -30,6 +30,6 @@ function post_process_experiment()
     fi
 
     for name in $names; do
-        $LUE/benchmark/script/$experiment_kind/$hostname/$name.sh post_process
+        $LUE/benchmark/script/$experiment_kind/$name.sh post_process
     done
 }
