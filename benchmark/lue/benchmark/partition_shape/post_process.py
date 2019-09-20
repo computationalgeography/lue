@@ -427,6 +427,17 @@ def post_process_raw_results(
                 for i in range(rank)])
         measurement_per_array_shape = measurement.query(expression)
 
+        # # Create dict from partition size (int) to shape (tuple)
+        # partition_shape_per_size = measurement_per_array_shape.filter(
+        #     items=
+        #         ["partition_size"] +
+        #         ["partition_shape_{}".format(i) for i in range(count)])
+        # partition_shape_per_size = \
+        #     partition_shape_per_size.set_index(keys="partition_size")
+        # partition_shape_per_size = partition_shape_per_size.to_dict("index")
+        # for key, value in partition_shape_per_size.items():
+        #     partition_shape_per_size[key] = tuple([v for v in value.values()])
+
         # Select data needed for plotting
         measurement_per_array_shape = measurement_per_array_shape.filter(
             items=
@@ -458,7 +469,8 @@ def post_process_raw_results(
             legend=False)
 
         # Annotation
-        axes.set_ylabel(u"duration ± 1 std ({})".format(time_point_units))
+        axes.set_ylabel(u"duration ({}) ± 1 std (count={})".format(
+            time_point_units, count))
         axes.yaxis.set_major_formatter(
             ticker.FuncFormatter(
                 lambda y, pos: format_duration(y)))
@@ -522,7 +534,7 @@ def post_process_raw_results(
     #       on the individual plots
     grid.set_axis_labels(
         u"partition size",
-        u"duration ± 1 std ({})".format(time_point_units)
+        u"duration ({}) ± 1 std (count={})".format(time_point_units, count)
     )
 
     axes = grid.axes[0]

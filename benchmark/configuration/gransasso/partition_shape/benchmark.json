@@ -1,5 +1,5 @@
 {
-    "count": 3,
+    "count": 5,
     "worker": {
         "type": "thread",
         "pool": {

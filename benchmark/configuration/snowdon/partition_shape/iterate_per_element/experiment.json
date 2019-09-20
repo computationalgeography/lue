@@ -1,9 +1,7 @@
 {
-    "nr_time_steps": 10,
+    "nr_time_steps": 25,
     "array": {
-        "min_shape": [10000, 10000],
-        "max_shape": [10000, 10000],
-        "shape_step": 500
+        "shape": [10000, 10000]
     },
     "partition": {
         "min_shape": [100, 100],

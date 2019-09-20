@@ -281,8 +281,6 @@ def import_raw_results(
 
     metadata_written = False
 
-    # for nr_workers in \
-    #         range(benchmark.worker.min_nr, benchmark.worker.max_nr + 1):
     for benchmark_idx in range(benchmark.worker.nr_benchmarks()):
 
         nr_workers = benchmark.worker.nr_workers(benchmark_idx)
@@ -386,6 +384,7 @@ def post_process_raw_results(
     meta_information = meta_information_dataframe(lue_meta_information)
     name = meta_information.name[0]
     system_name = meta_information.system_name[0]
+    worker_type = meta_information.worker_type[0]
 
     rank = lue_meta_information.properties["array_shape"].value.shape[1]
     nr_benchmarks, count = lue_measurement.properties["duration"].value.shape
@@ -482,7 +481,8 @@ def post_process_raw_results(
     sns.lineplot(
         data=durations, x="nr_workers", y="duration",
         ax=axes[0], color=actual_color)
-    axes[0].set_ylabel(u"duration ± 1 std ({})".format(time_point_units))
+    axes[0].set_ylabel(u"duration ({}) ± 1 std (count={})".format(
+        time_point_units, count))
     axes[0].yaxis.set_major_formatter(
         ticker.FuncFormatter(
             lambda y, pos: format_duration(y)))
@@ -519,7 +519,7 @@ def post_process_raw_results(
         ax=axes[2], color=actual_color)
     axes[2].set_ylim(0, 110)
     axes[2].set_ylabel("efficiency (%)")
-    # axes[2].set_xlabel(group_by_column)
+    axes[2].set_xlabel("nr_workers ({})".format(worker_type))
     axes[2].xaxis.set_major_formatter(
         ticker.FuncFormatter(
             lambda x, pos: format_nr_workers(x)))

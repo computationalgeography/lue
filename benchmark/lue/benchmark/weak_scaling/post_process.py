@@ -388,6 +388,7 @@ def post_process_raw_results(
     meta_information = meta_information_dataframe(lue_meta_information)
     name = meta_information.name[0]
     system_name = meta_information.system_name[0]
+    worker_type = meta_information.worker_type[0]
 
     rank = lue_meta_information.properties["partition_shape"].value.shape[1]
     nr_benchmarks, count = lue_measurement.properties["duration"].value.shape
@@ -470,7 +471,9 @@ def post_process_raw_results(
     sns.lineplot(
         data=durations, x="nr_workers", y="duration",
         ax=axes, color=actual_color)
-    axes.set_ylabel(u"duration ± 1 std ({})".format(time_point_units))
+    axes.set_ylabel(u"duration ({}) ± 1 std (count={})".format(
+        time_point_units, count))
+    axes.set_xlabel("nr_workers ({})".format(worker_type))
     axes.yaxis.set_major_formatter(
         ticker.FuncFormatter(
             lambda y, pos: format_duration(y)))

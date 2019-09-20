@@ -2,7 +2,10 @@
     "count": 5,
     "worker": {
         "type": "thread",
-        "min_nr": 1,
-        "max_nr": 4
+        "pool": {
+            "min_size": 1,
+            "max_size": 4,
+            "multiplier": 2
+        }
     }
 }
