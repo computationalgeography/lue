@@ -171,8 +171,6 @@ def generate_script_slurm(
     print("bash ./{}".format(script_pathname))
 
 
-
-
 def generate_script_shell(
         cluster,
         benchmark,

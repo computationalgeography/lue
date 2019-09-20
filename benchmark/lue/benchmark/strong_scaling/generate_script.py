@@ -11,14 +11,67 @@ def generate_script_slurm_threads(
         experiment,
         script_pathname):
     """
-    Scale over threads in a single node
+    Scale over threads in a single cluster node
     """
     assert benchmark.worker.nr_nodes_range() == 0
     assert benchmark.worker.nr_threads_range() >= 1
 
-    assert False, "Not implemented yet"
+    job_steps = []
+    array_shape = experiment.array.shape()
+    partition_shape = experiment.partition.shape()
 
-    # TODO very similar to shell script
+    for benchmark_idx in range(benchmark.worker.nr_benchmarks()):
+
+        nr_workers = benchmark.worker.nr_workers(benchmark_idx)
+
+        result_pathname = experiment.benchmark_result_pathname(
+            cluster.name, nr_workers, "json")
+
+        job_steps += [
+            # Run the benchmark, resulting in a json file
+            "srun {srun_configuration} {command_pathname} "
+                '--hpx:ini="hpx.parcel.mpi.enable=1" '
+                '--hpx:ini="hpx.os_threads={nr_threads}" '
+                '{program_configuration}'
+                .format(
+                    srun_configuration=job.srun_configuration(),
+                    command_pathname=experiment.command_pathname,
+                    nr_threads=nr_workers,
+                    program_configuration=job.program_configuration(
+                        cluster, benchmark, experiment,
+                        array_shape, partition_shape,
+                        result_pathname),
+                )
+        ]
+
+    slurm_script = job.create_slurm_script(
+        nr_nodes=benchmark.worker.nr_nodes(),
+        nr_threads=cluster.node.nr_threads(),  # Reserve all threads
+        output_filename=experiment.result_pathname(
+            cluster.name,
+            os.path.basename(os.path.splitext(script_pathname)[0]), "out"),
+        partition_name=cluster.partition_name,
+        max_duration=experiment.max_duration,
+        job_steps=job_steps)
+
+    job_name = "{name}-{program_name}".format(
+        name=experiment.name,
+        program_name=experiment.program_name)
+    delimiter = "END_OF_SLURM_SCRIPT"
+
+    commands = [
+        "# Make sure SLURM can create the output file",
+        "mkdir -p {}".format(experiment.workspace_pathname(cluster.name)),
+        "",
+        "# Submit job to SLURM scheduler",
+        "sbatch --job-name {job_name} << {delimiter}".format(
+            job_name=job_name, delimiter=delimiter),
+        slurm_script,
+        "{delimiter}".format(delimiter=delimiter),
+    ]
+
+    job.write_script(commands, script_pathname)
+    print("bash ./{}".format(script_pathname))
 
 
 def generate_script_slurm_nodes(
@@ -122,86 +175,6 @@ def generate_script_slurm(
     else:
         generate_script_slurm_nodes(
             cluster, benchmark, experiment, script_pathname)
-
-
-###     assert experiment.max_duration is not None
-### 
-###     output_filename = job.output_pathname(script_pathname)
-### 
-###     # Iterate over all combinations of array shapes and partition shapes
-###     # we need to benchmark and format a snippet of bash script for
-###     # executing the benchmark
-###     commands = []
-### 
-###     for array_shape in experiment.array.shapes():
-###         for partition_shape in experiment.partition.shapes():
-### 
-###             commands.append(
-###                 "srun {command_pathname} "
-###                     '--hpx:ini="hpx.parcel.mpi.enable=1" '
-###                     '--hpx:ini="hpx.parcel.tcp.enable=0" '
-###                     '{program_configuration}'
-###                 .format(
-###                     command_pathname=experiment.command_pathname,
-###                     program_configuration=job.program_configuration(
-###                         cluster, benchmark, experiment,
-###                         array_shape, partition_shape),
-###                 )
-###             )
-### 
-###     # HPX doc:
-###     # You can change the number of localities started per node
-###     # (for example to account for NUMA effects) by specifying the
-###     # -n option of srun. The number of cores per locality can be
-###     # set by -c.
-### 
-###     # There is no need to use any of the HPX command line options
-###     # related to the number of localities, number of threads,
-###     # or related to networking ports. All of this information is
-###     # automatically extracted from the SLURM environment by the
-###     # HPX startup code.
-### 
-###     # The srun documentation explicitly states: "If -c is
-###     # specified without -n as many tasks will be allocated per node
-###     # as possible while satisfying the -c restriction. For instance
-###     # on a cluster with 8 CPUs per node, a job request for 4 nodes
-###     # and 3 CPUs per task may be allocated 3 or 6 CPUs per node (1
-###     # or 2 tasks per node) depending upon resource consumption by
-###     # other jobs." For this reason, we suggest to always specify
-###     # -n <number-of-instances>, even if <number-of-instances>
-###     # is equal to one (1).
-### 
-###     assert False, "Create directories!"
-### 
-###     with open(script_pathname, "w") as script:
-###         script.write("""\
-### #!/usr/bin/env bash
-### #SBATCH --nodes={nr_nodes}
-### #SBATCH --ntasks={nr_nodes}
-### #SBATCH --cpus-per-task={nr_threads}
-### #SBATCH --output={output_filename}
-### #SBATCH --partition={partition_name}
-### #SBATCH --time={max_duration}
-### 
-### set -e
-### 
-### module purge
-### module load userspace/all
-### module load gcc/7.2.0
-### module load boost/gcc72/1.65.1
-### module load mpich/gcc72/mlnx/3.2.1
-### 
-### {commands}
-### """.format(
-###             nr_nodes=benchmark.worker.nr_nodes(),
-###             nr_threads=benchmark.worker.nr_threads(),
-###             output_filename=output_filename,
-###             partition_name=cluster.partition_name,
-###             max_duration=experiment.max_duration,
-###             commands="\n".join(commands)
-###         ))
-### 
-###     print("sbatch {}".format(script_pathname))
 
 
 def generate_script_shell(

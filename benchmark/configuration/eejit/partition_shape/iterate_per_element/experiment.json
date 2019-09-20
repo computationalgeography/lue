@@ -1,17 +1,11 @@
 {
-    "nr_time_steps": 10,
+    "nr_time_steps": 25,
     "array": {
-        "min_shape": [10000, 10000],
-        "max_shape": [10000, 10000],
-        "shape_step": 20000
-        # "max_shape": [510000, 510000],
-        # "max_shape": [90000, 90000],
+        "shape": [10000, 10000]
     },
     "partition": {
         "min_shape": [100, 100],
-        "max_shape": [700, 700],
+        "max_shape": [800, 800],
         "shape_step": 100
-        # Crashes...
-        # "max_shape": [5000, 5000],
     }
 }
