@@ -228,8 +228,6 @@ def determine_epoch(
 
     epoch = None
 
-    # for nr_workers in \
-    #         range(benchmark.worker.min_nr, benchmark.worker.max_nr + 1):
     for benchmark_idx in range(benchmark.worker.nr_benchmarks()):
 
         nr_workers = benchmark.worker.nr_workers(benchmark_idx)
@@ -304,6 +302,8 @@ def import_raw_results(
 
     lue.assert_is_valid(lue_dataset_pathname)
 
+    return lue_dataset_pathname
+
 
 def meta_information_dataframe(
         lue_meta_information):
@@ -368,13 +368,11 @@ def measurement_dataframe(
 
 
 def post_process_raw_results(
-        cluster,
-        experiment):
+        lue_dataset_pathname,
+        plot_pathname):
     """
     Create plots and tables from raw benchmark results
     """
-    lue_dataset_pathname = experiment.result_pathname(
-        cluster.name, "data", "lue")
     lue_dataset = lue.open_dataset(lue_dataset_pathname)
     lue_benchmark = lue_dataset.phenomena["benchmark"]
     lue_meta_information = \
@@ -424,21 +422,21 @@ def post_process_raw_results(
     # 100% serial code, but without parallelization overhead
     measurement["serial_duration"] = [t1 for i in range(nr_benchmarks)]
 
-    # speedup = t1 / tn
-    measurement["relative_speedup"] = \
+    # speed_up = t1 / tn
+    measurement["relative_speed_up"] = \
         t1 / measurement["duration"]
-    measurement["linear_relative_speedup"] = \
+    measurement["linear_relative_speed_up"] = \
         t1 / measurement["linear_duration"]
-    measurement["serial_relative_speedup"] = \
+    measurement["serial_relative_speed_up"] = \
         t1 / measurement["serial_duration"]
 
-    # efficiency = 100% * speedup / nr_workers
+    # efficiency = 100% * speed_up / nr_workers
     measurement["efficiency"] = \
-        100 * measurement["relative_speedup"] / nr_workers
+        100 * measurement["relative_speed_up"] / nr_workers
     measurement["linear_efficiency"] = \
-        100 * measurement["linear_relative_speedup"] / nr_workers
+        100 * measurement["linear_relative_speed_up"] / nr_workers
     measurement["serial_efficiency"] = \
-        100 * measurement["serial_relative_speedup"] / nr_workers
+        100 * measurement["serial_relative_speed_up"] / nr_workers
 
 
     # Select data needed for plotting
@@ -481,7 +479,7 @@ def post_process_raw_results(
     sns.lineplot(
         data=durations, x="nr_workers", y="duration",
         ax=axes[0], color=actual_color)
-    axes[0].set_ylabel(u"duration ({}) ± 1 std (count={})".format(
+    axes[0].set_ylabel(u"mean duration ({}) ± 95% ci (count={})".format(
         time_point_units, count))
     axes[0].yaxis.set_major_formatter(
         ticker.FuncFormatter(
@@ -490,18 +488,18 @@ def post_process_raw_results(
         ticker.FuncFormatter(
             lambda x, pos: format_nr_workers(x)))
 
-    # speedup by nr_workers
+    # speed_up by nr_workers
     sns.lineplot(
-        data=measurement, x="nr_workers", y="linear_relative_speedup",
+        data=measurement, x="nr_workers", y="linear_relative_speed_up",
         ax=axes[1], color=linear_color)
     sns.lineplot(
-        data=measurement, x="nr_workers", y="serial_relative_speedup",
+        data=measurement, x="nr_workers", y="serial_relative_speed_up",
         ax=axes[1], color=serial_color)
     sns.lineplot(
-        data=measurement, x="nr_workers", y="relative_speedup",
+        data=measurement, x="nr_workers", y="relative_speed_up",
         ax=axes[1], color=actual_color)
     # axes[1].set_ylim(0, max_nr_workers + 1)
-    axes[1].set_ylabel("relative speedup (-)")
+    axes[1].set_ylabel("relative speed up (-)")
     # axes[1].set_xlabel(group_by_column)
     axes[1].xaxis.set_major_formatter(
         ticker.FuncFormatter(
@@ -519,15 +517,17 @@ def post_process_raw_results(
         ax=axes[2], color=actual_color)
     axes[2].set_ylim(0, 110)
     axes[2].set_ylabel("efficiency (%)")
-    axes[2].set_xlabel("nr_workers ({})".format(worker_type))
     axes[2].xaxis.set_major_formatter(
         ticker.FuncFormatter(
             lambda x, pos: format_nr_workers(x)))
 
+    axes[-1].set_xlabel("nr_workers ({})".format(worker_type))
+
     figure.legend(labels=["linear", "serial", "actual"])
 
-    array_shape = experiment.array.shape()
-    partition_shape = experiment.partition.shape()
+    array_shape = lue_meta_information.properties["array_shape"].value[0]
+    partition_shape = \
+        lue_meta_information.properties["partition_shape"].value[0]
 
     figure.suptitle(
         "{}, {}, {}\n"
@@ -541,7 +541,6 @@ def post_process_raw_results(
             )
         )
 
-    plot_pathname = experiment.result_pathname(cluster.name, "plot", "pdf")
     plt.savefig(plot_pathname)
 
 
@@ -552,7 +551,7 @@ def post_process_results(
         command_pathname):
     """
     Post-process the results of executing the benchmark script generated
-    by the generate_script function.
+    by the generate_script function
     """
     job_scheduler = cluster_settings_json["job_scheduler"]
     assert job_scheduler in ["shell", "slurm"]
@@ -566,8 +565,10 @@ def post_process_results(
     experiment = StrongScalingExperiment(
         experiment_settings_json, command_pathname)
 
-    import_raw_results(cluster, benchmark, experiment)
+    lue_dataset_pathname = import_raw_results(cluster, benchmark, experiment)
     create_dot_graph(
         experiment.result_pathname(cluster.name, "data", "lue"),
         experiment.result_pathname(cluster.name, "graph", "pdf"))
-    post_process_raw_results(cluster, experiment)
+
+    plot_pathname = experiment.result_pathname(cluster.name, "plot", "pdf")
+    post_process_raw_results(lue_dataset_pathname, plot_pathname)

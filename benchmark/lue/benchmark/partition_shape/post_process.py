@@ -303,6 +303,8 @@ def import_raw_results(
 
     lue.assert_is_valid(lue_dataset_pathname)
 
+    return lue_dataset_pathname
+
 
 def meta_information_dataframe(
         lue_meta_information):
@@ -364,13 +366,13 @@ def measurement_dataframe(
 
 
 def post_process_raw_results(
+        lue_dataset_pathname,
+        plot_pathname,
         cluster,
         experiment):
     """
     Create plots and tables from raw benchmark results
     """
-    lue_dataset_pathname = experiment.result_pathname(
-        cluster.name, "data", "lue")
     lue_dataset = lue.open_dataset(lue_dataset_pathname)
     lue_benchmark = lue_dataset.phenomena["benchmark"]
     lue_meta_information = \
@@ -469,7 +471,7 @@ def post_process_raw_results(
             legend=False)
 
         # Annotation
-        axes.set_ylabel(u"duration ({}) ± 1 std (count={})".format(
+        axes.set_ylabel(u"mean duration ({}) ± 95% ci (count={})".format(
             time_point_units, count))
         axes.yaxis.set_major_formatter(
             ticker.FuncFormatter(
@@ -491,9 +493,9 @@ def post_process_raw_results(
                 )
             )
 
-        plot_pathname = experiment.benchmark_result_pathname(
+        a_plot_pathname = experiment.benchmark_result_pathname(
             cluster.name, array_shape, "plot", "pdf")
-        plt.savefig(plot_pathname)
+        plt.savefig(a_plot_pathname)
 
 
     # --------------------------------------------------------------------------
@@ -534,7 +536,8 @@ def post_process_raw_results(
     #       on the individual plots
     grid.set_axis_labels(
         u"partition size",
-        u"duration ({}) ± 1 std (count={})".format(time_point_units, count)
+        u"mean duration ({}) ± 95% ci (count={})".format(
+            time_point_units, count)
     )
 
     axes = grid.axes[0]
@@ -557,7 +560,6 @@ def post_process_raw_results(
             )
         )
 
-    plot_pathname = experiment.result_pathname(cluster.name, "plot", "pdf")
     plt.savefig(plot_pathname)
 
 
@@ -587,8 +589,9 @@ def post_process_results(
     experiment = PartitionShapeExperiment(
         experiment_settings_json, command_pathname)
 
-    import_raw_results(cluster, experiment)
+    lue_dataset_pathname = import_raw_results(cluster, experiment)
     create_dot_graph(
         experiment.result_pathname(cluster.name, "data", "lue"),
         experiment.result_pathname(cluster.name, "graph", "pdf"))
-    post_process_raw_results(cluster, experiment)
+    plot_pathname = experiment.result_pathname(cluster.name, "plot", "pdf")
+    post_process_raw_results(lue_dataset_pathname, plot_pathname, cluster, experiment)

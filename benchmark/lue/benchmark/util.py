@@ -1,3 +1,4 @@
+import math
 import os.path
 import shlex
 import subprocess
@@ -69,18 +70,18 @@ def format_duration(
         duration):
     # TODO Pass in units and be smarter
 
-    return "{:,}".format(int(duration))
+    return duration
+
+    # return "{:,}".format(int(duration))
 
 
 def format_nr_workers(
         size):
-    # TODO Use powers of 3, 6, 9, etc
-
-    return "{:,}".format(int(size))
+    nr_workers = math.floor(size)
+    return "{:,}".format(int(nr_workers)) if nr_workers == size else ""
 
 
 def format_partition_size(
         size):
-    # TODO Use powers of 3, 6, 9, etc
-
-    return "{:,}".format(int(size))
+    partition_size = math.floor(size)
+    return "{:,}".format(int(partition_size)) if partition_size == size else ""

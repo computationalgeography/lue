@@ -30,6 +30,7 @@ def benchmark_meta_to_lue_json(
         benchmark,
         experiment):
 
+    array_shape = experiment.array.shape()
     partition_shape = experiment.partition.shape()
 
     lue_json = {
@@ -75,6 +76,14 @@ def benchmark_meta_to_lue_json(
                                     "value_variability": "constant",
                                     "datatype": "string",
                                     "value": [experiment.description]
+                                },
+                                {
+                                    "name": "array_shape",
+                                    "shape_per_object": "same_shape",
+                                    "value_variability": "constant",
+                                    "datatype": "uint64",
+                                    "shape": [len(array_shape)],
+                                    "value": array_shape
                                 },
                                 {
                                     "name": "partition_shape",
@@ -227,8 +236,6 @@ def determine_epoch(
 
     epoch = None
 
-    # for nr_workers in \
-    #         range(benchmark.worker.min_nr, benchmark.worker.max_nr + 1):
     for benchmark_idx in range(benchmark.worker.nr_benchmarks()):
 
         nr_workers = benchmark.worker.nr_workers(benchmark_idx)
@@ -280,8 +287,6 @@ def import_raw_results(
 
     metadata_written = False
 
-    # for nr_workers in \
-    #         range(benchmark.worker.min_nr, benchmark.worker.max_nr + 1):
     for benchmark_idx in range(benchmark.worker.nr_benchmarks()):
 
         nr_workers = benchmark.worker.nr_workers(benchmark_idx)
@@ -304,6 +309,8 @@ def import_raw_results(
             import_lue_json(lue_json_file.name, lue_dataset_pathname)
 
     lue.assert_is_valid(lue_dataset_pathname)
+
+    return lue_dataset_pathname
 
 
 def meta_information_dataframe(
@@ -372,13 +379,12 @@ def measurement_dataframe(
 
 
 def post_process_raw_results(
-        cluster,
+        lue_dataset_pathname,
+        plot_pathname,
         experiment):
     """
     Create plots and tables from raw benchmark results
     """
-    lue_dataset_pathname = experiment.result_pathname(
-        cluster.name, "data", "lue")
     lue_dataset = lue.open_dataset(lue_dataset_pathname)
     lue_benchmark = lue_dataset.phenomena["benchmark"]
     lue_meta_information = \
@@ -431,6 +437,14 @@ def post_process_raw_results(
     measurement["serial_duration"] = t1 * nr_workers
 
 
+    # slow_down = tn / linear_duration
+    measurement["relative_slow_down"] = \
+        measurement["duration"] / measurement["linear_duration"]
+    measurement["linear_relative_slow_down"] = \
+        measurement["linear_duration"] / measurement["linear_duration"]
+    measurement["serial_relative_slow_down"] = \
+        measurement["serial_duration"] / measurement["linear_duration"]
+
     # Select data needed for plotting
     durations = measurement.filter(
         items=
@@ -456,35 +470,51 @@ def post_process_raw_results(
     actual_color = sns.xkcd_rgb["denim blue"]
 
     figure, axes = plt.subplots(
-            nrows=1, ncols=1,
-            figsize=(15, 5),
+            nrows=2, ncols=1,
+            figsize=(15, 10),
             sharex=True
         )  # Inches...
 
     # duration by nr_workers
     sns.lineplot(
         data=measurement, x="nr_workers", y="linear_duration",
-        ax=axes, color=linear_color)
+        ax=axes[0], color=linear_color)
     sns.lineplot(
         data=measurement, x="nr_workers", y="serial_duration",
-        ax=axes, color=serial_color)
+        ax=axes[0], color=serial_color)
     sns.lineplot(
         data=durations, x="nr_workers", y="duration",
-        ax=axes, color=actual_color)
-    axes.set_ylabel(u"duration ({}) ± 1 std (count={})".format(
+        ax=axes[0], color=actual_color)
+    axes[0].set_ylabel(u"mean duration ({}) ± 95% ci (count={})".format(
         time_point_units, count))
-    axes.set_xlabel("nr_workers ({})".format(worker_type))
-    axes.yaxis.set_major_formatter(
+    axes[0].yaxis.set_major_formatter(
         ticker.FuncFormatter(
             lambda y, pos: format_duration(y)))
-    axes.xaxis.set_major_formatter(
+    axes[0].xaxis.set_major_formatter(
         ticker.FuncFormatter(
             lambda x, pos: format_nr_workers(x)))
 
+    # slow_down by nr_workers
+    sns.lineplot(
+        data=measurement, x="nr_workers", y="linear_relative_slow_down",
+        ax=axes[1], color=linear_color)
+    sns.lineplot(
+        data=measurement, x="nr_workers", y="serial_relative_slow_down",
+        ax=axes[1], color=serial_color)
+    sns.lineplot(
+        data=measurement, x="nr_workers", y="relative_slow_down",
+        ax=axes[1], color=actual_color)
+    axes[1].set_ylim(None, 1.05 * measurement["relative_slow_down"].max())
+    axes[1].set_ylabel("relative slow down (-)")
+
+    axes[-1].set_xlabel("nr_workers ({})".format(worker_type))
+
     figure.legend(labels=["linear", "serial", "actual"])
 
-    array_shape_per_worker = experiment.array.shape()
-    partition_shape = experiment.partition.shape()
+    array_shape_per_worker = \
+        lue_meta_information.properties["array_shape"].value[0]
+    partition_shape = \
+        lue_meta_information.properties["partition_shape"].value[0]
 
     figure.suptitle(
         "{}, {}, {}\n"
@@ -498,7 +528,6 @@ def post_process_raw_results(
             )
         )
 
-    plot_pathname = experiment.result_pathname(cluster.name, "plot", "pdf")
     plt.savefig(plot_pathname)
 
 
@@ -523,8 +552,9 @@ def post_process_results(
     experiment = WeakScalingExperiment(
         experiment_settings_json, command_pathname)
 
-    import_raw_results(cluster, benchmark, experiment)
+    lue_dataset_pathname = import_raw_results(cluster, benchmark, experiment)
     create_dot_graph(
         experiment.result_pathname(cluster.name, "data", "lue"),
         experiment.result_pathname(cluster.name, "graph", "pdf"))
-    post_process_raw_results(cluster, experiment)
+    plot_pathname = experiment.result_pathname(cluster.name, "plot", "pdf")
+    post_process_raw_results(lue_dataset_pathname, plot_pathname, experiment)
