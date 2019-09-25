@@ -471,7 +471,7 @@ def post_process_raw_results(
             legend=False)
 
         # Annotation
-        axes.set_ylabel(u"mean duration ({}) ± 95% ci (count={})".format(
+        axes.set_ylabel(u"duration ({}) ± 95% ci (count={})".format(
             time_point_units, count))
         axes.yaxis.set_major_formatter(
             ticker.FuncFormatter(
@@ -536,7 +536,7 @@ def post_process_raw_results(
     #       on the individual plots
     grid.set_axis_labels(
         u"partition size",
-        u"mean duration ({}) ± 95% ci (count={})".format(
+        u"duration ({}) ± 95% ci (count={})".format(
             time_point_units, count)
     )
 
