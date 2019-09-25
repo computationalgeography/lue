@@ -37,12 +37,17 @@ def program_configuration(
         experiment,
         array_shape,
         partition_shape,
-        result_pathname):
+        result_pathname=None,
+        nr_workers=None):
 
-    return \
+    if result_pathname is None:
+        assert not nr_workers is None
+        result_pathname = experiment.benchmark_result_pathname(
+            cluster.name, nr_workers, "json")
+
+    configuration = \
         '--hpx:ini="application.{program_name}.benchmark.cluster_name!={cluster_name}" ' \
         '--hpx:ini="application.{program_name}.benchmark.count!={count}" ' \
-        '{max_tree_depth} ' \
         '--hpx:ini="application.{program_name}.benchmark.output!={result_pathname}" ' \
         '--hpx:ini="application.{program_name}.nr_time_steps!={nr_time_steps}" ' \
         '--hpx:ini="application.{program_name}.array_shape!={array_shape}" ' \
@@ -51,14 +56,49 @@ def program_configuration(
                 program_name=experiment.program_name,
                 cluster_name=cluster.name,
                 count=benchmark.count,
-                max_tree_depth=
-                    '--hpx:ini="application.{program_name}.benchmark.max_tree_depth!={max_tree_depth}" ' \
-                        if experiment.max_tree_depth is not None else "",
                 nr_time_steps=experiment.nr_time_steps,
                 array_shape=list(array_shape),
                 partition_shape=list(partition_shape),
                 result_pathname=result_pathname,
             )
+
+    arguments = []
+
+    if experiment.max_tree_depth is not None:
+        arguments.append(
+            '--hpx:ini="application.{program_name}.benchmark.max_tree_depth!={max_tree_depth}"'
+                .format(
+                    program_name=experiment.program_name,
+                    max_tree_depth=experiment.max_tree_depth))
+
+    if not benchmark.hpx is None:
+        assert not nr_workers is None
+        counter_pathname = experiment.benchmark_result_pathname(
+            cluster.name, "counter-{}".format(nr_workers), "csv")
+
+        # Format arguments for tracking performance counters
+        arguments += [
+            '--hpx:print-counter-format=csv',
+            '--hpx:print-counter-destination="{destination}"'.format(
+                destination=counter_pathname),
+        ]
+
+        pc_arguments = benchmark.hpx.performance_counters
+
+        for argument in pc_arguments:
+            assert len(argument) == 1
+            assert len(argument.items()[0]) == 2, argument.items()
+            key, value = argument.items()[0]
+
+            if not isinstance(value, list):
+                arguments.append('--hpx:{}="{}"'.format(key, value))
+            else:
+                for item in value:
+                    arguments.append('--hpx:{}="{}"'.format(key, item))
+
+    configuration += " {}".format(" ".join(arguments))
+
+    return configuration
 
 
 def write_script(

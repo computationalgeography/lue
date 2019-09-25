@@ -7,5 +7,17 @@
             "max_size": 4,
             "multiplier": 2
         }
+    },
+    "hpx": {
+        "performance_counters": [
+            {
+                "print-counter-interval": 1000
+            },
+            {
+                "print-counter": [
+                    "/threads{locality#*/worker-thread#*}/idle-rate"
+                ]
+            }
+        ]
     }
 }
