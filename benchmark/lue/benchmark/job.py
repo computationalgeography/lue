@@ -72,29 +72,32 @@ def program_configuration(
                     max_tree_depth=experiment.max_tree_depth))
 
     if not benchmark.hpx is None:
-        assert not nr_workers is None
-        counter_pathname = experiment.benchmark_result_pathname(
-            cluster.name, "counter-{}".format(nr_workers), "csv")
 
-        # Format arguments for tracking performance counters
-        arguments += [
-            '--hpx:print-counter-format=csv',
-            '--hpx:print-counter-destination="{destination}"'.format(
-                destination=counter_pathname),
-        ]
+        performance_counters = benchmark.hpx.performance_counters
 
-        pc_arguments = benchmark.hpx.performance_counters
+        if performance_counters is not None:
 
-        for argument in pc_arguments:
-            assert len(argument) == 1
-            assert len(argument.items()[0]) == 2, argument.items()
-            key, value = argument.items()[0]
+            assert not nr_workers is None
+            counter_pathname = experiment.benchmark_result_pathname(
+                cluster.name, "counter-{}".format(nr_workers), "csv")
 
-            if not isinstance(value, list):
-                arguments.append('--hpx:{}="{}"'.format(key, value))
-            else:
-                for item in value:
-                    arguments.append('--hpx:{}="{}"'.format(key, item))
+            # Format arguments for tracking performance counters
+            arguments += [
+                '--hpx:print-counter-format=csv',
+                '--hpx:print-counter-destination="{destination}"'.format(
+                    destination=counter_pathname),
+            ]
+
+            for argument in performance_counters:
+                assert len(argument) == 1
+                assert len(argument.items()[0]) == 2, argument.items()
+                key, value = argument.items()[0]
+
+                if not isinstance(value, list):
+                    arguments.append('--hpx:{}="{}"'.format(key, value))
+                else:
+                    for item in value:
+                        arguments.append('--hpx:{}="{}"'.format(key, item))
 
     configuration += " {}".format(" ".join(arguments))
 

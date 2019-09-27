@@ -481,6 +481,7 @@ def post_process_raw_results(
         axes.xaxis.set_major_formatter(
             ticker.FuncFormatter(
                 lambda x, pos: format_partition_size(x)))
+        axes.grid()
 
         figure.suptitle(
             "{}, {}, {}\n"
@@ -549,6 +550,7 @@ def post_process_raw_results(
     axes.xaxis.set_major_formatter(
         ticker.FuncFormatter(
             lambda x, pos: format_partition_size(x)))
+    axes.grid()
 
     grid.fig.suptitle(
         "{}, {}, {}\n"
