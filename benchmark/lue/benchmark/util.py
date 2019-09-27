@@ -1,3 +1,4 @@
+import pandas as pd
 import math
 import os.path
 import shlex
@@ -85,3 +86,29 @@ def format_partition_size(
         size):
     partition_size = math.floor(size)
     return "{:,}".format(int(partition_size)) if partition_size == size else ""
+
+
+def select_data_for_plot(
+        data_frame,
+        name,
+        count):
+    # Select data needed for plotting
+    result = data_frame.filter(
+        items=
+            ["nr_workers"] +
+            ["{}_{}".format(name, i) for i in range(count)])
+
+    # Durations per nr workers
+    result = result.set_index(keys="nr_workers")
+    result = pd.DataFrame(
+        data=result.stack(),
+        columns=[name])
+
+    # Get rid of introduced level of index
+    result.index = result.index.droplevel(1)
+
+    # Create a new index, moving nr_workers index level into columns
+    result = result.reset_index()
+
+    return result
+

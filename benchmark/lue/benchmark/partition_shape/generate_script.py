@@ -137,7 +137,7 @@ def generate_script_slurm(
                         program_configuration=job.program_configuration(
                             cluster, benchmark, experiment,
                             array_shape, partition_shape,
-                            result_pathname),
+                            result_pathname=result_pathname),
                     )
             ]
 
@@ -205,7 +205,7 @@ def generate_script_shell(
                         program_configuration=job.program_configuration(
                             cluster, benchmark, experiment,
                             array_shape, partition_shape,
-                            result_pathname)
+                            result_pathname=result_pathname)
                     )
             ]
 

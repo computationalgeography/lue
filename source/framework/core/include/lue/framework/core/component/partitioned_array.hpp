@@ -9,10 +9,6 @@
 
 namespace lue {
 
-/*!
-    @brief      Component client class associated with a collection of
-                distributed array partitions
-*/
 template<
     typename Element,
     std::size_t rank>
@@ -689,52 +685,6 @@ void PartitionedArray<Element, rank>::create(
 }
 
 
-// template<
-//     typename Element,
-//     std::size_t rank>
-// template<
-//     typename DistributionPolicy,
-//     typename Creator>
-// void PartitionedArray<Element, rank>::create(
-//     DistributionPolicy const& distribution_policy,
-//     Creator&& creator,
-//     Index const nr_partitions,
-//     Shape const& max_partition_shape)
-// {
-//     // The distribution_policy contains a collection of localities to place
-//     // partitions on and a strategy for distributing these partitions
-//     // over them. It does not know anything about array partitions and
-//     // how to create them. That is what the creator is for.
-// 
-// 
-// }
-
-
-// template<
-//     typename Element,
-//     std::size_t rank>
-// template<
-//     typename DistributionPolicy,
-//     typename Creator>
-// void PartitionedArray<Element, rank>::create(
-//     DistributionPolicy const& distribution_policy,
-//     Creator&& creator)
-// {
-//     // Given the distribution policy, determine the number of partitions
-//     // to create
-//     Index const nr_partitions =
-//         hpx::traits::num_container_partitions<DistributionPolicy>::call(
-//            distribution_policy);
-// 
-//     // Given the number of partitions to create and the shape of the
-//     // array, determine the maximum shape of the individual partitions
-//     auto const max_partition_shape =
-//         lue::max_partition_shape(_shape, nr_partitions);
-// 
-//     create(distribution_policy, creator, nr_partitions, max_partition_shape);
-// }
-
-
 template<
     typename Element,
     std::size_t rank>
@@ -769,35 +719,6 @@ void PartitionedArray<Element, rank>::create(
 
     create(shape_in_partitions, max_partition_shape);
 }
-
-
-// template<
-//     typename Element,
-//     std::size_t rank>
-// template<
-//     typename DistributionPolicy>
-// void PartitionedArray<Element, rank>::create(
-//     DistributionPolicy const& distribution_policy)
-// {
-//     // Use distribution_policy to instantiate count array partitions of
-//     // shape shape. Return a future to a collection containing, for each
-//     // locality used, a collection of GIDs of the array partitions
-//     // instantiated
-// 
-//     // The elements in the array partitions will not be initialized. Use
-//     // this creator for partitions that will be assigned to later.
-//     auto creator =
-//         [](
-//             DistributionPolicy const& distribution_policy,
-//             std::size_t const count,
-//             Shape const& shape)
-//         {
-//             return distribution_policy.template
-//                 bulk_create<PartitionServer>(count, shape);
-//         };
-// 
-//     create(distribution_policy, creator);
-// }
 
 
 template<
@@ -869,31 +790,6 @@ void PartitionedArray<Element, rank>::assert_invariants() const
 }
 
 
-// template<
-//     typename T>
-// typename PartitionedArray<T>::const_iterator PartitionedArray<T>::begin() const
-// {
-//     return _index.begin();
-// }
-// 
-// 
-// template<
-//     typename T>
-// typename PartitionedArray<T>::const_iterator PartitionedArray<T>::end() const
-// {
-//     return _index.end();
-// }
-// 
-// 
-// template<
-//     typename T>
-// void PartitionedArray<T>::insert(
-//     Element const& value)
-// {
-//     _index.insert(value);
-// }
-
-
 template<
     typename Element,
     std::size_t rank>
@@ -902,16 +798,6 @@ typename PartitionedArray<Element, rank>::Size
 {
     return lue::nr_elements(_shape);
 }
-
-
-// template<
-//     typename Element,
-//     typename Data>
-// typename PartitionedArray<Element, Data>::Definition const&
-//     PartitionedArray<Element, Data>::definition() const
-// {
-//     return _definition;
-// }
 
 
 template<

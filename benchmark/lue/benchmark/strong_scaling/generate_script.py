@@ -40,7 +40,7 @@ def generate_script_slurm_threads(
                     program_configuration=job.program_configuration(
                         cluster, benchmark, experiment,
                         array_shape, partition_shape,
-                        result_pathname),
+                        nr_workers=nr_workers),
                 )
         ]
 
@@ -118,7 +118,7 @@ def generate_script_slurm_nodes(
                     program_configuration=job.program_configuration(
                         cluster, benchmark, experiment,
                         array_shape, partition_shape,
-                        result_pathname),
+                        nr_workers=nr_workers),
                 )
         ]
 
@@ -217,7 +217,7 @@ def generate_script_shell(
                     program_configuration=job.program_configuration(
                         cluster, benchmark, experiment,
                         array_shape, partition_shape,
-                        result_pathname)
+                        nr_workers=nr_workers)
                 )
         ]
 

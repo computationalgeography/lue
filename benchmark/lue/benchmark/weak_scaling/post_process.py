@@ -417,51 +417,43 @@ def post_process_raw_results(
     # time_point = time_point.astimezone(tzlocal.get_localzone()).strftime("%c")
     time_point = time_point.strftime("%c")
 
-    # Calculate mean duration
-    duration_labels = ["duration_{}".format(i) for i in range(count)]
-    measurement["duration"] = \
-        measurement.filter(items=duration_labels).mean(axis=1)
-
-    # t1 = mean duration using one worker
     nr_workers = measurement["nr_workers"]
-    t1 = measurement.loc[nr_workers == 1]["duration"][0]
+    duration_labels = ["duration_{}".format(i) for i in range(count)]
 
-    # Best case: duration stays constant with increasing the number of
-    # workers and amount of work (and keeping the amount of work /
-    # worker constant)
-    # 100% parallel code, but without parallelization overhead
-    measurement["linear_duration"] = [t1 for i in range(nr_benchmarks)]
+    # t1 = duration using one worker
+    t1 = measurement.loc[nr_workers == 1].filter(items=duration_labels)
+    t1 = [t1["duration_{}".format(i)][0] for i in range(count)]
 
-    # Worst case: duration scales with number of workers
-    # 100% serial code, but without parallelization overhead
-    measurement["serial_duration"] = t1 * nr_workers
+    for i in range(count):
+        # Best case: duration stays constant with increasing the number of
+        # workers and amount of work (and keeping the amount of work /
+        # worker constant)
+        # 100% parallel code, but without parallelization overhead
+        measurement["linear_duration_{}".format(i)] = \
+            [t1[i] for b in range(nr_benchmarks)]
 
+        # Worst case: duration scales with number of workers
+        # 100% serial code, but without parallelization overhead
+        measurement["serial_duration_{}".format(i)] = t1[i] * nr_workers
 
-    # slow_down = tn / linear_duration
-    measurement["relative_slow_down"] = \
-        measurement["duration"] / measurement["linear_duration"]
-    measurement["linear_relative_slow_down"] = \
-        measurement["linear_duration"] / measurement["linear_duration"]
-    measurement["serial_relative_slow_down"] = \
-        measurement["serial_duration"] / measurement["linear_duration"]
+        ### # slow_down = tn / linear_duration
+        ### measurement["relative_slow_down_{}".format(i)] = \
+        ###     (measurement["duration_{}".format(i)] / \
+        ###     measurement["linear_duration_{}".format(i)]) - 1
+        ### measurement["linear_relative_slow_down_{}".format(i)] = \
+        ###     (measurement["linear_duration_{}".format(i)] / \
+        ###     measurement["linear_duration_{}".format(i)]) - 1
+        ### measurement["serial_relative_slow_down_{}".format(i)] = \
+        ###     (measurement["serial_duration_{}".format(i)] / \
+        ###     measurement["linear_duration_{}".format(i)]) - 1
 
-    # Select data needed for plotting
-    durations = measurement.filter(
-        items=
-            ["nr_workers"] +
-            ["duration_{}".format(i) for i in range(count)])
-
-    # Durations per nr workers
-    durations = durations.set_index(keys="nr_workers")
-    durations = pd.DataFrame(
-        data=durations.stack(),
-        columns=["duration"])
-
-    # Get rid of introduced level of index
-    durations.index = durations.index.droplevel(1)
-
-    # Create a new index, moving nr_workers index level into columns
-    durations = durations.reset_index()
+        # efficiency = 100% * t1 / tn
+        measurement["efficiency_{}".format(i)] = \
+            100 * t1[i] / measurement["duration_{}".format(i)]
+        measurement["linear_efficiency_{}".format(i)] = \
+            100 * t1[i] / measurement["linear_duration_{}".format(i)]
+        measurement["serial_efficiency_{}".format(i)] = \
+            100 * t1[i] / measurement["serial_duration_{}".format(i)]
 
 
     # https://xkcd.com/color/rgb/
@@ -476,37 +468,79 @@ def post_process_raw_results(
         )  # Inches...
 
     # duration by nr_workers
+    linear_duration = select_data_for_plot(
+        measurement, "linear_duration", count)
+    serial_duration = select_data_for_plot(
+        measurement, "serial_duration", count)
+    duration = select_data_for_plot(
+        measurement, "duration", count)
+
     sns.lineplot(
-        data=measurement, x="nr_workers", y="linear_duration",
+        data=linear_duration, x="nr_workers", y="linear_duration",
         ax=axes[0], color=linear_color)
     sns.lineplot(
-        data=measurement, x="nr_workers", y="serial_duration",
+        data=serial_duration, x="nr_workers", y="serial_duration",
         ax=axes[0], color=serial_color)
     sns.lineplot(
-        data=durations, x="nr_workers", y="duration",
+        data=duration, x="nr_workers", y="duration",
         ax=axes[0], color=actual_color)
-    axes[0].set_ylabel(u"mean duration ({}) ± 95% ci (count={})".format(
+    axes[0].set_ylabel(u"duration ({}) ± 95% ci (count={})".format(
         time_point_units, count))
     axes[0].yaxis.set_major_formatter(
         ticker.FuncFormatter(
             lambda y, pos: format_duration(y)))
-    axes[0].xaxis.set_major_formatter(
-        ticker.FuncFormatter(
-            lambda x, pos: format_nr_workers(x)))
+    axes[0].grid()
 
-    # slow_down by nr_workers
+    ### # slow_down by nr_workers
+    ### linear_relative_slow_down = select_data_for_plot(
+    ###     measurement, "linear_relative_slow_down", count)
+    ### serial_relative_slow_down = select_data_for_plot(
+    ###     measurement, "serial_relative_slow_down", count)
+    ### relative_slow_down = select_data_for_plot(
+    ###     measurement, "relative_slow_down", count)
+
+    ### sns.lineplot(
+    ###     data=linear_relative_slow_down,
+    ###     x="nr_workers", y="linear_relative_slow_down",
+    ###     ax=axes[1], color=linear_color)
+    ### sns.lineplot(
+    ###     data=serial_relative_slow_down,
+    ###     x="nr_workers", y="serial_relative_slow_down",
+    ###     ax=axes[1], color=serial_color)
+    ### sns.lineplot(
+    ###     data=relative_slow_down,
+    ###     x="nr_workers", y="relative_slow_down",
+    ###     ax=axes[1], color=actual_color)
+
+    ### max_relative_slow_down = measurement[
+    ###         ["relative_slow_down_{}".format(i) for i in range(count)]
+    ###     ].max().max()
+    ### axes[1].set_ylim(None, 1.05 * max_relative_slow_down)
+    ### axes[1].set_ylabel("relative slow down (-)")
+
+    linear_efficiency = select_data_for_plot(
+        measurement, "linear_efficiency", count)
+    serial_efficiency = select_data_for_plot(
+        measurement, "serial_efficiency", count)
+    efficiency = select_data_for_plot(
+        measurement, "efficiency", count)
+
     sns.lineplot(
-        data=measurement, x="nr_workers", y="linear_relative_slow_down",
+        data=linear_efficiency, x="nr_workers", y="linear_efficiency",
         ax=axes[1], color=linear_color)
     sns.lineplot(
-        data=measurement, x="nr_workers", y="serial_relative_slow_down",
+        data=serial_efficiency, x="nr_workers", y="serial_efficiency",
         ax=axes[1], color=serial_color)
     sns.lineplot(
-        data=measurement, x="nr_workers", y="relative_slow_down",
+        data=efficiency, x="nr_workers", y="efficiency",
         ax=axes[1], color=actual_color)
-    axes[1].set_ylim(None, 1.05 * measurement["relative_slow_down"].max())
-    axes[1].set_ylabel("relative slow down (-)")
+    axes[1].set_ylim(0, 110)
+    axes[1].set_ylabel("efficiency (%)")
+    axes[1].grid()
 
+    axes[-1].xaxis.set_major_formatter(
+        ticker.FuncFormatter(
+            lambda x, pos: format_nr_workers(x)))
     axes[-1].set_xlabel("nr_workers ({})".format(worker_type))
 
     figure.legend(labels=["linear", "serial", "actual"])
