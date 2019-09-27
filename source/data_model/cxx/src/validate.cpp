@@ -450,12 +450,64 @@ static void validate_value(
 
 
 static void validate_value(
-    ObjectTracker const& /* object_tracker */,
+    ObjectTracker const& object_tracker,
     different_shape::variable_shape::Value const& value,
     hdf5::Issues& issues)
 {
-    // TODO
-    not_supported_yet(value.id(), issues, "validation");
+    // - For each location in time, a value array is stored in the
+    //   value. The number of these values arrays must be equal to the
+    //   number of active sets stored in the object tracker.
+
+    auto const& active_set_index = object_tracker.active_set_index();
+
+    auto const nr_active_sets = active_set_index.nr_indices();
+    auto const nr_value_arrays = value.nr_locations_in_time();
+
+    if(nr_value_arrays != nr_active_sets) {
+        issues.add_error(value.id(), fmt::format(
+            "Number of value arrays in value does not equal "
+            "the number of active sets in object tracker "
+            "({} != {})",
+            nr_value_arrays, nr_active_sets
+        ));
+    }
+    else {
+
+        // Iterate over each active set and verify that the size of the
+        // value array equals the size of the set
+        std::vector<Index> active_set_idxs(active_set_index.nr_indices());
+        active_set_index.read(active_set_idxs.data());
+
+        // Add an end index to ease the iteration over ranges of IDs
+        active_set_idxs.push_back(object_tracker.active_object_id().nr_ids());
+        auto begin_idx = active_set_idxs[0];
+
+        // FIXME Implement
+        not_supported_yet(
+            value.id(), issues,
+            "validation of different_shape::variable_shape::Value");
+
+        for(std::size_t i = 1; i < active_set_idxs.size(); ++i) {
+            auto const end_idx = active_set_idxs[i];
+            auto const active_set_size = end_idx - begin_idx;
+
+        //     auto const value_array = value[i - 1];
+        //     auto const nr_object_arrays = value_array.nr_arrays();
+
+        //     if(nr_object_arrays != active_set_size) {
+        //         issues.add_error(value.id(), fmt::format(
+        //             "Number of object arrays stored does not equal "
+        //             "the size of the active set "
+        //             "({} != {})",
+        //             nr_object_arrays, active_set_size
+        //         ));
+
+        //         break;
+        //     }
+
+            begin_idx = end_idx;
+        }
+    }
 }
 
 

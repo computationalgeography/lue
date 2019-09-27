@@ -16,7 +16,8 @@ namespace {
 void throw_unsupported(
     std::string const& message)
 {
-    throw std::runtime_error(message);
+    throw std::runtime_error(fmt::format(
+        "Unsupported feature used: {}", message));
 }
 
 
@@ -409,6 +410,50 @@ void add_same_shape_constant_shape_property(
 // }
 
 
+template<
+    typename Datatype>
+void add_different_shape_variable_shape_property(
+    ::json const& property_json,
+    different_shape::variable_shape::Properties& properties)
+{
+    std::string const name = property_json.at("name");
+    std::size_t const rank = property_json.at("rank");
+
+    std::string const datatype_json = property_json.at("datatype");
+    assert(datatype_json == "uint64");
+
+    auto const datatype = hdf5::Datatype{
+        hdf5::NativeDatatypeTraits<Datatype>::type_id()};
+
+    auto& property = properties.contains(name)
+        ? properties[name]
+        : properties.add(name, datatype, rank)
+        ;
+
+    // TODO
+    // datatype, rank must match, etc
+    // branch on contains()
+
+    std::vector<std::vector<Datatype>> const values = property_json.at("value");
+
+    auto& value = property.value();
+
+    std::vector<hdf5::Shape> const shape = property_json.at("shape");
+    std::vector<Index> const object_id = property_json.at("object_id");
+    assert(values.size() == object_id.size());
+    assert(shape.size() == object_id.size());
+    auto const nr_objects = shape.size();
+
+    auto a = value.expand(
+        value.nr_locations_in_time(), nr_objects,
+        object_id.data(), shape.data());
+
+    for(std::size_t o = 0; o < nr_objects; ++o) {
+        a[object_id[o]].write(values[o].data());
+    }
+}
+
+
 void add_property(
     ::json const& property_json,
     Properties& properties)
@@ -593,7 +638,44 @@ void add_property(
                             // variable_value / different_shape / variable_shape
                             // using Properties = different_shape::variable_shape::Properties;
 
-                            throw_unsupported("different_shape::variable_shape");
+                            // throw_unsupported("different_shape::variable_shape");
+
+                            // break;
+
+
+
+                            // variable_value / different_shape / variable_shape
+                            using Properties = different_shape::variable_shape::Properties;
+
+                            if(datatype_json == "uint32") {
+                                using Datatype = std::uint32_t;
+
+                                add_different_shape_variable_shape_property<Datatype>(
+                                    property_json, properties.collection<Properties>());
+                            }
+                            else if(datatype_json == "uint64") {
+                                using Datatype = std::uint64_t;
+
+                                add_different_shape_variable_shape_property<Datatype>(
+                                    property_json, properties.collection<Properties>());
+                            }
+                            else if(datatype_json == "float32") {
+                                using Datatype = float;
+
+                                add_different_shape_variable_shape_property<Datatype>(
+                                    property_json, properties.collection<Properties>());
+                            }
+                            else if(datatype_json == "float64") {
+                                using Datatype = double;
+
+                                add_different_shape_variable_shape_property<Datatype>(
+                                    property_json, properties.collection<Properties>());
+                            }
+                            else {
+                                throw std::runtime_error(fmt::format(
+                                    "Datatype {} not supported yet",
+                                    datatype_json));
+                            }
 
                             break;
                         }
