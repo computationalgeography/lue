@@ -448,11 +448,11 @@ void PartitionedArray<Element, rank>::create(
         [nr_partitions, nr_localities](
             std::size_t const p) -> std::size_t
         {
-            return nr_localities == 1 ? 0 :
-                map_to_range(0lu, nr_partitions - 1, 1lu, nr_localities - 1, p);
+            // return nr_localities == 1 ? 0 :
+            //     map_to_range(0lu, nr_partitions - 1, 1lu, nr_localities - 1, p);
 
-            // return map_to_range(
-            //     0lu, nr_partitions - 1, 0lu, nr_localities - 1, p);
+            return map_to_range(
+                0lu, nr_partitions - 1, 0lu, nr_localities - 1, p);
         };
 
     // Create array partitions. Each of them will be located on a certain
@@ -462,7 +462,7 @@ void PartitionedArray<Element, rank>::create(
 
         auto idx = locality_idx(partition_idx);
 
-        assert((nr_localities == 1 && idx == 0) || idx > 0);
+        // assert((nr_localities == 1 && idx == 0) || idx > 0);
 
         _partitions[partition_idx] = Partition{
             localities[idx], max_partition_shape};
