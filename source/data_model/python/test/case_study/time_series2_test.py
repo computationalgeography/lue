@@ -43,7 +43,7 @@ class TimeSeriesTest(lue_test.TestCase):
             lue.TimeDomainItemType.cell
         )
         epoch = lue.Epoch(
-            lue.Epoch.Kind.anno_domini, "2019-01-01", lue.Calendar.gregorian)
+            lue.Epoch.Kind.common_era, "2019-01-01", lue.Calendar.gregorian)
         clock = lue.Clock(epoch, lue.Unit.day, 1)
         time_coordinate_datatype = lue.dtype.TickPeriodCount
 
@@ -111,7 +111,7 @@ class TimeSeriesTest(lue_test.TestCase):
         time_domain = outlet_points.time_domain
         clock = time_domain.clock
 
-        self.assertEqual(clock.epoch.kind, lue.Epoch.Kind.anno_domini)
+        self.assertEqual(clock.epoch.kind, lue.Epoch.Kind.common_era)
         self.assertEqual(clock.epoch.origin, "2019-01-01")
         self.assertEqual(clock.epoch.calendar, lue.Calendar.gregorian)
         self.assertEqual(clock.unit, lue.Unit.day)

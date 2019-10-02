@@ -168,7 +168,7 @@ def benchmark_to_lue_json(
                             "time_domain": {
                                 "clock": {
                                     "epoch": {
-                                        "kind": "anno_domini",
+                                        "kind": "common_era",
                                         "origin": epoch.isoformat(),
                                         "calendar": "gregorian"
                                     },
@@ -405,7 +405,7 @@ def post_process_raw_results(
     time_point_units = lue_clock.unit
 
     lue_epoch = lue_clock.epoch
-    assert lue_epoch.kind == lue.Epoch.Kind.anno_domini
+    assert lue_epoch.kind == lue.Epoch.Kind.common_era
     assert lue_epoch.calendar == lue.Calendar.gregorian
     time_point = dateutil.parser.isoparse(lue_epoch.origin)
 
