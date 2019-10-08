@@ -76,7 +76,7 @@ void init_epoch(
     was formed. As an extension, an origin kan be passed in,
     which defines a location in time after the epoch kind. This allows
     one to define epoch as the start of the current year by using the
-    :py:class:`Kind.anno_domini` epoch kind and a date string formatted
+    :py:class:`Kind.common_era` epoch kind and a date string formatted
     as an `ISO 8601 string <https://en.wikipedia.org/wiki/ISO_8601>`_. If
     necessary, to be able to interpret the origin string, a calendar
     can be passed in also.
@@ -94,7 +94,7 @@ void init_epoch(
     Default construct an instance
 
     This instance is set to Unix time epoch: kind is
-    :py:class:`Kind.anno_domini`, origin is "1970-01-01T00:00:00+00:00",
+    :py:class:`Kind.common_era`, origin is "1970-01-01T00:00:00+00:00",
     and calendar is :py:class:`Calendar.gregorian`.
 )"
         )
@@ -175,8 +175,8 @@ void init_epoch(
         "Kind")
 
         .value(
-            aspect_to_string(time::Epoch::Kind::anno_domini).c_str(),
-            time::Epoch::Kind::anno_domini
+            aspect_to_string(time::Epoch::Kind::common_era).c_str(),
+            time::Epoch::Kind::common_era
         )
 
         .value(

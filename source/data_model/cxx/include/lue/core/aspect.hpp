@@ -115,7 +115,7 @@ TAG_AND_MAP(time::Calendar, epoch_calendar_tag, ({
 }))
 
 TAG_AND_MAP(time::Epoch::Kind, epoch_kind_tag, ({
-    { time::Epoch::Kind::anno_domini, "anno_domini"},
+    { time::Epoch::Kind::common_era, "common_era"},
     { time::Epoch::Kind::formation_of_earth, "formation_of_earth"}
 }))
 
