@@ -89,9 +89,15 @@ def program_configuration(
             ]
 
             for argument in performance_counters:
-                assert len(argument) == 1
-                assert len(argument.items()[0]) == 2, argument.items()
-                key, value = argument.items()[0]
+                # Each argument is a dict with a single item. Each dict
+                # maps a key (the argument name) to a value. Value can
+                # be a single value or a list of values.
+                assert len(argument) == 1, argument
+                items = list(argument.items())
+                assert len(items) == 1
+                assert len(items[0]) == 2
+                # assert len(argument.items()[0]) == 2, argument.items()
+                key, value = items[0]
 
                 if not isinstance(value, list):
                     arguments.append('--hpx:{}="{}"'.format(key, value))

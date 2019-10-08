@@ -119,18 +119,22 @@ def benchmark_meta_to_lue_json(
 def read_performance_counters(
         counter_pathname):
 
-    with open(counter_pathname, "rb") as csv_file:
+    with open(counter_pathname, "r") as csv_file:
         reader = csv.reader(csv_file)
-        field_names = reader.next()
+        field_names = next(reader)
 
+    # HPX appends to CSVs... If this fails, remove CSVs and run experiment
+    # again. Or remove earlier stuff from CSVs.
     array = np.loadtxt(counter_pathname, dtype=np.float64, unpack=True,
         delimiter=',', skiprows=1)
 
-    # We are assuming uint64 values here
-    assert np.all(array >= 0)
-    assert np.all(array % 1 == 0)
+    assert len(array) == len(field_names), "{}: {} != {}".format(
+        counter_pathname, len(array), len(field_names))
 
-    array = array.astype(np.uint64)
+    # # We are assuming uint64 values here
+    # assert np.all(array >= 0)
+    # assert np.all(array % 1 == 0)
+    # array = array.astype(np.uint64)
 
     return field_names, array
 
@@ -186,41 +190,6 @@ def benchmark_to_lue_json(
     nr_threads = benchmark_json["environment"]["nr_threads"]
     nr_workers = \
         nr_localities if benchmark.worker.type == "node" else nr_threads
-
-
-    ### performance_counter_properties = []
-    ### performance_counters_available = benchmark.hpx is not None and \
-    ###     benchmark.hpx.performance_counters is not None
-
-    ### if performance_counters_available:
-    ###     counter_pathname = experiment.benchmark_result_pathname(
-    ###         cluster.name, "counter-{}".format(nr_workers), "csv")
-    ###     assert os.path.exists(counter_pathname), counter_pathname
-    ###     counter_names, counter_values = \
-    ###         read_performance_counters(counter_pathname)
-
-    ###     nr_performance_counters = len(counter_names)
-
-    ###     for c in range(nr_performance_counters):
-    ###         property_name = counter_names[c].replace("/", "|")
-    ###         property_value = counter_values[c]
-    ###         assert property_value.dtype == np.uint64, property_value.dtype
-
-    ###         performance_counter_properties.append(
-    ###                 {
-    ###                     "name": property_name,
-    ###                     "rank": 1,
-    ###                     # "description": property_description,
-    ###                     "shape_per_object": "different_shape",
-    ###                     "value_variability": "variable",
-    ###                     "shape_variability": "variable_shape",
-    ###                     "datatype": "uint64",
-    ###                     "object_id": [5],
-    ###                     "shape": [[len(property_value)]],
-    ###                     "value": [property_value.tolist()]
-    ###                 }
-    ###             )
-
 
     lue_json = {
         "dataset": {
@@ -280,135 +249,6 @@ def benchmark_to_lue_json(
         json.dumps(lue_json, sort_keys=False, indent=4))
 
 
-### def counter_to_lue_json(
-###         counter_pathname,
-###         lue_json_pathname,
-###         nr_workers):
-### 
-###     assert os.path.exists(counter_pathname), counter_pathname
-###     counter_names, counter_values = \
-###         read_performance_counters(counter_pathname)
-### 
-###     nr_performance_counters = len(counter_names)
-### 
-###     properties = []
-### 
-###     for c in range(nr_performance_counters):
-###         property_name = counter_names[c].replace("/", "|")
-###         property_value = counter_values[c]
-###         assert property_value.dtype == np.uint64, property_value.dtype
-### 
-###         properties.append(
-###                 {
-###                     "name": property_name,
-###                     "rank": 1,
-###                     # "description": property_description,
-###                     "shape_per_object": "different_shape",
-###                     "value_variability": "variable",
-###                     "shape_variability": "variable_shape",
-###                     "datatype": "uint64",
-###                     "object_id": [5],
-###                     "shape": [[len(property_value)]],
-###                     "value": [property_value.tolist()]
-###                 }
-###             )
-### 
-###     lue_json = {
-###         "dataset": {
-###             "phenomena": [
-###                 {
-###                     "name": "benchmark",
-###                     "property_sets": [
-###                         {
-###                             "name": "performance_counter_{}".format(nr_workers),
-###                             "description":
-###                                 "Performance counter results for "
-###                                 "benchmark measurement with {} workers".format(
-###                                     nr_workers),
-###                             # "object_tracker": {
-###                             #     "active_set_index": active_set_idx,
-###                             #     "active_object_id": active_object_id
-###                             # },
-###                             # "time_domain": {
-###                             #     "clock": {
-###                             #         "epoch": {
-###                             #             "kind": "common_era",
-###                             #             "origin": epoch.isoformat(),
-###                             #             "calendar": "gregorian"
-###                             #         },
-###                             #         "unit": time_units,
-###                             #         "tick_period_count": 1
-###                             #     },
-###                             #     "time_point": time_points
-###                             # },
-###                             "properties": properties
-###                         }
-###                     ]
-###                 }
-###             ]
-###         }
-###     }
-### 
-###     # Write results
-###     open(lue_json_pathname, "w").write(
-###         json.dumps(lue_json, sort_keys=False, indent=4))
-
-
-
-
-
-
-###     # Read all counters from the CSV
-###     with open(counter_pathname, "rb") as csv_file:
-###         reader = csv.reader(csv_file)
-###         field_names = reader.next()
-###         nr_fields = len(field_names)
-###         values = [[] for f in range(nr_fields)]
-### 
-###         for row in reader:
-###             for f in range(nr_fields):
-###                 values[f].append(row[f])
-### 
-###     assert len(field_names) == len(values)
-### 
-###     # The LUE dataset contains a benchmark phenomenon with a single object:
-###     # the software being benchmarked. For this object, information
-###     # is stored. Meta information about the environment, measurements
-###     # (durations) recorded during the benchmarking experiment, and
-###     # performance counter data.
-###     # - For each experiment, multiple benchmark runs are being performed,
-###     #     for a different number of workers
-###     # - Each benchmark run is repeated count times. Each time, durations
-###     #     are being recorded.
-###     # - Performance data is recorded for each count benchmark runs
-
-
-def determine_epoch(
-        cluster,
-        benchmark,
-        experiment):
-
-    epoch = None
-
-    for benchmark_idx in range(benchmark.worker.nr_benchmarks()):
-
-        nr_workers = benchmark.worker.nr_workers(benchmark_idx)
-
-        benchmark_pathname = experiment.benchmark_result_pathname(
-            cluster.name, nr_workers, "json")
-        assert os.path.exists(benchmark_pathname), benchmark_pathname
-
-        benchmark_json = json.loads(open(benchmark_pathname).read())
-        benchmark_start = dateutil.parser.isoparse(benchmark_json["start"])
-
-        if epoch is None:
-            epoch = benchmark_start
-        else:
-            epoch = epoch if epoch < benchmark_start else benchmark_start
-
-    return epoch
-
-
 def import_raw_results(
         cluster,
         benchmark,
@@ -431,7 +271,12 @@ def import_raw_results(
     # To position all benchmarks in time, we need a single starting time
     # point to use as the clock's epoch and calculate the distance of
     # each benchmark's start time point from this epoch.
-    epoch = determine_epoch(cluster, benchmark, experiment)
+    ### epoch = determine_epoch(cluster, benchmark, experiment)
+
+    # Create a collection of benchmark indices where the indices are
+    # sorted by start location in time
+    benchmark_idxs, epoch = sort_benchmarks_by_time(
+        cluster, benchmark, experiment)
 
     lue_dataset_pathname = experiment.result_pathname(
         cluster.name, "data", "lue")
@@ -441,7 +286,8 @@ def import_raw_results(
 
     metadata_written = False
 
-    for benchmark_idx in range(benchmark.worker.nr_benchmarks()):
+    ### for benchmark_idx in range(benchmark.worker.nr_benchmarks()):
+    for benchmark_idx in benchmark_idxs:
 
         nr_workers = benchmark.worker.nr_workers(benchmark_idx)
 
@@ -527,6 +373,9 @@ def measurement_dataframe(
 
     measurement = pd.concat([nr_workers, duration], axis=1)
 
+    ### # Sort measurements by the number of workers
+    ### measurement.sort_values(by=["nr_workers"], inplace=True)
+
     return measurement
 
 
@@ -572,7 +421,8 @@ def post_process_raw_results(
 
     # t1 = duration using one worker
     t1 = measurement.loc[nr_workers == 1].filter(items=duration_labels)
-    t1 = [t1["duration_{}".format(i)][0] for i in range(count)]
+    # t1 = [t1["duration_{}".format(i)][0] for i in range(count)]
+    t1 = [t1.iat[0, i] for i in range(count)]
 
     for i in range(count):
         # Best case: duration scales perfect with the number of workers
@@ -729,7 +579,7 @@ class PerformanceCounter(object):
     def full_name(self):
         # counter name: <object>{<instance>}/name@parameters
         assert self.parameters is None
-        return "{object}{{{instance}}}/{name}".format(
+        return "/{object}{{{instance}}}/{name}".format(
             object=self.object, instance=self.instance.full, name=self.name)
 
 
@@ -745,6 +595,10 @@ class PerformanceCounterGroup(object):
         return \
             "PerformanceCounterGroup(name={}, counters={})".format(
                 self.name, self.counters)
+
+    def __len__(self):
+        return len(self.counters)
+
 
 class PerformanceCounterInstance(object):
 
@@ -795,7 +649,7 @@ def parse_performance_counter_name(
 
     # counter name: <object>{<instance>}/name@parameters
     pattern = \
-        "^(?P<object>.+){(?P<instance>.+)}/(?P<name>.+)(@(?P<parameters>.+))?$"
+        "^/(?P<object>.+){(?P<instance>.+)}/(?P<name>.+)(@(?P<parameters>.+))?$"
     match = re.match(pattern, name)
     assert match is not None, name
 
@@ -915,25 +769,25 @@ def classify_performance_counter(
     counter_label = counter.instance.instance
 
     # Exceptions to the default grouping rule
-    if counter.object == "/agas":
+    if counter.object == "agas":
         if counter.name.startswith("count/cache"):
             # - Group per instance
             # - Group per statistic kind
             name, _, statistic_name = counter.name.rpartition("/")
             statistic_kind = classify_agas_cache_statistic(statistic_name)
-            group_name = "/agas{{{}}}/{}/<{}>".format(
+            group_name = "agas{{{}}}/{}/<{}>".format(
                 counter.instance.full, name, statistic_kind)
             counter_label = statistic_name
         elif counter.name.startswith("time/cache"):
             name, _, statistic = counter.name.rpartition("/")
-            group_name = "/agas{{{}}}/{}".format(counter.instance.full, name)
+            group_name = "agas{{{}}}/{}".format(counter.instance.full, name)
             counter_label = statistic
         elif counter.name.startswith("count"):
             # - Group per instance
             # - Group per AGAS service kind
             agas_service_name = counter.name.split("/")[1]
             agas_services_name = classify_agas_service(agas_service_name)
-            group_name = "/agas{{{}}}/count/<{}>".format(
+            group_name = "agas{{{}}}/count/<{}>".format(
                 counter.instance.full, agas_services_name)
             counter_label = agas_service_name
 
@@ -953,19 +807,28 @@ def group_performance_counters(
     # group instance containing all information about the group
     groups = collections.OrderedDict()
 
+    # Counters are grouped according to the object. Within this group,
+    # counters are also grouped.
+
     for counter_name in counter_names:
         # Classify counter and add to group. Create group if not
         # existant yet.
         counter = parse_performance_counter_name(counter_name)
+
+        # Counters related to the same object
+        object_groups = groups.setdefault(
+            counter.object, collections.OrderedDict())
+
         group_name, counter_label = classify_performance_counter(counter)
-        group = groups.setdefault(
+        counter_group = object_groups.setdefault(
             group_name, PerformanceCounterGroup(group_name))
         counter.label = counter_label
-        group.counters.append(counter)
+        counter_group.counters.append(counter)
 
-    for name, group in groups.items():
-        if "idle-rate" in name:
-            group.ylim = (0, 100)
+    # for names, object_groups in groups.items():
+    #     for name, group in object_groups.items():
+    #         if "idle-rate" in name:
+    #             group.ylim = (0, 100)
 
     return groups
 
@@ -973,41 +836,70 @@ def group_performance_counters(
 def plot_performance_counters(
         counter_pathname):
 
-    # Read data in numpy arrays
+    counter_dirname, counter_basename = os.path.split(counter_pathname)
+
+    # TODO
+    # - Create dir per object
+    # - Write plot per group
+    # - Make sure each individual plot contains all information
+
+    # Read data in numpy arrays and translate into data frame
     counter_names, counter_values = read_performance_counters(counter_pathname)
-    counter_groups = group_performance_counters(counter_names)
-    nr_plots = len(counter_groups)
-
-    # actual_color = sns.xkcd_rgb["denim blue"]
-    plot_pathname = os.path.splitext(counter_pathname)[0] + ".pdf"
-
-    figure, axes = plt.subplots(
-            nrows=nr_plots, ncols=1,
-            figsize=(15, 5 * nr_plots),
-            sharex=True
-        )  # Inches...
-
-    assert len(counter_values) == len(counter_names)
-
+    assert len(counter_values) == len(counter_names), "{} != {}".format(
+        len(counter_values), len(counter_names))
     data_frame = pd.DataFrame(dict(zip(counter_names, counter_values)))
 
-    for p in range(nr_plots):
-        group_name = counter_groups.keys()[p]
-        counter_group = counter_groups[group_name]
+    plot_pathnames = []
 
-        for counter in counter_group.counters:
-            sns.lineplot(data=data_frame[counter.full_name()], ax=axes[p])
+    groups_per_object = group_performance_counters(counter_names)
 
-        axes[p].set_ylabel(counter_group.name)
-        axes[p].grid()
-        axes[p].set_title(counter_group.name)
-        axes[p].set_ylim(*counter_group.ylim)
-        axes[p].legend(
-            labels=[counter.label for counter in counter_group.counters])
+    for object_name in groups_per_object:
+        # object_name: agas, threads, parcels, parcelqueue, runtime,
+        #     threadqueue, ...
+        counter_groups = groups_per_object[object_name]
 
-    axes[-1].set_xlabel("interval (x {} milliseconds)".format("todo"))
+        directory_pathname = os.path.join(counter_dirname, object_name)
 
-    plt.savefig(plot_pathname)
+        if not os.path.isdir(directory_pathname):
+            os.mkdir(directory_pathname)
+
+        plot_pathname = os.path.join(
+            directory_pathname,
+            "{}.pdf".format(os.path.splitext(counter_basename)[0]))
+        assert not plot_pathname in plot_pathnames
+        plot_pathnames.append(plot_pathname)
+
+        nr_plots = len(counter_groups)
+
+        figure, axes = plt.subplots(
+                nrows=nr_plots, ncols=1,
+                figsize=(15, 5 * nr_plots),
+                squeeze=False, sharex=True
+            )  # Inches...
+
+        for p in range(nr_plots):
+            group_name = list(counter_groups.keys())[p]
+            counter_group = counter_groups[group_name]
+
+            for counter in counter_group.counters:
+                sns.lineplot(
+                    data=data_frame[counter.full_name()], ax=axes[p, 0])
+
+            axes[p, 0].set_ylabel(counter_group.name)
+            axes[p, 0].grid()
+            axes[p, 0].set_title(counter_group.name)
+            axes[p, 0].set_ylim(*counter_group.ylim)
+
+            if len(counter_group) <= 10:
+                axes[p, 0].legend(
+                    labels=[
+                        counter.label for counter in counter_group.counters])
+
+        axes[-1, 0].set_xlabel("interval (x {} milliseconds)".format("todo"))
+
+        plt.tight_layout()
+        plt.savefig(plot_pathname)
+        plt.close(figure)
 
 
 def post_process_performance_counters(

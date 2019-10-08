@@ -15,8 +15,9 @@ class ArrayShapeTest(unittest.TestCase):
         rank = 1
         nr_arrays = 1
         size_of_element = 1
+        nr_nodes = 1
 
-        shape = array_shape(memory, rank, nr_arrays, size_of_element)
+        shape = array_shape(memory, rank, nr_arrays, size_of_element, nr_nodes)
         self.assertEqual(shape, (100,))
 
 
@@ -26,8 +27,9 @@ class ArrayShapeTest(unittest.TestCase):
         rank = 2
         nr_arrays = 1
         size_of_element = 1
+        nr_nodes = 1
 
-        shape = array_shape(memory, rank, nr_arrays, size_of_element)
+        shape = array_shape(memory, rank, nr_arrays, size_of_element, nr_nodes)
         self.assertEqual(shape, (10, 10))
 
 
@@ -37,8 +39,9 @@ class ArrayShapeTest(unittest.TestCase):
         rank = 1
         nr_arrays = 2
         size_of_element = 1
+        nr_nodes = 1
 
-        shape = array_shape(memory, rank, nr_arrays, size_of_element)
+        shape = array_shape(memory, rank, nr_arrays, size_of_element, nr_nodes)
         self.assertEqual(shape, (50,))
 
 
@@ -48,6 +51,7 @@ class ArrayShapeTest(unittest.TestCase):
         rank = 1
         nr_arrays = 1
         size_of_element = 2
+        nr_nodes = 1
 
-        shape = array_shape(memory, rank, nr_arrays, size_of_element)
+        shape = array_shape(memory, rank, nr_arrays, size_of_element, nr_nodes)
         self.assertEqual(shape, (50,))

@@ -1,3 +1,6 @@
+from functools import reduce
+
+
 def partition_shape_multipliers(
         shape,
         partition_shape):
@@ -79,36 +82,77 @@ def partition_shapes(
     return zip(*shape_ranges_)
 
 
+def range_of_array_shapes(
+        min_shape,
+        max_nr_elements,
+        multiplier):
+    """
+    Determine a range of shapes given the folowing requirements:
+    - First shape equals min_shape
+    - Number of cells in last shape smaller or equal to max_nr_elements
+    - Each next shape contains multiplier times more elements than the
+        previous shape
+    """
+    def nr_elements(
+            shape):
+        return reduce(lambda e1, e2: e1 * e2, shape)
+
+
+    def shape(
+            nr_elements,
+            normalized_shape):
+        rank = len(normalized_shape)
+
+        nr_elements_per_dimension = nr_elements ** (1.0 / rank)
+
+        return tuple([
+            int(round(nr_elements_per_dimension * extent)) for extent in
+                normalized_shape])
+
+
+    sizes = [nr_elements(min_shape)]
+
+    while multiplier * sizes[-1] <= max_nr_elements:
+        sizes.append(multiplier * sizes[-1])
+
+    normalized_shape = tuple([extent / max(min_shape) for extent in min_shape])
+    shapes = [shape(size, normalized_shape) for size in sizes]
+
+    assert len(shapes) == 0 or nr_elements(shapes[-1]) <= max_nr_elements, \
+        shapes
+
+    return shapes
+
+
+class Range(object):
+
+    def __init__(self,
+            json):
+        self.max_nr_elements = json["max_nr_elements"]
+        self.multiplier = json["multiplier"]
+
+
 class Shape(object):
 
     def __init__(self,
             json):
 
-        if "shape" in json:
-            # Fixed size shape
-            self.min_shape = tuple(json["shape"])
-            self.max_shape = self.min_shape
-            self.shape_step = None
-        else:
-            # Range of shapes
-            self.min_shape = tuple(json["min_shape"])
-            self.max_shape = tuple(json["max_shape"])
-            self.shape_step = json["shape_step"]
+        self.shape_ = tuple(json["shape"])
+        self.range = Range(json["range"]) if "range" in json else None
 
 
     def is_fixed(self):
 
-        return self.shape_step is None
+        return self.range is None
 
 
     def shapes(self):
         if self.is_fixed():
-            assert self.min_shape == self.max_shape
-            result = [self.min_shape]
+            result = [self.shape_]
         else:
             # Range of shapes
-            result = partition_shapes(
-                self.min_shape, self.max_shape, self.shape_step)
+            result = range_of_array_shapes(
+                self.shape_, self.range.max_nr_elements, self.range.multiplier)
 
         return result
 
@@ -121,4 +165,4 @@ class Shape(object):
         """
         assert self.is_fixed()
 
-        return self.min_shape
+        return self.shape_

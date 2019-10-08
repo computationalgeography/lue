@@ -82,3 +82,43 @@ class PartitionShapeTest(unittest.TestCase):
         self.assertEqual(shapes[0], (480, 480))
         self.assertEqual(shapes[1], (490, 490))
         self.assertEqual(shapes[2], (500, 500))
+
+
+    def test_array_shape_range_1d(self):
+        min_shape = (10,)
+        multiplier = 2
+
+        max_nr_elements = 159
+        range = range_of_array_shapes(min_shape, max_nr_elements, multiplier)
+        self.assertEqual(len(range), 4)
+        self.assertEqual(range, [(10,), (20,), (40,), (80,)])
+
+        max_nr_elements = 160
+        range = range_of_array_shapes(min_shape, max_nr_elements, multiplier)
+        self.assertEqual(len(range), 5)
+        self.assertEqual(range, [(10,), (20,), (40,), (80,), (160,)])
+
+        max_nr_elements = 161
+        range = range_of_array_shapes(min_shape, max_nr_elements, multiplier)
+        self.assertEqual(len(range), 5)
+        self.assertEqual(range, [(10,), (20,), (40,), (80,), (160,)])
+
+
+    def test_array_shape_range_2d(self):
+        min_shape = (10, 10)
+        multiplier = 2
+
+        max_nr_elements = 1599
+        range = range_of_array_shapes(min_shape, max_nr_elements, multiplier)
+        self.assertEqual(range,
+            [(10, 10), (14, 14), (20, 20), (28, 28)])
+
+        max_nr_elements = 1600
+        range = range_of_array_shapes(min_shape, max_nr_elements, multiplier)
+        self.assertEqual(range,
+            [(10, 10), (14, 14), (20, 20), (28, 28), (40, 40)])
+
+        max_nr_elements = 1601
+        range = range_of_array_shapes(min_shape, max_nr_elements, multiplier)
+        self.assertEqual(range,
+            [(10, 10), (14, 14), (20, 20), (28, 28), (40, 40)])

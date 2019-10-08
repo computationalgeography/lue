@@ -1,4 +1,6 @@
 import pandas as pd
+import dateutil.parser
+import json
 import math
 import os.path
 import shlex
@@ -112,3 +114,29 @@ def select_data_for_plot(
 
     return result
 
+
+def sort_benchmarks_by_time(
+        cluster,
+        benchmark,
+        experiment):
+
+    items = []
+
+    for benchmark_idx in range(benchmark.worker.nr_benchmarks()):
+
+        nr_workers = benchmark.worker.nr_workers(benchmark_idx)
+        benchmark_pathname = experiment.benchmark_result_pathname(
+            cluster.name, nr_workers, "json")
+        assert os.path.exists(benchmark_pathname), benchmark_pathname
+        benchmark_json = json.loads(open(benchmark_pathname).read())
+        benchmark_start = dateutil.parser.isoparse(benchmark_json["start"])
+
+        items.append((benchmark_start, benchmark_idx))
+
+    assert len(items) > 0
+
+    items.sort(key=lambda item: item[0])
+    epoch = items[0][0]
+    idxs = [item[1] for item in items]
+
+    return idxs, epoch
