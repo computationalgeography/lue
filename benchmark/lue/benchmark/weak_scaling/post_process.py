@@ -229,32 +229,6 @@ def benchmark_to_lue_json(
         json.dumps(lue_json, sort_keys=False, indent=4))
 
 
-def determine_epoch(
-        cluster,
-        benchmark,
-        experiment):
-
-    epoch = None
-
-    for benchmark_idx in range(benchmark.worker.nr_benchmarks()):
-
-        nr_workers = benchmark.worker.nr_workers(benchmark_idx)
-
-        benchmark_pathname = experiment.benchmark_result_pathname(
-            cluster.name, nr_workers, "json")
-        assert os.path.exists(benchmark_pathname), benchmark_pathname
-
-        benchmark_json = json.loads(open(benchmark_pathname).read())
-        benchmark_start = dateutil.parser.isoparse(benchmark_json["start"])
-
-        if epoch is None:
-            epoch = benchmark_start
-        else:
-            epoch = epoch if epoch < benchmark_start else benchmark_start
-
-    return epoch
-
-
 def import_raw_results(
         cluster,
         benchmark,
@@ -277,7 +251,12 @@ def import_raw_results(
     # To position all benchmarks in time, we need a single starting time
     # point to use as the clock's epoch and calculate the distance of
     # each benchmark's start time point from this epoch.
-    epoch = determine_epoch(cluster, benchmark, experiment)
+    ### epoch = determine_epoch(cluster, benchmark, experiment)
+
+    # Create a collection of benchmark indices where the indices are
+    # sorted by start location in time
+    benchmark_idxs, epoch = sort_benchmarks_by_time(
+        cluster, benchmark, experiment)
 
     lue_dataset_pathname = experiment.result_pathname(
         cluster.name, "data", "lue")
@@ -287,7 +266,8 @@ def import_raw_results(
 
     metadata_written = False
 
-    for benchmark_idx in range(benchmark.worker.nr_benchmarks()):
+    ### for benchmark_idx in range(benchmark.worker.nr_benchmarks()):
+    for benchmark_idx in benchmark_idxs:
 
         nr_workers = benchmark.worker.nr_workers(benchmark_idx)
 
@@ -422,7 +402,8 @@ def post_process_raw_results(
 
     # t1 = duration using one worker
     t1 = measurement.loc[nr_workers == 1].filter(items=duration_labels)
-    t1 = [t1["duration_{}".format(i)][0] for i in range(count)]
+    # t1 = [t1["duration_{}".format(i)][0] for i in range(count)]
+    t1 = [t1.iat[0, i] for i in range(count)]
 
     for i in range(count):
         # Best case: duration stays constant with increasing the number of
@@ -562,6 +543,7 @@ def post_process_raw_results(
             )
         )
 
+    plt.tight_layout()
     plt.savefig(plot_pathname)
 
 

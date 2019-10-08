@@ -1,11 +1,17 @@
 {
     "nr_time_steps": 25,
     "array": {
-        "shape": [10000, 10000]
+# Single node
+#         "shape": [10000, 10000]
+# Cluster partition of n nodes
+        "shape": [20000, 20000]
     },
     "partition": {
-        "min_shape": [100, 100],
-        "max_shape": [800, 800],
-        "shape_step": 100
+        "shape": [100, 100],
+        "range": {
+            # 1600 x 1600
+            "max_nr_elements": 2560000,
+            "multiplier": 2
+        }
     }
 }

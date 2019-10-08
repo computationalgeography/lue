@@ -19,10 +19,10 @@ Partition iterate_per_element_partition(
     using InputPartition = Partition;
     using InputData = DataT<InputPartition>;
 
-    hpx::future<InputData> partition_data = partition.data(CopyMode::share);
-
-    return hpx::dataflow(
-        hpx::launch::async,
+    // Once the data of the input partition has arrived, do whatever it
+    // takes to create the output partition
+    return partition.data(CopyMode::share).then(
+        hpx::launch::sync,  // Continue on current thread
         hpx::util::unwrapping(
             [](
                 InputData const& partition_data)
@@ -40,8 +40,7 @@ Partition iterate_per_element_partition(
                 // Copy the data and move it into a new partition
                 return Partition{hpx::find_here(), InputData{partition_data}};
             }
-        ),
-        partition_data
+        )
     );
 }
 
@@ -89,18 +88,24 @@ Array<Element, rank> iterate_per_element(
 
         Partition const& input_partition = array.partitions()[p];
 
+        // Asynchronously determine the contents of the new partition
+        // - First determine the locality the input partition is located on
+        // - Then *call the action on that locality*, passing in the
+        //     input partition
         output_partitions[p] =
             hpx::get_colocation_id(input_partition.get_id()).then(
+                hpx::launch::sync,  // Continue on current thread
                 hpx::util::unwrapping(
-                    [=](
-                        hpx::id_type const locality_id)
-                    {
-                        return hpx::dataflow(
-                            hpx::launch::async,
-                            action,
-                            locality_id,
-                            input_partition);
-                    }
+                   [action, input_partition](
+                       hpx::id_type const locality_id)
+                   {
+                       // Detach from current thread
+                       return hpx::dataflow(
+                           hpx::launch::async,
+                           action,
+                           locality_id,
+                           input_partition);
+                   }
                 )
             );
 

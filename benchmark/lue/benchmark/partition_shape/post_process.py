@@ -5,6 +5,7 @@ from ..cluster import *
 from ..util import *
 
 import lue
+# from ..plot.scale.square_root import SquareRootScale
 
 import dateutil.relativedelta
 import dateutil.parser
@@ -13,6 +14,7 @@ import matplotlib
 # matplotlib.use("PDF")
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+import matplotlib.scale as mscale
 import matplotlib.ticker as ticker
 import numpy as np
 import pandas as pd
@@ -22,6 +24,9 @@ import seaborn as sns
 import json
 import math
 import tempfile
+
+
+# mscale.register_scale(SquareRootScale)
 
 
 def benchmark_meta_to_lue_json(
@@ -477,6 +482,7 @@ def post_process_raw_results(
             ticker.FuncFormatter(
                 lambda y, pos: format_duration(y)))
 
+        # axes.set_xscale("square_root")
         axes.set_xlabel(u"partition size")
         axes.xaxis.set_major_formatter(
             ticker.FuncFormatter(
@@ -496,6 +502,7 @@ def post_process_raw_results(
 
         a_plot_pathname = experiment.benchmark_result_pathname(
             cluster.name, array_shape, "plot", "pdf")
+        plt.tight_layout()
         plt.savefig(a_plot_pathname)
 
 
@@ -547,6 +554,8 @@ def post_process_raw_results(
         ticker.FuncFormatter(
             lambda y, pos: format_duration(y)))
 
+    # axes.set_xscale("square_root")
+    axes.set_xlabel(u"partition size")
     axes.xaxis.set_major_formatter(
         ticker.FuncFormatter(
             lambda x, pos: format_partition_size(x)))
@@ -562,6 +571,7 @@ def post_process_raw_results(
             )
         )
 
+    plt.tight_layout()
     plt.savefig(plot_pathname)
 
 

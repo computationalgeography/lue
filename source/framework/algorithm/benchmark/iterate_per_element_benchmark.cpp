@@ -5,6 +5,7 @@
 #include "lue/framework/benchmark/hpx_main.hpp"
 
 #include <hpx/include/iostreams.hpp>
+#include <hpx/include/parallel_execution.hpp>
 
 
 namespace lue {
@@ -42,7 +43,7 @@ void iterate_per_element(
     hpx::shared_future<Element> max_nr_iterations =
         hpx::make_ready_future<Element>(100);
 
-    auto f = uniform(state, min_nr_iterations, max_nr_iterations);
+    uniform(state, min_nr_iterations, max_nr_iterations).wait();
 
     for(std::size_t i = 0; i < task.nr_time_steps(); ++i) {
 
@@ -64,11 +65,17 @@ void iterate_per_element(
 void iterate_per_element(
     Task const& task)
 {
+    hpx::parallel::execution::default_executor high_priority_executor{
+        hpx::threads::thread_priority_high};
+
     using Element = std::int32_t;
 
     switch(task.rank()) {
         case 2: {
-            detail::iterate_per_element<Element, 2>(task);
+            hpx::async(
+                high_priority_executor,
+                &detail::iterate_per_element<Element, 2>,
+                task).wait();
             break;
         }
     }

@@ -1,21 +1,21 @@
 {
-    "count": 5,
+    "count": 1,
 # Cluster settings
-#     "worker": {
-#         "type": "node",
-#         "pool": {
-#             "min_size": 1,
-#             "max_size": 16,
-#             "multiplier": 2
-#         }
-#     }
-# Node settings
     "worker": {
-        "type": "thread",
+        "type": "node",
         "pool": {
             "min_size": 1,
-            "max_size": 64,
+            "max_size": 8,
             "multiplier": 2
         }
     }
+# Node settings
+#     "worker": {
+#         "type": "thread",
+#         "pool": {
+#             "min_size": 1,
+#             "max_size": 64,
+#             "multiplier": 2
+#         }
+#     }
 }
