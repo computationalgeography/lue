@@ -45,7 +45,7 @@
 ### 
 ###                     # "/runtime/uptime",
 
-                    "/threads/idle-rate",
+                    "/threads{locality#*/pool#*/worker-thread#*}/idle-rate",
 
                     "/threads/time/average",
                     "/threads/time/average-overhead",

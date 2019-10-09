@@ -179,9 +179,9 @@ inline int Benchmark<Callable>::run()
         stopwatch.stop();
         _timings.push_back(stopwatch);
 
-        // if(i < _environment.count() - 1) {
+        if(i < _environment.count() - 1) {
             std::this_thread::sleep_for(5s);
-        // }
+        }
     }
     _timing.stop();
 
