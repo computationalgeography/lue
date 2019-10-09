@@ -53,7 +53,14 @@
                     "/threads/time/average-phase-overhead",
                     "/threads{locality#*/pool#*/worker-thread#*}/time/cumulative",
                     "/threads{locality#*/pool#*/worker-thread#*}/time/cumulative-overhead",
-                    "/threads{locality#*/pool#*/worker-thread#*}/time/overall"
+                    "/threads{locality#*/pool#*/worker-thread#*}/time/overall",
+
+                    "/threads{locality#*/pool#*/worker-thread#*}/count/instantaneous/active",
+                    "/threads{locality#*/pool#*/worker-thread#*}/count/instantaneous/all",
+                    "/threads{locality#*/pool#*/worker-thread#*}/count/instantaneous/pending",
+                    "/threads{locality#*/pool#*/worker-thread#*}/count/instantaneous/staged",
+                    "/threads{locality#*/pool#*/worker-thread#*}/count/instantaneous/suspended",
+                    "/threads{locality#*/pool#*/worker-thread#*}/count/instantaneous/terminated"
                 ]
             },
             {
@@ -116,13 +123,6 @@
                     "/threads/busy-loop-count/instantaneous",
                     "/threads{locality#*/pool#*/worker-thread#*}/count/cumulative",
                     "/threads{locality#*/pool#*/worker-thread#*}/count/cumulative-phases",
-
-                    "/threads{locality#*/pool#*/worker-thread#*}/count/instantaneous/active",
-                    "/threads{locality#*/pool#*/worker-thread#*}/count/instantaneous/all",
-                    "/threads{locality#*/pool#*/worker-thread#*}/count/instantaneous/pending",
-                    "/threads{locality#*/pool#*/worker-thread#*}/count/instantaneous/staged",
-                    "/threads{locality#*/pool#*/worker-thread#*}/count/instantaneous/suspended",
-                    "/threads{locality#*/pool#*/worker-thread#*}/count/instantaneous/terminated",
 
                     # "/threads/count/objects",
                     # "/threads/count/stack-recycles",

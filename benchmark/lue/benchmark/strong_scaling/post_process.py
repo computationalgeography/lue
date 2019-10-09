@@ -825,10 +825,10 @@ def group_performance_counters(
         counter.label = counter_label
         counter_group.counters.append(counter)
 
-    # for names, object_groups in groups.items():
-    #     for name, group in object_groups.items():
-    #         if "idle-rate" in name:
-    #             group.ylim = (0, 100)
+    for names, object_groups in groups.items():
+        for name, group in object_groups.items():
+            if "idle-rate" in name:
+                group.ylim = (0, 1000)
 
     return groups
 
