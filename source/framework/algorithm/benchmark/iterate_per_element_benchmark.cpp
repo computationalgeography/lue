@@ -27,9 +27,9 @@ void iterate_per_element(
 //             hpx::this_thread::get_priority())
 //     << ")\n";
 
-    assert(
-        hpx::threads::get_thread_priority() ==
-        hpx::threads::thread_priority_high);
+    // assert(
+    //     hpx::threads::get_thread_priority() ==
+    //     hpx::threads::thread_priority_high);
 
     using Array = PartitionedArray<Element, rank>;
     using Shape = typename Array::Shape;
