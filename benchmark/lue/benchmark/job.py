@@ -46,6 +46,7 @@ def program_configuration(
             cluster.name, nr_workers, "json")
 
     configuration = \
+        '--hpx:print-bind ' \
         '--hpx:ini="application.{program_name}.benchmark.cluster_name!={cluster_name}" ' \
         '--hpx:ini="application.{program_name}.benchmark.count!={count}" ' \
         '--hpx:ini="application.{program_name}.benchmark.output!={result_pathname}" ' \

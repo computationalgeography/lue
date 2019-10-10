@@ -4,8 +4,11 @@
         "shape": [5000, 5000]
     },
     "partition": {
-        "min_shape": [100, 100],
-        "max_shape": [1000, 1000],
-        "shape_step": 100
+        "shape": [20, 20],
+        "range": {
+            # 1280 x 1280
+            "max_nr_elements": 1638400,
+            "multiplier": 2
+        }
     }
 }

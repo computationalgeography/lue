@@ -1,11 +1,11 @@
 {
-    "count": 5,
+    "count": 1,
     "worker": {
         "type": "thread",
         "pool": {
             "min_size": 1,
-            "max_size": 4,
-            "multiplier": 2
+            "max_size": 7,
+            "incrementor": 1
         }
     }
 }
