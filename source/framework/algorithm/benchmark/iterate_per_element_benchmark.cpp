@@ -18,7 +18,8 @@ template<
     typename Element,
     std::size_t rank>
 void iterate_per_element(
-    Task const& task)
+    Task const& task,
+    std::size_t max_tree_depth)
 {
 // hpx::cout
 //     << "thread("
@@ -71,6 +72,13 @@ void iterate_per_element(
     // std::vector<Array> states;
     // states.push_back(state);
 
+    if(max_tree_depth == 0) {
+        max_tree_depth = task.nr_time_steps();
+    }
+    assert(max_tree_depth > 1);
+    hpx::lcos::local::sliding_semaphore semaphore{
+        static_cast<std::int64_t>(max_tree_depth - 1)};
+
     for(std::size_t i = 0; i < task.nr_time_steps(); ++i) {
 
         state = iterate_per_element(state);
@@ -85,8 +93,20 @@ void iterate_per_element(
         // state3 = iterate_per_element(state3);
         // state4 = iterate_per_element(state4);
 
-
         hpx::cout << '.' << hpx::flush;
+
+        // Attach a continuation to the state at the current time
+        // step. Once it is finished, signal the semaphore so it knowns
+        // that we can have another iteration in flight.
+        hpx::when_all_n(state.begin(), state.nr_partitions()).then(
+            hpx::launch::sync,
+            [&semaphore, i](
+                auto const&)
+            {
+                semaphore.signal(i);
+            });
+
+        semaphore.wait(i);
     }
 
     hpx::cout << "!" << hpx::flush;
@@ -107,22 +127,23 @@ void iterate_per_element(
 
 
 void iterate_per_element(
-    Task const& task)
+    Task const& task,
+    std::size_t const max_tree_depth)
 {
-    // // TODO Not sure if this helps
-    // hpx::parallel::execution::default_executor high_priority_executor{
-    //     hpx::threads::thread_priority_high};
+    // TODO Not sure if this helps
+    hpx::parallel::execution::default_executor high_priority_executor{
+        hpx::threads::thread_priority_high};
 
     using Element = std::int32_t;
 
     switch(task.rank()) {
         case 2: {
-            detail::iterate_per_element<Element, 2>(task);
+            // detail::iterate_per_element<Element, 2>(task, max_tree_depth);
 
-            // hpx::async(
-            //     high_priority_executor,
-            //     &detail::iterate_per_element<Element, 2>,
-            //     task).wait();
+            hpx::async(
+                high_priority_executor,
+                &detail::iterate_per_element<Element, 2>,
+                task, max_tree_depth).wait();
 
             // hpx::async(
             //     high_priority_executor,
@@ -160,8 +181,17 @@ auto setup_benchmark(
         lue::benchmark::Environment const& environment,
         lue::benchmark::Task const& task)
     {
-        assert(!environment.max_tree_depth());
-        lue::benchmark::iterate_per_element(task);
+        // assert(!environment.max_tree_depth());
+
+        std::size_t max_tree_depth = 0;
+
+        if(environment.max_tree_depth()) {
+            max_tree_depth = *environment.max_tree_depth();
+        }
+
+        lue::benchmark::iterate_per_element(task, max_tree_depth);
+
+        // lue::benchmark::iterate_per_element(task);
     };
 
     return lue::benchmark::Benchmark{std::move(callable), environment, task};
