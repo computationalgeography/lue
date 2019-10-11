@@ -19,6 +19,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
+from functools import reduce
 import json
 import tempfile
 

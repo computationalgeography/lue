@@ -21,6 +21,7 @@ import seaborn as sns
 
 import collections
 import csv
+from functools import reduce
 import json
 import re
 import tempfile
@@ -876,7 +877,7 @@ def group_performance_counters(
     for names, object_groups in groups.items():
         for name, group in object_groups.items():
             if "idle-rate" in name:
-                group.ylim = (0, 1000)
+                group.ylim = (0, 100)
 
     return groups
 
@@ -1007,5 +1008,5 @@ def post_process_results(
     performance_counters_available = benchmark.hpx is not None and \
         benchmark.hpx.performance_counters is not None
 
-    # if performance_counters_available:
-    #     post_process_performance_counters(lue_dataset_pathname, experiment)
+    if performance_counters_available:
+        post_process_performance_counters(lue_dataset_pathname, experiment)
