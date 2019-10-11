@@ -1007,5 +1007,5 @@ def post_process_results(
     performance_counters_available = benchmark.hpx is not None and \
         benchmark.hpx.performance_counters is not None
 
-    # if performance_counters_available:
-    #     post_process_performance_counters(lue_dataset_pathname, experiment)
+    if performance_counters_available:
+        post_process_performance_counters(lue_dataset_pathname, experiment)
