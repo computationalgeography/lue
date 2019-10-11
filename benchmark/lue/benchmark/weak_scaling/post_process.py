@@ -328,6 +328,8 @@ def measurement_dataframe(
         lue_measurement):
 
     array_shape = lue_measurement.properties["array_shape"].value[:]
+    nr_elements = \
+        [reduce(lambda e1, e2: e1 * e2, shape) for shape in array_shape]
     nr_workers = lue_measurement.properties["nr_workers"].value[:]
     duration = lue_measurement.properties["duration"].value[:]
     assert len(duration) == len(array_shape) == len(nr_workers)
@@ -340,6 +342,11 @@ def measurement_dataframe(
         array_shape,
         columns=["array_shape_{}".format(i) for i in range(rank)])
 
+    # nr_elements per benchmark
+    nr_elements = pd.DataFrame(
+        nr_elements,
+        columns=["nr_elements"])
+
     # count durations per benchmark
     duration = pd.DataFrame(
         duration,
@@ -351,9 +358,11 @@ def measurement_dataframe(
         columns=["nr_workers"])
 
     assert (duration.index == array_shape.index).all()
+    assert (duration.index == nr_elements.index).all()
     assert (duration.index == nr_workers.index).all()
 
-    measurement = pd.concat([nr_workers, array_shape, duration], axis=1)
+    measurement = pd.concat(
+        [nr_workers, array_shape, nr_elements, duration], axis=1)
 
     return measurement
 
@@ -376,7 +385,9 @@ def post_process_raw_results(
     system_name = meta_information.system_name[0]
     worker_type = meta_information.worker_type[0]
 
-    rank = lue_meta_information.properties["partition_shape"].value.shape[1]
+    nr_arrays, rank = \
+        lue_meta_information.properties["array_shape"].value.shape
+    assert nr_arrays == 1
     nr_benchmarks, count = lue_measurement.properties["duration"].value.shape
 
     measurement = measurement_dataframe(lue_measurement)
@@ -436,17 +447,35 @@ def post_process_raw_results(
         measurement["serial_efficiency_{}".format(i)] = \
             100 * t1[i] / measurement["serial_duration_{}".format(i)]
 
+        # lups = nr_elements / duration
+        # In the case of weak scaling, the nr_elements increases with the
+        # nr_workers. Ideally, LUPS increases linearly with the nr_workers.
+        measurement["lups_{}".format(i)] = \
+            measurement["nr_elements"] / measurement["duration_{}".format(i)]
+        measurement["linear_lups_{}".format(i)] = \
+            measurement["nr_elements"] / \
+            measurement["linear_duration_{}".format(i)]
+        measurement["serial_lups_{}".format(i)] = \
+            measurement["nr_elements"] / \
+            measurement["serial_duration_{}".format(i)]
+
 
     # https://xkcd.com/color/rgb/
     serial_color = sns.xkcd_rgb["pale red"]
     linear_color = sns.xkcd_rgb["medium green"]
     actual_color = sns.xkcd_rgb["denim blue"]
 
+    nr_plot_rows = 2
+    nr_plot_cols = 2
+    plot_width = 8  # Inches...
+    plot_height = 6  # Inches...
     figure, axes = plt.subplots(
-            nrows=2, ncols=1,
-            figsize=(15, 10),
-            sharex=True
-        )  # Inches...
+            nrows=nr_plot_rows, ncols=nr_plot_cols,
+            figsize=(nr_plot_cols * plot_width, nr_plot_rows * plot_height),
+            squeeze=False, sharex=False,
+        )
+
+    plot_row, plot_col = 0, 0
 
     # duration by nr_workers
     linear_duration = select_data_for_plot(
@@ -458,46 +487,21 @@ def post_process_raw_results(
 
     sns.lineplot(
         data=linear_duration, x="nr_workers", y="linear_duration",
-        ax=axes[0], color=linear_color)
+        ax=axes[plot_row, plot_col], color=linear_color)
     sns.lineplot(
         data=serial_duration, x="nr_workers", y="serial_duration",
-        ax=axes[0], color=serial_color)
+        ax=axes[plot_row, plot_col], color=serial_color)
     sns.lineplot(
         data=duration, x="nr_workers", y="duration",
-        ax=axes[0], color=actual_color)
-    axes[0].set_ylabel(u"duration ({}) ± 95% ci (count={})".format(
-        time_point_units, count))
-    axes[0].yaxis.set_major_formatter(
+        ax=axes[plot_row, plot_col], color=actual_color)
+    axes[plot_row, plot_col].set_ylabel(
+        u"duration ({}) ± 95% ci (count={})".format(
+            time_point_units, count))
+    axes[plot_row, plot_col].yaxis.set_major_formatter(
         ticker.FuncFormatter(
             lambda y, pos: format_duration(y)))
-    axes[0].grid()
 
-    ### # slow_down by nr_workers
-    ### linear_relative_slow_down = select_data_for_plot(
-    ###     measurement, "linear_relative_slow_down", count)
-    ### serial_relative_slow_down = select_data_for_plot(
-    ###     measurement, "serial_relative_slow_down", count)
-    ### relative_slow_down = select_data_for_plot(
-    ###     measurement, "relative_slow_down", count)
-
-    ### sns.lineplot(
-    ###     data=linear_relative_slow_down,
-    ###     x="nr_workers", y="linear_relative_slow_down",
-    ###     ax=axes[1], color=linear_color)
-    ### sns.lineplot(
-    ###     data=serial_relative_slow_down,
-    ###     x="nr_workers", y="serial_relative_slow_down",
-    ###     ax=axes[1], color=serial_color)
-    ### sns.lineplot(
-    ###     data=relative_slow_down,
-    ###     x="nr_workers", y="relative_slow_down",
-    ###     ax=axes[1], color=actual_color)
-
-    ### max_relative_slow_down = measurement[
-    ###         ["relative_slow_down_{}".format(i) for i in range(count)]
-    ###     ].max().max()
-    ### axes[1].set_ylim(None, 1.05 * max_relative_slow_down)
-    ### axes[1].set_ylabel("relative slow down (-)")
+    plot_row, plot_col = 0, 1
 
     linear_efficiency = select_data_for_plot(
         measurement, "linear_efficiency", count)
@@ -508,21 +512,48 @@ def post_process_raw_results(
 
     sns.lineplot(
         data=linear_efficiency, x="nr_workers", y="linear_efficiency",
-        ax=axes[1], color=linear_color)
+        ax=axes[plot_row, plot_col], color=linear_color)
     sns.lineplot(
         data=serial_efficiency, x="nr_workers", y="serial_efficiency",
-        ax=axes[1], color=serial_color)
+        ax=axes[plot_row, plot_col], color=serial_color)
     sns.lineplot(
         data=efficiency, x="nr_workers", y="efficiency",
-        ax=axes[1], color=actual_color)
-    axes[1].set_ylim(0, 110)
-    axes[1].set_ylabel("efficiency (%)")
-    axes[1].grid()
+        ax=axes[plot_row, plot_col], color=actual_color)
+    axes[plot_row, plot_col].set_ylim(0, 110)
+    axes[plot_row, plot_col].set_ylabel("efficiency (%)")
 
-    axes[-1].xaxis.set_major_formatter(
-        ticker.FuncFormatter(
-            lambda x, pos: format_nr_workers(x)))
-    axes[-1].set_xlabel("nr_workers ({})".format(worker_type))
+    plot_row, plot_col = 1, 0
+
+    # lups by nr_workers
+    linear_lups = select_data_for_plot(
+        measurement, "linear_lups", count)
+    serial_lups = select_data_for_plot(
+        measurement, "serial_lups", count)
+    lups = select_data_for_plot(
+        measurement, "lups", count)
+
+    sns.lineplot(
+        data=linear_lups, x="nr_workers", y="linear_lups",
+        ax=axes[plot_row, plot_col], color=linear_color)
+    sns.lineplot(
+        data=serial_lups, x="nr_workers", y="serial_lups",
+        ax=axes[plot_row, plot_col], color=serial_color)
+    sns.lineplot(
+        data=lups, x="nr_workers", y="lups",
+        ax=axes[plot_row, plot_col], color=actual_color)
+    axes[plot_row, plot_col].set_ylabel("LUPS")
+
+    plot_row, plot_col = 1, 1
+    axes[plot_row, plot_col].axis("off")
+
+    for plot_row in range(nr_plot_rows):
+        for plot_col in range(nr_plot_cols):
+            axes[plot_row, plot_col].xaxis.set_major_formatter(
+                ticker.FuncFormatter(
+                    lambda x, pos: format_nr_workers(x)))
+            axes[plot_row, plot_col].set_xlabel(
+                "nr_workers ({})".format(worker_type))
+            axes[plot_row, plot_col].grid()
 
     figure.legend(labels=["linear", "serial", "actual"])
 
@@ -543,7 +574,7 @@ def post_process_raw_results(
             )
         )
 
-    plt.tight_layout()
+    # plt.tight_layout()
     plt.savefig(plot_pathname)
 
 
