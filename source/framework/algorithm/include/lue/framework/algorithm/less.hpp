@@ -93,7 +93,7 @@ template<
     typename Partition>
 class OverloadPicker<
     Partition,
-    hpx::shared_future<ElementT<Partition>>>
+    ElementT<Partition>>
 
 {
 
@@ -154,7 +154,7 @@ public:
 template<
     typename Partition>
 class OverloadPicker<
-    hpx::shared_future<ElementT<Partition>>,
+    ElementT<Partition>,
     Partition>
 
 {
@@ -295,7 +295,7 @@ PartitionedArrayT<Array<bool, rank>, bool> less(
     using OutputArray = PartitionedArrayT<InputArray, bool>;
     using OutputPartitions = PartitionsT<OutputArray>;
 
-    LessPartitionAction<InputPartition, InputScalar> action;
+    LessPartitionAction<InputPartition, Element> action;
     OutputPartitions output_partitions{shape_in_partitions(array)};
 
     for(std::size_t p = 0; p < nr_partitions(array); ++p) {
@@ -342,7 +342,7 @@ PartitionedArrayT<Array<Element, rank>, bool> less(
     using OutputArray = PartitionedArrayT<InputArray, bool>;
     using OutputPartitions = PartitionsT<OutputArray>;
 
-    LessPartitionAction<InputScalar, InputPartition> action;
+    LessPartitionAction<Element, InputPartition> action;
     OutputPartitions output_partitions{shape_in_partitions(array)};
 
     for(std::size_t p = 0; p < nr_partitions(array); ++p) {

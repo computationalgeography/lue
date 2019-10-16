@@ -87,7 +87,7 @@ template<
     typename Partition>
 class OverloadPicker<
     Partition,
-    hpx::shared_future<ElementT<Partition>>>
+    ElementT<Partition>>
 
 {
 
@@ -228,7 +228,7 @@ Array<Element, rank> multiply(
     using OutputArray = Array<Element, rank>;
     using OutputPartitions = PartitionsT<OutputArray>;
 
-    MultiplyPartitionAction<InputPartition, InputScalar> action;
+    MultiplyPartitionAction<InputPartition, Element> action;
     OutputPartitions output_partitions{shape_in_partitions(array)};
 
     for(std::size_t p = 0; p < nr_partitions(array); ++p) {

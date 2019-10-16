@@ -23,9 +23,6 @@ Partition none_partition(
 
     using Shape = ShapeT<Partition>;
 
-    hpx::shared_future<InputData> partition_data =
-        partition.data(CopyMode::share);
-
     // Aggregate nD array partition to nD array partition containing a
     // single value
     Shape shape;
