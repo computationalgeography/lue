@@ -106,6 +106,8 @@ template<
 
     std::vector<hpx::future<void>> unique_id_partitions(nr_partitions);
 
+    // FIXME make all of this asynchronous
+
     UniqueIDPartitionAction<Partition> action;
 
     std::vector<hpx::future<typename Partition::Size>>

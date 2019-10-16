@@ -79,6 +79,13 @@ def benchmark_meta_to_lue_json(
                                     "value": [experiment.description]
                                 },
                                 {
+                                    "name": "nr_time_steps",
+                                    "shape_per_object": "same_shape",
+                                    "value_variability": "constant",
+                                    "datatype": "uint64",
+                                    "value": [experiment.nr_time_steps]
+                                },
+                                {
                                     "name": "array_shape",
                                     "shape_per_object": "same_shape",
                                     "value_variability": "constant",
@@ -303,6 +310,7 @@ def meta_information_dataframe(
     name = lue_meta_information.properties["name"].value[:]
     system_name = lue_meta_information.properties["system_name"].value[:]
     worker_type = lue_meta_information.properties["worker_type"].value[:]
+    nr_time_steps = lue_meta_information.properties["nr_time_steps"].value[:]
 
     partition_shape = \
         lue_meta_information.properties["partition_shape"].value[:]
@@ -314,6 +322,7 @@ def meta_information_dataframe(
             "name": name,
             "system_name": system_name,
             "worker_type": worker_type,
+            "nr_time_steps": nr_time_steps,
         })
     partition_shape = pd.DataFrame(
         partition_shape,
@@ -385,6 +394,7 @@ def post_process_raw_results(
     name = meta_information.name[0]
     system_name = meta_information.system_name[0]
     worker_type = meta_information.worker_type[0]
+    nr_time_steps = meta_information.nr_time_steps[0]
 
     nr_arrays, rank = \
         lue_meta_information.properties["array_shape"].value.shape
@@ -448,16 +458,17 @@ def post_process_raw_results(
         measurement["serial_efficiency_{}".format(i)] = \
             100 * t1[i] / measurement["serial_duration_{}".format(i)]
 
-        # lups = nr_elements / duration
+        # lups = nr_time_steps * nr_elements / duration
         # In the case of weak scaling, the nr_elements increases with the
         # nr_workers. Ideally, LUPS increases linearly with the nr_workers.
         measurement["lups_{}".format(i)] = \
-            measurement["nr_elements"] / measurement["duration_{}".format(i)]
+            nr_time_steps * measurement["nr_elements"] / \
+            measurement["duration_{}".format(i)]
         measurement["linear_lups_{}".format(i)] = \
-            measurement["nr_elements"] / \
+            nr_time_steps * measurement["nr_elements"] / \
             measurement["linear_duration_{}".format(i)]
         measurement["serial_lups_{}".format(i)] = \
-            measurement["nr_elements"] / \
+            nr_time_steps * measurement["nr_elements"] / \
             measurement["serial_duration_{}".format(i)]
 
 
@@ -553,7 +564,7 @@ def post_process_raw_results(
                 ticker.FuncFormatter(
                     lambda x, pos: format_nr_workers(x)))
             axes[plot_row, plot_col].set_xlabel(
-                "nr_workers ({})".format(worker_type))
+                "workers ({})".format(worker_type))
             axes[plot_row, plot_col].grid()
 
     figure.legend(labels=["linear", "serial", "actual"])

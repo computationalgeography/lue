@@ -7,7 +7,7 @@
 
 namespace lue {
 namespace detail {
-namespace greater_equal {
+namespace less_equal {
 
 template<
     typename T1,
@@ -29,7 +29,7 @@ class OverloadPicker<
 
 public:
 
-    static PartitionT<Partition, bool> greater_equal_partition(
+    static PartitionT<Partition, bool> less_equal_partition(
         Partition const& partition1,
         Partition const& partition2)
     {
@@ -67,7 +67,7 @@ public:
                             Element const lhs,
                             Element const rhs)
                         {
-                            return lhs >= rhs;
+                            return lhs <= rhs;
                         });
 
                     return OutputPartition{locality_id, std::move(result)};
@@ -81,8 +81,8 @@ public:
 
     struct Action:
         hpx::actions::make_action<
-            decltype(&greater_equal_partition),
-            &greater_equal_partition,
+            decltype(&less_equal_partition),
+            &less_equal_partition,
             Action>
     {};
 
@@ -99,7 +99,7 @@ class OverloadPicker<
 
 public:
 
-    static PartitionT<Partition, bool> greater_equal_partition(
+    static PartitionT<Partition, bool> less_equal_partition(
         Partition const& partition,
         ElementT<Partition> const scalar)
     {
@@ -130,7 +130,7 @@ public:
                         [scalar](
                             Element const element)
                         {
-                            return element >= scalar;
+                            return element <= scalar;
                         });
 
                     return OutputPartition{locality_id, std::move(result)};
@@ -143,8 +143,8 @@ public:
 
     struct Action:
         hpx::actions::make_action<
-            decltype(&greater_equal_partition),
-            &greater_equal_partition,
+            decltype(&less_equal_partition),
+            &less_equal_partition,
             Action>
     {};
 
@@ -161,7 +161,7 @@ class OverloadPicker<
 
 public:
 
-    static PartitionT<Partition, bool> greater_equal_partition(
+    static PartitionT<Partition, bool> less_equal_partition(
         ElementT<Partition> const scalar,
         Partition const& partition)
     {
@@ -192,7 +192,7 @@ public:
                         [scalar](
                             Element const element)
                         {
-                            return scalar >= element;
+                            return scalar <= element;
                         });
 
                     return OutputPartition{locality_id, std::move(result)};
@@ -205,22 +205,22 @@ public:
 
     struct Action:
         hpx::actions::make_action<
-            decltype(&greater_equal_partition),
-            &greater_equal_partition,
+            decltype(&less_equal_partition),
+            &less_equal_partition,
             Action>
     {};
 
 };
 
-}  // namespace greater_equal
+}  // namespace less_equal
 }  // namespace detail
 
 
 template<
     typename T1,
     typename T2>
-using GreaterEqualPartitionAction =
-    typename detail::greater_equal::OverloadPicker<T1, T2>::Action;
+using LessEqualPartitionAction =
+    typename detail::less_equal::OverloadPicker<T1, T2>::Action;
 
 
 /*!
@@ -236,7 +236,7 @@ template<
     typename Element,
     std::size_t rank,
     template<typename, std::size_t> typename Array>
-PartitionedArrayT<Array<bool, rank>, bool> greater_equal(
+PartitionedArrayT<Array<bool, rank>, bool> less_equal(
     Array<Element, rank> const& array1,
     Array<Element, rank> const& array2)
 {
@@ -248,7 +248,7 @@ PartitionedArrayT<Array<bool, rank>, bool> greater_equal(
     using OutputArray = PartitionedArrayT<InputArray, bool>;
     using OutputPartitions = PartitionsT<OutputArray>;
 
-    GreaterEqualPartitionAction<InputPartition, InputPartition> action;
+    LessEqualPartitionAction<InputPartition, InputPartition> action;
     OutputPartitions output_partitions{shape_in_partitions(array1)};
 
     for(std::size_t p = 0; p < nr_partitions(array1); ++p) {
@@ -285,7 +285,7 @@ template<
     typename Element,
     std::size_t rank,
     template<typename, std::size_t> typename Array>
-PartitionedArrayT<Array<bool, rank>, bool> greater_equal(
+PartitionedArrayT<Array<bool, rank>, bool> less_equal(
     Array<Element, rank> const& array,
     hpx::shared_future<Element> const& scalar)
 {
@@ -296,7 +296,7 @@ PartitionedArrayT<Array<bool, rank>, bool> greater_equal(
     using OutputArray = PartitionedArrayT<InputArray, bool>;
     using OutputPartitions = PartitionsT<OutputArray>;
 
-    GreaterEqualPartitionAction<InputPartition, InputScalar> action;
+    LessEqualPartitionAction<InputPartition, InputScalar> action;
     OutputPartitions output_partitions{shape_in_partitions(array)};
 
     for(std::size_t p = 0; p < nr_partitions(array); ++p) {
@@ -333,7 +333,7 @@ template<
     typename Element,
     std::size_t rank,
     template<typename, std::size_t> typename Array>
-PartitionedArrayT<Array<Element, rank>, bool> greater_equal(
+PartitionedArrayT<Array<Element, rank>, bool> less_equal(
     hpx::shared_future<Element> const& scalar,
     Array<Element, rank> const& array)
 {
@@ -344,7 +344,7 @@ PartitionedArrayT<Array<Element, rank>, bool> greater_equal(
     using OutputArray = PartitionedArrayT<InputArray, bool>;
     using OutputPartitions = PartitionsT<OutputArray>;
 
-    GreaterEqualPartitionAction<InputScalar, InputPartition> action;
+    LessEqualPartitionAction<InputScalar, InputPartition> action;
     OutputPartitions output_partitions{shape_in_partitions(array)};
 
     for(std::size_t p = 0; p < nr_partitions(array); ++p) {

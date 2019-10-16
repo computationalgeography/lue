@@ -30,43 +30,29 @@ PartitionT<Partition, OutputElement> sum_partition(
 
     using Shape = ShapeT<Partition>;
 
-    hpx::shared_future<InputData> partition_data =
-        partition.data(CopyMode::share);
-
     // Aggregate nD array partition to nD array partition containing a
     // single value
     Shape shape;
     std::fill(shape.begin(), shape.end(), 1);
 
-    hpx::future<OutputData> sum = partition_data.then(
+    return hpx::dataflow(
+        hpx::launch::async,
         hpx::util::unwrapping(
+
             [shape](
-                InputData const& partition_data)
+                hpx::id_type const locality_id,
+                InputData&& partition_data)
             {
                 OutputElement result = std::accumulate(
                     partition_data.begin(), partition_data.end(),
                     OutputElement{0});
 
-                return OutputData{shape, result};
+                return Partition{locality_id, OutputData{shape, result}};
             }
-        )
-    );
 
-    // Once the sum has been calculated, create a component containing
-    // the result, on the same locality as the summed partition
-    return hpx::when_all(hpx::get_colocation_id(partition.get_id()), sum)
-        .then(
-            hpx::util::unwrapping(
-                [](
-                    auto&& futures)
-                {
-                    auto const locality_id = hpx::util::get<0>(futures).get();
-                    auto&& data = hpx::util::get<1>(futures).get();
-
-                    return Partition{locality_id, std::move(data)};
-                }
-            )
-        );
+        ),
+        hpx::get_colocation_id(partition.get_id()),
+        partition.data(CopyMode::share));
 }
 
 }  // namespace detail
@@ -111,22 +97,21 @@ hpx::future<OutputElement> sum(
 
     for(std::size_t p = 0; p < nr_partitions(array); ++p) {
 
-        InputPartition const& partition = array.partitions()[p];
+        output_partitions[p] = hpx::dataflow(
+            hpx::launch::async,
+            hpx::util::unwrapping(
 
-        output_partitions[p] =
-            hpx::get_colocation_id(partition.get_id()).then(
-                hpx::util::unwrapping(
-                    [=](
-                        hpx::id_type const locality_id)
-                    {
-                        return hpx::dataflow(
-                            hpx::launch::async,
-                            action,
-                            locality_id,
-                            partition);
-                    }
-                )
-            );
+                [action](
+                    hpx::id_type const component_id)
+                {
+                    return action(
+                        hpx::get_colocation_id(
+                            hpx::launch::sync, component_id),
+                        InputPartition{component_id});
+                }
+
+            ),
+            array.partitions()[p]);
 
     }
 
@@ -134,8 +119,9 @@ hpx::future<OutputElement> sum(
     // localities. Attach a continuation that sums the sums once the
     // partition sums are ready. This continuation runs on our locality.
     return hpx::when_all(
-            output_partitions.begin(), output_partitions.end()).then(
-        hpx::util::unwrapping(
+        output_partitions.begin(), output_partitions.end()).then(
+                hpx::util::unwrapping(
+
             [](auto const& partitions) {
 
                 OutputElement result{};
@@ -151,8 +137,8 @@ hpx::future<OutputElement> sum(
 
                 return result;
             }
-        )
-    );
+
+        ));
 }
 
 }  // namespace lue

@@ -9,6 +9,7 @@
 #include "lue/framework/algorithm/fill.hpp"
 #include "lue/framework/algorithm/greater_equal.hpp"
 #include "lue/framework/algorithm/iterate_per_element.hpp"
+#include "lue/framework/algorithm/less_equal.hpp"
 #include "lue/framework/algorithm/less.hpp"
 #include "lue/framework/algorithm/multiply.hpp"
 #include "lue/framework/algorithm/none.hpp"

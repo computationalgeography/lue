@@ -31,36 +31,27 @@ Partition none_partition(
     Shape shape;
     std::fill(shape.begin(), shape.end(), 1);
 
-    hpx::future<OutputData> none = partition_data.then(
+    return hpx::dataflow(
+        hpx::launch::async,
         hpx::util::unwrapping(
+
             [shape](
-                InputData const& partition_data)
+                hpx::id_type const locality_id,
+                InputData&& partition_data)
             {
                 // TODO Update for case where Element is not bool
-                Element result = std::find(
+                // If one of the elements evaluates to true, then the result
+                // is false.
+                Element result = !(std::find(
                     partition_data.begin(), partition_data.end(),
-                    Element{1}) == partition_data.end();
+                    Element{1}) != partition_data.end());
 
-                return OutputData{shape, result};
+                return Partition{locality_id, OutputData{shape, result}};
             }
-        )
-    );
 
-    // Once the result has been calculated, create a component containing
-    // the result, on the same locality as the summed partition
-    return hpx::when_all(hpx::get_colocation_id(partition.get_id()), none)
-        .then(
-            hpx::util::unwrapping(
-                [](
-                    auto&& futures)
-                {
-                    auto const locality_id = hpx::util::get<0>(futures).get();
-                    auto&& data = hpx::util::get<1>(futures).get();
-
-                    return Partition{locality_id, std::move(data)};
-                }
-            )
-        );
+        ),
+        hpx::get_colocation_id(partition.get_id()),
+        partition.data(CopyMode::share));
 }
 
 }  // namespace detail
@@ -105,22 +96,21 @@ hpx::future<Element> none(
 
     for(std::size_t p = 0; p < nr_partitions(array); ++p) {
 
-        InputPartition const& partition = array.partitions()[p];
+        output_partitions[p] = hpx::dataflow(
+            hpx::launch::async,
+            hpx::util::unwrapping(
 
-        output_partitions[p] =
-            hpx::get_colocation_id(partition.get_id()).then(
-                hpx::util::unwrapping(
-                    [=](
-                        hpx::id_type const locality_id)
-                    {
-                        return hpx::dataflow(
-                            hpx::launch::async,
-                            action,
-                            locality_id,
-                            partition);
-                    }
-                )
-            );
+                [action](
+                    hpx::id_type const component_id)
+                {
+                    return action(
+                        hpx::get_colocation_id(
+                            hpx::launch::sync, component_id),
+                        InputPartition{component_id});
+                }
+
+            ),
+            array.partitions()[p]);
 
     }
 
@@ -129,8 +119,9 @@ hpx::future<Element> none(
     // once the partition results are ready. This continuation runs on
     // our locality.
     return hpx::when_all(
-            output_partitions.begin(), output_partitions.end()).then(
-        hpx::util::unwrapping(
+        output_partitions.begin(), output_partitions.end()).then(
+                hpx::util::unwrapping(
+
             [](auto const& partitions) {
 
                 Element result{0};
@@ -141,6 +132,8 @@ hpx::future<Element> none(
                     assert(data.size() == 1);
                     result = data[0];
 
+                    // If one of the elements evaluates to true, then
+                    // the result is false.
                     if(result) {
                         // Short-circuit
                         break;
@@ -150,8 +143,8 @@ hpx::future<Element> none(
 
                 return result;
             }
-        )
-    );
+
+        ));
 }
 
 }  // namespace lue

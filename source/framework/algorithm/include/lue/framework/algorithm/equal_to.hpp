@@ -45,17 +45,14 @@ public:
         using OutputPartition = PartitionT<InputPartition, bool>;
         using OutputData = DataT<OutputPartition>;
 
-        hpx::shared_future<InputData> partition_data1 =
-            partition1.data(CopyMode::share);
-        hpx::shared_future<InputData> partition_data2 =
-            partition2.data(CopyMode::share);
-
-        hpx::future<OutputData> result_data = hpx::dataflow(
+        return hpx::dataflow(
             hpx::launch::async,
             hpx::util::unwrapping(
+
                 [](
-                    InputData const& partition_data1,
-                    InputData const& partition_data2)
+                    hpx::id_type const locality_id,
+                    InputData&& partition_data1,
+                    InputData&& partition_data2)
                 {
                     assert(partition_data1.shape() == partition_data2.shape());
 
@@ -71,27 +68,14 @@ public:
                             return lhs == rhs;
                         });
 
-                    return result;
+                    return OutputPartition{locality_id, std::move(result)};
                 }
+
             ),
-            partition_data1,
-            partition_data2
-        );
+            hpx::get_colocation_id(partition1.get_id()),
+            partition1.data(CopyMode::share),
+            partition2.data(CopyMode::share));
 
-        return hpx::when_all(
-                hpx::get_colocation_id(partition1.get_id()), result_data)
-            .then(
-                hpx::util::unwrapping(
-                    [](
-                        auto&& futures)
-                    {
-                        auto const locality_id = hpx::util::get<0>(futures).get();
-                        auto&& data = hpx::util::get<1>(futures).get();
-
-                        return OutputPartition{locality_id, std::move(data)};
-                    }
-                )
-            );
     }
 
     struct Action:
@@ -116,7 +100,7 @@ public:
 
     static PartitionT<Partition, bool> equal_to_partition(
         Partition const& partition,
-        hpx::shared_future<ElementT<Partition>> scalar)
+        ElementT<Partition> const scalar)
     {
         assert(
             hpx::get_colocation_id(partition.get_id()).get() ==
@@ -129,15 +113,13 @@ public:
         using OutputPartition = PartitionT<InputPartition, bool>;
         using OutputData = DataT<OutputPartition, bool>;
 
-        hpx::shared_future<InputData> partition_data =
-            partition.data(CopyMode::share);
-
-        hpx::future<OutputData> result_data = hpx::dataflow(
+        return hpx::dataflow(
             hpx::launch::async,
             hpx::util::unwrapping(
-                [](
-                    InputData const& partition_data,
-                    Element const scalar)
+
+                [scalar](
+                    hpx::id_type const locality_id,
+                    InputData&& partition_data)
                 {
                     OutputData result{partition_data.shape()};
 
@@ -150,27 +132,12 @@ public:
                             return element == scalar;
                         });
 
-                    return result;
+                    return OutputPartition{locality_id, std::move(result)};
                 }
+
             ),
-            partition_data,
-            scalar
-        );
-
-        return hpx::when_all(
-                hpx::get_colocation_id(partition.get_id()), result_data)
-            .then(
-                hpx::util::unwrapping(
-                    [](
-                        auto&& futures)
-                    {
-                        auto const locality_id = hpx::util::get<0>(futures).get();
-                        auto&& data = hpx::util::get<1>(futures).get();
-
-                        return OutputPartition{locality_id, std::move(data)};
-                    }
-                )
-            );
+            hpx::get_colocation_id(partition.get_id()),
+            partition.data(CopyMode::share));
     }
 
     struct Action:
@@ -223,24 +190,24 @@ PartitionedArrayT<Array<bool, rank>, bool> equal_to(
 
     for(std::size_t p = 0; p < nr_partitions(array1); ++p) {
 
-        InputPartition const& input_partition1 = array1.partitions()[p];
-        InputPartition const& input_partition2 = array2.partitions()[p];
+        output_partitions[p] = hpx::dataflow(
+            hpx::launch::async,
+            hpx::util::unwrapping(
 
-        output_partitions[p] =
-            hpx::get_colocation_id(input_partition1.get_id()).then(
-                hpx::util::unwrapping(
-                    [=](
-                        hpx::id_type const locality_id)
-                    {
-                        return hpx::dataflow(
-                            hpx::launch::async,
-                            action,
-                            locality_id,
-                            input_partition1,
-                            input_partition2);
-                    }
-                )
-            );
+                [action](
+                    hpx::id_type const component1_id,
+                    hpx::id_type const component2_id)
+                {
+                    return action(
+                        hpx::get_colocation_id(
+                            hpx::launch::sync, component1_id),
+                        InputPartition{component1_id},
+                        InputPartition{component2_id});
+                }
+
+            ),
+            array1.partitions()[p],
+            array2.partitions()[p]);
     }
 
     return OutputArray{shape(array1), std::move(output_partitions)};
@@ -270,23 +237,24 @@ PartitionedArrayT<Array<bool, rank>, bool> equal_to(
 
     for(std::size_t p = 0; p < nr_partitions(array); ++p) {
 
-        InputPartition const& input_partition = array.partitions()[p];
+        output_partitions[p] = hpx::dataflow(
+            hpx::launch::async,
+            hpx::util::unwrapping(
 
-        output_partitions[p] =
-            hpx::get_colocation_id(input_partition.get_id()).then(
-                hpx::util::unwrapping(
-                    [=](
-                        hpx::id_type const locality_id)
-                    {
-                        return hpx::dataflow(
-                            hpx::launch::async,
-                            action,
-                            locality_id,
-                            input_partition,
-                            scalar);
-                    }
-                )
-            );
+                [action](
+                    hpx::id_type const component_id,
+                    Element const scalar)
+                {
+                    return action(
+                        hpx::get_colocation_id(
+                            hpx::launch::sync, component_id),
+                        InputPartition{component_id},
+                        scalar);
+                }
+
+            ),
+            array.partitions()[p],
+            scalar);
     }
 
     return OutputArray{shape(array), std::move(output_partitions)};

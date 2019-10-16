@@ -26,7 +26,7 @@
                     "/threads{locality#*/pool#*/worker-thread#*}/time/overall",
 
                     "/threads{locality#*/pool#*/worker-thread#*}/count/instantaneous/active",
-                    "/threads{locality#*/pool#*/worker-thread#*}/count/instantaneous/all",
+                    # "/threads{locality#*/pool#*/worker-thread#*}/count/instantaneous/all",
                     "/threads{locality#*/pool#*/worker-thread#*}/count/instantaneous/pending",
                     "/threads{locality#*/pool#*/worker-thread#*}/count/instantaneous/staged",
                     "/threads{locality#*/pool#*/worker-thread#*}/count/instantaneous/suspended",

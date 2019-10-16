@@ -104,7 +104,7 @@ std::ostream& operator<<(
     auto const end = data.end();
 
     // Max number of values to print at start and end
-    std::size_t const halo = 5;
+    std::size_t const halo = 15;
 
     if(size <= 2 * halo) {
         // Print all values
@@ -133,7 +133,7 @@ std::ostream& operator<<(
     stream
         << "    shape     : " << partition.shape().get() << "\n"
         << "    size      : " << partition.size().get() << "\n"
-        << partition.data().get()
+        << partition.data(CopyMode::share).get()
         ;
 
     return stream;

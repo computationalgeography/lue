@@ -22,12 +22,13 @@ PartitionT<Partition, ElementT<Partition>, 1> unique_partition(
     using OutputData = DataT<OutputPartition>;
     using OutputShape = ShapeT<OutputPartition>;
 
-    hpx::id_type partition_id = partition.get_id();
-
-    return partition.data(CopyMode::share).then(
+    return hpx::dataflow(
+        hpx::launch::async,
         hpx::util::unwrapping(
-            [partition_id](
-                InputData const& partition_data)
+
+            [](
+                hpx::id_type const locality_id,
+                InputData&& partition_data)
             {
                 // Copy values from input array into a set
                 std::set<Element> unique_values(
@@ -41,11 +42,12 @@ PartitionT<Partition, ElementT<Partition>, 1> unique_partition(
                     unique_values.begin(), unique_values.end(),
                     output_data.begin());
 
-                return OutputPartition{
-                    hpx::find_here(), std::move(output_data)};
+                return OutputPartition{locality_id, std::move(output_data)};
             }
-        )
-    );
+
+        ),
+        hpx::get_colocation_id(partition.get_id()),
+        partition.data(CopyMode::share));
 }
 
 }  // namespace detail
@@ -101,22 +103,21 @@ hpx::future<Array<Element, 1>> unique(
 
     for(std::size_t p = 0; p < nr_partitions(array); ++p) {
 
-        InputPartition const& input_partition = array.partitions()[p];
+        output_partitions[p] = hpx::dataflow(
+            hpx::launch::async,
+            hpx::util::unwrapping(
 
-        output_partitions[p] =
-            hpx::get_colocation_id(input_partition.get_id()).then(
-                hpx::util::unwrapping(
-                    [=](
-                        hpx::id_type const locality_id)
-                    {
-                        return hpx::dataflow(
-                            hpx::launch::async,
-                            action,
-                            locality_id,
-                            input_partition);
-                    }
-                )
-            );
+                [action](
+                    hpx::id_type const component_id)
+                {
+                    return action(
+                        hpx::get_colocation_id(
+                            hpx::launch::sync, component_id),
+                        InputPartition{component_id});
+                }
+
+            ),
+            array.partitions()[p]);
 
     }
 
@@ -128,8 +129,9 @@ hpx::future<Array<Element, 1>> unique(
     // ready. This continuation runs on our own locality. This implies
     // data is transported from remote localities to us.
     return hpx::when_all(
-            output_partitions.begin(), output_partitions.end()).then(
-        hpx::util::unwrapping(
+        output_partitions.begin(), output_partitions.end()).then(
+                hpx::util::unwrapping(
+
             [](auto const& partitions) {
 
                 // Collection of unique values of all partition results
@@ -139,9 +141,7 @@ hpx::future<Array<Element, 1>> unique(
 
                     auto const data = partition.data(CopyMode::copy).get();
 
-                    unique_values.insert(
-                        data.begin(),
-                        data.end());
+                    unique_values.insert(data.begin(), data.end());
 
                 }
 
@@ -170,8 +170,8 @@ hpx::future<Array<Element, 1>> unique(
 
                 return result_array;
             }
-        )
-    );
+
+        ));
 }
 
 }  // namespace lue

@@ -22,11 +22,13 @@ PartitionT<InputPartition, OutputElement> cast_partition(
     using OutputPartition = PartitionT<InputPartition, OutputElement>;
     using OutputData = DataT<OutputPartition>;
 
-    hpx::future<OutputData> cast = hpx::dataflow(
+    return hpx::dataflow(
         hpx::launch::async,
         hpx::util::unwrapping(
+
             [](
-                InputData const& input_partition_data)
+                hpx::id_type const locality_id,
+                InputData&& input_partition_data)
             {
                 OutputData output_partition_data{input_partition_data.shape()};
 
@@ -40,26 +42,13 @@ PartitionT<InputPartition, OutputElement> cast_partition(
                         return static_cast<OutputElement>(element);
                     });
 
-                return output_partition_data;
+                return OutputPartition{
+                    locality_id, std::move(output_partition_data)};
             }
+
         ),
-        input_partition.data(CopyMode::share)
-    );
-
-    return hpx::when_all(
-            hpx::get_colocation_id(input_partition.get_id()), cast)
-        .then(
-            hpx::util::unwrapping(
-                [](
-                    auto&& futures)
-                {
-                    auto const locality_id = hpx::util::get<0>(futures).get();
-                    auto&& data = hpx::util::get<1>(futures).get();
-
-                    return OutputPartition{locality_id, std::move(data)};
-                }
-            )
-        );
+        hpx::get_colocation_id(input_partition.get_id()),
+        input_partition.data(CopyMode::share));
 }
 
 }  // namespace detail
@@ -105,22 +94,22 @@ Array<OutputElement, rank> cast(
 
     for(std::size_t p = 0; p < nr_partitions(array); ++p) {
 
-        InputPartition const& input_partition = array.partitions()[p];
+        output_partitions[p] = hpx::dataflow(
+            hpx::launch::async,
+            hpx::util::unwrapping(
 
-        output_partitions[p] =
-            hpx::get_colocation_id(input_partition.get_id()).then(
-                hpx::util::unwrapping(
-                    [=](
-                        hpx::id_type const locality_id)
-                    {
-                        return hpx::dataflow(
-                            hpx::launch::async,
-                            action,
-                            locality_id,
-                            input_partition);
-                    }
-                )
-            );
+                [action](
+                    hpx::id_type const component_id)
+                {
+                    return action(
+                        hpx::get_colocation_id(
+                            hpx::launch::sync, component_id),
+                        InputPartition{component_id});
+                }
+
+            ),
+            array.partitions()[p]);
+
     }
 
     return OutputArray{shape(array), std::move(output_partitions)};

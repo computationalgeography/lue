@@ -67,22 +67,22 @@ Array<Element, rank> copy(
 
     for(std::size_t p = 0; p < nr_partitions(array); ++p) {
 
-        Partition const& input_partition = array.partitions()[p];
+        output_partitions[p] = hpx::dataflow(
+            hpx::launch::async,
+            hpx::util::unwrapping(
 
-        output_partitions[p] =
-            hpx::get_colocation_id(input_partition.get_id()).then(
-                hpx::util::unwrapping(
-                    [=](
-                        hpx::id_type const locality_id)
-                    {
-                        return hpx::dataflow(
-                            hpx::launch::async,
-                            action,
-                            locality_id,
-                            input_partition);
-                    }
-                )
-            );
+                [action](
+                    hpx::id_type const component_id)
+                {
+                    return action(
+                        hpx::get_colocation_id(
+                            hpx::launch::sync, component_id),
+                        Partition{component_id});
+                }
+
+            ),
+            array.partitions()[p]);
+
     }
 
     return Array_{shape(array), std::move(output_partitions)};

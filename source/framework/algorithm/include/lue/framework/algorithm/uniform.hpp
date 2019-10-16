@@ -40,8 +40,6 @@ public:
 
         using InputData = DataT<Partition>;
 
-        InputData partition_data = partition.data(CopyMode::share).get();
-
         // Will be used to obtain a seed for the random number engine
         std::random_device random_device;
 
@@ -59,15 +57,29 @@ public:
             }
         }();
 
-        std::generate(
-            partition_data.begin(), partition_data.end(),
-            [&]()
-            {
-                return distribution(random_number_engine);
-            }
-        );
+        return hpx::dataflow(
+            hpx::launch::async,
+            hpx::util::unwrapping(
 
-        return hpx::make_ready_future();
+                [
+                    distribution{std::move(distribution)},
+                    random_number_engine{std::move(random_number_engine)}
+                ] (
+                    InputData&& partition_data) mutable
+                {
+                    std::generate(
+                        partition_data.begin(), partition_data.end(),
+
+                        [&]()
+                        {
+                            return distribution(random_number_engine);
+                        }
+
+                        );
+                }
+
+            ),
+            partition.data(CopyMode::share));
     }
 
     struct Action:
@@ -91,7 +103,7 @@ using UniformAction =
 
 /*!
     @brief      Fill a partitioned array in-place with a uniform random
-                value from the range [@a min_value, @a max_value)
+                value from the range @a min_value - @a max_value
     @tparam     Element Type of elements in the array
     @tparam     rank Rank of the input array
     @tparam     Array Class template of the type of the array
@@ -105,9 +117,14 @@ using UniformAction =
     The existing @a array passed in is updated. Use the returned future if
     you need to know when the filling is done.
 
+    If @a Element is a floating point value, then the generated values
+    will be from the half open interval [@a min_value, @a max_value).
     To fill the array with values from the closed interval [min_value,
     max_value], pass std::nextafter(max_value,
     std::numeric_limits<Element>::max()) as the second parameter.
+
+    If @a Element is an integral value, then the generated values will
+    be from the closed interval [@a min_value, @a max_value].
 */
 template<
     typename Element,
@@ -126,26 +143,30 @@ template<
 
     for(std::size_t p = 0; p < nr_partitions(array); ++p) {
 
-        Partition& partition = array.partitions()[p];
-
         futures[p] = hpx::dataflow(
             hpx::launch::async,
             hpx::util::unwrapping(
-                [action, partition](
-                    hpx::id_type const locality_id,
+
+                [action](
+                    hpx::id_type const component_id,
                     Element const min_value,
                     Element const max_value)
                 {
-                    return action(locality_id, partition, min_value, max_value);
+                    return action(
+                        hpx::get_colocation_id(
+                            hpx::launch::sync, component_id),
+                        Partition{component_id},
+                        min_value, max_value);
                 }
+
             ),
-            hpx::get_colocation_id(partition.get_id()),
+            array.partitions()[p],
             min_value,
             max_value);
 
     }
 
-    return hpx::when_all(futures);
+    return hpx::when_all(std::move(futures));
 }
 
 }  // namespace lue

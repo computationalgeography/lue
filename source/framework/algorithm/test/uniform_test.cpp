@@ -3,10 +3,12 @@
 #include "lue/framework/algorithm/all.hpp"
 #include "lue/framework/algorithm/equal_to.hpp"
 #include "lue/framework/algorithm/greater_equal.hpp"
+#include "lue/framework/algorithm/less_equal.hpp"
 #include "lue/framework/algorithm/less.hpp"
 #include "lue/framework/algorithm/uniform.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework/test/stream.hpp"
 
 
 namespace detail {
@@ -30,19 +32,34 @@ void test_array()
     // whether
     // - All cells in these arrays are >= min_value
     // - All cells in these arrays are < max_value
-    // - All cells in these arrays are different
+    // (- All cells in these arrays are different)
 
     lue::uniform(array1, min_value, max_value).wait();
 
     // min_value <= array1 < max_value
     BOOST_CHECK(lue::all(lue::greater_equal(array1, min_value)).get());
-    BOOST_CHECK(lue::all(lue::less(array1, max_value)).get());
+
+    if constexpr(std::is_floating_point_v<Element>) {
+        BOOST_CHECK(lue::all(lue::less(array1, max_value)).get());
+    }
+    else if constexpr(std::is_integral_v<Element>) {
+        std::cout << array1 << std::endl;
+        std::cout << lue::less_equal(array1, max_value) << std::endl;
+        std::cout << lue::all(lue::less_equal(array1, max_value)).get() << std::endl;
+        BOOST_CHECK(lue::all(lue::less_equal(array1, max_value)).get());
+    }
 
     lue::uniform(array2, min_value, max_value).wait();
 
     // min_value <= array2 < max_value
     BOOST_CHECK(lue::all(lue::greater_equal(array2, min_value)).get());
-    BOOST_CHECK(lue::all(lue::less(array2, max_value)).get());
+
+    if constexpr(std::is_floating_point_v<Element>) {
+        BOOST_CHECK(lue::all(lue::less(array2, max_value)).get());
+    }
+    else if constexpr(std::is_integral_v<Element>) {
+        BOOST_CHECK(lue::all(lue::less_equal(array2, max_value)).get());
+    }
 }
 
 }  // namespace detail

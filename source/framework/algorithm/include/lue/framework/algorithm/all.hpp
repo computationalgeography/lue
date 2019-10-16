@@ -23,44 +23,32 @@ Partition all_partition(
 
     using Shape = ShapeT<Partition>;
 
-    hpx::shared_future<InputData> partition_data =
-        partition.data(CopyMode::share);
-
     // Aggregate nD array partition to nD array partition containing a
     // single value
     Shape shape;
     std::fill(shape.begin(), shape.end(), 1);
 
-    hpx::future<OutputData> all = partition_data.then(
+    return hpx::dataflow(
+        hpx::launch::async,
         hpx::util::unwrapping(
+
             [shape](
-                InputData const& partition_data)
+                hpx::id_type const locality_id,
+                InputData&& partition_data)
             {
                 // TODO Update for case where Element is not bool
-                Element result = std::find(
+                // If one of the elements evaluates to false, then the result
+                // is false
+                Element result = !(std::find(
                     partition_data.begin(), partition_data.end(),
-                    Element{1}) != partition_data.end();
+                    Element{0}) != partition_data.end());
 
-                return OutputData{shape, result};
+                return Partition{locality_id, OutputData{shape, result}};
             }
-        )
-    );
 
-    // Once the result has been calculated, create a component containing
-    // the result, on the same locality as the summed partition
-    return hpx::when_all(hpx::get_colocation_id(partition.get_id()), all)
-        .then(
-            hpx::util::unwrapping(
-                [](
-                    auto&& futures)
-                {
-                    auto const locality_id = hpx::util::get<0>(futures).get();
-                    auto&& data = hpx::util::get<1>(futures).get();
-
-                    return Partition{locality_id, std::move(data)};
-                }
-            )
-        );
+        ),
+        hpx::get_colocation_id(partition.get_id()),
+        partition.data(CopyMode::share));
 }
 
 }  // namespace detail
@@ -91,7 +79,7 @@ template<
     std::size_t rank,
     template<typename, std::size_t> typename Array>
 hpx::future<Element> all(
-    Array<Element, rank> const& array)
+    Array<Element, rank>const& array)
 {
     static_assert(std::is_convertible_v<Element, bool>);
 
@@ -105,22 +93,21 @@ hpx::future<Element> all(
 
     for(std::size_t p = 0; p < nr_partitions(array); ++p) {
 
-        InputPartition const& partition = array.partitions()[p];
+        output_partitions[p] = hpx::dataflow(
+            hpx::launch::async,
+            hpx::util::unwrapping(
 
-        output_partitions[p] =
-            hpx::get_colocation_id(partition.get_id()).then(
-                hpx::util::unwrapping(
-                    [=](
-                        hpx::id_type const locality_id)
-                    {
-                        return hpx::dataflow(
-                            hpx::launch::async,
-                            action,
-                            locality_id,
-                            partition);
-                    }
-                )
-            );
+                [action](
+                    hpx::id_type const component_id)
+                {
+                    return action(
+                        hpx::get_colocation_id(
+                            hpx::launch::sync, component_id),
+                        InputPartition{component_id});
+                }
+
+            ),
+            array.partitions()[p]);
 
     }
 
@@ -129,8 +116,9 @@ hpx::future<Element> all(
     // once the partition results are ready. This continuation runs on
     // our locality.
     return hpx::when_all(
-            output_partitions.begin(), output_partitions.end()).then(
-        hpx::util::unwrapping(
+        output_partitions.begin(), output_partitions.end()).then(
+                hpx::util::unwrapping(
+
             [](auto const& partitions) {
 
                 Element result{0};
@@ -141,7 +129,9 @@ hpx::future<Element> all(
                     assert(data.size() == 1);
                     result = data[0];
 
-                    if(result) {
+                    // If one of the elements evaluates to false, then
+                    // the result is false
+                    if(!result) {
                         // Short-circuit
                         break;
                     }
@@ -150,8 +140,8 @@ hpx::future<Element> all(
 
                 return result;
             }
-        )
-    );
+
+        ));
 }
 
 }  // namespace lue

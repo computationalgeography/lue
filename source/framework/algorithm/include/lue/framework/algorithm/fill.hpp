@@ -23,7 +23,7 @@ template<
     template<typename, std::size_t> typename Array>
 [[nodiscard]] hpx::future<void> fill(
     Array<Element, rank>& array,
-    hpx::shared_future<Element>& fill_value)
+    hpx::shared_future<Element> const& fill_value)
 {
     using Array_ = Array<Element, rank>;
     using Partition = PartitionT<Array_>;
@@ -34,20 +34,15 @@ template<
 
     for(std::size_t p = 0; p < nr_partitions(array); ++p) {
 
-        Partition& partition = array.partitions()[p];
-
         fill_partitions[p] = hpx::dataflow(
             hpx::launch::async,
             hpx::util::unwrapping(action),
-            partition.get_id(),
-            fill_value
-        );
+            array.partitions()[p],
+            fill_value);
 
     }
 
-    // when_all takes an r-value reference. Why don't we have to move
-    // the vector of futures in here?
-    return hpx::when_all(fill_partitions);
+    return hpx::when_all(std::move(fill_partitions));
 }
 
 }  // namespace lue

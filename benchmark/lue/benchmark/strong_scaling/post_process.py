@@ -82,6 +82,13 @@ def benchmark_meta_to_lue_json(
                                     "value": [experiment.description]
                                 },
                                 {
+                                    "name": "nr_time_steps",
+                                    "shape_per_object": "same_shape",
+                                    "value_variability": "constant",
+                                    "datatype": "uint64",
+                                    "value": [experiment.nr_time_steps]
+                                },
+                                {
                                     "name": "array_shape",
                                     "shape_per_object": "same_shape",
                                     "value_variability": "constant",
@@ -136,6 +143,10 @@ def read_performance_counters(
     # assert np.all(array >= 0)
     # assert np.all(array % 1 == 0)
     # array = array.astype(np.uint64)
+
+    # Idle-rates are reported as 0.01%. Convert them to percentages.
+    if "idle-rate" in counter_pathname:
+        array /= 100
 
     return field_names, array
 
@@ -324,6 +335,7 @@ def meta_information_dataframe(
     name = lue_meta_information.properties["name"].value[:]
     system_name = lue_meta_information.properties["system_name"].value[:]
     worker_type = lue_meta_information.properties["worker_type"].value[:]
+    nr_time_steps = lue_meta_information.properties["nr_time_steps"].value[:]
 
     array_shape = lue_meta_information.properties["array_shape"].value[:]
     assert len(array_shape) == 1
@@ -337,6 +349,7 @@ def meta_information_dataframe(
             "name": name,
             "system_name": system_name,
             "worker_type": worker_type,
+            "nr_time_steps": nr_time_steps,
         })
     array_shape = pd.DataFrame(
         array_shape,
@@ -396,6 +409,7 @@ def post_process_raw_results(
     name = meta_information.name[0]
     system_name = meta_information.system_name[0]
     worker_type = meta_information.worker_type[0]
+    nr_time_steps = meta_information.nr_time_steps[0]
 
     nr_arrays, rank = \
         lue_meta_information.properties["array_shape"].value.shape
@@ -455,15 +469,18 @@ def post_process_raw_results(
         measurement["serial_efficiency_{}".format(i)] = 100 * \
             measurement["serial_relative_speed_up_{}".format(i)] / nr_workers
 
-        # lups = nr_elements / duration
+        # lups = nr_time_steps * nr_elements / duration
         # In the case of strong scaling, the nr_elements is
         # constant. Ideally, LUPS increases linearly with the nr_workers.
         measurement["lups_{}".format(i)] = \
-            nr_elements / measurement["duration_{}".format(i)]
+            nr_time_steps * nr_elements / \
+            measurement["duration_{}".format(i)]
         measurement["linear_lups_{}".format(i)] = \
-            nr_elements / measurement["linear_duration_{}".format(i)]
+            nr_time_steps * nr_elements / \
+            measurement["linear_duration_{}".format(i)]
         measurement["serial_lups_{}".format(i)] = \
-            nr_elements / measurement["serial_duration_{}".format(i)]
+            nr_time_steps * nr_elements / \
+            measurement["serial_duration_{}".format(i)]
 
 
     # https://xkcd.com/color/rgb/
@@ -503,9 +520,9 @@ def post_process_raw_results(
     axes[plot_row, plot_col].set_ylabel(
         u"duration ({}) ± 95% ci (count={})".format(
             time_point_units, count))
-    axes[plot_row, plot_col].yaxis.set_major_formatter(
-        ticker.FuncFormatter(
-            lambda y, pos: format_duration(y)))
+    # axes[plot_row, plot_col].yaxis.set_major_formatter(
+    #     ticker.FuncFormatter(
+    #         lambda y, pos: format_duration(y)))
 
     plot_row, plot_col = 0, 1
 
@@ -577,11 +594,11 @@ def post_process_raw_results(
 
     for plot_row in range(nr_plot_rows):
         for plot_col in range(nr_plot_cols):
-            axes[plot_row, plot_col].xaxis.set_major_formatter(
-                ticker.FuncFormatter(
-                    lambda x, pos: format_nr_workers(x)))
+            # axes[plot_row, plot_col].xaxis.set_major_formatter(
+            #     ticker.FuncFormatter(
+            #         lambda x, pos: format_nr_workers(x)))
             axes[plot_row, plot_col].set_xlabel(
-                "nr_workers ({})".format(worker_type))
+                "workers ({})".format(worker_type))
             axes[plot_row, plot_col].grid()
 
     figure.legend(labels=["linear", "serial", "actual"])
@@ -923,7 +940,7 @@ def plot_performance_counters(
         figure, axes = plt.subplots(
                 nrows=nr_plots, ncols=1,
                 figsize=(15, 5 * nr_plots),
-                squeeze=False, sharex=True
+                squeeze=False, sharex=False
             )  # Inches...
 
         for p in range(nr_plots):
@@ -937,14 +954,14 @@ def plot_performance_counters(
             axes[p, 0].set_ylabel(counter_group.name)
             axes[p, 0].grid()
             axes[p, 0].set_title(counter_group.name)
+            axes[p, 0].set_xlabel(
+                "interval (x {} milliseconds)".format("todo"))
             axes[p, 0].set_ylim(*counter_group.ylim)
 
             if len(counter_group) <= 10:
                 axes[p, 0].legend(
                     labels=[
                         counter.label for counter in counter_group.counters])
-
-        axes[-1, 0].set_xlabel("interval (x {} milliseconds)".format("todo"))
 
         # plt.tight_layout()
         plt.savefig(plot_pathname)
