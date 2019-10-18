@@ -26,6 +26,8 @@ public:
 
     using ConstIterator = typename Elements::const_iterator;
 
+                   Array               ()=default;
+
                    Array               (Shape const& shape);
 
                    Array               (Shape const& shape,
@@ -55,6 +57,8 @@ public:
     ConstIterator  end                 () const;
 
 protected:
+
+    Element const* data                () const;
 
     Element*       data                ();
 
@@ -133,6 +137,15 @@ typename Array<Element, rank>::ConstIterator Array<Element, rank>::end() const
 template<
     typename Element,
     std::size_t rank>
+Element const* Array<Element, rank>::data() const
+{
+    return _elements.data();
+}
+
+
+template<
+    typename Element,
+    std::size_t rank>
 Element* Array<Element, rank>::data()
 {
     return _elements.data();
@@ -163,7 +176,7 @@ template<
     typename Element,
     std::size_t rank>
 Element const* Array<Element, rank>::operator[](
-    std::size_t idx) const
+    std::size_t const idx) const
 {
     return this->data() + idx;
 }
@@ -173,7 +186,7 @@ template<
     typename Element,
     std::size_t rank>
 Element* Array<Element, rank>::operator[](
-    std::size_t idx)
+    std::size_t const idx)
 {
     return this->data() + idx;
 }
@@ -199,7 +212,7 @@ public:
 template<
     typename Element>
 Element const& Array<Element, 1>::operator[](
-    std::size_t idx) const
+    std::size_t const idx) const
 {
     return this->data()[idx];
 }
@@ -208,7 +221,7 @@ Element const& Array<Element, 1>::operator[](
 template<
     typename Element>
 Element& Array<Element, 1>::operator[](
-    std::size_t idx)
+    std::size_t const idx)
 {
     return this->data()[idx];
 }

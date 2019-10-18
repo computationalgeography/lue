@@ -79,82 +79,375 @@ namespace detail {
 //         the array partition
 
 
+// template<
+//     typename Array>
+// class ConvolveVisitor:
+//     public ConstPartitionVisitor<PartitionsT<Array>>
+// {
+// 
+//     // - Determine type of output partitions and create collection
+//     // - During the visit, output partitions can be moved into the
+//     //   collection
+// 
+// private:
+// 
+//     using Partitions = PartitionsT<Array>;
+//     using Base = ConstPartitionVisitor<Partitions>;
+// 
+// public:
+// 
+//     ConvolveVisitor(
+//         Array const& array):
+// 
+//         Base{array.partitions()}
+// 
+//     {
+//     }
+// 
+//     void operator()()
+//     {
+//         // PartitionT<Partitions>& partition = this->partition();
+// 
+//         // ShapeT<Partitions> shrinked_partition_shape{partition.shape().get()};
+// 
+//         // auto const rank = Partitions::rank;
+// 
+//         // for(std::size_t i = 0; i < rank; ++i) {
+//         //     shrinked_partition_shape[i] =
+//         //         std::min(shrinked_partition_shape[i], _new_shape[i]);
+//         // }
+// 
+//         // // TODO Blocks current thread. Maybe wait in destructor?
+//         // partition.resize(shrinked_partition_shape).wait();
+//     }
+// 
+//     Array&& result() &&
+//     {
+//         // Move _result, but only when the type of this instance is an
+//         // r-value reference
+//         return std::move(_result);
+//     }
+// 
+// private:
+// 
+//     Array          _result;
+// 
+// };
+// 
+// 
+// template<
+//     typename Array,
+//     typename Kernel>
+// Array convolve(
+//     Array const& array,
+//     Kernel const& kernel)
+// {
+//     // TODO
+//     // - Add ResultElement template argument for type of result elements
+// 
+//     // For each nD focus cell, determine indices of neighboring cells
+//     // that are positioned within the array
+// 
+//     ConvolveVisitor visitor{array};
+// 
+//     // TODO Add overload visiting the whole array
+//     // visit_array(visitor);
+// 
+//     // return visitor.result();
+//     return std::move(visitor).result();
+// }
+
+
+// template<
+//     typename Array,
+//     typename Kernel>
+// Array convolve(
+//     Array const& array,
+//     Kernel const& kernel)
+// {
+// }
+
+
+
+
+
+
+
+// template<
+//     typename InputPartition,
+//     typename OutputPartition,
+//     typename Kernel>
+// using ConvolvePartitionAction1 =
+//     typename convolve::OverloadPicker1<
+//         InputPartition, OutputPartition, Kernel>::Action;
+
+
 template<
-    typename Array>
-class ConvolveVisitor:
-    public ConstPartitionVisitor<PartitionsT<Array>>
+    typename OutputElement,
+    typename InputElement,
+    typename Kernel>
+OutputElement convolve1(
+    InputElement const left,
+    InputElement const center,
+    InputElement const right,
+    Kernel const& kernel)
 {
+    static_assert(std::is_same_v<ElementT<Kernel>, bool>);
 
-    // - Determine type of output partitions and create collection
-    // - During the visit, output partitions can be moved into the
-    //   collection
+    assert(kernel.radius() == 1);
+    assert(kernel[0]);
+    assert(kernel[1]);
+    assert(kernel[2]);
 
-private:
+    return kernel[0] * left + kernel[1] * center + kernel[2] * right;
+}
 
-    using Partitions = PartitionsT<Array>;
-    using Base = ConstPartitionVisitor<Partitions>;
 
-public:
+template<
+    typename InputPartition,
+    typename OutputPartition,
+    typename Kernel>
+OutputPartition convolve_partition1(
+    InputPartition const& left_partition,
+    InputPartition const& center_partition,
+    InputPartition const& right_partition,
+    Kernel const& kernel)
+{
+    assert(
+        hpx::get_colocation_id(center_partition.get_id()).get() ==
+        hpx::find_here());
 
-    ConvolveVisitor(
-        Array const& array):
+    using InputData = DataT<InputPartition>;
+    using InputElement = ElementT<InputPartition>;
 
-        Base{array.partitions()}
+    using OutputData = DataT<OutputPartition>;
+    using OutputElement = ElementT<OutputPartition>;
 
-    {
-    }
+    auto convolve = convolve1<InputElement, OutputElement, Kernel>;
 
-    void operator()()
-    {
-        // PartitionT<Partitions>& partition = this->partition();
+    // When the focal cell is located on the first or last element of
+    // the new partition, radius number of cells are needed from the
+    // neighbording partitions. Asynchronously request them.
+    // TODO Copy only the required subset of cells, not all cells
+    auto left_data = left_partition.data(CopyMode::share);
+    auto right_data = right_partition.data(CopyMode::share);
 
-        // ShapeT<Partitions> shrinked_partition_shape{partition.shape().get()};
+    // Meanwhile, perform calculations for inner section of the new
+    // partition
+    hpx::shared_future<InputData> center_data =
+        center_partition.data(CopyMode::share);
 
-        // auto const rank = Partitions::rank;
+    auto new_partition = hpx::dataflow(
+        hpx::launch::async,
+        hpx::util::unwrapping(
 
-        // for(std::size_t i = 0; i < rank; ++i) {
-        //     shrinked_partition_shape[i] =
-        //         std::min(shrinked_partition_shape[i], _new_shape[i]);
-        // }
+            [convolve, kernel](
+                hpx::id_type const locality_id,
+                InputData const& input_data)
+            {
+                OutputData output_data{input_data.shape()};
 
-        // // TODO Blocks current thread. Maybe wait in destructor?
-        // partition.resize(shrinked_partition_shape).wait();
-    }
+                assert(kernel.radius() == 1);
 
-    Array&& result() &&
-    {
-        return std::move(_result);
-    }
+                for(std::size_t i = kernel.radius();
+                        i < input_data.size() - kernel.radius(); ++i) {
+                    output_data[i] = convolve(
+                        input_data[i-1], input_data[i], input_data[i+1], kernel);
+                }
 
-private:
+                return OutputPartition{locality_id, std::move(output_data)};
+            }
 
-    Array          _result;
+        ),
+        hpx::get_colocation_id(center_partition.get_id()),
+        center_data);
 
-};
+
+
+    // Once the elements from the neighboring partitions have arrived,
+    // finish by performing calculations for the sides of the new
+    // partition
+
+    return new_partition;
+
+    // return OutputPartition{hpx::find_here(), center_partition.shape().get()};
+}
+
+
+template<
+    typename InputPartition,
+    typename OutputPartition,
+    typename Kernel>
+struct ConvolvePartitionAction1:
+    hpx::actions::make_action<
+        decltype(&convolve_partition1<InputPartition, OutputPartition, Kernel>),
+        &convolve_partition1<InputPartition, OutputPartition, Kernel>,
+        ConvolvePartitionAction1<InputPartition, OutputPartition, Kernel>>
+{};
 
 
 template<
     typename Array,
-    typename Kernel>
-Array convolve(
+    typename Kernel,
+    typename OutputElement>
+PartitionedArrayT<Array, OutputElement> convolve_1d(
     Array const& array,
     Kernel const& kernel)
 {
-    // TODO
-    // - Add ResultElement template argument for type of result elements
+    static_assert(lue::rank<Array> == 1);
 
-    // For each nD focus cell, determine indices of neighboring cells
-    // that are positioned within the array
+    using InputArray = Array;
+    using InputPartition = PartitionT<InputArray>;
 
-    ConvolveVisitor visitor{array};
+    using OutputArray = PartitionedArrayT<Array, OutputElement>;
+    using OutputPartitions = PartitionsT<OutputArray>;
+    using OutputPartition = PartitionT<OutputArray>;
 
-    // TODO Add overload visiting the whole array
-    // visit_array(visitor);
+    ConvolvePartitionAction1<InputPartition, OutputPartition, Kernel> action;
+    OutputPartitions output_partitions{shape_in_partitions(array)};
 
-    return visitor.result();
+    // +---+---+---+---+---+
+    // | 1 | 1 | 1 | 1 | 1 |
+    // +---+---+---+---+---+
+
+    // *
+
+    // +------+------+------+
+    // | true | true | true |
+    // +------+------+------+
+
+    // =
+
+    // +---+---+---+---+---+
+    // | 2 | 3 | 3 | 3 | 2 |
+    // +---+---+---+---+---+
+
+    // - We assume that for all output elements in a partition a value
+    //     can be calculated based on the input partition containing
+    //     the focal element and the bordering partitions. This implies
+    //     that the size of each partition must be at least as large as
+    //     the kernel radius.
+
+    // Inner partitions: all partitions except for the first and last one
+    //     act(location, partition[-1], partition, partition[+1])
+
+    // Border partitions:
+    //     act(location, partition, partition[+1])
+    //     act(location, partition[-1], partition)
+
+    auto const nr_partitions = lue::nr_partitions(array);
+
+    if(nr_partitions == 1) {
+        // Pass in ghost partitions for left and right partition
+        // TODO
+    }
+    else if(nr_partitions >= 2) {
+
+        // Inner partitions
+        for(std::size_t p = 1; p < nr_partitions - 1; ++p) {
+
+            output_partitions[p] = hpx::dataflow(
+                hpx::launch::async,
+
+                [action, kernel](
+                    InputPartition const& left_partition,
+                    InputPartition const& center_partition,
+                    InputPartition const& right_partition)
+                {
+                    return action(
+                        hpx::get_colocation_id(
+                            hpx::launch::sync, center_partition.get_id()),
+                        left_partition,
+                        center_partition,
+                        right_partition,
+                        kernel);
+                },
+
+                array.partitions()[p-1],
+                array.partitions()[p],
+                array.partitions()[p+1]);
+
+        }
+
+        // First partition: pass in ghost partition for left partition
+        // TODO
+
+        // Last partition: pass in ghost partition for right partition
+        // TODO
+
+    }
+
+    return OutputArray{shape(array), std::move(output_partitions)};
 }
 
+
+template<
+    typename Array,
+    typename Kernel,
+    typename OutputElement>
+PartitionedArrayT<Array, OutputElement> convolve_2d(
+    Array const& array,
+    Kernel const& kernel)
+{
+    using OutputArray = PartitionedArrayT<Array, OutputElement>;
+
+    static_assert(lue::rank<Array> == 2);
+
+
+
+    return OutputArray{array.shape()};
+}
+
+
+template<
+    typename Array,
+    typename Kernel,
+    typename OutputElement>
+class Convolution
+{
+
+    using OutputArray = PartitionedArrayT<Array, OutputElement>;
+
+    static constexpr std::size_t rank = lue::rank<Array>;
+
+    static_assert(rank == 1 || rank == 2);
+
+public:
+
+    Convolution(
+            Array const& array,
+            Kernel const& kernel):
+
+        _array{array},
+        _kernel{kernel}
+
+    {
+    }
+
+    OutputArray operator()() const
+    {
+        if constexpr(rank == 1) {
+            return convolve_1d<Array, Kernel, OutputElement>(_array, _kernel);
+        }
+        else if constexpr(rank == 2) {
+            return convolve_2d<Array, Kernel, OutputElement>(_array, _kernel);
+        }
+    }
+
+private:
+
+    Array const&   _array;
+
+    Kernel const&  _kernel;
+
+};
+
+
+
+
+
 }  // namespace detail
+
 
 /*
     Image Processing using 2D Convolution:
@@ -229,11 +522,22 @@ Array convolve(
 */
 template<
     typename Array,
-    typename Kernel>
-Array convolve(
+    typename Kernel,
+    typename OutputElement=double>
+PartitionedArrayT<Array, OutputElement> convolve(
     Array const& array,
     Kernel const& kernel)
 {
+    detail::Convolution<Array, Kernel, OutputElement> convolution{
+        array, kernel};
+
+    return convolution();
+
+    // convolution.start();
+
+    // return std::move(convolution).result();
+}
+
 
     // Convolve algorithm
     // - Split tasks based on whether cells are located at the borders /
@@ -256,7 +560,7 @@ Array convolve(
     // A channels can be named
 
     // How to keep track of channels when the same algorithm may be
-    // called multiple time?
+    // called multiple times?
 
 
     // Upon creation, each component can have a channel associated
@@ -296,12 +600,15 @@ Array convolve(
     // partitions and have an API to get at values. This limits the
     // asynchronous nature of things, though.
 
+
+
+
+
     // stencil_7(285):
     // - A function receiving all partitions relevant for completely
     //   calculating the inner partition
     //   - The border partitions only contain the cells needed for
     //     the calculations
-
 
     // Plan: similar to stencil_7 and see where it goes. Generalize to
     //     nD arrays.
@@ -341,9 +648,7 @@ Array convolve(
     // return OutputArray{shape(array), std::move(output_partitions)};
 
 
-    return detail::convolve(array, kernel);
-
-
+    // return detail::convolve(array, kernel);
 
 
     // // For each partition in the array, determine the locality it is
@@ -387,6 +692,41 @@ Array convolve(
     // }
 
     // return OutputArray{shape(array), std::move(output_partitions)};
-}
+
+
+
+    // Iterate over all partitions and call action that calculates the
+    // result for each partition. This action must receive the focus
+    // partition, and the partitions surrounding it.
+
+
+    // -------------------------------------------------------------------------
+    // Inner partitions:
+
+    // 1D: act(locality_id,
+    //     left_partition, focus_partition, right_partition
+    // );
+
+    // 2D: act(locality_id,
+    //     top_left_partition, top_partition, top_right_partition,
+    //         left_partition, focus_partition, right_partition,
+    //     bottom_left_partition, bottom_partition, bottom_right_partition
+    // );
+
+    // 3D: act(locality_id,
+    //     ...
+    // );
+
+
+    // -------------------------------------------------------------------------
+    // Corner partitions:
+
+
+    // -------------------------------------------------------------------------
+    // Border partitions:
+
+    // return detail::convolve(array, kernel);
+
+
 
 }  // namespace lue

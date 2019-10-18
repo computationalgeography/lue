@@ -2,7 +2,7 @@
 #include "lue/framework/core/shape.hpp"
 #include "lue/framework/core/serialize/shared_buffer.hpp"
 #include "lue/framework/core/type_traits.hpp"
-#include <hpx/runtime/serialization/serialize.hpp>
+// #include <hpx/runtime/serialization/serialize.hpp>
 // #ifndef NDEBUG
 //     #define BOOST_DISABLE_ASSERTS
 // #endif

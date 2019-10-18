@@ -21,10 +21,14 @@ public:
 
     using Shape = typename Base::Shape;
 
+                   Kernel              ()=default;
+
                    Kernel              (Shape const& shape);
 
                    Kernel              (Shape const& shape,
                                         Weight weight);
+
+                   Kernel              (Array<Weight, rank> const& weights);
 
                    Kernel              (Kernel const&)=default;
 
@@ -40,7 +44,7 @@ public:
 
 private:
 
-    std::size_t const _radius;
+    std::size_t    _radius;
 
 };
 
@@ -81,6 +85,22 @@ Kernel<Weight, rank>::Kernel(
 template<
     typename Weight,
     std::size_t rank>
+Kernel<Weight, rank>::Kernel(
+    Array<Weight, rank> const& weights):
+
+    Base{weights},
+    _radius{(this->shape()[0] - 1) / 2}
+
+{
+    assert(nr_elements(this->shape()) > 0);
+    assert(2 * _radius + 1 == this->shape()[0]);
+    assert(is_hypercube(this->shape()));
+}
+
+
+template<
+    typename Weight,
+    std::size_t rank>
 std::size_t Kernel<Weight, rank>::radius() const
 {
     return _radius;
@@ -90,7 +110,7 @@ std::size_t Kernel<Weight, rank>::radius() const
 template<
     typename Weight,
     std::size_t rank>
-Kernel<Weight, rank> square_kernel(
+Kernel<Weight, rank> box_kernel(
     std::size_t const radius,
     Weight const value)
 {
