@@ -8,7 +8,6 @@
 #include "lue/framework/algorithm/uniform.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
-#include "lue/framework/test/stream.hpp"
 
 
 namespace detail {
@@ -43,9 +42,6 @@ void test_array()
         BOOST_CHECK(lue::all(lue::less(array1, max_value)).get());
     }
     else if constexpr(std::is_integral_v<Element>) {
-        std::cout << array1 << std::endl;
-        std::cout << lue::less_equal(array1, max_value) << std::endl;
-        std::cout << lue::all(lue::less_equal(array1, max_value)).get() << std::endl;
         BOOST_CHECK(lue::all(lue::less_equal(array1, max_value)).get());
     }
 
