@@ -95,18 +95,16 @@ hpx::future<Element> none(
 
         output_partitions[p] = hpx::dataflow(
             hpx::launch::async,
-            hpx::util::unwrapping(
 
-                [action](
-                    hpx::id_type const component_id)
-                {
-                    return action(
-                        hpx::get_colocation_id(
-                            hpx::launch::sync, component_id),
-                        InputPartition{component_id});
-                }
+            [action](
+                InputPartition const& input_partition)
+            {
+                return action(
+                    hpx::get_colocation_id(
+                        hpx::launch::sync, input_partition.get_id()),
+                    input_partition);
+            },
 
-            ),
             array.partitions()[p]);
 
     }

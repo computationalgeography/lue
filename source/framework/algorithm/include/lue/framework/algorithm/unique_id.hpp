@@ -100,7 +100,7 @@ template<
     //     assigning values to all cells
 
     using Array_ = Array<Element, rank>;
-    using Partition = PartitionT<Array_>;
+    using InputPartition = PartitionT<Array_>;
 
     auto const nr_partitions = lue::nr_partitions(array);
 
@@ -108,16 +108,16 @@ template<
 
     // FIXME make all of this asynchronous
 
-    UniqueIDPartitionAction<Partition> action;
+    UniqueIDPartitionAction<InputPartition> action;
 
-    std::vector<hpx::future<typename Partition::Size>>
+    std::vector<hpx::future<typename InputPartition::Size>>
         partition_sizes(nr_partitions);
 
     {
         // Request the sizes of all partitions and wait until they are
         // available
         for(std::size_t p = 0; p < nr_partitions; ++p) {
-            Partition& partition = array.partitions()[p];
+            InputPartition& partition = array.partitions()[p];
             partition_sizes[p] = partition.size();
         }
 
@@ -128,23 +128,40 @@ template<
 
     for(std::size_t p = 0; p < nr_partitions; ++p) {
 
-        Partition& partition = array.partitions()[p];
+        unique_id_partitions[p] = hpx::dataflow(
+            hpx::launch::async,
 
-        unique_id_partitions[p] =
-            hpx::get_colocation_id(partition.get_id()).then(
-                hpx::util::unwrapping(
-                    [=](
-                        hpx::id_type const locality_id)
-                    {
-                        return hpx::dataflow(
-                            hpx::launch::async,
-                            action,
-                            locality_id,
-                            partition,
-                            start_value);
-                    }
-                )
-            );
+            [action, start_value](
+                InputPartition const& input_partition)
+            {
+                return action(
+                    hpx::get_colocation_id(
+                        hpx::launch::sync, input_partition.get_id()),
+                    input_partition,
+                    start_value);
+            },
+
+            array.partitions()[p]);
+
+
+
+        // InputPartition& partition = array.partitions()[p];
+
+        // unique_id_partitions[p] =
+        //     hpx::get_colocation_id(partition.get_id()).then(
+        //         hpx::util::unwrapping(
+        //             [=](
+        //                 hpx::id_type const locality_id)
+        //             {
+        //                 return hpx::dataflow(
+        //                     hpx::launch::async,
+        //                     action,
+        //                     locality_id,
+        //                     partition,
+        //                     start_value);
+        //             }
+        //         )
+        //     );
 
         start_value += partition_sizes[p].get();
     }

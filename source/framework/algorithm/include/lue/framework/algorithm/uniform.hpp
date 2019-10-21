@@ -145,21 +145,19 @@ template<
 
         futures[p] = hpx::dataflow(
             hpx::launch::async,
-            hpx::util::unwrapping(
 
-                [action](
-                    hpx::id_type const component_id,
-                    Element const min_value,
-                    Element const max_value)
-                {
-                    return action(
-                        hpx::get_colocation_id(
-                            hpx::launch::sync, component_id),
-                        Partition{component_id},
-                        min_value, max_value);
-                }
+            [action](
+                Partition const& input_partition,
+                hpx::shared_future<Element> const& min_value,
+                hpx::shared_future<Element> const& max_value)
+            {
+                return action(
+                    hpx::get_colocation_id(
+                        hpx::launch::sync, input_partition.get_id()),
+                    input_partition,
+                    min_value.get(), max_value.get());
+            },
 
-            ),
             array.partitions()[p],
             min_value,
             max_value);

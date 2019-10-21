@@ -128,20 +128,19 @@ Array<Element, rank> add(
 
         output_partitions[p] = hpx::dataflow(
             hpx::launch::async,
-            hpx::util::unwrapping(
 
-                [action](
-                    hpx::id_type const component1_id,
-                    hpx::id_type const component2_id)
-                {
-                    return action(
-                        hpx::get_colocation_id(
-                            hpx::launch::sync, component1_id),
-                        InputPartition{component1_id},
-                        InputPartition{component2_id});
-                }
+            [action](
+                InputPartition const& input_partition1,
+                InputPartition const& input_partition2)
 
-            ),
+            {
+                return action(
+                    hpx::get_colocation_id(
+                        hpx::launch::sync, input_partition1.get_id()),
+                    input_partition1,
+                    input_partition2);
+            },
+
             array1.partitions()[p],
             array2.partitions()[p]);
 
