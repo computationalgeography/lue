@@ -21,6 +21,12 @@ documentation yourself while building LUE (see below).
 [![Linux build Status](https://travis-ci.org/pcraster/lue.svg?branch=master)](https://travis-ci.org/pcraster/lue) [![Windows build Status](https://ci.appveyor.com/api/projects/status/8qpm4qi44ctbfb7k/branch/master?svg=true)](https://ci.appveyor.com/project/kordejong/lue) [![Documentation Status](https://readthedocs.org/projects/docs/badge/)](https://lue.readthedocs.io/en/latest)
 
 
+## Publications
+- de Jong, K., Karssenberg, D., A physical data model for spatio-temporal
+objects, Environmental Modelling and Software (2019), doi:
+https://doi.org/10.1016/j.envsoft.2019.104553.
+
+
 ## Installation
 Here, we describe how to configure, build and install the LUE
 targets using CMake. The LUE source code can be obtained from the [LUE
