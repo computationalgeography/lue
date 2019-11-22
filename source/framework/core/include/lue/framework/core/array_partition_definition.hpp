@@ -5,14 +5,12 @@
 namespace lue {
 
 template<
-    typename Index_,
-    std::size_t rank>
+    typename Index,
+    Rank rank>
 class ArrayPartitionDefinition
 {
 
 public:
-
-    using Index = Index_;
 
     using Start = lue::Shape<Index, rank>;
 
@@ -52,7 +50,7 @@ public:
 
     Shape&         shape               ();
 
-    Index          nr_elements         () const;
+    Count          nr_elements         () const;
 
 private:
 
@@ -65,7 +63,7 @@ private:
 
 template<
     typename Index,
-    std::size_t rank>
+    Rank rank>
 inline ArrayPartitionDefinition<Index, rank>::ArrayPartitionDefinition():
 
     _start{},
@@ -77,7 +75,7 @@ inline ArrayPartitionDefinition<Index, rank>::ArrayPartitionDefinition():
 
 template<
     typename Index,
-    std::size_t rank>
+    Rank rank>
 inline ArrayPartitionDefinition<Index, rank>::ArrayPartitionDefinition(
     Shape const& shape):
 
@@ -90,7 +88,7 @@ inline ArrayPartitionDefinition<Index, rank>::ArrayPartitionDefinition(
 
 template<
     typename Index,
-    std::size_t rank>
+    Rank rank>
 inline ArrayPartitionDefinition<Index, rank>::ArrayPartitionDefinition(
     Start const& start,
     Shape const& shape):
@@ -104,7 +102,7 @@ inline ArrayPartitionDefinition<Index, rank>::ArrayPartitionDefinition(
 
 template<
     typename Index,
-    std::size_t rank>
+    Rank rank>
 inline bool ArrayPartitionDefinition<Index, rank>::operator==(
     ArrayPartitionDefinition const& other) const
 {
@@ -114,7 +112,7 @@ inline bool ArrayPartitionDefinition<Index, rank>::operator==(
 
 template<
     typename Index,
-    std::size_t rank>
+    Rank rank>
 inline typename ArrayPartitionDefinition<Index, rank>::Start const&
     ArrayPartitionDefinition<Index, rank>::start() const
 {
@@ -124,7 +122,7 @@ inline typename ArrayPartitionDefinition<Index, rank>::Start const&
 
 template<
     typename Index,
-    std::size_t rank>
+    Rank rank>
 inline typename ArrayPartitionDefinition<Index, rank>::Start&
     ArrayPartitionDefinition<Index, rank>::start()
 {
@@ -134,7 +132,7 @@ inline typename ArrayPartitionDefinition<Index, rank>::Start&
 
 template<
     typename Index,
-    std::size_t rank>
+    Rank rank>
 inline typename ArrayPartitionDefinition<Index, rank>::Shape const&
     ArrayPartitionDefinition<Index, rank>::shape() const
 {
@@ -144,7 +142,7 @@ inline typename ArrayPartitionDefinition<Index, rank>::Shape const&
 
 template<
     typename Index,
-    std::size_t rank>
+    Rank rank>
 inline typename ArrayPartitionDefinition<Index, rank>::Shape&
     ArrayPartitionDefinition<Index, rank>::shape()
 {
@@ -154,8 +152,8 @@ inline typename ArrayPartitionDefinition<Index, rank>::Shape&
 
 template<
     typename Index,
-    std::size_t rank>
-inline Index ArrayPartitionDefinition<Index, rank>::nr_elements() const
+    Rank rank>
+inline Count ArrayPartitionDefinition<Index, rank>::nr_elements() const
 {
     return lue::nr_elements(_shape);
 }

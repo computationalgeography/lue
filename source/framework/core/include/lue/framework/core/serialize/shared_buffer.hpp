@@ -16,7 +16,7 @@ void serialize(
     using Buffer = lue::SharedBuffer<Element>;
     using Array = hpx::serialization::array<Element>;
 
-    typename Buffer::Count size;
+    typename Buffer::Size size;
     archive & size;
 
     buffer.resize(size);
@@ -36,7 +36,7 @@ void serialize(
     using Buffer = lue::SharedBuffer<Element>;
     using Array = hpx::serialization::array<Element const>;
 
-    typename Buffer::Count const size = buffer.size();
+    typename Buffer::Size const size = buffer.size();
     Array array = hpx::serialization::make_array(buffer.begin(), size);
 
     archive & size & array;

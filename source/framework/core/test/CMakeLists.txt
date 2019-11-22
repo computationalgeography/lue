@@ -9,6 +9,7 @@ add_unit_tests(
         math_test
         shared_buffer_test
         shape_test
+        span_test
     LINK_LIBRARIES
         lue::framework_core
         lue::framework_test

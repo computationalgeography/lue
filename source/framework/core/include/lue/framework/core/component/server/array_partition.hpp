@@ -12,7 +12,7 @@ namespace server {
 */
 template<
     typename Element,
-    std::size_t rank>
+    Rank rank>
 class ArrayPartition:
     public hpx::components::locking_hook<
         hpx::components::component_base<ArrayPartition<Element, rank>>>
@@ -29,8 +29,6 @@ public:
     using Data = ArrayPartitionData<Element, rank>;
 
     using Shape = typename Data::Shape;
-
-    using Size = typename Data::Size;
 
                    ArrayPartition      ();
 
@@ -62,9 +60,9 @@ public:
 
     Shape          shape               () const;
 
-    void           resize              (Shape const& shape);
+    void           reshape             (Shape const& shape);
 
-    Size           size                () const;
+    Count          nr_elements         () const;
 
 private:
 
@@ -78,8 +76,8 @@ public:
     HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, fill, FillAction);
     HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, set_data, SetDataAction);
     HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, shape, ShapeAction);
-    HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, resize, ResizeAction);
-    HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, size, SizeAction);
+    HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, reshape, ReshapeAction);
+    HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, nr_elements, NrElementsAction);
 
 };
 
@@ -117,12 +115,12 @@ HPX_REGISTER_ACTION_DECLARATION(                                       \
     ArrayPartition_##Element##_##rank##_ShapeAction)                   \
                                                                        \
 HPX_REGISTER_ACTION_DECLARATION(                                       \
-    lue::detail::ArrayPartition_##Element##_##rank::ResizeAction,      \
-    ArrayPartition_##Element##_##rank##_ResizeAction)                  \
+    lue::detail::ArrayPartition_##Element##_##rank::ReshapeAction,     \
+    ArrayPartition_##Element##_##rank##_ReshapeAction)                 \
                                                                        \
 HPX_REGISTER_ACTION_DECLARATION(                                       \
-    lue::detail::ArrayPartition_##Element##_##rank::SizeAction,        \
-    ArrayPartition_##Element##_##rank##_SizeAction)
+    lue::detail::ArrayPartition_##Element##_##rank::NrElementsAction,  \
+    ArrayPartition_##Element##_##rank##_NrElementsAction)
 
 #define LUE_REGISTER_ARRAY_PARTITIONS_ACTION_DECLARATIONS(    \
     Element)                                                  \
@@ -148,7 +146,7 @@ namespace lue {                                                        \
                                                                        \
 template<                                                              \
     typename Element,                                                  \
-    std::size_t rank>                                                  \
+    Rank rank>                                                         \
 class ArrayPartition##name##Action                                     \
 {                                                                      \
                                                                        \
@@ -165,8 +163,8 @@ LUE_DEFINE_ARRAY_PARTITION_COMPONENT_ACTION_TEMPLATE(Data)
 LUE_DEFINE_ARRAY_PARTITION_COMPONENT_ACTION_TEMPLATE(Fill)
 LUE_DEFINE_ARRAY_PARTITION_COMPONENT_ACTION_TEMPLATE(SetData)
 LUE_DEFINE_ARRAY_PARTITION_COMPONENT_ACTION_TEMPLATE(Shape)
-LUE_DEFINE_ARRAY_PARTITION_COMPONENT_ACTION_TEMPLATE(Resize)
-LUE_DEFINE_ARRAY_PARTITION_COMPONENT_ACTION_TEMPLATE(Size)
+LUE_DEFINE_ARRAY_PARTITION_COMPONENT_ACTION_TEMPLATE(Reshape)
+LUE_DEFINE_ARRAY_PARTITION_COMPONENT_ACTION_TEMPLATE(NrElements)
 
 #undef LUE_DEFINE_ARRAY_PARTITION_COMPONENT_ACTION_TEMPLATE
 
@@ -176,7 +174,7 @@ namespace server {
 
 template<
     typename Element,
-    std::size_t rank>
+    Rank rank>
 ArrayPartition<Element, rank>::ArrayPartition():
 
     Base{},
@@ -195,7 +193,7 @@ ArrayPartition<Element, rank>::ArrayPartition():
 */
 template<
     typename Element,
-    std::size_t rank>
+    Rank rank>
 ArrayPartition<Element, rank>::ArrayPartition(
     Shape const& shape):
 
@@ -215,7 +213,7 @@ ArrayPartition<Element, rank>::ArrayPartition(
 */
 template<
     typename Element,
-    std::size_t rank>
+    Rank rank>
 ArrayPartition<Element, rank>::ArrayPartition(
     Shape const& shape,
     Element value):
@@ -237,7 +235,7 @@ ArrayPartition<Element, rank>::ArrayPartition(
 */
 template<
     typename Element,
-    std::size_t rank>
+    Rank rank>
 ArrayPartition<Element, rank>::ArrayPartition(
     Data const& data):
 
@@ -255,7 +253,7 @@ ArrayPartition<Element, rank>::ArrayPartition(
 */
 template<
     typename Element,
-    std::size_t rank>
+    Rank rank>
 ArrayPartition<Element, rank>::ArrayPartition(
     Data&& data):
 
@@ -268,7 +266,7 @@ ArrayPartition<Element, rank>::ArrayPartition(
 
 template<
     typename Element,
-    std::size_t rank>
+    Rank rank>
 ArrayPartition<Element, rank>::ArrayPartition(
     ArrayPartition const& other):
 
@@ -281,7 +279,7 @@ ArrayPartition<Element, rank>::ArrayPartition(
 
 template<
     typename Element,
-    std::size_t rank>
+    Rank rank>
 ArrayPartition<Element, rank>::ArrayPartition(
     ArrayPartition&& other):
 
@@ -297,7 +295,7 @@ ArrayPartition<Element, rank>::ArrayPartition(
 */
 template<
     typename Element,
-    std::size_t rank>
+    Rank rank>
 typename ArrayPartition<Element, rank>::Data
     ArrayPartition<Element, rank>::data(
         CopyMode const mode) const
@@ -313,7 +311,7 @@ typename ArrayPartition<Element, rank>::Data
 
 template<
     typename Element,
-    std::size_t rank>
+    Rank rank>
 void ArrayPartition<Element, rank>::fill(
     Element value)
 {
@@ -323,7 +321,7 @@ void ArrayPartition<Element, rank>::fill(
 
 template<
     typename Element,
-    std::size_t rank>
+    Rank rank>
 void ArrayPartition<Element, rank>::set_data(
     Data const& data,
     CopyMode const mode)
@@ -339,7 +337,7 @@ void ArrayPartition<Element, rank>::set_data(
 
 template<
     typename Element,
-    std::size_t rank>
+    Rank rank>
 typename ArrayPartition<Element, rank>::Shape
     ArrayPartition<Element, rank>::shape() const
 {
@@ -349,21 +347,20 @@ typename ArrayPartition<Element, rank>::Shape
 
 template<
     typename Element,
-    std::size_t rank>
-void ArrayPartition<Element, rank>::resize(
+    Rank rank>
+void ArrayPartition<Element, rank>::reshape(
     Shape const& shape)
 {
-    _data.resize(shape);
+    _data.reshape(shape);
 }
 
 
 template<
     typename Element,
-    std::size_t rank>
-typename ArrayPartition<Element, rank>::Size
-    ArrayPartition<Element, rank>::size() const
+    Rank rank>
+Count ArrayPartition<Element, rank>::nr_elements() const
 {
-    return _data.size();
+    return _data.nr_elements();
 }
 
 }  // namespace server

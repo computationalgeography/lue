@@ -8,15 +8,15 @@ int hpx_main(
     char* argv[])
 {
     // using Shape = std::vector<std::uint64_t>;
-    using Shape = lue::Shape<std::uint64_t, 2>;
+    using Shape = lue::Shape<lue::Count, 2>;
 
     // Runtime configuration
     // std::uint64_t const max_tree_depth =
     //     lue::required_configuration_entry<std::uint64_t>("max_tree_depth");
 
     // Simulation configuration
-    std::uint64_t const nr_time_steps =
-        lue::required_configuration_entry<std::uint64_t>("nr_time_steps");
+    lue::Count const nr_time_steps =
+        lue::required_configuration_entry<lue::Count>("nr_time_steps");
 
     Shape const array_shape = lue::required_configuration_entry<Shape>(
         "array_shape");

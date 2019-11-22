@@ -53,35 +53,35 @@ namespace serialization {
 //                                         const& definition,
 //                                     unsigned int const version);
 
-template<
-    typename Index,
-    std::size_t rank>
-void serialize(
-    input_archive& archive,
-    lue::ArrayPartitionDefinition<Index, rank>& definition,
-    unsigned int const /* version */)
-{
-    using Definition = lue::ArrayPartitionDefinition<Index, rank>;
-
-    typename Definition::Start start;
-    typename Definition::Shape shape;
-
-    archive & start & shape;
-
-    definition = Definition{start, shape};
-}
-
-
-template<
-    typename Index,
-    std::size_t rank>
-void serialize(
-    output_archive& archive,
-    lue::ArrayPartitionDefinition<Index, rank> const& definition,
-    unsigned int const /* version */)
-{
-    archive & definition.start() & definition.shape();
-}
+// template<
+//     typename Index,
+//     std::size_t rank>
+// void serialize(
+//     input_archive& archive,
+//     lue::ArrayPartitionDefinition<Index, rank>& definition,
+//     unsigned int const /* version */)
+// {
+//     using Definition = lue::ArrayPartitionDefinition<Index, rank>;
+// 
+//     typename Definition::Start start;
+//     typename Definition::Shape shape;
+// 
+//     archive & start & shape;
+// 
+//     definition = Definition{start, shape};
+// }
+// 
+// 
+// template<
+//     typename Index,
+//     std::size_t rank>
+// void serialize(
+//     output_archive& archive,
+//     lue::ArrayPartitionDefinition<Index, rank> const& definition,
+//     unsigned int const /* version */)
+// {
+//     archive & definition.start() & definition.shape();
+// }
 
 }  // namespace serialization
 }  // namespace hpx

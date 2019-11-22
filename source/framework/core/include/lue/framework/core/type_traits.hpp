@@ -1,4 +1,6 @@
 #pragma once
+#include "lue/framework/core/define.hpp"
+#include <type_traits>
 
 
 namespace lue {
@@ -52,7 +54,7 @@ using ElementT = typename detail::ArrayTraits<Array>::Element;
 */
 template<
     typename Array>
-static constexpr std::size_t rank = detail::ArrayTraits<Array>::rank;
+static constexpr Rank rank = detail::ArrayTraits<Array>::rank;
 
 
 /*!
@@ -81,7 +83,7 @@ using ShapeT = typename detail::ArrayTraits<Array>::Shape;
 template<
     typename Array,
     typename Element=ElementT<Array>,
-    std::size_t rank=rank<Array>>
+    Rank rank=rank<Array>>
 using DataT =
     typename detail::ArrayTraits<Array>::template Data<Element, rank>;
 
@@ -99,7 +101,7 @@ using DataT =
 template<
     typename Array,
     typename Element=ElementT<Array>,
-    std::size_t rank=rank<Array>>
+    Rank rank=rank<Array>>
 using PartitionT =
     typename detail::ArrayTraits<Array>::template Partition<Element, rank>;
 
@@ -117,7 +119,7 @@ using PartitionT =
 template<
     typename Array,
     typename Element=ElementT<Array>,
-    std::size_t rank=rank<Array>>
+    Rank rank=rank<Array>>
 using PartitionsT =
     typename detail::ArrayTraits<Array>::template Partitions<Element, rank>;
 
@@ -135,7 +137,7 @@ using PartitionsT =
 template<
     typename Array,
     typename Element=ElementT<Array>,
-    std::size_t rank=rank<Array>>
+    Rank rank=rank<Array>>
 using PartitionedArrayT =
     typename detail::ArrayTraits<Array>::
         template PartitionedArray<Element, rank>;

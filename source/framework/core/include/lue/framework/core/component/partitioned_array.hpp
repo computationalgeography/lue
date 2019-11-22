@@ -11,7 +11,7 @@ namespace lue {
 
 template<
     typename Element,
-    std::size_t rank>
+    Rank rank>
 class PartitionedArray
 {
 
@@ -27,15 +27,13 @@ public:
 
     using Partitions = ArrayPartitionData<Partition, rank>;
 
-    using Iterator = typename Partitions::Iterator;
-
-    using ConstIterator = typename Partitions::ConstIterator;
+    using Count = typename Partitions::Count;
 
     using Shape = typename Partitions::Shape;
 
-    using Index = typename Partitions::Index;
+    using Iterator = typename Partitions::Iterator;
 
-    using Size = typename Partitions::Size;
+    using ConstIterator = typename Partitions::ConstIterator;
 
                    PartitionedArray    ();
 
@@ -49,11 +47,11 @@ public:
 
                    ~PartitionedArray   ()=default;
 
-    Size           nr_elements         () const;
+    Count          nr_elements         () const;
 
     Shape const&   shape               () const;
 
-    Size           nr_partitions       () const;
+    Count          nr_partitions       () const;
 
     Partitions&    partitions          ();
 
@@ -101,7 +99,7 @@ namespace detail {
 // Specialization for PartitionedArray::Partitions
 template<
     typename E,
-    std::size_t r>
+    Rank r>
 class ArrayTraits<ArrayPartitionData<ArrayPartition<E, r>, r>>
 {
 
@@ -109,18 +107,18 @@ public:
 
     using Element = E;
 
-    constexpr static std::size_t rank = r;
+    constexpr static Rank rank = r;
 
     using Shape = typename ArrayPartitionData<ArrayPartition<E, r>, r>::Shape;
 
     template<
         typename E_,
-        std::size_t r_>
+        Rank r_>
     using Partition = ArrayPartition<E_, r_>;
 
     template<
         typename E_,
-        std::size_t r_>
+        Rank r_>
     using Partitions = ArrayPartitionData<ArrayPartition<E_, r_>, r_>;
 
 };
@@ -129,7 +127,7 @@ public:
 // Specialization for PartitionedArray
 template<
     typename E,
-    std::size_t r>
+    Rank r>
 class ArrayTraits<PartitionedArray<E, r>>
 {
 
@@ -137,23 +135,23 @@ public:
 
     using Element = E;
 
-    constexpr static std::size_t rank = r;
+    constexpr static Rank rank = r;
 
     using Shape = typename PartitionedArray<E, r>::Shape;
 
     template<
         typename E_,
-        std::size_t r_>
+        Rank r_>
     using Partition = typename PartitionedArray<E_, r_>::Partition;
 
     template<
         typename E_,
-        std::size_t r_>
+        Rank r_>
     using Partitions = typename PartitionedArray<E_, r_>::Partitions;
 
     template<
         typename E_,
-        std::size_t r_>
+        Rank r_>
     using PartitionedArray = PartitionedArray<E_, r_>;
 
 };
@@ -163,7 +161,7 @@ public:
 
 template<
     typename Element,
-    std::size_t rank>
+    Rank rank>
 PartitionedArray<Element, rank>::PartitionedArray():
 
     _shape{},
@@ -179,7 +177,7 @@ PartitionedArray<Element, rank>::PartitionedArray():
 */
 template<
     typename Element,
-    std::size_t rank>
+    Rank rank>
 PartitionedArray<Element, rank>::PartitionedArray(
     Shape const& shape):
 
@@ -195,7 +193,7 @@ PartitionedArray<Element, rank>::PartitionedArray(
 
 template<
     typename Element,
-    std::size_t rank>
+    Rank rank>
 PartitionedArray<Element, rank>::PartitionedArray(
     Shape const& shape,
     Shape const& max_partition_shape):
@@ -219,7 +217,7 @@ PartitionedArray<Element, rank>::PartitionedArray(
 */
 template<
     typename Element,
-    std::size_t rank>
+    Rank rank>
 PartitionedArray<Element, rank>::PartitionedArray(
     Shape const& shape,
     Partitions&& partitions):
@@ -260,7 +258,7 @@ PartitionedArray<Element, rank>::PartitionedArray(
 // 
 // template<
 //     typename Element,
-//     std::size_t rank>
+//     Rank rank>
 // void PartitionedArray<Element, rank>::print_partitions() const
 // {
 //     for(std::size_t i = 0; i < _partitions.size(); ++i) {
@@ -298,15 +296,15 @@ public:
 
         ShapeT<Partitions> shrinked_partition_shape{partition.shape().get()};
 
-        auto const rank = Partitions::rank;
+        Count const rank = static_cast<Count>(lue::rank<Partitions>);
 
-        for(std::size_t i = 0; i < rank; ++i) {
+        for(Index i = 0; i < rank; ++i) {
             shrinked_partition_shape[i] =
                 std::min(shrinked_partition_shape[i], _new_shape[i]);
         }
 
         // TODO Blocks current thread. Maybe wait in destructor?
-        partition.resize(shrinked_partition_shape).wait();
+        partition.reshape(shrinked_partition_shape).wait();
     }
 
 private:
@@ -319,7 +317,7 @@ private:
 
 template<
     typename Element,
-    std::size_t rank>
+    Rank rank>
 void PartitionedArray<Element, rank>::shrink_partitions(
     Shape const& begin_indices,
     Shape const& end_indices,
@@ -342,7 +340,7 @@ void PartitionedArray<Element, rank>::shrink_partitions(
 
 template<
     typename Element,
-    std::size_t rank>
+    Rank rank>
 void PartitionedArray<Element, rank>::clamp_array(
     Shape const& shape_in_partitions,
     Shape const& max_partition_shape)
@@ -362,7 +360,7 @@ void PartitionedArray<Element, rank>::clamp_array(
     Shape const end_indices{shape_in_partitions};
 
     // Iterate over all dimensions
-    for(std::size_t d = 0; d < rank; ++d) {
+    for(Rank d = 0; d < rank; ++d) {
         // Extent of current dimension in partitioned array
         auto const array_extent = _shape[d];
 
@@ -411,7 +409,7 @@ void PartitionedArray<Element, rank>::clamp_array(
 
 template<
     typename Element,
-    std::size_t rank>
+    Rank rank>
 void PartitionedArray<Element, rank>::create(
     Shape const& shape_in_partitions,
     Shape const& max_partition_shape)
@@ -420,17 +418,17 @@ void PartitionedArray<Element, rank>::create(
     // array. Note that the extent of this array might be too large,
     // given that we use max_partition_shape.
 
-    std::size_t const nr_partitions = lue::nr_elements(shape_in_partitions);
+    Count const nr_partitions = lue::nr_elements(shape_in_partitions);
 
     // Create array containing partitions. Each of these partitions will be
     // a component client instance referring to a, possibly remote,
     // component server instance.
     _partitions = Partitions{shape_in_partitions};
-    assert(_partitions.size() == nr_partitions);
+    assert(_partitions.nr_elements() == nr_partitions);
 
     std::vector<hpx::naming::id_type> const localities =
         hpx::find_all_localities();
-    std::size_t const nr_localities = localities.size();
+    Count const nr_localities = localities.size();
 
     assert(nr_localities > 0);
     assert(nr_partitions >= nr_localities);
@@ -442,18 +440,18 @@ void PartitionedArray<Element, rank>::create(
     // are created. This might be faster.
     auto locality_idx =
         [nr_partitions, nr_localities](
-            std::size_t const p) -> std::size_t
+            Index const p) -> Index
         {
             // return nr_localities == 1 ? 0 :
             //     map_to_range(0lu, nr_partitions - 1, 1lu, nr_localities - 1, p);
 
             return map_to_range(
-                0lu, nr_partitions - 1, 0lu, nr_localities - 1, p);
+                Index{0}, nr_partitions - 1, Index{0}, nr_localities - 1, p);
         };
 
     // Create array partitions. Each of them will be located on a certain
     // locality. Which one exactly is determined by locality_idx.
-    for(std::size_t partition_idx = 0; partition_idx < nr_partitions;
+    for(Index partition_idx = 0; partition_idx < nr_partitions;
             ++partition_idx) {
 
         auto idx = locality_idx(partition_idx);
@@ -687,7 +685,7 @@ void PartitionedArray<Element, rank>::create(
 
 template<
     typename Element,
-    std::size_t rank>
+    Rank rank>
 void PartitionedArray<Element, rank>::create()
 {
     // Given the shape of the array and the number of localities,
@@ -695,7 +693,7 @@ void PartitionedArray<Element, rank>::create()
     // in partitions
 
     // TODO blocks
-    Size const nr_localities = hpx::get_num_localities().get();
+    Count const nr_localities = hpx::get_num_localities().get();
     Shape const max_partition_shape =
         lue::max_partition_shape(_shape, nr_localities);
     auto const shape_in_partitions =
@@ -707,7 +705,7 @@ void PartitionedArray<Element, rank>::create()
 
 template<
     typename Element,
-    std::size_t rank>
+    Rank rank>
 void PartitionedArray<Element, rank>::create(
     Shape const& max_partition_shape)
 {
@@ -770,7 +768,7 @@ private:
 
 template<
     typename Element,
-    std::size_t rank>
+    Rank rank>
 void PartitionedArray<Element, rank>::assert_invariants() const
 {
 #ifndef NDEBUG
@@ -792,8 +790,8 @@ void PartitionedArray<Element, rank>::assert_invariants() const
 
 template<
     typename Element,
-    std::size_t rank>
-typename PartitionedArray<Element, rank>::Size
+    Rank rank>
+typename PartitionedArray<Element, rank>::Count
     PartitionedArray<Element, rank>::nr_elements() const
 {
     return lue::nr_elements(_shape);
@@ -802,7 +800,7 @@ typename PartitionedArray<Element, rank>::Size
 
 template<
     typename Element,
-    std::size_t rank>
+    Rank rank>
 typename PartitionedArray<Element, rank>::Shape const&
     PartitionedArray<Element, rank>::shape() const
 {
@@ -812,17 +810,17 @@ typename PartitionedArray<Element, rank>::Shape const&
 
 template<
     typename Element,
-    std::size_t rank>
-typename PartitionedArray<Element, rank>::Size
+    Rank rank>
+typename PartitionedArray<Element, rank>::Count
     PartitionedArray<Element, rank>::nr_partitions() const
 {
-    return _partitions.size();
+    return _partitions.nr_elements();
 }
 
 
 template<
     typename Element,
-    std::size_t rank>
+    Rank rank>
 typename PartitionedArray<Element, rank>::Partitions&
     PartitionedArray<Element, rank>::partitions()
 {
@@ -832,7 +830,7 @@ typename PartitionedArray<Element, rank>::Partitions&
 
 template<
     typename Element,
-    std::size_t rank>
+    Rank rank>
 typename PartitionedArray<Element, rank>::Partitions const&
     PartitionedArray<Element, rank>::partitions() const
 {
@@ -842,7 +840,7 @@ typename PartitionedArray<Element, rank>::Partitions const&
 
 template<
     typename Element,
-    std::size_t rank>
+    Rank rank>
 typename PartitionedArray<Element, rank>::ConstIterator
     PartitionedArray<Element, rank>::begin() const
 {
@@ -852,7 +850,7 @@ typename PartitionedArray<Element, rank>::ConstIterator
 
 template<
     typename Element,
-    std::size_t rank>
+    Rank rank>
 typename PartitionedArray<Element, rank>::Iterator
     PartitionedArray<Element, rank>::begin()
 {
@@ -862,7 +860,7 @@ typename PartitionedArray<Element, rank>::Iterator
 
 template<
     typename Element,
-    std::size_t rank>
+    Rank rank>
 typename PartitionedArray<Element, rank>::ConstIterator
     PartitionedArray<Element, rank>::end() const
 {
@@ -872,7 +870,7 @@ typename PartitionedArray<Element, rank>::ConstIterator
 
 template<
     typename Element,
-    std::size_t rank>
+    Rank rank>
 typename PartitionedArray<Element, rank>::Iterator
     PartitionedArray<Element, rank>::end()
 {
@@ -906,7 +904,7 @@ typename PartitionedArray<Element, rank>::Iterator
 
 template<
     typename Element,
-    std::size_t rank>
+    Rank rank>
 ShapeT<PartitionedArray<Element, rank>> shape(
     PartitionedArray<Element, rank> const& array)
 {
@@ -916,7 +914,7 @@ ShapeT<PartitionedArray<Element, rank>> shape(
 
 template<
     typename Element,
-    std::size_t rank>
+    Rank rank>
 ShapeT<PartitionedArray<Element, rank>> shape_in_partitions(
     PartitionedArray<Element, rank> const& array)
 {
@@ -926,8 +924,8 @@ ShapeT<PartitionedArray<Element, rank>> shape_in_partitions(
 
 template<
     typename Element,
-    std::size_t rank>
-std::size_t nr_partitions(
+    Rank rank>
+typename PartitionedArray<Element, rank>::Count nr_partitions(
     PartitionedArray<Element, rank> const& array)
 {
     return array.nr_partitions();
@@ -936,8 +934,8 @@ std::size_t nr_partitions(
 
 template<
     typename Element,
-    std::size_t rank>
-typename PartitionedArray<Element, rank>::Size nr_elements(
+    Rank rank>
+typename PartitionedArray<Element, rank>::Count nr_elements(
     PartitionedArray<Element, rank> const& array)
 {
     return array.nr_elements();
@@ -946,7 +944,7 @@ typename PartitionedArray<Element, rank>::Size nr_elements(
 
 template<
     typename Element,
-    std::size_t rank>
+    Rank rank>
 std::string describe(
     Shape<Element, rank> const& shape)
 {
@@ -970,19 +968,19 @@ std::string describe(
 
 template<
     typename Element,
-    std::size_t rank>
+    Rank rank>
 std::string describe(
     PartitionedArray<Element, rank> const& array)
 {
     return fmt::format(
         "- PartitionedArray:\n"
-        "    - shape              : {} ({} elements)\n"
-        "    - partitions         : {} ({} partitions)\n"
+        "    - array of elements  : {} ({} elements)\n"
+        "    - array of partitions: {} ({} partitions)\n"
         ,
         describe(array.shape()),
         array.nr_elements(),
         describe(array.partitions().shape()),
-        array.partitions().size()
+        array.partitions().nr_elements()
     );
 }
 

@@ -53,8 +53,8 @@ struct CopyPartitionAction:
 */
 template<
     typename Element,
-    std::size_t rank,
-    template<typename, std::size_t> typename Array>
+    Rank rank,
+    template<typename, Rank> typename Array>
 Array<Element, rank> copy(
     Array<Element, rank> const& array)
 {
@@ -65,7 +65,7 @@ Array<Element, rank> copy(
     CopyPartitionAction<Partition> action;
     Partitions output_partitions{shape_in_partitions(array)};
 
-    for(std::size_t p = 0; p < nr_partitions(array); ++p) {
+    for(Index p = 0; p < nr_partitions(array); ++p) {
 
         output_partitions[p] = hpx::dataflow(
             hpx::launch::async,

@@ -8,7 +8,7 @@ namespace {
 using Index = std::uint32_t;
 
 template<
-    std::size_t rank>
+    lue::Rank rank>
 using Shape = lue::Shape<Index, rank>;
 
 }  // Anonymous namespace

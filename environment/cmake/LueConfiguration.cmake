@@ -110,6 +110,7 @@ if(LUE_BUILD_FRAMEWORK)
     set(DEVBASE_FMT_REQUIRED TRUE)
     # set(DEVBASE_GUIDELINE_SUPPORT_LIBRARY_REQUIRED TRUE)
     set(DEVBASE_HPX_REQUIRED TRUE)
+    set(DEVBASE_KOKKOS_MDSPAN_REQUIRED TRUE)
 
     if(LUE_FRAMEWORK_WITH_OPENCL)
         set(DEVBASE_OPENCL_REQUIRED TRUE)
@@ -396,6 +397,17 @@ if(DEVBASE_IMGUI_REQUIRED)
     endif()
 
     unset(DEVBASE_IMGUI_REQUIRED)
+endif()
+
+
+if(DEVBASE_KOKKOS_MDSPAN_REQUIRED)
+    FetchContent_Declare(kokkos_mdspan
+        GIT_REPOSITORY https://github.com/kokkos/mdspan.git
+        GIT_TAG a7990884f090365787a90cdc12e689822d642c65  # 20191010
+    )
+    FetchContent_MakeAvailable(kokkos_mdspan)
+
+    unset(DEVBASE_KOKKOS_MDSPAN_REQUIRED)
 endif()
 
 

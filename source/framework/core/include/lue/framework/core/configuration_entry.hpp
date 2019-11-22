@@ -23,7 +23,9 @@ struct Type<T>                 \
 };
 
 TYPE(std::uint32_t)
+TYPE(std::int32_t)
 TYPE(std::uint64_t)
+TYPE(std::int64_t)
 #undef TYPE
 
 

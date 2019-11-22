@@ -25,7 +25,7 @@ BOOST_AUTO_TEST_CASE(default_construct)
         BOOST_CHECK_EQUAL(data.shape(), shape);
 
         BOOST_CHECK(data.empty());
-        BOOST_CHECK_EQUAL(data.size(), 0);
+        BOOST_CHECK_EQUAL(data.nr_elements(), 0);
         BOOST_CHECK(data.begin() == data.end());
     }
 
@@ -37,7 +37,7 @@ BOOST_AUTO_TEST_CASE(default_construct)
         BOOST_CHECK_EQUAL(data.shape(), shape);
 
         BOOST_CHECK(data.empty());
-        BOOST_CHECK_EQUAL(data.size(), 0);
+        BOOST_CHECK_EQUAL(data.nr_elements(), 0);
         BOOST_CHECK(data.begin() == data.end());
     }
 }
@@ -51,7 +51,7 @@ BOOST_AUTO_TEST_CASE(construct_initialized_definition)
     BOOST_CHECK_EQUAL(data.shape(), shape);
 
     BOOST_CHECK(!data.empty());
-    BOOST_CHECK_EQUAL(data.size(), 30 * 40);
+    BOOST_CHECK_EQUAL(data.nr_elements(), 30 * 40);
 
     std::vector<Value> values(30 * 40, 0);
     BOOST_CHECK_EQUAL_COLLECTIONS(
@@ -67,7 +67,7 @@ BOOST_AUTO_TEST_CASE(construct_initialized_definition_and_value)
     BOOST_CHECK_EQUAL(data.shape(), shape);
 
     BOOST_CHECK(!data.empty());
-    BOOST_CHECK_EQUAL(data.size(), 30 * 40);
+    BOOST_CHECK_EQUAL(data.nr_elements(), 30 * 40);
 
     std::vector<Value> values(30 * 40, 5);
     BOOST_CHECK_EQUAL_COLLECTIONS(
@@ -86,7 +86,7 @@ BOOST_AUTO_TEST_CASE(assign)
     BOOST_CHECK_EQUAL(data.shape(), shape);
 
     BOOST_CHECK(!data.empty());
-    BOOST_CHECK_EQUAL(data.size(), 30 * 40);
+    BOOST_CHECK_EQUAL(data.nr_elements(), 30 * 40);
 
     std::vector<Value> values(30 * 40, 5);
     BOOST_CHECK_EQUAL_COLLECTIONS(
@@ -106,14 +106,14 @@ BOOST_AUTO_TEST_CASE(scalar_array)
         Data data;
         BOOST_CHECK_EQUAL(data.shape(), shape);
         BOOST_CHECK(!data.empty());
-        BOOST_CHECK_EQUAL(data.size(), 1);
+        BOOST_CHECK_EQUAL(data.nr_elements(), 1);
     }
 
     {
         Data data{5};
         BOOST_CHECK_EQUAL(data.shape(), shape);
         BOOST_CHECK(!data.empty());
-        BOOST_CHECK_EQUAL(data.size(), 1);
+        BOOST_CHECK_EQUAL(data.nr_elements(), 1);
         BOOST_CHECK_EQUAL(data[0], 5);
     }
 }

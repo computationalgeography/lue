@@ -15,7 +15,7 @@ namespace lue {
 */
 template<
     typename Element,
-    std::size_t rank>
+    Rank rank>
 class ArrayPartition:
     public hpx::components::client_base<
         ArrayPartition<Element, rank>,
@@ -33,8 +33,6 @@ public:
     using Data = typename Server::Data;
 
     using Shape = typename Server::Shape;
-
-    using Size = typename Server::Size;
 
                    ArrayPartition      ();
 
@@ -83,9 +81,9 @@ public:
 
     hpx::future<Shape> shape           () const;
 
-    hpx::future<void> resize           (Shape const& shape);
+    hpx::future<void> reshape          (Shape const& shape);
 
-    hpx::future<Size> size             () const;
+    hpx::future<Count> nr_elements     () const;
 
 private:
 
@@ -94,7 +92,7 @@ private:
 
 template<
     typename Element,
-    std::size_t rank>
+    Rank rank>
 ArrayPartition<Element, rank>::ArrayPartition():
 
     Base{}
@@ -116,7 +114,7 @@ ArrayPartition<Element, rank>::ArrayPartition():
 */
 template<
     typename Element,
-    std::size_t rank>
+    Rank rank>
 ArrayPartition<Element, rank>::ArrayPartition(
     hpx::id_type const& id):
 
@@ -142,7 +140,7 @@ ArrayPartition<Element, rank>::ArrayPartition(
 */
 template<
     typename Element,
-    std::size_t rank>
+    Rank rank>
 ArrayPartition<Element, rank>::ArrayPartition(
     hpx::future<hpx::id_type>&& component_id):
 
@@ -167,7 +165,7 @@ ArrayPartition<Element, rank>::ArrayPartition(
 */
 template<
     typename Element,
-    std::size_t rank>
+    Rank rank>
 ArrayPartition<Element, rank>::ArrayPartition(
     hpx::future<ArrayPartition>&& partition):
 
@@ -184,7 +182,7 @@ ArrayPartition<Element, rank>::ArrayPartition(
 */
 template<
     typename Element,
-    std::size_t rank>
+    Rank rank>
 ArrayPartition<Element, rank>::ArrayPartition(
     hpx::id_type const locality_id,
     Shape const& shape):
@@ -203,7 +201,7 @@ ArrayPartition<Element, rank>::ArrayPartition(
 */
 template<
     typename Element,
-    std::size_t rank>
+    Rank rank>
 ArrayPartition<Element, rank>::ArrayPartition(
     hpx::id_type const locality_id,
     Shape const& shape,
@@ -222,7 +220,7 @@ ArrayPartition<Element, rank>::ArrayPartition(
 // */
 // template<
 //     typename Element,
-//     std::size_t rank>
+//     Rank rank>
 // ArrayPartition<Element, rank>::ArrayPartition(
 //     hpx::id_type const locality_id,
 //     Data const& data):
@@ -242,7 +240,7 @@ ArrayPartition<Element, rank>::ArrayPartition(
 */
 template<
     typename Element,
-    std::size_t rank>
+    Rank rank>
 ArrayPartition<Element, rank>::ArrayPartition(
     hpx::id_type const locality_id,
     Data&& data):
@@ -261,7 +259,7 @@ ArrayPartition<Element, rank>::ArrayPartition(
 // */
 // template<
 //     typename Element,
-//     std::size_t rank>
+//     Rank rank>
 // ArrayPartition<Element, rank>::ArrayPartition(
 //     hpx::id_type component_id,
 //     Data const& data):
@@ -274,7 +272,7 @@ ArrayPartition<Element, rank>::ArrayPartition(
 
 // template<
 //     typename Element,
-//     std::size_t rank>
+//     Rank rank>
 // ArrayPartition<Element, rank>::ArrayPartition(
 //     ArrayPartition const& other):
 // 
@@ -339,7 +337,7 @@ ArrayPartition<Element, rank>::ArrayPartition(
 */
 template<
     typename Element,
-    std::size_t rank>
+    Rank rank>
 hpx::future<typename ArrayPartition<Element, rank>::Data>
     ArrayPartition<Element, rank>::data(
         CopyMode const mode) const
@@ -361,11 +359,10 @@ hpx::future<typename ArrayPartition<Element, rank>::Data>
 
 template<
     typename Element,
-    std::size_t rank>
-hpx::future<typename ArrayPartition<Element, rank>::Size>
-    ArrayPartition<Element, rank>::size() const
+    Rank rank>
+hpx::future<Count> ArrayPartition<Element, rank>::nr_elements() const
 {
-    typename Server::SizeAction action;
+    typename Server::NrElementsAction action;
 
     // this->get_id() identifies the server instance
     return hpx::async(action, this->get_id());
@@ -374,7 +371,7 @@ hpx::future<typename ArrayPartition<Element, rank>::Size>
 
 template<
     typename Element,
-    std::size_t rank>
+    Rank rank>
 hpx::future<typename ArrayPartition<Element, rank>::Shape>
     ArrayPartition<Element, rank>::shape() const
 {
@@ -390,9 +387,9 @@ hpx::future<typename ArrayPartition<Element, rank>::Shape>
 */
 template<
     typename Element,
-    std::size_t rank>
+    Rank rank>
 hpx::future<void> ArrayPartition<Element, rank>::fill(
-    Element value)
+    Element const value)
 {
     typename Server::FillAction action;
 
@@ -406,7 +403,7 @@ hpx::future<void> ArrayPartition<Element, rank>::fill(
 */
 template<
     typename Element,
-    std::size_t rank>
+    Rank rank>
 hpx::future<void> ArrayPartition<Element, rank>::set_data(
     Data const& data,
     CopyMode const mode)
@@ -431,7 +428,7 @@ hpx::future<void> ArrayPartition<Element, rank>::set_data(
 */
 template<
     typename Element,
-    std::size_t rank>
+    Rank rank>
 hpx::future<void> ArrayPartition<Element, rank>::set_data(
     Data&& data)
 {
@@ -440,15 +437,15 @@ hpx::future<void> ArrayPartition<Element, rank>::set_data(
 
 
 /*!
-    @brief      Asynchronously resize the partition with @a value
+    @brief      Asynchronously reshape the partition with @a shape
 */
 template<
     typename Element,
-    std::size_t rank>
-hpx::future<void> ArrayPartition<Element, rank>::resize(
+    Rank rank>
+hpx::future<void> ArrayPartition<Element, rank>::reshape(
     Shape const& shape)
 {
-    typename Server::ResizeAction action;
+    typename Server::ReshapeAction action;
 
     // this->get_id() identifies the server instance
     return hpx::async(action, this->get_id(), shape);
@@ -459,7 +456,7 @@ namespace detail {
 
 template<
     typename E,
-    std::size_t r>
+    Rank r>
 class ArrayTraits<ArrayPartition<E, r>>
 {
 
@@ -467,18 +464,18 @@ public:
 
     using Element = E;
 
-    constexpr static std::size_t rank = r;
+    constexpr static Rank rank = r;
 
     using Shape = typename ArrayPartition<E, r>::Shape;
 
     template<
         typename E_,
-        std::size_t r_>
+        Rank r_>
     using Partition = ArrayPartition<E_, r_>;
 
     template<
         typename E_,
-        std::size_t r_>
+        Rank r_>
     using Data = typename ArrayPartition<E_, r_>::Data;
 
 };
@@ -486,17 +483,7 @@ public:
 
 template<
     typename Element,
-    std::size_t rank>
-typename ArrayPartition<Element, rank>::Size nr_elements(
-    ArrayPartition<Element, rank> const& partition)
-{
-    return partition.nr_elements();
-}
-
-
-template<
-    typename Element,
-    std::size_t rank>
+    Rank rank>
 class IsArrayPartition<ArrayPartition<Element, rank>>:
     public std::true_type
 {};

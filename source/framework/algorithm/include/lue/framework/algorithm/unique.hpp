@@ -33,11 +33,13 @@ PartitionT<Partition, ElementT<Partition>, 1> unique_partition(
                 // Copy values from input array into a set
                 std::set<Element> unique_values(
                     partition_data.begin(), partition_data.end());
-                assert(unique_values.size() <= partition_data.size());
+                Count const nr_unique_values =
+                    static_cast<Count>(unique_values.size());
+                assert(nr_unique_values <= partition_data.nr_elements());
 
                 // Copy unique values from set into output array
-                OutputData output_data{OutputShape{{unique_values.size()}}};
-                assert(output_data.size() == unique_values.size());
+                OutputData output_data{OutputShape{{nr_unique_values}}};
+                assert(output_data.nr_elements() == nr_unique_values);
                 std::copy(
                     unique_values.begin(), unique_values.end(),
                     output_data.begin());
@@ -77,8 +79,8 @@ struct UniquePartitionAction:
 */
 template<
     typename Element,
-    std::size_t rank,
-    template<typename, std::size_t> typename Array>
+    Rank rank,
+    template<typename, Rank> typename Array>
 hpx::future<Array<Element, 1>> unique(
     Array<Element, rank> const& array)
 {
@@ -101,7 +103,7 @@ hpx::future<Array<Element, 1>> unique(
     OutputPartitions output_partitions{OutputShape{{nr_partitions(array)}}};
     UniquePartitionAction<InputPartition> action;
 
-    for(std::size_t p = 0; p < nr_partitions(array); ++p) {
+    for(Index p = 0; p < nr_partitions(array); ++p) {
 
         output_partitions[p] = hpx::dataflow(
             hpx::launch::async,
@@ -144,7 +146,7 @@ hpx::future<Array<Element, 1>> unique(
                 }
 
                 // Shape in elements of resulting partitioned array
-                OutputShape shape{{unique_values.size()}};
+                OutputShape shape{{static_cast<Count>(unique_values.size())}};
 
                 // Shape in partitions of resulting partitioned array
                 OutputShape shape_in_partitions{{1}};

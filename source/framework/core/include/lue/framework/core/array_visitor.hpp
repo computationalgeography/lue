@@ -7,19 +7,21 @@
 
 namespace lue {
 
-template<
-    typename Shape>
-using IndexT = typename Shape::value_type;
+// template<
+//     typename Shape>
+// using IndexT = typename Shape::value_type;
 
 
 template<
-    std::size_t rank,
+    Rank rank,
     typename Iterator>
-typename std::iterator_traits<Iterator>::value_type linear_idx(
+// typename std::iterator_traits<Iterator>::value_type linear_idx(
+Index linear_idx(
     Iterator cell_idxs_it,
     [[maybe_unused]] Iterator shape_it)
 {
-    using ValueType = typename std::iterator_traits<Iterator>::value_type;
+    // using ValueType = typename std::iterator_traits<Iterator>::value_type;
+    using ValueType = Index;
 
     if constexpr (rank == 1) {
         return *cell_idxs_it;
@@ -27,7 +29,7 @@ typename std::iterator_traits<Iterator>::value_type linear_idx(
     else {
         return
             (*cell_idxs_it * std::accumulate(
-                shape_it + 1, shape_it + rank, 1u,
+                shape_it + 1, shape_it + rank, ValueType{1},
                 std::multiplies<ValueType>())) +
             linear_idx<rank-1>(cell_idxs_it + 1, shape_it + 1);
     }
@@ -36,11 +38,12 @@ typename std::iterator_traits<Iterator>::value_type linear_idx(
 
 template<
     typename Shape>
-IndexT<Shape> linear_idx(
+// IndexT<Shape> linear_idx(
+Index linear_idx(
     Shape const& cell_idxs,
     Shape const& shape)
 {
-    constexpr auto rank = std::tuple_size<Shape>();  // rank<Shape>();
+    constexpr auto rank = lue::rank<Shape>;
 
     assert(std::size(cell_idxs) == rank);
     assert(std::size(shape) == rank);
@@ -65,7 +68,7 @@ class ArrayVisitorCursor
 
 public:
 
-    using Index = IndexT<Shape>;
+    // using Index = IndexT<Shape>;
 
     ArrayVisitorCursor(
         Shape const& shape):
@@ -106,7 +109,7 @@ public:
         _current_cell = start;
         _dimension_idx = 0;
 
-        for(std::size_t i = 0; i < std::tuple_size<Shape>(); ++i) {
+        for(std::size_t i = 0; i < static_cast<Count>(rank<Shape>); ++i) {
             assert(_start[i] + _count[i] <= _shape[i]);
         }
     }
@@ -121,7 +124,7 @@ public:
     {
         ++_dimension_idx;
 
-        assert(_dimension_idx < std::tuple_size<Shape>());
+        assert(_dimension_idx < static_cast<Count>(rank<Shape>));
     }
 
     void leave_current_dimension()
@@ -168,7 +171,7 @@ public:
         return _current_cell;
     }
 
-    std::size_t dimension_idx() const
+    Index dimension_idx() const
     {
         return _dimension_idx;
     }
@@ -179,7 +182,7 @@ public:
         The index returned is probably only useful once the visitor has
         ended up at a selected cell.
     */
-    std::size_t linear_idx() const
+    Index linear_idx() const
     {
         return lue::linear_idx(_current_cell, _shape);
     }
@@ -199,7 +202,7 @@ private:
     Shape          _current_cell;
 
     //! Current dimension being visited
-    std::size_t    _dimension_idx;
+    Index          _dimension_idx;
 
 };
 
@@ -291,7 +294,7 @@ namespace detail {
                 selected cells
 */
 template<
-    std::size_t rank,
+    Rank rank,
     typename Visitor
 >
 void visit_array(
@@ -343,9 +346,8 @@ void visit_array(
 */
 template<
     typename Index,
-    std::size_t rank,
-    typename Visitor
->
+    Rank rank,
+    typename Visitor>
 void visit_array(
     Shape<Index, rank> const& begin_indices,
     Shape<Index, rank> const& end_indices,
@@ -353,7 +355,7 @@ void visit_array(
 {
     Shape<Index, rank> count;
 
-    for(std::size_t i = 0; i < rank; ++i) {
+    for(Rank i = 0; i < rank; ++i) {
         assert(end_indices[i] > begin_indices[i]);
         count[i] = end_indices[i] - begin_indices[i];
     }

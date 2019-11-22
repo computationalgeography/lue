@@ -16,6 +16,7 @@ target_include_directories(lue_framework_core SYSTEM
     PUBLIC
         ${HPX_INCLUDE_DIRS}
         ${Boost_INCLUDE_DIRS}
+        ${MDSpan_SOURCE_DIR}/include
 )
 
 target_include_directories(lue_framework_core
@@ -26,4 +27,5 @@ target_include_directories(lue_framework_core
 target_link_libraries(lue_framework_core
     PUBLIC
         fmt::fmt
+        std::mdspan
 )

@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/framework/core/define.hpp"
 #include <array>
 
 
@@ -6,7 +7,7 @@ namespace lue {
 
 template<
     typename Index,
-    std::size_t rank>
+    Rank rank>
 using Indices = std::array<Index, rank>;
 
 }  // namespace lue

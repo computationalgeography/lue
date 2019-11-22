@@ -14,7 +14,7 @@ auto setup_benchmark(
         lue::benchmark::Task const& task)
     {
 
-        using Shape = lue::Shape<std::uint64_t, 2>;
+        using Shape = lue::Shape<lue::Count, 2>;
 
         Shape array_shape;
         Shape partition_shape;

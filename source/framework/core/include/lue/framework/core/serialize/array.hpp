@@ -8,40 +8,38 @@ namespace serialization {
 
 template<
     typename Element,
-    std::size_t rank>
+    lue::Rank rank>
 void serialize(
     input_archive& archive,
     lue::Array<Element, rank>& array,
     unsigned int const /* version */)
 {
-    // using Buffer = lue::SharedBuffer<Element>;
-    // using Array = hpx::serialization::array<Element>;
+    using Array = lue::Array<Element, rank>;
 
-    // typename Buffer::Count size;
-    // archive & size;
+    // Read array shape and make sure array has enough room for the elements
+    typename Array::Shape shape;
+    archive & shape;
+    array.reshape(shape);
 
-    // buffer.resize(size);
-
-    // Array array = hpx::serialization::make_array(buffer.begin(), size);
-    // archive & array;
+    // Read elements
+    hpx::serialization::array<Element> elements =
+        hpx::serialization::make_array(array.data(), lue::nr_elements(array));
+    archive & elements;
 }
 
 
 template<
     typename Element,
-    std::size_t rank>
+    lue::Rank rank>
 void serialize(
     output_archive& archive,
     lue::Array<Element, rank> const& array,
     unsigned int const /* version */)
 {
-    // using Buffer = lue::SharedBuffer<Element>;
-    // using Array = hpx::serialization::array<Element const>;
-
-    // typename Buffer::Count const size = buffer.size();
-    // Array array = hpx::serialization::make_array(buffer.begin(), size);
-
-    // archive & size & array;
+    archive
+        & array.shape()
+        & hpx::serialization::make_array(array.data(), lue::nr_elements(array))
+        ;
 }
 
 }  // namespace serialization

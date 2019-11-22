@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/framework/core/type_traits.hpp"
 #include <algorithm>
 #include <array>
 #include <numeric>
@@ -7,43 +8,40 @@
 namespace lue {
 
 template<
-    typename Index,
-    std::size_t rank>
-using Shape = std::array<Index, rank>;
+    typename Count,
+    Rank rank>
+using Shape = std::array<Count, rank>;
 
 
-// template<
-//     typename Index,
-//     std::size_t rank>
-// class Shape
-// {
-// 
-// public:
-// 
-//     // using std::array<Index, rank>::array;
-// 
-//     Shape()
-//         _array{}
-//     {
-// 
-//     }
-// 
-// private:
-// 
-//     std::array<Index, rank> _array;
-// 
-// };
+namespace detail {
+
+// FIXME ArrayTraits is obviously not the correct name for these traits
+template<
+    typename C,
+    Rank r>
+class ArrayTraits<Shape<C, r>>
+{
+
+public:
+
+    constexpr static Rank rank = r;
+
+};
+
+}  // namespace detail
 
 
 template<
-    typename Index,
-    std::size_t rank>
-inline typename Shape<Index, rank>::value_type nr_elements(
-    Shape<Index, rank> const& shape)
+    typename Count,
+    Rank rank>
+inline Count nr_elements(
+    Shape<Count, rank> const& shape)
 {
     static_assert(!shape.empty());
 
-    using T = typename Shape<Index, rank>::value_type;
+    using T = typename Shape<Count, rank>::value_type;
+
+    static_assert(std::is_same_v<T, Count>);
 
     return std::accumulate(
         shape.begin(), shape.end(), T{1},
@@ -52,19 +50,19 @@ inline typename Shape<Index, rank>::value_type nr_elements(
 
 
 template<
-    typename Index>
-inline constexpr typename Shape<Index, 0>::value_type nr_elements(
-    Shape<Index, 0> const& /* shape */)
+    typename Count>
+inline constexpr Count nr_elements(
+    Shape<Count, 0> const& /* shape */)
 {
     return 0;
 }
 
 
 template<
-    typename Index,
-    std::size_t rank>
+    typename Count,
+    Rank rank>
 inline constexpr bool is_hypercube(
-    Shape<Index, rank> const& shape)
+    Shape<Count, rank> const& shape)
 {
     return shape.empty() ? false :
         std::count(shape.begin(), shape.end(), *shape.begin()) ==
