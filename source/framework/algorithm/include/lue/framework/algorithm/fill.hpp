@@ -19,8 +19,8 @@ namespace lue {
 */
 template<
     typename Element,
-    std::size_t rank,
-    template<typename, std::size_t> typename Array>
+    Rank rank,
+    template<typename, Rank> typename Array>
 [[nodiscard]] hpx::future<void> fill(
     Array<Element, rank>& array,
     hpx::shared_future<Element> const& fill_value)
@@ -32,7 +32,7 @@ template<
 
     typename ArrayPartitionFillAction<Element, rank>::Type action;
 
-    for(std::size_t p = 0; p < nr_partitions(array); ++p) {
+    for(Index p = 0; p < nr_partitions(array); ++p) {
 
         fill_partitions[p] = hpx::dataflow(
             hpx::launch::async,

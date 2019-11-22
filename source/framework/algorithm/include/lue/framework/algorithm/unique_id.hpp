@@ -57,7 +57,7 @@ template<
 
 template<
     typename Element,
-    std::size_t rank>
+    Rank rank>
 struct UniqueIDPartitionAction
 {
 };
@@ -88,8 +88,8 @@ struct UniqueIDPartitionAction:
 */
 template<
     typename Element,
-    std::size_t rank,
-    template<typename, std::size_t> typename Array>
+    Rank rank,
+    template<typename, Rank> typename Array>
 [[nodiscard]] hpx::future<void> unique_id(
     Array<Element, rank>& array)
 {
@@ -110,15 +110,14 @@ template<
 
     UniqueIDPartitionAction<InputPartition> action;
 
-    std::vector<hpx::future<typename InputPartition::Size>>
-        partition_sizes(nr_partitions);
+    std::vector<hpx::future<Count>> partition_sizes(nr_partitions);
 
     {
         // Request the sizes of all partitions and wait until they are
         // available
-        for(std::size_t p = 0; p < nr_partitions; ++p) {
+        for(Index p = 0; p < nr_partitions; ++p) {
             InputPartition& partition = array.partitions()[p];
-            partition_sizes[p] = partition.size();
+            partition_sizes[p] = partition.nr_elements();
         }
 
         hpx::wait_all(partition_sizes);
@@ -126,7 +125,7 @@ template<
 
     Element start_value = 0;
 
-    for(std::size_t p = 0; p < nr_partitions; ++p) {
+    for(Index p = 0; p < nr_partitions; ++p) {
 
         unique_id_partitions[p] = hpx::dataflow(
             hpx::launch::async,

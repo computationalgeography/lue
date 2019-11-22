@@ -76,8 +76,8 @@ struct NonePartitionAction:
 */
 template<
     typename Element,
-    std::size_t rank,
-    template<typename, std::size_t> typename Array>
+    Rank rank,
+    template<typename, Rank> typename Array>
 hpx::future<Element> none(
     Array<Element, rank> const& array)
 {
@@ -91,7 +91,7 @@ hpx::future<Element> none(
     OutputPartitions output_partitions{shape_in_partitions(array)};
     NonePartitionAction<InputPartition, Element> action;
 
-    for(std::size_t p = 0; p < nr_partitions(array); ++p) {
+    for(Index p = 0; p < nr_partitions(array); ++p) {
 
         output_partitions[p] = hpx::dataflow(
             hpx::launch::async,
@@ -124,7 +124,7 @@ hpx::future<Element> none(
                 for(auto const& partition: partitions) {
 
                     auto const data = partition.data(CopyMode::copy).get();
-                    assert(data.size() == 1);
+                    assert(data.nr_elements() == 1);
                     result = data[0];
 
                     // If one of the elements evaluates to true, then

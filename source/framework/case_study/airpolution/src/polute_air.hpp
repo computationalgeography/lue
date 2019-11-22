@@ -10,10 +10,10 @@ namespace lue {
 //                                         std::uint64_t nr_time_steps,
 //                                         std::uint64_t nr_partitions);
 
-void               polute_air          (std::uint64_t nr_time_steps,
-                                        Shape<std::uint64_t, 2> const&
+void               polute_air          (lue::Count nr_time_steps,
+                                        Shape<lue::Count, 2> const&
                                             array_shape,
-                                        Shape<std::uint64_t, 2> const&
+                                        Shape<lue::Count, 2> const&
                                             partition_shape);
 
 }  // namespace lue

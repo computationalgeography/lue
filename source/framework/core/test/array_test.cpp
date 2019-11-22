@@ -11,14 +11,14 @@ BOOST_AUTO_TEST_CASE(rank)
 
     // 1d
     {
-        std::size_t const rank = 1;
+        lue::Rank const rank = 1;
         using Array = lue::Array<Element, rank>;
         BOOST_CHECK_EQUAL(lue::rank<Array>, rank);
     }
 
     // 2d
     {
-        std::size_t const rank = 2;
+        lue::Rank const rank = 2;
         using Array = lue::Array<Element, rank>;
         BOOST_CHECK_EQUAL(lue::rank<Array>, rank);
     }
@@ -28,7 +28,7 @@ BOOST_AUTO_TEST_CASE(rank)
 BOOST_AUTO_TEST_CASE(array_bool_1d)
 {
     using Element = bool;
-    std::size_t const rank = 1;
+    lue::Rank const rank = 1;
     using Array = lue::Array<Element, rank>;
     using Shape = lue::ShapeT<Array>;
 
@@ -52,6 +52,10 @@ BOOST_AUTO_TEST_CASE(array_bool_1d)
         BOOST_CHECK_EQUAL(array[0], true);
         BOOST_CHECK_EQUAL(array[1], true);
         BOOST_CHECK_EQUAL(array[2], true);
+
+        BOOST_CHECK_EQUAL(array(0), true);
+        BOOST_CHECK_EQUAL(array(1), true);
+        BOOST_CHECK_EQUAL(array(2), true);
     }
 }
 
@@ -59,7 +63,7 @@ BOOST_AUTO_TEST_CASE(array_bool_1d)
 BOOST_AUTO_TEST_CASE(array_bool_2d)
 {
     using Element = bool;
-    std::size_t const rank = 2;
+    lue::Rank const rank = 2;
     using Array = lue::Array<Element, rank>;
     using Shape = lue::ShapeT<Array>;
 
@@ -88,14 +92,24 @@ BOOST_AUTO_TEST_CASE(array_bool_2d)
         sum = std::accumulate(array.begin(), array.end(), 0);
         BOOST_CHECK_EQUAL(sum, 9);
 
-        BOOST_CHECK_EQUAL(array[0][0], true);
-        BOOST_CHECK_EQUAL(array[0][1], true);
-        BOOST_CHECK_EQUAL(array[0][2], true);
-        BOOST_CHECK_EQUAL(array[1][0], true);
-        BOOST_CHECK_EQUAL(array[1][1], true);
-        BOOST_CHECK_EQUAL(array[1][2], true);
-        BOOST_CHECK_EQUAL(array[2][0], true);
-        BOOST_CHECK_EQUAL(array[2][1], true);
-        BOOST_CHECK_EQUAL(array[2][2], true);
+        BOOST_CHECK_EQUAL(array[0], true);
+        BOOST_CHECK_EQUAL(array[1], true);
+        BOOST_CHECK_EQUAL(array[2], true);
+        BOOST_CHECK_EQUAL(array[3], true);
+        BOOST_CHECK_EQUAL(array[4], true);
+        BOOST_CHECK_EQUAL(array[5], true);
+        BOOST_CHECK_EQUAL(array[6], true);
+        BOOST_CHECK_EQUAL(array[7], true);
+        BOOST_CHECK_EQUAL(array[8], true);
+
+        BOOST_CHECK_EQUAL(array(0, 0), true);
+        BOOST_CHECK_EQUAL(array(0, 1), true);
+        BOOST_CHECK_EQUAL(array(0, 2), true);
+        BOOST_CHECK_EQUAL(array(1, 0), true);
+        BOOST_CHECK_EQUAL(array(1, 1), true);
+        BOOST_CHECK_EQUAL(array(1, 2), true);
+        BOOST_CHECK_EQUAL(array(2, 0), true);
+        BOOST_CHECK_EQUAL(array(2, 1), true);
+        BOOST_CHECK_EQUAL(array(2, 2), true);
     }
 }

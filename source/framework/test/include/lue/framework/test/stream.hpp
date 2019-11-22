@@ -10,7 +10,7 @@
 // 
 // template<
 //     typename Element,
-//     std::size_t rank,
+//     Rank rank,
 //     typename Allocator>
 // std::ostream& operator<<(
 //     std::ostream& stream,
@@ -48,7 +48,7 @@ namespace std {
 
 template<
     typename T,
-    std::size_t rank>
+    lue::Rank rank>
 std::ostream& operator<<(
     std::ostream& stream,
     std::array<T, rank> const& array)
@@ -72,7 +72,7 @@ namespace lue {
 
 template<
     typename Index,
-    std::size_t rank>
+    Rank rank>
 std::ostream& operator<<(
     std::ostream& stream,
     ArrayPartitionDefinition<Index, rank> const& definition)
@@ -87,7 +87,7 @@ std::ostream& operator<<(
 
 template<
     typename Element,
-    std::size_t rank>
+    Rank rank>
 std::ostream& operator<<(
     std::ostream& stream,
     ArrayPartitionData<Element, rank> const& data)
@@ -99,14 +99,14 @@ std::ostream& operator<<(
 
     auto joiner = std::experimental::make_ostream_joiner(stream, ", ");
 
-    auto const size = data.size();
+    auto const nr_elements = data.nr_elements();
     auto const begin = data.begin();
     auto const end = data.end();
 
     // Max number of values to print at start and end
-    std::size_t const halo = 15;
+    Count const halo = 15;
 
-    if(size <= 2 * halo) {
+    if(nr_elements <= 2 * halo) {
         // Print all values
         std::copy(begin, end, joiner);
     }
@@ -125,14 +125,14 @@ std::ostream& operator<<(
 
 template<
     typename Element,
-    std::size_t rank>
+    Rank rank>
 std::ostream& operator<<(
     std::ostream& stream,
     ArrayPartition<Element, rank> const& partition)
 {
     stream
-        << "    shape     : " << partition.shape().get() << "\n"
-        << "    size      : " << partition.size().get() << "\n"
+        << "    shape      : " << partition.shape().get() << "\n"
+        << "    nr_elements: " << partition.nr_elements().get() << "\n"
         << partition.data(CopyMode::share).get()
         ;
 
@@ -142,7 +142,7 @@ std::ostream& operator<<(
 
 template<
     typename Element,
-    std::size_t rank>
+    Rank rank>
 std::ostream& operator<<(
     std::ostream& stream,
     PartitionedArray<Element, rank> const& array)

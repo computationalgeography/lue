@@ -56,7 +56,7 @@ struct formatter<std::vector<T>>
 
 template<
     typename Index,
-    std::size_t rank>
+    lue::Rank rank>
 struct formatter<lue::Shape<Index, rank>>
 {
     static_assert(rank > 0);
@@ -140,9 +140,9 @@ namespace lue {
     @brief      Calculate average airpolution based on synthetic data
 */
 void polute_air(
-    std::uint64_t const nr_time_steps,
-    Shape<std::uint64_t, 2> const& array_shape,
-    Shape<std::uint64_t, 2> const& partition_shape)
+    lue::Count const nr_time_steps,
+    Shape<lue::Count, 2> const& array_shape,
+    Shape<lue::Count, 2> const& partition_shape)
 {
     hpx::cout
         << fmt::format(
@@ -153,7 +153,7 @@ void polute_air(
         << std::flush;
 
     using Element = double;
-    std::size_t const rank = 2;
+    Rank const rank = 2;
 
     using Array = lue::PartitionedArray<Element, rank>;
 
@@ -181,7 +181,7 @@ void polute_air(
     hpx::shared_future<Element> parameter3 =
         hpx::make_ready_future<Element>(3);
 
-    for(std::size_t t = 0; t < nr_time_steps; ++t) {
+    for(lue::Index t = 0; t < nr_time_steps; ++t) {
         // array = array * parameter1 + array * parameter2 + array * parameter3
 
         // The arguments used in the calculations are not editted.
@@ -241,7 +241,7 @@ void polute_air(
             // 1 * (parameter1.get() + parameter2.get())
             ;
 
-        for(std::size_t t = 0; t < nr_time_steps; ++t) {
+        for(lue::Index t = 0; t < nr_time_steps; ++t) {
             result = parameter * result;
         }
         hpx::cout

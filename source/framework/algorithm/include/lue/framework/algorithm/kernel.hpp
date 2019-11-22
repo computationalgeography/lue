@@ -6,7 +6,7 @@ namespace lue {
 
 template<
     typename Weight,
-    std::size_t rank>
+    Rank rank>
 class Kernel:
     public Array<Weight, rank>
 {
@@ -19,12 +19,20 @@ private:
 
 public:
 
+    // using Index = typename Base::Index;
+
     using Shape = typename Base::Shape;
+
+    // using Radius = std::ptrdiff_t;  // std::size_t;
+
+                   Kernel              ()=default;
 
                    Kernel              (Shape const& shape);
 
                    Kernel              (Shape const& shape,
                                         Weight weight);
+
+                   Kernel              (Array<Weight, rank> const& weights);
 
                    Kernel              (Kernel const&)=default;
 
@@ -36,18 +44,20 @@ public:
 
     Kernel&        operator=           (Kernel&&)=default;
 
-    std::size_t    radius              () const;
+    Radius         radius              () const;
+
+    Count          size                () const;
 
 private:
 
-    std::size_t const _radius;
+    Radius         _radius;
 
 };
 
 
 template<
     typename Weight,
-    std::size_t rank>
+    Rank rank>
 Kernel<Weight, rank>::Kernel(
     Shape const& shape):
 
@@ -56,14 +66,14 @@ Kernel<Weight, rank>::Kernel(
 
 {
     assert(nr_elements(shape) > 0);
-    assert(2 * _radius + 1 == shape[0]);
+    assert(this->shape()[0] == this->size());
     assert(is_hypercube(shape));
 }
 
 
 template<
     typename Weight,
-    std::size_t rank>
+    Rank rank>
 Kernel<Weight, rank>::Kernel(
     Shape const& shape,
     Weight const weight):
@@ -73,15 +83,31 @@ Kernel<Weight, rank>::Kernel(
 
 {
     assert(nr_elements(shape) > 0);
-    assert(2 * _radius + 1 == shape[0]);
+    assert(this->shape()[0] == this->size());
     assert(is_hypercube(shape));
 }
 
 
 template<
     typename Weight,
-    std::size_t rank>
-std::size_t Kernel<Weight, rank>::radius() const
+    Rank rank>
+Kernel<Weight, rank>::Kernel(
+    Array<Weight, rank> const& weights):
+
+    Base{weights},
+    _radius{(this->shape()[0] - 1) / 2}
+
+{
+    assert(nr_elements(this->shape()) > 0);
+    assert(this->shape()[0] == this->size());
+    assert(is_hypercube(this->shape()));
+}
+
+
+template<
+    typename Weight,
+    Rank rank>
+Radius Kernel<Weight, rank>::radius() const
 {
     return _radius;
 }
@@ -89,9 +115,18 @@ std::size_t Kernel<Weight, rank>::radius() const
 
 template<
     typename Weight,
-    std::size_t rank>
-Kernel<Weight, rank> square_kernel(
-    std::size_t const radius,
+    Rank rank>
+Size Kernel<Weight, rank>::size() const
+{
+    return 2 * _radius + 1;
+}
+
+
+template<
+    typename Weight,
+    Rank rank>
+Kernel<Weight, rank> box_kernel(
+    Radius const radius,
     Weight const value)
 {
     using Kernel = Kernel<Weight, rank>;
@@ -109,7 +144,7 @@ namespace detail {
 
 template<
     typename E,
-    std::size_t r>
+    Rank r>
 class ArrayTraits<Kernel<E, r>>
 {
 
@@ -117,7 +152,7 @@ public:
 
     using Element = E;
 
-    constexpr static std::size_t rank = r;
+    constexpr static Rank rank = r;
 
     using Shape = typename Array<E, r>::Shape;
 

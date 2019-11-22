@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/framework/core/define.hpp"
 #include <cassert>
 #include <functional>
 #include <memory>
@@ -46,7 +47,7 @@ class SharedBuffer
 
 public:
 
-    using Count = std::size_t;
+    using Size = lue::Size;  // std::size_t;
 
 private:
 
@@ -66,7 +67,7 @@ private:
     // static void do_delete(
     //     Element* pointer,
     //     Deallocator deallocator,
-    //     Count const size)
+    //     Size const size)
     // {
     //     deallocator.deallocate(pointer, size);
     // }
@@ -77,7 +78,7 @@ public:
 
     // Some standard types
     using value_type = Element;
-    using size_type = Count;
+    using size_type = Size;
     using iterator = Element*;
     using const_iterator = Element const*;
 
@@ -130,7 +131,7 @@ public:
         The elements in the array are default-constructed.
     */
     explicit SharedBuffer(
-        Count const size):
+        Size const size):
         // Allocator const& allocator=Allocator{}):
 
         _ptr{},
@@ -155,7 +156,7 @@ public:
     */
     SharedBuffer(
         Element const* elements,
-        Count const size,
+        Size const size,
         Mode const mode=Mode::copy):
         // Allocator const& allocator=Allocator{}):
 
@@ -199,7 +200,7 @@ public:
     */
     SharedBuffer(
         Element* elements,
-        Count const size,
+        Size const size,
         Mode const mode=Mode::copy):
         // Allocator const& allocator=Allocator{}):
 
@@ -344,7 +345,7 @@ public:
     /*!
         @brief      Return the number of elements in the buffer
     */
-    Count size() const
+    Size size() const
     {
         return _size;
     }
@@ -387,7 +388,7 @@ public:
     Element& operator[](
         std::size_t const idx)
     {
-        assert(idx < _size);
+        assert(idx < static_cast<std::size_t>(_size));
 
         return _ptr.get()[idx];
     }
@@ -398,7 +399,7 @@ public:
     Element const& operator[](
         std::size_t const idx) const
     {
-        assert(idx < _size);
+        assert(idx < static_cast<std::size_t>(_size));
 
         // return _ptr[idx];
         return _ptr.get()[idx];
@@ -426,7 +427,7 @@ public:
         from the new size.
     */
     void resize(
-        std::size_t const size)
+        Size const size)
     {
         if(_size != size) {
             allocate(size);
@@ -449,12 +450,12 @@ private:
 
     Pointer        _ptr;
 
-    Count          _size;
+    Size           _size;
 
     // Allocator      _allocator;
 
     void allocate(
-        std::size_t const size)
+        Size const size)
     {
         // using namespace std::placeholders;
 
@@ -475,7 +476,7 @@ private:
         assert(
             // Either the pointer is not set and the size is zero, or ...
             (!_ptr && _size == 0) ||
-            // ... the pointer is set and the size is non-zero
+            // ... the pointer is set and the size is larger than zero
             (_ptr && _size > 0));
     }
 

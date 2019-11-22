@@ -82,8 +82,8 @@ struct SumPartitionAction:
 template<
     typename InputElement,
     typename OutputElement=InputElement,
-    std::size_t rank,
-    template<typename, std::size_t> typename Array>
+    Rank rank,
+    template<typename, Rank> typename Array>
 hpx::future<OutputElement> sum(
     Array<InputElement, rank> const& array)
 {
@@ -95,7 +95,7 @@ hpx::future<OutputElement> sum(
     OutputPartitions output_partitions{shape_in_partitions(array)};
     SumPartitionAction<InputPartition, OutputElement> action;
 
-    for(std::size_t p = 0; p < nr_partitions(array); ++p) {
+    for(Index p = 0; p < nr_partitions(array); ++p) {
 
         output_partitions[p] = hpx::dataflow(
             hpx::launch::async,
@@ -127,7 +127,7 @@ hpx::future<OutputElement> sum(
                 for(auto const& partition: partitions) {
 
                     auto const data = partition.data(CopyMode::copy).get();
-                    assert(data.size() == 1);
+                    assert(data.nr_elements() == 1);
 
                     result += data[0];
 

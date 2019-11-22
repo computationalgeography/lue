@@ -92,6 +92,38 @@ std::vector<std::uint64_t> cast<std::vector<std::uint64_t>>(
 
 
 template<>
+std::vector<std::int64_t> cast<std::vector<std::int64_t>>(
+    std::string const& value)
+{
+    // parse value into a vector of signed integers
+    // FIXME: Doesn't support negative integers yet
+    std::string const pattern{
+        "\\[([[:digit:]]+)(?:,[[:space:]]*([[:digit:]]+))*\\]"};
+    std::regex expression{pattern};
+    std::smatch match;
+
+    std::vector<std::int64_t> result;
+
+    if(std::regex_match(value, match, expression)) {
+        result.reserve(match.size());
+
+        for(std::size_t i = 1; i < match.size(); ++i) {
+            result.push_back(cast<std::int64_t>(match[i]));
+        }
+    }
+    else {
+        throw std::runtime_error(
+            fmt::format(
+                "Configuration entry {} cannot be parsed into "
+                "a vector of signed integers (using pattern {})",
+                value, pattern));
+    }
+
+    return result;
+}
+
+
+template<>
 lue::Shape<std::uint64_t, 2> cast<lue::Shape<std::uint64_t, 2>>(
     std::string const& value)
 {
@@ -111,6 +143,26 @@ lue::Shape<std::uint64_t, 2> cast<lue::Shape<std::uint64_t, 2>>(
     return result;
 }
 
+
+template<>
+lue::Shape<std::int64_t, 2> cast<lue::Shape<std::int64_t, 2>>(
+    std::string const& value)
+{
+    std::vector<std::int64_t> values = cast<std::vector<std::int64_t>>(value);
+
+    if(values.size() != 2) {
+        throw std::runtime_error(
+            fmt::format(
+                "Configuration entry {} must contain 2 values, "
+                "but {} where found",
+                value, values.size()));
+    }
+
+    lue::Shape<std::int64_t, 2> result;
+    std::copy(values.begin(), values.end(), result.begin());
+
+    return result;
+}
 
 }  // Anonymous namespace
 
@@ -219,16 +271,24 @@ template detail::ArgumentType<void(T)>::Type                                \
     std::string const&, detail::ArgumentType<void(T)>::Type const&);
 
 REQUIRED_CONFIGURATION_ENTRY(std::uint32_t);
+REQUIRED_CONFIGURATION_ENTRY(std::int32_t);
 REQUIRED_CONFIGURATION_ENTRY(std::uint64_t);
+REQUIRED_CONFIGURATION_ENTRY(std::int64_t);
 REQUIRED_CONFIGURATION_ENTRY(std::string);
 REQUIRED_CONFIGURATION_ENTRY(std::vector<std::uint64_t>);
+REQUIRED_CONFIGURATION_ENTRY(std::vector<std::int64_t>);
 REQUIRED_CONFIGURATION_ENTRY((lue::Shape<std::uint64_t, 2>));
+REQUIRED_CONFIGURATION_ENTRY((lue::Shape<std::int64_t, 2>));
 
 OPTIONAL_CONFIGURATION_ENTRY(std::uint32_t);
+OPTIONAL_CONFIGURATION_ENTRY(std::int32_t);
 OPTIONAL_CONFIGURATION_ENTRY(std::uint64_t);
+OPTIONAL_CONFIGURATION_ENTRY(std::int64_t);
 OPTIONAL_CONFIGURATION_ENTRY(std::string);
 OPTIONAL_CONFIGURATION_ENTRY(std::vector<std::uint64_t>);
+OPTIONAL_CONFIGURATION_ENTRY(std::vector<std::int64_t>);
 OPTIONAL_CONFIGURATION_ENTRY((lue::Shape<std::uint64_t, 2>));
+OPTIONAL_CONFIGURATION_ENTRY((lue::Shape<std::int64_t, 2>));
 
 #undef REQUIRED_CONFIGURATION_ENTRY
 #undef OPTIONAL_CONFIGURATION_ENTRY

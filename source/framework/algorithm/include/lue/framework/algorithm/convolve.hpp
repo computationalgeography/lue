@@ -1,7 +1,10 @@
 #pragma once
+#include "lue/framework/core/array.hpp"
 #include "lue/framework/core/array_partition_visitor.hpp"
 #include "lue/framework/core/type_traits.hpp"
 #include <hpx/include/lcos.hpp>
+#include <numeric>
+#include <unistd.h>
 
 
 namespace lue {
@@ -79,82 +82,1993 @@ namespace detail {
 //         the array partition
 
 
+// template<
+//     typename Array>
+// class ConvolveVisitor:
+//     public ConstPartitionVisitor<PartitionsT<Array>>
+// {
+// 
+//     // - Determine type of output partitions and create collection
+//     // - During the visit, output partitions can be moved into the
+//     //   collection
+// 
+// private:
+// 
+//     using Partitions = PartitionsT<Array>;
+//     using Base = ConstPartitionVisitor<Partitions>;
+// 
+// public:
+// 
+//     ConvolveVisitor(
+//         Array const& array):
+// 
+//         Base{array.partitions()}
+// 
+//     {
+//     }
+// 
+//     void operator()()
+//     {
+//         // PartitionT<Partitions>& partition = this->partition();
+// 
+//         // ShapeT<Partitions> shrinked_partition_shape{partition.shape().get()};
+// 
+//         // auto const rank = Partitions::rank;
+// 
+//         // for(std::size_t i = 0; i < rank; ++i) {
+//         //     shrinked_partition_shape[i] =
+//         //         std::min(shrinked_partition_shape[i], _new_shape[i]);
+//         // }
+// 
+//         // // TODO Blocks current thread. Maybe wait in destructor?
+//         // partition.resize(shrinked_partition_shape).wait();
+//     }
+// 
+//     Array&& result() &&
+//     {
+//         // Move _result, but only when the type of this instance is an
+//         // r-value reference
+//         return std::move(_result);
+//     }
+// 
+// private:
+// 
+//     Array          _result;
+// 
+// };
+// 
+// 
+// template<
+//     typename Array,
+//     typename Kernel>
+// Array convolve(
+//     Array const& array,
+//     Kernel const& kernel)
+// {
+//     // TODO
+//     // - Add ResultElement template argument for type of result elements
+// 
+//     // For each nD focus cell, determine indices of neighboring cells
+//     // that are positioned within the array
+// 
+//     ConvolveVisitor visitor{array};
+// 
+//     // TODO Add overload visiting the whole array
+//     // visit_array(visitor);
+// 
+//     // return visitor.result();
+//     return std::move(visitor).result();
+// }
+
+
+// template<
+//     typename Array,
+//     typename Kernel>
+// Array convolve(
+//     Array const& array,
+//     Kernel const& kernel)
+// {
+// }
+
+
+// template<
+//     typename InputPartition,
+//     typename OutputPartition,
+//     typename Kernel>
+// using ConvolvePartitionAction1 =
+//     typename convolve::OverloadPicker1<
+//         InputPartition, OutputPartition, Kernel>::Action;
+
+
+
+
+
+
+
+// template<
+//     typename InputElement,
+//     typename OutputElement,
+//     typename Kernel>
+// OutputElement convolve1(
+//     InputElement const* elements,
+//     Kernel const& kernel)
+// {
+//     static_assert(std::is_same_v<ElementT<Kernel>, bool>);
+//     static_assert(std::is_convertible_v<InputElement, OutputElement>);
+// 
+//     OutputElement result = 0;
+// 
+//     {
+//         Count nr_elements = lue::nr_elements(kernel);
+//         InputElement const* element = elements - kernel.radius();
+//         ElementT<Kernel> const* weight = kernel.data();
+// 
+//         for(Index i = 0; i < nr_elements; ++i, ++element, ++weight) {
+//             if(weight) {
+//                 result += *element;
+//             }
+//         }
+//     }
+// 
+//     return result;
+// }
+// 
+// 
+// template<
+//     typename InputElement,
+//     typename OutputElement,
+//     typename Kernel>
+// OutputElement convolve1_left_border(
+//     InputElement const* left_elements,
+//     Count const nr_external_elements,
+//     InputElement const* elements,
+//     Kernel const& kernel)
+// {
+//     static_assert(std::is_same_v<ElementT<Kernel>, bool>);
+//     static_assert(std::is_convertible_v<InputElement, OutputElement>);
+// 
+//     OutputElement result = 0;
+// 
+//     {
+//         InputElement const* element = left_elements;
+//         ElementT<Kernel> const* weight = kernel.data();
+//         Index i;
+// 
+//         for(i = 0; i < nr_external_elements; ++i, ++element, ++weight) {
+//             if(weight) {
+//                 result += *element;
+//             }
+//         }
+// 
+//         element = elements - kernel.radius() + i + 1;
+// 
+//         Count nr_elements = lue::nr_elements(kernel);
+// 
+//         for(; i < nr_elements; ++i, ++element, ++weight) {
+//             if(weight) {
+//                 result += *element;
+//             }
+//         }
+//     }
+// 
+//     return result;
+// }
+// 
+// 
+// template<
+//     typename InputElement,
+//     typename OutputElement,
+//     typename Kernel>
+// OutputElement convolve1_right_border(
+//     InputElement const* elements,
+//     InputElement const* right_elements,
+//     Count const nr_external_elements,
+//     Kernel const& kernel)
+// {
+//     static_assert(std::is_same_v<ElementT<Kernel>, bool>);
+//     static_assert(std::is_convertible_v<InputElement, OutputElement>);
+// 
+//     OutputElement result = 0;
+// 
+//     {
+//         InputElement const* element = elements - kernel.radius();
+//         ElementT<Kernel> const* weight = kernel.data();
+//         Index i;
+// 
+//         Count nr_elements = lue::nr_elements(kernel);
+// 
+//         for(i = 0; i < nr_elements - nr_external_elements;
+//                 ++i, ++element, ++weight) {
+//             if(weight) {
+//                 result += *element;
+//             }
+//         }
+// 
+//         element = right_elements;
+// 
+//         for(; i < nr_elements; ++i, ++element, ++weight) {
+//             if(weight) {
+//                 result += *element;
+//             }
+//         }
+//     }
+// 
+//     return result;
+// }
+
+
 template<
-    typename Array>
-class ConvolveVisitor:
-    public ConstPartitionVisitor<PartitionsT<Array>>
+    typename InputElement,
+    typename OutputElement,
+    typename Subspan,
+    typename Kernel>
+OutputElement convolve_subspan(
+    Subspan const& window,
+    Kernel const& kernel)
 {
+    static_assert(std::is_same_v<ElementT<Kernel>, bool>);
+    static_assert(std::is_convertible_v<InputElement, OutputElement>);
 
-    // - Determine type of output partitions and create collection
-    // - During the visit, output partitions can be moved into the
-    //   collection
+    OutputElement result = 0;
 
-private:
+    if constexpr(rank<Kernel> == 1) {
+        assert(window.extent() == kernel.size());
 
-    using Partitions = PartitionsT<Array>;
-    using Base = ConstPartitionVisitor<Partitions>;
+        for(Index c = 0; c < window.extent(); ++c) {
+            if(kernel(c)) {
+                result += window(c);
+            }
+        }
+    }
+    else if constexpr(rank<Kernel> == 2) {
+        assert(window.extent(0) == kernel.size());
+        assert(window.extent(1) == kernel.size());
 
-public:
-
-    ConvolveVisitor(
-        Array const& array):
-
-        Base{array.partitions()}
-
-    {
+        for(Index r = 0; r < window.extent(0); ++r) {
+            for(Index c = 0; c < window.extent(1); ++c) {
+                if(kernel(r, c)) {
+                    result += window(r, c);
+                }
+            }
+        }
     }
 
-    void operator()()
-    {
-        // PartitionT<Partitions>& partition = this->partition();
+    return result;
+}
 
-        // ShapeT<Partitions> shrinked_partition_shape{partition.shape().get()};
 
-        // auto const rank = Partitions::rank;
+template<
+    typename InputElement,
+    typename OutputElement,
+    typename Subspans,
+    typename Kernel>
+OutputElement convolve_border(
+    Subspans const& windows,
+    Kernel const& kernel)
+{
+    static_assert(std::is_same_v<ElementT<Kernel>, bool>);
+    static_assert(std::is_convertible_v<InputElement, OutputElement>);
+    static_assert(rank<Kernel> == rank<Subspans>);
 
-        // for(std::size_t i = 0; i < rank; ++i) {
-        //     shrinked_partition_shape[i] =
-        //         std::min(shrinked_partition_shape[i], _new_shape[i]);
-        // }
+    OutputElement result = 0;
 
-        // // TODO Blocks current thread. Maybe wait in destructor?
-        // partition.resize(shrinked_partition_shape).wait();
+    if constexpr(rank<Kernel> == 1) {
+        assert(false);
+    }
+    else if constexpr(rank<Kernel> == 2) {
+
+#ifndef NDEBUG
+
+        // Although the cells are scattered over multiple partitions,
+        // we must see the same number of cells as present in the kernel
+
+        // Check number of columns in each row of partitions
+        for(Count r = 0; r < windows.shape()[0]; ++r) {
+            Count count = 0;
+
+            for(Count c = 0; c < windows.shape()[1]; ++c) {
+                assert(windows(r, c).extent(1) > 0);
+                count += windows(r, c).extent(1);
+            }
+
+            assert(count == kernel.size());
+        }
+
+        // Check number of rows in each column of partitions
+        for(Count c = 0; c < windows.shape()[1]; ++c) {
+            Count count = 0;
+
+            for(Count r = 0; r < windows.shape()[0]; ++r) {
+                assert(windows(r, c).extent(0) > 0);
+                count += windows(r, c).extent(0);
+            }
+
+            assert(count == kernel.size());
+        }
+
+        // Within a row of partitions, the number of rows per
+        // partition must be the same
+        for(Count r = 0; r < windows.shape()[0]; ++r) {
+            Count const nr_rows = windows(r, 0).extent(0);
+
+            for(Count c = 0; c < windows.shape()[1]; ++c) {
+
+                assert(windows(r, c).extent(0) == nr_rows);
+            }
+        }
+
+        // Within a column of partitions, the number of columns per
+        // partition must be the same
+        for(Count c = 0; c < windows.shape()[1]; ++c) {
+            Count const nr_cols = windows(0, c).extent(1);
+
+            for(Count r = 0; r < windows.shape()[0]; ++r) {
+                assert(windows(r, c).extent(1) == nr_cols);
+            }
+        }
+
+#endif
+
+        // {r,c}w : {row,col} index window
+
+        Index rk = 0;
+        Index ck = 0;
+
+        for(Count rw = 0; rw < windows.shape()[0]; ++rw) {
+
+            for(Count cw = 0; cw < windows.shape()[1]; ++cw) {
+
+                auto const& window = windows(rw, cw);
+
+                assert(window.extent(0) <= kernel.size());
+                assert(window.extent(1) <= kernel.size());
+
+                for(Index r = 0; r < window.extent(0); ++r, ++rk) {
+                    for(Index c = 0; c < window.extent(1); ++c, ++ck) {
+                        if(kernel(rk, ck)) {
+                            result += window(r, c);
+                        }
+                    }
+
+                    ck -= window.extent(1);  // Carriage return
+                }
+
+                // Entering next partition in row
+
+                // Reset kernel row index to start row
+                rk -= window.extent(0);
+
+                // Offset kernel col indices by previous partition's cols
+                ck += window.extent(1);
+
+            }
+
+            // Offset kernel row indices by previous partition's rows
+            rk += windows(rw, 0).extent(0);
+        }
     }
 
-    Array&& result() &&
-    {
-        return std::move(_result);
+    return result;
+}
+
+
+// template<
+//     typename InputPartition,
+//     typename OutputPartition,
+//     typename Kernel>
+// OutputPartition convolve_partition1(
+//     InputPartition const& left_partition,
+//     InputPartition const& center_partition,
+//     InputPartition const& right_partition,
+//     Kernel const& kernel)
+// {
+//     assert(
+//         hpx::get_colocation_id(center_partition.get_id()).get() ==
+//         hpx::find_here());
+// 
+//     using InputData = DataT<InputPartition>;
+//     using InputElement = ElementT<InputPartition>;
+// 
+//     using OutputData = DataT<OutputPartition>;
+//     using OutputElement = ElementT<OutputPartition>;
+// 
+//     auto convolve = convolve1<InputElement, OutputElement, Kernel>;
+//     auto convolve_left_border =
+//         convolve1_left_border<InputElement, OutputElement, Kernel>;
+//     auto convolve_right_border =
+//         convolve1_right_border<InputElement, OutputElement, Kernel>;
+// 
+//     // When the focal cell is located on the first or last element of
+//     // the new partition, radius number of cells are needed from the
+//     // neighbording partitions. Asynchronously request them.
+// 
+//     // Meanwhile, perform calculations for inner section of the new
+//     // partition
+//     hpx::shared_future<InputData> center_data =
+//         center_partition.data(CopyMode::share);
+// 
+//     auto output_data = hpx::dataflow(
+//         hpx::launch::async,
+//         hpx::util::unwrapping(
+// 
+//             [convolve, kernel](
+//                 InputData const& center_data)
+//             {
+//                 OutputData output_data{center_data.shape()};
+// 
+//                 assert(kernel.radius() == 1);
+// 
+//                 for(Index i = kernel.radius();
+//                         i < center_data.nr_elements() - kernel.radius(); ++i) {
+//                     output_data[i] = convolve(&center_data[i], kernel);
+//                 }
+// 
+//                 return output_data;
+//             }
+// 
+//         ),
+//         center_data);
+// 
+//     // Once the elements from the neighboring partitions have arrived,
+//     // finish by performing calculations for the sides of the new
+//     // partition
+//     return hpx::dataflow(
+//         hpx::launch::async,
+//         hpx::util::unwrapping(
+// 
+//             [convolve_left_border, convolve_right_border, kernel](
+//                 hpx::id_type const locality_id,
+//                 OutputData&& output_data,
+//                 InputData const& left_data,
+//                 InputData const& center_data,
+//                 InputData const& right_data)
+//             {
+//                 assert(kernel.radius() == 1);
+//                 assert(nr_elements(left_data) >= kernel.radius());
+//                 assert(nr_elements(right_data) >= kernel.radius());
+// 
+//                 Count const nr_external_elements = kernel.radius();
+// 
+//                 // Left border
+//                 {
+//                     Index l = nr_elements(left_data) - kernel.radius();
+// 
+//                     for(Index i = 0; i < kernel.radius(); ++i, ++l) {
+//                         output_data[i] = convolve_left_border(
+//                             &left_data[l], nr_external_elements,
+//                             &center_data[i], kernel);
+//                     }
+//                 }
+// 
+//                 // Right border
+//                 {
+//                     for(Index i = nr_elements(center_data) -
+//                             kernel.radius(), nr_external_elements = 1;
+//                             i < nr_elements(center_data);
+//                             ++i, ++nr_external_elements) {
+// 
+//                         output_data[i] = convolve_right_border(
+//                             &center_data[i], &right_data[0],
+//                             nr_external_elements, kernel);
+// 
+//                     }
+//                 }
+// 
+//                 return OutputPartition{locality_id, std::move(output_data)};
+//             }
+// 
+//         ),
+//         hpx::get_colocation_id(center_partition.get_id()),
+//         std::move(output_data),
+//         left_partition.data(CopyMode::share),  // FIXME only subset of data
+//         center_data,
+//         right_partition.data(CopyMode::share));  // FIXME only subset of data
+// }
+
+
+template<
+    lue::Rank rank,
+    lue::Index dimension=rank>
+constexpr lue::Count nr_neighbors()
+{
+    // Given the rank of a partition, how many neighboring partitions
+    // are there?
+
+    // 1D: 1 * 2 * (1 - 0) → 2
+    // 2D: 1 * 2 * (2 - 0) + 2 * 2 * (2 - 1) → 4 + 4 → 8
+    // 3D: 1 * 2 * (3 - 0) + 2 * 2 * (3 - 1) + 3 * 2 * (3 - 2) → 6 + 8 + 12 → 26
+    //
+    // Given rank r, for each current dimension d є (0, r]:
+    //     d * 2 * (r - (d - 1))
+
+    if constexpr(dimension > 0) {
+        return
+            dimension * 2 * (rank - (dimension - 1)) +
+            nr_neighbors<rank, dimension - 1>();
+    }
+    else {
+        return 0;
+    }
+}
+
+
+template<
+    typename Partition>
+constexpr lue::Count nr_neighbors()
+{
+    // Given a partition, how many neighboring partitions are there?
+    return nr_neighbors<rank<Partition>>();
+}
+
+
+template<
+    typename InputPartitions,
+    typename OutputPartition,
+    typename Kernel>
+OutputPartition convolve_partition(
+    InputPartitions const& partitions,
+    Kernel const& kernel)
+{
+    using InputPartition = PartitionT<InputPartitions>;
+    using InputData = DataT<InputPartition>;
+    using InputElement = ElementT<InputPartition>;
+    using InputDataSpan = typename InputData::Span;
+    using InputDataSubspan = typename InputData::Subspan;
+
+    using OutputData = DataT<OutputPartition>;
+    using OutputElement = ElementT<OutputPartition>;
+
+    using Shape = ShapeT<InputPartitions>;
+
+    assert(partitions.nr_elements() == nr_neighbors<InputPartition>() + 1);
+
+    if constexpr(rank<InputPartition> == 2) {
+        assert(
+            hpx::get_colocation_id(partitions(1, 1).get_id()).get() ==
+            hpx::find_here());
+
+        // The partitions collection contains 9 partitions:
+        //
+        // +------+-----+------+
+        // | 0, 0 | 0, 1| 0, 2 |
+        // +------+-----+------+
+        // | 1, 0 | 1, 1| 1, 2 |
+        // +------+-----+------+
+        // | 2, 0 | 2, 1| 2, 2 |
+        // +------+-----+------+
+        //
+        // We only need to calculate a result for partition (1, 1). The
+        // other ones are used only to provide input values for the sides
+        // of this partition.
+
+        // Create an array with futures to partition data instances. Once
+        // the data has arrived, these instances are used in the actual
+        // calculations.
+
+        hpx::future<hpx::id_type> locality_id_future =
+            hpx::get_colocation_id(partitions(1, 1).get_id());
+
+        using InputPartitionsData =
+            Array<hpx::shared_future<InputData>, rank<InputPartition>>;
+
+        InputPartitionsData input_partitions_data{partitions.shape()};
+
+        // FIXME Get the smallest amount of data possible
+        // hier verder
+        input_partitions_data(0, 0) = partitions(0, 0).data(CopyMode::share);
+        input_partitions_data(0, 1) = partitions(0, 1).data(CopyMode::share);
+        input_partitions_data(0, 2) = partitions(0, 2).data(CopyMode::share);
+        input_partitions_data(1, 0) = partitions(1, 0).data(CopyMode::share);
+        input_partitions_data(1, 1) = partitions(1, 1).data(CopyMode::share);
+        input_partitions_data(1, 2) = partitions(1, 2).data(CopyMode::share);
+        input_partitions_data(2, 0) = partitions(2, 0).data(CopyMode::share);
+        input_partitions_data(2, 1) = partitions(2, 1).data(CopyMode::share);
+        input_partitions_data(2, 2) = partitions(2, 2).data(CopyMode::share);
+
+        using Slice = std::pair<std::ptrdiff_t, std::ptrdiff_t>;
+
+        // Once the elements from the center partition have arrived,
+        // perform calculations for all cells whose neighborhood are
+        // contained within this partition
+        auto output_data_future = hpx::dataflow(
+            hpx::launch::async,
+            hpx::util::unwrapping(
+
+                [kernel](
+                    InputData const& partition_data)
+                {
+                    auto const [nr_rows, nr_cols] = partition_data.shape();
+                    auto const& array_span = partition_data.span();
+
+                    assert(nr_rows >= kernel.size());
+                    assert(nr_cols >= kernel.size());
+
+                    OutputData output_data{partition_data.shape()};
+
+                    // rf, cf are indices of focal cell in array
+                    // ck, ck are indices of first cell in array
+                    //     that is visible from kernel
+
+                    for(Index rf = kernel.radius(), rk = rf - kernel.radius();
+                            rf < nr_rows - kernel.radius(); ++rf, ++rk) {
+                        for(Index cf = kernel.radius(), ck = cf - kernel.radius();
+                                cf < nr_cols - kernel.radius(); ++cf, ++rk) {
+
+                            output_data(rf, cf) =
+                                convolve_subspan<InputElement, OutputElement>(
+                                    lue::subspan(array_span,
+                                        Slice{rk, rk + kernel.size()},
+                                        Slice{ck, ck + kernel.size()}),
+                                    kernel);
+
+                        }
+                    }
+
+                    return output_data;
+                }
+
+            ),
+            input_partitions_data(1, 1));
+
+        // Once the elements from all neighboring partitions have arrived,
+        // finish by performing calculations for the sides of the new
+        // partition
+
+        auto input_partitions_data_future = hpx::when_all_n(
+             input_partitions_data.begin(),
+             nr_elements(input_partitions_data.shape()));
+
+        return hpx::when_all(
+                input_partitions_data_future,
+                locality_id_future,
+                output_data_future).then(
+            hpx::util::unwrapping(
+
+                [kernel](
+                    auto&& data)
+                {
+                    auto input_partitions_data_futures =
+                        hpx::util::get<0>(data).get();
+                    hpx::id_type const locality_id =
+                        hpx::util::get<1>(data).get();
+                    OutputData output_partition_data =
+                        hpx::util::get<2>(data).get();
+
+                    using InputPartitionsData =
+                        Array<InputData, rank<InputPartition>>;
+                    InputPartitionsData partitions_data{Shape{{3, 3}}};
+
+                    std::transform(
+                            input_partitions_data_futures.begin(),
+                            input_partitions_data_futures.end(),
+                            partitions_data.begin(),
+
+                            [](auto&& future) {
+                                return future.get();
+                            }
+
+                        );
+
+                    using InputPartitionsDataSpan =
+                        Array<InputDataSpan, rank<InputPartition>>;
+                    InputPartitionsDataSpan partition_spans{Shape{{3, 3}}};
+
+                    std::transform(
+                            partitions_data.begin(),
+                            partitions_data.end(),
+                            partition_spans.begin(),
+
+                            [](InputData const& input_partition_data) {
+                                return input_partition_data.span();
+                            }
+
+                        );
+
+                    using InputPartitionsDataSubspan =
+                        Array<InputDataSubspan, rank<InputPartition>>;
+
+                    auto const [nr_rows, nr_cols] =
+                        partitions_data(1, 1).shape();
+
+                    // rf, cf are indices of focal cell in array
+                    // ck, ck are indices of first cell in array
+                    //     that is visible from kernel
+
+                    {
+                        // Four partitions are involved when calculating
+                        // the convolution for the corner cells. In this
+                        // object we store the views into these partitions
+                        // which are used to calculate the convolution for
+                        // a single focal cell.
+                        InputPartitionsDataSubspan windows{Shape{{2, 2}}};
+
+                        // Indices of the four partition views used in the corners
+                        // {row, col}, {north-west, ..., south-west}, {begin, end}
+                        // → {r,c}{nw,ne,se,sw}{b,e}
+                        Index rnwb, rnwe, cnwb, cnwe;
+                        Index rneb, rnee, cneb, cnee;
+                        Index rswb, rswe, cswb, cswe;
+                        Index rseb, rsee, cseb, csee;
+
+                        // North-west corner
+                        {
+                            auto const& nw_partition = partition_spans(0, 0);
+                            auto const& ne_partition = partition_spans(0, 1);
+                            auto const& sw_partition = partition_spans(1, 0);
+                            auto const& se_partition = partition_spans(1, 1);
+
+                            rnwb = nw_partition.extent(0) - kernel.radius();
+                            rnwe = nw_partition.extent(0);
+                            cnwe = nw_partition.extent(1);
+
+                            rneb = ne_partition.extent(0) - kernel.radius();
+                            rnee = ne_partition.extent(0);
+                            cneb = 0;
+
+                            rswb = 0;
+                            rswe = kernel.radius() + 1;
+                            cswe = sw_partition.extent(1);
+
+                            rseb = 0;
+                            rsee = kernel.radius() + 1;
+                            cseb = 0;
+
+                            for(Index rf = 0; rf < kernel.radius();
+                                    ++rf, ++rnwb, ++rneb, ++rswe, ++rsee) {
+
+                                cnwb = nw_partition.extent(1) - kernel.radius();
+                                cnee = kernel.radius() + 1;
+                                cswb = sw_partition.extent(1) - kernel.radius();
+                                csee = kernel.radius() + 1;
+
+                                for(Index cf = 0; cf < kernel.radius();
+                                        ++cf, ++cnwb, ++cnee, ++cswb, ++csee) {
+
+                                    // NW partition view
+                                    windows(0, 0) = lue::subspan(nw_partition,
+                                        Slice{rnwb, rnwe}, Slice{cnwb, cnwe});
+                                    assert(windows(0, 0).extent(0) > 0);
+                                    assert(windows(0, 0).extent(1) > 0);
+                                    assert(windows(0, 0).extent(0) <= kernel.radius());
+                                    assert(windows(0, 0).extent(1) <= kernel.radius());
+
+                                    // NE partition view
+                                    windows(0, 1) = lue::subspan(ne_partition,
+                                        Slice{rneb, rnee}, Slice{cneb, cnee});
+                                    assert(windows(0, 1).extent(0) > 0);
+                                    assert(windows(0, 1).extent(1) > 0);
+                                    assert(windows(0, 1).extent(0) <= kernel.radius());
+                                    assert(windows(0, 1).extent(1) < kernel.size());
+
+                                    // SW partition view
+                                    windows(1, 0) = lue::subspan(sw_partition,
+                                        Slice{rswb, rswe}, Slice{cswb, cswe});
+                                    assert(windows(1, 0).extent(0) > 0);
+                                    assert(windows(1, 0).extent(1) > 0);
+                                    assert(windows(1, 0).extent(0) < kernel.size());
+                                    assert(windows(1, 0).extent(1) <= kernel.radius());
+
+                                    // SE partition view
+                                    windows(1, 1) = lue::subspan(se_partition,
+                                        Slice{rseb, rsee}, Slice{cseb, csee});
+                                    assert(windows(1, 1).extent(0) > 0);
+                                    assert(windows(1, 1).extent(1) > 0);
+                                    assert(windows(1, 1).extent(0) < kernel.size());
+                                    assert(windows(1, 1).extent(1) < kernel.size());
+
+                                    output_partition_data(rf, cf) =
+                                        convolve_border<InputElement, OutputElement>(
+                                            windows, kernel);
+                                }
+                            }
+                        }
+
+                        // North-east corner
+                        {
+                            auto const& nw_partition = partition_spans(0, 1);
+                            auto const& ne_partition = partition_spans(0, 2);
+                            auto const& sw_partition = partition_spans(1, 1);
+                            auto const& se_partition = partition_spans(1, 2);
+
+                            rnwb = nw_partition.extent(0) - kernel.radius();
+                            rnwe = nw_partition.extent(0);
+                            cnwe = nw_partition.extent(1);
+
+                            rneb = ne_partition.extent(0) - kernel.radius();
+                            rnee = ne_partition.extent(0);
+                            cneb = 0;
+
+                            rswb = 0;
+                            rswe = kernel.radius() + 1;
+                            cswe = sw_partition.extent(1);
+
+                            rseb = 0;
+                            rsee = kernel.radius() + 1;
+                            cseb = 0;
+
+                            for(Index rf = 0; rf < kernel.radius();
+                                    ++rf, ++rnwb, ++rneb, ++rswe, ++rsee) {
+
+                                cnwb = nw_partition.extent(1) - (kernel.size() - 1);
+                                cnee = cneb + 1;
+                                csee = cseb + 1;
+                                cswb = sw_partition.extent(1) - (kernel.size() - 1);
+
+                                for(Index cf = nr_cols - kernel.radius(); cf < nr_cols;
+                                        ++cf, ++cnwb, ++cnee, ++cswb, ++csee) {
+
+                                    // NW partition view
+                                    windows(0, 0) = lue::subspan(nw_partition,
+                                        Slice{rnwb, rnwe}, Slice{cnwb, cnwe});
+                                    assert(windows(0, 0).extent(0) > 0);
+                                    assert(windows(0, 0).extent(1) > 0);
+                                    assert(windows(0, 0).extent(0) <= kernel.radius());
+                                    assert(windows(0, 0).extent(1) < kernel.size());
+
+                                    // NE partition view
+                                    windows(0, 1) = lue::subspan(ne_partition,
+                                        Slice{rneb, rnee}, Slice{cneb, cnee});
+                                    assert(windows(0, 1).extent(0) > 0);
+                                    assert(windows(0, 1).extent(1) > 0);
+                                    assert(windows(0, 1).extent(0) <= kernel.radius());
+                                    assert(windows(0, 1).extent(1) <= kernel.radius());
+
+                                    // SW partition view
+                                    windows(1, 0) = lue::subspan(sw_partition,
+                                        Slice{rswb, rswe}, Slice{cswb, cswe});
+                                    assert(windows(1, 0).extent(0) > 0);
+                                    assert(windows(1, 0).extent(1) > 0);
+                                    assert(windows(1, 0).extent(0) < kernel.size());
+                                    assert(windows(1, 0).extent(1) < kernel.size());
+
+                                    // SE partition view
+                                    windows(1, 1) = lue::subspan(se_partition,
+                                        Slice{rseb, rsee}, Slice{cseb, csee});
+                                    assert(windows(1, 1).extent(0) > 0);
+                                    assert(windows(1, 1).extent(1) > 0);
+                                    assert(windows(1, 1).extent(0) < kernel.size());
+                                    assert(windows(1, 1).extent(1) <= kernel.radius());
+
+                                    output_partition_data(rf, cf) =
+                                        convolve_border<InputElement, OutputElement>(
+                                            windows, kernel);
+                                }
+                            }
+                        }
+
+                        // South-west corner
+                        {
+                            auto const& nw_partition = partition_spans(1, 0);
+                            auto const& ne_partition = partition_spans(1, 1);
+                            auto const& sw_partition = partition_spans(2, 0);
+                            auto const& se_partition = partition_spans(2, 1);
+
+                            rnwb = nw_partition.extent(0) - (kernel.size() - 1);
+                            rnwe = nw_partition.extent(0);
+                            cnwe = nw_partition.extent(1);
+
+                            rneb = ne_partition.extent(0) - (kernel.size() - 1);
+                            rnee = ne_partition.extent(0);
+                            cneb = 0;
+
+                            rswb = 0;
+                            rswe = rswb + 1;
+                            cswe = sw_partition.extent(1);
+
+                            rseb = 0;
+                            rsee = rswb + 1;
+                            cseb = 0;
+
+                            for(Index rf = nr_rows - kernel.radius(); rf < nr_rows;
+                                    ++rf, ++rnwb, ++rneb, ++rswe, ++rsee) {
+
+                                cnwb = nw_partition.extent(1) - kernel.radius();
+                                cnee = kernel.radius() + 1;
+                                cswb = sw_partition.extent(1) - kernel.radius();
+                                csee = kernel.radius() + 1;
+
+                                for(Index cf = 0; cf < kernel.radius();
+                                        ++cf, ++cnwb, ++cnee, ++cswb, ++csee) {
+
+                                    // NW partition view
+                                    windows(0, 0) = lue::subspan(nw_partition,
+                                        Slice{rnwb, rnwe}, Slice{cnwb, cnwe});
+                                    assert(windows(0, 0).extent(0) > 0);
+                                    assert(windows(0, 0).extent(1) > 0);
+                                    assert(windows(0, 0).extent(0) < kernel.size());
+                                    assert(windows(0, 0).extent(1) <= kernel.radius());
+
+                                    // NE partition view
+                                    windows(0, 1) = lue::subspan(ne_partition,
+                                        Slice{rneb, rnee}, Slice{cneb, cnee});
+                                    assert(windows(0, 1).extent(0) > 0);
+                                    assert(windows(0, 1).extent(1) > 0);
+                                    assert(windows(0, 1).extent(0) < kernel.size());
+                                    assert(windows(0, 1).extent(1) < kernel.size());
+
+                                    // SW partition view
+                                    windows(1, 0) = lue::subspan(sw_partition,
+                                        Slice{rswb, rswe}, Slice{cswb, cswe});
+                                    assert(windows(1, 0).extent(0) > 0);
+                                    assert(windows(1, 0).extent(1) > 0);
+                                    assert(windows(1, 0).extent(0) <= kernel.radius());
+                                    assert(windows(1, 0).extent(1) <= kernel.radius());
+
+                                    // SE partition view
+                                    windows(1, 1) = lue::subspan(se_partition,
+                                        Slice{rseb, rsee}, Slice{cseb, csee});
+                                    assert(windows(1, 1).extent(0) > 0);
+                                    assert(windows(1, 1).extent(1) > 0);
+                                    assert(windows(1, 1).extent(0) <= kernel.radius());
+                                    assert(windows(1, 1).extent(1) < kernel.size());
+
+                                    output_partition_data(rf, cf) =
+                                        convolve_border<InputElement, OutputElement>(
+                                            windows, kernel);
+                                }
+                            }
+                        }
+
+                        // South-east corner
+                        {
+                            auto const& nw_partition = partition_spans(1, 1);
+                            auto const& ne_partition = partition_spans(1, 2);
+                            auto const& sw_partition = partition_spans(2, 1);
+                            auto const& se_partition = partition_spans(2, 2);
+
+                            rnwb = nw_partition.extent(0) - (kernel.size() - 1);
+                            rnwe = nw_partition.extent(0);
+                            cnwe = nw_partition.extent(1);
+
+                            rneb = ne_partition.extent(0) - (kernel.size() - 1);
+                            rnee = ne_partition.extent(0);
+                            cneb = 0;
+
+                            rswb = 0;
+                            rswe = rswb + 1;
+                            cswe = sw_partition.extent(1);
+
+                            rseb = 0;
+                            rsee = rseb + 1;
+                            cseb = 0;
+
+                            for(Index rf = nr_rows - kernel.radius(); rf < nr_rows;
+                                    ++rf, ++rnwb, ++rneb, ++rswe, ++rsee) {
+
+                                cnwb = nw_partition.extent(1) - (kernel.size() - 1);
+                                cnee = cneb + 1;
+                                cswb = sw_partition.extent(1) - (kernel.size() - 1);
+                                csee = cseb + 1;
+
+                                for(Index cf = nr_cols - kernel.radius(); cf < nr_cols;
+                                        ++cf, ++cnwb, ++cnee, ++cswb, ++csee) {
+
+                                    // NW partition view
+                                    windows(0, 0) = lue::subspan(nw_partition,
+                                        Slice{rnwb, rnwe}, Slice{cnwb, cnwe});
+                                    assert(windows(0, 0).extent(0) > 0);
+                                    assert(windows(0, 0).extent(1) > 0);
+                                    assert(windows(0, 0).extent(0) < kernel.size());
+                                    assert(windows(0, 0).extent(1) < kernel.size());
+
+                                    // NE partition view
+                                    windows(0, 1) = lue::subspan(ne_partition,
+                                        Slice{rneb, rnee}, Slice{cneb, cnee});
+                                    assert(windows(0, 1).extent(0) > 0);
+                                    assert(windows(0, 1).extent(1) > 0);
+                                    assert(windows(0, 1).extent(0) < kernel.size());
+                                    assert(windows(0, 1).extent(1) <= kernel.radius());
+
+                                    // SW partition view
+                                    windows(1, 0) = lue::subspan(sw_partition,
+                                        Slice{rswb, rswe}, Slice{cswb, cswe});
+                                    assert(windows(1, 0).extent(0) > 0);
+                                    assert(windows(1, 0).extent(1) > 0);
+                                    assert(windows(1, 0).extent(0) <= kernel.radius());
+                                    assert(windows(1, 0).extent(1) < kernel.size());
+
+                                    // SE partition view
+                                    windows(1, 1) = lue::subspan(se_partition,
+                                        Slice{rseb, rsee}, Slice{cseb, csee});
+                                    assert(windows(1, 1).extent(0) > 0);
+                                    assert(windows(1, 1).extent(1) > 0);
+                                    assert(windows(1, 1).extent(0) <= kernel.radius());
+                                    assert(windows(1, 1).extent(1) <= kernel.radius());
+
+                                    output_partition_data(rf, cf) =
+                                        convolve_border<InputElement, OutputElement>(
+                                            windows, kernel);
+                                }
+                            }
+                        }
+                    }
+
+                    {
+                        // Two partitions are involved when calculating
+                        // the convolution for the side cells.
+
+                        // North side
+                        {
+                            InputPartitionsDataSubspan windows{Shape{{2, 1}}};
+
+                            auto const& n_partition = partition_spans(0, 1);
+                            auto const& s_partition = partition_spans(1, 1);
+
+                            Index rnb = n_partition.extent(0) - kernel.radius();
+                            Index const rne = n_partition.extent(0);
+                            Index const rsb = 0;
+                            Index rse = kernel.radius() + 1;
+
+                            for(Index rf = 0; rf < kernel.radius();
+                                    ++rf, ++rnb, ++rse) {
+
+                                for(Index cf = kernel.radius(), cb = 0; cf < nr_cols - kernel.radius();
+                                        ++cf, ++cb) {
+
+                                    // N partition view
+                                    windows(0, 0) = lue::subspan(n_partition,
+                                        Slice{rnb, rne}, Slice{cb, cb + kernel.size()});
+                                    assert(windows(0, 0).extent(0) > 0);
+                                    assert(windows(0, 0).extent(1) > 0);
+                                    assert(windows(0, 0).extent(0) <= kernel.radius());
+                                    assert(windows(0, 0).extent(1) == kernel.size());
+
+                                    // S partition view
+                                    windows(1, 0) = lue::subspan(s_partition,
+                                        Slice{rsb, rse}, Slice{cb, cb + kernel.size()});
+                                    assert(windows(1, 0).extent(0) > 0);
+                                    assert(windows(1, 0).extent(1) > 0);
+                                    assert(windows(1, 0).extent(0) < kernel.size());
+                                    assert(windows(1, 0).extent(1) == kernel.size());
+
+                                    output_partition_data(rf, cf) =
+                                        convolve_border<InputElement, OutputElement>(
+                                            windows, kernel);
+
+                                }
+                            }
+                        }
+
+                        // West side
+                        {
+                            InputPartitionsDataSubspan windows{Shape{{1, 2}}};
+
+                            auto const& w_partition = partition_spans(1, 0);
+                            auto const& e_partition = partition_spans(1, 1);
+
+                            Index const cwe = w_partition.extent(1);
+                            Index const ceb = 0;
+
+                            for(Index rf = kernel.radius(), rb = 0; rf < nr_rows - kernel.radius();
+                                    ++rf, ++rb) {
+
+                                Index cwb = w_partition.extent(1) - kernel.radius();
+                                Index cee = kernel.radius() + 1;
+
+                                for(Index cf = 0; cf < kernel.radius();
+                                        ++cf, ++cwb, ++cee) {
+
+                                    // W partition view
+                                    windows(0, 0) = lue::subspan(w_partition,
+                                        Slice{rb, rb + kernel.size()}, Slice{cwb, cwe});
+                                    assert(windows(0, 0).extent(0) > 0);
+                                    assert(windows(0, 0).extent(1) > 0);
+                                    assert(windows(0, 0).extent(0) == kernel.size());
+                                    assert(windows(0, 0).extent(1) <= kernel.radius());
+
+                                    // E partition view
+                                    windows(0, 1) = lue::subspan(e_partition,
+                                        Slice{rb, rb + kernel.size()}, Slice{ceb, cee});
+                                    assert(windows(0, 1).extent(0) > 0);
+                                    assert(windows(0, 1).extent(1) > 0);
+                                    assert(windows(0, 1).extent(0) == kernel.size());
+                                    assert(windows(0, 1).extent(1) < kernel.size());
+
+                                    output_partition_data(rf, cf) =
+                                        convolve_border<InputElement, OutputElement>(
+                                            windows, kernel);
+
+                                }
+                            }
+                        }
+
+                        // East side
+                        {
+                            InputPartitionsDataSubspan windows{Shape{{1, 2}}};
+
+                            auto const& w_partition = partition_spans(1, 1);
+                            auto const& e_partition = partition_spans(1, 2);
+
+                            Index const cwe = w_partition.extent(1);
+                            Index const ceb = 0;
+
+                            for(Index rf = kernel.radius(), rb = 0; rf < nr_rows - kernel.radius();
+                                    ++rf, ++rb) {
+
+                                Index cwb = w_partition.extent(1) - (kernel.size() - 1);
+                                Index cee = ceb + 1;
+
+                                for(Index cf = nr_cols - kernel.radius(); cf < nr_cols;
+                                        ++cf, ++cwb, ++cee) {
+
+                                    // W partition view
+                                    windows(0, 0) = lue::subspan(w_partition,
+                                        Slice{rb, rb + kernel.size()}, Slice{cwb, cwe});
+                                    assert(windows(0, 0).extent(0) > 0);
+                                    assert(windows(0, 0).extent(1) > 0);
+                                    assert(windows(0, 0).extent(0) == kernel.size());
+                                    assert(windows(0, 0).extent(1) < kernel.size());
+
+                                    // E partition view
+                                    windows(0, 1) = lue::subspan(e_partition,
+                                        Slice{rb, rb + kernel.size()}, Slice{ceb, cee});
+                                    assert(windows(0, 1).extent(0) > 0);
+                                    assert(windows(0, 1).extent(1) > 0);
+                                    assert(windows(0, 1).extent(0) == kernel.size());
+                                    assert(windows(0, 1).extent(1) <= kernel.radius());
+
+                                    output_partition_data(rf, cf) =
+                                        convolve_border<InputElement, OutputElement>(
+                                            windows, kernel);
+
+                                }
+                            }
+                        }
+
+                        // South side
+                        {
+                            InputPartitionsDataSubspan windows{Shape{{2, 1}}};
+
+                            auto const& n_partition = partition_spans(1, 1);
+                            auto const& s_partition = partition_spans(2, 1);
+
+                            Index rnb = n_partition.extent(0) - (kernel.size() - 1);
+                            Index const rne = n_partition.extent(0);
+
+                            Index const rsb = 0;
+                            Index rse = rsb + 1;
+
+                            for(Index rf = nr_rows - kernel.radius(); rf < nr_rows;
+                                    ++rf, ++rnb, ++rse) {
+
+                                for(Index cf = kernel.radius(), cb = 0; cf < nr_cols - kernel.radius();
+                                        ++cf, ++cb) {
+
+                                    // N partition view
+                                    windows(0, 0) = lue::subspan(n_partition,
+                                        Slice{rnb, rne}, Slice{cb, cb + kernel.size()});
+                                    assert(windows(0, 0).extent(0) > 0);
+                                    assert(windows(0, 0).extent(1) > 0);
+                                    assert(windows(0, 0).extent(0) < kernel.size());
+                                    assert(windows(0, 0).extent(1) == kernel.size());
+
+                                    // S partition view
+                                    windows(1, 0) = lue::subspan(s_partition,
+                                        Slice{rsb, rse}, Slice{cb, cb + kernel.size()});
+                                    assert(windows(1, 0).extent(0) > 0);
+                                    assert(windows(1, 0).extent(1) > 0);
+                                    assert(windows(1, 0).extent(0) <= kernel.radius());
+                                    assert(windows(1, 0).extent(1) == kernel.size());
+
+                                    output_partition_data(rf, cf) =
+                                        convolve_border<InputElement, OutputElement>(
+                                            windows, kernel);
+
+                                }
+                            }
+                        }
+                    }
+
+                    // Done, create and return the output partition ------------
+                    return OutputPartition{
+                        locality_id, std::move(output_partition_data)};
+                }
+
+            ));
+
+
+        // return hpx::dataflow(
+        //     hpx::launch::async,
+        //     hpx::util::unwrapping(
+
+        //         // [convolve_left_border, convolve_right_border, kernel](
+        //         [kernel](
+        //             hpx::id_type const locality_id,
+        //             OutputData&& output_data)
+        //             // InputData const& left_data,
+        //             // InputData const& center_data,
+        //             // InputData const& right_data)
+        //         {
+        //             // assert(kernel.radius() == 1);
+        //             // assert(nr_elements(left_data) >= kernel.radius());
+        //             // assert(nr_elements(right_data) >= kernel.radius());
+
+        //             // Count const nr_external_elements = kernel.radius();
+
+        //             // // Left border
+        //             // {
+        //             //     Index l = nr_elements(left_data) - kernel.radius();
+
+        //             //     for(Index i = 0; i < kernel.radius(); ++i, ++l) {
+        //             //         output_data[i] = convolve_left_border(
+        //             //             &left_data[l], nr_external_elements,
+        //             //             &center_data[i], kernel);
+        //             //     }
+        //             // }
+
+        //             // // Right border
+        //             // {
+        //             //     for(Index i = nr_elements(center_data) -
+        //             //             kernel.radius(), nr_external_elements = 1;
+        //             //             i < nr_elements(center_data);
+        //             //             ++i, ++nr_external_elements) {
+
+        //             //         output_data[i] = convolve_right_border(
+        //             //             &center_data[i], &right_data[0],
+        //             //             nr_external_elements, kernel);
+
+        //             //     }
+        //             // }
+
+        //             return OutputPartition{locality_id, std::move(output_data)};
+        //         }
+
+        //     ),
+        //     hpx::get_colocation_id(partitions(1, 1).get_id()),
+        //     std::move(output_data));
+
+
+
+        //     // left_partition.data(CopyMode::share),  // FIXME only subset of data
+        //     // center_data,
+        //     // right_partition.data(CopyMode::share));  // FIXME only subset of data
     }
 
-private:
+    assert(false);
+    return OutputPartition{hpx::find_here()};
+}
 
-    Array          _result;
 
-};
+// template<
+//     typename InputPartition,
+//     typename OutputPartition,
+//     typename Kernel>
+// struct ConvolvePartitionAction1:
+//     hpx::actions::make_action<
+//         decltype(&convolve_partition1<InputPartition, OutputPartition, Kernel>),
+//         &convolve_partition1<InputPartition, OutputPartition, Kernel>,
+//         ConvolvePartitionAction1<InputPartition, OutputPartition, Kernel>>
+// {};
+
+
+template<
+    typename InputPartitions,
+    typename OutputPartition,
+    typename Kernel>
+struct ConvolvePartitionAction:
+    hpx::actions::make_action<
+        decltype(&convolve_partition<InputPartitions, OutputPartition, Kernel>),
+        &convolve_partition<InputPartitions, OutputPartition, Kernel>,
+        ConvolvePartitionAction<InputPartitions, OutputPartition, Kernel>>
+{};
+
+
+// template<
+//     typename Array,
+//     typename Kernel,
+//     typename OutputElement>
+// PartitionedArrayT<Array, OutputElement> convolve_1d(
+//     Array const& array,
+//     Kernel const& kernel)
+// {
+//     static_assert(lue::rank<Array> == 1);
+// 
+//     using InputArray = Array;
+//     using InputPartition = PartitionT<InputArray>;
+// 
+//     using OutputArray = PartitionedArrayT<Array, OutputElement>;
+//     using OutputPartitions = PartitionsT<OutputArray>;
+//     using OutputPartition = PartitionT<OutputArray>;
+// 
+//     ConvolvePartitionAction1<InputPartition, OutputPartition, Kernel> action;
+//     OutputPartitions output_partitions{shape_in_partitions(array)};
+// 
+//     // +---+---+---+---+---+
+//     // | 1 | 1 | 1 | 1 | 1 |
+//     // +---+---+---+---+---+
+// 
+//     // *
+// 
+//     // +------+------+------+
+//     // | true | true | true |
+//     // +------+------+------+
+// 
+//     // =
+// 
+//     // +---+---+---+---+---+
+//     // | 2 | 3 | 3 | 3 | 2 |
+//     // +---+---+---+---+---+
+// 
+//     // - We assume that for all output elements in a partition a value
+//     //     can be calculated based on the input partition containing
+//     //     the focal element and the bordering partitions. This implies
+//     //     that the size of each partition must be at least as large as
+//     //     the kernel radius.
+// 
+//     // Inner partitions: all partitions except for the first and last one
+//     //     act(location, partition[-1], partition, partition[+1])
+// 
+//     // Border partitions:
+//     //     act(location, partition, partition[+1])
+//     //     act(location, partition[-1], partition)
+// 
+//     auto const nr_partitions = lue::nr_partitions(array);
+// 
+//     if(nr_partitions == 1) {
+//         // Pass in ghost partitions for left and right partition
+//         // TODO
+//         assert(false);
+//     }
+//     else if(nr_partitions >= 2) {
+// 
+//         // Inner partitions
+//         for(Index p = 1; p < nr_partitions - 1; ++p) {
+// 
+//             output_partitions[p] = hpx::dataflow(
+//                 hpx::launch::async,
+// 
+//                 [action, kernel](
+//                     InputPartition const& left_partition,
+//                     InputPartition const& center_partition,
+//                     InputPartition const& right_partition)
+//                 {
+//                     return action(
+//                         hpx::get_colocation_id(
+//                             hpx::launch::sync, center_partition.get_id()),
+//                         left_partition,
+//                         center_partition,
+//                         right_partition,
+//                         kernel);
+//                 },
+// 
+//                 array.partitions()[p-1],
+//                 array.partitions()[p],
+//                 array.partitions()[p+1]);
+// 
+//         }
+// 
+// 
+// 
+// 
+//         // First partition: pass in ad-hoc partition for left partition
+//         // TODO
+// 
+//         // Last partition: pass in ad-hoc partition for right partition
+//         // TODO
+// 
+//         // Options
+//         // - Create halo of real partitions around raster, with just
+//         //     enough cells to be able to perform the calculations
+//         // - Create partitions that only contain logic, no data, but
+//         //     behave as real partitions
+//         // - Do all this in the actions that handle borders and corners
+//         // - Don't use halo partitions, but special border/corner actions
+//         //     and policies for how to handle halo cells
+// 
+//     }
+// 
+//     return OutputArray{shape(array), std::move(output_partitions)};
+// }
 
 
 template<
     typename Array,
-    typename Kernel>
-Array convolve(
-    Array const& array,
+    typename Kernel,
+    typename OutputElement>
+PartitionedArrayT<Array, OutputElement> convolve_2d(
+    Array const& input_array,
     Kernel const& kernel)
 {
-    // TODO
-    // - Add ResultElement template argument for type of result elements
+    static_assert(lue::rank<Array> == 2);
 
-    // For each nD focus cell, determine indices of neighboring cells
-    // that are positioned within the array
+    using InputArray = Array;
+    using InputPartition = PartitionT<InputArray>;
+    using InputPartitions = PartitionsT<InputArray>;
 
-    ConvolveVisitor visitor{array};
+    using OutputArray = PartitionedArrayT<Array, OutputElement>;
+    using OutputPartitions = PartitionsT<OutputArray>;
+    using OutputPartition = PartitionT<OutputArray>;
 
-    // TODO Add overload visiting the whole array
-    // visit_array(visitor);
+    using Shape = ShapeT<Array>;
 
-    return visitor.result();
+    ConvolvePartitionAction<InputPartitions, OutputPartition, Kernel> action;
+    OutputPartitions output_partitions{shape_in_partitions(input_array)};
+
+    // auto const nr_partitions = lue::nr_partitions(input_array);
+    auto const [nr_rows, nr_cols] = lue::shape_in_partitions(input_array);
+    auto const kernel_radius = kernel.radius();
+
+    // Iterate over all partitions. Per partition determine the collection
+    // of neighboring partitions, and asynchronously call the algorithm
+    // that performs the calculations.
+
+    if(nr_rows < 3 && nr_cols < 3) {
+
+        // Some partitions don't have neighbors. Create them here and
+        // insert the minimal amount of elements needed to complete the
+        // calculations.
+        // TODO
+        assert(false);
+
+    }
+    else {
+
+        // Create a halo of temporary partitions that are used in the
+        // convolution of the partitions along the borders of the
+        // array. We create three collections of partitions:
+        // - 2x2 partitions for the corners of the halo
+        // - 2xc partitions for the longitudinal sides of the halo
+        // - rx2 partitions for the latitudinal sides of the halo
+        //
+        // The size of these partitions is as small as possible. They
+        // contain the minimum amount of elements needed for the
+        // calculations.
+        //
+        // The halo partitions are located on the same locality as the
+        // nearest border partition in the array.
+
+        // Corner halo partitions
+        InputPartitions halo_corner_partitions{Shape{{2, 2}}};
+
+        // North-west corner halo partition
+        halo_corner_partitions(0, 0) = hpx::get_colocation_id(
+                input_array.partitions()(0, 0).get_id()).then(
+            hpx::util::unwrapping(
+
+                [kernel_radius](
+                    hpx::id_type const locality_id)
+                {
+                    return InputPartition{locality_id,
+                        Shape{{kernel_radius, kernel_radius}}, 0};
+                }
+
+            ));
+
+        // North-east corner halo partition
+        halo_corner_partitions(0, 1) = hpx::get_colocation_id(
+                input_array.partitions()(0, nr_cols - 1).get_id()).then(
+            hpx::util::unwrapping(
+
+                [kernel_radius](
+                    hpx::id_type const locality_id)
+                {
+                    return InputPartition{locality_id,
+                        Shape{{kernel_radius, kernel_radius}}, 0};
+                }
+
+            ));
+
+        // South-west corner halo partition
+        halo_corner_partitions(1, 0) = hpx::get_colocation_id(
+                input_array.partitions()(nr_rows - 1, 0).get_id()).then(
+            hpx::util::unwrapping(
+
+                [kernel_radius](
+                    hpx::id_type const locality_id)
+                {
+                    return InputPartition{locality_id,
+                        Shape{{kernel_radius, kernel_radius}}, 0};
+                }
+
+            ));
+
+        // South-east corner halo partition
+        halo_corner_partitions(1, 1) = hpx::get_colocation_id(
+                input_array.partitions()(nr_rows - 1, nr_cols - 1).get_id()).then(
+            hpx::util::unwrapping(
+
+                [kernel_radius](
+                    hpx::id_type const locality_id)
+                {
+                    return InputPartition{locality_id,
+                        Shape{{kernel_radius, kernel_radius}}, 0};
+                }
+
+            ));
+
+        // Longitudinal side halo partitions
+        InputPartitions halo_longitudinal_side_partitions{Shape{{2, nr_cols}}};
+
+        for(auto const [rh, rp]: {
+                std::array<Index, 2>{{0, 0}},
+                std::array<Index, 2>{{1, nr_rows - 1}}}) {
+            for(Index c = 0; c < nr_cols; ++c) {
+
+                halo_longitudinal_side_partitions(rh, c) = hpx::dataflow(
+                    hpx::launch::async,
+                    hpx::util::unwrapping(
+
+                        [kernel_radius](
+                            hpx::id_type const locality_id,
+                            Shape const& partition_shape)
+                        {
+                            return InputPartition{locality_id,
+                                Shape{{kernel_radius, partition_shape[1]}}, 0};
+                        }
+
+                    ),
+
+                    hpx::get_colocation_id(
+                        input_array.partitions()(rp, c).get_id()),
+                    input_array.partitions()(rp, c).shape());
+
+            }
+        }
+
+        // Latitudinal sides halo partitions
+        InputPartitions halo_latitudinal_sides_partitions{Shape{{nr_rows, 2}}};
+
+        for(Index r = 0; r < nr_rows; ++r) {
+
+            for(auto const [ch, cp]: {
+                    std::array<Index, 2>{{0, 0}},
+                    std::array<Index, 2>{{1, nr_cols - 1}}}) {
+
+                halo_latitudinal_sides_partitions(r, ch) = hpx::dataflow(
+                    hpx::launch::async,
+                    hpx::util::unwrapping(
+
+                        [kernel_radius](
+                            hpx::id_type const locality_id,
+                            Shape const& partition_shape)
+                        {
+                            return InputPartition{locality_id,
+                                Shape{{partition_shape[0], kernel_radius}}, 0};
+                        }
+
+                    ),
+
+                    hpx::get_colocation_id(
+                        input_array.partitions()(r, cp).get_id()),
+                    input_array.partitions()(r, cp).shape());
+
+            }
+        }
+
+        // North-west corner partition
+        {
+            InputPartitions local_input_partitions{Shape{{3, 3}}};
+
+            local_input_partitions(0, 0) = halo_corner_partitions(0, 0);
+            local_input_partitions(0, 1) = halo_longitudinal_side_partitions(0, 0);
+            local_input_partitions(0, 2) = halo_longitudinal_side_partitions(0, 1);
+            local_input_partitions(1, 0) = halo_latitudinal_sides_partitions(0, 0);
+            local_input_partitions(1, 1) = input_array.partitions()(0, 0);
+            local_input_partitions(1, 2) = input_array.partitions()(0, 1);
+            local_input_partitions(2, 0) = halo_latitudinal_sides_partitions(1, 0);
+            local_input_partitions(2, 1) = input_array.partitions()(1, 0);
+            local_input_partitions(2, 2) = input_array.partitions()(1, 1);
+
+            // Once all needed partitions are ready, call the
+            // remote action
+            output_partitions(0, 0) = hpx::when_all_n(
+                    local_input_partitions.begin(),
+                    local_input_partitions.nr_elements()).then(
+                hpx::util::unwrapping(
+
+                    [action, kernel](
+                        auto&& partitions)
+                    {
+                        InputPartitions local_input_partitions{
+                            Shape{{3, 3}},
+                            partitions.begin(), partitions.end()};
+
+                        return action(
+                            hpx::get_colocation_id(
+                                hpx::launch::sync,
+                                local_input_partitions(1, 1).get_id()),
+                            local_input_partitions,
+                            kernel);
+                    }
+
+                ));
+        }
+
+        // North-east corner partition
+        {
+            InputPartitions local_input_partitions{Shape{{3, 3}}};
+
+            local_input_partitions(0, 0) = halo_longitudinal_side_partitions(0, nr_cols - 2);
+            local_input_partitions(0, 1) = halo_longitudinal_side_partitions(0, nr_cols - 1);
+            local_input_partitions(0, 2) = halo_corner_partitions(0, 1);
+            local_input_partitions(1, 0) = input_array.partitions()(0, nr_cols - 2);
+            local_input_partitions(1, 1) = input_array.partitions()(0, nr_cols - 1);
+            local_input_partitions(1, 2) = halo_latitudinal_sides_partitions(1, 0);
+            local_input_partitions(2, 0) = input_array.partitions()(1, nr_cols - 2);
+            local_input_partitions(2, 1) = input_array.partitions()(1, nr_cols - 1);
+            local_input_partitions(2, 2) = halo_latitudinal_sides_partitions(1, 1);
+
+            // Once all needed partitions are ready, call the
+            // remote action
+            output_partitions(0, nr_cols - 1) = hpx::when_all_n(
+                    local_input_partitions.begin(),
+                    local_input_partitions.nr_elements()).then(
+                hpx::util::unwrapping(
+
+                    [action, kernel](
+                        auto&& partitions)
+                    {
+                        InputPartitions local_input_partitions{
+                            Shape{{3, 3}},
+                            partitions.begin(), partitions.end()};
+
+                        return action(
+                            hpx::get_colocation_id(
+                                hpx::launch::sync,
+                                local_input_partitions(1, 1).get_id()),
+                            local_input_partitions,
+                            kernel);
+                    }
+
+                ));
+        }
+
+        // South-west corner partition
+        {
+            InputPartitions local_input_partitions{Shape{{3, 3}}};
+
+            local_input_partitions(0, 0) = halo_latitudinal_sides_partitions(nr_rows - 2, 0);
+            local_input_partitions(0, 1) = input_array.partitions()(nr_rows - 2, 0);
+            local_input_partitions(0, 2) = input_array.partitions()(nr_rows - 2, 1);
+            local_input_partitions(1, 0) = halo_latitudinal_sides_partitions(nr_rows - 1, 0);
+            local_input_partitions(1, 1) = input_array.partitions()(nr_rows - 1, 0);
+            local_input_partitions(1, 2) = input_array.partitions()(nr_rows - 1, 1);
+            local_input_partitions(2, 0) = halo_corner_partitions(1, 0);
+            local_input_partitions(2, 1) = halo_longitudinal_side_partitions(1, 0);
+            local_input_partitions(2, 2) = halo_longitudinal_side_partitions(1, 1);
+
+            // Once all needed partitions are ready, call the
+            // remote action
+            output_partitions(nr_rows - 1, 0) = hpx::when_all_n(
+                    local_input_partitions.begin(),
+                    local_input_partitions.nr_elements()).then(
+                hpx::util::unwrapping(
+
+                    [action, kernel](
+                        auto&& partitions)
+                    {
+                        InputPartitions local_input_partitions{
+                            Shape{{3, 3}},
+                            partitions.begin(), partitions.end()};
+
+                        return action(
+                            hpx::get_colocation_id(
+                                hpx::launch::sync,
+                                local_input_partitions(1, 1).get_id()),
+                            local_input_partitions,
+                            kernel);
+                    }
+
+                ));
+        }
+
+        // South-east corner partition
+        {
+            InputPartitions local_input_partitions{Shape{{3, 3}}};
+
+            local_input_partitions(0, 0) = input_array.partitions()(nr_rows - 2, nr_cols - 2);
+            local_input_partitions(0, 1) = input_array.partitions()(nr_rows - 2, nr_cols - 1);
+            local_input_partitions(0, 2) = halo_latitudinal_sides_partitions(nr_rows - 2, 1);
+            local_input_partitions(1, 0) = input_array.partitions()(nr_rows - 1, nr_cols - 2);
+            local_input_partitions(1, 1) = input_array.partitions()(nr_rows - 1, nr_cols - 1);
+            local_input_partitions(1, 2) = halo_latitudinal_sides_partitions(nr_rows - 1, 1);
+            local_input_partitions(2, 0) = halo_longitudinal_side_partitions(1, nr_cols - 2);
+            local_input_partitions(2, 1) = halo_longitudinal_side_partitions(1, nr_cols - 1);
+            local_input_partitions(2, 2) = halo_corner_partitions(1, 1);
+
+            // Once all needed partitions are ready, call the
+            // remote action
+            output_partitions(nr_rows - 1, nr_cols - 1) = hpx::when_all_n(
+                    local_input_partitions.begin(),
+                    local_input_partitions.nr_elements()).then(
+                hpx::util::unwrapping(
+
+                    [action, kernel](
+                        auto&& partitions)
+                    {
+                        InputPartitions local_input_partitions{
+                            Shape{{3, 3}},
+                            partitions.begin(), partitions.end()};
+
+                        return action(
+                            hpx::get_colocation_id(
+                                hpx::launch::sync,
+                                local_input_partitions(1, 1).get_id()),
+                            local_input_partitions,
+                            kernel);
+                    }
+
+                ));
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+        InputPartitions local_input_partitions{Shape{{3, 3}}};
+
+        // North side partition
+        {
+            for(Index c = 1; c < nr_cols - 1; ++c) {
+
+                local_input_partitions(0, 0) = halo_longitudinal_side_partitions(0, c - 1);
+                local_input_partitions(0, 1) = halo_longitudinal_side_partitions(0, c    );
+                local_input_partitions(0, 2) = halo_longitudinal_side_partitions(0, c + 1);
+                local_input_partitions(1, 0) = input_array.partitions()(0, c - 1);
+                local_input_partitions(1, 1) = input_array.partitions()(0, c    );
+                local_input_partitions(1, 2) = input_array.partitions()(0, c + 1);
+                local_input_partitions(2, 0) = input_array.partitions()(1, c - 1);
+                local_input_partitions(2, 1) = input_array.partitions()(1, c    );
+                local_input_partitions(2, 2) = input_array.partitions()(1, c + 1);
+
+                // Once all needed partitions are ready, call the
+                // remote action
+                output_partitions(0, c) = hpx::when_all_n(
+                        local_input_partitions.begin(),
+                        local_input_partitions.nr_elements()).then(
+                    hpx::util::unwrapping(
+
+                        [action, kernel](
+                            auto&& partitions)
+                        {
+                            InputPartitions local_input_partitions{
+                                Shape{{3, 3}},
+                                partitions.begin(), partitions.end()};
+
+                            return action(
+                                hpx::get_colocation_id(
+                                    hpx::launch::sync,
+                                    local_input_partitions(1, 1).get_id()),
+                                local_input_partitions,
+                                kernel);
+                        }
+
+                    ));
+
+            }
+        }
+
+        // South side partition
+        {
+            for(Index c = 1; c < nr_cols - 1; ++c) {
+
+                local_input_partitions(0, 0) = input_array.partitions()(nr_rows - 2, c - 1);
+                local_input_partitions(0, 1) = input_array.partitions()(nr_rows - 2, c    );
+                local_input_partitions(0, 2) = input_array.partitions()(nr_rows - 2, c + 1);
+                local_input_partitions(1, 0) = input_array.partitions()(nr_rows - 1, c - 1);
+                local_input_partitions(1, 1) = input_array.partitions()(nr_rows - 1, c    );
+                local_input_partitions(1, 2) = input_array.partitions()(nr_rows - 1, c + 1);
+                local_input_partitions(2, 0) = halo_longitudinal_side_partitions(0, c - 1);
+                local_input_partitions(2, 1) = halo_longitudinal_side_partitions(0, c    );
+                local_input_partitions(2, 2) = halo_longitudinal_side_partitions(0, c + 1);
+
+                // Once all needed partitions are ready, call the
+                // remote action
+                output_partitions(nr_rows - 1, c) = hpx::when_all_n(
+                        local_input_partitions.begin(),
+                        local_input_partitions.nr_elements()).then(
+                    hpx::util::unwrapping(
+
+                        [action, kernel](
+                            auto&& partitions)
+                        {
+                            InputPartitions local_input_partitions{
+                                Shape{{3, 3}},
+                                partitions.begin(), partitions.end()};
+
+                            return action(
+                                hpx::get_colocation_id(
+                                    hpx::launch::sync,
+                                    local_input_partitions(1, 1).get_id()),
+                                local_input_partitions,
+                                kernel);
+                        }
+
+                    ));
+
+            }
+        }
+        // West side partition
+        {
+            for(Index r = 1; r < nr_rows - 1; ++r) {
+
+                local_input_partitions(0, 0) = halo_latitudinal_sides_partitions(r - 1, 0);
+                local_input_partitions(0, 1) = input_array.partitions()(r - 1, 0);
+                local_input_partitions(0, 2) = input_array.partitions()(r - 1, 1);
+                local_input_partitions(1, 0) = halo_latitudinal_sides_partitions(r    , 0);
+                local_input_partitions(1, 1) = input_array.partitions()(r    , 0);
+                local_input_partitions(1, 2) = input_array.partitions()(r    , 1);
+                local_input_partitions(2, 0) = halo_latitudinal_sides_partitions(r + 1, 0);
+                local_input_partitions(2, 1) = input_array.partitions()(r + 1, 0);
+                local_input_partitions(2, 2) = input_array.partitions()(r + 1, 1);
+
+                // Once all needed partitions are ready, call the
+                // remote action
+                output_partitions(r, 0) = hpx::when_all_n(
+                        local_input_partitions.begin(),
+                        local_input_partitions.nr_elements()).then(
+                    hpx::util::unwrapping(
+
+                        [action, kernel](
+                            auto&& partitions)
+                        {
+                            InputPartitions local_input_partitions{
+                                Shape{{3, 3}},
+                                partitions.begin(), partitions.end()};
+
+                            return action(
+                                hpx::get_colocation_id(
+                                    hpx::launch::sync,
+                                    local_input_partitions(1, 1).get_id()),
+                                local_input_partitions,
+                                kernel);
+                        }
+
+                    ));
+
+            }
+        }
+
+        // East side partition
+        {
+            for(Index r = 1; r < nr_rows - 1; ++r) {
+
+                local_input_partitions(0, 0) = input_array.partitions()(r - 1, nr_cols - 2);
+                local_input_partitions(0, 1) = input_array.partitions()(r - 1, nr_cols - 1);
+                local_input_partitions(0, 2) = halo_latitudinal_sides_partitions(r - 1, 1);
+                local_input_partitions(1, 0) = input_array.partitions()(r    , nr_cols - 2);
+                local_input_partitions(1, 1) = input_array.partitions()(r    , nr_cols - 1);
+                local_input_partitions(1, 2) = halo_latitudinal_sides_partitions(r    , 1);
+                local_input_partitions(2, 0) = input_array.partitions()(r + 1, nr_cols - 2);
+                local_input_partitions(2, 1) = input_array.partitions()(r + 1, nr_cols - 1);
+                local_input_partitions(2, 2) = halo_latitudinal_sides_partitions(r + 1, 1);
+
+                // Once all needed partitions are ready, call the
+                // remote action
+                output_partitions(r, nr_cols - 1) = hpx::when_all_n(
+                        local_input_partitions.begin(),
+                        local_input_partitions.nr_elements()).then(
+                    hpx::util::unwrapping(
+
+                        [action, kernel](
+                            auto&& partitions)
+                        {
+                            InputPartitions local_input_partitions{
+                                Shape{{3, 3}},
+                                partitions.begin(), partitions.end()};
+
+                            return action(
+                                hpx::get_colocation_id(
+                                    hpx::launch::sync,
+                                    local_input_partitions(1, 1).get_id()),
+                                local_input_partitions,
+                                kernel);
+                        }
+
+                    ));
+
+            }
+        }
+
+        // Iterate over inner partitions
+        for(Index r = 1; r < nr_rows - 1; ++r) {
+            for(Index c = 1; c < nr_cols - 1; ++c) {
+
+                // Create collection of partitions containing the current
+                // partition and its neighboring partitions
+                InputPartitions local_input_partitions{Shape{{3, 3}}};
+
+                {
+                    // Assume one neighboring partition is enough
+                    Count const radius = 1;
+
+                    for(Index i = 0; i < 2 * radius + 1; ++i) {
+                        for(Index j = 0; j < 2 * radius + 1; ++j) {
+                            local_input_partitions(i, j) =
+                                input_array.partitions()(
+                                    r - radius + i, c - radius + j);
+                        }
+                    }
+                }
+
+                // Once all needed partitions are ready, call the
+                // remote action
+                output_partitions(r, c) = hpx::when_all_n(
+                        local_input_partitions.begin(),
+                        local_input_partitions.nr_elements()).then(
+                    hpx::util::unwrapping(
+
+                        [action, kernel](
+                            auto&& partitions)
+                        {
+                            InputPartitions local_input_partitions{
+                                Shape{{3, 3}},
+                                partitions.begin(), partitions.end()};
+
+                            return action(
+                                hpx::get_colocation_id(
+                                    hpx::launch::sync,
+                                    local_input_partitions(1, 1).get_id()),
+                                local_input_partitions,
+                                kernel);
+                        }
+
+                    ));
+            }
+        }
+    }
+
+    return OutputArray{shape(input_array), std::move(output_partitions)};
 }
 
+
+template<
+    typename Array,
+    typename Kernel,
+    typename OutputElement>
+class Convolution
+{
+
+    using OutputArray = PartitionedArrayT<Array, OutputElement>;
+
+    static constexpr Rank rank = lue::rank<Array>;
+
+    static_assert(rank == 1 || rank == 2);
+
+public:
+
+    Convolution(
+            Array const& array,
+            Kernel const& kernel):
+
+        _array{array},
+        _kernel{kernel}
+
+    {
+    }
+
+    OutputArray operator()() const
+    {
+        if constexpr(rank == 1) {
+            // return convolve_1d<Array, Kernel, OutputElement>(_array, _kernel);
+        }
+        else if constexpr(rank == 2) {
+            return convolve_2d<Array, Kernel, OutputElement>(_array, _kernel);
+        }
+    }
+
+private:
+
+    Array const&   _array;
+
+    Kernel const&  _kernel;
+
+};
+
+
+
+
+
 }  // namespace detail
+
 
 /*
     Image Processing using 2D Convolution:
@@ -229,11 +2143,22 @@ Array convolve(
 */
 template<
     typename Array,
-    typename Kernel>
-Array convolve(
+    typename Kernel,
+    typename OutputElement=double>
+PartitionedArrayT<Array, OutputElement> convolve(
     Array const& array,
     Kernel const& kernel)
 {
+    detail::Convolution<Array, Kernel, OutputElement> convolution{
+        array, kernel};
+
+    return convolution();
+
+    // convolution.start();
+
+    // return std::move(convolution).result();
+}
+
 
     // Convolve algorithm
     // - Split tasks based on whether cells are located at the borders /
@@ -256,7 +2181,7 @@ Array convolve(
     // A channels can be named
 
     // How to keep track of channels when the same algorithm may be
-    // called multiple time?
+    // called multiple times?
 
 
     // Upon creation, each component can have a channel associated
@@ -296,12 +2221,15 @@ Array convolve(
     // partitions and have an API to get at values. This limits the
     // asynchronous nature of things, though.
 
+
+
+
+
     // stencil_7(285):
     // - A function receiving all partitions relevant for completely
     //   calculating the inner partition
     //   - The border partitions only contain the cells needed for
     //     the calculations
-
 
     // Plan: similar to stencil_7 and see where it goes. Generalize to
     //     nD arrays.
@@ -341,9 +2269,7 @@ Array convolve(
     // return OutputArray{shape(array), std::move(output_partitions)};
 
 
-    return detail::convolve(array, kernel);
-
-
+    // return detail::convolve(array, kernel);
 
 
     // // For each partition in the array, determine the locality it is
@@ -387,6 +2313,41 @@ Array convolve(
     // }
 
     // return OutputArray{shape(array), std::move(output_partitions)};
-}
+
+
+
+    // Iterate over all partitions and call action that calculates the
+    // result for each partition. This action must receive the focus
+    // partition, and the partitions surrounding it.
+
+
+    // -------------------------------------------------------------------------
+    // Inner partitions:
+
+    // 1D: act(locality_id,
+    //     left_partition, focus_partition, right_partition
+    // );
+
+    // 2D: act(locality_id,
+    //     top_left_partition, top_partition, top_right_partition,
+    //         left_partition, focus_partition, right_partition,
+    //     bottom_left_partition, bottom_partition, bottom_right_partition
+    // );
+
+    // 3D: act(locality_id,
+    //     ...
+    // );
+
+
+    // -------------------------------------------------------------------------
+    // Corner partitions:
+
+
+    // -------------------------------------------------------------------------
+    // Border partitions:
+
+    // return detail::convolve(array, kernel);
+
+
 
 }  // namespace lue

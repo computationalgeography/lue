@@ -234,8 +234,8 @@ using LessPartitionAction =
 */
 template<
     typename Element,
-    std::size_t rank,
-    template<typename, std::size_t> typename Array>
+    Rank rank,
+    template<typename, Rank> typename Array>
 PartitionedArrayT<Array<bool, rank>, bool> less(
     Array<Element, rank> const& array1,
     Array<Element, rank> const& array2)
@@ -251,7 +251,7 @@ PartitionedArrayT<Array<bool, rank>, bool> less(
     LessPartitionAction<InputPartition, InputPartition> action;
     OutputPartitions output_partitions{shape_in_partitions(array1)};
 
-    for(std::size_t p = 0; p < nr_partitions(array1); ++p) {
+    for(Index p = 0; p < nr_partitions(array1); ++p) {
 
         output_partitions[p] = hpx::dataflow(
             hpx::launch::async,
@@ -280,8 +280,8 @@ PartitionedArrayT<Array<bool, rank>, bool> less(
 */
 template<
     typename Element,
-    std::size_t rank,
-    template<typename, std::size_t> typename Array>
+    Rank rank,
+    template<typename, Rank> typename Array>
 PartitionedArrayT<Array<bool, rank>, bool> less(
     Array<Element, rank> const& array,
     hpx::shared_future<Element> const& scalar)
@@ -296,7 +296,7 @@ PartitionedArrayT<Array<bool, rank>, bool> less(
     LessPartitionAction<InputPartition, Element> action;
     OutputPartitions output_partitions{shape_in_partitions(array)};
 
-    for(std::size_t p = 0; p < nr_partitions(array); ++p) {
+    for(Index p = 0; p < nr_partitions(array); ++p) {
 
         output_partitions[p] = hpx::dataflow(
             hpx::launch::async,
@@ -325,8 +325,8 @@ PartitionedArrayT<Array<bool, rank>, bool> less(
 */
 template<
     typename Element,
-    std::size_t rank,
-    template<typename, std::size_t> typename Array>
+    Rank rank,
+    template<typename, Rank> typename Array>
 PartitionedArrayT<Array<Element, rank>, bool> less(
     hpx::shared_future<Element> const& scalar,
     Array<Element, rank> const& array)
@@ -341,7 +341,7 @@ PartitionedArrayT<Array<Element, rank>, bool> less(
     LessPartitionAction<Element, InputPartition> action;
     OutputPartitions output_partitions{shape_in_partitions(array)};
 
-    for(std::size_t p = 0; p < nr_partitions(array); ++p) {
+    for(Index p = 0; p < nr_partitions(array); ++p) {
 
         output_partitions[p] = hpx::dataflow(
             hpx::launch::async,

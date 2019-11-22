@@ -78,8 +78,8 @@ struct CastPartitionAction:
 template<
     typename OutputElement,
     typename InputElement,
-    std::size_t rank,
-    template<typename, std::size_t> typename Array>
+    Rank rank,
+    template<typename, Rank> typename Array>
 Array<OutputElement, rank> cast(
     Array<InputElement, rank> const& array)
 {
@@ -92,7 +92,7 @@ Array<OutputElement, rank> cast(
     CastPartitionAction<InputPartition, OutputElement> action;
     OutputPartitions output_partitions{shape_in_partitions(array)};
 
-    for(std::size_t p = 0; p < nr_partitions(array); ++p) {
+    for(Index p = 0; p < nr_partitions(array); ++p) {
 
         output_partitions[p] = hpx::dataflow(
             hpx::launch::async,

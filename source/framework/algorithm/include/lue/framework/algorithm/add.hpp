@@ -104,8 +104,8 @@ using AddPartitionAction =
 */
 template<
     typename Element,
-    std::size_t rank,
-    template<typename, std::size_t> typename Array>
+    Rank rank,
+    template<typename, Rank> typename Array>
 Array<Element, rank> add(
     Array<Element, rank> const& array1,
     Array<Element, rank> const& array2)
@@ -124,7 +124,7 @@ Array<Element, rank> add(
     // Attach a continuation to each pair of input partitions that adds
     // all elements in those partitions and assigns the result to the
     // output partition
-    for(std::size_t p = 0; p < nr_partitions(array1); ++p) {
+    for(Index p = 0; p < nr_partitions(array1); ++p) {
 
         output_partitions[p] = hpx::dataflow(
             hpx::launch::async,

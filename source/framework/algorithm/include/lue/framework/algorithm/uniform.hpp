@@ -128,8 +128,8 @@ using UniformAction =
 */
 template<
     typename Element,
-    std::size_t rank,
-    template<typename, std::size_t> typename Array>
+    Rank rank,
+    template<typename, Rank> typename Array>
 [[nodiscard]] hpx::future<void> uniform(
     Array<Element, rank>& array,
     hpx::shared_future<Element> const& min_value,
@@ -141,7 +141,7 @@ template<
 
     std::vector<hpx::future<void>> futures(nr_partitions(array));
 
-    for(std::size_t p = 0; p < nr_partitions(array); ++p) {
+    for(Index p = 0; p < nr_partitions(array); ++p) {
 
         futures[p] = hpx::dataflow(
             hpx::launch::async,

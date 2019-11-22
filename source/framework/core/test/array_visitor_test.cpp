@@ -16,7 +16,7 @@ class Visitor:
 
 public:
 
-    using CellIndices = std::vector<std::size_t>;
+    using CellIndices = std::vector<lue::Index>;
 
     Visitor(
         Shape const& shape):
@@ -46,9 +46,8 @@ private:
 };
 
 
-using Index = std::size_t;
-std::size_t const rank = 2;
-using Shape = lue::Shape<Index, rank>;
+lue::Rank const rank = 2;
+using Shape = lue::Shape<lue::Index, rank>;
 using Cursor = lue::detail::ArrayVisitorCursor<Shape>;
 
 }  // Anonymous namespace
@@ -171,7 +170,6 @@ BOOST_AUTO_TEST_CASE(visit_some_cells)
 
 BOOST_AUTO_TEST_CASE(use_case_1)
 {
-
     Shape shape{{6, 4}};
     Visitor<Shape> visitor{shape};
 
