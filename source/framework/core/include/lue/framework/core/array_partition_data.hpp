@@ -1,4 +1,5 @@
 #pragma once
+// #include "lue/framework/core/component/server/array_partition.hpp"
 #include "lue/framework/core/shape.hpp"
 #include "lue/framework/core/serialize/shared_buffer.hpp"
 #include "lue/framework/core/span.hpp"
@@ -34,6 +35,10 @@ public:
     using Count = lue::Count;
 
     using Shape = lue::Shape<Count, rank>;
+
+    using Slice = std::pair<std::ptrdiff_t, std::ptrdiff_t>;
+
+    using Slices = std::array<Slice, rank>;
 
     using Iterator = typename Elements::iterator;
 
@@ -102,6 +107,8 @@ public:
     {
         return _span(idxs...);
     }
+
+    ArrayPartitionData slice           (Slices const& slices) const;
 
 private:
 
@@ -236,8 +243,11 @@ ArrayPartitionData<Element, rank>::ArrayPartitionData(
 
 {
     assert(
-        (mode == CopyMode::copy && (_elements.data() != other._elements.data())) ||
-        (mode == CopyMode::share && (_elements.data() == other._elements.data()))
+        (mode == CopyMode::copy && (
+            (_elements.data() != other._elements.data()) ||
+            (_elements.data() == nullptr))) ||
+        (mode == CopyMode::share && (
+            _elements.data() == other._elements.data()))
     );
     assert(_elements.size() == lue::nr_elements(_shape));
 }
@@ -257,7 +267,9 @@ ArrayPartitionData<Element, rank>::ArrayPartitionData(
     _span{_elements.data(), _shape}
 
 {
-    assert(_elements.data() != other._elements.data());
+    assert(
+        (_elements.data() != other._elements.data()) ||
+        (_elements.data() == nullptr));
     assert(_elements.size() == lue::nr_elements(_shape));
 }
 
@@ -277,7 +289,9 @@ ArrayPartitionData<Element, rank>&
         other._elements.data(), other._elements.size(), Elements::Mode::copy};
     _span = Span{_elements.data(), _shape};
 
-    assert(_elements.data() != other._elements.data());
+    assert(
+        (_elements.data() != other._elements.data()) ||
+        (_elements.data() == nullptr));
     assert(_elements.size() == lue::nr_elements(_shape));
 
     return *this;
@@ -297,7 +311,9 @@ ArrayPartitionData<Element, rank>& ArrayPartitionData<Element, rank>::operator=(
     _elements = std::move(other._elements);
     _span = Span{_elements.data(), _shape};
 
-    assert(_elements.data() != other._elements.data());
+    assert(
+        (_elements.data() != other._elements.data()) ||
+        (_elements.data() == nullptr));
     assert(_elements.size() == lue::nr_elements(_shape));
 
     return *this;
@@ -450,6 +466,74 @@ typename ArrayPartitionData<Element, rank>::Span const&
 
 
 template<
+    typename Element,
+    Rank rank>
+ArrayPartitionData<Element, rank> ArrayPartitionData<Element, rank>::slice(
+    Slices const& slices) const
+{
+    static_assert(rank > 0 && rank < 3);
+
+    // TODO Maybe also allow a slice into a shared buffer. This would prevent
+    //      the copy of the sliced elements into the new instance.
+
+    if constexpr (rank == 1) {
+        auto const [nr_elements] = _shape;
+
+        auto const& slice = slices[0];
+        auto const begin = std::get<0>(slice);
+        auto const end = std::get<1>(slice);
+        assert(end >= begin);
+        assert(end <= nr_elements);
+        auto const nr_elements_slice = end - begin;
+
+        ArrayPartitionData sliced_data{
+            Shape{{nr_elements_slice}}};
+
+        auto const source_begin = &(operator()(begin));
+        auto destination = &(sliced_data(0));
+
+        std::copy(
+            source_begin, source_begin + nr_elements_slice, destination);
+
+        return sliced_data;
+    }
+    else {
+        auto const [nr_elements0, nr_elements1] = _shape;
+
+        auto const& slice0 = slices[0];
+        auto const& slice1 = slices[1];
+
+        auto const begin0 = std::get<0>(slice0);
+        auto const end0 = std::get<1>(slice0);
+        assert(end0 >= begin0);
+        assert(end0 <= nr_elements0);
+        auto const nr_elements0_slice = end0 - begin0;
+
+        auto const begin1 = std::get<0>(slice1);
+        auto const end1 = std::get<1>(slice1);
+        assert(end1 >= begin1);
+        assert(end1 <= nr_elements1);
+        auto const nr_elements1_slice = end1 - begin1;
+
+        ArrayPartitionData sliced_data{
+            Shape{{nr_elements0_slice, nr_elements1_slice}}};
+
+        using Idx = std::tuple_element<0, Slice>::type;
+
+        for(Idx r = 0; r < nr_elements0_slice; ++r) {
+            auto const source_begin = &(operator()(begin0 + r, begin1));
+            auto destination = &(sliced_data(r, 0));
+
+            std::copy(
+                source_begin, source_begin + nr_elements1_slice, destination);
+        }
+
+        return sliced_data;
+    }
+}
+
+
+template<
     typename Element>
 class ArrayPartitionData<Element, 0>
 {
@@ -463,6 +547,10 @@ public:
     using Count = lue::Count;
 
     using Shape = lue::Shape<Count, 0>;
+
+    using Slice = std::pair<std::ptrdiff_t, std::ptrdiff_t>;
+
+    using Slices = std::array<Slice, 0>;
 
     using Iterator = typename Elements::iterator;
 

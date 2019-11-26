@@ -23,6 +23,10 @@ HPX_REGISTER_ACTION(                                                   \
     ArrayPartition_##Element##_##rank##_DataAction)                    \
                                                                        \
 HPX_REGISTER_ACTION(                                                   \
+    lue::detail::ArrayPartition_##Element##_##rank::SliceAction,       \
+    ArrayPartition_##Element##_##rank##_SliceAction)                   \
+                                                                       \
+HPX_REGISTER_ACTION(                                                   \
     lue::detail::ArrayPartition_##Element##_##rank::FillAction,        \
     ArrayPartition_##Element##_##rank##_FillAction)                    \
                                                                        \

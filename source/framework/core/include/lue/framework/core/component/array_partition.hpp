@@ -34,6 +34,10 @@ public:
 
     using Shape = typename Server::Shape;
 
+    using Slice = typename Server::Slice;
+
+    using Slices = typename Server::Slices;
+
                    ArrayPartition      ();
 
     explicit       ArrayPartition      (hpx::id_type const& component_id);
@@ -71,6 +75,8 @@ public:
     ArrayPartition& operator=          (ArrayPartition&&)=default;
 
     hpx::future<Data> data             (CopyMode mode) const;
+
+    hpx::future<Data> slice            (Slices const& slices) const;
 
     hpx::future<void> fill             (Element value);
 
@@ -345,6 +351,15 @@ hpx::future<typename ArrayPartition<Element, rank>::Data>
     assert(
         // In case copy mode is share, we and the server instance must be
         // located on the same locality
+
+        // Well... share means the caller only wants to read the
+        // elements. Iff the server is on the same locality, then share
+        // implies a copy is not needed. Otherwise a copy is performed
+        // by HPX, because the data is transported. So... share may be
+        // useful even if the server is not on the locality. In that
+        // case, de-serialization of the data should mark the result as
+        // being a copy. If the next assertion fails, update the test.
+
         (mode == CopyMode::share &&
             (hpx::get_colocation_id(this->get_id()).get() ==
                 hpx::find_here())) ||
@@ -354,6 +369,20 @@ hpx::future<typename ArrayPartition<Element, rank>::Data>
 
     // this->get_id() identifies the server instance
     return hpx::async(action, this->get_id(), mode);
+}
+
+
+template<
+    typename Element,
+    Rank rank>
+hpx::future<typename ArrayPartition<Element, rank>::Data>
+    ArrayPartition<Element, rank>::slice(
+        Slices const& slices) const
+{
+    typename Server::SliceAction action;
+
+    // this->get_id() identifies the server instance
+    return hpx::async(action, this->get_id(), slices);
 }
 
 
@@ -467,6 +496,10 @@ public:
     constexpr static Rank rank = r;
 
     using Shape = typename ArrayPartition<E, r>::Shape;
+
+    using Slices = typename ArrayPartition<E, r>::Slices;
+
+    using Slice = typename ArrayPartition<E, r>::Slice;
 
     template<
         typename E_,

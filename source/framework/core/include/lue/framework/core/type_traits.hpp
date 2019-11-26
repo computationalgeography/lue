@@ -69,6 +69,16 @@ template<
 using ShapeT = typename detail::ArrayTraits<Array>::Shape;
 
 
+template<
+    typename Array>
+using SlicesT = typename detail::ArrayTraits<Array>::Slices;
+
+
+template<
+    typename Array>
+using SliceT = typename detail::ArrayTraits<Array>::Slice;
+
+
 /*!
     @brief      Alias template of type aliases for container types of
                 array elements, instantiated for a given element type
