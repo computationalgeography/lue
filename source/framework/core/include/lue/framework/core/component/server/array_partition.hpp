@@ -30,6 +30,10 @@ public:
 
     using Shape = typename Data::Shape;
 
+    using Slice = typename Data::Slice;
+
+    using Slices = typename Data::Slices;
+
                    ArrayPartition      ();
 
     explicit       ArrayPartition      (Shape const& shape);
@@ -53,6 +57,8 @@ public:
 
     Data           data                ([[maybe_unused]] CopyMode mode) const;
 
+    Data           slice               ([[maybe_unused]] Slices const& slices) const;
+
     void           fill                (Element value);
 
     void           set_data            (Data const& data,
@@ -73,6 +79,7 @@ public:
 
     // Macros to define HPX component actions for all exported functions
     HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, data, DataAction);
+    HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, slice, SliceAction);
     HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, fill, FillAction);
     HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, set_data, SetDataAction);
     HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, shape, ShapeAction);
@@ -101,6 +108,10 @@ using ArrayPartition_##Element##_##rank =                              \
 HPX_REGISTER_ACTION_DECLARATION(                                       \
     lue::detail::ArrayPartition_##Element##_##rank::DataAction,        \
     ArrayPartition_##Element##_##rank##_DataAction)                    \
+                                                                       \
+HPX_REGISTER_ACTION_DECLARATION(                                       \
+    lue::detail::ArrayPartition_##Element##_##rank::SliceAction,       \
+    ArrayPartition_##Element##_##rank##_SliceAction)                   \
                                                                        \
 HPX_REGISTER_ACTION_DECLARATION(                                       \
     lue::detail::ArrayPartition_##Element##_##rank::FillAction,        \
@@ -160,6 +171,7 @@ public:                                                                \
 }
 
 LUE_DEFINE_ARRAY_PARTITION_COMPONENT_ACTION_TEMPLATE(Data)
+LUE_DEFINE_ARRAY_PARTITION_COMPONENT_ACTION_TEMPLATE(Slice)
 LUE_DEFINE_ARRAY_PARTITION_COMPONENT_ACTION_TEMPLATE(Fill)
 LUE_DEFINE_ARRAY_PARTITION_COMPONENT_ACTION_TEMPLATE(SetData)
 LUE_DEFINE_ARRAY_PARTITION_COMPONENT_ACTION_TEMPLATE(Shape)
@@ -305,6 +317,22 @@ typename ArrayPartition<Element, rank>::Data
     }
     else {
         return Data{_data, mode};
+    }
+}
+
+
+template<
+    typename Element,
+    Rank rank>
+typename ArrayPartition<Element, rank>::Data
+    ArrayPartition<Element, rank>::slice(
+        Slices const& slices) const
+{
+    if constexpr (rank == 0) {
+        return _data;
+    }
+    else {
+        return _data.slice(slices);
     }
 }
 

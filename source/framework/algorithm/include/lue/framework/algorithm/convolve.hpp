@@ -620,12 +620,19 @@ OutputPartition convolve_partition(
 
     using Shape = ShapeT<InputPartitions>;
 
+    using Slice = SliceT<InputPartition>;
+    using Slices = SlicesT<InputPartition>;
+
+    auto const kernel_radius = kernel.radius();
+
     assert(partitions.nr_elements() == nr_neighbors<InputPartition>() + 1);
 
     if constexpr(rank<InputPartition> == 2) {
         assert(
             hpx::get_colocation_id(partitions(1, 1).get_id()).get() ==
             hpx::find_here());
+
+        auto const [nr_rows, nr_cols] = partitions.shape();
 
         // The partitions collection contains 9 partitions:
         //
@@ -641,31 +648,203 @@ OutputPartition convolve_partition(
         // other ones are used only to provide input values for the sides
         // of this partition.
 
+        // Create an array with futures to the shape of the array
+        // partitions. These shapes are used to obtain the smallest
+        // amount of elements from the border partitions necessary to
+        // calculate the result for the partition at (1, 1).
+
+        using PartitionShapes =
+            Array<hpx::shared_future<Shape>, rank<InputPartition>>;
+
+        PartitionShapes partition_shapes{partitions.shape()};
+
+        for(Index r = 0; r < nr_rows; ++r) {
+            for(Index c = 0; c < nr_cols; ++c) {
+                partition_shapes(r, c) = partitions(r, c).shape();
+            }
+        }
+
+        // Once the shapes have arrived, request the elements for each
+        // partition. Which elements to request depends on the location of
+        // the partition relative to the current/center partition located at
+        // (1, 1).
+
         // Create an array with futures to partition data instances. Once
         // the data has arrived, these instances are used in the actual
         // calculations.
-
-        hpx::future<hpx::id_type> locality_id_future =
-            hpx::get_colocation_id(partitions(1, 1).get_id());
 
         using InputPartitionsData =
             Array<hpx::shared_future<InputData>, rank<InputPartition>>;
 
         InputPartitionsData input_partitions_data{partitions.shape()};
 
-        // FIXME Get the smallest amount of data possible
-        // hier verder
-        input_partitions_data(0, 0) = partitions(0, 0).data(CopyMode::share);
-        input_partitions_data(0, 1) = partitions(0, 1).data(CopyMode::share);
-        input_partitions_data(0, 2) = partitions(0, 2).data(CopyMode::share);
-        input_partitions_data(1, 0) = partitions(1, 0).data(CopyMode::share);
-        input_partitions_data(1, 1) = partitions(1, 1).data(CopyMode::share);
-        input_partitions_data(1, 2) = partitions(1, 2).data(CopyMode::share);
-        input_partitions_data(2, 0) = partitions(2, 0).data(CopyMode::share);
-        input_partitions_data(2, 1) = partitions(2, 1).data(CopyMode::share);
-        input_partitions_data(2, 2) = partitions(2, 2).data(CopyMode::share);
+        // North-west corner partition: get south-east corner elements
+        input_partitions_data(0, 0) = partition_shapes(0, 0).then(
+            hpx::util::unwrapping(
 
-        using Slice = std::pair<std::ptrdiff_t, std::ptrdiff_t>;
+                [kernel_radius, partition=partitions(0, 0)](
+                    Shape const& partition_shape)
+                {
+                    auto const [nr_elements0, nr_elements1] = partition_shape;
+                    assert(nr_elements0 >= kernel_radius);
+                    assert(nr_elements1 >= kernel_radius);
+
+                    return partition.slice(
+                        Slices{{
+                            Slice{nr_elements0 - kernel_radius, nr_elements0},
+                            Slice{nr_elements1 - kernel_radius, nr_elements1}
+                        }});
+                }
+
+            ));
+
+        // North partition: get south side elements
+        input_partitions_data(0, 1) = partition_shapes(0, 1).then(
+            hpx::util::unwrapping(
+
+                [kernel_radius, partition=partitions(0, 1)](
+                    Shape const& partition_shape)
+                {
+                    auto const [nr_elements0, nr_elements1] = partition_shape;
+                    assert(nr_elements0 >= kernel_radius);
+                    assert(nr_elements1 >= kernel_radius);
+
+                    return partition.slice(
+                        Slices{{
+                            Slice{nr_elements0 - kernel_radius, nr_elements0},
+                            Slice{0, nr_elements1}
+                        }});
+                }
+
+            ));
+
+        // North-east partition: get south-west corner elements
+        input_partitions_data(0, 2) = partition_shapes(0, 2).then(
+            hpx::util::unwrapping(
+
+                [kernel_radius, partition=partitions(0, 2)](
+                    Shape const& partition_shape)
+                {
+                    auto const [nr_elements0, nr_elements1] = partition_shape;
+                    assert(nr_elements0 >= kernel_radius);
+                    assert(nr_elements1 >= kernel_radius);
+
+                    return partition.slice(
+                        Slices{{
+                            Slice{nr_elements0 - kernel_radius, nr_elements0},
+                            Slice{0, kernel_radius}
+                        }});
+                }
+
+            ));
+
+        // West partition: get east side elements
+        input_partitions_data(1, 0) = partition_shapes(1, 0).then(
+            hpx::util::unwrapping(
+
+                [kernel_radius, partition=partitions(1, 0)](
+                    Shape const& partition_shape)
+                {
+                    auto const [nr_elements0, nr_elements1] = partition_shape;
+                    assert(nr_elements0 >= kernel_radius);
+                    assert(nr_elements1 >= kernel_radius);
+
+                    return partition.slice(
+                        Slices{{
+                            Slice{0, nr_elements0},
+                            Slice{nr_elements1 - kernel_radius, nr_elements1}
+                        }});
+                }
+
+            ));
+
+        // Center partition: get all elements
+        input_partitions_data(1, 1) = partitions(1, 1).data(CopyMode::share);
+
+        // East partition: get west side elements
+        input_partitions_data(1, 2) = partition_shapes(1, 2).then(
+            hpx::util::unwrapping(
+
+                [kernel_radius, partition=partitions(1, 2)](
+                    Shape const& partition_shape)
+                {
+                    auto const [nr_elements0, nr_elements1] = partition_shape;
+                    assert(nr_elements0 >= kernel_radius);
+                    assert(nr_elements1 >= kernel_radius);
+
+                    return partition.slice(
+                        Slices{{
+                            Slice{0, nr_elements0},
+                            Slice{0, kernel_radius}
+                        }});
+                }
+
+            ));
+
+        // South-west partition: get north-east corner elements
+        input_partitions_data(2, 0) = partition_shapes(2, 0).then(
+            hpx::util::unwrapping(
+
+                [kernel_radius, partition=partitions(2, 0)](
+                    Shape const& partition_shape)
+                {
+                    auto const [nr_elements0, nr_elements1] = partition_shape;
+                    assert(nr_elements0 >= kernel_radius);
+                    assert(nr_elements1 >= kernel_radius);
+
+                    return partition.slice(
+                        Slices{{
+                            Slice{0, kernel_radius},
+                            Slice{nr_elements1 - kernel_radius, nr_elements1}
+                        }});
+                }
+
+            ));
+
+        // South partition: get north side elements
+        input_partitions_data(2, 1) = partition_shapes(2, 1).then(
+            hpx::util::unwrapping(
+
+                [kernel_radius, partition=partitions(2, 1)](
+                    Shape const& partition_shape)
+                {
+                    auto const [nr_elements0, nr_elements1] = partition_shape;
+                    assert(nr_elements0 >= kernel_radius);
+                    assert(nr_elements1 >= kernel_radius);
+
+                    return partition.slice(
+                        Slices{{
+                            Slice{0, kernel_radius},
+                            Slice{0, nr_elements1}
+                        }});
+                }
+
+            ));
+
+        // South-east partition: get north-west corner elements
+        input_partitions_data(2, 2) = partition_shapes(2, 2).then(
+            hpx::util::unwrapping(
+
+                [kernel_radius, partition=partitions(2, 2)](
+                    Shape const& partition_shape)
+                {
+                    auto const [nr_elements0, nr_elements1] = partition_shape;
+                    assert(nr_elements0 >= kernel_radius);
+                    assert(nr_elements1 >= kernel_radius);
+
+                    return partition.slice(
+                        Slices{{
+                            Slice{0, kernel_radius},
+                            Slice{0, kernel_radius}
+                        }});
+                }
+
+            ));
+
+
+        hpx::future<hpx::id_type> locality_id_future =
+            hpx::get_colocation_id(partitions(1, 1).get_id());
+
 
         // Once the elements from the center partition have arrived,
         // perform calculations for all cells whose neighborhood are

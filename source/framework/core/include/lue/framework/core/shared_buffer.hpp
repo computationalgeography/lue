@@ -468,7 +468,7 @@ private:
         // _ptr.reset(new Element[size]);
 
         // Default construct all elements
-        _ptr.reset(new Element[size](), do_delete);
+        _ptr.reset(size > 0 ? new Element[size]() : nullptr, do_delete);
     }
 
     void assert_invariants()

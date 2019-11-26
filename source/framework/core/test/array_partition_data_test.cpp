@@ -3,6 +3,7 @@
 #include <boost/test/unit_test.hpp>
 #include "lue/framework/core/array_partition_data.hpp"
 #include "lue/framework/test/stream.hpp"
+#include <algorithm>
 
 
 namespace {
@@ -115,5 +116,98 @@ BOOST_AUTO_TEST_CASE(scalar_array)
         BOOST_CHECK(!data.empty());
         BOOST_CHECK_EQUAL(data.nr_elements(), 1);
         BOOST_CHECK_EQUAL(data[0], 5);
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE(slice_1d)
+{
+    using Value = std::int32_t;
+    std::size_t const rank = 1;
+    using Data = lue::ArrayPartitionData<Value, rank>;
+    using Shape = Data::Shape;
+    std::size_t const nr_elements = 10;
+    using Slice = Data::Slice;
+    using Slices = Data::Slices;
+
+    Shape shape{{nr_elements}};
+
+    Data data{shape};
+    std::iota(data.begin(), data.end(), 0);
+
+    {
+        Slices slices{Slice{0, 10}};
+        auto data_slice = data.slice(slices);
+
+        BOOST_REQUIRE_EQUAL(data_slice.shape(), shape);
+        BOOST_CHECK_EQUAL(data_slice(0), data(0));
+        BOOST_CHECK_EQUAL(data_slice(9), data(9));
+    }
+
+    {
+        Slices slices{Slice{5, 5}};
+        auto data_slice = data.slice(slices);
+
+        BOOST_CHECK_EQUAL(data_slice.shape(), Shape{{0}});
+        BOOST_CHECK_EQUAL(data_slice.nr_elements(), 0);
+    }
+
+    {
+        Slices slices{Slice{5, 6}};
+        auto data_slice = data.slice(slices);
+
+        BOOST_REQUIRE_EQUAL(data_slice.shape(), Shape{{1}});
+        BOOST_CHECK_EQUAL(data_slice(0), data(5));
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE(slice_2d)
+{
+    using Value = std::int32_t;
+    std::size_t const rank = 2;
+    using Data = lue::ArrayPartitionData<Value, rank>;
+    using Shape = Data::Shape;
+    std::size_t const nr_rows = 30;
+    std::size_t const nr_cols = 20;
+    using Slice = Data::Slice;
+    using Slices = Data::Slices;
+
+    Shape shape{{nr_rows, nr_cols}};
+
+    Data data{shape};
+    std::iota(data.begin(), data.end(), 0);
+
+    {
+        Slices slices{Slice{0, nr_rows}, Slice{0, nr_cols}};
+        auto data_slice = data.slice(slices);
+
+        BOOST_REQUIRE_EQUAL(data_slice.shape(), shape);
+        BOOST_CHECK_EQUAL(data_slice(0, 0), data(0, 0));
+        BOOST_CHECK_EQUAL(data_slice(29, 19), data(29, 19));
+    }
+
+    {
+        Slices slices{Slice{5, 5}, Slice{0, nr_cols}};
+        auto data_slice = data.slice(slices);
+
+        BOOST_CHECK_EQUAL(data_slice.shape(), (Shape{{0, nr_cols}}));
+        BOOST_CHECK_EQUAL(data_slice.nr_elements(), 0);
+    }
+
+    {
+        Slices slices{Slice{0, nr_rows}, Slice{6, 6}};
+        auto data_slice = data.slice(slices);
+
+        BOOST_CHECK_EQUAL(data_slice.shape(), (Shape{{nr_rows, 0}}));
+        BOOST_CHECK_EQUAL(data_slice.nr_elements(), 0);
+    }
+
+    {
+        Slices slices{Slice{5, 6}, Slice{6, 7}};
+        auto data_slice = data.slice(slices);
+
+        BOOST_REQUIRE_EQUAL(data_slice.shape(), (Shape{{1, 1}}));
+        BOOST_CHECK_EQUAL(data_slice(0, 0), data(5, 6));
     }
 }
