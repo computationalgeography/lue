@@ -297,6 +297,9 @@ namespace detail {
 // }
 
 
+/*!
+    @brief      Convolve a window of elements
+*/
 template<
     typename InputElement,
     typename OutputElement,
@@ -412,9 +415,11 @@ OutputElement convolve_border(
         // {r,c}w : {row,col} index window
 
         Index rk = 0;
-        Index ck = 0;
 
+        // Iterate over all views into partitions
         for(Count rw = 0; rw < windows.shape()[0]; ++rw) {
+
+            Index ck = 0;
 
             for(Count cw = 0; cw < windows.shape()[1]; ++cw) {
 
@@ -425,9 +430,14 @@ OutputElement convolve_border(
 
                 for(Index r = 0; r < window.extent(0); ++r, ++rk) {
                     for(Index c = 0; c < window.extent(1); ++c, ++ck) {
+
+                        assert(rk < std::get<0>(kernel.shape()));
+                        assert(ck < std::get<1>(kernel.shape()));
+
                         if(kernel(rk, ck)) {
                             result += window(r, c);
                         }
+
                     }
 
                     ck -= window.extent(1);  // Carriage return
@@ -632,7 +642,7 @@ OutputPartition convolve_partition(
             hpx::get_colocation_id(partitions(1, 1).get_id()).get() ==
             hpx::find_here());
 
-        auto const [nr_rows, nr_cols] = partitions.shape();
+        auto const [nr_partitions0, nr_partitions1] = partitions.shape();
 
         // The partitions collection contains 9 partitions:
         //
@@ -658,8 +668,8 @@ OutputPartition convolve_partition(
 
         PartitionShapes partition_shapes{partitions.shape()};
 
-        for(Index r = 0; r < nr_rows; ++r) {
-            for(Index c = 0; c < nr_cols; ++c) {
+        for(Index r = 0; r < nr_partitions0; ++r) {
+            for(Index c = 0; c < nr_partitions1; ++c) {
                 partition_shapes(r, c) = partitions(r, c).shape();
             }
         }
@@ -946,7 +956,7 @@ OutputPartition convolve_partition(
                     using InputPartitionsDataSubspan =
                         Array<InputDataSubspan, rank<InputPartition>>;
 
-                    auto const [nr_rows, nr_cols] =
+                    auto const [nr_elements0, nr_elements1] =
                         partitions_data(1, 1).shape();
 
                     // rf, cf are indices of focal cell in array
@@ -1073,7 +1083,7 @@ OutputPartition convolve_partition(
                                 csee = cseb + 1;
                                 cswb = sw_partition.extent(1) - (kernel.size() - 1);
 
-                                for(Index cf = nr_cols - kernel.radius(); cf < nr_cols;
+                                for(Index cf = nr_elements1 - kernel.radius(); cf < nr_elements1;
                                         ++cf, ++cnwb, ++cnee, ++cswb, ++csee) {
 
                                     // NW partition view
@@ -1135,10 +1145,10 @@ OutputPartition convolve_partition(
                             cswe = sw_partition.extent(1);
 
                             rseb = 0;
-                            rsee = rswb + 1;
+                            rsee = rseb + 1;
                             cseb = 0;
 
-                            for(Index rf = nr_rows - kernel.radius(); rf < nr_rows;
+                            for(Index rf = nr_elements0 - kernel.radius(); rf < nr_elements0;
                                     ++rf, ++rnwb, ++rneb, ++rswe, ++rsee) {
 
                                 cnwb = nw_partition.extent(1) - kernel.radius();
@@ -1211,7 +1221,7 @@ OutputPartition convolve_partition(
                             rsee = rseb + 1;
                             cseb = 0;
 
-                            for(Index rf = nr_rows - kernel.radius(); rf < nr_rows;
+                            for(Index rf = nr_elements0 - kernel.radius(); rf < nr_elements0;
                                     ++rf, ++rnwb, ++rneb, ++rswe, ++rsee) {
 
                                 cnwb = nw_partition.extent(1) - (kernel.size() - 1);
@@ -1219,7 +1229,7 @@ OutputPartition convolve_partition(
                                 cswb = sw_partition.extent(1) - (kernel.size() - 1);
                                 csee = cseb + 1;
 
-                                for(Index cf = nr_cols - kernel.radius(); cf < nr_cols;
+                                for(Index cf = nr_elements1 - kernel.radius(); cf < nr_elements1;
                                         ++cf, ++cnwb, ++cnee, ++cswb, ++csee) {
 
                                     // NW partition view
@@ -1281,7 +1291,7 @@ OutputPartition convolve_partition(
                             for(Index rf = 0; rf < kernel.radius();
                                     ++rf, ++rnb, ++rse) {
 
-                                for(Index cf = kernel.radius(), cb = 0; cf < nr_cols - kernel.radius();
+                                for(Index cf = kernel.radius(), cb = 0; cf < nr_elements1 - kernel.radius();
                                         ++cf, ++cb) {
 
                                     // N partition view
@@ -1318,7 +1328,7 @@ OutputPartition convolve_partition(
                             Index const cwe = w_partition.extent(1);
                             Index const ceb = 0;
 
-                            for(Index rf = kernel.radius(), rb = 0; rf < nr_rows - kernel.radius();
+                            for(Index rf = kernel.radius(), rb = 0; rf < nr_elements0 - kernel.radius();
                                     ++rf, ++rb) {
 
                                 Index cwb = w_partition.extent(1) - kernel.radius();
@@ -1361,13 +1371,13 @@ OutputPartition convolve_partition(
                             Index const cwe = w_partition.extent(1);
                             Index const ceb = 0;
 
-                            for(Index rf = kernel.radius(), rb = 0; rf < nr_rows - kernel.radius();
+                            for(Index rf = kernel.radius(), rb = 0; rf < nr_elements0 - kernel.radius();
                                     ++rf, ++rb) {
 
                                 Index cwb = w_partition.extent(1) - (kernel.size() - 1);
                                 Index cee = ceb + 1;
 
-                                for(Index cf = nr_cols - kernel.radius(); cf < nr_cols;
+                                for(Index cf = nr_elements1 - kernel.radius(); cf < nr_elements1;
                                         ++cf, ++cwb, ++cee) {
 
                                     // W partition view
@@ -1407,10 +1417,10 @@ OutputPartition convolve_partition(
                             Index const rsb = 0;
                             Index rse = rsb + 1;
 
-                            for(Index rf = nr_rows - kernel.radius(); rf < nr_rows;
+                            for(Index rf = nr_elements0 - kernel.radius(); rf < nr_elements0;
                                     ++rf, ++rnb, ++rse) {
 
-                                for(Index cf = kernel.radius(), cb = 0; cf < nr_cols - kernel.radius();
+                                for(Index cf = kernel.radius(), cb = 0; cf < nr_elements1 - kernel.radius();
                                         ++cf, ++cb) {
 
                                     // N partition view
@@ -1664,534 +1674,636 @@ PartitionedArrayT<Array, OutputElement> convolve_2d(
     OutputPartitions output_partitions{shape_in_partitions(input_array)};
 
     // auto const nr_partitions = lue::nr_partitions(input_array);
-    auto const [nr_rows, nr_cols] = lue::shape_in_partitions(input_array);
+    auto const [nr_partitions0, nr_partitions1] =
+        lue::shape_in_partitions(input_array);
     auto const kernel_radius = kernel.radius();
 
     // Iterate over all partitions. Per partition determine the collection
     // of neighboring partitions, and asynchronously call the algorithm
     // that performs the calculations.
 
-    if(nr_rows < 3 && nr_cols < 3) {
 
-        // Some partitions don't have neighbors. Create them here and
-        // insert the minimal amount of elements needed to complete the
-        // calculations.
-        // TODO
-        assert(false);
 
+    // -------------------------------------------------------------------------
+    // Create a halo of temporary partitions that are used in the
+    // convolution of the partitions along the borders of the
+    // array. We create three collections of partitions:
+    // - 2x2 partitions for the corners of the halo
+    // - 2xc partitions for the longitudinal sides of the halo
+    // - rx2 partitions for the latitudinal sides of the halo
+    //
+    // The size of these partitions is as small as possible. They
+    // contain the minimum amount of elements needed for the
+    // calculations.
+    //
+    // The halo partitions are located on the same locality as the
+    // nearest border partition in the array.
+
+    // Corner halo partitions
+    //     +----+----+
+    //     | NW | NE |
+    //     +----+----+
+    //     | SW | SE |
+    //     +----+----+
+    InputPartitions halo_corner_partitions{Shape{{2, 2}}};
+
+    // North-west corner halo partition
+    halo_corner_partitions(0, 0) = hpx::get_colocation_id(
+            input_array.partitions()(0, 0).get_id()).then(
+        hpx::util::unwrapping(
+
+            [kernel_radius](
+                hpx::id_type const locality_id)
+            {
+                return InputPartition{locality_id,
+                    Shape{{kernel_radius, kernel_radius}}, 0};
+            }
+
+        ));
+
+    // North-east corner halo partition
+    halo_corner_partitions(0, 1) = hpx::get_colocation_id(
+            input_array.partitions()(0, nr_partitions1 - 1).get_id()).then(
+        hpx::util::unwrapping(
+
+            [kernel_radius](
+                hpx::id_type const locality_id)
+            {
+                return InputPartition{locality_id,
+                    Shape{{kernel_radius, kernel_radius}}, 0};
+            }
+
+        ));
+
+    // South-west corner halo partition
+    halo_corner_partitions(1, 0) = hpx::get_colocation_id(
+            input_array.partitions()(nr_partitions0 - 1, 0).get_id()).then(
+        hpx::util::unwrapping(
+
+            [kernel_radius](
+                hpx::id_type const locality_id)
+            {
+                return InputPartition{locality_id,
+                    Shape{{kernel_radius, kernel_radius}}, 0};
+            }
+
+        ));
+
+    // South-east corner halo partition
+    halo_corner_partitions(1, 1) = hpx::get_colocation_id(
+            input_array.partitions()(nr_partitions0 - 1, nr_partitions1 - 1).get_id()).then(
+        hpx::util::unwrapping(
+
+            [kernel_radius](
+                hpx::id_type const locality_id)
+            {
+                return InputPartition{locality_id,
+                    Shape{{kernel_radius, kernel_radius}}, 0};
+            }
+
+        ));
+
+    // Longitudinal side halo partitions
+    //     +---+---+---+
+    //     | N | N | N |
+    //     +---+---+---+
+    //     | S | S | S |
+    //     +---+---+---+
+    InputPartitions halo_longitudinal_side_partitions{
+        Shape{{2, nr_partitions1}}};
+
+    for(auto const [rh, rp]: {
+            std::array<Index, 2>{{0, 0}},
+            std::array<Index, 2>{{1, nr_partitions0 - 1}}}) {
+        for(Index cp = 0; cp < nr_partitions1; ++cp) {
+
+            halo_longitudinal_side_partitions(rh, cp) = hpx::dataflow(
+                hpx::launch::async,
+                hpx::util::unwrapping(
+
+                    [kernel_radius](
+                        hpx::id_type const locality_id,
+                        Shape const& partition_shape)
+                    {
+                        return InputPartition{locality_id,
+                            Shape{{kernel_radius, partition_shape[1]}}, 0};
+                    }
+
+                ),
+
+                hpx::get_colocation_id(
+                    input_array.partitions()(rp, cp).get_id()),
+                input_array.partitions()(rp, cp).shape());
+
+        }
     }
-    else {
 
-        // Create a halo of temporary partitions that are used in the
-        // convolution of the partitions along the borders of the
-        // array. We create three collections of partitions:
-        // - 2x2 partitions for the corners of the halo
-        // - 2xc partitions for the longitudinal sides of the halo
-        // - rx2 partitions for the latitudinal sides of the halo
-        //
-        // The size of these partitions is as small as possible. They
-        // contain the minimum amount of elements needed for the
-        // calculations.
-        //
-        // The halo partitions are located on the same locality as the
-        // nearest border partition in the array.
+    // Latitudinal sides halo partitions
+    //     +---+---+
+    //     | W | E |
+    //     +---+---+
+    //     | W | E |
+    //     +---+---+
+    //     | W | E |
+    //     +---+---+
+    InputPartitions halo_latitudinal_sides_partitions{
+        Shape{{nr_partitions0, 2}}};
 
-        // Corner halo partitions
-        InputPartitions halo_corner_partitions{Shape{{2, 2}}};
+    for(Index rp = 0; rp < nr_partitions0; ++rp) {
 
-        // North-west corner halo partition
-        halo_corner_partitions(0, 0) = hpx::get_colocation_id(
-                input_array.partitions()(0, 0).get_id()).then(
-            hpx::util::unwrapping(
-
-                [kernel_radius](
-                    hpx::id_type const locality_id)
-                {
-                    return InputPartition{locality_id,
-                        Shape{{kernel_radius, kernel_radius}}, 0};
-                }
-
-            ));
-
-        // North-east corner halo partition
-        halo_corner_partitions(0, 1) = hpx::get_colocation_id(
-                input_array.partitions()(0, nr_cols - 1).get_id()).then(
-            hpx::util::unwrapping(
-
-                [kernel_radius](
-                    hpx::id_type const locality_id)
-                {
-                    return InputPartition{locality_id,
-                        Shape{{kernel_radius, kernel_radius}}, 0};
-                }
-
-            ));
-
-        // South-west corner halo partition
-        halo_corner_partitions(1, 0) = hpx::get_colocation_id(
-                input_array.partitions()(nr_rows - 1, 0).get_id()).then(
-            hpx::util::unwrapping(
-
-                [kernel_radius](
-                    hpx::id_type const locality_id)
-                {
-                    return InputPartition{locality_id,
-                        Shape{{kernel_radius, kernel_radius}}, 0};
-                }
-
-            ));
-
-        // South-east corner halo partition
-        halo_corner_partitions(1, 1) = hpx::get_colocation_id(
-                input_array.partitions()(nr_rows - 1, nr_cols - 1).get_id()).then(
-            hpx::util::unwrapping(
-
-                [kernel_radius](
-                    hpx::id_type const locality_id)
-                {
-                    return InputPartition{locality_id,
-                        Shape{{kernel_radius, kernel_radius}}, 0};
-                }
-
-            ));
-
-        // Longitudinal side halo partitions
-        InputPartitions halo_longitudinal_side_partitions{Shape{{2, nr_cols}}};
-
-        for(auto const [rh, rp]: {
+        for(auto const [ch, cp]: {
                 std::array<Index, 2>{{0, 0}},
-                std::array<Index, 2>{{1, nr_rows - 1}}}) {
-            for(Index c = 0; c < nr_cols; ++c) {
+                std::array<Index, 2>{{1, nr_partitions1 - 1}}}) {
 
-                halo_longitudinal_side_partitions(rh, c) = hpx::dataflow(
-                    hpx::launch::async,
-                    hpx::util::unwrapping(
-
-                        [kernel_radius](
-                            hpx::id_type const locality_id,
-                            Shape const& partition_shape)
-                        {
-                            return InputPartition{locality_id,
-                                Shape{{kernel_radius, partition_shape[1]}}, 0};
-                        }
-
-                    ),
-
-                    hpx::get_colocation_id(
-                        input_array.partitions()(rp, c).get_id()),
-                    input_array.partitions()(rp, c).shape());
-
-            }
-        }
-
-        // Latitudinal sides halo partitions
-        InputPartitions halo_latitudinal_sides_partitions{Shape{{nr_rows, 2}}};
-
-        for(Index r = 0; r < nr_rows; ++r) {
-
-            for(auto const [ch, cp]: {
-                    std::array<Index, 2>{{0, 0}},
-                    std::array<Index, 2>{{1, nr_cols - 1}}}) {
-
-                halo_latitudinal_sides_partitions(r, ch) = hpx::dataflow(
-                    hpx::launch::async,
-                    hpx::util::unwrapping(
-
-                        [kernel_radius](
-                            hpx::id_type const locality_id,
-                            Shape const& partition_shape)
-                        {
-                            return InputPartition{locality_id,
-                                Shape{{partition_shape[0], kernel_radius}}, 0};
-                        }
-
-                    ),
-
-                    hpx::get_colocation_id(
-                        input_array.partitions()(r, cp).get_id()),
-                    input_array.partitions()(r, cp).shape());
-
-            }
-        }
-
-        // North-west corner partition
-        {
-            InputPartitions local_input_partitions{Shape{{3, 3}}};
-
-            local_input_partitions(0, 0) = halo_corner_partitions(0, 0);
-            local_input_partitions(0, 1) = halo_longitudinal_side_partitions(0, 0);
-            local_input_partitions(0, 2) = halo_longitudinal_side_partitions(0, 1);
-            local_input_partitions(1, 0) = halo_latitudinal_sides_partitions(0, 0);
-            local_input_partitions(1, 1) = input_array.partitions()(0, 0);
-            local_input_partitions(1, 2) = input_array.partitions()(0, 1);
-            local_input_partitions(2, 0) = halo_latitudinal_sides_partitions(1, 0);
-            local_input_partitions(2, 1) = input_array.partitions()(1, 0);
-            local_input_partitions(2, 2) = input_array.partitions()(1, 1);
-
-            // Once all needed partitions are ready, call the
-            // remote action
-            output_partitions(0, 0) = hpx::when_all_n(
-                    local_input_partitions.begin(),
-                    local_input_partitions.nr_elements()).then(
+            halo_latitudinal_sides_partitions(rp, ch) = hpx::dataflow(
+                hpx::launch::async,
                 hpx::util::unwrapping(
 
-                    [action, kernel](
-                        auto&& partitions)
+                    [kernel_radius](
+                        hpx::id_type const locality_id,
+                        Shape const& partition_shape)
                     {
-                        InputPartitions local_input_partitions{
-                            Shape{{3, 3}},
-                            partitions.begin(), partitions.end()};
-
-                        return action(
-                            hpx::get_colocation_id(
-                                hpx::launch::sync,
-                                local_input_partitions(1, 1).get_id()),
-                            local_input_partitions,
-                            kernel);
+                        return InputPartition{locality_id,
+                            Shape{{partition_shape[0], kernel_radius}}, 0};
                     }
 
-                ));
+                ),
+
+                hpx::get_colocation_id(
+                    input_array.partitions()(rp, cp).get_id()),
+                input_array.partitions()(rp, cp).shape());
+
         }
+    }
 
-        // North-east corner partition
-        {
-            InputPartitions local_input_partitions{Shape{{3, 3}}};
+    // -------------------------------------------------------------------------
+    assert(nr_partitions0 > 0);
+    assert(nr_partitions1 > 0);
 
-            local_input_partitions(0, 0) = halo_longitudinal_side_partitions(0, nr_cols - 2);
-            local_input_partitions(0, 1) = halo_longitudinal_side_partitions(0, nr_cols - 1);
-            local_input_partitions(0, 2) = halo_corner_partitions(0, 1);
-            local_input_partitions(1, 0) = input_array.partitions()(0, nr_cols - 2);
-            local_input_partitions(1, 1) = input_array.partitions()(0, nr_cols - 1);
-            local_input_partitions(1, 2) = halo_latitudinal_sides_partitions(1, 0);
-            local_input_partitions(2, 0) = input_array.partitions()(1, nr_cols - 2);
-            local_input_partitions(2, 1) = input_array.partitions()(1, nr_cols - 1);
-            local_input_partitions(2, 2) = halo_latitudinal_sides_partitions(1, 1);
+    InputPartitions local_input_partitions{Shape{{3, 3}}};
 
-            // Once all needed partitions are ready, call the
-            // remote action
-            output_partitions(0, nr_cols - 1) = hpx::when_all_n(
-                    local_input_partitions.begin(),
-                    local_input_partitions.nr_elements()).then(
-                hpx::util::unwrapping(
+    // North-west corner partition
+    {
+        // This block also handles the first partition in case there
+        // is only a single row and/or a single column of partitions
 
-                    [action, kernel](
-                        auto&& partitions)
-                    {
-                        InputPartitions local_input_partitions{
-                            Shape{{3, 3}},
-                            partitions.begin(), partitions.end()};
+        local_input_partitions(0, 0) = halo_corner_partitions(0, 0);
+        local_input_partitions(0, 1) = halo_longitudinal_side_partitions(0, 0);
+        local_input_partitions(0, 2) = nr_partitions1 == 1
+            ? halo_corner_partitions(0, 1)
+            : halo_longitudinal_side_partitions(0, 1);
 
-                        return action(
-                            hpx::get_colocation_id(
-                                hpx::launch::sync,
-                                local_input_partitions(1, 1).get_id()),
-                            local_input_partitions,
-                            kernel);
-                    }
+        local_input_partitions(1, 0) = halo_latitudinal_sides_partitions(0, 0);
+        local_input_partitions(1, 1) = input_array.partitions()(0, 0);
+        local_input_partitions(1, 2) = nr_partitions1 == 1
+            ? halo_latitudinal_sides_partitions(0, 1)
+            : input_array.partitions()(0, 1);
 
-                ));
-        }
+        local_input_partitions(2, 0) = nr_partitions0 == 1
+            ? halo_corner_partitions(1, 0)
+            : halo_latitudinal_sides_partitions(1, 0);
+        local_input_partitions(2, 1) = nr_partitions0 == 1
+            ? halo_longitudinal_side_partitions(1, 0)
+            : input_array.partitions()(1, 0);
+        local_input_partitions(2, 2) = nr_partitions0 == 1
+            ? (nr_partitions1 == 1
+                ? halo_corner_partitions(1, 1)
+                : halo_longitudinal_side_partitions(1, 1))
+            : (nr_partitions1 == 1
+                ? halo_latitudinal_sides_partitions(1, 1)
+                : input_array.partitions()(1, 1));
 
-        // South-west corner partition
-        {
-            InputPartitions local_input_partitions{Shape{{3, 3}}};
+        // Once all needed partitions are ready, call the
+        // remote action
+        output_partitions(0, 0) = hpx::when_all_n(
+                local_input_partitions.begin(),
+                local_input_partitions.nr_elements()).then(
+            hpx::util::unwrapping(
 
-            local_input_partitions(0, 0) = halo_latitudinal_sides_partitions(nr_rows - 2, 0);
-            local_input_partitions(0, 1) = input_array.partitions()(nr_rows - 2, 0);
-            local_input_partitions(0, 2) = input_array.partitions()(nr_rows - 2, 1);
-            local_input_partitions(1, 0) = halo_latitudinal_sides_partitions(nr_rows - 1, 0);
-            local_input_partitions(1, 1) = input_array.partitions()(nr_rows - 1, 0);
-            local_input_partitions(1, 2) = input_array.partitions()(nr_rows - 1, 1);
-            local_input_partitions(2, 0) = halo_corner_partitions(1, 0);
-            local_input_partitions(2, 1) = halo_longitudinal_side_partitions(1, 0);
-            local_input_partitions(2, 2) = halo_longitudinal_side_partitions(1, 1);
-
-            // Once all needed partitions are ready, call the
-            // remote action
-            output_partitions(nr_rows - 1, 0) = hpx::when_all_n(
-                    local_input_partitions.begin(),
-                    local_input_partitions.nr_elements()).then(
-                hpx::util::unwrapping(
-
-                    [action, kernel](
-                        auto&& partitions)
-                    {
-                        InputPartitions local_input_partitions{
-                            Shape{{3, 3}},
-                            partitions.begin(), partitions.end()};
-
-                        return action(
-                            hpx::get_colocation_id(
-                                hpx::launch::sync,
-                                local_input_partitions(1, 1).get_id()),
-                            local_input_partitions,
-                            kernel);
-                    }
-
-                ));
-        }
-
-        // South-east corner partition
-        {
-            InputPartitions local_input_partitions{Shape{{3, 3}}};
-
-            local_input_partitions(0, 0) = input_array.partitions()(nr_rows - 2, nr_cols - 2);
-            local_input_partitions(0, 1) = input_array.partitions()(nr_rows - 2, nr_cols - 1);
-            local_input_partitions(0, 2) = halo_latitudinal_sides_partitions(nr_rows - 2, 1);
-            local_input_partitions(1, 0) = input_array.partitions()(nr_rows - 1, nr_cols - 2);
-            local_input_partitions(1, 1) = input_array.partitions()(nr_rows - 1, nr_cols - 1);
-            local_input_partitions(1, 2) = halo_latitudinal_sides_partitions(nr_rows - 1, 1);
-            local_input_partitions(2, 0) = halo_longitudinal_side_partitions(1, nr_cols - 2);
-            local_input_partitions(2, 1) = halo_longitudinal_side_partitions(1, nr_cols - 1);
-            local_input_partitions(2, 2) = halo_corner_partitions(1, 1);
-
-            // Once all needed partitions are ready, call the
-            // remote action
-            output_partitions(nr_rows - 1, nr_cols - 1) = hpx::when_all_n(
-                    local_input_partitions.begin(),
-                    local_input_partitions.nr_elements()).then(
-                hpx::util::unwrapping(
-
-                    [action, kernel](
-                        auto&& partitions)
-                    {
-                        InputPartitions local_input_partitions{
-                            Shape{{3, 3}},
-                            partitions.begin(), partitions.end()};
-
-                        return action(
-                            hpx::get_colocation_id(
-                                hpx::launch::sync,
-                                local_input_partitions(1, 1).get_id()),
-                            local_input_partitions,
-                            kernel);
-                    }
-
-                ));
-        }
-
-
-
-
-
-
-
-
-
-
-
-
-
-        InputPartitions local_input_partitions{Shape{{3, 3}}};
-
-        // North side partition
-        {
-            for(Index c = 1; c < nr_cols - 1; ++c) {
-
-                local_input_partitions(0, 0) = halo_longitudinal_side_partitions(0, c - 1);
-                local_input_partitions(0, 1) = halo_longitudinal_side_partitions(0, c    );
-                local_input_partitions(0, 2) = halo_longitudinal_side_partitions(0, c + 1);
-                local_input_partitions(1, 0) = input_array.partitions()(0, c - 1);
-                local_input_partitions(1, 1) = input_array.partitions()(0, c    );
-                local_input_partitions(1, 2) = input_array.partitions()(0, c + 1);
-                local_input_partitions(2, 0) = input_array.partitions()(1, c - 1);
-                local_input_partitions(2, 1) = input_array.partitions()(1, c    );
-                local_input_partitions(2, 2) = input_array.partitions()(1, c + 1);
-
-                // Once all needed partitions are ready, call the
-                // remote action
-                output_partitions(0, c) = hpx::when_all_n(
-                        local_input_partitions.begin(),
-                        local_input_partitions.nr_elements()).then(
-                    hpx::util::unwrapping(
-
-                        [action, kernel](
-                            auto&& partitions)
-                        {
-                            InputPartitions local_input_partitions{
-                                Shape{{3, 3}},
-                                partitions.begin(), partitions.end()};
-
-                            return action(
-                                hpx::get_colocation_id(
-                                    hpx::launch::sync,
-                                    local_input_partitions(1, 1).get_id()),
-                                local_input_partitions,
-                                kernel);
-                        }
-
-                    ));
-
-            }
-        }
-
-        // South side partition
-        {
-            for(Index c = 1; c < nr_cols - 1; ++c) {
-
-                local_input_partitions(0, 0) = input_array.partitions()(nr_rows - 2, c - 1);
-                local_input_partitions(0, 1) = input_array.partitions()(nr_rows - 2, c    );
-                local_input_partitions(0, 2) = input_array.partitions()(nr_rows - 2, c + 1);
-                local_input_partitions(1, 0) = input_array.partitions()(nr_rows - 1, c - 1);
-                local_input_partitions(1, 1) = input_array.partitions()(nr_rows - 1, c    );
-                local_input_partitions(1, 2) = input_array.partitions()(nr_rows - 1, c + 1);
-                local_input_partitions(2, 0) = halo_longitudinal_side_partitions(0, c - 1);
-                local_input_partitions(2, 1) = halo_longitudinal_side_partitions(0, c    );
-                local_input_partitions(2, 2) = halo_longitudinal_side_partitions(0, c + 1);
-
-                // Once all needed partitions are ready, call the
-                // remote action
-                output_partitions(nr_rows - 1, c) = hpx::when_all_n(
-                        local_input_partitions.begin(),
-                        local_input_partitions.nr_elements()).then(
-                    hpx::util::unwrapping(
-
-                        [action, kernel](
-                            auto&& partitions)
-                        {
-                            InputPartitions local_input_partitions{
-                                Shape{{3, 3}},
-                                partitions.begin(), partitions.end()};
-
-                            return action(
-                                hpx::get_colocation_id(
-                                    hpx::launch::sync,
-                                    local_input_partitions(1, 1).get_id()),
-                                local_input_partitions,
-                                kernel);
-                        }
-
-                    ));
-
-            }
-        }
-        // West side partition
-        {
-            for(Index r = 1; r < nr_rows - 1; ++r) {
-
-                local_input_partitions(0, 0) = halo_latitudinal_sides_partitions(r - 1, 0);
-                local_input_partitions(0, 1) = input_array.partitions()(r - 1, 0);
-                local_input_partitions(0, 2) = input_array.partitions()(r - 1, 1);
-                local_input_partitions(1, 0) = halo_latitudinal_sides_partitions(r    , 0);
-                local_input_partitions(1, 1) = input_array.partitions()(r    , 0);
-                local_input_partitions(1, 2) = input_array.partitions()(r    , 1);
-                local_input_partitions(2, 0) = halo_latitudinal_sides_partitions(r + 1, 0);
-                local_input_partitions(2, 1) = input_array.partitions()(r + 1, 0);
-                local_input_partitions(2, 2) = input_array.partitions()(r + 1, 1);
-
-                // Once all needed partitions are ready, call the
-                // remote action
-                output_partitions(r, 0) = hpx::when_all_n(
-                        local_input_partitions.begin(),
-                        local_input_partitions.nr_elements()).then(
-                    hpx::util::unwrapping(
-
-                        [action, kernel](
-                            auto&& partitions)
-                        {
-                            InputPartitions local_input_partitions{
-                                Shape{{3, 3}},
-                                partitions.begin(), partitions.end()};
-
-                            return action(
-                                hpx::get_colocation_id(
-                                    hpx::launch::sync,
-                                    local_input_partitions(1, 1).get_id()),
-                                local_input_partitions,
-                                kernel);
-                        }
-
-                    ));
-
-            }
-        }
-
-        // East side partition
-        {
-            for(Index r = 1; r < nr_rows - 1; ++r) {
-
-                local_input_partitions(0, 0) = input_array.partitions()(r - 1, nr_cols - 2);
-                local_input_partitions(0, 1) = input_array.partitions()(r - 1, nr_cols - 1);
-                local_input_partitions(0, 2) = halo_latitudinal_sides_partitions(r - 1, 1);
-                local_input_partitions(1, 0) = input_array.partitions()(r    , nr_cols - 2);
-                local_input_partitions(1, 1) = input_array.partitions()(r    , nr_cols - 1);
-                local_input_partitions(1, 2) = halo_latitudinal_sides_partitions(r    , 1);
-                local_input_partitions(2, 0) = input_array.partitions()(r + 1, nr_cols - 2);
-                local_input_partitions(2, 1) = input_array.partitions()(r + 1, nr_cols - 1);
-                local_input_partitions(2, 2) = halo_latitudinal_sides_partitions(r + 1, 1);
-
-                // Once all needed partitions are ready, call the
-                // remote action
-                output_partitions(r, nr_cols - 1) = hpx::when_all_n(
-                        local_input_partitions.begin(),
-                        local_input_partitions.nr_elements()).then(
-                    hpx::util::unwrapping(
-
-                        [action, kernel](
-                            auto&& partitions)
-                        {
-                            InputPartitions local_input_partitions{
-                                Shape{{3, 3}},
-                                partitions.begin(), partitions.end()};
-
-                            return action(
-                                hpx::get_colocation_id(
-                                    hpx::launch::sync,
-                                    local_input_partitions(1, 1).get_id()),
-                                local_input_partitions,
-                                kernel);
-                        }
-
-                    ));
-
-            }
-        }
-
-        // Iterate over inner partitions
-        for(Index r = 1; r < nr_rows - 1; ++r) {
-            for(Index c = 1; c < nr_cols - 1; ++c) {
-
-                // Create collection of partitions containing the current
-                // partition and its neighboring partitions
-                InputPartitions local_input_partitions{Shape{{3, 3}}};
-
+                [action, kernel](
+                    auto&& partitions)
                 {
-                    // Assume one neighboring partition is enough
-                    Count const radius = 1;
+                    InputPartitions local_input_partitions{
+                        Shape{{3, 3}},
+                        partitions.begin(), partitions.end()};
 
-                    for(Index i = 0; i < 2 * radius + 1; ++i) {
-                        for(Index j = 0; j < 2 * radius + 1; ++j) {
-                            local_input_partitions(i, j) =
-                                input_array.partitions()(
-                                    r - radius + i, c - radius + j);
-                        }
-                    }
+                    return action(
+                        hpx::get_colocation_id(
+                            hpx::launch::sync,
+                            local_input_partitions(1, 1).get_id()),
+                        local_input_partitions,
+                        kernel);
                 }
 
-                // Once all needed partitions are ready, call the
-                // remote action
-                output_partitions(r, c) = hpx::when_all_n(
-                        local_input_partitions.begin(),
-                        local_input_partitions.nr_elements()).then(
-                    hpx::util::unwrapping(
+            ));
+    }
 
-                        [action, kernel](
-                            auto&& partitions)
-                        {
-                            InputPartitions local_input_partitions{
-                                Shape{{3, 3}},
-                                partitions.begin(), partitions.end()};
+    // North-east corner partition
+    if(nr_partitions1 > 1) {
+        // This block also handles the last partition in case there
+        // is only a single row of partitions
 
-                            return action(
-                                hpx::get_colocation_id(
-                                    hpx::launch::sync,
-                                    local_input_partitions(1, 1).get_id()),
-                                local_input_partitions,
-                                kernel);
-                        }
+        local_input_partitions(0, 0) =
+            halo_longitudinal_side_partitions(0, nr_partitions1 - 2);
+        local_input_partitions(0, 1) =
+            halo_longitudinal_side_partitions(0, nr_partitions1 - 1);
+        local_input_partitions(0, 2) = halo_corner_partitions(0, 1);
 
-                    ));
+        local_input_partitions(1, 0) =
+            input_array.partitions()(0, nr_partitions1 - 2);
+        local_input_partitions(1, 1) =
+            input_array.partitions()(0, nr_partitions1 - 1);
+        local_input_partitions(1, 2) = halo_latitudinal_sides_partitions(0, 1);
+
+        if(nr_partitions0 == 1) {
+            // Case where nr_partitions1 == 1 is handled by north-west
+            // corner logic
+            assert(nr_partitions1 > 1);
+
+            local_input_partitions(2, 0) =
+                halo_longitudinal_side_partitions(1, nr_partitions1 - 2);
+            local_input_partitions(2, 1) =
+                halo_longitudinal_side_partitions(1, nr_partitions1 - 1);
+            local_input_partitions(2, 2) = halo_corner_partitions(1, 1);
+        }
+        else {
+            local_input_partitions(2, 0) =
+                input_array.partitions()(1, nr_partitions1 - 2);
+            local_input_partitions(2, 1) =
+                input_array.partitions()(1, nr_partitions1 - 1);
+            local_input_partitions(2, 2) =
+                halo_latitudinal_sides_partitions(1, 1);
+        }
+
+        // Once all needed partitions are ready, call the
+        // remote action
+        output_partitions(0, nr_partitions1 - 1) = hpx::when_all_n(
+                local_input_partitions.begin(),
+                local_input_partitions.nr_elements()).then(
+            hpx::util::unwrapping(
+
+                [action, kernel](
+                    auto&& partitions)
+                {
+                    InputPartitions local_input_partitions{
+                        Shape{{3, 3}},
+                        partitions.begin(), partitions.end()};
+
+                    return action(
+                        hpx::get_colocation_id(
+                            hpx::launch::sync,
+                            local_input_partitions(1, 1).get_id()),
+                        local_input_partitions,
+                        kernel);
+                }
+
+            ));
+    }
+
+    // South-west corner partition
+    if(nr_partitions0 > 1) {
+        // This block also handles the last partition in case there
+        // is only a single column of partitions
+
+        local_input_partitions(0, 0) =
+            halo_latitudinal_sides_partitions(nr_partitions0 - 2, 0);
+        local_input_partitions(0, 1) =
+            input_array.partitions()(nr_partitions0 - 2, 0);
+        local_input_partitions(0, 2) = nr_partitions1 == 1
+            ? halo_latitudinal_sides_partitions(nr_partitions0 - 2, 1)
+            : input_array.partitions()(nr_partitions0 - 2, 1);
+
+        local_input_partitions(1, 0) =
+            halo_latitudinal_sides_partitions(nr_partitions0 - 1, 0);
+        local_input_partitions(1, 1) =
+            input_array.partitions()(nr_partitions0 - 1, 0);
+        local_input_partitions(1, 2) = nr_partitions1 == 1
+            ? halo_latitudinal_sides_partitions(nr_partitions0 - 1, 1)
+            : input_array.partitions()(nr_partitions0 - 1, 1);
+
+        local_input_partitions(2, 0) = halo_corner_partitions(1, 0);
+        local_input_partitions(2, 1) = halo_longitudinal_side_partitions(1, 0);
+        local_input_partitions(2, 2) = nr_partitions1 == 1
+            ? halo_corner_partitions(1, 1)
+            : halo_longitudinal_side_partitions(1, 1);
+
+        // Once all needed partitions are ready, call the
+        // remote action
+        output_partitions(nr_partitions0 - 1, 0) = hpx::when_all_n(
+                local_input_partitions.begin(),
+                local_input_partitions.nr_elements()).then(
+            hpx::util::unwrapping(
+
+                [action, kernel](
+                    auto&& partitions)
+                {
+                    InputPartitions local_input_partitions{
+                        Shape{{3, 3}},
+                        partitions.begin(), partitions.end()};
+
+                    return action(
+                        hpx::get_colocation_id(
+                            hpx::launch::sync,
+                            local_input_partitions(1, 1).get_id()),
+                        local_input_partitions,
+                        kernel);
+                }
+
+            ));
+    }
+
+    // South-east corner partition
+    if(nr_partitions0 > 1 && nr_partitions1 > 1) {
+        local_input_partitions(0, 0) = input_array.partitions()(nr_partitions0 - 2, nr_partitions1 - 2);
+        local_input_partitions(0, 1) = input_array.partitions()(nr_partitions0 - 2, nr_partitions1 - 1);
+        local_input_partitions(0, 2) = halo_latitudinal_sides_partitions(nr_partitions0 - 2, 1);
+        local_input_partitions(1, 0) = input_array.partitions()(nr_partitions0 - 1, nr_partitions1 - 2);
+        local_input_partitions(1, 1) = input_array.partitions()(nr_partitions0 - 1, nr_partitions1 - 1);
+        local_input_partitions(1, 2) = halo_latitudinal_sides_partitions(nr_partitions0 - 1, 1);
+        local_input_partitions(2, 0) = halo_longitudinal_side_partitions(1, nr_partitions1 - 2);
+        local_input_partitions(2, 1) = halo_longitudinal_side_partitions(1, nr_partitions1 - 1);
+        local_input_partitions(2, 2) = halo_corner_partitions(1, 1);
+
+        // Once all needed partitions are ready, call the
+        // remote action
+        output_partitions(nr_partitions0 - 1, nr_partitions1 - 1) = hpx::when_all_n(
+                local_input_partitions.begin(),
+                local_input_partitions.nr_elements()).then(
+            hpx::util::unwrapping(
+
+                [action, kernel](
+                    auto&& partitions)
+                {
+                    InputPartitions local_input_partitions{
+                        Shape{{3, 3}},
+                        partitions.begin(), partitions.end()};
+
+                    return action(
+                        hpx::get_colocation_id(
+                            hpx::launch::sync,
+                            local_input_partitions(1, 1).get_id()),
+                        local_input_partitions,
+                        kernel);
+                }
+
+            ));
+    }
+
+
+    // North side partition
+    {
+        // This block also handles the middle partitions in
+        // case there is only a single row of partitions
+
+        for(Index c = 1; c < nr_partitions1 - 1; ++c) {
+            local_input_partitions(0, 0) =
+                halo_longitudinal_side_partitions(0, c - 1);
+            local_input_partitions(0, 1) =
+                halo_longitudinal_side_partitions(0, c    );
+            local_input_partitions(0, 2) =
+                halo_longitudinal_side_partitions(0, c + 1);
+
+            local_input_partitions(1, 0) = input_array.partitions()(0, c - 1);
+            local_input_partitions(1, 1) = input_array.partitions()(0, c    );
+            local_input_partitions(1, 2) = input_array.partitions()(0, c + 1);
+
+            if(nr_partitions0 == 1) {
+                // Case where nr_partitions1 == 1 is handled by north-west
+                // corner logic
+                assert(nr_partitions1 > 1);
+
+                local_input_partitions(2, 0) =
+                    halo_longitudinal_side_partitions(1, c - 1);
+                local_input_partitions(2, 1) =
+                    halo_longitudinal_side_partitions(1, c    );
+                local_input_partitions(2, 2) =
+                    halo_longitudinal_side_partitions(1, c + 1);
             }
+            else {
+                local_input_partitions(2, 0) =
+                    input_array.partitions()(1, c - 1);
+                local_input_partitions(2, 1) =
+                    input_array.partitions()(1, c    );
+                local_input_partitions(2, 2) =
+                    input_array.partitions()(1, c + 1);
+            }
+
+            // Once all needed partitions are ready, call the
+            // remote action
+            output_partitions(0, c) = hpx::when_all_n(
+                    local_input_partitions.begin(),
+                    local_input_partitions.nr_elements()).then(
+                hpx::util::unwrapping(
+
+                    [action, kernel](
+                        auto&& partitions)
+                    {
+                        InputPartitions local_input_partitions{
+                            Shape{{3, 3}},
+                            partitions.begin(), partitions.end()};
+
+                        return action(
+                            hpx::get_colocation_id(
+                                hpx::launch::sync,
+                                local_input_partitions(1, 1).get_id()),
+                            local_input_partitions,
+                            kernel);
+                    }
+
+                ));
+
+        }
+    }
+
+    // South side partition
+    if(nr_partitions0 > 1) {
+
+        for(Index c = 1; c < nr_partitions1 - 1; ++c) {
+            local_input_partitions(0, 0) = input_array.partitions()(nr_partitions0 - 2, c - 1);
+            local_input_partitions(0, 1) = input_array.partitions()(nr_partitions0 - 2, c    );
+            local_input_partitions(0, 2) = input_array.partitions()(nr_partitions0 - 2, c + 1);
+            local_input_partitions(1, 0) = input_array.partitions()(nr_partitions0 - 1, c - 1);
+            local_input_partitions(1, 1) = input_array.partitions()(nr_partitions0 - 1, c    );
+            local_input_partitions(1, 2) = input_array.partitions()(nr_partitions0 - 1, c + 1);
+            local_input_partitions(2, 0) = halo_longitudinal_side_partitions(0, c - 1);
+            local_input_partitions(2, 1) = halo_longitudinal_side_partitions(0, c    );
+            local_input_partitions(2, 2) = halo_longitudinal_side_partitions(0, c + 1);
+
+            // Once all needed partitions are ready, call the
+            // remote action
+            output_partitions(nr_partitions0 - 1, c) = hpx::when_all_n(
+                    local_input_partitions.begin(),
+                    local_input_partitions.nr_elements()).then(
+                hpx::util::unwrapping(
+
+                    [action, kernel](
+                        auto&& partitions)
+                    {
+                        InputPartitions local_input_partitions{
+                            Shape{{3, 3}},
+                            partitions.begin(), partitions.end()};
+
+                        return action(
+                            hpx::get_colocation_id(
+                                hpx::launch::sync,
+                                local_input_partitions(1, 1).get_id()),
+                            local_input_partitions,
+                            kernel);
+                    }
+
+                ));
+
+        }
+    }
+
+    // West side partition
+    {
+        // This block also handles the middle partitions in
+        // case there is only a single column of partitions
+
+        for(Index r = 1; r < nr_partitions0 - 1; ++r) {
+            local_input_partitions(0, 0) =
+                halo_latitudinal_sides_partitions(r - 1, 0);
+            local_input_partitions(0, 1) =
+                input_array.partitions()(r - 1, 0);
+            local_input_partitions(0, 2) = nr_partitions1 == 1
+                ? halo_latitudinal_sides_partitions(r - 1, 1)
+                : input_array.partitions()(r - 1, 1);
+
+            local_input_partitions(1, 0) =
+                halo_latitudinal_sides_partitions(r    , 0);
+            local_input_partitions(1, 1) =
+                input_array.partitions()(r    , 0);
+            local_input_partitions(1, 2) = nr_partitions1 == 1
+                ? halo_latitudinal_sides_partitions(r    , 1)
+                : input_array.partitions()(r    , 1);
+
+            local_input_partitions(2, 0) =
+                halo_latitudinal_sides_partitions(r + 1, 0);
+            local_input_partitions(2, 1) =
+                input_array.partitions()(r + 1, 0);
+            local_input_partitions(2, 2) = nr_partitions1 == 1
+                ? halo_latitudinal_sides_partitions(r + 1, 1)
+                : input_array.partitions()(r + 1, 1);
+
+            // Once all needed partitions are ready, call the
+            // remote action
+            output_partitions(r, 0) = hpx::when_all_n(
+                    local_input_partitions.begin(),
+                    local_input_partitions.nr_elements()).then(
+                hpx::util::unwrapping(
+
+                    [action, kernel](
+                        auto&& partitions)
+                    {
+                        InputPartitions local_input_partitions{
+                            Shape{{3, 3}},
+                            partitions.begin(), partitions.end()};
+
+                        return action(
+                            hpx::get_colocation_id(
+                                hpx::launch::sync,
+                                local_input_partitions(1, 1).get_id()),
+                            local_input_partitions,
+                            kernel);
+                    }
+
+                ));
+
+        }
+    }
+
+    // East side partition
+    if(nr_partitions1 > 1) {
+
+        for(Index r = 1; r < nr_partitions0 - 1; ++r) {
+            local_input_partitions(0, 0) =
+                input_array.partitions()(r - 1, nr_partitions1 - 2);
+            local_input_partitions(0, 1) =
+                input_array.partitions()(r - 1, nr_partitions1 - 1);
+            local_input_partitions(0, 2) =
+                halo_latitudinal_sides_partitions(r - 1, 1);
+            local_input_partitions(1, 0) =
+                input_array.partitions()(r    , nr_partitions1 - 2);
+            local_input_partitions(1, 1) =
+                input_array.partitions()(r    , nr_partitions1 - 1);
+            local_input_partitions(1, 2) =
+                halo_latitudinal_sides_partitions(r    , 1);
+            local_input_partitions(2, 0) =
+                input_array.partitions()(r + 1, nr_partitions1 - 2);
+            local_input_partitions(2, 1) =
+                input_array.partitions()(r + 1, nr_partitions1 - 1);
+            local_input_partitions(2, 2) =
+                halo_latitudinal_sides_partitions(r + 1, 1);
+
+            // Once all needed partitions are ready, call the
+            // remote action
+            output_partitions(r, nr_partitions1 - 1) = hpx::when_all_n(
+                    local_input_partitions.begin(),
+                    local_input_partitions.nr_elements()).then(
+                hpx::util::unwrapping(
+
+                    [action, kernel](
+                        auto&& partitions)
+                    {
+                        InputPartitions local_input_partitions{
+                            Shape{{3, 3}},
+                            partitions.begin(), partitions.end()};
+
+                        return action(
+                            hpx::get_colocation_id(
+                                hpx::launch::sync,
+                                local_input_partitions(1, 1).get_id()),
+                            local_input_partitions,
+                            kernel);
+                    }
+
+                ));
+
+        }
+    }
+
+    // Iterate over inner partitions
+    for(Index r = 1; r < nr_partitions0 - 1; ++r) {
+        for(Index c = 1; c < nr_partitions1 - 1; ++c) {
+            // Create collection of partitions containing the current
+            // partition and its neighboring partitions
+            {
+                // Assume one neighboring partition is enough
+                Count const radius = 1;
+
+                for(Index i = 0; i < 2 * radius + 1; ++i) {
+                    for(Index j = 0; j < 2 * radius + 1; ++j) {
+                        local_input_partitions(i, j) =
+                            input_array.partitions()(
+                                r - radius + i, c - radius + j);
+                    }
+                }
+            }
+
+            // Once all needed partitions are ready, call the
+            // remote action
+            output_partitions(r, c) = hpx::when_all_n(
+                    local_input_partitions.begin(),
+                    local_input_partitions.nr_elements()).then(
+                hpx::util::unwrapping(
+
+                    [action, kernel](
+                        auto&& partitions)
+                    {
+                        InputPartitions local_input_partitions{
+                            Shape{{3, 3}},
+                            partitions.begin(), partitions.end()};
+
+                        return action(
+                            hpx::get_colocation_id(
+                                hpx::launch::sync,
+                                local_input_partitions(1, 1).get_id()),
+                            local_input_partitions,
+                            kernel);
+                    }
+
+                ));
         }
     }
 
