@@ -81,13 +81,6 @@
 
 // TODO Test with larger kernel radius
 // TODO Test with different float weights
-// TODO Test with kernel radius larger than partition size → exception
-//     - Well, this is perfectly possible. The partitions at the east
-//         and south end have a size that we cannot predict. They are
-//         used to make the array size match the data (see partitioned
-//         array constructor). So, it seems we must support this,
-//         eventually.
-// TODO Test with single partition
 
 
 BOOST_AUTO_TEST_CASE(window_total_2d)
@@ -309,3 +302,293 @@ BOOST_AUTO_TEST_CASE(window_total_2d)
         BOOST_CHECK_EQUAL(data(2, 2), 4.0);
     }
 }
+
+
+BOOST_AUTO_TEST_CASE(window_total_2d_single_partition)
+{
+    using Element = std::int32_t;
+    std::size_t const rank = 2;
+
+    using Array = lue::PartitionedArray<Element, rank>;
+    using Shape = lue::ShapeT<Array>;
+
+    Shape const array_shape{{3, 3}};
+    Shape const partition_shape{{3, 3}};
+
+    //   |           |
+    // --+---+---+---+--
+    //   | 1 | 1 | 1 |
+    //   +---+---+---+--
+    //   | 1 | 1 | 1 |
+    //   +---+---+---+--
+    //   | 1 | 1 | 1 |
+    // --+---+---+---+--
+    //   |           |
+    Array array{array_shape, partition_shape};
+    lue::fill(array, hpx::make_ready_future<Element>(1).share()).wait();
+
+    // +---+---+---+
+    // | 1 | 1 | 1 |
+    // +---+---+---+
+    // | 1 | 1 | 1 |
+    // +---+---+---+
+    // | 1 | 1 | 1 |
+    // +---+---+---+
+    auto const kernel = lue::box_kernel<bool, rank>(1, true);
+
+    //   |           |
+    // --+---+---+---+--
+    //   | 4 | 6 | 4 |
+    //   +---+---+---+
+    //   | 6 | 9 | 6 |
+    //   +---+---+---+
+    //   | 4 | 6 | 4 |
+    // --+---+---+---+--
+    //   |           |
+    auto convolve = lue::convolve(array, kernel);
+
+    static_assert(std::is_same_v<lue::ElementT<decltype(convolve)>, double>);
+
+    BOOST_REQUIRE_EQUAL(lue::nr_partitions(convolve), 1);
+    BOOST_REQUIRE_EQUAL(convolve.shape(), array_shape);
+
+    auto const& partition = convolve.partitions()(0, 0);
+    auto const data = partition.data(lue::CopyMode::share).get();
+    BOOST_REQUIRE_EQUAL(shape(data), partition_shape);
+
+    BOOST_CHECK_EQUAL(data(0, 0), 4.0);
+    BOOST_CHECK_EQUAL(data(0, 1), 6.0);
+    BOOST_CHECK_EQUAL(data(0, 2), 4.0);
+    BOOST_CHECK_EQUAL(data(1, 0), 6.0);
+    BOOST_CHECK_EQUAL(data(1, 1), 9.0);
+    BOOST_CHECK_EQUAL(data(1, 2), 6.0);
+    BOOST_CHECK_EQUAL(data(2, 0), 4.0);
+    BOOST_CHECK_EQUAL(data(2, 1), 6.0);
+    BOOST_CHECK_EQUAL(data(2, 2), 4.0);
+}
+
+
+BOOST_AUTO_TEST_CASE(window_total_2d_single_row_of_partitions)
+{
+    using Element = std::int32_t;
+    std::size_t const rank = 2;
+
+    using Array = lue::PartitionedArray<Element, rank>;
+    using Shape = lue::ShapeT<Array>;
+
+    Shape const array_shape{{3, 9}};
+    Shape const partition_shape{{3, 3}};
+
+    //   |           |           |           |
+    // --+---+---+---+---+---+---+---+---+---+
+    //   | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 |
+    //   +---+---+---+---+---+---+---+---+---+
+    //   | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 |
+    //   +---+---+---+---+---+---+---+---+---+
+    //   | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 |
+    // --+---+---+---+---+---+---+---+---+---+
+    //   |           |           |           |
+    Array array{array_shape, partition_shape};
+    lue::fill(array, hpx::make_ready_future<Element>(1).share()).wait();
+
+    // +---+---+---+
+    // | 1 | 1 | 1 |
+    // +---+---+---+
+    // | 1 | 1 | 1 |
+    // +---+---+---+
+    // | 1 | 1 | 1 |
+    // +---+---+---+
+    auto const kernel = lue::box_kernel<bool, rank>(1, true);
+
+    //   |           |           |           |
+    // --+---+---+---+---+---+---+---+---+---+
+    //   | 4 | 6 | 6 | 6 | 6 | 6 | 6 | 6 | 4 |
+    //   +---+---+---+---+---+---+---+---+---+
+    //   | 6 | 9 | 9 | 9 | 9 | 9 | 9 | 9 | 6 |
+    //   +---+---+---+---+---+---+---+---+---+
+    //   | 4 | 6 | 6 | 6 | 6 | 6 | 6 | 6 | 4 |
+    // --+---+---+---+---+---+---+---+---+---+
+    //   |           |           |           |
+    auto convolve = lue::convolve(array, kernel);
+
+    static_assert(std::is_same_v<lue::ElementT<decltype(convolve)>, double>);
+
+    BOOST_REQUIRE_EQUAL(lue::nr_partitions(convolve), 3);
+    BOOST_REQUIRE_EQUAL(convolve.shape(), array_shape);
+
+    // partition 1
+    {
+        auto const& partition = convolve.partitions()(0, 0);
+        auto const data = partition.data(lue::CopyMode::share).get();
+        BOOST_REQUIRE_EQUAL(shape(data), partition_shape);
+        BOOST_CHECK_EQUAL(data(0, 0), 4.0);
+        BOOST_CHECK_EQUAL(data(0, 1), 6.0);
+        BOOST_CHECK_EQUAL(data(0, 2), 6.0);
+        BOOST_CHECK_EQUAL(data(1, 0), 6.0);
+        BOOST_CHECK_EQUAL(data(1, 1), 9.0);
+        BOOST_CHECK_EQUAL(data(1, 2), 9.0);
+        BOOST_CHECK_EQUAL(data(2, 0), 4.0);
+        BOOST_CHECK_EQUAL(data(2, 1), 6.0);
+        BOOST_CHECK_EQUAL(data(2, 2), 6.0);
+    }
+
+    // partition 2
+    {
+        auto const& partition = convolve.partitions()(0, 1);
+        auto const data = partition.data(lue::CopyMode::share).get();
+        BOOST_REQUIRE_EQUAL(shape(data), partition_shape);
+        BOOST_CHECK_EQUAL(data(0, 0), 6.0);
+        BOOST_CHECK_EQUAL(data(0, 1), 6.0);
+        BOOST_CHECK_EQUAL(data(0, 2), 6.0);
+        BOOST_CHECK_EQUAL(data(1, 0), 9.0);
+        BOOST_CHECK_EQUAL(data(1, 1), 9.0);
+        BOOST_CHECK_EQUAL(data(1, 2), 9.0);
+        BOOST_CHECK_EQUAL(data(2, 0), 6.0);
+        BOOST_CHECK_EQUAL(data(2, 1), 6.0);
+        BOOST_CHECK_EQUAL(data(2, 2), 6.0);
+    }
+
+    // partition 3
+    {
+        auto const& partition = convolve.partitions()(0, 2);
+        auto const data = partition.data(lue::CopyMode::share).get();
+        BOOST_REQUIRE_EQUAL(shape(data), partition_shape);
+        BOOST_CHECK_EQUAL(data(0, 0), 6.0);
+        BOOST_CHECK_EQUAL(data(0, 1), 6.0);
+        BOOST_CHECK_EQUAL(data(0, 2), 4.0);
+        BOOST_CHECK_EQUAL(data(1, 0), 9.0);
+        BOOST_CHECK_EQUAL(data(1, 1), 9.0);
+        BOOST_CHECK_EQUAL(data(1, 2), 6.0);
+        BOOST_CHECK_EQUAL(data(2, 0), 6.0);
+        BOOST_CHECK_EQUAL(data(2, 1), 6.0);
+        BOOST_CHECK_EQUAL(data(2, 2), 4.0);
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE(window_total_2d_single_col_of_partitions)
+{
+    using Element = std::int32_t;
+    std::size_t const rank = 2;
+
+    using Array = lue::PartitionedArray<Element, rank>;
+    using Shape = lue::ShapeT<Array>;
+
+    Shape const array_shape{{9, 3}};
+    Shape const partition_shape{{3, 3}};
+
+    //   |           |
+    // --+---+---+---+--
+    //   | 1 | 1 | 1 |
+    //   +---+---+---+--
+    //   | 1 | 1 | 1 |
+    //   +---+---+---+--
+    //   | 1 | 1 | 1 |
+    // --+---+---+---+--
+    //   | 1 | 1 | 1 |
+    //   +---+---+---+--
+    //   | 1 | 1 | 1 |
+    //   +---+---+---+--
+    //   | 1 | 1 | 1 |
+    // --+---+---+---+--
+    //   | 1 | 1 | 1 |
+    //   +---+---+---+--
+    //   | 1 | 1 | 1 |
+    //   +---+---+---+--
+    //   | 1 | 1 | 1 |
+    // --+---+---+---+--
+    //   |           |
+    Array array{array_shape, partition_shape};
+    lue::fill(array, hpx::make_ready_future<Element>(1).share()).wait();
+
+    // +---+---+---+
+    // | 1 | 1 | 1 |
+    // +---+---+---+
+    // | 1 | 1 | 1 |
+    // +---+---+---+
+    // | 1 | 1 | 1 |
+    // +---+---+---+
+    auto const kernel = lue::box_kernel<bool, rank>(1, true);
+
+    //   |           |
+    // --+---+---+---+
+    //   | 4 | 6 | 4 |
+    //   +---+---+---+
+    //   | 6 | 9 | 6 |
+    //   +---+---+---+
+    //   | 6 | 9 | 6 |
+    // --+---+---+---+
+    //   | 6 | 9 | 6 |
+    //   +---+---+---+
+    //   | 6 | 9 | 6 |
+    //   +---+---+---+
+    //   | 6 | 9 | 6 |
+    // --+---+---+---+
+    //   | 6 | 9 | 6 |
+    //   +---+---+---+
+    //   | 6 | 9 | 6 |
+    //   +---+---+---+
+    //   | 4 | 6 | 4 |
+    // --+---+---+---+
+    //   |           |
+    auto convolve = lue::convolve(array, kernel);
+
+    static_assert(std::is_same_v<lue::ElementT<decltype(convolve)>, double>);
+
+    BOOST_REQUIRE_EQUAL(lue::nr_partitions(convolve), 3);
+    BOOST_REQUIRE_EQUAL(convolve.shape(), array_shape);
+
+    // partition 1
+    {
+        auto const& partition = convolve.partitions()(0, 0);
+        auto const data = partition.data(lue::CopyMode::share).get();
+        BOOST_REQUIRE_EQUAL(shape(data), partition_shape);
+        BOOST_CHECK_EQUAL(data(0, 0), 4.0);
+        BOOST_CHECK_EQUAL(data(0, 1), 6.0);
+        BOOST_CHECK_EQUAL(data(0, 2), 4.0);
+        BOOST_CHECK_EQUAL(data(1, 0), 6.0);
+        BOOST_CHECK_EQUAL(data(1, 1), 9.0);
+        BOOST_CHECK_EQUAL(data(1, 2), 6.0);
+        BOOST_CHECK_EQUAL(data(2, 0), 6.0);
+        BOOST_CHECK_EQUAL(data(2, 1), 9.0);
+        BOOST_CHECK_EQUAL(data(2, 2), 6.0);
+    }
+
+    // partition 2
+    {
+        auto const& partition = convolve.partitions()(0, 1);
+        auto const data = partition.data(lue::CopyMode::share).get();
+        BOOST_REQUIRE_EQUAL(shape(data), partition_shape);
+        BOOST_CHECK_EQUAL(data(0, 0), 6.0);
+        BOOST_CHECK_EQUAL(data(0, 1), 9.0);
+        BOOST_CHECK_EQUAL(data(0, 2), 6.0);
+        BOOST_CHECK_EQUAL(data(1, 0), 6.0);
+        BOOST_CHECK_EQUAL(data(1, 1), 9.0);
+        BOOST_CHECK_EQUAL(data(1, 2), 6.0);
+        BOOST_CHECK_EQUAL(data(2, 0), 6.0);
+        BOOST_CHECK_EQUAL(data(2, 1), 9.0);
+        BOOST_CHECK_EQUAL(data(2, 2), 6.0);
+    }
+
+    // partition 3
+    {
+        auto const& partition = convolve.partitions()(0, 2);
+        auto const data = partition.data(lue::CopyMode::share).get();
+        BOOST_REQUIRE_EQUAL(shape(data), partition_shape);
+        BOOST_CHECK_EQUAL(data(0, 0), 6.0);
+        BOOST_CHECK_EQUAL(data(0, 1), 9.0);
+        BOOST_CHECK_EQUAL(data(0, 2), 6.0);
+        BOOST_CHECK_EQUAL(data(1, 0), 6.0);
+        BOOST_CHECK_EQUAL(data(1, 1), 9.0);
+        BOOST_CHECK_EQUAL(data(1, 2), 6.0);
+        BOOST_CHECK_EQUAL(data(2, 0), 4.0);
+        BOOST_CHECK_EQUAL(data(2, 1), 6.0);
+        BOOST_CHECK_EQUAL(data(2, 2), 4.0);
+    }
+}
+
+
+// TODO Test empty input raster
+//
+// TODO First row in each partitions is fragile. Sometimes it works,
+//      sometimes it doesn't...
