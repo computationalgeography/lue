@@ -3,6 +3,7 @@
 // #include "lue/framework/core/array_partition_definition.hpp"
 // #include <boost/multi_array.hpp>
 #include "lue/framework/core/component/partitioned_array.hpp"
+#include <boost/range/irange.hpp>
 #include <experimental/iterator>
 
 
@@ -63,6 +64,42 @@ std::ostream& operator<<(
     stream << ']';
 
     return stream;
+}
+
+
+template<
+    typename Element,
+    lue::Rank rank>
+std::ostream& stream_span(
+    std::ostream& stream,
+    lue::DynamicSpan<Element, rank> const& span)
+{
+    auto const idxs = boost::irange<lue::Index>(0, rank);
+
+    stream << '[';
+
+    std::transform(
+        std::begin(idxs), std::end(idxs),
+        std::experimental::make_ostream_joiner(stream, ", "),
+
+        [&span](lue::Index const idx)
+        {
+            return span.extent(idx);
+        });
+
+    stream << ']';
+
+    return stream;
+}
+
+
+template<
+    typename Element>
+std::ostream& operator<<(
+    std::ostream& stream,
+    lue::DynamicSpan<Element, 2> const& span)
+{
+    return stream_span<Element, 2>(stream, span);
 }
 
 }  // namespace std

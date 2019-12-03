@@ -10,6 +10,7 @@ add_unit_tests(
         copy_test
         equal_to_test
         fill_test
+        # focal_max_test
         greater_equal_test
         iterate_per_element_test
         kernel_test
@@ -17,6 +18,7 @@ add_unit_tests(
         less_test
         multiply_test
         none_test
+        range_test
         sum_test
         uniform_test
         unique_id_test
@@ -34,12 +36,14 @@ hpx_setup_target(lue_framework_algorithm_convolve_test)
 hpx_setup_target(lue_framework_algorithm_copy_test)
 hpx_setup_target(lue_framework_algorithm_equal_to_test)
 hpx_setup_target(lue_framework_algorithm_fill_test)
+# hpx_setup_target(lue_framework_algorithm_focal_max)
 hpx_setup_target(lue_framework_algorithm_greater_equal_test)
 hpx_setup_target(lue_framework_algorithm_iterate_per_element_test)
 hpx_setup_target(lue_framework_algorithm_less_equal_test)
 hpx_setup_target(lue_framework_algorithm_less_test)
 hpx_setup_target(lue_framework_algorithm_multiply_test)
 hpx_setup_target(lue_framework_algorithm_none_test)
+hpx_setup_target(lue_framework_algorithm_range_test)
 hpx_setup_target(lue_framework_algorithm_sum_test)
 hpx_setup_target(lue_framework_algorithm_uniform_test)
 hpx_setup_target(lue_framework_algorithm_unique_id_test)

@@ -76,6 +76,29 @@ BOOST_AUTO_TEST_CASE(construct_initialized_definition_and_value)
 }
 
 
+BOOST_AUTO_TEST_CASE(construct_initializer_list)
+{
+    Shape shape{{3, 2}};
+    Data data{shape, {
+        1, 2,
+        3, 4,
+        5, 6,
+    }};
+
+    BOOST_CHECK_EQUAL(data.shape(), shape);
+
+    BOOST_CHECK(!data.empty());
+    BOOST_CHECK_EQUAL(data.nr_elements(), 6);
+
+    BOOST_CHECK_EQUAL(data(0, 0), 1);
+    BOOST_CHECK_EQUAL(data(0, 1), 2);
+    BOOST_CHECK_EQUAL(data(1, 0), 3);
+    BOOST_CHECK_EQUAL(data(1, 1), 4);
+    BOOST_CHECK_EQUAL(data(2, 0), 5);
+    BOOST_CHECK_EQUAL(data(2, 1), 6);
+}
+
+
 BOOST_AUTO_TEST_CASE(assign)
 {
     Data data{};

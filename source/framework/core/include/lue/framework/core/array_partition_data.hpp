@@ -4,6 +4,7 @@
 #include "lue/framework/core/serialize/shared_buffer.hpp"
 #include "lue/framework/core/span.hpp"
 #include "lue/framework/core/type_traits.hpp"
+#include <initializer_list>
 
 
 namespace lue {
@@ -56,6 +57,13 @@ public:
                    ArrayPartitionData  (Shape const& shape,
                                         InputIterator begin,
                                         InputIterator end);
+
+                   // ArrayPartitionData  (Shape const& shape,
+                   //                      Elements const& elements);
+
+                   ArrayPartitionData  (Shape const& shape,
+                                        std::initializer_list<Element>
+                                            elements);
 
                    ArrayPartitionData  (ArrayPartitionData const& other,
                                         CopyMode mode=CopyMode::copy);
@@ -112,9 +120,9 @@ public:
 
 private:
 
-    Elements const& values             () const;
+    Elements const& elements           () const;
 
-    Elements&      values              ();
+    Elements&      elements            ();
 
     // All arguments passed to actions must support serialization,
     // even if they are never actually communicated between localities
@@ -227,6 +235,42 @@ ArrayPartitionData<Element, rank>::ArrayPartitionData(
 }
 
 
+template<
+    typename Element,
+    Rank rank>
+ArrayPartitionData<Element, rank>::ArrayPartitionData(
+    Shape const& shape,
+    std::initializer_list<Element> elements):
+
+    _shape{shape},
+    _elements(lue::nr_elements(shape)),
+    _span{_elements.data(), _shape}
+
+{
+    assert(static_cast<Count>(elements.size()) == lue::nr_elements(_shape));
+
+    std::copy(elements.begin(), elements.end(), _elements.begin());
+
+    assert(static_cast<Count>(_elements.size()) == lue::nr_elements(_shape));
+}
+
+
+// template<
+//     typename Element,
+//     Rank rank>
+// ArrayPartitionData<Element, rank>::ArrayPartitionData(
+//     Shape const& shape,
+//     Elements const& elements):
+// 
+//     _shape{shape},
+//     _elements(elements),
+//     _span{_elements.data(), _shape}
+// 
+// {
+//     assert(static_cast<Count>(_elements.size()) == lue::nr_elements(_shape));
+// }
+
+
 /*!
     @brief      Copy-construct an instance based on @a other
 */
@@ -326,7 +370,7 @@ template<
 bool ArrayPartitionData<Element, rank>::operator==(
     ArrayPartitionData const& other) const
 {
-    return _shape == other._shape && values() == other.values();
+    return _shape == other._shape && elements() == other.elements();
 }
 
 
@@ -379,7 +423,7 @@ template<
     typename Element,
     Rank rank>
 typename ArrayPartitionData<Element, rank>::Elements const&
-    ArrayPartitionData<Element, rank>::values() const
+    ArrayPartitionData<Element, rank>::elements() const
 {
     return _elements;
 }
@@ -389,7 +433,7 @@ template<
     typename Element,
     Rank rank>
 typename ArrayPartitionData<Element, rank>::Elements&
-    ArrayPartitionData<Element, rank>::values()
+    ArrayPartitionData<Element, rank>::elements()
 {
     return _elements;
 }
@@ -401,7 +445,7 @@ template<
 typename ArrayPartitionData<Element, rank>::ConstIterator
     ArrayPartitionData<Element, rank>::begin() const
 {
-    return values().begin();
+    return elements().begin();
 }
 
 
@@ -411,7 +455,7 @@ template<
 typename ArrayPartitionData<Element, rank>::Iterator
     ArrayPartitionData<Element, rank>::begin()
 {
-    return values().begin();
+    return elements().begin();
 }
 
 
@@ -421,7 +465,7 @@ template<
 typename ArrayPartitionData<Element, rank>::ConstIterator
     ArrayPartitionData<Element, rank>::end() const
 {
-    return values().end();
+    return elements().end();
 }
 
 
@@ -431,7 +475,7 @@ template<
 typename ArrayPartitionData<Element, rank>::Iterator
     ArrayPartitionData<Element, rank>::end()
 {
-    return values().end();
+    return elements().end();
 }
 
 

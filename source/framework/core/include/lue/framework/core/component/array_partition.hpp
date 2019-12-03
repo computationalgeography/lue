@@ -522,11 +522,4 @@ class IsArrayPartition<ArrayPartition<Element, rank>>:
 {};
 
 }  // namespace detail
-
-
-template<
-    typename Array>
-inline constexpr bool is_array_partition_v =
-    detail::IsArrayPartition<Array>::value;
-
 }  // namespace lue

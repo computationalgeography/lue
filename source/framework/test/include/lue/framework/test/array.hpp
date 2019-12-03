@@ -52,4 +52,35 @@ public:
 
 };
 
+
+namespace test {
+
+template<
+    typename Array,
+    typename Shape>
+Array create_partitioned_array(
+    Shape const& array_shape,
+    Shape const& partition_shape,
+    std::initializer_list<std::initializer_list<ElementT<Array>>> elements)
+{
+    using Partition = PartitionT<Array>;
+    using Data = DataT<Partition>;
+
+    Array array{array_shape, partition_shape};
+
+    assert(static_cast<Count>(elements.size()) == array.nr_partitions());
+
+    {
+        auto elements_it = elements.begin();
+
+        for(Partition& partition: array.partitions()) {
+            partition.set_data(Data{partition.shape().get(), *elements_it});
+            ++elements_it;
+        }
+    }
+
+    return array;
+}
+
+}  // namespace test
 }  // namespace lue

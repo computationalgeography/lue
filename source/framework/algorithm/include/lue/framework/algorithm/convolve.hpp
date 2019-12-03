@@ -928,15 +928,15 @@ OutputPartition convolve_partition(
                     InputPartitionsData partitions_data{Shape{{3, 3}}};
 
                     std::transform(
-                            input_partitions_data_futures.begin(),
-                            input_partitions_data_futures.end(),
-                            partitions_data.begin(),
+                        input_partitions_data_futures.begin(),
+                        input_partitions_data_futures.end(),
+                        partitions_data.begin(),
 
-                            [](auto&& future) {
-                                return future.get();
-                            }
+                        [](auto&& future) {
+                            return future.get();
+                        }
 
-                        );
+                    );
 
                     using InputPartitionsDataSpan =
                         Array<InputDataSpan, rank<InputPartition>>;

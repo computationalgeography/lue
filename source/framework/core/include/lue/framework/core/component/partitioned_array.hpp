@@ -5,6 +5,7 @@
 #include "lue/framework/core/debug.hpp"  // describe
 #include "lue/framework/core/domain_decomposition.hpp"
 #include "lue/framework/core/math.hpp"
+#include <initializer_list>
 
 
 namespace lue {
@@ -153,6 +154,11 @@ public:
         typename E_,
         Rank r_>
     using PartitionedArray = PartitionedArray<E_, r_>;
+
+    template<
+        typename E_,
+        Rank r_>
+    using Data = typename Partition<E_, r_>::Data;
 
 };
 
@@ -922,10 +928,19 @@ ShapeT<PartitionedArray<Element, rank>> shape_in_partitions(
 }
 
 
+// template<
+//     typename Element,
+//     Rank rank>
+// typename PartitionedArray<Element, rank>::Count nr_partitions(
+//     PartitionedArray<Element, rank> const& array)
+// {
+//     return array.nr_partitions();
+// }
+
 template<
     typename Element,
     Rank rank>
-typename PartitionedArray<Element, rank>::Count nr_partitions(
+Count nr_partitions(
     PartitionedArray<Element, rank> const& array)
 {
     return array.nr_partitions();
