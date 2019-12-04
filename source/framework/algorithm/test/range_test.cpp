@@ -5,7 +5,6 @@
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/compare.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
-#include "lue/framework/test/stream.hpp"
 #include <fmt/format.h>
 
 
@@ -21,13 +20,6 @@ BOOST_AUTO_TEST_CASE(range_2d_int32)
     Shape const array_shape{{9, 9}};
     Shape const partition_shape{{3, 3}};
 
-    Array array{array_shape, partition_shape};
-
-    hpx::shared_future<Element> start_value =
-        hpx::make_ready_future<Element>(1);
-
-    lue::range(array, start_value).wait();
-
     // [ 1  2  3  4  5  6  7  8  9]
     // [10 11 12 13 14 15 16 17 18]
     // [19 20 21 22 23 24 25 26 27]
@@ -37,6 +29,9 @@ BOOST_AUTO_TEST_CASE(range_2d_int32)
     // [55 56 57 58 59 60 61 62 63]
     // [64 65 66 67 68 69 70 71 72]
     // [73 74 75 76 77 78 79 80 81]
+    Array array{array_shape, partition_shape};
+    lue::range(array, hpx::make_ready_future<Element>(1).share()).wait();
+
     Array array_we_want = lue::test::create_partitioned_array<Array>(
         array_shape, partition_shape, {
             {  1,  2,  3, 10, 11, 12, 19, 20, 21 },

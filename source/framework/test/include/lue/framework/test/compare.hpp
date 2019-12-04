@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/framework/test/stream.hpp"
 #include "lue/framework/core/span.hpp"
 #include <boost/range/irange.hpp>
 #include <boost/test/test_tools.hpp>
@@ -68,11 +69,19 @@ void check_equal_partition(
     Partition const& partition1,
     Partition const& partition2)
 {
-    BOOST_REQUIRE_EQUAL(partition1.shape().get(), partition2.shape().get());
+    bool both_partitions_valid = partition1.valid() && partition2.valid();
+    bool both_partitions_invalid = !partition1.valid() && !partition2.valid();
 
-    check_equal_array_partition_data(
-        partition1.data(CopyMode::copy).get(),
-        partition2.data(CopyMode::copy).get());
+    BOOST_REQUIRE(both_partitions_valid || both_partitions_invalid);
+
+    if(both_partitions_valid) {
+        BOOST_REQUIRE_EQUAL(
+            partition1.shape().get(), partition2.shape().get());
+
+        check_equal_array_partition_data(
+            partition1.data(CopyMode::copy).get(),
+            partition2.data(CopyMode::copy).get());
+    }
 }
 
 
