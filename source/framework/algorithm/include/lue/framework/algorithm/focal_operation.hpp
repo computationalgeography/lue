@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/framework/core/array.hpp"
 #include <hpx/include/lcos.hpp>
 
 
