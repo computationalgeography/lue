@@ -1,29 +1,27 @@
 #pragma once
 #include "lue/framework/algorithm/focal_operation.hpp"
+#include <limits>
 
 
 namespace lue {
 namespace detail {
 
 template<
-    typename InputElement,
-    typename OutputElement_>
-class Convolve
+    typename Element>
+class FocalMax
 {
 
 public:
 
-    using OutputElement = OutputElement_;
+    using OutputElement = Element;
 
-    static_assert(std::is_convertible_v<InputElement, OutputElement>);
-
-    Convolve()
+    FocalMax()
     {
     }
 
-    constexpr InputElement fill_value() const
+    constexpr OutputElement fill_value() const
     {
-        return 0;
+        return std::numeric_limits<OutputElement>::min();
     }
 
     template<
@@ -34,9 +32,10 @@ public:
         Subspan const& window,
         Kernel const& kernel) const
     {
-        static_assert(std::is_same_v<ElementT<Kernel>, bool>);
+        static_assert(std::is_convertible_v<ElementT<Kernel>, bool>);
 
         OutputElement result = 0;
+        bool result_initialized = false;
 
         static_assert(rank<Kernel> == 2);
 
@@ -47,7 +46,13 @@ public:
             for(Index r = 0; r < window.extent(0); ++r) {
                 for(Index c = 0; c < window.extent(1); ++c) {
                     if(kernel(r, c)) {
-                        result += window(r, c);
+                        if(!result_initialized) {
+                            result = window(r, c);
+                            result_initialized = true;
+                        }
+                        else {
+                            result = std::max(result, window(r, c));
+                        }
                     }
                 }
             }
@@ -64,10 +69,11 @@ public:
         Subspans const& windows,
         Kernel const& kernel) const
     {
-        static_assert(std::is_same_v<ElementT<Kernel>, bool>);
+        static_assert(std::is_convertible_v<ElementT<Kernel>, bool>);
         static_assert(rank<Kernel> == rank<Subspans>);
 
         OutputElement result = 0;
+        bool result_initialized = false;
 
         static_assert(rank<Kernel> == 2);
 
@@ -148,7 +154,13 @@ public:
                             assert(ck < std::get<1>(kernel.shape()));
 
                             if(kernel(r, c)) {
-                                result += window(r, c);
+                                if(!result_initialized) {
+                                    result = window(r, c);
+                                    result_initialized = true;
+                                }
+                                else {
+                                    result = std::max(result, window(r, c));
+                                }
                             }
 
                         }
@@ -179,16 +191,30 @@ public:
 }  // namespace detail
 
 
+// focal_max: given
+// - a partitioned array
+//     - Element type is not relevant. As long as the values support
+//       being compared using operator<.
+// - a kernel
+//     - Element type is not relevant. As long as the values support
+//       being evaluated as boolean.
+// iterate kernel over array and store max value found in kernel window
+// in focal cell
+
+// Implementation calls a more generic algorithm accepting a partitioned
+// array, a kernel and a functor: focal operation
+// This algorithm handles the halo partitions around the array, the
+// partitioning of the algorithm, and calling the functor, passing in
+// the kernel and the (view on the) elements
+
 template<
     typename Array,
-    typename Kernel,
-    typename OutputElement=double>
-PartitionedArrayT<Array, OutputElement> convolve(
+    typename Kernel>
+Array focal_max(
     Array const& array,
     Kernel const& kernel)
 {
-    return focal_operation(
-        array, kernel, detail::Convolve<ElementT<Array>, OutputElement>{});
+    return focal_operation(array, kernel, detail::FocalMax<ElementT<Array>>{});
 }
 
 }  // namespace lue

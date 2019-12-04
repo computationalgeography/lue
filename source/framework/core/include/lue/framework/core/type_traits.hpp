@@ -152,4 +152,15 @@ using PartitionedArrayT =
     typename detail::ArrayTraits<Array>::
         template PartitionedArray<Element, rank>;
 
+
+template<
+    typename Array>
+inline constexpr bool is_array_partition_v =
+    detail::IsArrayPartition<Array>::value;
+
+
+template<
+    typename Array>
+Count              nr_partitions       (Array const& array);
+
 }  // namespace lue
