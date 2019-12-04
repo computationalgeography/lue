@@ -75,7 +75,7 @@ struct formatter<lue::Shape<Index, rank>>
         lue::Shape<Index, rank> const& values,
         FormatContext& ctx)
     {
-        auto it = ctx.begin();
+        auto it = ctx.out();
         it = format_to(it, "[");
 
         for(auto v_it = values.begin(); v_it != values.end() - 1; ++v_it) {

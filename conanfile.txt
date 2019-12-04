@@ -1,24 +1,14 @@
 [requires]
-
-# Current CMake versions don't find the boost targets yet
-# boost/1.66.0@conan/stable
-
-# This package does not install FindDocopt.cmake. Also, it is not
-# available for gcc-7 (but can be built by Conan).
-# docopt/0.6.2@conan/stable
-
-fmt/5.3.0@bincrafters/stable
+fmt/6.0.0@bincrafters/stable
 gsl_microsoft/2.0.0@bincrafters/stable
-jsonformoderncpp/3.6.1@vthiery/stable
-pybind11/2.2.4@conan/stable
-# range-v3
+jsonformoderncpp/3.7.3@vthiery/stable
+pybind11/2.3.0@conan/stable
 
 [options]
-# boost:shared=True
 
 [generators]
 cmake
 
-# [imports]
+[imports]
 # bin, *.dll -> ./bin
 # lib, *.dylib -> ./bin
