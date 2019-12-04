@@ -7,7 +7,7 @@ The LUE Python package allows you to perform I/O to the `LUE Scientific Database
 
 The LUE database lets you efficiently store huge amounts of attribute values of huge amounts of objects. These objects can be located in time and/or in space, and the attribute values can be n-dimensional values. The LUE database is `developed <https://github.com/pcraster/lue>`_ by the `PCRaster`_ R&D Team, to be useful in the domain of agent-based and field-based modeling. But the data format is general enough to allow it to be used in other domains as well.
 
-LUE can be used for storing information that is related to agents (AKA objects, individuals, items), e.g.:
+LUE can be used for storing information that is related to objects (AKA agents, individuals, items), e.g.:
 
 - the location of houses
 - GPS tracks of birds
@@ -15,7 +15,7 @@ LUE can be used for storing information that is related to agents (AKA objects, 
 
 The number of agents for which information is stored is at least 1 (e.g.: a single research area, country, economy, planet) and is at most limited by the available computing resources.
 
-At the core, LUE manages item properties, where items are the indiviuals (sometimes named objects or agents) that can have zero or more properties, where all of these properties can have very different characteristics (vary through time or not, vary through space or not, etc). Also, the items can be linked to each other to allow the representation of networks, like social or physical networkѕ (e.g. family relations, road networks).
+At the core, LUE manages object properties, where objects can have zero or more properties, where all of these properties can have very different characteristics (vary through time or not, vary through space or not, etc). Also, the objects can be linked to each other to allow the representation of networks, like social or physical networkѕ (e.g. family relations, road networks).
 
 The LUE data model is capable of representing many kinds of data. Some interesting aspects of LUE data are:
 

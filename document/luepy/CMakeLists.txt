@@ -9,7 +9,7 @@ configure_file(
 add_custom_target(
     py_doc
     DEPENDS
-        # TODO case_study
+        case_study
         lue::py
     # COMMAND
     #     ${SPHINX_APIDOC_EXECUTABLE}

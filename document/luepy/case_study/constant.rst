@@ -6,7 +6,7 @@ of the time and space that are considered, and on the accuracy required
 by the application. Given a small time and space extent some value may
 not vary, but it may vary over larger time and space extents. Also,
 one application may not be sensitive to some value's variation, while
-another may required detailed information about the variation of the
+another may require detailed information about the variation of the
 value through time and/or space.
 
 An example of a value that is often considered constant is the standard
@@ -33,11 +33,18 @@ not configured.
 
 property
 --------
-The property holding a constant's value contains a single 0D value
+The property holding a constant's value contains a single nD value
 per object.
 
 
 Example code
 ------------
+In the example a 0D value is stored per object.
+
 .. literalinclude:: planets.py
+
+The figure shows a graphical representation of the dataset by the
+example script. It is generated using the `lue_translate` command and
+Graphviz' `dot` command.
+
 .. generated_image:: planets.svg

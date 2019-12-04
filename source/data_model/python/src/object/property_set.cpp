@@ -4,6 +4,7 @@
 #include "../core/collection.hpp"
 #include "lue/py/conversion.hpp"
 #include <boost/algorithm/string/join.hpp>
+#include <algorithm>
 
 
 namespace py = pybind11;
@@ -22,6 +23,38 @@ static std::string formal_string_representation(
 }
 
 
+template<
+    typename PropertiesSpecialization>
+std::vector<std::string> property_names(
+    Properties const& properties)
+{
+    return properties.collection<PropertiesSpecialization>().names();
+}
+
+
+template<
+    typename PropertiesSpecialization>
+std::string join_property_names(
+    Properties const& properties)
+{
+    return boost::algorithm::join(
+        property_names<PropertiesSpecialization>(properties),
+        ", ");
+}
+
+
+std::vector<std::string>& join_collections(
+    std::vector<std::string> const& from_collection,
+    std::vector<std::string>& to_collection)
+{
+    std::copy(
+        from_collection.begin(), from_collection.end(),
+        std::back_inserter(to_collection));
+
+    return to_collection;
+}
+
+
 static std::string informal_string_representation(
     PropertySet const& property_set)
 {
@@ -36,30 +69,12 @@ static std::string informal_string_representation(
         "    different_shape/constant_shape properties: [{}]\n"
         "    different_shape/variable_shape properties: [{}]",
         formal_string_representation(property_set),
-        boost::algorithm::join(
-            properties.collection<
-                lue::same_shape::Properties>().names(),
-            ", "),
-        boost::algorithm::join(
-            properties.collection<
-                lue::same_shape::constant_shape::Properties>().names(),
-            ", "),
-        boost::algorithm::join(
-            properties.collection<
-                lue::same_shape::variable_shape::Properties>().names(),
-            ", "),
-        boost::algorithm::join(
-            properties.collection<
-                lue::different_shape::Properties>().names(),
-            ", "),
-        boost::algorithm::join(
-            properties.collection<
-                lue::different_shape::constant_shape::Properties>().names(),
-            ", "),
-        boost::algorithm::join(
-            properties.collection<
-                lue::different_shape::variable_shape::Properties>().names(),
-            ", ")
+        join_property_names<lue::same_shape::Properties>(properties),
+        join_property_names<lue::same_shape::constant_shape::Properties>(properties),
+        join_property_names<lue::same_shape::variable_shape::Properties>(properties),
+        join_property_names<lue::different_shape::Properties>(properties),
+        join_property_names<lue::different_shape::constant_shape::Properties>(properties),
+        join_property_names<lue::different_shape::variable_shape::Properties>(properties)
         );
 }
 
@@ -339,6 +354,62 @@ void init_property_set(
                 return property_reference(properties, name);
             },
             py::return_value_policy::reference_internal)
+
+        .def_property_readonly(
+            "names",
+            [](
+                Properties const& properties)
+            {
+                std::vector<std::string> names;
+
+                join_collections(
+                    property_names<lue::same_shape::Properties>(properties),
+                    names);
+                join_collections(
+                    property_names<lue::same_shape::constant_shape::Properties>(properties),
+                    names);
+                join_collections(
+                    property_names<lue::same_shape::variable_shape::Properties>(properties),
+                    names);
+                join_collections(
+                    property_names<lue::different_shape::Properties>(properties),
+                    names);
+                join_collections(
+                    property_names<lue::different_shape::constant_shape::Properties>(properties),
+                    names);
+                join_collections(
+                    property_names<lue::different_shape::variable_shape::Properties>(properties),
+                    names);
+
+                return names;
+            })
+
+        .def(
+            "value_variability",
+            [](
+                Properties const& properties,
+                std::string const& name)
+            {
+                return properties.value_variability(name);
+            })
+
+        .def(
+            "shape_per_object",
+            [](
+                Properties const& properties,
+                std::string const& name)
+            {
+                return properties.shape_per_object(name);
+            })
+
+        .def(
+            "shape_variability",
+            [](
+                Properties const& properties,
+                std::string const& name)
+            {
+                return properties.shape_variability(name);
+            })
 
         ;
 

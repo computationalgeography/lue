@@ -21,7 +21,7 @@ Instances of the various LUE classes can be printed. This results in a terse inf
 
 To get you started, we describe the general workflow for interacting with LUE datasets. For details, check out the docstrings of the LUE Python objects mentioned.
 
-LUE information is stored in a dataset (see :py:class:`lue.Dataset`). Each dataset contains a collection of universes (:py:class:`lue.Universes` instance containing :py:class:`lue.Universe` instances) and a collection of phenomena (:py:class:`lue.Phenomena` instance containing :py:class:`lue.Phenomenon` instances). Each universe also contains a collection of phenomena. Each phenomenon contains a collection of property sets (:py:class:`lue.PropertySets` instance containing :py:class:`lue.PropertySet` instances). Each property set is connected to a single domain (:py:class:`lue.Domain`) and contains a collection of properties (:py:class:`lue.Properties` instance containing :py:class:`lue.Property` instances).
+LUE information is stored in a dataset (see :py:class:`lue.Dataset`). Each dataset contains a collection of universes (:py:class:`lue.Universes` instance containing :py:class:`lue.Universe` instances) and a collection of phenomena (:py:class:`lue.Phenomena` instance containing :py:class:`lue.Phenomenon` instances). Each universe also contains a collection of phenomena. Each phenomenon contains a collection of property sets (:py:class:`lue.PropertySets` instance containing :py:class:`lue.PropertySet` instances). Each property set contains a single time domain (:py:class:`lue.TimeDomain`) and a single space domain (:py:class:`lue.SpaceDomain`), and contains a collection of properties (:py:class:`lue.Properties` instance).
 
 The next sections will show you how to create and query a LUE dataset. It will use a subset of the LUE API. Use the pointers given above to find out about the rest of the API.
 
@@ -62,5 +62,5 @@ The :py:class:`lue.Phenomena` class inherits functionality from the :py:class:`l
 A phenomenon has a :py:attr:`lue.Phenomenon.property_sets` attribute which represent the collection of property sets in the phenomenon. Subscripting the :py:attr:`lue.Phenomenon.property_sets` attributes provides us with the property set::
 
     >>> print(planets.property_sets.names)
-    [u'omnipresent']
-    >>> properties = planets.property_sets["omnipresent"]
+    [u'constant']
+    >>> constant = planets.property_sets["constant"]

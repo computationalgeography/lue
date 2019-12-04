@@ -1,11 +1,11 @@
-add_custom_target(
-    case_study
-    DEPENDS case_study_graphs
+add_custom_target(case_study
+    DEPENDS
+        case_study_graphs
 )
 
-add_custom_target(
-    case_study_graphs
-    DEPENDS preprocessed_case_studies
+add_custom_target(case_study_graphs
+    DEPENDS
+        preprocessed_case_studies
 )
 
 add_custom_target(
