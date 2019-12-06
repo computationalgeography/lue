@@ -1,21 +1,25 @@
 #pragma once
 #include "lue/framework/algorithm/focal_operation.hpp"
+#include <cmath>
+#include <limits>
 
 
 namespace lue {
 namespace detail {
 
 template<
-    typename InputElement,
-    typename OutputElement_>
-class Convolve
+    typename InputElement>
+class FocalMean
 {
 
 public:
 
-    using OutputElement = OutputElement_;
+    // If not, an OutputElement type must be passed in
+    static_assert(std::is_floating_point_v<InputElement>);
 
-    static_assert(std::is_convertible_v<InputElement, OutputElement>);
+    static_assert(std::numeric_limits<InputElement>::has_quiet_NaN);
+
+    using OutputElement = InputElement;
 
     class Aggregator
     {
@@ -23,7 +27,8 @@ public:
     public:
 
         Aggregator():
-            _sum{0}
+            _sum{0},
+            _count{0}
         {
         }
 
@@ -38,33 +43,41 @@ public:
                 std::is_floating_point_v<Weight>);
 
             if constexpr(std::is_same_v<Weight, bool>) {
-                if(weight) {
+                if(weight && !std::isnan(value)) {
                     _sum += value;
+                    ++_count;
                 }
             }
             else {
-                _sum += weight * value;
+                if(!std::isnan(value)) {
+                    _sum += weight * value;
+                    ++_count;
+                }
             }
         }
 
         OutputElement operator()() const
         {
-            return _sum;
+            return _count > 0
+                ? _sum / _count
+                : std::numeric_limits<InputElement>::quiet_NaN();
         }
 
     private:
 
         OutputElement _sum;
 
+        Count _count;
+
     };
 
-    Convolve()
+    FocalMean()
     {
     }
 
     constexpr InputElement fill_value() const
     {
-        return 0;
+        return std::numeric_limits<InputElement>::quiet_NaN();
     }
 
 };
@@ -74,14 +87,13 @@ public:
 
 template<
     typename Array,
-    typename Kernel,
-    typename OutputElement=double>
-PartitionedArrayT<Array, OutputElement> convolve(
+    typename Kernel>
+Array focal_mean(
     Array const& array,
     Kernel const& kernel)
 {
     return focal_operation(
-        array, kernel, detail::Convolve<ElementT<Array>, OutputElement>{});
+        array, kernel, detail::FocalMean<ElementT<Array>>{});
 }
 
 }  // namespace lue
