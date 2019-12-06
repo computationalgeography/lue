@@ -1,5 +1,5 @@
-names="copy iterate_per_element"
-names="iterate_per_element"
+names="copy focal_mean iterate_per_element"
+names="focal_mean"
 
 
 function perform_experiment()
