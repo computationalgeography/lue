@@ -430,9 +430,11 @@ OutputPartition focal_operation_partition(
                 [kernel_radius, partition=partitions(2, 2)](
                     Shape const& partition_shape)
                 {
+#ifndef NDEBUG
                     auto const [nr_elements0, nr_elements1] = partition_shape;
                     assert(nr_elements0 >= kernel_radius);
                     assert(nr_elements1 >= kernel_radius);
+#endif
 
                     return partition.slice(
                         Slices{{
@@ -449,14 +451,14 @@ OutputPartition focal_operation_partition(
 
 
         // Once the elements from the center partition have arrived,
-        // perform calculations for all cells whose neighborhood are
+        // perform calculations for all cells whose neighborhoods are
         // contained within this partition
         auto output_data_future = hpx::dataflow(
             hpx::launch::async,
             hpx::util::unwrapping(
 
                 [kernel /* , functor */](
-                    InputData const& partition_data)
+                    InputData /* const& */ partition_data)
                 {
                     auto const [nr_rows, nr_cols] = partition_data.shape();
                     auto const& array_span = partition_data.span();
@@ -467,13 +469,13 @@ OutputPartition focal_operation_partition(
                     OutputData output_data{partition_data.shape()};
 
                     // rf, cf are indices of focal cell in array
-                    // ck, ck are indices of first cell in array
+                    // rk, ck are indices of first cell in array
                     //     that is visible from kernel
 
                     for(Index rf = kernel.radius(), rk = rf - kernel.radius();
                             rf < nr_rows - kernel.radius(); ++rf, ++rk) {
                         for(Index cf = kernel.radius(), ck = cf - kernel.radius();
-                                cf < nr_cols - kernel.radius(); ++cf, ++rk) {
+                                cf < nr_cols - kernel.radius(); ++cf, ++ck) {
 
                             output_data(rf, cf) = detail::inner<Functor>(
                                 lue::subspan(array_span,
