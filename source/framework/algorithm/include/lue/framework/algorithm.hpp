@@ -8,6 +8,7 @@
 #include "lue/framework/algorithm/equal_to.hpp"
 #include "lue/framework/algorithm/fill.hpp"
 #include "lue/framework/algorithm/focal_max.hpp"
+#include "lue/framework/algorithm/focal_mean.hpp"
 #include "lue/framework/algorithm/focal_sum.hpp"
 #include "lue/framework/algorithm/greater_equal.hpp"
 #include "lue/framework/algorithm/iterate_per_element.hpp"
