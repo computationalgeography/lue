@@ -238,13 +238,13 @@ OutputPartition focal_operation_partition(
 
         // The partitions collection contains 9 partitions:
         //
-        // +------+-----+------+
-        // | 0, 0 | 0, 1| 0, 2 |
-        // +------+-----+------+
-        // | 1, 0 | 1, 1| 1, 2 |
-        // +------+-----+------+
-        // | 2, 0 | 2, 1| 2, 2 |
-        // +------+-----+------+
+        // +------+------+------+
+        // | 0, 0 | 0, 1 | 0, 2 |
+        // +------+------+------+
+        // | 1, 0 | 1, 1 | 1, 2 |
+        // +------+------+------+
+        // | 2, 0 | 2, 1 | 2, 2 |
+        // +------+------+------+
         //
         // We only need to calculate a result for partition (1, 1). The
         // other ones are used only to provide input values for the sides
@@ -1060,114 +1060,6 @@ struct FocalOperationPartitionAction:
 {};
 
 
-// // template<
-// //     typename Array,
-// //     typename Kernel,
-// //     typename OutputElement>
-// // PartitionedArrayT<Array, OutputElement> convolve_1d(
-// //     Array const& array,
-// //     Kernel const& kernel)
-// // {
-// //     static_assert(lue::rank<Array> == 1);
-// // 
-// //     using InputArray = Array;
-// //     using InputPartition = PartitionT<InputArray>;
-// // 
-// //     using OutputArray = PartitionedArrayT<Array, OutputElement>;
-// //     using OutputPartitions = PartitionsT<OutputArray>;
-// //     using OutputPartition = PartitionT<OutputArray>;
-// // 
-// //     ConvolvePartitionAction1<InputPartition, OutputPartition, Kernel> action;
-// //     OutputPartitions output_partitions{shape_in_partitions(array)};
-// // 
-// //     // +---+---+---+---+---+
-// //     // | 1 | 1 | 1 | 1 | 1 |
-// //     // +---+---+---+---+---+
-// // 
-// //     // *
-// // 
-// //     // +------+------+------+
-// //     // | true | true | true |
-// //     // +------+------+------+
-// // 
-// //     // =
-// // 
-// //     // +---+---+---+---+---+
-// //     // | 2 | 3 | 3 | 3 | 2 |
-// //     // +---+---+---+---+---+
-// // 
-// //     // - We assume that for all output elements in a partition a value
-// //     //     can be calculated based on the input partition containing
-// //     //     the focal element and the bordering partitions. This implies
-// //     //     that the size of each partition must be at least as large as
-// //     //     the kernel radius.
-// // 
-// //     // Inner partitions: all partitions except for the first and last one
-// //     //     act(location, partition[-1], partition, partition[+1])
-// // 
-// //     // Border partitions:
-// //     //     act(location, partition, partition[+1])
-// //     //     act(location, partition[-1], partition)
-// // 
-// //     auto const nr_partitions = lue::nr_partitions(array);
-// // 
-// //     if(nr_partitions == 1) {
-// //         // Pass in ghost partitions for left and right partition
-// //         // TODO
-// //         assert(false);
-// //     }
-// //     else if(nr_partitions >= 2) {
-// // 
-// //         // Inner partitions
-// //         for(Index p = 1; p < nr_partitions - 1; ++p) {
-// // 
-// //             output_partitions[p] = hpx::dataflow(
-// //                 hpx::launch::async,
-// // 
-// //                 [action, kernel](
-// //                     InputPartition const& left_partition,
-// //                     InputPartition const& center_partition,
-// //                     InputPartition const& right_partition)
-// //                 {
-// //                     return action(
-// //                         hpx::get_colocation_id(
-// //                             hpx::launch::sync, center_partition.get_id()),
-// //                         left_partition,
-// //                         center_partition,
-// //                         right_partition,
-// //                         kernel);
-// //                 },
-// // 
-// //                 array.partitions()[p-1],
-// //                 array.partitions()[p],
-// //                 array.partitions()[p+1]);
-// // 
-// //         }
-// // 
-// // 
-// // 
-// // 
-// //         // First partition: pass in ad-hoc partition for left partition
-// //         // TODO
-// // 
-// //         // Last partition: pass in ad-hoc partition for right partition
-// //         // TODO
-// // 
-// //         // Options
-// //         // - Create halo of real partitions around raster, with just
-// //         //     enough cells to be able to perform the calculations
-// //         // - Create partitions that only contain logic, no data, but
-// //         //     behave as real partitions
-// //         // - Do all this in the actions that handle borders and corners
-// //         // - Don't use halo partitions, but special border/corner actions
-// //         //     and policies for how to handle halo cells
-// // 
-// //     }
-// // 
-// //     return OutputArray{shape(array), std::move(output_partitions)};
-// // }
-
-
 template<
     typename Array,
     typename Kernel,
@@ -1195,9 +1087,15 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
     auto const kernel_radius = kernel.radius();
     auto const fill_value = functor.fill_value();
 
-    // Iterate over all partitions. Per partition determine the collection
-    // of neighboring partitions, and asynchronously call the algorithm
-    // that performs the calculations.
+
+    // - Create a halo of temporary partitions that are used in the
+    //     convolution of the partitions along the borders of the
+    //     array
+    // - Per array partition
+    //     - Determine the collection of neighboring partitions
+    //         - Use halo partitions in case of border partitions of array
+    //     - Call the action that performs the calculations
+
 
 
     // -------------------------------------------------------------------------
@@ -1301,12 +1199,13 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
                         hpx::id_type const locality_id,
                         Shape const& partition_shape)
                     {
-                        return InputPartition{locality_id,
-                            Shape{{kernel_radius, partition_shape[1]}}, fill_value};
+                        return InputPartition{
+                            locality_id,
+                            Shape{{kernel_radius, partition_shape[1]}},
+                            fill_value};
                     }
 
                 ),
-
                 hpx::get_colocation_id(
                     input_array.partitions()(rp, cp).get_id()),
                 input_array.partitions()(rp, cp).shape());
@@ -1339,8 +1238,10 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
                         hpx::id_type const locality_id,
                         Shape const& partition_shape)
                     {
-                        return InputPartition{locality_id,
-                            Shape{{partition_shape[0], kernel_radius}}, fill_value};
+                        return InputPartition{
+                            locality_id,
+                            Shape{{partition_shape[0], kernel_radius}},
+                            fill_value};
                     }
 
                 ),
@@ -1353,6 +1254,9 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
     }
 
     // -------------------------------------------------------------------------
+    // Iterate over all partitions. Per partition determine the collection
+    // of neighboring partitions, and asynchronously call the algorithm
+    // that performs the calculations.
     FocalOperationPartitionAction<
         InputPartitions, OutputPartition, Kernel, Functor> action;
     OutputPartitions output_partitions{shape_in_partitions(input_array)};
@@ -1393,8 +1297,8 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
                 ? halo_latitudinal_sides_partitions(1, 1)
                 : input_array.partitions()(1, 1));
 
-        // Once all needed partitions are ready, call the
-        // remote action
+        // Once all 9 partitions are ready, call the remote action
+        // TODO Also request locality id here
         output_partitions(0, 0) = hpx::when_all_n(
                 local_input_partitions.begin(),
                 local_input_partitions.nr_elements()).then(
@@ -1456,8 +1360,8 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
                 halo_latitudinal_sides_partitions(1, 1);
         }
 
-        // Once all needed partitions are ready, call the
-        // remote action
+        // Once all 9 partitions are ready, call the remote action
+        // TODO Also request locality id here
         output_partitions(0, nr_partitions1 - 1) = hpx::when_all_n(
                 local_input_partitions.begin(),
                 local_input_partitions.nr_elements()).then(
@@ -1509,8 +1413,8 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
             ? halo_corner_partitions(1, 1)
             : halo_longitudinal_side_partitions(1, 1);
 
-        // Once all needed partitions are ready, call the
-        // remote action
+        // Once all 9 partitions are ready, call the remote action
+        // TODO Also request locality id here
         output_partitions(nr_partitions0 - 1, 0) = hpx::when_all_n(
                 local_input_partitions.begin(),
                 local_input_partitions.nr_elements()).then(
@@ -1547,8 +1451,8 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
         local_input_partitions(2, 1) = halo_longitudinal_side_partitions(1, nr_partitions1 - 1);
         local_input_partitions(2, 2) = halo_corner_partitions(1, 1);
 
-        // Once all needed partitions are ready, call the
-        // remote action
+        // Once all 9 partitions are ready, call the remote action
+        // TODO Also request locality id here
         output_partitions(nr_partitions0 - 1, nr_partitions1 - 1) = hpx::when_all_n(
                 local_input_partitions.begin(),
                 local_input_partitions.nr_elements()).then(
@@ -1612,8 +1516,8 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
                     input_array.partitions()(1, c + 1);
             }
 
-            // Once all needed partitions are ready, call the
-            // remote action
+            // Once all 9 partitions are ready, call the remote action
+            // TODO Also request locality id here
             output_partitions(0, c) = hpx::when_all_n(
                     local_input_partitions.begin(),
                     local_input_partitions.nr_elements()).then(
@@ -1654,8 +1558,8 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
             local_input_partitions(2, 1) = halo_longitudinal_side_partitions(0, c    );
             local_input_partitions(2, 2) = halo_longitudinal_side_partitions(0, c + 1);
 
-            // Once all needed partitions are ready, call the
-            // remote action
+            // Once all 9 partitions are ready, call the remote action
+            // TODO Also request locality id here
             output_partitions(nr_partitions0 - 1, c) = hpx::when_all_n(
                     local_input_partitions.begin(),
                     local_input_partitions.nr_elements()).then(
@@ -1712,8 +1616,8 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
                 ? halo_latitudinal_sides_partitions(r + 1, 1)
                 : input_array.partitions()(r + 1, 1);
 
-            // Once all needed partitions are ready, call the
-            // remote action
+            // Once all 9 partitions are ready, call the remote action
+            // TODO Also request locality id here
             output_partitions(r, 0) = hpx::when_all_n(
                     local_input_partitions.begin(),
                     local_input_partitions.nr_elements()).then(
@@ -1763,8 +1667,8 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
             local_input_partitions(2, 2) =
                 halo_latitudinal_sides_partitions(r + 1, 1);
 
-            // Once all needed partitions are ready, call the
-            // remote action
+            // Once all 9 partitions are ready, call the remote action
+            // TODO Also request locality id here
             output_partitions(r, nr_partitions1 - 1) = hpx::when_all_n(
                     local_input_partitions.begin(),
                     local_input_partitions.nr_elements()).then(
@@ -1809,8 +1713,8 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
                 }
             }
 
-            // Once all needed partitions are ready, call the
-            // remote action
+            // Once all 9 partitions are ready, call the remote action
+            // TODO Also request locality id here
             output_partitions(r, c) = hpx::when_all_n(
                     local_input_partitions.begin(),
                     local_input_partitions.nr_elements()).then(
