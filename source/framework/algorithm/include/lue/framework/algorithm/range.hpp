@@ -103,7 +103,6 @@ template<
     using Shape = ShapeT<InputPartition>;
 
     auto const nr_partitions = lue::nr_partitions(array);
-    auto const array_shape = array.shape();
 
     std::vector<hpx::future<Shape>> partition_shapes(nr_partitions);
 

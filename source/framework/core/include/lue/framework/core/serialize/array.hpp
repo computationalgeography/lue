@@ -1,6 +1,6 @@
 #pragma once
 #include "lue/framework/core/array.hpp"
-#include <hpx/runtime/serialization/array.hpp>
+#include <hpx/serialization/array.hpp>
 
 
 namespace hpx {

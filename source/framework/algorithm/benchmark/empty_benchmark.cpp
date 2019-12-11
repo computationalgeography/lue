@@ -1,7 +1,7 @@
 #include "lue/framework/algorithm/empty.hpp"
 #include "lue/framework/benchmark/benchmark.hpp"
 #include "lue/framework/benchmark/hpx_main.hpp"
-#include <hpx/lcos/local/sliding_semaphore.hpp>
+#include <hpx/synchronization/sliding_semaphore.hpp>
 
 
 namespace lue {

@@ -212,8 +212,8 @@ if(DEVBASE_HPX_REQUIRED)
                 set(OTF2_ROOT ${PROJECT_BINARY_DIR}/otf2)
 
                 FetchContent_Declare(otf2
-                    URL https://www.vi-hps.org/cms/upload/packages/otf2/otf2-2.1.1.tar.gz
-                    URL_HASH MD5=e51ad0d8ca374d25f47426746ca629e7
+                    URL https://www.vi-hps.org/cms/upload/packages/otf2/otf2-2.2.tar.gz
+                    URL_HASH MD5=cfedf583bf000e98ce0c86e663e5ded0 
                 )
 
                 FetchContent_GetProperties(otf2)
@@ -278,45 +278,17 @@ if(DEVBASE_HPX_REQUIRED)
 
         FetchContent_Declare(hpx
             GIT_REPOSITORY ${hpx_repository}
-            GIT_TAG a943fd2c5d8b90d2f45be919850eefa9c31788e8  # 1.3.0
+            GIT_TAG 1e3cfa0  # 1.4.0-rc2
         )
 
-        FetchContent_GetProperties(hpx)
+        FetchContent_MakeAvailable(hpx)
 
-        if(NOT hpx_POPULATED)
-
-            FetchContent_Populate(hpx)
-
-            # TEMP HACK
-            # Current APEX CMake logic gets the include paths wrong.
-            if(HPX_WITH_APEX)
-                include_directories(
-                    ${hpx_SOURCE_DIR}/libs/preprocessor/include
-                    ${hpx_SOURCE_DIR}/apex/src/apex
-                    ${hpx_SOURCE_DIR}/apex/src/contrib
-                )
-            endif()
-            # /TEMP HACK
-
-            add_subdirectory(${hpx_SOURCE_DIR} ${hpx_BINARY_DIR})
-
-            # TEMP HACK
-            if(HPX_WITH_APEX AND HPX_WITH_APEX_TAG)
-                # Current APEX CMake logic resets the commit to the
-                # latest on the develop branch... Reset it back to the
-                # commit we want.
-                execute_process(
-                    COMMAND git checkout ${HPX_WITH_APEX_TAG}
-                    WORKING_DIRECTORY ${hpx_SOURCE_DIR}/apex)
-            endif()
-            # /TEMP HACK
-
-            # Use HPX from this project's binary directory
-            set(HPX_INCLUDE_DIRS
-                ${hpx_SOURCE_DIR}
-                ${PROJECT_BINARY_DIR}
-            )
-        endif()
+        # Use HPX from this project's binary directory
+        # TODO Check with FetchContent manual page
+        set(HPX_INCLUDE_DIRS
+            ${hpx_SOURCE_DIR}
+            ${PROJECT_BINARY_DIR}
+        )
     else()
         # Use HPX from the environment
         find_package(HPX REQUIRED)

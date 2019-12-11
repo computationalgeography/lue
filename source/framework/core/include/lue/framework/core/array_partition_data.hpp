@@ -1,5 +1,6 @@
 #pragma once
 // #include "lue/framework/core/component/server/array_partition.hpp"
+#include "lue/framework/core/define.hpp"
 #include "lue/framework/core/shape.hpp"
 #include "lue/framework/core/serialize/shared_buffer.hpp"
 #include "lue/framework/core/span.hpp"
@@ -522,6 +523,7 @@ ArrayPartitionData<Element, rank> ArrayPartitionData<Element, rank>::slice(
 
     if constexpr (rank == 1) {
         auto const [nr_elements] = _shape;
+        LUE_UNUSED(nr_elements);
 
         auto const& slice = slices[0];
         auto const begin = std::get<0>(slice);
@@ -542,7 +544,9 @@ ArrayPartitionData<Element, rank> ArrayPartitionData<Element, rank>::slice(
         return sliced_data;
     }
     else {
+#ifndef NDEBUG
         auto const [nr_elements0, nr_elements1] = _shape;
+#endif
 
         auto const& slice0 = slices[0];
         auto const& slice1 = slices[1];

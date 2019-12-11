@@ -2,7 +2,7 @@
 #include <hpx/include/iostreams.hpp>
 // #include <hpx/runtime/resource/partitioner.hpp>
 // TODO The above header doesn't provide detail::partitioner class definition
-#include <hpx/runtime/resource/detail/partitioner.hpp>
+#include <hpx/resource_partitioner/detail/partitioner.hpp>
 #include <fmt/format.h>
 
 

@@ -21,13 +21,12 @@ target_link_libraries(lue_imgui
 )
 
 
-
-add_executable(lue_imgui_demo
-    main
-)
-
-target_link_libraries(lue_imgui_demo
-    PRIVATE
-        fmt::fmt
-        lue::imgui
-)
+# add_executable(lue_imgui_demo
+#     main
+# )
+# 
+# target_link_libraries(lue_imgui_demo
+#     PRIVATE
+#         fmt::fmt
+#         lue::imgui
+# )

@@ -489,7 +489,7 @@ static void validate_value(
 
         for(std::size_t i = 1; i < active_set_idxs.size(); ++i) {
             auto const end_idx = active_set_idxs[i];
-            auto const active_set_size = end_idx - begin_idx;
+            [[maybe_unused]] auto const active_set_size = end_idx - begin_idx;
 
         //     auto const value_array = value[i - 1];
         //     auto const nr_object_arrays = value_array.nr_arrays();

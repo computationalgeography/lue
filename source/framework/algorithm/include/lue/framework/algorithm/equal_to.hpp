@@ -225,7 +225,6 @@ PartitionedArrayT<Array<bool, rank>, bool> equal_to(
     hpx::shared_future<Element> const& scalar)
 {
     using InputArray = Array<Element, rank>;
-    using InputScalar = hpx::shared_future<Element>;
     using InputPartition = PartitionT<InputArray>;
 
     using OutputArray = PartitionedArrayT<InputArray, bool>;
