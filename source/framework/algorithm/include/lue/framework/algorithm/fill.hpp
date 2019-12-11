@@ -25,9 +25,6 @@ template<
     Array<Element, rank>& array,
     hpx::shared_future<Element> const& fill_value)
 {
-    using Array_ = Array<Element, rank>;
-    using Partition = PartitionT<Array_>;
-
     std::vector<hpx::future<void>> fill_partitions(nr_partitions(array));
 
     typename ArrayPartitionFillAction<Element, rank>::Type action;

@@ -1,6 +1,8 @@
 #pragma once
 #include "lue/framework/core/array.hpp"
+#include "lue/framework/core/define.hpp"
 #include <hpx/include/lcos.hpp>
+#include <hpx/include/iostreams.hpp>
 
 
 namespace lue {
@@ -211,12 +213,10 @@ OutputPartition focal_operation_partition(
 {
     using InputPartition = PartitionT<InputPartitions>;
     using InputData = DataT<InputPartition>;
-    using InputElement = ElementT<InputPartition>;
     using InputDataSpan = typename InputData::Span;
     using InputDataSubspan = typename InputData::Subspan;
 
     using OutputData = DataT<OutputPartition>;
-    using OutputElement = ElementT<OutputPartition>;
 
     using Shape = ShapeT<InputPartitions>;
 
@@ -255,8 +255,7 @@ OutputPartition focal_operation_partition(
         // amount of elements from the border partitions necessary to
         // calculate the result for the partition at (1, 1).
 
-        using PartitionShapes =
-            Array<hpx::shared_future<Shape>, rank<InputPartition>>;
+        using PartitionShapes = Array<hpx::future<Shape>, rank<InputPartition>>;
 
         PartitionShapes partition_shapes{partitions.shape()};
 
@@ -276,7 +275,7 @@ OutputPartition focal_operation_partition(
         // calculations.
 
         using InputPartitionsData =
-            Array<hpx::shared_future<InputData>, rank<InputPartition>>;
+            Array<hpx::future<InputData>, rank<InputPartition>>;
 
         InputPartitionsData input_partitions_data{partitions.shape()};
 
@@ -330,6 +329,7 @@ OutputPartition focal_operation_partition(
                     auto const [nr_elements0, nr_elements1] = partition_shape;
                     assert(nr_elements0 >= kernel_radius);
                     assert(nr_elements1 >= kernel_radius);
+                    LUE_UNUSED(nr_elements1);
 
                     return partition.slice(
                         Slices{{
@@ -373,6 +373,7 @@ OutputPartition focal_operation_partition(
                     auto const [nr_elements0, nr_elements1] = partition_shape;
                     assert(nr_elements0 >= kernel_radius);
                     assert(nr_elements1 >= kernel_radius);
+                    LUE_UNUSED(nr_elements1);
 
                     return partition.slice(
                         Slices{{
@@ -393,6 +394,7 @@ OutputPartition focal_operation_partition(
                     auto const [nr_elements0, nr_elements1] = partition_shape;
                     assert(nr_elements0 >= kernel_radius);
                     assert(nr_elements1 >= kernel_radius);
+                    LUE_UNUSED(nr_elements0);
 
                     return partition.slice(
                         Slices{{
@@ -413,6 +415,7 @@ OutputPartition focal_operation_partition(
                     auto const [nr_elements0, nr_elements1] = partition_shape;
                     assert(nr_elements0 >= kernel_radius);
                     assert(nr_elements1 >= kernel_radius);
+                    LUE_UNUSED(nr_elements0);
 
                     return partition.slice(
                         Slices{{
@@ -428,13 +431,13 @@ OutputPartition focal_operation_partition(
             hpx::util::unwrapping(
 
                 [kernel_radius, partition=partitions(2, 2)](
-                    Shape const& partition_shape)
+                    [[maybe_unused]] Shape const& partition_shape)
                 {
-#ifndef NDEBUG
                     auto const [nr_elements0, nr_elements1] = partition_shape;
                     assert(nr_elements0 >= kernel_radius);
                     assert(nr_elements1 >= kernel_radius);
-#endif
+                    LUE_UNUSED(nr_elements0);
+                    LUE_UNUSED(nr_elements1);
 
                     return partition.slice(
                         Slices{{
@@ -458,7 +461,7 @@ OutputPartition focal_operation_partition(
             hpx::util::unwrapping(
 
                 [kernel /* , functor */](
-                    InputData /* const& */ partition_data)
+                    InputData const& partition_data)
                 {
                     auto const [nr_rows, nr_cols] = partition_data.shape();
                     auto const& array_span = partition_data.span();
@@ -502,7 +505,6 @@ OutputPartition focal_operation_partition(
 
         return hpx::when_all(
                 input_partitions_data_future,
-
                 locality_id_future,
                 output_data_future).then(
             hpx::util::unwrapping(
@@ -1069,6 +1071,7 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
     Kernel const& kernel,
     Functor const& functor)
 {
+hpx::cout << '[' << hpx::flush;
     static_assert(lue::rank<Array> == 2);
 
     using InputArray = Array;
@@ -1098,6 +1101,7 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
 
 
 
+hpx::cout << '(' << hpx::flush;
     // -------------------------------------------------------------------------
     // Create a halo of temporary partitions that are used in the
     // convolution of the partitions along the borders of the
@@ -1121,61 +1125,80 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
     //     +----+----+
     InputPartitions halo_corner_partitions{Shape{{2, 2}}};
 
+hpx::cout << "{" << hpx::flush;
     // North-west corner halo partition
-    halo_corner_partitions(0, 0) = hpx::get_colocation_id(
-            input_array.partitions()(0, 0).get_id()).then(
-        hpx::util::unwrapping(
+    halo_corner_partitions(0, 0) = hpx::dataflow(
+        hpx::launch::async,
+        hpx::util::annotated_function(
+            hpx::util::unwrapping(
 
-            [kernel_radius, fill_value](
-                hpx::id_type const locality_id)
-            {
-                return InputPartition{locality_id,
-                    Shape{{kernel_radius, kernel_radius}}, fill_value};
-            }
+                [kernel_radius, fill_value](
+                    hpx::id_type const locality_id)
+                {
+                    return InputPartition{
+                        locality_id,
+                        Shape{{kernel_radius, kernel_radius}}, fill_value};
+                }
 
-        ));
+                ),
+                "halo_corner_partition"),
+        input_array.partitions()(0, 0));
+hpx::cout << "}{" << hpx::flush;
 
     // North-east corner halo partition
-    halo_corner_partitions(0, 1) = hpx::get_colocation_id(
-            input_array.partitions()(0, nr_partitions1 - 1).get_id()).then(
-        hpx::util::unwrapping(
+    halo_corner_partitions(0, 1) = hpx::dataflow(
+        hpx::launch::async,
+        hpx::util::annotated_function(
+            hpx::util::unwrapping(
 
-            [kernel_radius, fill_value](
-                hpx::id_type const locality_id)
-            {
-                return InputPartition{locality_id,
-                    Shape{{kernel_radius, kernel_radius}}, fill_value};
-            }
+                [kernel_radius, fill_value](
+                    hpx::id_type const locality_id)
+                {
+                    return InputPartition{
+                        locality_id,
+                        Shape{{kernel_radius, kernel_radius}}, fill_value};
+                }
 
-        ));
+                ),
+                "halo_corner_partition"),
+        input_array.partitions()(0, nr_partitions1 - 1));
+
+hpx::cout << "}{" << hpx::flush;
 
     // South-west corner halo partition
+    // FIXME hier verder. draai ook unit tests!
     halo_corner_partitions(1, 0) = hpx::get_colocation_id(
             input_array.partitions()(nr_partitions0 - 1, 0).get_id()).then(
-        hpx::util::unwrapping(
+        hpx::util::annotated_function(
+            hpx::util::unwrapping(
 
-            [kernel_radius, fill_value](
-                hpx::id_type const locality_id)
-            {
-                return InputPartition{locality_id,
-                    Shape{{kernel_radius, kernel_radius}}, fill_value};
-            }
+                [kernel_radius, fill_value](
+                    hpx::id_type const locality_id)
+                {
+                    return InputPartition{locality_id,
+                        Shape{{kernel_radius, kernel_radius}}, fill_value};
+                }
 
-        ));
+            ),
+            "halo_corner_partition"));
+hpx::cout << "}{" << hpx::flush;
 
     // South-east corner halo partition
     halo_corner_partitions(1, 1) = hpx::get_colocation_id(
             input_array.partitions()(nr_partitions0 - 1, nr_partitions1 - 1).get_id()).then(
-        hpx::util::unwrapping(
+        hpx::util::annotated_function(
+            hpx::util::unwrapping(
 
-            [kernel_radius, fill_value](
-                hpx::id_type const locality_id)
-            {
-                return InputPartition{locality_id,
-                    Shape{{kernel_radius, kernel_radius}}, fill_value};
-            }
+                [kernel_radius, fill_value](
+                    hpx::id_type const locality_id)
+                {
+                    return InputPartition{locality_id,
+                        Shape{{kernel_radius, kernel_radius}}, fill_value};
+                }
 
-        ));
+            ),
+            "halo_corner_partition"));
+hpx::cout << "}{" << hpx::flush;
 
     // Longitudinal side halo partitions
     //     +---+---+---+
@@ -1193,25 +1216,28 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
 
             halo_longitudinal_side_partitions(rh, cp) = hpx::dataflow(
                 hpx::launch::async,
-                hpx::util::unwrapping(
+                hpx::util::annotated_function(
+                    hpx::util::unwrapping(
 
-                    [kernel_radius, fill_value](
-                        hpx::id_type const locality_id,
-                        Shape const& partition_shape)
-                    {
-                        return InputPartition{
-                            locality_id,
-                            Shape{{kernel_radius, partition_shape[1]}},
-                            fill_value};
-                    }
+                        [kernel_radius, fill_value](
+                            hpx::id_type const locality_id,
+                            Shape const& partition_shape)
+                        {
+                            return InputPartition{
+                                locality_id,
+                                Shape{{kernel_radius, partition_shape[1]}},
+                                fill_value};
+                        }
 
-                ),
+                    ),
+                    "halo_side_partitions"),
                 hpx::get_colocation_id(
                     input_array.partitions()(rp, cp).get_id()),
                 input_array.partitions()(rp, cp).shape());
 
         }
     }
+hpx::cout << "}{" << hpx::flush;
 
     // Latitudinal sides halo partitions
     //     +---+---+
@@ -1232,27 +1258,30 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
 
             halo_latitudinal_sides_partitions(rp, ch) = hpx::dataflow(
                 hpx::launch::async,
-                hpx::util::unwrapping(
+                hpx::util::annotated_function(
+                    hpx::util::unwrapping(
 
-                    [kernel_radius, fill_value](
-                        hpx::id_type const locality_id,
-                        Shape const& partition_shape)
-                    {
-                        return InputPartition{
-                            locality_id,
-                            Shape{{partition_shape[0], kernel_radius}},
-                            fill_value};
-                    }
+                        [kernel_radius, fill_value](
+                            hpx::id_type const locality_id,
+                            Shape const& partition_shape)
+                        {
+                            return InputPartition{
+                                locality_id,
+                                Shape{{partition_shape[0], kernel_radius}},
+                                fill_value};
+                        }
 
-                ),
-
+                    ),
+                    "halo_side_partitions"),
                 hpx::get_colocation_id(
                     input_array.partitions()(rp, cp).get_id()),
                 input_array.partitions()(rp, cp).shape());
 
         }
     }
+hpx::cout << "}" << hpx::flush;
 
+hpx::cout << ")(" << hpx::flush;
     // -------------------------------------------------------------------------
     // Iterate over all partitions. Per partition determine the collection
     // of neighboring partitions, and asynchronously call the algorithm
@@ -1298,29 +1327,30 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
                 : input_array.partitions()(1, 1));
 
         // Once all 9 partitions are ready, call the remote action
-        // TODO Also request locality id here
         output_partitions(0, 0) = hpx::when_all_n(
                 local_input_partitions.begin(),
                 local_input_partitions.nr_elements()).then(
-            hpx::util::unwrapping(
+            hpx::util::annotated_function(
+                hpx::util::unwrapping(
 
-                [action, kernel, functor](
-                    auto&& partitions)
-                {
-                    InputPartitions local_input_partitions{
-                        Shape{{3, 3}},
-                        partitions.begin(), partitions.end()};
+                    [action, kernel, functor](
+                        auto&& partitions)
+                    {
+                        InputPartitions local_input_partitions{
+                            Shape{{3, 3}},
+                            partitions.begin(), partitions.end()};
 
-                    return action(
-                        hpx::get_colocation_id(
-                            hpx::launch::sync,
-                            local_input_partitions(1, 1).get_id()),
-                        local_input_partitions,
-                        kernel,
-                        functor);
-                }
+                        return action(
+                            hpx::get_colocation_id(
+                                hpx::launch::sync,
+                                local_input_partitions(1, 1).get_id()),
+                            local_input_partitions,
+                            kernel,
+                            functor);
+                    }
 
-            ));
+                ),
+                "focal_partition"));
     }
 
     // North-east corner partition
@@ -1361,29 +1391,30 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
         }
 
         // Once all 9 partitions are ready, call the remote action
-        // TODO Also request locality id here
         output_partitions(0, nr_partitions1 - 1) = hpx::when_all_n(
                 local_input_partitions.begin(),
                 local_input_partitions.nr_elements()).then(
-            hpx::util::unwrapping(
+            hpx::util::annotated_function(
+                hpx::util::unwrapping(
 
-                [action, kernel, functor](
-                    auto&& partitions)
-                {
-                    InputPartitions local_input_partitions{
-                        Shape{{3, 3}},
-                        partitions.begin(), partitions.end()};
+                    [action, kernel, functor](
+                        auto&& partitions)
+                    {
+                        InputPartitions local_input_partitions{
+                            Shape{{3, 3}},
+                            partitions.begin(), partitions.end()};
 
-                    return action(
-                        hpx::get_colocation_id(
-                            hpx::launch::sync,
-                            local_input_partitions(1, 1).get_id()),
-                        local_input_partitions,
-                        kernel,
-                        functor);
-                }
+                        return action(
+                            hpx::get_colocation_id(
+                                hpx::launch::sync,
+                                local_input_partitions(1, 1).get_id()),
+                            local_input_partitions,
+                            kernel,
+                            functor);
+                    }
 
-            ));
+                ),
+                "focal_partition"));
     }
 
     // South-west corner partition
@@ -1414,29 +1445,30 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
             : halo_longitudinal_side_partitions(1, 1);
 
         // Once all 9 partitions are ready, call the remote action
-        // TODO Also request locality id here
         output_partitions(nr_partitions0 - 1, 0) = hpx::when_all_n(
                 local_input_partitions.begin(),
                 local_input_partitions.nr_elements()).then(
-            hpx::util::unwrapping(
+            hpx::util::annotated_function(
+                hpx::util::unwrapping(
 
-                [action, kernel, functor](
-                    auto&& partitions)
-                {
-                    InputPartitions local_input_partitions{
-                        Shape{{3, 3}},
-                        partitions.begin(), partitions.end()};
+                    [action, kernel, functor](
+                        auto&& partitions)
+                    {
+                        InputPartitions local_input_partitions{
+                            Shape{{3, 3}},
+                            partitions.begin(), partitions.end()};
 
-                    return action(
-                        hpx::get_colocation_id(
-                            hpx::launch::sync,
-                            local_input_partitions(1, 1).get_id()),
-                        local_input_partitions,
-                        kernel,
-                        functor);
-                }
+                        return action(
+                            hpx::get_colocation_id(
+                                hpx::launch::sync,
+                                local_input_partitions(1, 1).get_id()),
+                            local_input_partitions,
+                            kernel,
+                            functor);
+                    }
 
-            ));
+                ),
+                "focal_partition"));
     }
 
     // South-east corner partition
@@ -1452,29 +1484,30 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
         local_input_partitions(2, 2) = halo_corner_partitions(1, 1);
 
         // Once all 9 partitions are ready, call the remote action
-        // TODO Also request locality id here
         output_partitions(nr_partitions0 - 1, nr_partitions1 - 1) = hpx::when_all_n(
                 local_input_partitions.begin(),
                 local_input_partitions.nr_elements()).then(
-            hpx::util::unwrapping(
+            hpx::util::annotated_function(
+                hpx::util::unwrapping(
 
-                [action, kernel, functor](
-                    auto&& partitions)
-                {
-                    InputPartitions local_input_partitions{
-                        Shape{{3, 3}},
-                        partitions.begin(), partitions.end()};
+                    [action, kernel, functor](
+                        auto&& partitions)
+                    {
+                        InputPartitions local_input_partitions{
+                            Shape{{3, 3}},
+                            partitions.begin(), partitions.end()};
 
-                    return action(
-                        hpx::get_colocation_id(
-                            hpx::launch::sync,
-                            local_input_partitions(1, 1).get_id()),
-                        local_input_partitions,
-                        kernel,
-                        functor);
-                }
+                        return action(
+                            hpx::get_colocation_id(
+                                hpx::launch::sync,
+                                local_input_partitions(1, 1).get_id()),
+                            local_input_partitions,
+                            kernel,
+                            functor);
+                    }
 
-            ));
+                ),
+                "focal_partition"));
     }
 
 
@@ -1517,30 +1550,30 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
             }
 
             // Once all 9 partitions are ready, call the remote action
-            // TODO Also request locality id here
             output_partitions(0, c) = hpx::when_all_n(
                     local_input_partitions.begin(),
                     local_input_partitions.nr_elements()).then(
-                hpx::util::unwrapping(
+                hpx::util::annotated_function(
+                    hpx::util::unwrapping(
 
-                    [action, kernel, functor](
-                        auto&& partitions)
-                    {
-                        InputPartitions local_input_partitions{
-                            Shape{{3, 3}},
-                            partitions.begin(), partitions.end()};
+                        [action, kernel, functor](
+                            auto&& partitions)
+                        {
+                            InputPartitions local_input_partitions{
+                                Shape{{3, 3}},
+                                partitions.begin(), partitions.end()};
 
-                        return action(
-                            hpx::get_colocation_id(
-                                hpx::launch::sync,
-                                local_input_partitions(1, 1).get_id()),
-                            local_input_partitions,
-                            kernel,
-                            functor);
-                    }
+                            return action(
+                                hpx::get_colocation_id(
+                                    hpx::launch::sync,
+                                    local_input_partitions(1, 1).get_id()),
+                                local_input_partitions,
+                                kernel,
+                                functor);
+                        }
 
-                ));
-
+                    ),
+                    "focal_partition"));
         }
     }
 
@@ -1559,30 +1592,30 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
             local_input_partitions(2, 2) = halo_longitudinal_side_partitions(0, c + 1);
 
             // Once all 9 partitions are ready, call the remote action
-            // TODO Also request locality id here
             output_partitions(nr_partitions0 - 1, c) = hpx::when_all_n(
                     local_input_partitions.begin(),
                     local_input_partitions.nr_elements()).then(
-                hpx::util::unwrapping(
+                hpx::util::annotated_function(
+                    hpx::util::unwrapping(
 
-                    [action, kernel, functor](
-                        auto&& partitions)
-                    {
-                        InputPartitions local_input_partitions{
-                            Shape{{3, 3}},
-                            partitions.begin(), partitions.end()};
+                        [action, kernel, functor](
+                            auto&& partitions)
+                        {
+                            InputPartitions local_input_partitions{
+                                Shape{{3, 3}},
+                                partitions.begin(), partitions.end()};
 
-                        return action(
-                            hpx::get_colocation_id(
-                                hpx::launch::sync,
-                                local_input_partitions(1, 1).get_id()),
-                            local_input_partitions,
-                            kernel,
-                            functor);
-                    }
+                            return action(
+                                hpx::get_colocation_id(
+                                    hpx::launch::sync,
+                                    local_input_partitions(1, 1).get_id()),
+                                local_input_partitions,
+                                kernel,
+                                functor);
+                        }
 
-                ));
-
+                    ),
+                    "focal_partition"));
         }
     }
 
@@ -1617,30 +1650,30 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
                 : input_array.partitions()(r + 1, 1);
 
             // Once all 9 partitions are ready, call the remote action
-            // TODO Also request locality id here
             output_partitions(r, 0) = hpx::when_all_n(
                     local_input_partitions.begin(),
                     local_input_partitions.nr_elements()).then(
-                hpx::util::unwrapping(
+                hpx::util::annotated_function(
+                    hpx::util::unwrapping(
 
-                    [action, kernel, functor](
-                        auto&& partitions)
-                    {
-                        InputPartitions local_input_partitions{
-                            Shape{{3, 3}},
-                            partitions.begin(), partitions.end()};
+                        [action, kernel, functor](
+                            auto&& partitions)
+                        {
+                            InputPartitions local_input_partitions{
+                                Shape{{3, 3}},
+                                partitions.begin(), partitions.end()};
 
-                        return action(
-                            hpx::get_colocation_id(
-                                hpx::launch::sync,
-                                local_input_partitions(1, 1).get_id()),
-                            local_input_partitions,
-                            kernel,
-                            functor);
-                    }
+                            return action(
+                                hpx::get_colocation_id(
+                                    hpx::launch::sync,
+                                    local_input_partitions(1, 1).get_id()),
+                                local_input_partitions,
+                                kernel,
+                                functor);
+                        }
 
-                ));
-
+                    ),
+                    "focal_partition"));
         }
     }
 
@@ -1668,30 +1701,30 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
                 halo_latitudinal_sides_partitions(r + 1, 1);
 
             // Once all 9 partitions are ready, call the remote action
-            // TODO Also request locality id here
             output_partitions(r, nr_partitions1 - 1) = hpx::when_all_n(
                     local_input_partitions.begin(),
                     local_input_partitions.nr_elements()).then(
-                hpx::util::unwrapping(
+                hpx::util::annotated_function(
+                    hpx::util::unwrapping(
 
-                    [action, kernel, functor](
-                        auto&& partitions)
-                    {
-                        InputPartitions local_input_partitions{
-                            Shape{{3, 3}},
-                            partitions.begin(), partitions.end()};
+                        [action, kernel, functor](
+                            auto&& partitions)
+                        {
+                            InputPartitions local_input_partitions{
+                                Shape{{3, 3}},
+                                partitions.begin(), partitions.end()};
 
-                        return action(
-                            hpx::get_colocation_id(
-                                hpx::launch::sync,
-                                local_input_partitions(1, 1).get_id()),
-                            local_input_partitions,
-                            kernel,
-                            functor);
-                    }
+                            return action(
+                                hpx::get_colocation_id(
+                                    hpx::launch::sync,
+                                    local_input_partitions(1, 1).get_id()),
+                                local_input_partitions,
+                                kernel,
+                                functor);
+                        }
 
-                ));
-
+                    ),
+                    "focal_partition"));
         }
     }
 
@@ -1714,32 +1747,34 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
             }
 
             // Once all 9 partitions are ready, call the remote action
-            // TODO Also request locality id here
             output_partitions(r, c) = hpx::when_all_n(
                     local_input_partitions.begin(),
                     local_input_partitions.nr_elements()).then(
-                hpx::util::unwrapping(
+                hpx::util::annotated_function(
+                    hpx::util::unwrapping(
 
-                    [action, kernel, functor](
-                        auto&& partitions)
-                    {
-                        InputPartitions local_input_partitions{
-                            Shape{{3, 3}},
-                            partitions.begin(), partitions.end()};
+                        [action, kernel, functor](
+                            auto&& partitions)
+                        {
+                            InputPartitions local_input_partitions{
+                                Shape{{3, 3}},
+                                partitions.begin(), partitions.end()};
 
-                        return action(
-                            hpx::get_colocation_id(
-                                hpx::launch::sync,
-                                local_input_partitions(1, 1).get_id()),
-                            local_input_partitions,
-                            kernel,
-                            functor);
-                    }
+                            return action(
+                                hpx::get_colocation_id(
+                                    hpx::launch::sync,
+                                    local_input_partitions(1, 1).get_id()),
+                                local_input_partitions,
+                                kernel,
+                                functor);
+                        }
 
-                ));
+                    ),
+                    "focal_partition"));
         }
     }
 
+hpx::cout << ")]" << hpx::flush;
     return OutputArray{shape(input_array), std::move(output_partitions)};
 }
 

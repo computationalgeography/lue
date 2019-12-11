@@ -15,7 +15,6 @@ BOOST_AUTO_TEST_CASE(range_2d_int32)
 
     using Array = lue::PartitionedArray<Element, rank>;
     using Shape = lue::ShapeT<Array>;
-    using Data = lue::DataT<Array>;
 
     Shape const array_shape{{9, 9}};
     Shape const partition_shape{{3, 3}};

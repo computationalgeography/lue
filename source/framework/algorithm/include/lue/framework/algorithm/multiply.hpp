@@ -219,7 +219,6 @@ Array<Element, rank> multiply(
     Array<Element, rank> const& array,
     hpx::shared_future<Element> const& scalar)
 {
-    using InputScalar = hpx::shared_future<Element>;
     using InputArray = Array<Element, rank>;
     using InputPartition = PartitionT<InputArray>;
 

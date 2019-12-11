@@ -310,7 +310,7 @@ template<
     Rank rank>
 typename ArrayPartition<Element, rank>::Data
     ArrayPartition<Element, rank>::data(
-        CopyMode const mode) const
+        [[maybe_unused]] CopyMode const mode) const
 {
     if constexpr (rank == 0) {
         return _data;
@@ -352,7 +352,7 @@ template<
     Rank rank>
 void ArrayPartition<Element, rank>::set_data(
     Data const& data,
-    CopyMode const mode)
+    [[maybe_unused]] CopyMode const mode)
 {
     if constexpr (rank == 0) {
         _data = data;

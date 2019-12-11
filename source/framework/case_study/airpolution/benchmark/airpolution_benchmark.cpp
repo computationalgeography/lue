@@ -10,7 +10,7 @@ auto setup_benchmark(
         lue::benchmark::Task const& task)
 {
     auto callable = [](
-        lue::benchmark::Environment const& environment,
+        [[maybe_unused]] lue::benchmark::Environment const& environment,
         lue::benchmark::Task const& task)
     {
 

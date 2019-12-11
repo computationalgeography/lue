@@ -4,8 +4,8 @@
 
 
 int hpx_main(
-    int const argc,
-    char* argv[])
+    int const /* argc */,
+    char* /* argv */ [])
 {
     // using Shape = std::vector<std::uint64_t>;
     using Shape = lue::Shape<lue::Count, 2>;

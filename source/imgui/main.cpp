@@ -152,54 +152,54 @@ static void simulate(
 }
 
 
-static void model_demo()
-{
-    // *Simulation*
-    // - Visualize simulation
-    //     - State of variables
-    //     - ...
-    // - Change state of simulation
-    //     - Parameters
-    //     - ...
-
-    // *Execution environment*
-    // - Visualize execution environment
-    //     - Summaries
-    //         - Overall load
-    //         - Overall memory usage
-    //         - ...
-    //     - Per node
-    //         - Load per node
-    //         - Memory usage per node
-    //         - ...
-    // - Change state of execution environment
-    //     - Grain size
-    //     - ...
-
-    // TODO How to set this up
-    //     - Simulation can be visualized in some way. Doesn't have to
-    //       be done now.
-    //     - Execution environment can be set up using imgui. Windows
-    //       on top of simulation visualization (which can be empty
-    //       for now).
-
-    std::atomic_size_t current_time_step;
-    std::size_t nr_time_steps = 1e1;
-    std::atomic_bool stop_simulation = false;
-    std::atomic_bool simulation_finished = false;
-
-    auto simulation = std::async(
-        std::launch::async,
-        simulate, std::ref(current_time_step), nr_time_steps,
-        std::cref(stop_simulation),
-        std::ref(simulation_finished));
-
-    dashboard(
-        current_time_step, nr_time_steps, stop_simulation,
-        simulation_finished);
-
-    simulation.wait();
-}
+// static void model_demo()
+// {
+//     // *Simulation*
+//     // - Visualize simulation
+//     //     - State of variables
+//     //     - ...
+//     // - Change state of simulation
+//     //     - Parameters
+//     //     - ...
+// 
+//     // *Execution environment*
+//     // - Visualize execution environment
+//     //     - Summaries
+//     //         - Overall load
+//     //         - Overall memory usage
+//     //         - ...
+//     //     - Per node
+//     //         - Load per node
+//     //         - Memory usage per node
+//     //         - ...
+//     // - Change state of execution environment
+//     //     - Grain size
+//     //     - ...
+// 
+//     // TODO How to set this up
+//     //     - Simulation can be visualized in some way. Doesn't have to
+//     //       be done now.
+//     //     - Execution environment can be set up using imgui. Windows
+//     //       on top of simulation visualization (which can be empty
+//     //       for now).
+// 
+//     std::atomic_size_t current_time_step;
+//     std::size_t nr_time_steps = 1e1;
+//     std::atomic_bool stop_simulation = false;
+//     std::atomic_bool simulation_finished = false;
+// 
+//     auto simulation = std::async(
+//         std::launch::async,
+//         simulate, std::ref(current_time_step), nr_time_steps,
+//         std::cref(stop_simulation),
+//         std::ref(simulation_finished));
+// 
+//     dashboard(
+//         current_time_step, nr_time_steps, stop_simulation,
+//         simulation_finished);
+// 
+//     simulation.wait();
+// }
 
 
 int main(int, char**)

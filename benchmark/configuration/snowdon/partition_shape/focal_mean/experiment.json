@@ -1,0 +1,16 @@
+{
+    "nr_time_steps": 10,
+    # "nr_time_steps": 25,
+    "array": {
+        "shape": [10000, 10000]
+    },
+    "partition": {
+        # "shape": [20, 20],
+        "shape": [100, 100],
+        "range": {
+            # 1280 x 1280
+            "max_nr_elements": 1638400,
+            "multiplier": 2
+        }
+    }
+}
