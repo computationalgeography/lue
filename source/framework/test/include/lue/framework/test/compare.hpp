@@ -70,11 +70,16 @@ void check_equal_partition(
     Partition const& partition2)
 {
     bool both_partitions_valid = partition1.valid() && partition2.valid();
-    bool both_partitions_invalid = !partition1.valid() && !partition2.valid();
+    bool both_partitions_invalid =
+        (!partition1.valid()) && (!partition2.valid());
 
-    BOOST_REQUIRE(both_partitions_valid || both_partitions_invalid);
+    // XOR with bools
+    BOOST_REQUIRE(both_partitions_valid != both_partitions_invalid);
 
     if(both_partitions_valid) {
+        BOOST_REQUIRE(partition1.get_id());
+        BOOST_REQUIRE(partition2.get_id());
+
         BOOST_REQUIRE_EQUAL(
             partition1.shape().get(), partition2.shape().get());
 

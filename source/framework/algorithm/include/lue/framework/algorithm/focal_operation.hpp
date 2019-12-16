@@ -255,7 +255,8 @@ OutputPartition focal_operation_partition(
         // amount of elements from the border partitions necessary to
         // calculate the result for the partition at (1, 1).
 
-        using PartitionShapes = Array<hpx::future<Shape>, rank<InputPartition>>;
+        using PartitionShapes =
+            Array<hpx::shared_future<Shape>, rank<InputPartition>>;
 
         PartitionShapes partition_shapes{partitions.shape()};
 
@@ -275,7 +276,7 @@ OutputPartition focal_operation_partition(
         // calculations.
 
         using InputPartitionsData =
-            Array<hpx::future<InputData>, rank<InputPartition>>;
+            Array<hpx::shared_future<InputData>, rank<InputPartition>>;
 
         InputPartitionsData input_partitions_data{partitions.shape()};
 
@@ -431,7 +432,7 @@ OutputPartition focal_operation_partition(
             hpx::util::unwrapping(
 
                 [kernel_radius, partition=partitions(2, 2)](
-                    [[maybe_unused]] Shape const& partition_shape)
+                    Shape const& partition_shape)
                 {
                     auto const [nr_elements0, nr_elements1] = partition_shape;
                     assert(nr_elements0 >= kernel_radius);
@@ -777,7 +778,6 @@ OutputPartition focal_operation_partition(
                                     assert(windows(1, 0).extent(0) <= kernel.radius());
                                     assert(windows(1, 0).extent(1) <= kernel.radius());
 
-                                    // SE partition view
                                     windows(1, 1) = lue::subspan(se_partition,
                                         Slice{rseb, rsee}, Slice{cseb, csee});
                                     assert(windows(1, 1).extent(0) > 0);
@@ -1130,17 +1130,18 @@ hpx::cout << "{" << hpx::flush;
     halo_corner_partitions(0, 0) = hpx::dataflow(
         hpx::launch::async,
         hpx::util::annotated_function(
-            hpx::util::unwrapping(
+            // hpx::util::unwrapping(
 
                 [kernel_radius, fill_value](
-                    hpx::id_type const locality_id)
+                    InputPartition const& input_partition)
+                    // hpx::id_type const component_id)
                 {
                     return InputPartition{
-                        locality_id,
+                        hpx::get_colocation_id(hpx::launch::sync, input_partition.get_id()),
+                        // hpx::get_colocation_id(hpx::launch::sync, component_id),
                         Shape{{kernel_radius, kernel_radius}}, fill_value};
-                }
+                },
 
-                ),
                 "halo_corner_partition"),
         input_array.partitions()(0, 0));
 hpx::cout << "}{" << hpx::flush;
@@ -1149,55 +1150,96 @@ hpx::cout << "}{" << hpx::flush;
     halo_corner_partitions(0, 1) = hpx::dataflow(
         hpx::launch::async,
         hpx::util::annotated_function(
-            hpx::util::unwrapping(
+            // hpx::util::unwrapping(
 
                 [kernel_radius, fill_value](
-                    hpx::id_type const locality_id)
+                    InputPartition const& input_partition)
+                    // hpx::id_type const component_id)
                 {
                     return InputPartition{
-                        locality_id,
+                        hpx::get_colocation_id(hpx::launch::sync, input_partition.get_id()),
+                        // hpx::get_colocation_id(hpx::launch::sync, component_id),
                         Shape{{kernel_radius, kernel_radius}}, fill_value};
-                }
+                },
 
-                ),
                 "halo_corner_partition"),
         input_array.partitions()(0, nr_partitions1 - 1));
+    // halo_corner_partitions(0, 1) = hpx::get_colocation_id(
+    //         input_array.partitions()(0, nr_partitions1 - 1).get_id()).then(
+    //     hpx::util::unwrapping(
 
+    //         [kernel_radius, fill_value](
+    //             hpx::id_type const locality_id)
+    //         {
+    //             return InputPartition{locality_id,
+    //                 Shape{{kernel_radius, kernel_radius}}, fill_value};
+    //         }
+
+    //     ));
 hpx::cout << "}{" << hpx::flush;
 
     // South-west corner halo partition
-    // FIXME hier verder. draai ook unit tests!
-    halo_corner_partitions(1, 0) = hpx::get_colocation_id(
-            input_array.partitions()(nr_partitions0 - 1, 0).get_id()).then(
+    halo_corner_partitions(1, 0) = hpx::dataflow(
+        hpx::launch::async,
         hpx::util::annotated_function(
-            hpx::util::unwrapping(
+            // hpx::util::unwrapping(
 
                 [kernel_radius, fill_value](
-                    hpx::id_type const locality_id)
+                    InputPartition const& input_partition)
+                    // hpx::id_type const component_id)
                 {
-                    return InputPartition{locality_id,
+                    return InputPartition{
+                        hpx::get_colocation_id(hpx::launch::sync, input_partition.get_id()),
+                        // hpx::get_colocation_id(hpx::launch::sync, component_id),
                         Shape{{kernel_radius, kernel_radius}}, fill_value};
-                }
+                },
 
-            ),
-            "halo_corner_partition"));
+                "halo_corner_partition"),
+        input_array.partitions()(nr_partitions0 - 1, 0));
+    // halo_corner_partitions(1, 0) = hpx::get_colocation_id(
+    //         input_array.partitions()(nr_partitions0 - 1, 0).get_id()).then(
+    //     hpx::util::unwrapping(
+
+    //         [kernel_radius, fill_value](
+    //             hpx::id_type const locality_id)
+    //         {
+    //             return InputPartition{locality_id,
+    //                 Shape{{kernel_radius, kernel_radius}}, fill_value};
+    //         }
+
+    //     ));
 hpx::cout << "}{" << hpx::flush;
 
     // South-east corner halo partition
-    halo_corner_partitions(1, 1) = hpx::get_colocation_id(
-            input_array.partitions()(nr_partitions0 - 1, nr_partitions1 - 1).get_id()).then(
+    halo_corner_partitions(1, 1) = hpx::dataflow(
+        hpx::launch::async,
         hpx::util::annotated_function(
-            hpx::util::unwrapping(
+            // hpx::util::unwrapping(
 
                 [kernel_radius, fill_value](
-                    hpx::id_type const locality_id)
+                    InputPartition const& input_partition)
+                    // hpx::id_type const component_id)
                 {
-                    return InputPartition{locality_id,
+                    return InputPartition{
+                        hpx::get_colocation_id(hpx::launch::sync, input_partition.get_id()),
+                        // hpx::get_colocation_id(hpx::launch::sync, component_id),
                         Shape{{kernel_radius, kernel_radius}}, fill_value};
-                }
+                },
 
-            ),
-            "halo_corner_partition"));
+                "halo_corner_partition"),
+        input_array.partitions()(nr_partitions0 - 1, nr_partitions1 - 1));
+    // halo_corner_partitions(1, 1) = hpx::get_colocation_id(
+    //         input_array.partitions()(nr_partitions0 - 1, nr_partitions1 - 1).get_id()).then(
+    //     hpx::util::unwrapping(
+
+    //         [kernel_radius, fill_value](
+    //             hpx::id_type const locality_id)
+    //         {
+    //             return InputPartition{locality_id,
+    //                 Shape{{kernel_radius, kernel_radius}}, fill_value};
+    //         }
+
+    //     ));
 hpx::cout << "}{" << hpx::flush;
 
     // Longitudinal side halo partitions
@@ -1216,21 +1258,19 @@ hpx::cout << "}{" << hpx::flush;
 
             halo_longitudinal_side_partitions(rh, cp) = hpx::dataflow(
                 hpx::launch::async,
-                hpx::util::annotated_function(
-                    hpx::util::unwrapping(
+                hpx::util::unwrapping(
 
-                        [kernel_radius, fill_value](
-                            hpx::id_type const locality_id,
-                            Shape const& partition_shape)
-                        {
-                            return InputPartition{
-                                locality_id,
-                                Shape{{kernel_radius, partition_shape[1]}},
-                                fill_value};
-                        }
+                    [kernel_radius, fill_value](
+                        hpx::id_type const locality_id,
+                        Shape const& partition_shape)
+                    {
+                        return InputPartition{
+                            locality_id,
+                            Shape{{kernel_radius, partition_shape[1]}},
+                            fill_value};
+                    }
 
-                    ),
-                    "halo_side_partitions"),
+                ),
                 hpx::get_colocation_id(
                     input_array.partitions()(rp, cp).get_id()),
                 input_array.partitions()(rp, cp).shape());
@@ -1258,21 +1298,20 @@ hpx::cout << "}{" << hpx::flush;
 
             halo_latitudinal_sides_partitions(rp, ch) = hpx::dataflow(
                 hpx::launch::async,
-                hpx::util::annotated_function(
-                    hpx::util::unwrapping(
+                hpx::util::unwrapping(
 
-                        [kernel_radius, fill_value](
-                            hpx::id_type const locality_id,
-                            Shape const& partition_shape)
-                        {
-                            return InputPartition{
-                                locality_id,
-                                Shape{{partition_shape[0], kernel_radius}},
-                                fill_value};
-                        }
+                    [kernel_radius, fill_value](
+                        hpx::id_type const locality_id,
+                        Shape const& partition_shape)
+                    {
+                        return InputPartition{
+                            locality_id,
+                            Shape{{partition_shape[0], kernel_radius}},
+                            fill_value};
+                    }
 
-                    ),
-                    "halo_side_partitions"),
+                ),
+
                 hpx::get_colocation_id(
                     input_array.partitions()(rp, cp).get_id()),
                 input_array.partitions()(rp, cp).shape());
@@ -1330,27 +1369,25 @@ hpx::cout << ")(" << hpx::flush;
         output_partitions(0, 0) = hpx::when_all_n(
                 local_input_partitions.begin(),
                 local_input_partitions.nr_elements()).then(
-            hpx::util::annotated_function(
-                hpx::util::unwrapping(
+            hpx::util::unwrapping(
 
-                    [action, kernel, functor](
-                        auto&& partitions)
-                    {
-                        InputPartitions local_input_partitions{
-                            Shape{{3, 3}},
-                            partitions.begin(), partitions.end()};
+                [action, kernel, functor](
+                    auto&& partitions)
+                {
+                    InputPartitions local_input_partitions{
+                        Shape{{3, 3}},
+                        partitions.begin(), partitions.end()};
 
-                        return action(
-                            hpx::get_colocation_id(
-                                hpx::launch::sync,
-                                local_input_partitions(1, 1).get_id()),
-                            local_input_partitions,
-                            kernel,
-                            functor);
-                    }
+                    return action(
+                        hpx::get_colocation_id(
+                            hpx::launch::sync,
+                            local_input_partitions(1, 1).get_id()),
+                        local_input_partitions,
+                        kernel,
+                        functor);
+                }
 
-                ),
-                "focal_partition"));
+            ));
     }
 
     // North-east corner partition
@@ -1394,27 +1431,25 @@ hpx::cout << ")(" << hpx::flush;
         output_partitions(0, nr_partitions1 - 1) = hpx::when_all_n(
                 local_input_partitions.begin(),
                 local_input_partitions.nr_elements()).then(
-            hpx::util::annotated_function(
-                hpx::util::unwrapping(
+            hpx::util::unwrapping(
 
-                    [action, kernel, functor](
-                        auto&& partitions)
-                    {
-                        InputPartitions local_input_partitions{
-                            Shape{{3, 3}},
-                            partitions.begin(), partitions.end()};
+                [action, kernel, functor](
+                    auto&& partitions)
+                {
+                    InputPartitions local_input_partitions{
+                        Shape{{3, 3}},
+                        partitions.begin(), partitions.end()};
 
-                        return action(
-                            hpx::get_colocation_id(
-                                hpx::launch::sync,
-                                local_input_partitions(1, 1).get_id()),
-                            local_input_partitions,
-                            kernel,
-                            functor);
-                    }
+                    return action(
+                        hpx::get_colocation_id(
+                            hpx::launch::sync,
+                            local_input_partitions(1, 1).get_id()),
+                        local_input_partitions,
+                        kernel,
+                        functor);
+                }
 
-                ),
-                "focal_partition"));
+            ));
     }
 
     // South-west corner partition
@@ -1448,27 +1483,25 @@ hpx::cout << ")(" << hpx::flush;
         output_partitions(nr_partitions0 - 1, 0) = hpx::when_all_n(
                 local_input_partitions.begin(),
                 local_input_partitions.nr_elements()).then(
-            hpx::util::annotated_function(
-                hpx::util::unwrapping(
+            hpx::util::unwrapping(
 
-                    [action, kernel, functor](
-                        auto&& partitions)
-                    {
-                        InputPartitions local_input_partitions{
-                            Shape{{3, 3}},
-                            partitions.begin(), partitions.end()};
+                [action, kernel, functor](
+                    auto&& partitions)
+                {
+                    InputPartitions local_input_partitions{
+                        Shape{{3, 3}},
+                        partitions.begin(), partitions.end()};
 
-                        return action(
-                            hpx::get_colocation_id(
-                                hpx::launch::sync,
-                                local_input_partitions(1, 1).get_id()),
-                            local_input_partitions,
-                            kernel,
-                            functor);
-                    }
+                    return action(
+                        hpx::get_colocation_id(
+                            hpx::launch::sync,
+                            local_input_partitions(1, 1).get_id()),
+                        local_input_partitions,
+                        kernel,
+                        functor);
+                }
 
-                ),
-                "focal_partition"));
+            ));
     }
 
     // South-east corner partition
@@ -1487,27 +1520,25 @@ hpx::cout << ")(" << hpx::flush;
         output_partitions(nr_partitions0 - 1, nr_partitions1 - 1) = hpx::when_all_n(
                 local_input_partitions.begin(),
                 local_input_partitions.nr_elements()).then(
-            hpx::util::annotated_function(
-                hpx::util::unwrapping(
+            hpx::util::unwrapping(
 
-                    [action, kernel, functor](
-                        auto&& partitions)
-                    {
-                        InputPartitions local_input_partitions{
-                            Shape{{3, 3}},
-                            partitions.begin(), partitions.end()};
+                [action, kernel, functor](
+                    auto&& partitions)
+                {
+                    InputPartitions local_input_partitions{
+                        Shape{{3, 3}},
+                        partitions.begin(), partitions.end()};
 
-                        return action(
-                            hpx::get_colocation_id(
-                                hpx::launch::sync,
-                                local_input_partitions(1, 1).get_id()),
-                            local_input_partitions,
-                            kernel,
-                            functor);
-                    }
+                    return action(
+                        hpx::get_colocation_id(
+                            hpx::launch::sync,
+                            local_input_partitions(1, 1).get_id()),
+                        local_input_partitions,
+                        kernel,
+                        functor);
+                }
 
-                ),
-                "focal_partition"));
+            ));
     }
 
 
@@ -1553,27 +1584,26 @@ hpx::cout << ")(" << hpx::flush;
             output_partitions(0, c) = hpx::when_all_n(
                     local_input_partitions.begin(),
                     local_input_partitions.nr_elements()).then(
-                hpx::util::annotated_function(
-                    hpx::util::unwrapping(
+                hpx::util::unwrapping(
 
-                        [action, kernel, functor](
-                            auto&& partitions)
-                        {
-                            InputPartitions local_input_partitions{
-                                Shape{{3, 3}},
-                                partitions.begin(), partitions.end()};
+                    [action, kernel, functor](
+                        auto&& partitions)
+                    {
+                        InputPartitions local_input_partitions{
+                            Shape{{3, 3}},
+                            partitions.begin(), partitions.end()};
 
-                            return action(
-                                hpx::get_colocation_id(
-                                    hpx::launch::sync,
-                                    local_input_partitions(1, 1).get_id()),
-                                local_input_partitions,
-                                kernel,
-                                functor);
-                        }
+                        return action(
+                            hpx::get_colocation_id(
+                                hpx::launch::sync,
+                                local_input_partitions(1, 1).get_id()),
+                            local_input_partitions,
+                            kernel,
+                            functor);
+                    }
 
-                    ),
-                    "focal_partition"));
+                ));
+
         }
     }
 
@@ -1595,27 +1625,26 @@ hpx::cout << ")(" << hpx::flush;
             output_partitions(nr_partitions0 - 1, c) = hpx::when_all_n(
                     local_input_partitions.begin(),
                     local_input_partitions.nr_elements()).then(
-                hpx::util::annotated_function(
-                    hpx::util::unwrapping(
+                hpx::util::unwrapping(
 
-                        [action, kernel, functor](
-                            auto&& partitions)
-                        {
-                            InputPartitions local_input_partitions{
-                                Shape{{3, 3}},
-                                partitions.begin(), partitions.end()};
+                    [action, kernel, functor](
+                        auto&& partitions)
+                    {
+                        InputPartitions local_input_partitions{
+                            Shape{{3, 3}},
+                            partitions.begin(), partitions.end()};
 
-                            return action(
-                                hpx::get_colocation_id(
-                                    hpx::launch::sync,
-                                    local_input_partitions(1, 1).get_id()),
-                                local_input_partitions,
-                                kernel,
-                                functor);
-                        }
+                        return action(
+                            hpx::get_colocation_id(
+                                hpx::launch::sync,
+                                local_input_partitions(1, 1).get_id()),
+                            local_input_partitions,
+                            kernel,
+                            functor);
+                    }
 
-                    ),
-                    "focal_partition"));
+                ));
+
         }
     }
 
@@ -1653,27 +1682,26 @@ hpx::cout << ")(" << hpx::flush;
             output_partitions(r, 0) = hpx::when_all_n(
                     local_input_partitions.begin(),
                     local_input_partitions.nr_elements()).then(
-                hpx::util::annotated_function(
-                    hpx::util::unwrapping(
+                hpx::util::unwrapping(
 
-                        [action, kernel, functor](
-                            auto&& partitions)
-                        {
-                            InputPartitions local_input_partitions{
-                                Shape{{3, 3}},
-                                partitions.begin(), partitions.end()};
+                    [action, kernel, functor](
+                        auto&& partitions)
+                    {
+                        InputPartitions local_input_partitions{
+                            Shape{{3, 3}},
+                            partitions.begin(), partitions.end()};
 
-                            return action(
-                                hpx::get_colocation_id(
-                                    hpx::launch::sync,
-                                    local_input_partitions(1, 1).get_id()),
-                                local_input_partitions,
-                                kernel,
-                                functor);
-                        }
+                        return action(
+                            hpx::get_colocation_id(
+                                hpx::launch::sync,
+                                local_input_partitions(1, 1).get_id()),
+                            local_input_partitions,
+                            kernel,
+                            functor);
+                    }
 
-                    ),
-                    "focal_partition"));
+                ));
+
         }
     }
 
@@ -1704,27 +1732,26 @@ hpx::cout << ")(" << hpx::flush;
             output_partitions(r, nr_partitions1 - 1) = hpx::when_all_n(
                     local_input_partitions.begin(),
                     local_input_partitions.nr_elements()).then(
-                hpx::util::annotated_function(
-                    hpx::util::unwrapping(
+                hpx::util::unwrapping(
 
-                        [action, kernel, functor](
-                            auto&& partitions)
-                        {
-                            InputPartitions local_input_partitions{
-                                Shape{{3, 3}},
-                                partitions.begin(), partitions.end()};
+                    [action, kernel, functor](
+                        auto&& partitions)
+                    {
+                        InputPartitions local_input_partitions{
+                            Shape{{3, 3}},
+                            partitions.begin(), partitions.end()};
 
-                            return action(
-                                hpx::get_colocation_id(
-                                    hpx::launch::sync,
-                                    local_input_partitions(1, 1).get_id()),
-                                local_input_partitions,
-                                kernel,
-                                functor);
-                        }
+                        return action(
+                            hpx::get_colocation_id(
+                                hpx::launch::sync,
+                                local_input_partitions(1, 1).get_id()),
+                            local_input_partitions,
+                            kernel,
+                            functor);
+                    }
 
-                    ),
-                    "focal_partition"));
+                ));
+
         }
     }
 
@@ -1750,27 +1777,25 @@ hpx::cout << ")(" << hpx::flush;
             output_partitions(r, c) = hpx::when_all_n(
                     local_input_partitions.begin(),
                     local_input_partitions.nr_elements()).then(
-                hpx::util::annotated_function(
-                    hpx::util::unwrapping(
+                hpx::util::unwrapping(
 
-                        [action, kernel, functor](
-                            auto&& partitions)
-                        {
-                            InputPartitions local_input_partitions{
-                                Shape{{3, 3}},
-                                partitions.begin(), partitions.end()};
+                    [action, kernel, functor](
+                        auto&& partitions)
+                    {
+                        InputPartitions local_input_partitions{
+                            Shape{{3, 3}},
+                            partitions.begin(), partitions.end()};
 
-                            return action(
-                                hpx::get_colocation_id(
-                                    hpx::launch::sync,
-                                    local_input_partitions(1, 1).get_id()),
-                                local_input_partitions,
-                                kernel,
-                                functor);
-                        }
+                        return action(
+                            hpx::get_colocation_id(
+                                hpx::launch::sync,
+                                local_input_partitions(1, 1).get_id()),
+                            local_input_partitions,
+                            kernel,
+                            functor);
+                    }
 
-                    ),
-                    "focal_partition"));
+                ));
         }
     }
 

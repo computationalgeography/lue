@@ -348,6 +348,7 @@ hpx::future<typename ArrayPartition<Element, rank>::Data>
     ArrayPartition<Element, rank>::data(
         CopyMode const mode) const
 {
+    assert(this->get_id());
     assert(
         // In case copy mode is share, we and the server instance must be
         // located on the same locality
@@ -379,6 +380,8 @@ hpx::future<typename ArrayPartition<Element, rank>::Data>
     ArrayPartition<Element, rank>::slice(
         Slices const& slices) const
 {
+    assert(this->get_id());
+
     typename Server::SliceAction action;
 
     // this->get_id() identifies the server instance
@@ -391,6 +394,8 @@ template<
     Rank rank>
 hpx::future<Count> ArrayPartition<Element, rank>::nr_elements() const
 {
+    assert(this->get_id());
+
     typename Server::NrElementsAction action;
 
     // this->get_id() identifies the server instance
@@ -404,6 +409,8 @@ template<
 hpx::future<typename ArrayPartition<Element, rank>::Shape>
     ArrayPartition<Element, rank>::shape() const
 {
+    assert(this->get_id());
+
     typename Server::ShapeAction action;
 
     // this->get_id() identifies the server instance
@@ -420,6 +427,8 @@ template<
 hpx::future<void> ArrayPartition<Element, rank>::fill(
     Element const value)
 {
+    assert(this->get_id());
+
     typename Server::FillAction action;
 
     // this->get_id() identifies the server instance
@@ -437,6 +446,8 @@ hpx::future<void> ArrayPartition<Element, rank>::set_data(
     Data const& data,
     CopyMode const mode)
 {
+    assert(this->get_id());
+
     assert(
         // In case copy mode is share, we and the server instance must be
         // located on the same locality
@@ -474,6 +485,8 @@ template<
 hpx::future<void> ArrayPartition<Element, rank>::reshape(
     Shape const& shape)
 {
+    assert(this->get_id());
+
     typename Server::ReshapeAction action;
 
     // this->get_id() identifies the server instance
