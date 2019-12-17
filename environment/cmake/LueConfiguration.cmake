@@ -278,7 +278,7 @@ if(DEVBASE_HPX_REQUIRED)
 
         FetchContent_Declare(hpx
             GIT_REPOSITORY ${hpx_repository}
-            GIT_TAG 1e3cfa0  # 1.4.0-rc2
+            GIT_TAG bbc3ad7  # HPX-1.4.0-rc2 + APEX link fix
         )
 
         FetchContent_MakeAvailable(hpx)
