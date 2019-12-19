@@ -5,7 +5,11 @@ channels:
 dependencies:
 - conan
 - docopt
+- matplotlib
+- ipython
 - numpy  # =1.12
-- python=2.7
+- pandas
+- python  # =3.7
+- seaborn
 - setuptools
 - sphinx
