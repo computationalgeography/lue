@@ -40,7 +40,7 @@ public:
 
                    PartitionedArray    (PartitionedArray const& other)=delete;
 
-                   PartitionedArray    (PartitionedArray&& other)=delete;
+                   PartitionedArray    (PartitionedArray&& other)=default;
 
     explicit       PartitionedArray    (Shape const& shape);
 
@@ -1033,15 +1033,6 @@ ShapeT<PartitionedArray<Element, rank>> shape_in_partitions(
 }
 
 
-// template<
-//     typename Element,
-//     Rank rank>
-// typename PartitionedArray<Element, rank>::Count nr_partitions(
-//     PartitionedArray<Element, rank> const& array)
-// {
-//     return array.nr_partitions();
-// }
-
 template<
     typename Element,
     Rank rank>
@@ -1049,6 +1040,16 @@ Count nr_partitions(
     PartitionedArray<Element, rank> const& array)
 {
     return array.nr_partitions();
+}
+
+
+template<
+    typename Element,
+    Rank rank>
+Count nr_partitions(
+    ArrayPartitionData<ArrayPartition<Element, rank>, rank> const& partitions)
+{
+    return partitions.nr_elements();
 }
 
 

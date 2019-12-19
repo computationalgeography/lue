@@ -2,7 +2,6 @@
 #include "lue/framework/core/array.hpp"
 #include "lue/framework/core/define.hpp"
 #include <hpx/include/lcos.hpp>
-#include <hpx/include/iostreams.hpp>
 
 
 namespace lue {
@@ -1071,7 +1070,6 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
     Kernel const& kernel,
     Functor const& functor)
 {
-hpx::cout << '[' << hpx::flush;
     static_assert(lue::rank<Array> == 2);
 
     using InputArray = Array;
@@ -1101,7 +1099,6 @@ hpx::cout << '[' << hpx::flush;
 
 
 
-hpx::cout << '(' << hpx::flush;
     // -------------------------------------------------------------------------
     // Create a halo of temporary partitions that are used in the
     // convolution of the partitions along the borders of the
@@ -1125,7 +1122,6 @@ hpx::cout << '(' << hpx::flush;
     //     +----+----+
     InputPartitions halo_corner_partitions{Shape{{2, 2}}};
 
-hpx::cout << "{" << hpx::flush;
     // North-west corner halo partition
     halo_corner_partitions(0, 0) = hpx::dataflow(
         hpx::launch::async,
@@ -1144,7 +1140,6 @@ hpx::cout << "{" << hpx::flush;
 
                 "halo_corner_partition"),
         input_array.partitions()(0, 0));
-hpx::cout << "}{" << hpx::flush;
 
     // North-east corner halo partition
     halo_corner_partitions(0, 1) = hpx::dataflow(
@@ -1176,7 +1171,6 @@ hpx::cout << "}{" << hpx::flush;
     //         }
 
     //     ));
-hpx::cout << "}{" << hpx::flush;
 
     // South-west corner halo partition
     halo_corner_partitions(1, 0) = hpx::dataflow(
@@ -1208,7 +1202,6 @@ hpx::cout << "}{" << hpx::flush;
     //         }
 
     //     ));
-hpx::cout << "}{" << hpx::flush;
 
     // South-east corner halo partition
     halo_corner_partitions(1, 1) = hpx::dataflow(
@@ -1240,7 +1233,6 @@ hpx::cout << "}{" << hpx::flush;
     //         }
 
     //     ));
-hpx::cout << "}{" << hpx::flush;
 
     // Longitudinal side halo partitions
     //     +---+---+---+
@@ -1277,7 +1269,6 @@ hpx::cout << "}{" << hpx::flush;
 
         }
     }
-hpx::cout << "}{" << hpx::flush;
 
     // Latitudinal sides halo partitions
     //     +---+---+
@@ -1318,9 +1309,7 @@ hpx::cout << "}{" << hpx::flush;
 
         }
     }
-hpx::cout << "}" << hpx::flush;
 
-hpx::cout << ")(" << hpx::flush;
     // -------------------------------------------------------------------------
     // Iterate over all partitions. Per partition determine the collection
     // of neighboring partitions, and asynchronously call the algorithm
@@ -1799,7 +1788,6 @@ hpx::cout << ")(" << hpx::flush;
         }
     }
 
-hpx::cout << ")]" << hpx::flush;
     return OutputArray{shape(input_array), std::move(output_partitions)};
 }
 

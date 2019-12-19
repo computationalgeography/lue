@@ -99,15 +99,17 @@ template<
     static_assert(rank == 2);
 
     using Array_ = Array<Element, rank>;
+    using Partitions = PartitionsT<Array_>;
     using InputPartition = PartitionT<Array_>;
     using Shape = ShapeT<InputPartition>;
 
-    auto const nr_partitions = lue::nr_partitions(array);
+    Partitions& partitions = array.partitions();
+    Count const nr_partitions = lue::nr_partitions(partitions);
 
     std::vector<hpx::future<Shape>> partition_shapes(nr_partitions);
 
     for(Index p = 0; p < nr_partitions; ++p) {
-        InputPartition& partition = array.partitions()[p];
+        InputPartition& partition = partitions[p];
         partition_shapes[p] = partition.shape();
     }
 
@@ -117,12 +119,12 @@ template<
             start_value).then(
         hpx::util::unwrapping(
 
-            [array](
+            // Copy partitions. This is similar to copying shared pointers.
+            [partitions, array_shape=array.shape()](
                 auto&& data)
             {
-                auto const nr_partitions = lue::nr_partitions(array);
-                auto const [nr_partitions0, nr_partitions1] =
-                    array.partitions().shape();
+                auto const nr_partitions = lue::nr_partitions(partitions);
+                auto const [nr_partitions0, nr_partitions1] = partitions.shape();
 
                 auto partition_shapes_futures = hpx::util::get<0>(data).get();
                 std::vector<Shape> partition_shapes(nr_partitions);
@@ -143,7 +145,7 @@ template<
 
                 Element start_value = hpx::util::get<1>(data).get();
 
-                Count const stride = std::get<1>(array.shape());
+                Count const stride = std::get<1>(array_shape);
 
                 RangePartitionAction<InputPartition> action;
                 std::vector<hpx::future<void>> range_partitions(nr_partitions);
@@ -171,7 +173,7 @@ template<
                                     stride);
                             },
 
-                            array.partitions()(idx0, idx1));
+                            partitions(idx0, idx1));
 
                         start_value += partition_nr_elements0;
                     }

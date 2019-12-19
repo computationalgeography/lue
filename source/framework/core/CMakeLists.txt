@@ -10,8 +10,8 @@ add_library(lue::framework_core ALIAS lue_framework_core)
 
 hpx_setup_target(lue_framework_core
     TYPE LIBRARY
-    COMPONENT_DEPENDENCIES
-        iostreams
+    # COMPONENT_DEPENDENCIES
+    #     iostreams
 )
 
 target_include_directories(lue_framework_core SYSTEM
