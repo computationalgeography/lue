@@ -20,9 +20,9 @@ template<
     std::size_t rank>
 void focal_mean(
     Task const& task,
-    std::size_t const max_tree_depth)
+    std::size_t const /* max_tree_depth */)
 {
-    assert(max_tree_depth > 0);
+    // assert(max_tree_depth > 0);
 
     using Array = PartitionedArray<Element, rank>;
     using Shape = typename Array::Shape;
