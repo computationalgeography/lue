@@ -1,0 +1,15 @@
+{
+    "nr_time_steps": 25,
+    "max_tree_depth": 5,
+    "array": {
+        "shape": [50000, 50000]
+    },
+    "partition": {
+        "shape": [400, 400],
+        "range": {
+            # > 2264 x 2264
+            "max_nr_elements": 5130000,
+            "multiplier": 2
+        }
+    }
+}

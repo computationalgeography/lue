@@ -1,4 +1,6 @@
 {
     "name": "gransasso",
-    "job_scheduler": "shell"
+    "scheduler": {
+        "kind": "shell"
+    }
 }

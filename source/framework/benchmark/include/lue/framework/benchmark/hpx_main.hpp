@@ -5,6 +5,7 @@
 #include "lue/framework/core/debug.hpp"
 #include <hpx/hpx_finalize.hpp>
 #include <hpx/hpx_init.hpp>
+#include <hpx/include/lcos.hpp>
 #ifdef HPX_WITH_APEX
     #include <apex_api.hpp>
     #define register_apex_print_options() \
@@ -81,12 +82,20 @@ inline void run_hpx_benchmark(
 }  // namespace lue
 
 
+// MS:
+// Because of some changes in APEX the task names in the OTF file get the
+// first name of the task. We don't have a good solution for this yet. As
+// a hack ... → KDJ: see annotate_function and yield below
+
 #define LUE_CONFIGURE_HPX_BENCHMARK(                                           \
     configuration)                                                             \
 int hpx_main(                                                                  \
     int argc,                                                                  \
     char* argv[])                                                              \
 {                                                                              \
+    hpx::util::annotate_function annotation("hpx_main");                       \
+    hpx::this_thread::yield();                                                 \
+                                                                               \
     std::cout << lue::system_description().get() << std::endl;                 \
                                                                                \
     std::string const pathname =                                               \

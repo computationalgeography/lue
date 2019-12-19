@@ -1002,13 +1002,7 @@ def post_process_results(
     Post-process the results of executing the benchmark script generated
     by the generate_script function
     """
-    job_scheduler = cluster_settings_json["job_scheduler"]
-    assert job_scheduler in ["shell", "slurm"]
-
-    if job_scheduler == "slurm":
-        cluster = SlurmCluster(cluster_settings_json)
-    elif job_scheduler == "shell":
-        cluster = ShellCluster(cluster_settings_json)
+    cluster = Cluster(cluster_settings_json)
 
     benchmark = Benchmark(benchmark_settings_json, cluster)
     experiment = StrongScalingExperiment(

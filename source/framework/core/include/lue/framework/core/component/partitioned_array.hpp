@@ -38,6 +38,10 @@ public:
 
                    PartitionedArray    ();
 
+                   PartitionedArray    (PartitionedArray const& other)=delete;
+
+                   PartitionedArray    (PartitionedArray&& other)=delete;
+
     explicit       PartitionedArray    (Shape const& shape);
 
                    PartitionedArray    (Shape const& shape,
@@ -47,6 +51,10 @@ public:
                                         Partitions&& partitions);
 
                    ~PartitionedArray   ()=default;
+
+    PartitionedArray& operator=        (PartitionedArray const& other)=delete;
+
+    PartitionedArray& operator=        (PartitionedArray&& other)=default;
 
     Count          nr_elements         () const;
 
@@ -298,19 +306,38 @@ public:
 
     void operator()()
     {
-        PartitionT<Partitions>& partition = this->partition();
+        using Partition = PartitionT<Partitions>;
+        using Shape = ShapeT<Partitions>;
 
-        ShapeT<Partitions> shrinked_partition_shape{partition.shape().get()};
+        Partition& partition = this->partition();
 
-        Count const rank = static_cast<Count>(lue::rank<Partitions>);
+        partition = hpx::dataflow(
+            hpx::launch::async,
+            hpx::util::annotated_function(
 
-        for(Index i = 0; i < rank; ++i) {
-            shrinked_partition_shape[i] =
-                std::min(shrinked_partition_shape[i], _new_shape[i]);
-        }
+                [new_shape=this->_new_shape](
+                    Partition&& partition,
+                    hpx::future<Shape>&& f_partition_shape)
+                {
+                    Shape partition_shape = f_partition_shape.get();
+                    Count const rank = static_cast<Count>(lue::rank<Partitions>);
 
-        // TODO Blocks current thread. Maybe wait in destructor?
-        partition.reshape(shrinked_partition_shape).wait();
+                    for(Index i = 0; i < rank; ++i) {
+                        partition_shape[i] =
+                            std::min(partition_shape[i], new_shape[i]);
+                    }
+
+                    // FIXME Blocks current thread... Is this a problem?
+                    partition.reshape(partition_shape).wait();
+
+                    return partition;
+                },
+
+                "shrink_partition"
+            ),
+            partition,
+            partition.shape());
+
     }
 
 private:
@@ -437,38 +464,114 @@ void PartitionedArray<Element, rank>::create(
     Count const nr_localities = localities.size();
 
     assert(nr_localities > 0);
-    assert(nr_partitions >= nr_localities);
+
+    if(nr_partitions < nr_localities) {
+        throw std::runtime_error(fmt::format(
+            "Not enough partitions to use all localities ({} < {})",
+            nr_partitions, nr_localities));
+    }
 
     assert(hpx::find_here() == hpx::find_root_locality());
     assert(localities[0] == hpx::find_root_locality());
 
-    // Don't put partitions on the root locality where the main tasks
-    // are created. This might be faster.
-    auto locality_idx =
-        [nr_partitions, nr_localities](
-            Index const p) -> Index
-        {
-            // return nr_localities == 1 ? 0 :
-            //     map_to_range(0lu, nr_partitions - 1, 1lu, nr_localities - 1, p);
+    // create_partitions(max_partition_shape);
+    {
+        auto locality_idx =
+            [nr_partitions, nr_localities](
+                Index const p) -> Index
+            {
+                return map_to_range(
+                    Index{0}, nr_partitions - 1,
+                    Index{0}, nr_localities - 1,
+                    p);
+            };
 
-            return map_to_range(
-                Index{0}, nr_partitions - 1, Index{0}, nr_localities - 1, p);
-        };
+        // Create array partitions. Each of them will be located on a certain
+        // locality. Which one exactly is determined by locality_idx.
+        for(Index partition_idx = 0; partition_idx < nr_partitions;
+                ++partition_idx) {
 
-    // Create array partitions. Each of them will be located on a certain
-    // locality. Which one exactly is determined by locality_idx.
-    for(Index partition_idx = 0; partition_idx < nr_partitions;
-            ++partition_idx) {
+            auto idx = locality_idx(partition_idx);
+            auto locality = localities[idx];
 
-        auto idx = locality_idx(partition_idx);
+            // _partitions[partition_idx] = Partition{
+            //     localities[idx], max_partition_shape};
 
-        // assert((nr_localities == 1 && idx == 0) || idx > 0);
+            // Assign a future to a partition component to a partition
+            // component. The partition will become ready once it is
+            // allocated.
+            _partitions[partition_idx] = hpx::async(
+                hpx::util::annotated_function(
 
-        _partitions[partition_idx] = Partition{
-            localities[idx], max_partition_shape};
+                    [locality, max_partition_shape]()
+                    {
+                        return Partition{locality, max_partition_shape};
+                    },
+
+                "instantiate_partition"));
+
+        }
 
     }
 
+    clamp_array(shape_in_partitions, max_partition_shape);
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // if(nr_localities == 1) {
+    //     // hpx::future<std::vector<client_type>> f =
+    //     //         hpx::new_<client_type[]>(here, num, ...);
+
+    //     using Partition = PartitionT<Partitions>;
+
+    //     hpx::future<std::vector<Partition>> f =
+    //         hpx::new_<Partition[]>(
+    //             hpx::find_here(), nr_partitions, max_partition_shape);
+
+    //     f.wait();
+    //     auto new_partitions = f.get();
+
+    //     std::move(
+    //         new_partitions.begin(), new_partitions.end(), _partitions.begin());
+    // }
+    // else {
+    //     // Don't put partitions on the root locality where the main tasks
+    //     // are created. This might be faster.
+    //     auto locality_idx =
+    //         [nr_partitions, nr_localities](
+    //             Index const p) -> Index
+    //         {
+    //             // return nr_localities == 1 ? 0 :
+    //             //     map_to_range(0lu, nr_partitions - 1, 1lu, nr_localities - 1, p);
+
+    //             return map_to_range(
+    //                 Index{0}, nr_partitions - 1, Index{0}, nr_localities - 1, p);
+    //         };
+
+    //     // Create array partitions. Each of them will be located on a certain
+    //     // locality. Which one exactly is determined by locality_idx.
+    //     for(Index partition_idx = 0; partition_idx < nr_partitions;
+    //             ++partition_idx) {
+
+    //         auto idx = locality_idx(partition_idx);
+
+    //         // assert((nr_localities == 1 && idx == 0) || idx > 0);
+
+    //         _partitions[partition_idx] = Partition{
+    //             localities[idx], max_partition_shape};
+
+    //     }
+    // }
 
 
 
@@ -515,7 +618,9 @@ void PartitionedArray<Element, rank>::create(
 
     /// HPX_ASSERT(partition_idx == nr_partitions);
 
-    clamp_array(shape_in_partitions, max_partition_shape);
+
+
+    // clamp_array(shape_in_partitions, max_partition_shape);
 
 
 

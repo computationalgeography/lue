@@ -18,17 +18,14 @@ import os.path
 ###     # return result
 
 
-def srun_configuration():
+def srun_configuration(
+        cluster):
     """
     Return common arguments to the srun command used to start the program
     being benchmarked
     """
-    # The mpi switch is needed because support for mpich is not built-in
-    # to slurm, it seems
-
-    return \
-        "--kill-on-bad-exit " \
-        "--mpi=pmi2 "
+    assert cluster.scheduler.kind == "slurm"
+    return " ".join(cluster.scheduler.settings.srun_options)
 
 
 def program_configuration(
@@ -168,10 +165,12 @@ def create_slurm_script(
 set -e
 
 module purge
+module load opt/all
 module load userspace/all
 module load gcc/7.2.0
 module load boost/gcc72/1.65.1
 module load mpich/gcc72/mlnx/3.2.1
+module load libraries/papi/5.7.0
 
 {job_steps}""".format(
         nr_nodes=nr_nodes,

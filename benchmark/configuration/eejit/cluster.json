@@ -1,7 +1,21 @@
 {
     "name": "eejit",
-    "job_scheduler": "slurm",
-    "partition_name": "allq",
+    "scheduler": {
+        "kind": "slurm",
+        "settings": {
+            "partition": "allq",
+            "sbatch_options": [
+                "--qos=priority"
+            ],
+            "srun_options": [
+                "--kill-on-bad-exit",
+                # The mpi switch is needed because support for mpich is
+                # not built-in to slurm, it seems
+                "--mpi=pmi2",
+                "--qos=priority"
+            ]
+        }
+    },
     "node": {
         "nr_packages": 2,
         "package": {

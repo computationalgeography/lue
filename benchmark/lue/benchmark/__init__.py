@@ -1,7 +1,7 @@
 from . import partition_shape
 from . import strong_scaling
 from . import weak_scaling
-import json
+from .util import json_to_data
 import math
 
 
@@ -34,11 +34,3 @@ def array_shape(
     elements_per_dimension = int(math.floor(elements_per_dimension))
 
     return rank * (elements_per_dimension,)
-
-
-def json_to_data(
-        pathname):
-    lines = open(pathname).readlines()
-    lines = "".join([line for line in lines if not line.strip().startswith("#")])
-
-    return json.loads(lines)

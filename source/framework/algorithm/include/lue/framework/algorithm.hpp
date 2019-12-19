@@ -18,6 +18,7 @@
 #include "lue/framework/algorithm/none.hpp"
 #include "lue/framework/algorithm/range.hpp"
 #include "lue/framework/algorithm/sum.hpp"
+#include "lue/framework/algorithm/sqrt.hpp"
 #include "lue/framework/algorithm/uniform.hpp"
 #include "lue/framework/algorithm/unique.hpp"
 #include "lue/framework/algorithm/unique_id.hpp"

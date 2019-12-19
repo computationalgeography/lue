@@ -59,26 +59,30 @@ public:
 
         return hpx::dataflow(
             hpx::launch::async,
-            hpx::util::unwrapping(
+            hpx::util::annotated_function(
+                hpx::util::unwrapping(
 
-                [
-                    distribution{std::move(distribution)},
-                    random_number_engine{std::move(random_number_engine)}
-                ] (
-                    InputData&& partition_data) mutable
-                {
-                    std::generate(
-                        partition_data.begin(), partition_data.end(),
+                    [
+                        distribution{std::move(distribution)},
+                        random_number_engine{std::move(random_number_engine)}
+                    ] (
+                        InputData&& partition_data) mutable
+                    {
+                        // Fill the data collection passed in
+                        std::generate(
+                            partition_data.begin(), partition_data.end(),
 
-                        [&]()
-                        {
-                            return distribution(random_number_engine);
-                        }
+                            [&]()
+                            {
+                                return distribution(random_number_engine);
+                            }
 
-                        );
-                }
+                            );
+                    }
 
-            ),
+                ),
+                "uniform_partition"),
+
             partition.data(CopyMode::share));
     }
 
@@ -145,22 +149,28 @@ template<
 
         futures[p] = hpx::dataflow(
             hpx::launch::async,
+            hpx::util::annotated_function(
 
-            [action](
-                Partition const& input_partition,
-                hpx::shared_future<Element> const& min_value,
-                hpx::shared_future<Element> const& max_value)
-            {
-                return action(
-                    hpx::get_colocation_id(
-                        hpx::launch::sync, input_partition.get_id()),
-                    input_partition,
-                    min_value.get(), max_value.get());
-            },
+                [action](
+                    Partition const& input_partition,
+                    hpx::shared_future<Element> const& min_value,
+                    hpx::shared_future<Element> const& max_value,
+                    hpx::future<hpx::id_type>&& locality_id)
+                {
+                    return action(
+                        // hpx::get_colocation_id(
+                        //     hpx::launch::sync, input_partition.get_id()),
+                        locality_id.get(),
+                        input_partition,
+                        min_value.get(), max_value.get());
+                },
+
+                "uniform_partition_call"),
 
             array.partitions()[p],
             min_value,
-            max_value);
+            max_value,
+            hpx::get_colocation_id(array.partitions()[p].get_id()));
 
     }
 

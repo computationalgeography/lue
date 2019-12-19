@@ -174,14 +174,15 @@ inline int Benchmark<Callable>::run()
 
     _timing.start();
     for(std::size_t i = 0; i < _environment.count(); ++i) {
+        std::this_thread::sleep_for(2s);
         stopwatch.start();
         _callable(_environment, _task);
         stopwatch.stop();
         _timings.push_back(stopwatch);
 
-        if(i < _environment.count() - 1) {
-            std::this_thread::sleep_for(5s);
-        }
+        // if(i < _environment.count() - 1) {
+        //     std::this_thread::sleep_for(5s);
+        // }
     }
     _timing.stop();
 

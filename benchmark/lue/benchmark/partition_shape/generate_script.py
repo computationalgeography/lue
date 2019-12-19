@@ -96,15 +96,6 @@ def generate_script_slurm(
         experiment,
         script_pathname):
 
-    ### assert benchmark.worker.type in ["node", "thread"]
-
-    ### if benchmark.worker.type == "thread":
-    ###     generate_script_slurm_threads(
-    ###         cluster, benchmark, experiment, script_pathname)
-    ### else:
-    ###     generate_script_slurm_nodes(
-    ###         cluster, benchmark, experiment, script_pathname)
-
     assert benchmark.worker.nr_nodes_range() == 0
     assert benchmark.worker.nr_threads_range() == 0
 
@@ -130,10 +121,12 @@ def generate_script_slurm(
                 # Run the benchmark, resulting in a json file
                 "srun {srun_configuration} {command_pathname} "
                         '--hpx:ini="hpx.parcel.mpi.enable=1" '
+                        '--hpx:ini="hpx.os_threads={nr_threads}" '
                         '{program_configuration}'
                     .format(
-                        srun_configuration=job.srun_configuration(),
+                        srun_configuration=job.srun_configuration(cluster),
                         command_pathname=experiment.command_pathname,
+                        nr_threads=benchmark.worker.nr_threads(),
                         program_configuration=job.program_configuration(
                             cluster, benchmark, experiment,
                             array_shape, partition_shape,
@@ -143,11 +136,11 @@ def generate_script_slurm(
 
     slurm_script = job.create_slurm_script(
         nr_nodes=benchmark.worker.nr_nodes(),
-        nr_threads=benchmark.worker.nr_threads(),
+        nr_threads=cluster.node.nr_threads(),  # Reserve all threads
         output_filename=experiment.result_pathname(
             cluster.name,
             os.path.basename(os.path.splitext(script_pathname)[0]), "out"),
-        partition_name=cluster.partition_name,
+        partition_name=cluster.scheduler.settings.partition_name,
         max_duration=experiment.max_duration,
         job_steps=job_steps)
 
@@ -161,8 +154,10 @@ def generate_script_slurm(
         "mkdir -p {}".format(experiment.workspace_pathname(cluster.name)),
         "",
         "# Submit job to SLURM scheduler",
-        "sbatch --job-name {job_name} << {delimiter}".format(
-            job_name=job_name, delimiter=delimiter),
+        "sbatch --job-name {job_name} {sbatch_options} << {delimiter}".format(
+            job_name=job_name,
+            sbatch_options=" ".join(cluster.scheduler.settings.sbatch_options),
+            delimiter=delimiter),
         slurm_script,
         "{delimiter}".format(delimiter=delimiter),
     ]
@@ -226,13 +221,7 @@ def generate_script(
     A shell script is created that submits jobs to the scheduler. Each
     job executes a benchmark and writes results to a JSON file.
     """
-    job_scheduler = cluster_settings_json["job_scheduler"]
-    assert job_scheduler in ["shell", "slurm"]
-
-    if job_scheduler == "slurm":
-        cluster = SlurmCluster(cluster_settings_json)
-    elif job_scheduler == "shell":
-        cluster = ShellCluster(cluster_settings_json)
+    cluster = Cluster(cluster_settings_json)
 
     benchmark = Benchmark(benchmark_settings_json, cluster)
     assert benchmark.worker.nr_benchmarks() == 1
@@ -242,7 +231,7 @@ def generate_script(
     experiment = PartitionShapeExperiment(
         experiment_settings_json, command_pathname)
 
-    if job_scheduler == "slurm":
+    if cluster.scheduler.kind == "slurm":
         generate_script_slurm(cluster, benchmark, experiment, script_pathname)
-    elif job_scheduler == "shell":
+    elif cluster.scheduler.kind == "shell":
         generate_script_shell(cluster, benchmark, experiment, script_pathname)
