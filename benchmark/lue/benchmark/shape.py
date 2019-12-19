@@ -119,7 +119,7 @@ def range_of_array_shapes(
     shapes = [shape(size, normalized_shape) for size in sizes]
 
     assert len(shapes) == 0 or nr_elements(shapes[-1]) <= max_nr_elements, \
-        shapes
+        "{}, {}".format(shapes, max_nr_elements)
 
     return shapes
 

@@ -1,16 +1,18 @@
 {
-    "nr_time_steps": 25,
+    "nr_time_steps": 20,
+    # "max_tree_depth": 5,
     "array": {
-# Single node
-#         "shape": [10000, 10000]
-# Cluster partition of n nodes
-        "shape": [20000, 20000]
+        # 8 nodes * 50.000 x 50.000
+        "shape": [125000, 125000]
     },
     "partition": {
-        "shape": [100, 100],
+        "shape": [400, 400],
         "range": {
             # 1600 x 1600
-            "max_nr_elements": 2560000,
+            # This size is not too large yet. Probably because of local
+            # operation. Simple model.
+            # "max_nr_elements": 2560000,
+            "max_nr_elements":   4000000,
             "multiplier": 2
         }
     }

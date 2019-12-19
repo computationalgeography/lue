@@ -69,7 +69,7 @@ def generate_script_slurm_threads(
                 '--hpx:ini="hpx.os_threads={nr_threads}" '
                 '{program_configuration}'
                 .format(
-                    srun_configuration=job.srun_configuration(),
+                    srun_configuration=job.srun_configuration(cluster),
                     command_pathname=experiment.command_pathname,
                     nr_threads=nr_workers,
                     program_configuration=job.program_configuration(
@@ -85,7 +85,7 @@ def generate_script_slurm_threads(
         output_filename=experiment.result_pathname(
             cluster.name,
             os.path.basename(os.path.splitext(script_pathname)[0]), "out"),
-        partition_name=cluster.partition_name,
+        partition_name=cluster.scheduler.settings.partition_name,
         max_duration=experiment.max_duration,
         job_steps=job_steps)
 
@@ -149,7 +149,7 @@ def generate_script_slurm_nodes(
                 '--hpx:ini="hpx.parcel.mpi.enable=1" '
                 '{program_configuration}'
                 .format(
-                    srun_configuration=job.srun_configuration(),
+                    srun_configuration=job.srun_configuration(cluster),
                     command_pathname=experiment.command_pathname,
                     program_configuration=job.program_configuration(
                         cluster, benchmark, experiment,
@@ -163,7 +163,7 @@ def generate_script_slurm_nodes(
             nr_threads=benchmark.worker.nr_threads(),
             output_filename=experiment.benchmark_result_pathname(
                 cluster.name, nr_workers, "out"),
-            partition_name=cluster.partition_name,
+            partition_name=cluster.scheduler.settings.partition_name,
             max_duration=experiment.max_duration,
             job_steps=job_steps)
 
@@ -274,13 +274,17 @@ def generate_script(
     A shell script is created that submits jobs to the scheduler. Each
     job executes a benchmark and writes results to a JSON file.
     """
-    job_scheduler = cluster_settings_json["job_scheduler"]
-    assert job_scheduler in ["shell", "slurm"]
 
-    if job_scheduler == "slurm":
-        cluster = SlurmCluster(cluster_settings_json)
-    elif job_scheduler == "shell":
-        cluster = ShellCluster(cluster_settings_json)
+    cluster = Cluster(cluster_settings_json)
+
+
+    ### job_scheduler = cluster_settings_json["job_scheduler"]
+    ### assert job_scheduler in ["shell", "slurm"]
+
+    ### if job_scheduler == "slurm":
+    ###     cluster = SlurmCluster(cluster_settings_json)
+    ### elif job_scheduler == "shell":
+    ###     cluster = ShellCluster(cluster_settings_json)
 
     benchmark = Benchmark(benchmark_settings_json, cluster)
     assert \
@@ -293,7 +297,7 @@ def generate_script(
     experiment = WeakScalingExperiment(
         experiment_settings_json, command_pathname)
 
-    if job_scheduler == "slurm":
+    if cluster.scheduler.kind == "slurm":
         generate_script_slurm(cluster, benchmark, experiment, script_pathname)
-    elif job_scheduler == "shell":
+    elif cluster.scheduler.kind == "shell":
         generate_script_shell(cluster, benchmark, experiment, script_pathname)

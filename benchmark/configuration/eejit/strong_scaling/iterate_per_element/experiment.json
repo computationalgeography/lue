@@ -1,9 +1,12 @@
 {
-    "nr_time_steps": 25,
+    "nr_time_steps": 20,
     "array": {
-        "shape": [20000, 20000]
+        # scale over threads
+        # "shape": [20000, 20000]
+        # scale over nodes
+        "shape": [80000, 80000]
     },
     "partition": {
-        "shape": [320, 320]
+        "shape": [1000, 1000]
     }
 }

@@ -1,17 +1,3 @@
-class Cluster(object):
-
-    def __init__(self, json):
-
-        self.name = json["name"]
-
-
-class ShellCluster(Cluster):
-
-    def __init__(self, json):
-
-        Cluster.__init__(self, json)
-
-
 class Core(object):
 
     def __init__(self, json):
@@ -75,17 +61,49 @@ class Node(object):
         return self.nr_packages * self.package.nr_threads()
 
 
-class SlurmCluster(Cluster):
+class Scheduler(object):
 
     def __init__(self, json):
 
-        Cluster.__init__(self, json)
-        self.partition_name = json["partition_name"]
-        self.node = Node(json["node"])
+        self.kind = json["kind"]
 
-    def __str__(self):
-        return "SlurmCluster(partition_name={}, node={})" \
-            .format(
-                self.partition_name,
-                self.node,
-            )
+
+class ShellScheduler(Scheduler):
+
+    def __init__(self, json):
+
+        Scheduler.__init__(self, json)
+
+
+class SlurmSettings(object):
+
+    def __init__(self, json):
+
+        self.partition_name = json["partition"]
+        self.sbatch_options = \
+            json["sbatch_options"] if "sbatch_options" in json else ""
+        self.srun_options = \
+            json["srun_options"] if "srun_options" in json else ""
+
+
+class SlurmScheduler(Scheduler):
+
+    def __init__(self, json):
+
+        Scheduler.__init__(self, json)
+        self.settings = SlurmSettings(json["settings"])
+
+
+class Cluster(object):
+
+    def __init__(self, json):
+
+        self.name = json["name"]
+        scheduler_json = json["scheduler"]
+        scheduler_kind = scheduler_json["kind"]
+
+        if scheduler_kind == "shell":
+            self.scheduler = ShellScheduler(scheduler_json)
+        elif scheduler_kind == "slurm":
+            self.scheduler = SlurmScheduler(scheduler_json)
+            self.node = Node(json["node"])

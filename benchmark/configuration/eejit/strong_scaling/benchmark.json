@@ -1,139 +1,139 @@
 {
     "count": 1,
-# Cluster settings
-    "worker": {
-        "type": "node",
-        "pool": {
-            "min_size": 1,
-            "max_size": 8,
-            "multiplier": 2
-        }
-    },
-# Node settings
+# # Cluster settings
 #     "worker": {
-#         "type": "thread",
+#         "type": "node",
 #         "pool": {
 #             "min_size": 1,
-#             "max_size": 64,
-#             "multiplier": 2
+#             "max_size": 19,
+#             "incrementor": 3
 #         }
 #     },
-    "hpx": {
-        "performance_counters": [
-            {
-                "print-counter-interval": 100
-            },
-            {
-                "print-counter": [
-
-###                     "/agas/count/cache/entries",
-### 
-###                     "/agas/count/cache/evictions",
-###                     "/agas/count/cache/hits",
-###                     "/agas/count/cache/insertions",
-###                     "/agas/count/cache/misses",
-### 
-###                     "/agas/count/cache/get_entry",
-###                     "/agas/count/cache/insert_entry",
-###                     "/agas/count/cache/update_entry",
-###                     "/agas/count/cache/erase_entry",
-### 
-###                     "/agas/time/cache/get_entry",
-###                     "/agas/time/cache/insert_entry",
-###                     "/agas/time/cache/update_entry",
-###                     "/agas/time/cache/erase_entry",
-### 
-###                     # "/runtime/uptime",
-
-                    "/threads{locality#*/pool#*/worker-thread#*}/idle-rate",
-
-                    "/threads/time/average",
-                    "/threads/time/average-overhead",
-                    "/threads/time/average-phase",
-                    "/threads/time/average-phase-overhead",
-                    "/threads{locality#*/pool#*/worker-thread#*}/time/cumulative",
-                    "/threads{locality#*/pool#*/worker-thread#*}/time/cumulative-overhead",
-                    "/threads{locality#*/pool#*/worker-thread#*}/time/overall",
-
-                    "/threads{locality#*/pool#*/worker-thread#*}/count/instantaneous/active",
-                    "/threads{locality#*/pool#*/worker-thread#*}/count/instantaneous/all",
-                    "/threads{locality#*/pool#*/worker-thread#*}/count/instantaneous/pending",
-                    "/threads{locality#*/pool#*/worker-thread#*}/count/instantaneous/staged",
-                    "/threads{locality#*/pool#*/worker-thread#*}/count/instantaneous/suspended",
-                    "/threads{locality#*/pool#*/worker-thread#*}/count/instantaneous/terminated"
-                ]
-            },
-            {
-                "print-counter-reset": [
-###                     "/agas/count/route",
-###                     "/agas/count/bind_gid",
-###                     "/agas/count/resolve_gid",
-###                     "/agas/count/unbind_gid",
-###                     "/agas/count/increment_credit",
-###                     "/agas/count/decrement_credit",
-###                     "/agas/count/allocate",
-###                     "/agas/count/begin_migration",
-###                     "/agas/count/end_migration",
-### 
-###                     "/agas/count/bind_prefix",
-###                     "/agas/count/bind_name",
-###                     "/agas/count/resolve_id",
-###                     "/agas/count/unbind_name",
-###                     "/agas/count/iterate_types",
-###                     "/agas/count/get_component_typename",
-###                     "/agas/count/num_localities_type",
-### 
-###                     "/agas/count/free",
-###                     "/agas/count/localities",
-###                     "/agas/count/num_localities",
-###                     "/agas/count/num_threads",
-###                     "/agas/count/resolve_locality",
-###                     # "/agas/count/resolved_localities",
-### 
-###                     "/agas/count/bind",
-###                     "/agas/count/resolve",
-###                     "/agas/count/unbind",
-###                     "/agas/count/iterate_names",
-###                     "/agas/count/on_symbol_namespace_event",
-### 
-###                     "/agas/component/count",
-###                     "/agas/locality/count",
-###                     "/agas/symbol/count",
-
-                    "/parcels/count/routed",
-                    "/parcelqueue/length/receive",
-                    "/parcelqueue/length/send",
-
-###                     "/runtime/count/action-invocation",
-###                     "/runtime/count/component@ArrayPartitionServer_bool_0",
-###                     "/runtime/count/component@ArrayPartitionServer_bool_1",
-###                     "/runtime/count/component@ArrayPartitionServer_bool_2",
-###                     "/runtime/count/component@ArrayPartitionServer_double_0",
-###                     "/runtime/count/component@ArrayPartitionServer_double_1",
-###                     "/runtime/count/component@ArrayPartitionServer_double_2",
-###                     "/runtime/count/component@ArrayPartitionServer_int32_t_0",
-###                     "/runtime/count/component@ArrayPartitionServer_int32_t_1",
-###                     "/runtime/count/component@ArrayPartitionServer_int32_t_2",
-###                     "/runtime/count/component@ArrayPartitionServer_int64_t_0",
-###                     "/runtime/count/component@ArrayPartitionServer_int64_t_1",
-###                     "/runtime/count/component@ArrayPartitionServer_int64_t_2",
-### 
-###                     "/runtime/count/remote-action-invocation",
-
-                    "/threads/busy-loop-count/instantaneous",
-                    "/threads{locality#*/pool#*/worker-thread#*}/count/cumulative",
-                    "/threads{locality#*/pool#*/worker-thread#*}/count/cumulative-phases",
-
-                    # "/threads/count/objects",
-                    # "/threads/count/stack-recycles",
-                    # "/threads/count/stack-unbinds",
-                    # "/threads/idle-loop-count/instantaneous",
-
-                    "/threadqueue{locality#*/pool#*/worker-thread#*}/length"
-                ]
-            }
-        ]
+    # Node settings
+    "worker": {
+        "type": "thread",
+        "pool": {
+            "min_size": 1,
+            "max_size": 96,
+            "incrementor": 5
+        }
     }
+#     "hpx": {
+#         "performance_counters": [
+#             {
+#                 "print-counter-interval": 100
+#             },
+#             {
+#                 "print-counter": [
+# 
+#                     "/agas/count/cache/entries",
+# 
+#                     "/agas/count/cache/evictions",
+#                     "/agas/count/cache/hits",
+#                     "/agas/count/cache/insertions",
+#                     "/agas/count/cache/misses",
+# 
+# ###                     "/agas/count/cache/get_entry",
+# ###                     "/agas/count/cache/insert_entry",
+# ###                     "/agas/count/cache/update_entry",
+# ###                     "/agas/count/cache/erase_entry",
+# ### 
+# ###                     "/agas/time/cache/get_entry",
+# ###                     "/agas/time/cache/insert_entry",
+# ###                     "/agas/time/cache/update_entry",
+# ###                     "/agas/time/cache/erase_entry",
+# ### 
+# ###                     # "/runtime/uptime",
+# 
+#                     "/parcels/count/routed",
+#                     "/parcelqueue/length/receive",
+#                     "/parcelqueue/length/send",
+# 
+#                     "/threads{locality#*/pool#*/worker-thread#*}/idle-rate",
+# 
+#                     "/threads/time/average",
+#                     "/threads/time/average-overhead",
+#                     "/threads/time/average-phase",
+#                     "/threads/time/average-phase-overhead",
+#                     "/threads{locality#*/pool#*/worker-thread#*}/time/cumulative",
+#                     "/threads{locality#*/pool#*/worker-thread#*}/time/cumulative-overhead",
+#                     "/threads{locality#*/pool#*/worker-thread#*}/time/overall",
+# 
+#                     "/threads{locality#*/pool#*/worker-thread#*}/count/instantaneous/active",
+#                     # "/threads{locality#*/pool#*/worker-thread#*}/count/instantaneous/all",
+#                     "/threads{locality#*/pool#*/worker-thread#*}/count/instantaneous/pending",
+#                     "/threads{locality#*/pool#*/worker-thread#*}/count/instantaneous/staged",
+#                     "/threads{locality#*/pool#*/worker-thread#*}/count/instantaneous/suspended",
+#                     "/threads{locality#*/pool#*/worker-thread#*}/count/instantaneous/terminated",
+# 
+#                     "/threadqueue{locality#*/pool#*/worker-thread#*}/length"
+#                 ]
+#             },
+#             {
+#                 "print-counter-reset": [
+# ###                     "/agas/count/route",
+# ###                     "/agas/count/bind_gid",
+# ###                     "/agas/count/resolve_gid",
+# ###                     "/agas/count/unbind_gid",
+# ###                     "/agas/count/increment_credit",
+# ###                     "/agas/count/decrement_credit",
+# ###                     "/agas/count/allocate",
+# ###                     "/agas/count/begin_migration",
+# ###                     "/agas/count/end_migration",
+# ### 
+# ###                     "/agas/count/bind_prefix",
+# ###                     "/agas/count/bind_name",
+# ###                     "/agas/count/resolve_id",
+# ###                     "/agas/count/unbind_name",
+# ###                     "/agas/count/iterate_types",
+# ###                     "/agas/count/get_component_typename",
+# ###                     "/agas/count/num_localities_type",
+# ### 
+# ###                     "/agas/count/free",
+# ###                     "/agas/count/localities",
+# ###                     "/agas/count/num_localities",
+# ###                     "/agas/count/num_threads",
+# ###                     "/agas/count/resolve_locality",
+# ###                     # "/agas/count/resolved_localities",
+# ### 
+# ###                     "/agas/count/bind",
+# ###                     "/agas/count/resolve",
+# ###                     "/agas/count/unbind",
+# ###                     "/agas/count/iterate_names",
+# ###                     "/agas/count/on_symbol_namespace_event",
+# ### 
+# ###                     "/agas/component/count",
+# ###                     "/agas/locality/count",
+# ###                     "/agas/symbol/count",
+# 
+# ###                     "/runtime/count/action-invocation",
+# ###                     "/runtime/count/component@ArrayPartitionServer_bool_0",
+# ###                     "/runtime/count/component@ArrayPartitionServer_bool_1",
+# ###                     "/runtime/count/component@ArrayPartitionServer_bool_2",
+# ###                     "/runtime/count/component@ArrayPartitionServer_double_0",
+# ###                     "/runtime/count/component@ArrayPartitionServer_double_1",
+# ###                     "/runtime/count/component@ArrayPartitionServer_double_2",
+# ###                     "/runtime/count/component@ArrayPartitionServer_int32_t_0",
+# ###                     "/runtime/count/component@ArrayPartitionServer_int32_t_1",
+# ###                     "/runtime/count/component@ArrayPartitionServer_int32_t_2",
+# ###                     "/runtime/count/component@ArrayPartitionServer_int64_t_0",
+# ###                     "/runtime/count/component@ArrayPartitionServer_int64_t_1",
+# ###                     "/runtime/count/component@ArrayPartitionServer_int64_t_2",
+# ### 
+# ###                     "/runtime/count/remote-action-invocation",
+# 
+#                     # "/threads/busy-loop-count/instantaneous",
+#                     # "/threads{locality#*/pool#*/worker-thread#*}/count/cumulative",
+#                     # "/threads{locality#*/pool#*/worker-thread#*}/count/cumulative-phases",
+# 
+#                     # "/threads/count/objects",
+#                     # "/threads/count/stack-recycles",
+#                     # "/threads/count/stack-unbinds",
+#                     # "/threads/idle-loop-count/instantaneous",
+#                 ]
+#             }
+#         ]
+#     }
 }
 
 # /agas{locality#0/total}/component/count

@@ -21,6 +21,7 @@ add_unit_tests(
         multiply_test
         none_test
         range_test
+        sqrt_test
         sum_test
         uniform_test
         unique_id_test
@@ -48,6 +49,7 @@ hpx_setup_target(lue_framework_algorithm_less_test)
 hpx_setup_target(lue_framework_algorithm_multiply_test)
 hpx_setup_target(lue_framework_algorithm_none_test)
 hpx_setup_target(lue_framework_algorithm_range_test)
+hpx_setup_target(lue_framework_algorithm_sqrt_test)
 hpx_setup_target(lue_framework_algorithm_sum_test)
 hpx_setup_target(lue_framework_algorithm_uniform_test)
 hpx_setup_target(lue_framework_algorithm_unique_id_test)

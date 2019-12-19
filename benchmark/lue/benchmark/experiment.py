@@ -22,6 +22,7 @@ class Experiment(object):
             json["max_tree_depth"] if "max_tree_depth" in json else None
         self.nr_time_steps = json["nr_time_steps"]
 
+
     def workspace_pathname(self,
             cluster_name):
         """
