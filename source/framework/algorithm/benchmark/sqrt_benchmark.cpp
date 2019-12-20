@@ -17,8 +17,8 @@ void sqrt(
     Task const& task,
     std::size_t const max_tree_depth)
 {
-    hpx::util::annotate_function annotation("sqrt_benchmark");
-    hpx::this_thread::yield();
+    // hpx::util::annotate_function annotation("sqrt_benchmark");
+    // hpx::this_thread::yield();
 
     assert(max_tree_depth > 0);
 

@@ -5,14 +5,14 @@
         "settings": {
             "partition": "allq",
             "sbatch_options": [
-                "--qos=priority"
+                # "--qos=priority"
             ],
             "srun_options": [
                 "--kill-on-bad-exit",
                 # The mpi switch is needed because support for mpich is
                 # not built-in to slurm, it seems
-                "--mpi=pmi2",
-                "--qos=priority"
+                "--mpi=pmi2"
+                # "--qos=priority"
             ]
         }
     },

@@ -28,11 +28,12 @@ class PartitionShapeExperiment(experiment.Experiment):
 
     def benchmark_result_pathname(self,
             cluster_name,
+            scenario_name,
             array_shape,
             basename,
             extension):
 
         return os.path.join(
-            self.workspace_pathname(cluster_name),
+            self.workspace_pathname(cluster_name, scenario_name),
             "x".join([str(extent) for extent in array_shape]),
             "{}.{}".format(basename, extension))

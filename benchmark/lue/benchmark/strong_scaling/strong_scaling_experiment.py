@@ -27,9 +27,10 @@ class StrongScalingExperiment(experiment.Experiment):
 
     def benchmark_result_pathname(self,
             cluster_name,
+            scenario_name,
             nr_workers,
             extension):
 
         return os.path.join(
-            self.workspace_pathname(cluster_name),
+            self.workspace_pathname(cluster_name, scenario_name),
             "{}.{}".format(nr_workers, extension))

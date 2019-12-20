@@ -60,7 +60,7 @@ def generate_script_slurm_threads(
         array_shape = scale_array_shape(array_shape_per_worker, nr_workers)
 
         result_pathname = experiment.benchmark_result_pathname(
-            cluster.name, nr_workers, "json")
+            cluster.name, benchmark.scenario_name, nr_workers, "json")
 
         job_steps += [
             # Run the benchmark, resulting in a json file
@@ -83,7 +83,7 @@ def generate_script_slurm_threads(
         nr_nodes=benchmark.worker.nr_nodes(),
         nr_threads=cluster.node.nr_threads(),  # Reserve all threads
         output_filename=experiment.result_pathname(
-            cluster.name,
+            cluster.name, benchmark.scenario_name,
             os.path.basename(os.path.splitext(script_pathname)[0]), "out"),
         partition_name=cluster.scheduler.settings.partition_name,
         max_duration=experiment.max_duration,
@@ -96,7 +96,8 @@ def generate_script_slurm_threads(
 
     commands = [
         "# Make sure SLURM can create the output file",
-        "mkdir -p {}".format(experiment.workspace_pathname(cluster.name)),
+        "mkdir -p {}".format(experiment.workspace_pathname(
+            cluster.name, benchmark.scenario_name)),
         "",
         "# Submit job to SLURM scheduler",
         "sbatch --job-name {job_name} << {delimiter}".format(
@@ -141,7 +142,7 @@ def generate_script_slurm_nodes(
         array_shape = scale_array_shape(array_shape_per_worker, nr_workers)
 
         result_pathname = experiment.benchmark_result_pathname(
-            cluster.name, nr_workers, "json")
+            cluster.name, benchmark.scenario_name, nr_workers, "json")
 
         job_steps = [
             # Run the benchmark, resulting in a json file
@@ -162,7 +163,7 @@ def generate_script_slurm_nodes(
             nr_nodes=nr_workers,
             nr_threads=benchmark.worker.nr_threads(),
             output_filename=experiment.benchmark_result_pathname(
-                cluster.name, nr_workers, "out"),
+                cluster.name, benchmark.scenario_name, nr_workers, "out"),
             partition_name=cluster.scheduler.settings.partition_name,
             max_duration=experiment.max_duration,
             job_steps=job_steps)
@@ -237,7 +238,7 @@ def generate_script_shell(
         array_shape = scale_array_shape(array_shape_per_worker, nr_workers)
 
         result_pathname = experiment.benchmark_result_pathname(
-            cluster.name, nr_workers, "json")
+            cluster.name, benchmark.scenario_name, nr_workers, "json")
 
         commands += [
             # Create directory for the resulting json file

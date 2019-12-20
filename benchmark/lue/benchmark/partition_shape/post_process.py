@@ -226,6 +226,7 @@ def benchmark_to_lue_json(
 
 def determine_epoch(
         cluster,
+        benchmark,
         experiment):
 
     array_shapes = experiment.array.shapes()
@@ -237,7 +238,7 @@ def determine_epoch(
         for partition_shape in partition_shapes:
 
             benchmark_pathname = experiment.benchmark_result_pathname(
-                cluster.name, array_shape,
+                cluster.name, benchmark.scenario_name, array_shape,
                 "x".join([str(extent) for extent in partition_shape]),
                 "json")
             assert os.path.exists(benchmark_pathname), benchmark_pathname
@@ -255,6 +256,7 @@ def determine_epoch(
 
 def import_raw_results(
         cluster,
+        benchmark,
         experiment):
     """
     Import all raw benchmark results into a new LUE file
@@ -274,10 +276,10 @@ def import_raw_results(
     # To position all benchmarks in time, we need a single starting time
     # point to use as the clock's epoch and calculate the distance of
     # each benchmark's start time point from this epoch.
-    epoch = determine_epoch(cluster, experiment)
+    epoch = determine_epoch(cluster, benchmark, experiment)
 
     lue_dataset_pathname = experiment.result_pathname(
-        cluster.name, "data", "lue")
+        cluster.name, benchmark.scenario_name, "data", "lue")
 
     if os.path.exists(lue_dataset_pathname):
         os.remove(lue_dataset_pathname)
@@ -290,7 +292,7 @@ def import_raw_results(
         for partition_shape in partition_shapes:
 
             result_pathname = experiment.benchmark_result_pathname(
-                cluster.name, array_shape,
+                cluster.name, benchmark.scenario_name, array_shape,
                 "x".join([str(extent) for extent in partition_shape]),
                 "json")
             assert os.path.exists(result_pathname), result_pathname
@@ -374,6 +376,7 @@ def post_process_raw_results(
         lue_dataset_pathname,
         plot_pathname,
         cluster,
+        benchmark,
         experiment):
     """
     Create plots and tables from raw benchmark results
@@ -501,7 +504,7 @@ def post_process_raw_results(
             )
 
         a_plot_pathname = experiment.benchmark_result_pathname(
-            cluster.name, array_shape, "plot", "pdf")
+            cluster.name, benchmark.scenario_name, array_shape, "plot", "pdf")
         plt.tight_layout()
         plt.savefig(a_plot_pathname)
 
@@ -582,7 +585,7 @@ def post_process_raw_results(
 
 def post_process_results(
         cluster_settings_json,
-        benchmark_settings_json,  # Not used atm...
+        benchmark_settings_json,
         experiment_settings_json,
         command_pathname):
     """
@@ -590,12 +593,13 @@ def post_process_results(
     by the generate_script function.
     """
     cluster = Cluster(cluster_settings_json)
+    benchmark = Benchmark(benchmark_settings_json, cluster)
     experiment = PartitionShapeExperiment(
         experiment_settings_json, command_pathname)
 
-    lue_dataset_pathname = import_raw_results(cluster, experiment)
+    lue_dataset_pathname = import_raw_results(cluster, benchmark, experiment)
     create_dot_graph(
-        experiment.result_pathname(cluster.name, "data", "lue"),
-        experiment.result_pathname(cluster.name, "graph", "pdf"))
-    plot_pathname = experiment.result_pathname(cluster.name, "plot", "pdf")
-    post_process_raw_results(lue_dataset_pathname, plot_pathname, cluster, experiment)
+        experiment.result_pathname(cluster.name, benchmark.scenario_name, "data", "lue"),
+        experiment.result_pathname(cluster.name, benchmark.scenario_name, "graph", "pdf"))
+    plot_pathname = experiment.result_pathname(cluster.name, benchmark.scenario_name, "plot", "pdf")
+    post_process_raw_results(lue_dataset_pathname, plot_pathname, cluster, benchmark, experiment)

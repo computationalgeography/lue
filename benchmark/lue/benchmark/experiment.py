@@ -24,7 +24,8 @@ class Experiment(object):
 
 
     def workspace_pathname(self,
-            cluster_name):
+            cluster_name,
+            scenario_name):
         """
         Return pathname of directory in which or below which all
         experiment results must be stored
@@ -32,14 +33,16 @@ class Experiment(object):
         return os.path.join(
             os.path.abspath(cluster_name),
             self.program_name,
-            self.name)
+            self.name if scenario_name is None else
+                "{}-{}".format(self.name, scenario_name))
 
 
     def result_pathname(self,
             cluster_name,
+            scenario_name,
             basename,
             extension):
 
         return os.path.join(
-            self.workspace_pathname(cluster_name),
+            self.workspace_pathname(cluster_name, scenario_name),
             "{}.{}".format(basename, extension))

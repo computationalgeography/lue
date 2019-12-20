@@ -1,23 +1,17 @@
 {
+    "scenario": "node",
     "count": 1,
-# # Cluster settings
-#     "worker": {
-#         "type": "node",
-#         "pool": {
-#             "min_size": 1,
-#             "max_size": 19,
-#             "incrementor": 3
-#         }
-#     },
-    # Node settings
     "worker": {
-        "type": "thread",
+        "type": "node",
         "pool": {
             "min_size": 1,
-            "max_size": 96,
-            "incrementor": 5
+            # 19
+            "max_size": 7,
+            "incrementor": 3
         }
     }
+}
+
 #     "hpx": {
 #         "performance_counters": [
 #             {
@@ -134,7 +128,7 @@
 #             }
 #         ]
 #     }
-}
+# }
 
 # /agas{locality#0/total}/component/count
 # /agas{locality#0/total}/component/time

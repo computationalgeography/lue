@@ -108,7 +108,7 @@ def generate_script_slurm(
         for partition_shape in experiment.partition.shapes():
 
             result_pathname = experiment.benchmark_result_pathname(
-                cluster.name, array_shape,
+                cluster.name, benchmark.scenario_name, array_shape,
                 "x".join([str(extent) for extent in partition_shape]), "json")
 
             job_steps += [
@@ -138,7 +138,7 @@ def generate_script_slurm(
         nr_nodes=benchmark.worker.nr_nodes(),
         nr_threads=cluster.node.nr_threads(),  # Reserve all threads
         output_filename=experiment.result_pathname(
-            cluster.name,
+            cluster.name, benchmark.scenario_name,
             os.path.basename(os.path.splitext(script_pathname)[0]), "out"),
         partition_name=cluster.scheduler.settings.partition_name,
         max_duration=experiment.max_duration,
@@ -151,7 +151,8 @@ def generate_script_slurm(
 
     commands = [
         "# Make sure SLURM can create the output file",
-        "mkdir -p {}".format(experiment.workspace_pathname(cluster.name)),
+        "mkdir -p {}".format(experiment.workspace_pathname(
+            cluster.name, benchmark.scenario_name)),
         "",
         "# Submit job to SLURM scheduler",
         "sbatch --job-name {job_name} {sbatch_options} << {delimiter}".format(
@@ -183,7 +184,7 @@ def generate_script_shell(
         for partition_shape in experiment.partition.shapes():
 
             result_pathname = experiment.benchmark_result_pathname(
-                cluster.name, array_shape,
+                cluster.name, benchmark.scenario_name, array_shape,
                 "x".join([str(extent) for extent in partition_shape]), "json")
 
             commands += [

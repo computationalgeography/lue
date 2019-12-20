@@ -117,6 +117,7 @@ def select_data_for_plot(
 
 def json_to_data(
         pathname):
+    assert os.path.isfile(pathname), pathname
     lines = open(pathname).readlines()
     lines = "".join(
         [line for line in lines if not line.strip().startswith("#")])
@@ -135,7 +136,7 @@ def sort_benchmarks_by_time(
 
         nr_workers = benchmark.worker.nr_workers(benchmark_idx)
         benchmark_pathname = experiment.benchmark_result_pathname(
-            cluster.name, nr_workers, "json")
+            cluster.name, benchmark.scenario_name, nr_workers, "json")
         assert os.path.exists(benchmark_pathname), benchmark_pathname
         benchmark_json = json_to_data(benchmark_pathname)
         benchmark_start = dateutil.parser.isoparse(benchmark_json["start"])

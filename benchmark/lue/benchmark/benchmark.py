@@ -23,7 +23,7 @@ class Benchmark(object):
         count: How many times a benchmark needs to be repeated
         worker: Information about the workers to be used
         """
-
+        self.scenario_name = json["scenario"] if "scenario" in json else None
         self.count = json["count"]
         self.worker = worker.Worker(json["worker"], cluster)
         self.hpx = HPX(json["hpx"]) if "hpx" in json else None
