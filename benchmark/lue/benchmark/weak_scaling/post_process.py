@@ -267,7 +267,7 @@ def import_raw_results(
         cluster, benchmark, experiment)
 
     lue_dataset_pathname = experiment.result_pathname(
-        cluster.name, "data", "lue")
+        cluster.name, benchmark.scenario_name, "data", "lue")
 
     if os.path.exists(lue_dataset_pathname):
         os.remove(lue_dataset_pathname)
@@ -280,7 +280,7 @@ def import_raw_results(
         nr_workers = benchmark.worker.nr_workers(benchmark_idx)
 
         result_pathname = experiment.benchmark_result_pathname(
-            cluster.name, nr_workers, "json")
+            cluster.name, benchmark.scenario_name, nr_workers, "json")
         assert os.path.exists(result_pathname), result_pathname
 
         if not metadata_written:
@@ -600,22 +600,13 @@ def post_process_results(
     by the generate_script function.
     """
     cluster = Cluster(cluster_settings_json)
-
-    ### job_scheduler = cluster_settings_json["job_scheduler"]
-    ### assert job_scheduler in ["shell", "slurm"]
-
-    ### if job_scheduler == "slurm":
-    ###     cluster = SlurmCluster(cluster_settings_json)
-    ### elif job_scheduler == "shell":
-    ###     cluster = ShellCluster(cluster_settings_json)
-
     benchmark = Benchmark(benchmark_settings_json, cluster)
     experiment = WeakScalingExperiment(
         experiment_settings_json, command_pathname)
 
     lue_dataset_pathname = import_raw_results(cluster, benchmark, experiment)
     create_dot_graph(
-        experiment.result_pathname(cluster.name, "data", "lue"),
-        experiment.result_pathname(cluster.name, "graph", "pdf"))
-    plot_pathname = experiment.result_pathname(cluster.name, "plot", "pdf")
+        experiment.result_pathname(cluster.name, benchmark.scenario_name, "data", "lue"),
+        experiment.result_pathname(cluster.name, benchmark.scenario_name, "graph", "pdf"))
+    plot_pathname = experiment.result_pathname(cluster.name, benchmark.scenario_name, "plot", "pdf")
     post_process_raw_results(lue_dataset_pathname, plot_pathname, experiment)

@@ -1,14 +1,11 @@
 #include "lue/framework/core/component/partitioned_array.hpp"
-// #include "lue/framework/algorithm/copy.hpp"
-#include "lue/framework/algorithm/fill.hpp"
 #include "lue/framework/algorithm/focal_mean.hpp"
 #include "lue/framework/algorithm/kernel.hpp"
 #include "lue/framework/algorithm/serialize/kernel.hpp"
-// #include "lue/framework/algorithm/uniform.hpp"
+#include "lue/framework/algorithm/uniform.hpp"
 #include "lue/framework/benchmark/benchmark.hpp"
 #include "lue/framework/benchmark/hpx_main.hpp"
 #include <hpx/include/iostreams.hpp>
-// #include <hpx/include/parallel_execution.hpp>
 
 
 namespace lue {
@@ -20,9 +17,9 @@ template<
     std::size_t rank>
 void focal_mean(
     Task const& task,
-    std::size_t const /* max_tree_depth */)
+    std::size_t const max_tree_depth)
 {
-    // assert(max_tree_depth > 0);
+    assert(max_tree_depth > 0);
 
     using Array = PartitionedArray<Element, rank>;
     using Shape = typename Array::Shape;
@@ -43,42 +40,38 @@ void focal_mean(
 
     assert(state.shape() == shape);
 
-    // // Fill array with random numbers
-    // // hpx::shared_future<Element> min_nr_iterations =
-    // //     hpx::make_ready_future<Element>(20);
-    // hpx::shared_future<Element> max_nr_iterations =
-    //     hpx::make_ready_future<Element>(50);
-
-    // // uniform(state, min_nr_iterations, max_nr_iterations).wait();
-
-    // fill(state,
-    //     hpx::make_ready_future<Element>(
-    //         std::numeric_limits<Element>::max()).share()).wait();
+    // Fill array with random numbers
+    {
+        auto min = hpx::make_ready_future<Element>(0).share();
+        auto max = hpx::make_ready_future<Element>(
+            std::numeric_limits<Element>::max()).share();
+        uniform(state, min, max).wait();
+    }
 
     auto const kernel = lue::box_kernel<bool, rank>(1, true);
 
-    // hpx::lcos::local::sliding_semaphore semaphore{
-    //     static_cast<std::int64_t>(max_tree_depth)};
+    hpx::lcos::local::sliding_semaphore semaphore{
+        static_cast<std::int64_t>(max_tree_depth)};
 
     for(std::size_t i = 0; i < task.nr_time_steps(); ++i) {
 
-    //     // Wait if there are more than max_tree_depth iterations in flight
-    //     semaphore.wait(i);
+        // Wait if there are more than max_tree_depth iterations in flight
+        semaphore.wait(i);
 
         state = focal_mean(state, kernel);
 
         hpx::cout << '.' << hpx::flush;
 
-    //     // Attach a continuation to the state at the current time
-    //     // step. Once it is finished, signal the semaphore so it knowns
-    //     // that we can have another iteration in flight.
-    //     hpx::when_all_n(state.begin(), state.nr_partitions()).then(
-    //         hpx::launch::sync,
-    //         [&semaphore, i](
-    //             auto const&)
-    //         {
-    //             semaphore.signal(i);
-    //         });
+        // Attach a continuation to the state at the current time
+        // step. Once it is finished, signal the semaphore so it knowns
+        // that we can have another iteration in flight.
+        hpx::when_all_n(state.begin(), state.nr_partitions()).then(
+            hpx::launch::sync,
+            [&semaphore, i](
+                auto const&)
+            {
+                semaphore.signal(i);
+            });
     }
 
     hpx::cout << "!" << hpx::flush;

@@ -107,7 +107,7 @@ Array<Element, rank> sqrt(
                         input_partition);
                 },
 
-                "sqrt_partition_call"),
+                "spawn_sqrt_partition"),
 
             array.partitions()[p],
             hpx::get_colocation_id(array.partitions()[p].get_id()));

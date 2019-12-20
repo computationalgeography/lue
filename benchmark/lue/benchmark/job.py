@@ -40,7 +40,7 @@ def program_configuration(
     if result_pathname is None:
         assert not nr_workers is None
         result_pathname = experiment.benchmark_result_pathname(
-            cluster.name, nr_workers, "json")
+            cluster.name, benchmark.scenario_name, nr_workers, "json")
 
     configuration = \
         '--hpx:print-bind ' \
@@ -77,7 +77,8 @@ def program_configuration(
 
             assert not nr_workers is None
             counter_pathname = experiment.benchmark_result_pathname(
-                cluster.name, "counter-{}".format(nr_workers), "csv")
+                cluster.name, benchmark.scenario_name,
+                "counter-{}".format(nr_workers), "csv")
 
             # Format arguments for tracking performance counters
             arguments += [

@@ -1,0 +1,16 @@
+{
+    "nr_time_steps": 10,
+    "max_tree_depth": 5,
+    "array": {
+        # 8 nodes * 50.000 x 50.000
+        "shape": [125000, 125000]
+    },
+    "partition": {
+        "shape": [400, 400],
+        "range": {
+            # > 2264 x 2264
+            "max_nr_elements": 5130000,
+            "multiplier": 2
+        }
+    }
+}

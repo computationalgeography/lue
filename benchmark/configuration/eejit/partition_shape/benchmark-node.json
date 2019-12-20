@@ -1,0 +1,12 @@
+{
+    "scenario": "node",
+    "count": 1,
+    "worker": {
+        "type": "node",
+        "pool": {
+            "min_size": 8,
+            "max_size": 8,
+            "multiplier": 2
+        }
+    }
+}

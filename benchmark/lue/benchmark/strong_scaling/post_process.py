@@ -291,7 +291,7 @@ def import_raw_results(
         cluster, benchmark, experiment)
 
     lue_dataset_pathname = experiment.result_pathname(
-        cluster.name, "data", "lue")
+        cluster.name, benchmark.scenario_name, "data", "lue")
 
     if os.path.exists(lue_dataset_pathname):
         os.remove(lue_dataset_pathname)
@@ -304,7 +304,7 @@ def import_raw_results(
         nr_workers = benchmark.worker.nr_workers(benchmark_idx)
 
         result_pathname = experiment.benchmark_result_pathname(
-            cluster.name, nr_workers, "json")
+            cluster.name, benchmark.scenario_name, nr_workers, "json")
         assert os.path.exists(result_pathname), result_pathname
 
         if not metadata_written:
@@ -987,7 +987,7 @@ def post_process_performance_counters(
 
     for nr_workers_ in nr_workers:
         counter_pathname = experiment.benchmark_result_pathname(
-            system_name, "counter-{}".format(nr_workers_), "csv")
+            system_name, benchmark.scenario_name, "counter-{}".format(nr_workers_), "csv")
         assert os.path.exists(counter_pathname), counter_pathname
 
         plot_performance_counters(counter_pathname)
@@ -995,7 +995,7 @@ def post_process_performance_counters(
 
 def post_process_results(
         cluster_settings_json,
-        benchmark_settings_json,  # Not used atm...
+        benchmark_settings_json,
         experiment_settings_json,
         command_pathname):
     """
@@ -1003,17 +1003,16 @@ def post_process_results(
     by the generate_script function
     """
     cluster = Cluster(cluster_settings_json)
-
     benchmark = Benchmark(benchmark_settings_json, cluster)
     experiment = StrongScalingExperiment(
         experiment_settings_json, command_pathname)
 
     lue_dataset_pathname = import_raw_results(cluster, benchmark, experiment)
     create_dot_graph(
-        experiment.result_pathname(cluster.name, "data", "lue"),
-        experiment.result_pathname(cluster.name, "graph", "pdf"))
+        experiment.result_pathname(cluster.name, benchmark.scenario_name, "data", "lue"),
+        experiment.result_pathname(cluster.name, benchmark.scenario_name, "graph", "pdf"))
 
-    plot_pathname = experiment.result_pathname(cluster.name, "plot", "pdf")
+    plot_pathname = experiment.result_pathname(cluster.name, benchmark.scenario_name, "plot", "pdf")
     post_process_raw_results(lue_dataset_pathname, plot_pathname)
 
     performance_counters_available = benchmark.hpx is not None and \
