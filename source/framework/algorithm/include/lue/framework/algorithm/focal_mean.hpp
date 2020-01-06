@@ -7,7 +7,6 @@
 namespace lue {
 namespace detail {
 
-
 void spin(
     Count nr_iterations)
 {

@@ -158,6 +158,7 @@ typename Functor::OutputElement border(
 
 
 // If this is needed elsewhere, put it in algorithm/functor_traits.hpp
+// Refactor with unary_local_operation.hpp
 template<
     typename Functor>
 using OutputElementT = typename Functor::OutputElement;
