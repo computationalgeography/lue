@@ -1,0 +1,13 @@
+{
+    "nr_time_steps": 50,
+    "array": {
+        "shape": [100000000]
+    },
+    "partition": {
+        "shape": [10000],
+        "range": {
+            "max_nr_elements": 1000000,
+            "multiplier": 10
+        }
+    }
+}

@@ -3,7 +3,13 @@ set -e
 
 
 benchmark_prefix=$LUE/benchmark
-hostname="gransasso"
+
+hostname=`hostname --short`
+
+if [[ $hostname == "login01" ]]; then
+    hostname="eejit"
+fi
+
 data_prefix=$LUE_OBJECTS/$hostname
 
 
@@ -20,10 +26,10 @@ function perform_experiment()
 
 
 benchmark_name="case_study_heat_ring"
-benchmark_name="framework_algorithm_sqrt"
-benchmark_name="framework_algorithm_focal_mean"
+# benchmark_name="framework_algorithm_sqrt"
+# benchmark_name="framework_algorithm_focal_mean"
 
 
-# perform_experiment $benchmark_name "thread" "partition_shape"
+perform_experiment $benchmark_name "thread" "partition_shape"
 # perform_experiment $benchmark_name "thread" "strong_scaling"
 # perform_experiment $benchmark_name "thread" "weak_scaling"
