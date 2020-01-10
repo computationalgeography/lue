@@ -1,10 +1,9 @@
 {
-    "nr_time_steps": 10,
-    # "max_tree_depth": x,
+    "nr_time_steps": 50,
     "array": {
-        "shape": [100000]
+        "shape": [10000000]
     },
     "partition": {
-        "shape": [1000]
+        "shape": [100000]
     }
 }

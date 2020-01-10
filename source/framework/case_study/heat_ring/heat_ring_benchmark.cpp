@@ -390,10 +390,8 @@ void heat_ring(
 
     // Number of partitions.
     std::uint64_t np = task.array_shape()[0] / task.partition_shape()[0];
-    std::uint64_t nx = task.array_shape()[0];  // Number of grid points.
+    std::uint64_t nx = task.partition_shape()[0];  // Number of grid points.
     std::uint64_t nt = task.nr_time_steps();  // Number of steps.
-
-    // for(std::size_t i = 0; i < task.nr_time_steps(); ++i) {
 
     std::vector<hpx::id_type> localities = hpx::find_all_localities();
     std::size_t nl = localities.size();                    // Number of localities
