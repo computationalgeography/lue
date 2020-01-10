@@ -5,6 +5,7 @@ add_unit_tests(
         array_partition_data_test
         array_partition_definition_test
         array_visitor_test
+        configuration_entry_test
         domain_decomposition_test
         math_test
         shared_buffer_test

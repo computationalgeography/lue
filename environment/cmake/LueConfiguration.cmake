@@ -278,7 +278,7 @@ if(DEVBASE_HPX_REQUIRED)
 
         FetchContent_Declare(hpx
             GIT_REPOSITORY ${hpx_repository}
-            GIT_TAG 628bd7f  # HPX-1.4.0-rc2 + some fixes
+            GIT_TAG d1c61de  # Current stable tag
         )
 
         FetchContent_MakeAvailable(hpx)
