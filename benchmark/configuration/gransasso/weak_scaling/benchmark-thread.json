@@ -1,4 +1,5 @@
 {
+    "scenario": "thread",
     "count": 1,
     "worker": {
         "type": "thread",
