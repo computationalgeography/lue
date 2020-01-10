@@ -31,6 +31,59 @@ std::string configuration_entry(
 }
 
 
+std::string trim_vector(
+    std::string const& value)
+{
+    std::smatch match;
+
+    // Trim string with list of values from the list delimiters
+    if(!std::regex_match(value, match, std::regex(R"(\[([^\]]*)\])"))) {
+        throw std::runtime_error(
+            fmt::format(
+                "List of values not delimited by '[]' ({})",
+                value));
+    }
+
+    assert(match.size() == 2);
+
+    return match[1];
+}
+
+}  // Anonymous namespace
+
+
+namespace detail {
+namespace {
+
+template<
+    typename T>
+std::vector<T> cast_list(
+    std::string const& value,
+    std::regex const& expression)
+{
+    std::string string{trim_vector(value)};
+    std::smatch match;
+    std::vector<T> result;
+
+    while(std::regex_search(string, match, expression)) {
+        result.push_back(cast<T>(match[1]));
+        string = match.suffix().str();
+    }
+
+    if(!string.empty()) {
+        throw std::runtime_error(
+            fmt::format(
+                "Configuration entry '{}' cannot be parsed into "
+                "a list of values of type {}",
+                value, Type<T>::name()));
+    }
+
+    return result;
+}
+
+}  // Anonymous namespace
+
+
 template<
     typename T>
 T cast(
@@ -44,7 +97,7 @@ T cast(
     catch(boost::bad_lexical_cast const&) {
         throw std::runtime_error(
             fmt::format(
-                "Cannot cast value {} to type {}",
+                "Cannot cast value '{}' to type {}",
                 value, Type<T>::name()));
     }
 
@@ -64,30 +117,8 @@ template<>
 std::vector<std::uint64_t> cast<std::vector<std::uint64_t>>(
     std::string const& value)
 {
-    // parse value into a vector of unsigned integers
-    std::string const pattern{
-        "\\[([[:digit:]]+)(?:,[[:space:]]*([[:digit:]]+))*\\]"};
-    std::regex expression{pattern};
-    std::smatch match;
-
-    std::vector<std::uint64_t> result;
-
-    if(std::regex_match(value, match, expression)) {
-        result.reserve(match.size());
-
-        for(std::size_t i = 1; i < match.size(); ++i) {
-            result.push_back(cast<std::uint64_t>(match[i]));
-        }
-    }
-    else {
-        throw std::runtime_error(
-            fmt::format(
-                "Configuration entry {} cannot be parsed into "
-                "a vector of unsigned integers (using pattern {})",
-                value, pattern));
-    }
-
-    return result;
+    return cast_list<std::uint64_t>(value, 
+        std::regex(R"([[:space:]]*([[:digit:]]+)[[:space:]]*(?:$|,))"));
 }
 
 
@@ -95,31 +126,9 @@ template<>
 std::vector<std::int64_t> cast<std::vector<std::int64_t>>(
     std::string const& value)
 {
-    // parse value into a vector of signed integers
     // FIXME: Doesn't support negative integers yet
-    std::string const pattern{
-        "\\[([[:digit:]]+)(?:,[[:space:]]*([[:digit:]]+))*\\]"};
-    std::regex expression{pattern};
-    std::smatch match;
-
-    std::vector<std::int64_t> result;
-
-    if(std::regex_match(value, match, expression)) {
-        result.reserve(match.size());
-
-        for(std::size_t i = 1; i < match.size(); ++i) {
-            result.push_back(cast<std::int64_t>(match[i]));
-        }
-    }
-    else {
-        throw std::runtime_error(
-            fmt::format(
-                "Configuration entry {} cannot be parsed into "
-                "a vector of signed integers (using pattern {})",
-                value, pattern));
-    }
-
-    return result;
+    return cast_list<std::int64_t>(value, 
+        std::regex(R"([[:space:]]*([[:digit:]]+)[[:space:]]*(?:$|,))"));
 }
 
 
@@ -132,7 +141,7 @@ lue::Shape<std::uint64_t, 2> cast<lue::Shape<std::uint64_t, 2>>(
     if(values.size() != 2) {
         throw std::runtime_error(
             fmt::format(
-                "Configuration entry {} must contain 2 values, "
+                "Configuration entry '{}' must contain 2 values, "
                 "but {} where found",
                 value, values.size()));
     }
@@ -153,7 +162,7 @@ lue::Shape<std::int64_t, 2> cast<lue::Shape<std::int64_t, 2>>(
     if(values.size() != 2) {
         throw std::runtime_error(
             fmt::format(
-                "Configuration entry {} must contain 2 values, "
+                "Configuration entry '{}' must contain 2 values, "
                 "but {} where found",
                 value, values.size()));
     }
@@ -164,10 +173,6 @@ lue::Shape<std::int64_t, 2> cast<lue::Shape<std::int64_t, 2>>(
     return result;
 }
 
-}  // Anonymous namespace
-
-
-namespace detail {
 
 // Using this template to get at the type passed into a macro, allows
 // passing instantiated templates with multiple arguments to be passed.
@@ -210,7 +215,7 @@ T required_configuration_entry(
                 section, key));
     }
 
-    return cast<T>(value);
+    return detail::cast<T>(value);
 }
 
 
@@ -232,7 +237,7 @@ T optional_configuration_entry(
 {
     auto const value = configuration_entry(section, key, "");
 
-    return !value.empty() ? cast<T>(value) : default_value;
+    return !value.empty() ? detail::cast<T>(value) : default_value;
 }
 
 

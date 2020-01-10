@@ -53,4 +53,12 @@ T                  optional_configuration_entry(
                                         std::string const& key,
                                         T const& default_value);
 
+
+namespace detail {
+
+template<
+    typename T>
+T                  cast                (std::string const& value);
+
+}  // namespace detail
 }  // namespace lue
