@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-benchmark_name="lue_framework_algorithm_focal_mean_benchmark"
+benchmark_name="lue_framework_algorithm_iterate_per_element_benchmark"
 trace_prefix=$LUE_OBJECTS/trace/$benchmark_name
 
 nr_threads=20
@@ -46,5 +46,5 @@ srun --kill-on-bad-exit --mpi=pmi2 --qos=priority \
         --hpx:ini="application.${benchmark_name}.nr_time_steps!=$nr_time_steps" \
         --hpx:ini="application.${benchmark_name}.max_tree_depth!=$max_tree_depth" \
         --hpx:ini="application.${benchmark_name}.array_shape!=[5000, 5000]" \
-        --hpx:ini="application.${benchmark_name}.partition_shape!=[566, 566]"
+        --hpx:ini="application.${benchmark_name}.partition_shape!=[200, 200]"
 END_OF_SLURM_SCRIPT
