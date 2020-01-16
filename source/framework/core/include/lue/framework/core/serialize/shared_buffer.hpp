@@ -7,13 +7,14 @@ namespace hpx {
 namespace serialization {
 
 template<
-    typename Element>
+    typename Element,
+    typename Allocator>
 void serialize(
     input_archive& archive,
-    lue::SharedBuffer<Element>& buffer,
+    lue::SharedBuffer<Element, Allocator>& buffer,
     unsigned int const /* version */)
 {
-    using Buffer = lue::SharedBuffer<Element>;
+    using Buffer = lue::SharedBuffer<Element, Allocator>;
     using Array = hpx::serialization::array<Element>;
 
     typename Buffer::Size size;
@@ -27,13 +28,14 @@ void serialize(
 
 
 template<
-    typename Element>
+    typename Element,
+    typename Allocator>
 void serialize(
     output_archive& archive,
-    lue::SharedBuffer<Element> const& buffer,
+    lue::SharedBuffer<Element, Allocator> const& buffer,
     unsigned int const /* version */)
 {
-    using Buffer = lue::SharedBuffer<Element>;
+    using Buffer = lue::SharedBuffer<Element, Allocator>;
     using Array = hpx::serialization::array<Element const>;
 
     typename Buffer::Size const size = buffer.size();

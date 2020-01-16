@@ -5,6 +5,12 @@
 #include <memory>
 
 
+// - Get rid of shared pointer? Simplifies destruction.
+//     - No, we need to be able to copy buffers. The pointer knows when
+//         to delete.
+// - Make it possible to use a PartitionAllocator
+
+
 namespace lue {
 
 enum class CopyMode
@@ -39,15 +45,15 @@ enum class CopyMode
     owns the array or not.
 */
 template<
-    typename Element // ,
-    // typename Allocator=std::allocator<Element>
+    typename Element,
+    typename Allocator=std::allocator<Element>
 >
 class SharedBuffer
 {
 
 public:
 
-    using Size = lue::Size;  // std::size_t;
+    using Size = lue::Size;
 
 private:
 
@@ -57,23 +63,17 @@ private:
     }
 
     static void do_delete(
-        Element* ptr)
+        Element* ptr,
+        Allocator allocator,
+        Size const size)
     {
-        delete[] ptr;
+        std::destroy_n(ptr, size);  // Destruct each instance
+        allocator.deallocate(ptr, size);  // Release memory
     }
-
-    // template<
-    //     typename Deallocator>
-    // static void do_delete(
-    //     Element* pointer,
-    //     Deallocator deallocator,
-    //     Size const size)
-    // {
-    //     deallocator.deallocate(pointer, size);
-    // }
 
 public:
 
+    // Pointer type which allows a custom destructor to be set
     using Pointer = std::shared_ptr<Element>;
 
     // Some standard types
@@ -113,12 +113,12 @@ public:
 
         The layered array will be empty and the size zero.
     */
-    explicit SharedBuffer():
-        // Allocator const& allocator=Allocator{}):
+    explicit SharedBuffer(
+        Allocator const& allocator=Allocator{}):
 
         _ptr{},
-        _size{0} // ,
-        // _allocator{allocator}
+        _size{0},
+        _allocator{allocator}
 
     {
         assert_invariants();
@@ -131,15 +131,16 @@ public:
         The elements in the array are default-constructed.
     */
     explicit SharedBuffer(
-        Size const size):
-        // Allocator const& allocator=Allocator{}):
+        Size const size,
+        Allocator const& allocator=Allocator{}):
 
         _ptr{},
-        _size{size} // ,
-        // _allocator{allocator}
+        _size{size},
+        _allocator{allocator}
 
     {
         allocate(size);
+        std::uninitialized_default_construct_n(_ptr.get(), size);
 
         assert_invariants();
     }
@@ -157,12 +158,12 @@ public:
     SharedBuffer(
         Element const* elements,
         Size const size,
-        Mode const mode=Mode::copy):
-        // Allocator const& allocator=Allocator{}):
+        Mode const mode=Mode::copy,
+        Allocator const& allocator=Allocator{}):
 
         _ptr{},
-        _size{size} // ,
-        // _allocator{allocator}
+        _size{size},
+        _allocator{allocator}
 
     {
         assert(
@@ -173,7 +174,7 @@ public:
             case(Mode::copy): {
                 // Create new array and copy elements
                 allocate(size);
-                std::copy(elements, elements + size, begin());
+                std::uninitialized_copy(elements, elements + size, begin());
                 break;
             }
             case(Mode::use): {
@@ -201,12 +202,12 @@ public:
     SharedBuffer(
         Element* elements,
         Size const size,
-        Mode const mode=Mode::copy):
-        // Allocator const& allocator=Allocator{}):
+        Mode const mode=Mode::copy,
+        Allocator const& allocator=Allocator{}):
 
         _ptr{},
-        _size{size}  // ,
-        // _allocator{allocator}
+        _size{size},
+        _allocator{allocator}
 
     {
         assert(
@@ -219,7 +220,7 @@ public:
             case(Mode::copy): {
                 // Create new array and copy elements
                 allocate(size);
-                std::copy(elements, elements + size, begin());
+                std::uninitialized_copy(elements, elements + size, begin());
                 break;
             }
             case(Mode::use): {
@@ -229,10 +230,12 @@ public:
             }
             case(Mode::own): {
                 // Use the elements passed in, and delete at the end
-                // auto do_delete = std::bind(
-                //     SharedBuffer::do_delete<Allocator>, _1, _allocator, _size);
-                // _ptr = Pointer{elements};  // , do_delete};
-                _ptr = Pointer{elements, do_delete};
+                auto deleter =
+                    [allocator=this->_allocator, size](Element* ptr)
+                    {
+                        do_delete(ptr, std::move(allocator), size);
+                    };
+                _ptr = Pointer{elements, deleter};
                 break;
             }
         }
@@ -258,14 +261,15 @@ public:
         CopyMode const mode=CopyMode::share):
 
         _ptr{},
-        _size{other._size}
+        _size{other._size},
+        _allocator{other._allocator}
 
     {
         switch(mode) {
             case CopyMode::copy: {
                 // Create new array and copy elements
                 allocate(_size);
-                std::copy(other.begin(), other.end(), begin());
+                std::uninitialized_copy(other.begin(), other.end(), begin());
                 break;
             }
             case CopyMode::share: {
@@ -280,49 +284,9 @@ public:
 
     SharedBuffer(SharedBuffer&& other)=default;
 
-    // SharedBuffer(
-    //     SharedBuffer&& other):
-
-    //     _ptr{std::move(other._ptr)},
-    //     _size{other._size}  // ,
-    //     // _allocator{std::move(other._allocator)}
-
-    // {
-    //     other._size = 0;
-
-    //     assert_invariants();
-    // }
-
     SharedBuffer& operator=(SharedBuffer const& other)=default;
 
-    // SharedBuffer& operator=(
-    //     SharedBuffer const& other)
-    // {
-    //     // _ptr.reset();
-    //     // _allocator = other._allocator;
-    //     resize(other._size);
-    //     std::copy(other.begin(), other.end(), begin());
-
-    //     assert_invariants();
-
-    //     return *this;
-    // }
-
     SharedBuffer& operator=(SharedBuffer&& other)=default;
-
-    // SharedBuffer& operator=(
-    //     SharedBuffer&& other)
-    // {
-    //     _ptr = std::move(other._ptr);
-    //     _size = other._size;
-    //     // _allocator = std::move(other._allocator);
-
-    //     other._size = 0;
-
-    //     assert_invariants();
-
-    //     return *this;
-    // }
 
     ~SharedBuffer()=default;
 
@@ -401,7 +365,6 @@ public:
     {
         assert(idx < static_cast<std::size_t>(_size));
 
-        // return _ptr[idx];
         return _ptr.get()[idx];
     }
 
@@ -424,51 +387,45 @@ public:
         @param      size New size of the buffer
 
         The buffer will only be resized if the new size is different
-        from the new size.
+        from the current size.
     */
     void resize(
         Size const size)
     {
         if(_size != size) {
             allocate(size);
+            std::uninitialized_default_construct_n(_ptr.get(), size);
             _size = size;
         }
 
         assert(_size == size);
     }
 
-    // template<
-    //     typename Archive>
-    // void serialize(
-    //     Archive& archive,
-    //     unsigned int const /* version */)
-    // {
-    //     archive & hpx::serialization::make_array(begin(), size()) & _size;
-    // }
-
 private:
 
+    //! Pointer to contiguous array of Element instances
     Pointer        _ptr;
 
+    //! Number of Element instances in the buffer
     Size           _size;
 
-    // Allocator      _allocator;
+    //! Allocator to use for managing memory of the buffer
+    Allocator      _allocator;
 
     void allocate(
         Size const size)
     {
-        // using namespace std::placeholders;
+        // Allocate memory and install a deleter
 
-        // auto do_delete = std::bind(
-        //     SharedBuffer::do_delete<Allocator>, _1, _allocator, size);
+        // FIXME Deleter assumes instances are created, which is not
+        //   done here but at the call sites
+        auto deleter =
+            [allocator=this->_allocator, size](Element* ptr)
+            {
+                do_delete(ptr, std::move(allocator), size);
+            };
 
-        // _ptr.reset(_allocator.allocate(size));  // , do_delete);
-        // _ptr = std::make_shared<Element>(size);
-
-        // _ptr.reset(new Element[size]);
-
-        // Default construct all elements
-        _ptr.reset(size > 0 ? new Element[size]() : nullptr, do_delete);
+        _ptr.reset(size > 0 ? _allocator.allocate(size) : nullptr, deleter);
     }
 
     void assert_invariants()

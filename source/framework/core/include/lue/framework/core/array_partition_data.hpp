@@ -1,6 +1,6 @@
 #pragma once
-// #include "lue/framework/core/component/server/array_partition.hpp"
 #include "lue/framework/core/define.hpp"
+#include "lue/framework/core/partition_allocator.hpp"
 #include "lue/framework/core/shape.hpp"
 #include "lue/framework/core/serialize/shared_buffer.hpp"
 #include "lue/framework/core/span.hpp"
@@ -26,7 +26,7 @@ class ArrayPartitionData
 
 private:
 
-    using Elements = SharedBuffer<Element>;
+    using Elements = SharedBuffer<Element, PartitionAllocator<Element>>;
 
 public:
 
