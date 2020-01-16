@@ -43,7 +43,10 @@ def program_configuration(
             cluster.name, benchmark.scenario_name, nr_workers, "json")
 
     configuration = \
+        '--hpx:bind=balanced ' \
         '--hpx:print-bind ' \
+        '--hpx:queuing=shared-priority ' \
+        '--hpx:numa-sensitive ' \
         '--hpx:ini="application.{program_name}.benchmark.cluster_name!={cluster_name}" ' \
         '--hpx:ini="application.{program_name}.benchmark.count!={count}" ' \
         '--hpx:ini="application.{program_name}.benchmark.output!={result_pathname}" ' \
