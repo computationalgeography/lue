@@ -278,7 +278,7 @@ if(DEVBASE_HPX_REQUIRED)
 
         FetchContent_Declare(hpx
             GIT_REPOSITORY ${hpx_repository}
-            GIT_TAG d1c61de  # Current stable tag
+            GIT_TAG 1.4.0
         )
 
         FetchContent_MakeAvailable(hpx)
