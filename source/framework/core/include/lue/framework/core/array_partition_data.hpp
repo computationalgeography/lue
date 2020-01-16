@@ -26,7 +26,8 @@ class ArrayPartitionData
 
 private:
 
-    using Elements = SharedBuffer<Element, PartitionAllocator<Element>>;
+    // using Elements = SharedBuffer<Element, PartitionAllocator<Element>>;
+    using Elements = SharedBuffer<Element, std::allocator<Element>>;
 
 public:
 
