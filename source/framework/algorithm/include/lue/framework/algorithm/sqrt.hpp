@@ -20,10 +20,6 @@ public:
 
     using OutputElement = InputElement;
 
-    Sqrt()
-    {
-    }
-
     OutputElement operator()(
         InputElement const& input_element) const
     {

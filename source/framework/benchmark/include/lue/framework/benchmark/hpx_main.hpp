@@ -93,9 +93,6 @@ int hpx_main(                                                                  \
     int argc,                                                                  \
     char* argv[])                                                              \
 {                                                                              \
-    hpx::util::annotate_function annotation("hpx_main");                       \
-    hpx::this_thread::yield();                                                 \
-                                                                               \
     std::cout << lue::system_description().get() << std::endl;                 \
                                                                                \
     std::string const pathname =                                               \

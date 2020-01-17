@@ -313,11 +313,11 @@ public:
 
         partition = hpx::dataflow(
             hpx::launch::async,
-            hpx::util::annotated_function(
+            // hpx::util::annotated_function(
 
                 [new_shape=this->_new_shape](
                     Partition&& partition,
-                    hpx::future<Shape>&& f_partition_shape)
+                    hpx::future<Shape>&& f_partition_shape) // -> Partition
                 {
                     Shape partition_shape = f_partition_shape.get();
                     Count const rank = static_cast<Count>(lue::rank<Partitions>);
@@ -331,10 +331,10 @@ public:
                     partition.reshape(partition_shape).wait();
 
                     return partition;
+
                 },
 
-                "shrink_partition"
-            ),
+                // "shrink_partition),
             partition,
             partition.shape());
 
@@ -384,7 +384,7 @@ void PartitionedArray<Element, rank>::clamp_array(
 
     // Resize partitions at the sides of the array that are too large
 
-    // // Offset to iterate over partition along one of the dimensions
+    // Offset to iterate over partition along one of the dimensions
     // Index partition_idx_offset;
 
     // Begin and end indices of all partitions in the array
@@ -501,294 +501,21 @@ void PartitionedArray<Element, rank>::create(
             // component. The partition will become ready once it is
             // allocated.
             _partitions[partition_idx] = hpx::async(
-                hpx::util::annotated_function(
+                    hpx::util::annotated_function(
 
-                    [locality, max_partition_shape]()
-                    {
-                        return Partition{locality, max_partition_shape};
-                    },
+                        [locality, max_partition_shape]()
+                        {
+                            return Partition{locality, max_partition_shape};
+                        },
 
-                "instantiate_partition"));
+                    "instantiate_partition")
+                );
 
         }
 
     }
 
     clamp_array(shape_in_partitions, max_partition_shape);
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // if(nr_localities == 1) {
-    //     // hpx::future<std::vector<client_type>> f =
-    //     //         hpx::new_<client_type[]>(here, num, ...);
-
-    //     using Partition = PartitionT<Partitions>;
-
-    //     hpx::future<std::vector<Partition>> f =
-    //         hpx::new_<Partition[]>(
-    //             hpx::find_here(), nr_partitions, max_partition_shape);
-
-    //     f.wait();
-    //     auto new_partitions = f.get();
-
-    //     std::move(
-    //         new_partitions.begin(), new_partitions.end(), _partitions.begin());
-    // }
-    // else {
-    //     // Don't put partitions on the root locality where the main tasks
-    //     // are created. This might be faster.
-    //     auto locality_idx =
-    //         [nr_partitions, nr_localities](
-    //             Index const p) -> Index
-    //         {
-    //             // return nr_localities == 1 ? 0 :
-    //             //     map_to_range(0lu, nr_partitions - 1, 1lu, nr_localities - 1, p);
-
-    //             return map_to_range(
-    //                 Index{0}, nr_partitions - 1, Index{0}, nr_localities - 1, p);
-    //         };
-
-    //     // Create array partitions. Each of them will be located on a certain
-    //     // locality. Which one exactly is determined by locality_idx.
-    //     for(Index partition_idx = 0; partition_idx < nr_partitions;
-    //             ++partition_idx) {
-
-    //         auto idx = locality_idx(partition_idx);
-
-    //         // assert((nr_localities == 1 && idx == 0) || idx > 0);
-
-    //         _partitions[partition_idx] = Partition{
-    //             localities[idx], max_partition_shape};
-
-    //     }
-    // }
-
-
-
-
-
-
-
-    /// typename Partitions::Index partition_idx = 0;
-
-    /// // Iterate over all localities that got array partition components
-    /// // instantiated on them
-    /// for(BulkLocalityResult& r: f.get()) {
-    ///     assert(partition_idx < _partitions.size());
-
-    ///     // r: pair<id_type, vector<id_type>>
-
-    ///     // Obtain locality number from locality id
-    ///     // TODO Why not use the locality id itself?
-    ///     // std::uint32_t const locality_nr =
-    ///     //     hpx::naming::get_locality_id_from_id(r.first);
-
-    ///     // Iterate over all IDs of server components started on the
-    ///     // locality currently iterated over
-    ///     for(hpx::id_type const& id: r.second) {
-
-    ///         // Assign this partition to a cell in the partitions array
-    ///         _partitions.data()[partition_idx] = PartitionClient{id};
-    ///         //     // Partition{5};
-    ///         //     // Partition{id, max_partition_shape, locality_nr};
-
-    ///         // if(locality_nr == this_locality_nr) {
-    ///         //     ptrs.push_back(
-    ///         //         hpx::get_ptr<PartitionServer>(id).then(
-    ///         //             [this, partition_idx](auto&& future)
-    ///         //             {
-    ///         //                 _partitions.data()[partition_idx].set_local_data(
-    ///         //                     future.get());
-    ///         //             }));
-    ///         // }
-
-    ///         ++partition_idx;
-    ///     }
-    /// }
-
-    /// HPX_ASSERT(partition_idx == nr_partitions);
-
-
-
-    // clamp_array(shape_in_partitions, max_partition_shape);
-
-
-
-
-
-
-    //     //     // Linear index of partition
-    //     //     Index partition_idx = 0;
-
-    //     //     // Extents of partitions untill now, in two adjacent partitions
-    //     //     Index old_extent = 0;
-    //     //     Index new_extent;
-
-    //     //     // Iterate over all partitions
-    //     //     for(std::size_t p = 0; p < _partitions.shape()[d]; ++p) {
-
-    //     //         auto const partition = _partitions[partition_idx];
-
-    //     //         // Note: blocks for shape to be retrieved
-    //     //         new_extent = old_extent + partition.shape().get()[d];
-
-    //     //         // Last element in this partition must not extent beyond
-    //     //         // the array
-    //     //         LUE_ASSERT(
-    //     //             new_extent <= _shape[d],
-    //     //             "Along dimension {}, the last element of partition {} "
-    //     //             "extents beyond the array ({} > {})",
-    //     //             d, p, new_extent, _shape[d]);
-
-    //     //         old_extent = new_extent;
-    //     //         partition_idx += partition_idx_offset;
-    //     //     }
-
-    //     //     // Last element of the last partition must be the last element
-    //     //     // of the array
-    //     //     LUE_ASSERT(
-    //     //         new_extent == _shape[d],
-    //     //         "exents of partitions along dimension {} "
-    //     //         "do not sum up to extent of array ({} != {})",
-    //     //         d, old_extent, _shape[d]);
-
-    //     //     partition_idx_offset *= _partitions.shape()[d];
-
-
-    // }
-
-
-    //     // ArrayPartitionDefinition<Index, rank> partition(
-    //     //     Shape<Index, rank> const& area_shape,
-    //     //     Shape<Index, rank> const& partition_shape,
-    //     //     Shape<Index, rank> const& shape_in_partitions,
-    //     //     std::size_t const idx)
-
-    //     // TODO Here we iterate over all partitions, calculating the
-    //     //     partition shape it should have. This can be improved by
-    //     //     only iterating over bordering partitions.
-    //     //     Possibly integrate with logic above.
-
-    //     for(std::size_t p = 0; p < nr_partitions; ++p) {
-    //         auto const& partition{_partitions.data()[p]};
-    //         auto const current_partition_definition = partition.definition();
-    //         auto const required_partition_definition =
-    //             lue::partition(
-    //                 _definition.shape(), max_partition_shape,
-    //                 _partitions.definition().shape(), p);
-
-    //         HPX_ASSERT(
-    //             current_partition_definition.start() ==
-    //             required_partition_definition.start());
-
-    //         if(current_partition_definition.shape() !=
-    //                 required_partition_definition.shape()) {
-    //             PartitionClient client{partition.id()};
-
-    //             // TODO Fix on machine with multiple localities
-    //             assert(false);
-    //             // client.resize(required_partition_definition.shape());
-    //         }
-
-    //     }
-
-
-    //     // std::vector<std::pair<std::size_t, std::size_t>> indices(Data::rank);
-
-    //     // // Begin and end indices along each dimension of the array
-    //     // for(std::size_t d = 0; d < Data::rank; ++d) {
-    //     //     indices[d] = std::make_pair(0, _definition.shape()[d]);
-    //     // }
-
-    //     // // Iterate over all dimensions
-    //     // for(std::size_t d = 0; d < Data::rank; ++d) {
-    //     //     auto const nr_partitions = _definition.shape()[d];
-    //     //     auto const required_extent = _definition.shape()[d];
-    //     //     auto const current_extent = max_partition_shape[d];
-
-    //     //     if(current_extent != required_extent) {
-    //     //         auto indices2 = indices;
-    //     //         indices2[d].first = indices2[d].second - 1;
-
-
-    //     //     }
-    //     // }
-    // }
-
-
-
-    /// // TODO Move up?
-    /// hpx::wait_all(ptrs);
-
-
-    // // Cache the partition shape
-    // _partition_shape = max_partition_shape;
-
-
-
-
-
-
-
-    // // Fixing the size of partitions to avoid race conditions between
-    // // possible reallocations during push back and the continuation
-    // // to set the local partition data
-    // partitions_.resize(nr_partitions);
-    // for (bulk_locality_result const& r : f.get())
-    // {
-    //     using naming::get_locality_id_from_id;
-    //     std::uint32_t locality = get_locality_id_from_id(r.first);
-    //     for (hpx::id_type const& id : r.second)
-    //     {
-    //         std::size_t size = (std::min)(partition_size, size_ - allocated_size);
-    //         partitions_[l] = partition_data(id, size, locality);
-
-    //         if (locality == this_locality)
-    //         {
-    //             ptrs.push_back(
-    //                 get_ptr<partitioned_vector_partition_server>(id).then(
-    //                     util::bind_front(&partitioned_vector::get_ptr_helper,
-    //                         l, std::ref(partitions_))));
-    //         }
-    //         ++l;
-
-    //         allocated_size += size;
-    //         if (++num_part == nr_partitions)
-    //         {
-    //             HPX_ASSERT(allocated_size == size_);
-
-    //             // shrink last partition, if appropriate
-    //             if (size != partition_size)
-    //             {
-    //                 partitioned_vector_partition_client(
-    //                     partitions_[l - 1].partition_)
-    //                     .resize(size);
-    //             }
-    //             break;
-    //         }
-    //         else
-    //         {
-    //             HPX_ASSERT(size == partition_size);
-    //         }
-    //         HPX_ASSERT(l < nr_partitions);
-    //     }
-    // }
-    // HPX_ASSERT(l == nr_partitions);
-
-    // when_all(ptrs).get();
-
-    // // cache our partition size
-    // partition_size_ = get_partition_size();
 
     assert_invariants();
 }

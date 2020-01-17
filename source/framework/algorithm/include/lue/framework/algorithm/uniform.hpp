@@ -59,7 +59,7 @@ public:
 
         return hpx::dataflow(
             hpx::launch::async,
-            hpx::util::annotated_function(
+            // hpx::util::annotated_function(
                 hpx::util::unwrapping(
 
                     [
@@ -81,7 +81,7 @@ public:
                     }
 
                 ),
-                "uniform_partition"),
+                // "uniform_partition"),
 
             partition.data(CopyMode::share));
     }
@@ -149,7 +149,7 @@ template<
 
         futures[p] = hpx::dataflow(
             hpx::launch::async,
-            hpx::util::annotated_function(
+            // hpx::util::annotated_function(
 
                 [action](
                     Partition const& input_partition,
@@ -165,7 +165,7 @@ template<
                         min_value.get(), max_value.get());
                 },
 
-                "uniform_partition_call"),
+                // "uniform_partition_call"),
 
             array.partitions()[p],
             min_value,

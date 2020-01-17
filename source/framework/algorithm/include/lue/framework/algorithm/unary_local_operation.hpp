@@ -19,7 +19,7 @@ template<
     typename Functor>
 OutputPartition unary_local_operation_partition(
     InputPartition const& input_partition,
-    Functor const& functor)
+    Functor functor)
 {
     assert(
         hpx::get_colocation_id(input_partition.get_id()).get() ==
@@ -31,10 +31,10 @@ OutputPartition unary_local_operation_partition(
 
     return hpx::dataflow(
         hpx::launch::async,
-        hpx::util::annotated_function(
+        // hpx::util::annotated_function(
             hpx::util::unwrapping(
 
-                [functor](
+                [functor_=std::move(functor)](
                     InputData&& input_partition_data)
                 {
                     OutputData output_partition_data{
@@ -44,7 +44,7 @@ OutputPartition unary_local_operation_partition(
                         input_partition_data.begin(),
                         input_partition_data.end(),
                         output_partition_data.begin(),
-                        functor);
+                        functor_);
 
                     return OutputPartition{
                         hpx::find_here(),
@@ -52,7 +52,7 @@ OutputPartition unary_local_operation_partition(
                 }
 
             ),
-            "unary_local_operation_partition"),
+            // "unary_local_operation_partition"),
 
         input_partition.data(CopyMode::share));
 }
@@ -91,9 +91,12 @@ PartitionedArrayT<InputArray, OutputElementT<Functor>> unary_local_operation(
 
     for(Index p = 0; p < nr_partitions(input_array); ++p) {
 
+        // This loops will keep AGAS busy for a while, to return the
+        // locality IDs the components are located on. This might be why
+        // Vampir traces may show threads are starving(?).
         output_partitions[p] = hpx::dataflow(
             hpx::launch::async,
-            hpx::util::annotated_function(
+            // hpx::util::annotated_function(
 
                 [action, functor](
                     InputPartition const& input_partition,
@@ -105,7 +108,7 @@ PartitionedArrayT<InputArray, OutputElementT<Functor>> unary_local_operation(
                         functor);
                 },
 
-                "spawn_unary_local_operation_partition"),
+            //     "spawn_unary_local_operation_partition"),
 
             input_array.partitions()[p],
             hpx::get_colocation_id(input_array.partitions()[p].get_id()));
