@@ -1,19 +1,14 @@
-FIXME
 {
-    "nr_time_steps": 20,
-    # "max_tree_depth": 5,
+    "nr_time_steps": 50,
+    "max_tree_depth": 5,
     "array": {
-        # 8 nodes * 50.000 x 50.000
-        "shape": [125000, 125000]
+        # 8 nodes * 15.000 x 15.000
+        "shape": [43000, 43000]
     },
     "partition": {
         "shape": [400, 400],
         "range": {
-            # 1600 x 1600
-            # This size is not too large yet. Probably because of local
-            # operation. Simple model.
-            # "max_nr_elements": 2560000,
-            "max_nr_elements":   4000000,
+            "max_nr_elements": 5130000,
             "multiplier": 2
         }
     }

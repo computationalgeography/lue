@@ -1,71 +1,46 @@
 #pragma once
-#include "lue/framework/core/type_traits.hpp"
-#include <hpx/include/lcos.hpp>
+#include "lue/framework/algorithm/unary_local_operation.hpp"
 
 
 namespace lue {
 namespace detail {
 
 template<
-    typename Partition>
-Partition iterate_per_element_partition(
-    Partition const& partition)
+    typename InputElement>
+class IteratePerElement
 {
-    assert(
-        hpx::get_colocation_id(partition.get_id()).get() ==
-        hpx::find_here());
 
-    using Element = ElementT<Partition>;
-    using InputPartition = Partition;
-    using InputData = DataT<InputPartition>;
+public:
 
-    return hpx::dataflow(
-        hpx::launch::async,
-        hpx::util::unwrapping(
+    static_assert(std::is_integral_v<InputElement>);
 
-            [](
-                hpx::id_type const locality_id,
-                InputData&& partition_data)
-            {
-                // The use of volatile prevends the optimizing compiler
-                // to remove this iteration
-                for(volatile Element nr_iterations: partition_data) {
-                    assert(nr_iterations >= Element{0});
+    using OutputElement = InputElement;
 
-                    while(nr_iterations > Element{0}) {
-                        --nr_iterations;
-                    }
-                }
+    OutputElement operator()(
+        InputElement const& input_element) const
+    {
+        // The use of volatile prevends the optimizing compiler
+        // to remove this iteration
+        volatile InputElement nr_iterations = input_element;
+        assert(nr_iterations >= InputElement{0});
 
-                // Copy the data and move it into a new partition
-                return Partition{locality_id, InputData{partition_data}};
-            }
+        while(nr_iterations > InputElement{0}) {
+            --nr_iterations;
+        }
 
-        ),
-        hpx::get_colocation_id(partition.get_id()),
-        partition.data(CopyMode::share));
-}
+        return input_element;
+    }
+
+};
 
 }  // namespace detail
-
-
-template<
-    typename Partition>
-struct IteratePerElementPartitionAction:
-    hpx::actions::make_action<
-        decltype(&detail::iterate_per_element_partition<Partition>),
-        &detail::iterate_per_element_partition<Partition>,
-        IteratePerElementPartitionAction<Partition>>
-{};
 
 
 /*!
     @brief      Per cell in a partitioned array, iterate a number of
                 times before copying the cell to the result
-    @tparam     Element Type of elements in the arrays
-    @tparam     rank Rank of the input array
-    @tparam     Array Class template of the type of the arrays
-    @param      array Partitioned array
+    @tparam     Array Type of the input and output partitioned arrays
+    @param      array Input partitioned array
     @return     New partitioned array
 
     This algorithm has the same effect as the copy algorithm, but spends
@@ -73,38 +48,12 @@ struct IteratePerElementPartitionAction:
     of load per cell.
 */
 template<
-    typename Element,
-    Rank rank,
-    template<typename, Rank> typename Array>
-Array<Element, rank> iterate_per_element(
-    Array<Element, rank> const& array)
+    typename Array>
+Array iterate_per_element(
+    Array const& array)
 {
-    using Array_ = Array<Element, rank>;
-    using Partition = PartitionT<Array_>;
-    using Partitions = PartitionsT<Array_>;
-
-    IteratePerElementPartitionAction<Partition> action;
-    Partitions output_partitions{shape_in_partitions(array)};
-
-    for(Index p = 0; p < nr_partitions(array); ++p) {
-
-        output_partitions[p] = hpx::dataflow(
-            hpx::launch::async,
-
-            [action](
-                Partition const& input_partition)
-            {
-                return action(
-                    hpx::get_colocation_id(
-                        hpx::launch::sync, input_partition.get_id()),
-                    input_partition);
-            },
-
-            array.partitions()[p]);
-
-    }
-
-    return Array_{shape(array), std::move(output_partitions)};
+    return unary_local_operation(
+        array, detail::IteratePerElement<ElementT<Array>>{});
 }
 
 }  // namespace lue
