@@ -83,7 +83,7 @@ PartitionedArrayT<InputArray, OutputElementT<Functor>> unary_local_operation(
 
     using OutputArray = PartitionedArrayT<InputArray, OutputElementT<Functor>>;
     using OutputPartitions = PartitionsT<OutputArray>;
-    using OutputPartition = PartitionT<InputArray>;
+    using OutputPartition = PartitionT<OutputArray>;
 
     detail::UnaryLocalOperationPartitionAction<
         InputPartition, OutputPartition, Functor> action;
