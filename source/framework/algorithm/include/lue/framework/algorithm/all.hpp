@@ -81,6 +81,7 @@ template<
 hpx::future<Element> all(
     Array<Element, rank>const& array)
 {
+    // Unary aggregate operation
     static_assert(std::is_convertible_v<Element, bool>);
 
     using InputArray = Array<Element, rank>;
