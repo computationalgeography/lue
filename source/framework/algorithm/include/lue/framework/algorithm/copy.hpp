@@ -74,6 +74,7 @@ Array<Element, rank> copy(
                 Partition const& input_partition)
             {
                 return action(
+                    // FIXME
                     hpx::get_colocation_id(
                         hpx::launch::sync, input_partition.get_id()),
                     input_partition);
