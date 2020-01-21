@@ -1,3 +1,4 @@
+#pragma once
 #include "lue/framework/core/type_traits.hpp"
 #include <hpx/include/lcos.hpp>
 
@@ -5,7 +6,7 @@
 namespace lue {
 
 // If this is needed elsewhere, put it in algorithm/functor_traits.hpp
-// Refactor with focal_operation.hpp
+// Refactor with binary_operation, focal_operation.hpp
 template<
     typename Functor>
 using OutputElementT = typename Functor::OutputElement;
@@ -34,7 +35,7 @@ OutputPartition unary_local_operation_partition(
         // hpx::util::annotated_function(
             hpx::util::unwrapping(
 
-                [functor_=std::move(functor)](
+                [functor](
                     InputData&& input_partition_data)
                 {
                     OutputData output_partition_data{
@@ -44,7 +45,7 @@ OutputPartition unary_local_operation_partition(
                         input_partition_data.begin(),
                         input_partition_data.end(),
                         output_partition_data.begin(),
-                        functor_);
+                        functor);
 
                     return OutputPartition{
                         hpx::find_here(),
