@@ -11,10 +11,10 @@ template<
     typename Partition,
     typename Element>
 Partition all_partition(
-    Partition const& partition)
+    Partition const& input_partition)
 {
     assert(
-        hpx::get_colocation_id(partition.get_id()).get() ==
+        hpx::get_colocation_id(input_partition.get_id()).get() ==
         hpx::find_here());
 
     using InputData = DataT<Partition>;
@@ -34,21 +34,24 @@ Partition all_partition(
 
             [shape](
                 hpx::id_type const locality_id,
-                InputData&& partition_data)
+                InputData&& input_partition_data)
             {
                 // TODO Update for case where Element is not bool
                 // If one of the elements evaluates to false, then the result
                 // is false
                 Element result = !(std::find(
-                    partition_data.begin(), partition_data.end(),
-                    Element{0}) != partition_data.end());
+                    input_partition_data.begin(), input_partition_data.end(),
+                    Element{0}) != input_partition_data.end());
 
-                return Partition{locality_id, OutputData{shape, result}};
+                TargetIndex const target_idx =
+                    input_partition_data.target_idx();
+                return Partition{
+                    locality_id, OutputData{shape, result, target_idx}};
             }
 
         ),
-        hpx::get_colocation_id(partition.get_id()),
-        partition.data(CopyMode::share));
+        hpx::get_colocation_id(input_partition.get_id()),
+        input_partition.data(CopyMode::share));
 }
 
 }  // namespace detail
@@ -89,7 +92,8 @@ hpx::future<Element> all(
 
     using OutputPartitions = PartitionsT<InputArray, Element>;
 
-    OutputPartitions output_partitions{shape_in_partitions(array)};
+    OutputPartitions output_partitions{
+        shape_in_partitions(array), scattered_target_index()};
     AllPartitionAction<InputPartition, Element> action;
 
     for(Index p = 0; p < nr_partitions(array); ++p) {

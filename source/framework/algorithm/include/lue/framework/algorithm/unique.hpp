@@ -38,7 +38,9 @@ PartitionT<Partition, ElementT<Partition>, 1> unique_partition(
                 assert(nr_unique_values <= partition_data.nr_elements());
 
                 // Copy unique values from set into output array
-                OutputData output_data{OutputShape{{nr_unique_values}}};
+                TargetIndex const target_idx = partition_data.target_idx();
+                OutputData output_data{
+                    OutputShape{{nr_unique_values}}, target_idx};
                 assert(output_data.nr_elements() == nr_unique_values);
                 std::copy(
                     unique_values.begin(), unique_values.end(),
@@ -100,7 +102,8 @@ hpx::future<Array<Element, 1>> unique(
     using OutputData = DataT<OutputPartition>;
     using OutputShape = ShapeT<OutputArray>;
 
-    OutputPartitions output_partitions{OutputShape{{nr_partitions(array)}}};
+    OutputPartitions output_partitions{
+        OutputShape{{nr_partitions(array)}}, scattered_target_index()};
     UniquePartitionAction<InputPartition> action;
 
     for(Index p = 0; p < nr_partitions(array); ++p) {
@@ -152,7 +155,7 @@ hpx::future<Array<Element, 1>> unique(
                 OutputShape shape_in_partitions{{1}};
 
                 // Copy unique values into an array-data collection
-                OutputData result_values{shape};
+                OutputData result_values{shape, scattered_target_index()};
                 std::copy(
                     unique_values.begin(), unique_values.end(),
                     result_values.begin());
@@ -163,7 +166,8 @@ hpx::future<Array<Element, 1>> unique(
 
                 // Store partition component in a collection
                 OutputPartitions result_partitions{
-                    shape_in_partitions, std::move(result_partition)};
+                    shape_in_partitions, std::move(result_partition),
+                    scattered_target_index()};
 
                 // Store collection of partitions in a partitioned array
                 OutputArray result_array{shape, std::move(result_partitions)};

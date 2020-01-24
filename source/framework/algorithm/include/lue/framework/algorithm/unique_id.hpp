@@ -31,7 +31,10 @@ template<
             [partition, start_value](
                 Shape const& shape) mutable
             {
-                Data data{shape};
+                TargetIndex const target_idx =
+                    hpx::get_ptr<Partition>(partition).get()->target_idx();
+
+                Data data{shape, target_idx};
                 std::iota(data.begin(), data.end(), start_value);
 
                 // This runs asynchronous and returns a future<void>

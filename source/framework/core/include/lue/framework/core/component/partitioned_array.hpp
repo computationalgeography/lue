@@ -449,14 +449,15 @@ void PartitionedArray<Element, rank>::create(
 {
     // Create the array partitions that, together make up the partitioned
     // array. Note that the extent of this array might be too large,
-    // given that we use max_partition_shape.
+    // given that we use max_partition_shape. This will be fixed using
+    // clamp_array.
 
     Count const nr_partitions = lue::nr_elements(shape_in_partitions);
 
     // Create array containing partitions. Each of these partitions will be
     // a component client instance referring to a, possibly remote,
     // component server instance.
-    _partitions = Partitions{shape_in_partitions};
+    _partitions = Partitions{shape_in_partitions, scattered_target_index()};
     assert(_partitions.nr_elements() == nr_partitions);
 
     std::vector<hpx::naming::id_type> const localities =

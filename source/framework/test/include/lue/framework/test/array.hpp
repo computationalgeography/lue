@@ -74,7 +74,9 @@ Array create_partitioned_array(
         auto elements_it = elements.begin();
 
         for(Partition& partition: array.partitions()) {
-            partition.set_data(Data{partition.shape().get(), *elements_it});
+            partition.set_data(
+                Data{partition.shape().get(), *elements_it,
+                    scattered_target_index()});
             ++elements_it;
         }
     }

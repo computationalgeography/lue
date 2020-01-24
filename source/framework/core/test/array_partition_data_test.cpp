@@ -1,7 +1,6 @@
 #define BOOST_TEST_MODULE lue framework core array_partition_data
-#include <hpx/config.hpp>
-#include <boost/test/unit_test.hpp>
 #include "lue/framework/core/array_partition_data.hpp"
+#include "lue/framework/test/hpx_unit_test.hpp"
 #include "lue/framework/test/stream.hpp"
 #include <algorithm>
 
@@ -47,7 +46,7 @@ BOOST_AUTO_TEST_CASE(default_construct)
 BOOST_AUTO_TEST_CASE(construct_initialized_definition)
 {
     Shape shape{{30, 40}};
-    Data data{shape};
+    Data data{shape, lue::scattered_target_index()};
 
     BOOST_CHECK_EQUAL(data.shape(), shape);
 
@@ -63,7 +62,7 @@ BOOST_AUTO_TEST_CASE(construct_initialized_definition)
 BOOST_AUTO_TEST_CASE(construct_initialized_definition_and_value)
 {
     Shape shape{{30, 40}};
-    Data data{shape, 5};
+    Data data{shape, 5, lue::scattered_target_index()};
 
     BOOST_CHECK_EQUAL(data.shape(), shape);
 
@@ -83,7 +82,7 @@ BOOST_AUTO_TEST_CASE(construct_initializer_list)
         1, 2,
         3, 4,
         5, 6,
-    }};
+    }, scattered_target_index()};
 
     BOOST_CHECK_EQUAL(data.shape(), shape);
 
@@ -105,7 +104,7 @@ BOOST_AUTO_TEST_CASE(assign)
 
     Shape shape{{30, 40}};
 
-    data = Data{shape, 5};
+    data = Data{shape, 5, lue::scattered_target_index()};
 
     BOOST_CHECK_EQUAL(data.shape(), shape);
 
@@ -134,7 +133,7 @@ BOOST_AUTO_TEST_CASE(scalar_array)
     }
 
     {
-        Data data{5};
+        Data data{5, lue::scattered_target_index()};
         BOOST_CHECK_EQUAL(data.shape(), shape);
         BOOST_CHECK(!data.empty());
         BOOST_CHECK_EQUAL(data.nr_elements(), 1);
@@ -155,7 +154,7 @@ BOOST_AUTO_TEST_CASE(slice_1d)
 
     Shape shape{{nr_elements}};
 
-    Data data{shape};
+    Data data{shape, lue::scattered_target_index()};
     std::iota(data.begin(), data.end(), 0);
 
     {
@@ -198,7 +197,7 @@ BOOST_AUTO_TEST_CASE(slice_2d)
 
     Shape shape{{nr_rows, nr_cols}};
 
-    Data data{shape};
+    Data data{shape, lue::scattered_target_index()};
     std::iota(data.begin(), data.end(), 0);
 
     {
