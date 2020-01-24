@@ -26,43 +26,6 @@ BOOST_AUTO_TEST_CASE(construct_new)
 }
 
 
-BOOST_AUTO_TEST_CASE(construct_copy)
-{
-    auto source_buffer = std::make_unique<Element[]>(size);
-    SharedBuffer buffer{source_buffer.get(), size, SharedBuffer::Mode::copy};
-    BOOST_CHECK_EQUAL(buffer.size(), size);
-    BOOST_CHECK(buffer.data() != source_buffer.get());
-
-    // SharedBuffer must copy the elements from the source buffer. This must not
-    // crash because of double delete...
-}
-
-
-BOOST_AUTO_TEST_CASE(construct_use)
-{
-    std::size_t const size = 10;
-    auto source_buffer = std::make_unique<Element[]>(size);
-    SharedBuffer buffer{source_buffer.get(), size, SharedBuffer::Mode::use};
-    BOOST_CHECK_EQUAL(buffer.size(), size);
-    BOOST_CHECK(buffer.data() == source_buffer.get());
-
-    // SharedBuffer must not delete the source buffer. This must not crash
-    // because of double delete...
-}
-
-
-BOOST_AUTO_TEST_CASE(construct_own)
-{
-    auto source_buffer = std::make_unique<Element[]>(size);
-    Element* source_pointer = source_buffer.release();
-    SharedBuffer buffer{source_pointer, size, SharedBuffer::Mode::own};
-    BOOST_CHECK_EQUAL(buffer.size(), size);
-    BOOST_CHECK(buffer.data() == source_pointer);
-
-    // SharedBuffer must delete the source buffer. This must not leak...
-}
-
-
 BOOST_AUTO_TEST_CASE(resize)
 {
     std::size_t const new_size = 15;

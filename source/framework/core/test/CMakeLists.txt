@@ -2,7 +2,6 @@ add_unit_tests(
     SCOPE lue_framework_core
     NAMES
         array_test
-        array_partition_data_test
         array_partition_definition_test
         array_visitor_test
         configuration_entry_test
@@ -21,6 +20,7 @@ add_unit_tests(
     # Tests that use HPX must separate UTF arguments from HPX arguments
     UTF_ARGUMENTS_SEPARATOR "--"
     NAMES
+        array_partition_data_test
         array_partition_test
         partitioned_array_test
     LINK_LIBRARIES
@@ -29,6 +29,7 @@ add_unit_tests(
 )
 
 # Targets that depend on HPX
+hpx_setup_target(lue_framework_core_array_partition_data_test)
 hpx_setup_target(lue_framework_core_array_partition_test)
 hpx_setup_target(lue_framework_core_partitioned_array_test)
 

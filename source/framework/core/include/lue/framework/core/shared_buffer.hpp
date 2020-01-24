@@ -5,12 +5,6 @@
 #include <memory>
 
 
-// - Get rid of shared pointer? Simplifies destruction.
-//     - No, we need to be able to copy buffers. The pointer knows when
-//         to delete.
-// - Make it possible to use a PartitionAllocator
-
-
 namespace lue {
 
 enum class CopyMode
@@ -82,32 +76,6 @@ public:
     using iterator = Element*;
     using const_iterator = Element const*;
 
-    enum class Mode
-    {
-        /*!
-            @brief      Copy the elements from the array
-
-            Upon construction, we must allocate our own array and copy
-            the elemtents from the array passed in.
-        */
-        copy = 0,
-
-        /*!
-            @brief      Use the elements in the array
-
-            We're not allowed to delete the array.
-        */
-        use = 1,
-
-        /*!
-            @brief      Own the elements in the array
-
-            After we're done using the array, we are responsible for
-            deleting it.
-        */
-        own = 2
-    };
-
     /*!
         @brief      Default-construct an instance
 
@@ -145,105 +113,7 @@ public:
         assert_invariants();
     }
 
-    /*!
-        @brief      Construct an instance based on an existing array
-        @param      elements Pointer to existing array
-        @param      count Size of array
-        @param      mode Whether or not we should copy or use the array
-                    passed in
-        @exception  std::runtime_error If the @a mode passed in is
-                    Mode::own. You cannot take ownership of the read-only
-                    array passed in.
-    */
-    SharedBuffer(
-        Element const* elements,
-        Size const size,
-        Mode const mode=Mode::copy,
-        Allocator const& allocator=Allocator{}):
-
-        _ptr{},
-        _size{size},
-        _allocator{allocator}
-
-    {
-        assert(
-            (size == 0 && elements == nullptr) ||
-            (size > 0 && elements != nullptr));
-
-        switch(mode) {
-            case(Mode::copy): {
-                // Create new array and copy elements
-                allocate(size);
-                std::uninitialized_copy(elements, elements + size, begin());
-                break;
-            }
-            case(Mode::use): {
-                // Use the elements passed in, and do not delete at the end
-                _ptr = Pointer{const_cast<Element*>(elements), do_not_delete};
-                break;
-            }
-            case(Mode::own): {
-                throw std::runtime_error(
-                    "Cannot take ownership of read-only buffer");
-                break;
-            }
-        }
-
-        assert_invariants();
-    }
-
-    /*!
-        @brief      Construct an instance based on an existing array
-        @param      elements Pointer to existing array
-        @param      count Size of array
-        @param      mode Whether or not we should copy, use, or own
-                    the array passed in
-    */
-    SharedBuffer(
-        Element* elements,
-        Size const size,
-        Mode const mode=Mode::copy,
-        Allocator const& allocator=Allocator{}):
-
-        _ptr{},
-        _size{size},
-        _allocator{allocator}
-
-    {
-        assert(
-            (size == 0 && elements == nullptr) ||
-            (size > 0 && elements != nullptr));
-
-        using namespace std::placeholders;
-
-        switch(mode) {
-            case(Mode::copy): {
-                // Create new array and copy elements
-                allocate(size);
-                std::uninitialized_copy(elements, elements + size, begin());
-                break;
-            }
-            case(Mode::use): {
-                // Use the elements passed in, and do not delete at the end
-                _ptr = Pointer{elements, do_not_delete};
-                break;
-            }
-            case(Mode::own): {
-                // Use the elements passed in, and delete at the end
-                auto deleter =
-                    [allocator=this->_allocator, size](Element* ptr)
-                    {
-                        do_delete(ptr, std::move(allocator), size);
-                    };
-                _ptr = Pointer{elements, deleter};
-                break;
-            }
-        }
-
-        assert_invariants();
-    }
-
-    // SharedBuffer(SharedBuffer const& other)=default;
+    // SharedBuffer(SharedBuffer const& other)=delete;
 
     /*!
         @brief      Copy-construct an instance
@@ -258,24 +128,29 @@ public:
     */
     SharedBuffer(
         SharedBuffer const& other,
-        CopyMode const mode=CopyMode::share):
+        CopyMode const mode=CopyMode::share,
+        Allocator const& allocator=Allocator{}):
 
         _ptr{},
         _size{other._size},
-        _allocator{other._allocator}
+        _allocator{allocator}
 
     {
         switch(mode) {
             case CopyMode::copy: {
+
                 // Create new array and copy elements
                 allocate(_size);
                 std::uninitialized_copy(other.begin(), other.end(), begin());
                 break;
+
             }
             case CopyMode::share: {
+
                 // Share array between instances
                 _ptr = other._ptr;
                 break;
+
             }
         }
 

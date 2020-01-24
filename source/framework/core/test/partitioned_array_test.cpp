@@ -127,7 +127,7 @@ BOOST_AUTO_TEST_CASE(array_with_array_partitions)
     Shape shape_in_partitions{{nr_rows, nr_cols}};
 
     Partitions partitions{};
-    partitions = Partitions{shape_in_partitions};
+    partitions = Partitions{shape_in_partitions, lue::scattered_target_index()};
 
     for(auto& partition: partitions) {
         partition = Partition{};

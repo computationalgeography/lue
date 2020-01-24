@@ -70,6 +70,11 @@ public:
 
     Count          nr_elements         () const;
 
+    TargetIndex target_idx() const
+    {
+        return _data.target_idx();
+    }
+
 private:
 
     //! Data of this array partition
@@ -210,7 +215,7 @@ ArrayPartition<Element, rank>::ArrayPartition(
     Shape const& shape):
 
     Base{},
-    _data{shape}
+    _data{shape, scattered_target_index()}
 
 {
 }
@@ -231,7 +236,7 @@ ArrayPartition<Element, rank>::ArrayPartition(
     Element value):
 
     Base{},
-    _data{shape, value}
+    _data{shape, value, scattered_target_index()}
 
 {
     // Element is assumed to be a trivial type. Otherwise, don't pass
@@ -252,7 +257,7 @@ ArrayPartition<Element, rank>::ArrayPartition(
     Data const& data):
 
     Base{},
-    _data{data, CopyMode::copy}
+    _data{data, CopyMode::copy, data.target_idx()}
 
 {
 }
@@ -316,7 +321,9 @@ typename ArrayPartition<Element, rank>::Data
         return _data;
     }
     else {
-        return Data{_data, mode};
+        // For now, assume the new instance needs to be located by the
+        // same target as the source instance
+        return Data{_data, mode, _data.target_idx()};
     }
 }
 
@@ -358,7 +365,9 @@ void ArrayPartition<Element, rank>::set_data(
         _data = data;
     }
     else {
-        _data = Data{data, mode};
+        // Keep the instance at the same NUMA domain as it is already
+        // located at
+        _data = Data{data, mode, _data.target_idx()};
     }
 }
 
