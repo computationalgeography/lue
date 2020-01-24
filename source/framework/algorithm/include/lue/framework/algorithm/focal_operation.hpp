@@ -158,7 +158,7 @@ typename Functor::OutputElement border(
 
 
 // If this is needed elsewhere, put it in algorithm/functor_traits.hpp
-// Refactor with unary_local_operation.hpp
+// Refactor with unary_local_operation.hpp, binary_local_operation.hpp
 template<
     typename Functor>
 using OutputElementT = typename Functor::OutputElement;
@@ -467,7 +467,10 @@ OutputPartition focal_operation_partition(
                         assert(nr_rows >= kernel.size());
                         assert(nr_cols >= kernel.size());
 
-                        OutputData output_data{partition_data.shape()};
+                        TargetIndex const target_idx =
+                            partition_data.target_idx();
+                        OutputData output_data{
+                            partition_data.shape(), target_idx};
 
                         // rf, cf are indices of focal cell in array
                         // rk, ck are indices of first cell in array
@@ -1081,7 +1084,8 @@ auto spawn_focal_operation_partition(
                     hpx::id_type const locality_id)
                 {
                     Partitions partitions{
-                        Shape{{3, 3}}, partitions_.begin(), partitions_.end()};
+                        Shape{{3, 3}}, partitions_.begin(), partitions_.end(),
+                        scattered_target_index()};
 
                     return action(locality_id, partitions, kernel, functor);
                 }
@@ -1178,7 +1182,8 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
     //     +----+----+
     //     | SW | SE |
     //     +----+----+
-    InputPartitions halo_corner_partitions{Shape{{2, 2}}};
+    InputPartitions halo_corner_partitions{
+        Shape{{2, 2}}, scattered_target_index()};
 
     // North-west corner halo partition
     halo_corner_partitions(0, 0) = spawn_create_halo_partition(
@@ -1206,7 +1211,7 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
     //     | S | S | S |
     //     +---+---+---+
     InputPartitions halo_longitudinal_side_partitions{
-        Shape{{2, nr_partitions1}}};
+        Shape{{2, nr_partitions1}}, scattered_target_index()};
 
     for(auto const [rh, rp]: {
             std::array<Index, 2>{{0, 0}},
@@ -1245,7 +1250,7 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
     //     | W | E |
     //     +---+---+
     InputPartitions halo_latitudinal_sides_partitions{
-        Shape{{nr_partitions0, 2}}};
+        Shape{{nr_partitions0, 2}}, scattered_target_index()};
 
     for(Index rp = 0; rp < nr_partitions0; ++rp) {
 
@@ -1282,12 +1287,13 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
     // that performs the calculations.
     FocalOperationPartitionAction<
         InputPartitions, OutputPartition, Kernel, Functor> action;
-    OutputPartitions output_partitions{shape_in_partitions(input_array)};
+    OutputPartitions output_partitions{
+        shape_in_partitions(input_array), scattered_target_index()};
 
     assert(nr_partitions0 > 0);
     assert(nr_partitions1 > 0);
 
-    InputPartitions local_input_partitions{Shape{{3, 3}}};
+    InputPartitions local_input_partitions{Shape{{3, 3}}, scattered_target_index()};
 
     // North-west corner partition
     {

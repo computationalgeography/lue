@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/framework/core/numa_domain.hpp"
 #include "lue/framework/core/type_traits.hpp"
 #include <hpx/include/lcos.hpp>
 
@@ -30,32 +31,31 @@ OutputPartition unary_local_operation_partition(
 
     using OutputData = DataT<OutputPartition>;
 
-    return hpx::dataflow(
-        hpx::launch::async,
-        // hpx::util::annotated_function(
-            hpx::util::unwrapping(
+    auto const input_partition_server_ptr{hpx::get_ptr(input_partition).get()};
+    auto const& input_partition_server{*input_partition_server_ptr};
 
-                [functor](
-                    InputData&& input_partition_data)
-                {
-                    OutputData output_partition_data{
-                        input_partition_data.shape()};
+    InputData input_partition_data{
+        input_partition_server.data(CopyMode::share)};
+    TargetIndex const target_idx = input_partition_data.target_idx();
 
-                    std::transform(
-                        input_partition_data.begin(),
-                        input_partition_data.end(),
-                        output_partition_data.begin(),
-                        functor);
+    return hpx::async(
+        numa_domain_executor(target_idx),
 
-                    return OutputPartition{
-                        hpx::find_here(),
-                        std::move(output_partition_data)};
-                }
+        [functor, input_partition_data=std::move(input_partition_data), target_idx]()
+        {
+            OutputData output_partition_data{
+                input_partition_data.shape(), target_idx};
 
-            ),
-            // "unary_local_operation_partition"),
+            std::transform(
+                input_partition_data.begin(),
+                input_partition_data.end(),
+                output_partition_data.begin(),
+                functor);
 
-        input_partition.data(CopyMode::share));
+            return OutputPartition{
+                hpx::find_here(),
+                std::move(output_partition_data)};
+        });
 }
 
 
@@ -88,7 +88,8 @@ PartitionedArrayT<InputArray, OutputElementT<Functor>> unary_local_operation(
 
     detail::UnaryLocalOperationPartitionAction<
         InputPartition, OutputPartition, Functor> action;
-    OutputPartitions output_partitions{shape_in_partitions(input_array)};
+    OutputPartitions output_partitions{
+        shape_in_partitions(input_array), scattered_target_index()};
 
     for(Index p = 0; p < nr_partitions(input_array); ++p) {
 

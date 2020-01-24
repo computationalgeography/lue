@@ -47,7 +47,9 @@ PartitionT<Partition, OutputElement> sum_partition(
                     partition_data.begin(), partition_data.end(),
                     OutputElement{0});
 
-                return Partition{locality_id, OutputData{shape, result}};
+                TargetIndex const target_idx = partition_data.target_idx();
+                return Partition{
+                    locality_id, OutputData{shape, result, target_idx}};
             }
 
         ),
@@ -92,7 +94,8 @@ hpx::future<OutputElement> sum(
 
     using OutputPartitions = PartitionsT<InputArray, OutputElement>;
 
-    OutputPartitions output_partitions{shape_in_partitions(array)};
+    OutputPartitions output_partitions{
+        shape_in_partitions(array), scattered_target_index()};
     SumPartitionAction<InputPartition, OutputElement> action;
 
     for(Index p = 0; p < nr_partitions(array); ++p) {

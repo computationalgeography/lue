@@ -69,8 +69,10 @@ public:
                         input_partition_data1.shape() ==
                         input_partition_data2.shape());
 
+                    TargetIndex const target_idx =
+                        input_partition_data1.target_idx();
                     OutputData output_partition_data{
-                        input_partition_data1.shape()};
+                        input_partition_data1.shape(), target_idx};
 
                     std::transform(
                         input_partition_data1.begin(),
@@ -136,8 +138,10 @@ public:
                 [input_scalar, functor](
                     InputData&& input_partition_data)
                 {
+                    TargetIndex const target_idx =
+                        input_partition_data.target_idx();
                     OutputData output_partition_data{
-                        input_partition_data.shape()};
+                        input_partition_data.shape(), target_idx};
 
                     std::transform(
                         input_partition_data.begin(),
@@ -205,8 +209,10 @@ public:
                 [input_scalar, functor](
                     InputData&& input_partition_data)
                 {
+                    TargetIndex const target_idx =
+                        input_partition_data.target_idx();
                     OutputData output_partition_data{
-                        input_partition_data.shape()};
+                        input_partition_data.shape(), target_idx};
 
                     std::transform(
                         input_partition_data.begin(),
@@ -275,7 +281,8 @@ Array<OutputElementT<Functor>, rank> binary_local_operation(
 
     detail::BinaryLocalOperationPartitionAction<
         InputPartition, InputPartition, OutputPartition, Functor> action;
-    OutputPartitions output_partitions{shape_in_partitions(input_array1)};
+    OutputPartitions output_partitions{
+        shape_in_partitions(input_array1), scattered_target_index()};
 
     for(Index p = 0; p < nr_partitions(input_array1); ++p) {
 
@@ -323,7 +330,8 @@ Array<OutputElementT<Functor>, rank> binary_local_operation(
 
     detail::BinaryLocalOperationPartitionAction<
         InputPartition, InputElement, OutputPartition, Functor> action;
-    OutputPartitions output_partitions{shape_in_partitions(input_array)};
+    OutputPartitions output_partitions{
+        shape_in_partitions(input_array), scattered_target_index()};
 
     for(Index p = 0; p < nr_partitions(input_array); ++p) {
 
@@ -371,7 +379,8 @@ Array<OutputElementT<Functor>, rank> binary_local_operation(
 
     detail::BinaryLocalOperationPartitionAction<
         InputElement, InputPartition, OutputPartition, Functor> action;
-    OutputPartitions output_partitions{shape_in_partitions(input_array)};
+    OutputPartitions output_partitions{
+        shape_in_partitions(input_array), scattered_target_index()};
 
     for(Index p = 0; p < nr_partitions(input_array); ++p) {
 

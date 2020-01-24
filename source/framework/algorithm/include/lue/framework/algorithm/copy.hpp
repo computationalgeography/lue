@@ -9,25 +9,29 @@ namespace detail {
 /*!
     @brief      Return a new copy the array partition passed in
     @tparam     Partition Client class of partition component
-    @param      partition Client of array partition component
+    @param      input_partition Client of array partition component
     @return     A copy of the array partition passed in
 */
 template<
     typename Partition>
 Partition copy_partition(
-    Partition const& partition)
+    Partition const& input_partition)
 {
     // Assert the locality of the partition is the same as the locality
     // this code runs on
     assert(
-        hpx::get_colocation_id(partition.get_id()).get() ==
+        hpx::get_colocation_id(input_partition.get_id()).get() ==
         hpx::find_here());
 
     // Implement copy constructor that does a deep copy?
-    // return Partition{partition};
+    // return Partition{input_partition};
 
     // Copy the data and move it into a new partition
-    return Partition{hpx::find_here(), partition.data(CopyMode::copy).get()};
+
+    // FIXME Make asynchronous
+    auto input_partition_data = input_partition.data(CopyMode::copy).get();
+
+    return Partition{hpx::find_here(), std::move(input_partition_data)};
 }
 
 }  // namespace detail
@@ -63,7 +67,8 @@ Array<Element, rank> copy(
     using Partitions = PartitionsT<Array_>;
 
     CopyPartitionAction<Partition> action;
-    Partitions output_partitions{shape_in_partitions(array)};
+    Partitions output_partitions{
+        shape_in_partitions(array), scattered_target_index()};
 
     for(Index p = 0; p < nr_partitions(array); ++p) {
 
