@@ -112,10 +112,12 @@ def generate_script_slurm_nodes(
             # Run the benchmark, resulting in a json file
             "srun {srun_configuration} {command_pathname} "
                 '--hpx:ini="hpx.parcel.mpi.enable=1" '
+                '--hpx:ini="hpx.os_threads={nr_threads}" '
                 '{program_configuration}'
                 .format(
                     srun_configuration=job.srun_configuration(cluster),
                     command_pathname=experiment.command_pathname,
+                    nr_threads=cluster.node.nr_cores(),  # One thread per core
                     program_configuration=job.program_configuration(
                         cluster, benchmark, experiment,
                         array_shape, partition_shape,

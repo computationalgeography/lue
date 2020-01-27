@@ -40,6 +40,9 @@ class Package(object):
                 self.numa_domain,
             )
 
+    def nr_cores(self):
+        return self.nr_numa_domains * self.numa_domain.nr_cores
+
     def nr_threads(self):
         return self.nr_numa_domains * self.numa_domain.nr_threads()
 
@@ -56,6 +59,9 @@ class Node(object):
                 self.nr_packages,
                 self.package,
             )
+
+    def nr_cores(self):
+        return self.nr_packages * self.package.nr_cores()
 
     def nr_threads(self):
         return self.nr_packages * self.package.nr_threads()
