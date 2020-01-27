@@ -4,8 +4,8 @@
     "worker": {
         "type": "thread",
         "pool": {
-            "min_size": 96,
-            "max_size": 96,
+            "min_size": 48,
+            "max_size": 48,
             "multiplier": 2
         }
     }

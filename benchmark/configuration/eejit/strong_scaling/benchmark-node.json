@@ -5,7 +5,6 @@
         "type": "node",
         "pool": {
             "min_size": 1,
-            # 19
             "max_size": 7,
             "incrementor": 3
         }
