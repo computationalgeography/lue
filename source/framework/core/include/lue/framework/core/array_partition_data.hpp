@@ -78,8 +78,7 @@ public:
                    ArrayPartitionData  (ArrayPartitionData const& other);
 
                    ArrayPartitionData  (ArrayPartitionData const& other,
-                                        CopyMode const mode,
-                                        TargetIndex const target_idx);
+                                        CopyMode const mode);
 
                    ArrayPartitionData  (ArrayPartitionData&& other);
 
@@ -157,9 +156,6 @@ private:
     //! The index of the target the elements are managed by
     TargetIndex    _target_idx;
 
-    //! The one target the elements are allocated at
-    Targets        _targets;
-
     Shape          _shape;
 
     Elements       _elements;
@@ -180,11 +176,7 @@ template<
     Rank rank>
 ArrayPartitionData<Element, rank>::ArrayPartitionData():
 
-    _target_idx{},
-    _targets{},
-    _shape{},
-    _elements{Allocator{_targets}},
-    _span{_elements.data(), _shape}
+    ArrayPartitionData{Shape{}, scattered_target_index()}
 
 {
     assert(_elements.size() == lue::nr_elements(_shape));
@@ -203,9 +195,11 @@ ArrayPartitionData<Element, rank>::ArrayPartitionData(
     TargetIndex const target_idx):
 
     _target_idx{target_idx},
-    _targets(1, target(target_idx)),
     _shape{shape},
-    _elements{lue::nr_elements(shape), Allocator{_targets}},
+    _elements{
+            lue::nr_elements(shape),
+            Allocator{Targets(1, target(_target_idx))}
+        },
     _span{_elements.data(), _shape}
 
 {
@@ -281,33 +275,13 @@ ArrayPartitionData<Element, rank>::ArrayPartitionData(
 }
 
 
-// template<
-//     typename Element,
-//     Rank rank>
-// ArrayPartitionData<Element, rank>::ArrayPartitionData(
-//     Shape const& shape,
-//     Elements const& elements):
-// 
-//     _shape{shape},
-//     _elements(elements),
-//     _span{_elements.data(), _shape}
-// 
-// {
-//     assert(static_cast<Count>(_elements.size()) == lue::nr_elements(_shape));
-// }
-
-
 template<
     typename Element,
     Rank rank>
 ArrayPartitionData<Element, rank>::ArrayPartitionData(
     ArrayPartitionData const& other):
 
-    _target_idx{other._target_idx},
-    _targets{other._targets},
-    _shape{other._shape},
-    _elements{other._elements, CopyMode::share, Allocator{_targets}},
-    _span{_elements.data(), _shape}
+    ArrayPartitionData{other, CopyMode::share}
 
 {
     // This constructor is used by ArrayPartitionData::set_data
@@ -325,13 +299,11 @@ template<
     Rank rank>
 ArrayPartitionData<Element, rank>::ArrayPartitionData(
     ArrayPartitionData const& other,
-    CopyMode const mode,
-    TargetIndex const target_idx):
+    CopyMode const mode):
 
-    _target_idx{target_idx},
-    _targets(1, target(target_idx)),
+    _target_idx{other._target_idx},
     _shape{other._shape},
-    _elements{other._elements, mode, Allocator{_targets}},
+    _elements{other._elements, mode},
     _span{_elements.data(), _shape}
 
 {
@@ -356,7 +328,6 @@ ArrayPartitionData<Element, rank>::ArrayPartitionData(
     ArrayPartitionData&& other):
 
     _target_idx{other._target_idx},
-    _targets{std::move(other._targets)},
     _shape{std::move(other._shape)},
     _elements{std::move(other._elements)},
     _span{_elements.data(), _shape}
@@ -371,39 +342,6 @@ ArrayPartitionData<Element, rank>::ArrayPartitionData(
         (_elements.data() == nullptr));
     assert(_elements.size() == lue::nr_elements(_shape));
 }
-
-
-// /*!
-//     @brief      Assign @a other to this instance
-// */
-// template<
-//     typename Element,
-//     Rank rank>
-// ArrayPartitionData<Element, rank>&
-//         ArrayPartitionData<Element, rank>::operator=(
-//     ArrayPartitionData const& other)
-// {
-//     // WRT NUMA domain: Our elements are already located on a specific
-//     // domain. This domain is possibly different from the elements of the
-//     // source instance. Let's just keep our elements where they are and
-//     // copy the elements of the source instance. Only constructors determine
-//     // where the elements of an instance are to be located.
-// 
-//     _shape = other._shape;
-//     _elements = Elements{
-//         other._elements.data(),
-//         other._elements.size(),
-//         Elements::Mode::copy,
-//         Allocator{_targets}};
-//     _span = Span{_elements.data(), _shape};
-// 
-//     assert(
-//         (_elements.data() != other._elements.data()) ||
-//         (_elements.data() == nullptr));
-//     assert(_elements.size() == lue::nr_elements(_shape));
-// 
-//     return *this;
-// }
 
 
 /*!

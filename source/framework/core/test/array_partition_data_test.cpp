@@ -82,7 +82,7 @@ BOOST_AUTO_TEST_CASE(construct_initializer_list)
         1, 2,
         3, 4,
         5, 6,
-    }, scattered_target_index()};
+    }, lue::scattered_target_index()};
 
     BOOST_CHECK_EQUAL(data.shape(), shape);
 

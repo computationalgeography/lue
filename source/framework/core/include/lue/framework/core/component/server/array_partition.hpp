@@ -321,9 +321,9 @@ typename ArrayPartition<Element, rank>::Data
         return _data;
     }
     else {
-        // For now, assume the new instance needs to be located by the
-        // same target as the source instance
-        return Data{_data, mode, _data.target_idx()};
+        // The elements pointed to by the new data instance will be
+        // located at the same target as the source instance
+        return Data{_data, mode};
     }
 }
 
@@ -365,9 +365,9 @@ void ArrayPartition<Element, rank>::set_data(
         _data = data;
     }
     else {
-        // Keep the instance at the same NUMA domain as it is already
-        // located at
-        _data = Data{data, mode, _data.target_idx()};
+        // The elements pointed to by the updated data instance will be
+        // located at the same target as the source instance
+        _data = Data{data, mode};
     }
 }
 

@@ -37,6 +37,14 @@ class ScatterTargetIndex
 
 public:
 
+    ScatterTargetIndex()=default;
+
+    ScatterTargetIndex(ScatterTargetIndex&& other)=default;
+
+    ~ScatterTargetIndex()=default;
+
+    ScatterTargetIndex& operator=(ScatterTargetIndex&& other)=default;
+
     ScatterTargetIndex(
         TargetIndex const first,
         TargetIndex const last):

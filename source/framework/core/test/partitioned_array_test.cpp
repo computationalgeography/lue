@@ -71,6 +71,32 @@ BOOST_AUTO_TEST_CASE(construct_with_max_partition_shape)
     Shape shape{{nr_rows, nr_cols}};
 
     {
+        // 2 x 2 partitions, without clamping
+        Count nr_rows_partition = 15;
+        Count nr_cols_partition = 20;
+        Shape max_partition_shape{{nr_rows_partition, nr_cols_partition}};
+
+        PartitionedArray array{shape, max_partition_shape};
+
+        BOOST_CHECK_EQUAL(array.nr_elements(), nr_rows * nr_cols);
+        BOOST_CHECK_EQUAL(array.shape(), shape);
+        BOOST_CHECK_EQUAL(array.nr_partitions(), 4);
+    }
+
+    {
+        // 30 x 40 partitions, without clamping
+        Count nr_rows_partition = 1;
+        Count nr_cols_partition = 1;
+        Shape max_partition_shape{{nr_rows_partition, nr_cols_partition}};
+
+        PartitionedArray array{shape, max_partition_shape};
+
+        BOOST_CHECK_EQUAL(array.nr_elements(), nr_rows * nr_cols);
+        BOOST_CHECK_EQUAL(array.shape(), shape);
+        BOOST_CHECK_EQUAL(array.nr_partitions(), nr_rows * nr_cols);
+    }
+
+    {
         // 10 x 10 partitions, without clamping
         Count nr_rows_partition = 3;
         Count nr_cols_partition = 4;

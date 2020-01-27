@@ -1,11 +1,11 @@
 {
     "scenario": "thread",
-    "count": 1,
+    "count": 3,
     "worker": {
         "type": "thread",
         "pool": {
             "min_size": 1,
-            "max_size": 7,
+            "max_size": 4,
             "incrementor": 1
         }
     }

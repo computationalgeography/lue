@@ -502,14 +502,14 @@ void PartitionedArray<Element, rank>::create(
             // component. The partition will become ready once it is
             // allocated.
             _partitions[partition_idx] = hpx::async(
-                    hpx::util::annotated_function(
+                    // hpx::util::annotated_function(
 
                         [locality, max_partition_shape]()
                         {
                             return Partition{locality, max_partition_shape};
-                        },
+                        }  // ,
 
-                    "instantiate_partition")
+                    // "instantiate_partition")
                 );
 
         }

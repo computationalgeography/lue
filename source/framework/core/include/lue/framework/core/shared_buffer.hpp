@@ -295,12 +295,19 @@ private:
         // FIXME Deleter assumes instances are created, which is not
         //   done here but at the call sites
         auto deleter =
-            [allocator=this->_allocator, size](Element* ptr)
+            [allocator=this->_allocator, size](
+                Element* ptr)
             {
                 do_delete(ptr, std::move(allocator), size);
             };
 
         _ptr.reset(size > 0 ? _allocator.allocate(size) : nullptr, deleter);
+
+        assert(
+            // Either the pointer is not set and the size is zero, or ...
+            (!_ptr && size == 0) ||
+            // ... the pointer is set and the size is larger than zero
+            (_ptr && size > 0));
     }
 
     void assert_invariants()

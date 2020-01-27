@@ -68,7 +68,7 @@ BOOST_AUTO_TEST_CASE(scalar_array)
     PartitionClient partition{hpx::find_here(), shape, value};
     Data data_we_got = partition.data(lue::CopyMode::share).get();
 
-    Data data_we_want{shape, value, scattered_target_index()};
+    Data data_we_want{shape, value, lue::scattered_target_index()};
     BOOST_CHECK_EQUAL(data_we_got, data_we_want);
 }
 

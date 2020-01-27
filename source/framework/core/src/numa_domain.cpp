@@ -1,47 +1,59 @@
 #include "lue/framework/core/numa_domain.hpp"
-#include <memory>
+#include <hpx/synchronization/mutex.hpp>
 #include <mutex>
 
 
 namespace lue {
 namespace {
 
-Targets& targets()
+using Mutex = hpx::lcos::local::mutex;
+using Lock = std::lock_guard<Mutex>;
+
+static Targets _targets{};
+static NUMADomainExecutors _executors{};
+static bool initialized{false};
+static Mutex mutex;
+
+
+void init()
 {
-    static Targets targets{};
-    static bool initialized{false};
-    static std::mutex mutex;
+    Lock const lock{mutex};
 
-    {
-        std::lock_guard<std::mutex> const lock{mutex};
+    if(!initialized) {
 
-        if(!initialized) {
-            targets = hpx::compute::host::numa_domains();
-            initialized = true;
+        assert(_targets.empty());
+        assert(_executors.empty());
+
+        _targets = hpx::compute::host::numa_domains();
+
+        _executors.reserve(_targets.size());
+
+        for(auto& target: _targets) {
+            _executors.emplace_back(NUMADomainExecutor{Targets{1, target}});
         }
+
+        initialized = true;
+
     }
 
-    return targets;
+    assert(!_targets.empty());
+    assert(!_executors.empty());
+}
+
+
+Targets& targets()
+{
+    init();
+
+    return _targets;
 }
 
 
 NUMADomainExecutors& executors()
 {
-    static NUMADomainExecutors executors{};
-    static bool initialized{false};
-    static std::mutex mutex;
+    init();
 
-    {
-        std::lock_guard<std::mutex> const lock{mutex};
-
-        if(!initialized) {
-            for(auto& target: targets()) {
-                executors.push_back(NUMADomainExecutor{Targets{1, target}});
-            }
-        }
-    }
-
-    return executors;
+    return _executors;
 }
 
 }  // Anonymous namespace
@@ -76,23 +88,24 @@ NUMADomainExecutor& numa_domain_executor(
 
 TargetIndex scattered_target_index()
 {
-    static std::unique_ptr<ScatterTargetIndex> scatter;
-    static std::mutex mutex;
+    static ScatterTargetIndex scatter{};
+    static bool initialized{false};
+    static Mutex mutex;
 
     TargetIndex result;
 
     {
-        std::lock_guard<std::mutex> const lock{mutex};
+        Lock const lock{mutex};
 
-        if(!scatter) {
-            scatter = std::make_unique<ScatterTargetIndex>(
-                0, nr_numa_targets() - 1);
+        if(!initialized) {
+            scatter = ScatterTargetIndex{0, nr_numa_targets() - 1};
+            initialized = true;
         }
-
-        result = (*scatter)();
-
-        assert(result < nr_numa_targets());
     }
+
+    result = scatter();
+
+    assert(result < nr_numa_targets());
 
     return result;
 }
