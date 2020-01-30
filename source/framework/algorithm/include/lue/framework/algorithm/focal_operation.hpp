@@ -467,6 +467,9 @@ OutputPartition focal_operation_partition(
                         assert(nr_rows >= kernel.size());
                         assert(nr_cols >= kernel.size());
 
+                        // FIXME if still needed, update executor above
+                        //     to one that takes the NUMA node of this
+                        //     partition into account
                         TargetIndex const target_idx =
                             partition_data.target_idx();
                         OutputData output_data{
@@ -493,7 +496,7 @@ OutputPartition focal_operation_partition(
                         return output_data;
                     }
 
-                    ), "perform_focal_operation"),
+                    ), "focal_operation_partition_inner"),
             input_partitions_data(1, 1));
 
         // Once the elements from all neighboring partitions have arrived,
@@ -1035,7 +1038,7 @@ OutputPartition focal_operation_partition(
                             hpx::find_here(), std::move(output_partition_data)};
                     }
 
-                    ), "perform_focal_operation"),
+                    ), "focal_operation_partition_border"),
             hpx::when_all_n(
                 input_partitions_data.begin(),
                 nr_elements(input_partitions_data.shape())),
@@ -1076,21 +1079,25 @@ auto spawn_focal_operation_partition(
     // Once all 9 partitions are ready, call the remote action
     return hpx::dataflow(
         hpx::launch::async,
-        hpx::util::annotated_function(
-            hpx::util::unwrapping(
+        // hpx::util::annotated_function(
+        hpx::util::unwrapping(
 
-                [action, kernel, functor](
-                    auto&& partitions_,
-                    hpx::id_type const locality_id)
-                {
-                    Partitions partitions{
-                        Shape{{3, 3}}, partitions_.begin(), partitions_.end(),
-                        scattered_target_index()};
+            [action, kernel, functor](
+                auto&& partitions_,
+                hpx::id_type const locality_id)
+            {
+                // FIXME if still needed, replace scattered_target_index
+                //     with index of NUMA node the center partition is
+                //     located on
+                Partitions partitions{
+                    Shape{{3, 3}}, partitions_.begin(), partitions_.end(),
+                    scattered_target_index()};
 
-                    return action(locality_id, partitions, kernel, functor);
-                }
+                return action(locality_id, partitions, kernel, functor);
+            }
 
-                ), "spawn_focal_operation_partition"),
+        ),
+        //         ), "focal_operation_partition"),
         hpx::when_all_n(partitions.begin(), partitions.nr_elements()),
         hpx::get_colocation_id(partitions(1, 1).get_id()));
 }
@@ -1118,7 +1125,7 @@ auto spawn_create_halo_partition(
                         Shape{{kernel_radius, kernel_radius}}, fill_value};
                 }
 
-                ), "spawn_create_halo_partition"),
+                ), "create_halo_partition"),
         hpx::get_colocation_id(partition.get_id()));
 }
 

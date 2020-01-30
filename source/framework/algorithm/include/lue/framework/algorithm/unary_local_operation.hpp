@@ -40,22 +40,25 @@ OutputPartition unary_local_operation_partition(
 
     return hpx::async(
         numa_domain_executor(target_idx),
+        hpx::util::annotated_function(
 
-        [functor, input_partition_data=std::move(input_partition_data), target_idx]()
-        {
-            OutputData output_partition_data{
-                input_partition_data.shape(), target_idx};
+            [functor, input_partition_data=std::move(input_partition_data), target_idx]()
+            {
+                OutputData output_partition_data{
+                    input_partition_data.shape(), target_idx};
 
-            std::transform(
-                input_partition_data.begin(),
-                input_partition_data.end(),
-                output_partition_data.begin(),
-                functor);
+                std::transform(
+                    input_partition_data.begin(),
+                    input_partition_data.end(),
+                    output_partition_data.begin(),
+                    functor);
 
-            return OutputPartition{
-                hpx::find_here(),
-                std::move(output_partition_data)};
-        });
+                return OutputPartition{
+                    hpx::find_here(),
+                    std::move(output_partition_data)};
+            },
+
+            "unary_local_operation_partition"));
 }
 
 
