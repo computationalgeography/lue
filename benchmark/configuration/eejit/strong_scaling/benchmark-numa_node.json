@@ -1,0 +1,14 @@
+{
+    "scenario": "numa_node",
+    "count": 1,
+    "locality_per": "numa_node",
+    "worker": {
+        "type": "numa_node",
+        "pool": {
+            # Iterate over the NUMA nodes a cluster node
+            "min_size": 1,
+            "max_size": 8,
+            "incrementor": 1
+        }
+    }
+}

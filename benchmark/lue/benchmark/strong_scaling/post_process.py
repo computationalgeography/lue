@@ -201,7 +201,7 @@ def benchmark_to_lue_json(
     nr_localities = benchmark_json["environment"]["nr_localities"]
     nr_threads = benchmark_json["environment"]["nr_threads"]
     nr_workers = \
-        nr_localities if benchmark.worker.type == "node" else nr_threads
+        nr_threads if benchmark.worker.type == "thread" else nr_localities
 
     lue_json = {
         "dataset": {

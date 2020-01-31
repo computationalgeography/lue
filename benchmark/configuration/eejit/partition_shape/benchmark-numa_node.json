@@ -1,8 +1,9 @@
 {
-    "scenario": "node",
+    "scenario": "numa_node",
     "count": 1,
+    "locality_per": "numa_node",
     "worker": {
-        "type": "node",
+        "type": "numa_node",
         "pool": {
             # Half the size of the max nr_workers used in scaling experiment
             "size": 4

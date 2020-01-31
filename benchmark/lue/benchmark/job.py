@@ -131,9 +131,12 @@ set -e
 
 
 def create_slurm_script(
-        nr_cluster_nodes,
+        nr_cluster_nodes,  # How many nodes to reserve
+        nr_tasks,  # How many tasks to reserve for
+        nr_cores_per_socket,  # Number of physical cores per socket
         # nr_cores_per_numa_node,
-        nr_threads,
+        # nr_threads,  # Total nr of threads, including HT threads
+        cpus_per_task,
         output_filename,
         partition_name,
         max_duration,
@@ -171,9 +174,10 @@ def create_slurm_script(
     return """\
 #!/usr/bin/env bash
 #SBATCH --nodes={nr_cluster_nodes}
-#SBATCH --ntasks={nr_cluster_nodes}
-#SBATCH --cpus-per-task={nr_threads}
+#SBATCH --ntasks={nr_tasks}
+#SBATCH --cpus-per-task={cpus_per_task}
 #SBATCH --output={output_filename}
+#SBATCH --cores-per-socket={cores_per_socket}
 #SBATCH --partition={partition_name}
 {max_duration}
 
@@ -188,9 +192,11 @@ module load mpich/gcc72/mlnx/3.2.1
 module load libraries/papi/5.7.0
 
 {job_steps}""".format(
-        nr_cluster_nodes=nr_cluster_nodes,
+        nr_cluster_nodes=nr_cluster_nodes,  # Ask for this nr_cluster_nodes
+        nr_tasks=nr_tasks,  # Ask for hardware for max nr_tasks
+        cores_per_socket=nr_cores_per_socket,  # Ask for whole sockets of core
         # cores_per_socket=nr_cores_per_numa_node,
-        nr_threads=nr_threads,
+        cpus_per_task=cpus_per_task,
         output_filename=output_filename,
         partition_name=partition_name,
         max_duration="#SBATCH --time={}".format(max_duration)

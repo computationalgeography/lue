@@ -106,12 +106,20 @@ def generate_script_slurm(
     # executing the benchmark
     job_steps = []
 
+    nr_threads = benchmark.worker.nr_threads
+    nr_localities = benchmark.worker.nr_localities
+
     for array_shape in experiment.array.shapes:
         for partition_shape in experiment.partition.shapes:
 
             result_pathname = experiment.benchmark_result_pathname(
                 cluster.name, benchmark.scenario_name, array_shape,
                 "x".join([str(extent) for extent in partition_shape]), "json")
+
+            # Bind OS threads to the first processing unit of each core
+            thread_binding = "thread:0-{}=core:0-{}.pu:0".format(
+                nr_threads-1,
+                nr_threads-1)
 
             job_steps += [
                 # Create directory for the resulting json file. This
@@ -121,14 +129,17 @@ def generate_script_slurm(
                     .format(os.path.dirname(result_pathname)),
 
                 # Run the benchmark, resulting in a json file
-                "srun {srun_configuration} {command_pathname} "
+                "srun --ntasks {nr_tasks} {srun_configuration} {command_pathname} "
                         '--hpx:ini="hpx.parcel.mpi.enable=1" '
                         '--hpx:ini="hpx.os_threads={nr_threads}" '
+                        '--hpx:bind="{thread_binding}" '
                         '{program_configuration}'
                     .format(
+                        nr_tasks=nr_localities,
                         srun_configuration=job.srun_configuration(cluster),
                         command_pathname=experiment.command_pathname,
-                        nr_threads=benchmark.worker.nr_threads,
+                        nr_threads=nr_threads,
+                        thread_binding=thread_binding,
                         program_configuration=job.program_configuration(
                             cluster, benchmark, experiment,
                             array_shape, partition_shape,
@@ -138,9 +149,9 @@ def generate_script_slurm(
 
     slurm_script = job.create_slurm_script(
         nr_cluster_nodes=benchmark.worker.nr_cluster_nodes,
-        # nr_cores_per_numa_node=cluster.node.package.numa_node.nr_cores,
-        nr_threads=cluster.node.nr_threads,
-        # nr_threads=benchmark.nr_threads_per_locality,
+        nr_tasks=benchmark.worker.nr_localities,
+        nr_cores_per_socket=cluster.node.package.numa_node.nr_cores,
+        cpus_per_task=benchmark.nr_logical_cores_per_locality,
         output_filename=experiment.result_pathname(
             cluster.name, benchmark.scenario_name,
             os.path.basename(os.path.splitext(script_pathname)[0]), "out"),
@@ -169,7 +180,6 @@ def generate_script_slurm(
 
     job.write_script(commands, script_pathname)
     print("bash ./{}".format(script_pathname))
-
 
 
 def generate_script_shell(

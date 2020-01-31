@@ -36,35 +36,46 @@ class Benchmark(object):
 
         if self.worker.type == "thread":
             if self.locality_per == "numa_node":
-                self.nr_threads_per_locality = cluster.node.package.numa_node.nr_cores
-                # self.thread_binding = "scatter"
+                # self.max_nr_localities = 1
+                self.nr_logical_cores_per_locality = cluster.node.package.numa_node.nr_threads
+                self.nr_physical_cores_per_locality = cluster.node.package.numa_node.nr_cores
 
                 assert self.worker.min_nr_cluster_nodes == 1, self.worker.min_nr_cluster_nodes
                 assert self.worker.max_nr_cluster_nodes == 1, self.worker.max_nr_cluster_nodes
                 assert self.worker.min_nr_numa_nodes == 1, self.worker.min_nr_numa_nodes
                 assert self.worker.max_nr_numa_nodes == 1, self.worker.max_nr_numa_nodes
                 assert self.worker.min_nr_threads >= 1, self.worker.min_nr_threads
-                assert self.worker.max_nr_threads <= self.nr_threads_per_locality, self.nr_threads_per_locality
+                assert self.worker.max_nr_threads <= self.nr_physical_cores_per_locality, self.nr_physical_cores_per_locality
 
             elif self.locality_per == "cluster_node":
-                self.nr_threads_per_locality = cluster.node.nr_cores
-                # self.thread_binding = "scatter"
-
-                # # Bind OS threads to the first processing unit of each core
-                # self.thread_binding = \
-                #         "thread:0-{}=core:0-{}.pu:0" \
-                #     .format(
-                #         cluster.node.nr_cores-1,
-                #         cluster.node.nr_cores-1)
-
+                # self.max_nr_localities = 1
+                self.nr_logical_cores_per_locality = cluster.node.nr_threads
+                self.nr_physical_cores_per_locality = cluster.node.nr_cores
 
                 assert self.worker.min_nr_cluster_nodes == 1, self.worker.min_nr_cluster_nodes
                 assert self.worker.max_nr_cluster_nodes == 1, self.worker.max_nr_cluster_nodes
                 assert self.worker.min_nr_numa_nodes == self.worker.min_nr_numa_nodes, self.worker.min_nr_numa_nodes
                 assert self.worker.max_nr_numa_nodes == self.worker.max_nr_numa_nodes, self.worker.max_nr_numa_nodes
                 assert self.worker.min_nr_threads >= 1, self.worker.min_nr_threads
-                assert self.worker.max_nr_threads <= self.nr_threads_per_locality, self.nr_threads_per_locality
+                assert self.worker.max_nr_threads <= self.nr_physical_cores_per_locality, self.nr_physical_cores_per_locality
 
+        elif self.worker.type == "numa_node":
+
+            assert self.locality_per == "numa_node"
+
+            # self.max_nr_localities = cluster.node.nr_numa_nodes
+            self.nr_logical_cores_per_locality = cluster.node.package.numa_node.nr_threads
+            self.nr_physical_cores_per_locality = cluster.node.package.numa_node.nr_cores
+
+            assert self.worker.min_nr_cluster_nodes == 1, self.worker.min_nr_cluster_nodes
+            assert self.worker.max_nr_cluster_nodes == 1, self.worker.max_nr_cluster_nodes
+            assert self.worker.min_nr_numa_nodes >= 1, self.worker.min_nr_numa_nodes
+            assert self.worker.max_nr_numa_nodes <= cluster.node.nr_numa_nodes, cluster.node.nr_numa_nodes
+            assert self.worker.min_nr_threads == self.nr_physical_cores_per_locality, self.nr_physical_cores_per_locality
+            assert self.worker.max_nr_threads == self.nr_physical_cores_per_locality, self.nr_physical_cores_per_locality
+
+        elif self.worker.type == "cluster_node":
+            assert False
 
 
     def __str__(self):
