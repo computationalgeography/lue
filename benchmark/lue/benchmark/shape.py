@@ -137,25 +137,25 @@ class Shape(object):
     def __init__(self,
             json):
 
-        self.shape_ = tuple(json["shape"])
-        self.range = Range(json["range"]) if "range" in json else None
-
+        self._shape = tuple(json["shape"])
+        self._range = Range(json["range"]) if "range" in json else None
 
     def is_fixed(self):
 
-        return self.range is None
+        return self._range is None
 
-
+    @property
     def shapes(self):
         if self.is_fixed():
-            result = [self.shape_]
+            result = [self._shape]
         else:
             # Range of shapes
             result = range_of_array_shapes(
-                self.shape_, self.range.max_nr_elements, self.range.multiplier)
+                self._shape, self._range.max_nr_elements, self._range.multiplier)
 
         return result
 
+    @property
     def shape(self):
         """
         Return shape
@@ -165,4 +165,4 @@ class Shape(object):
         """
         assert self.is_fixed()
 
-        return self.shape_
+        return self._shape

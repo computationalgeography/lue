@@ -11,19 +11,19 @@ def generate_script_slurm_threads(
         experiment,
         script_pathname):
     """
-    Scale over threads in a single cluster node
+    Scale over threads in a single NUMA node or a single cluster node
     """
-    assert benchmark.worker.nr_nodes_range() == 0
-    assert benchmark.worker.nr_threads_range() >= 1
+    assert benchmark.worker.nr_cluster_nodes_range == 0
+    assert benchmark.worker.nr_numa_nodes_range == 0
+    assert benchmark.worker.nr_threads_range >= 1
 
     job_steps = []
-    array_shape = experiment.array.shape()
-    partition_shape = experiment.partition.shape()
+    array_shape = experiment.array.shape
+    partition_shape = experiment.partition.shape
 
-    for benchmark_idx in range(benchmark.worker.nr_benchmarks()):
+    for benchmark_idx in range(benchmark.worker.nr_benchmarks):
 
         nr_workers = benchmark.worker.nr_workers(benchmark_idx)
-
         result_pathname = experiment.benchmark_result_pathname(
             cluster.name, benchmark.scenario_name, nr_workers, "json")
 
@@ -45,8 +45,10 @@ def generate_script_slurm_threads(
         ]
 
     slurm_script = job.create_slurm_script(
-        nr_nodes=benchmark.worker.nr_nodes(),
-        nr_threads=cluster.node.nr_threads(),  # Reserve all threads
+        nr_cluster_nodes=benchmark.worker.nr_cluster_nodes,
+        # nr_cores_per_numa_node=cluster.node.package.numa_node.nr_cores,
+        nr_threads=cluster.node.nr_threads,
+        # nr_threads=benchmark.nr_threads_per_locality,
         output_filename=experiment.result_pathname(
             cluster.name, benchmark.scenario_name,
             os.path.basename(os.path.splitext(script_pathname)[0]), "out"),
@@ -75,7 +77,7 @@ def generate_script_slurm_threads(
     print("bash ./{}".format(script_pathname))
 
 
-def generate_script_slurm_nodes(
+def generate_script_slurm_cluster_nodes(
         cluster,
         benchmark,
         experiment,
@@ -83,8 +85,8 @@ def generate_script_slurm_nodes(
     """
     Scale over nodes in a cluster of nodes
     """
-    assert benchmark.worker.nr_nodes_range() >= 1
-    assert benchmark.worker.nr_threads_range() == 0
+    assert benchmark.worker.nr_cluster_nodes_range >= 1
+    assert benchmark.worker.nr_threads_range == 0
 
     # Given a problem size, measure the duration of executing an
     # executable on increasingly more nodes. For each number of nodes
@@ -126,8 +128,10 @@ def generate_script_slurm_nodes(
         ]
 
         slurm_script = job.create_slurm_script(
-            nr_nodes=nr_workers,
-            nr_threads=benchmark.worker.nr_threads(),
+            nr_cluster_nodes=nr_workers,
+            # nr_cores_per_numa_node=cluster.node.package.numa_node.nr_cores,
+            nr_threads=cluster.node.nr_threads,
+            # nr_threads=benchmark.worker.nr_threads(),
             output_filename=experiment.benchmark_result_pathname(
                 cluster.name, benchmark.scenario_name, nr_workers, "out"),
             partition_name=cluster.scheduler.settings.partition_name,
@@ -170,13 +174,16 @@ def generate_script_slurm(
         experiment,
         script_pathname):
 
-    assert benchmark.worker.type in ["node", "thread"]
+    assert benchmark.worker.type in ["cluster_node", "numa_node", "thread"]
 
-    if benchmark.worker.nr_nodes_range() == 0:
-        generate_script_slurm_threads(
+    if benchmark.worker.nr_cluster_nodes_range > 0:
+        generate_script_slurm_cluster_nodes(
             cluster, benchmark, experiment, script_pathname)
-    else:
-        generate_script_slurm_nodes(
+    elif benchmark.worker.nr_numa_nodes_range > 0:
+        generate_script_slurm_numa_nodes(
+            cluster, benchmark, experiment, script_pathname)
+    elif benchmark.worker.nr_threads_range > 0:
+        generate_script_slurm_threads(
             cluster, benchmark, experiment, script_pathname)
 
 
@@ -187,7 +194,7 @@ def generate_script_shell(
         script_pathname):
 
     assert benchmark.worker.type == "thread"
-    assert benchmark.worker.nr_nodes_range() == 0
+    assert benchmark.worker.nr_cluster_nodes_range() == 0
     assert benchmark.worker.nr_threads_range() >= 1
 
     # Iterate over all sets of workers we need to benchmark and format
@@ -242,14 +249,13 @@ def generate_script(
     job executes a benchmark and writes results to a JSON file.
     """
     cluster = Cluster(cluster_settings_json)
-
     benchmark = Benchmark(benchmark_settings_json, cluster)
-    assert \
-        (benchmark.worker.nr_nodes_range() > 0 and not
-            benchmark.worker.nr_threads_range() > 0) or \
-        (not benchmark.worker.nr_nodes_range() > 0 and  # xor
-            benchmark.worker.nr_threads_range() > 0)
-    assert benchmark.worker.nr_benchmarks() > 0
+
+    assert sum([
+        benchmark.worker.nr_cluster_nodes_range > 0,
+        benchmark.worker.nr_numa_nodes_range > 0,
+        benchmark.worker.nr_threads_range > 0]) == 1
+    assert benchmark.worker.nr_benchmarks > 0
 
     experiment = StrongScalingExperiment(
         experiment_settings_json, command_pathname)

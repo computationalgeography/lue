@@ -1,0 +1,14 @@
+{
+    "scenario": "thread_numa_node",
+    "count": 1,
+    "locality_per": "numa_node",
+    "worker": {
+        "type": "thread",
+        "pool": {
+            # Iterate over the physical cores within a NUMA node
+            "min_size": 1,
+            "max_size": 6,
+            "incrementor": 1
+        }
+    }
+}

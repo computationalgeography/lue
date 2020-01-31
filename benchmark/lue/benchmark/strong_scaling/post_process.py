@@ -34,8 +34,8 @@ def benchmark_meta_to_lue_json(
         benchmark,
         experiment):
 
-    array_shape = experiment.array.shape()
-    partition_shape = experiment.partition.shape()
+    array_shape = experiment.array.shape
+    partition_shape = experiment.partition.shape
 
     lue_json = {
         "dataset": {

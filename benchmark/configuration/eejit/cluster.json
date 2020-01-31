@@ -19,8 +19,8 @@
     "node": {
         "nr_packages": 2,
         "package": {
-            "nr_numa_domains": 4,
-            "numa_domain": {
+            "nr_numa_nodes": 4,
+            "numa_node": {
                 "nr_cores": 6,
                 "core": {
                     "nr_threads": 2

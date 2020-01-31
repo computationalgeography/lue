@@ -11,7 +11,7 @@ import os.path
 ###         experiment,
 ###         script_pathname):
 ### 
-###     assert benchmark.worker.nr_nodes_range() == 0
+###     assert benchmark.worker.nr_cluster_nodes_range() == 0
 ###     assert benchmark.worker.nr_threads_range() >= 1
 ### 
 ###     # Iterate over all combinations of array shapes and partition shapes
@@ -48,7 +48,7 @@ import os.path
 ###             ]
 ### 
 ###     slurm_script = job.create_slurm_script(
-###         nr_nodes=benchmark.worker.nr_nodes(),
+###         nr_cluster_nodes=benchmark.worker.nr_cluster_nodes(),
 ###         nr_threads=benchmark.worker.nr_threads(),
 ###         output_filename=experiment.result_pathname(
 ###             cluster.name,
@@ -84,7 +84,7 @@ import os.path
 ###         script_pathname):
 ### 
 ### 
-###     assert benchmark.worker.nr_nodes_range() >= 1
+###     assert benchmark.worker.nr_cluster_nodes_range() >= 1
 ###     assert benchmark.worker.nr_threads_range() == 0
 ### 
 ###     assert False
@@ -96,16 +96,18 @@ def generate_script_slurm(
         experiment,
         script_pathname):
 
-    assert benchmark.worker.nr_nodes_range() == 0
-    assert benchmark.worker.nr_threads_range() == 0
+    # We are not scaling workers, but testing partition sizes
+    assert benchmark.worker.nr_cluster_nodes_range == 0
+    assert benchmark.worker.nr_numa_nodes_range == 0
+    assert benchmark.worker.nr_threads_range == 0
 
     # Iterate over all combinations of array shapes and partition shapes
     # we need to benchmark and format a snippet of bash script for
     # executing the benchmark
     job_steps = []
 
-    for array_shape in experiment.array.shapes():
-        for partition_shape in experiment.partition.shapes():
+    for array_shape in experiment.array.shapes:
+        for partition_shape in experiment.partition.shapes:
 
             result_pathname = experiment.benchmark_result_pathname(
                 cluster.name, benchmark.scenario_name, array_shape,
@@ -126,7 +128,7 @@ def generate_script_slurm(
                     .format(
                         srun_configuration=job.srun_configuration(cluster),
                         command_pathname=experiment.command_pathname,
-                        nr_threads=benchmark.worker.nr_threads(),
+                        nr_threads=benchmark.worker.nr_threads,
                         program_configuration=job.program_configuration(
                             cluster, benchmark, experiment,
                             array_shape, partition_shape,
@@ -135,8 +137,10 @@ def generate_script_slurm(
             ]
 
     slurm_script = job.create_slurm_script(
-        nr_nodes=benchmark.worker.nr_nodes(),
-        nr_threads=cluster.node.nr_threads(),  # Reserve all threads
+        nr_cluster_nodes=benchmark.worker.nr_cluster_nodes,
+        # nr_cores_per_numa_node=cluster.node.package.numa_node.nr_cores,
+        nr_threads=cluster.node.nr_threads,
+        # nr_threads=benchmark.nr_threads_per_locality,
         output_filename=experiment.result_pathname(
             cluster.name, benchmark.scenario_name,
             os.path.basename(os.path.splitext(script_pathname)[0]), "out"),
@@ -165,6 +169,7 @@ def generate_script_slurm(
 
     job.write_script(commands, script_pathname)
     print("bash ./{}".format(script_pathname))
+
 
 
 def generate_script_shell(
@@ -225,9 +230,10 @@ def generate_script(
     cluster = Cluster(cluster_settings_json)
 
     benchmark = Benchmark(benchmark_settings_json, cluster)
-    assert benchmark.worker.nr_benchmarks() == 1
-    assert benchmark.worker.nr_nodes_range() == 0
-    assert benchmark.worker.nr_threads_range() == 0
+    assert benchmark.worker.nr_benchmarks == 1
+    assert benchmark.worker.nr_cluster_nodes_range == 0
+    assert benchmark.worker.nr_numa_nodes_range == 0
+    assert benchmark.worker.nr_threads_range == 0
 
     experiment = PartitionShapeExperiment(
         experiment_settings_json, command_pathname)

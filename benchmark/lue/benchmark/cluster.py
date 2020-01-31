@@ -10,19 +10,20 @@ class Core(object):
             )
 
 
-class NUMADomain(object):
+class NUMANode(object):
 
     def __init__(self, json):
         self.nr_cores = json["nr_cores"]
         self.core = Core(json["core"])
 
     def __str__(self):
-        return "NUMADomain(nr_cores={}, core={})" \
+        return "NUMANode(nr_cores={}, core={})" \
             .format(
                 self.nr_cores,
                 self.core,
             )
 
+    @property
     def nr_threads(self):
         return self.nr_cores * self.core.nr_threads
 
@@ -30,21 +31,27 @@ class NUMADomain(object):
 class Package(object):
 
     def __init__(self, json):
-        self.nr_numa_domains = json["nr_numa_domains"]
-        self.numa_domain = NUMADomain(json["numa_domain"])
+        self._nr_numa_nodes = json["nr_numa_nodes"]
+        self.numa_node = NUMANode(json["numa_node"])
 
     def __str__(self):
-        return "Package(nr_numa_domains={}, numa_domain={})" \
+        return "Package(nr_numa_nodes={}, numa_node={})" \
             .format(
-                self.nr_numa_domains,
-                self.numa_domain,
+                self._nr_numa_nodes,
+                self.numa_node,
             )
 
-    def nr_cores(self):
-        return self.nr_numa_domains * self.numa_domain.nr_cores
+    @property
+    def nr_numa_nodes(self):
+        return self._nr_numa_nodes
 
+    @property
+    def nr_cores(self):
+        return self._nr_numa_nodes * self.numa_node.nr_cores
+
+    @property
     def nr_threads(self):
-        return self.nr_numa_domains * self.numa_domain.nr_threads()
+        return self._nr_numa_nodes * self.numa_node.nr_threads
 
 
 class Node(object):
@@ -60,11 +67,17 @@ class Node(object):
                 self.package,
             )
 
-    def nr_cores(self):
-        return self.nr_packages * self.package.nr_cores()
+    @property
+    def nr_numa_nodes(self):
+        return self.nr_packages * self.package.nr_numa_nodes
 
+    @property
+    def nr_cores(self):
+        return self.nr_packages * self.package.nr_cores
+
+    @property
     def nr_threads(self):
-        return self.nr_packages * self.package.nr_threads()
+        return self.nr_packages * self.package.nr_threads
 
 
 class Scheduler(object):

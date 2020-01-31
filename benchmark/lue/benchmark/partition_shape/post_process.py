@@ -229,8 +229,8 @@ def determine_epoch(
         benchmark,
         experiment):
 
-    array_shapes = experiment.array.shapes()
-    partition_shapes = experiment.partition.shapes()
+    array_shapes = experiment.array.shapes
+    partition_shapes = experiment.partition.shapes
 
     epoch = None
 
@@ -284,8 +284,8 @@ def import_raw_results(
     if os.path.exists(lue_dataset_pathname):
         os.remove(lue_dataset_pathname)
 
-    array_shapes = list(experiment.array.shapes())
-    partition_shapes = list(experiment.partition.shapes())
+    array_shapes = list(experiment.array.shapes)
+    partition_shapes = list(experiment.partition.shapes)
     metadata_written = False
 
     for array_shape in array_shapes:
@@ -429,7 +429,7 @@ def post_process_raw_results(
     # --------------------------------------------------------------------------
     # For each array shape (size) a line plot with, for a given array
     # size, the spread of durations per partition size
-    for array_shape in experiment.array.shapes():
+    for array_shape in experiment.array.shapes:
 
         # Given shape of array, ѕelect data to plot
         expression = " and ".join([

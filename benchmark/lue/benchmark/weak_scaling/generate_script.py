@@ -3,6 +3,7 @@ from .weak_scaling_experiment import *
 from ..cluster import *
 from .. import job
 from functools import reduce  # Python 3
+import math
 import os.path
 
 
@@ -46,32 +47,38 @@ def generate_script_slurm_threads(
     """
     Scale over threads in a single node
     """
-    assert benchmark.worker.nr_nodes_range() == 0
-    assert benchmark.worker.nr_threads_range() >= 1
+    assert benchmark.worker.nr_cluster_nodes_range == 0
+    assert benchmark.worker.nr_numa_nodes_range == 0
+    assert benchmark.worker.nr_threads_range >= 1
 
     job_steps = []
-    array_shape_per_worker = experiment.array.shape()
-    partition_shape = experiment.partition.shape()
+    array_shape_per_worker = experiment.array.shape
+    partition_shape = experiment.partition.shape
 
-    for benchmark_idx in range(benchmark.worker.nr_benchmarks()):
+    for benchmark_idx in range(benchmark.worker.nr_benchmarks):
 
         nr_workers = benchmark.worker.nr_workers(benchmark_idx)
-
         array_shape = scale_array_shape(array_shape_per_worker, nr_workers)
-
         result_pathname = experiment.benchmark_result_pathname(
             cluster.name, benchmark.scenario_name, nr_workers, "json")
+
+        # Bind OS threads to the first processing unit of each core
+        thread_binding = "thread:0-{}=core:0-{}.pu:0".format(
+            nr_workers-1,
+            nr_workers-1)
 
         job_steps += [
             # Run the benchmark, resulting in a json file
             "srun {srun_configuration} {command_pathname} "
                 '--hpx:ini="hpx.parcel.mpi.enable=1" '
                 '--hpx:ini="hpx.os_threads={nr_threads}" '
+                '--hpx:bind="{thread_binding}" '
                 '{program_configuration}'
                 .format(
                     srun_configuration=job.srun_configuration(cluster),
                     command_pathname=experiment.command_pathname,
                     nr_threads=nr_workers,
+                    thread_binding=thread_binding,
                     program_configuration=job.program_configuration(
                         cluster, benchmark, experiment,
                         array_shape, partition_shape,
@@ -80,8 +87,9 @@ def generate_script_slurm_threads(
         ]
 
     slurm_script = job.create_slurm_script(
-        nr_nodes=benchmark.worker.nr_nodes(),
-        nr_threads=cluster.node.nr_threads(),  # Reserve all threads
+        nr_cluster_nodes=benchmark.worker.nr_cluster_nodes,
+        # nr_cores_per_numa_node=cluster.node.package.numa_node.nr_cores,
+        nr_threads=cluster.node.nr_threads,
         output_filename=experiment.result_pathname(
             cluster.name, benchmark.scenario_name,
             os.path.basename(os.path.splitext(script_pathname)[0]), "out"),
@@ -110,7 +118,7 @@ def generate_script_slurm_threads(
     print("bash ./{}".format(script_pathname))
 
 
-def generate_script_slurm_nodes(
+def generate_script_slurm_cluster_nodes(
         cluster,
         benchmark,
         experiment,
@@ -132,10 +140,10 @@ def generate_script_slurm_nodes(
     # a snippet of bash script for executing the benchmark
     commands = []
 
-    array_shape_per_worker = experiment.array.shape()
-    partition_shape = experiment.partition.shape()
+    array_shape_per_worker = experiment.array.shape
+    partition_shape = experiment.partition.shape
 
-    for benchmark_idx in range(benchmark.worker.nr_benchmarks()):
+    for benchmark_idx in range(benchmark.worker.nr_benchmarks):
 
         nr_workers = benchmark.worker.nr_workers(benchmark_idx)
 
@@ -206,13 +214,16 @@ def generate_script_slurm(
         experiment,
         script_pathname):
 
-    assert benchmark.worker.type in ["node", "thread"]
+    assert benchmark.worker.type in ["cluster_node", "numa_node", "thread"]
 
-    if benchmark.worker.nr_nodes_range() == 0:
-        generate_script_slurm_threads(
+    if benchmark.worker.nr_cluster_nodes_range > 0:
+        generate_script_slurm_cluster_nodes(
             cluster, benchmark, experiment, script_pathname)
-    else:
-        generate_script_slurm_nodes(
+    elif benchmark.worker.nr_numa_nodes_range > 0:
+        generate_script_slurm_numa_nodes(
+            cluster, benchmark, experiment, script_pathname)
+    elif benchmark.worker.nr_threads_range > 0:
+        generate_script_slurm_threads(
             cluster, benchmark, experiment, script_pathname)
 
 
@@ -230,10 +241,10 @@ def generate_script_shell(
     # a snippet of bash script for executing the benchmark
     commands = []
 
-    array_shape_per_worker = experiment.array.shape()
-    partition_shape = experiment.partition.shape()
+    array_shape_per_worker = experiment.array.shape
+    partition_shape = experiment.partition.shape
 
-    for benchmark_idx in range(benchmark.worker.nr_benchmarks()):
+    for benchmark_idx in range(benchmark.worker.nr_benchmarks):
 
         nr_workers = benchmark.worker.nr_workers(benchmark_idx)
 
@@ -279,23 +290,13 @@ def generate_script(
     """
 
     cluster = Cluster(cluster_settings_json)
-
-
-    ### job_scheduler = cluster_settings_json["job_scheduler"]
-    ### assert job_scheduler in ["shell", "slurm"]
-
-    ### if job_scheduler == "slurm":
-    ###     cluster = SlurmCluster(cluster_settings_json)
-    ### elif job_scheduler == "shell":
-    ###     cluster = ShellCluster(cluster_settings_json)
-
     benchmark = Benchmark(benchmark_settings_json, cluster)
-    assert \
-        (benchmark.worker.nr_nodes_range() > 0 and not
-            benchmark.worker.nr_threads_range() > 0) or \
-        (not benchmark.worker.nr_nodes_range() > 0 and  # xor
-            benchmark.worker.nr_threads_range() > 0)
-    assert benchmark.worker.nr_benchmarks() > 0
+
+    assert sum([
+        benchmark.worker.nr_cluster_nodes_range > 0,
+        benchmark.worker.nr_numa_nodes_range > 0,
+        benchmark.worker.nr_threads_range > 0]) == 1
+    assert benchmark.worker.nr_benchmarks > 0
 
     experiment = WeakScalingExperiment(
         experiment_settings_json, command_pathname)

@@ -43,10 +43,12 @@ def program_configuration(
             cluster.name, benchmark.scenario_name, nr_workers, "json")
 
     #   '--hpx:queuing=shared-priority '
+    #   '--hpx:bind=balanced '
+    #   '--hpx:numa-sensitive '
+    #   '--hpx:use-process-mask '
+    #   '--hpx:bind="{thread_binding}" '
     configuration = \
-        '--hpx:bind=balanced ' \
         '--hpx:print-bind ' \
-        '--hpx:numa-sensitive ' \
         '--hpx:ini="application.{program_name}.benchmark.cluster_name!={cluster_name}" ' \
         '--hpx:ini="application.{program_name}.benchmark.count!={count}" ' \
         '--hpx:ini="application.{program_name}.benchmark.output!={result_pathname}" ' \
@@ -54,6 +56,7 @@ def program_configuration(
         '--hpx:ini="application.{program_name}.array_shape!={array_shape}" ' \
         '--hpx:ini="application.{program_name}.partition_shape!={partition_shape}" ' \
             .format(
+                # thread_binding=benchmark.thread_binding,
                 program_name=experiment.program_name,
                 cluster_name=cluster.name,
                 count=benchmark.count,
@@ -128,7 +131,8 @@ set -e
 
 
 def create_slurm_script(
-        nr_nodes,
+        nr_cluster_nodes,
+        # nr_cores_per_numa_node,
         nr_threads,
         output_filename,
         partition_name,
@@ -157,10 +161,17 @@ def create_slurm_script(
     # -n <number-of-instances>, even if <number-of-instances>
     # is equal to one (1).
 
+    # In SLURM, a CPU is either a core or a thread, depending on the
+    # system configuration
+    #SBATCH --sockets-per-node=2
+
+    #SBATCH --threads-per-core=1
+    ### #SBATCH --cores-per-socket={cores_per_socket}
+
     return """\
 #!/usr/bin/env bash
-#SBATCH --nodes={nr_nodes}
-#SBATCH --ntasks={nr_nodes}
+#SBATCH --nodes={nr_cluster_nodes}
+#SBATCH --ntasks={nr_cluster_nodes}
 #SBATCH --cpus-per-task={nr_threads}
 #SBATCH --output={output_filename}
 #SBATCH --partition={partition_name}
@@ -177,7 +188,8 @@ module load mpich/gcc72/mlnx/3.2.1
 module load libraries/papi/5.7.0
 
 {job_steps}""".format(
-        nr_nodes=nr_nodes,
+        nr_cluster_nodes=nr_cluster_nodes,
+        # cores_per_socket=nr_cores_per_numa_node,
         nr_threads=nr_threads,
         output_filename=output_filename,
         partition_name=partition_name,
