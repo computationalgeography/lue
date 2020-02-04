@@ -62,6 +62,8 @@ public:
 
     File&          operator=           (File&&)=default;
 
+    std::string    hdf5_version        () const;
+
     std::string    pathname            () const;
 
     void           flush               () const;

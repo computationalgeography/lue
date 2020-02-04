@@ -64,6 +64,16 @@ void init_file(
 )")
 
         .def_property_readonly(
+            "hdf5_version",
+            &File::hdf5_version,
+            R"(
+    Return version of HDF5 used to create the dataset
+
+    :rtype: str
+)"
+        )
+
+        .def_property_readonly(
             "pathname",
             &File::pathname,
             R"(

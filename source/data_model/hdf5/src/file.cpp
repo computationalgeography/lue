@@ -134,6 +134,12 @@ File::File(
 }
 
 
+std::string File::hdf5_version() const
+{
+    return attribute<std::string>("hdf5_version");
+}
+
+
 std::string File::pathname() const
 {
     static_assert(std::is_same<std::string::value_type, char>::value,
@@ -227,7 +233,11 @@ File create_file(
             ));
     }
 
-    return File{std::move(id)};
+    File file{std::move(id)};
+
+    file.attributes().write<std::string>("hdf5_version", HDF5_VERSION);
+
+    return file;
 }
 
 

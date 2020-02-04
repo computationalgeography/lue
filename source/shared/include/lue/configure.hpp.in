@@ -1,6 +1,5 @@
 #pragma once
 
-
 #cmakedefine LUE_VERSION "${LUE_VERSION}"
 #cmakedefine LUE_FRAMEWORK_WITH_OPENCL
 #cmakedefine LUE_BUILD_TEST

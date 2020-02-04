@@ -39,6 +39,8 @@ public:
 
     Dataset&       operator=           (Dataset&&)=default;
 
+    std::string    lue_version         () const;
+
     Universe&      add_universe        (std::string const& name);
 
     Phenomenon&    add_phenomenon      (std::string const& name);

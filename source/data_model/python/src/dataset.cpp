@@ -75,6 +75,16 @@ void init_dataset(
             }
         )
 
+        .def_property_readonly(
+            "lue_version",
+            &Dataset::lue_version,
+            R"(
+    Return version of LUE used to create the dataset
+
+    :rtype: str
+)"
+        )
+
         .def(
             "add_phenomenon",
             &Dataset::add_phenomenon,
