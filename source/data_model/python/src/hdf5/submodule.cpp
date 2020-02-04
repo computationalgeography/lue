@@ -1,4 +1,5 @@
 #include "submodule.hpp"
+#include "lue/hdf5/configure.hpp"
 #include <pybind11/pybind11.h>
 
 
@@ -24,6 +25,9 @@ void init_submodule(
     don't need the functionality offered by the :mod:`lue` package,
     or if you need functionality that is not offered by this package yet.
 )");
+
+    submodule.attr("__version__") = py::str(HDF5_VERSION);
+    submodule.attr("hdf5_version") = py::str(HDF5_VERSION);
 
     init_shape(submodule);
     init_identifier(submodule);

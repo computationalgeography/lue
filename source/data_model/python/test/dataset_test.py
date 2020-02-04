@@ -94,3 +94,23 @@ class DatasetTest(lue_test.TestCase):
         dataset.add_phenomenon("my_phenomenon")
         self.assertRaises(RuntimeError, dataset.add_phenomenon,
             "my_phenomenon")
+
+
+    def test_query_version(self):
+        dataset_name = "dataset_query_version.lue"
+        dataset = self.create_dataset(dataset_name)
+
+        self.assertEqual(dataset.lue_version, lue.__version__)
+        self.assertEqual(dataset.lue_version, lue.lue_version)
+
+        self.assertEqual(dataset.hdf5_version, lue.hdf5.__version__)
+        self.assertEqual(dataset.hdf5_version, lue.hdf5.hdf5_version)
+
+
+    # TODO gh178
+    # def test_add_log_message(self):
+    #     dataset_name = "dataset_add_log_message.lue"
+    #     dataset = self.create_dataset(dataset_name)
+
+    #     self.assertEqual(dataset.log, [])
+

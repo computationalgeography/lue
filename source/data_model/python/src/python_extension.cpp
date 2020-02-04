@@ -39,6 +39,7 @@ PYBIND11_MODULE(lue, module)
     .. automodule:: lue.hdf5
 )";
     module.attr("__version__") = py::str(LUE_VERSION);
+    module.attr("lue_version") = py::str(LUE_VERSION);
 
 
     // Prevent the dump of HDF5 error/warning messages. Our messages should
@@ -46,7 +47,6 @@ PYBIND11_MODULE(lue, module)
 #ifndef NDEBUG
     H5Eset_auto(H5E_DEFAULT, nullptr, nullptr);
 #endif
-
 
     // Order matters!
 

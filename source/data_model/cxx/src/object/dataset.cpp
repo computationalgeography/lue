@@ -1,4 +1,5 @@
 #include "lue/object/dataset.hpp"
+#include "lue/configure.hpp"
 #include <cassert>
 #include <stdexcept>
 
@@ -33,6 +34,12 @@ Dataset::Dataset(
     _phenomena{*this}
 
 {
+}
+
+
+std::string Dataset::lue_version() const
+{
+    return attribute<std::string>("lue_version");
 }
 
 
@@ -125,6 +132,8 @@ Dataset create_dataset(
 
     create_universes(file);
     create_phenomena(file);
+
+    file.attributes().write<std::string>("lue_version", LUE_VERSION);
 
     return Dataset{std::move(file)};
 }
