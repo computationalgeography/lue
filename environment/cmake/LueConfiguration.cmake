@@ -278,7 +278,8 @@ if(DEVBASE_HPX_REQUIRED)
 
         FetchContent_Declare(hpx
             GIT_REPOSITORY ${hpx_repository}
-            GIT_TAG 1.4.0
+            GIT_TAG "1.4.0"
+            # GIT_TAG "pr4311"  # APEX fix
         )
 
         FetchContent_MakeAvailable(hpx)
@@ -325,7 +326,7 @@ if(DEVBASE_IMGUI_REQUIRED)
     FetchContent_Declare(imgui
         // MIT License, see ${imgui_SOURCE_DIR}/LICENSE.txt
         GIT_REPOSITORY ${imgui_repository}
-        GIT_TAG v1.65
+        GIT_TAG v1.74
     )
 
     FetchContent_GetProperties(imgui)

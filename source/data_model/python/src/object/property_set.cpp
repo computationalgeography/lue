@@ -25,20 +25,11 @@ static std::string formal_string_representation(
 
 template<
     typename PropertiesSpecialization>
-std::vector<std::string> property_names(
-    Properties const& properties)
-{
-    return properties.collection<PropertiesSpecialization>().names();
-}
-
-
-template<
-    typename PropertiesSpecialization>
 std::string join_property_names(
     Properties const& properties)
 {
     return boost::algorithm::join(
-        property_names<PropertiesSpecialization>(properties),
+        properties.names<PropertiesSpecialization>(),
         ", ");
 }
 
@@ -363,22 +354,22 @@ void init_property_set(
                 std::vector<std::string> names;
 
                 join_collections(
-                    property_names<lue::same_shape::Properties>(properties),
+                    properties.names<lue::same_shape::Properties>(),
                     names);
                 join_collections(
-                    property_names<lue::same_shape::constant_shape::Properties>(properties),
+                    properties.names<lue::same_shape::constant_shape::Properties>(),
                     names);
                 join_collections(
-                    property_names<lue::same_shape::variable_shape::Properties>(properties),
+                    properties.names<lue::same_shape::variable_shape::Properties>(),
                     names);
                 join_collections(
-                    property_names<lue::different_shape::Properties>(properties),
+                    properties.names<lue::different_shape::Properties>(),
                     names);
                 join_collections(
-                    property_names<lue::different_shape::constant_shape::Properties>(properties),
+                    properties.names<lue::different_shape::constant_shape::Properties>(),
                     names);
                 join_collections(
-                    property_names<lue::different_shape::variable_shape::Properties>(properties),
+                    properties.names<lue::different_shape::variable_shape::Properties>(),
                     names);
 
                 return names;

@@ -47,6 +47,10 @@ public:
     hdf5::Group&   collection_group    (std::string const& name);
 
     template<
+        typename Collection>
+    std::vector<std::string> names     () const;
+
+    template<
         typename T>
     T const&       collection          () const;
 
@@ -145,6 +149,14 @@ COLLECTION(
     _different_shape_variable_shape_properties)
 
 #undef COLLECTION
+
+
+template<
+    typename Collection>
+std::vector<std::string> Properties::names() const
+{
+    return collection<Collection>().names();
+}
 
 
 template<>

@@ -1,6 +1,6 @@
 #include "lue/utility/command.hpp"
 #include "lue/utility/print_message.hpp"
-#include "lue/utility/stopwatch.hpp"
+// #include "lue/utility/stopwatch.hpp"
 #include "lue/configure.hpp"
 #include <cassert>
 #include <iostream>
@@ -169,8 +169,8 @@ int Command::run() noexcept
 
     try {
 
-        Stopwatch stopwatch;
-        stopwatch.start();
+        // Stopwatch stopwatch;
+        // stopwatch.start();
 
         try {
             status = _sub_command
@@ -185,10 +185,10 @@ int Command::run() noexcept
             print_error_message(exception.what());
         }
 
-        stopwatch.stop();
-        print_info_message("finished at: " + to_string(stopwatch.end()));
-        print_info_message("elapsed time: " + std::to_string(
-            stopwatch.elapsed_seconds()) + "s");
+        // stopwatch.stop();
+        // print_info_message("finished at: " + to_string(stopwatch.end()));
+        // print_info_message("elapsed time: " + std::to_string(
+        //     stopwatch.elapsed_seconds()) + "s");
 
     }
     catch(...) {

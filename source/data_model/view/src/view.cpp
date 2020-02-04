@@ -95,6 +95,67 @@ void show_main_menu_bar()
 }
 
 
+void show_array(
+    Array const& /* array */)
+{
+}
+
+
+template<
+    typename Value>
+void               show_value          (Value const& value);
+
+
+template<>
+void show_value<same_shape::Value>(
+    same_shape::Value const& value)
+{
+    show_array(dynamic_cast<Array const&>(value));
+}
+
+
+template<>
+void show_value<same_shape::constant_shape::Value>(
+    same_shape::constant_shape::Value const& value)
+{
+    show_array(dynamic_cast<Array const&>(value));
+}
+
+
+template<>
+void show_value<same_shape::variable_shape::Value>(
+    same_shape::variable_shape::Value const& /* value */)
+{
+}
+
+
+template<>
+void show_value<different_shape::Value>(
+    different_shape::Value const& /* value */)
+{
+}
+
+
+template<>
+void show_value<different_shape::constant_shape::Value>(
+    different_shape::constant_shape::Value const& /* value */)
+{
+}
+
+
+template<>
+void show_value<different_shape::variable_shape::Value>(
+    different_shape::variable_shape::Value const& /* value */)
+{
+}
+
+
+void show_object_id(
+    ObjectID const& /* object_id */)
+{
+}
+
+
 void show_time_domain(
     TimeDomain const& /* domain */)
 {
@@ -107,10 +168,73 @@ void show_space_domain(
 }
 
 
-// void show_property(
-//     Property const& /* property */)
-// {
-// }
+template<
+    typename Property>
+void               show_property       (Property const& property);
+
+
+template<>
+void show_property<same_shape::Property>(
+    same_shape::Property const& property)
+{
+    show_value(property.value());
+}
+
+
+template<>
+void show_property<same_shape::constant_shape::Property>(
+    same_shape::constant_shape::Property const& property)
+{
+    show_value(property.value());
+}
+
+
+template<>
+void show_property<same_shape::variable_shape::Property>(
+    same_shape::variable_shape::Property const& property)
+{
+    show_value(property.value());
+}
+
+
+template<>
+void show_property<different_shape::Property>(
+    different_shape::Property const& property)
+{
+    show_value(property.value());
+}
+
+
+template<>
+void show_property<different_shape::constant_shape::Property>(
+    different_shape::constant_shape::Property const& property)
+{
+    show_value(property.value());
+}
+
+
+template<>
+void show_property<different_shape::variable_shape::Property>(
+    different_shape::variable_shape::Property const& property)
+{
+    show_value(property.value());
+}
+
+
+template<
+    typename Collection>
+void show_properties(
+    Properties const& properties)
+{
+    Collection const& collection{properties.collection<Collection>()};
+
+    for(std::string const& name: collection.names()) {
+        if(ImGui::TreeNode(name.c_str())) {
+            show_property(collection[name]);
+            ImGui::TreePop();
+        }
+    }
+}
 
 
 void show_property_set(
@@ -134,53 +258,77 @@ void show_property_set(
         ImGui::TreePop();
     }
 
+    {
+        auto const& properties = property_set.properties();
 
-    // auto const& properties = property_set.properties();
+        if(ImGui::TreeNode(fmt::format(
+                "properties ({})", properties.size()).c_str())) {
 
-    // for(std::string const& name: properties.names()) {
-    //     if(ImGui::TreeNode(name.c_str())) {
-    //         // show_property_set(property_sets[name]);
-    //         ImGui::TreePop();
-    //     }
-    // }
+            show_properties<same_shape::Properties>(properties);
+            show_properties<same_shape::constant_shape::Properties>(
+                properties);
+            show_properties<same_shape::variable_shape::Properties>(
+                properties);
+
+            show_properties<different_shape::Properties>(properties);
+            show_properties<different_shape::constant_shape::Properties>(
+                properties);
+            show_properties<different_shape::variable_shape::Properties>(
+                properties);
+
+            ImGui::TreePop();
+        }
+    }
 }
 
 
 void show_phenomenon(
     Phenomenon const& phenomenon)
 {
-    if(ImGui::TreeNode(fmt::format(
-                "collection property-sets ({})",
-                phenomenon.collection_property_sets().size()
-            ).c_str())) {
+    {
+        auto const& object_id{phenomenon.object_id()};
 
-        auto const& property_sets = phenomenon.collection_property_sets();
+        if(ImGui::TreeNode(fmt::format(
+                "object_id ({})", object_id.nr_objects()).c_str())) {
 
-        for(std::string const& name: property_sets.names()) {
-            if(ImGui::TreeNode(name.c_str())) {
-                show_property_set(property_sets[name]);
-                ImGui::TreePop();
-            }
+            show_object_id(object_id);
+            ImGui::TreePop();
         }
-
-        ImGui::TreePop();
     }
 
-    if(ImGui::TreeNode(fmt::format(
-                "property-sets ({})",
-                phenomenon.property_sets().size()
-            ).c_str())) {
+    {
+        auto const& property_sets{phenomenon.collection_property_sets()};
 
-        auto const& property_sets = phenomenon.property_sets();
+        if(ImGui::TreeNode(fmt::format(
+                "collection property-sets ({})",
+                property_sets.size()).c_str())) {
 
-        for(std::string const& name: property_sets.names()) {
-            if(ImGui::TreeNode(name.c_str())) {
-                show_property_set(property_sets[name]);
-                ImGui::TreePop();
+            for(std::string const& name: property_sets.names()) {
+                if(ImGui::TreeNode(name.c_str())) {
+                    show_property_set(property_sets[name]);
+                    ImGui::TreePop();
+                }
             }
-        }
 
-        ImGui::TreePop();
+            ImGui::TreePop();
+        }
+    }
+
+    {
+        auto const& property_sets{phenomenon.property_sets()};
+
+        if(ImGui::TreeNode(fmt::format(
+                "property-sets ({})", property_sets.size()).c_str())) {
+
+            for(std::string const& name: property_sets.names()) {
+                if(ImGui::TreeNode(name.c_str())) {
+                    show_property_set(property_sets[name]);
+                    ImGui::TreePop();
+                }
+            }
+
+            ImGui::TreePop();
+        }
     }
 }
 
