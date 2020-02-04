@@ -5,9 +5,9 @@
         "shape": [5000, 5000]
     },
     "partition": {
-        "shape": [500, 500],
+        "shape": [50, 50],
         "range": {
-            "max_nr_elements": 5130000,
+            "max_nr_elements": 1000000,
             "multiplier": 2
         }
     }

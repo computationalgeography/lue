@@ -2,5 +2,18 @@
     "name": "gransasso",
     "scheduler": {
         "kind": "shell"
+    },
+    "nr_cluster_nodes": 1,
+    "cluster_node": {
+        "nr_packages": 1,
+        "package": {
+            "nr_numa_nodes": 1,
+            "numa_node": {
+                "nr_cores": 4,
+                "core": {
+                    "nr_threads": 2
+                }
+            }
+        }
     }
 }

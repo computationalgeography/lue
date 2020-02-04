@@ -125,5 +125,6 @@ class Cluster(object):
             self.scheduler = ShellScheduler(scheduler_json)
         elif scheduler_kind == "slurm":
             self.scheduler = SlurmScheduler(scheduler_json)
-            self.nr_cluster_nodes = json["nr_cluster_nodes"]
-            self.cluster_node = ClusterNode(json["cluster_node"])
+
+        self.nr_cluster_nodes = json["nr_cluster_nodes"]
+        self.cluster_node = ClusterNode(json["cluster_node"])

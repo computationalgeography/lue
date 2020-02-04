@@ -2,6 +2,7 @@ from ..benchmark import *
 from .partition_shape_experiment import *
 from ..cluster import *
 from .. import job
+from .. import util
 import os.path
 
 
@@ -44,11 +45,6 @@ def generate_script_slurm(
                 cluster.name, benchmark.scenario_name, array_shape,
                 "x".join([str(extent) for extent in partition_shape]), "json")
 
-            # Bind OS threads to the first processing unit of each core
-            thread_binding = "thread:0-{}=core:0-{}.pu:0".format(
-                nr_threads-1,
-                nr_threads-1)
-
             job_steps += [
                 # Create directory for the resulting json file. This
                 # only needs to run on one of the nodes. For this we
@@ -67,13 +63,14 @@ def generate_script_slurm(
                         srun_configuration=job.srun_configuration(cluster),
                         command_pathname=experiment.command_pathname,
                         nr_threads=nr_threads,
-                        thread_binding=thread_binding,
+                        thread_binding=util.thread_binding(nr_threads),
                         program_configuration=job.program_configuration(
                             cluster, benchmark, experiment,
                             array_shape, partition_shape,
                             result_pathname=result_pathname,
                             nr_workers=nr_workers(benchmark.worker)),
                     )
+
             ]
 
     slurm_script = job.create_slurm_script(
@@ -123,8 +120,11 @@ def generate_script_shell(
     # executing the benchmark
     commands = []
 
-    for array_shape in experiment.array.shapes():
-        for partition_shape in experiment.partition.shapes():
+    nr_threads = benchmark.worker.nr_threads
+    nr_localities = benchmark.worker.nr_localities
+
+    for array_shape in experiment.array.shapes:
+        for partition_shape in experiment.partition.shapes:
 
             result_pathname = experiment.benchmark_result_pathname(
                 cluster.name, benchmark.scenario_name, array_shape,
@@ -137,14 +137,17 @@ def generate_script_shell(
                 # Run the benchmark, resulting in a json file
                 "{command_pathname} "
                     '--hpx:ini="hpx.os_threads={nr_threads}" '
+                    '--hpx:bind="{thread_binding}" '
                     '{program_configuration}'
                     .format(
                         command_pathname=experiment.command_pathname,
-                        nr_threads=benchmark.worker.nr_threads(),
+                        nr_threads=nr_threads,
+                        thread_binding=util.thread_binding(nr_threads),
                         program_configuration=job.program_configuration(
                             cluster, benchmark, experiment,
                             array_shape, partition_shape,
-                            result_pathname=result_pathname)
+                            result_pathname=result_pathname,
+                            nr_workers=nr_workers(benchmark.worker))
                     )
             ]
 

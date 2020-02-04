@@ -150,3 +150,12 @@ def sort_benchmarks_by_time(
     idxs = [item[1] for item in items]
 
     return idxs, epoch
+
+
+def thread_binding(
+        nr_threads):
+
+    # Bind OS threads to the first processing unit of each core
+    return "thread:0-{}=core:0-{}.pu:0".format(
+        nr_threads-1,
+        nr_threads-1)
