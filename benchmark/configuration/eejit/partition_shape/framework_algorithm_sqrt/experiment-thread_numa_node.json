@@ -1,0 +1,16 @@
+{
+    "nr_time_steps": 50,
+    "max_tree_depth": 5,
+    "array": {
+        # 5000x5000: double: 0.19 GiB
+        # 10000x10000: double: 0.75 GiB
+        "shape": [10000, 10000]
+    },
+    "partition": {
+        "shape": [400, 400],
+        "range": {
+            "max_nr_elements": 5130000,
+            "multiplier": 2
+        }
+    }
+}

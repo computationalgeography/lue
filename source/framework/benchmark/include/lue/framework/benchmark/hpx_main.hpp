@@ -31,10 +31,12 @@ Environment create_environment()
     //     required_configuration_entry<std::string>("benchmark.cluster_name");
     std::uint64_t const count =
         required_configuration_entry<std::uint64_t>("benchmark.count");
-    std::uint64_t const nr_localities =
-        required_configuration_entry<std::uint64_t>("hpx", "localities");
-    std::uint64_t const nr_threads =
-        required_configuration_entry<std::uint64_t>("hpx", "os_threads");
+    std::uint64_t const nr_workers =
+        required_configuration_entry<std::uint64_t>("benchmark.nr_workers");
+    // std::uint64_t const nr_localities =
+    //     required_configuration_entry<std::uint64_t>("hpx", "localities");
+    // std::uint64_t const nr_threads =
+    //     required_configuration_entry<std::uint64_t>("hpx", "os_threads");
     std::uint64_t const max_tree_depth =
         optional_configuration_entry<std::uint64_t>(
             "benchmark.max_tree_depth", 0);
@@ -42,7 +44,7 @@ Environment create_environment()
     //     required_configuration_entry<std::uint64_t>("benchmark.work_size");
 
     return Environment{
-        count, nr_localities, nr_threads,
+        count, nr_workers,
         max_tree_depth > 0
             ? std::optional<std::size_t>{max_tree_depth}
             : std::optional<std::size_t>{}
@@ -81,11 +83,6 @@ inline void run_hpx_benchmark(
 }  // namespace benchmark
 }  // namespace lue
 
-
-// MS:
-// Because of some changes in APEX the task names in the OTF file get the
-// first name of the task. We don't have a good solution for this yet. As
-// a hack ... → KDJ: see annotate_function and yield below
 
 #define LUE_CONFIGURE_HPX_BENCHMARK(                                           \
     configuration)                                                             \

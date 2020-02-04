@@ -69,6 +69,9 @@ template<
 inline std::string format_as_json(
     Benchmark const& benchmark)
 {
+    // Output the minimum amount of information. Together with the
+    // benchmark configuration files, a data set can be created containing
+    // all necessary information. But that is post-processing.
     using json = nlohmann::json;
 
     json j;
@@ -91,13 +94,15 @@ inline std::string format_as_json(
         auto const& environment = benchmark.environment();
         auto environment_json = json::object();
 
-        // environment_json["system_name"] = environment.system_name();
-        environment_json["nr_localities"] = environment.nr_localities();
-        environment_json["nr_threads"] = environment.nr_threads();
-        if(environment.max_tree_depth()) {
-            environment_json["max_tree_depth"] = *environment.max_tree_depth();
-        }
-        // environment_json["work_size"] = environment.work_size();
+        // // environment_json["system_name"] = environment.system_name();
+        // environment_json["nr_localities"] = environment.nr_localities();
+        // environment_json["nr_threads"] = environment.nr_threads();
+        // if(environment.max_tree_depth()) {
+        //     environment_json["max_tree_depth"] = *environment.max_tree_depth();
+        // }
+        // // environment_json["work_size"] = environment.work_size();
+
+        environment_json["nr_workers"] = environment.nr_workers();
 
         j["environment"] = environment_json;
     }
@@ -106,7 +111,7 @@ inline std::string format_as_json(
         auto const& task = benchmark.task();
         auto task_json = json::object();
 
-        task_json["nr_time_steps"] = task.nr_time_steps();
+        // task_json["nr_time_steps"] = task.nr_time_steps();
         task_json["array_shape"] = task.array_shape();
         task_json["partition_shape"] = task.partition_shape();
 

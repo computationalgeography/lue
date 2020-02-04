@@ -28,8 +28,8 @@ class ArrayPartitionData
 private:
 
     // using Allocator = PartitionAllocator<Element>;
-    // using Allocator = std::allocator<Element>;
-    using Allocator = NUMADomainAllocator<Element>;
+    using Allocator = std::allocator<Element>;
+    // using Allocator = NUMADomainAllocator<Element>;
 
     using Elements = SharedBuffer<Element, Allocator>;
 
@@ -197,8 +197,8 @@ ArrayPartitionData<Element, rank>::ArrayPartitionData(
     _target_idx{target_idx},
     _shape{shape},
     _elements{
-            lue::nr_elements(shape),
-            Allocator{Targets(1, target(_target_idx))}
+            lue::nr_elements(shape) // ,
+            // Allocator{Targets(1, target(_target_idx))}
         },
     _span{_elements.data(), _shape}
 

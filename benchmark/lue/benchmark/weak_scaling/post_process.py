@@ -31,8 +31,8 @@ def benchmark_meta_to_lue_json(
         benchmark,
         experiment):
 
-    array_shape = experiment.array.shape()
-    partition_shape = experiment.partition.shape()
+    array_shape = experiment.array.shape
+    partition_shape = experiment.partition.shape
 
     lue_json = {
         "dataset": {
@@ -70,6 +70,13 @@ def benchmark_meta_to_lue_json(
                                     "value_variability": "constant",
                                     "datatype": "string",
                                     "value": [experiment.name]
+                                },
+                                {
+                                    "name": "scenario_name",
+                                    "shape_per_object": "same_shape",
+                                    "value_variability": "constant",
+                                    "datatype": "string",
+                                    "value": [benchmark.scenario_name]
                                 },
                                 {
                                     "name": "description",
@@ -122,6 +129,7 @@ def benchmark_meta_to_lue_json(
 
 
 def benchmark_to_lue_json(
+        nr_workers,
         benchmark_pathname,
         lue_json_pathname,
         epoch,
@@ -164,11 +172,7 @@ def benchmark_to_lue_json(
     active_object_id = nr_active_sets * [5]
 
     array_shape = list(benchmark_json["task"]["array_shape"])
-
-    nr_localities = benchmark_json["environment"]["nr_localities"]
-    nr_threads = benchmark_json["environment"]["nr_threads"]
-    nr_workers = \
-        nr_localities if benchmark.worker.type == "node" else nr_threads
+    nr_workers = benchmark_json["environment"]["nr_workers"]
 
     lue_json = {
         "dataset": {
@@ -274,7 +278,6 @@ def import_raw_results(
 
     metadata_written = False
 
-    ### for benchmark_idx in range(benchmark.worker.nr_benchmarks()):
     for benchmark_idx in benchmark_idxs:
 
         nr_workers = benchmark.worker.nr_workers(benchmark_idx)
@@ -293,6 +296,7 @@ def import_raw_results(
 
         with tempfile.NamedTemporaryFile(suffix=".json") as lue_json_file:
             benchmark_to_lue_json(
+                nr_workers,
                 result_pathname, lue_json_file.name, epoch, benchmark)
             import_lue_json(lue_json_file.name, lue_dataset_pathname)
 
@@ -379,8 +383,7 @@ def measurement_dataframe(
 
 def post_process_raw_results(
         lue_dataset_pathname,
-        plot_pathname,
-        experiment):
+        plot_pathname):
     """
     Create plots and tables from raw benchmark results
     """
@@ -606,7 +609,11 @@ def post_process_results(
 
     lue_dataset_pathname = import_raw_results(cluster, benchmark, experiment)
     create_dot_graph(
-        experiment.result_pathname(cluster.name, benchmark.scenario_name, "data", "lue"),
-        experiment.result_pathname(cluster.name, benchmark.scenario_name, "graph", "pdf"))
-    plot_pathname = experiment.result_pathname(cluster.name, benchmark.scenario_name, "plot", "pdf")
-    post_process_raw_results(lue_dataset_pathname, plot_pathname, experiment)
+        experiment.result_pathname(
+            cluster.name, benchmark.scenario_name, "data", "lue"),
+        experiment.result_pathname(
+            cluster.name, benchmark.scenario_name, "graph", "pdf"))
+
+    plot_pathname = experiment.result_pathname(
+        cluster.name, benchmark.scenario_name, "plot", "pdf")
+    post_process_raw_results(lue_dataset_pathname, plot_pathname)

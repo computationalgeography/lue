@@ -7,7 +7,7 @@ class WorkerRange(object):
         assert self.min_size > 0
         assert self.min_size <= self.max_size
 
-        self.max_size = self.permutation_size(self.nr_permutations() - 1)
+        self.max_size = self.permutation_size(self.nr_permutations - 1)
 
 
 class MultipliedWorkerRange(WorkerRange):
@@ -25,6 +25,7 @@ class MultipliedWorkerRange(WorkerRange):
                 self.multiplier,
             )
 
+    @property
     def nr_permutations(self):
         size = self.min_size
         nr = 1
@@ -65,6 +66,7 @@ class IncrementedWorkerRange(WorkerRange):
                 self.incrementor,
             )
 
+    @property
     def nr_permutations(self):
         size = self.min_size
         nr = 1
@@ -80,7 +82,7 @@ class IncrementedWorkerRange(WorkerRange):
     def permutation_size(self,
             idx):
 
-        assert idx in range(self.nr_permutations()), idx
+        assert idx in range(self.nr_permutations), idx
 
         size = self.min_size
         idx -= 1
@@ -92,16 +94,44 @@ class IncrementedWorkerRange(WorkerRange):
         return size
 
 
+class EmptyWorkerRange(WorkerRange):
+    """
+    Worker range representing a single collection of workers of a
+    certain size
+    """
+
+    def __init__(self, json):
+        self.size = json["size"]
+        assert self.size >= 1
+        WorkerRange.__init__(self,
+            {"min_size": self.size, "max_size": self.size})
+        assert self.min_size == self.max_size == self.size
+
+    def __str__(self):
+        return "EmptyWorkerRange(size={})" \
+            .format(
+                self.size)
+
+    @property
+    def nr_permutations(self):
+        return 1
+
+    def permutation_size(self,
+            idx):
+        assert idx == 0
+        return self.size
+
+
 class Pool(object):
 
     def __init__(self, json):
-
-        assert "multiplier" in json or "incrementor" in json
 
         if "multiplier" in json:
             self.range = MultipliedWorkerRange(json)
         elif "incrementor" in json:
             self.range = IncrementedWorkerRange(json)
+        else:
+            self.range = EmptyWorkerRange(json)
 
     @property
     def min_size(self):
@@ -111,8 +141,9 @@ class Pool(object):
     def max_size(self):
         return self.range.max_size
 
+    @property
     def nr_permutations(self):
-        return self.range.nr_permutations()
+        return self.range.nr_permutations
 
     def permutation_size(self,
             idx):

@@ -132,7 +132,7 @@ def sort_benchmarks_by_time(
 
     items = []
 
-    for benchmark_idx in range(benchmark.worker.nr_benchmarks()):
+    for benchmark_idx in range(benchmark.worker.nr_benchmarks):
 
         nr_workers = benchmark.worker.nr_workers(benchmark_idx)
         benchmark_pathname = experiment.benchmark_result_pathname(

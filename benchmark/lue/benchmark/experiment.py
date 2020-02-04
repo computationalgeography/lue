@@ -33,8 +33,8 @@ class Experiment(object):
         return os.path.join(
             os.path.abspath(cluster_name),
             self.program_name,
-            self.name if scenario_name is None else
-                "{}-{}".format(self.name, scenario_name))
+            scenario_name,
+            self.name)
 
 
     def result_pathname(self,

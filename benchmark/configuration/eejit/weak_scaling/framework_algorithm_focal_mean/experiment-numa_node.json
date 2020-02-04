@@ -2,13 +2,10 @@
     "nr_time_steps": 50,
     "max_tree_depth": 5,
     "array": {
+        # 20000 x 20000 crashes...
         "shape": [15000, 15000]
     },
     "partition": {
-        "shape": [1500, 1500],
-        "range": {
-            "max_nr_elements": 5130000,
-            "multiplier": 2
-        }
+        "shape": [2263, 2263]
     }
 }

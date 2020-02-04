@@ -37,26 +37,33 @@ def program_configuration(
         result_pathname=None,
         nr_workers=None):
 
+    assert nr_workers is not None
+
     if result_pathname is None:
         assert not nr_workers is None
         result_pathname = experiment.benchmark_result_pathname(
             cluster.name, benchmark.scenario_name, nr_workers, "json")
 
     #   '--hpx:queuing=shared-priority '
+    #   '--hpx:bind=balanced '
+    #   '--hpx:numa-sensitive '
+    #   '--hpx:use-process-mask '
+    #   '--hpx:bind="{thread_binding}" '
     configuration = \
-        '--hpx:bind=balanced ' \
         '--hpx:print-bind ' \
-        '--hpx:numa-sensitive ' \
         '--hpx:ini="application.{program_name}.benchmark.cluster_name!={cluster_name}" ' \
         '--hpx:ini="application.{program_name}.benchmark.count!={count}" ' \
+        '--hpx:ini="application.{program_name}.benchmark.nr_workers!={nr_workers}" ' \
         '--hpx:ini="application.{program_name}.benchmark.output!={result_pathname}" ' \
         '--hpx:ini="application.{program_name}.nr_time_steps!={nr_time_steps}" ' \
         '--hpx:ini="application.{program_name}.array_shape!={array_shape}" ' \
         '--hpx:ini="application.{program_name}.partition_shape!={partition_shape}" ' \
             .format(
+                # thread_binding=benchmark.thread_binding,
                 program_name=experiment.program_name,
                 cluster_name=cluster.name,
                 count=benchmark.count,
+                nr_workers=nr_workers,
                 nr_time_steps=experiment.nr_time_steps,
                 array_shape=list(array_shape),
                 partition_shape=list(partition_shape),
@@ -128,8 +135,12 @@ set -e
 
 
 def create_slurm_script(
-        nr_nodes,
-        nr_threads,
+        nr_cluster_nodes,  # How many nodes to reserve
+        nr_tasks,  # How many tasks to reserve for
+        nr_cores_per_socket,  # Number of physical cores per socket
+        # nr_cores_per_numa_node,
+        # nr_threads,  # Total nr of threads, including HT threads
+        cpus_per_task,
         output_filename,
         partition_name,
         max_duration,
@@ -157,12 +168,20 @@ def create_slurm_script(
     # -n <number-of-instances>, even if <number-of-instances>
     # is equal to one (1).
 
+    # In SLURM, a CPU is either a core or a thread, depending on the
+    # system configuration
+    #SBATCH --sockets-per-node=2
+
+    #SBATCH --threads-per-core=1
+    ### #SBATCH --cores-per-socket={cores_per_socket}
+
     return """\
 #!/usr/bin/env bash
-#SBATCH --nodes={nr_nodes}
-#SBATCH --ntasks={nr_nodes}
-#SBATCH --cpus-per-task={nr_threads}
+#SBATCH --nodes={nr_cluster_nodes}
+#SBATCH --ntasks={nr_tasks}
+#SBATCH --cpus-per-task={cpus_per_task}
 #SBATCH --output={output_filename}
+#SBATCH --cores-per-socket={cores_per_socket}
 #SBATCH --partition={partition_name}
 {max_duration}
 
@@ -177,8 +196,11 @@ module load mpich/gcc72/mlnx/3.2.1
 module load libraries/papi/5.7.0
 
 {job_steps}""".format(
-        nr_nodes=nr_nodes,
-        nr_threads=nr_threads,
+        nr_cluster_nodes=nr_cluster_nodes,  # Ask for this nr_cluster_nodes
+        nr_tasks=nr_tasks,  # Ask for hardware for max nr_tasks
+        cores_per_socket=nr_cores_per_socket,  # Ask for whole sockets of core
+        # cores_per_socket=nr_cores_per_numa_node,
+        cpus_per_task=cpus_per_task,
         output_filename=output_filename,
         partition_name=partition_name,
         max_duration="#SBATCH --time={}".format(max_duration)
