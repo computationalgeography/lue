@@ -33,13 +33,13 @@ def benchmark_meta_to_lue_json(
         benchmark_pathname,
         lue_pathname,
         cluster,
+        benchmark,
         experiment):
 
     # Read benchmark JSON
     benchmark_json = json.loads(open(benchmark_pathname).read())
     environment_json = benchmark_json["environment"]
-    nr_localities = [environment_json["nr_localities"]]
-    nr_threads = [environment_json["nr_threads"]]
+    nr_workers = [environment_json["nr_workers"]]
 
     lue_json = {
         "dataset": {
@@ -79,6 +79,13 @@ def benchmark_meta_to_lue_json(
                                     "value": [experiment.name]
                                 },
                                 {
+                                    "name": "scenario_name",
+                                    "shape_per_object": "same_shape",
+                                    "value_variability": "constant",
+                                    "datatype": "string",
+                                    "value": [benchmark.scenario_name]
+                                },
+                                {
                                     "name": "description",
                                     "shape_per_object": "same_shape",
                                     "value_variability": "constant",
@@ -86,18 +93,11 @@ def benchmark_meta_to_lue_json(
                                     "value": [experiment.description]
                                 },
                                 {
-                                    "name": "nr_localities",
+                                    "name": "nr_workers",
                                     "shape_per_object": "same_shape",
                                     "value_variability": "constant",
                                     "datatype": "uint64",
-                                    "value": nr_localities
-                                },
-                                {
-                                    "name": "nr_threads",
-                                    "shape_per_object": "same_shape",
-                                    "value_variability": "constant",
-                                    "datatype": "uint64",
-                                    "value": nr_threads
+                                    "value": nr_workers
                                 },
                             ]
                         }
@@ -300,7 +300,8 @@ def import_raw_results(
             if not metadata_written:
                 with tempfile.NamedTemporaryFile(suffix=".json") as lue_json_file:
                     benchmark_meta_to_lue_json(
-                        result_pathname, lue_json_file.name, cluster, experiment)
+                        result_pathname, lue_json_file.name, cluster,
+                        benchmark, experiment)
                     import_lue_json(lue_json_file.name, lue_dataset_pathname)
                 metadata_written = True
 
@@ -324,6 +325,7 @@ def meta_information_dataframe(
 
     name = lue_meta_information.properties["name"].value[:]
     system_name = lue_meta_information.properties["system_name"].value[:]
+    scenario_name = lue_meta_information.properties["scenario_name"].value[:]
 
     # # Pandas does not support nD array elements. Convert (each) shape
     # # to string.
@@ -333,6 +335,7 @@ def meta_information_dataframe(
     meta_information = pd.DataFrame({
             "name": name,
             "system_name": system_name,
+            "scenario_name": scenario_name,
         })
 
     return meta_information
@@ -375,8 +378,6 @@ def measurement_dataframe(
 def post_process_raw_results(
         lue_dataset_pathname,
         plot_pathname,
-        cluster,
-        benchmark,
         experiment):
     """
     Create plots and tables from raw benchmark results
@@ -390,6 +391,7 @@ def post_process_raw_results(
     meta_information = meta_information_dataframe(lue_meta_information)
     name = meta_information.name[0]
     system_name = meta_information.system_name[0]
+    scenario_name = meta_information.scenario_name[0]
 
     rank = lue_measurement.properties["array_shape"].value.shape[1]
     count = lue_measurement.properties["duration"].value.shape[1]
@@ -417,19 +419,23 @@ def post_process_raw_results(
     assert lue_epoch.calendar == lue.Calendar.gregorian
     time_point = dateutil.parser.isoparse(lue_epoch.origin)
 
-
     # String containing time point in local time zone and conventions
     # time_point = time_point.astimezone(tzlocal.get_localzone()).strftime("%c")
     time_point = time_point.strftime("%c")
 
-
     actual_color = sns.xkcd_rgb["denim blue"]
 
+    # Determine array shapes for which we have measurements
+    array_shapes = measurement[array_shape_labels].drop_duplicates()
+    array_shapes = (
+            [row[label] for label in array_shape_labels] \
+                for _, row in array_shapes.iterrows()
+        )
 
     # --------------------------------------------------------------------------
     # For each array shape (size) a line plot with, for a given array
     # size, the spread of durations per partition size
-    for array_shape in experiment.array.shapes:
+    for array_shape in array_shapes:
 
         # Given shape of array, ѕelect data to plot
         expression = " and ".join([
@@ -504,10 +510,9 @@ def post_process_raw_results(
             )
 
         a_plot_pathname = experiment.benchmark_result_pathname(
-            cluster.name, benchmark.scenario_name, array_shape, "plot", "pdf")
+            system_name, scenario_name, array_shape, "plot", "pdf")
         plt.tight_layout()
         plt.savefig(a_plot_pathname)
-
 
     # --------------------------------------------------------------------------
     # Create a grid of line plots
@@ -602,4 +607,4 @@ def post_process_results(
         experiment.result_pathname(cluster.name, benchmark.scenario_name, "data", "lue"),
         experiment.result_pathname(cluster.name, benchmark.scenario_name, "graph", "pdf"))
     plot_pathname = experiment.result_pathname(cluster.name, benchmark.scenario_name, "plot", "pdf")
-    post_process_raw_results(lue_dataset_pathname, plot_pathname, cluster, benchmark, experiment)
+    post_process_raw_results(lue_dataset_pathname, plot_pathname, experiment)

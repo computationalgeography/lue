@@ -29,8 +29,8 @@ class Worker(object):
             self.max_nr_threads = self.pool.max_size
 
             if locality_per == "cluster_node":
-                self.min_nr_numa_nodes = cluster.node.nr_numa_nodes
-                self.max_nr_numa_nodes = cluster.node.nr_numa_nodes
+                self.min_nr_numa_nodes = cluster.cluster_node.nr_numa_nodes
+                self.max_nr_numa_nodes = cluster.cluster_node.nr_numa_nodes
             elif locality_per == "numa_node":
                 self.min_nr_numa_nodes = 1
                 self.max_nr_numa_nodes = 1
@@ -42,15 +42,17 @@ class Worker(object):
             self.max_nr_cluster_nodes = 1
             self.min_nr_numa_nodes = self.pool.min_size
             self.max_nr_numa_nodes = self.pool.max_size
-            self.min_nr_threads = cluster.node.package.numa_node.nr_cores
-            self.max_nr_threads = cluster.node.package.numa_node.nr_cores
+            self.min_nr_threads = cluster.cluster_node.package.numa_node.nr_cores
+            self.max_nr_threads = cluster.cluster_node.package.numa_node.nr_cores
 
         elif self.type == "cluster_node":
-            assert locality_per == "cluster_node"
+            assert locality_per == "numa_node"
 
             self.min_nr_cluster_nodes = self.pool.min_size
             self.max_nr_cluster_nodes = self.pool.max_size
-            self.min_nr_threads = cluster.node.nr_threads
+            self.min_nr_numa_nodes = cluster.cluster_node.nr_numa_nodes
+            self.max_nr_numa_nodes = cluster.cluster_node.nr_numa_nodes
+            self.min_nr_threads = cluster.cluster_node.package.numa_node.nr_cores
             self.max_nr_threads = self.min_nr_threads
 
         assert 1 <= self.min_nr_cluster_nodes <= self.max_nr_cluster_nodes
@@ -134,13 +136,26 @@ class Worker(object):
             assert self.nr_cluster_nodes_range == 0
             result = self.min_nr_numa_nodes
         elif self.type == "cluster_node":
+            # assert self.locality_per == "numa_node"
             assert self.nr_numa_nodes_range == 0
             assert self.nr_cluster_nodes_range == 0
-            result = self.min_nr_cluster_nodes
+            result = self.min_nr_cluster_nodes * self.min_nr_numa_nodes
 
         assert result > 0
 
         return result
+
+
+    @property
+    def nr_numa_nodes(self):
+        """
+        Return number of numa nodes to use in benchmark
+
+        This assumes that the range in number of numa nodes to use is zero
+        """
+        assert self.nr_numa_nodes_range == 0, self
+
+        return self.min_nr_numa_nodes
 
 
     @property

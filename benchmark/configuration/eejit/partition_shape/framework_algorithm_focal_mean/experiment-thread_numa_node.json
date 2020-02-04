@@ -2,11 +2,11 @@
     "nr_time_steps": 50,
     "max_tree_depth": 5,
     "array": {
-        # 8 nodes * 15.000 x 15.000
-        "shape": [43000, 43000]
+        # 10000x10000: double: 0.75 GiB
+        "shape": [10000, 10000]
     },
     "partition": {
-        "shape": [400, 400],
+        "shape": [800, 800],
         "range": {
             "max_nr_elements": 5130000,
             "multiplier": 2

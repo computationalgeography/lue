@@ -43,6 +43,7 @@ def generate_script_slurm_threads(
                     srun_configuration=job.srun_configuration(cluster),
                     command_pathname=experiment.command_pathname,
                     nr_threads=nr_workers,
+                    thread_binding=thread_binding,
                     program_configuration=job.program_configuration(
                         cluster, benchmark, experiment,
                         array_shape, partition_shape,
@@ -52,12 +53,11 @@ def generate_script_slurm_threads(
 
     slurm_script = job.create_slurm_script(
         nr_cluster_nodes=benchmark.worker.nr_cluster_nodes,
-        # nr_cores_per_numa_node=cluster.node.package.numa_node.nr_cores,
-        nr_threads=cluster.node.nr_threads,
-        # nr_threads=benchmark.nr_threads_per_locality,
+        nr_tasks=benchmark.worker.nr_localities,
+        nr_cores_per_socket=cluster.cluster_node.package.numa_node.nr_cores,
+        cpus_per_task=benchmark.nr_logical_cores_per_locality,
         output_filename=experiment.result_pathname(
-            cluster.name, benchmark.scenario_name,
-            os.path.basename(os.path.splitext(script_pathname)[0]), "out"),
+            cluster.name, benchmark.scenario_name, "slurm", "out"),
         partition_name=cluster.scheduler.settings.partition_name,
         max_duration=experiment.max_duration,
         job_steps=job_steps)
@@ -137,7 +137,7 @@ def generate_script_slurm_numa_nodes(
         nr_cluster_nodes=benchmark.worker.nr_cluster_nodes,
 
         nr_tasks=benchmark.worker.max_nr_numa_nodes,
-        nr_cores_per_socket=cluster.node.package.numa_node.nr_cores,
+        nr_cores_per_socket=cluster.cluster_node.package.numa_node.nr_cores,
         cpus_per_task=benchmark.nr_logical_cores_per_locality,
 
         output_filename=experiment.result_pathname(
@@ -177,6 +177,7 @@ def generate_script_slurm_cluster_nodes(
     Scale over nodes in a cluster of nodes
     """
     assert benchmark.worker.nr_cluster_nodes_range >= 1
+    assert benchmark.worker.nr_numa_nodes_range == 0
     assert benchmark.worker.nr_threads_range == 0
 
     # Given a problem size, measure the duration of executing an
@@ -189,40 +190,51 @@ def generate_script_slurm_cluster_nodes(
     # a snippet of bash script for executing the benchmark
 
     commands = []
-    array_shape = experiment.array.shape()
-    partition_shape = experiment.partition.shape()
+    array_shape = experiment.array.shape
+    partition_shape = experiment.partition.shape
 
-    # for nr_workers in \
-    #         range(benchmark.worker.min_nr, benchmark.worker.max_nr + 1):
-    for benchmark_idx in range(benchmark.worker.nr_benchmarks()):
+    nr_threads = benchmark.worker.nr_threads
+
+    for benchmark_idx in range(benchmark.worker.nr_benchmarks):
 
         nr_workers = benchmark.worker.nr_workers(benchmark_idx)
+        nr_localities = nr_workers * benchmark.worker.nr_numa_nodes
 
         result_pathname = experiment.benchmark_result_pathname(
             cluster.name, benchmark.scenario_name, nr_workers, "json")
 
+        # Bind OS threads to the first processing unit of each core
+        thread_binding = "thread:0-{}=core:0-{}.pu:0".format(
+            nr_threads-1,
+            nr_threads-1)
+
         job_steps = [
-            # Run the benchmark, resulting in a json file
-            "srun {srun_configuration} {command_pathname} "
-                '--hpx:ini="hpx.parcel.mpi.enable=1" '
-                '--hpx:ini="hpx.os_threads={nr_threads}" '
-                '{program_configuration}'
-                .format(
-                    srun_configuration=job.srun_configuration(cluster),
-                    command_pathname=experiment.command_pathname,
-                    nr_threads=cluster.node.nr_cores(),  # One thread per core
-                    program_configuration=job.program_configuration(
-                        cluster, benchmark, experiment,
-                        array_shape, partition_shape,
-                        nr_workers=nr_workers),
-                )
-        ]
+                # Run the benchmark, resulting in a json file
+                "srun --ntasks {nr_tasks} {srun_configuration} {command_pathname} "
+                    '--hpx:ini="hpx.parcel.mpi.enable=1" '
+                    '--hpx:ini="hpx.os_threads={nr_threads}" '
+                    '--hpx:bind="{thread_binding}" '
+                    '{program_configuration}'
+                    .format(
+                        nr_tasks=nr_localities,
+                        srun_configuration=job.srun_configuration(cluster),
+                        command_pathname=experiment.command_pathname,
+                        nr_threads=nr_threads,
+                        thread_binding=thread_binding,
+                        program_configuration=job.program_configuration(
+                            cluster, benchmark, experiment,
+                            array_shape, partition_shape,
+                            nr_workers=nr_workers),
+                    )
+            ]
 
         slurm_script = job.create_slurm_script(
             nr_cluster_nodes=nr_workers,
-            # nr_cores_per_numa_node=cluster.node.package.numa_node.nr_cores,
-            nr_threads=cluster.node.nr_threads,
-            # nr_threads=benchmark.worker.nr_threads(),
+
+            nr_tasks=nr_localities,
+            nr_cores_per_socket=cluster.cluster_node.package.numa_node.nr_cores,
+            cpus_per_task=benchmark.nr_logical_cores_per_locality,
+
             output_filename=experiment.benchmark_result_pathname(
                 cluster.name, benchmark.scenario_name, nr_workers, "out"),
             partition_name=cluster.scheduler.settings.partition_name,
@@ -295,12 +307,9 @@ def generate_script_shell(
     array_shape = experiment.array.shape()
     partition_shape = experiment.partition.shape()
 
-    # for nr_workers in \
-    #         range(benchmark.worker.min_nr, benchmark.worker.max_nr + 1):
     for benchmark_idx in range(benchmark.worker.nr_benchmarks()):
 
         nr_workers = benchmark.worker.nr_workers(benchmark_idx)
-
         result_pathname = experiment.benchmark_result_pathname(
             cluster.name, benchmark.scenario_name, nr_workers, "json")
 

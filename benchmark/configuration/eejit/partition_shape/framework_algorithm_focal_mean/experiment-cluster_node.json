@@ -2,11 +2,11 @@
     "nr_time_steps": 50,
     "max_tree_depth": 5,
     "array": {
-        # 140000x140000: double: 146 Gib
-        "shape": [140000, 140000]
+        # 140000 x 140000 crashes...
+        "shape": [120000, 120000]
     },
     "partition": {
-        "shape": [800, 800],
+        "shape": [1131, 1131],
         "range": {
             "max_nr_elements": 5130000,
             "multiplier": 2

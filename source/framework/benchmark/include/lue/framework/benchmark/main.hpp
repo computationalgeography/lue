@@ -15,13 +15,13 @@ std::string const usage = R"(
 Run a performance benchmark
 
 usage:
-    {0} --count=<count> --nr_threads=<nr_threads>
+    {0} --count=<count> --nr_workers=<nr_workers>
         [--max_tree_depth=<max_tree_depth>] [<output>]
     {0} (-h | --help) | --version
 
 options:
     --count=<count>  Number of times the benchmark must be run
-    --nr_threads=<nr_threads>  Maximum number of OS threads to use
+    --nr_workers=<nr_workers>  Number of workers used
     --max_tree_depth=<max_tree_depth>  Maximum depth of task tree
     -h --help        Show this screen
 
@@ -39,7 +39,7 @@ Environment create_environment(
 
     // std::string const hostname = boost::asio::ip::host_name();
     std::size_t const count = arguments.at("--count").asLong();
-    std::size_t const nr_threads = arguments.at("--nr_threads").asLong();
+    std::size_t const nr_workers = arguments.at("--nr_workers").asLong();
 
     std::optional<std::size_t> max_tree_depth;
 
@@ -49,7 +49,7 @@ Environment create_environment(
 
     // std::size_t const work_size = arguments.at("--work_size").asLong();
 
-    return Environment{count, nr_threads, max_tree_depth};  // , work_size};
+    return Environment{count, nr_workers, max_tree_depth};  // , work_size};
 }
 
 

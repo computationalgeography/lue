@@ -1,6 +1,7 @@
 {
     "scenario": "cluster_node",
     "count": 1,
+    "locality_per": "numa_node",
     "worker": {
         "type": "cluster_node",
         "pool": {

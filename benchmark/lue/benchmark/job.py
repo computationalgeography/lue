@@ -37,6 +37,8 @@ def program_configuration(
         result_pathname=None,
         nr_workers=None):
 
+    assert nr_workers is not None
+
     if result_pathname is None:
         assert not nr_workers is None
         result_pathname = experiment.benchmark_result_pathname(
@@ -51,6 +53,7 @@ def program_configuration(
         '--hpx:print-bind ' \
         '--hpx:ini="application.{program_name}.benchmark.cluster_name!={cluster_name}" ' \
         '--hpx:ini="application.{program_name}.benchmark.count!={count}" ' \
+        '--hpx:ini="application.{program_name}.benchmark.nr_workers!={nr_workers}" ' \
         '--hpx:ini="application.{program_name}.benchmark.output!={result_pathname}" ' \
         '--hpx:ini="application.{program_name}.nr_time_steps!={nr_time_steps}" ' \
         '--hpx:ini="application.{program_name}.array_shape!={array_shape}" ' \
@@ -60,6 +63,7 @@ def program_configuration(
                 program_name=experiment.program_name,
                 cluster_name=cluster.name,
                 count=benchmark.count,
+                nr_workers=nr_workers,
                 nr_time_steps=experiment.nr_time_steps,
                 array_shape=list(array_shape),
                 partition_shape=list(partition_shape),

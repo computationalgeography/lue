@@ -54,14 +54,14 @@ class Package(object):
         return self._nr_numa_nodes * self.numa_node.nr_threads
 
 
-class Node(object):
+class ClusterNode(object):
 
     def __init__(self, json):
         self.nr_packages = json["nr_packages"]
         self.package = Package(json["package"])
 
     def __str__(self):
-        return "Node(nr_packages={}, package={})" \
+        return "ClusterNode(nr_packages={}, package={})" \
             .format(
                 self.nr_packages,
                 self.package,
@@ -125,4 +125,5 @@ class Cluster(object):
             self.scheduler = ShellScheduler(scheduler_json)
         elif scheduler_kind == "slurm":
             self.scheduler = SlurmScheduler(scheduler_json)
-            self.node = Node(json["node"])
+            self.nr_cluster_nodes = json["nr_cluster_nodes"]
+            self.cluster_node = ClusterNode(json["cluster_node"])

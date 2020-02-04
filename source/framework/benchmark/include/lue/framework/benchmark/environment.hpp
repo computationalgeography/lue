@@ -12,20 +12,25 @@ class Environment
 
 public:
 
-                   Environment         (// std::string const& system_name,
-                                        std::size_t count,
-                                        std::size_t nr_threads,
-                                        std::optional<std::size_t> const&
-                                            max_tree_depth);
-                                        // std::size_t work_size);
+                   // Environment         (// std::string const& system_name,
+                   //                      std::size_t count,
+                   //                      std::size_t nr_threads,
+                   //                      std::optional<std::size_t> const&
+                   //                          max_tree_depth);
+                   //                      // std::size_t work_size);
 
-                   Environment         (// std::string const& system_name,
-                                        std::size_t count,
-                                        std::size_t nr_localities,
-                                        std::size_t nr_threads,
+                   // Environment         (// std::string const& system_name,
+                   //                      std::size_t count,
+                   //                      std::size_t nr_localities,
+                   //                      std::size_t nr_threads,
+                   //                      std::optional<std::size_t> const&
+                   //                          max_tree_depth);
+                   //                      // std::size_t work_size);
+
+                   Environment         (std::size_t count,
+                                        std::size_t nr_workers,
                                         std::optional<std::size_t> const&
                                             max_tree_depth);
-                                        // std::size_t work_size);
 
                    Environment         (Environment const&)=default;
 
@@ -41,9 +46,11 @@ public:
 
     std::size_t    count               () const;
 
-    std::size_t    nr_localities       () const;
+    std::size_t    nr_workers          () const;
 
-    std::size_t    nr_threads          () const;
+    // std::size_t    nr_localities       () const;
+
+    // std::size_t    nr_threads          () const;
 
     std::optional<std::size_t> const&
                    max_tree_depth      () const;
@@ -56,9 +63,11 @@ private:
 
     std::size_t const _count;
 
-    std::size_t const _nr_localities;
+    std::size_t const _nr_workers;
 
-    std::size_t const _nr_threads;
+    // std::size_t const _nr_localities;
+
+    // std::size_t const _nr_threads;
 
     std::optional<std::size_t> const _max_tree_depth;
 

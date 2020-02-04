@@ -16,7 +16,8 @@
             ]
         }
     },
-    "node": {
+    "nr_cluster_nodes": 96,
+    "cluster_node": {
         "nr_packages": 2,
         "package": {
             "nr_numa_nodes": 4,

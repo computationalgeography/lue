@@ -75,6 +75,13 @@ def benchmark_meta_to_lue_json(
                                     "value": [experiment.name]
                                 },
                                 {
+                                    "name": "scenario_name",
+                                    "shape_per_object": "same_shape",
+                                    "value_variability": "constant",
+                                    "datatype": "string",
+                                    "value": [benchmark.scenario_name]
+                                },
+                                {
                                     "name": "description",
                                     "shape_per_object": "same_shape",
                                     "value_variability": "constant",
@@ -198,10 +205,7 @@ def benchmark_to_lue_json(
     # array_shape = list(benchmark_json["task"]["array_shape"])
     # partition_shape = list(benchmark_json["task"]["partition_shape"])
 
-    nr_localities = benchmark_json["environment"]["nr_localities"]
-    nr_threads = benchmark_json["environment"]["nr_threads"]
-    nr_workers = \
-        nr_threads if benchmark.worker.type == "thread" else nr_localities
+    nr_workers = benchmark_json["environment"]["nr_workers"]
 
     lue_json = {
         "dataset": {
@@ -298,7 +302,6 @@ def import_raw_results(
 
     metadata_written = False
 
-    ### for benchmark_idx in range(benchmark.worker.nr_benchmarks()):
     for benchmark_idx in benchmark_idxs:
 
         nr_workers = benchmark.worker.nr_workers(benchmark_idx)

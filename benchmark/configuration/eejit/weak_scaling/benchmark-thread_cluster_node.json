@@ -8,7 +8,7 @@
             # Iterate over the physical cores within a cluster node
             "min_size": 1,
             "max_size": 48,
-            "incrementor": 5
+            "incrementor": 2
         }
     }
 }

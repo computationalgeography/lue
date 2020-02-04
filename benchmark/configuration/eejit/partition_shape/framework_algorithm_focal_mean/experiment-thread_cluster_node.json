@@ -2,8 +2,8 @@
     "nr_time_steps": 50,
     "max_tree_depth": 5,
     "array": {
-        # 140000x140000: double: 146 Gib
-        "shape": [140000, 140000]
+        # 50000x50000: double: 18.63 GiB
+        "shape": [50000, 50000]
     },
     "partition": {
         "shape": [800, 800],

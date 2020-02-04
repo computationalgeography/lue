@@ -88,8 +88,11 @@ def generate_script_slurm_threads(
 
     slurm_script = job.create_slurm_script(
         nr_cluster_nodes=benchmark.worker.nr_cluster_nodes,
-        # nr_cores_per_numa_node=cluster.node.package.numa_node.nr_cores,
-        nr_threads=cluster.node.nr_threads,
+        nr_tasks=benchmark.worker.nr_localities,
+        nr_cores_per_socket=cluster.cluster_node.package.numa_node.nr_cores,
+        cpus_per_task=benchmark.nr_logical_cores_per_locality,
+        ### # nr_cores_per_numa_node=cluster.cluster_node.package.numa_node.nr_cores,
+        ### nr_threads=cluster.cluster_node.nr_threads,
         output_filename=experiment.result_pathname(
             cluster.name, benchmark.scenario_name,
             os.path.basename(os.path.splitext(script_pathname)[0]), "out"),
@@ -173,11 +176,11 @@ def generate_script_slurm_numa_nodes(
         nr_cluster_nodes=benchmark.worker.nr_cluster_nodes,
 
         nr_tasks=benchmark.worker.max_nr_numa_nodes,
-        nr_cores_per_socket=cluster.node.package.numa_node.nr_cores,
+        nr_cores_per_socket=cluster.cluster_node.package.numa_node.nr_cores,
         cpus_per_task=benchmark.nr_logical_cores_per_locality,
 
-        # # nr_cores_per_numa_node=cluster.node.package.numa_node.nr_cores,
-        # nr_threads=cluster.node.nr_threads,
+        # # nr_cores_per_numa_node=cluster.cluster_node.package.numa_node.nr_cores,
+        # nr_threads=cluster.cluster_node.nr_threads,
         output_filename=experiment.result_pathname(
             cluster.name, benchmark.scenario_name,
             os.path.basename(os.path.splitext(script_pathname)[0]), "out"),
@@ -214,8 +217,9 @@ def generate_script_slurm_cluster_nodes(
     """
     Scale over nodes in a cluster of nodes
     """
-    assert benchmark.worker.nr_nodes_range() >= 1
-    assert benchmark.worker.nr_threads_range() == 0
+    assert benchmark.worker.nr_cluster_nodes_range >= 1
+    assert benchmark.worker.nr_numa_nodes_range == 0
+    assert benchmark.worker.nr_threads_range == 0
 
     # Measure the duration of executing an executable on increasingly more
     # nodes. The work size is scaled with the number of nodes in the set.
@@ -231,25 +235,36 @@ def generate_script_slurm_cluster_nodes(
     array_shape_per_worker = experiment.array.shape
     partition_shape = experiment.partition.shape
 
+    nr_threads = benchmark.worker.nr_threads
+
     for benchmark_idx in range(benchmark.worker.nr_benchmarks):
 
         nr_workers = benchmark.worker.nr_workers(benchmark_idx)
+        nr_localities = nr_workers * benchmark.worker.nr_numa_nodes
 
         array_shape = scale_array_shape(array_shape_per_worker, nr_workers)
 
         result_pathname = experiment.benchmark_result_pathname(
             cluster.name, benchmark.scenario_name, nr_workers, "json")
 
+        # Bind OS threads to the first processing unit of each core
+        thread_binding = "thread:0-{}=core:0-{}.pu:0".format(
+            nr_threads-1,
+            nr_threads-1)
+
         job_steps = [
             # Run the benchmark, resulting in a json file
-            "srun {srun_configuration} {command_pathname} "
+            "srun --ntasks {nr_tasks} {srun_configuration} {command_pathname} "
                 '--hpx:ini="hpx.parcel.mpi.enable=1" '
                 '--hpx:ini="hpx.os_threads={nr_threads}" '
+                '--hpx:bind="{thread_binding}" '
                 '{program_configuration}'
                 .format(
+                    nr_tasks=nr_localities,
                     srun_configuration=job.srun_configuration(cluster),
                     command_pathname=experiment.command_pathname,
-                    nr_threads=cluster.node.nr_cores(),  # One thread per core
+                    nr_threads=nr_threads,
+                    thread_binding=thread_binding,
                     program_configuration=job.program_configuration(
                         cluster, benchmark, experiment,
                         array_shape, partition_shape,
@@ -258,8 +273,10 @@ def generate_script_slurm_cluster_nodes(
         ]
 
         slurm_script = job.create_slurm_script(
-            nr_nodes=nr_workers,
-            nr_threads=benchmark.worker.nr_threads(),
+            nr_cluster_nodes=nr_workers,
+            nr_tasks=nr_localities,
+            nr_cores_per_socket=cluster.cluster_node.package.numa_node.nr_cores,
+            cpus_per_task=benchmark.nr_logical_cores_per_locality,
             output_filename=experiment.benchmark_result_pathname(
                 cluster.name, benchmark.scenario_name, nr_workers, "out"),
             partition_name=cluster.scheduler.settings.partition_name,
