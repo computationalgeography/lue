@@ -95,6 +95,45 @@ void show_main_menu_bar()
 }
 
 
+void show_identifier(
+    hdf5::Identifier const& identifier)
+{
+    ImGui::TextUnformatted(fmt::format(
+        "HDF5 identifier: {}", static_cast<hid_t>(identifier)).c_str());
+    // TODO type()
+    // TODO info()
+    ImGui::TextUnformatted(fmt::format(
+        "is_valid: {}", identifier.is_valid()).c_str());
+    ImGui::TextUnformatted(fmt::format(
+        "pathname: {}", identifier.pathname()).c_str());
+    ImGui::TextUnformatted(fmt::format(
+        "name: {}", identifier.name()).c_str());
+}
+
+
+void show_primary_data_object(
+    hdf5::PrimaryDataObject const& primary_data_object)
+{
+    show_identifier(primary_data_object.id());
+    // TODO attributes: requires to be able to query them
+}
+
+
+void show_group(
+    hdf5::Group const& group)
+{
+    show_primary_data_object(
+        dynamic_cast<hdf5::PrimaryDataObject const&>(group));
+}
+
+
+void show_file(
+    hdf5::File const& file)
+{
+    show_group(dynamic_cast<hdf5::Group const&>(file));
+}
+
+
 void show_array(
     Array const& /* array */)
 {
@@ -151,7 +190,14 @@ void show_value<different_shape::variable_shape::Value>(
 
 
 void show_object_id(
-    ObjectID const& /* object_id */)
+    ObjectID const& object_id)
+{
+    show_value(dynamic_cast<same_shape::Value const&>(object_id));
+}
+
+
+void show_object_tracker(
+    ObjectTracker const& /* object_tracker */)
 {
 }
 
@@ -240,22 +286,23 @@ void show_properties(
 void show_property_set(
     PropertySet const& property_set)
 {
-    if(ImGui::TreeNode("time domain")) {
-        if(property_set.has_time_domain()) {
-            auto const& domain = property_set.time_domain();
-            show_time_domain(domain);
+    if(property_set.has_time_domain()) {
+        if(ImGui::TreeNode("object tracker")) {
+            show_object_tracker(property_set.object_tracker());
+            ImGui::TreePop();
         }
 
-        ImGui::TreePop();
+        if(ImGui::TreeNode("time domain")) {
+            show_time_domain(property_set.time_domain());
+            ImGui::TreePop();
+        }
     }
 
-    if(ImGui::TreeNode("space domain")) {
-        if(property_set.has_space_domain()) {
-            auto const& domain = property_set.space_domain();
-            show_space_domain(domain);
+    if(property_set.has_space_domain()) {
+        if(ImGui::TreeNode("space domain")) {
+            show_space_domain(property_set.space_domain());
+            ImGui::TreePop();
         }
-
-        ImGui::TreePop();
     }
 
     {
@@ -288,46 +335,52 @@ void show_phenomenon(
     {
         auto const& object_id{phenomenon.object_id()};
 
-        if(ImGui::TreeNode(fmt::format(
-                "object_id ({})", object_id.nr_objects()).c_str())) {
+        if(object_id.nr_objects() > 0) {
+            if(ImGui::TreeNode(fmt::format(
+                    "object_id ({})", object_id.nr_objects()).c_str())) {
 
-            show_object_id(object_id);
-            ImGui::TreePop();
+                show_object_id(object_id);
+                ImGui::TreePop();
+            }
         }
     }
 
     {
         auto const& property_sets{phenomenon.collection_property_sets()};
 
-        if(ImGui::TreeNode(fmt::format(
-                "collection property-sets ({})",
-                property_sets.size()).c_str())) {
+        if(!property_sets.empty()) {
+            if(ImGui::TreeNode(fmt::format(
+                    "collection property-sets ({})",
+                    property_sets.size()).c_str())) {
 
-            for(std::string const& name: property_sets.names()) {
-                if(ImGui::TreeNode(name.c_str())) {
-                    show_property_set(property_sets[name]);
-                    ImGui::TreePop();
+                for(std::string const& name: property_sets.names()) {
+                    if(ImGui::TreeNode(name.c_str())) {
+                        show_property_set(property_sets[name]);
+                        ImGui::TreePop();
+                    }
                 }
-            }
 
-            ImGui::TreePop();
+                ImGui::TreePop();
+            }
         }
     }
 
     {
         auto const& property_sets{phenomenon.property_sets()};
 
-        if(ImGui::TreeNode(fmt::format(
-                "property-sets ({})", property_sets.size()).c_str())) {
+        if(!property_sets.empty()) {
+            if(ImGui::TreeNode(fmt::format(
+                    "property-sets ({})", property_sets.size()).c_str())) {
 
-            for(std::string const& name: property_sets.names()) {
-                if(ImGui::TreeNode(name.c_str())) {
-                    show_property_set(property_sets[name]);
-                    ImGui::TreePop();
+                for(std::string const& name: property_sets.names()) {
+                    if(ImGui::TreeNode(name.c_str())) {
+                        show_property_set(property_sets[name]);
+                        ImGui::TreePop();
+                    }
                 }
-            }
 
-            ImGui::TreePop();
+                ImGui::TreePop();
+            }
         }
     }
 }
@@ -424,6 +477,11 @@ int View::run_implementation()
             dataset_names.begin(), dataset_names.end()
         };
 
+    // TODO Add option to query for details that normally aren't needed
+    //     by users
+    //     - default: useful for end-users
+    //     - expert: useful for developers
+
     sdl2::API api;
     sdl2::Window sdl_window{"LUE view"};
     sdl2::ImGuiBinding binding{sdl_window};
@@ -460,22 +518,34 @@ int View::run_implementation()
 
                 ImGui::PushID(dataset_pathname.c_str());
 
-                ImGui::TextUnformatted(dataset_pathname.c_str());
+                // if(ImGui::IsItemHovered()) {
+                //     ImGui::SetTooltip("%s", dataset_parent_pathname.c_str());
+                // }
 
-                if(ImGui::TreeNode(fmt::format(
-                            "phenomena ({})",
-                            source.phenomena().size()
-                        ).c_str())) {
-                    show_phenomena(source.phenomena());
-                    ImGui::TreePop();
+                // ImGui::TextUnformatted(dataset_pathname.c_str());
+
+                show_file(dynamic_cast<hdf5::File const&>(source));
+
+                {
+                    auto const& phenomena{source.phenomena()};
+
+                    if(ImGui::TreeNode(fmt::format(
+                            "phenomena ({})", phenomena.size()).c_str())) {
+                        show_phenomena(phenomena);
+                        ImGui::TreePop();
+                    }
                 }
 
-                if(ImGui::TreeNode(fmt::format(
-                            "universes ({})",
-                            source.universes().size()
-                        ).c_str())) {
-                    show_universes(source.universes());
-                    ImGui::TreePop();
+                {
+                    auto const& universes{source.universes()};
+
+                    if(!universes.empty()) {
+                        if(ImGui::TreeNode(fmt::format(
+                                "universes ({})", universes.size()).c_str())) {
+                            show_universes(universes);
+                            ImGui::TreePop();
+                        }
+                    }
                 }
 
                 ImGui::PopID();
