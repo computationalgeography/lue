@@ -6,6 +6,9 @@
 #include <boost/filesystem.hpp>
 #include <iostream>
 
+// TODO Show all information about the space domain
+// TODO Show all information about the time domain
+
 
 namespace {
 
@@ -276,6 +279,17 @@ void show_properties(
 
     for(std::string const& name: collection.names()) {
         if(ImGui::TreeNode(name.c_str())) {
+
+            /// ImGui::Begin("Title bar Hovered/Active tests", &test_window);
+            if(ImGui::BeginPopupContextItem()) {
+                if(ImGui::MenuItem("Copy name")) {
+                    ImGui::LogToClipboard();
+                    ImGui::LogText(name.c_str());
+                    ImGui::LogFinish();
+                }
+                ImGui::EndPopup();
+            }
+
             show_property(collection[name]);
             ImGui::TreePop();
         }
@@ -484,7 +498,7 @@ int View::run_implementation()
 
     sdl2::API api;
     sdl2::Window sdl_window{"LUE view"};
-    sdl2::ImGuiBinding binding{sdl_window};
+    sdl2::ImGuiBinding binding{api, sdl_window};
 
     bool stop_browsing = false;
 

@@ -4,6 +4,12 @@ add_executable(lue_view
     src/view
 )
 
+target_compile_options(lue_view
+    PRIVATE
+        # warning: format not a string literal and no format arguments
+        $<$<CXX_COMPILER_ID:GNU>:-Wno-format-security>
+)
+
 target_link_libraries(lue_view
     PRIVATE
         lue::imgui
