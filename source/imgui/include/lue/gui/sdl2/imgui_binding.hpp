@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/gui/sdl2/api.hpp"
 #include "lue/gui/sdl2/window.hpp"
 #include "imgui.h"
 
@@ -10,7 +11,8 @@ class ImGuiBinding
 
 public:
 
-                   ImGuiBinding        (Window& window);
+                   ImGuiBinding        (API const& api,
+                                        Window& window);
 
                    ~ImGuiBinding       ();
 

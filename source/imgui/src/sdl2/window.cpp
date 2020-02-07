@@ -11,25 +11,25 @@ Window::Window(
     int const y,
     int const w,
     int const h,
-    Uint32 const flags)
-:
+    Uint32 const flags):
+
     _window{nullptr},
     _gl_context{nullptr}
-{
-    // // Setup window
-    // SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-    // SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-    // SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
-    // SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
-    // SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
-    // // SDL_DisplayMode current;
-    // // SDL_GetCurrentDisplayMode(0, &current);
 
-    _window = SDL_CreateWindow(title.c_str(), x, y, w, h, flags);
+{
+
+    // Create window with graphics context
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+
+    _window = SDL_CreateWindow(
+        title.c_str(), x, y, w, h, static_cast<SDL_WindowFlags>(flags));
     _gl_context = SDL_GL_CreateContext(_window);
     assert(_gl_context != nullptr);
 
-    // SDL_GL_SetSwapInterval(1); // Enable vsync
+    SDL_GL_MakeCurrent(_window, _gl_context);
+    SDL_GL_SetSwapInterval(1); // Enable vsync
 }
 
 

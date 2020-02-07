@@ -315,6 +315,7 @@ endif()
 
 if(DEVBASE_IMGUI_REQUIRED)
     find_package(OpenGL REQUIRED)
+    find_package(GLEW REQUIRED)
     find_package(SDL2 REQUIRED)
 
     if(LUE_REPOSITORY_CACHE AND EXISTS ${LUE_REPOSITORY_CACHE}/imgui)
@@ -341,8 +342,8 @@ if(DEVBASE_IMGUI_REQUIRED)
             ${imgui_SOURCE_DIR}/imgui_draw
             ${imgui_SOURCE_DIR}/imgui_widgets
 
-            # opengl2 / sdl2 binding
-            ${imgui_SOURCE_DIR}/examples/imgui_impl_opengl2
+            # opengl3 / sdl2 binding
+            ${imgui_SOURCE_DIR}/examples/imgui_impl_opengl3
             ${imgui_SOURCE_DIR}/examples/imgui_impl_sdl
         )
 
@@ -358,15 +359,11 @@ if(DEVBASE_IMGUI_REQUIRED)
         target_link_libraries(imgui
             PUBLIC
                 ${SDL2_LIBRARY}
+                GLEW::glew
                 OpenGL::GL
         )
 
         add_library(imgui::imgui ALIAS imgui)
-
-        # target_compile_options(imgui
-        #     PRIVATE
-        #         $<$<CXX_COMPILER_ID:Clang>:-Wno-c++98-compat-pedantic;-Wno-zero-as-null-pointer-constant;-Wno-double-promotion;-Wno-padded;-Wno-old-style-cast;-Wno-sign-conversion;-Wno-float-equal;-Wno-unused-macros>
-        # )
     endif()
 
     unset(DEVBASE_IMGUI_REQUIRED)

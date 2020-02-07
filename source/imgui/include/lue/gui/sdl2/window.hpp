@@ -16,7 +16,9 @@ public:
                                         int w=600,
                                         int h=400,
                                         Uint32 flags=
-                                    SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE);
+                                            SDL_WINDOW_OPENGL |
+                                            SDL_WINDOW_RESIZABLE |
+                                            SDL_WINDOW_ALLOW_HIGHDPI);
 
                    ~Window             ();
 
