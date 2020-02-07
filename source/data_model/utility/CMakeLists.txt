@@ -1,6 +1,9 @@
+add_test_conditionally(test)
+
 add_library(lue_utility
     src/application
     src/command
+    src/environment
     src/metadata
     src/print_message
     src/progress_indicator
