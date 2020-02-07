@@ -26,6 +26,12 @@ Epoch::Epoch():
 }
 
 
+/*!
+    @brief      Construct an instance
+    @param      kind Epoch kind
+
+    The calendar and offset are not set.
+*/
 Epoch::Epoch(
     Kind kind):
 
@@ -38,6 +44,13 @@ Epoch::Epoch(
 }
 
 
+/*!
+    @brief      Construct an instance
+    @param      kind Epoch kind
+    @param      origin Offset from epoch kind's epoch
+
+    The calendar is not set.
+*/
 Epoch::Epoch(
     Kind const kind,
     std::string const& origin):
@@ -51,6 +64,12 @@ Epoch::Epoch(
 }
 
 
+/*!
+    @brief      Construct an instance
+    @param      kind Epoch kind
+    @param      origin Offset from epoch kind's epoch
+    @param      calendar Calendar of time points
+*/
 Epoch::Epoch(
     Kind const kind,
     std::string const& origin,
