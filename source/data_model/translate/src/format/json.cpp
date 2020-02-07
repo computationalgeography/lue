@@ -1,6 +1,7 @@
 #include "lue/translate/format/json.hpp"
 #include "lue/translate/format/gdal_raster.hpp"
 #include "lue/data_model.hpp"
+#include "lue/utility/environment.hpp"
 #include "lue/navigate.hpp"
 #include <nlohmann/json.hpp>
 #include <optional>
@@ -72,8 +73,8 @@ void add_object_tracker(
     ObjectTracker& object_tracker)
 {
     if(contains(object_tracker_json, "active_set_index")) {
-        std::vector<Index> active_set_idx_json =
-            object_tracker_json.at("active_set_index");
+
+        std::vector<Index> idxs = object_tracker_json.at("active_set_index");
         auto& active_set_idx = object_tracker.active_set_index();
 
         // When appending active sets, we have to update the indices
@@ -81,29 +82,48 @@ void add_object_tracker(
         // stored already.
         Index offset = object_tracker.active_object_id().nr_ids();
         std::transform(
-            active_set_idx_json.begin(), active_set_idx_json.end(),
-            active_set_idx_json.begin(), [offset](auto const idx) {
+            idxs.begin(), idxs.end(),
+            idxs.begin(), [offset](auto const idx) {
                     return idx + offset;
                 }
             );
 
         Index const begin = active_set_idx.nr_indices();
-        IndexRange const index_range{
-            begin, begin + active_set_idx_json.size()};
-        active_set_idx.expand(active_set_idx_json.size());
-        active_set_idx.write(index_range, active_set_idx_json.data());
+        IndexRange const index_range{begin, begin + idxs.size()};
+        active_set_idx.expand(idxs.size());
+        active_set_idx.write(index_range, idxs.data());
+
+    }
+
+    if(contains(object_tracker_json, "active_object_index")) {
+
+        // Read indices from file
+        std::vector<Index> const idxs =
+            object_tracker_json.at("active_object_index");
+        auto& active_object_idx = object_tracker.active_object_index();
+
+        // In order to append, we need to know for each object in the
+        // active set how many values are already stored. This information
+        // is not available yet here... FIXME
+
+        // Add indices to dataset
+        Index const begin = 0;
+        IndexRange const index_range{begin, begin + idxs.size()};
+        active_object_idx.expand(idxs.size());
+        active_object_idx.write(index_range, idxs.data());
+
     }
 
     if(contains(object_tracker_json, "active_object_id")) {
-        std::vector<ID> const active_object_id_json =
-            object_tracker_json.at("active_object_id");
+
+        std::vector<ID> const ids = object_tracker_json.at("active_object_id");
         auto& active_object_id = object_tracker.active_object_id();
 
         Index const begin = active_object_id.nr_ids();
-        IndexRange const index_range{
-            begin, begin + active_object_id_json.size()};
-        active_object_id.expand(active_object_id_json.size());
-        active_object_id.write(index_range, active_object_id_json.data());
+        IndexRange const index_range{begin, begin + ids.size()};
+        active_object_id.expand(ids.size());
+        active_object_id.write(index_range, ids.data());
+
     }
 }
 
@@ -123,24 +143,111 @@ void add_time_points(
 
 
 template<
+    typename Coordinate>
+std::vector<Coordinate> read_space_box(
+    std::string const& dataset_name)
+{
+    auto space_box = GDALRaster{dataset_name}.domain().coordinates();
+
+    return std::vector<Coordinate>(space_box.begin(), space_box.end());
+}
+
+
+template<
     typename SpaceBox,
     typename Coordinate>
 void add_space_boxes(
     ::json const& space_box_json,
     SpaceDomain& space_domain)
 {
-    auto value = space_domain.value<StationarySpaceBox>();
-    std::vector<Coordinate> const space_boxes = space_box_json;
+    if(!space_box_json.empty()) {
 
-    auto const shape = value.array_shape();
-    auto const nr_elements_in_object_array = size_of_shape(shape, 1);
-    auto const nr_object_arrays =
-        space_boxes.size() / nr_elements_in_object_array;
+        auto value = space_domain.value<StationarySpaceBox>();
+        auto const shape = value.array_shape();
+        auto const nr_elements_in_object_array = size_of_shape(shape, 1);
+        std::vector<Coordinate> space_boxes;
 
-    Index const begin = value.nr_boxes();
-    IndexRange const index_range{begin, begin + nr_object_arrays};
-    value.expand(nr_object_arrays);
-    value.write(index_range, space_boxes.data());
+        if(space_box_json.front().is_string()) {
+            // Read space box from datasets
+            std::vector<std::string> const dataset_names = space_box_json;
+
+            space_boxes.resize(
+                dataset_names.size() * nr_elements_in_object_array);
+            auto it = space_boxes.begin();
+
+            for(std::string dataset_name: dataset_names) {
+                dataset_name = expand_environment_variables(dataset_name);
+                auto space_box = read_space_box<Coordinate>(dataset_name);
+                it = std::copy(space_box.begin(), space_box.end(), it);
+            }
+        }
+        else {
+            // Read space box from JSON
+            std::vector<Coordinate> const space_boxes = space_box_json;
+
+            if(space_boxes.size() % nr_elements_in_object_array != 0) {
+                throw std::runtime_error(fmt::format(
+                    "Expected a multiple of {} coordinates, but found {} ({})",
+                    nr_elements_in_object_array, space_boxes.size(),
+                    space_domain.id().pathname()));
+            }
+        }
+
+        auto const nr_object_arrays =
+            space_boxes.size() / nr_elements_in_object_array;
+
+        Index const begin = value.nr_boxes();
+        IndexRange const index_range{begin, begin + nr_object_arrays};
+        value.expand(nr_object_arrays);
+        value.write(index_range, space_boxes.data());
+    }
+}
+
+
+void add_space_domain_items(
+    ::json const& item_type_json,
+    hdf5::Datatype const datatype,
+    PropertySet& property_set)
+{
+    SpaceConfiguration const& space_configuration{
+        property_set.space_domain().configuration()};
+
+    switch(space_configuration.value<Mobility>()) {
+        case Mobility::stationary: {
+
+            switch(space_configuration.value<SpaceDomainItemType>()) {
+
+                case SpaceDomainItemType::point: {
+                    throw std::runtime_error(fmt::format(
+                        "Importing stationary space points not supported yet ({})",
+                        property_set.space_domain().id().pathname()));
+                    break;
+                }
+
+                case SpaceDomainItemType::box: {
+                    if(datatype == hdf5::native_float64) {
+                        add_space_boxes<StationarySpaceBox, double>(
+                            item_type_json, property_set.space_domain());
+                    }
+                    else {
+                        throw_unsupported("space domain coordinate type");
+                    }
+
+                    break;
+                }
+
+            }
+
+            break;
+        }
+        case Mobility::mobile: {
+            throw std::runtime_error(fmt::format(
+                "Importing mobile space items not supported yet ({})",
+                property_set.id().pathname()));
+
+            break;
+        }
+    }
 }
 
 
@@ -198,13 +305,13 @@ void add_different_shape_property(
     std::size_t rank = property_json.at("rank");
     auto const datatype = hdf5::native_datatype<Datatype>();
     auto const value_json = property_json.at("value");
-    hdf5::Shape shape;
 
     auto& property = properties.contains(name)
         ? properties[name]
         : properties.add(name, datatype, rank)
         ;
 
+    hdf5::Shape shape;
     std::vector<Datatype> values;
 
     for(auto const& a_value_json: value_json) {
@@ -212,7 +319,8 @@ void add_different_shape_property(
 
         if(contains(a_value_json, "dataset")) {
             // Value is stored in an external dataset
-            std::string const dataset_name = a_value_json.at("dataset");
+            std::string const dataset_name =
+                expand_environment_variables(a_value_json.at("dataset"));
             shape = read_gdal_raster(dataset_name, values);
         }
         else {
@@ -408,6 +516,74 @@ void add_same_shape_constant_shape_property(
 //     property.value().expand(nr_object_arrays);
 //     property.value().write(index_range, values.data());
 // }
+
+
+template<
+    typename Datatype>
+void add_different_shape_constant_shape_property(
+    ::json const& property_json,
+    different_shape::constant_shape::Properties& properties)
+{
+    std::string const name = property_json.at("name");
+    std::size_t const rank = property_json.at("rank");
+    auto const datatype = hdf5::Datatype{
+        hdf5::NativeDatatypeTraits<Datatype>::type_id()};
+
+    auto& property = properties.contains(name)
+        ? properties[name]
+        : properties.add(name, datatype, rank)
+        ;
+
+    auto& value = property.value();
+
+    hdf5::Shape shape;
+    std::vector<Datatype> values;
+    auto const& value_json = property_json.at("value");
+
+    for(auto const& a_value_json: value_json) {
+        ID const id = a_value_json.at("id");
+
+        if(contains(a_value_json, "dataset")) {
+            // Value is stored in an external dataset
+            std::string const dataset_name =
+                expand_environment_variables(a_value_json.at("dataset"));
+            shape = read_gdal_raster(dataset_name, values);
+        }
+        // else {
+        //     // Value is stored inline
+        //     values = a_value_json.get<decltype(values)>();
+        //     shape = a_value_json.at("shape");
+        // }
+
+        assert(!value.exists(id));
+
+        Count nr_locations_in_time = 1;
+
+        value.expand(id, shape, nr_locations_in_time);
+        value[id].write(values.data());
+    }
+
+
+
+    // if(contains(property_json, "space_discretization")) {
+    //     auto const discretization_json =
+    //         property_json.at("space_discretization");
+    //     auto const discretization_type =
+    //         string_to_aspect<SpaceDiscretization>(
+    //             discretization_json.at("type"));
+
+    //     std::string const property_path = discretization_json.at("property");
+
+    //     // Give the current property, navigate to the property pointed
+    //     // to by the path
+    //     auto discretization_property = lue::property(property, property_path);
+
+    //     property.set_space_discretization(
+    //         discretization_type, discretization_property);
+    // }
+
+
+}
 
 
 template<
@@ -628,22 +804,20 @@ void add_property(
                     switch(shape_variability) {
                         case ShapeVariability::constant: {
                             // variable_value / different_shape / constant_shape
-                            // using Properties = different_shape::constant_shape::Properties;
+                            using Properties = different_shape::constant_shape::Properties;
 
-                            throw_unsupported("different_shape::constant_shape");
+                            if(datatype_json == "uint8") {
+                                using Datatype = std::uint8_t;
+
+                                add_different_shape_constant_shape_property<Datatype>(
+                                    property_json, properties.collection<Properties>());
+                            }
+
+                            // TODO More value types
 
                             break;
                         }
                         case ShapeVariability::variable: {
-                            // variable_value / different_shape / variable_shape
-                            // using Properties = different_shape::variable_shape::Properties;
-
-                            // throw_unsupported("different_shape::variable_shape");
-
-                            // break;
-
-
-
                             // variable_value / different_shape / variable_shape
                             using Properties = different_shape::variable_shape::Properties;
 
@@ -691,6 +865,56 @@ void add_property(
 }
 
 
+std::tuple<SpaceConfiguration, hdf5::Datatype, std::size_t, ::json>
+    parse_space_domain(
+        ::json const& space_domain_json)
+{
+    Mobility mobility{Mobility::stationary};
+    SpaceDomainItemType item_type{};
+    ::json item_type_json;
+
+    if(contains(space_domain_json, "space_box")) {
+        item_type_json = space_domain_json.at("space_box");
+        item_type = SpaceDomainItemType::box;
+    }
+    else {
+        throw std::runtime_error(
+            "Could not find space domain values");
+    }
+
+    std::string const datatype_json = space_domain_json.at("datatype");
+    assert(datatype_json == "float64");
+    auto const datatype = hdf5::native_float64;
+    std::size_t const rank = space_domain_json.at("rank");
+
+    return std::make_tuple(
+        SpaceConfiguration{mobility, item_type}, datatype, rank,
+        item_type_json);
+}
+
+
+void verify_time_domain_is_compatible(
+    PropertySet const& property_set,
+    TimeConfiguration const& time_configuration,
+    Clock const& clock)
+{
+    if(property_set.time_domain().configuration() !=
+            time_configuration) {
+        throw std::runtime_error(fmt::format(
+            "Existing time configuration at {} does not match "
+            "the one in the JSON file",
+            property_set.id().pathname()));
+    }
+
+    if(property_set.time_domain().clock() != clock) {
+        throw std::runtime_error(fmt::format(
+            "Existing clock at {} does not match "
+            "the one in the JSON file",
+            property_set.id().pathname()));
+    }
+}
+
+
 void add_property_set(
     ::json const& property_set_json,
     PropertySets& property_sets)
@@ -704,61 +928,50 @@ void add_property_set(
 
     if(!contains(property_set_json, "time_domain")) {
         if(!contains(property_set_json, "space_domain")) {
+
+            // Add/use property-set without time domain and with space domain
             auto& property_set = property_sets.contains(name)
                 ? property_sets[name]
                 : property_sets.add(name)
                 ;
             property_set_ref = property_set;
+
         }
         else {
-            auto const& space_domain_json =
-                property_set_json.at("space_domain");
 
-            if(contains(space_domain_json, "space_box")) {
-                SpaceConfiguration const space_configuration{
-                        Mobility::stationary,
-                        SpaceDomainItemType::box
-                    };
-                std::string const datatype_json =
-                    space_domain_json.at("datatype");
-                assert(datatype_json == "float64");
-                auto const datatype = hdf5::native_float64;
-                std::size_t rank = space_domain_json.at("rank");
+            auto const& [space_configuration, datatype, rank,
+                    space_domain_item_type_json] =
+                parse_space_domain(property_set_json.at("space_domain"));
 
-                if(property_sets.contains(name)) {
-                    // Append to the existing property set
+            // Add/use property-set without time domain and with space domain
+            if(property_sets.contains(name)) {
+                auto& property_set = property_sets[name];
 
-                    // See if existing domain is the same as the one we
-                    // just read
-                    throw_unsupported(
-                        "Check space domain is same as existing");
-                }
-                else {
-                    // Create a new property set
-                    auto& property_set =
-                        property_sets.add(
-                            name, space_configuration, datatype, rank);
-                    property_set_ref = property_set;
-                }
+                // FIXME
+                // verify_space_domain_is_compatible(
+                //     property_set, space_configuration)
 
-                PropertySet& property_set = *property_set_ref;
+                throw_unsupported(
+                    "Check space domain is same as existing");
 
-                add_space_boxes<StationarySpaceBox, double>(
-                    space_domain_json.at("space_box"),
-                    property_set.space_domain());
+                property_set_ref = property_set;
             }
             else {
-                throw std::runtime_error(
-                    "Could not find space domain values");
+                // Create a new property set
+                auto& property_set =
+                    property_sets.add(
+                        name, space_configuration, datatype, rank);
+                property_set_ref = property_set;
             }
 
+            PropertySet& property_set = *property_set_ref;
 
+            add_object_tracker(
+                property_set_json.at("object_tracker"),
+                property_set.object_tracker());
 
-
-
-            // add_object_tracker(
-            //     property_set_json.at("object_tracker"),
-            //     property_set.object_tracker());
+            add_space_domain_items(
+                space_domain_item_type_json, datatype, property_set);
         }
     }
     else {
@@ -766,19 +979,28 @@ void add_property_set(
         auto const& clock_json = time_domain_json.at("clock");
         auto const& epoch_json = clock_json.at("epoch");
 
-        // TODO origin and calendar are optional
         time::Epoch::Kind const epoch_kind =
             string_to_aspect<time::Epoch::Kind>(epoch_json.at("kind"));
-        std::string const epoch_origin = epoch_json.at("origin");
-        time::Calendar const epoch_calendar =
-            string_to_aspect<time::Calendar>(epoch_json.at("calendar"));
-        time::Epoch const epoch{epoch_kind, epoch_origin, epoch_calendar};
+        time::Epoch epoch{epoch_kind};
+
+        if(epoch_json.contains("origin")) {
+            std::string const epoch_origin = epoch_json.at("origin");
+
+            if(epoch_json.contains("calendar")) {
+                time::Calendar const epoch_calendar =
+                    string_to_aspect<time::Calendar>(epoch_json.at("calendar"));
+                epoch = time::Epoch{epoch_kind, epoch_origin, epoch_calendar};
+            }
+            else {
+                epoch = time::Epoch{epoch_kind, epoch_origin};
+            }
+        }
 
         time::DurationCount const tick_period_count =
             clock_json.at("tick_period_count");
         std::string const unit = clock_json.at("unit");
 
-        // TODO Read the time domain item type from the json
+        // FIXME Read the time domain item type from the json
         TimeConfiguration const time_configuration{
                 TimeDomainItemType::point
             };
@@ -788,50 +1010,79 @@ void add_property_set(
                 tick_period_count
             };
 
-        if(property_sets.contains(name)) {
-            auto& property_set = property_sets[name];
-            property_set_ref = property_set;
+        if(!contains(property_set_json, "space_domain")) {
 
-            if(property_set.time_domain().configuration() !=
-                    time_configuration) {
-                throw std::runtime_error(fmt::format(
-                    "Existing time configuration at {} does not match "
-                    "the one in the JSON file",
-                    property_set.id().pathname()));
+            // Add/use property-set with time domain and without space domain
+            if(property_sets.contains(name)) {
+                auto& property_set = property_sets[name];
+
+                verify_time_domain_is_compatible(
+                    property_set, time_configuration, clock);
+
+                property_set_ref = property_set;
+            }
+            else {
+                auto& property_set =
+                    property_sets.add(name, time_configuration, clock);
+                property_set_ref = property_set;
             }
 
-            if(property_set.time_domain().clock() != clock) {
-                throw std::runtime_error(fmt::format(
-                    "Existing clock at {} does not match "
-                    "the one in the JSON file",
-                    property_set.id().pathname()));
-            }
         }
         else {
-            auto& property_set =
-                property_sets.add(name, time_configuration, clock);
-            property_set_ref = property_set;
+
+            auto const& [space_configuration, datatype, rank,
+                    space_domain_item_type_json] =
+                parse_space_domain(property_set_json.at("space_domain"));
+
+            // Add/use property-set with time domain and with space domain
+            if(property_sets.contains(name)) {
+                auto& property_set = property_sets[name];
+
+                verify_time_domain_is_compatible(
+                    property_set, time_configuration, clock);
+                // FIXME
+                // verify_space_domain_is_compatible(
+                //     property_set, space_configuration)
+
+                throw_unsupported(
+                    "Check space domain is same as existing");
+
+                property_set_ref = property_set;
+            }
+            else {
+                // Create a new property set
+                auto& property_set =
+                    property_sets.add(
+                        name, time_configuration, clock,
+                        space_configuration, datatype, rank);
+                property_set_ref = property_set;
+            }
+
+            PropertySet& property_set = *property_set_ref;
+
+            add_space_domain_items(
+                space_domain_item_type_json, datatype, property_set);
         }
 
+        assert(property_set_ref);
         PropertySet& property_set = *property_set_ref;
 
         add_object_tracker(
             property_set_json.at("object_tracker"),
             property_set.object_tracker());
+
         add_time_points(
             time_domain_json.at("time_point"), property_set.time_domain());
     }
 
     assert(property_set_ref);
 
-    if(property_set_ref) {
-        PropertySet& property_set = *property_set_ref;
+    PropertySet& property_set = *property_set_ref;
 
-        if(contains(property_set_json, "properties")) {
-            for(auto const& property_json:
-                    property_set_json.at("properties")) {
-                add_property(property_json, property_set.properties());
-            }
+    if(contains(property_set_json, "properties")) {
+        for(auto const& property_json:
+                property_set_json.at("properties")) {
+            add_property(property_json, property_set.properties());
         }
     }
 }

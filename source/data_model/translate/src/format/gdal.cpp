@@ -1,5 +1,5 @@
 #include "lue/translate/format/gdal.hpp"
-// #include "lue/translate/format/gdal_block.hpp"
+#include "lue/translate/format/gdal_block.hpp"
 // #include "lue/translate/format/gdal_stacks.hpp"
 // #include "lue/utility/progress_indicator.hpp"
 // #include "lue/hl/raster.hpp"
@@ -448,28 +448,98 @@ std::string stem(
 }
 
 
+GDALDataType memory_datatype_to_gdal_datatype(
+    hdf5::Datatype const datatype)
+{
+    GDALDataType result{GDT_Unknown};
+
+    if(datatype == hdf5::native_uint8) {
+        result = GDT_Byte;
+    }
+
+    return result;
+}
+
+
+auto gdal_driver_by_name(
+        std::string const& name)
+{
+    auto driver = GetGDALDriverManager()->GetDriverByName(name.c_str());
+
+    if(driver == nullptr) {
+        throw std::runtime_error("Cannot obtain " + name + " driver");
+    }
+
+    return driver;
+}
+
+
+auto create_dataset(
+    GDALDriver& driver,
+    std::string const& dataset_name,
+    hdf5::Shape const& shape,
+    Count const nr_bands,
+    GDALDataType const datatype)
+{
+    // TODO Pass in coordinate reference system
+    auto dataset = GDALDatasetPtr(driver.Create(
+            dataset_name.c_str(), shape[1], shape[0], nr_bands,
+            datatype, nullptr),
+        GDALDatasetDeleter{});
+
+    if(!dataset) {
+        throw std::runtime_error("Cannot create dataset " + dataset_name);
+    }
+
+    return dataset;
+}
+
+
+auto create_dataset(
+    GDALDriver& driver,
+    std::string const& dataset_name)
+{
+    return create_dataset(
+        driver, dataset_name, hdf5::Shape{0, 0}, 0, GDT_Unknown);
+}
+
+
+auto create_dataset(
+    GDALDriver& driver,
+    std::string const& dataset_name,
+    hdf5::Shape const& shape,
+    Count const nr_bands,
+    hdf5::Datatype const datatype)
+{
+    return create_dataset(
+        driver, dataset_name, shape, nr_bands,
+        memory_datatype_to_gdal_datatype(datatype));
+}
+
+
 GDALDatasetPtr create_dataset(
     std::string const& driver_name,
     std::string const& dataset_name)
 {
-    auto driver = GetGDALDriverManager()->GetDriverByName(driver_name.c_str());
+    auto driver = gdal_driver_by_name(driver_name);
+    auto dataset = create_dataset(*driver, dataset_name);
 
-    if(driver == nullptr) {
-        throw std::runtime_error(
-            "Cannot obtain " + driver_name + " driver");
-    }
+    return dataset;
+}
 
-    // TODO Pass in coordinate reference system
-    auto gdal_dataset = GDALDatasetPtr(
-        driver->Create(dataset_name.c_str(), 0, 0, 0, GDT_Unknown, nullptr),
-        GDALDatasetDeleter{});
 
-    if(!gdal_dataset) {
-        throw std::runtime_error(
-            "Cannot create dataset " + dataset_name);
-    }
+GDALDatasetPtr create_dataset(
+    std::string const& driver_name,
+    std::string const& dataset_name,
+    hdf5::Shape const& shape,
+    Count const nr_bands,
+    hdf5::Datatype const datatype)
+{
+    auto driver = gdal_driver_by_name(driver_name);
+    auto dataset = create_dataset(
+        *driver, dataset_name, shape, nr_bands, datatype);
 
-    return gdal_dataset;
+    return dataset;
 }
 
 
@@ -515,6 +585,101 @@ void write_shapefile(
 //     auto gdal_dataset = create_dataset("ESRI Shapefile", shapefile_name);
 // 
 // }
+
+
+GDALBlock natural_blocks(
+    GDALRasterBand& raster_band)
+{
+    int block_size_x, block_size_y;
+
+    raster_band.GetBlockSize(&block_size_x, &block_size_y);
+
+    assert(block_size_x >= 0);
+    assert(block_size_y >= 0);
+
+    int nr_rows = raster_band.GetYSize();
+    int nr_cols = raster_band.GetXSize();
+
+    return GDALBlock{
+        static_cast<std::size_t>(nr_cols),
+        static_cast<std::size_t>(nr_rows),
+        static_cast<std::size_t>(block_size_x),
+        static_cast<std::size_t>(block_size_y)};
+}
+
+
+void write_raster_band_block(
+    int const block_x,
+    int const block_y,
+    void* data,
+    GDALRasterBand& raster_band)
+{
+    auto cpl_status = raster_band.WriteBlock(block_x, block_y, data);
+
+    if(cpl_status != CE_None) {
+        throw std::runtime_error(
+            "Cannot write block to GDAL raster band");
+    }
+}
+
+
+template<
+    typename T>
+void write_raster_band(
+    same_shape::constant_shape::Value const& value,
+    Index const idx,
+    GDALRasterBand& raster_band)
+{
+    // It is assumed here that value contains a 2D array for multiple
+    // locations in time. The 2D array to write to the raster band is
+    // located at the index passed in.
+
+    auto const blocks = natural_blocks(raster_band);
+
+    std::vector<T> values(blocks.block_size());
+
+    // Copy blocks for value at specific index to raster band
+    for(size_t block_y = 0; block_y < blocks.nr_blocks_y(); ++block_y) {
+        for(size_t block_x = 0; block_x < blocks.nr_blocks_x(); ++block_x) {
+
+            auto const& [nr_valid_cells_x, nr_valid_cells_y] =
+                blocks.nr_valid_cells(block_x, block_y);
+
+            hdf5::Shape const shape = {
+                nr_valid_cells_x * nr_valid_cells_y
+            };
+            auto const memory_dataspace = hdf5::create_dataspace(shape);
+
+            hdf5::Offset offset = {
+                idx,
+                block_y * blocks.block_size_y(),
+                block_x * blocks.block_size_x()
+            };
+            hdf5::Count const count = {1, nr_valid_cells_y, nr_valid_cells_x};
+            hdf5::Hyperslab const hyperslab{offset, count};
+
+            value.read(hyperslab, values.data());
+            write_raster_band_block(
+                block_x, block_y, values.data(), raster_band);
+        }
+    }
+}
+
+
+void write_raster_band(
+    same_shape::constant_shape::Value const& value,
+    Index const idx,
+    GDALRasterBand& raster_band)
+{
+    auto const& memory_datatype{value.memory_datatype()};
+
+    if(memory_datatype == hdf5::native_uint8) {
+        write_raster_band<std::uint8_t>(value, idx, raster_band);
+    }
+    else {
+        assert(false);
+    }
+}
 
 
 void write_shapefiles(
@@ -631,6 +796,223 @@ void write_shapefiles(
 }  // Anonymous namespace
 
 
+void translate_lue_dataset_to_raster(
+    Dataset& dataset,
+    std::string const& raster_name,
+    Metadata const& metadata)
+{
+    // Figure out which property-sets are selected
+    auto const& root_json = metadata.object();
+    auto const lue_dataset_name =
+        boost::filesystem::path(dataset.pathname()).stem().string();
+
+    // Dataset -----------------------------------------------------------------
+    if(!json::has_key(root_json, lue_dataset_name)) {
+        throw std::runtime_error(fmt::format(
+            "No information for dataset {} present in metadata",
+                lue_dataset_name));
+    }
+
+    auto const dataset_json = json::object(root_json, lue_dataset_name);
+
+    // Phenomena ---------------------------------------------------------------
+    if(!json::has_key(dataset_json, "phenomena")) {
+        throw std::runtime_error(fmt::format(
+            "No information about phenomena present in metadata for "
+            "dataset {}",
+                lue_dataset_name));
+    }
+
+    auto const phenomena_json = json::object(dataset_json, "phenomena");
+
+    if(phenomena_json.size() != 1) {
+        throw std::runtime_error(fmt::format(
+            "Expected information about 1 phenomenon in metadata for "
+            "dataset {}, but got {}",
+                lue_dataset_name,
+                phenomena_json.size()));
+    }
+
+    auto const phenomenon_json = phenomena_json.front();
+    std::string const phenomenon_name = json::string(phenomenon_json, "name");
+
+    // Property-sets -----------------------------------------------------------
+    if(!json::has_key(phenomenon_json, "property_sets")) {
+        throw std::runtime_error(fmt::format(
+            "No information about property-sets present in metadata for "
+            "phenomenon {} in dataset {}",
+                phenomenon_name,
+                lue_dataset_name));
+    }
+
+    auto const property_sets_json =
+        json::object(phenomenon_json, "property_sets");
+
+    if(property_sets_json.size() != 1) {
+        throw std::runtime_error(fmt::format(
+            "Expected information about 1 property-set in metadata for "
+            "phenomenon {} in dataset {}, but got {}",
+                phenomenon_name,
+                lue_dataset_name,
+                property_sets_json.size()));
+    }
+
+    auto const property_set_json = property_sets_json.front();
+    std::string const property_set_name =
+        json::string(property_set_json, "name");
+
+    // Properties --------------------------------------------------------------
+    auto const properties_json = json::object(property_set_json, "properties");
+
+    if(properties_json.size() != 1) {
+        throw std::runtime_error(fmt::format(
+            "Expected information about 1 property in metadata for "
+            "property-set {} in phenomenon {} in dataset {}, but got {}",
+                property_set_name,
+                phenomenon_name,
+                lue_dataset_name,
+                properties_json.size()));
+    }
+
+    auto const property_json = properties_json.front();
+    std::string const property_name = json::string(property_json, "name");
+
+    // Find requested information in LUE dataset -------------------------------
+    Phenomenon& phenomenon = dataset.phenomena()[phenomenon_name];
+    PropertySet& property_set = phenomenon.property_sets()[property_set_name];
+
+    auto const& object_tracker{property_set.object_tracker()};
+
+    // Assert there is only a single active set
+    if(object_tracker.active_set_index().nr_indices() != 1) {
+        throw std::runtime_error("Expected a single active set");
+
+    }
+
+    // Assert the one active set contains only a single active object
+    if(object_tracker.active_object_id().nr_ids() != 1) {
+        throw std::runtime_error("Expected a single active object");
+    }
+
+
+    if(!property_set.has_space_domain()) {
+        throw std::runtime_error("Property-set does not have a space domain");
+    }
+
+    auto const& space_domain{property_set.space_domain()};
+
+    if(space_domain.configuration().value<Mobility>() != Mobility::stationary) {
+        throw std::runtime_error("Expected stationary space domain items");
+    }
+
+    if(space_domain.configuration().value<SpaceDomainItemType>() !=
+            SpaceDomainItemType::box) {
+        throw std::runtime_error("Expected space boxes");
+    }
+
+    StationarySpaceBox const space_domain_items{
+        const_cast<SpaceDomain&>(space_domain).value<StationarySpaceBox>()};
+
+    assert(space_domain_items.nr_boxes() == 1);
+    assert(space_domain_items.array_shape().size() == 1);
+    assert(space_domain_items.array_shape()[0] == 4);
+    assert(space_domain_items.memory_datatype() == hdf5::native_float64);
+
+    std::vector<double> coordinates(space_domain_items.array_shape()[0]);
+    space_domain_items.read(coordinates.data());
+
+    Properties& properties{property_set.properties()};
+
+    if(!properties.contains(property_name)) {
+        throw std::runtime_error(fmt::format(
+            "Property {} is not part of property-set {}",
+            property_name, property_set_name));
+    }
+
+    if(properties.shape_per_object(property_name) !=
+            ShapePerObject::different) {
+        throw std::runtime_error(
+            "Only ShapePerObject::different is currently supported");
+    }
+
+    if(properties.value_variability(property_name) !=
+            ValueVariability::variable) {
+        throw std::runtime_error(
+            "Only ValueVariability::variable is currently supported");
+    }
+
+    if(properties.shape_variability(property_name) !=
+            ShapeVariability::constant) {
+        throw std::runtime_error(
+            "Only ShapeVariability::constant is currently supported");
+    }
+
+    using Properties = different_shape::constant_shape::Properties;
+    using Property = different_shape::constant_shape::Property;
+
+    // The values of this property need to be written to a stack of rasters,
+    // using the GDAL API. Each value is a raster. Each location in time
+    // is a slice.
+    Property const& property{properties.collection<Properties>()[property_name]};
+
+    // For the current active set:
+    // - Iterate over each active object in the active set
+
+        // For the current object:
+        // Assert time domain item type is time point
+        // Write a raster: <name>.<extension>
+
+    std::vector<Index> active_set_idxs(
+        object_tracker.active_set_index().nr_arrays());
+    object_tracker.active_set_index().read(active_set_idxs.data());
+    assert(active_set_idxs.size() == 1);
+    assert(active_set_idxs.front() == 0);
+
+    std::vector<ID> active_object_ids(
+        object_tracker.active_object_id().nr_ids());
+    object_tracker.active_object_id().read(active_object_ids.data());
+    assert(active_object_ids.size() == 1);
+
+    ID const id{active_object_ids.front()};
+
+    auto const value{const_cast<Property&>(property).value()[id]};
+
+    assert(value.nr_arrays() == 1);
+    assert(value.rank() == 2);
+
+    auto const shape{value.array_shape()};
+
+    // Write a raster with the shape and values from the property value
+
+    Count const nr_bands{1};
+
+    auto gdal_dataset = create_dataset(
+        "GTiff", raster_name, shape, nr_bands, value.memory_datatype());
+
+    // FIXME
+    double const cell_size{0.000992063492063};
+    double const west{coordinates[0]};
+    double const north{coordinates[3]};
+    double geo_transform[6] = {
+        west, cell_size, 0, north, 0, -cell_size };
+
+    gdal_dataset->SetGeoTransform(geo_transform);
+
+    // TODO
+    // OGRSpatialReference oSRS;
+    // char *pszSRS_WKT = NULL;
+    // GDALRasterBand *poBand;
+    // GByte abyRaster[512*512];
+    // oSRS.SetUTM( 11, TRUE );
+    // oSRS.SetWellKnownGeogCS( "NAD27" );
+    // oSRS.exportToWkt( &pszSRS_WKT );
+    // poDstDS->SetProjection( pszSRS_WKT );
+    // CPLFree( pszSRS_WKT );
+
+    write_raster_band(value, 0, *gdal_dataset->GetRasterBand(1));
+}
+
+
 void translate_lue_dataset_to_shapefile(
     Dataset& dataset,
     std::string const& shapefile_name,
@@ -692,6 +1074,11 @@ void translate_lue_dataset_to_shapefile(
     auto const property_set_json = property_sets_json.front();
     std::string const property_set_name =
         json::string(property_set_json, "name");
+
+
+
+
+
 
     Phenomenon& phenomenon = dataset.phenomena()[phenomenon_name];
     PropertySet& property_set = phenomenon.property_sets()[property_set_name];

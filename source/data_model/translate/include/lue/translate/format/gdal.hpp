@@ -53,6 +53,11 @@ using GDALDatasetPtr = std::unique_ptr<::GDALDataset, GDALDatasetDeleter>;
 //                                         std::string const& lue_dataset_name,
 //                                         Metadata const& metadata);
 
+void               translate_lue_dataset_to_raster(
+                                        Dataset& dataset,
+                                        std::string const& raster_name,
+                                        Metadata const& metadata);
+
 void               translate_lue_dataset_to_shapefile(
                                         Dataset& dataset,
                                         std::string const& shapefile_name,
