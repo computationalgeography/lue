@@ -1,6 +1,7 @@
 #pragma once
 #include "lue/object/dataset.hpp"
-#include <string>
+#include <boost/filesystem.hpp>
+#include <optional>
 
 
 namespace lue {
@@ -17,11 +18,29 @@ public:
 
     Dataset const& dataset             () const;
 
+    boost::filesystem::path const& path() const;
+
+    std::string    pathname            () const;
+
+    std::string    filename            () const;
+
+    bool           is_open             () const;
+
+    void           rescan              ();
+
 private:
+
+    bool           exists              () const;
+
+    bool           changed             () const;
 
     std::string const _name;
 
-    Dataset        _dataset;
+    std::optional<Dataset> _dataset;
+
+    boost::filesystem::path _path;
+
+    std::time_t    _write_time;
 
 };
 

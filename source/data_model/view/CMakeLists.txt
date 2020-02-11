@@ -2,6 +2,7 @@ add_executable(lue_view
     src/dataset_to_visualize
     src/main
     src/view
+    src/view_configuration
 )
 
 target_compile_options(lue_view
