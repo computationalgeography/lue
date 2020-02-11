@@ -4,11 +4,5 @@ gsl_microsoft/2.0.0@bincrafters/stable
 jsonformoderncpp/3.7.3@vthiery/stable
 pybind11/2.3.0@conan/stable
 
-[options]
-
 [generators]
 cmake
-
-[imports]
-# bin, *.dll -> ./bin
-# lib, *.dylib -> ./bin
