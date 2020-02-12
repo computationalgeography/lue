@@ -1,4 +1,6 @@
 #include "lue/gui/sdl2/imgui_binding.hpp"
+#include "lue/gui/font/fa-solid-900.hpp"
+#include "lue/gui/font/IconsFontAwesome5.h"
 #include "lue/gui/font/roboto-medium.hpp"
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_sdl.h"
@@ -32,7 +34,20 @@ ImGuiBinding::ImGuiBinding(
     ImGui_ImplOpenGL3_Init(api.glsl_version().c_str());
 
     io.Fonts->AddFontFromMemoryCompressedTTF(
-        roboto_medium_compressed_data, roboto_medium_compressed_size, 20.0f);
+        roboto_medium_compressed_data, roboto_medium_compressed_size,
+        20.0f);
+
+    ImFontConfig config;
+    config.MergeMode = true;
+    // Use if you want to make the icon monospaced
+    config.GlyphMinAdvanceX = 20.0f;
+    // config.PixelSnapH = true;
+
+    // Will not be copied by AddFont* so keep in scope.
+    static const ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
+    io.Fonts->AddFontFromMemoryCompressedTTF(
+        fa_solid_900_compressed_data, fa_solid_900_compressed_size,
+        16.0f, &config, icon_ranges);
 }
 
 

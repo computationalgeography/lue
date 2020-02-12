@@ -3,6 +3,7 @@
 #include "dataset_to_visualize.hpp"
 #include "lue/configure.hpp"
 #include "lue/gui.hpp"
+// #include "lue/utility/environment.hpp"
 #include <fmt/format.h>
 #include <iostream>
 
@@ -29,6 +30,59 @@ namespace lue {
 namespace utility {
 namespace {
 
+// Helper to display a little (?) mark which shows a tooltip when hovered.
+// In your own code you may want to display an actual icon if you are using a merged icon fonts (see docs/FONTS.txt)
+void help_marker(
+    std::string const& description)
+{
+    static int const nr_characters{20};
+
+    ImGui::TextDisabled(ICON_FA_INFO);
+
+    if(ImGui::IsItemHovered()) {
+        ImGui::BeginTooltip();
+        ImGui::PushTextWrapPos(ImGui::GetFontSize() * nr_characters);
+        ImGui::TextUnformatted(description.c_str());
+        ImGui::PopTextWrapPos();
+        ImGui::EndTooltip();
+    }
+}
+
+
+void copy_popup(
+    std::string const& label,
+    std::string const& string)
+{
+    if(ImGui::BeginPopupContextItem()) {
+        if(ImGui::MenuItem((ICON_FA_COPY "Copy " + label).c_str())) {
+            ImGui::LogToClipboard();
+            ImGui::LogText(string.c_str());
+            ImGui::LogFinish();
+        }
+        ImGui::EndPopup();
+    }
+}
+
+
+std::string shape_as_string(
+    hdf5::Shape const& shape)
+{
+    std::stringstream stream;
+    stream << "(";
+
+    // Prevent seperator at end of string.
+    if(!shape.empty()) {
+        std::copy(shape.begin(), shape.end() - 1,
+            std::ostream_iterator<typename hdf5::Shape::value_type>(stream,
+                ", "));
+        stream << shape.back();
+    }
+    stream << ")";
+
+    return stream.str();
+}
+
+
 template<
     typename Properties>
 class PropertiesTraits;
@@ -48,6 +102,9 @@ public:
     static constexpr ShapeVariability shape_variability{
         ShapeVariability::constant};
 
+
+    static constexpr char label[] = {"same shape"};
+
 };
 
 
@@ -64,6 +121,8 @@ public:
 
     static constexpr ShapeVariability shape_variability{
         ShapeVariability::constant};
+
+    static constexpr char label[] = {"same constant shape"};
 
 };
 
@@ -82,6 +141,8 @@ public:
     static constexpr ShapeVariability shape_variability{
         ShapeVariability::variable};
 
+    static constexpr char label[] = {"same variable shape"};
+
 };
 
 
@@ -98,6 +159,8 @@ public:
 
     static constexpr ShapeVariability shape_variability{
         ShapeVariability::constant};
+
+    static constexpr char label[] = {"different shape"};
 
 };
 
@@ -116,6 +179,8 @@ public:
     static constexpr ShapeVariability shape_variability{
         ShapeVariability::constant};
 
+    static constexpr char label[] = {"different constant shape"};
+
 };
 
 
@@ -132,6 +197,8 @@ public:
 
     static constexpr ShapeVariability shape_variability{
         ShapeVariability::variable};
+
+    static constexpr char label[] = {"different variable shape"};
 
 };
 
@@ -152,6 +219,11 @@ template<
     typename Properties>
 static constexpr ShapeVariability shape_variability =
     PropertiesTraits<Properties>::shape_variability;
+
+
+template<
+    typename Properties>
+static const std::string label{PropertiesTraits<Properties>::label};
 
 
 // Or just use a optional<lue::Dataset> ?
@@ -196,7 +268,11 @@ void show_main_menu_bar(
 
         if(ImGui::BeginMenu("View")) {
             ImGui::MenuItem(
-                "Show details", nullptr, &configuration.show_details());
+                "Show details",
+                // configuration.show_details()
+                    // ? ICON_FA_EYE_SLASH "Show details"
+                    // : ICON_FA_EYE "Show details",
+                nullptr, &configuration.show_details());
 #ifndef NDEBUG
             ImGui::MenuItem("ImGui Demo", nullptr, &show_imgui_demo);
 #endif
@@ -262,9 +338,33 @@ void show_file(
 }
 
 
-void show_array(
-    Array const& /* array */)
+void show_dataset(
+    hdf5::Dataset const& /* dataset */)
 {
+}
+
+
+void show_array(
+    Array const& array,
+    bool const show_details)
+{
+    ImGui::Text("file datatype: ");
+    ImGui::SameLine();
+    ImGui::Text(
+        hdf5::standard_datatype_as_string(array.file_datatype()).c_str());
+    ImGui::SameLine();
+    help_marker("The type used to store the array elements in the file.");
+
+    if(show_details) {
+        ImGui::Text("memory datatype: ");
+        ImGui::SameLine();
+        ImGui::Text(
+            hdf5::native_datatype_as_string(array.memory_datatype()).c_str());
+        ImGui::SameLine();
+        help_marker("The type used to store the array elements in memory.");
+
+        show_dataset(array);
+    }
 }
 
 
@@ -274,21 +374,50 @@ void               show_value          (Value const& value,
                                         bool const show_details);
 
 
+static char const array_shape_doc[] =
+    "Shape of a single array. Each number is an extent along a "
+    "dimension. An empty shape implies a scalar value.";
+
+
 template<>
 void show_value<same_shape::Value>(
     same_shape::Value const& value,
-    bool const /* show_details */)
+    bool const show_details)
 {
-    show_array(dynamic_cast<Array const&>(value));
+    ImGui::Text("nr arrays: ");
+    ImGui::SameLine();
+    ImGui::Text(fmt::format("{}", value.nr_arrays()).c_str());
+    ImGui::SameLine();
+    help_marker("For each object an nD array is stored.");
+
+    ImGui::Text("array shape: ");
+    ImGui::SameLine();
+    ImGui::Text(shape_as_string(value.array_shape()).c_str());
+    ImGui::SameLine();
+    help_marker(array_shape_doc);
+
+    show_array(dynamic_cast<Array const&>(value), show_details);
 }
 
 
 template<>
 void show_value<same_shape::constant_shape::Value>(
     same_shape::constant_shape::Value const& value,
-    bool const /* show_details */)
+    bool const show_details)
 {
-    show_array(dynamic_cast<Array const&>(value));
+    ImGui::Text("nr arrays: ");
+    ImGui::SameLine();
+    ImGui::Text(fmt::format("{}", value.nr_arrays()).c_str());
+    ImGui::SameLine();
+    help_marker("For each active object an nD array is stored.");
+
+    ImGui::Text("array shape: ");
+    ImGui::SameLine();
+    ImGui::Text(shape_as_string(value.array_shape()).c_str());
+    ImGui::SameLine();
+    help_marker(array_shape_doc);
+
+    show_array(dynamic_cast<Array const&>(value), show_details);
 }
 
 
@@ -310,9 +439,17 @@ void show_value<different_shape::Value>(
 
 template<>
 void show_value<different_shape::constant_shape::Value>(
-    different_shape::constant_shape::Value const& /* value */,
+    different_shape::constant_shape::Value const& value,
     bool const /* show_details */)
 {
+    ImGui::Text("nr objects: ");
+    ImGui::SameLine();
+    ImGui::Text(fmt::format("{}", value.nr_objects()).c_str());
+    ImGui::SameLine();
+    help_marker("The number of objects for which arrays are stored.");
+
+    // hier verder
+    // show_value_group(value, show_details);
 }
 
 
@@ -541,25 +678,59 @@ void show_properties(
         ImGui::SameLine();
         ImGui::Text(aspect_to_string(shape_variability<Collection>).c_str());
 
+        for(std::string const& name: collection.names()) {
+            if(ImGui::TreeNodeEx(name.c_str(),
+                    ImGuiTreeNodeFlags_DefaultOpen)) {
+
+                copy_popup("property name", name);
+                show_property(collection[name], show_details);
+                ImGui::TreePop();
+
+            }
+        }
+
         ImGui::Separator();
         ImGui::EndGroup();
         ImGui::Unindent();
+    }
+}
 
-        for(std::string const& name: collection.names()) {
-            if(ImGui::TreeNodeEx(name.c_str(), ImGuiTreeNodeFlags_DefaultOpen)) {
 
-                if(ImGui::BeginPopupContextItem()) {
-                    if(ImGui::MenuItem("Copy name")) {
-                        ImGui::LogToClipboard();
-                        ImGui::LogText(name.c_str());
-                        ImGui::LogFinish();
-                    }
-                    ImGui::EndPopup();
-                }
+template<
+    typename Collection>
+void show_properties2(
+    Properties const& properties,
+    bool const show_details)
+{
+    Collection const& collection{properties.collection<Collection>()};
 
-                show_property(collection[name], show_details);
-                ImGui::TreePop();
+    for(std::string const& name: collection.names()) {
+
+        if(ImGui::BeginTabItem(name.c_str())) {
+
+            ImGui::Indent();
+            // ImGui::BeginGroup();
+
+            if(show_details) {
+                ImGui::Text("shape per object: ");
+                ImGui::SameLine();
+                ImGui::Text(aspect_to_string(shape_per_object<Collection>).c_str());
+
+                ImGui::Text("value variability: ");
+                ImGui::SameLine();
+                ImGui::Text(aspect_to_string(value_variability<Collection>).c_str());
+
+                ImGui::Text("shape variability: ");
+                ImGui::SameLine();
+                ImGui::Text(aspect_to_string(shape_variability<Collection>).c_str());
             }
+
+            show_property(collection[name], show_details);
+
+            // ImGui::Separator();
+            // ImGui::EndGroup();
+            ImGui::Unindent();
+            ImGui::EndTabItem();
         }
     }
 }
@@ -595,19 +766,63 @@ void show_property_set(
                 "properties ({})", properties.size()).c_str(),
                 ImGuiTreeNodeFlags_DefaultOpen)) {
 
-            show_properties<same_shape::Properties>(
-                properties, show_details);
-            show_properties<same_shape::constant_shape::Properties>(
-                properties, show_details);
-            show_properties<same_shape::variable_shape::Properties>(
-                properties, show_details);
+            // show_properties<same_shape::Properties>(
+            //     properties, show_details);
+            // show_properties<same_shape::constant_shape::Properties>(
+            //     properties, show_details);
+            // show_properties<same_shape::variable_shape::Properties>(
+            //     properties, show_details);
 
-            show_properties<different_shape::Properties>(
-                properties, show_details);
-            show_properties<different_shape::constant_shape::Properties>(
-                properties, show_details);
-            show_properties<different_shape::variable_shape::Properties>(
-                properties, show_details);
+            // show_properties<different_shape::Properties>(
+            //     properties, show_details);
+            // show_properties<different_shape::constant_shape::Properties>(
+            //     properties, show_details);
+            // show_properties<different_shape::variable_shape::Properties>(
+            //     properties, show_details);
+
+
+
+            if(ImGui::BeginTabBar("Properties")) {
+
+                show_properties2<same_shape::Properties>(
+                    properties, show_details);
+                show_properties2<same_shape::constant_shape::Properties>(
+                    properties, show_details);
+                show_properties2<same_shape::variable_shape::Properties>(
+                    properties, show_details);
+
+                show_properties2<different_shape::Properties>(
+                    properties, show_details);
+                show_properties2<different_shape::constant_shape::Properties>(
+                    properties, show_details);
+                show_properties2<different_shape::variable_shape::Properties>(
+                    properties, show_details);
+
+                ImGui::EndTabBar();
+            }
+
+
+            // if(!properties.empty()) {
+
+            //     auto const names{properties.names()};
+
+            //     if(ImGui::BeginCombo("properties", names.front().c_str())) {
+
+
+
+            //         // for (int n = 0; n < IM_ARRAYSIZE(items); n++)
+            //         // {
+            //         //     bool is_selected = (item_current == items[n]);
+            //         //     if (ImGui::Selectable(items[n], is_selected))
+            //         //         item_current = items[n];
+            //         //     if (is_selected)
+            //         //         ImGui::SetItemDefaultFocus();   // Set the initial focus when opening the combo (scrolling + for keyboard navigation support in the upcoming navigation branch)
+            //         // }
+
+            //         ImGui::EndCombo();
+            //     }
+            // }
+
 
             ImGui::TreePop();
         }
@@ -619,22 +834,30 @@ void show_property_sets(
     PropertySets const& property_sets,
     bool const show_details)
 {
-    for(std::string const& name: property_sets.names()) {
-        if(ImGui::TreeNodeEx(name.c_str(), ImGuiTreeNodeFlags_DefaultOpen)) {
+    if(ImGui::BeginTabBar("Property-sets")) {
 
-            if(ImGui::BeginPopupContextItem()) {
-                if(ImGui::MenuItem("Copy name")) {
-                    ImGui::LogToClipboard();
-                    ImGui::LogText(name.c_str());
-                    ImGui::LogFinish();
-                }
-                ImGui::EndPopup();
+        for(std::string const& name: property_sets.names()) {
+
+            if(ImGui::BeginTabItem(name.c_str())) {
+                 copy_popup("property-set name", name);
+                show_property_set(property_sets[name], show_details);
             }
 
-            show_property_set(property_sets[name], show_details);
-            ImGui::TreePop();
+            ImGui::EndTabItem();
         }
+
+        ImGui::EndTabBar();
     }
+
+    // for(std::string const& name: property_sets.names()) {
+    //     if(ImGui::TreeNodeEx(name.c_str(), ImGuiTreeNodeFlags_DefaultOpen)) {
+
+    //         copy_popup("property-set name", name);
+    //         show_property_set(property_sets[name], show_details);
+    //         ImGui::TreePop();
+
+    //     }
+    // }
 }
 
 
@@ -690,24 +913,31 @@ void show_phenomena(
     Phenomena const& phenomena,
     bool const show_details)
 {
-    for(std::string const& name: phenomena.names()) {
+    if(ImGui::BeginTabBar("Phenomena")) {
 
-        if(ImGui::TreeNodeEx(name.c_str(), ImGuiTreeNodeFlags_DefaultOpen)) {
+        for(std::string const& name: phenomena.names()) {
 
-            if(ImGui::BeginPopupContextItem()) {
-                if(ImGui::MenuItem("Copy name")) {
-                    ImGui::LogToClipboard();
-                    ImGui::LogText(name.c_str());
-                    ImGui::LogFinish();
-                }
-                ImGui::EndPopup();
+            if(ImGui::BeginTabItem(name.c_str())) {
+                 copy_popup("phenomenon name", name);
+                 show_phenomenon(phenomena[name], show_details);
             }
 
-            show_phenomenon(phenomena[name], show_details);
-
-            ImGui::TreePop();
+            ImGui::EndTabItem();
         }
+
+        ImGui::EndTabBar();
     }
+
+    // for(std::string const& name: phenomena.names()) {
+
+    //     if(ImGui::TreeNodeEx(name.c_str(), ImGuiTreeNodeFlags_DefaultOpen)) {
+
+    //         copy_popup("phenomenon name", name);
+    //         show_phenomenon(phenomena[name], show_details);
+    //         ImGui::TreePop();
+
+    //     }
+    // }
 }
 
 
@@ -726,23 +956,30 @@ void show_universes(
     Universes const& universes,
     bool const show_details)
 {
-    for(std::string const& name: universes.names()) {
-        if(ImGui::TreeNodeEx(name.c_str())) {
+    if(ImGui::BeginTabBar("Universes")) {
 
-            if(ImGui::BeginPopupContextItem()) {
-                if(ImGui::MenuItem("Copy name")) {
-                    ImGui::LogToClipboard();
-                    ImGui::LogText(name.c_str());
-                    ImGui::LogFinish();
-                }
-                ImGui::EndPopup();
+        for(std::string const& name: universes.names()) {
+
+            if(ImGui::BeginTabItem(name.c_str())) {
+                 copy_popup("property-set name", name);
+                show_universe(universes[name], show_details);
             }
 
-            show_universe(universes[name], show_details);
-            ImGui::TreePop();
-
+            ImGui::EndTabItem();
         }
+
+        ImGui::EndTabBar();
     }
+
+    // for(std::string const& name: universes.names()) {
+    //     if(ImGui::TreeNodeEx(name.c_str())) {
+
+    //         copy_popup("universe name", name);
+    //         show_universe(universes[name], show_details);
+    //         ImGui::TreePop();
+
+    //     }
+    // }
 }
 
 
@@ -752,9 +989,11 @@ void show_dataset(
 {
     auto const& source{dataset.dataset()};
 
+    ImGui::Indent();
     if(show_details) {
         show_file(dynamic_cast<hdf5::File const&>(source));
     }
+    ImGui::Unindent();
 
     {
         auto const& phenomena{source.phenomena()};
@@ -793,23 +1032,13 @@ void show_datasets(
     // Window for presenting information about the loaded datasets
     sdl2::imgui::Window imgui_window{"Datasets"};
 
-    ImGuiTabBarFlags tab_bar_flags{ImGuiTabBarFlags_None};
-
-    if(ImGui::BeginTabBar("Datasets", tab_bar_flags)) {
+    if(ImGui::BeginTabBar("Datasets")) {
 
         for(auto& dataset: datasets) {
 
             if(ImGui::BeginTabItem(dataset.filename().c_str())) {
 
-                if(ImGui::BeginPopupContextItem()) {
-                    if(ImGui::MenuItem("Copy name")) {
-                        ImGui::LogToClipboard();
-                        ImGui::LogText(dataset.filename().c_str());
-                        ImGui::LogFinish();
-                    }
-                    ImGui::EndPopup();
-                }
-
+                copy_popup("filename", dataset.filename().c_str());
                 dataset.rescan();
 
                 if(dataset.is_open()) {
@@ -878,8 +1107,13 @@ int View::run_implementation()
 
     sdl2::API api;
     sdl2::Window sdl_window{"LUE view",
-        SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 600};
+        SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1000, 800};
     sdl2::ImGuiBinding binding{api, sdl_window};
+
+    // static std::string const ini_pathname{
+    //     expand_environment_variables("${HOME}/.lue_view.ini")};
+    // binding.io().IniFilename = ini_pathname.c_str();
+    binding.io().IniFilename = nullptr;  // Skip for now
 
     bool stop_browsing = false;
 

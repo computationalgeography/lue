@@ -3,6 +3,7 @@
 #include "lue/gui/sdl2/imgui_binding.hpp"
 #include "lue/gui/sdl2/imgui/frame.hpp"
 #include "lue/gui/sdl2/imgui/window.hpp"
+#include "lue/gui/font/IconsFontAwesome5.h"
 
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_sdl.h"
