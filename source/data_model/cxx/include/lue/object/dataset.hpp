@@ -24,6 +24,15 @@ class Dataset:
 public:
 
                    Dataset             (std::string const& name,
+                                        unsigned int const flags,
+                                        AccessPropertyList const&
+                                            access_property_list);
+
+                   Dataset             (std::string const& name,
+                                        AccessPropertyList const&
+                                            access_property_list);
+
+                   Dataset             (std::string const& name,
                                         unsigned int const
                                             flags=H5F_ACC_RDONLY);
 
@@ -67,6 +76,9 @@ private:
 bool               dataset_exists      (std::string const& name);
 
 Dataset            create_dataset      (std::string const& name);
+
+Dataset            create_in_memory_dataset(
+                                        std::string const& name);
 
 void               remove_dataset      (std::string const& name);
 

@@ -6,6 +6,29 @@
 
 namespace lue {
 
+Dataset::Dataset(
+    std::string const& name,
+    unsigned int const flags,
+    AccessPropertyList const& access_property_list):
+
+    hdf5::File{name, flags, access_property_list},
+    _universes{*this},
+    _phenomena{*this}
+
+{
+}
+
+
+Dataset::Dataset(
+    std::string const& name,
+    AccessPropertyList const& access_property_list):
+
+    Dataset{name, H5F_ACC_RDONLY, access_property_list}
+
+{
+}
+
+
 /*!
     @brief      Open dataset
     @param      name Name of dataset
@@ -18,9 +41,7 @@ Dataset::Dataset(
     std::string const& name,
     unsigned int const flags):
 
-    hdf5::File{name, flags},
-    _universes{*this},
-    _phenomena{*this}
+    Dataset{name, flags, AccessPropertyList{}}
 
 {
 }
@@ -119,6 +140,22 @@ bool dataset_exists(
 }
 
 
+namespace {
+
+Dataset create_dataset(
+    hdf5::File&& file)
+{
+    create_universes(file);
+    create_phenomena(file);
+
+    file.attributes().write<std::string>("lue_version", LUE_VERSION);
+
+    return Dataset{std::move(file)};
+}
+
+}  // Anonymous namespace
+
+
 /*!
     @brief      Create dataset
     @param      name Name of dataset
@@ -130,12 +167,16 @@ Dataset create_dataset(
 {
     auto file = hdf5::create_file(name);
 
-    create_universes(file);
-    create_phenomena(file);
+    return create_dataset(std::move(file));
+}
 
-    file.attributes().write<std::string>("lue_version", LUE_VERSION);
 
-    return Dataset{std::move(file)};
+Dataset create_in_memory_dataset(
+    std::string const& name)
+{
+    auto file = hdf5::create_in_memory_file(name);
+
+    return create_dataset(std::move(file));
 }
 
 

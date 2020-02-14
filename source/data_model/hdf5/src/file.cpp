@@ -17,6 +17,8 @@ File::AccessPropertyList::AccessPropertyList()
 
 /*!
     @brief      Use the H5D_CORE driver
+    @param      backing_store Whether or not the file is written to disk
+                upon close
     @exception  std::runtime_error In case the H5D_CORE driver cannot be set
     @sa         [H5Pset_fapl_core](https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-SetFaplCore)
 */
@@ -65,7 +67,7 @@ File::File(
     std::string const& name,
     unsigned int const flags):
 
-    File{name, flags, AccessPropertyList()}
+    File{name, flags, AccessPropertyList{}}
 
 {
 }
@@ -79,7 +81,7 @@ File::File(
 File::File(
     std::string const& name):
 
-    File{name, H5F_ACC_RDONLY, AccessPropertyList()}
+    File{name, H5F_ACC_RDONLY, AccessPropertyList{}}
 
 {
 }

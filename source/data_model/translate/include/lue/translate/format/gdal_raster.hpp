@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/translate/format/gdal.hpp"
 #include "lue/translate/format/gdal_block.hpp"
 // #include "lue/utility/progress_indicator.hpp"
 #include "lue/translate/format/raster_discretization.hpp"
@@ -27,21 +28,21 @@ namespace utility {
 // 
 // using GDALDatasetDeleter = decltype(gdal_dataset_deleter);
 
-struct GDALDatasetDeleter
-{
-    void operator()(::GDALDataset* dataset) const
-    {
-        if(dataset) {
-            ::GDALClose(dataset);
-        }
-    }
-};
-
-
-/*!
-    @brief      Unique pointer to a dataset
-*/
-using GDALDatasetPtr = std::unique_ptr<::GDALDataset, GDALDatasetDeleter>;
+// struct GDALDatasetDeleter
+// {
+//     void operator()(::GDALDataset* dataset) const
+//     {
+//         if(dataset) {
+//             ::GDALClose(dataset);
+//         }
+//     }
+// };
+// 
+// 
+// /*!
+//     @brief      Unique pointer to a dataset
+// */
+// using GDALDatasetPtr = std::unique_ptr<::GDALDataset, GDALDatasetDeleter>;
 
 
 GDALDatasetPtr     try_open_gdal_raster_dataset_for_read(
@@ -49,6 +50,13 @@ GDALDatasetPtr     try_open_gdal_raster_dataset_for_read(
 
 GDALDatasetPtr     open_gdal_raster_dataset_for_read(
                                         std::string const& dataset_name);
+
+void               translate_gdal_raster_dataset_to_lue(
+                                        std::vector<std::string> const&
+                                            gdal_dataset_names,
+                                        std::string const& lue_dataset_name,
+                                        bool const add,
+                                        Metadata const& metadata);
 
 
 class GDALRaster

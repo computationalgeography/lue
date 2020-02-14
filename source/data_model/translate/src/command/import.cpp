@@ -114,21 +114,22 @@ int Import::run_implementation()
     //         input_dataset_names, output_dataset_name, metadata);
 
     // }
-    // else if(try_open_gdal_raster_dataset_for_read(first_input_dataset_name)) {
+    // else
+    if(try_open_gdal_raster_dataset_for_read(first_input_dataset_name)) {
 
-    //     // First input is a dataset that can be read by GDAL.
-    //     // We need to convert from a GDAL format to the LUE format.
-
-    //     translate_gdal_raster_dataset_to_lue(
-    //         input_dataset_names, output_dataset_name, metadata);
-    // }
+        // First input is a dataset that can be read by GDAL.
+        // We need to convert from a GDAL format to the LUE format.
+        translate_gdal_raster_dataset_to_lue(
+            input_dataset_names, output_dataset_name,
+            add_passed, metadata);
+    }
 
     // Support import of various file formats into a single lue dataset
-    if(bfs::path(first_input_dataset_name).extension() == ".json") {
-       assert(input_dataset_names.size() == 1);
-       translate_json_to_lue(
-           first_input_dataset_name, output_dataset_name,
-           add_passed, metadata);
+    else if(bfs::path(first_input_dataset_name).extension() == ".json") {
+        assert(input_dataset_names.size() == 1);
+        translate_json_to_lue(
+            first_input_dataset_name, output_dataset_name,
+            add_passed, metadata);
     }
     else {
         throw std::runtime_error(

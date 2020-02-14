@@ -124,6 +124,37 @@ GDALDatasetPtr open_gdal_raster_dataset_for_read(
 }
 
 
+void translate_gdal_raster_dataset_to_lue(
+    std::vector<std::string> const& /* gdal_dataset_names */,
+    std::string const& /* lue_dataset_name */,
+    bool const /* add */,
+    Metadata const& /* metadata */)
+{
+    // Create data structure that can be converted to a JSON object. This
+    // data structure represents the import request.
+
+    // hier verder
+
+    // auto datasets{open_gdal_datasets(gdal_dataset_names)};
+
+    // Scenarios:
+    // - Import a bunch of rasters covering the same space box. All
+    //     rasters belong to the same object. For each raster a different
+    //     property is made.
+    // - Import a bunch of rasters covering different space boxes. All
+    //     rasters belong to different objects. A single property is made.
+
+    // Figure out whether the space boxes differ
+    // auto const space_boxes{space_boxes(datasets)};
+
+    // bool space_boxes_differ
+
+
+    // // Translate to LUE format using common JSON import
+    // translate_json_to_lue(lue_json, lue_dataset_name, add, metadata);
+}
+
+
 GDALRaster::Band::Band(
     GDALRasterBand* band)
 

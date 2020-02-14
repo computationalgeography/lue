@@ -45,8 +45,9 @@ using GDALDatasetPtr = std::unique_ptr<::GDALDataset, GDALDatasetDeleter>;
 //                                         std::vector<std::string> const&
 //                                             gdal_dataset_names,
 //                                         std::string const& lue_dataset_name,
+//                                         bool const add,
 //                                         Metadata const& metadata);
-// 
+
 // void               translate_gdal_raster_stack_dataset_to_lue(
 //                                         std::vector<std::string> const&
 //                                             gdal_dataset_names,
@@ -58,10 +59,13 @@ void               translate_lue_dataset_to_raster(
                                         std::string const& raster_name,
                                         Metadata const& metadata);
 
-void               translate_lue_dataset_to_shapefile(
-                                        Dataset& dataset,
-                                        std::string const& shapefile_name,
-                                        Metadata const& metadata);
+// void               translate_lue_dataset_to_shapefile(
+//                                         Dataset& dataset,
+//                                         std::string const& shapefile_name,
+//                                         Metadata const& metadata);
+
+GDALDatasetPtr     create_gdal_dataset (std::string const& driver_name,
+                                        std::string const& dataset_name);
 
 }  // namespace utility
 }  // namespace lue

@@ -1,6 +1,5 @@
 #include "lue/validate.hpp"
 #include "lue/navigate.hpp"
-#include "lue/object/dataset.hpp"
 #include "lue/hdf5/validate.hpp"
 #include <algorithm>
 // #include <execution> Not in gcc 7 yet
@@ -1716,18 +1715,20 @@ static void validate(
 }
 
 
-static void validate(
-    Dataset& dataset,
+void validate(
+    Dataset const& dataset,
     hdf5::Issues& issues)
 {
-    auto& universes = dataset.universes();
+    // FIXME Push const cast down
+    auto& universes = const_cast<Dataset&>(dataset).universes();
 
     for(auto const& name: universes.names()) {
         validate(universes[name], issues);
     }
 
 
-    auto& phenomena = dataset.phenomena();
+    // FIXME Push const cast down
+    auto& phenomena = const_cast<Dataset&>(dataset).phenomena();
 
     for(auto const& name: phenomena.names()) {
         validate_phenomenon(phenomena[name], issues);
@@ -1827,7 +1828,27 @@ void validate(
     std::string const& pathname,
     hdf5::Issues& issues)
 {
-    validate(hdf5::File(pathname), issues);
+    validate(hdf5::File{pathname}, issues);
+}
+
+
+void assert_is_valid(
+    Dataset const& dataset,
+    bool const fail_on_warning)
+{
+    hdf5::Issues issues;
+
+    validate(dataset, issues);
+
+    if(issues.errors_found() || (fail_on_warning && issues.warnings_found())) {
+        throw std::runtime_error(fmt::format(
+            "{}"
+            "LUE is work in progress -- if you encounter "
+            "false-negatives, then please open an issue here: "
+            "https://github.com/pcraster/lue/issues",
+            message(issues)
+        ));
+    }
 }
 
 
