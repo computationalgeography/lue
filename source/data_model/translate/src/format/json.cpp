@@ -1,13 +1,8 @@
 #include "lue/translate/format/json.hpp"
 #include "lue/translate/format/gdal_raster.hpp"
-#include "lue/data_model.hpp"
 #include "lue/utility/environment.hpp"
 #include "lue/navigate.hpp"
-#include <nlohmann/json.hpp>
 #include <optional>
-
-
-using json = nlohmann::json;
 
 
 namespace lue {
@@ -183,7 +178,7 @@ void add_space_boxes(
         }
         else {
             // Read space box from JSON
-            std::vector<Coordinate> const space_boxes = space_box_json;
+            space_boxes = space_box_json.get<decltype(space_boxes)>();
 
             if(space_boxes.size() % nr_elements_in_object_array != 0) {
                 throw std::runtime_error(fmt::format(
@@ -325,8 +320,10 @@ void add_different_shape_property(
         }
         else {
             // Value is stored inline
-            values = a_value_json.get<decltype(values)>();
+            // BOGUS?
             shape = a_value_json.at("shape");
+            // values = a_value_json.get<decltype(values)>();
+            values = a_value_json.at("value").get<decltype(values)>();
         }
 
         // Each object has a uniquely shaped value. This value does not
@@ -551,6 +548,7 @@ void add_different_shape_constant_shape_property(
         }
         // else {
         //     // Value is stored inline
+        //     // BOGUS?
         //     values = a_value_json.get<decltype(values)>();
         //     shape = a_value_json.at("shape");
         // }
@@ -966,9 +964,10 @@ void add_property_set(
 
             PropertySet& property_set = *property_set_ref;
 
-            add_object_tracker(
-                property_set_json.at("object_tracker"),
-                property_set.object_tracker());
+            // No time domain, so object tracker is not needed...
+            // add_object_tracker(
+            //     property_set_json.at("object_tracker"),
+            //     property_set.object_tracker());
 
             add_space_domain_items(
                 space_domain_item_type_json, datatype, property_set);
@@ -1147,7 +1146,59 @@ void add_universe(
     }
 }
 
+
+void translate_json_to_lue(
+    ::json const& lue_json,
+    Dataset& dataset)
+{
+    if(!contains(lue_json, "dataset")) {
+        throw_missing_entry("<json>", "root", "dataset");
+    }
+
+    auto const& dataset_json = lue_json.at("dataset");
+
+    if(contains(dataset_json, "universes")) {
+        for(auto const& universe_json: dataset_json.at("universes")) {
+            add_universe(universe_json, dataset.universes());
+        }
+    }
+
+    if(contains(dataset_json, "phenomena")) {
+        for(auto const& phenomenon_json: dataset_json.at("phenomena")) {
+            add_phenomenon(phenomenon_json, dataset.phenomena());
+        }
+    }
+}
+
 }  // Anonymous namespace
+
+
+Dataset translate_json_to_lue(
+    ::json const& lue_json,
+    std::string const& dataset_name)
+{
+    auto dataset = create_in_memory_dataset(dataset_name);
+
+    translate_json_to_lue(lue_json, dataset);
+
+    return dataset;
+}
+
+
+void translate_json_to_lue(
+    ::json const& lue_json,
+    std::string const& lue_pathname,
+    bool const add)
+{
+    // Either create a new dataset or add the information stored in the
+    // JSON to an existing dataset
+    auto dataset = add && dataset_exists(lue_pathname)
+        ? Dataset{lue_pathname, H5F_ACC_RDWR}
+        : create_dataset(lue_pathname)
+        ;
+
+    translate_json_to_lue(lue_json, dataset);
+}
 
 
 void translate_json_to_lue(
@@ -1169,25 +1220,7 @@ void translate_json_to_lue(
         throw_missing_entry(json_pathname, "root", "dataset");
     }
 
-    // Either create a new dataset or add the information stored in the
-    // JSON to an existing dataset
-    auto dataset = add && dataset_exists(lue_pathname)
-        ? Dataset{lue_pathname, H5F_ACC_RDWR}
-        : create_dataset(lue_pathname)
-        ;
-    auto const& dataset_json = lue_json.at("dataset");
-
-    if(contains(dataset_json, "universes")) {
-        for(auto const& universe_json: dataset_json.at("universes")) {
-            add_universe(universe_json, dataset.universes());
-        }
-    }
-
-    if(contains(dataset_json, "phenomena")) {
-        for(auto const& phenomenon_json: dataset_json.at("phenomena")) {
-            add_phenomenon(phenomenon_json, dataset.phenomena());
-        }
-    }
+    return translate_json_to_lue(lue_json, lue_pathname, add);
 }
 
 }  // namespace utility
