@@ -47,7 +47,7 @@ void iterate_per_element(
     hpx::shared_future<Element> max_nr_iterations =
         hpx::make_ready_future<Element>(50);
 
-    // uniform(state, min_nr_iterations, max_nr_iterations).wait();
+    // uniform(min_nr_iterations, max_nr_iterations, state).wait();
 
     fill(state, max_nr_iterations).wait();
 
