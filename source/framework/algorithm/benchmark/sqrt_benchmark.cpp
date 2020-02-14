@@ -46,7 +46,7 @@ void sqrt(
         auto min = hpx::make_ready_future<Element>(0).share();
         auto max = hpx::make_ready_future<Element>(
             std::numeric_limits<Element>::max()).share();
-        uniform(state, min, max).wait();
+        uniform(min, max, state).wait();
     }
 
     hpx::lcos::local::sliding_semaphore semaphore{

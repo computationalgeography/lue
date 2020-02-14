@@ -45,7 +45,7 @@ void focal_mean(
         auto min = hpx::make_ready_future<Element>(0).share();
         auto max = hpx::make_ready_future<Element>(
             std::numeric_limits<Element>::max()).share();
-        uniform(state, min, max).wait();
+        uniform(min, max, state).wait();
     }
 
     auto const kernel = lue::box_kernel<bool, rank>(1, true);
