@@ -38,5 +38,16 @@ private:
 
 TimeBox            create_time_box     (hdf5::Group& parent);
 
+
+template<>
+class ValueTraits<TimeBox>
+{
+
+public:
+
+    using Element = typename ValueTraits<LocationInTime>::Element;
+
+};
+
 }  // namespace data_model
 }  // namespace lue

@@ -1,5 +1,7 @@
 #pragma once
 #include "lue/array/same_shape/constant_shape/value.hpp"
+#include "lue/array/value_traits.hpp"
+#include "lue/core/time/duration.hpp"
 
 
 namespace lue {
@@ -15,6 +17,8 @@ class LocationInTime:
 {
 
 public:
+
+    using Element = time::DurationCount;
 
                    LocationInTime      (hdf5::Group& parent);
 
@@ -41,6 +45,17 @@ private:
 LocationInTime     create_location_in_time(
                                         hdf5::Group& parent,
                                         hdf5::Shape const& value_shape);
+
+
+template<>
+class ValueTraits<LocationInTime>
+{
+
+public:
+
+    using Element = LocationInTime::Element;
+
+};
 
 }  // namespace data_model
 }  // namespace lue

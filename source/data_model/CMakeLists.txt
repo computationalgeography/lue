@@ -6,6 +6,9 @@ list(APPEND doxygen_input ${CMAKE_CURRENT_SOURCE_DIR}/hdf5)
 add_subdirectory(cxx)
 list(APPEND doxygen_input ${CMAKE_CURRENT_SOURCE_DIR}/cxx)
 
+add_subdirectory(hl)
+list(APPEND doxygen_input ${CMAKE_CURRENT_SOURCE_DIR}/hl)
+
 if(LUE_DATA_MODEL_WITH_PYTHON_API)
     add_subdirectory(python)
 
