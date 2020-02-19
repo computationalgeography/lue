@@ -9,7 +9,8 @@ using json = nlohmann::json;
 namespace lue {
 namespace utility {
 
-Dataset            translate_json_to_lue(
+data_model::Dataset
+                   translate_json_to_lue(
                                         ::json const& json,
                                         std::string const& dataset_name);
 

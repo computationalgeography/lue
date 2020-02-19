@@ -8,6 +8,7 @@ using namespace pybind11::literals;
 
 
 namespace lue {
+namespace data_model {
 
 void init_time_cell(
     py::module& module)
@@ -33,4 +34,5 @@ void init_time_cell(
 
 }
 
+}  // namespace data_model
 }  // namespace lue

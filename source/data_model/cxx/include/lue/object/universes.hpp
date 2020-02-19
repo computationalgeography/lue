@@ -4,6 +4,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 class Universes:
     public Collection<Universe>
@@ -34,4 +35,5 @@ private:
 
 Universes          create_universes    (hdf5::Group& parent);
 
+} // namespace data_model
 } // namespace lue

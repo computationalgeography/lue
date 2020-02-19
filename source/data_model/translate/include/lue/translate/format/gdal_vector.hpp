@@ -8,7 +8,7 @@ namespace lue {
 namespace utility {
 
 void               translate_lue_dataset_to_shapefile(
-                                        Dataset& dataset,
+                                        data_model::Dataset& dataset,
                                         std::string const& shapefile_name,
                                         Metadata const& metadata);
 

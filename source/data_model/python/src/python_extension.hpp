@@ -9,6 +9,7 @@ class module;
 
 
 namespace lue {
+namespace data_model {
 
 void               init_array          (pybind11::module& module);
 
@@ -68,4 +69,5 @@ void               init_universe       (pybind11::module& module);
 
 void               init_value_group    (pybind11::module& module);
 
+}  // namespace data_model
 }  // namespace lue

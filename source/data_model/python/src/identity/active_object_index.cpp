@@ -9,6 +9,7 @@ using namespace pybind11::literals;
 
 
 namespace lue {
+namespace data_model {
 namespace {
 
 static std::string formal_string_representation(
@@ -78,4 +79,5 @@ void init_active_object_index(
 
 }
 
+}  // namespace data_model
 }  // namespace lue

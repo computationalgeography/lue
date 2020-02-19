@@ -4,6 +4,7 @@
 
 
 namespace lue {
+namespace data_model {
 namespace different_shape {
 
 /*!
@@ -41,4 +42,5 @@ private:
 Properties         create_properties   (hdf5::Group& parent);
 
 }  // namespace different_shape
+}  // namespace data_model
 }  // namespace lue

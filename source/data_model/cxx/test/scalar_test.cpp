@@ -3,22 +3,22 @@
 #include "lue/test.hpp"
 
 
-BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
+BOOST_FIXTURE_TEST_CASE(create, lue::data_model::test::DatasetFixture)
 {
     std::string const phenomenon_name = "planets";
     std::string const property_set_name = "constants";
     std::string const property_name = "gravity";
 
-    lue::Count const nr_planets = 15;
+    lue::data_model::Count const nr_planets = 15;
     using ValueType = double;
     lue::hdf5::Datatype const datatype{
         lue::hdf5::NativeDatatypeTraits<ValueType>::type_id()};
 
-    std::vector<lue::ID> ids(nr_planets);
-    lue::test::generate_random_ids(ids);
+    std::vector<lue::data_model::ID> ids(nr_planets);
+    lue::data_model::test::generate_random_ids(ids);
 
     std::vector<ValueType> values(nr_planets);
-    lue::test::generate_random_values(values, 5.0, 15.0);
+    lue::data_model::test::generate_random_values(values, 5.0, 15.0);
 
     // Create and write
     {
@@ -35,7 +35,7 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
         value.write(values.data());
     }
 
-    BOOST_CHECK_NO_THROW(lue::assert_is_valid(pathname()));
+    BOOST_CHECK_NO_THROW(lue::data_model::assert_is_valid(pathname()));
 
     // Open and read
     {
@@ -49,12 +49,12 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
         auto value_variability =
             constants.properties().value_variability(property_name);
 
-        BOOST_REQUIRE_EQUAL(shape_per_object, lue::ShapePerObject::same);
+        BOOST_REQUIRE_EQUAL(shape_per_object, lue::data_model::ShapePerObject::same);
         BOOST_REQUIRE_EQUAL(
-            value_variability, lue::ValueVariability::constant);
+            value_variability, lue::data_model::ValueVariability::constant);
 
         auto const& properties =
-            constants.properties().collection<lue::same_shape::Properties>();
+            constants.properties().collection<lue::data_model::same_shape::Properties>();
 
         auto const& gravity = properties[property_name];
         auto const& value = gravity.value();

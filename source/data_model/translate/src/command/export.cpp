@@ -72,14 +72,14 @@ int Export::run_implementation()
     // First see if the input is valid
     {
         hdf5::Issues issues;
-        validate(*lue_dataset, issues);
+        data_model::validate(*lue_dataset, issues);
 
         if(issues.errors_found()) {
-            throw std::runtime_error(message(issues));
+            throw std::runtime_error(data_model::message(issues));
         }
         else if(issues.warnings_found()) {
             // Let's assume nothing bad will happen...
-            print_info_message(message(issues));
+            print_info_message(data_model::message(issues));
         }
     }
 

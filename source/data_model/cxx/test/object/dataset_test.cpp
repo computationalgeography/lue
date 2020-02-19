@@ -7,11 +7,11 @@
 BOOST_AUTO_TEST_CASE(create_new_dataset)
 {
     std::string const dataset_name = "create_new_dataset.lue";
-    lue::test::FileFixture f{dataset_name};
+    lue::data_model::test::FileFixture f{dataset_name};
 
-    auto const dataset = lue::create_dataset(dataset_name);
+    auto const dataset = lue::data_model::create_dataset(dataset_name);
 
-    BOOST_REQUIRE(lue::dataset_exists(dataset_name));
+    BOOST_REQUIRE(lue::data_model::dataset_exists(dataset_name));
     BOOST_CHECK_EQUAL(dataset.id().name(), "");
     BOOST_CHECK_EQUAL(dataset.id().pathname(), "/");
     BOOST_CHECK_EQUAL(dataset.pathname(), dataset_name);
@@ -29,13 +29,13 @@ BOOST_AUTO_TEST_CASE(create_new_dataset)
 BOOST_AUTO_TEST_CASE(open_new_dataset)
 {
     std::string const dataset_name = "open_new_dataset.lue";
-    lue::test::FileFixture f{dataset_name};
+    lue::data_model::test::FileFixture f{dataset_name};
 
-    /* auto const dataset = */ lue::create_dataset(dataset_name);
+    /* auto const dataset = */ lue::data_model::create_dataset(dataset_name);
 
-    BOOST_REQUIRE(lue::dataset_exists(dataset_name));
+    BOOST_REQUIRE(lue::data_model::dataset_exists(dataset_name));
 
-    lue::Dataset dataset{dataset_name, H5F_ACC_RDONLY};
+    lue::data_model::Dataset dataset{dataset_name, H5F_ACC_RDONLY};
 
     BOOST_CHECK_EQUAL(dataset.id().name(), "");
     BOOST_CHECK_EQUAL(dataset.id().pathname(), "/");

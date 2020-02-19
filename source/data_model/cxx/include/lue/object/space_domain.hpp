@@ -6,6 +6,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 /*!
     @brief      Aspects that determine how locations in space are represented
@@ -101,4 +102,5 @@ inline Value SpaceDomain::value(
     return Value{*this, datatype};
 }
 
+}  // namespace data_model
 }  // namespace lue

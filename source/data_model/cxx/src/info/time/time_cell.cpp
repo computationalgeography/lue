@@ -3,6 +3,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 TimeCell::TimeCell(
     hdf5::Group& parent):
@@ -10,7 +11,7 @@ TimeCell::TimeCell(
     TimeBox{parent},
     _count{
         parent, time_discretization_tag,
-        hdf5::Datatype{hdf5::NativeDatatypeTraits<lue::Count>::type_id()}}
+        hdf5::Datatype{hdf5::NativeDatatypeTraits<data_model::Count>::type_id()}}
 
 {
 }
@@ -27,7 +28,7 @@ TimeCell::TimeCell(
 }
 
 
-lue::Count TimeCell::nr_counts() const
+data_model::Count TimeCell::nr_counts() const
 {
     return _count.nr_arrays();
 }
@@ -52,7 +53,7 @@ TimeCell create_time_cell(
     auto time_box = create_time_box(parent);
 
     hdf5::Datatype memory_datatype{
-        hdf5::NativeDatatypeTraits<lue::Count>::type_id()};
+        hdf5::NativeDatatypeTraits<data_model::Count>::type_id()};
 
     auto count = same_shape::constant_shape::create_value(
         parent, time_discretization_tag, memory_datatype);
@@ -60,4 +61,5 @@ TimeCell create_time_cell(
     return TimeCell{std::move(time_box), std::move(count)};
 }
 
+}  // namespace data_model
 }  // namespace lue

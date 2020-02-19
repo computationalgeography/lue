@@ -3,6 +3,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 ActiveSetIndex::ActiveSetIndex(
     hdf5::Group& parent)
@@ -38,4 +39,5 @@ ActiveSetIndex create_active_set_index(
     return ActiveSetIndex{std::move(value)};
 }
 
+}  // namespace data_model
 }  // namespace lue

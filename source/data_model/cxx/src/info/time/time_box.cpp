@@ -2,6 +2,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 TimeBox::TimeBox(
     hdf5::Group& parent):
@@ -35,4 +36,5 @@ TimeBox create_time_box(
     return TimeBox{std::move(value)};
 }
 
+}  // namespace data_model
 }  // namespace lue

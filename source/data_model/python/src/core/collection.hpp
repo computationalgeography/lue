@@ -4,6 +4,7 @@
 
 
 namespace lue {
+namespace data_model {
 namespace python {
 
 #define BASE_COLLECTION(Items, Item)                                       \
@@ -65,4 +66,5 @@ namespace python {
 
 
 }  // namespace python
+}  // namespace data_model
 }  // namespace lue

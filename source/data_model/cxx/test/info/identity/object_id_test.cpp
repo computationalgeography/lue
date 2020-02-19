@@ -6,7 +6,7 @@
 
 
 class Fixture:
-    public lue::test::FileFixture
+    public lue::data_model::test::FileFixture
 {
 
 public:
@@ -16,8 +16,8 @@ public:
           _filename{"value.h5"},
           _file{std::make_unique<lue::hdf5::File>(
             lue::hdf5::create_file(_filename))},
-          _object_id{std::make_unique<lue::ObjectID>(
-            lue::create_object_id(*_file))}
+          _object_id{std::make_unique<lue::data_model::ObjectID>(
+            lue::data_model::create_object_id(*_file))}
     {
     }
 
@@ -34,7 +34,7 @@ private:
 
     std::string const _filename;
     std::unique_ptr<lue::hdf5::File> _file;
-    std::unique_ptr<lue::ObjectID> _object_id;
+    std::unique_ptr<lue::data_model::ObjectID> _object_id;
 
 };
 
@@ -43,7 +43,7 @@ BOOST_FIXTURE_TEST_CASE(create, Fixture)
 {
     auto const& object_id = this->object_id();
 
-    BOOST_CHECK_EQUAL(object_id.id().name(), lue::object_id_tag);
+    BOOST_CHECK_EQUAL(object_id.id().name(), lue::data_model::object_id_tag);
     BOOST_CHECK(
         object_id.memory_datatype() == lue::hdf5::Datatype{H5T_NATIVE_HSIZE});
     BOOST_CHECK_EQUAL(object_id.nr_arrays(), 0);

@@ -3,6 +3,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 MobileSpaceBox::MobileSpaceBox(
     hdf5::Group& parent):
@@ -66,4 +67,5 @@ MobileSpaceBox create_mobile_space_box(
     return MobileSpaceBox{std::move(value)};
 }
 
+}  // namespace data_model
 }  // namespace lue

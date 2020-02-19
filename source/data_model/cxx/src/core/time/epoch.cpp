@@ -3,6 +3,7 @@
 
 
 namespace lue {
+namespace data_model {
 namespace time {
 
 /*!
@@ -102,4 +103,5 @@ std::optional<Calendar> const& Epoch::calendar() const
 }
 
 }  // namespace time
+}  // namespace data_model
 }  // namespace lue

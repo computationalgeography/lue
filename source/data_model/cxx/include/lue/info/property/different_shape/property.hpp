@@ -4,6 +4,7 @@
 
 
 namespace lue {
+namespace data_model {
 namespace different_shape {
 
 class Property:
@@ -57,4 +58,5 @@ Property           create_property     (hdf5::Group& parent,
                                         Rank rank);
 
 }  // namespace different_shape
+}  // namespace data_model
 }  // namespace lue

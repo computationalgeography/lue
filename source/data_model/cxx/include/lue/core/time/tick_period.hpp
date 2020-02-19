@@ -4,6 +4,7 @@
 
 
 namespace lue {
+namespace data_model {
 namespace time {
 
 using TickPeriodCount = uint64_t;
@@ -88,4 +89,5 @@ inline typename TickPeriod<Unit>::Count TickPeriod<Unit>::nr_units() const
 }
 
 }  // namespace time
+}  // namespace data_model
 }  // namespace lue

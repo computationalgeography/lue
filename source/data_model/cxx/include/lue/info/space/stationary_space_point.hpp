@@ -3,6 +3,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 /*!
     - One space point per item
@@ -49,4 +50,5 @@ StationarySpacePoint   create_stationary_space_point(
                                         hdf5::Datatype const& memory_datatype,
                                         std::size_t rank);
 
+}  // namespace data_model
 }  // namespace lue

@@ -16,6 +16,7 @@ namespace py = pybind11;
 
 
 namespace lue {
+namespace data_model {
 
 PYBIND11_MODULE(lue, module)
 {
@@ -102,4 +103,5 @@ PYBIND11_MODULE(lue, module)
     // module.ptr();
 }
 
+}  // namespace data_model
 }  // namespace lue

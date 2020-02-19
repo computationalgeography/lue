@@ -5,7 +5,7 @@
 
 
 class Fixture:
-    public lue::test::FileFixture
+    public lue::data_model::test::FileFixture
 {
 
 public:
@@ -17,18 +17,18 @@ public:
             lue::hdf5::create_file(_filename))},
         _property_set_name{"my_property_set"},
         _time_configuration{
-            lue::TimeDomainItemType::box
+            lue::data_model::TimeDomainItemType::box
         },
-        _clock{lue::time::Unit::day, 1},
+        _clock{lue::data_model::time::Unit::day, 1},
         _space_configuration{
-            lue::Mobility::stationary,
-            lue::SpaceDomainItemType::point
+            lue::data_model::Mobility::stationary,
+            lue::data_model::SpaceDomainItemType::point
         },
         _space_coordinate_datatype{
             lue::hdf5::NativeDatatypeTraits<double>::type_id()},
         _space_rank{2},
-        _property_set{std::make_unique<lue::PropertySet>(
-                lue::create_property_set(
+        _property_set{std::make_unique<lue::data_model::PropertySet>(
+                lue::data_model::create_property_set(
                     *_file, _property_set_name,
                     _time_configuration, _clock,
                     _space_configuration, _space_coordinate_datatype,
@@ -66,12 +66,12 @@ private:
     std::string const _filename;
     std::unique_ptr<lue::hdf5::File> _file;
     std::string const _property_set_name;
-    lue::TimeConfiguration _time_configuration;
-    lue::Clock const _clock;
-    lue::SpaceConfiguration _space_configuration;
+    lue::data_model::TimeConfiguration _time_configuration;
+    lue::data_model::Clock const _clock;
+    lue::data_model::SpaceConfiguration _space_configuration;
     lue::hdf5::Datatype const _space_coordinate_datatype;
     std::size_t const _space_rank;
-    std::unique_ptr<lue::PropertySet> _property_set;
+    std::unique_ptr<lue::data_model::PropertySet> _property_set;
 
 };
 
@@ -93,7 +93,7 @@ BOOST_FIXTURE_TEST_CASE(create, Fixture)
 
     // same_shape
     {
-        using Properties = lue::same_shape::Properties;
+        using Properties = lue::data_model::same_shape::Properties;
         auto const& collection = properties.collection<Properties>();
         BOOST_CHECK_EQUAL(collection.size(), 0);
 
@@ -102,7 +102,7 @@ BOOST_FIXTURE_TEST_CASE(create, Fixture)
 
     // same_shape x constant_shape
     {
-        using Properties = lue::same_shape::constant_shape::Properties;
+        using Properties = lue::data_model::same_shape::constant_shape::Properties;
         auto const& collection = properties.collection<Properties>();
         BOOST_CHECK_EQUAL(collection.size(), 0);
 
@@ -111,7 +111,7 @@ BOOST_FIXTURE_TEST_CASE(create, Fixture)
 
     // same_shape x variable_shape
     {
-        using Properties = lue::same_shape::variable_shape::Properties;
+        using Properties = lue::data_model::same_shape::variable_shape::Properties;
         auto const& collection = properties.collection<Properties>();
         BOOST_CHECK_EQUAL(collection.size(), 0);
 
@@ -120,7 +120,7 @@ BOOST_FIXTURE_TEST_CASE(create, Fixture)
 
     // different_shape
     {
-        using Properties = lue::different_shape::Properties;
+        using Properties = lue::data_model::different_shape::Properties;
         auto const& collection = properties.collection<Properties>();
         BOOST_CHECK_EQUAL(collection.size(), 0);
 
@@ -129,7 +129,7 @@ BOOST_FIXTURE_TEST_CASE(create, Fixture)
 
     // different_shape x constant_shape
     {
-        using Properties = lue::different_shape::constant_shape::Properties;
+        using Properties = lue::data_model::different_shape::constant_shape::Properties;
         auto const& collection = properties.collection<Properties>();
         BOOST_CHECK_EQUAL(collection.size(), 0);
 
@@ -138,7 +138,7 @@ BOOST_FIXTURE_TEST_CASE(create, Fixture)
 
     // different_shape x variable_shape
     {
-        using Properties = lue::different_shape::constant_shape::Properties;
+        using Properties = lue::data_model::different_shape::constant_shape::Properties;
         auto const& collection = properties.collection<Properties>();
         BOOST_CHECK_EQUAL(collection.size(), 0);
 

@@ -34,7 +34,7 @@ BOOST_AUTO_TEST_CASE(empty_dataset)
 
         auto const dataset =
             lue::utility::translate_json_to_lue(lue_json, "empty_dataset.lue");
-        lue::assert_is_valid(dataset);
+        lue::data_model::assert_is_valid(dataset);
 
         BOOST_CHECK_EQUAL(dataset.universes().size(), 0);
         BOOST_CHECK_EQUAL(dataset.phenomena().size(), 0);
@@ -52,7 +52,7 @@ BOOST_AUTO_TEST_CASE(empty_dataset)
 
         auto const dataset =
             lue::utility::translate_json_to_lue(lue_json, "empty_dataset.lue");
-        lue::assert_is_valid(dataset);
+        lue::data_model::assert_is_valid(dataset);
 
         BOOST_CHECK_EQUAL(dataset.universes().size(), 0);
         BOOST_CHECK_EQUAL(dataset.phenomena().size(), 0);
@@ -136,7 +136,7 @@ BOOST_AUTO_TEST_CASE(new_rasters)
 
     auto dataset =
         lue::utility::translate_json_to_lue(lue_json, "new_raster.lue");
-    lue::assert_is_valid(dataset);
+    lue::data_model::assert_is_valid(dataset);
 
     BOOST_CHECK_EQUAL(dataset.universes().size(), 0);
     BOOST_CHECK_EQUAL(dataset.phenomena().size(), 1);
@@ -148,8 +148,8 @@ BOOST_AUTO_TEST_CASE(new_rasters)
     {
         auto& object_id{phenomenon.object_id()};
         BOOST_REQUIRE_EQUAL(object_id.nr_objects(), 2);
-        std::vector<lue::Index> ids(2);
-        object_id.read(lue::IndexRange{0, 2}, ids.data());
+        std::vector<lue::data_model::Index> ids(2);
+        object_id.read(lue::data_model::IndexRange{0, 2}, ids.data());
         BOOST_CHECK_EQUAL(ids[0], 5);
         BOOST_CHECK_EQUAL(ids[1], 9);
     }
@@ -186,17 +186,17 @@ BOOST_AUTO_TEST_CASE(new_rasters)
         auto const& configuration{space_domain.configuration()};
 
         BOOST_REQUIRE_EQUAL(
-            configuration.value<lue::Mobility>(),
-            lue::Mobility::stationary);
+            configuration.value<lue::data_model::Mobility>(),
+            lue::data_model::Mobility::stationary);
         BOOST_REQUIRE_EQUAL(
-            configuration.value<lue::SpaceDomainItemType>(),
-            lue::SpaceDomainItemType::box);
+            configuration.value<lue::data_model::SpaceDomainItemType>(),
+            lue::data_model::SpaceDomainItemType::box);
 
         BOOST_CHECK(!space_domain.presence_is_discretized());
 
         auto value{
-            const_cast<lue::SpaceDomain&>(space_domain)
-                .value<lue::StationarySpaceBox>()};
+            const_cast<lue::data_model::SpaceDomain&>(space_domain)
+                .value<lue::data_model::StationarySpaceBox>()};
 
         BOOST_REQUIRE_EQUAL(value.nr_boxes(), 2);
         BOOST_REQUIRE_EQUAL(value.array_shape(), lue::hdf5::Shape{4});
@@ -208,7 +208,7 @@ BOOST_AUTO_TEST_CASE(new_rasters)
 
         std::vector<double> elements(2 * 4);
 
-        value.read(lue::IndexRange{0, 2}, elements.data());
+        value.read(lue::data_model::IndexRange{0, 2}, elements.data());
 
         // Object 5
         BOOST_CHECK_EQUAL(elements[0], 100);
@@ -234,13 +234,13 @@ BOOST_AUTO_TEST_CASE(new_rasters)
     {
         BOOST_REQUIRE_EQUAL(
             properties.shape_per_object("dem"),
-            lue::ShapePerObject::different);
+            lue::data_model::ShapePerObject::different);
         BOOST_REQUIRE_EQUAL(
             properties.value_variability("dem"),
-            lue::ValueVariability::constant);
+            lue::data_model::ValueVariability::constant);
 
         auto const& property{
-            properties.collection<lue::different_shape::Properties>()["dem"]};
+            properties.collection<lue::data_model::different_shape::Properties>()["dem"]};
 
         auto const& value{property.value()};
         BOOST_REQUIRE_EQUAL(value.nr_objects(), 2);
@@ -249,7 +249,7 @@ BOOST_AUTO_TEST_CASE(new_rasters)
         {
             BOOST_REQUIRE(value.contains(5));
 
-            auto const array{const_cast<lue::different_shape::Value&>(value)[5]};
+            auto const array{const_cast<lue::data_model::different_shape::Value&>(value)[5]};
 
             BOOST_REQUIRE_EQUAL(array.shape(), (lue::hdf5::Shape{4, 6}));
             BOOST_CHECK_EQUAL(
@@ -291,7 +291,7 @@ BOOST_AUTO_TEST_CASE(new_rasters)
         // Object 9
         {
             BOOST_REQUIRE(value.contains(9));
-            auto const array{const_cast<lue::different_shape::Value&>(value)[9]};
+            auto const array{const_cast<lue::data_model::different_shape::Value&>(value)[9]};
 
             BOOST_REQUIRE_EQUAL(array.shape(), (lue::hdf5::Shape{3, 5}));
             BOOST_CHECK_EQUAL(
@@ -330,10 +330,10 @@ BOOST_AUTO_TEST_CASE(new_rasters)
         BOOST_REQUIRE(property.space_is_discretized());
         BOOST_REQUIRE_EQUAL(
             property.space_discretization_type(),
-            lue::SpaceDiscretization::regular_grid);
+            lue::data_model::SpaceDiscretization::regular_grid);
 
         auto discretization_property{
-            const_cast<lue::different_shape::Property&>(property)
+            const_cast<lue::data_model::different_shape::Property&>(property)
                 .space_discretization_property()};
 
         BOOST_CHECK_EQUAL(discretization_property.name(), "discretization");
@@ -343,14 +343,14 @@ BOOST_AUTO_TEST_CASE(new_rasters)
     {
         BOOST_REQUIRE_EQUAL(
             properties.shape_per_object("discretization"),
-            lue::ShapePerObject::same);
+            lue::data_model::ShapePerObject::same);
         BOOST_REQUIRE_EQUAL(
             properties.value_variability("discretization"),
-            lue::ValueVariability::constant);
+            lue::data_model::ValueVariability::constant);
 
         auto const& property{
             properties
-                .collection<lue::same_shape::Properties>()["discretization"]};
+                .collection<lue::data_model::same_shape::Properties>()["discretization"]};
 
         auto const& value{property.value()};
         BOOST_REQUIRE_EQUAL(value.nr_arrays(), 2);

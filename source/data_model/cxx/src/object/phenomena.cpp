@@ -3,6 +3,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 Phenomena::Phenomena(
     hdf5::Group& parent):
@@ -43,4 +44,5 @@ Phenomena create_phenomena(
     return Phenomena{std::move(collection)};
 }
 
+} // namespace data_model
 } // namespace lue

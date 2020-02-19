@@ -6,6 +6,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 using TimeConfiguration = Configuration<
     TimeDomainItemType
@@ -53,7 +54,7 @@ private:
 TimeDomain         create_time_domain  (hdf5::Group& parent,
                                         TimeConfiguration const&
                                             configuration,
-                                        lue::Clock const& clock);
+                                        data_model::Clock const& clock);
 
 void               link_time_domain    (hdf5::Group& parent,
                                         TimeDomain& domain);
@@ -71,4 +72,5 @@ inline T TimeDomain::value()
     return T{*this};
 }
 
+}  // namespace data_model
 }  // namespace lue

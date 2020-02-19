@@ -3,6 +3,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 /*!
     - Zero or more time boxes per item
@@ -37,4 +38,5 @@ private:
 
 TimeBox            create_time_box     (hdf5::Group& parent);
 
+}  // namespace data_model
 }  // namespace lue

@@ -9,6 +9,7 @@ using namespace pybind11::literals;
 
 
 namespace lue {
+namespace data_model {
 namespace same_shape {
 namespace {
 
@@ -68,4 +69,5 @@ void init_property(
 }
 
 }  // namespace same_shape
+}  // namespace data_model
 }  // namespace lue

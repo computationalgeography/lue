@@ -3,6 +3,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 /*!
     @brief      An ID per object
@@ -42,4 +43,5 @@ private:
 ObjectID                 create_object_id(
                                         hdf5::Group& parent);
 
+}  // namespace data_model
 }  // namespace lue

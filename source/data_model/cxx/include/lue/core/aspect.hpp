@@ -8,6 +8,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 template<
     typename T>
@@ -251,4 +252,5 @@ inline void Aspect<T>::load(
         attributes.read<std::string>(Tag<T>::value()));
 }
 
+}  // namespace data_model
 }  // namespace lue

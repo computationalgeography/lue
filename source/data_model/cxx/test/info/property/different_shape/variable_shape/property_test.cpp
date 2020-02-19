@@ -5,7 +5,7 @@
 
 
 class Fixture:
-    public lue::test::FileFixture
+    public lue::data_model::test::FileFixture
 {
 
 public:
@@ -18,8 +18,8 @@ public:
         _rank{2},
         _file{std::make_unique<lue::hdf5::File>(
             lue::hdf5::create_file(_filename))},
-        _property{std::make_unique<lue::different_shape::variable_shape::Property>(
-            lue::different_shape::variable_shape::create_property(
+        _property{std::make_unique<lue::data_model::different_shape::variable_shape::Property>(
+            lue::data_model::different_shape::variable_shape::create_property(
                 *_file, _name, _datatype, _rank))}
     {
     }
@@ -53,9 +53,9 @@ private:
     std::string const _filename;
     std::string const _name;
     lue::hdf5::Datatype const _datatype;
-    lue::Rank const _rank;
+    lue::data_model::Rank const _rank;
     std::unique_ptr<lue::hdf5::File> _file;
-    std::unique_ptr<lue::different_shape::variable_shape::Property> _property;
+    std::unique_ptr<lue::data_model::different_shape::variable_shape::Property> _property;
 
 };
 

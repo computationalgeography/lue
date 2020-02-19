@@ -4,6 +4,7 @@
 
 
 namespace lue {
+namespace data_model {
 namespace time {
 
 template<
@@ -41,4 +42,5 @@ UNIT_TRAITS(Unit::year, year)
 #undef UNIT_TRAITS
 
 }  // namespace time
+}  // namespace data_model
 }  // namespace lue

@@ -3,6 +3,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 Array::Array(
     hdf5::Group& parent,
@@ -185,4 +186,5 @@ void Array::write(
 //     return Array(open_dataset(location, name), memory_datatype);
 // }
 
-} // namespace lue
+}  // namespace data_model
+}  // namespace lue

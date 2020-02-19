@@ -3,6 +3,7 @@
 
 
 namespace lue {
+namespace data_model {
 namespace time {
 
 using DurationCount = uint64_t;
@@ -91,4 +92,5 @@ inline bool Duration<TickPeriod>::operator==(
 }
 
 }  // namespace time
+}  // namespace data_model
 }  // namespace lue

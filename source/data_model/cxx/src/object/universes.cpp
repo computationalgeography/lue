@@ -3,6 +3,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 Universes::Universes(
     hdf5::Group& parent):
@@ -43,4 +44,5 @@ Universes create_universes(
     return Universes{std::move(collection)};
 }
 
-} // namespace lue
+}  // namespace data_model
+}  // namespace lue

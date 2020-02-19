@@ -3,6 +3,7 @@
 
 
 namespace lue {
+namespace data_model {
 namespace different_shape {
 
 /*!
@@ -178,4 +179,5 @@ Value create_value(
 }
 
 }  // namespace different_shape
+}  // namespace data_model
 }  // namespace lue

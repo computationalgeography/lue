@@ -5,6 +5,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 inline void save(
     hdf5::Attributes& /* attributes */)
@@ -137,7 +138,7 @@ inline void Configuration<Ts...>::save(
     hdf5::Attributes& attributes,
     std::index_sequence<indices...> const&) const
 {
-    lue::save(attributes, std::get<indices>(_aspects)...);
+    data_model::save(attributes, std::get<indices>(_aspects)...);
 }
 
 
@@ -174,4 +175,5 @@ inline T Configuration<Ts...>::value() const
     return std::get<Aspect<T>>(_aspects).value();
 }
 
+}  // namespace data_model
 }  // namespace lue

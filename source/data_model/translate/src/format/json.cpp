@@ -6,6 +6,10 @@
 
 
 namespace lue {
+
+using namespace data_model;
+
+
 namespace utility {
 namespace {
 

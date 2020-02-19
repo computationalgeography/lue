@@ -5,7 +5,7 @@
 
 
 class Fixture:
-    public lue::test::FileFixture
+    public lue::data_model::test::FileFixture
 {
 
 public:
@@ -18,8 +18,8 @@ public:
           _rank{2},
           _file{std::make_unique<lue::hdf5::File>(
             lue::hdf5::create_file(_filename))},
-          _value{std::make_unique<lue::different_shape::Value>(
-            lue::different_shape::create_value(
+          _value{std::make_unique<lue::data_model::different_shape::Value>(
+            lue::data_model::different_shape::create_value(
                 *_file, _value_name, _datatype, _rank))}
     {
     }
@@ -48,9 +48,9 @@ private:
     std::string const _filename;
     std::string const _value_name;
     lue::hdf5::Datatype const _datatype;
-    lue::Rank const _rank;
+    lue::data_model::Rank const _rank;
     std::unique_ptr<lue::hdf5::File> _file;
-    std::unique_ptr<lue::different_shape::Value> _value;
+    std::unique_ptr<lue::data_model::different_shape::Value> _value;
 
 };
 
@@ -71,8 +71,8 @@ BOOST_FIXTURE_TEST_CASE(update_all_object_arrays, Fixture)
 {
     auto& value = this->value();
 
-    lue::IDs const ids1{5, 7, 9};
-    lue::Shapes const array_shapes1{{3, 2}, {5, 4}, {7, 6}};
+    lue::data_model::IDs const ids1{5, 7, 9};
+    lue::data_model::Shapes const array_shapes1{{3, 2}, {5, 4}, {7, 6}};
 
     {
         value.expand(ids1.size(), ids1.data(), array_shapes1.data());
@@ -86,8 +86,8 @@ BOOST_FIXTURE_TEST_CASE(update_all_object_arrays, Fixture)
         }
     }
 
-    lue::IDs const ids2{6, 8, 1};
-    lue::Shapes const array_shapes2{{2, 3}, {4, 5}, {6, 7}};
+    lue::data_model::IDs const ids2{6, 8, 1};
+    lue::data_model::Shapes const array_shapes2{{2, 3}, {4, 5}, {6, 7}};
 
     {
         value.expand(ids2.size(), ids2.data(), array_shapes2.data());

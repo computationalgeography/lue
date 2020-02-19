@@ -3,6 +3,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 /*!
     @brief      An ID per object in the active set
@@ -59,4 +60,5 @@ private:
 ActiveObjectID     create_active_object_id(
                                         hdf5::Group& parent);
 
+}  // namespace data_model
 }  // namespace lue

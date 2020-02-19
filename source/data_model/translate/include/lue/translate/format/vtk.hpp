@@ -7,7 +7,7 @@ namespace lue {
 namespace utility {
 
 void               translate_lue_dataset_to_vtk(
-                                        Dataset const& dataset,
+                                        data_model::Dataset const& dataset,
                                         std::string const& vtk_filename,
                                         Metadata const& metadata);
 

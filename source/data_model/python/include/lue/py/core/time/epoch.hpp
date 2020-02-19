@@ -4,6 +4,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 std::string        formal_string_representation(
                                         time::Epoch const& epoch);
@@ -11,4 +12,5 @@ std::string        formal_string_representation(
 std::string        informal_string_representation(
                                         time::Epoch const& epoch);
 
+}  // namespace data_model
 }  // namespace lue

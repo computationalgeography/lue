@@ -5,7 +5,7 @@
 
 
 class Fixture:
-    public lue::test::FileFixture
+    public lue::data_model::test::FileFixture
 {
 
 public:
@@ -16,10 +16,10 @@ public:
         _file{std::make_unique<lue::hdf5::File>(
             lue::hdf5::create_file(_filename))},
         _configuration{
-            lue::TimeDomainItemType::box},
-        _clock{lue::time::Unit::day, 1},
-        _domain{std::make_unique<lue::TimeDomain>(
-            lue::create_time_domain(*_file, _configuration, _clock))}
+            lue::data_model::TimeDomainItemType::box},
+        _clock{lue::data_model::time::Unit::day, 1},
+        _domain{std::make_unique<lue::data_model::TimeDomain>(
+            lue::data_model::create_time_domain(*_file, _configuration, _clock))}
     {
     }
 
@@ -46,9 +46,9 @@ private:
 
     std::string const _filename;
     std::unique_ptr<lue::hdf5::File> _file;
-    lue::TimeConfiguration const _configuration;
-    lue::Clock const _clock;
-    std::unique_ptr<lue::TimeDomain> _domain;
+    lue::data_model::TimeConfiguration const _configuration;
+    lue::data_model::Clock const _clock;
+    std::unique_ptr<lue::data_model::TimeDomain> _domain;
 
 };
 

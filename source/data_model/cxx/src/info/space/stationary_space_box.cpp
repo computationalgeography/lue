@@ -3,6 +3,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 StationarySpaceBox::StationarySpaceBox(
     hdf5::Group& parent):
@@ -64,4 +65,5 @@ StationarySpaceBox create_stationary_space_box(
     return StationarySpaceBox{std::move(value)};
 }
 
+}  // namespace data_model
 }  // namespace lue

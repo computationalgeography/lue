@@ -221,6 +221,7 @@ static void mark_as_empty(
 }  // namespace utility
 
 
+using namespace data_model;
 using namespace utility;
 
 
@@ -1030,7 +1031,7 @@ void translate_lue_datasets_to_dot(
         throw std::runtime_error("cannot open file " + dot_filename);
     }
 
-    to_dot(datasets, stream, metadata);
+    lue::to_dot(datasets, stream, metadata);
 }
 
 
@@ -1038,12 +1039,12 @@ void translate_lue_datasets_to_dot(
     @brief      Translate the structure of a LUE dataset to a DOT graph
 */
 void translate_lue_dataset_to_dot(
-    Dataset& dataset,
+    data_model::Dataset& dataset,
     std::ostream& stream,
     Metadata const& metadata)
 {
     DatasetRefs dataset_ref{dataset};
-    to_dot(dataset_ref, stream, metadata);
+    lue::to_dot(dataset_ref, stream, metadata);
 }
 
 
@@ -1051,7 +1052,7 @@ void translate_lue_dataset_to_dot(
     @brief      Translate the structure of a LUE dataset to a DOT graph
 */
 void translate_lue_dataset_to_dot(
-    Dataset& dataset,
+    data_model::Dataset& dataset,
     std::string const& dot_filename,
     Metadata const& metadata)
 {

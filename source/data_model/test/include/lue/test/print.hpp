@@ -8,6 +8,7 @@
 
 
 namespace lue {
+namespace data_model {
 namespace test {
 
 template<
@@ -26,6 +27,7 @@ inline void print(
 }
 
 }  // namespace test
+}  // namespace data_model
 
 
 namespace hdf5 {
@@ -35,7 +37,7 @@ inline std::ostream& operator<<(
     hdf5::Offset const& offset)
 {
     stream << "[";
-    test::print(stream, offset, ":");
+    data_model::test::print(stream, offset, ":");
     stream << "]";
     return stream;
 }
@@ -46,7 +48,7 @@ inline std::ostream& operator<<(
     hdf5::Stride const& stride)
 {
     stream << "[";
-    test::print(stream, stride, ":");
+    data_model::test::print(stream, stride, ":");
     stream << "]";
     return stream;
 }
@@ -57,7 +59,7 @@ inline std::ostream& operator<<(
     hdf5::Count const& count)
 {
     stream << "[";
-    test::print(stream, count, ":");
+    data_model::test::print(stream, count, ":");
     stream << "]";
     return stream;
 }
@@ -68,7 +70,7 @@ inline std::ostream& operator<<(
     hdf5::Shape const& shape)
 {
     stream << "[";
-    test::print(stream, shape, ":");
+    data_model::test::print(stream, shape, ":");
     stream << "]";
     return stream;
 }
@@ -79,11 +81,11 @@ inline std::ostream& operator<<(
     hdf5::Hyperslab const& hyperslab)
 {
     stream << "[";
-    test::print(stream, hyperslab.start(), ":");
+    data_model::test::print(stream, hyperslab.start(), ":");
     stream << ",";
-    test::print(stream, hyperslab.stride(), ":");
+    data_model::test::print(stream, hyperslab.stride(), ":");
     stream << ",";
-    test::print(stream, hyperslab.count(), ":");
+    data_model::test::print(stream, hyperslab.count(), ":");
     stream << "]";
 
     return stream;
@@ -109,6 +111,8 @@ inline std::ostream& operator<<(
 
 }  // namespace hdf5
 
+
+namespace data_model {
 
 template<
     typename T>
@@ -195,4 +199,5 @@ inline std::ostream& operator<<(
     return stream;
 }
 
+}  // namespace data_model
 }  // namespace lue

@@ -16,7 +16,8 @@ public:
 
     std::string const& name            () const;
 
-    Dataset const& dataset             () const;
+    data_model::Dataset const&
+                   dataset             () const;
 
     boost::filesystem::path const& path() const;
 
@@ -36,7 +37,7 @@ private:
 
     std::string const _name;
 
-    std::optional<Dataset> _dataset;
+    std::optional<data_model::Dataset> _dataset;
 
     boost::filesystem::path _path;
 

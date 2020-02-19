@@ -2,6 +2,7 @@
 
 
 namespace lue {
+namespace data_model {
 namespace time {
 
 /*!
@@ -105,4 +106,5 @@ inline typename Clock::Duration::Count TimePoint<Clock>::nr_ticks() const
 }
 
 }  // namespace time
+}  // namespace data_model
 }  // namespace lue

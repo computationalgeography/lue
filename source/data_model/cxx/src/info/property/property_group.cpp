@@ -6,6 +6,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 PropertyGroup::PropertyGroup(
     hdf5::Group& parent,
@@ -126,4 +127,5 @@ PropertyGroup create_property_group(
     return PropertyGroup{std::move(group)};
 }
 
+}  // namespace data_model
 }  // namespace lue

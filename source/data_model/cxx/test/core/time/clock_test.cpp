@@ -5,7 +5,7 @@
 
 BOOST_AUTO_TEST_CASE(seconds)
 {
-    using namespace lue::time;
+    using namespace lue::data_model::time;
 
     // Clock with a Unix time epoch and a tick period of 10 seconds
     std::size_t const nr_seconds_per_tick = 10;

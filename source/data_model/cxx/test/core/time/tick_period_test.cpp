@@ -5,7 +5,7 @@
 
 BOOST_AUTO_TEST_CASE(seconds)
 {
-    using namespace lue::time;
+    using namespace lue::data_model::time;
 
     // Every 5 * (1 seconds) a tick
     std::size_t const nr_seconds = 5;

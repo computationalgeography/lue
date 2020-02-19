@@ -2,6 +2,7 @@
 
 
 namespace lue {
+namespace data_model {
 namespace time {
 
 /*!
@@ -42,4 +43,5 @@ enum class Unit
 };
 
 }  // namespace time
+}  // namespace data_model
 }  // namespace lue

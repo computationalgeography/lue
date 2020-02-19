@@ -3,6 +3,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 ObjectID::ObjectID(
     hdf5::Group& parent):
@@ -37,4 +38,5 @@ ObjectID create_object_id(
     return ObjectID{std::move(value)};
 }
 
+}  // namespace data_model
 }  // namespace lue

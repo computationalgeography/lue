@@ -3,6 +3,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 class Clock
 {
@@ -38,4 +39,5 @@ private:
 
 };
 
+}  // namespace data_model
 }  // namespace lue

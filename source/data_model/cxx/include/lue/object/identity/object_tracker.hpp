@@ -5,6 +5,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 /*!
     @brief      Class for storing object tracking information for all
@@ -75,4 +76,5 @@ void               link_object_tracker (hdf5::Group& parent,
 bool               has_linked_object_tracker(
                                         hdf5::Group const& parent);
 
+}  // namespace data_model
 }  // namespace lue

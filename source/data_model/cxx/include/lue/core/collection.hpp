@@ -8,6 +8,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 /*!
     @brief      A collection of HDF5 objects
@@ -297,4 +298,5 @@ inline Collection<T> create_collection(
     return Collection<T>{hdf5::create_group(parent, name)};
 }
 
+} // namespace data_model
 } // namespace lue

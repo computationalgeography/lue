@@ -4,6 +4,7 @@
 
 
 namespace lue {
+namespace data_model {
 namespace time {
 
 enum class Calendar
@@ -89,4 +90,5 @@ private:
 };
 
 }  // namespace time
+}  // namespace data_model
 }  // namespace lue
