@@ -3,6 +3,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 /*!
     @brief      Class for performing I/O of variable rasters of a
@@ -18,7 +19,7 @@ class RasterView:
 
 public:
 
-    using TimeBox = std::array<ElementT<lue::TimeBox>, 2>;
+    using TimeBox = std::array<ElementT<data_model::TimeBox>, 2>;
 
     using SpaceBox = std::array<double, 4>;
 
@@ -105,4 +106,5 @@ RasterView         create_raster_view  (DatasetPtr dataset,
                                         hdf5::Shape const& raster_shape,
                                         RasterView::SpaceBox const& space_box);
 
+}  // namespace data_model
 }  // namespace lue

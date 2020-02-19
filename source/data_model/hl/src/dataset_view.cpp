@@ -2,6 +2,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 /*!
     @brief      Construct an instance
@@ -35,4 +36,5 @@ Dataset& DatasetView::operator*()
     return *_dataset;
 }
 
+}  // namespace data_model
 }  // namespace lue

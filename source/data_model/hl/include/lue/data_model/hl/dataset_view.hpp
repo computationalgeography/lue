@@ -4,6 +4,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 using DatasetPtr = std::shared_ptr<Dataset>;
 
@@ -48,4 +49,5 @@ private:
 
 };
 
+}  // namespace data_model
 }  // namespace lue

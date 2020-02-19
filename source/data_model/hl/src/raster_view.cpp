@@ -3,6 +3,7 @@
 
 
 namespace lue {
+namespace data_model {
 namespace {
 
 static std::string const time_discretization_property_name{"time_grid_shape"};
@@ -70,7 +71,7 @@ RasterView::RasterView(
     // Read time and space boxes from domains
     {
         auto& time_domain{property_set.time_domain()};
-        auto value{time_domain.value<lue::TimeBox>()};
+        auto value{time_domain.value<data_model::TimeBox>()};
         value.read(0, _time_box.data());
     }
 
@@ -301,7 +302,7 @@ RasterView create_raster_view(
     object_tracker.active_object_id().write(0, &object_id);
 
     // Time domain
-    auto time_domain_value{property_set.time_domain().value<lue::TimeBox>()};
+    auto time_domain_value{property_set.time_domain().value<data_model::TimeBox>()};
     time_domain_value.expand(1);
     time_domain_value.write(0, time_box.data());
 
@@ -342,4 +343,5 @@ RasterView create_raster_view(
         std::move(dataset_ptr), phenomenon_name, property_set_name};
 }
 
+}  // namespace data_model
 }  // namespace lue
