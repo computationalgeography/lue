@@ -139,7 +139,7 @@ int Import::run_implementation()
 
     if(!skip_validate) {
         // Verify that the dataset is usable
-        assert_is_valid(output_dataset_name);
+        data_model::assert_is_valid(output_dataset_name);
     }
 
     return EXIT_SUCCESS;

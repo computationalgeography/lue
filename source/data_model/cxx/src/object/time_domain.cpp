@@ -2,6 +2,7 @@
 
 
 namespace lue {
+namespace data_model {
 namespace {
 
 void write_epoch(
@@ -51,7 +52,7 @@ time::Epoch read_epoch(
 
 
 void write_clock(
-    lue::Clock const& clock,
+    data_model::Clock const& clock,
     hdf5::Attributes& attributes)
 {
     write_epoch(clock.epoch(), attributes);
@@ -112,7 +113,7 @@ Clock const& TimeDomain::clock() const
 TimeDomain create_time_domain(
     hdf5::Group& parent,
     TimeConfiguration const& configuration,
-    lue::Clock const& clock)
+    data_model::Clock const& clock)
 {
     auto group = hdf5::create_group(parent, time_domain_tag);
 
@@ -160,4 +161,5 @@ bool time_domain_exists(
     return parent.contains_group(time_domain_tag);
 }
 
+}  // namespace data_model
 }  // namespace lue

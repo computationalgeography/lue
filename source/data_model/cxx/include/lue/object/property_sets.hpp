@@ -4,6 +4,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 class PropertySets:
     public Collection<PropertySet>
@@ -82,4 +83,5 @@ private:
 PropertySets       create_property_sets(hdf5::Group& parent,
                                         std::string const& name);
 
+} // namespace data_model
 } // namespace lue

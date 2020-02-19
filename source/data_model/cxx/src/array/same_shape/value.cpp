@@ -2,6 +2,7 @@
 
 
 namespace lue {
+namespace data_model {
 namespace same_shape {
 
 /*!
@@ -224,4 +225,5 @@ Value create_value(
 }
 
 }  // namespace same_shape
+}  // namespace data_model
 }  // namespace lue

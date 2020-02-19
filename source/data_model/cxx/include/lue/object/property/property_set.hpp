@@ -7,6 +7,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 /*!
     @brief      Class representing a set of properties sharing a time
@@ -133,4 +134,5 @@ PropertySet        create_property_set (hdf5::Group& parent,
 //                                         SpaceConfiguration const&
 //                                             space_configuration);
 
+}  // namespace data_model
 }  // namespace lue

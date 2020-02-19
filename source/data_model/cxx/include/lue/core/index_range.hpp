@@ -3,6 +3,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 class IndexRange
 {
@@ -66,4 +67,5 @@ inline hsize_t IndexRange::size() const
     return _end - _begin;
 }
 
+} // namespace data_model
 } // namespace lue

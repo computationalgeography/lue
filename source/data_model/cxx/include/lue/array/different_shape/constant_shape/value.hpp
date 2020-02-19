@@ -4,6 +4,7 @@
 
 
 namespace lue {
+namespace data_model {
 namespace different_shape {
 namespace constant_shape {
 
@@ -84,4 +85,5 @@ Value              create_value        (hdf5::Group& parent,
 
 }  // namespace constant_shape
 }  // namespace different_shape
+}  // namespace data_model
 }  // namespace lue

@@ -4,14 +4,14 @@
 #include "lue/test.hpp"
 
 
-BOOST_FIXTURE_TEST_CASE(omnipresent_in_time, lue::test::DatasetFixture)
+BOOST_FIXTURE_TEST_CASE(omnipresent_in_time, lue::data_model::test::DatasetFixture)
 {
     std::string const phenomenon_name = "my_phenomenon";
     std::string const property_set_name = "my_property_set";
-    lue::Count const nr_objects = 5;
+    lue::data_model::Count const nr_objects = 5;
 
-    std::vector<lue::ID> ids(nr_objects);
-    lue::test::generate_random_ids(ids);
+    std::vector<lue::data_model::ID> ids(nr_objects);
+    lue::data_model::test::generate_random_ids(ids);
 
     // Create and write
     {
@@ -27,7 +27,7 @@ BOOST_FIXTURE_TEST_CASE(omnipresent_in_time, lue::test::DatasetFixture)
 
         BOOST_REQUIRE_EQUAL(phenomenon.object_id().nr_objects(), nr_objects);
 
-        std::vector<lue::ID> ids_read(nr_objects);
+        std::vector<lue::data_model::ID> ids_read(nr_objects);
 
         phenomenon.object_id().read(ids_read.data());
         BOOST_CHECK_EQUAL_COLLECTIONS(
@@ -37,19 +37,19 @@ BOOST_FIXTURE_TEST_CASE(omnipresent_in_time, lue::test::DatasetFixture)
 }
 
 
-BOOST_FIXTURE_TEST_CASE(time_points, lue::test::DatasetFixture)
+BOOST_FIXTURE_TEST_CASE(time_points, lue::data_model::test::DatasetFixture)
 {
     std::string const phenomenon_name = "my_phenomenon";
     std::string const property_set_name = "my_property_set";
-    lue::Count const nr_locations_in_time = 25;
+    lue::data_model::Count const nr_locations_in_time = 25;
 
     // Per location in time the number of objects in the active set
-    std::vector<lue::Count> nr_active_objects(nr_locations_in_time);
-    lue::test::generate_random_counts(nr_active_objects, 5, 15);
+    std::vector<lue::data_model::Count> nr_active_objects(nr_locations_in_time);
+    lue::data_model::test::generate_random_counts(nr_active_objects, 5, 15);
 
     // Per location in time the IDs of the objects in the active set
-    std::vector<std::vector<lue::ID>> active_ids(nr_locations_in_time);
-    lue::test::select_random_ids(active_ids, nr_active_objects);
+    std::vector<std::vector<lue::data_model::ID>> active_ids(nr_locations_in_time);
+    lue::data_model::test::select_random_ids(active_ids, nr_active_objects);
 
     // Create and write
     {
@@ -61,7 +61,7 @@ BOOST_FIXTURE_TEST_CASE(time_points, lue::test::DatasetFixture)
 }
 
 
-BOOST_FIXTURE_TEST_CASE(time_boxes, lue::test::DatasetFixture)
+BOOST_FIXTURE_TEST_CASE(time_boxes, lue::data_model::test::DatasetFixture)
 {
     // Create and write
     {
@@ -73,7 +73,7 @@ BOOST_FIXTURE_TEST_CASE(time_boxes, lue::test::DatasetFixture)
 }
 
 
-BOOST_FIXTURE_TEST_CASE(time_grids, lue::test::DatasetFixture)
+BOOST_FIXTURE_TEST_CASE(time_grids, lue::data_model::test::DatasetFixture)
 {
     // Create and write
     {

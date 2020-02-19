@@ -4,6 +4,7 @@
 
 
 namespace lue {
+namespace data_model {
 namespace time {
 
 /*!
@@ -98,4 +99,5 @@ inline typename TickPeriod::Count Clock<TickPeriod>::nr_units(
 }
 
 }  // namespace time
+}  // namespace data_model
 }  // namespace lue

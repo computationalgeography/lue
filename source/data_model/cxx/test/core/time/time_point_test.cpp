@@ -5,7 +5,7 @@
 
 BOOST_AUTO_TEST_CASE(seconds)
 {
-    using namespace lue::time;
+    using namespace lue::data_model::time;
 
     // Time point at 6 ticks in a clock with a tick period of 10 seconds,
     // so the point is located at 60 seconds
@@ -28,7 +28,7 @@ BOOST_AUTO_TEST_CASE(seconds)
 
 BOOST_AUTO_TEST_CASE(days)
 {
-    using namespace lue::time;
+    using namespace lue::data_model::time;
 
     // Types for tracking days
     using TickPeriod = TickPeriod<Day>;

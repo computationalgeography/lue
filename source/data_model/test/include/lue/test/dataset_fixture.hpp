@@ -4,6 +4,7 @@
 
 
 namespace lue {
+namespace data_model {
 namespace test {
 
 class DatasetFixture
@@ -40,4 +41,5 @@ private:
 };
 
 }  // namespace test
+}  // namespace data_model
 }  // namespace lue

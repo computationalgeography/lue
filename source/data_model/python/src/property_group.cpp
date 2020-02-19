@@ -9,6 +9,7 @@ using namespace pybind11::literals;
 
 
 namespace lue {
+namespace data_model {
 
 // Defined in property_set.cpp...
 // TODO Reorganize this in a header / module
@@ -87,17 +88,18 @@ void init_property_group(
                 // Property-set the discretization property is member of.
                 // New, local instance.
                 auto property_set =
-                    PropertySet{lue::property_set(discretization_property)};
+                    PropertySet{data_model::property_set(discretization_property)};
 
                 assert(property_set.properties().contains(
                         discretization_property.name()));
 
                 // Return a new instance of a property of the right type
-                return lue::property_new(
+                return data_model::property_new(
                     property_set.properties(), discretization_property.name());
             })
         ;
 
 }
 
+}  // namespace data_model
 }  // namespace lue

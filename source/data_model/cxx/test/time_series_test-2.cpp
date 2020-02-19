@@ -3,7 +3,7 @@
 #include "lue/test.hpp"
 
 
-BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
+BOOST_FIXTURE_TEST_CASE(create, lue::data_model::test::DatasetFixture)
 {
     // Time series as implemented here:
     // - Discharge at catchment outlets
@@ -18,27 +18,27 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
     std::string const phenomenon_name = "areas";
     std::string const property_set_name = "outlets";
 
-    lue::Count const max_active_set_size = 10;
-    lue::Count const nr_time_boxes = 3;
+    lue::data_model::Count const max_active_set_size = 10;
+    lue::data_model::Count const nr_time_boxes = 3;
 
     // Counts per box
-    std::vector<lue::Count> count(nr_time_boxes);
-    lue::test::generate_random_counts(count, 0, 100);
+    std::vector<lue::data_model::Count> count(nr_time_boxes);
+    lue::data_model::test::generate_random_counts(count, 0, 100);
     auto const nr_time_cells =
-        std::accumulate(count.begin(), count.end(), lue::Count{0});
+        std::accumulate(count.begin(), count.end(), lue::data_model::Count{0});
 
     // Object tracking info for information that changes through time
-    std::vector<lue::Count> active_set_sizes(nr_time_cells);
-    lue::test::generate_random_counts(
+    std::vector<lue::data_model::Count> active_set_sizes(nr_time_cells);
+    lue::data_model::test::generate_random_counts(
         active_set_sizes, 0, max_active_set_size);
-    std::vector<lue::Index> active_set_idxs(nr_time_cells);
-    std::vector<lue::ID> active_ids(
+    std::vector<lue::data_model::Index> active_set_idxs(nr_time_cells);
+    std::vector<lue::data_model::ID> active_ids(
         std::accumulate(active_set_sizes.begin(), active_set_sizes.end(), 0u));
-    lue::test::select_random_ids(
+    lue::data_model::test::select_random_ids(
         active_set_sizes, active_set_idxs, active_ids, max_active_set_size);
 
     // Object IDs for information that does not change through time
-    std::vector<lue::ID> unique_active_ids(active_ids);
+    std::vector<lue::data_model::ID> unique_active_ids(active_ids);
     std::sort(unique_active_ids.begin(), unique_active_ids.end());
     unique_active_ids.erase(
         std::unique(unique_active_ids.begin(), unique_active_ids.end()),
@@ -47,23 +47,23 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
 
     // Time domain
     // Boxes in time
-    lue::TimeConfiguration time_configuration{
-            lue::TimeDomainItemType::cell
+    lue::data_model::TimeConfiguration time_configuration{
+        lue::data_model::TimeDomainItemType::cell
         };
-    lue::Clock const clock{lue::time::Unit::day, 1};
-    using TimeCoordinateValueType = lue::time::TickPeriodCount;
+    lue::data_model::Clock const clock{lue::data_model::time::Unit::day, 1};
+    using TimeCoordinateValueType = lue::data_model::time::TickPeriodCount;
     lue::hdf5::Datatype const time_coordinate_datatype{
         lue::hdf5::NativeDatatypeTraits<TimeCoordinateValueType>::type_id()};
     std::vector<TimeCoordinateValueType> time_boxes(nr_time_boxes * 2);
-    lue::test::generate_random_strictly_increasing_values(time_boxes, 0, 1000);
+    lue::data_model::test::generate_random_strictly_increasing_values(time_boxes, 0, 1000);
 
 
     // Space domain
     // Points in space that don't change location:
     //     constant shape x constant value
-    lue::SpaceConfiguration space_configuration{
-            lue::Mobility::stationary,
-            lue::SpaceDomainItemType::point
+    lue::data_model::SpaceConfiguration space_configuration{
+        lue::data_model::Mobility::stationary,
+            lue::data_model::SpaceDomainItemType::point
         };
     using SpaceCoordinateValueType = double;
     lue::hdf5::Datatype const space_coordinate_datatype{
@@ -71,7 +71,7 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
     std::size_t const rank = 2;
     std::vector<SpaceCoordinateValueType> space_points(
         nr_unique_active_objects * rank);
-    lue::test::generate_random_values(space_points, 0, 1000);
+    lue::data_model::test::generate_random_values(space_points, 0, 1000);
 
     // Discharge property
     // Amount of discharge per active object in an active set per time cell
@@ -84,7 +84,7 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
     for(size_t t = 0; t < nr_time_cells; ++t) {
         discharge_values[t].resize(active_set_sizes[t]);
     }
-    lue::test::generate_random_values(discharge_values, 0.0, 1500.0);
+    lue::data_model::test::generate_random_values(discharge_values, 0.0, 1500.0);
 
     // Create and write
     {
@@ -138,7 +138,7 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
             // Time boxes and for each box a count
             {
                 auto& time_domain = outlet_points.time_domain();
-                auto value = time_domain.value<lue::TimeCell>();
+                auto value = time_domain.value<lue::data_model::TimeCell>();
                 value.expand(nr_time_boxes);
                 value.write(time_boxes.data());
 
@@ -152,21 +152,21 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
             // For each object that is ever active a point
             {
                 auto& space_domain = outlet_points.space_domain();
-                auto value = space_domain.value<lue::StationarySpacePoint>();
+                auto value = space_domain.value<lue::data_model::StationarySpacePoint>();
                 value.expand(nr_unique_active_objects);
                 value.write(space_points.data());
             }
 
             // Property
             {
-                using Property = lue::same_shape::constant_shape::Property;
+                using Property = lue::data_model::same_shape::constant_shape::Property;
                 auto& properties = outlet_points.properties();
                 auto& discharge_property = properties.add<Property>(
                     discharge_property_name, discharge_datatype);
 
                 auto& value = discharge_property.value();
                 for(std::size_t t = 0; t < nr_time_cells; ++t) {
-                    lue::IndexRange index_range{
+                    lue::data_model::IndexRange index_range{
                         value.nr_arrays(),
                         value.nr_arrays() + discharge_values[t].size()};
                     value.expand(index_range.size());
@@ -176,7 +176,7 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
         }
     }
 
-    lue::assert_is_valid(pathname());
+    lue::data_model::assert_is_valid(pathname());
 
     // Open and read
     {
@@ -185,7 +185,7 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
 
         BOOST_REQUIRE_EQUAL(
             areas.object_id().nr_objects(), nr_unique_active_objects);
-        std::vector<lue::ID> ids_read(nr_unique_active_objects);
+        std::vector<lue::data_model::ID> ids_read(nr_unique_active_objects);
         areas.object_id().read(ids_read.data());
         BOOST_CHECK_EQUAL_COLLECTIONS(
             ids_read.begin(), ids_read.end(),
@@ -203,7 +203,7 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
                 auto& active_set_index = object_tracker.active_set_index();
                 BOOST_REQUIRE_EQUAL(
                     active_set_index.nr_arrays(), nr_time_cells);
-                std::vector<lue::Index> active_set_idxs_read(nr_time_cells);
+                std::vector<lue::data_model::Index> active_set_idxs_read(nr_time_cells);
                 active_set_index.read(active_set_idxs_read.data());
                 BOOST_CHECK_EQUAL_COLLECTIONS(
                     active_set_idxs_read.begin(), active_set_idxs_read.end(),
@@ -212,7 +212,7 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
                 auto& active_object_id = object_tracker.active_object_id();
                 BOOST_REQUIRE_EQUAL(
                     active_object_id.nr_arrays(), active_ids.size());
-                std::vector<lue::ID> active_ids_read(active_ids.size());
+                std::vector<lue::data_model::ID> active_ids_read(active_ids.size());
                 active_object_id.read(active_ids_read.data());
                 BOOST_CHECK_EQUAL_COLLECTIONS(
                     active_ids_read.begin(), active_ids_read.end(),
@@ -234,7 +234,7 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
                 auto& clock = time_domain.clock();
                 BOOST_REQUIRE_EQUAL(time_domain.clock(), clock);
 
-                auto value = time_domain.value<lue::TimeCell>();
+                auto value = time_domain.value<lue::data_model::TimeCell>();
 
                 BOOST_REQUIRE_EQUAL(
                     value.memory_datatype(),
@@ -243,7 +243,7 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
                 BOOST_REQUIRE_EQUAL(value.nr_arrays(), nr_time_boxes);
                 BOOST_REQUIRE_EQUAL(value.nr_arrays(), value.nr_counts());
 
-                std::vector<lue::Count> counts_read(value.nr_counts());
+                std::vector<lue::data_model::Count> counts_read(value.nr_counts());
                 value.count().read(counts_read.data());
 
                 BOOST_CHECK_EQUAL_COLLECTIONS(
@@ -267,7 +267,7 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
                 BOOST_REQUIRE_EQUAL(
                     space_domain.configuration(), space_configuration);
 
-                auto value = space_domain.value<lue::StationarySpacePoint>();
+                auto value = space_domain.value<lue::data_model::StationarySpacePoint>();
 
                 BOOST_REQUIRE_EQUAL(
                     value.memory_datatype(), space_coordinate_datatype);
@@ -293,19 +293,19 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
                 BOOST_REQUIRE_EQUAL(
                     outlet_points.properties().shape_per_object(
                         discharge_property_name),
-                    lue::ShapePerObject::same);
+                    lue::data_model::ShapePerObject::same);
                 BOOST_REQUIRE_EQUAL(
                     outlet_points.properties().value_variability(
                         discharge_property_name),
-                    lue::ValueVariability::variable);
+                    lue::data_model::ValueVariability::variable);
                 BOOST_REQUIRE_EQUAL(
                     outlet_points.properties().shape_variability(
                         discharge_property_name),
-                    lue::ShapeVariability::constant);
+                    lue::data_model::ShapeVariability::constant);
 
                 auto& properties =
                     outlet_points.properties().collection<
-                        lue::same_shape::constant_shape::Properties>();
+                        lue::data_model::same_shape::constant_shape::Properties>();
                 auto& discharge_property = properties[discharge_property_name];
                 auto& value = discharge_property.value();
 
@@ -315,13 +315,13 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
                     value.memory_datatype(), discharge_datatype);
 
                 {
-                    lue::Index begin;
-                    lue::Index end = 0;
+                    lue::data_model::Index begin;
+                    lue::data_model::Index end = 0;
 
                     for(std::size_t t = 0; t < nr_time_cells; ++t) {
                         begin = end;
                         end = begin + active_set_sizes[t];
-                        lue::IndexRange index_range{begin, end};
+                        lue::data_model::IndexRange index_range{begin, end};
 
                         std::vector<DischargeValueType> discharge_values_read(
                             active_set_sizes[t]);

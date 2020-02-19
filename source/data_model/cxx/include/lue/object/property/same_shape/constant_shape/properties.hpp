@@ -4,6 +4,7 @@
 
 
 namespace lue {
+namespace data_model {
 namespace same_shape {
 namespace constant_shape {
 
@@ -46,4 +47,5 @@ Properties         create_properties   (hdf5::Group& parent);
 
 }  // namespace constant_shape
 }  // namespace same_shape
+}  // namespace data_model
 }  // namespace lue

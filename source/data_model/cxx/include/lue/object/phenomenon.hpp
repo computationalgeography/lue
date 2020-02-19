@@ -4,6 +4,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 /*!
     @brief      Class for phenomenon information
@@ -63,4 +64,5 @@ private:
 Phenomenon         create_phenomenon   (hdf5::Group& parent,
                                         std::string const& name);
 
+} // namespace data_model
 } // namespace lue

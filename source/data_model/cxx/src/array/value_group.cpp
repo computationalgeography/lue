@@ -3,6 +3,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 ValueGroup::ValueGroup(
     hdf5::Group& parent,
@@ -94,4 +95,5 @@ ValueGroup create_value_group(
     return ValueGroup{std::move(group), memory_datatype};
 }
 
+}  // namespace data_model
 }  // namespace lue

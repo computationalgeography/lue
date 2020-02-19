@@ -5,6 +5,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 // Try not to use this functionality!
 // These are all implementation details. Never depend on the knowledge
@@ -91,7 +92,7 @@ inline PropertyGroup property(
     assert(path.is_absolute());
 
     // Get the dataset
-    auto dataset = lue::dataset(property);
+    auto dataset = data_model::dataset(property);
     assert(dataset.id().pathname() == "/");
 
     // Find the property
@@ -152,4 +153,5 @@ inline PropertyGroup property(
     return PropertyGroup{*parent, property_name};
 }
 
+}  // namespace data_model
 }  // namespace lue

@@ -9,6 +9,7 @@ using namespace pybind11::literals;
 
 
 namespace lue {
+namespace data_model {
 
 std::string formal_string_representation(
     time::Epoch const& epoch)
@@ -188,4 +189,5 @@ void init_epoch(
 
 }
 
+}  // namespace data_model
 }  // namespace lue

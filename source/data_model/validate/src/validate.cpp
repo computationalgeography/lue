@@ -48,7 +48,7 @@ int Validate::run_implementation()
 
     for(auto const& dataset_name: dataset_names) {
         try {
-            assert_is_valid(dataset_name, fail_on_warning);
+            data_model::assert_is_valid(dataset_name, fail_on_warning);
 
             if(!only_print_issues) {
                 print_info_message("File " + dataset_name +

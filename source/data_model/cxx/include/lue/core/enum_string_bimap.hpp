@@ -5,6 +5,7 @@
 
 
 namespace lue {
+namespace data_model {
 namespace detail {
 
 template<
@@ -89,4 +90,5 @@ std::string EnumStringBimap<T>::as_string(
 }
 
 }  // namespace detail
+}  // namespace data_model
 }  // namespace lue

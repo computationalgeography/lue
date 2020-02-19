@@ -5,7 +5,7 @@
 
 
 class Fixture:
-    public lue::test::FileFixture
+    public lue::data_model::test::FileFixture
 {
 
 public:
@@ -20,8 +20,8 @@ public:
           _array_shape{_nr_rows, _nr_cols},
           _file{std::make_unique<lue::hdf5::File>(
             lue::hdf5::create_file(_filename))},
-          _value{std::make_unique<lue::same_shape::Value>(
-            lue::same_shape::create_value(
+          _value{std::make_unique<lue::data_model::same_shape::Value>(
+            lue::data_model::same_shape::create_value(
                 *_file, _value_name, _datatype, _array_shape))}
     {
     }
@@ -59,7 +59,7 @@ private:
     std::size_t const _nr_cols;
     lue::hdf5::Shape const _array_shape;
     std::unique_ptr<lue::hdf5::File> _file;
-    std::unique_ptr<lue::same_shape::Value> _value;
+    std::unique_ptr<lue::data_model::same_shape::Value> _value;
 
 };
 
@@ -80,7 +80,7 @@ BOOST_FIXTURE_TEST_CASE(update_all_object_arrays, Fixture)
 {
     auto& value = this->value();
 
-    lue::Count const nr_arrays = 3;
+    lue::data_model::Count const nr_arrays = 3;
     value.expand(nr_arrays);
 
     BOOST_CHECK_EQUAL(value.nr_arrays(), nr_arrays);
@@ -116,7 +116,7 @@ BOOST_FIXTURE_TEST_CASE(update_range_of_object_arrays, Fixture)
 {
     auto& value = this->value();
 
-    lue::Count const nr_arrays = 3;
+    lue::data_model::Count const nr_arrays = 3;
     value.expand(nr_arrays);
 
     BOOST_CHECK_EQUAL(value.nr_arrays(), nr_arrays);
@@ -146,7 +146,7 @@ BOOST_FIXTURE_TEST_CASE(update_individual_object_arrays, Fixture)
 {
     auto& value = this->value();
 
-    lue::Count const nr_arrays = 3;
+    lue::data_model::Count const nr_arrays = 3;
     value.expand(nr_arrays);
 
     BOOST_CHECK_EQUAL(value.nr_arrays(), nr_arrays);
@@ -172,7 +172,7 @@ BOOST_FIXTURE_TEST_CASE(expand, Fixture)
 {
     auto& value = this->value();
 
-    lue::Count const nr_arrays = 3;
+    lue::data_model::Count const nr_arrays = 3;
 
     value.expand(nr_arrays);
     BOOST_CHECK_EQUAL(value.nr_arrays(), nr_arrays);

@@ -157,10 +157,10 @@ JSONCIterator find(
 }
 
 
-Clock clock(
+data_model::Clock clock(
     JSON const& object)
 {
-    return Clock{
+    return data_model::Clock{
         object.at("unit"),
         object.at("nr_units")
     };
@@ -304,6 +304,7 @@ std::string Metadata::string(
 }  // namespace utility
 
 
+namespace data_model {
 namespace time {
 
 void from_json(
@@ -314,6 +315,7 @@ void from_json(
     // unit = string_to_unit(object.get<std::string>());
 }
 
+}  // namespace data_model
 }  // namespace time
 
 }  // namespace lue

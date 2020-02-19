@@ -3,6 +3,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 // array
 static std::string const datatype_tag =
@@ -95,6 +96,7 @@ static std::string const space_discretization_property_tag =
 static std::string const time_unit_tag = "lue_time_unit";
 static std::string const nr_time_units_tag = "lue_nr_time_units";
 
+}  // namespace data_model
 }  // namespace lue
 
 

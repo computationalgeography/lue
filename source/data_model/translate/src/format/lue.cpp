@@ -15,7 +15,8 @@ LUEDatasetPtr try_open_lue_dataset_for_read(
     LUEDatasetPtr result;
 
     try {
-        result = std::make_unique<Dataset>(dataset_name, H5F_ACC_RDONLY);
+        result = std::make_unique<data_model::Dataset>(
+            dataset_name, H5F_ACC_RDONLY);
     }
     catch(...) {
     }

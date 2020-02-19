@@ -5,6 +5,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 Dataset::Dataset(
     std::string const& name,
@@ -191,4 +192,5 @@ void remove_dataset(
     hdf5::remove_file(name);
 }
 
+} // namespace data_model
 } // namespace lue

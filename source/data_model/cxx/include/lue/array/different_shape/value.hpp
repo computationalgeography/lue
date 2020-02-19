@@ -5,6 +5,7 @@
 
 
 namespace lue {
+namespace data_model {
 namespace different_shape {
 
 /*!
@@ -76,4 +77,5 @@ Value              create_value        (hdf5::Group& parent,
                                         Rank rank);
 
 }  // namespace different_shape
+}  // namespace data_model
 }  // namespace lue

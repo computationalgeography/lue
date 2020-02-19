@@ -3,6 +3,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 /*!
     - Zero or more time points per item
@@ -37,4 +38,5 @@ private:
 
 TimePoint          create_time_point   (hdf5::Group& parent);
 
+}  // namespace data_model
 }  // namespace lue

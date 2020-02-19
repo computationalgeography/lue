@@ -6,6 +6,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 Properties::Properties(
     hdf5::Group& parent):
@@ -284,4 +285,5 @@ Properties create_properties(
     return Properties{std::move(group)};
 }
 
+}  // namespace data_model
 }  // namespace lue

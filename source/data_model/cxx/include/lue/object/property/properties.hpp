@@ -8,6 +8,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 class Properties:
     public hdf5::Group
@@ -249,4 +250,5 @@ inline different_shape::variable_shape::Property&
         name, datatype, rank);
 }
 
+}  // namespace data_model
 }  // namespace lue

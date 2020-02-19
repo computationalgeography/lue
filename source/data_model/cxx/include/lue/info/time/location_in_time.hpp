@@ -3,6 +3,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 /*!
     @todo       Privately inherit to hide base class' API?
@@ -41,4 +42,5 @@ LocationInTime     create_location_in_time(
                                         hdf5::Group& parent,
                                         hdf5::Shape const& value_shape);
 
+}  // namespace data_model
 }  // namespace lue

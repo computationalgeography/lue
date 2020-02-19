@@ -4,6 +4,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 LocationInTime::LocationInTime(
     hdf5::Group& parent):
@@ -52,4 +53,5 @@ LocationInTime create_location_in_time(
     return LocationInTime{std::move(value)};
 }
 
+}  // namespace data_model
 }  // namespace lue

@@ -2,6 +2,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 TimePoint::TimePoint(
     hdf5::Group& parent):
@@ -35,4 +36,5 @@ TimePoint create_time_point(
     return TimePoint{std::move(value)};
 }
 
+}  // namespace data_model
 }  // namespace lue

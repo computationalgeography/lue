@@ -4,6 +4,10 @@
 
 
 namespace lue {
+
+using namespace data_model;
+
+
 namespace utility {
 namespace {
 
@@ -261,7 +265,6 @@ void write_shapefiles(
 
     }
 }
-
 
 }  // Anonymous namespace
 

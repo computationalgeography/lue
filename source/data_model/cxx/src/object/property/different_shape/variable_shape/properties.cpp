@@ -3,6 +3,7 @@
 
 
 namespace lue {
+namespace data_model {
 namespace different_shape {
 namespace variable_shape {
 
@@ -45,4 +46,5 @@ Properties create_properties(
 
 }  // namespace variable_shape
 }  // namespace different_shape
+}  // namespace data_model
 }  // namespace lue

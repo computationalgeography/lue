@@ -9,7 +9,7 @@ namespace utility {
 /*!
     @brief      Unique pointer to a dataset
 */
-using LUEDatasetPtr = std::unique_ptr<Dataset>;
+using LUEDatasetPtr = std::unique_ptr<data_model::Dataset>;
 
 
 LUEDatasetPtr      try_open_lue_dataset_for_read(

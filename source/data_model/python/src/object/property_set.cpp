@@ -12,6 +12,7 @@ using namespace pybind11::literals;
 
 
 namespace lue {
+namespace data_model {
 namespace {
 
 static std::string formal_string_representation(
@@ -60,12 +61,12 @@ static std::string informal_string_representation(
         "    different_shape/constant_shape properties: [{}]\n"
         "    different_shape/variable_shape properties: [{}]",
         formal_string_representation(property_set),
-        join_property_names<lue::same_shape::Properties>(properties),
-        join_property_names<lue::same_shape::constant_shape::Properties>(properties),
-        join_property_names<lue::same_shape::variable_shape::Properties>(properties),
-        join_property_names<lue::different_shape::Properties>(properties),
-        join_property_names<lue::different_shape::constant_shape::Properties>(properties),
-        join_property_names<lue::different_shape::variable_shape::Properties>(properties)
+        join_property_names<same_shape::Properties>(properties),
+        join_property_names<same_shape::constant_shape::Properties>(properties),
+        join_property_names<same_shape::variable_shape::Properties>(properties),
+        join_property_names<different_shape::Properties>(properties),
+        join_property_names<different_shape::constant_shape::Properties>(properties),
+        join_property_names<different_shape::variable_shape::Properties>(properties)
         );
 }
 
@@ -354,22 +355,22 @@ void init_property_set(
                 std::vector<std::string> names;
 
                 join_collections(
-                    properties.names<lue::same_shape::Properties>(),
+                    properties.names<same_shape::Properties>(),
                     names);
                 join_collections(
-                    properties.names<lue::same_shape::constant_shape::Properties>(),
+                    properties.names<same_shape::constant_shape::Properties>(),
                     names);
                 join_collections(
-                    properties.names<lue::same_shape::variable_shape::Properties>(),
+                    properties.names<same_shape::variable_shape::Properties>(),
                     names);
                 join_collections(
-                    properties.names<lue::different_shape::Properties>(),
+                    properties.names<different_shape::Properties>(),
                     names);
                 join_collections(
-                    properties.names<lue::different_shape::constant_shape::Properties>(),
+                    properties.names<different_shape::constant_shape::Properties>(),
                     names);
                 join_collections(
-                    properties.names<lue::different_shape::variable_shape::Properties>(),
+                    properties.names<different_shape::variable_shape::Properties>(),
                     names);
 
                 return names;
@@ -775,4 +776,5 @@ void init_property_set(
 
 }
 
+}  // namespace data_model
 }  // namespace lue

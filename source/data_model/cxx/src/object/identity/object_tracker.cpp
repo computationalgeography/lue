@@ -3,6 +3,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 /*!
     @brief      Construct an instance in @a parent
@@ -121,4 +122,5 @@ bool has_linked_object_tracker(
     return parent.contains_soft_link(object_tracker_tag);
 }
 
+}  // namespace data_model
 }  // namespace lue

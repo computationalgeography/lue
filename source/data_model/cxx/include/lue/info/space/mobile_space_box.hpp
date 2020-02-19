@@ -3,6 +3,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 /*!
     - Zero or more space boxs per item
@@ -50,4 +51,5 @@ MobileSpaceBox     create_mobile_space_box(
                                         hdf5::Datatype const& memory_datatype,
                                         std::size_t rank);
 
+}  // namespace data_model
 }  // namespace lue

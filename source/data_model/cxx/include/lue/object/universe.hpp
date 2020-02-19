@@ -3,6 +3,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 class Universe:
     public hdf5::Group
@@ -41,4 +42,5 @@ private:
 Universe           create_universe     (hdf5::Group& parent,
                                         std::string const& name);
 
+} // namespace data_model
 } // namespace lue

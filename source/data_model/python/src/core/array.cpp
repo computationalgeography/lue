@@ -17,6 +17,7 @@ namespace py = pybind11;
 using namespace pybind11::literals;
 
 namespace lue {
+namespace data_model {
 
 DEFINE_INIT_NUMPY()
 
@@ -1055,4 +1056,5 @@ void init_array(
 
 }
 
+}  // namespace data_model
 }  // namespace lue

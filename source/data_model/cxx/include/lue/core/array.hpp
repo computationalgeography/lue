@@ -3,6 +3,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 class Array:
     public hdf5::Dataset
@@ -66,4 +67,5 @@ private:
 
 };
 
+} // namespace data_model
 } // namespace lue

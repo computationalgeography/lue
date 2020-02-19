@@ -3,6 +3,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 /*!
     @brief      Class for representing time box domains that are
@@ -34,7 +35,8 @@ public:
 
     TimeCell&      operator=           (TimeCell&&)=default;
 
-    lue::Count     nr_counts           () const;
+    data_model::Count
+                   nr_counts           () const;
 
     Count const&   count               () const;
 
@@ -50,4 +52,5 @@ private:
 
 TimeCell            create_time_cell   (hdf5::Group& parent);
 
+}  // namespace data_model
 }  // namespace lue

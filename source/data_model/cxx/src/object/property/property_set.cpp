@@ -3,6 +3,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 /*!
     @brief      Construct an instance based on a @a parent group and a
@@ -359,4 +360,5 @@ PropertySet create_property_set(
     return PropertySet{std::move(group)};
 }
 
+}  // namespace data_model
 }  // namespace lue

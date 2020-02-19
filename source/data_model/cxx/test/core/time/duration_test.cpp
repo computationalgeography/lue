@@ -5,7 +5,7 @@
 
 BOOST_AUTO_TEST_CASE(seconds)
 {
-    using namespace lue::time;
+    using namespace lue::data_model::time;
 
     // Period of 60 seconds modelled as 6 * (10 seconds)
     std::size_t const nr_ticks = 6;

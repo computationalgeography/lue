@@ -8,6 +8,7 @@ using namespace pybind11::literals;
 
 
 namespace lue {
+namespace data_model {
 
 void init_validate(
     py::module& module)
@@ -66,4 +67,5 @@ void init_validate(
 
 }
 
+}  // namespace data_model
 }  // namespace lue

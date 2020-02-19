@@ -2,6 +2,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 PropertySets::PropertySets(
     hdf5::Group& parent,
@@ -150,4 +151,5 @@ PropertySets create_property_sets(
     return PropertySets{std::move(collection)};
 }
 
+} // namespace data_model
 } // namespace lue

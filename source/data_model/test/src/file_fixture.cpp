@@ -3,6 +3,7 @@
 
 
 namespace lue {
+namespace data_model {
 namespace test {
 
 FileFixture::FileFixture(
@@ -37,4 +38,5 @@ void FileFixture::remove_file_if_it_exists()
 }
 
 }  // namespace test
+}  // namespace data_model
 }  // namespace lue

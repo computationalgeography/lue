@@ -5,7 +5,7 @@
 
 
 class Fixture:
-    public lue::test::FileFixture
+    public lue::data_model::test::FileFixture
 {
 
 public:
@@ -18,8 +18,8 @@ public:
           _rank{2},
           _file{std::make_unique<lue::hdf5::File>(
             lue::hdf5::create_file(_filename))},
-          _value{std::make_unique<lue::different_shape::variable_shape::Value>(
-            lue::different_shape::variable_shape::create_value(
+          _value{std::make_unique<lue::data_model::different_shape::variable_shape::Value>(
+            lue::data_model::different_shape::variable_shape::create_value(
                 *_file, _value_name, _datatype, _rank))}
     {
     }
@@ -48,9 +48,10 @@ private:
     std::string const _filename;
     std::string const _value_name;
     lue::hdf5::Datatype const _datatype;
-    lue::Rank const _rank;
+    lue::data_model::Rank const _rank;
     std::unique_ptr<lue::hdf5::File> _file;
-    std::unique_ptr<lue::different_shape::variable_shape::Value> _value;
+    std::unique_ptr<lue::data_model::different_shape::variable_shape::Value>
+        _value;
 
 };
 
@@ -71,14 +72,14 @@ BOOST_FIXTURE_TEST_CASE(update_all_object_arrays_per_location_in_time, Fixture)
 {
     auto& value = this->value();
 
-    lue::Count const nr_locations_in_time = 3;
-    lue::Counts const nr_active_objects{3, 4, 2};
-    std::vector<lue::IDs> const active_ids{
+    lue::data_model::Count const nr_locations_in_time = 3;
+    lue::data_model::Counts const nr_active_objects{3, 4, 2};
+    std::vector<lue::data_model::IDs> const active_ids{
         {5, 6, 7},  // 3 active objects
         {5, 6, 8, 9},  // 4
         {8, 3}  // 2
     };
-    std::vector<lue::Shapes> const array_shapes{
+    std::vector<lue::data_model::Shapes> const array_shapes{
         {{3, 2}, {5, 4}, {7, 6}},  // 3 active objects
         {{5, 4}, {7, 6}, {3, 2}, {6, 5}},  // 4
         {{7, 6}, {3, 2}}  // 2

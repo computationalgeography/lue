@@ -8,6 +8,7 @@
 
 
 namespace lue {
+namespace data_model {
 namespace {
 
 // void throw_not_supported_yet(
@@ -1484,7 +1485,7 @@ static void validate_property_set(
                     auto const& presence_property_name =
                         presence_property.name();
                     auto presence_property_set{
-                        lue::property_set(presence_property)};
+                        data_model::property_set(presence_property)};
                     auto const& properties =
                         presence_property_set.properties();
 
@@ -1887,4 +1888,5 @@ void assert_is_valid(
     assert_is_valid(hdf5::File(dataset_name), fail_on_warning);
 }
 
+}  // namespace data_model
 }  // namespace lue

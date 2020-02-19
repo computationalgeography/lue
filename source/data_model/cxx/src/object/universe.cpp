@@ -2,6 +2,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 Universe::Universe(
     hdf5::Group& parent,
@@ -54,4 +55,5 @@ Universe create_universe(
     return Universe{std::move(group)};
 }
 
+} // namespace data_model
 } // namespace lue

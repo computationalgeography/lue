@@ -27,61 +27,7 @@ options:
 
 
 namespace lue {
-namespace utility {
-namespace {
-
-// Helper to display a little (?) mark which shows a tooltip when hovered.
-// In your own code you may want to display an actual icon if you are using a merged icon fonts (see docs/FONTS.txt)
-void help_marker(
-    std::string const& description)
-{
-    static int const nr_characters{20};
-
-    ImGui::TextDisabled(ICON_FA_INFO);
-
-    if(ImGui::IsItemHovered()) {
-        ImGui::BeginTooltip();
-        ImGui::PushTextWrapPos(ImGui::GetFontSize() * nr_characters);
-        ImGui::TextUnformatted(description.c_str());
-        ImGui::PopTextWrapPos();
-        ImGui::EndTooltip();
-    }
-}
-
-
-void copy_popup(
-    std::string const& label,
-    std::string const& string)
-{
-    if(ImGui::BeginPopupContextItem()) {
-        if(ImGui::MenuItem((ICON_FA_COPY "Copy " + label).c_str())) {
-            ImGui::LogToClipboard();
-            ImGui::LogText(string.c_str());
-            ImGui::LogFinish();
-        }
-        ImGui::EndPopup();
-    }
-}
-
-
-std::string shape_as_string(
-    hdf5::Shape const& shape)
-{
-    std::stringstream stream;
-    stream << "(";
-
-    // Prevent seperator at end of string.
-    if(!shape.empty()) {
-        std::copy(shape.begin(), shape.end() - 1,
-            std::ostream_iterator<typename hdf5::Shape::value_type>(stream,
-                ", "));
-        stream << shape.back();
-    }
-    stream << ")";
-
-    return stream.str();
-}
-
+namespace data_model {
 
 template<
     typename Properties>
@@ -225,6 +171,64 @@ template<
     typename Properties>
 static const std::string label{PropertiesTraits<Properties>::label};
 
+}  // namespace data_model
+
+
+namespace utility {
+namespace {
+
+// Helper to display a little (?) mark which shows a tooltip when hovered.
+// In your own code you may want to display an actual icon if you are using a merged icon fonts (see docs/FONTS.txt)
+void help_marker(
+    std::string const& description)
+{
+    static int const nr_characters{20};
+
+    ImGui::TextDisabled(ICON_FA_INFO);
+
+    if(ImGui::IsItemHovered()) {
+        ImGui::BeginTooltip();
+        ImGui::PushTextWrapPos(ImGui::GetFontSize() * nr_characters);
+        ImGui::TextUnformatted(description.c_str());
+        ImGui::PopTextWrapPos();
+        ImGui::EndTooltip();
+    }
+}
+
+
+void copy_popup(
+    std::string const& label,
+    std::string const& string)
+{
+    if(ImGui::BeginPopupContextItem()) {
+        if(ImGui::MenuItem((ICON_FA_COPY "Copy " + label).c_str())) {
+            ImGui::LogToClipboard();
+            ImGui::LogText(string.c_str());
+            ImGui::LogFinish();
+        }
+        ImGui::EndPopup();
+    }
+}
+
+
+std::string shape_as_string(
+    hdf5::Shape const& shape)
+{
+    std::stringstream stream;
+    stream << "(";
+
+    // Prevent seperator at end of string.
+    if(!shape.empty()) {
+        std::copy(shape.begin(), shape.end() - 1,
+            std::ostream_iterator<typename hdf5::Shape::value_type>(stream,
+                ", "));
+        stream << shape.back();
+    }
+    stream << ")";
+
+    return stream.str();
+}
+
 
 // Or just use a optional<lue::Dataset> ?
 using DatasetsToVisualize = std::vector<DatasetToVisualize>;
@@ -345,7 +349,7 @@ void show_dataset(
 
 
 void show_array(
-    Array const& array,
+    data_model::Array const& array,
     bool const show_details)
 {
     ImGui::Text("file datatype: ");
@@ -380,8 +384,8 @@ static char const array_shape_doc[] =
 
 
 template<>
-void show_value<same_shape::Value>(
-    same_shape::Value const& value,
+void show_value<data_model::same_shape::Value>(
+    data_model::same_shape::Value const& value,
     bool const show_details)
 {
     ImGui::Text("nr arrays: ");
@@ -396,13 +400,13 @@ void show_value<same_shape::Value>(
     ImGui::SameLine();
     help_marker(array_shape_doc);
 
-    show_array(dynamic_cast<Array const&>(value), show_details);
+    show_array(dynamic_cast<data_model::Array const&>(value), show_details);
 }
 
 
 template<>
-void show_value<same_shape::constant_shape::Value>(
-    same_shape::constant_shape::Value const& value,
+void show_value<data_model::same_shape::constant_shape::Value>(
+    data_model::same_shape::constant_shape::Value const& value,
     bool const show_details)
 {
     ImGui::Text("nr arrays: ");
@@ -417,29 +421,29 @@ void show_value<same_shape::constant_shape::Value>(
     ImGui::SameLine();
     help_marker(array_shape_doc);
 
-    show_array(dynamic_cast<Array const&>(value), show_details);
+    show_array(dynamic_cast<data_model::Array const&>(value), show_details);
 }
 
 
 template<>
-void show_value<same_shape::variable_shape::Value>(
-    same_shape::variable_shape::Value const& /* value */,
+void show_value<data_model::same_shape::variable_shape::Value>(
+    data_model::same_shape::variable_shape::Value const& /* value */,
     bool const /* show_details */)
 {
 }
 
 
 template<>
-void show_value<different_shape::Value>(
-    different_shape::Value const& /* value */,
+void show_value<data_model::different_shape::Value>(
+    data_model::different_shape::Value const& /* value */,
     bool const /* show_details */)
 {
 }
 
 
 template<>
-void show_value<different_shape::constant_shape::Value>(
-    different_shape::constant_shape::Value const& value,
+void show_value<data_model::different_shape::constant_shape::Value>(
+    data_model::different_shape::constant_shape::Value const& value,
     bool const /* show_details */)
 {
     ImGui::Text("nr objects: ");
@@ -454,49 +458,49 @@ void show_value<different_shape::constant_shape::Value>(
 
 
 template<>
-void show_value<different_shape::variable_shape::Value>(
-    different_shape::variable_shape::Value const& /* value */,
+void show_value<data_model::different_shape::variable_shape::Value>(
+    data_model::different_shape::variable_shape::Value const& /* value */,
     bool const /* show_details */)
 {
 }
 
 
 void show_object_id(
-    ObjectID const& object_id,
+    data_model::ObjectID const& object_id,
     bool const show_details)
 {
-    show_value(dynamic_cast<same_shape::Value const&>(object_id), show_details);
+    show_value(dynamic_cast<data_model::same_shape::Value const&>(object_id), show_details);
 }
 
 
 void show_object_tracker(
-    ObjectTracker const& /* object_tracker */,
+    data_model::ObjectTracker const& /* object_tracker */,
     bool const /* show_details */)
 {
 }
 
 
 std::string epoch_to_string(
-    time::Epoch const epoch)
+    data_model::time::Epoch const epoch)
 {
     std::string result;
 
     if(!epoch.origin()) {
-        result = aspect_to_string(epoch.kind());
+        result = data_model::aspect_to_string(epoch.kind());
     }
     else {
         if(!epoch.calendar()) {
             result = fmt::format(
                 "{} / {}",
-                aspect_to_string(epoch.kind()),
+                data_model::aspect_to_string(epoch.kind()),
                 *epoch.origin());
         }
         else {
             result = fmt::format(
                 "{} / {} / {}",
-                aspect_to_string(epoch.kind()),
+                data_model::aspect_to_string(epoch.kind()),
                 *epoch.origin(),
-                aspect_to_string(*epoch.calendar()));
+                data_model::aspect_to_string(*epoch.calendar()));
         }
     }
 
@@ -505,7 +509,7 @@ std::string epoch_to_string(
 
 
 void show_time_domain(
-    TimeDomain const& domain,
+    data_model::TimeDomain const& domain,
     bool const /* show_details */)
 {
     ImGui::Indent();
@@ -516,8 +520,8 @@ void show_time_domain(
 
         ImGui::Text("item type: ");
         ImGui::SameLine();
-        ImGui::Text(aspect_to_string(
-            configuration.value<TimeDomainItemType>()).c_str());
+        ImGui::Text(data_model::aspect_to_string(
+            configuration.value<data_model::TimeDomainItemType>()).c_str());
     }
 
     // Clock
@@ -530,7 +534,7 @@ void show_time_domain(
 
         ImGui::Text("unit: ");
         ImGui::SameLine();
-        ImGui::Text(aspect_to_string(clock.unit()).c_str());
+        ImGui::Text(data_model::aspect_to_string(clock.unit()).c_str());
 
         ImGui::Text("nr_units: ");
         ImGui::SameLine();
@@ -550,7 +554,7 @@ void show_time_domain(
 
 
 void show_space_domain(
-    SpaceDomain const& domain,
+    data_model::SpaceDomain const& domain,
     bool const /* show_details */)
 {
     ImGui::Indent();
@@ -561,13 +565,13 @@ void show_space_domain(
 
         ImGui::Text("mobility: ");
         ImGui::SameLine();
-        ImGui::Text(aspect_to_string(
-            configuration.value<Mobility>()).c_str());
+        ImGui::Text(data_model::aspect_to_string(
+            configuration.value<data_model::Mobility>()).c_str());
 
         ImGui::Text("item type: ");
         ImGui::SameLine();
-        ImGui::Text(aspect_to_string(
-            configuration.value<SpaceDomainItemType>()).c_str());
+        ImGui::Text(data_model::aspect_to_string(
+            configuration.value<data_model::SpaceDomainItemType>()).c_str());
     }
 
     // Discretized presence property
@@ -576,7 +580,7 @@ void show_space_domain(
             ImGui::Text("discretized presence property: ");
             ImGui::SameLine();
             ImGui::Text(
-                const_cast<SpaceDomain&>(domain)
+                const_cast<data_model::SpaceDomain&>(domain)
                     .discretized_presence_property().id().pathname().c_str());
         }
     }
@@ -600,8 +604,8 @@ void               show_property       (Property const& property,
 
 
 template<>
-void show_property<same_shape::Property>(
-    same_shape::Property const& property,
+void show_property<data_model::same_shape::Property>(
+    data_model::same_shape::Property const& property,
     bool const show_details)
 {
     show_value(property.value(), show_details);
@@ -609,8 +613,8 @@ void show_property<same_shape::Property>(
 
 
 template<>
-void show_property<same_shape::constant_shape::Property>(
-    same_shape::constant_shape::Property const& property,
+void show_property<data_model::same_shape::constant_shape::Property>(
+    data_model::same_shape::constant_shape::Property const& property,
     bool const show_details)
 {
     show_value(property.value(), show_details);
@@ -618,8 +622,8 @@ void show_property<same_shape::constant_shape::Property>(
 
 
 template<>
-void show_property<same_shape::variable_shape::Property>(
-    same_shape::variable_shape::Property const& property,
+void show_property<data_model::same_shape::variable_shape::Property>(
+    data_model::same_shape::variable_shape::Property const& property,
     bool const show_details)
 {
     show_value(property.value(), show_details);
@@ -627,8 +631,8 @@ void show_property<same_shape::variable_shape::Property>(
 
 
 template<>
-void show_property<different_shape::Property>(
-    different_shape::Property const& property,
+void show_property<data_model::different_shape::Property>(
+    data_model::different_shape::Property const& property,
     bool const show_details)
 {
     show_value(property.value(), show_details);
@@ -636,8 +640,8 @@ void show_property<different_shape::Property>(
 
 
 template<>
-void show_property<different_shape::constant_shape::Property>(
-    different_shape::constant_shape::Property const& property,
+void show_property<data_model::different_shape::constant_shape::Property>(
+    data_model::different_shape::constant_shape::Property const& property,
     bool const show_details)
 {
     show_value(property.value(), show_details);
@@ -645,8 +649,8 @@ void show_property<different_shape::constant_shape::Property>(
 
 
 template<>
-void show_property<different_shape::variable_shape::Property>(
-    different_shape::variable_shape::Property const& property,
+void show_property<data_model::different_shape::variable_shape::Property>(
+    data_model::different_shape::variable_shape::Property const& property,
     bool const show_details)
 {
     show_value(property.value(), show_details);
@@ -656,7 +660,7 @@ void show_property<different_shape::variable_shape::Property>(
 template<
     typename Collection>
 void show_properties(
-    Properties const& properties,
+    data_model::Properties const& properties,
     bool const show_details)
 {
     Collection const& collection{properties.collection<Collection>()};
@@ -668,15 +672,15 @@ void show_properties(
 
         ImGui::Text("shape per object: ");
         ImGui::SameLine();
-        ImGui::Text(aspect_to_string(shape_per_object<Collection>).c_str());
+        ImGui::Text(data_model::aspect_to_string(data_model::shape_per_object<Collection>).c_str());
 
         ImGui::Text("value variability: ");
         ImGui::SameLine();
-        ImGui::Text(aspect_to_string(value_variability<Collection>).c_str());
+        ImGui::Text(data_model::aspect_to_string(data_model::value_variability<Collection>).c_str());
 
         ImGui::Text("shape variability: ");
         ImGui::SameLine();
-        ImGui::Text(aspect_to_string(shape_variability<Collection>).c_str());
+        ImGui::Text(data_model::aspect_to_string(data_model::shape_variability<Collection>).c_str());
 
         for(std::string const& name: collection.names()) {
             if(ImGui::TreeNodeEx(name.c_str(),
@@ -699,7 +703,7 @@ void show_properties(
 template<
     typename Collection>
 void show_properties2(
-    Properties const& properties,
+    data_model::Properties const& properties,
     bool const show_details)
 {
     Collection const& collection{properties.collection<Collection>()};
@@ -714,15 +718,15 @@ void show_properties2(
             if(show_details) {
                 ImGui::Text("shape per object: ");
                 ImGui::SameLine();
-                ImGui::Text(aspect_to_string(shape_per_object<Collection>).c_str());
+                ImGui::Text(data_model::aspect_to_string(data_model::shape_per_object<Collection>).c_str());
 
                 ImGui::Text("value variability: ");
                 ImGui::SameLine();
-                ImGui::Text(aspect_to_string(value_variability<Collection>).c_str());
+                ImGui::Text(data_model::aspect_to_string(data_model::value_variability<Collection>).c_str());
 
                 ImGui::Text("shape variability: ");
                 ImGui::SameLine();
-                ImGui::Text(aspect_to_string(shape_variability<Collection>).c_str());
+                ImGui::Text(data_model::aspect_to_string(data_model::shape_variability<Collection>).c_str());
             }
 
             show_property(collection[name], show_details);
@@ -737,7 +741,7 @@ void show_properties2(
 
 
 void show_property_set(
-    PropertySet const& property_set,
+    data_model::PropertySet const& property_set,
     bool const show_details)
 {
     if(property_set.has_time_domain()) {
@@ -784,18 +788,18 @@ void show_property_set(
 
             if(ImGui::BeginTabBar("Properties")) {
 
-                show_properties2<same_shape::Properties>(
+                show_properties2<data_model::same_shape::Properties>(
                     properties, show_details);
-                show_properties2<same_shape::constant_shape::Properties>(
+                show_properties2<data_model::same_shape::constant_shape::Properties>(
                     properties, show_details);
-                show_properties2<same_shape::variable_shape::Properties>(
+                show_properties2<data_model::same_shape::variable_shape::Properties>(
                     properties, show_details);
 
-                show_properties2<different_shape::Properties>(
+                show_properties2<data_model::different_shape::Properties>(
                     properties, show_details);
-                show_properties2<different_shape::constant_shape::Properties>(
+                show_properties2<data_model::different_shape::constant_shape::Properties>(
                     properties, show_details);
-                show_properties2<different_shape::variable_shape::Properties>(
+                show_properties2<data_model::different_shape::variable_shape::Properties>(
                     properties, show_details);
 
                 ImGui::EndTabBar();
@@ -831,7 +835,7 @@ void show_property_set(
 
 
 void show_property_sets(
-    PropertySets const& property_sets,
+    data_model::PropertySets const& property_sets,
     bool const show_details)
 {
     if(ImGui::BeginTabBar("Property-sets")) {
@@ -862,7 +866,7 @@ void show_property_sets(
 
 
 void show_phenomenon(
-    Phenomenon const& phenomenon,
+    data_model::Phenomenon const& phenomenon,
     bool const show_details)
 {
     {
@@ -910,7 +914,7 @@ void show_phenomenon(
 
 
 void show_phenomena(
-    Phenomena const& phenomena,
+    data_model::Phenomena const& phenomena,
     bool const show_details)
 {
     if(ImGui::BeginTabBar("Phenomena")) {
@@ -942,7 +946,7 @@ void show_phenomena(
 
 
 void show_universe(
-    Universe const& universe,
+    data_model::Universe const& universe,
     bool const show_details)
 {
     if(ImGui::TreeNodeEx("phenomena", ImGuiTreeNodeFlags_DefaultOpen)) {
@@ -953,7 +957,7 @@ void show_universe(
 
 
 void show_universes(
-    Universes const& universes,
+    data_model::Universes const& universes,
     bool const show_details)
 {
     if(ImGui::BeginTabBar("Universes")) {

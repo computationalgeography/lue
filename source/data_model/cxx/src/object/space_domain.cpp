@@ -3,6 +3,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 /*!
     @brief      Construct instance based on parent group
@@ -114,4 +115,5 @@ bool space_domain_exists(
     return parent.contains_group(space_domain_tag);
 }
 
+}  // namespace data_model
 }  // namespace lue

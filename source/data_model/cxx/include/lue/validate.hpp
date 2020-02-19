@@ -5,6 +5,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 std::string        message             (hdf5::Issues const& issues);
 
@@ -26,4 +27,5 @@ void               assert_is_valid     (hdf5::File const& file,
 void               assert_is_valid     (std::string const& name,
                                         bool fail_on_warning=true);
 
+}  // namespace data_model
 }  // namespace lue

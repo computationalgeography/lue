@@ -9,6 +9,7 @@ namespace py = pybind11;
 
 
 namespace lue {
+namespace data_model {
 namespace test {
 
 void init_submodule(
@@ -51,4 +52,5 @@ void init_submodule(
 }
 
 }  // namespace test
+}  // namespace data_model
 }  // namespace lue

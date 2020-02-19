@@ -5,6 +5,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 /*!
     @brief      This class is for managing LUE datasets.
@@ -82,4 +83,5 @@ Dataset            create_in_memory_dataset(
 
 void               remove_dataset      (std::string const& name);
 
+} // namespace data_model
 } // namespace lue

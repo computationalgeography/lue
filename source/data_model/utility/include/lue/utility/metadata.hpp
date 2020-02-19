@@ -49,7 +49,7 @@ JSONCIterator      find                (JSON const& object,
                                         std::string const& name,
                                         std::string const& string);
 
-Clock              clock               (JSON const& object);
+data_model::Clock  clock               (JSON const& object);
 
 }  // namespace json
 
@@ -111,10 +111,12 @@ private:
 }  // namespace utility
 
 
+namespace data_model {
 namespace time {
 
 void               from_json           (utility::JSON const& object,
                                         Unit& unit);
 
 }  // namespace time
+}  // namespace data_model
 }  // namespace lue

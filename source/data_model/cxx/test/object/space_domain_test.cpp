@@ -5,7 +5,7 @@
 
 
 class Fixture:
-    public lue::test::FileFixture
+    public lue::data_model::test::FileFixture
 {
 
 public:
@@ -16,13 +16,13 @@ public:
         _file{std::make_unique<lue::hdf5::File>(
             lue::hdf5::create_file(_filename))},
         _configuration{
-            lue::Mobility::stationary,
-            lue::SpaceDomainItemType::box},
+            lue::data_model::Mobility::stationary,
+            lue::data_model::SpaceDomainItemType::box},
         _datatype{
             lue::hdf5::NativeDatatypeTraits<double>::type_id()},
         _rank{2},
-        _domain{std::make_unique<lue::SpaceDomain>(
-            lue::create_space_domain(*_file, _configuration, _datatype, _rank))}
+        _domain{std::make_unique<lue::data_model::SpaceDomain>(
+            lue::data_model::create_space_domain(*_file, _configuration, _datatype, _rank))}
     {
     }
 
@@ -44,10 +44,10 @@ private:
 
     std::string const _filename;
     std::unique_ptr<lue::hdf5::File> _file;
-    lue::SpaceConfiguration const _configuration;
+    lue::data_model::SpaceConfiguration const _configuration;
     lue::hdf5::Datatype _datatype;
     std::size_t const _rank;
-    std::unique_ptr<lue::SpaceDomain> _domain;
+    std::unique_ptr<lue::data_model::SpaceDomain> _domain;
 
 };
 

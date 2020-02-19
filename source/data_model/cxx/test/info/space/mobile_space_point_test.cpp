@@ -6,7 +6,7 @@
 
 
 class Fixture:
-    public lue::test::FileFixture
+    public lue::data_model::test::FileFixture
 {
 
 public:
@@ -18,8 +18,8 @@ public:
         _rank{2},
         _file{std::make_unique<lue::hdf5::File>(
             lue::hdf5::create_file(_filename))},
-        _value{std::make_unique<lue::MobileSpacePoint>(
-            lue::create_mobile_space_point(*_file, _datatype, _rank))}
+        _value{std::make_unique<lue::data_model::MobileSpacePoint>(
+            lue::data_model::create_mobile_space_point(*_file, _datatype, _rank))}
     {
     }
 
@@ -46,9 +46,9 @@ private:
 
     std::string const _filename;
     lue::hdf5::Datatype const _datatype;
-    lue::Rank const _rank;
+    lue::data_model::Rank const _rank;
     std::unique_ptr<lue::hdf5::File> _file;
-    std::unique_ptr<lue::MobileSpacePoint> _value;
+    std::unique_ptr<lue::data_model::MobileSpacePoint> _value;
 
 };
 
@@ -59,10 +59,10 @@ BOOST_FIXTURE_TEST_CASE(create, Fixture)
 
     auto const& value = this->value();
 
-    BOOST_CHECK_EQUAL(value.id().name(), coordinates_tag);
+    BOOST_CHECK_EQUAL(value.id().name(), data_model::coordinates_tag);
     BOOST_CHECK(value.memory_datatype() == datatype());
     BOOST_CHECK(
-        value.file_datatype() == lue::hdf5::file_datatype(datatype()));
+        value.file_datatype() == hdf5::file_datatype(datatype()));
     BOOST_CHECK_EQUAL(value.nr_arrays(), 0);
     BOOST_CHECK(value.array_shape() == hdf5::Shape{
         static_cast<hdf5::Shape::value_type>(rank())});

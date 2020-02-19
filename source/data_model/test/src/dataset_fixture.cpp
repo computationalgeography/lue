@@ -3,6 +3,7 @@
 
 
 namespace lue {
+namespace data_model {
 namespace test {
 
 DatasetFixture::DatasetFixture()
@@ -47,4 +48,5 @@ void DatasetFixture::keep_dataset_upon_destruction()
 }
 
 }  // namespace test
+}  // namespace data_model
 }  // namespace lue

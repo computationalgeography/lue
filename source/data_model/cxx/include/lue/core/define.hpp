@@ -4,6 +4,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 using Index = hsize_t;
 
@@ -92,4 +93,5 @@ enum class SpaceDiscretization
     regular_grid
 };
 
+} // namespace data_model
 } // namespace lue

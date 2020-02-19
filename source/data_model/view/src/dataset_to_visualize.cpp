@@ -16,7 +16,7 @@ DatasetToVisualize::DatasetToVisualize(
     std::string const& name):
 
     _name{name},
-    _dataset{std::make_optional<Dataset>(name)},
+    _dataset{std::make_optional<data_model::Dataset>(name)},
     _path{boost::filesystem::canonical(_dataset->pathname())},
     _write_time{boost::filesystem::last_write_time(_path)}
 
@@ -37,7 +37,7 @@ std::string const& DatasetToVisualize::name() const
     @brief      Return the layered dataset
     @warning    A dataset must be opened
 */
-Dataset const& DatasetToVisualize::dataset() const
+data_model::Dataset const& DatasetToVisualize::dataset() const
 {
     assert(_dataset);
     return *_dataset;
@@ -72,7 +72,7 @@ void DatasetToVisualize::rescan()
 {
     if(changed()) {
         if(exists()) {
-            _dataset = Dataset(_name);
+            _dataset = data_model::Dataset(_name);
             _write_time = boost::filesystem::last_write_time(_path);
         }
         else {

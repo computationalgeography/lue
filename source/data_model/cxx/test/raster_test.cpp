@@ -3,27 +3,27 @@
 #include "lue/test.hpp"
 
 
-BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
+BOOST_FIXTURE_TEST_CASE(create, lue::data_model::test::DatasetFixture)
 {
     std::string const phenomenon_name = "areas";
     std::string const property_set_name = "areas";
 
-    lue::Count const nr_areas = 10;
+    lue::data_model::Count const nr_areas = 10;
 
     // Space domain
-    lue::SpaceConfiguration space_configuration{
-            lue::Mobility::stationary,
-            lue::SpaceDomainItemType::box
+    lue::data_model::SpaceConfiguration space_configuration{
+        lue::data_model::Mobility::stationary,
+            lue::data_model::SpaceDomainItemType::box
         };
     lue::hdf5::Datatype const coordinate_datatype{
         lue::hdf5::NativeDatatypeTraits<int>::type_id()};
     std::size_t const rank = 2;
     std::vector<int> boxes(nr_areas * rank * 2);
-    lue::test::generate_random_values(boxes, 0, 1000);
+    lue::data_model::test::generate_random_values(boxes, 0, 1000);
 
     // IDs
-    std::vector<lue::ID> ids(nr_areas);
-    lue::test::generate_random_ids(ids);
+    std::vector<lue::data_model::ID> ids(nr_areas);
+    lue::data_model::test::generate_random_ids(ids);
 
     // Discretization property
     std::string const discretization_property_name = "discretization";
@@ -31,7 +31,7 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
         lue::hdf5::NativeDatatypeTraits<
             lue::hdf5::Shape::value_type>::type_id()};
     std::vector<lue::hdf5::Shape::value_type> shapes(nr_areas * rank);
-    lue::test::generate_random_values(shapes, 10, 20);
+    lue::data_model::test::generate_random_values(shapes, 10, 20);
 
     // Elevation property
     std::string const elevation_property_name = "elevation";
@@ -42,7 +42,7 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
     for(std::size_t o = 0, s = 0; o < nr_areas; ++o, s += rank) {
         values[o].resize(shapes[s] * shapes[s + 1]);
     }
-    lue::test::generate_random_values(values, 5.0, 15.0);
+    lue::data_model::test::generate_random_values(values, 5.0, 15.0);
 
 
     // Create and write
@@ -70,7 +70,7 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
         // Space domain
         {
             auto& space_domain = area_boxes.space_domain();
-            auto value = space_domain.value<lue::StationarySpaceBox>();
+            auto value = space_domain.value<lue::data_model::StationarySpaceBox>();
             value.expand(nr_areas);
             value.write(boxes.data());
         }
@@ -99,11 +99,11 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
 
         // Link from elevation property to discretization property
         elevation_property.set_space_discretization(
-            lue::SpaceDiscretization::regular_grid,
+            lue::data_model::SpaceDiscretization::regular_grid,
             discretization_property);
     }
 
-    lue::assert_is_valid(pathname());
+    lue::data_model::assert_is_valid(pathname());
 
     // Open and read
     {
@@ -126,7 +126,7 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
             BOOST_REQUIRE_EQUAL(
                 space_domain.configuration(), space_configuration);
 
-            auto value = space_domain.value<lue::StationarySpaceBox>();
+            auto value = space_domain.value<lue::data_model::StationarySpaceBox>();
 
             BOOST_REQUIRE_EQUAL(value.nr_arrays(), nr_areas);
             BOOST_REQUIRE_EQUAL(value.memory_datatype(), coordinate_datatype);
@@ -148,14 +148,14 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
             BOOST_REQUIRE_EQUAL(
                 area_boxes.properties().shape_per_object(
                     elevation_property_name),
-                lue::ShapePerObject::different);
+                lue::data_model::ShapePerObject::different);
             BOOST_REQUIRE_EQUAL(
                 area_boxes.properties().value_variability(
                     elevation_property_name),
-                lue::ValueVariability::constant);
+                lue::data_model::ValueVariability::constant);
 
             auto& properties =
-                area_boxes.properties().collection<lue::different_shape::Properties>();
+                area_boxes.properties().collection<lue::data_model::different_shape::Properties>();
             auto& elevation_property = properties[elevation_property_name];
             auto& value = elevation_property.value();
 
@@ -188,13 +188,13 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
             auto discretization_type =
                 elevation_property.space_discretization_type();
             BOOST_CHECK_EQUAL(
-                discretization_type, lue::SpaceDiscretization::regular_grid);
+                discretization_type, lue::data_model::SpaceDiscretization::regular_grid);
 
             // Verify discretization parameters
             auto discretization_property =
                 elevation_property.space_discretization_property();
 
-            auto property_set{lue::property_set(discretization_property)};
+            auto property_set{lue::data_model::property_set(discretization_property)};
 
             BOOST_CHECK(
                 property_set.properties().contains(
@@ -203,16 +203,16 @@ BOOST_FIXTURE_TEST_CASE(create, lue::test::DatasetFixture)
             BOOST_REQUIRE_EQUAL(
                 property_set.properties().shape_per_object(
                     discretization_property_name),
-                lue::ShapePerObject::same);
+                lue::data_model::ShapePerObject::same);
             BOOST_REQUIRE_EQUAL(
                 property_set.properties().value_variability(
                     discretization_property_name),
-                lue::ValueVariability::constant);
+                lue::data_model::ValueVariability::constant);
 
             // Discretization property value
             {
                 auto& properties =
-                    property_set.properties().collection<lue::same_shape::Properties>();
+                    property_set.properties().collection<lue::data_model::same_shape::Properties>();
                 auto& discretization_property =
                     properties[discretization_property_name];
                 auto& value = discretization_property.value();

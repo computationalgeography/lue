@@ -5,7 +5,7 @@
 
 
 class Fixture:
-    public lue::test::FileFixture
+    public lue::data_model::test::FileFixture
 {
 
 public:
@@ -18,8 +18,8 @@ public:
           _rank{2},
           _file{std::make_unique<lue::hdf5::File>(
             lue::hdf5::create_file(_filename))},
-          _value{std::make_unique<lue::same_shape::variable_shape::Value>(
-            lue::same_shape::variable_shape::create_value(
+          _value{std::make_unique<lue::data_model::same_shape::variable_shape::Value>(
+            lue::data_model::same_shape::variable_shape::create_value(
                 *_file, _value_name, _datatype, _rank))}
     {
     }
@@ -48,9 +48,9 @@ private:
     std::string const _filename;
     std::string const _value_name;
     lue::hdf5::Datatype const _datatype;
-    lue::Rank const _rank;
+    lue::data_model::Rank const _rank;
     std::unique_ptr<lue::hdf5::File> _file;
-    std::unique_ptr<lue::same_shape::variable_shape::Value> _value;
+    std::unique_ptr<lue::data_model::same_shape::variable_shape::Value> _value;
 
 };
 
@@ -71,9 +71,9 @@ BOOST_FIXTURE_TEST_CASE(update_all_object_arrays_per_location_in_time, Fixture)
 {
     auto& value = this->value();
 
-    lue::Count const nr_locations_in_time1 = 3;
-    lue::Counts const nr_active_objects1{3, 4, 2};
-    lue::Shapes const array_shapes1{{3, 2}, {5, 4}, {7, 6}};
+    lue::data_model::Count const nr_locations_in_time1 = 3;
+    lue::data_model::Counts const nr_active_objects1{3, 4, 2};
+    lue::data_model::Shapes const array_shapes1{{3, 2}, {5, 4}, {7, 6}};
 
     {
         for(std::size_t t = 0; t < nr_locations_in_time1; ++t) {
@@ -103,9 +103,9 @@ BOOST_FIXTURE_TEST_CASE(update_all_object_arrays_per_location_in_time, Fixture)
         }
     }
 
-    lue::Count const nr_locations_in_time2 = 3;
-    lue::Counts const nr_active_objects2{8, 1, 3};
-    lue::Shapes const array_shapes2{{2, 3}, {4, 5}, {6, 7}};
+    lue::data_model::Count const nr_locations_in_time2 = 3;
+    lue::data_model::Counts const nr_active_objects2{8, 1, 3};
+    lue::data_model::Shapes const array_shapes2{{2, 3}, {4, 5}, {6, 7}};
 
     {
         for(std::size_t t = 0; t < nr_locations_in_time2; ++t) {

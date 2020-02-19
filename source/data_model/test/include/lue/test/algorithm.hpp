@@ -9,6 +9,7 @@
 
 
 namespace lue {
+namespace data_model {
 namespace test {
 namespace detail {
 
@@ -378,4 +379,5 @@ inline void generate_random_shapes(
 }
 
 }  // namespace test
+}  // namespace data_model
 }  // namespace lue

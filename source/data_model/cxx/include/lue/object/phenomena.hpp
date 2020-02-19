@@ -4,6 +4,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 class Phenomena:
     public Collection<Phenomenon>
@@ -34,4 +35,5 @@ private:
 
 Phenomena          create_phenomena    (hdf5::Group& parent);
 
+} // namespace data_model
 } // namespace lue

@@ -2,6 +2,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 Clock::Clock(
     time::Unit const unit,
@@ -70,4 +71,5 @@ bool Clock::operator<(
         ;
 }
 
+}  // namespace data_model
 }  // namespace lue

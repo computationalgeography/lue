@@ -4,6 +4,7 @@
 
 
 namespace lue {
+namespace data_model {
 
 class ValueGroup:
     public hdf5::Group
@@ -66,4 +67,5 @@ ValueGroup         create_value_group  (hdf5::Group& parent,
                                         hdf5::Datatype const& memory_datatype,
                                         Rank rank);
 
+}  // namespace data_model
 }  // namespace lue

@@ -11,6 +11,7 @@ using namespace pybind11::literals;
 
 
 namespace lue {
+namespace data_model {
 
 std::string informal_string_representation(
     time::Unit const unit)
@@ -128,4 +129,5 @@ void init_clock(
 
 }
 
+}  // namespace data_model
 }  // namespace lue
