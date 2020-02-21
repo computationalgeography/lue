@@ -48,6 +48,28 @@
 namespace std {
 
 template<
+    typename... Ts>
+std::ostream& operator<<(
+    std::ostream& stream,
+    std::tuple<Ts...> const& tuple)
+{
+    stream << '(';
+    std::apply(
+
+            [&stream](
+                auto&&... ts)
+            {
+                ((stream << ts << ", "), ...);
+            },
+
+        tuple);
+    stream << ')';
+
+    return stream;
+}
+
+
+template<
     typename T,
     lue::Rank rank>
 std::ostream& operator<<(

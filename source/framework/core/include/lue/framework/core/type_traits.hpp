@@ -57,6 +57,11 @@ template<
 static constexpr Rank rank = detail::ArrayTraits<Array>::rank;
 
 
+template<
+    typename Array>
+using OffsetT = typename detail::ArrayTraits<Array>::Offset;
+
+
 /*!
     @brief      Alias template of type aliases for the shape types
     @tparam     Array Array-like type

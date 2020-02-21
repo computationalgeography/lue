@@ -49,15 +49,16 @@ public:
                                         ID const* ids,
                                         hdf5::Shape::value_type const* shapes);
 
+    void           expand              (ID id,
+                                        hdf5::Shape const& shape);
+
     bool           contains            (ID const id) const;
 
     Array          operator[]          (ID id);
 
 private:
 
-    // Refactor expand  functions when making this public
-    // Handle _nr_objects in public functions
-    void           expand              (ID id,
+    void           expand_core         (ID id,
                                         hdf5::Shape const& shape);
 
     Count          _nr_objects;

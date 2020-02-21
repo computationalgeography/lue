@@ -29,9 +29,11 @@ Partition copy_partition(
     // Copy the data and move it into a new partition
 
     // FIXME Make asynchronous
+    auto offset = input_partition.offset().get();
     auto input_partition_data = input_partition.data(CopyMode::copy).get();
 
-    return Partition{hpx::find_here(), std::move(input_partition_data)};
+    return Partition{
+        hpx::find_here(), offset, std::move(input_partition_data)};
 }
 
 }  // namespace detail

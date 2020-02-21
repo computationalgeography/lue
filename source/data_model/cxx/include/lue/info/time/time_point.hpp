@@ -38,5 +38,16 @@ private:
 
 TimePoint          create_time_point   (hdf5::Group& parent);
 
+
+template<>
+class ValueTraits<TimePoint>
+{
+
+public:
+
+    using Element = typename ValueTraits<LocationInTime>::Element;
+
+};
+
 }  // namespace data_model
 }  // namespace lue

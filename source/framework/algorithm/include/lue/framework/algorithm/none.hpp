@@ -21,6 +21,7 @@ Partition none_partition(
 
     using OutputData = DataT<Partition>;
 
+    using Offset = OffsetT<Partition>;
     using Shape = ShapeT<Partition>;
 
     // Aggregate nD array partition to nD array partition containing a
@@ -44,8 +45,19 @@ Partition none_partition(
                     Element{1}) != partition_data.end());
 
                 TargetIndex const target_idx = partition_data.target_idx();
+
+                // Whatever offset we choose, it is wrong when this
+                // partition becomes part of a partitioned array. This
+                // is so because the partitions are being aggregated
+                // into a single value. Information about the shape of
+                // the partitions is lost. But this partition never
+                // becomes part of an partitioned array, so no need to
+                // worry about it.
+                Offset offset{};
+                offset.fill(0);
+
                 return Partition{
-                    locality_id, OutputData{shape, result, target_idx}};
+                    locality_id, offset, OutputData{shape, result, target_idx}};
             }
 
         ),

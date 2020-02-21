@@ -255,6 +255,8 @@ OutputPartition focal_operation_partition(
         // amount of elements from the border partitions necessary to
         // calculate the result for the partition at (1, 1).
 
+        auto offset_f{partitions(1, 1).offset()};
+
         using PartitionShapes =
             Array<hpx::shared_future<Shape>, rank<InputPartition>>;
 
@@ -514,6 +516,7 @@ OutputPartition focal_operation_partition(
                 hpx::util::unwrapping(
 
                     [kernel /* , functor */](
+                        auto&& offset,
                         auto&& input_partitions_data_futures,
                         auto&& output_partition_data)
                     {
@@ -1035,10 +1038,12 @@ OutputPartition focal_operation_partition(
 
                         // Done, create and return the output partition ------------
                         return OutputPartition{
-                            hpx::find_here(), std::move(output_partition_data)};
+                            hpx::find_here(), offset,
+                            std::move(output_partition_data)};
                     }
 
                     ), "focal_operation_partition_border"),
+            offset_f,
             hpx::when_all_n(
                 input_partitions_data.begin(),
                 nr_elements(input_partitions_data.shape())),
@@ -1110,6 +1115,7 @@ auto spawn_create_halo_partition(
     ElementT<Partition> const fill_value,
     Partition const& partition)
 {
+    using Offset = OffsetT<Partition>;
     using Shape = ShapeT<Partition>;
 
     return hpx::dataflow(
@@ -1122,6 +1128,7 @@ auto spawn_create_halo_partition(
                 {
                     return Partition{
                         locality_id,
+                        Offset{},
                         Shape{{kernel_radius, kernel_radius}}, fill_value};
                 }
 
@@ -1149,6 +1156,7 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
     using OutputPartitions = PartitionsT<OutputArray>;
     using OutputPartition = PartitionT<OutputArray>;
 
+    using Offset = OffsetT<Array>;
     using Shape = ShapeT<Array>;
 
     // auto const nr_partitions = lue::nr_partitions(input_array);
@@ -1236,6 +1244,7 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
                             {
                                 return InputPartition{
                                     locality_id,
+                                    Offset{},
                                     Shape{{kernel_radius, partition_shape[1]}},
                                     fill_value};
                             }
@@ -1276,6 +1285,7 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
                             {
                                 return InputPartition{
                                     locality_id,
+                                    Offset{},
                                     Shape{{partition_shape[0], kernel_radius}},
                                     fill_value};
                             }

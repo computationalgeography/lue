@@ -34,6 +34,7 @@ Partition all_partition(
 
             [shape](
                 hpx::id_type const locality_id,
+                auto&& offset,
                 InputData&& input_partition_data)
             {
                 // TODO Update for case where Element is not bool
@@ -46,11 +47,13 @@ Partition all_partition(
                 TargetIndex const target_idx =
                     input_partition_data.target_idx();
                 return Partition{
-                    locality_id, OutputData{shape, result, target_idx}};
+                    locality_id, offset,
+                    OutputData{shape, result, target_idx}};
             }
 
         ),
         hpx::get_colocation_id(input_partition.get_id()),
+        input_partition.offset(),
         input_partition.data(CopyMode::share));
 }
 

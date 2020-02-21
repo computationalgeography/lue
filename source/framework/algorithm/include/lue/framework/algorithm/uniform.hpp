@@ -152,6 +152,7 @@ PartitionT<InputPartition, OutputElement> uniform_partition(
     auto const& input_partition_server{*input_partition_server_ptr};
 
     TargetIndex const target_idx = input_partition_server.target_idx();
+    auto const partition_offset = input_partition_server.offset();
     auto const partition_shape = input_partition_server.shape();
 
 
@@ -180,6 +181,7 @@ PartitionT<InputPartition, OutputElement> uniform_partition(
             [
                 distribution{std::move(distribution)},
                 random_number_engine{std::move(random_number_engine)},
+                partition_offset,
                 partition_shape,
                 target_idx
             ]() mutable
@@ -199,6 +201,7 @@ PartitionT<InputPartition, OutputElement> uniform_partition(
 
                 return OutputPartition{
                     hpx::find_here(),
+                    partition_offset,
                     std::move(output_partition_data)};
             },
 
@@ -344,6 +347,8 @@ PartitionedArrayT<InputArray, OutputElement> uniform(
 }
 
 
+// FIXME OuputElement is the type of min_value/max_value, not the Element
+//     type of the input array
 template<
     typename InputArray,
     typename OutputElement=ElementT<InputArray>>

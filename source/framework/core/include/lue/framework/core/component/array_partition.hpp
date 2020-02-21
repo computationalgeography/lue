@@ -32,6 +32,8 @@ public:
 
     using Data = typename Server::Data;
 
+    using Offset = typename Server::Offset;
+
     using Shape = typename Server::Shape;
 
     using Slice = typename Server::Slice;
@@ -49,9 +51,11 @@ public:
                                             partition);
 
                    ArrayPartition      (hpx::id_type locality_id,
+                                        Offset const& offset,
                                         Shape const& shape);
 
                    ArrayPartition      (hpx::id_type locality_id,
+                                        Offset const& offset,
                                         Shape const& shape,
                                         Element value);
 
@@ -59,6 +63,7 @@ public:
     //                                     Data const& data);
 
                    ArrayPartition      (hpx::id_type locality_id,
+                                        Offset const& offset,
                                         Data&& data);
 
     //                ArrayPartition      (hpx::id_type component_id,
@@ -84,6 +89,8 @@ public:
                                         CopyMode mode);
 
     hpx::future<void> set_data         (Data&& data);
+
+    hpx::future<Offset> offset         () const;
 
     hpx::future<Shape> shape           () const;
 
@@ -191,9 +198,10 @@ template<
     Rank rank>
 ArrayPartition<Element, rank>::ArrayPartition(
     hpx::id_type const locality_id,
+    Offset const& offset,
     Shape const& shape):
 
-    Base{hpx::new_<Server>(locality_id, shape)}
+    Base{hpx::new_<Server>(locality_id, offset, shape)}
 
 {
 }
@@ -210,10 +218,11 @@ template<
     Rank rank>
 ArrayPartition<Element, rank>::ArrayPartition(
     hpx::id_type const locality_id,
+    Offset const& offset,
     Shape const& shape,
     Element const value):
 
-    Base{hpx::new_<Server>(locality_id, shape, value)}
+    Base{hpx::new_<Server>(locality_id, offset, shape, value)}
 
 {
 }
@@ -249,9 +258,10 @@ template<
     Rank rank>
 ArrayPartition<Element, rank>::ArrayPartition(
     hpx::id_type const locality_id,
+    Offset const& offset,
     Data&& data):
 
-    Base{hpx::new_<Server>(locality_id, std::move(data))}
+    Base{hpx::new_<Server>(locality_id, offset, std::move(data))}
 
 {
 }
@@ -406,6 +416,21 @@ hpx::future<Count> ArrayPartition<Element, rank>::nr_elements() const
 template<
     typename Element,
     Rank rank>
+hpx::future<typename ArrayPartition<Element, rank>::Offset>
+    ArrayPartition<Element, rank>::offset() const
+{
+    assert(this->get_id());
+
+    typename Server::OffsetAction action;
+
+    // this->get_id() identifies the server instance
+    return hpx::async(action, this->get_id());
+}
+
+
+template<
+    typename Element,
+    Rank rank>
 hpx::future<typename ArrayPartition<Element, rank>::Shape>
     ArrayPartition<Element, rank>::shape() const
 {
@@ -507,6 +532,8 @@ public:
     using Element = E;
 
     constexpr static Rank rank = r;
+
+    using Offset = typename ArrayPartition<E, r>::Offset;
 
     using Shape = typename ArrayPartition<E, r>::Shape;
 

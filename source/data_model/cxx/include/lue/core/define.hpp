@@ -6,7 +6,7 @@
 namespace lue {
 namespace data_model {
 
-using Index = hsize_t;
+using Index = hsize_t;  // unsigned long long by default
 
 using ID = hsize_t;
 using IDs = std::vector<ID>;

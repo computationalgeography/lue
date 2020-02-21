@@ -52,5 +52,16 @@ private:
 
 TimeCell            create_time_cell   (hdf5::Group& parent);
 
+
+template<>
+class ValueTraits<TimeCell>
+{
+
+public:
+
+    using Element = typename ValueTraits<LocationInTime>::Element;
+
+};
+
 }  // namespace data_model
 }  // namespace lue

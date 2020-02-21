@@ -4,6 +4,8 @@
 #include "lue/framework/core/array_partition_visitor.hpp"
 #include "lue/framework/core/debug.hpp"  // describe
 #include "lue/framework/core/domain_decomposition.hpp"
+#include "lue/framework/core/hilbert_curve.hpp"
+#include "lue/framework/core/linear_curve.hpp"
 #include "lue/framework/core/math.hpp"
 #include <initializer_list>
 
@@ -29,6 +31,8 @@ public:
     using Partitions = ArrayPartitionData<Partition, rank>;
 
     using Count = typename Partitions::Count;
+
+    using Offset = typename PartitionServer::Offset;
 
     using Shape = typename Partitions::Shape;
 
@@ -81,6 +85,17 @@ private:
 
     //! Array of partitions
     Partitions     _partitions;
+
+    template<
+        typename... Idxs>
+    void           instantiate_partition(
+                                        hpx::id_type locality_id,
+                                        Shape const& partition_shape,
+                                        Idxs... idxs);
+
+    void           instantiate_partitions(
+                                        Shape const& shape_in_partitions,
+                                        Shape const& partition_shape);
 
     void           shrink_partitions   (Shape const& begin_indices,
                                         Shape const& end_indices,
@@ -145,6 +160,8 @@ public:
     using Element = E;
 
     constexpr static Rank rank = r;
+
+    using Offset = typename PartitionedArray<E, r>::Offset;
 
     using Shape = typename PartitionedArray<E, r>::Shape;
 
@@ -443,21 +460,50 @@ void PartitionedArray<Element, rank>::clamp_array(
 template<
     typename Element,
     Rank rank>
-void PartitionedArray<Element, rank>::create(
-    Shape const& shape_in_partitions,
-    Shape const& max_partition_shape)
+template<
+    typename... Idxs>
+void PartitionedArray<Element, rank>::instantiate_partition(
+    hpx::id_type const locality_id,
+    Shape const& partition_shape,
+    Idxs... idxs)
 {
-    // Create the array partitions that, together make up the partitioned
-    // array. Note that the extent of this array might be too large,
-    // given that we use max_partition_shape. This will be fixed using
-    // clamp_array.
+    // idxs points to a cell (partition) in the partitioned
+    // array. Instantiate this partition.
+
+    _partitions(idxs...) = hpx::async(
+            hpx::util::annotated_function(
+
+                [locality_id, partition_shape, idxs...]()
+                {
+                    Offset offset{idxs...};
+
+                    for(std::size_t d = 0; d < rank; ++d) {
+                        offset[d] *= partition_shape[d];
+                    }
+
+                    return Partition{locality_id, offset, partition_shape};
+                },
+
+            "instantiate_partition")
+        );
+}
+
+
+template<
+    typename Element,
+    Rank rank>
+void PartitionedArray<Element, rank>::instantiate_partitions(
+    Shape const& shape_in_partitions,
+    Shape const& partition_shape)
+{
+    // Create array containing partitions. Each of these partitions
+    // will be a component client instance referring to a, possibly
+    // remote, component server instance.
+    assert(_partitions.empty());
+    _partitions = Partitions{
+        shape_in_partitions, scattered_target_index()};
 
     Count const nr_partitions = lue::nr_elements(shape_in_partitions);
-
-    // Create array containing partitions. Each of these partitions will be
-    // a component client instance referring to a, possibly remote,
-    // component server instance.
-    _partitions = Partitions{shape_in_partitions, scattered_target_index()};
     assert(_partitions.nr_elements() == nr_partitions);
 
     std::vector<hpx::naming::id_type> const localities =
@@ -475,47 +521,74 @@ void PartitionedArray<Element, rank>::create(
     assert(hpx::find_here() == hpx::find_root_locality());
     assert(localities[0] == hpx::find_root_locality());
 
-    // create_partitions(max_partition_shape);
-    {
-        auto locality_idx =
-            [nr_partitions, nr_localities](
-                Index const p) -> Index
-            {
-                return map_to_range(
-                    Index{0}, nr_partitions - 1,
-                    Index{0}, nr_localities - 1,
-                    p);
-            };
+    // Map partition index to locality index
+    auto locality_idx =
+        [nr_partitions, nr_localities](
+            Index const partition_idx)
+        {
+            return map_to_range(
+                Index{0}, nr_partitions - 1,
+                Index{0}, nr_localities - 1,
+                partition_idx);
+        };
 
-        // Create array partitions. Each of them will be located on a certain
-        // locality. Which one exactly is determined by locality_idx.
-        for(Index partition_idx = 0; partition_idx < nr_partitions;
-                ++partition_idx) {
+    if constexpr(rank == 2) {  //  || rank == 3) {
 
-            auto idx = locality_idx(partition_idx);
-            auto locality = localities[idx];
+        // Visit all cells in the array in an order defined by the
+        // Hilbert curve. The lambda will receive a linear partition index
+        // (along the Hilbert curve!) and the indices of the array
+        // partition.
+        //
+        // The indices of the array partition locate the partition to
+        // be instantiated. The linear index can be used to determine
+        // a locality to put the partition component on. By mapping
+        // nearby linear indices to the same locality, nearby partitions
+        // end up at the same locality.
 
-            // _partitions[partition_idx] = Partition{
-            //     localities[idx], max_partition_shape};
+        hilbert_curve<rank>(shape_in_partitions,
 
-            // Assign a future to a partition component to a partition
-            // component. The partition will become ready once it is
-            // allocated.
-            _partitions[partition_idx] = hpx::async(
-                    hpx::util::annotated_function(
+                [this, &localities, locality_idx, partition_shape](
+                    Index const partition_idx,  // Along curve
+                    /* Idxs... */ auto... idxs)  // Partition in array
+                {
+                    instantiate_partition(
+                        localities[locality_idx(partition_idx)],
+                        partition_shape, idxs...);
+                }
 
-                        [locality, max_partition_shape]()
-                        {
-                            return Partition{locality, max_partition_shape};
-                        },
-
-                    "instantiate_partition")
-                );
-
-        }
-
+            );
     }
+    else {
 
+        linear_curve<rank>(shape_in_partitions,
+
+                [this, &localities, locality_idx, partition_shape](
+                    Index const partition_idx,  // Along curve
+                    /* Idxs... */ auto... idxs)  // Partition in array
+                {
+                    instantiate_partition(
+                        localities[locality_idx(partition_idx)],
+                        partition_shape, idxs...);
+                }
+
+            );
+    }
+}
+
+
+template<
+    typename Element,
+    Rank rank>
+void PartitionedArray<Element, rank>::create(
+    Shape const& shape_in_partitions,
+    Shape const& max_partition_shape)
+{
+    // Create the array partitions that, together make up the partitioned
+    // array. Note that the extent of this array might be too large,
+    // given that we use max_partition_shape. This will be fixed using
+    // clamp_array.
+
+    instantiate_partitions(shape_in_partitions, max_partition_shape);
     clamp_array(shape_in_partitions, max_partition_shape);
 
     assert_invariants();

@@ -52,6 +52,9 @@ public:
         assert(
             hpx::get_colocation_id(input_partition2.get_id()).get() ==
             hpx::find_here());
+        assert(
+            input_partition1.offset().get() ==
+            input_partition2.offset().get());
 
         using InputData = DataT<InputPartition>;
 
@@ -62,6 +65,7 @@ public:
             hpx::util::unwrapping(
 
                 [functor](
+                    auto&& offset,
                     InputData&& input_partition_data1,
                     InputData&& input_partition_data2)
                 {
@@ -83,10 +87,12 @@ public:
 
                     return OutputPartition{
                         hpx::find_here(),
+                        offset,
                         std::move(output_partition_data)};
                 }
 
             ),
+            input_partition1.offset(),
             input_partition1.data(CopyMode::share),
             input_partition2.data(CopyMode::share));
 
@@ -136,6 +142,7 @@ public:
             hpx::util::unwrapping(
 
                 [input_scalar, functor](
+                    auto&& offset,
                     InputData&& input_partition_data)
                 {
                     TargetIndex const target_idx =
@@ -155,10 +162,12 @@ public:
 
                     return OutputPartition{
                         hpx::find_here(),
+                        offset,
                         std::move(output_partition_data)};
                 }
 
             ),
+            input_partition.offset(),
             input_partition.data(CopyMode::share));
 
     }
@@ -207,6 +216,7 @@ public:
             hpx::util::unwrapping(
 
                 [input_scalar, functor](
+                    auto&& offset,
                     InputData&& input_partition_data)
                 {
                     TargetIndex const target_idx =
@@ -226,10 +236,12 @@ public:
 
                     return OutputPartition{
                         hpx::find_here(),
+                        offset,
                         std::move(output_partition_data)};
                 }
 
             ),
+            input_partition.offset(),
             input_partition.data(CopyMode::share));
 
     }

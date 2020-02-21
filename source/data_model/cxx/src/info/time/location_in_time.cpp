@@ -11,8 +11,7 @@ LocationInTime::LocationInTime(
 
     same_shape::constant_shape::Value{
         parent, coordinates_tag,
-        hdf5::Datatype{
-            hdf5::NativeDatatypeTraits<time::DurationCount>::type_id()}}
+        hdf5::Datatype{hdf5::NativeDatatypeTraits<Element>::type_id()}}
 
 {
 }
@@ -43,9 +42,9 @@ LocationInTime create_location_in_time(
     // amount of ticks, which is just a count.
 
     hdf5::Datatype memory_datatype{
-        hdf5::NativeDatatypeTraits<time::DurationCount>::type_id()};
+        hdf5::NativeDatatypeTraits<ElementT<LocationInTime>>::type_id()};
     hdf5::Datatype file_datatype{
-        hdf5::StandardDatatypeTraits<time::DurationCount>::type_id()};
+        hdf5::StandardDatatypeTraits<ElementT<LocationInTime>>::type_id()};
 
     auto value = same_shape::constant_shape::create_value(
         parent, coordinates_tag, file_datatype, memory_datatype, value_shape);
