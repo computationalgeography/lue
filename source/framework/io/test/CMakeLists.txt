@@ -7,6 +7,7 @@ add_unit_tests(
     LINK_LIBRARIES
         lue::framework_io
         lue::framework_test
+        lue::data_model_hl
 )
 
 # Targets that depend on HPX

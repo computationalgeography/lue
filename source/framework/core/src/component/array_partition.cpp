@@ -35,6 +35,10 @@ HPX_REGISTER_ACTION(                                                   \
     ArrayPartition_##Element##_##rank##_SetDataAction)                 \
                                                                        \
 HPX_REGISTER_ACTION(                                                   \
+    lue::detail::ArrayPartition_##Element##_##rank::OffsetAction,      \
+    ArrayPartition_##Element##_##rank##_OffsetAction)                  \
+                                                                       \
+HPX_REGISTER_ACTION(                                                   \
     lue::detail::ArrayPartition_##Element##_##rank::ShapeAction,       \
     ArrayPartition_##Element##_##rank##_ShapeAction)                   \
                                                                        \

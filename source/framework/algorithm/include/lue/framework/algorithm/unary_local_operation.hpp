@@ -34,6 +34,7 @@ OutputPartition unary_local_operation_partition(
     auto const input_partition_server_ptr{hpx::get_ptr(input_partition).get()};
     auto const& input_partition_server{*input_partition_server_ptr};
 
+    auto offset{input_partition_server.offset()};
     InputData input_partition_data{
         input_partition_server.data(CopyMode::share)};
     TargetIndex const target_idx = input_partition_data.target_idx();
@@ -42,7 +43,7 @@ OutputPartition unary_local_operation_partition(
         numa_domain_executor(target_idx),
         hpx::util::annotated_function(
 
-            [functor, input_partition_data=std::move(input_partition_data), target_idx]()
+            [functor, offset, input_partition_data=std::move(input_partition_data), target_idx]()
             {
                 OutputData output_partition_data{
                     input_partition_data.shape(), target_idx};
@@ -55,6 +56,7 @@ OutputPartition unary_local_operation_partition(
 
                 return OutputPartition{
                     hpx::find_here(),
+                    offset,
                     std::move(output_partition_data)};
             },
 

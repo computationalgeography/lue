@@ -6,6 +6,8 @@ add_unit_tests(
         array_visitor_test
         configuration_entry_test
         domain_decomposition_test
+        hilbert_curve_test
+        linear_curve_test
         math_test
         shared_buffer_test
         shape_test

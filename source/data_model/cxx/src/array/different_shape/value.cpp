@@ -64,7 +64,7 @@ void Value::expand(
     hdf5::Shape const* shapes)
 {
     for(std::size_t o = 0; o < nr_objects; ++o) {
-        expand(ids[o], shapes[o]);
+        expand_core(ids[o], shapes[o]);
     }
 
     _nr_objects += nr_objects;
@@ -89,7 +89,7 @@ void Value::expand(
     auto rank = this->rank();
 
     for(std::size_t o = 0, s = 0; o < nr_objects; ++o, s +=rank) {
-        expand(ids[o], hdf5::Shape{shapes[s], shapes[s + 1]});
+        expand_core(ids[o], hdf5::Shape{shapes[s], shapes[s + 1]});
     }
 
     _nr_objects += nr_objects;
@@ -104,6 +104,23 @@ void Value::expand(
     @param      shape The shape of the object array
 */
 void Value::expand(
+    ID const id,
+    hdf5::Shape const& shape)
+{
+    expand_core(id, shape);
+
+    _nr_objects += 1;
+
+    attributes().write<Count>(nr_objects_tag, _nr_objects);
+}
+
+
+/*!
+    @brief      Make space for an additional object array
+    @param      id The object ID
+    @param      shape The shape of the object array
+*/
+void Value::expand_core(
     ID const id,
     hdf5::Shape const& shape)
 {

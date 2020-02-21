@@ -19,8 +19,9 @@ PartitionT<Partition, ElementT<Partition>, 1> unique_partition(
     using Element = ElementT<Partition>;
 
     using OutputPartition = PartitionT<Partition, Element, 1>;
-    using OutputData = DataT<OutputPartition>;
+    using OutputOffset = OffsetT<OutputPartition>;
     using OutputShape = ShapeT<OutputPartition>;
+    using OutputData = DataT<OutputPartition>;
 
     return hpx::dataflow(
         hpx::launch::async,
@@ -46,7 +47,8 @@ PartitionT<Partition, ElementT<Partition>, 1> unique_partition(
                     unique_values.begin(), unique_values.end(),
                     output_data.begin());
 
-                return OutputPartition{locality_id, std::move(output_data)};
+                return OutputPartition{
+                    locality_id, OutputOffset{0}, std::move(output_data)};
             }
 
         ),
@@ -99,8 +101,9 @@ hpx::future<Array<Element, 1>> unique(
     using OutputArray = Array<Element, 1>;
     using OutputPartitions = PartitionsT<OutputArray>;
     using OutputPartition = PartitionT<OutputArray>;
-    using OutputData = DataT<OutputPartition>;
+    using OutputOffset = OffsetT<OutputArray>;
     using OutputShape = ShapeT<OutputArray>;
+    using OutputData = DataT<OutputPartition>;
 
     OutputPartitions output_partitions{
         OutputShape{{nr_partitions(array)}}, scattered_target_index()};
@@ -162,7 +165,7 @@ hpx::future<Array<Element, 1>> unique(
 
                 // Store array data in partition component
                 OutputPartition result_partition{
-                    hpx::find_here(), std::move(result_values)};
+                    hpx::find_here(), OutputOffset{0}, std::move(result_values)};
 
                 // Store partition component in a collection
                 OutputPartitions result_partitions{

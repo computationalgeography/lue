@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/core/array_partition_data.hpp"
+#include "lue/framework/core/offset.hpp"
 #include <hpx/config.hpp>
 #include <hpx/include/components.hpp>
 
@@ -30,20 +31,26 @@ public:
 
     using Shape = typename Data::Shape;
 
+    using Offset = lue::Offset<Index, rank>;
+
     using Slice = typename Data::Slice;
 
     using Slices = typename Data::Slices;
 
                    ArrayPartition      ();
 
-    explicit       ArrayPartition      (Shape const& shape);
+                   ArrayPartition      (Offset const& offset,
+                                        Shape const& shape);
 
-                   ArrayPartition      (Shape const& shape,
+                   ArrayPartition      (Offset const& offset,
+                                        Shape const& shape,
                                         Element value);
 
-                   ArrayPartition      (Data const& data);
+                   ArrayPartition      (Offset const& offset,
+                                        Data const& data);
 
-                   ArrayPartition      (Data&& data);
+                   ArrayPartition      (Offset const& offset,
+                                        Data&& data);
 
                    ArrayPartition      (ArrayPartition const& other);
 
@@ -64,6 +71,8 @@ public:
     void           set_data            (Data const& data,
                                         [[maybe_unused]] CopyMode mode);
 
+    Offset         offset              () const;
+
     Shape          shape               () const;
 
     void           reshape             (Shape const& shape);
@@ -77,6 +86,8 @@ public:
 
 private:
 
+    Offset         _offset;
+
     //! Data of this array partition
     Data           _data;
 
@@ -87,6 +98,7 @@ public:
     HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, slice, SliceAction);
     HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, fill, FillAction);
     HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, set_data, SetDataAction);
+    HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, offset, OffsetAction);
     HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, shape, ShapeAction);
     HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, reshape, ReshapeAction);
     HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, nr_elements, NrElementsAction);
@@ -125,6 +137,10 @@ HPX_REGISTER_ACTION_DECLARATION(                                       \
 HPX_REGISTER_ACTION_DECLARATION(                                       \
     lue::detail::ArrayPartition_##Element##_##rank::SetDataAction,     \
     ArrayPartition_##Element##_##rank##_SetDataAction)                 \
+                                                                       \
+HPX_REGISTER_ACTION_DECLARATION(                                       \
+    lue::detail::ArrayPartition_##Element##_##rank::OffsetAction,      \
+    ArrayPartition_##Element##_##rank##_OffsetAction)                  \
                                                                        \
 HPX_REGISTER_ACTION_DECLARATION(                                       \
     lue::detail::ArrayPartition_##Element##_##rank::ShapeAction,       \
@@ -179,6 +195,7 @@ LUE_DEFINE_ARRAY_PARTITION_COMPONENT_ACTION_TEMPLATE(Data)
 LUE_DEFINE_ARRAY_PARTITION_COMPONENT_ACTION_TEMPLATE(Slice)
 LUE_DEFINE_ARRAY_PARTITION_COMPONENT_ACTION_TEMPLATE(Fill)
 LUE_DEFINE_ARRAY_PARTITION_COMPONENT_ACTION_TEMPLATE(SetData)
+LUE_DEFINE_ARRAY_PARTITION_COMPONENT_ACTION_TEMPLATE(Offset)
 LUE_DEFINE_ARRAY_PARTITION_COMPONENT_ACTION_TEMPLATE(Shape)
 LUE_DEFINE_ARRAY_PARTITION_COMPONENT_ACTION_TEMPLATE(Reshape)
 LUE_DEFINE_ARRAY_PARTITION_COMPONENT_ACTION_TEMPLATE(NrElements)
@@ -195,6 +212,7 @@ template<
 ArrayPartition<Element, rank>::ArrayPartition():
 
     Base{},
+    _offset{},
     _data{}
 
 {
@@ -212,9 +230,11 @@ template<
     typename Element,
     Rank rank>
 ArrayPartition<Element, rank>::ArrayPartition(
+    Offset const& offset,
     Shape const& shape):
 
     Base{},
+    _offset{offset},
     _data{shape, scattered_target_index()}
 
 {
@@ -232,10 +252,12 @@ template<
     typename Element,
     Rank rank>
 ArrayPartition<Element, rank>::ArrayPartition(
+    Offset const& offset,
     Shape const& shape,
     Element value):
 
     Base{},
+    _offset{offset},
     _data{shape, value, scattered_target_index()}
 
 {
@@ -254,9 +276,11 @@ template<
     typename Element,
     Rank rank>
 ArrayPartition<Element, rank>::ArrayPartition(
+    Offset const& offset,
     Data const& data):
 
     Base{},
+    _offset{offset},
     _data{data, CopyMode::copy, data.target_idx()}
 
 {
@@ -272,9 +296,11 @@ template<
     typename Element,
     Rank rank>
 ArrayPartition<Element, rank>::ArrayPartition(
+    Offset const& offset,
     Data&& data):
 
     Base{},
+    _offset{offset},
     _data{std::move(data)}
 
 {
@@ -288,6 +314,7 @@ ArrayPartition<Element, rank>::ArrayPartition(
     ArrayPartition const& other):
 
     Base{other},
+    _offset{other._offset},
     _data{other._data}
 
 {
@@ -301,7 +328,8 @@ ArrayPartition<Element, rank>::ArrayPartition(
     ArrayPartition&& other):
 
     Base{std::move(other)},
-    _data{std::move(other._data)}  // ← other is already move from...
+    _offset{std::move(other._offset)},
+    _data{std::move(other._data)}
 
 {
 }
@@ -369,6 +397,16 @@ void ArrayPartition<Element, rank>::set_data(
         // located at the same target as the source instance
         _data = Data{data, mode};
     }
+}
+
+
+template<
+    typename Element,
+    Rank rank>
+typename ArrayPartition<Element, rank>::Offset
+    ArrayPartition<Element, rank>::offset() const
+{
+    return _offset;
 }
 
 

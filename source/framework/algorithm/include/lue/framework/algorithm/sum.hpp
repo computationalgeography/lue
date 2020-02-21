@@ -41,6 +41,7 @@ PartitionT<Partition, OutputElement> sum_partition(
 
             [shape](
                 hpx::id_type const locality_id,
+                auto&& offset,
                 InputData&& partition_data)
             {
                 OutputElement result = std::accumulate(
@@ -49,11 +50,12 @@ PartitionT<Partition, OutputElement> sum_partition(
 
                 TargetIndex const target_idx = partition_data.target_idx();
                 return Partition{
-                    locality_id, OutputData{shape, result, target_idx}};
+                    locality_id, offset, OutputData{shape, result, target_idx}};
             }
 
         ),
         hpx::get_colocation_id(partition.get_id()),
+        partition.offset(),
         partition.data(CopyMode::share));
 }
 

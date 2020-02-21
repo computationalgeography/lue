@@ -17,6 +17,7 @@ using Data = typename PartitionedArray::Partition::Data;
 
 // using Definition = typename PartitionedArray::Definition;
 using Count = typename Data::Count;
+using Offset = typename PartitionedArray::Offset;
 using Shape = typename Data::Shape;
 
 }  // Anonymous namespace
@@ -139,6 +140,11 @@ BOOST_AUTO_TEST_CASE(construct_with_max_partition_shape)
         BOOST_CHECK_EQUAL(partitions[1].shape().get(), Shape({{20, 10}}));
         BOOST_CHECK_EQUAL(partitions[2].shape().get(), Shape({{10, 30}}));
         BOOST_CHECK_EQUAL(partitions[3].shape().get(), Shape({{10, 10}}));
+
+        BOOST_CHECK_EQUAL((partitions(0, 0).offset().get()), (Offset{ 0,  0}));
+        BOOST_CHECK_EQUAL((partitions(0, 1).offset().get()), (Offset{ 0, 30}));
+        BOOST_CHECK_EQUAL((partitions(1, 0).offset().get()), (Offset{20,  0}));
+        BOOST_CHECK_EQUAL((partitions(1, 1).offset().get()), (Offset{20, 30}));
     }
 }
 
