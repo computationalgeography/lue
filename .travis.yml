@@ -15,6 +15,7 @@ matrix:
                       - ubuntu-toolchain-r-test
                   packages:
                       - doxygen
+                      - libglew-dev
                       - libboost-all-dev
                       - g++-7
                       - libhdf5-dev
@@ -32,6 +33,7 @@ matrix:
                       - ubuntu-toolchain-r-test
                   packages:
                       - doxygen
+                      - libglew-dev
                       - libboost-all-dev
                       - g++-7
                       - libhdf5-dev
@@ -49,6 +51,7 @@ matrix:
                       - ubuntu-toolchain-r-test
                   packages:
                       - doxygen
+                      - libglew-dev
                       - libboost-all-dev
                       - g++-7
                       - libhdf5-dev
@@ -66,6 +69,7 @@ matrix:
                       - ubuntu-toolchain-r-test
                   packages:
                       - doxygen
+                      - libglew-dev
                       - libboost-all-dev
                       - g++-7
                       - libhdf5-dev
@@ -83,6 +87,7 @@ matrix:
                       - ubuntu-toolchain-r-test
                   packages:
                       - doxygen
+                      - libglew-dev
                       - libboost-all-dev
                       - g++-7
                       - libhdf5-dev
@@ -100,6 +105,7 @@ matrix:
                       - ubuntu-toolchain-r-test
                   packages:
                       - doxygen
+                      - libglew-dev
                       - libboost-all-dev
                       - g++-7
                       - libhdf5-dev
@@ -117,6 +123,7 @@ matrix:
                       - ubuntu-toolchain-r-test
                   packages:
                       - doxygen
+                      - libglew-dev
                       - libboost-all-dev
                       - g++-7
                       - libhdf5-dev
@@ -134,6 +141,7 @@ matrix:
                       - ubuntu-toolchain-r-test
                   packages:
                       - doxygen
+                      - libglew-dev
                       - libboost-all-dev
                       - g++-7
                       - libhdf5-dev
@@ -176,10 +184,10 @@ before_install:
 
     # Install a recent version of CMake. ---------------------------------------
     - cd tmp
-    - wget --no-check-certificate https://cmake.org/files/v3.15/cmake-3.15.5-Linux-x86_64.tar.gz
+    - wget --no-check-certificate http://cmake.org/files/v3.12/cmake-3.12.1-Linux-x86_64.tar.gz
     - cd ../local
-    - tar zxf ../tmp/cmake-3.15.5-Linux-x86_64.tar.gz
-    - export PATH=$PWD/cmake-3.15.5-Linux-x86_64/bin:$PATH
+    - tar zxf ../tmp/cmake-3.12.1-Linux-x86_64.tar.gz
+    - export PATH=$PWD/cmake-3.12.1-Linux-x86_64/bin:$PATH
     - cd ..
 
 
