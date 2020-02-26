@@ -278,7 +278,7 @@ if(DEVBASE_HPX_REQUIRED)
 
         FetchContent_Declare(hpx
             GIT_REPOSITORY ${hpx_repository}
-            GIT_TAG "1.4.0"
+            GIT_TAG "1.4.1"
             # GIT_TAG "pr4311"  # APEX fix
         )
 
