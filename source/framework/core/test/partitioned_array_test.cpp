@@ -129,9 +129,7 @@ BOOST_AUTO_TEST_CASE(construct_with_max_partition_shape)
         Count nr_cols_partition = 30;
         Shape max_partition_shape{{nr_rows_partition, nr_cols_partition}};
 
-        std::cout << "------------------------" << std::endl;
         PartitionedArray array{shape, max_partition_shape};
-        std::cout << "------------------------" << std::endl;
 
         BOOST_CHECK_EQUAL(array.nr_elements(), nr_rows * nr_cols);
         BOOST_CHECK_EQUAL(array.shape(), shape);
