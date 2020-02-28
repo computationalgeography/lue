@@ -7,20 +7,13 @@
 
 namespace lue {
 
-// template<
-//     typename Shape>
-// using IndexT = typename Shape::value_type;
-
-
 template<
     Rank rank,
     typename Iterator>
-// typename std::iterator_traits<Iterator>::value_type linear_idx(
 Index linear_idx(
     Iterator cell_idxs_it,
     [[maybe_unused]] Iterator shape_it)
 {
-    // using ValueType = typename std::iterator_traits<Iterator>::value_type;
     using ValueType = Index;
 
     if constexpr (rank == 1) {
@@ -38,7 +31,6 @@ Index linear_idx(
 
 template<
     typename Shape>
-// IndexT<Shape> linear_idx(
 Index linear_idx(
     Shape const& cell_idxs,
     Shape const& shape)
@@ -67,8 +59,6 @@ class ArrayVisitorCursor
 {
 
 public:
-
-    // using Index = IndexT<Shape>;
 
     ArrayVisitorCursor(
         Shape const& shape):
@@ -218,9 +208,9 @@ template<
 class ArrayVisitor
 {
 
-    using Cursor = detail::ArrayVisitorCursor<Shape>;
-
 public:
+
+    using Cursor = detail::ArrayVisitorCursor<Shape>;
 
     /*!
         @brief      Construct an instance based on the array shape
@@ -232,6 +222,8 @@ public:
 
     {
     }
+
+    virtual ~ArrayVisitor()=default;
 
     /*!
         @brief      Initialize the visit using the start indices and
@@ -257,7 +249,19 @@ public:
     */
     void leave_current_dimension()
     {
+        leaving_current_dimension();
         _cursor.leave_current_dimension();
+        left_current_dimension();
+    }
+
+    virtual void leaving_current_dimension()
+    {
+        // Default does nothing. Specializations might need this.
+    }
+
+    virtual void left_current_dimension()
+    {
+        // Default does nothing. Specializations might need this.
     }
 
     /*!
@@ -314,9 +318,11 @@ void visit_array(
         // We are still navigating along array dimensions. The latter
         // dimensions vary fastest: depth-first visit.
 
-        auto idx = visitor.cursor().start_idx();
+        for(
+            Index idx = visitor.cursor().start_idx();
+            idx < visitor.cursor().end_idx(); ++idx)
+        {
 
-        for(; idx < visitor.cursor().end_idx(); ++idx) {
             // Recurse into next dimension
             if constexpr (rank > 1) {
                 visitor.enter_next_dimension();

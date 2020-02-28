@@ -69,24 +69,24 @@ std::ostream& operator<<(
 }
 
 
-template<
-    typename T,
-    lue::Rank rank>
-std::ostream& operator<<(
-    std::ostream& stream,
-    std::array<T, rank> const& array)
-{
-    stream << '[';
-    std::copy(
-        std::begin(array), std::end(array),
-        std::experimental::make_ostream_joiner(stream, ", "));
-
-        // Prints a separator after the last element...
-        // std::ostream_iterator<Index>(stream, ", "));
-    stream << ']';
-
-    return stream;
-}
+// template<
+//     typename T,
+//     lue::Rank rank>
+// std::ostream& operator<<(
+//     std::ostream& stream,
+//     std::array<T, rank> const& array)
+// {
+//     stream << '[';
+//     std::copy(
+//         std::begin(array), std::end(array),
+//         std::experimental::make_ostream_joiner(stream, ", "));
+// 
+//         // Prints a separator after the last element...
+//         // std::ostream_iterator<Index>(stream, ", "));
+//     stream << ']';
+// 
+//     return stream;
+// }
 
 
 template<

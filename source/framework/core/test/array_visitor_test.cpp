@@ -187,3 +187,21 @@ BOOST_AUTO_TEST_CASE(use_case_1)
     BOOST_CHECK_EQUAL(cell_indices[nr_elements - 2], nr_elements - 2);
     BOOST_CHECK_EQUAL(cell_indices[nr_elements - 1], nr_elements - 1);
 }
+
+
+BOOST_AUTO_TEST_CASE(use_case_2)
+{
+    Shape shape{{1, 1}};
+    Visitor<Shape> visitor{shape};
+
+    Shape begin_indices{{0, 0}};
+    Shape end_indices{{1, 1}};
+    auto const nr_elements = lue::nr_elements(shape);
+
+    visit_array(begin_indices, end_indices, visitor);
+
+    Visitor<Shape>::CellIndices const& cell_indices = visitor.cell_indices();
+
+    BOOST_REQUIRE_EQUAL(cell_indices.size(), nr_elements);
+    BOOST_CHECK_EQUAL(cell_indices[0], 0);
+}
