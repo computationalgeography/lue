@@ -11,6 +11,10 @@ namespace lh5 = lue::hdf5;
 
 BOOST_AUTO_TEST_CASE(use_case_1)
 {
+    // variable::RasterView
+
+    using DatasetPtr = std::shared_ptr<lue::data_model::Dataset>;
+
     std::string const dataset_name{"use_case_1"};
     std::string const dataset_pathname{"hl/" + dataset_name};
     std::string const phenomenon_name{"area"};
@@ -25,12 +29,17 @@ BOOST_AUTO_TEST_CASE(use_case_1)
     // -------------------------------------------------------------------------
     auto dataset_ptr = std::make_shared<ldm::Dataset>(
         ldm::create_in_memory_dataset(dataset_pathname));
-    ldm::variable::RasterView view =
+
+    ldm::variable::RasterView<DatasetPtr> view =
         ldm::variable::create_raster_view(
             dataset_ptr,
             phenomenon_name, property_set_name,
             clock, nr_time_steps, {10, 10 + nr_time_steps},
             grid_shape, {0, 0, 400, 600});
+    BOOST_REQUIRE( ldm::variable::contains_raster(
+        *dataset_ptr, phenomenon_name, property_set_name));
+    BOOST_REQUIRE(!ldm::constant::contains_raster(
+        *dataset_ptr, phenomenon_name, property_set_name));
 
     // Details
     {
@@ -139,11 +148,12 @@ BOOST_AUTO_TEST_CASE(use_case_1)
 
         BOOST_CHECK(
             view.time_box() ==
-            (ldm::variable::RasterView::TimeBox{10, 10 + nr_time_steps}));
+            (ldm::variable::RasterView<DatasetPtr>::TimeBox{10, 10 + nr_time_steps}));
         BOOST_CHECK_EQUAL(view.nr_time_steps(), nr_time_steps);
 
         BOOST_CHECK(
-            view.space_box() == (ldm::variable::RasterView::SpaceBox{0, 0, 400, 600}));
+            view.space_box() ==
+            (ldm::variable::RasterView<DatasetPtr>::SpaceBox{0, 0, 400, 600}));
         auto const& grid_shape{view.grid_shape()};
         BOOST_REQUIRE_EQUAL(grid_shape.size(), 2);
         BOOST_CHECK_EQUAL(grid_shape[0], nr_rows);
@@ -153,28 +163,33 @@ BOOST_AUTO_TEST_CASE(use_case_1)
 
         {
             BOOST_CHECK(!view.contains("elevation"));
-            ldm::variable::RasterView::Layer layer{
+            ldm::variable::RasterView<DatasetPtr>::Layer layer{
                 view.add_layer<double>("elevation")};
             BOOST_CHECK(view.contains("elevation"));
+            BOOST_CHECK_EQUAL(layer.rank(), 3);
 
             // layer.write(time_step_idx, elevation_data);
         }
 
         {
             BOOST_CHECK(!view.contains("soil"));
-            ldm::variable::RasterView::Layer layer{
+            ldm::variable::RasterView<DatasetPtr>::Layer layer{
                 view.add_layer<std::uint32_t>("soil")};
             BOOST_CHECK(view.contains("soil"));
+            BOOST_CHECK_EQUAL(layer.rank(), 3);
 
             // layer.write(time_step_idx, soil_data);
         }
+
+        ldm::assert_is_valid(*dataset_ptr, false);
 
         BOOST_CHECK_EQUAL(view.nr_layers(), 2);
     }
 
     {
         // Open a second view on the just created dataset
-        ldm::variable::RasterView view{dataset_ptr, phenomenon_name, property_set_name};
+        ldm::variable::RasterView<DatasetPtr> view{
+            dataset_ptr, phenomenon_name, property_set_name};
 
         BOOST_CHECK_EQUAL(view.nr_layers(), 2);
         BOOST_CHECK(view.contains("elevation"));
@@ -185,7 +200,9 @@ BOOST_AUTO_TEST_CASE(use_case_1)
 
 BOOST_AUTO_TEST_CASE(use_case_2)
 {
-    // Constant rasters
+    // constant::RasterView
+
+    using DatasetPtr = std::shared_ptr<lue::data_model::Dataset>;
 
     std::string const dataset_name{"use_case_2"};
     std::string const dataset_pathname{dataset_name};
@@ -199,11 +216,16 @@ BOOST_AUTO_TEST_CASE(use_case_2)
     // -------------------------------------------------------------------------
     auto dataset_ptr = std::make_shared<ldm::Dataset>(
         ldm::create_in_memory_dataset(dataset_pathname));
-    ldm::constant::RasterView view =
+
+    ldm::constant::RasterView<DatasetPtr> view =
         ldm::constant::create_raster_view(
             dataset_ptr,
             phenomenon_name, property_set_name,
             grid_shape, {0, 0, 400, 600});
+    BOOST_REQUIRE( ldm::constant::contains_raster(
+        *dataset_ptr, phenomenon_name, property_set_name));
+    BOOST_REQUIRE(!ldm::variable::contains_raster(
+        *dataset_ptr, phenomenon_name, property_set_name));
 
     // Details
     {
@@ -283,7 +305,8 @@ BOOST_AUTO_TEST_CASE(use_case_2)
         BOOST_CHECK_EQUAL(view.property_set_name(), property_set_name);
 
         BOOST_CHECK(
-            view.space_box() == (ldm::variable::RasterView::SpaceBox{0, 0, 400, 600}));
+            view.space_box() ==
+            (ldm::variable::RasterView<DatasetPtr>::SpaceBox{0, 0, 400, 600}));
         auto const& grid_shape{view.grid_shape()};
         BOOST_REQUIRE_EQUAL(grid_shape.size(), 2);
         BOOST_CHECK_EQUAL(grid_shape[0], nr_rows);
@@ -293,28 +316,33 @@ BOOST_AUTO_TEST_CASE(use_case_2)
 
         {
             BOOST_CHECK(!view.contains("elevation"));
-            ldm::variable::RasterView::Layer layer{
+            ldm::variable::RasterView<DatasetPtr>::Layer layer{
                 view.add_layer<double>("elevation")};
             BOOST_CHECK(view.contains("elevation"));
+            // BOOST_CHECK_EQUAL(layer.rank(), 2);
 
             // layer.write(elevation_data);
         }
 
         {
             BOOST_CHECK(!view.contains("soil"));
-            ldm::variable::RasterView::Layer layer{
+            ldm::variable::RasterView<DatasetPtr>::Layer layer{
                 view.add_layer<std::uint32_t>("soil")};
             BOOST_CHECK(view.contains("soil"));
+            // BOOST_CHECK_EQUAL(layer.rank(), 2);
 
             // layer.write(soil_data);
         }
+
+        ldm::assert_is_valid(*dataset_ptr);
 
         BOOST_CHECK_EQUAL(view.nr_layers(), 2);
     }
 
     {
         // Open a second view on the just created dataset
-        ldm::constant::RasterView view{dataset_ptr, phenomenon_name, property_set_name};
+        ldm::constant::RasterView<DatasetPtr> view{
+            dataset_ptr, phenomenon_name, property_set_name};
 
         BOOST_CHECK_EQUAL(view.nr_layers(), 2);
         BOOST_CHECK(view.contains("elevation"));

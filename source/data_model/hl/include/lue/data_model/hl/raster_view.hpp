@@ -5,8 +5,10 @@
 namespace lue {
 namespace data_model {
 
+template<
+    typename DatasetPtr>
 class RasterView:
-    public DatasetView
+    public DatasetView<DatasetPtr>
 {
 
 public:
@@ -75,8 +77,10 @@ namespace constant {
     @brief      Class for performing I/O of constant rasters of a
                 single area
 */
+template<
+    typename DatasetPtr>
 class RasterView:
-    public data_model::RasterView
+    public data_model::RasterView<DatasetPtr>
 {
 
 public:
@@ -104,14 +108,18 @@ public:
     Layer          add_layer           (std::string const& name,
                                         hdf5::Datatype const& datatype);
 
+    Layer          layer               (std::string const& name);
+
 private:
 
 };
 
 
 template<
+    typename DatasetPtr>
+template<
     typename Element>
-RasterView::Layer RasterView::add_layer(
+typename RasterView<DatasetPtr>::Layer RasterView<DatasetPtr>::add_layer(
     std::string const& name)
 {
     return add_layer(
@@ -119,11 +127,19 @@ RasterView::Layer RasterView::add_layer(
 }
 
 
-RasterView         create_raster_view  (DatasetPtr dataset,
+bool               contains_raster     (Dataset const& dataset,
+                                        std::string const& phenomenon_name,
+                                        std::string const& property_set_name);
+
+template<
+    typename DatasetPtr>
+RasterView<DatasetPtr>
+                   create_raster_view  (DatasetPtr dataset,
                                         std::string const& phenomenon_name,
                                         std::string const& property_set_name,
                                         hdf5::Shape const& grid_shape,
-                                        RasterView::SpaceBox const& space_box);
+                                        typename data_model::RasterView<DatasetPtr>::SpaceBox const&
+                                            space_box);
 
 }  // namespace constant
 
@@ -138,8 +154,10 @@ namespace variable {
     spatio-temporal model data, as output by a PCRaster model. There is
     a single time box and space box that will be filled by the model.
 */
+template<
+    typename DatasetPtr>
 class RasterView:
-    public data_model::RasterView
+    public data_model::RasterView<DatasetPtr>
 {
 
 public:
@@ -174,6 +192,8 @@ public:
     Layer          add_layer           (std::string const& name,
                                         hdf5::Datatype const& datatype);
 
+    Layer          layer               (std::string const& name);
+
 private:
 
     TimeBox        _time_box;
@@ -184,8 +204,10 @@ private:
 
 
 template<
+    typename DatasetPtr>
+template<
     typename Element>
-RasterView::Layer RasterView::add_layer(
+typename RasterView<DatasetPtr>::Layer RasterView<DatasetPtr>::add_layer(
     std::string const& name)
 {
     return add_layer(
@@ -193,14 +215,22 @@ RasterView::Layer RasterView::add_layer(
 }
 
 
-RasterView         create_raster_view  (DatasetPtr dataset,
+bool               contains_raster     (Dataset const& dataset,
+                                        std::string const& phenomenon_name,
+                                        std::string const& property_set_name);
+
+template<
+    typename DatasetPtr>
+RasterView<DatasetPtr>
+                   create_raster_view  (DatasetPtr dataset,
                                         std::string const& phenomenon_name,
                                         std::string const& property_set_name,
                                         Clock const& clock,
                                         Count nr_time_steps,
-                                        RasterView::TimeBox const& time_box,
+                                        typename RasterView<DatasetPtr>::TimeBox const& time_box,
                                         hdf5::Shape const& grid_shape,
-                                        RasterView::SpaceBox const& space_box);
+                                        typename data_model::RasterView<DatasetPtr>::SpaceBox const&
+                                            space_box);
 
 }  // namespace variable
 }  // namespace data_model

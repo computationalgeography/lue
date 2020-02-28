@@ -1,9 +1,11 @@
 #include "lue/translate/format/gdal.hpp"
 #include "lue/translate/format/gdal_block.hpp"
+#include "lue/translate/stack_name.hpp"
 // #include "lue/translate/format/gdal_stacks.hpp"
 // #include "lue/utility/progress_indicator.hpp"
 // #include "lue/hl/raster.hpp"
 // #include "lue/hl/raster_stack.hpp"
+#include "lue/data_model/hl.hpp"
 #include <ogrsf_frmts.h>
 #include <boost/filesystem.hpp>
 
@@ -460,6 +462,27 @@ GDALDataType memory_datatype_to_gdal_datatype(
     if(datatype == hdf5::native_uint8) {
         result = GDT_Byte;
     }
+    else if(datatype == hdf5::native_uint16) {
+        result = GDT_UInt16;
+    }
+    else if(datatype == hdf5::native_int16) {
+        result = GDT_Int16;
+    }
+    else if(datatype == hdf5::native_uint32) {
+        result = GDT_UInt32;
+    }
+    else if(datatype == hdf5::native_int32) {
+        result = GDT_Int32;
+    }
+    else if(datatype == hdf5::native_float32) {
+        result = GDT_Float32;
+    }
+    else if(datatype == hdf5::native_float64) {
+        result = GDT_Float64;
+    }
+    else {
+        throw std::runtime_error("Cannot map LUE datatype to GDAL datatype");
+    }
 
     return result;
 }
@@ -620,7 +643,8 @@ template<
     typename T>
 void write_raster_band(
     same_shape::constant_shape::Value const& value,
-    Index const idx,
+    Index const time_point_idx,
+    Index const time_step_idx,
     GDALRasterBand& raster_band)
 {
     // It is assumed here that value contains a 2D array for multiple
@@ -644,11 +668,17 @@ void write_raster_band(
             auto const memory_dataspace = hdf5::create_dataspace(shape);
 
             hdf5::Offset offset = {
-                idx,
+                time_point_idx,
+                time_step_idx,
                 block_y * blocks.block_size_y(),
-                block_x * blocks.block_size_x()
-            };
-            hdf5::Count const count = {1, nr_valid_cells_y, nr_valid_cells_x};
+                block_x * blocks.block_size_x()};
+
+            hdf5::Count const count = {
+                1,
+                1,
+                nr_valid_cells_y,
+                nr_valid_cells_x};
+
             hdf5::Hyperslab const hyperslab{offset, count};
 
             value.read(hyperslab, values.data());
@@ -661,18 +691,136 @@ void write_raster_band(
 
 void write_raster_band(
     same_shape::constant_shape::Value const& value,
-    Index const idx,
+    Index const time_point_idx,
+    Index const time_step_idx,
     GDALRasterBand& raster_band)
 {
     auto const& memory_datatype{value.memory_datatype()};
 
     if(memory_datatype == hdf5::native_uint8) {
-        write_raster_band<std::uint8_t>(value, idx, raster_band);
+        write_raster_band<std::uint8_t>(
+            value, time_point_idx, time_step_idx, raster_band);
+    }
+    else if(memory_datatype == hdf5::native_uint16) {
+        write_raster_band<std::uint16_t>(
+            value, time_point_idx, time_step_idx, raster_band);
+    }
+    else if(memory_datatype == hdf5::native_int16) {
+        write_raster_band<std::int16_t>(
+            value, time_point_idx, time_step_idx, raster_band);
+    }
+    else if(memory_datatype == hdf5::native_uint32) {
+        write_raster_band<std::uint32_t>(
+            value, time_point_idx, time_step_idx, raster_band);
+    }
+    else if(memory_datatype == hdf5::native_int32) {
+        write_raster_band<std::int32_t>(
+            value, time_point_idx, time_step_idx, raster_band);
+    }
+    else if(memory_datatype == hdf5::native_uint64) {
+        write_raster_band<std::uint64_t>(
+            value, time_point_idx, time_step_idx, raster_band);
+    }
+    else if(memory_datatype == hdf5::native_int64) {
+        write_raster_band<std::int64_t>(
+            value, time_point_idx, time_step_idx, raster_band);
+    }
+    else if(memory_datatype == hdf5::native_float32) {
+        write_raster_band<float>(
+            value, time_point_idx, time_step_idx, raster_band);
+    }
+    else if(memory_datatype == hdf5::native_float64) {
+        write_raster_band<double>(
+            value, time_point_idx, time_step_idx, raster_band);
     }
     else {
-        assert(false);
+        throw std::runtime_error(
+            "Cannot write value with this datatype to a GDAL raster band");
     }
 }
+
+
+template<
+    typename T>
+void write_raster_band(
+    Array const& array,
+    GDALRasterBand& raster_band)
+{
+    // It is assumed here that array only contains a 2D array
+
+    auto const blocks = natural_blocks(raster_band);
+
+    std::vector<T> values(blocks.block_size());
+
+    // Copy blocks for array at specific index to raster band
+    for(size_t block_y = 0; block_y < blocks.nr_blocks_y(); ++block_y) {
+        for(size_t block_x = 0; block_x < blocks.nr_blocks_x(); ++block_x) {
+
+            auto const& [nr_valid_cells_x, nr_valid_cells_y] =
+                blocks.nr_valid_cells(block_x, block_y);
+
+            hdf5::Shape const shape = {
+                nr_valid_cells_x * nr_valid_cells_y
+            };
+            auto const memory_dataspace = hdf5::create_dataspace(shape);
+
+            hdf5::Offset offset = {
+                block_y * blocks.block_size_y(),
+                block_x * blocks.block_size_x()};
+
+            hdf5::Count const count = {
+                nr_valid_cells_y,
+                nr_valid_cells_x};
+
+            hdf5::Hyperslab const hyperslab{offset, count};
+
+            array.read(hyperslab, values.data());
+            write_raster_band_block(
+                block_x, block_y, values.data(), raster_band);
+        }
+    }
+}
+
+
+void write_raster_band(
+    Array const& array,
+    GDALRasterBand& raster_band)
+{
+    auto const& memory_datatype{array.memory_datatype()};
+
+    if(memory_datatype == hdf5::native_uint8) {
+        write_raster_band<std::uint8_t>(array, raster_band);
+    }
+    else if(memory_datatype == hdf5::native_uint16) {
+        write_raster_band<std::uint16_t>(array, raster_band);
+    }
+    else if(memory_datatype == hdf5::native_int16) {
+        write_raster_band<std::int16_t>(array, raster_band);
+    }
+    else if(memory_datatype == hdf5::native_uint32) {
+        write_raster_band<std::uint32_t>(array, raster_band);
+    }
+    else if(memory_datatype == hdf5::native_int32) {
+        write_raster_band<std::int32_t>(array, raster_band);
+    }
+    else if(memory_datatype == hdf5::native_uint64) {
+        write_raster_band<std::uint64_t>(array, raster_band);
+    }
+    else if(memory_datatype == hdf5::native_int64) {
+        write_raster_band<std::int64_t>(array, raster_band);
+    }
+    else if(memory_datatype == hdf5::native_float32) {
+        write_raster_band<float>(array, raster_band);
+    }
+    else if(memory_datatype == hdf5::native_float64) {
+        write_raster_band<double>(array, raster_band);
+    }
+    else {
+        throw std::runtime_error(
+            "Cannot write value with this datatype to a GDAL raster band");
+    }
+}
+
 
 
 // void write_shapefiles(
@@ -881,139 +1029,265 @@ void translate_lue_dataset_to_raster(
     auto const property_json = properties_json.front();
     std::string const property_name = json::string(property_json, "name");
 
-    // Find requested information in LUE dataset -------------------------------
-    Phenomenon& phenomenon = dataset.phenomena()[phenomenon_name];
-    PropertySet& property_set = phenomenon.property_sets()[property_set_name];
+    // If the constant raster view finds a raster with the property name
+    // requested, export it to a single GDAL raster
+    if(constant::contains_raster(
+            dataset, phenomenon_name, property_set_name)) {
 
-    auto const& object_tracker{property_set.object_tracker()};
+        using RasterView = constant::RasterView<Dataset*>;
+        using RasterLayer = RasterView::Layer;
 
-    // Assert there is only a single active set
-    if(object_tracker.active_set_index().nr_indices() != 1) {
-        throw std::runtime_error("Expected a single active set");
+        RasterView raster_view{&dataset, phenomenon_name, property_set_name};
 
+        if(!raster_view.contains(property_name)) {
+            throw std::runtime_error(fmt::format(
+                "Constant raster layer named {} is not part of property_set {}",
+                property_name, property_set_name));
+        }
+
+        assert(hdf5::size_of_shape(raster_view.grid_shape()) > 0);
+
+        Count const nr_bands{1};
+        RasterLayer layer{raster_view.layer(property_name)};
+        auto const& space_box{raster_view.space_box()};
+
+        auto gdal_dataset = create_dataset(
+            "GTiff", raster_name, raster_view.grid_shape(),
+            nr_bands, layer.memory_datatype());
+
+        // FIXME
+        double const cell_size{0.000992063492063};
+        double const west{space_box[0]};
+        double const north{space_box[3]};
+        double geo_transform[6] = {
+            west, cell_size, 0, north, 0, -cell_size };
+
+        gdal_dataset->SetGeoTransform(geo_transform);
+
+        // TODO
+        // OGRSpatialReference oSRS;
+        // char *pszSRS_WKT = NULL;
+        // GDALRasterBand *poBand;
+        // GByte abyRaster[512*512];
+        // oSRS.SetUTM( 11, TRUE );
+        // oSRS.SetWellKnownGeogCS( "NAD27" );
+        // oSRS.exportToWkt( &pszSRS_WKT );
+        // poDstDS->SetProjection( pszSRS_WKT );
+        // CPLFree( pszSRS_WKT );
+
+        write_raster_band(layer, *gdal_dataset->GetRasterBand(1));
     }
 
-    // Assert the one active set contains only a single active object
-    if(object_tracker.active_object_id().nr_ids() != 1) {
-        throw std::runtime_error("Expected a single active object");
+    // If the variable raster view finds a raster layer with the property
+    // name requested, export it to a stack of GDAL rasters
+    else if(variable::contains_raster(
+            dataset, phenomenon_name, property_set_name)) {
+
+        using RasterView = variable::RasterView<Dataset*>;
+        using RasterLayer = RasterView::Layer;
+
+        RasterView raster_view{&dataset, phenomenon_name, property_set_name};
+
+        if(!raster_view.contains(property_name)) {
+            throw std::runtime_error(fmt::format(
+                "Variable raster layer named {} is not part of property_set {}",
+                property_name, property_set_name));
+        }
+
+        assert(hdf5::size_of_shape(raster_view.grid_shape()) > 0);
+
+        Count const nr_bands{1};
+        Index const time_point_idx{0};  // Single time box
+        StackName stack_name{raster_name};
+        RasterLayer layer{raster_view.layer(property_name)};
+        auto const& space_box{raster_view.space_box()};
+
+        for(Count time_step = 0; time_step < raster_view.nr_time_steps();
+                ++time_step) {
+
+            auto gdal_dataset = create_dataset(
+                "GTiff", stack_name[time_step], raster_view.grid_shape(),
+                nr_bands, layer.memory_datatype());
+
+            // FIXME
+            double const cell_size{0.000992063492063};
+            double const west{space_box[0]};
+            double const north{space_box[3]};
+            double geo_transform[6] = {
+                west, cell_size, 0, north, 0, -cell_size };
+
+            gdal_dataset->SetGeoTransform(geo_transform);
+
+            // TODO
+            // OGRSpatialReference oSRS;
+            // char *pszSRS_WKT = NULL;
+            // GDALRasterBand *poBand;
+            // GByte abyRaster[512*512];
+            // oSRS.SetUTM( 11, TRUE );
+            // oSRS.SetWellKnownGeogCS( "NAD27" );
+            // oSRS.exportToWkt( &pszSRS_WKT );
+            // poDstDS->SetProjection( pszSRS_WKT );
+            // CPLFree( pszSRS_WKT );
+
+            write_raster_band(
+                layer, time_point_idx, time_step,
+                *gdal_dataset->GetRasterBand(1));
+        }
     }
-
-
-    if(!property_set.has_space_domain()) {
-        throw std::runtime_error("Property-set does not have a space domain");
-    }
-
-    auto const& space_domain{property_set.space_domain()};
-
-    if(space_domain.configuration().value<Mobility>() != Mobility::stationary) {
-        throw std::runtime_error("Expected stationary space domain items");
-    }
-
-    if(space_domain.configuration().value<SpaceDomainItemType>() !=
-            SpaceDomainItemType::box) {
-        throw std::runtime_error("Expected space boxes");
-    }
-
-    StationarySpaceBox const space_domain_items{
-        const_cast<SpaceDomain&>(space_domain).value<StationarySpaceBox>()};
-
-    assert(space_domain_items.nr_boxes() == 1);
-    assert(space_domain_items.array_shape().size() == 1);
-    assert(space_domain_items.array_shape()[0] == 4);
-    assert(space_domain_items.memory_datatype() == hdf5::native_float64);
-
-    std::vector<double> coordinates(space_domain_items.array_shape()[0]);
-    space_domain_items.read(coordinates.data());
-
-    Properties& properties{property_set.properties()};
-
-    if(!properties.contains(property_name)) {
+    else {
         throw std::runtime_error(fmt::format(
-            "Property {} is not part of property-set {}",
+            "No raster named {} found in property_set {}",
             property_name, property_set_name));
     }
 
-    if(properties.shape_per_object(property_name) !=
-            ShapePerObject::different) {
-        throw std::runtime_error(
-            "Only ShapePerObject::different is currently supported");
-    }
 
-    if(properties.value_variability(property_name) !=
-            ValueVariability::variable) {
-        throw std::runtime_error(
-            "Only ValueVariability::variable is currently supported");
-    }
 
-    if(properties.shape_variability(property_name) !=
-            ShapeVariability::constant) {
-        throw std::runtime_error(
-            "Only ShapeVariability::constant is currently supported");
-    }
 
-    using Properties = different_shape::constant_shape::Properties;
-    using Property = different_shape::constant_shape::Property;
 
-    // The values of this property need to be written to a stack of rasters,
-    // using the GDAL API. Each value is a raster. Each location in time
-    // is a slice.
-    Property const& property{properties.collection<Properties>()[property_name]};
 
-    // For the current active set:
-    // - Iterate over each active object in the active set
 
-        // For the current object:
-        // Assert time domain item type is time point
-        // Write a raster: <name>.<extension>
 
-    std::vector<Index> active_set_idxs(
-        object_tracker.active_set_index().nr_arrays());
-    object_tracker.active_set_index().read(active_set_idxs.data());
-    assert(active_set_idxs.size() == 1);
-    assert(active_set_idxs.front() == 0);
 
-    std::vector<ID> active_object_ids(
-        object_tracker.active_object_id().nr_ids());
-    object_tracker.active_object_id().read(active_object_ids.data());
-    assert(active_object_ids.size() == 1);
 
-    ID const id{active_object_ids.front()};
 
-    auto const value{const_cast<Property&>(property).value()[id]};
-
-    assert(value.nr_arrays() == 1);
-    assert(value.rank() == 2);
-
-    auto const shape{value.array_shape()};
-
-    // Write a raster with the shape and values from the property value
-
-    Count const nr_bands{1};
-
-    auto gdal_dataset = create_dataset(
-        "GTiff", raster_name, shape, nr_bands, value.memory_datatype());
-
-    // FIXME
-    double const cell_size{0.000992063492063};
-    double const west{coordinates[0]};
-    double const north{coordinates[3]};
-    double geo_transform[6] = {
-        west, cell_size, 0, north, 0, -cell_size };
-
-    gdal_dataset->SetGeoTransform(geo_transform);
-
-    // TODO
-    // OGRSpatialReference oSRS;
-    // char *pszSRS_WKT = NULL;
-    // GDALRasterBand *poBand;
-    // GByte abyRaster[512*512];
-    // oSRS.SetUTM( 11, TRUE );
-    // oSRS.SetWellKnownGeogCS( "NAD27" );
-    // oSRS.exportToWkt( &pszSRS_WKT );
-    // poDstDS->SetProjection( pszSRS_WKT );
-    // CPLFree( pszSRS_WKT );
-
-    write_raster_band(value, 0, *gdal_dataset->GetRasterBand(1));
+///     // Find requested information in LUE dataset -------------------------------
+///     Phenomenon& phenomenon = dataset.phenomena()[phenomenon_name];
+///     PropertySet& property_set = phenomenon.property_sets()[property_set_name];
+/// 
+///     auto const& object_tracker{property_set.object_tracker()};
+/// 
+///     // Assert there is only a single active set
+///     if(object_tracker.active_set_index().nr_indices() != 1) {
+///         throw std::runtime_error("Expected a single active set");
+/// 
+///     }
+/// 
+///     // Assert the one active set contains only a single active object
+///     if(object_tracker.active_object_id().nr_ids() != 1) {
+///         throw std::runtime_error("Expected a single active object");
+///     }
+/// 
+/// 
+///     if(!property_set.has_space_domain()) {
+///         throw std::runtime_error("Property-set does not have a space domain");
+///     }
+/// 
+///     auto const& space_domain{property_set.space_domain()};
+/// 
+///     if(space_domain.configuration().value<Mobility>() != Mobility::stationary) {
+///         throw std::runtime_error("Expected stationary space domain items");
+///     }
+/// 
+///     if(space_domain.configuration().value<SpaceDomainItemType>() !=
+///             SpaceDomainItemType::box) {
+///         throw std::runtime_error("Expected space boxes");
+///     }
+/// 
+///     StationarySpaceBox const space_domain_items{
+///         const_cast<SpaceDomain&>(space_domain).value<StationarySpaceBox>()};
+/// 
+///     assert(space_domain_items.nr_boxes() == 1);
+///     assert(space_domain_items.array_shape().size() == 1);
+///     assert(space_domain_items.array_shape()[0] == 4);
+///     assert(space_domain_items.memory_datatype() == hdf5::native_float64);
+/// 
+///     std::vector<double> coordinates(space_domain_items.array_shape()[0]);
+///     space_domain_items.read(coordinates.data());
+/// 
+///     Properties& properties{property_set.properties()};
+/// 
+///     if(!properties.contains(property_name)) {
+///         throw std::runtime_error(fmt::format(
+///             "Property {} is not part of property-set {}",
+///             property_name, property_set_name));
+///     }
+/// 
+///     if(properties.shape_per_object(property_name) !=
+///             ShapePerObject::different) {
+///         throw std::runtime_error(
+///             "Only ShapePerObject::different is currently supported");
+///     }
+/// 
+///     if(properties.value_variability(property_name) !=
+///             ValueVariability::variable) {
+///         throw std::runtime_error(
+///             "Only ValueVariability::variable is currently supported");
+///     }
+/// 
+///     if(properties.shape_variability(property_name) !=
+///             ShapeVariability::constant) {
+///         throw std::runtime_error(
+///             "Only ShapeVariability::constant is currently supported");
+///     }
+/// 
+///     using Properties = different_shape::constant_shape::Properties;
+///     using Property = different_shape::constant_shape::Property;
+/// 
+///     // The values of this property need to be written to a stack of rasters,
+///     // using the GDAL API. Each value is a raster. Each location in time
+///     // is a slice.
+///     Property const& property{properties.collection<Properties>()[property_name]};
+/// 
+///     // For the current active set:
+///     // - Iterate over each active object in the active set
+/// 
+///         // For the current object:
+///         // Assert time domain item type is time point
+///         // Write a raster: <name>.<extension>
+/// 
+///     std::vector<Index> active_set_idxs(
+///         object_tracker.active_set_index().nr_arrays());
+///     object_tracker.active_set_index().read(active_set_idxs.data());
+///     assert(active_set_idxs.size() == 1);
+///     assert(active_set_idxs.front() == 0);
+/// 
+///     std::vector<ID> active_object_ids(
+///         object_tracker.active_object_id().nr_ids());
+///     object_tracker.active_object_id().read(active_object_ids.data());
+///     assert(active_object_ids.size() == 1);
+/// 
+///     ID const id{active_object_ids.front()};
+/// 
+///     auto const value{const_cast<Property&>(property).value()[id]};
+/// 
+///     std::cout << "property_name: " << property_name << std::endl;
+///     std::cout << "id           : " << id << std::endl;
+///     std::cout << "nr_arrays    : " << value.nr_arrays() << std::endl;
+///     std::cout << "rank         : " << value.rank() << std::endl;
+///     // TODO hier verder, nr_arrays == 101... klopt of niet?
+///     assert(value.nr_arrays() == 1);
+///     assert(value.rank() == 2);
+/// 
+///     auto const shape{value.array_shape()};
+/// 
+///     // Write a raster with the shape and values from the property value
+/// 
+///     Count const nr_bands{1};
+/// 
+///     auto gdal_dataset = create_dataset(
+///         "GTiff", raster_name, shape, nr_bands, value.memory_datatype());
+/// 
+///     // FIXME
+///     double const cell_size{0.000992063492063};
+///     double const west{coordinates[0]};
+///     double const north{coordinates[3]};
+///     double geo_transform[6] = {
+///         west, cell_size, 0, north, 0, -cell_size };
+/// 
+///     gdal_dataset->SetGeoTransform(geo_transform);
+/// 
+///     // TODO
+///     // OGRSpatialReference oSRS;
+///     // char *pszSRS_WKT = NULL;
+///     // GDALRasterBand *poBand;
+///     // GByte abyRaster[512*512];
+///     // oSRS.SetUTM( 11, TRUE );
+///     // oSRS.SetWellKnownGeogCS( "NAD27" );
+///     // oSRS.exportToWkt( &pszSRS_WKT );
+///     // poDstDS->SetProjection( pszSRS_WKT );
+///     // CPLFree( pszSRS_WKT );
+/// 
+///     write_raster_band(value, 0, *gdal_dataset->GetRasterBand(1));
 }
 
 

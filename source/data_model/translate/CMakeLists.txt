@@ -1,6 +1,7 @@
 add_test_conditionally(test)
 
 add_library(lue_translate_lib STATIC
+    src/stack_name
     src/translate
 
     src/command/export
@@ -37,8 +38,7 @@ target_include_directories(lue_translate_lib
 
 target_link_libraries(lue_translate_lib
     PRIVATE
-        # lue::hl
-        lue::data_model
+        lue::data_model_hl
         ${GDAL_LIBRARIES}
     PUBLIC
         lue::utility

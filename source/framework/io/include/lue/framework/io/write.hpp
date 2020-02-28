@@ -14,11 +14,20 @@ template<
                                         std::string const& pathname);
 
 template<
-    typename Array>
+    typename Array,
+    typename DatasetPtr=std::shared_ptr<data_model::Dataset>>
 [[nodiscard]] hpx::future<void>
                    write               (
-                                Array const& array,
-                                data_model::variable::RasterView::Layer& layer,
-                                data_model::Index idx);
+        Array const& array,
+        typename data_model::constant::RasterView<DatasetPtr>::Layer& layer);
+
+template<
+    typename Array,
+    typename DatasetPtr=std::shared_ptr<data_model::Dataset>>
+[[nodiscard]] hpx::future<void>
+                   write               (
+        Array const& array,
+        typename data_model::variable::RasterView<DatasetPtr>::Layer& layer,
+        data_model::Index idx);
 
 }  // namespace lue

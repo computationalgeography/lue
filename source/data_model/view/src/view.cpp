@@ -1126,8 +1126,19 @@ int View::run_implementation()
         // Handle key presses
         SDL_Event event;
         while(SDL_PollEvent(&event)) {
+
             ImGui_ImplSDL2_ProcessEvent(&event);
-            if(event.type == SDL_QUIT) {
+
+            if(
+                    event.type == SDL_QUIT)
+            {
+                stop_browsing = true;
+            }
+            else if(
+                    event.type == SDL_WINDOWEVENT &&
+                    event.window.event == SDL_WINDOWEVENT_CLOSE &&
+                    event.window.windowID == SDL_GetWindowID(sdl_window))
+            {
                 stop_browsing = true;
             }
         }

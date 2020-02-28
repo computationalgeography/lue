@@ -9,7 +9,9 @@ namespace data_model {
     @param      dataset Pointer to dataset to manage
     @warning    @a dataset must point to a dataset
 */
-DatasetView::DatasetView(
+template<
+    typename DatasetPtr>
+DatasetView<DatasetPtr>::DatasetView(
     DatasetPtr dataset):
 
     _dataset{std::move(dataset)}
@@ -22,7 +24,9 @@ DatasetView::DatasetView(
 /*!
     @brief      Return the managed dataset
 */
-Dataset const& DatasetView::operator*() const
+template<
+    typename DatasetPtr>
+Dataset const& DatasetView<DatasetPtr>::operator*() const
 {
     return *_dataset;
 }
@@ -31,10 +35,21 @@ Dataset const& DatasetView::operator*() const
 /*!
     @brief      Return the managed dataset
 */
-Dataset& DatasetView::operator*()
+template<
+    typename DatasetPtr>
+Dataset& DatasetView<DatasetPtr>::operator*()
 {
     return *_dataset;
 }
+
+
+#define INSTANTIATE_DATASET_VIEW(DatasetPtr)  \
+template class DatasetView<DatasetPtr>;
+
+INSTANTIATE_DATASET_VIEW(Dataset*)
+INSTANTIATE_DATASET_VIEW(std::shared_ptr<Dataset>)
+
+#undef INSTANTIATE_DATASET_VIEW
 
 }  // namespace data_model
 }  // namespace lue

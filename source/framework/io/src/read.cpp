@@ -5,10 +5,11 @@
 namespace lue {
 
 template<
-    typename Array>
+    typename Array,
+    typename DatasetPtr>
 Array read(
     Array const& /* array */,
-    data_model::variable::RasterView::Layer const& /* layer */,
+    typename data_model::variable::RasterView<DatasetPtr>::Layer const& /* layer */,
     data_model::Index const /* idx */)
 {
 
@@ -20,17 +21,22 @@ Array read(
 }
 
 
-#define INSTANTIATE_READ(Element)                                          \
-                                                                           \
-template PartitionedArray<Element, 2> read<PartitionedArray<Element, 2>>(  \
-    PartitionedArray<Element, 2> const& array,                             \
-    data_model::variable::RasterView::Layer const& layer,                  \
-    data_model::Index const idx);
+#define INSTANTIATE_READ_1(Element, DatasetPtr)                            \
+template PartitionedArray<Element, 2>                                      \
+    read<PartitionedArray<Element, 2>, DatasetPtr>(                        \
+        PartitionedArray<Element, 2> const& array,                         \
+        data_model::variable::RasterView<DatasetPtr>::Layer const& layer,  \
+        data_model::Index const idx);
+
+#define INSTANTIATE_READ(Element)                                      \
+    INSTANTIATE_READ_1(Element, data_model::Dataset*)                  \
+    INSTANTIATE_READ_1(Element, std::shared_ptr<data_model::Dataset>)
 
 INSTANTIATE_READ(uint32_t)
 INSTANTIATE_READ(int32_t)
 INSTANTIATE_READ(double)
 
 #undef INSTANTIATE_READ
+#undef INSTANTIATE_READ_1
 
 }  // namespace lue
