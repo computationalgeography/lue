@@ -29,6 +29,7 @@ target_include_directories(lue_framework_core
 
 target_link_libraries(lue_framework_core
     PUBLIC
+        lue::shared
         fmt::fmt
         std::mdspan
 )

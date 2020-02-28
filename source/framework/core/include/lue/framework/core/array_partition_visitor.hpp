@@ -67,7 +67,7 @@ protected:
 
     PartitionT<Partitions> const& partition() const
     {
-        assert(this->cursor().linear_idx() < _partitions.size());
+        assert(this->cursor().linear_idx() < _partitions.nr_elements());
 
         return _partitions[this->cursor().linear_idx()];
     }

@@ -129,22 +129,24 @@ BOOST_AUTO_TEST_CASE(construct_with_max_partition_shape)
         Count nr_cols_partition = 30;
         Shape max_partition_shape{{nr_rows_partition, nr_cols_partition}};
 
+        std::cout << "------------------------" << std::endl;
         PartitionedArray array{shape, max_partition_shape};
+        std::cout << "------------------------" << std::endl;
 
         BOOST_CHECK_EQUAL(array.nr_elements(), nr_rows * nr_cols);
         BOOST_CHECK_EQUAL(array.shape(), shape);
         BOOST_CHECK_EQUAL(array.nr_partitions(), 4);
 
         auto const& partitions = array.partitions();
-        BOOST_CHECK_EQUAL(partitions[0].shape().get(), max_partition_shape);
-        BOOST_CHECK_EQUAL(partitions[1].shape().get(), Shape({{20, 10}}));
-        BOOST_CHECK_EQUAL(partitions[2].shape().get(), Shape({{10, 30}}));
-        BOOST_CHECK_EQUAL(partitions[3].shape().get(), Shape({{10, 10}}));
+        BOOST_CHECK_EQUAL(partitions(0, 0).shape().get(), max_partition_shape);
+        BOOST_CHECK_EQUAL(partitions(0, 1).shape().get(), Shape({20, 10}));
+        BOOST_CHECK_EQUAL(partitions(1, 0).shape().get(), Shape({10, 30}));
+        BOOST_CHECK_EQUAL(partitions(1, 1).shape().get(), Shape({10, 10}));
 
-        BOOST_CHECK_EQUAL((partitions(0, 0).offset().get()), (Offset{ 0,  0}));
-        BOOST_CHECK_EQUAL((partitions(0, 1).offset().get()), (Offset{ 0, 30}));
-        BOOST_CHECK_EQUAL((partitions(1, 0).offset().get()), (Offset{20,  0}));
-        BOOST_CHECK_EQUAL((partitions(1, 1).offset().get()), (Offset{20, 30}));
+        BOOST_CHECK_EQUAL((partitions(0, 0).offset().get()), Offset({ 0,  0}));
+        BOOST_CHECK_EQUAL((partitions(0, 1).offset().get()), Offset({ 0, 30}));
+        BOOST_CHECK_EQUAL((partitions(1, 0).offset().get()), Offset({20,  0}));
+        BOOST_CHECK_EQUAL((partitions(1, 1).offset().get()), Offset({20, 30}));
     }
 }
 
