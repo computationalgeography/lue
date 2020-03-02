@@ -27,6 +27,7 @@ template PartitionedArray<Element, 2> read<PartitionedArray<Element, 2>>(  \
     data_model::variable::RasterView::Layer const& layer,                  \
     data_model::Index const idx);
 
+INSTANTIATE_READ(uint32_t)
 INSTANTIATE_READ(int32_t)
 INSTANTIATE_READ(double)
 

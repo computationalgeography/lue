@@ -18,6 +18,7 @@ add_unit_tests(
         kernel_test
         less_equal_test
         less_test
+        locality_id_test
         multiply_test
         none_test
         range_test
@@ -46,6 +47,7 @@ hpx_setup_target(lue_framework_algorithm_greater_equal_test)
 hpx_setup_target(lue_framework_algorithm_iterate_per_element_test)
 hpx_setup_target(lue_framework_algorithm_less_equal_test)
 hpx_setup_target(lue_framework_algorithm_less_test)
+hpx_setup_target(lue_framework_algorithm_locality_id_test)
 hpx_setup_target(lue_framework_algorithm_multiply_test)
 hpx_setup_target(lue_framework_algorithm_none_test)
 hpx_setup_target(lue_framework_algorithm_range_test)
