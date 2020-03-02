@@ -13,12 +13,11 @@ public:
                    Window              (std::string const& title,
                                         int x=SDL_WINDOWPOS_CENTERED,
                                         int y=SDL_WINDOWPOS_CENTERED,
-                                        int w=600,
-                                        int h=400,
+                                        int w=640,
+                                        int h=480,
                                         Uint32 flags=
                                             SDL_WINDOW_OPENGL |
-                                            SDL_WINDOW_RESIZABLE |
-                                            SDL_WINDOW_ALLOW_HIGHDPI);
+                                            SDL_WINDOW_RESIZABLE);
 
                    ~Window             ();
 

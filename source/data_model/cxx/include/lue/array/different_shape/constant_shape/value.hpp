@@ -17,6 +17,22 @@ namespace constant_shape {
     dimension represents the time. The first location in time for which
     an object array is stored for an object is stored at the first index
     in the object's corresponding HDF5 dataset, etc.
+
+    As an example, when storing stacks of rasters for one or more time
+    boxes, one way to do that is to store a 3D object array per time
+    box and discretize this value using time and space discretization
+    properties. To read or write a whole singe raster from the HDF5
+    dataset you need to setup a hyperslab as follows:
+    - offset:
+        - time box index [0, nr_time_boxes)
+        - time step index [0, nr_time_steps)
+        - 0
+        - 0
+    - count:
+        - 1
+        - 1
+        - number of rows
+        - number of columns
 */
 class Value:
     public ValueGroup

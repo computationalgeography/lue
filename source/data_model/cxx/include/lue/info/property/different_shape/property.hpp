@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/info/property/property_group.hpp"
+#include "lue/info/property/property_traits.hpp"
 #include "lue/array/different_shape/value.hpp"
 
 
@@ -13,6 +14,8 @@ class Property:
 
 public:
 
+    using Value = different_shape::Value;
+
                    Property            (hdf5::Group& parent,
                                         std::string const& name);
 
@@ -25,7 +28,7 @@ public:
                    Property            (Property&&)=default;
 
                    Property            (PropertyGroup&& group,
-                                        different_shape::Value&& value);
+                                        Value&& value);
 
                    ~Property           ()=default;
 
@@ -33,15 +36,13 @@ public:
 
     Property&      operator=           (Property&&)=default;
 
-    different_shape::Value const&
-                   value               () const;
+    Value const&   value               () const;
 
-    different_shape::Value&
-                   value               ();
+    Value&         value               ();
 
 private:
 
-    different_shape::Value _value;
+    Value          _value;
 
 };
 
@@ -58,5 +59,17 @@ Property           create_property     (hdf5::Group& parent,
                                         Rank rank);
 
 }  // namespace different_shape
+
+
+template<>
+class PropertyTraits<different_shape::Property>
+{
+
+public:
+
+    using Value = different_shape::Property::Value;
+
+};
+
 }  // namespace data_model
 }  // namespace lue

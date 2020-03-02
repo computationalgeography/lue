@@ -25,11 +25,15 @@ BOOST_AUTO_TEST_CASE(use_case_1)
     ldm::Count nr_cols{40};
     lh5::Shape raster_shape{nr_rows, nr_cols};
 
-    auto dataset_ptr = std::make_shared<ldm::Dataset>(
+    using DatasetPtr = std::shared_ptr<ldm::Dataset>;
+    using RasterView = ldm::variable::RasterView<DatasetPtr>;
+    using RasterLayer = RasterView::Layer;
+
+    DatasetPtr dataset_ptr = std::make_shared<ldm::Dataset>(
         ldm::create_in_memory_dataset(dataset_pathname));
 
     // Add raster layer
-    ldm::variable::RasterView view =
+    RasterView view =
         ldm::variable::create_raster_view(
             dataset_ptr,
             phenomenon_name, property_set_name,
@@ -39,7 +43,7 @@ BOOST_AUTO_TEST_CASE(use_case_1)
 
     using Element = double;
 
-    ldm::variable::RasterView::Layer layer{view.add_layer<Element>("elevation")};
+    RasterLayer layer{view.add_layer<Element>("elevation")};
 
     // Create partitioned array
     ldm::Rank const rank{2};

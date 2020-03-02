@@ -1,0 +1,19 @@
+{
+    "change_land_use": {
+        "phenomena": [
+            {
+                "name": "area",
+                "property_sets": [
+                    {
+                        "name": "variable",
+                        "properties": [
+                            {
+                                "name": "land_use"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

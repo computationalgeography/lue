@@ -8,9 +8,10 @@
 namespace lue {
 
 template<
-    typename Array>
-Array              read        (Array const& array,
-                                data_model::variable::RasterView::Layer const& layer,
-                                data_model::Index idx);
+    typename Array,
+    typename DatasetPtr=std::shared_ptr<data_model::Dataset>>
+Array              read                (Array const& array,
+    typename data_model::variable::RasterView<DatasetPtr>::Layer const& layer,
+                                        data_model::Index idx);
 
 }  // namespace lue

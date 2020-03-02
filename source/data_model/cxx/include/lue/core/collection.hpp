@@ -24,6 +24,8 @@ class Collection:
 
 public:
 
+    using Element = T;
+
     using iterator = typename std::map<std::string, T>::iterator;
 
     using const_iterator = typename std::map<std::string, T>::const_iterator;

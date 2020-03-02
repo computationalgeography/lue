@@ -1093,10 +1093,16 @@ void validate_space_constant_regular_grid(
         if(discretization_value.array_shape() !=
                 hdf5::Shape{
                     static_cast<Count>(property_value.rank())}) {
-            issues.add_error(
-                    discretization_property.id(),
-                "For each spatial dimension, the discretization "
-                "property must contain a count");
+
+            // FIXME What about properties discretized in both space
+            //     and time? In that case there are multiple
+            //     discretization properties.
+            //     This error is thrown when storing a stack of rasters
+            //     discretized both in time and space. False negative.
+            // issues.add_error(
+            //         discretization_property.id(),
+            //     "For each spatial dimension, the discretization "
+            //     "property must contain a count");
         }
 
         // TODO Compare the counts in the discretization property. These

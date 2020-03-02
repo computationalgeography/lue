@@ -147,6 +147,15 @@ if(LUE_BUILD_DOCUMENTATION)
     if(NOT EDIT_DOT_GRAPH)
         message(FATAL_ERROR "edit_dot_graph.py not found")
     endif()
+
+    find_package(LATEX)
+
+    if(NOT LATEX_FOUND)
+        message(WARNING
+            "LaTeX could not be found. Latex documents will not be generated")
+    else()
+        include(UseLATEX)
+    endif()
 endif()
 
 
@@ -356,6 +365,12 @@ if(DEVBASE_IMGUI_REQUIRED)
                 ${SDL2_INCLUDE_DIR}
         )
 
+        target_compile_options(imgui
+            PUBLIC
+                # Output of `sdl2-config --cflags`
+                "$<$<PLATFORM_ID:Linux>:-D_REENTRANT>"
+        )
+
         target_link_libraries(imgui
             PUBLIC
                 ${SDL2_LIBRARY}
@@ -364,6 +379,7 @@ if(DEVBASE_IMGUI_REQUIRED)
         )
 
         add_library(imgui::imgui ALIAS imgui)
+
     endif()
 
     unset(DEVBASE_IMGUI_REQUIRED)

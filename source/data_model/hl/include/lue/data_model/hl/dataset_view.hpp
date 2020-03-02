@@ -6,7 +6,7 @@
 namespace lue {
 namespace data_model {
 
-using DatasetPtr = std::shared_ptr<Dataset>;
+/// using DatasetPtr = std::shared_ptr<Dataset>;
 
 /*!
     @brief      Class for objects managing a dataset with a specific
@@ -19,6 +19,8 @@ using DatasetPtr = std::shared_ptr<Dataset>;
     no other kinds of data are stored in the dataset. A single dataset
     can be potentially managed by multiple views.
 */
+template<
+    typename DatasetPtr=std::shared_ptr<Dataset>>
 class DatasetView
 {
 
