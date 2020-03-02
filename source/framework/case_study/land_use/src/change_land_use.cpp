@@ -39,7 +39,8 @@ void change_land_use(
 
     IntegerRaster land_use{raster_shape, partition_shape};
     FloatRaster elevation{raster_shape, partition_shape};
-    // hpx::cout << describe(land_use) << hpx::endl;
+
+    hpx::cout << describe(land_use) << hpx::endl;
 
     assert(land_use.shape() == raster_shape);
     assert(elevation.shape() == raster_shape);
@@ -64,11 +65,20 @@ void change_land_use(
     std::string const constant_property_set_name{"constant"};
     std::string const variable_property_set_name{"variable"};
     ldm::Clock const clock{ldm::time::Unit::day, 1};
+
+    // In non-Debug builds, lh5::Shape(raster_shape.begin(),
+    // raster_shape.end()) results in an undefined symbol error (pointing
+    // to std::allocator<unsigned long long>::allocator()). Therefore,
+    // this hack.
+    lh5::Shape raster_shape_(2);
+    std::copy(raster_shape.begin(), raster_shape.end(), raster_shape_.begin());
+
     ConstantRasterView constant_raster_view{
         ldm::constant::create_raster_view(
             dataset_ptr,
             phenomenon_name, constant_property_set_name,
-            lh5::Shape(raster_shape.begin(), raster_shape.end()),
+            // lh5::Shape(raster_shape.begin(), raster_shape.end()),
+            raster_shape_,
             {0.0, 0.0, double(raster_shape[1]), double(raster_shape[0])})};
     VariableRasterView variable_raster_view{
         ldm::variable::create_raster_view(
@@ -76,10 +86,13 @@ void change_land_use(
             phenomenon_name, variable_property_set_name,
             // Also store initial state
             clock, task.nr_time_steps() + 1, {0, task.nr_time_steps() + 1},
-            lh5::Shape(raster_shape.begin(), raster_shape.end()),
+            // lh5::Shape(raster_shape.begin(), raster_shape.end()),
+            raster_shape_,
             {0.0, 0.0, double(raster_shape[1]), double(raster_shape[0])})};
 
 
+    ConstantRasterView::Layer locality_id_layer{
+        constant_raster_view.add_layer<std::uint32_t>("locality_id")};
     ConstantRasterView::Layer elevation_layer{
         constant_raster_view.add_layer<ScalarElement>("elevation")};
     VariableRasterView::Layer land_use_layer{
@@ -87,7 +100,10 @@ void change_land_use(
 
 
     Count time_step = 0;
+
     std::vector<hpx::future<void>> written;
+
+    written.push_back(write(locality_id(elevation), locality_id_layer));
     written.push_back(write(elevation, elevation_layer));
     written.push_back(write(land_use, land_use_layer, time_step));
 
@@ -99,8 +115,12 @@ void change_land_use(
         semaphore.wait(time_step);
 
 
+        // model ---------------------------------------------------------------
         // No model yet...
         land_use = copy(land_use);
+
+        // /model --------------------------------------------------------------
+
 
         written.push_back(write(land_use, land_use_layer, time_step));
 

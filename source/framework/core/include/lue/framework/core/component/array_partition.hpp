@@ -359,22 +359,23 @@ hpx::future<typename ArrayPartition<Element, rank>::Data>
         CopyMode const mode) const
 {
     assert(this->get_id());
-    assert(
-        // In case copy mode is share, we and the server instance must be
-        // located on the same locality
 
-        // Well... share means the caller only wants to read the
-        // elements. Iff the server is on the same locality, then share
-        // implies a copy is not needed. Otherwise a copy is performed
-        // by HPX, because the data is transported. So... share may be
-        // useful even if the server is not on the locality. In that
-        // case, de-serialization of the data should mark the result as
-        // being a copy. If the next assertion fails, update the test.
+    // assert(
+    //     // In case copy mode is share, we and the server instance must be
+    //     // located on the same locality
 
-        (mode == CopyMode::share &&
-            (hpx::get_colocation_id(this->get_id()).get() ==
-                hpx::find_here())) ||
-        mode != CopyMode::share);
+    //     // Well... share means the caller only wants to read the
+    //     // elements. Iff the server is on the same locality, then share
+    //     // implies a copy is not needed. Otherwise a copy is performed
+    //     // by HPX, because the data is transported. So... share may be
+    //     // useful even if the server is not on the locality. In that
+    //     // case, de-serialization of the data should mark the result as
+    //     // being a copy. If the next assertion fails, update the test.
+
+    //     (mode == CopyMode::share &&
+    //         (hpx::get_colocation_id(this->get_id()).get() ==
+    //             hpx::find_here())) ||
+    //     mode != CopyMode::share);
 
     typename Server::DataAction action;
 
