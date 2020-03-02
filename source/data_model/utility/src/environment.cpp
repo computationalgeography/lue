@@ -16,9 +16,6 @@ std::string expand_environment_variables(
     // Pointer to environment variable value, possibly nullptr
     char* variable_value_ptr;
 
-    std::string::const_iterator first;
-    std::string::const_iterator last;
-
     // Value of environment variable, possibly empty
     std::string variable_value;
 
@@ -38,11 +35,8 @@ std::string expand_environment_variables(
         variable_value = variable_value_ptr != nullptr
             ? std::string{variable_value_ptr} : std::string{};
 
-        first = full_match.first;
-        last = full_match.second;
-
         // Replace variable name with, possibly empty, value
-        string.replace(first, last, variable_value);
+        string.replace(full_match.first, full_match.second, variable_value);
 
         // Set index to character just after the value just inserted
         idx += variable_value.size();
