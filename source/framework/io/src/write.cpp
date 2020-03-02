@@ -109,6 +109,7 @@ template hpx::future<void> write<PartitionedArray<Element, 2>>(  \
     PartitionedArray<Element, 2> const& array,                   \
     std::string const& pathname);
 
+INSTANTIATE_WRITE(uint32_t)
 INSTANTIATE_WRITE(int32_t)
 INSTANTIATE_WRITE(double)
 

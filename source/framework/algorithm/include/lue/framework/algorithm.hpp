@@ -14,6 +14,7 @@
 #include "lue/framework/algorithm/iterate_per_element.hpp"
 #include "lue/framework/algorithm/less_equal.hpp"
 #include "lue/framework/algorithm/less.hpp"
+#include "lue/framework/algorithm/locality_id.hpp"
 #include "lue/framework/algorithm/multiply.hpp"
 #include "lue/framework/algorithm/none.hpp"
 #include "lue/framework/algorithm/range.hpp"
