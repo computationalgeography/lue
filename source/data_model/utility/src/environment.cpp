@@ -23,7 +23,9 @@ std::string expand_environment_variables(
     std::size_t idx = 0;
 
     while(std::regex_search(
-            string.cbegin() + idx, string.cend(), match_results, expression)) {
+            string.cbegin() + idx, string.cend(),
+            match_results, expression))
+    {
 
         // A variable name was found in the range of characters
         auto const& full_match = match_results[0];
