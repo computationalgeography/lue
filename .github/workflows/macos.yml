@@ -10,10 +10,19 @@ jobs:
         steps:
         - uses: actions/checkout@v2
 
+        - name: checkout submodules
+          shell: bash
+          run: |
+              auth_header="$(git config --local \
+                  --get http.https://github.com/.extraheader)"
+              git submodule sync --recursive
+              git -c "http.extraheader=$auth_header" -c protocol.version=2 \
+                  submodule update --init --force --recursive --depth=1
+
         - name: install dependencies
           run: |
-             brew update && \
-             brew upgrade && \
+             brew update
+             brew upgrade
              brew install boost ninja
 
         - name: configure
