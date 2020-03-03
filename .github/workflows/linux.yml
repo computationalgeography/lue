@@ -1,0 +1,35 @@
+name: Linux CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+    - name: install dependencies
+      run: |
+        apt update && \
+        apt install cmake ninja
+        
+    - name: configure
+      shell: bash
+      run: |
+        cmake \
+            -H. \
+            -Bbuild \
+            -GNinja \
+            -DCMAKE_BUILD_TYPE=Debug
+               
+    - name: build
+      shell: bash
+      run: |
+          cmake --build build --target all
+          cmake --build build --target tests
+    - name: test
+      shell: bash
+      run: |
+          cd build
+          ctest --output-on-failure
