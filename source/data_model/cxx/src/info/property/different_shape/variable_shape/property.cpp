@@ -32,22 +32,22 @@ Property::Property(
 
 Property::Property(
     PropertyGroup&& group,
-    different_shape::variable_shape::Value&& value):
+    Value&& value):
 
     PropertyGroup{std::forward<PropertyGroup>(group)},
-    _value{std::forward<different_shape::variable_shape::Value>(value)}
+    _value{std::forward<Value>(value)}
 
 {
 }
 
 
-different_shape::variable_shape::Value const& Property::value() const
+Property::Value const& Property::value() const
 {
     return _value;
 }
 
 
-different_shape::variable_shape::Value& Property::value()
+Property::Value& Property::value()
 {
     return _value;
 }

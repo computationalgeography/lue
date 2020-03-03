@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/info/property/same_shape/constant_shape/property.hpp"
+#include "lue/object/property/properties_traits.hpp"
 #include "lue/core/collection.hpp"
 
 
@@ -47,5 +48,19 @@ Properties         create_properties   (hdf5::Group& parent);
 
 }  // namespace constant_shape
 }  // namespace same_shape
+
+
+template<>
+class PropertyTraits<same_shape::constant_shape::Properties>
+{
+
+public:
+
+    using Property = same_shape::constant_shape::Properties::Element;
+
+    using Value = ValueT<Property>;
+
+};
+
 }  // namespace data_model
 }  // namespace lue
