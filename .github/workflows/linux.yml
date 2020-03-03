@@ -12,7 +12,8 @@ jobs:
         - name: install dependencies
           run: |
             sudo apt update && \
-            sudo apt install cmake ninja
+            sudo apt upgrade && \
+            sudo apt install cmake ninja-build
 
         - name: configure
           shell: bash
