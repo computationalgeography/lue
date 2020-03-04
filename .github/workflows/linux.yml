@@ -36,15 +36,18 @@ jobs:
               conda create -q -n test-environment python=2.7 \
                   conan docopt numpy psutil sphinx
               source activate test-environment
+              conan remote add \
+                  public-conan https://api.bintray.com/conan/bincrafters/public-conan
+              conan install .
 
         - name: configure
           shell: bash
           run: |
-            cmake \
-                -H. \
-                -Bbuild \
-                -GNinja \
-                -DCMAKE_BUILD_TYPE=Debug
+              cmake \
+                  -H. \
+                  -Bbuild \
+                  -GNinja \
+                  -DCMAKE_BUILD_TYPE=Debug
 
         - name: build
           shell: bash
