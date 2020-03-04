@@ -21,9 +21,25 @@ jobs:
 
         - name: install dependencies
           run: |
-             brew update
-             brew upgrade
-             brew install boost ninja
+              brew update
+              brew upgrade
+              brew install boost ninja
+              wget https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -O miniconda.sh
+              bash miniconda.sh -b -p $HOME/miniconda
+              export PATH="$HOME/miniconda/bin:$PATH"
+              hash -r
+              conda config --set always_yes yes --set changeps1 no
+              conda update -q conda
+              conda config --add channels conda-forge
+              conda config --set show_channel_urls true
+              conda info -a
+              conda create -q -n test-environment python=2.7 \
+                  conan docopt numpy psutil sphinx
+              source activate test-environment
+              conan remote add \
+                  public-conan https://api.bintray.com/conan/bincrafters/public-conan
+              conan install .
+              mkdir build && mv conanbuildinfo.cmake build
 
         - name: configure
           shell: bash
