@@ -41,12 +41,7 @@ jobs:
                   public-conan https://api.bintray.com/conan/bincrafters/public-conan
               mkdir build
               cd build
-              conan install \
-                  --generator cmake \
-                  fmt/6.0.0@bincrafters/stable \
-                  gsl_microsoft/2.0.0@bincrafters/stable \
-                  jsonformoderncpp/3.7.3@vthiery/stable \
-                  --build fmt
+              conan install .. gsl_microsoft jsonformoderncpp
 
         - name: configure
           shell: bash
@@ -61,7 +56,7 @@ jobs:
           shell: bash
           run: |
               cmake --build build --target all
-              cmake --build build --target tests
+              cmake --build build --target test
 
         - name: test
           shell: bash

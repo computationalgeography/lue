@@ -57,7 +57,7 @@ jobs:
           shell: bash
           run: |
               cmake --build build --target all
-              cmake --build build --target tests
+              cmake --build build --target test
 
         - name: test
           shell: bash
