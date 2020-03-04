@@ -23,7 +23,8 @@ jobs:
           run: |
               brew update
               brew upgrade
-              brew install boost ninja
+              brew install \
+                  boost fmt hdf5 ninja pybind11
               wget https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -O miniconda.sh
               bash miniconda.sh -b -p $HOME/miniconda
               export PATH="$HOME/miniconda/bin:$PATH"
@@ -38,8 +39,14 @@ jobs:
               source activate test-environment
               conan remote add \
                   public-conan https://api.bintray.com/conan/bincrafters/public-conan
-              conan install .
-              mkdir build && mv conanbuildinfo.cmake build
+              mkdir build
+              cd build
+              conan install \
+                  --generator cmake \
+                  fmt/6.0.0@bincrafters/stable \
+                  gsl_microsoft/2.0.0@bincrafters/stable \
+                  jsonformoderncpp/3.7.3@vthiery/stable \
+                  --build fmt
 
         - name: configure
           shell: bash

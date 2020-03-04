@@ -23,7 +23,8 @@ jobs:
           run: |
               sudo apt update
               sudo apt upgrade
-              sudo apt install cmake libboost-all-dev ninja-build
+              sudo apt install \
+                  cmake libboost-all-dev libhdf5-dev ninja-build
               wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
               bash miniconda.sh -b -p $HOME/miniconda
               export PATH="$HOME/miniconda/bin:$PATH"
