@@ -1,6 +1,6 @@
 #include "lue/hdf5/datatype.hpp"
 #include "lue/hdf5/datatype_traits.hpp"
-#include <boost/detail/endian.hpp>
+#include <boost/predef/other/endian.h>
 #include <fmt/format.h>
 #include <algorithm>
 #include <cassert>
@@ -195,7 +195,7 @@ std::size_t Datatype::size() const
 
 bool Datatype::is_standard() const
 {
-#if !defined(BOOST_LITTLE_ENDIAN)
+#if !defined(BOOST_ENDIAN_LITTLE_BYTE)
     // We assume little endian platforms in tests. This can be changed
     // when necessary. In that case, first check whether the tests for
     // standard data types are really necessary. Ideally, let HDF
