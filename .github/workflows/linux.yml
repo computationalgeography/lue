@@ -41,8 +41,9 @@ jobs:
               conan profile update settings.compiler.libcxx=libstdc++11 default
               conan remote add \
                   public-conan https://api.bintray.com/conan/bincrafters/public-conan
-              conan install .
-              mkdir build && mv conanbuildinfo.cmake build
+              mkdir build
+              cd build
+              conan install ..
 
         - name: configure
           shell: bash
@@ -51,7 +52,8 @@ jobs:
                   -H. \
                   -Bbuild \
                   -GNinja \
-                  -DCMAKE_BUILD_TYPE=Debug
+                  -DCMAKE_BUILD_TYPE=Debug \
+                  -DLUE_BUILD_TEST=TRUE
 
         - name: build
           shell: bash

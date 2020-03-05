@@ -41,7 +41,7 @@ jobs:
                   public-conan https://api.bintray.com/conan/bincrafters/public-conan
               mkdir build
               cd build
-              conan install .. gsl_microsoft jsonformoderncpp
+              conan install .. --build fmt
 
         - name: configure
           shell: bash
@@ -50,7 +50,8 @@ jobs:
                   -H. \
                   -Bbuild \
                   -GNinja \
-                  -DCMAKE_BUILD_TYPE=Debug
+                  -DCMAKE_BUILD_TYPE=Debug \
+                  -DLUE_BUILD_TEST=TRUE
 
         - name: build
           shell: bash
