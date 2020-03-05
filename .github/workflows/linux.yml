@@ -22,6 +22,7 @@ jobs:
         - name: install dependencies
           run: |
               sudo apt update
+              sudo apt autoremove
               sudo apt upgrade
               sudo apt install \
                   cmake libboost-all-dev libhdf5-dev ninja-build
@@ -49,9 +50,9 @@ jobs:
           shell: bash
           run: |
               cmake \
-                  -H. \
-                  -Bbuild \
-                  -GNinja \
+                  -S . \
+                  -B build \
+                  -G"Unix Makefiles" \
                   -DCMAKE_BUILD_TYPE=Debug \
                   -DLUE_BUILD_TEST=TRUE
 
@@ -59,7 +60,6 @@ jobs:
           shell: bash
           run: |
               cmake --build build --target all
-              cmake --build build --target test
 
         - name: test
           shell: bash
