@@ -1,7 +1,5 @@
 #pragma once
-#include "lue/framework/core/numa_domain.hpp"
-#include "lue/framework/core/type_traits.hpp"
-#include <hpx/include/lcos.hpp>
+#include "lue/framework/core/component/partitioned_array.hpp"
 
 
 namespace lue {
@@ -39,28 +37,16 @@ OutputPartition unary_local_operation_partition(
         input_partition_server.data(CopyMode::share)};
     TargetIndex const target_idx = input_partition_data.target_idx();
 
-    return hpx::async(
-        numa_domain_executor(target_idx),
-        hpx::util::annotated_function(
+    OutputData output_partition_data{input_partition_data.shape(), target_idx};
 
-            [functor, offset, input_partition_data=std::move(input_partition_data), target_idx]()
-            {
-                OutputData output_partition_data{
-                    input_partition_data.shape(), target_idx};
+    std::transform(
+        input_partition_data.begin(), input_partition_data.end(),
+        output_partition_data.begin(), functor);
 
-                std::transform(
-                    input_partition_data.begin(),
-                    input_partition_data.end(),
-                    output_partition_data.begin(),
-                    functor);
-
-                return OutputPartition{
-                    hpx::find_here(),
-                    offset,
-                    std::move(output_partition_data)};
-            },
-
-            "unary_local_operation_partition"));
+    return OutputPartition{
+        hpx::find_here(),
+        offset,
+        std::move(output_partition_data)};
 }
 
 
@@ -70,24 +56,30 @@ template<
     typename Functor>
 struct UnaryLocalOperationPartitionAction:
     hpx::actions::make_action<
-        decltype(&unary_local_operation_partition<InputPartition, OutputPartition, Functor>),
-        &unary_local_operation_partition<InputPartition, OutputPartition, Functor>,
-        UnaryLocalOperationPartitionAction<InputPartition, OutputPartition, Functor>>
+            decltype(&unary_local_operation_partition<
+                InputPartition, OutputPartition, Functor>),
+            &unary_local_operation_partition<
+                InputPartition, OutputPartition, Functor>,
+            UnaryLocalOperationPartitionAction<
+                InputPartition, OutputPartition, Functor>
+        >
 {};
 
 }  // namespace detail
 
 
 template<
-    typename InputArray,
+    typename InputElement,
+    Rank rank,
     typename Functor>
-PartitionedArrayT<InputArray, OutputElementT<Functor>> unary_local_operation(
-    InputArray const& input_array,
+PartitionedArray<OutputElementT<Functor>, rank> unary_local_operation(
+    PartitionedArray<InputElement, rank> const& input_array,
     Functor const& functor)
 {
+    using InputArray = PartitionedArray<InputElement, rank>;
     using InputPartition = PartitionT<InputArray>;
 
-    using OutputArray = PartitionedArrayT<InputArray, OutputElementT<Functor>>;
+    using OutputArray = PartitionedArray<OutputElementT<Functor>, rank>;
     using OutputPartitions = PartitionsT<OutputArray>;
     using OutputPartition = PartitionT<OutputArray>;
 

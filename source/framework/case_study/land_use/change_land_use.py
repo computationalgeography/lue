@@ -12,48 +12,53 @@ gdal.UseExceptions()
 
 
 # Require operations:
-# - [ ] operator-(array, array), subtract(array, array)
-# - [ ] operator+(array, array), add(array, array)
-# - [ ] operator/(array, array), divide(array, array)
-# - [ ] operator*(array, array), multiply(array, array)
-#
-# - [ ] operator>(array, array), greater_than(array, array)
-# - [ ] operator<(array, array), less_than(array, array)
-# - [ ] operator<=(array, array), less_equal_than(array, array)
-# - [ ] operator>=(array, array), greater_equal_than(array, array)
-# - [ ] operator==(array, scalar), equal(array, scalar)
-#
-# - [ ] operator+=(array, array), iadd(array, array)
-#
-# - [ ] operator||(array<bool>, array<bool>), logical_or(array<bool>, array<bool>)
-# - [ ] operator&&(array<bool>, array<bool>), logical_and(array<bool>, array<bool>)
-# - [ ] operator!(array<bool>), logical_not(array<bool>)
-#
-# - [ ] bool all(raster<bool>)
-# - [ ] bool any(raster<bool>)
-#
-# - [ ] array_like(array, fill_value) → create new array distributed as input
-#
-# - [ ] array<count> sum(array<bool>) → count number of True cells
-#
+# Arithmetic
+# - [*] operator+(array, array), add(array, array)
+# - [*] operator-(array, array), subtract(array, array)
+# - [*] operator/(array, array), divide(array, array)
+# - [*] operator*(array, array), multiply(array, array)
+
+# Comparison
+# - [*] operator==(array, scalar), equal_to(array, scalar)
+# - [*] operator!=(array, scalar), not_equal_to(array, scalar)
+# - [*] operator<(array, array), less_than(array, array)
+# - [*] operator>(array, array), greater_than(array, array)
+# - [*] operator>=(array, array), greater_than_equal_to(array, array)
+# - [*] operator<=(array, array), less_than_equal_to(array, array)
+
+# Logical
+# - [*] operator&&(array<bool>, array<bool>), logical_and(array<bool>, array<bool>)
+# - [*] operator||(array<bool>, array<bool>), logical_inclusive_or(array<bool>, array<bool>)
+# - [*] operator!(array<bool>), logical_not(array<bool>)
+
+# Aggregate
+# - [*] bool all(raster<bool>)
+# - [*] bool none(raster<bool>)
+# - [*] bool any(raster<bool>)
+
+# Mathematical
+# - [*] array<count> sum(array<bool>) → count number of True cells
+# - [*] array = sqrt(array)
+# - [*] array = power(array, scalar)
+
+# Trigonometric
+# - [*] array = cos(array)
+# - [*] array = sin(array)
+# - [ ] array = atan2(array, array)
+
+# Focal
+# - [ ] slope(array, cell_with, cell_height)
 # - [ ] window_total, with support for skipping the focal cell
-#
-# - [ ] array = cos(array)
-# - [ ] array = sin(array)
-# - [ ] array = arctan2(array)
-#
-# - [ ] array = sqrt(array)
-# - [ ] array = power(array, scalar)
-#
+
+# Random
 # - [ ] array<float> uniform<float>(array, 0, 1)
 # - [ ] array<int> uniform<int>(array, 1, nr_land_use_types)
-#
+
+# Misc
+# - [ ] is_close(array, scalar), is_close(array, array)
+# - [ ] array_like(array, fill_value) → create new array distributed as input
 # - [ ] array<float> scale(array<float>, min, max) → scale values to range [min, max]
-#
-# - [ ] slope(array, cell_with, cell_height)
-#
 # - [ ] where(array<bool>, true_cells, false_cells)
-#
 # - [ ] array<float> mesh_grid(ranges)
 
 

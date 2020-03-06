@@ -1,6 +1,5 @@
 #pragma once
-#include "lue/framework/core/type_traits.hpp"
-#include <hpx/include/lcos.hpp>
+#include "lue/framework/core/component/partitioned_array.hpp"
 #include <algorithm>
 #include <random>
 
@@ -59,68 +58,25 @@ public:
             }
         }();
 
-
-
         auto const input_partition_server_ptr{
             hpx::get_ptr(input_partition).get()};
         auto const& input_partition_server{*input_partition_server_ptr};
 
         InputData input_partition_data{
             input_partition_server.data(CopyMode::share)};
-        TargetIndex const target_idx = input_partition_data.target_idx();
 
-        return hpx::async(
-            numa_domain_executor(target_idx),
-            hpx::util::annotated_function(
+        std::generate(
+                input_partition_data.begin(),
+                input_partition_data.end(),
 
-                [
-                    input_partition_data{std::move(input_partition_data)},
-                    distribution{std::move(distribution)},
-                    random_number_engine{std::move(random_number_engine)}
-                ] () mutable
+                [&]()
                 {
-                    // Fill the data collection passed in
-                    std::generate(
-                            input_partition_data.begin(),
-                            input_partition_data.end(),
+                    return distribution(random_number_engine);
+                }
 
-                            [&]()
-                            {
-                                return distribution(random_number_engine);
-                            }
+            );
 
-                        );
-                },
-
-                "uniform_partition"));
-
-        // return hpx::dataflow(
-        //     numa_domain_executor(target_idx),
-        //     hpx::util::annotated_function(
-        //         hpx::util::unwrapping(
-
-        //             [
-        //                 distribution{std::move(distribution)},
-        //                 random_number_engine{std::move(random_number_engine)}
-        //             ] (
-        //                 InputData&& input_partition_data) mutable
-        //             {
-        //                 // Fill the data collection passed in
-        //                 std::generate(
-        //                         input_partition_data.begin(), input_partition_data.end(),
-
-        //                         [&]()
-        //                         {
-        //                             return distribution(random_number_engine);
-        //                         }
-
-        //                     );
-        //             }
-
-        //         ),
-        //         "uniform_partition"),
-
-        //     input_partition.data(CopyMode::share));
+        return hpx::make_ready_future();
     }
 
     struct Action:
@@ -155,7 +111,6 @@ PartitionT<InputPartition, OutputElement> uniform_partition(
     auto const partition_offset = input_partition_server.offset();
     auto const partition_shape = input_partition_server.shape();
 
-
     // Will be used to obtain a seed for the random number engine
     std::random_device random_device;
 
@@ -173,39 +128,21 @@ PartitionT<InputPartition, OutputElement> uniform_partition(
         }
     }();
 
+    OutputData output_partition_data{partition_shape, target_idx};
 
-    return hpx::async(
-        numa_domain_executor(target_idx),
-        hpx::util::annotated_function(
+    std::generate(
+            output_partition_data.begin(),
+            output_partition_data.end(),
 
-            [
-                distribution{std::move(distribution)},
-                random_number_engine{std::move(random_number_engine)},
-                partition_offset,
-                partition_shape,
-                target_idx
-            ]() mutable
+            [&]()
             {
-                OutputData output_partition_data{partition_shape, target_idx};
+                return distribution(random_number_engine);
+            }
 
-                std::generate(
-                        output_partition_data.begin(),
-                        output_partition_data.end(),
+        );
 
-                        [&]()
-                        {
-                            return distribution(random_number_engine);
-                        }
-
-                    );
-
-                return OutputPartition{
-                    hpx::find_here(),
-                    partition_offset,
-                    std::move(output_partition_data)};
-            },
-
-            "uniform_partition"));
+    return OutputPartition{
+        hpx::find_here(), partition_offset, std::move(output_partition_data)};
 }
 
 

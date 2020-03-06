@@ -1,6 +1,5 @@
 #pragma once
-#include "lue/framework/core/type_traits.hpp"
-#include <hpx/include/lcos.hpp>
+#include "lue/framework/core/component/partitioned_array.hpp"
 
 
 namespace lue {
@@ -9,10 +8,10 @@ namespace detail {
 template<
     typename Partition>
 PartitionT<Partition, ElementT<Partition>, 1> unique_partition(
-    Partition const& partition)
+    Partition const& input_partition)
 {
     assert(
-        hpx::get_colocation_id(partition.get_id()).get() ==
+        hpx::get_colocation_id(input_partition.get_id()).get() ==
         hpx::find_here());
 
     using InputData = DataT<Partition>;
@@ -23,37 +22,31 @@ PartitionT<Partition, ElementT<Partition>, 1> unique_partition(
     using OutputShape = ShapeT<OutputPartition>;
     using OutputData = DataT<OutputPartition>;
 
-    return hpx::dataflow(
-        hpx::launch::async,
-        hpx::util::unwrapping(
+    auto const input_partition_server_ptr{
+        hpx::get_ptr(input_partition).get()};
+    auto const& input_partition_server{*input_partition_server_ptr};
 
-            [](
-                hpx::id_type const locality_id,
-                InputData&& partition_data)
-            {
-                // Copy values from input array into a set
-                std::set<Element> unique_values(
-                    partition_data.begin(), partition_data.end());
-                Count const nr_unique_values =
-                    static_cast<Count>(unique_values.size());
-                assert(nr_unique_values <= partition_data.nr_elements());
+    InputData input_partition_data{
+        input_partition_server.data(CopyMode::share)};
 
-                // Copy unique values from set into output array
-                TargetIndex const target_idx = partition_data.target_idx();
-                OutputData output_data{
-                    OutputShape{{nr_unique_values}}, target_idx};
-                assert(output_data.nr_elements() == nr_unique_values);
-                std::copy(
-                    unique_values.begin(), unique_values.end(),
-                    output_data.begin());
+    // Copy values from input array into a set
+    std::set<Element> unique_values(
+        input_partition_data.begin(), input_partition_data.end());
+    Count const nr_unique_values =
+        static_cast<Count>(unique_values.size());
+    assert(nr_unique_values <= input_partition_data.nr_elements());
 
-                return OutputPartition{
-                    locality_id, OutputOffset{0}, std::move(output_data)};
-            }
+    // Copy unique values from set into output array
+    TargetIndex const target_idx = input_partition_data.target_idx();
+    OutputData output_data{
+        OutputShape{{nr_unique_values}}, target_idx};
+    assert(output_data.nr_elements() == nr_unique_values);
+    std::copy(
+        unique_values.begin(), unique_values.end(),
+        output_data.begin());
 
-        ),
-        hpx::get_colocation_id(partition.get_id()),
-        partition.data(CopyMode::share));
+    return OutputPartition{
+        hpx::find_here(), OutputOffset{0}, std::move(output_data)};
 }
 
 }  // namespace detail
@@ -83,10 +76,9 @@ struct UniquePartitionAction:
 */
 template<
     typename Element,
-    Rank rank,
-    template<typename, Rank> typename Array>
-hpx::future<Array<Element, 1>> unique(
-    Array<Element, rank> const& array)
+    Rank rank>
+hpx::future<PartitionedArray<Element, 1>> unique(
+    PartitionedArray<Element, rank> const& array)
 {
 
     // - Determine unique values per partition
@@ -95,10 +87,10 @@ hpx::future<Array<Element, 1>> unique(
     // - The result is a 1-dimensional array with a single partition,
     //     located on the current locality
 
-    using InputArray = Array<Element, rank>;
+    using InputArray = PartitionedArray<Element, rank>;
     using InputPartition = PartitionT<InputArray>;
 
-    using OutputArray = Array<Element, 1>;
+    using OutputArray = PartitionedArray<Element, 1>;
     using OutputPartitions = PartitionsT<OutputArray>;
     using OutputPartition = PartitionT<OutputArray>;
     using OutputOffset = OffsetT<OutputArray>;
@@ -115,15 +107,16 @@ hpx::future<Array<Element, 1>> unique(
             hpx::launch::async,
 
             [action](
-                InputPartition const& input_partition)
+                InputPartition const& input_partition,
+                hpx::future<hpx::id_type>&& locality_id)
             {
                 return action(
-                    hpx::get_colocation_id(
-                        hpx::launch::sync, input_partition.get_id()),
+                    locality_id.get(),
                     input_partition);
             },
 
-            array.partitions()[p]);
+            array.partitions()[p],
+            hpx::get_colocation_id(array.partitions()[p].get_id()));
 
     }
 

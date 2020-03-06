@@ -1,6 +1,5 @@
 #pragma once
-#include "lue/framework/core/type_traits.hpp"
-#include <hpx/include/lcos.hpp>
+#include "lue/framework/core/component/partitioned_array.hpp"
 #include <numeric>
 
 
@@ -82,7 +81,6 @@ struct UniqueIDPartitionAction:
     @brief      Fill a partitioned array in-place with unique IDs
     @tparam     Element Type of elements in the array
     @tparam     rank Rank of the array
-    @tparam     Array Class template of the type of the array
     @param      array Partitioned array
     @return     Future that becomes ready once the algorithm has finished
 
@@ -91,10 +89,9 @@ struct UniqueIDPartitionAction:
 */
 template<
     typename Element,
-    Rank rank,
-    template<typename, Rank> typename Array>
+    Rank rank>
 [[nodiscard]] hpx::future<void> unique_id(
-    Array<Element, rank>& array)
+    PartitionedArray<Element, rank>& array)
 {
     // - Iterate over all partitions
     //     - Determine first value for partition
@@ -102,8 +99,8 @@ template<
     // - Return future that becomes ready once all partitions are done
     //     assigning values to all cells
 
-    using Array_ = Array<Element, rank>;
-    using InputPartition = PartitionT<Array_>;
+    using InputArray = PartitionedArray<Element, rank>;
+    using InputPartition = PartitionT<InputArray>;
 
     auto const nr_partitions = lue::nr_partitions(array);
 

@@ -92,17 +92,16 @@ struct RangePartitionAction:
 */
 template<
     typename Element,
-    Rank rank,
-    template<typename, Rank> typename Array>
+    Rank rank>
 [[nodiscard]] hpx::future<void> range(
-    Array<Element, rank>& array,
+    PartitionedArray<Element, rank>& array,
     hpx::shared_future<Element> const& start_value)
 {
     static_assert(rank == 2);
 
-    using Array_ = Array<Element, rank>;
-    using Partitions = PartitionsT<Array_>;
-    using InputPartition = PartitionT<Array_>;
+    using Array = PartitionedArray<Element, rank>;
+    using Partitions = PartitionsT<Array>;
+    using InputPartition = PartitionT<Array>;
     using Shape = ShapeT<InputPartition>;
 
     Partitions& partitions = array.partitions();
@@ -165,17 +164,19 @@ template<
                             hpx::launch::async,
 
                             [action, start_value, stride](
-                                InputPartition const& input_partition)
+                                InputPartition const& input_partition,
+                                hpx::future<hpx::id_type>&& locality_id)
                             {
                                 return action(
-                                    hpx::get_colocation_id(
-                                        hpx::launch::sync, input_partition.get_id()),
+                                    locality_id.get(),
                                     input_partition,
                                     start_value,
                                     stride);
                             },
 
-                            partitions(idx0, idx1));
+                            partitions(idx0, idx1),
+                            hpx::get_colocation_id(
+                                partitions(idx0, idx1).get_id()));
 
                         start_value += partition_nr_elements0;
                     }

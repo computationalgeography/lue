@@ -23,14 +23,12 @@ Partition copy_partition(
         hpx::get_colocation_id(input_partition.get_id()).get() ==
         hpx::find_here());
 
-    // Implement copy constructor that does a deep copy?
-    // return Partition{input_partition};
-
     // Copy the data and move it into a new partition
+    auto const input_partition_server_ptr{hpx::get_ptr(input_partition).get()};
+    auto const& input_partition_server{*input_partition_server_ptr};
 
-    // FIXME Make asynchronous
-    auto offset = input_partition.offset().get();
-    auto input_partition_data = input_partition.data(CopyMode::copy).get();
+    auto offset{input_partition_server.offset()};
+    auto input_partition_data = input_partition_server.data(CopyMode::copy);
 
     return Partition{
         hpx::find_here(), offset, std::move(input_partition_data)};
@@ -53,45 +51,45 @@ struct CopyPartitionAction:
     @brief      Return the result of copying a partitioned array
     @tparam     Element Type of elements in the arrays
     @tparam     rank Rank of the input array
-    @tparam     Array Class template of the type of the arrays
-    @param      array Partitioned array
+    @param      array Partitioned array to copy
     @return     New partitioned array
 */
 template<
     typename Element,
-    Rank rank,
-    template<typename, Rank> typename Array>
-Array<Element, rank> copy(
-    Array<Element, rank> const& array)
+    Rank rank>
+PartitionedArray<Element, rank> copy(
+    PartitionedArray<Element, rank> const& input_array)
 {
-    using Array_ = Array<Element, rank>;
-    using Partition = PartitionT<Array_>;
-    using Partitions = PartitionsT<Array_>;
+    using InputArray = PartitionedArray<Element, rank>;
+    using InputPartition = PartitionT<InputArray>;
 
-    CopyPartitionAction<Partition> action;
-    Partitions output_partitions{
-        shape_in_partitions(array), scattered_target_index()};
+    using OutputArray = PartitionedArray<Element, rank>;
+    using OutputPartitions = PartitionsT<OutputArray>;
 
-    for(Index p = 0; p < nr_partitions(array); ++p) {
+    CopyPartitionAction<InputPartition> action;
+    OutputPartitions output_partitions{
+        shape_in_partitions(input_array), scattered_target_index()};
+
+    for(Index p = 0; p < nr_partitions(input_array); ++p) {
 
         output_partitions[p] = hpx::dataflow(
             hpx::launch::async,
 
             [action](
-                Partition const& input_partition)
+                InputPartition const& input_partition,
+                hpx::future<hpx::id_type>&& locality_id)
             {
                 return action(
-                    // FIXME
-                    hpx::get_colocation_id(
-                        hpx::launch::sync, input_partition.get_id()),
+                    locality_id.get(),
                     input_partition);
             },
 
-            array.partitions()[p]);
+            input_array.partitions()[p],
+            hpx::get_colocation_id(input_array.partitions()[p].get_id()));
 
     }
 
-    return Array_{shape(array), std::move(output_partitions)};
+    return OutputArray{shape(input_array), std::move(output_partitions)};
 }
 
 }  // namespace lue

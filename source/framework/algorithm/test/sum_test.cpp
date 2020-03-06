@@ -1,5 +1,4 @@
 #define BOOST_TEST_MODULE lue framework algorithm sum
-#include "lue/framework/core/component/partitioned_array.hpp"
 #include "lue/framework/algorithm/fill.hpp"
 #include "lue/framework/algorithm/sum.hpp"
 #include "lue/framework/test/array.hpp"
@@ -19,13 +18,11 @@ void test_array()
     auto const shape{lue::Test<Array>::shape()};
 
     Array array{shape};
-    hpx::shared_future<Element> fill_value =
-        hpx::make_ready_future<Element>(5);
 
-    // Request the filling of the array and wait for it to finish
+    Element const fill_value{5};
+
     lue::fill(array, fill_value).wait();
 
-    // Request the sumation of the array
     auto sum = lue::sum<ResultElement>(array);
 
     using TypeWeGot = decltype(sum);
@@ -34,7 +31,7 @@ void test_array()
 
     BOOST_CHECK_EQUAL(
         sum.get(),
-        static_cast<Element>(lue::nr_elements(shape) * fill_value.get()));
+        static_cast<Element>(lue::nr_elements(shape) * fill_value));
 }
 
 

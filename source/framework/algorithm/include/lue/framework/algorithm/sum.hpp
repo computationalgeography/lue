@@ -1,147 +1,66 @@
 #pragma once
-#include "lue/framework/core/type_traits.hpp"
-#include <hpx/include/lcos.hpp>
+#include "lue/framework/algorithm/unary_aggregate_operation.hpp"
 
 
 namespace lue {
 namespace detail {
 
-/*!
-    @brief      Return the sum of values in an array partition
-    @tparam     Partition Client class of partition component
-    @tparam     OutputElement Element type for storing the sum
-    @param      partition Client of array partition component
-    @return     Client of an array partition component with a sum in it
-*/
 template<
-    typename Partition,
-    typename OutputElement>  /// =ElementT<Partition>>
-PartitionT<Partition, OutputElement> sum_partition(
-    Partition const& partition)
+    typename InputElement,
+    typename OutputElement_>
+class Sum
 {
-    assert(
-        hpx::get_colocation_id(partition.get_id()).get() ==
-        hpx::find_here());
 
-    using InputData = DataT<Partition>;
+public:
 
-    using OutputPartition = PartitionT<Partition, OutputElement>;
-    using OutputData = DataT<OutputPartition>;
+    using OutputElement = OutputElement_;
 
-    using Shape = ShapeT<Partition>;
+    constexpr OutputElement operator()() const noexcept
+    {
+        // The result is zero if there are no values to aggregate
+        return 0;
+    }
 
-    // Aggregate nD array partition to nD array partition containing a
-    // single value
-    Shape shape;
-    std::fill(shape.begin(), shape.end(), 1);
+    constexpr OutputElement operator()(
+        InputElement const input_element) const noexcept
+    {
+        return input_element;
+    }
 
-    return hpx::dataflow(
-        hpx::launch::async,
-        hpx::util::unwrapping(
+    constexpr OutputElement operator()(
+        InputElement const aggregate_value,
+        InputElement const input_element) const noexcept
+    {
+        return aggregate_value + input_element;
+    }
 
-            [shape](
-                hpx::id_type const locality_id,
-                auto&& offset,
-                InputData&& partition_data)
-            {
-                OutputElement result = std::accumulate(
-                    partition_data.begin(), partition_data.end(),
-                    OutputElement{0});
+    constexpr OutputElement partition(
+        InputElement const input_element) const noexcept
+    {
+        return input_element;
+    }
 
-                TargetIndex const target_idx = partition_data.target_idx();
-                return Partition{
-                    locality_id, offset, OutputData{shape, result, target_idx}};
-            }
+    constexpr OutputElement partition(
+        InputElement const aggregated_value,
+        InputElement const input_element) const noexcept
+    {
+        return aggregated_value + input_element;
+    }
 
-        ),
-        hpx::get_colocation_id(partition.get_id()),
-        partition.offset(),
-        partition.data(CopyMode::share));
-}
+};
 
 }  // namespace detail
 
 
 template<
-    typename Partition,
-    typename OutputElement>
-struct SumPartitionAction:
-    hpx::actions::make_action<
-        decltype(&detail::sum_partition<Partition, OutputElement>),
-        &detail::sum_partition<Partition, OutputElement>,
-        SumPartitionAction<Partition, OutputElement>>
-{};
-
-
-/*!
-    @brief      Return the result of summing the elements in a partitioned
-                array
-    @tparam     InputElement Type of elements in the input array
-    @tparam     OutputElement Type of result value
-    @tparam     rank Rank of the input array
-    @tparam     Array Class template of the type of the array
-    @param      array Partitioned array
-    @return     Future that becomes ready once the algorithm has finished
-*/
-template<
     typename InputElement,
     typename OutputElement=InputElement,
-    Rank rank,
-    template<typename, Rank> typename Array>
+    Rank rank>
 hpx::future<OutputElement> sum(
-    Array<InputElement, rank> const& array)
+    PartitionedArray<InputElement, rank> const& array)
 {
-    using InputArray = Array<InputElement, rank>;
-    using InputPartition = PartitionT<InputArray>;
-
-    using OutputPartitions = PartitionsT<InputArray, OutputElement>;
-
-    OutputPartitions output_partitions{
-        shape_in_partitions(array), scattered_target_index()};
-    SumPartitionAction<InputPartition, OutputElement> action;
-
-    for(Index p = 0; p < nr_partitions(array); ++p) {
-
-        output_partitions[p] = hpx::dataflow(
-            hpx::launch::async,
-
-            [action](
-                InputPartition const& input_partition)
-            {
-                return action(
-                    hpx::get_colocation_id(
-                        hpx::launch::sync, input_partition.get_id()),
-                    input_partition);
-            },
-
-            array.partitions()[p]);
-
-    }
-
-    // The partition sums are being determined on their respective
-    // localities. Attach a continuation that sums the sums once the
-    // partition sums are ready. This continuation runs on our locality.
-    return hpx::when_all(
-        output_partitions.begin(), output_partitions.end()).then(
-                hpx::util::unwrapping(
-
-            [](auto const& partitions) {
-
-                OutputElement result{};
-
-                for(auto const& partition: partitions) {
-
-                    auto const data = partition.data(CopyMode::copy).get();
-                    assert(data.nr_elements() == 1);
-
-                    result += data[0];
-
-                }
-
-                return result;
-            }
-
-        ));
+    return unary_aggregate_operation(
+        array, detail::Sum<InputElement, OutputElement>{});
 }
 
 }  // namespace lue

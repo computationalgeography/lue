@@ -1,7 +1,8 @@
-#define BOOST_TEST_MODULE lue framework algorithm add
+#define BOOST_TEST_MODULE lue framework algorithm divide
+#include "lue/framework/algorithm/all.hpp"
 #include "lue/framework/algorithm/arithmetic.hpp"
+#include "lue/framework/algorithm/comparison.hpp"
 #include "lue/framework/algorithm/fill.hpp"
-#include "lue/framework/algorithm/sum.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
@@ -20,20 +21,38 @@ void test_array()
     Array array1{shape};
     Array array2{shape};
 
-    Element const fill_value1{5};
+    Element const fill_value1{15};
     Element const fill_value2{6};
 
     hpx::wait_all(
         lue::fill(array1, fill_value1),
         lue::fill(array2, fill_value2));
 
-    auto add = array1 + array2;  // lue::add(array1, array2)
-    auto sum = lue::sum(add);
+    // Divide two arrays
+    {
+        auto divide = array1 / array2;
+        auto equal_to = divide == fill_value1 / fill_value2;
 
-    BOOST_CHECK_EQUAL(
-        sum.get(),
-        static_cast<Element>(
-            lue::nr_elements(shape) * (fill_value1 + fill_value2)));
+        BOOST_CHECK(lue::all(equal_to).get());
+    }
+
+    // Divide scalar by array
+    // array / scalar
+    {
+        auto divide = array1 / fill_value1;
+        auto equal_to = divide == fill_value1 / fill_value1;
+
+        BOOST_CHECK(lue::all(equal_to).get());
+    }
+
+    // Divide scalar by array
+    // scalar / array
+    {
+        auto divide = fill_value1 / array1;
+        auto equal_to = divide == fill_value1 / fill_value1;
+
+        BOOST_CHECK(lue::all(equal_to).get());
+    }
 }
 
 }  // namespace detail
@@ -48,8 +67,8 @@ BOOST_AUTO_TEST_CASE(array_##rank##d_##Element)  \
     detail::test_array<Element, rank>();         \
 }
 
-TEST_CASE(1, int32_t)
-TEST_CASE(2, int32_t)
+// TEST_CASE(1, int32_t)
+// TEST_CASE(2, int32_t)
 // TEST_CASE(1, int64_t)
 // TEST_CASE(2, int64_t)
 // TEST_CASE(1, float)

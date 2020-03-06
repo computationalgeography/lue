@@ -1,7 +1,8 @@
-#define BOOST_TEST_MODULE lue framework algorithm add
-#include "lue/framework/algorithm/arithmetic.hpp"
+#define BOOST_TEST_MODULE lue framework algorithm sin
+#include "lue/framework/algorithm/all.hpp"
+#include "lue/framework/algorithm/comparison.hpp"
 #include "lue/framework/algorithm/fill.hpp"
-#include "lue/framework/algorithm/sum.hpp"
+#include "lue/framework/algorithm/trigonometric.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
@@ -17,23 +18,12 @@ void test_array()
 
     auto const shape{lue::Test<Array>::shape()};
 
-    Array array1{shape};
-    Array array2{shape};
+    Array array{shape};
+    Element const fill_value{0.5};
 
-    Element const fill_value1{5};
-    Element const fill_value2{6};
+    lue::fill(array, fill_value).wait();
 
-    hpx::wait_all(
-        lue::fill(array1, fill_value1),
-        lue::fill(array2, fill_value2));
-
-    auto add = array1 + array2;  // lue::add(array1, array2)
-    auto sum = lue::sum(add);
-
-    BOOST_CHECK_EQUAL(
-        sum.get(),
-        static_cast<Element>(
-            lue::nr_elements(shape) * (fill_value1 + fill_value2)));
+    BOOST_CHECK(lue::all(lue::sin(array) == std::sin(fill_value)).get());
 }
 
 }  // namespace detail
@@ -48,12 +38,6 @@ BOOST_AUTO_TEST_CASE(array_##rank##d_##Element)  \
     detail::test_array<Element, rank>();         \
 }
 
-TEST_CASE(1, int32_t)
-TEST_CASE(2, int32_t)
-// TEST_CASE(1, int64_t)
-// TEST_CASE(2, int64_t)
-// TEST_CASE(1, float)
-// TEST_CASE(2, float)
 TEST_CASE(1, double)
 TEST_CASE(2, double)
 

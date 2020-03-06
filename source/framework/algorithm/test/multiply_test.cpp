@@ -1,10 +1,8 @@
 #define BOOST_TEST_MODULE lue framework algorithm multiply
-#include "lue/framework/core/component/partitioned_array.hpp"
-#include "lue/framework/algorithm/cast.hpp"
-#include "lue/framework/algorithm/equal_to.hpp"
-#include "lue/framework/algorithm/multiply.hpp"
+#include "lue/framework/algorithm/all.hpp"
+#include "lue/framework/algorithm/arithmetic.hpp"
+#include "lue/framework/algorithm/comparison.hpp"
 #include "lue/framework/algorithm/fill.hpp"
-#include "lue/framework/algorithm/sum.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
@@ -23,56 +21,37 @@ void test_array()
     Array array1{shape};
     Array array2{shape};
 
-    hpx::shared_future<Element> fill_value1 =
-        hpx::make_ready_future<Element>(5);
-    hpx::shared_future<Element> fill_value2 =
-        hpx::make_ready_future<Element>(6);
+    Element const fill_value1{15};
+    Element const fill_value2{6};
 
     hpx::wait_all(
         lue::fill(array1, fill_value1),
         lue::fill(array2, fill_value2));
 
-
-
     // Multiply two arrays
     {
-        auto multiply = lue::multiply(array1, array2);
-        hpx::shared_future<Element> expected_result =
-            hpx::make_ready_future<Element>(5 * 6);
-        auto equal_to = lue::equal_to(multiply, expected_result);
+        auto multiply = array1 * array2;
+        auto equal_to = multiply == fill_value1 * fill_value2;
 
-        auto cast = lue::cast<std::int32_t>(equal_to);
-        auto sum = lue::sum(cast);
-
-        BOOST_CHECK_EQUAL(sum.get(), lue::nr_elements(shape));
+        BOOST_CHECK(lue::all(equal_to).get());
     }
 
     // Multiply scalar with array
     // array * scalar
     {
-        auto multiply = lue::multiply(array1, fill_value1);
-        hpx::shared_future<Element> expected_result =
-            hpx::make_ready_future<Element>(5 * 5);
-        auto equal_to = lue::equal_to(multiply, expected_result);
+        auto multiply = array1 * fill_value1;
+        auto equal_to = multiply == fill_value1 * fill_value1;
 
-        auto cast = lue::cast<std::int32_t>(equal_to);
-        auto sum = lue::sum(cast);
-
-        BOOST_CHECK_EQUAL(sum.get(), lue::nr_elements(shape));
+        BOOST_CHECK(lue::all(equal_to).get());
     }
 
     // Multiply scalar with array
     // scalar * array
     {
-        auto multiply = lue::multiply(fill_value1, array1);
-        hpx::shared_future<Element> expected_result =
-            hpx::make_ready_future<Element>(5 * 5);
-        auto equal_to = lue::equal_to(multiply, expected_result);
+        auto multiply = fill_value1 * array1;
+        auto equal_to = multiply == fill_value1 * fill_value1;
 
-        auto cast = lue::cast<std::int32_t>(equal_to);
-        auto sum = lue::sum(cast);
-
-        BOOST_CHECK_EQUAL(sum.get(), lue::nr_elements(shape));
+        BOOST_CHECK(lue::all(equal_to).get());
     }
 }
 

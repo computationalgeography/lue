@@ -15,8 +15,8 @@ public:
 
     using OutputElement = OutputElement_;
 
-    OutputElement operator()(
-        InputElement const& input_element) const
+    constexpr OutputElement operator()(
+        InputElement const& input_element) const noexcept
     {
         return static_cast<OutputElement>(input_element);
     }

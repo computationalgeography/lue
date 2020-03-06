@@ -1,5 +1,4 @@
 #define BOOST_TEST_MODULE lue framework algorithm all
-#include "lue/framework/core/component/partitioned_array.hpp"
 #include "lue/framework/algorithm/all.hpp"
 #include "lue/framework/algorithm/fill.hpp"
 #include "lue/framework/test/array.hpp"
@@ -20,8 +19,8 @@ void test_array()
     Array array1{shape};
     Array array2{shape};
 
-    hpx::shared_future<Element> fill_value1 = hpx::make_ready_future<bool>(1);
-    hpx::shared_future<Element> fill_value2 = hpx::make_ready_future<bool>(0);
+    Element const fill_value1{1};
+    Element const fill_value2{0};
 
     hpx::wait_all(
         lue::fill(array1, fill_value1),
@@ -44,6 +43,8 @@ BOOST_AUTO_TEST_CASE(array_##rank##d_##Element)  \
 }
 
 TEST_CASE(1, bool)
+TEST_CASE(1, int32_t)
 TEST_CASE(2, bool)
+TEST_CASE(2, int32_t)
 
 #undef TEST_CASE

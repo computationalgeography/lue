@@ -5,10 +5,10 @@
 namespace lue {
 namespace detail {
 
-// Return true if all of the input elements are true
+// Return true if any of the input elements is true
 template<
     typename InputElement>
-class All
+class Any
 {
 
 public:
@@ -35,8 +35,8 @@ public:
         InputElement const input_element) const noexcept
     {
         // The result is true if the value aggregated until now is true
-        // and the input element is true
-        return aggregate_value && input_element;
+        // or the input element is true
+        return aggregate_value || input_element;
     }
 
     constexpr OutputElement partition(
@@ -51,8 +51,8 @@ public:
         InputElement const input_element) const noexcept
     {
         // The result is true if the value aggregated until now is true
-        // and the input element is true
-        return aggregated_value && input_element;
+        // or the input element is true
+        return aggregated_value || input_element;
     }
 
 };
@@ -63,10 +63,10 @@ public:
 template<
     typename Element,
     Rank rank>
-hpx::future<Element> all(
+hpx::future<Element> any(
     PartitionedArray<Element, rank> const& array)
 {
-    return unary_aggregate_operation(array, detail::All<Element>{});
+    return unary_aggregate_operation(array, detail::Any<Element>{});
 }
 
 }  // namespace lue

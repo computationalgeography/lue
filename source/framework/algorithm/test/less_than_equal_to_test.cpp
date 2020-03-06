@@ -1,8 +1,7 @@
-#define BOOST_TEST_MODULE lue framework algorithm less
-#include "lue/framework/core/component/partitioned_array.hpp"
+#define BOOST_TEST_MODULE lue framework algorithm less_than_equal_to
 #include "lue/framework/algorithm/all.hpp"
+#include "lue/framework/algorithm/comparison.hpp"
 #include "lue/framework/algorithm/fill.hpp"
-#include "lue/framework/algorithm/less.hpp"
 #include "lue/framework/algorithm/none.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
@@ -22,10 +21,8 @@ void test_array()
     Array array1{shape};
     Array array2{shape};
 
-    hpx::shared_future<Element> fill_value1 =
-        hpx::make_ready_future<Element>(5);
-    hpx::shared_future<Element> fill_value2 =
-        hpx::make_ready_future<Element>(6);
+    Element const fill_value1{5};
+    Element const fill_value2{6};
 
     hpx::wait_all(
         lue::fill(array1, fill_value1),
@@ -33,27 +30,27 @@ void test_array()
 
     // Compare two arrays with different values
     {
-        BOOST_CHECK(lue::all(lue::less(array1, array2)).get());
-        BOOST_CHECK(lue::none(lue::less(array2, array1)).get());
+        BOOST_CHECK(lue::all(array1 <= array2).get());
+        BOOST_CHECK(lue::none(array2 <= array1).get());
     }
 
     // Compare two arrays with the same values
     {
-        BOOST_CHECK(lue::none(lue::less(array2, array2)).get());
+        BOOST_CHECK(lue::all(array2 <= array2).get());
     }
 
     // Compare array with scalar
-    // array < scalar
+    // array <= scalar
     {
-        BOOST_CHECK(lue::none(lue::less(array2, fill_value2)).get());
-        BOOST_CHECK(lue::all(lue::less(array1, fill_value2)).get());
+        BOOST_CHECK(lue::all(array1 <= fill_value2).get());
+        BOOST_CHECK(lue::none(array2 <= fill_value1).get());
     }
 
     // Compare array with scalar
-    // scalar < array
+    // scalar <= array
     {
-        BOOST_CHECK(lue::none(lue::less(fill_value2, array2)).get());
-        BOOST_CHECK(lue::all(lue::less(fill_value1, array2)).get());
+        BOOST_CHECK(lue::all(fill_value2 <= array2).get());
+        BOOST_CHECK(lue::none(fill_value2 <= array1).get());
     }
 }
 

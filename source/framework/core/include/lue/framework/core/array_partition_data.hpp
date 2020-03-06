@@ -333,7 +333,7 @@ ArrayPartitionData<Element, rank>::ArrayPartitionData(
     _span{_elements.data(), _shape}
 
 {
-    // An instance is already created. Moving-constructing a new instance
+    // An instance is already created. Move-constructing a new instance
     // based on the existing instance just grabs the internals. No need to
     // be smart about NUMA domains here. Keep the elements where they are.
 

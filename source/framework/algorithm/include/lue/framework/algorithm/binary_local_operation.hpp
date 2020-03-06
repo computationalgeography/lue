@@ -1,6 +1,5 @@
 #pragma once
-#include "lue/framework/core/type_traits.hpp"
-#include <hpx/include/lcos.hpp>
+#include "lue/framework/core/component/partitioned_array.hpp"
 
 
 namespace lue {
@@ -60,41 +59,35 @@ public:
 
         using OutputData = DataT<OutputPartition>;
 
-        return hpx::dataflow(
-            hpx::launch::async,
-            hpx::util::unwrapping(
+        auto const input_partition_server_ptr1{
+            hpx::get_ptr(input_partition1).get()};
+        auto const& input_partition_server1{*input_partition_server_ptr1};
 
-                [functor](
-                    auto&& offset,
-                    InputData&& input_partition_data1,
-                    InputData&& input_partition_data2)
-                {
-                    assert(
-                        input_partition_data1.shape() ==
-                        input_partition_data2.shape());
+        auto const input_partition_server_ptr2{
+            hpx::get_ptr(input_partition2).get()};
+        auto const& input_partition_server2{*input_partition_server_ptr2};
 
-                    TargetIndex const target_idx =
-                        input_partition_data1.target_idx();
-                    OutputData output_partition_data{
-                        input_partition_data1.shape(), target_idx};
+        auto offset{input_partition_server1.offset()};
+        assert(input_partition_server2.offset() == offset);
 
-                    std::transform(
-                        input_partition_data1.begin(),
-                        input_partition_data1.end(),
-                        input_partition_data2.begin(),
-                        output_partition_data.begin(),
-                        functor);
+        InputData input_partition_data1{
+            input_partition_server1.data(CopyMode::share)};
+        InputData input_partition_data2{
+            input_partition_server2.data(CopyMode::share)};
 
-                    return OutputPartition{
-                        hpx::find_here(),
-                        offset,
-                        std::move(output_partition_data)};
-                }
+        TargetIndex const target_idx = input_partition_data1.target_idx();
+        OutputData output_partition_data{
+            input_partition_data1.shape(), target_idx};
 
-            ),
-            input_partition1.offset(),
-            input_partition1.data(CopyMode::share),
-            input_partition2.data(CopyMode::share));
+        std::transform(
+            input_partition_data1.begin(),
+            input_partition_data1.end(),
+            input_partition_data2.begin(),
+            output_partition_data.begin(),
+            functor);
+
+        return OutputPartition{
+            hpx::find_here(), offset, std::move(output_partition_data)};
 
     }
 
@@ -137,38 +130,30 @@ public:
 
         using OutputData = DataT<OutputPartition>;
 
-        return hpx::dataflow(
-            hpx::launch::async,
-            hpx::util::unwrapping(
+        auto const input_partition_server_ptr{
+            hpx::get_ptr(input_partition).get()};
+        auto const& input_partition_server{*input_partition_server_ptr};
 
-                [input_scalar, functor](
-                    auto&& offset,
-                    InputData&& input_partition_data)
-                {
-                    TargetIndex const target_idx =
-                        input_partition_data.target_idx();
-                    OutputData output_partition_data{
-                        input_partition_data.shape(), target_idx};
+        auto offset{input_partition_server.offset()};
+        InputData input_partition_data{
+            input_partition_server.data(CopyMode::share)};
 
-                    std::transform(
-                        input_partition_data.begin(),
-                        input_partition_data.end(),
-                        output_partition_data.begin(),
-                        [input_scalar, functor](
-                            InputElement const input_element)
-                        {
-                            return functor(input_element, input_scalar);
-                        });
+        TargetIndex const target_idx = input_partition_data.target_idx();
+        OutputData output_partition_data{
+            input_partition_data.shape(), target_idx};
 
-                    return OutputPartition{
-                        hpx::find_here(),
-                        offset,
-                        std::move(output_partition_data)};
-                }
+        std::transform(
+            input_partition_data.begin(),
+            input_partition_data.end(),
+            output_partition_data.begin(),
+            [input_scalar, functor](
+                InputElement const input_element)
+            {
+                return functor(input_element, input_scalar);
+            });
 
-            ),
-            input_partition.offset(),
-            input_partition.data(CopyMode::share));
+        return OutputPartition{
+            hpx::find_here(), offset, std::move(output_partition_data)};
 
     }
 
@@ -211,38 +196,30 @@ public:
 
         using OutputData = DataT<OutputPartition>;
 
-        return hpx::dataflow(
-            hpx::launch::async,
-            hpx::util::unwrapping(
+        auto const input_partition_server_ptr{
+            hpx::get_ptr(input_partition).get()};
+        auto const& input_partition_server{*input_partition_server_ptr};
 
-                [input_scalar, functor](
-                    auto&& offset,
-                    InputData&& input_partition_data)
-                {
-                    TargetIndex const target_idx =
-                        input_partition_data.target_idx();
-                    OutputData output_partition_data{
-                        input_partition_data.shape(), target_idx};
+        auto offset{input_partition_server.offset()};
+        InputData input_partition_data{
+            input_partition_server.data(CopyMode::share)};
 
-                    std::transform(
-                        input_partition_data.begin(),
-                        input_partition_data.end(),
-                        output_partition_data.begin(),
-                        [input_scalar, functor](
-                            InputElement const input_element)
-                        {
-                            return functor(input_scalar, input_element);
-                        });
+        TargetIndex const target_idx = input_partition_data.target_idx();
+        OutputData output_partition_data{
+            input_partition_data.shape(), target_idx};
 
-                    return OutputPartition{
-                        hpx::find_here(),
-                        offset,
-                        std::move(output_partition_data)};
-                }
+        std::transform(
+            input_partition_data.begin(),
+            input_partition_data.end(),
+            output_partition_data.begin(),
+            [input_scalar, functor](
+                InputElement const input_element)
+            {
+                return functor(input_scalar, input_element);
+            });
 
-            ),
-            input_partition.offset(),
-            input_partition.data(CopyMode::share));
+        return OutputPartition{
+            hpx::find_here(), offset, std::move(output_partition_data)};
 
     }
 
@@ -272,22 +249,20 @@ using BinaryLocalOperationPartitionAction =
 template<
     typename InputElement,
     Rank rank,
-    template<typename, Rank> typename Array,
     typename Functor>
-Array<OutputElementT<Functor>, rank> binary_local_operation(
-    Array<InputElement, rank> const& input_array1,
-    Array<InputElement, rank> const& input_array2,
+PartitionedArray<OutputElementT<Functor>, rank> binary_local_operation(
+    PartitionedArray<InputElement, rank> const& input_array1,
+    PartitionedArray<InputElement, rank> const& input_array2,
     Functor const& functor)
 {
     assert(nr_partitions(input_array1) == nr_partitions(input_array2));
     assert(shape_in_partitions(input_array1) == shape_in_partitions(input_array2));
 
-    using InputArray = Array<InputElement, rank>;
+    using InputArray = PartitionedArray<InputElement, rank>;
     using InputPartition = PartitionT<InputArray>;
 
-    // using OutputArray = PartitionedArrayT<InputArray, OutputElementT<Functor>>;
     using OutputElement = OutputElementT<Functor>;
-    using OutputArray = Array<OutputElement, rank>;
+    using OutputArray = PartitionedArray<OutputElement, rank>;
     using OutputPartition = PartitionT<OutputArray>;
     using OutputPartitions = PartitionsT<OutputArray>;
 
@@ -326,17 +301,16 @@ Array<OutputElementT<Functor>, rank> binary_local_operation(
 template<
     typename InputElement,
     Rank rank,
-    template<typename, Rank> typename Array,
     typename Functor>
-Array<OutputElementT<Functor>, rank> binary_local_operation(
-    Array<InputElement, rank> const& input_array,
+PartitionedArray<OutputElementT<Functor>, rank> binary_local_operation(
+    PartitionedArray<InputElement, rank> const& input_array,
     hpx::shared_future<InputElement> const& input_scalar,
     Functor const& functor)
 {
-    using InputArray = Array<InputElement, rank>;
+    using InputArray = PartitionedArray<InputElement, rank>;
     using InputPartition = PartitionT<InputArray>;
 
-    using OutputArray = Array<OutputElementT<Functor>, rank>;
+    using OutputArray = PartitionedArray<OutputElementT<Functor>, rank>;
     using OutputPartition = PartitionT<OutputArray>;
     using OutputPartitions = PartitionsT<OutputArray>;
 
@@ -375,17 +349,16 @@ Array<OutputElementT<Functor>, rank> binary_local_operation(
 template<
     typename InputElement,
     Rank rank,
-    template<typename, Rank> typename Array,
     typename Functor>
-Array<OutputElementT<Functor>, rank> binary_local_operation(
+PartitionedArray<OutputElementT<Functor>, rank> binary_local_operation(
     hpx::shared_future<InputElement> const& input_scalar,
-    Array<InputElement, rank> const& input_array,
+    PartitionedArray<InputElement, rank> const& input_array,
     Functor const& functor)
 {
-    using InputArray = Array<InputElement, rank>;
+    using InputArray = PartitionedArray<InputElement, rank>;
     using InputPartition = PartitionT<InputArray>;
 
-    using OutputArray = Array<OutputElementT<Functor>, rank>;
+    using OutputArray = PartitionedArray<OutputElementT<Functor>, rank>;
     using OutputPartition = PartitionT<OutputArray>;
     using OutputPartitions = PartitionsT<OutputArray>;
 

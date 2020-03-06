@@ -1,9 +1,8 @@
 #define BOOST_TEST_MODULE lue framework algorithm equal_to
-#include "lue/framework/core/component/partitioned_array.hpp"
-#include "lue/framework/algorithm/equal_to.hpp"
+#include "lue/framework/algorithm/comparison.hpp"
+#include "lue/framework/algorithm/all.hpp"
 #include "lue/framework/algorithm/fill.hpp"
-#include "lue/framework/algorithm/unique.hpp"
-#include "lue/framework/define.hpp"
+#include "lue/framework/algorithm/none.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
@@ -22,10 +21,8 @@ void test_array()
     Array array1{shape};
     Array array2{shape};
 
-    hpx::shared_future<Element> fill_value1 =
-        hpx::make_ready_future<Element>(5);
-    hpx::shared_future<Element> fill_value2 =
-        hpx::make_ready_future<Element>(6);
+    Element fill_value1{5};
+    Element fill_value2{6};
 
     hpx::wait_all(
         lue::fill(array1, fill_value1),
@@ -33,45 +30,36 @@ void test_array()
 
     // Compare two arrays with different values
     {
-        auto equal_to = lue::equal_to(array1, array2);
-        auto unique = lue::unique(equal_to).get();
+        auto equal_to = array1 == array2;
+        auto none = lue::none(equal_to);
 
-        BOOST_REQUIRE_EQUAL(unique.nr_elements(), 1);
-        BOOST_CHECK_EQUAL(
-            unique.partitions()[0].data(lue::CopyMode::copy).get()[0], false);
+        BOOST_CHECK(none.get());
     }
 
     // Compare two arrays with the same values
     {
-        auto equal_to = lue::equal_to(array1, array1);
-        auto unique = lue::unique(equal_to).get();
+        auto equal_to = array1 == array1;
+        auto all = lue::all(equal_to);
 
-        BOOST_REQUIRE_EQUAL(unique.nr_elements(), 1);
-        BOOST_CHECK_EQUAL(
-            unique.partitions()[0].data(lue::CopyMode::copy).get()[0], true);
+        BOOST_CHECK(all.get());
     }
 
     // Compare array with scalar
     // array == scalar
     {
-        auto equal_to = lue::equal_to(array1, fill_value1);
-        auto unique = lue::unique(equal_to).get();
+        auto equal_to = array1 == fill_value1;
+        auto all = lue::all(equal_to);
 
-        BOOST_REQUIRE_EQUAL(unique.nr_elements(), 1);
-        BOOST_CHECK_EQUAL(
-            unique.partitions()[0].data(lue::CopyMode::copy).get()[0], true);
-
+        BOOST_CHECK(all.get());
     }
 
     // Compare array with scalar
     // scalar == array
     {
-        auto equal_to = lue::equal_to(fill_value1, array1);
-        auto unique = lue::unique(equal_to).get();
+        auto equal_to = fill_value1 == array1;
+        auto all = lue::all(equal_to);
 
-        BOOST_REQUIRE_EQUAL(unique.nr_elements(), 1);
-        BOOST_CHECK_EQUAL(
-            unique.partitions()[0].data(lue::CopyMode::copy).get()[0], true);
+        BOOST_CHECK(all.get());
     }
 }
 

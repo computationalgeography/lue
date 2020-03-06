@@ -1,4 +1,4 @@
-#define BOOST_TEST_MODULE lue framework algorithm add
+#define BOOST_TEST_MODULE lue framework algorithm subtract
 #include "lue/framework/algorithm/arithmetic.hpp"
 #include "lue/framework/algorithm/fill.hpp"
 #include "lue/framework/algorithm/sum.hpp"
@@ -20,20 +20,20 @@ void test_array()
     Array array1{shape};
     Array array2{shape};
 
-    Element const fill_value1{5};
+    Element const fill_value1{15};
     Element const fill_value2{6};
 
     hpx::wait_all(
         lue::fill(array1, fill_value1),
         lue::fill(array2, fill_value2));
 
-    auto add = array1 + array2;  // lue::add(array1, array2)
+    auto add = array1 - array2;  // lue::subtract(array1, array2)
     auto sum = lue::sum(add);
 
     BOOST_CHECK_EQUAL(
         sum.get(),
         static_cast<Element>(
-            lue::nr_elements(shape) * (fill_value1 + fill_value2)));
+            lue::nr_elements(shape) * (fill_value1 - fill_value2)));
 }
 
 }  // namespace detail

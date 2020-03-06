@@ -16,8 +16,8 @@ public:
 
     using OutputElement = InputElement;
 
-    OutputElement operator()(
-        InputElement const& input_element) const
+    constexpr OutputElement operator()(
+        InputElement const& input_element) const noexcept
     {
         // The use of volatile prevends the optimizing compiler
         // to remove this iteration
@@ -39,21 +39,19 @@ public:
 /*!
     @brief      Per cell in a partitioned array, iterate a number of
                 times before copying the cell to the result
-    @tparam     Array Type of the input and output partitioned arrays
-    @param      array Input partitioned array
-    @return     New partitioned array
 
     This algorithm has the same effect as the copy algorithm, but spends
     some more time. It is useful when simulating a configurable amount
     of load per cell.
 */
 template<
-    typename Array>
-Array iterate_per_element(
-    Array const& array)
+    typename Element,
+    Rank rank>
+PartitionedArray<Element, rank> iterate_per_element(
+    PartitionedArray<Element, rank> const& input_array)
 {
     return unary_local_operation(
-        array, detail::IteratePerElement<ElementT<Array>>{});
+        input_array, detail::IteratePerElement<Element>{});
 }
 
 }  // namespace lue

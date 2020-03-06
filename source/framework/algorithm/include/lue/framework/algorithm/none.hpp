@@ -1,160 +1,73 @@
 #pragma once
-#include "lue/framework/core/type_traits.hpp"
-#include <hpx/include/lcos.hpp>
-#include <type_traits>
+#include "lue/framework/algorithm/unary_aggregate_operation.hpp"
 
 
 namespace lue {
 namespace detail {
 
+// Return true if none of the input elements is true. All of them evaluate
+// to false.
 template<
-    typename Partition,
-    typename Element>
-Partition none_partition(
-    Partition const& input_partition)
+    typename InputElement>
+class None
 {
-    assert(
-        hpx::get_colocation_id(input_partition.get_id()).get() ==
-        hpx::find_here());
 
-    using InputData = DataT<Partition>;
+public:
 
-    using OutputData = DataT<Partition>;
+    static_assert(std::is_convertible_v<InputElement, bool>);
 
-    using Offset = OffsetT<Partition>;
-    using Shape = ShapeT<Partition>;
+    using OutputElement = InputElement;
 
-    // Aggregate nD array partition to nD array partition containing a
-    // single value
-    Shape shape;
-    std::fill(shape.begin(), shape.end(), 1);
+    constexpr OutputElement operator()() const noexcept
+    {
+        // The result is false if there are not values to aggregate
+        return false;
+    }
 
-    return hpx::dataflow(
-        hpx::launch::async,
-        hpx::util::unwrapping(
+    constexpr OutputElement operator()(
+        InputElement const input_element) const noexcept
+    {
+        // The result is true if the input element is not true
+        return !input_element;
+    }
 
-            [shape](
-                hpx::id_type const locality_id,
-                InputData&& partition_data)
-            {
-                // TODO Update for case where Element is not bool
-                // If one of the elements evaluates to true, then the result
-                // is false.
-                Element result = !(std::find(
-                    partition_data.begin(), partition_data.end(),
-                    Element{1}) != partition_data.end());
+    constexpr OutputElement operator()(
+        InputElement const aggregated_value,
+        InputElement const input_element) const noexcept
+    {
+        // The result is true if the value aggregated until now is true
+        // and the input element is not true
+        return aggregated_value && !input_element;
+    }
 
-                TargetIndex const target_idx = partition_data.target_idx();
+    constexpr OutputElement partition(
+        InputElement const input_element) const noexcept
+    {
+        // The result is true if the input element is true
+        return input_element;
+    }
 
-                // Whatever offset we choose, it is wrong when this
-                // partition becomes part of a partitioned array. This
-                // is so because the partitions are being aggregated
-                // into a single value. Information about the shape of
-                // the partitions is lost. But this partition never
-                // becomes part of an partitioned array, so no need to
-                // worry about it.
-                Offset offset{};
-                offset.fill(0);
+    constexpr OutputElement partition(
+        InputElement const aggregated_value,
+        InputElement const input_element) const noexcept
+    {
+        // The result is true if the value aggregated until now is true
+        // and the input element is true
+        return aggregated_value && input_element;
+    }
 
-                return Partition{
-                    locality_id, offset, OutputData{shape, result, target_idx}};
-            }
-
-        ),
-        hpx::get_colocation_id(input_partition.get_id()),
-        input_partition.data(CopyMode::share));
-}
+};
 
 }  // namespace detail
 
 
 template<
-    typename Partition,
-    typename Element>
-struct NonePartitionAction:
-    hpx::actions::make_action<
-        decltype(&detail::none_partition<Partition, Element>),
-        &detail::none_partition<Partition, Element>,
-        NonePartitionAction<Partition, Element>>
-{};
-
-
-/*!
-    @brief      Return whether a partitioned array contains only elements
-                that evaluate to true
-    @tparam     Element Type of elements in the arrays
-    @tparam     rank Rank of the input arrays
-    @tparam     Array Class template of the type of the arrays
-    @param      array Partitioned array
-    @return     Future to a value that evaluates to true or false
-*/
-template<
     typename Element,
-    Rank rank,
-    template<typename, Rank> typename Array>
+    Rank rank>
 hpx::future<Element> none(
-    Array<Element, rank> const& array)
+    PartitionedArray<Element, rank> const& array)
 {
-    static_assert(std::is_convertible_v<Element, bool>);
-
-    using InputArray = Array<Element, rank>;
-    using InputPartition = PartitionT<InputArray>;
-
-    using OutputPartitions = PartitionsT<InputArray, Element>;
-
-    OutputPartitions output_partitions{
-        shape_in_partitions(array), scattered_target_index()};
-    NonePartitionAction<InputPartition, Element> action;
-
-    for(Index p = 0; p < nr_partitions(array); ++p) {
-
-        output_partitions[p] = hpx::dataflow(
-            hpx::launch::async,
-
-            [action](
-                InputPartition const& input_partition)
-            {
-                return action(
-                    hpx::get_colocation_id(
-                        hpx::launch::sync, input_partition.get_id()),
-                    input_partition);
-            },
-
-            array.partitions()[p]);
-
-    }
-
-    // The partition results are being determined on their respective
-    // localities. Attach a continuation that aggregates the results
-    // once the partition results are ready. This continuation runs on
-    // our locality.
-    return hpx::when_all(
-        output_partitions.begin(), output_partitions.end()).then(
-                hpx::util::unwrapping(
-
-            [](auto const& partitions) {
-
-                Element result{0};
-
-                for(auto const& partition: partitions) {
-
-                    auto const data = partition.data(CopyMode::copy).get();
-                    assert(data.nr_elements() == 1);
-                    result = data[0];
-
-                    // If one of the elements evaluates to true, then
-                    // the result is false.
-                    if(result) {
-                        // Short-circuit
-                        break;
-                    }
-
-                }
-
-                return result;
-            }
-
-        ));
+    return unary_aggregate_operation(array, detail::None<Element>{});
 }
 
 }  // namespace lue

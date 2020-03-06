@@ -7,7 +7,7 @@ namespace detail {
 
 template<
     typename InputElement>
-class Add
+class Subtract
 {
 
 public:
@@ -18,7 +18,7 @@ public:
         InputElement const& input_element1,
         InputElement const& input_element2) const noexcept
     {
-        return input_element1 + input_element2;
+        return input_element1 - input_element2;
     }
 
 };
@@ -29,33 +29,33 @@ public:
 template<
     typename Element,
     Rank rank>
-PartitionedArray<Element, rank> add(
+PartitionedArray<Element, rank> subtract(
     PartitionedArray<Element, rank> const& array1,
     PartitionedArray<Element, rank> const& array2)
 {
-    return binary_local_operation(array1, array2, detail::Add<Element>{});
+    return binary_local_operation(array1, array2, detail::Subtract<Element>{});
 }
 
 
 template<
     typename Element,
     Rank rank>
-PartitionedArray<Element, rank> add(
+PartitionedArray<Element, rank> subtract(
     PartitionedArray<Element, rank> const& array,
     hpx::shared_future<Element> const& scalar)
 {
-    return binary_local_operation(array, scalar, detail::Add<Element>{});
+    return binary_local_operation(array, scalar, detail::Subtract<Element>{});
 }
 
 
 template<
     typename Element,
     Rank rank>
-PartitionedArray<Element, rank> add(
+PartitionedArray<Element, rank> subtract(
     hpx::shared_future<Element> const& scalar,
     PartitionedArray<Element, rank> const& array)
 {
-    return binary_local_operation(scalar, array, detail::Add<Element>{});
+    return binary_local_operation(scalar, array, detail::Subtract<Element>{});
 }
 
 }  // namespace lue

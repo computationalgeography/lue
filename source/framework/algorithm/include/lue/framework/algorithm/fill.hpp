@@ -1,6 +1,5 @@
 #pragma once
-#include "lue/framework/core/type_traits.hpp"
-#include <hpx/include/lcos.hpp>
+#include "lue/framework/core/component/partitioned_array.hpp"
 
 
 namespace lue {
@@ -19,10 +18,9 @@ namespace lue {
 */
 template<
     typename Element,
-    Rank rank,
-    template<typename, Rank> typename Array>
+    Rank rank>
 [[nodiscard]] hpx::future<void> fill(
-    Array<Element, rank>& array,
+    PartitionedArray<Element, rank>& array,
     hpx::shared_future<Element> const& fill_value)
 {
     std::vector<hpx::future<void>> fill_partitions(nr_partitions(array));
@@ -40,6 +38,17 @@ template<
     }
 
     return hpx::when_all(std::move(fill_partitions));
+}
+
+
+template<
+    typename Element,
+    Rank rank>
+[[nodiscard]] hpx::future<void> fill(
+    PartitionedArray<Element, rank>& array,
+    Element const& fill_value)
+{
+    return fill(array, hpx::make_ready_future<Element>(fill_value).share());
 }
 
 }  // namespace lue

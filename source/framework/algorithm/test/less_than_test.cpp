@@ -1,7 +1,8 @@
-#define BOOST_TEST_MODULE lue framework algorithm add
-#include "lue/framework/algorithm/arithmetic.hpp"
+#define BOOST_TEST_MODULE lue framework algorithm less_than
+#include "lue/framework/algorithm/all.hpp"
+#include "lue/framework/algorithm/comparison.hpp"
 #include "lue/framework/algorithm/fill.hpp"
-#include "lue/framework/algorithm/sum.hpp"
+#include "lue/framework/algorithm/none.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
@@ -20,20 +21,37 @@ void test_array()
     Array array1{shape};
     Array array2{shape};
 
-    Element const fill_value1{5};
-    Element const fill_value2{6};
+    Element fill_value1{5};
+    Element fill_value2{6};
 
     hpx::wait_all(
         lue::fill(array1, fill_value1),
         lue::fill(array2, fill_value2));
 
-    auto add = array1 + array2;  // lue::add(array1, array2)
-    auto sum = lue::sum(add);
+    // Compare two arrays with different values
+    {
+        BOOST_CHECK(lue::all(array1 < array2).get());
+        BOOST_CHECK(lue::none(array2 < array1).get());
+    }
 
-    BOOST_CHECK_EQUAL(
-        sum.get(),
-        static_cast<Element>(
-            lue::nr_elements(shape) * (fill_value1 + fill_value2)));
+    // Compare two arrays with the same values
+    {
+        BOOST_CHECK(lue::none(array2 < array2).get());
+    }
+
+    // Compare array with scalar
+    // array < scalar
+    {
+        BOOST_CHECK(lue::none(array2 < fill_value2).get());
+        BOOST_CHECK(lue::all(array1 < fill_value2).get());
+    }
+
+    // Compare array with scalar
+    // scalar < array
+    {
+        BOOST_CHECK(lue::none(fill_value2 < array2).get());
+        BOOST_CHECK(lue::all(fill_value1 < array2).get());
+    }
 }
 
 }  // namespace detail
