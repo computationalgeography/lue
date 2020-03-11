@@ -84,6 +84,7 @@ target_compile_definitions(lue_py
 target_compile_options(lue_py
     PRIVATE
         $<$<CXX_COMPILER_ID:GNU>:-Wno-register -Wno-attributes>
+        $<$<CXX_COMPILER_ID:Clang>:-fsized-deallocation>
 )
 
 set_target_properties(lue_py

@@ -1,5 +1,6 @@
 #include "lue/hdf5/property_list.hpp"
 #include <cassert>
+#include <stdexcept>
 
 
 namespace lue {

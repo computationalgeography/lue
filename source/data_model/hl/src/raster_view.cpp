@@ -38,7 +38,7 @@ RasterView<DatasetPtr>::RasterView(
     // Read space box from domain
     {
         auto& space_domain{property_set.space_domain()};
-        auto value{space_domain.value<StationarySpaceBox>()};
+        auto value{space_domain.template value<StationarySpaceBox>()};
         value.read(0, _space_box.data());
     }
 
@@ -46,7 +46,7 @@ RasterView<DatasetPtr>::RasterView(
     {
         auto& properties{property_set.properties()};
         auto& space_discretization_property =
-            properties.collection<same_shape::Properties>()[
+            properties.template collection<same_shape::Properties>()[
                 space_discretization_property_name];
         space_discretization_property.value().read(0, _space_grid.data());
     }
