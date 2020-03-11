@@ -1,6 +1,7 @@
 #include "lue/hdf5/validate.hpp"
 #include "lue/hdf5/group.hpp"
 #include <algorithm>
+#include <iterator>
 
 
 namespace lue {
