@@ -44,5 +44,5 @@ BOOST_AUTO_TEST_CASE(range_2d_int32)
             { 61, 62, 63, 70, 71, 72, 79, 80, 81 },
         });
 
-    lue::test::check_equal_array(array, array_we_want);
+    lue::test::check_arrays_are_equal(array, array_we_want);
 }

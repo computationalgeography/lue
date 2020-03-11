@@ -70,13 +70,14 @@ public:
 
 
 template<
-    typename Array,
+    typename Element,
+    Rank rank,
     typename Kernel>
-Array focal_sum(
-    Array const& array,
+PartitionedArray<Element, rank> focal_sum(
+    PartitionedArray<Element, rank> const& array,
     Kernel const& kernel)
 {
-    return focal_operation(array, kernel, detail::FocalSum<ElementT<Array>>{});
+    return focal_operation(array, kernel, detail::FocalSum<Element>{});
 }
 
 }  // namespace lue

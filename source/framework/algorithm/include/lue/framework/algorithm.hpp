@@ -1,6 +1,7 @@
 #pragma once
 #include "lue/framework/algorithm/arithmetic.hpp"
 #include "lue/framework/algorithm/comparison.hpp"
+#include "lue/framework/algorithm/focal.hpp"
 #include "lue/framework/algorithm/logical.hpp"
 
 #include "lue/framework/algorithm/all.hpp"
@@ -18,11 +19,9 @@
 #include "lue/framework/algorithm/copy.hpp"
 #include "lue/framework/algorithm/empty.hpp"
 #include "lue/framework/algorithm/fill.hpp"
-#include "lue/framework/algorithm/focal_max.hpp"
-#include "lue/framework/algorithm/focal_mean.hpp"
-#include "lue/framework/algorithm/focal_sum.hpp"
 #include "lue/framework/algorithm/iterate_per_element.hpp"
 #include "lue/framework/algorithm/locality_id.hpp"
+#include "lue/framework/algorithm/mesh_grid.hpp"
 #include "lue/framework/algorithm/range.hpp"
 #include "lue/framework/algorithm/uniform.hpp"
 #include "lue/framework/algorithm/unique.hpp"

@@ -73,6 +73,44 @@ public:
 
 
 template<
+    typename OutOfImagePolicy_=SkipOutOfImage,
+    typename NoDataFocusElementPolicy_=KeepNoDataFocusElement
+>
+class ConvolvePolicies:
+    public OutOfImagePolicy_,
+    public NoDataFocusElementPolicy_
+{
+
+public:
+
+    using OutOfImagePolicy = OutOfImagePolicy_;
+
+    using NoDataFocusElementPolicy = NoDataFocusElementPolicy_;
+
+    ConvolvePolicies() {};
+
+private:
+
+};
+
+
+template<
+    typename ConvolvePolicies,
+    typename Array,
+    typename Kernel,
+    typename OutputElement=double>
+PartitionedArrayT<Array, OutputElement> convolve(
+    ConvolvePolicies const& policies,
+    Array const& array,
+    Kernel const& kernel)
+{
+    return focal_operation(
+        policies, array, kernel, detail::Convolve<ElementT<Array>,
+        OutputElement>{});
+}
+
+
+template<
     typename Array,
     typename Kernel,
     typename OutputElement=double>
@@ -80,8 +118,7 @@ PartitionedArrayT<Array, OutputElement> convolve(
     Array const& array,
     Kernel const& kernel)
 {
-    return focal_operation(
-        array, kernel, detail::Convolve<ElementT<Array>, OutputElement>{});
+    return convolve(ConvolvePolicies{}, array, kernel);
 }
 
 }  // namespace lue

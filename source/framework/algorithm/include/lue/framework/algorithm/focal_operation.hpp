@@ -1,7 +1,7 @@
 #pragma once
+#include "lue/framework/algorithm/policy.hpp"
+#include "lue/framework/core/component/partitioned_array.hpp"
 #include "lue/framework/core/array.hpp"
-#include "lue/framework/core/define.hpp"
-#include <hpx/include/lcos.hpp>
 
 
 namespace lue {
@@ -1138,10 +1138,12 @@ auto spawn_create_halo_partition(
 
 
 template<
+    typename Policies,
     typename Array,
     typename Kernel,
     typename Functor>
 PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
+    Policies const& /* policies */,
     Array const& input_array,
     Kernel const& kernel,
     Functor const& functor)
@@ -1599,6 +1601,7 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
 
 
 template<
+    typename Policies,
     typename Array,
     typename Kernel,
     typename Functor>
@@ -1614,10 +1617,12 @@ class FocalOperation
 public:
 
     FocalOperation(
+        Policies const& policies,
         Array const& array,
         Kernel const& kernel,
         Functor const& functor):
 
+        _policies{policies},
         _array{array},
         _kernel{kernel},
         _functor{functor}
@@ -1630,12 +1635,14 @@ public:
         static_assert(rank == 2);
 
         if constexpr(rank == 2) {
-            return focal_operation_2d<Array, Kernel, Functor>(
-                _array, _kernel, _functor);
+            return focal_operation_2d<Policies, Array, Kernel, Functor>(
+                _policies, _array, _kernel, _functor);
         }
     }
 
 private:
+
+    Policies const& _policies;
 
     Array const&   _array;
 
@@ -1649,18 +1656,59 @@ private:
 
 
 template<
-    typename Array,
+    typename OutOfImagePolicy_=SkipOutOfImage,
+    typename NoDataFocusElementPolicy_=KeepNoDataFocusElement
+>
+class FocalOperationPolicies:
+    public OutOfImagePolicy_,
+    public NoDataFocusElementPolicy_
+{
+
+public:
+
+    using OutOfImagePolicy = OutOfImagePolicy_;
+
+    using NoDataFocusElementPolicy = NoDataFocusElementPolicy_;
+
+    FocalOperationPolicies() {};
+
+private:
+
+};
+
+
+template<
+    typename Policies,
+    typename Element,
+    Rank rank,
     typename Kernel,
     typename Functor>
-PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation(
-    Array const& array,
+PartitionedArray<OutputElementT<Functor>, rank> focal_operation(
+    Policies const& policies,
+    PartitionedArray<Element, rank> const& array,
     Kernel const& kernel,
     Functor const& functor)
 {
-    detail::FocalOperation<Array, Kernel, Functor> focal_operation{
-        array, kernel, functor};
+    using InputArray = PartitionedArray<Element, rank>;
+
+    detail::FocalOperation<Policies, InputArray, Kernel, Functor>
+        focal_operation{policies, array, kernel, functor};
 
     return focal_operation();
+}
+
+
+template<
+    typename Element,
+    Rank rank,
+    typename Kernel,
+    typename Functor>
+PartitionedArray<OutputElementT<Functor>, rank> focal_operation(
+    PartitionedArray<Element, rank> const& array,
+    Kernel const& kernel,
+    Functor const& functor)
+{
+    return focal_operation(FocalOperationPolicies{}, array, kernel, functor);
 }
 
 }  // namespace lue

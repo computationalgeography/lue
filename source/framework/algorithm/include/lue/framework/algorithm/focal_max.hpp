@@ -89,13 +89,14 @@ public:
 // the kernel and the (view on the) elements
 
 template<
-    typename Array,
+    typename Element,
+    Rank rank,
     typename Kernel>
-Array focal_max(
-    Array const& array,
+PartitionedArray<Element, rank> focal_max(
+    PartitionedArray<Element, rank> const& array,
     Kernel const& kernel)
 {
-    return focal_operation(array, kernel, detail::FocalMax<ElementT<Array>>{});
+    return focal_operation(array, kernel, detail::FocalMax<Element>{});
 }
 
 }  // namespace lue

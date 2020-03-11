@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/core/component/partitioned_array.hpp"
+#include "lue/framework/algorithm/close_to.hpp"
 #include "lue/framework/algorithm/equal_to.hpp"
 #include "lue/framework/algorithm/greater_than.hpp"
 #include "lue/framework/algorithm/greater_than_equal_to.hpp"

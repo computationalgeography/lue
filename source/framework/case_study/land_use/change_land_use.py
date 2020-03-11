@@ -25,6 +25,7 @@ gdal.UseExceptions()
 # - [*] operator>(array, array), greater_than(array, array)
 # - [*] operator>=(array, array), greater_than_equal_to(array, array)
 # - [*] operator<=(array, array), less_than_equal_to(array, array)
+# - [*] close_to(array, scalar), close_to(array, array)
 
 # Logical
 # - [*] operator&&(array<bool>, array<bool>), logical_and(array<bool>, array<bool>)
@@ -44,22 +45,26 @@ gdal.UseExceptions()
 # Trigonometric
 # - [*] array = cos(array)
 # - [*] array = sin(array)
-# - [ ] array = atan2(array, array)
-
-# Focal
-# - [ ] slope(array, cell_with, cell_height)
-# - [ ] window_total, with support for skipping the focal cell
+# - [*] array = atan2(array, array)
+# - [*] array = atan(array)
 
 # Random
-# - [ ] array<float> uniform<float>(array, 0, 1)
-# - [ ] array<int> uniform<int>(array, 1, nr_land_use_types)
+# - [*] array<float> uniform<float>(array, 0, 1)
+# - [*] array<int> uniform<int>(array, 1, nr_land_use_types)
+
+# Focal
+# - [*] window_total, with support for skipping the focal cell
+# - [*] slope(array, cell_with, cell_height)
 
 # Misc
-# - [ ] is_close(array, scalar), is_close(array, array)
-# - [ ] array_like(array, fill_value) → create new array distributed as input
-# - [ ] array<float> scale(array<float>, min, max) → scale values to range [min, max]
-# - [ ] where(array<bool>, true_cells, false_cells)
-# - [ ] array<float> mesh_grid(ranges)
+# - [*] where(array<bool>, true_cells, false_cells)
+# - [*] array_like(array, fill_value) → create new array distributed as input
+# - [*] array<float> mesh_grid(ranges)
+# - [*] array = minimum(array)
+# - [*] array = maximum(array)
+
+# Skip:
+# - [ ] array<float> map_range(array<float>, min, max) → map_range values to range [min, max]
 
 
 def count_if(
@@ -70,7 +75,7 @@ def count_if(
     return counts[True] if True in counts else 0
 
 
-def scale(
+def map_range(
         array):
     # Scale array so all values are stretched within [0, 1]
 
@@ -311,7 +316,7 @@ class ChangeLandUse(object):
                     # Mark all other suitabilities with 0.
                     suitability = np.where(
                         self.land_use != land_use_type, suitability, 0)
-                    suitability = scale(suitability)
+                    suitability = map_range(suitability)
 
                     self.land_use = self.expand_land_use_type(
                         self.land_use, land_use_type, suitability)
@@ -336,7 +341,7 @@ class ChangeLandUse(object):
                     # Mark all other suitabilities with 1.
                     suitability = np.where(
                         self.land_use == land_use_type, suitability, 1)
-                    suitability = scale(suitability)
+                    suitability = map_range(suitability)
 
                     self.land_use = self.contract_land_use_type(
                         self.land_use, land_use_type, suitability)
@@ -582,7 +587,7 @@ class Randomness(SuitabilityFactor):
             land_use_type,
             land_use):
 
-        return scale(np.random.uniform(size=land_use.shape))
+        return map_range(np.random.uniform(size=land_use.shape))
 
 
 class SuitableArea(SuitabilityFactor):

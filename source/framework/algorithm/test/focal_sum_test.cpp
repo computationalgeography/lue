@@ -51,5 +51,5 @@ BOOST_AUTO_TEST_CASE(focal_sum_2d_int32)
             { 549, 558, 375, 630, 639, 429, 447, 453, 304 },
         });
 
-    lue::test::check_equal_array(focal_sum, array_we_want);
+    lue::test::check_arrays_are_equal(focal_sum, array_we_want);
 }

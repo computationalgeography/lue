@@ -51,5 +51,5 @@ BOOST_AUTO_TEST_CASE(focal_max_2d_int32)
             { 71, 72, 72, 80, 81, 81, 80, 81, 81 },
         });
 
-    lue::test::check_equal_array(focal_max, array_we_want);
+    lue::test::check_arrays_are_equal(focal_max, array_we_want);
 }

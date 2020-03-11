@@ -119,6 +119,16 @@ template<
     typename Element>
 std::ostream& operator<<(
     std::ostream& stream,
+    lue::DynamicSpan<Element, 1> const& span)
+{
+    return stream_span<Element, 1>(stream, span);
+}
+
+
+template<
+    typename Element>
+std::ostream& operator<<(
+    std::ostream& stream,
     lue::DynamicSpan<Element, 2> const& span)
 {
     return stream_span<Element, 2>(stream, span);

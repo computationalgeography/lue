@@ -51,5 +51,5 @@ BOOST_AUTO_TEST_CASE(focal_mean_2d_float64)
             { 61.0 , 62.0, 62.5,  70.0, 71.0, 71.5, 74.5, 75.5, 76.0 },
         });
 
-    lue::test::check_equal_array(focal_mean, array_we_want);
+    lue::test::check_arrays_are_equal(focal_mean, array_we_want);
 }

@@ -32,6 +32,9 @@ public:
                    Kernel              (Shape const& shape,
                                         Weight weight);
 
+                   Kernel              (Shape const& shape,
+                                        std::initializer_list<Weight> weights);
+
                    Kernel              (Array<Weight, rank> const& weights);
 
                    Kernel              (Kernel const&)=default;
@@ -79,6 +82,23 @@ Kernel<Weight, rank>::Kernel(
     Weight const weight):
 
     Base{shape, weight},
+    _radius{(shape[0] - 1) / 2}
+
+{
+    assert(nr_elements(shape) > 0);
+    assert(this->shape()[0] == this->size());
+    assert(is_hypercube(shape));
+}
+
+
+template<
+    typename Weight,
+    Rank rank>
+Kernel<Weight, rank>::Kernel(
+    Shape const& shape,
+    std::initializer_list<Weight> weights):
+
+    Base{shape, weights},
     _radius{(shape[0] - 1) / 2}
 
 {

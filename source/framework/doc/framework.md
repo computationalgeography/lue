@@ -28,6 +28,7 @@ lue::subtract, operator- | Return the result of subtracting something from a par
 Name   | Description
 -------|------------
 lue::equal_to, operator== | Return the result of comparing something with a partitioned array
+lue::close_to | Return the result of comparing something with a partitioned array
 lue::not_equal_to, operator!= | Return the result of comparing something with a partitioned array
 lue::greater_than, operator> | Return the result of comparing something with a partitioned array
 lue::less_than, operator< | Return the result of comparing something with a partitioned array
@@ -48,6 +49,7 @@ Name   | Description
 -------|------------
 lue::cos | cos...
 lue::sin | sin...
+lue::atan | atan...
 lue::atan2 | atan2...
 
 
@@ -56,7 +58,6 @@ Name   | Description
 -------|------------
 lue::pow | Return the result of rasing the elements in a partitioned array by the power of an exponent
 lue::sqrt | Return the result of taking the square root of the elements in a partitioned array
-lue::sum | Return the result of summing the elements in a partitioned array
 
 
 ## Focal
@@ -66,12 +67,31 @@ lue::convolve | Return the result of convolving a kernel with weights with a par
 lue::focal_max | focal_max...
 lue::focal_mean | focal_mean...
 lue::focal_sum | focal_sum...
+lue::slope | Return the slope of a digital elevation model
+
+
+## Global
+Name   | Description
+-------|------------
+lue::minimum | Return the minimum value in an array
+lue::maximum | Return the maximum value in an array
+lue::sum | Return the result of summing the elements in a partitioned array
 
 
 ## Random
 Name   | Description
 -------|------------
 lue::uniform | Fill a partitioned array in-place with a uniform random value
+
+
+## Statistic
+Name   | Description
+-------|------------
+lue::minimum | Return the minimum value in an array
+lue::maximum | Return the maximum value in an array
+lue::focal_max | focal_max...
+lue::focal_mean | focal_mean...
+lue::focal_sum | focal_sum...
 
 
 ## I/O
@@ -97,6 +117,9 @@ lue::fill | Fill a partitioned array in-place with a value
 lue::iterate_per_element | Per cell in a partitioned array, iterate a number of times
 lue::unique | Return the unique values in a partitioned array
 lue::unique_id | Fill a partitioned array in-place with unique IDs
+lue::where | Conditionally assign values to the result
+lue::mesh_grid | Create arrays with multidimensional `mesh grid`
+lue::scale | Return the result of scaling values in a partitioned array to a range defined by a minimum and maximum value
 
 
 # Data structures  {#lue_framework_data_structures}

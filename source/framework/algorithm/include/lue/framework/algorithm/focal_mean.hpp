@@ -105,14 +105,14 @@ public:
 
 
 template<
-    typename Array,
+    typename Element,
+    Rank rank,
     typename Kernel>
-Array focal_mean(
-    Array const& array,
+PartitionedArray<Element, rank> focal_mean(
+    PartitionedArray<Element, rank> const& array,
     Kernel const& kernel)
 {
-    return focal_operation(
-        array, kernel, detail::FocalMean<ElementT<Array>>{});
+    return focal_operation(array, kernel, detail::FocalMean<Element>{});
 }
 
 }  // namespace lue

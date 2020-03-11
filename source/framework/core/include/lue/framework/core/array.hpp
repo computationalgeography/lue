@@ -35,6 +35,9 @@ public:
                    Array               (Shape const& shape,
                                         Element value);
 
+                   Array               (Shape const& shape,
+                                        std::initializer_list<Element> values);
+
     template<
         typename InputIterator>
                    Array               (Shape const& shape,
@@ -148,6 +151,28 @@ Array<Element, rank>::Array(
 
 {
     std::move(begin, end, _elements.begin());
+
+    assert(static_cast<Size>(_elements.size()) == lue::nr_elements(_shape));
+}
+
+
+template<
+    typename Element,
+    Rank rank>
+Array<Element, rank>::Array(
+    Shape const& shape,
+    std::initializer_list<Element> values):
+
+    _shape{shape},
+    _elements(lue::nr_elements(shape)),
+    _span{_elements.data(), _shape}
+
+{
+    assert(
+        std::distance(values.begin(), values.end()) ==
+        lue::nr_elements(_shape));
+
+    std::move(values.begin(), values.end(), _elements.begin());
 
     assert(static_cast<Size>(_elements.size()) == lue::nr_elements(_shape));
 }
