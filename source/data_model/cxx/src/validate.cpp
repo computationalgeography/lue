@@ -4,6 +4,7 @@
 #include <algorithm>
 // #include <execution> Not in gcc 7 yet
 #include <numeric>
+#include <set>
 #include <sstream>
 
 

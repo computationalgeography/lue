@@ -1,6 +1,7 @@
 #include "lue/hdf5/identifier.hpp"
 #include <cassert>
 #include <cstring>
+#include <stdexcept>
 #include <type_traits>
 
 

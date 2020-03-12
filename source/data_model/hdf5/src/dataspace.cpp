@@ -2,6 +2,7 @@
 #include <cassert>
 #include <cstring>
 #include <memory>
+#include <stdexcept>
 
 
 namespace lue {
