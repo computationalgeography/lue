@@ -79,16 +79,15 @@ public:
 
     ArrayPartition& operator=          (ArrayPartition&&)=default;
 
-    hpx::future<Data> data             (CopyMode mode) const;
+    hpx::future<Data> data             () const;
 
     hpx::future<Data> slice            (Slices const& slices) const;
 
     hpx::future<void> fill             (Element value);
 
-    hpx::future<void> set_data         (Data const& data,
-                                        CopyMode mode);
+    hpx::future<void> set_data         (Data const& data);
 
-    hpx::future<void> set_data         (Data&& data);
+    // hpx::future<void> set_data         (Data&& data);
 
     hpx::future<Offset> offset         () const;
 
@@ -355,32 +354,14 @@ template<
     typename Element,
     Rank rank>
 hpx::future<typename ArrayPartition<Element, rank>::Data>
-    ArrayPartition<Element, rank>::data(
-        CopyMode const mode) const
+    ArrayPartition<Element, rank>::data() const
 {
     assert(this->get_id());
-
-    // assert(
-    //     // In case copy mode is share, we and the server instance must be
-    //     // located on the same locality
-
-    //     // Well... share means the caller only wants to read the
-    //     // elements. Iff the server is on the same locality, then share
-    //     // implies a copy is not needed. Otherwise a copy is performed
-    //     // by HPX, because the data is transported. So... share may be
-    //     // useful even if the server is not on the locality. In that
-    //     // case, de-serialization of the data should mark the result as
-    //     // being a copy. If the next assertion fails, update the test.
-
-    //     (mode == CopyMode::share &&
-    //         (hpx::get_colocation_id(this->get_id()).get() ==
-    //             hpx::find_here())) ||
-    //     mode != CopyMode::share);
 
     typename Server::DataAction action;
 
     // this->get_id() identifies the server instance
-    return hpx::async(action, this->get_id(), mode);
+    return hpx::async(action, this->get_id());
 }
 
 
@@ -469,37 +450,36 @@ template<
     typename Element,
     Rank rank>
 hpx::future<void> ArrayPartition<Element, rank>::set_data(
-    Data const& data,
-    CopyMode const mode)
+    Data const& data)
 {
     assert(this->get_id());
 
-    assert(
-        // In case copy mode is share, we and the server instance must be
-        // located on the same locality
-        (mode == CopyMode::share &&
-            (hpx::get_colocation_id(this->get_id()).get() ==
-                hpx::find_here())) ||
-        mode != CopyMode::share);
+    // assert(
+    //     // In case copy mode is share, we and the server instance must be
+    //     // located on the same locality
+    //     (mode == CopyMode::share &&
+    //         (hpx::get_colocation_id(this->get_id()).get() ==
+    //             hpx::find_here())) ||
+    //     mode != CopyMode::share);
 
     typename Server::SetDataAction action;
 
     // this->get_id() identifies the server instance
-    return hpx::async(action, this->get_id(), data, mode);
+    return hpx::async(action, this->get_id(), data);
 }
 
 
-/*!
-    @brief      Asynchronously assign @a data to the partition
-*/
-template<
-    typename Element,
-    Rank rank>
-hpx::future<void> ArrayPartition<Element, rank>::set_data(
-    Data&& data)
-{
-    return set_data(data, CopyMode::share);
-}
+// /*!
+//     @brief      Asynchronously assign @a data to the partition
+// */
+// template<
+//     typename Element,
+//     Rank rank>
+// hpx::future<void> ArrayPartition<Element, rank>::set_data(
+//     Data&& data)
+// {
+//     return set_data(data);
+// }
 
 
 /*!

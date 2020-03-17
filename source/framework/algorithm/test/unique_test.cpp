@@ -30,7 +30,7 @@ void test_array()
 
         BOOST_REQUIRE_EQUAL(unique.nr_elements(), 1);
         BOOST_CHECK_EQUAL(
-            unique.partitions()[0].data(lue::CopyMode::share).get()[0],
+            unique.partitions()[0].data().get()[0],
             fill_value.get());
     }
 

@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/core/component/partitioned_array.hpp"
+#include <hpx/lcos/when_all.hpp>
 #include <algorithm>
 #include <random>
 
@@ -62,8 +63,7 @@ public:
             hpx::get_ptr(input_partition).get()};
         auto const& input_partition_server{*input_partition_server_ptr};
 
-        InputData input_partition_data{
-            input_partition_server.data(CopyMode::share)};
+        InputData input_partition_data{input_partition_server.data()};
 
         std::generate(
                 input_partition_data.begin(),
@@ -107,7 +107,6 @@ PartitionT<InputPartition, OutputElement> uniform_partition(
     auto const input_partition_server_ptr{hpx::get_ptr(input_partition).get()};
     auto const& input_partition_server{*input_partition_server_ptr};
 
-    TargetIndex const target_idx = input_partition_server.target_idx();
     auto const partition_offset = input_partition_server.offset();
     auto const partition_shape = input_partition_server.shape();
 
@@ -128,7 +127,7 @@ PartitionT<InputPartition, OutputElement> uniform_partition(
         }
     }();
 
-    OutputData output_partition_data{partition_shape, target_idx};
+    OutputData output_partition_data{partition_shape};
 
     std::generate(
             output_partition_data.begin(),
@@ -235,10 +234,11 @@ template<
 
 
 template<
-    typename InputArray,
-    typename OutputElement=ElementT<InputArray>>
-PartitionedArrayT<InputArray, OutputElement> uniform(
-    InputArray const& input_array,
+    typename InputElement,
+    typename OutputElement,
+    Rank rank>
+PartitionedArray<OutputElement, rank> uniform(
+    PartitionedArray<InputElement, rank> const& input_array,
     hpx::shared_future<OutputElement> const& min_value,
     hpx::shared_future<OutputElement> const& max_value)
 {
@@ -246,15 +246,15 @@ PartitionedArrayT<InputArray, OutputElement> uniform(
     // location as the input array, but the elements might be of a different
     // type.
 
+    using InputArray = PartitionedArray<InputElement, rank>;
     using InputPartition = PartitionT<InputArray>;
 
-    using OutputArray = PartitionedArrayT<InputArray, OutputElement>;
+    using OutputArray = PartitionedArray<OutputElement, rank>;
     using OutputPartitions = PartitionsT<OutputArray>;
 
     detail::uniform::UniformPartitionAction<
         InputPartition, OutputElement> action;
-    OutputPartitions output_partitions{
-        shape_in_partitions(input_array), scattered_target_index()};
+    OutputPartitions output_partitions{shape_in_partitions(input_array)};
 
     for(Index p = 0; p < nr_partitions(input_array); ++p) {
 
@@ -284,13 +284,12 @@ PartitionedArrayT<InputArray, OutputElement> uniform(
 }
 
 
-// FIXME OuputElement is the type of min_value/max_value, not the Element
-//     type of the input array
 template<
-    typename InputArray,
-    typename OutputElement=ElementT<InputArray>>
-PartitionedArrayT<InputArray, OutputElement> uniform(
-    InputArray const& input_array,
+    typename InputElement,
+    typename OutputElement,
+    Rank rank>
+PartitionedArray<OutputElement, rank> uniform(
+    PartitionedArray<InputElement, rank> const& input_array,
     OutputElement const min_value,
     OutputElement const max_value)
 {

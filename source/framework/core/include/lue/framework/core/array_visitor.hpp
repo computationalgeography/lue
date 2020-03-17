@@ -99,7 +99,7 @@ public:
         _current_cell = start;
         _dimension_idx = 0;
 
-        for(std::size_t i = 0; i < static_cast<Count>(rank<Shape>); ++i) {
+        for(Rank i = 0; i < rank<Shape>; ++i) {
             assert(_start[i] + _count[i] <= _shape[i]);
         }
     }

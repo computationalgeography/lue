@@ -28,11 +28,10 @@ ArrayPartition<OutputElement, rank> array_like_partition(
 
     auto offset{input_partition_server.offset()};
     auto shape{input_partition_server.shape()};
-    auto target_idx{input_partition_server.target_idx()};
 
     return OutputPartition{
         hpx::find_here(), offset,
-        OutputPartitionData{shape, fill_value, target_idx}};
+        OutputPartitionData{shape, fill_value}};
 }
 
 }  // namespace detail
@@ -54,8 +53,8 @@ struct ArrayLikePartitionAction:
 
 
 template<
-    typename InputElement,
     typename OutputElement,
+    typename InputElement,
     Rank rank>
 PartitionedArray<OutputElement, rank> array_like(
     PartitionedArray<InputElement, rank> const& input_array,
@@ -68,8 +67,7 @@ PartitionedArray<OutputElement, rank> array_like(
     using OutputPartitions = PartitionsT<OutputArray>;
 
     ArrayLikePartitionAction<InputElement, OutputElement, rank> action;
-    OutputPartitions output_partitions{
-        shape_in_partitions(input_array), scattered_target_index()};
+    OutputPartitions output_partitions{shape_in_partitions(input_array)};
 
     for(Index p = 0; p < nr_partitions(input_array); ++p) {
 
@@ -98,8 +96,8 @@ PartitionedArray<OutputElement, rank> array_like(
 
 
 template<
-    typename InputElement,
     typename OutputElement,
+    typename InputElement,
     Rank rank>
 PartitionedArray<OutputElement, rank> array_like(
     PartitionedArray<InputElement, rank> const& input_array,

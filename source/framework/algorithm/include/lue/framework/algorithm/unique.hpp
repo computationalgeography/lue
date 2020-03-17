@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/core/component/partitioned_array.hpp"
+#include <hpx/lcos/when_all.hpp>
 
 
 namespace lue {
@@ -26,8 +27,7 @@ PartitionT<Partition, ElementT<Partition>, 1> unique_partition(
         hpx::get_ptr(input_partition).get()};
     auto const& input_partition_server{*input_partition_server_ptr};
 
-    InputData input_partition_data{
-        input_partition_server.data(CopyMode::share)};
+    InputData input_partition_data{input_partition_server.data()};
 
     // Copy values from input array into a set
     std::set<Element> unique_values(
@@ -37,9 +37,7 @@ PartitionT<Partition, ElementT<Partition>, 1> unique_partition(
     assert(nr_unique_values <= input_partition_data.nr_elements());
 
     // Copy unique values from set into output array
-    TargetIndex const target_idx = input_partition_data.target_idx();
-    OutputData output_data{
-        OutputShape{{nr_unique_values}}, target_idx};
+    OutputData output_data{OutputShape{{nr_unique_values}}};
     assert(output_data.nr_elements() == nr_unique_values);
     std::copy(
         unique_values.begin(), unique_values.end(),
@@ -97,8 +95,7 @@ hpx::future<PartitionedArray<Element, 1>> unique(
     using OutputShape = ShapeT<OutputArray>;
     using OutputData = DataT<OutputPartition>;
 
-    OutputPartitions output_partitions{
-        OutputShape{{nr_partitions(array)}}, scattered_target_index()};
+    OutputPartitions output_partitions{OutputShape{{nr_partitions(array)}}};
     UniquePartitionAction<InputPartition> action;
 
     for(Index p = 0; p < nr_partitions(array); ++p) {
@@ -138,7 +135,7 @@ hpx::future<PartitionedArray<Element, 1>> unique(
 
                 for(auto const& partition: partitions) {
 
-                    auto const data = partition.data(CopyMode::copy).get();
+                    auto const data = partition.data().get();
 
                     unique_values.insert(data.begin(), data.end());
 
@@ -151,7 +148,7 @@ hpx::future<PartitionedArray<Element, 1>> unique(
                 OutputShape shape_in_partitions{{1}};
 
                 // Copy unique values into an array-data collection
-                OutputData result_values{shape, scattered_target_index()};
+                OutputData result_values{shape};
                 std::copy(
                     unique_values.begin(), unique_values.end(),
                     result_values.begin());
@@ -162,8 +159,7 @@ hpx::future<PartitionedArray<Element, 1>> unique(
 
                 // Store partition component in a collection
                 OutputPartitions result_partitions{
-                    shape_in_partitions, std::move(result_partition),
-                    scattered_target_index()};
+                    shape_in_partitions, std::move(result_partition)};
 
                 // Store collection of partitions in a partitioned array
                 OutputArray result_array{shape, std::move(result_partitions)};

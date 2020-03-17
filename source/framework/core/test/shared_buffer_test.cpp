@@ -1,6 +1,8 @@
 #define BOOST_TEST_MODULE lue framework core shared_buffer
 #include <boost/test/unit_test.hpp>
 #include "lue/framework/core/shared_buffer.hpp"
+#include <numeric>
+
 
 namespace {
 
@@ -50,18 +52,6 @@ BOOST_AUTO_TEST_CASE(copy_construct)
         // It's a shared buffer
         BOOST_CHECK(buffer.data() == other.data());
     }
-
-    // Deep copy
-    {
-        SharedBuffer buffer{other, lue::CopyMode::copy};
-
-        BOOST_CHECK_EQUAL(buffer.size(), size);
-
-        BOOST_CHECK_EQUAL(other.size(), size);
-
-        // It's a shared buffer, but created as a deep copy from another one
-        BOOST_CHECK(buffer.data() != other.data());
-    }
 }
 
 
@@ -102,4 +92,39 @@ BOOST_AUTO_TEST_CASE(move_assign)
 
     BOOST_CHECK(buffer.data() != other.data());
     BOOST_CHECK(other.data() == nullptr);
+}
+
+
+BOOST_AUTO_TEST_CASE(erase)
+{
+    // +----+----+----+----+----+----+----+----+----+----+
+    // | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 |
+    // +----+----+----+----+----+----+----+----+----+----+
+    SharedBuffer buffer{10};
+    std::iota(buffer.begin(), buffer.end(), 10);
+    BOOST_CHECK_EQUAL(buffer.size(), 10);
+    BOOST_CHECK_EQUAL(buffer[0], 10);
+    BOOST_CHECK_EQUAL(buffer[9], 19);
+
+    // +----  +----+----+----+----+----+----+----+----+----+
+    // | 10   | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 |
+    // +----  +----+----+----+----+----+----+----+----+----+
+    buffer.erase(buffer.begin() + 0, buffer.begin() + 1);
+    BOOST_CHECK_EQUAL(buffer.size(), 9);
+    BOOST_CHECK_EQUAL(buffer[0], 11);
+
+    // +----+----+----+----+----+----+----+----+  ----+
+    // | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 |   19 |
+    // +----+----+----+----+----+----+----+----+  ----+
+    buffer.erase(buffer.begin() + 8, buffer.begin() + 9);
+    BOOST_CHECK_EQUAL(buffer.size(), 8);
+    BOOST_CHECK_EQUAL(buffer[7], 18);
+
+    // +----+----+----+  ----+----  +----+----+----+
+    // | 11 | 12 | 13 |   14 | 15   | 16 | 17 | 18 |
+    // +----+----+----+  ----+----  +----+----+----+
+    buffer.erase(buffer.begin() + 3, buffer.begin() + 5);
+    BOOST_CHECK_EQUAL(buffer.size(), 6);
+    BOOST_CHECK_EQUAL(buffer[2], 13);
+    BOOST_CHECK_EQUAL(buffer[3], 16);
 }

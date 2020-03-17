@@ -50,7 +50,7 @@
 //     {
 //         // TODO
 //         // auto const& partition = convolve.partitions()[0];
-//         // auto const data = partition.data(lue::CopyMode::share).get();
+//         // auto const data = partition.data().get();
 //         // BOOST_REQUIRE_EQUAL(shape(data), partition_shape);
 //         // BOOST_CHECK_EQUAL(data[0], 2.0);
 //         // BOOST_CHECK_EQUAL(data[1], 3.0);
@@ -60,7 +60,7 @@
 //     // Second partition
 //     {
 //         auto const& partition = convolve.partitions()[1];
-//         auto const data = partition.data(lue::CopyMode::share).get();
+//         auto const data = partition.data().get();
 //         BOOST_REQUIRE_EQUAL(shape(data), partition_shape);
 //         BOOST_CHECK_EQUAL(data[0], 3.0);
 //         BOOST_CHECK_EQUAL(data[1], 3.0);
@@ -71,7 +71,7 @@
 //     {
 //         // TODO
 //         // auto const& partition = convolve.partitions()[2];
-//         // auto const data = partition.data(lue::CopyMode::share).get();
+//         // auto const data = partition.data().get();
 //         // BOOST_REQUIRE_EQUAL(shape(data), Shape{{2}});
 //         // BOOST_CHECK_EQUAL(data[0], 3.0);
 //         // BOOST_CHECK_EQUAL(data[1], 2.0);

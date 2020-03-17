@@ -36,9 +36,7 @@ template<
                 // equals the arrays extent (along the second dimension)
                 assert(stride >= std::get<1>(shape));
 
-                TargetIndex const target_idx =
-                    hpx::get_ptr<Partition>(partition).get()->target_idx();
-                Data data{shape, target_idx};
+                Data data{shape};
 
                 Element value = start_value;
                 Element const offset = stride - std::get<1>(shape);

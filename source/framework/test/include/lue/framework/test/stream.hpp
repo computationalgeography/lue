@@ -202,7 +202,7 @@ std::ostream& operator<<(
     stream
         << "    shape      : " << partition.shape().get() << "\n"
         << "    nr_elements: " << partition.nr_elements().get() << "\n"
-        << partition.data(CopyMode::share).get()
+        << partition.data().get()
         ;
 
     return stream;

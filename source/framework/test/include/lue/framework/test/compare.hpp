@@ -118,8 +118,8 @@ void check_partition_is_equal(
             partition1.shape().get(), partition2.shape().get());
 
         check_array_partition_data_is_equal(
-            partition1.data(CopyMode::copy).get(),
-            partition2.data(CopyMode::copy).get());
+            partition1.data().get(),
+            partition2.data().get());
     }
 }
 
@@ -145,8 +145,8 @@ void check_partition_is_close(
             partition1.shape().get(), partition2.shape().get());
 
         check_array_partition_data_is_close(
-            partition1.data(CopyMode::copy).get(),
-            partition2.data(CopyMode::copy).get());
+            partition1.data().get(),
+            partition2.data().get());
     }
 }
 

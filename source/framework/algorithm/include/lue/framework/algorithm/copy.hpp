@@ -28,7 +28,7 @@ Partition copy_partition(
     auto const& input_partition_server{*input_partition_server_ptr};
 
     auto offset{input_partition_server.offset()};
-    auto input_partition_data = input_partition_server.data(CopyMode::copy);
+    auto input_partition_data = deep_copy(input_partition_server.data());
 
     return Partition{
         hpx::find_here(), offset, std::move(input_partition_data)};
@@ -67,8 +67,7 @@ PartitionedArray<Element, rank> copy(
     using OutputPartitions = PartitionsT<OutputArray>;
 
     CopyPartitionAction<InputPartition> action;
-    OutputPartitions output_partitions{
-        shape_in_partitions(input_array), scattered_target_index()};
+    OutputPartitions output_partitions{shape_in_partitions(input_array)};
 
     for(Index p = 0; p < nr_partitions(input_array); ++p) {
 

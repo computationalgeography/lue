@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/binary_local_operation.hpp"
+#include "lue/framework/algorithm/operator.hpp"
 
 
 namespace lue {
@@ -102,5 +103,8 @@ PartitionedArray<bool, rank> greater_than_equal_to(
     return greater_than_equal_to(
         hpx::make_ready_future<InputElement>(scalar).share(), array);
 }
+
+
+LUE_BINARY_COMPARISON_OPERATOR(>=, greater_than_equal_to)
 
 }  // namespace lue

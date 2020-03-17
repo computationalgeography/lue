@@ -14,6 +14,7 @@
 #include "lue/framework/algorithm/pow.hpp"
 #include "lue/framework/algorithm/sqrt.hpp"
 
+#include "lue/framework/algorithm/array_like.hpp"
 #include "lue/framework/algorithm/cast.hpp"
 #include "lue/framework/algorithm/convolve.hpp"
 #include "lue/framework/algorithm/copy.hpp"
@@ -26,3 +27,4 @@
 #include "lue/framework/algorithm/uniform.hpp"
 #include "lue/framework/algorithm/unique.hpp"
 #include "lue/framework/algorithm/unique_id.hpp"
+#include "lue/framework/algorithm/where.hpp"

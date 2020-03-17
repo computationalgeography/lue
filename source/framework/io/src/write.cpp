@@ -29,7 +29,7 @@ hpx::future<void> write(
     std::vector<hpx::future<Offset>> partition_offsets(nr_partitions);
 
     for(Index p = 0; p < nr_partitions; ++p) {
-        partition_datas[p] = array.partitions()[p].data(CopyMode::share);
+        partition_datas[p] = array.partitions()[p].data();
         partition_offsets[p] = array.partitions()[p].offset();
     }
 
@@ -57,7 +57,7 @@ hpx::future<void> write(
 
         hdf5::Hyperslab hyperslab{offset, count};
 
-        layer.write(hyperslab, partition_data.begin());
+        layer.write(hyperslab, &(*partition_data.begin()));
 
     }
 
@@ -106,7 +106,7 @@ hpx::future<void> write(
     std::vector<hpx::future<Offset>> partition_offsets(nr_partitions);
 
     for(Index p = 0; p < nr_partitions; ++p) {
-        partition_datas[p] = array.partitions()[p].data(CopyMode::share);
+        partition_datas[p] = array.partitions()[p].data();
         partition_offsets[p] = array.partitions()[p].offset();
     }
 
@@ -148,7 +148,7 @@ hpx::future<void> write(
 
         hdf5::Hyperslab hyperslab{offset, count};
 
-        layer.write(hyperslab, partition_data.begin());
+        layer.write(hyperslab, &(*partition_data.begin()));
 
     }
 

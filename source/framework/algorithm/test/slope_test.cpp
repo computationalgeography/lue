@@ -34,15 +34,15 @@ BOOST_AUTO_TEST_CASE(use_case_1)
     Element const nd{std::numeric_limits<Element>::quiet_NaN()};
 
     PartitionData data{
-        shape,
-        std::initializer_list<Element>{
-             70,  70,  80,  nd, 120,
-             70,  70,  90,  nd,  nd,
-             70,  70, 100, 140, 280,
-            180, 160, 110, 160, 320,
-            510, 440, 300, 400, 480,
-        },
-        lue::scattered_target_index()};
+            shape,
+            std::initializer_list<Element>{
+                 70,  70,  80,  nd, 120,
+                 70,  70,  90,  nd,  nd,
+                 70,  70, 100, 140, 280,
+                180, 160, 110, 160, 320,
+                510, 440, 300, 400, 480,
+            }
+        };
 
     Array elevation{shape};
     BOOST_REQUIRE_EQUAL(elevation.nr_partitions(), 1);
@@ -53,15 +53,15 @@ BOOST_AUTO_TEST_CASE(use_case_1)
     auto slope_we_got = lue::slope(elevation, cell_size);
 
     data = PartitionData{
-        shape,
-        std::initializer_list<Element>{
-            0.0118, 0.114, 0.394, nd  , 0.673,
-            0.13  , 0.206, 0.604, nd  , nd,
-            1.3   , 0.775, 0.643, 1.73, 1.87,
-            3.73  , 3.54 , 2.58 , 3.02, 2.36,
-            2.76  , 3.07 , 2.59 , 2.66, 1.65,
-        },
-        lue::scattered_target_index()};
+            shape,
+            std::initializer_list<Element>{
+                0.0118, 0.114, 0.394, nd  , 0.673,
+                0.13  , 0.206, 0.604, nd  , nd,
+                1.3   , 0.775, 0.643, 1.73, 1.87,
+                3.73  , 3.54 , 2.58 , 3.02, 2.36,
+                2.76  , 3.07 , 2.59 , 2.66, 1.65,
+            }
+        };
 
     Array slope_we_want{shape};
     slope_we_want.partitions()(0, 0).set_data(std::move(data));
