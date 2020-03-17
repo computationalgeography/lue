@@ -58,4 +58,26 @@ PartitionedArray<Element, rank> add(
     return binary_local_operation(scalar, array, detail::Add<Element>{});
 }
 
+
+template<
+    typename Element,
+    Rank rank>
+PartitionedArray<Element, rank> add(
+    PartitionedArray<Element, rank> const& array,
+    Element const scalar)
+{
+    return add(array, hpx::make_ready_future<Element>(scalar).share());
+}
+
+
+template<
+    typename Element,
+    Rank rank>
+PartitionedArray<Element, rank> add(
+    Element const scalar,
+    PartitionedArray<Element, rank> const& array)
+{
+    return add(hpx::make_ready_future<Element>(scalar).share(), array);
+}
+
 }  // namespace lue

@@ -1,7 +1,5 @@
 #pragma once
 #include "lue/framework/core/define.hpp"
-#include "lue/framework/core/numa_domain.hpp"
-#include "lue/framework/core/partition_allocator.hpp"
 #include "lue/framework/core/shape.hpp"
 #include "lue/framework/core/serialize/shared_buffer.hpp"
 #include "lue/framework/core/span.hpp"
@@ -27,11 +25,7 @@ class ArrayPartitionData
 
 private:
 
-    // using Allocator = PartitionAllocator<Element>;
-    using Allocator = std::allocator<Element>;
-    // using Allocator = NUMADomainAllocator<Element>;
-
-    using Elements = SharedBuffer<Element, Allocator>;
+    using Elements = SharedBuffer<Element>;
 
 public:
 
@@ -47,44 +41,34 @@ public:
 
     using Slices = std::array<Slice, rank>;
 
-    using Iterator = typename Elements::iterator;
+    using Iterator = typename Elements::Iterator;
 
-    using ConstIterator = typename Elements::const_iterator;
+    using ConstIterator = typename Elements::ConstIterator;
 
                    ArrayPartitionData  ();
 
-                   ArrayPartitionData  (Shape const& shape,
-                                        TargetIndex const target_idx);
+                   ArrayPartitionData  (Shape const& shape);
 
                    ArrayPartitionData  (Shape const& shape,
-                                        Element const& value,
-                                        TargetIndex const target_idx);
+                                        Element const& value);
 
     template<
         typename InputIterator>
                    ArrayPartitionData  (Shape const& shape,
                                         InputIterator begin,
-                                        InputIterator end,
-                                        TargetIndex const target_idx);
-
-                   // ArrayPartitionData  (Shape const& shape,
-                   //                      Elements const& elements);
+                                        InputIterator end);
 
                    ArrayPartitionData  (Shape const& shape,
                                         std::initializer_list<Element>
-                                            elements,
-                                        TargetIndex const target_idx);
+                                            elements);
 
                    ArrayPartitionData  (ArrayPartitionData const& other);
-
-                   ArrayPartitionData  (ArrayPartitionData const& other,
-                                        CopyMode const mode);
 
                    ArrayPartitionData  (ArrayPartitionData&& other);
 
                    ~ArrayPartitionData ()=default;
 
-    ArrayPartitionData& operator=      (ArrayPartitionData const& other)=delete;
+    ArrayPartitionData& operator=      (ArrayPartitionData const& other);
 
     ArrayPartitionData& operator=      (ArrayPartitionData&& other);
 
@@ -98,6 +82,10 @@ public:
 
     void           reshape             (Shape const& shape);
 
+    void           erase               (Rank const dimension_idx,
+                                        Index const hyperslab_begin_idx,
+                                        Index const hyperslab_end_idx);
+
     ConstIterator  begin               () const;
 
     Iterator       begin               ();
@@ -106,9 +94,9 @@ public:
 
     Iterator       end                 ();
 
-    Element&       operator[]          (std::size_t idx);
+    Element&       operator[]          (Index idx);
 
-    Element const& operator[]          (std::size_t idx) const;
+    Element const& operator[]          (Index idx) const;
 
     Span const&    span                () const;
 
@@ -130,11 +118,6 @@ public:
 
     ArrayPartitionData slice           (Slices const& slices) const;
 
-    TargetIndex target_idx() const
-    {
-        return _target_idx;
-    }
-
 private:
 
     Elements const& elements           () const;
@@ -152,9 +135,6 @@ private:
     {
         archive & _shape & _elements;
     }
-
-    //! The index of the target the elements are managed by
-    TargetIndex    _target_idx;
 
     Shape          _shape;
 
@@ -176,7 +156,7 @@ template<
     Rank rank>
 ArrayPartitionData<Element, rank>::ArrayPartitionData():
 
-    ArrayPartitionData{Shape{}, scattered_target_index()}
+    ArrayPartitionData{Shape{}}
 
 {
     assert(_elements.size() == lue::nr_elements(_shape));
@@ -191,15 +171,10 @@ template<
     typename Element,
     Rank rank>
 ArrayPartitionData<Element, rank>::ArrayPartitionData(
-    Shape const& shape,
-    TargetIndex const target_idx):
+    Shape const& shape):
 
-    _target_idx{target_idx},
     _shape{shape},
-    _elements{
-            lue::nr_elements(shape) // ,
-            // Allocator{Targets(1, target(_target_idx))}
-        },
+    _elements{lue::nr_elements(shape)},
     _span{_elements.data(), _shape}
 
 {
@@ -217,10 +192,9 @@ template<
     Rank rank>
 ArrayPartitionData<Element, rank>::ArrayPartitionData(
     Shape const& shape,
-    Element const& value,
-    TargetIndex const target_idx):
+    Element const& value):
 
-    ArrayPartitionData{shape, target_idx}
+    ArrayPartitionData{shape}
 
 {
     std::fill_n(_elements.begin(), _elements.size(), value);
@@ -244,10 +218,9 @@ template<
 ArrayPartitionData<Element, rank>::ArrayPartitionData(
     Shape const& shape,
     InputIterator begin,
-    InputIterator end,
-    TargetIndex const target_idx):
+    InputIterator end):
 
-    ArrayPartitionData{shape, target_idx}
+    ArrayPartitionData{shape}
 
 {
     std::move(begin, end, _elements.begin());
@@ -261,10 +234,9 @@ template<
     Rank rank>
 ArrayPartitionData<Element, rank>::ArrayPartitionData(
     Shape const& shape,
-    std::initializer_list<Element> elements,
-    TargetIndex const target_idx):
+    std::initializer_list<Element> elements):
 
-    ArrayPartitionData{shape, target_idx}
+    ArrayPartitionData{shape}
 
 {
     assert(static_cast<Count>(elements.size()) == lue::nr_elements(_shape));
@@ -275,22 +247,6 @@ ArrayPartitionData<Element, rank>::ArrayPartitionData(
 }
 
 
-template<
-    typename Element,
-    Rank rank>
-ArrayPartitionData<Element, rank>::ArrayPartitionData(
-    ArrayPartitionData const& other):
-
-    ArrayPartitionData{other, CopyMode::share}
-
-{
-    // This constructor is used by ArrayPartitionData::set_data
-
-    assert(_elements.data() == other._elements.data());
-    assert(_elements.size() == lue::nr_elements(_shape));
-}
-
-
 /*!
     @brief      Copy-construct an instance based on @a other
 */
@@ -298,23 +254,35 @@ template<
     typename Element,
     Rank rank>
 ArrayPartitionData<Element, rank>::ArrayPartitionData(
-    ArrayPartitionData const& other,
-    CopyMode const mode):
+    ArrayPartitionData const& other):
 
-    _target_idx{other._target_idx},
     _shape{other._shape},
-    _elements{other._elements, mode},
+    _elements{other._elements},
     _span{_elements.data(), _shape}
 
 {
-    assert(
-        (mode == CopyMode::copy && (
-            (_elements.data() != other._elements.data()) ||
-            (_elements.data() == nullptr))) ||
-        (mode == CopyMode::share && (
-            _elements.data() == other._elements.data()))
-    );
     assert(_elements.size() == lue::nr_elements(_shape));
+}
+
+
+/*!
+    @brief      Copy-assign an instance based on @a other
+
+    The collection of array elements is shared between the instances.
+*/
+template<
+    typename Element,
+    Rank rank>
+ArrayPartitionData<Element, rank>& ArrayPartitionData<Element, rank>::operator=(
+    ArrayPartitionData const& other)
+{
+    _shape = other._shape;
+    _elements = other._elements;
+    _span = Span{_elements.data(), _shape};
+
+    assert(_elements.size() == lue::nr_elements(_shape));
+
+    return *this;
 }
 
 
@@ -327,16 +295,11 @@ template<
 ArrayPartitionData<Element, rank>::ArrayPartitionData(
     ArrayPartitionData&& other):
 
-    _target_idx{other._target_idx},
     _shape{std::move(other._shape)},
     _elements{std::move(other._elements)},
     _span{_elements.data(), _shape}
 
 {
-    // An instance is already created. Move-constructing a new instance
-    // based on the existing instance just grabs the internals. No need to
-    // be smart about NUMA domains here. Keep the elements where they are.
-
     assert(
         (_elements.data() != other._elements.data()) ||
         (_elements.data() == nullptr));
@@ -353,12 +316,6 @@ template<
 ArrayPartitionData<Element, rank>& ArrayPartitionData<Element, rank>::operator=(
     ArrayPartitionData&& other)
 {
-    // WRT NUMA domain: Our elements are already located on a specific
-    // domain. This domain is possibly different from the elements of the
-    // source instance. Moving-assigning the existing instance just
-    // grabs the internals. No need to be smart about NUMA domains
-    // here. Keep the elements where they already are.
-
     _shape = std::move(other._shape);
     _elements = std::move(other._elements);
     _span = Span{_elements.data(), _shape};
@@ -427,6 +384,62 @@ void ArrayPartitionData<Element, rank>::reshape(
 }
 
 
+/*!
+    @brief      .
+    @param      .
+    @return     .
+    @exception  .
+    @warning    The underlying memory buffer is not resized. Array
+                elements are moved within the buffer.
+*/
+template<
+    typename Element,
+    Rank rank>
+void ArrayPartitionData<Element, rank>::erase(
+    Rank const dimension_idx,
+    Index const hyperslab_begin_idx,
+    Index const hyperslab_end_idx)
+{
+    assert(dimension_idx < rank);
+    assert(hyperslab_begin_idx <= hyperslab_end_idx);
+    assert(hyperslab_end_idx <= _shape[dimension_idx]);
+
+    if(hyperslab_begin_idx == hyperslab_end_idx) {
+        return;  // Nothing to do
+    }
+
+    // Number of elements to skip from the start of the 1D array to
+    // reach elements to erase
+    Count const offset{
+        hyperslab_begin_idx *
+        std::accumulate(
+            _shape.begin() + dimension_idx + 1, _shape.end(), 1,
+            std::multiplies<Count>{})};
+    assert(offset >= 0);
+
+    Count const count{
+        (hyperslab_end_idx - hyperslab_begin_idx) *
+        std::accumulate(
+            _shape.begin() + dimension_idx + 1, _shape.end(), 1,
+            std::multiplies<Count>{})};
+    assert(count > 0);
+
+    Count const stride{
+        std::accumulate(
+            _shape.begin() + dimension_idx, _shape.end(), 1,
+            std::multiplies<Count>{})};
+
+    for(Iterator slab_begin = begin() + offset; slab_begin < end();
+            slab_begin += (stride - count))
+    {
+        _elements.erase(slab_begin, slab_begin + count);
+    }
+
+    _shape[dimension_idx] -= hyperslab_end_idx - hyperslab_begin_idx;
+    _span = Span{_elements.data(), _shape};
+}
+
+
 template<
     typename Element,
     Rank rank>
@@ -491,7 +504,7 @@ template<
     typename Element,
     Rank rank>
 Element& ArrayPartitionData<Element, rank>::operator[](
-    std::size_t const idx)
+    Index const idx)
 {
     return _elements[idx];
 }
@@ -501,7 +514,7 @@ template<
     typename Element,
     Rank rank>
 Element const& ArrayPartitionData<Element, rank>::operator[](
-    std::size_t const idx) const
+    Index const idx) const
 {
     return _elements[idx];
 }
@@ -539,9 +552,7 @@ ArrayPartitionData<Element, rank> ArrayPartitionData<Element, rank>::slice(
         assert(end <= nr_elements);
         auto const nr_elements_slice = end - begin;
 
-        // Place slice on same NUMA domain as we are
-        ArrayPartitionData sliced_data{
-            Shape{{nr_elements_slice}}, _target_idx};
+        ArrayPartitionData sliced_data{Shape{{nr_elements_slice}}};
 
         auto const source_begin = &(operator()(begin));
         auto destination = &(sliced_data(0));
@@ -571,10 +582,8 @@ ArrayPartitionData<Element, rank> ArrayPartitionData<Element, rank>::slice(
         assert(end1 <= nr_elements1);
         auto const nr_elements1_slice = end1 - begin1;
 
-        // Place slice on same NUMA domain as we are
         ArrayPartitionData sliced_data{
-            Shape{{nr_elements0_slice, nr_elements1_slice}},
-            _target_idx};
+            Shape{{nr_elements0_slice, nr_elements1_slice}}};
 
         using Idx = std::tuple_element<0, Slice>::type;
 
@@ -616,12 +625,12 @@ public:
 
                    ArrayPartitionData  ();
 
-                   ArrayPartitionData  (Element const& value,
-                                        TargetIndex const target_idx);
+    explicit       ArrayPartitionData  (Element const& value);
+
+    explicit       ArrayPartitionData  (Shape const& shape);
 
                    ArrayPartitionData  (Shape const& shape,
-                                        Element const& value,
-                                        TargetIndex const target_idx);
+                                        Element const& value);
 
                    ArrayPartitionData  (ArrayPartitionData const&)=default;
 
@@ -651,9 +660,9 @@ public:
 
     Iterator       end                 ();
 
-    Element&       operator[]          (std::size_t idx);
+    Element&       operator[]          (Index idx);
 
-    Element const& operator[]          (std::size_t idx) const;
+    Element const& operator[]          (Index idx) const;
 
 private:
 
@@ -690,30 +699,37 @@ ArrayPartitionData<Element, 0>::ArrayPartitionData():
 template<
     typename Element>
 ArrayPartitionData<Element, 0>::ArrayPartitionData(
-    Element const& value,
-    TargetIndex const /* target_idx */):
+    Element const& value):
 
-    _shape{},
-    _elements{}
+    ArrayPartitionData{}
 
 {
     _elements[0] = value;
-
-    assert(_elements.size() == 1);
 }
 
 
 template<
     typename Element>
 ArrayPartitionData<Element, 0>::ArrayPartitionData(
-    Shape const& /* shape */,
-    Element const& value,
-    TargetIndex const target_idx):
+    [[maybe_unused]] Shape const& shape):
 
-    ArrayPartitionData{value, target_idx}
+    ArrayPartitionData{}
 
 {
-    assert(_elements.size() == 1);
+    assert(shape.empty());
+}
+
+
+template<
+    typename Element>
+ArrayPartitionData<Element, 0>::ArrayPartitionData(
+    [[maybe_unused]] Shape const& shape,
+    Element const& value):
+
+    ArrayPartitionData{value}
+
+{
+    assert(shape.empty());
 }
 
 
@@ -806,7 +822,7 @@ typename ArrayPartitionData<Element, 0>::Iterator
 template<
     typename Element>
 Element& ArrayPartitionData<Element, 0>::operator[](
-    [[maybe_unused]] std::size_t const idx)
+    [[maybe_unused]] Index const idx)
 {
     assert(idx == 0);
 
@@ -817,7 +833,7 @@ Element& ArrayPartitionData<Element, 0>::operator[](
 template<
     typename Element>
 Element const& ArrayPartitionData<Element, 0>::operator[](
-    [[maybe_unused]] std::size_t const idx) const
+    [[maybe_unused]] Index const idx) const
 {
     assert(idx == 0);
 
@@ -838,6 +854,12 @@ public:
     using Element = E;
 
     constexpr static Rank rank = r;
+
+    using Shape = typename ArrayPartitionData<E, r>::Shape;
+
+    using Slice = typename ArrayPartitionData<E, r>::Slice;
+
+    using Slices = typename ArrayPartitionData<E, r>::Slices;
 
 };
 
@@ -861,6 +883,20 @@ inline auto nr_elements(
     ArrayPartitionData<Element, rank> const& data)
 {
     return lue::nr_elements(shape(data));
+}
+
+
+template<
+    typename Element,
+    Rank rank>
+ArrayPartitionData<Element, rank> deep_copy(
+    ArrayPartitionData<Element, rank> const& data)
+{
+    ArrayPartitionData<Element, rank> copy{data.shape()};
+
+    std::copy(data.begin(), data.end(), copy.begin());
+
+    return copy;
 }
 
 }  // namespace lue

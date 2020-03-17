@@ -1,7 +1,7 @@
 #pragma once
+#include <hpx/config.hpp>
 #include "lue/framework/core/array_partition_data.hpp"
 #include "lue/framework/core/offset.hpp"
-#include <hpx/config.hpp>
 #include <hpx/include/components.hpp>
 
 
@@ -62,14 +62,13 @@ public:
 
     ArrayPartition& operator=          (ArrayPartition&&)=delete;
 
-    Data           data                ([[maybe_unused]] CopyMode mode) const;
+    Data           data                () const;
 
     Data           slice               ([[maybe_unused]] Slices const& slices) const;
 
     void           fill                (Element value);
 
-    void           set_data            (Data const& data,
-                                        [[maybe_unused]] CopyMode mode);
+    void           set_data            (Data const& data);
 
     Offset         offset              () const;
 
@@ -78,11 +77,6 @@ public:
     void           reshape             (Shape const& shape);
 
     Count          nr_elements         () const;
-
-    TargetIndex target_idx() const
-    {
-        return _data.target_idx();
-    }
 
 private:
 
@@ -236,7 +230,7 @@ ArrayPartition<Element, rank>::ArrayPartition(
 
     Base{},
     _offset{offset},
-    _data{shape, scattered_target_index()}
+    _data{shape}
 
 {
 }
@@ -259,7 +253,7 @@ ArrayPartition<Element, rank>::ArrayPartition(
 
     Base{},
     _offset{offset},
-    _data{shape, value, scattered_target_index()}
+    _data{shape, value}
 
 {
     // Element is assumed to be a trivial type. Otherwise, don't pass
@@ -282,7 +276,7 @@ ArrayPartition<Element, rank>::ArrayPartition(
 
     Base{},
     _offset{offset},
-    _data{data, CopyMode::copy, data.target_idx()}
+    _data{data}
 
 {
 }
@@ -343,17 +337,18 @@ template<
     typename Element,
     Rank rank>
 typename ArrayPartition<Element, rank>::Data
-    ArrayPartition<Element, rank>::data(
-        [[maybe_unused]] CopyMode const mode) const
+    ArrayPartition<Element, rank>::data() const
 {
-    if constexpr (rank == 0) {
-        return _data;
-    }
-    else {
-        // The elements pointed to by the new data instance will be
-        // located at the same target as the source instance
-        return Data{_data, mode};
-    }
+    return _data;
+
+    // if constexpr (rank == 0) {
+    //     return _data;
+    // }
+    // else {
+    //     // The elements pointed to by the new data instance will be
+    //     // located at the same target as the source instance
+    //     return Data{_data};
+    // }
 }
 
 
@@ -387,17 +382,18 @@ template<
     typename Element,
     Rank rank>
 void ArrayPartition<Element, rank>::set_data(
-    Data const& data,
-    [[maybe_unused]] CopyMode const mode)
+    Data const& data)
 {
-    if constexpr (rank == 0) {
-        _data = data;
-    }
-    else {
-        // The elements pointed to by the updated data instance will be
-        // located at the same target as the source instance
-        _data = Data{data, mode};
-    }
+    _data = data;
+
+    // if constexpr (rank == 0) {
+    //     _data = data;
+    // }
+    // else {
+    //     // The elements pointed to by the updated data instance will be
+    //     // located at the same target as the source instance
+    //     _data = Data{data, mode};
+    // }
 }
 
 

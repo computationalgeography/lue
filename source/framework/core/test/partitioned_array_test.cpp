@@ -129,7 +129,8 @@ BOOST_AUTO_TEST_CASE(construct_with_max_partition_shape)
         Count nr_cols_partition = 30;
         Shape max_partition_shape{{nr_rows_partition, nr_cols_partition}};
 
-        PartitionedArray array{shape, max_partition_shape};
+        PartitionedArray array{
+            shape, max_partition_shape, PartitionedArray::ClampMode::shrink};
 
         BOOST_CHECK_EQUAL(array.nr_elements(), nr_rows * nr_cols);
         BOOST_CHECK_EQUAL(array.shape(), shape);
@@ -146,6 +147,25 @@ BOOST_AUTO_TEST_CASE(construct_with_max_partition_shape)
         BOOST_CHECK_EQUAL((partitions(1, 0).offset().get()), Offset({20,  0}));
         BOOST_CHECK_EQUAL((partitions(1, 1).offset().get()), Offset({20, 30}));
     }
+
+    {
+        // 2 x 2 partitions, with clamping
+        Count nr_rows_partition = 20;
+        Count nr_cols_partition = 30;
+        Shape max_partition_shape{{nr_rows_partition, nr_cols_partition}};
+
+        PartitionedArray array{
+            shape, max_partition_shape, PartitionedArray::ClampMode::merge};
+
+        BOOST_CHECK_EQUAL(array.nr_elements(), nr_rows * nr_cols);
+        BOOST_CHECK_EQUAL(array.shape(), shape);
+        BOOST_CHECK_EQUAL(array.nr_partitions(), 1);
+
+        auto const& partitions = array.partitions();
+        BOOST_CHECK_EQUAL(partitions(0, 0).shape().get(), shape);
+
+        BOOST_CHECK_EQUAL((partitions(0, 0).offset().get()), Offset({ 0,  0}));
+    }
 }
 
 
@@ -159,7 +179,7 @@ BOOST_AUTO_TEST_CASE(array_with_array_partitions)
     Shape shape_in_partitions{{nr_rows, nr_cols}};
 
     Partitions partitions{};
-    partitions = Partitions{shape_in_partitions, lue::scattered_target_index()};
+    partitions = Partitions{shape_in_partitions};
 
     for(auto& partition: partitions) {
         partition = Partition{};

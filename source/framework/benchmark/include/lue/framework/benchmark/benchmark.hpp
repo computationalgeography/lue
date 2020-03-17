@@ -77,7 +77,7 @@ public:
 
                    Benchmark           (Benchmark&&)=delete;
 
-                   ~Benchmark          ()=default;
+                   virtual ~Benchmark  ()=default;
 
     Benchmark&     operator=           (Benchmark const&)=delete;
 
@@ -87,11 +87,19 @@ public:
 
     Task const&    task                () const;
 
-    int            run                 ();
+    virtual int    run                 ();
 
     Timing const&  timing              () const;
 
     Timings const& timings             () const;
+
+protected:
+
+    Callable&      callable            ();
+
+    Timing&        timing              ();
+
+    Timings&       timings             ();
 
 private:
 
@@ -135,6 +143,14 @@ inline Benchmark<Callable>::Benchmark(
 {
     // assert(!_array_shape.empty());
     // assert(std::size(_array_shape) == std::size(_partition_shape));
+}
+
+
+template<
+    typename Callable>
+Callable& Benchmark<Callable>::callable()
+{
+    return _callable;
 }
 
 
@@ -192,12 +208,30 @@ inline int Benchmark<Callable>::run()
 
 template<
     typename Callable>
+inline typename Benchmark<Callable>::Timing& Benchmark<Callable>::timing()
+{
+    return _timing;
+}
+
+
+template<
+    typename Callable>
 inline typename Benchmark<Callable>::Timing const&
     Benchmark<Callable>::timing() const
 {
     return _timing;
 }
 
+
+/*!
+    @brief      Return the timings of each run
+*/
+template<
+    typename Callable>
+inline typename Benchmark<Callable>::Timings& Benchmark<Callable>::timings()
+{
+    return _timings;
+}
 
 /*!
     @brief      Return the timings of each run

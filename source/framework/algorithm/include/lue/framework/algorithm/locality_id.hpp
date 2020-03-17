@@ -60,8 +60,7 @@ PartitionedArrayT<InputArray, std::uint32_t> locality_id(
     using OutputPartitions = PartitionsT<OutputArray>;
 
     LocalityIDPartitionAction<InputPartition> action;
-    OutputPartitions output_partitions{
-        shape_in_partitions(input_array), scattered_target_index()};
+    OutputPartitions output_partitions{shape_in_partitions(input_array)};
 
     for(Index p = 0; p < nr_partitions(input_array); ++p) {
 

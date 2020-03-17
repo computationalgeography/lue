@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/core/component/partitioned_array.hpp"
+#include <hpx/lcos/when_all.hpp>
 #include <numeric>
 
 
@@ -30,14 +31,11 @@ template<
             [partition, start_value](
                 Shape const& shape) mutable
             {
-                TargetIndex const target_idx =
-                    hpx::get_ptr<Partition>(partition).get()->target_idx();
-
-                Data data{shape, target_idx};
+                Data data{shape};
                 std::iota(data.begin(), data.end(), start_value);
 
                 // This runs asynchronous and returns a future<void>
-                return partition.set_data(std::move(data)); // data, CopyMode::share);
+                return partition.set_data(std::move(data));
             }));
 
     // auto assigned = data.then(

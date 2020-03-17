@@ -28,6 +28,18 @@ private:
 
 public:
 
+    enum class ClampMode
+    {
+
+        //! Shrink border partitions
+        shrink,
+
+        //! Enlarge border partitions
+        merge
+
+    };
+
+
     using Partition = PartitionClient;
 
     using Partitions = ArrayPartitionData<Partition, rank>;
@@ -51,7 +63,8 @@ public:
     explicit       PartitionedArray    (Shape const& shape);
 
                    PartitionedArray    (Shape const& shape,
-                                        Shape const& max_partition_shape);
+                                        Shape const& max_partition_shape,
+                                        ClampMode clamp_mode=ClampMode::merge);
 
                    PartitionedArray    (Shape const& shape,
                                         Partitions&& partitions);
@@ -103,15 +116,25 @@ private:
                                         Shape const& end_indices,
                                         Shape const& new_shape);
 
-    void           clamp_array         (Shape const& shape_in_partitions,
+    void           resize_partitions   (Shape const& begin_indices,
+                                        Shape const& end_indices,
+                                        Index dimension_idx,
+                                        Count new_size);
+
+    void           clamp_array_shrink  (Shape const& shape_in_partitions,
+                                        Shape const& max_partition_shape);
+
+    void           clamp_array_merge   (Shape const& shape_in_partitions,
                                         Shape const& max_partition_shape);
 
     void           create              ();
 
-    void           create              (Shape const& max_partition_shape);
+    void           create              (Shape const& max_partition_shape,
+                                        ClampMode clamp_mode);
 
     void           create              (Shape const& shape_in_partitions,
-                                        Shape const& max_partition_shape);
+                                        Shape const& max_partition_shape,
+                                        ClampMode clamp_mode);
 
     void           print_partitions    () const;
 
@@ -229,13 +252,14 @@ template<
     Rank rank>
 PartitionedArray<Element, rank>::PartitionedArray(
     Shape const& shape,
-    Shape const& max_partition_shape):
+    Shape const& max_partition_shape,
+    ClampMode const clamp_mode):
 
     _shape{shape},
     _partitions{}
 
 {
-    create(max_partition_shape);
+    create(max_partition_shape, clamp_mode);
 
     assert_invariants();
 }
@@ -393,7 +417,7 @@ void PartitionedArray<Element, rank>::shrink_partitions(
 template<
     typename Element,
     Rank rank>
-void PartitionedArray<Element, rank>::clamp_array(
+void PartitionedArray<Element, rank>::clamp_array_shrink(
     Shape const& shape_in_partitions,
     Shape const& max_partition_shape)
 {
@@ -428,7 +452,6 @@ void PartitionedArray<Element, rank>::clamp_array(
         // We are assuming here that only the last partition needs to
         // be resized. All other partitions must be positioned within
         // the array's extent.
-        // Typo? assert(excess_cells < max_partitions_extent);
         assert(excess_cells < max_partition_shape[d]);
 
         if(excess_cells > 0) {
@@ -437,10 +460,11 @@ void PartitionedArray<Element, rank>::clamp_array(
             // These partitions form a hyperslab of the array. We can
             // select this slab using start indices and end indices along
             // all dimensions. For the current dimension we set these
-            // to the same value: the index of the last partition. In
-            // case of the other dimension we set the start indices
-            // to zero and the end indices to the last index along each
-            // of these dimensions.
+            // to the same value: the index of the last partition.
+            //
+            // In case of the other dimensions we set the start
+            // indices to zero and the end indices to the last index
+            // along each of these dimensions.
 
             Shape begin_indices_hyperslab{begin_indices};
             Shape end_indices_hyperslab{end_indices};
@@ -454,6 +478,201 @@ void PartitionedArray<Element, rank>::clamp_array(
             shrink_partitions(
                 begin_indices_hyperslab, end_indices_hyperslab,
                 partition_shape);
+        }
+    }
+}
+
+
+template<
+    typename Partitions>
+class ResizeVisitor:
+    public PartitionVisitor<Partitions>
+{
+
+private:
+
+    using Base = PartitionVisitor<Partitions>;
+
+public:
+
+    ResizeVisitor(
+        Partitions& partitions,
+        Index const dimension_idx,
+        Count const new_size):
+
+        Base{partitions},
+        _dimension_idx{dimension_idx},
+        _new_size{new_size}
+
+    {
+        assert(_dimension_idx >= 0);
+        assert(_dimension_idx < static_cast<Index>(rank<Partitions>));
+    }
+
+    void operator()()
+    {
+        using Partition = PartitionT<Partitions>;
+        using Shape = ShapeT<Partitions>;
+
+        Partition& partition = this->partition();
+
+        partition = hpx::dataflow(
+            hpx::launch::async,
+            hpx::util::annotated_function(
+
+                [dimension_idx=this->_dimension_idx, new_size=this->_new_size](
+                    Partition&& partition,
+                    hpx::future<Shape>&& f_partition_shape) // -> Partition
+                {
+                    Shape partition_shape = f_partition_shape.get();
+
+                    partition_shape[dimension_idx] = new_size;
+
+                    // FIXME Blocks current thread... Is this a problem?
+                    partition.reshape(partition_shape).wait();
+
+                    return partition;
+                },
+
+                "resize_partition"),
+            partition,
+            partition.shape());
+
+    }
+
+private:
+
+    Index          _dimension_idx;
+
+    Count          _new_size;
+
+};
+
+
+template<
+    typename Element,
+    Rank rank>
+void PartitionedArray<Element, rank>::resize_partitions(
+    Shape const& begin_indices,
+    Shape const& end_indices,
+    Index const dimension_idx,
+    Count const new_size)
+{
+    // Iterate over all partitions and resize them.
+    // Array shape is not changed! It is assumed that the shape of
+    // the partitioned array after resizing corresponds with the cached
+    // array shape (_shape).
+    ResizeVisitor resize{_partitions, dimension_idx, new_size};
+
+    visit_array(begin_indices, end_indices, resize);
+}
+
+
+template<
+    typename Element,
+    Rank rank>
+void PartitionedArray<Element, rank>::clamp_array_merge(
+    Shape const& shape_in_partitions,
+    Shape const& max_partition_shape)
+{
+    // Merge partitions at the border of the array. They might be too
+    // large (overflow). This happens when the extents of the array are
+    // not a multiple of the corresponding extents in max_partition_shape.
+
+    // Begin and end indices of all partitions in the array
+    Shape begin_indices;
+    begin_indices.fill(0);
+    Shape end_indices{shape_in_partitions};
+
+    // Iterate over all dimensions
+    for(Rank d = 0; d < rank; ++d) {
+
+        // Extent of current dimension in partitioned array
+        auto const array_extent = _shape[d];
+
+        // Maximum extent of current dimension in partitioned array, given
+        // the number of partitions and the max extent
+        auto const max_partitions_extent =
+            shape_in_partitions[d] * max_partition_shape[d];
+
+        // Excess cells along current dimension in partitioned
+        // array. These cells need to be removed.
+        auto const excess_cells = max_partitions_extent - array_extent;
+
+        // We are assuming here that only the last partition needs to
+        // be resized. All other partitions must be positioned within
+        // the array's extent.
+        assert(excess_cells < max_partition_shape[d]);
+
+        if(excess_cells > 0) {
+
+            if(shape_in_partitions[d] == 1) {
+
+                // Only one partition along the current dimension:
+                // shrink it
+
+                // Resize current dimension of all partitions at currently
+                // considered side of array
+                // These partitions form a hyperslab of the array. We can
+                // select this slab using start indices and end indices along
+                // all dimensions. For the current dimension we set these
+                // to the same value: the index of the last partition.
+
+                // In case of the other dimensions we set the start
+                // indices to zero and the end indices to the last index
+                // along each of these dimensions.
+
+                Shape begin_indices_hyperslab{begin_indices};
+                Shape end_indices_hyperslab{end_indices};
+
+                begin_indices_hyperslab[d] = shape_in_partitions[d] - 1;
+                end_indices_hyperslab[d] = shape_in_partitions[d];
+
+                Shape partition_shape{max_partition_shape};
+                partition_shape[d] -= excess_cells;
+
+                shrink_partitions(
+                    begin_indices_hyperslab, end_indices_hyperslab,
+                    partition_shape);
+            }
+            else {
+
+                // Multiple partitions along the current dimension:
+                // get rid of the last one and enlarge the neighbouring
+                // partition (along the current dimension)
+
+                // We can select the relevant partitions using start
+                // indices and end indices along all dimensions. For
+                // the current dimension we set these to the same value:
+                // the index of the last partitions.
+                // In case of the other dimensions we set the start
+                // indices to zero and the end indices to the last index
+                // along each of these dimensions.
+
+                Shape begin_indices_hyperslab{begin_indices};
+                Shape end_indices_hyperslab{end_indices};
+
+                /// // Remove the last partitions, along the current dimension
+                /// begin_indices_hyperslab[d] = shape_in_partitions[d] - 1;
+                /// end_indices_hyperslab[d] = shape_in_partitions[d];
+
+                // Resize the one before the last partitions (which just
+                // got erased), along the current dimension
+                begin_indices_hyperslab[d] = shape_in_partitions[d] - 2;
+                end_indices_hyperslab[d] = shape_in_partitions[d] - 1;
+
+                Shape partition_shape{max_partition_shape};
+                partition_shape[d] += max_partition_shape[d] - excess_cells;
+
+                resize_partitions(
+                    begin_indices_hyperslab, end_indices_hyperslab,
+                    d, partition_shape[d]);
+
+                _partitions.erase(
+                    d, shape_in_partitions[d] - 1, shape_in_partitions[d]);
+
+                end_indices[d] -= 1;
+            }
         }
     }
 }
@@ -502,8 +721,7 @@ void PartitionedArray<Element, rank>::instantiate_partitions(
     // will be a component client instance referring to a, possibly
     // remote, component server instance.
     assert(_partitions.empty());
-    _partitions = Partitions{
-        shape_in_partitions, scattered_target_index()};
+    _partitions = Partitions{shape_in_partitions};
 
     Count const nr_partitions = lue::nr_elements(shape_in_partitions);
     assert(_partitions.nr_elements() == nr_partitions);
@@ -583,15 +801,36 @@ template<
     Rank rank>
 void PartitionedArray<Element, rank>::create(
     Shape const& shape_in_partitions,
-    Shape const& max_partition_shape)
+    Shape const& max_partition_shape,
+    ClampMode const clamp_mode)
 {
     // Create the array partitions that, together make up the partitioned
     // array. Note that the extent of this array might be too large,
-    // given that we use max_partition_shape. This will be fixed using
-    // clamp_array.
+    // given that we use max_partition_shape.
 
     instantiate_partitions(shape_in_partitions, max_partition_shape);
-    clamp_array(shape_in_partitions, max_partition_shape);
+
+    switch(clamp_mode)
+    {
+        case ClampMode::shrink:
+        {
+            // Fix too large extent by shrinking overflowing partitions. This
+            // may result is partitions that are too small for the focal
+            // algorithms. Therefore, the alternative approach is more robust.
+            clamp_array_shrink(shape_in_partitions, max_partition_shape);
+            break;
+        }
+        case ClampMode::merge:
+        {
+            // Fix too large extent by merging relevant part of overflowing
+            // partitions with bordering partitions. These will become larger
+            // than the requested partition size. But focal algorithms will
+            // behave more robust. Partitions in the array will be at least as
+            // large as the partitions shape requested.
+            clamp_array_merge(shape_in_partitions, max_partition_shape);
+            break;
+        }
+    }
 
     assert_invariants();
 }
@@ -613,7 +852,7 @@ void PartitionedArray<Element, rank>::create()
     auto const shape_in_partitions =
         lue::shape_in_partitions(_shape, max_partition_shape);
 
-    create(shape_in_partitions, max_partition_shape);
+    create(shape_in_partitions, max_partition_shape, ClampMode::merge);
 }
 
 
@@ -621,7 +860,8 @@ template<
     typename Element,
     Rank rank>
 void PartitionedArray<Element, rank>::create(
-    Shape const& max_partition_shape)
+    Shape const& max_partition_shape,
+    ClampMode const clamp_mode)
 {
     // Given the shape of the array and the shape of the array partitions,
     // determine the shape of the array in partitions
@@ -629,7 +869,7 @@ void PartitionedArray<Element, rank>::create(
     auto const shape_in_partitions =
         lue::shape_in_partitions(_shape, max_partition_shape);
 
-    create(shape_in_partitions, max_partition_shape);
+    create(shape_in_partitions, max_partition_shape, clamp_mode);
 }
 
 

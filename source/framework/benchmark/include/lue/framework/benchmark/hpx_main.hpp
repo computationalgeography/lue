@@ -124,7 +124,7 @@ int main(                                                                      \
         configuration                                                          \
     };                                                                         \
                                                                                \
-    register_apex_print_options() \
+    register_apex_print_options()                                              \
                                                                                \
     return hpx::init(argc, argv, cfg);                                         \
 }

@@ -70,14 +70,10 @@ public:
         auto offset{input_partition_server1.offset()};
         assert(input_partition_server2.offset() == offset);
 
-        InputData input_partition_data1{
-            input_partition_server1.data(CopyMode::share)};
-        InputData input_partition_data2{
-            input_partition_server2.data(CopyMode::share)};
+        InputData input_partition_data1{input_partition_server1.data()};
+        InputData input_partition_data2{input_partition_server2.data()};
 
-        TargetIndex const target_idx = input_partition_data1.target_idx();
-        OutputData output_partition_data{
-            input_partition_data1.shape(), target_idx};
+        OutputData output_partition_data{input_partition_data1.shape()};
 
         std::transform(
             input_partition_data1.begin(),
@@ -135,12 +131,9 @@ public:
         auto const& input_partition_server{*input_partition_server_ptr};
 
         auto offset{input_partition_server.offset()};
-        InputData input_partition_data{
-            input_partition_server.data(CopyMode::share)};
+        InputData input_partition_data{input_partition_server.data()};
 
-        TargetIndex const target_idx = input_partition_data.target_idx();
-        OutputData output_partition_data{
-            input_partition_data.shape(), target_idx};
+        OutputData output_partition_data{input_partition_data.shape()};
 
         std::transform(
             input_partition_data.begin(),
@@ -201,12 +194,9 @@ public:
         auto const& input_partition_server{*input_partition_server_ptr};
 
         auto offset{input_partition_server.offset()};
-        InputData input_partition_data{
-            input_partition_server.data(CopyMode::share)};
+        InputData input_partition_data{input_partition_server.data()};
 
-        TargetIndex const target_idx = input_partition_data.target_idx();
-        OutputData output_partition_data{
-            input_partition_data.shape(), target_idx};
+        OutputData output_partition_data{input_partition_data.shape()};
 
         std::transform(
             input_partition_data.begin(),
@@ -268,8 +258,7 @@ PartitionedArray<OutputElementT<Functor>, rank> binary_local_operation(
 
     detail::BinaryLocalOperationPartitionAction<
         InputPartition, InputPartition, OutputPartition, Functor> action;
-    OutputPartitions output_partitions{
-        shape_in_partitions(input_array1), scattered_target_index()};
+    OutputPartitions output_partitions{shape_in_partitions(input_array1)};
 
     for(Index p = 0; p < nr_partitions(input_array1); ++p) {
 
@@ -316,8 +305,7 @@ PartitionedArray<OutputElementT<Functor>, rank> binary_local_operation(
 
     detail::BinaryLocalOperationPartitionAction<
         InputPartition, InputElement, OutputPartition, Functor> action;
-    OutputPartitions output_partitions{
-        shape_in_partitions(input_array), scattered_target_index()};
+    OutputPartitions output_partitions{shape_in_partitions(input_array)};
 
     for(Index p = 0; p < nr_partitions(input_array); ++p) {
 
@@ -364,8 +352,7 @@ PartitionedArray<OutputElementT<Functor>, rank> binary_local_operation(
 
     detail::BinaryLocalOperationPartitionAction<
         InputElement, InputPartition, OutputPartition, Functor> action;
-    OutputPartitions output_partitions{
-        shape_in_partitions(input_array), scattered_target_index()};
+    OutputPartitions output_partitions{shape_in_partitions(input_array)};
 
     for(Index p = 0; p < nr_partitions(input_array); ++p) {
 

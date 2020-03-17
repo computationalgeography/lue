@@ -43,24 +43,24 @@ BOOST_AUTO_TEST_CASE(use_case_1)
     Shape shape{nr_rows, nr_cols};
 
     PartitionData<bool, rank> condition_data{
-        shape,
-        std::initializer_list<bool>{
-            true, false,
-            false, true,
-            true, false,
-        },
-        lue::scattered_target_index()};
+            shape,
+            std::initializer_list<bool>{
+                true, false,
+                false, true,
+                true, false,
+            }
+        };
     Array<bool, rank> condition{shape};
     condition.partitions()(0, 0).set_data(std::move(condition_data));
 
     PartitionData<Element, rank> true_data{
-        shape,
-        std::initializer_list<Element>{
-            1, 2,
-            3, 4,
-            5, 6,
-        },
-        lue::scattered_target_index()};
+            shape,
+            std::initializer_list<Element>{
+                1, 2,
+                3, 4,
+                5, 6,
+            }
+        };
     Array<Element, rank> true_array{shape};
     true_array.partitions()(0, 0).set_data(std::move(true_data));
 
@@ -69,13 +69,13 @@ BOOST_AUTO_TEST_CASE(use_case_1)
     auto result_we_got = lue::where(condition, true_array, false_value);
 
     PartitionData<Element, rank> result_we_want_data{
-        shape,
-        std::initializer_list<Element>{
-            1, 9,
-            9, 4,
-            5, 9,
-        },
-        lue::scattered_target_index()};
+            shape,
+            std::initializer_list<Element>{
+                1, 9,
+                9, 4,
+                5, 9,
+            }
+        };
     Array<Element, rank> result_we_want{shape};
     result_we_want.partitions()(0, 0).set_data(std::move(result_we_want_data));
 

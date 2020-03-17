@@ -2,6 +2,9 @@
 #include "lue/framework/algorithm/policy.hpp"
 #include "lue/framework/core/component/partitioned_array.hpp"
 #include "lue/framework/core/array.hpp"
+#include <hpx/lcos/when_all.hpp>
+#include <fmt/format.h>
+#include <stdexcept>
 
 
 namespace lue {
@@ -201,6 +204,48 @@ constexpr lue::Count nr_neighbors()
 }
 
 
+inline void throw_partition_too_small_exception(
+    Count const nr_elements0,
+    Count const nr_elements1,
+    Radius const kernel_size)
+{
+    throw std::runtime_error(fmt::format(
+        "Partition shape ({}, {}) is too small for focal kernel with "
+        "size {}. This can happen when the array is partitioned in such "
+        "a way that there are small partitions containing bordering cells "
+        "that are not part of regularly sized partitions. Or when the "
+        "kernel is large compared to the array partitions. Adjust either "
+        "the array partitioning or the kernel size.",
+        nr_elements0, nr_elements1, kernel_size));
+}
+
+
+inline void verify_border_partition_large_enough(
+    Count const nr_elements0,
+    Count const nr_elements1,
+    Radius const kernel_radius)
+{
+    if(nr_elements0 < kernel_radius || nr_elements1 < kernel_radius)
+    {
+        throw_partition_too_small_exception(
+            nr_elements0, nr_elements1, 2 * kernel_radius + 1);
+    }
+}
+
+
+inline void verify_partition_large_enough(
+    Count const nr_elements0,
+    Count const nr_elements1,
+    Radius const kernel_size)
+{
+    if(nr_elements0 < kernel_size || nr_elements1 < kernel_size)
+    {
+        throw_partition_too_small_exception(
+            nr_elements0, nr_elements1, 2 * kernel_size);
+    }
+}
+
+
 template<
     typename InputPartitions,
     typename OutputPartition,
@@ -247,8 +292,8 @@ OutputPartition focal_operation_partition(
         // +------+------+------+
         //
         // We only need to calculate a result for partition (1, 1). The
-        // other ones are used only to provide input values for the sides
-        // of this partition.
+        // other ones are used to provide input values for the sides of
+        // this partition.
 
         // Create an array with futures to the shape of the array
         // partitions. These shapes are used to obtain the smallest
@@ -290,8 +335,9 @@ OutputPartition focal_operation_partition(
                     Shape const& partition_shape)
                 {
                     auto const [nr_elements0, nr_elements1] = partition_shape;
-                    assert(nr_elements0 >= kernel_radius);
-                    assert(nr_elements1 >= kernel_radius);
+
+                    verify_border_partition_large_enough(
+                        nr_elements0, nr_elements1, kernel_radius);
 
                     return partition.slice(
                         Slices{{
@@ -310,8 +356,9 @@ OutputPartition focal_operation_partition(
                     Shape const& partition_shape)
                 {
                     auto const [nr_elements0, nr_elements1] = partition_shape;
-                    assert(nr_elements0 >= kernel_radius);
-                    assert(nr_elements1 >= kernel_radius);
+
+                    verify_border_partition_large_enough(
+                        nr_elements0, nr_elements1, kernel_radius);
 
                     return partition.slice(
                         Slices{{
@@ -330,9 +377,9 @@ OutputPartition focal_operation_partition(
                     Shape const& partition_shape)
                 {
                     auto const [nr_elements0, nr_elements1] = partition_shape;
-                    assert(nr_elements0 >= kernel_radius);
-                    assert(nr_elements1 >= kernel_radius);
-                    LUE_UNUSED(nr_elements1);
+
+                    verify_border_partition_large_enough(
+                        nr_elements0, nr_elements1, kernel_radius);
 
                     return partition.slice(
                         Slices{{
@@ -351,8 +398,9 @@ OutputPartition focal_operation_partition(
                     Shape const& partition_shape)
                 {
                     auto const [nr_elements0, nr_elements1] = partition_shape;
-                    assert(nr_elements0 >= kernel_radius);
-                    assert(nr_elements1 >= kernel_radius);
+
+                    verify_border_partition_large_enough(
+                        nr_elements0, nr_elements1, kernel_radius);
 
                     return partition.slice(
                         Slices{{
@@ -364,7 +412,7 @@ OutputPartition focal_operation_partition(
             ));
 
         // Center partition: get all elements
-        input_partitions_data(1, 1) = partitions(1, 1).data(CopyMode::share);
+        input_partitions_data(1, 1) = partitions(1, 1).data();
 
         // East partition: get west side elements
         input_partitions_data(1, 2) = partition_shapes(1, 2).then(
@@ -374,9 +422,9 @@ OutputPartition focal_operation_partition(
                     Shape const& partition_shape)
                 {
                     auto const [nr_elements0, nr_elements1] = partition_shape;
-                    assert(nr_elements0 >= kernel_radius);
-                    assert(nr_elements1 >= kernel_radius);
-                    LUE_UNUSED(nr_elements1);
+
+                    verify_border_partition_large_enough(
+                        nr_elements0, nr_elements1, kernel_radius);
 
                     return partition.slice(
                         Slices{{
@@ -395,9 +443,9 @@ OutputPartition focal_operation_partition(
                     Shape const& partition_shape)
                 {
                     auto const [nr_elements0, nr_elements1] = partition_shape;
-                    assert(nr_elements0 >= kernel_radius);
-                    assert(nr_elements1 >= kernel_radius);
-                    LUE_UNUSED(nr_elements0);
+
+                    verify_border_partition_large_enough(
+                        nr_elements0, nr_elements1, kernel_radius);
 
                     return partition.slice(
                         Slices{{
@@ -416,9 +464,9 @@ OutputPartition focal_operation_partition(
                     Shape const& partition_shape)
                 {
                     auto const [nr_elements0, nr_elements1] = partition_shape;
-                    assert(nr_elements0 >= kernel_radius);
-                    assert(nr_elements1 >= kernel_radius);
-                    LUE_UNUSED(nr_elements0);
+
+                    verify_border_partition_large_enough(
+                        nr_elements0, nr_elements1, kernel_radius);
 
                     return partition.slice(
                         Slices{{
@@ -437,10 +485,9 @@ OutputPartition focal_operation_partition(
                     Shape const& partition_shape)
                 {
                     auto const [nr_elements0, nr_elements1] = partition_shape;
-                    assert(nr_elements0 >= kernel_radius);
-                    assert(nr_elements1 >= kernel_radius);
-                    LUE_UNUSED(nr_elements0);
-                    LUE_UNUSED(nr_elements1);
+
+                    verify_border_partition_large_enough(
+                        nr_elements0, nr_elements1, kernel_radius);
 
                     return partition.slice(
                         Slices{{
@@ -450,7 +497,6 @@ OutputPartition focal_operation_partition(
                 }
 
             ));
-
 
         // Once the elements from the center partition have arrived,
         // perform calculations for all cells whose neighborhoods are
@@ -463,28 +509,23 @@ OutputPartition focal_operation_partition(
                     [kernel /* , functor */](
                         InputData const& partition_data)
                     {
-                        auto const [nr_rows, nr_cols] = partition_data.shape();
+                        auto const [nr_elements0, nr_elements1] =
+                            partition_data.shape();
                         auto const& array_span = partition_data.span();
 
-                        assert(nr_rows >= kernel.size());
-                        assert(nr_cols >= kernel.size());
+                        verify_partition_large_enough(
+                            nr_elements0, nr_elements1, kernel.size());
 
-                        // FIXME if still needed, update executor above
-                        //     to one that takes the NUMA node of this
-                        //     partition into account
-                        TargetIndex const target_idx =
-                            partition_data.target_idx();
-                        OutputData output_data{
-                            partition_data.shape(), target_idx};
+                        OutputData output_data{partition_data.shape()};
 
                         // rf, cf are indices of focal cell in array
                         // rk, ck are indices of first cell in array
                         //     that is visible from kernel
 
                         for(Index rf = kernel.radius(), rk = rf - kernel.radius();
-                                rf < nr_rows - kernel.radius(); ++rf, ++rk) {
+                                rf < nr_elements0 - kernel.radius(); ++rf, ++rk) {
                             for(Index cf = kernel.radius(), ck = cf - kernel.radius();
-                                    cf < nr_cols - kernel.radius(); ++cf, ++ck) {
+                                    cf < nr_elements1 - kernel.radius(); ++cf, ++ck) {
 
                                 output_data(rf, cf) = detail::inner<Functor>(
                                     lue::subspan(array_span,
@@ -1091,12 +1132,8 @@ auto spawn_focal_operation_partition(
                 auto&& partitions_,
                 hpx::id_type const locality_id)
             {
-                // FIXME if still needed, replace scattered_target_index
-                //     with index of NUMA node the center partition is
-                //     located on
                 Partitions partitions{
-                    Shape{{3, 3}}, partitions_.begin(), partitions_.end(),
-                    scattered_target_index()};
+                    Shape{{3, 3}}, partitions_.begin(), partitions_.end()};
 
                 return action(locality_id, partitions, kernel, functor);
             }
@@ -1161,22 +1198,10 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
     using Offset = OffsetT<Array>;
     using Shape = ShapeT<Array>;
 
-    // auto const nr_partitions = lue::nr_partitions(input_array);
     auto const [nr_partitions0, nr_partitions1] =
         lue::shape_in_partitions(input_array);
     auto const kernel_radius = kernel.radius();
     auto const fill_value = functor.fill_value();
-
-
-    // - Create a halo of temporary partitions that are used in the
-    //     convolution of the partitions along the borders of the
-    //     array
-    // - Per array partition
-    //     - Determine the collection of neighboring partitions
-    //         - Use halo partitions in case of border partitions of array
-    //     - Call the action that performs the calculations
-
-
 
     // -------------------------------------------------------------------------
     // Create a halo of temporary partitions that are used in the
@@ -1199,8 +1224,7 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
     //     +----+----+
     //     | SW | SE |
     //     +----+----+
-    InputPartitions halo_corner_partitions{
-        Shape{{2, 2}}, scattered_target_index()};
+    InputPartitions halo_corner_partitions{Shape{{2, 2}}};
 
     // North-west corner halo partition
     halo_corner_partitions(0, 0) = spawn_create_halo_partition(
@@ -1228,7 +1252,7 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
     //     | S | S | S |
     //     +---+---+---+
     InputPartitions halo_longitudinal_side_partitions{
-        Shape{{2, nr_partitions1}}, scattered_target_index()};
+        Shape{{2, nr_partitions1}}};
 
     for(auto const [rh, rp]: {
             std::array<Index, 2>{{0, 0}},
@@ -1268,7 +1292,7 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
     //     | W | E |
     //     +---+---+
     InputPartitions halo_latitudinal_sides_partitions{
-        Shape{{nr_partitions0, 2}}, scattered_target_index()};
+        Shape{{nr_partitions0, 2}}};
 
     for(Index rp = 0; rp < nr_partitions0; ++rp) {
 
@@ -1306,13 +1330,12 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
     // that performs the calculations.
     FocalOperationPartitionAction<
         InputPartitions, OutputPartition, Kernel, Functor> action;
-    OutputPartitions output_partitions{
-        shape_in_partitions(input_array), scattered_target_index()};
+    OutputPartitions output_partitions{shape_in_partitions(input_array)};
 
     assert(nr_partitions0 > 0);
     assert(nr_partitions1 > 0);
 
-    InputPartitions local_input_partitions{Shape{{3, 3}}, scattered_target_index()};
+    InputPartitions local_input_partitions{Shape{{3, 3}}};
 
     // North-west corner partition
     {

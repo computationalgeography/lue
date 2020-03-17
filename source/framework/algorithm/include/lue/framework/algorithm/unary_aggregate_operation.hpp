@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/core/component/partitioned_array.hpp"
+#include <hpx/lcos/when_all.hpp>
 
 
 namespace lue {
@@ -37,8 +38,7 @@ hpx::future<OutputElement> unary_aggregate_operation_partition(
     auto const input_partition_server_ptr{hpx::get_ptr(input_partition).get()};
     auto const& input_partition_server{*input_partition_server_ptr};
 
-    InputData input_partition_data{
-        input_partition_server.data(CopyMode::share)};
+    InputData input_partition_data{input_partition_server.data()};
 
     // Initialize result for the case that the partition is empty
     OutputElement result{functor()};

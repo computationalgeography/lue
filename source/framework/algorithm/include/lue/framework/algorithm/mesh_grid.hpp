@@ -25,11 +25,10 @@ ArrayPartition<OutputElement, rank> mesh_grid_partition(
     auto const input_partition_server_ptr{hpx::get_ptr(input_partition).get()};
     auto const& input_partition_server{*input_partition_server_ptr};
 
-    TargetIndex const target_idx = input_partition_server.target_idx();
     auto const partition_offset = input_partition_server.offset();
     auto const partition_shape = input_partition_server.shape();
 
-    OutputData output_partition_data{partition_shape, target_idx};
+    OutputData output_partition_data{partition_shape};
 
     if constexpr(rank == 1) {
         assert(dimension == 0);
@@ -119,7 +118,7 @@ std::array<PartitionedArray<OutputElement, rank>, rank> mesh_grid(
 
     for(Rank r = 0; r < rank; ++r) {
         output_partitions[r] = OutputPartitions{
-            shape_in_partitions(input_array), scattered_target_index()};
+            shape_in_partitions(input_array)};
     }
 
     for(Index p = 0; p < nr_partitions(input_array); ++p) {

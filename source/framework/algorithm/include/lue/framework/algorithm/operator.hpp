@@ -40,7 +40,7 @@ template<                                                \
     Rank rank>                                           \
 PartitionedArray<Element, rank> operator symbol(         \
     PartitionedArray<Element, rank> const& lhs,          \
-    Element const& rhs)                                  \
+    Element const rhs)                                   \
 {                                                        \
     return name(lhs, rhs);                               \
 }                                                        \
@@ -50,7 +50,7 @@ template<                                                \
     typename Element,                                    \
     Rank rank>                                           \
 PartitionedArray<Element, rank> operator symbol(         \
-    Element const& lhs,                                  \
+    Element const lhs,                                   \
     PartitionedArray<Element, rank> const& rhs)          \
 {                                                        \
     return name(lhs, rhs);                               \
@@ -96,7 +96,7 @@ template<                                                \
     Rank rank>                                           \
 PartitionedArray<bool, rank> operator symbol(            \
     PartitionedArray<Element, rank> const& lhs,          \
-    Element const& rhs)                                  \
+    Element const rhs)                                   \
 {                                                        \
     return name(lhs, rhs);                               \
 }                                                        \
@@ -106,7 +106,7 @@ template<                                                \
     typename Element,                                    \
     Rank rank>                                           \
 PartitionedArray<bool, rank> operator symbol(            \
-    Element const& lhs,                                  \
+    Element const lhs,                                   \
     PartitionedArray<Element, rank> const& rhs)          \
 {                                                        \
     return name(lhs, rhs);                               \
@@ -164,7 +164,7 @@ template<                                                \
     Rank rank>                                           \
 PartitionedArray<bool, rank> operator symbol(            \
     PartitionedArray<Element, rank> const& lhs,          \
-    Element const& rhs)                                  \
+    Element const rhs)                                   \
 {                                                        \
     return name(lhs, rhs);                               \
 }                                                        \
@@ -174,7 +174,7 @@ template<                                                \
     typename Element,                                    \
     Rank rank>                                           \
 PartitionedArray<bool, rank> operator symbol(            \
-    Element const& lhs,                                  \
+    Element const lhs,                                   \
     PartitionedArray<Element, rank> const& rhs)          \
 {                                                        \
     return name(lhs, rhs);                               \
