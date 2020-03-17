@@ -683,13 +683,11 @@ void show_properties(
         ImGui::Text(data_model::aspect_to_string(data_model::shape_variability<Collection>).c_str());
 
         for(std::string const& name: collection.names()) {
-            if(ImGui::TreeNodeEx(name.c_str(),
-                    ImGuiTreeNodeFlags_DefaultOpen)) {
-
+            if(ImGui::TreeNodeEx(name.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
+            {
                 copy_popup("property name", name);
                 show_property(collection[name], show_details);
                 ImGui::TreePop();
-
             }
         }
 
@@ -766,9 +764,10 @@ void show_property_set(
     {
         auto const& properties = property_set.properties();
 
-        if(ImGui::TreeNodeEx(fmt::format(
-                "properties ({})", properties.size()).c_str(),
-                ImGuiTreeNodeFlags_DefaultOpen)) {
+        if(ImGui::TreeNodeEx(
+            fmt::format("properties ({})", properties.size()).c_str(),
+            ImGuiTreeNodeFlags_DefaultOpen))
+        {
 
             // show_properties<same_shape::Properties>(
             //     properties, show_details);
@@ -843,11 +842,10 @@ void show_property_sets(
         for(std::string const& name: property_sets.names()) {
 
             if(ImGui::BeginTabItem(name.c_str())) {
-                 copy_popup("property-set name", name);
+                copy_popup("property-set name", name);
                 show_property_set(property_sets[name], show_details);
+                ImGui::EndTabItem();
             }
-
-            ImGui::EndTabItem();
         }
 
         ImGui::EndTabBar();
@@ -873,9 +871,9 @@ void show_phenomenon(
         auto const& object_id{phenomenon.object_id()};
 
         if(show_details || object_id.nr_objects() > 0) {
-            if(ImGui::TreeNodeEx(fmt::format(
-                    "object_id ({})", object_id.nr_objects()).c_str())) {
-
+            if(ImGui::TreeNodeEx(
+                fmt::format("object_id ({})", object_id.nr_objects()).c_str()))
+            {
                 show_object_id(object_id, show_details);
                 ImGui::TreePop();
             }
@@ -886,11 +884,11 @@ void show_phenomenon(
         auto const& property_sets{phenomenon.collection_property_sets()};
 
         if(show_details || !property_sets.empty()) {
-            if(ImGui::TreeNodeEx(fmt::format(
-                    "collection property-sets ({})",
-                        property_sets.size()).c_str(),
-                    ImGuiTreeNodeFlags_DefaultOpen)) {
-
+            if(ImGui::TreeNodeEx(
+                fmt::format("collection property-sets ({})",
+                    property_sets.size()).c_str(),
+                ImGuiTreeNodeFlags_DefaultOpen))
+            {
                 show_property_sets(property_sets, show_details);
                 ImGui::TreePop();
             }
@@ -901,10 +899,10 @@ void show_phenomenon(
         auto const& property_sets{phenomenon.property_sets()};
 
         if(show_details || !property_sets.empty()) {
-            if(ImGui::TreeNodeEx(fmt::format(
-                    "property-sets ({})", property_sets.size()).c_str(),
-                    ImGuiTreeNodeFlags_DefaultOpen)) {
-
+            if(ImGui::TreeNodeEx(
+                fmt::format("property-sets ({})", property_sets.size()).c_str(),
+                ImGuiTreeNodeFlags_DefaultOpen))
+            {
                 show_property_sets(property_sets, show_details);
                 ImGui::TreePop();
             }
@@ -922,11 +920,10 @@ void show_phenomena(
         for(std::string const& name: phenomena.names()) {
 
             if(ImGui::BeginTabItem(name.c_str())) {
-                 copy_popup("phenomenon name", name);
-                 show_phenomenon(phenomena[name], show_details);
+                copy_popup("phenomenon name", name);
+                show_phenomenon(phenomena[name], show_details);
+                ImGui::EndTabItem();
             }
-
-            ImGui::EndTabItem();
         }
 
         ImGui::EndTabBar();
@@ -965,11 +962,10 @@ void show_universes(
         for(std::string const& name: universes.names()) {
 
             if(ImGui::BeginTabItem(name.c_str())) {
-                 copy_popup("property-set name", name);
+                copy_popup("property-set name", name);
                 show_universe(universes[name], show_details);
+                ImGui::EndTabItem();
             }
-
-            ImGui::EndTabItem();
         }
 
         ImGui::EndTabBar();
@@ -1004,9 +1000,9 @@ void show_dataset(
 
         if(show_details || !phenomena.empty()) {
             if(ImGui::TreeNodeEx(
-                    fmt::format("phenomena ({})", phenomena.size()).c_str(),
-                    ImGuiTreeNodeFlags_DefaultOpen)) {
-
+                fmt::format("phenomena ({})", phenomena.size()).c_str(),
+                ImGuiTreeNodeFlags_DefaultOpen))
+            {
                 show_phenomena(phenomena, show_details);
                 ImGui::TreePop();
             }
@@ -1018,9 +1014,9 @@ void show_dataset(
 
         if(show_details || !universes.empty()) {
             if(ImGui::TreeNodeEx(
-                    fmt::format("universes ({})", universes.size()).c_str(),
-                    ImGuiTreeNodeFlags_DefaultOpen)) {
-
+                fmt::format("universes ({})", universes.size()).c_str(),
+                ImGuiTreeNodeFlags_DefaultOpen))
+            {
                 show_universes(universes, show_details);
                 ImGui::TreePop();
             }
