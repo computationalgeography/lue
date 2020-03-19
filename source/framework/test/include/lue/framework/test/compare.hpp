@@ -114,6 +114,9 @@ void check_partition_is_equal(
         BOOST_REQUIRE(partition1.get_id());
         BOOST_REQUIRE(partition2.get_id());
 
+        partition1.wait();
+        partition2.wait();
+
         BOOST_REQUIRE_EQUAL(
             partition1.shape().get(), partition2.shape().get());
 

@@ -25,7 +25,7 @@ void serialize(
 
     buffer.resize(size);
 
-    Array array = hpx::serialization::make_array(buffer.begin(), size);
+    Array array = hpx::serialization::make_array(buffer.data(), size);
     archive & array;
 }
 
@@ -45,7 +45,7 @@ void serialize(
     assert(!buffer.empty());
 
     typename Buffer::Size const size = buffer.size();
-    Array array = hpx::serialization::make_array(buffer.begin(), size);
+    Array array = hpx::serialization::make_array(buffer.data(), size);
 
     archive & size & array;
 }
