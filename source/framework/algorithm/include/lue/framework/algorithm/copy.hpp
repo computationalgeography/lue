@@ -23,15 +23,28 @@ Partition copy_partition(
         hpx::get_colocation_id(input_partition.get_id()).get() ==
         hpx::find_here());
 
-    // Copy the data and move it into a new partition
-    auto const input_partition_server_ptr{hpx::get_ptr(input_partition).get()};
-    auto const& input_partition_server{*input_partition_server_ptr};
+    using InputData = DataT<Partition>;
 
-    auto offset{input_partition_server.offset()};
-    auto input_partition_data = deep_copy(input_partition_server.data());
+    return hpx::dataflow(
+        hpx::launch::async,
 
-    return Partition{
-        hpx::find_here(), offset, std::move(input_partition_data)};
+        [](
+            Partition const& input_partition)
+        {
+            // Copy the data and move it into a new partition
+            auto const input_partition_server_ptr{
+                hpx::get_ptr(input_partition).get()};
+            auto const& input_partition_server{*input_partition_server_ptr};
+
+            auto offset{input_partition_server.offset()};
+            InputData input_partition_data =
+                deep_copy(input_partition_server.data());
+
+            return Partition{
+                hpx::find_here(), offset, std::move(input_partition_data)};
+        },
+
+        input_partition);
 }
 
 }  // namespace detail
@@ -71,20 +84,19 @@ PartitionedArray<Element, rank> copy(
 
     for(Index p = 0; p < nr_partitions(input_array); ++p) {
 
+        InputPartition const& input_partition{input_array.partitions()[p]};
+
         output_partitions[p] = hpx::dataflow(
             hpx::launch::async,
+            hpx::util::unwrapping(
 
-            [action](
-                InputPartition const& input_partition,
-                hpx::future<hpx::id_type>&& locality_id)
-            {
-                return action(
-                    locality_id.get(),
-                    input_partition);
-            },
+                [action, input_partition](
+                    hpx::id_type const locality_id)
+                {
+                    return action(locality_id, input_partition);
+                }),
 
-            input_array.partitions()[p],
-            hpx::get_colocation_id(input_array.partitions()[p].get_id()));
+            hpx::get_colocation_id(input_partition.get_id()));
 
     }
 

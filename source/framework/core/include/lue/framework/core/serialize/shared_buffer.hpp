@@ -20,6 +20,9 @@ void serialize(
     typename Buffer::Size size;
     archive & size;
 
+    // Otherwise, update folowing logic
+    assert(size > 0);
+
     buffer.resize(size);
 
     Array array = hpx::serialization::make_array(buffer.begin(), size);
@@ -37,6 +40,9 @@ void serialize(
     // Write buffer to archive
     using Buffer = lue::SharedBuffer<Element>;
     using Array = hpx::serialization::array<Element const>;
+
+    // Otherwise, update folowing logic
+    assert(!buffer.empty());
 
     typename Buffer::Size const size = buffer.size();
     Array array = hpx::serialization::make_array(buffer.begin(), size);

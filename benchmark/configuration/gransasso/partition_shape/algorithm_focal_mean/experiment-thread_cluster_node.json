@@ -1,0 +1,16 @@
+{
+    "nr_time_steps": 50,
+    "array": {
+        "shape": [10000, 10000]
+    },
+    "partition": {
+        "shape": [200, 200],
+        "range": {
+            # Don't increase this number. The process will run out of
+            # memory with large partitions.
+            "max_nr_elements": 800000,
+            "multiplier": 2.0,
+            "method": "linear"
+        }
+    }
+}

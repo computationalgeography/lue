@@ -6,6 +6,13 @@
 
 namespace lue {
 
+/*!
+    @brief      Class for managing a contiguous buffer of elements which
+                can be shared between instances
+
+    Instances contain a shared pointer to a, possibly empty, array
+    of elements.
+*/
 template<
     typename Element
 >
@@ -28,8 +35,14 @@ public:
 
     {
         allocate(0);
+
+        assert_invariants();
     }
 
+    /*!
+        @brief      Construct an instance pointing to a buffer with room
+                    for @a size elements
+    */
     explicit SharedBuffer(
         Size const size):
 
@@ -37,6 +50,8 @@ public:
 
     {
         allocate(size);
+
+        assert_invariants();
     }
 
     SharedBuffer(SharedBuffer const&)=default;
@@ -51,6 +66,10 @@ public:
         // empty, container
         assert(!other._ptr);
         other.allocate(0);
+        assert(other.size() == 0);
+
+        assert_invariants();
+        other.assert_invariants();
     }
 
     ~SharedBuffer()=default;
@@ -66,6 +85,10 @@ public:
         // empty, container
         assert(!other._ptr);
         other.allocate(0);
+        assert(other.size() == 0);
+
+        assert_invariants();
+        other.assert_invariants();
 
         return *this;
     }
@@ -76,15 +99,17 @@ public:
     Element* data()
     {
         assert_invariants();
+
         return (*_ptr).data();
     }
 
     /*!
-        @brief      Return a pointer to the underlying array
+        @overload
     */
     Element const* data() const
     {
         assert_invariants();
+
         return (*_ptr).data();
     }
 
@@ -94,7 +119,18 @@ public:
     Size size() const
     {
         assert_invariants();
+
         return (*_ptr).size();
+    }
+
+    /*!
+        @brief      Return whether the buffer is empty
+    */
+    bool empty() const
+    {
+        assert_invariants();
+
+        return (*_ptr).empty();
     }
 
     /*!
@@ -103,6 +139,7 @@ public:
     Iterator begin()
     {
         assert_invariants();
+
         return (*_ptr).begin();
     }
 
@@ -112,24 +149,27 @@ public:
     Iterator end()
     {
         assert_invariants();
+
         return (*_ptr).end();
     }
 
     /*!
-        @brief      Return an iterator to the begining of the buffer
+        @overload
     */
     ConstIterator begin() const
     {
         assert_invariants();
+
         return (*_ptr).begin();
     }
 
     /*!
-        @brief      Return an iterator to the end of the buffer
+        @overload
     */
     ConstIterator end() const
     {
         assert_invariants();
+
         return (*_ptr).end();
     }
 
@@ -146,7 +186,7 @@ public:
     }
 
     /*!
-        @brief      Access an element by index
+        @overload
     */
     Element const& operator[](
         Index const idx) const
@@ -157,11 +197,17 @@ public:
         return (*_ptr)[idx];
     }
 
+    /*!
+        @brief      Resize the buffer
+    */
     void resize(
         Size const size)
     {
         assert_invariants();
+
         (*_ptr).resize(size, boost::container::default_init_t{});
+
+        assert_invariants();
     }
 
     /*!
@@ -183,9 +229,6 @@ public:
 
     /*!
         @brief      Remove elements from the array
-        @param      .
-        @return     .
-        @exception  .
 
         Trailing elements will be moved to the front, to take in the
         place of the removed elements. The memory buffer will not
@@ -200,6 +243,8 @@ public:
         auto& container{*_ptr};
 
         container.erase(begin, end);
+
+        assert_invariants();
     }
 
 private:

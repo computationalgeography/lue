@@ -124,6 +124,9 @@ std::array<PartitionedArray<OutputElement, rank>, rank> mesh_grid(
     for(Index p = 0; p < nr_partitions(input_array); ++p) {
         for(Rank r = 0; r < rank; ++r) {
 
+            // FIXME Just sent the action to the remote locality and
+            // `wait` there for the partition to become ready
+
             output_partitions[r][p] = hpx::dataflow(
                 hpx::launch::async,
 

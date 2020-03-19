@@ -1,6 +1,6 @@
 {
     "scenario": "thread_cluster_node",
-    "count": 3,
+    "count": 1,
     "locality_per": "cluster_node",
     "worker": {
         "type": "thread",
@@ -10,17 +10,17 @@
             "max_size": 4,
             "incrementor": 1
         }
-    }
-# ,
-#     "hpx": {
-#         "performance_counters": [
-#             {
-#                 "print-counter-interval": 100
-#             },
-#             {
-#                 "print-counter": [
+    },
+    "hpx": {
+        "performance_counters": [
+            {
+                "print-counter-interval": 100
+            },
+            {
+                "print-counter": [
 #                     "/threads{locality#*/pool#*/worker-thread#*}/idle-rate",
-# 
+#                     "/threads/time/average",
+
 #                     "/threads/time/average",
 #                     "/threads/time/average-overhead",
 #                     "/threads/time/average-phase",
@@ -35,16 +35,16 @@
 #                     "/threads{locality#*/pool#*/worker-thread#*}/count/instantaneous/staged",
 #                     "/threads{locality#*/pool#*/worker-thread#*}/count/instantaneous/suspended",
 #                     "/threads{locality#*/pool#*/worker-thread#*}/count/instantaneous/terminated"
-#                 ]
-#             },
-#             {
-#                 "print-counter-reset": [
-# 
+                ]
+            },
+            {
+                "print-counter-reset": [
+                    "/threads{locality#*/pool#*/worker-thread#*}/idle-rate"
 #                     "/threadqueue{locality#*/pool#*/worker-thread#*}/length"
-#                 ]
-#             }
-#         ]
-#     }
+                ]
+            }
+        ]
+    }
 }
 
 #   /agas/count/decrement_credit

@@ -30,32 +30,45 @@ hpx::future<OutputElement> unary_aggregate_operation_partition(
 
     using Shape = ShapeT<InputPartition>;
 
-    // Aggregate nD array partition to nD array partition containing a
-    // single value
-    Shape shape;
-    std::fill(shape.begin(), shape.end(), 1);
+    return hpx::dataflow(
+        hpx::launch::async,
 
-    auto const input_partition_server_ptr{hpx::get_ptr(input_partition).get()};
-    auto const& input_partition_server{*input_partition_server_ptr};
+        [functor](
+            InputPartition const& input_partition)
+        {
+            // Aggregate nD array partition to nD array partition
+            // containing a single value
+            Shape shape;
+            std::fill(shape.begin(), shape.end(), 1);
 
-    InputData input_partition_data{input_partition_server.data()};
+            auto const input_partition_server_ptr{
+                hpx::get_ptr(input_partition).get()};
+            auto const& input_partition_server{
+                *input_partition_server_ptr};
 
-    // Initialize result for the case that the partition is empty
-    OutputElement result{functor()};
+            InputData input_partition_data{input_partition_server.data()};
 
-    if(!input_partition_data.empty()) {
+            // Initialize result for the case that the partition is empty
+            OutputElement result{functor()};
 
-        // Initialize result with first value
-        result = functor(input_partition_data[0]);
+            if(!input_partition_data.empty()) {
 
-        // Aggregate subsequent values
-        for(Index idx = 1; idx < input_partition_data.nr_elements(); ++idx) {
-            result = functor(result, input_partition_data[idx]);
-        }
+                // Initialize result with first value
+                result = functor(input_partition_data[0]);
 
-    }
+                // Aggregate subsequent values
+                for(Index idx = 1; idx < input_partition_data.nr_elements();
+                        ++idx)
+                {
+                    result = functor(result, input_partition_data[idx]);
+                }
 
-    return hpx::make_ready_future<OutputElement>(result);
+            }
+
+            return result;
+        },
+
+        input_partition);
 }
 
 
@@ -98,21 +111,20 @@ hpx::future<OutputElementT<Functor>> unary_aggregate_operation(
 
     for(Index p = 0; p < nr_partitions; ++p) {
 
+        InputPartition const& input_partition{input_array.partitions()[p]};
+
         partition_results[p] = hpx::dataflow(
             hpx::launch::async,
+            hpx::util::unwrapping(
 
-            [action, functor](
-                InputPartition const& input_partition,
-                hpx::future<hpx::id_type>&& locality_id)
-            {
-                return action(
-                    locality_id.get(),
-                    input_partition,
-                    functor);
-            },
+                    [action, functor, input_partition](
+                        hpx::id_type const locality_id)
+                    {
+                        return action(locality_id, input_partition, functor);
+                    }
 
-            input_array.partitions()[p],
-            hpx::get_colocation_id(input_array.partitions()[p].get_id()));
+                ),
+            hpx::get_colocation_id(input_partition.get_id()));
 
     }
 
@@ -124,7 +136,9 @@ hpx::future<OutputElementT<Functor>> unary_aggregate_operation(
                 partition_results.begin(), partition_results.end()).then(
                     hpx::util::unwrapping(
 
-            [functor](auto&& partition_results) {
+            [functor](
+                auto&& partition_results)
+            {
 
                 // Initialize result for the case the array is empty
                 OutputElement result{functor()};
@@ -136,11 +150,10 @@ hpx::future<OutputElementT<Functor>> unary_aggregate_operation(
 
                     // Aggregate
                     for(std::size_t idx = 1; idx < partition_results.size();
-                            ++idx) {
-
+                            ++idx)
+                    {
                         result = functor.partition(
                             result, partition_results[idx].get());
-
                     }
 
                 }

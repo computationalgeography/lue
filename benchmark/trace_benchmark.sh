@@ -1,18 +1,19 @@
 #!/usr/bin/env bash
 set -e
 
-benchmark_name="lue_framework_algorithm_iterate_per_element_benchmark"
-benchmark_name="lue_framework_algorithm_sqrt_benchmark"
-benchmark_name="lue_framework_algorithm_focal_mean_benchmark"
+benchmark_name="lue_algorithm_iterate_per_element_benchmark"
+benchmark_name="lue_algorithm_sqrt_benchmark"
+benchmark_name="lue_algorithm_multiply_benchmark"
+benchmark_name="lue_algorithm_focal_mean_benchmark"
 trace_prefix=$LUE_OBJECTS/trace/$benchmark_name-$(date +%Y%m%d_%H%M)
 
 nr_threads=4
 count=1
 nr_time_steps=50
-max_tree_depth=5
-array_size=5000
-partition_size=500  # 800
-cluster_name=snowdon
+# max_tree_depth=5
+array_size=10000
+partition_size=800  # 338  # 800
+cluster_name=gransasso
 
 # Make sure SLURM and APEX can create the output files
 mkdir $trace_prefix
@@ -23,18 +24,22 @@ export APEX_OTF2_ARCHIVE_PATH=$trace_prefix
 
 #   --hpx:ini="hpx.parcel.mpi.enable=1"
 
+
+
+#    --hpx:bind=balanced --hpx:numa-sensitive
+
 $LUE_OBJECTS/bin/$benchmark_name \
-    --hpx:bind=balanced \
-    --hpx:numa-sensitive \
+    --hpx:bind="thread:0-$((nr_threads-1))=core:0-$((nr_threads-1)).pu:0" \
     --hpx:ini="hpx.os_threads=$nr_threads" \
     --hpx:dump-config --hpx:print-bind \
     --hpx:ini="application.${benchmark_name}.benchmark.cluster_name!=$cluster_name" \
     --hpx:ini="application.${benchmark_name}.benchmark.count!=$count" \
+    --hpx:ini="application.${benchmark_name}.benchmark.nr_workers!=$nr_threads" \
     --hpx:ini="application.${benchmark_name}.benchmark.output!=$trace_prefix/run.json" \
     --hpx:ini="application.${benchmark_name}.nr_time_steps!=$nr_time_steps" \
-    --hpx:ini="application.${benchmark_name}.max_tree_depth!=$max_tree_depth" \
     --hpx:ini="application.${benchmark_name}.array_shape!=[$array_size, $array_size]" \
     --hpx:ini="application.${benchmark_name}.partition_shape!=[$partition_size, $partition_size]"
+#   --hpx:ini="application.${benchmark_name}.max_tree_depth!=$max_tree_depth"
 
 
 

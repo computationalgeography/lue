@@ -26,7 +26,7 @@ void test_array()
         hpx::make_ready_future<Element>(500);
 
     // Request the filling of the array and wait for it to finish
-    lue::uniform(min_nr_iterations, max_nr_iterations, array).wait();
+    array = lue::uniform(array, min_nr_iterations, max_nr_iterations);
 
     auto copy = lue::iterate_per_element(array);
 

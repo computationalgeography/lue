@@ -40,13 +40,7 @@ void focal_mean(
 
     assert(state.shape() == shape);
 
-    // Fill array with random numbers
-    {
-        auto min = hpx::make_ready_future<Element>(0).share();
-        auto max = hpx::make_ready_future<Element>(
-            std::numeric_limits<Element>::max()).share();
-        uniform(min, max, state).wait();
-    }
+    state = uniform(state, Element{0}, std::numeric_limits<Element>::max());
 
     auto const kernel = lue::box_kernel<bool, rank>(1, true);
 

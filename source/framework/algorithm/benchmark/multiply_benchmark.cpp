@@ -1,5 +1,6 @@
 #include "lue/framework/core/component/partitioned_array.hpp"
-#include "lue/framework/algorithm/sqrt.hpp"
+#include "lue/framework/algorithm/copy.hpp"
+#include "lue/framework/algorithm/arithmetic.hpp"
 #include "lue/framework/algorithm/uniform.hpp"
 #include "lue/framework/benchmark/benchmark.hpp"
 #include "lue/framework/benchmark/hpx_main.hpp"
@@ -17,9 +18,6 @@ void sqrt(
     Task const& task,
     std::size_t const max_tree_depth)
 {
-    // hpx::util::annotate_function annotation("sqrt_benchmark");
-    // hpx::this_thread::yield();
-
     assert(max_tree_depth > 0);
 
     using Array = PartitionedArray<Element, rank>;
@@ -41,7 +39,10 @@ void sqrt(
 
     assert(state.shape() == shape);
 
-    state = uniform(state, Element{0}, std::numeric_limits<Element>::max());
+    state  = uniform(state, Element{0}, std::numeric_limits<Element>::max());
+
+    Array state1 = copy(state);
+    Array state2 = copy(state);
 
     hpx::lcos::local::sliding_semaphore semaphore{
         static_cast<std::int64_t>(max_tree_depth)};
@@ -51,7 +52,7 @@ void sqrt(
         // Wait if there are more than max_tree_depth iterations in flight
         semaphore.wait(i);
 
-        state = sqrt(state);
+        state = (state * state1) / state2;
 
         hpx::cout << '.' << hpx::flush;
 
