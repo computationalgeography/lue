@@ -143,6 +143,9 @@ def read_performance_counters(
     array = np.loadtxt(counter_pathname, dtype=np.float64, unpack=True,
         delimiter=',', skiprows=1)
 
+    if len(field_names) == 1:
+        array = array.reshape(1, len(array))
+
     assert len(array) == len(field_names), "{}: {} != {}".format(
         counter_pathname, len(array), len(field_names))
 
@@ -152,8 +155,8 @@ def read_performance_counters(
     # array = array.astype(np.uint64)
 
     # Idle-rates are reported as 0.01%. Convert them to percentages.
-    if "idle-rate" in counter_pathname:
-        array /= 100
+    if "idle-rate" in field_names[0]:
+        array /= 100.
 
     return field_names, array
 
@@ -973,6 +976,7 @@ def plot_performance_counters(
 
 def post_process_performance_counters(
         lue_dataset_pathname,
+        scenario_name,
         experiment):
 
     # Iterate over all files containing performance counter information
@@ -990,7 +994,7 @@ def post_process_performance_counters(
 
     for nr_workers_ in nr_workers:
         counter_pathname = experiment.benchmark_result_pathname(
-            system_name, benchmark.scenario_name, "counter-{}".format(nr_workers_), "csv")
+            system_name, scenario_name, "counter-{}".format(nr_workers_), "csv")
         assert os.path.exists(counter_pathname), counter_pathname
 
         plot_performance_counters(counter_pathname)
@@ -1022,4 +1026,5 @@ def post_process_results(
         benchmark.hpx.performance_counters is not None
 
     if performance_counters_available:
-        post_process_performance_counters(lue_dataset_pathname, experiment)
+        post_process_performance_counters(
+            lue_dataset_pathname, benchmark.scenario_name, experiment)

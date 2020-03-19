@@ -82,10 +82,11 @@ def partition_shapes(
     return zip(*shape_ranges_)
 
 
-def range_of_array_shapes(
+def range_of_shapes(
         min_shape,
         max_nr_elements,
-        multiplier):
+        multiplier,
+        method):
     """
     Determine a range of shapes given the folowing requirements:
     - First shape equals min_shape
@@ -95,12 +96,14 @@ def range_of_array_shapes(
     """
     def nr_elements(
             shape):
+
         return reduce(lambda e1, e2: e1 * e2, shape)
 
 
     def shape(
             nr_elements,
             normalized_shape):
+
         rank = len(normalized_shape)
 
         nr_elements_per_dimension = nr_elements ** (1.0 / rank)
@@ -112,8 +115,22 @@ def range_of_array_shapes(
 
     sizes = [nr_elements(min_shape)]
 
-    while multiplier * sizes[-1] <= max_nr_elements:
-        sizes.append(multiplier * sizes[-1])
+    assert method in ["linear", "exponential"]
+
+    if method == "linear":
+
+        # Increase the number of cells linearly, by i * multiplier
+        i = 1
+        while i * multiplier * sizes[0] <= max_nr_elements:
+            sizes.append(i * multiplier * sizes[0])
+            i += 1
+
+    elif method == "exponential":
+
+        # Increase the number of cells exponentially, by multiplier *
+        # previous number of elements
+        while multiplier * sizes[-1] <= max_nr_elements:
+            sizes.append(multiplier * sizes[-1])
 
     normalized_shape = tuple([extent / max(min_shape) for extent in min_shape])
     shapes = [shape(size, normalized_shape) for size in sizes]
@@ -128,8 +145,15 @@ class Range(object):
 
     def __init__(self,
             json):
+
         self.max_nr_elements = json["max_nr_elements"]
         self.multiplier = json["multiplier"]
+        self.method = json["method"]
+
+        assert self.method in ["linear", "exponential"]
+
+        if self.method == "linear":
+            assert self.multiplier > 1
 
 
 class Shape(object):
@@ -150,8 +174,9 @@ class Shape(object):
             result = [self._shape]
         else:
             # Range of shapes
-            result = range_of_array_shapes(
-                self._shape, self._range.max_nr_elements, self._range.multiplier)
+            result = range_of_shapes(
+                self._shape, self._range.max_nr_elements,
+                self._range.multiplier, self._range.method)
 
         return result
 

@@ -23,11 +23,6 @@ void test_array()
     Element min_value{7};
     Element max_value{9};
 
-    hpx::shared_future<Element> min_value_f =
-        hpx::make_ready_future<Element>(min_value);
-    hpx::shared_future<Element> max_value_f =
-        hpx::make_ready_future<Element>(max_value);
-
     // Fill two arrays with values from a uniform distribution and check
     // whether
     // - All cells in these arrays are >= min_value
@@ -35,30 +30,30 @@ void test_array()
     // (- All cells in these arrays are different)
 
     {
-        lue::uniform(min_value_f, max_value_f, array1).wait();
+        array1 = lue::uniform(array1, min_value, max_value);
 
         // min_value <= array1 < max_value
-        BOOST_CHECK(lue::all(array1 >= min_value_f).get());
+        BOOST_CHECK(lue::all(array1 >= min_value).get());
 
         if constexpr(std::is_floating_point_v<Element>) {
-            BOOST_CHECK(lue::all(array1 < max_value_f).get());
+            BOOST_CHECK(lue::all(array1 < max_value).get());
         }
         else if constexpr(std::is_integral_v<Element>) {
-            BOOST_CHECK(lue::all(array1 <= max_value_f).get());
+            BOOST_CHECK(lue::all(array1 <= max_value).get());
         }
     }
 
     {
-        lue::uniform(min_value_f, max_value_f, array2).wait();
+        array2 = lue::uniform(array2, min_value, max_value);
 
         // min_value <= array2 < max_value
-        BOOST_CHECK(lue::all(array2 >= min_value_f).get());
+        BOOST_CHECK(lue::all(array2 >= min_value).get());
 
         if constexpr(std::is_floating_point_v<Element>) {
-            BOOST_CHECK(lue::all(array2 < max_value_f).get());
+            BOOST_CHECK(lue::all(array2 < max_value).get());
         }
         else if constexpr(std::is_integral_v<Element>) {
-            BOOST_CHECK(lue::all(array2 <= max_value_f).get());
+            BOOST_CHECK(lue::all(array2 <= max_value).get());
         }
     }
 
@@ -66,13 +61,13 @@ void test_array()
         auto result = lue::uniform(array1, min_value, max_value);
 
         // min_value <= result < max_value
-        BOOST_CHECK(lue::all(result >= min_value_f).get());
+        BOOST_CHECK(lue::all(result >= min_value).get());
 
         if constexpr(std::is_floating_point_v<Element>) {
-            BOOST_CHECK(lue::all(result < max_value_f).get());
+            BOOST_CHECK(lue::all(result < max_value).get());
         }
         else if constexpr(std::is_integral_v<Element>) {
-            BOOST_CHECK(lue::all(result <= max_value_f).get());
+            BOOST_CHECK(lue::all(result <= max_value).get());
         }
     }
 }

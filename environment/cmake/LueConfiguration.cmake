@@ -285,10 +285,15 @@ if(DEVBASE_HPX_REQUIRED)
             set(hpx_repository https://github.com/STEllAR-GROUP/hpx)
         endif()
 
+        if(LUE_HPX_GIT_TAG)
+            set(hpx_git_tag ${LUE_HPX_GIT_TAG})
+        else()
+            set(hpx_git_tag "1.4.1")
+        endif()
+
         FetchContent_Declare(hpx
             GIT_REPOSITORY ${hpx_repository}
-            GIT_TAG "1.4.1"
-            # GIT_TAG "pr4311"  # APEX fix
+            GIT_TAG ${hpx_git_tag}
         )
 
         FetchContent_MakeAvailable(hpx)

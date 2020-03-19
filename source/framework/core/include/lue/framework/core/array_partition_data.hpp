@@ -198,8 +198,6 @@ ArrayPartitionData<Element, rank>::ArrayPartitionData(
 
 {
     std::fill_n(_elements.begin(), _elements.size(), value);
-
-    assert(_elements.size() == lue::nr_elements(_shape));
 }
 
 
@@ -224,8 +222,6 @@ ArrayPartitionData<Element, rank>::ArrayPartitionData(
 
 {
     std::move(begin, end, _elements.begin());
-
-    assert(_elements.size() == lue::nr_elements(_shape));
 }
 
 
@@ -239,11 +235,7 @@ ArrayPartitionData<Element, rank>::ArrayPartitionData(
     ArrayPartitionData{shape}
 
 {
-    assert(static_cast<Count>(elements.size()) == lue::nr_elements(_shape));
-
     std::copy(elements.begin(), elements.end(), _elements.begin());
-
-    assert(static_cast<Count>(_elements.size()) == lue::nr_elements(_shape));
 }
 
 
@@ -276,9 +268,11 @@ template<
 ArrayPartitionData<Element, rank>& ArrayPartitionData<Element, rank>::operator=(
     ArrayPartitionData const& other)
 {
-    _shape = other._shape;
-    _elements = other._elements;
-    _span = Span{_elements.data(), _shape};
+    if(this != &other) {
+        _shape = other._shape;
+        _elements = other._elements;
+        _span = Span{_elements.data(), _shape};
+    }
 
     assert(_elements.size() == lue::nr_elements(_shape));
 
@@ -430,7 +424,7 @@ void ArrayPartitionData<Element, rank>::erase(
             std::multiplies<Count>{})};
 
     for(Iterator slab_begin = begin() + offset; slab_begin < end();
-            slab_begin += (stride - count))
+        slab_begin += (stride - count))
     {
         _elements.erase(slab_begin, slab_begin + count);
     }

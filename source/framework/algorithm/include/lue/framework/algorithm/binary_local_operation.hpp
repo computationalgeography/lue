@@ -59,32 +59,48 @@ public:
 
         using OutputData = DataT<OutputPartition>;
 
-        auto const input_partition_server_ptr1{
-            hpx::get_ptr(input_partition1).get()};
-        auto const& input_partition_server1{*input_partition_server_ptr1};
+        return hpx::dataflow(
+            hpx::launch::async,
 
-        auto const input_partition_server_ptr2{
-            hpx::get_ptr(input_partition2).get()};
-        auto const& input_partition_server2{*input_partition_server_ptr2};
+            [functor](
+                InputPartition const& input_partition1,
+                InputPartition const& input_partition2)
+            {
+                auto const input_partition_server_ptr1{
+                    hpx::get_ptr(input_partition1).get()};
+                auto const& input_partition_server1{
+                    *input_partition_server_ptr1};
 
-        auto offset{input_partition_server1.offset()};
-        assert(input_partition_server2.offset() == offset);
+                auto const input_partition_server_ptr2{
+                    hpx::get_ptr(input_partition2).get()};
+                auto const& input_partition_server2{
+                    *input_partition_server_ptr2};
 
-        InputData input_partition_data1{input_partition_server1.data()};
-        InputData input_partition_data2{input_partition_server2.data()};
+                auto offset{input_partition_server1.offset()};
+                assert(input_partition_server2.offset() == offset);
 
-        OutputData output_partition_data{input_partition_data1.shape()};
+                InputData input_partition_data1{
+                    input_partition_server1.data()};
+                InputData input_partition_data2{
+                    input_partition_server2.data()};
 
-        std::transform(
-            input_partition_data1.begin(),
-            input_partition_data1.end(),
-            input_partition_data2.begin(),
-            output_partition_data.begin(),
-            functor);
+                OutputData output_partition_data{
+                    input_partition_data1.shape()};
 
-        return OutputPartition{
-            hpx::find_here(), offset, std::move(output_partition_data)};
+                std::transform(
+                    input_partition_data1.begin(),
+                    input_partition_data1.end(),
+                    input_partition_data2.begin(),
+                    output_partition_data.begin(),
+                    functor);
 
+                return OutputPartition{
+                    hpx::find_here(), offset,
+                    std::move(output_partition_data)};
+            },
+
+            input_partition1,
+            input_partition2);
     }
 
     struct Action:
@@ -126,28 +142,39 @@ public:
 
         using OutputData = DataT<OutputPartition>;
 
-        auto const input_partition_server_ptr{
-            hpx::get_ptr(input_partition).get()};
-        auto const& input_partition_server{*input_partition_server_ptr};
+        return hpx::dataflow(
+            hpx::launch::async,
 
-        auto offset{input_partition_server.offset()};
-        InputData input_partition_data{input_partition_server.data()};
-
-        OutputData output_partition_data{input_partition_data.shape()};
-
-        std::transform(
-            input_partition_data.begin(),
-            input_partition_data.end(),
-            output_partition_data.begin(),
-            [input_scalar, functor](
-                InputElement const input_element)
+            [functor, input_scalar](
+                InputPartition const& input_partition)
             {
-                return functor(input_element, input_scalar);
-            });
+                auto const input_partition_server_ptr{
+                    hpx::get_ptr(input_partition).get()};
+                auto const& input_partition_server{
+                    *input_partition_server_ptr};
 
-        return OutputPartition{
-            hpx::find_here(), offset, std::move(output_partition_data)};
+                auto offset{input_partition_server.offset()};
+                InputData input_partition_data{input_partition_server.data()};
 
+                OutputData output_partition_data{
+                    input_partition_data.shape()};
+
+                std::transform(
+                    input_partition_data.begin(),
+                    input_partition_data.end(),
+                    output_partition_data.begin(),
+                    [functor, input_scalar](
+                        InputElement const input_element)
+                    {
+                        return functor(input_element, input_scalar);
+                    });
+
+                return OutputPartition{
+                    hpx::find_here(), offset,
+                    std::move(output_partition_data)};
+            },
+
+            input_partition);
     }
 
     struct Action:
@@ -189,28 +216,39 @@ public:
 
         using OutputData = DataT<OutputPartition>;
 
-        auto const input_partition_server_ptr{
-            hpx::get_ptr(input_partition).get()};
-        auto const& input_partition_server{*input_partition_server_ptr};
+        return hpx::dataflow(
+            hpx::launch::async,
 
-        auto offset{input_partition_server.offset()};
-        InputData input_partition_data{input_partition_server.data()};
-
-        OutputData output_partition_data{input_partition_data.shape()};
-
-        std::transform(
-            input_partition_data.begin(),
-            input_partition_data.end(),
-            output_partition_data.begin(),
-            [input_scalar, functor](
-                InputElement const input_element)
+            [functor, input_scalar](
+                InputPartition const& input_partition)
             {
-                return functor(input_scalar, input_element);
-            });
+                auto const input_partition_server_ptr{
+                    hpx::get_ptr(input_partition).get()};
+                auto const& input_partition_server{
+                    *input_partition_server_ptr};
 
-        return OutputPartition{
-            hpx::find_here(), offset, std::move(output_partition_data)};
+                auto offset{input_partition_server.offset()};
+                InputData input_partition_data{input_partition_server.data()};
 
+                OutputData output_partition_data{
+                    input_partition_data.shape()};
+
+                std::transform(
+                    input_partition_data.begin(),
+                    input_partition_data.end(),
+                    output_partition_data.begin(),
+                    [functor, input_scalar](
+                        InputElement const input_element)
+                    {
+                        return functor(input_scalar, input_element);
+                    });
+
+                return OutputPartition{
+                    hpx::find_here(), offset,
+                    std::move(output_partition_data)};
+            },
+
+            input_partition);
     }
 
     struct Action:
@@ -231,7 +269,8 @@ template<
     typename OutputPartition,
     typename Functor>
 using BinaryLocalOperationPartitionAction =
-    typename binary_local_operation::OverloadPicker<T1, T2, OutputPartition, Functor>::Action;
+    typename binary_local_operation::OverloadPicker<
+        T1, T2, OutputPartition, Functor>::Action;
 
 }  // namespace detail
 
@@ -262,24 +301,22 @@ PartitionedArray<OutputElementT<Functor>, rank> binary_local_operation(
 
     for(Index p = 0; p < nr_partitions(input_array1); ++p) {
 
+        InputPartition const& input_partition1{input_array1.partitions()[p]};
+        InputPartition const& input_partition2{input_array2.partitions()[p]};
+
         output_partitions[p] = hpx::dataflow(
             hpx::launch::async,
+            hpx::util::unwrapping(
 
-            [action, functor](
-                InputPartition const& input_partition1,
-                InputPartition const& input_partition2,
-                hpx::future<hpx::id_type>&& locality_id)
-            {
-                return action(
-                    locality_id.get(),
-                    input_partition1,
-                    input_partition2,
-                    functor);
-            },
+                [action, functor, input_partition1, input_partition2](
+                    hpx::id_type const locality_id)
+                {
+                    return action(
+                        locality_id, input_partition1, input_partition2,
+                        functor);
+                }),
 
-            input_array1.partitions()[p],
-            input_array2.partitions()[p],
-            hpx::get_colocation_id(input_array1.partitions()[p].get_id()));
+            hpx::get_colocation_id(input_partition1.get_id()));
 
     }
 
@@ -309,24 +346,22 @@ PartitionedArray<OutputElementT<Functor>, rank> binary_local_operation(
 
     for(Index p = 0; p < nr_partitions(input_array); ++p) {
 
+        InputPartition const& input_partition{input_array.partitions()[p]};
+
         output_partitions[p] = hpx::dataflow(
             hpx::launch::async,
+            hpx::util::unwrapping(
 
-            [action, functor](
-                InputPartition const& input_partition,
-                hpx::shared_future<InputElement> const& input_scalar,
-                hpx::future<hpx::id_type>&& locality_id)
-            {
-                return action(
-                    locality_id.get(),
-                    input_partition,
-                    input_scalar.get(),
-                    functor);
-            },
+                [action, functor, input_partition](
+                    hpx::id_type const locality_id,
+                    InputElement const input_scalar)
+                {
+                    return action(
+                        locality_id, input_partition, input_scalar, functor);
+                }),
 
-            input_array.partitions()[p],
-            input_scalar,
-            hpx::get_colocation_id(input_array.partitions()[p].get_id()));
+            hpx::get_colocation_id(input_partition.get_id()),
+            input_scalar);
 
     }
 
@@ -356,24 +391,22 @@ PartitionedArray<OutputElementT<Functor>, rank> binary_local_operation(
 
     for(Index p = 0; p < nr_partitions(input_array); ++p) {
 
+        InputPartition const& input_partition{input_array.partitions()[p]};
+
         output_partitions[p] = hpx::dataflow(
             hpx::launch::async,
+            hpx::util::unwrapping(
 
-            [action, functor](
-                hpx::shared_future<InputElement> const& input_scalar,
-                InputPartition const& input_partition,
-                hpx::future<hpx::id_type>&& locality_id)
-            {
-                return action(
-                    locality_id.get(),
-                    input_scalar.get(),
-                    input_partition,
-                    functor);
-            },
+                [action, functor, input_partition](
+                    hpx::id_type const locality_id,
+                    InputElement const input_scalar)
+                {
+                    return action(
+                        locality_id, input_scalar, input_partition, functor);
+                }),
 
-            input_scalar,
-            input_array.partitions()[p],
-            hpx::get_colocation_id(input_array.partitions()[p].get_id()));
+            hpx::get_colocation_id(input_partition.get_id()),
+            input_scalar);
 
     }
 
