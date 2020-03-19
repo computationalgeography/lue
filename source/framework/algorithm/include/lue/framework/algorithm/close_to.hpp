@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/binary_local_operation.hpp"
+#include <hpx/serialization/serialize.hpp>
 #include <cmath>
 
 
@@ -37,6 +38,17 @@ public:
                 _absolute_difference +
                 _relative_difference * std::abs(input_element2)
             );
+    }
+
+    friend class hpx::serialization::access;
+
+    template<
+        typename Archive>
+    void serialize(
+        Archive& archive,
+        unsigned int const /* version */)
+    {
+        archive & _relative_difference & _absolute_difference;
     }
 
 private:

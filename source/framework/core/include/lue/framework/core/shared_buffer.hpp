@@ -29,6 +29,8 @@ public:
 
     using ConstIterator = typename Elements::const_iterator;
 
+    using Size = lue::Size;
+
     SharedBuffer():
 
         _ptr{}

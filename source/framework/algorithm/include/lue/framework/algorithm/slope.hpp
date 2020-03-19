@@ -2,6 +2,7 @@
 #include "lue/framework/algorithm/arithmetic.hpp"
 #include "lue/framework/algorithm/convolve.hpp"
 #include "lue/framework/algorithm/kernel.hpp"
+#include "lue/framework/algorithm/serialize/kernel.hpp"
 #include "lue/framework/algorithm/pow.hpp"
 #include "lue/framework/algorithm/sqrt.hpp"
 
