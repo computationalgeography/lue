@@ -53,7 +53,10 @@ public:
 
     Universe&      add_universe        (std::string const& name);
 
-    Phenomenon&    add_phenomenon      (std::string const& name);
+    Phenomenon&    add_phenomenon      (std::string const& name,
+                                        std::string const& description="");
+
+    std::string const& description     () const;
 
     Universes const&
                    universes           () const;
@@ -67,6 +70,8 @@ public:
 
 private:
 
+    std::string    _description;
+
     Universes      _universes;
 
     Phenomena      _phenomena;
@@ -76,10 +81,12 @@ private:
 
 bool               dataset_exists      (std::string const& name);
 
-Dataset            create_dataset      (std::string const& name);
+Dataset            create_dataset      (std::string const& name,
+                                        std::string const& description="");
 
 Dataset            create_in_memory_dataset(
-                                        std::string const& name);
+                                        std::string const& name,
+                                        std::string const& description="");
 
 void               remove_dataset      (std::string const& name);
 

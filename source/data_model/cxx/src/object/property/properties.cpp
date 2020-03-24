@@ -234,33 +234,36 @@ void Properties::verify_property_does_not_exist(
 
 same_shape::Property& Properties::add(
     std::string const& name,
-    hdf5::Datatype const& datatype)
+    hdf5::Datatype const& datatype,
+    std::string const& description)
 {
     verify_property_does_not_exist(name);
 
-    return _same_shape_properties.add(name, datatype);
+    return _same_shape_properties.add(name, datatype, description);
 }
 
 
 same_shape::Property& Properties::add(
     std::string const& name,
     hdf5::Datatype const& datatype,
-    hdf5::Shape const& shape)
+    hdf5::Shape const& shape,
+    std::string const& description)
 {
     verify_property_does_not_exist(name);
 
-    return _same_shape_properties.add(name, datatype, shape);
+    return _same_shape_properties.add(name, datatype, shape, description);
 }
 
 
 different_shape::Property& Properties::add(
     std::string const& name,
     hdf5::Datatype const& datatype,
-    Rank const rank)
+    Rank const rank,
+    std::string const& description)
 {
     verify_property_does_not_exist(name);
 
-    return _different_shape_properties.add(name, datatype, rank);
+    return _different_shape_properties.add(name, datatype, rank, description);
 }
 
 

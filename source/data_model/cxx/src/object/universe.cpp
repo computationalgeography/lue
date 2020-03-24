@@ -38,9 +38,10 @@ Phenomena& Universe::phenomena()
 
 
 Phenomenon& Universe::add_phenomenon(
-    std::string const& name)
+    std::string const& name,
+    std::string const& description)
 {
-    return _phenomena.add(name);
+    return _phenomena.add(name, description);
 }
 
 

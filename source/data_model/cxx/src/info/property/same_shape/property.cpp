@@ -55,12 +55,14 @@ Property::Value& Property::value()
 Property create_property(
     hdf5::Group& parent,
     std::string const& name,
-    hdf5::Datatype const& memory_datatype)
+    hdf5::Datatype const& memory_datatype,
+    std::string const& description)
 {
     return create_property(
         parent, name,
         file_datatype(memory_datatype), memory_datatype,
-        hdf5::Shape{});
+        hdf5::Shape{},
+        description);
 }
 
 
@@ -68,12 +70,14 @@ Property create_property(
     hdf5::Group& parent,
     std::string const& name,
     hdf5::Datatype const& memory_datatype,
-    hdf5::Shape const& array_shape)
+    hdf5::Shape const& array_shape,
+    std::string const& description)
 {
     return create_property(
         parent, name,
         file_datatype(memory_datatype), memory_datatype,
-        array_shape);
+        array_shape,
+        description);
 }
 
 
@@ -81,12 +85,14 @@ Property create_property(
     hdf5::Group& parent,
     std::string const& name,
     hdf5::Datatype const& file_datatype,
-    hdf5::Datatype const& memory_datatype)
+    hdf5::Datatype const& memory_datatype,
+    std::string const& description)
 {
     return create_property(
         parent, name,
         file_datatype, memory_datatype,
-        hdf5::Shape{});
+        hdf5::Shape{},
+        description);
 }
 
 
@@ -95,9 +101,10 @@ Property create_property(
     std::string const& name,
     hdf5::Datatype const& file_datatype,
     hdf5::Datatype const& memory_datatype,
-    hdf5::Shape const& array_shape)
+    hdf5::Shape const& array_shape,
+    std::string const& description)
 {
-    auto group = create_property_group(parent, name);
+    auto group = create_property_group(parent, name, description);
     auto value = create_value(
         group, value_tag, file_datatype, memory_datatype, array_shape);
 

@@ -93,10 +93,12 @@ void init_dataset(
     Add new phenomenon to dataset
 
     :param str name: Name of phenomenon to create
+    :param str description: Description of phenomenon
     :raises RuntimeError: In case the phenomenon cannot be created
     :rtype: Phenomenon
 )",
             "name"_a,
+            "description"_a="",
             py::return_value_policy::reference_internal)
 
         .def_property_readonly(
@@ -203,11 +205,13 @@ void init_dataset(
 
     :param str name: Name of dataset to create. If a file with this name
         already exists it will be overwritten.
+    :param str description: Description
     :rtype: lue.Dataset
 
     Newly created datasets can be validated using :func:`lue.validate`.
 )",
         "name"_a,
+        "description"_a="",
         py::return_value_policy::move)
 
         ;

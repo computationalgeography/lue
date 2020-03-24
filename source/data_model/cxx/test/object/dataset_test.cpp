@@ -9,7 +9,7 @@ BOOST_AUTO_TEST_CASE(create_new_dataset)
     std::string const dataset_name = "create_new_dataset.lue";
     lue::data_model::test::FileFixture f{dataset_name};
 
-    auto const dataset = lue::data_model::create_dataset(dataset_name);
+    auto dataset = lue::data_model::create_dataset(dataset_name);
 
     BOOST_REQUIRE(lue::data_model::dataset_exists(dataset_name));
     BOOST_CHECK_EQUAL(dataset.id().name(), "");
@@ -23,6 +23,19 @@ BOOST_AUTO_TEST_CASE(create_new_dataset)
     auto const& phenomena = dataset.phenomena();
 
     BOOST_CHECK_EQUAL(phenomena.size(), 0);
+
+    // Add phenomenon with description containing UTF8 characters
+    auto const& phenomenon1 = dataset.add_phenomenon(
+        "my_næme1", "my_dæscriptiøn");
+
+    BOOST_CHECK_EQUAL(phenomena.size(), 1);
+    BOOST_CHECK_EQUAL(phenomenon1.description(), "my_dæscriptiøn");
+
+    // Add phenomenon, without description
+    auto const& phenomenon2 = dataset.add_phenomenon("my_næme2");
+
+    BOOST_CHECK_EQUAL(phenomena.size(), 2);
+    BOOST_CHECK_EQUAL(phenomenon2.description(), "");
 }
 
 

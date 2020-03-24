@@ -26,7 +26,8 @@ public:
 
     Phenomena&     operator=           (Phenomena&&)=default;
 
-    Phenomenon&    add                 (std::string const& name);
+    Phenomenon&    add                 (std::string const& name,
+                                        std::string const& description="");
 
 private:
 

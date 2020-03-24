@@ -29,6 +29,8 @@ public:
 
     std::string    name                () const;
 
+    std::string const& description     () const;
+
     bool           time_is_discretized () const;
 
     bool           space_is_discretized() const;
@@ -53,12 +55,15 @@ public:
 
 private:
 
+    std::string    _description;
+
 };
 
 
 PropertyGroup      create_property_group(
                                         hdf5::Group& parent,
-                                        std::string const& name);
+                                        std::string const& name,
+                                        std::string const& description);
 
 }  // namespace data_model
 }  // namespace lue

@@ -51,13 +51,15 @@ private:
 Property           create_property     (hdf5::Group& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& memory_datatype,
-                                        Rank rank);
+                                        Rank rank,
+                                        std::string const& description="");
 
 Property           create_property     (hdf5::Group& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& file_datatype,
                                         hdf5::Datatype const& memory_datatype,
-                                        Rank rank);
+                                        Rank rank,
+                                        std::string const& description="");
 
 }  // namespace variable_shape
 }  // namespace same_shape

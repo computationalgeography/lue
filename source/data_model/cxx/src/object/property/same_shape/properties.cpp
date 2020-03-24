@@ -26,19 +26,22 @@ Properties::Properties(
 
 Property& Properties::add(
     std::string const& name,
-    hdf5::Datatype const& datatype)
+    hdf5::Datatype const& datatype,
+    std::string const& description)
 {
-    return Collection::add(name, create_property(*this, name, datatype));
+    return Collection::add(
+        name, create_property(*this, name, datatype, description));
 }
 
 
 Property& Properties::add(
     std::string const& name,
     hdf5::Datatype const& datatype,
-    hdf5::Shape const& shape)
+    hdf5::Shape const& shape,
+    std::string const& description)
 {
     return Collection::add(
-        name, create_property(*this, name, datatype, shape));
+        name, create_property(*this, name, datatype, shape, description));
 }
 
 

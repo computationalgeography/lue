@@ -358,6 +358,8 @@ static py::object create_scalar(
         result = create_scalar<double>(array, hyperslab);
     }
     else {
+        // TODO Add support for obtaining a single string from an array
+        //      of strings
         throw std::runtime_error(
             "Unsupported array value type");
     }

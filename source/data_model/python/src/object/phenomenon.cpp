@@ -203,6 +203,13 @@ void init_phenomenon(
         )
 
         .def_property_readonly(
+            "description",
+            &Phenomenon::description,
+            R"(
+    Return description
+)")
+
+        .def_property_readonly(
             "object_id",
             py::overload_cast<>(&Phenomenon::object_id),
             R"(

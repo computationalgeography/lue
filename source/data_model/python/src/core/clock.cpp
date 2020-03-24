@@ -52,6 +52,9 @@ void init_clock(
     The actual resolution also determines on the number of units stored in
     the clock.
 )")
+        .value("nanosecond", time::Unit::nanosecond)
+        .value("microsecond", time::Unit::microsecond)
+        .value("millisecond", time::Unit::millisecond)
         .value("second", time::Unit::second)
         .value("minute", time::Unit::minute)
         .value("hour", time::Unit::hour)

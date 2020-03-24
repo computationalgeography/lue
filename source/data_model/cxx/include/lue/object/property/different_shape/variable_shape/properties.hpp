@@ -34,7 +34,8 @@ public:
 
     Property&      add                 (std::string const& name,
                                         hdf5::Datatype const& datatype,
-                                        Rank rank);
+                                        Rank rank,
+                                        std::string const& description="");
 
 private:
 

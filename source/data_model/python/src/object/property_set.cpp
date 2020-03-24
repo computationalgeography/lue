@@ -535,52 +535,25 @@ void init_property_set(
             [](
                 PropertySet& property_set,
                 std::string const& name,
-                py::dtype const& dtype) -> same_shape::Property&
-            {
-                auto const datatype_ = numpy_type_to_memory_datatype(dtype);
-
-                return property_set.properties().add(
-                    name,
-                    datatype_);
-            },
-            "name"_a,
-            "dtype"_a,
-            R"(
-    Add new property to collection
-
-    :param str name: Name of property to create
-    :param dtype numpy.dtype: Datatype of object array elements
-    :return: Property created
-    :rtype: same_shape.Property
-    :raises RuntimeError: In case the property cannot be created
-)",
-            py::return_value_policy::reference_internal)
-
-        .def(
-            "add_property",
-            [](
-                PropertySet& property_set,
-                std::string const& name,
                 py::dtype const& dtype,
-                py::tuple const& shape) -> same_shape::Property&
+                std::string const& description) -> same_shape::Property&
             {
                 auto const datatype_ = numpy_type_to_memory_datatype(dtype);
-                auto const shape_ = tuple_to_shape(shape);
 
                 return property_set.properties().add(
                     name,
                     datatype_,
-                    shape_);
+                    description);
             },
             "name"_a,
             "dtype"_a,
-            "shape"_a,
+            "description"_a="",
             R"(
     Add new property to collection
 
     :param str name: Name of property to create
     :param dtype numpy.dtype: Datatype of object array elements
-    :param tuple shape: Shape of object arrays
+    :param str description: Description
     :return: Property created
     :rtype: same_shape.Property
     :raises RuntimeError: In case the property cannot be created
@@ -594,7 +567,43 @@ void init_property_set(
                 std::string const& name,
                 py::dtype const& dtype,
                 py::tuple const& shape,
-                ValueVariability const value_variability)
+                std::string const& description) -> same_shape::Property&
+            {
+                auto const datatype_ = numpy_type_to_memory_datatype(dtype);
+                auto const shape_ = tuple_to_shape(shape);
+
+                return property_set.properties().add(
+                    name,
+                    datatype_,
+                    shape_,
+                    description);
+            },
+            "name"_a,
+            "dtype"_a,
+            "shape"_a,
+            "description"_a="",
+            R"(
+    Add new property to collection
+
+    :param str name: Name of property to create
+    :param dtype numpy.dtype: Datatype of object array elements
+    :param tuple shape: Shape of object arrays
+    :param str description: Description
+    :return: Property created
+    :rtype: same_shape.Property
+    :raises RuntimeError: In case the property cannot be created
+)",
+            py::return_value_policy::reference_internal)
+
+        .def(
+            "add_property",
+            [](
+                PropertySet& property_set,
+                std::string const& name,
+                py::dtype const& dtype,
+                py::tuple const& shape,
+                ValueVariability const value_variability,
+                std::string const& description)
             {
                 // In this overload:
                 // - Shape is the same per object
@@ -612,7 +621,8 @@ void init_property_set(
                             &property_set.properties().add<Property>(
                                 name,
                                 datatype_,
-                                shape_));
+                                shape_,
+                                description));
                         break;
                     }
                     case ValueVariability::variable: {
@@ -621,7 +631,8 @@ void init_property_set(
                             &property_set.properties().add<Property>(
                                 name,
                                 datatype_,
-                                shape_));
+                                shape_,
+                                description));
                         break;
                     }
                 }
@@ -632,6 +643,7 @@ void init_property_set(
             "dtype"_a,
             "shape"_a,
             "value_variability"_a,
+            "description"_a="",
             R"(
     Add new property to collection
 
@@ -639,6 +651,7 @@ void init_property_set(
     :param dtype numpy.dtype: Datatype of object array elements
     :param tuple shape: Shape of object arrays
     :param ValueVariability value_variability: Value variability
+    :param str description: Description
     :return: Property created
     :rtype: same_shape.Property or
         lue.same_shape.constant_shape.Property, depending on the
@@ -654,7 +667,8 @@ void init_property_set(
                 PropertySet& property_set,
                 std::string const& name,
                 py::dtype const& dtype,
-                Rank const rank) -> different_shape::Property&
+                Rank const rank,
+                std::string const& description) -> different_shape::Property&
             {
                 // In this overload
                 // - Value is constant
@@ -664,17 +678,20 @@ void init_property_set(
                 return property_set.properties().add(
                     name,
                     datatype_,
-                    rank);
+                    rank,
+                    description);
             },
             "name"_a,
             "dtype"_a,
             "rank"_a,
+            "description"_a="",
             R"(
     Add new property to collection
 
     :param str name: Name of property to create
     :param dtype numpy.dtype: Datatype of object array elements
     :param int rank: Rank of object arrays
+    :param str description: Description
     :return: Property created
     :rtype: different_shape.Property
     :raises RuntimeError: In case the property cannot be created
@@ -689,7 +706,8 @@ void init_property_set(
                 py::dtype const& dtype,
                 Rank const rank,
                 ShapePerObject const shape_per_object,
-                ShapeVariability const shape_variability)
+                ShapeVariability const shape_variability,
+                std::string const& description)
             {
                 // In this overload:
                 // - Value is variable, and
@@ -715,7 +733,8 @@ void init_property_set(
                                     &property_set.properties().add<Property>(
                                         name,
                                         datatype_,
-                                        rank));
+                                        rank,
+                                        description));
                                 break;
                             }
                         }
@@ -730,7 +749,8 @@ void init_property_set(
                                     &property_set.properties().add<Property>(
                                         name,
                                         datatype_,
-                                        rank));
+                                        rank,
+                                        description));
                                 break;
                             }
                             case ShapeVariability::variable: {
@@ -739,7 +759,8 @@ void init_property_set(
                                     &property_set.properties().add<Property>(
                                         name,
                                         datatype_,
-                                        rank));
+                                        rank,
+                                        description));
                                 break;
                             }
                         }
@@ -755,6 +776,7 @@ void init_property_set(
             "rank"_a,
             "shape_per_object"_a,
             "shape_variability"_a,
+            "description"_a="",
             R"(
     Add new property to collection
 
@@ -763,6 +785,7 @@ void init_property_set(
     :param int rank: Rank of object arrays
     :param ShapePerObject shape_per_object: Shape per object
     :param ShapeVariability shape_variability: Shape variability
+    :param str description: Description
     :return: Property created
     :rtype: same_shape::variable_shape::Property,
         different_shape::constant_shape::Property or
