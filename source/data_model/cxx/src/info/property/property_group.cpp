@@ -12,7 +12,9 @@ PropertyGroup::PropertyGroup(
     hdf5::Group& parent,
     std::string const& name):
 
-    hdf5::Group{parent, name}
+    hdf5::Group{parent, name},
+    _description{attributes().exists(description_tag)
+        ? attributes().read<std::string>(description_tag) : ""}
 
 {
     assert(this->name() == boost::filesystem::path{name}.filename());
@@ -22,7 +24,9 @@ PropertyGroup::PropertyGroup(
 PropertyGroup::PropertyGroup(
     hdf5::Group&& group):
 
-    hdf5::Group{std::forward<hdf5::Group>(group)}
+    hdf5::Group{std::forward<hdf5::Group>(group)},
+    _description{attributes().exists(description_tag)
+        ? attributes().read<std::string>(description_tag) : ""}
 
 {
 }
@@ -31,6 +35,12 @@ PropertyGroup::PropertyGroup(
 std::string PropertyGroup::name() const
 {
     return id().name();
+}
+
+
+std::string const& PropertyGroup::description() const
+{
+    return _description;
 }
 
 
@@ -120,9 +130,14 @@ PropertyGroup PropertyGroup::space_discretization_property()
 
 PropertyGroup create_property_group(
     hdf5::Group& parent,
-    std::string const& name)
+    std::string const& name,
+    std::string const& description)
 {
     auto group = hdf5::create_group(parent, name);
+
+    if(!description.empty()) {
+        group.attributes().write(description_tag, description);
+    }
 
     return PropertyGroup{std::move(group)};
 }

@@ -36,6 +36,8 @@ public:
 
     Phenomenon&    operator=           (Phenomenon&&)=default;
 
+    std::string const& description     () const;
+
     ObjectID const& object_id          () const;
 
     ObjectID&      object_id           ();
@@ -50,6 +52,8 @@ public:
 
 private:
 
+    std::string    _description;
+
     ObjectID       _object_id;
 
     //! Sets of properties of the collection of objects
@@ -62,7 +66,8 @@ private:
 
 
 Phenomenon         create_phenomenon   (hdf5::Group& parent,
-                                        std::string const& name);
+                                        std::string const& name,
+                                        std::string const& description);
 
 } // namespace data_model
 } // namespace lue

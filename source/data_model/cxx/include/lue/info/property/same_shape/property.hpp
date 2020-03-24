@@ -49,23 +49,27 @@ private:
 
 Property           create_property     (hdf5::Group& parent,
                                         std::string const& name,
-                                        hdf5::Datatype const& memory_datatype);
+                                        hdf5::Datatype const& memory_datatype,
+                                        std::string const& description="");
 
 Property           create_property     (hdf5::Group& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& memory_datatype,
-                                        hdf5::Shape const& array_shape);
-
-Property           create_property     (hdf5::Group& parent,
-                                        std::string const& name,
-                                        hdf5::Datatype const& file_datatype,
-                                        hdf5::Datatype const& memory_datatype);
+                                        hdf5::Shape const& array_shape,
+                                        std::string const& description="");
 
 Property           create_property     (hdf5::Group& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& file_datatype,
                                         hdf5::Datatype const& memory_datatype,
-                                        hdf5::Shape const& array_shape);
+                                        std::string const& description="");
+
+Property           create_property     (hdf5::Group& parent,
+                                        std::string const& name,
+                                        hdf5::Datatype const& file_datatype,
+                                        hdf5::Datatype const& memory_datatype,
+                                        hdf5::Shape const& array_shape,
+                                        std::string const& description="");
 
 }  // namespace same_shape
 

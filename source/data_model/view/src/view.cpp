@@ -338,6 +338,12 @@ void show_group(
 void show_file(
     hdf5::File const& file)
 {
+    ImGui::Text("HDF5 version: ");
+    ImGui::SameLine();
+    ImGui::Text(file.hdf5_version().c_str());
+    ImGui::SameLine();
+    help_marker("The version of HDF5 used to create the file");
+
     show_group(dynamic_cast<hdf5::Group const&>(file));
 }
 
@@ -379,7 +385,7 @@ void               show_value          (Value const& value,
 
 
 static char const array_shape_doc[] =
-    "Shape of a single array. Each number is an extent along a "
+    "Shape of an object array. Each number is an extent along a "
     "dimension. An empty shape implies a scalar value.";
 
 
@@ -514,40 +520,40 @@ void show_time_domain(
 {
     ImGui::Indent();
 
-    // Configuration
-    {
-        auto const& configuration{domain.configuration()};
+        // Configuration
+        {
+            auto const& configuration{domain.configuration()};
 
-        ImGui::Text("item type: ");
-        ImGui::SameLine();
-        ImGui::Text(data_model::aspect_to_string(
-            configuration.value<data_model::TimeDomainItemType>()).c_str());
-    }
+            ImGui::Text("item type: ");
+            ImGui::SameLine();
+            ImGui::Text(data_model::aspect_to_string(
+                configuration.value<data_model::TimeDomainItemType>()).c_str());
+        }
 
-    // Clock
-    {
-        auto const& clock{domain.clock()};
+        // Clock
+        {
+            auto const& clock{domain.clock()};
 
-        ImGui::Text("epoch: ");
-        ImGui::SameLine();
-        ImGui::Text(epoch_to_string(clock.epoch()).c_str());
+            ImGui::Text("epoch: ");
+            ImGui::SameLine();
+            ImGui::Text(epoch_to_string(clock.epoch()).c_str());
 
-        ImGui::Text("unit: ");
-        ImGui::SameLine();
-        ImGui::Text(data_model::aspect_to_string(clock.unit()).c_str());
+            ImGui::Text("unit: ");
+            ImGui::SameLine();
+            ImGui::Text(data_model::aspect_to_string(clock.unit()).c_str());
 
-        ImGui::Text("nr_units: ");
-        ImGui::SameLine();
-        ImGui::Text(fmt::format("{}", clock.nr_units()).c_str());
-    }
+            ImGui::Text("nr_units: ");
+            ImGui::SameLine();
+            ImGui::Text(fmt::format("{}", clock.nr_units()).c_str());
+        }
 
-    // Value
-    {
-        // FIXME
-        ImGui::Text("value: ");
-        ImGui::SameLine();
-        ImGui::Text("TODO");
-    }
+        // Value
+        {
+            // FIXME
+            ImGui::Text("value: ");
+            ImGui::SameLine();
+            ImGui::Text("TODO");
+        }
 
     ImGui::Unindent();
 }
@@ -559,39 +565,39 @@ void show_space_domain(
 {
     ImGui::Indent();
 
-    // Configuration
-    {
-        auto const& configuration{domain.configuration()};
+        // Configuration
+        {
+            auto const& configuration{domain.configuration()};
 
-        ImGui::Text("mobility: ");
-        ImGui::SameLine();
-        ImGui::Text(data_model::aspect_to_string(
-            configuration.value<data_model::Mobility>()).c_str());
-
-        ImGui::Text("item type: ");
-        ImGui::SameLine();
-        ImGui::Text(data_model::aspect_to_string(
-            configuration.value<data_model::SpaceDomainItemType>()).c_str());
-    }
-
-    // Discretized presence property
-    {
-        if(domain.presence_is_discretized()) {
-            ImGui::Text("discretized presence property: ");
+            ImGui::Text("mobility: ");
             ImGui::SameLine();
-            ImGui::Text(
-                const_cast<data_model::SpaceDomain&>(domain)
-                    .discretized_presence_property().id().pathname().c_str());
-        }
-    }
+            ImGui::Text(data_model::aspect_to_string(
+                configuration.value<data_model::Mobility>()).c_str());
 
-    // Value
-    {
-        // FIXME
-        ImGui::Text("value: ");
-        ImGui::SameLine();
-        ImGui::Text("TODO");
-    }
+            ImGui::Text("item type: ");
+            ImGui::SameLine();
+            ImGui::Text(data_model::aspect_to_string(
+                configuration.value<data_model::SpaceDomainItemType>()).c_str());
+        }
+
+        // Discretized presence property
+        {
+            if(domain.presence_is_discretized()) {
+                ImGui::Text("discretized presence property: ");
+                ImGui::SameLine();
+                ImGui::Text(
+                    const_cast<data_model::SpaceDomain&>(domain)
+                        .discretized_presence_property().id().pathname().c_str());
+            }
+        }
+
+        // Value
+        {
+            // FIXME
+            ImGui::Text("value: ");
+            ImGui::SameLine();
+            ImGui::Text("TODO");
+        }
 
     ImGui::Unindent();
 }
@@ -668,31 +674,33 @@ void show_properties(
     if(!collection.empty()) {
 
         ImGui::Indent();
-        ImGui::BeginGroup();
 
-        ImGui::Text("shape per object: ");
-        ImGui::SameLine();
-        ImGui::Text(data_model::aspect_to_string(data_model::shape_per_object<Collection>).c_str());
+            ImGui::BeginGroup();
 
-        ImGui::Text("value variability: ");
-        ImGui::SameLine();
-        ImGui::Text(data_model::aspect_to_string(data_model::value_variability<Collection>).c_str());
+            ImGui::Text("shape per object: ");
+            ImGui::SameLine();
+            ImGui::Text(data_model::aspect_to_string(data_model::shape_per_object<Collection>).c_str());
 
-        ImGui::Text("shape variability: ");
-        ImGui::SameLine();
-        ImGui::Text(data_model::aspect_to_string(data_model::shape_variability<Collection>).c_str());
+            ImGui::Text("value variability: ");
+            ImGui::SameLine();
+            ImGui::Text(data_model::aspect_to_string(data_model::value_variability<Collection>).c_str());
 
-        for(std::string const& name: collection.names()) {
-            if(ImGui::TreeNodeEx(name.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
-            {
-                copy_popup("property name", name);
-                show_property(collection[name], show_details);
-                ImGui::TreePop();
+            ImGui::Text("shape variability: ");
+            ImGui::SameLine();
+            ImGui::Text(data_model::aspect_to_string(data_model::shape_variability<Collection>).c_str());
+
+            for(std::string const& name: collection.names()) {
+                if(ImGui::TreeNodeEx(name.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
+                {
+                    copy_popup("property name", name);
+                    show_property(collection[name], show_details);
+                    ImGui::TreePop();
+                }
             }
-        }
 
-        ImGui::Separator();
-        ImGui::EndGroup();
+            ImGui::Separator();
+            ImGui::EndGroup();
+
         ImGui::Unindent();
     }
 }
@@ -711,26 +719,31 @@ void show_properties2(
         if(ImGui::BeginTabItem(name.c_str())) {
 
             ImGui::Indent();
-            // ImGui::BeginGroup();
 
-            if(show_details) {
-                ImGui::Text("shape per object: ");
-                ImGui::SameLine();
-                ImGui::Text(data_model::aspect_to_string(data_model::shape_per_object<Collection>).c_str());
+                // ImGui::BeginGroup();
 
-                ImGui::Text("value variability: ");
-                ImGui::SameLine();
-                ImGui::Text(data_model::aspect_to_string(data_model::value_variability<Collection>).c_str());
+                if(show_details) {
+                    ImGui::Text("shape per object: ");
+                    ImGui::SameLine();
+                    ImGui::Text(data_model::aspect_to_string(data_model::shape_per_object<Collection>).c_str());
 
-                ImGui::Text("shape variability: ");
-                ImGui::SameLine();
-                ImGui::Text(data_model::aspect_to_string(data_model::shape_variability<Collection>).c_str());
-            }
+                    ImGui::Text("value variability: ");
+                    ImGui::SameLine();
+                    ImGui::Text(data_model::aspect_to_string(data_model::value_variability<Collection>).c_str());
 
-            show_property(collection[name], show_details);
+                    ImGui::Text("shape variability: ");
+                    ImGui::SameLine();
+                    ImGui::Text(data_model::aspect_to_string(data_model::shape_variability<Collection>).c_str());
+                }
 
-            // ImGui::Separator();
-            // ImGui::EndGroup();
+                if(!collection[name].description().empty()) {
+                    ImGui::TextWrapped(collection[name].description().c_str());
+                }
+                show_property(collection[name], show_details);
+
+                // ImGui::Separator();
+                // ImGui::EndGroup();
+
             ImGui::Unindent();
             ImGui::EndTabItem();
         }
@@ -867,6 +880,10 @@ void show_phenomenon(
     data_model::Phenomenon const& phenomenon,
     bool const show_details)
 {
+    if(!phenomenon.description().empty()) {
+        ImGui::TextWrapped(phenomenon.description().c_str());
+    }
+
     {
         auto const& object_id{phenomenon.object_id()};
 
@@ -990,15 +1007,29 @@ void show_dataset(
     auto const& source{dataset.dataset()};
 
     ImGui::Indent();
-    if(show_details) {
-        show_file(dynamic_cast<hdf5::File const&>(source));
-    }
+
+        if(!source.description().empty()) {
+            ImGui::TextWrapped(source.description().c_str());
+        }
+
+        if(show_details) {
+
+            ImGui::Text("LUE version: ");
+            ImGui::SameLine();
+            ImGui::Text(source.lue_version().c_str());
+            ImGui::SameLine();
+            help_marker("The version of LUE used to create the dataset");
+
+            show_file(dynamic_cast<hdf5::File const&>(source));
+        }
+
     ImGui::Unindent();
 
     {
         auto const& phenomena{source.phenomena()};
 
-        if(show_details || !phenomena.empty()) {
+        if(show_details || !phenomena.empty())
+        {
             if(ImGui::TreeNodeEx(
                 fmt::format("phenomena ({})", phenomena.size()).c_str(),
                 ImGuiTreeNodeFlags_DefaultOpen))
@@ -1012,7 +1043,8 @@ void show_dataset(
     {
         auto const& universes{source.universes()};
 
-        if(show_details || !universes.empty()) {
+        if(show_details || !universes.empty())
+        {
             if(ImGui::TreeNodeEx(
                 fmt::format("universes ({})", universes.size()).c_str(),
                 ImGuiTreeNodeFlags_DefaultOpen))

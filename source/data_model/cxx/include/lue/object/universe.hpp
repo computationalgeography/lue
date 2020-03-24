@@ -30,7 +30,8 @@ public:
 
     Phenomena&     phenomena           ();
 
-    Phenomenon&    add_phenomenon      (std::string const& name);
+    Phenomenon&    add_phenomenon      (std::string const& name,
+                                        std::string const& description="");
 
 private:
 

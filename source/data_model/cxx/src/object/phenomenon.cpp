@@ -10,6 +10,8 @@ Phenomenon::Phenomenon(
     std::string const& name):
 
     hdf5::Group{parent, name},
+    _description{attributes().exists(description_tag)
+        ? attributes().read<std::string>(description_tag) : ""},
     _object_id{*this},
     _collection_property_sets{*this, collection_property_sets_tag},
     _property_sets{*this, property_sets_tag}
@@ -22,11 +24,19 @@ Phenomenon::Phenomenon(
     hdf5::Group&& group):
 
     hdf5::Group{std::forward<hdf5::Group>(group)},
+    _description{attributes().exists(description_tag)
+        ? attributes().read<std::string>(description_tag) : ""},
     _object_id{*this},
     _collection_property_sets{*this, collection_property_sets_tag},
     _property_sets{*this, property_sets_tag}
 
 {
+}
+
+
+std::string const& Phenomenon::description() const
+{
+    return _description;
 }
 
 
@@ -81,7 +91,8 @@ PropertySets& Phenomenon::property_sets()
 
 Phenomenon create_phenomenon(
     hdf5::Group& parent,
-    std::string const& name)
+    std::string const& name,
+    std::string const& description)
 {
     if(hdf5::group_exists(parent, name)) {
         throw std::runtime_error(fmt::format(
@@ -90,6 +101,11 @@ Phenomenon create_phenomenon(
     }
 
     auto group = hdf5::create_group(parent, name);
+
+    // Possibly empty
+    if(!description.empty()) {
+        group.attributes().write(description_tag, description);
+    }
 
     create_object_id(group);
     create_property_sets(group, collection_property_sets_tag);

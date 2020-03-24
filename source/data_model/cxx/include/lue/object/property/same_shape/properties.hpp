@@ -32,11 +32,13 @@ public:
     Properties&    operator=           (Properties&&)=default;
 
     Property&      add                 (std::string const& name,
-                                        hdf5::Datatype const& datatype);
+                                        hdf5::Datatype const& datatype,
+                                        std::string const& description="");
 
     Property&      add                 (std::string const& name,
                                         hdf5::Datatype const& datatype,
-                                        hdf5::Shape const& shape);
+                                        hdf5::Shape const& shape,
+                                        std::string const& description="");
 
 private:
 

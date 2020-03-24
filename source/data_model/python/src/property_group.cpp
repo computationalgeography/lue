@@ -55,6 +55,13 @@ void init_property_group(
     :param PropertyGroup property: Discretization property
 )")
 
+        .def_property_readonly(
+            "description",
+            &PropertyGroup::description,
+            R"(
+    Return description
+)")
+
         .def(
             "set_space_discretization",
             &PropertyGroup::set_space_discretization,

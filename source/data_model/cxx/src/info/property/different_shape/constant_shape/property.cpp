@@ -58,12 +58,14 @@ Property create_property(
     hdf5::Group& parent,
     std::string const& name,
     hdf5::Datatype const& memory_datatype,
-    Rank const rank)
+    Rank const rank,
+    std::string const& description)
 {
     return create_property(
         parent, name,
         file_datatype(memory_datatype), memory_datatype,
-        rank);
+        rank,
+        description);
 }
 
 
@@ -72,9 +74,10 @@ Property create_property(
     std::string const& name,
     hdf5::Datatype const& file_datatype,
     hdf5::Datatype const& memory_datatype,
-    Rank const rank)
+    Rank const rank,
+    std::string const& description)
 {
-    auto group = create_property_group(parent, name);
+    auto group = create_property_group(parent, name, description);
     auto value = create_value(
         group, value_tag, file_datatype, memory_datatype, rank);
 

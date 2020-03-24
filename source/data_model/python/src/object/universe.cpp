@@ -103,10 +103,12 @@ void init_universe(
             "add_phenomenon",
             &Universe::add_phenomenon,
             "name"_a,
+            "description"_a="",
             R"(
     Add new phenomenon to dataset
 
     :param str name: Name of phenomenon to create
+    :param str description: Description
     :return: Phenomenon created
     :rtype: lue.Phenomenon
     :raises RuntimeError: In case the phenomenon cannot be created

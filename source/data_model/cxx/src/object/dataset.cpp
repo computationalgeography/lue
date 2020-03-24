@@ -13,6 +13,8 @@ Dataset::Dataset(
     AccessPropertyList const& access_property_list):
 
     hdf5::File{name, flags, access_property_list},
+    _description{attributes().exists(description_tag)
+        ? attributes().read<std::string>(description_tag) : ""},
     _universes{*this},
     _phenomena{*this}
 
@@ -52,6 +54,8 @@ Dataset::Dataset(
     hdf5::File&& file):
 
     hdf5::File{std::forward<hdf5::File>(file)},
+    _description{attributes().exists(description_tag)
+        ? attributes().read<std::string>(description_tag) : ""},
     _universes{*this},
     _phenomena{*this}
 
@@ -81,9 +85,16 @@ Universe& Dataset::add_universe(
     @sa         Phenomena::add()
 */
 Phenomenon& Dataset::add_phenomenon(
-    std::string const& name)
+    std::string const& name,
+    std::string const& description)
 {
-    return _phenomena.add(name);
+    return _phenomena.add(name, description);
+}
+
+
+std::string const& Dataset::description() const
+{
+    return _description;
 }
 
 
@@ -144,12 +155,17 @@ bool dataset_exists(
 namespace {
 
 Dataset create_dataset(
-    hdf5::File&& file)
+    hdf5::File&& file,
+    std::string const& description)
 {
     create_universes(file);
     create_phenomena(file);
 
     file.attributes().write<std::string>("lue_version", LUE_VERSION);
+
+    if(!description.empty()) {
+        file.attributes().write<std::string>(description_tag, description);
+    }
 
     return Dataset{std::move(file)};
 }
@@ -164,20 +180,22 @@ Dataset create_dataset(
     @exception  std::runtime_error In case the dataset cannot be created
 */
 Dataset create_dataset(
-    std::string const& name)
+    std::string const& name,
+    std::string const& description)
 {
     auto file = hdf5::create_file(name);
 
-    return create_dataset(std::move(file));
+    return create_dataset(std::move(file), description);
 }
 
 
 Dataset create_in_memory_dataset(
-    std::string const& name)
+    std::string const& name,
+    std::string const& description)
 {
     auto file = hdf5::create_in_memory_file(name);
 
-    return create_dataset(std::move(file));
+    return create_dataset(std::move(file), description);
 }
 
 

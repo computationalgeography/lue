@@ -24,9 +24,10 @@ Phenomena::Phenomena(
 
 
 Phenomenon& Phenomena::add(
-    std::string const& name)
+    std::string const& name,
+    std::string const& description)
 {
-    return Collection::add(name, create_phenomenon(*this, name));
+    return Collection::add(name, create_phenomenon(*this, name, description));
 }
 
 

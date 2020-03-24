@@ -27,9 +27,11 @@ Properties::Properties(
 Property& Properties::add(
     std::string const& name,
     hdf5::Datatype const& datatype,
-    Rank const rank)
+    Rank const rank,
+    std::string const& description)
 {
-    return Collection::add(name, create_property(*this, name, datatype, rank));
+    return Collection::add(
+        name, create_property(*this, name, datatype, rank, description));
 }
 
 
