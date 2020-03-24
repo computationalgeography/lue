@@ -1,4 +1,5 @@
 from functools import reduce
+import math
 
 
 def partition_shape_multipliers(
@@ -109,7 +110,7 @@ def range_of_shapes(
         nr_elements_per_dimension = nr_elements ** (1.0 / rank)
 
         return tuple([
-            int(round(nr_elements_per_dimension * extent)) for extent in
+            int(math.floor(nr_elements_per_dimension * extent)) for extent in
                 normalized_shape])
 
 
@@ -132,7 +133,7 @@ def range_of_shapes(
         while multiplier * sizes[-1] <= max_nr_elements:
             sizes.append(multiplier * sizes[-1])
 
-    normalized_shape = tuple([extent / max(min_shape) for extent in min_shape])
+    normalized_shape = tuple([float(extent) / max(min_shape) for extent in min_shape])
     shapes = [shape(size, normalized_shape) for size in sizes]
 
     assert len(shapes) == 0 or nr_elements(shapes[-1]) <= max_nr_elements, \

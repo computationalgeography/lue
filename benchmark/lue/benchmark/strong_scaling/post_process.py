@@ -3,6 +3,7 @@ from ..benchmark import *
 # TODO Use the lue dataset for obtaining information, instead of the json files
 from .strong_scaling_experiment import *
 from ..cluster import *
+from ..plot import *
 from ..util import *
 
 import lue
@@ -300,8 +301,7 @@ def import_raw_results(
     lue_dataset_pathname = experiment.result_pathname(
         cluster.name, benchmark.scenario_name, "data", "lue")
 
-    if os.path.exists(lue_dataset_pathname):
-        os.remove(lue_dataset_pathname)
+    lue.create_dataset(lue_dataset_pathname, experiment.description)
 
     metadata_written = False
 
@@ -332,71 +332,160 @@ def import_raw_results(
     return lue_dataset_pathname
 
 
-def meta_information_dataframe(
-        lue_meta_information):
+def write_scaling_results(
+        lue_dataset_pathname):
 
-    assert \
-        lue_meta_information.properties["kind"].value[:] == ["strong_scaling"]
+    lue_dataset = lue.open_dataset(lue_dataset_pathname, "w")
+    count = lue_dataset.benchmark.measurement.duration.value.shape[1]
 
-    name = lue_meta_information.properties["name"].value[:]
-    system_name = lue_meta_information.properties["system_name"].value[:]
-    worker_type = lue_meta_information.properties["worker_type"].value[:]
-    nr_time_steps = lue_meta_information.properties["nr_time_steps"].value[:]
+    lue_measurement = lue_dataset.benchmark.measurement
+    lue_meta_information = lue_dataset.benchmark.meta_information
 
-    array_shape = lue_meta_information.properties["array_shape"].value[:]
-    assert len(array_shape) == 1
-    partition_shape = \
-        lue_meta_information.properties["partition_shape"].value[:]
-    assert len(partition_shape) == 1
+    # Write property-set to dataset containing the scalability information
+    # - benchmark
+    #     - scaling
+    #         - (mean_duration)
+    #         - (std_duration)
+    #         - relative speed-up (+ mean, std)
+    #         - efficiency (+ mean, std)
+    #         - LUPS (+ mean, std)
+    scaling_property_set = lue_dataset.benchmark.add_property_set(
+        "scaling", lue_measurement.time_domain, lue_measurement.object_tracker)
 
-    rank = len(partition_shape[0])
+    duration = lue_measurement.duration.value[:]
+    nr_durations = len(duration)
 
-    meta_information = pd.DataFrame({
-            "name": name,
-            "system_name": system_name,
-            "worker_type": worker_type,
-            "nr_time_steps": nr_time_steps,
-        })
-    array_shape = pd.DataFrame(
-        array_shape,
-        columns=["array_shape_{}".format(i) for i in range(rank)])
-    partition_shape = pd.DataFrame(
-        partition_shape,
-        columns=["partition_shape_{}".format(i) for i in range(rank)])
+    nr_workers = lue_measurement.nr_workers.value[:]
+    nr_workers = nr_workers.reshape(len(nr_workers), 1)
 
-    meta_information = pd.concat(
-        [meta_information, array_shape, partition_shape], axis=1)
+    # Count durations, using one worker
+    t1 = duration[0].astype(np.float64)
 
-    return meta_information
+    # speed_up = t1 / tn
+    relative_speed_up = t1 / duration
 
+    relative_speed_up_property = scaling_property_set.add_property(
+        "relative_speed_up", np.dtype(np.float64), shape=(count,),
+        value_variability=lue.ValueVariability.variable,
+        description="Relative speed-up: t1 / duration")
+    relative_speed_up_property.value.expand(nr_durations)[:] = \
+        relative_speed_up
 
-def measurement_dataframe(
-        lue_measurement):
+    # efficiency = 100% * speed_up / nr_workers
+    relative_efficiency = 100 * relative_speed_up / nr_workers
 
-    nr_workers = lue_measurement.properties["nr_workers"].value[:]
-    duration = lue_measurement.properties["duration"].value[:]
-    assert len(duration) == len(nr_workers)
+    relative_efficiency_property = scaling_property_set.add_property(
+        "relative_efficiency", np.dtype(np.float64), shape=(count,),
+        value_variability=lue.ValueVariability.variable,
+        description="Relative efficiency: 100% * relative_speed_up / "
+        "nr_workers")
+    relative_efficiency_property.value.expand(nr_durations)[:] = \
+        relative_efficiency
 
-    count = duration.shape[1]
+    # lups = nr_time_steps * nr_elements / duration
+    # In the case of strong scaling, the nr_elements is
+    # constant. Ideally, LUPS increases linearly with the nr_workers.
+    nr_time_steps = lue_meta_information.nr_time_steps.value[0]
+    array_shape = lue_meta_information.array_shape.value[0]
+    nr_elements = reduce(lambda e1, e2: e1 * e2, array_shape)
+    lups = nr_time_steps * nr_elements / duration
 
-    # count durations per benchmark
-    duration = pd.DataFrame(
-        duration,
-        columns=["duration_{}".format(i) for i in range(count)])
+    lups_property = scaling_property_set.add_property(
+        "lups", np.dtype(np.float64), shape=(count,),
+        value_variability=lue.ValueVariability.variable,
+        description="LUPS: nr_time_steps * nr_elements / "
+        "duration")
+    lups_property.value.expand(nr_durations)[:] = lups
 
-    # nr_workers per benchmark
-    nr_workers = pd.DataFrame(
-        nr_workers,
-        columns=["nr_workers"])
+    if count > 1:
+        mean_duration = np.mean(duration, axis=1)
+        std_duration = np.std(duration, axis=1)
+        assert len(mean_duration) == len(std_duration) == nr_durations
 
-    assert (duration.index == nr_workers.index).all()
+        mean_relative_speed_up = np.mean(relative_speed_up, axis=1)
+        std_relative_speed_up = np.std(relative_speed_up, axis=1)
 
-    measurement = pd.concat([nr_workers, duration], axis=1)
+        mean_relative_efficiency = np.mean(relative_efficiency, axis=1)
+        std_relative_efficiency = np.std(relative_efficiency, axis=1)
 
-    ### # Sort measurements by the number of workers
-    ### measurement.sort_values(by=["nr_workers"], inplace=True)
+        mean_lups = np.mean(lups, axis=1)
+        std_lups = np.std(lups, axis=1)
 
-    return measurement
+        mean_duration_property = scaling_property_set.add_property(
+            "mean_duration", np.dtype(np.float64), shape=(),
+            value_variability=lue.ValueVariability.variable,
+            description=
+                "For a number of workers, the mean duration of the {} "
+                "experiments took."
+                    .format(count))
+        mean_duration_property.value.expand(nr_durations)[:] = mean_duration
+
+        std_duration_property = scaling_property_set.add_property(
+            "std_duration", np.dtype(np.float64), shape=(),
+            value_variability=lue.ValueVariability.variable,
+            description=
+                "For a number of workers, the standard deviation of the "
+                "durations the {} experiments took."
+                    .format(count))
+        std_duration_property.value.expand(nr_durations)[:] = std_duration
+
+        mean_relative_speed_up_property = scaling_property_set.add_property(
+            "mean_relative_speed_up", np.dtype(np.float64), shape=(),
+            value_variability=lue.ValueVariability.variable,
+            description=
+                "For a number of workers, the mean of the relative "
+                "speed-up of the {} experiments."
+                    .format(count))
+        mean_relative_speed_up_property.value.expand(nr_durations)[:] = \
+            mean_relative_speed_up
+
+        std_relative_speed_up_property = scaling_property_set.add_property(
+            "std_relative_speed_up", np.dtype(np.float64), shape=(),
+            value_variability=lue.ValueVariability.variable,
+            description=
+                "For a number of workers, the standard deviation of the "
+                "relative speed-ups of the {} experiments."
+                    .format(count))
+        std_relative_speed_up_property.value.expand(nr_durations)[:] = \
+            std_relative_speed_up
+
+        mean_relative_efficiency_property = scaling_property_set.add_property(
+            "mean_relative_efficiency", np.dtype(np.float64), shape=(),
+            value_variability=lue.ValueVariability.variable,
+            description=
+                "For a number of workers, the mean of the relative "
+                "efficiency of the {} experiments."
+                    .format(count))
+        mean_relative_efficiency_property.value.expand(nr_durations)[:] = \
+            mean_relative_efficiency
+
+        std_relative_efficiency_property = scaling_property_set.add_property(
+            "std_relative_efficiency", np.dtype(np.float64), shape=(),
+            value_variability=lue.ValueVariability.variable,
+            description=
+                "For a number of workers, the standard deviation of the "
+                "relative efficiency of the {} experiments."
+                    .format(count))
+        std_relative_efficiency_property.value.expand(nr_durations)[:] = \
+            std_relative_efficiency
+
+        mean_lups_property = scaling_property_set.add_property(
+            "mean_lups", np.dtype(np.float64), shape=(),
+            value_variability=lue.ValueVariability.variable,
+            description=
+                "For a number of workers, the mean of the LUPS of the {} "
+                "experiments."
+                    .format(count))
+        mean_lups_property.value.expand(nr_durations)[:] = mean_lups
+
+        std_lups_property = scaling_property_set.add_property(
+            "std_lups", np.dtype(np.float64), shape=(),
+            value_variability=lue.ValueVariability.variable,
+            description=
+                "For a number of workers, the standard deviation of the "
+                "LUPS of the {} experiments."
+                    .format(count))
+        std_lups_property.value.expand(nr_durations)[:] = std_lups
 
 
 def post_process_raw_results(
@@ -406,29 +495,15 @@ def post_process_raw_results(
     Create plots and tables from raw benchmark results
     """
     lue_dataset = lue.open_dataset(lue_dataset_pathname)
-    lue_benchmark = lue_dataset.phenomena["benchmark"]
-    lue_meta_information = \
-        lue_benchmark.collection_property_sets["meta_information"]
-    lue_measurement = lue_benchmark.property_sets["measurement"]
+    lue_meta_information = lue_dataset.benchmark.meta_information
 
-    meta_information = meta_information_dataframe(lue_meta_information)
-    name = meta_information.name[0]
-    system_name = meta_information.system_name[0]
-    worker_type = meta_information.worker_type[0]
-    nr_time_steps = meta_information.nr_time_steps[0]
+    worker_type = lue_meta_information.worker_type.value[:][0]
 
-    nr_arrays, rank = \
-        lue_meta_information.properties["array_shape"].value.shape
-    assert nr_arrays == 1
-    array_shape = lue_meta_information.properties["array_shape"].value[0]
-    nr_elements = reduce(lambda e1, e2: e1 * e2, array_shape)
-    nr_benchmarks, count = lue_measurement.properties["duration"].value.shape
-
-    measurement = measurement_dataframe(lue_measurement)
+    count = lue_dataset.benchmark.measurement.duration.value.shape[1]
 
     # The time point at which the experiment was performed is the epoch
     # of the time domain used to store the durations
-    lue_clock = lue_measurement.time_domain.clock
+    lue_clock = lue_dataset.benchmark.measurement.time_domain.clock
     assert lue_clock.nr_units == 1
     time_point_units = lue_clock.unit
 
@@ -441,58 +516,159 @@ def post_process_raw_results(
     # time_point = time_point.astimezone(tzlocal.get_localzone()).strftime("%c")
     time_point = time_point.strftime("%c")
 
-    nr_workers = measurement["nr_workers"]
-    duration_labels = ["duration_{}".format(i) for i in range(count)]
-
-    # t1 = duration using one worker
-    t1 = measurement.loc[nr_workers == 1].filter(items=duration_labels)
-    # t1 = [t1["duration_{}".format(i)][0] for i in range(count)]
-    t1 = [t1.iat[0, i] for i in range(count)]
-
-    for i in range(count):
-        # Best case: duration scales perfect with the number of workers
-        # 100% parallel code, but without parallelization overhead
-        measurement["linear_duration_{}".format(i)] = t1[i] / nr_workers
-
-        # Worst case: duration does not scale with the number of threads
-        # 100% serial code, but without parallelization overhead
-        measurement["serial_duration_{}".format(i)] = \
-            [t1[i] for b in range(nr_benchmarks)]
-
-        # speed_up = t1 / tn
-        measurement["relative_speed_up_{}".format(i)] = \
-            t1[i] / measurement["duration_{}".format(i)]
-        measurement["linear_relative_speed_up_{}".format(i)] = \
-            t1[i] / measurement["linear_duration_{}".format(i)]
-        measurement["serial_relative_speed_up_{}".format(i)] = \
-            t1[i] / measurement["serial_duration_{}".format(i)]
-
-        # efficiency = 100% * speed_up / nr_workers
-        measurement["efficiency_{}".format(i)] = 100 * \
-            measurement["relative_speed_up_{}".format(i)] / nr_workers
-        measurement["linear_efficiency_{}".format(i)] = 100 * \
-            measurement["linear_relative_speed_up_{}".format(i)] / nr_workers
-        measurement["serial_efficiency_{}".format(i)] = 100 * \
-            measurement["serial_relative_speed_up_{}".format(i)] / nr_workers
-
-        # lups = nr_time_steps * nr_elements / duration
-        # In the case of strong scaling, the nr_elements is
-        # constant. Ideally, LUPS increases linearly with the nr_workers.
-        measurement["lups_{}".format(i)] = \
-            nr_time_steps * nr_elements / \
-            measurement["duration_{}".format(i)]
-        measurement["linear_lups_{}".format(i)] = \
-            nr_time_steps * nr_elements / \
-            measurement["linear_duration_{}".format(i)]
-        measurement["serial_lups_{}".format(i)] = \
-            nr_time_steps * nr_elements / \
-            measurement["serial_duration_{}".format(i)]
+    nr_workers = lue_dataset.benchmark.measurement.nr_workers.value[:]
 
 
-    # https://xkcd.com/color/rgb/
-    serial_color = sns.xkcd_rgb["pale red"]
-    linear_color = sns.xkcd_rgb["medium green"]
-    actual_color = sns.xkcd_rgb["denim blue"]
+    def annotate_plot(
+            axis,
+            y_label):
+        axis.set_xlabel(u"workers ({})".format(worker_type))
+        axis.set_xticks(nr_workers)
+        axis.set_ylabel(y_label)
+        axis.grid()
+
+
+    def plot_duration(
+            axis):
+
+        if count == 1:
+            duration = lue_dataset.benchmark.measurement.duration.value[:]
+            y_label = u"duration ({})".format(time_point_units)
+            axis.plot(
+                nr_workers, duration,
+                linewidth=default_linewidth,
+                color=actual_color, marker="o")
+        else:
+            duration = lue_dataset.benchmark.scaling.mean_duration.value[:]
+            error = lue_dataset.benchmark.scaling.std_duration.value[:]
+            y_label= u"duration ({}) ± stddev (count={})".format(
+                time_point_units, count)
+            axis.errorbar(
+                x=nr_workers, y=duration, yerr=error,
+                linewidth=default_linewidth,
+                color=actual_color, marker="o")
+
+        serial_duration = np.array([duration[0]
+            for n in range(len(nr_workers))])
+        axis.plot(
+            nr_workers, serial_duration, linewidth=default_linewidth,
+            color=serial_color)
+
+        linear_duration = np.array([duration[0] / nr_workers[n]
+            for n in range(len(nr_workers))])
+        axis.plot(
+            nr_workers, linear_duration, linewidth=default_linewidth,
+            color=linear_color)
+
+        annotate_plot(axis, y_label)
+
+
+    def plot_relative_speed_up(
+            axis):
+
+        if count == 1:
+            relative_speed_up = \
+                lue_dataset.benchmark.measurement.relative_speed_up.value[:]
+            axis.plot(
+                nr_workers, relative_speed_up,
+                linewidth=default_linewidth,
+                color=actual_color, marker="o")
+        else:
+            relative_speed_up = \
+                lue_dataset.benchmark.scaling.mean_relative_speed_up.value[:]
+            error = \
+                lue_dataset.benchmark.scaling.std_relative_speed_up.value[:]
+            axis.errorbar(
+                x=nr_workers, y=relative_speed_up, yerr=error,
+                linewidth=default_linewidth,
+                color=actual_color, marker="o")
+
+        serial_relative_speed_up = \
+            np.array([relative_speed_up[0] for n in range(len(nr_workers))])
+        axis.plot(
+            nr_workers, serial_relative_speed_up,
+            linewidth=default_linewidth,
+            color=serial_color)
+
+        linear_relative_speed_up = relative_speed_up[0] * nr_workers
+        axis.plot(
+            nr_workers, linear_relative_speed_up, linewidth=default_linewidth,
+            color=linear_color)
+
+        y_label= u"relative speed_up (-)"
+
+        annotate_plot(axis, y_label)
+
+
+    def plot_relative_efficiency(
+            axis):
+
+        if count == 1:
+            relative_efficiency = \
+                lue_dataset.benchmark.measurement.relative_efficiency.value[:]
+            axis.plot(
+                nr_workers, relative_efficiency, linewidth=default_linewidth,
+                color=actual_color, marker="o")
+        else:
+            relative_efficiency = \
+                lue_dataset.benchmark.scaling.mean_relative_efficiency.value[:]
+            error = \
+                lue_dataset.benchmark.scaling.std_relative_efficiency.value[:]
+            axis.errorbar(
+                x=nr_workers, y=relative_efficiency, yerr=error,
+                linewidth=default_linewidth,
+                color=actual_color, marker="o")
+
+        serial_relative_efficiency = relative_efficiency[0] / nr_workers
+        axis.plot(
+            nr_workers, serial_relative_efficiency, linewidth=default_linewidth,
+            color=serial_color)
+
+        linear_relative_efficiency = \
+            np.array([relative_efficiency[0] for n in range(len(nr_workers))])
+        axis.plot(
+            nr_workers, linear_relative_efficiency, linewidth=default_linewidth,
+            color=linear_color)
+
+        y_label= u"relative efficiency (%)"
+
+        annotate_plot(axis, y_label)
+
+
+    def plot_lups(
+            axis):
+
+        if count == 1:
+            lups = \
+                lue_dataset.benchmark.measurement.lups.value[:]
+            axis.plot(
+                nr_workers, lups, linewidth=default_linewidth,
+                color=actual_color, marker="o")
+        else:
+            lups = \
+                lue_dataset.benchmark.scaling.mean_lups.value[:]
+            error = \
+                lue_dataset.benchmark.scaling.std_lups.value[:]
+            axis.errorbar(
+                x=nr_workers, y=lups, yerr=error,
+                linewidth=default_linewidth,
+                color=actual_color, marker="o")
+
+        serial_lups = \
+            np.array([lups[0] for n in range(len(nr_workers))])
+        axis.plot(
+            nr_workers, serial_lups, linewidth=default_linewidth,
+            color=serial_color)
+
+        linear_lups = lups[0] * nr_workers
+        axis.plot(
+            nr_workers, linear_lups, linewidth=default_linewidth,
+            color=linear_color)
+
+        y_label= u"LUPS"
+
+        annotate_plot(axis, y_label)
+
 
     nr_plot_rows = 2
     nr_plot_cols = 2
@@ -504,113 +680,17 @@ def post_process_raw_results(
             squeeze=False, sharex=False,
         )  # Inches...
 
-    plot_row, plot_col = 0, 0
-
-    # duration by nr_workers
-    duration = select_data_for_plot(
-        measurement, "duration", count)
-    linear_duration = select_data_for_plot(
-        measurement, "linear_duration", count)
-    serial_duration = select_data_for_plot(
-        measurement, "serial_duration", count)
-
-    sns.lineplot(
-        data=linear_duration, x="nr_workers", y="linear_duration",
-        ax=axes[plot_row, plot_col], color=linear_color)
-    sns.lineplot(
-        data=serial_duration, x="nr_workers", y="serial_duration",
-        ax=axes[plot_row, plot_col], color=serial_color)
-    sns.lineplot(
-        data=duration, x="nr_workers", y="duration",
-        ax=axes[plot_row, plot_col], color=actual_color)
-    axes[plot_row, plot_col].set_ylabel(
-        u"duration ({}) ± 95% ci (count={})".format(
-            time_point_units, count))
-    # axes[plot_row, plot_col].yaxis.set_major_formatter(
-    #     ticker.FuncFormatter(
-    #         lambda y, pos: format_duration(y)))
-
-    plot_row, plot_col = 0, 1
-
-    # speed_up by nr_workers
-    relative_speed_up = select_data_for_plot(
-        measurement, "relative_speed_up", count)
-    linear_relative_speed_up = select_data_for_plot(
-        measurement, "linear_relative_speed_up", count)
-    serial_relative_speed_up = select_data_for_plot(
-        measurement, "serial_relative_speed_up", count)
-
-    sns.lineplot(
-        data=linear_relative_speed_up,
-        x="nr_workers", y="linear_relative_speed_up",
-        ax=axes[plot_row, plot_col], color=linear_color)
-    sns.lineplot(
-        data=serial_relative_speed_up,
-        x="nr_workers", y="serial_relative_speed_up",
-        ax=axes[plot_row, plot_col], color=serial_color)
-    sns.lineplot(
-        data=relative_speed_up,
-        x="nr_workers", y="relative_speed_up",
-        ax=axes[plot_row, plot_col], color=actual_color)
-    axes[plot_row, plot_col].set_ylabel("relative speed up (-)")
-
-    plot_row, plot_col = 1, 0
-
-    # efficiency by nr_workers
-    efficiency = select_data_for_plot(
-        measurement, "efficiency", count)
-    linear_efficiency = select_data_for_plot(
-        measurement, "linear_efficiency", count)
-    serial_efficiency = select_data_for_plot(
-        measurement, "serial_efficiency", count)
-
-    sns.lineplot(
-        data=linear_efficiency, x="nr_workers", y="linear_efficiency",
-        ax=axes[plot_row, plot_col], color=linear_color)
-    sns.lineplot(
-        data=serial_efficiency, x="nr_workers", y="serial_efficiency",
-        ax=axes[plot_row, plot_col], color=serial_color)
-    sns.lineplot(
-        data=efficiency, x="nr_workers", y="efficiency",
-        ax=axes[plot_row, plot_col], color=actual_color)
-    axes[plot_row, plot_col].set_ylim(0, 110)
-    axes[plot_row, plot_col].set_ylabel("efficiency (%)")
-
-    plot_row, plot_col = 1, 1
-
-    # lups by nr_workers
-    lups = select_data_for_plot(
-        measurement, "lups", count)
-    linear_lups = select_data_for_plot(
-        measurement, "linear_lups", count)
-    serial_lups = select_data_for_plot(
-        measurement, "serial_lups", count)
-
-    sns.lineplot(
-        data=linear_lups, x="nr_workers", y="linear_lups",
-        ax=axes[plot_row, plot_col], color=linear_color)
-    sns.lineplot(
-        data=serial_lups, x="nr_workers", y="serial_lups",
-        ax=axes[plot_row, plot_col], color=serial_color)
-    sns.lineplot(
-        data=lups, x="nr_workers", y="lups",
-        ax=axes[plot_row, plot_col], color=actual_color)
-    axes[plot_row, plot_col].set_ylabel("LUPS")
-
-
-    for plot_row in range(nr_plot_rows):
-        for plot_col in range(nr_plot_cols):
-            # axes[plot_row, plot_col].xaxis.set_major_formatter(
-            #     ticker.FuncFormatter(
-            #         lambda x, pos: format_nr_workers(x)))
-            axes[plot_row, plot_col].set_xlabel(
-                "workers ({})".format(worker_type))
-            axes[plot_row, plot_col].grid()
+    plot_duration(axes[0][0])
+    plot_relative_speed_up(axes[0][1])
+    plot_relative_efficiency(axes[1][0])
+    plot_lups(axes[1][1])
 
     figure.legend(labels=["linear", "serial", "actual"])
 
-    partition_shape = \
-        lue_meta_information.properties["partition_shape"].value[0]
+    name = lue_meta_information.name.value[:][0]
+    system_name = lue_meta_information.system_name.value[:][0]
+    array_shape = lue_meta_information.array_shape.value[0]
+    partition_shape = lue_meta_information.partition_shape.value[0]
 
     figure.suptitle(
         "{}, {}, {}\n"
@@ -624,7 +704,6 @@ def post_process_raw_results(
             )
         )
 
-    # plt.tight_layout()
     plt.savefig(plot_pathname)
 
 
@@ -1015,11 +1094,16 @@ def post_process_results(
         experiment_settings_json, command_pathname)
 
     lue_dataset_pathname = import_raw_results(cluster, benchmark, experiment)
-    create_dot_graph(
-        experiment.result_pathname(cluster.name, benchmark.scenario_name, "data", "lue"),
-        experiment.result_pathname(cluster.name, benchmark.scenario_name, "graph", "pdf"))
+    write_scaling_results(lue_dataset_pathname)
 
-    plot_pathname = experiment.result_pathname(cluster.name, benchmark.scenario_name, "plot", "pdf")
+    create_dot_graph(
+        experiment.result_pathname(
+            cluster.name, benchmark.scenario_name, "data", "lue"),
+        experiment.result_pathname(
+            cluster.name, benchmark.scenario_name, "graph", "pdf"))
+
+    plot_pathname = experiment.result_pathname(
+        cluster.name, benchmark.scenario_name, "plot", "pdf")
     post_process_raw_results(lue_dataset_pathname, plot_pathname)
 
     performance_counters_available = benchmark.hpx is not None and \

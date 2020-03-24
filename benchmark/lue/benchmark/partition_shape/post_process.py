@@ -2,10 +2,10 @@
 from ..benchmark import *
 from .partition_shape_experiment import *
 from ..cluster import *
+from ..plot import *
 from ..util import *
 
 import lue
-# from ..plot.scale.square_root import SquareRootScale
 
 import dateutil.relativedelta
 import dateutil.parser
@@ -14,19 +14,13 @@ import matplotlib
 # matplotlib.use("PDF")
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-import matplotlib.scale as mscale
-import matplotlib.ticker as ticker
 import numpy as np
-import pandas as pd
-import seaborn as sns
-# import tzlocal
 
 import json
-import math
 import tempfile
 
 
-# mscale.register_scale(SquareRootScale)
+# TODO Add number of partitions
 
 
 def benchmark_meta_to_lue_json(
@@ -281,8 +275,7 @@ def import_raw_results(
     lue_dataset_pathname = experiment.result_pathname(
         cluster.name, benchmark.scenario_name, "data", "lue")
 
-    if os.path.exists(lue_dataset_pathname):
-        os.remove(lue_dataset_pathname)
+    lue.create_dataset(lue_dataset_pathname, experiment.description)
 
     array_shapes = list(experiment.array.shapes)
     partition_shapes = list(experiment.partition.shapes)
@@ -314,65 +307,98 @@ def import_raw_results(
     return lue_dataset_pathname
 
 
-def meta_information_dataframe(
-        lue_meta_information):
+def write_scaling_results(
+        lue_dataset_pathname):
 
-    # TODO: BUG: double delete
-    # lue_meta_information.properties["kind"].value[0:0]
+    lue_dataset = lue.open_dataset(lue_dataset_pathname, "w")
+    count = lue_dataset.benchmark.measurement.duration.value.shape[1]
 
-    assert \
-        lue_meta_information.properties["kind"].value[:] == ["partition_shape"]
+    # Write phenomenon to dataset containing the shapes of the arrays
+    # used in the experiment
+    # - array
+    #     - array
+    #         - shape
+    array_shape = np.unique(
+        lue_dataset.benchmark.measurement.array_shape.value[:], axis=0)
+    nr_arrays = len(array_shape)
 
-    name = lue_meta_information.properties["name"].value[:]
-    system_name = lue_meta_information.properties["system_name"].value[:]
-    scenario_name = lue_meta_information.properties["scenario_name"].value[:]
+    array_phenomenon = lue_dataset.add_phenomenon("array",
+        "This phenomenon stores the array shapes for which experiments "
+        "where performed.")
+    array_phenomenon.object_id.expand(nr_arrays)[:] = \
+        np.arange(nr_arrays, dtype=np.uint64)
 
-    # # Pandas does not support nD array elements. Convert (each) shape
-    # # to string.
-    # assert array_shape.dtype == np.uint64
-    # array_shape = [str(shape) for shape in array_shape]
+    array_property_set = array_phenomenon.add_property_set("array")
 
-    meta_information = pd.DataFrame({
-            "name": name,
-            "system_name": system_name,
-            "scenario_name": scenario_name,
-        })
+    array_shape_property = array_property_set.add_property(
+        "shape", np.dtype(np.uint64), (2,),
+        "For each dimension the extent of the partitioned array used in the "
+        "experiment.")
+    array_shape_property.value.expand(nr_arrays)[:] = array_shape
 
-    return meta_information
+    # Write phenomenon to dataset containing per partition shape the
+    # durations of the count experiments performed per array
+    # - partition
+    #     - partition
+    #         - shape
+    #         - duration_0 ... duration_count-1
+    #         - mean_duration_0 ... mean_duration_count-1
+    #         - std_duration_0 ... std_duration_count-1
+    partition_shape = \
+        lue_dataset.benchmark.measurement.partition_shape.value[:]
+    nr_partitions = len(partition_shape)
+    assert nr_partitions % nr_arrays == 0
+    nr_partitions /= nr_arrays
+    partition_shape = partition_shape[0:nr_partitions]
 
+    partition_phenomenon = lue_dataset.add_phenomenon("partition",
+        "For each time the experiment was repeated, and for each array "
+        "shape for which the experiment was performed, this phenomenon "
+        "stores durations for various partition shapes.")
+    partition_phenomenon.object_id.expand(nr_partitions)[:] = \
+        np.arange(nr_partitions, dtype=np.uint64)
 
-def measurement_dataframe(
-        lue_measurement):
+    partition_property_set = partition_phenomenon.add_property_set("partition")
 
-    array_shape = lue_measurement.properties["array_shape"].value[:]
-    partition_shape = lue_measurement.properties["partition_shape"].value[:]
-    duration = lue_measurement.properties["duration"].value[:]
-    assert len(duration) == len(partition_shape) == len(array_shape)
+    partition_shape_property = partition_property_set.add_property(
+        "shape", np.dtype(np.uint64), (2,),
+        "For each dimension the extent of the partition of the partitioned "
+        "array used in the experiment.")
+    partition_shape_property.value.expand(nr_partitions)[:] = partition_shape
 
-    # count durations per benchmark
-    duration = pd.DataFrame(duration)
+    duration = lue_dataset.benchmark.measurement.duration.value[:]
+    nr_durations = len(duration)
+    assert nr_durations == nr_arrays * nr_partitions
 
-    # array shape per benchmark
-    array_shape = pd.DataFrame(array_shape)
+    for i in range(nr_arrays):
+        duration_property = partition_property_set.add_property(
+            "duration_{}".format(i), np.dtype(np.uint64), (count,),
+            "For an array and for each partition, the duration(s) it "
+            "took to perform count experiments.")
+        duration_property.value.expand(nr_partitions)[:] = \
+            duration[i * nr_partitions:(i + 1) * nr_partitions]
 
-    # partition shape per benchmark
-    partition_shape = pd.DataFrame(partition_shape)
+    # Add statistics
+    if count > 1:
+        mean_duration = np.mean(duration, axis=1)
+        std_duration = np.std(duration, axis=1)
+        assert len(mean_duration) == len(std_duration) == nr_durations
 
-    assert (duration.index == partition_shape.index).all()
-    assert (duration.index == array_shape.index).all()
+        for i in range(nr_arrays):
+            mean_duration_property = partition_property_set.add_property(
+                "mean_duration_{}".format(i), np.dtype(np.float64),
+                "For an array and for each partition, the mean duration "
+                "the {} experiments took.".format(count))
+            mean_duration_property.value.expand(nr_partitions)[:] = \
+                mean_duration[i * nr_partitions:(i + 1) * nr_partitions]
 
-    measurement = pd.concat([array_shape, partition_shape, duration], axis=1)
-
-    rank = len(array_shape.columns)
-    count = len(duration.columns)
-    labels = \
-        ["array_shape_{}".format(i) for i in range(rank)] + \
-        ["partition_shape_{}".format(i) for i in range(rank)] + \
-        ["duration_{}".format(i) for i in range(count)]
-
-    measurement.columns = labels
-
-    return measurement
+            std_duration_property = partition_property_set.add_property(
+                "std_duration_{}".format(i), np.dtype(np.float64),
+                "For an array and for each partition, the standard "
+                "deviation of the durations the {} experiments took.".format(
+                    count))
+            std_duration_property.value.expand(nr_partitions)[:] = \
+                std_duration[i * nr_partitions:(i + 1) * nr_partitions]
 
 
 def post_process_raw_results(
@@ -383,34 +409,17 @@ def post_process_raw_results(
     Create plots and tables from raw benchmark results
     """
     lue_dataset = lue.open_dataset(lue_dataset_pathname)
-    lue_benchmark = lue_dataset.phenomena["benchmark"]
-    lue_meta_information = \
-        lue_benchmark.collection_property_sets["meta_information"]
-    lue_measurement = lue_benchmark.property_sets["measurement"]
 
-    meta_information = meta_information_dataframe(lue_meta_information)
-    name = meta_information.name[0]
-    system_name = meta_information.system_name[0]
-    scenario_name = meta_information.scenario_name[0]
+    lue_meta_information = lue_dataset.benchmark.meta_information
+    name = lue_meta_information.name.value[:][0]
+    system_name = lue_meta_information.system_name.value[:][0]
+    scenario_name = lue_meta_information.scenario_name.value[:][0]
 
-    rank = lue_measurement.properties["array_shape"].value.shape[1]
-    count = lue_measurement.properties["duration"].value.shape[1]
-
-    measurement = measurement_dataframe(lue_measurement)
-
-    array_shape_labels = \
-        ["array_shape_{}".format(i) for i in range(rank)]
-    partition_shape_labels = \
-        ["partition_shape_{}".format(i) for i in range(rank)]
-
-    measurement.insert(0, "array_size",
-        measurement.filter(items=array_shape_labels).product(axis=1))
-    measurement.insert(0, "partition_size",
-        measurement.filter(items=partition_shape_labels).product(axis=1))
+    count = lue_dataset.benchmark.measurement.duration.value.shape[1]
 
     # The time point at which the experiment was performed is the epoch
     # of the time domain used to store the durations
-    lue_clock = lue_measurement.time_domain.clock
+    lue_clock = lue_dataset.benchmark.measurement.time_domain.clock
     assert lue_clock.nr_units == 1
     time_point_units = lue_clock.unit
 
@@ -423,80 +432,67 @@ def post_process_raw_results(
     # time_point = time_point.astimezone(tzlocal.get_localzone()).strftime("%c")
     time_point = time_point.strftime("%c")
 
-    actual_color = sns.xkcd_rgb["denim blue"]
+    array_shapes = lue_dataset.array.array.shape.value[:]
+    assert len(array_shapes) == len(array_shapes)
+    assert(np.all(array_shapes == array_shapes))
 
-    # Determine array shapes for which we have measurements
-    array_shapes = measurement[array_shape_labels].drop_duplicates()
-    array_shapes = (
-            [row[label] for label in array_shape_labels] \
-                for _, row in array_shapes.iterrows()
-        )
+    partition_shapes = lue_dataset.partition.partition.shape.value[:]
+    partition_sizes = np.prod(partition_shapes, axis=1)
+    assert len(partition_shapes) == len(partition_sizes)
+    nr_partitions = len(partition_shapes)
+
+
+    def plot_duration(
+            axis,
+            array_idx,
+            partition_sizes,
+            partition_shapes):
+
+        if count == 1:
+            duration = lue_dataset.partition.partition \
+                .properties["duration_{}".format(array_idx)].value[:]
+            y_label = u"duration ({})".format(time_point_units)
+            axis.plot(
+                partition_sizes, duration, linewidth=default_linewidth,
+                color=actual_color, marker="o")
+        else:
+            duration = lue_dataset.partition.partition \
+                .properties["mean_duration_{}".format(array_idx)].value[:]
+            error = lue_dataset.partition.partition \
+                .properties["std_duration_{}".format(array_idx)].value[:]
+            y_label= u"duration ({}) ± stddev (count={})".format(
+                time_point_units, count)
+            axis.errorbar(
+                x=partition_sizes, y=duration, yerr=error,
+                linewidth=default_linewidth,
+                color=actual_color, marker="o")
+
+        axis.set_xlabel(u"partition shape")
+        axis.set_xticks(partition_sizes)
+        axis.set_xticklabels(
+            ["{}".format("{}x{} ({size})".format(
+                *partition_shapes[i], size=partition_sizes[i]))
+                    for i in range(len(partition_shapes))],
+            rotation=45)
+
+        axis.set_ylabel(y_label)
+
+        axis.grid()
+
 
     # --------------------------------------------------------------------------
     # For each array shape (size) a line plot with, for a given array
     # size, the spread of durations per partition size
-    for array_shape in array_shapes:
+    # for array_shape in array_shapes:
+    for array_idx in range(len(array_shapes)):
 
-        # Given shape of array, ѕelect data to plot
-        expression = " and ".join([
-            "array_shape_{} == {}".format(i, array_shape[i])
-                for i in range(rank)])
-        measurement_per_array_shape = measurement.query(expression)
+        array_shape = array_shapes[array_idx]
 
-        # # Create dict from partition size (int) to shape (tuple)
-        # partition_shape_per_size = measurement_per_array_shape.filter(
-        #     items=
-        #         ["partition_size"] +
-        #         ["partition_shape_{}".format(i) for i in range(count)])
-        # partition_shape_per_size = \
-        #     partition_shape_per_size.set_index(keys="partition_size")
-        # partition_shape_per_size = partition_shape_per_size.to_dict("index")
-        # for key, value in partition_shape_per_size.items():
-        #     partition_shape_per_size[key] = tuple([v for v in value.values()])
-
-        # Select data needed for plotting
-        measurement_per_array_shape = measurement_per_array_shape.filter(
-            items=
-                ["partition_size"] +
-                ["duration_{}".format(i) for i in range(count)])
-
-        # Durations per partition size
-        measurement_per_array_shape = \
-            measurement_per_array_shape.set_index(keys="partition_size")
-        measurement_per_array_shape = pd.DataFrame(
-            data=measurement_per_array_shape.stack(),
-            columns=["duration"])
-
-        measurement_per_array_shape.index = \
-            measurement_per_array_shape.index.droplevel(1)
-
-        # Create a new index, moving partition_size index level into columns
-        measurement_per_array_shape = measurement_per_array_shape.reset_index()
-
-        figure, axes = plt.subplots(
-                nrows=1, ncols=1,
-                figsize=(15, 5)
+        figure, axis = plt.subplots(
+                figsize=(15, 10)
             )  # Inches...
 
-        sns.lineplot(
-            data=measurement_per_array_shape,
-            x="partition_size", y="duration",
-            ax=axes, color=actual_color,
-            legend=False)
-
-        # Annotation
-        axes.set_ylabel(u"duration ({}) ± 95% ci (count={})".format(
-            time_point_units, count))
-        axes.yaxis.set_major_formatter(
-            ticker.FuncFormatter(
-                lambda y, pos: format_duration(y)))
-
-        # axes.set_xscale("square_root")
-        axes.set_xlabel(u"partition size")
-        axes.xaxis.set_major_formatter(
-            ticker.FuncFormatter(
-                lambda x, pos: format_partition_size(x)))
-        axes.grid()
+        plot_duration(axis, array_idx, partition_sizes, partition_shapes)
 
         figure.suptitle(
             "{}, {}, {}\n"
@@ -511,65 +507,28 @@ def post_process_raw_results(
 
         a_plot_pathname = experiment.benchmark_result_pathname(
             system_name, scenario_name, array_shape, "plot", "pdf")
-        plt.tight_layout()
         plt.savefig(a_plot_pathname)
 
+
     # --------------------------------------------------------------------------
-    # Create a grid of line plots
+    array_shapes = lue_dataset.array.array.shape.value[:]
+    array_sizes = np.prod(array_shapes, axis=1)
+    assert len(array_shapes) == len(array_sizes)
+    nr_arrays = len(array_shapes)
+    nr_plots = nr_arrays
 
-    # Select data needed for plotting
-    measurement = measurement.filter(
-        items=
-            ["array_size", "partition_size"] +
-            ["duration_{}".format(i) for i in range(count)])
+    figure, axes = plt.subplots(
+            figsize=(15, nr_plots * 5), nrows=nr_plots, ncols=1,
+            sharex=True, sharey=True
+        )
 
-    # Durations per array size x partition size
-    measurement = measurement.set_index(keys=["array_size", "partition_size"])
-    measurement = pd.DataFrame(
-        data=measurement.stack(),
-        columns=["duration"])
+    for array_idx in range(nr_arrays):
+        axis = axes[array_idx]
+        plot_duration(axis, array_idx, partition_sizes, partition_shapes)
+        axis.set_title("{}x{} ({size})".format(
+            *array_shapes[array_idx], size=array_sizes[array_idx]))
 
-    # Get rid of the column name (duration_i) index level
-    measurement.index = measurement.index.droplevel(2)
-
-    # Create a new index, moving array_size and partition_size index
-    # levels into columns
-    measurement = measurement.reset_index()
-
-    # Now we have:
-    # <index> | array_size | partition_size | duration |
-    # This is 'tidy' data: each column is a variable and each row an
-    # observation
-
-    nr_plots = measurement["array_size"].nunique()
-    grid = sns.FacetGrid(measurement,
-        col="array_size", col_wrap=int(math.floor(math.sqrt(nr_plots))),
-        height=5, aspect=3)
-    grid.map(sns.lineplot, "partition_size", "duration", color=actual_color)
-
-    # Annotation
-    # TODO: Get rid of array_size = .... Replace with '... x ... array' like
-    #       on the individual plots
-    grid.set_axis_labels(
-        u"partition size",
-        u"duration ({}) ± 95% ci (count={})".format(
-            time_point_units, count)
-    )
-
-    axes = grid.axes[0]
-
-    axes.yaxis.set_major_formatter(
-        ticker.FuncFormatter(
-            lambda y, pos: format_duration(y)))
-
-    # axes.set_xscale("square_root")
-    axes.set_xlabel(u"partition size")
-    axes.xaxis.set_major_formatter(
-        ticker.FuncFormatter(
-            lambda x, pos: format_partition_size(x)))
-    axes.grid()
-
-    grid.fig.suptitle(
+    figure.suptitle(
         "{}, {}, {}\n"
         "Partition shape scaling experiment"
             .format(
@@ -579,13 +538,7 @@ def post_process_raw_results(
             )
         )
 
-    plt.tight_layout()
     plt.savefig(plot_pathname)
-
-
-    # --------------------------------------------------------------------------
-    # Create surface plot
-    # TODO When really needed
 
 
 def post_process_results(
@@ -603,8 +556,13 @@ def post_process_results(
         experiment_settings_json, command_pathname)
 
     lue_dataset_pathname = import_raw_results(cluster, benchmark, experiment)
+    write_scaling_results(lue_dataset_pathname)
+
     create_dot_graph(
-        experiment.result_pathname(cluster.name, benchmark.scenario_name, "data", "lue"),
-        experiment.result_pathname(cluster.name, benchmark.scenario_name, "graph", "pdf"))
-    plot_pathname = experiment.result_pathname(cluster.name, benchmark.scenario_name, "plot", "pdf")
+        experiment.result_pathname(
+            cluster.name, benchmark.scenario_name, "data", "lue"),
+        experiment.result_pathname(
+            cluster.name, benchmark.scenario_name, "graph", "pdf"))
+    plot_pathname = experiment.result_pathname(
+            cluster.name, benchmark.scenario_name, "plot", "pdf")
     post_process_raw_results(lue_dataset_pathname, plot_pathname, experiment)
