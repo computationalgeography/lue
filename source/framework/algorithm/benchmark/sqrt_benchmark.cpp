@@ -1,3 +1,5 @@
+#include "algorithm_benchmark_result.hpp"
+#include "format.hpp"
 #include "lue/framework/core/component/partitioned_array.hpp"
 #include "lue/framework/algorithm/sqrt.hpp"
 #include "lue/framework/algorithm/uniform.hpp"
@@ -13,7 +15,7 @@ namespace detail {
 template<
     typename Element,
     std::size_t rank>
-void sqrt(
+AlgorithmBenchmarkResult sqrt(
     Task const& task,
     std::size_t const max_tree_depth)
 {
@@ -38,6 +40,8 @@ void sqrt(
     // → Create initial array
     Array state{shape, partition_shape};
     hpx::cout << describe(state) << hpx::endl;
+
+    AlgorithmBenchmarkResult result{state.partitions().shape()};
 
     assert(state.shape() == shape);
 
@@ -72,23 +76,29 @@ void sqrt(
     hpx::wait_all_n(state.begin(), state.nr_partitions());
 
     hpx::cout << hpx::endl;
+
+    return result;
 }
 
 }  // namespace detail
 
 
-void sqrt(
+AlgorithmBenchmarkResult sqrt(
     Task const& task,
     std::size_t const max_tree_depth)
 {
     using Element = double;
 
+    AlgorithmBenchmarkResult result;
+
     switch(task.rank()) {
         case 2: {
-            detail::sqrt<Element, 2>(task, max_tree_depth);
+            result = detail::sqrt<Element, 2>(task, max_tree_depth);
             break;
         }
     }
+
+    return result;
 }
 
 }  // namespace benchmark
@@ -113,10 +123,14 @@ auto setup_benchmark(
             ? *environment.max_tree_depth()
             : task.nr_time_steps();
 
-        lue::benchmark::sqrt(task, max_tree_depth);
+        return lue::benchmark::sqrt(task, max_tree_depth);
     };
 
-    return lue::benchmark::Benchmark{std::move(callable), environment, task};
+    using Callable = decltype(callable);
+    using Result = decltype(callable(environment, task));
+
+    return lue::benchmark::Benchmark<Callable, Result>{
+        std::move(callable), environment, task};
 }
 
 

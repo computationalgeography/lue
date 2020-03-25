@@ -130,6 +130,11 @@ inline std::string format_as_json(
 
     j["timings"] = a;
 
+    if constexpr(!std::is_void_v<ResultT<Benchmark>>)
+    {
+        j["results"] = benchmark.results();
+    }
+
     return j.dump(4);
 }
 
