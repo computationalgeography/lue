@@ -135,9 +135,16 @@ def benchmark_to_lue_json(
         epoch_offset + int((time_point - benchmark_epoch).total_seconds())
             for time_point in time_points]
     time_points = [time_points[0]]
+    count = len(time_points)
 
     property_description = "Amount of time a measurement took"
     durations = [timing["duration"] for timing in benchmark_json["timings"]]
+
+    shape_in_partitions = [result["shape_in_partitions"] \
+        for result in benchmark_json["results"]]
+    nr_partitions = [
+        np.prod(shape_in_partitions[i]) for i in range(len(shape_in_partitions))]
+    assert len(nr_partitions) == count
 
     # Object tracking: a benchmark contains property values (durations)
     # for a single object (piece of software being benchmarked). The ID of
@@ -148,7 +155,9 @@ def benchmark_to_lue_json(
     active_object_id = nr_active_sets * [5]
 
     array_shape = list(benchmark_json["task"]["array_shape"])
+    rank = len(array_shape)
     partition_shape = list(benchmark_json["task"]["partition_shape"])
+
 
     lue_json = {
         "dataset": {
@@ -184,7 +193,7 @@ def benchmark_to_lue_json(
                                     "value_variability": "variable",
                                     "shape_variability": "constant_shape",
                                     "datatype": "uint64",
-                                    "shape": [len(durations)],
+                                    "shape": [count],  # len(durations)],
                                     "value": durations
                                 },
                                 {
@@ -204,6 +213,15 @@ def benchmark_to_lue_json(
                                     "datatype": "uint64",
                                     "shape": [len(partition_shape)],
                                     "value": partition_shape
+                                },
+                                {
+                                    "name": "nr_partitions",
+                                    "shape_per_object": "same_shape",
+                                    "value_variability": "variable",
+                                    "shape_variability": "constant_shape",
+                                    "datatype": "uint64",
+                                    "shape": [count],
+                                    "value": nr_partitions
                                 },
                             ]
                         }
@@ -439,7 +457,7 @@ def post_process_raw_results(
     partition_shapes = lue_dataset.partition.partition.shape.value[:]
     partition_sizes = np.prod(partition_shapes, axis=1)
     assert len(partition_shapes) == len(partition_sizes)
-    nr_partitions = len(partition_shapes)
+    # nr_partitions = len(partition_shapes)
 
 
     def plot_duration(
@@ -494,6 +512,9 @@ def post_process_raw_results(
 
         plot_duration(axis, array_idx, partition_sizes, partition_shapes)
 
+        # TODO For current array shape, plot nr_partitions by partition shape
+        # plot_nr_partitions(axis, array_idx)
+
         figure.suptitle(
             "{}, {}, {}\n"
             "Partition shape scaling experiment on {} array"
@@ -521,6 +542,9 @@ def post_process_raw_results(
             figsize=(15, nr_plots * 5), nrows=nr_plots, ncols=1,
             sharex=True, sharey=True
         )
+
+    if nr_arrays == 1:
+        axes = [axes]
 
     for array_idx in range(nr_arrays):
         axis = axes[array_idx]

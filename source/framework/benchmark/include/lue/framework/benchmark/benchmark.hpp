@@ -6,6 +6,7 @@
 #include <iostream>
 #include <string>
 #include <thread>
+#include <type_traits>
 #include <vector>
 
 
@@ -50,6 +51,28 @@ HPXBenchmark
 */
 
 
+// template<
+//     typename Callable>
+// class CallableTraits
+// {
+// 
+// public:
+// 
+//     using ResultT = void;
+// 
+// //     using ResultT = decltype(
+// //         Callable{}(
+// //             Environment{0, 0, std::optional<std::size_t>{0}},
+// //             Task{0, Task::Shape{}, Task::Shape{}}));
+// 
+// };
+// 
+// 
+// template<
+//     typename Callable>
+// using ResultT = typename CallableTraits<Callable>::ResultT;
+
+
 /*!
     @brief      Class for managing a performance benchmark
 
@@ -60,7 +83,7 @@ HPXBenchmark
 */
 template<
     typename Callable>
-class Benchmark
+class BenchmarkBase
 {
 
 public:
@@ -69,180 +92,287 @@ public:
     using Timing = Stopwatch;
     using Timings = std::vector<Timing>;
 
-                   Benchmark           (Callable&& callable,
-                                        Environment const& environment,
-                                        Task const& task);
+    /*!
+        @brief      Construct an instance
 
-                   Benchmark           (Benchmark const&)=delete;
+        In case of weird errors, verify that the callable is moved in.
+    */
+    BenchmarkBase(
+        Callable&& callable,
+        Environment const& environment,
+        Task const& task):
 
-                   Benchmark           (Benchmark&&)=delete;
+        _callable{std::forward<Callable>(callable)},
+        _environment{environment},
+        _task{task},
+        _timing{},
+        _timings{}
 
-                   virtual ~Benchmark  ()=default;
+    {
+        // assert(!_array_shape.empty());
+        // assert(std::size(_array_shape) == std::size(_partition_shape));
+    }
 
-    Benchmark&     operator=           (Benchmark const&)=delete;
+    BenchmarkBase(BenchmarkBase const&)=delete;
 
-    Benchmark&     operator=           (Benchmark&&)=delete;
+    BenchmarkBase(BenchmarkBase&&)=delete;
 
-    Environment const& environment     () const;
+    virtual ~BenchmarkBase()=default;
 
-    Task const&    task                () const;
+    BenchmarkBase& operator=(BenchmarkBase const&)=delete;
 
-    virtual int    run                 ();
+    BenchmarkBase& operator=(BenchmarkBase&&)=delete;
 
-    Timing const&  timing              () const;
+    Environment const& environment() const
+    {
+        return _environment;
+    }
 
-    Timings const& timings             () const;
+    Task const& task() const
+    {
+        return _task;
+    }
+
+    Timing const& timing() const
+    {
+        return _timing;
+    }
+
+    /*!
+        @brief      Return the timings of each run
+    */
+    Timings const& timings() const
+    {
+        return _timings;
+    }
+
+    /*!
+        @brief      Run the benchmarks @a count times
+        @return     EXIT_SUCCESS or EXIT_FAILURE
+
+        You can call this function multiple times, but any previous results
+        will be overwritten in that case.
+
+        After calling this function, @a count timings will be available.
+    */
+    virtual int run()=0;
 
 protected:
 
-    Callable&      callable            ();
+    Callable& callable()
+    {
+        return _callable;
+    }
 
-    Timing&        timing              ();
+    Timing& timing()
+    {
+        return _timing;
+    }
 
-    Timings&       timings             ();
+    /*!
+        @brief      Return the timings of each run
+    */
+    Timings& timings()
+    {
+        return _timings;
+    }
 
 private:
 
     //! Callable representing the workload to time
-    Callable       _callable;
+    Callable _callable;
 
     //! Environment the benchmark runs in
     Environment const _environment;
 
-    Task const     _task;
+    Task const _task;
 
     //! Name of the benchmark
     std::string const _name;
 
-    Timing         _timing;
+    Timing _timing;
 
     //! Timings of the @a count benchmark runs
-    Timings        _timings;
+    Timings _timings;
 
 };
 
 
-/*!
-    @brief      Construct an instance
-
-    In case of weird errors, verify that the callable is moved in.
-*/
+// ----------------------------------------------------------------------------
 template<
-    typename Callable>
-inline Benchmark<Callable>::Benchmark(
-    Callable&& callable,
-    Environment const& environment,
-    Task const& task):
-
-    _callable{std::forward<Callable>(callable)},
-    _environment{environment},
-    _task{task},
-    _timing{},
-    _timings{}
-
+    typename Callable,
+    typename Result=void,
+    typename Enable=void>
+class Benchmark:
+    public BenchmarkBase<Callable>
 {
-    // assert(!_array_shape.empty());
-    // assert(std::size(_array_shape) == std::size(_partition_shape));
-}
+    // Use this when the callable does not return a result
 
+public:
 
-template<
-    typename Callable>
-Callable& Benchmark<Callable>::callable()
-{
-    return _callable;
-}
+    Benchmark(
+        Callable&& callable,
+        Environment const& environment,
+        Task const& task):
 
+        BenchmarkBase<Callable>(
+            std::forward<Callable>(callable), environment, task)
 
-template<
-    typename Callable>
-Environment const& Benchmark<Callable>::environment() const
-{
-    return _environment;
-}
-
-
-template<
-    typename Callable>
-Task const& Benchmark<Callable>::task() const
-{
-    return _task;
-}
-
-
-/*!
-    @brief      Run the benchmarks @a count times
-    @return     EXIT_SUCCESS or EXIT_FAILURE
-
-    You can call this function multiple times, but any previous results
-    will be overwritten in that case.
-
-    After calling this function, @a count timings will be available.
-*/
-template<
-    typename Callable>
-inline int Benchmark<Callable>::run()
-{
-    using namespace std::chrono_literals;
-
-    _timings.clear();
-    Stopwatch stopwatch;
-
-    _timing.start();
-    for(std::size_t i = 0; i < _environment.count(); ++i) {
-        std::this_thread::sleep_for(2s);
-        stopwatch.start();
-        _callable(_environment, _task);
-        stopwatch.stop();
-        _timings.push_back(stopwatch);
-
-        // if(i < _environment.count() - 1) {
-        //     std::this_thread::sleep_for(5s);
-        // }
+    {
     }
-    _timing.stop();
 
-    return EXIT_SUCCESS;
-}
+    Benchmark(Benchmark const&)=delete;
+
+    Benchmark(Benchmark&&)=delete;
+
+    ~Benchmark()=default;
+
+    Benchmark& operator=(Benchmark const&)=delete;
+
+    Benchmark& operator=(Benchmark&&)=delete;
+
+    /*!
+        @overload
+    */
+    int run() override
+    {
+        using namespace std::chrono_literals;
+
+        this->timings().clear();
+        Stopwatch stopwatch;
+
+        this->timing().start();
+
+        for(std::size_t i = 0; i < this->environment().count(); ++i) {
+            std::this_thread::sleep_for(2s);
+
+            stopwatch.start();
+
+            this->callable()(this->environment(), this->task());
+
+            stopwatch.stop();
+
+            this->timings().push_back(stopwatch);
+
+            // if(i < _environment.count() - 1) {
+            //     std::this_thread::sleep_for(5s);
+            // }
+        }
+
+        this->timing().stop();
+
+        return EXIT_SUCCESS;
+    }
+
+};
+
+
+// ----------------------------------------------------------------------------
+template<
+    typename Callable,
+    typename Result>
+class Benchmark<Callable, Result, std::enable_if_t<!std::is_void_v<Result>>>:
+    public BenchmarkBase<Callable>
+{
+public:
+
+    // Use this when the callable returns a result
+    using Results = std::vector<Result>;
+
+    Benchmark(
+        Callable&& callable,
+        Environment const& environment,
+        Task const& task):
+
+        BenchmarkBase<Callable>(
+            std::forward<Callable>(callable), environment, task)
+
+    {
+    }
+
+    Benchmark(Benchmark const&)=delete;
+
+    Benchmark(Benchmark&&)=delete;
+
+    ~Benchmark()=default;
+
+    Benchmark& operator=(Benchmark const&)=delete;
+
+    Benchmark& operator=(Benchmark&&)=delete;
+
+    Results const& results () const
+    {
+        return _results;
+    }
+
+    /*!
+        @overload
+
+        After calling this function, @a count results will be available.
+    */
+    int run() override
+    {
+        using namespace std::chrono_literals;
+
+        this->timings().clear();
+        _results.clear();
+        Stopwatch stopwatch;
+
+        this->timing().start();
+
+        for(std::size_t i = 0; i < this->environment().count(); ++i) {
+            std::this_thread::sleep_for(2s);
+
+            stopwatch.start();
+
+            Result result = this->callable()(this->environment(), this->task());
+
+            stopwatch.stop();
+
+            this->timings().push_back(stopwatch);
+            _results.push_back(std::move(result));
+        }
+
+        this->timing().stop();
+
+        return EXIT_SUCCESS;
+    }
+
+protected:
+
+    Results& results()
+    {
+        return _results;
+    }
+
+private:
+
+    Results _results;
+
+};
 
 
 template<
-    typename Callable>
-inline typename Benchmark<Callable>::Timing& Benchmark<Callable>::timing()
-{
-    return _timing;
-}
+    typename Type>
+class TypeTraits;
 
 
 template<
-    typename Callable>
-inline typename Benchmark<Callable>::Timing const&
-    Benchmark<Callable>::timing() const
+    typename Callable,
+    typename Result>
+class TypeTraits<Benchmark<Callable, Result>>
 {
-    return _timing;
-}
+
+public:
+
+    using ResultT = Result;
+
+};
 
 
-/*!
-    @brief      Return the timings of each run
-*/
 template<
-    typename Callable>
-inline typename Benchmark<Callable>::Timings& Benchmark<Callable>::timings()
-{
-    return _timings;
-}
-
-/*!
-    @brief      Return the timings of each run
-*/
-template<
-    typename Callable>
-inline typename Benchmark<Callable>::Timings const&
-    Benchmark<Callable>::timings() const
-{
-    return _timings;
-}
+    typename Type>
+using ResultT = typename TypeTraits<Type>::ResultT;
 
 }  // namespace benchmark
 }  // namespace lue
