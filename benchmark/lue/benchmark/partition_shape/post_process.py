@@ -539,7 +539,7 @@ def post_process_raw_results(
     nr_plots = nr_arrays
 
     figure, axes = plt.subplots(
-            figsize=(15, nr_plots * 5), nrows=nr_plots, ncols=1,
+            figsize=(15, nr_plots * 10), nrows=nr_plots, ncols=1,
             sharex=True, sharey=True
         )
 

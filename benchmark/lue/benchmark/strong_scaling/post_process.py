@@ -534,8 +534,8 @@ def post_process_raw_results(
         if count == 1:
             duration = lue_dataset.benchmark.measurement.duration.value[:]
             y_label = u"duration ({})".format(time_point_units)
-            axis.plot(
-                nr_workers, duration,
+            plot_actual = lambda data: axis.plot(
+                nr_workers, data,
                 linewidth=default_linewidth,
                 color=actual_color, marker="o")
         else:
@@ -543,8 +543,8 @@ def post_process_raw_results(
             error = lue_dataset.benchmark.scaling.std_duration.value[:]
             y_label= u"duration ({}) ± stddev (count={})".format(
                 time_point_units, count)
-            axis.errorbar(
-                x=nr_workers, y=duration, yerr=error,
+            plot_actual = lambda data: axis.errorbar(
+                x=nr_workers, y=data, yerr=error,
                 linewidth=default_linewidth,
                 color=actual_color, marker="o")
 
@@ -560,6 +560,8 @@ def post_process_raw_results(
             nr_workers, linear_duration, linewidth=default_linewidth,
             color=linear_color)
 
+        plot_actual(duration)
+
         annotate_plot(axis, y_label)
 
 
@@ -568,9 +570,9 @@ def post_process_raw_results(
 
         if count == 1:
             relative_speed_up = \
-                lue_dataset.benchmark.measurement.relative_speed_up.value[:]
-            axis.plot(
-                nr_workers, relative_speed_up,
+                lue_dataset.benchmark.scaling.relative_speed_up.value[:]
+            plot_actual = lambda data: axis.plot(
+                nr_workers, data,
                 linewidth=default_linewidth,
                 color=actual_color, marker="o")
         else:
@@ -578,8 +580,8 @@ def post_process_raw_results(
                 lue_dataset.benchmark.scaling.mean_relative_speed_up.value[:]
             error = \
                 lue_dataset.benchmark.scaling.std_relative_speed_up.value[:]
-            axis.errorbar(
-                x=nr_workers, y=relative_speed_up, yerr=error,
+            plot_actual = lambda data: axis.errorbar(
+                x=nr_workers, y=data, yerr=error,
                 linewidth=default_linewidth,
                 color=actual_color, marker="o")
 
@@ -595,6 +597,8 @@ def post_process_raw_results(
             nr_workers, linear_relative_speed_up, linewidth=default_linewidth,
             color=linear_color)
 
+        plot_actual(relative_speed_up)
+
         y_label= u"relative speed_up (-)"
 
         annotate_plot(axis, y_label)
@@ -605,17 +609,17 @@ def post_process_raw_results(
 
         if count == 1:
             relative_efficiency = \
-                lue_dataset.benchmark.measurement.relative_efficiency.value[:]
-            axis.plot(
-                nr_workers, relative_efficiency, linewidth=default_linewidth,
+                lue_dataset.benchmark.scaling.relative_efficiency.value[:]
+            plot_actual = lambda data: axis.plot(
+                nr_workers, data, linewidth=default_linewidth,
                 color=actual_color, marker="o")
         else:
             relative_efficiency = \
                 lue_dataset.benchmark.scaling.mean_relative_efficiency.value[:]
             error = \
                 lue_dataset.benchmark.scaling.std_relative_efficiency.value[:]
-            axis.errorbar(
-                x=nr_workers, y=relative_efficiency, yerr=error,
+            plot_actual = lambda data: axis.errorbar(
+                x=nr_workers, y=data, yerr=error,
                 linewidth=default_linewidth,
                 color=actual_color, marker="o")
 
@@ -630,6 +634,8 @@ def post_process_raw_results(
             nr_workers, linear_relative_efficiency, linewidth=default_linewidth,
             color=linear_color)
 
+        plot_actual(relative_efficiency)
+
         y_label= u"relative efficiency (%)"
 
         annotate_plot(axis, y_label)
@@ -640,17 +646,17 @@ def post_process_raw_results(
 
         if count == 1:
             lups = \
-                lue_dataset.benchmark.measurement.lups.value[:]
-            axis.plot(
-                nr_workers, lups, linewidth=default_linewidth,
+                lue_dataset.benchmark.scaling.lups.value[:]
+            plot_actual = lambda data: axis.plot(
+                nr_workers, data, linewidth=default_linewidth,
                 color=actual_color, marker="o")
         else:
             lups = \
                 lue_dataset.benchmark.scaling.mean_lups.value[:]
             error = \
                 lue_dataset.benchmark.scaling.std_lups.value[:]
-            axis.errorbar(
-                x=nr_workers, y=lups, yerr=error,
+            plot_actual = lambda data: axis.errorbar(
+                x=nr_workers, y=data, yerr=error,
                 linewidth=default_linewidth,
                 color=actual_color, marker="o")
 
@@ -664,6 +670,8 @@ def post_process_raw_results(
         axis.plot(
             nr_workers, linear_lups, linewidth=default_linewidth,
             color=linear_color)
+
+        plot_actual(lups)
 
         y_label= u"LUPS"
 
