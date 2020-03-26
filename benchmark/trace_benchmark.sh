@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
 set -e
 
-benchmark_name="lue_algorithm_iterate_per_element_benchmark"
 benchmark_name="lue_algorithm_sqrt_benchmark"
 benchmark_name="lue_algorithm_multiply_benchmark"
+benchmark_name="lue_algorithm_iterate_per_element_benchmark"
 benchmark_name="lue_algorithm_focal_mean_benchmark"
 trace_prefix=$LUE_OBJECTS/trace/$benchmark_name-$(date +%Y%m%d_%H%M)
 
 nr_threads=4
 count=1
 nr_time_steps=50
-# max_tree_depth=5
+max_tree_depth=50
 array_size=10000
-partition_size=800  # 338  # 800
+partition_size=700  # 300  # 346  # 800
 cluster_name=gransasso
 
 # Make sure SLURM and APEX can create the output files
@@ -38,8 +38,8 @@ $LUE_OBJECTS/bin/$benchmark_name \
     --hpx:ini="application.${benchmark_name}.benchmark.output!=$trace_prefix/run.json" \
     --hpx:ini="application.${benchmark_name}.nr_time_steps!=$nr_time_steps" \
     --hpx:ini="application.${benchmark_name}.array_shape!=[$array_size, $array_size]" \
-    --hpx:ini="application.${benchmark_name}.partition_shape!=[$partition_size, $partition_size]"
-#   --hpx:ini="application.${benchmark_name}.max_tree_depth!=$max_tree_depth"
+    --hpx:ini="application.${benchmark_name}.partition_shape!=[$partition_size, $partition_size]" \
+    --hpx:ini="application.${benchmark_name}.max_tree_depth!=$max_tree_depth"
 
 
 
