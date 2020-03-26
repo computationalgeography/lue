@@ -1,6 +1,8 @@
 {
     "scenario": "thread_cluster_node",
     "count": 1,
+    # "count": 5,
+    # "max_tree_depth": 5,
     "locality_per": "cluster_node",
     "worker": {
         "type": "thread",
@@ -18,213 +20,13 @@
             },
             {
                 "print-counter": [
-#                     "/threads{locality#*/pool#*/worker-thread#*}/idle-rate",
-#                     "/threads/time/average",
-
-#                     "/threads/time/average",
-#                     "/threads/time/average-overhead",
-#                     "/threads/time/average-phase",
-#                     "/threads/time/average-phase-overhead",
-#                     "/threads{locality#*/pool#*/worker-thread#*}/time/cumulative",
-#                     "/threads{locality#*/pool#*/worker-thread#*}/time/cumulative-overhead",
-#                     "/threads{locality#*/pool#*/worker-thread#*}/time/overall",
-# 
-#                     "/threads{locality#*/pool#*/worker-thread#*}/count/instantaneous/active",
-#                     # "/threads{locality#*/pool#*/worker-thread#*}/count/instantaneous/all",
-#                     "/threads{locality#*/pool#*/worker-thread#*}/count/instantaneous/pending",
-#                     "/threads{locality#*/pool#*/worker-thread#*}/count/instantaneous/staged",
-#                     "/threads{locality#*/pool#*/worker-thread#*}/count/instantaneous/suspended",
-#                     "/threads{locality#*/pool#*/worker-thread#*}/count/instantaneous/terminated"
                 ]
             },
             {
                 "print-counter-reset": [
                     "/threads{locality#*/pool#*/worker-thread#*}/idle-rate"
-#                     "/threadqueue{locality#*/pool#*/worker-thread#*}/length"
                 ]
             }
         ]
     }
 }
-
-#   /agas/count/decrement_credit
-#   /agas/count/free
-#   /agas/count/get_component_typename
-#   /agas/count/increment_credit
-#   /agas/count/iterate_names
-#   /agas/count/iterate_types
-#   /agas/count/localities
-#   /agas/count/num_localities
-#   /agas/count/num_localities_type
-#   /agas/count/num_threads
-#   /agas/count/on_symbol_namespace_event
-#   /agas/count/resolve
-#   /agas/count/resolve_gid
-#   /agas/count/resolve_id
-#   /agas/count/resolve_locality
-#   /agas/count/route
-#   /agas/count/unbind
-#   /agas/count/unbind_gid
-#   /agas/count/unbind_name
-
-#   /agas/locality/time
-#   /agas/primary/count
-#   /agas/primary/time
-
-#   /agas/symbol/time
-
-#   /agas/time/allocate
-#   /agas/time/begin_migration
-#   /agas/time/bind
-#   /agas/time/bind_gid
-#   /agas/time/bind_name
-#   /agas/time/bind_prefix
-#   /agas/time/cache/erase_entry
-#   /agas/time/cache/get_entry
-#   /agas/time/cache/insert_entry
-#   /agas/time/cache/update_entry
-#   /agas/time/decrement_credit
-#   /agas/time/end_migration
-#   /agas/time/free
-#   /agas/time/get_component_typename
-#   /agas/time/increment_credit
-#   /agas/time/iterate_names
-#   /agas/time/iterate_types
-#   /agas/time/localities
-#   /agas/time/num_localities
-#   /agas/time/num_localities_type
-#   /agas/time/num_threads
-#   /agas/time/on_symbol_namespace_event
-#   /agas/time/resolve
-#   /agas/time/resolve_gid
-#   /agas/time/resolve_id
-#   /agas/time/resolve_locality
-#   /agas/time/route
-#   /agas/time/unbind
-#   /agas/time/unbind_gid
-#   /agas/time/unbind_name
-
-#   /arithmetics/add
-#   /arithmetics/count
-#   /arithmetics/divide
-#   /arithmetics/max
-#   /arithmetics/mean
-#   /arithmetics/median
-#   /arithmetics/min
-#   /arithmetics/multiply
-#   /arithmetics/subtract
-#   /arithmetics/variance
-
-#   /parcelqueue/length/receive
-#   /parcelqueue/length/send
-
-#   /parcels/count/routed
-
-#   /runtime/count/action-invocation
-#   /runtime/count/component
-#   /runtime/count/remote-action-invocation
-#   /runtime/uptime
-
-#   /scheduler/utilization/instantaneous
-
-#   /statistics/average
-#   /statistics/max
-#   /statistics/median
-#   /statistics/min
-#   /statistics/rolling_average
-#   /statistics/rolling_max
-#   /statistics/rolling_min
-#   /statistics/rolling_stddev
-#   /statistics/stddev
-
-
-        # "performance_counters": [
-        #     {
-        #         "print-counter-interval": 1000
-        #     },
-        #     {
-        #         "print-counter": [
-
-        #             "/agas/count/cache/entries",
-
-        #             "/agas/count/cache/evictions",
-        #             "/agas/count/cache/hits",
-        #             "/agas/count/cache/insertions",
-        #             "/agas/count/cache/misses",
-
-        #             "/agas/count/cache/get_entry",
-        #             "/agas/count/cache/insert_entry",
-        #             "/agas/count/cache/update_entry",
-        #             "/agas/count/cache/erase_entry",
-
-        #             "/agas/time/cache/get_entry",
-        #             "/agas/time/cache/insert_entry",
-        #             "/agas/time/cache/update_entry",
-        #             "/agas/time/cache/erase_entry",
-
-        #             "/threads/idle-rate",
-
-        #             "/threads/time/average",
-        #             "/threads/time/average-overhead",
-        #             "/threads/time/average-phase",
-        #             "/threads/time/average-phase-overhead",
-        #             "/threads{locality#*/pool#*/worker-thread#*}/time/cumulative",
-        #             "/threads{locality#*/pool#*/worker-thread#*}/time/cumulative-overhead",
-        #             "/threads{locality#*/pool#*/worker-thread#*}/time/overall"
-        #         ]
-        #     },
-        #     {
-        #         "print-counter-reset": [
-        #             "/agas/count/route",
-        #             "/agas/count/bind_gid",
-        #             "/agas/count/resolve_gid",
-        #             "/agas/count/unbind_gid",
-        #             "/agas/count/increment_credit",
-        #             "/agas/count/decrement_credit",
-        #             "/agas/count/allocate",
-        #             "/agas/count/begin_migration",
-        #             "/agas/count/end_migration",
-
-        #             "/agas/count/bind_prefix",
-        #             "/agas/count/bind_name",
-        #             "/agas/count/resolve_id",
-        #             "/agas/count/unbind_name",
-        #             "/agas/count/iterate_types",
-        #             "/agas/count/get_component_typename",
-        #             "/agas/count/num_localities_type",
-
-        #             "/agas/count/free",
-        #             "/agas/count/localities",
-        #             "/agas/count/num_localities",
-        #             "/agas/count/num_threads",
-        #             "/agas/count/resolve_locality",
-        #             # "/agas/count/resolved_localities",
-
-        #             "/agas/count/bind",
-        #             "/agas/count/resolve",
-        #             "/agas/count/unbind",
-        #             "/agas/count/iterate_names",
-        #             "/agas/count/on_symbol_namespace_event",
-
-        #             "/agas/component/count",
-        #             "/agas/locality/count",
-        #             "/agas/symbol/count",
-
-        #             "/threads/busy-loop-count/instantaneous",
-        #             "/threads{locality#*/pool#*/worker-thread#*}/count/cumulative",
-        #             "/threads{locality#*/pool#*/worker-thread#*}/count/cumulative-phases",
-
-        #             "/threads{locality#*/pool#*/worker-thread#*}/count/instantaneous/active",
-        #             "/threads{locality#*/pool#*/worker-thread#*}/count/instantaneous/all",
-        #             "/threads{locality#*/pool#*/worker-thread#*}/count/instantaneous/pending",
-        #             "/threads{locality#*/pool#*/worker-thread#*}/count/instantaneous/staged",
-        #             "/threads{locality#*/pool#*/worker-thread#*}/count/instantaneous/suspended",
-        #             "/threads{locality#*/pool#*/worker-thread#*}/count/instantaneous/terminated"
-
-        #             # "/threads/count/objects",
-        #             # "/threads/count/stack-recycles",
-        #             # "/threads/count/stack-unbinds",
-        #             # "/threads/idle-loop-count/instantaneous",
-
-        #             # "/threadqueue/length"
-        #         ]
