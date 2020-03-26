@@ -94,8 +94,8 @@ template<
     typename OutputElement>
 PartitionT<InputPartition, OutputElement> uniform_partition(
     InputPartition const& input_partition,
-    OutputElement const min_value,
-    OutputElement const max_value)
+    hpx::shared_future<OutputElement> const min_value,
+    hpx::shared_future<OutputElement> const max_value)
 {
     assert(
         hpx::get_colocation_id(input_partition.get_id()).get() ==
@@ -107,8 +107,10 @@ PartitionT<InputPartition, OutputElement> uniform_partition(
     return hpx::dataflow(
         hpx::launch::async,
 
-        [min_value, max_value](
-            InputPartition const& input_partition)
+        [](
+            InputPartition const& input_partition,
+            hpx::shared_future<OutputElement> const& min_value,
+            hpx::shared_future<OutputElement> const& max_value)
         {
             auto const input_partition_server_ptr{
                 hpx::get_ptr(input_partition).get()};
@@ -124,16 +126,18 @@ PartitionT<InputPartition, OutputElement> uniform_partition(
             // Standard mersenne_twister_engine seeded with the random_device
             std::mt19937 random_number_engine(random_device());
 
-            auto distribution = [min_value, max_value]() {
-                if constexpr(std::is_floating_point_v<OutputElement>) {
-                    return std::uniform_real_distribution<OutputElement>{
-                        min_value, max_value};
-                }
-                else if constexpr(std::is_integral_v<OutputElement>) {
-                    return std::uniform_int_distribution<OutputElement>{
-                        min_value, max_value};
-                }
-            }();
+            auto distribution =
+                [min_value=min_value.get(), max_value=max_value.get()]()
+                {
+                    if constexpr(std::is_floating_point_v<OutputElement>) {
+                        return std::uniform_real_distribution<OutputElement>{
+                            min_value, max_value};
+                    }
+                    else if constexpr(std::is_integral_v<OutputElement>) {
+                        return std::uniform_int_distribution<OutputElement>{
+                            min_value, max_value};
+                    }
+                }();
 
             OutputData output_partition_data{partition_shape};
 
@@ -154,7 +158,9 @@ PartitionT<InputPartition, OutputElement> uniform_partition(
 
         },
 
-        input_partition);
+        input_partition,
+        min_value,
+        max_value);
 }
 
 
@@ -258,6 +264,8 @@ PartitionedArray<OutputElement, rank> uniform(
     hpx::shared_future<OutputElement> const& min_value,
     hpx::shared_future<OutputElement> const& max_value)
 {
+    // Reimplement as ternary local operation?
+
     // The result array will have the same shape, partitioning and
     // location as the input array, but the elements might be of a different
     // type.
@@ -272,27 +280,44 @@ PartitionedArray<OutputElement, rank> uniform(
         InputPartition, OutputElement> action;
     OutputPartitions output_partitions{shape_in_partitions(input_array)};
 
-    for(Index p = 0; p < nr_partitions(input_array); ++p)
+    if(hpx::get_initial_num_localities() == 1)
     {
-        InputPartition const& input_partition{input_array.partitions()[p]};
+        // All partitions are here
+        hpx::id_type const here{hpx::find_here()};
 
-        output_partitions[p] = hpx::dataflow(
-            hpx::launch::async,
-            hpx::util::unwrapping(
+        for(Index p = 0; p < nr_partitions(input_array); ++p)
+        {
+            InputPartition const& input_partition{
+                input_array.partitions()[p]};
 
-                    [action, input_partition](
-                        OutputElement const min_value,
-                        OutputElement const max_value,
-                        hpx::id_type const locality_id)
-                    {
-                        return action(
-                            locality_id, input_partition, min_value, max_value);
-                    }
+            // The action must wait for the partition to become ready,
+            // since we don't do that here
+            output_partitions[p] =
+                action(here, input_partition, min_value, max_value);
+        }
+    }
+    else
+    {
+        for(Index p = 0; p < nr_partitions(input_array); ++p) {
 
-                ),
-            min_value,
-            max_value,
-            hpx::get_colocation_id(input_partition.get_id()));
+            InputPartition const& input_partition{
+                input_array.partitions()[p]};
+
+            output_partitions[p] = hpx::dataflow(
+                hpx::launch::async,
+                hpx::util::unwrapping(
+
+                        [action, input_partition, min_value, max_value](
+                            hpx::id_type const locality_id)
+                        {
+                            return action(
+                                locality_id,
+                                input_partition, min_value, max_value);
+                        }
+
+                    ),
+                hpx::get_colocation_id(input_partition.get_id()));
+        }
     }
 
     return OutputArray{shape(input_array), std::move(output_partitions)};

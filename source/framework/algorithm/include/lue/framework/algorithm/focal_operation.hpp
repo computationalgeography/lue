@@ -1122,6 +1122,40 @@ auto spawn_focal_operation_partition(
     Functor const& functor,
     Partitions const& partitions)
 {
+    using OutputPartition = PartitionT<Partitions, OutputElementT<Functor>>;
+
+    OutputPartition output_partition;
+
+    if(hpx::get_initial_num_localities() == 1)
+    {
+        // All partitions are here
+        hpx::id_type const here{hpx::find_here()};
+
+        // The action must wait for the partition to become ready,
+        // since we don't do that here
+        output_partition = action(here, partitions, kernel, functor);
+    }
+    else
+    {
+        // Partitions are scattered over localities. Scatter tasks as well.
+        output_partition = hpx::dataflow(
+            hpx::launch::async,
+            hpx::util::unwrapping(
+
+                    [action, kernel, functor, partitions](
+                        hpx::id_type const locality_id)
+                    {
+                        return action(
+                            locality_id, partitions, kernel, functor);
+                    }
+
+                ),
+            hpx::get_colocation_id(partitions(1, 1).get_id()));
+    }
+
+    return output_partition;
+
+
     // FIXME Why doesn't this work??? Error in offset of returned partition
     // // Spawn action on locality where the center partition is located on
     // return hpx::dataflow(
@@ -1137,26 +1171,27 @@ auto spawn_focal_operation_partition(
     //         ),
     //     hpx::get_colocation_id(partitions(1, 1).get_id()));
 
-    using Shape = ShapeT<Partitions>;
 
-    // Once all 9 partitions are ready, call the remote action
-    return hpx::dataflow(
-        hpx::launch::async,
-        hpx::util::unwrapping(
+    // using Shape = ShapeT<Partitions>;
 
-            [action, kernel, functor](
-                auto&& partitions_,
-                hpx::id_type const locality_id)
-            {
-                Partitions partitions{
-                    Shape{{3, 3}}, partitions_.begin(), partitions_.end()};
+    // // Once all 9 partitions are ready, call the remote action
+    // return hpx::dataflow(
+    //     hpx::launch::async,
+    //     hpx::util::unwrapping(
 
-                return action(locality_id, partitions, kernel, functor);
-            }
+    //         [action, kernel, functor](
+    //             auto&& partitions_,
+    //             hpx::id_type const locality_id)
+    //         {
+    //             Partitions partitions{
+    //                 Shape{{3, 3}}, partitions_.begin(), partitions_.end()};
 
-        ),
-        hpx::when_all_n(partitions.begin(), partitions.nr_elements()),
-        hpx::get_colocation_id(partitions(1, 1).get_id()));
+    //             return action(locality_id, partitions, kernel, functor);
+    //         }
+
+    //     ),
+    //     hpx::when_all_n(partitions.begin(), partitions.nr_elements()),
+    //     hpx::get_colocation_id(partitions(1, 1).get_id()));
 }
 
 

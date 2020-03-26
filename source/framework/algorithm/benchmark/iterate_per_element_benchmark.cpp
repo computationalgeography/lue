@@ -1,4 +1,5 @@
-#include "lue/framework/core/component/partitioned_array.hpp"
+#include "algorithm_benchmark_result.hpp"
+#include "format.hpp"
 #include "lue/framework/algorithm/copy.hpp"
 #include "lue/framework/algorithm/fill.hpp"
 #include "lue/framework/algorithm/iterate_per_element.hpp"
@@ -16,7 +17,7 @@ namespace detail {
 template<
     typename Element,
     std::size_t rank>
-void iterate_per_element(
+AlgorithmBenchmarkResult iterate_per_element(
     Task const& task,
     std::size_t const max_tree_depth)
 {
@@ -39,13 +40,14 @@ void iterate_per_element(
     Array state{shape, partition_shape};
     hpx::cout << describe(state) << hpx::endl;
 
+    AlgorithmBenchmarkResult result{state.partitions().shape()};
+
     assert(state.shape() == shape);
 
     // Fill array with random numbers
     // hpx::shared_future<Element> min_nr_iterations =
     //     hpx::make_ready_future<Element>(20);
-    hpx::shared_future<Element> max_nr_iterations =
-        hpx::make_ready_future<Element>(50);
+    Element const max_nr_iterations{50};
 
     // uniform(min_nr_iterations, max_nr_iterations, state).wait();
 
@@ -80,12 +82,14 @@ void iterate_per_element(
     hpx::wait_all_n(state.begin(), state.nr_partitions());
 
     hpx::cout << hpx::endl;
+
+    return result;
 }
 
 }  // namespace detail
 
 
-void iterate_per_element(
+AlgorithmBenchmarkResult iterate_per_element(
     Task const& task,
     std::size_t const max_tree_depth)
 {
@@ -94,16 +98,21 @@ void iterate_per_element(
 
     using Element = std::int32_t;
 
+    AlgorithmBenchmarkResult result;
+
     switch(task.rank()) {
         case 2: {
             // hpx::async(
             //     high_priority_executor,
             //     &detail::iterate_per_element<Element, 2>,
             //     task, max_tree_depth).wait();
-            detail::iterate_per_element<Element, 2>(task, max_tree_depth);
+            result = detail::iterate_per_element<Element, 2>(
+                task, max_tree_depth);
             break;
         }
     }
+
+    return result;
 }
 
 }  // namespace benchmark
@@ -122,16 +131,18 @@ auto setup_benchmark(
     // Function to benchmark
     auto callable = [](
         lue::benchmark::Environment const& environment,
-        lue::benchmark::Task const& task)
+        lue::benchmark::Task const& task) -> lue::AlgorithmBenchmarkResult
     {
         std::size_t const max_tree_depth = environment.max_tree_depth()
             ? *environment.max_tree_depth()
             : task.nr_time_steps();
 
-        lue::benchmark::iterate_per_element(task, max_tree_depth);
+        return lue::benchmark::iterate_per_element(task, max_tree_depth);
     };
 
-    return lue::benchmark::Benchmark{std::move(callable), environment, task};
+    return lue::benchmark::Benchmark<
+            decltype(callable), lue::AlgorithmBenchmarkResult>{
+        std::move(callable), environment, task};
 }
 
 

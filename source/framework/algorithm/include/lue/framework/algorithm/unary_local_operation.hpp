@@ -35,6 +35,7 @@ OutputPartition unary_local_operation_partition(
         [functor](
             InputPartition const& input_partition)
         {
+
             auto const input_partition_server_ptr{
                 hpx::get_ptr(input_partition).get()};
             auto const& input_partition_server{*input_partition_server_ptr};
@@ -50,6 +51,7 @@ OutputPartition unary_local_operation_partition(
 
             return OutputPartition{
                 hpx::find_here(), offset, std::move(output_partition_data)};
+
         },
 
         input_partition);
@@ -93,23 +95,41 @@ PartitionedArray<OutputElementT<Functor>, rank> unary_local_operation(
         InputPartition, OutputPartition, Functor> action;
     OutputPartitions output_partitions{shape_in_partitions(input_array)};
 
-    for(Index p = 0; p < nr_partitions(input_array); ++p) {
+    if(hpx::get_initial_num_localities() == 1)
+    {
+        // All partitions are here
+        hpx::id_type const here{hpx::find_here()};
 
-        InputPartition const& input_partition{input_array.partitions()[p]};
+        for(Index p = 0; p < nr_partitions(input_array); ++p)
+        {
+            InputPartition const& input_partition{input_array.partitions()[p]};
 
-        output_partitions[p] = hpx::dataflow(
-            hpx::launch::async,
-            hpx::util::unwrapping(
+            // The action must wait for the partition to become ready,
+            // since we don't do that here
+            output_partitions[p] = action(here, input_partition, functor);
+        }
+    }
+    else
+    {
+        // Partitions are scattered over localities. Scatter tasks as well.
+        for(Index p = 0; p < nr_partitions(input_array); ++p)
+        {
+            InputPartition const& input_partition{input_array.partitions()[p]};
 
-                    [action, functor, input_partition](
-                        hpx::id_type const locality_id)
-                    {
-                        return action(locality_id, input_partition, functor);
-                    }
+            output_partitions[p] = hpx::dataflow(
+                hpx::launch::async,
+                hpx::util::unwrapping(
 
-                ),
-            hpx::get_colocation_id(input_partition.get_id()));
+                        [action, functor, input_partition](
+                            hpx::id_type const locality_id)
+                        {
+                            return action(
+                                locality_id, input_partition, functor);
+                        }
 
+                    ),
+                hpx::get_colocation_id(input_partition.get_id()));
+        }
     }
 
     return OutputArray{shape(input_array), std::move(output_partitions)};

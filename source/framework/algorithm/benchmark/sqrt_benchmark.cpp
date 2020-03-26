@@ -1,6 +1,5 @@
 #include "algorithm_benchmark_result.hpp"
 #include "format.hpp"
-#include "lue/framework/core/component/partitioned_array.hpp"
 #include "lue/framework/algorithm/sqrt.hpp"
 #include "lue/framework/algorithm/uniform.hpp"
 #include "lue/framework/benchmark/benchmark.hpp"
@@ -19,9 +18,6 @@ AlgorithmBenchmarkResult sqrt(
     Task const& task,
     std::size_t const max_tree_depth)
 {
-    // hpx::util::annotate_function annotation("sqrt_benchmark");
-    // hpx::this_thread::yield();
-
     assert(max_tree_depth > 0);
 
     using Array = PartitionedArray<Element, rank>;
@@ -117,7 +113,7 @@ auto setup_benchmark(
     // Function to benchmark
     auto callable = [](
         lue::benchmark::Environment const& environment,
-        lue::benchmark::Task const& task)
+        lue::benchmark::Task const& task) -> lue::AlgorithmBenchmarkResult
     {
         std::size_t const max_tree_depth = environment.max_tree_depth()
             ? *environment.max_tree_depth()
@@ -126,10 +122,8 @@ auto setup_benchmark(
         return lue::benchmark::sqrt(task, max_tree_depth);
     };
 
-    using Callable = decltype(callable);
-    using Result = decltype(callable(environment, task));
-
-    return lue::benchmark::Benchmark<Callable, Result>{
+    return lue::benchmark::Benchmark<
+            decltype(callable), lue::AlgorithmBenchmarkResult>{
         std::move(callable), environment, task};
 }
 
