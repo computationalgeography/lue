@@ -7,7 +7,8 @@
         "shape": [100, 100],
         "range": {
             "max_nr_elements": 200000,
-            "multiplier": 1.5,
+            "multiplier": 2.0,
+            # "multiplier": 1.5,
             "method": "linear"
         }
     }

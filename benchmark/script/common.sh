@@ -12,7 +12,7 @@ fi
 configuration=$LUE/benchmark/configuration
 cluster=$configuration/$cluster_name
 benchmark=$cluster/$benchmark_kind
-benchmark_exe=$LUE_OBJECTS/bin/lue_${benchmark_name}_benchmark
+benchmark_exe=$LUE_OBJECTS/bin/${benchmark_name}
 
 cluster_settings=$cluster/cluster.json
 

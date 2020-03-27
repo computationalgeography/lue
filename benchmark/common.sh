@@ -17,6 +17,12 @@ function perform_experiment()
         hostname="eejit"
     fi
 
+    output_directory=${hostname}/${benchmark_name}/${scenario_name}/${experiment_kind}
+
+    if [ -d $output_directory ]; then
+        mv $output_directory "$output_directory-`stat -c %y ${output_directory}`"
+    fi
+
     $LUE/benchmark/script/$experiment_kind/$benchmark_name.sh \
         generate_script $scenario_name
     bash ./$hostname-$experiment_kind-$benchmark_name-$scenario_name.sh
