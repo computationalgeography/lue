@@ -1,8 +1,8 @@
 add_executable(lue_view
-    src/dataset_to_visualize
+    src/application
+    src/configuration
+    src/dataset
     src/main
-    src/view
-    src/view_configuration
 )
 
 target_compile_options(lue_view
@@ -11,10 +11,16 @@ target_compile_options(lue_view
         $<$<CXX_COMPILER_ID:GNU>:-Wno-format-security>
 )
 
+target_include_directories(lue_view
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+)
+
 target_link_libraries(lue_view
     PRIVATE
         lue::imgui
         lue::utility
+        lue::shared
 )
 
 install(

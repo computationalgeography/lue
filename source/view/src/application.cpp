@@ -1,11 +1,40 @@
-#include "view.hpp"
-#include "view_configuration.hpp"
-#include "dataset_to_visualize.hpp"
+#include "lue/view/application.hpp"
+#include "lue/view/configuration.hpp"
+#include "lue/view/dataset.hpp"
 #include "lue/configure.hpp"
 #include "lue/gui.hpp"
 // #include "lue/utility/environment.hpp"
 #include <fmt/format.h>
 #include <iostream>
+
+
+// void ImGui::PlotHistogram(
+//     const char* label,
+//     const float* values,
+//     int values_count,
+//     int values_offset,
+//     const char* overlay_text,
+//     float scale_min,
+//     float scale_max,
+//     ImVec2 graph_size,
+//     int stride)
+
+// void ImGui::PlotHistogram(
+//     const char* label,
+//     float (*values_getter)(void* data, int idx),
+//     void* data,
+//     int values_count,
+//     int values_offset,
+//     const char* overlay_text,
+//     float scale_min,
+//     float scale_max,
+//     ImVec2 graph_size)
+
+// ImGui::PlotHistogram("My title", array, nr_elements, 0, NULL, 0.0f, 1.0f, ImVec2(0,80));
+//
+// - Read values as floats (progress bar)
+// - Determine min/max/mean/std. Show in table.
+// - Optionally show histogram
 
 
 namespace {
@@ -174,7 +203,7 @@ static const std::string label{PropertiesTraits<Properties>::label};
 }  // namespace data_model
 
 
-namespace utility {
+namespace view {
 namespace {
 
 // Helper to display a little (?) mark which shows a tooltip when hovered.
@@ -231,7 +260,7 @@ std::string shape_as_string(
 
 
 // Or just use a optional<lue::Dataset> ?
-using DatasetsToVisualize = std::vector<DatasetToVisualize>;
+using Datasets = std::vector<Dataset>;
 
 
 void show_about_window(
@@ -257,7 +286,7 @@ void show_about_window(
 
 
 void show_main_menu_bar(
-    ViewConfiguration& configuration)
+    Configuration& configuration)
 {
     static bool show_about = false;
 #ifndef NDEBUG
@@ -407,6 +436,21 @@ void show_value<data_model::same_shape::Value>(
     help_marker(array_shape_doc);
 
     show_array(dynamic_cast<data_model::Array const&>(value), show_details);
+
+    if constexpr(build_options.build_framework)
+    {
+        // Visualize values. Options:
+        // - If 0D values:
+        //     - Table with value per object. Limit the size of the table.
+        //     - If numeric values:
+        //         - Table with summary statistics
+        //         - Histogram with distribution of values
+        //
+        // Tabs with visualizations?
+        // When reading values, cache them as long as the dataset is not
+        // updated. Invalidate cache once the dataset is updated.
+    }
+
 }
 
 
@@ -1001,7 +1045,7 @@ void show_universes(
 
 
 void show_dataset(
-    DatasetToVisualize& dataset,
+    Dataset& dataset,
     bool const show_details)
 {
     auto const& source{dataset.dataset()};
@@ -1058,7 +1102,7 @@ void show_dataset(
 
 
 void show_datasets(
-    DatasetsToVisualize& datasets,
+    Datasets& datasets,
     bool const show_details)
 {
     // Window for presenting information about the loaded datasets
@@ -1088,10 +1132,10 @@ void show_datasets(
 }  // Anonymous namespace
 
 
-View::View(
+Application::Application(
     std::vector<std::string> const& arguments)
 
-    : Application(usage, arguments)
+    : utility::Application{usage, arguments}
 
 {
     // Turn off error stack traversal. The default functions prints
@@ -1100,7 +1144,7 @@ View::View(
 }
 
 
-int View::run_implementation()
+int Application::run_implementation()
 {
     // - Visualize property values
     //     - time domain
@@ -1133,9 +1177,7 @@ int View::run_implementation()
     auto const dataset_names = argument<std::vector<std::string>>("<dataset>");
 
     // Open datasets
-    DatasetsToVisualize datasets_to_visualize{
-            dataset_names.begin(), dataset_names.end()
-        };
+    Datasets datasets_to_visualize{dataset_names.begin(), dataset_names.end()};
 
     sdl2::API api;
     sdl2::Window sdl_window{"LUE view",
@@ -1176,7 +1218,7 @@ int View::run_implementation()
 
         sdl2::imgui::Frame frame{sdl_window};
 
-        static ViewConfiguration configuration{};
+        static Configuration configuration{};
         show_main_menu_bar(configuration);
         show_datasets(datasets_to_visualize, configuration.show_details());
     }
@@ -1184,5 +1226,5 @@ int View::run_implementation()
     return EXIT_SUCCESS;
 }
 
-}  // namespace utility
+}  // namespace view
 }  // namespace lue

@@ -1,18 +1,16 @@
-#include "dataset_to_visualize.hpp"
+#include "lue/view/dataset.hpp"
 
 
 namespace lue {
-namespace utility {
+namespace view {
 
 /*!
     @brief      Construct an instance
-    @param      .
-    @return     .
-    @exception  .
+    @param      name Name of dataset
 
     A dataset named @a name must exist.
 */
-DatasetToVisualize::DatasetToVisualize(
+Dataset::Dataset(
     std::string const& name):
 
     _name{name},
@@ -27,7 +25,7 @@ DatasetToVisualize::DatasetToVisualize(
 /*!
     @brief      Return the name passed into the constructor
 */
-std::string const& DatasetToVisualize::name() const
+std::string const& Dataset::name() const
 {
     return _name;
 }
@@ -37,7 +35,7 @@ std::string const& DatasetToVisualize::name() const
     @brief      Return the layered dataset
     @warning    A dataset must be opened
 */
-data_model::Dataset const& DatasetToVisualize::dataset() const
+data_model::Dataset const& Dataset::dataset() const
 {
     assert(_dataset);
     return *_dataset;
@@ -47,19 +45,22 @@ data_model::Dataset const& DatasetToVisualize::dataset() const
 /*!
     @brief      Return the normalized pathname
 */
-boost::filesystem::path const& DatasetToVisualize::path() const
+boost::filesystem::path const& Dataset::path() const
 {
     return _path;
 }
 
 
-std::string DatasetToVisualize::pathname() const
+/*!
+    @brief      Return the normalized pathname, as a string
+*/
+std::string Dataset::pathname() const
 {
     return _path.string();
 }
 
 
-std::string DatasetToVisualize::filename() const
+std::string Dataset::filename() const
 {
     return _path.filename().string();
 }
@@ -68,14 +69,25 @@ std::string DatasetToVisualize::filename() const
 /*!
     @brief      Handle removal, reappearance or update of dataset
 */
-void DatasetToVisualize::rescan()
+void Dataset::rescan()
 {
-    if(changed()) {
-        if(exists()) {
-            _dataset = data_model::Dataset(_name);
-            _write_time = boost::filesystem::last_write_time(_path);
+    if(changed())
+    {
+        if(exists())
+        {
+            // There is a reason to reopen the dataset. Try to do so.
+            try {
+                _dataset = data_model::Dataset(_name);
+                _write_time = boost::filesystem::last_write_time(_path);
+            }
+            catch(...) {
+                // Assume the dataset is still being updated
+                _dataset.reset();
+            }
         }
-        else {
+        else
+        {
+            // The dataset has disappeared
             _dataset.reset();
         }
     }
@@ -85,7 +97,7 @@ void DatasetToVisualize::rescan()
 /*!
     @brief      Return whether the dataset is opened
 */
-bool DatasetToVisualize::is_open() const
+bool Dataset::is_open() const
 {
     return _dataset.has_value();
 }
@@ -94,7 +106,7 @@ bool DatasetToVisualize::is_open() const
 /*!
     @brief      Return whether the dataset exists
 */
-bool DatasetToVisualize::exists() const
+bool Dataset::exists() const
 {
     return boost::filesystem::exists(_path);
 }
@@ -108,7 +120,7 @@ bool DatasetToVisualize::exists() const
     - It was deleted (not opened), but now it exists again
     - It was opened, but has been updated afterwards
 */
-bool DatasetToVisualize::changed() const
+bool Dataset::changed() const
 {
     bool const is_open{this->is_open()};
     bool const exists{this->exists()};
@@ -141,5 +153,5 @@ bool DatasetToVisualize::changed() const
     return result;
 }
 
-}  // namespace utility
+}  // namespace view
 }  // namespace lue
