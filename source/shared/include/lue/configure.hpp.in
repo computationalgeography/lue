@@ -1,5 +1,28 @@
 #pragma once
+#include <string_view>
+
 
 #cmakedefine LUE_VERSION "${LUE_VERSION}"
 #cmakedefine LUE_FRAMEWORK_WITH_OPENCL
+#cmakedefine LUE_BUILD_DATA_MODEL
+#cmakedefine01 LUE_BUILD_FRAMEWORK
 #cmakedefine LUE_BUILD_TEST
+
+
+namespace lue {
+
+class BuildOptions
+{
+
+public:
+
+    static constexpr std::string_view version{LUE_VERSION};
+
+    static constexpr bool build_framework{LUE_BUILD_FRAMEWORK};
+
+};
+
+
+inline constexpr BuildOptions build_options;
+
+}  // namespace lue

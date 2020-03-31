@@ -8,6 +8,10 @@ if(LUE_BUILD_FRAMEWORK)
     add_subdirectory(framework)
 endif()
 
+if(LUE_BUILD_VIEW)
+    add_subdirectory(view)
+endif()
+
 if(LUE_BUILD_IMGUI)
     add_subdirectory(imgui)
 endif()

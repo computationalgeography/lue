@@ -25,6 +25,10 @@ option(LUE_FRAMEWORK_WITH_BENCHMARKS
     "Include benchmarks"
     FALSE)
 
+option(LUE_BUILD_VIEW
+    "Build LUE data model viewer"
+    FALSE)
+
 option(LUE_BUILD_DOCUMENTATION
     "Build documentation"
     FALSE)
@@ -46,10 +50,15 @@ option(LUE_BUILD_OTF2
 
 
 # Handle internal dependencies -------------------------------------------------
+if(LUE_BUILD_VIEW)
+    set(LUE_BUILD_IMGUI TRUE)
+endif()
+
+
 if(LUE_BUILD_DATA_MODEL)
-    if(LUE_DATA_MODEL_WITH_UTILITIES)
-        set(LUE_BUILD_IMGUI TRUE)
-    endif()
+    # if(LUE_DATA_MODEL_WITH_UTILITIES)
+    #     set(LUE_BUILD_IMGUI TRUE)
+    # endif()
 
     if(LUE_DATA_MODEL_WITH_PYTHON_API)
     endif()

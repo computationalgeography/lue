@@ -3,16 +3,16 @@
 
 
 namespace lue {
-namespace utility {
+namespace view {
 
-class View:
-    public Application
+class Application:
+    public utility::Application
 
 {
 
 public:
 
-                   View                (std::vector<std::string> const&
+                   Application         (std::vector<std::string> const&
                                             arguments);
 
     int            run_implementation  () final;
@@ -21,5 +21,5 @@ private:
 
 };
 
-}  // namespace utility
+}  // namespace view
 }  // namespace lue

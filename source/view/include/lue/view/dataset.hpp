@@ -5,14 +5,14 @@
 
 
 namespace lue {
-namespace utility {
+namespace view {
 
-class DatasetToVisualize
+class Dataset
 {
 
 public:
 
-                   DatasetToVisualize  (std::string const& name);
+                   Dataset             (std::string const& name);
 
     std::string const& name            () const;
 
@@ -35,15 +35,19 @@ private:
 
     bool           changed             () const;
 
+    //! Name of dataset as passed into constructor
     std::string const _name;
 
+    //! Dataset instance, if opened
     std::optional<data_model::Dataset> _dataset;
 
+    //! Canonical pathname of dataset
     boost::filesystem::path _path;
 
+    //! Last time the dataset was updated
     std::time_t    _write_time;
 
 };
 
-}  // namespace utility
+}  // namespace view
 }  // namespace lue
