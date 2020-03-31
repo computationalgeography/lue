@@ -166,6 +166,8 @@ ArrayPartitionData<Element, rank>::ArrayPartitionData():
 /*!
     @brief      Construct an instance with shape @a shape
     @param      shape Shape of data array
+
+    The elements will be default-initialized.
 */
 template<
     typename Element,

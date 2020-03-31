@@ -259,6 +259,8 @@ private:
     {
         assert(!_ptr);
 
+        // Default initialization of the elements. In case of
+        // numeric values, the values are indeterminate
         _ptr.reset(new Elements(size, boost::container::default_init_t{}));
 
         assert_invariants();

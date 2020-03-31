@@ -57,7 +57,7 @@ BOOST_AUTO_TEST_CASE(default_construct)
 }
 
 
-BOOST_AUTO_TEST_CASE(construct_initialized_definition)
+BOOST_AUTO_TEST_CASE(construct_with_shape)
 {
     Shape<2> shape{{30, 40}};
     Data<2> data{shape};
@@ -67,13 +67,14 @@ BOOST_AUTO_TEST_CASE(construct_initialized_definition)
     BOOST_CHECK(!data.empty());
     BOOST_CHECK_EQUAL(data.nr_elements(), 30 * 40);
 
-    std::vector<Value> values(30 * 40, 0);
-    BOOST_CHECK_EQUAL_COLLECTIONS(
-        data.begin(), data.end(), values.begin(), values.end());
+    // No! Values are indeterminate
+    // std::vector<Value> values(30 * 40, 0);
+    // BOOST_CHECK_EQUAL_COLLECTIONS(
+    //     data.begin(), data.end(), values.begin(), values.end());
 }
 
 
-BOOST_AUTO_TEST_CASE(construct_initialized_definition_and_value)
+BOOST_AUTO_TEST_CASE(construct_with_shape_and_value)
 {
     Shape<2> shape{{30, 40}};
     Data<2> data{shape, 5};
