@@ -145,7 +145,8 @@ def benchmark_to_lue_json(
     shape_in_partitions = [result["shape_in_partitions"] \
         for result in benchmark_json["results"]]
     nr_partitions = [
-        np.prod(shape_in_partitions[i]) for i in range(len(shape_in_partitions))]
+        float(np.prod(shape_in_partitions[i]))
+            for i in range(len(shape_in_partitions))]
     assert len(nr_partitions) == count, "{} != {}".format(
         len(nr_partitions), count)
 
@@ -369,7 +370,7 @@ def write_scaling_results(
         lue_dataset.benchmark.measurement.partition_shape.value[:]
     nr_partitions = len(partition_shape)
     assert nr_partitions % nr_arrays == 0
-    nr_partitions /= nr_arrays
+    nr_partitions = nr_partitions // nr_arrays
     partition_shape = partition_shape[0:nr_partitions]
 
     partition_phenomenon = lue_dataset.add_phenomenon("partition",
@@ -520,12 +521,13 @@ def post_process_raw_results(
 
         figure.suptitle(
             "{}, {}, {}\n"
-            "Partition shape scaling experiment on {} array"
+            "Partition shape scaling experiment on {} array ({})"
                 .format(
                     name,
                     system_name,
                     time_point,
                     "x".join([str(extent) for extent in array_shape]),
+                    scenario_name,
                 )
             )
 
@@ -557,11 +559,12 @@ def post_process_raw_results(
 
     figure.suptitle(
         "{}, {}, {}\n"
-        "Partition shape scaling experiment"
+        "Partition shape scaling experiment ({})"
             .format(
                 name,
                 system_name,
                 time_point,
+                scenario_name,
             )
         )
 

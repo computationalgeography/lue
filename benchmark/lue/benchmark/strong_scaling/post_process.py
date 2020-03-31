@@ -673,7 +673,7 @@ def post_process_raw_results(
 
         plot_actual(lups)
 
-        y_label= u"LUPS"
+        y_label= u"throughput (LUPS)"
 
         annotate_plot(axis, y_label)
 
@@ -697,18 +697,20 @@ def post_process_raw_results(
 
     name = lue_meta_information.name.value[:][0]
     system_name = lue_meta_information.system_name.value[:][0]
+    scenario_name = lue_meta_information.scenario_name.value[:][0]
     array_shape = lue_meta_information.array_shape.value[0]
     partition_shape = lue_meta_information.partition_shape.value[0]
 
     figure.suptitle(
         "{}, {}, {}\n"
-        "Strong scaling experiment on {} array and {} partitions"
+        "Strong scaling experiment on {} array and {} partitions ({})"
             .format(
                 name,
                 system_name,
                 time_point,
                 "x".join([str(extent) for extent in array_shape]),
                 "x".join([str(extent) for extent in partition_shape]),
+                scenario_name,
             )
         )
 

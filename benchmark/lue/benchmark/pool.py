@@ -39,7 +39,7 @@ class MultipliedWorkerRange(WorkerRange):
     def permutation_size(self,
             idx):
 
-        assert idx in range(self.nr_permutations()), idx
+        assert idx in range(self.nr_permutations), idx
 
         size = self.min_size
         idx -= 1

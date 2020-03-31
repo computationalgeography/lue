@@ -117,7 +117,7 @@ def generate_script_slurm_numa_nodes(
                     srun_configuration=job.srun_configuration(cluster),
                     command_pathname=experiment.command_pathname,
                     nr_threads=nr_threads,
-                    thread_binding=thread_binding(nr_threads),
+                    thread_binding=util.thread_binding(nr_threads),
                     program_configuration=job.program_configuration(
                         cluster, benchmark, experiment,
                         array_shape, partition_shape,
@@ -207,7 +207,7 @@ def generate_script_slurm_cluster_nodes(
                         srun_configuration=job.srun_configuration(cluster),
                         command_pathname=experiment.command_pathname,
                         nr_threads=nr_threads,
-                        thread_binding=thread_binding(nr_threads),
+                        thread_binding=util.thread_binding(nr_threads),
                         program_configuration=job.program_configuration(
                             cluster, benchmark, experiment,
                             array_shape, partition_shape,

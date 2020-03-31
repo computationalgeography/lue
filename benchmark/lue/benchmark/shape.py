@@ -118,12 +118,17 @@ def range_of_shapes(
 
     assert method in ["linear", "exponential"]
 
+    assert multiplier > 1, multiplier
+
     if method == "linear":
 
-        # Increase the number of cells linearly, by i * multiplier
+        # Increase the number of cells linearly, by 
+        # i * (multiplier - 1) * sizes[0]
+        new_size = lambda i: sizes[0] + i * (multiplier - 1) * sizes[0]
         i = 1
-        while i * multiplier * sizes[0] <= max_nr_elements:
-            sizes.append(i * multiplier * sizes[0])
+
+        while new_size(i) <= max_nr_elements:
+            sizes.append(new_size(i))
             i += 1
 
     elif method == "exponential":

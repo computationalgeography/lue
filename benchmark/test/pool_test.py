@@ -23,7 +23,7 @@ class PoolTest(unittest.TestCase):
 
         pool = Pool(data)
 
-        self.assertEqual(pool.nr_permutations(), len(permutation_sizes))
+        self.assertEqual(pool.nr_permutations, len(permutation_sizes))
         self.assertEqual(pool.range.min_size, permutation_sizes[0])
         self.assertEqual(pool.range.max_size, permutation_sizes[-1])
 
@@ -63,7 +63,7 @@ class PoolTest(unittest.TestCase):
 
         pool = Pool(data)
 
-        self.assertEqual(pool.nr_permutations(), len(permutation_sizes))
+        self.assertEqual(pool.nr_permutations, len(permutation_sizes))
         self.assertEqual(pool.min_size, permutation_sizes[0])
         self.assertEqual(pool.max_size, permutation_sizes[-1])
 

@@ -47,7 +47,7 @@ AlgorithmBenchmarkResult iterate_per_element(
     // Fill array with random numbers
     // hpx::shared_future<Element> min_nr_iterations =
     //     hpx::make_ready_future<Element>(20);
-    Element const max_nr_iterations{50};
+    Element const max_nr_iterations{25};
 
     // uniform(min_nr_iterations, max_nr_iterations, state).wait();
 
