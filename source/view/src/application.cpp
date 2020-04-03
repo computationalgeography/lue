@@ -437,20 +437,83 @@ void show_value<data_model::same_shape::Value>(
 
     show_array(dynamic_cast<data_model::Array const&>(value), show_details);
 
+    data_model::Rank const rank{
+        static_cast<data_model::Rank>(value.array_shape().size())};
+
+    // Visualize values. Options:
+    // - If 0D values:
+    //     - Table with value per object. Limit the size of the table.
+    //     - If numeric values:
+    //         - Table with summary statistics
+    //         - Histogram with distribution of values
+    //
+    // Tabs with visualizations?
+    // When reading values, cache them as long as the dataset is not
+    // updated. Invalidate cache once the dataset is updated.
+
     if constexpr(build_options.build_framework)
     {
-        // Visualize values. Options:
-        // - If 0D values:
-        //     - Table with value per object. Limit the size of the table.
-        //     - If numeric values:
-        //         - Table with summary statistics
-        //         - Histogram with distribution of values
-        //
-        // Tabs with visualizations?
-        // When reading values, cache them as long as the dataset is not
-        // updated. Invalidate cache once the dataset is updated.
-    }
+        if(ImGui::BeginTabBar("Values"))
+        {
+            // Read values, showing progress bar while doing it
+            // Do this asynchronously and cache results. Visualize values
+            // once the data has arrived. Don't show them in the meantime.
+            // Invalidate the cache if rescanning the datasets detects
+            // changes to the dataset. Use the ID as a unique identifier
+            // of the property value in the cache.
+            //
+            // cache[ID] = async(read);
+            //
+            // Maybe cache per kind of property value? Static cache in
+            // this function? Well then we can't invalidate the cache.
+            // TODO
 
+
+            if(rank == 0) {
+
+                // Table with for each object its value
+                if(ImGui::BeginTabItem("Table")) {
+
+                    // ImGui::Indent();
+
+                        ImGui::Columns(2, "mycolumns"); // 4-ways, with border
+                        ImGui::Separator();
+                        ImGui::Text("ID"); ImGui::NextColumn();
+                        ImGui::Text("Value"); ImGui::NextColumn();
+                        ImGui::Separator();
+
+                        // Iterate over all objects and add ID and value to table
+                        // TODO
+
+
+
+                        // const char* names[3] = { "One", "Two", "Three" };
+                        // const char* paths[3] = { "/path/one", "/path/two", "/path/three" };
+                        // static int selected = -1;
+                        // for (int i = 0; i < 3; i++)
+                        // {
+                        //     char label[32];
+                        //     sprintf(label, "%04d", i);
+                        //     if (ImGui::Selectable(label, selected == i, ImGuiSelectableFlags_SpanAllColumns))
+                        //         selected = i;
+                        //     bool hovered = ImGui::IsItemHovered();
+                        //     ImGui::NextColumn();
+                        //     ImGui::Text(names[i]); ImGui::NextColumn();
+                        //     ImGui::Text(paths[i]); ImGui::NextColumn();
+                        //     ImGui::Text("%d", hovered); ImGui::NextColumn();
+                        // }
+
+                        ImGui::Columns(1);  // Reset nr_cols
+                        ImGui::Separator();
+
+                    // ImGui::Unindent();
+                    ImGui::EndTabItem();
+                }
+            }
+
+            ImGui::EndTabBar();
+        }
+    }
 }
 
 
