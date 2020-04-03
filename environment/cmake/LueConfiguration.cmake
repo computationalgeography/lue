@@ -51,6 +51,7 @@ option(LUE_BUILD_OTF2
 
 # Handle internal dependencies -------------------------------------------------
 if(LUE_BUILD_VIEW)
+    set(LUE_BUILD_DATA_MODEL TRUE)
     set(LUE_BUILD_IMGUI TRUE)
 endif()
 
