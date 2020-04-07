@@ -156,8 +156,9 @@ def read_performance_counters(
     # array = array.astype(np.uint64)
 
     # Idle-rates are reported as 0.01%. Convert them to percentages.
-    if "idle-rate" in field_names[0]:
-        array /= 100.
+    for i in range(len(field_names)):
+        if "idle-rate" in field_names[i]:
+            array[i] /= 100.
 
     return field_names, array
 
@@ -193,6 +194,8 @@ def benchmark_to_lue_json(
     time_points = [
         epoch_offset + int((time_point - benchmark_epoch).total_seconds())
             for time_point in time_points]
+
+    # Just pick the first one for these count benchmarks
     time_points = [time_points[0]]
 
     property_description = "Amount of time a measurement took"
@@ -739,9 +742,14 @@ class PerformanceCounter(object):
 
     def full_name(self):
         # counter name: <object>{<instance>}/name@parameters
-        assert self.parameters is None
-        return "/{object}{{{instance}}}/{name}".format(
+
+        result = "/{object}{{{instance}}}/{name}".format(
             object=self.object, instance=self.instance.full, name=self.name)
+
+        if self.parameters:
+            result = "{}@{}".format(result, self.parameters)
+
+        return result
 
 
 class PerformanceCounterGroup(object):
@@ -802,7 +810,12 @@ def parse_performance_counter_instance_name(
 
     # TODO Update for AggregatePerformanceCounterInstance when needed
 
-    return SimplePerformanceCounterInstance(parent, instance)
+    result = SimplePerformanceCounterInstance(parent, instance)
+
+    # assert result.full_name() == name, \
+    #     "{} != {}".format(result.full_name(), name)
+
+    return result
 
 
 def parse_performance_counter_name(
@@ -810,7 +823,7 @@ def parse_performance_counter_name(
 
     # counter name: <object>{<instance>}/name@parameters
     pattern = \
-        "^/(?P<object>.+){(?P<instance>.+)}/(?P<name>.+)(@(?P<parameters>.+))?$"
+        "^/(?P<object>.+){(?P<instance>.+)}/(?P<name>[^@]+)(@(?P<parameters>.+))?$"
     match = re.match(pattern, name)
     assert match is not None, name
 
@@ -997,6 +1010,7 @@ def group_performance_counters(
 def plot_performance_counters(
         counter_pathname):
 
+    # CSV file containing the counter results
     counter_dirname, counter_basename = os.path.split(counter_pathname)
 
     # TODO

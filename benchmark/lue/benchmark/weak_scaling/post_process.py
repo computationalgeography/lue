@@ -157,6 +157,8 @@ def benchmark_to_lue_json(
     time_points = [
         epoch_offset + int((time_point - benchmark_epoch).total_seconds())
             for time_point in time_points]
+
+    # Just pick the first one for these count benchmarks
     time_points = [time_points[0]]
 
     property_description = "Amount of time a measurement took"

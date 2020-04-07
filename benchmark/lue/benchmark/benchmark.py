@@ -1,4 +1,5 @@
 from . import worker
+from . import util
 
 
 class HPX(object):
@@ -33,7 +34,17 @@ class Benchmark(object):
         assert self.locality_per in ["cluster_node", "numa_node"]
 
         self.worker = worker.Worker(json["worker"], cluster, self.locality_per)
-        self.hpx = HPX(json["hpx"]) if "hpx" in json else None
+
+        self.hpx = None
+        # self.hpx = HPX(json["hpx"]) if "hpx" in json else None
+
+        if "hpx" in json:
+            hpx_json = json["hpx"]
+
+            if isinstance(hpx_json, str):
+                hpx_json = util.json_to_data(hpx_json)
+
+            self.hpx = HPX(hpx_json)
 
         if self.worker.type == "thread":
             if self.locality_per == "numa_node":

@@ -16,7 +16,10 @@ class BuildOptions
 
 public:
 
-    static constexpr std::string_view version{LUE_VERSION};
+    // C++20
+    // static constexpr std::string version{LUE_VERSION};
+
+    static constexpr char version[]{LUE_VERSION};
 
     static constexpr bool build_framework{LUE_BUILD_FRAMEWORK};
 

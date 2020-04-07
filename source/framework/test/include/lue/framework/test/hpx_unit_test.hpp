@@ -31,8 +31,14 @@ int main(
 {
     // Blocks until HPX runtime system exists
 
+    std::vector<std::string> const cfg{
+            // Use this number of threads per locality. This will utilize
+            // the same number of cores per locality.
+            "hpx.os_threads!=4"
+        };
+
     // TODO For some reason HPX complains about test specific arguments not
     //     being supported. It should skip unsupported arguments and pass them
     //     on to hpx_main. Not sure why it doesn't in this case.
-    return hpx::init(argc, argv);
+    return hpx::init(argc, argv, cfg);
 }
