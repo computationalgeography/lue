@@ -57,15 +57,17 @@ if __name__ == "__main__":
     script_pathname = arguments["<script>"]
     command_pathname = arguments["<command>"]
 
+    experiment_settings["command_pathname"] = command_pathname
+
     if arguments["partition_shape"]:
         benchmark.partition_shape.generate_script(
             cluster_settings, benchmark_settings, experiment_settings,
-            script_pathname, command_pathname)
+            script_pathname)
     elif arguments["strong_scaling"]:
         benchmark.strong_scaling.generate_script(
             cluster_settings, benchmark_settings, experiment_settings,
-            script_pathname, command_pathname)
+            script_pathname)
     elif arguments["weak_scaling"]:
         benchmark.weak_scaling.generate_script(
             cluster_settings, benchmark_settings, experiment_settings,
-            script_pathname, command_pathname)
+            script_pathname)

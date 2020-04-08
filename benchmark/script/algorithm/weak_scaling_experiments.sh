@@ -6,10 +6,12 @@ source $dirname/header.sh
 experiment_name="weak_scaling"
 
 
-# algorithm_names="
-# "
-# scenarios="
-# "
+algorithm_names="
+    sqrt
+"
+scenarios="
+    thread_cluster_node
+"
 
 
 source $dirname/experiment_footer.sh

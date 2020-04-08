@@ -9,7 +9,7 @@ import docopt
 
 
 usage = """\
-Post-process benchmark results
+Import benchmark results
 
 Usage:
     {command} (partition_shape|strong_scaling|weak_scaling) <prefix>
@@ -38,8 +38,8 @@ if __name__ == "__main__":
     assert os.path.isdir(prefix_pathname), prefix_pathname
 
     if experiment == "partition_shape":
-        benchmark.partition_shape.post_process_results(prefix_pathname)
+        benchmark.partition_shape.import_results(prefix_pathname)
     elif experiment == "strong_scaling":
-        benchmark.strong_scaling.post_process_results(prefix_pathname)
+        benchmark.strong_scaling.import_results(prefix_pathname)
     elif experiment == "weak_scaling":
-        benchmark.weak_scaling.post_process_results(prefix_pathname)
+        benchmark.weak_scaling.import_results(prefix_pathname)

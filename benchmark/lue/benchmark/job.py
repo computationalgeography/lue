@@ -1,3 +1,4 @@
+import lue
 import os.path
 
 
@@ -206,3 +207,48 @@ module load libraries/papi/5.7.0
         max_duration="#SBATCH --time={}".format(max_duration)
             if max_duration is not None else "",
         job_steps="\n".join(job_steps))
+
+
+def lue_dataset_basename():
+    return "data"
+
+
+def lue_dataset_pathname(
+        cluster,
+        benchmark,
+        experiment):
+
+    return experiment.result_pathname(
+        cluster.name, benchmark.scenario_name, lue_dataset_basename(), "lue")
+
+
+def create_lue_dataset(
+        cluster,
+        benchmark,
+        experiment):
+
+    dataset_pathname = lue_dataset_pathname(cluster, benchmark, experiment)
+    directory_pathname = os.path.split(dataset_pathname)[0]
+
+    if os.path.exists(directory_pathname):
+        assert os.path.isdir(directory_pathname), directory_pathname
+    else:
+        os.makedirs(directory_pathname)
+
+    assert not os.path.exists(dataset_pathname), dataset_pathname
+
+    dataset = lue.create_dataset(dataset_pathname, experiment.description)
+
+    return dataset
+
+
+def open_lue_dataset(
+        results_prefix,
+        open_mode="r"):
+
+    dataset_pathname = os.path.join(
+        results_prefix, lue_dataset_basename() + ".lue")
+    assert os.path.exists(dataset_pathname), dataset_pathname
+    dataset = lue.open_dataset(dataset_pathname, open_mode)
+
+    return dataset
