@@ -338,6 +338,14 @@ void init_property_set(
 )")
 
         .def(
+            "__contains__",
+            &Properties::contains,
+    "Return whether or not the collection contains a property\n"
+    "\n"
+    ":param str name: Name of property to find\n",
+            "name"_a)
+
+        .def(
             "__getitem__",
             [](
                 Properties& properties,

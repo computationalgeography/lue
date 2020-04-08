@@ -1,21 +1,29 @@
 class WorkerRange(object):
 
     def __init__(self, json):
+        self._from_json(json)
+
+        self.max_size = self.permutation_size(self.nr_permutations - 1)
+
+    def _from_json(self, json):
         self.min_size = json["min_size"]
         self.max_size = json["max_size"]
 
         assert self.min_size > 0
         assert self.min_size <= self.max_size
 
-        self.max_size = self.permutation_size(self.nr_permutations - 1)
+    def to_json(self):
+        return {
+                "min_size": self.min_size,
+                "max_size": self.max_size,
+            }
 
 
 class MultipliedWorkerRange(WorkerRange):
 
     def __init__(self, json):
-        self.multiplier = json["multiplier"]
-        assert self.multiplier > 1
-        WorkerRange.__init__(self, json)
+        self.from_json(json)
+        super(MultipliedWorkerRange, self).__init__(json)
 
     def __str__(self):
         return "MultipliedWorkerRange(min_size={}, max_size={}, multiplier={})" \
@@ -24,6 +32,17 @@ class MultipliedWorkerRange(WorkerRange):
                 self.max_size,
                 self.multiplier,
             )
+
+    def from_json(self, json):
+        self.multiplier = json["multiplier"]
+        assert self.multiplier > 1
+
+    def to_json(self):
+        result = super(MultipliedWorkerRange, self).to_json()
+
+        result["multiplier"] = self.multiplier
+
+        return result
 
     @property
     def nr_permutations(self):
@@ -54,9 +73,8 @@ class MultipliedWorkerRange(WorkerRange):
 class IncrementedWorkerRange(WorkerRange):
 
     def __init__(self, json):
-        self.incrementor = json["incrementor"]
-        assert self.incrementor >= 1
-        WorkerRange.__init__(self, json)
+        self.from_json(json)
+        super(IncrementedWorkerRange, self).__init__(json)
 
     def __str__(self):
         return "IncrementedWorkerRange(min_size={}, max_size={}, incrementor={})" \
@@ -65,6 +83,17 @@ class IncrementedWorkerRange(WorkerRange):
                 self.max_size,
                 self.incrementor,
             )
+
+    def from_json(self, json):
+        self.incrementor = json["incrementor"]
+        assert self.incrementor >= 1
+
+    def to_json(self):
+        result = super(IncrementedWorkerRange, self).to_json()
+
+        result["incrementor"] = self.incrementor
+
+        return result
 
     @property
     def nr_permutations(self):
@@ -101,9 +130,9 @@ class EmptyWorkerRange(WorkerRange):
     """
 
     def __init__(self, json):
-        self.size = json["size"]
-        assert self.size >= 1
-        WorkerRange.__init__(self,
+        self.from_json(json)
+
+        super(EmptyWorkerRange, self).__init__(
             {"min_size": self.size, "max_size": self.size})
         assert self.min_size == self.max_size == self.size
 
@@ -111,6 +140,15 @@ class EmptyWorkerRange(WorkerRange):
         return "EmptyWorkerRange(size={})" \
             .format(
                 self.size)
+
+    def from_json(self, json):
+        self.size = json["size"]
+        assert self.size >= 1
+
+    def to_json(self):
+        return {
+                "size": self.size,
+            }
 
     @property
     def nr_permutations(self):
@@ -125,13 +163,15 @@ class EmptyWorkerRange(WorkerRange):
 class Pool(object):
 
     def __init__(self, json):
-
         if "multiplier" in json:
             self.range = MultipliedWorkerRange(json)
         elif "incrementor" in json:
             self.range = IncrementedWorkerRange(json)
         else:
             self.range = EmptyWorkerRange(json)
+
+    def to_json(self):
+        return self.range.to_json()
 
     @property
     def min_size(self):

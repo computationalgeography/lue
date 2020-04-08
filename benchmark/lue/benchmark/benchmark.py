@@ -5,6 +5,9 @@ from . import util
 class HPX(object):
 
     def __init__(self, json):
+        self.from_json(json)
+
+    def from_json(self, json):
         self.performance_counters = json["performance_counters"] \
             if "performance_counters" in json else None
 
@@ -12,6 +15,9 @@ class HPX(object):
         #     {
         #         "print-counter-destination": "counter.csv"
         #     },
+
+    def to_json(self):
+        return self.performance_counters
 
 
 class Benchmark(object):
@@ -26,25 +32,7 @@ class Benchmark(object):
             NUMA node
         worker: Information about the workers to be used
         """
-        self.scenario_name = json["scenario"] \
-            if "scenario" in json else "default"
-        self.count = json["count"]
-
-        self.locality_per = json["locality_per"]
-        assert self.locality_per in ["cluster_node", "numa_node"]
-
-        self.worker = worker.Worker(json["worker"], cluster, self.locality_per)
-
-        self.hpx = None
-        # self.hpx = HPX(json["hpx"]) if "hpx" in json else None
-
-        if "hpx" in json:
-            hpx_json = json["hpx"]
-
-            if isinstance(hpx_json, str):
-                hpx_json = util.json_to_data(hpx_json)
-
-            self.hpx = HPX(hpx_json)
+        self.from_json(json, cluster)
 
         if self.worker.type == "thread":
             if self.locality_per == "numa_node":
@@ -142,3 +130,36 @@ class Benchmark(object):
                 self.count,
                 self.worker
             )
+
+    def from_json(self, json, cluster):
+        self.scenario_name = json["scenario"] \
+            if "scenario" in json else "default"
+        self.count = json["count"]
+
+        self.locality_per = json["locality_per"]
+        assert self.locality_per in ["cluster_node", "numa_node"]
+
+        self.worker = worker.Worker(json["worker"], cluster, self.locality_per)
+
+        self.hpx = None
+
+        if "hpx" in json:
+            hpx_json = json["hpx"]
+
+            if isinstance(hpx_json, str):
+                hpx_json = util.json_to_data(hpx_json)
+
+            self.hpx = HPX(hpx_json)
+
+    def to_json(self):
+        result = {
+                "scenario": self.scenario_name,
+                "count": self.count,
+                "locality_per": self.locality_per,
+                "worker": self.worker.to_json(),
+            }
+
+        if self.hpx:
+            result["hpx"] = self.hpx.to_json()
+
+        return result

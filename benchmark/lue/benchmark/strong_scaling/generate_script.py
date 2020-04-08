@@ -1,6 +1,7 @@
-from ..benchmark import *
-from .strong_scaling_experiment import *
-from ..cluster import *
+from .strong_scaling_experiment import StrongScalingExperiment
+from ..benchmark import Benchmark
+from ..cluster import Cluster
+from .. import dataset
 from .. import job
 from .. import util
 import os.path
@@ -330,8 +331,7 @@ def generate_script(
         cluster_settings_json,
         benchmark_settings_json,
         experiment_settings_json,
-        script_pathname,
-        command_pathname):
+        script_pathname):
     """
     Given a fixed array size and partition shape size, iterate over a
     range of sets of workers and capture benchmark results
@@ -348,10 +348,15 @@ def generate_script(
         benchmark.worker.nr_threads_range > 0]) == 1
     assert benchmark.worker.nr_benchmarks > 0
 
-    experiment = StrongScalingExperiment(
-        experiment_settings_json, command_pathname)
+    experiment = StrongScalingExperiment(experiment_settings_json)
+
+    lue_dataset = job.create_lue_dataset(cluster, benchmark, experiment)
+    dataset.write_benchmark_settings(
+        lue_dataset, cluster, benchmark, experiment)
 
     if cluster.scheduler.kind == "slurm":
         generate_script_slurm(cluster, benchmark, experiment, script_pathname)
     elif cluster.scheduler.kind == "shell":
         generate_script_shell(cluster, benchmark, experiment, script_pathname)
+
+    dataset.write_script(lue_dataset, open(script_pathname).read())

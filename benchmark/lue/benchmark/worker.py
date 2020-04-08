@@ -3,7 +3,7 @@ from . import pool
 
 class Worker(object):
 
-    def __init__(self, data, cluster, locality_per):
+    def __init__(self, json, cluster, locality_per):
         """
         Class for storing information about the workers to be used
         in scaling experiments
@@ -16,11 +16,7 @@ class Worker(object):
             containing NUMA nodes
         - cluster_node: used in scaling experiments on a cluster of nodes
         """
-
-        self.type = data["type"]
-        assert self.type in ["thread", "numa_node", "cluster_node"], self.type
-
-        self.pool = pool.Pool(data["pool"])
+        self.from_json(json)
 
         if self.type == "thread":
             self.min_nr_cluster_nodes = 1
@@ -59,7 +55,6 @@ class Worker(object):
         assert 1 <= self.min_nr_numa_nodes <= self.max_nr_numa_nodes
         assert 1 <= self.min_nr_threads <= self.max_nr_threads
 
-
     def __str__(self):
         return "Worker(type={}, pool={})" \
             .format(
@@ -67,6 +62,17 @@ class Worker(object):
                 self.pool,
             )
 
+    def from_json(self, json):
+        self.type = json["type"]
+        assert self.type in ["thread", "numa_node", "cluster_node"], self.type
+
+        self.pool = pool.Pool(json["pool"])
+
+    def to_json(self):
+        return {
+                "type": self.type,
+                "pool": self.pool.to_json(),
+            }
 
     @property
     def nr_cluster_nodes_range(self):

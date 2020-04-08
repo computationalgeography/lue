@@ -6,10 +6,12 @@ source $dirname/header.sh
 experiment_name="strong_scaling"
 
 
-# algorithm_names="
-# "
-# scenarios="
-# "
+algorithm_names="
+    sqrt
+"
+scenarios="
+    thread_cluster_node
+"
 
 
 source $dirname/post_experiment_footer.sh

@@ -440,7 +440,8 @@ void write_to_array(
     verify_write<T>(array, hyperslab);
 
     // Write value into hyperslab target array
-    hdf5::Datatype memory_datatype{hdf5::NativeDatatypeTraits<T>::type_id()};
+    // hdf5::Datatype memory_datatype{hdf5::NativeDatatypeTraits<T>::type_id()};
+    hdf5::Datatype memory_datatype{hdf5::native_datatype<T>()};
 
     dynamic_cast<hdf5::Dataset&>(array).fill(
         memory_datatype, hyperslab, &value);
@@ -527,8 +528,6 @@ void write_to_array(
 // 
 //     return stream.str();
 // }
-
-
 
 
 template<
@@ -833,6 +832,13 @@ void init_array(
             set_item(array, index, double{value});
         })
 
+        // .def("__setitem__", [](
+        //         Array& array,
+        //         std::int64_t const index,
+        //         std::string const& value) {
+        //     set_item(array, index, value);
+        // })
+
         .def("__setitem__", [](
                 Array& array,
                 py::slice const& slice,
@@ -859,7 +865,7 @@ void init_array(
 
 
 #define SETITEM_SLICE(                                         \
-        T)                                                     \
+            T)                                                 \
         .def("__setitem__", [](                                \
                 Array& array,                                  \
                 py::slice const& slice,                        \

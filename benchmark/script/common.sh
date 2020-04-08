@@ -54,12 +54,13 @@ function post_process()
 {
     scenario_name=$1
 
-    benchmark_settings=$benchmark/benchmark-$scenario_name.json
-    experiment_settings=$benchmark/$benchmark_name/experiment-$scenario_name.json
+    benchmark_settings=benchmark-$scenario_name.json
+    experiment_settings=experiment-$scenario_name.json
 
+    import_benchmark_results.py $benchmark_kind \
+        `pwd`/$cluster_name/$benchmark_name/$scenario_name
     post_process_benchmark_results.py $benchmark_kind \
-        $cluster_settings $benchmark_settings $experiment_settings \
-        $benchmark_exe
+        `pwd`/$cluster_name/$benchmark_name/$scenario_name
 }
 
 

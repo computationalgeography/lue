@@ -151,7 +151,9 @@ class Range(object):
 
     def __init__(self,
             json):
+        self.from_json(json)
 
+    def from_json(self, json):
         self.max_nr_elements = json["max_nr_elements"]
         self.multiplier = json["multiplier"]
         self.method = json["method"]
@@ -161,14 +163,33 @@ class Range(object):
         if self.method == "linear":
             assert self.multiplier > 1
 
+    def to_json(self):
+        return {
+                "max_nr_elements": self.max_nr_elements,
+                "multiplier": self.multiplier,
+                "method": self.method,
+            }
+
 
 class Shape(object):
 
     def __init__(self,
             json):
+        self.from_json(json)
 
+    def from_json(self, json):
         self._shape = tuple(json["shape"])
         self._range = Range(json["range"]) if "range" in json else None
+
+    def to_json(self):
+        result = {
+                "shape": self._shape
+            }
+
+        if self._range:
+            result["range"] = self._range.to_json()
+
+        return result
 
     def is_fixed(self):
 
