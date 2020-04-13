@@ -17,6 +17,7 @@ Dataset::Dataset(
     _dataset{std::make_optional<data_model::Dataset>(name)},
     _path{boost::filesystem::canonical(_dataset->pathname())},
     _write_time{boost::filesystem::last_write_time(_path)}
+    // _cache{std::make_shared<Cache>()}
 
 {
 }
@@ -42,12 +43,24 @@ data_model::Dataset const& Dataset::dataset() const
 }
 
 
+// Dataset::CachePtr Dataset::cache()
+// {
+//     return _cache;
+// }
+
+
 /*!
     @brief      Return the normalized pathname
 */
 boost::filesystem::path const& Dataset::path() const
 {
     return _path;
+}
+
+
+std::time_t Dataset::write_time() const
+{
+    return _write_time;
 }
 
 
@@ -68,10 +81,14 @@ std::string Dataset::filename() const
 
 /*!
     @brief      Handle removal, reappearance or update of dataset
+    @return     Whether or not the dataset changed since the previous
+                time it was opened
 */
-void Dataset::rescan()
+bool Dataset::rescan()
 {
-    if(changed())
+    bool const changed{this->changed()};
+
+    if(changed)
     {
         if(exists())
         {
@@ -90,7 +107,11 @@ void Dataset::rescan()
             // The dataset has disappeared
             _dataset.reset();
         }
+
+        // _cache = std::make_shared<Cache>();
     }
+
+    return changed;
 }
 
 

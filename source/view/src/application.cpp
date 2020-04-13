@@ -5,6 +5,8 @@
 #include "lue/gui.hpp"
 // #include "lue/utility/environment.hpp"
 #include <fmt/format.h>
+#include <functional>
+
 #include <iostream>
 
 
@@ -196,15 +198,40 @@ static constexpr ShapeVariability shape_variability =
     PropertiesTraits<Properties>::shape_variability;
 
 
-template<
-    typename Properties>
-static const std::string label{PropertiesTraits<Properties>::label};
+// template<
+//     typename Properties>
+// static const std::string label{PropertiesTraits<Properties>::label};
 
 }  // namespace data_model
 
 
 namespace view {
 namespace {
+
+// template<
+//     typename Object,
+//     typename DataModelObject,
+//     typename ObjectRetriever>
+// Object& use_cache(
+//     Cache& cache,
+//     DataModelObject const& data_model_object,
+//     ObjectRetriever const& retriever)
+// {
+//     // Key used by the cache
+//     hdf5::Identifier const& id{data_model_object.id()};
+// 
+//     // If no object is stored for this key, use the retriever to obtain
+//     // one and store it in the cache
+//     if(!cache.contains(id)) {
+//         cache.insert<Object>(id, retriever(data_model_object));
+//     }
+// 
+//     assert(cache.contains(id));
+// 
+//     // Return object stored in the cache
+//     return cache.retrieve<Object>(id);
+// }
+
 
 // Helper to display a little (?) mark which shows a tooltip when hovered.
 // In your own code you may want to display an actual icon if you are using a merged icon fonts (see docs/FONTS.txt)
@@ -821,10 +848,10 @@ void show_properties2(
 {
     Collection const& collection{properties.collection<Collection>()};
 
-    for(std::string const& name: collection.names()) {
-
-        if(ImGui::BeginTabItem(name.c_str())) {
-
+    for(std::string const& property_name: collection.names())
+    {
+        if(ImGui::BeginTabItem(property_name.c_str()))
+        {
             ImGui::Indent();
 
                 // ImGui::BeginGroup();
@@ -843,10 +870,10 @@ void show_properties2(
                     ImGui::Text(data_model::aspect_to_string(data_model::shape_variability<Collection>).c_str());
                 }
 
-                if(!collection[name].description().empty()) {
-                    ImGui::TextWrapped(collection[name].description().c_str());
+                if(!collection[property_name].description().empty()) {
+                    ImGui::TextWrapped(collection[property_name].description().c_str());
                 }
-                show_property(collection[name], show_details);
+                show_property(collection[property_name], show_details);
 
                 // ImGui::Separator();
                 // ImGui::EndGroup();
@@ -1111,7 +1138,7 @@ void show_dataset(
     Dataset& dataset,
     bool const show_details)
 {
-    auto const& source{dataset.dataset()};
+    lue::data_model::Dataset const& source{dataset.dataset()};
 
     ImGui::Indent();
 

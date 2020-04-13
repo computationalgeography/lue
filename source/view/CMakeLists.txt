@@ -1,5 +1,6 @@
 add_executable(lue_view
     src/application
+    src/cache
     src/configuration
     src/dataset
     src/main

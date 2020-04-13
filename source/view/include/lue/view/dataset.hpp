@@ -1,6 +1,8 @@
 #pragma once
+// #include "lue/view/cache.hpp"
 #include "lue/object/dataset.hpp"
 #include <boost/filesystem.hpp>
+#include <memory>
 #include <optional>
 
 
@@ -12,6 +14,8 @@ class Dataset
 
 public:
 
+    // using CachePtr = std::shared_ptr<Cache>;
+
                    Dataset             (std::string const& name);
 
     std::string const& name            () const;
@@ -19,7 +23,11 @@ public:
     data_model::Dataset const&
                    dataset             () const;
 
+    // CachePtr       cache               ();
+
     boost::filesystem::path const& path() const;
+
+    std::time_t    write_time          () const;
 
     std::string    pathname            () const;
 
@@ -27,7 +35,7 @@ public:
 
     bool           is_open             () const;
 
-    void           rescan              ();
+    bool           rescan              ();
 
 private:
 
@@ -46,6 +54,8 @@ private:
 
     //! Last time the dataset was updated
     std::time_t    _write_time;
+
+    // CachePtr       _cache;
 
 };
 

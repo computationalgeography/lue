@@ -351,7 +351,7 @@ if(DEVBASE_IMGUI_REQUIRED)
     FetchContent_Declare(imgui
         // MIT License, see ${imgui_SOURCE_DIR}/LICENSE.txt
         GIT_REPOSITORY ${imgui_repository}
-        GIT_TAG v1.74
+        GIT_TAG v1.75
     )
 
     FetchContent_GetProperties(imgui)
