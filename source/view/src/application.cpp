@@ -10,6 +10,103 @@
 #include <iostream>
 
 
+class TabBar
+{
+
+public:
+
+    TabBar(std::string const& name):
+
+        _status{ImGui::BeginTabBar(name.c_str())}
+
+    {
+    }
+
+    ~TabBar()
+    {
+        if(_status) {
+            ImGui::EndTabBar();
+        }
+    }
+
+    explicit operator bool() const
+    {
+        return _status;
+    }
+
+private:
+
+    bool _status;
+
+};
+
+
+class TabItem
+{
+
+public:
+
+    TabItem(std::string const& name):
+
+        _status{ImGui::BeginTabItem(name.c_str())}
+
+    {
+    }
+
+    ~TabItem()
+    {
+        if(_status) {
+            ImGui::EndTabItem();
+        }
+    }
+
+    explicit operator bool() const
+    {
+        return _status;
+    }
+
+
+private:
+
+    bool _status;
+
+};
+
+
+class TreeNode
+{
+
+public:
+
+    TreeNode(
+        std::string const& name,
+        ImGuiTreeNodeFlags const flags=0):
+
+        _status{ImGui::TreeNodeEx(name.c_str(), flags)}
+
+    {
+    }
+
+    ~TreeNode()
+    {
+        if(_status) {
+            ImGui::TreePop();
+        }
+    }
+
+    explicit operator bool() const
+    {
+        return _status;
+    }
+
+
+private:
+
+    bool _status;
+
+};
+
+
 // void ImGui::PlotHistogram(
 //     const char* label,
 //     const float* values,
@@ -480,7 +577,7 @@ void show_value<data_model::same_shape::Value>(
 
     if constexpr(build_options.build_framework)
     {
-        if(ImGui::BeginTabBar("Values"))
+        if(auto tab_bar = TabBar("Values"))
         {
             // Read values, showing progress bar while doing it
             // Do this asynchronously and cache results. Visualize values
@@ -499,8 +596,8 @@ void show_value<data_model::same_shape::Value>(
             if(rank == 0) {
 
                 // Table with for each object its value
-                if(ImGui::BeginTabItem("Table")) {
-
+                if(auto tab_item = TabItem("Table"))
+                {
                     // ImGui::Indent();
 
                         ImGui::Columns(2, "mycolumns"); // 4-ways, with border
@@ -534,11 +631,8 @@ void show_value<data_model::same_shape::Value>(
                         ImGui::Separator();
 
                     // ImGui::Unindent();
-                    ImGui::EndTabItem();
                 }
             }
-
-            ImGui::EndTabBar();
         }
     }
 }
@@ -823,12 +917,12 @@ void show_properties(
             ImGui::SameLine();
             ImGui::Text(data_model::aspect_to_string(data_model::shape_variability<Collection>).c_str());
 
-            for(std::string const& name: collection.names()) {
-                if(ImGui::TreeNodeEx(name.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
+            for(std::string const& name: collection.names())
+            {
+                if(auto tree_node = TreeNode(name, ImGuiTreeNodeFlags_DefaultOpen))
                 {
                     copy_popup("property name", name);
                     show_property(collection[name], show_details);
-                    ImGui::TreePop();
                 }
             }
 
@@ -850,7 +944,7 @@ void show_properties2(
 
     for(std::string const& property_name: collection.names())
     {
-        if(ImGui::BeginTabItem(property_name.c_str()))
+        if(auto tab_item = TabItem(property_name))
         {
             ImGui::Indent();
 
@@ -879,7 +973,6 @@ void show_properties2(
                 // ImGui::EndGroup();
 
             ImGui::Unindent();
-            ImGui::EndTabItem();
         }
     }
 }
@@ -890,29 +983,29 @@ void show_property_set(
     bool const show_details)
 {
     if(property_set.has_time_domain()) {
-        if(ImGui::TreeNodeEx("object tracker")) {
+        if(auto tree_node = TreeNode("object tracker"))
+        {
             show_object_tracker(property_set.object_tracker(), show_details);
-            ImGui::TreePop();
         }
 
-        if(ImGui::TreeNodeEx("time domain", ImGuiTreeNodeFlags_DefaultOpen)) {
+        if(auto tree_node = TreeNode("time domain", ImGuiTreeNodeFlags_DefaultOpen))
+        {
             show_time_domain(property_set.time_domain(), show_details);
-            ImGui::TreePop();
         }
     }
 
     if(property_set.has_space_domain()) {
-        if(ImGui::TreeNodeEx("space domain", ImGuiTreeNodeFlags_DefaultOpen)) {
+        if(auto tree_node = TreeNode("space domain", ImGuiTreeNodeFlags_DefaultOpen))
+        {
             show_space_domain(property_set.space_domain(), show_details);
-            ImGui::TreePop();
         }
     }
 
     {
         auto const& properties = property_set.properties();
 
-        if(ImGui::TreeNodeEx(
-            fmt::format("properties ({})", properties.size()).c_str(),
+        if(auto tree_node = TreeNode(
+            fmt::format("properties ({})", properties.size()),
             ImGuiTreeNodeFlags_DefaultOpen))
         {
 
@@ -932,8 +1025,8 @@ void show_property_set(
 
 
 
-            if(ImGui::BeginTabBar("Properties")) {
-
+            if(auto tab_bar = TabBar("Properties"))
+            {
                 show_properties2<data_model::same_shape::Properties>(
                     properties, show_details);
                 show_properties2<data_model::same_shape::constant_shape::Properties>(
@@ -947,8 +1040,6 @@ void show_property_set(
                     properties, show_details);
                 show_properties2<data_model::different_shape::variable_shape::Properties>(
                     properties, show_details);
-
-                ImGui::EndTabBar();
             }
 
 
@@ -973,8 +1064,6 @@ void show_property_set(
             //     }
             // }
 
-
-            ImGui::TreePop();
         }
     }
 }
@@ -984,18 +1073,16 @@ void show_property_sets(
     data_model::PropertySets const& property_sets,
     bool const show_details)
 {
-    if(ImGui::BeginTabBar("Property-sets")) {
-
-        for(std::string const& name: property_sets.names()) {
-
-            if(ImGui::BeginTabItem(name.c_str())) {
+    if(auto tab_bar = TabBar("Property-sets"))
+    {
+        for(std::string const& name: property_sets.names())
+        {
+            if(auto tab_item = TabItem(name))
+            {
                 copy_popup("property-set name", name);
                 show_property_set(property_sets[name], show_details);
-                ImGui::EndTabItem();
             }
         }
-
-        ImGui::EndTabBar();
     }
 
     // for(std::string const& name: property_sets.names()) {
@@ -1022,11 +1109,10 @@ void show_phenomenon(
         auto const& object_id{phenomenon.object_id()};
 
         if(show_details || object_id.nr_objects() > 0) {
-            if(ImGui::TreeNodeEx(
-                fmt::format("object_id ({})", object_id.nr_objects()).c_str()))
+            if(auto tree_node = TreeNode(
+                fmt::format("object_id ({})", object_id.nr_objects())))
             {
                 show_object_id(object_id, show_details);
-                ImGui::TreePop();
             }
         }
     }
@@ -1035,13 +1121,11 @@ void show_phenomenon(
         auto const& property_sets{phenomenon.collection_property_sets()};
 
         if(show_details || !property_sets.empty()) {
-            if(ImGui::TreeNodeEx(
-                fmt::format("collection property-sets ({})",
-                    property_sets.size()).c_str(),
+            if(auto tree_node = TreeNode(
+                fmt::format("collection property-sets ({})", property_sets.size()),
                 ImGuiTreeNodeFlags_DefaultOpen))
             {
                 show_property_sets(property_sets, show_details);
-                ImGui::TreePop();
             }
         }
     }
@@ -1050,12 +1134,11 @@ void show_phenomenon(
         auto const& property_sets{phenomenon.property_sets()};
 
         if(show_details || !property_sets.empty()) {
-            if(ImGui::TreeNodeEx(
-                fmt::format("property-sets ({})", property_sets.size()).c_str(),
+            if(auto tree_node = TreeNode(
+                fmt::format("property-sets ({})", property_sets.size()),
                 ImGuiTreeNodeFlags_DefaultOpen))
             {
                 show_property_sets(property_sets, show_details);
-                ImGui::TreePop();
             }
         }
     }
@@ -1066,18 +1149,16 @@ void show_phenomena(
     data_model::Phenomena const& phenomena,
     bool const show_details)
 {
-    if(ImGui::BeginTabBar("Phenomena")) {
-
-        for(std::string const& name: phenomena.names()) {
-
-            if(ImGui::BeginTabItem(name.c_str())) {
+    if(auto tab_bar = TabBar("Phenomena"))
+    {
+        for(std::string const& name: phenomena.names())
+        {
+            if(auto tab_item = TabItem(name.c_str()))
+            {
                 copy_popup("phenomenon name", name);
                 show_phenomenon(phenomena[name], show_details);
-                ImGui::EndTabItem();
             }
         }
-
-        ImGui::EndTabBar();
     }
 
     // for(std::string const& name: phenomena.names()) {
@@ -1097,9 +1178,9 @@ void show_universe(
     data_model::Universe const& universe,
     bool const show_details)
 {
-    if(ImGui::TreeNodeEx("phenomena", ImGuiTreeNodeFlags_DefaultOpen)) {
+    if(auto tree_node = TreeNode("phenomena", ImGuiTreeNodeFlags_DefaultOpen))
+    {
         show_phenomena(universe.phenomena(), show_details);
-        ImGui::TreePop();
     }
 }
 
@@ -1108,18 +1189,16 @@ void show_universes(
     data_model::Universes const& universes,
     bool const show_details)
 {
-    if(ImGui::BeginTabBar("Universes")) {
-
-        for(std::string const& name: universes.names()) {
-
-            if(ImGui::BeginTabItem(name.c_str())) {
+    if(auto tab_bar = TabBar("Universes"))
+    {
+        for(std::string const& name: universes.names())
+        {
+            if(auto tab_item = TabItem(name))
+            {
                 copy_popup("property-set name", name);
                 show_universe(universes[name], show_details);
-                ImGui::EndTabItem();
             }
         }
-
-        ImGui::EndTabBar();
     }
 
     // for(std::string const& name: universes.names()) {
@@ -1164,12 +1243,11 @@ void show_dataset(
 
         if(show_details || !phenomena.empty())
         {
-            if(ImGui::TreeNodeEx(
-                fmt::format("phenomena ({})", phenomena.size()).c_str(),
+            if(auto tree_node = TreeNode(
+                fmt::format("phenomena ({})", phenomena.size()),
                 ImGuiTreeNodeFlags_DefaultOpen))
             {
                 show_phenomena(phenomena, show_details);
-                ImGui::TreePop();
             }
         }
     }
@@ -1179,12 +1257,11 @@ void show_dataset(
 
         if(show_details || !universes.empty())
         {
-            if(ImGui::TreeNodeEx(
-                fmt::format("universes ({})", universes.size()).c_str(),
+            if(auto tree_node = TreeNode(
+                fmt::format("universes ({})", universes.size()),
                 ImGuiTreeNodeFlags_DefaultOpen))
             {
                 show_universes(universes, show_details);
-                ImGui::TreePop();
             }
         }
     }
@@ -1198,24 +1275,20 @@ void show_datasets(
     // Window for presenting information about the loaded datasets
     sdl2::imgui::Window imgui_window{"Datasets"};
 
-    if(ImGui::BeginTabBar("Datasets")) {
-
-        for(auto& dataset: datasets) {
-
-            if(ImGui::BeginTabItem(dataset.filename().c_str())) {
-
+    if(auto tab_bar = TabBar("Datasets"))
+    {
+        for(auto& dataset: datasets)
+        {
+            if(auto tab_item = TabItem(dataset.filename().c_str()))
+            {
                 copy_popup("filename", dataset.filename().c_str());
                 dataset.rescan();
 
                 if(dataset.is_open()) {
                     show_dataset(dataset, show_details);
                 }
-
-                ImGui::EndTabItem();
             }
         }
-
-        ImGui::EndTabBar();
     }
 }
 
