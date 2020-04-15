@@ -1,5 +1,10 @@
 # Our higher level API on top of imgui + sdl2
 add_library(lue_imgui STATIC
+    src/selectable
+    src/tab_bar
+    src/tab_item
+    src/tree_node
+
     src/sdl2/api
     src/sdl2/imgui_binding
     src/sdl2/imgui/frame

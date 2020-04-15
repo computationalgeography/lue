@@ -7,105 +7,6 @@
 #include <fmt/format.h>
 #include <functional>
 
-#include <iostream>
-
-
-class TabBar
-{
-
-public:
-
-    TabBar(std::string const& name):
-
-        _status{ImGui::BeginTabBar(name.c_str())}
-
-    {
-    }
-
-    ~TabBar()
-    {
-        if(_status) {
-            ImGui::EndTabBar();
-        }
-    }
-
-    explicit operator bool() const
-    {
-        return _status;
-    }
-
-private:
-
-    bool _status;
-
-};
-
-
-class TabItem
-{
-
-public:
-
-    TabItem(std::string const& name):
-
-        _status{ImGui::BeginTabItem(name.c_str())}
-
-    {
-    }
-
-    ~TabItem()
-    {
-        if(_status) {
-            ImGui::EndTabItem();
-        }
-    }
-
-    explicit operator bool() const
-    {
-        return _status;
-    }
-
-
-private:
-
-    bool _status;
-
-};
-
-
-class TreeNode
-{
-
-public:
-
-    TreeNode(
-        std::string const& name,
-        ImGuiTreeNodeFlags const flags=0):
-
-        _status{ImGui::TreeNodeEx(name.c_str(), flags)}
-
-    {
-    }
-
-    ~TreeNode()
-    {
-        if(_status) {
-            ImGui::TreePop();
-        }
-    }
-
-    explicit operator bool() const
-    {
-        return _status;
-    }
-
-
-private:
-
-    bool _status;
-
-};
-
 
 // void ImGui::PlotHistogram(
 //     const char* label,
@@ -577,7 +478,7 @@ void show_value<data_model::same_shape::Value>(
 
     if constexpr(build_options.build_framework)
     {
-        if(auto tab_bar = TabBar("Values"))
+        if(auto tab_bar = gui::TabBar("Values"))
         {
             // Read values, showing progress bar while doing it
             // Do this asynchronously and cache results. Visualize values
@@ -596,7 +497,7 @@ void show_value<data_model::same_shape::Value>(
             if(rank == 0) {
 
                 // Table with for each object its value
-                if(auto tab_item = TabItem("Table"))
+                if(auto tab_item = gui::TabItem("Table"))
                 {
                     // ImGui::Indent();
 
@@ -919,7 +820,7 @@ void show_properties(
 
             for(std::string const& name: collection.names())
             {
-                if(auto tree_node = TreeNode(name, ImGuiTreeNodeFlags_DefaultOpen))
+                if(auto tree_node = gui::TreeNode(name, ImGuiTreeNodeFlags_DefaultOpen))
                 {
                     copy_popup("property name", name);
                     show_property(collection[name], show_details);
@@ -944,7 +845,7 @@ void show_properties2(
 
     for(std::string const& property_name: collection.names())
     {
-        if(auto tab_item = TabItem(property_name))
+        if(auto tab_item = gui::TabItem(property_name))
         {
             ImGui::Indent();
 
@@ -983,19 +884,19 @@ void show_property_set(
     bool const show_details)
 {
     if(property_set.has_time_domain()) {
-        if(auto tree_node = TreeNode("object tracker"))
+        if(auto tree_node = gui::TreeNode("object tracker"))
         {
             show_object_tracker(property_set.object_tracker(), show_details);
         }
 
-        if(auto tree_node = TreeNode("time domain", ImGuiTreeNodeFlags_DefaultOpen))
+        if(auto tree_node = gui::TreeNode("time domain", ImGuiTreeNodeFlags_DefaultOpen))
         {
             show_time_domain(property_set.time_domain(), show_details);
         }
     }
 
     if(property_set.has_space_domain()) {
-        if(auto tree_node = TreeNode("space domain", ImGuiTreeNodeFlags_DefaultOpen))
+        if(auto tree_node = gui::TreeNode("space domain", ImGuiTreeNodeFlags_DefaultOpen))
         {
             show_space_domain(property_set.space_domain(), show_details);
         }
@@ -1004,7 +905,7 @@ void show_property_set(
     {
         auto const& properties = property_set.properties();
 
-        if(auto tree_node = TreeNode(
+        if(auto tree_node = gui::TreeNode(
             fmt::format("properties ({})", properties.size()),
             ImGuiTreeNodeFlags_DefaultOpen))
         {
@@ -1025,7 +926,7 @@ void show_property_set(
 
 
 
-            if(auto tab_bar = TabBar("Properties"))
+            if(auto tab_bar = gui::TabBar("Properties"))
             {
                 show_properties2<data_model::same_shape::Properties>(
                     properties, show_details);
@@ -1073,11 +974,11 @@ void show_property_sets(
     data_model::PropertySets const& property_sets,
     bool const show_details)
 {
-    if(auto tab_bar = TabBar("Property-sets"))
+    if(auto tab_bar = gui::TabBar("Property-sets"))
     {
         for(std::string const& name: property_sets.names())
         {
-            if(auto tab_item = TabItem(name))
+            if(auto tab_item = gui::TabItem(name))
             {
                 copy_popup("property-set name", name);
                 show_property_set(property_sets[name], show_details);
@@ -1109,7 +1010,7 @@ void show_phenomenon(
         auto const& object_id{phenomenon.object_id()};
 
         if(show_details || object_id.nr_objects() > 0) {
-            if(auto tree_node = TreeNode(
+            if(auto tree_node = gui::TreeNode(
                 fmt::format("object_id ({})", object_id.nr_objects())))
             {
                 show_object_id(object_id, show_details);
@@ -1121,7 +1022,7 @@ void show_phenomenon(
         auto const& property_sets{phenomenon.collection_property_sets()};
 
         if(show_details || !property_sets.empty()) {
-            if(auto tree_node = TreeNode(
+            if(auto tree_node = gui::TreeNode(
                 fmt::format("collection property-sets ({})", property_sets.size()),
                 ImGuiTreeNodeFlags_DefaultOpen))
             {
@@ -1134,7 +1035,7 @@ void show_phenomenon(
         auto const& property_sets{phenomenon.property_sets()};
 
         if(show_details || !property_sets.empty()) {
-            if(auto tree_node = TreeNode(
+            if(auto tree_node = gui::TreeNode(
                 fmt::format("property-sets ({})", property_sets.size()),
                 ImGuiTreeNodeFlags_DefaultOpen))
             {
@@ -1149,11 +1050,11 @@ void show_phenomena(
     data_model::Phenomena const& phenomena,
     bool const show_details)
 {
-    if(auto tab_bar = TabBar("Phenomena"))
+    if(auto tab_bar = gui::TabBar("Phenomena"))
     {
         for(std::string const& name: phenomena.names())
         {
-            if(auto tab_item = TabItem(name.c_str()))
+            if(auto tab_item = gui::TabItem(name.c_str()))
             {
                 copy_popup("phenomenon name", name);
                 show_phenomenon(phenomena[name], show_details);
@@ -1178,7 +1079,7 @@ void show_universe(
     data_model::Universe const& universe,
     bool const show_details)
 {
-    if(auto tree_node = TreeNode("phenomena", ImGuiTreeNodeFlags_DefaultOpen))
+    if(auto tree_node = gui::TreeNode("phenomena", ImGuiTreeNodeFlags_DefaultOpen))
     {
         show_phenomena(universe.phenomena(), show_details);
     }
@@ -1189,11 +1090,11 @@ void show_universes(
     data_model::Universes const& universes,
     bool const show_details)
 {
-    if(auto tab_bar = TabBar("Universes"))
+    if(auto tab_bar = gui::TabBar("Universes"))
     {
         for(std::string const& name: universes.names())
         {
-            if(auto tab_item = TabItem(name))
+            if(auto tab_item = gui::TabItem(name))
             {
                 copy_popup("property-set name", name);
                 show_universe(universes[name], show_details);
@@ -1243,7 +1144,7 @@ void show_dataset(
 
         if(show_details || !phenomena.empty())
         {
-            if(auto tree_node = TreeNode(
+            if(auto tree_node = gui::TreeNode(
                 fmt::format("phenomena ({})", phenomena.size()),
                 ImGuiTreeNodeFlags_DefaultOpen))
             {
@@ -1257,7 +1158,7 @@ void show_dataset(
 
         if(show_details || !universes.empty())
         {
-            if(auto tree_node = TreeNode(
+            if(auto tree_node = gui::TreeNode(
                 fmt::format("universes ({})", universes.size()),
                 ImGuiTreeNodeFlags_DefaultOpen))
             {
@@ -1275,11 +1176,11 @@ void show_datasets(
     // Window for presenting information about the loaded datasets
     sdl2::imgui::Window imgui_window{"Datasets"};
 
-    if(auto tab_bar = TabBar("Datasets"))
+    if(auto tab_bar = gui::TabBar("Datasets"))
     {
         for(auto& dataset: datasets)
         {
-            if(auto tab_item = TabItem(dataset.filename().c_str()))
+            if(auto tab_item = gui::TabItem(dataset.filename().c_str()))
             {
                 copy_popup("filename", dataset.filename().c_str());
                 dataset.rescan();
