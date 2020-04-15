@@ -6,7 +6,10 @@ from .. import util
 import lue
 import dateutil.relativedelta
 import dateutil.parser
+from functools import reduce  # Python 3
 import numpy as np
+from tqdm import trange
+import csv
 import json
 import os.path
 import tempfile
@@ -159,9 +162,6 @@ def benchmark_to_lue_json(
     active_set_idx = list(range(nr_active_sets))
     active_object_id = nr_active_sets * [5]
 
-    # array_shape = list(benchmark_json["task"]["array_shape"])
-    # partition_shape = list(benchmark_json["task"]["partition_shape"])
-
     nr_workers = benchmark_json["environment"]["nr_workers"]
 
     lue_json = {
@@ -245,7 +245,6 @@ def import_raw_results(
     # To position all benchmarks in time, we need a single starting time
     # point to use as the clock's epoch and calculate the distance of
     # each benchmark's start time point from this epoch.
-    ### epoch = determine_epoch(cluster, benchmark, experiment)
 
     # Create a collection of benchmark indices where the indices are
     # sorted by start location in time
@@ -432,15 +431,158 @@ def write_scaling_results(
                     .format(count))
         std_lups_property.value.expand(nr_durations)[:] = std_lups
 
+    lue.assert_is_valid(lue_dataset)
+
+
+def read_performance_counters(
+        counter_pathname):
+
+    with open(counter_pathname, "r") as csv_file:
+        reader = csv.reader(csv_file)
+        field_names = next(reader)
+
+    # HPX appends to CSVs... If this fails, remove CSVs and run experiment
+    # again. Or remove earlier stuff from CSVs.
+    array = np.loadtxt(counter_pathname, dtype=np.float64, unpack=True,
+        delimiter=',', skiprows=1)
+
+    if len(field_names) == 1:
+        array = array.reshape(1, len(array))
+
+    assert len(array) == len(field_names), "{}: {} != {}".format(
+        counter_pathname, len(array), len(field_names))
+
+    # # We are assuming uint64 values here
+    # assert np.all(array >= 0)
+    # assert np.all(array % 1 == 0)
+    # array = array.astype(np.uint64)
+
+    # Idle-rates are reported as 0.01%. Convert them to percentages.
+    for i in range(len(field_names)):
+        if "idle-rate" in field_names[i]:
+            array[i] /= 100.
+
+    return field_names, array
+
+
+def import_performance_counter_file(
+        lue_dataset,
+        hpx,
+        nr_workers,
+        counter_pathname):
+
+    # --------------------------------------------------------------------------
+    # Read CSV into list of field names and 2D array of arrays with
+    # counter values, shaped (nr_time_steps, nr_fields)
+    with open(counter_pathname, "r") as csv_file:
+        reader = csv.reader(csv_file)
+        field_names = next(reader)
+
+    # HPX appends to CSVs... If this fails, remove CSVs and run experiment
+    # again. Or remove earlier stuff from CSVs.
+    counter_values = np.loadtxt(
+        counter_pathname, dtype=np.float64, delimiter=',', skiprows=1, ndmin=1)
+    assert len(counter_values.shape) == 2
+    nr_time_steps = counter_values.shape[0]
+
+    # ndmin should render this unnecessary
+    # if len(field_names) == 1:
+    #     counter_values = counter_values.reshape(1, len(counter_values))
+
+    # assert len(counter_values) == len(field_names), "{}: {} != {}".format(
+    #     counter_pathname, len(counter_values), len(field_names))
+    assert counter_values.shape[1] == len(field_names), "{}: {} != {}".format(
+        counter_pathname, counter_values.shape[1], len(field_names))
+
+    # # We are assuming uint64 values here
+    # assert np.all(counter_values >= 0)
+    # assert np.all(counter_values % 1 == 0)
+    # counter_values = counter_values.astype(np.uint64)
+
+    # Idle-rates are reported as 0.01%. Convert them to percentages.
+    for i in range(len(field_names)):
+        if "idle-rate" in field_names[i]:
+            counter_values[:, i] /= 100.
+
+    # --------------------------------------------------------------------------
+    # Create property-set for storing the counter values. Each performance
+    # counter becomes a property in the set. The time domain is a time
+    # box which is discretized in time steps. Each time step has the
+    # size of the resolution used while measuring the performance counters.
+
+    lue_benchmark = lue_dataset.benchmark
+
+    time_configuration = lue.TimeConfiguration(
+        lue.TimeDomainItemType.box
+    )
+    clock = lue.Clock(lue.Unit.millisecond, hpx.counter_interval)
+
+    lue_performance_counter = lue_benchmark.add_property_set(
+        "performance_counter_{}".format(nr_workers),
+        time_configuration, clock)
+
+    # The one active object
+    lue_performance_counter.object_tracker.active_set_index.expand(1)[:] = \
+        np.array([0])
+    lue_performance_counter.object_tracker.active_object_id.expand(1)[:] = \
+        np.array([5])
+
+    # The one time box
+    lue_performance_counter.time_domain.value.expand(1)[:] = \
+        np.array([0, nr_time_steps * hpx.counter_interval]).reshape(1, 2)
+
+    # Add properties to property-set
+    for i in range(len(field_names)):
+        property_name = \
+            util.performance_counter_name_to_property_name(field_names[i])
+        value_property = lue_performance_counter.add_property(
+            property_name, dtype=np.dtype(np.float64),
+            rank=1, shape_per_object=lue.ShapePerObject.different,
+            shape_variability=lue.ShapeVariability.variable)
+
+        # Skip for now... We know what it is.
+        # discretization_property = 
+
+        # For the one and only timebox (idx == 0) and this benchmark (ID == 5)
+        value_property.value.expand(0, 5, (nr_time_steps,))[5][:] = counter_values[:, i]
+
+
+def import_performance_counters(
+        lue_dataset,
+        hpx,
+        experiment):
+
+    # Iterate over all files containing performance counter information
+    # and import data into the properties of a new property-set
+
+    lue_benchmark = lue_dataset.benchmark
+    lue_meta_information = \
+        lue_benchmark.collection_property_sets["meta_information"]
+    system_name = lue_meta_information.properties["system_name"].value[:][0]
+    scenario_name = lue_meta_information.properties["scenario_name"].value[:][0]
+
+    lue_measurement = lue_benchmark.property_sets["measurement"]
+    nr_workers = lue_measurement.properties["nr_workers"].value[:]
+
+    for i in trange(len(nr_workers), desc="import performance counters"):
+        counter_pathname = experiment.benchmark_result_pathname(
+            system_name, scenario_name, "counter-{}".format(nr_workers[i]), "csv")
+        assert os.path.exists(counter_pathname), counter_pathname
+
+        import_performance_counter_file(
+            lue_dataset, hpx, nr_workers[i], counter_pathname)
+
+    lue.assert_is_valid(lue_dataset, fail_on_warning=False)
+
 
 def import_results(
         results_prefix):
 
-    lue_dataset = job.open_lue_dataset(results_prefix)
-    cluster, benchmark, experiment = dataset.read_benchmark_settings(
-        lue_dataset, StrongScalingExperiment)
+    lue_dataset = job.open_lue_dataset(results_prefix, "w")
 
     if not dataset.results_already_imported(lue_dataset):
+        cluster, benchmark, experiment = dataset.read_benchmark_settings(
+            lue_dataset, StrongScalingExperiment)
 
         import_raw_results(
             lue_dataset.pathname, cluster, benchmark, experiment)
@@ -451,3 +593,12 @@ def import_results(
         lue_dataset = job.open_lue_dataset(results_prefix, "w")
 
         write_scaling_results(lue_dataset)
+
+        performance_counters_available = benchmark.hpx is not None and \
+            benchmark.hpx.performance_counters is not None
+
+        if performance_counters_available:
+            import_performance_counters(lue_dataset, benchmark.hpx, experiment)
+
+        lue_dataset.flush()  # TODO Why is this needed?
+        lue.assert_is_valid(lue_dataset, fail_on_warning=False)

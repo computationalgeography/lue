@@ -8,8 +8,6 @@ from .. import util
 import lue
 import dateutil.parser
 import matplotlib
-# matplotlib.use("PDF")
-matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -122,7 +120,7 @@ def post_process_raw_results(
 
         a_plot_pathname = experiment.benchmark_result_pathname(
             system_name, scenario_name, array_shape, "plot", "pdf")
-        plt.savefig(a_plot_pathname)
+        plt.savefig(a_plot_pathname, bbox_inches="tight")
 
 
     # --------------------------------------------------------------------------
@@ -157,7 +155,7 @@ def post_process_raw_results(
             )
         )
 
-    plt.savefig(plot_pathname)
+    plt.savefig(plot_pathname, bbox_inches="tight")
 
 
 def post_process_results(

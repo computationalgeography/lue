@@ -11,13 +11,24 @@ class HPX(object):
         self.performance_counters = json["performance_counters"] \
             if "performance_counters" in json else None
 
-        # print-counter-destination={destination}
-        #     {
-        #         "print-counter-destination": "counter.csv"
-        #     },
+        if self.performance_counters:
+            self.counter_interval = None
+
+            for argument in self.performance_counters:
+                if "print-counter-interval" in argument:
+                    # milliseconds
+                    self.counter_interval = \
+                        int(argument["print-counter-interval"])
+
+            assert self.counter_interval
 
     def to_json(self):
-        return self.performance_counters
+        result = {}
+
+        if self.performance_counters:
+            result["performance_counters"] = self.performance_counters
+
+        return result
 
 
 class Benchmark(object):
@@ -161,5 +172,6 @@ class Benchmark(object):
 
         if self.hpx:
             result["hpx"] = self.hpx.to_json()
+            assert not result["hpx"] is None
 
         return result
