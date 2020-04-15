@@ -8,10 +8,12 @@ from .. import util
 import lue
 import dateutil.parser
 import matplotlib
-# matplotlib.use("PDF")
-matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
+from tqdm import trange
+import collections
+import os.path
+import re
 
 
 def post_process_raw_results(
@@ -239,7 +241,7 @@ def post_process_raw_results(
             )
         )
 
-    plt.savefig(plot_pathname)
+    plt.savefig(plot_pathname, bbox_inches="tight")
 
 
 class PerformanceCounter(object):
@@ -262,6 +264,7 @@ class PerformanceCounter(object):
                     "object={}, instance={}, name={}, parameters={})".format(
                 self.object, self.instance, self.name, self.parameters)
 
+    @property
     def full_name(self):
         # counter name: <object>{<instance>}/name@parameters
 
@@ -530,23 +533,33 @@ def group_performance_counters(
 
 
 def plot_performance_counters(
-        counter_pathname):
+        lue_dataset,
+        nr_workers):
 
-    # CSV file containing the counter results
-    counter_dirname, counter_basename = os.path.split(counter_pathname)
+    # Read performance counters and plot them, grouped
+    # - Get rid of seaborn stuff
+    # - Try to be faster than before
+    # - Try to be more robust, also when plotting large graphs (subset?)
 
-    # TODO
-    # - Create dir per object
-    # - Write plot per group
-    # - Make sure each individual plot contains all information
+    property_set_name = "performance_counter_{}".format(nr_workers)
+    property_set = lue_dataset.benchmark.property_sets[property_set_name]
 
-    # Read data in numpy arrays and translate into data frame
-    counter_names, counter_values = read_performance_counters(counter_pathname)
-    assert len(counter_values) == len(counter_names), "{} != {}".format(
-        len(counter_values), len(counter_names))
-    data_frame = pd.DataFrame(dict(zip(counter_names, counter_values)))
+    nr_time_units = property_set.time_domain.clock.nr_units
+    nr_time_points = property_set.time_domain.value[:]
+    assert nr_time_points.shape == (1, 2), nr_time_points.shape
+    assert nr_time_points[0][0] % nr_time_units == 0
+    assert nr_time_points[0][1] % nr_time_units == 0
+    nr_time_points = nr_time_points / nr_time_units
+    time = np.arange(nr_time_points[0][0], nr_time_points[0][1])
+
+    counter_dirname = os.path.split(lue_dataset.pathname)[0]
 
     plot_pathnames = []
+
+    property_names = property_set.properties.names
+    counter_names = [
+        util.property_name_to_performance_counter_name(name)
+            for name in property_names]
 
     groups_per_object = group_performance_counters(counter_names)
 
@@ -555,73 +568,65 @@ def plot_performance_counters(
         #     threadqueue, ...
         counter_groups = groups_per_object[object_name]
 
-        directory_pathname = os.path.join(counter_dirname, object_name)
+        directory_pathname = \
+            os.path.join(counter_dirname, object_name, str(nr_workers))
 
         if not os.path.isdir(directory_pathname):
-            os.mkdir(directory_pathname)
+            os.makedirs(directory_pathname)
 
-        plot_pathname = os.path.join(
-            directory_pathname,
-            "{}.pdf".format(os.path.splitext(counter_basename)[0]))
-        assert not plot_pathname in plot_pathnames
-        plot_pathnames.append(plot_pathname)
+        for counter_group_name in counter_groups:
 
-        nr_plots = len(counter_groups)
+            counter_group = counter_groups[counter_group_name]
+            counter_group_basename = \
+                util.performance_counter_name_to_property_name(
+                    counter_group_name)
 
-        figure, axes = plt.subplots(
-                nrows=nr_plots, ncols=1,
-                figsize=(15, 5 * nr_plots),
-                squeeze=False, sharex=False
-            )  # Inches...
+            plot_pathname = os.path.join(
+                directory_pathname, "{}.pdf".format(counter_group_basename))
+            assert not plot_pathname in plot_pathnames
+            plot_pathnames.append(plot_pathname)
 
-        for p in range(nr_plots):
-            group_name = list(counter_groups.keys())[p]
-            counter_group = counter_groups[group_name]
+            figure, axes = plt.subplots(
+                    nrows=1, ncols=1,
+                    figsize=(8, 6),
+                    squeeze=False, sharex=False
+                )  # Inches...
 
             for counter in counter_group.counters:
-                sns.lineplot(
-                    data=data_frame[counter.full_name()], ax=axes[p, 0])
+                property_name = \
+                    util.performance_counter_name_to_property_name(counter.full_name)
+                # Index of one and only time box (0) and of one and only
+                # object (5)
+                counter_data = \
+                    property_set.properties[property_name].value[0][5][:]
 
-            axes[p, 0].set_ylabel(counter_group.name)
-            axes[p, 0].grid()
-            axes[p, 0].set_title(counter_group.name)
-            axes[p, 0].set_xlabel(
-                "interval (x {} milliseconds)".format("todo"))
-            axes[p, 0].set_ylim(*counter_group.ylim)
+                axes[0, 0].plot(
+                    time, counter_data, linewidth=plot.default_linewidth)
+
+            axes[0, 0].set_ylabel(counter_group.name)
+            axes[0, 0].grid()
+            axes[0, 0].set_title(counter_group.name)
+            axes[0, 0].set_xlabel(
+                "interval (x {} milliseconds)".format(nr_time_units))
+            axes[0, 0].set_ylim(*counter_group.ylim)
 
             if len(counter_group) <= 10:
-                axes[p, 0].legend(
+                axes[0, 0].legend(
                     labels=[
                         counter.label for counter in counter_group.counters])
 
-        # plt.tight_layout()
-        plt.savefig(plot_pathname)
-        plt.close(figure)
+            plt.savefig(plot_pathname, bbox_inches="tight")
+            plt.close(figure)
 
 
 def post_process_performance_counters(
         lue_dataset,
-        scenario_name,
         experiment):
 
-    # Iterate over all files containing performance counter information
-    # and create plots
+    nr_workers = lue_dataset.benchmark.measurement.nr_workers.value[:]
 
-    lue_benchmark = lue_dataset.phenomena["benchmark"]
-
-    lue_meta_information = \
-        lue_benchmark.collection_property_sets["meta_information"]
-    system_name = lue_meta_information.properties["system_name"].value[:][0]
-
-    lue_measurement = lue_benchmark.property_sets["measurement"]
-    nr_workers = lue_measurement.properties["nr_workers"].value[:]
-
-    for nr_workers_ in nr_workers:
-        counter_pathname = experiment.benchmark_result_pathname(
-            system_name, scenario_name, "counter-{}".format(nr_workers_), "csv")
-        assert os.path.exists(counter_pathname), counter_pathname
-
-        plot_performance_counters(counter_pathname)
+    for i in trange(len(nr_workers), desc="plot performance counters"):
+        plot_performance_counters(lue_dataset, nr_workers[i])
 
 
 def post_process_results(
@@ -634,18 +639,19 @@ def post_process_results(
     cluster, benchmark, experiment = dataset.read_benchmark_settings(
         lue_dataset, StrongScalingExperiment)
 
-    util.create_dot_graph(
-        lue_dataset.pathname,
-        experiment.result_pathname(
-            cluster.name, benchmark.scenario_name, "graph", "pdf"))
+    performance_counters_available = benchmark.hpx is not None and \
+        benchmark.hpx.performance_counters is not None
+
+    if not performance_counters_available:
+        util.create_dot_graph(
+            lue_dataset.pathname,
+            experiment.result_pathname(
+                cluster.name, benchmark.scenario_name, "graph", "pdf"))
+
     plot_pathname = experiment.result_pathname(
             cluster.name, benchmark.scenario_name, "plot", "pdf")
 
     post_process_raw_results(lue_dataset, plot_pathname)
 
-    performance_counters_available = benchmark.hpx is not None and \
-        benchmark.hpx.performance_counters is not None
-
     if performance_counters_available:
-        post_process_performance_counters(
-            lue_dataset, benchmark.scenario_name)
+        post_process_performance_counters(lue_dataset, experiment)

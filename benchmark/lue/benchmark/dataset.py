@@ -11,7 +11,7 @@ def write_benchmark_settings(
         benchmark,
         experiment):
 
-    lue.assert_is_valid(lue_dataset)
+    lue.assert_is_valid(lue_dataset, fail_on_warning=False)
 
     phenomenon = lue_dataset.add_phenomenon("benchmark")
     property_set = phenomenon.add_collection_property_set("meta_information")
@@ -31,7 +31,7 @@ def write_benchmark_settings(
         "experiment_settings", dtype=np.dtype(np.unicode_))
     experiment_property.value.expand(1)[:] = np.array([experiment_json])
 
-    lue.assert_is_valid(lue_dataset)
+    lue.assert_is_valid(lue_dataset, fail_on_warning=False)
 
 
 def write_script(
@@ -51,7 +51,7 @@ def read_benchmark_settings(
         lue_dataset,
         Experiment):
 
-    lue.assert_is_valid(lue_dataset)
+    lue.assert_is_valid(lue_dataset, fail_on_warning=False)
 
     phenomenon = lue_dataset.benchmark
     property_set = phenomenon.meta_information
@@ -69,7 +69,7 @@ def read_benchmark_settings(
 def results_already_imported(
         lue_dataset):
 
-    lue.assert_is_valid(lue_dataset)
+    lue.assert_is_valid(lue_dataset, fail_on_warning=False)
 
     # Test for something that is being imported
     return \

@@ -118,10 +118,9 @@ class ClusterNode(object):
 class Scheduler(object):
 
     def __init__(self, json):
+        self._from_json(json)
 
-        self.from_json(json)
-
-    def from_json(self, json):
+    def _from_json(self, json):
         self.kind = json["kind"]
 
     def to_json(self):
@@ -133,10 +132,10 @@ class Scheduler(object):
 class ShellScheduler(Scheduler):
 
     def __init__(self, json):
-        Scheduler.__init__(self, json)
+        super(ShellScheduler, self).__init__(json)
 
     def to_json(self):
-        return Scheduler.to_json(self)
+        return super(ShellScheduler, self).to_json()
 
 
 class SlurmSettings(object):
@@ -168,14 +167,14 @@ class SlurmSettings(object):
 class SlurmScheduler(Scheduler):
 
     def __init__(self, json):
-        Scheduler.__init__(self, json)
+        super(SlurmScheduler, self).__init__(json)
         self.from_json(json)
 
     def from_json(self, json):
         self.settings = SlurmSettings(json["settings"])
 
     def to_json(self):
-        result = Scheduler.to_json(self)
+        result = super(SlurmScheduler, self).to_json()
 
         result["settings"] = self.settings.to_json()
 

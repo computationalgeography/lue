@@ -6,6 +6,7 @@ from .. import util
 import lue
 import dateutil.relativedelta
 import dateutil.parser
+from functools import reduce  # Python 3
 import numpy as np
 import json
 import os.path

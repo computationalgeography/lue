@@ -244,7 +244,7 @@ def create_lue_dataset(
 
 def open_lue_dataset(
         results_prefix,
-        open_mode="r"):
+        open_mode):
 
     dataset_pathname = os.path.join(
         results_prefix, lue_dataset_basename() + ".lue")
