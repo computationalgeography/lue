@@ -1240,9 +1240,6 @@ int Application::run_implementation()
 
     auto const dataset_names = argument<std::vector<std::string>>("<dataset>");
 
-    // Open datasets
-    Datasets datasets_to_visualize{dataset_names.begin(), dataset_names.end()};
-
     sdl2::API api;
     sdl2::Window sdl_window{"LUE view",
         SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1000, 800};
@@ -1252,6 +1249,9 @@ int Application::run_implementation()
     //     expand_environment_variables("${HOME}/.lue_view.ini")};
     // binding.io().IniFilename = ini_pathname.c_str();
     binding.io().IniFilename = nullptr;  // Skip for now
+
+    // Open datasets
+    Datasets datasets_to_visualize{dataset_names.begin(), dataset_names.end()};
 
     bool stop_browsing = false;
 
