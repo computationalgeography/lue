@@ -344,7 +344,8 @@ PartitionedArray<OutputElementT<Functor>, rank> binary_local_operation(
                         }
 
                     ),
-                hpx::get_colocation_id(input_partition1.get_id()));
+                input_partition1.locality_id());
+                // hpx::get_colocation_id(input_partition1.get_id()));
         }
     }
 
@@ -408,7 +409,8 @@ PartitionedArray<OutputElementT<Functor>, rank> binary_local_operation(
                         }
 
                     ),
-                hpx::get_colocation_id(input_partition.get_id()));
+                input_partition.locality_id());
+                // hpx::get_colocation_id(input_partition.get_id()));
         }
     }
 
@@ -472,7 +474,8 @@ PartitionedArray<OutputElementT<Functor>, rank> binary_local_operation(
                         }
 
                     ),
-                hpx::get_colocation_id(input_partition.get_id()));
+                input_partition.locality_id());
+                // hpx::get_colocation_id(input_partition.get_id()));
         }
     }
 

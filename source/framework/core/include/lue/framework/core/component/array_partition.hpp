@@ -79,6 +79,9 @@ public:
 
     ArrayPartition& operator=          (ArrayPartition&&)=default;
 
+    hpx::future<hpx::naming::id_type>
+                   locality_id         () const;
+
     hpx::future<Data> data             () const;
 
     hpx::future<Data> slice            (Slices const& slices) const;
@@ -345,6 +348,21 @@ ArrayPartition<Element, rank>::ArrayPartition(
 //     // this->get_id() identifies the server instance
 //     return hpx::get_ptr<Server>(this->get_id()).get();
 // }
+
+
+template<
+    typename Element,
+    Rank rank>
+hpx::future<hpx::naming::id_type>
+    ArrayPartition<Element, rank>::locality_id() const
+{
+    assert(this->get_id());
+
+    typename Server::LocalityIDAction action;
+
+    // this->get_id() identifies the server instance
+    return hpx::async(action, this->get_id());
+}
 
 
 /*!

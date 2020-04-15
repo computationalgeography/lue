@@ -128,7 +128,8 @@ PartitionedArray<OutputElementT<Functor>, rank> unary_local_operation(
                         }
 
                     ),
-                hpx::get_colocation_id(input_partition.get_id()));
+                input_partition.locality_id());
+                // hpx::get_colocation_id(input_partition.get_id()));
         }
     }
 
