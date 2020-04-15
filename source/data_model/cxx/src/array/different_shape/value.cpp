@@ -127,11 +127,11 @@ void Value::expand_core(
     assert(!contains(id));
 
     std::string const name = std::to_string(id);
-    hdf5::Shape max_dimension_sizes{shape};
-    auto dataspace = hdf5::create_dataspace(shape, max_dimension_sizes);
+    hdf5::Shape max_dimension_sizes{array_shape};
+    auto dataspace = hdf5::create_dataspace(array_shape, max_dimension_sizes);
 
     hdf5::Dataset::CreationPropertyList creation_property_list;
-    // TODO
+
     // auto chunk_dimension_sizes =
     //     hdf5::chunk_shape(array_shape, file_datatype.size());
     // creation_property_list.set_chunk(chunk_dimension_sizes);

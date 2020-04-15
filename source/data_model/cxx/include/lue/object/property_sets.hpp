@@ -45,6 +45,12 @@ public:
                                         TimeDomain& domain);
 
     PropertySet&   add                 (std::string const& name,
+                                        TimeConfiguration const&
+                                            time_configuration,
+                                        Clock const& clock,
+                                        ObjectTracker& object_tracker);
+
+    PropertySet&   add                 (std::string const& name,
                                         TimeDomain& domain,
                                         ObjectTracker& object_tracker);
 

@@ -75,6 +75,20 @@ PropertySet& PropertySets::add(
 
 PropertySet& PropertySets::add(
     std::string const& name,
+    TimeConfiguration const& time_configuration,
+    Clock const& clock,
+    ObjectTracker& object_tracker)
+{
+    return Collection::add(
+        name,
+        create_property_set(
+            *this, name,
+            time_configuration, clock, object_tracker));
+}
+
+
+PropertySet& PropertySets::add(
+    std::string const& name,
     TimeDomain& domain,
     ObjectTracker& object_tracker)
 {

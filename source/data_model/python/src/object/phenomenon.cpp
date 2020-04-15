@@ -104,6 +104,17 @@ PropertySet& add_property_set(
 PropertySet& add_property_set(
     PropertySets& property_sets,
     std::string const& name,
+    TimeConfiguration const& time_configuration,
+    Clock const& clock,
+    ObjectTracker& object_tracker)
+{
+    return property_sets.add(name, time_configuration, clock, object_tracker);
+}
+
+
+PropertySet& add_property_set(
+    PropertySets& property_sets,
+    std::string const& name,
     TimeDomain& time_domain,
     ObjectTracker& object_tracker)
 {
@@ -475,6 +486,42 @@ void init_phenomenon(
     :param TimeDomain time_domain: Another property-set's time domain
         to use. Sharing time domains makes sense when the locations in
         time are the same. This saves space in the dataset.
+    :return: Property-set created
+    :rtype: PropertySet
+    :raises RuntimeError: In case the property-set cannot be created
+
+    The property-set will have no space domain. Information stored in
+    this property-set will be omnipresent through space.
+)",
+            py::return_value_policy::reference_internal)
+
+        .def(
+            "add_property_set",
+            [](
+                Phenomenon& phenomenon,
+                std::string const& name,
+                TimeConfiguration const& time_configuration,
+                Clock const& clock,
+                ObjectTracker& object_tracker) -> PropertySet&
+            {
+                return add_property_set(
+                    phenomenon.property_sets(), name,
+                    time_configuration, clock, object_tracker);
+            },
+            "name"_a,
+            "time_configuration"_a,
+            "clock"_a,
+            "object_tracker"_a,
+            R"(
+    Add new property-set to collection
+
+    :param str name: Name of property-set to create
+    :param TimeConfiguration time_configuration: Configuration of
+        time domain
+    :param lue.Clock clock: Clock for locations in time
+    :param ObjectTracker object_tracker: Another property-set's object
+        tracker to use. Sharing object trackers makes sense when the
+        active set in different property-sets are the same.
     :return: Property-set created
     :rtype: PropertySet
     :raises RuntimeError: In case the property-set cannot be created

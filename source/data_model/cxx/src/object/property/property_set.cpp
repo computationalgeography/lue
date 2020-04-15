@@ -261,6 +261,29 @@ PropertySet create_property_set(
 PropertySet create_property_set(
     hdf5::Group& parent,
     std::string const& name,
+    TimeConfiguration const& time_configuration,
+    Clock const& clock,
+    ObjectTracker& object_tracker)
+{
+    if(hdf5::group_exists(parent, name)) {
+        throw std::runtime_error(fmt::format(
+            "Property-set {} already exists at {}",
+            name, parent.id().pathname()));
+    }
+
+    auto group = hdf5::create_group(parent, name);
+
+    link_object_tracker(group, object_tracker);
+    create_time_domain(group, time_configuration, clock);
+    create_properties(group);
+
+    return PropertySet{std::move(group)};
+}
+
+
+PropertySet create_property_set(
+    hdf5::Group& parent,
+    std::string const& name,
     TimeDomain& domain,
     ObjectTracker& object_tracker)
 {
