@@ -58,6 +58,28 @@ void File::AccessPropertyList::use_mpi_communicator(
 
 
 /*!
+    @brief      Set bounds on library versions, and indirectly format
+                versions, to be used when creating objects
+    @param      low Earliest version of library that will be used for
+                writing objects
+    @param      high ...
+    @exception  std::runtime_error In case the bounds on the library
+                versions cannot be set
+    @sa         [H5Pset_libver_bounds](https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-SetLibverBounds)
+*/
+void File::AccessPropertyList::set_library_version_bounds(
+    H5F_libver_t const low,
+    H5F_libver_t const high)
+{
+    auto status = ::H5Pset_libver_bounds(id(), low, high);
+
+    if(status < 0) {
+        throw std::runtime_error("Cannot set library version bounds");
+    }
+}
+
+
+/*!
     @brief      Open file
     @param      name Name of file
     @param      flags File access flags: H5F_ACC_RDWR, H5F_ACC_RDONLY
@@ -223,10 +245,11 @@ bool file_exists(
 
 
 File create_file(
-    std::string const& name)
+    std::string const& name,
+    File::AccessPropertyList const& access_property_list)
 {
     Identifier id(::H5Fcreate(name.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT,
-        H5P_DEFAULT), ::H5Fclose);
+        access_property_list.id()), ::H5Fclose);
 
     if(!id.is_valid()) {
         throw std::runtime_error(fmt::format(
@@ -243,27 +266,26 @@ File create_file(
 }
 
 
+File create_file(
+    std::string const& name)
+{
+    // Pass in default access property list
+    return create_file(name, File::AccessPropertyList{});
+}
+
+
 /*!
     @brief      Create an in-memory file
 */
 File create_in_memory_file(
     std::string const& name)
 {
-    auto access_property_list = File::AccessPropertyList();
+    // Pass in access property list for in-memory access
+    File::AccessPropertyList access_property_list{};
 
     access_property_list.use_core_driver();
 
-    Identifier id(::H5Fcreate(name.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT,
-        access_property_list.id()), ::H5Fclose);
-
-    if(!id.is_valid()) {
-        throw std::runtime_error(fmt::format(
-                "Cannot create file {}",
-                name
-            ));
-    }
-
-    return File{std::move(id)};
+    return create_file(name, access_property_list);
 }
 
 

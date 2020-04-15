@@ -109,7 +109,7 @@ void init_file(
 
     module.def(
         "create_file",
-        &create_file,
+        py::overload_cast<std::string const&>(&create_file),
         R"(
     Create new HDF5 file
 

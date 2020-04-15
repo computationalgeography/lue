@@ -32,6 +32,10 @@ public:
                                         MPI_Info const& info);
 #endif
 
+        void       set_library_version_bounds(
+                                        H5F_libver_t low,
+                                        H5F_libver_t high);
+
     };
 
     explicit       File                (std::string const& name);
@@ -76,6 +80,10 @@ private:
 
 
 bool               file_exists         (std::string const& name);
+
+File               create_file         (std::string const& name,
+                                        File::AccessPropertyList const&
+                                            access_property_list);
 
 File               create_file         (std::string const& name);
 
