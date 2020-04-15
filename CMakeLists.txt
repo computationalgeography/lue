@@ -18,6 +18,9 @@ list(APPEND CMAKE_MODULE_PATH
     ${CMAKE_CURRENT_LIST_DIR}/devbase/cmake
     ${CMAKE_CURRENT_LIST_DIR}/environment/cmake)
 
+include(GetGitRevisionDescription)
+get_git_head_revision(GIT_REFSPEC LUE_GIT_SHA1)
+
 include(Lue)
 
 if(LUE_BUILD_DOCUMENTATION)
