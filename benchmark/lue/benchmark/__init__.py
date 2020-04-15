@@ -2,6 +2,7 @@ from . import partition_shape
 from . import strong_scaling
 from . import weak_scaling
 from .util import json_to_data
+from .export_results import export_results
 import math
 
 
