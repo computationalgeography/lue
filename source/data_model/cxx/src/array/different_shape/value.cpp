@@ -122,7 +122,7 @@ void Value::expand(
 */
 void Value::expand_core(
     ID const id,
-    hdf5::Shape const& shape)
+    hdf5::Shape const& array_shape)
 {
     assert(!contains(id));
 
