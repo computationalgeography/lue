@@ -3,7 +3,10 @@
 
 
 #cmakedefine LUE_VERSION "${LUE_VERSION}"
+// #cmakedefine LUE_VERSION_TWEAK "${LUE_VERSION_TWEAK}"
+// #cmakedefine LUE_GIT_REFSPEC "${LUE_GIT_REFSPEC}"
 #cmakedefine LUE_GIT_SHA1 "${LUE_GIT_SHA1}"
+#cmakedefine LUE_GIT_SHORT_SHA1 "${LUE_GIT_SHORT_SHA1}"
 #cmakedefine LUE_FRAMEWORK_WITH_OPENCL
 #cmakedefine LUE_BUILD_DATA_MODEL
 #cmakedefine01 LUE_BUILD_FRAMEWORK
@@ -22,7 +25,13 @@ public:
 
     static constexpr char version[]{LUE_VERSION};
 
+    // static constexpr char version_tweak[]{LUE_VERSION_TWEAK};
+
+    // static constexpr char git_refspec[]{LUE_GIT_REFSPEC};
+
     static constexpr char git_sha1[]{LUE_GIT_SHA1};
+
+    static constexpr char git_short_sha1[]{LUE_GIT_SHORT_SHA1};
 
     static constexpr bool build_framework{LUE_BUILD_FRAMEWORK};
 
