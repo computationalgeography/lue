@@ -19,7 +19,8 @@ list(APPEND CMAKE_MODULE_PATH
     ${CMAKE_CURRENT_LIST_DIR}/environment/cmake)
 
 include(GetGitRevisionDescription)
-get_git_head_revision(GIT_REFSPEC LUE_GIT_SHA1)
+get_git_head_revision(LUE_GIT_REFSPEC LUE_GIT_SHA1)
+string(SUBSTRING ${LUE_GIT_SHA1} 0 7 LUE_GIT_SHORT_SHA1)
 
 include(Lue)
 

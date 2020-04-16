@@ -2,6 +2,7 @@
 #include "lue/utility/print_message.hpp"
 // #include "lue/utility/stopwatch.hpp"
 #include "lue/configure.hpp"
+#include <fmt/format.h>
 #include <cassert>
 #include <iostream>
 
@@ -74,7 +75,11 @@ Command::Command(
 
     : _info_stream(std::cout),
       _error_stream(std::cerr),
-      _arguments(docopt::docopt(usage, arguments, true, LUE_VERSION, true)),
+      _arguments(docopt::docopt(
+          usage, arguments, true,
+          fmt::format("{} (build {})",
+              build_options.version, build_options.git_short_sha1),
+          true)),
       _subcommand_creators{subcommand_creators},
       _sub_command()
 

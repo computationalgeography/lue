@@ -295,7 +295,8 @@ void show_about_window(
 
     if(ImGui::BeginPopupModal(
             "About...", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-        ImGui::Text("LUE version %s", LUE_VERSION);
+        ImGui::Text("LUE version %s (build %s)",
+            build_options.version, build_options.git_short_sha1);
         ImGui::Separator();
         ImGui::Text("By the PCRaster research and development team");
         ImGui::Text("LUE is licensed under the GPL-2 License");
