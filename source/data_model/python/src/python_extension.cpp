@@ -41,7 +41,7 @@ PYBIND11_MODULE(lue, module)
 )";
     module.attr("__version__") = py::str(build_options.version);
     module.attr("lue_version") = py::str(build_options.version);
-    module.attr("lue_git_short_sha1") = py::str(build_options.git_short_sha1);
+    module.attr("git_short_sha1") = py::str(build_options.git_short_sha1);
 
     // Prevent the dump of HDF5 error/warning messages. Our messages should
     // be clear enough.
