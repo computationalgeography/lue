@@ -22,11 +22,13 @@ def post_process_raw_results(
 
     worker_type = lue_meta_information.worker_type.value[:][0]
 
-    count = lue_dataset.benchmark.measurement.duration.value.shape[1]
+    lue_measurement = lue_dataset.benchmark.measurement
+
+    count = lue_measurement.duration.value.shape[1]
 
     # The time point at which the experiment was performed is the epoch
     # of the time domain used to store the durations
-    lue_clock = lue_dataset.benchmark.measurement.time_domain.clock
+    lue_clock = lue_measurement.time_domain.clock
     assert lue_clock.nr_units == 1
     time_point_units = lue_clock.unit
 
@@ -39,7 +41,16 @@ def post_process_raw_results(
     # time_point = time_point.astimezone(tzlocal.get_localzone()).strftime("%c")
     time_point = time_point.strftime("%c")
 
-    nr_workers = lue_dataset.benchmark.measurement.nr_workers.value[:]
+    nr_workers = lue_measurement.nr_workers.value[:]
+
+    # Results are sorted by time not by nr_workers. All values to be
+    # plotted need to be sorted, by nr_workers.
+    sort_idxs = np.argsort(nr_workers)
+    nr_workers = nr_workers[sort_idxs]
+    assert util.is_monotonically_increasing(nr_workers), nr_workers
+    assert nr_workers[0] == 1, nr_workers
+
+    lue_scaling = lue_dataset.benchmark.scaling
 
 
     def annotate_plot(
@@ -55,15 +66,15 @@ def post_process_raw_results(
             axis):
 
         if count == 1:
-            duration = lue_dataset.benchmark.measurement.duration.value[:]
+            duration = lue_measurement.duration.value[:][sort_idxs]
             y_label = u"duration ({})".format(time_point_units)
             plot_actual = lambda data: axis.plot(
                 nr_workers, data,
                 linewidth=plot.default_linewidth,
                 color=plot.actual_color, marker="o")
         else:
-            duration = lue_dataset.benchmark.scaling.mean_duration.value[:]
-            error = lue_dataset.benchmark.scaling.std_duration.value[:]
+            duration = lue_scaling.mean_duration.value[:][sort_idxs]
+            error = lue_scaling.std_duration.value[:][sort_idxs]
             y_label= u"duration ({}) ± stddev (count={})".format(
                 time_point_units, count)
             plot_actual = lambda data: axis.errorbar(
@@ -92,15 +103,14 @@ def post_process_raw_results(
 
         if count == 1:
             relative_efficiency = \
-                lue_dataset.benchmark.scaling.relative_efficiency.value[:]
+                lue_scaling.relative_efficiency.value[:][sort_idxs]
             plot_actual = lambda data: axis.plot(
                 nr_workers, data, linewidth=plot.default_linewidth,
                 color=plot.actual_color, marker="o")
         else:
             relative_efficiency = \
-                lue_dataset.benchmark.scaling.mean_relative_efficiency.value[:]
-            error = \
-                lue_dataset.benchmark.scaling.std_relative_efficiency.value[:]
+                lue_scaling.mean_relative_efficiency.value[:][sort_idxs]
+            error = lue_scaling.std_relative_efficiency.value[:][sort_idxs]
             plot_actual = lambda data: axis.errorbar(
                 x=nr_workers, y=data, yerr=error,
                 linewidth=plot.default_linewidth,
@@ -128,16 +138,13 @@ def post_process_raw_results(
             axis):
 
         if count == 1:
-            lups = \
-                lue_dataset.benchmark.scaling.lups.value[:]
+            lups = lue_scaling.lups.value[:][sort_idxs]
             plot_actual = lambda data: axis.plot(
                 nr_workers, data, linewidth=plot.default_linewidth,
                 color=plot.actual_color, marker="o")
         else:
-            lups = \
-                lue_dataset.benchmark.scaling.mean_lups.value[:]
-            error = \
-                lue_dataset.benchmark.scaling.std_lups.value[:]
+            lups = lue_scaling.mean_lups.value[:][sort_idxs]
+            error = lue_scaling.std_lups.value[:][sort_idxs]
             plot_actual = lambda data: axis.errorbar(
                 x=nr_workers, y=data, yerr=error,
                 linewidth=plot.default_linewidth,

@@ -408,7 +408,7 @@ def write_scaling_results(
 def import_results(
         results_prefix):
 
-    lue_dataset = job.open_lue_dataset(results_prefix)
+    lue_dataset = job.open_lue_dataset(results_prefix, "r")
     cluster, benchmark, experiment = dataset.read_benchmark_settings(
         lue_dataset, PartitionShapeExperiment)
 

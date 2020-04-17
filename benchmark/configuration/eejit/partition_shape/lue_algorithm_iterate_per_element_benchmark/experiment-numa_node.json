@@ -6,7 +6,7 @@
     "partition": {
         "shape": [200, 200],
         "range": {
-            "max_nr_elements": 600000,
+            "max_nr_elements": 800000,
             "multiplier": 1.5,
             "method": "linear"
         }

@@ -1,5 +1,5 @@
-import pandas as pd
 import dateutil.parser
+import numpy as np
 import json
 import math
 import os.path
@@ -90,31 +90,6 @@ def format_partition_size(
     return "{:,}".format(int(partition_size)) if partition_size == size else ""
 
 
-def select_data_for_plot(
-        data_frame,
-        name,
-        count):
-    # Select data needed for plotting
-    result = data_frame.filter(
-        items=
-            ["nr_workers"] +
-            ["{}_{}".format(name, i) for i in range(count)])
-
-    # Durations per nr workers
-    result = result.set_index(keys="nr_workers")
-    result = pd.DataFrame(
-        data=result.stack(),
-        columns=[name])
-
-    # Get rid of introduced level of index
-    result.index = result.index.droplevel(1)
-
-    # Create a new index, moving nr_workers index level into columns
-    result = result.reset_index()
-
-    return result
-
-
 def json_to_data(
         pathname):
 
@@ -176,3 +151,13 @@ def property_name_to_performance_counter_name(
     assert property_name.find("/") == -1, counter_name
     return property_name.replace("|", "/")
 
+
+def is_monotonically_increasing(
+        array):
+
+    # np.diff returns the difference between consecutive elements
+
+    # Cast to float64 because when the type is unsigned int, this
+    # logic fails because a negative value cannot be stored (out of range)
+
+    return np.all(np.diff(array.astype(np.float64)) > 0)

@@ -10,7 +10,7 @@ algorithm_names="
     sqrt
 "
 scenarios="
-    thread_cluster_node
+    cluster_node
 "
 
 

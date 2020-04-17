@@ -1,12 +1,12 @@
 {
-    "scenario": "thread_cluster_node",
-    "count": 5,
-    "locality_per": "cluster_node",
+    "scenario": "numa_node_800x800",
+    "count": 3,
+    "locality_per": "numa_node",
     "worker": {
-        "type": "thread",
+        "type": "numa_node",
         "pool": {
             "min_size": 1,
-            "max_size": 48,
+            "max_size": 8,
             "incrementor": 1
         }
     },

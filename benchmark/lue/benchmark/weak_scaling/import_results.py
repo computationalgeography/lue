@@ -6,8 +6,8 @@ from .. import util
 import lue
 import dateutil.relativedelta
 import dateutil.parser
-from functools import reduce  # Python 3
 import numpy as np
+from functools import reduce  # Python 3
 import json
 import os.path
 import tempfile
@@ -258,7 +258,13 @@ def import_raw_results(
     ### epoch = determine_epoch(cluster, benchmark, experiment)
 
     # Create a collection of benchmark indices where the indices are
-    # sorted by start location in time
+    # sorted by start location in time.
+
+    # It is possible that the results for a later experiment, with more
+    # workers, is stored before an experiment with less workers. This
+    # must be taken care of later, during post-processing.
+    # → Results are sorted by time, not by the number of workers!!!
+
     benchmark_idxs, epoch = util.sort_benchmarks_by_time(
         cluster, benchmark, experiment)
 
@@ -312,10 +318,16 @@ def write_scaling_results(
     nr_durations = len(duration)
 
     nr_workers = lue_measurement.nr_workers.value[:]
+
+    # Results are sorted by time, not by nr_workers. Find index of
+    # benchmark with 1 worker.
+    t1_idx = np.where(nr_workers == 1)[0][0]
+    assert nr_workers[t1_idx] == 1, nr_workers
+
     nr_workers = nr_workers.reshape(len(nr_workers), 1)
 
     # Count durations, using one worker
-    t1 = duration[0].astype(np.float64)
+    t1 = duration[t1_idx].astype(np.float64)
 
     # efficiency = 100% * t1 / tn
     relative_efficiency = 100 * t1 / duration
@@ -414,7 +426,7 @@ def write_scaling_results(
 def import_results(
         results_prefix):
 
-    lue_dataset = job.open_lue_dataset(results_prefix)
+    lue_dataset = job.open_lue_dataset(results_prefix, "r")
     cluster, benchmark, experiment = dataset.read_benchmark_settings(
         lue_dataset, WeakScalingExperiment)
 
@@ -423,7 +435,7 @@ def import_results(
         import_raw_results(
             lue_dataset.pathname, cluster, benchmark, experiment)
 
-        # Reopen dataset. Import raw results used lue_translate.
+        # Reopen dataset. import_raw_results used lue_translate.
         # Decrement use-count first.
         del lue_dataset
         lue_dataset = job.open_lue_dataset(results_prefix, "w")

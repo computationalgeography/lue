@@ -5,7 +5,7 @@
     "worker": {
         "type": "thread",
         "pool": {
-            "size": 3
+            "size": 6
         }
     }
 }

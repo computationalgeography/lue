@@ -50,6 +50,8 @@ def post_process_raw_results(
     assert len(partition_shapes) == len(partition_sizes)
     # nr_partitions = len(partition_shapes)
 
+    assert util.is_monotonically_increasing(partition_sizes), partition_sizes
+
 
     def plot_duration(
             axis,
