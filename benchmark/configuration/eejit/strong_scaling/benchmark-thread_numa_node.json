@@ -9,22 +9,6 @@
             "max_size": 6,
             "incrementor": 1
         }
-    }
-#     },
-#     "hpx": {
-#         "performance_counters": [
-#             {
-#                 "print-counter-interval": 100
-#             },
-#             {
-#                 "print-counter": [
-#                 ]
-#             },
-#             {
-#                 "print-counter-reset": [
-#                     "/threads{locality#*/pool#*/worker-thread#*}/idle-rate"
-#                 ]
-#             }
-#         ]
-#     }
+    },
+    "hpx": "$LUE/benchmark/configuration/eejit/strong_scaling/hpx.json"
 }
