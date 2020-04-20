@@ -61,6 +61,8 @@ def export_strong_scaling_results(
     lue_measurement = lue_dataset.benchmark.measurement
     count = lue_measurement.duration.value.array_shape[:][0]
     nr_workers = lue_measurement.nr_workers.value[:]
+    sort_idxs = np.argsort(nr_workers)
+    nr_workers = nr_workers[sort_idxs]
 
     if count == 1:
         # Write the folowing columns:
@@ -76,9 +78,9 @@ def export_strong_scaling_results(
                 ])
 
         lue_scaling = lue_dataset.benchmark.scaling
-        relative_speed_up = lue_scaling.relative_speed_up.value[:]
-        relative_efficiency = lue_scaling.relative_efficiency.value[:]
-        lups = lue_scaling.lups.value[:]
+        relative_speed_up = lue_scaling.relative_speed_up.value[:][sort_idxs]
+        relative_efficiency = lue_scaling.relative_efficiency.value[:][sort_idxs]
+        lups = lue_scaling.lups.value[:][sort_idxs]
 
         for n in range(len(nr_workers)):
             csv_writer.writerow([
@@ -88,7 +90,39 @@ def export_strong_scaling_results(
                     lups[n],
                 ])
     else:
-        assert False, "Implement!"
+        # Write the folowing columns:
+        # - nr_workers
+        # - {mean,std}_duration
+        # - {mean,std}_relative_efficiency
+        # - {mean,std}_lups
+        csv_writer.writerow([
+                    "nr_workers",
+                    "mean_duration",
+                    "std_duration",
+                    "mean_relative_efficiency",
+                    "std_relative_efficiency",
+                    "mean_lups",
+                    "std_lups",
+                ])
+
+        lue_scaling = lue_dataset.benchmark.scaling
+        mean_duration = lue_scaling.mean_duration.value[:][sort_idxs]
+        std_duration = lue_scaling.std_duration.value[:][sort_idxs]
+        mean_relative_efficiency = lue_scaling.mean_relative_efficiency.value[:][sort_idxs]
+        std_relative_efficiency = lue_scaling.std_relative_efficiency.value[:][sort_idxs]
+        mean_lups = lue_scaling.mean_lups.value[:][sort_idxs]
+        std_lups = lue_scaling.std_lups.value[:][sort_idxs]
+
+        for n in range(len(nr_workers)):
+            csv_writer.writerow([
+                    nr_workers[n],
+                    mean_duration[n],
+                    std_duration[n],
+                    mean_relative_efficiency[n],
+                    std_relative_efficiency[n],
+                    mean_lups[n],
+                    std_lups[n],
+                ])
 
 
 def export_weak_scaling_results(
@@ -98,6 +132,8 @@ def export_weak_scaling_results(
     lue_measurement = lue_dataset.benchmark.measurement
     count = lue_measurement.duration.value.array_shape[:][0]
     nr_workers = lue_measurement.nr_workers.value[:]
+    sort_idxs = np.argsort(nr_workers)
+    nr_workers = nr_workers[sort_idxs]
 
     if count == 1:
         # Write the folowing columns:
@@ -123,12 +159,12 @@ def export_weak_scaling_results(
                 ])
 
         lue_scaling = lue_dataset.benchmark.scaling
-        mean_duration = lue_scaling.mean_duration.value[:]
-        std_duration = lue_scaling.std_duration.value[:]
-        mean_relative_efficiency = lue_scaling.mean_relative_efficiency.value[:]
-        std_relative_efficiency = lue_scaling.std_relative_efficiency.value[:]
-        mean_lups = lue_scaling.mean_lups.value[:]
-        std_lups = lue_scaling.std_lups.value[:]
+        mean_duration = lue_scaling.mean_duration.value[:][sort_idxs]
+        std_duration = lue_scaling.std_duration.value[:][sort_idxs]
+        mean_relative_efficiency = lue_scaling.mean_relative_efficiency.value[:][sort_idxs]
+        std_relative_efficiency = lue_scaling.std_relative_efficiency.value[:][sort_idxs]
+        mean_lups = lue_scaling.mean_lups.value[:][sort_idxs]
+        std_lups = lue_scaling.std_lups.value[:][sort_idxs]
 
         for n in range(len(nr_workers)):
             csv_writer.writerow([
