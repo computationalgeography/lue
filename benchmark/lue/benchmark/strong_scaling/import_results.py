@@ -252,7 +252,7 @@ def import_raw_results(
     # It is possible that the results for a later experiment, with more
     # workers, is stored before an experiment with less workers. This
     # must be taken care of later, during post-processing.
-    # → Results are sorted by time, not by the number of workers!!!
+    # -> Results are sorted by time, not by the number of workers!!!
 
     benchmark_idxs, epoch = util.sort_benchmarks_by_time(
         cluster, benchmark, experiment)
