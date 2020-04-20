@@ -1,13 +1,11 @@
 {
     "scenario": "thread_cluster_node",
-    "count": 1,
-    # "count": 5,
+    "count": 3,
     "locality_per": "cluster_node",
     "worker": {
         "type": "thread",
         "pool": {
-            # Half the size of the max nr_workers used in scaling experiment
-            "size": 2
+            "size": 4
         }
     }
 }
