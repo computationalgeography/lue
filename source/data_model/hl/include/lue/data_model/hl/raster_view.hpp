@@ -122,8 +122,12 @@ template<
 typename RasterView<DatasetPtr>::Layer RasterView<DatasetPtr>::add_layer(
     std::string const& name)
 {
-    return add_layer(
-        name, hdf5::Datatype{hdf5::NativeDatatypeTraits<Element>::type_id()});
+    if constexpr(std::is_same_v<Element, bool>) {
+        return add_layer(name, hdf5::native_datatype<std::uint8_t>());
+    }
+    else {
+        return add_layer(name, hdf5::native_datatype<Element>());
+    }
 }
 
 
@@ -210,8 +214,12 @@ template<
 typename RasterView<DatasetPtr>::Layer RasterView<DatasetPtr>::add_layer(
     std::string const& name)
 {
-    return add_layer(
-        name, hdf5::Datatype{hdf5::NativeDatatypeTraits<Element>::type_id()});
+    if constexpr(std::is_same_v<Element, bool>) {
+        return add_layer(name, hdf5::native_datatype<std::uint8_t>());
+    }
+    else {
+        return add_layer(name, hdf5::native_datatype<Element>());
+    }
 }
 
 

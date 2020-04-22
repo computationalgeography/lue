@@ -1,4 +1,6 @@
 #pragma once
+#include "lue/framework/core/define.hpp"
+#include <hpx/include/iostreams.hpp>
 
 
 namespace lue {
@@ -21,18 +23,28 @@ namespace lue {
 */
 template<
     typename Model>
-void simulate(
+void simulate_process(
     Model& model,
     Count const nr_time_steps)
 {
+    hpx::cout << "[preprocess... " << hpx::flush;
     preprocess(model);
-    initialize(model);
+    hpx::cout << ']' << hpx::endl;
 
+    hpx::cout << "[initialize... " << hpx::flush;
+    initialize(model);
+    hpx::cout << ']' << hpx::endl;
+
+    hpx::cout << "[simulate" << hpx::flush;
     for(Count t = 0; t < nr_time_steps; ++t) {
         simulate(model, t);
+        hpx::cout << '.' << hpx::flush;
     }
+    hpx::cout << ']' << hpx::endl;
 
+    hpx::cout << "[postprocess..." << hpx::flush;
     postprocess(model);
+    hpx::cout << ']' << hpx::endl;
 }
 
 }  // namespace lue
