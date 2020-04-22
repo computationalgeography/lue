@@ -32,7 +32,7 @@ public:
 
     virtual void   initialize          ();
 
-    virtual void   simulate            ();
+    virtual void   simulate            (Count time_step);
 
     virtual void   postprocess         ();
 

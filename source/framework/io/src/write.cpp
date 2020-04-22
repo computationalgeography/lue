@@ -190,8 +190,13 @@ template hpx::future<void> write<PartitionedArray<Element, 2>>(  \
     INSTANTIATE_WRITE_1(Element, std::shared_ptr<data_model::Dataset>)  \
     INSTANTIATE_WRITE_2(Element)
 
+INSTANTIATE_WRITE(bool)
 INSTANTIATE_WRITE(uint32_t)
+// INSTANTIATE_WRITE(uint64_t)
+// INSTANTIATE_WRITE(int8_t)
 INSTANTIATE_WRITE(int32_t)
+INSTANTIATE_WRITE(int64_t)
+// INSTANTIATE_WRITE(float)
 INSTANTIATE_WRITE(double)
 
 #undef INSTANTIATE_WRITE

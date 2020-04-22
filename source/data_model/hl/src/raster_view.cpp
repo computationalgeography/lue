@@ -451,6 +451,7 @@ RasterView<DatasetPtr> create_raster_view(
 
     hdf5::Datatype const shape_datatype{
         hdf5::NativeDatatypeTraits<hdf5::Shape::value_type>::type_id()};
+        // hdf5::native_datatype<hdf5::Shape::value_type>()};
 
     {
         // Add property for storing space discretization
@@ -732,6 +733,8 @@ bool contains_raster(
                         value.file_datatype() == hdf5::Datatype{
                             hdf5::StandardDatatypeTraits<
                                 hdf5::Shape::value_type>::type_id()})
+                        // value.file_datatype() ==
+                        //     hdf5::std_datatype_le<hdf5::Shape::value_type>())
                     {
                         time_discretization_ok = true;
                     }

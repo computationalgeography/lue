@@ -32,8 +32,13 @@ template PartitionedArray<Element, 2>                                      \
     INSTANTIATE_READ_1(Element, data_model::Dataset*)                  \
     INSTANTIATE_READ_1(Element, std::shared_ptr<data_model::Dataset>)
 
+INSTANTIATE_READ(bool)
 INSTANTIATE_READ(uint32_t)
+// INSTANTIATE_READ(uint64_t)
+// INSTANTIATE_READ(int8_t)
 INSTANTIATE_READ(int32_t)
+INSTANTIATE_READ(int64_t)
+// INSTANTIATE_READ(float)
 INSTANTIATE_READ(double)
 
 #undef INSTANTIATE_READ

@@ -354,7 +354,14 @@ private:
 
 template<
     typename Type>
-class TypeTraits;
+class TypeTraits
+{
+
+public:
+
+    using ResultT = void;
+
+};
 
 
 template<

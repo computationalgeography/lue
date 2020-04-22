@@ -35,7 +35,8 @@ void Model::initialize()
 
     The default does nothing.
 */
-void Model::simulate()
+void Model::simulate(
+    Count const /* time_step */)
 {
 }
 
@@ -77,9 +78,9 @@ void initialize(
 */
 void simulate(
     Model& model,
-    Count const /* time_step */)
+    Count const time_step)
 {
-    model.simulate();
+    model.simulate(time_step);
 }
 
 

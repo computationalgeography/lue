@@ -1,0 +1,19 @@
+{
+    "burn_wilderness": {
+        "phenomena": [
+            {
+                "name": "area",
+                "property_sets": [
+                    {
+                        "name": "variable",
+                        "properties": [
+                            {
+                                "name": "state"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}
