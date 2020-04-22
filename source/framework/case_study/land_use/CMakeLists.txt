@@ -2,6 +2,8 @@ add_subdirectory(doc)
 
 add_library(lue_land_use_change
     src/change_land_use
+    src/land_use_change_model
+    src/land_use_change_model_base
 )
 
 add_library(lue::land_use_change ALIAS lue_land_use_change)
@@ -21,6 +23,7 @@ target_link_libraries(lue_land_use_change
     PUBLIC
         lue::framework_algorithm
         lue::framework_io
+        lue::framework_model
         lue::benchmark
 )
 

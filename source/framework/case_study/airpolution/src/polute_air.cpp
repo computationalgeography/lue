@@ -246,7 +246,7 @@ void polute_air(
         }
         hpx::cout
             << "Result we got : "
-            << array.partitions()[0].data(CopyMode::share).get()[0] << '\n'
+            << array.partitions()[0].data().get()[0] << '\n'
             << "Result we want: " << result << hpx::endl;
     }
 
