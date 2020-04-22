@@ -403,6 +403,50 @@ void show_file(
 }
 
 
+void show_file_datatype(
+    hdf5::Datatype const& datatype)
+{
+    ImGui::Text("file datatype: ");
+    ImGui::SameLine();
+    ImGui::Text(hdf5::standard_datatype_as_string(datatype).c_str());
+    ImGui::SameLine();
+    help_marker("The type used to store the array elements in the file.");
+}
+
+
+void show_memory_datatype(
+    hdf5::Datatype const& datatype)
+{
+    ImGui::Text("memory datatype: ");
+    ImGui::SameLine();
+    ImGui::Text(hdf5::native_datatype_as_string(datatype).c_str());
+    ImGui::SameLine();
+    help_marker("The type used to store the array elements in memory.");
+}
+
+
+void show_rank(
+    data_model::Rank const rank)
+{
+    ImGui::Text("rank: ");
+    ImGui::SameLine();
+    ImGui::Text(fmt::format("{}", rank).c_str());
+    ImGui::SameLine();
+    help_marker("The rank of each array stored per object.");
+}
+
+
+void show_nr_objects(
+    data_model::Count const nr_objects)
+{
+    ImGui::Text("nr objects: ");
+    ImGui::SameLine();
+    ImGui::Text(fmt::format("{}", nr_objects).c_str());
+    ImGui::SameLine();
+    help_marker("The number of objects for which arrays are stored.");
+}
+
+
 void show_dataset(
     hdf5::Dataset const& /* dataset */)
 {
@@ -413,22 +457,23 @@ void show_array(
     data_model::Array const& array,
     bool const show_details)
 {
-    ImGui::Text("file datatype: ");
-    ImGui::SameLine();
-    ImGui::Text(
-        hdf5::standard_datatype_as_string(array.file_datatype()).c_str());
-    ImGui::SameLine();
-    help_marker("The type used to store the array elements in the file.");
+    show_file_datatype(array.file_datatype());
 
     if(show_details) {
-        ImGui::Text("memory datatype: ");
-        ImGui::SameLine();
-        ImGui::Text(
-            hdf5::native_datatype_as_string(array.memory_datatype()).c_str());
-        ImGui::SameLine();
-        help_marker("The type used to store the array elements in memory.");
-
+        show_memory_datatype(array.memory_datatype());
         show_dataset(array);
+    }
+}
+
+
+void show_value_group(
+    data_model::ValueGroup const& value,
+    bool const show_details)
+{
+    show_file_datatype(value.file_datatype());
+
+    if(show_details) {
+        show_memory_datatype(value.memory_datatype());
     }
 }
 
@@ -563,41 +608,47 @@ void show_value<data_model::same_shape::constant_shape::Value>(
 
 template<>
 void show_value<data_model::same_shape::variable_shape::Value>(
-    data_model::same_shape::variable_shape::Value const& /* value */,
-    bool const /* show_details */)
+    data_model::same_shape::variable_shape::Value const& value,
+    bool const show_details)
 {
+    // TODO nr_locations_in_time
+
+    show_value_group(value, show_details);
+    // TODO show_rank(value.rank());
 }
 
 
 template<>
 void show_value<data_model::different_shape::Value>(
-    data_model::different_shape::Value const& /* value */,
-    bool const /* show_details */)
+    data_model::different_shape::Value const& value,
+    bool const show_details)
 {
+    show_nr_objects(value.nr_objects());
+    show_value_group(value, show_details);
+    // TODO show_rank(value.rank());
 }
 
 
 template<>
 void show_value<data_model::different_shape::constant_shape::Value>(
     data_model::different_shape::constant_shape::Value const& value,
-    bool const /* show_details */)
+    bool const show_details)
 {
-    ImGui::Text("nr objects: ");
-    ImGui::SameLine();
-    ImGui::Text(fmt::format("{}", value.nr_objects()).c_str());
-    ImGui::SameLine();
-    help_marker("The number of objects for which arrays are stored.");
-
-    // hier verder
-    // show_value_group(value, show_details);
+    show_nr_objects(value.nr_objects());
+    show_value_group(value, show_details);
+    show_rank(value.rank());
 }
 
 
 template<>
 void show_value<data_model::different_shape::variable_shape::Value>(
-    data_model::different_shape::variable_shape::Value const& /* value */,
-    bool const /* show_details */)
+    data_model::different_shape::variable_shape::Value const& value,
+    bool const show_details)
 {
+    // TODO nr_locations_in_time
+
+    show_value_group(value, show_details);
+    // TODO show_rank(value.rank() - 1);
 }
 
 
@@ -605,7 +656,9 @@ void show_object_id(
     data_model::ObjectID const& object_id,
     bool const show_details)
 {
-    show_value(dynamic_cast<data_model::same_shape::Value const&>(object_id), show_details);
+    show_value(
+        dynamic_cast<data_model::same_shape::Value const&>(object_id),
+        show_details);
 }
 
 
