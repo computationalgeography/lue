@@ -4,11 +4,11 @@
         "shape": [7000, 7000]
     },
     "partition": {
-        "shape": [100, 100],
+        "shape": [200, 200],
         "range": {
-            "max_nr_elements": 200000,
+            "max_nr_elements": 1000000,
             "multiplier": 2.0,
-            "method": "linear"
+            "method": "exponential"
         }
     }
 }

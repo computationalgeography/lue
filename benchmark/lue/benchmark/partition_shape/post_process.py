@@ -166,7 +166,7 @@ def post_process_results(
     Post-process the results of executing the benchmark script generated
     by the generate_script function.
     """
-    lue_dataset = job.open_lue_dataset(results_prefix, "r")
+    lue_dataset = job.open_scaling_lue_dataset(results_prefix, "r")
     cluster, benchmark, experiment = dataset.read_benchmark_settings(
         lue_dataset, PartitionShapeExperiment)
 

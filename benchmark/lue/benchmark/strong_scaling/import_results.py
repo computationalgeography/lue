@@ -590,20 +590,22 @@ def import_performance_counters(
 def import_results(
         results_prefix):
 
-    lue_dataset = job.open_lue_dataset(results_prefix, "r")
+    lue_dataset = job.open_raw_lue_dataset(results_prefix, "r")
+    raw_results_already_imported = \
+        dataset.raw_results_already_imported(lue_dataset)
 
-    if not dataset.results_already_imported(lue_dataset):
+    if not raw_results_already_imported:
         cluster, benchmark, experiment = dataset.read_benchmark_settings(
             lue_dataset, StrongScalingExperiment)
-
         import_raw_results(
             lue_dataset.pathname, cluster, benchmark, experiment)
 
-        # Reopen dataset. Import raw results used lue_translate.
-        # Decrement use-count first.
-        del lue_dataset
-        lue_dataset = job.open_lue_dataset(results_prefix, "w")
+    if not raw_results_already_imported or \
+            not job.scaling_lue_dataset_exists(results_prefix):
 
+        # Copy dataset and write scaling results
+        job.copy_raw_to_scaling_lue_dataset(results_prefix)
+        lue_dataset = job.open_scaling_lue_dataset(results_prefix, "w")
         write_scaling_results(lue_dataset)
 
         performance_counters_available = benchmark.hpx is not None and \

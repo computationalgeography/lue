@@ -6,9 +6,9 @@
     "partition": {
         "shape": [200, 200],
         "range": {
-            "max_nr_elements": 300000,
-            "multiplier": 1.5,
-            "method": "linear"
+            "max_nr_elements": 1000000,
+            "multiplier": 2.0,
+            "method": "exponential"
         }
     }
 }

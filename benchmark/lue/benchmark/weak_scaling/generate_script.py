@@ -392,7 +392,7 @@ def generate_script(
 
     experiment = WeakScalingExperiment(experiment_settings_json)
 
-    lue_dataset = job.create_lue_dataset(cluster, benchmark, experiment)
+    lue_dataset = job.create_raw_lue_dataset(cluster, benchmark, experiment)
     dataset.write_benchmark_settings(
         lue_dataset, cluster, benchmark, experiment)
 

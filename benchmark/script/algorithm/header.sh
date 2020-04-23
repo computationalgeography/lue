@@ -6,10 +6,10 @@ algorithm_names="
 "
 scenarios="
     thread_numa_node
-    thread_cluster_node
     numa_node
     cluster_node
 "
+#   thread_cluster_node
 
 output_prefix=${LUE_DATA:-.}
 

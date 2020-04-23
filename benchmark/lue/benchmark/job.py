@@ -1,5 +1,6 @@
 import lue
 import os.path
+import shutil
 
 
 ### def output_pathname(
@@ -209,25 +210,40 @@ module load libraries/papi/5.7.0
         job_steps="\n".join(job_steps))
 
 
-def lue_dataset_basename():
-    return "data"
+def lue_raw_dataset_basename():
+    return "raw"
 
 
-def lue_dataset_pathname(
+def lue_scaling_dataset_basename():
+    return "scaling"
+
+
+def lue_raw_dataset_pathname(
         cluster,
         benchmark,
         experiment):
 
     return experiment.result_pathname(
-        cluster.name, benchmark.scenario_name, lue_dataset_basename(), "lue")
+        cluster.name, benchmark.scenario_name, lue_raw_dataset_basename(),
+        "lue")
 
 
-def create_lue_dataset(
+def lue_scaling_dataset_pathname(
         cluster,
         benchmark,
         experiment):
 
-    dataset_pathname = lue_dataset_pathname(cluster, benchmark, experiment)
+    return experiment.result_pathname(
+        cluster.name, benchmark.scenario_name, lue_scaling_dataset_basename(),
+        "lue")
+
+
+def create_raw_lue_dataset(
+        cluster,
+        benchmark,
+        experiment):
+
+    dataset_pathname = lue_raw_dataset_pathname(cluster, benchmark, experiment)
     directory_pathname = os.path.split(dataset_pathname)[0]
 
     if os.path.exists(directory_pathname):
@@ -242,13 +258,44 @@ def create_lue_dataset(
     return dataset
 
 
-def open_lue_dataset(
+def open_raw_lue_dataset(
         results_prefix,
         open_mode):
 
     dataset_pathname = os.path.join(
-        results_prefix, lue_dataset_basename() + ".lue")
+        results_prefix, lue_raw_dataset_basename() + ".lue")
     assert os.path.exists(dataset_pathname), dataset_pathname
     dataset = lue.open_dataset(dataset_pathname, open_mode)
 
     return dataset
+
+
+def open_scaling_lue_dataset(
+        results_prefix,
+        open_mode):
+
+    dataset_pathname = os.path.join(
+        results_prefix, lue_scaling_dataset_basename() + ".lue")
+    assert os.path.exists(dataset_pathname), dataset_pathname
+    dataset = lue.open_dataset(dataset_pathname, open_mode)
+
+    return dataset
+
+
+def scaling_lue_dataset_exists(
+        results_prefix):
+
+    dataset_pathname = os.path.join(
+        results_prefix, lue_scaling_dataset_basename() + ".lue")
+    return os.path.exists(dataset_pathname)
+
+
+def copy_raw_to_scaling_lue_dataset(
+        results_prefix):
+
+    raw_dataset_pathname = os.path.join(
+        results_prefix, lue_raw_dataset_basename() + ".lue")
+    scaling_dataset_pathname = os.path.join(
+        results_prefix, lue_scaling_dataset_basename() + ".lue")
+
+    shutil.copyfile(raw_dataset_pathname, scaling_dataset_pathname)

@@ -66,7 +66,7 @@ def read_benchmark_settings(
     return cluster, benchmark, experiment
 
 
-def results_already_imported(
+def raw_results_already_imported(
         lue_dataset):
 
     lue.assert_is_valid(lue_dataset, fail_on_warning=False)

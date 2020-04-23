@@ -4,7 +4,7 @@
         "shape": [10000, 10000]
     },
     "partition": {
-        "shape": [100, 100],
+        "shape": [200, 200],
         "range": {
             "max_nr_elements": 1000000,
             "multiplier": 2.0,
