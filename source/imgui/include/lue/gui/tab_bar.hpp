@@ -12,7 +12,7 @@ class TabBar:
 
 public:
 
-                   TabBar              (std::string const& name);
+    explicit       TabBar              (std::string const& name);
 
                    TabBar              (TabBar const&)=default;
 

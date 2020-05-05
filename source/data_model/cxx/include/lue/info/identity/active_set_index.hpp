@@ -27,7 +27,7 @@ public:
 
     friend ActiveSetIndex create_active_set_index(hdf5::Group& parent);
 
-                   ActiveSetIndex      (hdf5::Group& parent);
+    explicit       ActiveSetIndex      (hdf5::Group& parent);
 
                    ActiveSetIndex      (ActiveSetIndex const&)=delete;
 
@@ -43,7 +43,7 @@ public:
 
 private:
 
-                   ActiveSetIndex      (same_shape::constant_shape::Value&&
+    explicit       ActiveSetIndex      (same_shape::constant_shape::Value&&
                                             value);
 
 

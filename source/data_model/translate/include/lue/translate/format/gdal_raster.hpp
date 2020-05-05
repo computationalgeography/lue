@@ -69,7 +69,7 @@ public:
 
     public:
 
-                   Band                (GDALRasterBand* band);
+        explicit   Band                (GDALRasterBand* band);
 
                    Band                (Band const&)=delete;
 
@@ -108,9 +108,9 @@ public:
     };
 
 
-                   GDALRaster          (std::string const& dataset_name);
+    explicit       GDALRaster          (std::string const& dataset_name);
 
-                   GDALRaster          (GDALDatasetPtr dataset);
+    explicit       GDALRaster          (GDALDatasetPtr dataset);
 
                    GDALRaster          (GDALRaster const& other)=default;
 

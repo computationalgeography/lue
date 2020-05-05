@@ -44,7 +44,7 @@ public:
 
     using Duration = typename Clock::Duration;
 
-                   TimePoint           (Duration const& duration);
+    explicit       TimePoint           (Duration const& duration);
 
                    TimePoint           (TimePoint const&)=default;
 

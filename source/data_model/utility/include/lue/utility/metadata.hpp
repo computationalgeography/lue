@@ -64,9 +64,9 @@ public:
 
                    Metadata            ()=default;
 
-                   Metadata            (std::string const& pathname);
+     explicit      Metadata            (std::string const& pathname);
 
-                   Metadata            (std::istream& stream);
+     explicit      Metadata            (std::istream& stream);
 
                    Metadata            (Metadata&& other)=default;
 

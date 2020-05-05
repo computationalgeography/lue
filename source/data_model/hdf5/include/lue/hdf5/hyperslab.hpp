@@ -27,7 +27,7 @@ public:
                    Hyperslab           (Offset const& start,
                                         Count const& count);
 
-                   Hyperslab           (Shape const& shape);
+    explicit       Hyperslab           (Shape const& shape);
 
                    Hyperslab           (Hyperslab const&)=default;
 

@@ -78,7 +78,7 @@ bool RasterDomain::operator==(
     RasterDomain const& other) const
 {
     return
-        _crs == _crs &&
+        _crs == other._crs &&
         _coordinates == other._coordinates
         ;
 }

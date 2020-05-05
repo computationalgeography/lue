@@ -114,7 +114,7 @@ struct ObjectNames
     std::size_t _nr_names;
     char** _names;
 
-    ObjectNames(char** const names)
+    explicit ObjectNames(char** const names)
         : _nr_names{0},
           _names{names}
     {

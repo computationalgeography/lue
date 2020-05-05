@@ -37,6 +37,7 @@ void init_validate(
         "assert_is_valid",
         py::overload_cast<std::string const&, bool const>(&assert_is_valid),
         "name"_a,
+        // cppcheck-suppress assignBoolToPointer
         "fail_on_warning"_a=true,
         R"(
     Check whether a file contains a valid LUE dataset
@@ -53,6 +54,7 @@ void init_validate(
         "assert_is_valid",
         py::overload_cast<hdf5::File const&, bool const>(&assert_is_valid),
         "file"_a,
+        // cppcheck-suppress assignBoolToPointer
         "fail_on_warning"_a=true,
         R"(
     Check whether a file contains a valid LUE dataset

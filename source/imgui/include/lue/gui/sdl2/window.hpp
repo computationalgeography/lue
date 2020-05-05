@@ -10,7 +10,7 @@ class Window
 
 public:
 
-                   Window              (std::string const& title,
+    explicit       Window              (std::string const& title,
                                         int x=SDL_WINDOWPOS_CENTERED,
                                         int y=SDL_WINDOWPOS_CENTERED,
                                         int w=640,

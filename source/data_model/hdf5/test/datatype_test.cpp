@@ -138,7 +138,7 @@ BOOST_AUTO_TEST_CASE(is_valid)
         BOOST_CHECK(datatype.id().is_valid());
 
         auto datatype_copy = datatype;
-        BOOST_CHECK(datatype.id().is_valid());
+        BOOST_CHECK(datatype_copy.id().is_valid());
     }
 
     // Built-in types are not valid
@@ -149,21 +149,21 @@ BOOST_AUTO_TEST_CASE(is_valid)
             BOOST_CHECK(!datatype.id().is_valid());
 
             auto datatype_copy = datatype;
-            BOOST_CHECK(!datatype.id().is_valid());
+            BOOST_CHECK(!datatype_copy.id().is_valid());
         }
 
         for(auto const& datatype: native_signed_integrals) {
             BOOST_CHECK(!datatype.id().is_valid());
 
             auto datatype_copy = datatype;
-            BOOST_CHECK(!datatype.id().is_valid());
+            BOOST_CHECK(!datatype_copy.id().is_valid());
         }
 
         for(auto const& datatype: native_floating_points) {
             BOOST_CHECK(!datatype.id().is_valid());
 
             auto datatype_copy = datatype;
-            BOOST_CHECK(!datatype.id().is_valid());
+            BOOST_CHECK(!datatype_copy.id().is_valid());
         }
     }
 
@@ -173,21 +173,21 @@ BOOST_AUTO_TEST_CASE(is_valid)
             BOOST_CHECK(!datatype.id().is_valid());
 
             auto datatype_copy = datatype;
-            BOOST_CHECK(!datatype.id().is_valid());
+            BOOST_CHECK(!datatype_copy.id().is_valid());
         }
 
         for(auto const& datatype: std_signed_integrals_le) {
             BOOST_CHECK(!datatype.id().is_valid());
 
             auto datatype_copy = datatype;
-            BOOST_CHECK(!datatype.id().is_valid());
+            BOOST_CHECK(!datatype_copy.id().is_valid());
         }
 
         for(auto const& datatype: ieee_floating_points_le) {
             BOOST_CHECK(!datatype.id().is_valid());
 
             auto datatype_copy = datatype;
-            BOOST_CHECK(!datatype.id().is_valid());
+            BOOST_CHECK(!datatype_copy.id().is_valid());
         }
     }
 }

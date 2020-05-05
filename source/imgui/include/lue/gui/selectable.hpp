@@ -9,7 +9,7 @@ class Selectable
 
 public:
 
-                   Selectable          (bool selected);
+    explicit       Selectable          (bool selected);
 
                    Selectable          (Selectable const&)=default;
 

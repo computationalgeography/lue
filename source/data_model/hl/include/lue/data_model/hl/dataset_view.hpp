@@ -32,7 +32,7 @@ public:
 
 protected:
 
-                   DatasetView         (DatasetPtr dataset);
+    explicit       DatasetView         (DatasetPtr dataset);
 
                    DatasetView         (DatasetView const&)=default;
 

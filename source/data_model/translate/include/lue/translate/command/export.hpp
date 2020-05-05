@@ -16,7 +16,7 @@ public:
     static CommandPtr command          (std::vector<std::string> const&
                                             arguments);
 
-                   Export              (std::vector<std::string> const&
+    explicit       Export              (std::vector<std::string> const&
                                             arguments);
 
                    Export              (Export const& other)=default;

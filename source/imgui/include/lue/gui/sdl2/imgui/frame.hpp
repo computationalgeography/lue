@@ -10,7 +10,7 @@ class Frame
 
 public:
 
-                   Frame               (sdl2::Window& window);
+    explicit       Frame               (sdl2::Window& window);
 
                    ~Frame              ();
 

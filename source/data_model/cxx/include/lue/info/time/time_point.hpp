@@ -15,13 +15,13 @@ class TimePoint:
 
 public:
 
-                   TimePoint           (hdf5::Group& parent);
+    explicit       TimePoint           (hdf5::Group& parent);
 
                    TimePoint           (TimePoint const&)=delete;
 
                    TimePoint           (TimePoint&&)=default;
 
-                   TimePoint           (LocationInTime&& value);
+    explicit       TimePoint           (LocationInTime&& value);
 
                    ~TimePoint          ()=default;
 

@@ -13,7 +13,7 @@ class TreeNode:
 
 public:
 
-                   TreeNode            (std::string const& name,
+    explicit       TreeNode            (std::string const& name,
                                         ImGuiTreeNodeFlags const flags=0);
 
                    TreeNode            (TreeNode const&)=default;

@@ -43,9 +43,9 @@ class Configuration
 
 public:
 
-                   Configuration       (Ts... types);
+    explicit       Configuration       (Ts... types);
 
-                   Configuration       (hdf5::Attributes const& attributes);
+    explicit       Configuration       (hdf5::Attributes const& attributes);
 
                    Configuration       (Configuration const&)=default;
 

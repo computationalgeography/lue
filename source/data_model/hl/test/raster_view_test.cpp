@@ -154,10 +154,10 @@ BOOST_AUTO_TEST_CASE(use_case_1)
         BOOST_CHECK(
             view.space_box() ==
             (ldm::variable::RasterView<DatasetPtr>::SpaceBox{0, 0, 400, 600}));
-        auto const& grid_shape{view.grid_shape()};
-        BOOST_REQUIRE_EQUAL(grid_shape.size(), 2);
-        BOOST_CHECK_EQUAL(grid_shape[0], nr_rows);
-        BOOST_CHECK_EQUAL(grid_shape[1], nr_cols);
+        auto const& grid_shape_{view.grid_shape()};
+        BOOST_REQUIRE_EQUAL(grid_shape_.size(), 2);
+        BOOST_CHECK_EQUAL(grid_shape_[0], nr_rows);
+        BOOST_CHECK_EQUAL(grid_shape_[1], nr_cols);
 
         BOOST_CHECK_EQUAL(view.nr_layers(), 0);
 
@@ -188,12 +188,12 @@ BOOST_AUTO_TEST_CASE(use_case_1)
 
     {
         // Open a second view on the just created dataset
-        ldm::variable::RasterView<DatasetPtr> view{
+        ldm::variable::RasterView<DatasetPtr> view_{
             dataset_ptr, phenomenon_name, property_set_name};
 
-        BOOST_CHECK_EQUAL(view.nr_layers(), 2);
-        BOOST_CHECK(view.contains("elevation"));
-        BOOST_CHECK(view.contains("soil"));
+        BOOST_CHECK_EQUAL(view_.nr_layers(), 2);
+        BOOST_CHECK(view_.contains("elevation"));
+        BOOST_CHECK(view_.contains("soil"));
     }
 }
 
@@ -307,10 +307,10 @@ BOOST_AUTO_TEST_CASE(use_case_2)
         BOOST_CHECK(
             view.space_box() ==
             (ldm::variable::RasterView<DatasetPtr>::SpaceBox{0, 0, 400, 600}));
-        auto const& grid_shape{view.grid_shape()};
-        BOOST_REQUIRE_EQUAL(grid_shape.size(), 2);
-        BOOST_CHECK_EQUAL(grid_shape[0], nr_rows);
-        BOOST_CHECK_EQUAL(grid_shape[1], nr_cols);
+        auto const& grid_shape_{view.grid_shape()};
+        BOOST_REQUIRE_EQUAL(grid_shape_.size(), 2);
+        BOOST_CHECK_EQUAL(grid_shape_[0], nr_rows);
+        BOOST_CHECK_EQUAL(grid_shape_[1], nr_cols);
 
         BOOST_CHECK_EQUAL(view.nr_layers(), 0);
 
@@ -341,11 +341,11 @@ BOOST_AUTO_TEST_CASE(use_case_2)
 
     {
         // Open a second view on the just created dataset
-        ldm::constant::RasterView<DatasetPtr> view{
+        ldm::constant::RasterView<DatasetPtr> view_{
             dataset_ptr, phenomenon_name, property_set_name};
 
-        BOOST_CHECK_EQUAL(view.nr_layers(), 2);
-        BOOST_CHECK(view.contains("elevation"));
-        BOOST_CHECK(view.contains("soil"));
+        BOOST_CHECK_EQUAL(view_.nr_layers(), 2);
+        BOOST_CHECK(view_.contains("elevation"));
+        BOOST_CHECK(view_.contains("soil"));
     }
 }

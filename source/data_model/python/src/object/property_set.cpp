@@ -77,6 +77,7 @@ static std::string informal_string_representation(
 // new instance of the property is stored.
 // TODO Refactor this with property_reference
 py::object property_new(
+    // cppcheck-suppress constParameter
     Properties& properties,
     std::string const& name)
 {

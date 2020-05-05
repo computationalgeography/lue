@@ -60,17 +60,15 @@ void add_point_layer(
 
     assert(space_points.size() % 2 == 0);
 
-    OGRPoint point;
-    double x, y;
-
     for(std::size_t i = 0; i < space_points.size(); i += 2) {
         auto feature = OGRFeaturePtr(
             OGRFeature::CreateFeature(layer->GetLayerDefn()),
             OGRFeatureDeleter{});
 
-        x = space_points[i];
-        y = space_points[i + 1];
+        double const x = space_points[i];
+        double const y = space_points[i + 1];
 
+        OGRPoint point;
         point.setX(x);
         point.setY(y);
 
@@ -99,19 +97,17 @@ void add_box_layer(
 
     assert(space_boxes.size() % 4 == 0);
 
-    OGRLinearRing ring;
-    double x_min, y_min, x_max, y_max;
-
     for(std::size_t i = 0; i < space_boxes.size(); i += 4) {
         auto feature = OGRFeaturePtr(
             OGRFeature::CreateFeature(layer->GetLayerDefn()),
             OGRFeatureDeleter{});
 
-        x_min = space_boxes[i + 0];
-        y_min = space_boxes[i + 1];
-        x_max = space_boxes[i + 2];
-        y_max = space_boxes[i + 3];
+        double x_min = space_boxes[i + 0];
+        double y_min = space_boxes[i + 1];
+        double x_max = space_boxes[i + 2];
+        double y_max = space_boxes[i + 3];
 
+        OGRLinearRing ring;
         ring.setPoint(0, x_min, y_min);
         ring.setPoint(1, x_max, y_min);
         ring.setPoint(2, x_max, y_max);
@@ -240,7 +236,6 @@ void write_shapefiles(
 
     Index current_set_idx = 0;
     Index next_set_idx;
-    std::size_t nr_objects;
 
 
     std::string layer_name;
@@ -252,7 +247,7 @@ void write_shapefiles(
         next_set_idx = set_idxs[c + 1];
         assert(next_set_idx >= current_set_idx);
 
-        nr_objects = next_set_idx - current_set_idx;
+        std::size_t nr_objects = next_set_idx - current_set_idx;
 
         space_points.resize(2 * nr_objects);
         lue_space_point.read(

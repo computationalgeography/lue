@@ -29,7 +29,7 @@ public:
 
     friend ActiveObjectIndex create_active_object_index(hdf5::Group& parent);
 
-                   ActiveObjectIndex   (hdf5::Group& parent);
+    explicit       ActiveObjectIndex   (hdf5::Group& parent);
 
                    ActiveObjectIndex   (ActiveObjectIndex const&)=delete;
 
@@ -45,7 +45,7 @@ public:
 
 private:
 
-                   ActiveObjectIndex   (same_shape::constant_shape::Value&&
+    explicit       ActiveObjectIndex   (same_shape::constant_shape::Value&&
                                             value);
 
 };

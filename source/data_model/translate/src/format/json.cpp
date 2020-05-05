@@ -220,7 +220,7 @@ void add_space_domain_items(
                     throw std::runtime_error(fmt::format(
                         "Importing stationary space points not supported yet ({})",
                         property_set.space_domain().id().pathname()));
-                    break;
+                    // break;
                 }
 
                 case SpaceDomainItemType::box: {
@@ -1080,12 +1080,13 @@ void add_property_set(
 
     assert(property_set_ref);
 
-    PropertySet& property_set = *property_set_ref;
+    if(contains(property_set_json, "properties"))
+    {
+        PropertySet& property_set_ = *property_set_ref;
 
-    if(contains(property_set_json, "properties")) {
         for(auto const& property_json:
                 property_set_json.at("properties")) {
-            add_property(property_json, property_set.properties());
+            add_property(property_json, property_set_.properties());
         }
     }
 }
@@ -1138,6 +1139,8 @@ void add_universe(
     Universes& universes)
 {
     std::string const name = universe_json.at("name");
+
+    // cppcheck-suppress variableScope
     auto& universe = universes.contains(name)
         ? universes[name]
         : universes.add(name)

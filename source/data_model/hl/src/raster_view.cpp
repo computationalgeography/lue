@@ -38,6 +38,7 @@ RasterView<DatasetPtr>::RasterView(
     // Read space box from domain
     {
         auto& space_domain{property_set.space_domain()};
+        // cppcheck-suppress internalAstError
         auto value{space_domain.template value<StationarySpaceBox>()};
         value.read(0, _space_box.data());
     }

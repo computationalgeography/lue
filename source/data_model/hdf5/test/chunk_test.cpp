@@ -61,7 +61,7 @@ BOOST_AUTO_TEST_CASE(chunk_shape_large_2)
     // 2D values
     {
         Shape const value_shape({2000000, 2000000});
-        auto const chunk_shape = test_chunk(value_shape);
+        test_chunk(value_shape);
     }
 
     {

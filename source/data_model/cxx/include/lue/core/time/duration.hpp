@@ -39,7 +39,7 @@ public:
 
     using Count = DurationCount;
 
-                   Duration            (Count const nr_ticks);
+    explicit       Duration            (Count nr_ticks);
 
                    Duration            (Duration const&)=default;
 

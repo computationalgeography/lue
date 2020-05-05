@@ -11,7 +11,7 @@ class FileFixture
 
 public:
 
-                   FileFixture         (std::string const& pathname,
+    explicit       FileFixture         (std::string const& pathname,
                                         bool remove_file_upon_destruction=true);
 
                    FileFixture         (FileFixture const&)=delete;
@@ -20,9 +20,9 @@ public:
 
                    ~FileFixture        ();
 
-   FileFixture&    operator=           (FileFixture const&)=delete;
+    FileFixture&   operator=           (FileFixture const&)=delete;
 
-   FileFixture&    operator=           (FileFixture&&)=delete;
+    FileFixture&   operator=           (FileFixture&&)=delete;
 
 private:
 

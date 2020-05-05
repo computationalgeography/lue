@@ -15,7 +15,7 @@ public:
 
                    AlgorithmBenchmarkResult()=default;
 
-                   AlgorithmBenchmarkResult(
+    explicit       AlgorithmBenchmarkResult(
                                         Shape const& shape_in_partitions);
 
     template<

@@ -152,14 +152,15 @@ template<
     typename T>
 inline std::vector<std::string> Collection<T>::names() const
 {
-    std::vector<std::string> names;
-    names.reserve(_items.size());
+    std::vector<std::string> result(_items.size());
 
-    for(auto const& pair: _items) {
-        names.emplace_back(pair.first);
-    }
+    std::transform(_items.begin(), _items.end(), result.begin(),
+        [](auto const& pair)
+        {
+            return pair.first;
+        });
 
-    return names;
+    return result;
 }
 
 
@@ -284,7 +285,7 @@ inline std::vector<std::string> Collection<T>::item_names() const
 
 
 inline bool collection_exists(
-    hdf5::Group& parent,
+    hdf5::Group const& parent,
     std::string const& name)
 {
     return hdf5::group_exists(parent, name);

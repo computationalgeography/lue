@@ -18,7 +18,7 @@ public:
 
     explicit       Properties          (hdf5::Group& parent);
 
-                   Properties          (hdf5::Group&& group);
+    explicit       Properties          (hdf5::Group&& group);
 
                    Properties          (Properties const&)=delete;
 

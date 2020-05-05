@@ -33,11 +33,11 @@ public:
                                         AccessPropertyList const&
                                             access_property_list);
 
-                   Dataset             (std::string const& name,
+    explicit       Dataset             (std::string const& name,
                                         unsigned int const
                                             flags=H5F_ACC_RDONLY);
 
-                   Dataset             (hdf5::File&& file);
+    explicit       Dataset             (hdf5::File&& file);
 
                    Dataset             (Dataset const&)=delete;
 

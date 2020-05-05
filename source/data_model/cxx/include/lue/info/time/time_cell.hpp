@@ -20,7 +20,7 @@ public:
 
     using Count = same_shape::constant_shape::Value;
 
-                   TimeCell            (hdf5::Group& parent);
+    explicit       TimeCell            (hdf5::Group& parent);
 
                    TimeCell            (TimeCell const&)=delete;
 

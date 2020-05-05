@@ -15,7 +15,7 @@ class StationarySpacePoint:
 
 public:
 
-                   StationarySpacePoint(hdf5::Group& parent);
+    explicit       StationarySpacePoint(hdf5::Group& parent);
 
                    StationarySpacePoint(hdf5::Group& parent,
                                         hdf5::Datatype const& memory_datatype);
@@ -24,7 +24,7 @@ public:
 
                    StationarySpacePoint(StationarySpacePoint&&)=default;
 
-                   StationarySpacePoint(same_shape::Value&& value);
+    explicit       StationarySpacePoint(same_shape::Value&& value);
 
                    ~StationarySpacePoint()=default;
 

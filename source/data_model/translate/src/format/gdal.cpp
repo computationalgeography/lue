@@ -662,10 +662,10 @@ void write_raster_band(
             auto const& [nr_valid_cells_x, nr_valid_cells_y] =
                 blocks.nr_valid_cells(block_x, block_y);
 
-            hdf5::Shape const shape = {
-                nr_valid_cells_x * nr_valid_cells_y
-            };
-            auto const memory_dataspace = hdf5::create_dataspace(shape);
+            // hdf5::Shape const shape = {
+            //     nr_valid_cells_x * nr_valid_cells_y
+            // };
+            // auto const memory_dataspace = hdf5::create_dataspace(shape);
 
             hdf5::Offset offset = {
                 time_point_idx,
@@ -759,10 +759,10 @@ void write_raster_band(
             auto const& [nr_valid_cells_x, nr_valid_cells_y] =
                 blocks.nr_valid_cells(block_x, block_y);
 
-            hdf5::Shape const shape = {
-                nr_valid_cells_x * nr_valid_cells_y
-            };
-            auto const memory_dataspace = hdf5::create_dataspace(shape);
+            // hdf5::Shape const shape = {
+            //     nr_valid_cells_x * nr_valid_cells_y
+            // };
+            // auto const memory_dataspace = hdf5::create_dataspace(shape);
 
             hdf5::Offset offset = {
                 block_y * blocks.block_size_y(),

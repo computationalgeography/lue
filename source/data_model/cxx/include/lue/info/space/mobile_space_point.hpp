@@ -15,7 +15,7 @@ class MobileSpacePoint:
 
 public:
 
-                   MobileSpacePoint    (hdf5::Group& parent);
+     explicit      MobileSpacePoint    (hdf5::Group& parent);
 
                    MobileSpacePoint    (hdf5::Group& parent,
                                         hdf5::Datatype const& memory_datatype);
@@ -24,7 +24,7 @@ public:
 
                    MobileSpacePoint    (MobileSpacePoint&&)=default;
 
-                   MobileSpacePoint    (same_shape::constant_shape::Value&&
+    explicit       MobileSpacePoint    (same_shape::constant_shape::Value&&
                                             value);
 
                    ~MobileSpacePoint   ()=default;

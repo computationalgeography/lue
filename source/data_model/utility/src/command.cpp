@@ -92,10 +92,10 @@ Command::Command(
 
         if(argument<bool>(command_name)) {
             assert(argument_parsed("<arguments>"));
-            auto const arguments = argument<std::vector<std::string>>(
+            auto const arguments_ = argument<std::vector<std::string>>(
                 "<arguments>");
 
-            _sub_command = _subcommand_creators[command_name](arguments);
+            _sub_command = _subcommand_creators[command_name](arguments_);
         }
     }
 }

@@ -11,7 +11,7 @@ class Fixture
 
 public:
 
-    Fixture(
+    explicit Fixture(
         std::string const& dataset_name)
 
         : _filename(dataset_name)

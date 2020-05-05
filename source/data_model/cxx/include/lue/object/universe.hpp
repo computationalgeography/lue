@@ -14,7 +14,7 @@ public:
                    Universe            (hdf5::Group& parent,
                                         std::string const& name);
 
-                   Universe            (hdf5::Group&& group);
+    explicit       Universe            (hdf5::Group&& group);
 
                    Universe            (Universe const&)=delete;
 

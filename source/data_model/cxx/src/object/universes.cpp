@@ -39,9 +39,7 @@ Universes create_universes(
             parent.id().pathname()));
     }
 
-    auto collection = create_collection<Universe>(parent, universes_tag);
-
-    return Universes{std::move(collection)};
+    return Universes{create_collection<Universe>(parent, universes_tag)};
 }
 
 }  // namespace data_model

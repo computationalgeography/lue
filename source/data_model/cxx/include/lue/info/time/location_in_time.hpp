@@ -20,13 +20,13 @@ public:
 
     using Element = time::DurationCount;
 
-                   LocationInTime      (hdf5::Group& parent);
+    explicit       LocationInTime      (hdf5::Group& parent);
 
                    LocationInTime      (LocationInTime const&)=delete;
 
                    LocationInTime      (LocationInTime&&)=default;
 
-                   LocationInTime      (
+    explicit       LocationInTime      (
                                     same_shape::constant_shape::Value&& value);
 
                    ~LocationInTime     ()=default;

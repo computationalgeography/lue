@@ -10,7 +10,7 @@ class Window
 
 public:
 
-                   Window               (std::string const& title,
+    explicit       Window               (std::string const& title,
                                          bool* open=nullptr);
 
                    ~Window              ();

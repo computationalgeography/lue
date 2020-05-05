@@ -16,7 +16,7 @@ public:
 
     // using CachePtr = std::shared_ptr<Cache>;
 
-                   Dataset             (std::string const& name);
+    explicit       Dataset             (std::string const& name);
 
     std::string const& name            () const;
 

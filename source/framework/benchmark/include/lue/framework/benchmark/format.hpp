@@ -120,10 +120,10 @@ inline std::string format_as_json(
 
     auto a = json::array();
 
-    for(Stopwatch const& timing: benchmark.timings()) {
+    for(Stopwatch const& timing_: benchmark.timings()) {
         auto o = json::object();
-        o["start"] = to_iso_string(timing.start());
-        o["duration"] = timing.duration<Unit>().count();
+        o["start"] = to_iso_string(timing_.start());
+        o["duration"] = timing_.duration<Unit>().count();
 
         a.emplace_back(o);
     }

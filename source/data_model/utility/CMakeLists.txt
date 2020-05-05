@@ -16,8 +16,8 @@ target_include_directories(lue_utility
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>
-    PRIVATE
-        fmt::fmt
+    # PRIVATE
+    #     fmt::fmt
 )
 
 target_link_libraries(lue_utility

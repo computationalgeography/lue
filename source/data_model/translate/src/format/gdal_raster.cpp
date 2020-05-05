@@ -373,7 +373,7 @@ GDALRaster::Band GDALRaster::band(
     assert(nr > 0);
     assert(nr <= int(nr_bands()));
 
-    return _dataset->GetRasterBand(nr);
+    return GDALRaster::Band{_dataset->GetRasterBand(nr)};
 }
 
 }  // namespace utility

@@ -16,7 +16,7 @@ public:
     static CommandPtr command          (std::vector<std::string> const&
                                             arguments);
 
-                   Import              (std::vector<std::string> const&
+    explicit       Import              (std::vector<std::string> const&
                                             arguments);
 
                    Import              (Import const& other)=default;

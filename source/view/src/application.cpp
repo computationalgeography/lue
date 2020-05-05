@@ -1169,7 +1169,7 @@ void show_universes(
 
 
 void show_dataset(
-    Dataset& dataset,
+    Dataset const& dataset,
     bool const show_details)
 {
     lue::data_model::Dataset const& source{dataset.dataset()};

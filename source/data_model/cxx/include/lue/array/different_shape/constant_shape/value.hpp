@@ -47,7 +47,7 @@ public:
                                         std::string const& name,
                                         hdf5::Datatype const& memory_datatype);
 
-                   Value               (ValueGroup&& group);
+    explicit       Value               (ValueGroup&& group);
 
                    Value               (Value const&)=delete;
 

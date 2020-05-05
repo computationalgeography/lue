@@ -31,7 +31,7 @@ public:
                                         std::string const& name,
                                         hdf5::Datatype const& memory_datatype);
 
-                   Value               (Array&& array);
+    explicit       Value               (Array&& array);
 
                    Value               (Value const&)=delete;
 

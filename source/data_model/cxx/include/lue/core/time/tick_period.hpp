@@ -38,7 +38,7 @@ public:
 
                    TickPeriod          ();
 
-                   TickPeriod          (Count const nr_units);
+    explicit       TickPeriod          (Count nr_units);
 
                    TickPeriod          (TickPeriod const&)=default;
 

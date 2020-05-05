@@ -18,7 +18,7 @@ BOOST_FIXTURE_TEST_CASE(create, lue::data_model::test::DatasetFixture)
     lue::hdf5::Datatype const coordinate_datatype{
         lue::hdf5::NativeDatatypeTraits<int>::type_id()};
     std::size_t const rank = 2;
-    std::vector<int> boxes(nr_areas * rank * 2);
+    std::vector<int> boxes(40 /* -> nr_areas * rank * 2 */);
     lue::data_model::test::generate_random_values(boxes, 0, 1000);
 
     // IDs

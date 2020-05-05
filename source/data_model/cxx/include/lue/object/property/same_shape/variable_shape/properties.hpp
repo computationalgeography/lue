@@ -20,7 +20,7 @@ public:
 
     explicit       Properties          (hdf5::Group& parent);
 
-                   Properties          (Collection<Property>&& collection);
+    explicit       Properties          (Collection<Property>&& collection);
 
                    Properties          (Properties const&)=delete;
 

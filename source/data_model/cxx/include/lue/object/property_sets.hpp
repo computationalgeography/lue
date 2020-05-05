@@ -15,7 +15,7 @@ public:
                    PropertySets        (hdf5::Group& parent,
                                         std::string const& name);
 
-                   PropertySets        (Collection<PropertySet>&& collection);
+    explicit       PropertySets        (Collection<PropertySet>&& collection);
 
                    PropertySets        (PropertySets const&)=delete;
 

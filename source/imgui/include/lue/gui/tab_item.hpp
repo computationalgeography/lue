@@ -12,7 +12,7 @@ class TabItem:
 
 public:
 
-                   TabItem             (std::string const& name);
+    explicit       TabItem             (std::string const& name);
 
                    TabItem             (TabItem const&)=default;
 
