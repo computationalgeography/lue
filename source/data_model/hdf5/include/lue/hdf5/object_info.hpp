@@ -26,6 +26,7 @@ public:
 
     bool           operator!=          (ObjectInfo const& other) const;
 
+    // NOLINTNEXTLINE(google-runtime-int)
     unsigned long  fileno              () const;
 
     haddr_t        addr                () const;

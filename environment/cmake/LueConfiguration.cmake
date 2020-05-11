@@ -38,9 +38,9 @@ option(LUE_BUILD_TEST
 
 
 # Options related to external software used by the project
-option(LUE_BUILD_DOCOPT
-    "If Docopt is required, build it instead of relying on the environment"
-    FALSE)
+### option(LUE_BUILD_DOCOPT
+###     "If Docopt is required, build it instead of relying on the environment"
+###     FALSE)
 option(LUE_BUILD_HPX
     "If HPX is required, build it instead of relying on the environment"
     FALSE)
@@ -177,27 +177,27 @@ if(DEVBASE_BOOST_REQUIRED)
 endif()
 
 
-if(DEVBASE_DOCOPT_REQUIRED)
-    if(LUE_BUILD_DOCOPT)
-        # Build Docopt ourselves
-        FetchContent_Declare(docopt
-            GIT_REPOSITORY https://github.com/docopt/docopt.cpp
-            GIT_TAG 18110222dc9cb57ec880ce24fbbd7291b2d1046e  # 0.6.2
-        )
-
-        FetchContent_GetProperties(docopt)
-
-        if(NOT docopt_POPULATED)
-            FetchContent_Populate(docopt)
-            add_subdirectory(${docopt_SOURCE_DIR} ${docopt_BINARY_DIR})
-        endif()
-    else()
-        # Use Docopt from the environment
-        find_package(Docopt REQUIRED)
-    endif()
-
-    unset(DEVBASE_DOCOPT_REQUIRED)
-endif()
+### if(DEVBASE_DOCOPT_REQUIRED)
+###     if(LUE_BUILD_DOCOPT)
+###         # Build Docopt ourselves
+###         FetchContent_Declare(docopt
+###             GIT_REPOSITORY https://github.com/docopt/docopt.cpp
+###             GIT_TAG 18110222dc9cb57ec880ce24fbbd7291b2d1046e  # 0.6.2
+###         )
+### 
+###         FetchContent_GetProperties(docopt)
+### 
+###         if(NOT docopt_POPULATED)
+###             FetchContent_Populate(docopt)
+###             add_subdirectory(${docopt_SOURCE_DIR} ${docopt_BINARY_DIR})
+###         endif()
+###     else()
+###         # Use Docopt from the environment
+###         find_package(Docopt REQUIRED)
+###     endif()
+### 
+###     unset(DEVBASE_DOCOPT_REQUIRED)
+### endif()
 
 
 if(DEVBASE_DOXYGEN_REQUIRED)
@@ -206,15 +206,15 @@ if(DEVBASE_DOXYGEN_REQUIRED)
 endif()
 
 
-if(DEVBASE_FMT_REQUIRED)
-    find_package(FMT REQUIRED)
-
-    if(NOT FMT_FOUND)
-        message(FATAL_ERROR "FMT not found")
-    endif()
-
-    unset(DEVBASE_FMT_REQUIRED)
-endif()
+# if(DEVBASE_FMT_REQUIRED)
+#     find_package(FMT REQUIRED)
+# 
+#     if(NOT FMT_FOUND)
+#         message(FATAL_ERROR "FMT not found")
+#     endif()
+# 
+#     unset(DEVBASE_FMT_REQUIRED)
+# endif()
 
 
 if(LUE_GDAL_REQUIRED)
@@ -351,7 +351,7 @@ if(DEVBASE_IMGUI_REQUIRED)
     FetchContent_Declare(imgui
         // MIT License, see ${imgui_SOURCE_DIR}/LICENSE.txt
         GIT_REPOSITORY ${imgui_repository}
-        GIT_TAG v1.75
+        GIT_TAG v1.76
     )
 
     FetchContent_GetProperties(imgui)
@@ -418,9 +418,48 @@ if(DEVBASE_OPENCL_REQUIRED)
 endif()
 
 
+# ------------------------------------------------------------------------------
+if(DEVBASE_DOCOPT_REQUIRED)
+    set(LUE_CONAN_REQUIRES
+        ${LUE_CONAN_REQUIRES}
+        docopt.cpp/0.6.2
+    )
+    unset(DEVBASE_DOCOPT_REQUIRED)
+endif()
+
+if(DEVBASE_FMT_REQUIRED)
+    set(LUE_CONAN_REQUIRES
+        ${LUE_CONAN_REQUIRES}
+        fmt/6.2.0
+    )
+    unset(DEVBASE_FMT_REQUIRED)
+endif()
+
+set(LUE_CONAN_REQUIRES
+    ${LUE_CONAN_REQUIRES}
+    gsl_microsoft/2.0.0@bincrafters/stable
+)
+
+if(DEVBASE_NLOHMANN_JSON_REQUIRED)
+    set(LUE_CONAN_REQUIRES
+        ${LUE_CONAN_REQUIRES}
+        nlohmann_json/3.7.3
+    )
+    unset(DEVBASE_NLOHMANN_JSON_REQUIRED)
+endif()
+
 if(DEVBASE_PYBIND11_REQUIRED)
-    # Find Pybind11. It will look for Python.
-    find_package(pybind11 REQUIRED)
+    set(LUE_CONAN_REQUIRES
+        ${LUE_CONAN_REQUIRES}
+        pybind11/2.4.3
+    )
+    unset(DEVBASE_PYBIND11_REQUIRED)
+endif()
+
+include(Conan)
+run_conan()
+
+if(DEVBASE_PYBIND11_REQUIRED)
     unset(DEVBASE_PYBIND11_REQUIRED)
 
     # Given Python found, figure out where the NumPy headers are. We don't

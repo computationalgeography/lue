@@ -13,17 +13,17 @@ public:
 
     using TimePoint = std::chrono::time_point<std::chrono::system_clock>;
 
-                   Stopwatch           ();
+                   Stopwatch           ()=default;
 
-                   Stopwatch           (Stopwatch const&)=delete;
+                   Stopwatch           (Stopwatch const&)=default;
 
-                   Stopwatch           (Stopwatch&&)=delete;
+                   Stopwatch           (Stopwatch&&)=default;
 
                    ~Stopwatch          ()=default;
 
-    Stopwatch&     operator=           (Stopwatch const&)=delete;
+    Stopwatch&     operator=           (Stopwatch const&)=default;
 
-    Stopwatch&     operator=           (Stopwatch&&)=delete;
+    Stopwatch&     operator=           (Stopwatch&&)=default;
 
     void           start               ();
 

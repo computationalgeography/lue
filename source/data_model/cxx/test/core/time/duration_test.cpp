@@ -3,15 +3,16 @@
 #include "lue/core/time.hpp"
 
 
+namespace ldm = lue::data_model;
+
+
 BOOST_AUTO_TEST_CASE(seconds)
 {
-    using namespace lue::data_model::time;
-
     // Period of 60 seconds modelled as 6 * (10 seconds)
     std::size_t const nr_ticks = 6;
 
-    using TickPeriod = TickPeriod<Second>;
-    using Duration = Duration<TickPeriod>;
+    using TickPeriod = ldm::time::TickPeriod<ldm::time::Second>;
+    using Duration = ldm::time::Duration<TickPeriod>;
 
     Duration duration(nr_ticks);
 

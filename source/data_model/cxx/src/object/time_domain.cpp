@@ -26,7 +26,7 @@ time::Epoch read_epoch(
     hdf5::Attributes const& attributes)
 {
     time::Epoch epoch;
-    time::Epoch::Kind const kind =
+    auto const kind =
         string_to_aspect<time::Epoch::Kind>(
             attributes.read<std::string>(epoch_kind_tag));
 
@@ -34,8 +34,7 @@ time::Epoch read_epoch(
         epoch = time::Epoch{kind};
     }
     else {
-        std::string const origin =
-            attributes.read<std::string>(epoch_origin_tag);
+        auto const origin = attributes.read<std::string>(epoch_origin_tag);
 
         if(!attributes.exists(epoch_calendar_tag)) {
             epoch = time::Epoch{kind, origin};

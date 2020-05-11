@@ -23,7 +23,7 @@ struct GDALDatasetDeleter
 {
     void operator()(::GDALDataset* dataset) const
     {
-        if(dataset) {
+        if(dataset != nullptr) {
             ::GDALClose(dataset);
         }
     }

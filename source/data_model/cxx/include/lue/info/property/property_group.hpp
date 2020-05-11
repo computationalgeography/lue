@@ -21,7 +21,7 @@ public:
 
                    PropertyGroup       (PropertyGroup&&)=default;
 
-                   ~PropertyGroup      ()=default;
+                   ~PropertyGroup      () override =default;
 
     PropertyGroup& operator=           (PropertyGroup const&)=delete;
 

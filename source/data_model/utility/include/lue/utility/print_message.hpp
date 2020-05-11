@@ -12,7 +12,7 @@ void               print_message       (std::ostream& stream,
 void               print_info_message  (std::ostream& stream,
                                         std::string const& message);
 
-void               print_info_message  (bool const verbose,
+void               print_info_message  (bool verbose,
                                         std::ostream& stream,
                                         std::string const& message);
 

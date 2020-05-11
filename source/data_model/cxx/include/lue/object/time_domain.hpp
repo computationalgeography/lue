@@ -27,7 +27,7 @@ public:
 
                    TimeDomain          (TimeDomain&&)=default;
 
-                   ~TimeDomain         ()=default;
+                   ~TimeDomain         () override =default;
 
     TimeDomain&    operator=           (TimeDomain const&)=delete;
 

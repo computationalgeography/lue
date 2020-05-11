@@ -24,6 +24,9 @@ public:
         BOOST_REQUIRE(!lue::hdf5::file_exists(_filename));
     }
 
+    Fixture(Fixture const&)=delete;
+
+    Fixture(Fixture&&)=delete;
 
     ~Fixture()
     {
@@ -34,6 +37,9 @@ public:
         BOOST_CHECK(!lue::hdf5::file_exists(_filename));
     }
 
+    Fixture& operator=(Fixture const&)=delete;
+
+    Fixture& operator=(Fixture&&)=delete;
 
 private:
 

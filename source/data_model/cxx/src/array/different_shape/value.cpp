@@ -64,6 +64,7 @@ void Value::expand(
     hdf5::Shape const* shapes)
 {
     for(std::size_t o = 0; o < nr_objects; ++o) {
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic, cppcoreguidelines-pro-bounds-pointer-arithmetic)
         expand_core(ids[o], shapes[o]);
     }
 
@@ -89,6 +90,7 @@ void Value::expand(
     auto rank = this->rank();
 
     for(std::size_t o = 0, s = 0; o < nr_objects; ++o, s +=rank) {
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
         expand_core(ids[o], hdf5::Shape{shapes[s], shapes[s + 1]});
     }
 
@@ -127,7 +129,7 @@ void Value::expand_core(
     assert(!contains(id));
 
     std::string const name = std::to_string(id);
-    hdf5::Shape max_dimension_sizes{array_shape};
+    hdf5::Shape const& max_dimension_sizes{array_shape};
     auto dataspace = hdf5::create_dataspace(array_shape, max_dimension_sizes);
 
     hdf5::Dataset::CreationPropertyList creation_property_list;

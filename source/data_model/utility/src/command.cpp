@@ -78,7 +78,7 @@ Command::Command(
       _arguments(docopt::docopt(
           usage, arguments, true,
           fmt::format("{} (build {})",
-              build_options.version, build_options.git_short_sha1),
+              BuildOptions::version, BuildOptions::git_short_sha1),
           true)),
       _subcommand_creators{subcommand_creators},
       _sub_command()

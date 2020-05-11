@@ -16,13 +16,13 @@ public:
                    Link                (Group& group,
                                         std::string const& name);
 
-                   Link                (Group const&)=delete;
+                   Link                (Link const&)=default;
 
                    Link                (Link&&)=default;
 
                    ~Link               ()=default;
 
-    Link&          operator=           (Link const&)=delete;
+    Link&          operator=           (Link const&)=default;
 
     Link&          operator=           (Link&&)=default;
 
@@ -40,7 +40,7 @@ private:
 
     Identifier     _location_id;
 
-    std::string const _name;
+    std::string    _name;
 
 };
 

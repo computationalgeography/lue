@@ -28,7 +28,7 @@ public:
 
                    Array               (Array&&)=default;
 
-                   ~Array              ()=default;
+                   ~Array              () override =default;
 
     Array&         operator=           (Array const&)=delete;
 

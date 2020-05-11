@@ -174,17 +174,7 @@ std::string File::pathname() const
 
     std::string result(nr_bytes, 'x');
 
-    /* nr_bytes = */ ::H5Fget_name(id(),
-// This test seems correct (201402L corresponds with C++14, non-const data()
-// is introduced in C++17), but non-const data() does not seem to be
-// available in GCC-5 and 6.
-// #if __cplusplus > 201402L
-//         result.data()
-// #else
-//         const_cast<std::string::value_type*>(result.data())
-// #endif
-        const_cast<std::string::value_type*>(result.data())
-        , nr_bytes + 1);
+    /* nr_bytes = */ ::H5Fget_name(id(), result.data() , nr_bytes + 1);
 
     return result;
 }
@@ -205,7 +195,7 @@ void File::flush() const
 
 unsigned int File::intent() const
 {
-    unsigned int intent;
+    unsigned int intent{};
     auto status = ::H5Fget_intent(id(), &intent);
 
     if(status < 0) {

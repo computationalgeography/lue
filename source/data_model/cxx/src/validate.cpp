@@ -301,7 +301,7 @@ static void validate_value(
     auto const nr_value_arrays = value.nr_objects();
 
     // Read IDs of all objects that have been active
-    auto& active_object_id = object_tracker.active_object_id();
+    auto const& active_object_id = object_tracker.active_object_id();
 
     std::vector<ID> active_object_ids(active_object_id.nr_ids());
     active_object_id.read(active_object_ids.data());
@@ -341,8 +341,8 @@ static void validate_value(
 
         // Iterate over each active set and verify that a value is
         // available for each object in the set
-        auto& active_set_index = object_tracker.active_set_index();
-        auto& active_object_index = object_tracker.active_object_index();
+        auto const& active_set_index = object_tracker.active_set_index();
+        auto const& active_object_index = object_tracker.active_object_index();
 
         std::vector<Index> active_set_idxs(active_set_index.nr_indices());
         active_set_index.read(active_set_idxs.data());
@@ -354,7 +354,7 @@ static void validate_value(
         active_set_idxs.push_back(active_object_id.nr_ids());
         auto begin_idx = active_set_idxs[0];
 
-        // TODO This happens when the active object idxs are empty. In
+        // TODO(KDJ) This happens when the active object idxs are empty. In
         // that case, validation of the object tracker succeeded, because
         // it doesn't now that this collection mustn't be empty, because
         // it doesn't know it is required. It is required in the case of
@@ -724,7 +724,7 @@ static void validate_time_box(
         std::vector<time::DurationCount> boxes(2 * nr_boxes);
         time_box.read(boxes.data());
 
-        // TODO Actually, if we allow boxes to overlap, we should test the
+        // TODO(KDJ) Actually, if we allow boxes to overlap, we should test the
         //      start coordinates and end coordinates of the boxes
         //      seperately. A start coordinate of a next box can be
         //      smaller than an end coordinate of a previous box.
@@ -763,7 +763,7 @@ static void validate_time_cell(
         std::vector<time::DurationCount> boxes(2 * nr_boxes);
         time_cell.read(boxes.data());
 
-        // TODO Actually, if we allow boxes to overlap, we should test the
+        // TODO(KDJ) Actually, if we allow boxes to overlap, we should test the
         //      start coordinates and end coordinates of the boxes
         //      seperately. A start coordinate of a next box can be
         //      smaller than an end coordinate of a previous box.
@@ -1107,7 +1107,7 @@ void validate_space_constant_regular_grid(
             //     "property must contain a count");
         }
 
-        // TODO Compare the counts in the discretization property. These
+        // TODO(KDJ) Compare the counts in the discretization property. These
         // must match the shapes of the values.
     }
 }
@@ -1399,14 +1399,14 @@ static void validate_property(
 {
     validate_value(object_tracker, property.value(), issues);
 
-    // TODO
+    // TODO(KDJ)
     if(property.time_is_discretized()) {
         not_supported_yet(
             property.id(), issues,
             "validation of discretization through time");
     }
 
-    // TODO
+    // TODO(KDJ)
     if(property.space_is_discretized()) {
         not_supported_yet(
             property.id(), issues,
@@ -1539,7 +1539,7 @@ static void validate_property_set(
                                         ));
                                     }
 
-                                    // TODO The presence property's value must contain
+                                    // TODO(KDJ) The presence property's value must contain
                                     // unsigned integers (= convertable to boolean)
 
                                     break;
@@ -1626,7 +1626,7 @@ static void validate_phenomenon(
                 check_ids.push_back(!collection.empty());
             }
 
-            // TODO Somehow verify that the object tracker of the
+            // TODO(KDJ) Somehow verify that the object tracker of the
             //   collection properties tracks only a single object (the
             //   collection as a whole). The properties must store a
             //   single value.
@@ -1728,6 +1728,7 @@ void validate(
     hdf5::Issues& issues)
 {
     // FIXME Push const cast down
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
     auto& universes = const_cast<Dataset&>(dataset).universes();
 
     for(auto const& name: universes.names()) {
@@ -1736,6 +1737,7 @@ void validate(
 
 
     // FIXME Push const cast down
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
     auto& phenomena = const_cast<Dataset&>(dataset).phenomena();
 
     for(auto const& name: phenomena.names()) {
@@ -1752,11 +1754,11 @@ void validate(
     hdf5::File const& file,
     hdf5::Issues& issues)
 {
-    // TODO
+    // TODO(KDJ)
     // - test version attribute (error)
     // - test history attribute (warning)
 
-    // TODO
+    // TODO(KDJ)
     //     history attribute on all levels, maybe with only information
     //     about the contained information?
     // std::vector<std::string> expected_attribute_names{

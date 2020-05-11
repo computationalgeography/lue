@@ -38,6 +38,7 @@ std::string const& Link::name() const
 
 std::size_t Link::value_size() const
 {
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
     return info().u.val_size;
 }
 
@@ -82,7 +83,8 @@ H5O_type_t object_type(
     }
 
     ::H5L_info_t info;
-    auto const status = ::H5Lget_info(id, name.c_str(), &info, H5P_DEFAULT);
+    auto const status =
+        ::H5Lget_info(id, name.c_str(), &info, H5P_DEFAULT);
 
     if(status < 0) {
         throw std::runtime_error(fmt::format(

@@ -31,7 +31,7 @@ BOOST_AUTO_TEST_CASE(use_case_3)
 {
     namespace lu = lue::utility;
 
-    std::string const raster_name{""};
+    std::string const raster_name{};
     lu::StackName const stack_name{raster_name};
 
     BOOST_CHECK_EQUAL(stack_name[0], "_0");

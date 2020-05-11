@@ -1,6 +1,7 @@
 // File: '../fonts/Roboto-Medium.ttf' (162588 bytes)
 // Exported using binary_to_compressed_c.cpp
 static const unsigned int roboto_medium_compressed_size = 115741;
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays, modernize-avoid-c-arrays)
 static const unsigned int roboto_medium_compressed_data[115744/4] =
 {
     0x0000bc57, 0x00000000, 0x1c7b0200, 0x00000400, 0x00010025, 0x82110000, 0x042e0804, 0x50471000, 0xaa7d534f, 0x02008c71, 0x0000a808, 0x53470c59, 

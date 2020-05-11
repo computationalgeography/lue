@@ -30,7 +30,7 @@ public:
 
                    Phenomenon          (Phenomenon&&)=default;
 
-                   ~Phenomenon         ()=default;
+                   ~Phenomenon         () override =default;
 
     Phenomenon&    operator=           (Phenomenon const&)=delete;
 

@@ -19,9 +19,7 @@ Shape::value_type size_of_shape(
     std::size_t const size_of_element)
 {
     return std::accumulate(
-        shape.begin(), shape.end(),
-        size_of_element,
-        std::multiplies<Shape::value_type>());
+        shape.begin(), shape.end(), size_of_element, std::multiplies<>());
 }
 
 }  // namespace hdf5

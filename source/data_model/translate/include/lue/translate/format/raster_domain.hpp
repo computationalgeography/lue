@@ -21,10 +21,10 @@ public:
                    RasterDomain        (RasterDomain&&)=default;
 
                    RasterDomain        (std::string const& crs,
-                                        Coordinate const west,
-                                        Coordinate const south,
-                                        Coordinate const east,
-                                        Coordinate const north);
+                                        Coordinate west,
+                                        Coordinate south,
+                                        Coordinate east,
+                                        Coordinate north);
 
                    RasterDomain        (std::string const& crs,
                                         Coordinates&& coordinates);

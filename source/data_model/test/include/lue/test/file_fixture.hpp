@@ -18,7 +18,7 @@ public:
 
                    FileFixture         (FileFixture&&)=delete;
 
-                   ~FileFixture        ();
+    virtual        ~FileFixture        ();
 
     FileFixture&   operator=           (FileFixture const&)=delete;
 

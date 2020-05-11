@@ -6,10 +6,6 @@
 
 
 namespace lue {
-
-using namespace data_model;
-
-
 namespace utility {
 namespace {
 
@@ -69,17 +65,17 @@ hdf5::Shape read_gdal_raster(
 
 void add_object_tracker(
     ::json const& object_tracker_json,
-    ObjectTracker& object_tracker)
+    data_model::ObjectTracker& object_tracker)
 {
     if(contains(object_tracker_json, "active_set_index")) {
 
-        std::vector<Index> idxs = object_tracker_json.at("active_set_index");
+        std::vector<data_model::Index> idxs = object_tracker_json.at("active_set_index");
         auto& active_set_idx = object_tracker.active_set_index();
 
         // When appending active sets, we have to update the indices
         // read from the JSON. This also works when no active sets are
         // stored already.
-        Index offset = object_tracker.active_object_id().nr_ids();
+        data_model::Index offset = object_tracker.active_object_id().nr_ids();
         std::transform(
             idxs.begin(), idxs.end(),
             idxs.begin(), [offset](auto const idx) {
@@ -87,8 +83,8 @@ void add_object_tracker(
                 }
             );
 
-        Index const begin = active_set_idx.nr_indices();
-        IndexRange const index_range{begin, begin + idxs.size()};
+        data_model::Index const begin = active_set_idx.nr_indices();
+        data_model::IndexRange const index_range{begin, begin + idxs.size()};
         active_set_idx.expand(idxs.size());
         active_set_idx.write(index_range, idxs.data());
 
@@ -97,7 +93,7 @@ void add_object_tracker(
     if(contains(object_tracker_json, "active_object_index")) {
 
         // Read indices from file
-        std::vector<Index> const idxs =
+        std::vector<data_model::Index> const idxs =
             object_tracker_json.at("active_object_index");
         auto& active_object_idx = object_tracker.active_object_index();
 
@@ -106,8 +102,8 @@ void add_object_tracker(
         // is not available yet here... FIXME
 
         // Add indices to dataset
-        Index const begin = 0;
-        IndexRange const index_range{begin, begin + idxs.size()};
+        data_model::Index const begin = 0;
+        data_model::IndexRange const index_range{begin, begin + idxs.size()};
         active_object_idx.expand(idxs.size());
         active_object_idx.write(index_range, idxs.data());
 
@@ -115,11 +111,11 @@ void add_object_tracker(
 
     if(contains(object_tracker_json, "active_object_id")) {
 
-        std::vector<ID> const ids = object_tracker_json.at("active_object_id");
+        std::vector<data_model::ID> const ids = object_tracker_json.at("active_object_id");
         auto& active_object_id = object_tracker.active_object_id();
 
-        Index const begin = active_object_id.nr_ids();
-        IndexRange const index_range{begin, begin + ids.size()};
+        data_model::Index const begin = active_object_id.nr_ids();
+        data_model::IndexRange const index_range{begin, begin + ids.size()};
         active_object_id.expand(ids.size());
         active_object_id.write(index_range, ids.data());
 
@@ -129,13 +125,13 @@ void add_object_tracker(
 
 void add_time_points(
     ::json const& time_point_json,
-    TimeDomain& time_domain)
+    data_model::TimeDomain& time_domain)
 {
-    std::vector<time::DurationCount> const time_points = time_point_json;
-    auto value = time_domain.value<TimePoint>();
+    std::vector<data_model::time::DurationCount> const time_points = time_point_json;
+    auto value = time_domain.value<data_model::TimePoint>();
 
-    Index const begin = value.nr_points();
-    IndexRange const index_range{begin, begin + time_points.size()};
+    data_model::Index const begin = value.nr_points();
+    data_model::IndexRange const index_range{begin, begin + time_points.size()};
     value.expand(time_points.size());
     value.write(index_range, time_points.data());
 }
@@ -157,11 +153,11 @@ template<
     typename Coordinate>
 void add_space_boxes(
     ::json const& space_box_json,
-    SpaceDomain& space_domain)
+    data_model::SpaceDomain& space_domain)
 {
     if(!space_box_json.empty()) {
 
-        auto value = space_domain.value<StationarySpaceBox>();
+        auto value = space_domain.value<data_model::StationarySpaceBox>();
         auto const shape = value.array_shape();
         auto const nr_elements_in_object_array = size_of_shape(shape, 1);
         std::vector<Coordinate> space_boxes;
@@ -195,8 +191,8 @@ void add_space_boxes(
         auto const nr_object_arrays =
             space_boxes.size() / nr_elements_in_object_array;
 
-        Index const begin = value.nr_boxes();
-        IndexRange const index_range{begin, begin + nr_object_arrays};
+        data_model::Index const begin = value.nr_boxes();
+        data_model::IndexRange const index_range{begin, begin + nr_object_arrays};
         value.expand(nr_object_arrays);
         value.write(index_range, space_boxes.data());
     }
@@ -205,27 +201,27 @@ void add_space_boxes(
 
 void add_space_domain_items(
     ::json const& item_type_json,
-    hdf5::Datatype const datatype,
-    PropertySet& property_set)
+    hdf5::Datatype const& datatype,
+    data_model::PropertySet& property_set)
 {
-    SpaceConfiguration const& space_configuration{
+    data_model::SpaceConfiguration const& space_configuration{
         property_set.space_domain().configuration()};
 
-    switch(space_configuration.value<Mobility>()) {
-        case Mobility::stationary: {
+    switch(space_configuration.value<data_model::Mobility>()) {
+        case data_model::Mobility::stationary: {
 
-            switch(space_configuration.value<SpaceDomainItemType>()) {
+            switch(space_configuration.value<data_model::SpaceDomainItemType>()) {
 
-                case SpaceDomainItemType::point: {
+                case data_model::SpaceDomainItemType::point: {
                     throw std::runtime_error(fmt::format(
                         "Importing stationary space points not supported yet ({})",
                         property_set.space_domain().id().pathname()));
                     // break;
                 }
 
-                case SpaceDomainItemType::box: {
+                case data_model::SpaceDomainItemType::box: {
                     if(datatype == hdf5::native_float64) {
-                        add_space_boxes<StationarySpaceBox, double>(
+                        add_space_boxes<data_model::StationarySpaceBox, double>(
                             item_type_json, property_set.space_domain());
                     }
                     else {
@@ -239,7 +235,7 @@ void add_space_domain_items(
 
             break;
         }
-        case Mobility::mobile: {
+        case data_model::Mobility::mobile: {
             throw std::runtime_error(fmt::format(
                 "Importing mobile space items not supported yet ({})",
                 property_set.id().pathname()));
@@ -254,7 +250,7 @@ template<
     typename Datatype>
 void add_same_shape_property(
     ::json const& property_json,
-    same_shape::Properties& properties)
+    data_model::same_shape::Properties& properties)
 {
     std::string const name = property_json.at("name");
 
@@ -280,15 +276,15 @@ void add_same_shape_property(
         : properties.add(name, datatype, shape)
         ;
 
-    Index const begin = property.value().nr_arrays();
+    data_model::Index const begin = property.value().nr_arrays();
     auto const nr_object_arrays =
         values.size() / nr_elements_in_object_array;
-    IndexRange const index_range{begin, begin + nr_object_arrays};
+    data_model::IndexRange const index_range{begin, begin + nr_object_arrays};
     property.value().expand(nr_object_arrays);
     property.value().write(index_range, values.data());
 
 
-    // TODO
+    // TODO(KDJ)
     // datatype, shape must match, etc
     // branch on contains()
 }
@@ -298,7 +294,7 @@ template<
     typename Datatype>
 void add_different_shape_property(
     ::json const& property_json,
-    different_shape::Properties& properties)
+    data_model::different_shape::Properties& properties)
 {
     std::string const name = property_json.at("name");
     std::size_t rank = property_json.at("rank");
@@ -314,7 +310,7 @@ void add_different_shape_property(
     std::vector<Datatype> values;
 
     for(auto const& a_value_json: value_json) {
-        ID const id = a_value_json.at("id");
+        data_model::ID const id = a_value_json.at("id");
 
         if(contains(a_value_json, "dataset")) {
             // Value is stored in an external dataset
@@ -343,14 +339,15 @@ void add_different_shape_property(
         auto const discretization_json =
             property_json.at("space_discretization");
         auto const discretization_type =
-            string_to_aspect<SpaceDiscretization>(
+            data_model::string_to_aspect<data_model::SpaceDiscretization>(
                 discretization_json.at("type"));
 
         std::string const property_path = discretization_json.at("property");
 
         // Give the current property, navigate to the property pointed
         // to by the path
-        auto discretization_property = lue::property(property, property_path);
+        auto discretization_property =
+            lue::data_model::property(property, property_path);
 
         property.set_space_discretization(
             discretization_type, discretization_property);
@@ -407,7 +404,7 @@ void add_different_shape_property(
 //     property.value().write(index_range, values.data());
 // 
 // 
-//     // TODO
+//     // TODO(KDJ)
 //     // datatype, shape must match, etc
 //     // branch on contains()
 // 
@@ -418,7 +415,7 @@ template<
     typename Datatype>
 void add_same_shape_constant_shape_property(
     ::json const& property_json,
-    same_shape::constant_shape::Properties& properties)
+    data_model::same_shape::constant_shape::Properties& properties)
 {
     std::string const name = property_json.at("name");
 
@@ -439,7 +436,7 @@ void add_same_shape_constant_shape_property(
         : properties.add(name, datatype, shape)
         ;
 
-    // TODO
+    // TODO(KDJ)
     // datatype, shape must match, etc
     // branch on contains()
 
@@ -457,8 +454,8 @@ void add_same_shape_constant_shape_property(
     }
 
     auto const nr_object_arrays = values.size() / nr_elements_in_object_array;
-    Index const begin = property.value().nr_arrays();
-    IndexRange const index_range{begin, begin + nr_object_arrays};
+    data_model::Index const begin = property.value().nr_arrays();
+    data_model::IndexRange const index_range{begin, begin + nr_object_arrays};
     property.value().expand(nr_object_arrays);
     property.value().write(index_range, values.data());
 }
@@ -494,7 +491,7 @@ void add_same_shape_constant_shape_property(
 //         : properties.add(name, datatype, shape)
 //         ;
 // 
-//     // TODO
+//     // TODO(KDJ)
 //     // datatype, shape must match, etc
 //     // branch on contains()
 // 
@@ -523,7 +520,7 @@ template<
     typename Datatype>
 void add_different_shape_constant_shape_property(
     ::json const& property_json,
-    different_shape::constant_shape::Properties& properties)
+    data_model::different_shape::constant_shape::Properties& properties)
 {
     std::string const name = property_json.at("name");
     std::size_t const rank = property_json.at("rank");
@@ -542,7 +539,7 @@ void add_different_shape_constant_shape_property(
     auto const& value_json = property_json.at("value");
 
     for(auto const& a_value_json: value_json) {
-        ID const id = a_value_json.at("id");
+        data_model::ID const id = a_value_json.at("id");
 
         if(contains(a_value_json, "dataset")) {
             // Value is stored in an external dataset
@@ -559,7 +556,7 @@ void add_different_shape_constant_shape_property(
 
         assert(!value.exists(id));
 
-        Count nr_locations_in_time = 1;
+        data_model::Count nr_locations_in_time = 1;
 
         value.expand(id, shape, nr_locations_in_time);
         value[id].write(values.data());
@@ -592,7 +589,7 @@ template<
     typename Datatype>
 void add_different_shape_variable_shape_property(
     ::json const& property_json,
-    different_shape::variable_shape::Properties& properties)
+    data_model::different_shape::variable_shape::Properties& properties)
 {
     std::string const name = property_json.at("name");
     std::size_t const rank = property_json.at("rank");
@@ -608,7 +605,7 @@ void add_different_shape_variable_shape_property(
         : properties.add(name, datatype, rank)
         ;
 
-    // TODO
+    // TODO(KDJ)
     // datatype, rank must match, etc
     // branch on contains()
 
@@ -617,7 +614,7 @@ void add_different_shape_variable_shape_property(
     auto& value = property.value();
 
     std::vector<hdf5::Shape> const shape = property_json.at("shape");
-    std::vector<Index> const object_id = property_json.at("object_id");
+    std::vector<data_model::Index> const object_id = property_json.at("object_id");
     assert(values.size() == object_id.size());
     assert(shape.size() == object_id.size());
     auto const nr_objects = shape.size();
@@ -634,29 +631,29 @@ void add_different_shape_variable_shape_property(
 
 void add_property(
     ::json const& property_json,
-    Properties& properties)
+    data_model::Properties& properties)
 {
     // std::string const description = property_json["description"];
 
     std::string const value_variability_json =
         property_json.at("value_variability");
     auto const value_variability =
-        string_to_aspect<ValueVariability>(value_variability_json);
+        data_model::string_to_aspect<data_model::ValueVariability>(value_variability_json);
 
     std::string const shape_per_object_json =
         property_json.at("shape_per_object");
     auto const shape_per_object =
-        string_to_aspect<ShapePerObject>(shape_per_object_json);
+        data_model::string_to_aspect<data_model::ShapePerObject>(shape_per_object_json);
 
     std::string const datatype_json = property_json.at("datatype");
 
     switch(value_variability) {
-        case ValueVariability::constant: {
+        case data_model::ValueVariability::constant: {
 
             switch(shape_per_object) {
-                case ShapePerObject::same: {
+                case data_model::ShapePerObject::same: {
                     // constant_value / same_shape
-                    using Properties = same_shape::Properties;
+                    using Properties = data_model::same_shape::Properties;
 
                     if(datatype_json == "uint32") {
                         using Datatype = std::uint32_t;
@@ -696,9 +693,9 @@ void add_property(
 
                     break;
                 }
-                case ShapePerObject::different: {
+                case data_model::ShapePerObject::different: {
                     // constant_value / different_shape
-                    using Properties = different_shape::Properties;
+                    using Properties = data_model::different_shape::Properties;
 
                     if(datatype_json == "uint32") {
                         using Datatype = std::uint32_t;
@@ -742,20 +739,20 @@ void add_property(
 
             break;
         }
-        case ValueVariability::variable: {
+        case data_model::ValueVariability::variable: {
 
             std::string const shape_variability_json =
                 property_json.at("shape_variability");
             auto const shape_variability =
-                string_to_aspect<ShapeVariability>(shape_variability_json);
+                data_model::string_to_aspect<data_model::ShapeVariability>(shape_variability_json);
 
             switch(shape_per_object) {
-                case ShapePerObject::same: {
+                case data_model::ShapePerObject::same: {
 
                     switch(shape_variability) {
-                        case ShapeVariability::constant: {
+                        case data_model::ShapeVariability::constant: {
                             // variable_value / same_shape / constant_shape
-                            using Properties = same_shape::constant_shape::Properties;
+                            using Properties = data_model::same_shape::constant_shape::Properties;
 
                             if(datatype_json == "uint32") {
                                 using Datatype = std::uint32_t;
@@ -789,7 +786,7 @@ void add_property(
 
                             break;
                         }
-                        case ShapeVariability::variable: {
+                        case data_model::ShapeVariability::variable: {
                             // variable_value / same_shape / variable_shape
                             // using Properties = same_shape::variable_shape::Properties;
 
@@ -801,12 +798,12 @@ void add_property(
 
                     break;
                 }
-                case ShapePerObject::different: {
+                case data_model::ShapePerObject::different: {
 
                     switch(shape_variability) {
-                        case ShapeVariability::constant: {
+                        case data_model::ShapeVariability::constant: {
                             // variable_value / different_shape / constant_shape
-                            using Properties = different_shape::constant_shape::Properties;
+                            using Properties = data_model::different_shape::constant_shape::Properties;
 
                             if(datatype_json == "uint8") {
                                 using Datatype = std::uint8_t;
@@ -815,13 +812,13 @@ void add_property(
                                     property_json, properties.collection<Properties>());
                             }
 
-                            // TODO More value types
+                            // TODO(KDJ) More value types
 
                             break;
                         }
-                        case ShapeVariability::variable: {
+                        case data_model::ShapeVariability::variable: {
                             // variable_value / different_shape / variable_shape
-                            using Properties = different_shape::variable_shape::Properties;
+                            using Properties = data_model::different_shape::variable_shape::Properties;
 
                             if(datatype_json == "uint32") {
                                 using Datatype = std::uint32_t;
@@ -867,17 +864,17 @@ void add_property(
 }
 
 
-std::tuple<SpaceConfiguration, hdf5::Datatype, std::size_t, ::json>
+std::tuple<data_model::SpaceConfiguration, hdf5::Datatype, std::size_t, ::json>
     parse_space_domain(
         ::json const& space_domain_json)
 {
-    Mobility mobility{Mobility::stationary};
-    SpaceDomainItemType item_type{};
+    data_model::Mobility mobility{data_model::Mobility::stationary};
+    data_model::SpaceDomainItemType item_type{};
     ::json item_type_json;
 
     if(contains(space_domain_json, "space_box")) {
         item_type_json = space_domain_json.at("space_box");
-        item_type = SpaceDomainItemType::box;
+        item_type = data_model::SpaceDomainItemType::box;
     }
     else {
         throw std::runtime_error(
@@ -890,15 +887,15 @@ std::tuple<SpaceConfiguration, hdf5::Datatype, std::size_t, ::json>
     std::size_t const rank = space_domain_json.at("rank");
 
     return std::make_tuple(
-        SpaceConfiguration{mobility, item_type}, datatype, rank,
+        data_model::SpaceConfiguration{mobility, item_type}, datatype, rank,
         item_type_json);
 }
 
 
 void verify_time_domain_is_compatible(
-    PropertySet const& property_set,
-    TimeConfiguration const& time_configuration,
-    Clock const& clock)
+    data_model::PropertySet const& property_set,
+    data_model::TimeConfiguration const& time_configuration,
+    data_model::Clock const& clock)
 {
     if(property_set.time_domain().configuration() !=
             time_configuration) {
@@ -919,11 +916,11 @@ void verify_time_domain_is_compatible(
 
 void add_property_set(
     ::json const& property_set_json,
-    PropertySets& property_sets)
+    data_model::PropertySets& property_sets)
 {
     std::string const name = property_set_json.at("name");
 
-    using PropertySetRef = std::reference_wrapper<PropertySet>;
+    using PropertySetRef = std::reference_wrapper<data_model::PropertySet>;
     using OptionalPropertySet = std::optional<PropertySetRef>;
 
     OptionalPropertySet property_set_ref;
@@ -966,7 +963,7 @@ void add_property_set(
                 property_set_ref = property_set;
             }
 
-            PropertySet& property_set = *property_set_ref;
+            data_model::PropertySet& property_set = *property_set_ref;
 
             // No time domain, so object tracker is not needed...
             // add_object_tracker(
@@ -982,34 +979,34 @@ void add_property_set(
         auto const& clock_json = time_domain_json.at("clock");
         auto const& epoch_json = clock_json.at("epoch");
 
-        time::Epoch::Kind const epoch_kind =
-            string_to_aspect<time::Epoch::Kind>(epoch_json.at("kind"));
-        time::Epoch epoch{epoch_kind};
+        auto const epoch_kind =
+            data_model::string_to_aspect<data_model::time::Epoch::Kind>(epoch_json.at("kind"));
+        data_model::time::Epoch epoch{epoch_kind};
 
         if(epoch_json.contains("origin")) {
             std::string const epoch_origin = epoch_json.at("origin");
 
             if(epoch_json.contains("calendar")) {
-                time::Calendar const epoch_calendar =
-                    string_to_aspect<time::Calendar>(epoch_json.at("calendar"));
-                epoch = time::Epoch{epoch_kind, epoch_origin, epoch_calendar};
+                auto const epoch_calendar =
+                    data_model::string_to_aspect<data_model::time::Calendar>(epoch_json.at("calendar"));
+                epoch = data_model::time::Epoch{epoch_kind, epoch_origin, epoch_calendar};
             }
             else {
-                epoch = time::Epoch{epoch_kind, epoch_origin};
+                epoch = data_model::time::Epoch{epoch_kind, epoch_origin};
             }
         }
 
-        time::DurationCount const tick_period_count =
+        data_model::time::DurationCount const tick_period_count =
             clock_json.at("tick_period_count");
         std::string const unit = clock_json.at("unit");
 
         // FIXME Read the time domain item type from the json
-        TimeConfiguration const time_configuration{
-                TimeDomainItemType::point
+        data_model::TimeConfiguration const time_configuration{
+                data_model::TimeDomainItemType::point
             };
-        Clock const clock{
+        data_model::Clock const clock{
                 epoch,
-                string_to_aspect<time::Unit>(unit),
+                data_model::string_to_aspect<data_model::time::Unit>(unit),
                 tick_period_count
             };
 
@@ -1061,14 +1058,14 @@ void add_property_set(
                 property_set_ref = property_set;
             }
 
-            PropertySet& property_set = *property_set_ref;
+            data_model::PropertySet& property_set = *property_set_ref;
 
             add_space_domain_items(
                 space_domain_item_type_json, datatype, property_set);
         }
 
         assert(property_set_ref);
-        PropertySet& property_set = *property_set_ref;
+        data_model::PropertySet& property_set = *property_set_ref;
 
         add_object_tracker(
             property_set_json.at("object_tracker"),
@@ -1082,7 +1079,7 @@ void add_property_set(
 
     if(contains(property_set_json, "properties"))
     {
-        PropertySet& property_set_ = *property_set_ref;
+        data_model::PropertySet& property_set_ = *property_set_ref;
 
         for(auto const& property_json:
                 property_set_json.at("properties")) {
@@ -1094,7 +1091,7 @@ void add_property_set(
 
 void add_phenomenon(
     ::json const& phenomenon_json,
-    Phenomena& phenomena)
+    data_model::Phenomena& phenomena)
 {
     std::string const name = phenomenon_json.at("name");
     auto& phenomenon = phenomena.contains(name)
@@ -1105,13 +1102,13 @@ void add_phenomenon(
     if(contains(phenomenon_json, "object_id")) {
         // JSON contains IDs of objects having information that doesn't
         // change through time.
-        std::vector<Index> const object_id = phenomenon_json.at("object_id");
+        std::vector<data_model::Index> const object_id = phenomenon_json.at("object_id");
 
         // This logic should work when this is the first collection of IDs
         // and when this collection should be appended to an existing
         // collection of IDs
-        Index const begin = phenomenon.object_id().nr_arrays();
-        IndexRange const index_range{begin, begin + object_id.size()};
+        data_model::Index const begin = phenomenon.object_id().nr_arrays();
+        data_model::IndexRange const index_range{begin, begin + object_id.size()};
         phenomenon.object_id().expand(object_id.size());
         phenomenon.object_id().write(index_range, object_id.data());
     }
@@ -1136,7 +1133,7 @@ void add_phenomenon(
 
 void add_universe(
     ::json const& universe_json,
-    Universes& universes)
+    data_model::Universes& universes)
 {
     std::string const name = universe_json.at("name");
 
@@ -1156,7 +1153,7 @@ void add_universe(
 
 void translate_json_to_lue(
     ::json const& lue_json,
-    Dataset& dataset)
+    data_model::Dataset& dataset)
 {
     if(!contains(lue_json, "dataset")) {
         throw_missing_entry("<json>", "root", "dataset");
@@ -1180,11 +1177,11 @@ void translate_json_to_lue(
 }  // Anonymous namespace
 
 
-Dataset translate_json_to_lue(
+data_model::Dataset translate_json_to_lue(
     ::json const& lue_json,
     std::string const& dataset_name)
 {
-    auto dataset = create_in_memory_dataset(dataset_name);
+    auto dataset = data_model::create_in_memory_dataset(dataset_name);
 
     translate_json_to_lue(lue_json, dataset);
 
@@ -1199,9 +1196,9 @@ void translate_json_to_lue(
 {
     // Either create a new dataset or add the information stored in the
     // JSON to an existing dataset
-    auto dataset = add && dataset_exists(lue_pathname)
-        ? Dataset{lue_pathname, H5F_ACC_RDWR}
-        : create_dataset(lue_pathname)
+    auto dataset = add && data_model::dataset_exists(lue_pathname)
+        ? data_model::Dataset{lue_pathname, H5F_ACC_RDWR}
+        : data_model::create_dataset(lue_pathname)
         ;
 
     translate_json_to_lue(lue_json, dataset);

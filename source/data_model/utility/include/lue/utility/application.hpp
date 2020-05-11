@@ -15,7 +15,7 @@ public:
 
                    Application         (Application&&)=delete;
 
-                   ~Application        ()=default;
+                   ~Application        () override =default;
 
     Application&   operator=           (Application const&)=delete;
 

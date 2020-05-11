@@ -6,11 +6,6 @@
 namespace lue {
 namespace utility {
 
-Stopwatch::Stopwatch()
-{
-}
-
-
 void Stopwatch::start()
 {
     _start = std::chrono::system_clock::now();

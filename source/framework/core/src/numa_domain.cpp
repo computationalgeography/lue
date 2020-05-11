@@ -9,10 +9,10 @@ namespace {
 using Mutex = hpx::lcos::local::mutex;
 using Lock = std::lock_guard<Mutex>;
 
-static Targets _targets{};
-static NUMADomainExecutors _executors{};
-static bool initialized{false};
-static Mutex mutex;
+Targets _targets{};
+NUMADomainExecutors _executors{};
+bool initialized{false};
+Mutex mutex;
 
 
 void init()
@@ -92,8 +92,6 @@ TargetIndex scattered_target_index()
     static bool initialized{false};
     static Mutex mutex;
 
-    TargetIndex result;
-
     {
         Lock const lock{mutex};
 
@@ -103,7 +101,7 @@ TargetIndex scattered_target_index()
         }
     }
 
-    result = scatter();
+    TargetIndex result = scatter();
 
     assert(result < nr_numa_targets());
 

@@ -80,6 +80,7 @@ void Value::expand(
     Count const* nr_locations_in_time)
 {
     for(std::size_t o = 0; o < nr_objects; ++o) {
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
         expand_(ids[o], shapes[o], nr_locations_in_time[o]);
     }
 

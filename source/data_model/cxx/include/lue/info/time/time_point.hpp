@@ -23,7 +23,7 @@ public:
 
     explicit       TimePoint           (LocationInTime&& value);
 
-                   ~TimePoint          ()=default;
+                   ~TimePoint          () override =default;
 
     TimePoint&     operator=           (TimePoint const&)=delete;
 

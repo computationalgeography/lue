@@ -6,6 +6,11 @@ add_hpx_executable(lue_main_at_each_locality
         iostreams
 )
 
+set_target_properties(lue_main_at_each_locality
+    PROPERTIES
+        CXX_CLANG_TIDY ""  # TODO(KDJ) Get it to skip hpx headers
+)
+
 target_include_directories(lue_main_at_each_locality SYSTEM
     PRIVATE
         ${HPX_INCLUDE_DIRS}
@@ -14,5 +19,5 @@ target_include_directories(lue_main_at_each_locality SYSTEM
 
 target_link_libraries(lue_main_at_each_locality
     PRIVATE
-        fmt::fmt
+        CONAN_PKG::fmt
 )

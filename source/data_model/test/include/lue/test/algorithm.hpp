@@ -135,7 +135,7 @@ inline void select_random_ids(
 
 #ifndef NDEBUG
     std::size_t const sum_active_set_sizes = std::accumulate(
-        active_set_sizes.begin(), active_set_sizes.end(), 0u);
+        active_set_sizes.begin(), active_set_sizes.end(), std::size_t{0});
     assert(
         static_cast<std::size_t>(active_ids.size()) == sum_active_set_sizes);
 #endif
@@ -187,7 +187,7 @@ inline void generate_random_integral_values(
 {
     using ValueType = typename Collection::value_type;
 
-    static_assert(std::is_integral<ValueType>(), "");
+    static_assert(std::is_integral<ValueType>());
 
     // Fill collection with range of random integers within [min, max].
     // Some of the values might occur more than once.
@@ -212,7 +212,7 @@ inline void generate_random_strictly_increasing_integral_values(
 {
     using ValueType = typename Collection::value_type;
 
-    static_assert(std::is_integral<ValueType>(), "");
+    static_assert(std::is_integral<ValueType>());
 
     auto const nr_values_in_range = max - min + 1;
     auto const nr_values_to_select = values.size();
@@ -250,7 +250,7 @@ inline void generate_random_real_values(
 {
     using ValueType = typename Collection::value_type;
 
-    static_assert(std::is_floating_point<ValueType>(), "");
+    static_assert(std::is_floating_point<ValueType>());
 
     // Fill collection with range of random reals within [min, max].
     // Some of the values might occur more than once (unlikely).

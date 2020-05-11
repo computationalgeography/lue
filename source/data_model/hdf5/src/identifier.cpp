@@ -68,16 +68,22 @@ Identifier::Identifier(
     invalid.
 */
 Identifier::Identifier(
-    Identifier&& other)
+    Identifier&& other) noexcept
 
-    : _id{std::move(other._id)},
+    : _id{other._id},
       _close{std::move(other._close)}
 
 {
     other._id = -1;
 
-    assert_invariant();
-    assert(!other.is_valid());
+    try {
+        assert_invariant();
+        assert(!other.is_valid());
+    }
+    catch(...) {
+        // This should never happen
+        assert(false);
+    }
 }
 
 
@@ -86,9 +92,15 @@ Identifier::Identifier(
 
     If necessary, the close function is called.
 */
-Identifier::~Identifier()
+Identifier::~Identifier() noexcept
 {
-    close_if_necessary();
+    try {
+        close_if_necessary();
+    }
+    catch(...) {
+        // This should never happen
+        assert(false);
+    }
 }
 
 
@@ -101,42 +113,51 @@ Identifier::~Identifier()
 Identifier& Identifier::operator=(
     Identifier const& other)
 {
-    // Copy-assign:
-    // - Clean-up this instance
-    // - Copy the other instance in
+    if(&other != this)
+    {
+        // Copy-assign:
+        // - Clean-up this instance
+        // - Copy the other instance in
 
-    close_if_necessary();
+        close_if_necessary();
 
-    _id = other._id;
+        _id = other._id;
 
-    if(is_valid()) {
-        increment_reference_count();
+        if(is_valid()) {
+            increment_reference_count();
+        }
+
+        _close = other._close;
+
+        assert_invariant();
     }
-
-    _close = other._close;
-
-    assert_invariant();
 
     return *this;
 }
 
 
 Identifier& Identifier::operator=(
-    Identifier&& other)
+    Identifier&& other) noexcept
 {
     // Move-assign:
     // - Clean-up this instance
     // - Move the other instance in
 
-    close_if_necessary();
+    try {
+        close_if_necessary();
 
-    _id = std::move(other._id);
-    other._id = -1;
+        _id = other._id;
+        other._id = -1;
 
-    _close = std::move(other._close);
+        _close = std::move(other._close);
 
-    assert_invariant();
-    assert(!other.is_valid());
+        assert_invariant();
+        assert(!other.is_valid());
+    }
+    catch(...) {
+        // This should never happen
+        assert(false);
+    }
 
     return *this;
 }
@@ -156,6 +177,7 @@ int Identifier::reference_count() const
 }
 
 
+// NOLINTNEXTLINE(readability-make-member-function-const)
 int Identifier::increment_reference_count()
 {
     assert(is_valid());
@@ -208,7 +230,7 @@ bool Identifier::is_valid() const
 
 ::H5I_type_t Identifier::type() const
 {
-    auto result = ::H5Iget_type(_id);
+    ::H5I_type_t result = ::H5Iget_type(_id);
 
     if(result == ::H5I_BADID) {
         throw std::runtime_error(
@@ -219,11 +241,12 @@ bool Identifier::is_valid() const
 }
 
 
+// NOLINTNEXTLINE(readability-make-member-function-const)
 void* Identifier::object()
 {
-    auto result = ::H5Iobject_verify(_id, type());
+    auto* result = ::H5Iobject_verify(_id, type());
 
-    if(!result) {
+    if(result == nullptr) {
         throw std::runtime_error(
             "Cannot obtain pointer to object");
     }
@@ -260,17 +283,7 @@ std::string Identifier::pathname() const
 
     std::string result(nr_bytes, 'x');
 
-    /* nr_bytes = */ ::H5Iget_name(_id,
-// This test seems correct (201402L corresponds with C++14, non-const data()
-// is introduced in C++17), but non-const data() does not seem to be
-// available in GCC-5 and 6.
-// #if __cplusplus > 201402L
-//         result.data()
-// #else
-//         const_cast<std::string::value_type*>(result.data())
-// #endif
-        const_cast<std::string::value_type*>(result.data())
-        , nr_bytes + 1);
+    /* nr_bytes = */ ::H5Iget_name(_id, result.data(), nr_bytes + 1);
 
     return result;
 }

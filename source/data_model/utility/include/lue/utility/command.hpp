@@ -1,6 +1,5 @@
 #pragma once
-#include <stdexcept>  // otherwise docopt fails
-#include <docopt.h>
+#include <docopt/docopt.h>
 #include <functional>
 #include <map>
 #include <memory>

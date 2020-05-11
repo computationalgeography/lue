@@ -37,13 +37,13 @@ public:
 
                    Collection          (Collection const&)=delete;
 
-                   Collection          (Collection&&)=default;
+                   Collection          (Collection&&) noexcept =default;
 
-                   ~Collection         ()=default;
+                   ~Collection         () override =default;
 
     Collection&    operator=           (Collection const&)=delete;
 
-    Collection&    operator=           (Collection&&)=default;
+    Collection&    operator=           (Collection&&) noexcept =default;
 
     bool           empty               () const;
 

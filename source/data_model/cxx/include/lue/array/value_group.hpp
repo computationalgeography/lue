@@ -19,7 +19,7 @@ public:
 
                    ValueGroup          (ValueGroup&&)=default;
 
-                   ~ValueGroup         ()=default;
+                   ~ValueGroup         () override =default;
 
     ValueGroup&    operator=           (ValueGroup const&)=delete;
 
@@ -45,13 +45,13 @@ protected:
 private:
 
     //! In-file datatype
-    hdf5::Datatype const _file_datatype;
+    hdf5::Datatype _file_datatype;
 
     //! In-memory datatype
-    hdf5::Datatype const _memory_datatype;
+    hdf5::Datatype _memory_datatype;
 
     //! Rank of the object arrays
-    Rank const     _rank;
+    Rank           _rank;
 
 };
 

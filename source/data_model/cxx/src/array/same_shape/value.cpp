@@ -80,7 +80,7 @@ hdf5::Shape Value::array_shape() const
 {
     auto const shape = this->shape();
 
-    assert(shape.size() >= 1);
+    assert(!shape.empty());
 
     return hdf5::Shape{shape.begin() + 1, shape.end()};
 }

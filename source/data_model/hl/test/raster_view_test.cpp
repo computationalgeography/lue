@@ -80,6 +80,7 @@ BOOST_AUTO_TEST_CASE(use_case_1)
 
             BOOST_CHECK(time_domain.clock() == clock);
 
+            // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
             ldm::TimeBox value{const_cast<ldm::TimeDomain&>(time_domain)
                 .value<ldm::TimeBox>()};
 
@@ -118,6 +119,7 @@ BOOST_AUTO_TEST_CASE(use_case_1)
                 ldm::SpaceDomainItemType::box);
 
             ldm::StationarySpaceBox value{
+                // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
                 const_cast<ldm::SpaceDomain&>(space_domain)
                     .value<ldm::StationarySpaceBox>()};
 
@@ -205,6 +207,7 @@ BOOST_AUTO_TEST_CASE(use_case_2)
     using DatasetPtr = std::shared_ptr<lue::data_model::Dataset>;
 
     std::string const dataset_name{"use_case_2"};
+    // NOLINTNEXTLINE(performance-unnecessary-copy-initialization)
     std::string const dataset_pathname{dataset_name};
     std::string const phenomenon_name{"area"};
     std::string const property_set_name{"area"};
@@ -276,6 +279,7 @@ BOOST_AUTO_TEST_CASE(use_case_2)
                 ldm::SpaceDomainItemType::box);
 
             ldm::StationarySpaceBox value{
+                // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
                 const_cast<ldm::SpaceDomain&>(space_domain)
                     .value<ldm::StationarySpaceBox>()};
 

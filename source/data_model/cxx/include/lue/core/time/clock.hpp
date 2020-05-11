@@ -27,13 +27,13 @@ public:
 
                    Clock               (Clock const&)=default;
 
-                   Clock               (Clock&&)=default;
+                   Clock               (Clock&&) noexcept =default;
 
                    ~Clock              ()=default;
 
     Clock&         operator=           (Clock const&)=default;
 
-    Clock&         operator=           (Clock&&)=default;
+    Clock&         operator=           (Clock&&) noexcept =default;
 
     Epoch const&   epoch               () const;
 

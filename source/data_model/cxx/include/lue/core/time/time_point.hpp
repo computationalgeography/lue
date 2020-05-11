@@ -48,13 +48,13 @@ public:
 
                    TimePoint           (TimePoint const&)=default;
 
-                   TimePoint           (TimePoint&&)=default;
+                   TimePoint           (TimePoint&&) noexcept =default;
 
                    ~TimePoint          ()=default;
 
     TimePoint&     operator=           (TimePoint const&)=default;
 
-    TimePoint&     operator=           (TimePoint&&)=default;
+    TimePoint&     operator=           (TimePoint&&) noexcept =default;
 
     Duration const& duration           () const;
 

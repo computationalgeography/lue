@@ -8,13 +8,13 @@ class HPXFixture
 
 public:
 
-                   HPXFixture          ();
+                   HPXFixture          ()=default;
 
                    HPXFixture          (HPXFixture const&)=delete;
 
                    HPXFixture          (HPXFixture&&)=delete;
 
-                   ~HPXFixture         ();
+   virtual         ~HPXFixture         ()=default;
 
    HPXFixture&     operator=           (HPXFixture const&)=delete;
 
