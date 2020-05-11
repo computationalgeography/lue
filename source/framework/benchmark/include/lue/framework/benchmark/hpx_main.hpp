@@ -5,6 +5,8 @@
 #include "lue/framework/core/debug.hpp"
 #include <hpx/hpx_finalize.hpp>
 #include <hpx/hpx_init.hpp>
+#include <hpx/custom_exception_info.hpp>
+#include <hpx/include/iostreams.hpp>
 #include <hpx/include/lcos.hpp>
 #ifdef HPX_WITH_APEX
     #include <apex_api.hpp>
@@ -14,7 +16,6 @@
     #define register_apex_print_options()
 #endif
 #include <fstream>
-#include <iostream>
 
 
 namespace lue {
@@ -90,26 +91,34 @@ int hpx_main(                                                                  \
     int argc,                                                                  \
     char* argv[])                                                              \
 {                                                                              \
-    std::cout << lue::system_description().get() << std::endl;                 \
+    try                                                                        \
+    {                                                                          \
+        hpx::cout << lue::system_description().get() << std::endl;             \
                                                                                \
-    std::string const pathname =                                               \
-        lue::optional_configuration_entry<std::string>(                        \
-            "benchmark.output", "");                                           \
+        std::string const pathname =                                           \
+            lue::optional_configuration_entry<std::string>(                    \
+                "benchmark.output", "");                                       \
                                                                                \
-    auto const environment{                                                    \
-        lue::benchmark::detail::create_environment()};                         \
-    auto const task{                                                           \
-        lue::benchmark::detail::create_task()};                                \
+        auto const environment{                                                \
+            lue::benchmark::detail::create_environment()};                     \
+        auto const task{                                                       \
+            lue::benchmark::detail::create_task()};                            \
                                                                                \
-    auto benchmark = setup_benchmark(argc, argv, environment, task);           \
+        auto benchmark = setup_benchmark(argc, argv, environment, task);       \
                                                                                \
-    if(!pathname.empty()) {                                                    \
-        std::fstream stream;                                                   \
-        stream.open(pathname, std::ios::out);                                  \
-        lue::benchmark::run_hpx_benchmark(benchmark, stream);                  \
+        if(!pathname.empty()) {                                                \
+            std::fstream stream;                                               \
+            stream.open(pathname, std::ios::out);                              \
+            lue::benchmark::run_hpx_benchmark(benchmark, stream);              \
+        }                                                                      \
+        else {                                                                 \
+            lue::benchmark::run_hpx_benchmark(benchmark, hpx::cout);           \
+        }                                                                      \
     }                                                                          \
-    else {                                                                     \
-        lue::benchmark::run_hpx_benchmark(benchmark, std::cout);               \
+    catch(hpx::exception const& exception)                                     \
+    {                                                                          \
+        hpx::cout << exception.what() << "\n\n";                               \
+        hpx::cout << hpx::diagnostic_information(exception) << "\n";           \
     }                                                                          \
                                                                                \
     return hpx::finalize();                                                    \
