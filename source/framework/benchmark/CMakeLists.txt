@@ -14,6 +14,8 @@ target_include_directories(lue_benchmark
 )
 
 hpx_setup_target(lue_benchmark
+    COMPONENT_DEPENDENCIES
+        iostreams
     DEPENDENCIES
         lue::framework_core
         CONAN_PKG::docopt.cpp
