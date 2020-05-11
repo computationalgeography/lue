@@ -40,7 +40,6 @@ function build_peacock()
 {
     # Don't build any of the support libraries...
     build_boost=false
-    build_docopt=false
     build_gdal=false
     build_google_benchmark=false
     build_hdf5=false
@@ -49,7 +48,6 @@ function build_peacock()
 
     # ...except for these machines
     hostname=`hostname -s`
-    build_docopt=true
 
     if [ $hostname == "sonic" ]; then
         build_boost=true
@@ -84,12 +82,6 @@ function build_peacock()
         options+=("-Dboost_build_boost_regex=true")
         options+=("-Dboost_build_boost_system=true")
         options+=("-Dboost_build_boost_test=true")
-    fi
-
-
-    if [ "$build_docopt" = true ]; then
-        options+=("-Dbuild_docopt=true")
-        options+=("-Ddocopt_version=0.6.2")
     fi
 
 
