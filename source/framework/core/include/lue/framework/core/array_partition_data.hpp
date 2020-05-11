@@ -1,9 +1,11 @@
 #pragma once
+#include "lue/framework/core/debug.hpp"
 #include "lue/framework/core/define.hpp"
 #include "lue/framework/core/shape.hpp"
 #include "lue/framework/core/serialize/shared_buffer.hpp"
 #include "lue/framework/core/span.hpp"
 #include "lue/framework/core/type_traits.hpp"
+#include "lue/configure.hpp"
 #include <initializer_list>
 
 
@@ -101,18 +103,28 @@ public:
     Span const&    span                () const;
 
     template<
-        typename... Indxs>
+        typename... Idxs>
     Element const& operator()(
-        Indxs... idxs) const
+        Idxs... idxs) const
     {
+        if constexpr(BuildOptions::validate_idxs)
+        {
+            validate_idxs(_shape, idxs...);
+        }
+
         return _span(idxs...);
     }
 
     template<
-        typename... Indxs>
+        typename... Idxs>
     Element& operator()(
-        Indxs... idxs)
+        Idxs... idxs)
     {
+        if constexpr(BuildOptions::validate_idxs)
+        {
+            validate_idxs(_shape, idxs...);
+        }
+
         return _span(idxs...);
     }
 
@@ -550,11 +562,14 @@ ArrayPartitionData<Element, rank> ArrayPartitionData<Element, rank>::slice(
 
         ArrayPartitionData sliced_data{Shape{{nr_elements_slice}}};
 
-        auto const source_begin = &(operator()(begin));
-        auto destination = &(sliced_data(0));
+        if(!sliced_data.empty())
+        {
+            auto const source_begin = &(operator()(begin));
+            auto destination = &(sliced_data(0));
 
-        std::copy(
-            source_begin, source_begin + nr_elements_slice, destination);
+            std::copy(
+                source_begin, source_begin + nr_elements_slice, destination);
+        }
 
         return sliced_data;
     }
@@ -581,14 +596,19 @@ ArrayPartitionData<Element, rank> ArrayPartitionData<Element, rank>::slice(
         ArrayPartitionData sliced_data{
             Shape{{nr_elements0_slice, nr_elements1_slice}}};
 
-        using Idx = std::tuple_element<0, Slice>::type;
+        if(!sliced_data.empty())
+        {
+            using Idx = std::tuple_element<0, Slice>::type;
 
-        for(Idx r = 0; r < nr_elements0_slice; ++r) {
-            auto const source_begin = &(operator()(begin0 + r, begin1));
-            auto destination = &(sliced_data(r, 0));
+            for(Idx r = 0; r < nr_elements0_slice; ++r)
+            {
+                auto const source_begin = &(operator()(begin0 + r, begin1));
+                auto destination = &(sliced_data(r, 0));
 
-            std::copy(
-                source_begin, source_begin + nr_elements1_slice, destination);
+                std::copy(
+                    source_begin, source_begin + nr_elements1_slice,
+                    destination);
+            }
         }
 
         return sliced_data;

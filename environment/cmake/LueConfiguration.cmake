@@ -49,6 +49,12 @@ option(LUE_BUILD_OTF2
     FALSE)
 
 
+# Options tweaking the behaviour of the software
+option(LUE_VALIDATE_IDXS
+    "Validate array indices are within array bounds (expensive!)"
+    FALSE)
+
+
 # Handle internal dependencies -------------------------------------------------
 if(LUE_BUILD_VIEW)
     set(LUE_BUILD_DATA_MODEL TRUE)

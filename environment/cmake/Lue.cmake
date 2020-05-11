@@ -59,3 +59,9 @@ message(STATUS "Build tests        : ${LUE_BUILD_TEST}")
 message(STATUS "")
 message(STATUS "HDF5_IS_PARALLEL   : ${HDF5_IS_PARALLEL}")
 message(STATUS "--------------------------------------------------------------")
+
+
+if(LUE_VALIDATE_IDXS)
+    message(WARNING
+        "LUE_VALIDATE_IDXS is set. Turn this off for production use!")
+endif()
