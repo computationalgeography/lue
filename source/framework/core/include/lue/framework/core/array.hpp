@@ -1,8 +1,10 @@
 #pragma once
+#include "lue/framework/core/debug.hpp"
 #include "lue/framework/core/define.hpp"
 #include "lue/framework/core/type_traits.hpp"
 #include "lue/framework/core/shape.hpp"
 #include "lue/framework/core/span.hpp"
+#include "lue/configure.hpp"
 #include <boost/container/vector.hpp>
 #include <cassert>
 
@@ -75,6 +77,11 @@ public:
     Element const& operator()(
         Indxs... idxs) const
     {
+        if constexpr(BuildOptions::validate_idxs)
+        {
+            validate_idxs(_shape, idxs...);
+        }
+
         return _span(idxs...);
     }
 
@@ -83,6 +90,11 @@ public:
     Element& operator()(
         Indxs... idxs)
     {
+        if constexpr(BuildOptions::validate_idxs)
+        {
+            validate_idxs(_shape, idxs...);
+        }
+
         return _span(idxs...);
     }
 
