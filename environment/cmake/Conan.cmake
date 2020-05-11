@@ -13,7 +13,7 @@ macro(run_conan)
 
     file(COPY
         "${CMAKE_SOURCE_DIR}/environment/cmake/conan-${version}.cmake"
-        "${CMAKE_BINARY_DIR}")
+        DESTINATION "${CMAKE_BINARY_DIR}")
 
     include(${CMAKE_BINARY_DIR}/conan-${version}.cmake)
 
