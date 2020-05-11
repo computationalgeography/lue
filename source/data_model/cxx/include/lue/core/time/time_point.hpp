@@ -44,17 +44,17 @@ public:
 
     using Duration = typename Clock::Duration;
 
-                   TimePoint           (Duration const& duration);
+    explicit       TimePoint           (Duration const& duration);
 
                    TimePoint           (TimePoint const&)=default;
 
-                   TimePoint           (TimePoint&&)=default;
+                   TimePoint           (TimePoint&&) noexcept =default;
 
                    ~TimePoint          ()=default;
 
     TimePoint&     operator=           (TimePoint const&)=default;
 
-    TimePoint&     operator=           (TimePoint&&)=default;
+    TimePoint&     operator=           (TimePoint&&) noexcept =default;
 
     Duration const& duration           () const;
 

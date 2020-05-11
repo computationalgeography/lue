@@ -12,7 +12,7 @@ class Application:
 
 public:
 
-                   Application         (std::vector<std::string> const&
+    explicit       Application         (std::vector<std::string> const&
                                             arguments);
 
     int            run_implementation  () final;

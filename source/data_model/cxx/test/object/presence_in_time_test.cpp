@@ -7,7 +7,7 @@
 BOOST_FIXTURE_TEST_CASE(omnipresent_in_time, lue::data_model::test::DatasetFixture)
 {
     std::string const phenomenon_name = "my_phenomenon";
-    std::string const property_set_name = "my_property_set";
+    // std::string const property_set_name = "my_property_set";
     lue::data_model::Count const nr_objects = 5;
 
     std::vector<lue::data_model::ID> ids(nr_objects);
@@ -39,8 +39,8 @@ BOOST_FIXTURE_TEST_CASE(omnipresent_in_time, lue::data_model::test::DatasetFixtu
 
 BOOST_FIXTURE_TEST_CASE(time_points, lue::data_model::test::DatasetFixture)
 {
-    std::string const phenomenon_name = "my_phenomenon";
-    std::string const property_set_name = "my_property_set";
+    // std::string const phenomenon_name = "my_phenomenon";
+    // std::string const property_set_name = "my_property_set";
     lue::data_model::Count const nr_locations_in_time = 25;
 
     // Per location in time the number of objects in the active set

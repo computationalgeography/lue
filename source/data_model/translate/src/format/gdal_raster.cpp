@@ -1,4 +1,5 @@
 #include "lue/translate/format/gdal_raster.hpp"
+#include <array>
 #include <cassert>
 #include <cmath>
 #include <cstdint>
@@ -14,8 +15,8 @@ hl::RasterDomain raster_domain(
 {
     std::string const crs = dataset.GetProjectionRef();
 
-    double geo_transform[6];
-    dataset.GetGeoTransform(geo_transform);
+    std::array<double, 6> geo_transform{};
+    dataset.GetGeoTransform(geo_transform.data());
 
     double const west = geo_transform[0];
     double const north = geo_transform[3];
@@ -102,6 +103,7 @@ GDALDatasetPtr try_open_gdal_raster_dataset_for_read(
 
     auto result = GDALDatasetPtr(
         static_cast<::GDALDataset*>(::GDALOpenEx(dataset_name.c_str(),
+            // NOLINTNEXTLINE(hicpp-signed-bitwise)
             GDAL_OF_READONLY | GDAL_OF_RASTER, nullptr, nullptr, nullptr)),
         GDALDatasetDeleter{});
 
@@ -179,7 +181,8 @@ hdf5::Datatype GDALRaster::Band::datatype() const
 
 GDALBlock GDALRaster::Band::blocks() const
 {
-    int block_size_x, block_size_y;
+    int block_size_x{};
+    int block_size_y{};
 
     _band->GetBlockSize(&block_size_x, &block_size_y);
 
@@ -373,7 +376,7 @@ GDALRaster::Band GDALRaster::band(
     assert(nr > 0);
     assert(nr <= int(nr_bands()));
 
-    return _dataset->GetRasterBand(nr);
+    return GDALRaster::Band{_dataset->GetRasterBand(nr)};
 }
 
 }  // namespace utility

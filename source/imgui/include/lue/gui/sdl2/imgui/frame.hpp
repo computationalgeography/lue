@@ -10,9 +10,17 @@ class Frame
 
 public:
 
-                   Frame               (sdl2::Window& window);
+    explicit       Frame               (sdl2::Window& window);
+
+                   Frame               (Frame const&)=delete;
+
+                   Frame               (Frame&&)=delete;
 
                    ~Frame              ();
+
+    Frame&         operator=           (Frame const&)=delete;
+
+    Frame&         operator=           (Frame&&)=delete;
 
 private:
 

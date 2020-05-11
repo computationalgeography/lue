@@ -11,6 +11,7 @@ namespace data_model {
 */
 template<
     typename DatasetPtr>
+// cppcheck-suppress uninitMemberVar
 DatasetView<DatasetPtr>::DatasetView(
     DatasetPtr dataset):
 

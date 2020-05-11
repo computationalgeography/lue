@@ -25,7 +25,7 @@ class Dataset:
 public:
 
                    Dataset             (std::string const& name,
-                                        unsigned int const flags,
+                                        unsigned int flags,
                                         AccessPropertyList const&
                                             access_property_list);
 
@@ -33,17 +33,16 @@ public:
                                         AccessPropertyList const&
                                             access_property_list);
 
-                   Dataset             (std::string const& name,
-                                        unsigned int const
-                                            flags=H5F_ACC_RDONLY);
+    explicit       Dataset             (std::string const& name,
+                                        unsigned int flags=H5F_ACC_RDONLY);
 
-                   Dataset             (hdf5::File&& file);
+    explicit       Dataset             (hdf5::File&& file);
 
                    Dataset             (Dataset const&)=delete;
 
                    Dataset             (Dataset&&)=default;
 
-                   ~Dataset            ()=default;
+                   ~Dataset            () override =default;
 
     Dataset&       operator=           (Dataset const&)=delete;
 

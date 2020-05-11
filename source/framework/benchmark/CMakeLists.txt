@@ -16,8 +16,8 @@ target_include_directories(lue_benchmark
 hpx_setup_target(lue_benchmark
     DEPENDENCIES
         lue::framework_core
-        docopt
-        nlohmann_json::nlohmann_json
+        CONAN_PKG::docopt.cpp
+        CONAN_PKG::nlohmann_json
 )
 
 add_executable(lue_dummy_benchmark

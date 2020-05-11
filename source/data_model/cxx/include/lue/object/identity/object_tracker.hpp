@@ -26,13 +26,13 @@ public:
 
     explicit       ObjectTracker       (hdf5::Group& parent);
 
-                   ObjectTracker       (hdf5::Group&& group);
+    explicit       ObjectTracker       (hdf5::Group&& group);
 
                    ObjectTracker       (ObjectTracker const&)=delete;
 
                    ObjectTracker       (ObjectTracker&&)=default;
 
-                   ~ObjectTracker      ()=default;
+                   ~ObjectTracker      () override =default;
 
     ObjectTracker& operator=           (ObjectTracker const&)=delete;
 

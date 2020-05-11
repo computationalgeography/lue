@@ -92,8 +92,8 @@ inline PropertyGroup property(
     assert(path.is_absolute());
 
     // Get the dataset
-    auto dataset = data_model::dataset(property);
-    assert(dataset.id().pathname() == "/");
+    auto dataset_ = data_model::dataset(property);
+    assert(dataset_.id().pathname() == "/");
 
     // Find the property
     std::optional<std::reference_wrapper<hdf5::Group>> parent;
@@ -106,39 +106,46 @@ inline PropertyGroup property(
     if(it != path.end()) {
         auto const phenomenon_name = (*it).string();
 
-        if(dataset.phenomena().contains(phenomenon_name)) {
-            auto& phenomenon = dataset.phenomena()[phenomenon_name];
+        if(dataset_.phenomena().contains(phenomenon_name)) {
 
             ++it;
 
             if(it != path.end()) {
+
                 auto const property_set_name = (*it).string();
 
-                std::optional<std::reference_wrapper<PropertySets>> property_sets;
+                std::optional<std::reference_wrapper<PropertySets>> property_sets_opt;
 
-                if(phenomenon.collection_property_sets().contains(property_set_name)) {
-                    property_sets = phenomenon.collection_property_sets();
+                {
+                    auto& phenomenon = dataset_.phenomena()[phenomenon_name];
+
+                    if(phenomenon.collection_property_sets().contains(property_set_name)) {
+                        property_sets_opt = phenomenon.collection_property_sets();
+                    }
+                    else if(phenomenon.property_sets().contains(property_set_name)) {
+                        property_sets_opt = phenomenon.property_sets();
+                    }
                 }
-                else if(phenomenon.property_sets().contains(property_set_name)) {
-                    property_sets = phenomenon.property_sets();
-                }
 
-                if(property_sets) {
-                    PropertySets& property_sets_ = *property_sets;
-                    auto& property_set = property_sets_[property_set_name];
-
+                if(property_sets_opt) {
                     ++it;
 
                     if(it != path.end()) {
                         property_name = (*it).string();
 
-                        if(property_set.properties().contains(property_name)) {
+                        {
+                            PropertySets& property_sets_ = *property_sets_opt;
+                            auto& property_set_ = property_sets_[property_set_name];
 
-                            assert(++it == path.end());
+                            if(property_set_.properties().contains(property_name)) {
 
-                            parent =
-                                property_set.properties().collection_group(
-                                    property_name);
+                                // NOLINTNEXTLINE(bugprone-assert-side-effect)
+                                assert(++it == path.end());  // Last use of it
+
+                                parent =
+                                    property_set_.properties().collection_group(
+                                        property_name);
+                            }
                         }
                     }
                 }

@@ -195,6 +195,7 @@ BOOST_AUTO_TEST_CASE(new_rasters)
         BOOST_CHECK(!space_domain.presence_is_discretized());
 
         auto value{
+            // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
             const_cast<lue::data_model::SpaceDomain&>(space_domain)
                 .value<lue::data_model::StationarySpaceBox>()};
 
@@ -249,7 +250,9 @@ BOOST_AUTO_TEST_CASE(new_rasters)
         {
             BOOST_REQUIRE(value.contains(5));
 
-            auto const array{const_cast<lue::data_model::different_shape::Value&>(value)[5]};
+            auto const array{
+                // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
+                const_cast<lue::data_model::different_shape::Value&>(value)[5]};
 
             BOOST_REQUIRE_EQUAL(array.shape(), (lue::hdf5::Shape{4, 6}));
             BOOST_CHECK_EQUAL(
@@ -291,7 +294,9 @@ BOOST_AUTO_TEST_CASE(new_rasters)
         // Object 9
         {
             BOOST_REQUIRE(value.contains(9));
-            auto const array{const_cast<lue::data_model::different_shape::Value&>(value)[9]};
+            auto const array{
+                // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
+                const_cast<lue::data_model::different_shape::Value&>(value)[9]};
 
             BOOST_REQUIRE_EQUAL(array.shape(), (lue::hdf5::Shape{3, 5}));
             BOOST_CHECK_EQUAL(
@@ -333,6 +338,7 @@ BOOST_AUTO_TEST_CASE(new_rasters)
             lue::data_model::SpaceDiscretization::regular_grid);
 
         auto discretization_property{
+            // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
             const_cast<lue::data_model::different_shape::Property&>(property)
                 .space_discretization_property()};
 

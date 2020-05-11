@@ -14,8 +14,9 @@ namespace hdf5 {
 */
 std::size_t lower_chunk_size_limit()
 {
-    // 10 KiB
-    return 10240;
+    static std::size_t const _10_KiB{10240};
+
+    return _10_KiB;
 }
 
 
@@ -24,8 +25,9 @@ std::size_t lower_chunk_size_limit()
 */
 std::size_t upper_chunk_size_limit()
 {
-    // 1 MiB
-    return 1048576;
+    static std::size_t const _1_MiB{1048576};
+
+    return _1_MiB;
 }
 
 
@@ -59,7 +61,7 @@ Shape chunk_shape(
         // At least one item can fit in a chunk.
 
         // Determine how many items can fit in a single chunk.
-        std::size_t const nr_items =
+        auto const nr_items =
             static_cast<std::size_t>(std::floor(nr_values_in_largest_chunk));
 
         result.push_back(nr_items);
@@ -100,7 +102,7 @@ Shape chunk_shape(
         using ExtentIndexTuple = std::tuple<Shape::value_type, std::size_t>;
         std::vector<ExtentIndexTuple> tuples;
         for(std::size_t i = 0; i < value_shape.size(); ++i) {
-            tuples.push_back(ExtentIndexTuple(value_shape[i], i));
+            tuples.emplace_back(ExtentIndexTuple(value_shape[i], i));
         }
 
         // Sort tuples based on dimension extent.

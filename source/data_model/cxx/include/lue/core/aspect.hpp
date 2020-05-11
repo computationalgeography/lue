@@ -165,13 +165,13 @@ public:
 
                    Aspect              (Aspect const&)=default;
 
-                   Aspect              (Aspect&&)=default;
+                   Aspect              (Aspect&&) noexcept =default;
 
                    ~Aspect             ()=default;
 
     Aspect&        operator=           (Aspect const&)=default;
 
-    Aspect&        operator=           (Aspect&&)=default;
+    Aspect&        operator=           (Aspect&&) noexcept =default;
 
     T              value               () const;
 

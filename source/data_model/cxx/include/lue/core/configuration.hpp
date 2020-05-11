@@ -43,19 +43,40 @@ class Configuration
 
 public:
 
-                   Configuration       (Ts... types);
+    /*!
+        @brief      Construct instance based on @a Ts and @a values
+        @param      values Values representing the configuration aspects
+    */
+    explicit Configuration(
+        Ts... values)
 
-                   Configuration       (hdf5::Attributes const& attributes);
+        : _aspects{Aspect<Ts>{values}...}
+
+    {
+    }
+
+    /*!
+        @brief      Construct instance based on @a Ts and @a attributes
+        @param      attributes Collection of attributes to read configuration
+                    aspect values from
+    */
+    explicit Configuration(
+        hdf5::Attributes const& attributes)
+
+        : _aspects{Aspect<Ts>{attributes}...}
+
+    {
+    }
 
                    Configuration       (Configuration const&)=default;
 
-                   Configuration       (Configuration&&)=default;
+                   Configuration       (Configuration&&) noexcept =default;
 
                    ~Configuration      ()=default;
 
     Configuration& operator=           (Configuration const&)=default;
 
-    Configuration& operator=           (Configuration&&)=default;
+    Configuration& operator=           (Configuration&&) noexcept =default;
 
     std::tuple<Aspect<Ts>...> aspects() const;
 
@@ -89,57 +110,17 @@ private:
 
     template<
         std::size_t... indices>
-    void           save                (hdf5::Attributes& attributes,
-                                        std::index_sequence<indices...> const&)
-                                            const;
+    void save(
+        hdf5::Attributes& attributes,
+        [[maybe_unused]] std::index_sequence<indices...> const& sequence) const
+    {
+        data_model::save(attributes, std::get<indices>(_aspects)...);
+    }
 
     //! Configuration aspects
     std::tuple<Aspect<Ts>...> _aspects;
 
 };
-
-
-/*!
-    @brief      Construct instance based on @a Ts and @a values
-    @param      values Values representing the configuration aspects
-*/
-template<
-    typename... Ts>
-inline Configuration<Ts...>::Configuration(
-    Ts... values)
-
-    : _aspects{Aspect<Ts>{values}...}
-
-{
-}
-
-
-/*!
-    @brief      Construct instance based on @a Ts and @a attributes
-    @param      attributes Collection of attributes to read configuration
-                aspect values from
-*/
-template<
-    typename... Ts>
-inline Configuration<Ts...>::Configuration(
-    hdf5::Attributes const& attributes)
-
-    : _aspects{Aspect<Ts>{attributes}...}
-
-{
-}
-
-
-template<
-    typename... Ts>
-template<
-    std::size_t... indices>
-inline void Configuration<Ts...>::save(
-    hdf5::Attributes& attributes,
-    std::index_sequence<indices...> const&) const
-{
-    data_model::save(attributes, std::get<indices>(_aspects)...);
-}
 
 
 /*!

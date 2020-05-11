@@ -15,7 +15,7 @@ class MobileSpaceBox:
 
 public:
 
-                   MobileSpaceBox      (hdf5::Group& parent);
+    explicit       MobileSpaceBox      (hdf5::Group& parent);
 
                    MobileSpaceBox      (hdf5::Group& parent,
                                         hdf5::Datatype const& memory_datatype);
@@ -24,10 +24,10 @@ public:
 
                    MobileSpaceBox      (MobileSpaceBox&&)=default;
 
-                   MobileSpaceBox      (same_shape::constant_shape::Value&&
+    explicit       MobileSpaceBox      (same_shape::constant_shape::Value&&
                                             value);
 
-                   ~MobileSpaceBox     ()=default;
+                   ~MobileSpaceBox     () override =default;
 
     MobileSpaceBox& operator=          (MobileSpaceBox const&)=delete;
 

@@ -3,13 +3,13 @@
 #include "lue/hdf5/hyperslab.hpp"
 
 
-using namespace lue::hdf5;
+namespace lh5 = lue::hdf5;
 
 
 BOOST_AUTO_TEST_CASE(hyper_slab_1)
 {
-    Shape const shape{};
-    Hyperslab const hyperslab{shape};
+    lh5::Shape const shape{};
+    lh5::Hyperslab const hyperslab{shape};
 
     BOOST_CHECK(hyperslab.empty());
     BOOST_CHECK_EQUAL(hyperslab.nr_elements(), 0);
@@ -18,8 +18,8 @@ BOOST_AUTO_TEST_CASE(hyper_slab_1)
 
 BOOST_AUTO_TEST_CASE(hyper_slab_2)
 {
-    Shape const shape{4};
-    Hyperslab const hyperslab{shape};
+    lh5::Shape const shape{4};
+    lh5::Hyperslab const hyperslab{shape};
 
     BOOST_CHECK(!hyperslab.empty());
     BOOST_CHECK_EQUAL(hyperslab.nr_elements(), 4);
@@ -28,8 +28,8 @@ BOOST_AUTO_TEST_CASE(hyper_slab_2)
 
 BOOST_AUTO_TEST_CASE(shape_size_3)
 {
-    Shape const shape{3, 2};
-    Hyperslab const hyperslab{shape};
+    lh5::Shape const shape{3, 2};
+    lh5::Hyperslab const hyperslab{shape};
 
     BOOST_CHECK(!hyperslab.empty());
     BOOST_CHECK_EQUAL(hyperslab.nr_elements(), 6);

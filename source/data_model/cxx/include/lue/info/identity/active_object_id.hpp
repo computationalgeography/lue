@@ -35,13 +35,13 @@ public:
                    create_active_object_id(
                                         hdf5::Group& parent);
 
-                   ActiveObjectID      (hdf5::Group& parent);
+    explicit       ActiveObjectID      (hdf5::Group& parent);
 
                    ActiveObjectID      (ActiveObjectID const&)=delete;
 
                    ActiveObjectID      (ActiveObjectID&&)=default;
 
-                   ~ActiveObjectID     ()=default;
+                   ~ActiveObjectID     () override =default;
 
     ActiveObjectID& operator=          (ActiveObjectID const&)=delete;
 
@@ -51,7 +51,7 @@ public:
 
 private:
 
-                   ActiveObjectID      (same_shape::constant_shape::Value&&
+    explicit       ActiveObjectID      (same_shape::constant_shape::Value&&
                                             value);
 
 };

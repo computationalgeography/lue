@@ -12,7 +12,7 @@ class Translate:
 
 public:
 
-                   Translate           (std::vector<std::string> const&
+    explicit       Translate           (std::vector<std::string> const&
                                             arguments);
 
 private:

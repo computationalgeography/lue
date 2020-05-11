@@ -5,6 +5,7 @@
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_sdl.h"
 #include <GL/glew.h>    // Initialize with glewInit()
+#include <array>
 #include <stdexcept>
 
 
@@ -22,6 +23,7 @@ ImGuiBinding::ImGuiBinding(
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();  // (void)io;
+    // NOLINTNEXTLINE(hicpp-signed-bitwise)
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
     //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 
@@ -35,19 +37,19 @@ ImGuiBinding::ImGuiBinding(
 
     io.Fonts->AddFontFromMemoryCompressedTTF(
         roboto_medium_compressed_data, roboto_medium_compressed_size,
-        20.0f);
+        20.0);
 
     ImFontConfig config;
     config.MergeMode = true;
     // Use if you want to make the icon monospaced
-    config.GlyphMinAdvanceX = 20.0f;
+    config.GlyphMinAdvanceX = 20.0;
     // config.PixelSnapH = true;
 
     // Will not be copied by AddFont* so keep in scope.
-    static const ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
+    static std::array<ImWchar, 3> const icon_ranges{ICON_MIN_FA, ICON_MAX_FA, 0};
     io.Fonts->AddFontFromMemoryCompressedTTF(
         fa_solid_900_compressed_data, fa_solid_900_compressed_size,
-        16.0f, &config, icon_ranges);
+        16.0, &config, icon_ranges.data());
 }
 
 
@@ -56,12 +58,6 @@ ImGuiBinding::~ImGuiBinding()
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplSDL2_Shutdown();
     ImGui::DestroyContext();
-}
-
-
-ImGuiIO& ImGuiBinding::io()
-{
-    return ImGui::GetIO();
 }
 
 }  // namespace sdl2

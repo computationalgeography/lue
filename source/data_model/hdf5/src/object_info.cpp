@@ -6,7 +6,10 @@ namespace lue {
 namespace hdf5 {
 
 ObjectInfo::ObjectInfo(
-    hid_t const id)
+    hid_t const id):
+
+    _info{}
+
 {
     auto status = ::H5Oget_info(id, &_info);
 
@@ -16,7 +19,7 @@ ObjectInfo::ObjectInfo(
 }
 
 
-unsigned long ObjectInfo::fileno() const
+unsigned long ObjectInfo::fileno() const  // NOLINT(google-runtime-int)
 {
     return _info.fileno;
 }

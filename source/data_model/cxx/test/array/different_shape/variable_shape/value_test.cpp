@@ -24,9 +24,15 @@ public:
     {
     }
 
-    ~Fixture()
-    {
-    }
+    Fixture(Fixture const&)=delete;
+
+    Fixture(Fixture&&)=delete;
+
+    ~Fixture() override =default;
+
+    Fixture& operator=(Fixture const&)=delete;
+
+    Fixture& operator=(Fixture&&)=delete;
 
     auto& value()
     {

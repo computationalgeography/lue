@@ -78,7 +78,7 @@ Command::Command(
       _arguments(docopt::docopt(
           usage, arguments, true,
           fmt::format("{} (build {})",
-              build_options.version, build_options.git_short_sha1),
+              BuildOptions::version, BuildOptions::git_short_sha1),
           true)),
       _subcommand_creators{subcommand_creators},
       _sub_command()
@@ -92,10 +92,10 @@ Command::Command(
 
         if(argument<bool>(command_name)) {
             assert(argument_parsed("<arguments>"));
-            auto const arguments = argument<std::vector<std::string>>(
+            auto const arguments_ = argument<std::vector<std::string>>(
                 "<arguments>");
 
-            _sub_command = _subcommand_creators[command_name](arguments);
+            _sub_command = _subcommand_creators[command_name](arguments_);
         }
     }
 }

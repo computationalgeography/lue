@@ -51,8 +51,8 @@ int Export::run_implementation()
 {
     namespace bfs = boost::filesystem;
 
-    std::string const input_dataset_name = argument<std::string>("<input>");
-    std::string const output_dataset_name = argument<std::string>("<output>");
+    auto const input_dataset_name = argument<std::string>("<input>");
+    auto const output_dataset_name = argument<std::string>("<output>");
 
     bool const metadata_passed = argument_parsed("--meta");
 
@@ -77,7 +77,8 @@ int Export::run_implementation()
         if(issues.errors_found()) {
             throw std::runtime_error(data_model::message(issues));
         }
-        else if(issues.warnings_found()) {
+
+        if(issues.warnings_found()) {
             // Let's assume nothing bad will happen...
             print_info_message(data_model::message(issues));
         }

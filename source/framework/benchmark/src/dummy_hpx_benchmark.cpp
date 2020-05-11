@@ -21,7 +21,7 @@ auto setup_benchmark(
         lue::benchmark::Environment const& environment,
         lue::benchmark::Task const& task)
 {
-    DummyAction dummy;
+    DummyAction dummy_;
 
     // std::string const name = "dummy_hpx";
 
@@ -38,18 +38,18 @@ auto setup_benchmark(
     auto node = hpx::find_here();
 
     // Function to benchmark
-    auto callable = [dummy, node](
+    auto callable = [dummy_, node](
         lue::benchmark::Environment const& /* environment */,
         lue::benchmark::Task const& /* task */)
     {
         std::vector<hpx::future<void>> futures;
 
         futures.emplace_back(
-            hpx::async(dummy, node /* , environment, task */));
+            hpx::async(dummy_, node /* , environment, task */));
         futures.emplace_back(
-            hpx::async(dummy, node /* , environment, task */));
+            hpx::async(dummy_, node /* , environment, task */));
         futures.emplace_back(
-            hpx::async(dummy, node /* , environment, task */));
+            hpx::async(dummy_, node /* , environment, task */));
 
         hpx::wait_all(futures);
     };

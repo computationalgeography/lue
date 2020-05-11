@@ -24,13 +24,13 @@ public:
                    Phenomenon          (hdf5::Group& parent,
                                         std::string const& name);
 
-                   Phenomenon          (hdf5::Group&& group);
+     explicit      Phenomenon          (hdf5::Group&& group);
 
                    Phenomenon          (Phenomenon const&)=delete;
 
                    Phenomenon          (Phenomenon&&)=default;
 
-                   ~Phenomenon         ()=default;
+                   ~Phenomenon         () override =default;
 
     Phenomenon&    operator=           (Phenomenon const&)=delete;
 

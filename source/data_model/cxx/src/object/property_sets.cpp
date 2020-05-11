@@ -160,9 +160,8 @@ PropertySets create_property_sets(
             name, parent.id().pathname()));
     }
 
-    auto collection = create_collection<PropertySet>(parent, name);
 
-    return PropertySets{std::move(collection)};
+    return PropertySets{create_collection<PropertySet>(parent, name)};
 }
 
 } // namespace data_model

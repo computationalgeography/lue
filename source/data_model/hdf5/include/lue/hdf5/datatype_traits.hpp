@@ -187,6 +187,7 @@ struct StandardDatatypeTraits<
         "expecting size of hsize_t to be 8 bytes");
     static_assert(std::is_unsigned<hsize_t>::value,
         "expecting hsize_t to be unsigned");
+    // NOLINTNEXTLINE(google-runtime-int)
     static_assert(std::is_same<hsize_t, unsigned long long int>::value,
         "expecting hsize_t to be unsigned long long int");
 };

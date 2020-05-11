@@ -39,17 +39,17 @@ public:
 
     using Count = DurationCount;
 
-                   Duration            (Count const nr_ticks);
+    explicit       Duration            (Count nr_ticks);
 
                    Duration            (Duration const&)=default;
 
-                   Duration            (Duration&&)=default;
+                   Duration            (Duration&&) noexcept =default;
 
                    ~Duration           ()=default;
 
     Duration&      operator=           (Duration const&)=default;
 
-    Duration&      operator=           (Duration&&)=default;
+    Duration&      operator=           (Duration&&) noexcept =default;
 
     bool           operator==          (Duration const& other) const;
 

@@ -14,13 +14,13 @@ public:
                    Universe            (hdf5::Group& parent,
                                         std::string const& name);
 
-                   Universe            (hdf5::Group&& group);
+    explicit       Universe            (hdf5::Group&& group);
 
                    Universe            (Universe const&)=delete;
 
                    Universe            (Universe&&)=default;
 
-                   ~Universe           ()=default;
+                   ~Universe           () override =default;
 
     Universe&      operator=           (Universe const&)=delete;
 

@@ -16,15 +16,15 @@ target_include_directories(lue_utility
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>
-    PRIVATE
-        fmt::fmt
+    # PRIVATE
+    #     fmt::fmt
 )
 
 target_link_libraries(lue_utility
     PUBLIC
         lue::data_model
-        docopt
-        nlohmann_json::nlohmann_json
-    PRIVATE
-        fmt::fmt
+        CONAN_PKG::docopt.cpp
+        CONAN_PKG::nlohmann_json
+    # PRIVATE
+    #     fmt::fmt
 )

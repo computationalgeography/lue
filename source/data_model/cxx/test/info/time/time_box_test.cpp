@@ -21,9 +21,15 @@ public:
     {
     }
 
-    ~Fixture()
-    {
-    }
+    Fixture(Fixture const&)=delete;
+
+    Fixture(Fixture&&)=delete;
+
+    ~Fixture() override =default;
+
+    Fixture& operator=(Fixture const&)=delete;
+
+    Fixture& operator=(Fixture&&)=delete;
 
     auto& value()
     {
@@ -41,17 +47,18 @@ private:
 
 BOOST_FIXTURE_TEST_CASE(create, Fixture)
 {
-    using namespace lue;
+    namespace lh5 = lue::hdf5;
+    namespace ldm = lue::data_model;
 
     auto const& value = this->value();
 
-    BOOST_CHECK_EQUAL(value.id().name(), data_model::coordinates_tag);
+    BOOST_CHECK_EQUAL(value.id().name(), ldm::coordinates_tag);
     BOOST_CHECK(
         value.memory_datatype() ==
-        hdf5::Datatype{
-            hdf5::NativeDatatypeTraits<data_model::time::DurationCount>::type_id()});
+        lh5::Datatype{
+            lh5::NativeDatatypeTraits<ldm::time::DurationCount>::type_id()});
     BOOST_CHECK_EQUAL(value.nr_arrays(), 0);
-    BOOST_CHECK(value.array_shape() == hdf5::Shape{2});
+    BOOST_CHECK(value.array_shape() == lh5::Shape{2});
 }
 
 

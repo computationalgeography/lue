@@ -32,17 +32,17 @@ public:
 
 protected:
 
-                   DatasetView         (DatasetPtr dataset);
+    explicit       DatasetView         (DatasetPtr dataset);
 
                    DatasetView         (DatasetView const&)=default;
 
-                   DatasetView         (DatasetView&&)=default;
+                   DatasetView         (DatasetView&&) noexcept =default;
 
     virtual        ~DatasetView        ()=default;
 
     DatasetView&   operator=           (DatasetView const&)=default;
 
-    DatasetView&   operator=           (DatasetView&&)=default;
+    DatasetView&   operator=           (DatasetView&&) noexcept =default;
 
 private:
 

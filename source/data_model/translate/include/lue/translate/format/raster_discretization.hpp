@@ -19,7 +19,7 @@ public:
                    RasterDiscretization(hsize_t nr_rows,
                                         hsize_t nr_cols);
 
-                   RasterDiscretization(Shape&& shape);
+    explicit       RasterDiscretization(Shape&& shape);
 
                    RasterDiscretization(RasterDiscretization const&)=default;
 

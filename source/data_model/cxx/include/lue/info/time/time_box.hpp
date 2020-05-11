@@ -15,15 +15,15 @@ class TimeBox:
 
 public:
 
-                   TimeBox             (hdf5::Group& parent);
+    explicit       TimeBox             (hdf5::Group& parent);
 
                    TimeBox             (TimeBox const&)=delete;
 
                    TimeBox             (TimeBox&&)=default;
 
-                   TimeBox             (LocationInTime&& value);
+    explicit       TimeBox             (LocationInTime&& value);
 
-                   ~TimeBox            ()=default;
+                   ~TimeBox            () override =default;
 
     TimeBox&       operator=           (TimeBox const&)=delete;
 

@@ -22,13 +22,13 @@ public:
                    PropertySet         (hdf5::Group& parent,
                                         std::string const& name);
 
-                   PropertySet         (hdf5::Group&& group);
+    explicit       PropertySet         (hdf5::Group&& group);
 
                    PropertySet         (PropertySet const&)=delete;
 
                    PropertySet         (PropertySet&&)=default;
 
-                   ~PropertySet        ()=default;
+                   ~PropertySet        () override =default;
 
     PropertySet&   operator=           (PropertySet const&)=delete;
 

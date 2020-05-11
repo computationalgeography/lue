@@ -10,10 +10,18 @@ class Window
 
 public:
 
-                   Window               (std::string const& title,
+    explicit       Window               (std::string const& title,
                                          bool* open=nullptr);
 
+                   Window               (Window const&)=default;
+
+                   Window               (Window&&)=default;
+
                    ~Window              ();
+
+    Window&        operator=            (Window const&)=default;
+
+    Window&        operator=            (Window&&)=default;
 
 private:
 

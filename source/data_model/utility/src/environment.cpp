@@ -13,9 +13,6 @@ std::string expand_environment_variables(
     // Name of variable found in string
     std::string variable_name;
 
-    // Pointer to environment variable value, possibly nullptr
-    char* variable_value_ptr;
-
     // Value of environment variable, possibly empty
     std::string variable_value;
 
@@ -31,7 +28,9 @@ std::string expand_environment_variables(
         auto const& full_match = match_results[0];
         variable_name = match_results[1].str();
 
-        variable_value_ptr = std::getenv(variable_name.c_str());
+        // Pointer to environment variable value, possibly nullptr
+        char* variable_value_ptr = std::getenv(variable_name.c_str());
+
         variable_value = variable_value_ptr != nullptr
             ? std::string{variable_value_ptr} : std::string{};
 

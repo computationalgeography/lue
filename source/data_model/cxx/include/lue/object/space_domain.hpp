@@ -35,7 +35,7 @@ public:
 
                    SpaceDomain         (SpaceDomain&&)=default;
 
-                   ~SpaceDomain        ()=default;
+                   ~SpaceDomain        () override =default;
 
     SpaceDomain&   operator=           (SpaceDomain const&)=delete;
 
@@ -70,7 +70,7 @@ SpaceDomain        create_space_domain (hdf5::Group& parent,
                                         SpaceConfiguration const&
                                             configuration,
                                         hdf5::Datatype const& datatype,
-                                        std::size_t const rank);
+                                        std::size_t rank);
 
 bool               space_domain_exists (hdf5::Group const& parent);
 

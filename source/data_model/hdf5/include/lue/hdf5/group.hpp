@@ -36,7 +36,7 @@ public:
 
                    Group               (Group&&)=default;
 
-                   ~Group              ()=default;
+                   ~Group              () override =default;
 
     Group&         operator=           (Group const& other)=delete;
 

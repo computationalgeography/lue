@@ -7,7 +7,7 @@ namespace lue {
 namespace detail {
 
 // -----------------------------------------------------------------------------
-// TODO How to replace this by generic code for translating a rank to
+// TODO(KDJ) How to replace this by generic code for translating a rank to
 //      a extents<dynamic_extent...>
 template<
     Rank rank>

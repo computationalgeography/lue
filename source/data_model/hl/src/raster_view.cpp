@@ -6,9 +6,9 @@ namespace lue {
 namespace data_model {
 namespace {
 
-static std::string const time_discretization_property_name{"time_grid_shape"};
+std::string const time_discretization_property_name{"time_grid_shape"};
 
-static std::string const space_discretization_property_name{"space_grid_shape"};
+std::string const space_discretization_property_name{"space_grid_shape"};
 
 }  // Anonymous namespace
 
@@ -38,6 +38,7 @@ RasterView<DatasetPtr>::RasterView(
     // Read space box from domain
     {
         auto& space_domain{property_set.space_domain()};
+        // cppcheck-suppress internalAstError
         auto value{space_domain.template value<StationarySpaceBox>()};
         value.read(0, _space_box.data());
     }
@@ -177,6 +178,7 @@ bool contains_raster(
                         SpaceDomainItemType::box &&
                     !space_domain.presence_is_discretized())
                 {
+                    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
                     auto space_box = const_cast<SpaceDomain&>(space_domain)
                         .value<StationarySpaceBox>();
 
@@ -689,6 +691,7 @@ bool contains_raster(
                 if(configuration.value<TimeDomainItemType>() ==
                         TimeDomainItemType::box)
                 {
+                    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
                     auto time_box = const_cast<TimeDomain&>(time_domain)
                         .value<TimeBox>();
 

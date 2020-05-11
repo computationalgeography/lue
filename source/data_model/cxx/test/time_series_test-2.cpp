@@ -33,7 +33,8 @@ BOOST_FIXTURE_TEST_CASE(create, lue::data_model::test::DatasetFixture)
         active_set_sizes, 0, max_active_set_size);
     std::vector<lue::data_model::Index> active_set_idxs(nr_time_cells);
     std::vector<lue::data_model::ID> active_ids(
-        std::accumulate(active_set_sizes.begin(), active_set_sizes.end(), 0u));
+        std::accumulate(
+            active_set_sizes.begin(), active_set_sizes.end(), std::size_t{0}));
     lue::data_model::test::select_random_ids(
         active_set_sizes, active_set_idxs, active_ids, max_active_set_size);
 
@@ -127,7 +128,9 @@ BOOST_FIXTURE_TEST_CASE(create, lue::data_model::test::DatasetFixture)
 
                     // Write IDs of the objects in this active set
                     active_object_id.write(
+                        // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
                         {active_set_idx, active_set_idx + active_set_size},
+                        // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
                         active_ids.data() + active_set_idx);
 
                     active_set_idx += active_set_size;
@@ -231,7 +234,7 @@ BOOST_FIXTURE_TEST_CASE(create, lue::data_model::test::DatasetFixture)
                 BOOST_REQUIRE_EQUAL(
                     time_domain.configuration(), time_configuration);
 
-                auto& clock = time_domain.clock();
+                auto const& clock = time_domain.clock();
                 BOOST_REQUIRE_EQUAL(time_domain.clock(), clock);
 
                 auto value = time_domain.value<lue::data_model::TimeCell>();
@@ -315,7 +318,7 @@ BOOST_FIXTURE_TEST_CASE(create, lue::data_model::test::DatasetFixture)
                     value.memory_datatype(), discharge_datatype);
 
                 {
-                    lue::data_model::Index begin;
+                    lue::data_model::Index begin{};
                     lue::data_model::Index end = 0;
 
                     for(std::size_t t = 0; t < nr_time_cells; ++t) {

@@ -15,13 +15,13 @@ public:
                    PropertyGroup       (hdf5::Group& parent,
                                         std::string const& name);
 
-                   PropertyGroup       (hdf5::Group&& group);
+    explicit       PropertyGroup       (hdf5::Group&& group);
 
                    PropertyGroup       (PropertyGroup const&)=delete;
 
                    PropertyGroup       (PropertyGroup&&)=default;
 
-                   ~PropertyGroup      ()=default;
+                   ~PropertyGroup      () override =default;
 
     PropertyGroup& operator=           (PropertyGroup const&)=delete;
 

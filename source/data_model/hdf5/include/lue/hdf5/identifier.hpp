@@ -39,13 +39,13 @@ public:
 
                    Identifier          (Identifier const& other);
 
-                   Identifier          (Identifier&& other);
+                   Identifier          (Identifier&& other) noexcept;
 
-                   ~Identifier         ();
+                   ~Identifier         () noexcept;
 
     Identifier&    operator=           (Identifier const& other);
 
-    Identifier&    operator=           (Identifier&& other);
+    Identifier&    operator=           (Identifier&& other) noexcept;
 
     bool           operator==          (Identifier const& other) const;
 
@@ -57,6 +57,9 @@ public:
 
     void*          object              ();
 
+    // Allow explicit conversion to underlying hid_t. It is very
+    // convenient, in this specific case.
+    // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
                    operator hid_t      () const;
 
     std::string    pathname            () const;

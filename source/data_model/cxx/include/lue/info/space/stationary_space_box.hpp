@@ -15,7 +15,7 @@ class StationarySpaceBox:
 
 public:
 
-                   StationarySpaceBox  (hdf5::Group& parent);
+    explicit       StationarySpaceBox  (hdf5::Group& parent);
 
                    StationarySpaceBox  (hdf5::Group& parent,
                                         hdf5::Datatype const& memory_datatype);
@@ -24,9 +24,9 @@ public:
 
                    StationarySpaceBox  (StationarySpaceBox&&)=default;
 
-                   StationarySpaceBox  (same_shape::Value&& value);
+    explicit       StationarySpaceBox  (same_shape::Value&& value);
 
-                   ~StationarySpaceBox ()=default;
+                   ~StationarySpaceBox () override =default;
 
     StationarySpaceBox& operator=      (StationarySpaceBox const&)=delete;
 

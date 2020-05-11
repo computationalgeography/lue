@@ -10,7 +10,7 @@ class StackName
 
 public:
 
-                   StackName           (std::string const& name);
+    explicit       StackName           (std::string const& name);
 
                    StackName           (StackName const&)=default;
 

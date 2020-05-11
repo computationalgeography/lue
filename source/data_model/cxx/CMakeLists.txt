@@ -67,27 +67,16 @@ add_library(lue_data_model STATIC
 
 add_library(lue::data_model ALIAS lue_data_model)
 
-target_include_directories(lue_data_model SYSTEM
-    PRIVATE
-        ${HDF5_INCLUDE_DIRS}
-        # fmt::fmt
-    PUBLIC
-        ${Boost_INCLUDE_DIRS}
-        # TODO Shutup compiler, but use a different variable. fmt::fmt
-        # doesn't work here...
-        ${CONAN_INCLUDE_DIRS_FMT}
-)
-
 target_include_directories(lue_data_model
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
         $<INSTALL_INTERFACE:include>
 )
 
 target_link_libraries(lue_data_model
     PUBLIC
         lue::hdf5
+        CONAN_PKG::fmt
 )
 
 install(

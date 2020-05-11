@@ -14,13 +14,13 @@ public:
                    HardLink            (Group& group,
                                         std::string const& name);
 
-                   HardLink            (Group const&)=delete;
+                   HardLink            (HardLink const&)=default;
 
                    HardLink            (HardLink&&)=default;
 
                    ~HardLink           ()=default;
 
-    HardLink&      operator=           (HardLink const&)=delete;
+    HardLink&      operator=           (HardLink const&)=default;
 
     HardLink&      operator=           (HardLink&&)=default;
 

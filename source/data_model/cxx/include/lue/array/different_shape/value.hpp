@@ -27,13 +27,13 @@ public:
                                         std::string const& name,
                                         hdf5::Datatype const& memory_datatype);
 
-                   Value               (ValueGroup&& group);
+    explicit       Value               (ValueGroup&& group);
 
                    Value               (Value const&)=delete;
 
                    Value               (Value&&)=default;
 
-                   ~Value              ()=default;
+                   ~Value              () override =default;
 
     Value&         operator=           (Value const&)=delete;
 
@@ -52,7 +52,7 @@ public:
     void           expand              (ID id,
                                         hdf5::Shape const& shape);
 
-    bool           contains            (ID const id) const;
+    bool           contains            (ID id) const;
 
     Array          operator[]          (ID id);
 

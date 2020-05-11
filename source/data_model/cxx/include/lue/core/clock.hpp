@@ -10,12 +10,22 @@ class Clock
 
 public:
 
-                   Clock               (time::Unit const unit,
-                                        time::TickPeriodCount const nr_units);
+                   Clock               (time::Unit unit,
+                                        time::TickPeriodCount nr_units);
 
                    Clock               (time::Epoch const& epoch,
-                                        time::Unit const unit,
-                                        time::TickPeriodCount const nr_units);
+                                        time::Unit unit,
+                                        time::TickPeriodCount nr_units);
+
+                   Clock               (Clock const&)=default;
+
+                   Clock               (Clock&&)=default;
+
+                   ~Clock              ()=default;
+
+    Clock&         operator=           (Clock const&)=default;
+
+    Clock&         operator=           (Clock&&)=default;
 
     bool           operator==          (Clock const& other) const;
 
@@ -31,11 +41,11 @@ public:
 
 private:
 
-    time::Epoch const _epoch;
+    time::Epoch    _epoch;
 
-    time::Unit const _unit;
+    time::Unit     _unit;
 
-    time::TickPeriodCount const _nr_units;
+    time::TickPeriodCount _nr_units;
 
 };
 

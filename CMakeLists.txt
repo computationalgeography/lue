@@ -9,10 +9,10 @@ set(${PROJECT_NAME}_COPYRIGHT "2015-now PCRaster owners")
 set(${PROJECT_NAME}_PROJECT_NAME "${PROJECT_NAME}")
 set(${PROJECT_NAME}_HOMEPAGE "http://www.pcraster.eu")
 
-if(EXISTS ${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-    include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-    conan_basic_setup()
-endif()
+### if(EXISTS ${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+###     include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+###     conan_basic_setup()
+### endif()
 
 list(APPEND CMAKE_MODULE_PATH
     ${CMAKE_CURRENT_LIST_DIR}/devbase/cmake

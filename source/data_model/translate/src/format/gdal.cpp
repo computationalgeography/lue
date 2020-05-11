@@ -11,10 +11,6 @@
 
 
 namespace lue {
-
-using namespace data_model;
-
-
 namespace utility {
 // namespace {
 // 
@@ -106,10 +102,10 @@ namespace utility {
 //             gdal_raster_band.write(raster_band, progress_indicator);
 //         }
 // 
-//         // TODO Make sure the dataset version is in the dataset
-//         // TODO Write description items from the metadata
-//         // TODO Write metadata items
-//         // TODO Handle various ways of handling no-data in GDAL
+//         // TODO(KDJ) Make sure the dataset version is in the dataset
+//         // TODO(KDJ) Write description items from the metadata
+//         // TODO(KDJ) Write metadata items
+//         // TODO(KDJ) Handle various ways of handling no-data in GDAL
 //     }
 // }
 // 
@@ -338,10 +334,10 @@ namespace utility {
 // //         }
 // //     }
 // // 
-// //     // TODO Make sure the dataset version is in the dataset
-// //     // TODO Write description items from the metadata
-// //     // TODO Write metadata items
-// //     // TODO Handle various ways of handling no-data in GDAL
+// //     // TODO(KDJ) Make sure the dataset version is in the dataset
+// //     // TODO(KDJ) Write description items from the metadata
+// //     // TODO(KDJ) Write metadata items
+// //     // TODO(KDJ) Handle various ways of handling no-data in GDAL
 // // }
 
 
@@ -455,7 +451,7 @@ namespace {
 
 
 GDALDataType memory_datatype_to_gdal_datatype(
-    hdf5::Datatype const datatype)
+    hdf5::Datatype const& datatype)
 {
     GDALDataType result{GDT_Unknown};
 
@@ -491,7 +487,7 @@ GDALDataType memory_datatype_to_gdal_datatype(
 auto gdal_driver_by_name(
         std::string const& name)
 {
-    auto driver = GetGDALDriverManager()->GetDriverByName(name.c_str());
+    auto* driver = GetGDALDriverManager()->GetDriverByName(name.c_str());
 
     if(driver == nullptr) {
         throw std::runtime_error("Cannot obtain " + name + " driver");
@@ -505,10 +501,10 @@ auto create_dataset(
     GDALDriver& driver,
     std::string const& dataset_name,
     hdf5::Shape const& shape,
-    Count const nr_bands,
+    data_model::Count const nr_bands,
     GDALDataType const datatype)
 {
-    // TODO Pass in coordinate reference system
+    // TODO(KDJ) Pass in coordinate reference system
     auto dataset = GDALDatasetPtr(driver.Create(
             dataset_name.c_str(), shape[1], shape[0], nr_bands,
             datatype, nullptr),
@@ -535,8 +531,8 @@ auto create_dataset(
     GDALDriver& driver,
     std::string const& dataset_name,
     hdf5::Shape const& shape,
-    Count const nr_bands,
-    hdf5::Datatype const datatype)
+    data_model::Count const nr_bands,
+    hdf5::Datatype const& datatype)
 {
     return create_dataset(
         driver, dataset_name, shape, nr_bands,
@@ -548,10 +544,10 @@ GDALDatasetPtr create_dataset(
     std::string const& driver_name,
     std::string const& dataset_name,
     hdf5::Shape const& shape,
-    Count const nr_bands,
-    hdf5::Datatype const datatype)
+    data_model::Count const nr_bands,
+    hdf5::Datatype const& datatype)
 {
-    auto driver = gdal_driver_by_name(driver_name);
+    auto* driver = gdal_driver_by_name(driver_name);
     auto dataset = create_dataset(
         *driver, dataset_name, shape, nr_bands, datatype);
 
@@ -606,7 +602,8 @@ GDALDatasetPtr create_dataset(
 GDALBlock natural_blocks(
     GDALRasterBand& raster_band)
 {
-    int block_size_x, block_size_y;
+    int block_size_x{};
+    int block_size_y{};
 
     raster_band.GetBlockSize(&block_size_x, &block_size_y);
 
@@ -642,9 +639,9 @@ void write_raster_band_block(
 template<
     typename T>
 void write_raster_band(
-    same_shape::constant_shape::Value const& value,
-    Index const time_point_idx,
-    Index const time_step_idx,
+    data_model::same_shape::constant_shape::Value const& value,
+    data_model::Index const time_point_idx,
+    data_model::Index const time_step_idx,
     GDALRasterBand& raster_band)
 {
     // It is assumed here that value contains a 2D array for multiple
@@ -662,10 +659,10 @@ void write_raster_band(
             auto const& [nr_valid_cells_x, nr_valid_cells_y] =
                 blocks.nr_valid_cells(block_x, block_y);
 
-            hdf5::Shape const shape = {
-                nr_valid_cells_x * nr_valid_cells_y
-            };
-            auto const memory_dataspace = hdf5::create_dataspace(shape);
+            // hdf5::Shape const shape = {
+            //     nr_valid_cells_x * nr_valid_cells_y
+            // };
+            // auto const memory_dataspace = hdf5::create_dataspace(shape);
 
             hdf5::Offset offset = {
                 time_point_idx,
@@ -690,9 +687,9 @@ void write_raster_band(
 
 
 void write_raster_band(
-    same_shape::constant_shape::Value const& value,
-    Index const time_point_idx,
-    Index const time_step_idx,
+    data_model::same_shape::constant_shape::Value const& value,
+    data_model::Index const time_point_idx,
+    data_model::Index const time_step_idx,
     GDALRasterBand& raster_band)
 {
     auto const& memory_datatype{value.memory_datatype()};
@@ -743,7 +740,7 @@ void write_raster_band(
 template<
     typename T>
 void write_raster_band(
-    Array const& array,
+    data_model::Array const& array,
     GDALRasterBand& raster_band)
 {
     // It is assumed here that array only contains a 2D array
@@ -759,10 +756,10 @@ void write_raster_band(
             auto const& [nr_valid_cells_x, nr_valid_cells_y] =
                 blocks.nr_valid_cells(block_x, block_y);
 
-            hdf5::Shape const shape = {
-                nr_valid_cells_x * nr_valid_cells_y
-            };
-            auto const memory_dataspace = hdf5::create_dataspace(shape);
+            // hdf5::Shape const shape = {
+            //     nr_valid_cells_x * nr_valid_cells_y
+            // };
+            // auto const memory_dataspace = hdf5::create_dataspace(shape);
 
             hdf5::Offset offset = {
                 block_y * blocks.block_size_y(),
@@ -783,7 +780,7 @@ void write_raster_band(
 
 
 void write_raster_band(
-    Array const& array,
+    data_model::Array const& array,
     GDALRasterBand& raster_band)
 {
     auto const& memory_datatype{array.memory_datatype()};
@@ -941,7 +938,7 @@ GDALDatasetPtr create_gdal_dataset(
     std::string const& driver_name,
     std::string const& dataset_name)
 {
-    auto driver = gdal_driver_by_name(driver_name);
+    auto* driver = gdal_driver_by_name(driver_name);
     auto dataset = create_dataset(*driver, dataset_name);
 
     return dataset;
@@ -949,7 +946,7 @@ GDALDatasetPtr create_gdal_dataset(
 
 
 void translate_lue_dataset_to_raster(
-    Dataset& dataset,
+    data_model::Dataset& dataset,
     std::string const& raster_name,
     Metadata const& metadata)
 {
@@ -1031,10 +1028,10 @@ void translate_lue_dataset_to_raster(
 
     // If the constant raster view finds a raster with the property name
     // requested, export it to a single GDAL raster
-    if(constant::contains_raster(
+    if(data_model::constant::contains_raster(
             dataset, phenomenon_name, property_set_name)) {
 
-        using RasterView = constant::RasterView<Dataset*>;
+        using RasterView = data_model::constant::RasterView<data_model::Dataset*>;
         using RasterLayer = RasterView::Layer;
 
         RasterView raster_view{&dataset, phenomenon_name, property_set_name};
@@ -1047,7 +1044,7 @@ void translate_lue_dataset_to_raster(
 
         assert(hdf5::size_of_shape(raster_view.grid_shape()) > 0);
 
-        Count const nr_bands{1};
+        data_model::Count const nr_bands{1};
         RasterLayer layer{raster_view.layer(property_name)};
         auto const& space_box{raster_view.space_box()};
 
@@ -1059,12 +1056,12 @@ void translate_lue_dataset_to_raster(
         double const cell_size{0.000992063492063};
         double const west{space_box[0]};
         double const north{space_box[3]};
-        double geo_transform[6] = {
+        std::array<double, 6> geo_transform{
             west, cell_size, 0, north, 0, -cell_size };
 
-        gdal_dataset->SetGeoTransform(geo_transform);
+        gdal_dataset->SetGeoTransform(geo_transform.data());
 
-        // TODO
+        // TODO(KDJ)
         // OGRSpatialReference oSRS;
         // char *pszSRS_WKT = NULL;
         // GDALRasterBand *poBand;
@@ -1080,10 +1077,10 @@ void translate_lue_dataset_to_raster(
 
     // If the variable raster view finds a raster layer with the property
     // name requested, export it to a stack of GDAL rasters
-    else if(variable::contains_raster(
+    else if(data_model::variable::contains_raster(
             dataset, phenomenon_name, property_set_name)) {
 
-        using RasterView = variable::RasterView<Dataset*>;
+        using RasterView = data_model::variable::RasterView<data_model::Dataset*>;
         using RasterLayer = RasterView::Layer;
 
         RasterView raster_view{&dataset, phenomenon_name, property_set_name};
@@ -1096,13 +1093,13 @@ void translate_lue_dataset_to_raster(
 
         assert(hdf5::size_of_shape(raster_view.grid_shape()) > 0);
 
-        Count const nr_bands{1};
-        Index const time_point_idx{0};  // Single time box
+        data_model::Count const nr_bands{1};
+        data_model::Index const time_point_idx{0};  // Single time box
         StackName stack_name{raster_name};
         RasterLayer layer{raster_view.layer(property_name)};
         auto const& space_box{raster_view.space_box()};
 
-        for(Count time_step = 0; time_step < raster_view.nr_time_steps();
+        for(data_model::Count time_step = 0; time_step < raster_view.nr_time_steps();
                 ++time_step) {
 
             auto gdal_dataset = create_dataset(
@@ -1113,12 +1110,12 @@ void translate_lue_dataset_to_raster(
             double const cell_size{0.000992063492063};
             double const west{space_box[0]};
             double const north{space_box[3]};
-            double geo_transform[6] = {
+            std::array<double, 6> geo_transform{
                 west, cell_size, 0, north, 0, -cell_size };
 
-            gdal_dataset->SetGeoTransform(geo_transform);
+            gdal_dataset->SetGeoTransform(geo_transform.data());
 
-            // TODO
+            // TODO(KDJ)
             // OGRSpatialReference oSRS;
             // char *pszSRS_WKT = NULL;
             // GDALRasterBand *poBand;
@@ -1254,7 +1251,7 @@ void translate_lue_dataset_to_raster(
 ///     std::cout << "id           : " << id << std::endl;
 ///     std::cout << "nr_arrays    : " << value.nr_arrays() << std::endl;
 ///     std::cout << "rank         : " << value.rank() << std::endl;
-///     // TODO hier verder, nr_arrays == 101... klopt of niet?
+///     // TODO(KDJ) hier verder, nr_arrays == 101... klopt of niet?
 ///     assert(value.nr_arrays() == 1);
 ///     assert(value.rank() == 2);
 /// 
@@ -1276,7 +1273,7 @@ void translate_lue_dataset_to_raster(
 /// 
 ///     gdal_dataset->SetGeoTransform(geo_transform);
 /// 
-///     // TODO
+///     // TODO(KDJ)
 ///     // OGRSpatialReference oSRS;
 ///     // char *pszSRS_WKT = NULL;
 ///     // GDALRasterBand *poBand;
@@ -1397,7 +1394,7 @@ void translate_lue_dataset_to_raster(
 //                             space_domain.value<StationarySpaceBox>(
 //                                 hdf5::native_float64);
 // 
-//                         // TODO
+//                         // TODO(KDJ)
 //                         bool const write_properties = false;
 // 
 //                         if(!write_properties) {
@@ -1420,7 +1417,7 @@ void translate_lue_dataset_to_raster(
 //                                 //     auto const time_cell =
 //                                 //         time_domain.value<TimeCell>();
 // 
-//                                 //     // TODO Add properties
+//                                 //     // TODO(KDJ) Add properties
 //                                 //     write_shapefiles(
 //                                 //         shapefile_name, property_set_name,
 //                                 //         property_set.object_tracker(),
@@ -1459,7 +1456,7 @@ void translate_lue_dataset_to_raster(
 //                     //         auto const time_cell =
 //                     //             time_domain.value<TimeCell>();
 // 
-//                     //         // TODO Add properties
+//                     //         // TODO(KDJ) Add properties
 //                     //         write_shapefiles(
 //                     //             shapefile_name, property_set_name,
 //                     //             property_set.object_tracker(),
@@ -1517,7 +1514,7 @@ void translate_lue_dataset_to_raster(
 //                             auto const time_cell =
 //                                 time_domain.value<TimeCell>();
 // 
-//                             // TODO Add properties
+//                             // TODO(KDJ) Add properties
 //                             write_shapefiles(
 //                                 shapefile_name, property_set_name,
 //                                 property_set.object_tracker(),

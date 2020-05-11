@@ -40,9 +40,7 @@ Phenomena create_phenomena(
             parent.id().pathname()));
     }
 
-    auto collection = create_collection<Phenomenon>(parent, phenomena_tag);
-
-    return Phenomena{std::move(collection)};
+    return Phenomena{create_collection<Phenomenon>(parent, phenomena_tag)};
 }
 
 } // namespace data_model

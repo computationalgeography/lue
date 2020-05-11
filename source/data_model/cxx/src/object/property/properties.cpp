@@ -211,7 +211,7 @@ hdf5::Group& Properties::collection_group(
         result = &_different_shape_variable_shape_properties;
     }
 
-    if(!result) {
+    if(result == nullptr) {
         throw std::runtime_error(fmt::format(
             "Property named {} does not exist", name));
     }

@@ -12,7 +12,7 @@ public:
 
                    ProgressIndicator   (std::ostream& stream,
                                         std::string const& label,
-                                        size_t const nr_tasks);
+                                        size_t nr_tasks);
 
                    ProgressIndicator   (ProgressIndicator const&)=delete;
 
@@ -26,7 +26,7 @@ public:
     ProgressIndicator&
                    operator=           (ProgressIndicator&&)=delete;
 
-    void           update_progress     (size_t const task);
+    void           update_progress     (size_t task);
 
 private:
 

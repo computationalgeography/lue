@@ -44,13 +44,13 @@ protected:
 
                    RasterView          (RasterView const&)=default;
 
-                   RasterView          (RasterView&&)=default;
+                   RasterView          (RasterView&&) noexcept =default;
 
-                   ~RasterView         ()=default;
+                   ~RasterView         () override =default;
 
     RasterView&    operator=           (RasterView const&)=default;
 
-    RasterView&    operator=           (RasterView&&)=default;
+    RasterView&    operator=           (RasterView&&) noexcept =default;
 
     void           add_layer           (std::string const& name);
 
@@ -93,13 +93,13 @@ public:
 
                    RasterView          (RasterView const&)=default;
 
-                   RasterView          (RasterView&&)=default;
+                   RasterView          (RasterView&&) noexcept =default;
 
-                   ~RasterView         ()=default;
+                   ~RasterView         () override =default;
 
     RasterView&    operator=           (RasterView const&)=default;
 
-    RasterView&    operator=           (RasterView&&)=default;
+    RasterView&    operator=           (RasterView&&) noexcept =default;
 
     template<
         typename Element>
@@ -176,13 +176,13 @@ public:
 
                    RasterView          (RasterView const&)=default;
 
-                   RasterView          (RasterView&&)=default;
+                   RasterView          (RasterView&&) noexcept =default;
 
-                   ~RasterView         ()=default;
+                   ~RasterView         () override =default;
 
     RasterView&    operator=           (RasterView const&)=default;
 
-    RasterView&    operator=           (RasterView&&)=default;
+    RasterView&    operator=           (RasterView&&) noexcept =default;
 
     TimeBox const& time_box            () const;
 

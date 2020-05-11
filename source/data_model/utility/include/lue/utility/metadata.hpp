@@ -46,8 +46,8 @@ JSONPointer        pointer             (JSON const& object,
                                         std::string const& name);
 
 JSONCIterator      find                (JSON const& object,
-                                        std::string const& name,
-                                        std::string const& string);
+                                        std::string const& key,
+                                        std::string const& value);
 
 data_model::Clock  clock               (JSON const& object);
 
@@ -64,9 +64,9 @@ public:
 
                    Metadata            ()=default;
 
-                   Metadata            (std::string const& pathname);
+     explicit      Metadata            (std::string const& pathname);
 
-                   Metadata            (std::istream& stream);
+     explicit      Metadata            (std::istream& stream);
 
                    Metadata            (Metadata&& other)=default;
 
@@ -100,7 +100,7 @@ public:
                                             const;
 
     bool           boolean             (JSONPointer const& pointer,
-                                        bool const default_value) const;
+                                        bool default_value) const;
 
 private:
 

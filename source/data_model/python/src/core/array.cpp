@@ -241,7 +241,6 @@ static py::array create_array(
 
         py::str py_string;
         Py_ssize_t data_size;
-        char const* data;
         Py_UNICODE* it = py_buffer.get();
 
         for(std::size_t i = 0; i < nr_strings; ++i) {
@@ -256,7 +255,7 @@ static py::array create_array(
 
             // Copy Unicode string into the slot in the Numpy array
             data_size = PyUnicode_GET_DATA_SIZE(py_string.ptr());  // Bytes
-            data = PyUnicode_AS_DATA(py_string.ptr());
+            char const* data = PyUnicode_AS_DATA(py_string.ptr());
             std::memcpy(it, data, data_size);
             it += nr_ordinals;
         }

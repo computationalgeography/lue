@@ -38,17 +38,17 @@ public:
 
                    TickPeriod          ();
 
-                   TickPeriod          (Count const nr_units);
+    explicit       TickPeriod          (Count nr_units);
 
                    TickPeriod          (TickPeriod const&)=default;
 
-                   TickPeriod          (TickPeriod&&)=default;
+                   TickPeriod          (TickPeriod&&) noexcept =default;
 
                    ~TickPeriod         ()=default;
 
     TickPeriod&    operator=           (TickPeriod const&)=default;
 
-    TickPeriod&    operator=           (TickPeriod&&)=default;
+    TickPeriod&    operator=           (TickPeriod&&) noexcept =default;
 
     Count          nr_units            () const;
 

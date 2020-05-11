@@ -171,7 +171,7 @@ template<
 inline std::ostream& write(
     std::ostream& stream,
     Configuration<Ts...> const& configuration,
-    std::index_sequence<indices...> const&)
+    [[maybe_unused]] std::index_sequence<indices...> const& sequence)
 {
     write(stream, std::get<indices>(configuration.aspects())...);
 
@@ -185,14 +185,13 @@ inline std::ostream& operator<<(
     std::ostream& stream,
     Configuration<Ts...> const& configuration)
 {
-    return write(
-        stream, configuration, std::index_sequence_for<Ts...>());
+    return write(stream, configuration, std::index_sequence_for<Ts...>());
 }
 
 
 inline std::ostream& operator<<(
     std::ostream& stream,
-    Clock const clock)
+    Clock const& clock)
 {
     stream << clock.nr_units() << "[" << clock.unit() << "]";
 

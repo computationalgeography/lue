@@ -12,15 +12,15 @@ class Universes:
 
 public:
 
-                   Universes           (hdf5::Group& parent);
+    explicit       Universes           (hdf5::Group& parent);
 
-                   Universes           (Collection<Universe>&& collection);
+    explicit       Universes           (Collection<Universe>&& collection);
 
                    Universes           (Universes const&)=delete;
 
                    Universes           (Universes&&)=default;
 
-                   ~Universes          ()=default;
+                   ~Universes          () override =default;
 
     Universes&     operator=           (Universes const&)=delete;
 

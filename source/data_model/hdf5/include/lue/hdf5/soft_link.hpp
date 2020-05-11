@@ -14,13 +14,13 @@ public:
                    SoftLink            (Group& group,
                                         std::string const& name);
 
-                   SoftLink            (Group const&)=delete;
+                   SoftLink            (SoftLink const&)=default;
 
                    SoftLink            (SoftLink&&)=default;
 
                    ~SoftLink           ()=default;
 
-    SoftLink&      operator=           (SoftLink const&)=delete;
+    SoftLink&      operator=           (SoftLink const&)=default;
 
     SoftLink&      operator=           (SoftLink&&)=default;
 

@@ -13,14 +13,14 @@ class TreeNode:
 
 public:
 
-                   TreeNode            (std::string const& name,
-                                        ImGuiTreeNodeFlags const flags=0);
+    explicit       TreeNode            (std::string const& name,
+                                        ImGuiTreeNodeFlags flags=0);
 
                    TreeNode            (TreeNode const&)=default;
 
                    TreeNode            (TreeNode&&)=default;
 
-                   ~TreeNode           ();
+                   ~TreeNode           () override;
 
     TreeNode&      operator=           (TreeNode const&)=default;
 

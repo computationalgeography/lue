@@ -18,13 +18,13 @@ public:
 
     explicit       Properties          (hdf5::Group& parent);
 
-                   Properties          (hdf5::Group&& group);
+    explicit       Properties          (hdf5::Group&& group);
 
                    Properties          (Properties const&)=delete;
 
                    Properties          (Properties&&)=default;
 
-                   ~Properties         ()=default;
+                   ~Properties         () override =default;
 
     Properties&    operator=           (Properties const&)=delete;
 
@@ -134,6 +134,7 @@ inline type& Properties::collection<type>()              \
 {                                                        \
     return member;                                       \
 }
+
 
 
 COLLECTION(
