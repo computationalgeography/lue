@@ -29,7 +29,7 @@ public:
                    TimeCell            (TimeBox&& time_box,
                                         Count&& count);
 
-                   ~TimeCell           ()=default;
+                   ~TimeCell           () override =default;
 
     TimeCell&      operator=           (TimeCell const&)=delete;
 

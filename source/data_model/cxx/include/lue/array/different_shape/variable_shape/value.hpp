@@ -35,7 +35,7 @@ public:
 
                    Value               (Value&&)=default;
 
-                   ~Value              ()=default;
+                   ~Value              () override =default;
 
     Value&         operator=           (Value const&)=delete;
 

@@ -30,6 +30,6 @@ target_include_directories(lue_framework_core
 target_link_libraries(lue_framework_core
     PUBLIC
         lue::shared
-        fmt::fmt
+        CONAN_PKG::fmt
         std::mdspan
 )

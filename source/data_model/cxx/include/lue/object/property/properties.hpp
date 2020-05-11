@@ -24,7 +24,7 @@ public:
 
                    Properties          (Properties&&)=default;
 
-                   ~Properties         ()=default;
+                   ~Properties         () override =default;
 
     Properties&    operator=           (Properties const&)=delete;
 
@@ -134,6 +134,7 @@ inline type& Properties::collection<type>()              \
 {                                                        \
     return member;                                       \
 }
+
 
 
 COLLECTION(

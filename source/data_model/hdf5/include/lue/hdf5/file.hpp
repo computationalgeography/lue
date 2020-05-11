@@ -41,14 +41,14 @@ public:
     explicit       File                (std::string const& name);
 
                    File                (std::string const& name,
-                                        unsigned int const flags);
+                                        unsigned int flags);
 
                    File                (std::string const& name,
                                         AccessPropertyList const&
                                             access_property_list);
 
                    File                (std::string const& name,
-                                        unsigned int const flags,
+                                        unsigned int flags,
                                         AccessPropertyList const&
                                             access_property_list);
 
@@ -60,7 +60,7 @@ public:
 
                    File                (File&&)=default;
 
-    virtual        ~File               ()=default;
+                   ~File               () override =default;
 
     File&          operator=           (File const&)=delete;
 

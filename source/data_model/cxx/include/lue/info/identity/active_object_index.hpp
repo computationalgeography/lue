@@ -35,7 +35,7 @@ public:
 
                    ActiveObjectIndex   (ActiveObjectIndex&&)=default;
 
-                   ~ActiveObjectIndex  ()=default;
+                   ~ActiveObjectIndex  () override =default;
 
     ActiveObjectIndex& operator=       (ActiveObjectIndex const&)=delete;
 

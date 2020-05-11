@@ -26,7 +26,7 @@ public:
 
     explicit       StationarySpacePoint(same_shape::Value&& value);
 
-                   ~StationarySpacePoint()=default;
+                   ~StationarySpacePoint() override =default;
 
     StationarySpacePoint& operator=    (StationarySpacePoint const&)=delete;
 

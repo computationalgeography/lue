@@ -43,13 +43,13 @@ public:
 
                    Duration            (Duration const&)=default;
 
-                   Duration            (Duration&&)=default;
+                   Duration            (Duration&&) noexcept =default;
 
                    ~Duration           ()=default;
 
     Duration&      operator=           (Duration const&)=default;
 
-    Duration&      operator=           (Duration&&)=default;
+    Duration&      operator=           (Duration&&) noexcept =default;
 
     bool           operator==          (Duration const& other) const;
 

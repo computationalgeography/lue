@@ -9,8 +9,8 @@ BOOST_AUTO_TEST_CASE(dynamic_span_test)
     lue::Count const nr_cols = 40;
     lue::Count const nr_cells = nr_rows * nr_cols;
 
-    auto idx =
-        [nr_rows, nr_cols](
+    // NOLINTNEXTLINE(clang-diagnostic-unused-lambda-capture)
+    auto idx = [nr_rows, nr_cols](
             lue::Index const row,
             lue::Index const col) -> lue::Index
         {

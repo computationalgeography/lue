@@ -28,7 +28,7 @@ public:
 
                    PropertySet         (PropertySet&&)=default;
 
-                   ~PropertySet        ()=default;
+                   ~PropertySet        () override =default;
 
     PropertySet&   operator=           (PropertySet const&)=delete;
 

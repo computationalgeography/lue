@@ -128,9 +128,15 @@ std::string standard_datatype_as_string(
     The data type is not closed upon destruction
 */
 Datatype::Datatype(
-    hid_t const id)
+    hid_t const id):
 
-    : _id(id, [](hid_t){ return 0; })
+    _id{
+            id,
+            []([[maybe_unused]] hid_t const id)
+            {
+                return 0;
+            }
+        }
 
 {
     assert(_id.type() == H5I_DATATYPE);
@@ -256,7 +262,7 @@ std::vector<unsigned char> encode_datatype(
     Datatype const& datatype)
 {
     // Determine size of buffer.
-    std::size_t nr_bytes;
+    std::size_t nr_bytes{};
     auto status = ::H5Tencode(datatype.id(), nullptr, &nr_bytes);
 
     if(status < 0) {

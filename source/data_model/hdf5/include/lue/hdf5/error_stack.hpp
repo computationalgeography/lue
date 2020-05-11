@@ -47,5 +47,5 @@ private:
 
 };
 
-}  // namespace lue
 }  // namespace hdf5
+}  // namespace lue

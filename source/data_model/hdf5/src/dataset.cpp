@@ -20,8 +20,8 @@ Dataset::CreationPropertyList::CreationPropertyList()
 void Dataset::CreationPropertyList::set_chunk(
     Shape const& chunk)
 {
-    auto status =
-        ::H5Pset_chunk(id(), static_cast<int>(chunk.size()), chunk.data());
+    auto status = ::H5Pset_chunk(
+        id(), static_cast<int>(chunk.size()), chunk.data());
 
     if(status < 0) {
         throw std::runtime_error("Cannot set chunk size");
@@ -183,7 +183,8 @@ void Dataset::read(
     // Select elements: create hyperslab
     auto const file_dataspace = this->dataspace();
     hsize_t const* block = nullptr;
-    auto status = ::H5Sselect_hyperslab(file_dataspace.id(), H5S_SELECT_SET,
+    auto status = ::H5Sselect_hyperslab(
+        file_dataspace.id(), H5S_SELECT_SET,
         hyperslab.start().data(), hyperslab.stride().data(),
         hyperslab.count().data(), block);
 
@@ -261,7 +262,8 @@ void Dataset::write(
     // Select elements: create hyperslab
     auto file_dataspace = this->dataspace();
     hsize_t const* block = nullptr;
-    auto status = ::H5Sselect_hyperslab(file_dataspace.id(), H5S_SELECT_SET,
+    auto status = ::H5Sselect_hyperslab(
+        file_dataspace.id(), H5S_SELECT_SET,
         hyperslab.start().data(), hyperslab.stride().data(),
         hyperslab.count().data(), block);
 
@@ -301,26 +303,26 @@ void Dataset::fill(
 
     // Create a buffer to hold the fill values.
     using byte = unsigned char;
-    static_assert(sizeof(byte) == 1, "");
+    static_assert(sizeof(byte) == 1);
 
     std::size_t const nr_elements = hyperslab.nr_elements();
     std::size_t const nr_bytes_per_element = datatype.size();
     std::size_t const nr_bytes = nr_elements * nr_bytes_per_element;
-    auto memory_buffer = std::make_unique<byte[]>(nr_bytes);
+    std::vector<byte> memory_buffer(nr_bytes);
 
     // Fill the buffer with the fill value.
     {
-        auto dst = memory_buffer.get();
+        auto* dst = memory_buffer.data();
 
-        for(std::size_t i = 0; i < nr_elements; ++i,
-                dst += nr_bytes_per_element) {
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+        for(std::size_t i = 0; i < nr_elements; ++i, dst += nr_bytes_per_element) {
             std::memcpy(dst, buffer, datatype.size());
         }
     }
 
     auto const memory_dataspace = create_dataspace(Shape{nr_elements});
 
-    write(datatype, memory_dataspace, hyperslab, memory_buffer.get());
+    write(datatype, memory_dataspace, hyperslab, memory_buffer.data());
 }
 
 
@@ -336,8 +338,8 @@ Dataset open_dataset(
     Identifier& parent,
     std::string const& name)
 {
-    Identifier dataset_location(::H5Dopen(parent, name.c_str(),
-        H5P_DEFAULT), ::H5Dclose);
+    Identifier dataset_location(
+        ::H5Dopen(parent, name.c_str(), H5P_DEFAULT), ::H5Dclose);
 
     if(!dataset_location.is_valid()) {
         throw std::runtime_error(fmt::format(
@@ -378,9 +380,10 @@ Dataset create_dataset(
             ));
     }
 
-    Identifier dataset_location(::H5Dcreate(parent, name.c_str(),
-        datatype.id(), dataspace.id(), H5P_DEFAULT,
-        creation_property_list.id(), H5P_DEFAULT), ::H5Dclose);
+    Identifier dataset_location{
+        ::H5Dcreate(parent, name.c_str(),
+            datatype.id(), dataspace.id(), H5P_DEFAULT,
+            creation_property_list.id(), H5P_DEFAULT), ::H5Dclose};
 
     if(!dataset_location.is_valid()) {
         throw std::runtime_error(fmt::format(

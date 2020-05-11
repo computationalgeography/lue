@@ -20,7 +20,7 @@ public:
 
                    Phenomena           (Phenomena&&)=default;
 
-                   ~Phenomena          ()=default;
+                   ~Phenomena          () override =default;
 
     Phenomena&     operator=           (Phenomena const&)=delete;
 

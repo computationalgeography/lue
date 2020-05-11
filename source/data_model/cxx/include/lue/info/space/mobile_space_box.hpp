@@ -27,7 +27,7 @@ public:
     explicit       MobileSpaceBox      (same_shape::constant_shape::Value&&
                                             value);
 
-                   ~MobileSpaceBox     ()=default;
+                   ~MobileSpaceBox     () override =default;
 
     MobileSpaceBox& operator=          (MobileSpaceBox const&)=delete;
 

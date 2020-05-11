@@ -5,20 +5,20 @@
 
 BOOST_AUTO_TEST_CASE(seconds)
 {
-    using namespace lue::data_model::time;
+    namespace ldm = lue::data_model;
 
     // Clock with a Unix time epoch and a tick period of 10 seconds
     std::size_t const nr_seconds_per_tick = 10;
 
-    using TickPeriod = TickPeriod<Second>;
-    using Clock = Clock<TickPeriod>;
+    using TickPeriod = ldm::time::TickPeriod<ldm::time::Second>;
+    using Clock = ldm::time::Clock<TickPeriod>;
 
     TickPeriod tick_period(nr_seconds_per_tick);
     Clock clock;
 
-    BOOST_CHECK(clock.epoch().kind() == Epoch::Kind::common_era);
+    BOOST_CHECK(clock.epoch().kind() == ldm::time::Epoch::Kind::common_era);
     BOOST_REQUIRE(clock.epoch().origin());
     BOOST_CHECK_EQUAL(*clock.epoch().origin(), "1970-01-01T00:00:00+00:00");
     BOOST_REQUIRE(clock.epoch().calendar());
-    BOOST_CHECK(*clock.epoch().calendar() == Calendar::gregorian);
+    BOOST_CHECK(*clock.epoch().calendar() == ldm::time::Calendar::gregorian);
 }

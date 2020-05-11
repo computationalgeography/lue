@@ -21,9 +21,15 @@ public:
     {
     }
 
-    ~Fixture()
-    {
-    }
+    Fixture(Fixture const&)=delete;
+
+    Fixture(Fixture&&)=delete;
+
+    ~Fixture() override =default;
+
+    Fixture& operator=(Fixture const&)=delete;
+
+    Fixture& operator=(Fixture&&)=delete;
 
     auto& object_id()
     {
@@ -47,7 +53,7 @@ BOOST_FIXTURE_TEST_CASE(create, Fixture)
     BOOST_CHECK(
         object_id.memory_datatype() == lue::hdf5::Datatype{H5T_NATIVE_HSIZE});
     BOOST_CHECK_EQUAL(object_id.nr_arrays(), 0);
-    BOOST_CHECK(object_id.array_shape() == lue::hdf5::Shape{});
+    BOOST_CHECK(object_id.array_shape().empty());
     BOOST_CHECK_EQUAL(object_id.nr_objects(), 0);
 }
 

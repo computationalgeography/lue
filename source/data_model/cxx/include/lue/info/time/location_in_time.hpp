@@ -29,7 +29,7 @@ public:
     explicit       LocationInTime      (
                                     same_shape::constant_shape::Value&& value);
 
-                   ~LocationInTime     ()=default;
+                   ~LocationInTime     () override =default;
 
     LocationInTime& operator=          (LocationInTime const&)=delete;
 

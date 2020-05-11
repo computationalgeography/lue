@@ -78,8 +78,9 @@ Attribute create_attribute(
     Datatype const& datatype,
     Dataspace const& dataspace)
 {
-    Identifier id(::H5Acreate(location, name.c_str(), datatype.id(),
-        dataspace.id(), H5P_DEFAULT, H5P_DEFAULT), ::H5Aclose);
+    Identifier id{
+        ::H5Acreate(location, name.c_str(), datatype.id(),
+        dataspace.id(), H5P_DEFAULT, H5P_DEFAULT), ::H5Aclose};
 
     if(!id.is_valid()) {
         throw std::runtime_error("Cannot create attribute");

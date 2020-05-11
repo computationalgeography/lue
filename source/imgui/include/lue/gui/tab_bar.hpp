@@ -18,7 +18,7 @@ public:
 
                    TabBar              (TabBar&&)=default;
 
-                   ~TabBar             ();
+                   ~TabBar             () override;
 
     TabBar&        operator=           (TabBar const&)=default;
 

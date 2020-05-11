@@ -53,7 +53,7 @@ public:
 
                    Value               (Value&&)=default;
 
-                   ~Value              ()=default;
+                   ~Value              () override =default;
 
     Value&         operator=           (Value const&)=delete;
 
@@ -71,7 +71,7 @@ public:
     same_shape::constant_shape::Value
                    expand              (ID id,
                                         hdf5::Shape const& shape,
-                                        Count const nr_locations_in_time);
+                                        Count nr_locations_in_time);
 
     same_shape::constant_shape::Value
                    operator[]          (ID id);
@@ -81,7 +81,7 @@ private:
     same_shape::constant_shape::Value
                    expand_             (ID id,
                                         hdf5::Shape const& shape,
-                                        Count const nr_locations_in_time);
+                                        Count nr_locations_in_time);
 
     Count          _nr_objects;
 

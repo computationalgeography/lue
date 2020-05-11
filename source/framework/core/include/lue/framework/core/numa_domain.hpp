@@ -24,10 +24,10 @@ using NUMADomainAllocator = hpx::compute::host::block_allocator<Element>;
 
 std::size_t        nr_numa_targets     ();
 
-Target&            target              (TargetIndex const idx);
+Target&            target              (TargetIndex idx);
 
 NUMADomainExecutor& numa_domain_executor(
-                                        TargetIndex const idx);
+                                        TargetIndex idx);
 
 TargetIndex        scattered_target_index();
 
@@ -39,9 +39,13 @@ public:
 
     ScatterTargetIndex()=default;
 
+    ScatterTargetIndex(ScatterTargetIndex const& other)=default;
+
     ScatterTargetIndex(ScatterTargetIndex&& other)=default;
 
     ~ScatterTargetIndex()=default;
+
+    ScatterTargetIndex& operator=(ScatterTargetIndex const& other)=default;
 
     ScatterTargetIndex& operator=(ScatterTargetIndex&& other)=default;
 

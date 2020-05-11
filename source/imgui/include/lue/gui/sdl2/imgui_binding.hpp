@@ -14,9 +14,20 @@ public:
                    ImGuiBinding        (API const& api,
                                         Window& window);
 
+                   ImGuiBinding        (ImGuiBinding const&)=default;
+
+                   ImGuiBinding        (ImGuiBinding&&)=default;
+
                    ~ImGuiBinding       ();
 
-    ImGuiIO&       io                  ();
+    ImGuiBinding&  operator=           (ImGuiBinding const&)=default;
+
+    ImGuiBinding&  operator=           (ImGuiBinding&&)=default;
+
+    static ImGuiIO& io()
+    {
+        return ImGui::GetIO();
+    }
 
 private:
 

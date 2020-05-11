@@ -77,7 +77,7 @@ public:
     static constexpr ShapeVariability shape_variability{
         ShapeVariability::constant};
 
-
+    // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays, modernize-avoid-c-arrays, hicpp-avoid-c-arrays,-warnings-as-errors)
     static constexpr char label[] = {"same shape"};
 
 };
@@ -97,6 +97,7 @@ public:
     static constexpr ShapeVariability shape_variability{
         ShapeVariability::constant};
 
+    // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays, modernize-avoid-c-arrays, hicpp-avoid-c-arrays,-warnings-as-errors)
     static constexpr char label[] = {"same constant shape"};
 
 };
@@ -116,6 +117,7 @@ public:
     static constexpr ShapeVariability shape_variability{
         ShapeVariability::variable};
 
+    // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays, modernize-avoid-c-arrays, hicpp-avoid-c-arrays,-warnings-as-errors)
     static constexpr char label[] = {"same variable shape"};
 
 };
@@ -135,6 +137,7 @@ public:
     static constexpr ShapeVariability shape_variability{
         ShapeVariability::constant};
 
+    // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays, modernize-avoid-c-arrays, hicpp-avoid-c-arrays,-warnings-as-errors)
     static constexpr char label[] = {"different shape"};
 
 };
@@ -154,6 +157,7 @@ public:
     static constexpr ShapeVariability shape_variability{
         ShapeVariability::constant};
 
+    // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays, modernize-avoid-c-arrays, hicpp-avoid-c-arrays,-warnings-as-errors)
     static constexpr char label[] = {"different constant shape"};
 
 };
@@ -173,6 +177,7 @@ public:
     static constexpr ShapeVariability shape_variability{
         ShapeVariability::variable};
 
+    // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays, modernize-avoid-c-arrays, hicpp-avoid-c-arrays,-warnings-as-errors)
     static constexpr char label[] = {"different variable shape"};
 
 };
@@ -296,7 +301,7 @@ void show_about_window(
     if(ImGui::BeginPopupModal(
             "About...", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
         ImGui::Text("LUE version %s (build %s)",
-            build_options.version, build_options.git_short_sha1);
+            BuildOptions::version, BuildOptions::git_short_sha1);
         ImGui::Separator();
         ImGui::Text("By the PCRaster research and development team");
         ImGui::Text("LUE is licensed under the GPL-2 License");
@@ -363,8 +368,8 @@ void show_identifier(
 {
     ImGui::TextUnformatted(fmt::format(
         "HDF5 identifier: {}", static_cast<hid_t>(identifier)).c_str());
-    // TODO type()
-    // TODO info()
+    // TODO(KDJ) type()
+    // TODO(KDJ) info()
     ImGui::TextUnformatted(fmt::format(
         "is_valid: {}", identifier.is_valid()).c_str());
     ImGui::TextUnformatted(fmt::format(
@@ -378,7 +383,7 @@ void show_primary_data_object(
     hdf5::PrimaryDataObject const& primary_data_object)
 {
     show_identifier(primary_data_object.id());
-    // TODO attributes: requires to be able to query them
+    // TODO(KDJ) attributes: requires to be able to query them
 }
 
 
@@ -481,12 +486,12 @@ void show_value_group(
 template<
     typename Value>
 void               show_value          (Value const& value,
-                                        bool const show_details);
+                                        bool show_details);
 
 
-static char const array_shape_doc[] =
+std::string const array_shape_doc{
     "Shape of an object array. Each number is an extent along a "
-    "dimension. An empty shape implies a scalar value.";
+    "dimension. An empty shape implies a scalar value."};
 
 
 template<>
@@ -522,7 +527,7 @@ void show_value<data_model::same_shape::Value>(
     // When reading values, cache them as long as the dataset is not
     // updated. Invalidate cache once the dataset is updated.
 
-    if constexpr(build_options.build_framework)
+    if constexpr(BuildOptions::build_framework)
     {
         if(auto tab_bar = gui::TabBar("Values"))
         {
@@ -537,7 +542,7 @@ void show_value<data_model::same_shape::Value>(
             //
             // Maybe cache per kind of property value? Static cache in
             // this function? Well then we can't invalidate the cache.
-            // TODO
+            // TODO(KDJ)
 
 
             if(rank == 0) {
@@ -554,7 +559,7 @@ void show_value<data_model::same_shape::Value>(
                         ImGui::Separator();
 
                         // Iterate over all objects and add ID and value to table
-                        // TODO
+                        // TODO(KDJ)
 
 
 
@@ -611,10 +616,10 @@ void show_value<data_model::same_shape::variable_shape::Value>(
     data_model::same_shape::variable_shape::Value const& value,
     bool const show_details)
 {
-    // TODO nr_locations_in_time
+    // TODO(KDJ) nr_locations_in_time
 
     show_value_group(value, show_details);
-    // TODO show_rank(value.rank());
+    // TODO(KDJ) show_rank(value.rank());
 }
 
 
@@ -625,7 +630,7 @@ void show_value<data_model::different_shape::Value>(
 {
     show_nr_objects(value.nr_objects());
     show_value_group(value, show_details);
-    // TODO show_rank(value.rank());
+    // TODO(KDJ) show_rank(value.rank());
 }
 
 
@@ -645,10 +650,10 @@ void show_value<data_model::different_shape::variable_shape::Value>(
     data_model::different_shape::variable_shape::Value const& value,
     bool const show_details)
 {
-    // TODO nr_locations_in_time
+    // TODO(KDJ) nr_locations_in_time
 
     show_value_group(value, show_details);
-    // TODO show_rank(value.rank() - 1);
+    // TODO(KDJ) show_rank(value.rank() - 1);
 }
 
 
@@ -670,7 +675,7 @@ void show_object_tracker(
 
 
 std::string epoch_to_string(
-    data_model::time::Epoch const epoch)
+    data_model::time::Epoch const& epoch)
 {
     std::string result;
 
@@ -769,6 +774,7 @@ void show_space_domain(
                 ImGui::Text("discretized presence property: ");
                 ImGui::SameLine();
                 ImGui::Text(
+                    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
                     const_cast<data_model::SpaceDomain&>(domain)
                         .discretized_presence_property().id().pathname().c_str());
             }
@@ -789,7 +795,7 @@ void show_space_domain(
 template<
     typename Property>
 void               show_property       (Property const& property,
-                                        bool const show_details);
+                                        bool show_details);
 
 
 template<>
@@ -1108,7 +1114,7 @@ void show_phenomena(
     {
         for(std::string const& name: phenomena.names())
         {
-            if(auto tab_item = gui::TabItem(name.c_str()))
+            if(auto tab_item = gui::TabItem(name))
             {
                 copy_popup("phenomenon name", name);
                 show_phenomenon(phenomena[name], show_details);
@@ -1234,9 +1240,9 @@ void show_datasets(
     {
         for(auto& dataset: datasets)
         {
-            if(auto tab_item = gui::TabItem(dataset.filename().c_str()))
+            if(auto tab_item = gui::TabItem(dataset.filename()))
             {
-                copy_popup("filename", dataset.filename().c_str());
+                copy_popup("filename", dataset.filename());
                 dataset.rescan();
 
                 if(dataset.is_open()) {
@@ -1296,13 +1302,14 @@ int Application::run_implementation()
 
     sdl2::API api;
     sdl2::Window sdl_window{"LUE view",
+        // NOLINTNEXTLINE(hicpp-signed-bitwise)
         SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1000, 800};
     sdl2::ImGuiBinding binding{api, sdl_window};
 
     // static std::string const ini_pathname{
     //     expand_environment_variables("${HOME}/.lue_view.ini")};
     // binding.io().IniFilename = ini_pathname.c_str();
-    binding.io().IniFilename = nullptr;  // Skip for now
+    sdl2::ImGuiBinding::io().IniFilename = nullptr;  // Skip for now
 
     // Open datasets
     Datasets datasets_to_visualize{dataset_names.begin(), dataset_names.end()};
@@ -1313,26 +1320,22 @@ int Application::run_implementation()
 
         // Handle key presses
         SDL_Event event;
-        while(SDL_PollEvent(&event)) {
+        while(SDL_PollEvent(&event) != 0) {
 
             ImGui_ImplSDL2_ProcessEvent(&event);
 
             if(
-                    event.type == SDL_QUIT)
-            {
-                stop_browsing = true;
-            }
-            else if(
-                    event.type == SDL_WINDOWEVENT &&
-                    event.window.event == SDL_WINDOWEVENT_CLOSE &&
-                    event.window.windowID == SDL_GetWindowID(sdl_window))
+                event.type == SDL_QUIT || (
+                event.type == SDL_WINDOWEVENT &&
+                event.window.event == SDL_WINDOWEVENT_CLOSE &&
+                event.window.windowID == SDL_GetWindowID(sdl_window)))
             {
                 stop_browsing = true;
             }
         }
 
         // Draw stuff on window
-        // TODO
+        // TODO(KDJ)
 
         sdl2::imgui::Frame frame{sdl_window};
 

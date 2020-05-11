@@ -25,7 +25,7 @@ public:
 
                    EnumStringBimap     (EnumStringBimap const&)=default;
 
-                   EnumStringBimap     (EnumStringBimap&&)=default;
+                   EnumStringBimap     (EnumStringBimap&&) noexcept =default;
 
                    ~EnumStringBimap    ()=default;
 
@@ -33,13 +33,13 @@ public:
                    operator=           (EnumStringBimap const&)=default;
 
     EnumStringBimap&
-                   operator=           (EnumStringBimap&&)=default;
+                   operator=           (EnumStringBimap&&) noexcept =default;
 
     bool           contains            (std::string const& string) const;
 
     T              as_value            (std::string const& string) const;
 
-    std::string    as_string           (T const value) const;
+    std::string    as_string           (T value) const;
 
 private:
 

@@ -1,10 +1,8 @@
 add_test_conditionally(test)
 
-# TODO Add SYSTEM argument once pybind11 version is bumped. To get rid
-#      of python/pybind11 warnings.
 # TODO Prefer without NO_EXTRAS, but this results in link errors on some
 #      platforms (sonic, eejit)
-pybind11_add_module(lue_py MODULE NO_EXTRAS THIN_LTO
+pybind11_add_module(lue_py MODULE NO_EXTRAS SYSTEM THIN_LTO
     src/hdf5/dataset
     src/hdf5/file
     src/hdf5/group
@@ -78,18 +76,10 @@ target_compile_definitions(lue_py
         NPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION
 )
 
-# TODO
-# Once we can pass the SYSTEM option to pybind11_add_module, this should not
-# be necessary anymore
-target_compile_options(lue_py
-    PRIVATE
-        $<$<CXX_COMPILER_ID:GNU>:-Wno-register -Wno-attributes>
-        $<$<CXX_COMPILER_ID:Clang>:-fsized-deallocation>
-)
-
 set_target_properties(lue_py
     PROPERTIES
         OUTPUT_NAME lue
+        CXX_CLANG_TIDY ""  # TODO(KDJ) Get it to skip pybind11.h
 )
 
 # Explicitly add the location of the numpy headers to the list. Otherwise
@@ -97,8 +87,6 @@ set_target_properties(lue_py
 target_include_directories(lue_py SYSTEM
     PRIVATE
         ${NUMPY_INCLUDE_DIRS}
-        # Remove line once SYSTEM works in pybind11_add_module
-        ${CONAN_INCLUDE_DIRS_PYBIND11}
 )
 
 target_include_directories(lue_py
@@ -111,6 +99,8 @@ target_link_libraries(lue_py
     PRIVATE
         $<$<TARGET_EXISTS:lue::data_model_test>:lue::data_model_test>
         lue::data_model
+        CONAN_PKG::gsl_microsoft
+        CONAN_PKG::pybind11
 )
 
 install(

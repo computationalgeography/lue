@@ -16,8 +16,8 @@ using Table = std::vector<Record>;
 std::string to_dot(
     Record const& record)
 {
-    auto cell1 = std::get<0>(record);
-    auto cell2 = std::get<1>(record);
+    auto const& cell1 = std::get<0>(record);
+    auto const& cell2 = std::get<1>(record);
 
     return cell2.empty()
         ?
@@ -82,7 +82,7 @@ std::string dot_name(
 
 // Shapes are based on the HDF5 object type ------------------------------------
 std::string shape(
-    hdf5::Group const&,
+    hdf5::Group const& /* group */,
     Metadata const& metadata)
 {
     return metadata.string(JSONPointer("/hdf5/group/shape"), "oval");
@@ -90,7 +90,7 @@ std::string shape(
 
 
 std::string shape(
-    hdf5::Dataset const&,
+    hdf5::Dataset const& /* dataset */,
     Metadata const& metadata)
 {
     return metadata.string(JSONPointer("/hdf5/dataset/shape"), "box");
@@ -107,7 +107,7 @@ std::string default_fillcolor()
 template<
     typename T>
 std::string fillcolor(
-    T const&)
+    T const& /* object */)
 {
     return default_fillcolor();
 }
@@ -120,7 +120,7 @@ public:
 
     Subgraph(
         std::ostream& stream,
-        hdf5::Identifier const id,
+        hdf5::Identifier const& id,
         std::string const& label)
     :
         _stream{stream}
@@ -137,17 +137,25 @@ subgraph cluster_{} {{
 
     Subgraph(
         std::ostream& stream,
-        hdf5::Identifier const id)
+        hdf5::Identifier const& id)
     :
         Subgraph{stream, id, id.name()}
 
         {
         }
 
+    Subgraph(Subgraph const&)=delete;
+
+    Subgraph(Subgraph&&)=delete;
+
     ~Subgraph()
     {
         _stream << "}\n\n";
     }
+
+    Subgraph& operator=(Subgraph const&)=delete;
+
+    Subgraph& operator=(Subgraph&&)=delete;
 
 private:
 
@@ -221,26 +229,22 @@ static void mark_as_empty(
 }  // namespace utility
 
 
-using namespace data_model;
-using namespace utility;
-
-
 // We are in the lue namespace now. This make the code below easier to write.
 // We need less explicit namespace qualifications.
 
 void to_dot(
-    same_shape::Value const& value,
+    data_model::same_shape::Value const& value,
     std::ostream& stream,
-    Metadata const& metadata)
+    utility::Metadata const& metadata)
 {
     std::string const label = metadata.boolean(
-            JSONPointer("/lue/value/show_details"), false)
-        ? to_dot(Table{
-                Record{value.id().name(), ""},
-                Record{"shape_per_object", "same"},
-                Record{"nr_arrays", std::to_string(value.nr_arrays())},
-                Record{"array_shape", to_string(value.array_shape())},
-                Record{"file_datatype",
+            utility::JSONPointer("/lue/value/show_details"), false)
+        ? utility::to_dot(utility::Table{
+                utility::Record{value.id().name(), ""},
+                utility::Record{"shape_per_object", "same"},
+                utility::Record{"nr_arrays", std::to_string(value.nr_arrays())},
+                utility::Record{"array_shape", utility::to_string(value.array_shape())},
+                utility::Record{"file_datatype",
                     hdf5::standard_datatype_as_string(
                         (value.file_datatype()))},
             })
@@ -254,26 +258,26 @@ void to_dot(
         fillcolor="{}"
     ];
 )",
-        dot_name(value),
+        utility::dot_name(value),
         label,
         shape(value, metadata),
         metadata.string(
-            JSONPointer("/lue/value/fillcolor"), fillcolor(value)));
+            utility::JSONPointer("/lue/value/fillcolor"), utility::fillcolor(value)));
 }
 
 
 void to_dot(
-    different_shape::Value const& value,
+    data_model::different_shape::Value const& value,
     std::ostream& stream,
-    Metadata const& metadata)
+    utility::Metadata const& metadata)
 {
     std::string const label = metadata.boolean(
-            JSONPointer("/lue/value/show_details"), false)
-        ? to_dot(Table{
-                Record{value.id().name(), ""},
-                Record{"shape_per_object", "different"},
-                Record{"rank", std::to_string(value.rank())},
-                Record{"file_datatype",
+            utility::JSONPointer("/lue/value/show_details"), false)
+        ? utility::to_dot(utility::Table{
+                utility::Record{value.id().name(), ""},
+                utility::Record{"shape_per_object", "different"},
+                utility::Record{"rank", std::to_string(value.rank())},
+                utility::Record{"file_datatype",
                     hdf5::standard_datatype_as_string(
                         (value.file_datatype()))},
             })
@@ -287,28 +291,28 @@ void to_dot(
         fillcolor="{}"
     ];
 )",
-        dot_name(value),
+        utility::dot_name(value),
         label,
         shape(value, metadata),
         metadata.string(
-            JSONPointer("/lue/value/fillcolor"), fillcolor(value)));
+            utility::JSONPointer("/lue/value/fillcolor"), utility::fillcolor(value)));
 }
 
 
 void to_dot(
-    same_shape::constant_shape::Value const& value,
+    data_model::same_shape::constant_shape::Value const& value,
     std::ostream& stream,
-    Metadata const& metadata)
+    utility::Metadata const& metadata)
 {
     std::string const label = metadata.boolean(
-            JSONPointer("/lue/value/show_details"), false)
-        ? to_dot(Table{
-                Record{value.id().name(), ""},
-                Record{"shape_per_object", "same"},
-                Record{"shape_variability", "constant"},
-                Record{"nr_arrays", std::to_string(value.nr_arrays())},
-                Record{"array_shape", to_string(value.array_shape())},
-                Record{"file_datatype",
+            utility::JSONPointer("/lue/value/show_details"), false)
+        ? utility::to_dot(utility::Table{
+                utility::Record{value.id().name(), ""},
+                utility::Record{"shape_per_object", "same"},
+                utility::Record{"shape_variability", "constant"},
+                utility::Record{"nr_arrays", std::to_string(value.nr_arrays())},
+                utility::Record{"array_shape", utility::to_string(value.array_shape())},
+                utility::Record{"file_datatype",
                     hdf5::standard_datatype_as_string(
                         (value.file_datatype()))},
             })
@@ -322,28 +326,28 @@ void to_dot(
         fillcolor="{}"
     ];
 )",
-        dot_name(value),
+        utility::dot_name(value),
         label,
         shape(value, metadata),
         metadata.string(
-            JSONPointer("/lue/value/fillcolor"), fillcolor(value)));
+            utility::JSONPointer("/lue/value/fillcolor"), utility::fillcolor(value)));
 }
 
 
 void to_dot(
-    different_shape::constant_shape::Value const& value,
+    data_model::different_shape::constant_shape::Value const& value,
     std::ostream& stream,
-    Metadata const& metadata)
+    utility::Metadata const& metadata)
 {
     std::string const label = metadata.boolean(
-            JSONPointer("/lue/value/show_details"), false)
-        ? to_dot(Table{
-                Record{value.id().name(), ""},
-                Record{"shape_per_object", "different"},
-                Record{"shape_variability", "constant"},
-                Record{"nr_objects", std::to_string(value.nr_objects())},
-                Record{"rank", std::to_string(value.rank())},
-                Record{"file_datatype",
+            utility::JSONPointer("/lue/value/show_details"), false)
+        ? utility::to_dot(utility::Table{
+                utility::Record{value.id().name(), ""},
+                utility::Record{"shape_per_object", "different"},
+                utility::Record{"shape_variability", "constant"},
+                utility::Record{"nr_objects", std::to_string(value.nr_objects())},
+                utility::Record{"rank", std::to_string(value.rank())},
+                utility::Record{"file_datatype",
                     hdf5::standard_datatype_as_string(
                         (value.file_datatype()))},
             })
@@ -357,29 +361,29 @@ void to_dot(
         fillcolor="{}"
     ];
 )",
-        dot_name(value),
+        utility::dot_name(value),
         label,
         shape(value, metadata),
         metadata.string(
-            JSONPointer("/lue/value/fillcolor"), fillcolor(value)));
+            utility::JSONPointer("/lue/value/fillcolor"), utility::fillcolor(value)));
 }
 
 
 void to_dot(
-    same_shape::variable_shape::Value const& value,
+    data_model::same_shape::variable_shape::Value const& value,
     std::ostream& stream,
-    Metadata const& metadata)
+    utility::Metadata const& metadata)
 {
     std::string const label = metadata.boolean(
-            JSONPointer("/lue/value/show_details"), false)
-        ? to_dot(Table{
-                Record{value.id().name(), ""},
-                Record{"shape_per_object", "same"},
-                Record{"shape_variability", "variable"},
-                Record{"nr_locations_in_time",
+            utility::JSONPointer("/lue/value/show_details"), false)
+        ? utility::to_dot(utility::Table{
+                utility::Record{value.id().name(), ""},
+                utility::Record{"shape_per_object", "same"},
+                utility::Record{"shape_variability", "variable"},
+                utility::Record{"nr_locations_in_time",
                     std::to_string(value.nr_locations_in_time())},
-                Record{"rank", std::to_string(value.rank())},
-                Record{"file_datatype",
+                utility::Record{"rank", std::to_string(value.rank())},
+                utility::Record{"file_datatype",
                     hdf5::standard_datatype_as_string(
                         (value.file_datatype()))},
             })
@@ -393,29 +397,29 @@ void to_dot(
         fillcolor="{}"
     ];
 )",
-        dot_name(value),
+        utility::dot_name(value),
         label,
         shape(value, metadata),
         metadata.string(
-            JSONPointer("/lue/value/fillcolor"), fillcolor(value)));
+            utility::JSONPointer("/lue/value/fillcolor"), utility::fillcolor(value)));
 }
 
 
 void to_dot(
-    different_shape::variable_shape::Value const& value,
+    data_model::different_shape::variable_shape::Value const& value,
     std::ostream& stream,
-    Metadata const& metadata)
+    utility::Metadata const& metadata)
 {
     std::string const label = metadata.boolean(
-            JSONPointer("/lue/value/show_details"), false)
-        ? to_dot(Table{
-                Record{value.id().name(), ""},
-                Record{"shape_per_object", "different"},
-                Record{"shape_variability", "variable"},
-                Record{"nr_locations_in_time",
+            utility::JSONPointer("/lue/value/show_details"), false)
+        ? utility::to_dot(utility::Table{
+                utility::Record{value.id().name(), ""},
+                utility::Record{"shape_per_object", "different"},
+                utility::Record{"shape_variability", "variable"},
+                utility::Record{"nr_locations_in_time",
                     std::to_string(value.nr_locations_in_time())},
-                Record{"rank", std::to_string(value.rank())},
-                Record{"file_datatype",
+                utility::Record{"rank", std::to_string(value.rank())},
+                utility::Record{"file_datatype",
                     hdf5::standard_datatype_as_string(
                         (value.file_datatype()))},
             })
@@ -429,20 +433,20 @@ void to_dot(
         fillcolor="{}"
     ];
 )",
-        dot_name(value),
+        utility::dot_name(value),
         label,
         shape(value, metadata),
         metadata.string(
-            JSONPointer("/lue/value/fillcolor"), fillcolor(value)));
+            utility::JSONPointer("/lue/value/fillcolor"), utility::fillcolor(value)));
 }
 
 
 void to_dot(
-    TimeCell const& time_cell,
+    data_model::TimeCell const& time_cell,
     std::ostream& stream,
-    Metadata const& metadata)
+    utility::Metadata const& metadata)
 {
-    to_dot(dynamic_cast<TimeBox const&>(time_cell), stream, metadata);
+    to_dot(dynamic_cast<data_model::TimeBox const&>(time_cell), stream, metadata);
 
     // Also dump the counts and link the boxes to the counts
     to_dot(time_cell.count(), stream, metadata);
@@ -451,9 +455,9 @@ void to_dot(
 
 
 void to_dot(
-    PropertyGroup& property,
+    data_model::PropertyGroup& property,
     std::ostream& stream,
-    Metadata const& metadata)
+    utility::Metadata const& metadata)
 {
     stream << fmt::format(R"(
     {} [
@@ -462,45 +466,45 @@ void to_dot(
         fillcolor="{}"
     ];
 )",
-        dot_name(property),
+        utility::dot_name(property),
         property.id().name(),
         shape(property, metadata),
         metadata.string(
-            JSONPointer("/lue/property/fillcolor"),
-            fillcolor(property)));
+            utility::JSONPointer("/lue/property/fillcolor"),
+            utility::fillcolor(property)));
 
     if(property.time_is_discretized()) {
         auto const show_details =
-            metadata.boolean(JSONPointer("/lue/time_domain/show_details"),
+            metadata.boolean(utility::JSONPointer("/lue/time_domain/show_details"),
             false);
         soft_link_nodes(property, property.time_discretization_property(),
             stream, metadata,
             show_details
-                ? aspect_to_string(property.time_discretization_type())
+                ? data_model::aspect_to_string(property.time_discretization_type())
                 : "");
     }
 
     if(property.space_is_discretized()) {
         auto const show_details =
-            metadata.boolean(JSONPointer("/lue/space_domain/show_details"),
+            metadata.boolean(utility::JSONPointer("/lue/space_domain/show_details"),
             false);
         soft_link_nodes(property, property.space_discretization_property(),
             stream, metadata,
             show_details
-                ? aspect_to_string(property.space_discretization_type())
+                ? data_model::aspect_to_string(property.space_discretization_type())
                 : "");
     }
 }
 
 
 void to_dot(
-    same_shape::Property& property,
+    data_model::same_shape::Property& property,
     std::ostream& stream,
-    Metadata const& metadata)
+    utility::Metadata const& metadata)
 {
-    to_dot(dynamic_cast<PropertyGroup&>(property), stream, metadata);
+    to_dot(dynamic_cast<data_model::PropertyGroup&>(property), stream, metadata);
 
-    if(metadata.boolean(JSONPointer("/lue/value/show"), false)) {
+    if(metadata.boolean(utility::JSONPointer("/lue/value/show"), false)) {
         to_dot(property.value(), stream, metadata);
         link_nodes(property, property.value(), stream, metadata);
     }
@@ -508,13 +512,13 @@ void to_dot(
 
 
 void to_dot(
-    different_shape::Property& property,
+    data_model::different_shape::Property& property,
     std::ostream& stream,
-    Metadata const& metadata)
+    utility::Metadata const& metadata)
 {
-    to_dot(dynamic_cast<PropertyGroup&>(property), stream, metadata);
+    to_dot(dynamic_cast<data_model::PropertyGroup&>(property), stream, metadata);
 
-    if(metadata.boolean(JSONPointer("/lue/value/show"), false)) {
+    if(metadata.boolean(utility::JSONPointer("/lue/value/show"), false)) {
         to_dot(property.value(), stream, metadata);
         link_nodes(property, property.value(), stream, metadata);
     }
@@ -522,13 +526,13 @@ void to_dot(
 
 
 void to_dot(
-    same_shape::constant_shape::Property& property,
+    data_model::same_shape::constant_shape::Property& property,
     std::ostream& stream,
-    Metadata const& metadata)
+    utility::Metadata const& metadata)
 {
-    to_dot(dynamic_cast<PropertyGroup&>(property), stream, metadata);
+    to_dot(dynamic_cast<data_model::PropertyGroup&>(property), stream, metadata);
 
-    if(metadata.boolean(JSONPointer("/lue/value/show"), false)) {
+    if(metadata.boolean(utility::JSONPointer("/lue/value/show"), false)) {
         to_dot(property.value(), stream, metadata);
         link_nodes(property, property.value(), stream, metadata);
     }
@@ -536,13 +540,13 @@ void to_dot(
 
 
 void to_dot(
-    different_shape::constant_shape::Property& property,
+    data_model::different_shape::constant_shape::Property& property,
     std::ostream& stream,
-    Metadata const& metadata)
+    utility::Metadata const& metadata)
 {
-    to_dot(dynamic_cast<PropertyGroup&>(property), stream, metadata);
+    to_dot(dynamic_cast<data_model::PropertyGroup&>(property), stream, metadata);
 
-    if(metadata.boolean(JSONPointer("/lue/value/show"), false)) {
+    if(metadata.boolean(utility::JSONPointer("/lue/value/show"), false)) {
         to_dot(property.value(), stream, metadata);
         link_nodes(property, property.value(), stream, metadata);
     }
@@ -550,13 +554,13 @@ void to_dot(
 
 
 void to_dot(
-    same_shape::variable_shape::Property& property,
+    data_model::same_shape::variable_shape::Property& property,
     std::ostream& stream,
-    Metadata const& metadata)
+    utility::Metadata const& metadata)
 {
-    to_dot(dynamic_cast<PropertyGroup&>(property), stream, metadata);
+    to_dot(dynamic_cast<data_model::PropertyGroup&>(property), stream, metadata);
 
-    if(metadata.boolean(JSONPointer("/lue/value/show"), false)) {
+    if(metadata.boolean(utility::JSONPointer("/lue/value/show"), false)) {
         to_dot(property.value(), stream, metadata);
         link_nodes(property, property.value(), stream, metadata);
     }
@@ -564,13 +568,13 @@ void to_dot(
 
 
 void to_dot(
-    different_shape::variable_shape::Property& property,
+    data_model::different_shape::variable_shape::Property& property,
     std::ostream& stream,
-    Metadata const& metadata)
+    utility::Metadata const& metadata)
 {
-    to_dot(dynamic_cast<PropertyGroup&>(property), stream, metadata);
+    to_dot(dynamic_cast<data_model::PropertyGroup&>(property), stream, metadata);
 
-    if(metadata.boolean(JSONPointer("/lue/value/show"), false)) {
+    if(metadata.boolean(utility::JSONPointer("/lue/value/show"), false)) {
         to_dot(property.value(), stream, metadata);
         link_nodes(property, property.value(), stream, metadata);
     }
@@ -578,21 +582,21 @@ void to_dot(
 
 
 void to_dot(
-    TimeDomain& time_domain,
+    data_model::TimeDomain& time_domain,
     std::ostream& stream,
-    Metadata const& metadata)
+    utility::Metadata const& metadata)
 {
     auto const configuration = time_domain.configuration();
-    auto const item_type = configuration.value<TimeDomainItemType>();
+    auto const item_type = configuration.value<data_model::TimeDomainItemType>();
     auto const& clock = time_domain.clock();
 
     std::string const label = metadata.boolean(
-            JSONPointer("/lue/time_domain/show_details"), false)
-        ? to_dot(Table{
-                Record{time_domain.id().name(), ""},
-                Record{"unit", aspect_to_string(clock.unit())},
-                Record{"nr_units", std::to_string(clock.nr_units())},
-                Record{"item_type", aspect_to_string(item_type)},
+            utility::JSONPointer("/lue/time_domain/show_details"), false)
+        ? utility::to_dot(utility::Table{
+                utility::Record{time_domain.id().name(), ""},
+                utility::Record{"unit", data_model::aspect_to_string(clock.unit())},
+                utility::Record{"nr_units", std::to_string(clock.nr_units())},
+                utility::Record{"item_type", data_model::aspect_to_string(item_type)},
             })
         : time_domain.id().name()
         ;
@@ -604,30 +608,30 @@ void to_dot(
         fillcolor="{}"
     ];
 )",
-        dot_name(time_domain),
+        utility::dot_name(time_domain),
         label,
         shape(time_domain, metadata),
         metadata.string(
-            JSONPointer("/lue/time_domain/fillcolor"),
-            fillcolor(time_domain)));
+            utility::JSONPointer("/lue/time_domain/fillcolor"),
+            utility::fillcolor(time_domain)));
 
 
-    if(metadata.boolean(JSONPointer("/lue/value/show"), false)) {
-        switch(configuration.value<TimeDomainItemType>()) {
-            case TimeDomainItemType::box: {
-                auto const& value = time_domain.value<TimeBox>();
+    if(metadata.boolean(utility::JSONPointer("/lue/value/show"), false)) {
+        switch(configuration.value<data_model::TimeDomainItemType>()) {
+            case data_model::TimeDomainItemType::box: {
+                auto const& value = time_domain.value<data_model::TimeBox>();
                 to_dot(value, stream, metadata);
                 link_nodes(time_domain, value, stream, metadata);
                 break;
             }
-            case TimeDomainItemType::cell: {
-                auto const& value = time_domain.value<TimeCell>();
+            case data_model::TimeDomainItemType::cell: {
+                auto const& value = time_domain.value<data_model::TimeCell>();
                 to_dot(value, stream, metadata);
                 link_nodes(time_domain, value, stream, metadata);
                 break;
             }
-            case TimeDomainItemType::point: {
-                auto const& value = time_domain.value<TimePoint>();
+            case data_model::TimeDomainItemType::point: {
+                auto const& value = time_domain.value<data_model::TimePoint>();
                 to_dot(value, stream, metadata);
                 link_nodes(time_domain, value, stream, metadata);
                 break;
@@ -638,20 +642,20 @@ void to_dot(
 
 
 void to_dot(
-    SpaceDomain& space_domain,
+    data_model::SpaceDomain& space_domain,
     std::ostream& stream,
-    Metadata const& metadata)
+    utility::Metadata const& metadata)
 {
     auto const configuration = space_domain.configuration();
-    auto const mobility = configuration.value<Mobility>();
-    auto const item_type = configuration.value<SpaceDomainItemType>();
+    auto const mobility = configuration.value<data_model::Mobility>();
+    auto const item_type = configuration.value<data_model::SpaceDomainItemType>();
 
     std::string const label = metadata.boolean(
-            JSONPointer("/lue/space_domain/show_details"), false)
-        ? to_dot(Table{
-                Record{space_domain.id().name(), ""},
-                Record{"mobility", aspect_to_string(mobility)},
-                Record{"item_type", aspect_to_string(item_type)},
+            utility::JSONPointer("/lue/space_domain/show_details"), false)
+        ? utility::to_dot(utility::Table{
+                utility::Record{space_domain.id().name(), ""},
+                utility::Record{"mobility", data_model::aspect_to_string(mobility)},
+                utility::Record{"item_type", data_model::aspect_to_string(item_type)},
             })
         : space_domain.id().name()
         ;
@@ -663,25 +667,25 @@ void to_dot(
         fillcolor="{}"
     ];
 )",
-        dot_name(space_domain),
+        utility::dot_name(space_domain),
         label,
         shape(space_domain, metadata),
         metadata.string(
-            JSONPointer("/lue/space_domain/fillcolor"),
-            fillcolor(space_domain)));
+            utility::JSONPointer("/lue/space_domain/fillcolor"),
+            utility::fillcolor(space_domain)));
 
-    if(metadata.boolean(JSONPointer("/lue/value/show"), false)) {
+    if(metadata.boolean(utility::JSONPointer("/lue/value/show"), false)) {
         switch(mobility) {
-            case Mobility::mobile: {
+            case data_model::Mobility::mobile: {
                 switch(item_type) {
-                    case SpaceDomainItemType::box: {
-                        auto const& value = space_domain.value<MobileSpaceBox>();
+                    case data_model::SpaceDomainItemType::box: {
+                        auto const& value = space_domain.value<data_model::MobileSpaceBox>();
                         to_dot(value, stream, metadata);
                         link_nodes(space_domain, value, stream, metadata);
                         break;
                     }
-                    case SpaceDomainItemType::point: {
-                        auto const& value = space_domain.value<MobileSpacePoint>();
+                    case data_model::SpaceDomainItemType::point: {
+                        auto const& value = space_domain.value<data_model::MobileSpacePoint>();
                         to_dot(value, stream, metadata);
                         link_nodes(space_domain, value, stream, metadata);
                         break;
@@ -690,18 +694,18 @@ void to_dot(
 
                 break;
             }
-            case Mobility::stationary: {
+            case data_model::Mobility::stationary: {
                 switch(item_type) {
-                    case SpaceDomainItemType::box: {
+                    case data_model::SpaceDomainItemType::box: {
                         auto const& value =
-                            space_domain.value<StationarySpaceBox>();
+                            space_domain.value<data_model::StationarySpaceBox>();
                         to_dot(value, stream, metadata);
                         link_nodes(space_domain, value, stream, metadata);
                         break;
                     }
-                    case SpaceDomainItemType::point: {
+                    case data_model::SpaceDomainItemType::point: {
                         auto const& value =
-                            space_domain.value<StationarySpacePoint>();
+                            space_domain.value<data_model::StationarySpacePoint>();
                         to_dot(value, stream, metadata);
                         link_nodes(space_domain, value, stream, metadata);
                         break;
@@ -716,9 +720,9 @@ void to_dot(
 
 
 void to_dot(
-    ObjectTracker const& object_tracker,
+    data_model::ObjectTracker const& object_tracker,
     std::ostream& stream,
-    Metadata const& metadata)
+    utility::Metadata const& metadata)
 {
     stream << fmt::format(R"(
     {} [
@@ -727,14 +731,14 @@ void to_dot(
         fillcolor="{}"
     ];
 )",
-        dot_name(object_tracker),
+        utility::dot_name(object_tracker),
         object_tracker.id().name(),
         shape(object_tracker, metadata),
         metadata.string(
-            JSONPointer("/lue/object_tracker/fillcolor"),
-            fillcolor(object_tracker)));
+            utility::JSONPointer("/lue/object_tracker/fillcolor"),
+            utility::fillcolor(object_tracker)));
 
-    if(metadata.boolean(JSONPointer("/lue/value/show"), false)) {
+    if(metadata.boolean(utility::JSONPointer("/lue/value/show"), false)) {
         {
             auto const& active_set_index = object_tracker.active_set_index();
             to_dot(active_set_index, stream, metadata);
@@ -761,9 +765,9 @@ void to_dot(
     @brief      Translate the structure of a property-set to a DOT graph
 */
 void to_dot(
-    PropertySet& property_set,
+    data_model::PropertySet& property_set,
     std::ostream& stream,
-    Metadata const& metadata)
+    utility::Metadata const& metadata)
 {
     stream << fmt::format(R"(
     {} [
@@ -772,14 +776,14 @@ void to_dot(
         fillcolor="{}"
     ];
 )",
-        dot_name(property_set),
+        utility::dot_name(property_set),
         property_set.id().name(),
         shape(property_set, metadata),
         metadata.string(
-            JSONPointer("/lue/property_set/fillcolor"),
-            fillcolor(property_set)));
+            utility::JSONPointer("/lue/property_set/fillcolor"),
+            utility::fillcolor(property_set)));
 
-    if(metadata.boolean(JSONPointer("/lue/object_tracker/show"), false)) {
+    if(metadata.boolean(utility::JSONPointer("/lue/object_tracker/show"), false)) {
         auto const& object_tracker = property_set.object_tracker();
 
         if(property_set.owns_object_tracker()) {
@@ -819,37 +823,37 @@ void to_dot(
     auto& properties = property_set.properties();
 
     for(auto& property:
-            properties.collection<same_shape::Properties>()) {
+            properties.collection<data_model::same_shape::Properties>()) {
         to_dot(property.second, stream, metadata);
         link_nodes(property_set, property.second, stream, metadata, 0);
     }
 
     for(auto& property: properties.collection<
-            different_shape::Properties>()) {
+            data_model::different_shape::Properties>()) {
         to_dot(property.second, stream, metadata);
         link_nodes(property_set, property.second, stream, metadata, 0);
     }
 
     for(auto& property: properties.collection<
-            same_shape::constant_shape::Properties>()) {
+            data_model::same_shape::constant_shape::Properties>()) {
         to_dot(property.second, stream, metadata);
         link_nodes(property_set, property.second, stream, metadata, 0);
     }
 
     for(auto& property: properties.collection<
-            different_shape::constant_shape::Properties>()) {
+            data_model::different_shape::constant_shape::Properties>()) {
         to_dot(property.second, stream, metadata);
         link_nodes(property_set, property.second, stream, metadata, 0);
     }
 
     for(auto& property: properties.collection<
-            same_shape::variable_shape::Properties>()) {
+            data_model::same_shape::variable_shape::Properties>()) {
         to_dot(property.second, stream, metadata);
         link_nodes(property_set, property.second, stream, metadata, 0);
     }
 
     for(auto& property: properties.collection<
-            different_shape::variable_shape::Properties>()) {
+            data_model::different_shape::variable_shape::Properties>()) {
         to_dot(property.second, stream, metadata);
         link_nodes(property_set, property.second, stream, metadata, 0);
     }
@@ -860,9 +864,9 @@ void to_dot(
     @brief      Translate the structure of a phenomenon to a DOT graph
 */
 void to_dot(
-    Phenomenon& phenomenon,
+    data_model::Phenomenon& phenomenon,
     std::ostream& stream,
-    Metadata const& metadata)
+    utility::Metadata const& metadata)
 {
     stream << fmt::format(R"(
     {} [
@@ -871,15 +875,15 @@ void to_dot(
         fillcolor="{}"
     ];
 )",
-        dot_name(phenomenon),
+        utility::dot_name(phenomenon),
         phenomenon.id().name(),
         shape(phenomenon, metadata),
         metadata.string(
-            JSONPointer("/lue/phenomenon/fillcolor"), fillcolor(phenomenon))
+            utility::JSONPointer("/lue/phenomenon/fillcolor"), utility::fillcolor(phenomenon))
     );
 
-    if(metadata.boolean(JSONPointer("/lue/object_tracker/show"), false)) {
-        if(metadata.boolean(JSONPointer("/lue/value/show"), false)) {
+    if(metadata.boolean(utility::JSONPointer("/lue/object_tracker/show"), false)) {
+        if(metadata.boolean(utility::JSONPointer("/lue/value/show"), false)) {
             auto const& object_id = phenomenon.object_id();
             to_dot(object_id, stream, metadata);
             link_nodes(phenomenon, object_id, stream, metadata);
@@ -909,11 +913,11 @@ void to_dot(
     @brief      Translate the structure of a universe to a DOT graph
 */
 void to_dot(
-    Universe& universe,
+    data_model::Universe& universe,
     std::ostream& stream,
-    Metadata const& metadata)
+    utility::Metadata const& metadata)
 {
-    Subgraph graph(stream, universe.id(), universe.id().name());
+    utility::Subgraph graph(stream, universe.id(), universe.id().name());
 
     auto& phenomena = universe.phenomena();
 
@@ -922,7 +926,7 @@ void to_dot(
     }
 
     if(phenomena.empty()) {
-        mark_as_empty(universe, stream);
+        utility::mark_as_empty(universe, stream);
     }
 }
 
@@ -934,11 +938,11 @@ void to_dot(
     datasets.
 */
 void to_dot(
-    Dataset& dataset,
+    data_model::Dataset& dataset,
     std::ostream& stream,
-    Metadata const& metadata)
+    utility::Metadata const& metadata)
 {
-    Subgraph graph(stream, dataset.id(), dataset.pathname());
+    utility::Subgraph graph(stream, dataset.id(), dataset.pathname());
 
     auto& universes = dataset.universes();
 
@@ -956,7 +960,7 @@ void to_dot(
     if(universes.empty() && phenomena.empty()) {
         // In this case, the subgraph won't be visualized. Just dump
         // something to signal the user that the dataset is empty.
-        mark_as_empty(dataset, stream);
+        utility::mark_as_empty(dataset, stream);
     }
 }
 
@@ -966,9 +970,9 @@ void to_dot(
                 DOT graph
 */
 void to_dot(
-    DatasetRefs const& datasets,
+    utility::DatasetRefs const& datasets,
     std::ostream& stream,
-    Metadata const& metadata)
+    utility::Metadata const& metadata)
 {
     if(datasets.empty()) {
         return;
@@ -1002,10 +1006,10 @@ void to_dot(
 
 )",
         metadata.string(
-            JSONPointer("/dot/node/fontcolor"), "black")
+            utility::JSONPointer("/dot/node/fontcolor"), "black")
     );
 
-    for(auto& dataset: datasets) {
+    for(auto const& dataset: datasets) {
         to_dot(dataset, stream, metadata);
     }
 

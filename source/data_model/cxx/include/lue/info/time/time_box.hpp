@@ -23,7 +23,7 @@ public:
 
     explicit       TimeBox             (LocationInTime&& value);
 
-                   ~TimeBox            ()=default;
+                   ~TimeBox            () override =default;
 
     TimeBox&       operator=           (TimeBox const&)=delete;
 

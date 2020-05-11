@@ -15,7 +15,15 @@ public:
                                         Dataspace const& dataspace,
                                         void* buffer);
 
+                   VLenMemory          (VLenMemory const&)=delete;
+
+                   VLenMemory          (VLenMemory&&)=delete;
+
                    ~VLenMemory         ();
+
+    VLenMemory&    operator=           (VLenMemory const&)=delete;
+
+    VLenMemory&    operator=           (VLenMemory&&)=delete;
 
 private:
 

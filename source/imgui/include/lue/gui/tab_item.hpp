@@ -18,7 +18,7 @@ public:
 
                    TabItem             (TabItem&&)=default;
 
-                   ~TabItem            ();
+                   ~TabItem            () override;
 
     TabItem&       operator=           (TabItem const&)=default;
 

@@ -17,7 +17,7 @@ class Shape: public std::vector<hsize_t> {
 
 
 Shape::value_type  size_of_shape       (Shape const& shape,
-                                        std::size_t const size_of_element=1);
+                                        std::size_t size_of_element=1);
 
 }  // namespace hdf5
 }  // namespace lue

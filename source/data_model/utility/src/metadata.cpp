@@ -315,7 +315,7 @@ void from_json(
     // unit = string_to_unit(object.get<std::string>());
 }
 
-}  // namespace data_model
 }  // namespace time
+}  // namespace data_model
 
 }  // namespace lue

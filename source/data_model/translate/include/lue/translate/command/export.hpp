@@ -19,15 +19,15 @@ public:
     explicit       Export              (std::vector<std::string> const&
                                             arguments);
 
-                   Export              (Export const& other)=default;
+                   Export              (Export const& other)=delete;
 
-                   Export              (Export&& other)=default;
+                   Export              (Export&& other)=delete;
 
-                   ~Export             ()=default;
+                   ~Export             () override =default;
 
-   Export&         operator=           (Export const& other)=default;
+   Export&         operator=           (Export const& other)=delete;
 
-   Export&         operator=           (Export&& other)=default;
+   Export&         operator=           (Export&& other)=delete;
 
 protected:
 

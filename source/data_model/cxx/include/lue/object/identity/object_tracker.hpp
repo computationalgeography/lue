@@ -32,7 +32,7 @@ public:
 
                    ObjectTracker       (ObjectTracker&&)=default;
 
-                   ~ObjectTracker      ()=default;
+                   ~ObjectTracker      () override =default;
 
     ObjectTracker& operator=           (ObjectTracker const&)=delete;
 

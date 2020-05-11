@@ -4,10 +4,6 @@
 
 
 namespace lue {
-
-using namespace data_model;
-
-
 namespace utility {
 namespace {
 
@@ -36,7 +32,7 @@ struct OGRFeatureDeleter
 {
     void operator()(::OGRFeature* feature) const
     {
-        if(feature) {
+        if(feature != nullptr) {
             ::OGRFeature::DestroyFeature(feature);
         }
     }
@@ -51,10 +47,10 @@ void add_point_layer(
     std::string const& layer_name,
     std::vector<double> const& space_points)
 {
-    auto layer = gdal_dataset.CreateLayer(
+    auto* layer = gdal_dataset.CreateLayer(
         layer_name.c_str(), nullptr, wkbPoint, nullptr);
 
-    if(!layer) {
+    if(layer == nullptr) {
         throw std::runtime_error("Cannot create layer " + layer_name);
     }
 
@@ -88,10 +84,10 @@ void add_box_layer(
     std::string const& layer_name,
     std::vector<double> const& space_boxes)
 {
-    auto layer = gdal_dataset.CreateLayer(
+    auto* layer = gdal_dataset.CreateLayer(
         layer_name.c_str(), nullptr, wkbPolygon, nullptr);
 
-    if(!layer) {
+    if(layer == nullptr) {
         throw std::runtime_error("Cannot create layer " + layer_name);
     }
 
@@ -131,7 +127,7 @@ void add_box_layer(
 void write_shapefile(
     std::string const& shapefile_name,
     std::string const& property_set_name,
-    StationarySpaceBox const& lue_space_box)
+    data_model::StationarySpaceBox const& lue_space_box)
 {
     // Write a Shapefile containing space boxes
 
@@ -146,7 +142,7 @@ void write_shapefile(
 
     lue_space_box.read(space_boxes.data());
 
-    std::string const layer_name = property_set_name;
+    std::string const& layer_name = property_set_name;
     add_box_layer(*gdal_dataset, layer_name, space_boxes);
 }
 
@@ -154,9 +150,9 @@ void write_shapefile(
 void write_shapefiles(
     std::string shapefile_name,
     std::string const& property_set_name,
-    ObjectTracker const& lue_object_tracker,
-    TimeCell const& lue_time_cell,
-    MobileSpacePoint const& lue_space_point)
+    data_model::ObjectTracker const& lue_object_tracker,
+    data_model::TimeCell const& lue_time_cell,
+    data_model::MobileSpacePoint const& lue_space_point)
 {
     // For each time cell, write a Shapefile containing space points. Name
     // these Shapefiles after the property-set name and time step.
@@ -182,20 +178,20 @@ void write_shapefiles(
     auto gdal_dataset = create_gdal_dataset("ESRI Shapefile", shapefile_name);
 
 
-    TimeCell::Count const& lue_count = lue_time_cell.count();
+    data_model::TimeCell::Count const& lue_count = lue_time_cell.count();
     assert(lue_count.nr_arrays() == 1);
 
-    Count nr_time_cells;
+    data_model::Count nr_time_cells{};
     lue_count.read(0, &nr_time_cells);
 
-    ActiveSetIndex const& lue_active_set_idx =
+    data_model::ActiveSetIndex const& lue_active_set_idx =
         lue_object_tracker.active_set_index();
-    ActiveObjectID const& lue_active_object_id =
+    data_model::ActiveObjectID const& lue_active_object_id =
         lue_object_tracker.active_object_id();
 
     assert(lue_active_set_idx.nr_indices() == nr_time_cells);
 
-    std::vector<Index> set_idxs(lue_active_set_idx.nr_indices() + 1);
+    std::vector<data_model::Index> set_idxs(lue_active_set_idx.nr_indices() + 1);
     lue_active_set_idx.read(set_idxs.data());
     set_idxs[lue_active_set_idx.nr_indices()] = lue_active_object_id.nr_ids();
 
@@ -234,13 +230,13 @@ void write_shapefiles(
     std::vector<double> space_points;
     space_points.reserve(2 * max_size_active_set);
 
-    Index current_set_idx = 0;
-    Index next_set_idx;
+    data_model::Index current_set_idx = 0;
+    data_model::Index next_set_idx{};
 
 
     std::string layer_name;
 
-    for(Count c = 0; c < nr_time_cells; ++c) {
+    for(data_model::Count c = 0; c < nr_time_cells; ++c) {
 
         // Figure out which space points are part of the active set at
         // time cell c
@@ -251,7 +247,8 @@ void write_shapefiles(
 
         space_points.resize(2 * nr_objects);
         lue_space_point.read(
-            IndexRange(current_set_idx, next_set_idx), space_points.data());
+            data_model::IndexRange(
+                current_set_idx, next_set_idx), space_points.data());
 
         layer_name = fmt::format("{}-{}", property_set_name, c + 1);
         add_point_layer(*gdal_dataset, layer_name, space_points);
@@ -265,7 +262,7 @@ void write_shapefiles(
 
 
 void translate_lue_dataset_to_shapefile(
-    Dataset& dataset,
+    data_model::Dataset& dataset,
     std::string const& shapefile_name,
     Metadata const& metadata)
 {
@@ -331,8 +328,8 @@ void translate_lue_dataset_to_shapefile(
 
 
 
-    Phenomenon& phenomenon = dataset.phenomena()[phenomenon_name];
-    PropertySet& property_set = phenomenon.property_sets()[property_set_name];
+    data_model::Phenomenon& phenomenon = dataset.phenomena()[phenomenon_name];
+    data_model::PropertySet& property_set = phenomenon.property_sets()[property_set_name];
 
     if(!property_set.has_space_domain()) {
         throw std::runtime_error(fmt::format(
@@ -340,73 +337,73 @@ void translate_lue_dataset_to_shapefile(
                 property_set_name));
     }
 
-    SpaceDomain& space_domain = property_set.space_domain();
+    data_model::SpaceDomain& space_domain = property_set.space_domain();
     auto const& space_configuration = space_domain.configuration();
-    auto const mobility = space_configuration.value<Mobility>();
+    auto const mobility = space_configuration.value<data_model::Mobility>();
     auto const space_domain_item_type =
-        space_configuration.value<SpaceDomainItemType>();
+        space_configuration.value<data_model::SpaceDomainItemType>();
 
     switch(mobility) {
 
-        case Mobility::stationary: {
+        case data_model::Mobility::stationary: {
 
+            // NOLINTNEXTLINE(hicpp-multiway-paths-covered)
             switch(space_domain_item_type) {
 
-                case SpaceDomainItemType::box: {
+                case data_model::SpaceDomainItemType::box: {
 
 
 
-                    if(!property_set.has_time_domain()) {
-
+                    if(!property_set.has_time_domain())
+                    {
                         throw std::runtime_error(fmt::format(
                             "Translating stationary space domain with "
                             "static properties is not supported yet"));
+                    }
 
+                    // GDAL coordinates are 64-bit floats
+                    auto stationary_space_box =
+                        space_domain.value<data_model::StationarySpaceBox>(
+                            hdf5::native_float64);
+
+                    // TODO(KDJ)
+                    bool const write_properties = false;
+
+                    if(!write_properties) {
+                        write_shapefile(
+                            shapefile_name, property_set_name,
+                            stationary_space_box);
                     }
                     else {
 
-                        // GDAL coordinates are 64-bit floats
-                        auto stationary_space_box =
-                            space_domain.value<StationarySpaceBox>(
-                                hdf5::native_float64);
+                        data_model::TimeDomain& time_domain =
+                            property_set.time_domain();
+                        auto const& time_configuration =
+                            time_domain.configuration();
+                        auto const time_domain_item_type =
+                            time_configuration.value<data_model::TimeDomainItemType>();
 
-                        // TODO
-                        bool const write_properties = false;
+                        // NOLINTNEXTLINE(hicpp-multiway-paths-covered)
+                        switch(time_domain_item_type) {
 
-                        if(!write_properties) {
-                            write_shapefile(
-                                shapefile_name, property_set_name,
-                                stationary_space_box);
-                        }
-                        else {
+                            // case TimeDomainItemType::cell: {
 
-                            TimeDomain& time_domain = property_set.time_domain();
-                            auto const& time_configuration =
-                                time_domain.configuration();
-                            auto const time_domain_item_type =
-                                time_configuration.value<TimeDomainItemType>();
+                            //     auto const time_cell =
+                            //         time_domain.value<TimeCell>();
 
-                            switch(time_domain_item_type) {
+                            //     // TODO(KDJ) Add properties
+                            //     write_shapefiles(
+                            //         shapefile_name, property_set_name,
+                            //         property_set.object_tracker(),
+                            //         time_cell, stationary_space_box);
 
-                                // case TimeDomainItemType::cell: {
-
-                                //     auto const time_cell =
-                                //         time_domain.value<TimeCell>();
-
-                                //     // TODO Add properties
-                                //     write_shapefiles(
-                                //         shapefile_name, property_set_name,
-                                //         property_set.object_tracker(),
-                                //         time_cell, stationary_space_box);
-
-                                //     break;
-                                // }
-                                default: {
-                                    throw std::runtime_error(fmt::format(
-                                        "Translating time domain with item type {} "
-                                        "is not supported yet",
-                                            aspect_to_string(time_domain_item_type)));
-                                }
+                            //     break;
+                            // }
+                            default: {
+                                throw std::runtime_error(fmt::format(
+                                    "Translating time domain with item type {} "
+                                    "is not supported yet",
+                                        aspect_to_string(time_domain_item_type)));
                             }
                         }
                     }
@@ -432,7 +429,7 @@ void translate_lue_dataset_to_shapefile(
                     //         auto const time_cell =
                     //             time_domain.value<TimeCell>();
 
-                    //         // TODO Add properties
+                    //         // TODO(KDJ) Add properties
                     //         write_shapefiles(
                     //             shapefile_name, property_set_name,
                     //             property_set.object_tracker(),
@@ -464,33 +461,35 @@ void translate_lue_dataset_to_shapefile(
             break;
 
         }
-        case Mobility::mobile: {
+        case data_model::Mobility::mobile: {
 
+            // NOLINTNEXTLINE(hicpp-multiway-paths-covered)
             switch(space_domain_item_type) {
 
-                case SpaceDomainItemType::point: {
+                case data_model::SpaceDomainItemType::point: {
 
                     assert(property_set.has_time_domain());
 
-                    TimeDomain& time_domain = property_set.time_domain();
+                    data_model::TimeDomain& time_domain = property_set.time_domain();
                     auto const& time_configuration =
                         time_domain.configuration();
                     auto const time_domain_item_type =
-                        time_configuration.value<TimeDomainItemType>();
+                        time_configuration.value<data_model::TimeDomainItemType>();
 
                     // GDAL coordinates are 64-bit floats
                     auto mobile_space_point =
-                        space_domain.value<MobileSpacePoint>(
+                        space_domain.value<data_model::MobileSpacePoint>(
                             hdf5::native_float64);
 
+                    // NOLINTNEXTLINE(hicpp-multiway-paths-covered)
                     switch(time_domain_item_type) {
 
-                        case TimeDomainItemType::cell: {
+                        case data_model::TimeDomainItemType::cell: {
 
                             auto const time_cell =
-                                time_domain.value<TimeCell>();
+                                time_domain.value<data_model::TimeCell>();
 
-                            // TODO Add properties
+                            // TODO(KDJ) Add properties
                             write_shapefiles(
                                 shapefile_name, property_set_name,
                                 property_set.object_tracker(),

@@ -33,7 +33,7 @@ public:
 
                    ActiveSetIndex      (ActiveSetIndex&&)=default;
 
-                   ~ActiveSetIndex     ()=default;
+                   ~ActiveSetIndex     () override =default;
 
     ActiveSetIndex& operator=          (ActiveSetIndex const&)=delete;
 

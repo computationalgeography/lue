@@ -139,7 +139,8 @@ inline PropertyGroup property(
 
                             if(property_set_.properties().contains(property_name)) {
 
-                                assert(++it == path.end());
+                                // NOLINTNEXTLINE(bugprone-assert-side-effect)
+                                assert(++it == path.end());  // Last use of it
 
                                 parent =
                                     property_set_.properties().collection_group(

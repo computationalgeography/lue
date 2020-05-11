@@ -31,7 +31,7 @@ add_unit_tests(
         ${PYTHON_INCLUDE_DIRS}
     # OBJECT_LIBRARIES
     LINK_LIBRARIES
-        pybind11::pybind11
+        CONAN_PKG::pybind11
         ${PYTHON_LIBRARIES}
     DEPENDENCIES
         lue_test_modules
@@ -41,4 +41,9 @@ add_unit_tests(
     ENVIRONMENT
         PYTHONPATH=$<TARGET_FILE_DIR:lue::py>
         ${environment}
+)
+
+set_target_properties(lue_py_python_test
+    PROPERTIES
+        CXX_CLANG_TIDY ""  # TODO(KDJ) Get it to skip pybind11.h
 )

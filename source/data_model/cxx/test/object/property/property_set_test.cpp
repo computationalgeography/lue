@@ -37,9 +37,15 @@ public:
     {
     }
 
-    ~Fixture()
-    {
-    }
+    Fixture(Fixture const&)=delete;
+
+    Fixture(Fixture&&)=delete;
+
+    ~Fixture() override =default;
+
+    Fixture& operator=(Fixture const&)=delete;
+
+    Fixture& operator=(Fixture&&)=delete;
 
     auto const& property_set_name() const
     {
@@ -86,7 +92,7 @@ BOOST_FIXTURE_TEST_CASE(create, Fixture)
     BOOST_CHECK_EQUAL(property_set.id().name(), property_set_name());
     BOOST_CHECK(time_domain.configuration() == time_configuration());
     BOOST_CHECK(space_domain.configuration() == space_configuration());
-    // TODO Grab space domain and check it
+    // TODO(KDJ) Grab space domain and check it
     // ...
 
     BOOST_CHECK(properties.empty());

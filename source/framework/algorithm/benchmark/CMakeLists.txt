@@ -8,6 +8,7 @@ add_library(lue::algorithm_benchmark ALIAS lue_algorithm_benchmark)
 target_link_libraries(lue_algorithm_benchmark
     PUBLIC
         lue::framework_core
+        CONAN_PKG::nlohmann_json
 )
 
 lue_add_benchmark(CATEGORY algorithm NAME copy)

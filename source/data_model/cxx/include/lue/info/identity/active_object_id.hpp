@@ -41,7 +41,7 @@ public:
 
                    ActiveObjectID      (ActiveObjectID&&)=default;
 
-                   ~ActiveObjectID     ()=default;
+                   ~ActiveObjectID     () override =default;
 
     ActiveObjectID& operator=          (ActiveObjectID const&)=delete;
 

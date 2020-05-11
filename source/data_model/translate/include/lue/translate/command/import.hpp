@@ -19,15 +19,15 @@ public:
     explicit       Import              (std::vector<std::string> const&
                                             arguments);
 
-                   Import              (Import const& other)=default;
+                   Import              (Import const& other)=delete;
 
-                   Import              (Import&& other)=default;
+                   Import              (Import&& other)=delete;
 
-                   ~Import             ()=default;
+                   ~Import             () override =default;
 
-   Import&         operator=           (Import const& other)=default;
+   Import&         operator=           (Import const& other)=delete;
 
-   Import&         operator=           (Import&& other)=default;
+   Import&         operator=           (Import&& other)=delete;
 
 protected:
 

@@ -82,7 +82,7 @@ bool PropertySet::owns_object_tracker() const
 */
 bool PropertySet::has_time_domain() const
 {
-    return _time_domain ? true : false;
+    return bool{_time_domain};
 }
 
 
@@ -106,7 +106,7 @@ bool PropertySet::owns_time_domain() const
 */
 bool PropertySet::has_space_domain() const
 {
-    return _space_domain ? true : false;
+    return bool{_space_domain};
 }
 
 

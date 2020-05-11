@@ -87,8 +87,8 @@ std::tuple<size_t, size_t> GDALBlock::nr_valid_cells(
     size_t const block_index_x,
     size_t const block_index_y) const
 {
-    size_t nr_valid_cells_x;
-    size_t nr_valid_cells_y;
+    size_t nr_valid_cells_x{};
+    size_t nr_valid_cells_y{};
 
     // Compute the portion of the block that is valid
     // for partial edge blocks.
