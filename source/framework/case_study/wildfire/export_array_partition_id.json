@@ -1,0 +1,19 @@
+{
+    "burn_wilderness": {
+        "phenomena": [
+            {
+                "name": "area",
+                "property_sets": [
+                    {
+                        "name": "constant",
+                        "properties": [
+                            {
+                                "name": "array_partition_id"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}
