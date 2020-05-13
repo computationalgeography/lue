@@ -459,7 +459,6 @@ if(DEVBASE_PYBIND11_REQUIRED)
         ${LUE_CONAN_REQUIRES}
         pybind11/2.4.3
     )
-    unset(DEVBASE_PYBIND11_REQUIRED)
 endif()
 
 include(Conan)
