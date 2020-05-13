@@ -467,6 +467,10 @@ GDALDataType memory_datatype_to_gdal_datatype(
     else if(datatype == hdf5::native_uint32) {
         result = GDT_UInt32;
     }
+    else if(datatype == hdf5::native_uint64) {
+        std::cout << "Warning: cast from uint64 (LUE) to uint32 (GDAL)\n";
+        result = GDT_UInt32;
+    }
     else if(datatype == hdf5::native_int32) {
         result = GDT_Int32;
     }
@@ -478,6 +482,50 @@ GDALDataType memory_datatype_to_gdal_datatype(
     }
     else {
         throw std::runtime_error("Cannot map LUE datatype to GDAL datatype");
+    }
+
+    return result;
+}
+
+
+hdf5::Datatype gdal_datatype_to_memory_datatype(
+    GDALDataType const& datatype)
+{
+    hdf5::Datatype result{};
+
+    switch(datatype) {
+        case GDT_Byte: {
+            result = hdf5::native_datatype<std::uint8_t>();
+            break;
+        }
+        case GDT_UInt16: {
+            result = hdf5::native_datatype<std::uint16_t>();
+            break;
+        }
+        case GDT_Int16: {
+            result = hdf5::native_datatype<std::int16_t>();
+            break;
+        }
+        case GDT_UInt32: {
+            result = hdf5::native_datatype<std::uint32_t>();
+            break;
+        }
+        case GDT_Int32: {
+            result = hdf5::native_datatype<std::int32_t>();
+            break;
+        }
+        case GDT_Float32: {
+            result = hdf5::native_datatype<float>();
+            break;
+        }
+        case GDT_Float64: {
+            result = hdf5::native_datatype<double>();
+            break;
+        }
+        default: {
+            throw std::runtime_error(
+                "Cannot map GDAL datatype to LUE datatype");
+        }
     }
 
     return result;
@@ -692,7 +740,9 @@ void write_raster_band(
     data_model::Index const time_step_idx,
     GDALRasterBand& raster_band)
 {
-    auto const& memory_datatype{value.memory_datatype()};
+    /// auto const& memory_datatype{value.memory_datatype()};
+    hdf5::Datatype const memory_datatype{
+        gdal_datatype_to_memory_datatype(raster_band.GetRasterDataType())};
 
     if(memory_datatype == hdf5::native_uint8) {
         write_raster_band<std::uint8_t>(
@@ -748,6 +798,7 @@ void write_raster_band(
     auto const blocks = natural_blocks(raster_band);
 
     std::vector<T> values(blocks.block_size());
+    hdf5::Datatype const memory_datatype{hdf5::native_datatype<T>()};
 
     // Copy blocks for array at specific index to raster band
     for(size_t block_y = 0; block_y < blocks.nr_blocks_y(); ++block_y) {
@@ -771,7 +822,7 @@ void write_raster_band(
 
             hdf5::Hyperslab const hyperslab{offset, count};
 
-            array.read(hyperslab, values.data());
+            array.read(memory_datatype, hyperslab, values.data());
             write_raster_band_block(
                 block_x, block_y, values.data(), raster_band);
         }
@@ -783,7 +834,9 @@ void write_raster_band(
     data_model::Array const& array,
     GDALRasterBand& raster_band)
 {
-    auto const& memory_datatype{array.memory_datatype()};
+    /// auto const& memory_datatype{array.memory_datatype()};
+    hdf5::Datatype const memory_datatype{
+        gdal_datatype_to_memory_datatype(raster_band.GetRasterDataType())};
 
     if(memory_datatype == hdf5::native_uint8) {
         write_raster_band<std::uint8_t>(array, raster_band);
