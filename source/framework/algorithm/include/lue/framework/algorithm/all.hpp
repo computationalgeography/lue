@@ -69,4 +69,14 @@ hpx::future<Element> all(
     return unary_aggregate_operation(array, detail::All<Element>{});
 }
 
+
+template<
+    typename Element,
+    Rank rank>
+hpx::future<Element> all(
+    ArrayPartition<Element, rank> const& partition)
+{
+    return unary_aggregate_operation(partition, detail::All<Element>{});
+}
+
 }  // namespace lue

@@ -279,6 +279,41 @@ using BinaryLocalOperationPartitionAction =
 }  // namespace detail
 
 
+// local_operation(partition, scalar)
+template<
+    typename InputElement,
+    Rank rank,
+    typename Functor>
+ArrayPartition<OutputElementT<Functor>, rank> binary_local_operation(
+    ArrayPartition<InputElement, rank> const& input_partition,
+    hpx::shared_future<InputElement> const& input_scalar,
+    Functor const& functor)
+{
+    using InputPartition = ArrayPartition<InputElement, rank>;
+
+    using OutputPartition = ArrayPartition<OutputElementT<Functor>, rank>;
+
+    detail::BinaryLocalOperationPartitionAction<
+        InputPartition, InputElement, OutputPartition, Functor> action;
+
+    return hpx::dataflow(
+        hpx::launch::async,
+        hpx::util::unwrapping(
+
+                [action, functor, input_partition, input_scalar](
+                    hpx::id_type const locality_id)
+                {
+                    return action(
+                        locality_id, input_partition, input_scalar,
+                        functor);
+                }
+
+            ),
+        hpx::get_colocation_id(input_partition.get_id()));
+}
+
+
+// local_operation(array, array)
 template<
     typename InputElement,
     Rank rank,
@@ -332,6 +367,7 @@ PartitionedArray<OutputElementT<Functor>, rank> binary_local_operation(
 }
 
 
+// local_operation(array, scalar)
 template<
     typename InputElement,
     Rank rank,
@@ -378,6 +414,7 @@ PartitionedArray<OutputElementT<Functor>, rank> binary_local_operation(
 }
 
 
+// local_operation(scalar, array)
 template<
     typename InputElement,
     Rank rank,
