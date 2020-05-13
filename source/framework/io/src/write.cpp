@@ -192,7 +192,7 @@ template hpx::future<void> write<PartitionedArray<Element, 2>>(  \
 
 INSTANTIATE_WRITE(bool)
 INSTANTIATE_WRITE(uint32_t)
-// INSTANTIATE_WRITE(uint64_t)
+INSTANTIATE_WRITE(uint64_t)
 // INSTANTIATE_WRITE(int8_t)
 INSTANTIATE_WRITE(int32_t)
 INSTANTIATE_WRITE(int64_t)
