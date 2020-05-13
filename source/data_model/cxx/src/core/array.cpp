@@ -117,6 +117,15 @@ void Array::read(
 
 
 void Array::read(
+    hdf5::Datatype const& memory_datatype,
+    hdf5::Hyperslab const& hyperslab,
+    void* buffer) const
+{
+    hdf5::Dataset::read(memory_datatype, hyperslab, buffer);
+}
+
+
+void Array::read(
     hdf5::Dataspace const& memory_dataspace,
     void* buffer) const
 {
