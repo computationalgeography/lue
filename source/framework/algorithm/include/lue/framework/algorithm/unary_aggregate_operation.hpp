@@ -95,6 +95,36 @@ template<
     Rank rank,
     typename Functor>
 hpx::future<OutputElementT<Functor>> unary_aggregate_operation(
+    ArrayPartition<InputElement, rank> const& input_partition,
+    Functor const& functor)
+{
+    using InputPartition = ArrayPartition<InputElement, rank>;
+
+    using OutputElement = OutputElementT<Functor>;
+
+    detail::UnaryAggregateOperationPartitionAction<
+        InputPartition, OutputElement, Functor> action;
+
+    return hpx::dataflow(
+        hpx::launch::async,
+        hpx::util::unwrapping(
+
+                [action, functor, input_partition](
+                    hpx::id_type const locality_id)
+                {
+                    return action(locality_id, input_partition, functor);
+                }
+
+            ),
+        hpx::get_colocation_id(input_partition.get_id()));
+}
+
+
+template<
+    typename InputElement,
+    Rank rank,
+    typename Functor>
+hpx::future<OutputElementT<Functor>> unary_aggregate_operation(
     PartitionedArray<InputElement, rank> const& input_array,
     Functor const& functor)
 {

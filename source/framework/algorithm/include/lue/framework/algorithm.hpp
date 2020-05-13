@@ -15,6 +15,7 @@
 #include "lue/framework/algorithm/sqrt.hpp"
 
 #include "lue/framework/algorithm/array_like.hpp"
+#include "lue/framework/algorithm/array_partition_id.hpp"
 #include "lue/framework/algorithm/cast.hpp"
 #include "lue/framework/algorithm/convolve.hpp"
 #include "lue/framework/algorithm/copy.hpp"

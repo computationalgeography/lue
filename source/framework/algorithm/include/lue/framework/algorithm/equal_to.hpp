@@ -27,6 +27,7 @@ public:
 }  // namespace detail
 
 
+// array == array
 template<
     typename InputElement,
     Rank rank>
@@ -39,6 +40,7 @@ PartitionedArray<bool, rank> equal_to(
 }
 
 
+// array == scalar
 template<
     typename InputElement,
     Rank rank>
@@ -51,6 +53,7 @@ PartitionedArray<bool, rank> equal_to(
 }
 
 
+// scalar == array
 template<
     typename InputElement,
     Rank rank>
@@ -63,6 +66,7 @@ PartitionedArray<bool, rank> equal_to(
 }
 
 
+// array == scalar
 template<
     typename InputElement,
     Rank rank>
@@ -75,6 +79,7 @@ PartitionedArray<bool, rank> equal_to(
 }
 
 
+// scalar == array
 template<
     typename InputElement,
     Rank rank>
@@ -84,6 +89,32 @@ PartitionedArray<bool, rank> equal_to(
 {
     return equal_to(
         hpx::make_ready_future<InputElement>(scalar).share(), array);
+}
+
+
+// partition == scalar
+template<
+    typename InputElement,
+    Rank rank>
+ArrayPartition<bool, rank> equal_to(
+    ArrayPartition<InputElement, rank> const& array,
+    hpx::shared_future<InputElement> const& scalar)
+{
+    return binary_local_operation(
+        array, scalar, detail::EqualTo<InputElement>{});
+}
+
+
+// partition == scalar
+template<
+    typename InputElement,
+    Rank rank>
+ArrayPartition<bool, rank> equal_to(
+    ArrayPartition<InputElement, rank> const& array,
+    InputElement const& scalar)
+{
+    return equal_to(
+        array, hpx::make_ready_future<InputElement>(scalar).share());
 }
 
 

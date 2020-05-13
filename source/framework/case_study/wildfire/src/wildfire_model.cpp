@@ -1,5 +1,7 @@
 #include "wildfire_model.hpp"
+#include "lue/framework/algorithm/array_partition_id.hpp"
 #include "lue/framework/algorithm/less_than.hpp"
+#include "lue/framework/algorithm/locality_id.hpp"
 #include "lue/framework/algorithm/uniform.hpp"
 #include "lue/framework/io.hpp"
 
@@ -83,6 +85,16 @@ void WildfireModel::initialize()
 {
     WildfireModelBase::initialize();
 
+    PartitionedArray<std::uint32_t, 2> locality_id{lue::locality_id(_clone)};
+    PartitionedArray<std::uint64_t, 2> array_partition_id{
+        lue::array_partition_id(_clone)};
+
+    ConstantRasterView::Layer locality_id_layer{
+        _constant_raster_view.add_layer<std::uint32_t>(
+            "locality_id")};
+    ConstantRasterView::Layer array_partition_id_layer{
+        _constant_raster_view.add_layer<std::uint64_t>(
+            "array_partition_id")};
     ConstantRasterView::Layer ignite_probability_layer{
         _constant_raster_view.add_layer<ScalarElement>(
             "ignite_probability")};
@@ -90,6 +102,10 @@ void WildfireModel::initialize()
         _constant_raster_view.add_layer<ScalarElement>(
             "spot_ignite_probability")};
 
+    _written.push_back(
+        write(locality_id, locality_id_layer));
+    _written.push_back(
+        write(array_partition_id, array_partition_id_layer));
     _written.push_back(
         write(ignite_probability(), ignite_probability_layer));
     _written.push_back(

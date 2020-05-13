@@ -110,8 +110,18 @@ PartitionedArray<bool, rank> operator symbol(            \
     PartitionedArray<Element, rank> const& rhs)          \
 {                                                        \
     return name(lhs, rhs);                               \
+}                                                        \
+                                                         \
+                                                         \
+template<                                                \
+    typename Element,                                    \
+    Rank rank>                                           \
+ArrayPartition<bool, rank> operator symbol(              \
+    ArrayPartition<Element, rank> const& lhs,            \
+    Element const rhs)                                   \
+{                                                        \
+    return name(lhs, rhs);                               \
 }
-
 
 
 #define LUE_UNARY_LOGICAL_OPERATOR(symbol, name)         \

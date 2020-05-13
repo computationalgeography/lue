@@ -7,6 +7,7 @@ add_unit_tests(
         all_test
         any_test
         array_like_test
+        array_partition_id_test
         atan_test
         atan2_test
         cast_test
@@ -57,6 +58,7 @@ hpx_setup_target(lue_framework_algorithm_add_test)
 hpx_setup_target(lue_framework_algorithm_all_test)
 hpx_setup_target(lue_framework_algorithm_any_test)
 hpx_setup_target(lue_framework_algorithm_array_like_test)
+hpx_setup_target(lue_framework_algorithm_array_partition_id_test)
 hpx_setup_target(lue_framework_algorithm_atan_test)
 hpx_setup_target(lue_framework_algorithm_atan2_test)
 hpx_setup_target(lue_framework_algorithm_cast_test)

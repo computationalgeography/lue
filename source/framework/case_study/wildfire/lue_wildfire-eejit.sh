@@ -39,12 +39,18 @@ END_OF_SLURM_SCRIPT
 
 # # Postprocess results
 # raster_layer_names="
+#     array_partition_id
+#     locality_id
 #     ignite_probability
 #     spot_ignite_probability
 #     burning
 #     fire
 #     fire_age
 #     state
+# "
+# raster_layer_names="
+#     array_partition_id
+#     locality_id
 # "
 # 
 # 
@@ -53,6 +59,3 @@ END_OF_SLURM_SCRIPT
 #         --meta $source_prefix/export_${raster_layer_name}.json \
 #         burn_wilderness.lue ${raster_layer_name}.tif
 # done
-# 
-# 
-# aguila --timesteps [1,5000] $raster_layer_names
