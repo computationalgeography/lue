@@ -1,100 +1,64 @@
+set(names
+    add_test
+    all_test
+    any_test
+    array_like_test
+    array_partition_id_test
+    atan_test
+    atan2_test
+    cast_test
+    close_to_test
+    convolve_test
+    copy_test
+    cos_test
+    divide_test
+    equal_to_test
+    fill_test
+    focal_max_test
+    focal_mean_test
+    focal_sum_test
+    greater_than_equal_to_test
+    greater_than_test
+    iterate_per_element_test
+    kernel_test
+    less_than_equal_to_test
+    less_than_test
+    locality_id_test
+    logical_and_test
+    logical_inclusive_or_test
+    logical_not_test
+    mesh_grid_test
+    maximum_test
+    minimum_test
+    multiply_test
+    none_test
+    not_equal_to_test
+    pow_test
+    range_test
+    sin_test
+    slope_test
+    sqrt_test
+    subtract_test
+    sum_test
+    uniform_test
+    unique_id_test
+    unique_test
+    where_test
+    zonal_sum_test
+)
+
 add_unit_tests(
     SCOPE lue_framework_algorithm
     # Tests that use HPX must separate UTF arguments from HPX arguments
     UTF_ARGUMENTS_SEPARATOR "--"
     NAMES
-        add_test
-        all_test
-        any_test
-        array_like_test
-        array_partition_id_test
-        atan_test
-        atan2_test
-        cast_test
-        close_to_test
-        convolve_test
-        copy_test
-        cos_test
-        divide_test
-        equal_to_test
-        fill_test
-        focal_max_test
-        focal_mean_test
-        focal_sum_test
-        greater_than_equal_to_test
-        greater_than_test
-        iterate_per_element_test
-        kernel_test
-        less_than_equal_to_test
-        less_than_test
-        locality_id_test
-        logical_and_test
-        logical_inclusive_or_test
-        logical_not_test
-        mesh_grid_test
-        maximum_test
-        minimum_test
-        multiply_test
-        none_test
-        not_equal_to_test
-        pow_test
-        range_test
-        sin_test
-        slope_test
-        sqrt_test
-        subtract_test
-        sum_test
-        uniform_test
-        unique_id_test
-        unique_test
-        where_test
+        ${names}
     LINK_LIBRARIES
         lue::framework_algorithm
         lue::framework_test
 )
 
-# Targets that depend on HPX
-hpx_setup_target(lue_framework_algorithm_add_test)
-hpx_setup_target(lue_framework_algorithm_all_test)
-hpx_setup_target(lue_framework_algorithm_any_test)
-hpx_setup_target(lue_framework_algorithm_array_like_test)
-hpx_setup_target(lue_framework_algorithm_array_partition_id_test)
-hpx_setup_target(lue_framework_algorithm_atan_test)
-hpx_setup_target(lue_framework_algorithm_atan2_test)
-hpx_setup_target(lue_framework_algorithm_cast_test)
-hpx_setup_target(lue_framework_algorithm_close_to_test)
-hpx_setup_target(lue_framework_algorithm_convolve_test)
-hpx_setup_target(lue_framework_algorithm_copy_test)
-hpx_setup_target(lue_framework_algorithm_cos_test)
-hpx_setup_target(lue_framework_algorithm_divide_test)
-hpx_setup_target(lue_framework_algorithm_equal_to_test)
-hpx_setup_target(lue_framework_algorithm_fill_test)
-hpx_setup_target(lue_framework_algorithm_focal_max_test)
-hpx_setup_target(lue_framework_algorithm_focal_mean_test)
-hpx_setup_target(lue_framework_algorithm_focal_sum_test)
-hpx_setup_target(lue_framework_algorithm_greater_than_equal_to_test)
-hpx_setup_target(lue_framework_algorithm_greater_than_test)
-hpx_setup_target(lue_framework_algorithm_iterate_per_element_test)
-hpx_setup_target(lue_framework_algorithm_less_than_equal_to_test)
-hpx_setup_target(lue_framework_algorithm_less_than_test)
-hpx_setup_target(lue_framework_algorithm_locality_id_test)
-hpx_setup_target(lue_framework_algorithm_logical_and_test)
-hpx_setup_target(lue_framework_algorithm_logical_inclusive_or_test)
-hpx_setup_target(lue_framework_algorithm_logical_not_test)
-hpx_setup_target(lue_framework_algorithm_mesh_grid_test)
-hpx_setup_target(lue_framework_algorithm_maximum_test)
-hpx_setup_target(lue_framework_algorithm_minimum_test)
-hpx_setup_target(lue_framework_algorithm_multiply_test)
-hpx_setup_target(lue_framework_algorithm_none_test)
-hpx_setup_target(lue_framework_algorithm_not_equal_to_test)
-hpx_setup_target(lue_framework_algorithm_pow_test)
-hpx_setup_target(lue_framework_algorithm_range_test)
-hpx_setup_target(lue_framework_algorithm_sin_test)
-hpx_setup_target(lue_framework_algorithm_slope_test)
-hpx_setup_target(lue_framework_algorithm_sqrt_test)
-hpx_setup_target(lue_framework_algorithm_subtract_test)
-hpx_setup_target(lue_framework_algorithm_sum_test)
-hpx_setup_target(lue_framework_algorithm_uniform_test)
-hpx_setup_target(lue_framework_algorithm_unique_id_test)
-hpx_setup_target(lue_framework_algorithm_unique_test)
-hpx_setup_target(lue_framework_algorithm_where_test)
+foreach(name ${names})
+    # Targets that depend on HPX
+    hpx_setup_target(lue_framework_algorithm_${name})
+endforeach()
