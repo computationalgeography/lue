@@ -3,6 +3,7 @@
 #include "lue/framework/algorithm/comparison.hpp"
 #include "lue/framework/algorithm/focal.hpp"
 #include "lue/framework/algorithm/logical.hpp"
+#include "lue/framework/algorithm/zonal.hpp"
 
 #include "lue/framework/algorithm/all.hpp"
 #include "lue/framework/algorithm/any.hpp"

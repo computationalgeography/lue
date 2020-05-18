@@ -7,21 +7,21 @@
 namespace lue {
 namespace detail {
 
-void spin(
-    Count nr_iterations)
-{
-    for(volatile Count i = 0; i < nr_iterations; ++i) {}
-
-    // // The use of volatile prevends the optimizing compiler
-    // // to remove this iteration
-    // for(volatile Element nr_iterations: partition_data) {
-    //     assert(nr_iterations >= Element{0});
-
-    //     while(nr_iterations > Element{0}) {
-    //         --nr_iterations;
-    //     }
-    // }
-}
+// void spin(
+//     Count nr_iterations)
+// {
+//     for(volatile Count i = 0; i < nr_iterations; ++i) {}
+// 
+//     // // The use of volatile prevends the optimizing compiler
+//     // // to remove this iteration
+//     // for(volatile Element nr_iterations: partition_data) {
+//     //     assert(nr_iterations >= Element{0});
+// 
+//     //     while(nr_iterations > Element{0}) {
+//     //         --nr_iterations;
+//     //     }
+//     // }
+// }
 
 
 template<
