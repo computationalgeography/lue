@@ -14,7 +14,7 @@ void Model::preprocess()
 
 
 /*!
-    @brief      Initialize the modelled state.
+    @brief      Initialize the modelled state
 
     After calling this function, the simulated state must be representable
     for t = 0.
@@ -37,6 +37,16 @@ void Model::initialize()
 */
 void Model::simulate(
     Count const /* time_step */)
+{
+}
+
+
+/*!
+    @brief      Terminate the model
+
+    The default does nothing.
+*/
+void Model::terminate()
 {
 }
 
@@ -81,6 +91,16 @@ void simulate(
     Count const time_step)
 {
     model.simulate(time_step);
+}
+
+
+/*!
+    @brief      Call Model.terminate()
+*/
+void terminate(
+    Model& model)
+{
+    model.terminate();
 }
 
 

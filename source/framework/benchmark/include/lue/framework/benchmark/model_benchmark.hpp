@@ -86,6 +86,8 @@ inline int ModelBenchmark<Callable>::run()
             for(std::uint64_t t = 0; t < nr_time_steps; ++t) {
                 simulate(model, t);
             }
+
+            terminate(model);
         }
 
         stopwatch.stop();

@@ -16,10 +16,19 @@ namespace lue {
     - preprocess()
     - initialize()
     - simulate(), for each time step
+    - terminate()
     - postprocess()
 
     These customization points must be implemented for the @a Model type
     of the model passed in.
+
+    - preprocess() / postprocess() are not part of the actual simulation
+        model. They do what needs to be done before and after the model
+        has run.
+    - initialize() / terminate() do what needs to be done before and
+        after the simulation through time, like initialize the state at
+        the start of the simulation (initialize()) and waiting for all
+        tasks to finish (terminate()).
 */
 template<
     typename Model>
@@ -40,6 +49,10 @@ void simulate_process(
         simulate(model, t);
         hpx::cout << '.' << hpx::flush;
     }
+    hpx::cout << ']' << hpx::endl;
+
+    hpx::cout << "[terminate... " << hpx::flush;
+    terminate(model);
     hpx::cout << ']' << hpx::endl;
 
     hpx::cout << "[postprocess..." << hpx::flush;
