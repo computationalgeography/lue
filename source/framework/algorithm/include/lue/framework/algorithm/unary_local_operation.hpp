@@ -95,7 +95,6 @@ PartitionedArray<OutputElementT<Functor>, rank> unary_local_operation(
         InputPartition, OutputPartition, Functor> action;
     OutputPartitions output_partitions{shape_in_partitions(input_array)};
 
-    // Partitions are scattered over localities. Scatter tasks as well.
     for(Index p = 0; p < nr_partitions(input_array); ++p)
     {
         InputPartition const& input_partition{input_array.partitions()[p]};

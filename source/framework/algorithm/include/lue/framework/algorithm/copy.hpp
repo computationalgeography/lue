@@ -83,22 +83,22 @@ PartitionedArray<Element, rank> copy(
     CopyPartitionAction<InputPartition> action;
     OutputPartitions output_partitions{shape_in_partitions(input_array)};
 
-    for(Index p = 0; p < nr_partitions(input_array); ++p) {
-
+    for(Index p = 0; p < nr_partitions(input_array); ++p)
+    {
         InputPartition const& input_partition{input_array.partitions()[p]};
 
         output_partitions[p] = hpx::dataflow(
             hpx::launch::async,
             hpx::util::unwrapping(
 
-                [action, input_partition](
-                    hpx::id_type const locality_id)
-                {
-                    return action(locality_id, input_partition);
-                }),
+                    [action, input_partition](
+                        hpx::id_type const locality_id)
+                    {
+                        return action(locality_id, input_partition);
+                    }
 
+                ),
             hpx::get_colocation_id(input_partition.get_id()));
-
     }
 
     return OutputArray{shape(input_array), std::move(output_partitions)};
