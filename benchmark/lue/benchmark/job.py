@@ -47,12 +47,18 @@ def program_configuration(
             cluster.name, benchmark.scenario_name, nr_workers, "json")
 
     #   '--hpx:queuing=shared-priority '
+    #   '--hpx:queuing=local-priority-fifo '
+    #   '--hpx:queuing=static-priority '
+    #   '--hpx:queuing=local '
+    #   '--hpx:queuing=static '
+    #   '--hpx:queuing=abp-priority-fifo '
     #   '--hpx:bind=balanced '
     #   '--hpx:numa-sensitive '
     #   '--hpx:use-process-mask '
     #   '--hpx:bind="{thread_binding}" '
     configuration = \
         '--hpx:print-bind ' \
+        '--hpx:ini="hpx.agas.max_pending_refcnt_requests!=400" ' \
         '--hpx:ini="application.{program_name}.benchmark.cluster_name!={cluster_name}" ' \
         '--hpx:ini="application.{program_name}.benchmark.count!={count}" ' \
         '--hpx:ini="application.{program_name}.benchmark.nr_workers!={nr_workers}" ' \
