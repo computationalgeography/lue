@@ -34,6 +34,8 @@ public:
 
     virtual void   simulate            (Count time_step);
 
+    virtual void   terminate           ();
+
     virtual void   postprocess         ();
 
 private:
@@ -47,6 +49,8 @@ void               initialize          (Model& model);
 
 void               simulate            (Model& model,
                                         Count time_step);
+
+void               terminate           (Model& model);
 
 void               postprocess         (Model& model);
 
