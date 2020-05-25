@@ -28,6 +28,8 @@ public:
 
     using Array = PartitionedArray<Element, rank>;
 
+    using Kernel = lue::Kernel<bool, rank>;
+
                    FocalMeanBenchmarkModel(
                                         Task const& task);
 
@@ -53,13 +55,13 @@ public:
 
     void           terminate           ();
 
-    // void           postprocess         ();
+    void           postprocess         ();
 
 private:
 
     Array _state;
 
-    Kernel<bool, rank> _kernel;
+    Kernel _kernel;
 
 };
 
@@ -90,6 +92,8 @@ void FocalMeanBenchmarkModel<Element, rank>::preprocess()
     assert(_state.shape() == this->array_shape());
 
     _kernel = lue::box_kernel<bool, rank>(1, true);
+
+    hpx::cout << describe(_state) << hpx::endl;
 
 
     // Optionally, write state -------------------------------------------------
@@ -181,12 +185,13 @@ void FocalMeanBenchmarkModel<Element, rank>::terminate()
 }
 
 
-// template<
-//     typename Element,
-//     std::size_t rank>
-// void FocalMeanBenchmarkModel<Element, rank>::postprocess()
-// {
-// }
+template<
+    typename Element,
+    std::size_t rank>
+void FocalMeanBenchmarkModel<Element, rank>::postprocess()
+{
+    this->set_result(AlgorithmBenchmarkResult{_state.partitions().shape()});
+}
 
 
 // template<
@@ -273,7 +278,8 @@ auto setup_benchmark(
         return lue::benchmark::FocalMeanBenchmarkModel<double, 2>{task};
     };
 
-    return lue::benchmark::ModelBenchmark{
+    return lue::benchmark::ModelBenchmark<
+            decltype(callable), lue::AlgorithmBenchmarkResult>{
         std::move(callable), environment, task};
 }
 

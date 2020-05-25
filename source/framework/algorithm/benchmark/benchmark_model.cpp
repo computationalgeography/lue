@@ -43,6 +43,24 @@ typename BenchmarkModel<rank>::Shape const&
 }
 
 
+template<
+    Rank rank>
+void BenchmarkModel<rank>::set_result(
+    Result const& result)
+{
+    _result = result;
+}
+
+
+template<
+    Rank rank>
+typename BenchmarkModel<rank>::Result const&
+    BenchmarkModel<rank>::result() const
+{
+    return _result;
+}
+
+
 template class BenchmarkModel<2>;
 
 }  // namespace benchmark

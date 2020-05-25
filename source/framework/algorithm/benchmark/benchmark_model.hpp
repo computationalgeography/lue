@@ -1,4 +1,6 @@
 #pragma once
+#include "algorithm_benchmark_result.hpp"
+#include "format.hpp"
 #include "lue/framework/core/shape.hpp"
 #include "lue/framework/model/model.hpp"
 #include "lue/framework/benchmark/task.hpp"
@@ -17,6 +19,8 @@ public:
 
     using Shape = lue::Shape<Count, rank>;
 
+    using Result = AlgorithmBenchmarkResult;
+
                    BenchmarkModel      (Task const& task);
 
                    BenchmarkModel      (BenchmarkModel const&)=default;
@@ -33,11 +37,17 @@ public:
 
     Shape const&   partition_shape     () const;
 
+    void           set_result          (Result const& result);
+
+    Result const&  result              () const;
+
 private:
 
     Shape _array_shape;
 
     Shape _partition_shape;
+
+    Result  _result;
 
 };
 

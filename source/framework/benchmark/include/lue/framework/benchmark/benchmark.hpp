@@ -315,7 +315,7 @@ public:
         using namespace std::chrono_literals;
 
         this->timings().clear();
-        _results.clear();
+        clear_results();
         Stopwatch stopwatch;
 
         this->timing().start();
@@ -330,7 +330,7 @@ public:
             stopwatch.stop();
 
             this->timings().push_back(stopwatch);
-            _results.push_back(std::move(result));
+            add_result(std::move(result));
         }
 
         this->timing().stop();
@@ -340,10 +340,21 @@ public:
 
 protected:
 
-    Results& results()
+    void clear_results()
     {
-        return _results;
+        _results.clear();
     }
+
+    void add_result(
+        Result result)
+    {
+        _results.push_back(std::move(result));
+    }
+
+    // Results& results()
+    // {
+    //     return _results;
+    // }
 
 private:
 

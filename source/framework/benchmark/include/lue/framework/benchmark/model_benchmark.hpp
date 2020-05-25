@@ -6,12 +6,15 @@ namespace lue {
 namespace benchmark {
 
 template<
-    typename Callable>
+    typename Callable,
+    typename Result>
 class ModelBenchmark:
-    public Benchmark<Callable>
+    public BenchmarkBase<Callable>
 {
 
 public:
+
+    using Results = std::vector<Result>;
 
                    ModelBenchmark      (Callable&& callable,
                                         Environment const& environment,
@@ -31,27 +34,48 @@ public:
 
     int            run                 () final;
 
+    Results const& results () const
+    {
+        return _results;
+    }
+
 private:
+
+    void clear_results()
+    {
+        _results.clear();
+    }
+
+    void add_result(
+        Result result)
+    {
+        _results.push_back(std::move(result));
+    }
+
+    Results _results;
 
 };
 
 
 template<
-    typename Callable>
-inline ModelBenchmark<Callable>::ModelBenchmark(
+    typename Callable,
+    typename Result>
+inline ModelBenchmark<Callable, Result>::ModelBenchmark(
     Callable&& callable,
     Environment const& environment,
     Task const& task):
 
-    Benchmark<Callable>{std::forward<Callable>(callable), environment, task}
+    BenchmarkBase<Callable>{
+        std::forward<Callable>(callable), environment, task}
 
 {
 }
 
 
 template<
-    typename Callable>
-inline int ModelBenchmark<Callable>::run()
+    typename Callable,
+    typename Result>
+inline int ModelBenchmark<Callable, Result>::run()
 {
     // Only time the simulate of the callable
     using namespace std::chrono_literals;
@@ -63,6 +87,7 @@ inline int ModelBenchmark<Callable>::run()
     auto& callable{this->callable()};
 
     timings.clear();
+    this->clear_results();
     Stopwatch stopwatch;
 
     auto const nr_time_steps = task.nr_time_steps();
@@ -90,16 +115,32 @@ inline int ModelBenchmark<Callable>::run()
             terminate(model);
         }
 
+        Result result = model.result();
+
         stopwatch.stop();
 
         postprocess(model);
 
         timings.push_back(stopwatch);
+        this->add_result(std::move(result));
     }
     timing.stop();
 
     return EXIT_SUCCESS;
 }
+
+
+template<
+    typename Callable,
+    typename Result>
+class TypeTraits<ModelBenchmark<Callable, Result>>
+{
+
+public:
+
+    using ResultT = Result;
+
+};
 
 }  // namespace benchmark
 }  // namespace lue
