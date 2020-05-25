@@ -1,6 +1,6 @@
 {
     "scenario": "thread_cluster_node",
-    "count": 3,
+    "count": 5,
     "locality_per": "cluster_node",
     "worker": {
         "type": "thread",
@@ -9,21 +9,6 @@
             "max_size": 4,
             "incrementor": 1
         }
-    },
-    "hpx": {
-        "performance_counters": [
-            {
-                "print-counter-interval": 100
-            },
-            {
-                "print-counter": [
-                ]
-            },
-            {
-                "print-counter-reset": [
-                    "/threads{locality#*/pool#*/worker-thread#*}/idle-rate"
-                ]
-            }
-        ]
     }
+    # "hpx": "$LUE/benchmark/configuration/gransasso/strong_scaling/hpx.json"
 }
