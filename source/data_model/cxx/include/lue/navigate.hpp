@@ -140,7 +140,7 @@ inline PropertyGroup property(
                             if(property_set_.properties().contains(property_name)) {
 
                                 // NOLINTNEXTLINE(bugprone-assert-side-effect)
-                                assert(++it == path.end());  // Last use of it
+                                assert(++it == path.end());  // cppcheck-suppress assignmentInAssert
 
                                 parent =
                                     property_set_.properties().collection_group(
