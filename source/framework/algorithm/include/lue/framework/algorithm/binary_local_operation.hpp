@@ -1,16 +1,9 @@
 #pragma once
+#include "lue/framework/algorithm/functor_traits.hpp"
 #include "lue/framework/core/component/partitioned_array.hpp"
 
 
 namespace lue {
-
-// If this is needed elsewhere, put it in algorithm/functor_traits.hpp
-// Refactor with unary_local_operation.hpp, focal_operation.hpp
-template<
-    typename Functor>
-using OutputElementT = typename Functor::OutputElement;
-
-
 namespace detail {
 namespace binary_local_operation {
 
@@ -45,19 +38,11 @@ public:
         InputPartition const& input_partition2,
         Functor functor)
     {
-        assert(
-            hpx::get_colocation_id(input_partition1.get_id()).get() ==
-            hpx::find_here());
-        assert(
-            hpx::get_colocation_id(input_partition2.get_id()).get() ==
-            hpx::find_here());
-        assert(
-            input_partition1.offset().get() ==
-            input_partition2.offset().get());
-
         using InputData = DataT<InputPartition>;
-
         using OutputData = DataT<OutputPartition>;
+
+        lue_assert(input_partition1.locality_id().get() == hpx::find_here());
+        lue_assert(input_partition2.locality_id().get() == hpx::find_here());
 
         return hpx::dataflow(
             hpx::launch::async,
@@ -77,7 +62,7 @@ public:
                     *input_partition_server_ptr2};
 
                 auto offset{input_partition_server1.offset()};
-                assert(input_partition_server2.offset() == offset);
+                lue_assert(input_partition_server2.offset() == offset);
 
                 InputData input_partition_data1{
                     input_partition_server1.data()};
@@ -134,13 +119,10 @@ public:
         hpx::shared_future<InputElement> const input_scalar,
         Functor functor)
     {
-        assert(
-            hpx::get_colocation_id(input_partition.get_id()).get() ==
-            hpx::find_here());
-
         using InputData = DataT<InputPartition>;
-
         using OutputData = DataT<OutputPartition>;
+
+        lue_assert(input_partition.locality_id().get() == hpx::find_here());
 
         return hpx::dataflow(
             hpx::launch::async,
@@ -160,6 +142,8 @@ public:
                 OutputData output_partition_data{
                     input_partition_data.shape()};
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wattributes"
                 std::transform(
                     input_partition_data.begin(),
                     input_partition_data.end(),
@@ -169,6 +153,7 @@ public:
                     {
                         return functor(input_element1, input_element2);
                     });
+#pragma GCC diagnostic pop
 
                 return OutputPartition{
                     hpx::find_here(), offset,
@@ -210,13 +195,10 @@ public:
         InputPartition const& input_partition,
         Functor functor)
     {
-        assert(
-            hpx::get_colocation_id(input_partition.get_id()).get() ==
-            hpx::find_here());
-
         using InputData = DataT<InputPartition>;
-
         using OutputData = DataT<OutputPartition>;
+
+        lue_assert(input_partition.locality_id().get() == hpx::find_here());
 
         return hpx::dataflow(
             hpx::launch::async,
@@ -236,6 +218,8 @@ public:
                 OutputData output_partition_data{
                     input_partition_data.shape()};
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wattributes"
                 std::transform(
                     input_partition_data.begin(),
                     input_partition_data.end(),
@@ -245,6 +229,7 @@ public:
                     {
                         return functor(input_element1, input_element2);
                     });
+#pragma GCC diagnostic pop
 
                 return OutputPartition{
                     hpx::find_here(), offset,
@@ -290,7 +275,6 @@ ArrayPartition<OutputElementT<Functor>, rank> binary_local_operation(
     Functor const& functor)
 {
     using InputPartition = ArrayPartition<InputElement, rank>;
-
     using OutputPartition = ArrayPartition<OutputElementT<Functor>, rank>;
 
     detail::BinaryLocalOperationPartitionAction<
@@ -303,13 +287,13 @@ ArrayPartition<OutputElementT<Functor>, rank> binary_local_operation(
                 [action, functor, input_partition, input_scalar](
                     hpx::id_type const locality_id)
                 {
-                    return action(
-                        locality_id, input_partition, input_scalar,
+                    return action(locality_id,
+                        input_partition, input_scalar,
                         functor);
                 }
 
             ),
-        hpx::get_colocation_id(input_partition.get_id()));
+        input_partition.locality_id());
 }
 
 
@@ -323,9 +307,6 @@ PartitionedArray<OutputElementT<Functor>, rank> binary_local_operation(
     PartitionedArray<InputElement, rank> const& input_array2,
     Functor const& functor)
 {
-    assert(nr_partitions(input_array1) == nr_partitions(input_array2));
-    assert(shape_in_partitions(input_array1) == shape_in_partitions(input_array2));
-
     using InputArray = PartitionedArray<InputElement, rank>;
     using InputPartition = PartitionT<InputArray>;
 
@@ -334,17 +315,18 @@ PartitionedArray<OutputElementT<Functor>, rank> binary_local_operation(
     using OutputPartition = PartitionT<OutputArray>;
     using OutputPartitions = PartitionsT<OutputArray>;
 
+    lue_assert(nr_partitions(input_array1) == nr_partitions(input_array2));
+    lue_assert(
+        shape_in_partitions(input_array1) == shape_in_partitions(input_array2));
+
     detail::BinaryLocalOperationPartitionAction<
         InputPartition, InputPartition, OutputPartition, Functor> action;
     OutputPartitions output_partitions{shape_in_partitions(input_array1)};
 
-    // Partitions are scattered over localities. Scatter tasks as well.
     for(Index p = 0; p < nr_partitions(input_array1); ++p)
     {
-        InputPartition const& input_partition1{
-            input_array1.partitions()[p]};
-        InputPartition const& input_partition2{
-            input_array2.partitions()[p]};
+        InputPartition const& input_partition1{input_array1.partitions()[p]};
+        InputPartition const& input_partition2{input_array2.partitions()[p]};
 
         output_partitions[p] = hpx::dataflow(
             hpx::launch::async,
@@ -353,14 +335,13 @@ PartitionedArray<OutputElementT<Functor>, rank> binary_local_operation(
                     [action, functor, input_partition1, input_partition2](
                         hpx::id_type const locality_id)
                     {
-                        return action(
-                            locality_id, input_partition1, input_partition2,
+                        return action(locality_id,
+                            input_partition1, input_partition2,
                             functor);
                     }
 
                 ),
-            // input_partition1.locality_id());
-            hpx::get_colocation_id(input_partition1.get_id()));
+            input_partition1.locality_id());
     }
 
     return OutputArray{shape(input_array1), std::move(output_partitions)};
@@ -388,10 +369,9 @@ PartitionedArray<OutputElementT<Functor>, rank> binary_local_operation(
         InputPartition, InputElement, OutputPartition, Functor> action;
     OutputPartitions output_partitions{shape_in_partitions(input_array)};
 
-    for(Index p = 0; p < nr_partitions(input_array); ++p) {
-
-        InputPartition const& input_partition{
-            input_array.partitions()[p]};
+    for(Index p = 0; p < nr_partitions(input_array); ++p)
+    {
+        InputPartition const& input_partition{input_array.partitions()[p]};
 
         output_partitions[p] = hpx::dataflow(
             hpx::launch::async,
@@ -400,14 +380,13 @@ PartitionedArray<OutputElementT<Functor>, rank> binary_local_operation(
                     [action, functor, input_partition, input_scalar](
                         hpx::id_type const locality_id)
                     {
-                        return action(
-                            locality_id, input_partition, input_scalar,
+                        return action(locality_id,
+                            input_partition, input_scalar,
                             functor);
                     }
 
                 ),
-            // input_partition.locality_id());
-            hpx::get_colocation_id(input_partition.get_id()));
+            input_partition.locality_id());
     }
 
     return OutputArray{shape(input_array), std::move(output_partitions)};
@@ -435,10 +414,9 @@ PartitionedArray<OutputElementT<Functor>, rank> binary_local_operation(
         InputElement, InputPartition, OutputPartition, Functor> action;
     OutputPartitions output_partitions{shape_in_partitions(input_array)};
 
-    for(Index p = 0; p < nr_partitions(input_array); ++p) {
-
-        InputPartition const& input_partition{
-            input_array.partitions()[p]};
+    for(Index p = 0; p < nr_partitions(input_array); ++p)
+    {
+        InputPartition const& input_partition{input_array.partitions()[p]};
 
         output_partitions[p] = hpx::dataflow(
             hpx::launch::async,
@@ -447,13 +425,13 @@ PartitionedArray<OutputElementT<Functor>, rank> binary_local_operation(
                     [action, functor, input_scalar, input_partition](
                         hpx::id_type const locality_id)
                     {
-                        return action(
-                            locality_id, input_scalar, input_partition,
+                        return action(locality_id,
+                            input_scalar, input_partition,
                             functor);
                     }
 
                 ),
-            hpx::get_colocation_id(input_partition.get_id()));
+            input_partition.locality_id());
     }
 
     return OutputArray{shape(input_array), std::move(output_partitions)};

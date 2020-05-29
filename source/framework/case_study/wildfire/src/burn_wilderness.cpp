@@ -10,7 +10,7 @@ void burn_wilderness(
     Task const& task,
     std::size_t const /* max_tree_depth */)
 {
-    // assert(max_tree_depth > 0);
+    // lue_assert(max_tree_depth > 0);
 
 
     // Given the arguments passed in, instantiate the model and simulate

@@ -36,7 +36,7 @@ struct formatter<std::vector<T>>
         std::vector<T> const& values,
         FormatContext& ctx)
     {
-        assert(values.size() > 1);
+        lue_assert(values.size() > 1);
 
         auto it = ctx.begin();
         it = format_to(it, "[");
@@ -257,10 +257,10 @@ void polute_air(
 
 
 
-    // // assert(nr_rows > 0);
-    // // assert(nr_cols > 0);
-    // // assert(nr_rows_partition < nr_rows);
-    // // assert(nr_cols_partition < nr_cols);
+    // // lue_assert(nr_rows > 0);
+    // // lue_assert(nr_cols > 0);
+    // // lue_assert(nr_rows_partition < nr_rows);
+    // // lue_assert(nr_cols_partition < nr_cols);
 
     // // using Shape = lue::Shape<std::uint64_t, 2>;
 
@@ -317,7 +317,7 @@ void polute_air(
     // // //             gather_basename(), std::move(local_result),
     // // //             hpx::get_num_localities(hpx::launch::sync), count).get();
 
-    // // //     assert(!all_results.empty());
+    // // //     lue_assert(!all_results.empty());
 
     // // //     // auto const overall_result =
     // // //     //     *std::max_element(all_results.begin(), all_results.end());

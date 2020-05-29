@@ -3,6 +3,7 @@
 #include "lue/framework/test/compare.hpp"
 #include "lue/framework/test/stream.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework/core/component.hpp"
 
 
 BOOST_AUTO_TEST_CASE(use_case_1)
@@ -28,6 +29,7 @@ BOOST_AUTO_TEST_CASE(use_case_1)
     auto [result_we_got] = lue::mesh_grid(input_array, first_value, step);
 
     Array result_we_want{shape};
+    lue::wait_all(result_we_want.partitions());
     result_we_want.partitions()(0).set_data(
         PartitionData{
                 shape,
@@ -65,7 +67,7 @@ BOOST_AUTO_TEST_CASE(use_case_2)
         lue::mesh_grid(input_array, first_value, step);
 
     Array result_we_want{shape};
-
+    lue::wait_all(result_we_want.partitions());
     result_we_want.partitions()(0, 0).set_data(
         PartitionData{
                 shape,

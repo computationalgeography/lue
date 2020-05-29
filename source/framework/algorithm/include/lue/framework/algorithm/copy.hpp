@@ -18,11 +18,7 @@ template<
 Partition copy_partition(
     Partition const& input_partition)
 {
-    // Assert the locality of the partition is the same as the locality
-    // this code runs on
-    assert(
-        hpx::get_colocation_id(input_partition.get_id()).get() ==
-        hpx::find_here());
+    lue_assert(input_partition.locality_id().get() == hpx::find_here());
 
     using InputData = DataT<Partition>;
 
@@ -98,7 +94,7 @@ PartitionedArray<Element, rank> copy(
                     }
 
                 ),
-            hpx::get_colocation_id(input_partition.get_id()));
+            input_partition.locality_id());
     }
 
     return OutputArray{shape(input_array), std::move(output_partitions)};

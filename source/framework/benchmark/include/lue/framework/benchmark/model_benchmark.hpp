@@ -101,28 +101,26 @@ inline int ModelBenchmark<Callable, Result>::run()
 
         auto model = callable(environment, task);
 
-        preprocess(model);
-
-        stopwatch.start();
-
         {
-            initialize(model);
+            preprocess(model);
+            {
+                stopwatch.start();
+                {
+                    initialize(model);
 
-            for(std::uint64_t t = 0; t < nr_time_steps; ++t) {
-                simulate(model, t);
+                    for(std::uint64_t t = 0; t < nr_time_steps; ++t) {
+                        simulate(model, t);
+                    }
+
+                    terminate(model);
+                }
+                stopwatch.stop();
             }
-
-            terminate(model);
+            postprocess(model);
         }
 
-        Result result = model.result();
-
-        stopwatch.stop();
-
-        postprocess(model);
-
         timings.push_back(stopwatch);
-        this->add_result(std::move(result));
+        this->add_result(model.result());
     }
     timing.stop();
 

@@ -1,7 +1,7 @@
 #pragma once
 #include "lue/framework/core/shape.hpp"
+#include "lue/assert.hpp"
 #include <algorithm>
-#include <cassert>
 #include <numeric>
 
 
@@ -37,8 +37,8 @@ Index linear_idx(
 {
     constexpr auto rank = lue::rank<Shape>;
 
-    assert(std::size(cell_idxs) == rank);
-    assert(std::size(shape) == rank);
+    lue_assert(std::size(cell_idxs) == rank);
+    lue_assert(std::size(shape) == rank);
 
     return linear_idx<rank>(cell_idxs.begin(), shape.begin());
 }
@@ -100,7 +100,7 @@ public:
         _dimension_idx = 0;
 
         for(Rank i = 0; i < rank<Shape>; ++i) {
-            assert(_start[i] + _count[i] <= _shape[i]);
+            lue_assert(_start[i] + _count[i] <= _shape[i]);
         }
     }
 
@@ -114,7 +114,7 @@ public:
     {
         ++_dimension_idx;
 
-        assert(_dimension_idx < static_cast<Count>(rank<Shape>));
+        lue_assert(_dimension_idx < static_cast<Count>(rank<Shape>));
     }
 
     void leave_current_dimension()
@@ -122,14 +122,14 @@ public:
         // Reset index of current dimension to start of hyperslab
         _current_cell[_dimension_idx] = _start[_dimension_idx];
 
-        assert(_dimension_idx > 0);
+        lue_assert(_dimension_idx > 0);
 
         --_dimension_idx;
     }
 
     ArrayVisitorCursor& operator++()
     {
-        assert(_current_cell[_dimension_idx] < _shape[_dimension_idx]);
+        lue_assert(_current_cell[_dimension_idx] < _shape[_dimension_idx]);
 
         ++_current_cell[_dimension_idx];
 
@@ -362,7 +362,7 @@ void visit_array(
     Shape<Index, rank> count;
 
     for(Rank i = 0; i < rank; ++i) {
-        assert(end_indices[i] > begin_indices[i]);
+        lue_assert(end_indices[i] > begin_indices[i]);
         count[i] = end_indices[i] - begin_indices[i];
     }
 

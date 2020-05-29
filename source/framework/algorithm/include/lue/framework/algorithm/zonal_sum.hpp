@@ -55,7 +55,7 @@ public:
         {
             auto it{_sums.find(zone)};
 
-            assert(it != _sums.end());
+            lue_assert(it != _sums.end());
 
             return (*it).second;
         }

@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/core/define.hpp"
+#include "lue/assert.hpp"
 #include <memory>
 #include <boost/container/vector.hpp>
 
@@ -66,9 +67,9 @@ public:
     {
         // This class requires that _ptr always points to a, possibly
         // empty, container
-        assert(!other._ptr);
+        lue_assert(!other._ptr);
         other.allocate(0);
-        assert(other.size() == 0);
+        lue_assert(other.size() == 0);
 
         assert_invariants();
         other.assert_invariants();
@@ -85,9 +86,9 @@ public:
 
         // This class requires that a _ptr always points to a, possibly
         // empty, container
-        assert(!other._ptr);
+        lue_assert(!other._ptr);
         other.allocate(0);
-        assert(other.size() == 0);
+        lue_assert(other.size() == 0);
 
         assert_invariants();
         other.assert_invariants();
@@ -182,7 +183,7 @@ public:
         Index const idx)
     {
         assert_invariants();
-        assert(idx < static_cast<Index>((*_ptr).size()));
+        lue_assert(idx < static_cast<Index>((*_ptr).size()));
 
         return (*_ptr)[idx];
     }
@@ -194,7 +195,7 @@ public:
         Index const idx) const
     {
         assert_invariants();
-        assert(idx < static_cast<Index>((*_ptr).size()));
+        lue_assert(idx < static_cast<Index>((*_ptr).size()));
 
         return (*_ptr)[idx];
     }
@@ -257,7 +258,7 @@ private:
     void allocate(
         Size const size)
     {
-        assert(!_ptr);
+        lue_assert(!_ptr);
 
         // Default initialization of the elements. In case of
         // numeric values, the values are indeterminate
@@ -270,7 +271,7 @@ private:
     {
         // _ptr should always be set, but the size of the vector can
         // be zero
-        assert(_ptr);
+        lue_assert(_ptr);
     }
 
 };

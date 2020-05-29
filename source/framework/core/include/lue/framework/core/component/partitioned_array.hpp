@@ -354,33 +354,39 @@ public:
 
         Partition& partition = this->partition();
 
-        partition = hpx::dataflow(
-            hpx::launch::async,
-            hpx::util::annotated_function(
-
+        // Only once the partition is ready we can manipulate it
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wattributes"
+        partition = partition.then(
                 [new_shape=this->_new_shape](
-                    Partition&& partition,
-                    hpx::future<Shape>&& f_partition_shape) // -> Partition
+                    Partition&& partition)
                 {
-                    Shape partition_shape = f_partition_shape.get();
-                    Count const rank = static_cast<Count>(lue::rank<Partitions>);
+                    // Once the current shape is obtained we can
+                    // reshape the partition
+                    return partition.shape().then(
+                        hpx::util::unwrapping(
+                            [new_shape, partition](
+                                Shape current_shape) mutable
+                            {
+                                Count const rank =
+                                    static_cast<Count>(lue::rank<Partitions>);
 
-                    for(Index i = 0; i < rank; ++i) {
-                        partition_shape[i] =
-                            std::min(partition_shape[i], new_shape[i]);
-                    }
+                                // Update current shape given requested shape
+                                for(Index i = 0; i < rank; ++i) {
+                                    current_shape[i] =
+                                        std::min(current_shape[i], new_shape[i]);
+                                }
 
-                    // FIXME Blocks current thread... Is this a problem?
-                    partition.reshape(partition_shape).wait();
+                                // FIXME Blocks current thread... Is this a problem?
+                                //     Guess not, we are doing useful stuff.
+                                partition.reshape(current_shape).wait();
 
-                    return partition;
-
-                },
-
-                "shrink_partition"),
-            partition,
-            partition.shape());
-
+                                return partition;
+                            }
+                        ));
+                }
+            );
+#pragma GCC diagnostic pop
     }
 
 private:
@@ -452,7 +458,7 @@ void PartitionedArray<Element, rank>::clamp_array_shrink(
         // We are assuming here that only the last partition needs to
         // be resized. All other partitions must be positioned within
         // the array's extent.
-        assert(excess_cells < max_partition_shape[d]);
+        lue_assert(excess_cells < max_partition_shape[d]);
 
         if(excess_cells > 0) {
             // Resize current dimension of all partitions at currently
@@ -505,8 +511,8 @@ public:
         _new_size{new_size}
 
     {
-        assert(_dimension_idx >= 0);
-        assert(_dimension_idx < static_cast<Index>(rank<Partitions>));
+        lue_assert(_dimension_idx >= 0);
+        lue_assert(_dimension_idx < static_cast<Index>(rank<Partitions>));
     }
 
     void operator()()
@@ -516,28 +522,32 @@ public:
 
         Partition& partition = this->partition();
 
-        partition = hpx::dataflow(
-            hpx::launch::async,
-            hpx::util::annotated_function(
-
+        // Only once the partition is ready we can manipulate it
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wattributes"
+        partition = partition.then(
                 [dimension_idx=this->_dimension_idx, new_size=this->_new_size](
-                    Partition&& partition,
-                    hpx::future<Shape>&& f_partition_shape) // -> Partition
+                    Partition&& partition)
                 {
-                    Shape partition_shape = f_partition_shape.get();
+                    // Once the current shape is obtained we can
+                    // reshape the partition
+                    return partition.shape().then(
+                        hpx::util::unwrapping(
+                            [dimension_idx, new_size, partition](
+                                Shape current_shape) mutable
+                            {
+                                current_shape[dimension_idx] = new_size;
 
-                    partition_shape[dimension_idx] = new_size;
+                                // FIXME Blocks current thread... Is this a problem?
+                                //     Guess not, we are doing useful stuff.
+                                partition.reshape(current_shape).wait();
 
-                    // FIXME Blocks current thread... Is this a problem?
-                    partition.reshape(partition_shape).wait();
-
-                    return partition;
-                },
-
-                "resize_partition"),
-            partition,
-            partition.shape());
-
+                                return partition;
+                            }
+                        ));
+                }
+            );
+#pragma GCC diagnostic pop
     }
 
 private:
@@ -602,7 +612,7 @@ void PartitionedArray<Element, rank>::clamp_array_merge(
         // We are assuming here that only the last partition needs to
         // be resized. All other partitions must be positioned within
         // the array's extent.
-        assert(excess_cells < max_partition_shape[d]);
+        lue_assert(excess_cells < max_partition_shape[d]);
 
         if(excess_cells > 0) {
 
@@ -720,17 +730,17 @@ void PartitionedArray<Element, rank>::instantiate_partitions(
     // Create array containing partitions. Each of these partitions
     // will be a component client instance referring to a, possibly
     // remote, component server instance.
-    assert(_partitions.empty());
+    lue_assert(_partitions.empty());
     _partitions = Partitions{shape_in_partitions};
 
     Count const nr_partitions = lue::nr_elements(shape_in_partitions);
-    assert(_partitions.nr_elements() == nr_partitions);
+    lue_assert(_partitions.nr_elements() == nr_partitions);
 
     std::vector<hpx::naming::id_type> const localities =
         hpx::find_all_localities();
     Count const nr_localities = localities.size();
 
-    assert(nr_localities > 0);
+    lue_assert(nr_localities > 0);
 
     if(nr_partitions < nr_localities) {
         throw std::runtime_error(fmt::format(
@@ -738,8 +748,8 @@ void PartitionedArray<Element, rank>::instantiate_partitions(
             nr_partitions, nr_localities));
     }
 
-    assert(hpx::find_here() == hpx::find_root_locality());
-    assert(localities[0] == hpx::find_root_locality());
+    lue_assert(hpx::find_here() == hpx::find_root_locality());
+    lue_assert(localities[0] == hpx::find_root_locality());
 
     // Map partition index to locality index
     auto locality_idx =
@@ -910,7 +920,8 @@ public:
         // the expected offset
 
         Partition const& partition{this->partition()};
-        Offset const& partition_offset{partition.offset().get()};
+        partition.wait();
+        Offset const partition_offset{partition.offset().get()};
         _partition_shape = partition.shape().get();
         Cursor const& cursor{this->cursor()};
 
@@ -956,7 +967,7 @@ public:
         // last seen partition and set the column offset to zero (similar
         // to a carriage return). We will be iterating over the cells
         // in next row next.
-        assert(dimension_idx > 0);
+        lue_assert(dimension_idx > 0);
         _offset[dimension_idx - 1] += _partition_shape[dimension_idx - 1];
         _offset[dimension_idx] = 0;
     }

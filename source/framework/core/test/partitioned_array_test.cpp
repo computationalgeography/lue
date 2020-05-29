@@ -1,5 +1,6 @@
 #define BOOST_TEST_MODULE lue framework core partitioned_array
 #include "lue/framework/core/component/partitioned_array.hpp"
+#include "lue/framework/core/component.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 #include "lue/framework/test/stream.hpp"
 
@@ -137,6 +138,8 @@ BOOST_AUTO_TEST_CASE(construct_with_max_partition_shape)
         BOOST_CHECK_EQUAL(array.nr_partitions(), 4);
 
         auto const& partitions = array.partitions();
+        lue::wait_all(partitions);
+
         BOOST_CHECK_EQUAL(partitions(0, 0).shape().get(), max_partition_shape);
         BOOST_CHECK_EQUAL(partitions(0, 1).shape().get(), Shape({20, 10}));
         BOOST_CHECK_EQUAL(partitions(1, 0).shape().get(), Shape({10, 30}));
@@ -162,6 +165,8 @@ BOOST_AUTO_TEST_CASE(construct_with_max_partition_shape)
         BOOST_CHECK_EQUAL(array.nr_partitions(), 1);
 
         auto const& partitions = array.partitions();
+        lue::wait_all(partitions);
+
         BOOST_CHECK_EQUAL(partitions(0, 0).shape().get(), shape);
 
         BOOST_CHECK_EQUAL((partitions(0, 0).offset().get()), Offset({ 0,  0}));

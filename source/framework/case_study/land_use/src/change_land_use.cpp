@@ -18,7 +18,7 @@ void change_land_use(
     Task const& task,
     std::size_t const max_tree_depth)
 {
-    assert(max_tree_depth > 0);
+    lue_assert(max_tree_depth > 0);
 
     using NominalElement = std::int32_t;
     using ScalarElement = double;
@@ -42,8 +42,8 @@ void change_land_use(
 
     hpx::cout << describe(land_use) << hpx::endl;
 
-    assert(land_use.shape() == raster_shape);
-    assert(elevation.shape() == raster_shape);
+    lue_assert(land_use.shape() == raster_shape);
+    lue_assert(elevation.shape() == raster_shape);
 
     // Initialize state
     land_use = uniform(land_use, 0, 10);

@@ -1,16 +1,9 @@
 #pragma once
+#include "lue/framework/algorithm/functor_traits.hpp"
 #include "lue/framework/core/component/partitioned_array.hpp"
 
 
 namespace lue {
-
-// If this is needed elsewhere, put it in algorithm/functor_traits.hpp
-// Refactor with binary_operation, focal_operation.hpp
-template<
-    typename Functor>
-using OutputElementT = typename Functor::OutputElement;
-
-
 namespace detail {
 
 template<
@@ -21,12 +14,10 @@ OutputPartition unary_local_operation_partition(
     InputPartition const& input_partition,
     Functor functor)
 {
-    assert(
-        hpx::get_colocation_id(input_partition.get_id()).get() ==
-        hpx::find_here());
+    lue_assert(input_partition.locality_id().get() == hpx::find_here());
 
+    using Offset = OffsetT<InputPartition>;
     using InputData = DataT<InputPartition>;
-
     using OutputData = DataT<OutputPartition>;
 
     return hpx::dataflow(
@@ -35,14 +26,13 @@ OutputPartition unary_local_operation_partition(
         [functor](
             InputPartition const& input_partition)
         {
-
             auto const input_partition_server_ptr{
                 hpx::get_ptr(input_partition).get()};
             auto const& input_partition_server{*input_partition_server_ptr};
 
-            auto offset{input_partition_server.offset()};
-            InputData input_partition_data{input_partition_server.data()};
-
+            Offset const offset{input_partition_server.offset()};
+            InputData const input_partition_data{
+                input_partition_server.data()};
             OutputData output_partition_data{input_partition_data.shape()};
 
             std::transform(
@@ -51,7 +41,6 @@ OutputPartition unary_local_operation_partition(
 
             return OutputPartition{
                 hpx::find_here(), offset, std::move(output_partition_data)};
-
         },
 
         input_partition);
@@ -106,12 +95,11 @@ PartitionedArray<OutputElementT<Functor>, rank> unary_local_operation(
                     [action, functor, input_partition](
                         hpx::id_type const locality_id)
                     {
-                        return action(
-                            locality_id, input_partition, functor);
+                        return action(locality_id, input_partition, functor);
                     }
 
                 ),
-            hpx::get_colocation_id(input_partition.get_id()));
+            input_partition.locality_id());
     }
 
     return OutputArray{shape(input_array), std::move(output_partitions)};

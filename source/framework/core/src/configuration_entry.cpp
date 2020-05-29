@@ -1,5 +1,6 @@
 #include "lue/framework/core/configuration_entry.hpp"
 #include "lue/framework/core/shape.hpp"
+#include "lue/assert.hpp"
 #include <fmt/format.h>
 #include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
@@ -44,7 +45,7 @@ std::string trim_vector(
                 value));
     }
 
-    assert(match.size() == 2);
+    lue_assert(match.size() == 2);
 
     return match[1];
 }
@@ -146,7 +147,7 @@ lue::Shape<std::uint64_t, 2> cast<lue::Shape<std::uint64_t, 2>>(
                 value, values.size()));
     }
 
-    lue::Shape<std::uint64_t, 2> result;
+    lue::Shape<std::uint64_t, 2> result{};
     std::copy(values.begin(), values.end(), result.begin());
 
     return result;
@@ -167,7 +168,7 @@ lue::Shape<std::int64_t, 2> cast<lue::Shape<std::int64_t, 2>>(
                 value, values.size()));
     }
 
-    lue::Shape<std::int64_t, 2> result;
+    lue::Shape<std::int64_t, 2> result{};
     std::copy(values.begin(), values.end(), result.begin());
 
     return result;

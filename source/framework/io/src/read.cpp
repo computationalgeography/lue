@@ -16,7 +16,7 @@ Array read(
     // Create new array with partitions that become ready once their
     // data has been read
 
-    assert(false);
+    lue_assert(false);
 
 }
 

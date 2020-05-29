@@ -12,6 +12,11 @@ target_include_directories(lue_shared
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
 
+target_link_libraries(lue_shared
+    INTERFACE
+        CONAN_PKG::fmt
+)
+
 install(
     TARGETS
         lue_shared

@@ -171,7 +171,7 @@ ArrayPartitionData<Element, rank>::ArrayPartitionData():
     ArrayPartitionData{Shape{}}
 
 {
-    assert(_elements.size() == lue::nr_elements(_shape));
+    lue_assert(_elements.size() == lue::nr_elements(_shape));
 }
 
 
@@ -192,7 +192,7 @@ ArrayPartitionData<Element, rank>::ArrayPartitionData(
     _span{_elements.data(), _shape}
 
 {
-    assert(_elements.size() == lue::nr_elements(_shape));
+    lue_assert(_elements.size() == lue::nr_elements(_shape));
 }
 
 
@@ -267,7 +267,7 @@ ArrayPartitionData<Element, rank>::ArrayPartitionData(
     _span{_elements.data(), _shape}
 
 {
-    assert(_elements.size() == lue::nr_elements(_shape));
+    lue_assert(_elements.size() == lue::nr_elements(_shape));
 }
 
 
@@ -288,7 +288,7 @@ ArrayPartitionData<Element, rank>& ArrayPartitionData<Element, rank>::operator=(
         _span = Span{_elements.data(), _shape};
     }
 
-    assert(_elements.size() == lue::nr_elements(_shape));
+    lue_assert(_elements.size() == lue::nr_elements(_shape));
 
     return *this;
 }
@@ -308,10 +308,10 @@ ArrayPartitionData<Element, rank>::ArrayPartitionData(
     _span{_elements.data(), _shape}
 
 {
-    assert(
+    lue_assert(
         (_elements.data() != other._elements.data()) ||
         (_elements.data() == nullptr));
-    assert(_elements.size() == lue::nr_elements(_shape));
+    lue_assert(_elements.size() == lue::nr_elements(_shape));
 }
 
 
@@ -328,10 +328,10 @@ ArrayPartitionData<Element, rank>& ArrayPartitionData<Element, rank>::operator=(
     _elements = std::move(other._elements);
     _span = Span{_elements.data(), _shape};
 
-    assert(
+    lue_assert(
         (_elements.data() != other._elements.data()) ||
         (_elements.data() == nullptr));
-    assert(_elements.size() == lue::nr_elements(_shape));
+    lue_assert(_elements.size() == lue::nr_elements(_shape));
 
     return *this;
 }
@@ -363,7 +363,7 @@ template<
 typename ArrayPartitionData<Element, rank>::Count
     ArrayPartitionData<Element, rank>::nr_elements() const
 {
-    assert(_elements.size() == lue::nr_elements(_shape));
+    lue_assert(_elements.size() == lue::nr_elements(_shape));
 
     return lue::nr_elements(_shape);
 }
@@ -408,9 +408,9 @@ void ArrayPartitionData<Element, rank>::erase(
     Index const hyperslab_begin_idx,
     Index const hyperslab_end_idx)
 {
-    assert(dimension_idx < rank);
-    assert(hyperslab_begin_idx <= hyperslab_end_idx);
-    assert(hyperslab_end_idx <= _shape[dimension_idx]);
+    lue_assert(dimension_idx < rank);
+    lue_assert(hyperslab_begin_idx <= hyperslab_end_idx);
+    lue_assert(hyperslab_end_idx <= _shape[dimension_idx]);
 
     if(hyperslab_begin_idx == hyperslab_end_idx) {
         return;  // Nothing to do
@@ -423,14 +423,14 @@ void ArrayPartitionData<Element, rank>::erase(
         std::accumulate(
             _shape.begin() + dimension_idx + 1, _shape.end(), 1,
             std::multiplies<Count>{})};
-    assert(offset >= 0);
+    lue_assert(offset >= 0);
 
     Count const count{
         (hyperslab_end_idx - hyperslab_begin_idx) *
         std::accumulate(
             _shape.begin() + dimension_idx + 1, _shape.end(), 1,
             std::multiplies<Count>{})};
-    assert(count > 0);
+    lue_assert(count > 0);
 
     Count const stride{
         std::accumulate(
@@ -514,6 +514,8 @@ template<
 Element& ArrayPartitionData<Element, rank>::operator[](
     Index const idx)
 {
+    lue_assert(idx < _elements.size());
+
     return _elements[idx];
 }
 
@@ -524,6 +526,8 @@ template<
 Element const& ArrayPartitionData<Element, rank>::operator[](
     Index const idx) const
 {
+    lue_assert(idx < _elements.size());
+
     return _elements[idx];
 }
 
@@ -556,8 +560,8 @@ ArrayPartitionData<Element, rank> ArrayPartitionData<Element, rank>::slice(
         auto const& slice = slices[0];
         auto const begin = std::get<0>(slice);
         auto const end = std::get<1>(slice);
-        assert(end >= begin);
-        assert(end <= nr_elements);
+        lue_assert(end >= begin);
+        lue_assert(end <= nr_elements);
         auto const nr_elements_slice = end - begin;
 
         ArrayPartitionData sliced_data{Shape{{nr_elements_slice}}};
@@ -574,23 +578,21 @@ ArrayPartitionData<Element, rank> ArrayPartitionData<Element, rank>::slice(
         return sliced_data;
     }
     else {
-#ifndef NDEBUG
         auto const [nr_elements0, nr_elements1] = _shape;
-#endif
 
         auto const& slice0 = slices[0];
         auto const& slice1 = slices[1];
 
         auto const begin0 = std::get<0>(slice0);
         auto const end0 = std::get<1>(slice0);
-        assert(end0 >= begin0);
-        assert(end0 <= nr_elements0);
+        lue_assert(end0 >= begin0);
+        lue_assert(end0 <= nr_elements0);
         auto const nr_elements0_slice = end0 - begin0;
 
         auto const begin1 = std::get<0>(slice1);
         auto const end1 = std::get<1>(slice1);
-        assert(end1 >= begin1);
-        assert(end1 <= nr_elements1);
+        lue_assert(end1 >= begin1);
+        lue_assert(end1 <= nr_elements1);
         auto const nr_elements1_slice = end1 - begin1;
 
         ArrayPartitionData sliced_data{
@@ -708,7 +710,7 @@ ArrayPartitionData<Element, 0>::ArrayPartitionData():
     _elements{}
 
 {
-    assert(_elements.size() == 1);
+    lue_assert(_elements.size() == 1);
 }
 
 
@@ -732,7 +734,7 @@ ArrayPartitionData<Element, 0>::ArrayPartitionData(
     ArrayPartitionData{}
 
 {
-    assert(shape.empty());
+    lue_assert(shape.empty());
 }
 
 
@@ -745,7 +747,7 @@ ArrayPartitionData<Element, 0>::ArrayPartitionData(
     ArrayPartitionData{value}
 
 {
-    assert(shape.empty());
+    lue_assert(shape.empty());
 }
 
 
@@ -754,7 +756,7 @@ template<
 bool ArrayPartitionData<Element, 0>::operator==(
     ArrayPartitionData const& other) const
 {
-    assert(_shape == other._shape);
+    lue_assert(_shape == other._shape);
 
     return _elements[0] == other._elements[0];
 }
@@ -784,8 +786,8 @@ template<
 typename ArrayPartitionData<Element, 0>::Count
     ArrayPartitionData<Element, 0>::nr_elements() const
 {
-    assert(lue::nr_elements(_shape) == 0);
-    assert(_elements.size() == 1);
+    lue_assert(lue::nr_elements(_shape) == 0);
+    lue_assert(_elements.size() == 1);
 
     return 1;
 }
@@ -840,7 +842,7 @@ template<
 Element& ArrayPartitionData<Element, 0>::operator[](
     [[maybe_unused]] Index const idx)
 {
-    assert(idx == 0);
+    lue_assert(idx == 0);
 
     return _elements[0];
 }
@@ -851,7 +853,7 @@ template<
 Element const& ArrayPartitionData<Element, 0>::operator[](
     [[maybe_unused]] Index const idx) const
 {
-    assert(idx == 0);
+    lue_assert(idx == 0);
 
     return _elements[0];
 }

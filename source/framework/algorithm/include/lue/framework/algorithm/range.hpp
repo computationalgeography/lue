@@ -25,6 +25,10 @@ template<
     using Element = ElementT<Data>;
     using Shape = ShapeT<Partition>;
 
+    // Given the logic below, it can be assumed that the input partition
+    // is ready.
+    assert(partition.is_ready());
+
     // Given the partition's shape, we can create a new collection for
     // partition elements
     return partition.shape().then(
@@ -34,7 +38,7 @@ template<
             {
                 // If stride equals nr_cols, then this partition's extent
                 // equals the arrays extent (along the second dimension)
-                assert(stride >= std::get<1>(shape));
+                lue_assert(stride >= std::get<1>(shape));
 
                 Data data{shape};
 
@@ -107,9 +111,16 @@ template<
 
     std::vector<hpx::future<Shape>> partition_shapes(nr_partitions);
 
-    for(Index p = 0; p < nr_partitions; ++p) {
+    for(Index p = 0; p < nr_partitions; ++p)
+    {
         InputPartition& partition = partitions[p];
-        partition_shapes[p] = partition.shape();
+
+        // Once the partition is ready ask for its shape
+        partition_shapes[p] = partition.then(
+            [](InputPartition&& partition)
+            {
+                return partition.shape();
+            });
     }
 
     return hpx::when_all(
@@ -158,23 +169,25 @@ template<
 
                     for(Index idx1 = 0; idx1 < nr_partitions1; ++idx1) {
 
+                        InputPartition const& input_partition = partitions(idx0, idx1);
+
                         range_partitions_span(idx0, idx1) = hpx::dataflow(
                             hpx::launch::async,
+                            hpx::util::unwrapping(
 
-                            [action, start_value, stride](
-                                InputPartition const& input_partition,
-                                hpx::future<hpx::id_type>&& locality_id)
-                            {
-                                return action(
-                                    locality_id.get(),
-                                    input_partition,
-                                    start_value,
-                                    stride);
-                            },
+                                [action, input_partition, start_value, stride](
+                                    hpx::id_type const locality_id)
+                                {
+                                    return action(
+                                        locality_id,
+                                        input_partition,
+                                        start_value,
+                                        stride);
+                                }
 
-                            partitions(idx0, idx1),
-                            hpx::get_colocation_id(
-                                partitions(idx0, idx1).get_id()));
+                            ),
+
+                            input_partition.locality_id());
 
                         start_value += partition_nr_elements0;
                     }

@@ -68,9 +68,9 @@ Kernel<Weight, rank>::Kernel(
     _radius{(shape[0] - 1) / 2}
 
 {
-    assert(nr_elements(shape) > 0);
-    assert(this->shape()[0] == this->size());
-    assert(is_hypercube(shape));
+    lue_assert(nr_elements(shape) > 0);
+    lue_assert(this->shape()[0] == this->size());
+    lue_assert(is_hypercube(shape));
 }
 
 
@@ -85,9 +85,9 @@ Kernel<Weight, rank>::Kernel(
     _radius{(shape[0] - 1) / 2}
 
 {
-    assert(nr_elements(shape) > 0);
-    assert(this->shape()[0] == this->size());
-    assert(is_hypercube(shape));
+    lue_assert(nr_elements(shape) > 0);
+    lue_assert(this->shape()[0] == this->size());
+    lue_assert(is_hypercube(shape));
 }
 
 
@@ -102,9 +102,9 @@ Kernel<Weight, rank>::Kernel(
     _radius{(shape[0] - 1) / 2}
 
 {
-    assert(nr_elements(shape) > 0);
-    assert(this->shape()[0] == this->size());
-    assert(is_hypercube(shape));
+    lue_assert(nr_elements(shape) > 0);
+    lue_assert(this->shape()[0] == this->size());
+    lue_assert(is_hypercube(shape));
 }
 
 
@@ -118,9 +118,9 @@ Kernel<Weight, rank>::Kernel(
     _radius{(this->shape()[0] - 1) / 2}
 
 {
-    assert(nr_elements(this->shape()) > 0);
-    assert(this->shape()[0] == this->size());
-    assert(is_hypercube(this->shape()));
+    lue_assert(nr_elements(this->shape()) > 0);
+    lue_assert(this->shape()[0] == this->size());
+    lue_assert(is_hypercube(this->shape()));
 }
 
 

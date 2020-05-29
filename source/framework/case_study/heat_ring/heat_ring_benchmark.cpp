@@ -9,6 +9,7 @@
 #include "lue/framework/core/math.hpp"
 #include "lue/framework/benchmark/benchmark.hpp"
 #include "lue/framework/benchmark/hpx_main.hpp"
+#include "lue/assert.hpp"
 #include <hpx/hpx.hpp>
 #include <hpx/serialization/serialize.hpp>
 #include "print_time_results.hpp"
@@ -385,8 +386,8 @@ void heat_ring(
     std::size_t const max_tree_depth)
 {
     static_assert(rank == 1);
-    assert(max_tree_depth > 0);
-    assert(task.array_shape()[0] % task.partition_shape()[0] == 0);
+    lue_assert(max_tree_depth > 0);
+    lue_assert(task.array_shape()[0] % task.partition_shape()[0] == 0);
 
     // Number of partitions.
     std::uint64_t np = task.array_shape()[0] / task.partition_shape()[0];

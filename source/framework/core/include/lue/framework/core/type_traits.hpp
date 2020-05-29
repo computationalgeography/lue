@@ -118,7 +118,10 @@ template<
     typename Element=ElementT<Array>,
     Rank rank=rank<Array>>
 using PartitionT =
-    typename detail::ArrayTraits<Array>::template Partition<Element, rank>;
+    std::remove_const_t<
+            typename detail::ArrayTraits<Array>::template
+                Partition<Element, rank>
+        >;
 
 
 /*!

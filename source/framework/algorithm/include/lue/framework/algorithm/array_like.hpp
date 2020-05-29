@@ -13,14 +13,11 @@ ArrayPartition<OutputElement, rank> array_like_partition(
     ArrayPartition<InputElement, rank> const& input_partition,
     OutputElement const fill_value)
 {
-    assert(
-        hpx::get_colocation_id(input_partition.get_id()).get() ==
-        hpx::find_here());
-
     using InputPartition = ArrayPartition<InputElement, rank>;
-
     using OutputPartition = ArrayPartition<OutputElement, rank>;
     using OutputPartitionData = DataT<OutputPartition>;
+
+    lue_assert(input_partition.locality_id().get() == hpx::find_here());
 
     return hpx::dataflow(
         hpx::launch::async,
@@ -38,8 +35,8 @@ ArrayPartition<OutputElement, rank> array_like_partition(
             auto const shape{input_partition_server.shape()};
 
             return OutputPartition{
-                hpx::find_here(), offset,
-                OutputPartitionData{shape, fill_value}};
+                hpx::find_here(), std::move(offset),
+                OutputPartitionData{std::move(shape), fill_value}};
         },
 
         input_partition);
@@ -97,7 +94,7 @@ PartitionedArray<OutputElement, rank> array_like(
 
                 ),
 
-            hpx::get_colocation_id(input_partition.get_id()),
+            input_partition.locality_id(),
             fill_value);
     }
 

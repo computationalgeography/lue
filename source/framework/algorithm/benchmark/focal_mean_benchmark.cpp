@@ -16,7 +16,6 @@
 namespace lue {
 namespace benchmark {
 
-
 template<
     typename Element,
     Rank rank>
@@ -89,7 +88,7 @@ void FocalMeanBenchmarkModel<Element, rank>::preprocess()
         Array{this->array_shape(), this->partition_shape()},
         Element{0}, std::numeric_limits<Element>::max());
 
-    assert(_state.shape() == this->array_shape());
+    lue_assert(_state.shape() == this->array_shape());
 
     _kernel = lue::box_kernel<bool, rank>(1, true);
 
@@ -97,17 +96,17 @@ void FocalMeanBenchmarkModel<Element, rank>::preprocess()
 
 
     // Optionally, write state -------------------------------------------------
-    namespace ldm = lue::data_model;
-    namespace lh5 = lue::hdf5;
-
-    // using Shape = typename BenchmarkModel<rank>::Shape;
-    using ConstantRasterView =
-        ldm::constant::RasterView<std::shared_ptr<ldm::Dataset>>;
-
     bool const write_info{false};
 
     if(write_info)
     {
+        namespace ldm = lue::data_model;
+        namespace lh5 = lue::hdf5;
+
+        // using Shape = typename BenchmarkModel<rank>::Shape;
+        using ConstantRasterView =
+            ldm::constant::RasterView<std::shared_ptr<ldm::Dataset>>;
+
         std::string const dataset_pathname{"focal_mean.lue"};
         auto dataset_ptr{std::make_shared<ldm::Dataset>(
             ldm::create_dataset(dataset_pathname))};
@@ -201,7 +200,7 @@ void FocalMeanBenchmarkModel<Element, rank>::postprocess()
 //     Task const& task,
 //     std::size_t const max_tree_depth)
 // {
-//     assert(max_tree_depth > 0);
+//     lue_assert(max_tree_depth > 0);
 // 
 //     using Array = PartitionedArray<Element, rank>;
 //     using Shape = typename Array::Shape;
@@ -222,7 +221,7 @@ void FocalMeanBenchmarkModel<Element, rank>::postprocess()
 // 
 //     AlgorithmBenchmarkResult result{state.partitions().shape()};
 // 
-//     assert(state.shape() == shape);
+//     lue_assert(state.shape() == shape);
 // 
 //     state = uniform(state, Element{0}, std::numeric_limits<Element>::max());
 // 

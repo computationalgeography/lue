@@ -12,13 +12,10 @@ template<
 ArrayPartition<std::uint32_t, rank> locality_id_partition(
     ArrayPartition<InputElement, rank> const& input_partition)
 {
-    assert(
-        hpx::get_colocation_id(input_partition.get_id()).get() ==
-        hpx::find_here());
-
     using InputPartition = ArrayPartition<InputElement, rank>;
-
     using OutputPartition = ArrayPartition<std::uint32_t, rank>;
+
+    lue_assert(input_partition.locality_id().get() == hpx::find_here());
 
     return hpx::dataflow(
         hpx::launch::async,
@@ -75,8 +72,8 @@ PartitionedArray<std::uint32_t, rank> locality_id(
     LocalityIDPartitionAction<InputElement, rank> action;
     OutputPartitions output_partitions{shape_in_partitions(input_array)};
 
-    for(Index p = 0; p < nr_partitions(input_array); ++p) {
-
+    for(Index p = 0; p < nr_partitions(input_array); ++p)
+    {
         InputPartition const& input_partition{input_array.partitions()[p]};
 
         output_partitions[p] = hpx::dataflow(
@@ -90,8 +87,7 @@ PartitionedArray<std::uint32_t, rank> locality_id(
                     }
 
                 ),
-            hpx::get_colocation_id(input_partition.get_id()));
-
+            input_partition.locality_id());
     }
 
     return OutputArray{shape(input_array), std::move(output_partitions)};

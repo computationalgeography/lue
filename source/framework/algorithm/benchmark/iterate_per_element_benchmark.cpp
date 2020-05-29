@@ -21,7 +21,7 @@ AlgorithmBenchmarkResult iterate_per_element(
     Task const& task,
     std::size_t const max_tree_depth)
 {
-    assert(max_tree_depth > 0);
+    lue_assert(max_tree_depth > 0);
 
     using Array = PartitionedArray<Element, rank>;
     using Shape = typename Array::Shape;
@@ -42,7 +42,7 @@ AlgorithmBenchmarkResult iterate_per_element(
 
     AlgorithmBenchmarkResult result{state.partitions().shape()};
 
-    assert(state.shape() == shape);
+    lue_assert(state.shape() == shape);
 
     // Fill array with random numbers
     // hpx::shared_future<Element> min_nr_iterations =

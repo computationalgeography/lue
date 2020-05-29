@@ -1,4 +1,5 @@
 #include "benchmark_model.hpp"
+#include "lue/assert.hpp"
 #include <algorithm>
 
 
@@ -48,6 +49,8 @@ template<
 void BenchmarkModel<rank>::set_result(
     Result const& result)
 {
+    lue_assert(result.shape_in_partitions().size() == rank);
+
     _result = result;
 }
 
@@ -57,6 +60,8 @@ template<
 typename BenchmarkModel<rank>::Result const&
     BenchmarkModel<rank>::result() const
 {
+    lue_assert(_result.shape_in_partitions().size() == rank);
+
     return _result;
 }
 

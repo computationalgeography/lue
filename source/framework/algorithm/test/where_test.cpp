@@ -51,6 +51,7 @@ BOOST_AUTO_TEST_CASE(use_case_1)
             }
         };
     Array<bool, rank> condition{shape};
+    condition.partitions()(0, 0).wait();
     condition.partitions()(0, 0).set_data(std::move(condition_data));
 
     PartitionData<Element, rank> true_data{
@@ -62,6 +63,7 @@ BOOST_AUTO_TEST_CASE(use_case_1)
             }
         };
     Array<Element, rank> true_array{shape};
+    true_array.partitions()(0, 0).wait();
     true_array.partitions()(0, 0).set_data(std::move(true_data));
 
     Element const false_value{9};
@@ -77,6 +79,7 @@ BOOST_AUTO_TEST_CASE(use_case_1)
             }
         };
     Array<Element, rank> result_we_want{shape};
+    result_we_want.partitions()(0, 0).wait();
     result_we_want.partitions()(0, 0).set_data(std::move(result_we_want_data));
 
     lue::test::check_arrays_are_equal(result_we_got, result_we_want);

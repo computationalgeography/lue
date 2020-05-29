@@ -37,7 +37,7 @@ public:
 
     using Slices = typename Data::Slices;
 
-                   ArrayPartition      ();
+    ///                ArrayPartition      ();
 
                    ArrayPartition      (Offset const& offset,
                                         Shape const& shape);
@@ -216,19 +216,19 @@ LUE_DEFINE_ARRAY_PARTITION_COMPONENT_ACTION_TEMPLATE(NrElements)
 namespace lue {
 namespace server {
 
-template<
-    typename Element,
-    Rank rank>
-ArrayPartition<Element, rank>::ArrayPartition():
-
-    Base{},
-    _locality_id{hpx::find_here()},
-    _offset{},
-    _data{}
-
-{
-    HPX_ASSERT(false);
-}
+// template<
+//     typename Element,
+//     Rank rank>
+// ArrayPartition<Element, rank>::ArrayPartition():
+// 
+//     Base{},
+//     _locality_id{hpx::find_here()},
+//     _offset{},
+//     _data{}
+// 
+// {
+//     HPX_ASSERT(false);
+// }
 
 
 /*!

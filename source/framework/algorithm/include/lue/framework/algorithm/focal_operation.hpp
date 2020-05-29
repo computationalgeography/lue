@@ -2,6 +2,7 @@
 #include "lue/framework/algorithm/policy.hpp"
 #include "lue/framework/core/component/partitioned_array.hpp"
 #include "lue/framework/core/array.hpp"
+#include "lue/framework/core/component.hpp"
 #include <hpx/lcos/when_all.hpp>
 #include <fmt/format.h>
 #include <stdexcept>
@@ -25,8 +26,8 @@ typename Functor::OutputElement inner(
     static_assert(rank<Kernel> == 2);
 
     if constexpr(rank<Kernel> == 2) {
-        assert(window.extent(0) == kernel.size());
-        assert(window.extent(1) == kernel.size());
+        lue_assert(window.extent(0) == kernel.size());
+        lue_assert(window.extent(1) == kernel.size());
 
         for(Index r = 0; r < window.extent(0); ++r) {
             for(Index c = 0; c < window.extent(1); ++c) {
@@ -68,11 +69,11 @@ typename Functor::OutputElement border(
             Count count = 0;
 
             for(Count c = 0; c < windows.shape()[1]; ++c) {
-                assert(windows(r, c).extent(1) > 0);
+                lue_assert(windows(r, c).extent(1) > 0);
                 count += windows(r, c).extent(1);
             }
 
-            assert(count == kernel.size());
+            lue_assert(count == kernel.size());
         }
 
         // Check number of rows in each column of partitions
@@ -80,11 +81,11 @@ typename Functor::OutputElement border(
             Count count = 0;
 
             for(Count r = 0; r < windows.shape()[0]; ++r) {
-                assert(windows(r, c).extent(0) > 0);
+                lue_assert(windows(r, c).extent(0) > 0);
                 count += windows(r, c).extent(0);
             }
 
-            assert(count == kernel.size());
+            lue_assert(count == kernel.size());
         }
 
         // Within a row of partitions, the number of rows per
@@ -94,7 +95,7 @@ typename Functor::OutputElement border(
 
             for(Count c = 0; c < windows.shape()[1]; ++c) {
 
-                assert(windows(r, c).extent(0) == nr_rows);
+                lue_assert(windows(r, c).extent(0) == nr_rows);
             }
         }
 
@@ -104,7 +105,7 @@ typename Functor::OutputElement border(
             Count const nr_cols = windows(0, c).extent(1);
 
             for(Count r = 0; r < windows.shape()[0]; ++r) {
-                assert(windows(r, c).extent(1) == nr_cols);
+                lue_assert(windows(r, c).extent(1) == nr_cols);
             }
         }
 
@@ -123,14 +124,14 @@ typename Functor::OutputElement border(
 
                 auto const& window = windows(rw, cw);
 
-                assert(window.extent(0) <= kernel.size());
-                assert(window.extent(1) <= kernel.size());
+                lue_assert(window.extent(0) <= kernel.size());
+                lue_assert(window.extent(1) <= kernel.size());
 
                 for(Index r = 0; r < window.extent(0); ++r, ++rk) {
                     for(Index c = 0; c < window.extent(1); ++c, ++ck) {
 
-                        assert(rk < std::get<0>(kernel.shape()));
-                        assert(ck < std::get<1>(kernel.shape()));
+                        lue_assert(rk < std::get<0>(kernel.shape()));
+                        lue_assert(ck < std::get<1>(kernel.shape()));
 
                         aggregator.add(kernel(r, c), window(r, c));
 
@@ -251,7 +252,7 @@ template<
     typename OutputPartition,
     typename Kernel,
     typename Functor>
-OutputPartition focal_operation_partition(
+OutputPartition focal_operation_partition2(
     InputPartitions const& partitions,
     Kernel const& kernel,
     Functor const& /* functor */)
@@ -269,16 +270,19 @@ OutputPartition focal_operation_partition(
     using Slice = SliceT<InputPartition>;
     using Slices = SlicesT<InputPartition>;
 
+    // We are called from a function that waits on all partitions to
+    // become ready
+    lue_assert(all_are_ready(partitions));
+
     auto const kernel_radius = kernel.radius();
 
-    assert(partitions.nr_elements() == nr_neighbors<InputPartition>() + 1);
+    lue_assert(partitions.nr_elements() == nr_neighbors<InputPartition>() + 1);
 
     static_assert(rank<InputPartition> == 2);
 
-    if constexpr(rank<InputPartition> == 2) {
-        assert(
-            hpx::get_colocation_id(partitions(1, 1).get_id()).get() ==
-            hpx::find_here());
+    if constexpr(rank<InputPartition> == 2)
+    {
+        lue_assert(partitions(1, 1).locality_id().get() == hpx::find_here());
 
         auto const [nr_partitions0, nr_partitions1] = partitions.shape();
 
@@ -295,7 +299,6 @@ OutputPartition focal_operation_partition(
         // We only need to calculate a result for partition (1, 1). The
         // other ones are used to provide input values for the sides of
         // this partition.
-
 
         hpx::future<Offset> offset{partitions(1, 1).offset()};
 
@@ -506,6 +509,8 @@ OutputPartition focal_operation_partition(
 
         }
 
+        lue_assert(all_are_valid(input_partitions_data));
+
         // Once the elements from the center partition have arrived,
         // perform calculations for all cells whose neighborhoods are
         // contained within this partition
@@ -558,9 +563,9 @@ OutputPartition focal_operation_partition(
             hpx::util::unwrapping(
 
                     [kernel /* , functor */](
-                        auto&& offset,
+                        Offset&& offset,
                         auto&& input_partitions_data_futures,
-                        auto&& output_partition_data)
+                        OutputData&& output_partition_data)
                     {
                         using InputPartitionsData =
                             Array<InputData, rank<InputPartition>>;
@@ -655,34 +660,34 @@ OutputPartition focal_operation_partition(
                                         // NW partition view
                                         windows(0, 0) = lue::subspan(nw_partition,
                                             Slice{rnwb, rnwe}, Slice{cnwb, cnwe});
-                                        assert(windows(0, 0).extent(0) > 0);
-                                        assert(windows(0, 0).extent(1) > 0);
-                                        assert(windows(0, 0).extent(0) <= kernel.radius());
-                                        assert(windows(0, 0).extent(1) <= kernel.radius());
+                                        lue_assert(windows(0, 0).extent(0) > 0);
+                                        lue_assert(windows(0, 0).extent(1) > 0);
+                                        lue_assert(windows(0, 0).extent(0) <= kernel.radius());
+                                        lue_assert(windows(0, 0).extent(1) <= kernel.radius());
 
                                         // NE partition view
                                         windows(0, 1) = lue::subspan(ne_partition,
                                             Slice{rneb, rnee}, Slice{cneb, cnee});
-                                        assert(windows(0, 1).extent(0) > 0);
-                                        assert(windows(0, 1).extent(1) > 0);
-                                        assert(windows(0, 1).extent(0) <= kernel.radius());
-                                        assert(windows(0, 1).extent(1) < kernel.size());
+                                        lue_assert(windows(0, 1).extent(0) > 0);
+                                        lue_assert(windows(0, 1).extent(1) > 0);
+                                        lue_assert(windows(0, 1).extent(0) <= kernel.radius());
+                                        lue_assert(windows(0, 1).extent(1) < kernel.size());
 
                                         // SW partition view
                                         windows(1, 0) = lue::subspan(sw_partition,
                                             Slice{rswb, rswe}, Slice{cswb, cswe});
-                                        assert(windows(1, 0).extent(0) > 0);
-                                        assert(windows(1, 0).extent(1) > 0);
-                                        assert(windows(1, 0).extent(0) < kernel.size());
-                                        assert(windows(1, 0).extent(1) <= kernel.radius());
+                                        lue_assert(windows(1, 0).extent(0) > 0);
+                                        lue_assert(windows(1, 0).extent(1) > 0);
+                                        lue_assert(windows(1, 0).extent(0) < kernel.size());
+                                        lue_assert(windows(1, 0).extent(1) <= kernel.radius());
 
                                         // SE partition view
                                         windows(1, 1) = lue::subspan(se_partition,
                                             Slice{rseb, rsee}, Slice{cseb, csee});
-                                        assert(windows(1, 1).extent(0) > 0);
-                                        assert(windows(1, 1).extent(1) > 0);
-                                        assert(windows(1, 1).extent(0) < kernel.size());
-                                        assert(windows(1, 1).extent(1) < kernel.size());
+                                        lue_assert(windows(1, 1).extent(0) > 0);
+                                        lue_assert(windows(1, 1).extent(1) > 0);
+                                        lue_assert(windows(1, 1).extent(0) < kernel.size());
+                                        lue_assert(windows(1, 1).extent(1) < kernel.size());
 
                                         output_partition_data(rf, cf) =
                                             detail::border<Functor>(windows, kernel);
@@ -727,34 +732,34 @@ OutputPartition focal_operation_partition(
                                         // NW partition view
                                         windows(0, 0) = lue::subspan(nw_partition,
                                             Slice{rnwb, rnwe}, Slice{cnwb, cnwe});
-                                        assert(windows(0, 0).extent(0) > 0);
-                                        assert(windows(0, 0).extent(1) > 0);
-                                        assert(windows(0, 0).extent(0) <= kernel.radius());
-                                        assert(windows(0, 0).extent(1) < kernel.size());
+                                        lue_assert(windows(0, 0).extent(0) > 0);
+                                        lue_assert(windows(0, 0).extent(1) > 0);
+                                        lue_assert(windows(0, 0).extent(0) <= kernel.radius());
+                                        lue_assert(windows(0, 0).extent(1) < kernel.size());
 
                                         // NE partition view
                                         windows(0, 1) = lue::subspan(ne_partition,
                                             Slice{rneb, rnee}, Slice{cneb, cnee});
-                                        assert(windows(0, 1).extent(0) > 0);
-                                        assert(windows(0, 1).extent(1) > 0);
-                                        assert(windows(0, 1).extent(0) <= kernel.radius());
-                                        assert(windows(0, 1).extent(1) <= kernel.radius());
+                                        lue_assert(windows(0, 1).extent(0) > 0);
+                                        lue_assert(windows(0, 1).extent(1) > 0);
+                                        lue_assert(windows(0, 1).extent(0) <= kernel.radius());
+                                        lue_assert(windows(0, 1).extent(1) <= kernel.radius());
 
                                         // SW partition view
                                         windows(1, 0) = lue::subspan(sw_partition,
                                             Slice{rswb, rswe}, Slice{cswb, cswe});
-                                        assert(windows(1, 0).extent(0) > 0);
-                                        assert(windows(1, 0).extent(1) > 0);
-                                        assert(windows(1, 0).extent(0) < kernel.size());
-                                        assert(windows(1, 0).extent(1) < kernel.size());
+                                        lue_assert(windows(1, 0).extent(0) > 0);
+                                        lue_assert(windows(1, 0).extent(1) > 0);
+                                        lue_assert(windows(1, 0).extent(0) < kernel.size());
+                                        lue_assert(windows(1, 0).extent(1) < kernel.size());
 
                                         // SE partition view
                                         windows(1, 1) = lue::subspan(se_partition,
                                             Slice{rseb, rsee}, Slice{cseb, csee});
-                                        assert(windows(1, 1).extent(0) > 0);
-                                        assert(windows(1, 1).extent(1) > 0);
-                                        assert(windows(1, 1).extent(0) < kernel.size());
-                                        assert(windows(1, 1).extent(1) <= kernel.radius());
+                                        lue_assert(windows(1, 1).extent(0) > 0);
+                                        lue_assert(windows(1, 1).extent(1) > 0);
+                                        lue_assert(windows(1, 1).extent(0) < kernel.size());
+                                        lue_assert(windows(1, 1).extent(1) <= kernel.radius());
 
                                         output_partition_data(rf, cf) =
                                             detail::border<Functor>(windows, kernel);
@@ -799,33 +804,33 @@ OutputPartition focal_operation_partition(
                                         // NW partition view
                                         windows(0, 0) = lue::subspan(nw_partition,
                                             Slice{rnwb, rnwe}, Slice{cnwb, cnwe});
-                                        assert(windows(0, 0).extent(0) > 0);
-                                        assert(windows(0, 0).extent(1) > 0);
-                                        assert(windows(0, 0).extent(0) < kernel.size());
-                                        assert(windows(0, 0).extent(1) <= kernel.radius());
+                                        lue_assert(windows(0, 0).extent(0) > 0);
+                                        lue_assert(windows(0, 0).extent(1) > 0);
+                                        lue_assert(windows(0, 0).extent(0) < kernel.size());
+                                        lue_assert(windows(0, 0).extent(1) <= kernel.radius());
 
                                         // NE partition view
                                         windows(0, 1) = lue::subspan(ne_partition,
                                             Slice{rneb, rnee}, Slice{cneb, cnee});
-                                        assert(windows(0, 1).extent(0) > 0);
-                                        assert(windows(0, 1).extent(1) > 0);
-                                        assert(windows(0, 1).extent(0) < kernel.size());
-                                        assert(windows(0, 1).extent(1) < kernel.size());
+                                        lue_assert(windows(0, 1).extent(0) > 0);
+                                        lue_assert(windows(0, 1).extent(1) > 0);
+                                        lue_assert(windows(0, 1).extent(0) < kernel.size());
+                                        lue_assert(windows(0, 1).extent(1) < kernel.size());
 
                                         // SW partition view
                                         windows(1, 0) = lue::subspan(sw_partition,
                                             Slice{rswb, rswe}, Slice{cswb, cswe});
-                                        assert(windows(1, 0).extent(0) > 0);
-                                        assert(windows(1, 0).extent(1) > 0);
-                                        assert(windows(1, 0).extent(0) <= kernel.radius());
-                                        assert(windows(1, 0).extent(1) <= kernel.radius());
+                                        lue_assert(windows(1, 0).extent(0) > 0);
+                                        lue_assert(windows(1, 0).extent(1) > 0);
+                                        lue_assert(windows(1, 0).extent(0) <= kernel.radius());
+                                        lue_assert(windows(1, 0).extent(1) <= kernel.radius());
 
                                         windows(1, 1) = lue::subspan(se_partition,
                                             Slice{rseb, rsee}, Slice{cseb, csee});
-                                        assert(windows(1, 1).extent(0) > 0);
-                                        assert(windows(1, 1).extent(1) > 0);
-                                        assert(windows(1, 1).extent(0) <= kernel.radius());
-                                        assert(windows(1, 1).extent(1) < kernel.size());
+                                        lue_assert(windows(1, 1).extent(0) > 0);
+                                        lue_assert(windows(1, 1).extent(1) > 0);
+                                        lue_assert(windows(1, 1).extent(0) <= kernel.radius());
+                                        lue_assert(windows(1, 1).extent(1) < kernel.size());
 
                                         output_partition_data(rf, cf) =
                                             detail::border<Functor>(windows, kernel);
@@ -870,34 +875,34 @@ OutputPartition focal_operation_partition(
                                         // NW partition view
                                         windows(0, 0) = lue::subspan(nw_partition,
                                             Slice{rnwb, rnwe}, Slice{cnwb, cnwe});
-                                        assert(windows(0, 0).extent(0) > 0);
-                                        assert(windows(0, 0).extent(1) > 0);
-                                        assert(windows(0, 0).extent(0) < kernel.size());
-                                        assert(windows(0, 0).extent(1) < kernel.size());
+                                        lue_assert(windows(0, 0).extent(0) > 0);
+                                        lue_assert(windows(0, 0).extent(1) > 0);
+                                        lue_assert(windows(0, 0).extent(0) < kernel.size());
+                                        lue_assert(windows(0, 0).extent(1) < kernel.size());
 
                                         // NE partition view
                                         windows(0, 1) = lue::subspan(ne_partition,
                                             Slice{rneb, rnee}, Slice{cneb, cnee});
-                                        assert(windows(0, 1).extent(0) > 0);
-                                        assert(windows(0, 1).extent(1) > 0);
-                                        assert(windows(0, 1).extent(0) < kernel.size());
-                                        assert(windows(0, 1).extent(1) <= kernel.radius());
+                                        lue_assert(windows(0, 1).extent(0) > 0);
+                                        lue_assert(windows(0, 1).extent(1) > 0);
+                                        lue_assert(windows(0, 1).extent(0) < kernel.size());
+                                        lue_assert(windows(0, 1).extent(1) <= kernel.radius());
 
                                         // SW partition view
                                         windows(1, 0) = lue::subspan(sw_partition,
                                             Slice{rswb, rswe}, Slice{cswb, cswe});
-                                        assert(windows(1, 0).extent(0) > 0);
-                                        assert(windows(1, 0).extent(1) > 0);
-                                        assert(windows(1, 0).extent(0) <= kernel.radius());
-                                        assert(windows(1, 0).extent(1) < kernel.size());
+                                        lue_assert(windows(1, 0).extent(0) > 0);
+                                        lue_assert(windows(1, 0).extent(1) > 0);
+                                        lue_assert(windows(1, 0).extent(0) <= kernel.radius());
+                                        lue_assert(windows(1, 0).extent(1) < kernel.size());
 
                                         // SE partition view
                                         windows(1, 1) = lue::subspan(se_partition,
                                             Slice{rseb, rsee}, Slice{cseb, csee});
-                                        assert(windows(1, 1).extent(0) > 0);
-                                        assert(windows(1, 1).extent(1) > 0);
-                                        assert(windows(1, 1).extent(0) <= kernel.radius());
-                                        assert(windows(1, 1).extent(1) <= kernel.radius());
+                                        lue_assert(windows(1, 1).extent(0) > 0);
+                                        lue_assert(windows(1, 1).extent(1) > 0);
+                                        lue_assert(windows(1, 1).extent(0) <= kernel.radius());
+                                        lue_assert(windows(1, 1).extent(1) <= kernel.radius());
 
                                         output_partition_data(rf, cf) =
                                             detail::border<Functor>(windows, kernel);
@@ -931,18 +936,18 @@ OutputPartition focal_operation_partition(
                                         // N partition view
                                         windows(0, 0) = lue::subspan(n_partition,
                                             Slice{rnb, rne}, Slice{cb, cb + kernel.size()});
-                                        assert(windows(0, 0).extent(0) > 0);
-                                        assert(windows(0, 0).extent(1) > 0);
-                                        assert(windows(0, 0).extent(0) <= kernel.radius());
-                                        assert(windows(0, 0).extent(1) == kernel.size());
+                                        lue_assert(windows(0, 0).extent(0) > 0);
+                                        lue_assert(windows(0, 0).extent(1) > 0);
+                                        lue_assert(windows(0, 0).extent(0) <= kernel.radius());
+                                        lue_assert(windows(0, 0).extent(1) == kernel.size());
 
                                         // S partition view
                                         windows(1, 0) = lue::subspan(s_partition,
                                             Slice{rsb, rse}, Slice{cb, cb + kernel.size()});
-                                        assert(windows(1, 0).extent(0) > 0);
-                                        assert(windows(1, 0).extent(1) > 0);
-                                        assert(windows(1, 0).extent(0) < kernel.size());
-                                        assert(windows(1, 0).extent(1) == kernel.size());
+                                        lue_assert(windows(1, 0).extent(0) > 0);
+                                        lue_assert(windows(1, 0).extent(1) > 0);
+                                        lue_assert(windows(1, 0).extent(0) < kernel.size());
+                                        lue_assert(windows(1, 0).extent(1) == kernel.size());
 
                                         output_partition_data(rf, cf) =
                                             detail::border<Functor>(windows, kernel);
@@ -973,18 +978,18 @@ OutputPartition focal_operation_partition(
                                         // W partition view
                                         windows(0, 0) = lue::subspan(w_partition,
                                             Slice{rb, rb + kernel.size()}, Slice{cwb, cwe});
-                                        assert(windows(0, 0).extent(0) > 0);
-                                        assert(windows(0, 0).extent(1) > 0);
-                                        assert(windows(0, 0).extent(0) == kernel.size());
-                                        assert(windows(0, 0).extent(1) <= kernel.radius());
+                                        lue_assert(windows(0, 0).extent(0) > 0);
+                                        lue_assert(windows(0, 0).extent(1) > 0);
+                                        lue_assert(windows(0, 0).extent(0) == kernel.size());
+                                        lue_assert(windows(0, 0).extent(1) <= kernel.radius());
 
                                         // E partition view
                                         windows(0, 1) = lue::subspan(e_partition,
                                             Slice{rb, rb + kernel.size()}, Slice{ceb, cee});
-                                        assert(windows(0, 1).extent(0) > 0);
-                                        assert(windows(0, 1).extent(1) > 0);
-                                        assert(windows(0, 1).extent(0) == kernel.size());
-                                        assert(windows(0, 1).extent(1) < kernel.size());
+                                        lue_assert(windows(0, 1).extent(0) > 0);
+                                        lue_assert(windows(0, 1).extent(1) > 0);
+                                        lue_assert(windows(0, 1).extent(0) == kernel.size());
+                                        lue_assert(windows(0, 1).extent(1) < kernel.size());
 
                                         output_partition_data(rf, cf) =
                                             detail::border<Functor>(windows, kernel);
@@ -1015,18 +1020,18 @@ OutputPartition focal_operation_partition(
                                         // W partition view
                                         windows(0, 0) = lue::subspan(w_partition,
                                             Slice{rb, rb + kernel.size()}, Slice{cwb, cwe});
-                                        assert(windows(0, 0).extent(0) > 0);
-                                        assert(windows(0, 0).extent(1) > 0);
-                                        assert(windows(0, 0).extent(0) == kernel.size());
-                                        assert(windows(0, 0).extent(1) < kernel.size());
+                                        lue_assert(windows(0, 0).extent(0) > 0);
+                                        lue_assert(windows(0, 0).extent(1) > 0);
+                                        lue_assert(windows(0, 0).extent(0) == kernel.size());
+                                        lue_assert(windows(0, 0).extent(1) < kernel.size());
 
                                         // E partition view
                                         windows(0, 1) = lue::subspan(e_partition,
                                             Slice{rb, rb + kernel.size()}, Slice{ceb, cee});
-                                        assert(windows(0, 1).extent(0) > 0);
-                                        assert(windows(0, 1).extent(1) > 0);
-                                        assert(windows(0, 1).extent(0) == kernel.size());
-                                        assert(windows(0, 1).extent(1) <= kernel.radius());
+                                        lue_assert(windows(0, 1).extent(0) > 0);
+                                        lue_assert(windows(0, 1).extent(1) > 0);
+                                        lue_assert(windows(0, 1).extent(0) == kernel.size());
+                                        lue_assert(windows(0, 1).extent(1) <= kernel.radius());
 
                                         output_partition_data(rf, cf) =
                                             detail::border<Functor>(windows, kernel);
@@ -1057,18 +1062,18 @@ OutputPartition focal_operation_partition(
                                         // N partition view
                                         windows(0, 0) = lue::subspan(n_partition,
                                             Slice{rnb, rne}, Slice{cb, cb + kernel.size()});
-                                        assert(windows(0, 0).extent(0) > 0);
-                                        assert(windows(0, 0).extent(1) > 0);
-                                        assert(windows(0, 0).extent(0) < kernel.size());
-                                        assert(windows(0, 0).extent(1) == kernel.size());
+                                        lue_assert(windows(0, 0).extent(0) > 0);
+                                        lue_assert(windows(0, 0).extent(1) > 0);
+                                        lue_assert(windows(0, 0).extent(0) < kernel.size());
+                                        lue_assert(windows(0, 0).extent(1) == kernel.size());
 
                                         // S partition view
                                         windows(1, 0) = lue::subspan(s_partition,
                                             Slice{rsb, rse}, Slice{cb, cb + kernel.size()});
-                                        assert(windows(1, 0).extent(0) > 0);
-                                        assert(windows(1, 0).extent(1) > 0);
-                                        assert(windows(1, 0).extent(0) <= kernel.radius());
-                                        assert(windows(1, 0).extent(1) == kernel.size());
+                                        lue_assert(windows(1, 0).extent(0) > 0);
+                                        lue_assert(windows(1, 0).extent(1) > 0);
+                                        lue_assert(windows(1, 0).extent(0) <= kernel.radius());
+                                        lue_assert(windows(1, 0).extent(1) == kernel.size());
 
                                         output_partition_data(rf, cf) =
                                             detail::border<Functor>(windows, kernel);
@@ -1092,8 +1097,51 @@ OutputPartition focal_operation_partition(
             output_data_future);
     }
 
-    assert(false);
+    lue_assert(false);
     return OutputPartition{hpx::find_here()};
+}
+
+
+template<
+    typename InputPartitions,
+    typename OutputPartition,
+    typename Kernel,
+    typename Functor>
+OutputPartition focal_operation_partition(
+    InputPartitions const& input_partitions,
+    Kernel const& kernel,
+    Functor const& functor)
+{
+    // Call the function that does the actual calculations. Here we make
+    // sure the input partitions are ready before the calculations start.
+
+    static_assert(rank<InputPartitions> == 2);
+
+    using InputPartition = PartitionT<InputPartitions>;
+
+    lue_assert(all_are_valid(input_partitions));
+
+    OutputPartition result;
+
+    result = hpx::when_all(input_partitions.begin(), input_partitions.end()).then(
+        hpx::util::unwrapping(
+
+                [kernel, functor](
+                    std::vector<InputPartition>&& input_partitions)
+                {
+                    using Shape = ShapeT<InputPartitions>;
+
+                    return focal_operation_partition2<
+                            InputPartitions, OutputPartition, Kernel, Functor>(
+                        InputPartitions{
+                            Shape{{3, 3}},
+                            input_partitions.begin(), input_partitions.end()},
+                        kernel, functor);
+                }
+
+            ));
+
+    return result;
 }
 
 
@@ -1115,87 +1163,57 @@ template<
     typename Kernel,
     typename Functor,
     typename Partitions>
-auto spawn_focal_operation_partition(
+PartitionT<Partitions, OutputElementT<Functor>>
+        spawn_focal_operation_partition(
     Action const& action,
     Kernel const& kernel,
     Functor const& functor,
-    Partitions const& partitions)
+    Partitions const& input_partitions)
 {
-    // using OutputPartition = PartitionT<Partitions, OutputElementT<Functor>>;
+    // Send the task to the locality of the center partition. Some of
+    // the input partitions might not be ready yet.
 
-    // OutputPartition output_partition;
+    lue_assert(all_are_valid(input_partitions));
 
-    // // Partitions are scattered over localities. Scatter tasks as well.
-    // output_partition = hpx::dataflow(
-    //     hpx::launch::async,
-    //     hpx::util::unwrapping(
+    return input_partitions(1, 1).locality_id().then(hpx::util::unwrapping(
 
-    //             [action, kernel, functor, partitions](
-    //                 hpx::id_type const locality_id)
-    //             {
-    //                 return action(
-    //                     locality_id, partitions, kernel, functor);
-    //             }
-
-    //         ),
-    //     hpx::get_colocation_id(partitions(1, 1).get_id()));
-
-    // return output_partition;
-
-
-
-    using Shape = ShapeT<Partitions>;
-
-    // Once all 9 partitions are ready, call the remote action
-    return hpx::dataflow(
-        hpx::launch::async,
-        hpx::util::unwrapping(
-
-            [action, kernel, functor](
-                auto&& partitions_,
+            [action, kernel, functor, input_partitions](
                 hpx::id_type const locality_id)
             {
-                Partitions partitions{
-                    Shape{{3, 3}}, partitions_.begin(), partitions_.end()};
-
-                return action(locality_id, partitions, kernel, functor);
+                return action(locality_id, input_partitions, kernel, functor);
             }
 
-        ),
-        hpx::when_all_n(partitions.begin(), partitions.nr_elements()),
-        // FIXME We assume that the partition component is ready
-        //     here. Otherwise its location cannot be determined yet.
-        hpx::get_colocation_id(partitions(1, 1).get_id()));
+        ));
 }
 
 
 template<
     typename Element,
     Rank rank>
-auto spawn_create_halo_partition(
+ArrayPartition<Element, rank> spawn_create_halo_corner_partition(
     Radius const kernel_radius,
     Element const fill_value,
     ArrayPartition<Element, rank> const& partition)
 {
+    // Asynchronously create a new partition component, on the same
+    // locality as the input partition. The input partition might not
+    // be ready yet.
+
     using Partition = ArrayPartition<Element, rank>;
     using Offset = OffsetT<Partition>;
     using Shape = ShapeT<Partition>;
 
-    return hpx::dataflow(
-        hpx::launch::async,
-        hpx::util::unwrapping(
+    return partition.locality_id().then(hpx::util::unwrapping(
 
-                [kernel_radius, fill_value](
-                    hpx::id_type const locality_id)
-                {
-                    return Partition{
-                        locality_id, Offset{},
-                        Shape{{kernel_radius, kernel_radius}}, fill_value};
-                }
+            [kernel_radius, fill_value](
+                hpx::id_type const locality_id)
+            {
+                return Partition{
+                    locality_id, Offset{},
+                    Shape{{kernel_radius, kernel_radius}}, fill_value};
+            }
 
-            ),
-
-        hpx::get_colocation_id(partition.get_id()));
+        ));
 }
 
 
@@ -1222,6 +1240,8 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
 
     using Offset = OffsetT<Array>;
     using Shape = ShapeT<Array>;
+
+    lue_assert(all_are_valid(input_array.partitions()));
 
     auto const [nr_partitions0, nr_partitions1] =
         lue::shape_in_partitions(input_array);
@@ -1252,22 +1272,22 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
     InputPartitions halo_corner_partitions{Shape{{2, 2}}};
 
     // North-west corner halo partition
-    halo_corner_partitions(0, 0) = spawn_create_halo_partition(
+    halo_corner_partitions(0, 0) = spawn_create_halo_corner_partition(
         kernel_radius, fill_value, input_array.partitions()(
             0, 0));
 
     // North-east corner halo partition
-    halo_corner_partitions(0, 1) = spawn_create_halo_partition(
+    halo_corner_partitions(0, 1) = spawn_create_halo_corner_partition(
         kernel_radius, fill_value, input_array.partitions()(
             0, nr_partitions1 - 1));
 
     // South-west corner halo partition
-    halo_corner_partitions(1, 0) = spawn_create_halo_partition(
+    halo_corner_partitions(1, 0) = spawn_create_halo_corner_partition(
         kernel_radius, fill_value, input_array.partitions()(
             nr_partitions0 - 1, 0));
 
     // South-east corner halo partition
-    halo_corner_partitions(1, 1) = spawn_create_halo_partition(
+    halo_corner_partitions(1, 1) = spawn_create_halo_corner_partition(
         kernel_radius, fill_value, input_array.partitions()(
             nr_partitions0 - 1, nr_partitions1 - 1));
 
@@ -1281,30 +1301,40 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
         Shape{{2, nr_partitions1}}};
 
     for(auto const [rh, rp]: {
-            std::array<Index, 2>{{0, 0}},
-            std::array<Index, 2>{{1, nr_partitions0 - 1}}})
+        std::array<Index, 2>{{0, 0}},
+        std::array<Index, 2>{{1, nr_partitions0 - 1}}})
     {
-        for(Index cp = 0; cp < nr_partitions1; ++cp) {
+        for(Index cp = 0; cp < nr_partitions1; ++cp)
+        {
+            // FIXME Why can't we attach continuations to a const component?
+            InputPartition& input_partition =
+                const_cast<InputArray&>(input_array).partitions()(rp, cp);
 
-            halo_longitudinal_side_partitions(rh, cp) = hpx::dataflow(
-                hpx::launch::async,
-                hpx::util::unwrapping(
+            halo_longitudinal_side_partitions(rh, cp) = input_partition.then(
 
-                        [kernel_radius, fill_value](
-                            hpx::id_type const locality_id,
-                            Shape const& partition_shape)
-                        {
-                            return InputPartition{
-                                locality_id, Offset{},
-                                Shape{{kernel_radius, partition_shape[1]}},
-                                fill_value};
-                        }
+                    [kernel_radius, fill_value](
+                        InputPartition const& input_partition)
+                    {
+                        return hpx::dataflow(
+                            hpx::launch::async,
+                            hpx::util::unwrapping(
 
-                    ),
-                hpx::get_colocation_id(
-                    input_array.partitions()(rp, cp).get_id()),
-                input_array.partitions()(rp, cp).shape());
+                                    [kernel_radius, fill_value](
+                                        hpx::id_type const locality_id,
+                                        Shape const& partition_shape)
+                                    {
+                                        return InputPartition{
+                                            locality_id, Offset{},
+                                            Shape{{kernel_radius, partition_shape[1]}},
+                                            fill_value};
+                                    }
 
+                                ),
+                            input_partition.locality_id(),
+                            input_partition.shape());
+                    }
+
+                );
         }
     }
 
@@ -1323,30 +1353,43 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
 
         for(auto const [ch, cp]: {
                 std::array<Index, 2>{{0, 0}},
-                std::array<Index, 2>{{1, nr_partitions1 - 1}}}) {
+                std::array<Index, 2>{{1, nr_partitions1 - 1}}})
+        {
+            // FIXME Why can't we attach continuations to a const component?
+            InputPartition& input_partition =
+                const_cast<InputArray&>(input_array).partitions()(rp, cp);
 
-            halo_latitudinal_sides_partitions(rp, ch) = hpx::dataflow(
-                hpx::launch::async,
-                hpx::util::unwrapping(
+            halo_latitudinal_sides_partitions(rp, ch) = input_partition.then(
 
-                        [kernel_radius, fill_value](
-                            hpx::id_type const locality_id,
-                            Shape const& partition_shape)
-                        {
-                            return InputPartition{
-                                locality_id, Offset{},
-                                Shape{{partition_shape[0], kernel_radius}},
-                                fill_value};
-                        }
+                    [kernel_radius, fill_value](
+                        InputPartition const& input_partition)
+                    {
+                        return hpx::dataflow(
+                            hpx::launch::async,
+                            hpx::util::unwrapping(
 
-                    ),
+                                    [kernel_radius, fill_value](
+                                        hpx::id_type const locality_id,
+                                        Shape const& partition_shape)
+                                    {
+                                        return InputPartition{
+                                            locality_id, Offset{},
+                                            Shape{{partition_shape[0], kernel_radius}},
+                                            fill_value};
+                                    }
 
-                hpx::get_colocation_id(
-                    input_array.partitions()(rp, cp).get_id()),
-                input_array.partitions()(rp, cp).shape());
+                                ),
+                            input_partition.locality_id(),
+                            input_partition.shape());
+                    }
 
+                );
         }
     }
+
+    lue_assert(all_are_valid(halo_corner_partitions));
+    lue_assert(all_are_valid(halo_longitudinal_side_partitions));
+    lue_assert(all_are_valid(halo_latitudinal_sides_partitions));
 
     // -------------------------------------------------------------------------
     // Iterate over all partitions. Per partition determine the collection
@@ -1356,15 +1399,14 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
         InputPartitions, OutputPartition, Kernel, Functor> action;
     OutputPartitions output_partitions{shape_in_partitions(input_array)};
 
-    assert(nr_partitions0 > 0);
-    assert(nr_partitions1 > 0);
-
-    InputPartitions local_input_partitions{Shape{{3, 3}}};
+    lue_assert(nr_partitions0 > 0);
+    lue_assert(nr_partitions1 > 0);
 
     // North-west corner partition
     {
         // This block also handles the first partition in case there
         // is only a single row and/or a single column of partitions
+        InputPartitions local_input_partitions{Shape{{3, 3}}};
 
         local_input_partitions(0, 0) = halo_corner_partitions(0, 0);
         local_input_partitions(0, 1) = halo_longitudinal_side_partitions(0, 0);
@@ -1392,15 +1434,19 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
                 ? halo_latitudinal_sides_partitions(1, 1)
                 : input_array.partitions()(1, 1));
 
+        lue_assert(all_are_valid(local_input_partitions));
+
         output_partitions(0, 0) =
             spawn_focal_operation_partition(
                 action, kernel, functor, local_input_partitions);
     }
 
     // North-east corner partition
-    if(nr_partitions1 > 1) {
+    if(nr_partitions1 > 1)
+    {
         // This block also handles the last partition in case there
         // is only a single row of partitions
+        InputPartitions local_input_partitions{Shape{{3, 3}}};
 
         local_input_partitions(0, 0) =
             halo_longitudinal_side_partitions(0, nr_partitions1 - 2);
@@ -1417,7 +1463,7 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
         if(nr_partitions0 == 1) {
             // Case where nr_partitions1 == 1 is handled by north-west
             // corner logic
-            assert(nr_partitions1 > 1);
+            lue_assert(nr_partitions1 > 1);
 
             local_input_partitions(2, 0) =
                 halo_longitudinal_side_partitions(1, nr_partitions1 - 2);
@@ -1434,15 +1480,19 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
                 halo_latitudinal_sides_partitions(1, 1);
         }
 
+        lue_assert(all_are_valid(local_input_partitions));
+
         output_partitions(0, nr_partitions1 - 1) =
             spawn_focal_operation_partition(
                 action, kernel, functor, local_input_partitions);
     }
 
     // South-west corner partition
-    if(nr_partitions0 > 1) {
+    if(nr_partitions0 > 1)
+    {
         // This block also handles the last partition in case there
         // is only a single column of partitions
+        InputPartitions local_input_partitions{Shape{{3, 3}}};
 
         local_input_partitions(0, 0) =
             halo_latitudinal_sides_partitions(nr_partitions0 - 2, 0);
@@ -1466,13 +1516,17 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
             ? halo_corner_partitions(1, 1)
             : halo_longitudinal_side_partitions(1, 1);
 
+        lue_assert(all_are_valid(local_input_partitions));
+
         output_partitions(nr_partitions0 - 1, 0) =
             spawn_focal_operation_partition(
                 action, kernel, functor, local_input_partitions);
     }
 
     // South-east corner partition
-    if(nr_partitions0 > 1 && nr_partitions1 > 1) {
+    if(nr_partitions0 > 1 && nr_partitions1 > 1)
+    {
+        InputPartitions local_input_partitions{Shape{{3, 3}}};
         local_input_partitions(0, 0) =
             input_array.partitions()(nr_partitions0 - 2, nr_partitions1 - 2);
         local_input_partitions(0, 1) =
@@ -1492,6 +1546,8 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
         local_input_partitions(2, 2) =
             halo_corner_partitions(1, 1);
 
+        lue_assert(all_are_valid(local_input_partitions));
+
         output_partitions(nr_partitions0 - 1, nr_partitions1 - 1) =
             spawn_focal_operation_partition(
                 action, kernel, functor, local_input_partitions);
@@ -1501,6 +1557,7 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
     {
         // This block also handles the middle partitions in
         // case there is only a single row of partitions
+        InputPartitions local_input_partitions{Shape{{3, 3}}};
 
         for(Index c = 1; c < nr_partitions1 - 1; ++c) {
             local_input_partitions(0, 0) =
@@ -1517,7 +1574,7 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
             if(nr_partitions0 == 1) {
                 // Case where nr_partitions1 == 1 is handled by north-west
                 // corner logic
-                assert(nr_partitions1 > 1);
+                lue_assert(nr_partitions1 > 1);
 
                 local_input_partitions(2, 0) =
                     halo_longitudinal_side_partitions(1, c - 1);
@@ -1535,6 +1592,8 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
                     input_array.partitions()(1, c + 1);
             }
 
+            lue_assert(all_are_valid(local_input_partitions));
+
             output_partitions(0, c) =
                 spawn_focal_operation_partition(
                     action, kernel, functor, local_input_partitions);
@@ -1542,7 +1601,9 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
     }
 
     // South side partition
-    if(nr_partitions0 > 1) {
+    if(nr_partitions0 > 1)
+    {
+        InputPartitions local_input_partitions{Shape{{3, 3}}};
 
         for(Index c = 1; c < nr_partitions1 - 1; ++c) {
             local_input_partitions(0, 0) =
@@ -1564,6 +1625,8 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
             local_input_partitions(2, 2) =
                 halo_longitudinal_side_partitions(0, c + 1);
 
+            lue_assert(all_are_valid(local_input_partitions));
+
             output_partitions(nr_partitions0 - 1, c) =
                 spawn_focal_operation_partition(
                     action, kernel, functor, local_input_partitions);
@@ -1574,6 +1637,7 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
     {
         // This block also handles the middle partitions in
         // case there is only a single column of partitions
+        InputPartitions local_input_partitions{Shape{{3, 3}}};
 
         for(Index r = 1; r < nr_partitions0 - 1; ++r) {
             local_input_partitions(0, 0) =
@@ -1600,6 +1664,8 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
                 ? halo_latitudinal_sides_partitions(r + 1, 1)
                 : input_array.partitions()(r + 1, 1);
 
+            lue_assert(all_are_valid(local_input_partitions));
+
             output_partitions(r, 0) =
                 spawn_focal_operation_partition(
                     action, kernel, functor, local_input_partitions);
@@ -1607,7 +1673,9 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
     }
 
     // East side partition
-    if(nr_partitions1 > 1) {
+    if(nr_partitions1 > 1)
+    {
+        InputPartitions local_input_partitions{Shape{{3, 3}}};
 
         for(Index r = 1; r < nr_partitions0 - 1; ++r) {
             local_input_partitions(0, 0) =
@@ -1629,6 +1697,8 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
             local_input_partitions(2, 2) =
                 halo_latitudinal_sides_partitions(r + 1, 1);
 
+            lue_assert(all_are_valid(local_input_partitions));
+
             output_partitions(r, nr_partitions1 - 1) =
                 spawn_focal_operation_partition(
                     action, kernel, functor, local_input_partitions);
@@ -1636,29 +1706,35 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
     }
 
     // Iterate over inner partitions
-    for(Index r = 1; r < nr_partitions0 - 1; ++r) {
-        for(Index c = 1; c < nr_partitions1 - 1; ++c) {
+    {
+        InputPartitions local_input_partitions{Shape{{3, 3}}};
+        for(Index r = 1; r < nr_partitions0 - 1; ++r) {
+            for(Index c = 1; c < nr_partitions1 - 1; ++c) {
 
-            // Create collection of partitions containing the current
-            // partition and its neighboring partitions
-            {
-                // Assume one neighboring partition is enough
-                Count const radius = 1;
+                // Create collection of partitions containing the current
+                // partition and its neighboring partitions
+                {
+                    // Assume one neighboring partition is enough
+                    Count const radius = 1;
 
-                for(Index i = 0; i < 2 * radius + 1; ++i) {
-                    for(Index j = 0; j < 2 * radius + 1; ++j) {
-                        local_input_partitions(i, j) =
-                            input_array.partitions()(
-                                r - radius + i, c - radius + j);
+                    for(Index i = 0; i < 2 * radius + 1; ++i) {
+                        for(Index j = 0; j < 2 * radius + 1; ++j) {
+                            local_input_partitions(i, j) =
+                                input_array.partitions()(
+                                    r - radius + i, c - radius + j);
+                        }
                     }
                 }
+
+                lue_assert(all_are_valid(local_input_partitions));
+
+                output_partitions(r, c) = spawn_focal_operation_partition(
+                    action, kernel, functor, local_input_partitions);
             }
-
-            output_partitions(r, c) = spawn_focal_operation_partition(
-                action, kernel, functor, local_input_partitions);
-
         }
     }
+
+    lue_assert(all_are_valid(output_partitions));
 
     return OutputArray{shape(input_array), std::move(output_partitions)};
 }

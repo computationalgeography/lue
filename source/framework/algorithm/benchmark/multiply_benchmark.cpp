@@ -19,7 +19,7 @@ AlgorithmBenchmarkResult multiply(
     Task const& task,
     std::size_t const max_tree_depth)
 {
-    assert(max_tree_depth > 0);
+    lue_assert(max_tree_depth > 0);
 
     using Array = PartitionedArray<Element, rank>;
     using Shape = typename Array::Shape;
@@ -40,7 +40,7 @@ AlgorithmBenchmarkResult multiply(
 
     AlgorithmBenchmarkResult result{state.partitions().shape()};
 
-    assert(state.shape() == shape);
+    lue_assert(state.shape() == shape);
 
     state = uniform(state, Element{0}, std::numeric_limits<Element>::max());
 

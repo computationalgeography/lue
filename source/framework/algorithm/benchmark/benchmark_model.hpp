@@ -47,7 +47,7 @@ private:
 
     Shape _partition_shape;
 
-    Result  _result;
+    Result _result;
 
 };
 

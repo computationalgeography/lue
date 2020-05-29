@@ -4,7 +4,7 @@
 #include <vector>
 
 
-namespace lue { 
+namespace lue {
 
 class AlgorithmBenchmarkResult
 {

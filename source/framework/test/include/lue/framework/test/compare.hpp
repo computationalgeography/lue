@@ -110,12 +110,13 @@ void check_partition_is_equal(
     // XOR with bools
     BOOST_REQUIRE(both_partitions_valid != both_partitions_invalid);
 
-    if(both_partitions_valid) {
-        BOOST_REQUIRE(partition1.get_id());
-        BOOST_REQUIRE(partition2.get_id());
-
+    if(both_partitions_valid)
+    {
         partition1.wait();
         partition2.wait();
+
+        BOOST_REQUIRE(partition1.get_id());
+        BOOST_REQUIRE(partition2.get_id());
 
         BOOST_REQUIRE_EQUAL(
             partition1.shape().get(), partition2.shape().get());
@@ -140,7 +141,11 @@ void check_partition_is_close(
     // XOR with bools
     BOOST_REQUIRE(both_partitions_valid != both_partitions_invalid);
 
-    if(both_partitions_valid) {
+    if(both_partitions_valid)
+    {
+        partition1.wait();
+        partition2.wait();
+
         BOOST_REQUIRE(partition1.get_id());
         BOOST_REQUIRE(partition2.get_id());
 

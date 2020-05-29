@@ -50,6 +50,9 @@ option(LUE_BUILD_OTF2
 
 
 # Options tweaking the behaviour of the software
+option(LUE_ASSERT_CONDITIONS
+    "Assert conditions placed in the source code"
+    FALSE)
 option(LUE_VALIDATE_IDXS
     "Validate array indices are within array bounds (expensive!)"
     FALSE)

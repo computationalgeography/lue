@@ -71,12 +71,3 @@ void validate_idxs(
 }
 
 }  // namespace lue
-
-
-#define LUE_ASSERT(                                     \
-        test,                                           \
-        ...)                                            \
-    if(!(test)) {                                       \
-        write_debug_message(fmt::format(__VA_ARGS__));  \
-    }                                                   \
-    assert(test);

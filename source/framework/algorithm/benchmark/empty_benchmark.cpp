@@ -11,7 +11,7 @@ void empty(
     Task const& task,
     std::size_t const max_tree_depth)
 {
-    assert(max_tree_depth > 0);
+    lue_assert(max_tree_depth > 0);
 
     // There is no state to manipulate
     hpx::future<void> state = hpx::make_ready_future<void>();

@@ -21,12 +21,8 @@ hpx::future<AggregatorT<Functor>> zonal_operation_partition1(
     ZonesPartition const& zones_partition,
     Functor /* functor */)
 {
-    assert(
-        hpx::get_colocation_id(input_partition.get_id()).get() ==
-        hpx::find_here());
-    assert(
-        hpx::get_colocation_id(zones_partition.get_id()).get() ==
-        hpx::find_here());
+    lue_assert(input_partition.locality_id().get() == hpx::find_here());
+    lue_assert(zones_partition.locality_id().get() == hpx::find_here());
 
     using InputData = DataT<InputPartition>;
     using ZonesData = DataT<ZonesPartition>;
@@ -51,7 +47,7 @@ hpx::future<AggregatorT<Functor>> zonal_operation_partition1(
 
             Count const nr_elements{lue::nr_elements(input_partition_data)};
 
-            assert(lue::nr_elements(zones_partition_data) == nr_elements);
+            lue_assert(lue::nr_elements(zones_partition_data) == nr_elements);
 
             Aggregator result{};
 
@@ -83,15 +79,13 @@ OutputPartition zonal_operation_partition2(
     ZonesPartition const& zones_partition,
     AggregatorT<Functor> const& aggregator)
 {
-    assert(
-        hpx::get_colocation_id(zones_partition.get_id()).get() ==
-        hpx::find_here());
+    lue_assert(zones_partition.locality_id().get() == hpx::find_here());
 
     using ZonesData = DataT<ZonesPartition>;
 
     using OutputData = DataT<OutputPartition>;
 
-    assert(zones_partition.is_ready());
+    lue_assert(zones_partition.is_ready());
 
     auto const zones_partition_server_ptr{
         hpx::get_ptr(zones_partition).get()};
@@ -180,7 +174,7 @@ PartitionedArray<OutputElementT<Functor>, rank> zonal_operation(
     using Aggregators = std::vector<hpx::future<Aggregator>>;
 
     Count const nr_partitions{lue::nr_partitions(input_array)};
-    assert(lue::nr_partitions(zones_array) == nr_partitions);
+    lue_assert(lue::nr_partitions(zones_array) == nr_partitions);
 
     // 1. ----------------------------------------------------------------------
     Aggregators aggregators{static_cast<std::size_t>(nr_partitions)};
@@ -207,7 +201,7 @@ PartitionedArray<OutputElementT<Functor>, rank> zonal_operation(
                         }
 
                     ),
-                hpx::get_colocation_id(input_partition.get_id()));
+                input_partition.locality_id());
         }
     }
 
@@ -251,7 +245,7 @@ PartitionedArray<OutputElementT<Functor>, rank> zonal_operation(
                         }
 
                     ),
-                hpx::get_colocation_id(zones_partition.get_id()),
+                zones_partition.locality_id(),
                 aggregator);
         }
     }

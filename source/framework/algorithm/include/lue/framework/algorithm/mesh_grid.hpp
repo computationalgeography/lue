@@ -15,9 +15,9 @@ ArrayPartition<OutputElement, rank> mesh_grid_partition(
     OutputElement const step,
     Index const dimension)
 {
-    assert(
-        hpx::get_colocation_id(input_partition.get_id()).get() ==
-        hpx::find_here());
+    // FIXME make asynchronous
+    lue_assert(input_partition.is_ready());  // FIXME remove
+    lue_assert(input_partition.locality_id().get() == hpx::find_here());
 
     using OutputPartition = ArrayPartition<OutputElement, rank>;
     using OutputData = DataT<OutputPartition>;
@@ -31,7 +31,7 @@ ArrayPartition<OutputElement, rank> mesh_grid_partition(
     OutputData output_partition_data{partition_shape};
 
     if constexpr(rank == 1) {
-        assert(dimension == 0);
+        lue_assert(dimension == 0);
 
         for(Index i = 0; i < partition_shape[0]; ++i) {
             output_partition_data(i) =
@@ -39,7 +39,7 @@ ArrayPartition<OutputElement, rank> mesh_grid_partition(
         }
     }
     else if constexpr(rank == 2) {
-        assert(dimension == 0 || dimension == 1);
+        lue_assert(dimension == 0 || dimension == 1);
 
         if(dimension == 0) {
             for(Index r = 0; r < partition_shape[0]; ++r) {
@@ -144,7 +144,7 @@ std::array<PartitionedArray<OutputElement, rank>, rank> mesh_grid(
                 input_array.partitions()[p],
                 first_value,
                 step,
-                hpx::get_colocation_id(input_array.partitions()[p].get_id()));
+                input_array.partitions()[p].locality_id());
         }
     }
 

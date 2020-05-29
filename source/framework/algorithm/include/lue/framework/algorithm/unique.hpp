@@ -7,44 +7,51 @@ namespace lue {
 namespace detail {
 
 template<
-    typename Partition>
-PartitionT<Partition, ElementT<Partition>, 1> unique_partition(
-    Partition const& input_partition)
+    typename InputPartition>
+PartitionT<InputPartition, ElementT<InputPartition>, 1> unique_partition(
+    InputPartition input_partition)  // Can't .then on a const& instance...
 {
-    assert(
-        hpx::get_colocation_id(input_partition.get_id()).get() ==
-        hpx::find_here());
+    using InputData = DataT<InputPartition>;
+    using Element = ElementT<InputPartition>;
 
-    using InputData = DataT<Partition>;
-    using Element = ElementT<Partition>;
-
-    using OutputPartition = PartitionT<Partition, Element, 1>;
+    using OutputPartition = PartitionT<InputPartition, Element, 1>;
     using OutputOffset = OffsetT<OutputPartition>;
     using OutputShape = ShapeT<OutputPartition>;
     using OutputData = DataT<OutputPartition>;
 
-    auto const input_partition_server_ptr{
-        hpx::get_ptr(input_partition).get()};
-    auto const& input_partition_server{*input_partition_server_ptr};
+    lue_assert(input_partition.locality_id().get() == hpx::find_here());
 
-    InputData input_partition_data{input_partition_server.data()};
+    return input_partition.then(
+            [](
+                InputPartition const& input_partition)
+            {
+                auto const input_partition_server_ptr{
+                    hpx::get_ptr(input_partition).get()};
+                auto const& input_partition_server{*input_partition_server_ptr};
 
-    // Copy values from input array into a set
-    std::set<Element> unique_values(
-        input_partition_data.begin(), input_partition_data.end());
-    Count const nr_unique_values =
-        static_cast<Count>(unique_values.size());
-    assert(nr_unique_values <= input_partition_data.nr_elements());
+                InputData const input_partition_data{
+                    input_partition_server.data()};
 
-    // Copy unique values from set into output array
-    OutputData output_data{OutputShape{{nr_unique_values}}};
-    assert(output_data.nr_elements() == nr_unique_values);
-    std::copy(
-        unique_values.begin(), unique_values.end(),
-        output_data.begin());
+                // Copy values from input array into a set
+                std::set<Element> unique_values(
+                    input_partition_data.begin(), input_partition_data.end());
+                Count const nr_unique_values =
+                    static_cast<Count>(unique_values.size());
+                lue_assert(
+                    nr_unique_values <= input_partition_data.nr_elements());
 
-    return OutputPartition{
-        hpx::find_here(), OutputOffset{0}, std::move(output_data)};
+                // Copy unique values from set into output array
+                OutputData output_data{OutputShape{{nr_unique_values}}};
+                lue_assert(output_data.nr_elements() == nr_unique_values);
+                std::copy(
+                    unique_values.begin(), unique_values.end(),
+                    output_data.begin());
+
+                return OutputPartition{
+                    hpx::find_here(), OutputOffset{0}, std::move(output_data)};
+            }
+
+        );
 }
 
 }  // namespace detail
@@ -65,7 +72,7 @@ struct UniquePartitionAction:
     @tparam     Element Type of elements in the input array
     @tparam     rank Rank of the input array
     @tparam     Array Class template of the type of the array
-    @param      array Partitioned array
+    @param      input_array Partitioned array
     @return     Future to collection with unique values that becomes
                 ready once the algorithm has finished
 
@@ -76,7 +83,7 @@ template<
     typename Element,
     Rank rank>
 hpx::future<PartitionedArray<Element, 1>> unique(
-    PartitionedArray<Element, rank> const& array)
+    PartitionedArray<Element, rank> const& input_array)
 {
 
     // - Determine unique values per partition
@@ -95,26 +102,25 @@ hpx::future<PartitionedArray<Element, 1>> unique(
     using OutputShape = ShapeT<OutputArray>;
     using OutputData = DataT<OutputPartition>;
 
-    OutputPartitions output_partitions{OutputShape{{nr_partitions(array)}}};
+    OutputPartitions output_partitions{OutputShape{{nr_partitions(input_array)}}};
     UniquePartitionAction<InputPartition> action;
 
-    for(Index p = 0; p < nr_partitions(array); ++p) {
+    for(Index p = 0; p < nr_partitions(input_array); ++p)
+    {
+        InputPartition const& input_partition = input_array.partitions()[p];
 
         output_partitions[p] = hpx::dataflow(
             hpx::launch::async,
+            hpx::util::unwrapping(
 
-            [action](
-                InputPartition const& input_partition,
-                hpx::future<hpx::id_type>&& locality_id)
-            {
-                return action(
-                    locality_id.get(),
-                    input_partition);
-            },
+                    [action, input_partition](
+                        hpx::id_type const locality_id)
+                    {
+                        return action(locality_id, input_partition);
+                    }
 
-            array.partitions()[p],
-            hpx::get_colocation_id(array.partitions()[p].get_id()));
-
+                ),
+            input_partition.locality_id());
     }
 
     // Collect all unique values into a single array, on the current locality
@@ -131,21 +137,21 @@ hpx::future<PartitionedArray<Element, 1>> unique(
             [](auto const& partitions) {
 
                 // Collection of unique values of all partition results
-                std::set<Element> unique_values;
+                std::set<Element> unique_values{};
 
-                for(auto const& partition: partitions) {
-
+                for(auto const& partition: partitions)
+                {
                     auto const data = partition.data().get();
 
                     unique_values.insert(data.begin(), data.end());
-
                 }
 
                 // Shape in elements of resulting partitioned array
-                OutputShape shape{{static_cast<Count>(unique_values.size())}};
+                OutputShape const shape{
+                    {static_cast<Count>(unique_values.size())}};
 
                 // Shape in partitions of resulting partitioned array
-                OutputShape shape_in_partitions{{1}};
+                OutputShape const shape_in_partitions{{1}};
 
                 // Copy unique values into an array-data collection
                 OutputData result_values{shape};

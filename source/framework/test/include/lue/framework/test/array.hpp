@@ -68,12 +68,13 @@ Array create_partitioned_array(
 
     Array array{array_shape, partition_shape};
 
-    assert(static_cast<Count>(elements.size()) == array.nr_partitions());
+    lue_assert(static_cast<Count>(elements.size()) == array.nr_partitions());
 
     {
         auto elements_it = elements.begin();
 
         for(Partition& partition: array.partitions()) {
+            partition.wait();  // FIXME be made asynchronous
             partition.set_data(
                 Data{partition.shape().get(), *elements_it});
             ++elements_it;

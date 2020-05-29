@@ -1,8 +1,8 @@
 #pragma once
 #include "lue/framework/core/indices.hpp"
 #include "lue/framework/core/array_partition_definition.hpp"
+#include "lue/assert.hpp"
 #include <algorithm>
-#include <cassert>
 #include <cmath>
 #include <numeric>
 #include <vector>
@@ -72,9 +72,9 @@ Shape<Index, rank> max_partition_shape(
 {
     static_assert(rank > 0);
 
-    assert(nr_elements(array_shape) > 0);
-    assert(min_nr_partitions > 0);
-    assert(min_nr_partitions <= nr_elements(array_shape));
+    lue_assert(nr_elements(array_shape) > 0);
+    lue_assert(min_nr_partitions > 0);
+    lue_assert(min_nr_partitions <= nr_elements(array_shape));
 
     Shape<Index, rank> partition_shape{array_shape};
 
@@ -90,8 +90,8 @@ Shape<Index, rank> max_partition_shape(
         }
     }
 
-    assert(nr_elements(partition_shape) > 0);
-    assert(nr_elements(shape_in_partitions(array_shape, partition_shape)) >=
+    lue_assert(nr_elements(partition_shape) > 0);
+    lue_assert(nr_elements(shape_in_partitions(array_shape, partition_shape)) >=
         min_nr_partitions);
 
     return partition_shape;
@@ -106,7 +106,7 @@ Indices<Index, rank> linear_to_shape_index(
     Index idx)
 {
     static_assert(rank > 0);
-    assert(
+    lue_assert(
         idx < std::accumulate(
             shape.begin(), shape.end(), Index{1}, std::multiplies<Index>()));
 
@@ -218,8 +218,8 @@ std::vector<ArrayPartitionDefinition<Index, rank>> partitions(
     std::size_t const nr_localities,
     std::uint32_t const locality_id)
 {
-    assert(nr_localities > 0);
-    assert(locality_id < nr_localities);
+    lue_assert(nr_localities > 0);
+    lue_assert(locality_id < nr_localities);
 
     auto const shape_in_partitions_ =
         shape_in_partitions(area_shape, partition_shape);

@@ -1,17 +1,10 @@
 #pragma once
+#include "lue/framework/algorithm/functor_traits.hpp"
 #include "lue/framework/core/component/partitioned_array.hpp"
 #include <hpx/lcos/when_all.hpp>
 
 
 namespace lue {
-
-// If this is needed elsewhere, put it in algorithm/functor_traits.hpp
-// Refactor with binary_operation, focal_operation.hpp
-template<
-    typename Functor>
-using OutputElementT = typename Functor::OutputElement;
-
-
 namespace detail {
 
 template<
@@ -22,13 +15,10 @@ hpx::future<OutputElement> unary_aggregate_operation_partition(
     InputPartition const& input_partition,
     Functor functor)
 {
-    assert(
-        hpx::get_colocation_id(input_partition.get_id()).get() ==
-        hpx::find_here());
-
     using InputData = DataT<InputPartition>;
-
     using Shape = ShapeT<InputPartition>;
+
+    lue_assert(input_partition.locality_id().get() == hpx::find_here());
 
     return hpx::dataflow(
         hpx::launch::async,
@@ -43,16 +33,15 @@ hpx::future<OutputElement> unary_aggregate_operation_partition(
 
             auto const input_partition_server_ptr{
                 hpx::get_ptr(input_partition).get()};
-            auto const& input_partition_server{
-                *input_partition_server_ptr};
+            auto const& input_partition_server{*input_partition_server_ptr};
 
             InputData input_partition_data{input_partition_server.data()};
 
             // Initialize result for the case that the partition is empty
             OutputElement result{functor()};
 
-            if(!input_partition_data.empty()) {
-
+            if(!input_partition_data.empty())
+            {
                 // Initialize result with first value
                 result = functor(input_partition_data[0]);
 
@@ -62,7 +51,6 @@ hpx::future<OutputElement> unary_aggregate_operation_partition(
                 {
                     result = functor(result, input_partition_data[idx]);
                 }
-
             }
 
             return result;
@@ -99,7 +87,6 @@ hpx::future<OutputElementT<Functor>> unary_aggregate_operation(
     Functor const& functor)
 {
     using InputPartition = ArrayPartition<InputElement, rank>;
-
     using OutputElement = OutputElementT<Functor>;
 
     detail::UnaryAggregateOperationPartitionAction<
@@ -116,7 +103,7 @@ hpx::future<OutputElementT<Functor>> unary_aggregate_operation(
                 }
 
             ),
-        hpx::get_colocation_id(input_partition.get_id()));
+        input_partition.locality_id());
 }
 
 
@@ -139,8 +126,8 @@ hpx::future<OutputElementT<Functor>> unary_aggregate_operation(
     Count const nr_partitions{lue::nr_partitions(input_array)};
     std::vector<hpx::future<OutputElement>> partition_results(nr_partitions);
 
-    for(Index p = 0; p < nr_partitions; ++p) {
-
+    for(Index p = 0; p < nr_partitions; ++p)
+    {
         InputPartition const& input_partition{input_array.partitions()[p]};
 
         partition_results[p] = hpx::dataflow(
@@ -154,8 +141,7 @@ hpx::future<OutputElementT<Functor>> unary_aggregate_operation(
                     }
 
                 ),
-            hpx::get_colocation_id(input_partition.get_id()));
-
+            input_partition.locality_id());
     }
 
     // The partition results are being determined on their respective
@@ -192,7 +178,6 @@ hpx::future<OutputElementT<Functor>> unary_aggregate_operation(
             }
 
         ));
-
 }
 
 }  // namespace lue

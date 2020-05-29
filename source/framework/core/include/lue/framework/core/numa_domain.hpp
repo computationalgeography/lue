@@ -1,7 +1,7 @@
 #pragma once
 #include "lue/framework/core/define.hpp"
+#include "lue/assert.hpp"
 #include <hpx/include/compute.hpp>
-#include <cassert>
 
 
 namespace lue {
@@ -58,7 +58,7 @@ public:
         _index{last}
 
     {
-        assert(first <= last);
+        lue_assert(first <= last);
     }
 
     TargetIndex operator()()

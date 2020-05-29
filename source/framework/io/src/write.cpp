@@ -37,7 +37,7 @@ hpx::future<void> write(
     hpx::wait_all_n(partition_offsets.begin(), partition_offsets.size());
 
     // Shape of object array: (nr_rows, nr_cols)
-    assert(layer.shape().size() == 2);
+    lue_assert(layer.shape().size() == 2);
     hdf5::Offset offset(layer.shape().size());
     hdf5::Count count(layer.shape().size());
 
@@ -114,7 +114,7 @@ hpx::future<void> write(
     hpx::wait_all_n(partition_offsets.begin(), partition_offsets.size());
 
     // Shape of object array: (nr_time_steps, nr_rows, nr_cols)
-    assert(layer.rank() == 3);
+    lue_assert(layer.rank() == 3);
     hdf5::Offset offset(layer.rank() + 1);
     hdf5::Count count(layer.rank() + 1);
 
@@ -164,7 +164,7 @@ hpx::future<void> write(
 {
     // TODO Create and use constant::RasterView
 
-    assert(false);
+    lue_assert(false);
 
     return hpx::make_ready_future<void>();
 }

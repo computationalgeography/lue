@@ -4,6 +4,7 @@
 #include "lue/framework/core/type_traits.hpp"
 #include "lue/framework/core/shape.hpp"
 #include "lue/framework/core/span.hpp"
+#include "lue/assert.hpp"
 #include "lue/configure.hpp"
 #include <boost/container/vector.hpp>
 #include <cassert>
@@ -164,7 +165,8 @@ Array<Element, rank>::Array(
 {
     std::move(begin, end, _elements.begin());
 
-    assert(static_cast<Size>(_elements.size()) == lue::nr_elements(_shape));
+    lue_assert(
+        static_cast<Size>(_elements.size()) == lue::nr_elements(_shape));
 }
 
 
@@ -180,13 +182,14 @@ Array<Element, rank>::Array(
     _span{_elements.data(), _shape}
 
 {
-    assert(
+    lue_assert(
         std::distance(values.begin(), values.end()) ==
         lue::nr_elements(_shape));
 
     std::move(values.begin(), values.end(), _elements.begin());
 
-    assert(static_cast<Size>(_elements.size()) == lue::nr_elements(_shape));
+    lue_assert(
+        static_cast<Size>(_elements.size()) == lue::nr_elements(_shape));
 }
 
 

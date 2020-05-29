@@ -22,15 +22,13 @@ template<
     typename OutputElement>
 PartitionT<InputPartition, OutputElement> uniform_partition(
     InputPartition const& input_partition,
-    hpx::shared_future<OutputElement> const min_value,
-    hpx::shared_future<OutputElement> const max_value)
+    hpx::shared_future<OutputElement> const& min_value,
+    hpx::shared_future<OutputElement> const& max_value)
 {
-    assert(
-        hpx::get_colocation_id(input_partition.get_id()).get() ==
-        hpx::find_here());
-
     using OutputPartition = PartitionT<InputPartition, OutputElement>;
     using OutputData = DataT<OutputPartition>;
+
+    lue_assert(input_partition.locality_id().get() == hpx::find_here());
 
     return hpx::dataflow(
         hpx::launch::async,
@@ -42,8 +40,7 @@ PartitionT<InputPartition, OutputElement> uniform_partition(
         {
             auto const input_partition_server_ptr{
                 hpx::get_ptr(input_partition).get()};
-            auto const& input_partition_server{
-                *input_partition_server_ptr};
+            auto const& input_partition_server{*input_partition_server_ptr};
 
             auto const partition_offset = input_partition_server.offset();
             auto const partition_shape = input_partition_server.shape();
@@ -140,10 +137,9 @@ PartitionedArray<OutputElement, rank> uniform(
         InputPartition, OutputElement> action;
     OutputPartitions output_partitions{shape_in_partitions(input_array)};
 
-    for(Index p = 0; p < nr_partitions(input_array); ++p) {
-
-        InputPartition const& input_partition{
-            input_array.partitions()[p]};
+    for(Index p = 0; p < nr_partitions(input_array); ++p)
+    {
+        InputPartition const& input_partition{input_array.partitions()[p]};
 
         output_partitions[p] = hpx::dataflow(
             hpx::launch::async,
@@ -158,7 +154,7 @@ PartitionedArray<OutputElement, rank> uniform(
                     }
 
                 ),
-            hpx::get_colocation_id(input_partition.get_id()));
+            input_partition.locality_id());
     }
 
     return OutputArray{shape(input_array), std::move(output_partitions)};

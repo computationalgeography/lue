@@ -21,7 +21,7 @@ void serialize(
     archive & size;
 
     // Otherwise, update folowing logic
-    assert(size > 0);
+    lue::lue_assert(size > 0);
 
     buffer.resize(size);
 
@@ -42,7 +42,7 @@ void serialize(
     using Array = hpx::serialization::array<Element const>;
 
     // Otherwise, update folowing logic
-    assert(!buffer.empty());
+    lue::lue_assert(!buffer.empty());
 
     typename Buffer::Size const size = buffer.size();
     Array array = hpx::serialization::make_array(buffer.data(), size);

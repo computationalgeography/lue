@@ -2,6 +2,7 @@
 #include "lue/framework/benchmark/environment.hpp"
 #include "lue/framework/benchmark/stopwatch.hpp"
 #include "lue/framework/benchmark/task.hpp"
+#include "lue/assert.hpp"
 #include <chrono>
 #include <iostream>
 #include <string>
@@ -109,8 +110,8 @@ public:
         _timings{}
 
     {
-        // assert(!_array_shape.empty());
-        // assert(std::size(_array_shape) == std::size(_partition_shape));
+        // lue_assert(!_array_shape.empty());
+        // lue_assert(std::size(_array_shape) == std::size(_partition_shape));
     }
 
     BenchmarkBase(BenchmarkBase const&)=delete;

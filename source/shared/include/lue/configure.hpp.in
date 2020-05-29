@@ -11,6 +11,7 @@
 #cmakedefine LUE_BUILD_DATA_MODEL
 #cmakedefine01 LUE_BUILD_FRAMEWORK
 #cmakedefine01 LUE_VALIDATE_IDXS
+#cmakedefine01 LUE_ASSERT_CONDITIONS
 #cmakedefine LUE_BUILD_TEST
 
 
@@ -40,6 +41,8 @@ public:
     static constexpr bool build_framework{LUE_BUILD_FRAMEWORK};
 
     static constexpr bool validate_idxs{LUE_VALIDATE_IDXS};
+
+    static constexpr bool assert_conditions{LUE_ASSERT_CONDITIONS};
 
 };
 

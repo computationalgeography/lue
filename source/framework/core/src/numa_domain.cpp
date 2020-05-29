@@ -21,8 +21,8 @@ void init()
 
     if(!initialized) {
 
-        assert(_targets.empty());
-        assert(_executors.empty());
+        lue_assert(_targets.empty());
+        lue_assert(_executors.empty());
 
         _targets = hpx::compute::host::numa_domains();
 
@@ -36,8 +36,8 @@ void init()
 
     }
 
-    assert(!_targets.empty());
-    assert(!_executors.empty());
+    lue_assert(!_targets.empty());
+    lue_assert(!_executors.empty());
 }
 
 
@@ -68,7 +68,7 @@ std::size_t nr_numa_targets()
 Target& target(
     TargetIndex const idx)
 {
-    assert(idx < targets().size());
+    lue_assert(idx < targets().size());
 
     return targets()[idx];
 }
@@ -80,7 +80,7 @@ Target& target(
 NUMADomainExecutor& numa_domain_executor(
     TargetIndex const idx)
 {
-    assert(idx < executors().size());
+    lue_assert(idx < executors().size());
 
     return executors()[idx];
 }
@@ -103,7 +103,7 @@ TargetIndex scattered_target_index()
 
     TargetIndex result = scatter();
 
-    assert(result < nr_numa_targets());
+    lue_assert(result < nr_numa_targets());
 
     return result;
 }

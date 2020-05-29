@@ -1,5 +1,5 @@
 #include "lue/framework/benchmark/task.hpp"
-#include <cassert>
+#include "lue/assert.hpp"
 #include <functional>
 #include <numeric>
 
@@ -17,8 +17,8 @@ Task::Task(
     _partition_shape{partition_shape}
 
 {
-    assert(_nr_time_steps > 0);
-    assert(_array_shape.size() == _partition_shape.size());
+    lue_assert(_nr_time_steps > 0);
+    lue_assert(_array_shape.size() == _partition_shape.size());
 }
 
 
@@ -36,7 +36,7 @@ std::size_t Task::rank() const
 
 std::uint64_t Task::nr_elements() const
 {
-    assert(!_array_shape.empty());
+    lue_assert(!_array_shape.empty());
 
     return std::accumulate(
         _array_shape.begin(), _array_shape.end(), std::uint64_t{1},

@@ -1,7 +1,7 @@
 #include "algorithm_benchmark_result.hpp"
 
 
-namespace lue { 
+namespace lue {
 
 AlgorithmBenchmarkResult::AlgorithmBenchmarkResult(
     Shape const& shape_in_partitions):

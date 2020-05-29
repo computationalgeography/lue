@@ -42,7 +42,7 @@ PartitionedArray<std::uint64_t, rank> array_partition_id(
                     }
 
                 ),
-            hpx::get_colocation_id(input_partition.get_id()));
+            input_partition.locality_id());
 
     }
 

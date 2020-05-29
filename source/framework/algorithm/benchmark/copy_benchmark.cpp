@@ -16,7 +16,7 @@ void copy(
     Task const& task,
     std::size_t const max_tree_depth)
 {
-    assert(max_tree_depth > 0);
+    lue_assert(max_tree_depth > 0);
 
     using Array = PartitionedArray<Element, rank>;
     using Shape = typename Array::Shape;
@@ -37,7 +37,7 @@ void copy(
     Array state{shape, partition_shape};
     hpx::cout << describe(state) << hpx::endl;
 
-    assert(state.shape() == shape);
+    lue_assert(state.shape() == shape);
 
     hpx::lcos::local::sliding_semaphore semaphore{
         static_cast<std::int64_t>(max_tree_depth)};

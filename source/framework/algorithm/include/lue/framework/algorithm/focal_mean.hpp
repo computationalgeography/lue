@@ -15,7 +15,7 @@ namespace detail {
 //     // // The use of volatile prevends the optimizing compiler
 //     // // to remove this iteration
 //     // for(volatile Element nr_iterations: partition_data) {
-//     //     assert(nr_iterations >= Element{0});
+//     //     lue_assert(nr_iterations >= Element{0});
 // 
 //     //     while(nr_iterations > Element{0}) {
 //     //         --nr_iterations;
