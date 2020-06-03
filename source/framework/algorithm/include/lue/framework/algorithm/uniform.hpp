@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/core/component/partitioned_array.hpp"
+#include "lue/framework/core/component.hpp"
 #include <hpx/lcos/when_all.hpp>
 #include <algorithm>
 #include <random>
@@ -25,6 +26,8 @@ PartitionT<InputPartition, OutputElement> uniform_partition(
     hpx::shared_future<OutputElement> const& min_value,
     hpx::shared_future<OutputElement> const& max_value)
 {
+    using Offset = OffsetT<InputPartition>;
+    using Shape = ShapeT<InputPartition>;
     using OutputPartition = PartitionT<InputPartition, OutputElement>;
     using OutputData = DataT<OutputPartition>;
 
@@ -38,12 +41,11 @@ PartitionT<InputPartition, OutputElement> uniform_partition(
             hpx::shared_future<OutputElement> const& min_value,
             hpx::shared_future<OutputElement> const& max_value)
         {
-            auto const input_partition_server_ptr{
-                hpx::get_ptr(input_partition).get()};
+            auto const input_partition_server_ptr{hpx::get_ptr(input_partition).get()};
             auto const& input_partition_server{*input_partition_server_ptr};
 
-            auto const partition_offset = input_partition_server.offset();
-            auto const partition_shape = input_partition_server.shape();
+            Offset const offset = input_partition_server.offset();
+            Shape const shape = input_partition_server.shape();
 
             // Will be used to obtain a seed for the random number engine
             std::random_device random_device;
@@ -55,31 +57,26 @@ PartitionT<InputPartition, OutputElement> uniform_partition(
                 [min_value=min_value.get(), max_value=max_value.get()]()
                 {
                     if constexpr(std::is_floating_point_v<OutputElement>) {
-                        return std::uniform_real_distribution<OutputElement>{
-                            min_value, max_value};
+                        return std::uniform_real_distribution<OutputElement>{min_value, max_value};
                     }
                     else if constexpr(std::is_integral_v<OutputElement>) {
-                        return std::uniform_int_distribution<OutputElement>{
-                            min_value, max_value};
+                        return std::uniform_int_distribution<OutputElement>{min_value, max_value};
                     }
                 }();
 
-            OutputData output_partition_data{partition_shape};
+            OutputData output_partition_data{shape};
 
             std::generate(
-                    output_partition_data.begin(),
-                    output_partition_data.end(),
+                    output_partition_data.begin(), output_partition_data.end(),
 
-                    [&]()
+                    [&distribution, &random_number_engine]()
                     {
                         return distribution(random_number_engine);
                     }
 
                 );
 
-            return OutputPartition{
-                hpx::find_here(), partition_offset,
-                std::move(output_partition_data)};
+            return OutputPartition{hpx::find_here(), offset, std::move(output_partition_data)};
 
         },
 
@@ -133,8 +130,11 @@ PartitionedArray<OutputElement, rank> uniform(
     using OutputArray = PartitionedArray<OutputElement, rank>;
     using OutputPartitions = PartitionsT<OutputArray>;
 
-    detail::uniform::UniformPartitionAction<
-        InputPartition, OutputElement> action;
+    lue_assert(all_are_valid(input_array.partitions()));
+    lue_assert(min_value.valid());
+    lue_assert(max_value.valid());
+
+    detail::uniform::UniformPartitionAction<InputPartition, OutputElement> action;
     OutputPartitions output_partitions{shape_in_partitions(input_array)};
 
     for(Index p = 0; p < nr_partitions(input_array); ++p)
@@ -148,9 +148,7 @@ PartitionedArray<OutputElement, rank> uniform(
                     [action, input_partition, min_value, max_value](
                         hpx::id_type const locality_id)
                     {
-                        return action(
-                            locality_id,
-                            input_partition, min_value, max_value);
+                        return action(locality_id, input_partition, min_value, max_value);
                     }
 
                 ),

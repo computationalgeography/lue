@@ -64,6 +64,8 @@ public:
 
     hpx::naming::id_type locality_id() const
     {
+        lue_assert(_locality_id);
+
         return _locality_id;
     }
 

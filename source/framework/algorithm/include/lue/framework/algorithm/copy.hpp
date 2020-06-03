@@ -20,6 +20,7 @@ Partition copy_partition(
 {
     lue_assert(input_partition.locality_id().get() == hpx::find_here());
 
+    using Offset = OffsetT<Partition>;
     using InputData = DataT<Partition>;
 
     return hpx::dataflow(
@@ -29,16 +30,13 @@ Partition copy_partition(
             Partition const& input_partition)
         {
             // Copy the data and move it into a new partition
-            auto const input_partition_server_ptr{
-                hpx::get_ptr(input_partition).get()};
+            auto const input_partition_server_ptr{hpx::get_ptr(input_partition).get()};
             auto const& input_partition_server{*input_partition_server_ptr};
 
-            auto offset{input_partition_server.offset()};
-            InputData input_partition_data =
-                deep_copy(input_partition_server.data());
+            Offset const offset{input_partition_server.offset()};
+            InputData input_partition_data = deep_copy(input_partition_server.data());
 
-            return Partition{
-                hpx::find_here(), offset, std::move(input_partition_data)};
+            return Partition{hpx::find_here(), offset, std::move(input_partition_data)};
         },
 
         input_partition);

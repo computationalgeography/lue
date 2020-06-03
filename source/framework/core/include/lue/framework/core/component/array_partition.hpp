@@ -28,8 +28,7 @@ public:
 
     using Server = server::ArrayPartition<Element, rank>;
 
-    using Base =
-        hpx::components::client_base<ArrayPartition<Element, rank>, Server>;
+    using Base = hpx::components::client_base<ArrayPartition<Element, rank>, Server>;
 
     using Data = typename Server::Data;
 
@@ -45,11 +44,9 @@ public:
 
     explicit       ArrayPartition      (hpx::id_type const& component_id);
 
-    explicit       ArrayPartition      (hpx::future<hpx::id_type>&&
-                                            component_id);
+    explicit       ArrayPartition      (hpx::future<hpx::id_type>&& component_id);
 
-                   ArrayPartition      (hpx::future<ArrayPartition>&&
-                                            partition);
+                   ArrayPartition      (hpx::future<ArrayPartition>&& partition);
 
                    ArrayPartition      (hpx::id_type locality_id,
                                         Offset const& offset,
@@ -103,7 +100,7 @@ public:
 
 private:
 
-    //! Global ID representing the locality this component is located in
+    //! Global ID representing the locality the component is located in
     hpx::id_type _locality_id;
 
 };
@@ -198,7 +195,7 @@ ArrayPartition<Element, rank>::ArrayPartition(
     _locality_id{}
 
 {
-    lue_assert(!_locality_id);
+    assert(!_locality_id);
 }
 
 

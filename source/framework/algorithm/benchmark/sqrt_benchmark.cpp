@@ -1,5 +1,5 @@
 #include "benchmark_model.hpp"
-#include "lue/framework/algorithm/arithmetic.hpp"
+#include "lue/framework/algorithm/pow.hpp"
 #include "lue/framework/algorithm/sqrt.hpp"
 #include "lue/framework/algorithm/uniform.hpp"
 #include "lue/framework/benchmark/hpx_main.hpp"
@@ -48,6 +48,8 @@ private:
 
     Array _state;
 
+    hpx::lcos::local::sliding_semaphore _semaphore;
+
 };
 
 
@@ -58,7 +60,8 @@ SqrtBenchmarkModel<Element, rank>::SqrtBenchmarkModel(
     Task const& task):
 
     BenchmarkModel<rank>{task},
-    _state{}
+    _state{},
+    _semaphore{4}
 
 {
 }
@@ -74,6 +77,9 @@ void SqrtBenchmarkModel<Element, rank>::preprocess()
         Element{0}, std::numeric_limits<Element>::max());
 
     lue_assert(_state.shape() == this->array_shape());
+
+    // _semaphore = hpx::lcos::local::sliding_semaphore{static_cast<std::int64_t>(5)};
+    // this->max_tree_depth())};
 
     hpx::cout << describe(_state) << hpx::endl;
 }
@@ -92,10 +98,43 @@ template<
     typename Element,
     std::size_t rank>
 void SqrtBenchmarkModel<Element, rank>::simulate(
-    Count const /* time_step */)
+    Count const time_step)
 {
-    _state = sqrt(_state) * sqrt(_state);
+    /// // Wait if there are more than max_tree_depth iterations in flight
+    /// _semaphore.wait(time_step);
+
+    _state = pow(sqrt(_state), Element{2});
+
     hpx::cout << '.' << hpx::flush;
+
+    /// // Attach a continuation to the state at the current time
+    /// // step. Once it is finished, signal the semaphore so it knowns
+    /// // that we can have another iteration in flight.
+    /// hpx::when_all(state.begin(), state.end()).then(
+    ///     hpx::launch::sync,
+    ///     [&_semaphore, time_step](
+    ///         auto const&)
+    ///     {
+    ///         _semaphore.signal(time_step);
+    ///     });
+
+
+    /// // every nd time steps, attach additional continuation which will
+    /// // trigger the semaphore once computation has reached this point
+    /// if ((time_step % 5) == 0)
+    /// {
+    ///     _state.partitions()[0].then(
+
+    ///         [this, time_step](auto const&)
+    ///         {
+    ///             // inform semaphore about new lower limit
+    ///             _semaphore.signal(time_step);
+    ///         });
+    /// }
+
+    /// // suspend if the tree has become too deep, the continuation above
+    /// // will resume this thread once the computation has caught up
+    /// _semaphore.wait(time_step);
 }
 
 

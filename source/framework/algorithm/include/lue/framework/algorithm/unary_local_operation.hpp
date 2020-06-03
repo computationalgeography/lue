@@ -1,6 +1,7 @@
 #pragma once
 #include "lue/framework/algorithm/functor_traits.hpp"
 #include "lue/framework/core/component/partitioned_array.hpp"
+#include "lue/framework/core/component.hpp"
 
 
 namespace lue {
@@ -12,13 +13,13 @@ template<
     typename Functor>
 OutputPartition unary_local_operation_partition(
     InputPartition const& input_partition,
-    Functor functor)
+    Functor const& functor)
 {
-    lue_assert(input_partition.locality_id().get() == hpx::find_here());
-
     using Offset = OffsetT<InputPartition>;
     using InputData = DataT<InputPartition>;
     using OutputData = DataT<OutputPartition>;
+
+    lue_assert(input_partition.locality_id().get() == hpx::find_here());
 
     return hpx::dataflow(
         hpx::launch::async,
@@ -26,21 +27,18 @@ OutputPartition unary_local_operation_partition(
         [functor](
             InputPartition const& input_partition)
         {
-            auto const input_partition_server_ptr{
-                hpx::get_ptr(input_partition).get()};
+            auto const input_partition_server_ptr{hpx::get_ptr(input_partition).get()};
             auto const& input_partition_server{*input_partition_server_ptr};
 
             Offset const offset{input_partition_server.offset()};
-            InputData const input_partition_data{
-                input_partition_server.data()};
+            InputData const input_partition_data{input_partition_server.data()};
             OutputData output_partition_data{input_partition_data.shape()};
 
             std::transform(
                 input_partition_data.begin(), input_partition_data.end(),
                 output_partition_data.begin(), functor);
 
-            return OutputPartition{
-                hpx::find_here(), offset, std::move(output_partition_data)};
+            return OutputPartition{hpx::find_here(), offset, std::move(output_partition_data)};
         },
 
         input_partition);
@@ -53,12 +51,9 @@ template<
     typename Functor>
 struct UnaryLocalOperationPartitionAction:
     hpx::actions::make_action<
-            decltype(&unary_local_operation_partition<
-                InputPartition, OutputPartition, Functor>),
-            &unary_local_operation_partition<
-                InputPartition, OutputPartition, Functor>,
-            UnaryLocalOperationPartitionAction<
-                InputPartition, OutputPartition, Functor>
+            decltype(&unary_local_operation_partition<InputPartition, OutputPartition, Functor>),
+            &unary_local_operation_partition<InputPartition, OutputPartition, Functor>,
+            UnaryLocalOperationPartitionAction<InputPartition, OutputPartition, Functor>
         >
 {};
 
@@ -80,8 +75,9 @@ PartitionedArray<OutputElementT<Functor>, rank> unary_local_operation(
     using OutputPartitions = PartitionsT<OutputArray>;
     using OutputPartition = PartitionT<OutputArray>;
 
-    detail::UnaryLocalOperationPartitionAction<
-        InputPartition, OutputPartition, Functor> action;
+    lue_assert(all_are_valid(input_array.partitions()));
+
+    detail::UnaryLocalOperationPartitionAction<InputPartition, OutputPartition, Functor> action;
     OutputPartitions output_partitions{shape_in_partitions(input_array)};
 
     for(Index p = 0; p < nr_partitions(input_array); ++p)

@@ -33,8 +33,7 @@ PartitionedArray<Element, rank> multiply(
     PartitionedArray<Element, rank> const& array1,
     PartitionedArray<Element, rank> const& array2)
 {
-    return binary_local_operation(
-        array1, array2, detail::Multiply<Element>{});
+    return binary_local_operation(array1, array2, detail::Multiply<Element>{});
 }
 
 
@@ -45,8 +44,7 @@ PartitionedArray<Element, rank> multiply(
     PartitionedArray<Element, rank> const& array,
     hpx::shared_future<Element> const& scalar)
 {
-    return binary_local_operation(
-        array, scalar, detail::Multiply<Element>{});
+    return binary_local_operation(array, scalar, detail::Multiply<Element>{});
 }
 
 
@@ -57,8 +55,7 @@ PartitionedArray<Element, rank> multiply(
     hpx::shared_future<Element> const& scalar,
     PartitionedArray<Element, rank> const& array)
 {
-    return binary_local_operation(
-        scalar, array, detail::Multiply<Element>{});
+    return binary_local_operation(scalar, array, detail::Multiply<Element>{});
 }
 
 
@@ -70,8 +67,7 @@ PartitionedArray<Element, rank> multiply(
     Element const& scalar)
 {
     return binary_local_operation(
-        array, hpx::make_ready_future<Element>(scalar).share(),
-        detail::Multiply<Element>{});
+        array, hpx::make_ready_future<Element>(scalar).share(), detail::Multiply<Element>{});
 }
 
 
@@ -83,8 +79,7 @@ PartitionedArray<Element, rank> multiply(
     PartitionedArray<Element, rank> const& array)
 {
     return binary_local_operation(
-        hpx::make_ready_future<Element>(scalar).share(),
-        array, detail::Multiply<Element>{});
+        hpx::make_ready_future<Element>(scalar).share(), array, detail::Multiply<Element>{});
 }
 
 }  // namespace lue
