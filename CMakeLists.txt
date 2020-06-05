@@ -9,10 +9,10 @@ set(${PROJECT_NAME}_COPYRIGHT "2015-now PCRaster owners")
 set(${PROJECT_NAME}_PROJECT_NAME "${PROJECT_NAME}")
 set(${PROJECT_NAME}_HOMEPAGE "http://www.pcraster.eu")
 
-### if(EXISTS ${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-###     include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-###     conan_basic_setup()
-### endif()
+# 'library' for the requested compile options
+add_library(lue_compile_options INTERFACE)
+add_library(lue::compile_options ALIAS lue_compile_options)
+install(TARGETS lue_compile_options EXPORT lue_targets)
 
 list(APPEND CMAKE_MODULE_PATH
     ${CMAKE_CURRENT_LIST_DIR}/devbase/cmake

@@ -2,11 +2,10 @@ set(CMAKE_CXX_STANDARD 17)
 
 include(StandardProjectSettings)
 
+include(Sanitizers)
+enable_sanitizers(lue_compile_options)
 
 include(StaticAnalyzers)
-
-
-
 
 include(FetchContent)
 

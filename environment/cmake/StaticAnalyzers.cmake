@@ -2,8 +2,13 @@ option(${PROJECT_NAME}_ENABLE_CPPCHECK
     "Enable static analysis with cppcheck" OFF)
 option(${PROJECT_NAME}_ENABLE_CLANG_TIDY
     "Enable static analysis with clang-tidy" OFF)
+
+# TODO
 # option(ENABLE_INCLUDE_WHAT_YOU_USE
 #     "Enable static analysis with include-what-you-use" OFF)
+# <lang>_CPPLINT
+# <lang>_INCLUDE_WHAT_YOU_USE
+# LINK_WHAT_YOU_USE
 
 
 if(${PROJECT_NAME}_ENABLE_CPPCHECK)
