@@ -57,6 +57,11 @@ public:
 
     Array&         operator=           (Array&&)=default;
 
+    bool empty() const
+    {
+        return _elements.empty();
+    }
+
     Shape const&   shape               () const;
 
     Iterator       begin               ();

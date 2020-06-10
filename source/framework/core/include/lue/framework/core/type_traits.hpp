@@ -6,6 +6,21 @@
 namespace lue {
 namespace detail {
 
+// Since C++20
+template<
+    typename T>
+struct remove_cvref
+{
+    using type = std::remove_cv_t<std::remove_reference_t<T>>;
+};
+
+
+// Since C++20
+template<
+    typename T>
+using remove_cvref_t = typename remove_cvref<T>::type;
+
+
 /*!
     @brief      Primary template for traits of an array-like type
     @tparam     Array-like type
@@ -45,7 +60,7 @@ class IsArrayPartition:
 */
 template<
     typename Array>
-using ElementT = typename detail::ArrayTraits<Array>::Element;
+using ElementT = detail::remove_cvref_t<typename detail::ArrayTraits<Array>::Element>;
 
 
 /*!
@@ -54,12 +69,12 @@ using ElementT = typename detail::ArrayTraits<Array>::Element;
 */
 template<
     typename Array>
-static constexpr Rank rank = detail::ArrayTraits<Array>::rank;
+static constexpr Rank rank = detail::ArrayTraits<detail::remove_cvref_t<Array>>::rank;
 
 
 template<
     typename Array>
-using OffsetT = typename detail::ArrayTraits<Array>::Offset;
+using OffsetT = detail::remove_cvref_t<typename detail::ArrayTraits<Array>::Offset>;
 
 
 /*!
@@ -71,17 +86,17 @@ using OffsetT = typename detail::ArrayTraits<Array>::Offset;
 */
 template<
     typename Array>
-using ShapeT = typename detail::ArrayTraits<Array>::Shape;
+using ShapeT = detail::remove_cvref_t<typename detail::ArrayTraits<Array>::Shape>;
 
 
 template<
     typename Array>
-using SlicesT = typename detail::ArrayTraits<Array>::Slices;
+using SlicesT = detail::remove_cvref_t<typename detail::ArrayTraits<Array>::Slices>;
 
 
 template<
     typename Array>
-using SliceT = typename detail::ArrayTraits<Array>::Slice;
+using SliceT = detail::remove_cvref_t<typename detail::ArrayTraits<Array>::Slice>;
 
 
 /*!
@@ -99,8 +114,7 @@ template<
     typename Array,
     typename Element=ElementT<Array>,
     Rank rank=rank<Array>>
-using DataT =
-    typename detail::ArrayTraits<Array>::template Data<Element, rank>;
+using DataT = detail::remove_cvref_t<typename detail::ArrayTraits<Array>::template Data<Element, rank>>;
 
 
 /*!
@@ -118,9 +132,8 @@ template<
     typename Element=ElementT<Array>,
     Rank rank=rank<Array>>
 using PartitionT =
-    std::remove_const_t<
-            typename detail::ArrayTraits<Array>::template
-                Partition<Element, rank>
+    detail::remove_cvref_t<
+            typename detail::ArrayTraits<Array>::template Partition<Element, rank>
         >;
 
 
@@ -139,7 +152,9 @@ template<
     typename Element=ElementT<Array>,
     Rank rank=rank<Array>>
 using PartitionsT =
-    typename detail::ArrayTraits<Array>::template Partitions<Element, rank>;
+    detail::remove_cvref_t<
+            typename detail::ArrayTraits<Array>::template Partitions<Element, rank>
+        >;
 
 
 /*!
@@ -157,8 +172,9 @@ template<
     typename Element=ElementT<Array>,
     Rank rank=rank<Array>>
 using PartitionedArrayT =
-    typename detail::ArrayTraits<Array>::
-        template PartitionedArray<Element, rank>;
+    detail::remove_cvref_t<
+            typename detail::ArrayTraits<Array>::template PartitionedArray<Element, rank>
+        >;
 
 
 template<

@@ -136,15 +136,26 @@ private:
 
     Elements&      elements            ();
 
-    // All arguments passed to actions must support serialization,
-    // even if they are never actually communicated between localities
+    void           assert_invariants   () const;
+
     friend class hpx::serialization::access;
 
-    template<typename Archive>
     void serialize(
-        Archive& archive,
+        hpx::serialization::input_archive& archive,
         unsigned int const /* version */)
     {
+        archive & _shape & _elements;
+        _span = Span{_elements.data(), _shape};
+
+        assert_invariants();
+    }
+
+    void serialize(
+        hpx::serialization::output_archive& archive,
+        unsigned int const /* version */) const
+    {
+        assert_invariants();
+
         archive & _shape & _elements;
     }
 
@@ -171,7 +182,7 @@ ArrayPartitionData<Element, rank>::ArrayPartitionData():
     ArrayPartitionData{Shape{}}
 
 {
-    lue_assert(_elements.size() == lue::nr_elements(_shape));
+    assert_invariants();
 }
 
 
@@ -192,7 +203,7 @@ ArrayPartitionData<Element, rank>::ArrayPartitionData(
     _span{_elements.data(), _shape}
 
 {
-    lue_assert(_elements.size() == lue::nr_elements(_shape));
+    assert_invariants();
 }
 
 
@@ -212,6 +223,8 @@ ArrayPartitionData<Element, rank>::ArrayPartitionData(
 
 {
     std::fill_n(_elements.begin(), _elements.size(), value);
+
+    assert_invariants();
 }
 
 
@@ -235,7 +248,11 @@ ArrayPartitionData<Element, rank>::ArrayPartitionData(
     ArrayPartitionData{shape}
 
 {
+    lue_assert(std::distance(begin, end) == _elements.size());
+
     std::move(begin, end, _elements.begin());
+
+    assert_invariants();
 }
 
 
@@ -250,6 +267,8 @@ ArrayPartitionData<Element, rank>::ArrayPartitionData(
 
 {
     std::copy(elements.begin(), elements.end(), _elements.begin());
+
+    assert_invariants();
 }
 
 
@@ -267,7 +286,7 @@ ArrayPartitionData<Element, rank>::ArrayPartitionData(
     _span{_elements.data(), _shape}
 
 {
-    lue_assert(_elements.size() == lue::nr_elements(_shape));
+    assert_invariants();
 }
 
 
@@ -288,7 +307,7 @@ ArrayPartitionData<Element, rank>& ArrayPartitionData<Element, rank>::operator=(
         _span = Span{_elements.data(), _shape};
     }
 
-    lue_assert(_elements.size() == lue::nr_elements(_shape));
+    assert_invariants();
 
     return *this;
 }
@@ -308,10 +327,12 @@ ArrayPartitionData<Element, rank>::ArrayPartitionData(
     _span{_elements.data(), _shape}
 
 {
-    lue_assert(
-        (_elements.data() != other._elements.data()) ||
-        (_elements.data() == nullptr));
-    lue_assert(_elements.size() == lue::nr_elements(_shape));
+    other._shape.fill(0);
+    other._span = Span{other._elements.data(), other._shape};
+
+    other.assert_invariants();
+    lue_assert(other.empty());
+    assert_invariants();
 }
 
 
@@ -324,14 +345,20 @@ template<
 ArrayPartitionData<Element, rank>& ArrayPartitionData<Element, rank>::operator=(
     ArrayPartitionData&& other)
 {
-    _shape = std::move(other._shape);
-    _elements = std::move(other._elements);
-    _span = Span{_elements.data(), _shape};
+    if(this != &other)
+    {
+        _shape = std::move(other._shape);
+        other._shape.fill(0);
 
-    lue_assert(
-        (_elements.data() != other._elements.data()) ||
-        (_elements.data() == nullptr));
-    lue_assert(_elements.size() == lue::nr_elements(_shape));
+        _elements = std::move(other._elements);
+
+        _span = Span{_elements.data(), _shape};
+        other._span = Span{other._elements.data(), other._shape};
+    }
+
+    other.assert_invariants();
+    lue_assert(other.empty());
+    assert_invariants();
 
     return *this;
 }
@@ -363,8 +390,6 @@ template<
 typename ArrayPartitionData<Element, rank>::Count
     ArrayPartitionData<Element, rank>::nr_elements() const
 {
-    lue_assert(_elements.size() == lue::nr_elements(_shape));
-
     return lue::nr_elements(_shape);
 }
 
@@ -389,6 +414,8 @@ void ArrayPartitionData<Element, rank>::reshape(
         _shape = shape;
         _span = Span{_elements.data(), _shape};
     }
+
+    assert_invariants();
 }
 
 
@@ -445,6 +472,8 @@ void ArrayPartitionData<Element, rank>::erase(
 
     _shape[dimension_idx] -= hyperslab_end_idx - hyperslab_begin_idx;
     _span = Span{_elements.data(), _shape};
+
+    assert_invariants();
 }
 
 
@@ -615,6 +644,17 @@ ArrayPartitionData<Element, rank> ArrayPartitionData<Element, rank>::slice(
 
         return sliced_data;
     }
+}
+
+
+template<
+    typename Element,
+    Rank rank>
+void ArrayPartitionData<Element, rank>::assert_invariants() const
+{
+    lue_assert(lue::nr_elements(_shape) == _elements.size());
+    lue_assert(_span.size() == _elements.size());
+    lue_assert(_span.data() == _elements.data());
 }
 
 
