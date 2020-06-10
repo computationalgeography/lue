@@ -12,6 +12,9 @@
 #include "lue/framework/io.hpp"
 #include "lue/data_model/hl/raster_view.hpp"
 
+#include "lue/framework/algorithm/arithmetic.hpp"
+/// #include "lue/framework/algorithm/copy.hpp"
+
 
 namespace lue {
 namespace benchmark {
@@ -30,7 +33,8 @@ public:
     using Kernel = lue::Kernel<bool, rank>;
 
                    FocalMeanBenchmarkModel(
-                                        Task const& task);
+                                        Task const& task,
+                                        std::size_t max_tree_depth);
 
                    FocalMeanBenchmarkModel(
                                         FocalMeanBenchmarkModel const&)=default;
@@ -58,6 +62,10 @@ public:
 
 private:
 
+    std::int64_t _max_tree_depth;
+
+    hpx::lcos::local::sliding_semaphore _semaphore;
+
     Array _state;
 
     Kernel _kernel;
@@ -69,9 +77,12 @@ template<
     typename Element,
     std::size_t rank>
 FocalMeanBenchmarkModel<Element, rank>::FocalMeanBenchmarkModel(
-    Task const& task):
+    Task const& task,
+    std::size_t const max_tree_depth):
 
     BenchmarkModel<rank>{task},
+    _max_tree_depth{static_cast<std::int64_t>(max_tree_depth)},
+    _semaphore{_max_tree_depth},
     _state{},
     _kernel{}
 
@@ -87,6 +98,9 @@ void FocalMeanBenchmarkModel<Element, rank>::preprocess()
     _state = uniform(
         Array{this->array_shape(), this->partition_shape()},
         Element{0}, std::numeric_limits<Element>::max());
+
+    // Calculating state at t0 is not part of the benchmark
+    wait_all(_state.partitions());
 
     lue_assert(_state.shape() == this->array_shape());
 
@@ -167,10 +181,29 @@ template<
     typename Element,
     std::size_t rank>
 void FocalMeanBenchmarkModel<Element, rank>::simulate(
-    Count const /* time_step */)
+    Count const time_step)
 {
-    _state = focal_mean(_state, _kernel);
+    _state = focal_mean(Element{1} * _state, _kernel);
     hpx::cout << '.' << hpx::flush;
+
+
+
+    // every nd time steps, attach additional continuation which will
+    // trigger the semaphore once computation has reached this point
+    if((time_step % _max_tree_depth) == 0)
+    {
+        _state.partitions()[0].then(
+
+            [this, time_step](auto const&)
+            {
+                // inform semaphore about new lower limit
+                _semaphore.signal(time_step);
+            });
+    }
+
+    // suspend if the tree has become too deep, the continuation above
+    // will resume this thread once the computation has caught up
+    _semaphore.wait(time_step);
 }
 
 
@@ -193,72 +226,72 @@ void FocalMeanBenchmarkModel<Element, rank>::postprocess()
 }
 
 
-// template<
-//     typename Element,
-//     std::size_t rank>
-// AlgorithmBenchmarkResult focal_mean(
-//     Task const& task,
-//     std::size_t const max_tree_depth)
-// {
-//     lue_assert(max_tree_depth > 0);
-// 
-//     using Array = PartitionedArray<Element, rank>;
-//     using Shape = typename Array::Shape;
-// 
-//     Shape shape;
-//     std::copy(
-//         task.array_shape().begin(), task.array_shape().end(),
-//         shape.begin());
-// 
-//     Shape partition_shape;
-//     std::copy(
-//         task.partition_shape().begin(), task.partition_shape().end(),
-//         partition_shape.begin());
-// 
-//     // → Create initial array
-//     Array state{shape, partition_shape};
-//     hpx::cout << describe(state) << hpx::endl;
-// 
-//     AlgorithmBenchmarkResult result{state.partitions().shape()};
-// 
-//     lue_assert(state.shape() == shape);
-// 
-//     state = uniform(state, Element{0}, std::numeric_limits<Element>::max());
-// 
-//     auto const kernel = lue::box_kernel<bool, rank>(1, true);
-// 
-//     hpx::lcos::local::sliding_semaphore semaphore{
-//         static_cast<std::int64_t>(max_tree_depth)};
-// 
-//     for(std::size_t i = 0; i < task.nr_time_steps(); ++i) {
-// 
-//         // Wait if there are more than max_tree_depth iterations in flight
-//         semaphore.wait(i);
-// 
-//         state = focal_mean(state, kernel);
-// 
-//         hpx::cout << '.' << hpx::flush;
-// 
-//         // Attach a continuation to the state at the current time
-//         // step. Once it is finished, signal the semaphore so it knowns
-//         // that we can have another iteration in flight.
-//         hpx::when_all_n(state.begin(), state.nr_partitions()).then(
-//             hpx::launch::sync,
-//             [&semaphore, i](
-//                 auto const&)
-//             {
-//                 semaphore.signal(i);
-//             });
-//     }
-// 
-//     hpx::cout << "!" << hpx::flush;
-// 
-//     hpx::wait_all_n(state.begin(), state.nr_partitions());
-// 
-//     hpx::cout << hpx::endl;
-// 
-//     return result;
-// }
+/// template<
+///     typename Element,
+///     std::size_t rank>
+/// AlgorithmBenchmarkResult focal_mean(
+///     Task const& task,
+///     std::size_t const max_tree_depth)
+/// {
+///     lue_assert(max_tree_depth > 0);
+/// 
+///     using Array = PartitionedArray<Element, rank>;
+///     using Shape = typename Array::Shape;
+/// 
+///     Shape shape;
+///     std::copy(
+///         task.array_shape().begin(), task.array_shape().end(),
+///         shape.begin());
+/// 
+///     Shape partition_shape;
+///     std::copy(
+///         task.partition_shape().begin(), task.partition_shape().end(),
+///         partition_shape.begin());
+/// 
+///     // → Create initial array
+///     Array state{shape, partition_shape};
+///     hpx::cout << describe(state) << hpx::endl;
+/// 
+///     AlgorithmBenchmarkResult result{state.partitions().shape()};
+/// 
+///     lue_assert(state.shape() == shape);
+/// 
+///     state = uniform(state, Element{0}, std::numeric_limits<Element>::max());
+/// 
+///     auto const kernel = lue::box_kernel<bool, rank>(1, true);
+/// 
+///     hpx::lcos::local::sliding_semaphore semaphore{
+///         static_cast<std::int64_t>(max_tree_depth)};
+/// 
+///     for(std::size_t i = 0; i < task.nr_time_steps(); ++i) {
+/// 
+///         // Wait if there are more than max_tree_depth iterations in flight
+///         semaphore.wait(i);
+/// 
+///         auto state2 = focal_mean(state, kernel);
+/// 
+///         hpx::cout << '.' << hpx::flush;
+/// 
+///         // Attach a continuation to the state at the current time
+///         // step. Once it is finished, signal the semaphore so it knowns
+///         // that we can have another iteration in flight.
+///         hpx::when_all_n(state.begin(), state.nr_partitions()).then(
+///             hpx::launch::sync,
+///             [&semaphore, i](
+///                 auto const&)
+///             {
+///                 semaphore.signal(i);
+///             });
+///     }
+/// 
+///     hpx::cout << "!" << hpx::flush;
+/// 
+///     hpx::wait_all_n(state.begin(), state.nr_partitions());
+/// 
+///     hpx::cout << hpx::endl;
+/// 
+///     return result;
+/// }
 
 }  // namespace benchmark
 }  // namespace lue
@@ -271,16 +304,43 @@ auto setup_benchmark(
     lue::benchmark::Task const& task)
 {
     auto callable = [](
-        lue::benchmark::Environment const& /* environment */,
+        lue::benchmark::Environment const& environment,
         lue::benchmark::Task const& task)
     {
-        return lue::benchmark::FocalMeanBenchmarkModel<double, 2>{task};
+        std::size_t const max_tree_depth = environment.max_tree_depth()
+            ? *environment.max_tree_depth()
+            : task.nr_time_steps();
+
+        return lue::benchmark::FocalMeanBenchmarkModel<double, 2>{task, max_tree_depth};
     };
 
     return lue::benchmark::ModelBenchmark<
             decltype(callable), lue::AlgorithmBenchmarkResult>{
         std::move(callable), environment, task};
 }
+
+
+/// auto setup_benchmark(
+///         int /* argc */,
+///         char* /* argv */[],
+///         lue::benchmark::Environment const& environment,
+///         lue::benchmark::Task const& task)
+/// {
+///     auto callable = [](
+///         lue::benchmark::Environment const& environment,
+///         lue::benchmark::Task const& task) -> lue::AlgorithmBenchmarkResult
+///     {
+///         std::size_t const max_tree_depth = environment.max_tree_depth()
+///             ? *environment.max_tree_depth()
+///             : task.nr_time_steps();
+/// 
+///         return lue::benchmark::focal_mean<double, 2>(task, max_tree_depth);
+///     };
+/// 
+///     return lue::benchmark::Benchmark<
+///             decltype(callable), lue::AlgorithmBenchmarkResult>{
+///         std::move(callable), environment, task};
+/// }
 
 
 LUE_CONFIGURE_HPX_BENCHMARK()

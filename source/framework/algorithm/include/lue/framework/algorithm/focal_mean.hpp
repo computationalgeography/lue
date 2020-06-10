@@ -7,23 +7,6 @@
 namespace lue {
 namespace detail {
 
-// void spin(
-//     Count nr_iterations)
-// {
-//     for(volatile Count i = 0; i < nr_iterations; ++i) {}
-// 
-//     // // The use of volatile prevends the optimizing compiler
-//     // // to remove this iteration
-//     // for(volatile Element nr_iterations: partition_data) {
-//     //     lue_assert(nr_iterations >= Element{0});
-// 
-//     //     while(nr_iterations > Element{0}) {
-//     //         --nr_iterations;
-//     //     }
-//     // }
-// }
-
-
 template<
     typename InputElement>
 class FocalMean
@@ -55,11 +38,7 @@ public:
             Weight const weight,
             InputElement const value)
         {
-            static_assert(
-                std::is_same_v<Weight, bool> ||
-                std::is_floating_point_v<Weight>);
-
-            // spin(5);
+            static_assert(std::is_same_v<Weight, bool> || std::is_floating_point_v<Weight>);
 
             if constexpr(std::is_same_v<Weight, bool>) {
                 if(weight && !std::isnan(value)) {
