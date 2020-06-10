@@ -736,13 +736,13 @@ void PartitionedArray<Element, rank>::instantiate_partitions(
     Count const nr_partitions = lue::nr_elements(shape_in_partitions);
     lue_assert(_partitions.nr_elements() == nr_partitions);
 
-    std::vector<hpx::naming::id_type> const localities =
-        hpx::find_all_localities();
+    std::vector<hpx::id_type> const localities = hpx::find_all_localities();
     Count const nr_localities = localities.size();
 
     lue_assert(nr_localities > 0);
 
-    if(nr_partitions < nr_localities) {
+    if(nr_partitions < nr_localities)
+    {
         throw std::runtime_error(fmt::format(
             "Not enough partitions to use all localities ({} < {})",
             nr_partitions, nr_localities));

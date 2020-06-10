@@ -65,13 +65,14 @@ public:
         _ptr{std::move(other._ptr)}
 
     {
+        assert_invariants();
+
         // This class requires that _ptr always points to a, possibly
         // empty, container
         lue_assert(!other._ptr);
         other.allocate(0);
         lue_assert(other.size() == 0);
 
-        assert_invariants();
         other.assert_invariants();
     }
 
@@ -84,13 +85,14 @@ public:
     {
         _ptr = std::move(other._ptr);
 
+        assert_invariants();
+
         // This class requires that a _ptr always points to a, possibly
         // empty, container
         lue_assert(!other._ptr);
         other.allocate(0);
         lue_assert(other.size() == 0);
 
-        assert_invariants();
         other.assert_invariants();
 
         return *this;

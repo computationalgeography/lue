@@ -14,17 +14,18 @@ void serialize(
     lue::Array<Element, rank>& array,
     unsigned int const /* version */)
 {
+    // Read array from archive
+
     using Array = lue::Array<Element, rank>;
+    using Shape = typename Array::Shape;
 
     // Read array shape and make sure array has enough room for the elements
-    typename Array::Shape shape;
+    Shape shape{};
     archive & shape;
     array.reshape(shape);
 
     // Read elements
-    hpx::serialization::array<Element> elements =
-        hpx::serialization::make_array(array.data(), lue::nr_elements(array));
-    archive & elements;
+    archive & hpx::serialization::make_array(array.data(), lue::nr_elements(array));
 }
 
 
@@ -36,6 +37,8 @@ void serialize(
     lue::Array<Element, rank> const& array,
     unsigned int const /* version */)
 {
+    // Write array to archive
+
     archive
         & array.shape()
         & hpx::serialization::make_array(array.data(), lue::nr_elements(array))

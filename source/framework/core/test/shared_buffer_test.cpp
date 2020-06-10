@@ -17,6 +17,7 @@ BOOST_AUTO_TEST_CASE(default_construct)
 {
     SharedBuffer buffer{};
     BOOST_CHECK_EQUAL(buffer.size(), 0);
+    BOOST_CHECK_EQUAL(std::distance(buffer.begin(), buffer.end()), 0);
 }
 
 
@@ -34,6 +35,7 @@ BOOST_AUTO_TEST_CASE(resize)
     SharedBuffer buffer{size};
     buffer.resize(new_size);
     BOOST_CHECK_EQUAL(buffer.size(), new_size);
+    BOOST_CHECK_EQUAL(std::distance(buffer.begin(), buffer.end()), new_size);
 }
 
 
@@ -103,6 +105,7 @@ BOOST_AUTO_TEST_CASE(erase)
     SharedBuffer buffer{10};
     std::iota(buffer.begin(), buffer.end(), 10);
     BOOST_CHECK_EQUAL(buffer.size(), 10);
+    BOOST_CHECK_EQUAL(std::distance(buffer.begin(), buffer.end()), 10);
     BOOST_CHECK_EQUAL(buffer[0], 10);
     BOOST_CHECK_EQUAL(buffer[9], 19);
 
@@ -111,6 +114,7 @@ BOOST_AUTO_TEST_CASE(erase)
     // +----  +----+----+----+----+----+----+----+----+----+
     buffer.erase(buffer.begin() + 0, buffer.begin() + 1);
     BOOST_CHECK_EQUAL(buffer.size(), 9);
+    BOOST_CHECK_EQUAL(std::distance(buffer.begin(), buffer.end()), 9);
     BOOST_CHECK_EQUAL(buffer[0], 11);
 
     // +----+----+----+----+----+----+----+----+  ----+
@@ -118,6 +122,7 @@ BOOST_AUTO_TEST_CASE(erase)
     // +----+----+----+----+----+----+----+----+  ----+
     buffer.erase(buffer.begin() + 8, buffer.begin() + 9);
     BOOST_CHECK_EQUAL(buffer.size(), 8);
+    BOOST_CHECK_EQUAL(std::distance(buffer.begin(), buffer.end()), 8);
     BOOST_CHECK_EQUAL(buffer[7], 18);
 
     // +----+----+----+  ----+----  +----+----+----+
@@ -125,6 +130,7 @@ BOOST_AUTO_TEST_CASE(erase)
     // +----+----+----+  ----+----  +----+----+----+
     buffer.erase(buffer.begin() + 3, buffer.begin() + 5);
     BOOST_CHECK_EQUAL(buffer.size(), 6);
+    BOOST_CHECK_EQUAL(std::distance(buffer.begin(), buffer.end()), 6);
     BOOST_CHECK_EQUAL(buffer[2], 13);
     BOOST_CHECK_EQUAL(buffer[3], 16);
 }

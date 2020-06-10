@@ -77,7 +77,7 @@ public:
 
     ArrayPartition& operator=          (ArrayPartition&&)=default;
 
-    hpx::future<hpx::naming::id_type>
+    hpx::future<hpx::id_type>
                    locality_id         () const;
 
     hpx::future<Data> data             () const;
@@ -99,6 +99,22 @@ public:
     hpx::future<Count> nr_elements     () const;
 
 private:
+
+    friend class hpx::serialization::access;
+
+    void serialize(
+        hpx::serialization::input_archive& archive,
+        unsigned int const /* version */)
+    {
+        archive & dynamic_cast<Base&>(*this) & _locality_id;
+    }
+
+    void serialize(
+        hpx::serialization::output_archive& archive,
+        unsigned int const /* version */) const
+    {
+        archive & dynamic_cast<Base const&>(*this) & _locality_id;
+    }
 
     //! Global ID representing the locality the component is located in
     hpx::id_type _locality_id;
@@ -365,27 +381,15 @@ ArrayPartition<Element, rank>::ArrayPartition(
 // }
 
 
-/// template<
-///     typename Element,
-///     Rank rank>
-/// hpx::naming::id_type ArrayPartition<Element, rank>::locality_id() const
-/// {
-///     lue_assert(_locality_id);
-/// 
-///     return _locality_id;
-/// }
-
-
 template<
     typename Element,
     Rank rank>
-hpx::future<hpx::naming::id_type>
-    ArrayPartition<Element, rank>::locality_id() const
+hpx::future<hpx::id_type> ArrayPartition<Element, rank>::locality_id() const
 {
     lue_assert(_locality_id || this->get_id());
 
     return _locality_id
-        ? hpx::make_ready_future<hpx::naming::id_type>(_locality_id)
+        ? hpx::make_ready_future<hpx::id_type>(_locality_id)
         : hpx::async(typename Server::LocalityIDAction{}, this->get_id())
         ;
 }
@@ -397,8 +401,7 @@ hpx::future<hpx::naming::id_type>
 template<
     typename Element,
     Rank rank>
-hpx::future<typename ArrayPartition<Element, rank>::Data>
-    ArrayPartition<Element, rank>::data() const
+hpx::future<typename ArrayPartition<Element, rank>::Data> ArrayPartition<Element, rank>::data() const
 {
     lue_assert(this->is_ready());
     lue_assert(this->get_id());

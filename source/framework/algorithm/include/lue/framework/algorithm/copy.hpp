@@ -55,6 +55,31 @@ struct CopyPartitionAction:
 {};
 
 
+template<
+    typename Element,
+    Rank rank>
+ArrayPartition<Element, rank> copy(
+    ArrayPartition<Element, rank> const& input_partition)
+{
+    using Partition = ArrayPartition<Element, rank>;
+
+    CopyPartitionAction<Partition> action;
+
+    return hpx::dataflow(
+        hpx::launch::async,
+        hpx::util::unwrapping(
+
+                [action, input_partition](
+                    hpx::id_type const locality_id)
+                {
+                    return action(locality_id, input_partition);
+                }
+
+            ),
+        input_partition.locality_id());
+}
+
+
 /*!
     @brief      Return the result of copying a partitioned array
     @tparam     Element Type of elements in the arrays

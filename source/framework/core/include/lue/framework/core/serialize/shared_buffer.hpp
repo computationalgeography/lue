@@ -14,19 +14,17 @@ void serialize(
     unsigned int const /* version */)
 {
     // Read buffer from archive
+
     using Buffer = lue::SharedBuffer<Element>;
-    using Array = hpx::serialization::array<Element>;
+    using Size = typename Buffer::Size;
 
-    typename Buffer::Size size;
+    // Read buffer size and make sure buffer has enough room for the elements
+    Size size{};
     archive & size;
-
-    // Otherwise, update folowing logic
-    lue::lue_assert(size > 0);
-
     buffer.resize(size);
 
-    Array array = hpx::serialization::make_array(buffer.data(), size);
-    archive & array;
+    // Read elements
+    archive & hpx::serialization::make_array(buffer.data(), size);
 }
 
 
@@ -38,16 +36,11 @@ void serialize(
     unsigned int const /* version */)
 {
     // Write buffer to archive
-    using Buffer = lue::SharedBuffer<Element>;
-    using Array = hpx::serialization::array<Element const>;
 
-    // Otherwise, update folowing logic
-    lue::lue_assert(!buffer.empty());
-
-    typename Buffer::Size const size = buffer.size();
-    Array array = hpx::serialization::make_array(buffer.data(), size);
-
-    archive & size & array;
+    archive
+        & buffer.size()
+        & hpx::serialization::make_array(buffer.data(), buffer.size())
+        ;
 }
 
 }  // namespace serialization

@@ -36,7 +36,7 @@ void serialize(
 {
     using Array = lue::Array<Weight, rank>;
 
-    serialize(archive, dynamic_cast<const Array&>(kernel), version);
+    serialize(archive, dynamic_cast<Array const&>(kernel), version);
 }
 
 }  // namespace serialization
