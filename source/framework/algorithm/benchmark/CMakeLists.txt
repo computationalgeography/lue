@@ -1,26 +1,7 @@
-add_library(lue_algorithm_benchmark
-    algorithm_benchmark_result
-    benchmark_model
-    format
-)
-
-add_library(lue::algorithm_benchmark ALIAS lue_algorithm_benchmark)
-
-target_link_libraries(lue_algorithm_benchmark
-    PUBLIC
-        lue::benchmark
-        lue::framework_io
-        lue::framework_model
-        CONAN_PKG::nlohmann_json
-)
-
 lue_add_benchmark(CATEGORY algorithm NAME copy)
 lue_add_benchmark(CATEGORY algorithm NAME empty)
-lue_add_benchmark(CATEGORY algorithm NAME focal_mean
-    LINK_LIBRARIES lue::algorithm_benchmark)
-lue_add_benchmark(CATEGORY algorithm NAME iterate_per_element
-    LINK_LIBRARIES lue::algorithm_benchmark)
-lue_add_benchmark(CATEGORY algorithm NAME multiply
-    LINK_LIBRARIES lue::algorithm_benchmark)
-lue_add_benchmark(CATEGORY algorithm NAME sqrt
-    LINK_LIBRARIES lue::algorithm_benchmark)
+lue_add_benchmark(CATEGORY algorithm NAME focal_mean)
+lue_add_benchmark(CATEGORY algorithm NAME iterate_per_element)
+lue_add_benchmark(CATEGORY algorithm NAME multiply)
+lue_add_benchmark(CATEGORY algorithm NAME sqrt)
+lue_add_benchmark(CATEGORY algorithm NAME zonal_sum)

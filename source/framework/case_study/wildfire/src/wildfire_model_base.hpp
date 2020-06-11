@@ -8,7 +8,9 @@
 namespace lue {
 
 class WildfireModelBase:
-    public Model
+    // This class in inherited by WildfireBenchmarkModel, which inherits
+    // Model as well. We therefore need to use virtual inheritance.
+    public virtual Model
 {
 
 public:
@@ -35,11 +37,9 @@ public:
 
     using KernelShape = ShapeT<Kernel>;
 
-    void           initialize          ();
+    void           initialize          () override;
 
-    void           simulate            (Count time_step);
-
-    void           postprocess         ();
+    void           simulate            (Count time_step) override;
 
 protected:
 

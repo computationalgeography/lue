@@ -141,9 +141,4 @@ void WildfireModelBase::simulate(
     _state = where(_burning, 1, where(_fire, 2, 3));
 }
 
-
-void WildfireModelBase::postprocess()
-{
-}
-
 }  // namespace lue

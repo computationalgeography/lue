@@ -21,9 +21,6 @@ hpx::future<AggregatorT<Functor>> zonal_operation_partition1(
     ZonesPartition const& zones_partition,
     Functor /* functor */)
 {
-    lue_assert(input_partition.locality_id().get() == hpx::find_here());
-    lue_assert(zones_partition.locality_id().get() == hpx::find_here());
-
     using InputData = DataT<InputPartition>;
     using ZonesData = DataT<ZonesPartition>;
     using Aggregator = AggregatorT<Functor>;
@@ -35,15 +32,16 @@ hpx::future<AggregatorT<Functor>> zonal_operation_partition1(
             InputPartition const& input_partition,
             ZonesPartition const& zones_partition)
         {
-            auto const input_partition_server_ptr{
-                hpx::get_ptr(input_partition).get()};
-            auto const& input_partition_server{*input_partition_server_ptr};
-            InputData input_partition_data{input_partition_server.data()};
+            lue_assert(input_partition.locality_id().get() == hpx::find_here());
+            lue_assert(zones_partition.locality_id().get() == hpx::find_here());
 
-            auto const zones_partition_server_ptr{
-                hpx::get_ptr(zones_partition).get()};
+            auto const input_partition_server_ptr{hpx::get_ptr(input_partition).get()};
+            auto const& input_partition_server{*input_partition_server_ptr};
+            InputData const input_partition_data{input_partition_server.data()};
+
+            auto const zones_partition_server_ptr{hpx::get_ptr(zones_partition).get()};
             auto const& zones_partition_server{*zones_partition_server_ptr};
-            ZonesData zones_partition_data{zones_partition_server.data()};
+            ZonesData const zones_partition_data{zones_partition_server.data()};
 
             Count const nr_elements{lue::nr_elements(input_partition_data)};
 
@@ -79,20 +77,19 @@ OutputPartition zonal_operation_partition2(
     ZonesPartition const& zones_partition,
     AggregatorT<Functor> const& aggregator)
 {
-    lue_assert(zones_partition.locality_id().get() == hpx::find_here());
-
     using ZonesData = DataT<ZonesPartition>;
-
     using OutputData = DataT<OutputPartition>;
 
+    // These zones have already been used during step 1 of the algorithm below
     lue_assert(zones_partition.is_ready());
 
-    auto const zones_partition_server_ptr{
-        hpx::get_ptr(zones_partition).get()};
+    lue_assert(zones_partition.locality_id().get() == hpx::find_here());
+
+    auto const zones_partition_server_ptr{hpx::get_ptr(zones_partition).get()};
     auto const& zones_partition_server{*zones_partition_server_ptr};
 
     auto offset{zones_partition_server.offset()};
-    ZonesData zones_partition_data{zones_partition_server.data()};
+    ZonesData const zones_partition_data{zones_partition_server.data()};
 
     OutputData output_partition_data{zones_partition_data.shape()};
 
@@ -103,8 +100,7 @@ OutputPartition zonal_operation_partition2(
         output_partition_data[i] = aggregator[zones_partition_data[i]];
     }
 
-    return OutputPartition{
-        hpx::find_here(), offset, std::move(output_partition_data)};
+    return OutputPartition{hpx::find_here(), offset, std::move(output_partition_data)};
 }
 
 
@@ -152,14 +148,6 @@ PartitionedArray<OutputElementT<Functor>, rank> zonal_operation(
     PartitionedArray<Zone, rank> const& zones_array,
     Functor const& functor)
 {
-    // 1. Per input partition, calculate a statistic per zone. This
-    //     results in some operation-specific object that contains this
-    //     information. Example: sum per zone
-    // 2. Merge the zonal statistics of all input partitions. This
-    //     results in the same operation-specific object, but now
-    //     containing information for the whole array.
-    // 3. Per input partition, translate input zone to output statistic.
-
     using InputArray = PartitionedArray<InputElement, rank>;
     using InputPartition = PartitionT<InputArray>;
 
@@ -176,12 +164,14 @@ PartitionedArray<OutputElementT<Functor>, rank> zonal_operation(
     Count const nr_partitions{lue::nr_partitions(input_array)};
     lue_assert(lue::nr_partitions(zones_array) == nr_partitions);
 
-    // 1. ----------------------------------------------------------------------
+    // -------------------------------------------------------------------------
+    // 1. Per input partition, calculate a statistic per zone. This
+    //     results in some operation-specific object that contains this
+    //     information. Example: sum per zone
     Aggregators aggregators{static_cast<std::size_t>(nr_partitions)};
 
     {
-        detail::ZonalOperationPartitionAction1<
-            InputPartition, ZonesPartition, Functor> action;
+        detail::ZonalOperationPartitionAction1<InputPartition, ZonesPartition, Functor> action;
 
         for(Index p = 0; p < nr_partitions; ++p)
         {
@@ -195,9 +185,7 @@ PartitionedArray<OutputElementT<Functor>, rank> zonal_operation(
                         [action, functor, input_partition, zones_partition](
                             hpx::id_type const locality_id)
                         {
-                            return action(
-                                locality_id, input_partition,
-                                zones_partition, functor);
+                            return action(locality_id, input_partition, zones_partition, functor);
                         }
 
                     ),
@@ -205,9 +193,12 @@ PartitionedArray<OutputElementT<Functor>, rank> zonal_operation(
         }
     }
 
-    // 2. ----------------------------------------------------------------------
-    hpx::shared_future<Aggregator> aggregator =
-            hpx::when_all(std::move(aggregators)).then(
+    // -------------------------------------------------------------------------
+    // 2. Merge the zonal statistics of all input partitions. This
+    //     results in the same operation-specific object, but now
+    //     containing information for the whole array.
+
+    hpx::shared_future<Aggregator> aggregator = hpx::when_all(std::move(aggregators)).then(
         [](
             hpx::future<Aggregators>&& aggregators)
         {
@@ -221,12 +212,13 @@ PartitionedArray<OutputElementT<Functor>, rank> zonal_operation(
             return result;
         });
 
-    // 3. ----------------------------------------------------------------------
+    // -------------------------------------------------------------------------
+    // 3. Per input partition, translate input zone to output statistic.
+
     OutputPartitions output_partitions{shape_in_partitions(input_array)};
 
     {
-        detail::ZonalOperationPartitionAction2<
-            ZonesPartition, OutputPartition, Functor> action;
+        detail::ZonalOperationPartitionAction2<ZonesPartition, OutputPartition, Functor> action;
 
         for(Index p = 0; p < nr_partitions; ++p)
         {
@@ -240,8 +232,7 @@ PartitionedArray<OutputElementT<Functor>, rank> zonal_operation(
                             hpx::id_type const locality_id,
                             Aggregator const& aggregator)
                         {
-                            return action(
-                                locality_id, zones_partition, aggregator);
+                            return action(locality_id, zones_partition, aggregator);
                         }
 
                     ),

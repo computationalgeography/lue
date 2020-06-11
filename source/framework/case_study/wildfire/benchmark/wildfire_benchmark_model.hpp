@@ -1,19 +1,24 @@
 #pragma once
 #include "wildfire_model_base.hpp"
+#include "lue/framework/benchmark/benchmark_model.hpp"
 #include "lue/framework/benchmark/model_benchmark.hpp"
 
 
 namespace lue {
 
-class WildfireBenchmarkModel final:
-    public WildfireModelBase
+class WildfireBenchmarkModel:
+    private WildfireModelBase,
+    public benchmark::BenchmarkModel<WildfireModelBase::NominalElement, 2>
 {
 
 public:
 
+    using Base = benchmark::BenchmarkModel<WildfireModelBase::NominalElement, 2>;
+
                    WildfireBenchmarkModel(
                                         benchmark::Environment const& environment,
-                                        benchmark::Task const& task);
+                                        benchmark::Task const& task,
+                                        std::size_t max_tree_depth);
 
                    WildfireBenchmarkModel(
                                         WildfireBenchmarkModel const&)=default;
@@ -29,9 +34,21 @@ public:
     WildfireBenchmarkModel&
                    operator=           (WildfireBenchmarkModel&&)=default;
 
+    void           initialize          () override;
+
+    void           simulate            (Count time_step) override;
+
 protected:
 
 private:
+
+    void           do_preprocess       () override;
+
+    void           do_initialize       () override;
+
+    void           do_simulate         (Count time_step) override;
+
+    void           do_postprocess      () override;
 
     BooleanRaster   initial_fire       () const final;
 
