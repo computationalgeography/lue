@@ -1,19 +1,10 @@
-#include "benchmark_model.hpp"
-#include "lue/framework/algorithm/array_like.hpp"
-#include "lue/framework/algorithm/array_partition_id.hpp"
 #include "lue/framework/algorithm/focal_mean.hpp"
 #include "lue/framework/algorithm/kernel.hpp"
-#include "lue/framework/algorithm/locality_id.hpp"
-#include "lue/framework/algorithm/zonal_sum.hpp"
 #include "lue/framework/algorithm/uniform.hpp"
 #include "lue/framework/algorithm/serialize/kernel.hpp"
+#include "lue/framework/benchmark/benchmark_model.hpp"
 #include "lue/framework/benchmark/hpx_main.hpp"
 #include "lue/framework/benchmark/model_benchmark.hpp"
-#include "lue/framework/io.hpp"
-#include "lue/data_model/hl/raster_view.hpp"
-
-#include "lue/framework/algorithm/arithmetic.hpp"
-/// #include "lue/framework/algorithm/copy.hpp"
 
 
 namespace lue {
@@ -23,12 +14,10 @@ template<
     typename Element,
     Rank rank>
 class FocalMeanBenchmarkModel final:
-    public BenchmarkModel<rank>
+    public BenchmarkModel<Element, rank>
 {
 
 public:
-
-    using Array = PartitionedArray<Element, rank>;
 
     using Kernel = lue::Kernel<bool, rank>;
 
@@ -50,23 +39,11 @@ public:
     FocalMeanBenchmarkModel&
                    operator=           (FocalMeanBenchmarkModel&&)=default;
 
-    void           preprocess          ();
+    void           do_preprocess       () override;
 
-    void           initialize          ();
-
-    void           simulate            (Count time_step);
-
-    void           terminate           ();
-
-    void           postprocess         ();
+    void           do_simulate         (Count time_step) override;
 
 private:
-
-    std::int64_t _max_tree_depth;
-
-    hpx::lcos::local::sliding_semaphore _semaphore;
-
-    Array _state;
 
     Kernel _kernel;
 
@@ -80,10 +57,7 @@ FocalMeanBenchmarkModel<Element, rank>::FocalMeanBenchmarkModel(
     Task const& task,
     std::size_t const max_tree_depth):
 
-    BenchmarkModel<rank>{task},
-    _max_tree_depth{static_cast<std::int64_t>(max_tree_depth)},
-    _semaphore{_max_tree_depth},
-    _state{},
+    BenchmarkModel<Element, rank>{task, max_tree_depth},
     _kernel{}
 
 {
@@ -93,136 +67,20 @@ FocalMeanBenchmarkModel<Element, rank>::FocalMeanBenchmarkModel(
 template<
     typename Element,
     std::size_t rank>
-void FocalMeanBenchmarkModel<Element, rank>::preprocess()
+void FocalMeanBenchmarkModel<Element, rank>::do_preprocess()
 {
-    _state = uniform(
-        Array{this->array_shape(), this->partition_shape()},
-        Element{0}, std::numeric_limits<Element>::max());
-
-    // Calculating state at t0 is not part of the benchmark
-    wait_all(_state.partitions());
-
-    lue_assert(_state.shape() == this->array_shape());
-
+    this->_state = uniform(this->_state, Element{0}, std::numeric_limits<Element>::max());
     _kernel = lue::box_kernel<bool, rank>(1, true);
-
-    hpx::cout << describe(_state) << hpx::endl;
-
-
-    // Optionally, write state -------------------------------------------------
-    bool const write_info{false};
-
-    if(write_info)
-    {
-        namespace ldm = lue::data_model;
-        namespace lh5 = lue::hdf5;
-
-        // using Shape = typename BenchmarkModel<rank>::Shape;
-        using ConstantRasterView =
-            ldm::constant::RasterView<std::shared_ptr<ldm::Dataset>>;
-
-        std::string const dataset_pathname{"focal_mean.lue"};
-        auto dataset_ptr{std::make_shared<ldm::Dataset>(
-            ldm::create_dataset(dataset_pathname))};
-
-        // Shape const array_shape{this->array_shape()};
-        lh5::Shape array_shape(rank);
-        std::copy(this->array_shape().begin(), this->array_shape().end(), array_shape.begin());
-
-        std::string const phenomenon_name{"area"};
-        std::string const constant_property_set_name{"constant"};
-
-        ConstantRasterView constant_raster_view{
-            ldm::constant::create_raster_view(
-                dataset_ptr,
-                phenomenon_name, constant_property_set_name,
-                array_shape,
-                {0.0, 0.0, double(array_shape[1]), double(array_shape[0])})};
-
-        PartitionedArray<std::uint32_t, 2> locality_id{
-            lue::locality_id(_state)};
-        PartitionedArray<std::uint64_t, 2> array_partition_id{
-            lue::array_partition_id(_state)};
-        PartitionedArray<std::uint64_t, 2> nr_elements_per_locality{
-            zonal_sum(array_like<std::uint64_t>(_state, 1), locality_id)};
-
-        ConstantRasterView::Layer locality_id_layer{
-            constant_raster_view.add_layer<std::uint32_t>(
-                "locality_id")};
-        ConstantRasterView::Layer array_partition_id_layer{
-            constant_raster_view.add_layer<std::uint32_t>(
-                "array_partition_id")};
-        ConstantRasterView::Layer nr_elements_per_locality_layer{
-            constant_raster_view.add_layer<std::uint32_t>(
-                "nr_elements_per_locality")};
-
-        std::vector<hpx::future<void>> written;
-        written.push_back(
-            write(locality_id, locality_id_layer));
-        written.push_back(
-            write(array_partition_id, array_partition_id_layer));
-        written.push_back(
-            write(nr_elements_per_locality, nr_elements_per_locality_layer));
-        hpx::wait_all_n(written.begin(), written.size());
-    }
 }
 
 
 template<
     typename Element,
     std::size_t rank>
-void FocalMeanBenchmarkModel<Element, rank>::initialize()
+void FocalMeanBenchmarkModel<Element, rank>::do_simulate(
+    Count const /* time_step */)
 {
-    hpx::cout << '[' << hpx::flush;
-}
-
-
-template<
-    typename Element,
-    std::size_t rank>
-void FocalMeanBenchmarkModel<Element, rank>::simulate(
-    Count const time_step)
-{
-    _state = focal_mean(Element{1} * _state, _kernel);
-    hpx::cout << '.' << hpx::flush;
-
-
-
-    // every nd time steps, attach additional continuation which will
-    // trigger the semaphore once computation has reached this point
-    if((time_step % _max_tree_depth) == 0)
-    {
-        _state.partitions()[0].then(
-
-            [this, time_step](auto const&)
-            {
-                // inform semaphore about new lower limit
-                _semaphore.signal(time_step);
-            });
-    }
-
-    // suspend if the tree has become too deep, the continuation above
-    // will resume this thread once the computation has caught up
-    _semaphore.wait(time_step);
-}
-
-
-template<
-    typename Element,
-    std::size_t rank>
-void FocalMeanBenchmarkModel<Element, rank>::terminate()
-{
-    hpx::wait_all_n(_state.begin(), _state.nr_partitions());
-    hpx::cout << "]\n" << hpx::flush;
-}
-
-
-template<
-    typename Element,
-    std::size_t rank>
-void FocalMeanBenchmarkModel<Element, rank>::postprocess()
-{
-    this->set_result(AlgorithmBenchmarkResult{_state.partitions().shape()});
+    this->_state = focal_mean(this->_state, _kernel);
 }
 
 
@@ -314,8 +172,7 @@ auto setup_benchmark(
         return lue::benchmark::FocalMeanBenchmarkModel<double, 2>{task, max_tree_depth};
     };
 
-    return lue::benchmark::ModelBenchmark<
-            decltype(callable), lue::AlgorithmBenchmarkResult>{
+    return lue::benchmark::ModelBenchmark<decltype(callable), lue::benchmark::AlgorithmBenchmarkResult>{
         std::move(callable), environment, task};
 }
 

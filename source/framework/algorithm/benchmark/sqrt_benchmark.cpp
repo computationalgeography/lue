@@ -1,7 +1,7 @@
-#include "benchmark_model.hpp"
 #include "lue/framework/algorithm/pow.hpp"
 #include "lue/framework/algorithm/sqrt.hpp"
 #include "lue/framework/algorithm/uniform.hpp"
+#include "lue/framework/benchmark/benchmark_model.hpp"
 #include "lue/framework/benchmark/hpx_main.hpp"
 #include "lue/framework/benchmark/model_benchmark.hpp"
 
@@ -13,14 +13,15 @@ template<
     typename Element,
     Rank rank>
 class SqrtBenchmarkModel final:
-    public BenchmarkModel<rank>
+    public BenchmarkModel<Element, rank>
 {
 
 public:
 
     using Array = PartitionedArray<Element, rank>;
 
-                   SqrtBenchmarkModel  (Task const& task);
+                   SqrtBenchmarkModel  (Task const& task,
+                                        std::size_t max_tree_depth);
 
                    SqrtBenchmarkModel  (SqrtBenchmarkModel const&)=default;
 
@@ -34,21 +35,11 @@ public:
     SqrtBenchmarkModel&
                    operator=           (SqrtBenchmarkModel&&)=default;
 
-    void           preprocess          ();
+    void           do_preprocess       () override;
 
-    void           initialize          ();
-
-    void           simulate            (Count time_step);
-
-    void           terminate           ();
-
-    void           postprocess         ();
+    void           do_simulate         (Count time_step) override;
 
 private:
-
-    Array _state;
-
-    hpx::lcos::local::sliding_semaphore _semaphore;
 
 };
 
@@ -57,11 +48,10 @@ template<
     typename Element,
     std::size_t rank>
 SqrtBenchmarkModel<Element, rank>::SqrtBenchmarkModel(
-    Task const& task):
+    Task const& task,
+    std::size_t const max_tree_depth):
 
-    BenchmarkModel<rank>{task},
-    _state{},
-    _semaphore{4}
+    BenchmarkModel<Element, rank>{task, max_tree_depth}
 
 {
 }
@@ -70,90 +60,19 @@ SqrtBenchmarkModel<Element, rank>::SqrtBenchmarkModel(
 template<
     typename Element,
     std::size_t rank>
-void SqrtBenchmarkModel<Element, rank>::preprocess()
+void SqrtBenchmarkModel<Element, rank>::do_preprocess()
 {
-    _state = uniform(
-        Array{this->array_shape(), this->partition_shape()},
-        Element{0}, std::numeric_limits<Element>::max());
-
-    lue_assert(_state.shape() == this->array_shape());
-
-    // _semaphore = hpx::lcos::local::sliding_semaphore{static_cast<std::int64_t>(5)};
-    // this->max_tree_depth())};
-
-    hpx::cout << describe(_state) << hpx::endl;
+    this->_state = uniform(this->_state, Element{0}, std::numeric_limits<Element>::max());
 }
 
 
 template<
     typename Element,
     std::size_t rank>
-void SqrtBenchmarkModel<Element, rank>::initialize()
+void SqrtBenchmarkModel<Element, rank>::do_simulate(
+    Count const /* time_step */)
 {
-    hpx::cout << '[' << hpx::flush;
-}
-
-
-template<
-    typename Element,
-    std::size_t rank>
-void SqrtBenchmarkModel<Element, rank>::simulate(
-    Count const time_step)
-{
-    /// // Wait if there are more than max_tree_depth iterations in flight
-    /// _semaphore.wait(time_step);
-
-    _state = pow(sqrt(_state), Element{2});
-
-    hpx::cout << '.' << hpx::flush;
-
-    /// // Attach a continuation to the state at the current time
-    /// // step. Once it is finished, signal the semaphore so it knowns
-    /// // that we can have another iteration in flight.
-    /// hpx::when_all(state.begin(), state.end()).then(
-    ///     hpx::launch::sync,
-    ///     [&_semaphore, time_step](
-    ///         auto const&)
-    ///     {
-    ///         _semaphore.signal(time_step);
-    ///     });
-
-
-    /// // every nd time steps, attach additional continuation which will
-    /// // trigger the semaphore once computation has reached this point
-    /// if ((time_step % 5) == 0)
-    /// {
-    ///     _state.partitions()[0].then(
-
-    ///         [this, time_step](auto const&)
-    ///         {
-    ///             // inform semaphore about new lower limit
-    ///             _semaphore.signal(time_step);
-    ///         });
-    /// }
-
-    /// // suspend if the tree has become too deep, the continuation above
-    /// // will resume this thread once the computation has caught up
-    /// _semaphore.wait(time_step);
-}
-
-
-template<
-    typename Element,
-    std::size_t rank>
-void SqrtBenchmarkModel<Element, rank>::terminate()
-{
-    hpx::wait_all_n(_state.begin(), _state.nr_partitions());
-    hpx::cout << "]\n" << hpx::flush;
-}
-
-
-template<
-    typename Element,
-    std::size_t rank>
-void SqrtBenchmarkModel<Element, rank>::postprocess()
-{
-    this->set_result(AlgorithmBenchmarkResult{_state.partitions().shape()});
+    this->_state = pow(sqrt(this->_state), Element{2});
 }
 
 
@@ -283,14 +202,17 @@ auto setup_benchmark(
     lue::benchmark::Task const& task)
 {
     auto callable = [](
-        lue::benchmark::Environment const& /* environment */,
+        lue::benchmark::Environment const& environment,
         lue::benchmark::Task const& task)
     {
-        return lue::benchmark::SqrtBenchmarkModel<double, 2>{task};
+        std::size_t const max_tree_depth = environment.max_tree_depth()
+            ? *environment.max_tree_depth()
+            : task.nr_time_steps();
+
+        return lue::benchmark::SqrtBenchmarkModel<double, 2>{task, max_tree_depth};
     };
 
-    return lue::benchmark::ModelBenchmark<
-            decltype(callable), lue::AlgorithmBenchmarkResult>{
+    return lue::benchmark::ModelBenchmark<decltype(callable), lue::benchmark::AlgorithmBenchmarkResult>{
         std::move(callable), environment, task};
 }
 

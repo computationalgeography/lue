@@ -1,10 +1,10 @@
-#include "algorithm_benchmark_result.hpp"
-#include "format.hpp"
 #include "lue/framework/algorithm/copy.hpp"
 #include "lue/framework/algorithm/fill.hpp"
 #include "lue/framework/algorithm/iterate_per_element.hpp"
 #include "lue/framework/algorithm/uniform.hpp"
+#include "lue/framework/benchmark/algorithm_benchmark_result.hpp"
 #include "lue/framework/benchmark/benchmark.hpp"
+#include "lue/framework/benchmark/format.hpp"
 #include "lue/framework/benchmark/hpx_main.hpp"
 #include <hpx/include/iostreams.hpp>
 // #include <hpx/include/parallel_execution.hpp>
@@ -131,7 +131,7 @@ auto setup_benchmark(
     // Function to benchmark
     auto callable = [](
         lue::benchmark::Environment const& environment,
-        lue::benchmark::Task const& task) -> lue::AlgorithmBenchmarkResult
+        lue::benchmark::Task const& task) -> lue::benchmark::AlgorithmBenchmarkResult
     {
         std::size_t const max_tree_depth = environment.max_tree_depth()
             ? *environment.max_tree_depth()
@@ -140,8 +140,7 @@ auto setup_benchmark(
         return lue::benchmark::iterate_per_element(task, max_tree_depth);
     };
 
-    return lue::benchmark::Benchmark<
-            decltype(callable), lue::AlgorithmBenchmarkResult>{
+    return lue::benchmark::Benchmark<decltype(callable), lue::benchmark::AlgorithmBenchmarkResult>{
         std::move(callable), environment, task};
 }
 

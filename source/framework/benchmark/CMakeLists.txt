@@ -1,5 +1,8 @@
 add_library(lue_benchmark
+    src/algorithm_benchmark_result
+    src/benchmark_model
     src/environment
+    src/format
     src/runtime_environment
     src/stopwatch
     src/task
@@ -18,6 +21,7 @@ hpx_setup_target(lue_benchmark
         iostreams
     DEPENDENCIES
         lue::framework_core
+        lue::framework_model
         CONAN_PKG::docopt.cpp
         CONAN_PKG::nlohmann_json
 )

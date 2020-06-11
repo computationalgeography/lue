@@ -5,6 +5,7 @@
 
 
 namespace lue {
+namespace benchmark {
 
 class AlgorithmBenchmarkResult
 {
@@ -49,4 +50,5 @@ private:
 
 };
 
+}  // namespace benchmark
 }  // namespace lue

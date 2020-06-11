@@ -1,7 +1,8 @@
-#include "format.hpp"
+#include "lue/framework/benchmark/format.hpp"
 
 
 namespace lue {
+namespace benchmark {
 
 void to_json(
     nlohmann::json& json,
@@ -14,4 +15,5 @@ void to_json(
         };
 }
 
+}  // namespace benchmark
 }  // namespace lue

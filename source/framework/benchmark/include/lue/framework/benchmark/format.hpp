@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/framework/benchmark/algorithm_benchmark_result.hpp"
 #include "lue/framework/benchmark/benchmark.hpp"
 #include <nlohmann/json.hpp>
 #include <array>
@@ -136,6 +137,10 @@ inline std::string format_as_json(
 
     return j.dump(4);
 }
+
+
+void               to_json             (nlohmann::json& json,
+                                        AlgorithmBenchmarkResult const& result);
 
 }  // benchmark
 }  // lue
