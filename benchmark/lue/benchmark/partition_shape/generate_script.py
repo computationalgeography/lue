@@ -76,7 +76,7 @@ def generate_script_slurm(
 
     slurm_script = job.create_slurm_script(
         nr_cluster_nodes=benchmark.worker.nr_cluster_nodes,
-        nr_tasks=benchmark.worker.nr_localities,
+        nr_tasks=cluster.nr_localities_to_reserve(benchmark.worker, benchmark.locality_per),
         nr_cores_per_socket=cluster.cluster_node.package.numa_node.nr_cores,
         cpus_per_task=benchmark.nr_logical_cores_per_locality,
         output_filename=experiment.result_pathname(
@@ -122,7 +122,6 @@ def generate_script_shell(
     commands = []
 
     nr_threads = benchmark.worker.nr_threads
-    nr_localities = benchmark.worker.nr_localities
 
     for array_shape in experiment.array.shapes:
         for partition_shape in experiment.partition.shapes:

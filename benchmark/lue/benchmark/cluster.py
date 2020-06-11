@@ -207,3 +207,33 @@ class Cluster(object):
                 "nr_cluster_nodes": self.nr_cluster_nodes,
                 "cluster_node": self.cluster_node.to_json(),
             }
+
+    def nr_localities_to_reserve(self,
+            worker,
+            locality_per):
+        """
+        When scheduling jobs, the number of localities we need to ask
+        for from the scheduler
+
+        This number might be larger than the actual number of localities
+        used by tasks. We want to prevent to compete with other jobs
+        while performing the benchmarks.
+        """
+        if worker.type == "thread":
+            # Claim a whole cluster node
+            if locality_per == "cluster_node":
+                result = 1
+            elif locality_per == "numa_node":
+                result = self.cluster_node.nr_numa_nodes
+        elif worker.type == "numa_node":
+            # Claim a whole cluster node
+            assert locality_per == "numa_node"
+            result = self.cluster_node.nr_numa_nodes
+        elif worker.type == "cluster_node":
+            # Claim all cluster nodes in the partition
+            if locality_per == "cluster_node":
+                result = worker.nr_cluster_nodes
+            elif locality_per == "numa_node":
+                result = worker.nr_cluster_nodes * self.cluster_node.nr_numa_nodes
+
+        return result

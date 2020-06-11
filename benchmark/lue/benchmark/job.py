@@ -46,6 +46,8 @@ def program_configuration(
         result_pathname = experiment.benchmark_result_pathname(
             cluster.name, benchmark.scenario_name, nr_workers, "json")
 
+    #   '--hpx:ini="hpx.agas.max_pending_refcnt_requests!=400" '
+    #   '--hpx:attach-debugger=exception '
     #   '--hpx:queuing=shared-priority '
     #   '--hpx:queuing=local-priority-fifo '
     #   '--hpx:queuing=static-priority '
@@ -214,6 +216,7 @@ module load libraries/papi/5.7.0
         max_duration="#SBATCH --time={}".format(max_duration)
             if max_duration is not None else "",
         job_steps="\n".join(job_steps))
+        # job_steps="\nsleep 2s\n".join(job_steps))
 
 
 def lue_raw_dataset_basename():

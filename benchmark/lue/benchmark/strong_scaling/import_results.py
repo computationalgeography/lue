@@ -115,8 +115,7 @@ def benchmark_meta_to_lue_json(
     }
 
     # Write results
-    open(lue_dataset_pathname, "w").write(
-        json.dumps(lue_json, sort_keys=False, indent=4))
+    open(lue_dataset_pathname, "w").write(json.dumps(lue_json, sort_keys=False, indent=4))
 
 
 def benchmark_to_lue_json(
@@ -218,8 +217,7 @@ def benchmark_to_lue_json(
     }
 
     # Write results
-    open(lue_json_pathname, "w").write(
-        json.dumps(lue_json, sort_keys=False, indent=4))
+    open(lue_json_pathname, "w").write(json.dumps(lue_json, sort_keys=False, indent=4))
 
 
 def import_raw_results(
@@ -254,8 +252,7 @@ def import_raw_results(
     # must be taken care of later, during post-processing.
     # -> Results are sorted by time, not by the number of workers!!!
 
-    benchmark_idxs, epoch = util.sort_benchmarks_by_time(
-        cluster, benchmark, experiment)
+    benchmark_idxs, epoch = util.sort_benchmarks_by_time(cluster, benchmark, experiment)
 
     metadata_written = False
 
@@ -270,14 +267,12 @@ def import_raw_results(
         if not metadata_written:
             with tempfile.NamedTemporaryFile(suffix=".json") as lue_json_file:
                 benchmark_meta_to_lue_json(
-                    result_pathname, lue_json_file.name,
-                    cluster, benchmark, experiment)
+                    result_pathname, lue_json_file.name, cluster, benchmark, experiment)
                 util.import_lue_json(lue_json_file.name, lue_dataset_pathname)
             metadata_written = True
 
         with tempfile.NamedTemporaryFile(suffix=".json") as lue_json_file:
-            benchmark_to_lue_json(
-                result_pathname, lue_json_file.name, epoch)
+            benchmark_to_lue_json(result_pathname, lue_json_file.name, epoch)
             util.import_lue_json(lue_json_file.name, lue_dataset_pathname)
 
     lue.assert_is_valid(lue_dataset_pathname)
@@ -591,17 +586,14 @@ def import_results(
         results_prefix):
 
     lue_dataset = job.open_raw_lue_dataset(results_prefix, "r")
-    raw_results_already_imported = \
-        dataset.raw_results_already_imported(lue_dataset)
+    raw_results_already_imported = dataset.raw_results_already_imported(lue_dataset)
 
     if not raw_results_already_imported:
         cluster, benchmark, experiment = dataset.read_benchmark_settings(
             lue_dataset, StrongScalingExperiment)
-        import_raw_results(
-            lue_dataset.pathname, cluster, benchmark, experiment)
+        import_raw_results(lue_dataset.pathname, cluster, benchmark, experiment)
 
-    if not raw_results_already_imported or \
-            not job.scaling_lue_dataset_exists(results_prefix):
+    if not raw_results_already_imported or not job.scaling_lue_dataset_exists(results_prefix):
 
         # Copy dataset and write scaling results
         job.copy_raw_to_scaling_lue_dataset(results_prefix)

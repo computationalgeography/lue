@@ -85,7 +85,7 @@ def generate_script_slurm_threads(
 
     slurm_script = job.create_slurm_script(
         nr_cluster_nodes=benchmark.worker.nr_cluster_nodes,
-        nr_tasks=benchmark.worker.nr_localities,
+        nr_tasks=cluster.nr_localities_to_reserve(benchmark.worker, benchmark.locality_per),
         nr_cores_per_socket=cluster.cluster_node.package.numa_node.nr_cores,
         cpus_per_task=benchmark.nr_logical_cores_per_locality,
         ### # nr_cores_per_numa_node=cluster.cluster_node.package.numa_node.nr_cores,
@@ -167,7 +167,7 @@ def generate_script_slurm_numa_nodes(
     slurm_script = job.create_slurm_script(
         nr_cluster_nodes=benchmark.worker.nr_cluster_nodes,
 
-        nr_tasks=benchmark.worker.max_nr_numa_nodes,
+        nr_tasks=cluster.nr_localities_to_reserve(benchmark.worker, benchmark.locality_per),
         nr_cores_per_socket=cluster.cluster_node.package.numa_node.nr_cores,
         cpus_per_task=benchmark.nr_logical_cores_per_locality,
 
@@ -293,6 +293,9 @@ def generate_script_slurm_cluster_nodes(
                 job_name=job_name, delimiter=delimiter),
             slurm_script,
             "{delimiter}".format(delimiter=delimiter),
+            "",
+            "# Prevent benchmarks to start at the same time point",
+            "sleep 2s",
             "",
         ]
 
