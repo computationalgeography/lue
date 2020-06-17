@@ -1,6 +1,6 @@
 copy_python_unit_test_modules(
     RECURSE
-    TARGET lue_test_modules
+    TARGET lue_py_data_model_test_modules
 )
 
 
@@ -24,7 +24,7 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 endif()
 
 add_unit_tests(
-    SCOPE lue_py
+    SCOPE lue_py_data_model
     NAMES
         python_test
     INCLUDE_DIRS
@@ -34,7 +34,7 @@ add_unit_tests(
         CONAN_PKG::pybind11
         ${PYTHON_LIBRARIES}
     DEPENDENCIES
-        lue_test_modules
+        lue_py_data_model_test_modules
         # The tests load the Python extension at runtime. Make sure it is
         # up to date.
         lue::py
@@ -43,7 +43,7 @@ add_unit_tests(
         ${environment}
 )
 
-set_target_properties(lue_py_python_test
+set_target_properties(lue_py_data_model_python_test
     PROPERTIES
         CXX_CLANG_TIDY ""  # TODO(KDJ) Get it to skip pybind11.h
 )

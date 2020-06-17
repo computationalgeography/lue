@@ -1,19 +1,19 @@
 import numpy as np
-import lue
+import lue.data_model as ldm
 
 
 nr_areas = 10
 rank = 2
 
-dataset = lue.create_dataset("areas.lue")
+dataset = ldm.create_dataset("areas.lue")
 area = dataset.add_phenomenon("area")
 
 id = [2, 4, 6, 8, 10, 9, 7, 5, 3, 1]
 area.object_id.expand(nr_areas)[:] = id
 
-space_configuration = lue.SpaceConfiguration(
-    lue.Mobility.stationary,
-    lue.SpaceDomainItemType.box
+space_configuration = ldm.SpaceConfiguration(
+    ldm.Mobility.stationary,
+    ldm.SpaceDomainItemType.box
 )
 constant = area.add_property_set(
     "constant", space_configuration,
@@ -27,7 +27,7 @@ constant.space_domain.value.expand(nr_areas)[:] = box
 elevation_datatype = np.dtype(np.float32)
 elevation = constant.add_property(
     "elevation", dtype=elevation_datatype, rank=rank)
-count_datatype = lue.dtype.Count
+count_datatype = ldm.dtype.Count
 shape = np.arange(  # Dummy data
     nr_areas * rank, dtype=count_datatype).reshape(nr_areas, rank)
 value = elevation.value.expand(id, shape)
@@ -43,4 +43,4 @@ discretization = constant.add_property(
 discretization.value.expand(nr_areas)[:] = shape
 
 elevation.set_space_discretization(
-    lue.SpaceDiscretization.regular_grid, discretization)
+    ldm.SpaceDiscretization.regular_grid, discretization)

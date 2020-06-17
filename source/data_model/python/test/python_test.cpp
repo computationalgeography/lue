@@ -1,4 +1,4 @@
-#define BOOST_TEST_MODULE lue py
+#define BOOST_TEST_MODULE lue py data_model
 #include <boost/test/unit_test.hpp>
 #include <boost/algorithm/string.hpp>
 #include <pybind11/pybind11.h>

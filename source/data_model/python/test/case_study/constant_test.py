@@ -1,5 +1,5 @@
 # -*- encoding: utf-8 -*-
-import lue
+import lue.data_model as ldm
 import lue_test
 import numpy as np
 
@@ -8,7 +8,7 @@ class ConstantTest(lue_test.TestCase):
 
     def test_case_study(self):
 
-        dataset = lue.create_dataset("planets.lue")
+        dataset = ldm.create_dataset("planets.lue")
         planets = dataset.add_phenomenon("planets")
 
         nr_planets = 3
@@ -33,4 +33,4 @@ class ConstantTest(lue_test.TestCase):
         gravity.value.expand(nr_planets)[:] = \
             np.array([1.5, 2.5, 3.5], dtype=np.float32)
 
-        lue.assert_is_valid(dataset)
+        ldm.assert_is_valid(dataset)

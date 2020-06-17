@@ -2,7 +2,7 @@
 #include "lue/object/property/property_set.hpp"
 #include "lue/object/property_sets.hpp"
 #include "../core/collection.hpp"
-#include "lue/py/conversion.hpp"
+#include "lue/py/data_model/conversion.hpp"
 #include <boost/algorithm/string/join.hpp>
 #include <algorithm>
 

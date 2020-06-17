@@ -1,5 +1,5 @@
 #include "python_extension.hpp"
-#include "lue/py/conversion.hpp"
+#include "lue/py/data_model/conversion.hpp"
 #include "lue/array/value_group.hpp"
 #include <pybind11/pybind11.h>
 

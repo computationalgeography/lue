@@ -1,23 +1,23 @@
 import numpy as np
-import lue
+import lue.data_model as ldm
 
 nr_areas = 10
 rank = 2
 
-dataset = lue.create_dataset("elevation.lue")
+dataset = ldm.create_dataset("elevation.lue")
 area = dataset.add_phenomenon("area")
 
 # id = [2, 4, 6, 8, 10, 9, 7, 5, 3, 1]
 # area.object_id.expand(nr_areas)[:] = id
 
 
-time_configuration = lue.TimeConfiguration(
-    lue.TimeDomainItemType.box
+time_configuration = ldm.TimeConfiguration(
+    ldm.TimeDomainItemType.box
 )
-clock = lue.Clock(lue.Unit.day, 1)
-space_configuration = lue.SpaceConfiguration(
-    lue.Mobility.stationary,
-    lue.SpaceDomainItemType.box
+clock = ldm.Clock(ldm.Unit.day, 1)
+space_configuration = ldm.SpaceConfiguration(
+    ldm.Mobility.stationary,
+    ldm.SpaceDomainItemType.box
 )
 variable = area.add_property_set(
     "variable",
@@ -30,7 +30,7 @@ object_tracker = variable.object_tracker
 
 
 ### # Time domain contains 1D boxes, with a resolution of 1 day
-### time_domain = located.create_time_box_domain(areas, lue.Clock(lue.unit.day, 1))
+### time_domain = located.create_time_box_domain(areas, ldm.Clock(ldm.unit.day, 1))
 ### nr_time_boxes = 4
 ### time_boxes = time_domain.reserve(nr_time_boxes)
 ### # A box is defined by a begin and end time point (two coordinates per box)
@@ -50,7 +50,7 @@ object_tracker = variable.object_tracker
 ### # Given the 10 day time boxes, configure time steps to be 2 days long
 ### nr_time_steps = 5
 ### discretization_phenomenon = dataset.add_phenomenon("discretization")
-### discretization_property_set = lue.constant_collection.create_property_set(
+### discretization_property_set = ldm.constant_collection.create_property_set(
 ###     discretization_phenomenon, "discretization")
 ### discretization_property_set.ids.reserve(1)[0] = 12345
 ### 
@@ -58,7 +58,7 @@ object_tracker = variable.object_tracker
 ###     discretization_property_set, "time", np.uint32)
 ### time_discretization.values.reserve(1)[:] = nr_time_steps
 ### 
-### discretization_property_set = lue.constant_collection.create_property_set(
+### discretization_property_set = ldm.constant_collection.create_property_set(
 ###     area, "discretization", areas.ids)
 ### space_discretization = omnipresent.same_shape.create_property(
 ###     discretization_property_set, "space", np.uint32, (2,))
@@ -87,4 +87,4 @@ object_tracker = variable.object_tracker
 ### elevation.discretize_space(space_discretization)
 ### elevation.discretize_time(time_discretization)
 ### 
-### lue.assert_is_valid(dataset)
+### ldm.assert_is_valid(dataset)

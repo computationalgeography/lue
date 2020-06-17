@@ -1,7 +1,7 @@
 #include "../python_extension.hpp"
 #include "lue/object/phenomena.hpp"
 #include "../core/collection.hpp"
-#include "lue/py/conversion.hpp"
+#include "lue/py/data_model/conversion.hpp"
 #include <pybind11/pybind11.h>
 #include <boost/algorithm/string/join.hpp>
 

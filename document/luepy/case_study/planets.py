@@ -1,9 +1,9 @@
 import numpy as np
-import lue
+import lue.data_model as ldm
 
 
 # Create a dataset
-dataset = lue.create_dataset("planets.lue")
+dataset = ldm.create_dataset("planets.lue")
 
 # Add a phenomenon for storing information about planets
 planet = dataset.add_phenomenon("planet")

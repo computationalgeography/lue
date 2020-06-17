@@ -24,6 +24,9 @@ option(LUE_FRAMEWORK_WITH_DASHBOARD
 option(LUE_FRAMEWORK_WITH_BENCHMARKS
     "Include benchmarks"
     FALSE)
+option(LUE_FRAMEWORK_WITH_PYTHON_API
+    "Include Python API for modelling framework"
+    FALSE)
 
 option(LUE_BUILD_VIEW
     "Build LUE data model viewer"
@@ -141,6 +144,10 @@ if(LUE_BUILD_FRAMEWORK)
 
     if(LUE_FRAMEWORK_WITH_BENCHMARKS)
         set(DEVBASE_NLOHMANN_JSON_REQUIRED TRUE)
+    endif()
+
+    if(LUE_FRAMEWORK_WITH_PYTHON_API)
+        set(DEVBASE_PYBIND11_REQUIRED TRUE)
     endif()
 endif()
 

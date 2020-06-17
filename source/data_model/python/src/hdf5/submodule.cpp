@@ -15,15 +15,16 @@ void init_submodule(
     py::module submodule = module.def_submodule(
         "hdf5",
         R"(
-    :mod:`lue.hdf5` --- Manipulating HDF5 from Python
-    =================================================
+    :mod:`lue.data_model.hdf5` --- Manipulating HDF5 from Python
+    ============================================================
 
-    The :mod:`lue.hdf5` package wraps the LUE C++ API that, in turn, is
-    implemented on top of the HDF5 C API. In general you don't need to use
-    this package. It exists because it is a side effect of implementing
-    the rest of the :mod:`lue` package. It may be useful in case you
-    don't need the functionality offered by the :mod:`lue` package,
-    or if you need functionality that is not offered by this package yet.
+    The :mod:`lue.data_model.hdf5` package wraps the LUE C++ API that,
+    in turn, is implemented on top of the HDF5 C API. In general you don't
+    need to use this package. It exists because it is a side effect of
+    implementing the rest of the :mod:`lue.data_model` package. It may
+    be useful in case you don't need the functionality offered by the
+    :mod:`lue.data_model` package, or if you need functionality that is
+    not offered by this package yet.
 )");
 
     submodule.attr("__version__") = py::str(HDF5_VERSION);

@@ -1,5 +1,5 @@
 #include "../python_extension.hpp"
-#include "lue/py/core/time/epoch.hpp"
+#include "lue/py/data_model/core/time/epoch.hpp"
 #include "lue/core/aspect.hpp"
 #include "lue/core/clock.hpp"
 #include <pybind11/pybind11.h>

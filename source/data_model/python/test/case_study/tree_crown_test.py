@@ -1,5 +1,5 @@
 import numpy as np
-import lue
+import lue.data_model as ldm
 import lue_test
 
 
@@ -26,9 +26,9 @@ class TreeCrownTest(lue_test.TestCase):
             # are located in space using stationary 2D points.
 
             # Property-set
-            space_configuration = lue.SpaceConfiguration(
-                lue.Mobility.stationary,
-                lue.SpaceDomainItemType.point
+            space_configuration = ldm.SpaceConfiguration(
+                ldm.Mobility.stationary,
+                ldm.SpaceDomainItemType.point
             )
             space_coordinate_datatype = np.dtype(np.float32)
             stem_points = phenomenon.add_property_set(
@@ -62,7 +62,7 @@ class TreeCrownTest(lue_test.TestCase):
 
             # Discretization property
             # Here, discretization does not change through time
-            count_datatype = lue.dtype.Count
+            count_datatype = ldm.dtype.Count
             discretization = property_set.add_property(
                 "discretization", dtype=count_datatype, shape=(rank,))
 
@@ -75,8 +75,8 @@ class TreeCrownTest(lue_test.TestCase):
             presence_datatype = np.dtype(np.uint8)
             presence = property_set.add_property(
                 "presence", dtype=presence_datatype, rank=rank,
-                shape_per_object=lue.ShapePerObject.different,
-                shape_variability=lue.ShapeVariability.constant)
+                shape_per_object=ldm.ShapePerObject.different,
+                shape_variability=ldm.ShapeVariability.constant)
 
             for t in range(nr_trees):
                 value_array = \
@@ -89,7 +89,7 @@ class TreeCrownTest(lue_test.TestCase):
 
             # Link presence to discretization
             presence.set_space_discretization(
-                lue.SpaceDiscretization.regular_grid, discretization)
+                ldm.SpaceDiscretization.regular_grid, discretization)
 
             return presence
 
@@ -105,14 +105,14 @@ class TreeCrownTest(lue_test.TestCase):
             # still vary through time.
 
             # Property set
-            time_configuration = lue.TimeConfiguration(
-                lue.TimeDomainItemType.box
+            time_configuration = ldm.TimeConfiguration(
+                ldm.TimeDomainItemType.box
             )
-            clock = lue.Clock(lue.Unit.week, 1)
+            clock = ldm.Clock(ldm.Unit.week, 1)
 
-            space_configuration = lue.SpaceConfiguration(
-                lue.Mobility.stationary,
-                lue.SpaceDomainItemType.box
+            space_configuration = ldm.SpaceConfiguration(
+                ldm.Mobility.stationary,
+                ldm.SpaceDomainItemType.box
             )
             space_coordinate_datatype = np.dtype(np.float32)
 
@@ -126,13 +126,13 @@ class TreeCrownTest(lue_test.TestCase):
                     nr_time_boxes)[:] = \
                 np.array(
                     [t * nr_trees for t in range(nr_time_boxes)],
-                    dtype=lue.dtype.Index)
+                    dtype=ldm.dtype.Index)
 
             # [0, 0, 0, ..., nr_time_boxes-1, nr_time_boxes-1]
             crown_boxes.object_tracker.active_object_index.expand(
                     nr_time_boxes * nr_trees)[:] = \
                 np.repeat(
-                    np.arange(0, nr_time_boxes, dtype=lue.dtype.Index),
+                    np.arange(0, nr_time_boxes, dtype=ldm.dtype.Index),
                     repeats=nr_trees)
 
             # [id1, id2, ..., idn, ..., id1, id2, ...idn]
@@ -154,7 +154,7 @@ class TreeCrownTest(lue_test.TestCase):
 
             # Time domain
             time_domain = crown_boxes.time_domain
-            time_coordinate_datatype = lue.dtype.TickPeriodCount
+            time_coordinate_datatype = ldm.dtype.TickPeriodCount
             boxes = np.arange(
                 nr_time_boxes * 2, dtype=time_coordinate_datatype) \
                     .reshape(nr_time_boxes, 2)
@@ -167,7 +167,7 @@ class TreeCrownTest(lue_test.TestCase):
             return crown_boxes
 
 
-        dataset = lue.create_dataset("trees.lue")
+        dataset = ldm.create_dataset("trees.lue")
         trees = dataset.add_phenomenon("trees")
 
         trees.object_id.expand(nr_trees)[:] = ids
@@ -175,35 +175,35 @@ class TreeCrownTest(lue_test.TestCase):
         stem_properties = add_stem_properties(trees)
         crown_properties = add_crown_properties(trees)
 
-        lue.assert_is_valid(dataset)
+        ldm.assert_is_valid(dataset)
 
 
     def test_case_study2(self):
 
-        dataset = lue.create_dataset("forest.lue")
+        dataset = ldm.create_dataset("forest.lue")
 
         # We are assuming here that we can model biomass of trees in a
         # forest on a daily basis, during the growth season. This allows
         # us to use multiple discretized time boxes.
-        time_cell_configuration = lue.TimeConfiguration(
-                lue.TimeDomainItemType.cell
+        time_cell_configuration = ldm.TimeConfiguration(
+                ldm.TimeDomainItemType.cell
             )
-        clock = lue.Clock(lue.Unit.day, 1)
-        time_coordinate_datatype = lue.dtype.TickPeriodCount
+        clock = ldm.Clock(ldm.Unit.day, 1)
+        time_coordinate_datatype = ldm.dtype.TickPeriodCount
 
         # Trees usually don't move. Forests neither.
-        stationary_space_point_configuration = lue.SpaceConfiguration(
-                lue.Mobility.stationary,
-                lue.SpaceDomainItemType.point
+        stationary_space_point_configuration = ldm.SpaceConfiguration(
+                ldm.Mobility.stationary,
+                ldm.SpaceDomainItemType.point
             )
-        stationary_space_box_configuration = lue.SpaceConfiguration(
-                lue.Mobility.stationary,
-                lue.SpaceDomainItemType.box
+        stationary_space_box_configuration = ldm.SpaceConfiguration(
+                ldm.Mobility.stationary,
+                ldm.SpaceDomainItemType.box
             )
         space_coordinate_datatype = np.dtype(np.float32)
         space_rank = 2
 
-        count_datatype = lue.dtype.Count
+        count_datatype = ldm.dtype.Count
         cell_size = 0.5  # m
         max_size_of_crown = int(20 / cell_size)  # 20 m in nr of cells
         nr_cells_in_crown = max_size_of_crown ** 2
@@ -224,7 +224,7 @@ class TreeCrownTest(lue_test.TestCase):
         crowns_biomass = crowns.add_property(
             "biomass", dtype=biomass_datatype,
             shape=(max_size_of_crown, max_size_of_crown),
-            value_variability=lue.ValueVariability.variable)
+            value_variability=ldm.ValueVariability.variable)
 
         # Biomass discretization
         # Each biomass value is a 2D value with the same shape
@@ -245,7 +245,7 @@ class TreeCrownTest(lue_test.TestCase):
 
         # Link biomass to discretization
         crowns_biomass.set_space_discretization(
-            lue.SpaceDiscretization.regular_grid,
+            ldm.SpaceDiscretization.regular_grid,
             crowns_biomass_discretization)
 
         # Forests --------------------------------------------------------------
@@ -260,8 +260,8 @@ class TreeCrownTest(lue_test.TestCase):
             space_rank)
         areas_biomass = areas.add_property(
             "biomass", dtype=biomass_datatype, rank=space_rank,
-            shape_per_object=lue.ShapePerObject.different,
-            shape_variability=lue.ShapeVariability.constant)
+            shape_per_object=ldm.ShapePerObject.different,
+            shape_variability=ldm.ShapeVariability.constant)
 
         # Forest biomass discretization
         forests_globals = forests.add_collection_property_set("globals")
@@ -271,7 +271,7 @@ class TreeCrownTest(lue_test.TestCase):
 
         # TODO The extent of the forest must be known beforehand
         nr_forests = 1
-        forest_ids = np.arange(nr_forests, dtype=lue.dtype.ID)
+        forest_ids = np.arange(nr_forests, dtype=ldm.dtype.ID)
         forest_shapes = \
             np.arange(nr_forests * space_rank, dtype=count_datatype) \
                 .reshape(nr_forests, space_rank) + 10
@@ -280,7 +280,7 @@ class TreeCrownTest(lue_test.TestCase):
 
         # Link biomass to discretization
         areas_biomass.set_space_discretization(
-            lue.SpaceDiscretization.regular_grid,
+            ldm.SpaceDiscretization.regular_grid,
             forests_biomass_discretization)
 
 
@@ -351,7 +351,7 @@ class TreeCrownTest(lue_test.TestCase):
                 # - ID
                 # - Stem location
                 # - Crown extent
-                starting_tree_ids = np.array([d_idx], dtype=lue.dtype.ID)
+                starting_tree_ids = np.array([d_idx], dtype=ldm.dtype.ID)
                 nr_starting_trees = len(starting_tree_ids)
                 starting_tree_stem_locations = np.arange(
                     nr_starting_trees * space_rank,
@@ -376,7 +376,7 @@ class TreeCrownTest(lue_test.TestCase):
 
                 # Determine collection of stopping trees:
                 # - ID
-                stopping_tree_ids = np.array([], dtype=lue.dtype.ID)
+                stopping_tree_ids = np.array([], dtype=ldm.dtype.ID)
 
                 # Determine collection of active trees
                 # - ID
@@ -406,8 +406,8 @@ class TreeCrownTest(lue_test.TestCase):
                 # Store IDs of active forests in the active set
                 # Currently this is the one and only forest containing
                 # all trees.
-                active_forest_ids = np.array([0], dtype=lue.dtype.ID)
-                active_forest_idxs = np.array([d], dtype=lue.dtype.Index)
+                active_forest_ids = np.array([0], dtype=ldm.dtype.ID)
+                active_forest_idxs = np.array([d], dtype=ldm.dtype.Index)
                 object_index = areas_active_object_id.nr_ids
                 areas_active_set_index.expand(1)[-1] = object_index
                 nr_active_forests = len(active_forest_ids)
@@ -452,4 +452,4 @@ class TreeCrownTest(lue_test.TestCase):
             areas.space_domain.value.expand(1)[-1] = forest_space_box
 
 
-        lue.assert_is_valid(dataset)
+        ldm.assert_is_valid(dataset)

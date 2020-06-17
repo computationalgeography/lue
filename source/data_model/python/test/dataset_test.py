@@ -1,5 +1,6 @@
 import os
 import lue
+import lue.data_model as ldm
 import lue_test
 
 
@@ -12,7 +13,7 @@ class DatasetTest(lue_test.TestCase):
 
         lue_test.remove_file_if_existant(dataset_name)
 
-        dataset = lue.create_dataset(dataset_name)
+        dataset = ldm.create_dataset(dataset_name)
 
         self.assertDatasetIsValid(dataset)
         self.assertTrue(os.path.isfile(dataset_name))
@@ -53,7 +54,7 @@ class DatasetTest(lue_test.TestCase):
 
         dataset_name = "dataset_open_existing_readable.lue"
         dataset = self.create_dataset(dataset_name)
-        existing_dataset = lue.open_dataset(dataset_name, "r")
+        existing_dataset = ldm.open_dataset(dataset_name, "r")
 
 
     def test_add_universe(self):
@@ -103,8 +104,8 @@ class DatasetTest(lue_test.TestCase):
         self.assertEqual(dataset.lue_version, lue.__version__)
         self.assertEqual(dataset.lue_version, lue.lue_version)
 
-        self.assertEqual(dataset.hdf5_version, lue.hdf5.__version__)
-        self.assertEqual(dataset.hdf5_version, lue.hdf5.hdf5_version)
+        self.assertEqual(dataset.hdf5_version, ldm.hdf5.__version__)
+        self.assertEqual(dataset.hdf5_version, ldm.hdf5.hdf5_version)
 
 
     # TODO gh178

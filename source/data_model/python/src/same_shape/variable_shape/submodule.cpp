@@ -21,10 +21,10 @@ void init_submodule(
     py::module submodule = module.def_submodule(
         "variable_shape",
         R"(
-    :mod:`lue.same_shape.variable_shape` --- Object arrays
-    ======================================================
+    :mod:`lue.data_model.same_shape.variable_shape` --- Object arrays
+    =================================================================
 
-    The :mod:`lue.same_shape.variable_shape` package contains
+    The :mod:`lue.data_model.same_shape.variable_shape` package contains
     functionality for manipulating object arrays with the same shapes
     that (the shapes) are variable through time.
 )");
