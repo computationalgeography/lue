@@ -3,7 +3,7 @@ import shlex
 import subprocess
 import unittest
 import numpy
-import lue
+import lue.data_model as ldm
 import lue_test
 
 
@@ -46,7 +46,7 @@ class TestCase(unittest.TestCase):
         """
         lue_test.remove_file_if_existant(name)
 
-        return lue.create_dataset(name)
+        return ldm.create_dataset(name)
 
 
     @classmethod
@@ -70,10 +70,10 @@ class TestCase(unittest.TestCase):
 
         if isinstance(dataset, str):
             self.assertTrue(os.path.exists(dataset_pathname))
-            dataset = lue.open_dataset(dataset_pathname)
+            dataset = ldm.open_dataset(dataset_pathname)
 
         try:
-            lue.assert_is_valid(dataset, fail_on_warning=True)
+            ldm.assert_is_valid(dataset, fail_on_warning=True)
         except RuntimeError as exception:
             self.fail("dataset {} is not valid\n{}".format(
                 dataset.pathname, exception))

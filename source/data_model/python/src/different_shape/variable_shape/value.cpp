@@ -1,6 +1,6 @@
 #include "submodule.hpp"
 #include "lue/array/different_shape/variable_shape/value.hpp"
-#include "lue/py/conversion.hpp"
+#include "lue/py/data_model/conversion.hpp"
 #include <pybind11/pybind11.h>
 
 

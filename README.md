@@ -52,6 +52,7 @@ Some targets have optional features:
 | -------- | ------  | ------ |
 | `LUE_DATA_MODEL_WITH_PYTHON_API` | `FALSE` | Build data model Python API |
 | `LUE_DATA_MODEL_WITH_UTILITIES` | `FALSE` | Build commandline utilities |
+| `LUE_FRAMEWORK_WITH_PYTHON_API` | `FALSE` | Build modelling framework Python API |
 
 Depending on which targets are selected for building, some prerequisite
 libaries and tools must be installed:
@@ -63,6 +64,7 @@ libaries and tools must be installed:
 | `LUE_BUILD_VIEW` | Dear ImGUI^1, OpenGL, GLEW, SDL2 |
 | `LUE_DATA_MODEL_WITH_PYTHON_API` | Python, pybind11, NumPy, Guidelines Support libraries |
 | `LUE_DATA_MODEL_WITH_UTILITIES` | Docopt, GDAL, Nlohmann JSON libraries |
+| `LUE_FRAMEWORK_WITH_PYTHON_API` | Python, pybind11, NumPy |
 | `LUE_BUILD_TEST` | Boost unit-test framework library |
 | `LUE_BUILD_DOCUMENTATION` | Doxygen, Graphviz, Sphinx |
 

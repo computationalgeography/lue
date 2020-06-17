@@ -17,14 +17,14 @@ void init_submodule(
     py::module submodule = module.def_submodule(
         "different_shape",
         R"(
-    :mod:`lue.different_shape` --- Object arrays
-    ============================================
+    :mod:`lue.data_model.different_shape` --- Object arrays
+    =======================================================
 
-    The :mod:`lue.different_shape` package contains functionality for
+    The :mod:`lue.data_model.different_shape` package contains functionality for
     manipulating object arrays with different shapes.
 
-    .. automodule:: lue.different_shape.constant_shape
-    .. automodule:: lue.different_shape.variable_shape
+    .. automodule:: lue.data_model.different_shape.constant_shape
+    .. automodule:: lue.data_model.different_shape.variable_shape
 )");
 
     init_properties(submodule);

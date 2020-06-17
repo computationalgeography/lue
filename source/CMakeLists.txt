@@ -8,6 +8,11 @@ if(LUE_BUILD_FRAMEWORK)
     add_subdirectory(framework)
 endif()
 
+if((LUE_BUILD_DATA_MODEL AND LUE_DATA_MODEL_WITH_PYTHON_API) OR
+        (LUE_BUILD_FRAMEWORK AND LUE_FRAMEWORK_WITH_PYTHON_API))
+    add_subdirectory(python)
+endif()
+
 if(LUE_BUILD_VIEW)
     add_subdirectory(view)
 endif()

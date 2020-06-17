@@ -4,8 +4,8 @@
 #include "lue/core/array.hpp"
 #include "lue/core/define.hpp"
 #include "lue/core/time/tick_period.hpp"
-#include "lue/py/conversion.hpp"
-#include "lue/py/numpy.hpp"
+#include "lue/py/data_model/conversion.hpp"
+#include "lue/py/data_model/numpy.hpp"
 #include <fmt/format.h>
 #include <pybind11/numpy.h>
 #include <pybind11/stl.h>

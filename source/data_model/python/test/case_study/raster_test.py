@@ -1,5 +1,5 @@
 import numpy
-import lue
+import lue.data_model as ldm
 import lue_test
 
 
@@ -7,7 +7,7 @@ class RasterTest(lue_test.TestCase):
 
     def test_case_study(self):
 
-        dataset = lue.create_dataset("areas.lue")
+        dataset = ldm.create_dataset("areas.lue")
         areas = dataset.add_phenomenon("areas")
 
         nr_areas = 10
@@ -16,9 +16,9 @@ class RasterTest(lue_test.TestCase):
         ids = numpy.arange(nr_areas, dtype=numpy.uint64)
         areas.object_id.expand(nr_areas)[:] = ids
 
-        space_configuration = lue.SpaceConfiguration(
-            lue.Mobility.stationary,
-            lue.SpaceDomainItemType.box
+        space_configuration = ldm.SpaceConfiguration(
+            ldm.Mobility.stationary,
+            ldm.SpaceDomainItemType.box
         )
         coordinate_datatype = numpy.dtype(numpy.float32)
         rank = 2
@@ -32,7 +32,7 @@ class RasterTest(lue_test.TestCase):
         space_domain.value.expand(nr_areas)[:] = boxes
 
         # Discretization property
-        count_datatype = lue.dtype.Count
+        count_datatype = ldm.dtype.Count
         discretization = area_boxes.add_property(
             "discretization", dtype=count_datatype, shape=(rank,))
         shapes = numpy.arange(
@@ -50,6 +50,6 @@ class RasterTest(lue_test.TestCase):
 
         # Link elevation to discretization
         elevation.set_space_discretization(
-            lue.SpaceDiscretization.regular_grid, discretization)
+            ldm.SpaceDiscretization.regular_grid, discretization)
 
-        lue.assert_is_valid(dataset)
+        ldm.assert_is_valid(dataset)

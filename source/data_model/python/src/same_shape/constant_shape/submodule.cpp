@@ -21,10 +21,10 @@ void init_submodule(
     py::module submodule = module.def_submodule(
         "constant_shape",
         R"(
-    :mod:`lue.same_shape.constant_shape` --- Object arrays
-    ======================================================
+    :mod:`lue.data_model.same_shape.constant_shape` --- Object arrays
+    =================================================================
 
-    The :mod:`lue.same_shape.constant_shape` package contains
+    The :mod:`lue.data_model.same_shape.constant_shape` package contains
     functionality for manipulating object arrays with the same shapes
     that (the shapes) are constant through time.
 )");

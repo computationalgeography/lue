@@ -1,7 +1,7 @@
 from functools import reduce
 import os
 import numpy as np
-import lue
+import lue.data_model as ldm
 import lue_test
 
 
@@ -11,7 +11,7 @@ class ArrayTest(lue_test.TestCase):
 
         dataset_name = "my_dataset.lue"
         lue_test.remove_file_if_existant(dataset_name)
-        self.dataset = lue.create_dataset(dataset_name)
+        self.dataset = ldm.create_dataset(dataset_name)
         self.phenomenon = self.dataset.add_phenomenon("my_phenomenon")
 
         self.nr_objects = 5
@@ -46,7 +46,7 @@ class ArrayTest(lue_test.TestCase):
             self.numpy_numeric_values.astype(self.string_value_type)
         # self.lue_string_values[:] = self.numpy_string_values
 
-        lue.assert_is_valid(self.dataset)
+        ldm.assert_is_valid(self.dataset)
 
 
     def tearDown(self):

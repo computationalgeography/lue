@@ -1,5 +1,5 @@
 import numpy
-import lue
+import lue.data_model as ldm
 import lue_test
 
 
@@ -24,7 +24,7 @@ class TimeSeriesTest(lue_test.TestCase):
         # - Use this approach if the active set is constant within a time box
 
         nr_time_boxes = 3;
-        shape_datatype = lue.dtype.Count
+        shape_datatype = ldm.dtype.Count
         shapes = numpy.random.randint(
             10, 20, size=nr_time_boxes).astype(dtype=shape_datatype)
 
@@ -38,15 +38,15 @@ class TimeSeriesTest(lue_test.TestCase):
             phenomenon.object_id.expand(nr_outlets)[:] = ids
 
             # Time domain
-            time_configuration = lue.TimeConfiguration(
-                lue.TimeDomainItemType.box
+            time_configuration = ldm.TimeConfiguration(
+                ldm.TimeDomainItemType.box
             )
-            clock = lue.Clock(lue.Unit.day, 1)
+            clock = ldm.Clock(ldm.Unit.day, 1)
 
             # Space domain
-            space_configuration = lue.SpaceConfiguration(
-                lue.Mobility.stationary,
-                lue.SpaceDomainItemType.point
+            space_configuration = ldm.SpaceConfiguration(
+                ldm.Mobility.stationary,
+                ldm.SpaceDomainItemType.point
             )
             space_coordinate_datatype = numpy.dtype(numpy.float64)
             rank = 2
@@ -63,11 +63,11 @@ class TimeSeriesTest(lue_test.TestCase):
             object_tracker.active_set_index.expand(nr_time_boxes)
 
             active_set_sizes = numpy.random.randint(
-                0, nr_outlets, nr_time_boxes).astype(dtype=lue.dtype.Count)
-            active_set_idxs = numpy.empty(nr_time_boxes, dtype=lue.dtype.Index)
-            active_object_ids = numpy.empty(active_set_sizes.sum(), dtype=lue.dtype.ID)
+                0, nr_outlets, nr_time_boxes).astype(dtype=ldm.dtype.Count)
+            active_set_idxs = numpy.empty(nr_time_boxes, dtype=ldm.dtype.Index)
+            active_object_ids = numpy.empty(active_set_sizes.sum(), dtype=ldm.dtype.ID)
 
-            lue.test.select_random_ids(
+            ldm.test.select_random_ids(
                 active_set_sizes, active_set_idxs, active_object_ids, nr_outlets);
 
             object_tracker.active_object_id.expand(len(active_object_ids))
@@ -84,7 +84,7 @@ class TimeSeriesTest(lue_test.TestCase):
 
             # Time domain
             time_domain = outlet_points.time_domain
-            time_coordinate_datatype = lue.dtype.TickPeriodCount
+            time_coordinate_datatype = ldm.dtype.TickPeriodCount
             time_boxes = numpy.arange(
                 nr_time_boxes * 2, dtype=time_coordinate_datatype).reshape(
                     nr_time_boxes, 2)
@@ -101,8 +101,8 @@ class TimeSeriesTest(lue_test.TestCase):
             discharge_datatype = numpy.dtype(numpy.float32)
             discharge = outlet_points.add_property(
                 "discharge", dtype=discharge_datatype, rank=1,
-                shape_per_object=lue.ShapePerObject.same,
-                shape_variability=lue.ShapeVariability.variable)
+                shape_per_object=ldm.ShapePerObject.same,
+                shape_variability=ldm.ShapeVariability.variable)
 
             discharge_values = [
                 numpy.arange(
@@ -146,19 +146,19 @@ class TimeSeriesTest(lue_test.TestCase):
             # Property
             discretization = collection.add_property(
                 "discretization", dtype=shape_datatype, shape=(1,),
-                value_variability=lue.ValueVariability.variable)
+                value_variability=ldm.ValueVariability.variable)
             discretization.value.expand(nr_time_boxes)[:] = shapes
 
             return discretization
 
 
-        dataset = lue.create_dataset("outlets1.lue")
+        dataset = ldm.create_dataset("outlets1.lue")
         phenomenon = dataset.add_phenomenon("areas")
         discharge = discharge_property(phenomenon)
         discretization = discretization_property(phenomenon)
 
         # Link discharge to discretization
         discharge.set_time_discretization(
-            lue.TimeDiscretization.regular_grid, discretization)
+            ldm.TimeDiscretization.regular_grid, discretization)
 
-        lue.assert_is_valid(dataset)
+        ldm.assert_is_valid(dataset)

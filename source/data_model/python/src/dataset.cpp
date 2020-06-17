@@ -1,6 +1,6 @@
 #include "python_extension.hpp"
 #include "lue/object/dataset.hpp"
-#include "lue/py/hdf5/file.hpp"
+#include "lue/py/data_model/hdf5/file.hpp"
 #include <pybind11/pybind11.h>
 #include <boost/algorithm/string/join.hpp>
 

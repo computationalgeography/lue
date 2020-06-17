@@ -1,4 +1,4 @@
-import lue
+import lue.data_model as ldm
 import lue_test
 import numpy
 import random
@@ -27,7 +27,7 @@ class TimeSeriesTest(lue_test.TestCase):
         #     - + Possible to let objects be 'born' and 'die' during
         #         iterative simulation
 
-        dataset = lue.create_dataset("outlets2.lue")
+        dataset = ldm.create_dataset("outlets2.lue")
         phenomenon = dataset.add_phenomenon("areas")
 
         # Assume we are simulating some temporal variable (discharge at
@@ -39,18 +39,18 @@ class TimeSeriesTest(lue_test.TestCase):
         # Property values are located in space at stationary space points.
 
         # Time domain
-        time_configuration = lue.TimeConfiguration(
-            lue.TimeDomainItemType.cell
+        time_configuration = ldm.TimeConfiguration(
+            ldm.TimeDomainItemType.cell
         )
-        epoch = lue.Epoch(
-            lue.Epoch.Kind.common_era, "2019-01-01", lue.Calendar.gregorian)
-        clock = lue.Clock(epoch, lue.Unit.day, 1)
-        time_coordinate_datatype = lue.dtype.TickPeriodCount
+        epoch = ldm.Epoch(
+            ldm.Epoch.Kind.common_era, "2019-01-01", ldm.Calendar.gregorian)
+        clock = ldm.Clock(epoch, ldm.Unit.day, 1)
+        time_coordinate_datatype = ldm.dtype.TickPeriodCount
 
         # Space domain
-        space_configuration = lue.SpaceConfiguration(
-            lue.Mobility.stationary,
-            lue.SpaceDomainItemType.point
+        space_configuration = ldm.SpaceConfiguration(
+            ldm.Mobility.stationary,
+            ldm.SpaceDomainItemType.point
         )
         space_coordinate_datatype = numpy.dtype(numpy.float32)
         rank = 2
@@ -69,7 +69,7 @@ class TimeSeriesTest(lue_test.TestCase):
         discharge_datatype = numpy.dtype(numpy.float32)
         discharge = outlet_points.add_property(
             "discharge", dtype=discharge_datatype, shape=(1,),
-            value_variability=lue.ValueVariability.variable)
+            value_variability=ldm.ValueVariability.variable)
 
         nr_time_boxes = 5
         max_nr_objects = 100
@@ -91,8 +91,8 @@ class TimeSeriesTest(lue_test.TestCase):
                 active_set_index.expand(1)[-1] = object_index
                 nr_objects = int(random.random() * max_nr_objects)
 
-                object_id = numpy.empty(nr_objects, dtype=lue.dtype.ID)
-                lue.test.select_random_ids(object_id, max_nr_objects);
+                object_id = numpy.empty(nr_objects, dtype=ldm.dtype.ID)
+                ldm.test.select_random_ids(object_id, max_nr_objects);
                 active_object_id.expand(nr_objects)[object_index:] = object_id
 
                 # Store property values of active objects
@@ -101,18 +101,18 @@ class TimeSeriesTest(lue_test.TestCase):
                 discharge.value.expand(nr_objects)[object_index:] = \
                     discharge_values
 
-        lue.assert_is_valid(dataset)
+        ldm.assert_is_valid(dataset)
 
         del dataset
 
-        dataset = lue.open_dataset("outlets2.lue")
+        dataset = ldm.open_dataset("outlets2.lue")
         phenomenon = dataset.phenomena["areas"]
         outlet_points = phenomenon.property_sets["outlets"]
         time_domain = outlet_points.time_domain
         clock = time_domain.clock
 
-        self.assertEqual(clock.epoch.kind, lue.Epoch.Kind.common_era)
+        self.assertEqual(clock.epoch.kind, ldm.Epoch.Kind.common_era)
         self.assertEqual(clock.epoch.origin, "2019-01-01")
-        self.assertEqual(clock.epoch.calendar, lue.Calendar.gregorian)
-        self.assertEqual(clock.unit, lue.Unit.day)
+        self.assertEqual(clock.epoch.calendar, ldm.Calendar.gregorian)
+        self.assertEqual(clock.unit, ldm.Unit.day)
         self.assertEqual(clock.nr_units, 1)

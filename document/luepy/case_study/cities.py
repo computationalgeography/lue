@@ -1,19 +1,19 @@
 import numpy as np
-import lue
+import lue.data_model as ldm
 
 
 nr_cities = 10
 rank = 2
 
-dataset = lue.create_dataset("cities.lue")
+dataset = ldm.create_dataset("cities.lue")
 city = dataset.add_phenomenon("city")
 
 id = [2, 4, 6, 8, 10, 9, 7, 5, 3, 1]
 city.object_id.expand(nr_cities)[:] = id
 
-space_configuration = lue.SpaceConfiguration(
-    lue.Mobility.stationary,
-    lue.SpaceDomainItemType.point
+space_configuration = ldm.SpaceConfiguration(
+    ldm.Mobility.stationary,
+    ldm.SpaceDomainItemType.point
 )
 constant = city.add_property_set(
     "constant", space_configuration,
