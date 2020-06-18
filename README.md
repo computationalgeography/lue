@@ -18,7 +18,7 @@ The Python package documentation at Read the Docs is not complete. Most
 importantly, it lacks information about the API. For that, generate the
 documentation yourself while building LUE (see below).
 
-[![Linux build Status](https://travis-ci.org/pcraster/lue.svg?branch=master)](https://travis-ci.org/pcraster/lue) [![Windows build Status](https://ci.appveyor.com/api/projects/status/8qpm4qi44ctbfb7k/branch/master?svg=true)](https://ci.appveyor.com/project/kordejong/lue) [![Documentation Status](https://readthedocs.org/projects/docs/badge/)](https://lue.readthedocs.io/en/latest)
+[![Documentation Status](https://readthedocs.org/projects/docs/badge/)](https://lue.readthedocs.io/en/latest)
 
 ![Linux build status](https://github.com/pcraster/lue/workflows/Linux%20CI/badge.svg)
 ![macOS build status](https://github.com/pcraster/lue/workflows/macOS%20CI/badge.svg)
