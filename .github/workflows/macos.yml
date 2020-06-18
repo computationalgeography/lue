@@ -39,6 +39,7 @@ jobs:
         - name: configure
           shell: bash
           run: |
+              source activate test-environment
               cmake \
                   -H. \
                   -Bbuild \
