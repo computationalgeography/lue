@@ -35,17 +35,7 @@ jobs:
               conda info -a
               conda create -q -n test-environment python=2.7 conan docopt numpy psutil sphinx
               source activate test-environment
-              conan profile new --detect default
-              conan profile update settings.compiler.libcxx=libstdc++11 default
-              conan remote add public-conan https://api.bintray.com/conan/bincrafters/public-conan
               mkdir build
-              cd build
-              conan install \
-                  docopt.cpp/0.6.2 \
-                  fmt/6.2.0 \
-                  gsl_microsoft/2.0.0@bincrafters/stable \
-                  nlohmann_json/3.7.3 \
-                  pybind11/2.4.3
 
         - name: configure
           shell: bash
