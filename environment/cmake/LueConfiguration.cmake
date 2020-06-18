@@ -69,10 +69,6 @@ endif()
 
 
 if(LUE_BUILD_DATA_MODEL)
-    # if(LUE_DATA_MODEL_WITH_UTILITIES)
-    #     set(LUE_BUILD_IMGUI TRUE)
-    # endif()
-
     if(LUE_DATA_MODEL_WITH_PYTHON_API)
     endif()
 endif()
