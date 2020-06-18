@@ -52,8 +52,8 @@ jobs:
                   -G"Unix Makefiles" \
                   -DCMAKE_BUILD_TYPE=Debug \
                   -DLUE_BUILD_TEST=TRUE \
-                  -DLUE_DATA_MODEL_WITH_PYTHON_API \
-                  -DLUE_DATA_MODEL_WITH_UTILITIES
+                  -DLUE_DATA_MODEL_WITH_PYTHON_API=TRUE \
+                  -DLUE_DATA_MODEL_WITH_UTILITIES=TRUE
 
         - name: build lue
           shell: bash
