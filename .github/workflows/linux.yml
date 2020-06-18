@@ -12,6 +12,8 @@ jobs:
 
         runs-on: ${{ matrix.os }}
 
+        name: ${{ matrix.os }} - ${{ matrix.python-version }}
+
         steps:
 
         - name: checkout lue
@@ -33,7 +35,7 @@ jobs:
               sudo apt install cmake libboost-all-dev libhdf5-dev ninja-build
         - uses: goanpeca/setup-miniconda@v1
           with:
-              update-conda: true
+              auto-update-conda: true
               python-version: ${{ matrix.python-version }}
               channels: conda-forge
         - shell: bash -l {0}
