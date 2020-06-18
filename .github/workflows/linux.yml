@@ -16,7 +16,7 @@ jobs:
 
         - name: checkout lue
           uses: actions/checkout@v2
-          shell: bash
+        - shell: bash
           run: |
               auth_header="$(git config --local --get http.https://github.com/.extraheader)"
               git submodule sync --recursive
