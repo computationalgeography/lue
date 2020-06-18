@@ -31,7 +31,7 @@ jobs:
           run: |
               brew update
               brew upgrade
-              brew install boost fmt hdf5 ninja pybind11
+              brew install boost fmt gdal hdf5 ninja pybind11
 
         - uses: goanpeca/setup-miniconda@v1
           with:
