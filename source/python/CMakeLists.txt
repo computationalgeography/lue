@@ -26,6 +26,7 @@ target_link_libraries(lue_py
     PRIVATE
         lue::shared
         CONAN_PKG::pybind11
+        Boost::headers
 )
 
 if(LUE_DATA_MODEL_WITH_PYTHON_API)
