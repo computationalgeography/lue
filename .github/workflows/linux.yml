@@ -14,10 +14,8 @@ jobs:
 
         steps:
 
-        - name: checkout
+        - name: checkout lue
           uses: actions/checkout@v2
-
-        - name: checkout submodules
           shell: bash
           run: |
               auth_header="$(git config --local --get http.https://github.com/.extraheader)"
@@ -25,28 +23,22 @@ jobs:
               git -c "http.extraheader=$auth_header" -c protocol.version=2 \
                   submodule update --init --force --recursive --depth=1
 
-        - name: update packages
+        - name: configure system
           run: |
               sudo apt update
               sudo apt autoremove
               sudo apt upgrade
-
-        - name: install dependencies
-          run: |
               sudo apt install cmake libboost-all-dev libhdf5-dev ninja-build
-
-        - name: setup miniconda
-          uses: goanpeca/setup-miniconda@v1
+        - uses: goanpeca/setup-miniconda@v1
           with:
+              update-conda: true
               python-version: ${{ matrix.python-version }}
-
-        - name: create conda environment
-          shell: bash -l {0}
+              conda-channels: conda-forge
+        - shell: bash -l {0}
           run: |
-              conda info
               conda install conan docopt numpy psutil sphinx
 
-        - name: configure
+        - name: configure lue
           shell: bash -l {0}
           run: |
               mkdir build
@@ -57,12 +49,12 @@ jobs:
                   -DCMAKE_BUILD_TYPE=Debug \
                   -DLUE_BUILD_TEST=TRUE
 
-        - name: build
+        - name: build lue
           shell: bash
           run: |
               cmake --build build --target all
 
-        - name: test
+        - name: test lue
           shell: bash
           run: |
               cd build
