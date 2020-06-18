@@ -33,17 +33,16 @@ jobs:
               conda config --set show_channel_urls true
               conda info -a
               conda create -q -n test-environment python=2.7 conan docopt numpy psutil sphinx
-              source activate test-environment
+              conda activate test-environment
               mkdir build
 
         - name: configure
           shell: bash
           run: |
-              source activate test-environment
               cmake \
-                  -H. \
-                  -Bbuild \
-                  -GNinja \
+                  -S . \
+                  -B build \
+                  -G Ninja \
                   -DCMAKE_BUILD_TYPE=Debug \
                   -DLUE_BUILD_TEST=TRUE
 
