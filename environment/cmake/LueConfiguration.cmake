@@ -434,6 +434,12 @@ if(DEVBASE_OPENCL_REQUIRED)
 endif()
 
 
+if(DEVBASE_HDF5_REQUIRED)
+    find_package(HDF5 REQUIRED)
+    unset(DEVBASE_HDF5_REQUIRED)
+endif()
+
+
 # ------------------------------------------------------------------------------
 if(DEVBASE_DOCOPT_REQUIRED)
     set(LUE_CONAN_REQUIRES

@@ -32,6 +32,12 @@ add_library(lue_hdf5 STATIC
 
 add_library(lue::hdf5 ALIAS lue_hdf5)
 
+target_compile_definitions(lue_hdf5
+    PUBLIC
+        ${HDF5_DEFINITIONS}
+        H5_USE_110_API
+)
+
 target_include_directories(lue_hdf5 SYSTEM
     PUBLIC
         ${HDF5_INCLUDE_DIRS}
