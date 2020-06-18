@@ -41,7 +41,12 @@ jobs:
                   public-conan https://api.bintray.com/conan/bincrafters/public-conan
               mkdir build
               cd build
-              conan install .. --build fmt
+              conan install --build fmt \
+                  docopt.cpp/0.6.2 \
+                  fmt/6.2.0 \
+                  gsl_microsoft/2.0.0@bincrafters/stable \
+                  nlohmann_json/3.7.3 \
+                  pybind11/2.4.3
 
         - name: configure
           shell: bash
