@@ -5,10 +5,17 @@ on: [push]
 jobs:
     build:
 
-        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                os: ["ubuntu-latest"]
+                python-version: [2.7]
+
+        runs-on: ${{ matrix.os }}
 
         steps:
-        - uses: actions/checkout@v2
+
+        - name: checkout
+          uses: actions/checkout@v2
 
         - name: checkout submodules
           shell: bash
@@ -18,28 +25,31 @@ jobs:
               git -c "http.extraheader=$auth_header" -c protocol.version=2 \
                   submodule update --init --force --recursive --depth=1
 
-        - name: install dependencies
+        - name: update packages
           run: |
               sudo apt update
               sudo apt autoremove
               sudo apt upgrade
+
+        - name: install dependencies
+          run: |
               sudo apt install cmake libboost-all-dev libhdf5-dev ninja-build
-              wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
-              bash miniconda.sh -b -p $HOME/miniconda
-              export PATH="$HOME/miniconda/bin:$PATH"
-              hash -r
-              conda config --set always_yes yes --set changeps1 no
-              conda update -q conda
-              conda config --add channels conda-forge
-              conda config --set show_channel_urls true
-              conda info -a
-              conda create -q -n test-environment python=2.7 conan docopt numpy psutil sphinx
-              conda activate test-environment
-              mkdir build
+
+        - name: setup miniconda
+          uses: goanpeca/setup-miniconda@v1
+          with:
+              python-version: ${{ matrix.python-version }}
+
+        - name: create conda environment
+          shell: bash -l {0}
+          run: |
+              conda info
+              conda install conan docopt numpy psutil sphinx
 
         - name: configure
-          shell: bash
+          shell: bash -l {0}
           run: |
+              mkdir build
               cmake \
                   -S . \
                   -B build \
