@@ -16,7 +16,9 @@ jobs:
 
         - name: checkout lue
           uses: actions/checkout@v2
-        - shell: bash
+
+        - name: checkout submodules
+          shell: bash
           run: |
               auth_header="$(git config --local --get http.https://github.com/.extraheader)"
               git submodule sync --recursive
@@ -33,7 +35,7 @@ jobs:
           with:
               update-conda: true
               python-version: ${{ matrix.python-version }}
-              conda-channels: conda-forge
+              channels: conda-forge
         - shell: bash -l {0}
           run: |
               conda install conan docopt numpy psutil sphinx
