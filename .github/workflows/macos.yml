@@ -5,10 +5,17 @@ on: [push]
 jobs:
     build:
 
-        runs-on: macos-latest
+        strategy:
+            matrix:
+                os: ["macos-latest"]
+                python-version: [2.7, 3.8]
+
+        runs-on: ${{ matrix.os }}
 
         steps:
-        - uses: actions/checkout@v2
+
+        - name: checkout lue
+          uses: actions/checkout@v2
 
         - name: checkout submodules
           shell: bash
@@ -18,41 +25,38 @@ jobs:
               git -c "http.extraheader=$auth_header" -c protocol.version=2 \
                   submodule update --init --force --recursive --depth=1
 
-        - name: install dependencies
+        - name: configure system
           run: |
               brew update
               brew upgrade
               brew install boost fmt hdf5 ninja pybind11
-              wget https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -O miniconda.sh
-              bash miniconda.sh -b -p $HOME/miniconda
-              export PATH="$HOME/miniconda/bin:$PATH"
-              hash -r
-              conda config --set always_yes yes --set changeps1 no
-              conda update -q conda
-              conda config --add channels conda-forge
-              conda config --set show_channel_urls true
-              conda info -a
-              conda create -q -n test-environment python=2.7 conan docopt numpy psutil sphinx
-              conda activate test-environment
-              mkdir build
 
-        - name: configure
-          shell: bash
+        - uses: goanpeca/setup-miniconda@v1
+          with:
+              update-conda: true
+              python-version: ${{ matrix.python-version }}
+              channels: conda-forge
+        - shell: bash -l {0}
           run: |
+              conda install conan docopt numpy psutil sphinx
+
+        - name: configure lue
+          shell: bash -l {0}
+          run: |
+              mkdir build
               cmake \
                   -S . \
                   -B build \
-                  -G Ninja \
+                  -G"Unix Makefiles" \
                   -DCMAKE_BUILD_TYPE=Debug \
                   -DLUE_BUILD_TEST=TRUE
 
-        - name: build
+        - name: build lue
           shell: bash
           run: |
               cmake --build build --target all
-              cmake --build build --target test
 
-        - name: test
+        - name: test lue
           shell: bash
           run: |
               cd build
