@@ -25,9 +25,7 @@ target_link_libraries(lue_wildfire
         lue::benchmark
 )
 
-if(LUE_FRAMEWORK_WITH_BENCHMARKS)
-    add_subdirectory(benchmark)
-endif()
+add_subdirectory(benchmark)
 
 add_hpx_executable(lue_burn_wilderness
     ESSENTIAL
