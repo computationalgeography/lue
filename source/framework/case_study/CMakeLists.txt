@@ -1,6 +1,6 @@
 # add_subdirectory(airpolution)
 if(LUE_FRAMEWORK_WITH_BENCHMARKS)
     add_subdirectory(heat_ring)
+    add_subdirectory(wildfire)
 endif()
 # add_subdirectory(land_use)
-add_subdirectory(wildfire)
