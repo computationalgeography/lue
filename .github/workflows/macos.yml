@@ -49,7 +49,7 @@ jobs:
               cmake \
                   -S . \
                   -B build \
-                  -G"Unix Makefiles" \
+                  -G"Ninja" \
                   -DCMAKE_BUILD_TYPE=Release \
                   -DLUE_BUILD_DOCUMENTATION=TRUE \
                   -DLUE_BUILD_TEST=TRUE \
