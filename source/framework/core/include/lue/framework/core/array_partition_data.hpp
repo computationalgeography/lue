@@ -1,6 +1,7 @@
 #pragma once
 #include "lue/framework/core/debug.hpp"
 #include "lue/framework/core/define.hpp"
+#include "lue/framework/core/erase.hpp"
 #include "lue/framework/core/shape.hpp"
 #include "lue/framework/core/serialize/shared_buffer.hpp"
 #include "lue/framework/core/span.hpp"
@@ -328,6 +329,7 @@ ArrayPartitionData<Element, rank>::ArrayPartitionData(
 
 {
     other._shape.fill(0);
+    other._elements.clear();
     other._span = Span{other._elements.data(), other._shape};
 
     other.assert_invariants();
@@ -351,6 +353,7 @@ ArrayPartitionData<Element, rank>& ArrayPartitionData<Element, rank>::operator=(
         other._shape.fill(0);
 
         _elements = std::move(other._elements);
+        other._elements.clear();
 
         _span = Span{_elements.data(), _shape};
         other._span = Span{other._elements.data(), other._shape};
@@ -435,42 +438,7 @@ void ArrayPartitionData<Element, rank>::erase(
     Index const hyperslab_begin_idx,
     Index const hyperslab_end_idx)
 {
-    lue_assert(dimension_idx < rank);
-    lue_assert(hyperslab_begin_idx <= hyperslab_end_idx);
-    lue_assert(hyperslab_end_idx <= _shape[dimension_idx]);
-
-    if(hyperslab_begin_idx == hyperslab_end_idx) {
-        return;  // Nothing to do
-    }
-
-    // Number of elements to skip from the start of the 1D array to
-    // reach elements to erase
-    Count const offset{
-        hyperslab_begin_idx *
-        std::accumulate(
-            _shape.begin() + dimension_idx + 1, _shape.end(), 1,
-            std::multiplies<Count>{})};
-    lue_assert(offset >= 0);
-
-    Count const count{
-        (hyperslab_end_idx - hyperslab_begin_idx) *
-        std::accumulate(
-            _shape.begin() + dimension_idx + 1, _shape.end(), 1,
-            std::multiplies<Count>{})};
-    lue_assert(count > 0);
-
-    Count const stride{
-        std::accumulate(
-            _shape.begin() + dimension_idx, _shape.end(), 1,
-            std::multiplies<Count>{})};
-
-    for(Iterator slab_begin = begin() + offset; slab_begin < end();
-        slab_begin += (stride - count))
-    {
-        _elements.erase(slab_begin, slab_begin + count);
-    }
-
-    _shape[dimension_idx] -= hyperslab_end_idx - hyperslab_begin_idx;
+    _shape = lue::erase(_elements, _shape, dimension_idx, hyperslab_begin_idx, hyperslab_end_idx);
     _span = Span{_elements.data(), _shape};
 
     assert_invariants();

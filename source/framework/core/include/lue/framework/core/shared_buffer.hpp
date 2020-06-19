@@ -215,6 +215,15 @@ public:
         assert_invariants();
     }
 
+    void clear()
+    {
+        assert_invariants();
+
+        (*_ptr).clear();
+
+        assert_invariants();
+    }
+
     /*!
         @brief      Return whether or not this instance equals @a other
 

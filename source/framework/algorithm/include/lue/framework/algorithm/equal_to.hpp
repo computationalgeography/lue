@@ -35,8 +35,7 @@ PartitionedArray<bool, rank> equal_to(
     PartitionedArray<InputElement, rank> const& array1,
     PartitionedArray<InputElement, rank> const& array2)
 {
-    return binary_local_operation(
-        array1, array2, detail::EqualTo<InputElement>{});
+    return binary_local_operation(array1, array2, detail::EqualTo<InputElement>{});
 }
 
 
@@ -48,8 +47,7 @@ PartitionedArray<bool, rank> equal_to(
     PartitionedArray<InputElement, rank> const& array,
     hpx::shared_future<InputElement> const& scalar)
 {
-    return binary_local_operation(
-        array, scalar, detail::EqualTo<InputElement>{});
+    return binary_local_operation(array, scalar, detail::EqualTo<InputElement>{});
 }
 
 
@@ -61,8 +59,7 @@ PartitionedArray<bool, rank> equal_to(
     hpx::shared_future<InputElement> const& scalar,
     PartitionedArray<InputElement, rank> const& array)
 {
-    return binary_local_operation(
-        scalar, array, detail::EqualTo<InputElement>{});
+    return binary_local_operation(scalar, array, detail::EqualTo<InputElement>{});
 }
 
 
@@ -74,8 +71,7 @@ PartitionedArray<bool, rank> equal_to(
     PartitionedArray<InputElement, rank> const& array,
     InputElement const& scalar)
 {
-    return equal_to(
-        array, hpx::make_ready_future<InputElement>(scalar).share());
+    return equal_to(array, hpx::make_ready_future<InputElement>(scalar).share());
 }
 
 
@@ -87,8 +83,7 @@ PartitionedArray<bool, rank> equal_to(
     InputElement const& scalar,
     PartitionedArray<InputElement, rank> const& array)
 {
-    return equal_to(
-        hpx::make_ready_future<InputElement>(scalar).share(), array);
+    return equal_to(hpx::make_ready_future<InputElement>(scalar).share(), array);
 }
 
 
@@ -97,11 +92,11 @@ template<
     typename InputElement,
     Rank rank>
 ArrayPartition<bool, rank> equal_to(
-    ArrayPartition<InputElement, rank> const& array,
+    hpx::id_type const locality_id,
+    ArrayPartition<InputElement, rank> const& partition,
     hpx::shared_future<InputElement> const& scalar)
 {
-    return binary_local_operation(
-        array, scalar, detail::EqualTo<InputElement>{});
+    return binary_local_operation(locality_id, partition, scalar, detail::EqualTo<InputElement>{});
 }
 
 
@@ -110,11 +105,11 @@ template<
     typename InputElement,
     Rank rank>
 ArrayPartition<bool, rank> equal_to(
-    ArrayPartition<InputElement, rank> const& array,
+    hpx::id_type const locality_id,
+    ArrayPartition<InputElement, rank> const& partition,
     InputElement const& scalar)
 {
-    return equal_to(
-        array, hpx::make_ready_future<InputElement>(scalar).share());
+    return equal_to(locality_id, partition, hpx::make_ready_future<InputElement>(scalar).share());
 }
 
 

@@ -25,40 +25,34 @@ hpx::future<AggregatorT<Functor>> zonal_operation_partition1(
     using ZonesData = DataT<ZonesPartition>;
     using Aggregator = AggregatorT<Functor>;
 
+    lue_assert(input_partition.is_ready());
+    lue_assert(zones_partition.is_ready());
+
     return hpx::dataflow(
         hpx::launch::async,
+        hpx::util::unwrapping(
 
-        [](
-            InputPartition const& input_partition,
-            ZonesPartition const& zones_partition)
-        {
-            lue_assert(input_partition.locality_id().get() == hpx::find_here());
-            lue_assert(zones_partition.locality_id().get() == hpx::find_here());
+                [](
+                    InputData const& input_partition_data,
+                    ZonesData const& zones_partition_data)
+                {
+                    Count const nr_elements{lue::nr_elements(input_partition_data)};
 
-            auto const input_partition_server_ptr{hpx::get_ptr(input_partition).get()};
-            auto const& input_partition_server{*input_partition_server_ptr};
-            InputData const input_partition_data{input_partition_server.data()};
+                    lue_assert(lue::nr_elements(zones_partition_data) == nr_elements);
 
-            auto const zones_partition_server_ptr{hpx::get_ptr(zones_partition).get()};
-            auto const& zones_partition_server{*zones_partition_server_ptr};
-            ZonesData const zones_partition_data{zones_partition_server.data()};
+                    Aggregator result{};
 
-            Count const nr_elements{lue::nr_elements(input_partition_data)};
+                    for(Index i = 0; i < nr_elements; ++i)
+                    {
+                        result.add(zones_partition_data[i], input_partition_data[i]);
+                    }
 
-            lue_assert(lue::nr_elements(zones_partition_data) == nr_elements);
+                    return result;
+                }
 
-            Aggregator result{};
-
-            for(Index i = 0; i < nr_elements; ++i)
-            {
-                result.add(zones_partition_data[i], input_partition_data[i]);
-            }
-
-            return result;
-        },
-
-        input_partition,
-        zones_partition);
+            ),
+        input_partition.data(),
+        zones_partition.data());
 }
 
 
@@ -77,30 +71,35 @@ OutputPartition zonal_operation_partition2(
     ZonesPartition const& zones_partition,
     AggregatorT<Functor> const& aggregator)
 {
+    using Offset = OffsetT<ZonesPartition>;
     using ZonesData = DataT<ZonesPartition>;
     using OutputData = DataT<OutputPartition>;
 
-    // These zones have already been used during step 1 of the algorithm below
     lue_assert(zones_partition.is_ready());
 
-    lue_assert(zones_partition.locality_id().get() == hpx::find_here());
+    return hpx::dataflow(
+        hpx::launch::async,
+        hpx::util::unwrapping(
 
-    auto const zones_partition_server_ptr{hpx::get_ptr(zones_partition).get()};
-    auto const& zones_partition_server{*zones_partition_server_ptr};
+                [aggregator](
+                    Offset const& offset,
+                    ZonesData const& zones_partition_data)
+                {
+                    OutputData output_partition_data{zones_partition_data.shape()};
 
-    auto offset{zones_partition_server.offset()};
-    ZonesData const zones_partition_data{zones_partition_server.data()};
+                    Count const nr_elements{lue::nr_elements(zones_partition_data)};
 
-    OutputData output_partition_data{zones_partition_data.shape()};
+                    for(Index i = 0; i < nr_elements; ++i)
+                    {
+                        output_partition_data[i] = aggregator[zones_partition_data[i]];
+                    }
 
-    Count const nr_elements{lue::nr_elements(zones_partition_data)};
+                    return OutputPartition{hpx::find_here(), offset, std::move(output_partition_data)};
+                }
 
-    for(Index i = 0; i < nr_elements; ++i)
-    {
-        output_partition_data[i] = aggregator[zones_partition_data[i]];
-    }
-
-    return OutputPartition{hpx::find_here(), offset, std::move(output_partition_data)};
+            ),
+        zones_partition.offset(),
+        zones_partition.data());
 }
 
 
@@ -149,9 +148,11 @@ PartitionedArray<OutputElementT<Functor>, rank> zonal_operation(
     Functor const& functor)
 {
     using InputArray = PartitionedArray<InputElement, rank>;
+    using InputPartitions = PartitionsT<InputArray>;
     using InputPartition = PartitionT<InputArray>;
 
     using ZonesArray = PartitionedArray<Zone, rank>;
+    using ZonesPartitions = PartitionsT<ZonesArray>;
     using ZonesPartition = PartitionT<ZonesArray>;
 
     using OutputArray = PartitionedArray<OutputElementT<Functor>, rank>;
@@ -164,6 +165,9 @@ PartitionedArray<OutputElementT<Functor>, rank> zonal_operation(
     Count const nr_partitions{lue::nr_partitions(input_array)};
     lue_assert(lue::nr_partitions(zones_array) == nr_partitions);
 
+    Localities<rank> const& localities{input_array.localities()};
+    ZonesPartitions const& zones_partitions{zones_array.partitions()};
+
     // -------------------------------------------------------------------------
     // 1. Per input partition, calculate a statistic per zone. This
     //     results in some operation-specific object that contains this
@@ -173,23 +177,22 @@ PartitionedArray<OutputElementT<Functor>, rank> zonal_operation(
     {
         detail::ZonalOperationPartitionAction1<InputPartition, ZonesPartition, Functor> action;
 
+        InputPartitions const& input_partitions{input_array.partitions()};
+
         for(Index p = 0; p < nr_partitions; ++p)
         {
-            InputPartition const& input_partition{input_array.partitions()[p]};
-            ZonesPartition const& zones_partition{zones_array.partitions()[p]};
-
             aggregators[p] = hpx::dataflow(
                 hpx::launch::async,
-                hpx::util::unwrapping(
 
-                        [action, functor, input_partition, zones_partition](
-                            hpx::id_type const locality_id)
-                        {
-                            return action(locality_id, input_partition, zones_partition, functor);
-                        }
+                [locality_id=localities[p], action, functor](
+                    InputPartition const& input_partition,
+                    ZonesPartition const& zones_partition)
+                {
+                    return action(locality_id, input_partition, zones_partition, functor);
+                },
 
-                    ),
-                input_partition.locality_id());
+                input_partitions[p],
+                zones_partitions[p]);
         }
     }
 
@@ -222,26 +225,20 @@ PartitionedArray<OutputElementT<Functor>, rank> zonal_operation(
 
         for(Index p = 0; p < nr_partitions; ++p)
         {
-            ZonesPartition const& zones_partition{zones_array.partitions()[p]};
-
             output_partitions[p] = hpx::dataflow(
                 hpx::launch::async,
-                hpx::util::unwrapping(
 
-                        [action, zones_partition](
-                            hpx::id_type const locality_id,
-                            Aggregator const& aggregator)
-                        {
-                            return action(locality_id, zones_partition, aggregator);
-                        }
+                [locality_id=localities[p], action, zones_partition=zones_partitions[p]](
+                    hpx::shared_future<Aggregator>const& aggregator)
+                {
+                    return action(locality_id, zones_partition, aggregator.get());
+                },
 
-                    ),
-                zones_partition.locality_id(),
                 aggregator);
         }
     }
 
-    return OutputArray{shape(input_array), std::move(output_partitions)};
+    return OutputArray{shape(input_array), localities, std::move(output_partitions)};
 }
 
 }  // namespace lue

@@ -58,8 +58,7 @@ template<
 hpx::future<Element> maximum(
     PartitionedArray<Element, rank> const& array)
 {
-    return unary_aggregate_operation(
-        array, detail::Maximum<Element, Element>{});
+    return unary_aggregate_operation(array, detail::Maximum<Element, Element>{});
 }
 
 }  // namespace lue

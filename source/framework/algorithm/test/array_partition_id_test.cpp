@@ -25,11 +25,16 @@ void test_array()
 
     BOOST_CHECK_EQUAL(array_partition_id.shape(), array.shape());
 
+    auto const& localities{array_partition_id.localities()};
+    auto const& partitions{array_partition_id.partitions()};
+
     for(lue::Index p = 0; p < lue::nr_partitions(array_partition_id); ++p)
     {
-        auto const& partition{array_partition_id.partitions()[p]};
-
-        BOOST_CHECK(lue::all(partition == static_cast<std::uint64_t>(p)).get());
+        BOOST_CHECK(
+            lue::all(
+                    localities[p],
+                    lue::equal_to(localities[p], partitions[p], static_cast<std::uint64_t>(p))
+                ).get());
     }
 }
 

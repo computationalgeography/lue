@@ -19,29 +19,29 @@ OutputPartition unary_local_operation_partition(
     using InputData = DataT<InputPartition>;
     using OutputData = DataT<OutputPartition>;
 
-    lue_assert(input_partition.locality_id().get() == hpx::find_here());
+    lue_assert(input_partition.is_ready());
 
     return hpx::dataflow(
         hpx::launch::async,
+        hpx::util::unwrapping(
 
-        [functor](
-            InputPartition const& input_partition)
-        {
-            auto const input_partition_server_ptr{hpx::get_ptr(input_partition).get()};
-            auto const& input_partition_server{*input_partition_server_ptr};
+                [functor](
+                    Offset const& offset,
+                    InputData const& input_partition_data)
+                {
+                    OutputData output_partition_data{input_partition_data.shape()};
 
-            Offset const offset{input_partition_server.offset()};
-            InputData const input_partition_data{input_partition_server.data()};
-            OutputData output_partition_data{input_partition_data.shape()};
+                    std::transform(
+                        input_partition_data.begin(), input_partition_data.end(),
+                        output_partition_data.begin(), functor);
 
-            std::transform(
-                input_partition_data.begin(), input_partition_data.end(),
-                output_partition_data.begin(), functor);
+                    return OutputPartition{hpx::find_here(), offset, std::move(output_partition_data)};
+                }
 
-            return OutputPartition{hpx::find_here(), offset, std::move(output_partition_data)};
-        },
-
-        input_partition);
+            ),
+            input_partition.offset(),
+            input_partition.data()
+        );
 }
 
 
@@ -69,6 +69,7 @@ PartitionedArray<OutputElementT<Functor>, rank> unary_local_operation(
     Functor const& functor)
 {
     using InputArray = PartitionedArray<InputElement, rank>;
+    using InputPartitions = PartitionsT<InputArray>;
     using InputPartition = PartitionT<InputArray>;
 
     using OutputArray = PartitionedArray<OutputElementT<Functor>, rank>;
@@ -78,27 +79,26 @@ PartitionedArray<OutputElementT<Functor>, rank> unary_local_operation(
     lue_assert(all_are_valid(input_array.partitions()));
 
     detail::UnaryLocalOperationPartitionAction<InputPartition, OutputPartition, Functor> action;
+
+    Localities<rank> const& localities{input_array.localities()};
+    InputPartitions const& input_partitions{input_array.partitions()};
     OutputPartitions output_partitions{shape_in_partitions(input_array)};
 
     for(Index p = 0; p < nr_partitions(input_array); ++p)
     {
-        InputPartition const& input_partition{input_array.partitions()[p]};
-
         output_partitions[p] = hpx::dataflow(
             hpx::launch::async,
-            hpx::util::unwrapping(
 
-                    [action, functor, input_partition](
-                        hpx::id_type const locality_id)
-                    {
-                        return action(locality_id, input_partition, functor);
-                    }
+            [locality_id=localities[p], action, functor](
+                InputPartition const& input_partition)
+            {
+                return action(locality_id, input_partition, functor);
+            },
 
-                ),
-            input_partition.locality_id());
+            input_partitions[p]);
     }
 
-    return OutputArray{shape(input_array), std::move(output_partitions)};
+    return OutputArray{shape(input_array), localities, std::move(output_partitions)};
 }
 
 }  // namespace lue

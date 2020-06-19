@@ -74,9 +74,10 @@ template<
     typename Element,
     Rank rank>
 hpx::future<Element> all(
+    hpx::id_type const locality_id,
     ArrayPartition<Element, rank> const& partition)
 {
-    return unary_aggregate_operation(partition, detail::All<Element>{});
+    return unary_aggregate_operation(locality_id, partition, detail::All<Element>{});
 }
 
 }  // namespace lue

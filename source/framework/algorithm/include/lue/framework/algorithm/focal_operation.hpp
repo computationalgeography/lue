@@ -253,7 +253,7 @@ template<
     typename OutputPartition,
     typename Kernel,
     typename Functor>
-OutputPartition focal_operation_partition2(
+OutputPartition focal_operation_partition(
     InputPartitions const& input_partitions,
     Kernel const& kernel,
     Functor const& /* functor */)
@@ -283,8 +283,6 @@ OutputPartition focal_operation_partition2(
 
     if constexpr(rank<InputPartition> == 2)
     {
-        lue_assert(input_partitions(1, 1).locality_id().get() == hpx::find_here());
-
         auto const [nr_partitions0, nr_partitions1] = input_partitions.shape();
 
         // The partitions collection contains 9 partitions:
@@ -1081,41 +1079,6 @@ template<
     typename OutputPartition,
     typename Kernel,
     typename Functor>
-OutputPartition focal_operation_partition(
-    InputPartitions const& input_partitions,
-    Kernel const& kernel,
-    Functor const& functor)
-{
-    // Call the function that does the actual calculations. Here we make
-    // sure the input partitions are ready before the calculations start.
-
-    static_assert(rank<InputPartitions> == 2);
-
-    using InputPartition = PartitionT<InputPartitions>;
-    using Shape = ShapeT<InputPartitions>;
-
-    lue_assert(all_are_valid(input_partitions));
-
-    return hpx::when_all(input_partitions.begin(), input_partitions.end()).then(
-        hpx::util::unwrapping(
-
-                [kernel, functor](
-                    std::vector<InputPartition>&& input_partitions)
-                {
-                    return focal_operation_partition2<InputPartitions, OutputPartition, Kernel, Functor>(
-                        InputPartitions{Shape{{3, 3}}, input_partitions.begin(), input_partitions.end()},
-                        kernel, functor);
-                }
-
-            ));
-}
-
-
-template<
-    typename InputPartitions,
-    typename OutputPartition,
-    typename Kernel,
-    typename Functor>
 struct FocalOperationPartitionAction:
     hpx::actions::make_action<
         decltype(&focal_operation_partition<InputPartitions, OutputPartition, Kernel, Functor>),
@@ -1130,31 +1093,28 @@ template<
     typename Functor,
     typename InputPartitions>
 PartitionT<InputPartitions, OutputElementT<Functor>> spawn_focal_operation_partition(
+    hpx::id_type const locality_id,
     Action const& action,
     Kernel const& kernel,
     Functor const& functor,
     InputPartitions&& input_partitions)
 {
-    // Send the task to the locality of the center partition. Some of
-    // the input partitions might not be ready yet.
+    static_assert(rank<InputPartitions> == 2);
 
-    PartitionT<InputPartitions> center_partition{input_partitions(1, 1)};
+    using InputPartition = PartitionT<InputPartitions>;
+    using Shape = ShapeT<InputPartitions>;
 
-    return center_partition.locality_id().then(hpx::util::unwrapping(
+    lue_assert(all_are_valid(input_partitions));
 
-            [center_partition, action, input_partitions=std::move(input_partitions), kernel, functor](
-                hpx::id_type const locality_id)
+    return hpx::when_all(input_partitions.begin(), input_partitions.end()).then(hpx::util::unwrapping(
+
+            [locality_id, action, kernel, functor](
+                std::vector<InputPartition>&& input_partitions)
             {
-                HPX_UNUSED(center_partition);
-
-                lue_assert(all_are_valid(input_partitions));
-
-                // Passing the same partition (1, 1) works fine. Passing different ones
-                // results in a memory leak...
-                // Everything works fine on a single locality
-                // Memory leaks when using multiple localities...
-
-                return action(locality_id, std::move(input_partitions), kernel, functor);
+                return action(
+                    locality_id,
+                    InputPartitions{Shape{{3, 3}}, input_partitions.begin(), input_partitions.end()},
+                    kernel, functor);
             }
 
         ));
@@ -1165,29 +1125,17 @@ template<
     typename Element,
     Rank rank>
 ArrayPartition<Element, rank> spawn_create_halo_corner_partition(
+    hpx::id_type const locality_id,
     Radius const kernel_radius,
-    Element const fill_value,
-    ArrayPartition<Element, rank> const& partition)
+    Element const fill_value)
 {
-    // Asynchronously create a new partition component, on the same
-    // locality as the input partition. The input partition might not
-    // be ready yet.
+    // Create a new partition component
 
     using Partition = ArrayPartition<Element, rank>;
     using Offset = OffsetT<Partition>;
     using Shape = ShapeT<Partition>;
 
-    return partition.locality_id().then(hpx::util::unwrapping(
-
-            [partition, kernel_radius, fill_value](
-                hpx::id_type const locality_id)
-            {
-                HPX_UNUSED(partition);
-
-                return Partition{locality_id, Offset{}, Shape{{kernel_radius, kernel_radius}}, fill_value};
-            }
-
-        ));
+    return Partition{locality_id, Offset{}, Shape{{kernel_radius, kernel_radius}}, fill_value};
 }
 
 
@@ -1203,10 +1151,12 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
     Functor const& functor)
 {
     static_assert(lue::rank<Array> == 2);
+    Rank const rank{2};
 
     using InputArray = Array;
     using InputPartition = PartitionT<InputArray>;
     using InputPartitions = PartitionsT<InputArray>;
+    using InputElement = ElementT<InputArray>;
 
     using OutputArray = PartitionedArrayT<Array, OutputElementT<Functor>>;
     using OutputPartitions = PartitionsT<OutputArray>;
@@ -1216,6 +1166,7 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
     using Shape = ShapeT<Array>;
 
     InputPartitions const& input_partitions{input_array.partitions()};
+    Localities<rank> const& localities{input_array.localities()};
 
     lue_assert(all_are_valid(input_partitions));
 
@@ -1247,20 +1198,20 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
     InputPartitions halo_corner_partitions{Shape{{2, 2}}};
 
     // North-west corner halo partition
-    halo_corner_partitions(0, 0) = spawn_create_halo_corner_partition(
-        kernel_radius, fill_value, input_partitions(0, 0));
+    halo_corner_partitions(0, 0) = spawn_create_halo_corner_partition<InputElement, rank>(
+        localities(0, 0), kernel_radius, fill_value);
 
     // North-east corner halo partition
-    halo_corner_partitions(0, 1) = spawn_create_halo_corner_partition(
-        kernel_radius, fill_value, input_partitions(0, nr_partitions1 - 1));
+    halo_corner_partitions(0, 1) = spawn_create_halo_corner_partition<InputElement, rank>(
+        localities(0, nr_partitions1 - 1), kernel_radius, fill_value);
 
     // South-west corner halo partition
-    halo_corner_partitions(1, 0) = spawn_create_halo_corner_partition(
-        kernel_radius, fill_value, input_partitions(nr_partitions0 - 1, 0));
+    halo_corner_partitions(1, 0) = spawn_create_halo_corner_partition<InputElement, rank>(
+        localities(nr_partitions0 - 1, 0), kernel_radius, fill_value);
 
     // South-east corner halo partition
-    halo_corner_partitions(1, 1) = spawn_create_halo_corner_partition(
-        kernel_radius, fill_value, input_partitions(nr_partitions0 - 1, nr_partitions1 - 1));
+    halo_corner_partitions(1, 1) = spawn_create_halo_corner_partition<InputElement, rank>(
+        localities(nr_partitions0 - 1, nr_partitions1 - 1), kernel_radius, fill_value);
 
     // Longitudinal side halo partitions
     //     +---+---+---+
@@ -1277,11 +1228,11 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
         for(Index cp = 0; cp < nr_partitions1; ++cp)
         {
             // FIXME Why can't we attach continuations to a const component?
-            InputPartition& input_partition = const_cast<InputArray&>(input_array).partitions()(rp, cp);
+            InputPartition& input_partition = const_cast<InputPartition&>(input_partitions(rp, cp));
 
             halo_longitudinal_side_partitions(rh, cp) = input_partition.then(
 
-                    [kernel_radius, fill_value](
+                    [locality_id=localities(rp, cp), kernel_radius, fill_value](
                         InputPartition const& input_partition)
                     {
 #pragma GCC diagnostic push
@@ -1290,8 +1241,7 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
                             hpx::launch::async,
                             hpx::util::unwrapping(
 
-                                    [input_partition, kernel_radius, fill_value](
-                                        hpx::id_type const locality_id,
+                                    [locality_id, input_partition, kernel_radius, fill_value](
                                         Shape const& partition_shape)
                                     {
                                         HPX_UNUSED(input_partition);
@@ -1303,7 +1253,6 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
                                     }
 
                                 ),
-                            input_partition.locality_id(),
                             input_partition.shape());
 #pragma GCC diagnostic pop
                     }
@@ -1329,11 +1278,11 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
             std::array<Index, 2>{{1, nr_partitions1 - 1}}})
         {
             // FIXME Why can't we attach continuations to a const component?
-            InputPartition& input_partition = const_cast<InputArray&>(input_array).partitions()(rp, cp);
+            InputPartition& input_partition = const_cast<InputPartition&>(input_partitions(rp, cp));
 
             halo_latitudinal_sides_partitions(rp, ch) = input_partition.then(
 
-                    [kernel_radius, fill_value](
+                    [locality_id=localities(rp, cp), kernel_radius, fill_value](
                         InputPartition const& input_partition)
                     {
 #pragma GCC diagnostic push
@@ -1342,8 +1291,7 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
                             hpx::launch::async,
                             hpx::util::unwrapping(
 
-                                    [input_partition, kernel_radius, fill_value](
-                                        hpx::id_type const locality_id,
+                                    [locality_id, input_partition, kernel_radius, fill_value](
                                         Shape const& partition_shape)
                                     {
                                         HPX_UNUSED(input_partition);
@@ -1355,7 +1303,6 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
                                     }
 
                                 ),
-                            input_partition.locality_id(),
                             input_partition.shape());
 #pragma GCC diagnostic pop
                     }
@@ -1412,9 +1359,8 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
 
         lue_assert(all_are_valid(local_input_partitions));
 
-        output_partitions(0, 0) =
-            spawn_focal_operation_partition(action, kernel, functor, std::move(local_input_partitions));
-        lue_assert(local_input_partitions.empty());
+        output_partitions(0, 0) = spawn_focal_operation_partition(
+           localities(0, 0), action, kernel, functor, std::move(local_input_partitions));
     }
 
     // North-east corner partition
@@ -1449,9 +1395,8 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
 
         lue_assert(all_are_valid(local_input_partitions));
 
-        output_partitions(0, nr_partitions1 - 1) =
-            spawn_focal_operation_partition(action, kernel, functor, std::move(local_input_partitions));
-        lue_assert(local_input_partitions.empty());
+        output_partitions(0, nr_partitions1 - 1) = spawn_focal_operation_partition(
+            localities(0, nr_partitions1 - 1), action, kernel, functor, std::move(local_input_partitions));
     }
 
     // South-west corner partition
@@ -1481,9 +1426,8 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
 
         lue_assert(all_are_valid(local_input_partitions));
 
-        output_partitions(nr_partitions0 - 1, 0) =
-            spawn_focal_operation_partition(action, kernel, functor, std::move(local_input_partitions));
-        lue_assert(local_input_partitions.empty());
+        output_partitions(nr_partitions0 - 1, 0) = spawn_focal_operation_partition(
+           localities(nr_partitions0 - 1, 0), action, kernel, functor, std::move(local_input_partitions));
     }
 
     // South-east corner partition
@@ -1503,9 +1447,9 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
 
         lue_assert(all_are_valid(local_input_partitions));
 
-        output_partitions(nr_partitions0 - 1, nr_partitions1 - 1) =
-            spawn_focal_operation_partition(action, kernel, functor, std::move(local_input_partitions));
-        lue_assert(local_input_partitions.empty());
+        output_partitions(nr_partitions0 - 1, nr_partitions1 - 1) = spawn_focal_operation_partition(
+            localities(nr_partitions0 - 1, nr_partitions1 - 1), action, kernel, functor,
+            std::move(local_input_partitions));
     }
 
     // North side partition
@@ -1541,9 +1485,8 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
 
             lue_assert(all_are_valid(local_input_partitions));
 
-            output_partitions(0, c) =
-                spawn_focal_operation_partition(action, kernel, functor, std::move(local_input_partitions));
-            lue_assert(local_input_partitions.empty());
+            output_partitions(0, c) = spawn_focal_operation_partition(
+               localities(0, c), action, kernel, functor, std::move(local_input_partitions));
         }
     }
 
@@ -1566,9 +1509,9 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
 
             lue_assert(all_are_valid(local_input_partitions));
 
-            output_partitions(nr_partitions0 - 1, c) =
-                spawn_focal_operation_partition(action, kernel, functor, std::move(local_input_partitions));
-            lue_assert(local_input_partitions.empty());
+            output_partitions(nr_partitions0 - 1, c) = spawn_focal_operation_partition(
+                localities(nr_partitions0 - 1, c), action, kernel, functor,
+                std::move(local_input_partitions));
         }
     }
 
@@ -1600,9 +1543,8 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
 
             lue_assert(all_are_valid(local_input_partitions));
 
-            output_partitions(r, 0) =
-                spawn_focal_operation_partition(action, kernel, functor, std::move(local_input_partitions));
-            lue_assert(local_input_partitions.empty());
+            output_partitions(r, 0) = spawn_focal_operation_partition(
+                localities(r, 0), action, kernel, functor, std::move(local_input_partitions));
         }
     }
 
@@ -1625,9 +1567,9 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
 
             lue_assert(all_are_valid(local_input_partitions));
 
-            output_partitions(r, nr_partitions1 - 1) =
-                spawn_focal_operation_partition(action, kernel, functor, std::move(local_input_partitions));
-            lue_assert(local_input_partitions.empty());
+            output_partitions(r, nr_partitions1 - 1) = spawn_focal_operation_partition(
+                localities(r, nr_partitions1 - 1), action, kernel, functor,
+                std::move(local_input_partitions));
         }
     }
 
@@ -1655,15 +1597,14 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
                 lue_assert(all_are_valid(local_input_partitions));
 
                 output_partitions(r, c) = spawn_focal_operation_partition(
-                    action, kernel, functor, std::move(local_input_partitions));
-                lue_assert(local_input_partitions.empty());
+                    localities(r, c), action, kernel, functor, std::move(local_input_partitions));
             }
         }
     }
 
     lue_assert(all_are_valid(output_partitions));
 
-    return OutputArray{shape(input_array), std::move(output_partitions)};
+    return OutputArray{shape(input_array), localities, std::move(output_partitions)};
 }
 
 

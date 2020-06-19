@@ -81,17 +81,17 @@ struct UniqueIDPartitionAction:
     @brief      Fill a partitioned array in-place with unique IDs
     @tparam     Element Type of elements in the array
     @tparam     rank Rank of the array
-    @param      array Partitioned array
+    @param      input_array Partitioned array
     @return     Future that becomes ready once the algorithm has finished
 
-    The existing @a array passed in is updated. Use the returned future if
+    The existing @a input_array passed in is updated. Use the returned future if
     you need to know when the filling is done.
 */
 template<
     typename Element,
     Rank rank>
 [[nodiscard]] hpx::future<void> unique_id(
-    PartitionedArray<Element, rank>& array)
+    PartitionedArray<Element, rank>& input_array)
 {
     // - Iterate over all partitions
     //     - Determine first value for partition
@@ -100,9 +100,12 @@ template<
     //     assigning values to all cells
 
     using InputArray = PartitionedArray<Element, rank>;
+    using InputPartitions = PartitionsT<InputArray>;
     using InputPartition = PartitionT<InputArray>;
 
-    auto const nr_partitions = lue::nr_partitions(array);
+    InputPartitions const& input_partitions{input_array.partitions()};
+
+    std::size_t const nr_partitions{input_partitions.nr_elements()};
 
     std::vector<hpx::future<Count>> partition_sizes(nr_partitions);
     {
@@ -111,46 +114,42 @@ template<
         // ID with the number of previous elements (see start_value below).
         for(Index p = 0; p < nr_partitions; ++p)
         {
-            partition_sizes[p] = array.partitions()[p].then(
-                    [](InputPartition const& partition)
-                    {
-                        return partition.nr_elements();
-                    }
-                );
+            partition_sizes[p] = hpx::dataflow(
+                hpx::launch::async,
+
+                [](InputPartition const& partition)
+                {
+                    return partition.nr_elements();
+                },
+
+                input_partitions[p]);
         }
     }
 
-    UniqueIDPartitionAction<InputPartition> action;
+    UniqueIDPartitionAction<InputPartition> action{};
 
-    std::vector<hpx::future<void>> unique_id_partitions(nr_partitions);
+    return hpx::when_all(partition_sizes).then(hpx::util::unwrapping(
 
-    Element start_value = 0;
+            [localities=input_array.localities(), input_partitions, action](
+                std::vector<hpx::future<Count>>&& partition_sizes)
+            {
+                Element start_value = 0;
+                std::size_t const nr_partitions{input_partitions.nr_elements()};
+                std::vector<hpx::future<void>> unique_id_partitions(nr_partitions);
 
-    // FIXME make asynchronous
-    hpx::wait_all(partition_sizes);
+                for(Index p = 0; p < nr_partitions; ++p)
+                {
+                    lue_assert(input_partitions[p].is_ready());
 
-    for(Index p = 0; p < nr_partitions; ++p) {
+                    unique_id_partitions[p] = hpx::async(
+                        action, localities[p], input_partitions[p], start_value);
+                    start_value += partition_sizes[p].get();
+                }
 
-        InputPartition const& input_partition = array.partitions()[p];
+                return hpx::when_all(unique_id_partitions);
+            }
 
-        unique_id_partitions[p] = hpx::dataflow(
-            hpx::launch::async,
-            hpx::util::unwrapping(
-
-                    [action, input_partition, start_value](
-                        hpx::id_type const locality_id)
-                    {
-                        return action(
-                            locality_id, input_partition, start_value);
-                    }
-
-                ),
-            input_partition.locality_id());
-
-        start_value += partition_sizes[p].get();
-    }
-
-    return hpx::when_all(unique_id_partitions);
+        ));
 }
 
 }  // namespace lue

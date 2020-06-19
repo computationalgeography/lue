@@ -23,66 +23,51 @@ template<
     typename OutputElement>
 PartitionT<InputPartition, OutputElement> uniform_partition(
     InputPartition const& input_partition,
-    hpx::shared_future<OutputElement> const& min_value,
-    hpx::shared_future<OutputElement> const& max_value)
+    OutputElement const min_value,
+    OutputElement const max_value)
 {
     using Offset = OffsetT<InputPartition>;
     using Shape = ShapeT<InputPartition>;
     using OutputPartition = PartitionT<InputPartition, OutputElement>;
     using OutputData = DataT<OutputPartition>;
 
-    lue_assert(input_partition.locality_id().get() == hpx::find_here());
+    lue_assert(input_partition.is_ready());
 
-    return hpx::dataflow(
-        hpx::launch::async,
+    auto const input_partition_server_ptr{hpx::get_ptr(input_partition).get()};
+    auto const& input_partition_server{*input_partition_server_ptr};
 
-        [](
-            InputPartition const& input_partition,
-            hpx::shared_future<OutputElement> const& min_value,
-            hpx::shared_future<OutputElement> const& max_value)
+    Offset const offset = input_partition_server.offset();
+    Shape const shape = input_partition_server.shape();
+
+    // Will be used to obtain a seed for the random number engine
+    std::random_device random_device;
+
+    // Standard mersenne_twister_engine seeded with the random_device
+    std::mt19937 random_number_engine(random_device());
+
+    auto distribution =
+        [min_value, max_value]()
         {
-            auto const input_partition_server_ptr{hpx::get_ptr(input_partition).get()};
-            auto const& input_partition_server{*input_partition_server_ptr};
+            if constexpr(std::is_floating_point_v<OutputElement>) {
+                return std::uniform_real_distribution<OutputElement>{min_value, max_value};
+            }
+            else if constexpr(std::is_integral_v<OutputElement>) {
+                return std::uniform_int_distribution<OutputElement>{min_value, max_value};
+            }
+        }();
 
-            Offset const offset = input_partition_server.offset();
-            Shape const shape = input_partition_server.shape();
+    OutputData output_partition_data{shape};
 
-            // Will be used to obtain a seed for the random number engine
-            std::random_device random_device;
+    std::generate(output_partition_data.begin(), output_partition_data.end(),
 
-            // Standard mersenne_twister_engine seeded with the random_device
-            std::mt19937 random_number_engine(random_device());
+            [&distribution, &random_number_engine]()
+            {
+                return distribution(random_number_engine);
+            }
 
-            auto distribution =
-                [min_value=min_value.get(), max_value=max_value.get()]()
-                {
-                    if constexpr(std::is_floating_point_v<OutputElement>) {
-                        return std::uniform_real_distribution<OutputElement>{min_value, max_value};
-                    }
-                    else if constexpr(std::is_integral_v<OutputElement>) {
-                        return std::uniform_int_distribution<OutputElement>{min_value, max_value};
-                    }
-                }();
+        );
 
-            OutputData output_partition_data{shape};
-
-            std::generate(
-                    output_partition_data.begin(), output_partition_data.end(),
-
-                    [&distribution, &random_number_engine]()
-                    {
-                        return distribution(random_number_engine);
-                    }
-
-                );
-
-            return OutputPartition{hpx::find_here(), offset, std::move(output_partition_data)};
-
-        },
-
-        input_partition,
-        min_value,
-        max_value);
+    return OutputPartition{hpx::find_here(), offset, std::move(output_partition_data)};
 }
 
 
@@ -125,6 +110,7 @@ PartitionedArray<OutputElement, rank> uniform(
     // type.
 
     using InputArray = PartitionedArray<InputElement, rank>;
+    using InputPartitions = PartitionsT<InputArray>;
     using InputPartition = PartitionT<InputArray>;
 
     using OutputArray = PartitionedArray<OutputElement, rank>;
@@ -135,27 +121,30 @@ PartitionedArray<OutputElement, rank> uniform(
     lue_assert(max_value.valid());
 
     detail::uniform::UniformPartitionAction<InputPartition, OutputElement> action;
+
+    Localities<rank> const& localities{input_array.localities()};
+    InputPartitions const& input_partitions{input_array.partitions()};
     OutputPartitions output_partitions{shape_in_partitions(input_array)};
 
     for(Index p = 0; p < nr_partitions(input_array); ++p)
     {
-        InputPartition const& input_partition{input_array.partitions()[p]};
-
         output_partitions[p] = hpx::dataflow(
             hpx::launch::async,
-            hpx::util::unwrapping(
 
-                    [action, input_partition, min_value, max_value](
-                        hpx::id_type const locality_id)
-                    {
-                        return action(locality_id, input_partition, min_value, max_value);
-                    }
+            [locality_id=localities[p], action](
+                InputPartition const& input_partition,
+                hpx::shared_future<OutputElement> const& min_value,
+                hpx::shared_future<OutputElement> const& max_value)
+            {
+                return action(locality_id, input_partition, min_value.get(), max_value.get());
+            },
 
-                ),
-            input_partition.locality_id());
+            input_partitions[p],
+            min_value,
+            max_value);
     }
 
-    return OutputArray{shape(input_array), std::move(output_partitions)};
+    return OutputArray{shape(input_array), input_array.localities(), std::move(output_partitions)};
 }
 
 

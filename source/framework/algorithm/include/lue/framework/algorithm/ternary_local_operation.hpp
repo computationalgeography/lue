@@ -47,72 +47,46 @@ public:
         InputPartition3 const& input_partition3,
         Functor functor)
     {
-        lue_assert(input_partition1.locality_id().get() == hpx::find_here());
-        lue_assert(input_partition2.locality_id().get() == hpx::find_here());
-        lue_assert(input_partition3.locality_id().get() == hpx::find_here());
-
+        using Offset = OffsetT<InputPartition1>;
         using InputData1 = DataT<InputPartition1>;
         using InputData2 = DataT<InputPartition2>;
         using InputData3 = DataT<InputPartition3>;
 
         using OutputData = DataT<OutputPartition>;
 
+        lue_assert(input_partition1.is_ready());
+        lue_assert(input_partition2.is_ready());
+        lue_assert(input_partition3.is_ready());
+
         return hpx::dataflow(
             hpx::launch::async,
+            hpx::util::unwrapping(
 
-            [functor](
-                InputPartition1 const& input_partition1,
-                InputPartition2 const& input_partition2,
-                InputPartition3 const& input_partition3)
-            {
-                auto const input_partition_server_ptr1{
-                    hpx::get_ptr(input_partition1).get()};
-                auto const& input_partition_server1{
-                    *input_partition_server_ptr1};
+                    [functor](
+                        Offset const& offset,
+                        InputData1 const& input_data1,
+                        InputData2 const& input_data2,
+                        InputData3 const& input_data3)
+                    {
+                        lue_assert(input_data2.nr_elements() == input_data1.nr_elements());
+                        lue_assert(input_data3.nr_elements() == input_data1.nr_elements());
 
-                auto const input_partition_server_ptr2{
-                    hpx::get_ptr(input_partition2).get()};
-                auto const& input_partition_server2{
-                    *input_partition_server_ptr2};
+                        OutputData output_data{input_data1.shape()};
+                        Count const nr_elements{lue::nr_elements(input_data1)};
 
-                auto const input_partition_server_ptr3{
-                    hpx::get_ptr(input_partition3).get()};
-                auto const& input_partition_server3{
-                    *input_partition_server_ptr3};
+                        for(Index i = 0; i < nr_elements; ++i)
+                        {
+                            output_data[i] = functor(input_data1[i], input_data2[i], input_data3[i]);
+                        }
 
-                auto offset{input_partition_server1.offset()};
-                lue_assert(input_partition_server2.offset() == offset);
-                lue_assert(input_partition_server3.offset() == offset);
+                        return OutputPartition{hpx::find_here(), offset, std::move(output_data)};
+                    }
 
-                InputData1 const input_partition_data1{input_partition_server1.data()};
-                InputData2 const input_partition_data2{input_partition_server2.data()};
-                InputData3 const input_partition_data3{input_partition_server3.data()};
-
-                lue_assert(
-                    input_partition_data1.nr_elements() ==
-                    input_partition_data2.nr_elements());
-                lue_assert(
-                    input_partition_data1.nr_elements() ==
-                    input_partition_data3.nr_elements());
-
-                OutputData output_partition_data{input_partition_data1.shape()};
-
-                Count const nr_elements{lue::nr_elements(input_partition_data1)};
-
-                for(Index i = 0; i < nr_elements; ++i) {
-                    output_partition_data[i] = functor(
-                        input_partition_data1[i],
-                        input_partition_data2[i],
-                        input_partition_data3[i]);
-                }
-
-                return OutputPartition{
-                    hpx::find_here(), offset, std::move(output_partition_data)};
-            },
-
-            input_partition1,
-            input_partition2,
-            input_partition3);
+                ),
+            input_partition1.offset(),
+            input_partition1.data(),
+            input_partition2.data(),
+            input_partition3.data());
     }
 
     struct Action:
@@ -150,64 +124,44 @@ public:
     static OutputPartition ternary_local_operation_partition(
         InputPartition1 const& input_partition1,
         InputPartition2 const& input_partition2,
-        hpx::shared_future<InputElement3> const& input_scalar,
+        InputElement3 const input_scalar,
         Functor functor)
     {
-        lue_assert(input_partition1.locality_id().get() == hpx::find_here());
-        lue_assert(input_partition2.locality_id().get() == hpx::find_here());
-
+        using Offset = OffsetT<InputPartition1>;
         using InputData1 = DataT<InputPartition1>;
         using InputData2 = DataT<InputPartition2>;
 
         using OutputData = DataT<OutputPartition>;
 
+        lue_assert(input_partition1.is_ready());
+        lue_assert(input_partition2.is_ready());
+
         return hpx::dataflow(
             hpx::launch::async,
+            hpx::util::unwrapping(
 
-            [functor](
-                InputPartition1 const& input_partition1,
-                InputPartition2 const& input_partition2,
-                hpx::shared_future<InputElement3> const& input_scalar_f)
-            {
-                auto const input_partition_server_ptr1{
-                    hpx::get_ptr(input_partition1).get()};
-                auto const& input_partition_server1{
-                    *input_partition_server_ptr1};
+                    [functor, input_scalar](
+                        Offset const& offset,
+                        InputData1 const& input_data1,
+                        InputData2 const& input_data2)
+                    {
+                        lue_assert(input_data2.nr_elements() == input_data1.nr_elements());
 
-                auto const input_partition_server_ptr2{
-                    hpx::get_ptr(input_partition2).get()};
-                auto const& input_partition_server2{
-                    *input_partition_server_ptr2};
+                        OutputData output_data{input_data1.shape()};
+                        Count const nr_elements{lue::nr_elements(input_data1)};
 
-                auto offset{input_partition_server1.offset()};
-                lue_assert(input_partition_server2.offset() == offset);
+                        for(Index i = 0; i < nr_elements; ++i)
+                        {
+                            output_data[i] = functor(input_data1[i], input_data2[i], input_scalar);
+                        }
 
-                InputData1 const input_partition_data1{input_partition_server1.data()};
-                InputData2 const input_partition_data2{input_partition_server2.data()};
-                InputElement3 const input_scalar{input_scalar_f.get()};
+                        return OutputPartition{hpx::find_here(), offset, std::move(output_data)};
+                    }
 
-                lue_assert(
-                    input_partition_data1.nr_elements() ==
-                    input_partition_data2.nr_elements());
-
-                OutputData output_partition_data{input_partition_data1.shape()};
-
-                Count const nr_elements{lue::nr_elements(input_partition_data1)};
-
-                for(Index i = 0; i < nr_elements; ++i) {
-                    output_partition_data[i] = functor(
-                        input_partition_data1[i],
-                        input_partition_data2[i],
-                        input_scalar);
-                }
-
-                return OutputPartition{
-                    hpx::find_here(), offset, std::move(output_partition_data)};
-            },
-
-            input_partition1,
-            input_partition2,
-            input_scalar);
+                ),
+            input_partition1.offset(),
+            input_partition1.data(),
+            input_partition2.data());
     }
 
     struct Action:
@@ -244,65 +198,45 @@ public:
 
     static OutputPartition ternary_local_operation_partition(
         InputPartition1 const& input_partition1,
-        hpx::shared_future<InputElement2> const& input_scalar,
+        InputElement2 const input_scalar,
         InputPartition2 const& input_partition2,
         Functor functor)
     {
-        lue_assert(input_partition1.locality_id().get() == hpx::find_here());
-        lue_assert(input_partition2.locality_id().get() == hpx::find_here());
-
+        using Offset = OffsetT<InputPartition1>;
         using InputData1 = DataT<InputPartition1>;
         using InputData2 = DataT<InputPartition2>;
 
         using OutputData = DataT<OutputPartition>;
 
+        lue_assert(input_partition1.is_ready());
+        lue_assert(input_partition2.is_ready());
+
         return hpx::dataflow(
             hpx::launch::async,
+            hpx::util::unwrapping(
 
-            [functor](
-                InputPartition1 const& input_partition1,
-                hpx::shared_future<InputElement2> const& input_scalar_f,
-                InputPartition2 const& input_partition2)
-            {
-                auto const input_partition_server_ptr1{
-                    hpx::get_ptr(input_partition1).get()};
-                auto const& input_partition_server1{
-                    *input_partition_server_ptr1};
+                    [functor, input_scalar](
+                        Offset const& offset,
+                        InputData1 const& input_data1,
+                        InputData2 const& input_data2)
+                    {
+                        lue_assert(input_data2.nr_elements() == input_data1.nr_elements());
 
-                auto const input_partition_server_ptr2{
-                    hpx::get_ptr(input_partition2).get()};
-                auto const& input_partition_server2{
-                    *input_partition_server_ptr2};
+                        OutputData output_data{input_data1.shape()};
+                        Count const nr_elements{lue::nr_elements(input_data1)};
 
-                auto offset{input_partition_server1.offset()};
-                lue_assert(input_partition_server2.offset() == offset);
+                        for(Index i = 0; i < nr_elements; ++i)
+                        {
+                            output_data[i] = functor(input_data1[i], input_scalar, input_data2[i]);
+                        }
 
-                InputData1 const input_partition_data1{input_partition_server1.data()};
-                InputElement2 const input_scalar{input_scalar_f.get()};
-                InputData2 const input_partition_data2{input_partition_server2.data()};
+                        return OutputPartition{hpx::find_here(), offset, std::move(output_data)};
+                    }
 
-                lue_assert(
-                    input_partition_data1.nr_elements() ==
-                    input_partition_data2.nr_elements());
-
-                OutputData output_partition_data{input_partition_data1.shape()};
-
-                Count const nr_elements{lue::nr_elements(input_partition_data1)};
-
-                for(Index i = 0; i < nr_elements; ++i) {
-                    output_partition_data[i] = functor(
-                        input_partition_data1[i],
-                        input_scalar,
-                        input_partition_data2[i]);
-                }
-
-                return OutputPartition{
-                    hpx::find_here(), offset, std::move(output_partition_data)};
-            },
-
-            input_partition1,
-            input_scalar,
-            input_partition2);
+                ),
+            input_partition1.offset(),
+            input_partition1.data(),
+            input_partition2.data());
     }
 
     struct Action:
@@ -338,53 +272,39 @@ public:
 
     static OutputPartition ternary_local_operation_partition(
         InputPartition const& input_partition,
-        hpx::shared_future<InputElement2> const& input_scalar1,
-        hpx::shared_future<InputElement3> const& input_scalar2,
+        InputElement2 const input_scalar1,
+        InputElement3 const input_scalar2,
         Functor functor)
     {
-        lue_assert(input_partition.locality_id().get() == hpx::find_here());
-
+        using Offset = OffsetT<InputPartition>;
         using InputData = DataT<InputPartition>;
 
         using OutputData = DataT<OutputPartition>;
 
+        lue_assert(input_partition.is_ready());
+
         return hpx::dataflow(
             hpx::launch::async,
+            hpx::util::unwrapping(
 
-            [functor](
-                InputPartition const& input_partition,
-                hpx::shared_future<InputElement2> const& input_scalar_f1,
-                hpx::shared_future<InputElement3> const& input_scalar_f2)
-            {
-                auto const input_partition_server_ptr{
-                    hpx::get_ptr(input_partition).get()};
-                auto const& input_partition_server{
-                    *input_partition_server_ptr};
+                    [functor, input_scalar1, input_scalar2](
+                        Offset const& offset,
+                        InputData const& input_data)
+                    {
+                        OutputData output_data{input_data.shape()};
+                        Count const nr_elements{lue::nr_elements(input_data)};
 
-                auto offset{input_partition_server.offset()};
+                        for(Index i = 0; i < nr_elements; ++i)
+                        {
+                            output_data[i] = functor(input_data[i], input_scalar1, input_scalar2);
+                        }
 
-                InputData const input_partition_data{input_partition_server.data()};
-                InputElement2 const input_scalar1{input_scalar_f1.get()};
-                InputElement3 const input_scalar2{input_scalar_f2.get()};
+                        return OutputPartition{hpx::find_here(), offset, std::move(output_data)};
+                    }
 
-                OutputData output_partition_data{input_partition_data.shape()};
-
-                Count const nr_elements{lue::nr_elements(input_partition_data)};
-
-                for(Index i = 0; i < nr_elements; ++i) {
-                    output_partition_data[i] = functor(
-                        input_partition_data[i],
-                        input_scalar1,
-                        input_scalar2);
-                }
-
-                return OutputPartition{
-                    hpx::find_here(), offset, std::move(output_partition_data)};
-            },
-
-            input_partition,
-            input_scalar1,
-            input_scalar2);
+                ),
+            input_partition.offset(),
+            input_partition.data());
     }
 
     struct Action:
@@ -426,12 +346,15 @@ PartitionedArray<OutputElementT<Functor>, rank> ternary_local_operation(
     Functor const& functor)
 {
     using InputArray1 = PartitionedArray<InputElement1, rank>;
+    using InputPartitions1 = PartitionsT<InputArray1>;
     using InputPartition1 = PartitionT<InputArray1>;
 
     using InputArray2 = PartitionedArray<InputElement2, rank>;
+    using InputPartitions2 = PartitionsT<InputArray2>;
     using InputPartition2 = PartitionT<InputArray2>;
 
     using InputArray3 = PartitionedArray<InputElement3, rank>;
+    using InputPartitions3 = PartitionsT<InputArray3>;
     using InputPartition3 = PartitionT<InputArray3>;
 
     using OutputArray = PartitionedArray<OutputElementT<Functor>, rank>;
@@ -440,40 +363,38 @@ PartitionedArray<OutputElementT<Functor>, rank> ternary_local_operation(
 
     lue_assert(nr_partitions(input_array1) == nr_partitions(input_array2));
     lue_assert(nr_partitions(input_array1) == nr_partitions(input_array3));
-    lue_assert(
-        shape_in_partitions(input_array1) == shape_in_partitions(input_array2));
-    lue_assert(
-        shape_in_partitions(input_array1) == shape_in_partitions(input_array3));
+    lue_assert(shape_in_partitions(input_array1) == shape_in_partitions(input_array2));
+    lue_assert(shape_in_partitions(input_array1) == shape_in_partitions(input_array3));
 
     detail::TernaryLocalOperationPartitionAction<
         InputPartition1, InputPartition2, InputPartition3, OutputPartition,
         Functor> action;
+
+    Localities<rank> const& localities{input_array1.localities()};
+    InputPartitions1 const& input_partitions1{input_array1.partitions()};
+    InputPartitions2 const& input_partitions2{input_array2.partitions()};
+    InputPartitions3 const& input_partitions3{input_array3.partitions()};
     OutputPartitions output_partitions{shape_in_partitions(input_array1)};
 
     for(Index p = 0; p < nr_partitions(input_array1); ++p)
     {
-        InputPartition1 const& input_partition1{input_array1.partitions()[p]};
-        InputPartition2 const& input_partition2{input_array2.partitions()[p]};
-        InputPartition3 const& input_partition3{input_array3.partitions()[p]};
-
         output_partitions[p] = hpx::dataflow(
             hpx::launch::async,
-            hpx::util::unwrapping(
 
-                    [action, functor, input_partition1, input_partition2, input_partition3](
-                        hpx::id_type const locality_id)
-                    {
-                        return action(
-                            locality_id,
-                            input_partition1, input_partition2, input_partition3,
-                            functor);
-                    }
+            [locality_id=localities[p], action, functor](
+                InputPartition1 const& input_partition1,
+                InputPartition2 const& input_partition2,
+                InputPartition2 const& input_partition3)
+            {
+                return action(locality_id, input_partition1, input_partition2, input_partition3, functor);
+            },
 
-                ),
-            input_partition1.locality_id());
+            input_partitions1[p],
+            input_partitions2[p],
+            input_partitions3[p]);
     }
 
-    return OutputArray{shape(input_array1), std::move(output_partitions)};
+    return OutputArray{shape(input_array1), localities, std::move(output_partitions)};
 }
 
 
@@ -491,9 +412,11 @@ PartitionedArray<OutputElementT<Functor>, rank> ternary_local_operation(
     Functor const& functor)
 {
     using InputArray1 = PartitionedArray<InputElement1, rank>;
+    using InputPartitions1 = PartitionsT<InputArray1>;
     using InputPartition1 = PartitionT<InputArray1>;
 
     using InputArray2 = PartitionedArray<InputElement2, rank>;
+    using InputPartitions2 = PartitionsT<InputArray2>;
     using InputPartition2 = PartitionT<InputArray2>;
 
     using OutputArray = PartitionedArray<OutputElementT<Functor>, rank>;
@@ -501,37 +424,36 @@ PartitionedArray<OutputElementT<Functor>, rank> ternary_local_operation(
     using OutputPartitions = PartitionsT<OutputArray>;
 
     lue_assert(nr_partitions(input_array1) == nr_partitions(input_array2));
-    lue_assert(
-        shape_in_partitions(input_array1) == shape_in_partitions(input_array2));
+    lue_assert(shape_in_partitions(input_array1) == shape_in_partitions(input_array2));
 
     detail::TernaryLocalOperationPartitionAction<
         InputPartition1, InputPartition2, InputElement3, OutputPartition,
         Functor> action;
+
+    Localities<rank> const& localities{input_array1.localities()};
+    InputPartitions1 const& input_partitions1{input_array1.partitions()};
+    InputPartitions2 const& input_partitions2{input_array2.partitions()};
     OutputPartitions output_partitions{shape_in_partitions(input_array1)};
 
     for(Index p = 0; p < nr_partitions(input_array1); ++p)
     {
-        InputPartition1 const& input_partition1{input_array1.partitions()[p]};
-        InputPartition2 const& input_partition2{input_array2.partitions()[p]};
-
         output_partitions[p] = hpx::dataflow(
             hpx::launch::async,
-            hpx::util::unwrapping(
 
-                    [action, functor, input_partition1, input_partition2, input_scalar](
-                        hpx::id_type const locality_id)
-                    {
-                        return action(
-                            locality_id,
-                            input_partition1, input_partition2, input_scalar,
-                            functor);
-                    }
+            [locality_id=localities[p], action, functor](
+                InputPartition1 const& input_partition1,
+                InputPartition2 const& input_partition2,
+                hpx::shared_future<InputElement3> const& input_scalar)
+            {
+                return action(locality_id, input_partition1, input_partition2, input_scalar.get(), functor);
+            },
 
-                ),
-            input_partition1.locality_id());
+            input_partitions1[p],
+            input_partitions2[p],
+            input_scalar);
     }
 
-    return OutputArray{shape(input_array1), std::move(output_partitions)};
+    return OutputArray{shape(input_array1), localities, std::move(output_partitions)};
 }
 
 
@@ -549,9 +471,11 @@ PartitionedArray<OutputElementT<Functor>, rank> ternary_local_operation(
     Functor const& functor)
 {
     using InputArray1 = PartitionedArray<InputElement1, rank>;
+    using InputPartitions1 = PartitionsT<InputArray1>;
     using InputPartition1 = PartitionT<InputArray1>;
 
     using InputArray2 = PartitionedArray<InputElement3, rank>;
+    using InputPartitions2 = PartitionsT<InputArray2>;
     using InputPartition2 = PartitionT<InputArray2>;
 
     using OutputArray = PartitionedArray<OutputElementT<Functor>, rank>;
@@ -559,37 +483,36 @@ PartitionedArray<OutputElementT<Functor>, rank> ternary_local_operation(
     using OutputPartitions = PartitionsT<OutputArray>;
 
     lue_assert(nr_partitions(input_array1) == nr_partitions(input_array2));
-    lue_assert(
-        shape_in_partitions(input_array1) == shape_in_partitions(input_array2));
+    lue_assert(shape_in_partitions(input_array1) == shape_in_partitions(input_array2));
 
     detail::TernaryLocalOperationPartitionAction<
         InputPartition1, InputElement2, InputPartition2, OutputPartition,
         Functor> action;
+
+    Localities<rank> const& localities{input_array1.localities()};
+    InputPartitions1 const& input_partitions1{input_array1.partitions()};
+    InputPartitions2 const& input_partitions2{input_array2.partitions()};
     OutputPartitions output_partitions{shape_in_partitions(input_array1)};
 
     for(Index p = 0; p < nr_partitions(input_array1); ++p)
     {
-        InputPartition1 const& input_partition1{input_array1.partitions()[p]};
-        InputPartition2 const& input_partition2{input_array2.partitions()[p]};
-
         output_partitions[p] = hpx::dataflow(
             hpx::launch::async,
-            hpx::util::unwrapping(
 
-                    [action, functor, input_partition1, input_scalar, input_partition2](
-                        hpx::id_type const locality_id)
-                    {
-                        return action(
-                            locality_id,
-                            input_partition1, input_scalar, input_partition2,
-                            functor);
-                    }
+            [locality_id=localities[p], action, functor](
+                InputPartition1 const& input_partition1,
+                hpx::shared_future<InputElement2> const& input_scalar,
+                InputPartition2 const& input_partition2)
+            {
+                return action(locality_id, input_partition1, input_scalar.get(), input_partition2, functor);
+            },
 
-                ),
-            input_partition1.locality_id());
+            input_partitions1[p],
+            input_scalar,
+            input_partitions2[p]);
     }
 
-    return OutputArray{shape(input_array1), std::move(output_partitions)};
+    return OutputArray{shape(input_array1), localities, std::move(output_partitions)};
 }
 
 
@@ -607,6 +530,7 @@ PartitionedArray<OutputElementT<Functor>, rank> ternary_local_operation(
     Functor const& functor)
 {
     using InputArray = PartitionedArray<InputElement1, rank>;
+    using InputPartitions = PartitionsT<InputArray>;
     using InputPartition = PartitionT<InputArray>;
 
     using OutputArray = PartitionedArray<OutputElementT<Functor>, rank>;
@@ -616,30 +540,30 @@ PartitionedArray<OutputElementT<Functor>, rank> ternary_local_operation(
     detail::TernaryLocalOperationPartitionAction<
         InputPartition, InputElement2, InputElement3, OutputPartition,
         Functor> action;
+
+    Localities<rank> const& localities{input_array.localities()};
+    InputPartitions const& input_partitions{input_array.partitions()};
     OutputPartitions output_partitions{shape_in_partitions(input_array)};
 
     for(Index p = 0; p < nr_partitions(input_array); ++p)
     {
-        InputPartition const& input_partition{input_array.partitions()[p]};
-
         output_partitions[p] = hpx::dataflow(
             hpx::launch::async,
-            hpx::util::unwrapping(
 
-                    [action, functor, input_partition, input_scalar1, input_scalar2](
-                        hpx::id_type const locality_id)
-                    {
-                        return action(
-                            locality_id,
-                            input_partition, input_scalar1, input_scalar2,
-                            functor);
-                    }
+            [locality_id=localities[p], action, functor](
+                InputPartition const& input_partition,
+                hpx::shared_future<InputElement2> const& input_scalar1,
+                hpx::shared_future<InputElement3> const& input_scalar2)
+            {
+                return action(locality_id, input_partition, input_scalar1.get(), input_scalar2.get(), functor);
+            },
 
-                ),
-            input_partition.locality_id());
+            input_partitions[p],
+            input_scalar1,
+            input_scalar2);
     }
 
-    return OutputArray{shape(input_array), std::move(output_partitions)};
+    return OutputArray{shape(input_array), localities, std::move(output_partitions)};
 }
 
 }  // namespace lue

@@ -34,8 +34,7 @@ PartitionedArray<bool, rank> less_than_equal_to(
     PartitionedArray<InputElement, rank> const& array1,
     PartitionedArray<InputElement, rank> const& array2)
 {
-    return binary_local_operation(
-        array1, array2, detail::LessThanEqualTo<InputElement>{});
+    return binary_local_operation(array1, array2, detail::LessThanEqualTo<InputElement>{});
 }
 
 
@@ -46,8 +45,7 @@ PartitionedArray<bool, rank> less_than_equal_to(
     PartitionedArray<InputElement, rank> const& array,
     hpx::shared_future<InputElement> const& scalar)
 {
-    return binary_local_operation(
-        array, scalar, detail::LessThanEqualTo<InputElement>{});
+    return binary_local_operation(array, scalar, detail::LessThanEqualTo<InputElement>{});
 }
 
 
@@ -58,8 +56,7 @@ PartitionedArray<bool, rank> less_than_equal_to(
     hpx::shared_future<InputElement> const& scalar,
     PartitionedArray<InputElement, rank> const& array)
 {
-    return binary_local_operation(
-        scalar, array, detail::LessThanEqualTo<InputElement>{});
+    return binary_local_operation(scalar, array, detail::LessThanEqualTo<InputElement>{});
 }
 
 
@@ -70,8 +67,7 @@ PartitionedArray<bool, rank> less_than_equal_to(
     PartitionedArray<InputElement, rank> const& array,
     InputElement const& scalar)
 {
-    return less_than_equal_to(
-        array, hpx::make_ready_future<InputElement>(scalar).share());
+    return less_than_equal_to(array, hpx::make_ready_future<InputElement>(scalar).share());
 }
 
 
@@ -82,8 +78,7 @@ PartitionedArray<bool, rank> less_than_equal_to(
     InputElement const& scalar,
     PartitionedArray<InputElement, rank> const& array)
 {
-    return less_than_equal_to(
-        hpx::make_ready_future<InputElement>(scalar).share(), array);
+    return less_than_equal_to(hpx::make_ready_future<InputElement>(scalar).share(), array);
 }
 
 
