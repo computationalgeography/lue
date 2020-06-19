@@ -28,6 +28,10 @@ function(preprocess_case_study)
     set(dot_properties_pathname
         ${CMAKE_SOURCE_DIR}/document/lue_translate/dot_properties.json)
 
+    if(APPLE)
+        set(environment "DYLD_LIBRARY_PATH=$<TARGET_FILE_DIR:lue::py>")
+    endif()
+
     add_custom_command(
         OUTPUT ${svg_name}
         DEPENDS
@@ -36,7 +40,7 @@ function(preprocess_case_study)
             lue_validate
             lue_translate
             ${dot_properties_pathname}
-        COMMAND ${CMAKE_COMMAND} -E env PYTHONPATH=$<TARGET_FILE_DIR:lue::py>
+        COMMAND ${CMAKE_COMMAND} -E env "PYTHONPATH=$<TARGET_FILE_DIR:lue::py>" ${environment}
             ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/${script_name}
         COMMAND ${CMAKE_BINARY_DIR}/bin/lue_validate --issues ${dataset_name}
         COMMAND ${CMAKE_BINARY_DIR}/bin/lue_translate export
