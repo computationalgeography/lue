@@ -58,7 +58,8 @@ jobs:
                   -DLUE_DATA_MODEL_WITH_UTILITIES=TRUE \
                   -DLUE_BUILD_FRAMEWORK=TRUE \
                   -DLUE_BUILD_HPX=TRUE \
-                  -DHPX_WITH_MALLOC=TRUE
+                  -DHPX_WITH_EXAMPLES=FALSE \
+                  -DHPX_WITH_TESTS=FALSE
 
         - name: build lue
           shell: bash
@@ -69,7 +70,7 @@ jobs:
           shell: bash
           run: |
               cd build
-              ctest --output-on-failure
+              ctest --output-on-failure -E lue_framework
 
         - name: generate lue documentation
           shell: bash
