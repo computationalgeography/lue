@@ -64,4 +64,4 @@ jobs:
           shell: bash
           run: |
               cd build
-              ctest --output-on-failure
+              ctest --output-on-failure -E lue_py_data_model_python_test
