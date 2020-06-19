@@ -7,6 +7,7 @@
 // #include "lue/framework/io.hpp"
 // #include "lue/data_model/hl/raster_view.hpp"
 #include <hpx/include/iostreams.hpp>
+#include <hpx/lcos/when_all.hpp>
 #include <algorithm>
 
 
@@ -180,20 +181,21 @@ void BenchmarkModel<Element, rank>::simulate(
 
     hpx::cout << '.' << hpx::flush;
 
-    // every nd time steps, attach additional continuation which will
-    // trigger the semaphore once computation has reached this point
-    if((time_step % _max_tree_depth) == 0)
+    // Every _max_tree_depth time steps, attach additional continuation
+    // which will trigger the semaphore once computation has reached
+    // this point
+    if(((time_step + 1) % _max_tree_depth) == 0)
     {
         _state.partitions()[0].then(
 
             [this, time_step](auto const&)
             {
-                // inform semaphore about new lower limit
+                // Inform semaphore about new lower limit
                 _semaphore.signal(time_step);
             });
     }
 
-    // suspend if the tree has become too deep, the continuation above
+    // Suspend if the tree has become too deep, the continuation above
     // will resume this thread once the computation has caught up
     _semaphore.wait(time_step);
 }
