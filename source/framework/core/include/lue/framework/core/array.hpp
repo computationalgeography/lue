@@ -1,13 +1,13 @@
 #pragma once
 #include "lue/framework/core/debug.hpp"
 #include "lue/framework/core/define.hpp"
-#include "lue/framework/core/type_traits.hpp"
+#include "lue/framework/core/erase.hpp"
 #include "lue/framework/core/shape.hpp"
 #include "lue/framework/core/span.hpp"
+#include "lue/framework/core/type_traits.hpp"
 #include "lue/assert.hpp"
 #include "lue/configure.hpp"
 #include <boost/container/vector.hpp>
-#include <cassert>
 
 
 namespace lue {
@@ -47,15 +47,15 @@ public:
                                         InputIterator begin,
                                         InputIterator end);
 
-                   Array               (Array const&)=default;
+                   Array               (Array const& other);
 
-                   Array               (Array&&)=default;
+                   Array               (Array&& other);
 
                    ~Array              ()=default;
 
-    Array&         operator=           (Array const&)=default;
+    Array&         operator=           (Array const& other);
 
-    Array&         operator=           (Array&&)=default;
+    Array&         operator=           (Array&& other);
 
     bool empty() const
     {
@@ -74,14 +74,18 @@ public:
 
     void           reshape             (Shape const& shape);
 
+    void           erase               (Rank const dimension_idx,
+                                        Index const hyperslab_begin_idx,
+                                        Index const hyperslab_end_idx);
+
     Element const* data                () const;
 
     Element*       data                ();
 
     template<
-        typename... Indxs>
+        typename... Idxs>
     Element const& operator()(
-        Indxs... idxs) const
+        Idxs... idxs) const
     {
         if constexpr(BuildOptions::validate_idxs)
         {
@@ -92,9 +96,9 @@ public:
     }
 
     template<
-        typename... Indxs>
+        typename... Idxs>
     Element& operator()(
-        Indxs... idxs)
+        Idxs... idxs)
     {
         if constexpr(BuildOptions::validate_idxs)
         {
@@ -111,6 +115,8 @@ public:
 protected:
 
 private:
+
+    void           assert_invariants   () const;
 
     // Shape of array
     Shape          _shape;
@@ -135,6 +141,7 @@ Array<Element, rank>::Array(
     _span{_elements.data(), _shape}
 
 {
+    assert_invariants();
 }
 
 
@@ -150,6 +157,7 @@ Array<Element, rank>::Array(
     _span{_elements.data(), _shape}
 
 {
+    assert_invariants();
 }
 
 
@@ -170,8 +178,7 @@ Array<Element, rank>::Array(
 {
     std::move(begin, end, _elements.begin());
 
-    lue_assert(
-        static_cast<Size>(_elements.size()) == lue::nr_elements(_shape));
+    assert_invariants();
 }
 
 
@@ -193,8 +200,89 @@ Array<Element, rank>::Array(
 
     std::move(values.begin(), values.end(), _elements.begin());
 
-    lue_assert(
-        static_cast<Size>(_elements.size()) == lue::nr_elements(_shape));
+    assert_invariants();
+}
+
+
+template<
+    typename Element,
+    Rank rank>
+Array<Element, rank>::Array(
+    Array const& other):
+
+    _shape{other._shape},
+    _elements{other._elements},
+    _span{_elements.data(), _shape}
+
+{
+    assert_invariants();
+}
+
+
+template<
+    typename Element,
+    Rank rank>
+Array<Element, rank>::Array(
+    Array&& other):
+
+    _shape{std::move(other._shape)},
+    _elements{std::move(other._elements)},
+    _span{_elements.data(), _shape}
+
+{
+    other._shape.fill(0);
+    other._elements.clear();
+    other._span = Span{other._elements.data(), other._shape};
+
+    other.assert_invariants();
+    lue_assert(other.empty());
+
+    assert_invariants();
+}
+
+
+template<
+    typename Element,
+    Rank rank>
+Array<Element, rank>& Array<Element, rank>::operator=(
+    Array const& other)
+{
+    if(this != &other)
+    {
+        _shape = other._shape;
+        _elements = other._elements;
+        _span = Span{_elements.data(), _shape};
+    }
+
+    assert_invariants();
+
+    return *this;
+}
+
+
+template<
+    typename Element,
+    Rank rank>
+Array<Element, rank>& Array<Element, rank>::operator=(
+    Array&& other)
+{
+    if(this != &other)
+    {
+        _shape = std::move(other._shape);
+        other._shape.fill(0);
+
+        _elements = std::move(other._elements);
+        other._elements.clear();
+
+        _span = Span{_elements.data(), _shape};
+        other._span = Span{other._elements.data(), other._shape};
+    }
+
+    other.assert_invariants();
+    lue_assert(other.empty());
+    assert_invariants();
+
+    return *this;
 }
 
 
@@ -272,6 +360,23 @@ void Array<Element, rank>::reshape(
         _shape = shape;
         _span = Span{_elements.data(), _shape};
     }
+
+    assert_invariants();
+}
+
+
+template<
+    typename Element,
+    Rank rank>
+void Array<Element, rank>::erase(
+    Rank const dimension_idx,
+    Index const hyperslab_begin_idx,
+    Index const hyperslab_end_idx)
+{
+    _shape = lue::erase(_elements, _shape, dimension_idx, hyperslab_begin_idx, hyperslab_end_idx);
+    _span = Span{_elements.data(), _shape};
+
+    assert_invariants();
 }
 
 // } // namespace detail
@@ -312,6 +417,19 @@ Element Array<Element, rank>::operator[](
     std::size_t const idx)
 {
     return this->data()[idx];
+}
+
+
+template<
+    typename Element,
+    Rank rank>
+void Array<Element, rank>::assert_invariants() const
+{
+    // lue_assert(
+    //     static_cast<Size>(_elements.size()) == lue::nr_elements(_shape));
+    lue_assert(lue::nr_elements(_shape) == static_cast<Size>(_elements.size()));
+    lue_assert(_span.size() == static_cast<Size>(_elements.size()));
+    lue_assert(_span.data() == _elements.data());
 }
 
 

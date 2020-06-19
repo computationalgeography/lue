@@ -28,14 +28,13 @@ template<
 
     typename ArrayPartitionFillAction<Element, rank>::Type action;
 
-    for(Index p = 0; p < nr_partitions(array); ++p) {
-
+    for(Index p = 0; p < nr_partitions(array); ++p)
+    {
         fill_partitions[p] = hpx::dataflow(
             hpx::launch::async,
             hpx::util::unwrapping(action),
             array.partitions()[p],
             fill_value);
-
     }
 
     return hpx::when_all(std::move(fill_partitions));

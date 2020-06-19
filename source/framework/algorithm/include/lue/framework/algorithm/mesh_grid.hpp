@@ -15,54 +15,64 @@ ArrayPartition<OutputElement, rank> mesh_grid_partition(
     OutputElement const step,
     Index const dimension)
 {
-    // FIXME make asynchronous
-    lue_assert(input_partition.is_ready());  // FIXME remove
-    lue_assert(input_partition.locality_id().get() == hpx::find_here());
+    using InputPartition = ArrayPartition<InputElement, rank>;
+    using Offset = OffsetT<InputPartition>;
+    using Shape = ShapeT<InputPartition>;
 
     using OutputPartition = ArrayPartition<OutputElement, rank>;
     using OutputData = DataT<OutputPartition>;
 
-    auto const input_partition_server_ptr{hpx::get_ptr(input_partition).get()};
-    auto const& input_partition_server{*input_partition_server_ptr};
+    lue_assert(input_partition.is_ready());
 
-    auto const partition_offset = input_partition_server.offset();
-    auto const partition_shape = input_partition_server.shape();
+    return hpx::dataflow(
+        hpx::launch::async,
+        hpx::util::unwrapping(
 
-    OutputData output_partition_data{partition_shape};
+                [first_value, step, dimension](
+                    Offset const& offset,
+                    Shape const& shape)
+                {
+                    OutputData output_data{shape};
 
-    if constexpr(rank == 1) {
-        lue_assert(dimension == 0);
+                    if constexpr(rank == 1)
+                    {
+                        lue_assert(dimension == 0);
 
-        for(Index i = 0; i < partition_shape[0]; ++i) {
-            output_partition_data(i) =
-                first_value + (partition_offset[dimension] + i) * step;
-        }
-    }
-    else if constexpr(rank == 2) {
-        lue_assert(dimension == 0 || dimension == 1);
+                        for(Index i = 0; i < shape[0]; ++i)
+                        {
+                            output_data(i) = first_value + (offset[dimension] + i) * step;
+                        }
+                    }
+                    else if constexpr(rank == 2)
+                    {
+                        lue_assert(dimension == 0 || dimension == 1);
 
-        if(dimension == 0) {
-            for(Index r = 0; r < partition_shape[0]; ++r) {
-                for(Index c = 0; c < partition_shape[1]; ++c) {
-                    output_partition_data(r, c) =
-                        first_value +
-                        (partition_offset[dimension] + r) * step;
+                        if(dimension == 0)
+                        {
+                            for(Index r = 0; r < shape[0]; ++r) {
+                                for(Index c = 0; c < shape[1]; ++c)
+                                {
+                                    output_data(r, c) = first_value + (offset[dimension] + r) * step;
+                                }
+                            }
+                        }
+                        else if(dimension == 1)
+                        {
+                            for(Index r = 0; r < shape[0]; ++r) {
+                                for(Index c = 0; c < shape[1]; ++c)
+                                {
+                                    output_data(r, c) = first_value + (offset[dimension] + c) * step;
+                                }
+                            }
+                        }
+                    }
+
+                    return OutputPartition{hpx::find_here(), offset, std::move(output_data)};
                 }
-            }
-        }
-        else if(dimension == 1) {
-            for(Index r = 0; r < partition_shape[0]; ++r) {
-                for(Index c = 0; c < partition_shape[1]; ++c) {
-                    output_partition_data(r, c) =
-                        first_value +
-                        (partition_offset[dimension] + c) * step;
-                }
-            }
-        }
-    }
 
-    return OutputPartition{
-        hpx::find_here(), partition_offset, std::move(output_partition_data)};
+            ),
+        input_partition.offset(),
+        input_partition.shape());
 }
 
 
@@ -106,6 +116,7 @@ std::array<PartitionedArray<OutputElement, rank>, rank> mesh_grid(
     static_assert(rank == 1 || rank == 2);
 
     using InputArray = PartitionedArray<InputElement, rank>;
+    using InputPartitions = PartitionsT<InputArray>;
     using InputPartition = PartitionT<InputArray>;
 
     using OutputArray = PartitionedArray<OutputElement, rank>;
@@ -113,46 +124,42 @@ std::array<PartitionedArray<OutputElement, rank>, rank> mesh_grid(
 
     detail::MeshGridPartitionAction<InputElement, OutputElement, rank> action;
 
+    Localities<rank> const& localities{input_array.localities()};
+    InputPartitions const& input_partitions{input_array.partitions()};
+
     // For each rank a collection of partitions
     std::array<OutputPartitions, rank> output_partitions;
 
-    for(Rank r = 0; r < rank; ++r) {
-        output_partitions[r] = OutputPartitions{
-            shape_in_partitions(input_array)};
+    for(Rank r = 0; r < rank; ++r)
+    {
+        output_partitions[r] = OutputPartitions{shape_in_partitions(input_array)};
     }
 
     for(Index p = 0; p < nr_partitions(input_array); ++p) {
-        for(Rank r = 0; r < rank; ++r) {
-
-            // FIXME Just sent the action to the remote locality and
-            // `wait` there for the partition to become ready
-
+        for(Rank r = 0; r < rank; ++r)
+        {
             output_partitions[r][p] = hpx::dataflow(
                 hpx::launch::async,
 
-                    [action, r](
-                        InputPartition const& input_partition,
-                        hpx::shared_future<OutputElement> const& first_value,
-                        hpx::shared_future<OutputElement> const& step,
-                        hpx::future<hpx::id_type>&& locality_id)
-                    {
-                        return action(
-                            locality_id.get(),
-                            input_partition, first_value.get(), step.get(), r);
-                    },
+                [locality_id=localities[p], action, r](
+                    InputPartition const& input_partition,
+                    hpx::shared_future<OutputElement> const& first_value,
+                    hpx::shared_future<OutputElement> const& step)
+                {
+                    return action(locality_id, input_partition, first_value.get(), step.get(), r);
+                },
 
-                input_array.partitions()[p],
+                input_partitions[p],
                 first_value,
-                step,
-                input_array.partitions()[p].locality_id());
+                step);
         }
     }
 
     std::array<OutputArray, rank> result;
 
-    for(Rank r = 0; r < rank; ++r) {
-        result[r] =
-            OutputArray{shape(input_array), std::move(output_partitions[r])};
+    for(Rank r = 0; r < rank; ++r)
+    {
+        result[r] = OutputArray{shape(input_array), localities, std::move(output_partitions[r])};
     }
 
     return result;

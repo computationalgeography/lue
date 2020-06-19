@@ -50,8 +50,7 @@ template<
 PartitionedArray<Element, rank> iterate_per_element(
     PartitionedArray<Element, rank> const& input_array)
 {
-    return unary_local_operation(
-        input_array, detail::IteratePerElement<Element>{});
+    return unary_local_operation(input_array, detail::IteratePerElement<Element>{});
 }
 
 }  // namespace lue

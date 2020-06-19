@@ -33,8 +33,7 @@ PartitionedArray<bool, rank> logical_inclusive_or(
     PartitionedArray<InputElement, rank> const& array1,
     PartitionedArray<InputElement, rank> const& array2)
 {
-    return binary_local_operation(
-        array1, array2, detail::LogicalInclusiveOr<InputElement>{});
+    return binary_local_operation(array1, array2, detail::LogicalInclusiveOr<InputElement>{});
 }
 
 
@@ -45,8 +44,7 @@ PartitionedArray<bool, rank> logical_inclusive_or(
     PartitionedArray<InputElement, rank> const& array,
     hpx::shared_future<InputElement> const& scalar)
 {
-    return binary_local_operation(
-        array, scalar, detail::LogicalInclusiveOr<InputElement>{});
+    return binary_local_operation(array, scalar, detail::LogicalInclusiveOr<InputElement>{});
 }
 
 
@@ -57,8 +55,7 @@ PartitionedArray<bool, rank> logical_inclusive_or(
     hpx::shared_future<InputElement> const& scalar,
     PartitionedArray<InputElement, rank> const& array)
 {
-    return binary_local_operation(
-        scalar, array, detail::LogicalInclusiveOr<InputElement>{});
+    return binary_local_operation(scalar, array, detail::LogicalInclusiveOr<InputElement>{});
 }
 
 
@@ -69,8 +66,7 @@ PartitionedArray<bool, rank> logical_inclusive_or(
     PartitionedArray<InputElement, rank> const& array,
     InputElement const& scalar)
 {
-    return logical_inclusive_or(
-        array, hpx::make_ready_future<InputElement>(scalar).share());
+    return logical_inclusive_or(array, hpx::make_ready_future<InputElement>(scalar).share());
 }
 
 
@@ -81,8 +77,7 @@ PartitionedArray<bool, rank> logical_inclusive_or(
     InputElement const& scalar,
     PartitionedArray<InputElement, rank> const& array)
 {
-    return logical_inclusive_or(
-        hpx::make_ready_future<InputElement>(scalar).share(), array);
+    return logical_inclusive_or(hpx::make_ready_future<InputElement>(scalar).share(), array);
 }
 
 }  // namespace lue

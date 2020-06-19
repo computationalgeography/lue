@@ -58,8 +58,7 @@ template<
 hpx::future<Element> minimum(
     PartitionedArray<Element, rank> const& array)
 {
-    return unary_aggregate_operation(
-        array, detail::Minimum<Element, Element>{});
+    return unary_aggregate_operation(array, detail::Minimum<Element, Element>{});
 }
 
 }  // namespace lue

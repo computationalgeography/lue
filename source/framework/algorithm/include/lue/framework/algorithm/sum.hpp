@@ -59,8 +59,7 @@ template<
 hpx::future<OutputElement> sum(
     PartitionedArray<InputElement, rank> const& array)
 {
-    return unary_aggregate_operation(
-        array, detail::Sum<InputElement, OutputElement>{});
+    return unary_aggregate_operation(array, detail::Sum<InputElement, OutputElement>{});
 }
 
 }  // namespace lue

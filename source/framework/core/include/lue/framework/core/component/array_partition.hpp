@@ -57,15 +57,9 @@ public:
                                         Shape const& shape,
                                         Element value);
 
-    //                ArrayPartition      (hpx::id_type locality_id,
-    //                                     Data const& data);
-
                    ArrayPartition      (hpx::id_type locality_id,
                                         Offset const& offset,
                                         Data&& data);
-
-    //                ArrayPartition      (hpx::id_type component_id,
-    //                                     Data const& data);
 
                    ArrayPartition      (ArrayPartition const&)=default;
 
@@ -76,9 +70,6 @@ public:
     ArrayPartition& operator=          (ArrayPartition const&)=default;
 
     ArrayPartition& operator=          (ArrayPartition&&)=default;
-
-    hpx::future<hpx::id_type>
-                   locality_id         () const;
 
     hpx::future<Data> data             () const;
 
@@ -100,25 +91,6 @@ public:
 
 private:
 
-    friend class hpx::serialization::access;
-
-    void serialize(
-        hpx::serialization::input_archive& archive,
-        unsigned int const /* version */)
-    {
-        archive & dynamic_cast<Base&>(*this) & _locality_id;
-    }
-
-    void serialize(
-        hpx::serialization::output_archive& archive,
-        unsigned int const /* version */) const
-    {
-        archive & dynamic_cast<Base const&>(*this) & _locality_id;
-    }
-
-    //! Global ID representing the locality the component is located in
-    hpx::id_type _locality_id;
-
 };
 
 
@@ -127,11 +99,9 @@ template<
     Rank rank>
 ArrayPartition<Element, rank>::ArrayPartition():
 
-    Base{},
-    _locality_id{}
+    Base{}
 
 {
-    lue_assert(!_locality_id);
 }
 
 
@@ -152,11 +122,9 @@ template<
 ArrayPartition<Element, rank>::ArrayPartition(
     hpx::id_type const& id):
 
-    Base{id},
-    _locality_id{}
+    Base{id}
 
 {
-    lue_assert(!_locality_id);
 }
 
 
@@ -180,11 +148,9 @@ template<
 ArrayPartition<Element, rank>::ArrayPartition(
     hpx::future<hpx::id_type>&& component_id):
 
-    Base{std::move(component_id)},
-    _locality_id{}
+    Base{std::move(component_id)}
 
 {
-    lue_assert(!_locality_id);
 }
 
 
@@ -207,11 +173,9 @@ template<
 ArrayPartition<Element, rank>::ArrayPartition(
     hpx::future<ArrayPartition>&& partition):
 
-    Base{std::move(partition)},
-    _locality_id{}
+    Base{std::move(partition)}
 
 {
-    assert(!_locality_id);
 }
 
 
@@ -228,11 +192,9 @@ ArrayPartition<Element, rank>::ArrayPartition(
     Offset const& offset,
     Shape const& shape):
 
-    Base{hpx::new_<Server>(locality_id, offset, shape)},
-    _locality_id{locality_id}
+    Base{hpx::new_<Server>(locality_id, offset, shape)}
 
 {
-    lue_assert(_locality_id);
 }
 
 
@@ -251,30 +213,10 @@ ArrayPartition<Element, rank>::ArrayPartition(
     Shape const& shape,
     Element const value):
 
-    Base{hpx::new_<Server>(locality_id, offset, shape, value)},
-    _locality_id{locality_id}
+    Base{hpx::new_<Server>(locality_id, offset, shape, value)}
 
 {
-    lue_assert(_locality_id);
 }
-
-
-// /*!
-//     @brief      Construct a server instance on locality @a locality_id
-//     @param      locality_id ID of locality to create instance on
-//     @param      data Initial data
-// */
-// template<
-//     typename Element,
-//     Rank rank>
-// ArrayPartition<Element, rank>::ArrayPartition(
-//     hpx::id_type const locality_id,
-//     Data const& data):
-// 
-//     Base{hpx::new_<Server>(locality_id, data)}
-// 
-// {
-// }
 
 
 /*!
@@ -292,11 +234,9 @@ ArrayPartition<Element, rank>::ArrayPartition(
     Offset const& offset,
     Data&& data):
 
-    Base{hpx::new_<Server>(locality_id, offset, std::move(data))},
-    _locality_id{locality_id}
+    Base{hpx::new_<Server>(locality_id, offset, std::move(data))}
 
 {
-    lue_assert(_locality_id);
 }
 
 
@@ -381,18 +321,20 @@ ArrayPartition<Element, rank>::ArrayPartition(
 // }
 
 
-template<
-    typename Element,
-    Rank rank>
-hpx::future<hpx::id_type> ArrayPartition<Element, rank>::locality_id() const
-{
-    lue_assert(_locality_id || this->get_id());
-
-    return _locality_id
-        ? hpx::make_ready_future<hpx::id_type>(_locality_id)
-        : hpx::async(typename Server::LocalityIDAction{}, this->get_id())
-        ;
-}
+// template<
+//     typename Element,
+//     Rank rank>
+// hpx::future<hpx::id_type> ArrayPartition<Element, rank>::locality_id() const
+// {
+//     return hpx::get_colocation_id(this->get_id());
+// 
+//     // lue_assert(_locality_id || this->get_id());
+// 
+//     // return _locality_id
+//     //     ? hpx::make_ready_future<hpx::id_type>(_locality_id)
+//     //     : hpx::async(typename Server::LocalityIDAction{}, this->get_id())
+//     //     ;
+// }
 
 
 /*!

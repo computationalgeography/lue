@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/framework/algorithm/array_like.hpp"
 #include "lue/framework/core/type_traits.hpp"
 #include <hpx/include/lcos.hpp>
 
@@ -12,29 +13,7 @@ template<
 ArrayPartition<std::uint32_t, rank> locality_id_partition(
     ArrayPartition<InputElement, rank> const& input_partition)
 {
-    using InputPartition = ArrayPartition<InputElement, rank>;
-    using OutputPartition = ArrayPartition<std::uint32_t, rank>;
-
-    lue_assert(input_partition.locality_id().get() == hpx::find_here());
-
-    return hpx::dataflow(
-        hpx::launch::async,
-
-        [](
-            InputPartition const& input_partition)
-        {
-            auto const input_partition_server_ptr{
-                hpx::get_ptr(hpx::launch::sync, input_partition)};
-            auto const& input_partition_server{*input_partition_server_ptr};
-
-            std::uint32_t const locality_id{hpx::get_locality_id()};
-
-            return OutputPartition{
-                hpx::find_here(), input_partition_server.offset(),
-                input_partition_server.shape(), locality_id};
-        },
-
-        input_partition);
+    return array_like_partition(input_partition, hpx::get_locality_id());
 }
 
 }  // namespace detail
@@ -64,33 +43,33 @@ PartitionedArray<std::uint32_t, rank> locality_id(
     // the locality the partition is located on.
 
     using InputArray = PartitionedArray<InputElement, rank>;
+    using InputPartitions = PartitionsT<InputArray>;
     using InputPartition = PartitionT<InputArray>;
 
     using OutputArray = PartitionedArray<std::uint32_t, rank>;
     using OutputPartitions = PartitionsT<OutputArray>;
 
     LocalityIDPartitionAction<InputElement, rank> action;
+
+    Localities<rank> const& localities{input_array.localities()};
+    InputPartitions const& input_partitions{input_array.partitions()};
     OutputPartitions output_partitions{shape_in_partitions(input_array)};
 
     for(Index p = 0; p < nr_partitions(input_array); ++p)
     {
-        InputPartition const& input_partition{input_array.partitions()[p]};
-
         output_partitions[p] = hpx::dataflow(
             hpx::launch::async,
-            hpx::util::unwrapping(
 
-                    [action, input_partition](
-                        hpx::id_type const locality_id)
-                    {
-                        return action(locality_id, input_partition);
-                    }
+            [locality_id=localities[p], action](
+                InputPartition const& input_partition)
+            {
+                return action(locality_id, input_partition);
+            },
 
-                ),
-            input_partition.locality_id());
+            input_partitions[p]);
     }
 
-    return OutputArray{shape(input_array), std::move(output_partitions)};
+    return OutputArray{shape(input_array), localities, std::move(output_partitions)};
 }
 
 }  // namespace lue

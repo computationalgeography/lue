@@ -9,7 +9,7 @@ namespace detail {
 template<
     typename Partition>
 [[nodiscard]] hpx::future<void> range_partition(
-    Partition partition,
+    Partition input_partition,
     ElementT<Partition> const start_value,
     Count const stride)
 {
@@ -25,37 +25,36 @@ template<
     using Element = ElementT<Data>;
     using Shape = ShapeT<Partition>;
 
-    // Given the logic below, it can be assumed that the input partition
-    // is ready.
-    assert(partition.is_ready());
+    assert(input_partition.is_ready());
 
     // Given the partition's shape, we can create a new collection for
     // partition elements
-    return partition.shape().then(
-        hpx::util::unwrapping(
-            [partition, start_value, stride](
-                Shape const& shape) mutable
-            {
-                // If stride equals nr_cols, then this partition's extent
-                // equals the arrays extent (along the second dimension)
-                lue_assert(stride >= std::get<1>(shape));
+    return input_partition.shape().then(
+            hpx::util::unwrapping(
+                [input_partition, start_value, stride](
+                    Shape const& shape) mutable
+                {
+                    // If stride equals nr_cols, then this partition's extent
+                    // equals the arrays extent (along the second dimension)
+                    lue_assert(stride >= std::get<1>(shape));
 
-                Data data{shape};
+                    Data data{shape};
 
-                Element value = start_value;
-                Element const offset = stride - std::get<1>(shape);
+                    Element value = start_value;
+                    Element const offset = stride - std::get<1>(shape);
 
-                for(Index idx0 = 0; idx0 < std::get<0>(shape); ++idx0) {
-                    for(Index idx1 = 0; idx1 < std::get<1>(shape); ++idx1) {
-                        data(idx0, idx1) = value++;
+                    for(Index idx0 = 0; idx0 < std::get<0>(shape); ++idx0) {
+                        for(Index idx1 = 0; idx1 < std::get<1>(shape); ++idx1)
+                        {
+                            data(idx0, idx1) = value++;
+                        }
+
+                        value += offset;
                     }
 
-                    value += offset;
+                    // This runs asynchronous and returns a future<void>
+                    return input_partition.set_data(std::move(data));
                 }
-
-                // This runs asynchronous and returns a future<void>
-                return partition.set_data(std::move(data));
-            }
 
         ));
 }
@@ -86,17 +85,17 @@ struct RangePartitionAction:
     @tparam     Element Type of elements in the array
     @tparam     rank Rank of the array
     @tparam     Array Class template of the type of the array
-    @param      array Partitioned array
+    @param      input_array Partitioned array
     @return     Future that becomes ready once the algorithm has finished
 
-    The existing @a array passed in is updated. Use the returned future if
-    you need to know when the filling is done.
+    The existing @a input_array passed in is updated. Use the returned
+    future if you need to know when the filling is done.
 */
 template<
     typename Element,
     Rank rank>
 [[nodiscard]] hpx::future<void> range(
-    PartitionedArray<Element, rank>& array,
+    PartitionedArray<Element, rank>& input_array,
     hpx::shared_future<Element> const& start_value)
 {
     static_assert(rank == 2);
@@ -106,7 +105,8 @@ template<
     using InputPartition = PartitionT<Array>;
     using Shape = ShapeT<InputPartition>;
 
-    Partitions& partitions = array.partitions();
+    Localities<rank> const& localities{input_array.localities()};
+    Partitions& partitions = input_array.partitions();
     Count const nr_partitions = lue::nr_partitions(partitions);
 
     std::vector<hpx::future<Shape>> partition_shapes(nr_partitions);
@@ -130,7 +130,7 @@ template<
         hpx::util::unwrapping(
 
             // Copy partitions. This is similar to copying shared pointers.
-            [partitions, array_shape=array.shape()](
+            [localities, partitions, array_shape=input_array.shape()](
                 auto&& data)
             {
                 auto const nr_partitions = lue::nr_partitions(partitions);
@@ -171,23 +171,10 @@ template<
 
                         InputPartition const& input_partition = partitions(idx0, idx1);
 
-                        range_partitions_span(idx0, idx1) = hpx::dataflow(
-                            hpx::launch::async,
-                            hpx::util::unwrapping(
+                        lue_assert(input_partition.is_ready());
 
-                                [action, input_partition, start_value, stride](
-                                    hpx::id_type const locality_id)
-                                {
-                                    return action(
-                                        locality_id,
-                                        input_partition,
-                                        start_value,
-                                        stride);
-                                }
-
-                            ),
-
-                            input_partition.locality_id());
+                        range_partitions_span(idx0, idx1) = hpx::async(
+                            action, localities(idx0, idx1), input_partition, start_value, stride);
 
                         start_value += partition_nr_elements0;
                     }

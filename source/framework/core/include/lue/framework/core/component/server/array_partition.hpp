@@ -62,12 +62,12 @@ public:
 
     ArrayPartition& operator=          (ArrayPartition&&)=delete;
 
-    hpx::naming::id_type locality_id() const
-    {
-        lue_assert(_locality_id);
+    // hpx::naming::id_type locality_id() const
+    // {
+    //     lue_assert(_locality_id);
 
-        return _locality_id;
-    }
+    //     return _locality_id;
+    // }
 
     Offset         offset              () const;
 
@@ -87,8 +87,8 @@ public:
 
 private:
 
-    //! Global ID representing the locality this component is located in
-    hpx::naming::id_type _locality_id;
+    // //! Global ID representing the locality this component is located in
+    // hpx::naming::id_type _locality_id;
 
     Offset         _offset;
 
@@ -98,7 +98,6 @@ private:
 public:
 
     // Macros to define HPX component actions for all exported functions
-    HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, locality_id, LocalityIDAction);
     HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, data, DataAction);
     HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, slice, SliceAction);
     HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, fill, FillAction);
@@ -126,10 +125,6 @@ using ArrayPartition_##Element##_##rank =                              \
                                                                        \
 }                                                                      \
 }                                                                      \
-                                                                       \
-HPX_REGISTER_ACTION_DECLARATION(                                       \
-    lue::detail::ArrayPartition_##Element##_##rank::LocalityIDAction,  \
-    ArrayPartition_##Element##_##rank##_LocalityIDAction)              \
                                                                        \
 HPX_REGISTER_ACTION_DECLARATION(                                       \
     lue::detail::ArrayPartition_##Element##_##rank::DataAction,        \
@@ -202,7 +197,6 @@ public:                                                                \
                                                                        \
 }
 
-LUE_DEFINE_ARRAY_PARTITION_COMPONENT_ACTION_TEMPLATE(LocalityID)
 LUE_DEFINE_ARRAY_PARTITION_COMPONENT_ACTION_TEMPLATE(Data)
 LUE_DEFINE_ARRAY_PARTITION_COMPONENT_ACTION_TEMPLATE(Slice)
 LUE_DEFINE_ARRAY_PARTITION_COMPONENT_ACTION_TEMPLATE(Fill)
@@ -247,7 +241,7 @@ ArrayPartition<Element, rank>::ArrayPartition(
     Shape const& shape):
 
     Base{},
-    _locality_id{hpx::find_here()},
+    // _locality_id{hpx::find_here()},
     _offset{offset},
     _data{shape}
 
@@ -271,7 +265,7 @@ ArrayPartition<Element, rank>::ArrayPartition(
     Element value):
 
     Base{},
-    _locality_id{hpx::find_here()},
+    // _locality_id{hpx::find_here()},
     _offset{offset},
     _data{shape, value}
 
@@ -295,7 +289,7 @@ ArrayPartition<Element, rank>::ArrayPartition(
     Data const& data):
 
     Base{},
-    _locality_id{hpx::find_here()},
+    // _locality_id{hpx::find_here()},
     _offset{offset},
     _data{data}
 
@@ -316,7 +310,7 @@ ArrayPartition<Element, rank>::ArrayPartition(
     Data&& data):
 
     Base{},
-    _locality_id{hpx::find_here()},
+    // _locality_id{hpx::find_here()},
     _offset{offset},
     _data{std::move(data)}
 
@@ -331,7 +325,7 @@ ArrayPartition<Element, rank>::ArrayPartition(
     ArrayPartition const& other):
 
     Base{other},
-    _locality_id{hpx::find_here()},
+    // _locality_id{hpx::find_here()},
     _offset{other._offset},
     _data{other._data}
 
@@ -346,7 +340,7 @@ ArrayPartition<Element, rank>::ArrayPartition(
     ArrayPartition&& other):
 
     Base{std::move(other)},
-    _locality_id{hpx::find_here()},
+    // _locality_id{hpx::find_here()},
     _offset{std::move(other._offset)},
     _data{std::move(other._data)}
 

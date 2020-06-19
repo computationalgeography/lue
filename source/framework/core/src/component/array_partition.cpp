@@ -19,10 +19,6 @@ HPX_REGISTER_COMPONENT(                                                \
     ArrayPartitionServer_##Element##_##rank)                           \
                                                                        \
 HPX_REGISTER_ACTION(                                                   \
-    lue::detail::ArrayPartition_##Element##_##rank::LocalityIDAction,  \
-    ArrayPartition_##Element##_##rank##_LocalityIDAction)              \
-                                                                       \
-HPX_REGISTER_ACTION(                                                   \
     lue::detail::ArrayPartition_##Element##_##rank::DataAction,        \
     ArrayPartition_##Element##_##rank##_DataAction)                    \
                                                                        \

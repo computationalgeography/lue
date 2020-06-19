@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/core/component/array_partition.hpp"
+#include "lue/framework/core/array.hpp"
 #include "lue/framework/core/array_partition_data.hpp"
 #include "lue/framework/core/array_partition_visitor.hpp"
 #include "lue/framework/core/debug.hpp"  // describe
@@ -13,6 +14,11 @@
 
 
 namespace lue {
+
+template<
+    Rank rank>
+using Localities = Array<hpx::id_type, rank>;
+
 
 template<
     typename Element,
@@ -67,6 +73,7 @@ public:
                                         ClampMode clamp_mode=ClampMode::merge);
 
                    PartitionedArray    (Shape const& shape,
+                                        Localities<rank> const& localities,
                                         Partitions&& partitions);
 
                    ~PartitionedArray   ()=default;
@@ -78,6 +85,9 @@ public:
     Count          nr_elements         () const;
 
     Shape const&   shape               () const;
+
+    Localities<rank> const&
+                   localities          () const;
 
     Count          nr_partitions       () const;
 
@@ -97,6 +107,9 @@ private:
 
     //! Shape of the partitioned array
     Shape          _shape;
+
+    //! Localities the partitions are located in
+    Localities<rank> _localities;
 
     //! Array of partitions
     Partitions     _partitions;
@@ -221,6 +234,7 @@ template<
 PartitionedArray<Element, rank>::PartitionedArray():
 
     _shape{},
+    _localities{},
     _partitions{}
 
 {
@@ -238,6 +252,7 @@ PartitionedArray<Element, rank>::PartitionedArray(
     Shape const& shape):
 
     _shape{shape},
+    _localities{},
     _partitions{}
 
 {
@@ -256,6 +271,7 @@ PartitionedArray<Element, rank>::PartitionedArray(
     ClampMode const clamp_mode):
 
     _shape{shape},
+    _localities{},
     _partitions{}
 
 {
@@ -277,9 +293,11 @@ template<
     Rank rank>
 PartitionedArray<Element, rank>::PartitionedArray(
     Shape const& shape,
+    Localities<rank> const& localities,
     Partitions&& partitions):
 
     _shape{shape},
+    _localities{localities},
     _partitions{std::move(partitions)}
 
 {
@@ -678,8 +696,8 @@ void PartitionedArray<Element, rank>::clamp_array_merge(
                     begin_indices_hyperslab, end_indices_hyperslab,
                     d, partition_shape[d]);
 
-                _partitions.erase(
-                    d, shape_in_partitions[d] - 1, shape_in_partitions[d]);
+                _localities.erase(d, shape_in_partitions[d] - 1, shape_in_partitions[d]);
+                _partitions.erase(d, shape_in_partitions[d] - 1, shape_in_partitions[d]);
 
                 end_indices[d] -= 1;
             }
@@ -701,21 +719,21 @@ void PartitionedArray<Element, rank>::instantiate_partition(
     // idxs points to a cell (partition) in the partitioned
     // array. Instantiate this partition.
 
+    _localities(idxs...) = locality_id;
+
     _partitions(idxs...) = hpx::async(
-            hpx::util::annotated_function(
 
-                [locality_id, partition_shape, idxs...]()
-                {
-                    Offset offset{idxs...};
+            [locality_id, partition_shape, idxs...]()
+            {
+                Offset offset{idxs...};
 
-                    for(std::size_t d = 0; d < rank; ++d) {
-                        offset[d] *= partition_shape[d];
-                    }
+                for(std::size_t d = 0; d < rank; ++d) {
+                    offset[d] *= partition_shape[d];
+                }
 
-                    return Partition{locality_id, offset, partition_shape};
-                },
+                return Partition{locality_id, offset, partition_shape};
+            }
 
-            "instantiate_partition")
         );
 }
 
@@ -730,6 +748,8 @@ void PartitionedArray<Element, rank>::instantiate_partitions(
     // Create array containing partitions. Each of these partitions
     // will be a component client instance referring to a, possibly
     // remote, component server instance.
+    lue_assert(_localities.empty());
+    _localities = Localities<rank>{shape_in_partitions};
     lue_assert(_partitions.empty());
     _partitions = Partitions{shape_in_partitions};
 
@@ -992,6 +1012,17 @@ template<
 void PartitionedArray<Element, rank>::assert_invariants() const
 {
 
+    lue_assert(_partitions.shape() == _localities.shape());
+
+    // The array is either empty, or all localities are valid / known
+    lue_assert(
+        _localities.empty() ||
+        std::all_of(_localities.begin(), _localities.end(),
+            [](hpx::id_type const locality_id)
+            {
+                return bool{locality_id};
+            }));
+
     // WARNING This is an expensive and synchronous operation. Never do
     //     this in production code.
 
@@ -1099,6 +1130,15 @@ typename PartitionedArray<Element, rank>::Iterator
     PartitionedArray<Element, rank>::end()
 {
     return _partitions.end();
+}
+
+
+template<
+    typename Element,
+    Rank rank>
+Localities<rank> const& PartitionedArray<Element, rank>::localities() const
+{
+    return _localities;
 }
 
 

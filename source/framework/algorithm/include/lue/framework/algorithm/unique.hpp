@@ -19,8 +19,6 @@ PartitionT<InputPartition, ElementT<InputPartition>, 1> unique_partition(
     using OutputShape = ShapeT<OutputPartition>;
     using OutputData = DataT<OutputPartition>;
 
-    lue_assert(input_partition.locality_id().get() == hpx::find_here());
-
     return input_partition.then(
             [](
                 InputPartition const& input_partition)
@@ -93,6 +91,7 @@ hpx::future<PartitionedArray<Element, 1>> unique(
     //     located on the current locality
 
     using InputArray = PartitionedArray<Element, rank>;
+    using InputPartitions = PartitionsT<InputArray>;
     using InputPartition = PartitionT<InputArray>;
 
     using OutputArray = PartitionedArray<Element, 1>;
@@ -102,25 +101,24 @@ hpx::future<PartitionedArray<Element, 1>> unique(
     using OutputShape = ShapeT<OutputArray>;
     using OutputData = DataT<OutputPartition>;
 
-    OutputPartitions output_partitions{OutputShape{{nr_partitions(input_array)}}};
     UniquePartitionAction<InputPartition> action;
+
+    Localities<rank> const& localities{input_array.localities()};
+    InputPartitions const& input_partitions{input_array.partitions()};
+    OutputPartitions output_partitions{OutputShape{{nr_partitions(input_array)}}};
 
     for(Index p = 0; p < nr_partitions(input_array); ++p)
     {
-        InputPartition const& input_partition = input_array.partitions()[p];
-
         output_partitions[p] = hpx::dataflow(
             hpx::launch::async,
-            hpx::util::unwrapping(
 
-                    [action, input_partition](
-                        hpx::id_type const locality_id)
-                    {
-                        return action(locality_id, input_partition);
-                    }
+            [locality_id=localities[p], action](
+                InputPartition const& input_partition)
+            {
+                return action(locality_id, input_partition);
+            },
 
-                ),
-            input_partition.locality_id());
+            input_partitions[p]);
     }
 
     // Collect all unique values into a single array, on the current locality
@@ -147,28 +145,26 @@ hpx::future<PartitionedArray<Element, 1>> unique(
                 }
 
                 // Shape in elements of resulting partitioned array
-                OutputShape const shape{
-                    {static_cast<Count>(unique_values.size())}};
+                OutputShape const shape{{static_cast<Count>(unique_values.size())}};
 
                 // Shape in partitions of resulting partitioned array
                 OutputShape const shape_in_partitions{{1}};
 
+                hpx::id_type locality{hpx::find_here()};
+                Localities<1> localities{shape_in_partitions, {locality}};
+
                 // Copy unique values into an array-data collection
                 OutputData result_values{shape};
-                std::copy(
-                    unique_values.begin(), unique_values.end(),
-                    result_values.begin());
+                std::copy(unique_values.begin(), unique_values.end(), result_values.begin());
 
                 // Store array data in partition component
-                OutputPartition result_partition{
-                    hpx::find_here(), OutputOffset{0}, std::move(result_values)};
+                OutputPartition result_partition{locality, OutputOffset{0}, std::move(result_values)};
 
                 // Store partition component in a collection
-                OutputPartitions result_partitions{
-                    shape_in_partitions, std::move(result_partition)};
+                OutputPartitions result_partitions{shape_in_partitions, std::move(result_partition)};
 
                 // Store collection of partitions in a partitioned array
-                OutputArray result_array{shape, std::move(result_partitions)};
+                OutputArray result_array{shape, localities, std::move(result_partitions)};
 
                 return result_array;
             }

@@ -18,28 +18,26 @@ template<
 Partition copy_partition(
     Partition const& input_partition)
 {
-    lue_assert(input_partition.locality_id().get() == hpx::find_here());
-
     using Offset = OffsetT<Partition>;
     using InputData = DataT<Partition>;
 
+    lue_assert(input_partition.is_ready());
+
     return hpx::dataflow(
         hpx::launch::async,
+        hpx::util::unwrapping(
 
-        [](
-            Partition const& input_partition)
-        {
-            // Copy the data and move it into a new partition
-            auto const input_partition_server_ptr{hpx::get_ptr(input_partition).get()};
-            auto const& input_partition_server{*input_partition_server_ptr};
+                [](
+                    Offset const& offset,
+                    InputData&& input_partition_data)
+                {
+                    // Copy the data and move it into a new partition
+                    return Partition{hpx::find_here(), offset, std::move(input_partition_data)};
+                }
 
-            Offset const offset{input_partition_server.offset()};
-            InputData input_partition_data = deep_copy(input_partition_server.data());
-
-            return Partition{hpx::find_here(), offset, std::move(input_partition_data)};
-        },
-
-        input_partition);
+            ),
+        input_partition.offset(),
+        input_partition.data());
 }
 
 }  // namespace detail
@@ -55,29 +53,29 @@ struct CopyPartitionAction:
 {};
 
 
-template<
-    typename Element,
-    Rank rank>
-ArrayPartition<Element, rank> copy(
-    ArrayPartition<Element, rank> const& input_partition)
-{
-    using Partition = ArrayPartition<Element, rank>;
-
-    CopyPartitionAction<Partition> action;
-
-    return hpx::dataflow(
-        hpx::launch::async,
-        hpx::util::unwrapping(
-
-                [action, input_partition](
-                    hpx::id_type const locality_id)
-                {
-                    return action(locality_id, input_partition);
-                }
-
-            ),
-        input_partition.locality_id());
-}
+// template<
+//     typename Element,
+//     Rank rank>
+// ArrayPartition<Element, rank> copy(
+//     ArrayPartition<Element, rank> const& input_partition)
+// {
+//     using Partition = ArrayPartition<Element, rank>;
+// 
+//     CopyPartitionAction<Partition> action;
+// 
+//     return hpx::dataflow(
+//         hpx::launch::async,
+//         hpx::util::unwrapping(
+// 
+//                 [action, input_partition](
+//                     hpx::id_type const locality_id)
+//                 {
+//                     return action(locality_id, input_partition);
+//                 }
+// 
+//             ),
+//         input_partition.locality_id());
+// }
 
 
 /*!
@@ -94,33 +92,32 @@ PartitionedArray<Element, rank> copy(
     PartitionedArray<Element, rank> const& input_array)
 {
     using InputArray = PartitionedArray<Element, rank>;
+    using InputPartitions = PartitionsT<InputArray>;
     using InputPartition = PartitionT<InputArray>;
 
     using OutputArray = PartitionedArray<Element, rank>;
     using OutputPartitions = PartitionsT<OutputArray>;
 
     CopyPartitionAction<InputPartition> action;
+    Localities<rank> const& localities{input_array.localities()};
+    InputPartitions const& input_partitions{input_array.partitions()};
     OutputPartitions output_partitions{shape_in_partitions(input_array)};
 
     for(Index p = 0; p < nr_partitions(input_array); ++p)
     {
-        InputPartition const& input_partition{input_array.partitions()[p]};
-
         output_partitions[p] = hpx::dataflow(
             hpx::launch::async,
-            hpx::util::unwrapping(
 
-                    [action, input_partition](
-                        hpx::id_type const locality_id)
-                    {
-                        return action(locality_id, input_partition);
-                    }
+            [locality_id=localities[p], action](
+                InputPartition const& input_partition)
+            {
+                return action(locality_id, input_partition);
+            },
 
-                ),
-            input_partition.locality_id());
+            input_partitions[p]);
     }
 
-    return OutputArray{shape(input_array), std::move(output_partitions)};
+    return OutputArray{shape(input_array), localities, std::move(output_partitions)};
 }
 
 }  // namespace lue

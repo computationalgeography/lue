@@ -34,10 +34,8 @@ public:
         InputElement const& input_element2) const noexcept
     {
         return
-            std::abs(input_element1 - input_element2) <= (
-                _absolute_difference +
-                _relative_difference * std::abs(input_element2)
-            );
+            std::abs(input_element1 - input_element2) <=
+                (_absolute_difference + _relative_difference * std::abs(input_element2));
     }
 
     friend class hpx::serialization::access;
@@ -69,8 +67,7 @@ PartitionedArray<bool, rank> close_to(
     PartitionedArray<InputElement, rank> const& array1,
     PartitionedArray<InputElement, rank> const& array2)
 {
-    return binary_local_operation(
-        array1, array2, detail::CloseTo<InputElement>{});
+    return binary_local_operation(array1, array2, detail::CloseTo<InputElement>{});
 }
 
 
@@ -81,8 +78,7 @@ PartitionedArray<bool, rank> close_to(
     PartitionedArray<InputElement, rank> const& array,
     hpx::shared_future<InputElement> const& scalar)
 {
-    return binary_local_operation(
-        array, scalar, detail::CloseTo<InputElement>{});
+    return binary_local_operation(array, scalar, detail::CloseTo<InputElement>{});
 }
 
 
@@ -93,8 +89,7 @@ PartitionedArray<bool, rank> close_to(
     hpx::shared_future<InputElement> const& scalar,
     PartitionedArray<InputElement, rank> const& array)
 {
-    return binary_local_operation(
-        scalar, array, detail::CloseTo<InputElement>{});
+    return binary_local_operation(scalar, array, detail::CloseTo<InputElement>{});
 }
 
 
@@ -105,8 +100,7 @@ PartitionedArray<bool, rank> close_to(
     PartitionedArray<InputElement, rank> const& array,
     InputElement const scalar)
 {
-    return close_to(
-        array, hpx::make_ready_future<InputElement>(scalar).share());
+    return close_to(array, hpx::make_ready_future<InputElement>(scalar).share());
 }
 
 
@@ -117,8 +111,7 @@ PartitionedArray<bool, rank> close_to(
     InputElement const scalar,
     PartitionedArray<InputElement, rank> const& array)
 {
-    return close_to(
-        hpx::make_ready_future<InputElement>(scalar).share(), array);
+    return close_to(hpx::make_ready_future<InputElement>(scalar).share(), array);
 }
 
 }  // namespace lue

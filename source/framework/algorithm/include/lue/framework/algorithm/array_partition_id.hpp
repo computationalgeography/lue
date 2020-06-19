@@ -18,6 +18,7 @@ PartitionedArray<std::uint64_t, rank> array_partition_id(
     // of partitions.
 
     using InputArray = PartitionedArray<InputElement, rank>;
+    using InputPartitions = PartitionsT<InputArray>;
     using InputPartition = PartitionT<InputArray>;
 
     using OutputElement = std::uint64_t;
@@ -25,28 +26,26 @@ PartitionedArray<std::uint64_t, rank> array_partition_id(
     using OutputPartitions = PartitionsT<OutputArray>;
 
     ArrayLikePartitionAction<InputElement, OutputElement, rank> action;
+
+    Localities<rank> const& localities{input_array.localities()};
+    InputPartitions const& input_partitions{input_array.partitions()};
     OutputPartitions output_partitions{shape_in_partitions(input_array)};
 
-    for(Index p = 0; p < nr_partitions(input_array); ++p) {
-
-        InputPartition const& input_partition{input_array.partitions()[p]};
-
+    for(Index p = 0; p < nr_partitions(input_array); ++p)
+    {
         output_partitions[p] = hpx::dataflow(
             hpx::launch::async,
-            hpx::util::unwrapping(
 
-                    [action, input_partition, p](
-                        hpx::id_type const locality_id)
-                    {
-                        return action(locality_id, input_partition, p);
-                    }
+            [locality_id=localities[p], action, p](
+                InputPartition const& input_partition)
+            {
+                return action(locality_id, input_partition, p);
+            },
 
-                ),
-            input_partition.locality_id());
-
+            input_partitions[p]);
     }
 
-    return OutputArray{shape(input_array), std::move(output_partitions)};
+    return OutputArray{shape(input_array), localities, std::move(output_partitions)};
 }
 
 }  // namespace lue

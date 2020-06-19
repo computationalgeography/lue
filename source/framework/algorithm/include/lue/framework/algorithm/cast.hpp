@@ -32,8 +32,7 @@ template<
 PartitionedArrayT<InputArray, OutputElement> cast(
     InputArray const& array)
 {
-    return unary_local_operation(
-        array, detail::Cast<ElementT<InputArray>, OutputElement>{});
+    return unary_local_operation(array, detail::Cast<ElementT<InputArray>, OutputElement>{});
 }
 
 }  // namespace lue
