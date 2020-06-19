@@ -3,6 +3,7 @@ algorithm_names="
     multiply
     focal_mean
     iterate_per_element
+    zonal_sum
 "
 scenarios="
     thread_numa_node
