@@ -5,11 +5,13 @@ copy_python_unit_test_modules(
 
 
 if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
-    # This is needed on macOS with Python from Conda
+    # Path to Python library is needed with Python from Conda
+    # Path to output library dir is needed on GH workflows system
     get_filename_component(library_path ${PYTHON_LIBRARY} DIRECTORY)
     set(environment
-        DYLD_LIBRARY_PATH=${library_path}
+        DYLD_LIBRARY_PATH="${library_path}:$<TARGET_FILE_DIR:lue_py_data_model>"
     )
+    message("environment: ${environment}")
 endif()
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
