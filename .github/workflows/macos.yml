@@ -31,7 +31,7 @@ jobs:
           run: |
               brew update
               brew upgrade
-              brew install boost fmt gdal hdf5 ninja pybind11
+              brew install boost doxygen fmt gdal graphviz hdf5 ninja pybind11
 
         - uses: goanpeca/setup-miniconda@v1
           with:
@@ -50,7 +50,8 @@ jobs:
                   -S . \
                   -B build \
                   -G"Unix Makefiles" \
-                  -DCMAKE_BUILD_TYPE=Debug \
+                  -DCMAKE_BUILD_TYPE=Release \
+                  -DLUE_BUILD_DOCUMENTATION=TRUE \
                   -DLUE_BUILD_TEST=TRUE \
                   -DLUE_DATA_MODEL_WITH_PYTHON_API=TRUE \
                   -DLUE_DATA_MODEL_WITH_UTILITIES=TRUE
@@ -65,3 +66,8 @@ jobs:
           run: |
               cd build
               ctest --output-on-failure -E lue_py_data_model_python_test
+
+        - name: generate lue documentation
+          shell: bash
+          run: |
+              cmake --build build --target cpp_doc py_doc
