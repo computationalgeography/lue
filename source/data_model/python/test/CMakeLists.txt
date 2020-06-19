@@ -5,11 +5,8 @@ copy_python_unit_test_modules(
 
 
 if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
-    # This is needed on macOS with Python from Conda
     get_filename_component(library_path ${PYTHON_LIBRARY} DIRECTORY)
-    set(environment
-        DYLD_LIBRARY_PATH=${library_path}
-    )
+    set(environment "DYLD_LIBRARY_PATH=${library_path}:$<TARGET_FILE_DIR:lue::py>")
 endif()
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")

@@ -41,9 +41,6 @@ option(LUE_BUILD_TEST
 
 
 # Options related to external software used by the project
-### option(LUE_BUILD_DOCOPT
-###     "If Docopt is required, build it instead of relying on the environment"
-###     FALSE)
 option(LUE_BUILD_HPX
     "If HPX is required, build it instead of relying on the environment"
     FALSE)
@@ -191,29 +188,6 @@ if(DEVBASE_BOOST_REQUIRED)
         COMPONENTS ${DEVBASE_REQUIRED_BOOST_COMPONENTS})
     unset(DEVBASE_BOOST_REQUIRED)
 endif()
-
-
-### if(DEVBASE_DOCOPT_REQUIRED)
-###     if(LUE_BUILD_DOCOPT)
-###         # Build Docopt ourselves
-###         FetchContent_Declare(docopt
-###             GIT_REPOSITORY https://github.com/docopt/docopt.cpp
-###             GIT_TAG 18110222dc9cb57ec880ce24fbbd7291b2d1046e  # 0.6.2
-###         )
-### 
-###         FetchContent_GetProperties(docopt)
-### 
-###         if(NOT docopt_POPULATED)
-###             FetchContent_Populate(docopt)
-###             add_subdirectory(${docopt_SOURCE_DIR} ${docopt_BINARY_DIR})
-###         endif()
-###     else()
-###         # Use Docopt from the environment
-###         find_package(Docopt REQUIRED)
-###     endif()
-### 
-###     unset(DEVBASE_DOCOPT_REQUIRED)
-### endif()
 
 
 if(DEVBASE_DOXYGEN_REQUIRED)
