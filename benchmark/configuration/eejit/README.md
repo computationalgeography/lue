@@ -73,32 +73,32 @@ We use about 4.000x4.000 cells per OS thread.
 
 ### `thread_numa_node`
 - 6 OS threads / NUMA node
-- Experiment scales over [1, 6] OS threads
+- Experiment scales over \[1, 6] OS threads
 - array size = sqrt(6 * 4000^2) = 10.000x10.000
 
 ### `numa_node`
 - 8 NUMA nodes / cluster node = 48 OS threads
-- Experiment scales over [1, 8] NUMA nodes =  [6, 48] OS threads
+- Experiment scales over \[1, 8] NUMA nodes =  \[6, 48] OS threads
 - array size = sqrt(48 * 4000^2) = 30.000x30.000
 
 ### `cluster_node`
 - 4 cluster nodes = 192 OS threads
-- Experiment uses scales over [1, 6] cluster nodes = [48, 192] OS threads
+- Experiment uses scales over \[1, 6] cluster nodes = \[48, 192] OS threads
 - array size = sqrt(192 * 2000^2) = 55.000x55.000
 
 ## `weak_scaling`
 
 ### `thread_numa_node`
 - 6 OS threads / NUMA node
-- Experiment scales over [1, 6] threads
+- Experiment scales over \[1, 6] threads
 - array size = sqrt(1 * 4000^2) = 4.000x4.000
 
 ### `numa_node`
 - 8 NUMA nodes / cluster node = 48 OS threads
-- Experiment scales over [1, 8] NUMA nodes =  [6, 48] OS threads
+- Experiment scales over \[1, 8] NUMA nodes =  \[6, 48] OS threads
 - array size = sqrt(6 * 4000^2) = 10.000x10.000
 
 ### `cluster_node`
 - 6 cluster nodes = 288 OS threads
-- Experiment scales over [1, 6] cluster nodes = [48, 288] OS threads
+- Experiment scales over \[1, 6] cluster nodes = \[48, 288] OS threads
 - array size = sqrt(48 * 4000^2) = 30.000x30.000
