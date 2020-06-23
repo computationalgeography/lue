@@ -154,13 +154,17 @@ if(LUE_BUILD_TEST)
         filesystem system unit_test_framework)
 
     if(LUE_BUILD_FRAMEWORK)
-        find_file(HPXRUN
-            "hpxrun.py"
-            PATHS ${CMAKE_BINARY_DIR}/_deps/hpx-build/bin)
+        set(HPXRUN
+            "${CMAKE_BINARY_DIR}/_deps/hpx-build/bin/hpxrun.py"
 
-        if(NOT HPXRUN)
-            message(FATAL_ERROR "hpxrun.py not found")
-        endif()
+        # Does not work when HPX is built as part of LUE build
+        # find_file(HPXRUN
+        #     "hpxrun.py"
+        #     PATHS ${CMAKE_BINARY_DIR}/_deps/hpx-build/bin)
+        # 
+        # if(NOT HPXRUN)
+        #     message(FATAL_ERROR "hpxrun.py not found")
+        # endif()
     endif()
 endif()
 
