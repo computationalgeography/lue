@@ -31,7 +31,7 @@ jobs:
           run: |
               brew update
               brew upgrade
-              brew install boost doxygen fmt gdal graphviz hdf5 ninja pybind11
+              brew install cmake boost doxygen gdal graphviz gperftools hdf5 ninja
 
         - uses: goanpeca/setup-miniconda@v1
           with:
