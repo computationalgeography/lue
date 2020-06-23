@@ -52,7 +52,6 @@
 
 We use about 4.000x4.000 cells per OS thread.
 
-
 ## `partition_shape`
 
 ### `thread_numa_node`
@@ -60,26 +59,15 @@ We use about 4.000x4.000 cells per OS thread.
 - Experiment uses 6 OS threads
 - array size = sqrt(6 * 4000^2) = 10.000x10.000
 
-### `thread_cluster_node`
-- 48 OS threads / cluster node
-- Experiment uses 48 OS threads
-- array size = sqrt(48 * 4000^2) = 30.000x30.000
-
 ### `numa_node`
 - 8 NUMA nodes / cluster node = 48 OS threads
 - Experiment uses 8 NUMA nodes = 48 OS threads
 - array size = sqrt(48 * 4000^2) = 30.000x30.000
 
-- focal_mean → crash!
-
 ### `cluster_node`
-- 6 cluster nodes = 288 OS threads
-- Experiment uses 6 cluster nodes = 288 OS threads
-- array size = sqrt(288 * 4000^2) = 70.000x70.000
-
-- iterate_per_element → crash!
-- focal_mean → crash!
-
+- 4 cluster nodes = 192 OS threads
+- Experiment uses 4 cluster nodes = 192 OS threads
+- array size = sqrt(192 * 4000^2) = 55.000x55.000
 
 ## `strong_scaling`
 
@@ -88,28 +76,15 @@ We use about 4.000x4.000 cells per OS thread.
 - Experiment scales over [1, 6] OS threads
 - array size = sqrt(6 * 4000^2) = 10.000x10.000
 
-### `thread_cluster_node`
-- 48 OS threads / cluster node
-- Experiment scalar over [1, 48] OS threads
-- array size = sqrt(48 * 4000^2) = 30.000x30.000
-
 ### `numa_node`
 - 8 NUMA nodes / cluster node = 48 OS threads
 - Experiment scales over [1, 8] NUMA nodes =  [6, 48] OS threads
 - array size = sqrt(48 * 4000^2) = 30.000x30.000
 
-- focal_mean
-
-
 ### `cluster_node`
-- 6 cluster nodes = 288 OS threads
-- Experiment uses scales over [1, 6] cluster nodes = [48, 288] OS threads
-- array size = sqrt(288 * 4000^2) = 70.000x70.000
-
-- multiply → crash when using 1 node, other ones seem fine
-- iterate_per_element
-- focal_mean
-
+- 4 cluster nodes = 192 OS threads
+- Experiment uses scales over [1, 6] cluster nodes = [48, 192] OS threads
+- array size = sqrt(192 * 2000^2) = 55.000x55.000
 
 ## `weak_scaling`
 
@@ -118,22 +93,12 @@ We use about 4.000x4.000 cells per OS thread.
 - Experiment scales over [1, 6] threads
 - array size = sqrt(1 * 4000^2) = 4.000x4.000
 
-### `thread_cluster_node`
-- 48 OS threads / cluster node
-- Experiment scales over [1, 48] OS threads
-- array size = sqrt(1 * 4000^2) = 4.000x4.000
-
 ### `numa_node`
 - 8 NUMA nodes / cluster node = 48 OS threads
 - Experiment scales over [1, 8] NUMA nodes =  [6, 48] OS threads
 - array size = sqrt(6 * 4000^2) = 10.000x10.000
 
-- focal_mean
-
 ### `cluster_node`
 - 6 cluster nodes = 288 OS threads
 - Experiment scales over [1, 6] cluster nodes = [48, 288] OS threads
 - array size = sqrt(48 * 4000^2) = 30.000x30.000
-
-- iterate_per_element: crash
-- focal_mean
