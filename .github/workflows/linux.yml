@@ -32,7 +32,7 @@ jobs:
               sudo apt update
               sudo apt autoremove
               sudo apt upgrade
-              sudo apt install cmake doxygen graphviz libboost-all-dev libgdal-dev libgoogle-perftools-dev libhdf5-dev ninja-build
+              sudo apt install cmake doxygen graphviz hwloc libboost-all-dev libgdal-dev libgoogle-perftools-dev libhdf5-dev ninja-build
         - uses: goanpeca/setup-miniconda@v1
           with:
               auto-update-conda: true
@@ -60,6 +60,7 @@ jobs:
                   -DLUE_DATA_MODEL_WITH_UTILITIES=TRUE \
                   -DLUE_BUILD_FRAMEWORK=TRUE \
                   -DLUE_BUILD_HPX=TRUE \
+                  -DHPX_WITH_MALLOC "tcmalloc" \
                   -DHPX_WITH_EXAMPLES=FALSE \
                   -DHPX_WITH_TESTS=FALSE
 

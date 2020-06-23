@@ -31,7 +31,7 @@ jobs:
           run: |
               brew update
               brew upgrade
-              brew install cmake boost doxygen gdal graphviz gperftools hdf5 ninja
+              brew install cmake boost doxygen gdal graphviz gperftools hdf5 hwloc ninja
 
         - uses: goanpeca/setup-miniconda@v1
           with:
@@ -60,6 +60,7 @@ jobs:
                   -DLUE_DATA_MODEL_WITH_UTILITIES=TRUE \
                   -DLUE_BUILD_FRAMEWORK=TRUE \
                   -DLUE_BUILD_HPX=TRUE \
+                  -DHPX_WITH_MALLOC "tcmalloc" \
                   -DHPX_WITH_EXAMPLES=FALSE \
                   -DHPX_WITH_TESTS=FALSE
 
