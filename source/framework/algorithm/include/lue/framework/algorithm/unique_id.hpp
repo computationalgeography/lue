@@ -105,7 +105,7 @@ template<
 
     InputPartitions const& input_partitions{input_array.partitions()};
 
-    std::size_t const nr_partitions{input_partitions.nr_elements()};
+    Count const nr_partitions{input_partitions.nr_elements()};
 
     std::vector<hpx::future<Count>> partition_sizes(nr_partitions);
     {
@@ -134,7 +134,7 @@ template<
                 std::vector<hpx::future<Count>>&& partition_sizes)
             {
                 Element start_value = 0;
-                std::size_t const nr_partitions{input_partitions.nr_elements()};
+                Count const nr_partitions{input_partitions.nr_elements()};
                 std::vector<hpx::future<void>> unique_id_partitions(nr_partitions);
 
                 for(Index p = 0; p < nr_partitions; ++p)
