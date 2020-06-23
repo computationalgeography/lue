@@ -154,8 +154,7 @@ if(LUE_BUILD_TEST)
         filesystem system unit_test_framework)
 
     if(LUE_BUILD_FRAMEWORK)
-        set(HPXRUN
-            "${CMAKE_BINARY_DIR}/_deps/hpx-build/bin/hpxrun.py"
+        set(HPXRUN "${CMAKE_BINARY_DIR}/_deps/hpx-build/bin/hpxrun.py")
 
         # Does not work when HPX is built as part of LUE build
         # find_file(HPXRUN
