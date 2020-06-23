@@ -3,7 +3,7 @@ set -e
 
 basename="focal_mean"
 bin_prefix=$LUE_OBJECTS/bin
-source_prefix=$LUE/source/framework/algorithm/benchmark
+# source_prefix=$LUE/source/framework/algorithm/benchmark
 tmp_prefix=${TMPDIR:-/tmp}
 
 
