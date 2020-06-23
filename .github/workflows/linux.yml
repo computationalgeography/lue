@@ -53,6 +53,8 @@ jobs:
                   -DCMAKE_BUILD_TYPE=Release \
                   -DLUE_BUILD_DOCUMENTATION=TRUE \
                   -DLUE_BUILD_TEST=TRUE \
+                  -DLUE_TEST_NR_LOCALITIES_PER_TEST=1 \
+                  -DLUE_TEST_NR_THREADS_PER_LOCALITY=2 \
                   -DLUE_BUILD_DATA_MODEL=TRUE \
                   -DLUE_DATA_MODEL_WITH_PYTHON_API=TRUE \
                   -DLUE_DATA_MODEL_WITH_UTILITIES=TRUE \
@@ -70,7 +72,7 @@ jobs:
           shell: bash
           run: |
               cd build
-              ctest --output-on-failure -E lue_framework
+              ctest --output-on-failure
 
         - name: generate lue documentation
           shell: bash

@@ -20,7 +20,6 @@ set(names
     greater_than_equal_to_test
     greater_than_test
     iterate_per_element_test
-    kernel_test
     less_than_equal_to_test
     less_than_test
     locality_id_test
@@ -49,16 +48,16 @@ set(names
 
 add_unit_tests(
     SCOPE lue_framework_algorithm
-    # Tests that use HPX must separate UTF arguments from HPX arguments
-    UTF_ARGUMENTS_SEPARATOR "--"
-    NAMES
-        ${names}
+    NAMES kernel_test
     LINK_LIBRARIES
         lue::framework_algorithm
         lue::framework_test
 )
 
-foreach(name ${names})
-    # Targets that depend on HPX
-    hpx_setup_target(lue_framework_algorithm_${name})
-endforeach()
+add_hpx_unit_tests(
+    SCOPE lue_framework_algorithm
+    NAMES ${names}
+    LINK_LIBRARIES
+        lue::framework_algorithm
+        lue::framework_test
+)

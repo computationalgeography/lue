@@ -35,9 +35,14 @@ option(LUE_BUILD_VIEW
 option(LUE_BUILD_DOCUMENTATION
     "Build documentation"
     FALSE)
+
 option(LUE_BUILD_TEST
     "Build tests"
     FALSE)
+set(LUE_TEST_NR_LOCALITIES_PER_TEST
+    1 CACHE STRING "Number of localities to use")
+set(LUE_TEST_NR_THREADS_PER_LOCALITY
+    1 CACHE STRING "Number of threads to use")
 
 
 # Options related to external software used by the project
@@ -147,6 +152,16 @@ if(LUE_BUILD_TEST)
     set(DEVBASE_BOOST_REQUIRED TRUE)
     list(APPEND DEVBASE_REQUIRED_BOOST_COMPONENTS
         filesystem system unit_test_framework)
+
+    if(LUE_BUILD_FRAMEWORK)
+        find_file(HPXRUN
+            "hpxrun.py"
+            PATHS ${CMAKE_BINARY_DIR}/_deps/hpx-build/bin)
+
+        if(NOT HPXRUN)
+            message(FATAL_ERROR "hpxrun.py not found")
+        endif()
+    endif()
 endif()
 
 
