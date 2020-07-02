@@ -4,7 +4,6 @@
 #include "lue/hdf5/datatype_traits.hpp"
 #include <cassert>
 #include <stdexcept>
-#include <type_traits>
 
 
 namespace lue {
@@ -13,14 +12,14 @@ namespace detail {
 
 template<
     typename T>
-inline std::enable_if_t<!std::is_base_of<std::vector<hsize_t>, T>::value>
+inline std::enable_if_t<!std::is_base_of<std::vector<::hsize_t>, T>::value>
         read_attribute(
     Identifier const& id,
     Datatype const& datatype,
     Dataspace const& /* dataspace */,
     T& value)
 {
-    auto status = ::H5Aread(id, datatype.id(), &value);
+    ::herr_t const status{::H5Aread(id, datatype.id(), &value)};
 
     if(status < 0) {
         throw std::runtime_error("Cannot read attribute");
@@ -40,11 +39,11 @@ inline void read_attribute<std::string>(
 
     assert(datatype.encoding() == ::H5T_CSET_UTF8);
 
-    auto const nr_bytes = datatype.size();
+    std::size_t const nr_bytes{datatype.size()};
 
     value.resize(nr_bytes, 'x');
 
-    auto status = ::H5Aread(id, datatype.id(), value.data());
+    ::herr_t const status{::H5Aread(id, datatype.id(), value.data())};
     assert(value.size() == nr_bytes);
 
     if(status < 0) {
@@ -61,11 +60,11 @@ inline void read_attribute(
     Dataspace const& dataspace,
     std::vector<T>& value)
 {
-    auto const nr_elements = dataspace.nr_elements();
+    ::hssize_t const nr_elements{dataspace.nr_elements()};
 
     value.resize(nr_elements);
 
-    auto status = ::H5Aread(id, datatype.id(), value.data());
+    ::herr_t const status{::H5Aread(id, datatype.id(), value.data())};
     assert(value.size() == static_cast<std::size_t>(nr_elements));
 
     if(status < 0) {
@@ -76,13 +75,12 @@ inline void read_attribute(
 
 template<
     typename T>
-inline std::enable_if_t<!std::is_base_of<std::vector<hsize_t>, T>::value>
-        write_attribute(
+inline std::enable_if_t<!std::is_base_of<std::vector<::hsize_t>, T>::value> write_attribute(
     Identifier const& id,
     Datatype const& datatype,
     T const& value)
 {
-    auto status = ::H5Awrite(id, datatype.id(), &value);
+    ::herr_t const status{::H5Awrite(id, datatype.id(), &value)};
 
     if(status < 0) {
         throw std::runtime_error("Cannot write attribute");
@@ -96,7 +94,7 @@ inline void write_attribute<std::string>(
     Datatype const& datatype,
     std::string const& value)
 {
-    auto status = ::H5Awrite(id, datatype.id(), value.c_str());
+    ::herr_t const status{::H5Awrite(id, datatype.id(), value.c_str())};
 
     if(status < 0) {
         throw std::runtime_error("Cannot write attribute");
@@ -111,7 +109,7 @@ inline void write_attribute(
     Datatype const& datatype,
     std::vector<T> const& value)
 {
-    auto status = ::H5Awrite(id, datatype.id(), value.data());
+    ::herr_t const status{::H5Awrite(id, datatype.id(), value.data())};
 
     if(status < 0) {
         throw std::runtime_error("Cannot write attribute");
@@ -129,8 +127,6 @@ class Attribute
 {
 
 public:
-
-    explicit       Attribute           (Identifier&& id);
 
                    Attribute           (Identifier const& location,
                                         std::string const& name);
@@ -170,6 +166,12 @@ public:
                                         T& value);
 
 private:
+
+    friend Attribute create_attribute(
+        Identifier const& location, std::string const& name,
+        Datatype const& datatype, Dataspace const& dataspace);
+
+    explicit       Attribute           (Identifier id);
 
     //! Identifier of attribute
     Identifier     _id;
@@ -264,9 +266,9 @@ inline std::enable_if_t<
     std::string const& name,
     T const& value)
 {
-    auto datatype = Datatype{NativeDatatypeTraits<T>::type_id()};
-    auto dataspace = Dataspace{::H5S_SCALAR};
-    auto attribute = create_attribute(location, name, datatype, dataspace);
+    Datatype const datatype{NativeDatatypeTraits<T>::type_id()};
+    Dataspace const dataspace{::H5S_SCALAR};
+    Attribute attribute{create_attribute(location, name, datatype, dataspace)};
 
     attribute.write(value);
 
@@ -280,9 +282,9 @@ inline Attribute create_attribute(
     std::string const& name,
     std::string const& value)
 {
-    auto datatype = create_datatype(value.size());
-    auto dataspace = Dataspace{::H5S_SCALAR};
-    auto attribute = create_attribute(location, name, datatype, dataspace);
+    Datatype const datatype{create_datatype(value.size())};
+    Dataspace const dataspace{Dataspace{::H5S_SCALAR}};
+    Attribute attribute{create_attribute(location, name, datatype, dataspace)};
 
     attribute.write(value);
 
@@ -297,9 +299,9 @@ inline Attribute create_attribute(
     std::string const& name,
     std::vector<T> const& value)
 {
-    auto datatype = Datatype{NativeDatatypeTraits<T>::type_id()};
-    auto dataspace = create_dataspace(Shape{value.size()});
-    auto attribute = create_attribute(location, name, datatype, dataspace);
+    Datatype const datatype{Datatype{NativeDatatypeTraits<T>::type_id()}};
+    Dataspace const dataspace{create_dataspace(Shape{value.size()})};
+    Attribute attribute{create_attribute(location, name, datatype, dataspace)};
 
     attribute.write(value);
 

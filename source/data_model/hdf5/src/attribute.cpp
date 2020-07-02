@@ -9,11 +9,11 @@ namespace hdf5 {
     @param      id Identifier of attribute
 */
 Attribute::Attribute(
-    Identifier&& id)
+    Identifier id):
 
-    : _id{std::forward<Identifier>(id)},
-      _datatype{::H5Aget_type(_id)},
-      _dataspace{::H5Aget_space(_id)}
+    _id{std::forward<Identifier>(id)},
+    _datatype{::H5Aget_type(_id)},
+    _dataspace{::H5Aget_space(_id)}
 
 {
 }
@@ -27,11 +27,11 @@ Attribute::Attribute(
 */
 Attribute::Attribute(
     Identifier const& location,
-    std::string const& name)
+    std::string const& name):
 
-    : _id(::H5Aopen(location, name.c_str(), H5P_DEFAULT), ::H5Aclose),
-      _datatype{::H5Aget_type(_id)},
-      _dataspace{::H5Aget_space(_id)}
+    _id(::H5Aopen(location, name.c_str(), H5P_DEFAULT), ::H5Aclose),
+    _datatype{::H5Aget_type(_id)},
+    _dataspace{::H5Aget_space(_id)}
 
 {
 }
@@ -79,14 +79,14 @@ Attribute create_attribute(
     Dataspace const& dataspace)
 {
     Identifier id{
-        ::H5Acreate(location, name.c_str(), datatype.id(),
-        dataspace.id(), H5P_DEFAULT, H5P_DEFAULT), ::H5Aclose};
+        ::H5Acreate(location, name.c_str(), datatype.id(), dataspace.id(), H5P_DEFAULT, H5P_DEFAULT),
+        ::H5Aclose};
 
     if(!id.is_valid()) {
         throw std::runtime_error("Cannot create attribute");
     }
 
-    return Attribute(std::move(id));
+    return Attribute{std::move(id)};
 }
 
 } // namespace hdf5

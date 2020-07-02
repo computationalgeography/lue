@@ -2,7 +2,6 @@
 #include "lue/hdf5/hard_link.hpp"
 #include "lue/hdf5/soft_link.hpp"
 #include "lue/hdf5/primary_data_object.hpp"
-#include <memory>
 
 
 namespace lue {
@@ -22,29 +21,27 @@ class Group:
     public PrimaryDataObject
 {
 
-    friend File;
-
 public:
 
-                   Group               (Group& parent,
+                   Group               (Group const& parent,
                                         std::string const& name);
 
-                   Group               (Group& parent,
-                                        Identifier& id);
-
-                   Group               (Group& other);
+                   Group               (Group const&)=default;
 
                    Group               (Group&&)=default;
 
                    ~Group              () override =default;
 
-    Group&         operator=           (Group const& other)=delete;
+    Group&         operator=           (Group const&)=default;
 
     Group&         operator=           (Group&&)=default;
 
     bool           has_parent          () const;
 
-    Group&         parent              ();
+    std::string const&
+                   parent_pathname     () const;
+
+    Group          parent              () const;
 
     std::vector<std::string>
                    group_names         () const;
@@ -74,10 +71,20 @@ protected:
 
 private:
 
-    explicit       Group               (Identifier&& id);
+    friend File;
 
-    //! Parent group
-    std::unique_ptr<Group> _parent;
+    friend Group create_group(Group& parent, std::string const& name);
+
+                   Group               (Group const& parent,
+                                        Identifier& id);
+
+                   Group               (Identifier const& parent,
+                                        std::string const& name);
+
+    explicit       Group               (Identifier id);
+
+    //! Pathname of parent group
+    std::string    _parent_pathname;
 
 };
 

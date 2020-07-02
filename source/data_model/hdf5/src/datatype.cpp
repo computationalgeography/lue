@@ -3,9 +3,7 @@
 #include <boost/predef/other/endian.h>
 #include <fmt/format.h>
 #include <algorithm>
-#include <cassert>
 #include <optional>
-#include <set>
 
 
 namespace lue {
@@ -130,23 +128,16 @@ std::string standard_datatype_as_string(
 Datatype::Datatype(
     hid_t const id):
 
-    _id{
-            id,
-            []([[maybe_unused]] hid_t const id)
-            {
-                return 0;
-            }
-        }
+    Datatype{Identifier{id, []([[maybe_unused]] hid_t const id) { return 0; }}}
 
 {
-    assert(_id.type() == H5I_DATATYPE);
 }
 
 
 Datatype::Datatype(
-    Identifier&& id)
+    Identifier id):
 
-    : _id(std::forward<Identifier>(id))
+    _id(std::move(id))
 
 {
     assert(_id.type() == H5I_DATATYPE);
@@ -168,7 +159,7 @@ Identifier const& Datatype::id() const
 void Datatype::set_size(
     std::size_t const nr_bytes)
 {
-    auto status = ::H5Tset_size(_id, nr_bytes);
+    ::herr_t const status{::H5Tset_size(_id, nr_bytes)};
 
     if(status < 0) {
         throw std::runtime_error("Cannot set size");
@@ -189,7 +180,7 @@ std::size_t Datatype::size() const
 */
 ::H5T_cset_t Datatype::encoding() const
 {
-    auto encoding = ::H5Tget_cset(_id);
+    ::H5T_cset_t const encoding{::H5Tget_cset(_id)};
 
     if(encoding == ::H5T_CSET_ERROR) {
         throw std::runtime_error("Cannot retrieve encoding");
@@ -227,7 +218,7 @@ bool Datatype::is_native() const
 
 bool Datatype::is_string() const
 {
-    return class_() == H5T_STRING;
+    return class_() == ::H5T_STRING;
 }
 
 
@@ -236,7 +227,7 @@ void Datatype::insert(
     std::size_t offset,
     Datatype const& datatype)
 {
-    auto status = ::H5Tinsert(_id, name.c_str(), offset, datatype.id());
+    herr_t const status{::H5Tinsert(_id, name.c_str(), offset, datatype.id())};
 
     if(status < 0) {
         throw std::runtime_error("Cannot insert member to compound datatype");
@@ -263,12 +254,11 @@ std::vector<unsigned char> encode_datatype(
 {
     // Determine size of buffer.
     std::size_t nr_bytes{};
-    auto status = ::H5Tencode(datatype.id(), nullptr, &nr_bytes);
+    ::herr_t status{::H5Tencode(datatype.id(), nullptr, &nr_bytes)};
 
     if(status < 0) {
         throw std::runtime_error("Cannot encode data type");
     }
-
 
     // Encode data type.
     std::vector<unsigned char> buffer(nr_bytes);
@@ -286,46 +276,42 @@ std::vector<unsigned char> encode_datatype(
 Datatype decode_datatype(
     std::vector<unsigned char> const& buffer)
 {
-    auto id = ::H5Tdecode(buffer.data());
+    ::hid_t const id{::H5Tdecode(buffer.data())};
 
     if(id < 0) {
         throw std::runtime_error("Cannot decode data type");
     }
 
-    return Datatype(Identifier(id, ::H5Tclose));
+    return Datatype{Identifier{id, ::H5Tclose}};
 }
 
 
 namespace {
 
 Datatype create_datatype_(
-    H5T_class_t const class_,
+    ::H5T_class_t const class_,
     std::size_t const nr_bytes)
 {
-    auto id = Identifier(::H5Tcreate(class_, nr_bytes), ::H5Tclose);
+    Identifier id{::H5Tcreate(class_, nr_bytes), ::H5Tclose};
 
     if(!id.is_valid()) {
         throw std::runtime_error("Cannot create compound data type");
     }
 
-    Datatype datatype{std::move(id)};
-
-    return datatype;
+    return Datatype{std::move(id)};
 }
 
 
 Datatype copy_datatype(
-    hid_t const datatype_id)
+    ::hid_t const datatype_id)
 {
-    auto id = Identifier(::H5Tcopy(datatype_id), ::H5Tclose);
+    Identifier id{::H5Tcopy(datatype_id), ::H5Tclose};
 
     if(!id.is_valid()) {
         throw std::runtime_error("Cannot copy data type");
     }
 
-    Datatype datatype{std::move(id)};
-
-    return datatype;
+    return Datatype{std::move(id)};
 }
 
 }  // Anonymous namespace
@@ -340,8 +326,8 @@ Datatype copy_datatype(
 Datatype create_datatype(
     std::size_t const nr_bytes)
 {
-    auto datatype = create_datatype(H5T_C_S1, nr_bytes);
-    auto status = ::H5Tset_cset(datatype.id(), H5T_CSET_UTF8);
+    Datatype datatype{create_datatype(H5T_C_S1, nr_bytes)};
+    ::herr_t const status = ::H5Tset_cset(datatype.id(), ::H5T_CSET_UTF8);
 
     if(status < 0) {
         throw std::runtime_error("Cannot set character set");
@@ -357,16 +343,16 @@ Datatype create_datatype(
     @exception  std::runtime_error In case the datatype cannot be created
 */
 Datatype create_datatype(
-    hid_t const type_id,
+    ::hid_t const type_id,
     std::size_t const nr_bytes)
 {
-    auto id = Identifier(::H5Tcopy(type_id), ::H5Tclose);
+    Identifier id{::H5Tcopy(type_id), ::H5Tclose};
 
     if(!id.is_valid()) {
         throw std::runtime_error("Cannot copy type-id");
     }
 
-    Datatype datatype(std::move(id));
+    Datatype datatype{std::move(id)};
     datatype.set_size(nr_bytes);
 
     return datatype;
@@ -384,8 +370,8 @@ Datatype create_datatype(
 */
 Datatype create_string_datatype()
 {
-    auto datatype = copy_datatype(H5T_C_S1);
-    auto status = ::H5Tset_cset(datatype.id(), H5T_CSET_UTF8);
+    Datatype datatype{copy_datatype(H5T_C_S1)};
+    ::herr_t const status{::H5Tset_cset(datatype.id(), ::H5T_CSET_UTF8)};
 
     if(status < 0) {
         throw std::runtime_error("Cannot set character set");
@@ -400,7 +386,7 @@ Datatype create_string_datatype()
 Datatype create_compound_datatype(
     std::size_t const nr_bytes)
 {
-    auto datatype = create_datatype_(H5T_COMPOUND, nr_bytes);
+    Datatype datatype{create_datatype_(::H5T_COMPOUND, nr_bytes)};
 
     datatype.set_size(nr_bytes);
 
@@ -460,64 +446,39 @@ Datatype memory_datatype(
 
     return *result;
 
+    // Hashing based on object ID does not work. The same type can have different IDs...
+    // static std::unordered_map<Datatype, Datatype, Datatype::Hash> const map{
+    //         {std_uint8_le, native_uint8},
+    //         {std_uint16_le, native_uint16},
+    //         {std_uint32_le, native_uint32},
+    //         {std_uint64_le, native_uint64},
+    //         {std_int8_le, native_int8},
+    //         {std_int16_le, native_int16},
+    //         {std_int32_le, native_int32},
+    //         {std_int64_le, native_int64},
+    //         {ieee_float32_le, native_float32},
+    //         {ieee_float64_le, native_float64},
+    //     };
 
-    // std::map<Datatype, Datatype, CompareDatatypes_>
-    //     memory_datatype_by_file_datatype
+    // Datatype result{};
+
+    // if(auto const it{map.find(file_datatype)}; it != map.end())
     // {
-    //     {Datatype{H5T_STD_U8LE}, Datatype{H5T_NATIVE_UINT8}},
-    //     {Datatype{H5T_STD_U16LE}, Datatype{H5T_NATIVE_UINT16}},
-    //     {Datatype{H5T_STD_U32LE}, Datatype{H5T_NATIVE_UINT32}},
-    //     {Datatype{H5T_STD_U64LE}, Datatype{H5T_NATIVE_UINT64}},
-    //     {Datatype{H5T_STD_I8LE}, Datatype{H5T_NATIVE_INT8}},
-    //     {Datatype{H5T_STD_I16LE}, Datatype{H5T_NATIVE_INT16}},
-    //     {Datatype{H5T_STD_I32LE}, Datatype{H5T_NATIVE_INT32}},
-    //     {Datatype{H5T_STD_I64LE}, Datatype{H5T_NATIVE_INT64}},
-    //     {Datatype{H5T_IEEE_F32LE}, Datatype{H5T_NATIVE_FLOAT}},
-    //     {Datatype{H5T_IEEE_F64LE}, Datatype{H5T_NATIVE_DOUBLE}}  // ,
-    //     // {create_string_datatype(), create_string_datatype()}
-    // };
-    // assert(memory_datatype_by_file_datatype.size() == 10);
-
-    // std::cout
-    //     << standard_datatype_as_string(file_datatype)
-    //     << ": " << file_datatype.id().is_valid()
-    //     << "- " << ::H5Iobject_verify(file_datatype.id(), H5I_DATATYPE)
-    //     << std::endl
-    //     << "-------------------------------------------------\n"
-    //     ;
-
-    // for(auto const tuple: memory_datatype_by_file_datatype) {
-    //     assert(tuple.first.is_standard() || tuple.first.is_string());
-    //     assert(tuple.second.is_native() || tuple.second.is_string());
-
-    //     auto const file_datatype = tuple.first;
-
-    //     std::cout
-    //         << standard_datatype_as_string(file_datatype)
-    //         << ": " << file_datatype.id().is_valid()
-    //         << "- " << ::H5Iobject_verify(file_datatype.id(), H5I_DATATYPE)
-    //         << std::endl
-    //         ;
+    //     result = it->second;
     // }
-
-
-    //     // auto object1 = ::H5Iobject_verify(lhs.id(), H5I_DATATYPE);
-    //     // auto object2 = ::H5Iobject_verify(rhs.id(), H5I_DATATYPE);
-
-    //     // assert((lhs.id().is_valid() && object1) || (!lhs.id().is_valid() && !object1));
-    //     // assert((rhs.id().is_valid() && object2) || (!rhs.id().is_valid() && !object2));
-
-
-    // auto const it = memory_datatype_by_file_datatype.find(file_datatype);
-
-    // if(it == memory_datatype_by_file_datatype.end()) {
+    // else if(file_datatype.is_string())
+    // {
+    //     result = file_datatype;
+    // }
+    // else
+    // {
     //     throw std::runtime_error(fmt::format(
     //         "No memory datatype for file datatype ({})",
     //         standard_datatype_as_string(file_datatype))
     //     );
     // }
 
-    // return it->second;
+    // return result;
 }
 
 
@@ -571,33 +532,39 @@ Datatype file_datatype(
 
     return *result;
 
+    // Hashing based on object ID does not work. The same type can have different IDs...
+    // static std::unordered_map<Datatype, Datatype, Datatype::Hash> const map{
+    //         {native_uint8, std_uint8_le},
+    //         {native_uint16, std_uint16_le},
+    //         {native_uint32, std_uint32_le},
+    //         {native_uint64, std_uint64_le},
+    //         {native_int8, std_int8_le},
+    //         {native_int16, std_int16_le},
+    //         {native_int32, std_int32_le},
+    //         {native_int64, std_int64_le},
+    //         {native_float32, ieee_float32_le},
+    //         {native_float64, ieee_float64_le},
+    //     };
 
-    // std::map<Datatype, Datatype, CompareDatatypes_>
-    //     file_datatype_by_memory_datatype
+    // Datatype result{};
+
+    // if(auto const it{map.find(memory_datatype)}; it != map.end())
     // {
-    //     {Datatype{H5T_NATIVE_UINT8},  Datatype{H5T_STD_U8LE}},
-    //     {Datatype{H5T_NATIVE_UINT16}, Datatype{H5T_STD_U16LE}},
-    //     {Datatype{H5T_NATIVE_UINT32}, Datatype{H5T_STD_U32LE}},
-    //     {Datatype{H5T_NATIVE_UINT64}, Datatype{H5T_STD_U64LE}},
-    //     {Datatype{H5T_NATIVE_INT8},   Datatype{H5T_STD_I8LE}},
-    //     {Datatype{H5T_NATIVE_INT16},  Datatype{H5T_STD_I16LE}},
-    //     {Datatype{H5T_NATIVE_INT32},  Datatype{H5T_STD_I32LE}},
-    //     {Datatype{H5T_NATIVE_INT64},  Datatype{H5T_STD_I64LE}},
-    //     {Datatype{H5T_NATIVE_FLOAT},  Datatype{H5T_IEEE_F32LE}},
-    //     {Datatype{H5T_NATIVE_DOUBLE}, Datatype{H5T_IEEE_F64LE}},
-    //     {create_string_datatype(), create_string_datatype()}
-    // };
-
-    // auto const it = file_datatype_by_memory_datatype.find(memory_datatype);
-
-    // if(it == file_datatype_by_memory_datatype.end()) {
+    //     result = it->second;
+    // }
+    // else if(memory_datatype.is_string())
+    // {
+    //     result = memory_datatype;
+    // }
+    // else
+    // {
     //     throw std::runtime_error(fmt::format(
     //         "No file datatype for memory datatype ({})",
     //         native_datatype_as_string(memory_datatype))
     //     );
     // }
 
-    // return it->second;
+    // return result;
 }
 
 
@@ -605,9 +572,8 @@ bool is_native_unsigned_integral(
     Datatype const& datatype)
 {
     return std::find(
-        native_unsigned_integrals.begin(),
-        native_unsigned_integrals.end(),
-        datatype) != native_unsigned_integrals.end();
+        native_unsigned_integrals.begin(), native_unsigned_integrals.end(), datatype) !=
+        native_unsigned_integrals.end();
 }
 
 
@@ -615,9 +581,8 @@ bool is_native_signed_integral(
     Datatype const& datatype)
 {
     return std::find(
-        native_signed_integrals.begin(),
-        native_signed_integrals.end(),
-        datatype) != native_signed_integrals.end();
+        native_signed_integrals.begin(), native_signed_integrals.end(), datatype) !=
+        native_signed_integrals.end();
 }
 
 
@@ -625,9 +590,8 @@ bool is_native_floating_point(
     Datatype const& datatype)
 {
     return std::find(
-        native_floating_points.begin(),
-        native_floating_points.end(),
-        datatype) != native_floating_points.end();
+        native_floating_points.begin(), native_floating_points.end(), datatype) !=
+        native_floating_points.end();
 }
 
 
@@ -635,9 +599,8 @@ bool is_std_unsigned_integral_le(
     Datatype const& datatype)
 {
     return std::find(
-        std_unsigned_integrals_le.begin(),
-        std_unsigned_integrals_le.end(),
-        datatype) != std_unsigned_integrals_le.end();
+        std_unsigned_integrals_le.begin(), std_unsigned_integrals_le.end(), datatype) !=
+        std_unsigned_integrals_le.end();
 }
 
 
@@ -645,9 +608,8 @@ bool is_std_signed_integral_le(
     Datatype const& datatype)
 {
     return std::find(
-        std_signed_integrals_le.begin(),
-        std_signed_integrals_le.end(),
-        datatype) != std_signed_integrals_le.end();
+        std_signed_integrals_le.begin(), std_signed_integrals_le.end(), datatype) !=
+        std_signed_integrals_le.end();
 }
 
 
@@ -655,9 +617,8 @@ bool is_ieee_floating_point_le(
     Datatype const& datatype)
 {
     return std::find(
-        ieee_floating_points_le.begin(),
-        ieee_floating_points_le.end(),
-        datatype) != ieee_floating_points_le.end();
+        ieee_floating_points_le.begin(), ieee_floating_points_le.end(), datatype) !=
+        ieee_floating_points_le.end();
 }
 
 

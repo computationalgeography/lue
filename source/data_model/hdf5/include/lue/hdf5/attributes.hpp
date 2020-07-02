@@ -66,30 +66,6 @@ inline T Attributes::read(
 }
 
 
-// template<>
-// inline void Attributes::write<std::string>(
-//     std::string const& name,
-//     std::string const& value)
-// {
-//     assert(_id.get().is_valid());
-//     assert(!exists(name));
-// 
-//     auto attribute = create_attribute(_id, name, value);
-// }
-// 
-// 
-// template<>
-// inline void Attributes::write<std::vector<unsigned char>>(
-//     std::string const& name,
-//     std::vector<unsigned char> const& value)
-// {
-//     assert(_id.get().is_valid());
-//     assert(!exists(name));
-// 
-//     auto attribute = create_attribute(_id, name, value);
-// }
-
-
 /*!
     @brief      Store @a value of attribute @a name
 
@@ -103,10 +79,12 @@ inline void Attributes::write(
 {
     assert(_id.is_valid());
 
-    if(!exists(name)) {
+    if(!exists(name))
+    {
         create_attribute(_id, name, value);
     }
-    else {
+    else
+    {
         attribute(name).write<T>(value);
     }
 }

@@ -28,7 +28,7 @@ public:
 
 protected:
 
-    explicit       PropertyList        (hid_t class_id);
+    explicit       PropertyList        (::hid_t class_id);
 
 private:
 

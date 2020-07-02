@@ -32,7 +32,7 @@ struct NativeDatatypeTraits
     /*!
         @brief      Return id of native HDF5 type
     */
-    static hid_t   type_id             ();
+    static ::hid_t type_id             ();
 
     /*!
         @brief      Return name of native HDF5 type
@@ -48,7 +48,7 @@ struct NativeDatatypeTraits
 template<>                                           \
 struct NativeDatatypeTraits<type>                    \
 {                                                    \
-    static hid_t type_id() { return type_id_; }      \
+    static ::hid_t type_id() { return type_id_; }    \
     static std::string name() { return #type_id_; }  \
 };
 
@@ -76,11 +76,11 @@ template<
 struct NativeDatatypeTraits<
     T,
     typename std::enable_if<(
-        std::is_same<T, hsize_t>::value &&
-        !std::is_same<hsize_t, uint64_t>::value)>::type
+        std::is_same<T, ::hsize_t>::value &&
+        !std::is_same<::hsize_t, std::uint64_t>::value)>::type
 >
 {
-    static hid_t type_id() { return H5T_NATIVE_HSIZE; }
+    static ::hid_t type_id() { return H5T_NATIVE_HSIZE; }
     static std::string name() { return "H5T_NATIVE_HSIZE"; }
 };
 
@@ -119,7 +119,7 @@ struct StandardDatatypeTraits
     /*!
         @brief      Return id of standard HDF5 type
     */
-    static hid_t   type_id             ();
+    static ::hid_t type_id             ();
 
     /*!
         @brief      Return name of standard HDF5 type
@@ -141,7 +141,7 @@ struct StandardDatatypeTraits
 template<>                                               \
 struct StandardDatatypeTraits<type>                      \
 {                                                        \
-    static hid_t type_id() { return type_id_; }          \
+    static ::hid_t type_id() { return type_id_; }        \
     static std::string name() { return #type_id_; }      \
     static std::size_t nr_bytes() { return nr_bytes_; }  \
 };
@@ -170,10 +170,10 @@ template<
 struct StandardDatatypeTraits<
     T,
     typename std::enable_if<(
-        std::is_same<T, hsize_t>::value &&
-        !std::is_same<hsize_t, uint64_t>::value)>::type
+        std::is_same<T, ::hsize_t>::value &&
+        !std::is_same<::hsize_t, uint64_t>::value)>::type
 >
-    : public StandardDatatypeTraits<uint64_t>
+    : public StandardDatatypeTraits<std::uint64_t>
 {
     // hsize_t is not defined as being uint64_t
     // Here we assume that hsize_t
@@ -183,12 +183,12 @@ struct StandardDatatypeTraits<
     //
     // If this is not the case, we want to know about it.
 
-    static_assert(sizeof(hsize_t) == 8,
+    static_assert(sizeof(::hsize_t) == 8,
         "expecting size of hsize_t to be 8 bytes");
-    static_assert(std::is_unsigned<hsize_t>::value,
+    static_assert(std::is_unsigned<::hsize_t>::value,
         "expecting hsize_t to be unsigned");
     // NOLINTNEXTLINE(google-runtime-int)
-    static_assert(std::is_same<hsize_t, unsigned long long int>::value,
+    static_assert(std::is_same<::hsize_t, unsigned long long int>::value,
         "expecting hsize_t to be unsigned long long int");
 };
 

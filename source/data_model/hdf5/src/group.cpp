@@ -4,8 +4,6 @@
 #include <boost/filesystem.hpp>
 #include <cstring>
 #include <cstdlib>
-#include <memory>
-#include <iostream>
 
 
 namespace lue {
@@ -20,8 +18,8 @@ void iterate(
     F& callback,
     T& data)
 {
-    auto const status = ::H5Literate(
-        location, ::H5_INDEX_NAME, ::H5_ITER_NATIVE, nullptr, callback, &data);
+    ::herr_t const status{
+        ::H5Literate(location, ::H5_INDEX_NAME, ::H5_ITER_NATIVE, nullptr, callback, &data)};
 
     if(status < 0) {
         throw std::runtime_error(fmt::format(
@@ -30,102 +28,6 @@ void iterate(
         ));
     }
 }
-
-
-// class ObjectCounter
-// {
-// 
-//     public:
-// 
-//         ObjectCounter():
-//             _nr_objects{0}
-//         {
-//         }
-// 
-//         std::size_t operator++()
-//         {
-//             return ++_nr_objects;
-//         }
-// 
-//         std::size_t nr_objects() const
-//         {
-//             return _nr_objects;
-//         }
-// 
-//     private:
-// 
-//         std::size_t _nr_objects;
-// 
-// };
-
-
-// herr_t count_objects(
-//     hid_t const location,
-//     char const* name,
-//     ::H5L_info_t const* /* info */,
-//     void* data)
-// {
-//     auto* data_ = static_cast<ObjectCounter*>(data);
-// 
-//     ::H5O_info_t infobuf;
-//     auto status = ::H5Oget_info_by_name(location, name, &infobuf, H5P_DEFAULT);
-// 
-//     if(status < 0) {
-//         return status;
-//     }
-// 
-//     if(infobuf.type == H5O_TYPE_GROUP || infobuf.type == H5O_TYPE_DATASET) {
-//         ++data_;
-//     }
-// 
-//     return 0;
-// }
-
-
-// herr_t count_groups(
-//     hid_t const location,
-//     char const* name,
-//     ::H5L_info_t const* /* info */,
-//     void* data)
-// {
-//     auto* data_ = static_cast<ObjectCounter*>(data);
-// 
-//     ::H5O_info_t infobuf;
-//     auto status = ::H5Oget_info_by_name(location, name, &infobuf, H5P_DEFAULT);
-// 
-//     if(status < 0) {
-//         return status;
-//     }
-// 
-//     if(infobuf.type == H5O_TYPE_GROUP) {
-//         ++data_;
-//     }
-// 
-//     return 0;
-// }
-
-
-// herr_t count_datasets(
-//     hid_t const location,
-//     char const* name,
-//     ::H5L_info_t const* /* info */,
-//     void* data)
-// {
-//     auto* data_ = static_cast<ObjectCounter*>(data);
-// 
-//     ::H5O_info_t infobuf;
-//     auto status = ::H5Oget_info_by_name(location, name, &infobuf, H5P_DEFAULT);
-// 
-//     if(status < 0) {
-//         return status;
-//     }
-// 
-//     if(infobuf.type == H5O_TYPE_DATASET) {
-//         ++data_->nr_objects;
-//     }
-// 
-//     return 0;
-// }
 
 
 class ObjectNameCollector
@@ -153,14 +55,14 @@ class ObjectNameCollector
 };
 
 
-herr_t retrieve_object_names(
+::herr_t retrieve_object_names(
     ::hid_t const location,
     char const* name,
     ::H5L_info_t const* /* info */,
     void* data)
 {
     ::H5O_info_t infobuf;
-    herr_t status = H5Oget_info_by_name(location, name, &infobuf, H5P_DEFAULT);
+    ::herr_t const status{::H5Oget_info_by_name(location, name, &infobuf, H5P_DEFAULT)};
 
     if(status < 0) {
         return status;
@@ -168,62 +70,63 @@ herr_t retrieve_object_names(
 
     if(infobuf.type == H5O_TYPE_GROUP || infobuf.type == H5O_TYPE_DATASET)
     {
-        auto* data_ = static_cast<ObjectNameCollector*>(data);
-        data_->add(name);
+        static_cast<ObjectNameCollector*>(data)->add(name);
     }
 
     return 0;
 }
 
 
-herr_t retrieve_group_names(
+::herr_t retrieve_group_names(
     ::hid_t const location,
     char const* name,
     ::H5L_info_t const* /* info */,
     void* data)
 {
     ::H5O_info_t infobuf;
-    herr_t status = H5Oget_info_by_name(location, name, &infobuf, H5P_DEFAULT);
+    ::herr_t const status{::H5Oget_info_by_name(location, name, &infobuf, H5P_DEFAULT)};
 
     if(status < 0) {
         return status;
     }
 
-    if(infobuf.type == H5O_TYPE_GROUP) {
-        auto* data_ = static_cast<ObjectNameCollector*>(data);
-        data_->add(name);
+    if(infobuf.type == ::H5O_TYPE_GROUP)
+    {
+        static_cast<ObjectNameCollector*>(data)->add(name);
     }
 
     return 0;
 }
 
-
-// herr_t retrieve_dataset_names(
-//     ::hid_t const location,
-//     char const* name,
-//     ::H5L_info_t const* /* info */,
-//     void* data)
-// {
-//     auto* data_ = static_cast<ObjectNameCollector*>(data);
-// 
-//     ::H5O_info_t infobuf;
-//     herr_t status = H5Oget_info_by_name(location, name, &infobuf, H5P_DEFAULT);
-// 
-//     if(status < 0) {
-//         return status;
-//     }
-// 
-//     if(infobuf.type == H5O_TYPE_DATASET) {
-//         data_->_names[data_->_nr_names] =
-//             (char*)malloc((std::strlen(name) + 1) * sizeof(char));
-//         std::strcpy(data_->_names[data_->_nr_names], name);
-//         ++data_->_nr_names;
-//     }
-// 
-//     return 0;
-// }
-
 }  // Anonymous namespace
+
+
+Group::Group(
+    Identifier const& parent,
+    std::string const& name):
+
+    PrimaryDataObject{Identifier{::H5Gopen(parent, name.c_str(), H5P_DEFAULT), ::H5Gclose}},
+    _parent_pathname{}
+
+{
+    if(!id().is_valid()) {
+        throw std::runtime_error(fmt::format(
+            "Cannot open group {} in {}",
+            name, parent.pathname()
+        ));
+    }
+
+    boost::filesystem::path const path{id().pathname()};
+    assert(path.is_absolute());
+
+    if(path.has_parent_path())
+    {
+        _parent_pathname = path.parent_path().string();
+    }
+
+    assert(id().is_valid());
+    assert(has_parent() || _parent_pathname.empty());
+}
 
 
 /*!
@@ -233,69 +136,25 @@ herr_t retrieve_group_names(
     @exception  std::runtime_error In case the group cannot be opened
 */
 Group::Group(
-    Group& parent,
+    Group const& parent,
     std::string const& name):
 
-    PrimaryDataObject{
-            Identifier{
-                ::H5Gopen(parent.id(), name.c_str(), H5P_DEFAULT),
-                ::H5Gclose
-            }
-        },
-    _parent{}
+    Group{parent.id(), name}
 
 {
-    if(!id().is_valid()) {
-        throw std::runtime_error(fmt::format(
-            "Cannot open group {} in {}",
-            name, parent.id().pathname()
-        ));
-    }
-
-    boost::filesystem::path path{id().pathname()};
-    assert(path.is_absolute());
-
-    if(parent.id().pathname() == path.parent_path().string()) {
-        // Parent passed in is our direct parent. Cool, use it.
-        _parent = std::make_unique<Group>(parent);
-    }
-    else if(path.has_parent_path()) {
-        // Direct parent is different from parent passed in. This happens
-        // when using absolute paths as group names and pass in an
-        // unrelated parent, which is OK. Here we build up the chain of
-        // direct parents.
-        _parent = std::make_unique<Group>(*this, path.parent_path().string());
-    }
-    // else {
-    //   Parent is root
-    // }
-
-    assert(id().is_valid());
 }
 
 
 Group::Group(
-    Group& parent,
+    Group const& parent,
     Identifier& id):
 
     PrimaryDataObject{id},
-    _parent{std::make_unique<Group>(parent)}
+    _parent_pathname{parent.id().pathname()}
 
 {
+    // Only used by create_group() below
     assert(this->id().is_valid());
-}
-
-
-Group::Group(
-    Group& other):
-
-    PrimaryDataObject{other},
-    _parent{}
-
-{
-    if(other._parent) {
-        _parent = std::make_unique<Group>(*other._parent);
-    }
 }
 
 
@@ -306,27 +165,35 @@ Group::Group(
     Use this constructor for groups that have no parent.
 */
 Group::Group(
-    Identifier&& id):
+    Identifier id):
 
-    PrimaryDataObject{std::forward<Identifier>(id)},
-    _parent{}
+    PrimaryDataObject{std::move(id)},
+    _parent_pathname{}
 
 {
-    // assert(id().is_valid());
+    // Only used by File constructor
+    assert(this->id().is_valid());
+    assert(this->id().type() == ::H5I_FILE);
 }
 
 
 bool Group::has_parent() const
 {
-    return bool{_parent};
+    return !_parent_pathname.empty();
 }
 
 
-Group& Group::parent()
+Group Group::parent() const
 {
-    assert(_parent);
+    assert(has_parent());
 
-    return *_parent;
+    return Group{id().file_id(), _parent_pathname};
+}
+
+
+std::string const& Group::parent_pathname () const
+{
+    return _parent_pathname;
 }
 
 
@@ -470,10 +337,7 @@ Group create_group(
     }
 
     Identifier group_id{
-            ::H5Gcreate(parent.id(), name.c_str(), H5P_DEFAULT, H5P_DEFAULT,
-                H5P_DEFAULT),
-            ::H5Gclose
-        };
+        ::H5Gcreate(parent.id(), name.c_str(), H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT), ::H5Gclose};
 
     if(!group_id.is_valid()) {
         throw std::runtime_error(fmt::format(

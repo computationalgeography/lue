@@ -53,7 +53,7 @@ void assert_no_superfluous_objects_exist(
     std::vector<std::string> const& names,
     Issues& issues)
 {
-    auto superflouos_objects_names = difference(group.object_names(), names);
+    auto const superflouos_objects_names = difference(group.object_names(), names);
 
     // These objects are not expected.
     for(auto const& name: superflouos_objects_names) {
@@ -67,7 +67,7 @@ bool assert_groups_exist(
     std::vector<std::string> const& names,
     Issues& issues)
 {
-    auto missing_groups_names = difference(names, group.group_names());
+    auto const missing_groups_names = difference(names, group.group_names());
 
     // These required groups are not found.
     for(auto const& name: missing_groups_names) {

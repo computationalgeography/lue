@@ -41,7 +41,7 @@ private:
 
     Identifier     _id;
 
-    herr_t (*_original_error_handler)(hid_t, void*);
+    ::herr_t (*_original_error_handler)(::hid_t, void*);
 
     void*          _original_client_data;
 

@@ -48,9 +48,7 @@ public:
 
 protected:
 
-    explicit       PrimaryDataObject   (Identifier& id);
-
-    explicit       PrimaryDataObject   (Identifier&& id);
+    explicit       PrimaryDataObject   (Identifier id);
 
 private:
 

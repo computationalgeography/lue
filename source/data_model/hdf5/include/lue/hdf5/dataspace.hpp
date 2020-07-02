@@ -18,9 +18,7 @@ public:
 
     explicit       Dataspace           (::H5S_class_t type);
 
-    explicit       Dataspace           (hid_t id);
-
-    explicit       Dataspace           (Identifier&& id);
+    explicit       Dataspace           (::hid_t id);
 
                    Dataspace           (Dataspace const&)=default;
 
@@ -38,9 +36,13 @@ public:
 
     Shape          dimension_extents   () const;
 
-    hssize_t       nr_elements         () const;
+    ::hssize_t     nr_elements         () const;
 
 private:
+
+    friend Dataspace create_dataspace(Shape const& dimension_sizes, Shape const& max_dimension_sizes);
+
+    explicit       Dataspace           (Identifier id);
 
     //! Id of dataspace
     Identifier     _id;

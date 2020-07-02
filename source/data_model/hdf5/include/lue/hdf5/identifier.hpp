@@ -10,7 +10,7 @@ namespace hdf5 {
 /*!
     @brief      This class represents an HDF5 identifier of an open
                 HDF5 object
-    @sa         https://support.hdfgroup.org/HDF5/doc/RM/RM_H5I.html
+    @sa         https://portal.hdfgroup.org/display/HDF5/Identifiers
 
     Scoping the identifier in this class ensures that the identifier is
     closed upon exiting the scope.
@@ -68,13 +68,30 @@ public:
 
     ObjectInfo     info                () const;
 
+    Identifier     file_id             () const;
+
+    // class Hash
+    // {
+
+    // public:
+
+    //     std::size_t operator()(
+    //         Identifier const& id) const noexcept
+    //     {
+    //         // return std::hash<::hid_t>{}(id._id);
+
+    //         return std::hash<::haddr_t>{}(id.info().addr());
+    //     }
+
+    // };
+
 private:
 
     int            reference_count     () const;
 
     int            increment_reference_count();
 
-    void           close_if_necessary  ();
+    void           close_if_valid      ();
 
     void           assert_invariant    () const;
 

@@ -19,15 +19,15 @@ namespace {
 
 
 extern "C"
-herr_t error_walker(
+::herr_t error_walker(
     unsigned int /* idx */,
-    H5E_error2_t const* error,
+    ::H5E_error2_t const* error,
     void* client_data);
 
 
-herr_t error_walker(
+::herr_t error_walker(
     unsigned int /* idx */,
-    H5E_error2_t const* error,
+    ::H5E_error2_t const* error,
     void* client_data)
 {
     auto* messages = static_cast<std::vector<std::string>*>(client_data);
@@ -49,27 +49,20 @@ herr_t error_walker(
 }  // Anonymous namespace
 
 
-ErrorStack::ErrorStack()
+ErrorStack::ErrorStack():
 
-    : ErrorStack{
-        Identifier{
-            H5E_DEFAULT,
-            []([[maybe_unused]] hid_t const id)
-            {
-                return 0;
-            }
-        }}
+    ErrorStack{Identifier{H5E_DEFAULT, []([[maybe_unused]] ::hid_t const id) { return 0; }}}
 
 {
 }
 
 
 ErrorStack::ErrorStack(
-    Identifier const& id)
+    Identifier const& id):
 
-    : _id{id},
-      _original_error_handler{nullptr},
-      _original_client_data{nullptr}
+    _id{id},
+    _original_error_handler{nullptr},
+    _original_client_data{nullptr}
 
 {
     // Save current error handler
@@ -90,7 +83,7 @@ ErrorStack::~ErrorStack()
 
 bool ErrorStack::empty() const
 {
-    ssize_t const nr_error_messages = ::H5Eget_num(_id);
+    ::ssize_t const nr_error_messages = ::H5Eget_num(_id);
     assert(nr_error_messages >= 0);
 
     return nr_error_messages == 0;
@@ -99,7 +92,7 @@ bool ErrorStack::empty() const
 
 void ErrorStack::clear() const
 {
-    [[maybe_unused]] herr_t const result = ::H5Eclear2(_id);
+    [[maybe_unused]] ::herr_t const result = ::H5Eclear2(_id);
     assert(result >= 0);
 }
 
@@ -114,8 +107,7 @@ std::vector<std::string> ErrorStack::messages() const
 {
     std::vector<std::string> result;
 
-    [[maybe_unused]] herr_t const status =
-        ::H5Ewalk2(_id, H5E_WALK_DOWNWARD, error_walker, &result);
+    [[maybe_unused]] herr_t const status = ::H5Ewalk2(_id, H5E_WALK_DOWNWARD, error_walker, &result);
     assert(status >= 0);
 
     return result;

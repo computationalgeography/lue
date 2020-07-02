@@ -9,8 +9,7 @@ PrimaryDataObject::PrimaryDataObject(
     Identifier const& location,
     std::string const& name):
 
-    _id{::H5Oopen(location, name.c_str(), H5P_DEFAULT), ::H5Oclose},
-    _attributes{_id}
+    PrimaryDataObject{Identifier{::H5Oopen(location, name.c_str(), H5P_DEFAULT), ::H5Oclose}}
 
 {
 }
@@ -23,27 +22,13 @@ PrimaryDataObject::PrimaryDataObject(
     will be opened.
 */
 PrimaryDataObject::PrimaryDataObject(
-    Identifier& id):
+    Identifier id):
 
-    _id{id},
+    _id{std::move(id)},
     _attributes{_id}
 
 {
     assert(_id.is_valid());
-}
-
-
-/*!
-    @brief      Construct an object based on an identifier
-*/
-PrimaryDataObject::PrimaryDataObject(
-    Identifier&& id)
-
-    : _id{std::forward<Identifier>(id)},
-      _attributes{_id}
-
-{
-    // assert(_id.is_valid());
 }
 
 

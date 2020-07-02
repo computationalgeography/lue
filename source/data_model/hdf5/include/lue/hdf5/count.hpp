@@ -12,8 +12,9 @@ namespace hdf5 {
 
     Using this class instead of HDF5's `hsize_t const*` is more type-safe.
 */
-class Count: public std::vector<hsize_t> {
-    using std::vector<hsize_t>::vector;
+class Count: public std::vector<::hsize_t>
+{
+    using std::vector<::hsize_t>::vector;
 };
 
 }  // namespace hdf5
