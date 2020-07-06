@@ -51,12 +51,16 @@ PYBIND11_MODULE(lue, module)
     module.attr("lue_version") = py::str(BuildOptions::version);
     module.attr("git_short_sha1") = py::str(BuildOptions::git_short_sha1);
 
+#ifdef LUE_BUILD_DATA_MODEL
 #ifdef LUE_DATA_MODEL_WITH_PYTHON_API
     data_model::init_submodule(module);
 #endif
+#endif
 
+#ifdef LUE_BUILD_FRAMEWORK
 #ifdef LUE_FRAMEWORK_WITH_PYTHON_API
     framework::init_submodule(module);
+#endif
 #endif
 }
 
