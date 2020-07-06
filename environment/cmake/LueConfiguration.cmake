@@ -171,6 +171,7 @@ endif()
 if(LUE_BUILD_VIEW)
     set(DEVBASE_DOCOPT_REQUIRED TRUE)
     set(DEVBASE_FMT_REQUIRED TRUE)
+    set(DEVBASE_IMGUI_REQUIRED TRUE)
     set(DEVBASE_NLOHMANN_JSON_REQUIRED TRUE)
 endif()
 
@@ -346,63 +347,70 @@ endif()
 
 
 if(DEVBASE_IMGUI_REQUIRED)
-    find_package(OpenGL REQUIRED)
-    find_package(GLEW REQUIRED)
-    find_package(SDL2 REQUIRED)
 
-    if(LUE_REPOSITORY_CACHE AND EXISTS ${LUE_REPOSITORY_CACHE}/imgui)
-        set(imgui_repository ${LUE_REPOSITORY_CACHE}/imgui)
+    if(LUE_BUILD_IMGUI)
+        find_package(OpenGL REQUIRED)
+        find_package(GLEW REQUIRED)
+        find_package(SDL2 REQUIRED)
+
+        if(LUE_REPOSITORY_CACHE AND EXISTS ${LUE_REPOSITORY_CACHE}/imgui)
+            set(imgui_repository ${LUE_REPOSITORY_CACHE}/imgui)
+        else()
+            set(imgui_repository https://github.com/ocornut/imgui.git)
+        endif()
+
+        FetchContent_Declare(imgui
+            // MIT License, see ${imgui_SOURCE_DIR}/LICENSE.txt
+            GIT_REPOSITORY ${imgui_repository}
+            GIT_TAG v1.76
+        )
+
+        FetchContent_GetProperties(imgui)
+
+        if(NOT imgui_POPULATED)
+            FetchContent_Populate(imgui)
+
+            add_library(imgui STATIC
+                # imgui release
+                ${imgui_SOURCE_DIR}/imgui
+                ${imgui_SOURCE_DIR}/imgui_demo
+                ${imgui_SOURCE_DIR}/imgui_draw
+                ${imgui_SOURCE_DIR}/imgui_widgets
+
+                # opengl3 / sdl2 binding
+                ${imgui_SOURCE_DIR}/examples/imgui_impl_opengl3
+                ${imgui_SOURCE_DIR}/examples/imgui_impl_sdl
+            )
+
+            target_include_directories(imgui SYSTEM
+                PRIVATE
+                    ${imgui_SOURCE_DIR}
+                PUBLIC
+                    ${imgui_SOURCE_DIR}/examples
+                    $<BUILD_INTERFACE:${imgui_SOURCE_DIR}>
+                    ${SDL2_INCLUDE_DIR}
+            )
+
+            target_compile_options(imgui
+                PUBLIC
+                    # Output of `sdl2-config --cflags`
+                    "$<$<PLATFORM_ID:Linux>:-D_REENTRANT>"
+            )
+
+            target_link_libraries(imgui
+                PUBLIC
+                    ${SDL2_LIBRARY}
+                    GLEW::glew
+                    OpenGL::GL
+            )
+
+            add_library(imgui::imgui ALIAS imgui)
+
+        endif()
     else()
-        set(imgui_repository https://github.com/ocornut/imgui.git)
-    endif()
-
-    FetchContent_Declare(imgui
-        // MIT License, see ${imgui_SOURCE_DIR}/LICENSE.txt
-        GIT_REPOSITORY ${imgui_repository}
-        GIT_TAG v1.76
-    )
-
-    FetchContent_GetProperties(imgui)
-
-    if(NOT imgui_POPULATED)
-        FetchContent_Populate(imgui)
-
-        add_library(imgui STATIC
-            # imgui release
-            ${imgui_SOURCE_DIR}/imgui
-            ${imgui_SOURCE_DIR}/imgui_demo
-            ${imgui_SOURCE_DIR}/imgui_draw
-            ${imgui_SOURCE_DIR}/imgui_widgets
-
-            # opengl3 / sdl2 binding
-            ${imgui_SOURCE_DIR}/examples/imgui_impl_opengl3
-            ${imgui_SOURCE_DIR}/examples/imgui_impl_sdl
-        )
-
-        target_include_directories(imgui SYSTEM
-            PRIVATE
-                ${imgui_SOURCE_DIR}
-            PUBLIC
-                ${imgui_SOURCE_DIR}/examples
-                $<BUILD_INTERFACE:${imgui_SOURCE_DIR}>
-                ${SDL2_INCLUDE_DIR}
-        )
-
-        target_compile_options(imgui
-            PUBLIC
-                # Output of `sdl2-config --cflags`
-                "$<$<PLATFORM_ID:Linux>:-D_REENTRANT>"
-        )
-
-        target_link_libraries(imgui
-            PUBLIC
-                ${SDL2_LIBRARY}
-                GLEW::glew
-                OpenGL::GL
-        )
-
-        add_library(imgui::imgui ALIAS imgui)
-
+        message(FATAL_ERROR
+            "Support for system-provided ImGUI library does not work yet\n"
+            "But we can build ImGUI for you! Just reconfigure with LUE_BUILD_IMGUI=TRUE")
     endif()
 
     unset(DEVBASE_IMGUI_REQUIRED)
