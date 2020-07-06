@@ -503,4 +503,8 @@ if(DEVBASE_PYBIND11_REQUIRED)
         message(STATUS
             "Found NumPy ${numpy_version} headers in ${NUMPY_INCLUDE_DIRS}")
     endif()
+
+    if(NOT LUE_PYTHON_API_INSTALL_DIR)
+        set(LUE_PYTHON_API_INSTALL_DIR "${PYTHON_SITE_PACKAGES}/lue")
+    endif()
 endif()

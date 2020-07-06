@@ -107,8 +107,8 @@ target_link_libraries(lue_py_data_model
 install(
     TARGETS
         lue_py_data_model
-    LIBRARY DESTINATION python
-    RUNTIME DESTINATION python
+    LIBRARY DESTINATION ${LUE_PYTHON_API_INSTALL_DIR}
+    RUNTIME DESTINATION ${LUE_PYTHON_API_INSTALL_DIR}
 )
 
 configure_file(setup.py.in
