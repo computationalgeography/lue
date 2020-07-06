@@ -29,13 +29,13 @@ target_link_libraries(lue_py
         Boost::headers
 )
 
-if(LUE_DATA_MODEL_WITH_PYTHON_API)
+if(LUE_BUILD_DATA_MODEL AND LUE_DATA_MODEL_WITH_PYTHON_API)
     target_link_libraries(lue_py
         PRIVATE
             lue::py_data_model)
 endif()
 
-if(LUE_FRAMEWORK_WITH_PYTHON_API)
+if(LUE_BUILD_FRAMEWORK AND LUE_FRAMEWORK_WITH_PYTHON_API)
     target_link_libraries(lue_py
         PRIVATE
             lue::py_framework)

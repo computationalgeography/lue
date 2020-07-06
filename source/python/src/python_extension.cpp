@@ -1,9 +1,13 @@
 #include "lue/configure.hpp"
+#ifdef LUE_BUILD_DATA_MODEL
 #ifdef LUE_DATA_MODEL_WITH_PYTHON_API
 #include "lue/py/data_model/submodule.hpp"
 #endif
+#endif
+#ifdef LUE_BUILD_FRAMEWORK
 #ifdef LUE_FRAMEWORK_WITH_PYTHON_API
 #include "lue/py/framework/submodule.hpp"
+#endif
 #endif
 #include <pybind11/pybind11.h>
 #include <boost/algorithm/string/join.hpp>
