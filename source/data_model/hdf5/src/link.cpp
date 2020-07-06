@@ -8,7 +8,7 @@ namespace lue {
 namespace hdf5 {
 
 Link::Link(
-    Group& group,
+    Group const& group,
     std::string const& name):
 
     _location_id{group.id()},
@@ -57,8 +57,7 @@ H5O_type_t object_type(
 {
     ::H5O_info_t info;
 
-    auto const status =
-        ::H5Oget_info_by_name(id, name.c_str(), &info, H5P_DEFAULT);
+    ::herr_t const status{::H5Oget_info_by_name(id, name.c_str(), &info, H5P_DEFAULT)};
 
     if(status < 0) {
         throw std::runtime_error(fmt::format(
@@ -83,8 +82,7 @@ H5O_type_t object_type(
     }
 
     ::H5L_info_t info;
-    auto const status =
-        ::H5Lget_info(id, name.c_str(), &info, H5P_DEFAULT);
+    ::herr_t const status{::H5Lget_info(id, name.c_str(), &info, H5P_DEFAULT)};
 
     if(status < 0) {
         throw std::runtime_error(fmt::format(
@@ -97,7 +95,7 @@ H5O_type_t object_type(
 }
 
 
-H5L_type_t link_type(
+::H5L_type_t link_type(
     Identifier const& id,
     std::string const& name)
 {
@@ -109,7 +107,7 @@ bool link_is_dataset(
     Identifier const& id,
     std::string const& name)
 {
-    return object_type(id, name) == H5O_TYPE_DATASET;
+    return object_type(id, name) == ::H5O_TYPE_DATASET;
 }
 
 
@@ -117,7 +115,7 @@ bool link_is_group(
     Identifier const& id,
     std::string const& name)
 {
-    return object_type(id, name) == H5O_TYPE_GROUP;
+    return object_type(id, name) == ::H5O_TYPE_GROUP;
 }
 
 }  // namespace hdf5

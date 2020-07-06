@@ -31,28 +31,23 @@ class ActiveObjectID:
 
 public:
 
-    friend ActiveObjectID
-                   create_active_object_id(
-                                        hdf5::Group& parent);
+    explicit       ActiveObjectID      (hdf5::Group const& parent);
 
-    explicit       ActiveObjectID      (hdf5::Group& parent);
+    explicit       ActiveObjectID      (same_shape::constant_shape::Value&& value);
 
-                   ActiveObjectID      (ActiveObjectID const&)=delete;
+                   ActiveObjectID      (ActiveObjectID const&)=default;
 
                    ActiveObjectID      (ActiveObjectID&&)=default;
 
                    ~ActiveObjectID     () override =default;
 
-    ActiveObjectID& operator=          (ActiveObjectID const&)=delete;
+    ActiveObjectID& operator=          (ActiveObjectID const&)=default;
 
     ActiveObjectID& operator=          (ActiveObjectID&&)=default;
 
     Count          nr_ids              () const;
 
 private:
-
-    explicit       ActiveObjectID      (same_shape::constant_shape::Value&&
-                                            value);
 
 };
 

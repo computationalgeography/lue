@@ -41,16 +41,14 @@ public:
                    TransferPropertyList();
 
 #ifdef HDF5_IS_PARALLEL
-        void       set_transfer_mode   (H5FD_mpio_xfer_t xfer_mode);
+        void       set_transfer_mode   (::H5FD_mpio_xfer_t xfer_mode);
 #endif
 
     };
 
 
-                   Dataset             (Group& parent,
+                   Dataset             (Group const& parent,
                                         std::string const& name);
-
-    explicit       Dataset             (Identifier& id);
 
     explicit       Dataset             (Identifier&& id);
 
@@ -123,8 +121,7 @@ Dataset            create_dataset      (Identifier& parent,
                                         std::string const& name,
                                         Datatype const& datatype,
                                         Dataspace const& dataspace,
-                                        Dataset::CreationPropertyList const&
-                                            creation_property_list);
+                                        Dataset::CreationPropertyList const& creation_property_list);
 
 } // namespace hdf5
 } // namespace lue

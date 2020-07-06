@@ -25,16 +25,16 @@ public:
                    AccessPropertyList  ();
 
         void       use_core_driver     (std::size_t increment=64000,
-                                        hbool_t backing_store=0);
+                                        ::hbool_t backing_store=0);
 
 #ifdef HDF5_IS_PARALLEL
-        void       use_mpi_communicator(MPI_Comm const& communicator,
-                                        MPI_Info const& info);
+        void       use_mpi_communicator(::MPI_Comm const& communicator,
+                                        ::MPI_Info const& info);
 #endif
 
         void       set_library_version_bounds(
-                                        H5F_libver_t low,
-                                        H5F_libver_t high);
+                                        ::H5F_libver_t low,
+                                        ::H5F_libver_t high);
 
     };
 
@@ -44,25 +44,23 @@ public:
                                         unsigned int flags);
 
                    File                (std::string const& name,
-                                        AccessPropertyList const&
-                                            access_property_list);
+                                        AccessPropertyList const& access_property_list);
 
                    File                (std::string const& name,
                                         unsigned int flags,
-                                        AccessPropertyList const&
-                                            access_property_list);
+                                        AccessPropertyList const& access_property_list);
 
     explicit       File                (Identifier&& id);
 
     explicit       File                (Group&& group);
 
-                   File                (File const&)=delete;
+                   File                (File const&)=default;
 
                    File                (File&&)=default;
 
                    ~File               () override =default;
 
-    File&          operator=           (File const&)=delete;
+    File&          operator=           (File const&)=default;
 
     File&          operator=           (File&&)=default;
 
@@ -81,11 +79,10 @@ private:
 
 bool               file_exists         (std::string const& name);
 
-File               create_file         (std::string const& name,
-                                        File::AccessPropertyList const&
-                                            access_property_list);
-
 File               create_file         (std::string const& name);
+
+File               create_file         (std::string const& name,
+                                        File::AccessPropertyList const& access_property_list);
 
 File               create_in_memory_file(
                                         std::string const& name);

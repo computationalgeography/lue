@@ -11,18 +11,18 @@ class Universe:
 
 public:
 
-                   Universe            (hdf5::Group& parent,
+                   Universe            (hdf5::Group const& parent,
                                         std::string const& name);
 
     explicit       Universe            (hdf5::Group&& group);
 
-                   Universe            (Universe const&)=delete;
+                   Universe            (Universe const&)=default;
 
                    Universe            (Universe&&)=default;
 
                    ~Universe           () override =default;
 
-    Universe&      operator=           (Universe const&)=delete;
+    Universe&      operator=           (Universe const&)=default;
 
     Universe&      operator=           (Universe&&)=default;
 

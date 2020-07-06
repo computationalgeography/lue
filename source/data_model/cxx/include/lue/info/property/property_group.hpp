@@ -12,18 +12,18 @@ class PropertyGroup:
 
 public:
 
-                   PropertyGroup       (hdf5::Group& parent,
+                   PropertyGroup       (hdf5::Group const& parent,
                                         std::string const& name);
 
     explicit       PropertyGroup       (hdf5::Group&& group);
 
-                   PropertyGroup       (PropertyGroup const&)=delete;
+                   PropertyGroup       (PropertyGroup const&)=default;
 
                    PropertyGroup       (PropertyGroup&&)=default;
 
                    ~PropertyGroup      () override =default;
 
-    PropertyGroup& operator=           (PropertyGroup const&)=delete;
+    PropertyGroup& operator=           (PropertyGroup const&)=default;
 
     PropertyGroup& operator=           (PropertyGroup&&)=default;
 

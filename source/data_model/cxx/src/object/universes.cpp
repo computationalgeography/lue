@@ -6,7 +6,7 @@ namespace lue {
 namespace data_model {
 
 Universes::Universes(
-    hdf5::Group& parent):
+    hdf5::Group const& parent):
 
     Collection<Universe>{parent, universes_tag}
 
@@ -17,7 +17,7 @@ Universes::Universes(
 Universes::Universes(
     Collection<Universe>&& collection):
 
-    Collection<Universe>{std::forward<Collection<Universe>>(collection)}
+    Collection<Universe>{std::move(collection)}
 
 {
 }

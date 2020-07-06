@@ -52,25 +52,21 @@ Shape chunk_shape(
     Shape result;
 
     auto const value_size_bytes = size_of_shape(value_shape, size_of_element);
-    double const nr_values_in_largest_chunk =
-        double(upper_chunk_size_limit()) / value_size_bytes;
+    double const nr_values_in_largest_chunk = double(upper_chunk_size_limit()) / value_size_bytes;
 
-    if(nr_values_in_largest_chunk >= 1.0) {
-
+    if(nr_values_in_largest_chunk >= 1.0)
+    {
         // Values are relatively small.
         // At least one item can fit in a chunk.
 
         // Determine how many items can fit in a single chunk.
-        auto const nr_items =
-            static_cast<std::size_t>(std::floor(nr_values_in_largest_chunk));
+        auto const nr_items = static_cast<std::size_t>(std::floor(nr_values_in_largest_chunk));
 
         result.push_back(nr_items);
-        result.insert(result.begin() + 1,
-            value_shape.begin(), value_shape.end());
-
+        result.insert(result.begin() + 1, value_shape.begin(), value_shape.end());
     }
-    else {
-
+    else
+    {
         // Values are relatively large.
         // The value of a single item is chunked.
 
@@ -84,12 +80,9 @@ Shape chunk_shape(
         // Determine the size of each chunk dimension (except for the first
         // one, which is 1) in case the chunk is square.
         // These are all in bytes.
-        double const chunk_size_bytes =
-            value_size_bytes * nr_values_in_largest_chunk;
-        double const chunk_size_bytes_per_dimension =
-            std::pow(chunk_size_bytes, 1.0 / value_shape.size());
-        double chunk_size_elements_per_dimension =
-            chunk_size_bytes_per_dimension / size_of_element;
+        double const chunk_size_bytes = value_size_bytes * nr_values_in_largest_chunk;
+        double const chunk_size_bytes_per_dimension = std::pow(chunk_size_bytes, 1.0 / value_shape.size());
+        double chunk_size_elements_per_dimension = chunk_size_bytes_per_dimension / size_of_element;
 
 
         // Adjust the shape of the chunk to the shape of the value. If the
@@ -101,39 +94,41 @@ Shape chunk_shape(
         // Determine indices of the dimensions in this order.
         using ExtentIndexTuple = std::tuple<Shape::value_type, std::size_t>;
         std::vector<ExtentIndexTuple> tuples;
-        for(std::size_t i = 0; i < value_shape.size(); ++i) {
+        for(std::size_t i = 0; i < value_shape.size(); ++i)
+        {
             tuples.emplace_back(ExtentIndexTuple(value_shape[i], i));
         }
 
         // Sort tuples based on dimension extent.
         std::sort(tuples.begin(), tuples.end(),
-            [](ExtentIndexTuple const& lhs, ExtentIndexTuple const& rhs) {
-                return std::get<0>(lhs) < std::get<0>(rhs);
-            }
-        );
+
+                [](ExtentIndexTuple const& lhs, ExtentIndexTuple const& rhs)
+                {
+                    return std::get<0>(lhs) < std::get<0>(rhs);
+                }
+
+            );
 
         // Iterate over the dimensions, in increasing extent order.
-        for(auto const& tuple: tuples) {
+        for(auto const& tuple: tuples)
+        {
             auto const extent = std::get<0>(tuple);
             auto const index = std::get<1>(tuple);
 
             // Size of dimension, in elements.
             auto const chunk_size_elements_of_dimension = std::min(
-                static_cast<Shape::value_type>(std::floor(
-                    chunk_size_elements_per_dimension)),
-                extent
-            );
+                    static_cast<Shape::value_type>(std::floor(chunk_size_elements_per_dimension)),
+                    extent
+                );
 
             // If the extent of the chunk in the current dimension is lower
             // than the average one, we must enlarge the next chunk dimension
             // extents.
             chunk_size_elements_per_dimension *=
-                chunk_size_elements_per_dimension /
-                chunk_size_elements_of_dimension;
+                chunk_size_elements_per_dimension / chunk_size_elements_of_dimension;
 
             result[index + 1] = chunk_size_elements_of_dimension;
             assert(result[index + 1] <= value_shape[index]);
-
         }
     }
 

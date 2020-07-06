@@ -21,18 +21,18 @@ class Phenomenon:
 
 public:
 
-                   Phenomenon          (hdf5::Group& parent,
+                   Phenomenon          (hdf5::Group const& parent,
                                         std::string const& name);
 
-     explicit      Phenomenon          (hdf5::Group&& group);
+    explicit       Phenomenon          (hdf5::Group&& group);
 
-                   Phenomenon          (Phenomenon const&)=delete;
+                   Phenomenon          (Phenomenon const&)=default;
 
                    Phenomenon          (Phenomenon&&)=default;
 
                    ~Phenomenon         () override =default;
 
-    Phenomenon&    operator=           (Phenomenon const&)=delete;
+    Phenomenon&    operator=           (Phenomenon const&)=default;
 
     Phenomenon&    operator=           (Phenomenon&&)=default;
 

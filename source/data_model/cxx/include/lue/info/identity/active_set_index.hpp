@@ -25,27 +25,23 @@ class ActiveSetIndex:
 
 public:
 
-    friend ActiveSetIndex create_active_set_index(hdf5::Group& parent);
+    explicit       ActiveSetIndex      (hdf5::Group const& parent);
 
-    explicit       ActiveSetIndex      (hdf5::Group& parent);
+    explicit       ActiveSetIndex      (same_shape::constant_shape::Value&& value);
 
-                   ActiveSetIndex      (ActiveSetIndex const&)=delete;
+                   ActiveSetIndex      (ActiveSetIndex const&)=default;
 
                    ActiveSetIndex      (ActiveSetIndex&&)=default;
 
                    ~ActiveSetIndex     () override =default;
 
-    ActiveSetIndex& operator=          (ActiveSetIndex const&)=delete;
+    ActiveSetIndex& operator=          (ActiveSetIndex const&)=default;
 
     ActiveSetIndex& operator=          (ActiveSetIndex&&)=default;
 
     Count          nr_indices          () const;
 
 private:
-
-    explicit       ActiveSetIndex      (same_shape::constant_shape::Value&&
-                                            value);
-
 
 };
 

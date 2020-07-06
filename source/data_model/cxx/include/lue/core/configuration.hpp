@@ -48,9 +48,9 @@ public:
         @param      values Values representing the configuration aspects
     */
     explicit Configuration(
-        Ts... values)
+        Ts... values):
 
-        : _aspects{Aspect<Ts>{values}...}
+        _aspects{Aspect<Ts>{values}...}
 
     {
     }
@@ -61,9 +61,9 @@ public:
                     aspect values from
     */
     explicit Configuration(
-        hdf5::Attributes const& attributes)
+        hdf5::Attributes const& attributes):
 
-        : _aspects{Aspect<Ts>{attributes}...}
+        _aspects{Aspect<Ts>{attributes}...}
 
     {
     }

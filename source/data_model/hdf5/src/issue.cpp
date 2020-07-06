@@ -9,10 +9,10 @@ namespace hdf5 {
 */
 Issue::Issue(
     Identifier const& id,
-    std::string const& message)
+    std::string const& message):
 
-    : _id(id),
-      _message(message)
+    _id{id},
+    _message{message}
 
 {
 }

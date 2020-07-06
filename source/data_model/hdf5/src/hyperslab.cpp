@@ -16,11 +16,11 @@ namespace hdf5 {
 Hyperslab::Hyperslab(
     Offset const& start,
     Stride const& stride,
-    Count const& count)
+    Count const& count):
 
-    : _start{start},
-      _stride{stride},
-      _count{count}
+    _start{start},
+    _stride{stride},
+    _count{count}
 
 {
     assert(_start.size() == _stride.size());
@@ -38,11 +38,11 @@ Hyperslab::Hyperslab(
 */
 Hyperslab::Hyperslab(
     Offset const& start,
-    Count const& count)
+    Count const& count):
 
-    : _start{start},
-      _stride(start.size(), 1),
-      _count{count}
+    _start{start},
+    _stride(start.size(), 1),
+    _count{count}
 
 {
     assert(_start.size() == _count.size());
@@ -61,11 +61,11 @@ Hyperslab::Hyperslab(
     dataspace.
 */
 Hyperslab::Hyperslab(
-    Shape const& shape)
+    Shape const& shape):
 
-    : _start(shape.size(), 0),
-      _stride(shape.size(), 1),
-      _count(shape.begin(), shape.end())
+    _start(shape.size(), 0),
+    _stride(shape.size(), 1),
+    _count(shape.begin(), shape.end())
 
 {
     assert(_start.size() == _stride.size());
@@ -165,10 +165,12 @@ std::size_t Hyperslab::nr_elements() const
 {
     std::size_t result = 0;
 
-    if(!empty()) {
+    if(!empty())
+    {
         result = 1;
 
-        for(std::size_t i = 0; i < nr_dimensions(); ++i) {
+        for(std::size_t i = 0; i < nr_dimensions(); ++i)
+        {
             result *= (_stride[i] * _count[i]);
         }
     }

@@ -20,7 +20,7 @@ public:
 
                    Issue               (Issue const&)=default;
 
-                   Issue               (Issue&& other)=default;
+                   Issue               (Issue&&)=default;
 
                    ~Issue              ()=default;
 

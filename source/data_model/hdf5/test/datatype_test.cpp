@@ -56,67 +56,53 @@ BOOST_AUTO_TEST_CASE(equality)
 
 BOOST_AUTO_TEST_CASE(memory_datatype_by_file_datatype)
 {
-    struct CompareDatatypes
-    {
-        bool operator()(
-            lh5::Datatype const& lhs,
-            lh5::Datatype const& rhs) const
-        {
-            return lhs != rhs && lhs.id() < rhs.id();
-        }
-    };
+    BOOST_CHECK(lh5::memory_datatype(lh5::std_uint8_le) == lh5::native_uint8);
+    BOOST_CHECK(lh5::memory_datatype(lh5::std_uint16_le) == lh5::native_uint16);
+    BOOST_CHECK(lh5::memory_datatype(lh5::std_uint32_le) == lh5::native_uint32);
+    BOOST_CHECK(lh5::memory_datatype(lh5::std_uint64_le) == lh5::native_uint64);
+    BOOST_CHECK(lh5::memory_datatype(lh5::std_int8_le) == lh5::native_int8);
+    BOOST_CHECK(lh5::memory_datatype(lh5::std_int16_le) == lh5::native_int16);
+    BOOST_CHECK(lh5::memory_datatype(lh5::std_int32_le) == lh5::native_int32);
+    BOOST_CHECK(lh5::memory_datatype(lh5::std_int64_le) == lh5::native_int64);
+    BOOST_CHECK(lh5::memory_datatype(lh5::ieee_float32_le) == lh5::native_float32);
+    BOOST_CHECK(lh5::memory_datatype(lh5::ieee_float64_le) == lh5::native_float64);
 
-    std::map<lh5::Datatype, lh5::Datatype, CompareDatatypes> map
-    {
-        {lh5::Datatype{H5T_STD_U8LE},   lh5::Datatype{H5T_NATIVE_UINT8}},
-        {lh5::Datatype{H5T_STD_U16LE},  lh5::Datatype{H5T_NATIVE_UINT16}},
-        {lh5::Datatype{H5T_STD_U32LE},  lh5::Datatype{H5T_NATIVE_UINT32}},
-        {lh5::Datatype{H5T_STD_U64LE},  lh5::Datatype{H5T_NATIVE_UINT64}},
-        {lh5::Datatype{H5T_STD_I8LE},   lh5::Datatype{H5T_NATIVE_INT8}},
-        {lh5::Datatype{H5T_STD_I16LE},  lh5::Datatype{H5T_NATIVE_INT16}},
-        {lh5::Datatype{H5T_STD_I32LE},  lh5::Datatype{H5T_NATIVE_INT32}},
-        {lh5::Datatype{H5T_STD_I64LE},  lh5::Datatype{H5T_NATIVE_INT64}},
-        {lh5::Datatype{H5T_IEEE_F32LE}, lh5::Datatype{H5T_NATIVE_FLOAT}},
-        {lh5::Datatype{H5T_IEEE_F64LE}, lh5::Datatype{H5T_NATIVE_DOUBLE}},
-        {lh5::create_string_datatype(), lh5::create_string_datatype()}
-    };
+    lh5::Datatype const string_datatype{lh5::create_string_datatype()};
+    BOOST_CHECK(lh5::memory_datatype(string_datatype) == string_datatype);
 
-    BOOST_REQUIRE_EQUAL(map.size(), 11);
-
+    // Use newly created types should also work
     // uint8
     {
         lh5::Datatype const file_datatype{H5T_STD_U8LE};
         lh5::Datatype const memory_datatype{H5T_NATIVE_UINT8};
-        auto it = map.find(file_datatype);
-        BOOST_REQUIRE(it != map.end());
-        BOOST_CHECK(it->second == memory_datatype);
+        BOOST_CHECK(lh5::file_datatype(memory_datatype) == file_datatype);
     }
+}
 
-    // int32
-    {
-        lh5::Datatype const file_datatype{H5T_STD_I32LE};
-        lh5::Datatype const memory_datatype{H5T_NATIVE_INT32};
-        auto it = map.find(file_datatype);
-        BOOST_REQUIRE(it != map.end());
-        BOOST_CHECK(it->second == memory_datatype);
-    }
 
-    // float32
-    {
-        lh5::Datatype const file_datatype{H5T_IEEE_F32LE};
-        lh5::Datatype const memory_datatype{H5T_NATIVE_FLOAT};
-        auto it = map.find(file_datatype);
-        BOOST_REQUIRE(it != map.end());
-        BOOST_CHECK(it->second == memory_datatype);
-    }
+BOOST_AUTO_TEST_CASE(file_datatype_by_memory_datatype)
+{
+    // Use predefined types should work
+    BOOST_CHECK(lh5::file_datatype(lh5::native_uint8) == lh5::std_uint8_le);
+    BOOST_CHECK(lh5::file_datatype(lh5::native_uint16) == lh5::std_uint16_le);
+    BOOST_CHECK(lh5::file_datatype(lh5::native_uint32) == lh5::std_uint32_le);
+    BOOST_CHECK(lh5::file_datatype(lh5::native_uint64) == lh5::std_uint64_le);
+    BOOST_CHECK(lh5::file_datatype(lh5::native_int8) == lh5::std_int8_le);
+    BOOST_CHECK(lh5::file_datatype(lh5::native_int16) == lh5::std_int16_le);
+    BOOST_CHECK(lh5::file_datatype(lh5::native_int32) == lh5::std_int32_le);
+    BOOST_CHECK(lh5::file_datatype(lh5::native_int64) == lh5::std_int64_le);
+    BOOST_CHECK(lh5::file_datatype(lh5::native_float32) == lh5::ieee_float32_le);
+    BOOST_CHECK(lh5::file_datatype(lh5::native_float64) == lh5::ieee_float64_le);
 
-    // string
+    lh5::Datatype const string_datatype{lh5::create_string_datatype()};
+    BOOST_CHECK(lh5::file_datatype(string_datatype) == string_datatype);
+
+    // Use newly created types should also work
+    // uint8
     {
-        lh5::Datatype const file_datatype{lh5::create_string_datatype()};
-        lh5::Datatype const memory_datatype{lh5::create_string_datatype()};
-        auto it = map.find(file_datatype);
-        BOOST_REQUIRE(it != map.end());
-        BOOST_CHECK(it->second == memory_datatype);
+        lh5::Datatype const file_datatype{H5T_STD_U8LE};
+        lh5::Datatype const memory_datatype{H5T_NATIVE_UINT8};
+        BOOST_CHECK(lh5::file_datatype(memory_datatype) == file_datatype);
     }
 }
 

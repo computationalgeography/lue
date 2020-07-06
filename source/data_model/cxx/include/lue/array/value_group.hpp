@@ -12,16 +12,16 @@ class ValueGroup:
 
 public:
 
-                   ValueGroup          (Group&& group,
+                   ValueGroup          (Group const& parent,
                                         hdf5::Datatype const& memory_datatype);
 
-                   ValueGroup          (ValueGroup const&)=delete;
+                   ValueGroup          (ValueGroup const&)=default;
 
                    ValueGroup          (ValueGroup&&)=default;
 
                    ~ValueGroup         () override =default;
 
-    ValueGroup&    operator=           (ValueGroup const&)=delete;
+    ValueGroup&    operator=           (ValueGroup const&)=default;
 
     ValueGroup&    operator=           (ValueGroup&&)=default;
 
@@ -35,10 +35,10 @@ public:
 
 protected:
 
-                   ValueGroup          (hdf5::Group& parent,
+                   ValueGroup          (hdf5::Group const& parent,
                                         std::string const& name);
 
-                   ValueGroup          (hdf5::Group& parent,
+                   ValueGroup          (hdf5::Group const& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& memory_datatype);
 

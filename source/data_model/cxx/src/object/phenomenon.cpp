@@ -6,7 +6,7 @@ namespace lue {
 namespace data_model {
 
 Phenomenon::Phenomenon(
-    hdf5::Group& parent,
+    hdf5::Group const& parent,
     std::string const& name):
 
     hdf5::Group{parent, name},
@@ -23,7 +23,7 @@ Phenomenon::Phenomenon(
 Phenomenon::Phenomenon(
     hdf5::Group&& group):
 
-    hdf5::Group{std::forward<hdf5::Group>(group)},
+    hdf5::Group{std::move(group)},
     _description{attributes().exists(description_tag)
         ? attributes().read<std::string>(description_tag) : ""},
     _object_id{*this},
@@ -100,7 +100,7 @@ Phenomenon create_phenomenon(
             name, parent.id().pathname()));
     }
 
-    auto group = hdf5::create_group(parent, name);
+    hdf5::Group group{hdf5::create_group(parent, name)};
 
     // Possibly empty
     if(!description.empty()) {

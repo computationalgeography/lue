@@ -7,9 +7,9 @@
 namespace lue {
 namespace hdf5 {
 
-File::AccessPropertyList::AccessPropertyList()
+File::AccessPropertyList::AccessPropertyList():
 
-    : PropertyList(H5P_FILE_ACCESS)
+    PropertyList{H5P_FILE_ACCESS}
 
 {
 }
@@ -24,12 +24,12 @@ File::AccessPropertyList::AccessPropertyList()
 */
 void File::AccessPropertyList::use_core_driver(
     std::size_t const increment,
-    hbool_t const backing_store)
+    ::hbool_t const backing_store)
 {
     // std::size_t const increment = 64000;  // 64k
     // hbool_t const backing_store = 0;  // false
 
-    auto status = ::H5Pset_fapl_core(id(), increment, backing_store);
+    herr_t const status{::H5Pset_fapl_core(id(), increment, backing_store)};
 
     if(status < 0) {
         throw std::runtime_error("Cannot set core file driver");
@@ -45,10 +45,10 @@ void File::AccessPropertyList::use_core_driver(
     @sa         [H5Pset_fapl_mpio](https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-SetFaplMpio)
 */
 void File::AccessPropertyList::use_mpi_communicator(
-    MPI_Comm const& communicator,
-    MPI_Info const& info)
+    ::MPI_Comm const& communicator,
+    ::MPI_Info const& info)
 {
-    auto status = ::H5Pset_fapl_mpio(id(), communicator, info);
+    ::herr_t const status{::H5Pset_fapl_mpio(id(), communicator, info)};
 
     if(status < 0) {
         throw std::runtime_error("Cannot set MPI communicator");
@@ -68,10 +68,10 @@ void File::AccessPropertyList::use_mpi_communicator(
     @sa         [H5Pset_libver_bounds](https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-SetLibverBounds)
 */
 void File::AccessPropertyList::set_library_version_bounds(
-    H5F_libver_t const low,
-    H5F_libver_t const high)
+    ::H5F_libver_t const low,
+    ::H5F_libver_t const high)
 {
-    auto status = ::H5Pset_libver_bounds(id(), low, high);
+    ::herr_t const status{::H5Pset_libver_bounds(id(), low, high)};
 
     if(status < 0) {
         throw std::runtime_error("Cannot set library version bounds");
@@ -124,11 +124,7 @@ File::File(
     unsigned int const flags,
     AccessPropertyList const& access_property_list):
 
-    Group{
-            Identifier(
-                ::H5Fopen(name.c_str(), flags, access_property_list.id()),
-                ::H5Fclose)
-        }
+    Group{Identifier(::H5Fopen(name.c_str(), flags, access_property_list.id()), ::H5Fclose)}
 
 {
     if(!id().is_valid()) {
@@ -143,7 +139,7 @@ File::File(
 File::File(
     Identifier&& id):
 
-    Group{std::forward<Identifier>(id)}
+    Group{std::move(id)}
 
 {
 }
@@ -152,7 +148,7 @@ File::File(
 File::File(
     Group&& group):
 
-    Group{std::forward<Group>(group)}
+    Group{std::move(group)}
 
 {
 }
@@ -170,7 +166,7 @@ std::string File::pathname() const
         "expect std::string::value_type to be char");
 
     assert(id().is_valid());
-    auto nr_bytes = ::H5Fget_name(id(), nullptr, 0);
+    ::ssize_t const nr_bytes{::H5Fget_name(id(), nullptr, 0)};
 
     std::string result(nr_bytes, 'x');
 
@@ -182,7 +178,7 @@ std::string File::pathname() const
 
 void File::flush() const
 {
-    auto status = ::H5Fflush(id(), H5F_SCOPE_LOCAL);
+    ::herr_t const status{::H5Fflush(id(), H5F_SCOPE_LOCAL)};
 
     if(status < 0) {
         throw std::runtime_error(fmt::format(
@@ -196,7 +192,7 @@ void File::flush() const
 unsigned int File::intent() const
 {
     unsigned int intent{};
-    auto status = ::H5Fget_intent(id(), &intent);
+    ::herr_t const status{::H5Fget_intent(id(), &intent)};
 
     if(status < 0) {
         throw std::runtime_error(fmt::format(
@@ -238,8 +234,8 @@ File create_file(
     std::string const& name,
     File::AccessPropertyList const& access_property_list)
 {
-    Identifier id(::H5Fcreate(name.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT,
-        access_property_list.id()), ::H5Fclose);
+    Identifier id{
+        ::H5Fcreate(name.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, access_property_list.id()), ::H5Fclose};
 
     if(!id.is_valid()) {
         throw std::runtime_error(fmt::format(

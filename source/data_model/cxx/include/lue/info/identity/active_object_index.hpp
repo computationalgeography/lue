@@ -27,26 +27,23 @@ class ActiveObjectIndex:
 
 public:
 
-    friend ActiveObjectIndex create_active_object_index(hdf5::Group& parent);
+    explicit       ActiveObjectIndex   (hdf5::Group const& parent);
 
-    explicit       ActiveObjectIndex   (hdf5::Group& parent);
+    explicit       ActiveObjectIndex   (same_shape::constant_shape::Value&& value);
 
-                   ActiveObjectIndex   (ActiveObjectIndex const&)=delete;
+                   ActiveObjectIndex   (ActiveObjectIndex const&)=default;
 
                    ActiveObjectIndex   (ActiveObjectIndex&&)=default;
 
                    ~ActiveObjectIndex  () override =default;
 
-    ActiveObjectIndex& operator=       (ActiveObjectIndex const&)=delete;
+    ActiveObjectIndex& operator=       (ActiveObjectIndex const&)=default;
 
     ActiveObjectIndex& operator=       (ActiveObjectIndex&&)=default;
 
     Count          nr_indices          () const;
 
 private:
-
-    explicit       ActiveObjectIndex   (same_shape::constant_shape::Value&&
-                                            value);
 
 };
 

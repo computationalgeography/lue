@@ -76,9 +76,9 @@ private:
 template<
     typename Clock>
 inline TimePoint<Clock>::TimePoint(
-    Duration const& duration)
+    Duration const& duration):
 
-    : _duration{duration}
+    _duration{duration}
 
 {
 }

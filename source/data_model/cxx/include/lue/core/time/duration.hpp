@@ -66,9 +66,9 @@ private:
 template<
     typename TickPeriod>
 inline Duration<TickPeriod>::Duration(
-    Count const nr_ticks)
+    Count const nr_ticks):
 
-    : _nr_ticks{nr_ticks}
+    _nr_ticks{nr_ticks}
 
 {
 }

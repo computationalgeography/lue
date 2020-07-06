@@ -8,7 +8,7 @@ namespace different_shape {
 namespace constant_shape {
 
 Property::Property(
-    hdf5::Group& parent,
+    hdf5::Group const& parent,
     std::string const& name):
 
     PropertyGroup{parent, name},
@@ -19,7 +19,7 @@ Property::Property(
 
 
 Property::Property(
-    hdf5::Group& parent,
+    hdf5::Group const& parent,
     std::string const& name,
     hdf5::Datatype const& memory_datatype):
 
@@ -34,8 +34,8 @@ Property::Property(
     PropertyGroup&& group,
     Value&& value):
 
-    PropertyGroup{std::forward<PropertyGroup>(group)},
-    _value{std::forward<Value>(value)}
+    PropertyGroup{std::move(group)},
+    _value{std::move(value)}
 
 {
 }
@@ -61,11 +61,7 @@ Property create_property(
     Rank const rank,
     std::string const& description)
 {
-    return create_property(
-        parent, name,
-        file_datatype(memory_datatype), memory_datatype,
-        rank,
-        description);
+    return create_property(parent, name, file_datatype(memory_datatype), memory_datatype, rank, description);
 }
 
 
@@ -77,9 +73,8 @@ Property create_property(
     Rank const rank,
     std::string const& description)
 {
-    auto group = create_property_group(parent, name, description);
-    auto value = create_value(
-        group, value_tag, file_datatype, memory_datatype, rank);
+    PropertyGroup group{create_property_group(parent, name, description)};
+    Value value{create_value(group, value_tag, file_datatype, memory_datatype, rank)};
 
     return Property{std::move(group), std::move(value)};
 }

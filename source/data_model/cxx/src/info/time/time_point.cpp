@@ -5,7 +5,7 @@ namespace lue {
 namespace data_model {
 
 TimePoint::TimePoint(
-    hdf5::Group& parent):
+    hdf5::Group const& parent):
 
     LocationInTime{parent}
 
@@ -16,7 +16,7 @@ TimePoint::TimePoint(
 TimePoint::TimePoint(
     LocationInTime&& value):
 
-    LocationInTime{std::forward<LocationInTime>(value)}
+    LocationInTime{std::move(value)}
 
 {
 }
@@ -31,7 +31,7 @@ Count TimePoint::nr_points() const
 TimePoint create_time_point(
     hdf5::Group& parent)
 {
-    auto value = create_location_in_time(parent, hdf5::Shape{1});
+    LocationInTime value{create_location_in_time(parent, hdf5::Shape{1})};
 
     return TimePoint{std::move(value)};
 }

@@ -11,9 +11,9 @@ namespace constant_shape {
     @brief      Open value @a name in @a parent
 */
 Value::Value(
-    hdf5::Group& parent,
-    std::string const& name)
-:
+    hdf5::Group const& parent,
+    std::string const& name):
+
     ValueGroup{parent, name},
     _nr_objects{attributes().read<Count>(nr_objects_tag)}
 
@@ -25,10 +25,10 @@ Value::Value(
     @brief      Open value @a name in @a parent
 */
 Value::Value(
-    hdf5::Group& parent,
+    hdf5::Group const& parent,
     std::string const& name,
-    hdf5::Datatype const& memory_datatype)
-:
+    hdf5::Datatype const& memory_datatype):
+
     ValueGroup{parent, name, memory_datatype},
     _nr_objects{attributes().read<Count>(nr_objects_tag)}
 
@@ -37,9 +37,9 @@ Value::Value(
 
 
 Value::Value(
-    ValueGroup&& group)
-:
-    ValueGroup{std::forward<ValueGroup>(group)},
+    ValueGroup&& group):
+
+    ValueGroup{std::move(group)},
     _nr_objects{attributes().read<Count>(nr_objects_tag)}
 
 {
@@ -52,7 +52,8 @@ Count Value::nr_objects() const
 }
 
 
-bool Value::exists(ID id) const
+bool Value::exists(
+    ID const id) const
 {
     std::string const name = std::to_string(id);
 
@@ -79,7 +80,8 @@ void Value::expand(
     hdf5::Shape const* shapes,
     Count const* nr_locations_in_time)
 {
-    for(std::size_t o = 0; o < nr_objects; ++o) {
+    for(std::size_t o = 0; o < nr_objects; ++o)
+    {
         // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
         expand_(ids[o], shapes[o], nr_locations_in_time[o]);
     }
@@ -106,7 +108,7 @@ same_shape::constant_shape::Value Value::expand(
     hdf5::Shape const& shape,
     Count const nr_locations_in_time)
 {
-    auto value = expand_(id, shape, nr_locations_in_time);
+    same_shape::constant_shape::Value value{expand_(id, shape, nr_locations_in_time)};
     attributes().write<Count>(nr_objects_tag, ++_nr_objects);
 
     return value;
@@ -121,9 +123,9 @@ same_shape::constant_shape::Value Value::expand_(
     // Reserve space, but don't update the nr_objects_tag attribute. This
     // function is re-used by expand overloads that will update the
     // nr_objects_tag_attribute.
-    std::string const name = std::to_string(id);
-    auto value = same_shape::constant_shape::create_value(
-        *this, name, file_datatype(), memory_datatype(), shape);
+    std::string const name{std::to_string(id)};
+    same_shape::constant_shape::Value value{
+        same_shape::constant_shape::create_value(*this, name, file_datatype(), memory_datatype(), shape)};
     value.expand(nr_locations_in_time);
 
     return value;
@@ -133,7 +135,7 @@ same_shape::constant_shape::Value Value::expand_(
 same_shape::constant_shape::Value Value::operator[](
     ID const id)
 {
-    std::string const name = std::to_string(id);
+    std::string const name{std::to_string(id)};
 
     return same_shape::constant_shape::Value{*this, name, memory_datatype()};
 }
@@ -148,10 +150,7 @@ Value create_value(
     hdf5::Datatype const& memory_datatype,
     Rank const rank)
 {
-    return create_value(
-        parent, name,
-        file_datatype(memory_datatype), memory_datatype,
-        rank);
+    return create_value(parent, name, file_datatype(memory_datatype), memory_datatype, rank);
 }
 
 
@@ -165,8 +164,7 @@ Value create_value(
     hdf5::Datatype const& memory_datatype,
     Rank const rank)
 {
-    auto group = create_value_group(
-        parent, name, file_datatype, memory_datatype, rank);
+    ValueGroup group{create_value_group(parent, name, file_datatype, memory_datatype, rank)};
 
     group.attributes().write<Count>(nr_objects_tag, 0);
 

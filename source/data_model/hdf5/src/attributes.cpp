@@ -9,9 +9,9 @@ namespace hdf5 {
     @param      id Id of object containing attributes
 */
 Attributes::Attributes(
-    Identifier const& id)
+    Identifier const& id):
 
-    : _id{id}
+    _id{id}
 
 {
 }

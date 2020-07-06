@@ -11,7 +11,7 @@ class SoftLink:
 
 public:
 
-                   SoftLink            (Group& group,
+                   SoftLink            (Group const& group,
                                         std::string const& name);
 
                    SoftLink            (SoftLink const&)=default;

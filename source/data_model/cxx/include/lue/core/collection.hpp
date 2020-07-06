@@ -30,18 +30,18 @@ public:
 
     using const_iterator = typename std::map<std::string, T>::const_iterator;
 
-                   Collection          (hdf5::Group& parent,
+                   Collection          (hdf5::Group const& parent,
                                         std::string const& name);
 
     explicit       Collection          (hdf5::Group&& group);
 
-                   Collection          (Collection const&)=delete;
+                   Collection          (Collection const&)=default;
 
                    Collection          (Collection&&) noexcept =default;
 
                    ~Collection         () override =default;
 
-    Collection&    operator=           (Collection const&)=delete;
+    Collection&    operator=           (Collection const&)=default;
 
     Collection&    operator=           (Collection&&) noexcept =default;
 
@@ -92,11 +92,11 @@ Collection<T>      create_collection   (hdf5::Group const& group);
 template<
     typename T>
 inline Collection<T>::Collection(
-    hdf5::Group& parent,
-    std::string const& name)
+    hdf5::Group const& parent,
+    std::string const& name):
 
-    : hdf5::Group{parent, name},
-      _items{}
+    hdf5::Group{parent, name},
+    _items{}
 
 {
     if(!id().is_valid()) {
@@ -107,7 +107,8 @@ inline Collection<T>::Collection(
     }
 
     // Open items, if available.
-    for(auto const& name_: item_names()) {
+    for(auto const& name_: item_names())
+    {
         _items.insert(std::make_pair(name_, T{*this, name_}));
     }
 }
@@ -116,14 +117,15 @@ inline Collection<T>::Collection(
 template<
     typename T>
 inline Collection<T>::Collection(
-    hdf5::Group&& group)
+    hdf5::Group&& group):
 
-    : hdf5::Group{std::forward<hdf5::Group>(group)},
-      _items{}
+    hdf5::Group{std::move(group)},
+    _items{}
 
 {
     // Open items, if available.
-    for(auto const& name_: item_names()) {
+    for(auto const& name_: item_names())
+    {
         _items.insert(std::make_pair(name_, T{*this, name_}));
     }
 }
@@ -155,10 +157,13 @@ inline std::vector<std::string> Collection<T>::names() const
     std::vector<std::string> result(_items.size());
 
     std::transform(_items.begin(), _items.end(), result.begin(),
-        [](auto const& pair)
-        {
-            return pair.first;
-        });
+
+            [](auto const& pair)
+            {
+                return pair.first;
+            }
+
+        );
 
     return result;
 }

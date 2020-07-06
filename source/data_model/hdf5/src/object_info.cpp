@@ -42,8 +42,7 @@ bool ObjectInfo::operator==(
 {
     return
         fileno() == other.fileno() &&
-        addr() == other.addr()
-        ;
+        addr() == other.addr();
 }
 
 

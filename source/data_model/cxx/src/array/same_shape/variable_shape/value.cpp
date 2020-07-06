@@ -11,9 +11,9 @@ namespace variable_shape {
     @brief      Open value @a name in @a parent
 */
 Value::Value(
-    hdf5::Group& parent,
-    std::string const& name)
-:
+    hdf5::Group const& parent,
+    std::string const& name):
+
     ValueGroup{parent, name},
     _nr_locations_in_time{attributes().read<Count>(nr_locations_in_time_tag)}
 
@@ -25,10 +25,10 @@ Value::Value(
     @brief      Open value @a name in @a parent
 */
 Value::Value(
-    hdf5::Group& parent,
+    hdf5::Group const& parent,
     std::string const& name,
-    hdf5::Datatype const& memory_datatype)
-:
+    hdf5::Datatype const& memory_datatype):
+
     ValueGroup{parent, name, memory_datatype},
     _nr_locations_in_time{attributes().read<Count>(nr_locations_in_time_tag)}
 
@@ -37,9 +37,9 @@ Value::Value(
 
 
 Value::Value(
-    ValueGroup&& group)
-:
-    ValueGroup{std::forward<ValueGroup>(group)},
+    ValueGroup&& group):
+
+    ValueGroup{std::move(group)},
     _nr_locations_in_time{attributes().read<Count>(nr_locations_in_time_tag)}
 
 {
@@ -66,12 +66,11 @@ same_shape::Value Value::expand(
     Count const nr_arrays,
     hdf5::Shape const& array_shape)
 {
-    std::string const name = std::to_string(idx);
-    auto value = same_shape::create_value(
-        *this, name, file_datatype(), memory_datatype(), array_shape);
+    std::string const name{std::to_string(idx)};
+    same_shape::Value value{
+        same_shape::create_value(*this, name, file_datatype(), memory_datatype(), array_shape)};
     value.expand(nr_arrays);
-    attributes().write<Count>(
-        nr_locations_in_time_tag, ++_nr_locations_in_time);
+    attributes().write<Count>(nr_locations_in_time_tag, ++_nr_locations_in_time);
 
     return value;
 }
@@ -80,7 +79,7 @@ same_shape::Value Value::expand(
 same_shape::Value Value::operator[](
     Index const idx)
 {
-    std::string const name = std::to_string(idx);
+    std::string const name{std::to_string(idx)};
 
     return same_shape::Value{*this, name};
 }
@@ -95,10 +94,7 @@ Value create_value(
     hdf5::Datatype const& memory_datatype,
     Rank const rank)
 {
-    return create_value(
-        parent, name,
-        file_datatype(memory_datatype), memory_datatype,
-        rank);
+    return create_value(parent, name, file_datatype(memory_datatype), memory_datatype, rank);
 }
 
 
@@ -112,8 +108,7 @@ Value create_value(
     hdf5::Datatype const& memory_datatype,
     Rank const rank)
 {
-    auto group = create_value_group(
-        parent, name, file_datatype, memory_datatype, rank);
+    ValueGroup group{create_value_group(parent, name, file_datatype, memory_datatype, rank)};
 
     group.attributes().write<Count>(nr_locations_in_time_tag, 0);
 

@@ -9,9 +9,9 @@
 namespace lue {
 namespace hdf5 {
 
-Dataset::CreationPropertyList::CreationPropertyList()
+Dataset::CreationPropertyList::CreationPropertyList():
 
-    : PropertyList(H5P_DATASET_CREATE)
+    PropertyList(H5P_DATASET_CREATE)
 
 {
 }
@@ -20,8 +20,7 @@ Dataset::CreationPropertyList::CreationPropertyList()
 void Dataset::CreationPropertyList::set_chunk(
     Shape const& chunk)
 {
-    auto status = ::H5Pset_chunk(
-        id(), static_cast<int>(chunk.size()), chunk.data());
+    auto status = ::H5Pset_chunk(id(), static_cast<int>(chunk.size()), chunk.data());
 
     if(status < 0) {
         throw std::runtime_error("Cannot set chunk size");
@@ -29,9 +28,9 @@ void Dataset::CreationPropertyList::set_chunk(
 }
 
 
-Dataset::TransferPropertyList::TransferPropertyList()
+Dataset::TransferPropertyList::TransferPropertyList():
 
-    : PropertyList(H5P_DATASET_XFER)
+    PropertyList(H5P_DATASET_XFER)
 
 {
 }
@@ -45,9 +44,9 @@ Dataset::TransferPropertyList::TransferPropertyList()
     @sa         [H5Pset_dxpl_mpio](https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-SetDxplMpio)
 */
 void Dataset::TransferPropertyList::set_transfer_mode(
-    H5FD_mpio_xfer_t const xfer_mode)
+    ::H5FD_mpio_xfer_t const xfer_mode)
 {
-    auto status = ::H5Pset_dxpl_mpio(id(), xfer_mode);
+    ::herr_t const status{::H5Pset_dxpl_mpio(id(), xfer_mode)};
 
     if(status < 0) {
         throw std::runtime_error("Cannot set data transfer mode");
@@ -64,14 +63,14 @@ void Dataset::TransferPropertyList::set_transfer_mode(
                 located at @a parent cannot be opened
 */
 Dataset::Dataset(
-    Group& parent,
-    std::string const& name)
+    Group const& parent,
+    std::string const& name):
 
-    : PrimaryDataObject{Identifier{
-        ::H5Dopen(parent.id(), name.c_str(), H5P_DEFAULT), ::H5Dclose}}
+    PrimaryDataObject{Identifier{::H5Dopen(parent.id(), name.c_str(), H5P_DEFAULT), ::H5Dclose}}
 
 {
-    if(!id().is_valid()) {
+    if(!id().is_valid())
+    {
         throw std::runtime_error(fmt::format(
                 "Cannot open dataset {} at {}",
                 name, parent.id().pathname()
@@ -83,19 +82,9 @@ Dataset::Dataset(
 
 
 Dataset::Dataset(
-    Identifier& id)
+    Identifier&& id):
 
-    : PrimaryDataObject{id}
-
-{
-    assert(this->id().is_valid());
-}
-
-
-Dataset::Dataset(
-    Identifier&& id)
-
-    : PrimaryDataObject{std::forward<Identifier>(id)}
+    PrimaryDataObject{std::move(id)}
 
 {
     assert(this->id().is_valid());
@@ -109,17 +98,16 @@ Dataset::Dataset(
 */
 Datatype Dataset::datatype() const
 {
-    return Datatype(Identifier(::H5Dget_type(id()), ::H5Tclose));
+    return Datatype{Identifier{::H5Dget_type(id()), ::H5Tclose}};
 }
 
 
 void Dataset::resize(
     Shape const& new_dimension_sizes)
 {
-    assert(static_cast<int>(new_dimension_sizes.size()) ==
-        dataspace().nr_dimensions());
+    assert(static_cast<int>(new_dimension_sizes.size()) == dataspace().nr_dimensions());
 
-    auto status = ::H5Dset_extent(id(), new_dimension_sizes.data());
+    ::herr_t const status{::H5Dset_extent(id(), new_dimension_sizes.data())};
 
     if(status < 0) {
         throw std::runtime_error("Cannot resize dataset");
@@ -131,7 +119,7 @@ Dataspace Dataset::dataspace() const
 {
     assert(id().is_valid());
 
-    return Dataspace(::H5Dget_space(id()));
+    return Dataspace{::H5Dget_space(id())};
 }
 
 
@@ -147,7 +135,7 @@ void Dataset::read(
     Datatype const& datatype,
     void* buffer) const
 {
-    read(datatype, Hyperslab(shape()), buffer);
+    read(datatype, Hyperslab{shape()}, buffer);
 }
 
 
@@ -156,8 +144,8 @@ void Dataset::read(
     Hyperslab const& hyperslab,
     void* buffer) const
 {
-    auto const memory_dataspace = create_dataspace(
-        Shape(hyperslab.count().begin(), hyperslab.count().end()));
+    Dataspace const memory_dataspace{
+        create_dataspace(Shape{hyperslab.count().begin(), hyperslab.count().end()})};
 
     read(datatype, memory_dataspace, hyperslab, buffer);
 }
@@ -168,7 +156,7 @@ void Dataset::read(
     Dataspace const& memory_dataspace,
     void* buffer) const
 {
-    read(datatype, memory_dataspace, Hyperslab(shape()), buffer);
+    read(datatype, memory_dataspace, Hyperslab{shape()}, buffer);
 }
 
 
@@ -181,12 +169,13 @@ void Dataset::read(
     assert(datatype.is_native() || datatype.is_string());
 
     // Select elements: create hyperslab
-    auto const file_dataspace = this->dataspace();
-    hsize_t const* block = nullptr;
-    auto status = ::H5Sselect_hyperslab(
-        file_dataspace.id(), H5S_SELECT_SET,
-        hyperslab.start().data(), hyperslab.stride().data(),
-        hyperslab.count().data(), block);
+    Dataspace const file_dataspace{this->dataspace()};
+    ::hsize_t const* block = nullptr;
+    ::herr_t status{
+        ::H5Sselect_hyperslab(
+            file_dataspace.id(), H5S_SELECT_SET,
+            hyperslab.start().data(), hyperslab.stride().data(), hyperslab.count().data(),
+            block)};
 
     if(status < 0) {
         throw std::runtime_error("Cannot create hyperslab");
@@ -195,10 +184,7 @@ void Dataset::read(
     assert(id().is_valid());
     assert(file_dataspace.id().is_valid());
 
-    status = ::H5Dread(
-        id(), datatype.id(),
-        memory_dataspace.id(), file_dataspace.id(),
-        H5P_DEFAULT, buffer);
+    status = ::H5Dread(id(), datatype.id(), memory_dataspace.id(), file_dataspace.id(), H5P_DEFAULT, buffer);
 
     if(status < 0) {
         throw std::runtime_error("Cannot read from dataset");
@@ -220,7 +206,7 @@ void Dataset::write(
 {
     // Select all values in the dataset. Assume the buffer contains
     // values for all values in the dataset.
-    write(datatype, Hyperslab(shape()), buffer);
+    write(datatype, Hyperslab{shape()}, buffer);
 }
 
 
@@ -230,8 +216,8 @@ void Dataset::write(
     void const* buffer) const
 {
     // Assume values in memory are layed out contiguously in all dimensions
-    auto const memory_dataspace = create_dataspace(
-        Shape(hyperslab.count().begin(), hyperslab.count().end()));
+    Dataspace const memory_dataspace{
+        create_dataspace(Shape{hyperslab.count().begin(), hyperslab.count().end()})};
 
     write(datatype, memory_dataspace, hyperslab, buffer);
 }
@@ -242,7 +228,7 @@ void Dataset::write(
     Dataspace const& memory_dataspace,
     void const* buffer) const
 {
-    write(datatype, memory_dataspace, Hyperslab(shape()), buffer);
+    write(datatype, memory_dataspace, Hyperslab{shape()}, buffer);
 }
 
 
@@ -260,21 +246,18 @@ void Dataset::write(
     assert(datatype.is_native() || datatype.is_string());
 
     // Select elements: create hyperslab
-    auto file_dataspace = this->dataspace();
-    hsize_t const* block = nullptr;
-    auto status = ::H5Sselect_hyperslab(
+    Dataspace const file_dataspace{this->dataspace()};
+    ::hsize_t const* block = nullptr;
+    ::herr_t status{::H5Sselect_hyperslab(
         file_dataspace.id(), H5S_SELECT_SET,
-        hyperslab.start().data(), hyperslab.stride().data(),
-        hyperslab.count().data(), block);
+        hyperslab.start().data(), hyperslab.stride().data(), hyperslab.count().data(),
+        block)};
 
     if(status < 0) {
         throw std::runtime_error("Cannot create hyperslab");
     }
 
-    status = ::H5Dwrite(
-        id(), datatype.id(),
-        memory_dataspace.id(), file_dataspace.id(),
-        H5P_DEFAULT, buffer);
+    status = ::H5Dwrite(id(), datatype.id(), memory_dataspace.id(), file_dataspace.id(), H5P_DEFAULT, buffer);
 
     if(status < 0) {
         throw std::runtime_error("Cannot write to dataset");
@@ -305,9 +288,9 @@ void Dataset::fill(
     using byte = unsigned char;
     static_assert(sizeof(byte) == 1);
 
-    std::size_t const nr_elements = hyperslab.nr_elements();
-    std::size_t const nr_bytes_per_element = datatype.size();
-    std::size_t const nr_bytes = nr_elements * nr_bytes_per_element;
+    std::size_t const nr_elements{hyperslab.nr_elements()};
+    std::size_t const nr_bytes_per_element{datatype.size()};
+    std::size_t const nr_bytes{nr_elements * nr_bytes_per_element};
     std::vector<byte> memory_buffer(nr_bytes);
 
     // Fill the buffer with the fill value.
@@ -315,12 +298,13 @@ void Dataset::fill(
         auto* dst = memory_buffer.data();
 
         // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-        for(std::size_t i = 0; i < nr_elements; ++i, dst += nr_bytes_per_element) {
+        for(std::size_t i = 0; i < nr_elements; ++i, dst += nr_bytes_per_element)
+        {
             std::memcpy(dst, buffer, datatype.size());
         }
     }
 
-    auto const memory_dataspace = create_dataspace(Shape{nr_elements});
+    Dataspace const memory_dataspace{create_dataspace(Shape{nr_elements})};
 
     write(datatype, memory_dataspace, hyperslab, memory_buffer.data());
 }
@@ -338,8 +322,7 @@ Dataset open_dataset(
     Identifier& parent,
     std::string const& name)
 {
-    Identifier dataset_location(
-        ::H5Dopen(parent, name.c_str(), H5P_DEFAULT), ::H5Dclose);
+    Identifier dataset_location{::H5Dopen(parent, name.c_str(), H5P_DEFAULT), ::H5Dclose};
 
     if(!dataset_location.is_valid()) {
         throw std::runtime_error(fmt::format(
@@ -348,7 +331,7 @@ Dataset open_dataset(
             ));
     }
 
-    return Dataset(std::move(dataset_location));
+    return Dataset{std::move(dataset_location)};
 }
 
 
@@ -381,9 +364,10 @@ Dataset create_dataset(
     }
 
     Identifier dataset_location{
-        ::H5Dcreate(parent, name.c_str(),
-            datatype.id(), dataspace.id(), H5P_DEFAULT,
-            creation_property_list.id(), H5P_DEFAULT), ::H5Dclose};
+        ::H5Dcreate(
+            parent, name.c_str(), datatype.id(), dataspace.id(),
+            H5P_DEFAULT, creation_property_list.id(), H5P_DEFAULT),
+        ::H5Dclose};
 
     if(!dataset_location.is_valid()) {
         throw std::runtime_error(fmt::format(
@@ -392,7 +376,7 @@ Dataset create_dataset(
             ));
     }
 
-    return Dataset(std::move(dataset_location));
+    return Dataset{std::move(dataset_location)};
 }
 
 } // namespace hdf5

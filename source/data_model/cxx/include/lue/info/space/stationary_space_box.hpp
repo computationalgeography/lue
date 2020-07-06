@@ -15,20 +15,20 @@ class StationarySpaceBox:
 
 public:
 
-    explicit       StationarySpaceBox  (hdf5::Group& parent);
+    explicit       StationarySpaceBox  (hdf5::Group const& parent);
 
-                   StationarySpaceBox  (hdf5::Group& parent,
+                   StationarySpaceBox  (hdf5::Group const& parent,
                                         hdf5::Datatype const& memory_datatype);
-
-                   StationarySpaceBox  (StationarySpaceBox const&)=delete;
-
-                   StationarySpaceBox  (StationarySpaceBox&&)=default;
 
     explicit       StationarySpaceBox  (same_shape::Value&& value);
 
+                   StationarySpaceBox  (StationarySpaceBox const&)=default;
+
+                   StationarySpaceBox  (StationarySpaceBox&&)=default;
+
                    ~StationarySpaceBox () override =default;
 
-    StationarySpaceBox& operator=      (StationarySpaceBox const&)=delete;
+    StationarySpaceBox& operator=      (StationarySpaceBox const&)=default;
 
     StationarySpaceBox& operator=      (StationarySpaceBox&&)=default;
 

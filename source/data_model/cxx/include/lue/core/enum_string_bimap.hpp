@@ -20,8 +20,7 @@ public:
 
                    EnumStringBimap     ()=default;
 
-                   EnumStringBimap     (std::initializer_list<value_type>
-                                            const& values);
+                   EnumStringBimap     (std::initializer_list<value_type> const& values);
 
                    EnumStringBimap     (EnumStringBimap const&)=default;
 
@@ -51,9 +50,9 @@ private:
 template<
     typename T>
 EnumStringBimap<T>::EnumStringBimap(
-    std::initializer_list<value_type> const& values)
+    std::initializer_list<value_type> const& values):
 
-    : _map(values.begin(), values.end())
+    _map(values.begin(), values.end())
 
 {
 }

@@ -10,7 +10,7 @@ namespace data_model {
     @parent     parent Parent group of group representing the space domain
 */
 SpaceDomain::SpaceDomain(
-    hdf5::Group& parent):
+    hdf5::Group const& parent):
 
     SpaceDomain{hdf5::Group{parent, space_domain_tag}}
 
@@ -26,7 +26,7 @@ SpaceDomain::SpaceDomain(
 SpaceDomain::SpaceDomain(
     hdf5::Group&& group):
 
-    hdf5::Group{std::forward<hdf5::Group>(group)},
+    hdf5::Group{std::move(group)},
     _configuration{attributes()}
 
 {
@@ -59,8 +59,7 @@ PropertyGroup SpaceDomain::discretized_presence_property()
 {
     assert(this->contains_soft_link(presence_discretization_property_tag));
 
-    return PropertyGroup{*this,
-        hdf5::SoftLink{*this, presence_discretization_property_tag}.path()};
+    return PropertyGroup{*this, hdf5::SoftLink{*this, presence_discretization_property_tag}.path()};
 }
 
 

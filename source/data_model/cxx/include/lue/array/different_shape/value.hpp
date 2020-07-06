@@ -29,13 +29,13 @@ public:
 
     explicit       Value               (ValueGroup&& group);
 
-                   Value               (Value const&)=delete;
+                   Value               (Value const&)=default;
 
                    Value               (Value&&)=default;
 
                    ~Value              () override =default;
 
-    Value&         operator=           (Value const&)=delete;
+    Value&         operator=           (Value const&)=default;
 
     Value&         operator=           (Value&&)=default;
 

@@ -31,13 +31,13 @@ public:
 
                    Issues              (Issues const&)=default;
 
-                   Issues              (Issues&& other)=default;
+                   Issues              (Issues&&)=default;
 
                    ~Issues             ()=default;
 
     Issues&        operator=           (Issues const&)=default;
 
-    Issues&        operator=           (Issues&&)=delete;
+    Issues&        operator=           (Issues&&)=default;
 
     Errors const&  errors              () const;
 

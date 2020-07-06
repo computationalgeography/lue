@@ -13,7 +13,7 @@ namespace data_model {
                 property set
 */
 PropertySet::PropertySet(
-    hdf5::Group& parent,
+    hdf5::Group const& parent,
     std::string const& name):
 
     PropertySet{hdf5::Group{parent, name}}
@@ -29,7 +29,7 @@ PropertySet::PropertySet(
 PropertySet::PropertySet(
     hdf5::Group&& group):
 
-    hdf5::Group{std::forward<hdf5::Group>(group)},
+    hdf5::Group{std::move(group)},
     _object_tracker{*this},
     _time_domain{},
     _space_domain{},
@@ -37,11 +37,11 @@ PropertySet::PropertySet(
 
 {
     if(time_domain_exists(*this)) {
-        _time_domain = std::make_unique<TimeDomain>(*this);
+        _time_domain = TimeDomain{*this};
     }
 
     if(space_domain_exists(*this)) {
-        _space_domain = std::make_unique<SpaceDomain>(*this);
+        _space_domain = SpaceDomain{*this};
     }
 }
 
@@ -182,7 +182,7 @@ PropertySet create_property_set(
             name, parent.id().pathname()));
     }
 
-    auto group = hdf5::create_group(parent, name);
+    hdf5::Group group{hdf5::create_group(parent, name)};
 
     create_object_tracker(group);
     create_properties(group);
@@ -204,11 +204,10 @@ PropertySet create_property_set(
             name, parent.id().pathname()));
     }
 
-    auto group = hdf5::create_group(parent, name);
+    hdf5::Group group{hdf5::create_group(parent, name)};
 
     create_object_tracker(group);
-    create_space_domain(
-        group, space_configuration, space_coordinate_datatype, rank);
+    create_space_domain(group, space_configuration, space_coordinate_datatype, rank);
     create_properties(group);
 
     return PropertySet{std::move(group)};
@@ -226,7 +225,7 @@ PropertySet create_property_set(
             name, parent.id().pathname()));
     }
 
-    auto group = hdf5::create_group(parent, name);
+    hdf5::Group group{hdf5::create_group(parent, name)};
 
     create_object_tracker(group);
     link_time_domain(group, domain);
@@ -248,7 +247,7 @@ PropertySet create_property_set(
             name, parent.id().pathname()));
     }
 
-    auto group = hdf5::create_group(parent, name);
+    hdf5::Group group{hdf5::create_group(parent, name)};
 
     create_object_tracker(group);
     create_time_domain(group, time_configuration, clock);
@@ -271,7 +270,7 @@ PropertySet create_property_set(
             name, parent.id().pathname()));
     }
 
-    auto group = hdf5::create_group(parent, name);
+    hdf5::Group group{hdf5::create_group(parent, name)};
 
     link_object_tracker(group, object_tracker);
     create_time_domain(group, time_configuration, clock);
@@ -293,7 +292,7 @@ PropertySet create_property_set(
             name, parent.id().pathname()));
     }
 
-    auto group = hdf5::create_group(parent, name);
+    hdf5::Group group{hdf5::create_group(parent, name)};
 
     link_object_tracker(group, object_tracker);
     link_time_domain(group, domain);
@@ -318,13 +317,11 @@ PropertySet create_property_set(
             name, parent.id().pathname()));
     }
 
-    auto group = hdf5::create_group(parent, name);
+    hdf5::Group group{hdf5::create_group(parent, name)};
 
     create_object_tracker(group);
-    create_time_domain(
-        group, time_configuration, clock);
-    create_space_domain(
-        group, space_configuration, space_coordinate_datatype, rank);
+    create_time_domain(group, time_configuration, clock);
+    create_space_domain(group, space_configuration, space_coordinate_datatype, rank);
     create_properties(group);
 
     return PropertySet{std::move(group)};
@@ -345,12 +342,11 @@ PropertySet create_property_set(
             name, parent.id().pathname()));
     }
 
-    auto group = hdf5::create_group(parent, name);
+    hdf5::Group group{hdf5::create_group(parent, name)};
 
     create_object_tracker(group);
     link_time_domain(group, time_domain);
-    create_space_domain(
-        group, space_configuration, space_coordinate_datatype, rank);
+    create_space_domain(group, space_configuration, space_coordinate_datatype, rank);
     create_properties(group);
 
     return PropertySet{std::move(group)};
@@ -372,12 +368,11 @@ PropertySet create_property_set(
             name, parent.id().pathname()));
     }
 
-    auto group = hdf5::create_group(parent, name);
+    hdf5::Group group{hdf5::create_group(parent, name)};
 
     link_object_tracker(group, object_tracker);
     link_time_domain(group, time_domain);
-    create_space_domain(
-        group, space_configuration, space_coordinate_datatype, rank);
+    create_space_domain(group, space_configuration, space_coordinate_datatype, rank);
     create_properties(group);
 
     return PropertySet{std::move(group)};

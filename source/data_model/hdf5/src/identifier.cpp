@@ -14,10 +14,10 @@ namespace hdf5 {
 
     The resulting instance will not be valid.
 */
-Identifier::Identifier()
+Identifier::Identifier():
 
-    : _id{-1},
-      _close{nullptr}
+    _id{-1},
+    _close{nullptr}
 
 {
     assert(!is_valid());
@@ -29,11 +29,11 @@ Identifier::Identifier()
                 close function
 */
 Identifier::Identifier(
-    hid_t id,
-    Close const& close)
+    hid_t const id,
+    Close const& close):
 
-    : _id{id},
-      _close(close)
+    _id{id},
+    _close{close}
 
 {
     assert_invariant();
@@ -43,13 +43,14 @@ Identifier::Identifier(
 /*!
     @brief      Copy construct an instance
 
-    If the HDF5 identifier is valid, its reference count will be incremented.
+    If the HDF5 identifier is valid, the reference count of the object
+    it identifies will be incremented.
 */
 Identifier::Identifier(
-    Identifier const& other)
+    Identifier const& other):
 
-    : _id{other._id},
-      _close{other._close}
+    _id{other._id},
+    _close{other._close}
 
 {
     if(is_valid()) {
@@ -65,22 +66,25 @@ Identifier::Identifier(
 
     The resulting instance will be valid when @a other is valid, otherwise it
     will be invalid. Once the new instance is constructed, @a other will be
-    invalid.
+    in a valid state, but semantically invalid (not identifying an
+    object anymore).
 */
 Identifier::Identifier(
-    Identifier&& other) noexcept
+    Identifier&& other) noexcept:
 
-    : _id{other._id},
-      _close{std::move(other._close)}
+    _id{other._id},
+    _close{std::move(other._close)}
 
 {
     other._id = -1;
 
-    try {
+    try
+    {
         assert_invariant();
         assert(!other.is_valid());
     }
-    catch(...) {
+    catch(...)
+    {
         // This should never happen
         assert(false);
     }
@@ -94,10 +98,12 @@ Identifier::Identifier(
 */
 Identifier::~Identifier() noexcept
 {
-    try {
-        close_if_necessary();
+    try
+    {
+        close_if_valid();
     }
-    catch(...) {
+    catch(...)
+    {
         // This should never happen
         assert(false);
     }
@@ -107,19 +113,19 @@ Identifier::~Identifier() noexcept
 /*!
     @brief      Copy-assign @a other to this instance
 
-    If necessary, the close function is called on the layered HDF5
-    identifier before the assignment.
+    If necessary, the close function is called on the currently layered
+    HDF5 identifier before the assignment.
 */
 Identifier& Identifier::operator=(
     Identifier const& other)
 {
+    // Copy-assign:
+    // - Clean-up this instance
+    // - Copy the other instance in
+
     if(&other != this)
     {
-        // Copy-assign:
-        // - Clean-up this instance
-        // - Copy the other instance in
-
-        close_if_necessary();
+        close_if_valid();
 
         _id = other._id;
 
@@ -136,6 +142,12 @@ Identifier& Identifier::operator=(
 }
 
 
+/*!
+    @brief      Move-assign @a other to this instance
+
+    If necessary, the close function is called on the currently layered
+    HDF5 identifier before the assignment.
+*/
 Identifier& Identifier::operator=(
     Identifier&& other) noexcept
 {
@@ -143,8 +155,9 @@ Identifier& Identifier::operator=(
     // - Clean-up this instance
     // - Move the other instance in
 
-    try {
-        close_if_necessary();
+    try
+    {
+        close_if_valid();
 
         _id = other._id;
         other._id = -1;
@@ -154,7 +167,8 @@ Identifier& Identifier::operator=(
         assert_invariant();
         assert(!other.is_valid());
     }
-    catch(...) {
+    catch(...)
+    {
         // This should never happen
         assert(false);
     }
@@ -167,7 +181,7 @@ int Identifier::reference_count() const
 {
     assert(is_valid());
 
-    auto count = ::H5Iget_ref(_id);
+    int const count{::H5Iget_ref(_id)};
 
     if(count < 0) {
         throw std::runtime_error("Cannot retrieve object's reference count");
@@ -182,7 +196,7 @@ int Identifier::increment_reference_count()
 {
     assert(is_valid());
 
-    auto count = ::H5Iinc_ref(_id);
+    int const count{::H5Iinc_ref(_id)};
 
     if(count < 0) {
         throw std::runtime_error("Cannot increment object's reference count");
@@ -194,10 +208,17 @@ int Identifier::increment_reference_count()
 
 /*!
     @brief      Close the HDF5 object pointed to by the instance
+
+    Nothing will happen if the instance is not valid. Otherwise the
+    layered close function which was passed upon construction is
+    called. Typically, close functions will decrement the reference count
+    of the object identified by the identifier and close the object when
+    this count becomes zero.
 */
-void Identifier::close_if_necessary()
+void Identifier::close_if_valid()
 {
-    if(is_valid()) {
+    if(is_valid())
+    {
         assert(reference_count() > 0);
         _close(_id);
     }
@@ -217,11 +238,16 @@ bool Identifier::is_valid() const
 {
     // Don't call assert_invariant here, since it uses is_valid in its
     // implementation...
-    auto status = ::H5Iis_valid(_id);
 
-    if(status < 0) {
-        throw std::runtime_error(
-            "Cannot determine whether identifier is valid");
+    ::htri_t status{0};
+
+    if(_id >= 0)
+    {
+        status = ::H5Iis_valid(_id);
+
+        if(status < 0) {
+            throw std::runtime_error("Cannot determine whether identifier is valid");
+        }
     }
 
     return status > 0;
@@ -230,11 +256,10 @@ bool Identifier::is_valid() const
 
 ::H5I_type_t Identifier::type() const
 {
-    ::H5I_type_t result = ::H5Iget_type(_id);
+    ::H5I_type_t const result{::H5Iget_type(_id)};
 
     if(result == ::H5I_BADID) {
-        throw std::runtime_error(
-            "Cannot determine type of object identifier");
+        throw std::runtime_error("Cannot determine type of object identifier");
     }
 
     return result;
@@ -244,11 +269,10 @@ bool Identifier::is_valid() const
 // NOLINTNEXTLINE(readability-make-member-function-const)
 void* Identifier::object()
 {
-    auto* result = ::H5Iobject_verify(_id, type());
+    void* result{::H5Iobject_verify(_id, type())};
 
     if(result == nullptr) {
-        throw std::runtime_error(
-            "Cannot obtain pointer to object");
+        throw std::runtime_error("Cannot obtain pointer to object");
     }
 
     return result;
@@ -271,6 +295,9 @@ Identifier::operator hid_t() const
     There may be more than one pathname to an object. This function returns
     one of them. When possible, it is the one with which the object was
     opened.
+
+    If the object identified by this identifier is an attribute, then
+    the name of the object to which the attribute is attached is returned.
 */
 std::string Identifier::pathname() const
 {
@@ -279,7 +306,12 @@ std::string Identifier::pathname() const
 
     assert(is_valid());
 
-    auto const nr_bytes = ::H5Iget_name(_id, nullptr, 0);
+    // Number of bytes, excluding \0
+    ::ssize_t const nr_bytes{::H5Iget_name(_id, nullptr, 0)};
+
+    if(nr_bytes < 0) {
+        throw std::runtime_error("Cannot retrieve name of object");
+    }
 
     std::string result(nr_bytes, 'x');
 
@@ -303,8 +335,8 @@ std::string Identifier::name() const
 {
     assert(is_valid());
 
-    auto const pathname = this->pathname();
-    auto const idx = pathname.find_last_of('/');
+    std::string const pathname{this->pathname()};
+    std::size_t const idx{pathname.find_last_of('/')};
 
     return idx == std::string::npos ? pathname : pathname.substr(idx + 1);
 }
@@ -314,7 +346,21 @@ ObjectInfo Identifier::info() const
 {
     assert(is_valid());
 
-    return ObjectInfo(_id);
+    return ObjectInfo{_id};
+}
+
+
+Identifier Identifier::file_id() const
+{
+    assert(is_valid());
+
+    ::hid_t const object_id{::H5Iget_file_id(_id)};
+
+    if(object_id < 0) {
+        throw std::runtime_error("Cannot get file ID");
+    }
+
+    return Identifier{object_id, ::H5Fclose};
 }
 
 

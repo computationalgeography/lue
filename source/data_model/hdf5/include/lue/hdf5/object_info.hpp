@@ -12,13 +12,13 @@ public:
 
     explicit       ObjectInfo          (hid_t id);
 
-                   ObjectInfo          (ObjectInfo const&)=delete;
+                   ObjectInfo          (ObjectInfo const&)=default;
 
                    ObjectInfo          (ObjectInfo&&)=default;
 
                    ~ObjectInfo         ()=default;
 
-    ObjectInfo&    operator=           (ObjectInfo const&)=delete;
+    ObjectInfo&    operator=           (ObjectInfo const&)=default;
 
     ObjectInfo&    operator=           (ObjectInfo&&)=default;
 

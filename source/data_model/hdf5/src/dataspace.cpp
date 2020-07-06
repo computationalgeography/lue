@@ -15,9 +15,9 @@ namespace hdf5 {
     @sa         [H5Screate](https://support.hdfgroup.org/HDF5/doc/RM/RM_H5S.html#Dataspace-Create)
 */
 Dataspace::Dataspace(
-    ::H5S_class_t const type)
+    ::H5S_class_t const type):
 
-    : Dataspace(::H5Screate(type))
+    Dataspace{::H5Screate(type)}
 
 {
 }
@@ -29,14 +29,11 @@ Dataspace::Dataspace(
     @exception  std::runtime_error In case the @a id is not valid
 */
 Dataspace::Dataspace(
-    hid_t const id)
+    ::hid_t const id):
 
-    : _id{id, ::H5Sclose}
+    Dataspace{Identifier{id, ::H5Sclose}}
 
 {
-    if(!_id.is_valid()) {
-        throw std::runtime_error("Dataspace is not valid");
-    }
 }
 
 
@@ -46,14 +43,16 @@ Dataspace::Dataspace(
     @exception  std::runtime_error In case the @a id is not valid
 */
 Dataspace::Dataspace(
-    Identifier&& id)
+    Identifier&& id):
 
-    : _id{std::forward<Identifier>(id)}
+    _id{std::move(id)}
 
 {
     if(!_id.is_valid()) {
         throw std::runtime_error("Dataspace is not valid");
     }
+
+    assert(_id.type() == H5I_DATASPACE);
 }
 
 
@@ -73,11 +72,10 @@ Identifier const& Dataspace::id() const
 */
 int Dataspace::nr_dimensions() const
 {
-    auto const nr_dimensions = ::H5Sget_simple_extent_ndims(_id);
+    int const nr_dimensions{::H5Sget_simple_extent_ndims(_id)};
 
     if(nr_dimensions < 0) {
-        throw std::runtime_error(
-            "Cannot determine number of dataspace dimensions");
+        throw std::runtime_error("Cannot determine number of dataspace dimensions");
     }
 
     return nr_dimensions;
@@ -91,15 +89,14 @@ int Dataspace::nr_dimensions() const
 */
 Shape Dataspace::dimension_extents() const
 {
-    int const nr_dimensions = this->nr_dimensions();
+    int const nr_dimensions{this->nr_dimensions()};
 
-    static_assert(std::is_same_v<Shape::value_type, hsize_t>);
+    static_assert(std::is_same_v<Shape::value_type, ::hsize_t>);
 
     Shape extents(nr_dimensions);
-    hsize_t* max_extents = nullptr;
+    ::hsize_t* max_extents = nullptr;
 
-    int const nr_dimensions2 =
-        ::H5Sget_simple_extent_dims(_id, extents.data(), max_extents);
+    int const nr_dimensions2{::H5Sget_simple_extent_dims(_id, extents.data(), max_extents)};
 
     if(nr_dimensions2 < 0) {
         throw std::runtime_error("Cannot retrieve dataspace extents");
@@ -111,7 +108,7 @@ Shape Dataspace::dimension_extents() const
 }
 
 
-hssize_t Dataspace::nr_elements() const
+::hssize_t Dataspace::nr_elements() const
 {
     return ::H5Sget_simple_extent_npoints(_id);
 }
@@ -153,7 +150,7 @@ Dataspace create_dataspace(
         throw std::runtime_error("Dataspace cannot be created");
     }
 
-    return Dataspace(std::move(dataspace_location));
+    return Dataspace{std::move(dataspace_location)};
 }
 
 } // namespace hdf5

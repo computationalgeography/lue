@@ -7,9 +7,9 @@ namespace lue {
 namespace hdf5 {
 
 PropertyList::PropertyList(
-    hid_t const class_id)
+    ::hid_t const class_id):
 
-    : _id(::H5Pcreate(class_id), ::H5Pclose)
+    _id{::H5Pcreate(class_id), ::H5Pclose}
 
 {
     if(!_id.is_valid()) {

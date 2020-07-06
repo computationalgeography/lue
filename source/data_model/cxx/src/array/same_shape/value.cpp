@@ -9,10 +9,10 @@ namespace same_shape {
     @brief      Open value @a name in @a parent
 */
 Value::Value(
-    hdf5::Group& parent,
-    std::string const& name)
+    hdf5::Group const& parent,
+    std::string const& name):
 
-    : Array{parent, name}
+    Array{parent, name}
 
 {
 }
@@ -22,11 +22,11 @@ Value::Value(
     @brief      Open value @a name in @a parent
 */
 Value::Value(
-    hdf5::Group& parent,
+    hdf5::Group const& parent,
     std::string const& name,
-    hdf5::Datatype const& memory_datatype)
+    hdf5::Datatype const& memory_datatype):
 
-    : Array{parent, name, memory_datatype}
+    Array{parent, name, memory_datatype}
 
 {
 }
@@ -36,9 +36,9 @@ Value::Value(
     @brief      Move in @a dataset
 */
 Value::Value(
-    Array&& array)
+    Array&& array):
 
-    : Array{std::forward<Array>(array)}
+    Array{std::move(array)}
 
 {
 }
@@ -53,7 +53,7 @@ void Value::expand(
 {
     // Get current shape of the underlying dataset, and update it for
     // the new size
-    auto shape = this->shape();
+    hdf5::Shape shape{this->shape()};
     shape[0] += nr_arrays;
 
     // Resize the dataset
@@ -78,7 +78,7 @@ Count Value::nr_arrays() const
 */
 hdf5::Shape Value::array_shape() const
 {
-    auto const shape = this->shape();
+    hdf5::Shape const shape{this->shape()};
 
     assert(!shape.empty());
 
@@ -89,7 +89,7 @@ hdf5::Shape Value::array_shape() const
 hdf5::Hyperslab Value::hyperslab(
     IndexRange const& range) const
 {
-    auto shape = this->shape();
+    hdf5::Shape shape{this->shape()};
 
     hdf5::Offset offset(shape.size(), 0);
     offset[0] = range.begin();
@@ -148,10 +148,7 @@ Value create_value(
     std::string const& name,
     hdf5::Datatype const& memory_datatype)
 {
-    return create_value(
-        parent, name,
-        file_datatype(memory_datatype), memory_datatype,
-        hdf5::Shape{});
+    return create_value(parent, name, file_datatype(memory_datatype), memory_datatype, hdf5::Shape{});
 }
 
 
@@ -164,10 +161,7 @@ Value create_value(
     hdf5::Datatype const& memory_datatype,
     hdf5::Shape const& array_shape)
 {
-    return create_value(
-        parent, name,
-        file_datatype(memory_datatype), memory_datatype,
-        array_shape);
+    return create_value(parent, name, file_datatype(memory_datatype), memory_datatype, array_shape);
 }
 
 
@@ -180,10 +174,7 @@ Value create_value(
     hdf5::Datatype const& file_datatype,
     hdf5::Datatype const& memory_datatype)
 {
-    return create_value(
-        parent, name,
-        file_datatype, memory_datatype,
-        hdf5::Shape{});
+    return create_value(parent, name, file_datatype, memory_datatype, hdf5::Shape{});
 }
 
 
@@ -210,16 +201,14 @@ Value create_value(
     hdf5::Shape max_dimension_sizes{array_shape};
     max_dimension_sizes.insert(max_dimension_sizes.begin(), H5S_UNLIMITED);
 
-    auto dataspace = hdf5::create_dataspace(
-        dimension_sizes, max_dimension_sizes);
+    hdf5::Dataspace const dataspace{hdf5::create_dataspace(dimension_sizes, max_dimension_sizes)};
 
     hdf5::Dataset::CreationPropertyList creation_property_list;
-    auto chunk_dimension_sizes =
-        hdf5::chunk_shape(array_shape, file_datatype.size());
+    auto chunk_dimension_sizes = hdf5::chunk_shape(array_shape, file_datatype.size());
     creation_property_list.set_chunk(chunk_dimension_sizes);
 
-    auto dataset = hdf5::create_dataset(
-        parent.id(), name, file_datatype, dataspace, creation_property_list);
+    hdf5::Dataset dataset{
+        hdf5::create_dataset(parent.id(), name, file_datatype, dataspace, creation_property_list)};
 
     return Value{Array{std::move(dataset), memory_datatype}};
 }

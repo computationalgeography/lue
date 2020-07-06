@@ -6,7 +6,7 @@ namespace lue {
 namespace data_model {
 
 TimeCell::TimeCell(
-    hdf5::Group& parent):
+    hdf5::Group const& parent):
 
     TimeBox{parent},
     _count{
@@ -19,10 +19,10 @@ TimeCell::TimeCell(
 
 TimeCell::TimeCell(
     TimeBox&& time_box,
-    TimeCell::Count&& count):
+    TimeCell::Count count):
 
-    TimeBox{std::forward<TimeBox>(time_box)},
-    _count{std::forward<TimeCell::Count>(count)}
+    TimeBox{std::move(time_box)},
+    _count{std::move(count)}
 
 {
 }
@@ -50,13 +50,12 @@ TimeCell create_time_cell(
     hdf5::Group& parent)
 {
     // A time cell is defined by a time box and a count per box.
-    auto time_box = create_time_box(parent);
+    TimeBox time_box{create_time_box(parent)};
 
-    hdf5::Datatype memory_datatype{
-        hdf5::NativeDatatypeTraits<data_model::Count>::type_id()};
+    hdf5::Datatype memory_datatype{hdf5::NativeDatatypeTraits<data_model::Count>::type_id()};
 
-    auto count = same_shape::constant_shape::create_value(
-        parent, time_discretization_tag, memory_datatype);
+    same_shape::constant_shape::Value count{
+        same_shape::constant_shape::create_value(parent, time_discretization_tag, memory_datatype)};
 
     return TimeCell{std::move(time_box), std::move(count)};
 }
