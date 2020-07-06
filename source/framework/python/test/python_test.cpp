@@ -73,5 +73,7 @@ catch_out.write("\n".join(failures))
     std::string string = PyString_AsString(output.ptr());
 #endif
 
+    Py_Finalize();
+
     BOOST_CHECK_EQUAL(string, "");
 }
