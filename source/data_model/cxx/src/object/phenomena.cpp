@@ -6,7 +6,7 @@ namespace lue {
 namespace data_model {
 
 Phenomena::Phenomena(
-    hdf5::Group& parent):
+    hdf5::Group const& parent):
 
     Collection<Phenomenon>{parent, phenomena_tag}
 
@@ -17,7 +17,7 @@ Phenomena::Phenomena(
 Phenomena::Phenomena(
     Collection<Phenomenon>&& collection):
 
-    Collection<Phenomenon>{std::forward<Collection<Phenomenon>>(collection)}
+    Collection<Phenomenon>{std::move(collection)}
 
 {
 }

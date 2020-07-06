@@ -11,8 +11,8 @@ void write_epoch(
 {
     Aspect<time::Epoch::Kind>(epoch.kind()).save(attributes);
 
-    if(epoch.origin()) {
-
+    if(epoch.origin())
+    {
         attributes.write(epoch_origin_tag, *epoch.origin());
 
         if(epoch.calendar()) {
@@ -25,23 +25,24 @@ void write_epoch(
 time::Epoch read_epoch(
     hdf5::Attributes const& attributes)
 {
-    time::Epoch epoch;
-    auto const kind =
-        string_to_aspect<time::Epoch::Kind>(
-            attributes.read<std::string>(epoch_kind_tag));
+    time::Epoch epoch{};
+    auto const kind = string_to_aspect<time::Epoch::Kind>(attributes.read<std::string>(epoch_kind_tag));
 
-    if(!attributes.exists(epoch_origin_tag)) {
+    if(!attributes.exists(epoch_origin_tag))
+    {
         epoch = time::Epoch{kind};
     }
-    else {
-        auto const origin = attributes.read<std::string>(epoch_origin_tag);
+    else
+    {
+        std::string const origin{attributes.read<std::string>(epoch_origin_tag)};
 
-        if(!attributes.exists(epoch_calendar_tag)) {
+        if(!attributes.exists(epoch_calendar_tag))
+        {
             epoch = time::Epoch{kind, origin};
         }
-        else {
-            time::Calendar const calendar =
-                Aspect<time::Calendar>(attributes).value();
+        else
+        {
+            time::Calendar const calendar = Aspect<time::Calendar>(attributes).value();
             epoch = time::Epoch{kind, origin, calendar};
         }
     }
@@ -66,8 +67,7 @@ Clock read_clock(
 {
     time::Epoch const epoch = read_epoch(attributes);
     auto const unit = Aspect<time::Unit>(attributes).value();
-    auto const nr_units =
-        attributes.read<time::TickPeriodCount>(nr_time_units_tag);
+    auto const nr_units = attributes.read<time::TickPeriodCount>(nr_time_units_tag);
 
     return {epoch, unit, nr_units};
 }
@@ -76,7 +76,7 @@ Clock read_clock(
 
 
 TimeDomain::TimeDomain(
-    hdf5::Group& parent):
+    hdf5::Group const& parent):
 
     hdf5::Group{parent, time_domain_tag},
     _configuration{attributes()},
@@ -89,7 +89,7 @@ TimeDomain::TimeDomain(
 TimeDomain::TimeDomain(
     hdf5::Group&& group):
 
-    hdf5::Group{std::forward<hdf5::Group>(group)},
+    hdf5::Group{std::move(group)},
     _configuration{attributes()},
     _clock{read_clock(attributes())}
 
@@ -114,9 +114,10 @@ TimeDomain create_time_domain(
     TimeConfiguration const& configuration,
     data_model::Clock const& clock)
 {
-    auto group = hdf5::create_group(parent, time_domain_tag);
+    hdf5::Group group{hdf5::create_group(parent, time_domain_tag)};
 
-    switch(configuration.value<TimeDomainItemType>()) {
+    switch(configuration.value<TimeDomainItemType>())
+    {
         case TimeDomainItemType::box: {
             create_time_box(group);
             break;

@@ -135,7 +135,7 @@ Datatype::Datatype(
 
 
 Datatype::Datatype(
-    Identifier id):
+    Identifier&& id):
 
     _id(std::move(id))
 

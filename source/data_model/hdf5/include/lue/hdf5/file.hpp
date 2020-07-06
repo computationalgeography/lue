@@ -50,6 +50,10 @@ public:
                                         unsigned int flags,
                                         AccessPropertyList const& access_property_list);
 
+    explicit       File                (Identifier&& id);
+
+    explicit       File                (Group&& group);
+
                    File                (File const&)=default;
 
                    File                (File&&)=default;
@@ -69,10 +73,6 @@ public:
     unsigned int   intent              () const;
 
 private:
-
-    friend File create_file(std::string const& name, File::AccessPropertyList const& access_property_list);
-
-    explicit       File                (Identifier id);
 
 };
 

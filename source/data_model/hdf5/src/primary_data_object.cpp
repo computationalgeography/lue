@@ -22,7 +22,7 @@ PrimaryDataObject::PrimaryDataObject(
     will be opened.
 */
 PrimaryDataObject::PrimaryDataObject(
-    Identifier id):
+    Identifier&& id):
 
     _id{std::move(id)},
     _attributes{_id}

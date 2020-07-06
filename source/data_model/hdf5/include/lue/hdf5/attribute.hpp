@@ -135,6 +135,8 @@ public:
 
                    Attribute           (Attribute&&)=default;
 
+    explicit       Attribute           (Identifier&& id);
+
                    ~Attribute          ()=default;
 
     Attribute&     operator=           (Attribute const&)=default;
@@ -166,12 +168,6 @@ public:
                                         T& value);
 
 private:
-
-    friend Attribute create_attribute(
-        Identifier const& location, std::string const& name,
-        Datatype const& datatype, Dataspace const& dataspace);
-
-    explicit       Attribute           (Identifier id);
 
     //! Identifier of attribute
     Identifier     _id;

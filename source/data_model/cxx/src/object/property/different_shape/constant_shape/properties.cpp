@@ -8,7 +8,7 @@ namespace different_shape {
 namespace constant_shape {
 
 Properties::Properties(
-    hdf5::Group& parent):
+    hdf5::Group const& parent):
 
     Collection<Property>{parent, different_shape_constant_shape_tag}
 
@@ -19,7 +19,7 @@ Properties::Properties(
 Properties::Properties(
     Collection<Property>&& collection):
 
-    Collection<Property>{std::forward<Collection<Property>>(collection)}
+    Collection<Property>{std::move(collection)}
 
 {
 }
@@ -31,16 +31,15 @@ Property& Properties::add(
     Rank const rank,
     std::string const& description)
 {
-    return Collection::add(
-        name, create_property(*this, name, datatype, rank, description));
+    return Collection::add(name, create_property(*this, name, datatype, rank, description));
 }
 
 
 Properties create_properties(
     hdf5::Group& parent)
 {
-    auto collection = create_collection<Property>(
-        parent, different_shape_constant_shape_tag);
+    Collection<Property> collection{
+        create_collection<Property>(parent, different_shape_constant_shape_tag)};
 
     return Properties{std::move(collection)};
 }

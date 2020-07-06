@@ -7,7 +7,7 @@ namespace lue {
 namespace hdf5 {
 
 HardLink::HardLink(
-    Group& group,
+    Group const& group,
     std::string const& name):
 
     Link{group, name}

@@ -147,14 +147,15 @@ Group::Group(
 
 Group::Group(
     Group const& parent,
-    Identifier& id):
+    Identifier&& id):
 
-    PrimaryDataObject{id},
+    PrimaryDataObject{std::move(id)},
     _parent_pathname{parent.id().pathname()}
 
 {
     // Only used by create_group() below
     assert(this->id().is_valid());
+    assert(has_parent());
 }
 
 
@@ -165,7 +166,7 @@ Group::Group(
     Use this constructor for groups that have no parent.
 */
 Group::Group(
-    Identifier id):
+    Identifier&& id):
 
     PrimaryDataObject{std::move(id)},
     _parent_pathname{}
@@ -346,7 +347,7 @@ Group create_group(
         ));
     }
 
-    return Group{parent, group_id};
+    return Group{parent, std::move(group_id)};
 }
 
 } // namespace hdf5

@@ -183,12 +183,11 @@ Dataset create_dataset(
     std::string const& name,
     std::string const& description)
 {
-    auto access_property_list = hdf5::File::AccessPropertyList();
+    hdf5::File::AccessPropertyList access_property_list{};
 
-    access_property_list.set_library_version_bounds(
-        ::H5F_LIBVER_LATEST, ::H5F_LIBVER_LATEST);
+    access_property_list.set_library_version_bounds(::H5F_LIBVER_LATEST, ::H5F_LIBVER_LATEST);
 
-    auto file = hdf5::create_file(name, access_property_list);
+    hdf5::File file{hdf5::create_file(name, access_property_list)};
 
     return create_dataset(std::move(file), description);
 }
@@ -198,7 +197,7 @@ Dataset create_in_memory_dataset(
     std::string const& name,
     std::string const& description)
 {
-    auto file = hdf5::create_in_memory_file(name);
+    hdf5::File file{hdf5::create_in_memory_file(name)};
 
     return create_dataset(std::move(file), description);
 }

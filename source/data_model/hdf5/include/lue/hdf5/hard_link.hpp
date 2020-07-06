@@ -11,7 +11,7 @@ class HardLink:
 
 public:
 
-                   HardLink            (Group& group,
+                   HardLink            (Group const& group,
                                         std::string const& name);
 
                    HardLink            (HardLink const&)=default;

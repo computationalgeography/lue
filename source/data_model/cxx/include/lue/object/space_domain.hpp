@@ -27,17 +27,17 @@ class SpaceDomain:
 
 public:
 
-    explicit       SpaceDomain         (hdf5::Group& parent);
+    explicit       SpaceDomain         (hdf5::Group const& parent);
 
     explicit       SpaceDomain         (hdf5::Group&& group);
 
-                   SpaceDomain         (SpaceDomain const&)=delete;
+                   SpaceDomain         (SpaceDomain const&)=default;
 
                    SpaceDomain         (SpaceDomain&&)=default;
 
                    ~SpaceDomain        () override =default;
 
-    SpaceDomain&   operator=           (SpaceDomain const&)=delete;
+    SpaceDomain&   operator=           (SpaceDomain const&)=default;
 
     SpaceDomain&   operator=           (SpaceDomain&&)=default;
 

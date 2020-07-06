@@ -5,7 +5,7 @@ namespace lue {
 namespace data_model {
 
 Universe::Universe(
-    hdf5::Group& parent,
+    hdf5::Group const& parent,
     std::string const& name):
 
     hdf5::Group{parent, name},
@@ -18,7 +18,7 @@ Universe::Universe(
 Universe::Universe(
     hdf5::Group&& group):
 
-    hdf5::Group{std::forward<hdf5::Group>(group)},
+    hdf5::Group{std::move(group)},
     _phenomena{*this}
 
 {
@@ -49,7 +49,7 @@ Universe create_universe(
     hdf5::Group& parent,
     std::string const& name)
 {
-    auto group = hdf5::create_group(parent, name);
+    hdf5::Group group{hdf5::create_group(parent, name)};
 
     create_phenomena(group);
 

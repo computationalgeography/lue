@@ -9,7 +9,7 @@ namespace lue {
 namespace data_model {
 
 Properties::Properties(
-    hdf5::Group& parent):
+    hdf5::Group const& parent):
 
     hdf5::Group{parent, properties_tag},
     _same_shape_properties{*this},
@@ -26,7 +26,7 @@ Properties::Properties(
 Properties::Properties(
     hdf5::Group&& group):
 
-    hdf5::Group{std::forward<hdf5::Group>(group)},
+    hdf5::Group{std::move(group)},
     _same_shape_properties{*this},
     _same_shape_constant_shape_properties{*this},
     _same_shape_variable_shape_properties{*this},
@@ -86,8 +86,7 @@ bool Properties::contains(
         _same_shape_variable_shape_properties.contains(name) ||
         _different_shape_properties.contains(name) ||
         _different_shape_constant_shape_properties.contains(name) ||
-        _different_shape_variable_shape_properties.contains(name)
-        ;
+        _different_shape_variable_shape_properties.contains(name);
 }
 
 
@@ -98,17 +97,15 @@ ShapePerObject Properties::shape_per_object(
 
     if(     _same_shape_properties.contains(name) ||
             _same_shape_constant_shape_properties.contains(name) ||
-            _same_shape_variable_shape_properties.contains(name)) {
-
+            _same_shape_variable_shape_properties.contains(name))
+    {
         result = ShapePerObject::same;
-
     }
     else if(_different_shape_properties.contains(name) ||
             _different_shape_constant_shape_properties.contains(name) ||
-            _different_shape_variable_shape_properties.contains(name)) {
-
+            _different_shape_variable_shape_properties.contains(name))
+    {
         result = ShapePerObject::different;
-
     }
 
     if(!result) {
@@ -128,18 +125,16 @@ ValueVariability Properties::value_variability(
     boost::optional<ValueVariability> result;
 
     if(     _same_shape_properties.contains(name) ||
-            _different_shape_properties.contains(name)) {
-
+            _different_shape_properties.contains(name))
+    {
         result = ValueVariability::constant;
-
     }
     else if(_same_shape_constant_shape_properties.contains(name) ||
             _same_shape_variable_shape_properties.contains(name) ||
             _different_shape_constant_shape_properties.contains(name) ||
-            _different_shape_variable_shape_properties.contains(name)) {
-
+            _different_shape_variable_shape_properties.contains(name))
+    {
         result = ValueVariability::variable;
-
     }
 
     if(!result) {
@@ -160,16 +155,14 @@ ShapeVariability Properties::shape_variability(
 
     if(
             _same_shape_constant_shape_properties.contains(name) ||
-            _different_shape_constant_shape_properties.contains(name)) {
-
+            _different_shape_constant_shape_properties.contains(name))
+    {
         result = ShapeVariability::constant;
-
     }
     else if(_same_shape_variable_shape_properties.contains(name) ||
-            _different_shape_variable_shape_properties.contains(name)) {
-
+            _different_shape_variable_shape_properties.contains(name))
+    {
         result = ShapeVariability::variable;
-
     }
 
     if(!result) {
@@ -276,7 +269,7 @@ Properties create_properties(
             parent.id().pathname()));
     }
 
-    auto group = hdf5::create_group(parent, properties_tag);
+    hdf5::Group group{hdf5::create_group(parent, properties_tag)};
 
     same_shape::create_properties(group);
     same_shape::constant_shape::create_properties(group);

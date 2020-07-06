@@ -40,8 +40,8 @@ private:
 
 inline IndexRange::IndexRange(
     Index const begin,
-    Index const end)
-:
+    Index const end):
+
     _begin{begin},
     _end{end}
 

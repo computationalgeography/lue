@@ -9,7 +9,7 @@ namespace hdf5 {
     @param      id Identifier of attribute
 */
 Attribute::Attribute(
-    Identifier id):
+    Identifier&& id):
 
     _id{std::forward<Identifier>(id)},
     _datatype{::H5Aget_type(_id)},

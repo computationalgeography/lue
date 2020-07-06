@@ -13,7 +13,7 @@ class Link
 
 public:
 
-                   Link                (Group& group,
+                   Link                (Group const& group,
                                         std::string const& name);
 
                    Link                (Link const&)=default;

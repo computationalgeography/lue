@@ -26,6 +26,11 @@ public:
                    Group               (Group const& parent,
                                         std::string const& name);
 
+                   Group               (Group const& parent,
+                                        Identifier&& id);
+
+    explicit       Group               (Identifier&& id);
+
                    Group               (Group const&)=default;
 
                    Group               (Group&&)=default;
@@ -73,15 +78,8 @@ private:
 
     friend File;
 
-    friend Group create_group(Group& parent, std::string const& name);
-
-                   Group               (Group const& parent,
-                                        Identifier& id);
-
                    Group               (Identifier const& parent,
                                         std::string const& name);
-
-    explicit       Group               (Identifier id);
 
     //! Pathname of parent group
     std::string    _parent_pathname;

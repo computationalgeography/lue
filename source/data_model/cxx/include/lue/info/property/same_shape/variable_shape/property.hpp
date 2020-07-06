@@ -17,23 +17,23 @@ public:
 
     using Value = same_shape::variable_shape::Value;
 
-                   Property            (hdf5::Group& parent,
+                   Property            (hdf5::Group const& parent,
                                         std::string const& name);
 
-                   Property            (hdf5::Group& parent,
+                   Property            (hdf5::Group const& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& memory_datatype);
-
-                   Property            (Property const&)=delete;
-
-                   Property            (Property&&)=default;
 
                    Property            (PropertyGroup&& group,
                                         Value&& value);
 
+                   Property            (Property const&)=default;
+
+                   Property            (Property&&)=default;
+
                    ~Property           () override =default;
 
-    Property&      operator=           (Property const&)=delete;
+    Property&      operator=           (Property const&)=default;
 
     Property&      operator=           (Property&&)=default;
 

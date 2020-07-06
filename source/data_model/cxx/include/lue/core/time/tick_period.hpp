@@ -62,9 +62,9 @@ private:
 
 template<
     typename Unit>
-inline TickPeriod<Unit>::TickPeriod()
+inline TickPeriod<Unit>::TickPeriod():
 
-    : _nr_units{1}
+    _nr_units{1}
 
 {
 }
@@ -73,9 +73,9 @@ inline TickPeriod<Unit>::TickPeriod()
 template<
     typename Unit>
 inline TickPeriod<Unit>::TickPeriod(
-    Count const nr_units)
+    Count const nr_units):
 
-    : _nr_units{nr_units}
+    _nr_units{nr_units}
 
 {
 }

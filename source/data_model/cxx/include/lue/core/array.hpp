@@ -11,26 +11,23 @@ class Array:
 
 public:
 
-                   Array               (hdf5::Group& parent,
+                   Array               (hdf5::Group const& parent,
                                         std::string const& name);
 
-                   Array               (hdf5::Group& parent,
+                   Array               (hdf5::Group const& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& memory_datatype);
 
                    Array               (hdf5::Dataset&& dataset,
                                         hdf5::Datatype const& memory_datatype);
 
-                   Array               (hdf5::Identifier& id,
-                                        hdf5::Datatype const& memory_datatype);
-
-                   Array               (Array const&)=delete;
+                   Array               (Array const&)=default;
 
                    Array               (Array&&)=default;
 
                    ~Array              () override =default;
 
-    Array&         operator=           (Array const&)=delete;
+    Array&         operator=           (Array const&)=default;
 
     Array&         operator=           (Array&&)=default;
 
@@ -59,12 +56,16 @@ public:
     void           write               (hdf5::Dataspace const& memory_dataspace,
                                         void const* buffer) const;
 
-    void           write               (hdf5::Dataspace const&
-                                            memory_dataspace,
+    void           write               (hdf5::Dataspace const& memory_dataspace,
                                         hdf5::Hyperslab const& hyperslab,
                                         void const* buffer);
 
+protected:
+
 private:
+
+                   Array               (hdf5::Identifier&& id,
+                                        hdf5::Datatype const& memory_datatype);
 
     //! In-memory type-id.
     hdf5::Datatype _memory_datatype;

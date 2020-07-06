@@ -21,22 +21,22 @@ class Value:
 
 public:
 
-                   Value               (hdf5::Group& parent,
+                   Value               (hdf5::Group const& parent,
                                         std::string const& name);
 
-                   Value               (hdf5::Group& parent,
+                   Value               (hdf5::Group const& parent,
                                         std::string const& name,
                                         hdf5::Datatype const& memory_datatype);
 
     explicit       Value               (ValueGroup&& group);
 
-                   Value               (Value const&)=delete;
+                   Value               (Value const&)=default;
 
                    Value               (Value&&)=default;
 
                    ~Value              () override =default;
 
-    Value&         operator=           (Value const&)=delete;
+    Value&         operator=           (Value const&)=default;
 
     Value&         operator=           (Value&&)=default;
 

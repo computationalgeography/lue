@@ -137,7 +137,7 @@ File::File(
 
 
 File::File(
-    Identifier id):
+    Identifier&& id):
 
     Group{std::move(id)}
 
@@ -145,13 +145,13 @@ File::File(
 }
 
 
-// File::File(
-//     Group&& group):
-// 
-//     Group{std::forward<Group>(group)}
-// 
-// {
-// }
+File::File(
+    Group&& group):
+
+    Group{std::move(group)}
+
+{
+}
 
 
 std::string File::hdf5_version() const

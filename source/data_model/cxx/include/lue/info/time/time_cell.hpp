@@ -20,18 +20,18 @@ public:
 
     using Count = same_shape::constant_shape::Value;
 
-    explicit       TimeCell            (hdf5::Group& parent);
+    explicit       TimeCell            (hdf5::Group const& parent);
 
-                   TimeCell            (TimeCell const&)=delete;
+                   TimeCell            (TimeBox&& time_box,
+                                        Count count);
+
+                   TimeCell            (TimeCell const&)=default;
 
                    TimeCell            (TimeCell&&)=default;
 
-                   TimeCell            (TimeBox&& time_box,
-                                        Count&& count);
-
                    ~TimeCell           () override =default;
 
-    TimeCell&      operator=           (TimeCell const&)=delete;
+    TimeCell&      operator=           (TimeCell const&)=default;
 
     TimeCell&      operator=           (TimeCell&&)=default;
 

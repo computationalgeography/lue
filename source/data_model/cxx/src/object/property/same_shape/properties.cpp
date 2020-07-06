@@ -7,7 +7,7 @@ namespace data_model {
 namespace same_shape {
 
 Properties::Properties(
-    hdf5::Group& parent):
+    hdf5::Group const& parent):
 
     Collection<Property>{parent, same_shape_tag}
 
@@ -18,7 +18,7 @@ Properties::Properties(
 Properties::Properties(
     Collection<Property>&& collection):
 
-    Collection<Property>{std::forward<Collection<Property>>(collection)}
+    Collection<Property>{std::move(collection)}
 
 {
 }
@@ -29,8 +29,7 @@ Property& Properties::add(
     hdf5::Datatype const& datatype,
     std::string const& description)
 {
-    return Collection::add(
-        name, create_property(*this, name, datatype, description));
+    return Collection::add(name, create_property(*this, name, datatype, description));
 }
 
 
@@ -40,15 +39,14 @@ Property& Properties::add(
     hdf5::Shape const& shape,
     std::string const& description)
 {
-    return Collection::add(
-        name, create_property(*this, name, datatype, shape, description));
+    return Collection::add(name, create_property(*this, name, datatype, shape, description));
 }
 
 
 Properties create_properties(
     hdf5::Group& parent)
 {
-    auto collection = create_collection<Property>(parent, same_shape_tag);
+    Collection<Property> collection{create_collection<Property>(parent, same_shape_tag)};
 
     return Properties{std::move(collection)};
 }

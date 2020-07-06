@@ -11,8 +11,8 @@ namespace different_shape {
 */
 Value::Value(
     hdf5::Group& parent,
-    std::string const& name)
-:
+    std::string const& name):
+
     ValueGroup{parent, name},
     _nr_objects{attributes().read<Count>(nr_objects_tag)}
 
@@ -26,8 +26,8 @@ Value::Value(
 Value::Value(
     hdf5::Group& parent,
     std::string const& name,
-    hdf5::Datatype const& memory_datatype)
-:
+    hdf5::Datatype const& memory_datatype):
+
     ValueGroup{parent, name, memory_datatype},
     _nr_objects{attributes().read<Count>(nr_objects_tag)}
 
@@ -36,9 +36,9 @@ Value::Value(
 
 
 Value::Value(
-    ValueGroup&& group)
-:
-    ValueGroup{std::forward<ValueGroup>(group)},
+    ValueGroup&& group):
+
+    ValueGroup{std::move(group)},
     _nr_objects{attributes().read<Count>(nr_objects_tag)}
 
 {
@@ -63,7 +63,8 @@ void Value::expand(
     ID const* ids,
     hdf5::Shape const* shapes)
 {
-    for(std::size_t o = 0; o < nr_objects; ++o) {
+    for(Index o = 0; o < nr_objects; ++o)
+    {
         // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic, cppcoreguidelines-pro-bounds-pointer-arithmetic)
         expand_core(ids[o], shapes[o]);
     }
@@ -87,9 +88,10 @@ void Value::expand(
     ID const* ids,
     hdf5::Shape::value_type const* shapes)
 {
-    auto rank = this->rank();
+    Rank const rank{this->rank()};
 
-    for(std::size_t o = 0, s = 0; o < nr_objects; ++o, s +=rank) {
+    for(Index o = 0, s = 0; o < nr_objects; ++o, s +=rank)
+    {
         // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
         expand_core(ids[o], hdf5::Shape{shapes[s], shapes[s + 1]});
     }
@@ -128,11 +130,11 @@ void Value::expand_core(
 {
     assert(!contains(id));
 
-    std::string const name = std::to_string(id);
+    std::string const name{std::to_string(id)};
     hdf5::Shape const& max_dimension_sizes{array_shape};
-    auto dataspace = hdf5::create_dataspace(array_shape, max_dimension_sizes);
+    hdf5::Dataspace const dataspace{hdf5::create_dataspace(array_shape, max_dimension_sizes)};
 
-    hdf5::Dataset::CreationPropertyList creation_property_list;
+    hdf5::Dataset::CreationPropertyList creation_property_list{};
 
     // auto chunk_dimension_sizes =
     //     hdf5::chunk_shape(array_shape, file_datatype.size());
@@ -146,7 +148,7 @@ void Value::expand_core(
 bool Value::contains(
     ID const id) const
 {
-    std::string const name = std::to_string(id);
+    std::string const name{std::to_string(id)};
 
     return hdf5::dataset_exists(this->id(), name);
 }
@@ -157,7 +159,7 @@ Array Value::operator[](
 {
     assert(contains(id));
 
-    std::string const name = std::to_string(id);
+    std::string const name{std::to_string(id)};
 
     return Array{*this, name, memory_datatype()};
 }
@@ -172,10 +174,7 @@ Value create_value(
     hdf5::Datatype const& memory_datatype,
     Rank const rank)
 {
-    return create_value(
-        parent, name,
-        file_datatype(memory_datatype), memory_datatype,
-        rank);
+    return create_value(parent, name, file_datatype(memory_datatype), memory_datatype, rank);
 }
 
 
@@ -189,8 +188,7 @@ Value create_value(
     hdf5::Datatype const& memory_datatype,
     Rank const rank)
 {
-    auto group = create_value_group(
-        parent, name, file_datatype, memory_datatype, rank);
+    ValueGroup group{create_value_group(parent, name, file_datatype, memory_datatype, rank)};
 
     group.attributes().write<Count>(nr_objects_tag, 0);
 

@@ -43,7 +43,7 @@ Dataspace::Dataspace(
     @exception  std::runtime_error In case the @a id is not valid
 */
 Dataspace::Dataspace(
-    Identifier id):
+    Identifier&& id):
 
     _id{std::move(id)}
 

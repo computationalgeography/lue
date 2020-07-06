@@ -18,17 +18,17 @@ class Properties:
 
 public:
 
-    explicit       Properties          (hdf5::Group& parent);
+    explicit       Properties          (hdf5::Group const& parent);
 
     explicit       Properties          (Collection<Property>&& collection);
 
-                   Properties          (Properties const&)=delete;
+                   Properties          (Properties const&)=default;
 
                    Properties          (Properties&&)=default;
 
                    ~Properties         () override =default;
 
-    Properties&    operator=           (Properties const&)=delete;
+    Properties&    operator=           (Properties const&)=default;
 
     Properties&    operator=           (Properties&&)=default;
 

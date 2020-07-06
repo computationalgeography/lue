@@ -63,7 +63,7 @@ void Dataset::TransferPropertyList::set_transfer_mode(
                 located at @a parent cannot be opened
 */
 Dataset::Dataset(
-    Group& parent,
+    Group const& parent,
     std::string const& name):
 
     PrimaryDataObject{Identifier{::H5Dopen(parent.id(), name.c_str(), H5P_DEFAULT), ::H5Dclose}}
@@ -82,7 +82,7 @@ Dataset::Dataset(
 
 
 Dataset::Dataset(
-    Identifier id):
+    Identifier&& id):
 
     PrimaryDataObject{std::move(id)}
 

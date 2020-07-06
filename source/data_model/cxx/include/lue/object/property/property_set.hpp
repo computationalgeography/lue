@@ -3,7 +3,8 @@
 #include "lue/object/property/properties.hpp"
 #include "lue/object/space_domain.hpp"
 #include "lue/object/time_domain.hpp"
-#include <memory>
+// #include <memory>
+#include <optional>
 
 
 namespace lue {
@@ -19,18 +20,18 @@ class PropertySet:
 
 public:
 
-                   PropertySet         (hdf5::Group& parent,
+                   PropertySet         (hdf5::Group const& parent,
                                         std::string const& name);
 
     explicit       PropertySet         (hdf5::Group&& group);
 
-                   PropertySet         (PropertySet const&)=delete;
+                   PropertySet         (PropertySet const&)=default;
 
                    PropertySet         (PropertySet&&)=default;
 
                    ~PropertySet        () override =default;
 
-    PropertySet&   operator=           (PropertySet const&)=delete;
+    PropertySet&   operator=           (PropertySet const&)=default;
 
     PropertySet&   operator=           (PropertySet&&)=default;
 
@@ -63,9 +64,9 @@ private:
 
     ObjectTracker  _object_tracker;
 
-    std::unique_ptr<TimeDomain> _time_domain;
+    std::optional<TimeDomain> _time_domain;
 
-    std::unique_ptr<SpaceDomain> _space_domain;
+    std::optional<SpaceDomain> _space_domain;
 
     Properties     _properties;
 

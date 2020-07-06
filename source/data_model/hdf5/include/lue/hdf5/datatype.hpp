@@ -19,7 +19,7 @@ public:
 
     explicit       Datatype            (hid_t id);
 
-    explicit       Datatype            (Identifier id);
+    explicit       Datatype            (Identifier&& id);
 
                    Datatype            (Datatype const&)=default;
 

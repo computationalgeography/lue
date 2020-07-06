@@ -6,7 +6,7 @@ namespace lue {
 namespace data_model {
 
 ObjectID::ObjectID(
-    hdf5::Group& parent):
+    hdf5::Group const& parent):
 
     same_shape::Value{parent, object_id_tag}
 
@@ -15,9 +15,9 @@ ObjectID::ObjectID(
 
 
 ObjectID::ObjectID(
-    same_shape::Value&& value)
-:
-    same_shape::Value{std::forward<same_shape::Value>(value)}
+    same_shape::Value&& value):
+
+    same_shape::Value{std::move(value)}
 
 {
 }
@@ -32,8 +32,8 @@ Count ObjectID::nr_objects() const
 ObjectID create_object_id(
     hdf5::Group& parent)
 {
-    auto value = same_shape::create_value(
-        parent, object_id_tag, hdf5::Datatype{H5T_NATIVE_HSIZE});
+    same_shape::Value value{
+        same_shape::create_value(parent, object_id_tag, hdf5::Datatype{H5T_NATIVE_HSIZE})};
 
     return ObjectID{std::move(value)};
 }

@@ -14,7 +14,7 @@ namespace data_model {
 template<
     typename Property>
 inline hdf5::Group property_set_group(
-    Property& property)
+    Property const& property)
 {
     return property.parent().parent().parent();
 }
@@ -23,7 +23,7 @@ inline hdf5::Group property_set_group(
 template<
     typename Property>
 inline hdf5::Group property_sets_group(
-    Property& property)
+    Property const& property)
 {
     return property_set_group(property).parent();
 }
@@ -32,7 +32,7 @@ inline hdf5::Group property_sets_group(
 template<
     typename Property>
 inline hdf5::Group phenomena_group(
-    Property& property)
+    Property const& property)
 {
     return property_sets_group(property).parent().parent();
 }
@@ -41,7 +41,7 @@ inline hdf5::Group phenomena_group(
 template<
     typename Property>
 inline hdf5::Group dataset_group(
-    Property& property)
+    Property const& property)
 {
     return phenomena_group(property).parent();
 }
@@ -50,7 +50,7 @@ inline hdf5::Group dataset_group(
 template<
     typename Property>
 inline PropertySet property_set(
-    Property& property)
+    Property const& property)
 {
     return PropertySet{property_set_group(property)};
 }
@@ -59,10 +59,9 @@ inline PropertySet property_set(
 template<
     typename Property>
 inline PropertySets property_sets(
-    Property& property)
+    Property const& property)
 {
-    return PropertySets{
-        Collection<PropertySet>{property_sets_group(property)}};
+    return PropertySets{Collection<PropertySet>{property_sets_group(property)}};
 }
 
 
@@ -82,7 +81,7 @@ inline Dataset dataset(
 template<
     typename Property>
 inline PropertyGroup property(
-    Property& property,
+    Property const& property,
     std::string const& pathname)
 {
     // If path is absolute, it is relative to the dataset
@@ -103,15 +102,16 @@ inline PropertyGroup property(
     assert((*it).string() == "/");
     ++it;
 
-    if(it != path.end()) {
+    if(it != path.end())
+    {
         auto const phenomenon_name = (*it).string();
 
-        if(dataset_.phenomena().contains(phenomenon_name)) {
-
+        if(dataset_.phenomena().contains(phenomenon_name))
+        {
             ++it;
 
-            if(it != path.end()) {
-
+            if(it != path.end())
+            {
                 auto const property_set_name = (*it).string();
 
                 std::optional<std::reference_wrapper<PropertySets>> property_sets_opt;
@@ -127,10 +127,12 @@ inline PropertyGroup property(
                     }
                 }
 
-                if(property_sets_opt) {
+                if(property_sets_opt)
+                {
                     ++it;
 
-                    if(it != path.end()) {
+                    if(it != path.end())
+                    {
                         property_name = (*it).string();
 
                         {
@@ -142,9 +144,7 @@ inline PropertyGroup property(
                                 // NOLINTNEXTLINE(bugprone-assert-side-effect)
                                 assert(++it == path.end());  // cppcheck-suppress assignmentInAssert
 
-                                parent =
-                                    property_set_.properties().collection_group(
-                                        property_name);
+                                parent = property_set_.properties().collection_group(property_name);
                             }
                         }
                     }

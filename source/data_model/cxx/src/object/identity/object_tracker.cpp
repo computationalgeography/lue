@@ -11,7 +11,7 @@ namespace data_model {
     It is assumed that @a parent contains an object tracker
 */
 ObjectTracker::ObjectTracker(
-    hdf5::Group& parent):
+    hdf5::Group const& parent):
 
     hdf5::Group{parent, object_tracker_tag},
     _active_object_id{*this},
@@ -25,7 +25,7 @@ ObjectTracker::ObjectTracker(
 ObjectTracker::ObjectTracker(
     hdf5::Group&& group):
 
-    hdf5::Group{std::forward<hdf5::Group>(group)},
+    hdf5::Group{std::move(group)},
     _active_object_id{*this},
     _active_set_index{*this},
     _active_object_index{*this}
@@ -98,7 +98,7 @@ ActiveObjectIndex& ObjectTracker::active_object_index()
 ObjectTracker create_object_tracker(
     hdf5::Group& parent)
 {
-    auto group = hdf5::create_group(parent, object_tracker_tag);
+    hdf5::Group group{hdf5::create_group(parent, object_tracker_tag)};
 
     create_active_object_id(group);
     create_active_set_index(group);

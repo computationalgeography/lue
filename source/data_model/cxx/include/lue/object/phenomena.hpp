@@ -12,17 +12,17 @@ class Phenomena:
 
 public:
 
-    explicit       Phenomena           (hdf5::Group& parent);
+    explicit       Phenomena           (hdf5::Group const& parent);
 
     explicit       Phenomena           (Collection<Phenomenon>&& collection);
 
-                   Phenomena           (Phenomena const&)=delete;
+                   Phenomena           (Phenomena const&)=default;
 
                    Phenomena           (Phenomena&&)=default;
 
                    ~Phenomena          () override =default;
 
-    Phenomena&     operator=           (Phenomena const&)=delete;
+    Phenomena&     operator=           (Phenomena const&)=default;
 
     Phenomena&     operator=           (Phenomena&&)=default;
 

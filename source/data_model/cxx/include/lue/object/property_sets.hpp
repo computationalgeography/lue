@@ -12,18 +12,18 @@ class PropertySets:
 
 public:
 
-                   PropertySets        (hdf5::Group& parent,
+                   PropertySets        (hdf5::Group const& parent,
                                         std::string const& name);
 
     explicit       PropertySets        (Collection<PropertySet>&& collection);
 
-                   PropertySets        (PropertySets const&)=delete;
+                   PropertySets        (PropertySets const&)=default;
 
                    PropertySets        (PropertySets&&)=default;
 
                    ~PropertySets       () override =default;
 
-    PropertySets&  operator=           (PropertySets const&)=delete;
+    PropertySets&  operator=           (PropertySets const&)=default;
 
     PropertySets&  operator=           (PropertySets&&)=default;
 

@@ -19,17 +19,17 @@ class TimeDomain:
 
 public:
 
-    explicit       TimeDomain          (hdf5::Group& parent);
+    explicit       TimeDomain          (hdf5::Group const& parent);
 
     explicit       TimeDomain          (hdf5::Group&& group);
 
-                   TimeDomain          (TimeDomain const&)=delete;
+                   TimeDomain          (TimeDomain const&)=default;
 
                    TimeDomain          (TimeDomain&&)=default;
 
                    ~TimeDomain         () override =default;
 
-    TimeDomain&    operator=           (TimeDomain const&)=delete;
+    TimeDomain&    operator=           (TimeDomain const&)=default;
 
     TimeDomain&    operator=           (TimeDomain&&)=default;
 

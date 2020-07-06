@@ -15,20 +15,20 @@ class StationarySpacePoint:
 
 public:
 
-    explicit       StationarySpacePoint(hdf5::Group& parent);
+    explicit       StationarySpacePoint(hdf5::Group const& parent);
 
-                   StationarySpacePoint(hdf5::Group& parent,
+                   StationarySpacePoint(hdf5::Group const& parent,
                                         hdf5::Datatype const& memory_datatype);
-
-                   StationarySpacePoint(StationarySpacePoint const&)=delete;
-
-                   StationarySpacePoint(StationarySpacePoint&&)=default;
 
     explicit       StationarySpacePoint(same_shape::Value&& value);
 
+                   StationarySpacePoint(StationarySpacePoint const&)=default;
+
+                   StationarySpacePoint(StationarySpacePoint&&)=default;
+
                    ~StationarySpacePoint() override =default;
 
-    StationarySpacePoint& operator=    (StationarySpacePoint const&)=delete;
+    StationarySpacePoint& operator=    (StationarySpacePoint const&)=default;
 
     StationarySpacePoint& operator=    (StationarySpacePoint&&)=default;
 

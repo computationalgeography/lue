@@ -19,17 +19,17 @@ class ObjectID:
 
 public:
 
-    explicit       ObjectID            (hdf5::Group& parent);
+    explicit       ObjectID            (hdf5::Group const& parent);
 
     explicit       ObjectID            (same_shape::Value&& value);
 
-                   ObjectID            (ObjectID const&)=delete;
+                   ObjectID            (ObjectID const&)=default;
 
                    ObjectID            (ObjectID&&)=default;
 
                    ~ObjectID           () override =default;
 
-    ObjectID&      operator=           (ObjectID const&)=delete;
+    ObjectID&      operator=           (ObjectID const&)=default;
 
     ObjectID&      operator=           (ObjectID&&)=default;
 

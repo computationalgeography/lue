@@ -8,7 +8,7 @@ namespace lue {
 namespace hdf5 {
 
 Link::Link(
-    Group& group,
+    Group const& group,
     std::string const& name):
 
     _location_id{group.id()},

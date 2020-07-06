@@ -9,12 +9,11 @@ namespace lue {
 namespace data_model {
 
 PropertyGroup::PropertyGroup(
-    hdf5::Group& parent,
+    hdf5::Group const& parent,
     std::string const& name):
 
     hdf5::Group{parent, name},
-    _description{attributes().exists(description_tag)
-        ? attributes().read<std::string>(description_tag) : ""}
+    _description{attributes().exists(description_tag) ? attributes().read<std::string>(description_tag) : ""}
 
 {
     assert(this->name() == boost::filesystem::path{name}.filename());
@@ -24,9 +23,8 @@ PropertyGroup::PropertyGroup(
 PropertyGroup::PropertyGroup(
     hdf5::Group&& group):
 
-    hdf5::Group{std::forward<hdf5::Group>(group)},
-    _description{attributes().exists(description_tag)
-        ? attributes().read<std::string>(description_tag) : ""}
+    hdf5::Group{std::move(group)},
+    _description{attributes().exists(description_tag) ? attributes().read<std::string>(description_tag) : ""}
 
 {
 }
@@ -114,8 +112,7 @@ PropertyGroup PropertyGroup::time_discretization_property()
 {
     assert(this->contains_soft_link(time_discretization_property_tag));
 
-    return PropertyGroup{*this,
-        hdf5::SoftLink{*this, time_discretization_property_tag}.path()};
+    return PropertyGroup{*this, hdf5::SoftLink{*this, time_discretization_property_tag}.path()};
 }
 
 
@@ -123,8 +120,7 @@ PropertyGroup PropertyGroup::space_discretization_property()
 {
     assert(this->contains_soft_link(space_discretization_property_tag));
 
-    return PropertyGroup{*this,
-        hdf5::SoftLink{*this, space_discretization_property_tag}.path()};
+    return PropertyGroup{*this, hdf5::SoftLink{*this, space_discretization_property_tag}.path()};
 }
 
 
@@ -133,7 +129,7 @@ PropertyGroup create_property_group(
     std::string const& name,
     std::string const& description)
 {
-    auto group = hdf5::create_group(parent, name);
+    hdf5::Group group{hdf5::create_group(parent, name)};
 
     if(!description.empty()) {
         group.attributes().write(description_tag, description);

@@ -47,10 +47,10 @@ public:
     };
 
 
-                   Dataset             (Group& parent,
+                   Dataset             (Group const& parent,
                                         std::string const& name);
 
-    explicit       Dataset             (Identifier id);
+    explicit       Dataset             (Identifier&& id);
 
                    Dataset             (Dataset const&)=default;
 

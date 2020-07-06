@@ -6,12 +6,11 @@ namespace lue {
 namespace data_model {
 
 ValueGroup::ValueGroup(
-    hdf5::Group& parent,
-    std::string const& name)
-:
+    hdf5::Group const& parent,
+    std::string const& name):
+
     hdf5::Group{parent, name},
-    _file_datatype{hdf5::decode_datatype(
-        attributes().read<std::vector<unsigned char>>(datatype_tag))},
+    _file_datatype{hdf5::decode_datatype(attributes().read<std::vector<unsigned char>>(datatype_tag))},
     _memory_datatype{hdf5::memory_datatype(_file_datatype)},
     _rank{attributes().read<Rank>(rank_tag)}
 
@@ -20,13 +19,12 @@ ValueGroup::ValueGroup(
 
 
 ValueGroup::ValueGroup(
-    hdf5::Group& parent,
+    hdf5::Group const& parent,
     std::string const& name,
-    hdf5::Datatype const& memory_datatype)
-:
+    hdf5::Datatype const& memory_datatype):
+
     hdf5::Group{parent, name},
-    _file_datatype{hdf5::decode_datatype(
-        attributes().read<std::vector<unsigned char>>(datatype_tag))},
+    _file_datatype{hdf5::decode_datatype(attributes().read<std::vector<unsigned char>>(datatype_tag))},
     _memory_datatype{memory_datatype},
     _rank{attributes().read<Rank>(rank_tag)}
 
@@ -35,12 +33,11 @@ ValueGroup::ValueGroup(
 
 
 ValueGroup::ValueGroup(
-    Group&& group,
-    hdf5::Datatype const& memory_datatype)
-:
-    Group{std::forward<hdf5::Group>(group)},
-    _file_datatype{hdf5::decode_datatype(
-        attributes().read<std::vector<unsigned char>>(datatype_tag))},
+    Group const& group,
+    hdf5::Datatype const& memory_datatype):
+
+    hdf5::Group{group},
+    _file_datatype{hdf5::decode_datatype(attributes().read<std::vector<unsigned char>>(datatype_tag))},
     _memory_datatype{memory_datatype},
     _rank{attributes().read<Rank>(rank_tag)}
 
@@ -86,7 +83,7 @@ ValueGroup create_value_group(
     hdf5::Datatype const& memory_datatype,
     Rank const rank)
 {
-    auto group = hdf5::create_group(parent, name);
+    hdf5::Group group{hdf5::create_group(parent, name)};
 
     group.attributes().write<std::vector<unsigned char>>(
         datatype_tag, hdf5::encode_datatype(file_datatype));
