@@ -20,12 +20,12 @@ set_target_properties(lue_py_framework
         OUTPUT_NAME lue_py_framework
 )
 
-### # Explicitly add the location of the numpy headers to the list. Otherwise
-### # the wrong header might be picked up, resulting in runtime errors.
-### target_include_directories(lue_py_framework SYSTEM
-###     PRIVATE
-###         ${NUMPY_INCLUDE_DIRS}
-### )
+# Explicitly add the location of the numpy headers to the list. Otherwise
+# the wrong header might be picked up, resulting in runtime errors.
+target_include_directories(lue_py_framework SYSTEM
+    PRIVATE
+        ${NUMPY_INCLUDE_DIRS}
+)
 
 target_include_directories(lue_py_framework
     PRIVATE
@@ -50,4 +50,3 @@ install(
     LIBRARY DESTINATION ${LUE_PYTHON_API_INSTALL_DIR}
     RUNTIME DESTINATION ${LUE_PYTHON_API_INSTALL_DIR}
 )
-
