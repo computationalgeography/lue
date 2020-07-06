@@ -43,3 +43,11 @@ target_link_libraries(lue_py_framework
         # Boost::program_options
         CONAN_PKG::pybind11
 )
+
+install(
+    TARGETS
+        lue_py_framework
+    LIBRARY DESTINATION ${LUE_PYTHON_API_INSTALL_DIR}
+    RUNTIME DESTINATION ${LUE_PYTHON_API_INSTALL_DIR}
+)
+

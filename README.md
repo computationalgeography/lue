@@ -83,7 +83,13 @@ is the case. By default, they are not set.
 | `LUE_BUILD_HPX`  | Build the HPX library                               |
 | `LUE_BUILD_OTF2` | Build the OTF2 library (optionally required by HPX) |
 
-Here is an example session of building the default LUE targets and installing them in `$HOME/lue_install`:
+If one of the Python API's are built, the installation directory can
+be set manually by setting `LUE_PYTHON_API_INSTALL_DIR`. By default,
+it will be set to the pathname of a subdirectory called `lue` in the
+current Python's site packages.
+
+Here is an example session of building the default LUE targets and
+installing them in `$HOME/lue_install`:
 
 ```bash
 cd /tmp
