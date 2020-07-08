@@ -505,6 +505,11 @@ if(DEVBASE_PYBIND11_REQUIRED)
     endif()
 
     if(NOT LUE_PYTHON_API_INSTALL_DIR)
-        set(LUE_PYTHON_API_INSTALL_DIR "${PYTHON_SITE_PACKAGES}/lue")
+        # Most Python packages install in a subdirectory of Python's site
+        # packages. But we currently ship only Python packages implemented
+        # as shared libraries. Therefore, we install in the root of the
+        # site packages directory. We may have to change things in
+        # the future if this is unconventional.
+        set(LUE_PYTHON_API_INSTALL_DIR "${PYTHON_SITE_PACKAGES}")  # /lue")
     endif()
 endif()

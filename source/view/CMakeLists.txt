@@ -26,5 +26,5 @@ target_link_libraries(lue_view
 
 install(
     TARGETS lue_view
-    RUNTIME DESTINATION bin
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
