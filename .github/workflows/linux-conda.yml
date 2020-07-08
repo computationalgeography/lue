@@ -1,0 +1,39 @@
+name: Linux Conda package
+
+on: [push]
+
+jobs:
+    build:
+
+        strategy:
+            matrix:
+                os: ["ubuntu-latest"]
+                python-version: [3.8]
+
+        runs-on: ${{ matrix.os }}
+
+        name: ${{ matrix.os }} - ${{ matrix.python-version }}
+
+        steps:
+
+        - name: checkout lue
+          uses: actions/checkout@v2
+
+        - name: checkout submodules
+          shell: bash
+          run: |
+              auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+              git submodule sync --recursive
+              git -c "http.extraheader=$auth_header" -c protocol.version=2 \
+                  submodule update --init --force --recursive --depth=1
+
+        - name: configure system
+          run: |
+              sudo apt update
+              sudo apt autoremove
+              sudo apt upgrade
+        - uses: goanpeca/setup-miniconda@v1
+          with:
+              auto-update-conda: true
+              python-version: ${{ matrix.python-version }}
+              channels: conda-forge
