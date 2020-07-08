@@ -38,6 +38,8 @@ if(LUE_BUILD_TEST)
     enable_testing()
 endif()
 
+include(GNUInstallDirs)
+
 
 message(STATUS "--------------------------------------------------------------")
 message(STATUS "LUE_VERSION               : ${LUE_VERSION}")

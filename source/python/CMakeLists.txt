@@ -20,6 +20,10 @@ add_library(lue::py ALIAS lue_py)
 set_target_properties(lue_py
     PROPERTIES
         OUTPUT_NAME lue
+    # This shared lib loads other shared libs containing the
+    # data_model and framework sub-packages. Make sure it looks in
+    # the current directory to find them.
+    INSTALL_RPATH "\$ORIGIN"
 )
 
 target_link_libraries(lue_py

@@ -53,7 +53,7 @@ void init_active_object_id(
 
     Use this class when object arrays of different objects
     are stored in the same value array. This is the case
-    when storing object arrays whose shape iѕ the same per
+    when storing object arrays whose shape is the same per
     object (:class:`same_shape.constant_shape.Value` and
     :class:`same_shape.variable_shape.Value`).
 

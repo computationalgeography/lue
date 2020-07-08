@@ -26,5 +26,5 @@ target_link_libraries(lue_validate
 
 install(
     TARGETS lue_validate
-    RUNTIME DESTINATION bin
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )

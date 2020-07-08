@@ -55,5 +55,5 @@ target_link_libraries(lue_translate
 
 install(
     TARGETS lue_translate
-    RUNTIME DESTINATION bin
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
