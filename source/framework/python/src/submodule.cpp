@@ -14,9 +14,13 @@ namespace lue {
 namespace framework {
 namespace {
 
+static bool hpx_runtime_started{false};
+
 void start_hpx_runtime(
     std::vector<std::string> arguments)
 {
+    assert(!hpx_runtime_started);
+
     std::vector<char*> argv(arguments.size() + 1);
     std::transform(arguments.begin(), arguments.end(), argv.begin(),
             [arguments](std::string& argument)
@@ -26,6 +30,8 @@ void start_hpx_runtime(
         );
     argv.back() = nullptr;
 
+    hpx_runtime_started = true;
+
     // Initialize HPX, but don't run hpx_main
     hpx::start(nullptr, argv.size() - 1, argv.data());
 }
@@ -33,6 +39,8 @@ void start_hpx_runtime(
 
 void stop_hpx_runtime()
 {
+    assert(hpx_runtime_started);
+
     // Schedule a finalize
     hpx::apply([]() { hpx::finalize(); });
 
@@ -41,6 +49,8 @@ void stop_hpx_runtime()
     {
         throw std::runtime_error("Error while stopping the HPX runtime");
     }
+
+    hpx_runtime_started = false;
 }
 
 
