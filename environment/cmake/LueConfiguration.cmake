@@ -176,7 +176,7 @@ if(LUE_BUILD_DOCUMENTATION)
 
     find_program(EDIT_DOT_GRAPH
         edit_dot_graph.py
-        PATHS ${PROJECT_SOURCE_DIR}/devbase/script
+        PATHS ${PROJECT_SOURCE_DIR}/environment/script
         NO_DEFAULT_PATH
     )
     if(NOT EDIT_DOT_GRAPH)
