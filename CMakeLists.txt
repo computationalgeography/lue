@@ -15,7 +15,6 @@ add_library(lue::compile_options ALIAS lue_compile_options)
 install(TARGETS lue_compile_options EXPORT lue_targets)
 
 list(APPEND CMAKE_MODULE_PATH
-    ${CMAKE_CURRENT_LIST_DIR}/devbase/cmake
     ${CMAKE_CURRENT_LIST_DIR}/environment/cmake)
 
 include(GetGitRevisionDescription)
