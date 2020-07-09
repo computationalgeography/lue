@@ -220,11 +220,6 @@ if(LUE_GRAPHVIZ_REQUIRED)
 endif()
 
 
-if(LUE_GUIDELINE_SUPPORT_LIBRARY_REQUIRED)
-    find_package(GuidelineSupportLibrary REQUIRED)
-endif()
-
-
 if(LUE_HDF5_REQUIRED)
     find_package(HDF5 REQUIRED)
 endif()
@@ -450,10 +445,12 @@ if(LUE_FMT_REQUIRED)
     )
 endif()
 
-set(LUE_CONAN_REQUIRES
-    ${LUE_CONAN_REQUIRES}
-    gsl_microsoft/2.0.0@bincrafters/stable
-)
+if(LUE_GUIDELINE_SUPPORT_LIBRARY_REQUIRED)
+    set(LUE_CONAN_REQUIRES
+        ${LUE_CONAN_REQUIRES}
+        gsl_microsoft/2.0.0@bincrafters/stable
+    )
+endif()
 
 if(LUE_NLOHMANN_JSON_REQUIRED)
     set(LUE_CONAN_REQUIRES
