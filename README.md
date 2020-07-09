@@ -85,8 +85,7 @@ is the case. By default, they are not set.
 
 If one of the Python API's are built, the installation directory can
 be set manually by setting `LUE_PYTHON_API_INSTALL_DIR`. By default,
-it will be set to the pathname of a subdirectory called `lue` in the
-current Python's site packages.
+it will be set to the pathname of the current Python's site packages.
 
 Here is an example session of building the default LUE targets and
 installing them in `$HOME/lue_install`:
