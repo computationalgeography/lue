@@ -9,10 +9,7 @@ include(StaticAnalyzers)
 
 include(FetchContent)
 
-include(PeacockPlatform)
 include(LueConfiguration)
-include(DevBaseExternal)
-include(DevBaseMacro)
 include(LueMacro)
 
 if(LUE_BUILD_DATA_MODEL)

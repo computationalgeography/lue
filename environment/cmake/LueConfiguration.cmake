@@ -93,64 +93,57 @@ endif()
 
 # Handle external dependencies -------------------------------------------------
 if(LUE_BUILD_DATA_MODEL)
-    set(DEVBASE_HDF5_REQUIRED TRUE)
-    list(APPEND DEVBASE_REQUIRED_HDF5_COMPONENTS
-        C)  # HL
-    set(DEVBASE_FMT_REQUIRED TRUE)
+    set(LUE_HDF5_REQUIRED TRUE)
+    # list(APPEND LUE_REQUIRED_HDF5_COMPONENTS C)  # HL
+    set(LUE_FMT_REQUIRED TRUE)
 
-    set(DEVBASE_BOOST_REQUIRED TRUE)
-    list(APPEND DEVBASE_REQUIRED_BOOST_COMPONENTS
+    set(LUE_BOOST_REQUIRED TRUE)
+    list(APPEND LUE_REQUIRED_BOOST_COMPONENTS
         filesystem system)
 
-    # if(LUE_API_WITH_MPI)
-        # set(DEVBASE_MPI_REQUIRED TRUE)
-        set(HDF5_PREFER_PARALLEL TRUE)
-    # endif()
-
+    set(HDF5_PREFER_PARALLEL TRUE)
 
     if(LUE_DATA_MODEL_WITH_UTILITIES)
-        set(DEVBASE_DOCOPT_REQUIRED TRUE)
+        set(LUE_DOCOPT_REQUIRED TRUE)
         set(LUE_GDAL_REQUIRED TRUE)
-        set(DEVBASE_NLOHMANN_JSON_REQUIRED TRUE)
+        set(LUE_NLOHMANN_JSON_REQUIRED TRUE)
     endif()
 
     if(LUE_DATA_MODEL_WITH_PYTHON_API)
-        set(DEVBASE_GUIDELINE_SUPPORT_LIBRARY_REQUIRED TRUE)
-        set(DEVBASE_PYBIND11_REQUIRED TRUE)
+        set(LUE_GUIDELINE_SUPPORT_LIBRARY_REQUIRED TRUE)
+        set(LUE_PYBIND11_REQUIRED TRUE)
     endif()
 endif()
 
 
 if(LUE_BUILD_FRAMEWORK)
-    set(DEVBASE_BOOST_REQUIRED TRUE)
-    set(DEVBASE_DOCOPT_REQUIRED TRUE)
-    set(DEVBASE_FMT_REQUIRED TRUE)
-    # set(DEVBASE_GUIDELINE_SUPPORT_LIBRARY_REQUIRED TRUE)
-    set(DEVBASE_HPX_REQUIRED TRUE)
-    set(DEVBASE_KOKKOS_MDSPAN_REQUIRED TRUE)
+    set(LUE_BOOST_REQUIRED TRUE)
+    set(LUE_DOCOPT_REQUIRED TRUE)
+    set(LUE_FMT_REQUIRED TRUE)
+    set(LUE_HPX_REQUIRED TRUE)
+    set(LUE_KOKKOS_MDSPAN_REQUIRED TRUE)
 
     if(LUE_FRAMEWORK_WITH_OPENCL)
-        set(DEVBASE_OPENCL_REQUIRED TRUE)
+        set(LUE_OPENCL_REQUIRED TRUE)
     endif()
 
     if(LUE_FRAMEWORK_WITH_DASHBOARD)
-        set(DEVBASE_IMGUI_REQUIRED TRUE)
+        set(LUE_IMGUI_REQUIRED TRUE)
     endif()
 
     if(LUE_FRAMEWORK_WITH_BENCHMARKS)
-        set(DEVBASE_NLOHMANN_JSON_REQUIRED TRUE)
+        set(LUE_NLOHMANN_JSON_REQUIRED TRUE)
     endif()
 
     if(LUE_FRAMEWORK_WITH_PYTHON_API)
-        set(DEVBASE_PYBIND11_REQUIRED TRUE)
+        set(LUE_PYBIND11_REQUIRED TRUE)
     endif()
 endif()
 
 
 if(LUE_BUILD_TEST)
-    set(DEVBASE_BUILD_TEST TRUE)
-    set(DEVBASE_BOOST_REQUIRED TRUE)
-    list(APPEND DEVBASE_REQUIRED_BOOST_COMPONENTS
+    set(LUE_BOOST_REQUIRED TRUE)
+    list(APPEND LUE_REQUIRED_BOOST_COMPONENTS
         filesystem system unit_test_framework)
 
     if(LUE_BUILD_FRAMEWORK)
@@ -169,17 +162,17 @@ endif()
 
 
 if(LUE_BUILD_VIEW)
-    set(DEVBASE_DOCOPT_REQUIRED TRUE)
-    set(DEVBASE_FMT_REQUIRED TRUE)
-    set(DEVBASE_IMGUI_REQUIRED TRUE)
-    set(DEVBASE_NLOHMANN_JSON_REQUIRED TRUE)
+    set(LUE_DOCOPT_REQUIRED TRUE)
+    set(LUE_FMT_REQUIRED TRUE)
+    set(LUE_IMGUI_REQUIRED TRUE)
+    set(LUE_NLOHMANN_JSON_REQUIRED TRUE)
 endif()
 
 
 if(LUE_BUILD_DOCUMENTATION)
-    set(DEVBASE_DOXYGEN_REQUIRED TRUE)
-    set(DEVBASE_GRAPHVIZ_REQUIRED TRUE)
-    set(DEVBASE_SPHINX_REQUIRED TRUE)
+    set(LUE_DOXYGEN_REQUIRED TRUE)
+    set(LUE_GRAPHVIZ_REQUIRED TRUE)
+    set(LUE_SPHINX_REQUIRED TRUE)
 
     find_program(EDIT_DOT_GRAPH
         edit_dot_graph.py
@@ -202,37 +195,42 @@ endif()
 
 
 # Find external packages -------------------------------------------------------
-if(DEVBASE_BOOST_REQUIRED)
+if(LUE_BOOST_REQUIRED)
     find_package(Boost REQUIRED
-        COMPONENTS ${DEVBASE_REQUIRED_BOOST_COMPONENTS})
-    unset(DEVBASE_BOOST_REQUIRED)
+        COMPONENTS ${LUE_REQUIRED_BOOST_COMPONENTS})
 endif()
 
 
-if(DEVBASE_DOXYGEN_REQUIRED)
+if(LUE_DOXYGEN_REQUIRED)
     find_package(Doxygen REQUIRED dot)
-    unset(DEVBASE_DOXYGEN_REQUIRED)
 endif()
-
-
-# if(DEVBASE_FMT_REQUIRED)
-#     find_package(FMT REQUIRED)
-# 
-#     if(NOT FMT_FOUND)
-#         message(FATAL_ERROR "FMT not found")
-#     endif()
-# 
-#     unset(DEVBASE_FMT_REQUIRED)
-# endif()
 
 
 if(LUE_GDAL_REQUIRED)
     find_package(GDAL 2 REQUIRED)
-    unset(LUE_GDAL_REQUIRED)
 endif()
 
 
-if(DEVBASE_HPX_REQUIRED)
+if(LUE_GRAPHVIZ_REQUIRED)
+    find_package(Graphviz REQUIRED)
+
+    if(GRAPHVIZ_FOUND)
+        include(GraphvizMacro)
+    endif()
+endif()
+
+
+if(LUE_GUIDELINE_SUPPORT_LIBRARY_REQUIRED)
+    find_package(GuidelineSupportLibrary REQUIRED)
+endif()
+
+
+if(LUE_HDF5_REQUIRED)
+    find_package(HDF5 REQUIRED)
+endif()
+
+
+if(LUE_HPX_REQUIRED)
     if(HPX_WITH_APEX)
         if(APEX_WITH_OTF2)
             if(LUE_BUILD_OTF2)
@@ -341,12 +339,10 @@ if(DEVBASE_HPX_REQUIRED)
             endif()
         endif()
     endif()
-
-    unset(DEVBASE_HPX_REQUIRED)
 endif()
 
 
-if(DEVBASE_IMGUI_REQUIRED)
+if(LUE_IMGUI_REQUIRED)
 
     if(LUE_BUILD_IMGUI)
         find_package(OpenGL REQUIRED)
@@ -412,49 +408,46 @@ if(DEVBASE_IMGUI_REQUIRED)
             "Support for system-provided ImGUI library does not work yet\n"
             "But we can build ImGUI for you! Just reconfigure with LUE_BUILD_IMGUI=TRUE")
     endif()
-
-    unset(DEVBASE_IMGUI_REQUIRED)
 endif()
 
 
-if(DEVBASE_KOKKOS_MDSPAN_REQUIRED)
+if(LUE_KOKKOS_MDSPAN_REQUIRED)
     FetchContent_Declare(kokkos_mdspan
         GIT_REPOSITORY https://github.com/kokkos/mdspan.git
         GIT_TAG a7990884f090365787a90cdc12e689822d642c65  # 20191010
     )
     FetchContent_MakeAvailable(kokkos_mdspan)
-
-    unset(DEVBASE_KOKKOS_MDSPAN_REQUIRED)
 endif()
 
 
-if(DEVBASE_OPENCL_REQUIRED)
+if(LUE_OPENCL_REQUIRED)
     find_package(OpenCL REQUIRED)
-    unset(DEVBASE_OPENCL_REQUIRED)
 endif()
 
 
-if(DEVBASE_HDF5_REQUIRED)
-    find_package(HDF5 REQUIRED)
-    unset(DEVBASE_HDF5_REQUIRED)
+if(LUE_SPHINX_REQUIRED)
+    # TODO Find Sphinx Python package.
+    include(SphinxDoc)
+
+    if(NOT SPHINX_BUILD_EXECUTABLE OR NOT SPHINX_APIDOC_EXECUTABLE)
+        message(FATAL_ERROR "sphinx not found")
+    endif()
 endif()
 
 
 # ------------------------------------------------------------------------------
-if(DEVBASE_DOCOPT_REQUIRED)
+if(LUE_DOCOPT_REQUIRED)
     set(LUE_CONAN_REQUIRES
         ${LUE_CONAN_REQUIRES}
         docopt.cpp/0.6.2
     )
-    unset(DEVBASE_DOCOPT_REQUIRED)
 endif()
 
-if(DEVBASE_FMT_REQUIRED)
+if(LUE_FMT_REQUIRED)
     set(LUE_CONAN_REQUIRES
         ${LUE_CONAN_REQUIRES}
         fmt/6.2.0
     )
-    unset(DEVBASE_FMT_REQUIRED)
 endif()
 
 set(LUE_CONAN_REQUIRES
@@ -462,15 +455,14 @@ set(LUE_CONAN_REQUIRES
     gsl_microsoft/2.0.0@bincrafters/stable
 )
 
-if(DEVBASE_NLOHMANN_JSON_REQUIRED)
+if(LUE_NLOHMANN_JSON_REQUIRED)
     set(LUE_CONAN_REQUIRES
         ${LUE_CONAN_REQUIRES}
         nlohmann_json/3.7.3
     )
-    unset(DEVBASE_NLOHMANN_JSON_REQUIRED)
 endif()
 
-if(DEVBASE_PYBIND11_REQUIRED)
+if(LUE_PYBIND11_REQUIRED)
     set(LUE_CONAN_REQUIRES
         ${LUE_CONAN_REQUIRES}
         pybind11/2.4.3
@@ -480,9 +472,7 @@ endif()
 include(Conan)
 run_conan()
 
-if(DEVBASE_PYBIND11_REQUIRED)
-    unset(DEVBASE_PYBIND11_REQUIRED)
-
+if(LUE_PYBIND11_REQUIRED)
     # Given Python found, figure out where the NumPy headers are. We don't
     # want to pick up headers from another prefix than the prefix of the
     # Python interpreter.
