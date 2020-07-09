@@ -194,37 +194,11 @@ if(LUE_BUILD_DOCUMENTATION)
 endif()
 
 
-# Find external packages -------------------------------------------------------
-if(LUE_BOOST_REQUIRED)
-    find_package(Boost REQUIRED
-        COMPONENTS ${LUE_REQUIRED_BOOST_COMPONENTS})
-endif()
-
-
-if(LUE_DOXYGEN_REQUIRED)
-    find_package(Doxygen REQUIRED dot)
-endif()
-
-
-if(LUE_GDAL_REQUIRED)
-    find_package(GDAL 2 REQUIRED)
-endif()
-
-
-if(LUE_GRAPHVIZ_REQUIRED)
-    find_package(Graphviz REQUIRED)
-
-    if(GRAPHVIZ_FOUND)
-        include(GraphvizMacro)
-    endif()
-endif()
-
-
-if(LUE_HDF5_REQUIRED)
-    find_package(HDF5 REQUIRED)
-endif()
-
-
+# Build (not find) external packages -------------------------------------------
+# It is important to build external packages first, because our CMake
+# logic might influence them. For example, HPX tests whether
+# Boost.filesystem has been found already. If we do that here, before
+# building HPX, the HPX build fails.
 if(LUE_HPX_REQUIRED)
     if(HPX_WITH_APEX)
         if(APEX_WITH_OTF2)
@@ -282,9 +256,6 @@ if(LUE_HPX_REQUIRED)
                             ${otf2_BINARY_DIR}
                     )
                 endif()
-            ### else()
-            ###     # Set OTF2_ROOT, or OTF2_LIBRARY and OTF2_INCLUDE_DIR
-            ###     message(FATAL_ERROR "Add logic to find OTF2")
             endif()
         endif()
     endif()
@@ -316,93 +287,134 @@ if(LUE_HPX_REQUIRED)
             ${hpx_SOURCE_DIR}
             ${PROJECT_BINARY_DIR}
         )
-    else()
-        # Use HPX from the environment
-        find_package(HPX REQUIRED)
-
-        if(HPX_FOUND)
-            message(STATUS "Found HPX")
-            message(STATUS "  includes : ${HPX_INCLUDE_DIRS}")
-            message(STATUS "  libraries: ${HPX_LIBRARIES}")
-
-            # Check whether we are using the same build type as HPX
-            if (NOT "${HPX_BUILD_TYPE}" STREQUAL "${CMAKE_BUILD_TYPE}")
-                message(WARNING
-                    "CMAKE_BUILD_TYPE does not match HPX_BUILD_TYPE: "
-                    "\"${CMAKE_BUILD_TYPE}\" != \"${HPX_BUILD_TYPE}\"\n"
-                    "ABI compatibility is not guaranteed. Expect link errors.")
-            endif()
-        endif()
     endif()
 endif()
 
 
-if(LUE_IMGUI_REQUIRED)
+if(LUE_IMGUI_REQUIRED AND LUE_BUILD_IMGUI)
+    find_package(OpenGL REQUIRED)
+    find_package(GLEW REQUIRED)
+    find_package(SDL2 REQUIRED)
 
-    if(LUE_BUILD_IMGUI)
-        find_package(OpenGL REQUIRED)
-        find_package(GLEW REQUIRED)
-        find_package(SDL2 REQUIRED)
+    if(LUE_REPOSITORY_CACHE AND EXISTS ${LUE_REPOSITORY_CACHE}/imgui)
+        set(imgui_repository ${LUE_REPOSITORY_CACHE}/imgui)
+    else()
+        set(imgui_repository https://github.com/ocornut/imgui.git)
+    endif()
 
-        if(LUE_REPOSITORY_CACHE AND EXISTS ${LUE_REPOSITORY_CACHE}/imgui)
-            set(imgui_repository ${LUE_REPOSITORY_CACHE}/imgui)
-        else()
-            set(imgui_repository https://github.com/ocornut/imgui.git)
-        endif()
+    FetchContent_Declare(imgui
+        // MIT License, see ${imgui_SOURCE_DIR}/LICENSE.txt
+        GIT_REPOSITORY ${imgui_repository}
+        GIT_TAG v1.76
+    )
 
-        FetchContent_Declare(imgui
-            // MIT License, see ${imgui_SOURCE_DIR}/LICENSE.txt
-            GIT_REPOSITORY ${imgui_repository}
-            GIT_TAG v1.76
+    FetchContent_GetProperties(imgui)
+
+    if(NOT imgui_POPULATED)
+        FetchContent_Populate(imgui)
+
+        add_library(imgui STATIC
+            # imgui release
+            ${imgui_SOURCE_DIR}/imgui
+            ${imgui_SOURCE_DIR}/imgui_demo
+            ${imgui_SOURCE_DIR}/imgui_draw
+            ${imgui_SOURCE_DIR}/imgui_widgets
+
+            # opengl3 / sdl2 binding
+            ${imgui_SOURCE_DIR}/examples/imgui_impl_opengl3
+            ${imgui_SOURCE_DIR}/examples/imgui_impl_sdl
         )
 
-        FetchContent_GetProperties(imgui)
+        target_include_directories(imgui SYSTEM
+            PRIVATE
+                ${imgui_SOURCE_DIR}
+            PUBLIC
+                ${imgui_SOURCE_DIR}/examples
+                $<BUILD_INTERFACE:${imgui_SOURCE_DIR}>
+                ${SDL2_INCLUDE_DIR}
+        )
 
-        if(NOT imgui_POPULATED)
-            FetchContent_Populate(imgui)
+        target_compile_options(imgui
+            PUBLIC
+                # Output of `sdl2-config --cflags`
+                "$<$<PLATFORM_ID:Linux>:-D_REENTRANT>"
+        )
 
-            add_library(imgui STATIC
-                # imgui release
-                ${imgui_SOURCE_DIR}/imgui
-                ${imgui_SOURCE_DIR}/imgui_demo
-                ${imgui_SOURCE_DIR}/imgui_draw
-                ${imgui_SOURCE_DIR}/imgui_widgets
+        target_link_libraries(imgui
+            PUBLIC
+                ${SDL2_LIBRARY}
+                GLEW::glew
+                OpenGL::GL
+        )
 
-                # opengl3 / sdl2 binding
-                ${imgui_SOURCE_DIR}/examples/imgui_impl_opengl3
-                ${imgui_SOURCE_DIR}/examples/imgui_impl_sdl
-            )
-
-            target_include_directories(imgui SYSTEM
-                PRIVATE
-                    ${imgui_SOURCE_DIR}
-                PUBLIC
-                    ${imgui_SOURCE_DIR}/examples
-                    $<BUILD_INTERFACE:${imgui_SOURCE_DIR}>
-                    ${SDL2_INCLUDE_DIR}
-            )
-
-            target_compile_options(imgui
-                PUBLIC
-                    # Output of `sdl2-config --cflags`
-                    "$<$<PLATFORM_ID:Linux>:-D_REENTRANT>"
-            )
-
-            target_link_libraries(imgui
-                PUBLIC
-                    ${SDL2_LIBRARY}
-                    GLEW::glew
-                    OpenGL::GL
-            )
-
-            add_library(imgui::imgui ALIAS imgui)
-
-        endif()
-    else()
-        message(FATAL_ERROR
-            "Support for system-provided ImGUI library does not work yet\n"
-            "But we can build ImGUI for you! Just reconfigure with LUE_BUILD_IMGUI=TRUE")
+        add_library(imgui::imgui ALIAS imgui)
     endif()
+endif()
+
+
+# Find (not build) external packages -------------------------------------------
+# These are packages that can be installed easily, using standard
+# package managers
+if(LUE_BOOST_REQUIRED)
+    find_package(Boost REQUIRED
+        COMPONENTS ${LUE_REQUIRED_BOOST_COMPONENTS})
+endif()
+
+
+if(LUE_DOXYGEN_REQUIRED)
+    find_package(Doxygen REQUIRED dot)
+endif()
+
+
+if(LUE_GDAL_REQUIRED)
+    find_package(GDAL 2 REQUIRED)
+endif()
+
+
+if(LUE_GRAPHVIZ_REQUIRED)
+    find_package(Graphviz REQUIRED)
+
+    if(GRAPHVIZ_FOUND)
+        include(GraphvizMacro)
+    endif()
+endif()
+
+
+if(LUE_HDF5_REQUIRED)
+    find_package(HDF5 REQUIRED)
+endif()
+
+
+if(LUE_HPX_REQUIRED)
+    if(NOT LUE_BUILD_HPX)
+        message(FATAL_ERROR
+            "Support for system-provided HPX library does not work yet\n"
+            "But we can build HPX for you! Just reconfigure with LUE_BUILD_HPX=TRUE")
+
+        # # Use HPX from the environment
+        # find_package(HPX REQUIRED)
+
+        # if(HPX_FOUND)
+        #     message(STATUS "Found HPX")
+        #     message(STATUS "  includes : ${HPX_INCLUDE_DIRS}")
+        #     message(STATUS "  libraries: ${HPX_LIBRARIES}")
+
+        #     # Check whether we are using the same build type as HPX
+        #     if (NOT "${HPX_BUILD_TYPE}" STREQUAL "${CMAKE_BUILD_TYPE}")
+        #         message(WARNING
+        #             "CMAKE_BUILD_TYPE does not match HPX_BUILD_TYPE: "
+        #             "\"${CMAKE_BUILD_TYPE}\" != \"${HPX_BUILD_TYPE}\"\n"
+        #             "ABI compatibility is not guaranteed. Expect link errors.")
+        #     endif()
+        # endif()
+    endif()
+endif()
+
+
+if(LUE_IMGUI_REQUIRED AND NOT LUE_BUILD_IMGUI)
+    message(FATAL_ERROR
+        "Support for system-provided ImGUI library does not work yet\n"
+        "But we can build ImGUI for you! Just reconfigure with LUE_BUILD_IMGUI=TRUE")
 endif()
 
 
@@ -430,7 +442,9 @@ if(LUE_SPHINX_REQUIRED)
 endif()
 
 
-# ------------------------------------------------------------------------------
+# Install external packages using Conan ----------------------------------------
+# These are packages that we cannot assume to be installable using standard
+# package managers (yet)
 if(LUE_DOCOPT_REQUIRED)
     set(LUE_CONAN_REQUIRES
         ${LUE_CONAN_REQUIRES}
