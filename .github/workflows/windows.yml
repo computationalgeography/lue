@@ -27,3 +27,18 @@ jobs:
         - shell: bash -l {0}
           run: |
               conda install conan docopt ninja numpy psutil sphinx
+
+        - name: configure lue
+          shell: bash -l {0}
+          run: |
+              mkdir build
+              cmake \
+                  -S . \
+                  -B build \
+                  -G"Ninja" \
+                  -DCMAKE_BUILD_TYPE=Release
+
+        - name: build lue
+          shell: bash
+          run: |
+              cmake --build build --target all
