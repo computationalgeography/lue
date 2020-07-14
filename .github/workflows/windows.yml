@@ -35,8 +35,7 @@ jobs:
               cmake \
                   -S . \
                   -B build \
-                  -G"Ninja" \
-                  -DCMAKE_BUILD_TYPE=Release
+                  -G "Visual Studio 16 2019" -A x64
 
         - name: build lue
           shell: bash
