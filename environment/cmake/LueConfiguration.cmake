@@ -361,12 +361,12 @@ if(LUE_BOOST_REQUIRED)
 endif()
 
 
-if(LUE_DOXYGEN_REQUIRED)
+if(LUE_DOXYGEN_REQUIRED AND NOT WIN32)
     find_package(Doxygen REQUIRED dot)
 endif()
 
 
-if(LUE_GDAL_REQUIRED)
+if(LUE_GDAL_REQUIRED AND NOT WIN32)
     find_package(GDAL 2 REQUIRED)
 endif()
 
@@ -380,7 +380,7 @@ if(LUE_GRAPHVIZ_REQUIRED)
 endif()
 
 
-if(LUE_HDF5_REQUIRED)
+if(LUE_HDF5_REQUIRED AND NOT WIN32)
     find_package(HDF5 REQUIRED)
 endif()
 
@@ -452,6 +452,13 @@ if(LUE_DOCOPT_REQUIRED)
     )
 endif()
 
+if(LUE_DOXYGEN_REQUIRED AND WIN32)
+    set(LUE_CONAN_REQUIRES
+        ${LUE_CONAN_REQUIRES}
+        doxygen/1.8.18
+    )
+endif()
+
 if(LUE_FMT_REQUIRED)
     set(LUE_CONAN_REQUIRES
         ${LUE_CONAN_REQUIRES}
@@ -459,10 +466,24 @@ if(LUE_FMT_REQUIRED)
     )
 endif()
 
+if(LUE_GDAL_REQUIRED AND WIN32)
+    set(LUE_CONAN_REQUIRES
+        ${LUE_CONAN_REQUIRES}
+        gdal/3.1.0
+    )
+endif()
+
 if(LUE_GUIDELINE_SUPPORT_LIBRARY_REQUIRED)
     set(LUE_CONAN_REQUIRES
         ${LUE_CONAN_REQUIRES}
         gsl_microsoft/2.0.0@bincrafters/stable
+    )
+endif()
+
+if(LUE_HDF5_REQUIRED AND WIN32)
+    set(LUE_CONAN_REQUIRES
+        ${LUE_CONAN_REQUIRES}
+        hdf5/1.12.0
     )
 endif()
 
