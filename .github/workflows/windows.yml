@@ -43,4 +43,6 @@ jobs:
         - name: build lue
           shell: bash
           run: |
-              cmake --build build --target all --config Release
+              pwd
+              ls -l build
+              cmake --build build --target ALL_BUILD --config Release
