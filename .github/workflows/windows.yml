@@ -18,3 +18,12 @@ jobs:
 
         - name: checkout lue
           uses: actions/checkout@v2
+
+        - uses: goanpeca/setup-miniconda@v1
+          with:
+              auto-update-conda: true
+              python-version: ${{ matrix.python-version }}
+              channels: conda-forge
+        - shell: bash -l {0}
+          run: |
+              conda install conan docopt ninja numpy psutil sphinx
