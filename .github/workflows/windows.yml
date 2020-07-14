@@ -26,7 +26,7 @@ jobs:
               channels: conda-forge
         - shell: bash -l {0}
           run: |
-              conda install conan docopt ninja numpy psutil sphinx
+              conda install conan docopt numpy psutil sphinx
 
         - name: configure lue
           shell: bash -l {0}
@@ -36,9 +36,11 @@ jobs:
                   cmake \
                       -S . \
                       -B build \
-                      -G "Visual Studio 16 2019" -A x64
+                      -G "Visual Studio 16 2019" -A x64 \
+                      -DLUE_BUILD_DOCUMENTATION=FALSE \
+                      -DLUE_BUILD_TEST=FALSE
 
         - name: build lue
           shell: bash
           run: |
-              cmake --build build --target all
+              cmake --build build --target all --config Release
