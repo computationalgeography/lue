@@ -32,10 +32,11 @@ jobs:
           shell: bash -l {0}
           run: |
               mkdir build
-              cmake \
-                  -S . \
-                  -B build \
-                  -G "Visual Studio 16 2019" -A x64
+              BOOST_ROOT=${BOOST_ROOT_1_72_0} \
+                  cmake \
+                      -S . \
+                      -B build \
+                      -G "Visual Studio 16 2019" -A x64
 
         - name: build lue
           shell: bash
