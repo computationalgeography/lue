@@ -39,9 +39,9 @@ jobs:
                       -G "Visual Studio 16 2019" -A x64 \
                       -DLUE_HAVE_BOOST=TRUE \
                       -DLUE_BUILD_DOCUMENTATION=FALSE \
-                      -DLUE_BUILD_TEST=FALSE \
+                      -DLUE_BUILD_TEST=TRUE \
                       -DLUE_BUILD_DATA_MODEL=TRUE \
-                      -DLUE_DATA_MODEL_WITH_PYTHON_API=FALSE \
+                      -DLUE_DATA_MODEL_WITH_PYTHON_API=TRUE \
                       -DLUE_DATA_MODEL_WITH_UTILITIES=FALSE
 
         - name: build lue
@@ -50,3 +50,14 @@ jobs:
               pwd
               ls -l build
               cmake --build build --target ALL_BUILD --config Release
+
+        - name: test lue
+          shell: bash
+          run: |
+              cd build
+              ctest --output-on-failure
+
+        - name: install lue
+          shell: bash
+          run: |
+              cmake --install build --prefix install
