@@ -42,6 +42,7 @@ target_compile_definitions(lue_hdf5
 target_include_directories(lue_hdf5 SYSTEM
     PUBLIC
         ${Boost_INCLUDE_DIRS}
+        $<$<BOOL:${LUE_HAVE_HDF5}>:${HDF5_C_INCLUDE_DIRS}>
 )
 
 target_include_directories(lue_hdf5
@@ -54,7 +55,8 @@ target_include_directories(lue_hdf5
 target_link_libraries(lue_hdf5
     PUBLIC
         lue::shared
-        ${lue_hdf5_target}
+        $<$<BOOL:${LUE_HAVE_HDF5}>:${HDF5_C_LIBRARIES}>
+        $<$<NOT:$<BOOL:${LUE_HAVE_HDF5}>>:CONAN_PKG::hdf5>
     PRIVATE
         Boost::filesystem
         CONAN_PKG::fmt
