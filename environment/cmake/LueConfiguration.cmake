@@ -493,7 +493,7 @@ endif()
 
 
 if(LUE_PYBIND11_REQUIRED)
-    set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} pybind11/2.4.3)
+    set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} pybind11/2.5.0)
 
     find_package(Python COMPONENTS Interpreter Development NumPy)
 
@@ -527,3 +527,7 @@ endif()
 
 include(Conan)
 run_conan()
+
+if(LUE_PYBIND11_REQUIRED)
+    include(pybind11Tools)
+endif()
