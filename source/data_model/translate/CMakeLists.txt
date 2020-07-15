@@ -25,24 +25,19 @@ add_library(lue_translate_lib STATIC
 
 add_library(lue::translate ALIAS lue_translate_lib)
 
-target_include_directories(lue_translate_lib SYSTEM
-    PUBLIC
-        $<$<BOOL:${LUE_HAVE_GDAL}>:${GDAL_INCLUDE_DIR}>
-)
-
 target_include_directories(lue_translate_lib
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>
 )
 
+
 target_link_libraries(lue_translate_lib
     PRIVATE
         lue::data_model_hl
-        $<$<BOOL:${LUE_HAVE_GDAL}>:${GDAL_LIBRARIES}>
     PUBLIC
         lue::utility
-        $<$<NOT:$<BOOL:${LUE_HAVE_GDAL}>>:CONAN_PKG::gdal>
+        ${lue_gdal_target}
 )
 
 add_executable(lue_translate

@@ -34,13 +34,14 @@ add_library(lue::hdf5 ALIAS lue_hdf5)
 
 target_compile_definitions(lue_hdf5
     PUBLIC
-        # $<$<BOOL:${LUE_HAVE_HDF5}>:${HDF5_DEFINITIONS}>
+        # FIXME Contains -D, which trips the compiler
+        # ${HDF5_C_DEFINITIONS}
         H5_USE_110_API
 )
 
 target_include_directories(lue_hdf5 SYSTEM
     PUBLIC
-        $<$<BOOL:${LUE_HAVE_HDF5}>:${HDF5_INCLUDE_DIRS}>
+        ${HDF5_C_INCLUDE_DIRS}
         ${Boost_INCLUDE_DIRS}
 )
 
@@ -54,8 +55,9 @@ target_include_directories(lue_hdf5
 target_link_libraries(lue_hdf5
     PUBLIC
         lue::shared
-        $<$<BOOL:${LUE_HAVE_HDF5}>:${HDF5_C_LIBRARIES}>
-        $<$<NOT:$<BOOL:${LUE_HAVE_HDF5}>>:CONAN_PKG::hdf5>
+        ${HDF5_LIBRARIES}
+        ${ZLIB_LIBRARIES}
+        dl
     PRIVATE
         Boost::filesystem
         CONAN_PKG::fmt

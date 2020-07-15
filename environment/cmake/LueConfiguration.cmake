@@ -380,66 +380,34 @@ endif()
 
 # Find or install external packages --------------------------------------------
 if(LUE_BOOST_REQUIRED)
-    if(LUE_HAVE_BOOST)
-        find_package(Boost REQUIRED COMPONENTS ${LUE_REQUIRED_BOOST_COMPONENTS})
-    else()
-        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} boost/1.73.0)
+    if(NOT LUE_HAVE_BOOST)
+        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} boost/1.71.0)
     endif()
 endif()
-
 
 if(LUE_DOCOPT_REQUIRED)
     set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} docopt.cpp/0.6.2)
 endif()
 
-
-if(LUE_DOXYGEN_REQUIRED)
-    if(LUE_HAVE_DOXYGEN)
-        find_package(Doxygen REQUIRED dot)
-    else()
-        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} doxygen/1.8.18)
-    endif()
-endif()
-
-
 if(LUE_FMT_REQUIRED)
     set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} fmt/6.2.0)
 endif()
 
-
 if(LUE_GDAL_REQUIRED)
-    if(LUE_HAVE_GDAL)
-        find_package(GDAL 2 REQUIRED)
-    else()
+    if(NOT LUE_HAVE_GDAL)
         set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} gdal/3.1.0)
     endif()
 endif()
-
-
-if(LUE_GRAPHVIZ_REQUIRED)
-    find_package(Graphviz REQUIRED)
-
-    if(GRAPHVIZ_FOUND)
-        include(GraphvizMacro)
-    endif()
-endif()
-
 
 if(LUE_GUIDELINE_SUPPORT_LIBRARY_REQUIRED)
     set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} gsl_microsoft/2.0.0@bincrafters/stable)
 endif()
 
-
 if(LUE_HDF5_REQUIRED)
-    if(LUE_HAVE_HDF5)
-        find_package(HDF5 REQUIRED)
-    else()
-        set(HDF5_VERSION "1.12.0")
-        set(HDF5_IS_PARALLEL FALSE)
-        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} hdf5/${HDF5_VERSION})
+    if(NOT LUE_HAVE_HDF5)
+        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} hdf5/1.12.0)
     endif()
 endif()
-
 
 if(LUE_HPX_REQUIRED)
     if(NOT LUE_BUILD_HPX)
@@ -466,7 +434,6 @@ if(LUE_HPX_REQUIRED)
     endif()
 endif()
 
-
 if(LUE_IMGUI_REQUIRED AND NOT LUE_BUILD_IMGUI)
     message(FATAL_ERROR
         "Support for system-provided ImGUI library does not work yet\n"
@@ -481,20 +448,56 @@ if(LUE_KOKKOS_MDSPAN_REQUIRED)
     FetchContent_MakeAvailable(kokkos_mdspan)
 endif()
 
-
 if(LUE_NLOHMANN_JSON_REQUIRED)
     set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} nlohmann_json/3.7.3)
 endif()
 
+if(LUE_PYBIND11_REQUIRED)
+    set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} pybind11/2.5.0)
+endif()
+
+include(Conan)
+run_conan()
+
+if(LUE_BOOST_REQUIRED)
+    find_package(Boost REQUIRED COMPONENTS ${LUE_REQUIRED_BOOST_COMPONENTS})
+endif()
+
+if(LUE_DOXYGEN_REQUIRED)
+    find_package(Doxygen REQUIRED dot)
+endif()
+
+if(LUE_GDAL_REQUIRED)
+    if(LUE_HAVE_GDAL)
+        find_package(GDAL REQUIRED)
+        set(lue_gdal_target GDAL::GDAL)
+    else()
+        set(lue_gdal_target CONAN_PKG::gdal)
+    endif()
+endif()
+
+if(LUE_GRAPHVIZ_REQUIRED)
+    find_package(Graphviz REQUIRED)
+
+    if(GRAPHVIZ_FOUND)
+        include(GraphvizMacro)
+    endif()
+endif()
+
+if(LUE_HDF5_REQUIRED)
+    find_package(HDF5 REQUIRED COMPONENTS C)
+
+    if(NOT LUE_HAVE_HDF5)
+        # Conda's HDF5 depends on zlib
+        find_package(ZLIB REQUIRED)
+    endif()
+endif()
 
 if(LUE_OPENCL_REQUIRED)
     find_package(OpenCL REQUIRED)
 endif()
 
-
 if(LUE_PYBIND11_REQUIRED)
-    set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} pybind11/2.5.0)
-
     find_package(Python COMPONENTS Interpreter Development NumPy)
 
     if(NOT Python_FOUND)
@@ -513,8 +516,9 @@ if(LUE_PYBIND11_REQUIRED)
         # the future if this is unconventional.
         set(LUE_PYTHON_API_INSTALL_DIR "${PYTHON_SITELIB}")  # /lue")
     endif()
-endif()
 
+    include(${CONAN_BUILD_DIRS_PYBIND11}/pybind11Tools.cmake)
+endif()
 
 if(LUE_SPHINX_REQUIRED)
     # TODO Find Sphinx Python package.
@@ -523,11 +527,4 @@ if(LUE_SPHINX_REQUIRED)
     if(NOT SPHINX_BUILD_EXECUTABLE OR NOT SPHINX_APIDOC_EXECUTABLE)
         message(FATAL_ERROR "sphinx not found")
     endif()
-endif()
-
-include(Conan)
-run_conan()
-
-if(LUE_PYBIND11_REQUIRED)
-    include(pybind11Tools)
 endif()
