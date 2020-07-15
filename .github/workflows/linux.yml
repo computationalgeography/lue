@@ -1,9 +1,6 @@
 name: Linux CI
 
-on:
-    push:
-        branches-ignore:
-        - '**'
+on: [push]
 
 jobs:
     build:
