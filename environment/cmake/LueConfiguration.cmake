@@ -224,6 +224,7 @@ endif()
 # logic might influence them. For example, HPX tests whether
 # Boost.filesystem has been found already. If we do that here, before
 # building HPX, the HPX build fails.
+# Should be fixed in HPX>=1.5.0
 if(LUE_HPX_REQUIRED)
     if(HPX_WITH_APEX)
         if(APEX_WITH_OTF2)
@@ -493,6 +494,25 @@ endif()
 
 if(LUE_PYBIND11_REQUIRED)
     set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} pybind11/2.4.3)
+
+    find_package(Python COMPONENTS Interpreter Development NumPy)
+
+    if(NOT Python_FOUND)
+        message(FATAL_ERROR "Python not found")
+    endif()
+
+    if(NOT Python_NumPy_FOUND)
+        message(FATAL_ERROR "Python NumPy not found")
+    endif()
+
+    if(NOT LUE_PYTHON_API_INSTALL_DIR)
+        # Most Python packages install in a subdirectory of Python's site
+        # packages. But we currently ship only Python packages implemented
+        # as shared libraries. Therefore, we install in the root of the
+        # site packages directory. We may have to change things in
+        # the future if this is unconventional.
+        set(LUE_PYTHON_API_INSTALL_DIR "${PYTHON_SITELIB}")  # /lue")
+    endif()
 endif()
 
 
@@ -507,35 +527,3 @@ endif()
 
 include(Conan)
 run_conan()
-
-if(LUE_PYBIND11_REQUIRED)
-    # Given Python found, figure out where the NumPy headers are. We don't
-    # want to pick up headers from another prefix than the prefix of the
-    # Python interpreter.
-    execute_process(COMMAND "${PYTHON_EXECUTABLE}" -c
-        "import numpy as np; print(\"{};{}\".format(np.__version__, np.get_include()));"
-        RESULT_VARIABLE numpy_search_result
-        OUTPUT_VARIABLE numpy_search_output
-        ERROR_VARIABLE numpy_search_error
-        OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-    if(NOT numpy_search_result MATCHES 0)
-        message(FATAL_ERROR
-            "${PYTHON_EXECUTABLE} is unable to import numpy:\n${numpy_search_error}")
-    else()
-        list(GET numpy_search_output -2 numpy_version)
-        list(GET numpy_search_output -1 NUMPY_INCLUDE_DIRS)
-
-        message(STATUS
-            "Found NumPy ${numpy_version} headers in ${NUMPY_INCLUDE_DIRS}")
-    endif()
-
-    if(NOT LUE_PYTHON_API_INSTALL_DIR)
-        # Most Python packages install in a subdirectory of Python's site
-        # packages. But we currently ship only Python packages implemented
-        # as shared libraries. Therefore, we install in the root of the
-        # site packages directory. We may have to change things in
-        # the future if this is unconventional.
-        set(LUE_PYTHON_API_INSTALL_DIR "${PYTHON_SITE_PACKAGES}")  # /lue")
-    endif()
-endif()

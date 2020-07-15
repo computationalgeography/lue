@@ -27,7 +27,7 @@ add_library(lue::translate ALIAS lue_translate_lib)
 
 target_include_directories(lue_translate_lib SYSTEM
     PUBLIC
-        ${GDAL_INCLUDE_DIR}
+        $<$<BOOL:${LUE_HAVE_GDAL}>:${GDAL_INCLUDE_DIR}>
 )
 
 target_include_directories(lue_translate_lib
@@ -39,9 +39,10 @@ target_include_directories(lue_translate_lib
 target_link_libraries(lue_translate_lib
     PRIVATE
         lue::data_model_hl
-        ${GDAL_LIBRARIES}
+        $<$<BOOL:${LUE_HAVE_GDAL}>:${GDAL_LIBRARIES}>
     PUBLIC
         lue::utility
+        $<$<NOT:$<BOOL:${LUE_HAVE_GDAL}>>:CONAN_PKG::gdal>
 )
 
 add_executable(lue_translate
