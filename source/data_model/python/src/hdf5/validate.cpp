@@ -32,7 +32,10 @@ void init_validate(
 
     py::bind_vector<std::vector<Issue>>(
         module,
-        "VectorIssue")
+        "VectorIssue",
+            R"(
+    VectorIssue docstring...
+)")
 
         ;
 

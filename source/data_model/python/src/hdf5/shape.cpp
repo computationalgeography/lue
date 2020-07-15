@@ -17,7 +17,10 @@ void init_shape(
 
     py::bind_vector<std::vector<hsize_t>>(
         module,
-        "VectorHSizeT")
+        "VectorHSizeT",
+        R"(
+    VectorHSizeT docstring...
+)")
 
         ;
 
