@@ -33,7 +33,6 @@ jobs:
           run: |
               mkdir build
               BOOST_ROOT=${BOOST_ROOT_1_72_0} \
-              CXXFLAGS="/MP" \
                   cmake \
                       -S . \
                       -B build \
