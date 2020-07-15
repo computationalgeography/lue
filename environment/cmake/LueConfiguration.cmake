@@ -63,6 +63,31 @@ option(LUE_VALIDATE_IDXS
     FALSE)
 
 
+# Options related to the availability of external packages
+if(WIN32)
+    set(LUE_HAVE_BOOST_INIT FALSE)
+    set(LUE_HAVE_DOXYGEN_INIT FALSE)
+    set(LUE_HAVE_GDAL_INIT FALSE)
+    set(LUE_HAVE_HDF5_INIT FALSE)
+else()
+    set(LUE_HAVE_BOOST_INIT TRUE)
+    set(LUE_HAVE_DOXYGEN_INIT TRUE)
+    set(LUE_HAVE_GDAL_INIT TRUE)
+    set(LUE_HAVE_HDF5_INIT TRUE)
+endif()
+
+function(lue_have_option name)
+    option(LUE_HAVE_${name}
+        "If ${name} is required, assume it is installed"
+        ${LUE_HAVE_${name}_INIT})
+endfunction()
+
+lue_have_option(BOOST)
+lue_have_option(DOXYGEN)
+lue_have_option(GDAL)
+lue_have_option(HDF5)
+
+
 # Handle internal dependencies -------------------------------------------------
 if(LUE_BUILD_VIEW)
     set(LUE_BUILD_DATA_MODEL TRUE)
@@ -352,22 +377,41 @@ if(LUE_IMGUI_REQUIRED AND LUE_BUILD_IMGUI)
 endif()
 
 
-# Find (not build) external packages -------------------------------------------
-# These are packages that can be installed easily, using standard
-# package managers
+# Find or install external packages --------------------------------------------
 if(LUE_BOOST_REQUIRED)
-    find_package(Boost REQUIRED
-        COMPONENTS ${LUE_REQUIRED_BOOST_COMPONENTS})
+    if(LUE_HAVE_BOOST)
+        find_package(Boost REQUIRED COMPONENTS ${LUE_REQUIRED_BOOST_COMPONENTS})
+    else()
+        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} boost/1.73.0)
+    endif()
 endif()
 
 
-if(LUE_DOXYGEN_REQUIRED AND NOT WIN32)
-    find_package(Doxygen REQUIRED dot)
+if(LUE_DOCOPT_REQUIRED)
+    set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} docopt.cpp/0.6.2)
 endif()
 
 
-if(LUE_GDAL_REQUIRED AND NOT WIN32)
-    find_package(GDAL 2 REQUIRED)
+if(LUE_DOXYGEN_REQUIRED)
+    if(LUE_HAVE_DOXYGEN)
+        find_package(Doxygen REQUIRED dot)
+    else()
+        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} doxygen/1.8.18)
+    endif()
+endif()
+
+
+if(LUE_FMT_REQUIRED)
+    set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} fmt/6.2.0)
+endif()
+
+
+if(LUE_GDAL_REQUIRED)
+    if(LUE_HAVE_GDAL)
+        find_package(GDAL 2 REQUIRED)
+    else()
+        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} gdal/3.1.0)
+    endif()
 endif()
 
 
@@ -380,8 +424,19 @@ if(LUE_GRAPHVIZ_REQUIRED)
 endif()
 
 
-if(LUE_HDF5_REQUIRED AND NOT WIN32)
-    find_package(HDF5 REQUIRED)
+if(LUE_GUIDELINE_SUPPORT_LIBRARY_REQUIRED)
+    set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} gsl_microsoft/2.0.0@bincrafters/stable)
+endif()
+
+
+if(LUE_HDF5_REQUIRED)
+    if(LUE_HAVE_HDF5)
+        find_package(HDF5 REQUIRED)
+    else()
+        set(HDF5_VERSION "1.12.0")
+        set(HDF5_IS_PARALLEL FALSE)
+        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} hdf5/${HDF5_VERSION})
+    endif()
 endif()
 
 
@@ -417,7 +472,6 @@ if(LUE_IMGUI_REQUIRED AND NOT LUE_BUILD_IMGUI)
         "But we can build ImGUI for you! Just reconfigure with LUE_BUILD_IMGUI=TRUE")
 endif()
 
-
 if(LUE_KOKKOS_MDSPAN_REQUIRED)
     FetchContent_Declare(kokkos_mdspan
         GIT_REPOSITORY https://github.com/kokkos/mdspan.git
@@ -427,8 +481,18 @@ if(LUE_KOKKOS_MDSPAN_REQUIRED)
 endif()
 
 
+if(LUE_NLOHMANN_JSON_REQUIRED)
+    set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} nlohmann_json/3.7.3)
+endif()
+
+
 if(LUE_OPENCL_REQUIRED)
     find_package(OpenCL REQUIRED)
+endif()
+
+
+if(LUE_PYBIND11_REQUIRED)
+    set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} pybind11/2.4.3)
 endif()
 
 
@@ -439,66 +503,6 @@ if(LUE_SPHINX_REQUIRED)
     if(NOT SPHINX_BUILD_EXECUTABLE OR NOT SPHINX_APIDOC_EXECUTABLE)
         message(FATAL_ERROR "sphinx not found")
     endif()
-endif()
-
-
-# Install external packages using Conan ----------------------------------------
-# These are packages that we cannot assume to be installable using standard
-# package managers (yet)
-if(LUE_DOCOPT_REQUIRED)
-    set(LUE_CONAN_REQUIRES
-        ${LUE_CONAN_REQUIRES}
-        docopt.cpp/0.6.2
-    )
-endif()
-
-if(LUE_DOXYGEN_REQUIRED AND WIN32)
-    set(LUE_CONAN_REQUIRES
-        ${LUE_CONAN_REQUIRES}
-        doxygen/1.8.18
-    )
-endif()
-
-if(LUE_FMT_REQUIRED)
-    set(LUE_CONAN_REQUIRES
-        ${LUE_CONAN_REQUIRES}
-        fmt/6.2.0
-    )
-endif()
-
-if(LUE_GDAL_REQUIRED AND WIN32)
-    set(LUE_CONAN_REQUIRES
-        ${LUE_CONAN_REQUIRES}
-        gdal/3.1.0
-    )
-endif()
-
-if(LUE_GUIDELINE_SUPPORT_LIBRARY_REQUIRED)
-    set(LUE_CONAN_REQUIRES
-        ${LUE_CONAN_REQUIRES}
-        gsl_microsoft/2.0.0@bincrafters/stable
-    )
-endif()
-
-if(LUE_HDF5_REQUIRED AND WIN32)
-    set(LUE_CONAN_REQUIRES
-        ${LUE_CONAN_REQUIRES}
-        hdf5/1.12.0
-    )
-endif()
-
-if(LUE_NLOHMANN_JSON_REQUIRED)
-    set(LUE_CONAN_REQUIRES
-        ${LUE_CONAN_REQUIRES}
-        nlohmann_json/3.7.3
-    )
-endif()
-
-if(LUE_PYBIND11_REQUIRED)
-    set(LUE_CONAN_REQUIRES
-        ${LUE_CONAN_REQUIRES}
-        pybind11/2.4.3
-    )
 endif()
 
 include(Conan)
