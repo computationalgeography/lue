@@ -383,20 +383,6 @@ if(LUE_BOOST_REQUIRED)
     if(NOT LUE_HAVE_BOOST)
         set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} boost/1.71.0)
         set(LUE_CONAN_OPTIONS ${LUE_CONAN_OPTIONS} boost:shared=True)
-        set(Boost_USE_STATIC_LIBS OFF)
-        if(WIN32)
-            # The auto-linking feature has problems with USE_STATIC_LIBS
-            # off, so we use BOOST_ALL_NO_LIB to turn it off. Several
-            # boost libraries headers aren't configured correctly if
-            # USE_STATIC_LIBS is off, so we explicitly say they are dynamic
-            # with the remaining definitions.
-            add_definitions(
-                -DBOOST_ALL_NO_LIB
-                -DBOOST_PROGRAM_OPTIONS_DYN_LINK
-                -DBOOST_IOSTREAMS_DYN_LINK
-                -DBOOST_THREAD_DYN_LINK
-                -DBOOST_TEST_DYN_LINK)
-        endif()
     endif()
 endif()
 
@@ -479,6 +465,13 @@ run_conan()
 
 if(LUE_BOOST_REQUIRED)
     find_package(Boost REQUIRED COMPONENTS ${LUE_REQUIRED_BOOST_COMPONENTS})
+
+    # set(Boost_USE_STATIC_LIBS OFF)
+
+    add_definitions(
+            -DBOOST_ALL_NO_LIB
+            -DBOOST_ALL_DYN_LINK
+        )
 endif()
 
 if(LUE_DOXYGEN_REQUIRED)
@@ -513,14 +506,27 @@ if(LUE_OPENCL_REQUIRED)
 endif()
 
 if(LUE_PYBIND11_REQUIRED)
-    find_package(Python COMPONENTS Interpreter Development NumPy)
+    include(${CONAN_BUILD_DIRS_PYBIND11}/pybind11Tools.cmake)
 
-    if(NOT Python_FOUND)
-        message(FATAL_ERROR "Python not found")
-    endif()
+    # Given Python found, figure out where the NumPy headers are. We don't
+    # want to pick up headers from another prefix than the prefix of the
+    # Python interpreter.
+    execute_process(COMMAND "${PYTHON_EXECUTABLE}" -c
+        "import numpy as np; print(\"{};{}\".format(np.__version__, np.get_include()));"
+        RESULT_VARIABLE numpy_search_result
+        OUTPUT_VARIABLE numpy_search_output
+        ERROR_VARIABLE numpy_search_error
+        OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-    if(NOT Python_NumPy_FOUND)
-        message(FATAL_ERROR "Python NumPy not found")
+    if(NOT numpy_search_result MATCHES 0)
+        message(FATAL_ERROR
+            "${PYTHON_EXECUTABLE} is unable to import numpy:\n${numpy_search_error}")
+    else()
+        list(GET numpy_search_output -2 numpy_version)
+        list(GET numpy_search_output -1 NUMPY_INCLUDE_DIRS)
+
+        message(STATUS
+            "Found NumPy ${numpy_version} headers in ${NUMPY_INCLUDE_DIRS}")
     endif()
 
     if(NOT LUE_PYTHON_API_INSTALL_DIR)
@@ -529,10 +535,27 @@ if(LUE_PYBIND11_REQUIRED)
         # as shared libraries. Therefore, we install in the root of the
         # site packages directory. We may have to change things in
         # the future if this is unconventional.
-        set(LUE_PYTHON_API_INSTALL_DIR "${Python_SITELIB}")  # /lue")
+        set(LUE_PYTHON_API_INSTALL_DIR "${PYTHON_SITE_PACKAGES}")  # /lue")
     endif()
 
-    include(${CONAN_BUILD_DIRS_PYBIND11}/pybind11Tools.cmake)
+    ### find_package(Python COMPONENTS Interpreter Development NumPy)
+
+    ### if(NOT Python_FOUND)
+    ###     message(FATAL_ERROR "Python not found")
+    ### endif()
+
+    ### if(NOT Python_NumPy_FOUND)
+    ###     message(FATAL_ERROR "Python NumPy not found")
+    ### endif()
+
+    ### if(NOT LUE_PYTHON_API_INSTALL_DIR)
+    ###     # Most Python packages install in a subdirectory of Python's site
+    ###     # packages. But we currently ship only Python packages implemented
+    ###     # as shared libraries. Therefore, we install in the root of the
+    ###     # site packages directory. We may have to change things in
+    ###     # the future if this is unconventional.
+    ###     set(LUE_PYTHON_API_INSTALL_DIR "${Python_SITELIB}")  # /lue")
+    ### endif()
 endif()
 
 if(LUE_SPHINX_REQUIRED)
