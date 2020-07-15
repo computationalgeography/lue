@@ -405,7 +405,8 @@ endif()
 
 if(LUE_HDF5_REQUIRED)
     if(NOT LUE_HAVE_HDF5)
-        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} hdf5/1.12.0)
+        set(HDF5_VERSION 1.12.0)
+        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} hdf5/${HDF5_VERSION})
     endif()
 endif()
 
@@ -485,11 +486,12 @@ if(LUE_GRAPHVIZ_REQUIRED)
 endif()
 
 if(LUE_HDF5_REQUIRED)
-    find_package(HDF5 REQUIRED COMPONENTS C)
-
-    if(NOT LUE_HAVE_HDF5)
-        # Conda's HDF5 depends on zlib
-        find_package(ZLIB REQUIRED)
+    if(LUE_HAVE_HDF5)
+        find_package(HDF5 REQUIRED COMPONENTS C)
+        add_library(hdf5::hdf5_c ALIAS ${HDF5_C_LIBRARIES})
+        set(lue_hdf5_target hdf5::hdf5_c)
+    else()
+        set(lue_hdf5_target CONAN_PKG::hdf5)
     endif()
 endif()
 
