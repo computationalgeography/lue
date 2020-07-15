@@ -37,6 +37,7 @@ jobs:
                       -S . \
                       -B build \
                       -G "Visual Studio 16 2019" -A x64 \
+                      -DLUE_HAVE_BOOST=TRUE \
                       -DLUE_BUILD_DOCUMENTATION=FALSE \
                       -DLUE_BUILD_TEST=FALSE
 
