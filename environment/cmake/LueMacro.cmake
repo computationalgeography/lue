@@ -47,10 +47,6 @@ macro(add_unit_test)
     add_executable(${TEST_EXE_NAME} ${TEST_MODULE_NAME}
         ${ADD_UNIT_TEST_SUPPORT_NAMES}
         ${ADD_UNIT_TEST_OBJECT_LIBRARIES})
-    target_compile_definitions(${TEST_EXE_NAME}
-        PRIVATE
-            BOOST_ALL_DYN_LINK
-    )
     target_include_directories(${TEST_EXE_NAME} SYSTEM
         PRIVATE
             ${Boost_INCLUDE_DIRS})
@@ -335,9 +331,6 @@ function(add_hpx_unit_test)
 
     add_executable(${TEST_EXE_NAME} ${TEST_MODULE_NAME})
 
-    target_compile_definitions(${TEST_EXE_NAME}
-        PRIVATE
-            BOOST_ALL_DYN_LINK)
     target_include_directories(${TEST_EXE_NAME} SYSTEM
         PRIVATE
             ${Boost_INCLUDE_DIRS})
