@@ -8,7 +8,7 @@ jobs:
         strategy:
             matrix:
                 os: ["windows-latest"]
-                python-version: [2.7, 3.8]
+                python-version: [3.8]
 
         runs-on: ${{ matrix.os }}
 
@@ -38,11 +38,12 @@ jobs:
                       -B build \
                       -G "Visual Studio 16 2019" -A x64 \
                       -DLUE_HAVE_BOOST=TRUE \
+                      -DLUE_HAVE_GDAL=FALSE \
                       -DLUE_BUILD_DOCUMENTATION=FALSE \
                       -DLUE_BUILD_TEST=TRUE \
                       -DLUE_BUILD_DATA_MODEL=TRUE \
-                      -DLUE_DATA_MODEL_WITH_PYTHON_API=TRUE \
-                      -DLUE_DATA_MODEL_WITH_UTILITIES=FALSE
+                      -DLUE_DATA_MODEL_WITH_PYTHON_API=FALSE \
+                      -DLUE_DATA_MODEL_WITH_UTILITIES=TRUE
 
         - name: build lue
           shell: bash
