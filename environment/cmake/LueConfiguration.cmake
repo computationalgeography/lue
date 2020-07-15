@@ -529,7 +529,7 @@ if(LUE_PYBIND11_REQUIRED)
         # as shared libraries. Therefore, we install in the root of the
         # site packages directory. We may have to change things in
         # the future if this is unconventional.
-        set(LUE_PYTHON_API_INSTALL_DIR "${PYTHON_SITELIB}")  # /lue")
+        set(LUE_PYTHON_API_INSTALL_DIR "${Python_SITELIB}")  # /lue")
     endif()
 
     include(${CONAN_BUILD_DIRS_PYBIND11}/pybind11Tools.cmake)
