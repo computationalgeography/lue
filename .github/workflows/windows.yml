@@ -38,6 +38,7 @@ jobs:
                       -B build \
                       -G "Visual Studio 16 2019" -A x64 \
                       -DLUE_HAVE_BOOST=TRUE \
+                      -DBoost_USE_STATIC_LIBS=FALSE \
                       -DLUE_HAVE_GDAL=FALSE \
                       -DLUE_BUILD_DOCUMENTATION=FALSE \
                       -DLUE_BUILD_TEST=FALSE \

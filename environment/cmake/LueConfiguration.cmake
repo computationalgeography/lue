@@ -466,8 +466,6 @@ run_conan()
 if(LUE_BOOST_REQUIRED)
     find_package(Boost REQUIRED COMPONENTS ${LUE_REQUIRED_BOOST_COMPONENTS})
 
-    # set(Boost_USE_STATIC_LIBS OFF)
-
     add_definitions(
             -DBOOST_ALL_NO_LIB
             -DBOOST_ALL_DYN_LINK
