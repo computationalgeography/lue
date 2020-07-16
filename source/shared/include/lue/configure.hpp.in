@@ -32,17 +32,17 @@ public:
     // static constexpr std::string version{LUE_VERSION};
 
     // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays, modernize-avoid-c-arrays)
-    static constexpr char version[]{LUE_VERSION};
+    static constexpr char const* version{LUE_VERSION};
 
-    // static constexpr char version_tweak[]{LUE_VERSION_TWEAK};
+    // static constexpr char const* version_tweak{LUE_VERSION_TWEAK};
 
-    // static constexpr char git_refspec[]{LUE_GIT_REFSPEC};
-
-    // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays, modernize-avoid-c-arrays)
-    static constexpr char git_sha1[]{LUE_GIT_SHA1};
+    // static constexpr char const* git_refspec{LUE_GIT_REFSPEC};
 
     // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays, modernize-avoid-c-arrays)
-    static constexpr char git_short_sha1[]{LUE_GIT_SHORT_SHA1};
+    static constexpr char const* git_sha1{LUE_GIT_SHA1};
+
+    // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays, modernize-avoid-c-arrays)
+    static constexpr char const* git_short_sha1{LUE_GIT_SHORT_SHA1};
 
     static constexpr bool build_framework{LUE_BUILD_FRAMEWORK01};
 

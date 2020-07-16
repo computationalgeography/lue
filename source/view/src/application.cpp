@@ -6,6 +6,7 @@
 // #include "lue/utility/environment.hpp"
 #include <fmt/format.h>
 #include <functional>
+#include <sstream>
 
 
 // void ImGui::PlotHistogram(
@@ -78,7 +79,7 @@ public:
         ShapeVariability::constant};
 
     // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays, modernize-avoid-c-arrays, hicpp-avoid-c-arrays,-warnings-as-errors)
-    static constexpr char label[] = {"same shape"};
+    static constexpr char const* label{"same shape"};
 
 };
 
@@ -98,7 +99,7 @@ public:
         ShapeVariability::constant};
 
     // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays, modernize-avoid-c-arrays, hicpp-avoid-c-arrays,-warnings-as-errors)
-    static constexpr char label[] = {"same constant shape"};
+    static constexpr char const* label{"same constant shape"};
 
 };
 
@@ -118,7 +119,7 @@ public:
         ShapeVariability::variable};
 
     // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays, modernize-avoid-c-arrays, hicpp-avoid-c-arrays,-warnings-as-errors)
-    static constexpr char label[] = {"same variable shape"};
+    static constexpr char const* label{"same variable shape"};
 
 };
 
@@ -138,7 +139,7 @@ public:
         ShapeVariability::constant};
 
     // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays, modernize-avoid-c-arrays, hicpp-avoid-c-arrays,-warnings-as-errors)
-    static constexpr char label[] = {"different shape"};
+    static constexpr char const* label{"different shape"};
 
 };
 
@@ -158,7 +159,7 @@ public:
         ShapeVariability::constant};
 
     // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays, modernize-avoid-c-arrays, hicpp-avoid-c-arrays,-warnings-as-errors)
-    static constexpr char label[] = {"different constant shape"};
+    static constexpr char const* label{"different constant shape"};
 
 };
 
@@ -178,7 +179,7 @@ public:
         ShapeVariability::variable};
 
     // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays, modernize-avoid-c-arrays, hicpp-avoid-c-arrays,-warnings-as-errors)
-    static constexpr char label[] = {"different variable shape"};
+    static constexpr char const* label{"different variable shape"};
 
 };
 

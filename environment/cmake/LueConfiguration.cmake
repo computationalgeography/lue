@@ -63,6 +63,31 @@ option(LUE_VALIDATE_IDXS
     FALSE)
 
 
+# Options related to the availability of external packages
+if(WIN32)
+    set(LUE_HAVE_BOOST_INIT FALSE)
+    set(LUE_HAVE_DOXYGEN_INIT FALSE)
+    set(LUE_HAVE_GDAL_INIT FALSE)
+    set(LUE_HAVE_HDF5_INIT FALSE)
+else()
+    set(LUE_HAVE_BOOST_INIT TRUE)
+    set(LUE_HAVE_DOXYGEN_INIT TRUE)
+    set(LUE_HAVE_GDAL_INIT TRUE)
+    set(LUE_HAVE_HDF5_INIT TRUE)
+endif()
+
+function(lue_have_option name)
+    option(LUE_HAVE_${name}
+        "If ${name} is required, assume it is installed"
+        ${LUE_HAVE_${name}_INIT})
+endfunction()
+
+lue_have_option(BOOST)
+lue_have_option(DOXYGEN)
+lue_have_option(GDAL)
+lue_have_option(HDF5)
+
+
 # Handle internal dependencies -------------------------------------------------
 if(LUE_BUILD_VIEW)
     set(LUE_BUILD_DATA_MODEL TRUE)
@@ -199,6 +224,7 @@ endif()
 # logic might influence them. For example, HPX tests whether
 # Boost.filesystem has been found already. If we do that here, before
 # building HPX, the HPX build fails.
+# Should be fixed in HPX>=1.5.0
 if(LUE_HPX_REQUIRED)
     if(HPX_WITH_APEX)
         if(APEX_WITH_OTF2)
@@ -352,38 +378,38 @@ if(LUE_IMGUI_REQUIRED AND LUE_BUILD_IMGUI)
 endif()
 
 
-# Find (not build) external packages -------------------------------------------
-# These are packages that can be installed easily, using standard
-# package managers
+# Find or install external packages --------------------------------------------
 if(LUE_BOOST_REQUIRED)
-    find_package(Boost REQUIRED
-        COMPONENTS ${LUE_REQUIRED_BOOST_COMPONENTS})
-endif()
-
-
-if(LUE_DOXYGEN_REQUIRED)
-    find_package(Doxygen REQUIRED dot)
-endif()
-
-
-if(LUE_GDAL_REQUIRED)
-    find_package(GDAL 2 REQUIRED)
-endif()
-
-
-if(LUE_GRAPHVIZ_REQUIRED)
-    find_package(Graphviz REQUIRED)
-
-    if(GRAPHVIZ_FOUND)
-        include(GraphvizMacro)
+    if(NOT LUE_HAVE_BOOST)
+        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} boost/1.71.0)
+        set(LUE_CONAN_OPTIONS ${LUE_CONAN_OPTIONS} boost:shared=True)
     endif()
 endif()
 
-
-if(LUE_HDF5_REQUIRED)
-    find_package(HDF5 REQUIRED)
+if(LUE_DOCOPT_REQUIRED)
+    set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} docopt.cpp/0.6.2)
 endif()
 
+if(LUE_FMT_REQUIRED)
+    set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} fmt/6.2.0)
+endif()
+
+if(LUE_GDAL_REQUIRED)
+    if(NOT LUE_HAVE_GDAL)
+        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} gdal/3.1.0)
+    endif()
+endif()
+
+if(LUE_GUIDELINE_SUPPORT_LIBRARY_REQUIRED)
+    set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} gsl_microsoft/2.0.0@bincrafters/stable)
+endif()
+
+if(LUE_HDF5_REQUIRED)
+    if(NOT LUE_HAVE_HDF5)
+        set(HDF5_VERSION 1.12.0)
+        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} hdf5/${HDF5_VERSION})
+    endif()
+endif()
 
 if(LUE_HPX_REQUIRED)
     if(NOT LUE_BUILD_HPX)
@@ -410,13 +436,11 @@ if(LUE_HPX_REQUIRED)
     endif()
 endif()
 
-
 if(LUE_IMGUI_REQUIRED AND NOT LUE_BUILD_IMGUI)
     message(FATAL_ERROR
         "Support for system-provided ImGUI library does not work yet\n"
         "But we can build ImGUI for you! Just reconfigure with LUE_BUILD_IMGUI=TRUE")
 endif()
-
 
 if(LUE_KOKKOS_MDSPAN_REQUIRED)
     FetchContent_Declare(kokkos_mdspan
@@ -426,64 +450,62 @@ if(LUE_KOKKOS_MDSPAN_REQUIRED)
     FetchContent_MakeAvailable(kokkos_mdspan)
 endif()
 
+if(LUE_NLOHMANN_JSON_REQUIRED)
+    set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} nlohmann_json/3.7.3)
+endif()
+
+if(LUE_PYBIND11_REQUIRED)
+    set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} pybind11/2.5.0)
+endif()
+
+
+include(Conan)
+run_conan()
+
+
+if(LUE_BOOST_REQUIRED)
+    find_package(Boost REQUIRED COMPONENTS ${LUE_REQUIRED_BOOST_COMPONENTS})
+
+    add_definitions(
+            -DBOOST_ALL_NO_LIB
+            -DBOOST_ALL_DYN_LINK
+        )
+endif()
+
+if(LUE_DOXYGEN_REQUIRED)
+    find_package(Doxygen REQUIRED dot)
+endif()
+
+if(LUE_GDAL_REQUIRED)
+    if(LUE_HAVE_GDAL)
+        find_package(GDAL REQUIRED)
+        set(lue_gdal_target GDAL::GDAL)
+    else()
+        set(lue_gdal_target CONAN_PKG::gdal)
+    endif()
+endif()
+
+if(LUE_GRAPHVIZ_REQUIRED)
+    find_package(Graphviz REQUIRED)
+
+    if(GRAPHVIZ_FOUND)
+        include(GraphvizMacro)
+    endif()
+endif()
+
+if(LUE_HDF5_REQUIRED)
+    if(LUE_HAVE_HDF5)
+        find_package(HDF5 REQUIRED COMPONENTS C)
+    endif()
+endif()
 
 if(LUE_OPENCL_REQUIRED)
     find_package(OpenCL REQUIRED)
 endif()
 
-
-if(LUE_SPHINX_REQUIRED)
-    # TODO Find Sphinx Python package.
-    include(SphinxDoc)
-
-    if(NOT SPHINX_BUILD_EXECUTABLE OR NOT SPHINX_APIDOC_EXECUTABLE)
-        message(FATAL_ERROR "sphinx not found")
-    endif()
-endif()
-
-
-# Install external packages using Conan ----------------------------------------
-# These are packages that we cannot assume to be installable using standard
-# package managers (yet)
-if(LUE_DOCOPT_REQUIRED)
-    set(LUE_CONAN_REQUIRES
-        ${LUE_CONAN_REQUIRES}
-        docopt.cpp/0.6.2
-    )
-endif()
-
-if(LUE_FMT_REQUIRED)
-    set(LUE_CONAN_REQUIRES
-        ${LUE_CONAN_REQUIRES}
-        fmt/6.2.0
-    )
-endif()
-
-if(LUE_GUIDELINE_SUPPORT_LIBRARY_REQUIRED)
-    set(LUE_CONAN_REQUIRES
-        ${LUE_CONAN_REQUIRES}
-        gsl_microsoft/2.0.0@bincrafters/stable
-    )
-endif()
-
-if(LUE_NLOHMANN_JSON_REQUIRED)
-    set(LUE_CONAN_REQUIRES
-        ${LUE_CONAN_REQUIRES}
-        nlohmann_json/3.7.3
-    )
-endif()
-
 if(LUE_PYBIND11_REQUIRED)
-    set(LUE_CONAN_REQUIRES
-        ${LUE_CONAN_REQUIRES}
-        pybind11/2.4.3
-    )
-endif()
+    include(${CONAN_BUILD_DIRS_PYBIND11}/pybind11Tools.cmake)
 
-include(Conan)
-run_conan()
-
-if(LUE_PYBIND11_REQUIRED)
     # Given Python found, figure out where the NumPy headers are. We don't
     # want to pick up headers from another prefix than the prefix of the
     # Python interpreter.
@@ -512,5 +534,33 @@ if(LUE_PYBIND11_REQUIRED)
         # site packages directory. We may have to change things in
         # the future if this is unconventional.
         set(LUE_PYTHON_API_INSTALL_DIR "${PYTHON_SITE_PACKAGES}")  # /lue")
+    endif()
+
+    ### find_package(Python COMPONENTS Interpreter Development NumPy)
+
+    ### if(NOT Python_FOUND)
+    ###     message(FATAL_ERROR "Python not found")
+    ### endif()
+
+    ### if(NOT Python_NumPy_FOUND)
+    ###     message(FATAL_ERROR "Python NumPy not found")
+    ### endif()
+
+    ### if(NOT LUE_PYTHON_API_INSTALL_DIR)
+    ###     # Most Python packages install in a subdirectory of Python's site
+    ###     # packages. But we currently ship only Python packages implemented
+    ###     # as shared libraries. Therefore, we install in the root of the
+    ###     # site packages directory. We may have to change things in
+    ###     # the future if this is unconventional.
+    ###     set(LUE_PYTHON_API_INSTALL_DIR "${Python_SITELIB}")  # /lue")
+    ### endif()
+endif()
+
+if(LUE_SPHINX_REQUIRED)
+    # TODO Find Sphinx Python package.
+    include(SphinxDoc)
+
+    if(NOT SPHINX_BUILD_EXECUTABLE OR NOT SPHINX_APIDOC_EXECUTABLE)
+        message(FATAL_ERROR "sphinx not found")
     endif()
 endif()

@@ -189,7 +189,8 @@ static py::array create_array(
     py::array result;
     auto const& datatype = array.datatype();
 
-    if(datatype.is_string()) {
+    if(datatype.is_string())
+    {
         // HDF5 array contains variable length UTF8 strings. The
         // destination array must contain fixed length Unicode strings
         // (measured in code points). Shorter strings are padded with
@@ -199,55 +200,55 @@ static py::array create_array(
         auto const nr_strings = slice_shape[0];
 
         // Read the strings in a data structure of our own
-        auto const memory_datatype{lue::hdf5::create_string_datatype()};
+        hdf5::Datatype const memory_datatype{lue::hdf5::create_string_datatype()};
 
-        char* values_read[nr_strings];
-        lue::hdf5::VLenMemory vlen{
-            memory_datatype, array.dataspace(), values_read};
+        // Array of variable length arrays of characters. The values_read
+        // array will be freed.
+        auto values_read{std::make_unique<char*[]>(nr_strings)};
 
-        array.read(hyperslab, values_read);
+        // Object to scope the array of arrays allocated by the next
+        // read. The values_read sub-arrays will be freed.
+        lue::hdf5::VLenMemory vlen{memory_datatype, array.dataspace(), values_read.get()};
+
+        array.read(hyperslab, values_read.get());
 
         // We now have variable length UTF8 encoded Unicode strings in
         // values_read. These must end up as fixed length Unicode strings
         // in the Numpy array.
 
-        std::size_t max_nr_bytes_utf8 = 0;
+        std::size_t max_nr_bytes_utf8{0};
 
-        for(size_t i = 0; i < nr_strings; ++i) {
-            max_nr_bytes_utf8 =
-                std::max(max_nr_bytes_utf8, strlen(values_read[i]));
+        for(size_t i = 0; i < nr_strings; ++i)
+        {
+            max_nr_bytes_utf8 = std::max(max_nr_bytes_utf8, strlen(values_read[i]));
         }
 
         // Number of bytes used to represent a code point
-        std::size_t const nr_bytes_per_code_point = 4;
+        std::size_t const nr_bytes_per_code_point{4};
 
         // Number of code points per string
-        std::size_t const nr_code_points = max_nr_bytes_utf8;
+        std::size_t const nr_code_points{max_nr_bytes_utf8};
 
         // Number of bytes per string
-        std::size_t const nr_bytes_unicode =
-            nr_code_points * nr_bytes_per_code_point;
+        std::size_t const nr_bytes_unicode{nr_code_points * nr_bytes_per_code_point};
 
         // Number of ordinals per string, to store the encoded Unicode
         // string on the Python side
         assert(nr_bytes_unicode % sizeof(Py_UNICODE) == 0);
-        std::size_t const nr_ordinals = nr_bytes_unicode / sizeof(Py_UNICODE);
+        std::size_t const nr_ordinals{nr_bytes_unicode / sizeof(Py_UNICODE)};
 
         // Buffer for all Unicode strings, back to back
-        auto py_buffer = std::make_unique<Py_UNICODE[]>(
-            nr_strings * nr_ordinals);
-        std::fill(
-            py_buffer.get(), py_buffer.get() + nr_strings * nr_ordinals, '\0');
+        auto py_buffer{std::make_unique<Py_UNICODE[]>(nr_strings * nr_ordinals)};
+        std::fill(py_buffer.get(), py_buffer.get() + nr_strings * nr_ordinals, '\0');
 
         py::str py_string;
         Py_ssize_t data_size;
         Py_UNICODE* it = py_buffer.get();
 
-        for(std::size_t i = 0; i < nr_strings; ++i) {
-
+        for(std::size_t i = 0; i < nr_strings; ++i)
+        {
             // Decode UTF8 string as read from LUE array
-            py_string = py::reinterpret_steal<py::str>(
-                ::PyUnicode_FromString(values_read[i]));
+            py_string = py::reinterpret_steal<py::str>(::PyUnicode_FromString(values_read[i]));
 
             if(!py_string) {
                 throw py::error_already_set();
@@ -255,12 +256,13 @@ static py::array create_array(
 
             // Copy Unicode string into the slot in the Numpy array
             data_size = PyUnicode_GET_DATA_SIZE(py_string.ptr());  // Bytes
-            char const* data = PyUnicode_AS_DATA(py_string.ptr());
+            char const* data{PyUnicode_AS_DATA(py_string.ptr())};
             std::memcpy(it, data, data_size);
             it += nr_ordinals;
         }
 
-        py::capsule free_when_done(py_buffer.get(), [](void* buffer)
+        py::capsule free_when_done(py_buffer.get(),
+            [](void* buffer)
             {
                 delete[] static_cast<Py_UNICODE*>(buffer);
             });
@@ -269,7 +271,8 @@ static py::array create_array(
         hdf5::Shape shape{nr_strings};
         result = py::array(dtype, shape, py_buffer.release(), free_when_done);
     }
-    else {
+    else
+    {
         if(datatype == hdf5::Datatype{H5T_NATIVE_UINT8}) {
             result = create_array<uint8_t>(slice_shape);
         }

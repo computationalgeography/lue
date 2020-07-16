@@ -63,16 +63,35 @@ libaries and tools must be installed:
 
 | Variable                         | Prerequisites                                             |
 | -------------------------------- | --------------------------------------------------------- |
-| `LUE_BUILD_DATA_MODEL`           | HDF5 C, Boost (filesystem, system), fmt^2 libraries       |
-| `LUE_BUILD_FRAMEWORK`            | Boost, Docopt^2, fmt^2, HPX libraries, Kokkos mdspan^1    |
-| `LUE_BUILD_VIEW`                 | Dear ImGUI^1, OpenGL, GLEW, SDL2                          |
-| `LUE_DATA_MODEL_WITH_PYTHON_API` | Python, pybind11^2, NumPy, Guidelines Support libraries^2 |
-| `LUE_DATA_MODEL_WITH_UTILITIES`  | Docopt^2, GDAL, Nlohmann JSON libraries^2                 |
-| `LUE_FRAMEWORK_WITH_PYTHON_API`  | Python, pybind11^2, NumPy                                 |
+| `LUE_BUILD_DATA_MODEL`           | HDF5 C, Boost (filesystem, system), fmt libraries         |
+| `LUE_BUILD_FRAMEWORK`            | Boost, Docopt, fmt, HPX libraries, Kokkos mdspan          |
+| `LUE_BUILD_VIEW`                 | Dear ImGUI, OpenGL, GLEW, SDL2                            |
+| `LUE_DATA_MODEL_WITH_PYTHON_API` | Python, pybind11, NumPy, Guidelines Support libraries     |
+| `LUE_DATA_MODEL_WITH_UTILITIES`  | Docopt, GDAL, Nlohmann JSON libraries                     |
+| `LUE_FRAMEWORK_WITH_PYTHON_API`  | Python, pybind11, NumPy                                   |
 | `LUE_BUILD_TEST`                 | Boost unit-test framework library                         |
 | `LUE_BUILD_DOCUMENTATION`        | Doxygen, Graphviz, Sphinx                                 |
 
-^1: built by LUE project, ^2: installed by LUE project (using Conan)
+There are three options for installing prerequistie libraries and tools:
+1. Install using platform specific package manager
+2. Install using Conan, either before building LUE or by the LUE build
+    scripts
+3. Build by the LUE build scripts
+
+These variable determine what should happen:
+
+- `LUE_HAVE_BOOST`
+    - TRUE: Search for Boost in standard locations
+    - FALSE: Install Boost using Conan
+    - Default: WIN32: FALSE, All other platforms: TRUE
+- `LUE_HAVE_GDAL`
+    - TRUE: Search for GDAL in standard locations
+    - FALSE: Install GDAL using Conan
+    - Default: WIN32: FALSE, All other platforms: TRUE
+- `LUE_HAVE_HDF5`
+    - TRUE: Search for HDF5 in standard locations
+    - FALSE: Install HDF5 using Conan
+    - Default: WIN32: FALSE, All other platforms: TRUE
 
 Some prerequisite libraries can optionally be built by the LUE project
 itself. The folowing variables are used to decide whether or not that
@@ -100,3 +119,7 @@ cd build
 cmake -DCMAKE_INSTALL_PREFIX=$HOME/lue_install ..
 cmake --build . --target install
 ```
+
+Also, you can check the scripts behind the [Gihub workflows](
+https://github.com/pcraster/lue/actions) to see how LUE can be built
+on various platforms.
