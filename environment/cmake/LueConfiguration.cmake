@@ -297,7 +297,7 @@ if(LUE_HPX_REQUIRED)
         if(LUE_HPX_GIT_TAG)
             set(hpx_git_tag ${LUE_HPX_GIT_TAG})
         else()
-            set(hpx_git_tag "1.4.1")
+            set(hpx_git_tag "1.5.0-rc1")
         endif()
 
         FetchContent_Declare(hpx
