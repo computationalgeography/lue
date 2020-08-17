@@ -1,6 +1,6 @@
 #pragma once
 #include "lue/framework/core/define.hpp"
-#include <hpx/include/iostreams.hpp>
+#include <hpx/distributed/iostream.hpp>
 
 
 namespace lue {

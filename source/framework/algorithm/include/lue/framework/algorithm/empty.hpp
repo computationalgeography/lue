@@ -1,5 +1,5 @@
 #pragma once
-#include <hpx/lcos/future.hpp>
+#include <hpx/future.hpp>
 
 
 namespace lue {

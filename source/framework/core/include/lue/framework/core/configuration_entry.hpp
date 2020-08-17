@@ -1,5 +1,5 @@
 #pragma once
-#include <hpx/runtime/config_entry.hpp>
+#include <hpx/modules/runtime_local.hpp>
 
 
 namespace lue {

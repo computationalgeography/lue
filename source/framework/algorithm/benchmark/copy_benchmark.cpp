@@ -2,7 +2,7 @@
 #include "lue/framework/algorithm/copy.hpp"
 #include "lue/framework/benchmark/benchmark.hpp"
 #include "lue/framework/benchmark/hpx_main.hpp"
-#include <hpx/include/iostreams.hpp>
+#include <hpx/distributed/iostream.hpp>
 
 
 namespace lue {
