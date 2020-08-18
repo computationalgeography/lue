@@ -306,13 +306,6 @@ if(LUE_HPX_REQUIRED)
         )
 
         FetchContent_MakeAvailable(hpx)
-
-        # Use HPX from this project's binary directory
-        # TODO Check with FetchContent manual page
-        set(HPX_INCLUDE_DIRS
-            ${hpx_SOURCE_DIR}
-            ${PROJECT_BINARY_DIR}
-        )
     endif()
 endif()
 
