@@ -341,7 +341,7 @@ function(add_hpx_unit_test)
 
     add_test(NAME ${TEST_EXE_NAME}
         COMMAND
-            ${PYTHON_EXECUTABLE} ${HPXRUN} 
+            ${LUE_PYTHON_EXECUTABLE} ${HPXRUN}
                 "--localities" ${LUE_TEST_NR_LOCALITIES_PER_TEST}
                 "--thread" ${LUE_TEST_NR_THREADS_PER_LOCALITY} --
                     "$<TARGET_FILE:${TEST_EXE_NAME}>")

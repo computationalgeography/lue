@@ -1,10 +1,10 @@
-#include <boost/test/tools/old/interface.hpp>
 #define BOOST_TEST_MODULE lue framework algorithm range
 #include "lue/framework/core/component/partitioned_array.hpp"
 #include "lue/framework/algorithm/range.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/compare.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include <boost/test/tools/old/interface.hpp>
 #include <fmt/format.h>
 
 

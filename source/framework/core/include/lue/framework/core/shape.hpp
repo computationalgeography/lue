@@ -37,7 +37,7 @@ template<
 inline Count nr_elements(
     Shape<Count, rank> const& shape)
 {
-    static_assert(!shape.empty());
+    static_assert(rank > 0);
 
     using T = typename Shape<Count, rank>::value_type;
 

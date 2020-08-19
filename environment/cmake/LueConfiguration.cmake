@@ -163,6 +163,7 @@ if(LUE_BUILD_FRAMEWORK)
     if(LUE_FRAMEWORK_WITH_PYTHON_API)
         set(LUE_PYBIND11_REQUIRED TRUE)
     endif()
+
 endif()
 
 
@@ -173,6 +174,9 @@ if(LUE_BUILD_TEST)
 
     if(LUE_BUILD_FRAMEWORK)
         set(HPXRUN "${CMAKE_BINARY_DIR}/_deps/hpx-build/bin/hpxrun.py")
+
+        # Needed to be able to run hpxrun.py
+        set(LUE_PYTHON_REQUIRED TRUE)
 
         # Does not work when HPX is built as part of LUE build
         # find_file(HPXRUN
@@ -375,7 +379,8 @@ endif()
 if(LUE_BOOST_REQUIRED)
     if(NOT LUE_HAVE_BOOST)
         set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} boost/1.71.0)
-        set(LUE_CONAN_OPTIONS ${LUE_CONAN_OPTIONS} boost:shared=True)
+        set(LUE_CONAN_OPTIONS ${LUE_CONAN_OPTIONS}
+            boost:shared=True)
     endif()
 endif()
 
@@ -389,6 +394,7 @@ endif()
 
 if(LUE_GDAL_REQUIRED)
     if(NOT LUE_HAVE_GDAL)
+        # https://conan.io/center/gdal/3.1.0
         set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} gdal/3.1.0)
     endif()
 endif()
@@ -400,7 +406,14 @@ endif()
 if(LUE_HDF5_REQUIRED)
     if(NOT LUE_HAVE_HDF5)
         set(HDF5_VERSION 1.12.0)
+        set(HDF5_IS_PARALLEL FALSE)
         set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} hdf5/${HDF5_VERSION})
+        set(LUE_CONAN_OPTIONS ${LUE_CONAN_OPTIONS}
+                hdf5:shared=True
+                hdf5:enable_cxx=False
+                hdf5:hl=False
+                hdf5:threadsafe=True
+                hdf5:with_zlib=True)
     endif()
 endif()
 
@@ -444,7 +457,7 @@ if(LUE_KOKKOS_MDSPAN_REQUIRED)
 endif()
 
 if(LUE_NLOHMANN_JSON_REQUIRED)
-    set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} nlohmann_json/3.7.3)
+    set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} nlohmann_json/3.9.1)
 endif()
 
 if(LUE_PYBIND11_REQUIRED)
@@ -498,11 +511,12 @@ endif()
 
 if(LUE_PYBIND11_REQUIRED)
     include(${CONAN_BUILD_DIRS_PYBIND11}/pybind11Tools.cmake)
+    set(LUE_PYTHON_EXECUTABLE ${PYTHON_EXECUTABLE})
 
     # Given Python found, figure out where the NumPy headers are. We don't
     # want to pick up headers from another prefix than the prefix of the
     # Python interpreter.
-    execute_process(COMMAND "${PYTHON_EXECUTABLE}" -c
+    execute_process(COMMAND "${LUE_PYTHON_EXECUTABLE}" -c
         "import numpy as np; print(\"{};{}\".format(np.__version__, np.get_include()));"
         RESULT_VARIABLE numpy_search_result
         OUTPUT_VARIABLE numpy_search_output
@@ -511,7 +525,7 @@ if(LUE_PYBIND11_REQUIRED)
 
     if(NOT numpy_search_result MATCHES 0)
         message(FATAL_ERROR
-            "${PYTHON_EXECUTABLE} is unable to import numpy:\n${numpy_search_error}")
+            "${LUE_PYTHON_EXECUTABLE} is unable to import numpy:\n${numpy_search_error}")
     else()
         list(GET numpy_search_output -2 numpy_version)
         list(GET numpy_search_output -1 NUMPY_INCLUDE_DIRS)
@@ -547,6 +561,16 @@ if(LUE_PYBIND11_REQUIRED)
     ###     # the future if this is unconventional.
     ###     set(LUE_PYTHON_API_INSTALL_DIR "${Python_SITELIB}")  # /lue")
     ### endif()
+endif()
+
+if(LUE_PYTHON_REQUIRED AND NOT LUE_PYBIND11_REQUIRED)
+    find_package(Python COMPONENTS Interpreter)
+
+    if(NOT Python_FOUND)
+        message(FATAL_ERROR "Python not found")
+    endif()
+
+    set(LUE_PYTHON_EXECUTABLE ${Python_EXECUTABLE})
 endif()
 
 if(LUE_SPHINX_REQUIRED)

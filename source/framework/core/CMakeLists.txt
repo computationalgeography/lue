@@ -28,6 +28,8 @@ target_include_directories(lue_framework_core
 )
 
 target_link_libraries(lue_framework_core
+    PRIVATE
+        Boost::filesystem
     PUBLIC
         lue::shared
         # CONAN_PKG::fmt
