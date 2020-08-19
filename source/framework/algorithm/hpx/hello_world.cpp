@@ -1,5 +1,5 @@
 #include <hpx/hpx_main.hpp>
-#include <hpx/include/iostreams.hpp>
+#include <hpx/distributed/iostream.hpp>
 
 
 int main()

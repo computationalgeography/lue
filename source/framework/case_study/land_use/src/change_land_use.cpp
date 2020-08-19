@@ -3,7 +3,7 @@
 #include "lue/framework/algorithm.hpp"
 #include "lue/framework/io.hpp"
 #include "lue/data_model/hl/raster_view.hpp"
-#include <hpx/include/iostreams.hpp>
+#include <hpx/distributed/iostream.hpp>
 
 
 namespace lue {

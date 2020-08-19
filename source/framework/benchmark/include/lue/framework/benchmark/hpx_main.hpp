@@ -5,8 +5,8 @@
 #include "lue/framework/core/debug.hpp"
 #include <hpx/hpx_finalize.hpp>
 #include <hpx/hpx_init.hpp>
-#include <hpx/custom_exception_info.hpp>
-#include <hpx/include/iostreams.hpp>
+#include <hpx/modules/runtime_local.hpp>
+#include <hpx/distributed/iostream.hpp>
 #include <hpx/include/lcos.hpp>
 #ifdef HPX_WITH_APEX
     #include <apex_api.hpp>

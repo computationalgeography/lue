@@ -6,8 +6,7 @@
 // #include "lue/framework/algorithm/zonal_sum.hpp"
 // #include "lue/framework/io.hpp"
 // #include "lue/data_model/hl/raster_view.hpp"
-#include <hpx/include/iostreams.hpp>
-#include <hpx/lcos/when_all.hpp>
+#include <hpx/distributed/iostream.hpp>
 #include <algorithm>
 
 

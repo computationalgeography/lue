@@ -1,7 +1,6 @@
 #pragma once
 #include "lue/framework/core/component/partitioned_array.hpp"
 #include "lue/framework/core/component.hpp"
-#include <hpx/lcos/when_all.hpp>
 #include <algorithm>
 #include <random>
 

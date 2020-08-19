@@ -9,7 +9,7 @@
 // // #include <hpx/lcos/gather.hpp>
 // // #include "lue/data_model.hpp"
 // // #include <hpx/runtime.hpp>
-#include <hpx/include/iostreams.hpp>
+#include <hpx/distributed/iostream.hpp>
 #include <fmt/format.h>
 // #include <iostream>
 // #include <cassert>
