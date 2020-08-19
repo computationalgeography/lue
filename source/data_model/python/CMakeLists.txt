@@ -100,7 +100,7 @@ target_link_libraries(lue_py_data_model
     PRIVATE
         $<$<TARGET_EXISTS:lue::data_model_test>:lue::data_model_test>
         lue::data_model
-        CONAN_PKG::gsl_microsoft
+        CONAN_PKG::ms-gsl
         CONAN_PKG::pybind11
 )
 

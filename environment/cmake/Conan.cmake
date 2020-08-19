@@ -17,11 +17,11 @@ macro(run_conan)
 
     include(${CMAKE_BINARY_DIR}/conan-${version}.cmake)
 
-    conan_add_remote(
-        NAME
-            bincrafters
-        URL
-            https://api.bintray.com/conan/bincrafters/public-conan)
+    # conan_add_remote(
+    #     NAME
+    #         bincrafters
+    #     URL
+    #         https://api.bintray.com/conan/bincrafters/public-conan)
 
     conan_cmake_run(
         REQUIRES

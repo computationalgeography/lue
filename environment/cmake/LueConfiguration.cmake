@@ -378,18 +378,17 @@ endif()
 # Find or install external packages --------------------------------------------
 if(LUE_BOOST_REQUIRED)
     if(NOT LUE_HAVE_BOOST)
-        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} boost/1.71.0)
-        set(LUE_CONAN_OPTIONS ${LUE_CONAN_OPTIONS}
-            boost:shared=True)
+        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} boost/1.73.0)
+        set(LUE_CONAN_OPTIONS ${LUE_CONAN_OPTIONS} boost:shared=True)
     endif()
 endif()
 
 if(LUE_DOCOPT_REQUIRED)
-    set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} docopt.cpp/0.6.2)
+    set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} docopt.cpp/0.6.3)
 endif()
 
 if(LUE_FMT_REQUIRED)
-    set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} fmt/6.2.0)
+    set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} fmt/7.0.3)
 endif()
 
 if(LUE_GDAL_REQUIRED)
@@ -400,7 +399,7 @@ if(LUE_GDAL_REQUIRED)
 endif()
 
 if(LUE_GUIDELINE_SUPPORT_LIBRARY_REQUIRED)
-    set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} gsl_microsoft/2.0.0@bincrafters/stable)
+    set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} ms-gsl/3.1.0)
 endif()
 
 if(LUE_HDF5_REQUIRED)

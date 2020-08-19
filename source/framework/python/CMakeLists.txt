@@ -39,7 +39,7 @@ target_link_libraries(lue_py_framework
         # # $<$<TARGET_EXISTS:lue::data_model_test>:lue::data_model_test>
         lue::framework_algorithm
         #     # lue::data_model
-        #     # CONAN_PKG::gsl_microsoft
+        #     # CONAN_PKG::ms-gsl
         # Boost::program_options
         CONAN_PKG::pybind11
 )
