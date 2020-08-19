@@ -1,5 +1,6 @@
 #include <hpx/hpx_init.hpp>
-#include <hpx/distributed/iostream.hpp>
+// #include <hpx/distributed/iostream.hpp>
+#include <hpx/iostream.hpp>
 // #include <hpx/runtime/resource/partitioner.hpp>
 // TODO The above header doesn't provide detail::partitioner class definition
 #include <hpx/resource_partitioner/detail/partitioner.hpp>

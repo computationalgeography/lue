@@ -1,5 +1,6 @@
 #include <hpx/hpx_init.hpp>
-#include <hpx/distributed/iostream.hpp>
+// #include <hpx/distributed/iostream.hpp>
+#include <hpx/iostream.hpp>
 #include <fmt/format.h>
 
 
