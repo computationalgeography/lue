@@ -1,4 +1,4 @@
-import lue
+import lue.data_model as ldm
 import numpy as np
 import csv
 
@@ -182,7 +182,7 @@ def export_results(
         lue_dataset_pathname,
         csv_file_pathname):
 
-    lue_dataset = lue.open_dataset(lue_dataset_pathname, "r")
+    lue_dataset = ldm.open_dataset(lue_dataset_pathname, "r")
     kind = lue_dataset.benchmark.meta_information.kind.value[:][0]
 
     with open(csv_file_pathname, "w") as csv_file:

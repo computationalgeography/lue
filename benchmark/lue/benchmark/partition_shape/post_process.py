@@ -5,7 +5,7 @@ from .. import job
 from .. import plot
 from .. import util
 
-import lue
+import lue.data_model as ldm
 import dateutil.parser
 import matplotlib
 import matplotlib.pyplot as plt
@@ -33,8 +33,8 @@ def post_process_raw_results(
     time_point_units = lue_clock.unit
 
     lue_epoch = lue_clock.epoch
-    assert lue_epoch.kind == lue.Epoch.Kind.common_era
-    assert lue_epoch.calendar == lue.Calendar.gregorian
+    assert lue_epoch.kind == ldm.Epoch.Kind.common_era
+    assert lue_epoch.calendar == ldm.Calendar.gregorian
     time_point = dateutil.parser.isoparse(lue_epoch.origin)
 
     # String containing time point in local time zone and conventions

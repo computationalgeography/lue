@@ -3,7 +3,7 @@ from .. import dataset
 from .. import job
 from .. import util
 
-import lue
+import lue.data_model as ldm
 import dateutil.relativedelta
 import dateutil.parser
 import numpy as np
@@ -309,7 +309,7 @@ def import_raw_results(
                 benchmark_to_lue_json(result_pathname, lue_json_file.name, epoch)
                 util.import_lue_json(lue_json_file.name, lue_dataset_pathname)
 
-    lue.assert_is_valid(lue_dataset_pathname)
+    ldm.assert_is_valid(lue_dataset_pathname)
 
 
 def write_scaling_results(
@@ -409,17 +409,16 @@ def import_results(
         results_prefix):
 
     lue_dataset = job.open_raw_lue_dataset(results_prefix, "r")
-    raw_results_already_imported = \
-        dataset.raw_results_already_imported(lue_dataset)
+    raw_results_already_imported = dataset.raw_results_already_imported(lue_dataset)
 
     if not raw_results_already_imported:
         cluster, benchmark, experiment = dataset.read_benchmark_settings(
             lue_dataset, PartitionShapeExperiment)
-        import_raw_results(
-            lue_dataset.pathname, cluster, benchmark, experiment)
+        lue_dataset_pathname = lue_dataset.pathname
+        del lue_dataset
+        import_raw_results(lue_dataset_pathname, cluster, benchmark, experiment)
 
-    if not raw_results_already_imported or \
-            not job.scaling_lue_dataset_exists(results_prefix):
+    if not raw_results_already_imported or not job.scaling_lue_dataset_exists(results_prefix):
 
         # Copy dataset and write scaling results
         job.copy_raw_to_scaling_lue_dataset(results_prefix)

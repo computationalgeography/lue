@@ -3,7 +3,7 @@ from .. import dataset
 from .. import job
 from .. import util
 
-import lue
+import lue.data_model as ldm
 import dateutil.relativedelta
 import dateutil.parser
 import numpy as np
@@ -275,7 +275,7 @@ def import_raw_results(
             benchmark_to_lue_json(result_pathname, lue_json_file.name, epoch)
             util.import_lue_json(lue_json_file.name, lue_dataset_pathname)
 
-    lue.assert_is_valid(lue_dataset_pathname)
+    ldm.assert_is_valid(lue_dataset_pathname)
 
 
 def write_scaling_results(
@@ -317,7 +317,7 @@ def write_scaling_results(
 
     relative_speed_up_property = scaling_property_set.add_property(
         "relative_speed_up", np.dtype(np.float64), shape=(count,),
-        value_variability=lue.ValueVariability.variable,
+        value_variability=ldm.ValueVariability.variable,
         description="Relative speed-up: t1 / duration")
     relative_speed_up_property.value.expand(nr_durations)[:] = \
         relative_speed_up
@@ -327,7 +327,7 @@ def write_scaling_results(
 
     relative_efficiency_property = scaling_property_set.add_property(
         "relative_efficiency", np.dtype(np.float64), shape=(count,),
-        value_variability=lue.ValueVariability.variable,
+        value_variability=ldm.ValueVariability.variable,
         description="Relative efficiency: 100% * relative_speed_up / "
         "nr_workers")
     relative_efficiency_property.value.expand(nr_durations)[:] = \
@@ -343,7 +343,7 @@ def write_scaling_results(
 
     lups_property = scaling_property_set.add_property(
         "lups", np.dtype(np.float64), shape=(count,),
-        value_variability=lue.ValueVariability.variable,
+        value_variability=ldm.ValueVariability.variable,
         description="LUPS: nr_time_steps * nr_elements / "
         "duration")
     lups_property.value.expand(nr_durations)[:] = lups
@@ -364,7 +364,7 @@ def write_scaling_results(
 
         mean_duration_property = scaling_property_set.add_property(
             "mean_duration", np.dtype(np.float64), shape=(),
-            value_variability=lue.ValueVariability.variable,
+            value_variability=ldm.ValueVariability.variable,
             description=
                 "For a number of workers, the mean duration of the {} "
                 "experiments took."
@@ -373,7 +373,7 @@ def write_scaling_results(
 
         std_duration_property = scaling_property_set.add_property(
             "std_duration", np.dtype(np.float64), shape=(),
-            value_variability=lue.ValueVariability.variable,
+            value_variability=ldm.ValueVariability.variable,
             description=
                 "For a number of workers, the standard deviation of the "
                 "durations the {} experiments took."
@@ -382,7 +382,7 @@ def write_scaling_results(
 
         mean_relative_speed_up_property = scaling_property_set.add_property(
             "mean_relative_speed_up", np.dtype(np.float64), shape=(),
-            value_variability=lue.ValueVariability.variable,
+            value_variability=ldm.ValueVariability.variable,
             description=
                 "For a number of workers, the mean of the relative "
                 "speed-up of the {} experiments."
@@ -392,7 +392,7 @@ def write_scaling_results(
 
         std_relative_speed_up_property = scaling_property_set.add_property(
             "std_relative_speed_up", np.dtype(np.float64), shape=(),
-            value_variability=lue.ValueVariability.variable,
+            value_variability=ldm.ValueVariability.variable,
             description=
                 "For a number of workers, the standard deviation of the "
                 "relative speed-ups of the {} experiments."
@@ -402,7 +402,7 @@ def write_scaling_results(
 
         mean_relative_efficiency_property = scaling_property_set.add_property(
             "mean_relative_efficiency", np.dtype(np.float64), shape=(),
-            value_variability=lue.ValueVariability.variable,
+            value_variability=ldm.ValueVariability.variable,
             description=
                 "For a number of workers, the mean of the relative "
                 "efficiency of the {} experiments."
@@ -412,7 +412,7 @@ def write_scaling_results(
 
         std_relative_efficiency_property = scaling_property_set.add_property(
             "std_relative_efficiency", np.dtype(np.float64), shape=(),
-            value_variability=lue.ValueVariability.variable,
+            value_variability=ldm.ValueVariability.variable,
             description=
                 "For a number of workers, the standard deviation of the "
                 "relative efficiency of the {} experiments."
@@ -422,7 +422,7 @@ def write_scaling_results(
 
         mean_lups_property = scaling_property_set.add_property(
             "mean_lups", np.dtype(np.float64), shape=(),
-            value_variability=lue.ValueVariability.variable,
+            value_variability=ldm.ValueVariability.variable,
             description=
                 "For a number of workers, the mean of the LUPS of the {} "
                 "experiments."
@@ -431,14 +431,14 @@ def write_scaling_results(
 
         std_lups_property = scaling_property_set.add_property(
             "std_lups", np.dtype(np.float64), shape=(),
-            value_variability=lue.ValueVariability.variable,
+            value_variability=ldm.ValueVariability.variable,
             description=
                 "For a number of workers, the standard deviation of the "
                 "LUPS of the {} experiments."
                     .format(count))
         std_lups_property.value.expand(nr_durations)[:] = std_lups
 
-    lue.assert_is_valid(lue_dataset)
+    ldm.assert_is_valid(lue_dataset)
 
 
 def read_performance_counters(
@@ -519,10 +519,10 @@ def import_performance_counter_file(
 
     lue_benchmark = lue_dataset.benchmark
 
-    time_configuration = lue.TimeConfiguration(
-        lue.TimeDomainItemType.box
+    time_configuration = ldm.TimeConfiguration(
+        ldm.TimeDomainItemType.box
     )
-    clock = lue.Clock(lue.Unit.millisecond, hpx.counter_interval)
+    clock = ldm.Clock(ldm.Unit.millisecond, hpx.counter_interval)
 
     lue_performance_counter = lue_benchmark.add_property_set(
         "performance_counter_{}".format(nr_workers),
@@ -544,8 +544,8 @@ def import_performance_counter_file(
             util.performance_counter_name_to_property_name(field_names[i])
         value_property = lue_performance_counter.add_property(
             property_name, dtype=np.dtype(np.float64),
-            rank=1, shape_per_object=lue.ShapePerObject.different,
-            shape_variability=lue.ShapeVariability.variable)
+            rank=1, shape_per_object=ldm.ShapePerObject.different,
+            shape_variability=ldm.ShapeVariability.variable)
 
         # Skip for now... We know what it is.
         # discretization_property = 
@@ -579,7 +579,7 @@ def import_performance_counters(
         import_performance_counter_file(
             lue_dataset, hpx, nr_workers[i], counter_pathname)
 
-    lue.assert_is_valid(lue_dataset, fail_on_warning=False)
+    ldm.assert_is_valid(lue_dataset, fail_on_warning=False)
 
 
 def import_results(
@@ -591,7 +591,9 @@ def import_results(
     if not raw_results_already_imported:
         cluster, benchmark, experiment = dataset.read_benchmark_settings(
             lue_dataset, StrongScalingExperiment)
-        import_raw_results(lue_dataset.pathname, cluster, benchmark, experiment)
+        lue_dataset_pathname = lue_dataset.pathname
+        del lue_dataset
+        import_raw_results(lue_dataset_pathname, cluster, benchmark, experiment)
 
     if not raw_results_already_imported or not job.scaling_lue_dataset_exists(results_prefix):
 
@@ -607,4 +609,4 @@ def import_results(
             import_performance_counters(lue_dataset, benchmark.hpx, experiment)
 
         lue_dataset.flush()  # TODO Why is this needed?
-        lue.assert_is_valid(lue_dataset, fail_on_warning=False)
+        ldm.assert_is_valid(lue_dataset, fail_on_warning=False)

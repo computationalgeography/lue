@@ -3,7 +3,7 @@ from .. import dataset
 from .. import job
 from .. import util
 
-import lue
+import lue.data_model as ldm
 import dateutil.relativedelta
 import dateutil.parser
 import numpy as np
@@ -292,7 +292,7 @@ def import_raw_results(
                 result_pathname, lue_json_file.name, epoch, benchmark)
             util.import_lue_json(lue_json_file.name, lue_dataset_pathname)
 
-    lue.assert_is_valid(lue_dataset_pathname)
+    ldm.assert_is_valid(lue_dataset_pathname)
 
 
 def write_scaling_results(
@@ -334,7 +334,7 @@ def write_scaling_results(
 
     relative_efficiency_property = scaling_property_set.add_property(
         "relative_efficiency", np.dtype(np.float64), shape=(count,),
-        value_variability=lue.ValueVariability.variable,
+        value_variability=ldm.ValueVariability.variable,
         description=
             "Relative efficiency: 100% * t1 / nr_workers")
     relative_efficiency_property.value.expand(nr_durations)[:] = \
@@ -350,7 +350,7 @@ def write_scaling_results(
 
     lups_property = scaling_property_set.add_property(
         "lups", np.dtype(np.float64), shape=(count,),
-        value_variability=lue.ValueVariability.variable,
+        value_variability=ldm.ValueVariability.variable,
         description=
             "LUPS: nr_time_steps * nr_elements / duration")
     lups_property.value.expand(nr_durations)[:] = lups
@@ -368,7 +368,7 @@ def write_scaling_results(
 
         mean_duration_property = scaling_property_set.add_property(
             "mean_duration", np.dtype(np.float64), shape=(),
-            value_variability=lue.ValueVariability.variable,
+            value_variability=ldm.ValueVariability.variable,
             description=
                 "For a number of workers, the mean duration of the {} "
                 "experiments took."
@@ -377,7 +377,7 @@ def write_scaling_results(
 
         std_duration_property = scaling_property_set.add_property(
             "std_duration", np.dtype(np.float64), shape=(),
-            value_variability=lue.ValueVariability.variable,
+            value_variability=ldm.ValueVariability.variable,
             description=
                 "For a number of workers, the standard deviation of the "
                 "durations the {} experiments took."
@@ -386,7 +386,7 @@ def write_scaling_results(
 
         mean_relative_efficiency_property = scaling_property_set.add_property(
             "mean_relative_efficiency", np.dtype(np.float64), shape=(),
-            value_variability=lue.ValueVariability.variable,
+            value_variability=ldm.ValueVariability.variable,
             description=
                 "For a number of workers, the mean of the relative "
                 "efficiency of the {} experiments."
@@ -396,7 +396,7 @@ def write_scaling_results(
 
         std_relative_efficiency_property = scaling_property_set.add_property(
             "std_relative_efficiency", np.dtype(np.float64), shape=(),
-            value_variability=lue.ValueVariability.variable,
+            value_variability=ldm.ValueVariability.variable,
             description=
                 "For a number of workers, the standard deviation of the "
                 "relative efficiency of the {} experiments."
@@ -406,7 +406,7 @@ def write_scaling_results(
 
         mean_lups_property = scaling_property_set.add_property(
             "mean_lups", np.dtype(np.float64), shape=(),
-            value_variability=lue.ValueVariability.variable,
+            value_variability=ldm.ValueVariability.variable,
             description=
                 "For a number of workers, the mean of the LUPS of the {} "
                 "experiments."
@@ -415,7 +415,7 @@ def write_scaling_results(
 
         std_lups_property = scaling_property_set.add_property(
             "std_lups", np.dtype(np.float64), shape=(),
-            value_variability=lue.ValueVariability.variable,
+            value_variability=ldm.ValueVariability.variable,
             description=
                 "For a number of workers, the standard deviation of the "
                 "LUPS of the {} experiments."
@@ -427,17 +427,15 @@ def import_results(
         results_prefix):
 
     lue_dataset = job.open_raw_lue_dataset(results_prefix, "r")
-    raw_results_already_imported = \
-        dataset.raw_results_already_imported(lue_dataset)
+    raw_results_already_imported = dataset.raw_results_already_imported(lue_dataset)
 
     if not raw_results_already_imported:
-        cluster, benchmark, experiment = dataset.read_benchmark_settings(
-            lue_dataset, WeakScalingExperiment)
-        import_raw_results(
-            lue_dataset.pathname, cluster, benchmark, experiment)
+        cluster, benchmark, experiment = dataset.read_benchmark_settings(lue_dataset, WeakScalingExperiment)
+        lue_dataset_pathname = lue_dataset.pathname
+        del lue_dataset
+        import_raw_results(lue_dataset_pathname, cluster, benchmark, experiment)
 
-    if not raw_results_already_imported or \
-            not job.scaling_lue_dataset_exists(results_prefix):
+    if not raw_results_already_imported or not job.scaling_lue_dataset_exists(results_prefix):
 
         # Copy dataset and write scaling results
         job.copy_raw_to_scaling_lue_dataset(results_prefix)

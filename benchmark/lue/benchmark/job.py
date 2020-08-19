@@ -1,4 +1,4 @@
-import lue
+import lue.data_model as ldm
 import os.path
 import shutil
 
@@ -200,10 +200,10 @@ set -e
 module purge
 module load opt/all
 module load userspace/all
-module load gcc/7.2.0
-module load boost/gcc72/1.65.1
-module load mpich/gcc72/mlnx/3.2.1
+module load gcc/10.2.0
+module load openmpi/gcc-10.2.0/4.0.4
 module load libraries/papi/5.7.0
+module load perftools/2.7
 
 {job_steps}""".format(
         nr_cluster_nodes=nr_cluster_nodes,  # Ask for this nr_cluster_nodes
@@ -262,7 +262,7 @@ def create_raw_lue_dataset(
 
     assert not os.path.exists(dataset_pathname), dataset_pathname
 
-    dataset = lue.create_dataset(dataset_pathname, experiment.description)
+    dataset = ldm.create_dataset(dataset_pathname, experiment.description)
 
     return dataset
 
@@ -274,7 +274,7 @@ def open_raw_lue_dataset(
     dataset_pathname = os.path.join(
         results_prefix, lue_raw_dataset_basename() + ".lue")
     assert os.path.exists(dataset_pathname), dataset_pathname
-    dataset = lue.open_dataset(dataset_pathname, open_mode)
+    dataset = ldm.open_dataset(dataset_pathname, open_mode)
 
     return dataset
 
@@ -286,7 +286,7 @@ def open_scaling_lue_dataset(
     dataset_pathname = os.path.join(
         results_prefix, lue_scaling_dataset_basename() + ".lue")
     assert os.path.exists(dataset_pathname), dataset_pathname
-    dataset = lue.open_dataset(dataset_pathname, open_mode)
+    dataset = ldm.open_dataset(dataset_pathname, open_mode)
 
     return dataset
 
