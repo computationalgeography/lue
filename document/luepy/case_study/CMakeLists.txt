@@ -41,7 +41,7 @@ function(preprocess_case_study)
             lue_translate
             ${dot_properties_pathname}
         COMMAND ${CMAKE_COMMAND} -E env "PYTHONPATH=$<TARGET_FILE_DIR:lue::py>" ${environment}
-            ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/${script_name}
+            ${LUE_PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/${script_name}
         COMMAND ${CMAKE_BINARY_DIR}/bin/lue_validate --issues ${dataset_name}
         COMMAND ${CMAKE_BINARY_DIR}/bin/lue_translate export
             --meta ${dot_properties_pathname} ${dataset_name} ${dot_name}
