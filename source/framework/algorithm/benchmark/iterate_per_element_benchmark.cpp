@@ -6,7 +6,6 @@
 #include "lue/framework/benchmark/benchmark.hpp"
 #include "lue/framework/benchmark/format.hpp"
 #include "lue/framework/benchmark/hpx_main.hpp"
-// #include <hpx/distributed/iostream.hpp>
 #include <hpx/iostream.hpp>
 // #include <hpx/include/parallel_execution.hpp>
 

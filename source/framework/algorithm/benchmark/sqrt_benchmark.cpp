@@ -18,8 +18,6 @@ class SqrtBenchmarkModel final:
 
 public:
 
-    using Array = PartitionedArray<Element, rank>;
-
                    SqrtBenchmarkModel  (Task const& task,
                                         std::size_t max_tree_depth);
 
