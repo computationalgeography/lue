@@ -18,7 +18,8 @@ public:
 
                    ModelBenchmark      (Callable&& callable,
                                         Environment const& environment,
-                                        Task const& task);
+                                        Task const& task,
+                                        bool hangs_rarely=false);
 
                    ModelBenchmark      (ModelBenchmark const&)=delete;
 
@@ -39,6 +40,8 @@ public:
         return _results;
     }
 
+    bool           hangs_rarely        () const { return _hangs_rarely; }
+
 private:
 
     void clear_results()
@@ -52,6 +55,8 @@ private:
         _results.push_back(std::move(result));
     }
 
+    bool const _hangs_rarely;
+
     Results _results;
 
 };
@@ -63,10 +68,11 @@ template<
 inline ModelBenchmark<Callable, Result>::ModelBenchmark(
     Callable&& callable,
     Environment const& environment,
-    Task const& task):
+    Task const& task,
+    bool const hangs_rarely):
 
-    BenchmarkBase<Callable>{
-        std::forward<Callable>(callable), environment, task}
+    BenchmarkBase<Callable>{std::forward<Callable>(callable), environment, task},
+    _hangs_rarely{hangs_rarely}
 
 {
 }
@@ -93,8 +99,8 @@ inline int ModelBenchmark<Callable, Result>::run()
     auto const nr_time_steps = task.nr_time_steps();
 
     timing.start();
-    for(std::size_t i = 0; i < environment.count(); ++i) {
-
+    for(std::size_t i = 0; i < environment.count(); ++i)
+    {
         // Only measure the time it takes to simulate the state for all
         // time steps
         std::this_thread::sleep_for(2s);
@@ -108,7 +114,8 @@ inline int ModelBenchmark<Callable, Result>::run()
                 {
                     initialize(model);
 
-                    for(std::uint64_t t = 0; t < nr_time_steps; ++t) {
+                    for(std::uint64_t t = 0; t < nr_time_steps; ++t)
+                    {
                         simulate(model, t);
                     }
 

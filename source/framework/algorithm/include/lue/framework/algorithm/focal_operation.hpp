@@ -550,9 +550,9 @@ OutputPartition focal_operation_partition(
             hpx::util::unwrapping(
 
                     [input_partitions, kernel /* , functor */](
-                        Offset&& offset,
-                        std::vector<hpx::shared_future<InputData>>&& input_partitions_data_futures,
-                        OutputData&& output_partition_data)
+                        Offset const& offset,
+                        std::vector<hpx::shared_future<InputData>>const& input_partitions_data_futures,
+                        OutputData output_partition_data)
                     {
                         HPX_UNUSED(input_partitions);
 
@@ -1063,9 +1063,9 @@ OutputPartition focal_operation_partition(
                     }
 
                 ),
-            offset,
+            std::move(offset),
             hpx::when_all(input_partitions_data.begin(), input_partitions_data.end()),
-            output_data_future);
+            std::move(output_data_future));
     }
 
     lue_assert(false);

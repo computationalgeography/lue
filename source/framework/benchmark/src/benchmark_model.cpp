@@ -1,12 +1,6 @@
 #include "lue/framework/benchmark/benchmark_model.hpp"
+#include "lue/framework/core/component.hpp"
 #include "lue/assert.hpp"
-// #include "lue/framework/algorithm/array_like.hpp"
-// #include "lue/framework/algorithm/array_partition_id.hpp"
-// #include "lue/framework/algorithm/locality_id.hpp"
-// #include "lue/framework/algorithm/zonal_sum.hpp"
-// #include "lue/framework/io.hpp"
-// #include "lue/data_model/hl/raster_view.hpp"
-// #include <hpx/distributed/iostream.hpp>
 #include <hpx/iostream.hpp>
 #include <algorithm>
 
@@ -209,6 +203,9 @@ void BenchmarkModel<Element, rank>::terminate()
     do_terminate();
 
     hpx::wait_all_n(_state.partitions().begin(), _state.nr_partitions());
+
+    lue_assert(all_are_ready(_state.partitions()));
+    lue_assert(none_have_exception(_state.partitions()));
 
     hpx::cout << "]\n" << hpx::flush;
 }

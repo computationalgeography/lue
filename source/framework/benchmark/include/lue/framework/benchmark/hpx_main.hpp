@@ -6,8 +6,7 @@
 #include <hpx/hpx_finalize.hpp>
 #include <hpx/hpx_init.hpp>
 #include <hpx/modules/runtime_local.hpp>
-// #include <hpx/distributed/iostream.hpp>
-#include <hpx/iostream.hpp>
+// #include <hpx/iostream.hpp>
 #include <hpx/include/lcos.hpp>
 #ifdef HPX_WITH_APEX
     #include <apex_api.hpp>
@@ -66,6 +65,16 @@ Task create_task()
     return Task{nr_time_steps, array_shape, partition_shape};
 }
 
+
+void handle_rare_hang()
+{
+    // Some benchmarks result in HPX hanging upon exit. To work around
+    // this, until we understand why this happens, we will just exit.
+
+    // Some code that is not equal to EXIT_SUCCESS.
+    std::_Exit(18);
+}
+
 } // Namespace detail
 
 
@@ -94,7 +103,7 @@ int hpx_main(                                                                  \
 {                                                                              \
     try                                                                        \
     {                                                                          \
-        hpx::cout << lue::system_description().get() << std::endl;             \
+        std::cout << lue::system_description().get() << std::endl;             \
                                                                                \
         std::string const pathname =                                           \
             lue::optional_configuration_entry<std::string>(                    \
@@ -113,13 +122,17 @@ int hpx_main(                                                                  \
             lue::benchmark::run_hpx_benchmark(benchmark, stream);              \
         }                                                                      \
         else {                                                                 \
-            lue::benchmark::run_hpx_benchmark(benchmark, hpx::cout);           \
+            lue::benchmark::run_hpx_benchmark(benchmark, std::cout);           \
         }                                                                      \
+                                                                               \
+        if(benchmark.hangs_rarely()) {                   \
+            lue::benchmark::detail::handle_rare_hang();  \
+        }                                                \
     }                                                                          \
     catch(hpx::exception const& exception)                                     \
     {                                                                          \
-        hpx::cout << exception.what() << "\n\n";                               \
-        hpx::cout << hpx::diagnostic_information(exception) << "\n";           \
+        std::cout << exception.what() << "\n\n";                               \
+        std::cout << hpx::diagnostic_information(exception) << "\n";           \
     }                                                                          \
                                                                                \
     return hpx::finalize();                                                    \
