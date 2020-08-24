@@ -295,7 +295,7 @@ def generate_script_slurm_cluster_nodes(
             "{delimiter}".format(delimiter=delimiter),
             "",
             "# Prevent benchmarks to start at the same time point",
-            "sleep 2s",
+            "sleep 3s",
             "",
         ]
 

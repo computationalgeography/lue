@@ -101,11 +101,13 @@ public:
     BenchmarkBase(
         Callable&& callable,
         Environment const& environment,
-        Task const& task):
+        Task const& task,
+        bool const hangs_rarely=false):
 
         _callable{std::forward<Callable>(callable)},
         _environment{environment},
         _task{task},
+        _hangs_rarely{hangs_rarely},
         _timing{},
         _timings{}
 
@@ -158,6 +160,8 @@ public:
     */
     virtual int run()=0;
 
+    bool           hangs_rarely        () const { return _hangs_rarely; }
+
 protected:
 
     Callable& callable()
@@ -187,6 +191,8 @@ private:
     Environment const _environment;
 
     Task const _task;
+
+    bool const _hangs_rarely;
 
     //! Name of the benchmark
     std::string const _name;

@@ -40,8 +40,6 @@ public:
         return _results;
     }
 
-    bool           hangs_rarely        () const { return _hangs_rarely; }
-
 private:
 
     void clear_results()
@@ -54,8 +52,6 @@ private:
     {
         _results.push_back(std::move(result));
     }
-
-    bool const _hangs_rarely;
 
     Results _results;
 
@@ -71,8 +67,7 @@ inline ModelBenchmark<Callable, Result>::ModelBenchmark(
     Task const& task,
     bool const hangs_rarely):
 
-    BenchmarkBase<Callable>{std::forward<Callable>(callable), environment, task},
-    _hangs_rarely{hangs_rarely}
+    BenchmarkBase<Callable>{std::forward<Callable>(callable), environment, task, hangs_rarely}
 
 {
 }

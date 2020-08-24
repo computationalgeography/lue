@@ -58,9 +58,9 @@ def program_configuration(
     #   '--hpx:numa-sensitive '
     #   '--hpx:use-process-mask '
     #   '--hpx:bind="{thread_binding}" '
+    #   '--hpx:debug-hpx-log '
     configuration = \
         '--hpx:print-bind ' \
-        '--hpx:ini="hpx.agas.max_pending_refcnt_requests!=400" ' \
         '--hpx:ini="application.{program_name}.benchmark.cluster_name!={cluster_name}" ' \
         '--hpx:ini="application.{program_name}.benchmark.count!={count}" ' \
         '--hpx:ini="application.{program_name}.benchmark.nr_workers!={nr_workers}" ' \
@@ -195,7 +195,29 @@ def create_slurm_script(
 #SBATCH --partition={partition_name}
 {max_duration}
 
-set -e
+
+# We are assuming that no errors occur. This is needed because some
+# runs normally hang on one or more remaining tasks(?). Therefore,
+# all runs are exited explicitly, as if there was an error.
+# set -e
+
+# work_around_hang()
+# {{
+#     echo "$1 at $2"
+#     echo $*
+#     echo $?
+#     echo $0
+# 
+#     if [ "$1" == "18" ]; then
+#         # If OK
+#         echo "Work around hang: just smile and wave"
+#     else
+#         exit $1
+#     fi
+# }}
+# 
+# trap 'work_around_hang ${{$?}} ${{LINENO}}' ERR
+
 
 module purge
 module load opt/all
