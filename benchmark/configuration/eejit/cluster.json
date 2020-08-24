@@ -8,10 +8,15 @@
                 # "--qos=priority"
             ],
             "srun_options": [
-                "--kill-on-bad-exit",
+                "--kill-on-bad-exit"
                 # The mpi switch is needed because support for mpich is
                 # not built-in to slurm, it seems
-                "--mpi=pmi2"
+                # "--mpi=pmi2"
+
+                # Other options: `srun --mpi=list`
+                # "--mpi=pmix_v3"
+                # "--mpi=openmpi"
+
                 # "--qos=priority"
             ]
         }
