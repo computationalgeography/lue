@@ -46,7 +46,6 @@ def program_configuration(
         result_pathname = experiment.benchmark_result_pathname(
             cluster.name, benchmark.scenario_name, nr_workers, "json")
 
-    #   '--hpx:ini="hpx.agas.max_pending_refcnt_requests!=400" '
     #   '--hpx:attach-debugger=exception '
     #   '--hpx:queuing=shared-priority '
     #   '--hpx:queuing=local-priority-fifo '
@@ -61,6 +60,7 @@ def program_configuration(
     #   '--hpx:debug-hpx-log '
     configuration = \
         '--hpx:print-bind ' \
+        '--hpx:ini="hpx.agas.max_pending_refcnt_requests!=1000" ' \
         '--hpx:ini="application.{program_name}.benchmark.cluster_name!={cluster_name}" ' \
         '--hpx:ini="application.{program_name}.benchmark.count!={count}" ' \
         '--hpx:ini="application.{program_name}.benchmark.nr_workers!={nr_workers}" ' \
