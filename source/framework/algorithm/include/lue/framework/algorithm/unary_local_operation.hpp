@@ -25,10 +25,12 @@ OutputPartition unary_local_operation_partition(
         hpx::launch::async,
         hpx::util::unwrapping(
 
-                [functor](
+                [input_partition, functor](
                     Offset const& offset,
                     InputData const& input_partition_data)
                 {
+                    HPX_UNUSED(input_partition);
+
                     OutputData output_partition_data{input_partition_data.shape()};
 
                     std::transform(

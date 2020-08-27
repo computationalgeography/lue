@@ -62,12 +62,16 @@ public:
             hpx::launch::async,
             hpx::util::unwrapping(
 
-                    [functor](
+                    [input_partition1, input_partition2, input_partition3, functor](
                         Offset const& offset,
                         InputData1 const& input_data1,
                         InputData2 const& input_data2,
                         InputData3 const& input_data3)
                     {
+                        HPX_UNUSED(input_partition1);
+                        HPX_UNUSED(input_partition2);
+                        HPX_UNUSED(input_partition3);
+
                         lue_assert(input_data2.nr_elements() == input_data1.nr_elements());
                         lue_assert(input_data3.nr_elements() == input_data1.nr_elements());
 
@@ -140,11 +144,14 @@ public:
             hpx::launch::async,
             hpx::util::unwrapping(
 
-                    [functor, input_scalar](
+                    [input_partition1, input_partition2, functor, input_scalar](
                         Offset const& offset,
                         InputData1 const& input_data1,
                         InputData2 const& input_data2)
                     {
+                        HPX_UNUSED(input_partition1);
+                        HPX_UNUSED(input_partition2);
+
                         lue_assert(input_data2.nr_elements() == input_data1.nr_elements());
 
                         OutputData output_data{input_data1.shape()};
@@ -215,11 +222,14 @@ public:
             hpx::launch::async,
             hpx::util::unwrapping(
 
-                    [functor, input_scalar](
+                    [input_partition1, input_partition2, functor, input_scalar](
                         Offset const& offset,
                         InputData1 const& input_data1,
                         InputData2 const& input_data2)
                     {
+                        HPX_UNUSED(input_partition1);
+                        HPX_UNUSED(input_partition2);
+
                         lue_assert(input_data2.nr_elements() == input_data1.nr_elements());
 
                         OutputData output_data{input_data1.shape()};
@@ -287,10 +297,12 @@ public:
             hpx::launch::async,
             hpx::util::unwrapping(
 
-                    [functor, input_scalar1, input_scalar2](
+                    [input_partition, functor, input_scalar1, input_scalar2](
                         Offset const& offset,
                         InputData const& input_data)
                     {
+                        HPX_UNUSED(input_partition);
+
                         OutputData output_data{input_data.shape()};
                         Count const nr_elements{lue::nr_elements(input_data)};
 

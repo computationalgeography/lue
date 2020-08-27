@@ -28,10 +28,12 @@ ArrayPartition<OutputElement, rank> mesh_grid_partition(
         hpx::launch::async,
         hpx::util::unwrapping(
 
-                [first_value, step, dimension](
+                [input_partition, first_value, step, dimension](
                     Offset const& offset,
                     Shape const& shape)
                 {
+                    HPX_UNUSED(input_partition);
+
                     OutputData output_data{shape};
 
                     if constexpr(rank == 1)

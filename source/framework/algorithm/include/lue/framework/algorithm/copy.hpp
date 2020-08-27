@@ -27,10 +27,12 @@ Partition copy_partition(
         hpx::launch::async,
         hpx::util::unwrapping(
 
-                [](
+                [input_partition](
                     Offset const& offset,
                     InputData&& input_partition_data)
                 {
+                    HPX_UNUSED(input_partition);
+
                     // Copy the data and move it into a new partition
                     return Partition{hpx::find_here(), offset, std::move(input_partition_data)};
                 }

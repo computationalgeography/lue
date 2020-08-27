@@ -26,10 +26,12 @@ ArrayPartition<OutputElement, rank> array_like_partition(
         hpx::launch::async,
         hpx::util::unwrapping(
 
-                [fill_value](
+                [input_partition, fill_value](
                     Offset const& offset,
                     Shape const& shape)
                 {
+                    HPX_UNUSED(input_partition);
+
                     // Copy the data and move it into a new partition
                     return OutputPartition{hpx::find_here(), offset, OutputPartitionData{shape, fill_value}};
                 }

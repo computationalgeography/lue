@@ -50,11 +50,14 @@ public:
             hpx::launch::async,
             hpx::util::unwrapping(
 
-                    [functor](
+                    [input_partition1, input_partition2, functor](
                         Offset const& offset,
                         InputData const& input_partition_data1,
                         InputData const& input_partition_data2)
                     {
+                        HPX_UNUSED(input_partition1);
+                        HPX_UNUSED(input_partition2);
+
                         OutputData output_partition_data{input_partition_data1.shape()};
 
                         std::transform(
@@ -112,10 +115,12 @@ public:
             hpx::launch::async,
             hpx::util::unwrapping(
 
-                    [functor, input_scalar](
+                    [input_partition, functor, input_scalar](
                         Offset const& offset,
                         InputData const& input_partition_data)
                     {
+                        HPX_UNUSED(input_partition);
+
                         OutputData output_partition_data{input_partition_data.shape()};
 
 #pragma GCC diagnostic push
@@ -182,10 +187,12 @@ public:
             hpx::launch::async,
             hpx::util::unwrapping(
 
-                    [functor, input_scalar](
+                    [input_partition, functor, input_scalar](
                         Offset const& offset,
                         InputData const& input_partition_data)
                     {
+                        HPX_UNUSED(input_partition);
+
                         OutputData output_partition_data{input_partition_data.shape()};
 
 #pragma GCC diagnostic push
