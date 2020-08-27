@@ -32,10 +32,13 @@ hpx::future<AggregatorT<Functor>> zonal_operation_partition1(
         hpx::launch::async,
         hpx::util::unwrapping(
 
-                [](
+                [input_partition, zones_partition](
                     InputData const& input_partition_data,
                     ZonesData const& zones_partition_data)
                 {
+                    HPX_UNUSED(input_partition);
+                    HPX_UNUSED(zones_partition);
+
                     Count const nr_elements{lue::nr_elements(input_partition_data)};
 
                     lue_assert(lue::nr_elements(zones_partition_data) == nr_elements);
@@ -81,10 +84,12 @@ OutputPartition zonal_operation_partition2(
         hpx::launch::async,
         hpx::util::unwrapping(
 
-                [aggregator](
+                [zones_partition, aggregator](
                     Offset const& offset,
                     ZonesData const& zones_partition_data)
                 {
+                    HPX_UNUSED(zones_partition);
+
                     OutputData output_partition_data{zones_partition_data.shape()};
 
                     Count const nr_elements{lue::nr_elements(zones_partition_data)};

@@ -44,8 +44,6 @@ private:
 
     Zone _max_zone;
 
-    Zones _zones;
-
 };
 
 
@@ -57,8 +55,7 @@ ZonalSumBenchmark<Element, rank>::ZonalSumBenchmark(
     std::size_t const max_tree_depth):
 
     BenchmarkModel<Element, rank>{task, max_tree_depth},
-    _max_zone{100},
-    _zones{}
+    _max_zone{100}
 
 {
 }
@@ -72,9 +69,6 @@ void ZonalSumBenchmark<Element, rank>::do_preprocess()
     static_assert(std::is_floating_point_v<Element>);
 
     this->_state = uniform(this->_state, Element{-1e6}, Element{1e6});
-
-    _zones = Zones{this->array_shape(), this->partition_shape()};
-    _zones = uniform(_zones, Zone{0}, _max_zone);
 }
 
 
@@ -84,11 +78,11 @@ template<
 void ZonalSumBenchmark<Element, rank>::do_simulate(
     Count const /* time_step */)
 {
-    // Aggregate per currently distributed zones
-    this->_state = zonal_sum(this->_state, _zones);
+    // Distribute zones
+    Zones zones = uniform(this->_state, Zone{0}, _max_zone);
 
-    // Redistribute zones
-    _zones = uniform(_zones, Zone{0}, _max_zone);
+    // Aggregate per currently distributed zones
+    this->_state = zonal_sum(this->_state, zones);
 }
 
 }  // namespace benchmark

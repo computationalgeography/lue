@@ -65,13 +65,13 @@ public:
                                         std::initializer_list<Element>
                                             elements);
 
-                   ArrayPartitionData  (ArrayPartitionData const& other);
+                   ArrayPartitionData  (ArrayPartitionData const&)=default;
 
                    ArrayPartitionData  (ArrayPartitionData&& other);
 
                    ~ArrayPartitionData ()=default;
 
-    ArrayPartitionData& operator=      (ArrayPartitionData const& other);
+    ArrayPartitionData& operator=      (ArrayPartitionData const&)=default;
 
     ArrayPartitionData& operator=      (ArrayPartitionData&& other);
 
@@ -274,47 +274,6 @@ ArrayPartitionData<Element, rank>::ArrayPartitionData(
 
 
 /*!
-    @brief      Copy-construct an instance based on @a other
-*/
-template<
-    typename Element,
-    Rank rank>
-ArrayPartitionData<Element, rank>::ArrayPartitionData(
-    ArrayPartitionData const& other):
-
-    _shape{other._shape},
-    _elements{other._elements},
-    _span{_elements.data(), _shape}
-
-{
-    assert_invariants();
-}
-
-
-/*!
-    @brief      Copy-assign an instance based on @a other
-
-    The collection of array elements is shared between the instances.
-*/
-template<
-    typename Element,
-    Rank rank>
-ArrayPartitionData<Element, rank>& ArrayPartitionData<Element, rank>::operator=(
-    ArrayPartitionData const& other)
-{
-    if(this != &other) {
-        _shape = other._shape;
-        _elements = other._elements;
-        _span = Span{_elements.data(), _shape};
-    }
-
-    assert_invariants();
-
-    return *this;
-}
-
-
-/*!
     @brief      Move-construct and instance based on @a other
 */
 template<
@@ -357,10 +316,11 @@ ArrayPartitionData<Element, rank>& ArrayPartitionData<Element, rank>::operator=(
 
         _span = Span{_elements.data(), _shape};
         other._span = Span{other._elements.data(), other._shape};
+
+        other.assert_invariants();
+        lue_assert(other.empty());
     }
 
-    other.assert_invariants();
-    lue_assert(other.empty());
     assert_invariants();
 
     return *this;
@@ -412,7 +372,16 @@ template<
 void ArrayPartitionData<Element, rank>::reshape(
     Shape const& shape)
 {
-    if(_shape != shape) {
+    // Reshaping the elements while multiple ArrayPartitionData instances
+    // refer to it is dangereous because of the _span member. The other
+    // instance(s) do not have there _span member updated.
+    // If this fires, move the span and shape into the
+    // SharedBuffer(?). Still there might be an issue with multiple threads
+    // using the data at the same time, while it is reshaped...
+    lue_assert(_elements.use_count() == 1);
+
+    if(_shape != shape)
+    {
         _elements.resize(lue::nr_elements(shape));
         _shape = shape;
         _span = Span{_elements.data(), _shape};
@@ -568,8 +537,7 @@ ArrayPartitionData<Element, rank> ArrayPartitionData<Element, rank>::slice(
             auto const source_begin = &(operator()(begin));
             auto destination = &(sliced_data(0));
 
-            std::copy(
-                source_begin, source_begin + nr_elements_slice, destination);
+            std::copy(source_begin, source_begin + nr_elements_slice, destination);
         }
 
         return sliced_data;
@@ -592,8 +560,7 @@ ArrayPartitionData<Element, rank> ArrayPartitionData<Element, rank>::slice(
         lue_assert(end1 <= nr_elements1);
         auto const nr_elements1_slice = end1 - begin1;
 
-        ArrayPartitionData sliced_data{
-            Shape{{nr_elements0_slice, nr_elements1_slice}}};
+        ArrayPartitionData sliced_data{Shape{{nr_elements0_slice, nr_elements1_slice}}};
 
         if(!sliced_data.empty())
         {
@@ -604,9 +571,7 @@ ArrayPartitionData<Element, rank> ArrayPartitionData<Element, rank>::slice(
                 auto const source_begin = &(operator()(begin0 + r, begin1));
                 auto destination = &(sliced_data(r, 0));
 
-                std::copy(
-                    source_begin, source_begin + nr_elements1_slice,
-                    destination);
+                std::copy(source_begin, source_begin + nr_elements1_slice, destination);
             }
         }
 
@@ -772,8 +737,7 @@ bool ArrayPartitionData<Element, 0>::operator==(
 
 template<
     typename Element>
-typename ArrayPartitionData<Element, 0>::Shape const&
-    ArrayPartitionData<Element, 0>::shape() const
+typename ArrayPartitionData<Element, 0>::Shape const& ArrayPartitionData<Element, 0>::shape() const
 {
     return _shape;
 }
@@ -791,8 +755,7 @@ void ArrayPartitionData<Element, 0>::reshape(
 
 template<
     typename Element>
-typename ArrayPartitionData<Element, 0>::Count
-    ArrayPartitionData<Element, 0>::nr_elements() const
+typename ArrayPartitionData<Element, 0>::Count ArrayPartitionData<Element, 0>::nr_elements() const
 {
     lue_assert(lue::nr_elements(_shape) == 0);
     lue_assert(_elements.size() == 1);
@@ -811,8 +774,7 @@ bool ArrayPartitionData<Element, 0>::empty() const
 
 template<
     typename Element>
-typename ArrayPartitionData<Element, 0>::ConstIterator
-    ArrayPartitionData<Element, 0>::begin() const
+typename ArrayPartitionData<Element, 0>::ConstIterator ArrayPartitionData<Element, 0>::begin() const
 {
     return _elements.begin();
 }
@@ -820,8 +782,7 @@ typename ArrayPartitionData<Element, 0>::ConstIterator
 
 template<
     typename Element>
-typename ArrayPartitionData<Element, 0>::Iterator
-    ArrayPartitionData<Element, 0>::begin()
+typename ArrayPartitionData<Element, 0>::Iterator ArrayPartitionData<Element, 0>::begin()
 {
     return _elements.begin();
 }
@@ -829,8 +790,7 @@ typename ArrayPartitionData<Element, 0>::Iterator
 
 template<
     typename Element>
-typename ArrayPartitionData<Element, 0>::ConstIterator
-    ArrayPartitionData<Element, 0>::end() const
+typename ArrayPartitionData<Element, 0>::ConstIterator ArrayPartitionData<Element, 0>::end() const
 {
     return _elements.end();
 }
@@ -838,8 +798,7 @@ typename ArrayPartitionData<Element, 0>::ConstIterator
 
 template<
     typename Element>
-typename ArrayPartitionData<Element, 0>::Iterator
-    ArrayPartitionData<Element, 0>::end()
+typename ArrayPartitionData<Element, 0>::Iterator ArrayPartitionData<Element, 0>::end()
 {
     return _elements.end();
 }

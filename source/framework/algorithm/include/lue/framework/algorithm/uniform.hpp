@@ -32,41 +32,51 @@ PartitionT<InputPartition, OutputElement> uniform_partition(
 
     lue_assert(input_partition.is_ready());
 
-    auto const input_partition_server_ptr{hpx::get_ptr(input_partition).get()};
-    auto const& input_partition_server{*input_partition_server_ptr};
+    return hpx::dataflow(
+        hpx::launch::async,
+        hpx::util::unwrapping(
 
-    Offset const offset = input_partition_server.offset();
-    Shape const shape = input_partition_server.shape();
+                [input_partition, min_value, max_value](
+                    Offset const& offset,
+                    Shape const& shape)
+                {
+                    HPX_UNUSED(input_partition);
 
-    // Will be used to obtain a seed for the random number engine
-    std::random_device random_device;
+                    // Will be used to obtain a seed for the random number engine
+                    std::random_device random_device;
 
-    // Standard mersenne_twister_engine seeded with the random_device
-    std::mt19937 random_number_engine(random_device());
+                    // Standard mersenne_twister_engine seeded with the random_device
+                    std::mt19937 random_number_engine(random_device());
 
-    auto distribution =
-        [min_value, max_value]()
-        {
-            if constexpr(std::is_floating_point_v<OutputElement>) {
-                return std::uniform_real_distribution<OutputElement>{min_value, max_value};
-            }
-            else if constexpr(std::is_integral_v<OutputElement>) {
-                return std::uniform_int_distribution<OutputElement>{min_value, max_value};
-            }
-        }();
+                    auto distribution =
+                        [min_value, max_value]()
+                        {
+                            if constexpr(std::is_floating_point_v<OutputElement>) {
+                                return std::uniform_real_distribution<OutputElement>{min_value, max_value};
+                            }
+                            else if constexpr(std::is_integral_v<OutputElement>) {
+                                return std::uniform_int_distribution<OutputElement>{min_value, max_value};
+                            }
+                        }();
 
-    OutputData output_partition_data{shape};
+                    OutputData output_partition_data{shape};
 
-    std::generate(output_partition_data.begin(), output_partition_data.end(),
+                    std::generate(output_partition_data.begin(), output_partition_data.end(),
 
-            [&distribution, &random_number_engine]()
-            {
-                return distribution(random_number_engine);
-            }
+                            [&distribution, &random_number_engine]()
+                            {
+                                return distribution(random_number_engine);
+                            }
 
-        );
+                        );
 
-    return OutputPartition{hpx::find_here(), offset, std::move(output_partition_data)};
+                    return OutputPartition{hpx::find_here(), offset, std::move(output_partition_data)};
+
+                }
+
+            ),
+        input_partition.offset(),
+        input_partition.shape());
 }
 
 
@@ -143,7 +153,7 @@ PartitionedArray<OutputElement, rank> uniform(
             max_value);
     }
 
-    return OutputArray{shape(input_array), input_array.localities(), std::move(output_partitions)};
+    return OutputArray{shape(input_array), localities, std::move(output_partitions)};
 }
 
 

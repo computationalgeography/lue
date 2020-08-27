@@ -62,18 +62,17 @@ public:
     SharedBuffer(
         SharedBuffer&& other):
 
-        _ptr{std::move(other._ptr)}
+        SharedBuffer{}
 
     {
+        // This class requires that a _ptr always points to a, possibly
+        // empty, container
+
+        std::swap(other._ptr, _ptr);
         assert_invariants();
 
-        // This class requires that _ptr always points to a, possibly
-        // empty, container
-        lue_assert(!other._ptr);
-        other.allocate(0);
-        lue_assert(other.size() == 0);
-
         other.assert_invariants();
+        lue_assert(other.size() == 0);
     }
 
     ~SharedBuffer()=default;
@@ -83,20 +82,19 @@ public:
     SharedBuffer& operator=(
         SharedBuffer&& other)
     {
-        _ptr = std::move(other._ptr);
-
-        assert_invariants();
-
         // This class requires that a _ptr always points to a, possibly
         // empty, container
-        lue_assert(!other._ptr);
-        other.allocate(0);
-        lue_assert(other.size() == 0);
 
+        std::swap(other._ptr, _ptr);
+        assert_invariants();
+
+        other._ptr->clear();
         other.assert_invariants();
+        lue_assert(other.size() == 0);
 
         return *this;
     }
+
 
     /*!
         @brief      Return a pointer to the underlying array
@@ -224,6 +222,11 @@ public:
         assert_invariants();
     }
 
+    long use_count() const
+    {
+        return _ptr.use_count();
+    }
+
     /*!
         @brief      Return whether or not this instance equals @a other
 
@@ -256,6 +259,9 @@ public:
 
         auto& container{*_ptr};
 
+        lue_assert(begin >= container.begin());
+        lue_assert(end <= container.end());
+
         container.erase(begin, end);
 
         assert_invariants();
@@ -273,7 +279,7 @@ private:
 
         // Default initialization of the elements. In case of
         // numeric values, the values are indeterminate
-        _ptr.reset(new Elements(size, boost::container::default_init_t{}));
+        _ptr = std::make_shared<Elements>(size, boost::container::default_init_t{});
 
         assert_invariants();
     }
