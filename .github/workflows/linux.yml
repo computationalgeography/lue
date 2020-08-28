@@ -89,5 +89,5 @@ jobs:
               remote_dir: ${{ secrets.FTP_REMOTE_DIR }}/doc/api/python
               local_dir: "html/"
           run: |
-              cd document/luepy/_build
+              cd build/document/luepy/_build
               lftp -c "open --user $ftp_username --password $ftp_password -p $ftp_port $ftp_server;set sftp:auto-confirm yes;mirror --verbose --reverse --delete --continue --parallel=2 $local_dir $remote_dir"
