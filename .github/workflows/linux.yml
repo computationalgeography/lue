@@ -24,7 +24,7 @@ jobs:
               sudo apt update
               sudo apt autoremove
               sudo apt upgrade
-              sudo apt install cmake doxygen graphviz hwloc libboost-all-dev libgdal-dev libgoogle-perftools-dev libhdf5-dev ninja-build
+              sudo apt install cmake doxygen graphviz hwloc lftp libboost-all-dev libgdal-dev libgoogle-perftools-dev libhdf5-dev ninja-build
         - uses: goanpeca/setup-miniconda@v1
           with:
               auto-update-conda: true
@@ -78,3 +78,16 @@ jobs:
           shell: bash
           run: |
               cmake --install build --prefix install
+
+        - name: deploy lue documentation
+          if: github.ref == 'refs/heads/master' && matrix.python-version == 3.8
+          env:
+              ftp_server: ${{ secrets.FTP_SERVER }}
+              ftp_port: ${{ secrets.FTP_PORT }}
+              ftp_username: ${{ secrets.FTP_USERNAME }}
+              ftp_password: ${{ secrets.FTP_PASSWORD }}
+              remote_dir: ${{ secrets.FTP_REMOTE_DIR }}/doc/api/python
+              local_dir: "html/"
+          run: |
+              cd document/luepy/_build
+              lftp -c "open --user $ftp_username --password $ftp_password -p $ftp_port $ftp_server;set sftp:auto-confirm yes;mirror --verbose --reverse --delete --continue --parallel=2 $local_dir $remote_dir"
