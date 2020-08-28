@@ -56,8 +56,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'LUE'
-copyright = u'2015-now PCRaster Owners'
-author = u'PCRaster R&D Team'
+copyright = u'2015-now Kor de Jong'
+author = u'Kor de Jong'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

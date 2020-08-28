@@ -8,19 +8,15 @@ come back here once in a while to check on the project's status.
 
 More information about LUE:
 
-|               |                                          |
-| --------------|------------------------------------------|
-| Documentation | <http://lue.readthedocs.io/en/latest/>   |
-| R&D team      | <https://www.computationalgeography.org> |
-
-The Python package documentation at Read the Docs is not complete. Most
-importantly, it lacks information about the API. For that, generate the
-documentation yourself while building LUE (see below).
+|               |                                              |
+| --------------|----------------------------------------------|
+| Homepage      | <https://lue.computationalgeography.org>     |
+| Documentation | <https://lue.computationalgeography.org/doc> |
+| R&D team      | <https://www.computationalgeography.org>     |
 
 [![Linux build status](https://github.com/pcraster/lue/workflows/Linux%20CI/badge.svg)](https://github.com/pcraster/lue/actions)
 [![macOS build status](https://github.com/pcraster/lue/workflows/macOS%20CI/badge.svg)](https://github.com/pcraster/lue/actions)
 [![Windows build status](https://github.com/pcraster/lue/workflows/Windows%20CI/badge.svg)](https://github.com/pcraster/lue/actions)
-[![Documentation Status](https://readthedocs.org/projects/docs/badge/)](https://lue.readthedocs.io/en/latest)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/ccaa0ef833824c3289c6d61973f51909)](https://www.codacy.com/gh/pcraster/lue?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=pcraster/lue&amp;utm_campaign=Badge_Grade)
 
 | OS         | Description                                              |

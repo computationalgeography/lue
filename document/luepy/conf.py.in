@@ -17,8 +17,8 @@ templates_path = ['_templates']
 source_suffix = '.rst'
 master_doc = 'index'
 project = u'LUE'
-copyright = u'2015-now PCRaster Owners'
-author = u'PCRaster R&D Team'
+copyright = u'2015-now Kor de Jong'
+author = u'Kor de Jong'
 version = u'@LUE_VERSION_MAJOR@.@LUE_VERSION_MINOR@'
 release = u'@LUE_VERSION@'
 language = None
@@ -72,5 +72,5 @@ def setup(app):
 
 
 intersphinx_mapping = {
-    "python": ("https://docs.python.org/3.5", None)
+    "python": ("https://docs.python.org/3.8", None)
 }
