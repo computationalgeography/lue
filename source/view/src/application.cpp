@@ -1109,6 +1109,8 @@ void show_phenomenon(
                 fmt::format("collection property-sets ({})", property_sets.size()),
                 ImGuiTreeNodeFlags_DefaultOpen))
             {
+                LUE_UNUSED(tree_node);
+
                 show_property_sets(property_sets, show_details);
             }
         }
@@ -1122,6 +1124,8 @@ void show_phenomenon(
                 fmt::format("property-sets ({})", property_sets.size()),
                 ImGuiTreeNodeFlags_DefaultOpen))
             {
+                LUE_UNUSED(tree_node);
+
                 show_property_sets(property_sets, show_details);
             }
         }
@@ -1241,6 +1245,8 @@ void show_dataset(
                 fmt::format("phenomena ({})", phenomena.size()),
                 ImGuiTreeNodeFlags_DefaultOpen))
             {
+                LUE_UNUSED(tree_node);
+
                 show_phenomena(phenomena, show_details);
             }
         }
@@ -1255,6 +1261,8 @@ void show_dataset(
                 fmt::format("universes ({})", universes.size()),
                 ImGuiTreeNodeFlags_DefaultOpen))
             {
+                LUE_UNUSED(tree_node);
+
                 show_universes(universes, show_details);
             }
         }
