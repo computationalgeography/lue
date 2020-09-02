@@ -18,6 +18,7 @@ Array read(
 
     lue_assert(false);
 
+    return Array{};
 }
 
 

@@ -64,9 +64,10 @@ template<
 inline constexpr bool is_hypercube(
     Shape<Count, rank> const& shape)
 {
-    return shape.empty() ? false :
-        std::count(shape.begin(), shape.end(), *shape.begin()) ==
-        shape.size();
+    return shape.empty()
+        ? false
+        : static_cast<typename Shape<Count, rank>::size_type>(
+            std::count(shape.begin(), shape.end(), *shape.begin())) == shape.size();
 }
 
 }  // namespace lue

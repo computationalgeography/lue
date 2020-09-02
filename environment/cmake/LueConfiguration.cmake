@@ -302,11 +302,16 @@ if(LUE_HPX_REQUIRED)
             set(hpx_git_tag ${LUE_HPX_GIT_TAG})
         else()
             set(hpx_git_tag "1.5.0")
+            # Get rid of the final warnings in HPX sources
+            set(hpx_patch_command
+                git apply --ignore-space-change --ignore-whitespace
+                    ${CMAKE_CURRENT_SOURCE_DIR}/environment/cmake/hpx-1.5.0.patch)
         endif()
 
         FetchContent_Declare(hpx
             GIT_REPOSITORY ${hpx_repository}
             GIT_TAG ${hpx_git_tag}
+            PATCH_COMMAND ${hpx_patch_command}
         )
 
         FetchContent_MakeAvailable(hpx)

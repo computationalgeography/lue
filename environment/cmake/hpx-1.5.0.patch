@@ -1,0 +1,13 @@
+diff --git a/libs/topology/include/hpx/topology/cpu_mask.hpp b/libs/topology/include/hpx/topology/cpu_mask.hpp
+index 76f2c50d69f..839a5257a7c 100644
+--- a/libs/topology/include/hpx/topology/cpu_mask.hpp
++++ b/libs/topology/include/hpx/topology/cpu_mask.hpp
+@@ -176,7 +176,7 @@ namespace hpx { namespace threads {
+     }
+ 
+     // clang-format off
+-    inline void resize(mask_type& mask, std::size_t s)
++    inline void resize([[maybe_unused]] mask_type& mask, [[maybe_unused]] std::size_t s)
+     {
+ #  if defined(HPX_HAVE_MAX_CPU_COUNT)
+         HPX_ASSERT(s <= mask.size());
