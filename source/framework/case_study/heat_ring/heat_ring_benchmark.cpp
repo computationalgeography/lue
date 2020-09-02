@@ -11,7 +11,7 @@
 #include "lue/framework/benchmark/hpx_main.hpp"
 #include "lue/assert.hpp"
 #include <hpx/hpx.hpp>
-#include <hpx/serialization/serialize.hpp>
+#include <hpx/serialization/serialize_buffer.hpp>
 #include "print_time_results.hpp"
 #include <iostream>
 
