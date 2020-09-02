@@ -6,40 +6,46 @@ namespace lue {
 
 WildfireModelBase::WildfireModelBase():
 
+    WildfireModelBase{std::make_shared<NominalRaster>()}
+
+{
+}
+
+
+WildfireModelBase::WildfireModelBase(
+    NominalRasterPtr const& state):
+
     Model{},
     _fire{},
     _burning{},
     _ignite_probability{},
     _spot_ignite_probability{},
-    _fire_age{}
+    _fire_age{},
+    _state_ptr{state}
 
 {
 }
 
 
-WildfireModelBase::BooleanRaster const&
-    WildfireModelBase::fire() const
+WildfireModelBase::BooleanRaster const& WildfireModelBase::fire() const
 {
     return _fire;
 }
 
 
-WildfireModelBase::BooleanRaster const&
-    WildfireModelBase::burning() const
+WildfireModelBase::BooleanRaster const& WildfireModelBase::burning() const
 {
     return _burning;
 }
 
 
-WildfireModelBase::ScalarRaster const&
-    WildfireModelBase::ignite_probability() const
+WildfireModelBase::ScalarRaster const& WildfireModelBase::ignite_probability() const
 {
     return _ignite_probability;
 }
 
 
-WildfireModelBase::ScalarRaster const&
-    WildfireModelBase::spot_ignite_probability() const
+WildfireModelBase::ScalarRaster const& WildfireModelBase::spot_ignite_probability() const
 {
     return _spot_ignite_probability;
 }
@@ -48,12 +54,6 @@ WildfireModelBase::ScalarRaster const&
 WildfireModelBase::CountRaster const& WildfireModelBase::fire_age() const
 {
     return _fire_age;
-}
-
-
-WildfireModelBase::NominalRaster const& WildfireModelBase::state() const
-{
-    return _state;
 }
 
 
@@ -77,8 +77,7 @@ void WildfireModelBase::initialize()
     // ScalarRaster mah = focal_mean(meh, kernel);
     // BooleanRaster mih = mah < 0.5;
 
-    BooleanRaster burnability =
-        focal_mean(uniform(_burning, 0.0, 1.0), kernel) < 0.5;
+    BooleanRaster burnability = focal_mean(uniform(_burning, 0.0, 1.0), kernel) < 0.5;
 
     // Assign probabilities for catching fire
     _ignite_probability = where(burnability, 0.05, 0.01);
@@ -138,7 +137,7 @@ void WildfireModelBase::simulate(
     // Burning cells
     _burning = _fire && _fire_age < 30u;
 
-    _state = where(_burning, 1, where(_fire, 2, 3));
+    state() = where(_burning, 1, where(_fire, 2, 3));
 }
 
 }  // namespace lue

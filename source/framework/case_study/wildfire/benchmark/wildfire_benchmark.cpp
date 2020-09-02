@@ -1,6 +1,7 @@
 #include "wildfire_benchmark_model.hpp"
 #include "lue/framework/benchmark/algorithm_benchmark_result.hpp"
 #include "lue/framework/benchmark/hpx_main.hpp"
+#include "lue/framework/benchmark/model_benchmark.hpp"
 
 
 auto setup_benchmark(
@@ -21,7 +22,7 @@ auto setup_benchmark(
             throw std::runtime_error("rank must be 2");
         }
 
-        return lue::WildfireBenchmarkModel{environment, task, max_tree_depth};
+        return lue::benchmark::WildfireBenchmarkModel{environment, task, max_tree_depth};
     };
 
     return lue::benchmark::ModelBenchmark<decltype(callable), lue::benchmark::AlgorithmBenchmarkResult>{

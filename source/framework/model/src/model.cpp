@@ -16,8 +16,8 @@ void Model::preprocess()
 /*!
     @brief      Initialize the modelled state
 
-    After calling this function, the simulated state must be representable
-    for t = 0.
+    The current state of the simulated system is undefined. After calling
+    this function, it must be representable for t = 0.
 
     The default does nothing.
 */
@@ -30,8 +30,9 @@ void Model::initialize()
     @brief      Simulate the state of the modelled system during an
                 additional time step (t = t + 1)
 
-    After calling this function, the simulated state must be representable
-    for t = t + 1.
+    The current state of the simulated system is representable for t =
+    t. After calling this function, it must be representable for t =
+    t + 1.
 
     The default does nothing.
 */
@@ -84,7 +85,7 @@ void initialize(
 
 
 /*!
-    @brief      Call Model.simulate()
+    @brief      Call Model.simulate(Count const)
 */
 void simulate(
     Model& model,

@@ -68,7 +68,7 @@ void ZonalSumBenchmark<Element, rank>::do_preprocess()
 {
     static_assert(std::is_floating_point_v<Element>);
 
-    this->_state = uniform(this->_state, Element{-1e6}, Element{1e6});
+    this->state() = uniform(this->state(), Element{-1e6}, Element{1e6});
 }
 
 
@@ -79,10 +79,10 @@ void ZonalSumBenchmark<Element, rank>::do_simulate(
     Count const /* time_step */)
 {
     // Distribute zones
-    Zones zones = uniform(this->_state, Zone{0}, _max_zone);
+    Zones zones = uniform(this->state(), Zone{0}, _max_zone);
 
     // Aggregate per currently distributed zones
-    this->_state = zonal_sum(this->_state, zones);
+    this->state() = zonal_sum(this->state(), zones);
 }
 
 }  // namespace benchmark

@@ -14,15 +14,14 @@ template<
     typename Element,
     Rank rank>
 class BenchmarkModel:
-    // This class in inherited by benchmark models, which inherit
-    // Model directly as well. We therefore need to use virtual
-    // inheritance.
-    public virtual Model
+    public Model
 {
 
 public:
 
     using Array = PartitionedArray<Element, rank>;
+
+    using ArrayPtr = std::shared_ptr<Array>;
 
     using Shape = lue::Shape<Count, rank>;
 
@@ -80,9 +79,19 @@ private:
 
 protected:
 
-    Array _state;
+    Array& state()
+    {
+        return *_state_ptr;
+    }
+
+    ArrayPtr state_ptr()
+    {
+        return _state_ptr;
+    }
 
 private:
+
+    ArrayPtr       _state_ptr;
 
     Shape _array_shape;
 

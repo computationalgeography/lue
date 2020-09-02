@@ -60,7 +60,7 @@ template<
     std::size_t rank>
 void SqrtBenchmarkModel<Element, rank>::do_preprocess()
 {
-    this->_state = uniform(this->_state, Element{0}, std::numeric_limits<Element>::max());
+    this->state() = uniform(this->state(), Element{0}, std::numeric_limits<Element>::max());
 }
 
 
@@ -70,7 +70,7 @@ template<
 void SqrtBenchmarkModel<Element, rank>::do_simulate(
     Count const /* time_step */)
 {
-    this->_state = pow(sqrt(this->_state), Element{2});
+    this->state() = pow(sqrt(this->state()), Element{2});
 }
 
 }  // namespace benchmark

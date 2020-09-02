@@ -28,15 +28,5 @@ int main(
     int const argc,
     char* argv[])
 {
-    // // Turn off error stack traversal. The default functions prints
-    // // lots of messages we usually don't care about.
-    // H5Eset_auto(H5E_DEFAULT, nullptr, nullptr);
-
-    // std::vector<std::string> cfg = {
-    //     // // Run hpx_main on all localities
-    //     // "hpx.run_hpx_main!=1",
-    //     // "application.lue_polute_air.mah!=1"
-    // };
-
     return hpx::init(argc, argv);  // , cfg);
 }

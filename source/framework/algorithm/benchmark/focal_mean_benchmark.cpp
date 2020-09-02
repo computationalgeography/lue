@@ -69,7 +69,7 @@ template<
     std::size_t rank>
 void FocalMeanBenchmarkModel<Element, rank>::do_preprocess()
 {
-    this->_state = uniform(this->_state, Element{0}, std::numeric_limits<Element>::max());
+    this->state() = uniform(this->state(), Element{0}, std::numeric_limits<Element>::max());
     _kernel = lue::box_kernel<bool, rank>(1, true);
 }
 
@@ -80,7 +80,7 @@ template<
 void FocalMeanBenchmarkModel<Element, rank>::do_simulate(
     Count const /* time_step */)
 {
-    this->_state = focal_mean(this->_state, _kernel);
+    this->state() = focal_mean(this->state(), _kernel);
 }
 
 }  // namespace benchmark

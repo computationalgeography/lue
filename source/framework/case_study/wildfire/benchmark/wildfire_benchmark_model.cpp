@@ -4,73 +4,74 @@
 
 
 namespace lue {
+namespace benchmark {
+namespace detail {
+
+class Model:
+    public WildfireModelBase
+{
+
+public:
+
+    Model(NominalRasterPtr const& state):
+
+        WildfireModelBase{state}
+
+    {
+    }
+
+    Model(Model const&)=default;
+
+    Model(Model&&)=default;
+
+    ~Model()=default;
+
+    Model& operator=(Model const&)=default;
+
+    Model& operator=(Model&&)=default;
+
+private:
+
+    BooleanRaster initial_fire() const
+    {
+        return uniform(state(), 0.0, 1.0) < 1e-5;
+    }
+
+};
+
+}  // namespace detail
+
 
 WildfireBenchmarkModel::WildfireBenchmarkModel(
-    benchmark::Environment const& /* environment */,
-    benchmark::Task const& task,
+    Environment const& /* environment */,
+    Task const& task,
     std::size_t const max_tree_depth):
 
-    WildfireModelBase{},
-    benchmark::BenchmarkModel<WildfireModelBase::NominalElement, 2>{task, max_tree_depth},
-    _raster_shape{},
-    _partition_shape{},
-    _clone{}
+    BenchmarkModel<WildfireModelBase::NominalElement, 2>{task, max_tree_depth},
+    _model{std::make_unique<detail::Model>(state_ptr())}
 
 {
-    std::copy(
-        task.array_shape().begin(), task.array_shape().end(),
-        _raster_shape.begin());
-
-    std::copy(
-        task.partition_shape().begin(), task.partition_shape().end(),
-        _partition_shape.begin());
-
-    _clone = BooleanRaster{_raster_shape, _partition_shape};
 }
 
 
-WildfireBenchmarkModel::BooleanRaster
-    WildfireBenchmarkModel::initial_fire() const
+WildfireBenchmarkModel::~WildfireBenchmarkModel()
 {
-    return uniform(_clone, 0.0, 1.0) < 1e-5;
-}
-
-
-void WildfireBenchmarkModel::initialize()
-{
-    Base::initialize();
-}
-
-
-void WildfireBenchmarkModel::simulate(
-    Count const time_step)
-{
-    Base::simulate(time_step);
-}
-
-
-void WildfireBenchmarkModel::do_preprocess()
-{
-    // TODO
+    // Not =default because then the forward declared detail::Model icw
+    // std::unique_ptr won't compile.
 }
 
 
 void WildfireBenchmarkModel::do_initialize()
 {
-    // TODO
+    _model->initialize();
 }
 
 
 void WildfireBenchmarkModel::do_simulate(
-    Count const /* time_step */)
+    Count const time_step)
 {
-    // TODO
+    _model->simulate(time_step);
 }
 
-
-void WildfireBenchmarkModel::do_postprocess()
-{
-    // TODO
-}
-
+}  // namespace benchmark
 }  // namespace lue

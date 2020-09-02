@@ -8,9 +8,7 @@
 namespace lue {
 
 class WildfireModelBase:
-    // This class in inherited by WildfireBenchmarkModel, which inherits
-    // Model as well. We therefore need to use virtual inheritance.
-    public virtual Model
+    public Model
 {
 
 public:
@@ -26,6 +24,8 @@ public:
     using BooleanRaster = PartitionedArray<BooleanElement, 2>;
 
     using NominalRaster = PartitionedArray<NominalElement, 2>;
+
+    using NominalRasterPtr = std::shared_ptr<NominalRaster>;
 
     using ScalarRaster = PartitionedArray<ScalarElement, 2>;
 
@@ -44,6 +44,8 @@ public:
 protected:
 
                    WildfireModelBase   ();
+
+                   WildfireModelBase   (NominalRasterPtr const& state);
 
                    WildfireModelBase   (WildfireModelBase const&)=default;
 
@@ -75,8 +77,15 @@ protected:
     CountRaster const&
                    fire_age            () const;
 
-    NominalRaster const&
-                   state               () const;
+    NominalRaster const& state() const
+    {
+        return *_state_ptr;
+    }
+
+    NominalRaster& state()
+    {
+        return *_state_ptr;
+    }
 
 private:
 
@@ -90,7 +99,7 @@ private:
 
     CountRaster    _fire_age;
 
-    NominalRaster  _state;
+    NominalRasterPtr _state_ptr;
 
 };
 
