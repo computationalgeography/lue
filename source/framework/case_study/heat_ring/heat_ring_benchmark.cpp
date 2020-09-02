@@ -222,7 +222,7 @@ struct partition : hpx::components::client_base<partition, partition_server>
 
     // Unwrap a future<partition> (a partition already holds a future to the
     // id of the referenced object, thus unwrapping accesses this inner future).
-    explicit partition(hpx::future<partition> && c)
+    partition(hpx::future<partition> && c)
       : base_type(std::move(c))
     {}
 
