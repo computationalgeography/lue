@@ -82,6 +82,7 @@ def generate_script_slurm(
         output_filename=experiment.result_pathname(
             cluster.name, benchmark.scenario_name, "slurm", "out"),
         partition_name=cluster.scheduler.settings.partition_name,
+        sbatch_options=cluster.scheduler.settings.sbatch_options,
         max_duration=experiment.max_duration,
         job_steps=job_steps)
 

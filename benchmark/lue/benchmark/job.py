@@ -153,6 +153,7 @@ def create_slurm_script(
         cpus_per_task,
         output_filename,
         partition_name,
+        sbatch_options,
         max_duration,
         job_steps):
 
@@ -193,6 +194,7 @@ def create_slurm_script(
 #SBATCH --output={output_filename}
 #SBATCH --cores-per-socket={cores_per_socket}
 #SBATCH --partition={partition_name}
+{sbatch_options}
 {max_duration}
 
 
@@ -222,6 +224,7 @@ def create_slurm_script(
 module purge
 module load opt/all
 module load userspace/all
+module load libraries/zstd/1.3.7
 module load gcc/10.2.0
 module load openmpi/gcc-10.2.0/4.0.4
 module load libraries/papi/5.7.0
@@ -235,6 +238,7 @@ module load perftools/2.7
         cpus_per_task=cpus_per_task,
         output_filename=output_filename,
         partition_name=partition_name,
+        sbatch_options="\n".join(["#SBATCH {}".format(option) for option in sbatch_options]),
         max_duration="#SBATCH --time={}".format(max_duration)
             if max_duration is not None else "",
         job_steps="\n".join(job_steps))

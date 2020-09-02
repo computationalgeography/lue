@@ -94,6 +94,7 @@ def generate_script_slurm_threads(
             cluster.name, benchmark.scenario_name,
             os.path.basename(os.path.splitext(script_pathname)[0]), "out"),
         partition_name=cluster.scheduler.settings.partition_name,
+        sbatch_options=cluster.scheduler.settings.sbatch_options,
         max_duration=experiment.max_duration,
         job_steps=job_steps)
 
@@ -177,6 +178,7 @@ def generate_script_slurm_numa_nodes(
             cluster.name, benchmark.scenario_name,
             os.path.basename(os.path.splitext(script_pathname)[0]), "out"),
         partition_name=cluster.scheduler.settings.partition_name,
+        sbatch_options=cluster.scheduler.settings.sbatch_options,
         max_duration=experiment.max_duration,
         job_steps=job_steps)
 
@@ -267,6 +269,7 @@ def generate_script_slurm_cluster_nodes(
             output_filename=experiment.benchmark_result_pathname(
                 cluster.name, benchmark.scenario_name, nr_workers, "out"),
             partition_name=cluster.scheduler.settings.partition_name,
+            sbatch_options=cluster.scheduler.settings.sbatch_options,
             max_duration=experiment.max_duration,
             job_steps=job_steps)
 

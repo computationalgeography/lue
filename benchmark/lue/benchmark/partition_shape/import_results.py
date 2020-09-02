@@ -116,17 +116,10 @@ def benchmark_to_lue_json(
             "epoch passed in is later than epoch from benchmark: "
             "{} > {}".format(epoch, benchmark_epoch))
 
-    # Calculate number of seconds sinds the epoch
-    time_points = [
-        dateutil.parser.isoparse(timing["start"])
-            for timing in benchmark_json["timings"]]
-    time_points = [
-        epoch_offset + int((time_point - benchmark_epoch).total_seconds())
-            for time_point in time_points]
-    count = len(time_points)
-
-    # Just pick the first one for these count benchmarks
-    time_points = [time_points[0]]
+    # Benchmarks are sorted by benchmark epochs. Keep the information
+    # sorted by time as well. Use benchmark epoch instead of individual
+    # timings.
+    time_points = [epoch_offset]
 
     property_description = "Amount of time a measurement took"
     durations = [timing["duration"] for timing in benchmark_json["timings"]]
@@ -136,8 +129,6 @@ def benchmark_to_lue_json(
     nr_partitions = [
         float(np.prod(shape_in_partitions[i]))
             for i in range(len(shape_in_partitions))]
-    assert len(nr_partitions) == count, "{} != {}".format(
-        len(nr_partitions), count)
 
     # Object tracking: a benchmark contains property values (durations)
     # for a single object (piece of software being benchmarked). The ID of
@@ -186,7 +177,7 @@ def benchmark_to_lue_json(
                                     "value_variability": "variable",
                                     "shape_variability": "constant_shape",
                                     "datatype": "uint64",
-                                    "shape": [count],  # len(durations)],
+                                    "shape": [len(durations)],
                                     "value": durations
                                 },
                                 {
@@ -213,7 +204,7 @@ def benchmark_to_lue_json(
                                     "value_variability": "variable",
                                     "shape_variability": "constant_shape",
                                     "datatype": "uint64",
-                                    "shape": [count],
+                                    "shape": [len(nr_partitions)],
                                     "value": nr_partitions
                                 },
                             ]

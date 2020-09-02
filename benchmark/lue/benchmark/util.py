@@ -129,7 +129,7 @@ def sort_benchmarks_by_time(
     time_points = [item[0] for item in items]
     idxs = [item[1] for item in items]
 
-    assert all(t1 < t2 for t1, t2 in zip(time_points, time_points[1:])), time_points
+    assert all(t1 <= t2 for t1, t2 in zip(time_points, time_points[1:])), time_points
     epoch = time_points[0]
 
     return idxs, epoch

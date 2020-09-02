@@ -5,12 +5,18 @@ algorithm_names="
     iterate_per_element
     zonal_sum
 "
+case_study_names="
+    wildfire
+"
 scenarios="
     thread_numa_node
     numa_node
     cluster_node
 "
 #   thread_cluster_node
+
+algorithm_names=""
+case_study_names=""
 
 output_prefix=${LUE_DATA:-.}
 
