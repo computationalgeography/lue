@@ -27,7 +27,7 @@ public:
 
                    Kernel              ()=default;
 
-                   Kernel              (Shape const& shape);
+    explicit       Kernel              (Shape const& shape);
 
                    Kernel              (Shape const& shape,
                                         Weight weight);
@@ -35,7 +35,7 @@ public:
                    Kernel              (Shape const& shape,
                                         std::initializer_list<Weight> weights);
 
-                   Kernel              (Array<Weight, rank> const& weights);
+    explicit       Kernel              (Array<Weight, rank> const& weights);
 
                    Kernel              (Kernel const&)=default;
 

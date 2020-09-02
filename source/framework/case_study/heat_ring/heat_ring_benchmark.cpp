@@ -54,7 +54,7 @@ public:
     {}
 
     // Create a new (uninitialized) partition of the given size.
-    partition_data(std::size_t size)
+    explicit partition_data(std::size_t size)
       : data_(std::allocator<double>().allocate(size), size, buffer_type::take)
       , size_(size)
       , min_index_(0)
@@ -140,7 +140,7 @@ struct partition_server
     // construct new instances
     partition_server() {}
 
-    partition_server(partition_data const& data)
+    explicit partition_server(partition_data const& data)
       : data_(data)
     {}
 
@@ -216,13 +216,13 @@ struct partition : hpx::components::client_base<partition, partition_server>
     {}
 
     // Attach a future representing a (possibly remote) partition.
-    partition(hpx::future<hpx::id_type> && id)
+    explicit partition(hpx::future<hpx::id_type> && id)
       : base_type(std::move(id))
     {}
 
     // Unwrap a future<partition> (a partition already holds a future to the
     // id of the referenced object, thus unwrapping accesses this inner future).
-    partition(hpx::future<partition> && c)
+    explicit partition(hpx::future<partition> && c)
       : base_type(std::move(c))
     {}
 

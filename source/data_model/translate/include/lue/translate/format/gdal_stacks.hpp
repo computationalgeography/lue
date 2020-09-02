@@ -21,8 +21,7 @@ public:
    using Iterator = Collection::iterator;
    using ConstIterator = Collection::const_iterator;
 
-                   GDALStacks          (std::vector<std::string> const&
-                                            dataset_names);
+   explicit        GDALStacks          (std::vector<std::string> const& dataset_names);
 
                    GDALStacks          (GDALStacks const& other)=default;
 

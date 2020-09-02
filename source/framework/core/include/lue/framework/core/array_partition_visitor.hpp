@@ -16,7 +16,7 @@ private:
 
 public:
 
-    PartitionVisitor(
+    explicit PartitionVisitor(
         Partitions& partitions):
 
         Base{partitions.shape()},
@@ -54,7 +54,7 @@ private:
 
 public:
 
-    ConstPartitionVisitor(
+    explicit ConstPartitionVisitor(
         Partitions const& partitions):
 
         Base{partitions.shape()},

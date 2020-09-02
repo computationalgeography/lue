@@ -2,6 +2,7 @@
 #include "lue/framework/algorithm/focal.hpp"
 #include "lue/framework/test/compare.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/define.hpp"  // LUE_UNUSED
 
 
 BOOST_AUTO_TEST_CASE(use_case_1)
@@ -52,6 +53,7 @@ BOOST_AUTO_TEST_CASE(use_case_1)
     Element cell_size = 50.0;
 
     auto slope_we_got = lue::slope(elevation, cell_size);
+    LUE_UNUSED(slope_we_got);
 
     data = PartitionData{
             shape,

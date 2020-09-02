@@ -20,7 +20,7 @@ public:
 
                    EnumStringBimap     ()=default;
 
-                   EnumStringBimap     (std::initializer_list<value_type> const& values);
+    explicit       EnumStringBimap     (std::initializer_list<value_type> const& values);
 
                    EnumStringBimap     (EnumStringBimap const&)=default;
 

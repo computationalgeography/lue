@@ -79,9 +79,11 @@ public:
 
     ColumnDefinition()=default;
 
-    ColumnDefinition(
-        std::string const& value_type_name)
-        : _value_type_name{value_type_name}
+    explicit ColumnDefinition(
+        std::string const& value_type_name):
+
+        _value_type_name{value_type_name}
+
     {
     }
 

@@ -89,10 +89,11 @@ NUMADomainExecutor& numa_domain_executor(
 TargetIndex scattered_target_index()
 {
     static ScatterTargetIndex scatter{};
-    static bool initialized{false};
-    static Mutex mutex;
 
     {
+        static bool initialized{false};
+        static Mutex mutex;
+
         Lock const lock{mutex};
 
         if(!initialized) {

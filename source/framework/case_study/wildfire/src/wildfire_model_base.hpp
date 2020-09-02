@@ -45,7 +45,7 @@ protected:
 
                    WildfireModelBase   ();
 
-                   WildfireModelBase   (NominalRasterPtr const& state);
+    explicit       WildfireModelBase   (NominalRasterPtr const& state);
 
                    WildfireModelBase   (WildfireModelBase const&)=default;
 

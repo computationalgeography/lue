@@ -33,7 +33,7 @@ public:
 
                    Array               ()=default;
 
-                   Array               (Shape const& shape);
+    explicit       Array               (Shape const& shape);
 
                    Array               (Shape const& shape,
                                         Element value);

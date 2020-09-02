@@ -60,7 +60,7 @@ class ArrayVisitorCursor
 
 public:
 
-    ArrayVisitorCursor(
+    explicit ArrayVisitorCursor(
         Shape const& shape):
 
         _shape{shape},
@@ -215,7 +215,7 @@ public:
     /*!
         @brief      Construct an instance based on the array shape
     */
-    ArrayVisitor(
+    explicit ArrayVisitor(
         Shape const& shape):
 
         _cursor{shape}

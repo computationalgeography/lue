@@ -2,6 +2,7 @@
 #include "lue/view/configuration.hpp"
 #include "lue/view/dataset.hpp"
 #include "lue/configure.hpp"
+#include "lue/define.hpp"
 #include "lue/gui.hpp"
 // #include "lue/utility/environment.hpp"
 #include <fmt/format.h>
@@ -532,6 +533,8 @@ void show_value<data_model::same_shape::Value>(
     {
         if(auto tab_bar = gui::TabBar("Values"))
         {
+            LUE_UNUSED(tab_bar);
+
             // Read values, showing progress bar while doing it
             // Do this asynchronously and cache results. Visualize values
             // once the data has arrived. Don't show them in the meantime.
@@ -551,6 +554,8 @@ void show_value<data_model::same_shape::Value>(
                 // Table with for each object its value
                 if(auto tab_item = gui::TabItem("Table"))
                 {
+                    LUE_UNUSED(tab_item);
+
                     // ImGui::Indent();
 
                         ImGui::Columns(2, "mycolumns"); // 4-ways, with border
@@ -908,6 +913,8 @@ void show_properties2(
     {
         if(auto tab_item = gui::TabItem(property_name))
         {
+            LUE_UNUSED(tab_item);
+
             ImGui::Indent();
 
                 // ImGui::BeginGroup();
@@ -947,11 +954,15 @@ void show_property_set(
     if(property_set.has_time_domain()) {
         if(auto tree_node = gui::TreeNode("object tracker"))
         {
+            LUE_UNUSED(tree_node);
+
             show_object_tracker(property_set.object_tracker(), show_details);
         }
 
         if(auto tree_node = gui::TreeNode("time domain", ImGuiTreeNodeFlags_DefaultOpen))
         {
+            LUE_UNUSED(tree_node);
+
             show_time_domain(property_set.time_domain(), show_details);
         }
     }
@@ -959,6 +970,8 @@ void show_property_set(
     if(property_set.has_space_domain()) {
         if(auto tree_node = gui::TreeNode("space domain", ImGuiTreeNodeFlags_DefaultOpen))
         {
+            LUE_UNUSED(tree_node);
+
             show_space_domain(property_set.space_domain(), show_details);
         }
     }
@@ -970,6 +983,7 @@ void show_property_set(
             fmt::format("properties ({})", properties.size()),
             ImGuiTreeNodeFlags_DefaultOpen))
         {
+            LUE_UNUSED(tree_node);
 
             // show_properties<same_shape::Properties>(
             //     properties, show_details);
@@ -989,6 +1003,8 @@ void show_property_set(
 
             if(auto tab_bar = gui::TabBar("Properties"))
             {
+                LUE_UNUSED(tab_bar);
+
                 show_properties2<data_model::same_shape::Properties>(
                     properties, show_details);
                 show_properties2<data_model::same_shape::constant_shape::Properties>(
@@ -1037,10 +1053,14 @@ void show_property_sets(
 {
     if(auto tab_bar = gui::TabBar("Property-sets"))
     {
+        LUE_UNUSED(tab_bar);
+
         for(std::string const& name: property_sets.names())
         {
             if(auto tab_item = gui::TabItem(name))
             {
+                LUE_UNUSED(tab_item);
+
                 copy_popup("property-set name", name);
                 show_property_set(property_sets[name], show_details);
             }
@@ -1113,10 +1133,14 @@ void show_phenomena(
 {
     if(auto tab_bar = gui::TabBar("Phenomena"))
     {
+        LUE_UNUSED(tab_bar);
+
         for(std::string const& name: phenomena.names())
         {
             if(auto tab_item = gui::TabItem(name))
             {
+                LUE_UNUSED(tab_item);
+
                 copy_popup("phenomenon name", name);
                 show_phenomenon(phenomena[name], show_details);
             }
@@ -1142,6 +1166,8 @@ void show_universe(
 {
     if(auto tree_node = gui::TreeNode("phenomena", ImGuiTreeNodeFlags_DefaultOpen))
     {
+        LUE_UNUSED(tree_node);
+
         show_phenomena(universe.phenomena(), show_details);
     }
 }
@@ -1153,10 +1179,14 @@ void show_universes(
 {
     if(auto tab_bar = gui::TabBar("Universes"))
     {
+        LUE_UNUSED(tab_bar);
+
         for(std::string const& name: universes.names())
         {
             if(auto tab_item = gui::TabItem(name))
             {
+                LUE_UNUSED(tab_item);
+
                 copy_popup("property-set name", name);
                 show_universe(universes[name], show_details);
             }
@@ -1239,6 +1269,8 @@ void show_datasets(
 
     if(auto tab_bar = gui::TabBar("Datasets"))
     {
+        LUE_UNUSED(tab_bar);
+
         for(auto& dataset: datasets)
         {
             if(auto tab_item = gui::TabItem(dataset.filename()))

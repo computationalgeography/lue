@@ -7,6 +7,7 @@
 #include "lue/framework/core/span.hpp"
 #include "lue/framework/core/type_traits.hpp"
 #include "lue/configure.hpp"
+#include "lue/define.hpp"
 #include <initializer_list>
 
 
@@ -50,7 +51,7 @@ public:
 
                    ArrayPartitionData  ();
 
-                   ArrayPartitionData  (Shape const& shape);
+    explicit       ArrayPartitionData  (Shape const& shape);
 
                    ArrayPartitionData  (Shape const& shape,
                                         Element const& value);

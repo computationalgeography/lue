@@ -13,7 +13,7 @@ class Model:
 
 public:
 
-    Model(NominalRasterPtr const& state):
+    explicit Model(NominalRasterPtr const& state):
 
         WildfireModelBase{state}
 

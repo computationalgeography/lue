@@ -43,7 +43,7 @@ public:
 
                    Slices              ()=default;
 
-                   Slices              (Indices indices);
+        explicit   Slices              (Indices indices);
 
         bool       empty               () const;
 
@@ -121,7 +121,7 @@ public:
     };
 
 
-                   GDALStack           (std::string const& dataset_name);
+   explicit        GDALStack           (std::string const& dataset_name);
 
                    GDALStack           (GDALStack const& other)=default;
 

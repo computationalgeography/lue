@@ -393,7 +393,6 @@ void GDALStack::Band::write(
         }
         default: {
             throw std::runtime_error("Unsupported datatype");
-            break;
         }
     }
 }

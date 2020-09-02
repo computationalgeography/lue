@@ -18,7 +18,7 @@ public:
 
     using CellIndices = std::vector<lue::Index>;
 
-    Visitor(
+    explicit Visitor(
         Shape const& shape):
 
         lue::ArrayVisitor<Shape>{shape},
