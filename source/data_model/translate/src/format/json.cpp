@@ -42,8 +42,6 @@ hdf5::Shape read_gdal_raster(
     std::string const& pathname,
     Collection& collection)
 {
-    using ValueType = typename Collection::value_type;
-
     // Open dataset
     GDALRaster raster{pathname};
 
@@ -51,7 +49,7 @@ hdf5::Shape read_gdal_raster(
     assert(raster.nr_bands() == 1);
     auto band = raster.band(1);
 
-    assert(band.datatype() == hdf5::native_datatype<ValueType>());
+    assert(band.datatype() == hdf5::native_datatype<typename Collection::value_type>());
 
     // Read all cells
     auto const nr_rows = raster.discretization().nr_rows();
