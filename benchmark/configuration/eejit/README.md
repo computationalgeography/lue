@@ -65,9 +65,9 @@ We use about 4.000x4.000 cells per OS thread.
 - array size = sqrt(48 * 4000^2) = 30.000x30.000
 
 ### `cluster_node`
-- 4 cluster nodes = 192 OS threads
-- Experiment uses 4 cluster nodes = 192 OS threads
-- array size = sqrt(192 * 4000^2) = 55.000x55.000
+- 12 cluster nodes = 576 OS threads
+- Experiment uses 12 cluster nodes = 576 OS threads
+- array size = sqrt(576 * 4000^2) = 96.000x96.000
 
 ## `strong_scaling`
 
@@ -82,9 +82,9 @@ We use about 4.000x4.000 cells per OS thread.
 - array size = sqrt(48 * 4000^2) = 30.000x30.000
 
 ### `cluster_node`
-- 4 cluster nodes = 192 OS threads
-- Experiment uses scales over \[1, 6] cluster nodes = \[48, 192] OS threads
-- array size = sqrt(192 * 2000^2) = 55.000x55.000
+- 12 cluster nodes = 576 OS threads
+- Experiment uses scales over \[1, 12] cluster nodes = \[48, 576] OS threads
+- array size = sqrt(576 * 4000^2) = 96.000x96.000
 
 ## `weak_scaling`
 
@@ -99,6 +99,6 @@ We use about 4.000x4.000 cells per OS thread.
 - array size = sqrt(6 * 4000^2) = 10.000x10.000
 
 ### `cluster_node`
-- 6 cluster nodes = 288 OS threads
-- Experiment scales over \[1, 6] cluster nodes = \[48, 288] OS threads
+- 12 cluster nodes = 576 OS threads
+- Experiment uses scales over \[1, 12] cluster nodes = \[48, 576] OS threads
 - array size = sqrt(48 * 4000^2) = 30.000x30.000

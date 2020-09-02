@@ -16,6 +16,7 @@ of components by HPX.
     <tr><td>55.000x55.000</td><td>22.5</td></tr>
     <tr><td>70.000x70.000</td><td>36.5</td></tr>
     <tr><td>80.000x80.000</td><td>47.7</td></tr>
+    <tr><td>96.000x96.000</td><td>68.7</td></tr>
 <table>
 
 
