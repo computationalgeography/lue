@@ -1,5 +1,4 @@
 from functools import reduce
-import os
 import numpy as np
 import lue.data_model as ldm
 import lue_test

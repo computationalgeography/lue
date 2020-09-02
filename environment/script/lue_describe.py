@@ -46,26 +46,26 @@ def print_heading(
 ### def describe_attributes(
 ###         attributes,
 ###         indent):
-### 
+###
 ###     print_message(indent, "attributes")
 ###     # TODO
-### 
-### 
+###
+###
 ### def describe_primary_data_object(
 ###         object,
 ###         indent):
-### 
+###
 ###     print_message(indent, "primary_data_object")
 ###     print_messages(indent+1, [
 ###             "id: {}".format(object.id),
 ###         ])
 ###     describe_attributes(indent+1, object.attributes)
-### 
-### 
+###
+###
 ### def describe_group(
 ###         group,
 ###         indent):
-### 
+###
 ###     print_message(indent, "group")
 ###     describe_primary_data_object(group, indent)
 
@@ -84,22 +84,22 @@ def describe_file(
 # ds = lue.open_dataset("planets.lue")
 # ph = ds.phenomena["planet"]
 # ps = ph.property_sets["constant"]
-# 
+#
 # properties = ps.properties
-# 
+#
 # for name in properties.names:
 #     print(name)
 #     print(properties.value_variability(name))
 #     print(properties.shape_per_object(name))
-# 
+#
 #     if properties.value_variability(name) == lue.ValueVariability.variable:
 #         print(ps.properties.shape_variability(name))
-# 
+#
 #     property = ps.properties[name]
-# 
-# 
+#
+#
 # # pr = ps.properties["gravity"]
-# # 
+# #
 # # print(pr)
 # # print(dir(pr))
 

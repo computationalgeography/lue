@@ -53,7 +53,7 @@ inline std::size_t idx(std::size_t i, int dir, std::size_t size)
 struct partition_data
 {
 public:
-    explicity partition_data(std::size_t size)
+    explicit partition_data(std::size_t size)
       : data_(new double[size]), size_(size)
     {}
 

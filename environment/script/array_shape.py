@@ -8,7 +8,6 @@ sys.path = [
 import benchmark
 import docopt
 import functools
-import math
 
 
 usage = """\

@@ -370,15 +370,15 @@ apidoc_generated = can_access_python_extension()
 
 
 # from sphinx.apidoc import main
-# 
-# 
+#
+#
 # def run_apidoc(_):
 #     package_root_pathname = os.path.join(
 #         os.environ["OBJECTS"], os.environ["MY_DEVENV_BUILD_TYPE"],
 #         "lue", "source", "lue_py")
 #     cwd = os.path.abspath(os.path.dirname(__file__))
 #     output_pathname = os.path.join(cwd, "api")
-# 
+#
 #     main([
 #         None,
 #         "--separate",

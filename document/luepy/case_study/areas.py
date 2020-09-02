@@ -8,8 +8,8 @@ rank = 2
 dataset = ldm.create_dataset("areas.lue")
 area = dataset.add_phenomenon("area")
 
-id = [2, 4, 6, 8, 10, 9, 7, 5, 3, 1]
-area.object_id.expand(nr_areas)[:] = id
+oid = [2, 4, 6, 8, 10, 9, 7, 5, 3, 1]
+area.object_id.expand(nr_areas)[:] = oid
 
 space_configuration = ldm.SpaceConfiguration(
     ldm.Mobility.stationary,
@@ -30,10 +30,10 @@ elevation = constant.add_property(
 count_datatype = ldm.dtype.Count
 shape = np.arange(  # Dummy data
     nr_areas * rank, dtype=count_datatype).reshape(nr_areas, rank)
-value = elevation.value.expand(id, shape)
+value = elevation.value.expand(oid, shape)
 
 for a in range(nr_areas):
-    value[id[a]][:] = (  # Dummy data
+    value[oid[a]][:] = (  # Dummy data
         10 * np.random.rand(*shape[a])).astype(elevation_datatype)
 
 # Discretization property with 1D object arrays containing the shape of

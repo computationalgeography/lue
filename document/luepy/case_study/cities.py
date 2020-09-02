@@ -8,8 +8,8 @@ rank = 2
 dataset = ldm.create_dataset("cities.lue")
 city = dataset.add_phenomenon("city")
 
-id = [2, 4, 6, 8, 10, 9, 7, 5, 3, 1]
-city.object_id.expand(nr_cities)[:] = id
+oid = [2, 4, 6, 8, 10, 9, 7, 5, 3, 1]
+city.object_id.expand(nr_cities)[:] = oid
 
 space_configuration = ldm.SpaceConfiguration(
     ldm.Mobility.stationary,

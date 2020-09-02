@@ -1094,6 +1094,8 @@ void show_phenomenon(
             if(auto tree_node = gui::TreeNode(
                 fmt::format("object_id ({})", object_id.nr_objects())))
             {
+                LUE_UNUSED(tree_node);
+
                 show_object_id(object_id, show_details);
             }
         }
@@ -1275,6 +1277,8 @@ void show_datasets(
         {
             if(auto tab_item = gui::TabItem(dataset.filename()))
             {
+                LUE_UNUSED(tab_item);
+
                 copy_popup("filename", dataset.filename());
                 dataset.rescan();
 

@@ -1,6 +1,4 @@
 import os
-import shlex
-import subprocess
 import unittest
 import numpy
 import lue.data_model as ldm
@@ -32,6 +30,7 @@ class TestCase(unittest.TestCase):
             method):
         """
         Binds the `method` passed in to the class.
+
         This is a convenience function to use when adding test methods to
         test cases programmatically at runtime.
         """
@@ -55,7 +54,7 @@ class TestCase(unittest.TestCase):
             filename):
         """
         Return a relative pathname to *filename*, given that the test module
-        is located in *directory_pathname*.
+        is located in *directory_pathname*
         """
         return os.path.join(
             lue_test.relative_pathname(__file__, directory_pathname),
@@ -69,8 +68,8 @@ class TestCase(unittest.TestCase):
         """
 
         if isinstance(dataset, str):
-            self.assertTrue(os.path.exists(dataset_pathname))
-            dataset = ldm.open_dataset(dataset_pathname)
+            self.assertTrue(os.path.exists(dataset))
+            dataset = ldm.open_dataset(dataset)
 
         try:
             ldm.assert_is_valid(dataset, fail_on_warning=True)

@@ -79,12 +79,12 @@ def map_range(
         array):
     # Scale array so all values are stretched within [0, 1]
 
-    min = np.min(array)
-    max = np.max(array)
+    min_ = np.min(array)
+    max_ = np.max(array)
 
-    assert min != max, array
+    assert min_ != max_, array
 
-    array = (array - min) / (max - min)
+    array = (array - min_) / (max_ - min_)
 
     assert np.isclose(np.min(array), 0), np.min(array)
     assert np.isclose(np.max(array), 1), np.max(array)

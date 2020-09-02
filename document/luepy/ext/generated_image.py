@@ -54,9 +54,9 @@ class GeneratedImageDirective(Directive):
 #         app,
 #         doctree,
 #         fromdocname):
-# 
+#
 #     image_root = app.config.generated_image_root
-# 
+#
 #     if not image_root is None:
 #         for node in doctree.traverse(GeneratedImage):
 #             # print(node)

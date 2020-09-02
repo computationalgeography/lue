@@ -42,22 +42,22 @@ object_tracker = variable.object_tracker
 ###         [50,  60],
 ###         [70,  80],
 ###     ], time_boxes.dtype)
-### 
+###
 ### space_domain = located.create_space_box_domain(areas, np.float64, rank=2)
 ### space_domain.reserve(nr_areas)[:] = np.arange(  # Dummy data...
 ###     nr_areas * 4, dtype=np.float64).reshape(nr_areas, 4)
-### 
+###
 ### # Given the 10 day time boxes, configure time steps to be 2 days long
 ### nr_time_steps = 5
 ### discretization_phenomenon = dataset.add_phenomenon("discretization")
 ### discretization_property_set = ldm.constant_collection.create_property_set(
 ###     discretization_phenomenon, "discretization")
 ### discretization_property_set.ids.reserve(1)[0] = 12345
-### 
+###
 ### time_discretization = omnipresent.same_shape.create_property(
 ###     discretization_property_set, "time", np.uint32)
 ### time_discretization.values.reserve(1)[:] = nr_time_steps
-### 
+###
 ### discretization_property_set = ldm.constant_collection.create_property_set(
 ###     area, "discretization", areas.ids)
 ### space_discretization = omnipresent.same_shape.create_property(
@@ -65,26 +65,26 @@ object_tracker = variable.object_tracker
 ### nr_cells = np.arange(start=1, stop=nr_areas * 2 + 1, dtype=np.uint32)
 ### nr_cells = nr_cells.reshape(nr_areas, 2)
 ### space_discretization.values.reserve(nr_areas)[:] = nr_cells
-### 
+###
 ### # Re-use nr_cells array with shapes of spatial fields, but add information
 ### # about the number of time steps. The resulting values will be
 ### # [nr_time_steps, nr_rows, nr_cols], where nr_rows, nr_cols is different
 ### # for each raster.
 ### nr_cells = np.insert(nr_cells, 0, nr_time_steps, axis=1)
-### 
+###
 ### # Elevation fields
 ### elevation = located.constant_shape.different_shape.create_property(
 ###     areas, "elevation", np.float64, 3)
 ### values = elevation.values.reserve(nr_time_boxes, nr_cells)
 ### assert len(values) == nr_areas, len(values)
-### 
+###
 ### for i in range(nr_areas):
 ###     shape = values[i].shape
 ###     # [nr_time_domain_items, nr_time_steps, nr_rows, nr_cols]
 ###     assert len(shape) == 4, shape
 ###     values[i][:] = (10 * np.random.rand(*shape)).astype(np.float64)
-### 
+###
 ### elevation.discretize_space(space_discretization)
 ### elevation.discretize_time(time_discretization)
-### 
+###
 ### ldm.assert_is_valid(dataset)
