@@ -508,6 +508,8 @@ OutputPartition focal_operation_partition(
                     [input_partition=input_partitions(1, 1), kernel /* , functor */](
                         InputData const& partition_data)
                     {
+                        AnnotateFunction annotation{"focal_operation_partition"};
+
                         HPX_UNUSED(input_partition);
 
                         auto const [nr_elements0, nr_elements1] = partition_data.shape();
@@ -554,6 +556,8 @@ OutputPartition focal_operation_partition(
                         std::vector<hpx::shared_future<InputData>>const& input_partitions_data_futures,
                         OutputData output_partition_data)
                     {
+                        AnnotateFunction annotation{"focal_operation_partition"};
+
                         HPX_UNUSED(input_partitions);
 
                         using InputPartitionsData = Array<InputData, rank<InputPartition>>;
@@ -1110,6 +1114,8 @@ PartitionT<InputPartitions, OutputElementT<Functor>> spawn_focal_operation_parti
             [locality_id, action, kernel, functor](
                 std::vector<InputPartition>&& input_partitions)
             {
+                AnnotateFunction annotation{"focal_operation"};
+
                 return action(
                     locality_id,
                     InputPartitions{Shape{{3, 3}}, input_partitions.begin(), input_partitions.end()},

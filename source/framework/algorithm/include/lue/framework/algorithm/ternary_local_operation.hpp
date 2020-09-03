@@ -68,6 +68,8 @@ public:
                         InputData2 const& input_data2,
                         InputData3 const& input_data3)
                     {
+                        AnnotateFunction annotation{"ternary_local_operation"};
+
                         HPX_UNUSED(input_partition1);
                         HPX_UNUSED(input_partition2);
                         HPX_UNUSED(input_partition3);
@@ -149,6 +151,8 @@ public:
                         InputData1 const& input_data1,
                         InputData2 const& input_data2)
                     {
+                        AnnotateFunction annotation{"ternary_local_operation_partition"};
+
                         HPX_UNUSED(input_partition1);
                         HPX_UNUSED(input_partition2);
 
@@ -227,6 +231,8 @@ public:
                         InputData1 const& input_data1,
                         InputData2 const& input_data2)
                     {
+                        AnnotateFunction annotation{"ternary_local_operation_partition"};
+
                         HPX_UNUSED(input_partition1);
                         HPX_UNUSED(input_partition2);
 
@@ -301,6 +307,8 @@ public:
                         Offset const& offset,
                         InputData const& input_data)
                     {
+                        AnnotateFunction annotation{"ternary_local_operation_partition"};
+
                         HPX_UNUSED(input_partition);
 
                         OutputData output_data{input_data.shape()};
@@ -398,6 +406,8 @@ PartitionedArray<OutputElementT<Functor>, rank> ternary_local_operation(
                 InputPartition2 const& input_partition2,
                 InputPartition2 const& input_partition3)
             {
+                AnnotateFunction annotation{"ternary_local_operation"};
+
                 return action(locality_id, input_partition1, input_partition2, input_partition3, functor);
             },
 
@@ -457,6 +467,8 @@ PartitionedArray<OutputElementT<Functor>, rank> ternary_local_operation(
                 InputPartition2 const& input_partition2,
                 hpx::shared_future<InputElement3> const& input_scalar)
             {
+                AnnotateFunction annotation{"ternary_local_operation"};
+
                 return action(locality_id, input_partition1, input_partition2, input_scalar.get(), functor);
             },
 
@@ -516,6 +528,8 @@ PartitionedArray<OutputElementT<Functor>, rank> ternary_local_operation(
                 hpx::shared_future<InputElement2> const& input_scalar,
                 InputPartition2 const& input_partition2)
             {
+                AnnotateFunction annotation{"ternary_local_operation"};
+
                 return action(locality_id, input_partition1, input_scalar.get(), input_partition2, functor);
             },
 
@@ -567,6 +581,8 @@ PartitionedArray<OutputElementT<Functor>, rank> ternary_local_operation(
                 hpx::shared_future<InputElement2> const& input_scalar1,
                 hpx::shared_future<InputElement3> const& input_scalar2)
             {
+                AnnotateFunction annotation{"ternary_local_operation"};
+
                 return action(locality_id, input_partition, input_scalar1.get(), input_scalar2.get(), functor);
             },
 

@@ -31,6 +31,8 @@ Partition copy_partition(
                     Offset const& offset,
                     InputData&& input_partition_data)
                 {
+                    AnnotateFunction annotation{"copy_partition"};
+
                     HPX_UNUSED(input_partition);
 
                     // Copy the data and move it into a new partition
@@ -113,6 +115,7 @@ PartitionedArray<Element, rank> copy(
             [locality_id=localities[p], action](
                 InputPartition const& input_partition)
             {
+                AnnotateFunction annotation{"copy"};
                 return action(locality_id, input_partition);
             },
 

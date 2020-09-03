@@ -6,15 +6,7 @@
 #include <hpx/hpx_finalize.hpp>
 #include <hpx/hpx_init.hpp>
 #include <hpx/modules/runtime_local.hpp>
-// #include <hpx/iostream.hpp>
 #include <hpx/include/lcos.hpp>
-#ifdef HPX_WITH_APEX
-    #include <apex_api.hpp>
-    #define register_apex_print_options() \
-        hpx::register_startup_function(&apex::print_options);
-#else
-    #define register_apex_print_options()
-#endif
 #include <fstream>
 
 
@@ -146,8 +138,6 @@ int main(                                                                      \
     std::vector<std::string> cfg = {                                           \
         configuration                                                          \
     };                                                                         \
-                                                                               \
-    register_apex_print_options()                                              \
                                                                                \
     return hpx::init(argc, argv, cfg);                                         \
 }

@@ -40,6 +40,8 @@ PartitionT<InputPartition, OutputElement> uniform_partition(
                     Offset const& offset,
                     Shape const& shape)
                 {
+                    AnnotateFunction annotation{"uniform_partition"};
+
                     HPX_UNUSED(input_partition);
 
                     // Will be used to obtain a seed for the random number engine
@@ -71,7 +73,6 @@ PartitionT<InputPartition, OutputElement> uniform_partition(
                         );
 
                     return OutputPartition{hpx::find_here(), offset, std::move(output_partition_data)};
-
                 }
 
             ),
@@ -96,8 +97,7 @@ struct UniformPartitionAction:
 
 template<
     typename T>
-using UniformAction =
-    typename detail::uniform::OverloadPicker<T>::Action;
+using UniformAction = typename detail::uniform::OverloadPicker<T>::Action;
 
 
 /*!
@@ -145,6 +145,7 @@ PartitionedArray<OutputElement, rank> uniform(
                 hpx::shared_future<OutputElement> const& min_value,
                 hpx::shared_future<OutputElement> const& max_value)
             {
+                AnnotateFunction annotation{"uniform"};
                 return action(locality_id, input_partition, min_value.get(), max_value.get());
             },
 

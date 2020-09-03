@@ -55,6 +55,8 @@ public:
                         InputData const& input_partition_data1,
                         InputData const& input_partition_data2)
                     {
+                        AnnotateFunction annotation{"binary_local_operation_partition"};
+
                         HPX_UNUSED(input_partition1);
                         HPX_UNUSED(input_partition2);
 
@@ -119,6 +121,8 @@ public:
                         Offset const& offset,
                         InputData const& input_partition_data)
                     {
+                        AnnotateFunction annotation{"binary_local_operation_partition"};
+
                         HPX_UNUSED(input_partition);
 
                         OutputData output_partition_data{input_partition_data.shape()};
@@ -191,6 +195,8 @@ public:
                         Offset const& offset,
                         InputData const& input_partition_data)
                     {
+                        AnnotateFunction annotation{"binary_local_operation_partition"};
+
                         HPX_UNUSED(input_partition);
 
                         OutputData output_partition_data{input_partition_data.shape()};
@@ -267,6 +273,8 @@ ArrayPartition<OutputElementT<Functor>, rank> binary_local_operation(
             InputPartition const& input_partition,
             hpx::shared_future<InputElement> const& input_scalar)
         {
+            AnnotateFunction annotation{"binary_local_operation"};
+
             return action(locality_id, input_partition, input_scalar.get(), functor);
         },
 
@@ -315,6 +323,8 @@ PartitionedArray<OutputElementT<Functor>, rank> binary_local_operation(
                     InputPartition const& input_partition1,
                     InputPartition const& input_partition2)
                 {
+                    AnnotateFunction annotation{"binary_local_operation"};
+
                     return action(locality_id, input_partition1, input_partition2, functor);
                 },
 
@@ -363,6 +373,8 @@ PartitionedArray<OutputElementT<Functor>, rank> binary_local_operation(
                     InputPartition const& input_partition,
                     hpx::shared_future<InputElement> const& input_scalar)
                 {
+                    AnnotateFunction annotation{"binary_local_operation"};
+
                     return action(locality_id, input_partition, input_scalar.get(), functor);
                 },
 
@@ -411,6 +423,8 @@ PartitionedArray<OutputElementT<Functor>, rank> binary_local_operation(
                     hpx::shared_future<InputElement> const& input_scalar,
                     InputPartition const& input_partition)
                 {
+                    AnnotateFunction annotation{"binary_local_operation"};
+
                     return action(locality_id, input_scalar.get(), input_partition, functor);
                 },
 

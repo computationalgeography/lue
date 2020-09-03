@@ -23,6 +23,8 @@ hpx::future<OutputElement> unary_aggregate_operation_partition(
         [functor](
             InputPartition const& input_partition)
         {
+            AnnotateFunction annotation{"unary_aggregate_operation_partition"};
+
             // Aggregate nD array partition to nD array partition
             // containing a single value
             Shape shape;
@@ -95,6 +97,8 @@ hpx::future<OutputElementT<Functor>> unary_aggregate_operation(
         [locality_id, action, functor](
             InputPartition const& input_partition)
         {
+            AnnotateFunction annotation{"unary_aggregate_operation"};
+
             return action(locality_id, input_partition, functor);
         },
 
@@ -132,6 +136,8 @@ hpx::future<OutputElementT<Functor>> unary_aggregate_operation(
             [locality_id=localities[p], action, functor](
                 InputPartition const& input_partition)
             {
+                AnnotateFunction annotation{"unary_aggregate_operation"};
+
                 return action(locality_id, input_partition, functor);
             },
 
@@ -149,6 +155,8 @@ hpx::future<OutputElementT<Functor>> unary_aggregate_operation(
             [functor](
                 auto&& partition_results)
             {
+                AnnotateFunction annotation{"unary_aggregate_operation"};
+
                 // Initialize result for the case the array is empty
                 OutputElement result{functor()};
 

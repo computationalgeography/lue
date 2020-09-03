@@ -63,6 +63,8 @@ PartitionedArray<std::uint32_t, rank> locality_id(
             [locality_id=localities[p], action](
                 InputPartition const& input_partition)
             {
+                AnnotateFunction annotation{"locality_id"};
+
                 return action(locality_id, input_partition);
             },
 

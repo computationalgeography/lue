@@ -32,6 +32,8 @@ ArrayPartition<OutputElement, rank> mesh_grid_partition(
                     Offset const& offset,
                     Shape const& shape)
                 {
+                    AnnotateFunction annotation{"mesh_grid_partition"};
+
                     HPX_UNUSED(input_partition);
 
                     OutputData output_data{shape};
@@ -148,6 +150,8 @@ std::array<PartitionedArray<OutputElement, rank>, rank> mesh_grid(
                     hpx::shared_future<OutputElement> const& first_value,
                     hpx::shared_future<OutputElement> const& step)
                 {
+                    AnnotateFunction annotation{"mesh_grid"};
+
                     return action(locality_id, input_partition, first_value.get(), step.get(), r);
                 },
 

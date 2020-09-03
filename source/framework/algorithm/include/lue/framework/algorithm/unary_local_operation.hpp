@@ -29,6 +29,8 @@ OutputPartition unary_local_operation_partition(
                     Offset const& offset,
                     InputData const& input_partition_data)
                 {
+                    AnnotateFunction annotation{"unary_local_operation_partition"};
+
                     HPX_UNUSED(input_partition);
 
                     OutputData output_partition_data{input_partition_data.shape()};
@@ -94,6 +96,8 @@ PartitionedArray<OutputElementT<Functor>, rank> unary_local_operation(
             [locality_id=localities[p], action, functor](
                 InputPartition const& input_partition)
             {
+                AnnotateFunction annotation{"unary_local_operation"};
+
                 return action(locality_id, input_partition, functor);
             },
 

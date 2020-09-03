@@ -45,7 +45,8 @@ void simulate_process(
     hpx::cout << ']' << hpx::endl;
 
     hpx::cout << "[simulate" << hpx::flush;
-    for(Count t = 0; t < nr_time_steps; ++t) {
+    for(Count t = 0; t < nr_time_steps; ++t)
+    {
         simulate(model, t);
         hpx::cout << '.' << hpx::flush;
     }

@@ -39,6 +39,8 @@ PartitionedArray<std::uint64_t, rank> array_partition_id(
             [locality_id=localities[p], action, p](
                 InputPartition const& input_partition)
             {
+                AnnotateFunction annotation{"array_partition_id"};
+
                 return action(locality_id, input_partition, p);
             },
 

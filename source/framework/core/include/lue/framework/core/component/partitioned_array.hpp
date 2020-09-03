@@ -8,6 +8,7 @@
 #include "lue/framework/core/hilbert_curve.hpp"
 #include "lue/framework/core/linear_curve.hpp"
 #include "lue/framework/core/math.hpp"
+#include "lue/framework/core/annotate.hpp"
 #include "lue/stream.hpp"
 #include <fmt/ostream.h>
 #include <initializer_list>
@@ -386,6 +387,8 @@ public:
                             [new_shape, partition](
                                 Shape current_shape) mutable
                             {
+                                AnnotateFunction annotation{"shrink_partition"};
+
                                 Count const rank =
                                     static_cast<Count>(lue::rank<Partitions>);
 
@@ -554,6 +557,8 @@ public:
                             [dimension_idx, new_size, partition](
                                 Shape current_shape) mutable
                             {
+                                AnnotateFunction annotation{"resize_partition"};
+
                                 current_shape[dimension_idx] = new_size;
 
                                 // FIXME Blocks current thread... Is this a problem?
@@ -725,6 +730,8 @@ void PartitionedArray<Element, rank>::instantiate_partition(
 
             [locality_id, partition_shape, idxs...]()
             {
+                AnnotateFunction annotation{"instantiate_partition"};
+
                 Offset offset{idxs...};
 
                 for(std::size_t d = 0; d < rank; ++d) {

@@ -35,6 +35,8 @@ template<
                         [input_partition, start_value](
                             Shape const& shape) mutable
                         {
+                            AnnotateFunction annotation{"unique_id_partition"};
+
                             Data data{shape};
                             std::iota(data.begin(), data.end(), start_value);
 
@@ -118,6 +120,8 @@ template<
 
                 [](InputPartition const& partition)
                 {
+                    AnnotateFunction annotation{"unique_id"};
+
                     return partition.nr_elements();
                 },
 
@@ -132,6 +136,8 @@ template<
             [localities=input_array.localities(), input_partitions, action](
                 std::vector<hpx::future<Count>>&& partition_sizes)
             {
+                AnnotateFunction annotation{"unique_id"};
+
                 Element start_value = 0;
                 Count const nr_partitions{input_partitions.nr_elements()};
                 std::vector<hpx::future<void>> unique_id_partitions(nr_partitions);

@@ -30,6 +30,8 @@ ArrayPartition<OutputElement, rank> array_like_partition(
                     Offset const& offset,
                     Shape const& shape)
                 {
+                    AnnotateFunction annotation{"array_like_partition"};
+
                     HPX_UNUSED(input_partition);
 
                     // Copy the data and move it into a new partition
@@ -86,6 +88,8 @@ PartitionedArray<OutputElement, rank> array_like(
                 InputPartition const& input_partition,
                 hpx::shared_future<OutputElement> const& fill_value)
             {
+                AnnotateFunction annotation{"array_like"};
+
                 return action(locality_id, input_partition, fill_value.get());
             },
 

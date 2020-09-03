@@ -34,6 +34,8 @@ template<
                 [input_partition, start_value, stride](
                     Shape const& shape) mutable
                 {
+                    AnnotateFunction annotation{"range_partition"};
+
                     // If stride equals nr_cols, then this partition's extent
                     // equals the arrays extent (along the second dimension)
                     lue_assert(stride >= std::get<1>(shape));
@@ -133,6 +135,8 @@ template<
             [localities, partitions, array_shape=input_array.shape()](
                 auto&& data)
             {
+                AnnotateFunction annotation{"range"};
+
                 auto const nr_partitions = lue::nr_partitions(partitions);
                 auto const [nr_partitions0, nr_partitions1] = partitions.shape();
 

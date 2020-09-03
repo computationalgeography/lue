@@ -36,6 +36,8 @@ hpx::future<AggregatorT<Functor>> zonal_operation_partition1(
                     InputData const& input_partition_data,
                     ZonesData const& zones_partition_data)
                 {
+                    AnnotateFunction annotation{"zonal_operation_partition"};
+
                     HPX_UNUSED(input_partition);
                     HPX_UNUSED(zones_partition);
 
@@ -88,6 +90,8 @@ OutputPartition zonal_operation_partition2(
                     Offset const& offset,
                     ZonesData const& zones_partition_data)
                 {
+                    AnnotateFunction annotation{"zonal_operation_partition"};
+
                     HPX_UNUSED(zones_partition);
 
                     OutputData output_partition_data{zones_partition_data.shape()};
@@ -193,6 +197,8 @@ PartitionedArray<OutputElementT<Functor>, rank> zonal_operation(
                     InputPartition const& input_partition,
                     ZonesPartition const& zones_partition)
                 {
+                    AnnotateFunction annotation{"zonal_operation"};
+
                     return action(locality_id, input_partition, zones_partition, functor);
                 },
 
@@ -210,6 +216,8 @@ PartitionedArray<OutputElementT<Functor>, rank> zonal_operation(
         [](
             hpx::future<Aggregators>&& aggregators)
         {
+            AnnotateFunction annotation{"zonal_operation"};
+
             Aggregator result{};
 
             for(hpx::future<Aggregator>& aggregator: aggregators.get())
@@ -236,6 +244,8 @@ PartitionedArray<OutputElementT<Functor>, rank> zonal_operation(
                 [locality_id=localities[p], action, zones_partition=zones_partitions[p]](
                     hpx::shared_future<Aggregator>const& aggregator)
                 {
+                    AnnotateFunction annotation{"zonal_operation"};
+
                     return action(locality_id, zones_partition, aggregator.get());
                 },
 

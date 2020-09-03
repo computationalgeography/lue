@@ -22,6 +22,8 @@ PartitionT<InputPartition, ElementT<InputPartition>, 1> unique_partition(
             [](
                 InputPartition const& input_partition)
             {
+                AnnotateFunction annotation{"unique_partition"};
+
                 auto const input_partition_server_ptr{
                     hpx::get_ptr(input_partition).get()};
                 auto const& input_partition_server{*input_partition_server_ptr};
@@ -114,6 +116,8 @@ hpx::future<PartitionedArray<Element, 1>> unique(
             [locality_id=localities[p], action](
                 InputPartition const& input_partition)
             {
+                AnnotateFunction annotation{"unique"};
+
                 return action(locality_id, input_partition);
             },
 
@@ -131,7 +135,9 @@ hpx::future<PartitionedArray<Element, 1>> unique(
         output_partitions.begin(), output_partitions.end()).then(
                 hpx::util::unwrapping(
 
-            [](auto const& partitions) {
+            [](auto const& partitions)
+            {
+                AnnotateFunction annotation{"unique"};
 
                 // Collection of unique values of all partition results
                 std::set<Element> unique_values{};
