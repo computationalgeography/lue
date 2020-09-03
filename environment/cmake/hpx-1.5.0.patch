@@ -1,3 +1,34 @@
+diff --git a/hpx/lcos/packaged_action.hpp b/hpx/lcos/packaged_action.hpp
+index 9d6a80c9d90..968361cf17d 100644
+--- a/hpx/lcos/packaged_action.hpp
++++ b/hpx/lcos/packaged_action.hpp
+@@ -199,7 +199,7 @@ namespace hpx { namespace lcos {
+                         << hpx::actions::detail::get_action_name<action_type>()
+                         << ", " << id << ") args(" << sizeof...(Ts) << ")";
+ 
+-            using callback_type = typename util::decay<Callback>::type;
++            using callback_type [[maybe_unused]] = typename util::decay<Callback>::type;
+ 
+ #if defined(HPX_HAVE_NETWORKING)
+             auto&& f = detail::parcel_write_handler_cb<Result, callback_type>{
+@@ -241,7 +241,7 @@ namespace hpx { namespace lcos {
+                         << hpx::actions::detail::get_action_name<action_type>()
+                         << ", " << id << ") args(" << sizeof...(Ts) << ")";
+ 
+-            using callback_type = typename util::decay<Callback>::type;
++            using callback_type [[maybe_unused]] = typename util::decay<Callback>::type;
+ 
+ #if defined(HPX_HAVE_NETWORKING)
+             auto&& f = detail::parcel_write_handler_cb<Result, callback_type>{
+@@ -375,7 +375,7 @@ namespace hpx { namespace lcos {
+                         << hpx::actions::detail::get_action_name<action_type>()
+                         << ", " << id << ") args(" << sizeof...(Ts) << ")";
+ 
+-            using callback_type = typename util::decay<Callback>::type;
++            using callback_type [[maybe_unused]] = typename util::decay<Callback>::type;
+ 
+ #if defined(HPX_HAVE_NETWORKING)
+             auto&& f = detail::parcel_write_handler_cb<Result, callback_type>{
 diff --git a/libs/topology/include/hpx/topology/cpu_mask.hpp b/libs/topology/include/hpx/topology/cpu_mask.hpp
 index 76f2c50d69f..839a5257a7c 100644
 --- a/libs/topology/include/hpx/topology/cpu_mask.hpp
