@@ -29,6 +29,8 @@ public:
 
     void           simulate            (Count time_step) final;
 
+    void           terminate           ();
+
 private:
 
     using ConstantRasterView =

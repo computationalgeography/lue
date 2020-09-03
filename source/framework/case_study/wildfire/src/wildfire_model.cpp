@@ -86,22 +86,25 @@ void WildfireModel::initialize()
 {
     WildfireModelBase::initialize();
 
-    PartitionedArray<std::uint32_t, 2> locality_id{lue::locality_id(_clone)};
-    PartitionedArray<std::uint64_t, 2> array_partition_id{lue::array_partition_id(_clone)};
+    if(false)
+    {
+        PartitionedArray<std::uint32_t, 2> locality_id{lue::locality_id(_clone)};
+        PartitionedArray<std::uint64_t, 2> array_partition_id{lue::array_partition_id(_clone)};
 
-    ConstantRasterView::Layer locality_id_layer{
-        _constant_raster_view.add_layer<std::uint32_t>("locality_id")};
-    ConstantRasterView::Layer array_partition_id_layer{
-        _constant_raster_view.add_layer<std::uint64_t>("array_partition_id")};
-    ConstantRasterView::Layer ignite_probability_layer{
-        _constant_raster_view.add_layer<ScalarElement>("ignite_probability")};
-    ConstantRasterView::Layer spot_ignite_probability_layer{
-        _constant_raster_view.add_layer<ScalarElement>("spot_ignite_probability")};
+        ConstantRasterView::Layer locality_id_layer{
+            _constant_raster_view.add_layer<std::uint32_t>("locality_id")};
+        ConstantRasterView::Layer array_partition_id_layer{
+            _constant_raster_view.add_layer<std::uint64_t>("array_partition_id")};
+        ConstantRasterView::Layer ignite_probability_layer{
+            _constant_raster_view.add_layer<ScalarElement>("ignite_probability")};
+        ConstantRasterView::Layer spot_ignite_probability_layer{
+            _constant_raster_view.add_layer<ScalarElement>("spot_ignite_probability")};
 
-    _written.push_back(write(locality_id, locality_id_layer));
-    _written.push_back(write(array_partition_id, array_partition_id_layer));
-    _written.push_back(write(ignite_probability(), ignite_probability_layer));
-    _written.push_back(write(spot_ignite_probability(), spot_ignite_probability_layer));
+        _written.push_back(write(locality_id, locality_id_layer));
+        _written.push_back(write(array_partition_id, array_partition_id_layer));
+        _written.push_back(write(ignite_probability(), ignite_probability_layer));
+        _written.push_back(write(spot_ignite_probability(), spot_ignite_probability_layer));
+    }
 }
 
 
@@ -110,10 +113,19 @@ void WildfireModel::simulate(
 {
     WildfireModelBase::simulate(time_step);
 
-    _written.push_back(write(fire(), _fire_layer, time_step));
-    _written.push_back(write(burning(), _burning_layer, time_step));
-    _written.push_back(write(fire_age(), _fire_age_layer, time_step));
-    _written.push_back(write(state(), _state_layer, time_step));
+    if(false)
+    {
+        _written.push_back(write(fire(), _fire_layer, time_step));
+        _written.push_back(write(burning(), _burning_layer, time_step));
+        _written.push_back(write(fire_age(), _fire_age_layer, time_step));
+        _written.push_back(write(state(), _state_layer, time_step));
+    }
+}
+
+
+void WildfireModel::terminate()
+{
+    hpx::wait_all_n(state().partitions().begin(), state().nr_partitions());
 }
 
 }  // namespace lue
