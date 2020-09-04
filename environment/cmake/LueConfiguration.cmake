@@ -292,27 +292,43 @@ if(LUE_HPX_REQUIRED)
 
     if(LUE_BUILD_HPX)
         # Build HPX ourselves
-        if(LUE_REPOSITORY_CACHE AND EXISTS ${LUE_REPOSITORY_CACHE}/hpx)
-            set(hpx_repository ${LUE_REPOSITORY_CACHE}/hpx)
-        else()
-            set(hpx_repository https://github.com/STEllAR-GROUP/hpx)
-        endif()
 
         if(LUE_HPX_GIT_TAG)
-            set(hpx_git_tag ${LUE_HPX_GIT_TAG})
+            # Obtain HPX from GIT repository. This is useful when we
+            # need to use a specific HPX commit.
+            if(LUE_REPOSITORY_CACHE AND EXISTS "${LUE_REPOSITORY_CACHE}/hpx")
+                # Use local repository
+                set(hpx_repository "${LUE_REPOSITORY_CACHE}/hpx")
+            else()
+                # Use remote repository
+                set(hpx_repository "https://github.com/STEllAR-GROUP/hpx")
+            endif()
+
+            FetchContent_Declare(hpx
+                GIT_REPOSITORY ${hpx_repository}
+                GIT_TAG ${LUE_HPX_GIT_TAG}
+            )
         else()
-            set(hpx_git_tag "1.5.0")
+            # Obtain HPX from archive. This has the advantage of being
+            # able to patch the source files.
+            if(LUE_REPOSITORY_CACHE AND EXISTS ${LUE_REPOSITORY_CACHE})
+                # Use local archive
+                set(hpx_url "file://${LUE_REPOSITORY_CACHE}/1.5.0.tar.gz")
+            else()
+                # Use remote archive
+                set(hpx_url "https://github.com/STEllAR-GROUP/hpx/archive/1.5.0.tar.gz")
+            endif()
+
             # Get rid of the final warnings in HPX sources
             set(hpx_patch_command
-                git apply --ignore-space-change --ignore-whitespace
+                git apply --reject --ignore-space-change --ignore-whitespace
                     ${CMAKE_CURRENT_SOURCE_DIR}/environment/cmake/hpx-1.5.0.patch)
-        endif()
 
-        FetchContent_Declare(hpx
-            GIT_REPOSITORY ${hpx_repository}
-            GIT_TAG ${hpx_git_tag}
-            PATCH_COMMAND ${hpx_patch_command}
-        )
+            FetchContent_Declare(hpx
+                URL ${hpx_url}
+                PATCH_COMMAND ${hpx_patch_command}
+            )
+        endif()
 
         FetchContent_MakeAvailable(hpx)
     endif()
