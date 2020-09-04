@@ -60,7 +60,7 @@ def program_configuration(
     #   '--hpx:debug-hpx-log '
     configuration = \
         '--hpx:print-bind ' \
-        '--hpx:ini="hpx.agas.max_pending_refcnt_requests!=1000" ' \
+        '--hpx:ini="hpx.agas.max_pending_refcnt_requests!=50" ' \
         '--hpx:ini="application.{program_name}.benchmark.cluster_name!={cluster_name}" ' \
         '--hpx:ini="application.{program_name}.benchmark.count!={count}" ' \
         '--hpx:ini="application.{program_name}.benchmark.nr_workers!={nr_workers}" ' \
