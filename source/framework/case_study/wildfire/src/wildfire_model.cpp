@@ -45,6 +45,7 @@ WildfireModel::WildfireModel(
     _raster_shape{raster_shape},
     _partition_shape{partition_shape},
     _clone{_raster_shape, _partition_shape},
+    _with_io{true},
     _dataset_ptr{
         std::make_shared<ldm::Dataset>(ldm::create_dataset(dataset_pathname))},
     _constant_raster_view{
@@ -86,7 +87,7 @@ void WildfireModel::initialize()
 {
     WildfireModelBase::initialize();
 
-    if(false)
+    if(_with_io)
     {
         PartitionedArray<std::uint32_t, 2> locality_id{lue::locality_id(_clone)};
         PartitionedArray<std::uint64_t, 2> array_partition_id{lue::array_partition_id(_clone)};
@@ -113,7 +114,7 @@ void WildfireModel::simulate(
 {
     WildfireModelBase::simulate(time_step);
 
-    if(false)
+    if(_with_io)
     {
         _written.push_back(write(fire(), _fire_layer, time_step));
         _written.push_back(write(burning(), _burning_layer, time_step));

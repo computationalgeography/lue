@@ -17,7 +17,7 @@ public:
 
     using NominalElement = std::int32_t;
 
-    using ScalarElement = double;
+    using ScalarElement = float;
 
     using CountElement = std::uint32_t;
 
@@ -33,7 +33,7 @@ public:
 
     using RasterShape = Shape<Count, 2>;
 
-    using Kernel = lue::Kernel<double, 2>;
+    using Kernel = lue::Kernel<ScalarElement, 2>;
 
     using KernelShape = ShapeT<Kernel>;
 

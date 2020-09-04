@@ -48,6 +48,8 @@ private:
 
     BooleanRaster  _clone;
 
+    bool           _with_io;
+
     std::shared_ptr<data_model::Dataset> _dataset_ptr;
 
     ConstantRasterView _constant_raster_view;

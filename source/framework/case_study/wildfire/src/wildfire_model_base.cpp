@@ -71,20 +71,21 @@ void WildfireModelBase::initialize()
     // Create two areas that differ in how fast they catch fire
     // TODO Use round distribution of weights
     Radius const kernel_radius{25};  // 51x51
-    Kernel const kernel = lue::box_kernel<double, 2>(kernel_radius, 1.0);
+    Kernel const kernel = lue::box_kernel<ScalarElement, 2>(kernel_radius, 1.0);
 
     // ScalarRaster meh = uniform(_burning, 0.0, 1.0);
     // ScalarRaster mah = focal_mean(meh, kernel);
     // BooleanRaster mih = mah < 0.5;
 
-    BooleanRaster burnability = focal_mean(uniform(_burning, 0.0, 1.0), kernel) < 0.5;
+    BooleanRaster burnability =
+        focal_mean(uniform(_burning, ScalarElement{0.0}, ScalarElement{1.0}), kernel) < ScalarElement{0.5};
 
     // Assign probabilities for catching fire
-    _ignite_probability = where(burnability, 0.05, 0.01);
+    _ignite_probability = where(burnability, ScalarElement{0.05}, ScalarElement{0.01});
 
     // Assign probabilities for jump fire: we use a linear relation with
     // _ignite_probability, but lower
-    _spot_ignite_probability = _ignite_probability / 50.0;
+    _spot_ignite_probability = _ignite_probability / ScalarElement{50.0};
 
     _fire_age = array_like<CountElement>(_fire, 0);
 }
@@ -98,7 +99,7 @@ void WildfireModelBase::simulate(
     KernelShape kernel_shape{3, 3};
     Kernel kernel{
             kernel_shape,
-            std::initializer_list<double>{
+            std::initializer_list<ScalarElement>{
                     0.0, 1.0, 0.0,
                     1.0, 1.0, 1.0,
                     0.0, 1.0, 0.0
@@ -113,21 +114,21 @@ void WildfireModelBase::simulate(
     // Select cells that catch new fire from direct neighbours
     BooleanRaster const new_fire =
         cells_not_burning_surrounded_by_fire &&
-        uniform(_fire, 0.0, 1.0) < _ignite_probability;
+        uniform(_fire, ScalarElement{0.0}, ScalarElement{1.0}) < _ignite_probability;
 
     // Find pixels that have not burned down or at fire and that have
     // fire pixels over a distance (jump dispersal). This should be
     // a round window preferable, diameter I do not know
     // FIXME: round distribution of kernel weights, cirkel_kernel
     Radius const kernel_radius{2};  // 5x5
-    kernel = box_kernel<double, 2>(kernel_radius, 1.0);
+    kernel = box_kernel<ScalarElement, 2>(kernel_radius, 1.0);
     BooleanRaster const jump_cells =
         // FIXME 0.5 -> 0.0
         focal_sum(cast<CountElement>(_burning), kernel) > 0u && !_fire;
 
     // Select cells that catch new fire by jumping fire
     BooleanRaster const new_fire_jump =
-        jump_cells && uniform(_fire, 0.0, 1.0) < _spot_ignite_probability;
+        jump_cells && uniform(_fire, ScalarElement{0.0}, ScalarElement{1.0}) < _spot_ignite_probability;
 
     _fire = _fire || new_fire || new_fire_jump;
 
