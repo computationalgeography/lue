@@ -81,11 +81,15 @@ protected:
 
     Array& state()
     {
+        lue_assert(_state_ptr);
+
         return *_state_ptr;
     }
 
     ArrayPtr state_ptr()
     {
+        lue_assert(_state_ptr);
+
         return _state_ptr;
     }
 

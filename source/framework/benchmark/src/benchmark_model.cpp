@@ -19,11 +19,13 @@ BenchmarkModel<Element, rank>::BenchmarkModel(
     _count{0},
     _max_tree_depth{max_tree_depth},
     _semaphore{static_cast<std::int64_t>(_max_tree_depth)},
-    _state_ptr{},
+    _state_ptr{std::make_shared<Array>()},
     _array_shape{},
     _partition_shape{}
 
 {
+    lue_assert(_state_ptr);
+
     std::copy(
         task.array_shape().begin(), task.array_shape().end(),
         _array_shape.begin());
@@ -83,7 +85,7 @@ template<
     Rank rank>
 void BenchmarkModel<Element, rank>::preprocess()
 {
-    _state_ptr = std::make_shared<Array>(this->array_shape(), this->partition_shape());
+    state() = Array{this->array_shape(), this->partition_shape()};
 
     do_preprocess();
 

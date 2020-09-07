@@ -72,8 +72,10 @@ def generate_script_slurm_threads(
             cluster.name, benchmark.scenario_name)),
         "",
         "# Submit job to SLURM scheduler",
-        "sbatch --job-name {job_name} << {delimiter}".format(
-            job_name=job_name, delimiter=delimiter),
+        "sbatch --job-name {job_name} {sbatch_options} << {delimiter}".format(
+            job_name=job_name,
+            sbatch_options=" ".join(cluster.scheduler.settings.sbatch_options),
+            delimiter=delimiter),
         slurm_script,
         "{delimiter}".format(delimiter=delimiter),
     ]
@@ -153,8 +155,10 @@ def generate_script_slurm_numa_nodes(
             cluster.name, benchmark.scenario_name)),
         "",
         "# Submit job to SLURM scheduler",
-        "sbatch --job-name {job_name} << {delimiter}".format(
-            job_name=job_name, delimiter=delimiter),
+        "sbatch --job-name {job_name} {sbatch_options} << {delimiter}".format(
+            job_name=job_name,
+            sbatch_options=" ".join(cluster.scheduler.settings.sbatch_options),
+            delimiter=delimiter),
         slurm_script,
         "{delimiter}".format(delimiter=delimiter),
     ]
@@ -251,8 +255,10 @@ def generate_script_slurm_cluster_nodes(
             "mkdir -p {}".format(os.path.dirname(result_pathname)),
 
             # Submit SLURM script to scheduler
-            "sbatch --job-name {job_name} << {delimiter}".format(
-                job_name=job_name, delimiter=delimiter),
+            "sbatch --job-name {job_name} {sbatch_options} << {delimiter}".format(
+                job_name=job_name,
+                sbatch_options=" ".join(cluster.scheduler.settings.sbatch_options),
+                delimiter=delimiter),
             slurm_script,
             "{delimiter}".format(delimiter=delimiter),
             "",

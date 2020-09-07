@@ -45,7 +45,7 @@ protected:
 
                    WildfireModelBase   ();
 
-    explicit       WildfireModelBase   (NominalRasterPtr const& state);
+    explicit       WildfireModelBase   (NominalRasterPtr const& state_ptr);
 
                    WildfireModelBase   (WildfireModelBase const&)=default;
 
@@ -84,6 +84,8 @@ protected:
 
     NominalRaster& state()
     {
+        lue_assert(_state_ptr);
+
         return *_state_ptr;
     }
 

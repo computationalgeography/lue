@@ -13,9 +13,9 @@ class Model:
 
 public:
 
-    explicit Model(NominalRasterPtr const& state):
+    explicit Model(NominalRasterPtr const& state_ptr):
 
-        WildfireModelBase{state}
+        WildfireModelBase{state_ptr}
 
     {
     }
@@ -32,9 +32,9 @@ public:
 
 private:
 
-    BooleanRaster initial_fire() const
+    BooleanRaster initial_fire() const final
     {
-        return uniform(state(), 0.0, 1.0) < 1e-5;
+        return uniform(state(), ScalarElement{0.0}, ScalarElement{1.0}) < ScalarElement{1e-5};
     }
 
 };

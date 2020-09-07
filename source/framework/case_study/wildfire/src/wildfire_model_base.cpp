@@ -13,7 +13,7 @@ WildfireModelBase::WildfireModelBase():
 
 
 WildfireModelBase::WildfireModelBase(
-    NominalRasterPtr const& state):
+    NominalRasterPtr const& state_ptr):
 
     Model{},
     _fire{},
@@ -21,9 +21,10 @@ WildfireModelBase::WildfireModelBase(
     _ignite_probability{},
     _spot_ignite_probability{},
     _fire_age{},
-    _state_ptr{state}
+    _state_ptr{state_ptr}
 
 {
+    lue_assert(_state_ptr);
 }
 
 
