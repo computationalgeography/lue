@@ -15,15 +15,12 @@ template<
     typename Element,
     Rank rank>
 class ArrayPartition:
-    public hpx::components::locking_hook<
-        hpx::components::component_base<ArrayPartition<Element, rank>>>
+    public hpx::components::component_base<ArrayPartition<Element, rank>>
 {
 
 private:
 
-    using Base =
-        hpx::components::locking_hook<
-            hpx::components::component_base<ArrayPartition<Element, rank>>>;
+    using Base = hpx::components::component_base<ArrayPartition<Element, rank>>;
 
 public:
 
@@ -36,8 +33,6 @@ public:
     using Slice = typename Data::Slice;
 
     using Slices = typename Data::Slices;
-
-    ///                ArrayPartition      ();
 
                    ArrayPartition      (Offset const& offset,
                                         Shape const& shape);
@@ -62,13 +57,6 @@ public:
 
     ArrayPartition& operator=          (ArrayPartition&&)=delete;
 
-    // hpx::naming::id_type locality_id() const
-    // {
-    //     lue_assert(_locality_id);
-
-    //     return _locality_id;
-    // }
-
     Offset         offset              () const;
 
     Data           data                () const;
@@ -86,9 +74,6 @@ public:
     Count          nr_elements         () const;
 
 private:
-
-    // //! Global ID representing the locality this component is located in
-    // hpx::naming::id_type _locality_id;
 
     Offset         _offset;
 
