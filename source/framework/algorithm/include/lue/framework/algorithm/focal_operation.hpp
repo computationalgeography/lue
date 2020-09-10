@@ -333,167 +333,159 @@ OutputPartition focal_operation_partition(
             // -----------------------------------------------------------------
 
             // North-west corner partition: get south-east corner elements
-            input_partitions_data(0, 0) = partition_shapes(0, 0).then(
-                hpx::util::unwrapping(
+            input_partitions_data(0, 0) = partition_shapes(0, 0).then(hpx::util::unwrapping(
 
-                        [kernel_radius, input_partition=input_partitions(0, 0)](
-                            Shape const& partition_shape)
-                        {
-                            auto const [nr_elements0, nr_elements1] = partition_shape;
+                    [kernel_radius, input_partition=input_partitions(0, 0)](
+                        Shape const& partition_shape)
+                    {
+                        auto const [nr_elements0, nr_elements1] = partition_shape;
 
-                            verify_border_partition_large_enough(nr_elements0, nr_elements1, kernel_radius);
+                        verify_border_partition_large_enough(nr_elements0, nr_elements1, kernel_radius);
 
-                            return input_partition.slice(
-                                Slices{{
-                                    Slice{nr_elements0 - kernel_radius, nr_elements0},
-                                    Slice{nr_elements1 - kernel_radius, nr_elements1}
-                                }});
-                        }
+                        return input_partition.slice(
+                            Slices{{
+                                Slice{nr_elements0 - kernel_radius, nr_elements0},
+                                Slice{nr_elements1 - kernel_radius, nr_elements1}
+                            }});
+                    }
 
-                    ));
+                ));
 
             // North partition: get south side elements
-            input_partitions_data(0, 1) = partition_shapes(0, 1).then(
-                hpx::util::unwrapping(
+            input_partitions_data(0, 1) = partition_shapes(0, 1).then(hpx::util::unwrapping(
 
-                        [kernel_radius, input_partition=input_partitions(0, 1)](
-                            Shape const& partition_shape)
-                        {
-                            auto const [nr_elements0, nr_elements1] = partition_shape;
+                    [kernel_radius, input_partition=input_partitions(0, 1)](
+                        Shape const& partition_shape)
+                    {
+                        auto const [nr_elements0, nr_elements1] = partition_shape;
 
-                            verify_border_partition_large_enough(nr_elements0, nr_elements1, kernel_radius);
+                        verify_border_partition_large_enough(nr_elements0, nr_elements1, kernel_radius);
 
-                            return input_partition.slice(
-                                Slices{{
-                                    Slice{nr_elements0 - kernel_radius, nr_elements0},
-                                    Slice{0, nr_elements1}
-                                }});
-                        }
+                        return input_partition.slice(
+                            Slices{{
+                                Slice{nr_elements0 - kernel_radius, nr_elements0},
+                                Slice{0, nr_elements1}
+                            }});
+                    }
 
-                    ));
+                ));
 
             // North-east partition: get south-west corner elements
-            input_partitions_data(0, 2) = partition_shapes(0, 2).then(
-                hpx::util::unwrapping(
+            input_partitions_data(0, 2) = partition_shapes(0, 2).then(hpx::util::unwrapping(
 
-                        [kernel_radius, input_partition=input_partitions(0, 2)](
-                            Shape const& partition_shape)
-                        {
-                            auto const [nr_elements0, nr_elements1] = partition_shape;
+                    [kernel_radius, input_partition=input_partitions(0, 2)](
+                        Shape const& partition_shape)
+                    {
+                        auto const [nr_elements0, nr_elements1] = partition_shape;
 
-                            verify_border_partition_large_enough(nr_elements0, nr_elements1, kernel_radius);
+                        verify_border_partition_large_enough(nr_elements0, nr_elements1, kernel_radius);
 
-                            return input_partition.slice(
-                                Slices{{
-                                    Slice{nr_elements0 - kernel_radius, nr_elements0},
-                                    Slice{0, kernel_radius}
-                                }});
-                        }
+                        return input_partition.slice(
+                            Slices{{
+                                Slice{nr_elements0 - kernel_radius, nr_elements0},
+                                Slice{0, kernel_radius}
+                            }});
+                    }
 
-                    ));
+                ));
 
             // West partition: get east side elements
-            input_partitions_data(1, 0) = partition_shapes(1, 0).then(
-                hpx::util::unwrapping(
+            input_partitions_data(1, 0) = partition_shapes(1, 0).then(hpx::util::unwrapping(
 
-                        [kernel_radius, input_partition=input_partitions(1, 0)](
-                            Shape const& partition_shape)
-                        {
-                            auto const [nr_elements0, nr_elements1] = partition_shape;
+                    [kernel_radius, input_partition=input_partitions(1, 0)](
+                        Shape const& partition_shape)
+                    {
+                        auto const [nr_elements0, nr_elements1] = partition_shape;
 
-                            verify_border_partition_large_enough(nr_elements0, nr_elements1, kernel_radius);
+                        verify_border_partition_large_enough(nr_elements0, nr_elements1, kernel_radius);
 
-                            return input_partition.slice(
-                                Slices{{
-                                    Slice{0, nr_elements0},
-                                    Slice{nr_elements1 - kernel_radius, nr_elements1}
-                                }});
-                        }
+                        return input_partition.slice(
+                            Slices{{
+                                Slice{0, nr_elements0},
+                                Slice{nr_elements1 - kernel_radius, nr_elements1}
+                            }});
+                    }
 
-                    ));
+                ));
 
             // Center partition: get all elements
             input_partitions_data(1, 1) = input_partitions(1, 1).data();
 
             // East partition: get west side elements
-            input_partitions_data(1, 2) = partition_shapes(1, 2).then(
-                hpx::util::unwrapping(
+            input_partitions_data(1, 2) = partition_shapes(1, 2).then(hpx::util::unwrapping(
 
-                        [kernel_radius, input_partition=input_partitions(1, 2)](
-                            Shape const& partition_shape)
-                        {
-                            auto const [nr_elements0, nr_elements1] = partition_shape;
+                    [kernel_radius, input_partition=input_partitions(1, 2)](
+                        Shape const& partition_shape)
+                    {
+                        auto const [nr_elements0, nr_elements1] = partition_shape;
 
-                            verify_border_partition_large_enough(nr_elements0, nr_elements1, kernel_radius);
+                        verify_border_partition_large_enough(nr_elements0, nr_elements1, kernel_radius);
 
-                            return input_partition.slice(
-                                Slices{{
-                                    Slice{0, nr_elements0},
-                                    Slice{0, kernel_radius}
-                                }});
-                        }
+                        return input_partition.slice(
+                            Slices{{
+                                Slice{0, nr_elements0},
+                                Slice{0, kernel_radius}
+                            }});
+                    }
 
-                    ));
+                ));
 
             // South-west partition: get north-east corner elements
-            input_partitions_data(2, 0) = partition_shapes(2, 0).then(
-                hpx::util::unwrapping(
+            input_partitions_data(2, 0) = partition_shapes(2, 0).then(hpx::util::unwrapping(
 
-                        [kernel_radius, input_partition=input_partitions(2, 0)](
-                            Shape const& partition_shape)
-                        {
-                            auto const [nr_elements0, nr_elements1] = partition_shape;
+                    [kernel_radius, input_partition=input_partitions(2, 0)](
+                        Shape const& partition_shape)
+                    {
+                        auto const [nr_elements0, nr_elements1] = partition_shape;
 
-                            verify_border_partition_large_enough(nr_elements0, nr_elements1, kernel_radius);
+                        verify_border_partition_large_enough(nr_elements0, nr_elements1, kernel_radius);
 
-                            return input_partition.slice(
-                                Slices{{
-                                    Slice{0, kernel_radius},
-                                    Slice{nr_elements1 - kernel_radius, nr_elements1}
-                                }});
-                        }
+                        return input_partition.slice(
+                            Slices{{
+                                Slice{0, kernel_radius},
+                                Slice{nr_elements1 - kernel_radius, nr_elements1}
+                            }});
+                    }
 
-                    ));
+                ));
 
             // South partition: get north side elements
-            input_partitions_data(2, 1) = partition_shapes(2, 1).then(
-                hpx::util::unwrapping(
+            input_partitions_data(2, 1) = partition_shapes(2, 1).then(hpx::util::unwrapping(
 
-                        [kernel_radius, input_partition=input_partitions(2, 1)](
-                            Shape const& partition_shape)
-                        {
-                            auto const [nr_elements0, nr_elements1] = partition_shape;
+                    [kernel_radius, input_partition=input_partitions(2, 1)](
+                        Shape const& partition_shape)
+                    {
+                        auto const [nr_elements0, nr_elements1] = partition_shape;
 
-                            verify_border_partition_large_enough(nr_elements0, nr_elements1, kernel_radius);
+                        verify_border_partition_large_enough(nr_elements0, nr_elements1, kernel_radius);
 
-                            return input_partition.slice(
-                                Slices{{
-                                    Slice{0, kernel_radius},
-                                    Slice{0, nr_elements1}
-                                }});
-                        }
+                        return input_partition.slice(
+                            Slices{{
+                                Slice{0, kernel_radius},
+                                Slice{0, nr_elements1}
+                            }});
+                    }
 
-                    ));
+                ));
 
             // South-east partition: get north-west corner elements
-            input_partitions_data(2, 2) = partition_shapes(2, 2).then(
-                hpx::util::unwrapping(
+            input_partitions_data(2, 2) = partition_shapes(2, 2).then(hpx::util::unwrapping(
 
-                        [kernel_radius, input_partition=input_partitions(2, 2)](
-                            Shape const& partition_shape)
-                        {
-                            auto const [nr_elements0, nr_elements1] = partition_shape;
+                    [kernel_radius, input_partition=input_partitions(2, 2)](
+                        Shape const& partition_shape)
+                    {
+                        auto const [nr_elements0, nr_elements1] = partition_shape;
 
-                            verify_border_partition_large_enough(nr_elements0, nr_elements1, kernel_radius);
+                        verify_border_partition_large_enough(nr_elements0, nr_elements1, kernel_radius);
 
-                            return input_partition.slice(
-                                Slices{{
-                                    Slice{0, kernel_radius},
-                                    Slice{0, kernel_radius}
-                                }});
-                        }
+                        return input_partition.slice(
+                            Slices{{
+                                Slice{0, kernel_radius},
+                                Slice{0, kernel_radius}
+                            }});
+                    }
 
-                    ));
+                ));
         }
 
         lue_assert(all_are_valid(input_partitions_data));
@@ -552,8 +544,8 @@ OutputPartition focal_operation_partition(
             hpx::util::unwrapping(
 
                     [input_partitions, kernel /* , functor */](
-                        Offset const& offset,
-                        std::vector<hpx::shared_future<InputData>>const& input_partitions_data_futures,
+                        Offset offset,
+                        std::vector<hpx::shared_future<InputData>> input_partitions_data_futures,
                         OutputData output_partition_data)
                     {
                         AnnotateFunction annotation{"focal_operation_partition"};
@@ -1100,7 +1092,7 @@ PartitionT<InputPartitions, OutputElementT<Functor>> spawn_focal_operation_parti
     Action const& action,
     Kernel const& kernel,
     Functor const& functor,
-    InputPartitions&& input_partitions)
+    InputPartitions input_partitions)
 {
     static_assert(rank<InputPartitions> == 2);
 
@@ -1112,7 +1104,7 @@ PartitionT<InputPartitions, OutputElementT<Functor>> spawn_focal_operation_parti
     return hpx::when_all(input_partitions.begin(), input_partitions.end()).then(hpx::util::unwrapping(
 
             [locality_id, action, kernel, functor](
-                std::vector<InputPartition>&& input_partitions)
+                std::vector<InputPartition> input_partitions)
             {
                 AnnotateFunction annotation{"focal_operation"};
 
@@ -1232,37 +1224,26 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
     {
         for(Index cp = 0; cp < nr_partitions1; ++cp)
         {
-            // FIXME Why can't we attach continuations to a const component?
-            InputPartition& input_partition = const_cast<InputPartition&>(input_partitions(rp, cp));
+            InputPartition const& input_partition{input_partitions(rp, cp)};
 
-            halo_longitudinal_side_partitions(rh, cp) = input_partition.then(
+            halo_longitudinal_side_partitions(rh, cp) =
+                hpx::dataflow(
+                    hpx::launch::async,
+                    hpx::util::unwrapping(
 
-                    [locality_id=localities(rp, cp), kernel_radius, fill_value](
-                        InputPartition const& input_partition)
-                    {
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wattributes"
-                        return hpx::dataflow(
-                            hpx::launch::async,
-                            hpx::util::unwrapping(
+                            [input_partition, locality_id=localities(rp, cp), kernel_radius, fill_value](
+                                Shape const& partition_shape)
+                            {
+                                HPX_UNUSED(input_partition);
 
-                                    [locality_id, input_partition, kernel_radius, fill_value](
-                                        Shape const& partition_shape)
-                                    {
-                                        HPX_UNUSED(input_partition);
+                                return InputPartition{
+                                    locality_id, Offset{},
+                                    Shape{{kernel_radius, partition_shape[1]}},
+                                    fill_value};
+                            }
 
-                                        return InputPartition{
-                                            locality_id, Offset{},
-                                            Shape{{kernel_radius, partition_shape[1]}},
-                                            fill_value};
-                                    }
-
-                                ),
-                            input_partition.shape());
-#pragma GCC diagnostic pop
-                    }
-
-                );
+                        ),
+                    input_partition.shape());
         }
     }
 
@@ -1282,37 +1263,26 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
             std::array<Index, 2>{{0, 0}},
             std::array<Index, 2>{{1, nr_partitions1 - 1}}})
         {
-            // FIXME Why can't we attach continuations to a const component?
-            InputPartition& input_partition = const_cast<InputPartition&>(input_partitions(rp, cp));
+            InputPartition const& input_partition{input_partitions(rp, cp)};
 
-            halo_latitudinal_sides_partitions(rp, ch) = input_partition.then(
+            halo_latitudinal_sides_partitions(rp, ch) =
+                hpx::dataflow(
+                    hpx::launch::async,
+                    hpx::util::unwrapping(
 
-                    [locality_id=localities(rp, cp), kernel_radius, fill_value](
-                        InputPartition const& input_partition)
-                    {
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wattributes"
-                        return hpx::dataflow(
-                            hpx::launch::async,
-                            hpx::util::unwrapping(
+                            [input_partition, locality_id=localities(rp, cp), kernel_radius, fill_value](
+                                Shape const& partition_shape)
+                            {
+                                HPX_UNUSED(input_partition);
 
-                                    [locality_id, input_partition, kernel_radius, fill_value](
-                                        Shape const& partition_shape)
-                                    {
-                                        HPX_UNUSED(input_partition);
+                                return InputPartition{
+                                    locality_id, Offset{},
+                                    Shape{{partition_shape[0], kernel_radius}},
+                                    fill_value};
+                            }
 
-                                        return InputPartition{
-                                            locality_id, Offset{},
-                                            Shape{{partition_shape[0], kernel_radius}},
-                                            fill_value};
-                                    }
-
-                                ),
-                            input_partition.shape());
-#pragma GCC diagnostic pop
-                    }
-
-                );
+                        ),
+                    input_partition.shape());
         }
     }
 
