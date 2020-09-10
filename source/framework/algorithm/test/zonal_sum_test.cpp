@@ -7,7 +7,41 @@
 #include "lue/framework/test/hpx_unit_test.hpp"
 
 
-BOOST_AUTO_TEST_CASE(zonal_sum_2d_int32)
+BOOST_AUTO_TEST_CASE(zonal_sum_0d_2d_int32)
+{
+    using Value = std::int32_t;
+    using Class = std::uint64_t;
+    std::size_t const rank = 2;
+
+    using ValueArray = lue::PartitionedArray<Value, rank>;
+    using ClassArray = lue::PartitionedArray<Class, rank>;
+    using Shape = lue::ShapeT<ValueArray>;
+
+    Shape const array_shape{{9, 9}};
+    Shape const partition_shape{{3, 3}};
+
+    ClassArray class_array{lue::array_partition_id(ClassArray{array_shape, partition_shape})};
+
+    auto zonal_sum = lue::zonal_sum<Value>(1, class_array);
+
+    ValueArray array_we_want = lue::test::create_partitioned_array<ValueArray>(
+        array_shape, partition_shape, {
+            { 9, 9, 9, 9, 9, 9, 9, 9, 9 },
+            { 9, 9, 9, 9, 9, 9, 9, 9, 9 },
+            { 9, 9, 9, 9, 9, 9, 9, 9, 9 },
+            { 9, 9, 9, 9, 9, 9, 9, 9, 9 },
+            { 9, 9, 9, 9, 9, 9, 9, 9, 9 },
+            { 9, 9, 9, 9, 9, 9, 9, 9, 9 },
+            { 9, 9, 9, 9, 9, 9, 9, 9, 9 },
+            { 9, 9, 9, 9, 9, 9, 9, 9, 9 },
+            { 9, 9, 9, 9, 9, 9, 9, 9, 9 },
+        });
+
+    lue::test::check_arrays_are_equal(zonal_sum, array_we_want);
+}
+
+
+BOOST_AUTO_TEST_CASE(zonal_sum_2d_2d_int32)
 {
     using Value = std::int32_t;
     using Class = std::uint64_t;

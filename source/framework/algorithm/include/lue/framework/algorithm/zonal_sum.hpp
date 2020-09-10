@@ -87,6 +87,18 @@ template<
     typename Zone,
     Rank rank>
 PartitionedArray<Element, rank> zonal_sum(
+    Element const& value,
+    PartitionedArray<Zone, rank> const& zones)
+{
+    return zonal_operation(value, zones, detail::ZonalSum<Element, Zone>{});
+}
+
+
+template<
+    typename Element,
+    typename Zone,
+    Rank rank>
+PartitionedArray<Element, rank> zonal_sum(
     PartitionedArray<Element, rank> const& array,
     PartitionedArray<Zone, rank> const& zones)
 {
