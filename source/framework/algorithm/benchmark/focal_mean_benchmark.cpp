@@ -105,7 +105,7 @@ auto setup_benchmark(
     };
 
     return lue::benchmark::ModelBenchmark<decltype(callable), lue::benchmark::AlgorithmBenchmarkResult>{
-        std::move(callable), environment, task, true};
+        std::move(callable), environment, task};
 }
 
 
