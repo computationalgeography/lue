@@ -5,15 +5,16 @@ benchmark_name="lue_algorithm_sqrt_benchmark"
 benchmark_name="lue_algorithm_multiply_benchmark"
 benchmark_name="lue_algorithm_iterate_per_element_benchmark"
 benchmark_name="lue_algorithm_focal_mean_benchmark"
+benchmark_name="lue_case_study_wildfire_benchmark"
 trace_prefix=$LUE_OBJECTS/trace/$benchmark_name-$(date +%Y%m%d_%H%M)
 
 nr_threads=4
 count=1
-nr_time_steps=50
-max_tree_depth=50
-array_size=10000
-partition_size=700  # 300  # 346  # 800
-cluster_name=gransasso
+nr_time_steps=10
+max_tree_depth=$nr_time_steps
+array_size=5000
+partition_size=300  # 300  # 346  # 800
+cluster_name=snowdon
 
 # Make sure SLURM and APEX can create the output files
 mkdir $trace_prefix
@@ -29,6 +30,7 @@ export APEX_OTF2_ARCHIVE_PATH=$trace_prefix
 #    --hpx:bind=balanced --hpx:numa-sensitive
 
 $LUE_OBJECTS/bin/$benchmark_name \
+    --hpx:ini="hpx.agas.max_pending_refcnt_requests!=50" \
     --hpx:bind="thread:0-$((nr_threads-1))=core:0-$((nr_threads-1)).pu:0" \
     --hpx:ini="hpx.os_threads=$nr_threads" \
     --hpx:dump-config --hpx:print-bind \
