@@ -66,12 +66,13 @@ def generate_script_slurm_threads(
 
         job_steps += [
             # Run the benchmark, resulting in a json file
-            "srun {srun_configuration} {command_pathname} "
+            "srun --ntasks {nr_tasks} {srun_configuration} {command_pathname} "
                 '--hpx:ini="hpx.parcel.mpi.enable=1" '
                 '--hpx:ini="hpx.os_threads={nr_threads}" '
                 '--hpx:bind="{thread_binding}" '
                 '{program_configuration}'
                 .format(
+                    nr_tasks=1,  # Single NUMA node or cluster node
                     srun_configuration=job.srun_configuration(cluster),
                     command_pathname=experiment.command_pathname,
                     nr_threads=nr_threads,
