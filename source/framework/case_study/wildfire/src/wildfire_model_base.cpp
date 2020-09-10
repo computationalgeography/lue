@@ -92,7 +92,7 @@ void WildfireModelBase::initialize()
     _spot_ignite_probability = _ignite_probability / ScalarElement{50.0};
 
     _fire_age = array_like<CountElement>(_fire, 0);
-    _nr_burnt_cells = zonal_sum<CountElement>(1, _fire);
+    _nr_burnt_cells = where(_fire, zonal_sum<CountElement>(1, _fire), CountElement{0});
 }
 
 
@@ -141,7 +141,7 @@ void WildfireModelBase::simulate(
     _fire_age = where(_fire, _fire_age + 1u, _fire_age);
 
     // Number of cells that are burning or have burnt
-    _nr_burnt_cells = zonal_sum<CountElement>(1, _fire);
+    _nr_burnt_cells = where(_fire, zonal_sum<CountElement>(1, _fire), CountElement{0});
 
     // Burning cells
     _burning = _fire && _fire_age < 30u;

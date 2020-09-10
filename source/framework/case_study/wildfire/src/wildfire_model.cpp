@@ -80,7 +80,7 @@ WildfireModel::~WildfireModel()
 
 WildfireModel::BooleanRaster WildfireModel::initial_fire() const
 {
-    return uniform(_clone, 0.0, 1.0) < 1e-5;
+    return uniform(_clone, 0.0, 1.0) < 5e-5;
 }
 
 
