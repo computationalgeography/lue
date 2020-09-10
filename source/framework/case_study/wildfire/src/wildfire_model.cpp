@@ -65,6 +65,7 @@ WildfireModel::WildfireModel(
     _fire_layer{_variable_raster_view.add_layer<BooleanElement>("fire")},
     _burning_layer{_variable_raster_view.add_layer<BooleanElement>("burning")},
     _fire_age_layer{_variable_raster_view.add_layer<CountElement>("fire_age")},
+    _nr_burnt_cells_layer{_variable_raster_view.add_layer<CountElement>("nr_burnt_cells")},
     _state_layer{_variable_raster_view.add_layer<NominalElement>("state")}
 
 {
@@ -119,6 +120,7 @@ void WildfireModel::simulate(
         _written.push_back(write(fire(), _fire_layer, time_step));
         _written.push_back(write(burning(), _burning_layer, time_step));
         _written.push_back(write(fire_age(), _fire_age_layer, time_step));
+        _written.push_back(write(nr_burnt_cells(), _nr_burnt_cells_layer, time_step));
         _written.push_back(write(state(), _state_layer, time_step));
     }
 }

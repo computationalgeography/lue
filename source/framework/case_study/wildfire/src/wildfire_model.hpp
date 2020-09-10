@@ -62,6 +62,8 @@ private:
 
     VariableRasterView::Layer _fire_age_layer;
 
+    VariableRasterView::Layer _nr_burnt_cells_layer;
+
     VariableRasterView::Layer _state_layer;
 
     std::vector<hpx::future<void>> _written;

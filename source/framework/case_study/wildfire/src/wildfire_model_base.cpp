@@ -21,6 +21,7 @@ WildfireModelBase::WildfireModelBase(
     _ignite_probability{},
     _spot_ignite_probability{},
     _fire_age{},
+    _nr_burnt_cells{},
     _state_ptr{state_ptr}
 
 {
@@ -58,6 +59,12 @@ WildfireModelBase::CountRaster const& WildfireModelBase::fire_age() const
 }
 
 
+WildfireModelBase::CountRaster const& WildfireModelBase::nr_burnt_cells() const
+{
+    return _nr_burnt_cells;
+}
+
+
 void WildfireModelBase::initialize()
 {
     // Call functions of the specialization to initialize the modelled
@@ -71,12 +78,8 @@ void WildfireModelBase::initialize()
 
     // Create two areas that differ in how fast they catch fire
     // TODO Use round distribution of weights
-    Radius const kernel_radius{25};  // 51x51
+    Radius const kernel_radius{25};  // == 51x51
     Kernel const kernel = lue::box_kernel<ScalarElement, 2>(kernel_radius, 1.0);
-
-    // ScalarRaster meh = uniform(_burning, 0.0, 1.0);
-    // ScalarRaster mah = focal_mean(meh, kernel);
-    // BooleanRaster mih = mah < 0.5;
 
     BooleanRaster burnability =
         focal_mean(uniform(_burning, ScalarElement{0.0}, ScalarElement{1.0}), kernel) < ScalarElement{0.5};
@@ -89,6 +92,7 @@ void WildfireModelBase::initialize()
     _spot_ignite_probability = _ignite_probability / ScalarElement{50.0};
 
     _fire_age = array_like<CountElement>(_fire, 0);
+    _nr_burnt_cells = zonal_sum<CountElement>(1, _fire);
 }
 
 
@@ -97,7 +101,7 @@ void WildfireModelBase::simulate(
 {
     // Find pixels where at least one neighbour is burning and that
     // themselves are not yet burning or burnt down
-    KernelShape kernel_shape{3, 3};
+    static KernelShape const kernel_shape{3, 3};
     Kernel kernel{
             kernel_shape,
             std::initializer_list<ScalarElement>{
@@ -121,7 +125,7 @@ void WildfireModelBase::simulate(
     // fire pixels over a distance (jump dispersal). This should be
     // a round window preferable, diameter I do not know
     // FIXME: round distribution of kernel weights, cirkel_kernel
-    Radius const kernel_radius{2};  // 5x5
+    Radius const kernel_radius{2};  // == 5x5
     kernel = box_kernel<ScalarElement, 2>(kernel_radius, 1.0);
     BooleanRaster const jump_cells =
         // FIXME 0.5 -> 0.0
@@ -135,6 +139,9 @@ void WildfireModelBase::simulate(
 
     // Age of fire in timesteps
     _fire_age = where(_fire, _fire_age + 1u, _fire_age);
+
+    // Number of cells that are burning or have burnt
+    _nr_burnt_cells = zonal_sum<CountElement>(1, _fire);
 
     // Burning cells
     _burning = _fire && _fire_age < 30u;

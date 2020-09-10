@@ -17,7 +17,7 @@ public:
 
     using NominalElement = std::int32_t;
 
-    using ScalarElement = float;
+    using ScalarElement = double;
 
     using CountElement = std::uint32_t;
 
@@ -77,6 +77,9 @@ protected:
     CountRaster const&
                    fire_age            () const;
 
+    CountRaster const&
+                   nr_burnt_cells      () const;
+
     NominalRaster const& state() const
     {
         return *_state_ptr;
@@ -100,6 +103,8 @@ private:
     ScalarRaster   _spot_ignite_probability;
 
     CountRaster    _fire_age;
+
+    CountRaster    _nr_burnt_cells;
 
     NominalRasterPtr _state_ptr;
 
