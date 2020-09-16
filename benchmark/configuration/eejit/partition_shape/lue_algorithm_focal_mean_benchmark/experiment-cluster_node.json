@@ -1,10 +1,10 @@
 {
     "nr_time_steps": 500,
     "array": {
-        "shape": [55000, 55000]
+        "shape": [96000, 96000]
     },
     "partition": {
-        "shape": [500, 500],
+        "shape": [600, 600],
         "range": {
             "max_nr_elements": 3000000,
             "multiplier": 1.7,

@@ -5,6 +5,7 @@
         "settings": {
             "partition": "allq",
             "sbatch_options": [
+                "--qos=swdev"
                 # "--qos=priority"
             ],
             "srun_options": [

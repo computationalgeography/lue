@@ -1,13 +1,13 @@
 {
-    "nr_time_steps": 250,
+    "nr_time_steps": 500,
     "array": {
         "shape": [30000, 30000]
     },
     "partition": {
-        "shape": [1800, 1800],
+        "shape": [500, 500],
         "range": {
-            "max_nr_elements": 10000000,
-            "multiplier": 1.2,
+            "max_nr_elements": 3000000,
+            "multiplier": 1.7,
             "method": "linear"
         }
     }

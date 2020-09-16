@@ -1,14 +1,14 @@
 {
-    "nr_time_steps": 50,
+    "nr_time_steps": 500,
     "array": {
         "shape": [30000, 30000]
     },
     "partition": {
-        "shape": [200, 200],
+        "shape": [600, 600],
         "range": {
-            "max_nr_elements": 1000000,
-            "multiplier": 2.0,
-            "method": "exponential"
+            "max_nr_elements": 4000000,
+            "multiplier": 1.7,
+            "method": "linear"
         }
     }
 }
