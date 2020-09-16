@@ -1,6 +1,6 @@
 {
     "scenario": "thread_cluster_node",
-    "count": 5,
+    "count": 1,
     "locality_per": "cluster_node",
     "worker": {
         "type": "thread",

@@ -1,13 +1,11 @@
 {
-    "nr_time_steps": 100,
-    "max_tree_depth": 5,
+    "nr_time_steps": 10,
     "array": {
         "shape": [10000, 10000]
     },
     "partition": {
         "shape": [200, 200],
         "range": {
-            # TODO Increase to 1.000.000
             "max_nr_elements": 800000,
             "multiplier": 1.5,
             "method": "linear"

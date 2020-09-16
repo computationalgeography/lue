@@ -1,5 +1,5 @@
 {
-    "nr_time_steps": 500,
+    "nr_time_steps": 5,
     "array": {
         "shape": [10000, 10000]
     },
