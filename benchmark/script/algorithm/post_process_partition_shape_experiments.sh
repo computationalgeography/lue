@@ -6,10 +6,5 @@ source $dirname/header.sh
 experiment_name="partition_shape"
 
 
-# algorithm_names="
-# "
-# scenarios="
-# "
-
 
 source $dirname/post_experiment_footer.sh

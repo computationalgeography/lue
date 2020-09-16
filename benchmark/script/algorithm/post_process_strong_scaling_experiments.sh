@@ -6,10 +6,4 @@ source $dirname/header.sh
 experiment_name="strong_scaling"
 
 
-# algorithm_names="
-# "
-# scenarios="
-# "
-
-
 source $dirname/post_experiment_footer.sh
