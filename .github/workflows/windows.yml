@@ -49,8 +49,6 @@ jobs:
         - name: build lue
           shell: bash
           run: |
-              pwd
-              ls -l build
               cmake --build build --target ALL_BUILD --config Release
 
         - name: install lue
