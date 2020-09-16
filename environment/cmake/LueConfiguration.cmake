@@ -416,8 +416,8 @@ if(LUE_GDAL_REQUIRED)
     if(NOT LUE_HAVE_GDAL)
         # https://conan.io/center/gdal/3.1.2
         set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} gdal/3.1.2)
-        set(LUE_CONAN_OPTIONS ${LUE_CONAN_OPTIONS}
-                gdal:with_qhull=False)
+        # set(LUE_CONAN_OPTIONS ${LUE_CONAN_OPTIONS}
+        #         gdal:with_qhull=False)
     endif()
 endif()
 
