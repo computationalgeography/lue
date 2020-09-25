@@ -160,6 +160,56 @@ Kernel<Weight, rank> box_kernel(
 }
 
 
+template<
+    typename Weight,
+    Rank rank>
+Kernel<Weight, rank> circle_kernel(
+    Radius const radius,
+    Weight const value)
+{
+    static_assert(rank <= 2);
+
+    if constexpr(rank == 1)
+    {
+        return box_kernel<Weight, rank>(radius, value);
+    }
+    else {
+        using Kernel = Kernel<Weight, rank>;
+        using Shape = ShapeT<Kernel>;
+
+        Shape shape{};
+        std::fill(shape.begin(), shape.end(), 2 * radius + 1);
+
+        Kernel kernel{shape, Weight{0}};
+
+        // Assign the weight to all cells whose center is within a radius
+        // distance of the kernel's centre
+        Radius const distance_measure{radius * radius};
+
+        {
+            Radius dist0, dist1;
+
+            for(Index idx0 = 0; idx0 < shape[0]; ++idx0)
+            {
+                dist0 = (idx0 - radius) * (idx0 - radius);
+
+                for(Index idx1 = 0; idx1 < shape[1]; ++idx1)
+                {
+                    dist1 = (idx1 - radius) * (idx1 - radius);
+
+                    if(dist0 + dist1 <= distance_measure)
+                    {
+                        kernel(idx0, idx1) = value;
+                    }
+                }
+            }
+        }
+
+        return kernel;
+    }
+}
+
+
 namespace detail {
 
 template<
