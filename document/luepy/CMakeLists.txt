@@ -21,6 +21,7 @@ add_custom_target(
             -q -b html
             -c ${CMAKE_CURRENT_BINARY_DIR}/_build
             -d ${CMAKE_CURRENT_BINARY_DIR}/_build/doctrees
+            -Dbreathe_projects.LUE=${PROJECT_BINARY_DIR}/source/xml
             ${CMAKE_CURRENT_SOURCE_DIR}
             ${CMAKE_CURRENT_BINARY_DIR}/_build/html
     COMMENT "Generating luepy documentation"

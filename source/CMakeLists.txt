@@ -58,6 +58,7 @@ if(LUE_BUILD_DOCUMENTATION)
     ### )
 
     # set(DOXYGEN_ENABLE_PREPROCESSING FALSE)
+    set(DOXYGEN_GENERATE_XML YES)
     doxygen_add_docs(cpp_doc
         doc
         shared
