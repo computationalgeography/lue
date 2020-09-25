@@ -29,12 +29,13 @@ def export_partition_shape_results(
     if count == 1:
         assert False, "Implement!"
     else:
-        # Write the folowing columns:
+        # Write the following columns:
         # - partition_shape
         # - nr_partitions
         # - {mean,std}_duration
         csv_writer.writerow([
-                    "partition_shape",
+                    # "partition_shape",
+                    "partition_size",
                     "nr_partitions",
                     "mean_duration",
                     "std_duration",
@@ -47,7 +48,8 @@ def export_partition_shape_results(
 
         for n in range(len(partition_shape)):
             csv_writer.writerow([
-                    "{},{}".format(*partition_shape[n]),
+                    # "{},{}".format(*partition_shape[n]),
+                    np.prod(partition_shape[n]),
                     nr_partitions[n],
                     mean_duration[n],
                     std_duration[n],
@@ -65,19 +67,21 @@ def export_strong_scaling_results(
     nr_workers = nr_workers[sort_idxs]
 
     if count == 1:
-        # Write the folowing columns:
+        # Write the following columns:
         # - nr_workers
         # - relative_speed_up
         # - relative_efficiency
         # - lups
         csv_writer.writerow([
                     "nr_workers",
+                    "duration",
                     "relative_speed_up",
                     "relative_efficiency",
                     "lups",
                 ])
 
         lue_scaling = lue_dataset.benchmark.scaling
+        duration = lue_measurement.duration.value[:][sort_idxs]
         relative_speed_up = lue_scaling.relative_speed_up.value[:][sort_idxs]
         relative_efficiency = lue_scaling.relative_efficiency.value[:][sort_idxs]
         lups = lue_scaling.lups.value[:][sort_idxs]
@@ -85,12 +89,13 @@ def export_strong_scaling_results(
         for n in range(len(nr_workers)):
             csv_writer.writerow([
                     nr_workers[n],
-                    relative_speed_up[n],
-                    relative_efficiency[n],
-                    lups[n],
+                    duration[n][0],
+                    relative_speed_up[n][0],
+                    relative_efficiency[n][0],
+                    lups[n][0],
                 ])
     else:
-        # Write the folowing columns:
+        # Write the following columns:
         # - nr_workers
         # - {mean,std}_duration
         # - {mean,std}_relative_efficiency
@@ -136,14 +141,32 @@ def export_weak_scaling_results(
     nr_workers = nr_workers[sort_idxs]
 
     if count == 1:
-        # Write the folowing columns:
+        # Write the following columns:
         # - nr_workers
         # - duration
         # - relative_efficiency
         # - lups
-        assert False, "Implement!"
+        csv_writer.writerow([
+                    "nr_workers",
+                    "duration",
+                    "relative_efficiency",
+                    "lups",
+                ])
+
+        lue_scaling = lue_dataset.benchmark.scaling
+        duration = lue_measurement.duration.value[:]
+        relative_efficiency = lue_scaling.relative_efficiency.value[:][sort_idxs]
+        lups = lue_scaling.lups.value[:][sort_idxs]
+
+        for n in range(len(nr_workers)):
+            csv_writer.writerow([
+                    nr_workers[n],
+                    duration[n][0],
+                    relative_efficiency[n][0],
+                    lups[n][0],
+                ])
     else:
-        # Write the folowing columns:
+        # Write the following columns:
         # - nr_workers
         # - {mean,std}_duration
         # - {mean,std}_relative_efficiency
