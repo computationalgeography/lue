@@ -140,6 +140,44 @@ std::ostream& operator<<(
 namespace lue {
 
 template<
+    typename Element,
+    Rank rank>
+std::ostream& operator<<(
+    std::ostream& stream,
+    Array<Element, rank> const& data)
+{
+    stream
+        << data.shape()
+        << ", "
+        << "[\n";
+
+    auto joiner = std::experimental::make_ostream_joiner(stream, ", ");
+
+    auto const nr_elements = lue::nr_elements(data.shape());
+    auto const begin = data.begin();
+    auto const end = data.end();
+
+    // Max number of values to print at start and end
+    Count const halo = 15;
+
+    if(nr_elements <= 2 * halo) {
+        // Print all values
+        std::copy(begin, end, joiner);
+    }
+    else {
+        // Print first and last halo number of values
+        std::copy(begin, begin + halo, joiner);
+        stream << ", ..., ";
+        std::copy(end - halo, end, joiner);
+    }
+
+    stream << "]\n";
+
+    return stream;
+}
+
+
+template<
     typename Index,
     Rank rank>
 std::ostream& operator<<(
