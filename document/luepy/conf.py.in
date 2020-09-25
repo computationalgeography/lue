@@ -5,6 +5,7 @@ sys.path.insert(0, "@CMAKE_CURRENT_SOURCE_DIR@")
 
 
 extensions = [
+    "breathe",
     "sphinx.ext.autodoc",
     "sphinx.ext.graphviz",
     "sphinx.ext.inheritance_diagram",
@@ -74,3 +75,5 @@ def setup(app):
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3.8", None)
 }
+
+breathe_default_project = "LUE"
