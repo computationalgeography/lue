@@ -28,7 +28,7 @@ public:
 
         Aggregator():
             _sum{0},
-            _count{0}
+            _sum_of_weights{0}
         {
         }
 
@@ -43,21 +43,21 @@ public:
             if constexpr(std::is_same_v<Weight, bool>) {
                 if(weight && !std::isnan(value)) {
                     _sum += value;
-                    ++_count;
+                    _sum_of_weights += 1.0;
                 }
             }
             else {
                 if(!std::isnan(value)) {
                     _sum += weight * value;
-                    ++_count;
+                    _sum_of_weights += weight;
                 }
             }
         }
 
         OutputElement operator()() const
         {
-            return _count > 0
-                ? _sum / _count
+            return _sum_of_weights > 0.0
+                ? _sum / _sum_of_weights
                 : std::numeric_limits<InputElement>::quiet_NaN();
         }
 
@@ -65,7 +65,7 @@ public:
 
         OutputElement _sum;
 
-        Count _count;
+        double _sum_of_weights;
 
     };
 
