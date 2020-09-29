@@ -77,12 +77,11 @@ void WildfireModelBase::initialize()
     _burning = copy(_fire);
 
     // Create two areas that differ in how fast they catch fire
-    // TODO Use round distribution of weights
-    Radius const kernel_radius{25};  // == 51x51
-    Kernel const kernel = lue::box_kernel<ScalarElement, 2>(kernel_radius, 1.0);
+    static Kernel const kernel_51x51 = circle_kernel<ScalarElement, 2>(25, 1.0);
 
     BooleanRaster burnability =
-        focal_mean(uniform(_burning, ScalarElement{0.0}, ScalarElement{1.0}), kernel) < ScalarElement{0.5};
+        focal_mean(uniform(_burning, ScalarElement{0.0}, ScalarElement{1.0}), kernel_51x51) <
+        ScalarElement{0.5};
 
     // Assign probabilities for catching fire
     _ignite_probability = where(burnability, ScalarElement{0.05}, ScalarElement{0.01});
@@ -101,20 +100,12 @@ void WildfireModelBase::simulate(
 {
     // Find pixels where at least one neighbour is burning and that
     // themselves are not yet burning or burnt down
-    static KernelShape const kernel_shape{3, 3};
-    Kernel kernel{
-            kernel_shape,
-            std::initializer_list<ScalarElement>{
-                    0.0, 1.0, 0.0,
-                    1.0, 1.0, 1.0,
-                    0.0, 1.0, 0.0
-                }
-        };
 
     // TODO Would be useful to be able to pass in output element type
     //     to focal_sum. That would get rid of the cast.
+    static Kernel const kernel_3x3 = circle_kernel<ScalarElement, 2>(1, 1.0);
     BooleanRaster cells_not_burning_surrounded_by_fire =
-        focal_sum(cast<CountElement>(_burning), kernel) > 0u && !_fire;
+        focal_sum(cast<CountElement>(_burning), kernel_3x3) > 0u && !_fire;
 
     // Select cells that catch new fire from direct neighbours
     BooleanRaster const new_fire =
@@ -124,12 +115,10 @@ void WildfireModelBase::simulate(
     // Find pixels that have not burned down or at fire and that have
     // fire pixels over a distance (jump dispersal). This should be
     // a round window preferable, diameter I do not know
-    // FIXME: round distribution of kernel weights, cirkel_kernel
-    Radius const kernel_radius{2};  // == 5x5
-    kernel = box_kernel<ScalarElement, 2>(kernel_radius, 1.0);
+    static Kernel const kernel_5x5 = circle_kernel<ScalarElement, 2>(2, 1.0);
     BooleanRaster const jump_cells =
         // FIXME 0.5 -> 0.0
-        focal_sum(cast<CountElement>(_burning), kernel) > 0u && !_fire;
+        focal_sum(cast<CountElement>(_burning), kernel_5x5) > 0u && !_fire;
 
     // Select cells that catch new fire by jumping fire
     BooleanRaster const new_fire_jump =
