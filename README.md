@@ -23,7 +23,7 @@ More information about LUE:
 | ---------- | -------------------------------------------------------- |
 | Linux CI   | Release build of data model, framework and related tests |
 | macOS CI   | Release build of data model and related tests            |
-| Windows CI | Initial set-up only                                      |
+| Windows CI | Release build of data model, without utilities           |
 
 ## Publications
 - de Jong, K., Karssenberg, D., A physical data model for spatio-temporal

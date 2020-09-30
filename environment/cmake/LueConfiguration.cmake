@@ -414,8 +414,10 @@ endif()
 
 if(LUE_GDAL_REQUIRED)
     if(NOT LUE_HAVE_GDAL)
-        # https://conan.io/center/gdal/3.1.0
-        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} gdal/3.1.0)
+        # https://conan.io/center/gdal/3.1.2
+        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} gdal/3.1.2)
+        # set(LUE_CONAN_OPTIONS ${LUE_CONAN_OPTIONS}
+        #         gdal:with_qhull=False)
     endif()
 endif()
 
@@ -428,12 +430,6 @@ if(LUE_HDF5_REQUIRED)
         set(HDF5_VERSION 1.12.0)
         set(HDF5_IS_PARALLEL FALSE)
         set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} hdf5/${HDF5_VERSION})
-        set(LUE_CONAN_OPTIONS ${LUE_CONAN_OPTIONS}
-                hdf5:shared=True
-                hdf5:enable_cxx=False
-                hdf5:hl=False
-                hdf5:threadsafe=True
-                hdf5:with_zlib=True)
     endif()
 endif()
 

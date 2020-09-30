@@ -37,20 +37,18 @@ jobs:
                       -S . \
                       -B build \
                       -G "Visual Studio 16 2019" -A x64 \
+                      -DCMAKE_BUILD_TYPE=Release \
                       -DLUE_HAVE_BOOST=TRUE \
                       -DBoost_USE_STATIC_LIBS=FALSE \
-                      -DLUE_HAVE_GDAL=FALSE \
                       -DLUE_BUILD_DOCUMENTATION=FALSE \
                       -DLUE_BUILD_TEST=FALSE \
                       -DLUE_BUILD_DATA_MODEL=TRUE \
                       -DLUE_DATA_MODEL_WITH_PYTHON_API=FALSE \
-                      -DLUE_DATA_MODEL_WITH_UTILITIES=TRUE
+                      -DLUE_DATA_MODEL_WITH_UTILITIES=FALSE
 
         - name: build lue
           shell: bash
           run: |
-              pwd
-              ls -l build
               cmake --build build --target ALL_BUILD --config Release
 
         - name: install lue
