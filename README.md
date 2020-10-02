@@ -66,7 +66,7 @@ libaries and tools must be installed:
 | `LUE_DATA_MODEL_WITH_UTILITIES`  | Docopt, GDAL, Nlohmann JSON libraries                     |
 | `LUE_FRAMEWORK_WITH_PYTHON_API`  | Python, pybind11, NumPy                                   |
 | `LUE_BUILD_TEST`                 | Boost unit-test framework library                         |
-| `LUE_BUILD_DOCUMENTATION`        | Doxygen, Graphviz, Sphinx                                 |
+| `LUE_BUILD_DOCUMENTATION`        | Breathe, Doxygen, Graphviz, Sphinx                        |
 
 There are three options for installing prerequistie libraries and tools:
 1. Install using platform specific package manager

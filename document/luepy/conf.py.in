@@ -74,3 +74,5 @@ def setup(app):
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3.8", None)
 }
+
+breathe_default_project = "LUE"

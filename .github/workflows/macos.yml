@@ -23,7 +23,7 @@ jobs:
           run: |
               brew update
               brew upgrade
-              brew install cmake boost doxygen gdal graphviz gperftools hdf5 hwloc ninja
+              brew install cmake boost doxygen gdal graphviz gperftools hdf5 hwloc ninja tree
 
         - uses: goanpeca/setup-miniconda@v1
           with:
@@ -32,7 +32,7 @@ jobs:
               channels: conda-forge
         - shell: bash -l {0}
           run: |
-              conda install conan docopt numpy psutil sphinx
+              conda install breathe conan docopt numpy psutil sphinx_rtd_theme sphinx
 
         - name: configure lue
           shell: bash -l {0}
@@ -70,11 +70,15 @@ jobs:
               ctest --output-on-failure
 
         - name: generate lue documentation
+          if: matrix.python-version > 3
           shell: bash
           run: |
               cmake --build build --target cpp_doc py_doc
+              cmake --build build --target sphinx_doc
 
         - name: install lue
+          if: matrix.python-version > 3
           shell: bash
           run: |
               cmake --install build --prefix install
+              tree install
