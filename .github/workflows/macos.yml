@@ -23,7 +23,7 @@ jobs:
           run: |
               brew update
               brew upgrade
-              brew install cmake boost doxygen gdal graphviz gperftools hdf5 hwloc ninja
+              brew install cmake boost doxygen gdal graphviz gperftools hdf5 hwloc ninja tree
 
         - uses: goanpeca/setup-miniconda@v1
           with:

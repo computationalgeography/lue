@@ -24,7 +24,7 @@ jobs:
               sudo apt update
               sudo apt autoremove
               sudo apt upgrade
-              sudo apt install cmake doxygen graphviz hwloc lftp libboost-all-dev libgdal-dev libgoogle-perftools-dev libhdf5-dev ninja-build
+              sudo apt install cmake doxygen graphviz hwloc lftp libboost-all-dev libgdal-dev libgoogle-perftools-dev libhdf5-dev ninja-build tree
         - uses: goanpeca/setup-miniconda@v1
           with:
               auto-update-conda: true
