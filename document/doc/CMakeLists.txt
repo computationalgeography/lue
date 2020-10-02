@@ -31,7 +31,6 @@ doxygen_add_docs(
     )
 
 set(DOXYGEN_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/${DOXYGEN_OUTPUT_DIRECTORY})
-set(DOXYGEN_INDEX_FILE ${DOXYGEN_OUTPUT_DIR}/xml/index.xml)
 
 
 set(SPHINX_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
@@ -46,8 +45,8 @@ add_custom_command(
         -Dbreathe_projects.LUE=${DOXYGEN_OUTPUT_DIR}/xml
         ${SPHINX_SOURCE_DIR} ${SPHINX_BUILD_DIR}
         DEPENDS
+            doxygen_doc
             ${sphinx_sources}
-            ${DOXYGEN_INDEX_FILE}
         MAIN_DEPENDENCY
             ${CMAKE_CURRENT_SOURCE_DIR}/conf.py)
 
