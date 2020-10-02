@@ -1,24 +1,38 @@
-find_package(Doxygen REQUIRED)
+if(LUE_BUILD_DATA_MODEL)
+    set(data_model_root "${PROJECT_SOURCE_DIR}/source/data_model")
 
-set(DOXYGEN_INPUT_DIR
-        ${PROJECT_SOURCE_DIR}/source/data_model/hdf5
+    list(APPEND DOXYGEN_INPUT_DIR
+        ${data_model_root}/cxx
+        ${data_model_root}/doc
+        ${data_model_root}/hdf5
+        ${data_model_root}/hl)
+
+    if(LUE_DATA_MODEL_WITH_UTILITIES)
+        list(APPEND DOXYGEN_INPUT_DIR
+            ${data_model_root}/translate
+            ${data_model_root}/utility
+            ${data_model_root}/validate)
+    endif()
+
+    if(LUE_DATA_MODEL_WITH_PYTHON_API)
+        list(APPEND DOXYGEN_INPUT_DIR
+            ${data_model_root}/python)
+    endif()
+endif()
+
+
+set(DOXYGEN_GENERATE_HTML YES)
+set(DOXYGEN_GENERATE_XML YES)
+set(DOXYGEN_OUTPUT_DIRECTORY doxygen)
+
+doxygen_add_docs(
+        doxygen_doc
+        ${DOXYGEN_INPUT_DIR}
     )
-set(DOXYGEN_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/doxygen)
+
+set(DOXYGEN_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/${DOXYGEN_OUTPUT_DIRECTORY})
 set(DOXYGEN_INDEX_FILE ${DOXYGEN_OUTPUT_DIR}/xml/index.xml)
 
-configure_file(Doxyfile.in Doxyfile @ONLY)
-
-file(MAKE_DIRECTORY ${DOXYGEN_OUTPUT_DIR})
-
-add_custom_command(
-    OUTPUT ${DOXYGEN_INDEX_FILE}
-    COMMAND ${DOXYGEN_EXECUTABLE} Doxyfile
-    MAIN_DEPENDENCY Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
-
-add_custom_target(doxygen_doc DEPENDS ${DOXYGEN_INDEX_FILE})
-
-
-find_package(Sphinx REQUIRED)
 
 set(SPHINX_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(SPHINX_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/sphinx)

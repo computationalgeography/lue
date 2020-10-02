@@ -29,6 +29,12 @@ author = 'Kor de Jong'
 # ones.
 extensions = [
     "breathe",
+    "sphinx.ext.autodoc",
+    "sphinx.ext.graphviz",
+    "sphinx.ext.inheritance_diagram",
+    "sphinx.ext.ifconfig",
+    "sphinx.ext.intersphinx",
+    # "ext.generated_image",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -55,3 +61,6 @@ html_static_path = ['_static']
 
 breathe_default_project = "LUE"
 breathe_default_members = ("members", "undoc-members")
+
+# Doesn't seem to work
+# add_module_names = False
