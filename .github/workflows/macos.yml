@@ -32,7 +32,7 @@ jobs:
               channels: conda-forge
         - shell: bash -l {0}
           run: |
-              conda install breathe conan docopt numpy psutil sphinx
+              conda install breathe conan docopt numpy psutil sphinx_rtd_theme sphinx
 
         - name: configure lue
           shell: bash -l {0}
@@ -70,6 +70,7 @@ jobs:
               ctest --output-on-failure
 
         - name: generate lue documentation
+          if: matrix.python-version > 3
           shell: bash
           run: |
               cmake --build build --target cpp_doc py_doc
