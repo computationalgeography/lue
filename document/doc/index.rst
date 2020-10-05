@@ -13,6 +13,7 @@ LUE documentation
    Contributing <contribute/index>
    Publications <publication/index>
    About <about>
+   Related <related>
 
 
 What is LUE?
