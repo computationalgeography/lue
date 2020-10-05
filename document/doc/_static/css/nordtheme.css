@@ -38,6 +38,7 @@
 /* Override some colours */
 body {
     color: var(--color1);
+    font-size: 14pt;
 }
 
 .wy-nav-content {

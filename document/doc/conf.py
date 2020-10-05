@@ -73,3 +73,5 @@ breathe_default_members = ("members", "undoc-members")
 # add_module_names = False
 
 html_show_sourcelink = False
+
+graphviz_output_format = "svg"

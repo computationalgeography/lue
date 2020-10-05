@@ -1,7 +1,5 @@
 Reference
 =========
-Details of the LUE software: C++ API, Python API, command line utilities,
-...
 
 :ref:`genindex` | :ref:`modindex` | :ref:`search`
 
@@ -11,3 +9,4 @@ Details of the LUE software: C++ API, Python API, command line utilities,
 
    Python <python/index>
    C++ <cpp/index>
+   Utilities <utility/index>

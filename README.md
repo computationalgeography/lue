@@ -5,7 +5,7 @@ LUE is software for storing and manipulating large amounts of information
 for large amounts of objects. This information can optionally have a
 reference in time and space. For example, LUE can represent collections of
 wandering animals and their properties, some of which are changing through
-time, or the elevation of the surface of one or more areas. The software
+time, or the elevation of the surface of one or multiple areas. The software
 is useful, and currently mainly used, in the context of environmental
 modelling of biological and physical systems, represented by agents and
 fields, but we make sure that the software is as generic as possible,
