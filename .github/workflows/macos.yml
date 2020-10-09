@@ -32,7 +32,7 @@ jobs:
               channels: conda-forge
         - shell: bash -l {0}
           run: |
-              conda install breathe conan docopt numpy psutil sphinx_rtd_theme sphinx
+              conda install breathe conan docopt numpy psutil sphinx
 
         - name: configure lue
           shell: bash -l {0}
