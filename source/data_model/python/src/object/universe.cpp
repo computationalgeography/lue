@@ -60,7 +60,7 @@ void init_universe(
 
     :param str name: Name of universe to create
     :return: Universe created
-    :rtype: lue.Universe
+    :rtype: Universe
     :raises RuntimeError: In case the universe cannot be created
 )",
             py::return_value_policy::reference_internal)
@@ -110,7 +110,7 @@ void init_universe(
     :param str name: Name of phenomenon to create
     :param str description: Description
     :return: Phenomenon created
-    :rtype: lue.Phenomenon
+    :rtype: Phenomenon
     :raises RuntimeError: In case the phenomenon cannot be created
 )",
             py::return_value_policy::reference_internal)
@@ -121,7 +121,7 @@ void init_universe(
             R"(
     Return phenomena collection
 
-    :rtype: lue.Phenomena
+    :rtype: Phenomena
 )",
             py::return_value_policy::reference_internal)
 

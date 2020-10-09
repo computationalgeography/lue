@@ -93,6 +93,3 @@ Updating LUE to pick up the updated Sphinx theme involves these steps:
 
 .. _Read the Docs Sphinx Theme: https://sphinx-rtd-theme.readthedocs.io
 .. _Nord theme: https://www.nordtheme.com
-
-
-

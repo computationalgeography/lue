@@ -189,9 +189,9 @@ void init_dataset(
         r         Open dataset for reading (default)
         w         Open dataset for writing, truncating the dataset first
         ========= =======
-    :rtype: lue.Dataset
+    :rtype: Dataset
 
-    Updated datasets can be validated using :func:`lue.validate`.
+    Updated datasets can be validated using :func:`validate`.
 )",
         "name"_a,
         "mode"_a="r",
@@ -206,9 +206,9 @@ void init_dataset(
     :param str name: Name of dataset to create. If a file with this name
         already exists it will be overwritten.
     :param str description: Description
-    :rtype: lue.Dataset
+    :rtype: Dataset
 
-    Newly created datasets can be validated using :func:`lue.validate`.
+    Newly created datasets can be validated using :func:`validate`.
 )",
         "name"_a,
         "description"_a="",

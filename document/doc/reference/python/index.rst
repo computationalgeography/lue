@@ -1,5 +1,9 @@
 Python reference
 ================
-Details of the LUE Python API
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
 
-...
+   universe
+   phenomenon
+   dataset

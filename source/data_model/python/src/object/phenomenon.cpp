@@ -390,7 +390,7 @@ void init_phenomenon(
     :param str name: Name of property-set to create
     :param TimeConfiguration time_configuration: Configuration of
         time domain
-    :param lue.Clock clock: Clock for locations in time
+    :param Clock clock: Clock for locations in time
     :return: Property-set created
     :rtype: PropertySet
     :raises RuntimeError: In case the property-set cannot be created
@@ -425,7 +425,7 @@ void init_phenomenon(
     :param str name: Name of property-set to create
     :param TimeConfiguration time_configuration: Configuration of
         time domain
-    :param lue.Clock clock: Clock for locations in time
+    :param Clock clock: Clock for locations in time
     :param SpaceConfiguration space_configuration: Configuration of
         space domain
     :param numpy.dtype space_coordinate_dtype: Datatype of the spatial
@@ -518,7 +518,7 @@ void init_phenomenon(
     :param str name: Name of property-set to create
     :param TimeConfiguration time_configuration: Configuration of
         time domain
-    :param lue.Clock clock: Clock for locations in time
+    :param Clock clock: Clock for locations in time
     :param ObjectTracker object_tracker: Another property-set's object
         tracker to use. Sharing object trackers makes sense when the
         active set in different property-sets are the same.

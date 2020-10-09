@@ -1,9 +1,9 @@
 Manual
 ======
-
-
 .. toctree::
-   :maxdepth: 2
+   :hidden:
+   :maxdepth: 1
    :caption: Contents:
 
-   concept
+   data_model <data_model/index>
+   framework <framework/index>

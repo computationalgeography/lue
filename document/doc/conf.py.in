@@ -71,3 +71,7 @@ breathe_default_members = ("members", "undoc-members")
 html_show_sourcelink = False
 
 graphviz_output_format = "svg"
+
+autodoc_default_options = {
+        "members": None,
+    }
