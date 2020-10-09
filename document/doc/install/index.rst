@@ -35,6 +35,10 @@ installing them in `$HOME/lue_install`:
 Also, you can check the scripts behind the `LUE Github workflows`_
 to see how LUE can be built on various platforms.
 
+If one of the Python API's is built, the installation directory can
+be set manually by setting `LUE_PYTHON_API_INSTALL_DIR`. By default,
+it will be set to the pathname of the current Python's site packages.
+
 
 Targets
 +++++++
@@ -136,10 +140,6 @@ Variable         Effect when set
 `LUE_BUILD_HPX`  Build the HPX library
 `LUE_BUILD_OTF2` Build the OTF2 library (optionally required by HPX)
 ================ ===================================================
-
-If one of the Python API's are built, the installation directory can
-be set manually by setting `LUE_PYTHON_API_INSTALL_DIR`. By default,
-it will be set to the pathname of the current Python's site packages.
 
 .. _LUE Github project page: https://github.com/pcraster/lue
 .. _LUE Github workflows: https://github.com/pcraster/lue/actions
