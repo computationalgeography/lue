@@ -407,7 +407,7 @@ if(LUE_SPHINX_LUE_THEME_REQUIRED)
 
     FetchContent_Declare(sphinx_lue_theme
         GIT_REPOSITORY ${sphinx_rtd_theme_repository}
-        GIT_TAG 1d52fbb
+        GIT_TAG 3ecd7ff
     )
 
     FetchContent_MakeAvailable(sphinx_lue_theme)
