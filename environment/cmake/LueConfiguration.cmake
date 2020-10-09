@@ -203,6 +203,7 @@ if(LUE_BUILD_DOCUMENTATION)
     set(LUE_DOXYGEN_REQUIRED TRUE)
     set(LUE_GRAPHVIZ_REQUIRED TRUE)
     set(LUE_SPHINX_REQUIRED TRUE)
+    set(LUE_SPHINX_LUE_THEME_REQUIRED TRUE)
 
     find_program(EDIT_DOT_GRAPH
         edit_dot_graph.py
@@ -394,6 +395,22 @@ if(LUE_IMGUI_REQUIRED AND LUE_BUILD_IMGUI)
 
         add_library(imgui::imgui ALIAS imgui)
     endif()
+endif()
+
+
+if(LUE_SPHINX_LUE_THEME_REQUIRED)
+    if(LUE_REPOSITORY_CACHE AND EXISTS "${LUE_REPOSITORY_CACHE}/sphinx_rtd_theme")
+        set(sphinx_rtd_theme_repository "${LUE_REPOSITORY_CACHE}/sphinx_rtd_theme")
+    else()
+        set(sphinx_rtd_theme_repository "https://github.com/computationalgeography/sphinx_rtd_theme")
+    endif()
+
+    FetchContent_Declare(sphinx_lue_theme
+        GIT_REPOSITORY ${sphinx_rtd_theme_repository}
+        GIT_TAG 1d52fbb
+    )
+
+    FetchContent_MakeAvailable(sphinx_lue_theme)
 endif()
 
 

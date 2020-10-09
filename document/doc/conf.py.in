@@ -12,15 +12,15 @@
 #
 # import os
 # import sys
-# sys.path.insert(0, os.path.abspath('.'))
+# sys.path.insert(0, os.path.abspath("."))
 import sphinx_rtd_theme
 
 
 # -- Project information -----------------------------------------------------
 
-project = 'LUE'
-copyright = '2020, Kor de Jong'
-author = 'Kor de Jong'
+project = "LUE"
+copyright = "2020, Kor de Jong"
+author = "Kor de Jong"
 
 
 # -- General configuration ---------------------------------------------------
@@ -35,36 +35,32 @@ extensions = [
     "sphinx.ext.inheritance_diagram",
     "sphinx.ext.ifconfig",
     "sphinx.ext.intersphinx",
-    "sphinx_rtd_theme",
     # "ext.generated_image",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+# templates_path = ["@CMAKE_CURRENT_SOURCE_DIR@/_templates"]
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-# https://sphinx-rtd-theme.readthedocs.io/en/latest/index.html
+# This points to the updated RTD theme in the lue_theme branch of our
+# fork at
+# https://github.com/computationalgeography/sphinx_rtd_theme/tree/lue_theme
 html_theme = "sphinx_rtd_theme"
-
-html_style = "css/nordtheme.css"
+html_theme_path = ["@sphinx_lue_theme_SOURCE_DIR@"]
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
-
-# html_css_files = [
-#         "css/nordtheme.css",
-#     ]
+# html_static_path = ["@CMAKE_CURRENT_SOURCE_DIR@/_static"]
 
 breathe_default_project = "LUE"
 breathe_default_members = ("members", "undoc-members")
