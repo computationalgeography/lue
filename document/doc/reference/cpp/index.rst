@@ -1,5 +1,7 @@
 C++ reference
 =============
-Details of the LUE C++ API.
+.. toctree::
+   :maxdepth: 1
+   :caption: Contents:
 
-...
+   dataset

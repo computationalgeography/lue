@@ -43,10 +43,12 @@ configure_file(conf.py.in conf.py @ONLY)
 
 add_custom_command(
     OUTPUT ${SPHINX_INDEX_FILE}
-    COMMAND ${SPHINX_BUILD_EXECUTABLE} -b html
-        -c ${CMAKE_CURRENT_BINARY_DIR}
-        -Dbreathe_projects.LUE=${DOXYGEN_OUTPUT_DIR}/xml
-        ${SPHINX_SOURCE_DIR} ${SPHINX_BUILD_DIR}
+    COMMAND
+        ${CMAKE_COMMAND} -E env "PYTHONPATH=${PROJECT_BINARY_DIR}/lib:$ENV{PYTHONPATH}"
+            ${SPHINX_BUILD_EXECUTABLE} -b html
+                -c ${CMAKE_CURRENT_BINARY_DIR}
+                -Dbreathe_projects.LUE=${DOXYGEN_OUTPUT_DIR}/xml
+                ${SPHINX_SOURCE_DIR} ${SPHINX_BUILD_DIR}
         DEPENDS
             doxygen_doc
             ${sphinx_sources}
