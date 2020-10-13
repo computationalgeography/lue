@@ -1,4 +1,10 @@
+.. currentmodule:: lue.data_model
+
+
 Universe
 ========
-.. autoclass:: lue.data_model.Universes
-.. autoclass:: lue.data_model.Universe
+.. autosummary::
+    Universes
+    Universe
+.. autoclass:: Universes
+.. autoclass:: Universe

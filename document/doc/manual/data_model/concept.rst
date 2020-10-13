@@ -84,7 +84,8 @@ data model are described in more detail.
 At the top of the LUE data model the :ref:`phenomena <concept_phenomenon>`
 are located. These are collections of objects of the same kind. Objects
 can represent abstract things, like economies, or very concrete things,
-like birds. Whatever makes sense in a certain context. Within a phenomenon all information related to the objects is
+like birds. Whatever makes sense in a certain context. Within a phenomenon
+all information related to the objects is
 aggregated into :ref:`property-sets <concept_property_set>`.
 Property-sets aggregate information about objects that share the same
 :ref:`time domain <concept_time_domain>` and :ref:`space domain

@@ -1,7 +1,16 @@
+.. currentmodule:: lue.data_model
+
+
 Dataset
 =======
-.. autoclass:: lue.data_model.Dataset
-.. autofunction:: lue.data_model.create_dataset
-.. autofunction:: lue.data_model.open_dataset
-.. autofunction:: lue.data_model.validate
-.. autofunction:: lue.data_model.assert_is_valid
+.. autosummary::
+    Dataset
+    create_dataset
+    open_dataset
+    validate
+    assert_is_valid
+.. autoclass:: Dataset
+.. autofunction:: create_dataset
+.. autofunction:: open_dataset
+.. autofunction:: validate
+.. autofunction:: assert_is_valid

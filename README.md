@@ -23,12 +23,14 @@ to be performed on hardware ranging from laptops to compute clusters,
 without the user having to know about high-performance computing and
 the related technology.
 
+
 ## Links:
 |               |                                              |
 | --------------|----------------------------------------------|
 | Homepage      | <https://lue.computationalgeography.org>     |
 | Documentation | <https://lue.computationalgeography.org/doc> |
 | R&D team      | <https://www.computationalgeography.org>     |
+
 
 ## CI builds
 [![Linux build status](https://github.com/pcraster/lue/workflows/Linux%20CI/badge.svg)](https://github.com/pcraster/lue/actions)
@@ -42,11 +44,22 @@ the related technology.
 | macOS CI   | Release build of data model and related tests            |
 | Windows CI | Release build of data model, without utilities           |
 
+
 ## Publications
 - de Jong, K., Karssenberg, D., A physical data model for spatio-temporal
     objects, Environmental Modelling and Software (2019), doi:
     https://doi.org/10.1016/j.envsoft.2019.104553.
 
+
 ## Installation
-Information about how to configure, build and install LUE can be found
-in the [LUE documentation](https://lue.computationalgeography.org/doc).
+[![Anaconda-Server Badge](https://anaconda.org/conda-forge/lue/badges/version.svg)](https://anaconda.org/conda-forge/lue)
+[![Anaconda-Server Badge](https://anaconda.org/conda-forge/lue/badges/platforms.svg)](https://anaconda.org/conda-forge/lue).
+[![Anaconda-Server Badge](https://anaconda.org/conda-forge/lue/badges/installer/conda.svg)](https://conda.anaconda.org/conda-forge)
+
+The easiest way to install LUE is using Conda:
+```bash
+conda install -c conda-forge lue
+```
+
+More information about how to install LUE can be found in the [LUE
+documentation](https://lue.computationalgeography.org/doc).

@@ -99,8 +99,7 @@ std::string const& Dataset::description() const
 
 
 /*!
-    @brief      return universes collection.
-    @warning    a universes collection must be present
+    @brief      Return universes collection.
 */
 Universes const& Dataset::universes() const
 {
@@ -109,8 +108,7 @@ Universes const& Dataset::universes() const
 
 
 /*!
-    @brief      return universes collection.
-    @warning    a universes collection must be present
+    @brief      Return universes collection.
 */
 Universes& Dataset::universes()
 {
@@ -120,7 +118,6 @@ Universes& Dataset::universes()
 
 /*!
     @brief      Return phenomena collection
-    @warning    A phenomena collection must be present
 */
 Phenomena const& Dataset::phenomena() const
 {
@@ -130,7 +127,6 @@ Phenomena const& Dataset::phenomena() const
 
 /*!
     @brief      Return phenomena collection
-    @warning    A phenomena collection must be present
 */
 Phenomena& Dataset::phenomena()
 {

@@ -31,6 +31,7 @@ author = "Kor de Jong"
 extensions = [
     "breathe",
     "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",
     "sphinx.ext.graphviz",
     "sphinx.ext.inheritance_diagram",
     "sphinx.ext.ifconfig",
@@ -77,4 +78,9 @@ graphviz_output_format = "svg"
 
 autodoc_default_options = {
         "members": None,
+    }
+
+intersphinx_mapping = {
+        "python": ("https://docs.python.org/3", None),
+        "numpy": ("https://numpy.org/doc/stable/objects.inv", None),
     }

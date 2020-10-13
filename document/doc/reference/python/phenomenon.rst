@@ -1,4 +1,10 @@
+.. currentmodule:: lue.data_model
+
+
 Phenomenon
 ==========
-.. autoclass:: lue.data_model.Phenomena
-.. autoclass:: lue.data_model.Phenomenon
+.. autosummary::
+    Phenomena
+    Phenomenon
+.. autoclass:: Phenomena
+.. autoclass:: Phenomenon
