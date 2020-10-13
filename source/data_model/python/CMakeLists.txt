@@ -107,8 +107,8 @@ target_link_libraries(lue_py_data_model
 install(
     TARGETS
         lue_py_data_model
-    LIBRARY DESTINATION ${LUE_PYTHON_API_INSTALL_DIR}
-    RUNTIME DESTINATION ${LUE_PYTHON_API_INSTALL_DIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
 configure_file(setup.py.in
