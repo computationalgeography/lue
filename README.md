@@ -33,10 +33,10 @@ the related technology.
 
 
 ## CI builds
-[![Linux build status](https://github.com/pcraster/lue/workflows/Linux%20CI/badge.svg)](https://github.com/pcraster/lue/actions)
-[![macOS build status](https://github.com/pcraster/lue/workflows/macOS%20CI/badge.svg)](https://github.com/pcraster/lue/actions)
-[![Windows build status](https://github.com/pcraster/lue/workflows/Windows%20CI/badge.svg)](https://github.com/pcraster/lue/actions)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/ccaa0ef833824c3289c6d61973f51909)](https://www.codacy.com/gh/pcraster/lue?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=pcraster/lue&amp;utm_campaign=Badge_Grade)
+[![Linux build status](https://github.com/computationalgeography/lue/workflows/Linux%20CI/badge.svg)](https://github.com/computationalgeography/lue/actions)
+[![macOS build status](https://github.com/computationalgeography/lue/workflows/macOS%20CI/badge.svg)](https://github.com/computationalgeography/lue/actions)
+[![Windows build status](https://github.com/computationalgeography/lue/workflows/Windows%20CI/badge.svg)](https://github.com/computationalgeography/lue/actions)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/ccaa0ef833824c3289c6d61973f51909)](https://www.codacy.com/gh/computationalgeography/lue?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=computationalgeography/lue&amp;utm_campaign=Badge_Grade)
 
 | OS         | Description                                              |
 | ---------- | -------------------------------------------------------- |
@@ -53,7 +53,7 @@ the related technology.
 
 ## Installation
 [![Anaconda-Server Badge](https://anaconda.org/conda-forge/lue/badges/version.svg)](https://anaconda.org/conda-forge/lue)
-[![Anaconda-Server Badge](https://anaconda.org/conda-forge/lue/badges/platforms.svg)](https://anaconda.org/conda-forge/lue).
+[![Anaconda-Server Badge](https://anaconda.org/conda-forge/lue/badges/platforms.svg)](https://anaconda.org/conda-forge/lue)
 [![Anaconda-Server Badge](https://anaconda.org/conda-forge/lue/badges/installer/conda.svg)](https://conda.anaconda.org/conda-forge)
 
 The easiest way to install LUE is using Conda:

@@ -6,7 +6,7 @@ The functionality in :mod:`lue.data_model` allows you to perform I/O to the `LUE
 
 The functionality in :mod:`lue.framework` allows you to create scalable environmental models that can be run on laptops, desktop and clusters of nodes.
 
-The LUE data model and framework are `developed <https://github.com/pcraster/lue>`_ by the `Computational Geography`_ R&D Team, to be useful in the domain of agent-based and field-based modeling. The data format is general enough to allow it to be used in other domains as well.
+The LUE data model and framework are `developed <https://github.com/computationalgeography/lue>`_ by the `Computational Geography`_ R&D Team, to be useful in the domain of agent-based and field-based modeling. The data format is general enough to allow it to be used in other domains as well.
 
 
 .. note::

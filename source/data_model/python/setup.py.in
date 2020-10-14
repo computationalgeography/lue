@@ -94,8 +94,8 @@ setuptools.setup(
         "Scientific Database, which is an HDF5 binary data format",
     long_description=long_description,
     author="PCRaster R&D Team",
-    author_email="info@pcraster.eu",
-    url="https://github.com/pcraster/lue",
+    author_email="lue@computationalgeography.org",
+    url="https://github.com/computationalgeography/lue",
     packages=setuptools.find_packages(),
     ext_modules=[
         setuptools.Extension("lue",

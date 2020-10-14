@@ -305,9 +305,9 @@ void show_about_window(
         ImGui::Text("LUE version %s (build %s)",
             BuildOptions::version, BuildOptions::git_short_sha1);
         ImGui::Separator();
-        ImGui::Text("By the PCRaster research and development team");
-        ImGui::Text("LUE is licensed under the GPL-2 License");
-        ImGui::Text("More info at https://www.pcraster.eu");
+        ImGui::Text("By the Computational Geography research and development team");
+        ImGui::Text("LUE is licensed under the MIT License");
+        ImGui::Text("More info at https://lue.computationalgeography.org");
 
         if(ImGui::Button("Close")) {
             ImGui::CloseCurrentPopup();

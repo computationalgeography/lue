@@ -18,7 +18,7 @@ namespace {
 //     throw std::runtime_error(fmt::format(
 //         "This feature is not supported yet: {}\n"
 //         "You may want to open an issue here: "
-//         "https://github.com/pcraster/lue/issues",
+//         "https://github.com/computationalgeography/lue/issues",
 //         message));
 // }
 
@@ -33,7 +33,7 @@ void not_supported_yet(
         fmt::format(
             "validation of this feature is not supported yet: {} -- "
             "you may want to open an issue here: "
-            "https://github.com/pcraster/lue/issues",
+            "https://github.com/computationalgeography/lue/issues",
             message));
 }
 
@@ -1855,7 +1855,7 @@ void assert_is_valid(
             "{}"
             "LUE is work in progress -- if you encounter "
             "false-negatives, then please open an issue here: "
-            "https://github.com/pcraster/lue/issues",
+            "https://github.com/computationalgeography/lue/issues",
             message(issues)
         ));
     }
@@ -1879,7 +1879,7 @@ void assert_is_valid(
             "{}"
             "LUE is work in progress -- if you encounter "
             "false-negatives, then please open an issue here: "
-            "https://github.com/pcraster/lue/issues",
+            "https://github.com/computationalgeography/lue/issues",
             message(issues)
         ));
     }

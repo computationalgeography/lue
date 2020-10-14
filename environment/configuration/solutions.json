@@ -12,7 +12,7 @@
                 "cd /opt && wget --no-verbose https://cmake.org/files/v3.1/cmake-3.1.3-Linux-x86_64.tar.gz && tar zxf cmake-3.1.3-Linux-x86_64.tar.gz && ln -s cmake-3.1.3-Linux-x86_64 cmake && rm cmake-3.1.3-Linux-x86_64.tar.gz"
             ],
             "commands": [
-                "git clone --recursive https://github.com/pcraster/lue.git",
+                "git clone --recursive https://github.com/computationalgeography/lue.git",
                 "mkdir -p build",
                 "cd build && CC=gcc-4.9 CXX=g++-4.9 /opt/cmake/bin/cmake -DLUE_BUILD_TEST:BOOL=TRUE ../lue",
                 "/opt/cmake/bin/cmake --build build",
@@ -36,7 +36,7 @@
                 "cd /opt && wget --no-verbose https://cmake.org/files/v3.1/cmake-3.1.3-Linux-x86_64.tar.gz && tar zxf cmake-3.1.3-Linux-x86_64.tar.gz && ln -s cmake-3.1.3-Linux-x86_64 cmake && rm cmake-3.1.3-Linux-x86_64.tar.gz"
             ],
             "commands": [
-                "git clone --recursive https://github.com/pcraster/lue.git",
+                "git clone --recursive https://github.com/computationalgeography/lue.git",
                 "mkdir -p build",
                 "cd build && CC=clang-3.9 CXX=clang++-3.9 CXXFLAGS=\"-stdlib=libc++\" /opt/cmake/bin/cmake -DLUE_BUILD_TEST:BOOL=TRUE ../lue",
                 "/opt/cmake/bin/cmake --build build",
@@ -60,7 +60,7 @@
                 "cd /opt && wget --no-verbose https://cmake.org/files/v3.1/cmake-3.1.3-Linux-x86_64.tar.gz && tar zxf cmake-3.1.3-Linux-x86_64.tar.gz && ln -s cmake-3.1.3-Linux-x86_64 cmake && rm cmake-3.1.3-Linux-x86_64.tar.gz"
             ],
             "commands": [
-                "git clone --recursive https://github.com/pcraster/lue.git",
+                "git clone --recursive https://github.com/computationalgeography/lue.git",
                 "mkdir -p build",
                 "cd build && CC=clang-4.0 CXX=clang++-4.0 CXXFLAGS=\"-stdlib=libc++\" /opt/cmake/bin/cmake -DLUE_BUILD_TEST:BOOL=TRUE ../lue",
                 "/opt/cmake/bin/cmake --build build",
@@ -80,7 +80,7 @@
                 "apt-get -y autoremove"
             ],
             "commands": [
-                "git clone --recursive https://github.com/pcraster/lue.git",
+                "git clone --recursive https://github.com/computationalgeography/lue.git",
                 "mkdir -p build",
                 "cd build && cmake -DLUE_BUILD_TEST:BOOL=TRUE ../lue",
                 "cmake --build build",
@@ -101,7 +101,7 @@
                 "cd /opt && wget --no-verbose https://github.com/pybind/pybind11/archive/v2.1.0.tar.gz && tar zxf v2.1.0.tar.gz && ln -s pybind11-2.1.0 pybind11 && rm v2.1.0.tar.gz"
             ],
             "commands": [
-                "git clone --recursive https://github.com/pcraster/lue.git",
+                "git clone --recursive https://github.com/computationalgeography/lue.git",
                 "mkdir -p build",
                 "cd build && cmake -DLUE_BUILD_TEST:BOOL=TRUE -DLUE_BUILD_PYTHON_API:BOOL=TRUE -DPYBIND11_INCLUDE_DIRS:PATH=/opt/pybind11/include ../lue",
                 "cmake --build build",

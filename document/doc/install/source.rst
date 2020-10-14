@@ -27,7 +27,7 @@ installing them in `$HOME/lue_install`:
 .. code-block:: bash
 
    cd /tmp
-   git clone https://github.com/pcraster/lue.git
+   git clone https://github.com/computationalgeography/lue.git
    cd lue
    mkdir build
    cd build
@@ -143,5 +143,5 @@ Variable         Effect when set
 `LUE_BUILD_OTF2` Build the OTF2 library (optionally required by HPX)
 ================ ===================================================
 
-.. _LUE Github project page: https://github.com/pcraster/lue
-.. _LUE Github workflows: https://github.com/pcraster/lue/actions
+.. _LUE Github project page: https://github.com/computationalgeography/lue
+.. _LUE Github workflows: https://github.com/computationalgeography/lue/actions
