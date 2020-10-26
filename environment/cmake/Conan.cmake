@@ -12,7 +12,8 @@ macro(run_conan)
     # endif()
 
     file(COPY
-        "${CMAKE_SOURCE_DIR}/environment/cmake/conan-${version}.cmake"
+        # "${CMAKE_SOURCE_DIR}/environment/cmake/conan-${version}.cmake"
+        "${${PROJECT_NAME}_SOURCE_DIR}/environment/cmake/conan-${version}.cmake"
         DESTINATION "${CMAKE_BINARY_DIR}")
 
     include(${CMAKE_BINARY_DIR}/conan-${version}.cmake)
