@@ -1,4 +1,6 @@
 #include "lue/translate/format/gdal_raster.hpp"
+#include "lue/data_model/hl.hpp"
+#include <boost/filesystem.hpp>
 #include <array>
 #include <cassert>
 #include <cmath>
@@ -88,72 +90,6 @@ hdf5::Datatype gdal_datatype_to_memory_datatype(
     assert(type_id >= 0);
 
     return hdf5::Datatype(type_id);
-}
-
-
-/*!
-    @brief      Try to open a raster dataset read-only
-    @return     A pointer to a ::GDALDataset instance if the dataset can be
-                opened. Otherwise a pointer containing nullptr.
-*/
-GDALDatasetPtr try_open_gdal_raster_dataset_for_read(
-    std::string const& dataset_name)
-{
-    CPLPushErrorHandler(CPLQuietErrorHandler);
-
-    auto result = GDALDatasetPtr(
-        static_cast<::GDALDataset*>(::GDALOpenEx(dataset_name.c_str(),
-            // NOLINTNEXTLINE(hicpp-signed-bitwise)
-            GDAL_OF_READONLY | GDAL_OF_RASTER, nullptr, nullptr, nullptr)),
-        GDALDatasetDeleter{});
-
-    CPLPopErrorHandler();
-
-    return result;
-}
-
-
-GDALDatasetPtr open_gdal_raster_dataset_for_read(
-    std::string const& dataset_name)
-{
-    auto result = try_open_gdal_raster_dataset_for_read(dataset_name);
-
-    if(!result) {
-        throw std::runtime_error("Cannot open raster " + dataset_name);
-    }
-
-    return result;
-}
-
-
-void translate_gdal_raster_dataset_to_lue(
-    std::vector<std::string> const& /* gdal_dataset_names */,
-    std::string const& /* lue_dataset_name */,
-    bool const /* add */,
-    Metadata const& /* metadata */)
-{
-    // Create data structure that can be converted to a JSON object. This
-    // data structure represents the import request.
-
-    // hier verder
-
-    // auto datasets{open_gdal_datasets(gdal_dataset_names)};
-
-    // Scenarios:
-    // - Import a bunch of rasters covering the same space box. All
-    //     rasters belong to the same object. For each raster a different
-    //     property is made.
-    // - Import a bunch of rasters covering different space boxes. All
-    //     rasters belong to different objects. A single property is made.
-
-    // Figure out whether the space boxes differ
-    // auto const space_boxes{space_boxes(datasets)};
-
-    // bool space_boxes_differ
-
-
-    // // Translate to LUE format using common JSON import
-    // translate_json_to_lue(lue_json, lue_dataset_name, add, metadata);
 }
 
 
@@ -378,6 +314,180 @@ GDALRaster::Band GDALRaster::band(
 
     return GDALRaster::Band{_dataset->GetRasterBand(nr)};
 }
+
+
+/*!
+    @brief      Try to open a raster dataset read-only
+    @return     A pointer to a ::GDALDataset instance if the dataset can be
+                opened. Otherwise a pointer containing nullptr.
+*/
+GDALDatasetPtr try_open_gdal_raster_dataset_for_read(
+    std::string const& dataset_name)
+{
+    CPLPushErrorHandler(CPLQuietErrorHandler);
+
+    auto result = GDALDatasetPtr(
+        static_cast<::GDALDataset*>(::GDALOpenEx(dataset_name.c_str(),
+            // NOLINTNEXTLINE(hicpp-signed-bitwise)
+            GDAL_OF_READONLY | GDAL_OF_RASTER, nullptr, nullptr, nullptr)),
+        GDALDatasetDeleter{});
+
+    CPLPopErrorHandler();
+
+    return result;
+}
+
+
+GDALDatasetPtr open_gdal_raster_dataset_for_read(
+    std::string const& dataset_name)
+{
+    auto result = try_open_gdal_raster_dataset_for_read(dataset_name);
+
+    if(!result) {
+        throw std::runtime_error("Cannot open raster " + dataset_name);
+    }
+
+    return result;
+}
+
+
+void translate_gdal_raster_dataset_to_lue(
+    std::vector<std::string> const& gdal_dataset_names,
+    std::string const& lue_dataset_name,
+    bool const add,
+    Metadata const& /* metadata */)
+{
+    namespace lh5 = lue::hdf5;
+    namespace ldm = lue::data_model;
+
+    // Create / open dataset
+    auto create_dataset =
+        [lue_dataset_name]()
+        {
+            return ldm::create_dataset(lue_dataset_name);
+        };
+
+    auto open_dataset =
+        [lue_dataset_name, add]()
+        {
+            if(!add)
+            {
+                throw std::runtime_error(fmt::format("Dataset {} already exists", lue_dataset_name));
+            }
+
+            return ldm::open_dataset(lue_dataset_name);
+        };
+
+    ldm::Dataset dataset{!ldm::dataset_exists(lue_dataset_name) ? create_dataset() : open_dataset()};
+
+    // Each dataset passed in is a GDAL raster dataset. Each of these
+    // can contain multiple layers. Layers from rasters with the same
+    // domain and discretization can be stored in the same property-set.
+
+    // TODO We are assuming all rasters passed in can be stored in the
+    //     same property-set (have the same domain +
+    //     discretization). Update this logic if that is not the case.
+
+    assert(!gdal_dataset_names.empty());
+
+    GDALRaster gdal_raster{gdal_dataset_names[0]};
+
+    // Create / open raster view
+    using RasterView = data_model::constant::RasterView<data_model::Dataset*>;
+    using SpaceBox = RasterView::SpaceBox;
+
+    lh5::Shape const grid_shape{
+        gdal_raster.discretization().nr_rows(), gdal_raster.discretization().nr_cols()};
+    SpaceBox const space_box{
+            gdal_raster.domain().west(), gdal_raster.domain().south(),
+            gdal_raster.domain().east(), gdal_raster.domain().north()
+        };
+
+    // TODO For now, we use default names. These could also be obtained
+    //     from the metadata passed in.
+    std::string const phenomenon_name{"area"};
+    std::string const property_set_name{"raster"};
+
+    auto contains_raster =
+        [dataset, phenomenon_name, property_set_name]()
+        {
+            return
+                dataset.phenomena().contains(phenomenon_name) &&
+                dataset.phenomena()[phenomenon_name].property_sets().contains(property_set_name) &&
+                ldm::constant::contains_raster(dataset, phenomenon_name, property_set_name);
+        };
+
+    RasterView raster_view{
+            !contains_raster()
+                ? ldm::constant::create_raster_view(
+                        &dataset, phenomenon_name, property_set_name, grid_shape, space_box)
+                : ldm::constant::open_raster_view(
+                        &dataset, phenomenon_name, property_set_name)
+        };
+
+    // Add raster layers from input raster(s)
+    using RasterLayer = RasterView::Layer;
+
+    for(std::string const& gdal_dataset_name: gdal_dataset_names)
+    {
+        GDALRaster const gdal_raster{gdal_dataset_name};
+
+        std::string const raster_layer_name{
+            boost::filesystem::path(gdal_dataset_name).stem().string()};
+
+        auto band_name =
+            [raster_layer_name, nr_bands=gdal_raster.nr_bands()](
+                int const band_idx) -> std::string
+            {
+                return nr_bands == 1
+                    ? raster_layer_name
+                    : fmt::format("{}-{}", raster_layer_name, band_idx + 1)
+                    ;
+            };
+
+        for(std::size_t band_idx = 0; band_idx < gdal_raster.nr_bands(); ++band_idx)
+        {
+            GDALRaster::Band band{gdal_raster.band(band_idx + 1)};
+
+            RasterLayer raster_layer{raster_view.add_layer(band_name(band_idx), band.datatype())};
+
+            std::unique_ptr<uint8_t[]> buffer{new uint8_t[
+                band.datatype().size() *
+                gdal_raster.discretization().nr_rows() * gdal_raster.discretization().nr_cols()]};
+
+            band.read(buffer.get());
+            raster_layer.write(buffer.get());
+        }
+    }
+
+
+
+
+
+    // Create data structure that can be converted to a JSON object. This
+    // data structure represents the import request.
+
+    // hier verder
+
+    // auto datasets{open_gdal_datasets(gdal_dataset_names)};
+
+    // Scenarios:
+    // - Import a bunch of rasters covering the same space box. All
+    //     rasters belong to the same object. For each raster a different
+    //     property is made.
+    // - Import a bunch of rasters covering different space boxes. All
+    //     rasters belong to different objects. A single property is made.
+
+    // Figure out whether the space boxes differ
+    // auto const space_boxes{space_boxes(datasets)};
+
+    // bool space_boxes_differ
+
+
+    // // Translate to LUE format using common JSON import
+    // translate_json_to_lue(lue_json, lue_dataset_name, add, metadata);
+}
+
 
 }  // namespace utility
 }  // namespace lue

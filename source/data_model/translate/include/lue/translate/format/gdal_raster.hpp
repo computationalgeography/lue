@@ -52,8 +52,7 @@ GDALDatasetPtr     open_gdal_raster_dataset_for_read(
                                         std::string const& dataset_name);
 
 void               translate_gdal_raster_dataset_to_lue(
-                                        std::vector<std::string> const&
-                                            gdal_dataset_names,
+                                        std::vector<std::string> const& gdal_dataset_names,
                                         std::string const& lue_dataset_name,
                                         bool add,
                                         Metadata const& metadata);
@@ -112,15 +111,15 @@ public:
 
     explicit       GDALRaster          (GDALDatasetPtr dataset);
 
-                   GDALRaster          (GDALRaster const& other)=delete;
+                   GDALRaster          (GDALRaster const&)=delete;
 
-                   GDALRaster          (GDALRaster&& other)=delete;
+                   GDALRaster          (GDALRaster&&)=default;
 
                    ~GDALRaster         ()=default;
 
-   GDALRaster&     operator=           (GDALRaster const& other)=delete;
+   GDALRaster&     operator=           (GDALRaster const&)=delete;
 
-   GDALRaster&     operator=           (GDALRaster&& other)=delete;
+   GDALRaster&     operator=           (GDALRaster&&)=default;
 
    Band            band                (int nr) const;
 
