@@ -78,6 +78,9 @@ private:
 
 bool               dataset_exists      (std::string const& name);
 
+Dataset            open_dataset        (std::string const& name,
+                                        unsigned int flags=H5F_ACC_RDONLY);
+
 Dataset            create_dataset      (std::string const& name,
                                         std::string const& description="");
 

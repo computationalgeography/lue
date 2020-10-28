@@ -170,6 +170,20 @@ Dataset create_dataset(
 
 
 /*!
+    @brief      Open dataset
+    @param      name Name of dataset
+    @return     Dataset instance
+    @exception  std::runtime_error In case the dataset cannot be created
+*/
+Dataset open_dataset(
+    std::string const& name,
+    unsigned int flags)
+{
+    return Dataset{name, flags};
+}
+
+
+/*!
     @brief      Create dataset
     @param      name Name of dataset
     @return     Dataset instance
