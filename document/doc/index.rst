@@ -19,7 +19,7 @@ LUE documentation
 What is LUE?
 ------------
 LUE is software for storing and manipulating large amounts of information
-for large amounts of objects. This information can optionally have a
+for large numbers of objects. This information can optionally have a
 reference in time and space. For example, LUE can represent collections of
 wandering animals and their properties, some of which are changing through
 time, or the elevation of the surface of one or multiple areas. The software
@@ -31,7 +31,7 @@ allowing it to be useful in other contexts as well.
 Currently, LUE contains two main parts: *LUE data model* and *LUE
 framework*. LUE data model is an implementation of the LUE physical data
 model, which allows users to perform I/O to the "LUE Scientific Database".
-It allows for the storage of large amounts of objects and their location
+It allows for the storage of large numbers of objects and their location
 in time and space, and their properties.
 
 LUE framework is a collection of data types and algorithms that can be
