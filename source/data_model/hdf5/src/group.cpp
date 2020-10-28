@@ -162,6 +162,8 @@ Group::Group(
 /*!
     @brief      Construct a group based on an identifier
     @param      id Identifier of group
+    @warning    Whether or not the @a id passed in is valid must be
+                checked by the calling code
 
     Use this constructor for groups that have no parent.
 */
@@ -173,8 +175,12 @@ Group::Group(
 
 {
     // Only used by File constructor
-    assert(this->id().is_valid());
-    assert(this->id().type() == ::H5I_FILE);
+
+    // No assertions please. It is well possible that the id is not
+    // valid. The calling code must check that.
+
+    // assert(this->id().is_valid());
+    // assert(this->id().type() == ::H5I_FILE);
 }
 
 
