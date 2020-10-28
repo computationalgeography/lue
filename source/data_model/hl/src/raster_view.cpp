@@ -251,8 +251,7 @@ RasterView<DatasetPtr>::RasterView(
     std::string const& phenomenon_name,
     std::string const& property_set_name):
 
-    data_model::RasterView<DatasetPtr>{
-        std::move(dataset_ptr), phenomenon_name, property_set_name}
+    data_model::RasterView<DatasetPtr>{std::move(dataset_ptr), phenomenon_name, property_set_name}
 
 {
     // FIXME Obtain these from base class?
@@ -262,36 +261,32 @@ RasterView<DatasetPtr>::RasterView(
 
     auto& properties{property_set.properties()};
     auto& space_discretization_property =
-        properties.collection<same_shape::Properties>()[
-            space_discretization_property_name];
+        properties.collection<same_shape::Properties>()[space_discretization_property_name];
 
     // Scan for properties that represent the rasters
     {
         using RasterProperties = different_shape::Properties;
         using RasterProperty = different_shape::Property;
 
-        RasterProperties& raster_properties{
-            properties.collection<RasterProperties>()};
+        RasterProperties& raster_properties{properties.collection<RasterProperties>()};
 
-        for(auto const& name: raster_properties.names()) {
-
+        for(auto const& name: raster_properties.names())
+        {
             RasterProperty& property{raster_properties[name]};
 
             // Perform some sanity checks on the properties to skip the
             // ones that actually aren't raster properties
-            bool const property_is_discretized =
+            bool const property_is_discretized{
                 property.space_is_discretized() &&
-                property.space_discretization_type() ==
-                    SpaceDiscretization::regular_grid;
+                property.space_discretization_type() == SpaceDiscretization::regular_grid};
 
-            if(property_is_discretized) {
+            if(property_is_discretized)
+            {
+                bool const space_discretization_properties_match{
+                    property.space_discretization_property().id() == space_discretization_property.id()};
 
-                bool const space_discretization_properties_match =
-                    property.space_discretization_property().id() ==
-                        space_discretization_property.id();
-
-                if(space_discretization_properties_match) {
-
+                if(space_discretization_properties_match)
+                {
                     data_model::RasterView<DatasetPtr>::add_layer(name);
                 }
             }
@@ -318,14 +313,12 @@ typename RasterView<DatasetPtr>::Layer RasterView<DatasetPtr>::add_layer(
     auto& properties{property_set.properties()};
 
     auto& space_discretization_property{
-        properties.template collection<same_shape::Properties>()[
-            space_discretization_property_name]};
+        properties.template collection<same_shape::Properties>()[space_discretization_property_name]};
 
     using RasterProperties = different_shape::Properties;
     using RasterProperty = different_shape::Property;
 
-    RasterProperties& raster_properties{
-        properties.template collection<RasterProperties>()};
+    RasterProperties& raster_properties{properties.template collection<RasterProperties>()};
 
     assert(!raster_properties.contains(name));
 
@@ -465,8 +458,7 @@ RasterView<DatasetPtr> create_raster_view(
         value.write(0, grid_shape.data());
     }
 
-    return RasterView<DatasetPtr>{
-        std::move(dataset_ptr), phenomenon_name, property_set_name};
+    return RasterView<DatasetPtr>{std::move(dataset_ptr), phenomenon_name, property_set_name};
 }
 
 }  // namespace constant

@@ -135,6 +135,18 @@ bool               contains_raster     (Dataset const& dataset,
                                         std::string const& phenomenon_name,
                                         std::string const& property_set_name);
 
+
+template<
+    typename DatasetPtr>
+RasterView<DatasetPtr> open_raster_view(
+    DatasetPtr dataset,
+    std::string const& phenomenon_name,
+    std::string const& property_set_name)
+{
+    return RasterView<DatasetPtr>{std::move(dataset), phenomenon_name, property_set_name};
+}
+
+
 template<
     typename DatasetPtr>
 RasterView<DatasetPtr>
