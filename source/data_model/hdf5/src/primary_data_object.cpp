@@ -1,4 +1,5 @@
 #include "lue/hdf5/primary_data_object.hpp"
+#include <fmt/format.h>
 
 
 namespace lue {
@@ -17,6 +18,8 @@ PrimaryDataObject::PrimaryDataObject(
 
 /*!
     @brief      Construct an object based on an identifier
+    @warning    Whether or not the @a id passing in is valid must be
+                checked by calling code
 
     The identifier passed in is the id of the object itself; no object
     will be opened.
@@ -28,7 +31,10 @@ PrimaryDataObject::PrimaryDataObject(
     _attributes{_id}
 
 {
-    assert(_id.is_valid());
+    // No assertions please. It is well possible that the id is not
+    // valid. The calling code must check that.
+
+    // assert(_id.is_valid());
 }
 
 
