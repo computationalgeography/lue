@@ -15,29 +15,11 @@ template<
     typename Subspan,
     typename Kernel>
 typename Functor::OutputElement inner(
+    Functor const& functor,
     Subspan const& window,
     Kernel const& kernel)
 {
-    static_assert(std::is_convertible_v<ElementT<Kernel>, bool>);
-
-    typename Functor::Aggregator aggregator;
-
-    static_assert(rank<Kernel> == 2);
-
-    if constexpr(rank<Kernel> == 2) {
-        lue_assert(window.extent(0) == kernel.size());
-        lue_assert(window.extent(1) == kernel.size());
-
-        for(Index r = 0; r < window.extent(0); ++r) {
-            for(Index c = 0; c < window.extent(1); ++c) {
-
-                aggregator.add(kernel(r, c), window(r, c));
-
-            }
-        }
-    }
-
-    return aggregator();
+    return functor(window, kernel);
 }
 
 
@@ -46,120 +28,121 @@ template<
     typename Subspans,
     typename Kernel>
 typename Functor::OutputElement border(
+    Functor const& functor,
     Subspans const& windows,
     Kernel const& kernel)
 {
     static_assert(std::is_convertible_v<ElementT<Kernel>, bool>);
     static_assert(rank<Kernel> == rank<Subspans>);
 
-    typename Functor::Aggregator aggregator;
-
     static_assert(rank<Kernel> == 2);
-
-    if constexpr(rank<Kernel> == 2) {
 
 #ifndef NDEBUG
 
-        // Although the cells are scattered over multiple partitions,
-        // we must see the same number of cells as present in the kernel
+    // Although the cells are scattered over multiple partitions,
+    // we must see the same number of cells as present in the kernel
 
-        // Check number of columns in each row of partitions
-        for(Count r = 0; r < windows.shape()[0]; ++r)
-        {
-            Count count = 0;
+    // Check number of columns in each row of partitions
+    for(Count r = 0; r < windows.shape()[0]; ++r)
+    {
+        Count count = 0;
 
-            for(Count c = 0; c < windows.shape()[1]; ++c)
-            {
-                lue_assert(windows(r, c).extent(1) > 0);
-                count += windows(r, c).extent(1);
-            }
-
-            lue_assert(count == kernel.size());
-        }
-
-        // Check number of rows in each column of partitions
         for(Count c = 0; c < windows.shape()[1]; ++c)
         {
-            Count count = 0;
-
-            for(Count r = 0; r < windows.shape()[0]; ++r)
-            {
-                lue_assert(windows(r, c).extent(0) > 0);
-                count += windows(r, c).extent(0);
-            }
-
-            lue_assert(count == kernel.size());
+            lue_assert(windows(r, c).extent(1) > 0);
+            count += windows(r, c).extent(1);
         }
 
-        // Within a row of partitions, the number of rows per
-        // partition must be the same
+        lue_assert(count == kernel.size());
+    }
+
+    // Check number of rows in each column of partitions
+    for(Count c = 0; c < windows.shape()[1]; ++c)
+    {
+        Count count = 0;
+
         for(Count r = 0; r < windows.shape()[0]; ++r)
         {
-            Count const nr_rows = windows(r, 0).extent(0);
-
-            for(Count c = 0; c < windows.shape()[1]; ++c)
-            {
-                lue_assert(windows(r, c).extent(0) == nr_rows);
-            }
+            lue_assert(windows(r, c).extent(0) > 0);
+            count += windows(r, c).extent(0);
         }
 
-        // Within a column of partitions, the number of columns per
-        // partition must be the same
-        for(Count c = 0; c < windows.shape()[1]; ++c) {
-            Count const nr_cols = windows(0, c).extent(1);
+        lue_assert(count == kernel.size());
+    }
 
-            for(Count r = 0; r < windows.shape()[0]; ++r) {
-                lue_assert(windows(r, c).extent(1) == nr_cols);
-            }
-        }
+    // Within a row of partitions, the number of rows per
+    // partition must be the same
+    for(Count r = 0; r < windows.shape()[0]; ++r)
+    {
+        Count const nr_rows = windows(r, 0).extent(0);
 
-#endif
-
-        // {r,c}w : {row,col} index window
-
-        Index rk = 0;
-
-        // Iterate over all views into partitions
-        for(Count rw = 0; rw < windows.shape()[0]; ++rw) {
-
-            Index ck = 0;
-
-            for(Count cw = 0; cw < windows.shape()[1]; ++cw) {
-
-                auto const& window = windows(rw, cw);
-
-                lue_assert(window.extent(0) <= kernel.size());
-                lue_assert(window.extent(1) <= kernel.size());
-
-                for(Index r = 0; r < window.extent(0); ++r, ++rk) {
-                    for(Index c = 0; c < window.extent(1); ++c, ++ck) {
-
-                        lue_assert(rk < std::get<0>(kernel.shape()));
-                        lue_assert(ck < std::get<1>(kernel.shape()));
-
-                        aggregator.add(kernel(r, c), window(r, c));
-
-                    }
-
-                    ck -= window.extent(1);  // Carriage return
-                }
-
-                // Entering next partition in row
-
-                // Reset kernel row index to start row
-                rk -= window.extent(0);
-
-                // Offset kernel col indices by previous partition's cols
-                ck += window.extent(1);
-
-            }
-
-            // Offset kernel row indices by previous partition's rows
-            rk += windows(rw, 0).extent(0);
+        for(Count c = 0; c < windows.shape()[1]; ++c)
+        {
+            lue_assert(windows(r, c).extent(0) == nr_rows);
         }
     }
 
-    return aggregator();
+    // Within a column of partitions, the number of columns per
+    // partition must be the same
+    for(Count c = 0; c < windows.shape()[1]; ++c) {
+        Count const nr_cols = windows(0, c).extent(1);
+
+        for(Count r = 0; r < windows.shape()[0]; ++r) {
+            lue_assert(windows(r, c).extent(1) == nr_cols);
+        }
+    }
+
+#endif
+
+    // Copy values from different views into a single array and pass it
+    // on to function calculating the result for the focal cell
+
+    using InputElement = typename ElementT<Subspans>::value_type;
+    Array<InputElement, rank<Subspans>> array{kernel.shape()};
+
+    // {r,c}w : {row,col} index of window in windows
+    // {r,c}k : {row,col} index of cell in kernel
+
+    Index rk = 0;
+
+    // Iterate over all views into partitions
+    for(Count rw = 0; rw < windows.shape()[0]; ++rw)
+    {
+        Index ck = 0;
+
+        for(Count cw = 0; cw < windows.shape()[1]; ++cw)
+        {
+            auto const& window = windows(rw, cw);
+
+            lue_assert(window.extent(0) <= kernel.size());
+            lue_assert(window.extent(1) <= kernel.size());
+
+            for(Index r = 0; r < window.extent(0); ++r, ++rk) {
+                for(Index c = 0; c < window.extent(1); ++c, ++ck)
+                {
+                    lue_assert(rk < std::get<0>(kernel.shape()));
+                    lue_assert(ck < std::get<1>(kernel.shape()));
+
+                    array(rk, ck) = window(r, c);
+                }
+
+                ck -= window.extent(1);  // Carriage return
+            }
+
+            // Entering next partition in row
+
+            // Reset kernel row index to start row
+            rk -= window.extent(0);
+
+            // Offset kernel col indices by previous partition's cols
+            ck += window.extent(1);
+        }
+
+        // Offset kernel row indices by previous partition's rows
+        rk += windows(rw, 0).extent(0);
+    }
+
+    return inner(functor, array, kernel);
 }
 
 }  // namespace detail
@@ -255,7 +238,7 @@ template<
 OutputPartition focal_operation_partition(
     InputPartitions const& input_partitions,
     Kernel const& kernel,
-    Functor const& /* functor */)
+    Functor const& functor)
 {
     using InputPartition = PartitionT<InputPartitions>;
     using InputData = DataT<InputPartition>;
@@ -497,7 +480,7 @@ OutputPartition focal_operation_partition(
             hpx::launch::async,
             hpx::util::unwrapping(
 
-                    [input_partition=input_partitions(1, 1), kernel /* , functor */](
+                    [input_partition=input_partitions(1, 1), kernel, functor](
                         InputData const& partition_data)
                     {
                         AnnotateFunction annotation{"focal_operation_partition"};
@@ -518,14 +501,14 @@ OutputPartition focal_operation_partition(
                         for(Index rf = kernel.radius(), rk = 0 /* rf - kernel.radius() */;
                                 rf < nr_elements0 - kernel.radius(); ++rf, ++rk) {
                             for(Index cf = kernel.radius(), ck = 0 /* cf - kernel.radius() */;
-                                    cf < nr_elements1 - kernel.radius(); ++cf, ++ck) {
-
-                                output_data(rf, cf) = detail::inner<Functor>(
+                                    cf < nr_elements1 - kernel.radius(); ++cf, ++ck)
+                            {
+                                output_data(rf, cf) = detail::inner(
+                                    functor,
                                     lue::subspan(array_span,
                                         Slice{rk, rk + kernel.size()},
                                         Slice{ck, ck + kernel.size()}),
                                     kernel);
-
                             }
                         }
 
@@ -543,7 +526,7 @@ OutputPartition focal_operation_partition(
             hpx::launch::async,
             hpx::util::unwrapping(
 
-                    [input_partitions, kernel /* , functor */](
+                    [input_partitions, kernel, functor](
                         Offset offset,
                         std::vector<hpx::shared_future<InputData>> input_partitions_data_futures,
                         OutputData output_partition_data)
@@ -674,7 +657,8 @@ OutputPartition focal_operation_partition(
                                         lue_assert(windows(1, 1).extent(0) < kernel.size());
                                         lue_assert(windows(1, 1).extent(1) < kernel.size());
 
-                                        output_partition_data(rf, cf) = detail::border<Functor>(windows, kernel);
+                                        output_partition_data(rf, cf) = detail::border(
+                                            functor, windows, kernel);
                                     }
                                 }
                             }
@@ -744,7 +728,8 @@ OutputPartition focal_operation_partition(
                                         lue_assert(windows(1, 1).extent(0) < kernel.size());
                                         lue_assert(windows(1, 1).extent(1) <= kernel.radius());
 
-                                        output_partition_data(rf, cf) = detail::border<Functor>(windows, kernel);
+                                        output_partition_data(rf, cf) = detail::border(
+                                            functor, windows, kernel);
                                     }
                                 }
                             }
@@ -815,7 +800,8 @@ OutputPartition focal_operation_partition(
                                         lue_assert(windows(1, 1).extent(0) <= kernel.radius());
                                         lue_assert(windows(1, 1).extent(1) < kernel.size());
 
-                                        output_partition_data(rf, cf) = detail::border<Functor>(windows, kernel);
+                                        output_partition_data(rf, cf) = detail::border(
+                                            functor, windows, kernel);
                                     }
                                 }
                             }
@@ -886,7 +872,8 @@ OutputPartition focal_operation_partition(
                                         lue_assert(windows(1, 1).extent(0) <= kernel.radius());
                                         lue_assert(windows(1, 1).extent(1) <= kernel.radius());
 
-                                        output_partition_data(rf, cf) = detail::border<Functor>(windows, kernel);
+                                        output_partition_data(rf, cf) = detail::border(
+                                            functor, windows, kernel);
                                     }
                                 }
                             }
@@ -929,7 +916,8 @@ OutputPartition focal_operation_partition(
                                         lue_assert(windows(1, 0).extent(0) < kernel.size());
                                         lue_assert(windows(1, 0).extent(1) == kernel.size());
 
-                                        output_partition_data(rf, cf) = detail::border<Functor>(windows, kernel);
+                                        output_partition_data(rf, cf) = detail::border(
+                                            functor, windows, kernel);
                                     }
                                 }
                             }
@@ -968,7 +956,8 @@ OutputPartition focal_operation_partition(
                                         lue_assert(windows(0, 1).extent(0) == kernel.size());
                                         lue_assert(windows(0, 1).extent(1) < kernel.size());
 
-                                        output_partition_data(rf, cf) = detail::border<Functor>(windows, kernel);
+                                        output_partition_data(rf, cf) = detail::border(
+                                            functor, windows, kernel);
                                     }
                                 }
                             }
@@ -1008,7 +997,8 @@ OutputPartition focal_operation_partition(
                                         lue_assert(windows(0, 1).extent(0) == kernel.size());
                                         lue_assert(windows(0, 1).extent(1) <= kernel.radius());
 
-                                        output_partition_data(rf, cf) = detail::border<Functor>(windows, kernel);
+                                        output_partition_data(rf, cf) = detail::border(
+                                            functor, windows, kernel);
                                     }
                                 }
                             }
@@ -1048,7 +1038,8 @@ OutputPartition focal_operation_partition(
                                         lue_assert(windows(1, 0).extent(0) <= kernel.radius());
                                         lue_assert(windows(1, 0).extent(1) == kernel.size());
 
-                                        output_partition_data(rf, cf) = detail::border<Functor>(windows, kernel);
+                                        output_partition_data(rf, cf) = detail::border(
+                                            functor, windows, kernel);
                                     }
                                 }
                             }
@@ -1145,7 +1136,7 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
     Policies const& /* policies */,
     Array const& input_array,
     Kernel const& kernel,
-    Functor const& functor)
+    Functor functor)
 {
     static_assert(lue::rank<Array> == 2);
     Rank const rank{2};
@@ -1583,57 +1574,57 @@ PartitionedArrayT<Array, OutputElementT<Functor>> focal_operation_2d(
 }
 
 
-template<
-    typename Policies,
-    typename Array,
-    typename Kernel,
-    typename Functor>
-class FocalOperation
-{
-
-    using OutputArray = PartitionedArrayT<Array, OutputElementT<Functor>>;
-
-    static constexpr Rank rank = lue::rank<Array>;
-
-    static_assert(rank == 1 || rank == 2);
-
-public:
-
-    FocalOperation(
-        Policies const& policies,
-        Array const& array,
-        Kernel const& kernel,
-        Functor const& functor):
-
-        _policies{policies},
-        _array{array},
-        _kernel{kernel},
-        _functor{functor}
-
-    {
-    }
-
-    OutputArray operator()() const
-    {
-        static_assert(rank == 2);
-
-        if constexpr(rank == 2) {
-            return focal_operation_2d<Policies, Array, Kernel, Functor>(
-                _policies, _array, _kernel, _functor);
-        }
-    }
-
-private:
-
-    Policies const& _policies;
-
-    Array const&   _array;
-
-    Kernel const&  _kernel;
-
-    Functor const& _functor;
-
-};
+/// template<
+///     typename Policies,
+///     typename Array,
+///     typename Kernel,
+///     typename Functor>
+/// class FocalOperation
+/// {
+/// 
+///     using OutputArray = PartitionedArrayT<Array, OutputElementT<Functor>>;
+/// 
+///     static constexpr Rank rank = lue::rank<Array>;
+/// 
+///     static_assert(rank == 1 || rank == 2);
+/// 
+/// public:
+/// 
+///     FocalOperation(
+///         Policies const& policies,
+///         Array const& array,
+///         Kernel const& kernel,
+///         Functor functor):
+/// 
+///         _policies{policies},
+///         _array{array},
+///         _kernel{kernel},
+///         _functor{std::move(functor)}
+/// 
+///     {
+///     }
+/// 
+///     OutputArray operator()() const
+///     {
+///         static_assert(rank == 2);
+/// 
+///         if constexpr(rank == 2) {
+///             return focal_operation_2d<Policies, Array, Kernel, Functor>(
+///                 _policies, _array, _kernel, _functor);
+///         }
+///     }
+/// 
+/// private:
+/// 
+///     Policies const& _policies;
+/// 
+///     Array const&   _array;
+/// 
+///     Kernel const&  _kernel;
+/// 
+///     Functor        _functor;
+/// 
+/// };
 
 }  // namespace detail
 
@@ -1670,14 +1661,14 @@ PartitionedArray<OutputElementT<Functor>, rank> focal_operation(
     Policies const& policies,
     PartitionedArray<Element, rank> const& array,
     Kernel const& kernel,
-    Functor const& functor)
+    Functor functor)
 {
     using InputArray = PartitionedArray<Element, rank>;
 
-    detail::FocalOperation<Policies, InputArray, Kernel, Functor> focal_operation{
-        policies, array, kernel, functor};
+    static_assert(rank == 2);
 
-    return focal_operation();
+    return detail::focal_operation_2d<Policies, InputArray, Kernel, Functor>(
+        policies, array, kernel, std::move(functor));
 }
 
 
@@ -1689,9 +1680,9 @@ template<
 PartitionedArray<OutputElementT<Functor>, rank> focal_operation(
     PartitionedArray<Element, rank> const& array,
     Kernel const& kernel,
-    Functor const& functor)
+    Functor functor)
 {
-    return focal_operation(FocalOperationPolicies{}, array, kernel, functor);
+    return focal_operation(FocalOperationPolicies{}, array, kernel, std::move(functor));
 }
 
 }  // namespace lue

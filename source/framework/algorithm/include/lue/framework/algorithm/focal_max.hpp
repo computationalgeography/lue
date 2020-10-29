@@ -15,78 +15,68 @@ public:
 
     using OutputElement = InputElement;
 
-    class Aggregator
-    {
-
-    public:
-
-        Aggregator():
-            _max{0},
-            _initialized{false}
-        {
-        }
-
-        template<
-            typename Weight>
-        void add(
-            Weight const weight,
-            InputElement const value)
-        {
-            static_assert(std::is_same_v<Weight, bool>);
-
-            if(weight) {
-                if(!_initialized) {
-                    _max = value;
-                    _initialized = true;
-                }
-                else {
-                    _max = std::max(_max, value);
-                }
-            }
-        }
-
-        OutputElement operator()() const
-        {
-            return _max;
-        }
-
-    private:
-
-        OutputElement _max;
-
-        bool _initialized;
-
-    };
-
-    FocalMax()
-    {
-    }
+    FocalMax()=default;
 
     constexpr InputElement fill_value() const
     {
         return std::numeric_limits<InputElement>::min();
     }
 
+    template<
+        typename Subspan,
+        typename Kernel>
+    OutputElement operator()(
+        Subspan const& window,
+        Kernel const& kernel) const
+    {
+        static_assert(rank<Kernel> == 2);
+
+        using Weight = ElementT<Kernel>;
+
+        // TODO Add traits to grab typename of elements in Subspan
+        // static_assert(std::is_same_v<ElementT<Subspan>, InputElement>);
+        static_assert(std::is_convertible_v<Weight, bool>);
+
+        OutputElement max{};
+        bool initialized{false};
+
+        lue_assert(window.extent(0) == kernel.size());
+        lue_assert(window.extent(1) == kernel.size());
+
+        for(Index r = 0; r < window.extent(0); ++r) {
+            for(Index c = 0; c < window.extent(1); ++c)
+            {
+                Weight const weight{kernel(r, c)};
+                InputElement const value{window(r, c)};
+
+                if(weight)
+                {
+                    if(!initialized)
+                    {
+                        max = value;
+                        initialized = true;
+                    }
+                    else
+                    {
+                        max = std::max(max, value);
+                    }
+                }
+            }
+        }
+
+        // TODO(KDJ)
+        // If the kernel weight are all false, or when no-data are
+        // supported and all values are no-data, then the result is not
+        // initialized. In that case we must mark the result to no-data.
+        assert(initialized);
+
+        return max;
+    }
+
 };
 
 }  // namespace detail
 
-
-// focal_max: given
-// - a partitioned array
-//     - Element type is not relevant. As long as the values support
-//       being compared using operator<.
-// - a kernel
-//     - Element type is not relevant. As long as the values support
-//       being evaluated as boolean.
-// iterate kernel over array and store max value found in kernel window
-// in focal cell
-
-// Implementation calls a more generic algorithm accepting a partitioned
-// array, a kernel and a functor: focal operation
-// This algorithm handles the halo partitions around the array, the
-// partitioning of the algorithm, and calling the functor, passing in
-// the kernel and the (view on the) elements
 
 template<
     typename Element,

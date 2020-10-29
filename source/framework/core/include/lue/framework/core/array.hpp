@@ -62,7 +62,15 @@ public:
         return _elements.empty();
     }
 
-    Shape const&   shape               () const;
+    Shape const& shape() const
+    {
+        return _shape;
+    }
+
+    lue::Index extent(Rank const dimension_idx) const
+    {
+        return _shape[dimension_idx];
+    }
 
     Iterator       begin               ();
 
@@ -283,15 +291,6 @@ Array<Element, rank>& Array<Element, rank>::operator=(
     assert_invariants();
 
     return *this;
-}
-
-
-template<
-    typename Element,
-    Rank rank>
-typename Array<Element, rank>::Shape const& Array<Element, rank>::shape() const
-{
-    return _shape;
 }
 
 
