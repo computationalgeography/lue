@@ -73,10 +73,10 @@ Array create_partitioned_array(
     {
         auto elements_it = elements.begin();
 
-        for(Partition& partition: array.partitions()) {
+        for(Partition& partition: array.partitions())
+        {
             partition.wait();  // FIXME be made asynchronous
-            partition.set_data(
-                Data{partition.shape().get(), *elements_it});
+            partition.set_data(Data{partition.shape().get(), *elements_it});
             ++elements_it;
         }
     }
