@@ -30,3 +30,5 @@
 #include "lue/framework/algorithm/unique.hpp"
 #include "lue/framework/algorithm/unique_id.hpp"
 #include "lue/framework/algorithm/where.hpp"
+
+#include "lue/framework/algorithm/d8_network.hpp"
