@@ -5,6 +5,174 @@
 #include "lue/framework/test/hpx_unit_test.hpp"
 
 
+BOOST_AUTO_TEST_CASE(use_case_01)
+{
+    // south, uint8 = f(double)
+    using Elevation = double;
+    using FlowDirection = std::uint8_t;
+    std::size_t const rank = 2;
+
+    using DEM = lue::PartitionedArray<Elevation, rank>;
+    using D8 = lue::PartitionedArray<FlowDirection, rank>;
+    using Shape = lue::ShapeT<DEM>;
+
+    Shape const array_shape{{5, 5}};
+    Shape const partition_shape{{5, 5}};
+
+    DEM dem = lue::test::create_partitioned_array<DEM>(
+        array_shape, partition_shape, {
+            {
+                9, 9, 9, 9, 9,
+                8, 8, 8, 8, 8,
+                7, 7, 7, 7, 7,
+                6, 6, 6, 6, 6,
+                5, 5, 5, 5, 5,
+            },
+        });
+
+    D8 d8_we_want = lue::test::create_partitioned_array<D8>(
+        array_shape, partition_shape, {
+            {
+                8, 8, 8, 8, 8,
+                4, 2, 2, 2, 6,
+                4, 2, 2, 2, 6,
+                4, 2, 2, 2, 6,
+                4, 2, 2, 2, 6,
+            },
+        });
+
+    D8 d8_we_got = lue::d8_network<FlowDirection>(dem);
+
+    lue::test::check_arrays_are_equal(d8_we_got, d8_we_want);
+}
+
+
+BOOST_AUTO_TEST_CASE(use_case_02)
+{
+    // north, uint8 = f(float)
+    using Elevation = float;
+    using FlowDirection = std::uint8_t;
+    std::size_t const rank = 2;
+
+    using DEM = lue::PartitionedArray<Elevation, rank>;
+    using D8 = lue::PartitionedArray<FlowDirection, rank>;
+    using Shape = lue::ShapeT<DEM>;
+
+    Shape const array_shape{{5, 5}};
+    Shape const partition_shape{{5, 5}};
+
+    DEM dem = lue::test::create_partitioned_array<DEM>(
+        array_shape, partition_shape, {
+            {
+                5, 5, 5, 5, 5,
+                6, 6, 6, 6, 6,
+                7, 7, 7, 7, 7,
+                8, 8, 8, 8, 8,
+                9, 9, 9, 9, 9,
+            },
+        });
+
+    D8 d8_we_want = lue::test::create_partitioned_array<D8>(
+        array_shape, partition_shape, {
+            {
+                8, 8, 8, 8, 8,
+                4, 8, 8, 8, 6,
+                4, 8, 8, 8, 6,
+                4, 8, 8, 8, 6,
+                4, 2, 2, 2, 6,
+            },
+        });
+
+    D8 d8_we_got = lue::d8_network<FlowDirection>(dem);
+
+    lue::test::check_arrays_are_equal(d8_we_got, d8_we_want);
+}
+
+
+BOOST_AUTO_TEST_CASE(use_case_03)
+{
+    // east, uint32
+    using Elevation = double;
+    using FlowDirection = std::uint32_t;
+    std::size_t const rank = 2;
+
+    using DEM = lue::PartitionedArray<Elevation, rank>;
+    using D8 = lue::PartitionedArray<FlowDirection, rank>;
+    using Shape = lue::ShapeT<DEM>;
+
+    Shape const array_shape{{5, 5}};
+    Shape const partition_shape{{5, 5}};
+
+    DEM dem = lue::test::create_partitioned_array<DEM>(
+        array_shape, partition_shape, {
+            {
+                9, 8, 7, 6, 5,
+                9, 8, 7, 6, 5,
+                9, 8, 7, 6, 5,
+                9, 8, 7, 6, 5,
+                9, 8, 7, 6, 5,
+            },
+        });
+
+    D8 d8_we_want = lue::test::create_partitioned_array<D8>(
+        array_shape, partition_shape, {
+            {
+                8, 8, 8, 8, 8,
+                4, 6, 6, 6, 6,
+                4, 6, 6, 6, 6,
+                4, 6, 6, 6, 6,
+                4, 2, 2, 2, 6,
+            },
+        });
+
+    D8 d8_we_got = lue::d8_network<FlowDirection>(dem);
+
+    lue::test::check_arrays_are_equal(d8_we_got, d8_we_want);
+}
+
+
+BOOST_AUTO_TEST_CASE(use_case_04)
+{
+    // west, uint64
+    using Elevation = double;
+    using FlowDirection = std::uint64_t;
+    std::size_t const rank = 2;
+
+    using DEM = lue::PartitionedArray<Elevation, rank>;
+    using D8 = lue::PartitionedArray<FlowDirection, rank>;
+    using Shape = lue::ShapeT<DEM>;
+
+    Shape const array_shape{{5, 5}};
+    Shape const partition_shape{{5, 5}};
+
+    DEM dem = lue::test::create_partitioned_array<DEM>(
+        array_shape, partition_shape, {
+            {
+                5, 6, 7, 8, 9,
+                5, 6, 7, 8, 9,
+                5, 6, 7, 8, 9,
+                5, 6, 7, 8, 9,
+                5, 6, 7, 8, 9,
+            },
+        });
+
+    D8 d8_we_want = lue::test::create_partitioned_array<D8>(
+        array_shape, partition_shape, {
+            {
+                8, 8, 8, 8, 8,
+                4, 4, 4, 4, 6,
+                4, 4, 4, 4, 6,
+                4, 4, 4, 4, 6,
+                4, 2, 2, 2, 6,
+            },
+        });
+
+    D8 d8_we_got = lue::d8_network<FlowDirection>(dem);
+
+    lue::test::check_arrays_are_equal(d8_we_got, d8_we_want);
+}
+
+
 BOOST_AUTO_TEST_CASE(barnes_2017)
 {
     // DEM and network from paper:
