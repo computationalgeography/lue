@@ -1,5 +1,6 @@
 #define BOOST_TEST_MODULE lue framework algorithm d8_network
 #include "lue/framework/algorithm/d8_network.hpp"
+#include "lue/framework/algorithm/serialize/kernel.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/compare.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
