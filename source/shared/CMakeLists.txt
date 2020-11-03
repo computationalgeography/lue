@@ -1,3 +1,5 @@
+add_test_conditionally(test)
+
 configure_file(
     include/lue/configure.hpp.in
     include/lue/configure.hpp
