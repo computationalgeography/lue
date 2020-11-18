@@ -16,12 +16,18 @@ class SkipNoData
 
     public:
 
-        static constexpr bool is_no_data()
+        template<
+            typename Data>
+        static constexpr bool is_no_data(
+            Data const& /* data */)
         {
             return false;
         }
 
+        template<
+            typename Data>
         static constexpr bool is_no_data(
+            Data const& /* data */,
             Index /* idx */ ...)
         {
             return false;

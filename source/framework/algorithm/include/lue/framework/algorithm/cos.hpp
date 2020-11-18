@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/unary_local_operation.hpp"
+#include "lue/framework/algorithm/policy/default_policies.hpp"
 #include <cmath>
 
 
@@ -28,13 +29,25 @@ public:
 }  // namespace detail
 
 
+namespace policy {
+namespace cos {
+
+using DefaultPolicies = policy::DefaultPolicies<1, 1>;
+
+}  // namespace policy
+}  // namespace cos
+
+
 template<
     typename Element,
     Rank rank>
 PartitionedArray<Element, rank> cos(
     PartitionedArray<Element, rank> const& array)
 {
-    return unary_local_operation(array, detail::Cos<Element>{});
+    return unary_local_operation(
+        policy::cos::DefaultPolicies{},
+        array,
+        detail::Cos<Element>{});
 }
 
 }  // namespace lue

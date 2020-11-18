@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/unary_local_operation.hpp"
+#include "lue/framework/algorithm/policy/default_policies.hpp"
 
 
 namespace lue {
@@ -26,13 +27,25 @@ public:
 }  // namespace detail
 
 
+namespace policy {
+namespace cast {
+
+using DefaultPolicies = policy::DefaultPolicies<1, 1>;
+
+}  // namespace policy
+}  // namespace cast
+
+
 template<
     typename OutputElement,
     typename InputArray>
 PartitionedArrayT<InputArray, OutputElement> cast(
     InputArray const& array)
 {
-    return unary_local_operation(array, detail::Cast<ElementT<InputArray>, OutputElement>{});
+    return unary_local_operation(
+        policy::cast::DefaultPolicies{},
+        array,
+        detail::Cast<ElementT<InputArray>, OutputElement>{});
 }
 
 }  // namespace lue

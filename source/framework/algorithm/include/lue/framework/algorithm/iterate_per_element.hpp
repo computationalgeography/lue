@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/unary_local_operation.hpp"
+#include "lue/framework/algorithm/policy/default_policies.hpp"
 
 
 namespace lue {
@@ -36,6 +37,15 @@ public:
 }  // namespace detail
 
 
+namespace policy {
+namespace iterate_per_element {
+
+using DefaultPolicies = policy::DefaultPolicies<1, 1>;
+
+}  // namespace policy
+}  // namespace iterate_per_element
+
+
 /*!
     @brief      Per cell in a partitioned array, iterate a number of
                 times before copying the cell to the result
@@ -50,7 +60,10 @@ template<
 PartitionedArray<Element, rank> iterate_per_element(
     PartitionedArray<Element, rank> const& input_array)
 {
-    return unary_local_operation(input_array, detail::IteratePerElement<Element>{});
+    return unary_local_operation(
+        policy::iterate_per_element::DefaultPolicies{},
+        input_array,
+        detail::IteratePerElement<Element>{});
 }
 
 }  // namespace lue

@@ -2,7 +2,6 @@
 #include "lue/framework/algorithm/functor_traits.hpp"
 #include "lue/framework/core/component/partitioned_array.hpp"
 #include "lue/framework/core/component.hpp"
-// #include "lue/no_data.hpp"
 
 
 namespace lue {
@@ -75,9 +74,10 @@ public:
 
                         for(Index i = 0; i < nr_elements; ++i)
                         {
-                            if(indp1.is_no_data(i) || indp2.is_no_data(i))
+                            if(indp1.is_no_data(input_partition_data1, i) ||
+                                indp2.is_no_data(input_partition_data2, i))
                             {
-                                ondp.mark_no_data(i);
+                                ondp.mark_no_data(output_partition_data, i);
                             }
                             else
                             {
@@ -154,20 +154,20 @@ public:
 
                         Count const nr_elements{lue::nr_elements(input_partition_data)};
 
-                        if(indp2.is_no_data())
+                        if(indp2.is_no_data(input_scalar))
                         {
                             for(Index i = 0; i < nr_elements; ++i)
                             {
-                                ondp.mark_no_data(i);
+                                ondp.mark_no_data(output_partition_data, i);
                             }
                         }
                         else
                         {
                             for(Index i = 0; i < nr_elements; ++i)
                             {
-                                if(indp1.is_no_data(i))
+                                if(indp1.is_no_data(input_partition_data, i))
                                 {
-                                    ondp.mark_no_data(i);
+                                    ondp.mark_no_data(output_partition_data, i);
                                 }
                                 else
                                 {
@@ -244,20 +244,20 @@ public:
 
                         Count const nr_elements{lue::nr_elements(input_partition_data)};
 
-                        if(indp1.is_no_data())
+                        if(indp1.is_no_data(input_scalar))
                         {
                             for(Index i = 0; i < nr_elements; ++i)
                             {
-                                ondp.mark_no_data(i);
+                                ondp.mark_no_data(output_partition_data, i);
                             }
                         }
                         else
                         {
                             for(Index i = 0; i < nr_elements; ++i)
                             {
-                                if(indp2.is_no_data(i))
+                                if(indp2.is_no_data(input_partition_data, i))
                                 {
-                                    ondp.mark_no_data(i);
+                                    ondp.mark_no_data(output_partition_data, i);
                                 }
                                 else
                                 {

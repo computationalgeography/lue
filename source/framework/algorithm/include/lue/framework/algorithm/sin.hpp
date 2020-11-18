@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/unary_local_operation.hpp"
+#include "lue/framework/algorithm/policy/default_policies.hpp"
 #include <cmath>
 
 
@@ -28,13 +29,25 @@ public:
 }  // namespace detail
 
 
+namespace policy {
+namespace sin {
+
+using DefaultPolicies = policy::DefaultPolicies<1, 1>;
+
+}  // namespace policy
+}  // namespace sin
+
+
 template<
     typename Element,
     Rank rank>
 PartitionedArray<Element, rank> sin(
     PartitionedArray<Element, rank> const& array)
 {
-    return unary_local_operation(array, detail::Sin<Element>{});
+    return unary_local_operation(
+        policy::sin::DefaultPolicies{},
+        array,
+        detail::Sin<Element>{});
 }
 
 }  // namespace lue
