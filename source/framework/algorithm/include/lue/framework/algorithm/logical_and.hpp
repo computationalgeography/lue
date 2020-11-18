@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/binary_local_operation.hpp"
+#include "lue/framework/algorithm/policy/default_policies.hpp"
 
 
 namespace lue {
@@ -26,6 +27,15 @@ public:
 }  // namespace detail
 
 
+namespace policy {
+namespace logical_and {
+
+using DefaultPolicies = policy::DefaultPolicies<2, 1>;
+
+}  // namespace policy
+}  // namespace logical_and
+
+
 template<
     typename InputElement,
     Rank rank>
@@ -33,7 +43,10 @@ PartitionedArray<bool, rank> logical_and(
     PartitionedArray<InputElement, rank> const& array1,
     PartitionedArray<InputElement, rank> const& array2)
 {
-    return binary_local_operation(array1, array2, detail::LogicalAnd<InputElement>{});
+    return binary_local_operation(
+        policy::logical_and::DefaultPolicies{},
+        array1, array2,
+        detail::LogicalAnd<InputElement>{});
 }
 
 
@@ -44,7 +57,10 @@ PartitionedArray<bool, rank> logical_and(
     PartitionedArray<InputElement, rank> const& array,
     hpx::shared_future<InputElement> const& scalar)
 {
-    return binary_local_operation(array, scalar, detail::LogicalAnd<InputElement>{});
+    return binary_local_operation(
+        policy::logical_and::DefaultPolicies{},
+        array, scalar,
+        detail::LogicalAnd<InputElement>{});
 }
 
 
@@ -55,7 +71,10 @@ PartitionedArray<bool, rank> logical_and(
     hpx::shared_future<InputElement> const& scalar,
     PartitionedArray<InputElement, rank> const& array)
 {
-    return binary_local_operation(scalar, array, detail::LogicalAnd<InputElement>{});
+    return binary_local_operation(
+        policy::logical_and::DefaultPolicies{},
+        scalar, array,
+        detail::LogicalAnd<InputElement>{});
 }
 
 

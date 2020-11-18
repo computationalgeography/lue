@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/binary_local_operation.hpp"
+#include "lue/framework/algorithm/policy/default_policies.hpp"
 
 
 namespace lue {
@@ -26,6 +27,15 @@ public:
 }  // namespace detail
 
 
+namespace policy {
+namespace subtract {
+
+using DefaultPolicies = policy::DefaultPolicies<2, 1>;
+
+}  // namespace policy
+}  // namespace subtract
+
+
 template<
     typename Element,
     Rank rank>
@@ -33,7 +43,10 @@ PartitionedArray<Element, rank> subtract(
     PartitionedArray<Element, rank> const& array1,
     PartitionedArray<Element, rank> const& array2)
 {
-    return binary_local_operation(array1, array2, detail::Subtract<Element>{});
+    return binary_local_operation(
+        policy::subtract::DefaultPolicies{},
+        array1, array2,
+        detail::Subtract<Element>{});
 }
 
 
@@ -44,7 +57,9 @@ PartitionedArray<Element, rank> subtract(
     PartitionedArray<Element, rank> const& array,
     hpx::shared_future<Element> const& scalar)
 {
-    return binary_local_operation(array, scalar, detail::Subtract<Element>{});
+    return binary_local_operation(
+        policy::subtract::DefaultPolicies{},
+        array, scalar, detail::Subtract<Element>{});
 }
 
 
@@ -55,7 +70,10 @@ PartitionedArray<Element, rank> subtract(
     hpx::shared_future<Element> const& scalar,
     PartitionedArray<Element, rank> const& array)
 {
-    return binary_local_operation(scalar, array, detail::Subtract<Element>{});
+    return binary_local_operation(
+        policy::subtract::DefaultPolicies{},
+        scalar, array,
+        detail::Subtract<Element>{});
 }
 
 }  // namespace lue

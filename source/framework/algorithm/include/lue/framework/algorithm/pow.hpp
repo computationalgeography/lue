@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/binary_local_operation.hpp"
+#include "lue/framework/algorithm/policy/default_policies.hpp"
 #include <cmath>
 #include <limits>
 
@@ -32,6 +33,15 @@ public:
 }  // namespace detail
 
 
+namespace policy {
+namespace pow {
+
+using DefaultPolicies = policy::DefaultPolicies<2, 1>;
+
+}  // namespace policy
+}  // namespace pow
+
+
 template<
     typename Element,
     Rank rank>
@@ -39,7 +49,10 @@ PartitionedArray<Element, rank> pow(
     PartitionedArray<Element, rank> const& array,
     hpx::shared_future<Element> const& exponent)
 {
-    return binary_local_operation(array, exponent, detail::Pow<Element>{});
+    return binary_local_operation(
+        policy::pow::DefaultPolicies{},
+        array, exponent,
+        detail::Pow<Element>{});
 }
 
 

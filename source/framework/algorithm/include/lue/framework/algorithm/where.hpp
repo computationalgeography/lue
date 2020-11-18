@@ -1,5 +1,4 @@
 #pragma once
-#include "lue/framework/algorithm/binary_local_operation.hpp"
 #include "lue/framework/algorithm/ternary_local_operation.hpp"
 
 

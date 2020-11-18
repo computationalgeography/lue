@@ -1,6 +1,7 @@
 #pragma once
 #include "lue/framework/algorithm/binary_local_operation.hpp"
 #include "lue/framework/algorithm/operator.hpp"
+#include "lue/framework/algorithm/policy/default_policies.hpp"
 
 
 namespace lue {
@@ -27,6 +28,15 @@ public:
 }  // namespace detail
 
 
+namespace policy {
+namespace equal_to {
+
+using DefaultPolicies = policy::DefaultPolicies<2, 1>;
+
+}  // namespace policy
+}  // namespace equal_to
+
+
 // array == array
 template<
     typename InputElement,
@@ -35,7 +45,10 @@ PartitionedArray<bool, rank> equal_to(
     PartitionedArray<InputElement, rank> const& array1,
     PartitionedArray<InputElement, rank> const& array2)
 {
-    return binary_local_operation(array1, array2, detail::EqualTo<InputElement>{});
+    return binary_local_operation(
+        policy::equal_to::DefaultPolicies{},
+        array1, array2,
+        detail::EqualTo<InputElement>{});
 }
 
 
@@ -47,7 +60,10 @@ PartitionedArray<bool, rank> equal_to(
     PartitionedArray<InputElement, rank> const& array,
     hpx::shared_future<InputElement> const& scalar)
 {
-    return binary_local_operation(array, scalar, detail::EqualTo<InputElement>{});
+    return binary_local_operation(
+        policy::equal_to::DefaultPolicies{},
+        array, scalar,
+        detail::EqualTo<InputElement>{});
 }
 
 
@@ -59,7 +75,9 @@ PartitionedArray<bool, rank> equal_to(
     hpx::shared_future<InputElement> const& scalar,
     PartitionedArray<InputElement, rank> const& array)
 {
-    return binary_local_operation(scalar, array, detail::EqualTo<InputElement>{});
+    return binary_local_operation(
+        policy::equal_to::DefaultPolicies{},
+        scalar, array, detail::EqualTo<InputElement>{});
 }
 
 
@@ -96,7 +114,11 @@ ArrayPartition<bool, rank> equal_to(
     ArrayPartition<InputElement, rank> const& partition,
     hpx::shared_future<InputElement> const& scalar)
 {
-    return binary_local_operation(locality_id, partition, scalar, detail::EqualTo<InputElement>{});
+    return binary_local_operation(
+        locality_id,
+        policy::equal_to::DefaultPolicies{},
+        partition, scalar,
+        detail::EqualTo<InputElement>{});
 }
 
 

@@ -1,6 +1,7 @@
 #pragma once
 #include "lue/framework/algorithm/binary_local_operation.hpp"
 #include "lue/framework/algorithm/operator.hpp"
+#include "lue/framework/algorithm/policy/default_policies.hpp"
 
 
 namespace lue {
@@ -27,6 +28,15 @@ public:
 }  // namespace detail
 
 
+namespace policy {
+namespace greater_than {
+
+using DefaultPolicies = policy::DefaultPolicies<2, 1>;
+
+}  // namespace policy
+}  // namespace greater_than
+
+
 template<
     typename InputElement,
     Rank rank>
@@ -34,7 +44,10 @@ PartitionedArray<bool, rank> greater_than(
     PartitionedArray<InputElement, rank> const& array1,
     PartitionedArray<InputElement, rank> const& array2)
 {
-    return binary_local_operation(array1, array2, detail::GreaterThan<InputElement>{});
+    return binary_local_operation(
+        policy::greater_than::DefaultPolicies{},
+        array1, array2,
+        detail::GreaterThan<InputElement>{});
 }
 
 
@@ -45,7 +58,10 @@ PartitionedArray<bool, rank> greater_than(
     PartitionedArray<InputElement, rank> const& array,
     hpx::shared_future<InputElement> const& scalar)
 {
-    return binary_local_operation(array, scalar, detail::GreaterThan<InputElement>{});
+    return binary_local_operation(
+        policy::greater_than::DefaultPolicies{},
+        array, scalar,
+        detail::GreaterThan<InputElement>{});
 }
 
 
@@ -56,7 +72,10 @@ PartitionedArray<bool, rank> greater_than(
     hpx::shared_future<InputElement> const& scalar,
     PartitionedArray<InputElement, rank> const& array)
 {
-    return binary_local_operation(scalar, array, detail::GreaterThan<InputElement>{});
+    return binary_local_operation(
+        policy::greater_than::DefaultPolicies{},
+        scalar, array,
+        detail::GreaterThan<InputElement>{});
 }
 
 

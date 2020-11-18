@@ -1,6 +1,7 @@
 #pragma once
 #include "lue/framework/algorithm/binary_local_operation.hpp"
 #include "lue/framework/algorithm/operator.hpp"
+#include "lue/framework/algorithm/policy/default_policies.hpp"
 
 
 namespace lue {
@@ -27,6 +28,15 @@ public:
 }  // namespace detail
 
 
+namespace policy {
+namespace greater_than_equal_to {
+
+using DefaultPolicies = policy::DefaultPolicies<2, 1>;
+
+}  // namespace policy
+}  // namespace greater_than_equal_to
+
+
 /*!
     @brief      Return the result of comparing two partitioned arrays
     @param      array1 Partitioned array
@@ -40,7 +50,9 @@ PartitionedArray<bool, rank> greater_than_equal_to(
     PartitionedArray<InputElement, rank> const& array1,
     PartitionedArray<InputElement, rank> const& array2)
 {
-    return binary_local_operation(array1, array2, detail::GreaterThanEqualTo<InputElement>{});
+    return binary_local_operation(
+        policy::greater_than_equal_to::DefaultPolicies{},
+        array1, array2, detail::GreaterThanEqualTo<InputElement>{});
 }
 
 
@@ -54,7 +66,9 @@ PartitionedArray<bool, rank> greater_than_equal_to(
     PartitionedArray<InputElement, rank> const& array,
     hpx::shared_future<InputElement> const& scalar)
 {
-    return binary_local_operation(array, scalar, detail::GreaterThanEqualTo<InputElement>{});
+    return binary_local_operation(
+        policy::greater_than_equal_to::DefaultPolicies{},
+        array, scalar, detail::GreaterThanEqualTo<InputElement>{});
 }
 
 
@@ -68,7 +82,9 @@ PartitionedArray<bool, rank> greater_than_equal_to(
     hpx::shared_future<InputElement> const& scalar,
     PartitionedArray<InputElement, rank> const& array)
 {
-    return binary_local_operation(scalar, array, detail::GreaterThanEqualTo<InputElement>{});
+    return binary_local_operation(
+        policy::greater_than_equal_to::DefaultPolicies{},
+        scalar, array, detail::GreaterThanEqualTo<InputElement>{});
 }
 
 

@@ -1,6 +1,7 @@
 #pragma once
 #include "lue/framework/algorithm/binary_local_operation.hpp"
 #include "lue/framework/algorithm/operator.hpp"
+#include "lue/framework/algorithm/policy/default_policies.hpp"
 
 
 namespace lue {
@@ -27,6 +28,15 @@ public:
 }  // namespace detail
 
 
+namespace policy {
+namespace not_equal_to {
+
+using DefaultPolicies = policy::DefaultPolicies<2, 1>;
+
+}  // namespace policy
+}  // namespace not_equal_to
+
+
 template<
     typename InputElement,
     Rank rank>
@@ -34,7 +44,10 @@ PartitionedArray<bool, rank> not_equal_to(
     PartitionedArray<InputElement, rank> const& array1,
     PartitionedArray<InputElement, rank> const& array2)
 {
-    return binary_local_operation(array1, array2, detail::NotEqualTo<InputElement>{});
+    return binary_local_operation(
+        policy::not_equal_to::DefaultPolicies{},
+        array1, array2,
+        detail::NotEqualTo<InputElement>{});
 }
 
 
@@ -45,7 +58,10 @@ PartitionedArray<bool, rank> not_equal_to(
     PartitionedArray<InputElement, rank> const& array,
     hpx::shared_future<InputElement> const& scalar)
 {
-    return binary_local_operation(array, scalar, detail::NotEqualTo<InputElement>{});
+    return binary_local_operation(
+        policy::not_equal_to::DefaultPolicies{},
+        array, scalar,
+        detail::NotEqualTo<InputElement>{});
 }
 
 
@@ -56,7 +72,10 @@ PartitionedArray<bool, rank> not_equal_to(
     hpx::shared_future<InputElement> const& scalar,
     PartitionedArray<InputElement, rank> const& array)
 {
-    return binary_local_operation(scalar, array, detail::NotEqualTo<InputElement>{});
+    return binary_local_operation(
+        policy::not_equal_to::DefaultPolicies{},
+        scalar, array,
+        detail::NotEqualTo<InputElement>{});
 }
 
 
