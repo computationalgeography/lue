@@ -8,10 +8,12 @@ namespace lue {
 namespace detail {
 
 template<
+    typename Policies,
     typename InputPartition,
     typename OutputPartition,
     typename Functor>
 OutputPartition unary_local_operation_partition(
+    Policies const& policies,
     InputPartition const& input_partition,
     Functor const& functor)
 {
@@ -25,7 +27,7 @@ OutputPartition unary_local_operation_partition(
         hpx::launch::async,
         hpx::util::unwrapping(
 
-                [input_partition, functor](
+                [input_partition, policies, functor](
                     Offset const& offset,
                     InputData const& input_partition_data)
                 {
@@ -35,9 +37,22 @@ OutputPartition unary_local_operation_partition(
 
                     OutputData output_partition_data{input_partition_data.shape()};
 
-                    std::transform(
-                        input_partition_data.begin(), input_partition_data.end(),
-                        output_partition_data.begin(), functor);
+                    auto const& [indp] = policies.input_no_data_policies();
+                    auto const& [ondp] = policies.output_no_data_policies();
+
+                    Count const nr_elements{lue::nr_elements(input_partition_data)};
+
+                    for(Index i = 0; i < nr_elements; ++i)
+                    {
+                        if(indp.is_no_data(input_partition_data, i))
+                        {
+                            ondp.mark_no_data(input_partition_data, i);
+                        }
+                        else
+                        {
+                            output_partition_data[i] = functor(input_partition_data[i]);
+                        }
+                    }
 
                     return OutputPartition{hpx::find_here(), offset, std::move(output_partition_data)};
                 }
@@ -50,14 +65,15 @@ OutputPartition unary_local_operation_partition(
 
 
 template<
+    typename Policies,
     typename InputPartition,
     typename OutputPartition,
     typename Functor>
 struct UnaryLocalOperationPartitionAction:
     hpx::actions::make_action<
-            decltype(&unary_local_operation_partition<InputPartition, OutputPartition, Functor>),
-            &unary_local_operation_partition<InputPartition, OutputPartition, Functor>,
-            UnaryLocalOperationPartitionAction<InputPartition, OutputPartition, Functor>
+            decltype(&unary_local_operation_partition<Policies, InputPartition, OutputPartition, Functor>),
+            &unary_local_operation_partition<Policies, InputPartition, OutputPartition, Functor>,
+            UnaryLocalOperationPartitionAction<Policies, InputPartition, OutputPartition, Functor>
         >
 {};
 
@@ -65,10 +81,12 @@ struct UnaryLocalOperationPartitionAction:
 
 
 template<
+    typename Policies,
     typename InputElement,
     Rank rank,
     typename Functor>
 PartitionedArray<OutputElementT<Functor>, rank> unary_local_operation(
+    Policies const& policies,
     PartitionedArray<InputElement, rank> const& input_array,
     Functor const& functor)
 {
@@ -82,7 +100,8 @@ PartitionedArray<OutputElementT<Functor>, rank> unary_local_operation(
 
     lue_assert(all_are_valid(input_array.partitions()));
 
-    detail::UnaryLocalOperationPartitionAction<InputPartition, OutputPartition, Functor> action;
+    detail::UnaryLocalOperationPartitionAction<
+        Policies, InputPartition, OutputPartition, Functor> action;
 
     Localities<rank> const& localities{input_array.localities()};
     InputPartitions const& input_partitions{input_array.partitions()};
@@ -93,12 +112,12 @@ PartitionedArray<OutputElementT<Functor>, rank> unary_local_operation(
         output_partitions[p] = hpx::dataflow(
             hpx::launch::async,
 
-            [locality_id=localities[p], action, functor](
+            [locality_id=localities[p], action, policies, functor](
                 InputPartition const& input_partition)
             {
                 AnnotateFunction annotation{"unary_local_operation"};
 
-                return action(locality_id, input_partition, functor);
+                return action(locality_id, policies, input_partition, functor);
             },
 
             input_partitions[p]);

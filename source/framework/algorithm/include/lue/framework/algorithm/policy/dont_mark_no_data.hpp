@@ -16,7 +16,17 @@ class DontMarkNoData
 
     public:
 
+        template<
+            typename Data>
         static constexpr void mark_no_data(
+            Data& /* data */)
+        {
+        }
+
+        template<
+            typename Data>
+        static constexpr void mark_no_data(
+            Data& /* data */,
             Index /* idx */ ...)
         {
         }

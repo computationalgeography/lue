@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/unary_local_operation.hpp"
+#include "lue/framework/algorithm/policy/default_policies.hpp"
 
 
 namespace lue {
@@ -25,13 +26,25 @@ public:
 }  // namespace detail
 
 
+namespace policy {
+namespace logical_not {
+
+using DefaultPolicies = policy::DefaultPolicies<1, 1>;
+
+}  // namespace policy
+}  // namespace logical_not
+
+
 template<
     typename InputElement,
     Rank rank>
 PartitionedArray<bool, rank> logical_not(
     PartitionedArray<InputElement, rank> const& array)
 {
-    return unary_local_operation(array, detail::LogicalNot<InputElement>{});
+    return unary_local_operation(
+        policy::logical_not::DefaultPolicies{},
+        array,
+        detail::LogicalNot<InputElement>{});
 }
 
 }  // namespace lue
