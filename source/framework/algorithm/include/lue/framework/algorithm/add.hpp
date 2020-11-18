@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/binary_local_operation.hpp"
+#include "lue/framework/algorithm/policy/default_policies.hpp"
 
 
 namespace lue {
@@ -26,6 +27,15 @@ public:
 }  // namespace detail
 
 
+namespace policy {
+namespace add {
+
+using DefaultPolicies = policy::DefaultPolicies<2, 1>;
+
+}  // namespace policy
+}  // namespace add
+
+
 template<
     typename Element,
     Rank rank>
@@ -33,7 +43,10 @@ PartitionedArray<Element, rank> add(
     PartitionedArray<Element, rank> const& array1,
     PartitionedArray<Element, rank> const& array2)
 {
-    return binary_local_operation(array1, array2, detail::Add<Element>{});
+    return binary_local_operation(
+        policy::add::DefaultPolicies{},
+        array1, array2,
+        detail::Add<Element>{});
 }
 
 
@@ -44,7 +57,10 @@ PartitionedArray<Element, rank> add(
     PartitionedArray<Element, rank> const& array,
     hpx::shared_future<Element> const& scalar)
 {
-    return binary_local_operation(array, scalar, detail::Add<Element>{});
+    return binary_local_operation(
+        policy::add::DefaultPolicies{},
+        array, scalar,
+        detail::Add<Element>{});
 }
 
 
@@ -55,7 +71,10 @@ PartitionedArray<Element, rank> add(
     hpx::shared_future<Element> const& scalar,
     PartitionedArray<Element, rank> const& array)
 {
-    return binary_local_operation(scalar, array, detail::Add<Element>{});
+    return binary_local_operation(
+        policy::add::DefaultPolicies{},
+        scalar, array,
+        detail::Add<Element>{});
 }
 
 

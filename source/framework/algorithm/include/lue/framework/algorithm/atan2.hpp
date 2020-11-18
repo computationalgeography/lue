@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/binary_local_operation.hpp"
+#include "lue/framework/algorithm/policy/default_policies.hpp"
 #include <cmath>
 
 
@@ -29,6 +30,15 @@ public:
 }  // namespace detail
 
 
+namespace policy {
+namespace atan2 {
+
+using DefaultPolicies = policy::DefaultPolicies<2, 1>;
+
+}  // namespace policy
+}  // namespace atan2
+
+
 template<
     typename Element,
     Rank rank>
@@ -36,7 +46,10 @@ PartitionedArray<Element, rank> atan2(
     PartitionedArray<Element, rank> const& array1,
     PartitionedArray<Element, rank> const& array2)
 {
-    return binary_local_operation(array1, array2, detail::ATan2<Element>{});
+    return binary_local_operation(
+        policy::atan2::DefaultPolicies{},
+        array1, array2,
+        detail::ATan2<Element>{});
 }
 
 }  // namespace lue
