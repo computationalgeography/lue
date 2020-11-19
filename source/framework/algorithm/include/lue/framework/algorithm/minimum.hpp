@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/unary_aggregate_operation.hpp"
+#include "lue/framework/algorithm/policy/default_policies.hpp"
 
 
 namespace lue {
@@ -35,14 +36,14 @@ public:
     }
 
     constexpr OutputElement partition(
-        InputElement const input_element) const noexcept
+        OutputElement const input_element) const noexcept
     {
         return input_element;
     }
 
     constexpr OutputElement partition(
-        InputElement const aggregated_value,
-        InputElement const input_element) const noexcept
+        OutputElement const aggregated_value,
+        OutputElement const input_element) const noexcept
     {
         return std::min(aggregated_value, input_element);
     }
@@ -52,13 +53,25 @@ public:
 }  // namespace detail
 
 
+namespace policy {
+namespace minimum {
+
+using DefaultPolicies = policy::DefaultPolicies<1, 1>;
+
+}  // namespace policy
+}  // namespace minimum
+
+
 template<
     typename Element,
     Rank rank>
 hpx::future<Element> minimum(
     PartitionedArray<Element, rank> const& array)
 {
-    return unary_aggregate_operation(array, detail::Minimum<Element, Element>{});
+    return unary_aggregate_operation(
+        policy::minimum::DefaultPolicies{},
+        array,
+        detail::Minimum<Element, Element>{});
 }
 
 }  // namespace lue
