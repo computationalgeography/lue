@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/unary_aggregate_operation.hpp"
+#include "lue/framework/algorithm/policy/default_policies.hpp"
 
 
 namespace lue {
@@ -40,15 +41,15 @@ public:
     }
 
     constexpr OutputElement partition(
-        InputElement const input_element) const noexcept
+        OutputElement const input_element) const noexcept
     {
         // The result is true if the input element is true
         return input_element;
     }
 
     constexpr OutputElement partition(
-        InputElement const aggregated_value,
-        InputElement const input_element) const noexcept
+        OutputElement const aggregated_value,
+        OutputElement const input_element) const noexcept
     {
         // The result is true if the value aggregated until now is true
         // and the input element is true
@@ -60,13 +61,25 @@ public:
 }  // namespace detail
 
 
+namespace policy {
+namespace all {
+
+using DefaultPolicies = policy::DefaultPolicies<1, 1>;
+
+}  // namespace policy
+}  // namespace all
+
+
 template<
     typename Element,
     Rank rank>
 hpx::future<Element> all(
     PartitionedArray<Element, rank> const& array)
 {
-    return unary_aggregate_operation(array, detail::All<Element>{});
+    return unary_aggregate_operation(
+        policy::all::DefaultPolicies{},
+        array,
+        detail::All<Element>{});
 }
 
 
@@ -77,7 +90,11 @@ hpx::future<Element> all(
     hpx::id_type const locality_id,
     ArrayPartition<Element, rank> const& partition)
 {
-    return unary_aggregate_operation(locality_id, partition, detail::All<Element>{});
+    return unary_aggregate_operation(
+        locality_id,
+        policy::all::DefaultPolicies{},
+        partition,
+        detail::All<Element>{});
 }
 
 }  // namespace lue
