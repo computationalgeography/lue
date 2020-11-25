@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/zonal_operation.hpp"
+#include "lue/framework/algorithm/policy/default_policies.hpp"
 #include <hpx/serialization/unordered_map.hpp>
 
 
@@ -50,6 +51,12 @@ public:
             }
         }
 
+        bool contains(
+            Zone const zone) const
+        {
+            return _sums.find(zone) != _sums.end();
+        }
+
         InputElement operator[](
             Zone const zone) const
         {
@@ -82,6 +89,15 @@ public:
 }  // namespace detail
 
 
+namespace policy {
+namespace zonal_sum {
+
+using DefaultPolicies = policy::DefaultPolicies<2, 1>;
+
+}  // namespace policy
+}  // namespace zonal_sum
+
+
 template<
     typename Element,
     typename Zone,
@@ -90,7 +106,10 @@ PartitionedArray<Element, rank> zonal_sum(
     Element const& value,
     PartitionedArray<Zone, rank> const& zones)
 {
-    return zonal_operation(value, zones, detail::ZonalSum<Element, Zone>{});
+    return zonal_operation(
+        policy::zonal_sum::DefaultPolicies{},
+        value, zones,
+        detail::ZonalSum<Element, Zone>{});
 }
 
 
@@ -102,7 +121,10 @@ PartitionedArray<Element, rank> zonal_sum(
     PartitionedArray<Element, rank> const& array,
     PartitionedArray<Zone, rank> const& zones)
 {
-    return zonal_operation(array, zones, detail::ZonalSum<Element, Zone>{});
+    return zonal_operation(
+        policy::zonal_sum::DefaultPolicies{},
+        array, zones,
+        detail::ZonalSum<Element, Zone>{});
 }
 
 }  // namespace lue

@@ -8,6 +8,7 @@ namespace detail {
 namespace zonal_operation {
 
 template<
+    typename Policies,
     typename Input,
     typename ZonesPartition,
     typename Functor>
@@ -25,6 +26,7 @@ class OverloadPicker
             @return     Future to collection of statistic per zone
         */
         static hpx::future<AggregatorT<Functor>> zonal_operation_partition(
+            Policies const& policies,
             InputElement const input_element,
             ZonesPartition const& zones_partition,
             Functor /* functor */)
@@ -38,20 +40,28 @@ class OverloadPicker
                 hpx::launch::async,
                 hpx::util::unwrapping(
 
-                        [input_element, zones_partition](
+                        [policies, input_element, zones_partition](
                             ZonesData const& zones_partition_data)
                         {
                             AnnotateFunction annotation{"zonal_operation_partition"};
 
                             HPX_UNUSED(zones_partition);
 
-                            Count const nr_elements{lue::nr_elements(zones_partition_data)};
+                            auto const& [indp1, indp2] = policies.input_no_data_policies();
 
                             Aggregator result{};
 
-                            for(Index i = 0; i < nr_elements; ++i)
+                            if(!indp1.is_no_data(input_element))
                             {
-                                result.add(zones_partition_data[i], input_element);
+                                Count const nr_elements{lue::nr_elements(zones_partition_data)};
+
+                                for(Index i = 0; i < nr_elements; ++i)
+                                {
+                                    if(!indp2.is_no_data(zones_partition_data, i))
+                                    {
+                                        result.add(zones_partition_data[i], input_element);
+                                    }
+                                }
                             }
 
                             return result;
@@ -72,10 +82,12 @@ class OverloadPicker
 
 
 template<
+    typename Policies,
     typename InputElement,
     typename ZonesPartition,
     typename Functor>
 class OverloadPicker<
+    Policies,
     ArrayPartition<InputElement, rank<ZonesPartition>>,
     ZonesPartition,
     Functor>
@@ -92,6 +104,7 @@ class OverloadPicker<
             @return     Future to collection of statistic per zone
         */
         static hpx::future<AggregatorT<Functor>> zonal_operation_partition(
+            Policies const& policies,
             InputPartition const& input_partition,
             ZonesPartition const& zones_partition,
             Functor /* functor */)
@@ -107,7 +120,7 @@ class OverloadPicker<
                 hpx::launch::async,
                 hpx::util::unwrapping(
 
-                        [input_partition, zones_partition](
+                        [policies, input_partition, zones_partition](
                             InputData const& input_partition_data,
                             ZonesData const& zones_partition_data)
                         {
@@ -115,6 +128,8 @@ class OverloadPicker<
 
                             HPX_UNUSED(input_partition);
                             HPX_UNUSED(zones_partition);
+
+                            auto const& [indp1, indp2] = policies.input_no_data_policies();
 
                             Count const nr_elements{lue::nr_elements(zones_partition_data)};
 
@@ -124,7 +139,11 @@ class OverloadPicker<
 
                             for(Index i = 0; i < nr_elements; ++i)
                             {
-                                result.add(zones_partition_data[i], input_partition_data[i]);
+                                if(!indp1.is_no_data(input_partition_data, i) &&
+                                    !indp2.is_no_data(zones_partition_data, i))
+                                {
+                                    result.add(zones_partition_data[i], input_partition_data[i]);
+                                }
                             }
 
                             return result;
@@ -155,10 +174,12 @@ class OverloadPicker<
     @return     Partition with per zone the corresponding statistic
 */
 template<
+    typename Policies,
     typename ZonesPartition,
     typename OutputPartition,
     typename Functor>
 OutputPartition zonal_operation_partition2(
+    Policies const& policies,
     ZonesPartition const& zones_partition,
     AggregatorT<Functor> const& aggregator)
 {
@@ -172,7 +193,7 @@ OutputPartition zonal_operation_partition2(
         hpx::launch::async,
         hpx::util::unwrapping(
 
-                [zones_partition, aggregator](
+                [policies, zones_partition, aggregator](
                     Offset const& offset,
                     ZonesData const& zones_partition_data)
                 {
@@ -182,11 +203,20 @@ OutputPartition zonal_operation_partition2(
 
                     OutputData output_partition_data{zones_partition_data.shape()};
 
+                    auto const& [ondp] = policies.output_no_data_policies();
+
                     Count const nr_elements{lue::nr_elements(zones_partition_data)};
 
                     for(Index i = 0; i < nr_elements; ++i)
                     {
-                        output_partition_data[i] = aggregator[zones_partition_data[i]];
+                        if(!aggregator.contains(zones_partition_data[i]))
+                        {
+                            ondp.mark_no_data(output_partition_data, i);
+                        }
+                        else
+                        {
+                            output_partition_data[i] = aggregator[zones_partition_data[i]];
+                        }
                     }
 
                     return OutputPartition{hpx::find_here(), offset, std::move(output_partition_data)};
@@ -199,25 +229,27 @@ OutputPartition zonal_operation_partition2(
 
 
 template<
+    typename Policies,
     typename T,
     typename ZonesPartition,
     typename Functor>
 using ZonalOperationPartitionAction1 =
-    typename zonal_operation::OverloadPicker<T, ZonesPartition, Functor>::Action;
+    typename zonal_operation::OverloadPicker<Policies, T, ZonesPartition, Functor>::Action;
 
 
 template<
+    typename Policies,
     typename ZonesPartition,
     typename OutputPartition,
     typename Functor>
 struct ZonalOperationPartitionAction2:
     hpx::actions::make_action<
             decltype(&zonal_operation_partition2<
-                ZonesPartition, OutputPartition, Functor>),
+                Policies, ZonesPartition, OutputPartition, Functor>),
             &zonal_operation_partition2<
-                ZonesPartition, OutputPartition, Functor>,
+                Policies, ZonesPartition, OutputPartition, Functor>,
             ZonalOperationPartitionAction2<
-                ZonesPartition, OutputPartition, Functor>
+                Policies, ZonesPartition, OutputPartition, Functor>
         >
 {};
 
@@ -225,11 +257,13 @@ struct ZonalOperationPartitionAction2:
 
 
 template<
+    typename Policies,
     typename InputElement,
     typename Zone,
     Rank rank,
     typename Functor>
 PartitionedArray<OutputElementT<Functor>, rank> zonal_operation(
+    Policies const& policies,
     hpx::shared_future<InputElement> const input_element,
     PartitionedArray<Zone, rank> const& zones_array,
     Functor const& functor)
@@ -257,20 +291,21 @@ PartitionedArray<OutputElementT<Functor>, rank> zonal_operation(
     Aggregators aggregators{static_cast<std::size_t>(nr_partitions)};
 
     {
-        detail::ZonalOperationPartitionAction1<InputElement, ZonesPartition, Functor> action;
+        detail::ZonalOperationPartitionAction1<
+            Policies, InputElement, ZonesPartition, Functor> action;
 
         for(Index p = 0; p < nr_partitions; ++p)
         {
             aggregators[p] = hpx::dataflow(
                 hpx::launch::async,
 
-                [locality_id=localities[p], action, functor](
+                [locality_id=localities[p], action, policies, functor](
                     hpx::shared_future<InputElement> const& input_element,
                     ZonesPartition const& zones_partition)
                 {
                     AnnotateFunction annotation{"zonal_operation"};
 
-                    return action(locality_id, input_element.get(), zones_partition, functor);
+                    return action(locality_id, policies, input_element.get(), zones_partition, functor);
                 },
 
                 input_element,
@@ -305,19 +340,20 @@ PartitionedArray<OutputElementT<Functor>, rank> zonal_operation(
     OutputPartitions output_partitions{shape_in_partitions(zones_array)};
 
     {
-        detail::ZonalOperationPartitionAction2<ZonesPartition, OutputPartition, Functor> action;
+        detail::ZonalOperationPartitionAction2<
+            Policies, ZonesPartition, OutputPartition, Functor> action;
 
         for(Index p = 0; p < nr_partitions; ++p)
         {
             output_partitions[p] = hpx::dataflow(
                 hpx::launch::async,
 
-                [locality_id=localities[p], action, zones_partition=zones_partitions[p]](
+                [locality_id=localities[p], action, policies, zones_partition=zones_partitions[p]](
                     hpx::shared_future<Aggregator>const& aggregator)
                 {
                     AnnotateFunction annotation{"zonal_operation"};
 
-                    return action(locality_id, zones_partition, aggregator.get());
+                    return action(locality_id, policies, zones_partition, aggregator.get());
                 },
 
                 aggregator);
@@ -329,26 +365,32 @@ PartitionedArray<OutputElementT<Functor>, rank> zonal_operation(
 
 
 template<
+    typename Policies,
     typename InputElement,
     typename Zone,
     Rank rank,
     typename Functor>
 PartitionedArray<OutputElementT<Functor>, rank> zonal_operation(
+    Policies const& policies,
     InputElement const input_element,
     PartitionedArray<Zone, rank> const& zones_array,
     Functor const& functor)
 {
     return zonal_operation(
-        hpx::make_ready_future<InputElement>(input_element).share(), zones_array, functor);
+        policies,
+        hpx::make_ready_future<InputElement>(input_element).share(), zones_array,
+        functor);
 }
 
 
 template<
+    typename Policies,
     typename InputElement,
     typename Zone,
     Rank rank,
     typename Functor>
 PartitionedArray<OutputElementT<Functor>, rank> zonal_operation(
+    Policies const& policies,
     PartitionedArray<InputElement, rank> const& input_array,
     PartitionedArray<Zone, rank> const& zones_array,
     Functor const& functor)
@@ -381,7 +423,8 @@ PartitionedArray<OutputElementT<Functor>, rank> zonal_operation(
     Aggregators aggregators{static_cast<std::size_t>(nr_partitions)};
 
     {
-        detail::ZonalOperationPartitionAction1<InputPartition, ZonesPartition, Functor> action;
+        detail::ZonalOperationPartitionAction1<
+            Policies, InputPartition, ZonesPartition, Functor> action;
 
         InputPartitions const& input_partitions{input_array.partitions()};
 
@@ -390,13 +433,13 @@ PartitionedArray<OutputElementT<Functor>, rank> zonal_operation(
             aggregators[p] = hpx::dataflow(
                 hpx::launch::async,
 
-                [locality_id=localities[p], action, functor](
+                [locality_id=localities[p], action, policies, functor](
                     InputPartition const& input_partition,
                     ZonesPartition const& zones_partition)
                 {
                     AnnotateFunction annotation{"zonal_operation"};
 
-                    return action(locality_id, input_partition, zones_partition, functor);
+                    return action(locality_id, policies, input_partition, zones_partition, functor);
                 },
 
                 input_partitions[p],
@@ -431,19 +474,20 @@ PartitionedArray<OutputElementT<Functor>, rank> zonal_operation(
     OutputPartitions output_partitions{shape_in_partitions(input_array)};
 
     {
-        detail::ZonalOperationPartitionAction2<ZonesPartition, OutputPartition, Functor> action;
+        detail::ZonalOperationPartitionAction2<
+            Policies, ZonesPartition, OutputPartition, Functor> action;
 
         for(Index p = 0; p < nr_partitions; ++p)
         {
             output_partitions[p] = hpx::dataflow(
                 hpx::launch::async,
 
-                [locality_id=localities[p], action, zones_partition=zones_partitions[p]](
+                [locality_id=localities[p], action, policies, zones_partition=zones_partitions[p]](
                     hpx::shared_future<Aggregator>const& aggregator)
                 {
                     AnnotateFunction annotation{"zonal_operation"};
 
-                    return action(locality_id, zones_partition, aggregator.get());
+                    return action(locality_id, policies, zones_partition, aggregator.get());
                 },
 
                 aggregator);
