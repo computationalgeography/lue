@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/ternary_local_operation.hpp"
+#include "lue/framework/algorithm/policy/default_policies.hpp"
 
 
 namespace lue {
@@ -28,6 +29,15 @@ public:
 }  // namespace detail
 
 
+namespace policy {
+namespace where {
+
+using DefaultPolicies = policy::DefaultPolicies<3, 1>;
+
+}  // namespace where
+}  // namespace policy
+
+
 template<
     typename ConditionElement,
     typename Element,
@@ -37,9 +47,12 @@ PartitionedArray<Element, rank> where(
     PartitionedArray<Element, rank> const& true_array,
     PartitionedArray<Element, rank> const& false_array)
 {
+    using Policies = policy::where::DefaultPolicies;
+
     return ternary_local_operation(
-            condition, true_array, false_array,
-            detail::Where<ConditionElement, Element>{});
+        Policies{},
+        condition, true_array, false_array,
+        detail::Where<ConditionElement, Element>{});
 }
 
 
@@ -61,9 +74,12 @@ PartitionedArray<Element, rank> where(
     PartitionedArray<Element, rank> const& true_array,
     hpx::shared_future<Element> const false_value)
 {
+    using Policies = policy::where::DefaultPolicies;
+
     return ternary_local_operation(
-            condition, true_array, false_value,
-            detail::Where<ConditionElement, Element>{});
+        Policies{},
+        condition, true_array, false_value,
+        detail::Where<ConditionElement, Element>{});
 }
 
 
@@ -79,9 +95,12 @@ PartitionedArray<Element, rank> where(
     hpx::shared_future<Element> const true_value,
     PartitionedArray<Element, rank> const& false_array)
 {
+    using Policies = policy::where::DefaultPolicies;
+
     return ternary_local_operation(
-            condition, true_value, false_array,
-            detail::Where<ConditionElement, Element>{});
+        Policies{},
+        condition, true_value, false_array,
+        detail::Where<ConditionElement, Element>{});
 }
 
 
@@ -97,9 +116,12 @@ PartitionedArray<Element, rank> where(
     hpx::shared_future<Element> const true_value,
     hpx::shared_future<Element> const false_value)
 {
+    using Policies = policy::where::DefaultPolicies;
+
     return ternary_local_operation(
-            condition, true_value, false_value,
-            detail::Where<ConditionElement, Element>{});
+        Policies{},
+        condition, true_value, false_value,
+        detail::Where<ConditionElement, Element>{});
 }
 
 

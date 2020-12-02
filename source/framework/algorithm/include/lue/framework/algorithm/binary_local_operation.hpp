@@ -54,7 +54,7 @@ public:
             hpx::launch::async,
             hpx::util::unwrapping(
 
-                    [input_partition1, input_partition2, policies, functor](
+                    [policies, input_partition1, input_partition2, functor](
                         Offset const& offset,
                         InputData const& input_partition_data1,
                         InputData const& input_partition_data2)
@@ -139,7 +139,7 @@ public:
             hpx::launch::async,
             hpx::util::unwrapping(
 
-                    [input_partition, policies, functor, input_scalar](
+                    [policies, input_partition, functor, input_scalar](
                         Offset const& offset,
                         InputData const& input_partition_data)
                     {
@@ -229,7 +229,7 @@ public:
             hpx::launch::async,
             hpx::util::unwrapping(
 
-                    [input_partition, policies, functor, input_scalar](
+                    [policies, input_partition, functor, input_scalar](
                         Offset const& offset,
                         InputData const& input_partition_data)
                     {

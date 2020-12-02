@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/framework/algorithm/policy/default_policies.hpp"
 #include "lue/framework/core/component/partitioned_array.hpp"
 
 
@@ -6,8 +7,10 @@ namespace lue {
 namespace detail {
 
 template<
+    typename Policies,
     typename InputPartition>
 PartitionT<InputPartition, ElementT<InputPartition>, 1> unique_partition(
+    Policies const& policies,
     InputPartition input_partition)  // Can't .then on a const& instance...
 {
     using InputData = DataT<InputPartition>;
@@ -18,38 +21,47 @@ PartitionT<InputPartition, ElementT<InputPartition>, 1> unique_partition(
     using OutputShape = ShapeT<OutputPartition>;
     using OutputData = DataT<OutputPartition>;
 
-    return input_partition.then(
-            [](
-                InputPartition const& input_partition)
-            {
-                AnnotateFunction annotation{"unique_partition"};
+    return hpx::dataflow(
+        hpx::launch::async,
+        hpx::util::unwrapping(
 
-                auto const input_partition_server_ptr{
-                    hpx::get_ptr(input_partition).get()};
-                auto const& input_partition_server{*input_partition_server_ptr};
+                [input_partition, policies](
+                    InputData const& input_partition_data)
+                {
+                    AnnotateFunction annotation{"unique_partition"};
 
-                InputData const input_partition_data{
-                    input_partition_server.data()};
+                    HPX_UNUSED(input_partition);
 
-                // Copy values from input array into a set
-                std::set<Element> unique_values(
-                    input_partition_data.begin(), input_partition_data.end());
-                Count const nr_unique_values =
-                    static_cast<Count>(unique_values.size());
-                lue_assert(
-                    nr_unique_values <= input_partition_data.nr_elements());
+                    // Copy values from input array into a set
+                    std::set<Element> unique_values;
 
-                // Copy unique values from set into output array
-                OutputData output_data{OutputShape{{nr_unique_values}}};
-                lue_assert(output_data.nr_elements() == nr_unique_values);
-                std::copy(
-                    unique_values.begin(), unique_values.end(),
-                    output_data.begin());
+                    auto const& [indp] = policies.input_no_data_policies();
 
-                return OutputPartition{
-                    hpx::find_here(), OutputOffset{0}, std::move(output_data)};
-            }
+                    Count const nr_elements{lue::nr_elements(input_partition_data)};
 
+                    for(Index i = 0; i < nr_elements; ++i)
+                    {
+                        if(!indp.is_no_data(input_partition_data, i))
+                        {
+                            unique_values.insert(input_partition_data[i]);
+                        }
+                    }
+
+                    Count const nr_unique_values = static_cast<Count>(unique_values.size());
+                    lue_assert(nr_unique_values <= input_partition_data.nr_elements());
+
+                    // Copy unique values from set into output array
+                    OutputData output_data{OutputShape{{nr_unique_values}}};
+                    lue_assert(output_data.nr_elements() == nr_unique_values);
+                    std::copy(
+                        unique_values.begin(), unique_values.end(),
+                        output_data.begin());
+
+                    return OutputPartition{hpx::find_here(), OutputOffset{0}, std::move(output_data)};
+                }
+
+            ),
+            input_partition.data()
         );
 }
 
@@ -57,13 +69,23 @@ PartitionT<InputPartition, ElementT<InputPartition>, 1> unique_partition(
 
 
 template<
+    typename Policies,
     typename Partition>
 struct UniquePartitionAction:
     hpx::actions::make_action<
-        decltype(&detail::unique_partition<Partition>),
-        &detail::unique_partition<Partition>,
-        UniquePartitionAction<Partition>>
+        decltype(&detail::unique_partition<Policies, Partition>),
+        &detail::unique_partition<Policies, Partition>,
+        UniquePartitionAction<Policies, Partition>>
 {};
+
+
+namespace policy {
+namespace unique {
+
+using DefaultPolicies = policy::DefaultPolicies<1, 1>;
+
+}  // namespace unique
+}  // namespace policy
 
 
 /*!
@@ -79,9 +101,11 @@ struct UniquePartitionAction:
     a single partition located on the current locality.
 */
 template<
+    typename Policies,
     typename Element,
     Rank rank>
 hpx::future<PartitionedArray<Element, 1>> unique(
+    Policies const& policies,
     PartitionedArray<Element, rank> const& input_array)
 {
 
@@ -102,7 +126,7 @@ hpx::future<PartitionedArray<Element, 1>> unique(
     using OutputShape = ShapeT<OutputArray>;
     using OutputData = DataT<OutputPartition>;
 
-    UniquePartitionAction<InputPartition> action;
+    UniquePartitionAction<Policies, InputPartition> action;
 
     Localities<rank> const& localities{input_array.localities()};
     InputPartitions const& input_partitions{input_array.partitions()};
@@ -113,12 +137,12 @@ hpx::future<PartitionedArray<Element, 1>> unique(
         output_partitions[p] = hpx::dataflow(
             hpx::launch::async,
 
-            [locality_id=localities[p], action](
+            [locality_id=localities[p], policies, action](
                 InputPartition const& input_partition)
             {
                 AnnotateFunction annotation{"unique"};
 
-                return action(locality_id, input_partition);
+                return action(locality_id, policies, input_partition);
             },
 
             input_partitions[p]);
@@ -175,6 +199,18 @@ hpx::future<PartitionedArray<Element, 1>> unique(
             }
 
         ));
+}
+
+
+template<
+    typename Element,
+    Rank rank>
+hpx::future<PartitionedArray<Element, 1>> unique(
+    PartitionedArray<Element, rank> const& input_array)
+{
+    using Policies = policy::unique::DefaultPolicies;
+
+    return unique(Policies{}, input_array);
 }
 
 }  // namespace lue
