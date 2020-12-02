@@ -31,8 +31,8 @@ namespace logical_not {
 
 using DefaultPolicies = policy::DefaultPolicies<1, 1>;
 
-}  // namespace policy
 }  // namespace logical_not
+}  // namespace policy
 
 
 template<

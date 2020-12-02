@@ -7,13 +7,14 @@ namespace lue {
 namespace detail {
 
 template<
-    typename InputElement>
+    typename InputElement,
+    typename OutputElement_=InputElement>
 class Subtract
 {
 
 public:
 
-    using OutputElement = InputElement;
+    using OutputElement = OutputElement_;
 
     constexpr OutputElement operator()(
         InputElement const& input_element1,
@@ -32,48 +33,10 @@ namespace subtract {
 
 using DefaultPolicies = policy::DefaultPolicies<2, 1>;
 
-}  // namespace policy
 }  // namespace subtract
+}  // namespace policy
 
 
-template<
-    typename Element,
-    Rank rank>
-PartitionedArray<Element, rank> subtract(
-    PartitionedArray<Element, rank> const& array1,
-    PartitionedArray<Element, rank> const& array2)
-{
-    return binary_local_operation(
-        policy::subtract::DefaultPolicies{},
-        array1, array2,
-        detail::Subtract<Element>{});
-}
-
-
-template<
-    typename Element,
-    Rank rank>
-PartitionedArray<Element, rank> subtract(
-    PartitionedArray<Element, rank> const& array,
-    hpx::shared_future<Element> const& scalar)
-{
-    return binary_local_operation(
-        policy::subtract::DefaultPolicies{},
-        array, scalar, detail::Subtract<Element>{});
-}
-
-
-template<
-    typename Element,
-    Rank rank>
-PartitionedArray<Element, rank> subtract(
-    hpx::shared_future<Element> const& scalar,
-    PartitionedArray<Element, rank> const& array)
-{
-    return binary_local_operation(
-        policy::subtract::DefaultPolicies{},
-        scalar, array,
-        detail::Subtract<Element>{});
-}
+LUE_BINARY_LOCAL_OPERATION_OVERLOADS(subtract, detail::Subtract)
 
 }  // namespace lue

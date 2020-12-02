@@ -58,8 +58,8 @@ namespace sum {
 
 using DefaultPolicies = policy::DefaultPolicies<1, 1>;
 
-}  // namespace policy
 }  // namespace sum
+}  // namespace policy
 
 
 template<

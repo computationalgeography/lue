@@ -58,8 +58,8 @@ namespace minimum {
 
 using DefaultPolicies = policy::DefaultPolicies<1, 1>;
 
-}  // namespace policy
 }  // namespace minimum
+}  // namespace policy
 
 
 template<

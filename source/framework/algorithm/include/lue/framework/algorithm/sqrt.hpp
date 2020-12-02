@@ -42,9 +42,20 @@ namespace sqrt {
 
 using DefaultPolicies = policy::DefaultPolicies<1, 1>;
 
-}  // namespace policy
 }  // namespace sqrt
+}  // namespace policy
 
+
+template<
+    typename Policies,
+    typename Element,
+    Rank rank>
+PartitionedArray<Element, rank> sqrt(
+    Policies const& policies,
+    PartitionedArray<Element, rank> const& array)
+{
+    return unary_local_operation(policies, array, detail::Sqrt<Element>{});
+}
 
 template<
     typename Element,
@@ -52,10 +63,7 @@ template<
 PartitionedArray<Element, rank> sqrt(
     PartitionedArray<Element, rank> const& array)
 {
-    return unary_local_operation(
-        policy::sqrt::DefaultPolicies{},
-        array,
-        detail::Sqrt<Element>{});
+    return sqrt(policy::sqrt::DefaultPolicies{}, array);
 }
 
 }  // namespace lue

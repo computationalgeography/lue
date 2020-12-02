@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/framework/algorithm/policy/default_policies.hpp"
 #include "lue/framework/core/component/partitioned_array.hpp"
 #include "lue/framework/core/type_traits.hpp"
 #include <hpx/include/lcos.hpp>
@@ -14,12 +15,15 @@ namespace detail {
     @return     A copy of the array partition passed in
 */
 template<
+    typename Policies,
     typename Partition>
 Partition copy_partition(
+    Policies const& policies,
     Partition const& input_partition)
 {
     using Offset = OffsetT<Partition>;
     using InputData = DataT<Partition>;
+    using OutputData = InputData;
 
     lue_assert(input_partition.is_ready());
 
@@ -27,7 +31,7 @@ Partition copy_partition(
         hpx::launch::async,
         hpx::util::unwrapping(
 
-                [input_partition](
+                [policies, input_partition](
                     Offset const& offset,
                     InputData&& input_partition_data)
                 {
@@ -35,8 +39,26 @@ Partition copy_partition(
 
                     HPX_UNUSED(input_partition);
 
-                    // Copy the data and move it into a new partition
-                    return Partition{hpx::find_here(), offset, std::move(input_partition_data)};
+                    OutputData output_partition_data{input_partition_data.shape()};
+
+                    auto const& [indp] = policies.input_no_data_policies();
+                    auto const& [ondp] = policies.output_no_data_policies();
+
+                    Count const nr_elements{lue::nr_elements(output_partition_data)};
+
+                    for(Index i = 0; i < nr_elements; ++i)
+                    {
+                        if(indp.is_no_data(input_partition_data, i))
+                        {
+                            ondp.mark_no_data(output_partition_data, i);
+                        }
+                        else
+                        {
+                            output_partition_data[i] = input_partition_data[i];
+                        }
+                    }
+
+                    return Partition{hpx::find_here(), offset, std::move(output_partition_data)};
                 }
 
             ),
@@ -47,39 +69,24 @@ Partition copy_partition(
 }  // namespace detail
 
 
+namespace policy {
+namespace copy {
+
+using DefaultPolicies = policy::DefaultPolicies<1, 1>;
+
+}  // namespace copy
+}  // namespace policy
+
+
 template<
+    typename Policies,
     typename Partition>
 struct CopyPartitionAction:
     hpx::actions::make_action<
-        decltype(&detail::copy_partition<Partition>),
-        &detail::copy_partition<Partition>,
-        CopyPartitionAction<Partition>>
+        decltype(&detail::copy_partition<Policies, Partition>),
+        &detail::copy_partition<Policies, Partition>,
+        CopyPartitionAction<Policies, Partition>>
 {};
-
-
-// template<
-//     typename Element,
-//     Rank rank>
-// ArrayPartition<Element, rank> copy(
-//     ArrayPartition<Element, rank> const& input_partition)
-// {
-//     using Partition = ArrayPartition<Element, rank>;
-// 
-//     CopyPartitionAction<Partition> action;
-// 
-//     return hpx::dataflow(
-//         hpx::launch::async,
-//         hpx::util::unwrapping(
-// 
-//                 [action, input_partition](
-//                     hpx::id_type const locality_id)
-//                 {
-//                     return action(locality_id, input_partition);
-//                 }
-// 
-//             ),
-//         input_partition.locality_id());
-// }
 
 
 /*!
@@ -90,9 +97,11 @@ struct CopyPartitionAction:
     @return     New partitioned array
 */
 template<
+    typename Policies,
     typename Element,
     Rank rank>
 PartitionedArray<Element, rank> copy(
+    Policies const& policies,
     PartitionedArray<Element, rank> const& input_array)
 {
     using InputArray = PartitionedArray<Element, rank>;
@@ -102,7 +111,7 @@ PartitionedArray<Element, rank> copy(
     using OutputArray = PartitionedArray<Element, rank>;
     using OutputPartitions = PartitionsT<OutputArray>;
 
-    CopyPartitionAction<InputPartition> action;
+    CopyPartitionAction<Policies, InputPartition> action;
     Localities<rank> const& localities{input_array.localities()};
     InputPartitions const& input_partitions{input_array.partitions()};
     OutputPartitions output_partitions{shape_in_partitions(input_array)};
@@ -112,17 +121,29 @@ PartitionedArray<Element, rank> copy(
         output_partitions[p] = hpx::dataflow(
             hpx::launch::async,
 
-            [locality_id=localities[p], action](
+            [locality_id=localities[p], policies, action](
                 InputPartition const& input_partition)
             {
                 AnnotateFunction annotation{"copy"};
-                return action(locality_id, input_partition);
+                return action(locality_id, policies, input_partition);
             },
 
             input_partitions[p]);
     }
 
     return OutputArray{shape(input_array), localities, std::move(output_partitions)};
+}
+
+
+template<
+    typename Element,
+    Rank rank>
+PartitionedArray<Element, rank> copy(
+    PartitionedArray<Element, rank> const& input_array)
+{
+    return copy(
+        policy::copy::DefaultPolicies{},
+        input_array);
 }
 
 }  // namespace lue

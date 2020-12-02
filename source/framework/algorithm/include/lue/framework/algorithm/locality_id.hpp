@@ -13,7 +13,9 @@ template<
 ArrayPartition<std::uint32_t, rank> locality_id_partition(
     ArrayPartition<InputElement, rank> const& input_partition)
 {
-    return array_like_partition(input_partition, hpx::get_locality_id());
+    // We don't need support for detecting / marking no-data here
+    return array_like_partition(
+        policy::array_like::DefaultPolicies{}, input_partition, hpx::get_locality_id());
 }
 
 }  // namespace detail

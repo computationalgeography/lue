@@ -25,7 +25,11 @@ PartitionedArray<std::uint64_t, rank> array_partition_id(
     using OutputArray = PartitionedArray<OutputElement, rank>;
     using OutputPartitions = PartitionsT<OutputArray>;
 
-    ArrayLikePartitionAction<InputElement, OutputElement, rank> action;
+    // We don't need support for detecting / marking no-data here
+    using Policies = policy::array_like::DefaultPolicies;
+    Policies policies{};
+
+    ArrayLikePartitionAction<Policies, InputElement, OutputElement, rank> action;
 
     Localities<rank> const& localities{input_array.localities()};
     InputPartitions const& input_partitions{input_array.partitions()};
@@ -36,12 +40,12 @@ PartitionedArray<std::uint64_t, rank> array_partition_id(
         output_partitions[p] = hpx::dataflow(
             hpx::launch::async,
 
-            [locality_id=localities[p], action, p](
+            [locality_id=localities[p], action, policies, p](
                 InputPartition const& input_partition)
             {
                 AnnotateFunction annotation{"array_partition_id"};
 
-                return action(locality_id, input_partition, p);
+                return action(locality_id, policies, input_partition, p);
             },
 
             input_partitions[p]);

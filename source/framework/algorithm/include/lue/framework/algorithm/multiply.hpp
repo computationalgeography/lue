@@ -7,13 +7,14 @@ namespace lue {
 namespace detail {
 
 template<
-    typename InputElement>
+    typename InputElement,
+    typename OutputElement_=InputElement>
 class Multiply
 {
 
 public:
 
-    using OutputElement = InputElement;
+    using OutputElement = OutputElement_;
 
     constexpr OutputElement operator()(
         InputElement const& input_element1,
@@ -32,77 +33,10 @@ namespace multiply {
 
 using DefaultPolicies = policy::DefaultPolicies<2, 1>;
 
-}  // namespace policy
 }  // namespace multiply
+}  // namespace policy
 
 
-template<
-    typename Element,
-    Rank rank>
-PartitionedArray<Element, rank> multiply(
-    PartitionedArray<Element, rank> const& array1,
-    PartitionedArray<Element, rank> const& array2)
-{
-    return binary_local_operation(
-        policy::multiply::DefaultPolicies{},
-        array1, array2,
-        detail::Multiply<Element>{});
-}
-
-
-template<
-    typename Element,
-    Rank rank>
-PartitionedArray<Element, rank> multiply(
-    PartitionedArray<Element, rank> const& array,
-    hpx::shared_future<Element> const& scalar)
-{
-    return binary_local_operation(
-        policy::multiply::DefaultPolicies{},
-        array, scalar,
-        detail::Multiply<Element>{});
-}
-
-
-template<
-    typename Element,
-    Rank rank>
-PartitionedArray<Element, rank> multiply(
-    hpx::shared_future<Element> const& scalar,
-    PartitionedArray<Element, rank> const& array)
-{
-    return binary_local_operation(
-        policy::multiply::DefaultPolicies{},
-        scalar, array,
-        detail::Multiply<Element>{});
-}
-
-
-template<
-    typename Element,
-    Rank rank>
-PartitionedArray<Element, rank> multiply(
-    PartitionedArray<Element, rank> const& array,
-    Element const& scalar)
-{
-    return binary_local_operation(
-        policy::multiply::DefaultPolicies{},
-        array, hpx::make_ready_future<Element>(scalar).share(),
-        detail::Multiply<Element>{});
-}
-
-
-template<
-    typename Element,
-    Rank rank>
-PartitionedArray<Element, rank> multiply(
-    Element const& scalar,
-    PartitionedArray<Element, rank> const& array)
-{
-    return binary_local_operation(
-        policy::multiply::DefaultPolicies{},
-        hpx::make_ready_future<Element>(scalar).share(), array,
-        detail::Multiply<Element>{});
-}
+LUE_BINARY_LOCAL_OPERATION_OVERLOADS(multiply, detail::Multiply)
 
 }  // namespace lue

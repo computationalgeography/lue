@@ -10,8 +10,8 @@ namespace detail {
 
 // https://docs.scipy.org/doc/numpy/reference/generated/numpy.isclose.html
 template<
-    typename OutputElement_,
-    typename InputElement>
+    typename InputElement,
+    typename OutputElement_=bool>
 class CloseTo
 {
 
@@ -67,76 +67,10 @@ namespace close_to {
 
 using DefaultPolicies = policy::DefaultPolicies<2, 1>;
 
-}  // namespace policy
 }  // namespace close_to
+}  // namespace policy
 
 
-template<
-    typename OutputElement=bool,
-    typename InputElement,
-    Rank rank>
-PartitionedArray<OutputElement, rank> close_to(
-    PartitionedArray<InputElement, rank> const& array1,
-    PartitionedArray<InputElement, rank> const& array2)
-{
-    return binary_local_operation(
-        policy::close_to::DefaultPolicies{},
-        array1, array2,
-        detail::CloseTo<OutputElement, InputElement>{});
-}
-
-
-template<
-    typename OutputElement=bool,
-    typename InputElement,
-    Rank rank>
-PartitionedArray<OutputElement, rank> close_to(
-    PartitionedArray<InputElement, rank> const& array,
-    hpx::shared_future<InputElement> const& scalar)
-{
-    return binary_local_operation(
-        policy::close_to::DefaultPolicies{},
-        array, scalar,
-        detail::CloseTo<OutputElement, InputElement>{});
-}
-
-
-template<
-    typename OutputElement=bool,
-    typename InputElement,
-    Rank rank>
-PartitionedArray<OutputElement, rank> close_to(
-    hpx::shared_future<InputElement> const& scalar,
-    PartitionedArray<InputElement, rank> const& array)
-{
-    return binary_local_operation(
-        policy::close_to::DefaultPolicies{},
-        scalar, array,
-        detail::CloseTo<OutputElement, InputElement>{});
-}
-
-
-template<
-    typename OutputElement=bool,
-    typename InputElement,
-    Rank rank>
-PartitionedArray<OutputElement, rank> close_to(
-    PartitionedArray<InputElement, rank> const& array,
-    InputElement const scalar)
-{
-    return close_to<OutputElement>(array, hpx::make_ready_future<InputElement>(scalar).share());
-}
-
-
-template<
-    typename OutputElement=bool,
-    typename InputElement,
-    Rank rank>
-PartitionedArray<OutputElement, rank> close_to(
-    InputElement const scalar,
-    PartitionedArray<InputElement, rank> const& array)
-{
-    return close_to<OutputElement>(hpx::make_ready_future<InputElement>(scalar).share(), array);
-}
+LUE_BINARY_LOCAL_OPERATION_OVERLOADS(close_to, detail::CloseTo)
 
 }  // namespace lue

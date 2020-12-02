@@ -8,13 +8,14 @@ namespace lue {
 namespace detail {
 
 template<
-    typename InputElement>
+    typename InputElement,
+    typename OutputElement_=bool>
 class NotEqualTo
 {
 
 public:
 
-    using OutputElement = bool;
+    using OutputElement = OutputElement_;
 
     constexpr OutputElement operator()(
         InputElement const& input_element1,
@@ -33,74 +34,11 @@ namespace not_equal_to {
 
 using DefaultPolicies = policy::DefaultPolicies<2, 1>;
 
-}  // namespace policy
 }  // namespace not_equal_to
+}  // namespace policy
 
 
-template<
-    typename InputElement,
-    Rank rank>
-PartitionedArray<bool, rank> not_equal_to(
-    PartitionedArray<InputElement, rank> const& array1,
-    PartitionedArray<InputElement, rank> const& array2)
-{
-    return binary_local_operation(
-        policy::not_equal_to::DefaultPolicies{},
-        array1, array2,
-        detail::NotEqualTo<InputElement>{});
-}
-
-
-template<
-    typename InputElement,
-    Rank rank>
-PartitionedArray<bool, rank> not_equal_to(
-    PartitionedArray<InputElement, rank> const& array,
-    hpx::shared_future<InputElement> const& scalar)
-{
-    return binary_local_operation(
-        policy::not_equal_to::DefaultPolicies{},
-        array, scalar,
-        detail::NotEqualTo<InputElement>{});
-}
-
-
-template<
-    typename InputElement,
-    Rank rank>
-PartitionedArray<bool, rank> not_equal_to(
-    hpx::shared_future<InputElement> const& scalar,
-    PartitionedArray<InputElement, rank> const& array)
-{
-    return binary_local_operation(
-        policy::not_equal_to::DefaultPolicies{},
-        scalar, array,
-        detail::NotEqualTo<InputElement>{});
-}
-
-
-template<
-    typename InputElement,
-    Rank rank>
-PartitionedArray<bool, rank> not_equal_to(
-    PartitionedArray<InputElement, rank> const& array,
-    InputElement const& scalar)
-{
-    return not_equal_to(array, hpx::make_ready_future<InputElement>(scalar).share());
-}
-
-
-template<
-    typename InputElement,
-    Rank rank>
-PartitionedArray<bool, rank> not_equal_to(
-    InputElement const& scalar,
-    PartitionedArray<InputElement, rank> const& array)
-{
-    return not_equal_to(hpx::make_ready_future<InputElement>(scalar).share(), array);
-}
-
-
+LUE_BINARY_LOCAL_OPERATION_OVERLOADS(not_equal_to, detail::NotEqualTo)
 LUE_BINARY_COMPARISON_OPERATOR(!=, not_equal_to)
 
 }  // namespace lue

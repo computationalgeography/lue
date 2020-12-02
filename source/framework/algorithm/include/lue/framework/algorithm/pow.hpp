@@ -9,7 +9,8 @@ namespace lue {
 namespace detail {
 
 template<
-    typename InputElement>
+    typename InputElement,
+    typename OutputElement_=InputElement>
 class Pow
 {
 
@@ -19,7 +20,7 @@ public:
 
     /// static_assert(std::numeric_limits<InputElement>::has_quiet_NaN);
 
-    using OutputElement = InputElement;
+    using OutputElement = OutputElement_;
 
     OutputElement operator()(
         InputElement const input_element,
@@ -38,32 +39,10 @@ namespace pow {
 
 using DefaultPolicies = policy::DefaultPolicies<2, 1>;
 
-}  // namespace policy
 }  // namespace pow
+}  // namespace policy
 
 
-template<
-    typename Element,
-    Rank rank>
-PartitionedArray<Element, rank> pow(
-    PartitionedArray<Element, rank> const& array,
-    hpx::shared_future<Element> const& exponent)
-{
-    return binary_local_operation(
-        policy::pow::DefaultPolicies{},
-        array, exponent,
-        detail::Pow<Element>{});
-}
-
-
-template<
-    typename Element,
-    Rank rank>
-PartitionedArray<Element, rank> pow(
-    PartitionedArray<Element, rank> const& array,
-    Element const exponent)
-{
-    return pow(array, hpx::make_ready_future<Element>(exponent).share());
-}
+LUE_BINARY_LOCAL_OPERATION_OVERLOADS(pow, detail::Pow)
 
 }  // namespace lue

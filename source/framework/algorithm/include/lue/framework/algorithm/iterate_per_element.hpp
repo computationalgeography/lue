@@ -42,8 +42,8 @@ namespace iterate_per_element {
 
 using DefaultPolicies = policy::DefaultPolicies<1, 1>;
 
-}  // namespace policy
 }  // namespace iterate_per_element
+}  // namespace policy
 
 
 /*!
