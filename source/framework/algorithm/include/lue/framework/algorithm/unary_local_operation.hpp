@@ -46,7 +46,7 @@ OutputPartition unary_local_operation_partition(
                     {
                         if(indp.is_no_data(input_partition_data, i))
                         {
-                            ondp.mark_no_data(input_partition_data, i);
+                            ondp.mark_no_data(output_partition_data, i);
                         }
                         else
                         {

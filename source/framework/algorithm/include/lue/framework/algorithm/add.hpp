@@ -7,13 +7,14 @@ namespace lue {
 namespace detail {
 
 template<
-    typename InputElement>
+    typename InputElement,
+    typename OutputElement_=InputElement>
 class Add
 {
 
 public:
 
-    using OutputElement = InputElement;
+    using OutputElement = OutputElement_;
 
     constexpr OutputElement operator()(
         InputElement const& input_element1,
@@ -32,71 +33,10 @@ namespace add {
 
 using DefaultPolicies = policy::DefaultPolicies<2, 1>;
 
-}  // namespace policy
 }  // namespace add
+}  // namespace policy
 
 
-template<
-    typename Element,
-    Rank rank>
-PartitionedArray<Element, rank> add(
-    PartitionedArray<Element, rank> const& array1,
-    PartitionedArray<Element, rank> const& array2)
-{
-    return binary_local_operation(
-        policy::add::DefaultPolicies{},
-        array1, array2,
-        detail::Add<Element>{});
-}
-
-
-template<
-    typename Element,
-    Rank rank>
-PartitionedArray<Element, rank> add(
-    PartitionedArray<Element, rank> const& array,
-    hpx::shared_future<Element> const& scalar)
-{
-    return binary_local_operation(
-        policy::add::DefaultPolicies{},
-        array, scalar,
-        detail::Add<Element>{});
-}
-
-
-template<
-    typename Element,
-    Rank rank>
-PartitionedArray<Element, rank> add(
-    hpx::shared_future<Element> const& scalar,
-    PartitionedArray<Element, rank> const& array)
-{
-    return binary_local_operation(
-        policy::add::DefaultPolicies{},
-        scalar, array,
-        detail::Add<Element>{});
-}
-
-
-template<
-    typename Element,
-    Rank rank>
-PartitionedArray<Element, rank> add(
-    PartitionedArray<Element, rank> const& array,
-    Element const scalar)
-{
-    return add(array, hpx::make_ready_future<Element>(scalar).share());
-}
-
-
-template<
-    typename Element,
-    Rank rank>
-PartitionedArray<Element, rank> add(
-    Element const scalar,
-    PartitionedArray<Element, rank> const& array)
-{
-    return add(hpx::make_ready_future<Element>(scalar).share(), array);
-}
+LUE_BINARY_LOCAL_OPERATION_OVERLOADS(add, detail::Add)
 
 }  // namespace lue

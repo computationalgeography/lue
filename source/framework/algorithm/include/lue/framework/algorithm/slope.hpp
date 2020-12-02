@@ -8,6 +8,14 @@
 
 
 namespace lue {
+namespace policy {
+namespace slope {
+
+using DefaultPolicies = policy::DefaultPolicies<2, 1>;
+
+}  // namespace slope
+}  // namespace policy
+
 
 /*!
     @brief      Return slope of elevation surface
@@ -66,8 +74,10 @@ namespace lue {
     @endcode
 */
 template<
+    typename Policies,
     typename Element>
 PartitionedArray<Element, 2> slope(
+    Policies const& policies,
     PartitionedArray<Element, 2> const& elevation,
     Element const cell_size)
 {
@@ -92,10 +102,51 @@ PartitionedArray<Element, 2> slope(
              1.0,  2.0,  1.0,
         }};
 
-    Array dz_dx = convolve(elevation, dz_dx_kernel) / (8.0 * cell_size);
-    Array dz_dy = convolve(elevation, dz_dy_kernel) / (8.0 * cell_size);
+    // Array dz_dx = convolve(elevation, dz_dx_kernel) / (8.0 * cell_size);
+    // Array dz_dy = convolve(elevation, dz_dy_kernel) / (8.0 * cell_size);
 
-    return sqrt(pow(dz_dx, 2.0) + pow(dz_dy, 2.0));
+    // using DividePolicies =
+    //     Policies<
+    //             InputNoDataPolicies<>,
+    //             OutputNoDataPolicies<>
+    //         >;
+
+    // TODO(KDJ) Make dependent on Policies
+    // auto convolve_policies = policy::convolve::DefaultPolicies{};
+
+    // TODO(KDJ) Make dependent on Policies
+
+    // using DividePolicies = policy::divide::Policies<
+    //     InputNoDataPolicyT<Policies, 0>,
+    //     SkipNoData,
+    //     OutputNoDataPolyT<Policies, 0>>;
+
+    auto divide_policies = policy::divide::DefaultPolicies{};
+
+    // This assumes 8 * cell_size does not go out of range, which would be silly
+    Array dz_dx = divide(divide_policies, convolve(elevation, dz_dx_kernel), 8.0 * cell_size);
+    Array dz_dy = divide(divide_policies, convolve(elevation, dz_dy_kernel), 8.0 * cell_size);
+
+    // return sqrt(pow(dz_dx, 2.0) + pow(dz_dy, 2.0));
+
+    auto sqrt_policies = policy::sqrt::DefaultPolicies{};
+    auto add_policies = policy::add::DefaultPolicies{};
+    auto pow_policies = policy::pow::DefaultPolicies{};
+
+    return sqrt(sqrt_policies,
+        add(add_policies, pow(pow_policies, dz_dx, 2.0), pow(pow_policies, dz_dy, 2.0)));
+}
+
+
+template<
+    typename Element>
+PartitionedArray<Element, 2> slope(
+    PartitionedArray<Element, 2> const& elevation,
+    Element const cell_size)
+{
+    return slope(
+        policy::slope::DefaultPolicies{},
+        elevation, cell_size);
 }
 
 }  // namespace lue

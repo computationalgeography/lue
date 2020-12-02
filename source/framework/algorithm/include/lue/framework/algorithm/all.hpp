@@ -66,8 +66,8 @@ namespace all {
 
 using DefaultPolicies = policy::DefaultPolicies<1, 1>;
 
-}  // namespace policy
 }  // namespace all
+}  // namespace policy
 
 
 template<

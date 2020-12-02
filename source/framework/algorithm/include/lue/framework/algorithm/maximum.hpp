@@ -58,8 +58,8 @@ namespace maximum {
 
 using DefaultPolicies = policy::DefaultPolicies<1, 1>;
 
-}  // namespace policy
 }  // namespace maximum
+}  // namespace policy
 
 
 template<

@@ -7,13 +7,14 @@ namespace lue {
 namespace detail {
 
 template<
-    typename InputElement>
+    typename InputElement,
+    typename OutputElement_=bool>
 class LogicalAnd
 {
 
 public:
 
-    using OutputElement = bool;
+    using OutputElement = OutputElement_;
 
     constexpr OutputElement operator()(
         InputElement const& input_element1,
@@ -32,71 +33,10 @@ namespace logical_and {
 
 using DefaultPolicies = policy::DefaultPolicies<2, 1>;
 
-}  // namespace policy
 }  // namespace logical_and
+}  // namespace policy
 
 
-template<
-    typename InputElement,
-    Rank rank>
-PartitionedArray<bool, rank> logical_and(
-    PartitionedArray<InputElement, rank> const& array1,
-    PartitionedArray<InputElement, rank> const& array2)
-{
-    return binary_local_operation(
-        policy::logical_and::DefaultPolicies{},
-        array1, array2,
-        detail::LogicalAnd<InputElement>{});
-}
-
-
-template<
-    typename InputElement,
-    Rank rank>
-PartitionedArray<bool, rank> logical_and(
-    PartitionedArray<InputElement, rank> const& array,
-    hpx::shared_future<InputElement> const& scalar)
-{
-    return binary_local_operation(
-        policy::logical_and::DefaultPolicies{},
-        array, scalar,
-        detail::LogicalAnd<InputElement>{});
-}
-
-
-template<
-    typename InputElement,
-    Rank rank>
-PartitionedArray<bool, rank> logical_and(
-    hpx::shared_future<InputElement> const& scalar,
-    PartitionedArray<InputElement, rank> const& array)
-{
-    return binary_local_operation(
-        policy::logical_and::DefaultPolicies{},
-        scalar, array,
-        detail::LogicalAnd<InputElement>{});
-}
-
-
-template<
-    typename InputElement,
-    Rank rank>
-PartitionedArray<bool, rank> logical_and(
-    PartitionedArray<InputElement, rank> const& array,
-    InputElement const& scalar)
-{
-    return logical_and(array, hpx::make_ready_future<InputElement>(scalar).share());
-}
-
-
-template<
-    typename InputElement,
-    Rank rank>
-PartitionedArray<bool, rank> logical_and(
-    InputElement const& scalar,
-    PartitionedArray<InputElement, rank> const& array)
-{
-    return logical_and(hpx::make_ready_future<InputElement>(scalar).share(), array);
-}
+LUE_BINARY_LOCAL_OPERATION_OVERLOADS(logical_and, detail::LogicalAnd)
 
 }  // namespace lue

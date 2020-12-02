@@ -67,8 +67,8 @@ namespace none {
 
 using DefaultPolicies = policy::DefaultPolicies<1, 1>;
 
-}  // namespace policy
 }  // namespace none
+}  // namespace policy
 
 
 template<

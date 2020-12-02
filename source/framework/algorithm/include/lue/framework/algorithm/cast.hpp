@@ -32,8 +32,8 @@ namespace cast {
 
 using DefaultPolicies = policy::DefaultPolicies<1, 1>;
 
-}  // namespace policy
 }  // namespace cast
+}  // namespace policy
 
 
 template<

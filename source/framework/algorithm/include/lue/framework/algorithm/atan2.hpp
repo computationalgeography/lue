@@ -35,8 +35,8 @@ namespace atan2 {
 
 using DefaultPolicies = policy::DefaultPolicies<2, 1>;
 
-}  // namespace policy
 }  // namespace atan2
+}  // namespace policy
 
 
 template<

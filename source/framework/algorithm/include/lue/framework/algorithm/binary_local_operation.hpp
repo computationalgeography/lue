@@ -500,4 +500,233 @@ PartitionedArray<OutputElementT<Functor>, rank> binary_local_operation(
     return OutputArray{shape(input_array), localities, std::move(output_partitions)};
 }
 
+
+#define LUE_BINARY_LOCAL_OPERATION_OVERLOADS(name, Functor)                     \
+                                                                                \
+/* f(policies, array, array) */                                                 \
+template<                                                                       \
+    typename Policies,                                                          \
+    typename InputElement,                                                      \
+    Rank rank>                                                                  \
+auto name(                                                                      \
+    Policies const& policies,                                                   \
+    PartitionedArray<InputElement, rank> const& array1,                         \
+    PartitionedArray<InputElement, rank> const& array2)                         \
+{                                                                               \
+    using OutputElement = OutputElementT<Functor<InputElement>>;                \
+                                                                                \
+    return binary_local_operation(                                              \
+        policies, array1, array2, Functor<InputElement, OutputElement>{});      \
+}                                                                               \
+                                                                                \
+                                                                                \
+/* f(array, array) */                                                           \
+template<                                                                       \
+    typename InputElement,                                                      \
+    Rank rank>                                                                  \
+auto name(                                                                      \
+    PartitionedArray<InputElement, rank> const& array1,                         \
+    PartitionedArray<InputElement, rank> const& array2)                         \
+{                                                                               \
+    return name(policy::name::DefaultPolicies{}, array1, array2);               \
+}                                                                               \
+                                                                                \
+                                                                                \
+/* f(policies, array, scalar) */                                                \
+template<                                                                       \
+    typename Policies,                                                          \
+    typename OutputElement,                                                     \
+    typename InputElement,                                                      \
+    Rank rank>                                                                  \
+PartitionedArray<OutputElement, rank> name(                                     \
+    Policies const& policies,                                                   \
+    PartitionedArray<InputElement, rank> const& array,                          \
+    hpx::shared_future<InputElement> const& scalar)                             \
+{                                                                               \
+    return binary_local_operation(                                              \
+        policies, array, scalar, Functor<InputElement, OutputElement>{});       \
+}                                                                               \
+                                                                                \
+                                                                                \
+/* f(policies, array, scalar) */                                                \
+template<                                                                       \
+    typename Policies,                                                          \
+    typename InputElement,                                                      \
+    Rank rank>                                                                  \
+auto name(                                                                      \
+    Policies const& policies,                                                   \
+    PartitionedArray<InputElement, rank> const& array,                          \
+    hpx::shared_future<InputElement> const& scalar)                             \
+{                                                                               \
+    using OutputElement = OutputElementT<Functor<InputElement>>;                \
+                                                                                \
+    return name<Policies, OutputElement, InputElement, rank>(                   \
+        policies, array, scalar);                                               \
+}                                                                               \
+                                                                                \
+                                                                                \
+/* f(policies, array, scalar) */                                                \
+template<                                                                       \
+    typename Policies,                                                          \
+    typename InputElement,                                                      \
+    Rank rank>                                                                  \
+auto name(                                                                      \
+    Policies const& policies,                                                   \
+    PartitionedArray<InputElement, rank> const& array,                          \
+    InputElement const scalar)                                                  \
+{                                                                               \
+    return name(                                                                \
+        policies, array, hpx::make_ready_future<InputElement>(scalar).share()); \
+}                                                                               \
+                                                                                \
+                                                                                \
+/* f(array, scalar) */                                                          \
+template<                                                                       \
+    typename OutputElement,                                                     \
+    typename InputElement,                                                      \
+    Rank rank>                                                                  \
+PartitionedArray<OutputElement, rank> name(                                     \
+    PartitionedArray<InputElement, rank> const& array,                          \
+    hpx::shared_future<InputElement> const& scalar)                             \
+{                                                                               \
+    using Policies = policy::name::DefaultPolicies;                             \
+                                                                                \
+    return name<Policies, OutputElement, InputElement, rank>(                   \
+        Policies{}, array, scalar);                                             \
+}                                                                               \
+                                                                                \
+                                                                                \
+/* f(array, scalar) */                                                          \
+template<                                                                       \
+    typename OutputElement,                                                     \
+    typename InputElement,                                                      \
+    Rank rank>                                                                  \
+PartitionedArray<OutputElement, rank> name(                                     \
+    PartitionedArray<InputElement, rank> const& array,                          \
+    InputElement const scalar)                                                  \
+{                                                                               \
+    return name<OutputElement, InputElement, rank>(                             \
+        array, hpx::make_ready_future<InputElement>(scalar).share());           \
+}                                                                               \
+                                                                                \
+                                                                                \
+/* f(array, scalar) */                                                          \
+template<                                                                       \
+    typename InputElement,                                                      \
+    Rank rank>                                                                  \
+auto name(                                                                      \
+    PartitionedArray<InputElement, rank> const& array,                          \
+    hpx::shared_future<InputElement> const& scalar)                             \
+{                                                                               \
+    using OutputElement = OutputElementT<Functor<InputElement>>;                \
+                                                                                \
+    return name<OutputElement, InputElement, rank>(array, scalar);              \
+}                                                                               \
+                                                                                \
+                                                                                \
+/* f(array, scalar) */                                                          \
+template<                                                                       \
+    typename InputElement,                                                      \
+    Rank rank>                                                                  \
+auto name(                                                                      \
+    PartitionedArray<InputElement, rank> const& array,                          \
+    InputElement const scalar)                                                  \
+{                                                                               \
+    return name(array, hpx::make_ready_future<InputElement>(scalar).share());   \
+}                                                                               \
+                                                                                \
+                                                                                \
+/* f(policies, scalar, array) */                                                \
+template<                                                                       \
+    typename Policies,                                                          \
+    typename OutputElement,                                                     \
+    typename InputElement,                                                      \
+    Rank rank>                                                                  \
+PartitionedArray<OutputElement, rank> name(                                     \
+    Policies const& policies,                                                   \
+    hpx::shared_future<InputElement> const& scalar,                             \
+    PartitionedArray<InputElement, rank> const& array)                          \
+{                                                                               \
+    return binary_local_operation(                                              \
+        policies, scalar, array, Functor<InputElement, OutputElement>{});       \
+}                                                                               \
+                                                                                \
+                                                                                \
+/* f(policies, scalar, array) */                                                \
+template<                                                                       \
+    typename Policies,                                                          \
+    typename InputElement,                                                      \
+    Rank rank>                                                                  \
+auto name(                                                                      \
+    Policies const& policies,                                                   \
+    hpx::shared_future<InputElement> const& scalar,                             \
+    PartitionedArray<InputElement, rank> const& array)                          \
+{                                                                               \
+    using OutputElement = OutputElementT<Functor<InputElement>>;                \
+                                                                                \
+    return name<Policies, OutputElement, InputElement, rank>(                   \
+        policies, scalar, array);                                               \
+}                                                                               \
+                                                                                \
+                                                                                \
+/* f(scalar, array) */                                                          \
+template<                                                                       \
+    typename OutputElement,                                                     \
+    typename InputElement,                                                      \
+    Rank rank>                                                                  \
+PartitionedArray<OutputElement, rank> name(                                     \
+    hpx::shared_future<InputElement> const& scalar,                             \
+    PartitionedArray<InputElement, rank> const& array)                          \
+{                                                                               \
+    using Policies = policy::name::DefaultPolicies;                             \
+                                                                                \
+    return name<Policies, OutputElement, InputElement, rank>(                   \
+        Policies{}, scalar, array);                                             \
+}                                                                               \
+                                                                                \
+                                                                                \
+/* f(scalar, array) */                                                          \
+template<                                                                       \
+    typename InputElement,                                                      \
+    Rank rank>                                                                  \
+auto name(                                                                      \
+    hpx::shared_future<InputElement> const& scalar,                             \
+    PartitionedArray<InputElement, rank> const& array)                          \
+{                                                                               \
+    using Policies = policy::name::DefaultPolicies;                             \
+    using OutputElement = OutputElementT<Functor<InputElement>>;                \
+                                                                                \
+    return name<Policies, OutputElement, InputElement, rank>(                   \
+        Policies{}, scalar, array);                                             \
+}                                                                               \
+                                                                                \
+                                                                                \
+/* f(scalar, array) */                                                          \
+template<                                                                       \
+    typename OutputElement,                                                     \
+    typename InputElement,                                                      \
+    Rank rank>                                                                  \
+PartitionedArray<OutputElement, rank> name(                                     \
+    InputElement const scalar,                                                  \
+    PartitionedArray<InputElement, rank> const& array)                          \
+{                                                                               \
+    return name<OutputElement, InputElement, rank>(                             \
+        hpx::make_ready_future<InputElement>(scalar).share(), array);           \
+}                                                                               \
+                                                                                \
+                                                                                \
+/* f(scalar, array) */                                                          \
+template<                                                                       \
+    typename InputElement,                                                      \
+    Rank rank>                                                                  \
+auto name(                                                                      \
+    InputElement const scalar,                                                  \
+    PartitionedArray<InputElement, rank> const& array)                          \
+{                                                                               \
+    using OutputElement = OutputElementT<Functor<InputElement>>;                \
+                                                                                \
+    return name<OutputElement, InputElement, rank>(                             \
+        hpx::make_ready_future<InputElement>(scalar).share(), array);           \
+}
+
 }  // namespace lue
