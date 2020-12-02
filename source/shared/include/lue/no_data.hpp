@@ -9,10 +9,13 @@ namespace lue {
 /*!
     @brief      Return whether @a value passed in represents the special
                 no-data value
-    @tparam     T Type of value to test. Must be an arithmetic type and
-                not bool. Bool only has two states.
+    @tparam     T Type of value to test. Must be an arithmetic type. In
+                case T is bool, this function always returns false.
     @param      value Value to test
     @return     True or false
+
+    In case T is bool there is no special value to use to represent
+    no-data. Bool only has two states.
 */
 template<
     typename T>
@@ -21,9 +24,16 @@ bool is_no_data(
 {
     static_assert(std::is_arithmetic_v<T>);
 
-    if constexpr(std::is_integral_v<T> && !std::is_same_v<T, bool>)
+    if constexpr(std::is_integral_v<T>)
     {
-        return value == std::numeric_limits<T>::max();
+        if constexpr(std::is_same_v<T, bool>)
+        {
+            return false;
+        }
+        else
+        {
+            return value == std::numeric_limits<T>::max();
+        }
     }
     else
     {
@@ -46,6 +56,7 @@ void set_no_data(
     T& value)
 {
     static_assert(std::is_arithmetic_v<T>);
+    static_assert(!std::is_same_v<T, bool>);
 
     if constexpr(std::is_integral_v<T> && !std::is_same_v<T, bool>)
     {
