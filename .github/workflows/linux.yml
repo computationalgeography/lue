@@ -25,7 +25,7 @@ jobs:
               sudo apt autoremove
               sudo apt upgrade
               sudo apt install cmake doxygen graphviz hwloc lftp libboost-all-dev libgdal-dev libgoogle-perftools-dev libhdf5-dev ninja-build tree
-        - uses: goanpeca/setup-miniconda@v1
+        - uses: conda-incubator/setup-miniconda@v2
           with:
               auto-update-conda: true
               python-version: ${{ matrix.python-version }}
