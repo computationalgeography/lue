@@ -19,11 +19,11 @@ jobs:
         - name: checkout lue
           uses: actions/checkout@v2
 
-        - name: configure system
-          run: |
-              sudo apt update
-              sudo apt autoremove
-              sudo apt upgrade
+        # - name: configure system
+        #   run: |
+        #       sudo apt update
+        #       sudo apt autoremove
+        #       sudo apt upgrade
         - uses: conda-incubator/setup-miniconda@v2
           with:
               auto-update-conda: true
