@@ -1,6 +1,7 @@
 #pragma once
 #include "lue/framework/algorithm/policy/dont_mark_no_data.hpp"
 #include "lue/framework/algorithm/policy/skip_no_data.hpp"
+#include <hpx/serialization.hpp>
 #include <array>
 
 
@@ -38,6 +39,18 @@ class DefaultPolicies
         }
 
     private:
+
+        // All arguments passed to actions have to support serialization,
+        // even if there is nothing to serialize
+        friend class hpx::serialization::access;
+
+        template<typename Archive>
+        void serialize(
+            [[maybe_unused]] Archive& archive,
+            [[maybe_unused]] unsigned int const version)
+        {
+            // Nothing to do
+        }
 
         //! For each input a no-data policy
         InputNoDataPolicies _indp;
