@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/focal_operation.hpp"
+#include "lue/framework/algorithm/policy/default_policies.hpp"
 
 
 namespace lue {
@@ -16,17 +17,12 @@ public:
 
     FocalSum()=default;
 
-    constexpr InputElement fill_value() const
-    {
-        return 0;
-    }
-
     template<
-        typename Subspan,
-        typename Kernel>
+        typename Kernel,
+        typename Subspan>
     OutputElement operator()(
-        Subspan const& window,
-        Kernel const& kernel) const
+        Kernel const& kernel,
+        Subspan const& window) const
     {
         static_assert(rank<Kernel> == 2);
 
@@ -71,6 +67,20 @@ public:
 }  // namespace detail
 
 
+namespace policy {
+namespace focal_sum {
+
+template<
+    typename OutputElement,
+    typename InputElement>
+using DefaultPolicies = policy::DefaultFocalOperationPolicies<
+    OutputElements<OutputElement>,
+    InputElements<InputElement>>;
+
+}  // namespace focal_sum
+}  // namespace policy
+
+
 template<
     typename Element,
     Rank rank,
@@ -79,7 +89,14 @@ PartitionedArray<Element, rank> focal_sum(
     PartitionedArray<Element, rank> const& array,
     Kernel const& kernel)
 {
-    return focal_operation(array, kernel, detail::FocalSum<Element>{});
+    using Functor = detail::FocalSum<Element>;
+    using OutputElement = OutputElementT<Functor>;
+    using InputElement = Element;
+    using Policies = policy::focal_sum::DefaultPolicies<OutputElement, InputElement>;
+
+    InputElement const fill_value{0};
+
+    return focal_operation(Policies{fill_value}, array, kernel, Functor{});
 }
 
 }  // namespace lue

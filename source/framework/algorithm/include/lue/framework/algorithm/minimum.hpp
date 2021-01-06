@@ -56,7 +56,11 @@ public:
 namespace policy {
 namespace minimum {
 
-using DefaultPolicies = policy::DefaultPolicies<1, 1>;
+template<
+    typename Element>
+using DefaultPolicies = policy::DefaultPolicies<
+    OutputElements<Element>,
+    InputElements<Element>>;
 
 }  // namespace minimum
 }  // namespace policy
@@ -68,10 +72,10 @@ template<
 hpx::future<Element> minimum(
     PartitionedArray<Element, rank> const& array)
 {
-    return unary_aggregate_operation(
-        policy::minimum::DefaultPolicies{},
-        array,
-        detail::Minimum<Element, Element>{});
+    using Functor = detail::Minimum<Element, Element>;
+    using Policies = policy::minimum::DefaultPolicies<Element>;
+
+    return unary_aggregate_operation(Policies{}, array, Functor{});
 }
 
 }  // namespace lue

@@ -32,7 +32,12 @@ public:
 namespace policy {
 namespace equal_to {
 
-using DefaultPolicies = policy::DefaultPolicies<2, 1>;
+template<
+    typename OutputElement,
+    typename InputElement>
+using DefaultPolicies = policy::DefaultPolicies<
+    OutputElements<OutputElement>,
+    InputElements<InputElement, InputElement>>;
 
 }  // namespace equal_to
 }  // namespace policy
@@ -45,14 +50,13 @@ LUE_BINARY_LOCAL_OPERATION_OVERLOADS(equal_to, detail::EqualTo)
 template<
     typename InputElement,
     Rank rank>
-// ArrayPartition<bool, rank> equal_to(
 auto equal_to(
     hpx::id_type const locality_id,
     ArrayPartition<InputElement, rank> const& partition,
     hpx::shared_future<InputElement> const& scalar)
 {
-    using Policies = policy::equal_to::DefaultPolicies;
     using OutputElement = OutputElementT<detail::EqualTo<InputElement>>;
+    using Policies = policy::equal_to::DefaultPolicies<OutputElement, InputElement>;
 
     return binary_local_operation(
         locality_id,

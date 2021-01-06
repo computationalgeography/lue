@@ -528,7 +528,10 @@ auto name(                                                                      
     PartitionedArray<InputElement, rank> const& array1,                         \
     PartitionedArray<InputElement, rank> const& array2)                         \
 {                                                                               \
-    return name(policy::name::DefaultPolicies{}, array1, array2);               \
+    using OutputElement = OutputElementT<Functor<InputElement>>;                \
+    using Policies = policy::name::DefaultPolicies<OutputElement, InputElement>;  \
+                                                                                \
+    return name(Policies{}, array1, array2);                                    \
 }                                                                               \
                                                                                 \
                                                                                 \
@@ -589,7 +592,7 @@ PartitionedArray<OutputElement, rank> name(                                     
     PartitionedArray<InputElement, rank> const& array,                          \
     hpx::shared_future<InputElement> const& scalar)                             \
 {                                                                               \
-    using Policies = policy::name::DefaultPolicies;                             \
+    using Policies = policy::name::DefaultPolicies<OutputElement, InputElement>;  \
                                                                                 \
     return name<Policies, OutputElement, InputElement, rank>(                   \
         Policies{}, array, scalar);                                             \
@@ -678,7 +681,7 @@ PartitionedArray<OutputElement, rank> name(                                     
     hpx::shared_future<InputElement> const& scalar,                             \
     PartitionedArray<InputElement, rank> const& array)                          \
 {                                                                               \
-    using Policies = policy::name::DefaultPolicies;                             \
+    using Policies = policy::name::DefaultPolicies<OutputElement, InputElement>;  \
                                                                                 \
     return name<Policies, OutputElement, InputElement, rank>(                   \
         Policies{}, scalar, array);                                             \
@@ -693,8 +696,8 @@ auto name(                                                                      
     hpx::shared_future<InputElement> const& scalar,                             \
     PartitionedArray<InputElement, rank> const& array)                          \
 {                                                                               \
-    using Policies = policy::name::DefaultPolicies;                             \
     using OutputElement = OutputElementT<Functor<InputElement>>;                \
+    using Policies = policy::name::DefaultPolicies<OutputElement, InputElement>;  \
                                                                                 \
     return name<Policies, OutputElement, InputElement, rank>(                   \
         Policies{}, scalar, array);                                             \

@@ -92,7 +92,12 @@ public:
 namespace policy {
 namespace zonal_sum {
 
-using DefaultPolicies = policy::DefaultPolicies<2, 1>;
+template<
+    typename Element,
+    typename Zone>
+using DefaultPolicies = policy::DefaultPolicies<
+    OutputElements<Element>,
+    InputElements<Element, Zone>>;
 
 }  // namespace policy
 }  // namespace zonal_sum
@@ -106,10 +111,10 @@ PartitionedArray<Element, rank> zonal_sum(
     Element const& value,
     PartitionedArray<Zone, rank> const& zones)
 {
-    return zonal_operation(
-        policy::zonal_sum::DefaultPolicies{},
-        value, zones,
-        detail::ZonalSum<Element, Zone>{});
+    using Functor = detail::ZonalSum<Element, Zone>;
+    using Policies = policy::zonal_sum::DefaultPolicies<Element, Zone>;
+
+    return zonal_operation(Policies{}, value, zones, Functor{});
 }
 
 
@@ -121,10 +126,10 @@ PartitionedArray<Element, rank> zonal_sum(
     PartitionedArray<Element, rank> const& array,
     PartitionedArray<Zone, rank> const& zones)
 {
-    return zonal_operation(
-        policy::zonal_sum::DefaultPolicies{},
-        array, zones,
-        detail::ZonalSum<Element, Zone>{});
+    using Functor = detail::ZonalSum<Element, Zone>;
+    using Policies = policy::zonal_sum::DefaultPolicies<Element, Zone>;
+
+    return zonal_operation(Policies{}, array, zones, Functor{});
 }
 
 }  // namespace lue

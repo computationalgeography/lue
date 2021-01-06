@@ -40,7 +40,11 @@ public:
 namespace policy {
 namespace iterate_per_element {
 
-using DefaultPolicies = policy::DefaultPolicies<1, 1>;
+template<
+    typename Element>
+using DefaultPolicies = policy::DefaultPolicies<
+    OutputElements<Element>,
+    InputElements<Element>>;
 
 }  // namespace iterate_per_element
 }  // namespace policy
@@ -60,10 +64,10 @@ template<
 PartitionedArray<Element, rank> iterate_per_element(
     PartitionedArray<Element, rank> const& input_array)
 {
-    return unary_local_operation(
-        policy::iterate_per_element::DefaultPolicies{},
-        input_array,
-        detail::IteratePerElement<Element>{});
+    using Functor = detail::IteratePerElement<Element>;
+    using Policies = policy::iterate_per_element::DefaultPolicies<Element>;
+
+    return unary_local_operation(Policies{}, input_array, Functor{});
 }
 
 }  // namespace lue

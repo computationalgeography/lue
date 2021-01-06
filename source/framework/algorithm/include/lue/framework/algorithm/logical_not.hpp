@@ -29,7 +29,12 @@ public:
 namespace policy {
 namespace logical_not {
 
-using DefaultPolicies = policy::DefaultPolicies<1, 1>;
+template<
+    typename OutputElement,
+    typename InputElement>
+using DefaultPolicies = policy::DefaultPolicies<
+    OutputElements<OutputElement>,
+    InputElements<InputElement>>;
 
 }  // namespace logical_not
 }  // namespace policy
@@ -41,10 +46,11 @@ template<
 PartitionedArray<bool, rank> logical_not(
     PartitionedArray<InputElement, rank> const& array)
 {
-    return unary_local_operation(
-        policy::logical_not::DefaultPolicies{},
-        array,
-        detail::LogicalNot<InputElement>{});
+    using Functor = detail::LogicalNot<InputElement>;
+    using OutputElement = OutputElementT<Functor>;
+    using Policies = policy::logical_not::DefaultPolicies<OutputElement, InputElement>;
+
+    return unary_local_operation(Policies{}, array, Functor{});
 }
 
 }  // namespace lue

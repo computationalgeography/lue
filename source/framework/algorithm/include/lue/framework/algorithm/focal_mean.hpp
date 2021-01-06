@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/focal_operation.hpp"
+#include "lue/framework/algorithm/policy/default_policies.hpp"
 #include <cmath>
 #include <limits>
 
@@ -23,17 +24,12 @@ public:
 
     FocalMean()=default;
 
-    constexpr InputElement fill_value() const
-    {
-        return std::numeric_limits<InputElement>::quiet_NaN();
-    }
-
     template<
-        typename Subspan,
-        typename Kernel>
+        typename Kernel,
+        typename Subspan>
     OutputElement operator()(
-        Subspan const& window,
-        Kernel const& kernel) const
+        Kernel const& kernel,
+        Subspan const& window) const
     {
         static_assert(rank<Kernel> == 2);
 
@@ -80,6 +76,20 @@ public:
 }  // namespace detail
 
 
+namespace policy {
+namespace focal_mean {
+
+template<
+    typename OutputElement,
+    typename InputElement>
+using DefaultPolicies = policy::DefaultFocalOperationPolicies<
+    OutputElements<OutputElement>,
+    InputElements<InputElement>>;
+
+}  // namespace focal_mean
+}  // namespace policy
+
+
 template<
     typename Element,
     Rank rank,
@@ -88,7 +98,14 @@ PartitionedArray<Element, rank> focal_mean(
     PartitionedArray<Element, rank> const& array,
     Kernel const& kernel)
 {
-    return focal_operation(array, kernel, detail::FocalMean<Element>{});
+    using Functor = detail::FocalMean<Element>;
+    using OutputElement = OutputElementT<Functor>;
+    using InputElement = Element;
+    using Policies = policy::focal_mean::DefaultPolicies<OutputElement, InputElement>;
+
+    InputElement const fill_value{std::numeric_limits<InputElement>::quiet_NaN()};
+
+    return focal_operation(Policies{fill_value}, array, kernel, Functor{});
 }
 
 }  // namespace lue

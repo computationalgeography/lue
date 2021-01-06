@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/focal_operation.hpp"
+#include "lue/framework/algorithm/policy/default_policies.hpp"
 #include <limits>
 
 
@@ -17,17 +18,12 @@ public:
 
     FocalMax()=default;
 
-    constexpr InputElement fill_value() const
-    {
-        return std::numeric_limits<InputElement>::min();
-    }
-
     template<
-        typename Subspan,
-        typename Kernel>
+        typename Kernel,
+        typename Subspan>
     OutputElement operator()(
-        Subspan const& window,
-        Kernel const& kernel) const
+        Kernel const& kernel,
+        Subspan const& window) const
     {
         static_assert(rank<Kernel> == 2);
 
@@ -78,6 +74,20 @@ public:
 }  // namespace detail
 
 
+namespace policy {
+namespace focal_max {
+
+template<
+    typename OutputElement,
+    typename InputElement>
+using DefaultPolicies = policy::DefaultFocalOperationPolicies<
+    OutputElements<OutputElement>,
+    InputElements<InputElement>>;
+
+}  // namespace focal_max
+}  // namespace policy
+
+
 template<
     typename Element,
     Rank rank,
@@ -86,7 +96,14 @@ PartitionedArray<Element, rank> focal_max(
     PartitionedArray<Element, rank> const& array,
     Kernel const& kernel)
 {
-    return focal_operation(array, kernel, detail::FocalMax<Element>{});
+    using Functor = detail::FocalMax<Element>;
+    using OutputElement = OutputElementT<Functor>;
+    using InputElement = Element;
+    using Policies = policy::focal_max::DefaultPolicies<OutputElement, InputElement>;
+
+    InputElement const fill_value{std::numeric_limits<InputElement>::min()};
+
+    return focal_operation(Policies{fill_value}, array, kernel, Functor{});
 }
 
 }  // namespace lue

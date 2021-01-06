@@ -32,7 +32,11 @@ public:
 namespace policy {
 namespace atan {
 
-using DefaultPolicies = policy::DefaultPolicies<1, 1>;
+template<
+    typename Element>
+using DefaultPolicies = policy::DefaultPolicies<
+    OutputElements<Element>,
+    InputElements<Element>>;
 
 }  // namespace atan
 }  // namespace policy
@@ -44,10 +48,10 @@ template<
 PartitionedArray<Element, rank> atan(
     PartitionedArray<Element, rank> const& array)
 {
-    return unary_local_operation(
-        policy::atan::DefaultPolicies{},
-        array,
-        detail::ATan<Element>{});
+    using Functor = detail::ATan<Element>;
+    using Policies = policy::atan::DefaultPolicies<Element>;
+
+    return unary_local_operation(Policies{}, array, Functor{});
 }
 
 }  // namespace lue

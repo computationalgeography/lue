@@ -33,7 +33,12 @@ public:
 namespace policy {
 namespace atan2 {
 
-using DefaultPolicies = policy::DefaultPolicies<2, 1>;
+template<
+    typename Element>
+using DefaultPolicies = policy::DefaultPolicies<
+    OutputElements<Element>,
+    InputElements<Element, Element>>;
+
 
 }  // namespace atan2
 }  // namespace policy
@@ -46,10 +51,10 @@ PartitionedArray<Element, rank> atan2(
     PartitionedArray<Element, rank> const& array1,
     PartitionedArray<Element, rank> const& array2)
 {
-    return binary_local_operation(
-        policy::atan2::DefaultPolicies{},
-        array1, array2,
-        detail::ATan2<Element>{});
+    using Functor = detail::ATan2<Element>;
+    using Policies = policy::atan2::DefaultPolicies<Element>;
+
+    return binary_local_operation(Policies{}, array1, array2, Functor{});
 }
 
 }  // namespace lue
