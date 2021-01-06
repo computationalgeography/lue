@@ -102,6 +102,22 @@ Dependencies
 Test
 ----
 
+Optional features:
+
+================================== ======= ====================================
+Variable                           Default Effect
+================================== ======= ====================================
+`LUE_TEST_NR_LOCALITIES_PER_TEST`  `1`     Number of localities used when testing the framework
+`LUE_TEST_NR_THREADS_PER_LOCALITY` `1`     Number of threads per locality used when testing the framework
+================================== ======= ====================================
+
+.. note::
+
+   Changing `LUE_TEST_NR_LOCALITIES_PER_TEST` and
+   `LUE_TEST_NR_THREADS_PER_LOCALITY` is only relevant for tests that
+   depend on the HPX library. Using multiple localities
+   (`LUE_TEST_NR_LOCALITIES_PER_TEST` > 1), requires that HPX is
+   built with support for networking.
 
 Dependencies
 ~~~~~~~~~~~~
