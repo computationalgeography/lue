@@ -21,8 +21,8 @@ jobs:
 
         - name: configure system
           run: |
-              brew update
-              brew upgrade
+              # brew update
+              # brew upgrade
               brew install cmake boost doxygen gdal graphviz gperftools hdf5 hwloc ninja tree
 
         - uses: conda-incubator/setup-miniconda@v2
