@@ -21,8 +21,8 @@ jobs:
 
         - name: configure system
           run: |
-              brew update
-              brew upgrade
+              # brew update
+              # brew upgrade
 
         - uses: conda-incubator/setup-miniconda@v2
           with:
