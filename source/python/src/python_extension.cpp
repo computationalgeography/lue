@@ -9,7 +9,6 @@
 #include "lue/py/framework/submodule.hpp"
 #endif
 #endif
-#include <pybind11/pybind11.h>
 #include <boost/algorithm/string/join.hpp>
 #include <fmt/format.h>
 

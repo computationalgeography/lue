@@ -309,22 +309,28 @@ if(LUE_HPX_REQUIRED)
             FetchContent_Declare(hpx
                 GIT_REPOSITORY ${hpx_repository}
                 GIT_TAG ${LUE_HPX_GIT_TAG}
+                GIT_SHALLOW ON  # This implies that a commit hash is not allowed
             )
         else()
             # Obtain HPX from archive. This has the advantage of being
             # able to patch the source files.
+            set(hpx_version 1.5.1)
+
             if(LUE_REPOSITORY_CACHE AND EXISTS ${LUE_REPOSITORY_CACHE})
                 # Use local archive
-                set(hpx_url "file://${LUE_REPOSITORY_CACHE}/1.5.0.tar.gz")
+                set(hpx_url "file://${LUE_REPOSITORY_CACHE}/${hpx_version}.tar.gz")
             else()
                 # Use remote archive
-                set(hpx_url "https://github.com/STEllAR-GROUP/hpx/archive/1.5.0.tar.gz")
+                set(hpx_url "https://github.com/STEllAR-GROUP/hpx/archive/${hpx_version}.tar.gz")
             endif()
 
-            # Get rid of the final warnings in HPX sources
-            set(hpx_patch_command
-                git apply --reject --ignore-space-change --ignore-whitespace
-                    ${CMAKE_CURRENT_SOURCE_DIR}/environment/cmake/hpx-1.5.0.patch)
+            set(hpx_path_file ${CMAKE_CURRENT_SOURCE_DIR}/environment/cmake/hpx-${hpx_version}.patch)
+            if(EXISTS ${hpx_path_file})
+                # Get rid of the final warnings in HPX sources
+                set(hpx_patch_command
+                    git apply --reject --ignore-space-change --ignore-whitespace
+                        ${CMAKE_CURRENT_SOURCE_DIR}/environment/cmake/hpx-${hpx_version}.patch)
+            endif()
 
             FetchContent_Declare(hpx
                 URL ${hpx_url}
@@ -417,7 +423,7 @@ endif()
 # Find or install external packages --------------------------------------------
 if(LUE_BOOST_REQUIRED)
     if(NOT LUE_HAVE_BOOST)
-        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} boost/1.73.0)
+        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} boost/1.74.0)
         set(LUE_CONAN_OPTIONS ${LUE_CONAN_OPTIONS} boost:shared=True)
     endif()
 endif()
@@ -427,13 +433,13 @@ if(LUE_DOCOPT_REQUIRED)
 endif()
 
 if(LUE_FMT_REQUIRED)
-    set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} fmt/7.0.3)
+    set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} fmt/7.1.2)
 endif()
 
 if(LUE_GDAL_REQUIRED)
     if(NOT LUE_HAVE_GDAL)
         # https://conan.io/center/gdal/3.1.2
-        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} gdal/3.1.2)
+        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} gdal/3.1.4)
         # set(LUE_CONAN_OPTIONS ${LUE_CONAN_OPTIONS}
         #         gdal:with_qhull=False)
     endif()
@@ -495,7 +501,7 @@ if(LUE_NLOHMANN_JSON_REQUIRED)
 endif()
 
 if(LUE_PYBIND11_REQUIRED)
-    set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} pybind11/2.5.0)
+    set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} pybind11/2.6.1)
 endif()
 
 

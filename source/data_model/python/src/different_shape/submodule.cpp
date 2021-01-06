@@ -1,7 +1,6 @@
 #include "submodule.hpp"
 #include "constant_shape/submodule.hpp"
 #include "variable_shape/submodule.hpp"
-#include <pybind11/pybind11.h>
 
 
 namespace py = pybind11;

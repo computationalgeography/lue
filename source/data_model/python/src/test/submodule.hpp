@@ -1,11 +1,5 @@
 #pragma once
-
-
-namespace pybind11 {
-
-class module;
-
-}  // namespace pybind11
+#include <pybind11/pybind11.h>
 
 
 namespace lue {

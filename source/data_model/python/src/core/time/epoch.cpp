@@ -155,7 +155,7 @@ void init_epoch(
             "origin",
             [](time::Epoch const& epoch) {
                 return epoch.origin()
-                    ? py::cast<std::string>(*epoch.origin())
+                    ? py::cast(*epoch.origin())
                     : py::none()
                     ;
             })
@@ -164,7 +164,7 @@ void init_epoch(
             "calendar",
             [](time::Epoch const& epoch) {
                 return epoch.calendar()
-                    ? py::cast<time::Calendar>(*epoch.calendar())
+                    ? py::cast(*epoch.calendar())
                     : py::none()
                     ;
             })

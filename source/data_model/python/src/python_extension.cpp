@@ -1,6 +1,5 @@
 #include "lue/configure.hpp"
 #include "lue/py/data_model/submodule.hpp"
-#include <pybind11/pybind11.h>
 
 
 namespace py = pybind11;
