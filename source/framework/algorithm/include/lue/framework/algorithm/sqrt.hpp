@@ -40,7 +40,11 @@ public:
 namespace policy {
 namespace sqrt {
 
-using DefaultPolicies = policy::DefaultPolicies<1, 1>;
+template<
+    typename Element>
+using DefaultPolicies = policy::DefaultPolicies<
+    OutputElements<Element>,
+    InputElements<Element>>;
 
 }  // namespace sqrt
 }  // namespace policy
@@ -63,7 +67,9 @@ template<
 PartitionedArray<Element, rank> sqrt(
     PartitionedArray<Element, rank> const& array)
 {
-    return sqrt(policy::sqrt::DefaultPolicies{}, array);
+    using Policies = policy::sqrt::DefaultPolicies<Element>;
+
+    return sqrt(Policies{}, array);
 }
 
 }  // namespace lue

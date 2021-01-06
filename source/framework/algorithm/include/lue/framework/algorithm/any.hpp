@@ -64,7 +64,11 @@ public:
 namespace policy {
 namespace any {
 
-using DefaultPolicies = policy::DefaultPolicies<1, 1>;
+template<
+    typename Element>
+using DefaultPolicies = policy::DefaultPolicies<
+    OutputElements<Element>,
+    InputElements<Element>>;
 
 }  // namespace any
 }  // namespace policy
@@ -76,10 +80,10 @@ template<
 hpx::future<Element> any(
     PartitionedArray<Element, rank> const& array)
 {
-    return unary_aggregate_operation(
-        policy::any::DefaultPolicies{},
-        array,
-        detail::Any<Element>{});
+    using Functor = detail::Any<Element>;
+    using Policies = policy::any::DefaultPolicies<Element>;
+
+    return unary_aggregate_operation(Policies{}, array, Functor{});
 }
 
 }  // namespace lue

@@ -32,7 +32,12 @@ public:
 namespace policy {
 namespace where {
 
-using DefaultPolicies = policy::DefaultPolicies<3, 1>;
+template<
+    typename ConditionElement,
+    typename Element>
+using DefaultPolicies = policy::DefaultPolicies<
+    OutputElements<Element>,
+    InputElements<ConditionElement, Element, Element>>;
 
 }  // namespace where
 }  // namespace policy
@@ -47,7 +52,7 @@ PartitionedArray<Element, rank> where(
     PartitionedArray<Element, rank> const& true_array,
     PartitionedArray<Element, rank> const& false_array)
 {
-    using Policies = policy::where::DefaultPolicies;
+    using Policies = policy::where::DefaultPolicies<ConditionElement, Element>;
 
     return ternary_local_operation(
         Policies{},
@@ -74,7 +79,7 @@ PartitionedArray<Element, rank> where(
     PartitionedArray<Element, rank> const& true_array,
     hpx::shared_future<Element> const false_value)
 {
-    using Policies = policy::where::DefaultPolicies;
+    using Policies = policy::where::DefaultPolicies<ConditionElement, Element>;
 
     return ternary_local_operation(
         Policies{},
@@ -95,7 +100,7 @@ PartitionedArray<Element, rank> where(
     hpx::shared_future<Element> const true_value,
     PartitionedArray<Element, rank> const& false_array)
 {
-    using Policies = policy::where::DefaultPolicies;
+    using Policies = policy::where::DefaultPolicies<ConditionElement, Element>;
 
     return ternary_local_operation(
         Policies{},
@@ -116,7 +121,7 @@ PartitionedArray<Element, rank> where(
     hpx::shared_future<Element> const true_value,
     hpx::shared_future<Element> const false_value)
 {
-    using Policies = policy::where::DefaultPolicies;
+    using Policies = policy::where::DefaultPolicies<ConditionElement, Element>;
 
     return ternary_local_operation(
         Policies{},

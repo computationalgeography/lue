@@ -72,7 +72,11 @@ Partition copy_partition(
 namespace policy {
 namespace copy {
 
-using DefaultPolicies = policy::DefaultPolicies<1, 1>;
+template<
+    typename Element>
+using DefaultPolicies = policy::DefaultPolicies<
+    OutputElements<Element>,
+    InputElements<Element>>;
 
 }  // namespace copy
 }  // namespace policy
@@ -141,9 +145,9 @@ template<
 PartitionedArray<Element, rank> copy(
     PartitionedArray<Element, rank> const& input_array)
 {
-    return copy(
-        policy::copy::DefaultPolicies{},
-        input_array);
+    using Policies = policy::copy::DefaultPolicies<Element>;
+
+    return copy(Policies{}, input_array);
 }
 
 }  // namespace lue

@@ -32,7 +32,11 @@ public:
 namespace policy {
 namespace sin {
 
-using DefaultPolicies = policy::DefaultPolicies<1, 1>;
+template<
+    typename Element>
+using DefaultPolicies = policy::DefaultPolicies<
+    OutputElements<Element>,
+    InputElements<Element>>;
 
 }  // namespace sin
 }  // namespace policy
@@ -44,10 +48,10 @@ template<
 PartitionedArray<Element, rank> sin(
     PartitionedArray<Element, rank> const& array)
 {
-    return unary_local_operation(
-        policy::sin::DefaultPolicies{},
-        array,
-        detail::Sin<Element>{});
+    using Functor = detail::Sin<Element>;
+    using Policies = policy::sin::DefaultPolicies<Element>;
+
+    return unary_local_operation(Policies{}, array, Functor{});
 }
 
 }  // namespace lue

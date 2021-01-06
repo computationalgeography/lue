@@ -56,7 +56,12 @@ public:
 namespace policy {
 namespace sum {
 
-using DefaultPolicies = policy::DefaultPolicies<1, 1>;
+template<
+    typename OutputElement,
+    typename InputElement>
+using DefaultPolicies = policy::DefaultPolicies<
+    OutputElements<OutputElement>,
+    InputElements<InputElement>>;
 
 }  // namespace sum
 }  // namespace policy
@@ -69,9 +74,10 @@ template<
 hpx::future<OutputElement> sum(
     PartitionedArray<InputElement, rank> const& array)
 {
-    return unary_aggregate_operation(
-        policy::sum::DefaultPolicies{},
-        array, detail::Sum<InputElement, OutputElement>{});
+    using Functor = detail::Sum<InputElement, OutputElement>;
+    using Policies = policy::sum::DefaultPolicies<OutputElement, InputElement>;
+
+    return unary_aggregate_operation(Policies{}, array, Functor{});
 }
 
 }  // namespace lue

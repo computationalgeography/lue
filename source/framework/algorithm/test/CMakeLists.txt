@@ -17,6 +17,7 @@ set(names
     fill_test
     focal_max_test
     focal_mean_test
+    focal_operation_test
     focal_sum_test
     greater_than_equal_to_test
     greater_than_test

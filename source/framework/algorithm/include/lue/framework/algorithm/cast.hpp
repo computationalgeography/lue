@@ -30,7 +30,12 @@ public:
 namespace policy {
 namespace cast {
 
-using DefaultPolicies = policy::DefaultPolicies<1, 1>;
+template<
+    typename OutputElement,
+    typename InputElement>
+using DefaultPolicies = policy::DefaultPolicies<
+    OutputElements<OutputElement>,
+    InputElements<InputElement>>;
 
 }  // namespace cast
 }  // namespace policy
@@ -42,10 +47,11 @@ template<
 PartitionedArrayT<InputArray, OutputElement> cast(
     InputArray const& array)
 {
-    return unary_local_operation(
-        policy::cast::DefaultPolicies{},
-        array,
-        detail::Cast<ElementT<InputArray>, OutputElement>{});
+    using InputElement = ElementT<InputArray>;
+    using Functor = detail::Cast<InputElement, OutputElement>;
+    using Policies = policy::cast::DefaultPolicies<OutputElement, InputElement>;
+
+    return unary_local_operation(Policies{}, array, Functor{});
 }
 
 }  // namespace lue

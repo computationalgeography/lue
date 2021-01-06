@@ -117,8 +117,13 @@ struct UniformPartitionAction:
 namespace policy {
 namespace uniform {
 
-// The min/max values are the arguments whose values are relevant
-using DefaultPolicies = policy::DefaultPolicies<2, 1>;
+// The min/max values are the input arguments whose values are
+// relevant. These have the same element type as the output element.
+template<
+    typename OutputElement>
+using DefaultPolicies = policy::DefaultPolicies<
+    OutputElements<OutputElement>,
+    InputElements<OutputElement, OutputElement>>;
 
 }  // namespace uniform
 }  // namespace policy
@@ -195,7 +200,7 @@ PartitionedArray<OutputElement, rank> uniform(
     hpx::shared_future<OutputElement> const& min_value,
     hpx::shared_future<OutputElement> const& max_value)
 {
-    using Policies = policy::uniform::DefaultPolicies;
+    using Policies = policy::uniform::DefaultPolicies<OutputElement>;
 
     return uniform(Policies{}, input_array, min_value, max_value);
 }

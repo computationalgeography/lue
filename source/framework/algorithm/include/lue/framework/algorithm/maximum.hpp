@@ -56,7 +56,11 @@ public:
 namespace policy {
 namespace maximum {
 
-using DefaultPolicies = policy::DefaultPolicies<1, 1>;
+template<
+    typename Element>
+using DefaultPolicies = policy::DefaultPolicies<
+    OutputElements<Element>,
+    InputElements<Element>>;
 
 }  // namespace maximum
 }  // namespace policy
@@ -68,10 +72,10 @@ template<
 hpx::future<Element> maximum(
     PartitionedArray<Element, rank> const& array)
 {
-    return unary_aggregate_operation(
-        policy::maximum::DefaultPolicies{},
-        array,
-        detail::Maximum<Element, Element>{});
+    using Functor = detail::Maximum<Element, Element>;
+    using Policies = policy::maximum::DefaultPolicies<Element>;
+
+    return unary_aggregate_operation(Policies{}, array, Functor{});
 }
 
 }  // namespace lue

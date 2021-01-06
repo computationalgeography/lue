@@ -26,7 +26,7 @@ PartitionedArray<std::uint64_t, rank> array_partition_id(
     using OutputPartitions = PartitionsT<OutputArray>;
 
     // We don't need support for detecting / marking no-data here
-    using Policies = policy::array_like::DefaultPolicies;
+    using Policies = policy::array_like::DefaultPolicies<OutputElement, InputElement>;
     Policies policies{};
 
     ArrayLikePartitionAction<Policies, InputElement, OutputElement, rank> action;

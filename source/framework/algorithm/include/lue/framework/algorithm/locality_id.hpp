@@ -14,8 +14,10 @@ ArrayPartition<std::uint32_t, rank> locality_id_partition(
     ArrayPartition<InputElement, rank> const& input_partition)
 {
     // We don't need support for detecting / marking no-data here
-    return array_like_partition(
-        policy::array_like::DefaultPolicies{}, input_partition, hpx::get_locality_id());
+    using OutputElement = std::uint32_t;
+    using Policies = policy::array_like::DefaultPolicies<OutputElement, InputElement>;
+
+    return array_like_partition(Policies{}, input_partition, hpx::get_locality_id());
 }
 
 }  // namespace detail

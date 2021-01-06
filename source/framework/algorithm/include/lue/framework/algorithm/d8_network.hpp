@@ -1,6 +1,7 @@
 #pragma once
 #include "lue/framework/algorithm/focal_operation.hpp"
 #include "lue/framework/algorithm/kernel.hpp"
+#include "lue/framework/algorithm/policy/default_policies.hpp"
 #include <type_traits>
 
 
@@ -19,17 +20,12 @@ public:
 
     D8Network()=default;
 
-    constexpr ElevationElement fill_value() const
-    {
-        return std::numeric_limits<ElevationElement>::min();
-    }
-
     template<
-        typename Subspan,
-        typename Kernel>
+        typename Kernel,
+        typename Subspan>
     FlowDirectionElement operator()(
-        Subspan const& window,
-        Kernel const& kernel) const
+        Kernel const& kernel,
+        Subspan const& window) const
     {
         using Weight = ElementT<Kernel>;
 
@@ -124,6 +120,20 @@ public:
 }  // namespace detail
 
 
+namespace policy {
+namespace d8 {
+
+template<
+    typename OutputElement,
+    typename InputElement>
+using DefaultPolicies = policy::DefaultFocalOperationPolicies<
+    OutputElements<OutputElement>,
+    InputElements<InputElement>>;
+
+}  // namespace d8
+}  // namespace policy
+
+
 template<
     typename FlowDirectionElement,
     typename ElevationElement,
@@ -132,10 +142,13 @@ PartitionedArray<FlowDirectionElement, rank> d8_network(
     PartitionedArray<ElevationElement, rank> const& elevation)
 {
     using Weight = bool;
+    using Functor = detail::D8Network<FlowDirectionElement, ElevationElement>;
+    using Policies = policy::d8::DefaultPolicies<FlowDirectionElement, ElevationElement>;
 
+    ElevationElement const fill_value{std::numeric_limits<ElevationElement>::min()};
     Kernel<Weight, rank> kernel{box_kernel<Weight, rank>(1, true)};
 
-    return focal_operation(elevation, kernel, detail::D8Network<FlowDirectionElement, ElevationElement>{});
+    return focal_operation(Policies{fill_value}, elevation, kernel, Functor{});
 }
 
 }  // namespace lue
