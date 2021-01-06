@@ -31,7 +31,12 @@ public:
 namespace policy {
 namespace logical_inclusive_or {
 
-using DefaultPolicies = policy::DefaultPolicies<2, 1>;
+template<
+    typename OutputElement,
+    typename InputElement>
+using DefaultPolicies = policy::DefaultPolicies<
+    OutputElements<OutputElement>,
+    InputElements<InputElement, InputElement>>;
 
 }  // namespace logical_inclusive_or
 }  // namespace policy

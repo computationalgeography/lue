@@ -73,7 +73,12 @@ ArrayPartition<OutputElement, rank> array_like_partition(
 namespace policy {
 namespace array_like {
 
-using DefaultPolicies = policy::DefaultPolicies<1, 1>;
+template<
+    typename OutputElement,
+    typename InputElement>
+using DefaultPolicies = policy::DefaultPolicies<
+    OutputElements<OutputElement>,
+    InputElements<InputElement>>;
 
 }  // namespace array_like
 }  // namespace policy
@@ -145,9 +150,10 @@ PartitionedArray<OutputElement, rank> array_like(
     PartitionedArray<InputElement, rank> const& input_array,
     OutputElement const fill_value)
 {
+    using Policies = policy::array_like::DefaultPolicies<OutputElement, InputElement>;
+
     return array_like(
-        policy::array_like::DefaultPolicies{},
-        input_array, hpx::make_ready_future<OutputElement>(fill_value).share());
+        Policies{}, input_array, hpx::make_ready_future<OutputElement>(fill_value).share());
 }
 
 }  // namespace lue

@@ -64,7 +64,11 @@ public:
 namespace policy {
 namespace all {
 
-using DefaultPolicies = policy::DefaultPolicies<1, 1>;
+template<
+    typename Element>
+using DefaultPolicies = policy::DefaultPolicies<
+    OutputElements<Element>,
+    InputElements<Element>>;
 
 }  // namespace all
 }  // namespace policy
@@ -76,10 +80,10 @@ template<
 hpx::future<Element> all(
     PartitionedArray<Element, rank> const& array)
 {
-    return unary_aggregate_operation(
-        policy::all::DefaultPolicies{},
-        array,
-        detail::All<Element>{});
+    using Functor = detail::All<Element>;
+    using Policies = policy::all::DefaultPolicies<Element>;
+
+    return unary_aggregate_operation(Policies{}, array, Functor{});
 }
 
 
@@ -90,11 +94,10 @@ hpx::future<Element> all(
     hpx::id_type const locality_id,
     ArrayPartition<Element, rank> const& partition)
 {
-    return unary_aggregate_operation(
-        locality_id,
-        policy::all::DefaultPolicies{},
-        partition,
-        detail::All<Element>{});
+    using Functor = detail::All<Element>;
+    using Policies = policy::all::DefaultPolicies<Element>;
+
+    return unary_aggregate_operation(locality_id, Policies{}, partition, Functor{});
 }
 
 }  // namespace lue

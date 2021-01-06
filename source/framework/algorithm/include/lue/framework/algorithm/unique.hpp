@@ -82,7 +82,11 @@ struct UniquePartitionAction:
 namespace policy {
 namespace unique {
 
-using DefaultPolicies = policy::DefaultPolicies<1, 1>;
+template<
+    typename Element>
+using DefaultPolicies = policy::DefaultPolicies<
+    OutputElements<Element>,
+    InputElements<Element>>;
 
 }  // namespace unique
 }  // namespace policy
@@ -208,7 +212,7 @@ template<
 hpx::future<PartitionedArray<Element, 1>> unique(
     PartitionedArray<Element, rank> const& input_array)
 {
-    using Policies = policy::unique::DefaultPolicies;
+    using Policies = policy::unique::DefaultPolicies<Element>;
 
     return unique(Policies{}, input_array);
 }

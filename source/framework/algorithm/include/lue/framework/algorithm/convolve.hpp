@@ -1,13 +1,14 @@
 #pragma once
 #include "lue/framework/algorithm/focal_operation.hpp"
+#include "lue/framework/algorithm/policy/default_policies.hpp"
 
 
 namespace lue {
 namespace detail {
 
 template<
-    typename InputElement,
-    typename OutputElement_>
+    typename OutputElement_,
+    typename InputElement>
 class Convolve
 {
 
@@ -19,17 +20,12 @@ public:
 
     Convolve()=default;
 
-    constexpr InputElement fill_value() const
-    {
-        return 0;
-    }
-
     template<
-        typename Subspan,
-        typename Kernel>
+        typename Kernel,
+        typename Subspan>
     OutputElement operator()(
-        Subspan const& window,
-        Kernel const& kernel) const
+        Kernel const& kernel,
+        Subspan const& window) const
     {
         static_assert(rank<Kernel> == 2);
 
@@ -68,26 +64,40 @@ public:
 }  // namespace detail
 
 
+namespace policy {
+namespace convolve {
+
 template<
-    typename OutOfImagePolicy_=SkipOutOfImage,
-    typename NoDataFocusElementPolicy_=KeepNoDataFocusElement
->
-class ConvolvePolicies:
-    public OutOfImagePolicy_,
-    public NoDataFocusElementPolicy_
-{
+    typename OutputElement,
+    typename InputElement>
+using DefaultPolicies = policy::DefaultFocalOperationPolicies<
+    OutputElements<OutputElement>,
+    InputElements<InputElement>>;
 
-public:
+}  // namespace convolve
+}  // namespace policy
 
-    using OutOfImagePolicy = OutOfImagePolicy_;
 
-    using NoDataFocusElementPolicy = NoDataFocusElementPolicy_;
-
-    ConvolvePolicies() {};
-
-private:
-
-};
+// template<
+//     typename OutOfImagePolicy_=SkipOutOfImage,
+//     typename NoDataFocusElementPolicy_=KeepNoDataFocusElement
+// >
+// class ConvolvePolicies:
+//     public OutOfImagePolicy_,
+//     public NoDataFocusElementPolicy_
+// {
+// 
+// public:
+// 
+//     using OutOfImagePolicy = OutOfImagePolicy_;
+// 
+//     using NoDataFocusElementPolicy = NoDataFocusElementPolicy_;
+// 
+//     ConvolvePolicies() {};
+// 
+// private:
+// 
+// };
 
 
 template<
@@ -100,9 +110,9 @@ PartitionedArrayT<Array, OutputElement> convolve(
     Array const& array,
     Kernel const& kernel)
 {
-    return focal_operation(
-        policies, array, kernel, detail::Convolve<ElementT<Array>,
-        OutputElement>{});
+    using Functor = detail::Convolve<OutputElement, ElementT<Array>>;
+
+    return focal_operation(policies, array, kernel, Functor{});
 }
 
 
@@ -114,7 +124,12 @@ PartitionedArrayT<Array, OutputElement> convolve(
     Array const& array,
     Kernel const& kernel)
 {
-    return convolve(ConvolvePolicies{}, array, kernel);
+    using InputElement = ElementT<Array>;
+    using Policies = policy::convolve::DefaultPolicies<OutputElement, InputElement>;
+
+    InputElement const fill_value{0};
+
+    return convolve(Policies{fill_value}, array, kernel);
 }
 
 }  // namespace lue

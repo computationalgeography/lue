@@ -32,7 +32,11 @@ public:
 namespace policy {
 namespace cos {
 
-using DefaultPolicies = policy::DefaultPolicies<1, 1>;
+template<
+    typename Element>
+using DefaultPolicies = policy::DefaultPolicies<
+    OutputElements<Element>,
+    InputElements<Element>>;
 
 }  // namespace cos
 }  // namespace policy
@@ -44,10 +48,10 @@ template<
 PartitionedArray<Element, rank> cos(
     PartitionedArray<Element, rank> const& array)
 {
-    return unary_local_operation(
-        policy::cos::DefaultPolicies{},
-        array,
-        detail::Cos<Element>{});
+    using Functor = detail::Cos<Element>;
+    using Policies = policy::cos::DefaultPolicies<Element>;
+
+    return unary_local_operation(Policies{}, array, Functor{});
 }
 
 }  // namespace lue

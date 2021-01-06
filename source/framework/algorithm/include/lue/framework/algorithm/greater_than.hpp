@@ -32,7 +32,12 @@ public:
 namespace policy {
 namespace greater_than {
 
-using DefaultPolicies = policy::DefaultPolicies<2, 1>;
+template<
+    typename OutputElement,
+    typename InputElement>
+using DefaultPolicies = policy::DefaultPolicies<
+    OutputElements<OutputElement>,
+    InputElements<InputElement, InputElement>>;
 
 }  // namespace greater_than
 }  // namespace policy

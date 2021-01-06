@@ -40,7 +40,12 @@ public:
 namespace policy {
 namespace divide {
 
-using DefaultPolicies = policy::DefaultPolicies<2, 1>;
+template<
+    typename OutputElement,
+    typename InputElement>
+using DefaultPolicies = policy::DefaultPolicies<
+    OutputElements<OutputElement>,
+    InputElements<InputElement, InputElement>>;
 
 }  // namespace divide
 }  // namespace policy
