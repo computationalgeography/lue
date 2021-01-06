@@ -120,6 +120,11 @@ public:
 
     Element        operator[]          (std::size_t idx);
 
+    Span const& span() const
+    {
+        return _span;
+    }
+
 protected:
 
 private:
