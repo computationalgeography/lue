@@ -47,7 +47,8 @@ class OverloadPicker
 
                             HPX_UNUSED(zones_partition);
 
-                            auto const& [indp1, indp2] = policies.input_no_data_policies();
+                            auto const& indp1 = std::get<0>(policies.inputs_policies()).input_no_data_policy();
+                            auto const& indp2 = std::get<1>(policies.inputs_policies()).input_no_data_policy();
 
                             Aggregator result{};
 
@@ -129,7 +130,8 @@ class OverloadPicker<
                             HPX_UNUSED(input_partition);
                             HPX_UNUSED(zones_partition);
 
-                            auto const& [indp1, indp2] = policies.input_no_data_policies();
+                            auto const& indp1 = std::get<0>(policies.inputs_policies()).input_no_data_policy();
+                            auto const& indp2 = std::get<1>(policies.inputs_policies()).input_no_data_policy();
 
                             Count const nr_elements{lue::nr_elements(zones_partition_data)};
 
@@ -203,7 +205,7 @@ OutputPartition zonal_operation_partition2(
 
                     OutputData output_partition_data{zones_partition_data.shape()};
 
-                    auto const& [ondp] = policies.output_no_data_policies();
+                    auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
 
                     Count const nr_elements{lue::nr_elements(zones_partition_data)};
 

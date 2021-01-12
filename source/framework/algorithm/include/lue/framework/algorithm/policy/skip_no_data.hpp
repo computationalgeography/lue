@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/core/define.hpp"
+#include <hpx/serialization.hpp>
 
 
 namespace lue {
@@ -11,6 +12,8 @@ namespace policy {
     Use this policy if you do not want to check for no-data values in
     the input.
 */
+template<
+    typename Element>
 class SkipNoData
 {
 
@@ -31,6 +34,18 @@ class SkipNoData
             Index /* idx */ ...)
         {
             return false;
+        }
+
+    private:
+
+        friend class hpx::serialization::access;
+
+        template<typename Archive>
+        void serialize(
+            [[maybe_unused]] Archive& archive,
+            [[maybe_unused]] unsigned int const version)
+        {
+            // Nothing to do
         }
 
 };

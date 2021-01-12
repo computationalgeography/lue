@@ -22,13 +22,13 @@ BOOST_AUTO_TEST_CASE(use_case_1)
 
     Shape shape{nr_elements};
 
-    Array input_array{shape};
+    Array input_array{shape, shape};
 
     Element first_value{1};
     Element step{0.5};
     auto [result_we_got] = lue::mesh_grid(input_array, first_value, step);
 
-    Array result_we_want{shape};
+    Array result_we_want{shape, shape};
     lue::wait_all(result_we_want.partitions());
     result_we_want.partitions()(0).set_data(
         PartitionData{
@@ -59,14 +59,14 @@ BOOST_AUTO_TEST_CASE(use_case_2)
 
     Shape shape{nr_rows, nr_cols};
 
-    Array input_array{shape};
+    Array input_array{shape, shape};
 
     Element first_value{1};
     Element step{0.5};
     auto [result_we_got1, result_we_got2] =
         lue::mesh_grid(input_array, first_value, step);
 
-    Array result_we_want{shape};
+    Array result_we_want{shape, shape};
     lue::wait_all(result_we_want.partitions());
     result_we_want.partitions()(0, 0).set_data(
         PartitionData{

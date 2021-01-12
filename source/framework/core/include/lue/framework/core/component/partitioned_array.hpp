@@ -768,11 +768,19 @@ void PartitionedArray<Element, rank>::instantiate_partitions(
 
     lue_assert(nr_localities > 0);
 
-    if(nr_partitions < nr_localities)
+    if(!BuildOptions::build_test)
     {
-        throw std::runtime_error(fmt::format(
-            "Not enough partitions to use all localities ({} < {})",
-            nr_partitions, nr_localities));
+        // In general, the number of localities should be smaller than
+        // the number of partitions. Otherwise more hardware is used than
+        // necessary. The exception is when we are building with tests
+        // turned on. Tests may have to run on less localities than there
+        // are partitions.
+        if(nr_partitions < nr_localities)
+        {
+            throw std::runtime_error(fmt::format(
+                "Not enough partitions to use all localities ({} < {})",
+                nr_partitions, nr_localities));
+        }
     }
 
     lue_assert(hpx::find_here() == hpx::find_root_locality());

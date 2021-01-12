@@ -1,6 +1,6 @@
 #pragma once
+#include "lue/framework/algorithm/detail/halo_partition.hpp"
 #include "lue/framework/algorithm/policy.hpp"
-#include "lue/framework/core/component/partitioned_array.hpp"
 #include "lue/framework/core/array.hpp"
 #include "lue/framework/core/component.hpp"
 #include <fmt/format.h>
@@ -1453,9 +1453,6 @@ OutputPartition focal_operation_partition(
         std::move(offset),
         meh::get_partition_data(input_partitions)...,
         std::move(output_data_future));
-
-    lue_assert(false);
-    return OutputPartition{hpx::find_here()};
 }
 
 }  // namespace meh
@@ -1599,290 +1596,65 @@ class WrappedPartitionedArray
 
         InputPartitions north_west_corner_input_partitions() const
         {
-            // This block also handles the first partition in case there
-            // is only a single row and/or a single column of partitions
-
-            auto const [nr_partitions0, nr_partitions1] = lue::shape_in_partitions(_array);
-            InputPartitions const& input_partitions{_array.partitions()};
-
-            InputPartitions local_input_partitions{Shape{{3, 3}}};
-
-            local_input_partitions(0, 0) = _halo_corner_partitions(0, 0);
-            local_input_partitions(0, 1) = _halo_longitudinal_side_partitions(0, 0);
-            local_input_partitions(0, 2) = nr_partitions1 == 1
-                ? _halo_corner_partitions(0, 1)
-                : _halo_longitudinal_side_partitions(0, 1);
-
-            local_input_partitions(1, 0) = _halo_latitudinal_sides_partitions(0, 0);
-            local_input_partitions(1, 1) = input_partitions(0, 0);
-            local_input_partitions(1, 2) = nr_partitions1 == 1
-                ? _halo_latitudinal_sides_partitions(0, 1)
-                : input_partitions(0, 1);
-
-            local_input_partitions(2, 0) = nr_partitions0 == 1
-                ? _halo_corner_partitions(1, 0)
-                : _halo_latitudinal_sides_partitions(1, 0);
-            local_input_partitions(2, 1) = nr_partitions0 == 1
-                ? _halo_longitudinal_side_partitions(1, 0)
-                : input_partitions(1, 0);
-            local_input_partitions(2, 2) = nr_partitions0 == 1
-                ? (nr_partitions1 == 1
-                    ? _halo_corner_partitions(1, 1)
-                    : _halo_longitudinal_side_partitions(1, 1))
-                : (nr_partitions1 == 1
-                    ? _halo_latitudinal_sides_partitions(1, 1)
-                    : input_partitions(1, 1));
-
-            lue_assert(all_are_valid(local_input_partitions));
-
-            return local_input_partitions;
+            return detail::north_west_corner_input_partitions(
+                _array.partitions(), _halo_corner_partitions,
+                _halo_longitudinal_side_partitions, _halo_latitudinal_sides_partitions);
         }
 
         InputPartitions north_east_corner_input_partitions() const
         {
-            // This block also handles the last partition in case there
-            // is only a single row of partitions
-
-            auto const [nr_partitions0, nr_partitions1] = lue::shape_in_partitions(_array);
-            InputPartitions const& input_partitions{_array.partitions()};
-
-            lue_assert(nr_partitions1 > 1);
-
-            InputPartitions local_input_partitions{Shape{{3, 3}}};
-
-            local_input_partitions(0, 0) = _halo_longitudinal_side_partitions(0, nr_partitions1 - 2);
-            local_input_partitions(0, 1) = _halo_longitudinal_side_partitions(0, nr_partitions1 - 1);
-            local_input_partitions(0, 2) = _halo_corner_partitions(0, 1);
-
-            local_input_partitions(1, 0) = input_partitions(0, nr_partitions1 - 2);
-            local_input_partitions(1, 1) = input_partitions(0, nr_partitions1 - 1);
-            local_input_partitions(1, 2) = _halo_latitudinal_sides_partitions(0, 1);
-
-            if(nr_partitions0 == 1) {
-                // Case where nr_partitions1 == 1 is handled by north-west
-                // corner logic
-                lue_assert(nr_partitions1 > 1);
-
-                local_input_partitions(2, 0) = _halo_longitudinal_side_partitions(1, nr_partitions1 - 2);
-                local_input_partitions(2, 1) = _halo_longitudinal_side_partitions(1, nr_partitions1 - 1);
-                local_input_partitions(2, 2) = _halo_corner_partitions(1, 1);
-            }
-            else {
-                local_input_partitions(2, 0) = input_partitions(1, nr_partitions1 - 2);
-                local_input_partitions(2, 1) = input_partitions(1, nr_partitions1 - 1);
-                local_input_partitions(2, 2) = _halo_latitudinal_sides_partitions(1, 1);
-            }
-
-            lue_assert(all_are_valid(local_input_partitions));
-
-            return local_input_partitions;
+            return detail::north_east_corner_input_partitions(
+                _array.partitions(), _halo_corner_partitions,
+                _halo_longitudinal_side_partitions, _halo_latitudinal_sides_partitions);
         }
 
         InputPartitions south_west_corner_input_partitions() const
         {
-            // This block also handles the last partition in case there
-            // is only a single column of partitions
-
-            auto const [nr_partitions0, nr_partitions1] = lue::shape_in_partitions(_array);
-            InputPartitions const& input_partitions{_array.partitions()};
-
-            lue_assert(nr_partitions0 > 1);
-
-            InputPartitions local_input_partitions{Shape{{3, 3}}};
-
-            local_input_partitions(0, 0) = _halo_latitudinal_sides_partitions(nr_partitions0 - 2, 0);
-            local_input_partitions(0, 1) = input_partitions(nr_partitions0 - 2, 0);
-            local_input_partitions(0, 2) = nr_partitions1 == 1
-                ? _halo_latitudinal_sides_partitions(nr_partitions0 - 2, 1)
-                : input_partitions(nr_partitions0 - 2, 1);
-
-            local_input_partitions(1, 0) = _halo_latitudinal_sides_partitions(nr_partitions0 - 1, 0);
-            local_input_partitions(1, 1) = input_partitions(nr_partitions0 - 1, 0);
-            local_input_partitions(1, 2) = nr_partitions1 == 1
-                ? _halo_latitudinal_sides_partitions(nr_partitions0 - 1, 1)
-                : input_partitions(nr_partitions0 - 1, 1);
-
-            local_input_partitions(2, 0) = _halo_corner_partitions(1, 0);
-            local_input_partitions(2, 1) = _halo_longitudinal_side_partitions(1, 0);
-            local_input_partitions(2, 2) = nr_partitions1 == 1
-                ? _halo_corner_partitions(1, 1)
-                : _halo_longitudinal_side_partitions(1, 1);
-
-            lue_assert(all_are_valid(local_input_partitions));
-
-            return local_input_partitions;
+            return detail::south_west_corner_input_partitions(
+                _array.partitions(), _halo_corner_partitions,
+                _halo_longitudinal_side_partitions, _halo_latitudinal_sides_partitions);
         }
 
         InputPartitions south_east_corner_input_partitions() const
         {
-            auto const [nr_partitions0, nr_partitions1] = lue::shape_in_partitions(_array);
-            InputPartitions const& input_partitions{_array.partitions()};
-
-            lue_assert(nr_partitions0 > 1 && nr_partitions1 > 1);
-
-            InputPartitions local_input_partitions{Shape{{3, 3}}};
-
-            local_input_partitions(0, 0) = input_partitions(nr_partitions0 - 2, nr_partitions1 - 2);
-            local_input_partitions(0, 1) = input_partitions(nr_partitions0 - 2, nr_partitions1 - 1);
-            local_input_partitions(0, 2) = _halo_latitudinal_sides_partitions(nr_partitions0 - 2, 1);
-            local_input_partitions(1, 0) = input_partitions(nr_partitions0 - 1, nr_partitions1 - 2);
-            local_input_partitions(1, 1) = input_partitions(nr_partitions0 - 1, nr_partitions1 - 1);
-            local_input_partitions(1, 2) = _halo_latitudinal_sides_partitions(nr_partitions0 - 1, 1);
-            local_input_partitions(2, 0) = _halo_longitudinal_side_partitions(1, nr_partitions1 - 2);
-            local_input_partitions(2, 1) = _halo_longitudinal_side_partitions(1, nr_partitions1 - 1);
-            local_input_partitions(2, 2) = _halo_corner_partitions(1, 1);
-
-            lue_assert(all_are_valid(local_input_partitions));
-
-            return local_input_partitions;
+            return detail::south_east_corner_input_partitions(
+                _array.partitions(), _halo_corner_partitions,
+                _halo_longitudinal_side_partitions, _halo_latitudinal_sides_partitions);
         }
 
         InputPartitions north_side_input_partitions(
             Index const c) const
         {
-            auto const [nr_partitions0, nr_partitions1] = lue::shape_in_partitions(_array);
-            InputPartitions const& input_partitions{_array.partitions()};
-
-            // This block also handles the middle partitions in
-            // case there is only a single row of partitions
-
-            InputPartitions local_input_partitions{Shape{{3, 3}}};
-
-            local_input_partitions(0, 0) = _halo_longitudinal_side_partitions(0, c - 1);
-            local_input_partitions(0, 1) = _halo_longitudinal_side_partitions(0, c    );
-            local_input_partitions(0, 2) = _halo_longitudinal_side_partitions(0, c + 1);
-
-            local_input_partitions(1, 0) = input_partitions(0, c - 1);
-            local_input_partitions(1, 1) = input_partitions(0, c    );
-            local_input_partitions(1, 2) = input_partitions(0, c + 1);
-
-            if(nr_partitions0 == 1) {
-                // Case where nr_partitions1 == 1 is handled by north-west
-                // corner logic
-                lue_assert(nr_partitions1 > 1);
-
-                local_input_partitions(2, 0) = _halo_longitudinal_side_partitions(1, c - 1);
-                local_input_partitions(2, 1) = _halo_longitudinal_side_partitions(1, c    );
-                local_input_partitions(2, 2) = _halo_longitudinal_side_partitions(1, c + 1);
-            }
-            else {
-                local_input_partitions(2, 0) = input_partitions(1, c - 1);
-                local_input_partitions(2, 1) = input_partitions(1, c    );
-                local_input_partitions(2, 2) = input_partitions(1, c + 1);
-            }
-
-            lue_assert(all_are_valid(local_input_partitions));
-
-            return local_input_partitions;
+            return detail::north_side_input_partitions(
+                c, _array.partitions(), _halo_longitudinal_side_partitions);
         }
 
         InputPartitions south_side_input_partitions(
             Index const c) const
         {
-            auto const [nr_partitions0, nr_partitions1] = lue::shape_in_partitions(_array);
-            InputPartitions const& input_partitions{_array.partitions()};
-
-            InputPartitions local_input_partitions{Shape{{3, 3}}};
-
-            local_input_partitions(0, 0) = input_partitions(nr_partitions0 - 2, c - 1);
-            local_input_partitions(0, 1) = input_partitions(nr_partitions0 - 2, c    );
-            local_input_partitions(0, 2) = input_partitions(nr_partitions0 - 2, c + 1);
-            local_input_partitions(1, 0) = input_partitions(nr_partitions0 - 1, c - 1);
-            local_input_partitions(1, 1) = input_partitions(nr_partitions0 - 1, c    );
-            local_input_partitions(1, 2) = input_partitions(nr_partitions0 - 1, c + 1);
-            local_input_partitions(2, 0) = _halo_longitudinal_side_partitions(0, c - 1);
-            local_input_partitions(2, 1) = _halo_longitudinal_side_partitions(0, c    );
-            local_input_partitions(2, 2) = _halo_longitudinal_side_partitions(0, c + 1);
-
-            lue_assert(all_are_valid(local_input_partitions));
-
-            return local_input_partitions;
+            return detail::south_side_input_partitions(
+                c, _array.partitions(), _halo_longitudinal_side_partitions);
         }
 
         InputPartitions west_side_input_partitions(
             Index const r) const
         {
-            auto const [nr_partitions0, nr_partitions1] = lue::shape_in_partitions(_array);
-            InputPartitions const& input_partitions{_array.partitions()};
-
-            // This block also handles the middle partitions in
-            // case there is only a single column of partitions
-            InputPartitions local_input_partitions{Shape{{3, 3}}};
-
-            local_input_partitions(0, 0) = _halo_latitudinal_sides_partitions(r - 1, 0);
-            local_input_partitions(0, 1) = input_partitions(r - 1, 0);
-            local_input_partitions(0, 2) = nr_partitions1 == 1
-                ? _halo_latitudinal_sides_partitions(r - 1, 1)
-                : input_partitions(r - 1, 1);
-
-            local_input_partitions(1, 0) = _halo_latitudinal_sides_partitions(r, 0);
-            local_input_partitions(1, 1) = input_partitions(r, 0);
-            local_input_partitions(1, 2) = nr_partitions1 == 1
-                ? _halo_latitudinal_sides_partitions(r, 1)
-                : input_partitions(r, 1);
-
-            local_input_partitions(2, 0) = _halo_latitudinal_sides_partitions(r + 1, 0);
-            local_input_partitions(2, 1) = input_partitions(r + 1, 0);
-            local_input_partitions(2, 2) = nr_partitions1 == 1
-                ? _halo_latitudinal_sides_partitions(r + 1, 1)
-                : input_partitions(r + 1, 1);
-
-            lue_assert(all_are_valid(local_input_partitions));
-
-            return local_input_partitions;
+            return detail::west_side_input_partitions(
+                r, _array.partitions(), _halo_latitudinal_sides_partitions);
         }
 
         InputPartitions east_side_input_partitions(
             Index const r) const
         {
-            auto const [nr_partitions0, nr_partitions1] = lue::shape_in_partitions(_array);
-            InputPartitions const& input_partitions{_array.partitions()};
-
-            InputPartitions local_input_partitions{Shape{{3, 3}}};
-
-            local_input_partitions(0, 0) = input_partitions(r - 1, nr_partitions1 - 2);
-            local_input_partitions(0, 1) = input_partitions(r - 1, nr_partitions1 - 1);
-            local_input_partitions(0, 2) = _halo_latitudinal_sides_partitions(r - 1, 1);
-            local_input_partitions(1, 0) = input_partitions(r    , nr_partitions1 - 2);
-            local_input_partitions(1, 1) = input_partitions(r    , nr_partitions1 - 1);
-            local_input_partitions(1, 2) = _halo_latitudinal_sides_partitions(r    , 1);
-            local_input_partitions(2, 0) = input_partitions(r + 1, nr_partitions1 - 2);
-            local_input_partitions(2, 1) = input_partitions(r + 1, nr_partitions1 - 1);
-            local_input_partitions(2, 2) = _halo_latitudinal_sides_partitions(r + 1, 1);
-
-            lue_assert(all_are_valid(local_input_partitions));
-
-            return local_input_partitions;
+            return detail::east_side_input_partitions(
+                r, _array.partitions(), _halo_latitudinal_sides_partitions);
         }
 
         InputPartitions inner_input_partitions(
             Index const r,
             Index const c) const
         {
-            auto const [nr_partitions0, nr_partitions1] = lue::shape_in_partitions(_array);
-
-            lue_assert(r < nr_partitions0);
-            lue_assert(c < nr_partitions1);
-
-            InputPartitions const& input_partitions{_array.partitions()};
-
-            // Assume one neighboring partition is enough
-            Count const radius{1};
-
-            // Create collection of partitions containing the current
-            // partition and its neighboring partitions
-            InputPartitions local_input_partitions{Shape{{3, 3}}};
-
-            for(Index i = 0; i < 2 * radius + 1; ++i) {
-                for(Index j = 0; j < 2 * radius + 1; ++j)
-                {
-                    local_input_partitions(i, j) = input_partitions(r - radius + i, c - radius + j);
-                }
-            }
-
-            lue_assert(all_are_valid(local_input_partitions));
-
-            return local_input_partitions;
+            return detail::inner_input_partitions(r, c, _array.partitions());
         }
 
     private:
@@ -2044,6 +1816,8 @@ template<
 using InputPartitionsT = typename WrappedPartitionedArray::InputPartitions;
 
 
+namespace meh {
+
 template<
     typename WrappedPartitionedArray>
 InputPartitionsT<WrappedPartitionedArray> north_west_corner_input_partitions(
@@ -2130,6 +1904,8 @@ InputPartitionsT<WrappedPartitionedArray> inner_input_partitions(
     return input_array.inner_input_partitions(row_partition_idx, col_partition_idx);
 }
 
+}  // namespace meh
+
 
 template<
     typename... InputPolicies,
@@ -2167,34 +1943,34 @@ PartitionedArray<OutputElementT<Functor>, rank<Kernel>> focal_operation_2d(
     output_partitions(0, 0) = spawn_focal_operation_partition(
        localities(0, 0),
        action, kernel, functor,
-       north_west_corner_input_partitions(input_arrays)...);
+       meh::north_west_corner_input_partitions(input_arrays)...);
 
     if(nr_partitions1 > 1)
     {
         output_partitions(0, nr_partitions1 - 1) = spawn_focal_operation_partition(
            localities(0, nr_partitions1 - 1),
-           action, kernel, functor, north_east_corner_input_partitions(input_arrays)...);
+           action, kernel, functor, meh::north_east_corner_input_partitions(input_arrays)...);
     }
 
     if(nr_partitions0 > 1)
     {
         output_partitions(nr_partitions0 - 1, 0) = spawn_focal_operation_partition(
            localities(nr_partitions0 - 1, 0),
-           action, kernel, functor, south_west_corner_input_partitions(input_arrays)...);
+           action, kernel, functor, meh::south_west_corner_input_partitions(input_arrays)...);
     }
 
     if(nr_partitions0 > 1 && nr_partitions1 > 1)
     {
         output_partitions(nr_partitions0 - 1, nr_partitions1 - 1) = spawn_focal_operation_partition(
             localities(nr_partitions0 - 1, nr_partitions1 - 1),
-            action, kernel, functor, south_east_corner_input_partitions(input_arrays)...);
+            action, kernel, functor, meh::south_east_corner_input_partitions(input_arrays)...);
     }
 
     for(Index c = 1; c < nr_partitions1 - 1; ++c)
     {
         output_partitions(0, c) = spawn_focal_operation_partition(
            localities(0, c),
-           action, kernel, functor, north_side_input_partitions(c, input_arrays)...);
+           action, kernel, functor, meh::north_side_input_partitions(c, input_arrays)...);
     }
 
     if(nr_partitions0 > 1)
@@ -2203,7 +1979,7 @@ PartitionedArray<OutputElementT<Functor>, rank<Kernel>> focal_operation_2d(
         {
             output_partitions(nr_partitions0 - 1, c) = spawn_focal_operation_partition(
                 localities(nr_partitions0 - 1, c),
-                action, kernel, functor, south_side_input_partitions(c, input_arrays)...);
+                action, kernel, functor, meh::south_side_input_partitions(c, input_arrays)...);
         }
     }
 
@@ -2211,7 +1987,7 @@ PartitionedArray<OutputElementT<Functor>, rank<Kernel>> focal_operation_2d(
     {
         output_partitions(r, 0) = spawn_focal_operation_partition(
             localities(r, 0),
-            action, kernel, functor, west_side_input_partitions(r, input_arrays)...);
+            action, kernel, functor, meh::west_side_input_partitions(r, input_arrays)...);
     }
 
     if(nr_partitions1 > 1)
@@ -2220,7 +1996,7 @@ PartitionedArray<OutputElementT<Functor>, rank<Kernel>> focal_operation_2d(
         {
             output_partitions(r, nr_partitions1 - 1) = spawn_focal_operation_partition(
                 localities(r, nr_partitions1 - 1),
-                action, kernel, functor, east_side_input_partitions(r, input_arrays)...);
+                action, kernel, functor, meh::east_side_input_partitions(r, input_arrays)...);
         }
     }
 
@@ -2230,7 +2006,7 @@ PartitionedArray<OutputElementT<Functor>, rank<Kernel>> focal_operation_2d(
         {
             output_partitions(r, c) = spawn_focal_operation_partition(
                 localities(r, c),
-                action, kernel, functor, inner_input_partitions(r, c, input_arrays)...);
+                action, kernel, functor, meh::inner_input_partitions(r, c, input_arrays)...);
         }
     }
 
@@ -2257,7 +2033,7 @@ PartitionedArray<OutputElementT<Functor>, rank<Kernel>> focal_operation_2d(
     // WrappedPartitionedArray instance, based on the policy and value
     return focal_operation_2d(kernel, functor,
         WrappedPartitionedArray{
-            std::get<idxs>(policies.input_policies()), input_arrays, kernel.radius()}...);
+            std::get<idxs>(policies.inputs_policies()), input_arrays, kernel.radius()}...);
 }
 
 

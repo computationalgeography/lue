@@ -1,6 +1,5 @@
 #pragma once
 #include "lue/framework/algorithm/policy/skip_no_data.hpp"
-#include "lue/framework/core/define.hpp"
 
 
 namespace lue {
@@ -12,8 +11,10 @@ namespace policy {
     Use this policy if you do not want to mark no-data values in
     the output.
 */
+template<
+    typename Element>
 class DontMarkNoData:
-    public SkipNoData
+    public SkipNoData<Element>
 {
 
     public:

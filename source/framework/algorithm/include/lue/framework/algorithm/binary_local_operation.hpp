@@ -66,8 +66,9 @@ public:
 
                         OutputData output_partition_data{input_partition_data1.shape()};
 
-                        auto const& [indp1, indp2] = policies.input_no_data_policies();
-                        auto const& [ondp] = policies.output_no_data_policies();
+                        auto const& indp1 = std::get<0>(policies.inputs_policies()).input_no_data_policy();
+                        auto const& indp2 = std::get<1>(policies.inputs_policies()).input_no_data_policy();
+                        auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
 
                         Count const nr_elements{lue::nr_elements(input_partition_data1)};
                         lue_assert(lue::nr_elements(input_partition_data2) == nr_elements);
@@ -149,8 +150,9 @@ public:
 
                         OutputData output_partition_data{input_partition_data.shape()};
 
-                        auto const& [indp1, indp2] = policies.input_no_data_policies();
-                        auto const& [ondp] = policies.output_no_data_policies();
+                        auto const& indp1 = std::get<0>(policies.inputs_policies()).input_no_data_policy();
+                        auto const& indp2 = std::get<1>(policies.inputs_policies()).input_no_data_policy();
+                        auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
 
                         Count const nr_elements{lue::nr_elements(input_partition_data)};
 
@@ -239,8 +241,9 @@ public:
 
                         OutputData output_partition_data{input_partition_data.shape()};
 
-                        auto const& [indp1, indp2] = policies.input_no_data_policies();
-                        auto const& [ondp] = policies.output_no_data_policies();
+                        auto const& indp1 = std::get<0>(policies.inputs_policies()).input_no_data_policy();
+                        auto const& indp2 = std::get<1>(policies.inputs_policies()).input_no_data_policy();
+                        auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
 
                         Count const nr_elements{lue::nr_elements(input_partition_data)};
 

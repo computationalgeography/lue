@@ -21,6 +21,7 @@ set(names
     focal_sum_test
     greater_than_equal_to_test
     greater_than_test
+    inflow_count_test
     iterate_per_element_test
     less_than_equal_to_test
     less_than_test

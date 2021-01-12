@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE(use_case_1)
             }
         };
 
-    Array elevation{shape};
+    Array elevation{shape, shape};
     BOOST_REQUIRE_EQUAL(elevation.nr_partitions(), 1);
     elevation.partitions()(0, 0).wait();
     elevation.partitions()(0, 0).set_data(std::move(data));
@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE(use_case_1)
             }
         };
 
-    Array slope_we_want{shape};
+    Array slope_we_want{shape, shape};
     slope_we_want.partitions()(0, 0).wait();
     slope_we_want.partitions()(0, 0).set_data(std::move(data));
 

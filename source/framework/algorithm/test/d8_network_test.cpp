@@ -20,6 +20,11 @@ BOOST_AUTO_TEST_CASE(use_case_01)
     Shape const array_shape{{5, 5}};
     Shape const partition_shape{{5, 5}};
 
+    auto const n{lue::north<FlowDirection>};
+    auto const e{lue::east<FlowDirection>};
+    auto const s{lue::south<FlowDirection>};
+    auto const w{lue::west<FlowDirection>};
+
     DEM dem = lue::test::create_partitioned_array<DEM>(
         array_shape, partition_shape, {
             {
@@ -34,11 +39,11 @@ BOOST_AUTO_TEST_CASE(use_case_01)
     D8 d8_we_want = lue::test::create_partitioned_array<D8>(
         array_shape, partition_shape, {
             {
-                8, 8, 8, 8, 8,
-                4, 2, 2, 2, 6,
-                4, 2, 2, 2, 6,
-                4, 2, 2, 2, 6,
-                4, 2, 2, 2, 6,
+                n, n, n, n, n,
+                w, s, s, s, e,
+                w, s, s, s, e,
+                w, s, s, s, e,
+                w, s, s, s, e,
             },
         });
 
@@ -62,6 +67,11 @@ BOOST_AUTO_TEST_CASE(use_case_02)
     Shape const array_shape{{5, 5}};
     Shape const partition_shape{{5, 5}};
 
+    auto const n{lue::north<FlowDirection>};
+    auto const e{lue::east<FlowDirection>};
+    auto const s{lue::south<FlowDirection>};
+    auto const w{lue::west<FlowDirection>};
+
     DEM dem = lue::test::create_partitioned_array<DEM>(
         array_shape, partition_shape, {
             {
@@ -76,11 +86,11 @@ BOOST_AUTO_TEST_CASE(use_case_02)
     D8 d8_we_want = lue::test::create_partitioned_array<D8>(
         array_shape, partition_shape, {
             {
-                8, 8, 8, 8, 8,
-                4, 8, 8, 8, 6,
-                4, 8, 8, 8, 6,
-                4, 8, 8, 8, 6,
-                4, 2, 2, 2, 6,
+                n, n, n, n, n,
+                w, n, n, n, e,
+                w, n, n, n, e,
+                w, n, n, n, e,
+                w, s, s, s, e,
             },
         });
 
@@ -104,6 +114,11 @@ BOOST_AUTO_TEST_CASE(use_case_03)
     Shape const array_shape{{5, 5}};
     Shape const partition_shape{{5, 5}};
 
+    auto const n{lue::north<FlowDirection>};
+    auto const e{lue::east<FlowDirection>};
+    auto const s{lue::south<FlowDirection>};
+    auto const w{lue::west<FlowDirection>};
+
     DEM dem = lue::test::create_partitioned_array<DEM>(
         array_shape, partition_shape, {
             {
@@ -118,11 +133,11 @@ BOOST_AUTO_TEST_CASE(use_case_03)
     D8 d8_we_want = lue::test::create_partitioned_array<D8>(
         array_shape, partition_shape, {
             {
-                8, 8, 8, 8, 8,
-                4, 6, 6, 6, 6,
-                4, 6, 6, 6, 6,
-                4, 6, 6, 6, 6,
-                4, 2, 2, 2, 6,
+                n, n, n, n, n,
+                w, e, e, e, e,
+                w, e, e, e, e,
+                w, e, e, e, e,
+                w, s, s, s, e,
             },
         });
 
@@ -146,6 +161,11 @@ BOOST_AUTO_TEST_CASE(use_case_04)
     Shape const array_shape{{5, 5}};
     Shape const partition_shape{{5, 5}};
 
+    auto const n{lue::north<FlowDirection>};
+    auto const e{lue::east<FlowDirection>};
+    auto const s{lue::south<FlowDirection>};
+    auto const w{lue::west<FlowDirection>};
+
     DEM dem = lue::test::create_partitioned_array<DEM>(
         array_shape, partition_shape, {
             {
@@ -160,11 +180,11 @@ BOOST_AUTO_TEST_CASE(use_case_04)
     D8 d8_we_want = lue::test::create_partitioned_array<D8>(
         array_shape, partition_shape, {
             {
-                8, 8, 8, 8, 8,
-                4, 4, 4, 4, 6,
-                4, 4, 4, 4, 6,
-                4, 4, 4, 4, 6,
-                4, 2, 2, 2, 6,
+                n, n, n, n, n,
+                w, w, w, w, e,
+                w, w, w, w, e,
+                w, w, w, w, e,
+                w, s, s, s, e,
             },
         });
 
@@ -190,6 +210,15 @@ BOOST_AUTO_TEST_CASE(barnes_2017)
 
     Shape const array_shape{{21, 21}};
     Shape const partition_shape{{7, 7}};
+
+    auto const n{lue::north<FlowDirection>};
+    auto const ne{lue::north_east<FlowDirection>};
+    auto const e{lue::east<FlowDirection>};
+    auto const se{lue::south_east<FlowDirection>};
+    auto const s{lue::south<FlowDirection>};
+    auto const sw{lue::south_west<FlowDirection>};
+    auto const w{lue::west<FlowDirection>};
+    auto const nw{lue::north_west<FlowDirection>};
 
     DEM dem = lue::test::create_partitioned_array<DEM>(
         array_shape, partition_shape, {
@@ -279,85 +308,85 @@ BOOST_AUTO_TEST_CASE(barnes_2017)
     D8 d8_we_want = lue::test::create_partitioned_array<D8>(
         array_shape, partition_shape, {
             {
-                7, 8, 8, 8, 8, 8, 8,
-                4, 1, 3, 2, 6, 6, 9,
-                4, 1, 1, 1, 4, 9, 8,
-                4, 4, 4, 4, 1, 9, 8,
-                4, 7, 7, 4, 4, 8, 7,
-                4, 8, 8, 7, 4, 4, 8,
-                4, 9, 8, 8, 7, 4, 4 
+                nw, n, n, n, n, n, n,
+                w, sw, se, s, e, e, ne,
+                w, sw, sw, sw, w, ne, n,
+                w, w, w, w, sw, ne, n,
+                w, nw, nw, w, w, n, nw,
+                w, n, n, nw, w, w, n,
+                w, ne, n, n, nw, w, w 
             },
             {
-                8, 8, 8, 8, 8, 8, 8,
-                9, 8, 7, 9, 9, 8, 7,
-                8, 8, 8, 9, 8, 8, 7,
-                8, 8, 7, 4, 8, 7, 7,
-                4, 8, 8, 7, 7, 4, 4,
-                7, 7, 3, 6, 8, 7, 4,
-                7, 3, 6, 9, 8, 8, 4
+                n, n, n, n, n, n, n,
+                ne, n, nw, ne, ne, n, nw,
+                n, n, n, ne, n, n, nw,
+                n, n, nw, w, n, nw, nw,
+                w, n, n, nw, nw, w, w,
+                nw, nw, se, e, n, nw, w,
+                nw, se, e, ne, n, n, w
             },
             {
-                8, 8, 8, 8, 8, 8, 9,
-                7, 7, 8, 7, 4, 4, 6,
-                7, 3, 6, 8, 3, 3, 6,
-                6, 6, 3, 3, 6, 6, 6,
-                6, 6, 6, 6, 6, 9, 6,
-                9, 6, 6, 6, 9, 8, 6,
-                4, 6, 9, 9, 8, 6, 6
+                n, n, n, n, n, n, ne,
+                nw, nw, n, nw, w, w, e,
+                nw, se, e, n, se, se, e,
+                e, e, se, se, e, e, e,
+                e, e, e, e, e, ne, e,
+                ne, e, e, e, ne, n, e,
+                w, e, ne, ne, n, e, e
             },
             {
-                4, 8, 8, 8, 8, 7, 7,
-                4, 9, 8, 8, 7, 8, 6,
-                4, 4, 2, 2, 3, 2, 6,
-                4, 2, 2, 2, 1, 6, 6,
-                4, 4, 4, 4, 4, 8, 8,
-                4, 4, 4, 4, 7, 4, 2,
-                4, 8, 8, 7, 7, 7, 4
+                w, n, n, n, n, nw, nw,
+                w, ne, n, n, nw, n, e,
+                w, w, s, s, se, s, e,
+                w, s, s, s, sw, e, e,
+                w, w, w, w, w, n, n,
+                w, w, w, w, nw, w, s,
+                w, n, n, nw, nw, nw, w
             },
             {
-                2, 6, 9, 8, 8, 8, 4,
-                3, 2, 2, 2, 8, 7, 4,
-                6, 3, 3, 2, 2, 1, 4,
-                9, 6, 3, 2, 2, 1, 4,
-                8, 8, 6, 3, 2, 2, 4,
-                9, 6, 9, 6, 3, 2, 4,
-                4, 9, 8, 8, 6, 3, 2
+                s, e, ne, n, n, n, w,
+                se, s, s, s, n, nw, w,
+                e, se, se, s, s, sw, w,
+                ne, e, se, s, s, sw, w,
+                n, n, e, se, s, s, w,
+                ne, e, ne, e, se, s, w,
+                w, ne, n, n, e, se, s
             },
             {
-                4, 9, 8, 9, 6, 9, 6,
-                4, 6, 6, 6, 9, 4, 6,
-                2, 6, 6, 9, 4, 7, 6,
-                6, 6, 9, 8, 7, 4, 6,
-                2, 4, 8, 9, 8, 3, 6,
-                3, 2, 2, 3, 2, 3, 6,
-                2, 3, 2, 2, 2, 6, 6
+                w, ne, n, ne, e, ne, e,
+                w, e, e, e, ne, w, e,
+                s, e, e, ne, w, nw, e,
+                e, e, ne, n, nw, w, e,
+                s, w, n, ne, n, se, e,
+                se, s, s, se, s, se, e,
+                s, se, s, s, s, e, e
             },
             {
-                4, 8, 8, 7, 3, 2, 1,
-                4, 3, 2, 6, 2, 1, 4,
-                4, 3, 3, 2, 1, 4, 3,
-                4, 6, 6, 2, 4, 4, 8,
-                4, 2, 6, 1, 4, 1, 6,
-                4, 1, 1, 1, 7, 4, 3,
-                1, 2, 2, 2, 2, 2, 2
+                w, n, n, nw, se, s, sw,
+                w, se, s, e, s, sw, w,
+                w, se, se, s, sw, w, se,
+                w, e, e, s, w, w, n,
+                w, s, e, sw, w, sw, e,
+                w, sw, sw, sw, nw, w, se,
+                sw, s, s, s, s, s, s
             },
             {
-                4, 9, 8, 9, 8, 6, 6,
-                4, 4, 2, 3, 6, 6, 9,
-                3, 3, 2, 2, 1, 9, 8,
-                6, 6, 6, 3, 4, 1, 9,
-                6, 9, 8, 8, 2, 4, 1,
-                2, 1, 3, 2, 2, 1, 3,
-                2, 2, 2, 2, 2, 2, 2
+                w, ne, n, ne, n, e, e,
+                w, w, s, se, e, e, ne,
+                se, se, s, s, sw, ne, n,
+                e, e, e, se, w, sw, ne,
+                e, ne, n, n, s, w, sw,
+                s, sw, se, s, s, sw, se,
+                s, s, s, s, s, s, s
             },
             {
-                6, 6, 6, 6, 6, 9, 6,
-                4, 6, 6, 6, 9, 8, 6,
-                6, 6, 6, 9, 4, 8, 6,
-                9, 9, 8, 8, 4, 7, 6,
-                6, 8, 9, 8, 7, 3, 6,
-                2, 2, 1, 4, 3, 3, 6,
-                2, 2, 2, 2, 2, 2, 3
+                e, e, e, e, e, ne, e,
+                w, e, e, e, ne, n, e,
+                e, e, e, ne, w, n, e,
+                ne, ne, n, n, w, nw, e,
+                e, n, ne, n, nw, se, e,
+                s, s, sw, w, se, se, e,
+                s, s, s, s, s, s, se
             },
         });
 
