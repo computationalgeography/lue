@@ -43,8 +43,9 @@ PartitionT<InputPartition, OutputElement> uniform_partition(
 
                     OutputData output_partition_data{shape};
 
-                    auto const& [indp1, indp2] = policies.input_no_data_policies();
-                    auto const& [ondp] = policies.output_no_data_policies();
+                    auto const& indp1 = std::get<0>(policies.inputs_policies()).input_no_data_policy();
+                    auto const& indp2 = std::get<1>(policies.inputs_policies()).input_no_data_policy();
+                    auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
 
                     if(indp1.is_no_data(min_value) || indp2.is_no_data(max_value))
                     {

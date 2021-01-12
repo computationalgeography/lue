@@ -32,8 +32,8 @@ hpx::future<OutputElement> unary_aggregate_operation_partition(
 
                     HPX_UNUSED(input_partition);
 
-                    auto const& [indp] = policies.input_no_data_policies();
-                    auto const& [ondp] = policies.output_no_data_policies();
+                    auto const& indp = std::get<0>(policies.inputs_policies()).input_no_data_policy();
+                    auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
 
                     Count const nr_elements{lue::nr_elements(input_partition_data)};
 
@@ -197,7 +197,7 @@ hpx::future<OutputElementT<Functor>> unary_aggregate_operation(
             {
                 AnnotateFunction annotation{"unary_aggregate_operation"};
 
-                auto const& [ondp] = policies.output_no_data_policies();
+                auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
 
                 std::size_t nr_results{std::size(partition_results)};
 

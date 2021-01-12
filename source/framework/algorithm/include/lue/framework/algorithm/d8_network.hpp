@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/framework/algorithm/flow_direction.hpp"
 #include "lue/framework/algorithm/focal_operation.hpp"
 #include "lue/framework/algorithm/kernel.hpp"
 #include "lue/framework/algorithm/policy/default_policies.hpp"
@@ -42,7 +43,7 @@ public:
         lue_assert(window.extent(1) == kernel.size());
 
         ElevationElement drop{0};
-        FlowDirectionElement direction{5};
+        FlowDirectionElement direction{sink<FlowDirectionElement>};
 
         ElevationElement other_drop;
 
@@ -52,7 +53,7 @@ public:
         if(other_drop > drop)
         {
             drop = other_drop;
-            direction = 8;
+            direction = north<FlowDirectionElement>;
         }
 
         // West
@@ -60,7 +61,7 @@ public:
         if(other_drop > drop)
         {
             drop = other_drop;
-            direction = 4;
+            direction = west<FlowDirectionElement>;
         }
 
         // East
@@ -68,7 +69,7 @@ public:
         if(other_drop > drop)
         {
             drop = other_drop;
-            direction = 6;
+            direction = east<FlowDirectionElement>;
         }
 
         // South
@@ -76,7 +77,7 @@ public:
         if(other_drop > drop)
         {
             drop = other_drop;
-            direction = 2;
+            direction = south<FlowDirectionElement>;
         }
 
         // Move on the diagonal cells ------------------------------------------
@@ -85,7 +86,7 @@ public:
         if(other_drop > drop)
         {
             drop = other_drop;
-            direction = 7;
+            direction = north_west<FlowDirectionElement>;
         }
 
         // North-east
@@ -93,7 +94,7 @@ public:
         if(other_drop > drop)
         {
             drop = other_drop;
-            direction = 9;
+            direction = north_east<FlowDirectionElement>;
         }
 
         // South-west
@@ -101,7 +102,7 @@ public:
         if(other_drop > drop)
         {
             drop = other_drop;
-            direction = 1;
+            direction = south_west<FlowDirectionElement>;
         }
 
         // South-east
@@ -109,7 +110,7 @@ public:
         if(other_drop > drop)
         {
             drop = other_drop;
-            direction = 3;
+            direction = south_east<FlowDirectionElement>;
         }
 
         return direction;

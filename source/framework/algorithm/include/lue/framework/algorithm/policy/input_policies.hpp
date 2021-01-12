@@ -1,4 +1,5 @@
 #pragma once
+#include <hpx/serialization.hpp>
 
 
 namespace lue {
@@ -32,6 +33,16 @@ class InputPolicies
         }
 
     private:
+
+        friend class hpx::serialization::access;
+
+        template<typename Archive>
+        void serialize(
+            Archive& archive,
+            [[maybe_unused]] unsigned int const version)
+        {
+            archive & _indp;
+        }
 
         InputNoDataPolicy _indp;
 

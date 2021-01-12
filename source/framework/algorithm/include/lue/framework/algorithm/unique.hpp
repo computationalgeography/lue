@@ -35,7 +35,7 @@ PartitionT<InputPartition, ElementT<InputPartition>, 1> unique_partition(
                     // Copy values from input array into a set
                     std::set<Element> unique_values;
 
-                    auto const& [indp] = policies.input_no_data_policies();
+                    auto const& indp = std::get<0>(policies.inputs_policies()).input_no_data_policy();
 
                     Count const nr_elements{lue::nr_elements(input_partition_data)};
 

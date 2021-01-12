@@ -12,7 +12,6 @@
 #cmakedefine LUE_DATA_MODEL_WITH_PYTHON_API
 
 #cmakedefine LUE_BUILD_FRAMEWORK
-#cmakedefine01 LUE_BUILD_FRAMEWORK01
 #cmakedefine LUE_FRAMEWORK_WITH_OPENCL
 #cmakedefine LUE_FRAMEWORK_WITH_PYTHON_API
 
@@ -44,11 +43,25 @@ public:
     // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays, modernize-avoid-c-arrays)
     static constexpr char const* git_short_sha1{LUE_GIT_SHORT_SHA1};
 
-    static constexpr bool build_framework{LUE_BUILD_FRAMEWORK01};
+    static constexpr bool build_framework{
+#ifdef LUE_BUILD_FRAMEWORK
+            true
+#else
+            false
+#endif
+        };
 
     static constexpr bool validate_idxs{LUE_VALIDATE_IDXS};
 
     static constexpr bool assert_conditions{LUE_ASSERT_CONDITIONS};
+
+    static constexpr bool build_test{
+#ifdef LUE_BUILD_TEST
+            true
+#else
+            false
+#endif
+        };
 
 };
 
