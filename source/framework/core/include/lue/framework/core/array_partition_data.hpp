@@ -130,6 +130,19 @@ public:
         return _span(idxs...);
     }
 
+    // template<
+    //     typename... Idxs>
+    // typename Span::index_type index(
+    //     Idxs... idxs)
+    // {
+    //     if constexpr(BuildOptions::validate_idxs)
+    //     {
+    //         validate_idxs(_shape, idxs...);
+    //     }
+
+    //     return _span.mapping()(idxs...);
+    // }
+
     ArrayPartitionData slice           (Slices const& slices) const;
 
 private:

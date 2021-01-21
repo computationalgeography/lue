@@ -534,3 +534,123 @@ BOOST_AUTO_TEST_CASE(no_data)
                 },
             }));
 }
+
+
+BOOST_AUTO_TEST_CASE(merging_inter_partition_streams)
+{
+    using InflowCountPolicies =
+        lue::policy::OutputPolicies<lue::policy::MarkNoDataByValue<CountElement>>;
+    using FlowDirectionPolicies =
+        lue::policy::InputPolicies<lue::policy::DetectNoDataByValue<FlowDirectionElement>>;
+    using Policies = lue::policy::Policies<
+        lue::policy::OutputsPolicies<InflowCountPolicies>,
+        lue::policy::InputsPolicies<FlowDirectionPolicies>>;
+
+    InflowCountPolicies inflow_count_policies{
+        lue::policy::MarkNoDataByValue<CountElement>{99}};
+    FlowDirectionPolicies flow_direction_policies{
+        lue::policy::DetectNoDataByValue<FlowDirectionElement>{nd}};
+
+    Policies policies{inflow_count_policies, flow_direction_policies};
+
+    Shape const array_shape{{9, 9}};
+
+    test_inflow_count(
+        policies,
+        lue::test::create_partitioned_array<FlowDirection>(array_shape, partition_shape,
+            {
+                { // 0, 0
+                    nd, nd, nd,
+                    nd, nd, nd,
+                    nd, nd, se,
+                },
+                { // 0, 1
+                    nd, nw, se,
+                    nd,  s,  e,
+                    nd,  s, nd,
+                },
+                { // 0, 2
+                    nd,  s, sw,
+                    se,  s,  w,
+                    nd,  s, sw,
+                },
+                { // 1, 0
+                    nd, nd,  e,
+                    nd, nd, ne,
+                    nd, nd,  e,
+                },
+                { // 1, 1
+                     e,  s,  w,
+                    nd,  s,  w,
+                     e,  s,  w,
+                },
+                { // 1, 2
+                     w,  w, nd,
+                     w, nd, nd,
+                     w, nd, nd,
+                },
+                { // 2, 0
+                    nd, nd, nd,
+                    nd, nd, nd,
+                    nd, nd,  s,
+                },
+                { // 2, 1
+                    nd,  s, nd,
+                    sw,  w,  w,
+                     w,  w,  w,
+                },
+                { // 2, 2
+                    nw, nd, nd,
+                     w, nd, nd,
+                     w, nd, nd,
+                },
+            }),
+        lue::test::create_partitioned_array<InflowCount>(array_shape, partition_shape,
+            {
+                {
+                    99, 99, 99,
+                    99, 99, 99,
+                    99, 99,  0,
+                },
+                {
+                    99,  0,  0,
+                    99,  0,  0,
+                    99,  1, 99,
+                },
+                {
+                    99,  0,  0,
+                     2,  3,  0,
+                    99,  2,  0,
+                },
+                {
+                    99, 99,  0,
+                    99, 99,  0,
+                    99, 99,  0,
+                },
+                {
+                     3,  3,  1,
+                    99,  2,  1,
+                     1,  3,  2,
+                },
+                {
+                     1,  2, 99,
+                     0, 99, 99,
+                     0, 99, 99,
+                },
+                {
+                    99, 99, 99,
+                    99, 99, 99,
+                    99, 99,  2,
+                },
+                {
+                    99,  1, 99,
+                     1,  2,  1,
+                     1,  1,  1,
+                },
+                {
+                     0, 99, 99,
+                     0, 99, 99,
+                     0, 99, 99,
+                },
+            }));
+}

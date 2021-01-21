@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/framework/core/type_traits.hpp"
+#include "lue/framework/algorithm/policy/policy_traits.hpp"
 #include <hpx/serialization.hpp>
 #include <type_traits>
 
@@ -14,7 +14,12 @@ class DetectNoDataByValue
 
     public:
 
-        DetectNoDataByValue()=default;
+        DetectNoDataByValue():
+
+            DetectNoDataByValue(no_data_value<Element>)
+
+        {
+        }
 
         DetectNoDataByValue(
                 Element const value):
@@ -37,7 +42,7 @@ class DetectNoDataByValue
             Data const& data,
             Idxs const... idxs) const
         {
-            static_assert(std::is_same_v<ElementT<Data>, Element>);
+            static_assert(std::is_same_v<lue::ElementT<Data>, Element>);
 
             return data(idxs...) == _value;
         }
@@ -65,5 +70,25 @@ class DetectNoDataByValue
 
 };
 
+
+namespace detail {
+
+template<
+    typename E>
+class TypeTraits<
+    DetectNoDataByValue<E>>
+{
+
+    public:
+
+        using Element = E;
+
+        template<
+            typename E_>
+        using Policy = DetectNoDataByValue<E_>;
+
+};
+
+}  // namespace detail
 }  // namespace policy
 }  // namespace lue

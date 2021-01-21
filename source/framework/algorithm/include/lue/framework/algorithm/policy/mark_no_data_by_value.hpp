@@ -13,7 +13,12 @@ class MarkNoDataByValue:
 
     public:
 
-        MarkNoDataByValue()=default;
+        MarkNoDataByValue():
+
+            MarkNoDataByValue(no_data_value<Element>)
+
+        {
+        }
 
         MarkNoDataByValue(
                 Element const value):
@@ -36,12 +41,32 @@ class MarkNoDataByValue:
             Data& data,
             Idxs const...idxs) const
         {
-            static_assert(std::is_same_v<ElementT<Data>, Element>);
+            static_assert(std::is_same_v<lue::ElementT<Data>, Element>);
 
             data(idxs...) = this->value();
         }
 
 };
 
+
+namespace detail {
+
+template<
+    typename E>
+class TypeTraits<
+    MarkNoDataByValue<E>>
+{
+
+    public:
+
+        using Element = E;
+
+        template<
+            typename E_>
+        using Policy = MarkNoDataByValue<E_>;
+
+};
+
+}  // namespace detail
 }  // namespace policy
 }  // namespace lue
