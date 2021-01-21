@@ -22,6 +22,7 @@ set(names
     greater_than_equal_to_test
     greater_than_test
     inflow_count_test
+    inter_partition_stream_test
     iterate_per_element_test
     less_than_equal_to_test
     less_than_test
@@ -51,7 +52,9 @@ set(names
 
 add_unit_tests(
     SCOPE lue_framework_algorithm
-    NAMES kernel_test
+    NAMES
+        array_partition_io_test
+        kernel_test
     LINK_LIBRARIES
         lue::framework_algorithm
         lue::framework_test

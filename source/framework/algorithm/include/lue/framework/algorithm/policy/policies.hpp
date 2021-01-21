@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/policy/detail/type_list.hpp"
+#include "lue/framework/algorithm/policy/policy_traits.hpp"
 #include <hpx/serialization.hpp>
 
 
@@ -12,8 +13,8 @@ using InputsPolicies = detail::TypeList<InputPolicy...>;
 
 
 template<
-    typename... InputPolicy>
-using OutputsPolicies = detail::TypeList<InputPolicy...>;
+    typename... OutputPolicy>
+using OutputsPolicies = detail::TypeList<OutputPolicy...>;
 
 
 template<
@@ -93,5 +94,29 @@ class Policies<
 
 };
 
+
+namespace detail {
+
+template<
+    typename... P>
+class TypeTraits<
+    std::tuple<P ...>>
+{
+
+    public:
+
+        // template<
+        //     std::size_t idx,
+        //     typename Element>
+        // using Policy = typename TypeTraits<typename std::tuple_element<idx, std::tuple<P...>>::type>::
+        //     template Type<Element>;
+
+        template<
+            std::size_t idx>
+        using Policies = typename std::tuple_element<idx, std::tuple<P...>>::type;
+
+};
+
+}  // namespace detail
 }  // namespace policy
 }  // namespace lue

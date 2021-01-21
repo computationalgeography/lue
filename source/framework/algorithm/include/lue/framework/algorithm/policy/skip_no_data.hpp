@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/core/define.hpp"
+#include "lue/framework/algorithm/policy/policy_traits.hpp"
 #include <hpx/serialization.hpp>
 
 
@@ -50,5 +51,25 @@ class SkipNoData
 
 };
 
+
+namespace detail {
+
+template<
+    typename E>
+class TypeTraits<
+    SkipNoData<E>>
+{
+
+    public:
+
+        using Element = E;
+
+        template<
+            typename E_>
+        using Policy = SkipNoData<E_>;
+
+};
+
+}  // namespace detail
 }  // namespace policy
 }  // namespace lue

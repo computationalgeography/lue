@@ -6,13 +6,15 @@ endif()
 
 add_subdirectory(hpx)
 
-add_library(lue_framework_algorithm INTERFACE)
+add_library(lue_framework_algorithm
+    src/component/array_partition
+)
 
 add_library(lue::framework_algorithm ALIAS lue_framework_algorithm)
 
-# hpx_setup_target(lue_framework_algorithm
-#     TYPE LIBRARY
-# )
+hpx_setup_target(lue_framework_algorithm
+    TYPE LIBRARY
+)
 
 # set_target_properties(lue_framework_algorithm
 #     PROPERTIES
@@ -20,11 +22,11 @@ add_library(lue::framework_algorithm ALIAS lue_framework_algorithm)
 # )
 
 target_include_directories(lue_framework_algorithm
-    INTERFACE
+    PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
 
 target_link_libraries(lue_framework_algorithm
-    INTERFACE
+    PUBLIC
         lue::framework_core
 )

@@ -36,5 +36,25 @@ class DontMarkNoData:
 
 };
 
+
+namespace detail {
+
+template<
+    typename E>
+class TypeTraits<
+    DontMarkNoData<E>>
+{
+
+    public:
+
+        using Element = E;
+
+        template<
+            typename E_>
+        using Policy = DontMarkNoData<E_>;
+
+};
+
+}  // namespace detail
 }  // namespace policy
 }  // namespace lue

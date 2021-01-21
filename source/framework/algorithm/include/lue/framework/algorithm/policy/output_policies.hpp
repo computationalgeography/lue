@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/framework/algorithm/policy/policy_traits.hpp"
 #include <hpx/serialization.hpp>
 
 
@@ -48,5 +49,26 @@ class OutputPolicies
 
 };
 
+
+namespace detail {
+
+template<
+    typename OutputNoDataPolicy>
+class TypeTraits<
+    OutputPolicies<OutputNoDataPolicy>>
+{
+
+    public:
+
+        using Element = ElementT<OutputNoDataPolicy>;
+
+        template<
+            typename Element>
+        using Policies = OutputPolicies<
+            OutputNoDataPolicyT<OutputNoDataPolicy, Element>>;
+
+};
+
+}  // namespace detail
 }  // namespace policy
 }  // namespace lue

@@ -5,6 +5,8 @@
 #include "lue/framework/core/component/partitioned_array.hpp"
 #include <boost/range/irange.hpp>
 #include <experimental/iterator>
+#include <map>
+#include <ostream>
 
 
 // namespace boost {
@@ -64,6 +66,64 @@ std::ostream& operator<<(
 
         tuple);
     stream << ')';
+
+    return stream;
+}
+
+
+template<
+    typename T>
+ostream& operator<<(
+    ostream& stream,
+    std::vector<T> const& vector)
+{
+    stream << '[';
+
+    {
+        auto joiner = std::experimental::make_ostream_joiner(stream, ", ");
+
+        auto const nr_elements = vector.size();
+        auto const begin = vector.begin();
+        auto const end = vector.end();
+
+        // Max number of values to print at start and end
+        std::size_t const halo = 15;
+
+        if(nr_elements <= 2 * halo) {
+            // Print all values
+            std::copy(begin, end, joiner);
+        }
+        else {
+            // Print first and last halo number of values
+            std::copy(begin, begin + halo, joiner);
+            stream << ", ..., ";
+            std::copy(end - halo, end, joiner);
+        }
+    }
+
+    stream << "]";
+
+    return stream;
+}
+
+
+template<
+    typename Key,
+    typename Value>
+ostream& operator<<(
+    ostream& stream,
+    std::map<Key, Value> const& map_)
+{
+    stream << '{';
+
+    {
+        for(auto const& pair: map_)
+        {
+            stream << '<' << pair.first << ": " << pair.second << ">, ";
+        }
+    }
+
+    stream << "}";
 
     return stream;
 }

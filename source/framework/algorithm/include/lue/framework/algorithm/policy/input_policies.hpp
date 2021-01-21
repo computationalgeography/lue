@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/framework/algorithm/policy/policy_traits.hpp"
 #include <hpx/serialization.hpp>
 
 
@@ -47,6 +48,28 @@ class InputPolicies
         InputNoDataPolicy _indp;
 
 };
+
+
+namespace detail {
+
+template<
+    typename InputNoDataPolicy>
+class TypeTraits<
+    InputPolicies<InputNoDataPolicy>>
+{
+
+    public:
+
+        using Element = ElementT<InputNoDataPolicy>;
+
+        template<
+            typename Element>
+        using Policies = InputPolicies<
+            InputNoDataPolicyT<InputNoDataPolicy, Element>>;
+
+};
+
+}  // namespace detail
 
 
 template<
