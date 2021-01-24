@@ -14,7 +14,7 @@ PYBIND11_MODULE(lue_py_framework, module)
     module.doc() =
         R"(
     :mod:`lue_py_framework` --- Environmental Modelling Framework
-    ==========================================================
+    =============================================================
 )";
     module.attr("__version__") = py::str(BuildOptions::version);
     module.attr("lue_version") = py::str(BuildOptions::version);
