@@ -4,6 +4,8 @@
 pybind11_add_module(lue_py_framework SHARED SYSTEM THIN_LTO
     src/algorithm/local_operation
     src/core/partitioned_array
+    src/command_line
+    src/hpx_runtime
     src/python_extension
     src/submodule
 )
