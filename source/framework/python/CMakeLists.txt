@@ -32,6 +32,7 @@ target_include_directories(lue_py_framework SYSTEM
 target_include_directories(lue_py_framework
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/../../data_model/python/include
+        ${CMAKE_CURRENT_BINARY_DIR}/../../python/include  # configure.hpp
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )

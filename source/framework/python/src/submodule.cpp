@@ -3,8 +3,7 @@
 #include <pybind11/stl.h>
 
 
-namespace py = pybind11;
-using namespace py::literals;
+using namespace pybind11::literals;
 
 
 namespace lue {
@@ -19,7 +18,7 @@ void start_hpx_runtime(std::vector<std::string> const& configuration)
     // instantiate one. This will start the HPX runtime.
     if(runtime == nullptr)
     {
-        py::gil_scoped_release release;
+        pybind11::gil_scoped_release release;
         runtime = new HPXRuntime(configuration);
     }
 }
@@ -33,7 +32,7 @@ void stop_hpx_runtime()
     {
         HPXRuntime* r = runtime;
         runtime = nullptr;
-        py::gil_scoped_release release;
+        pybind11::gil_scoped_release release;
         delete r;
     }
 }
@@ -49,14 +48,14 @@ bool on_root_locality()
 
 namespace framework {
 
-void init_local_operations(py::module& module);
-void init_partitioned_array(py::module& module);
+void init_local_operations(pybind11::module& module);
+void init_partitioned_array(pybind11::module& module);
 
 
 void init_submodule(
-    py::module& module)
+    pybind11::module& module)
 {
-    py::module submodule = module.def_submodule(
+    pybind11::module submodule = module.def_submodule(
         "framework",
         R"(
     :mod:`lue.framework` --- LUE Environmental Modelling Framework
@@ -85,8 +84,8 @@ void init_submodule(
 
     // Unless the user calls stop_hpx_runtime explicitly, we will do it
     // automatically upon module unload
-    auto atexit = py::module_::import("atexit");
-    atexit.attr("register")(py::cpp_function(
+    auto atexit = pybind11::module_::import("atexit");
+    atexit.attr("register")(pybind11::cpp_function(
         []() { stop_hpx_runtime(); }));
 }
 
