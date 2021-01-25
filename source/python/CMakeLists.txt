@@ -6,6 +6,11 @@
 
 add_test_conditionally(test)
 
+configure_file(
+    include/lue/py/configure.hpp.in
+    include/lue/py/configure.hpp
+)
+
 pybind11_add_module(lue_py MODULE SYSTEM THIN_LTO
     src/python_extension
 )
@@ -21,6 +26,13 @@ set_target_properties(lue_py
     PROPERTIES
         OUTPUT_NAME lue
 )
+
+# target_include_directories(lue_py
+#     PUBLIC
+#         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+#         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
+#         $<INSTALL_INTERFACE:include>
+# )
 
 target_link_libraries(lue_py
     PRIVATE

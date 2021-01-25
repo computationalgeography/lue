@@ -553,6 +553,25 @@ if(LUE_PYBIND11_REQUIRED)
     include(${CONAN_BUILD_DIRS_PYBIND11}/pybind11Tools.cmake)
     set(LUE_PYTHON_EXECUTABLE ${PYTHON_EXECUTABLE})
 
+    execute_process(COMMAND "${LUE_PYTHON_EXECUTABLE}" -c
+        "import sys; print(\"{};{};{}\".format(sys.version_info[0], sys.version_info[1], sys.version_info[2]))"
+        RESULT_VARIABLE version_result
+        OUTPUT_VARIABLE version_output
+        ERROR_VARIABLE version_error
+        OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+    if(NOT version_result MATCHES 0)
+        message(FATAL_ERROR
+            "${LUE_PYTHON_EXECUTABLE} is unable to determine version:\n${version_error}")
+    else()
+        list(GET version_output -3 Python_VERSION_MAJOR)
+        list(GET version_output -2 Python_VERSION_MINOR)
+        list(GET version_output -1 Python_VERSION_PATCH)
+        set(Python_VERSION "${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}.${Python_VERSION_PATCH}")
+
+        message(STATUS "Found Python ${Python_VERSION}")
+    endif()
+
     # Given Python found, figure out where the NumPy headers are. We don't
     # want to pick up headers from another prefix than the prefix of the
     # Python interpreter.
