@@ -57,7 +57,7 @@ CommandLine::CommandLine()
 #endif
 
     lue_assert(_argument_pointers.size() == static_cast<std::size_t>(_argc + 1));
-    _argument_pointers[_argc + 1] = nullptr;
+    _argument_pointers[_argc] = nullptr;
     _argv = _argument_pointers.data();
 }
 
