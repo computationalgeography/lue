@@ -163,7 +163,6 @@ if(LUE_BUILD_FRAMEWORK)
     if(LUE_FRAMEWORK_WITH_PYTHON_API)
         set(LUE_PYBIND11_REQUIRED TRUE)
     endif()
-
 endif()
 
 
