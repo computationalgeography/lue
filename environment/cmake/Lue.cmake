@@ -37,6 +37,13 @@ endif()
 
 include(GNUInstallDirs)
 
+# When building a Conda package, we want all libs to be installed in
+# the lib dir, not in some OS/arch specific variant thereof (e.g. lib64),
+# which is sometimes used by GNUInstallDirs
+if(DEFINED ENV{CONDA_BUILD})
+    set(CMAKE_INSTALL_LIBDIR "lib")
+endif()
+
 
 message(STATUS "--------------------------------------------------------------")
 message(STATUS "LUE_VERSION               : ${LUE_VERSION}")
