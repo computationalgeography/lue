@@ -1,71 +1,38 @@
 #include "lue/framework/core/component/partitioned_array.hpp"
-#include "lue/py/data_model/numpy.hpp"
-#include <pybind11/numpy.h>
-#include <pybind11/stl.h>
+#include "type_traits.hpp"
 #include <pybind11/pybind11.h>
-
-
-DEFINE_INIT_NUMPY()
-
-
-namespace py = pybind11;
 
 
 namespace lue {
 namespace framework {
+namespace {
 
 template<
-    typename T,
+    typename Element,
     Rank rank>
-PartitionedArray<T, rank> create_array(
-    py::array_t<T, py::array::c_style | py::array::forcecast> const& elements,
-    ShapeT<PartitionedArray<T, rank>> const& max_partition_shape)
+void bind_partitioned_array(
+    pybind11::module& module)
 {
-    using Shape = ShapeT<PartitionedArray<T, rank>>;
-
-    py::buffer_info const array_info{elements.request()};
-
-    if(array_info.ndim != rank) {
-        throw std::runtime_error("Rank of array must equal rank of partition shape");
-    }
-
-    std::vector<ssize_t> const& shape1{array_info.shape};
-    Shape shape{};
-    std::copy(shape1.begin(), shape1.end(), shape.begin());
-
-    return PartitionedArray<T, rank>{shape, /* elements, */ max_partition_shape};
-}
-
-
-PartitionedArray<double, 2> create_array(
-    py::array_t<double, py::array::c_style | py::array::forcecast> const& elements,
-    ShapeT<PartitionedArray<double, 2>> const& max_partition_shape)
-{
-    return create_array<double, 2>(elements, max_partition_shape);
-}
-
-
-void init_partitioned_array(
-    py::module& module)
-{
-    init_numpy();
-
-    py::class_<
-            PartitionedArray<double, 2>>(
+    pybind11::class_<lue::PartitionedArray<Element, rank>>(
         module,
-        "PartitionedArray",
-        "PartitionedArray docstring...")
-        ;
+        fmt::format("PartitionedArray{}", as_string<Element>()).c_str(),
+        "PartitionedArray docstring...");
+}
 
-    module.def(
-        "create_array",
-        [](
-            py::array_t<double, py::array::c_style | py::array::forcecast> const& elements,
-            ShapeT<PartitionedArray<double, 2>> const& max_partition_shape)
-        {
-            return create_array(elements, max_partition_shape);
-        },
-        py::return_value_policy::move);
+}  // Anonymous namespace
+
+
+void bind_partitioned_array(
+    pybind11::module& module)
+{
+    bind_partitioned_array<std::uint8_t, 2>(module);
+    bind_partitioned_array<std::uint32_t, 2>(module);
+    bind_partitioned_array<std::uint64_t, 2>(module);
+    bind_partitioned_array<std::int8_t, 2>(module);
+    bind_partitioned_array<std::int32_t, 2>(module);
+    bind_partitioned_array<std::int64_t, 2>(module);
+    bind_partitioned_array<float, 2>(module);
+    bind_partitioned_array<double, 2>(module);
 }
 
 }  // namespace framework

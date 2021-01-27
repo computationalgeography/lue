@@ -9,7 +9,7 @@ namespace py = pybind11;
 namespace lue {
 namespace framework {
 
-void init_local_operations(
+void bind_local_operations(
     py::module& module)
 {
     module.def(
