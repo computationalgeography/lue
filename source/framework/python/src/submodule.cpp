@@ -3,13 +3,11 @@
 #include <pybind11/stl.h>
 
 
-using namespace pybind11::literals;
-
-
 namespace lue {
+namespace framework {
 namespace {
 
-HPXRuntime* runtime = nullptr;
+HPXRuntime* runtime{nullptr};
 
 
 void start_hpx_runtime(std::vector<std::string> const& configuration)
@@ -46,10 +44,9 @@ bool on_root_locality()
 }  // Anonymous namespace
 
 
-namespace framework {
-
-void init_local_operations(pybind11::module& module);
-void init_partitioned_array(pybind11::module& module);
+void bind_create_partitioned_array(pybind11::module& module);
+void bind_local_operations(pybind11::module& module);
+void bind_partitioned_array(pybind11::module& module);
 
 
 void init_submodule(
@@ -77,10 +74,11 @@ void init_submodule(
         &on_root_locality);
 
     // Wrap high-level data structures
-    init_partitioned_array(submodule);
+    bind_partitioned_array(submodule);
 
     // Wrap high-level algorithms
-    init_local_operations(submodule);
+    bind_create_partitioned_array(submodule);
+    bind_local_operations(submodule);
 
     // Unless the user calls stop_hpx_runtime explicitly, we will do it
     // automatically upon module unload
