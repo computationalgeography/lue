@@ -28,7 +28,6 @@ void bind_partitioned_array(
     bind_partitioned_array<std::uint8_t, 2>(module);
     bind_partitioned_array<std::uint32_t, 2>(module);
     bind_partitioned_array<std::uint64_t, 2>(module);
-    bind_partitioned_array<std::int8_t, 2>(module);
     bind_partitioned_array<std::int32_t, 2>(module);
     bind_partitioned_array<std::int64_t, 2>(module);
     bind_partitioned_array<float, 2>(module);

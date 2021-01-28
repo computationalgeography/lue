@@ -74,6 +74,11 @@ public:
                                         ClampMode clamp_mode=ClampMode::merge);
 
                    PartitionedArray    (Shape const& shape,
+                                        Shape const& max_partition_shape,
+                                        Element const& fill_value,
+                                        ClampMode clamp_mode=ClampMode::merge);
+
+                   PartitionedArray    (Shape const& shape,
                                         Localities<rank> const& localities,
                                         Partitions&& partitions);
 
@@ -122,9 +127,22 @@ private:
                                         Shape const& partition_shape,
                                         Idxs... idxs);
 
+    template<
+        typename... Idxs>
+    void           instantiate_partition(
+                                        hpx::id_type locality_id,
+                                        Shape const& partition_shape,
+                                        Element const& fill_value,
+                                        Idxs... idxs);
+
     void           instantiate_partitions(
                                         Shape const& shape_in_partitions,
                                         Shape const& partition_shape);
+
+    void           instantiate_partitions(
+                                        Shape const& shape_in_partitions,
+                                        Shape const& partition_shape,
+                                        Element const& fill_value);
 
     void           shrink_partitions   (Shape const& begin_indices,
                                         Shape const& end_indices,
@@ -146,8 +164,17 @@ private:
     void           create              (Shape const& max_partition_shape,
                                         ClampMode clamp_mode);
 
+    void           create              (Shape const& max_partition_shape,
+                                        Element const& fill_value,
+                                        ClampMode clamp_mode);
+
     void           create              (Shape const& shape_in_partitions,
                                         Shape const& max_partition_shape,
+                                        ClampMode clamp_mode);
+
+    void           create              (Shape const& shape_in_partitions,
+                                        Shape const& max_partition_shape,
+                                        Element const& fill_value,
                                         ClampMode clamp_mode);
 
     void           print_partitions    () const;
@@ -277,6 +304,26 @@ PartitionedArray<Element, rank>::PartitionedArray(
 
 {
     create(max_partition_shape, clamp_mode);
+
+    assert_invariants();
+}
+
+
+template<
+    typename Element,
+    Rank rank>
+PartitionedArray<Element, rank>::PartitionedArray(
+    Shape const& shape,
+    Shape const& max_partition_shape,
+    Element const& fill_value,
+    ClampMode const clamp_mode):
+
+    _shape{shape},
+    _localities{},
+    _partitions{}
+
+{
+    create(max_partition_shape, fill_value, clamp_mode);
 
     assert_invariants();
 }
@@ -748,6 +795,41 @@ void PartitionedArray<Element, rank>::instantiate_partition(
 template<
     typename Element,
     Rank rank>
+template<
+    typename... Idxs>
+void PartitionedArray<Element, rank>::instantiate_partition(
+    hpx::id_type const locality_id,
+    Shape const& partition_shape,
+    Element const& fill_value,
+    Idxs... idxs)
+{
+    // idxs points to a cell (partition) in the partitioned
+    // array. Instantiate this partition.
+
+    _localities(idxs...) = locality_id;
+
+    _partitions(idxs...) = hpx::async(
+
+            [locality_id, partition_shape, fill_value, idxs...]()
+            {
+                AnnotateFunction annotation{"instantiate_partition"};
+
+                Offset offset{idxs...};
+
+                for(std::size_t d = 0; d < rank; ++d) {
+                    offset[d] *= partition_shape[d];
+                }
+
+                return Partition{locality_id, offset, partition_shape, fill_value};
+            }
+
+        );
+}
+
+
+template<
+    typename Element,
+    Rank rank>
 void PartitionedArray<Element, rank>::instantiate_partitions(
     Shape const& shape_in_partitions,
     Shape const& partition_shape)
@@ -844,6 +926,103 @@ void PartitionedArray<Element, rank>::instantiate_partitions(
 template<
     typename Element,
     Rank rank>
+void PartitionedArray<Element, rank>::instantiate_partitions(
+    Shape const& shape_in_partitions,
+    Shape const& partition_shape,
+    Element const& fill_value)
+{
+    // Create array containing partitions. Each of these partitions
+    // will be a component client instance referring to a, possibly
+    // remote, component server instance.
+    lue_assert(_localities.empty());
+    _localities = Localities<rank>{shape_in_partitions};
+    lue_assert(_partitions.empty());
+    _partitions = Partitions{shape_in_partitions};
+
+    Count const nr_partitions = lue::nr_elements(shape_in_partitions);
+    lue_assert(_partitions.nr_elements() == nr_partitions);
+
+    std::vector<hpx::id_type> const localities = hpx::find_all_localities();
+    Count const nr_localities = localities.size();
+
+    lue_assert(nr_localities > 0);
+
+    if(!BuildOptions::build_test)
+    {
+        // In general, the number of localities should be smaller than
+        // the number of partitions. Otherwise more hardware is used than
+        // necessary. The exception is when we are building with tests
+        // turned on. Tests may have to run on less localities than there
+        // are partitions.
+        if(nr_partitions < nr_localities)
+        {
+            throw std::runtime_error(fmt::format(
+                "Not enough partitions to use all localities ({} < {})",
+                nr_partitions, nr_localities));
+        }
+    }
+
+    lue_assert(hpx::find_here() == hpx::find_root_locality());
+    lue_assert(localities[0] == hpx::find_root_locality());
+
+    // Map partition index to locality index
+    auto locality_idx =
+        [nr_partitions, nr_localities](
+            Index const partition_idx)
+        {
+            return map_to_range(
+                Index{0}, nr_partitions - 1,
+                Index{0}, nr_localities - 1,
+                partition_idx);
+        };
+
+    if constexpr(rank == 2) {  //  || rank == 3) {
+
+        // Visit all cells in the array in an order defined by the
+        // Hilbert curve. The lambda will receive a linear partition index
+        // (along the Hilbert curve!) and the indices of the array
+        // partition.
+        //
+        // The indices of the array partition locate the partition to
+        // be instantiated. The linear index can be used to determine
+        // a locality to put the partition component on. By mapping
+        // nearby linear indices to the same locality, nearby partitions
+        // end up at the same locality.
+
+        hilbert_curve<rank>(shape_in_partitions,
+
+                [this, &localities, locality_idx, partition_shape, fill_value](
+                    Index const partition_idx,  // Along curve
+                    /* Idxs... */ auto... idxs)  // Partition in array
+                {
+                    instantiate_partition(
+                        localities[locality_idx(partition_idx)],
+                        partition_shape, fill_value, idxs...);
+                }
+
+            );
+    }
+    else {
+
+        linear_curve<rank>(shape_in_partitions,
+
+                [this, &localities, locality_idx, partition_shape, fill_value](
+                    Index const partition_idx,  // Along curve
+                    /* Idxs... */ auto... idxs)  // Partition in array
+                {
+                    instantiate_partition(
+                        localities[locality_idx(partition_idx)],
+                        partition_shape, fill_value, idxs...);
+                }
+
+            );
+    }
+}
+
+
+template<
+    typename Element,
+    Rank rank>
 void PartitionedArray<Element, rank>::create(
     Shape const& shape_in_partitions,
     Shape const& max_partition_shape,
@@ -855,6 +1034,49 @@ void PartitionedArray<Element, rank>::create(
 
     instantiate_partitions(shape_in_partitions, max_partition_shape);
 
+    // TODO Refactor with other create: clamp(clamp_mode)
+    switch(clamp_mode)
+    {
+        case ClampMode::shrink:
+        {
+            // Fix too large extent by shrinking overflowing partitions. This
+            // may result is partitions that are too small for the focal
+            // algorithms. Therefore, the alternative approach is more robust.
+            clamp_array_shrink(shape_in_partitions, max_partition_shape);
+            break;
+        }
+        case ClampMode::merge:
+        {
+            // Fix too large extent by merging relevant part of overflowing
+            // partitions with bordering partitions. These will become larger
+            // than the requested partition size. But focal algorithms will
+            // behave more robust. Partitions in the array will be at least as
+            // large as the partitions shape requested.
+            clamp_array_merge(shape_in_partitions, max_partition_shape);
+            break;
+        }
+    }
+
+    assert_invariants();
+}
+
+
+template<
+    typename Element,
+    Rank rank>
+void PartitionedArray<Element, rank>::create(
+    Shape const& shape_in_partitions,
+    Shape const& max_partition_shape,
+    Element const& fill_value,
+    ClampMode const clamp_mode)
+{
+    // Create the array partitions that, together make up the partitioned
+    // array. Note that the extent of this array might be too large,
+    // given that we use max_partition_shape.
+
+    instantiate_partitions(shape_in_partitions, max_partition_shape, fill_value);
+
+    // TODO Refactor with other create: clamp(clamp_mode)
     switch(clamp_mode)
     {
         case ClampMode::shrink:
@@ -911,10 +1133,26 @@ void PartitionedArray<Element, rank>::create(
     // Given the shape of the array and the shape of the array partitions,
     // determine the shape of the array in partitions
 
-    auto const shape_in_partitions =
-        lue::shape_in_partitions(_shape, max_partition_shape);
+    auto const shape_in_partitions = lue::shape_in_partitions(_shape, max_partition_shape);
 
     create(shape_in_partitions, max_partition_shape, clamp_mode);
+}
+
+
+template<
+    typename Element,
+    Rank rank>
+void PartitionedArray<Element, rank>::create(
+    Shape const& max_partition_shape,
+    Element const& fill_value,
+    ClampMode const clamp_mode)
+{
+    // Given the shape of the array and the shape of the array partitions,
+    // determine the shape of the array in partitions
+
+    auto const shape_in_partitions = lue::shape_in_partitions(_shape, max_partition_shape);
+
+    create(shape_in_partitions, max_partition_shape, fill_value, clamp_mode);
 }
 
 

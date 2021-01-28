@@ -1,4 +1,5 @@
-add_test_conditionally(test)
+# TODO No command line arguments end up in HPX runtime...
+# add_test_conditionally(test)
 
 pybind11_add_module(lue_py_framework SHARED SYSTEM THIN_LTO
     src/algorithm/local_operation
