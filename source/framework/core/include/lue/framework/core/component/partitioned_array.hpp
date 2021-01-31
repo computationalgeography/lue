@@ -898,7 +898,7 @@ void PartitionedArray<Element, rank>::instantiate_partitions(
                     Index const partition_idx,  // Along curve
                     /* Idxs... */ auto... idxs)  // Partition in array
                 {
-                    instantiate_partition(
+                    instantiate_partition<decltype(idxs)...>(
                         localities[locality_idx(partition_idx)],
                         partition_shape, idxs...);
                 }
@@ -913,7 +913,7 @@ void PartitionedArray<Element, rank>::instantiate_partitions(
                     Index const partition_idx,  // Along curve
                     /* Idxs... */ auto... idxs)  // Partition in array
                 {
-                    instantiate_partition(
+                    instantiate_partition<decltype(idxs)...>(
                         localities[locality_idx(partition_idx)],
                         partition_shape, idxs...);
                 }
@@ -995,7 +995,7 @@ void PartitionedArray<Element, rank>::instantiate_partitions(
                     Index const partition_idx,  // Along curve
                     /* Idxs... */ auto... idxs)  // Partition in array
                 {
-                    instantiate_partition(
+                    instantiate_partition<decltype(idxs)...>(
                         localities[locality_idx(partition_idx)],
                         partition_shape, fill_value, idxs...);
                 }
@@ -1010,7 +1010,7 @@ void PartitionedArray<Element, rank>::instantiate_partitions(
                     Index const partition_idx,  // Along curve
                     /* Idxs... */ auto... idxs)  // Partition in array
                 {
-                    instantiate_partition(
+                    instantiate_partition<decltype(idxs)...>(
                         localities[locality_idx(partition_idx)],
                         partition_shape, fill_value, idxs...);
                 }

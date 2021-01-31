@@ -2,6 +2,9 @@
 #include <pybind11/numpy.h>
 
 
+using namespace pybind11::literals;
+
+
 namespace lue {
 namespace framework {
 namespace {
@@ -203,6 +206,22 @@ void bind_create_partitioned_array(
             return create_partitioned_array(
                 tuple_to_shape(array_shape), tuple_to_shape(partition_shape), dtype, fill_value);
         },
+        R"(
+    Create new partitioned array
+
+    :param tuple array_shape: Shape of the array
+    :param tuple partition_shape: Shape of the array partitions
+    :param numpy.dtype dtype: Type of the array elements
+    :param tuple fill_value: Value to fill array with
+    :rtype: PartitionedArray specialization
+
+    The type of the array returned depends on the rank of the array and
+    the type of the array elements.
+)",
+        "array_shape"_a,
+        "partition_shape"_a,
+        "dtype"_a,
+        "fill_value"_a,
         pybind11::return_value_policy::move);
 }
 

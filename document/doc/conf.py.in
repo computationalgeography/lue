@@ -19,7 +19,7 @@
 # -- Project information -----------------------------------------------------
 
 project = "LUE"
-copyright = "2020, Kor de Jong"
+copyright = "2020-now, Kor de Jong"
 author = "Kor de Jong"
 
 
