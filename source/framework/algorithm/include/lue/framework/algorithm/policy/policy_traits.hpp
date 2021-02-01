@@ -24,7 +24,7 @@ class TypeTraits<
 
     public:
 
-        static T const no_data_value = std::numeric_limits<T>::quiet_NaN();
+        static constexpr T no_data_value = std::numeric_limits<T>::quiet_NaN();
 
 };
 

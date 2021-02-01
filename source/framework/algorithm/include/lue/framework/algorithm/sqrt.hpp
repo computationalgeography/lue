@@ -1,6 +1,7 @@
 #pragma once
 #include "lue/framework/algorithm/unary_local_operation.hpp"
 #include "lue/framework/algorithm/policy/default_policies.hpp"
+#include "lue/framework/algorithm/policy/default_value_policies.hpp"
 #include <cmath>
 #include <limits>
 
@@ -46,6 +47,13 @@ using DefaultPolicies = policy::DefaultPolicies<
     OutputElements<Element>,
     InputElements<Element>>;
 
+
+template<
+    typename Element>
+using DefaultValuePolicies = policy::DefaultValuePolicies<
+    OutputElements<Element>,
+    InputElements<Element>>;
+
 }  // namespace sqrt
 }  // namespace policy
 
@@ -60,6 +68,7 @@ PartitionedArray<Element, rank> sqrt(
 {
     return unary_local_operation(policies, array, detail::Sqrt<Element>{});
 }
+
 
 template<
     typename Element,

@@ -36,6 +36,17 @@ class DetectNoDataByValue
         }
 
         template<
+            typename Data>
+        bool is_no_data(
+            Data const& data,
+            Index const idx) const
+        {
+            static_assert(std::is_same_v<lue::ElementT<Data>, Element>);
+
+            return data[idx] == _value;
+        }
+
+        template<
             typename Data,
             typename... Idxs>
         bool is_no_data(

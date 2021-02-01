@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/policy/default_policies.hpp"
+#include "lue/framework/algorithm/policy/default_value_policies.hpp"
 #include "lue/framework/core/component/partitioned_array.hpp"
 #include "lue/framework/core/component.hpp"
 #include <algorithm>
@@ -126,6 +127,13 @@ using DefaultPolicies = policy::DefaultPolicies<
     OutputElements<OutputElement>,
     InputElements<OutputElement, OutputElement>>;
 
+
+template<
+    typename OutputElement>
+using DefaultValuePolicies = policy::DefaultValuePolicies<
+    OutputElements<OutputElement>,
+    InputElements<OutputElement, OutputElement>>;
+
 }  // namespace uniform
 }  // namespace policy
 
@@ -186,6 +194,23 @@ PartitionedArray<OutputElement, rank> uniform(
     }
 
     return OutputArray{shape(input_array), localities, std::move(output_partitions)};
+}
+
+
+template<
+    typename Policies,
+    typename InputElement,
+    typename OutputElement,
+    Rank rank>
+PartitionedArray<OutputElement, rank> uniform(
+    Policies const& policies,
+    PartitionedArray<InputElement, rank> const& input_array,
+    OutputElement const min_value,
+    OutputElement const max_value)
+{
+    return uniform(policies, input_array,
+        hpx::make_ready_future<OutputElement>(min_value).share(),
+        hpx::make_ready_future<OutputElement>(max_value).share());
 }
 
 

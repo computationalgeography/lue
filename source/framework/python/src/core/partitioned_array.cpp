@@ -29,6 +29,7 @@ void bind_partitioned_array(
 void bind_partitioned_array(
     pybind11::module& module)
 {
+    // TODO: https://github.com/pybind/pybind11/issues/199#issuecomment-323995589
     bind_partitioned_array<std::uint8_t, 2>(module);
     bind_partitioned_array<std::uint32_t, 2>(module);
     bind_partitioned_array<std::uint64_t, 2>(module);
