@@ -35,6 +35,17 @@ class MarkNoDataByValue:
         }
 
         template<
+            typename Data>
+        void mark_no_data(
+            Data& data,
+            Index const idx) const
+        {
+            static_assert(std::is_same_v<lue::ElementT<Data>, Element>);
+
+            data[idx] = this->value();
+        }
+
+        template<
             typename Data,
             typename... Idxs>
         void mark_no_data(
