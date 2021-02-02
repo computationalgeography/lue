@@ -15,7 +15,7 @@ void bind_partitioned_array(
 {
     pybind11::class_<lue::PartitionedArray<Element, rank>>(
         module,
-        fmt::format("PartitionedArray{}", as_string<Element>()).c_str(),
+        fmt::format("PartitionedArray_{}_{}", as_string<Element>(), rank).c_str(),
         fmt::format(R"(
     Partitioned array type for arrays of rank {}, containing array
     elements of type {}

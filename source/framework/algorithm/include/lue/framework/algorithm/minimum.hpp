@@ -1,6 +1,7 @@
 #pragma once
 #include "lue/framework/algorithm/unary_aggregate_operation.hpp"
 #include "lue/framework/algorithm/policy/default_policies.hpp"
+#include "lue/framework/algorithm/policy/default_value_policies.hpp"
 
 
 namespace lue {
@@ -62,8 +63,28 @@ using DefaultPolicies = policy::DefaultPolicies<
     OutputElements<Element>,
     InputElements<Element>>;
 
+template<
+    typename Element>
+using DefaultValuePolicies = policy::DefaultValuePolicies<
+    OutputElements<Element>,
+    InputElements<Element>>;
+
 }  // namespace minimum
 }  // namespace policy
+
+
+template<
+    typename Policies,
+    typename Element,
+    Rank rank>
+hpx::future<Element> minimum(
+    Policies const& policies,
+    PartitionedArray<Element, rank> const& array)
+{
+    using Functor = detail::Minimum<Element, Element>;
+
+    return unary_aggregate_operation(policies, array, Functor{});
+}
 
 
 template<
@@ -72,10 +93,9 @@ template<
 hpx::future<Element> minimum(
     PartitionedArray<Element, rank> const& array)
 {
-    using Functor = detail::Minimum<Element, Element>;
     using Policies = policy::minimum::DefaultPolicies<Element>;
 
-    return unary_aggregate_operation(Policies{}, array, Functor{});
+    return minimum(Policies{}, array);
 }
 
 }  // namespace lue
