@@ -44,6 +44,7 @@ bool on_root_locality()
 }  // Anonymous namespace
 
 
+void bind_hpx(pybind11::module& module);
 void bind_create_partitioned_array(pybind11::module& module);
 void bind_local_operations(pybind11::module& module);
 void bind_partitioned_array(pybind11::module& module);
@@ -72,6 +73,8 @@ void init_submodule(
     submodule.def(
         "on_root_locality",
         &on_root_locality);
+
+    bind_hpx(submodule);
 
     // Wrap high-level data structures
     bind_partitioned_array(submodule);

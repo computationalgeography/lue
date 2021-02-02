@@ -25,6 +25,7 @@ PartitionedArray<Element, rank> uniform(
 void bind_uniform(
     pybind11::module& module)
 {
+    // TODO How to document these?
     module.def("uniform", uniform<std::uint8_t, 1>);
     module.def("uniform", uniform<std::uint8_t, 2>);
     module.def("uniform", uniform<std::uint32_t, 1>);

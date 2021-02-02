@@ -1281,16 +1281,16 @@ void PartitionedArray<Element, rank>::assert_invariants() const
 
 #ifndef NDEBUG
 
-    // Visit all partitions and see whether they fit exactly within
-    // the shape of the array
+    /// // Visit all partitions and see whether they fit exactly within
+    /// // the shape of the array
 
-    Shape begin_indices;
-    begin_indices.fill(0);
-    Shape const end_indices{_partitions.shape()};
+    /// Shape begin_indices;
+    /// begin_indices.fill(0);
+    /// Shape const end_indices{_partitions.shape()};
 
-    ValidateVisitor validate{_partitions, _shape};
+    /// ValidateVisitor validate{_partitions, _shape};
 
-    visit_array(begin_indices, end_indices, validate);
+    /// visit_array(begin_indices, end_indices, validate);
 
 #endif
 }

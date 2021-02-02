@@ -1,3 +1,6 @@
+.. currentmodule:: lue.framework
+
+
 lue.framework reference
 =======================
 .. toctree::
@@ -5,3 +8,13 @@ lue.framework reference
    :caption: Contents:
 
    create_array
+
+.. autosummary::
+    minimum
+    maximum
+    sqrt
+    uniform
+.. autofunction:: maximum
+.. autofunction:: minimum
+.. autofunction:: sqrt
+.. autofunction:: uniform
