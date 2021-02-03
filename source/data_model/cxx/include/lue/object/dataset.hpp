@@ -79,7 +79,9 @@ private:
 bool               dataset_exists      (std::string const& name);
 
 Dataset            open_dataset        (std::string const& name,
-                                        unsigned int flags=H5F_ACC_RDONLY);
+                                        unsigned int flags=H5F_ACC_RDONLY,
+                                        hdf5::File::AccessPropertyList const&
+                                            access_property_list=hdf5::File::AccessPropertyList{});
 
 Dataset            create_dataset      (std::string const& name,
                                         std::string const& description="");

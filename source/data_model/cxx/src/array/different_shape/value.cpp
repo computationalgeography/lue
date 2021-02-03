@@ -155,7 +155,7 @@ bool Value::contains(
 
 
 Array Value::operator[](
-    ID const id)
+    ID const id) const
 {
     assert(contains(id));
 

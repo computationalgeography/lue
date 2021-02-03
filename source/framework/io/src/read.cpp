@@ -9,6 +9,31 @@ template<
     typename DatasetPtr>
 Array read(
     Array const& /* array */,
+    typename data_model::constant::RasterView<DatasetPtr>::Layer const& /* layer */)
+{
+    // Create new array with partitions that become ready once their
+    // data has been read
+
+    // Determine the extent of the array
+
+    // Determine a partition size
+
+    // Create a partitioned array
+
+    // Add continuations that read data in each partition
+
+
+    lue_assert(false);
+
+    return Array{};
+}
+
+
+template<
+    typename Array,
+    typename DatasetPtr>
+Array read(
+    Array const& /* array */,
     typename data_model::variable::RasterView<DatasetPtr>::Layer const& /* layer */,
     data_model::Index const /* idx */)
 {
@@ -22,11 +47,16 @@ Array read(
 }
 
 
-#define INSTANTIATE_READ_1(Element, DatasetPtr)                            \
-template PartitionedArray<Element, 2>                                      \
-    read<PartitionedArray<Element, 2>, DatasetPtr>(                        \
-        PartitionedArray<Element, 2> const& array,                         \
-        data_model::variable::RasterView<DatasetPtr>::Layer const& layer,  \
+#define INSTANTIATE_READ_1(Element, DatasetPtr)                             \
+template PartitionedArray<Element, 2>                                       \
+    read<PartitionedArray<Element, 2>, DatasetPtr>(                         \
+        PartitionedArray<Element, 2> const& array,                          \
+        data_model::constant::RasterView<DatasetPtr>::Layer const& layer);  \
+                                                                            \
+template PartitionedArray<Element, 2>                                       \
+    read<PartitionedArray<Element, 2>, DatasetPtr>(                         \
+        PartitionedArray<Element, 2> const& array,                          \
+        data_model::variable::RasterView<DatasetPtr>::Layer const& layer,   \
         data_model::Index const idx);
 
 #define INSTANTIATE_READ(Element)                                      \

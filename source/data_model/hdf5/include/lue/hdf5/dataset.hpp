@@ -29,6 +29,19 @@ public:
 
         void       set_chunk           (Shape const& chunk);
 
+        void       set_fill_time       (H5D_fill_time_t fill_time);
+
+    };
+
+
+    class AccessPropertyList:
+        public PropertyList
+    {
+
+    public:
+
+                   AccessPropertyList();
+
     };
 
 
@@ -48,7 +61,9 @@ public:
 
 
                    Dataset             (Group const& parent,
-                                        std::string const& name);
+                                        std::string const& name,
+                                        AccessPropertyList const& access_property_list=
+                                            AccessPropertyList{});
 
     explicit       Dataset             (Identifier&& id);
 
@@ -78,6 +93,11 @@ public:
                                         void* buffer) const;
 
     void           read                (Datatype const& datatype,
+                                        Hyperslab const& hyperslab,
+                                        TransferPropertyList const& transfer_property_list,
+                                        void* buffer) const;
+
+    void           read                (Datatype const& datatype,
                                         Dataspace const& memory_dataspace,
                                         void* buffer) const;
 
@@ -86,11 +106,22 @@ public:
                                         Hyperslab const& hyperslab,
                                         void* buffer) const;
 
+    void           read                (Datatype const& datatype,
+                                        Dataspace const& memory_dataspace,
+                                        Hyperslab const& hyperslab,
+                                        TransferPropertyList const& transfer_property_list,
+                                        void* buffer) const;
+
     void           write               (Datatype const& datatype,
                                         void const* buffer) const;
 
     void           write               (Datatype const& datatype,
                                         Hyperslab const& hyperslab,
+                                        void const* buffer) const;
+
+    void           write               (Datatype const& datatype,
+                                        Hyperslab const& hyperslab,
+                                        TransferPropertyList const& transfer_property_list,
                                         void const* buffer) const;
 
     void           write               (Datatype const& datatype,
@@ -100,6 +131,12 @@ public:
     void           write               (Datatype const& datatype,
                                         Dataspace const& memory_dataspace,
                                         Hyperslab const& hyperslab,
+                                        void const* buffer) const;
+
+    void           write               (Datatype const& datatype,
+                                        Dataspace const& memory_dataspace,
+                                        Hyperslab const& hyperslab,
+                                        TransferPropertyList const& transfer_property_list,
                                         void const* buffer) const;
 
     void           fill                (Datatype const& datatype,
@@ -115,7 +152,9 @@ bool               dataset_exists      (Identifier const& parent,
                                         std::string const& name);
 
 Dataset            open_dataset        (Identifier& parent,
-                                        std::string const& name);
+                                        std::string const& name,
+                                        Dataset::AccessPropertyList const& access_property_list=
+                                            Dataset::AccessPropertyList{});
 
 Dataset            create_dataset      (Identifier& parent,
                                         std::string const& name,

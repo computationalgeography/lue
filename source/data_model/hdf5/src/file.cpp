@@ -246,7 +246,7 @@ File create_file(
 
     File file{std::move(id)};
 
-    file.attributes().write<std::string>("hdf5_version", HDF5_VERSION);
+    file.attributes().write<std::string>("hdf5_version", BuildOptions::hdf5_version);
 
     return file;
 }

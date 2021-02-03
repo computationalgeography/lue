@@ -26,8 +26,8 @@ void init_submodule(
     not offered by this package yet.
 )");
 
-    submodule.attr("__version__") = py::str(HDF5_VERSION);
-    submodule.attr("hdf5_version") = py::str(HDF5_VERSION);
+    submodule.attr("__version__") = py::str(BuildOptions::hdf5_version);
+    submodule.attr("hdf5_version") = py::str(BuildOptions::hdf5_version);
 
     init_shape(submodule);
     init_identifier(submodule);

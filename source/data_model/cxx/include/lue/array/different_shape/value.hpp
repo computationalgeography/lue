@@ -54,7 +54,7 @@ public:
 
     bool           contains            (ID id) const;
 
-    Array          operator[]          (ID id);
+    Array          operator[]          (ID id) const;
 
 private:
 
