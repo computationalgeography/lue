@@ -177,9 +177,10 @@ Dataset create_dataset(
 */
 Dataset open_dataset(
     std::string const& name,
-    unsigned int flags)
+    unsigned int flags,
+    hdf5::File::AccessPropertyList const& access_property_list)
 {
-    return Dataset{name, flags};
+    return Dataset{name, flags, access_property_list};
 }
 
 

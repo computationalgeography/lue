@@ -11,6 +11,7 @@ set(names
     convolve_test
     copy_test
     cos_test
+    create_partitioned_array_test
     d8_network_test
     divide_test
     equal_to_test

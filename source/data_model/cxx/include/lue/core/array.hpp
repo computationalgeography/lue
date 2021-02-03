@@ -45,6 +45,11 @@ public:
                                         hdf5::Hyperslab const& hyperslab,
                                         void* buffer) const;
 
+    void           read                (hdf5::Datatype const& memory_datatype,
+                                        hdf5::Hyperslab const& hyperslab,
+                                        TransferPropertyList const& transfer_property_list,
+                                        void* buffer) const;
+
     void           read                (hdf5::Dataspace const& memory_dataspace,
                                         void* buffer) const;
 
@@ -53,11 +58,20 @@ public:
     void           write               (hdf5::Hyperslab const& hyperslab,
                                         void const* buffer);
 
+    void           write               (hdf5::Hyperslab const& hyperslab,
+                                        TransferPropertyList const& transfer_property_list,
+                                        void const* buffer);
+
     void           write               (hdf5::Dataspace const& memory_dataspace,
-                                        void const* buffer) const;
+                                        void const* buffer);
 
     void           write               (hdf5::Dataspace const& memory_dataspace,
                                         hdf5::Hyperslab const& hyperslab,
+                                        void const* buffer);
+
+    void           write               (hdf5::Dataspace const& memory_dataspace,
+                                        hdf5::Hyperslab const& hyperslab,
+                                        TransferPropertyList const& transfer_property_list,
                                         void const* buffer);
 
 protected:

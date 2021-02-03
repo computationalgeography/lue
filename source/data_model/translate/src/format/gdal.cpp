@@ -8,6 +8,7 @@
 #include "lue/data_model/hl.hpp"
 #include <ogrsf_frmts.h>
 #include <boost/filesystem.hpp>
+#include <filesystem>
 
 
 namespace lue {
@@ -794,7 +795,6 @@ void write_raster_band(
     GDALRasterBand& raster_band)
 {
     // It is assumed here that array only contains a 2D array
-
     auto const blocks = natural_blocks(raster_band);
 
     std::vector<T> values(blocks.block_size());
@@ -823,8 +823,7 @@ void write_raster_band(
             hdf5::Hyperslab const hyperslab{offset, count};
 
             array.read(memory_datatype, hyperslab, values.data());
-            write_raster_band_block(
-                block_x, block_y, values.data(), raster_band);
+            write_raster_band_block(block_x, block_y, values.data(), raster_band);
         }
     }
 }
@@ -1047,8 +1046,7 @@ void translate_lue_dataset_to_raster(
                 lue_dataset_name));
     }
 
-    auto const property_sets_json =
-        json::object(phenomenon_json, "property_sets");
+    auto const property_sets_json = json::object(phenomenon_json, "property_sets");
 
     if(property_sets_json.size() != 1) {
         throw std::runtime_error(fmt::format(
@@ -1060,24 +1058,32 @@ void translate_lue_dataset_to_raster(
     }
 
     auto const property_set_json = property_sets_json.front();
-    std::string const property_set_name =
-        json::string(property_set_json, "name");
+    std::string const property_set_name = json::string(property_set_json, "name");
 
     // Properties --------------------------------------------------------------
-    auto const properties_json = json::object(property_set_json, "properties");
+    std::string property_name;
 
-    if(properties_json.size() != 1) {
-        throw std::runtime_error(fmt::format(
-            "Expected information about 1 property in metadata for "
-            "property-set {} in phenomenon {} in dataset {}, but got {}",
-                property_set_name,
-                phenomenon_name,
-                lue_dataset_name,
-                properties_json.size()));
+    if(json::has_key(property_set_json, "properties"))
+    {
+        auto const properties_json = json::object(property_set_json, "properties");
+
+        if(properties_json.size() != 1) {
+            throw std::runtime_error(fmt::format(
+                "Expected information about 1 property in metadata for "
+                "property-set {} in phenomenon {} in dataset {}, but got {}",
+                    property_set_name,
+                    phenomenon_name,
+                    lue_dataset_name,
+                    properties_json.size()));
+        }
+
+        auto const property_json = properties_json.front();
+        property_name = json::string(property_json, "name");
     }
-
-    auto const property_json = properties_json.front();
-    std::string const property_name = json::string(property_json, "name");
+    else
+    {
+        property_name = std::filesystem::path{raster_name}.stem();
+    }
 
     // If the constant raster view finds a raster with the property name
     // requested, export it to a single GDAL raster

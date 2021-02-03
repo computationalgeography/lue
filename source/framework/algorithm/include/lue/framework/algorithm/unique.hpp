@@ -112,6 +112,7 @@ hpx::future<PartitionedArray<Element, 1>> unique(
     Policies const& policies,
     PartitionedArray<Element, rank> const& input_array)
 {
+    // TODO Why not return a regular Array<Element, 1>?
 
     // - Determine unique values per partition
     // - Collect these values and determine overall collection of

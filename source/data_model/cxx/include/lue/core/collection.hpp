@@ -30,10 +30,16 @@ public:
 
     using const_iterator = typename std::map<std::string, T>::const_iterator;
 
+    template<
+        typename... Argument>
                    Collection          (hdf5::Group const& parent,
-                                        std::string const& name);
+                                        std::string const& name,
+                                        Argument const&... argument);
 
-    explicit       Collection          (hdf5::Group&& group);
+    template<
+        typename... Argument>
+    explicit       Collection          (hdf5::Group&& group,
+                                        Argument const&... argument);
 
                    Collection          (Collection const&)=default;
 
@@ -91,9 +97,12 @@ Collection<T>      create_collection   (hdf5::Group const& group);
 */
 template<
     typename T>
+template<
+    typename... Argument>
 inline Collection<T>::Collection(
     hdf5::Group const& parent,
-    std::string const& name):
+    std::string const& name,
+    Argument const&... argument):
 
     hdf5::Group{parent, name},
     _items{}
@@ -109,15 +118,18 @@ inline Collection<T>::Collection(
     // Open items, if available.
     for(auto const& name_: item_names())
     {
-        _items.insert(std::make_pair(name_, T{*this, name_}));
+        _items.insert(std::make_pair(name_, T{*this, name_, argument...}));
     }
 }
 
 
 template<
     typename T>
+template<
+    typename... Argument>
 inline Collection<T>::Collection(
-    hdf5::Group&& group):
+    hdf5::Group&& group,
+    Argument const&... argument):
 
     hdf5::Group{std::move(group)},
     _items{}
@@ -126,7 +138,7 @@ inline Collection<T>::Collection(
     // Open items, if available.
     for(auto const& name_: item_names())
     {
-        _items.insert(std::make_pair(name_, T{*this, name_}));
+        _items.insert(std::make_pair(name_, T{*this, name_, argument...}));
     }
 }
 

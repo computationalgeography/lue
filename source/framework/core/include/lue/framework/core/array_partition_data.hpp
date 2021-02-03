@@ -145,6 +145,11 @@ public:
 
     ArrayPartitionData slice           (Slices const& slices) const;
 
+    Element*       data()
+    {
+        return _elements.data();
+    }
+
 private:
 
     Elements const& elements           () const;

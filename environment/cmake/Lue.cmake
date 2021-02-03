@@ -23,7 +23,7 @@ endif()
 
 
 if(HDF5_IS_PARALLEL)
-    find_package(MPI REQUIRED)
+    find_package(MPI REQUIRED COMPONENTS CXX)
 
     if(NOT MPI_CXX_FOUND)
         message(FATAL_ERROR "MPI for C++ not found")
