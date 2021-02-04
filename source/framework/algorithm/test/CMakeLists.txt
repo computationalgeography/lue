@@ -36,6 +36,7 @@ set(names
     multiply_test
     none_test
     not_equal_to_test
+    partition_count_unique_test
     pow_test
     range_test
     sin_test
