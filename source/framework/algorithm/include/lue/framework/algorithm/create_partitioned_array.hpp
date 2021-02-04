@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/framework/algorithm/detail/clamp_array.hpp"
 #include "lue/framework/algorithm/policy/default_policies.hpp"
 #include "lue/framework/algorithm/functor_traits.hpp"
 #include "lue/framework/core/component/partitioned_array.hpp"
@@ -52,10 +53,10 @@ class InstantiatePartitionsBase
     public:
 
         using OutputElement = OutputElementT<Functor>;
-        using Array = PartitionedArray<OutputElement, rank>;
-        using Partitions = PartitionsT<Array>;
-        using Offset = OffsetT<Array>;
-        using Shape = ShapeT<Array>;
+        using OutputArray = PartitionedArray<OutputElement, rank>;
+        using Partitions = PartitionsT<OutputArray>;
+        using Offset = OffsetT<OutputArray>;
+        using Shape = ShapeT<OutputArray>;
         using Localities = lue::Localities<rank>;
 
         InstantiatePartitionsBase(
@@ -104,6 +105,7 @@ class InstantiatePartitionsBase
             return std::move(_partitions);
         }
 
+#ifndef NDEBUG
         void assert_invariants() const
         {
             lue_assert(_partitions.shape() == _localities.shape());
@@ -114,6 +116,7 @@ class InstantiatePartitionsBase
                     return bool{locality_id};
                 }));
         }
+#endif
 
     protected:
 
@@ -128,7 +131,7 @@ class InstantiatePartitionsBase
         template<
             typename... Idxs>
         Offset offset(
-            Idxs... partition_idxs)  // In array!
+            Idxs const... partition_idxs)  // In array!
         {
             Offset offset{partition_idxs...};
 
@@ -196,13 +199,13 @@ class InstantiatePartition:
             typename... Idxs>
         void operator()(
             Index const partition_idx,  // Along curve!
-            Idxs... partition_idxs)  // In array!
+            Idxs const... partition_idxs)  // In array!
         {
             hpx::id_type const locality_id{this->locality_id(partition_idx)};
             this->_localities(partition_idxs...) = locality_id;
             this->_partitions(partition_idxs...) =
                 this->_partition_creator.instantiate(
-                    locality_id, this->offset(partition_idxs...), this->_partition_shape);
+                    locality_id, partition_idx, this->offset(partition_idxs...), this->_partition_shape);
         }
 
     private:
@@ -246,72 +249,35 @@ class InstantiatePartitions:
             typename... Idxs>
         void operator()(
             Index const partition_idx,  // Along curve!
-            Idxs... partition_idxs)  // In array!
+            Idxs const... partition_idxs)  // In array!
         {
             hpx::id_type const locality_id{this->locality_id(partition_idx)};
-            typename Base::Offset const offset{this->offset(partition_idxs...)};
 
-            if(!_current_locality_id)
+            if(partition_idx == 0)
             {
-                lue_assert(_offsets.empty());
-                lue_assert(_idxs.empty());
-                _current_locality_id = locality_id;
+                prepare_for_new_locality(locality_id);
             }
 
-            lue_assert(_current_locality_id);
+            typename Base::Offset const offset{this->offset(partition_idxs...)};
 
-            if(locality_id != _current_locality_id || partition_idx == Index(this->nr_partitions()) - 1)
+            bool const same_locality{locality_id == _current_locality_id};
+            bool const last_partition{partition_idx == Index(this->nr_partitions()) - 1};
+
+            if(same_locality)
             {
-                // Instantiate partitions for the same locality once we jump
-                // to another locality, or once the partition_idx passed in
-                // is the last one we will get
-
-                // Ask for the creation of a set of partitions and assign
-                // the resulting partition clients to the correct location
-                // in the array.
-                using Partitions = typename Base::Partitions;
-                using Partition = PartitionT<Partitions>;
-
-                hpx::future<std::vector<Partition>> partitions_f{
-                    this->_partition_creator.instantiate(
-                        _current_locality_id, _offsets, this->_partition_shape)};
-                partitions_f.wait();
-
-                // The collection of partitions is ready. This does not
-                // imply that the partitions themselves are ready. This
-                // does not matter though.
-
-                // Assign the partitions to their correct location in the array
-                {
-                    std::vector<Partition> partitions{partitions_f.get()};
-                    lue_assert(partitions.size() == _idxs.size());
-
-                    for(std::size_t i = 0; i < partitions.size(); ++i)
-                    {
-                        std::apply(
-
-                            [this, locality_id=_current_locality_id, partition=std::move(partitions[i])](
-                                Idxs... idxs)
-                            {
-                                this->_localities(idxs...) = locality_id;
-                                this->_partitions(idxs...) = std::move(partition);
-                            },
-
-                            _idxs[i]);
-                    }
-                }
-
-                _offsets.clear();
-                _idxs.clear();
+                cache_partition_information(offset, partition_idxs...);
             }
             else
             {
-                // Do nothing while we are still instantiating for the same locality
-                // Cache information necessary for instantiating this
-                // specific partition.
-                lue_assert(locality_id == _current_locality_id);
-                _offsets.push_back(offset);
-                _idxs.push_back(std::array<Index, rank>{partition_idxs...});
+                instantiate_partitions<Idxs...>();
+                prepare_for_new_locality(locality_id);
+                cache_partition_information(offset, partition_idxs...);
+
+            }
+
+            if(last_partition)
+            {
+                instantiate_partitions<Idxs...>();
             }
         }
 
@@ -319,6 +285,65 @@ class InstantiatePartitions:
 
         using Offsets = std::vector<typename Base::Offset>;
         using Idxs = std::vector<std::array<Index, rank>>;
+
+        void prepare_for_new_locality(
+            hpx::id_type const locality_id)
+        {
+            lue_assert(locality_id);
+            _current_locality_id = locality_id;
+            _offsets.clear();
+            _idxs.clear();
+        }
+
+        template<
+            typename... Idxs>
+        void cache_partition_information(
+            typename Base::Offset const& offset,
+            Idxs const... partition_idxs)
+        {
+            // lue_assert(locality_id == _current_locality_id);
+            _offsets.push_back(offset);
+            _idxs.push_back(std::array<Index, rank>{partition_idxs...});
+        }
+
+        template<
+            typename... Idxs>
+        void instantiate_partitions()
+        {
+            // Ask for the creation of a set of partitions and assign
+            // the resulting partition clients to the correct location
+            // in the array.
+            using Partitions = typename Base::Partitions;
+            using Partition = PartitionT<Partitions>;
+
+            hpx::future<std::vector<Partition>> partitions_f{
+                this->_partition_creator.instantiate(
+                    _current_locality_id, _offsets, this->_partition_shape)};
+
+            // The collection of partitions is ready. This does not
+            // imply that the partitions themselves are ready. This
+            // does not matter though.
+
+            // Assign the partitions to their correct location in the array
+            {
+                std::vector<Partition> partitions{partitions_f.get()};
+                lue_assert(partitions.size() == _idxs.size());
+
+                for(std::size_t i = 0; i < partitions.size(); ++i)
+                {
+                    std::apply(
+
+                        [this, locality_id=_current_locality_id, partition=std::move(partitions[i])](
+                            Idxs... idxs)
+                        {
+                            this->_localities(idxs...) = locality_id;
+                            this->_partitions(idxs...) = std::move(partition);
+                        },
+
+                        _idxs[i]);
+                }
+            }
+        }
 
         hpx::id_type _current_locality_id;
 
@@ -333,17 +358,16 @@ template<
     typename Policies,
     typename Shape,
     typename Instantiator>
-PartitionedArray<OutputElementT<Instantiator>, rank<Shape>> instantiate_partitions(
+std::tuple<
+            Localities<rank<Shape>>,
+            PartitionsT<PartitionedArray<OutputElementT<Instantiator>, rank<Shape>>>
+        > instantiate_partitions2(
     Policies const& /* policies */,
-    Shape const& array_shape,
     Shape const& shape_in_partitions,
     Shape const& /* partition_shape */,
     Instantiator&& instantiator)  // The instantiator is ours
-    // std::vector<hpx::id_type> const& /* localities */)
 {
-    using Element = OutputElementT<Instantiator>;
     constexpr Rank rank{lue::rank<Shape>};
-    using Array = PartitionedArray<Element, rank>;
 
     // Pass a reference to the instantiator to the curve functions. We
     // need access to the results of the visit.
@@ -373,7 +397,8 @@ PartitionedArray<OutputElementT<Instantiator>, rank<Shape>> instantiate_partitio
 #endif
 
     // All partitions are being created. Return an array containing them.
-    return Array{array_shape, instantiator.localities(), instantiator.partitions()};
+    // return OutputArray{array_shape, instantiator.localities(), instantiator.partitions()};
+    return std::make_tuple(instantiator.localities(), instantiator.partitions());
 }
 
 
@@ -381,9 +406,11 @@ template<
     typename Policies,
     typename Shape,
     typename Functor>
-PartitionedArray<OutputElementT<Functor>, rank<Shape>> instantiate_partitions(
+std::tuple<
+            Localities<rank<Shape>>,
+            PartitionsT<PartitionedArray<OutputElementT<Functor>, rank<Shape>>>
+        > instantiate_partitions(
     Policies const& policies,
-    Shape const& array_shape,
     Shape const& shape_in_partitions,
     Shape const& partition_shape,
     Functor const& partition_creator)
@@ -393,8 +420,8 @@ PartitionedArray<OutputElementT<Functor>, rank<Shape>> instantiate_partitions(
     // remote, component server instance.
 
     using Element = OutputElementT<Functor>;
-    using Array = PartitionedArray<Element, rank<Shape>>;
-    using Partitions = PartitionsT<Array>;
+    using OutputArray = PartitionedArray<Element, rank<Shape>>;
+    using Partitions = PartitionsT<OutputArray>;
 
     Partitions partitions{shape_in_partitions};
     Count const nr_partitions = lue::nr_elements(shape_in_partitions);
@@ -428,20 +455,102 @@ PartitionedArray<OutputElementT<Functor>, rank<Shape>> instantiate_partitions(
         // Per locality, instantiate all partitions in one go
         InstantiatePartitions<Policies, rank<Shape>, Functor> instantiator{
             policies, shape_in_partitions, partition_shape, partition_creator, std::move(localities)};
-        return instantiate_partitions(
-            policies, array_shape, shape_in_partitions, partition_shape, std::move(instantiator));
+        return instantiate_partitions2(
+            policies, shape_in_partitions, partition_shape, std::move(instantiator));
     }
     else
     {
         // Instantiate each partition individually
         InstantiatePartition<Policies, rank<Shape>, Functor> instantiator{
             policies, shape_in_partitions, partition_shape, partition_creator, std::move(localities)};
-        return instantiate_partitions(
-            policies, array_shape, shape_in_partitions, partition_shape, std::move(instantiator));
+        return instantiate_partitions2(
+            policies, shape_in_partitions, partition_shape, std::move(instantiator));
     }
 }
 
 }  // namespace detail
+
+
+template<
+    typename Element,
+    lue::Rank rank>
+class InstantiateUninitialized
+{
+
+    public:
+
+        using OutputElement = Element;
+        using Partition = lue::ArrayPartition<OutputElement, rank>;
+        using Offset = lue::OffsetT<Partition>;
+        using Shape = lue::ShapeT<Partition>;
+
+        static constexpr bool instantiate_per_locality{false};
+
+        Partition instantiate(
+            hpx::id_type const locality_id,
+            lue::Index const /* partition_idx */,
+            Offset const& offset,
+            Shape const& partition_shape)
+        {
+            return hpx::async(
+
+                    [locality_id, offset, partition_shape]()
+                    {
+                        return Partition{locality_id, offset, partition_shape};
+                    }
+
+                );
+        }
+
+    private:
+
+};
+
+
+template<
+    typename Element,
+    lue::Rank rank>
+class InstantiateFilled
+{
+
+    public:
+
+        using OutputElement = Element;
+        using Partition = lue::ArrayPartition<OutputElement, rank>;
+        using Offset = lue::OffsetT<Partition>;
+        using Shape = lue::ShapeT<Partition>;
+
+        static constexpr bool instantiate_per_locality{false};
+
+        InstantiateFilled(
+            Element const fill_value):
+
+            _fill_value{fill_value}
+
+        {
+        }
+
+        Partition instantiate(
+            hpx::id_type const locality_id,
+            lue::Index const /* partition_idx */,
+            Offset const& offset,
+            Shape const& partition_shape)
+        {
+            return hpx::async(
+
+                    [locality_id, offset, partition_shape, fill_value=_fill_value]()
+                    {
+                        return Partition{locality_id, offset, partition_shape, fill_value};
+                    }
+
+                );
+        }
+
+    private:
+
+        Element const _fill_value;
+
+};
 
 
 namespace policy::create_partitioned_array {
@@ -455,6 +564,26 @@ namespace policy::create_partitioned_array {
 }  // namespace policy::create_partitioned_array
 
 
+/*!
+    @brief      Create a partitioned array
+    @param      policies Operation policies
+    @param      array_shape Shape of array to create
+    @param      partition_shape Shape of partitions to create
+    @param      partition_creator Functor responsible for instantiating the partitions
+    @param      clamp_mode How to handle the partitions at the sides to
+                make an array of @a array_shape
+    @return     Newly created partitioned array
+
+    This function creates a new array pointing to partitions that are
+    distributed over the available localities. It is responsible for
+    creating tasks that will execute on those localities. These tasks
+    use the functor passed in to instantitiate the partitions.
+
+    Possible uses of this function include creating an array and:
+    - Fill all elements with some value.
+    - Fill all elements with random values.
+    - Fill all elements with values read from a file on disk.
+*/
 template<
     typename Policies,
     typename Shape,
@@ -472,42 +601,49 @@ PartitionedArray<OutputElementT<Functor>, rank<Shape>> create_partitioned_array(
     // given that we use a certain partition shape for all partitions.
 
     using Element = OutputElementT<Functor>;
-    using Array = PartitionedArray<Element, rank<Shape>>;
+    using OutputArray = PartitionedArray<Element, rank<Shape>>;
 
     // Given the shape of the array and the shape of the array partitions,
     // determine the shape of the array in partitions
 
     Shape const shape_in_partitions = lue::shape_in_partitions(array_shape, partition_shape);
 
-    Array array{detail::instantiate_partitions(
-        policies, array_shape, shape_in_partitions, partition_shape, partition_creator)};
+    // OutputArray array{detail::instantiate_partitions(
+    auto [localities, partitions] = detail::instantiate_partitions(
+        policies, shape_in_partitions, partition_shape, partition_creator);
 
-    // TODO
+    // In most cases, the array just created is too large. Some cells
+    // extent beyond the array size requested. How to handle this depends
+    // on the clamp_mode passed in.
+
     switch(clamp_mode)
     {
-        case Array::ClampMode::shrink:
+        case OutputArray::ClampMode::shrink:
         {
-    //         // Fix too large extent by shrinking overflowing partitions. This
-    //         // may result is partitions that are too small for the focal
-    //         // algorithms. Therefore, the alternative approach is more robust.
-    //         clamp_array_shrink(shape_in_partitions, partition_shape);
-    //         break;
+            // Fix too large extent by shrinking overflowing partitions. This
+            // may result is partitions that are too small for the focal
+            // algorithms. Therefore, the alternative approach is more robust.
+            detail::clamp_array_shrink<Element, rank<Shape>>(
+                partitions, array_shape, shape_in_partitions, partition_shape);
+            break;
         }
-        case Array::ClampMode::merge:
+        case OutputArray::ClampMode::merge:
         {
-    //         // Fix too large extent by merging relevant part of overflowing
-    //         // partitions with bordering partitions. These will become larger
-    //         // than the requested partition size. But focal algorithms will
-    //         // behave more robust. Partitions in the array will be at least as
-    //         // large as the partitions shape requested.
-    //         clamp_array_merge(shape_in_partitions, partition_shape);
-    //         break;
+            // Fix too large extent by merging relevant part of overflowing
+            // partitions with bordering partitions. These will become larger
+            // than the requested partition size. But focal algorithms will
+            // behave more robust. Partitions in the array will be at least as
+            // large as the partitions shape requested.
+            detail::clamp_array_merge<Element, rank<Shape>>(
+                localities, partitions, array_shape, shape_in_partitions, partition_shape);
+            break;
         }
     }
 
+    // TODO
     // assert_invariants();
 
-    return array;
+    return OutputArray{array_shape, localities, std::move(partitions)};
 }
 
 

@@ -1,6 +1,10 @@
 #define BOOST_TEST_MODULE lue framework algorithm create_partitioned_array
+#include "lue/framework/algorithm/all.hpp"
+#include "lue/framework/algorithm/comparison.hpp"
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
+#include "lue/framework/algorithm/partition_count_unique.hpp"
 #include "lue/framework/algorithm/policy.hpp"
+#include "lue/framework/algorithm/unique.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/compare.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
@@ -13,8 +17,9 @@ std::size_t const rank = 2;
 
 using Array = lue::PartitionedArray<Element, rank>;
 using Shape = lue::ShapeT<Array>;
+using Offset = lue::OffsetT<Array>;
 
-Shape const array_shape{{100, 100}};
+Shape const array_shape{{60, 40}};
 Shape const partition_shape{{10, 10}};
 
 
@@ -35,14 +40,17 @@ class NumberPartitionsIndividually
 
         Partition instantiate(
             hpx::id_type const locality_id,
+            lue::Index const partition_idx,
             Offset const& offset,
             Shape const& partition_shape)
         {
+            Element const fill_value{partition_idx};
+
             return hpx::async(
 
-                    [locality_id, offset, partition_shape]()
+                    [locality_id, offset, partition_shape, fill_value]()
                     {
-                        return Partition{locality_id, offset, partition_shape};
+                        return Partition{locality_id, offset, partition_shape, fill_value};
                     }
 
                 );
@@ -165,53 +173,110 @@ BOOST_AUTO_TEST_CASE(instantiate_partitions_individually)
 
     Array array = lue::create_partitioned_array(array_shape, partition_shape, Functor{});
 
-    // TODO Test results...
-    // BOOST_CHECK(false);
-
     // The number of unique values per partition is 1
-    // TODO Depends on availability of partition_count_unique algorithm, gh300
     // Per partition a single count >= 0
-    // PartitionedArray<Count, rank> counts = partition_count_unique(array);
-    // BOOST_CHECK(lue::all(lue::equal(counts, 1)).get());
+    lue::PartitionedArray<lue::Count, 2> counts = lue::partition_count_unique(array);
+    BOOST_CHECK(lue::all(lue::equal_to(counts, lue::Count{1})).get());
 
     // The number of unique values in the array equals the number of partitions
-    // PartitionedArray<Count, 1> unique_values = lue::unique(array);
-    // BOOST_CHECK(lue::nr_elements(unique_values) == lue::nr_partitions(array));
+    lue::PartitionedArray<lue::Count, 1> unique_values = lue::unique(array).get();
+    BOOST_CHECK_EQUAL(lue::nr_elements(unique_values), lue::nr_partitions(array));
 }
 
 
-// BOOST_AUTO_TEST_CASE(instantiate_partitions_per_locality)
-// {
-//     // Create a partitioned array in which the elements of the partitions
-//     // have a unique value per partition per locality. The partitions
-//     // instantiated within the same locality contain the same numbers. The
-//     // elements within each partition have the same number.
-// 
-//     using Functor = NumberPartitionsPerLocality<Element, rank>;
-// 
-//     Array array = lue::create_partitioned_array(array_shape, partition_shape, Functor{});
-// 
-//     // TODO Test results...
-//     BOOST_CHECK(false);
-// 
-//     // The number of unique values per partition is 1
-//     // PartitionedArray<Count, rank> counts = partition_count_unique(array);
-//     // future<Count> sum = lue::sum(counts);
-// 
-//     // The number of unique values in the array equals the number of localities
-//     // PartitionedArray<Count, 1> unique_values = lue::unique(array);
-//     // BOOST_CHECK(lue::nr_elements(unique_values) == hpx::nr_localities());
-// }
+BOOST_AUTO_TEST_CASE(instantiate_partitions_per_locality)
+{
+    // Create a partitioned array in which the elements of the partitions
+    // have a unique value per partition per locality. The partitions
+    // instantiated within the same locality contain the same numbers. The
+    // elements within each partition have the same number.
+
+    using Functor = NumberPartitionsPerLocality<Element, rank>;
+
+    Array array = lue::create_partitioned_array(array_shape, partition_shape, Functor{});
+
+    // The number of unique values per partition is 1
+    lue::PartitionedArray<lue::Count, rank> counts = lue::partition_count_unique(array);
+    BOOST_CHECK(lue::all(lue::equal_to(counts, lue::Count{1})).get());
+
+    // The number of unique values in the array equals the number of localities
+    lue::PartitionedArray<lue::Count, 1> unique_values = lue::unique(array).get();
+    BOOST_CHECK_EQUAL(lue::nr_elements(unique_values), hpx::get_num_localities().get());
+}
 
 
-// TODO
-// BOOST_AUTO_TEST_CASE(clamp_mode_merge)
-// {
-//     BOOST_CHECK(false);
-// }
-// 
-// 
-// BOOST_AUTO_TEST_CASE(clamp_mode_shrink)
-// {
-//     BOOST_CHECK(false);
-// }
+BOOST_AUTO_TEST_CASE(clamp_mode_merge)
+{
+    // Create a partitioned array and verify the partitions at the side
+    // have merged
+
+    lue::Count const nr_rows = 30;
+    lue::Count const nr_cols = 40;
+    Shape const array_shape{{nr_rows, nr_cols}};
+
+    // 2 x 2 partitions, with clamping
+    lue::Count const nr_rows_partition = 20;
+    lue::Count const nr_cols_partition = 30;
+    Shape const partition_shape{{nr_rows_partition, nr_cols_partition}};
+
+    using Functor = NumberPartitionsIndividually<Element, rank>;
+
+    Array array = lue::create_partitioned_array(
+        array_shape, partition_shape, Functor{}, Array::ClampMode::merge);
+
+    BOOST_CHECK_EQUAL(array.nr_elements(), nr_rows * nr_cols);
+    BOOST_CHECK_EQUAL(array.shape(), array_shape);
+    BOOST_CHECK_EQUAL(array.nr_partitions(), 1);
+
+    auto const& partitions = array.partitions();
+    lue::wait_all(partitions);
+
+    BOOST_CHECK_EQUAL(partitions(0, 0).shape().get(), array_shape);
+
+    BOOST_CHECK_EQUAL((partitions(0, 0).offset().get()), Offset({ 0,  0}));
+}
+
+
+BOOST_AUTO_TEST_CASE(clamp_mode_shrink)
+{
+    // Create a partitioned array and verify the partitions at the side
+    // have shrunken
+
+    lue::Count const nr_rows = 30;
+    lue::Count const nr_cols = 40;
+    Shape const array_shape{{nr_rows, nr_cols}};
+
+    // 2 x 2 partitions, with clamping
+    lue::Count const nr_rows_partition = 20;
+    lue::Count const nr_cols_partition = 30;
+    Shape const partition_shape{{nr_rows_partition, nr_cols_partition}};
+
+    using Functor = NumberPartitionsIndividually<Element, rank>;
+
+    Array array = lue::create_partitioned_array(
+        array_shape, partition_shape, Functor{}, Array::ClampMode::shrink);
+
+    BOOST_CHECK_EQUAL(array.nr_elements(), nr_rows * nr_cols);
+    BOOST_CHECK_EQUAL(array.shape(), array_shape);
+    BOOST_CHECK_EQUAL(array.nr_partitions(), 4);
+
+    auto const& partitions = array.partitions();
+    lue::wait_all(partitions);
+
+    BOOST_CHECK_EQUAL(partitions(0, 0).shape().get(), partition_shape);
+    BOOST_CHECK_EQUAL(partitions(0, 1).shape().get(), Shape({20, 10}));
+    BOOST_CHECK_EQUAL(partitions(1, 0).shape().get(), Shape({10, 30}));
+    BOOST_CHECK_EQUAL(partitions(1, 1).shape().get(), Shape({10, 10}));
+
+    BOOST_CHECK_EQUAL((partitions(0, 0).offset().get()), Offset({ 0,  0}));
+    BOOST_CHECK_EQUAL((partitions(0, 1).offset().get()), Offset({ 0, 30}));
+    BOOST_CHECK_EQUAL((partitions(1, 0).offset().get()), Offset({20,  0}));
+    BOOST_CHECK_EQUAL((partitions(1, 1).offset().get()), Offset({20, 30}));
+}
+
+
+BOOST_AUTO_TEST_CASE(all_no_data)
+{
+    // TODO Depends on gh297 for easy creation of DefaultValuePolicies
+    BOOST_WARN(false);
+}
