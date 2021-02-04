@@ -1,6 +1,7 @@
 #pragma once
 #include "lue/framework/algorithm/binary_local_operation.hpp"
 #include "lue/framework/algorithm/policy/default_policies.hpp"
+#include "lue/framework/algorithm/policy/default_value_policies.hpp"
 
 
 namespace lue {
@@ -28,8 +29,7 @@ public:
 }  // namespace detail
 
 
-namespace policy {
-namespace add {
+namespace policy::add {
 
 template<
     typename OutputElement,
@@ -38,8 +38,15 @@ using DefaultPolicies = policy::DefaultPolicies<
     OutputElements<OutputElement>,
     InputElements<InputElement, InputElement>>;
 
-}  // namespace add
-}  // namespace policy
+
+template<
+    typename OutputElement,
+    typename InputElement>
+using DefaultValuePolicies = policy::DefaultValuePolicies<
+    OutputElements<OutputElement>,
+    InputElements<InputElement, InputElement>>;
+
+}  // namespace policy::add
 
 
 LUE_BINARY_LOCAL_OPERATION_OVERLOADS(add, detail::Add)

@@ -43,6 +43,7 @@ PartitionedArray<Element, rank> create_partitioned_array(
     //     mode it doesn't (yet), because of validation.
     using Array = PartitionedArray<Element, rank>;
 
+    // TODO Replace this with new create_partitioned_array algorithm
     return Array{array_shape, partition_shape, pybind11::cast<Element>(fill_value), Array::ClampMode::merge};
 }
 

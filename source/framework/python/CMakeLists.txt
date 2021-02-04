@@ -2,6 +2,7 @@
 # add_test_conditionally(test)
 
 pybind11_add_module(lue_py_framework SHARED SYSTEM THIN_LTO
+    src/algorithm/add
     src/algorithm/local_operation
     src/algorithm/maximum
     src/algorithm/minimum
