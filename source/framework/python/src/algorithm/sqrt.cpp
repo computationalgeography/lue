@@ -24,9 +24,7 @@ void bind_sqrt(
     pybind11::module& module)
 {
     // TODO How to document these?
-    module.def("sqrt", sqrt<float, 1>);
     module.def("sqrt", sqrt<float, 2>);
-    module.def("sqrt", sqrt<double, 1>);
     module.def("sqrt", sqrt<double, 2>);
 }
 
