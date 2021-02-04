@@ -4,10 +4,10 @@
         "shape": [10000, 10000]
     },
     "partition": {
-        "shape": [100, 100],
+        "shape": [200, 200],
         "range": {
-            "max_nr_elements": 200000,
-            "multiplier": 2.0,
+            "max_nr_elements": 750000,
+            "multiplier": 2.5,
             "method": "linear"
         }
     }

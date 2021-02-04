@@ -1,7 +1,6 @@
 {
     "scenario": "thread_cluster_node",
     "count": 5,
-    # "max_tree_depth": 5,
     "locality_per": "cluster_node",
     "worker": {
         "type": "thread",
