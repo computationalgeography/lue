@@ -1,6 +1,6 @@
 add_subdirectory(shared)
 
-add_subdirectory(command)
+# add_subdirectory(command)
 
 if(LUE_BUILD_DATA_MODEL)
     add_subdirectory(data_model)
