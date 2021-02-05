@@ -28,6 +28,23 @@ hpx::future<void> when_all_get(
         );
 }
 
+template<
+    typename Shape>
+Shape hyperslab_to_shape(
+    hdf5::Hyperslab const& hyperslab)
+{
+    // Return the shape represented by the hyperslab passed in
+    lue_assert(std::all_of(hyperslab.stride().begin(), hyperslab.stride().end(),
+        [](auto const s) { return s == 1; }));
+    auto const& count{hyperslab.count()};
+    Shape shape;
+
+    lue_assert(count.size() == shape.size());
+    std::copy(count.begin(), count.end(), shape.begin());
+
+    return shape;
+}
+
 
 template<
     Rank rank>
@@ -50,6 +67,9 @@ template<
 hdf5::Hyperslab hyperslab(
     PartitionServer const& partition_server)
 {
+    // Return the part of the array represented by the partition server
+    // instance passed in, as an HDF5 hyperslab. The result is useful
+    // for performing I/O to the corresponding HDF5 dataset.
     return hyperslab(partition_server.offset(), partition_server.shape());
 }
 

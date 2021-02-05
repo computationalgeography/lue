@@ -38,8 +38,11 @@ class NumberPartitionsIndividually
 
         static constexpr bool instantiate_per_locality{false};
 
+        template<
+            typename Policies>
         Partition instantiate(
             hpx::id_type const locality_id,
+            [[maybe_unused]] Policies const& policies,
             lue::Index const partition_idx,
             Offset const& offset,
             Shape const& partition_shape)
@@ -133,8 +136,11 @@ class NumberPartitionsPerLocality
 
         static constexpr bool instantiate_per_locality{true};
 
+        template<
+            typename Policies>
         hpx::future<std::vector<Partition>> instantiate(
             hpx::id_type const locality_id,
+            [[maybe_unused]] Policies const& policies,
             std::vector<Offset> offsets,
             Shape const& partition_shape)
         {

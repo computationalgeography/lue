@@ -1,7 +1,10 @@
 #pragma once
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/io/util.hpp"
+#include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/policy/default_policies.hpp"
+#include "lue/framework/algorithm/policy/default_value_policies.hpp"
+#include "lue/data_model/hl/raster_view.hpp"
 #include "lue/data_model.hpp"
 // #ifdef HDF5_IS_PARALLEL
 // Only available in case MPI is used in HPX
@@ -100,19 +103,6 @@ struct ReadIntoPartitionsAction:
 }  // namespace detail
 
 
-namespace policy {
-namespace read_into {
-
-template<
-    typename OutputElement>
-using DefaultPolicies = policy::DefaultPolicies<
-    OutputElements<OutputElement>,
-    InputElements<>>;
-
-}  // namespace read_into
-}  // namespace policy
-
-
 template<
     typename Policies,
     typename Element,
@@ -166,241 +156,107 @@ template<
 }
 
 
+namespace detail {
+
+    template<
+        typename Count,
+        Rank rank>
+    Shape<Count, rank> array_shape(
+        std::string const& array_pathname)
+    {
+        auto const [dataset_pathname, phenomenon_name, property_set_name, property_name] =
+            parse_array_pathname(array_pathname);
+
+        namespace lh5 = lue::hdf5;
+        namespace ldm = lue::data_model;
+
+        using DatasetPtr = std::shared_ptr<ldm::Dataset>;
+        using RasterView = ldm::constant::RasterView<DatasetPtr>;
+
+        auto input_dataset_ptr = std::make_shared<ldm::Dataset>(
+            ldm::open_dataset(dataset_pathname, H5F_ACC_RDONLY));
+
+        lh5::Shape grid_shape{};
+
+        // Open a view on the raster
+        RasterView input_raster_view{input_dataset_ptr, phenomenon_name, property_set_name};
+
+        // Open raster layer and determine its shape
+        auto const flow_direction_layer{input_raster_view.layer(property_name)};
+
+        grid_shape = lh5::Shape{input_raster_view.grid_shape()};
+
+        using Shape = lue::Shape<Count, rank>;
+
+        lue_assert(rank == 2);  // TODO(KDJ)
+
+        return Shape{{
+            static_cast<typename Shape::value_type>(grid_shape[0]),
+            static_cast<typename Shape::value_type>(grid_shape[1])}};
+    }
+
+}  // namespace detail
+
+
+namespace policy::read_into {
+
+    template<
+        typename OutputElement>
+    using DefaultPolicies = policy::DefaultPolicies<
+        OutputElements<OutputElement>,
+        InputElements<>>;
+
+
+    template<
+        typename OutputElement>
+    using DefaultValuePolicies = policy::DefaultValuePolicies<
+        OutputElements<OutputElement>,
+        InputElements<>>;
+
+}  // namespace policy::read_into
+
+
+template<
+    typename Policies,
+    typename Element,
+    Rank rank>
+PartitionedArray<Element, rank> read(
+    Policies const& policies,
+    std::string const& array_pathname,
+    ShapeT<PartitionedArray<Element, rank>> const& partition_shape,
+    data_model::ID const object_id)
+{
+    // Open dataset and figure out what the properties are of the
+    // array. Return a partitioned array corresponding with these properties.
+
+    using Array = PartitionedArray<Element, rank>;
+    using Functor = InstantiateUninitialized<Element, rank>;
+    using Shape = ShapeT<Array>;
+
+    Shape const array_shape{detail::array_shape<Count, rank>(array_pathname)};
+
+    // Create partitioned array
+    Array array{create_partitioned_array(policies, array_shape, partition_shape, Functor{})};
+
+    // Read elements from dataset into array
+    // TODO(KDJ) This blocks until the data is read. Can we do better?
+    read_into(policies, array_pathname, object_id, array).get();
+
+    return array;
+}
+
+
 template<
     typename Element,
     Rank rank>
-[[nodiscard]] hpx::future<void> read_into(
+PartitionedArray<Element, rank> read(
     std::string const& array_pathname,
-    data_model::ID const object_id,
-    PartitionedArray<Element, rank>& array)
+    ShapeT<PartitionedArray<Element, rank>> const& partition_shape,
+    data_model::ID const object_id)
 {
     using Policies = policy::read_into::DefaultPolicies<Element>;
 
-    return read_into(Policies{}, array_pathname, object_id, array);
+    return read(Policies{}, array_pathname, partition_shape, object_id);
 }
-
-
-// template<
-//     typename Policies,
-//     typename Partition>
-// class ReadPartition
-// {
-//     public:
-// 
-//         static constexpr bool instantiate_per_locality{true};
-// 
-//         // ReadPartition():
-// 
-//     private:
-// 
-// };
-// 
-// 
-// template<
-//     typename Policies,
-//     typename Element,
-//     Rank rank>
-// PartitionedArray<Element, rank> read(
-//     Policies const& policies,
-//     std::string const& array_pathname,
-//     ShapeT<PartitionedArray<Element, rank>> const& partition_shape,
-//     data_model::ID const object_id)
-// {
-//     // Open dataset and figure out what the properties are of the
-//     // array. Return a partitioned array corresponding with these properties.
-// 
-//     // Array array{array_shape, partition_shape};
-// 
-//     // Given array_shape, partition_shape and a functor that instantiates
-//     // a new partitions and fills it with values, create a new array. Very
-//     // similar to the PartitionedArray constructor, except:
-//     // - Value to put in the partition are created by the functor
-//     //     - Uniform
-//     //     - Fill
-//     //     - Read from dataset
-//     //     - Do nothing (uninitialized)
-//     //     - ...
-//     // - In the case of read, the actions that create partitions must
-//     //     execute collectively per locality, not individually per partition.
-// 
-// 
-//     using Array = PartitionedArray<Element, rank>;
-//     using Partition = PartitionT<Array>;
-//     using Functor = ReadPartition<Policies, Partition>;
-//     using Shape = ShapeT<Array>;
-// 
-//     Shape const array_shape{array_shape(array_pathname)};
-// 
-//     return create_partitioned_array(
-//         policies, array_shape, partition_shape, Functor{array_pathname, object_id});
-// }
 
 }  // namespace lue
-
-
-// https://www.hdfgroup.org/2020/06/webinar-followup-parallel-i-o-with-hdf5-and-performance-tuning-techniques/
-// https://www.hdfgroup.org/2020/06/webinar-followup-parallel-i-o-with-hdf5-and-performance-tuning-techniques/
-
-
-// https://portal.hdfgroup.org/display/HDF5/Parallel+HDF5
-
-// Just use parallel I/O if it is available
-
-
-// Not for shared memory programming
-
-
-// collective
-// - all processes must participate in the right order
-// - independent means not collective
-// - collective is not necessarily synchronous
-// - most PHDF5 APIs are collective. E.g.:
-//     - file operations: Fcreate, Fopen, Fclose
-//     - object creation: Dcreate, Dopen, Dclose
-//     - object structure: Dextend (increase dimension sizes)
-//     - Array data transfer can be collective or independent
-
-
-// Each process (locality)
-// - setup MPI-IO access template
-//     H5Pset_fapl_mpio(...)
-// - open file
-//     H5Fcreate(filename, ..., access_property_list)
-// - close file
-//     H5Fclose(file_id)
-
-
-
-/*
-   // Per process do something like this:
-
-   hdf5::File::AccessPropertyList access_property_list{};
-
-   if(hdf5::BuildOptions::parallel_io)
-   {
-       ::MPI_Comm communicator{...};  // MPI_COMM_WORLD
-       ::MPI_Info info{...};  // MPI_INFO_NULL
-
-       access_property_list.use_mpi_communicator(communicator, info);
-   }
-
-   hdf5::File file{name, access_property_list};
-
-
-   // Per process create / open datasets
-   // Per process extend dataset with unlimited dimensions before writing to it
-
-   // If all processes must do the same thing collectively, they must
-   // have more global knowledge than they might have. → What knowledge?
-
-   // Reading:
-   // - All processes that have opened a dataset may do collective I/O
-   // - Each process may do independent and arbitrary number of I/O access calls
-
-
-Accessing a dataset:
-
-
-Dataset::TransferPropertyList transfer_property_list{};
-
-if(hdf5::BuildOptions::parallel_io)
-{
-    ::H5FD_mpio_xfer_t transfer_mode{...};  // H5D_MPIO_COLLECTIVE / H5D_MPIO_INDEPENDENT (default)
-
-    transfer_property_list.set_transfer_mode();
-
-    // Pass this property_list to dataset.read / dataset.write
-}
-
-
-Each process opens a file. What if multiple read operations are performed
-on the same file? This calls for some I/O service per process that keeps
-track of this? Once all processes have opened the file for some I/O
-operation, the file doesn't need to be opened again for another I/O
-operation. Alternative: aggregate I/O operations that access the same
-file and be done with it.
-
-read(filename, ...)
-
-
-
-All functions that modify structural metadata are collective!!!
-
-
-
-On the root locality:
-
-template<
-    typename Array>
-Array& read_into(
-    Array& array,
-    std::string const& raster_pathname,
-    typename data_model::constant::RasterView<DatasetPtr>::Layer const& layer)
-
-Multiple of these calls may be done. How to make sure they use the same
-HDF5 file thingy? Maybe, on the localities, have some static global
-thing containing open files? These must be cleared once nobody accesses
-them anymore though.
-
-
-Collectiveness is indicated by function parameters, not by function names
-(as in MPI API)
-
-Collective I/O will combine many small independent calls into few but
-bigger calls.
-
-
-
-Three options (see what works better)
-- Operate on all chunks in one collective I/O operation: "linked chunk I/O"
-- Operate on each chunk collectively: "multi-chunk I/O"
-- Break collective I/O and perform I/O on each chunk independently:
-    also in "multi-chunk I/O" algorithm
-
-Collective chunk mode
-- One linked-chunk I/O? (optional user input)
-    - yes: One collective I/O call for all chunks
-    - no: Multi-chunk I/O
-        Collective I/O? (optional user input)
-        - yes: Collective I/O per chunk
-        - no: Independent I/O
-
-
-Sources for chunking:
-- Partition size used by framework (memory)
-- Chunks used by data model (file)
-- Chunking used by parallel filesystem (file)
-
-Perform I/O per thread or per process?
-- If per thread, then each of them must perform all collective calls. This
-    seem unfeasible.
-
-Metadata operations
-- Create / remove dataset, group, attribute, ...
-- Extent dataset dimensions
-- Modify group hierarchy
-- ...
-
-All metadata operations are collective: all processes have to call that operation.
-→ When running 1000 processes and one needs to create a dataset, *all*
-    processes must call H5Dcreate to create 1 dataset...!!!
-
-Flushing the metadata cache
-- Single process (process 0) write
-- Distributed write
-
-h5perf
-- Provides indication of I/O speed upper limits
-
-
-autotuning!
-
-
-Use h5c++ -show to see command line options to use. (Or query CMake variables?)
-    /usr/lib/x86_64-linux-gnu/hdf5/openmpi/libhdf5.settings
-
-Collective I/O: attempts to combine multiple smaller independent I/O
-ops into fewer larger ops
-
-Most PHDF5 APIs are collective.
-*/
