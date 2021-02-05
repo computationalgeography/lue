@@ -97,9 +97,6 @@ int DescribeFlowDirection::run_implementation()
     using FlowDirectionArray = PartitionedArray<FlowDirectionElement, rank>;
 
     using Shape = ShapeT<FlowDirectionArray>;
-    Shape const array_shape{{
-        static_cast<Shape::value_type>(grid_shape[0]),
-        static_cast<Shape::value_type>(grid_shape[1])}};
     Shape const partition_shape =
         [](
             std::string const& partition_shape_string)
@@ -113,25 +110,22 @@ int DescribeFlowDirection::run_implementation()
             return Shape{std::stoi(extents[0]), std::stoi(extents[1])};
         }(partition_shape_string);
 
-    ElevationArray elevation_array{array_shape, partition_shape};
-    FlowDirectionArray flow_direction_array{array_shape, partition_shape};
-
     std::string array_pathname;
-    std::vector<hpx::future<void>> arrays_read;
 
     // Read layer into partitioned array, updating the existing partitions
     array_pathname = fmt::format("{}/{}/{}/{}",
         input_dataset_pathname, phenomenon_name, property_set_name, elevation_layer_name);
-    arrays_read.push_back(read_into(array_pathname, object_id, elevation_array));
-    // TODO ElevationArray elevation_array{read(array_pathname, partition_shape, object_id)};
+    ElevationArray elevation_array{
+        read<policy::read_into::DefaultValuePolicies<ElevationElement>, ElevationElement, rank>(
+            policy::read_into::DefaultValuePolicies<ElevationElement>{},
+            array_pathname, partition_shape, object_id)};
 
     array_pathname = fmt::format("{}/{}/{}/{}",
         input_dataset_pathname, phenomenon_name, property_set_name, flow_direction_layer_name);
-    arrays_read.push_back(read_into(array_pathname, object_id, flow_direction_array));
-    // TODO FlowDirectionArray flow_direction_array{read(array_pathname, partition_shape, object_id)};
-
-    // Wait for all partitions to have been read
-    lue::detail::when_all_get(move(arrays_read)).get();
+    FlowDirectionArray flow_direction_array{
+        read<policy::read_into::DefaultValuePolicies<FlowDirectionElement>, FlowDirectionElement, rank>(
+            policy::read_into::DefaultValuePolicies<FlowDirectionElement>{},
+            array_pathname, partition_shape, object_id)};
 
     // -------------------------------------------------------------------------
     // Call operations for characterizing the flow direction network
