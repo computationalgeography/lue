@@ -34,13 +34,5 @@ TYPE_TRAITS(double, "float64")
 
 #undef TYPE_TRAITS
 
-
-template<
-    typename Element>
-std::string as_string()
-{
-    return TypeTraits<Element>::name;
-}
-
 }  // namespace framework
 }  // namespace lue

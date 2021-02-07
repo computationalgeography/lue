@@ -1,6 +1,7 @@
 #pragma once
 #include "lue/framework/algorithm/detail/clamp_array.hpp"
 #include "lue/framework/algorithm/policy/default_policies.hpp"
+#include "lue/framework/algorithm/policy/default_value_policies.hpp"
 #include "lue/framework/algorithm/functor_traits.hpp"
 #include "lue/framework/core/component/partitioned_array.hpp"
 
@@ -568,6 +569,12 @@ namespace policy::create_partitioned_array {
     template<
         typename OutputElement>
     using DefaultPolicies = policy::DefaultPolicies<
+        OutputElements<OutputElement>,
+        InputElements<>>;
+
+    template<
+        typename OutputElement>
+    using DefaultValuePolicies = policy::DefaultValuePolicies<
         OutputElements<OutputElement>,
         InputElements<>>;
 

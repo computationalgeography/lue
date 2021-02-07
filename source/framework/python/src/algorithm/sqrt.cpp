@@ -2,31 +2,29 @@
 #include <pybind11/pybind11.h>
 
 
-namespace lue {
-namespace framework {
-namespace {
+namespace lue::framework {
+    namespace {
 
-template<
-    typename Element,
-    Rank rank>
-PartitionedArray<Element, rank> sqrt(
-    PartitionedArray<Element, rank> const& array)
-{
-    using Policies = policy::sqrt::DefaultValuePolicies<Element>;
+        template<
+            typename Element,
+            Rank rank>
+        PartitionedArray<Element, rank> sqrt(
+            PartitionedArray<Element, rank> const& array)
+        {
+            using Policies = policy::sqrt::DefaultValuePolicies<Element>;
 
-    return sqrt(Policies{}, array);
-}
+            return sqrt(Policies{}, array);
+        }
 
-}  // Anonymous namespace
+    }  // Anonymous namespace
 
 
-void bind_sqrt(
-    pybind11::module& module)
-{
-    // TODO How to document these?
-    module.def("sqrt", sqrt<float, 2>);
-    module.def("sqrt", sqrt<double, 2>);
-}
+    void bind_sqrt(
+        pybind11::module& module)
+    {
+        // TODO How to document these?
+        module.def("sqrt", sqrt<float, 2>);
+        module.def("sqrt", sqrt<double, 2>);
+    }
 
-}  // namespace framework
-}  // namespace lue
+}  // namespace lue::framework

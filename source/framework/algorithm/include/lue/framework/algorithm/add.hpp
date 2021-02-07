@@ -31,20 +31,20 @@ public:
 
 namespace policy::add {
 
-template<
-    typename OutputElement,
-    typename InputElement>
-using DefaultPolicies = policy::DefaultPolicies<
-    OutputElements<OutputElement>,
-    InputElements<InputElement, InputElement>>;
+    template<
+        typename OutputElement,
+        typename InputElement>
+    using DefaultPolicies = policy::DefaultPolicies<
+        OutputElements<OutputElement>,
+        InputElements<InputElement, InputElement>>;
 
 
-template<
-    typename OutputElement,
-    typename InputElement>
-using DefaultValuePolicies = policy::DefaultValuePolicies<
-    OutputElements<OutputElement>,
-    InputElements<InputElement, InputElement>>;
+    template<
+        typename OutputElement,
+        typename InputElement>
+    using DefaultValuePolicies = policy::DefaultValuePolicies<
+        OutputElements<OutputElement>,
+        InputElements<InputElement, InputElement>>;
 
 }  // namespace policy::add
 
