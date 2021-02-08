@@ -97,19 +97,19 @@ namespace lue::framework {
             // a - b, b - a, a -= b
             class_
                 .def("__sub__", [](Array const& argument1, Array const& argument2)
-                    { return sub(argument1, argument2); },
+                    { return subtract(argument1, argument2); },
                     pybind11::is_operator())
                 .def("__sub__", [](Array const& argument1, Element const argument2)
-                    { return sub(argument1, argument2); },
+                    { return subtract(argument1, argument2); },
                     pybind11::is_operator())
                 .def("__sub__", [](Array const& argument1, ElementF const& argument2)
-                    { return sub(argument1, argument2); },
+                    { return subtract(argument1, argument2); },
                     pybind11::is_operator())
                 .def("__rsub__", [](Element const argument1, Array const& argument2)
-                    { return sub(argument1, argument2); },
+                    { return subtract(argument1, argument2); },
                     pybind11::is_operator())
                 .def("__rsub__", [](Array const& argument2, ElementF const& argument1)
-                    { return sub(argument1, argument2); },
+                    { return subtract(argument1, argument2); },
                     pybind11::is_operator())
                 ;
 
