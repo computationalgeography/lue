@@ -4,9 +4,26 @@
 #include "lue/framework/algorithm/policy/default_value_policies.hpp"
 #include "lue/framework/algorithm/functor_traits.hpp"
 #include "lue/framework/core/component/partitioned_array.hpp"
+#include "lue/framework/core/domain_decomposition.hpp"
+#include "lue/framework/core/hilbert_curve.hpp"
+#include "lue/framework/core/linear_curve.hpp"
+#include "lue/framework/core/math.hpp"
 
 
 namespace lue {
+
+    enum class ClampMode
+    {
+
+        //! Shrink border partitions
+        shrink,
+
+        //! Enlarge border partitions
+        merge
+
+    };
+
+
 namespace detail {
 
 class LocalityIdxByPartitionIdx
@@ -479,7 +496,7 @@ std::tuple<
 template<
     typename Element,
     lue::Rank rank>
-class InstantiateUninitialized
+class InstantiateDefaultInitialized
 {
 
     public:
@@ -564,6 +581,61 @@ class InstantiateFilled
 };
 
 
+template<
+    typename Element,
+    lue::Rank rank>
+class FunctorTraits<
+    InstantiateFilled<Element, rank>>
+{
+
+    public:
+
+        static constexpr bool const is_functor{true};
+
+};
+
+
+template<
+    typename Element,
+    lue::Rank rank>
+class FunctorTraits<
+    InstantiateDefaultInitialized<Element, rank>>
+{
+
+    public:
+
+        static constexpr bool const is_functor{true};
+
+};
+
+
+// TODO, as part of range algorithm
+// template<
+//     typename Element,
+//     lue::Rank rank>
+// class InstantiateRange
+// {
+// }
+
+
+// TODO, as part of uniform algorithm
+// template<
+//     typename Element,
+//     lue::Rank rank>
+// class InstantiateUniform
+// {
+// }
+
+
+// TODO, as part of unique algorithm
+// template<
+//     typename Element,
+//     lue::Rank rank>
+// class InstantiateUnique
+// {
+// }
+
+
 namespace policy::create_partitioned_array {
 
     template<
@@ -603,15 +675,14 @@ namespace policy::create_partitioned_array {
 */
 template<
     typename Policies,
-    typename Shape,
-    typename Functor>
+    typename Functor,
+    typename Shape>
 PartitionedArray<OutputElementT<Functor>, rank<Shape>> create_partitioned_array(
     Policies const& policies,
     Shape const& array_shape,
     Shape const& partition_shape,
     Functor const& partition_creator,
-    typename PartitionedArray<OutputElementT<Functor>, rank<Shape>>::ClampMode const clamp_mode=
-        PartitionedArray<OutputElementT<Functor>, rank<Shape>>::ClampMode::merge)
+    ClampMode const clamp_mode=ClampMode::merge)
 {
     // Create the array partitions that, together make up the partitioned
     // array. Note that the extent of this array might be too large,
@@ -635,7 +706,7 @@ PartitionedArray<OutputElementT<Functor>, rank<Shape>> create_partitioned_array(
 
     switch(clamp_mode)
     {
-        case OutputArray::ClampMode::shrink:
+        case ClampMode::shrink:
         {
             // Fix too large extent by shrinking overflowing partitions. This
             // may result is partitions that are too small for the focal
@@ -644,7 +715,7 @@ PartitionedArray<OutputElementT<Functor>, rank<Shape>> create_partitioned_array(
                 partitions, array_shape, shape_in_partitions, partition_shape);
             break;
         }
-        case OutputArray::ClampMode::merge:
+        case ClampMode::merge:
         {
             // Fix too large extent by merging relevant part of overflowing
             // partitions with bordering partitions. These will become larger
@@ -662,20 +733,58 @@ PartitionedArray<OutputElementT<Functor>, rank<Shape>> create_partitioned_array(
 
 
 template<
+    typename Functor,
     typename Shape,
-    typename Functor>
+    // Select cases where Functor is passed, instead of Element
+    std::enable_if_t<is_functor_v<Functor>>* =nullptr>
 PartitionedArray<OutputElementT<Functor>, rank<Shape>> create_partitioned_array(
     Shape const& array_shape,
     Shape const& partition_shape,
     Functor const& partition_creator,
-    typename PartitionedArray<OutputElementT<Functor>, rank<Shape>>::ClampMode const clamp_mode=
-        PartitionedArray<OutputElementT<Functor>, rank<Shape>>::ClampMode::merge)
+    ClampMode const clamp_mode=ClampMode::merge)
 {
     using Element = OutputElementT<Functor>;
     using Policies = policy::create_partitioned_array::DefaultPolicies<Element>;
 
     return create_partitioned_array(
         Policies{}, array_shape, partition_shape, partition_creator, clamp_mode);
+}
+
+
+template<
+    typename Element,
+    typename Shape,
+    // Select cases where Element is not a Functor (but it can be a class)
+    std::enable_if_t<!is_functor_v<Element>>* =nullptr>
+PartitionedArray<Element, rank<Shape>> create_partitioned_array(
+    Shape const& array_shape,
+    Shape const& partition_shape,
+    ClampMode const clamp_mode=ClampMode::merge)
+{
+    using Policies = policy::create_partitioned_array::DefaultPolicies<Element>;
+    using Functor = InstantiateDefaultInitialized<Element, rank<Shape>>;
+
+    return create_partitioned_array(
+        Policies{}, array_shape, partition_shape, Functor{}, clamp_mode);
+}
+
+
+template<
+    typename Element,
+    typename Shape,
+    // Select cases where Element is not a Functor (but it can be a class)
+    std::enable_if_t<!is_functor_v<Element>>* =nullptr>
+PartitionedArray<Element, rank<Shape>> create_partitioned_array(
+    Shape const& array_shape,
+    Shape const& partition_shape,
+    Element const fill_value,
+    ClampMode const clamp_mode=ClampMode::merge)
+{
+    using Policies = policy::create_partitioned_array::DefaultPolicies<Element>;
+    using Functor = InstantiateFilled<Element, rank<Shape>>;
+
+    return create_partitioned_array(
+        Policies{}, array_shape, partition_shape, Functor{fill_value}, clamp_mode);
 }
 
 }  // namespace lue

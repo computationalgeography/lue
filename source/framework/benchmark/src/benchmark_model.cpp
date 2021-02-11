@@ -1,4 +1,5 @@
 #include "lue/framework/benchmark/benchmark_model.hpp"
+#include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/core/component.hpp"
 #include "lue/assert.hpp"
 #include <hpx/iostream.hpp>
@@ -85,7 +86,7 @@ template<
     Rank rank>
 void BenchmarkModel<Element, rank>::preprocess()
 {
-    state() = Array{this->array_shape(), this->partition_shape()};
+    state() = create_partitioned_array<Element>(this->array_shape(), this->partition_shape());
 
     do_preprocess();
 

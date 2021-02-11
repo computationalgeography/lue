@@ -5,6 +5,7 @@
 #include "lue/framework/core/component/partitioned_array.hpp"
 #include <boost/range/irange.hpp>
 #include <experimental/iterator>
+#include <array>
 #include <map>
 #include <ostream>
 
@@ -129,24 +130,24 @@ ostream& operator<<(
 }
 
 
-// template<
-//     typename T,
-//     lue::Rank rank>
-// std::ostream& operator<<(
-//     std::ostream& stream,
-//     std::array<T, rank> const& array)
-// {
-//     stream << '[';
-//     std::copy(
-//         std::begin(array), std::end(array),
-//         std::experimental::make_ostream_joiner(stream, ", "));
-// 
-//         // Prints a separator after the last element...
-//         // std::ostream_iterator<Index>(stream, ", "));
-//     stream << ']';
-// 
-//     return stream;
-// }
+template<
+    typename T,
+    std::size_t count>
+std::ostream& operator<<(
+    std::ostream& stream,
+    std::array<T, count> const& array)
+{
+    stream << '[';
+    std::copy(
+        std::begin(array), std::end(array),
+        std::experimental::make_ostream_joiner(stream, ", "));
+
+        // Prints a separator after the last element...
+        // std::ostream_iterator<Index>(stream, ", "));
+    stream << ']';
+
+    return stream;
+}
 
 
 template<
@@ -237,19 +238,19 @@ std::ostream& operator<<(
 }
 
 
-template<
-    typename Index,
-    Rank rank>
-std::ostream& operator<<(
-    std::ostream& stream,
-    ArrayPartitionDefinition<Index, rank> const& definition)
-{
-    stream <<
-        "start: " << definition.start() << ", "
-        "shape: " << definition.shape();
-
-    return stream;
-}
+/// template<
+///     typename Index,
+///     Rank rank>
+/// std::ostream& operator<<(
+///     std::ostream& stream,
+///     ArrayPartitionDefinition<Index, rank> const& definition)
+/// {
+///     stream <<
+///         "start: " << definition.start() << ", "
+///         "shape: " << definition.shape();
+/// 
+///     return stream;
+/// }
 
 
 template<

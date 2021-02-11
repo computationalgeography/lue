@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE lue framework algorithm focal_operation
+#include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/kernel.hpp"
-#include "lue/framework/algorithm/fill.hpp"
 #include "lue/framework/algorithm/focal_operation.hpp"
 #include "lue/framework/algorithm/policy/default_policies.hpp"
 #include "lue/framework/algorithm/serialize/kernel.hpp"
@@ -79,8 +79,8 @@ BOOST_AUTO_TEST_CASE(unary_focal_operation_2d)
     Shape const array_shape{{9, 9}};
     Shape const partition_shape{{3, 3}};
 
-    InputArray1 input_array1{array_shape, partition_shape};
-    lue::fill(input_array1, 1).wait();
+    InputArray1 input_array1{lue::create_partitioned_array(array_shape, partition_shape, 1)};
+
     auto const kernel = lue::box_kernel<bool, rank>(1, true);
     OutputArray output_array =
         lue::focal_operation(Policies{fill_value1}, input_array1, kernel, Functor{});
@@ -124,10 +124,9 @@ BOOST_AUTO_TEST_CASE(binary_focal_operation_2d)
     Shape const array_shape{{9, 9}};
     Shape const partition_shape{{3, 3}};
 
-    InputArray1 input_array1{array_shape, partition_shape};
-    lue::fill(input_array1, 1).wait();
-    InputArray2 input_array2{array_shape, partition_shape};
-    lue::fill(input_array2, 2.0f).wait();
+    InputArray1 input_array1{lue::create_partitioned_array(array_shape, partition_shape, 1)};
+    InputArray2 input_array2{lue::create_partitioned_array(array_shape, partition_shape, 2.0f)};
+
     auto const kernel = lue::box_kernel<bool, rank>(1, true);
     OutputArray output_array =
         lue::focal_operation(

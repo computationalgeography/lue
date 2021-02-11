@@ -1,5 +1,5 @@
-#include "lue/framework/core/component/partitioned_array.hpp"
 #include "lue/framework/algorithm/copy.hpp"
+#include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/benchmark/benchmark.hpp"
 #include "lue/framework/benchmark/hpx_main.hpp"
 #include <hpx/iostream.hpp>
@@ -34,7 +34,7 @@ void copy(
         partition_shape.begin());
 
     // → Create initial array
-    Array state{shape, partition_shape};
+    Array state{create_partitioned_array<Element>(shape, partition_shape)};
     hpx::cout << describe(state) << hpx::endl;
 
     lue_assert(state.shape() == shape);

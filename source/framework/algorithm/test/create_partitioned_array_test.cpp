@@ -168,6 +168,42 @@ class NumberPartitionsPerLocality
 }  // Anonymous namespace
 
 
+namespace lue {
+
+    template<
+        typename Element,
+        Rank rank>
+    class FunctorTraits<
+        NumberPartitionsIndividually<Element, rank>>
+    {
+
+        public:
+
+            static constexpr bool const is_functor{true};
+
+    };
+
+}  // namespace lue
+
+
+namespace lue {
+
+    template<
+        typename Element,
+        Rank rank>
+    class FunctorTraits<
+        NumberPartitionsPerLocality<Element, rank>>
+    {
+
+        public:
+
+            static constexpr bool const is_functor{true};
+
+    };
+
+}  // namespace lue
+
+
 BOOST_AUTO_TEST_CASE(instantiate_partitions_individually)
 {
     // Create a partitioned array in which the elements of the partitions
@@ -228,7 +264,7 @@ BOOST_AUTO_TEST_CASE(clamp_mode_merge)
     using Functor = NumberPartitionsIndividually<Element, rank>;
 
     Array array = lue::create_partitioned_array(
-        array_shape, partition_shape, Functor{}, Array::ClampMode::merge);
+        array_shape, partition_shape, Functor{}, lue::ClampMode::merge);
 
     BOOST_CHECK_EQUAL(array.nr_elements(), nr_rows * nr_cols);
     BOOST_CHECK_EQUAL(array.shape(), array_shape);
@@ -260,7 +296,7 @@ BOOST_AUTO_TEST_CASE(clamp_mode_shrink)
     using Functor = NumberPartitionsIndividually<Element, rank>;
 
     Array array = lue::create_partitioned_array(
-        array_shape, partition_shape, Functor{}, Array::ClampMode::shrink);
+        array_shape, partition_shape, Functor{}, lue::ClampMode::shrink);
 
     BOOST_CHECK_EQUAL(array.nr_elements(), nr_rows * nr_cols);
     BOOST_CHECK_EQUAL(array.shape(), array_shape);

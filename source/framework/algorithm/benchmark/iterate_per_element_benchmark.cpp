@@ -1,4 +1,5 @@
 #include "lue/framework/algorithm/copy.hpp"
+#include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/fill.hpp"
 #include "lue/framework/algorithm/iterate_per_element.hpp"
 #include "lue/framework/algorithm/uniform.hpp"
@@ -37,7 +38,7 @@ AlgorithmBenchmarkResult iterate_per_element(
         partition_shape.begin());
 
     // → Create initial array
-    Array state{shape, partition_shape};
+    Array state{create_partitioned_array<Element>(shape, partition_shape)};
     hpx::cout << describe(state) << hpx::endl;
 
     AlgorithmBenchmarkResult result{state.partitions().shape()};

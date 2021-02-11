@@ -61,7 +61,7 @@ PartitionedArray<Element, rank> operator symbol(         \
 template<                                                \
     typename Element,                                    \
     Rank rank>                                           \
-PartitionedArray<bool, rank> operator symbol(            \
+PartitionedArray<std::uint8_t, rank> operator symbol(    \
     PartitionedArray<Element, rank> const& lhs,          \
     PartitionedArray<Element, rank> const& rhs)          \
 {                                                        \
@@ -72,7 +72,7 @@ PartitionedArray<bool, rank> operator symbol(            \
 template<                                                \
     typename Element,                                    \
     Rank rank>                                           \
-PartitionedArray<bool, rank> operator symbol(            \
+PartitionedArray<std::uint8_t, rank> operator symbol(    \
     PartitionedArray<Element, rank> const& lhs,          \
     hpx::shared_future<Element> const& rhs)              \
 {                                                        \
@@ -83,7 +83,7 @@ PartitionedArray<bool, rank> operator symbol(            \
 template<                                                \
     typename Element,                                    \
     Rank rank>                                           \
-PartitionedArray<bool, rank> operator symbol(            \
+PartitionedArray<std::uint8_t, rank> operator symbol(    \
     hpx::shared_future<Element> const& lhs,              \
     PartitionedArray<Element, rank> const& rhs)          \
 {                                                        \
@@ -94,7 +94,7 @@ PartitionedArray<bool, rank> operator symbol(            \
 template<                                                \
     typename Element,                                    \
     Rank rank>                                           \
-PartitionedArray<bool, rank> operator symbol(            \
+PartitionedArray<std::uint8_t, rank> operator symbol(    \
     PartitionedArray<Element, rank> const& lhs,          \
     Element const rhs)                                   \
 {                                                        \
@@ -105,7 +105,7 @@ PartitionedArray<bool, rank> operator symbol(            \
 template<                                                \
     typename Element,                                    \
     Rank rank>                                           \
-PartitionedArray<bool, rank> operator symbol(            \
+PartitionedArray<std::uint8_t, rank> operator symbol(    \
     Element const lhs,                                   \
     PartitionedArray<Element, rank> const& rhs)          \
 {                                                        \
@@ -117,7 +117,7 @@ PartitionedArray<bool, rank> operator symbol(            \
 template<                                                \
     typename Element,                                    \
     Rank rank>                                           \
-PartitionedArray<bool, rank> operator symbol(            \
+PartitionedArray<std::uint8_t, rank> operator symbol(    \
     PartitionedArray<Element, rank> const& array)        \
 {                                                        \
     return name(array);                                  \
@@ -128,7 +128,7 @@ PartitionedArray<bool, rank> operator symbol(            \
 template<                                                \
     typename Element,                                    \
     Rank rank>                                           \
-PartitionedArray<bool, rank> operator symbol(            \
+PartitionedArray<std::uint8_t, rank> operator symbol(    \
     PartitionedArray<Element, rank> const& lhs,          \
     PartitionedArray<Element, rank> const& rhs)          \
 {                                                        \
@@ -139,7 +139,7 @@ PartitionedArray<bool, rank> operator symbol(            \
 template<                                                \
     typename Element,                                    \
     Rank rank>                                           \
-PartitionedArray<bool, rank> operator symbol(            \
+PartitionedArray<std::uint8_t, rank> operator symbol(    \
     PartitionedArray<Element, rank> const& lhs,          \
     hpx::shared_future<Element> const& rhs)              \
 {                                                        \
@@ -150,7 +150,7 @@ PartitionedArray<bool, rank> operator symbol(            \
 template<                                                \
     typename Element,                                    \
     Rank rank>                                           \
-PartitionedArray<bool, rank> operator symbol(            \
+PartitionedArray<std::uint8_t, rank> operator symbol(    \
     hpx::shared_future<Element> const& lhs,              \
     PartitionedArray<Element, rank> const& rhs)          \
 {                                                        \
@@ -161,7 +161,7 @@ PartitionedArray<bool, rank> operator symbol(            \
 template<                                                \
     typename Element,                                    \
     Rank rank>                                           \
-PartitionedArray<bool, rank> operator symbol(            \
+PartitionedArray<std::uint8_t, rank> operator symbol(    \
     PartitionedArray<Element, rank> const& lhs,          \
     Element const rhs)                                   \
 {                                                        \
@@ -172,7 +172,7 @@ PartitionedArray<bool, rank> operator symbol(            \
 template<                                                \
     typename Element,                                    \
     Rank rank>                                           \
-PartitionedArray<bool, rank> operator symbol(            \
+PartitionedArray<std::uint8_t, rank> operator symbol(    \
     Element const lhs,                                   \
     PartitionedArray<Element, rank> const& rhs)          \
 {                                                        \

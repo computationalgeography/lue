@@ -1,7 +1,7 @@
 #pragma once
 #include "lue/framework/algorithm/partition_operation.hpp"
 #include "lue/framework/algorithm/policy/default_policies.hpp"
-// TODO #include "lue/framework/algorithm/policy/default_value_policies.hpp"
+#include "lue/framework/algorithm/policy/default_value_policies.hpp"
 #include <hpx/serialization/map.hpp>
 #include <set>
 
@@ -74,13 +74,12 @@ namespace lue {
             InputElements<InputElement>>;
 
 
-        // TODO
-        // template<
-        //     typename OutputElement,
-        //     typename InputElement>
-        // using DefaultValuePolicies = policy::DefaultValuePolicies<
-        //     OutputElements<OutputElement>,
-        //     InputElements<InputElement>>;
+        template<
+            typename OutputElement,
+            typename InputElement>
+        using DefaultValuePolicies = policy::DefaultValuePolicies<
+            OutputElements<OutputElement>,
+            InputElements<InputElement>>;
 
     }  // namespace policy::partition_count_unique
 

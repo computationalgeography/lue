@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE lue framework algorithm fill
-#include "lue/framework/core/component/partitioned_array.hpp"
 #include "lue/framework/algorithm/all.hpp"
+#include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/equal_to.hpp"
 #include "lue/framework/algorithm/fill.hpp"
 #include "lue/framework/algorithm/sum.hpp"
@@ -10,26 +10,26 @@
 
 namespace detail {
 
-template<
-    typename Element,
-    std::size_t rank>
-void test_array()
-{
-    using Array = lue::PartitionedArray<Element, rank>;
+    template<
+        typename Element,
+        std::size_t rank>
+    void test_array()
+    {
+        using Array = lue::PartitionedArray<Element, rank>;
 
-    auto const shape{lue::Test<Array>::shape()};
+        auto const array_shape{lue::Test<Array>::shape()};
+        auto const partition_shape{lue::Test<Array>::partition_shape()};
 
-    Array array{shape};
+        Array array{lue::create_partitioned_array<Element>(array_shape, partition_shape)};
 
-    // Fill the array with a value and check whether all values in the
-    // array are equal to this value
-    hpx::shared_future<Element> fill_value =
-        hpx::make_ready_future<Element>(5);
+        // Fill the array with a value and check whether all values in the
+        // array are equal to this value
+        hpx::shared_future<Element> fill_value = hpx::make_ready_future<Element>(5);
 
-    lue::fill(array, fill_value).wait();
+        lue::fill(array, fill_value).wait();
 
-    BOOST_CHECK(lue::all(lue::equal_to(array, fill_value)).get());
-}
+        BOOST_CHECK(lue::all(array == fill_value).get());
+    }
 
 }  // namespace detail
 

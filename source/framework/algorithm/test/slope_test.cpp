@@ -1,4 +1,5 @@
 #define BOOST_TEST_MODULE lue framework algorithm slope
+#include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/focal.hpp"
 #include "lue/framework/test/compare.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
@@ -45,7 +46,7 @@ BOOST_AUTO_TEST_CASE(use_case_1)
             }
         };
 
-    Array elevation{shape, shape};
+    Array elevation{lue::create_partitioned_array<Element>(shape, shape)};
     BOOST_REQUIRE_EQUAL(elevation.nr_partitions(), 1);
     elevation.partitions()(0, 0).wait();
     elevation.partitions()(0, 0).set_data(std::move(data));
@@ -66,9 +67,11 @@ BOOST_AUTO_TEST_CASE(use_case_1)
             }
         };
 
-    Array slope_we_want{shape, shape};
+    Array slope_we_want{lue::create_partitioned_array<Element>(shape, shape)};
     slope_we_want.partitions()(0, 0).wait();
     slope_we_want.partitions()(0, 0).set_data(std::move(data));
+
+    BOOST_WARN_MESSAGE(false, "Update slope to use policies");
 
     // FIXME Update focal_operation to use policies that are needed by slope
     // lue::test::check_arrays_are_close(slope_we_got, slope_we_want);
