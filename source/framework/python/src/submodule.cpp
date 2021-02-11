@@ -44,9 +44,10 @@ namespace lue::framework {
 
 
     void bind_hpx(pybind11::module& module);
-    void bind_create_partitioned_array(pybind11::module& module);
+    void bind_create_array(pybind11::module& module);
     void bind_local_operations(pybind11::module& module);
     void bind_partitioned_array(pybind11::module& module);
+    void bind_read_array(pybind11::module& module);
 
 
     void init_submodule(
@@ -79,8 +80,9 @@ namespace lue::framework {
         bind_partitioned_array(submodule);
 
         // Wrap high-level algorithms
-        bind_create_partitioned_array(submodule);
+        bind_create_array(submodule);
         bind_local_operations(submodule);
+        bind_read_array(submodule);
 
         // Unless the user calls stop_hpx_runtime explicitly, we will do it
         // automatically upon module unload

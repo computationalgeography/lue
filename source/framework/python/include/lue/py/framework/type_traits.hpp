@@ -1,27 +1,30 @@
 #pragma once
+#include <pybind11/numpy.h>
 #include <cstdint>
 #include <string>
 
 
-namespace lue {
-namespace framework {
+namespace lue::framework {
 
-template<
-    typename Element>
-class TypeTraits
-{};
+    template<
+        typename Element>
+    class TypeTraits
+    {};
 
 
-#define TYPE_TRAITS(Element, name_)                   \
-template<>                                            \
-class TypeTraits<Element>                             \
-{                                                     \
-                                                      \
-    public:                                           \
-                                                      \
-        inline static std::string const name{name_};  \
-                                                      \
-};
+#define TYPE_TRAITS(Element, name_)  \
+    template<>                                            \
+    class TypeTraits<Element>                             \
+    {                                                     \
+                                                          \
+        public:                                           \
+                                                          \
+            inline static std::string const name{name_};  \
+                                                          \
+            inline static pybind11::dtype const dtype{    \
+                pybind11::dtype::of<Element>()};          \
+                                                          \
+    };
 
 TYPE_TRAITS(std::uint8_t, "uint8")
 TYPE_TRAITS(std::uint32_t, "uint32")
@@ -34,5 +37,19 @@ TYPE_TRAITS(double, "float64")
 
 #undef TYPE_TRAITS
 
-}  // namespace framework
-}  // namespace lue
+    template<
+        typename Element>
+    std::string as_string()
+    {
+        return TypeTraits<Element>::name;
+    }
+
+
+    template<
+        typename Element>
+    pybind11::dtype dtype()
+    {
+        return TypeTraits<Element>::dtype;
+    }
+
+}  // namespace lue::framework

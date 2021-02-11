@@ -133,7 +133,7 @@ same_shape::constant_shape::Value Value::expand_(
 
 
 same_shape::constant_shape::Value Value::operator[](
-    ID const id)
+    ID const id) const
 {
     std::string const name{std::to_string(id)};
 

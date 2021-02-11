@@ -63,6 +63,28 @@ hdf5::Hyperslab hyperslab(
 
 
 template<
+    Rank rank>
+hdf5::Hyperslab hyperslab(
+    Offset<Index, rank> const& partition_offset,
+    Shape<Count, rank> const& partition_shape,
+    Index const location_in_time_idx,
+    Index const time_step_idx)
+{
+    hdf5::Offset offset(rank + 2);
+    std::copy(partition_offset.begin(), partition_offset.end(), offset.begin() + 2);
+    offset[0] = location_in_time_idx;
+    offset[1] = time_step_idx;
+
+    hdf5::Count count(rank + 2);
+    std::copy(partition_shape.begin(), partition_shape.end(), count.begin() + 2);
+    count[0] = 1;
+    count[1] = 1;
+
+    return hdf5::Hyperslab{offset, count};
+}
+
+
+template<
     typename PartitionServer>
 hdf5::Hyperslab hyperslab(
     PartitionServer const& partition_server)
@@ -71,6 +93,21 @@ hdf5::Hyperslab hyperslab(
     // instance passed in, as an HDF5 hyperslab. The result is useful
     // for performing I/O to the corresponding HDF5 dataset.
     return hyperslab(partition_server.offset(), partition_server.shape());
+}
+
+
+template<
+    typename PartitionServer>
+hdf5::Hyperslab hyperslab(
+    PartitionServer const& partition_server,
+    Index const location_in_time_idx,
+    Index const time_step_idx)
+{
+    // Return the part of the array represented by the partition server
+    // instance passed in, as an HDF5 hyperslab. The result is useful
+    // for performing I/O to the corresponding HDF5 dataset.
+    return hyperslab(
+        partition_server.offset(), partition_server.shape(), location_in_time_idx, time_step_idx);
 }
 
 

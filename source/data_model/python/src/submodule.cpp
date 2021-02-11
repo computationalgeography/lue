@@ -1,3 +1,4 @@
+#include "hl/submodule.hpp"
 #include "lue/py/data_model/submodule.hpp"
 #include "python_extension.hpp"
 #include "lue/configure.hpp"  // LUE_BUILD_TEST
@@ -105,6 +106,8 @@ void init_submodule(
 #ifdef LUE_BUILD_TEST
     test::init_submodule(submodule);
 #endif
+
+    bind_hl_submodule(submodule);
 
     // submodule.ptr();
 }

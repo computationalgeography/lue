@@ -212,9 +212,7 @@ void init_dataset(
 )",
         "name"_a,
         "description"_a="",
-        py::return_value_policy::move)
-
-        ;
+        py::return_value_policy::move);
 
 }
 

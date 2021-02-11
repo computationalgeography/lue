@@ -658,6 +658,9 @@ void set_item(
     py::array_t<T, py::array::c_style>& /* values */)
 {
     assert(false);
+
+    throw std::invalid_argument(
+        "this type of indexing is not supported yet");
 }
 
 

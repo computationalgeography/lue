@@ -1,9 +1,11 @@
 # TODO No command line arguments end up in HPX runtime...
-# add_test_conditionally(test)
+add_test_conditionally(test)
 
 pybind11_add_module(lue_py_framework SHARED SYSTEM THIN_LTO
     src/algorithm/add
+    src/algorithm/all
     src/algorithm/divide
+    src/algorithm/equal_to
     src/algorithm/local_operation
     src/algorithm/maximum
     src/algorithm/minimum
@@ -13,6 +15,7 @@ pybind11_add_module(lue_py_framework SHARED SYSTEM THIN_LTO
     src/algorithm/uniform
     src/core/create_partitioned_array
     src/core/partitioned_array
+    src/io/read_array
     src/command_line
     src/hpx
     src/hpx_runtime
@@ -45,12 +48,14 @@ target_include_directories(lue_py_framework
         ${CMAKE_CURRENT_BINARY_DIR}/../../python/include  # configure.hpp
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
 )
 
 target_link_libraries(lue_py_framework
     PRIVATE
         # # $<$<TARGET_EXISTS:lue::data_model_test>:lue::data_model_test>
         lue::framework_algorithm
+        lue::framework_io
         #     # lue::data_model
         #     # CONAN_PKG::ms-gsl
         # Boost::program_options

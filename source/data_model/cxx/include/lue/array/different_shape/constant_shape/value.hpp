@@ -74,7 +74,7 @@ public:
                                         Count nr_locations_in_time);
 
     same_shape::constant_shape::Value
-                   operator[]          (ID id);
+                   operator[]          (ID id) const;
 
 private:
 

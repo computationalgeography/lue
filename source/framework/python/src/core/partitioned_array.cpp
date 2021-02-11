@@ -1,15 +1,16 @@
 #include "lue/py/framework/algorithm/add.hpp"
 #include "lue/py/framework/algorithm/divide.hpp"
+#include "lue/py/framework/algorithm/equal_to.hpp"
 #include "lue/py/framework/algorithm/multiply.hpp"
 #include "lue/py/framework/algorithm/subtract.hpp"
 #include "lue/py/framework/stream.hpp"
 #include "lue/framework/core/component/partitioned_array.hpp"
-#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 
 // TODO Make array behave like numeric type:
 // https://docs.python.org/3/reference/datamodel.html?highlight=rmul#emulating-numeric-types
-// -, /
+// read tests
 // ...
 
 
@@ -58,6 +59,28 @@ namespace lue::framework {
 )"
                     , rank, as_string<Element>()).c_str())
 
+            .def_property_readonly(
+                "dtype",
+                []([[maybe_unused]] Array const& self)
+                {
+                    return dtype<Element>();
+                },
+                "dtype docstring..."
+            )
+
+            .def_property_readonly(
+                "shape",
+                [](Array const& self)
+                {
+                    static_assert(rank == 2);
+
+                    auto shape{self.shape()};
+
+                    return std::make_tuple(shape[0], shape[1]);
+                },
+                "shape docstring..."
+            )
+
             .def(
                 "__repr__",
                 [](Array const& array) {
@@ -71,6 +94,17 @@ namespace lue::framework {
                     return informal_string_representation(array);
                 }
             )
+
+            // a == b
+            .def("__eq__", [](Array const& argument1, Array const& argument2)
+                { return equal_to(argument1, argument2); },
+                pybind11::is_operator())
+            .def("__eq__", [](Array const& argument1, Element const argument2)
+                { return equal_to(argument1, argument2); },
+                pybind11::is_operator())
+            .def("__eq__", [](Array const& argument1, ElementF const& argument2)
+                { return equal_to(argument1, argument2); },
+                pybind11::is_operator())
 
             ;
 
