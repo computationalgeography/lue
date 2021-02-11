@@ -9,10 +9,11 @@ jobs:
             matrix:
                 os: ["ubuntu-20.04"]
                 python-version: [2.7, 3.8, 3.9]
+                compiler-version: [9, 10]
 
         runs-on: ${{ matrix.os }}
 
-        name: ${{ matrix.os }} - ${{ matrix.python-version }}
+        name: os: ${{ matrix.os }} / compiler: ${{ matrix.compiler-version }} / python: ${{ matrix.python-version }}
 
         steps:
 
@@ -24,7 +25,7 @@ jobs:
               # sudo apt update
               # sudo apt autoremove
               # sudo apt upgrade
-              sudo apt install cmake doxygen graphviz hwloc lftp libboost-all-dev libgdal-dev libgoogle-perftools-dev libhdf5-dev ninja-build tree
+              sudo apt install cmake doxygen gcc-${{ matrix.compiler-version }} graphviz hwloc lftp libboost-all-dev libgdal-dev libgoogle-perftools-dev libhdf5-dev ninja-build tree
         - uses: conda-incubator/setup-miniconda@v2
           with:
               auto-update-conda: true
@@ -42,6 +43,8 @@ jobs:
                   -S . \
                   -B build \
                   -G"Ninja" \
+                  -DCMAKE_C_COMPILER=gcc-${{ matrix.compiler-version }} \
+                  -DCMAKE_CXX_COMPILER=g++-${{ matrix.compiler-version }} \
                   -DCMAKE_BUILD_TYPE=Release \
                   -DLUE_BUILD_DOCUMENTATION=TRUE \
                   -DLUE_BUILD_TEST=TRUE \
@@ -84,7 +87,7 @@ jobs:
               tree install
 
         - name: deploy lue documentation
-          if: github.ref == 'refs/heads/master' && matrix.python-version == 3.8
+          if: github.ref == 'refs/heads/master' && matrix.compiler-version == 9 && matrix.python-version == 3.8
           env:
               ftp_server: ${{ secrets.FTP_SERVER }}
               ftp_port: ${{ secrets.FTP_PORT }}
