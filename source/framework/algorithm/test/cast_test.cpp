@@ -1,43 +1,36 @@
 #define BOOST_TEST_MODULE lue framework algorithm cast
-#include "lue/framework/core/component/partitioned_array.hpp"
+#include "lue/framework/algorithm/all.hpp"
+#include "lue/framework/algorithm/array_like.hpp"
 #include "lue/framework/algorithm/cast.hpp"
-#include "lue/framework/algorithm/fill.hpp"
-#include "lue/framework/algorithm/sum.hpp"
+#include "lue/framework/algorithm/comparison.hpp"
+#include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
 
 namespace detail {
 
-template<
-    typename InputElement,
-    typename OutputElement,
-    std::size_t rank>
-void test_array()
-{
-    using InputArray = lue::PartitionedArray<InputElement, rank>;
+    template<
+        typename InputElement,
+        typename OutputElement,
+        std::size_t rank>
+    void test_array()
+    {
+        using InputArray = lue::PartitionedArray<InputElement, rank>;
 
-    auto const shape{lue::Test<InputArray>::shape()};
+        auto const array_shape{lue::Test<InputArray>::shape()};
+        auto const partition_shape{lue::Test<InputArray>::partition_shape()};
 
-    InputArray array{shape};
-    hpx::shared_future<InputElement> fill_value =
-        hpx::make_ready_future<InputElement>(5);
+        InputElement const fill_value(5);
 
-    // Request the filling of the array and wait for it to finish
-    lue::fill(array, fill_value).wait();
+        InputArray array{lue::create_partitioned_array(array_shape, partition_shape, fill_value)};
 
-    // Request the cast of the array
-    auto cast = lue::cast<OutputElement>(array);
+        // Request the cast of the array
+        auto cast = lue::cast<OutputElement>(array);
 
-    // Request the sumation of the array
-    auto sum = lue::sum(cast);
-
-    BOOST_CHECK_EQUAL(
-        sum.get(),
-        static_cast<OutputElement>(
-            lue::nr_elements(shape) *
-            static_cast<OutputElement>(fill_value.get())));
-}
+        BOOST_CHECK(
+            lue::all(cast == lue::array_like(array, static_cast<OutputElement>(fill_value))).get());
+    }
 
 }  // namespace detail
 

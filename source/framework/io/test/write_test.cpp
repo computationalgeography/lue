@@ -1,8 +1,8 @@
 #define BOOST_TEST_MODULE lue framework io write
 #include <hpx/config.hpp>
 #include "lue/data_model/hl/raster_view.hpp"
-#include "lue/framework/core/component/partitioned_array.hpp"
 #include "lue/framework/io/write.hpp"
+#include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/uniform.hpp"
 // #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
@@ -72,7 +72,7 @@ BOOST_AUTO_TEST_CASE(use_case_1)
             highest_value, std::numeric_limits<Element>::max());
     }
 
-    Array elevation{grid_shape, partition_shape};
+    Array elevation{lue::create_partitioned_array<Element>(grid_shape, partition_shape)};
     elevation = lue::uniform(
         elevation,
         Element{lowest_value + time_step},

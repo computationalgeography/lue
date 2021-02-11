@@ -20,7 +20,8 @@ hpx_setup_target(lue_benchmark
     COMPONENT_DEPENDENCIES
         iostreams
     DEPENDENCIES
-        lue::framework_core
+        lue::framework_algorithm
+        # lue::framework_core
         lue::framework_model
         CONAN_PKG::docopt.cpp
         CONAN_PKG::nlohmann_json

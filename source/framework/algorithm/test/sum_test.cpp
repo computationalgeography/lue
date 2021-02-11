@@ -1,5 +1,5 @@
 #define BOOST_TEST_MODULE lue framework algorithm sum
-#include "lue/framework/algorithm/fill.hpp"
+#include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/sum.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
@@ -7,50 +7,49 @@
 
 namespace detail {
 
-template<
-    typename Element,
-    typename ResultElement,
-    std::size_t rank>
-void test_array()
-{
-    using Array = lue::PartitionedArray<Element, rank>;
+    template<
+        typename Element,
+        typename ResultElement,
+        std::size_t rank>
+    void test_array()
+    {
+        using Array = lue::PartitionedArray<Element, rank>;
 
-    auto const shape{lue::Test<Array>::shape()};
+        auto const array_shape{lue::Test<Array>::shape()};
+        auto const partition_shape{lue::Test<Array>::partition_shape()};
 
-    Array array{shape};
+        Element const fill_value{5};
 
-    Element const fill_value{5};
+        Array array{lue::create_partitioned_array(array_shape, partition_shape, fill_value)};
 
-    lue::fill(array, fill_value).wait();
+        auto sum = lue::sum<ResultElement>(array);
 
-    auto sum = lue::sum<ResultElement>(array);
+        using TypeWeGot = decltype(sum);
+        using TypeWeWant = hpx::future<ResultElement>;
+        static_assert(std::is_same_v<TypeWeGot, TypeWeWant>);
 
-    using TypeWeGot = decltype(sum);
-    using TypeWeWant = hpx::future<ResultElement>;
-    static_assert(std::is_same_v<TypeWeGot, TypeWeWant>);
-
-    BOOST_CHECK_EQUAL(
-        sum.get(),
-        static_cast<Element>(lue::nr_elements(shape) * fill_value));
-}
-
-
-template<
-    typename Element,
-    typename ResultElement>
-void test_array_1d()
-{
-    test_array<Element, ResultElement, 1>();
-}
+        BOOST_CHECK_EQUAL(
+            sum.get(),
+            static_cast<Element>(lue::nr_elements(array_shape) * fill_value));
+    }
 
 
-template<
-    typename Element,
-    typename ResultElement>
-void test_array_2d()
-{
-    test_array<Element, ResultElement, 2>();
-}
+    template<
+        typename Element,
+        typename ResultElement>
+    void test_array_1d()
+    {
+        test_array<Element, ResultElement, 1>();
+    }
+
+
+    template<
+        typename Element,
+        typename ResultElement>
+    void test_array_2d()
+    {
+        test_array<Element, ResultElement, 2>();
+    }
 
 }  // namespace detail
 

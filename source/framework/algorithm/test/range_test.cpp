@@ -1,5 +1,5 @@
 #define BOOST_TEST_MODULE lue framework algorithm range
-#include "lue/framework/core/component/partitioned_array.hpp"
+#include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/range.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/compare.hpp"
@@ -28,7 +28,7 @@ BOOST_AUTO_TEST_CASE(range_2d_int32)
     // [55 56 57 58 59 60 61 62 63]
     // [64 65 66 67 68 69 70 71 72]
     // [73 74 75 76 77 78 79 80 81]
-    Array array{array_shape, partition_shape};
+    Array array{lue::create_partitioned_array<Element>(array_shape, partition_shape)};
     lue::range(array, hpx::make_ready_future<Element>(1).share()).wait();
 
     Array array_we_want = lue::test::create_partitioned_array<Array>(

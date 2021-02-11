@@ -11,7 +11,9 @@ lue.framework reference
 
 .. autosummary::
     add
+    all
     divide
+    equal_to
     minimum
     maximum
     multiply
@@ -19,7 +21,9 @@ lue.framework reference
     subtract
     uniform
 .. autofunction:: add
+.. autofunction:: all
 .. autofunction:: divide
+.. autofunction:: equal_to
 .. autofunction:: maximum
 .. autofunction:: minimum
 .. autofunction:: multiply

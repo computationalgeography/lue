@@ -2,58 +2,52 @@
 #include "lue/framework/algorithm/all.hpp"
 #include "lue/framework/algorithm/arithmetic.hpp"
 #include "lue/framework/algorithm/comparison.hpp"
-#include "lue/framework/algorithm/fill.hpp"
+#include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
 
 namespace detail {
 
-template<
-    typename Element,
-    std::size_t rank>
-void test_array()
-{
-    using Array = lue::PartitionedArray<Element, rank>;
-
-    auto const shape{lue::Test<Array>::shape()};
-
-    Array array1{shape};
-    Array array2{shape};
-
-    Element const fill_value1{15};
-    Element const fill_value2{6};
-
-    hpx::wait_all(
-        lue::fill(array1, fill_value1),
-        lue::fill(array2, fill_value2));
-
-    // Divide two arrays
+    template<
+        typename Element,
+        std::size_t rank>
+    void test_array()
     {
-        auto divide = array1 / array2;
-        auto equal_to = divide == fill_value1 / fill_value2;
+        using Array = lue::PartitionedArray<Element, rank>;
 
-        BOOST_CHECK(lue::all(equal_to).get());
+        auto const array_shape{lue::Test<Array>::shape()};
+        auto const partition_shape{lue::Test<Array>::partition_shape()};
+
+        Element const fill_value1{15};
+        Element const fill_value2{6};
+
+        Array array1{lue::create_partitioned_array(array_shape, partition_shape, fill_value1)};
+        Array array2{lue::create_partitioned_array(array_shape, partition_shape, fill_value2)};
+
+        // Divide two arrays
+        {
+            auto divide = array1 / array2;
+
+            BOOST_CHECK(lue::all(divide == fill_value1 / fill_value2).get());
+        }
+
+        // Divide scalar by array
+        // array / scalar
+        {
+            auto divide = array1 / fill_value1;
+
+            BOOST_CHECK(lue::all(divide == fill_value1 / fill_value1).get());
+        }
+
+        // Divide scalar by array
+        // scalar / array
+        {
+            auto divide = fill_value1 / array1;
+
+            BOOST_CHECK(lue::all(divide == fill_value1 / fill_value1).get());
+        }
     }
-
-    // Divide scalar by array
-    // array / scalar
-    {
-        auto divide = array1 / fill_value1;
-        auto equal_to = divide == fill_value1 / fill_value1;
-
-        BOOST_CHECK(lue::all(equal_to).get());
-    }
-
-    // Divide scalar by array
-    // scalar / array
-    {
-        auto divide = fill_value1 / array1;
-        auto equal_to = divide == fill_value1 / fill_value1;
-
-        BOOST_CHECK(lue::all(equal_to).get());
-    }
-}
 
 }  // namespace detail
 

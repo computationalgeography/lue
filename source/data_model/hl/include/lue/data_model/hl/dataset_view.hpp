@@ -30,6 +30,8 @@ public:
 
     Dataset&       operator*           ();
 
+    virtual        ~DatasetView        ()=default;
+
 protected:
 
     explicit       DatasetView         (DatasetPtr dataset);
@@ -37,8 +39,6 @@ protected:
                    DatasetView         (DatasetView const&)=default;
 
                    DatasetView         (DatasetView&&) noexcept =default;
-
-    virtual        ~DatasetView        ()=default;
 
     DatasetView&   operator=           (DatasetView const&)=default;
 

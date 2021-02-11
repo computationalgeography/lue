@@ -50,14 +50,6 @@ namespace lue::framework {
 
 
     template<
-        typename Element>
-    std::string as_string()
-    {
-        return TypeTraits<Element>::name;
-    }
-
-
-    template<
         typename Count,
         Rank rank>
     std::string as_string(

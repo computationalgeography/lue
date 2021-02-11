@@ -36,6 +36,8 @@ public:
 
     bool           contains            (std::string const& name);
 
+                   ~RasterView         () override =default;
+
 protected:
 
                    RasterView          (DatasetPtr dataset,
@@ -45,8 +47,6 @@ protected:
                    RasterView          (RasterView const&)=default;
 
                    RasterView          (RasterView&&) noexcept =default;
-
-                   ~RasterView         () override =default;
 
     RasterView&    operator=           (RasterView const&)=default;
 
@@ -147,6 +147,12 @@ RasterView<DatasetPtr> open_raster_view(
 }
 
 
+std::tuple<ID, hdf5::Datatype> probe_raster(
+                                        std::string const& dataset_pathname,
+                                        std::string const& phenomenon_name,
+                                        std::string const& property_set_name,
+                                        std::string const& layer_name);
+
 template<
     typename DatasetPtr>
 RasterView<DatasetPtr>
@@ -238,6 +244,24 @@ typename RasterView<DatasetPtr>::Layer RasterView<DatasetPtr>::add_layer(
 bool               contains_raster     (Dataset const& dataset,
                                         std::string const& phenomenon_name,
                                         std::string const& property_set_name);
+
+
+template<
+    typename DatasetPtr>
+RasterView<DatasetPtr> open_raster_view(
+    DatasetPtr dataset,
+    std::string const& phenomenon_name,
+    std::string const& property_set_name)
+{
+    return RasterView<DatasetPtr>{std::move(dataset), phenomenon_name, property_set_name};
+}
+
+
+std::tuple<ID, hdf5::Datatype> probe_raster(
+                                        std::string const& dataset_pathname,
+                                        std::string const& phenomenon_name,
+                                        std::string const& property_set_name,
+                                        std::string const& layer_name);
 
 template<
     typename DatasetPtr>

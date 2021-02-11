@@ -67,6 +67,10 @@ pybind11_add_module(lue_py_data_model SHARED SYSTEM THIN_LTO
     src/time_point
     src/validate
 
+    src/hl/dataset_view
+    src/hl/raster_view
+    src/hl/submodule
+
     $<$<TARGET_EXISTS:lue::data_model_test>:src/test/submodule>
 )
 
@@ -99,7 +103,7 @@ target_include_directories(lue_py_data_model
 target_link_libraries(lue_py_data_model
     PRIVATE
         $<$<TARGET_EXISTS:lue::data_model_test>:lue::data_model_test>
-        lue::data_model
+        lue::data_model_hl
         CONAN_PKG::ms-gsl
         CONAN_PKG::pybind11
 )

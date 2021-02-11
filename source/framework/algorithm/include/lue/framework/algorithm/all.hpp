@@ -1,6 +1,7 @@
 #pragma once
 #include "lue/framework/algorithm/unary_aggregate_operation.hpp"
 #include "lue/framework/algorithm/policy/default_policies.hpp"
+#include "lue/framework/algorithm/policy/default_value_policies.hpp"
 
 
 namespace lue {
@@ -61,17 +62,36 @@ public:
 }  // namespace detail
 
 
-namespace policy {
-namespace all {
+namespace policy::all {
+
+    template<
+        typename Element>
+    using DefaultPolicies = policy::DefaultPolicies<
+        OutputElements<Element>,
+        InputElements<Element>>;
+
+
+    template<
+        typename Element>
+    using DefaultValuePolicies = policy::DefaultValuePolicies<
+        OutputElements<Element>,
+        InputElements<Element>>;
+
+}  // namespace policy::all
+
 
 template<
-    typename Element>
-using DefaultPolicies = policy::DefaultPolicies<
-    OutputElements<Element>,
-    InputElements<Element>>;
+    typename Policies,
+    typename Element,
+    Rank rank>
+hpx::future<Element> all(
+    Policies const& policies,
+    PartitionedArray<Element, rank> const& array)
+{
+    using Functor = detail::All<Element>;
 
-}  // namespace all
-}  // namespace policy
+    return unary_aggregate_operation(policies, array, Functor{});
+}
 
 
 template<
@@ -80,10 +100,9 @@ template<
 hpx::future<Element> all(
     PartitionedArray<Element, rank> const& array)
 {
-    using Functor = detail::All<Element>;
     using Policies = policy::all::DefaultPolicies<Element>;
 
-    return unary_aggregate_operation(Policies{}, array, Functor{});
+    return all(Policies{}, array);
 }
 
 

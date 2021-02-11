@@ -1,5 +1,6 @@
 #define BOOST_TEST_MODULE lue framework algorithm zonal_sum
 #include "lue/framework/algorithm/array_partition_id.hpp"
+#include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/range.hpp"
 #include "lue/framework/algorithm/zonal_sum.hpp"
 #include "lue/framework/test/array.hpp"
@@ -20,7 +21,8 @@ BOOST_AUTO_TEST_CASE(zonal_sum_0d_2d_int32)
     Shape const array_shape{{9, 9}};
     Shape const partition_shape{{3, 3}};
 
-    ClassArray class_array{lue::array_partition_id(ClassArray{array_shape, partition_shape})};
+    ClassArray class_array{
+        lue::array_partition_id(lue::create_partitioned_array<Class>(array_shape, partition_shape))};
 
     auto zonal_sum = lue::zonal_sum<Value>(1, class_array);
 
@@ -65,7 +67,7 @@ BOOST_AUTO_TEST_CASE(zonal_sum_2d_2d_int32)
     // 55 56 57 | 58 59 60 | 61 62 63
     // 64 65 66 | 67 68 69 | 70 71 72
     // 73 74 75 | 76 77 78 | 79 80 81
-    ValueArray value_array{array_shape, partition_shape};
+    ValueArray value_array{lue::create_partitioned_array<Value>(array_shape, partition_shape)};
     lue::range(value_array, hpx::make_ready_future<Value>(1).share()).wait();
 
     ClassArray class_array = lue::array_partition_id(value_array);

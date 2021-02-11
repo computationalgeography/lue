@@ -65,7 +65,7 @@ OutputPartition partition_aggregate_operation_partition(
                         }
                     }
 
-                    OutputElement result;
+                    OutputElement result{};
 
                     if(functor.result_is_valid())
                     {

@@ -2,83 +2,88 @@
 #include "lue/framework/algorithm/binary_local_operation.hpp"
 #include "lue/framework/algorithm/operator.hpp"
 #include "lue/framework/algorithm/policy/default_policies.hpp"
+#include "lue/framework/algorithm/policy/default_value_policies.hpp"
 
 
 namespace lue {
-namespace detail {
+    namespace detail {
 
-template<
-    typename InputElement,
-    typename OutputElement_=bool>
-class EqualTo
-{
+        template<
+            typename InputElement,
+            typename OutputElement_=std::uint8_t>
+        class EqualTo
+        {
 
-public:
+        public:
 
-    using OutputElement = OutputElement_;
+            using OutputElement = OutputElement_;
 
-    constexpr OutputElement operator()(
-        InputElement const& input_element1,
-        InputElement const& input_element2) const noexcept
+            constexpr OutputElement operator()(
+                InputElement const& input_element1,
+                InputElement const& input_element2) const noexcept
+            {
+                return input_element1 == input_element2;
+            }
+
+        };
+
+    }  // namespace detail
+
+
+    namespace policy::equal_to {
+
+        template<
+            typename OutputElement,
+            typename InputElement>
+        using DefaultPolicies = policy::DefaultPolicies<
+            OutputElements<OutputElement>,
+            InputElements<InputElement, InputElement>>;
+
+        template<
+            typename OutputElement,
+            typename InputElement>
+        using DefaultValuePolicies = policy::DefaultValuePolicies<
+            OutputElements<OutputElement>,
+            InputElements<InputElement, InputElement>>;
+
+    }  // namespace policy::equal_to
+
+
+    LUE_BINARY_LOCAL_OPERATION_OVERLOADS(equal_to, detail::EqualTo)
+
+
+    // partition == scalar_f
+    template<
+        typename InputElement,
+        typename OutputElement=std::uint8_t,
+        Rank rank>
+    ArrayPartition<OutputElement, rank> equal_to(
+        hpx::id_type const locality_id,
+        ArrayPartition<InputElement, rank> const& partition,
+        hpx::shared_future<InputElement> const& scalar)
     {
-        return input_element1 == input_element2;
+        using Policies = policy::equal_to::DefaultPolicies<OutputElement, InputElement>;
+
+        return binary_local_operation(
+            locality_id, Policies{}, partition, scalar, detail::EqualTo<InputElement, OutputElement>{});
     }
 
-};
 
-}  // namespace detail
-
-
-namespace policy {
-namespace equal_to {
-
-template<
-    typename OutputElement,
-    typename InputElement>
-using DefaultPolicies = policy::DefaultPolicies<
-    OutputElements<OutputElement>,
-    InputElements<InputElement, InputElement>>;
-
-}  // namespace equal_to
-}  // namespace policy
+    // partition == scalar
+    template<
+        typename InputElement,
+        typename OutputElement=std::uint8_t,
+        Rank rank>
+    ArrayPartition<OutputElement, rank> equal_to(
+        hpx::id_type const locality_id,
+        ArrayPartition<InputElement, rank> const& partition,
+        InputElement const& scalar)
+    {
+        return equal_to<InputElement, OutputElement, rank>(
+            locality_id, partition, hpx::make_ready_future<InputElement>(scalar).share());
+    }
 
 
-LUE_BINARY_LOCAL_OPERATION_OVERLOADS(equal_to, detail::EqualTo)
-
-
-// partition == scalar
-template<
-    typename InputElement,
-    Rank rank>
-auto equal_to(
-    hpx::id_type const locality_id,
-    ArrayPartition<InputElement, rank> const& partition,
-    hpx::shared_future<InputElement> const& scalar)
-{
-    using OutputElement = OutputElementT<detail::EqualTo<InputElement>>;
-    using Policies = policy::equal_to::DefaultPolicies<OutputElement, InputElement>;
-
-    return binary_local_operation(
-        locality_id,
-        Policies{},
-        partition, scalar,
-        detail::EqualTo<InputElement, OutputElement>{});
-}
-
-
-// partition == scalar
-template<
-    typename InputElement,
-    Rank rank>
-ArrayPartition<bool, rank> equal_to(
-    hpx::id_type const locality_id,
-    ArrayPartition<InputElement, rank> const& partition,
-    InputElement const& scalar)
-{
-    return equal_to(locality_id, partition, hpx::make_ready_future<InputElement>(scalar).share());
-}
-
-
-LUE_BINARY_COMPARISON_OPERATOR(==, equal_to)
+    LUE_BINARY_COMPARISON_OPERATOR(==, equal_to)
 
 }  // namespace lue

@@ -1,6 +1,7 @@
 #pragma once
 #include "lue/framework/algorithm/detail/halo_partition.hpp"
 #include "lue/framework/algorithm/policy.hpp"
+#include "lue/framework/core/annotate.hpp"
 #include "lue/framework/core/array.hpp"
 #include "lue/framework/core/component.hpp"
 #include <fmt/format.h>
@@ -1669,7 +1670,7 @@ class WrappedPartitionedArray
             InputPartitions const& input_partitions{_array.partitions()};
             Localities<rank> const& localities{_array.localities()};
 
-            lue_assert(all_are_valid(input_partitions));
+            lue_assert(all_are_valid(input_partitions));  // But possibly not ready yet!
 
             auto const [nr_partitions0, nr_partitions1] = lue::shape_in_partitions(_array);
             Radius const kernel_radius{_kernel_radius};
@@ -1729,26 +1730,28 @@ class WrappedPartitionedArray
             {
                 for(Index cp = 0; cp < nr_partitions1; ++cp)
                 {
-                    InputPartition const& input_partition{input_partitions(rp, cp)};
+                    InputPartition input_partition{input_partitions(rp, cp)};
 
-                    _halo_longitudinal_side_partitions(rh, cp) =
-                        hpx::dataflow(
-                            hpx::launch::async,
-                            hpx::util::unwrapping(
+                    _halo_longitudinal_side_partitions(rh, cp) = input_partition.then(
 
-                                    [input_partition, locality_id=localities(rp, cp), kernel_radius, fill_value](
-                                        Shape const& partition_shape)
-                                    {
-                                        HPX_UNUSED(input_partition);
+                            [locality_id=localities(rp, cp), kernel_radius, fill_value](
+                                InputPartition&& input_partition)
+                            {
+                                return input_partition.shape().then(
 
-                                        return InputPartition{
-                                            locality_id, Offset{},
-                                            Shape{{kernel_radius, partition_shape[1]}},
-                                            fill_value};
-                                    }
+                                        [locality_id, kernel_radius, fill_value](
+                                            hpx::future<Shape>&& partition_shape_f)
+                                        {
+                                            return InputPartition{
+                                                locality_id, Offset{},
+                                                Shape{{kernel_radius, partition_shape_f.get()[1]}},
+                                                fill_value};
+                                        }
 
-                                ),
-                            input_partition.shape());
+                                    );
+                            }
+
+                        );
                 }
             }
 
@@ -1768,26 +1771,28 @@ class WrappedPartitionedArray
                     std::array<Index, 2>{{0, 0}},
                     std::array<Index, 2>{{1, nr_partitions1 - 1}}})
                 {
-                    InputPartition const& input_partition{input_partitions(rp, cp)};
+                    InputPartition input_partition{input_partitions(rp, cp)};
 
-                    _halo_latitudinal_sides_partitions(rp, ch) =
-                        hpx::dataflow(
-                            hpx::launch::async,
-                            hpx::util::unwrapping(
+                    _halo_latitudinal_sides_partitions(rp, ch) = input_partition.then(
 
-                                    [input_partition, locality_id=localities(rp, cp), kernel_radius, fill_value](
-                                        Shape const& partition_shape)
-                                    {
-                                        HPX_UNUSED(input_partition);
+                            [locality_id=localities(rp, cp), kernel_radius, fill_value](
+                                InputPartition&& input_partition)
+                            {
+                                return input_partition.shape().then(
 
-                                        return InputPartition{
-                                            locality_id, Offset{},
-                                            Shape{{partition_shape[0], kernel_radius}},
-                                            fill_value};
-                                    }
+                                        [locality_id, kernel_radius, fill_value](
+                                            hpx::future<Shape>&& partition_shape_f)
+                                        {
+                                            return InputPartition{
+                                                locality_id, Offset{},
+                                                Shape{{partition_shape_f.get()[0], kernel_radius}},
+                                                fill_value};
+                                        }
 
-                                ),
-                            input_partition.shape());
+                                    );
+                            }
+
+                        );
                 }
             }
 
