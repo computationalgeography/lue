@@ -43,6 +43,10 @@ set(LUE_TEST_NR_LOCALITIES_PER_TEST
     1 CACHE STRING "Number of localities to use")
 set(LUE_TEST_NR_THREADS_PER_LOCALITY
     1 CACHE STRING "Number of threads to use")
+set(LUE_TEST_HPX_RUNWRAPPER
+    none CACHE STRING "Which runwrapper to use (see hpxrun.py)")
+set(LUE_TEST_HPX_PARCELPORT
+    tcp CACHE STRING "Which parcelport to use (see hpxrun.py)")
 
 
 # Options related to external software used by the project

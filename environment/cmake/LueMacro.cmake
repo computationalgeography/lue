@@ -342,6 +342,8 @@ function(add_hpx_unit_test)
     add_test(NAME ${TEST_EXE_NAME}
         COMMAND
             ${LUE_PYTHON_EXECUTABLE} ${HPXRUN}
+                "--runwrapper" ${LUE_TEST_HPX_RUNWRAPPER}
+                "--parcelport" ${LUE_TEST_HPX_PARCELPORT}
                 "--localities" ${LUE_TEST_NR_LOCALITIES_PER_TEST}
                 "--thread" ${LUE_TEST_NR_THREADS_PER_LOCALITY} --
                     "$<TARGET_FILE:${TEST_EXE_NAME}>")
