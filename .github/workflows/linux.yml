@@ -13,7 +13,7 @@ jobs:
 
         runs-on: ${{ matrix.os }}
 
-        name: os: ${{ matrix.os }} / compiler: ${{ matrix.compiler-version }} / python: ${{ matrix.python-version }}
+        name: os - ${{ matrix.os }} / compiler - ${{ matrix.compiler-version }} / python - ${{ matrix.python-version }}
 
         steps:
 
