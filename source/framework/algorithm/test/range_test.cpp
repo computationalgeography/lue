@@ -29,7 +29,7 @@ BOOST_AUTO_TEST_CASE(range_2d_int32)
     // [64 65 66 67 68 69 70 71 72]
     // [73 74 75 76 77 78 79 80 81]
     Array array{lue::create_partitioned_array<Element>(array_shape, partition_shape)};
-    lue::range(array, hpx::make_ready_future<Element>(1).share()).wait();
+    lue::range(array, Element{1}).get();
 
     Array array_we_want = lue::test::create_partitioned_array<Array>(
         array_shape, partition_shape, {

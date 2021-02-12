@@ -1,7 +1,6 @@
 #define BOOST_TEST_MODULE lue framework algorithm logical_not
 #include "lue/framework/algorithm/all.hpp"
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
-#include "lue/framework/algorithm/fill.hpp"
 #include "lue/framework/algorithm/logical.hpp"
 #include "lue/framework/algorithm/none.hpp"
 #include "lue/framework/test/array.hpp"

@@ -26,7 +26,7 @@ namespace detail {
         // array are equal to this value
         hpx::shared_future<Element> fill_value = hpx::make_ready_future<Element>(5);
 
-        lue::fill(array, fill_value).wait();
+        lue::fill(array, fill_value).get();
 
         BOOST_CHECK(lue::all(array == fill_value).get());
     }

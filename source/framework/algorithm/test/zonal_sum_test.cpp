@@ -68,7 +68,7 @@ BOOST_AUTO_TEST_CASE(zonal_sum_2d_2d_int32)
     // 64 65 66 | 67 68 69 | 70 71 72
     // 73 74 75 | 76 77 78 | 79 80 81
     ValueArray value_array{lue::create_partitioned_array<Value>(array_shape, partition_shape)};
-    lue::range(value_array, hpx::make_ready_future<Value>(1).share()).wait();
+    lue::range(value_array, Value{1}).get();
 
     ClassArray class_array = lue::array_partition_id(value_array);
 

@@ -22,7 +22,7 @@ namespace detail {
         Array array{lue::create_partitioned_array<Element>(array_shape, partition_shape)};
 
         {
-            lue::unique_id(array).wait();
+            lue::unique_id(array).get();
             auto unique = lue::unique(array).get();
 
             BOOST_REQUIRE_EQUAL(unique.nr_elements(), lue::nr_elements(array));

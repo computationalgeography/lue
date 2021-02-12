@@ -20,7 +20,7 @@ namespace detail {
 
         Array array{lue::create_partitioned_array<Element>(array_shape, partition_shape)};
 
-        lue::unique_id(array).wait();
+        lue::unique_id(array).get();
 
         BOOST_CHECK_EQUAL(lue::maximum(array).get(), lue::nr_elements(array_shape) - 1);
     }

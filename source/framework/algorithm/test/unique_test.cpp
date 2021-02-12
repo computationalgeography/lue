@@ -1,6 +1,5 @@
 #define BOOST_TEST_MODULE lue framework algorithm unique
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
-#include "lue/framework/algorithm/fill.hpp"
 #include "lue/framework/algorithm/unique.hpp"
 #include "lue/framework/algorithm/unique_id.hpp"
 #include "lue/framework/test/array.hpp"
@@ -19,24 +18,23 @@ namespace detail {
         auto const array_shape{lue::Test<Array>::shape()};
         auto const partition_shape{lue::Test<Array>::partition_shape()};
 
-        Array array{lue::create_partitioned_array<Element>(array_shape, partition_shape)};
-
         // All the same values
         {
-            hpx::shared_future<Element> fill_value = hpx::make_ready_future<Element>(5);
-            lue::fill(array, fill_value).wait();
+            Element const fill_value{5};
+            Array array{lue::create_partitioned_array(array_shape, partition_shape, fill_value)};
 
             auto unique = lue::unique(array).get();
 
             BOOST_REQUIRE_EQUAL(unique.nr_elements(), 1);
-            BOOST_CHECK_EQUAL(
-                unique.partitions()[0].data().get()[0],
-                fill_value.get());
+            BOOST_CHECK_EQUAL(unique.partitions()[0].data().get()[0], fill_value);
         }
 
         // All different values
         {
-            lue::unique_id(array).wait();
+            Array array{lue::create_partitioned_array<Element>(array_shape, partition_shape)};
+
+            lue::unique_id(array).get();
+
             auto unique = lue::unique(array).get();
 
             BOOST_REQUIRE_EQUAL(unique.nr_elements(), lue::nr_elements(array));
