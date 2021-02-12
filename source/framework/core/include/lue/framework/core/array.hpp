@@ -31,7 +31,20 @@ public:
 
     using ConstIterator = typename Elements::const_iterator;
 
-                   Array               ()=default;
+    Array():
+
+        _shape{},
+        _elements{},
+        _span{}
+
+    {
+        // The shape is filled with indeterminate values! Explicitly
+        // set things up for the default constructed instance.
+        _shape.fill(0);
+        _span = Span{_elements.data(), _shape};
+
+        assert_invariants();
+    }
 
     explicit       Array               (Shape const& shape);
 

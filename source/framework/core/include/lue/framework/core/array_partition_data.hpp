@@ -199,9 +199,17 @@ template<
     Rank rank>
 ArrayPartitionData<Element, rank>::ArrayPartitionData():
 
-    ArrayPartitionData{Shape{}}
+    _shape{},
+    _elements{},
+    _span{}
 
 {
+    // Shape is filled with indeterminate values! This may or may not
+    // matter, depending on what happens next with this instance. To be sure,
+    // explicitly set the shape to empty.
+    _shape.fill(0);
+    _span = Span{_elements.data(), _shape};
+
     assert_invariants();
 }
 
@@ -702,6 +710,7 @@ ArrayPartitionData<Element, 0>::ArrayPartitionData():
     _elements{}
 
 {
+    _shape.fill(0);
     lue_assert(_elements.size() == 1);
 }
 

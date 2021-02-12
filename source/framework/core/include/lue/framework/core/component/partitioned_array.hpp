@@ -175,6 +175,12 @@ PartitionedArray<Element, rank>::PartitionedArray():
     _partitions{}
 
 {
+    // Shape is filled with indeterminate values! This may or may not
+    // matter, depending on what happens next with this instance. To be sure,
+    // explicitly set the shape to empty.
+    _shape.fill(0);
+
+    assert_invariants();
 }
 
 
