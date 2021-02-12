@@ -12,7 +12,7 @@ namespace lue::framework {
     {
         using Policies = policy::all::DefaultValuePolicies<Element>;
 
-        return all(Policies{}, array);
+        return all(Policies{}, array).share();
     }
 
 }  // namespace lue::framework

@@ -1,7 +1,12 @@
 #include "lue/py/framework/algorithm/add.hpp"
 #include "lue/py/framework/algorithm/divide.hpp"
 #include "lue/py/framework/algorithm/equal_to.hpp"
+#include "lue/py/framework/algorithm/greater_than.hpp"
+#include "lue/py/framework/algorithm/greater_than_equal_to.hpp"
+#include "lue/py/framework/algorithm/less_than.hpp"
+#include "lue/py/framework/algorithm/less_than_equal_to.hpp"
 #include "lue/py/framework/algorithm/multiply.hpp"
+#include "lue/py/framework/algorithm/not_equal_to.hpp"
 #include "lue/py/framework/algorithm/subtract.hpp"
 #include "lue/py/framework/stream.hpp"
 #include "lue/framework/core/component/partitioned_array.hpp"
@@ -95,6 +100,28 @@ namespace lue::framework {
                 }
             )
 
+            // a < b
+            .def("__lt__", [](Array const& argument1, Array const& argument2)
+                { return less_than(argument1, argument2); },
+                pybind11::is_operator())
+            .def("__lt__", [](Array const& argument1, Element const argument2)
+                { return less_than(argument1, argument2); },
+                pybind11::is_operator())
+            .def("__lt__", [](Array const& argument1, ElementF const& argument2)
+                { return less_than(argument1, argument2); },
+                pybind11::is_operator())
+
+            // a <= b
+            .def("__le__", [](Array const& argument1, Array const& argument2)
+                { return less_than_equal_to(argument1, argument2); },
+                pybind11::is_operator())
+            .def("__le__", [](Array const& argument1, Element const argument2)
+                { return less_than_equal_to(argument1, argument2); },
+                pybind11::is_operator())
+            .def("__le__", [](Array const& argument1, ElementF const& argument2)
+                { return less_than_equal_to(argument1, argument2); },
+                pybind11::is_operator())
+
             // a == b
             .def("__eq__", [](Array const& argument1, Array const& argument2)
                 { return equal_to(argument1, argument2); },
@@ -104,6 +131,39 @@ namespace lue::framework {
                 pybind11::is_operator())
             .def("__eq__", [](Array const& argument1, ElementF const& argument2)
                 { return equal_to(argument1, argument2); },
+                pybind11::is_operator())
+
+            // a != b
+            .def("__ne__", [](Array const& argument1, Array const& argument2)
+                { return not_equal_to(argument1, argument2); },
+                pybind11::is_operator())
+            .def("__ne__", [](Array const& argument1, Element const argument2)
+                { return not_equal_to(argument1, argument2); },
+                pybind11::is_operator())
+            .def("__ne__", [](Array const& argument1, ElementF const& argument2)
+                { return not_equal_to(argument1, argument2); },
+                pybind11::is_operator())
+
+            // a > b
+            .def("__gt__", [](Array const& argument1, Array const& argument2)
+                { return greater_than(argument1, argument2); },
+                pybind11::is_operator())
+            .def("__gt__", [](Array const& argument1, Element const argument2)
+                { return greater_than(argument1, argument2); },
+                pybind11::is_operator())
+            .def("__gt__", [](Array const& argument1, ElementF const& argument2)
+                { return greater_than(argument1, argument2); },
+                pybind11::is_operator())
+
+            // a >= b
+            .def("__ge__", [](Array const& argument1, Array const& argument2)
+                { return greater_than_equal_to(argument1, argument2); },
+                pybind11::is_operator())
+            .def("__ge__", [](Array const& argument1, Element const argument2)
+                { return greater_than_equal_to(argument1, argument2); },
+                pybind11::is_operator())
+            .def("__ge__", [](Array const& argument1, ElementF const& argument2)
+                { return greater_than_equal_to(argument1, argument2); },
                 pybind11::is_operator())
 
             ;
