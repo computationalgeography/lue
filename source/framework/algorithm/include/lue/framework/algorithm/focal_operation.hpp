@@ -885,6 +885,9 @@ OutputPartition focal_operation_partition(
     using OutputData = DataT<OutputPartition>;
     using Offset = OffsetT<OutputPartition>;
 
+//return OutputPartition{hpx::find_here(), Offset{0, 0}, ShapeT<OutputPartition>{10, 10}};
+       //  OutputData{first_focal_input_partition.shape().get()}};
+
     // For each set of input partitions, the center partition
     std::tuple<PartitionT<InputPartitions>...> focal_input_partitions{
         meh::input_partition(input_partitions, 1, 1)...};
@@ -944,7 +947,7 @@ OutputPartition focal_operation_partition(
             ),
         meh::input_partition_data(input_partitions, 1, 1)...);
 
-    // Once the elements from all neighboring partitions have arrived,
+    // Once the elements from all neighbouring partitions have arrived,
     // finish by performing calculations for the sides of the new
     // partition
     std::tuple<WrappedArrayPartitions<InputPartitions>...> input_partitions_tuple{input_partitions...};
@@ -1488,6 +1491,56 @@ struct FocalOperationPartitionAction:
 
 
 template<
+    typename Element,
+    Rank rank>
+hpx::future<ArrayPartitionData<ArrayPartition<Element, rank>, rank>> when_all_get(
+    ArrayPartitionData<ArrayPartition<Element, rank>, rank>&& partitions)
+{
+    // Given an array of partitions, wait for all partitions to become ready
+    // and return a future to an array with ready partitions
+
+    using InputPartition = ArrayPartition<Element, rank>;
+
+    return hpx::when_all(partitions.begin(), partitions.end()).then(hpx::util::unwrapping(
+            [shape=partitions.shape()](
+                std::vector<InputPartition>&& vector_of_ready_partitions)
+            {
+                ArrayPartitionData<InputPartition, rank> array_of_partitions{{shape}};
+
+                std::move(
+                    vector_of_ready_partitions.begin(), vector_of_ready_partitions.end(),
+                    array_of_partitions.begin());
+
+                return array_of_partitions;
+            }
+
+        ));
+}
+
+
+template<
+    typename... T>
+std::tuple<T...> get_futures_meh(
+    hpx::future<T>&&... futures)
+{
+    // Given any number of ready(!) futures to values of various types,
+    // return an std::tuple of the values themselves
+    return std::make_tuple(futures.get()...);
+}
+
+
+template<
+    typename... T>
+std::tuple<T...> get_futures(
+    hpx::util::tuple<hpx::future<T>...>&& futures)
+{
+    // Given an hpx::tuple of ready(!) futures to values of various types,
+    // return an std::tuple of the values themselves
+    return std::apply(get_futures_meh<T...>, std::tuple<hpx::future<T>...>(std::move(futures)));
+}
+
+
+template<
     typename Action,
     typename Kernel,
     typename Functor,
@@ -1497,47 +1550,27 @@ ArrayPartition<OutputElementT<Functor>, rank<Kernel>> spawn_focal_operation_part
     Action const& action,
     Kernel const& kernel,
     Functor const& functor,
-    InputPartitions... input_partitions)
+    InputPartitions&&... input_partitions)
 {
     static_assert(rank<Kernel> == 2);
 
-    /// using InputPartition = PartitionT<InputPartitions>;
-    /// using Shape = ShapeT<InputPartitions>;
-
-    /// lue_assert(all_are_valid(input_partitions));
-
-
-    return hpx::when_all(detail::meh::when_all(input_partitions)...).then(hpx::util::unwrapping(
-            [locality_id, action, kernel, functor, input_partitions...](
-                // std::vector<std::vector<InputPartition>> input_partitions)
-                auto /* input_partitions */)
+    return hpx::when_all(when_all_get(std::move(input_partitions))...).then(hpx::util::unwrapping(
+            [locality_id, action, kernel, functor](
+                hpx::util::tuple<hpx::lcos::future<InputPartitions>...>&& input_partitions)
             {
                 AnnotateFunction annotation{"focal_operation"};
 
-                return action(
-                    locality_id,
-                    // InputPartitions{Shape{{3, 3}}, input_partitions.begin(), input_partitions.end()},
-                    input_partitions...,
-                    kernel, functor);
+                auto call_action = [locality_id, action, kernel, functor](
+                        InputPartitions&&... input_partitions)
+                    {
+                        return action(locality_id, std::move(input_partitions)..., kernel, functor);
+                    };
+
+                return std::apply(
+                    call_action, std::tuple<InputPartitions...>{get_futures(std::move(input_partitions))});
             }
 
         ));
-
-
-    /// return hpx::when_all(input_partitions.begin(), input_partitions.end()).then(hpx::util::unwrapping(
-
-    ///         [locality_id, action, kernel, functor](
-    ///             std::vector<InputPartition> input_partitions)
-    ///         {
-    ///             AnnotateFunction annotation{"focal_operation"};
-
-    ///             return action(
-    ///                 locality_id,
-    ///                 InputPartitions{Shape{{3, 3}}, input_partitions.begin(), input_partitions.end()},
-    ///                 kernel, functor);
-    ///         }
-
-    ///     ));
 }
 
 
@@ -1947,8 +1980,7 @@ PartitionedArray<OutputElementT<Functor>, rank<Kernel>> focal_operation_2d(
 
     output_partitions(0, 0) = spawn_focal_operation_partition(
        localities(0, 0),
-       action, kernel, functor,
-       meh::north_west_corner_input_partitions(input_arrays)...);
+       action, kernel, functor, meh::north_west_corner_input_partitions(input_arrays)...);
 
     if(nr_partitions1 > 1)
     {
@@ -2113,19 +2145,5 @@ PartitionedArray<OutputElementT<Functor>, rank> focal_operation(
 {
     return focal_operation(policies, kernel, std::move(functor), array1, array2);
 }
-
-
-/// template<
-///     typename Element,
-///     Rank rank,
-///     typename Kernel,
-///     typename Functor>
-/// PartitionedArray<OutputElementT<Functor>, rank> focal_operation(
-///     PartitionedArray<Element, rank> const& array,
-///     Kernel const& kernel,
-///     Functor functor)
-/// {
-///     return focal_operation(FocalOperationPolicies{}, array, kernel, std::move(functor));
-/// }
 
 }  // namespace lue

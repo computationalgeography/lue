@@ -193,4 +193,15 @@ template<
         ));
 }
 
+
+template<
+    typename Element,
+    Rank rank>
+[[nodiscard]] hpx::future<void> range(
+    PartitionedArray<Element, rank>& input_array,
+    Element const start_value)
+{
+    return range(input_array, hpx::make_ready_future<Element>(start_value).share());
+}
+
 }  // namespace lue

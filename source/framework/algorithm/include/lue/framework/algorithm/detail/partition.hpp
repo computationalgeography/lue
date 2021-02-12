@@ -51,12 +51,12 @@ Array<hpx::shared_future<DataT<PartitionT<Partitions>>>, rank<Partitions>> parti
     // North-west corner partition: get south-east corner element
     data(0, 0) = partition_shapes(0, 0).then(hpx::util::unwrapping(
 
-            [flow_direction_partition=partitions(0, 0)](
+            [input_partition=partitions(0, 0)](
                 Shape const& partition_shape)
             {
                 auto const [nr_elements0, nr_elements1] = partition_shape;
 
-                return flow_direction_partition.slice(
+                return input_partition.slice(
                     Slices{{
                         Slice{nr_elements0 - 1, nr_elements0},
                         Slice{nr_elements1 - 1, nr_elements1}
