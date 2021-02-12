@@ -8,7 +8,9 @@ jobs:
         strategy:
             matrix:
                 os: ["ubuntu-20.04"]
-                python-version: [2.7, 3.8, 3.9]
+                # lue.framework fails icw 2.7. Possibly fixed in pybind11 2.7.
+                # Add 2.7 once this version of pybind11 is released.
+                python-version: [3.8, 3.9]
                 compiler-version: [9, 10]
 
         runs-on: ${{ matrix.os }}
@@ -87,7 +89,8 @@ jobs:
               tree install
 
         - name: deploy lue documentation
-          if: github.ref == 'refs/heads/master' && matrix.compiler-version == 9 && matrix.python-version == 3.8
+          # Skip deploy for now. Still hangs upon uploading to the server...
+          if: 0 && github.ref == 'refs/heads/master' && matrix.compiler-version == 9 && matrix.python-version == 3.8
           env:
               ftp_server: ${{ secrets.FTP_SERVER }}
               ftp_port: ${{ secrets.FTP_PORT }}
