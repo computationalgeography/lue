@@ -1,6 +1,8 @@
 #pragma once
 #include "lue/framework/algorithm/binary_local_operation.hpp"
+#include "lue/framework/algorithm/policy/all_values_within_domain.hpp"
 #include "lue/framework/algorithm/policy/default_policies.hpp"
+#include "lue/framework/algorithm/policy/default_value_policies.hpp"
 #include <cmath>
 
 
@@ -30,18 +32,23 @@ public:
 }  // namespace detail
 
 
-namespace policy {
-namespace atan2 {
+namespace policy::atan2 {
 
-template<
-    typename Element>
-using DefaultPolicies = policy::DefaultPolicies<
-    OutputElements<Element>,
-    InputElements<Element, Element>>;
+    template<
+        typename Element>
+    using DefaultPolicies = policy::DefaultPolicies<
+        AllValuesWithinDomain<Element, Element>,
+        OutputElements<Element>,
+        InputElements<Element, Element>>;
 
+    template<
+        typename Element>
+    using DefaultValuePolicies = policy::DefaultValuePolicies<
+        AllValuesWithinDomain<Element, Element>,
+        OutputElements<Element>,
+        InputElements<Element, Element>>;
 
-}  // namespace atan2
-}  // namespace policy
+}  // namespace policy::atan2
 
 
 template<

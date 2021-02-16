@@ -81,6 +81,7 @@ public:
 
                         OutputData output_partition_data{input_partition_data1.shape()};
 
+                        auto const& dp = policies.domain_policy();
                         auto const& indp1 = std::get<0>(policies.inputs_policies()).input_no_data_policy();
                         auto const& indp2 = std::get<1>(policies.inputs_policies()).input_no_data_policy();
                         auto const& indp3 = std::get<2>(policies.inputs_policies()).input_no_data_policy();
@@ -95,6 +96,12 @@ public:
                             if(indp1.is_no_data(input_partition_data1, i) ||
                                 indp2.is_no_data(input_partition_data2, i) ||
                                 indp3.is_no_data(input_partition_data3, i))
+                            {
+                                ondp.mark_no_data(output_partition_data, i);
+                            }
+                            else if(!dp.within_domain(
+                                input_partition_data1[i], input_partition_data2[i],
+                                input_partition_data3[i]))
                             {
                                 ondp.mark_no_data(output_partition_data, i);
                             }
@@ -182,6 +189,7 @@ public:
 
                         OutputData output_partition_data{input_partition_data1.shape()};
 
+                        auto const& dp = policies.domain_policy();
                         auto const& indp1 = std::get<0>(policies.inputs_policies()).input_no_data_policy();
                         auto const& indp2 = std::get<1>(policies.inputs_policies()).input_no_data_policy();
                         auto const& indp3 = std::get<2>(policies.inputs_policies()).input_no_data_policy();
@@ -203,6 +211,11 @@ public:
                             {
                                 if(indp1.is_no_data(input_partition_data1, i) ||
                                     indp2.is_no_data(input_partition_data2, i))
+                                {
+                                    ondp.mark_no_data(output_partition_data, i);
+                                }
+                                else if(!dp.within_domain(
+                                    input_partition_data1[i], input_partition_data2[i], input_scalar))
                                 {
                                     ondp.mark_no_data(output_partition_data, i);
                                 }
@@ -289,6 +302,7 @@ public:
 
                         OutputData output_partition_data{input_partition_data1.shape()};
 
+                        auto const& dp = policies.domain_policy();
                         auto const& indp1 = std::get<0>(policies.inputs_policies()).input_no_data_policy();
                         auto const& indp2 = std::get<1>(policies.inputs_policies()).input_no_data_policy();
                         auto const& indp3 = std::get<2>(policies.inputs_policies()).input_no_data_policy();
@@ -310,6 +324,11 @@ public:
                             {
                                 if(indp1.is_no_data(input_partition_data1, i) ||
                                     indp3.is_no_data(input_partition_data2, i))
+                                {
+                                    ondp.mark_no_data(output_partition_data, i);
+                                }
+                                else if(!dp.within_domain(
+                                    input_partition_data1[i], input_scalar, input_partition_data2[i]))
                                 {
                                     ondp.mark_no_data(output_partition_data, i);
                                 }
@@ -391,6 +410,7 @@ public:
 
                         OutputData output_partition_data{input_partition_data.shape()};
 
+                        auto const& dp = policies.domain_policy();
                         auto const& indp1 = std::get<0>(policies.inputs_policies()).input_no_data_policy();
                         auto const& indp2 = std::get<1>(policies.inputs_policies()).input_no_data_policy();
                         auto const& indp3 = std::get<2>(policies.inputs_policies()).input_no_data_policy();
@@ -410,6 +430,11 @@ public:
                             for(Index i = 0; i < nr_elements; ++i)
                             {
                                 if(indp1.is_no_data(input_partition_data, i))
+                                {
+                                    ondp.mark_no_data(output_partition_data, i);
+                                }
+                                else if(!dp.within_domain(
+                                    input_partition_data[i], input_scalar1, input_scalar2))
                                 {
                                     ondp.mark_no_data(output_partition_data, i);
                                 }

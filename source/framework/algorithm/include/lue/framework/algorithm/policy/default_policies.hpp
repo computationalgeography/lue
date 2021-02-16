@@ -24,6 +24,7 @@ using OutputElements = detail::TypeList<Elements...>;
 
 
 template<
+    typename DomainPolicy,
     typename OutputElements,
     typename InputElements>
 class DefaultPolicies
@@ -39,13 +40,16 @@ class DefaultPolicies
     - Input no-data policy does not check for no-data in the input
 */
 template<
+    typename DomainPolicy,
     typename... OutputElements,
     typename... InputElements>
 class DefaultPolicies<
+    DomainPolicy,
     detail::TypeList<OutputElements...>,
     detail::TypeList<InputElements...>>:
 
     public Policies<
+        DomainPolicy,
         OutputsPolicies<OutputPolicies<DontMarkNoData<OutputElements>>...>,
         InputsPolicies<InputPolicies<SkipNoData<InputElements>>...>>
 
@@ -54,6 +58,7 @@ class DefaultPolicies<
 
 
 template<
+    typename DomainPolicy,
     typename OutputElements,
     typename InputElements>
 class DefaultFocalOperationPolicies
@@ -72,13 +77,16 @@ class DefaultFocalOperationPolicies
        - Halos are filled with a constant value
 */
 template<
+    typename DomainPolicy,
     typename... OutputElements,
     typename... InputElements>
 class DefaultFocalOperationPolicies<
+        DomainPolicy,
         detail::TypeList<OutputElements...>,
         detail::TypeList<InputElements...>>:
 
     public Policies<
+        DomainPolicy,
         OutputsPolicies<OutputPolicies<DontMarkNoData<OutputElements>>...>,
         InputsPolicies<
             FocalOperationInputPolicies<
@@ -89,6 +97,7 @@ class DefaultFocalOperationPolicies<
     private:
 
         using Base = Policies<
+            DomainPolicy,
             OutputsPolicies<
                 OutputPolicies<
                     DontMarkNoData<OutputElements>>...>,
@@ -103,6 +112,7 @@ class DefaultFocalOperationPolicies<
             InputElements const... fill_values):
 
             Base{
+                    DomainPolicy{},
                     OutputPolicies<
                             DontMarkNoData<OutputElements>
                         >{}...,

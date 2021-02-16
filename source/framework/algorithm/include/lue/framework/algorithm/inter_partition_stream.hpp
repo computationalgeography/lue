@@ -126,6 +126,7 @@ hpx::util::tuple<InterPartitionStreamPartition, PartitionIOPartition> inter_part
 
     using FlowDirectionPartition = PartitionT<FlowDirectionPartitions>;
     using FlowDirectionData = DataT<FlowDirectionPartition>;
+    using FlowDirectionElement = ElementT<FlowDirectionPartitions>;
 
     using InflowCountElement = std::uint8_t;
     using InflowCountPartition = PartitionT<FlowDirectionPartition, InflowCountElement>;
@@ -160,9 +161,11 @@ hpx::util::tuple<InterPartitionStreamPartition, PartitionIOPartition> inter_part
 
                     using InflowCountPolicies =
                         policy::Policies<
+                            policy::AllValuesWithinDomain<FlowDirectionElement>,
                             policy::OutputsPolicies<InflowCountPolicy>,
                             policy::InputsPolicies<FlowDirectionPolicy>>;
                     InflowCountPolicies inflow_count_policies{
+                        policy::AllValuesWithinDomain<FlowDirectionElement>{},
                         InflowCountPolicy{}, std::get<0>(policies.inputs_policies())};
 
                     auto const& [inflow_count_data, input_cell_idxs] =
@@ -338,18 +341,17 @@ struct InterPartitionStreamPartitionAction:
 }  // namespace detail
 
 
-namespace policy {
-namespace inter_partition_stream {
+namespace policy::inter_partition_stream {
 
-template<
-    typename BooleanElement,
-    typename FlowDirectionElement>
-using DefaultPolicies = policy::DefaultPolicies<
-    OutputElements<BooleanElement>,
-    InputElements<FlowDirectionElement>>;
+    template<
+        typename BooleanElement,
+        typename FlowDirectionElement>
+    using DefaultPolicies = policy::DefaultPolicies<
+        AllValuesWithinDomain<FlowDirectionElement>,
+        OutputElements<BooleanElement>,
+        InputElements<FlowDirectionElement>>;
 
-}  // namespace inter_partition_stream
-}  // namespace policy
+}  // namespace policy::inter_partition_stream
 
 
 template<

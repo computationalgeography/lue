@@ -1,5 +1,7 @@
 #pragma once
+#include "lue/framework/algorithm/policy/all_values_within_domain.hpp"
 #include "lue/framework/algorithm/policy/default_policies.hpp"
+#include "lue/framework/algorithm/policy/default_value_policies.hpp"
 #include "lue/framework/core/annotate.hpp"
 #include "lue/framework/core/component/partitioned_array.hpp"
 
@@ -80,17 +82,23 @@ struct UniquePartitionAction:
 {};
 
 
-namespace policy {
-namespace unique {
+namespace policy::unique {
 
-template<
-    typename Element>
-using DefaultPolicies = policy::DefaultPolicies<
-    OutputElements<Element>,
-    InputElements<Element>>;
+    template<
+        typename Element>
+    using DefaultPolicies = policy::DefaultPolicies<
+        AllValuesWithinDomain<Element>,
+        OutputElements<Element>,
+        InputElements<Element>>;
 
-}  // namespace unique
-}  // namespace policy
+    template<
+        typename Element>
+    using DefaultValuePolicies = policy::DefaultValuePolicies<
+        AllValuesWithinDomain<Element>,
+        OutputElements<Element>,
+        InputElements<Element>>;
+
+}  // namespace policy::unique
 
 
 /*!

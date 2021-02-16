@@ -2,6 +2,7 @@
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/io/util.hpp"
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
+#include "lue/framework/algorithm/policy/all_values_within_domain.hpp"
 #include "lue/framework/algorithm/policy/default_policies.hpp"
 #include "lue/framework/algorithm/policy/default_value_policies.hpp"
 #include "lue/data_model/hl/raster_view.hpp"
@@ -379,6 +380,7 @@ namespace policy::read_into {
     template<
         typename OutputElement>
     using DefaultPolicies = policy::DefaultPolicies<
+        AllValuesWithinDomain<>,
         OutputElements<OutputElement>,
         InputElements<>>;
 
@@ -386,6 +388,7 @@ namespace policy::read_into {
     template<
         typename OutputElement>
     using DefaultValuePolicies = policy::DefaultValuePolicies<
+        AllValuesWithinDomain<>,
         OutputElements<OutputElement>,
         InputElements<>>;
 

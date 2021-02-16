@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/unary_local_operation.hpp"
+#include "lue/framework/algorithm/policy/all_values_within_domain.hpp"
 #include "lue/framework/algorithm/policy/default_policies.hpp"
 #include "lue/framework/algorithm/policy/default_value_policies.hpp"
 #include <cmath>
@@ -38,24 +39,24 @@ public:
 }  // namespace detail
 
 
-namespace policy {
-namespace sqrt {
+namespace policy::sqrt {
 
-template<
-    typename Element>
-using DefaultPolicies = policy::DefaultPolicies<
-    OutputElements<Element>,
-    InputElements<Element>>;
+    template<
+        typename Element>
+    using DefaultPolicies = policy::DefaultPolicies<
+        AllValuesWithinDomain<Element>,
+        OutputElements<Element>,
+        InputElements<Element>>;
 
 
-template<
-    typename Element>
-using DefaultValuePolicies = policy::DefaultValuePolicies<
-    OutputElements<Element>,
-    InputElements<Element>>;
+    template<
+        typename Element>
+    using DefaultValuePolicies = policy::DefaultValuePolicies<
+        AllValuesWithinDomain<Element>,
+        OutputElements<Element>,
+        InputElements<Element>>;
 
-}  // namespace sqrt
-}  // namespace policy
+}  // namespace policy::sqrt
 
 
 template<

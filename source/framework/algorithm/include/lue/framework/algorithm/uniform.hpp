@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/framework/algorithm/policy/all_values_within_domain.hpp"
 #include "lue/framework/algorithm/policy/default_policies.hpp"
 #include "lue/framework/algorithm/policy/default_value_policies.hpp"
 #include "lue/framework/core/annotate.hpp"
@@ -117,26 +118,26 @@ struct UniformPartitionAction:
 /// using UniformAction = typename detail::uniform::OverloadPicker<Policies, T>::Action;
 
 
-namespace policy {
-namespace uniform {
+namespace policy::uniform {
 
-// The min/max values are the input arguments whose values are
-// relevant. These have the same element type as the output element.
-template<
-    typename OutputElement>
-using DefaultPolicies = policy::DefaultPolicies<
-    OutputElements<OutputElement>,
-    InputElements<OutputElement, OutputElement>>;
+    // The min/max values are the input arguments whose values are
+    // relevant. These have the same element type as the output element.
+    template<
+        typename OutputElement>
+    using DefaultPolicies = policy::DefaultPolicies<
+        AllValuesWithinDomain<OutputElement, OutputElement>,
+        OutputElements<OutputElement>,
+        InputElements<OutputElement, OutputElement>>;
 
 
-template<
-    typename OutputElement>
-using DefaultValuePolicies = policy::DefaultValuePolicies<
-    OutputElements<OutputElement>,
-    InputElements<OutputElement, OutputElement>>;
+    template<
+        typename OutputElement>
+    using DefaultValuePolicies = policy::DefaultValuePolicies<
+        AllValuesWithinDomain<OutputElement, OutputElement>,
+        OutputElements<OutputElement>,
+        InputElements<OutputElement, OutputElement>>;
 
-}  // namespace uniform
-}  // namespace policy
+}  // namespace policy::uniform
 
 
 template<

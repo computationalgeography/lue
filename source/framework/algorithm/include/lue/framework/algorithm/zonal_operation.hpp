@@ -48,6 +48,7 @@ class OverloadPicker
 
                             HPX_UNUSED(zones_partition);
 
+                            auto const& dp = policies.domain_policy();
                             auto const& indp1 = std::get<0>(policies.inputs_policies()).input_no_data_policy();
                             auto const& indp2 = std::get<1>(policies.inputs_policies()).input_no_data_policy();
 
@@ -61,7 +62,10 @@ class OverloadPicker
                                 {
                                     if(!indp2.is_no_data(zones_partition_data, i))
                                     {
-                                        result.add(zones_partition_data[i], input_element);
+                                        if(dp.within_domain(zones_partition_data[i], input_element))
+                                        {
+                                            result.add(zones_partition_data[i], input_element);
+                                        }
                                     }
                                 }
                             }
@@ -131,6 +135,7 @@ class OverloadPicker<
                             HPX_UNUSED(input_partition);
                             HPX_UNUSED(zones_partition);
 
+                            auto const& dp = policies.domain_policy();
                             auto const& indp1 = std::get<0>(policies.inputs_policies()).input_no_data_policy();
                             auto const& indp2 = std::get<1>(policies.inputs_policies()).input_no_data_policy();
 
@@ -145,7 +150,10 @@ class OverloadPicker<
                                 if(!indp1.is_no_data(input_partition_data, i) &&
                                     !indp2.is_no_data(zones_partition_data, i))
                                 {
-                                    result.add(zones_partition_data[i], input_partition_data[i]);
+                                    if(dp.within_domain(zones_partition_data[i], input_partition_data[i]))
+                                    {
+                                        result.add(zones_partition_data[i], input_partition_data[i]);
+                                    }
                                 }
                             }
 

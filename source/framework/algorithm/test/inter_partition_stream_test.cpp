@@ -1434,6 +1434,8 @@ BOOST_AUTO_TEST_CASE(all_no_data)
     // | X | X | X |
     // +---+---+---+
 
+    using DomainPolicy = lue::policy::AllValuesWithinDomain<FlowDirectionElement>;
+
     // Outputs
     using StreamPolicies =
         lue::policy::OutputPolicies<lue::policy::MarkNoDataByValue<BooleanElement>>;
@@ -1443,6 +1445,7 @@ BOOST_AUTO_TEST_CASE(all_no_data)
         lue::policy::InputPolicies<lue::policy::DetectNoDataByValue<FlowDirectionElement>>;
 
     using Policies = lue::policy::Policies<
+        DomainPolicy,
         lue::policy::OutputsPolicies<StreamPolicies>,
         lue::policy::InputsPolicies<FlowDirectionPolicies>>;
 
@@ -1451,7 +1454,7 @@ BOOST_AUTO_TEST_CASE(all_no_data)
     FlowDirectionPolicies flow_direction_policies{
         lue::policy::DetectNoDataByValue<FlowDirectionElement>{nd}};
 
-    Policies policies{stream_policies, flow_direction_policies};
+    Policies policies{DomainPolicy{}, stream_policies, flow_direction_policies};
 
     PartitionIO io0;
 
@@ -1478,6 +1481,8 @@ BOOST_AUTO_TEST_CASE(all_no_data)
 
 BOOST_AUTO_TEST_CASE(no_data)
 {
+    using DomainPolicy = lue::policy::AllValuesWithinDomain<FlowDirectionElement>;
+
     // Outputs
     using StreamPolicies =
         lue::policy::OutputPolicies<lue::policy::MarkNoDataByValue<BooleanElement>>;
@@ -1487,6 +1492,7 @@ BOOST_AUTO_TEST_CASE(no_data)
         lue::policy::InputPolicies<lue::policy::DetectNoDataByValue<FlowDirectionElement>>;
 
     using Policies = lue::policy::Policies<
+        DomainPolicy,
         lue::policy::OutputsPolicies<StreamPolicies>,
         lue::policy::InputsPolicies<FlowDirectionPolicies>>;
 
@@ -1495,7 +1501,7 @@ BOOST_AUTO_TEST_CASE(no_data)
     FlowDirectionPolicies flow_direction_policies{
         lue::policy::DetectNoDataByValue<FlowDirectionElement>{nd}};
 
-    Policies policies{stream_policies, flow_direction_policies};
+    Policies policies{DomainPolicy{}, stream_policies, flow_direction_policies};
 
     PartitionIO io0, io1;
     io0.add({1, 2}, {      }, 1);
@@ -1547,6 +1553,8 @@ BOOST_AUTO_TEST_CASE(no_data)
 
 BOOST_AUTO_TEST_CASE(merging_inter_partition_streams)
 {
+    using DomainPolicy = lue::policy::AllValuesWithinDomain<FlowDirectionElement>;
+
     // Outputs
     using StreamPolicies =
         lue::policy::OutputPolicies<lue::policy::MarkNoDataByValue<BooleanElement>>;
@@ -1556,6 +1564,7 @@ BOOST_AUTO_TEST_CASE(merging_inter_partition_streams)
         lue::policy::InputPolicies<lue::policy::DetectNoDataByValue<FlowDirectionElement>>;
 
     using Policies = lue::policy::Policies<
+        DomainPolicy,
         lue::policy::OutputsPolicies<StreamPolicies>,
         lue::policy::InputsPolicies<FlowDirectionPolicies>>;
 
@@ -1564,7 +1573,7 @@ BOOST_AUTO_TEST_CASE(merging_inter_partition_streams)
     FlowDirectionPolicies flow_direction_policies{
         lue::policy::DetectNoDataByValue<FlowDirectionElement>{nd}};
 
-    Policies policies{stream_policies, flow_direction_policies};
+    Policies policies{DomainPolicy{}, stream_policies, flow_direction_policies};
 
     PartitionIO io0, io1, io2, io3, io4, io5, io6, io7, io8;
     io0.add({2, 2}, {      }, 1);

@@ -56,6 +56,7 @@ template<
     typename OutputElement,
     typename... InputElement>
 using DefaultPolicies = lue::policy::DefaultFocalOperationPolicies<
+    lue::policy::AllValuesWithinDomain<InputElement...>,
     lue::policy::OutputElements<OutputElement>,
     lue::policy::InputElements<InputElement...>>;
 

@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/focal_operation.hpp"
+#include "lue/framework/algorithm/policy/all_values_within_domain.hpp"
 #include "lue/framework/algorithm/policy/default_policies.hpp"
 #include <limits>
 
@@ -74,18 +75,17 @@ public:
 }  // namespace detail
 
 
-namespace policy {
-namespace focal_max {
+namespace policy::focal_max {
 
-template<
-    typename OutputElement,
-    typename InputElement>
-using DefaultPolicies = policy::DefaultFocalOperationPolicies<
-    OutputElements<OutputElement>,
-    InputElements<InputElement>>;
+    template<
+        typename OutputElement,
+        typename InputElement>
+    using DefaultPolicies = policy::DefaultFocalOperationPolicies<
+        AllValuesWithinDomain<InputElement>,
+        OutputElements<OutputElement>,
+        InputElements<InputElement>>;
 
-}  // namespace focal_max
-}  // namespace policy
+}  // namespace policy::focal_max
 
 
 template<

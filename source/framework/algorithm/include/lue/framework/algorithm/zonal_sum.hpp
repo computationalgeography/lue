@@ -1,6 +1,8 @@
 #pragma once
 #include "lue/framework/algorithm/zonal_operation.hpp"
+#include "lue/framework/algorithm/policy/all_values_within_domain.hpp"
 #include "lue/framework/algorithm/policy/default_policies.hpp"
+#include "lue/framework/algorithm/policy/default_value_policies.hpp"
 #include <hpx/serialization/unordered_map.hpp>
 
 
@@ -89,18 +91,25 @@ public:
 }  // namespace detail
 
 
-namespace policy {
-namespace zonal_sum {
+namespace policy::zonal_sum {
 
-template<
-    typename Element,
-    typename Zone>
-using DefaultPolicies = policy::DefaultPolicies<
-    OutputElements<Element>,
-    InputElements<Element, Zone>>;
+    template<
+        typename Element,
+        typename Zone>
+    using DefaultPolicies = policy::DefaultPolicies<
+        AllValuesWithinDomain<Element, Zone>,
+        OutputElements<Element>,
+        InputElements<Element, Zone>>;
 
-}  // namespace policy
-}  // namespace zonal_sum
+    template<
+        typename Element,
+        typename Zone>
+    using DefaultValuePolicies = policy::DefaultValuePolicies<
+        AllValuesWithinDomain<Element, Zone>,
+        OutputElements<Element>,
+        InputElements<Element, Zone>>;
+
+}  // namespace zonal_sum::policy
 
 
 template<

@@ -38,6 +38,7 @@ OutputPartition unary_local_operation_partition(
 
                     OutputData output_partition_data{input_partition_data.shape()};
 
+                    auto const& dp = policies.domain_policy();
                     auto const& indp = std::get<0>(policies.inputs_policies()).input_no_data_policy();
                     auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
 
@@ -46,6 +47,10 @@ OutputPartition unary_local_operation_partition(
                     for(Index i = 0; i < nr_elements; ++i)
                     {
                         if(indp.is_no_data(input_partition_data, i))
+                        {
+                            ondp.mark_no_data(output_partition_data, i);
+                        }
+                        else if(!dp.within_domain(input_partition_data[i]))
                         {
                             ondp.mark_no_data(output_partition_data, i);
                         }

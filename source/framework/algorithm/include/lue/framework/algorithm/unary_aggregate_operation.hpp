@@ -33,6 +33,7 @@ hpx::future<OutputElement> unary_aggregate_operation_partition(
 
                     HPX_UNUSED(input_partition);
 
+                    auto const& dp = policies.domain_policy();
                     auto const& indp = std::get<0>(policies.inputs_policies()).input_no_data_policy();
                     auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
 
@@ -59,19 +60,25 @@ hpx::future<OutputElement> unary_aggregate_operation_partition(
                         {
                             if(!indp.is_no_data(input_partition_data, idx))
                             {
-                                // Initialize result with first valid value
-                                result = functor(input_partition_data[idx]);
-
-                                // Aggregate subsequent valid values
-                                for(++idx; idx < nr_elements; ++idx)
+                                if(dp.within_domain(input_partition_data[idx]))
                                 {
-                                    if(!indp.is_no_data(input_partition_data, idx))
-                                    {
-                                        result = functor(result, input_partition_data[idx]);
-                                    }
-                                }
+                                    // Initialize result with first valid value
+                                    result = functor(input_partition_data[idx]);
 
-                                lue_assert(idx == nr_elements);
+                                    // Aggregate subsequent valid values
+                                    for(++idx; idx < nr_elements; ++idx)
+                                    {
+                                        if(!indp.is_no_data(input_partition_data, idx))
+                                        {
+                                            if(dp.within_domain(input_partition_data[idx]))
+                                            {
+                                                result = functor(result, input_partition_data[idx]);
+                                            }
+                                        }
+                                    }
+
+                                    lue_assert(idx == nr_elements);
+                                }
                             }
                         }
 

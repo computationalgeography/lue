@@ -22,17 +22,19 @@ class OverloadPicker
 
 
 template<
-    typename InputPartition,
+    typename InputPartition1,
+    typename InputPartition2,
     typename OutputPartition,
     typename Policies,
     typename Functor>
 class OverloadPicker<
-    InputPartition,
-    InputPartition,
+    InputPartition1,
+    InputPartition2,
     OutputPartition,
     Policies,
     Functor,
-    typename std::enable_if_t<is_array_partition_v<InputPartition>>>
+    typename std::enable_if_t<
+        is_array_partition_v<InputPartition1> && is_array_partition_v<InputPartition2>>>
 
 {
 
@@ -40,12 +42,15 @@ public:
 
     static OutputPartition binary_local_operation_partition(
         Policies const& policies,
-        InputPartition const& input_partition1,
-        InputPartition const& input_partition2,
+        InputPartition1 const& input_partition1,
+        InputPartition2 const& input_partition2,
         Functor const& functor)
     {
-        using Offset = OffsetT<InputPartition>;
-        using InputData = DataT<InputPartition>;
+        using Offset = OffsetT<InputPartition1>;
+
+        using InputData1 = DataT<InputPartition1>;
+        using InputData2 = DataT<InputPartition2>;
+
         using OutputData = DataT<OutputPartition>;
 
         lue_assert(input_partition1.is_ready());
@@ -57,8 +62,8 @@ public:
 
                     [policies, input_partition1, input_partition2, functor](
                         Offset const& offset,
-                        InputData const& input_partition_data1,
-                        InputData const& input_partition_data2)
+                        InputData1 const& input_partition_data1,
+                        InputData2 const& input_partition_data2)
                     {
                         AnnotateFunction annotation{"binary_local_operation_partition"};
 
@@ -67,6 +72,7 @@ public:
 
                         OutputData output_partition_data{input_partition_data1.shape()};
 
+                        auto const& dp = policies.domain_policy();
                         auto const& indp1 = std::get<0>(policies.inputs_policies()).input_no_data_policy();
                         auto const& indp2 = std::get<1>(policies.inputs_policies()).input_no_data_policy();
                         auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
@@ -78,6 +84,11 @@ public:
                         {
                             if(indp1.is_no_data(input_partition_data1, i) ||
                                 indp2.is_no_data(input_partition_data2, i))
+                            {
+                                ondp.mark_no_data(output_partition_data, i);
+                            }
+                            else if(!dp.within_domain(
+                                input_partition_data1[i], input_partition_data2[i]))
                             {
                                 ondp.mark_no_data(output_partition_data, i);
                             }
@@ -109,21 +120,22 @@ public:
 
 template<
     typename InputPartition,
+    typename InputElement,
     typename OutputPartition,
     typename Policies,
     typename Functor>
 class OverloadPicker<
     InputPartition,
-    ElementT<InputPartition>,
+    InputElement,
     OutputPartition,
     Policies,
-    Functor>
+    Functor,
+    typename std::enable_if_t<
+        is_array_partition_v<InputPartition> && !is_array_partition_v<InputElement>>>
 
 {
 
 public:
-
-    using InputElement = ElementT<InputPartition>;
 
     static OutputPartition binary_local_operation_partition(
         Policies const& policies,
@@ -151,6 +163,7 @@ public:
 
                         OutputData output_partition_data{input_partition_data.shape()};
 
+                        auto const& dp = policies.domain_policy();
                         auto const& indp1 = std::get<0>(policies.inputs_policies()).input_no_data_policy();
                         auto const& indp2 = std::get<1>(policies.inputs_policies()).input_no_data_policy();
                         auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
@@ -169,6 +182,10 @@ public:
                             for(Index i = 0; i < nr_elements; ++i)
                             {
                                 if(indp1.is_no_data(input_partition_data, i))
+                                {
+                                    ondp.mark_no_data(output_partition_data, i);
+                                }
+                                else if(!dp.within_domain(input_partition_data[i], input_scalar))
                                 {
                                     ondp.mark_no_data(output_partition_data, i);
                                 }
@@ -199,22 +216,23 @@ public:
 
 
 template<
+    typename InputElement,
     typename InputPartition,
     typename OutputPartition,
     typename Policies,
     typename Functor>
 class OverloadPicker<
-    ElementT<InputPartition>,
+    InputElement,
     InputPartition,
     OutputPartition,
     Policies,
-    Functor>
+    Functor,
+    typename std::enable_if_t<
+        !is_array_partition_v<InputElement> && is_array_partition_v<InputPartition>>>
 
 {
 
 public:
-
-    using InputElement = ElementT<InputPartition>;
 
     static OutputPartition binary_local_operation_partition(
         Policies const& policies,
@@ -242,6 +260,7 @@ public:
 
                         OutputData output_partition_data{input_partition_data.shape()};
 
+                        auto const& dp = policies.domain_policy();
                         auto const& indp1 = std::get<0>(policies.inputs_policies()).input_no_data_policy();
                         auto const& indp2 = std::get<1>(policies.inputs_policies()).input_no_data_policy();
                         auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
@@ -260,6 +279,10 @@ public:
                             for(Index i = 0; i < nr_elements; ++i)
                             {
                                 if(indp2.is_no_data(input_partition_data, i))
+                                {
+                                    ondp.mark_no_data(output_partition_data, i);
+                                }
+                                else if(!dp.within_domain(input_scalar, input_partition_data[i]))
                                 {
                                     ondp.mark_no_data(output_partition_data, i);
                                 }
@@ -306,31 +329,32 @@ using BinaryLocalOperationPartitionAction =
 // local_operation(partition, scalar)
 template<
     typename Policies,
-    typename InputElement,
+    typename InputElement1,
+    typename InputElement2,
     Rank rank,
     typename Functor>
 ArrayPartition<OutputElementT<Functor>, rank> binary_local_operation(
     hpx::id_type const locality_id,
     Policies const& policies,
-    ArrayPartition<InputElement, rank> const& input_partition,
-    hpx::shared_future<InputElement> const& input_scalar,
+    ArrayPartition<InputElement1, rank> const& input_partition,
+    hpx::shared_future<InputElement2> const& input_scalar,
     Functor const& functor)
 {
-    using InputPartition = ArrayPartition<InputElement, rank>;
+    using InputPartition = ArrayPartition<InputElement1, rank>;
     using OutputPartition = ArrayPartition<OutputElementT<Functor>, rank>;
 
     lue_assert(input_partition.valid());
     lue_assert(input_scalar.valid());
 
     detail::BinaryLocalOperationPartitionAction<
-        Policies, InputPartition, InputElement, OutputPartition, Functor> action;
+        Policies, InputPartition, InputElement2, OutputPartition, Functor> action;
 
     return hpx::dataflow(
         hpx::launch::async,
 
         [locality_id, action, policies, functor](
             InputPartition const& input_partition,
-            hpx::shared_future<InputElement> const& input_scalar)
+            hpx::shared_future<InputElement2> const& input_scalar)
         {
             AnnotateFunction annotation{"binary_local_operation"};
 
@@ -345,45 +369,57 @@ ArrayPartition<OutputElementT<Functor>, rank> binary_local_operation(
 // local_operation(array, array)
 template<
     typename Policies,
-    typename InputElement,
+    typename InputElement1,
+    typename InputElement2,
     Rank rank,
     typename Functor>
 PartitionedArray<OutputElementT<Functor>, rank> binary_local_operation(
     Policies const& policies,
-    PartitionedArray<InputElement, rank> const& input_array1,
-    PartitionedArray<InputElement, rank> const& input_array2,
+    PartitionedArray<InputElement1, rank> const& input_array1,
+    PartitionedArray<InputElement2, rank> const& input_array2,
     Functor const& functor)
 {
-    using InputArray = PartitionedArray<InputElement, rank>;
-    using InputPartitions = PartitionsT<InputArray>;
-    using InputPartition = PartitionT<InputArray>;
+    using InputArray1 = PartitionedArray<InputElement1, rank>;
+    using InputPartitions1 = PartitionsT<InputArray1>;
+    using InputPartition1 = PartitionT<InputArray1>;
+
+    using InputArray2 = PartitionedArray<InputElement2, rank>;
+    using InputPartitions2 = PartitionsT<InputArray2>;
+    using InputPartition2 = PartitionT<InputArray2>;
 
     using OutputElement = OutputElementT<Functor>;
     using OutputArray = PartitionedArray<OutputElement, rank>;
     using OutputPartitions = PartitionsT<OutputArray>;
     using OutputPartition = PartitionT<OutputArray>;
 
+    using Shape = ShapeT<OutputArray>;
+
     lue_assert(all_are_valid(input_array1.partitions()));
     lue_assert(all_are_valid(input_array2.partitions()));
     lue_assert(nr_partitions(input_array1) == nr_partitions(input_array2));
+    lue_assert(input_array1.shape() == input_array2.shape());
     lue_assert(shape_in_partitions(input_array1) == shape_in_partitions(input_array2));
 
     detail::BinaryLocalOperationPartitionAction<
-        Policies, InputPartition, InputPartition, OutputPartition, Functor> action;
+        Policies, InputPartition1, InputPartition2, OutputPartition, Functor> action;
 
     Localities<rank> const& localities{input_array1.localities()};
-    InputPartitions const& input_partitions1{input_array1.partitions()};
-    InputPartitions const& input_partitions2{input_array2.partitions()};
-    OutputPartitions output_partitions{shape_in_partitions(input_array1)};
+    Shape const shape_in_partitions{localities.shape()};
+    Count const nr_partitions{nr_elements(localities)};
 
-    for(Index p = 0; p < nr_partitions(input_array1); ++p)
+    InputPartitions1 const& input_partitions1{input_array1.partitions()};
+    InputPartitions2 const& input_partitions2{input_array2.partitions()};
+
+    OutputPartitions output_partitions{shape_in_partitions};
+
+    for(Index p = 0; p < nr_partitions; ++p)
     {
         output_partitions[p] = hpx::dataflow(
             hpx::launch::async,
 
                 [locality_id=localities[p], action, policies, functor](
-                    InputPartition const& input_partition1,
-                    InputPartition const& input_partition2)
+                    InputPartition1 const& input_partition1,
+                    InputPartition2 const& input_partition2)
                 {
                     AnnotateFunction annotation{"binary_local_operation"};
 
@@ -402,16 +438,17 @@ PartitionedArray<OutputElementT<Functor>, rank> binary_local_operation(
 // local_operation(array, scalar)
 template<
     typename Policies,
-    typename InputElement,
+    typename InputElement1,
+    typename InputElement2,
     Rank rank,
     typename Functor>
 PartitionedArray<OutputElementT<Functor>, rank> binary_local_operation(
     Policies const& policies,
-    PartitionedArray<InputElement, rank> const& input_array,
-    hpx::shared_future<InputElement> const& input_scalar,
+    PartitionedArray<InputElement1, rank> const& input_array,
+    hpx::shared_future<InputElement2> const& input_scalar,
     Functor const& functor)
 {
-    using InputArray = PartitionedArray<InputElement, rank>;
+    using InputArray = PartitionedArray<InputElement1, rank>;
     using InputPartitions = PartitionsT<InputArray>;
     using InputPartition = PartitionT<InputArray>;
 
@@ -419,24 +456,30 @@ PartitionedArray<OutputElementT<Functor>, rank> binary_local_operation(
     using OutputPartitions = PartitionsT<OutputArray>;
     using OutputPartition = PartitionT<OutputArray>;
 
+    using Shape = ShapeT<OutputArray>;
+
     lue_assert(all_are_valid(input_array.partitions()));
     lue_assert(input_scalar.valid());
 
     detail::BinaryLocalOperationPartitionAction<
-        Policies, InputPartition, InputElement, OutputPartition, Functor> action;
+        Policies, InputPartition, InputElement2, OutputPartition, Functor> action;
 
     Localities<rank> const& localities{input_array.localities()};
-    InputPartitions const& input_partitions{input_array.partitions()};
-    OutputPartitions output_partitions{shape_in_partitions(input_array)};
+    Shape const shape_in_partitions{localities.shape()};
+    Count const nr_partitions{nr_elements(localities)};
 
-    for(Index p = 0; p < nr_partitions(input_array); ++p)
+    InputPartitions const& input_partitions{input_array.partitions()};
+
+    OutputPartitions output_partitions{shape_in_partitions};
+
+    for(Index p = 0; p < nr_partitions; ++p)
     {
         output_partitions[p] = hpx::dataflow(
             hpx::launch::async,
 
                 [locality_id=localities[p], action, policies, functor](
                     InputPartition const& input_partition,
-                    hpx::shared_future<InputElement> const& input_scalar)
+                    hpx::shared_future<InputElement2> const& input_scalar)
                 {
                     AnnotateFunction annotation{"binary_local_operation"};
 
@@ -455,16 +498,17 @@ PartitionedArray<OutputElementT<Functor>, rank> binary_local_operation(
 // local_operation(scalar, array)
 template<
     typename Policies,
-    typename InputElement,
+    typename InputElement1,
+    typename InputElement2,
     Rank rank,
     typename Functor>
 PartitionedArray<OutputElementT<Functor>, rank> binary_local_operation(
     Policies const& policies,
-    hpx::shared_future<InputElement> const& input_scalar,
-    PartitionedArray<InputElement, rank> const& input_array,
+    hpx::shared_future<InputElement1> const& input_scalar,
+    PartitionedArray<InputElement2, rank> const& input_array,
     Functor const& functor)
 {
-    using InputArray = PartitionedArray<InputElement, rank>;
+    using InputArray = PartitionedArray<InputElement2, rank>;
     using InputPartitions = PartitionsT<InputArray>;
     using InputPartition = PartitionT<InputArray>;
 
@@ -472,23 +516,29 @@ PartitionedArray<OutputElementT<Functor>, rank> binary_local_operation(
     using OutputPartitions = PartitionsT<OutputArray>;
     using OutputPartition = PartitionT<OutputArray>;
 
+    using Shape = ShapeT<OutputArray>;
+
     lue_assert(input_scalar.valid());
     lue_assert(all_are_valid(input_array.partitions()));
 
     detail::BinaryLocalOperationPartitionAction<
-        Policies, InputElement, InputPartition, OutputPartition, Functor> action;
+        Policies, InputElement1, InputPartition, OutputPartition, Functor> action;
 
     Localities<rank> const& localities{input_array.localities()};
-    InputPartitions const& input_partitions{input_array.partitions()};
-    OutputPartitions output_partitions{shape_in_partitions(input_array)};
+    Shape const shape_in_partitions{localities.shape()};
+    Count const nr_partitions{nr_elements(localities)};
 
-    for(Index p = 0; p < nr_partitions(input_array); ++p)
+    InputPartitions const& input_partitions{input_array.partitions()};
+
+    OutputPartitions output_partitions{shape_in_partitions};
+
+    for(Index p = 0; p < nr_partitions; ++p)
     {
         output_partitions[p] = hpx::dataflow(
             hpx::launch::async,
 
                 [locality_id=localities[p], action, policies, functor](
-                    hpx::shared_future<InputElement> const& input_scalar,
+                    hpx::shared_future<InputElement1> const& input_scalar,
                     InputPartition const& input_partition)
                 {
                     AnnotateFunction annotation{"binary_local_operation"};
