@@ -1,6 +1,8 @@
 #pragma once
 #include "lue/framework/algorithm/unary_local_operation.hpp"
+#include "lue/framework/algorithm/policy/all_values_within_domain.hpp"
 #include "lue/framework/algorithm/policy/default_policies.hpp"
+#include "lue/framework/algorithm/policy/default_value_policies.hpp"
 
 
 namespace lue {
@@ -27,18 +29,25 @@ public:
 }  // namespace detail
 
 
-namespace policy {
-namespace cast {
+namespace policy::cast {
 
-template<
-    typename OutputElement,
-    typename InputElement>
-using DefaultPolicies = policy::DefaultPolicies<
-    OutputElements<OutputElement>,
-    InputElements<InputElement>>;
+    template<
+        typename OutputElement,
+        typename InputElement>
+    using DefaultPolicies = policy::DefaultPolicies<
+        AllValuesWithinDomain<InputElement>,
+        OutputElements<OutputElement>,
+        InputElements<InputElement>>;
 
-}  // namespace cast
-}  // namespace policy
+    template<
+        typename OutputElement,
+        typename InputElement>
+    using DefaultValuePolicies = policy::DefaultValuePolicies<
+        AllValuesWithinDomain<InputElement>,
+        OutputElements<OutputElement>,
+        InputElements<InputElement>>;
+
+}  // namespace policy::cast
 
 
 template<

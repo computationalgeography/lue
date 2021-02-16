@@ -20,6 +20,7 @@ namespace lue::framework {
     void bind_sqrt(pybind11::module& module);
     void bind_subtract(pybind11::module& module);
     void bind_uniform(pybind11::module& module);
+    void bind_where(pybind11::module& module);
 
 
     void bind_local_operations(
@@ -40,6 +41,7 @@ namespace lue::framework {
         bind_subtract(module);
         bind_multiply(module);
         bind_uniform(module);
+        bind_where(module);
     }
 
 }  // namespace lue::framework

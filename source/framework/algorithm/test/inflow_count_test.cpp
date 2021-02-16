@@ -454,11 +454,13 @@ BOOST_AUTO_TEST_CASE(all_no_data)
     // | X | X | X |   | X | X | X |
     // +---+---+---+   +---+---+---+
 
+    using DomainPolicy = lue::policy::AllValuesWithinDomain<FlowDirectionElement>;
     using InflowCountPolicies =
         lue::policy::OutputPolicies<lue::policy::MarkNoDataByValue<CountElement>>;
     using FlowDirectionPolicies =
         lue::policy::InputPolicies<lue::policy::DetectNoDataByValue<FlowDirectionElement>>;
     using Policies = lue::policy::Policies<
+        DomainPolicy,
         lue::policy::OutputsPolicies<InflowCountPolicies>,
         lue::policy::InputsPolicies<FlowDirectionPolicies>>;
 
@@ -467,7 +469,7 @@ BOOST_AUTO_TEST_CASE(all_no_data)
     FlowDirectionPolicies flow_direction_policies{
         lue::policy::DetectNoDataByValue<FlowDirectionElement>{nd}};
 
-    Policies policies{inflow_count_policies, flow_direction_policies};
+    Policies policies{DomainPolicy{}, inflow_count_policies, flow_direction_policies};
 
     test_inflow_count(
         policies,
@@ -488,11 +490,13 @@ BOOST_AUTO_TEST_CASE(all_no_data)
 
 BOOST_AUTO_TEST_CASE(no_data)
 {
+    using DomainPolicy = lue::policy::AllValuesWithinDomain<FlowDirectionElement>;
     using InflowCountPolicies =
         lue::policy::OutputPolicies<lue::policy::MarkNoDataByValue<CountElement>>;
     using FlowDirectionPolicies =
         lue::policy::InputPolicies<lue::policy::DetectNoDataByValue<FlowDirectionElement>>;
     using Policies = lue::policy::Policies<
+        DomainPolicy,
         lue::policy::OutputsPolicies<InflowCountPolicies>,
         lue::policy::InputsPolicies<FlowDirectionPolicies>>;
 
@@ -501,7 +505,7 @@ BOOST_AUTO_TEST_CASE(no_data)
     FlowDirectionPolicies flow_direction_policies{
         lue::policy::DetectNoDataByValue<FlowDirectionElement>{nd}};
 
-    Policies policies{inflow_count_policies, flow_direction_policies};
+    Policies policies{DomainPolicy{}, inflow_count_policies, flow_direction_policies};
 
     Shape const array_shape{{3, 6}};
 
@@ -538,11 +542,13 @@ BOOST_AUTO_TEST_CASE(no_data)
 
 BOOST_AUTO_TEST_CASE(merging_inter_partition_streams)
 {
+    using DomainPolicy = lue::policy::AllValuesWithinDomain<FlowDirectionElement>;
     using InflowCountPolicies =
         lue::policy::OutputPolicies<lue::policy::MarkNoDataByValue<CountElement>>;
     using FlowDirectionPolicies =
         lue::policy::InputPolicies<lue::policy::DetectNoDataByValue<FlowDirectionElement>>;
     using Policies = lue::policy::Policies<
+        DomainPolicy,
         lue::policy::OutputsPolicies<InflowCountPolicies>,
         lue::policy::InputsPolicies<FlowDirectionPolicies>>;
 
@@ -551,7 +557,7 @@ BOOST_AUTO_TEST_CASE(merging_inter_partition_streams)
     FlowDirectionPolicies flow_direction_policies{
         lue::policy::DetectNoDataByValue<FlowDirectionElement>{nd}};
 
-    Policies policies{inflow_count_policies, flow_direction_policies};
+    Policies policies{DomainPolicy{}, inflow_count_policies, flow_direction_policies};
 
     Shape const array_shape{{9, 9}};
 

@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/unary_local_operation.hpp"
+#include "lue/framework/algorithm/policy/all_values_within_domain.hpp"
 #include "lue/framework/algorithm/policy/default_policies.hpp"
 
 
@@ -37,17 +38,16 @@ public:
 }  // namespace detail
 
 
-namespace policy {
-namespace iterate_per_element {
+namespace policy::iterate_per_element {
 
-template<
-    typename Element>
-using DefaultPolicies = policy::DefaultPolicies<
-    OutputElements<Element>,
-    InputElements<Element>>;
+    template<
+        typename Element>
+    using DefaultPolicies = policy::DefaultPolicies<
+        AllValuesWithinDomain<Element>,
+        OutputElements<Element>,
+        InputElements<Element>>;
 
-}  // namespace iterate_per_element
-}  // namespace policy
+}  // namespace policy::iterate_per_element
 
 
 /*!

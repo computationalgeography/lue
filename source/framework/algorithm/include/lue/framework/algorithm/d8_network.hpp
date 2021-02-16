@@ -2,6 +2,7 @@
 #include "lue/framework/algorithm/flow_direction.hpp"
 #include "lue/framework/algorithm/focal_operation.hpp"
 #include "lue/framework/algorithm/kernel.hpp"
+#include "lue/framework/algorithm/policy/all_values_within_domain.hpp"
 #include "lue/framework/algorithm/policy/default_policies.hpp"
 #include <type_traits>
 
@@ -121,18 +122,17 @@ public:
 }  // namespace detail
 
 
-namespace policy {
-namespace d8 {
+namespace policy::d8 {
 
-template<
-    typename OutputElement,
-    typename InputElement>
-using DefaultPolicies = policy::DefaultFocalOperationPolicies<
-    OutputElements<OutputElement>,
-    InputElements<InputElement>>;
+    template<
+        typename OutputElement,
+        typename InputElement>
+    using DefaultPolicies = policy::DefaultFocalOperationPolicies<
+        AllValuesWithinDomain<InputElement>,
+        OutputElements<OutputElement>,
+        InputElements<InputElement>>;
 
-}  // namespace d8
-}  // namespace policy
+}  // namespace policy::d8
 
 
 template<

@@ -18,6 +18,7 @@ using OutputsPolicies = detail::TypeList<OutputPolicy...>;
 
 
 template<
+    typename DomainPolicy,
     typename OutputsPolicies,
     typename InputsPolicies>
 class Policies
@@ -39,9 +40,11 @@ class Policies
 
 
 template<
+    typename DomainPolicy,
     typename... OutputPolicy,
     typename... InputPolicy>
 class Policies<
+    DomainPolicy,
     detail::TypeList<OutputPolicy...>,
     detail::TypeList<InputPolicy...>>
 {
@@ -57,13 +60,20 @@ class Policies<
         Policies()=default;
 
         Policies(
-                OutputPolicy... output_policies,
-                InputPolicy... input_policies):
+            DomainPolicy const& domain_policy,
+            OutputPolicy... output_policies,
+            InputPolicy... input_policies):
 
+            _dp{domain_policy},
             _op{output_policies...},
             _ip{input_policies...}
 
         {
+        }
+
+        DomainPolicy const& domain_policy() const
+        {
+            return _dp;
         }
 
         InputsPolicies const& inputs_policies() const
@@ -87,6 +97,8 @@ class Policies<
         {
             archive & _op & _ip;
         }
+
+        DomainPolicy _dp;
 
         OutputsPolicies _op;
 

@@ -1,7 +1,9 @@
 #pragma once
 #include "lue/framework/core/annotate.hpp"
 #include "lue/framework/core/component/partitioned_array.hpp"
+#include "lue/framework/algorithm/policy/all_values_within_domain.hpp"
 #include "lue/framework/algorithm/policy/default_policies.hpp"
+#include "lue/framework/algorithm/policy/default_value_policies.hpp"
 
 
 namespace lue {
@@ -71,18 +73,25 @@ ArrayPartition<OutputElement, rank> array_like_partition(
 }  // namespace detail
 
 
-namespace policy {
-namespace array_like {
+namespace policy::array_like {
 
-template<
-    typename OutputElement,
-    typename InputElement>
-using DefaultPolicies = policy::DefaultPolicies<
-    OutputElements<OutputElement>,
-    InputElements<InputElement>>;
+    template<
+        typename OutputElement,
+        typename InputElement>
+    using DefaultPolicies = policy::DefaultPolicies<
+        AllValuesWithinDomain<InputElement>,
+        OutputElements<OutputElement>,
+        InputElements<InputElement>>;
 
-}  // namespace array_like
-}  // namespace policy
+    template<
+        typename OutputElement,
+        typename InputElement>
+    using DefaultValuePolicies = policy::DefaultValuePolicies<
+        AllValuesWithinDomain<InputElement>,
+        OutputElements<OutputElement>,
+        InputElements<InputElement>>;
+
+}  // namespace policy::array_like
 
 
 template<

@@ -23,6 +23,7 @@ using OutputElements = detail::TypeList<Elements...>;
 
 
 template<
+    typename DomainPolicy,
     typename OutputElements,
     typename InputElements>
 class DefaultValuePolicies
@@ -38,13 +39,16 @@ class DefaultValuePolicies
     - Input no-data policy detects value by value
 */
 template<
+    typename DomainPolicy,
     typename... OutputElements,
     typename... InputElements>
 class DefaultValuePolicies<
+    DomainPolicy,
     detail::TypeList<OutputElements...>,
     detail::TypeList<InputElements...>>:
 
     public Policies<
+        DomainPolicy,
         OutputsPolicies<OutputPolicies<MarkNoDataByValue<OutputElements>>...>,
         InputsPolicies<InputPolicies<DetectNoDataByValue<InputElements>>...>>
 

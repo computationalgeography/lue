@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/framework/algorithm/policy/all_values_within_domain.hpp"
 #include "lue/framework/algorithm/policy/default_policies.hpp"
 #include "lue/framework/algorithm/detail/flow_direction.hpp"
 #include "lue/framework/algorithm/detail/halo_partition.hpp"
@@ -893,18 +894,17 @@ struct InflowCountPartitionAction:
 }  // namespace detail
 
 
-namespace policy {
-namespace inflow_count {
+namespace policy::inflow_count {
 
-template<
-    typename CountElement,
-    typename FlowDirectionElement>
-using DefaultPolicies = policy::DefaultPolicies<
-    OutputElements<CountElement>,
-    InputElements<FlowDirectionElement>>;
+    template<
+        typename CountElement,
+        typename FlowDirectionElement>
+    using DefaultPolicies = policy::DefaultPolicies<
+        AllValuesWithinDomain<FlowDirectionElement>,
+        OutputElements<CountElement>,
+        InputElements<FlowDirectionElement>>;
 
-}  // namespace inflow_count
-}  // namespace policy
+}  // namespace policy::inflow_count
 
 
 template<

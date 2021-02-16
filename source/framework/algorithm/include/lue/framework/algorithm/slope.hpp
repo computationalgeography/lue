@@ -8,17 +8,23 @@
 
 
 namespace lue {
-namespace policy {
-namespace slope {
+namespace policy::slope {
 
-template<
-    typename Element>
-using DefaultPolicies = policy::DefaultPolicies<
-    OutputElements<Element>,
-    InputElements<Element, Element>>;
+    template<
+        typename Element>
+    using DefaultPolicies = policy::DefaultPolicies<
+        AllValuesWithinDomain<Element, Element>,
+        OutputElements<Element>,
+        InputElements<Element, Element>>;
 
-}  // namespace slope
-}  // namespace policy
+    template<
+        typename Element>
+    using DefaultValuePolicies = policy::DefaultValuePolicies<
+        AllValuesWithinDomain<Element, Element>,
+        OutputElements<Element>,
+        InputElements<Element, Element>>;
+
+}  // namespace policy::slope
 
 
 /*!

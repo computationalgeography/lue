@@ -1,5 +1,7 @@
 #pragma once
+#include "lue/framework/algorithm/policy/all_values_within_domain.hpp"
 #include "lue/framework/algorithm/policy/default_policies.hpp"
+#include "lue/framework/algorithm/policy/default_value_policies.hpp"
 #include "lue/framework/core/annotate.hpp"
 #include "lue/framework/core/component/partitioned_array.hpp"
 #include "lue/framework/core/type_traits.hpp"
@@ -70,17 +72,23 @@ Partition copy_partition(
 }  // namespace detail
 
 
-namespace policy {
-namespace copy {
+namespace policy::copy {
 
-template<
-    typename Element>
-using DefaultPolicies = policy::DefaultPolicies<
-    OutputElements<Element>,
-    InputElements<Element>>;
+    template<
+        typename Element>
+    using DefaultPolicies = policy::DefaultPolicies<
+        AllValuesWithinDomain<Element>,
+        OutputElements<Element>,
+        InputElements<Element>>;
 
-}  // namespace copy
-}  // namespace policy
+    template<
+        typename Element>
+    using DefaultValuePolicies = policy::DefaultValuePolicies<
+        AllValuesWithinDomain<Element>,
+        OutputElements<Element>,
+        InputElements<Element>>;
+
+}  // namespace policy::copy
 
 
 template<

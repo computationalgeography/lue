@@ -1,6 +1,8 @@
 #pragma once
 #include "lue/framework/algorithm/unary_aggregate_operation.hpp"
+#include "lue/framework/algorithm/policy/all_values_within_domain.hpp"
 #include "lue/framework/algorithm/policy/default_policies.hpp"
+#include "lue/framework/algorithm/policy/default_value_policies.hpp"
 
 
 namespace lue {
@@ -61,17 +63,23 @@ public:
 }  // namespace detail
 
 
-namespace policy {
-namespace any {
+namespace policy::any {
 
-template<
-    typename Element>
-using DefaultPolicies = policy::DefaultPolicies<
-    OutputElements<Element>,
-    InputElements<Element>>;
+    template<
+        typename Element>
+    using DefaultPolicies = policy::DefaultPolicies<
+        AllValuesWithinDomain<Element>,
+        OutputElements<Element>,
+        InputElements<Element>>;
 
-}  // namespace any
-}  // namespace policy
+    template<
+        typename Element>
+    using DefaultValuePolicies = policy::DefaultValuePolicies<
+        AllValuesWithinDomain<Element>,
+        OutputElements<Element>,
+        InputElements<Element>>;
+
+}  // namespace policy::any
 
 
 template<
