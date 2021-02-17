@@ -15,6 +15,7 @@ pybind11_add_module(lue_py_framework SHARED SYSTEM THIN_LTO
     src/algorithm/minimum
     src/algorithm/multiply
     src/algorithm/not_equal_to
+    src/algorithm/pow
     src/algorithm/sqrt
     src/algorithm/subtract
     src/algorithm/uniform
