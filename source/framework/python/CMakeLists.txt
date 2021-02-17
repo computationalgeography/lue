@@ -29,6 +29,11 @@ pybind11_add_module(lue_py_framework SHARED SYSTEM THIN_LTO
     src/submodule
 )
 
+# if(LUE_FRAMEWORK_WITH_DASHBOARD)
+#     list(APPEND sources
+#        src/dashboard/dashboard)
+# endif()
+
 add_library(lue::py_framework ALIAS lue_py_framework)
 
 target_compile_definitions(lue_py_framework

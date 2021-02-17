@@ -3,6 +3,14 @@ import lue_test
 import numpy as np
 
 
+def setUpModule():
+    lue_test.start_hpx_runtime()
+
+
+def tearDownModule():
+    lue_test.stop_hpx_runtime()
+
+
 class CreateArrayTest(lue_test.TestCase):
 
     def test_create_array(self):

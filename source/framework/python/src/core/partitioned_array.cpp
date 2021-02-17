@@ -13,12 +13,6 @@
 #include <pybind11/stl.h>
 
 
-// TODO Make array behave like numeric type:
-// https://docs.python.org/3/reference/datamodel.html?highlight=rmul#emulating-numeric-types
-// read tests
-// ...
-
-
 namespace lue::framework {
     namespace {
 
@@ -180,7 +174,7 @@ namespace lue::framework {
                 .def("__add__", [](Array const& argument1, ElementF const& argument2)
                     { return add(argument1, argument2); },
                     pybind11::is_operator())
-                .def("__radd__", [](Element const argument1, Array const& argument2)
+                .def("__radd__", [](Array const& argument2, Element const argument1)
                     { return add(argument1, argument2); },
                     pybind11::is_operator())
                 .def("__radd__", [](Array const& argument2, ElementF const& argument1)
@@ -199,7 +193,7 @@ namespace lue::framework {
                 .def("__sub__", [](Array const& argument1, ElementF const& argument2)
                     { return subtract(argument1, argument2); },
                     pybind11::is_operator())
-                .def("__rsub__", [](Element const argument1, Array const& argument2)
+                .def("__rsub__", [](Array const& argument2, Element const argument1)
                     { return subtract(argument1, argument2); },
                     pybind11::is_operator())
                 .def("__rsub__", [](Array const& argument2, ElementF const& argument1)
@@ -225,6 +219,25 @@ namespace lue::framework {
                         pybind11::is_operator())
                     .def("__rmul__", [](Array const& argument2, ElementF const& argument1)
                         { return multiply(argument1, argument2); },
+                        pybind11::is_operator())
+                    ;
+
+                // a / b, b / a, a /= b
+                class_
+                    .def("__truediv__", [](Array const& argument1, Array const& argument2)
+                        { return divide(argument1, argument2); },
+                        pybind11::is_operator())
+                    .def("__truediv__", [](Array const& argument1, Element const argument2)
+                        { return divide(argument1, argument2); },
+                        pybind11::is_operator())
+                    .def("__truediv__", [](Array const& argument1, ElementF const& argument2)
+                        { return divide(argument1, argument2); },
+                        pybind11::is_operator())
+                    .def("__rtruediv__", [](Array const& argument2, Element const argument1)
+                        { return divide(argument1, argument2); },
+                        pybind11::is_operator())
+                    .def("__rtruediv__", [](Array const& argument2, ElementF const& argument1)
+                        { return divide(argument1, argument2); },
                         pybind11::is_operator())
                     ;
             }
