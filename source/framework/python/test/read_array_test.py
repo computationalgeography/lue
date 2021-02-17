@@ -4,11 +4,19 @@ import lue_test
 import numpy as np
 
 
+def setUpModule():
+    lue_test.start_hpx_runtime()
+
+
+def tearDownModule():
+    lue_test.stop_hpx_runtime()
+
+
 class ReadArrayTest(lue_test.TestCase):
 
     def test_read_constant_array(self):
 
-        # Create an in-memory dataset containing a constant raster
+        # Create a dataset containing a constant raster
         dataset_pathname = "read_constant_array.lue"
         phenomenon_name = "earth"
         property_set_name = "continent"

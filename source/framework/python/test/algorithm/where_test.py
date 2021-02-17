@@ -3,6 +3,14 @@ import lue_test
 import numpy as np
 
 
+def setUpModule():
+    lue_test.start_hpx_runtime()
+
+
+def tearDownModule():
+    lue_test.stop_hpx_runtime()
+
+
 class WhereTest(lue_test.TestCase):
 
     def test_binary_where_overloads(self):
