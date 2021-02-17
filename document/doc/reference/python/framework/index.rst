@@ -9,6 +9,7 @@ lue.framework reference
 
    create_array
 
+
 .. autosummary::
     add
     all
@@ -18,13 +19,15 @@ lue.framework reference
     greater_than_equal_to
     less_than
     less_than_equal_to
-    minimum
     maximum
+    minimum
     multiply
     not_equal_to
+    pow
     sqrt
     subtract
     uniform
+    where
 .. autofunction:: add
 .. autofunction:: all
 .. autofunction:: divide
@@ -33,8 +36,8 @@ lue.framework reference
 .. autofunction:: greater_than_equal_to
 .. autofunction:: less_than
 .. autofunction:: less_than_equal_to
-.. autofunction:: maximum
 .. autofunction:: minimum
+.. autofunction:: maximum
 .. autofunction:: multiply
 .. autofunction:: not_equal_to
 .. autofunction:: sqrt

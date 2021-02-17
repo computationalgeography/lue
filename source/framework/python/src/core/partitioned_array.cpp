@@ -7,6 +7,7 @@
 #include "lue/py/framework/algorithm/less_than_equal_to.hpp"
 #include "lue/py/framework/algorithm/multiply.hpp"
 #include "lue/py/framework/algorithm/not_equal_to.hpp"
+#include "lue/py/framework/algorithm/pow.hpp"
 #include "lue/py/framework/algorithm/subtract.hpp"
 #include "lue/py/framework/stream.hpp"
 #include "lue/framework/core/component/partitioned_array.hpp"
@@ -238,6 +239,25 @@ namespace lue::framework {
                         pybind11::is_operator())
                     .def("__rtruediv__", [](Array const& argument2, ElementF const& argument1)
                         { return divide(argument1, argument2); },
+                        pybind11::is_operator())
+                    ;
+
+                // a ** b, b ** a, a **= b
+                class_
+                    .def("__pow__", [](Array const& argument1, Array const& argument2)
+                        { return pow(argument1, argument2); },
+                        pybind11::is_operator())
+                    .def("__pow__", [](Array const& argument1, Element const argument2)
+                        { return pow(argument1, argument2); },
+                        pybind11::is_operator())
+                    .def("__pow__", [](Array const& argument1, ElementF const& argument2)
+                        { return pow(argument1, argument2); },
+                        pybind11::is_operator())
+                    .def("__rpow__", [](Array const& argument2, Element const argument1)
+                        { return pow(argument1, argument2); },
+                        pybind11::is_operator())
+                    .def("__rpow__", [](Array const& argument2, ElementF const& argument1)
+                        { return pow(argument1, argument2); },
                         pybind11::is_operator())
                     ;
             }

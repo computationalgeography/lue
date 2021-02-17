@@ -16,11 +16,6 @@ namespace lue::framework {
         pybind11::module& module)
     {
         // TODO How to document these?
-        // LUE_MULTIPLY_OVERLOADS(std::uint8_t, 2)
-        // LUE_MULTIPLY_OVERLOADS(std::uint32_t, 2)
-        // LUE_MULTIPLY_OVERLOADS(std::uint64_t, 2)
-        // LUE_MULTIPLY_OVERLOADS(std::int32_t, 2)
-        // LUE_MULTIPLY_OVERLOADS(std::int64_t, 2)
         LUE_MULTIPLY_OVERLOADS(float, 2)
         LUE_MULTIPLY_OVERLOADS(double, 2)
     }

@@ -20,8 +20,6 @@ public:
 
     static_assert(std::is_floating_point_v<InputElement>);
 
-    /// static_assert(std::numeric_limits<InputElement>::has_quiet_NaN);
-
     using OutputElement = OutputElement_;
 
     OutputElement operator()(
