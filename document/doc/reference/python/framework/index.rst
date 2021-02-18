@@ -19,6 +19,7 @@ lue.framework reference
     greater_than_equal_to
     less_than
     less_than_equal_to
+    log
     maximum
     minimum
     multiply
@@ -36,6 +37,7 @@ lue.framework reference
 .. autofunction:: greater_than_equal_to
 .. autofunction:: less_than
 .. autofunction:: less_than_equal_to
+.. autofunction:: log
 .. autofunction:: minimum
 .. autofunction:: maximum
 .. autofunction:: multiply

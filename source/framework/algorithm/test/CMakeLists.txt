@@ -28,6 +28,7 @@ set(names
     less_than_equal_to_test
     less_than_test
     locality_id_test
+    log_test
     logical_and_test
     logical_inclusive_or_test
     logical_not_test
