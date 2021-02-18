@@ -8,7 +8,8 @@ def setUpModule():
 
 
 def tearDownModule():
-    lue_test.stop_hpx_runtime()
+    pass
+    # lue_test.stop_hpx_runtime()
 
 
 class WhereTest(lue_test.TestCase):

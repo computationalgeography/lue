@@ -8,12 +8,11 @@ def setUpModule():
 
 
 def tearDownModule():
-    lue_test.stop_hpx_runtime()
+    pass
+    # lue_test.stop_hpx_runtime()
 
 
 class WhereTest(lue_test.TestCase):
-    # Silly computations. We're only verifying the operator
-    # overloads are available.
 
     @classmethod
     def setUpClass(cls):
