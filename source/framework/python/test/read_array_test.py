@@ -9,7 +9,8 @@ def setUpModule():
 
 
 def tearDownModule():
-    lue_test.stop_hpx_runtime()
+    pass
+    # lue_test.stop_hpx_runtime()
 
 
 class ReadArrayTest(lue_test.TestCase):
