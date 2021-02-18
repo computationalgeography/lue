@@ -6,61 +6,78 @@
 
 
 namespace lue {
-namespace detail {
+    namespace detail {
 
-template<
-    typename InputElement,
-    typename OutputElement_=InputElement>
-class Divide
-{
+        template<
+            typename InputElement,
+            typename OutputElement_=InputElement>
+        class Divide
+        {
 
-public:
+            public:
 
-    static_assert(std::is_floating_point_v<InputElement>);
+                static_assert(std::is_floating_point_v<InputElement>);
 
-    static_assert(std::numeric_limits<InputElement>::has_quiet_NaN);
+                static_assert(std::numeric_limits<InputElement>::has_quiet_NaN);
 
-    using OutputElement = OutputElement_;
+                using OutputElement = OutputElement_;
 
-    constexpr OutputElement operator()(
-        InputElement const& input_element1,
-        InputElement const& input_element2) const noexcept
-    {
-        // TODO(KDJ) Move this test to a domain policy used by the binary
-        //     local operation
-        return input_element2 == 0
-            ? std::numeric_limits<OutputElement>::quiet_NaN()
-            : input_element1 / input_element2
-            ;
-    }
+                constexpr OutputElement operator()(
+                    InputElement const& input_element1,
+                    InputElement const& input_element2) const noexcept
+                {
+                    // TODO(KDJ) Move this test to a domain policy used by the binary
+                    //     local operation
+                    return input_element2 == 0
+                        ? std::numeric_limits<OutputElement>::quiet_NaN()
+                        : input_element1 / input_element2
+                        ;
+                }
 
-};
+        };
 
-}  // namespace detail
-
-
-namespace policy::divide {
-
-    template<
-        typename OutputElement,
-        typename InputElement>
-    using DefaultPolicies = policy::DefaultPolicies<
-        AllValuesWithinDomain<InputElement, InputElement>,
-        OutputElements<OutputElement>,
-        InputElements<InputElement, InputElement>>;
+    }  // namespace detail
 
 
-    template<
-        typename OutputElement,
-        typename InputElement>
-    using DefaultValuePolicies = policy::DefaultValuePolicies<
-        AllValuesWithinDomain<InputElement, InputElement>,
-        OutputElements<OutputElement>,
-        InputElements<InputElement, InputElement>>;
+    namespace policy::divide {
 
-}  // namespace divide::policy
+        template<
+            typename Element>
+        class DomainPolicy
+        {
+
+            public:
+
+                static constexpr bool within_domain(
+                    [[maybe_unused]] Element const numerator,
+                    Element const denominator) noexcept
+                {
+                    return denominator != 0;
+                }
+
+        };
 
 
-LUE_BINARY_LOCAL_OPERATION_OVERLOADS(divide, detail::Divide)
+        template<
+            typename OutputElement,
+            typename InputElement>
+        using DefaultPolicies = policy::DefaultPolicies<
+            DomainPolicy<InputElement>,
+            OutputElements<OutputElement>,
+            InputElements<InputElement, InputElement>>;
+
+
+        template<
+            typename OutputElement,
+            typename InputElement>
+        using DefaultValuePolicies = policy::DefaultValuePolicies<
+            DomainPolicy<InputElement>,
+            OutputElements<OutputElement>,
+            InputElements<InputElement, InputElement>>;
+
+    }  // namespace divide::policy
+
+
+    LUE_BINARY_LOCAL_OPERATION_OVERLOADS(divide, detail::Divide)
 
 }  // namespace lue

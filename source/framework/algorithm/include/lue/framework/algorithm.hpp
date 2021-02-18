@@ -12,6 +12,7 @@
 
 #include "lue/framework/algorithm/trigonometric.hpp"
 
+#include "lue/framework/algorithm/log.hpp"
 #include "lue/framework/algorithm/pow.hpp"
 #include "lue/framework/algorithm/sqrt.hpp"
 
