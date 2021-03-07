@@ -360,7 +360,7 @@ if(LUE_IMGUI_REQUIRED AND LUE_BUILD_IMGUI)
     FetchContent_Declare(imgui
         // MIT License, see ${imgui_SOURCE_DIR}/LICENSE.txt
         GIT_REPOSITORY ${imgui_repository}
-        GIT_TAG v1.76
+        GIT_TAG v1.81
     )
 
     FetchContent_GetProperties(imgui)
@@ -373,18 +373,19 @@ if(LUE_IMGUI_REQUIRED AND LUE_BUILD_IMGUI)
             ${imgui_SOURCE_DIR}/imgui
             ${imgui_SOURCE_DIR}/imgui_demo
             ${imgui_SOURCE_DIR}/imgui_draw
+            ${imgui_SOURCE_DIR}/imgui_tables
             ${imgui_SOURCE_DIR}/imgui_widgets
 
             # opengl3 / sdl2 binding
-            ${imgui_SOURCE_DIR}/examples/imgui_impl_opengl3
-            ${imgui_SOURCE_DIR}/examples/imgui_impl_sdl
+            ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3
+            ${imgui_SOURCE_DIR}/backends/imgui_impl_sdl
         )
 
         target_include_directories(imgui SYSTEM
             PRIVATE
                 ${imgui_SOURCE_DIR}
             PUBLIC
-                ${imgui_SOURCE_DIR}/examples
+                ${imgui_SOURCE_DIR}/backends
                 $<BUILD_INTERFACE:${imgui_SOURCE_DIR}>
                 ${SDL2_INCLUDE_DIR}
         )
@@ -393,6 +394,7 @@ if(LUE_IMGUI_REQUIRED AND LUE_BUILD_IMGUI)
             PUBLIC
                 # Output of `sdl2-config --cflags`
                 "$<$<PLATFORM_ID:Linux>:-D_REENTRANT>"
+                -DIMGUI_DISABLE_OBSOLETE_FUNCTIONS
         )
 
         target_link_libraries(imgui
