@@ -24,7 +24,7 @@ jobs:
 
         - name: configure system
           run: |
-              # sudo apt update
+              sudo apt update
               # sudo apt autoremove
               # sudo apt upgrade
               sudo apt install cmake doxygen gcc-${{ matrix.compiler-version }} graphviz hwloc lftp libboost-all-dev libgdal-dev libgoogle-perftools-dev libhdf5-dev ninja-build tree
