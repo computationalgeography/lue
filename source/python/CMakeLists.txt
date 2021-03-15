@@ -37,7 +37,7 @@ set_target_properties(lue_py
 target_link_libraries(lue_py
     PRIVATE
         lue::shared
-        CONAN_PKG::pybind11
+        pybind11::pybind11
         Boost::headers
 )
 

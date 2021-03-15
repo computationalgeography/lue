@@ -23,8 +23,8 @@ hpx_setup_target(lue_benchmark
         lue::framework_algorithm
         # lue::framework_core
         lue::framework_model
-        CONAN_PKG::docopt.cpp
-        CONAN_PKG::nlohmann_json
+        docopt::docopt
+        nlohmann_json::nlohmann_json
 )
 
 add_executable(lue_dummy_benchmark
@@ -34,7 +34,6 @@ add_executable(lue_dummy_benchmark
 target_link_libraries(lue_dummy_benchmark
     PRIVATE
         lue::benchmark
-        # nlohmann_json::nlohmann_json
 )
 
 add_hpx_executable(lue_dummy_hpx_benchmark

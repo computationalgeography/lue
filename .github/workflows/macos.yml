@@ -23,7 +23,7 @@ jobs:
           run: |
               # brew update
               # brew upgrade
-              brew install cmake boost doxygen gdal graphviz gperftools hdf5 hwloc ninja tree
+              brew install cmake boost doxygen gdal glew glfw graphviz gperftools hdf5 hwloc ninja tree
 
         - uses: conda-incubator/setup-miniconda@v2
           with:
@@ -50,9 +50,10 @@ jobs:
                   -DLUE_BUILD_DATA_MODEL=TRUE \
                   -DLUE_DATA_MODEL_WITH_PYTHON_API=TRUE \
                   -DLUE_DATA_MODEL_WITH_UTILITIES=TRUE \
-                  -DLUE_BUILD_FRAMEWORK=FALSE \
+                  -DLUE_BUILD_FRAMEWORK=TRUE \
                   -DLUE_FRAMEWORK_WITH_PYTHON_API=TRUE \
                   -DLUE_BUILD_HPX=TRUE \
+                  -DLUE_BUILD_VIEW=TRUE \
                   -DHPX_USE_CMAKE_CXX_STANDARD=TRUE \
                   -DHPX_WITH_MALLOC="tcmalloc" \
                   -DHPX_WITH_EXAMPLES=FALSE \

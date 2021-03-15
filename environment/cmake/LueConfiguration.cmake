@@ -72,11 +72,15 @@ if(WIN32)
     set(LUE_HAVE_BOOST_INIT FALSE)
     set(LUE_HAVE_DOXYGEN_INIT FALSE)
     set(LUE_HAVE_GDAL_INIT FALSE)
+    set(LUE_HAVE_GLEW_INIT FALSE)
+    set(LUE_HAVE_GLFW_INIT FALSE)
     set(LUE_HAVE_HDF5_INIT FALSE)
 else()
     set(LUE_HAVE_BOOST_INIT TRUE)
     set(LUE_HAVE_DOXYGEN_INIT TRUE)
     set(LUE_HAVE_GDAL_INIT TRUE)
+    set(LUE_HAVE_GLEW_INIT TRUE)
+    set(LUE_HAVE_GLFW_INIT TRUE)
     set(LUE_HAVE_HDF5_INIT TRUE)
 endif()
 
@@ -89,6 +93,8 @@ endfunction()
 lue_have_option(BOOST)
 lue_have_option(DOXYGEN)
 lue_have_option(GDAL)
+lue_have_option(GLEW)
+lue_have_option(GLFW)
 lue_have_option(HDF5)
 
 
@@ -196,6 +202,8 @@ endif()
 if(LUE_BUILD_VIEW)
     set(LUE_DOCOPT_REQUIRED TRUE)
     set(LUE_FMT_REQUIRED TRUE)
+    set(LUE_GLEW_REQUIRED TRUE)
+    set(LUE_GLFW_REQUIRED TRUE)
     set(LUE_IMGUI_REQUIRED TRUE)
     set(LUE_NLOHMANN_JSON_REQUIRED TRUE)
 endif()
@@ -228,12 +236,129 @@ if(LUE_BUILD_DOCUMENTATION)
 endif()
 
 
+# ------------------------------------------------------------------------------
+# Packages that need to be installed with Conan must be installed first,
+# so packages using them will find them
+
+if(LUE_BOOST_REQUIRED)
+    if(NOT LUE_HAVE_BOOST)
+        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} boost/1.75.0)
+        set(LUE_CONAN_OPTIONS ${LUE_CONAN_OPTIONS} boost:shared=True)
+    endif()
+endif()
+
+if(LUE_DOCOPT_REQUIRED)
+    set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} docopt.cpp/0.6.3)
+endif()
+
+if(LUE_FMT_REQUIRED)
+    set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} fmt/7.1.3)
+endif()
+
+if(LUE_GDAL_REQUIRED)
+    if(NOT LUE_HAVE_GDAL)
+        # https://conan.io/center/gdal/3.1.2
+        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} gdal/3.1.4)
+        # set(LUE_CONAN_OPTIONS ${LUE_CONAN_OPTIONS}
+        #         gdal:with_qhull=False)
+    endif()
+endif()
+
+
+if(LUE_GLEW_REQUIRED)
+    if(NOT LUE_HAVE_GLEW)
+        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} glew/2.1.0)
+    endif()
+endif()
+
+
+if(LUE_GLFW_REQUIRED)
+    if(NOT LUE_HAVE_GLFW)
+        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} glfw/3.3.3)
+    endif()
+endif()
+
+
+if(LUE_GUIDELINE_SUPPORT_LIBRARY_REQUIRED)
+    set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} ms-gsl/3.1.0)
+endif()
+
+if(LUE_HDF5_REQUIRED)
+    if(NOT LUE_HAVE_HDF5)
+        set(HDF5_VERSION 1.12.0)
+        set(HDF5_IS_PARALLEL FALSE)
+        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} hdf5/${HDF5_VERSION})
+    endif()
+endif()
+
+if(LUE_HPX_REQUIRED)
+    if(NOT LUE_BUILD_HPX)
+        message(FATAL_ERROR
+            "Support for system-provided HPX library does not work yet\n"
+            "But we can build HPX for you! Just reconfigure with LUE_BUILD_HPX=TRUE")
+
+        # # Use HPX from the environment
+        # find_package(HPX REQUIRED)
+
+        # if(HPX_FOUND)
+        #     message(STATUS "Found HPX")
+        #     message(STATUS "  includes : ${HPX_INCLUDE_DIRS}")
+        #     message(STATUS "  libraries: ${HPX_LIBRARIES}")
+
+        #     # Check whether we are using the same build type as HPX
+        #     if (NOT "${HPX_BUILD_TYPE}" STREQUAL "${CMAKE_BUILD_TYPE}")
+        #         message(WARNING
+        #             "CMAKE_BUILD_TYPE does not match HPX_BUILD_TYPE: "
+        #             "\"${CMAKE_BUILD_TYPE}\" != \"${HPX_BUILD_TYPE}\"\n"
+        #             "ABI compatibility is not guaranteed. Expect link errors.")
+        #     endif()
+        # endif()
+    endif()
+endif()
+
+if(LUE_IMGUI_REQUIRED AND NOT LUE_BUILD_IMGUI)
+    message(FATAL_ERROR
+        "Support for system-provided ImGUI library does not work yet\n"
+        "But we can build ImGUI for you! Just reconfigure with LUE_BUILD_IMGUI=TRUE")
+endif()
+
+if(LUE_KOKKOS_MDSPAN_REQUIRED)
+    FetchContent_Declare(kokkos_mdspan
+        GIT_REPOSITORY https://github.com/kokkos/mdspan.git
+        GIT_TAG a7990884f090365787a90cdc12e689822d642c65  # 20191010
+    )
+    FetchContent_MakeAvailable(kokkos_mdspan)
+endif()
+
+if(LUE_NLOHMANN_JSON_REQUIRED)
+    set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} nlohmann_json/3.9.1)
+endif()
+
+if(LUE_PYBIND11_REQUIRED)
+    FetchContent_Declare(pybind11
+        GIT_REPOSITORY https://github.com/pybind/pybind11
+        GIT_TAG "v2.6.2"
+    )
+    FetchContent_MakeAvailable(pybind11)
+endif()
+
+
+include(conan-0.16.1)
+conan_cmake_configure(
+    REQUIRES ${LUE_CONAN_REQUIRES}
+    GENERATORS cmake_find_package
+    OPTIONS ${LUE_CONAN_OPTIONS})
+conan_cmake_autodetect(settings)
+conan_cmake_install(
+    PATH_OR_REFERENCE .
+    BUILD missing
+    REMOTE conan-center
+    SETTINGS ${settings})
+list(APPEND CMAKE_MODULE_PATH
+    ${CMAKE_CURRENT_BINARY_DIR})
+
+
 # Build (not find) external packages -------------------------------------------
-# It is important to build external packages first, because our CMake
-# logic might influence them. For example, HPX tests whether
-# Boost.filesystem has been found already. If we do that here, before
-# building HPX, the HPX build fails.
-# Should be fixed in HPX>=1.5.0
 if(LUE_HPX_REQUIRED)
     if(HPX_WITH_APEX)
         if(APEX_WITH_OTF2)
@@ -298,6 +423,12 @@ if(LUE_HPX_REQUIRED)
     if(LUE_BUILD_HPX)
         # Build HPX ourselves
 
+        # if(NOT LUE_HAVE_BOOST)
+        #     # If Boost is installed by Conan, then Boost_REGEX_FOUND is not
+        #     # set, which trips the HPX configuration
+        #     set(Boost_REGEX_FOUND TRUE)
+        # endif()
+
         if(LUE_HPX_GIT_TAG)
             # Obtain HPX from GIT repository. This is useful when we
             # need to use a specific HPX commit.
@@ -349,7 +480,7 @@ endif()
 if(LUE_IMGUI_REQUIRED AND LUE_BUILD_IMGUI)
     find_package(OpenGL REQUIRED)
     find_package(GLEW REQUIRED)
-    find_package(SDL2 REQUIRED)
+    find_package(glfw3 REQUIRED)
 
     if(LUE_REPOSITORY_CACHE AND EXISTS ${LUE_REPOSITORY_CACHE}/imgui)
         set(imgui_repository ${LUE_REPOSITORY_CACHE}/imgui)
@@ -376,9 +507,8 @@ if(LUE_IMGUI_REQUIRED AND LUE_BUILD_IMGUI)
             ${imgui_SOURCE_DIR}/imgui_tables
             ${imgui_SOURCE_DIR}/imgui_widgets
 
-            # opengl3 / sdl2 binding
             ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3
-            ${imgui_SOURCE_DIR}/backends/imgui_impl_sdl
+            ${imgui_SOURCE_DIR}/backends/imgui_impl_glfw
         )
 
         target_include_directories(imgui SYSTEM
@@ -387,20 +517,18 @@ if(LUE_IMGUI_REQUIRED AND LUE_BUILD_IMGUI)
             PUBLIC
                 ${imgui_SOURCE_DIR}/backends
                 $<BUILD_INTERFACE:${imgui_SOURCE_DIR}>
-                ${SDL2_INCLUDE_DIR}
         )
 
-        target_compile_options(imgui
+        target_compile_definitions(imgui
             PUBLIC
-                # Output of `sdl2-config --cflags`
-                "$<$<PLATFORM_ID:Linux>:-D_REENTRANT>"
-                -DIMGUI_DISABLE_OBSOLETE_FUNCTIONS
+                IMGUI_DISABLE_OBSOLETE_FUNCTIONS
+                IMGUI_IMPL_OPENGL_LOADER_GLEW
         )
 
         target_link_libraries(imgui
             PUBLIC
-                ${SDL2_LIBRARY}
-                GLEW::glew
+                glfw::glfw
+                GLEW::GLEW
                 OpenGL::GL
         )
 
@@ -425,95 +553,6 @@ if(LUE_SPHINX_LUE_THEME_REQUIRED)
 endif()
 
 
-# Find or install external packages --------------------------------------------
-if(LUE_BOOST_REQUIRED)
-    if(NOT LUE_HAVE_BOOST)
-        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} boost/1.74.0)
-        set(LUE_CONAN_OPTIONS ${LUE_CONAN_OPTIONS} boost:shared=True)
-    endif()
-endif()
-
-if(LUE_DOCOPT_REQUIRED)
-    set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} docopt.cpp/0.6.3)
-endif()
-
-if(LUE_FMT_REQUIRED)
-    set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} fmt/7.1.2)
-endif()
-
-if(LUE_GDAL_REQUIRED)
-    if(NOT LUE_HAVE_GDAL)
-        # https://conan.io/center/gdal/3.1.2
-        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} gdal/3.1.4)
-        # set(LUE_CONAN_OPTIONS ${LUE_CONAN_OPTIONS}
-        #         gdal:with_qhull=False)
-    endif()
-endif()
-
-if(LUE_GUIDELINE_SUPPORT_LIBRARY_REQUIRED)
-    set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} ms-gsl/3.1.0)
-endif()
-
-if(LUE_HDF5_REQUIRED)
-    if(NOT LUE_HAVE_HDF5)
-        set(HDF5_VERSION 1.12.0)
-        set(HDF5_IS_PARALLEL FALSE)
-        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} hdf5/${HDF5_VERSION})
-    endif()
-endif()
-
-if(LUE_HPX_REQUIRED)
-    if(NOT LUE_BUILD_HPX)
-        message(FATAL_ERROR
-            "Support for system-provided HPX library does not work yet\n"
-            "But we can build HPX for you! Just reconfigure with LUE_BUILD_HPX=TRUE")
-
-        # # Use HPX from the environment
-        # find_package(HPX REQUIRED)
-
-        # if(HPX_FOUND)
-        #     message(STATUS "Found HPX")
-        #     message(STATUS "  includes : ${HPX_INCLUDE_DIRS}")
-        #     message(STATUS "  libraries: ${HPX_LIBRARIES}")
-
-        #     # Check whether we are using the same build type as HPX
-        #     if (NOT "${HPX_BUILD_TYPE}" STREQUAL "${CMAKE_BUILD_TYPE}")
-        #         message(WARNING
-        #             "CMAKE_BUILD_TYPE does not match HPX_BUILD_TYPE: "
-        #             "\"${CMAKE_BUILD_TYPE}\" != \"${HPX_BUILD_TYPE}\"\n"
-        #             "ABI compatibility is not guaranteed. Expect link errors.")
-        #     endif()
-        # endif()
-    endif()
-endif()
-
-if(LUE_IMGUI_REQUIRED AND NOT LUE_BUILD_IMGUI)
-    message(FATAL_ERROR
-        "Support for system-provided ImGUI library does not work yet\n"
-        "But we can build ImGUI for you! Just reconfigure with LUE_BUILD_IMGUI=TRUE")
-endif()
-
-if(LUE_KOKKOS_MDSPAN_REQUIRED)
-    FetchContent_Declare(kokkos_mdspan
-        GIT_REPOSITORY https://github.com/kokkos/mdspan.git
-        GIT_TAG a7990884f090365787a90cdc12e689822d642c65  # 20191010
-    )
-    FetchContent_MakeAvailable(kokkos_mdspan)
-endif()
-
-if(LUE_NLOHMANN_JSON_REQUIRED)
-    set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} nlohmann_json/3.9.1)
-endif()
-
-if(LUE_PYBIND11_REQUIRED)
-    set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} pybind11/2.6.1)
-endif()
-
-
-include(Conan)
-run_conan()
-
-
 if(LUE_BOOST_REQUIRED)
     find_package(Boost REQUIRED COMPONENTS ${LUE_REQUIRED_BOOST_COMPONENTS})
 
@@ -523,17 +562,17 @@ if(LUE_BOOST_REQUIRED)
         )
 endif()
 
+
+if(LUE_DOCOPT_REQUIRED)
+    find_package(docopt REQUIRED)
+endif()
+
 if(LUE_DOXYGEN_REQUIRED)
     find_package(Doxygen REQUIRED dot)
 endif()
 
 if(LUE_GDAL_REQUIRED)
-    if(LUE_HAVE_GDAL)
-        find_package(GDAL REQUIRED)
-        set(lue_gdal_target GDAL::GDAL)
-    else()
-        set(lue_gdal_target CONAN_PKG::gdal)
-    endif()
+    find_package(GDAL REQUIRED)
 endif()
 
 if(LUE_GRAPHVIZ_REQUIRED)
@@ -544,10 +583,21 @@ if(LUE_GRAPHVIZ_REQUIRED)
     endif()
 endif()
 
+if(LUE_FMT_REQUIRED)
+    find_package(fmt REQUIRED)
+endif()
+
 if(LUE_HDF5_REQUIRED)
-    if(LUE_HAVE_HDF5)
-        find_package(HDF5 REQUIRED COMPONENTS C)
-    endif()
+    find_package(HDF5 REQUIRED COMPONENTS C)
+    add_library(hdf5::hdf5 ALIAS HDF5::HDF5)  # Conan uses uppercase...
+endif()
+
+if(LUE_GUIDELINE_SUPPORT_LIBRARY_REQUIRED)
+    find_package(Microsoft.GSL REQUIRED)
+endif()
+
+if(LUE_NLOHMANN_JSON_REQUIRED)
+    find_package(nlohmann_json REQUIRED)
 endif()
 
 if(LUE_OPENCL_REQUIRED)
@@ -555,76 +605,80 @@ if(LUE_OPENCL_REQUIRED)
 endif()
 
 if(LUE_PYBIND11_REQUIRED)
-    include(${CONAN_BUILD_DIRS_PYBIND11}/pybind11Tools.cmake)
+
+    message("python: ${PYTHON_EXECUTABLE}")
+
+    ###     find_package(pybind11)
+    ###     include(pybind11NewTools.cmake)
     set(LUE_PYTHON_EXECUTABLE ${PYTHON_EXECUTABLE})
 
-    execute_process(COMMAND "${LUE_PYTHON_EXECUTABLE}" -c
-        "import sys; print(\"{};{};{}\".format(sys.version_info[0], sys.version_info[1], sys.version_info[2]))"
-        RESULT_VARIABLE version_result
-        OUTPUT_VARIABLE version_output
-        ERROR_VARIABLE version_error
-        OUTPUT_STRIP_TRAILING_WHITESPACE)
+        execute_process(COMMAND "${LUE_PYTHON_EXECUTABLE}" -c
+            "import sys; print(\"{};{};{}\".format(sys.version_info[0], sys.version_info[1], sys.version_info[2]))"
+            RESULT_VARIABLE version_result
+            OUTPUT_VARIABLE version_output
+            ERROR_VARIABLE version_error
+            OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-    if(NOT version_result MATCHES 0)
-        message(FATAL_ERROR
-            "${LUE_PYTHON_EXECUTABLE} is unable to determine version:\n${version_error}")
-    else()
-        list(GET version_output -3 Python_VERSION_MAJOR)
-        list(GET version_output -2 Python_VERSION_MINOR)
-        list(GET version_output -1 Python_VERSION_PATCH)
-        set(Python_VERSION "${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}.${Python_VERSION_PATCH}")
+        if(NOT version_result MATCHES 0)
+            message(FATAL_ERROR
+                "${LUE_PYTHON_EXECUTABLE} is unable to determine version:\n${version_error}")
+        else()
+            list(GET version_output -3 Python_VERSION_MAJOR)
+            list(GET version_output -2 Python_VERSION_MINOR)
+            list(GET version_output -1 Python_VERSION_PATCH)
+            set(Python_VERSION "${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}.${Python_VERSION_PATCH}")
 
-        message(STATUS "Found Python ${Python_VERSION}")
-    endif()
+            message(STATUS "Found Python ${Python_VERSION}")
+        endif()
 
-    # Given Python found, figure out where the NumPy headers are. We don't
-    # want to pick up headers from another prefix than the prefix of the
-    # Python interpreter.
-    execute_process(COMMAND "${LUE_PYTHON_EXECUTABLE}" -c
-        "import numpy as np; print(\"{};{}\".format(np.__version__, np.get_include()));"
-        RESULT_VARIABLE numpy_search_result
-        OUTPUT_VARIABLE numpy_search_output
-        ERROR_VARIABLE numpy_search_error
-        OUTPUT_STRIP_TRAILING_WHITESPACE)
+        # Given Python found, figure out where the NumPy headers are. We don't
+        # want to pick up headers from another prefix than the prefix of the
+        # Python interpreter.
+        execute_process(COMMAND "${LUE_PYTHON_EXECUTABLE}" -c
+            "import numpy as np; print(\"{};{}\".format(np.__version__, np.get_include()));"
+            RESULT_VARIABLE numpy_search_result
+            OUTPUT_VARIABLE numpy_search_output
+            ERROR_VARIABLE numpy_search_error
+            OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-    if(NOT numpy_search_result MATCHES 0)
-        message(FATAL_ERROR
-            "${LUE_PYTHON_EXECUTABLE} is unable to import numpy:\n${numpy_search_error}")
-    else()
-        list(GET numpy_search_output -2 numpy_version)
-        list(GET numpy_search_output -1 NUMPY_INCLUDE_DIRS)
+        if(NOT numpy_search_result MATCHES 0)
+            message(FATAL_ERROR
+                "${LUE_PYTHON_EXECUTABLE} is unable to import numpy:\n${numpy_search_error}")
+        else()
+            list(GET numpy_search_output -2 numpy_version)
+            list(GET numpy_search_output -1 NUMPY_INCLUDE_DIRS)
 
-        message(STATUS
-            "Found NumPy ${numpy_version} headers in ${NUMPY_INCLUDE_DIRS}")
-    endif()
+            message(STATUS
+                "Found NumPy ${numpy_version} headers in ${NUMPY_INCLUDE_DIRS}")
+        endif()
 
-    if(NOT LUE_PYTHON_API_INSTALL_DIR)
-        # Most Python packages install in a subdirectory of Python's site
-        # packages. But we currently ship only Python packages implemented
-        # as shared libraries. Therefore, we install in the root of the
-        # site packages directory. We may have to change things in
-        # the future if this is unconventional.
-        set(LUE_PYTHON_API_INSTALL_DIR "${PYTHON_SITE_PACKAGES}")  # /lue")
-    endif()
+        if(NOT LUE_PYTHON_API_INSTALL_DIR)
+            # Most Python packages install in a subdirectory of Python's site
+            # packages. But we currently ship only Python packages implemented
+            # as shared libraries. Therefore, we install in the root of the
+            # site packages directory. We may have to change things in
+            # the future if this is unconventional.
+            set(LUE_PYTHON_API_INSTALL_DIR "${PYTHON_SITE_PACKAGES}")  # /lue")
+        endif()
 
-    ### find_package(Python COMPONENTS Interpreter Development NumPy)
+        ### find_package(Python COMPONENTS Interpreter Development NumPy)
 
-    ### if(NOT Python_FOUND)
-    ###     message(FATAL_ERROR "Python not found")
-    ### endif()
+        ### if(NOT Python_FOUND)
+        ###     message(FATAL_ERROR "Python not found")
+        ### endif()
 
-    ### if(NOT Python_NumPy_FOUND)
-    ###     message(FATAL_ERROR "Python NumPy not found")
-    ### endif()
+        ### if(NOT Python_NumPy_FOUND)
+        ###     message(FATAL_ERROR "Python NumPy not found")
+        ### endif()
 
-    ### if(NOT LUE_PYTHON_API_INSTALL_DIR)
-    ###     # Most Python packages install in a subdirectory of Python's site
-    ###     # packages. But we currently ship only Python packages implemented
-    ###     # as shared libraries. Therefore, we install in the root of the
-    ###     # site packages directory. We may have to change things in
-    ###     # the future if this is unconventional.
-    ###     set(LUE_PYTHON_API_INSTALL_DIR "${Python_SITELIB}")  # /lue")
-    ### endif()
+        ### if(NOT LUE_PYTHON_API_INSTALL_DIR)
+        ###     # Most Python packages install in a subdirectory of Python's site
+        ###     # packages. But we currently ship only Python packages implemented
+        ###     # as shared libraries. Therefore, we install in the root of the
+        ###     # site packages directory. We may have to change things in
+        ###     # the future if this is unconventional.
+        ###     set(LUE_PYTHON_API_INSTALL_DIR "${Python_SITELIB}")  # /lue")
+        ### endif()
 endif()
 
 if(LUE_PYTHON_REQUIRED AND NOT LUE_PYBIND11_REQUIRED)

@@ -19,5 +19,5 @@ target_include_directories(lue_main_at_each_locality SYSTEM
 
 target_link_libraries(lue_main_at_each_locality
     PRIVATE
-        CONAN_PKG::fmt
+        fmt::fmt
 )

@@ -28,7 +28,7 @@ add_unit_tests(
         ${PYTHON_INCLUDE_DIRS}
     # OBJECT_LIBRARIES
     LINK_LIBRARIES
-        CONAN_PKG::pybind11
+        pybind11::pybind11
         ${PYTHON_LIBRARIES}
     DEPENDENCIES
         lue_py_data_model_test_modules

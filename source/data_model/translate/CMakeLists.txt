@@ -37,7 +37,7 @@ target_link_libraries(lue_translate_lib
         lue::data_model_hl
     PUBLIC
         lue::utility
-        ${lue_gdal_target}
+        GDAL::GDAL
 )
 
 add_executable(lue_translate

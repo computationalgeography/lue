@@ -76,7 +76,7 @@ target_include_directories(lue_data_model
 target_link_libraries(lue_data_model
     PUBLIC
         lue::hdf5
-        CONAN_PKG::fmt
+        fmt::fmt
 )
 
 install(
