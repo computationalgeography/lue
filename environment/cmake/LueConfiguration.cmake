@@ -610,79 +610,51 @@ endif()
 
 if(LUE_PYBIND11_REQUIRED)
 
-    message("python: ${PYTHON_EXECUTABLE}")
-
-    ###     find_package(pybind11)
-    ###     include(pybind11NewTools.cmake)
     set(LUE_PYTHON_EXECUTABLE ${PYTHON_EXECUTABLE})
 
-        execute_process(COMMAND "${LUE_PYTHON_EXECUTABLE}" -c
-            "import sys; print(\"{};{};{}\".format(sys.version_info[0], sys.version_info[1], sys.version_info[2]))"
-            RESULT_VARIABLE version_result
-            OUTPUT_VARIABLE version_output
-            ERROR_VARIABLE version_error
-            OUTPUT_STRIP_TRAILING_WHITESPACE)
+    # Ask Python for some properties we can use.
+    # Given Python found, figure out where the NumPy headers are. We don't
+    # want to pick up headers from another prefix than the prefix of the
+    # Python interpreter.
+    execute_process(COMMAND "${LUE_PYTHON_EXECUTABLE}" -c "
+from distutils import sysconfig
+import numpy as np
+import sys
+print(\"{};{};{};{};{};{}\".format(
+        sys.version_info[0], sys.version_info[1], sys.version_info[2],
+        sysconfig.get_python_lib(plat_specific=True),
+        np.__version__, np.get_include(),
+    ))"
+        RESULT_VARIABLE python_result
+        OUTPUT_VARIABLE python_output
+        ERROR_VARIABLE python_error
+        OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-        if(NOT version_result MATCHES 0)
-            message(FATAL_ERROR
-                "${LUE_PYTHON_EXECUTABLE} is unable to determine version:\n${version_error}")
-        else()
-            list(GET version_output -3 Python_VERSION_MAJOR)
-            list(GET version_output -2 Python_VERSION_MINOR)
-            list(GET version_output -1 Python_VERSION_PATCH)
-            set(Python_VERSION "${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}.${Python_VERSION_PATCH}")
+    if(NOT python_result MATCHES 0)
+        message(FATAL_ERROR
+            "${LUE_PYTHON_EXECUTABLE} is unable to determine interpreter properties:\n${python_error}")
+    else()
+        list(GET python_output 0 Python_VERSION_MAJOR)
+        list(GET python_output 1 Python_VERSION_MINOR)
+        list(GET python_output 2 Python_VERSION_PATCH)
+        list(GET python_output 3 Python_SITE_PACKAGES)
+        list(GET python_output 4 numpy_version)
+        list(GET python_output 5 NUMPY_INCLUDE_DIRS)
+        set(Python_VERSION "${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}.${Python_VERSION_PATCH}")
 
-            message(STATUS "Found Python ${Python_VERSION}")
-        endif()
+        message(STATUS "Found Python ${Python_VERSION}")
+        message(STATUS
+            "Found NumPy ${numpy_version} headers in ${NUMPY_INCLUDE_DIRS}")
+    endif()
 
-        # Given Python found, figure out where the NumPy headers are. We don't
-        # want to pick up headers from another prefix than the prefix of the
-        # Python interpreter.
-        execute_process(COMMAND "${LUE_PYTHON_EXECUTABLE}" -c
-            "import numpy as np; print(\"{};{}\".format(np.__version__, np.get_include()));"
-            RESULT_VARIABLE numpy_search_result
-            OUTPUT_VARIABLE numpy_search_output
-            ERROR_VARIABLE numpy_search_error
-            OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-        if(NOT numpy_search_result MATCHES 0)
-            message(FATAL_ERROR
-                "${LUE_PYTHON_EXECUTABLE} is unable to import numpy:\n${numpy_search_error}")
-        else()
-            list(GET numpy_search_output -2 numpy_version)
-            list(GET numpy_search_output -1 NUMPY_INCLUDE_DIRS)
-
-            message(STATUS
-                "Found NumPy ${numpy_version} headers in ${NUMPY_INCLUDE_DIRS}")
-        endif()
-
-        if(NOT LUE_PYTHON_API_INSTALL_DIR)
-            # Most Python packages install in a subdirectory of Python's site
-            # packages. But we currently ship only Python packages implemented
-            # as shared libraries. Therefore, we install in the root of the
-            # site packages directory. We may have to change things in
-            # the future if this is unconventional.
-            set(LUE_PYTHON_API_INSTALL_DIR "${PYTHON_SITE_PACKAGES}")  # /lue")
-        endif()
-
-        ### find_package(Python COMPONENTS Interpreter Development NumPy)
-
-        ### if(NOT Python_FOUND)
-        ###     message(FATAL_ERROR "Python not found")
-        ### endif()
-
-        ### if(NOT Python_NumPy_FOUND)
-        ###     message(FATAL_ERROR "Python NumPy not found")
-        ### endif()
-
-        ### if(NOT LUE_PYTHON_API_INSTALL_DIR)
-        ###     # Most Python packages install in a subdirectory of Python's site
-        ###     # packages. But we currently ship only Python packages implemented
-        ###     # as shared libraries. Therefore, we install in the root of the
-        ###     # site packages directory. We may have to change things in
-        ###     # the future if this is unconventional.
-        ###     set(LUE_PYTHON_API_INSTALL_DIR "${Python_SITELIB}")  # /lue")
-        ### endif()
+    if(NOT LUE_PYTHON_API_INSTALL_DIR)
+        # Most Python packages install in a subdirectory of Python's site
+        # packages. But we currently ship only Python packages implemented
+        # as shared libraries. Therefore, we install in the root of the
+        # site packages directory. We may have to change things in
+        # the future if this is unconventional.
+        set(LUE_PYTHON_API_INSTALL_DIR "${Python_SITE_PACKAGES}")  # /lue")
+    endif()
 endif()
 
 if(LUE_PYTHON_REQUIRED AND NOT LUE_PYBIND11_REQUIRED)

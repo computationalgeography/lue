@@ -26,13 +26,14 @@ jobs:
               channels: conda-forge
         - shell: bash -l {0}
           run: |
-              conda install conan docopt gdal glew glfw hdf5 libhwloc numpy psutil sphinx
+              conda install conan gdal glew glfw hdf5 libhwloc numpy psutil sphinx
 
         - name: configure lue
           shell: bash -l {0}
           run: |
               mkdir build
               BOOST_ROOT=${BOOST_ROOT_1_72_0} \
+              HWLOC_ROOT=${BOOST_ROOT_1_72_0} \
                   cmake \
                       -S . \
                       -B build \
