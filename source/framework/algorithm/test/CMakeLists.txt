@@ -49,7 +49,7 @@ set(names
     uniform_test
     unique_id_test
     unique_test
-    valid_test
+    # valid_test
     where_test
     zonal_sum_test
 )
