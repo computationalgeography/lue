@@ -629,17 +629,16 @@ print(\"{};{};{};{};{};{}\".format(
         message(FATAL_ERROR
             "${LUE_PYTHON_EXECUTABLE} is unable to determine interpreter properties:\n${python_error}")
     else()
-        list(GET python_output 0 Python_VERSION_MAJOR)
-        list(GET python_output 1 Python_VERSION_MINOR)
-        list(GET python_output 2 Python_VERSION_PATCH)
-        list(GET python_output 3 Python_SITE_PACKAGES)
+        list(GET python_output 0 PYTHON_VERSION_MAJOR)
+        list(GET python_output 1 PYTHON_VERSION_MINOR)
+        list(GET python_output 2 PYTHON_VERSION_PATCH)
+        list(GET python_output 3 python_site_packages)
         list(GET python_output 4 numpy_version)
         list(GET python_output 5 NUMPY_INCLUDE_DIRS)
-        set(Python_VERSION "${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}.${Python_VERSION_PATCH}")
+        set(PYTHON_VERSION "${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}.${PYTHON_VERSION_PATCH}")
 
-        message(STATUS "Found Python ${Python_VERSION}")
-        message(STATUS
-            "Found NumPy ${numpy_version} headers in ${NUMPY_INCLUDE_DIRS}")
+        message(STATUS "Found Python ${PYTHON_VERSION}")
+        message(STATUS "Found NumPy ${numpy_version} headers in ${NUMPY_INCLUDE_DIRS}")
     endif()
 
     if(NOT LUE_PYTHON_API_INSTALL_DIR)
@@ -648,7 +647,7 @@ print(\"{};{};{};{};{};{}\".format(
         # as shared libraries. Therefore, we install in the root of the
         # site packages directory. We may have to change things in
         # the future if this is unconventional.
-        set(LUE_PYTHON_API_INSTALL_DIR "${Python_SITE_PACKAGES}")  # /lue")
+        set(LUE_PYTHON_API_INSTALL_DIR "${python_site_packages}")  # /lue")
     endif()
 endif()
 
