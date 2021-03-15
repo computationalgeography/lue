@@ -73,14 +73,12 @@ if(WIN32)
     set(LUE_HAVE_DOXYGEN_INIT FALSE)
     set(LUE_HAVE_GDAL_INIT FALSE)
     set(LUE_HAVE_GLEW_INIT FALSE)
-    set(LUE_HAVE_GLFW_INIT FALSE)
     set(LUE_HAVE_HDF5_INIT FALSE)
 else()
     set(LUE_HAVE_BOOST_INIT TRUE)
     set(LUE_HAVE_DOXYGEN_INIT TRUE)
     set(LUE_HAVE_GDAL_INIT TRUE)
     set(LUE_HAVE_GLEW_INIT TRUE)
-    set(LUE_HAVE_GLFW_INIT TRUE)
     set(LUE_HAVE_HDF5_INIT TRUE)
 endif()
 
@@ -94,7 +92,6 @@ lue_have_option(BOOST)
 lue_have_option(DOXYGEN)
 lue_have_option(GDAL)
 lue_have_option(GLEW)
-lue_have_option(GLFW)
 lue_have_option(HDF5)
 
 
@@ -273,9 +270,7 @@ endif()
 
 
 if(LUE_GLFW_REQUIRED)
-    if(NOT LUE_HAVE_GLFW)
-        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} glfw/3.3.3)
-    endif()
+    set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} glfw/3.3.3)
 endif()
 
 

@@ -26,7 +26,7 @@ jobs:
               channels: conda-forge
         - shell: bash -l {0}
           run: |
-              conda install conan gdal glew glfw hdf5 libhwloc numpy psutil sphinx
+              conda install conan gdal glew hdf5 libhwloc numpy psutil sphinx
 
         - name: configure lue
           shell: bash -l {0}
@@ -43,7 +43,6 @@ jobs:
                       -DBoost_USE_STATIC_LIBS=FALSE \
                       -DLUE_HAVE_GDAL=TRUE \
                       -DLUE_HAVE_GLEW=TRUE \
-                      -DLUE_HAVE_GLFW=TRUE \
                       -DLUE_HAVE_HDF5=TRUE \
                       -DLUE_BUILD_DOCUMENTATION=FALSE \
                       -DLUE_BUILD_TEST=FALSE \
