@@ -589,7 +589,11 @@ endif()
 
 if(LUE_HDF5_REQUIRED)
     find_package(HDF5 REQUIRED COMPONENTS C)
-    add_library(hdf5::hdf5 ALIAS HDF5::HDF5)  # Conan uses uppercase...
+
+    if(NOT LUE_HAVE_HDF5)
+        # Conan find module uses uppercase target names...
+        add_library(hdf5::hdf5 ALIAS HDF5::HDF5)
+    endif()
 endif()
 
 if(LUE_GUIDELINE_SUPPORT_LIBRARY_REQUIRED)
