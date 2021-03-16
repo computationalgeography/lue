@@ -31,6 +31,8 @@ jobs:
         - name: configure lue
           shell: bash -l {0}
           run: |
+              echo $CONDA_PKGS_DIR
+              ls $CONDA_PKGS_DIR
               mkdir build
               cmake \
                   -S . \
@@ -44,7 +46,7 @@ jobs:
                   -DLUE_HAVE_HDF5=TRUE \
                   -DLUE_BUILD_DOCUMENTATION=FALSE \
                   -DLUE_BUILD_TEST=FALSE \
-                  -DLUE_BUILD_DATA_MODEL=TRUE \
+                  -DLUE_BUILD_DATA_MODEL=FALSE \
                   -DLUE_DATA_MODEL_WITH_PYTHON_API=TRUE \
                   -DLUE_DATA_MODEL_WITH_UTILITIES=TRUE \
                   -DLUE_BUILD_FRAMEWORK=FALSE \
