@@ -16,7 +16,7 @@ target_include_directories(lue_shared
 
 target_link_libraries(lue_shared
     INTERFACE
-        CONAN_PKG::fmt
+        fmt::fmt
         lue::compile_options
 )
 

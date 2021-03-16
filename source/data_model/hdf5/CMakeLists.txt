@@ -52,11 +52,10 @@ target_include_directories(lue_hdf5
 target_link_libraries(lue_hdf5
     PUBLIC
         lue::shared
-        $<$<BOOL:${LUE_HAVE_HDF5}>:hdf5::hdf5>
-        $<$<NOT:$<BOOL:${LUE_HAVE_HDF5}>>:CONAN_PKG::hdf5>
+        hdf5::hdf5
     PRIVATE
         Boost::filesystem
-        CONAN_PKG::fmt
+        fmt::fmt
 )
 
 if(HDF5_IS_PARALLEL)

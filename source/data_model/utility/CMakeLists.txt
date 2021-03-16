@@ -23,8 +23,8 @@ target_include_directories(lue_utility
 target_link_libraries(lue_utility
     PUBLIC
         lue::data_model
-        CONAN_PKG::docopt.cpp
-        CONAN_PKG::nlohmann_json
+        docopt::docopt
+        nlohmann_json::nlohmann_json
     # PRIVATE
     #     fmt::fmt
 )

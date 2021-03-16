@@ -73,13 +73,9 @@ target_include_directories(lue_py_framework
 
 target_link_libraries(lue_py_framework
     PRIVATE
-        # # $<$<TARGET_EXISTS:lue::data_model_test>:lue::data_model_test>
         lue::framework_algorithm
         lue::framework_io
-        #     # lue::data_model
-        #     # CONAN_PKG::ms-gsl
-        # Boost::program_options
-        CONAN_PKG::pybind11
+        pybind11::pybind11
 )
 
 install(

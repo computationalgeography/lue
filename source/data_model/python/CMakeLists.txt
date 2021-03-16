@@ -104,8 +104,8 @@ target_link_libraries(lue_py_data_model
     PRIVATE
         $<$<TARGET_EXISTS:lue::data_model_test>:lue::data_model_test>
         lue::data_model_hl
-        CONAN_PKG::ms-gsl
-        CONAN_PKG::pybind11
+        Microsoft.GSL::Microsoft.GSL
+        pybind11::pybind11
 )
 
 install(

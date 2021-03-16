@@ -32,6 +32,5 @@ target_link_libraries(lue_framework_core
         Boost::filesystem
     PUBLIC
         lue::shared
-        # CONAN_PKG::fmt
         std::mdspan
 )

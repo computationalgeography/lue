@@ -19,5 +19,5 @@ target_include_directories(lue_hardware_topology SYSTEM
 
 target_link_libraries(lue_hardware_topology
     PRIVATE
-        CONAN_PKG::fmt
+        fmt::fmt
 )

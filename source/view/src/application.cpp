@@ -1275,7 +1275,7 @@ void show_datasets(
     bool const show_details)
 {
     // Window for presenting information about the loaded datasets
-    sdl2::imgui::Window imgui_window{"Datasets"};
+    glfw::imgui::Window imgui_window{"Datasets"};
 
     if(auto tab_bar = gui::TabBar("Datasets"))
     {
@@ -1345,44 +1345,26 @@ int Application::run_implementation()
 
     auto const dataset_names = argument<std::vector<std::string>>("<dataset>");
 
-    sdl2::API api;
-    sdl2::Window sdl_window{"LUE view",
-        // NOLINTNEXTLINE(hicpp-signed-bitwise)
-        SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1000, 800};
-    sdl2::ImGuiBinding binding{api, sdl_window};
+    glfw::API api;
+    glfw::Window glfw_window{"LUE view", 1000, 800};
+    glfw::ImGuiBinding binding{api, glfw_window};
 
     // static std::string const ini_pathname{
     //     expand_environment_variables("${HOME}/.lue_view.ini")};
     // binding.io().IniFilename = ini_pathname.c_str();
-    sdl2::ImGuiBinding::io().IniFilename = nullptr;  // Skip for now
+    glfw::ImGuiBinding::io().IniFilename = nullptr;  // Skip for now
 
     // Open datasets
     Datasets datasets_to_visualize{dataset_names.begin(), dataset_names.end()};
 
-    bool stop_browsing = false;
-
-    while(!stop_browsing) {
-
-        // Handle key presses
-        SDL_Event event;
-        while(SDL_PollEvent(&event) != 0) {
-
-            ImGui_ImplSDL2_ProcessEvent(&event);
-
-            if(
-                event.type == SDL_QUIT || (
-                event.type == SDL_WINDOWEVENT &&
-                event.window.event == SDL_WINDOWEVENT_CLOSE &&
-                event.window.windowID == SDL_GetWindowID(sdl_window)))
-            {
-                stop_browsing = true;
-            }
-        }
+    while(!glfwWindowShouldClose(glfw_window))
+    {
+        glfwPollEvents();
 
         // Draw stuff on window
         // TODO(KDJ)
 
-        sdl2::imgui::Frame frame{sdl_window};
+        glfw::imgui::Frame frame{glfw_window};
 
         static Configuration configuration{};
         show_main_menu_bar(configuration);
