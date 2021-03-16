@@ -254,10 +254,7 @@ endif()
 
 if(LUE_GDAL_REQUIRED)
     if(NOT LUE_HAVE_GDAL)
-        # https://conan.io/center/gdal/3.1.2
         set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} gdal/3.1.4)
-        # set(LUE_CONAN_OPTIONS ${LUE_CONAN_OPTIONS}
-        #         gdal:with_qhull=False)
     endif()
 endif()
 
@@ -417,12 +414,6 @@ if(LUE_HPX_REQUIRED)
 
     if(LUE_BUILD_HPX)
         # Build HPX ourselves
-
-        # if(NOT LUE_HAVE_BOOST)
-        #     # If Boost is installed by Conan, then Boost_REGEX_FOUND is not
-        #     # set, which trips the HPX configuration
-        #     set(Boost_REGEX_FOUND TRUE)
-        # endif()
 
         if(LUE_HPX_GIT_TAG)
             # Obtain HPX from GIT repository. This is useful when we
