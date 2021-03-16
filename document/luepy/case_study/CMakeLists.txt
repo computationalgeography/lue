@@ -37,13 +37,11 @@ function(preprocess_case_study)
         DEPENDS
             ${script_name}
             lue::py
-            lue_validate
-            lue_translate
             ${dot_properties_pathname}
         COMMAND ${CMAKE_COMMAND} -E env "PYTHONPATH=$<TARGET_FILE_DIR:lue::py>" ${environment}
             ${LUE_PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/${script_name}
-        COMMAND ${CMAKE_BINARY_DIR}/bin/lue_validate --issues ${dataset_name}
-        COMMAND ${CMAKE_BINARY_DIR}/bin/lue_translate export
+        COMMAND $<TARGET_FILE:lue_validate> --issues ${dataset_name}
+        COMMAND $<TARGET_FILE:lue_translate> export
             --meta ${dot_properties_pathname} ${dataset_name} ${dot_name}
         COMMAND ${GRAPHVIZ_DOT_EXECUTABLE} -Tsvg -o ${svg_name} ${dot_name}
     )
