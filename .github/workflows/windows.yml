@@ -28,22 +28,11 @@ jobs:
           run: |
               conda install conan gdal glew hdf5 libhwloc numpy psutil sphinx
 
-        - name: install hwloc
-          shell: bash -l {0}
-          run: |
-              choco install wget --no-progress
-              wget https://download.open-mpi.org/release/hwloc/v2.4/hwloc-win64-build-2.4.1.zip
-              unzip hwloc-win64-build-2.4.1.zip
-              export HWLOC_ROOT=`pwd`/hwloc-win64-build-2.4.1
-
         - name: configure lue
           shell: bash -l {0}
           run: |
-              echo $HWLOC_ROOT
-              dir C:/Miniconda/envs/test/Library
-              dir C:/Miniconda/envs/test/Library/bin
-              dir C:/Miniconda/envs/test/Library/include
-              dir C:/Miniconda/envs/test/Library/lib
+              echo $CONDA_PREFIX
+              ls $CONDA_PREFIX
               mkdir build
               cmake \
                   -S . \
@@ -66,6 +55,7 @@ jobs:
                   -DLUE_BUILD_VIEW=TRUE \
                   -DHPX_USE_CMAKE_CXX_STANDARD=TRUE \
                   -DHPX_WITH_MALLOC="system" \
+                  -DHWLOC_ROOT="$CONDA_PREFIX/Library" \
                   -DHPX_WITH_EXAMPLES=FALSE \
                   -DHPX_WITH_TESTS=FALSE
 
