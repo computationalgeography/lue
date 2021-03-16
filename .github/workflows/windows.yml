@@ -52,7 +52,7 @@ jobs:
                   -DLUE_BUILD_FRAMEWORK=FALSE \
                   -DLUE_FRAMEWORK_WITH_PYTHON_API=TRUE \
                   -DLUE_BUILD_HPX=TRUE \
-                  -DLUE_BUILD_VIEW=TRUE \
+                  -DLUE_BUILD_VIEW=FALSE \
                   -DHPX_USE_CMAKE_CXX_STANDARD=TRUE \
                   -DHPX_WITH_MALLOC="system" \
                   -DHWLOC_ROOT="$CONDA_PREFIX/Library" \
