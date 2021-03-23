@@ -151,7 +151,7 @@ namespace lue::framework {
                 throw std::runtime_error("Currently only arrays of rank 1 or 2 are supported");
             }
 
-            lue_assert(result);
+            lue_hpx_assert(result);
 
             return result;
         }

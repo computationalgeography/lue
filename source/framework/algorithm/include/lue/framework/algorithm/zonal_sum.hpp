@@ -64,7 +64,7 @@ public:
         {
             auto it{_sums.find(zone)};
 
-            lue_assert(it != _sums.end());
+            lue_hpx_assert(it != _sums.end());
 
             return (*it).second;
         }

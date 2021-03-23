@@ -1,6 +1,6 @@
 #pragma once
+#include "lue/framework/core/assert.hpp"
 #include "lue/framework/core/define.hpp"
-#include "lue/assert.hpp"
 #include <pybind11/pybind11.h>
 #include <array>
 #include <vector>
@@ -36,7 +36,7 @@ namespace lue::framework {
     std::array<Count, rank> dynamic_shape_to_static_shape(
         std::vector<Count> const& shape)
     {
-        lue_assert(shape.size() == rank);
+        lue_hpx_assert(shape.size() == rank);
         std::array<Count, rank> result{};
         std::copy(shape.begin(), shape.end(), result.begin());
         return result;

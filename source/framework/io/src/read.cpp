@@ -23,7 +23,7 @@ Array read(
     // Add continuations that read data in each partition
 
 
-    lue_assert(false);
+    lue_hpx_assert(false);
 
     return Array{};
 }
@@ -41,7 +41,7 @@ Array read(
     // Create new array with partitions that become ready once their
     // data has been read
 
-    lue_assert(false);
+    lue_hpx_assert(false);
 
     return Array{};
 }

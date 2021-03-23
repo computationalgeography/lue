@@ -1,6 +1,6 @@
 #include "lue/framework/core/configuration_entry.hpp"
+#include "lue/framework/core/assert.hpp"
 #include "lue/framework/core/shape.hpp"
-#include "lue/assert.hpp"
 #include <fmt/format.h>
 #include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
@@ -45,7 +45,7 @@ std::string trim_vector(
                 value));
     }
 
-    lue_assert(match.size() == 2);
+    lue_hpx_assert(match.size() == 2);
 
     return match[1];
 }

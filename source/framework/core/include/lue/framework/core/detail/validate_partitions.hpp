@@ -83,7 +83,7 @@
 ///         // last seen partition and set the column offset to zero (similar
 ///         // to a carriage return). We will be iterating over the cells
 ///         // in next row next.
-///         lue_assert(dimension_idx > 0);
+///         lue_hpx_assert(dimension_idx > 0);
 ///         _offset[dimension_idx - 1] += _partition_shape[dimension_idx - 1];
 ///         _offset[dimension_idx] = 0;
 ///     }

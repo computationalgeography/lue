@@ -1,9 +1,11 @@
 set(names
+    accu_test.cpp
     add_test.cpp
     all_test.cpp
     any_test.cpp
     array_like_test.cpp
     array_partition_id_test.cpp
+    array_partition_io_test.cpp
     atan_test.cpp
     atan2_test.cpp
     cast_test.cpp
@@ -57,7 +59,6 @@ set(names
 add_unit_tests(
     SCOPE lue_framework_algorithm
     NAMES
-        array_partition_io_test.cpp
         kernel_test.cpp
     LINK_LIBRARIES
         lue::framework_algorithm

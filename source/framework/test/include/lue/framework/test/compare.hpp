@@ -1,6 +1,6 @@
 #pragma once
 #include "lue/framework/test/stream.hpp"
-#include "lue/framework/core/span.hpp"
+#include "lue/framework/core/component/component_array.hpp"
 #include <boost/range/irange.hpp>
 #include <boost/test/test_tools.hpp>
 
@@ -218,6 +218,58 @@ void check_arrays_are_close(
     BOOST_REQUIRE_EQUAL(array1.shape(), array2.shape());
 
     check_partitions_are_close(array1.partitions(), array2.partitions());
+}
+
+
+template<
+    typename Component>
+void check_component_is_equal_(
+    Component const& component1,
+    Component const& component2)
+{
+    bool both_components_valid = component1.valid() && component2.valid();
+    bool both_components_invalid = (!component1.valid()) && (!component2.valid());
+
+    // XOR with bools
+    BOOST_REQUIRE(both_components_valid != both_components_invalid);
+
+    if(both_components_valid)
+    {
+        component1.wait();
+        component2.wait();
+
+        BOOST_REQUIRE(component1.get_id());
+        BOOST_REQUIRE(component2.get_id());
+
+        check_component_is_equal(component1, component2);
+    }
+}
+
+
+template<
+    typename Component,
+    Rank rank>
+void check_components_are_equal(
+    Array<Component, rank> const& components1,
+    Array<Component, rank> const& components2)
+{
+    BOOST_REQUIRE_EQUAL(components1.shape(), components2.shape());
+
+    for(Index c = 0; c < nr_elements(components1); ++c) {
+        BOOST_TEST_CONTEXT(fmt::format("Component index: {}", c))
+        check_component_is_equal_(components1[c], components2[c]);
+    }
+}
+
+
+template<
+    typename Component,
+    Rank rank>
+void check_arrays_are_equal(
+    ComponentArray<Component, rank> const& array1,
+    ComponentArray<Component, rank> const& array2)
+{
+    check_components_are_equal(array1.components(), array2.components());
 }
 
 }  // namespace test

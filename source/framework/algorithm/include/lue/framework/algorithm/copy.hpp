@@ -28,7 +28,7 @@ Partition copy_partition(
     using InputData = DataT<Partition>;
     using OutputData = InputData;
 
-    lue_assert(input_partition.is_ready());
+    lue_hpx_assert(input_partition.is_ready());
 
     return hpx::dataflow(
         hpx::launch::async,

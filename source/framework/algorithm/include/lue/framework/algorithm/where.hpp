@@ -24,7 +24,7 @@ namespace lue {
                 {
                     // False conditions are assumed to be out of domain. They must
                     // have been already handled by the caller.
-                    lue_assert(condition);
+                    lue_hpx_assert(condition);
 
                     return true_value;
                 }

@@ -24,6 +24,7 @@ using remove_cvref_t = typename remove_cvref<T>::type;
 /*!
     @brief      Primary template for traits of an array-like type
     @tparam     Array-like type
+    @todo       Rename to TypeTraits
 
     Specializations add traits that are relevant for the actual array-like
     type. Some of these traits are relevant for all array-like types
@@ -35,6 +36,8 @@ class ArrayTraits
 {
 
 public:
+
+    using Element = typename Array::Element;
 
 };
 
@@ -60,7 +63,12 @@ class IsArrayPartition:
 */
 template<
     typename Array>
-using ElementT = detail::remove_cvref_t<typename detail::ArrayTraits<Array>::Element>;
+using ElementT = typename detail::ArrayTraits<detail::remove_cvref_t<Array>>::Element;
+
+
+template<
+    typename Array>
+using ElementsT = typename detail::ArrayTraits<detail::remove_cvref_t<Array>>::Elements;
 
 
 /*!
@@ -74,7 +82,7 @@ static constexpr Rank rank = detail::ArrayTraits<detail::remove_cvref_t<Array>>:
 
 template<
     typename Array>
-using OffsetT = detail::remove_cvref_t<typename detail::ArrayTraits<Array>::Offset>;
+using OffsetT = typename detail::ArrayTraits<detail::remove_cvref_t<Array>>::Offset;
 
 
 /*!
@@ -86,17 +94,17 @@ using OffsetT = detail::remove_cvref_t<typename detail::ArrayTraits<Array>::Offs
 */
 template<
     typename Array>
-using ShapeT = detail::remove_cvref_t<typename detail::ArrayTraits<Array>::Shape>;
+using ShapeT = typename detail::ArrayTraits<detail::remove_cvref_t<Array>>::Shape;
 
 
 template<
     typename Array>
-using SlicesT = detail::remove_cvref_t<typename detail::ArrayTraits<Array>::Slices>;
+using SlicesT = typename detail::ArrayTraits<detail::remove_cvref_t<Array>>::Slices;
 
 
 template<
     typename Array>
-using SliceT = detail::remove_cvref_t<typename detail::ArrayTraits<Array>::Slice>;
+using SliceT = typename detail::ArrayTraits<detail::remove_cvref_t<Array>>::Slice;
 
 
 /*!
@@ -114,7 +122,9 @@ template<
     typename Array,
     typename Element=ElementT<Array>,
     Rank rank=rank<Array>>
-using DataT = detail::remove_cvref_t<typename detail::ArrayTraits<Array>::template Data<Element, rank>>;
+using DataT =
+    typename detail::ArrayTraits<detail::remove_cvref_t<Array>>::template
+        Data<detail::remove_cvref_t<Element>, rank>;
 
 
 /*!
@@ -132,9 +142,8 @@ template<
     typename Element=ElementT<Array>,
     Rank rank=rank<Array>>
 using PartitionT =
-    detail::remove_cvref_t<
-            typename detail::ArrayTraits<Array>::template Partition<Element, rank>
-        >;
+    typename detail::ArrayTraits<detail::remove_cvref_t<Array>>::template
+        Partition<detail::remove_cvref_t<Element>, rank>;
 
 
 /*!
@@ -152,9 +161,26 @@ template<
     typename Element=ElementT<Array>,
     Rank rank=rank<Array>>
 using PartitionsT =
-    detail::remove_cvref_t<
-            typename detail::ArrayTraits<Array>::template Partitions<Element, rank>
-        >;
+    typename detail::ArrayTraits<detail::remove_cvref_t<Array>>::template
+        Partitions<detail::remove_cvref_t<Element>, rank>;
+
+
+template<
+    typename Array,
+    typename Element=ElementT<Array>,
+    Rank rank=rank<Array>>
+using ComponentT =
+    typename detail::ArrayTraits<detail::remove_cvref_t<Array>>::template
+        Component<detail::remove_cvref_t<Element>, rank>;
+
+
+template<
+    typename Array,
+    typename Element=ElementT<Array>,
+    Rank rank=rank<Array>>
+using ComponentsT =
+    typename detail::ArrayTraits<detail::remove_cvref_t<Array>>::template
+        Components<detail::remove_cvref_t<Element>, rank>;
 
 
 /*!
@@ -172,9 +198,8 @@ template<
     typename Element=ElementT<Array>,
     Rank rank=rank<Array>>
 using PartitionedArrayT =
-    detail::remove_cvref_t<
-            typename detail::ArrayTraits<Array>::template PartitionedArray<Element, rank>
-        >;
+    typename detail::ArrayTraits<detail::remove_cvref_t<Array>>::template
+        PartitionedArray<detail::remove_cvref_t<Element>, rank>;
 
 
 template<

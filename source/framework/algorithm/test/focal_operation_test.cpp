@@ -55,7 +55,7 @@ class Functor
 template<
     typename OutputElement,
     typename... InputElement>
-using DefaultPolicies = lue::policy::DefaultFocalOperationPolicies<
+using DefaultPolicies = lue::policy::DefaultSpatialOperationPolicies<
     lue::policy::AllValuesWithinDomain<InputElement...>,
     lue::policy::OutputElements<OutputElement>,
     lue::policy::InputElements<InputElement...>>;

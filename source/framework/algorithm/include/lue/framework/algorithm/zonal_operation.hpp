@@ -35,7 +35,7 @@ class OverloadPicker
             using ZonesData = DataT<ZonesPartition>;
             using Aggregator = AggregatorT<Functor>;
 
-            lue_assert(zones_partition.is_ready());
+            lue_hpx_assert(zones_partition.is_ready());
 
             return hpx::dataflow(
                 hpx::launch::async,
@@ -119,8 +119,8 @@ class OverloadPicker<
             using ZonesData = DataT<ZonesPartition>;
             using Aggregator = AggregatorT<Functor>;
 
-            lue_assert(input_partition.is_ready());
-            lue_assert(zones_partition.is_ready());
+            lue_hpx_assert(input_partition.is_ready());
+            lue_hpx_assert(zones_partition.is_ready());
 
             return hpx::dataflow(
                 hpx::launch::async,
@@ -141,7 +141,7 @@ class OverloadPicker<
 
                             Count const nr_elements{lue::nr_elements(zones_partition_data)};
 
-                            lue_assert(lue::nr_elements(input_partition_data) == nr_elements);
+                            lue_hpx_assert(lue::nr_elements(input_partition_data) == nr_elements);
 
                             Aggregator result{};
 
@@ -198,7 +198,7 @@ OutputPartition zonal_operation_partition2(
     using ZonesData = DataT<ZonesPartition>;
     using OutputData = DataT<OutputPartition>;
 
-    lue_assert(zones_partition.is_ready());
+    lue_hpx_assert(zones_partition.is_ready());
 
     return hpx::dataflow(
         hpx::launch::async,
@@ -422,7 +422,7 @@ PartitionedArray<OutputElementT<Functor>, rank> zonal_operation(
     using Aggregators = std::vector<hpx::future<Aggregator>>;
 
     Count const nr_partitions{lue::nr_partitions(zones_array)};
-    lue_assert(lue::nr_partitions(input_array) == nr_partitions);
+    lue_hpx_assert(lue::nr_partitions(input_array) == nr_partitions);
 
     Localities<rank> const& localities{zones_array.localities()};
     ZonesPartitions const& zones_partitions{zones_array.partitions()};

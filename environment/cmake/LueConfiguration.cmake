@@ -492,14 +492,14 @@ if(LUE_IMGUI_REQUIRED AND LUE_BUILD_IMGUI)
 
         add_library(imgui STATIC
             # imgui release
-            ${imgui_SOURCE_DIR}/imgui
-            ${imgui_SOURCE_DIR}/imgui_demo
-            ${imgui_SOURCE_DIR}/imgui_draw
-            ${imgui_SOURCE_DIR}/imgui_tables
-            ${imgui_SOURCE_DIR}/imgui_widgets
+            ${imgui_SOURCE_DIR}/imgui.cpp
+            ${imgui_SOURCE_DIR}/imgui_demo.cpp
+            ${imgui_SOURCE_DIR}/imgui_draw.cpp
+            ${imgui_SOURCE_DIR}/imgui_tables.cpp
+            ${imgui_SOURCE_DIR}/imgui_widgets.cpp
 
-            ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3
-            ${imgui_SOURCE_DIR}/backends/imgui_impl_glfw
+            ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
+            ${imgui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
         )
 
         target_include_directories(imgui SYSTEM

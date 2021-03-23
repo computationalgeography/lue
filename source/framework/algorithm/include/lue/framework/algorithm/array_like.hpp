@@ -26,7 +26,7 @@ ArrayPartition<OutputElement, rank> array_like_partition(
     using OutputPartition = ArrayPartition<OutputElement, rank>;
     using OutputData = DataT<OutputPartition>;
 
-    lue_assert(input_partition.is_ready());
+    lue_hpx_assert(input_partition.is_ready());
 
     return hpx::dataflow(
         hpx::launch::async,

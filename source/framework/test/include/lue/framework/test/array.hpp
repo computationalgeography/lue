@@ -86,7 +86,7 @@ namespace lue {
 
             Array array{lue::create_partitioned_array<ElementT<Array>>(array_shape, partition_shape)};
 
-            lue_assert(static_cast<Count>(elements.size()) == array.nr_partitions());
+            lue_hpx_assert(static_cast<Count>(elements.size()) == array.nr_partitions());
 
             {
                 auto elements_it = elements.begin();
@@ -100,6 +100,36 @@ namespace lue {
             }
 
             return array;
+        }
+
+
+        template<
+            typename Array>
+        Array create_component_array(
+            Localities<rank<Array>> const& localities,
+            std::initializer_list<DataT<ComponentT<Array>>> elements)
+        {
+            using Component = ComponentT<Array>;  // HPX component in the array. The elements.
+            using Data = DataT<Component>;  // The type of the objects in the initializer list.
+            using Components = ComponentsT<Array>;  // The type of the collection of components.
+
+            lue_hpx_assert(nr_elements(localities.shape()) == static_cast<Count>(std::size(elements)));
+
+            Components components{localities.shape()};
+
+            {
+                // Fill the array with new components. Each component
+                // is initialized with the data passed into this function.
+
+                auto element_it = elements.begin();
+
+                for(std::size_t idx = 0; idx < std::size(elements); ++idx, ++element_it)
+                {
+                    components[idx] = hpx::new_<Component>(localities[idx], Data{*element_it});
+                }
+            }
+
+            return Array{localities, std::move(components)};
         }
 
     }  // namespace test

@@ -1,6 +1,6 @@
 #pragma once
+#include "lue/framework/core/assert.hpp"
 #include "lue/framework/core/define.hpp"
-#include "lue/assert.hpp"
 #include <hpx/include/compute.hpp>
 
 
@@ -58,7 +58,7 @@ public:
         _index{last}
 
     {
-        lue_assert(first <= last);
+        lue_hpx_assert(first <= last);
     }
 
     TargetIndex operator()()

@@ -177,7 +177,7 @@ Array<hpx::shared_future<DataT<PartitionT<Partitions>>>, rank<Partitions>> parti
             Slice{0, 1}
         }});
 
-    lue_assert(all_are_valid(data));
+    lue_hpx_assert(all_are_valid(data));
 
     return data;
 }

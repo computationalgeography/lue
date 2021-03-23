@@ -59,9 +59,9 @@ public:
 
         using OutputData = DataT<OutputPartition>;
 
-        lue_assert(input_partition1.is_ready());
-        lue_assert(input_partition2.is_ready());
-        lue_assert(input_partition3.is_ready());
+        lue_hpx_assert(input_partition1.is_ready());
+        lue_hpx_assert(input_partition2.is_ready());
+        lue_hpx_assert(input_partition3.is_ready());
 
         return hpx::dataflow(
             hpx::launch::async,
@@ -88,8 +88,8 @@ public:
                         auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
 
                         Count const nr_elements{lue::nr_elements(input_partition_data1)};
-                        lue_assert(lue::nr_elements(input_partition_data2) == nr_elements);
-                        lue_assert(lue::nr_elements(input_partition_data3) == nr_elements);
+                        lue_hpx_assert(lue::nr_elements(input_partition_data2) == nr_elements);
+                        lue_hpx_assert(lue::nr_elements(input_partition_data3) == nr_elements);
 
                         for(Index i = 0; i < nr_elements; ++i)
                         {
@@ -170,8 +170,8 @@ public:
 
         using OutputData = DataT<OutputPartition>;
 
-        lue_assert(input_partition1.is_ready());
-        lue_assert(input_partition2.is_ready());
+        lue_hpx_assert(input_partition1.is_ready());
+        lue_hpx_assert(input_partition2.is_ready());
 
         return hpx::dataflow(
             hpx::launch::async,
@@ -196,7 +196,7 @@ public:
                         auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
 
                         Count const nr_elements{lue::nr_elements(input_partition_data1)};
-                        lue_assert(lue::nr_elements(input_partition_data2) == nr_elements);
+                        lue_hpx_assert(lue::nr_elements(input_partition_data2) == nr_elements);
 
                         if(indp3.is_no_data(input_scalar))
                         {
@@ -283,8 +283,8 @@ public:
 
         using OutputData = DataT<OutputPartition>;
 
-        lue_assert(input_partition1.is_ready());
-        lue_assert(input_partition2.is_ready());
+        lue_hpx_assert(input_partition1.is_ready());
+        lue_hpx_assert(input_partition2.is_ready());
 
         return hpx::dataflow(
             hpx::launch::async,
@@ -309,7 +309,7 @@ public:
                         auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
 
                         Count const nr_elements{lue::nr_elements(input_partition_data1)};
-                        lue_assert(lue::nr_elements(input_partition_data2) == nr_elements);
+                        lue_hpx_assert(lue::nr_elements(input_partition_data2) == nr_elements);
 
                         if(indp2.is_no_data(input_scalar))
                         {
@@ -394,7 +394,7 @@ public:
 
         using OutputData = DataT<OutputPartition>;
 
-        lue_assert(input_partition.is_ready());
+        lue_hpx_assert(input_partition.is_ready());
 
         return hpx::dataflow(
             hpx::launch::async,
@@ -511,10 +511,10 @@ PartitionedArray<OutputElementT<Functor>, rank> ternary_local_operation(
     using OutputPartition = PartitionT<OutputArray>;
     using OutputPartitions = PartitionsT<OutputArray>;
 
-    lue_assert(nr_partitions(input_array1) == nr_partitions(input_array2));
-    lue_assert(nr_partitions(input_array1) == nr_partitions(input_array3));
-    lue_assert(shape_in_partitions(input_array1) == shape_in_partitions(input_array2));
-    lue_assert(shape_in_partitions(input_array1) == shape_in_partitions(input_array3));
+    lue_hpx_assert(nr_partitions(input_array1) == nr_partitions(input_array2));
+    lue_hpx_assert(nr_partitions(input_array1) == nr_partitions(input_array3));
+    lue_hpx_assert(shape_in_partitions(input_array1) == shape_in_partitions(input_array2));
+    lue_hpx_assert(shape_in_partitions(input_array1) == shape_in_partitions(input_array3));
 
     detail::TernaryLocalOperationPartitionAction<
         Policies, InputPartition1, InputPartition2, InputPartition3, OutputPartition, Functor> action;
@@ -577,8 +577,8 @@ PartitionedArray<OutputElementT<Functor>, rank> ternary_local_operation(
     using OutputPartition = PartitionT<OutputArray>;
     using OutputPartitions = PartitionsT<OutputArray>;
 
-    lue_assert(nr_partitions(input_array1) == nr_partitions(input_array2));
-    lue_assert(shape_in_partitions(input_array1) == shape_in_partitions(input_array2));
+    lue_hpx_assert(nr_partitions(input_array1) == nr_partitions(input_array2));
+    lue_hpx_assert(shape_in_partitions(input_array1) == shape_in_partitions(input_array2));
 
     detail::TernaryLocalOperationPartitionAction<
         Policies, InputPartition1, InputPartition2, InputElement3, OutputPartition, Functor> action;
@@ -640,8 +640,8 @@ PartitionedArray<OutputElementT<Functor>, rank> ternary_local_operation(
     using OutputPartition = PartitionT<OutputArray>;
     using OutputPartitions = PartitionsT<OutputArray>;
 
-    lue_assert(nr_partitions(input_array1) == nr_partitions(input_array2));
-    lue_assert(shape_in_partitions(input_array1) == shape_in_partitions(input_array2));
+    lue_hpx_assert(nr_partitions(input_array1) == nr_partitions(input_array2));
+    lue_hpx_assert(shape_in_partitions(input_array1) == shape_in_partitions(input_array2));
 
     detail::TernaryLocalOperationPartitionAction<
         Policies, InputPartition1, InputElement2, InputPartition2, OutputPartition, Functor> action;

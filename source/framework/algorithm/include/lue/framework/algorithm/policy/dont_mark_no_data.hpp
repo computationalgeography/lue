@@ -53,6 +53,8 @@ class TypeTraits<
             typename E_>
         using Policy = DontMarkNoData<E_>;
 
+        using InputNoDataPolicy = SkipNoData<Element>;
+
 };
 
 }  // namespace detail

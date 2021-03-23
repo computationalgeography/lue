@@ -41,7 +41,7 @@ hpx::future<OutputElement> unary_aggregate_operation_partition(
 
                     // The logic below assumes that, after iterating over
                     // the elements, the index can become nr_elements + 1
-                    lue_assert(nr_elements < std::numeric_limits<Count>::max());
+                    lue_hpx_assert(nr_elements < std::numeric_limits<Count>::max());
 
                     // Initialize result for the case that no result
                     // can be set, and no-data is not handled by the
@@ -77,12 +77,12 @@ hpx::future<OutputElement> unary_aggregate_operation_partition(
                                         }
                                     }
 
-                                    lue_assert(idx == nr_elements);
+                                    lue_hpx_assert(idx == nr_elements);
                                 }
                             }
                         }
 
-                        lue_assert(idx == nr_elements || idx == nr_elements + 1);
+                        lue_hpx_assert(idx == nr_elements || idx == nr_elements + 1);
 
                         if(idx == nr_elements)
                         {
@@ -244,11 +244,11 @@ hpx::future<OutputElementT<Functor>> unary_aggregate_operation(
                                 }
                             }
 
-                            lue_assert(idx == nr_results);
+                            lue_hpx_assert(idx == nr_results);
                         }
                     }
 
-                    lue_assert(idx == nr_results || idx == nr_results + 1);
+                    lue_hpx_assert(idx == nr_results || idx == nr_results + 1);
 
                     if(idx == nr_results)
                     {

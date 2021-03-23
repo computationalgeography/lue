@@ -43,10 +43,10 @@ void write_into_partitions(
     auto& property_set{phenomenon.property_sets()[property_set_name]};
 
     // Open property
-    lue_assert(property_set.properties().contains(property_name));
-    lue_assert(property_set.properties().shape_per_object(property_name) ==
+    lue_hpx_assert(property_set.properties().contains(property_name));
+    lue_hpx_assert(property_set.properties().shape_per_object(property_name) ==
         data_model::ShapePerObject::different);
-    lue_assert(property_set.properties().value_variability(property_name) ==
+    lue_hpx_assert(property_set.properties().value_variability(property_name) ==
         data_model::ValueVariability::constant);
     using Properties = data_model::different_shape::Properties;
     auto& property{property_set.properties().collection<Properties>()[property_name]};

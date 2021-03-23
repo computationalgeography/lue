@@ -34,12 +34,12 @@ Shape hyperslab_to_shape(
     hdf5::Hyperslab const& hyperslab)
 {
     // Return the shape represented by the hyperslab passed in
-    lue_assert(std::all_of(hyperslab.stride().begin(), hyperslab.stride().end(),
+    lue_hpx_assert(std::all_of(hyperslab.stride().begin(), hyperslab.stride().end(),
         [](auto const s) { return s == 1; }));
     auto const& count{hyperslab.count()};
     Shape shape;
 
-    lue_assert(count.size() == shape.size());
+    lue_hpx_assert(count.size() == shape.size());
     std::copy(count.begin(), count.end(), shape.begin());
 
     return shape;
@@ -108,25 +108,6 @@ hdf5::Hyperslab hyperslab(
     // for performing I/O to the corresponding HDF5 dataset.
     return hyperslab(
         partition_server.offset(), partition_server.shape(), location_in_time_idx, time_step_idx);
-}
-
-
-template<
-    typename ComponentClient>
-std::shared_ptr<typename ComponentClient::Server> ready_component_ptr(
-    ComponentClient& client)
-{
-    // Only call this function on the same locality as the component
-    // Only call this function when the client is ready
-    lue_assert(client.is_ready());
-
-    using ComponentServer = typename ComponentClient::Server;
-
-    hpx::future<std::shared_ptr<ComponentServer>> server_ptr_ftr{
-        hpx::get_ptr<ComponentServer>(client.get_id())};
-    lue_assert(server_ptr_ftr.is_ready());
-
-    return server_ptr_ftr.get();
 }
 
 
@@ -213,7 +194,7 @@ std::map<hpx::id_type, std::vector<PartitionT<PartitionedArray<Element, rank>>>>
         for(Index p = 0; p < nr_partitions; ++p)
         {
             // TODO
-            // lue_assert(result[localities[p]].capacity() > result[localities[p]].size());
+            // lue_hpx_assert(result[localities[p]].capacity() > result[localities[p]].size());
             result[localities[p]].push_back(partitions[p]);
         }
     }

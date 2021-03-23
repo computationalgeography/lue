@@ -39,7 +39,7 @@ template<
 
                     // If stride equals nr_cols, then this partition's extent
                     // equals the arrays extent (along the second dimension)
-                    lue_assert(stride >= std::get<1>(shape));
+                    lue_hpx_assert(stride >= std::get<1>(shape));
 
                     Data data{shape};
 
@@ -178,7 +178,7 @@ template<
 
                         InputPartition const& input_partition = partitions(idx0, idx1);
 
-                        lue_assert(input_partition.is_ready());
+                        lue_hpx_assert(input_partition.is_ready());
 
                         range_partitions_span(idx0, idx1) = hpx::async(
                             action, localities(idx0, idx1), input_partition, start_value, stride);

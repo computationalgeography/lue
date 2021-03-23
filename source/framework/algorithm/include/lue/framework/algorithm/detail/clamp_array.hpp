@@ -148,7 +148,7 @@ namespace lue::detail {
             // We are assuming here that only the last partition needs to
             // be resized. All other partitions must be positioned within
             // the array's extent.
-            lue_assert(excess_cells < max_partition_shape[d]);
+            lue_hpx_assert(excess_cells < max_partition_shape[d]);
 
             if(excess_cells > 0)
             {
@@ -203,8 +203,8 @@ namespace lue::detail {
             _new_size{new_size}
 
         {
-            lue_assert(_dimension_idx >= 0);
-            lue_assert(_dimension_idx < static_cast<Index>(rank<Partitions>));
+            lue_hpx_assert(_dimension_idx >= 0);
+            lue_hpx_assert(_dimension_idx < static_cast<Index>(rank<Partitions>));
         }
 
         void operator()()
@@ -313,7 +313,7 @@ namespace lue::detail {
             // We are assuming here that only the last partition needs to
             // be resized. All other partitions must be positioned within
             // the array's extent.
-            lue_assert(excess_cells < max_partition_shape[d]);
+            lue_hpx_assert(excess_cells < max_partition_shape[d]);
 
             if(excess_cells > 0)
             {

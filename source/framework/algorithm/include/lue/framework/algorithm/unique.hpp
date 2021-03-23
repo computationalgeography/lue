@@ -51,11 +51,11 @@ PartitionT<InputPartition, ElementT<InputPartition>, 1> unique_partition(
                     }
 
                     Count const nr_unique_values = static_cast<Count>(unique_values.size());
-                    lue_assert(nr_unique_values <= input_partition_data.nr_elements());
+                    lue_hpx_assert(nr_unique_values <= input_partition_data.nr_elements());
 
                     // Copy unique values from set into output array
                     OutputData output_data{OutputShape{{nr_unique_values}}};
-                    lue_assert(output_data.nr_elements() == nr_unique_values);
+                    lue_hpx_assert(output_data.nr_elements() == nr_unique_values);
                     std::copy(
                         unique_values.begin(), unique_values.end(),
                         output_data.begin());

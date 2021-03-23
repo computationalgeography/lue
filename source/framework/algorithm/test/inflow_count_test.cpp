@@ -8,59 +8,59 @@
 
 namespace {
 
-using FlowDirectionElement = std::uint32_t;
-using CountElement = std::int32_t;
-std::size_t const rank = 2;
+    using FlowDirectionElement = std::uint32_t;
+    using CountElement = std::int32_t;
+    std::size_t const rank = 2;
 
-using FlowDirection = lue::PartitionedArray<FlowDirectionElement, rank>;
-using InflowCount = lue::PartitionedArray<CountElement, rank>;
-using Shape = lue::ShapeT<FlowDirection>;
+    using FlowDirection = lue::PartitionedArray<FlowDirectionElement, rank>;
+    using InflowCount = lue::PartitionedArray<CountElement, rank>;
+    using Shape = lue::ShapeT<FlowDirection>;
 
-Shape const array_shape{{3, 3}};
-Shape const partition_shape{{3, 3}};
+    Shape const array_shape{{3, 3}};
+    Shape const partition_shape{{3, 3}};
 
-auto const n{lue::north<FlowDirectionElement>};
-auto const ne{lue::north_east<FlowDirectionElement>};
-auto const e{lue::east<FlowDirectionElement>};
-auto const se{lue::south_east<FlowDirectionElement>};
-auto const s{lue::south<FlowDirectionElement>};
-auto const sw{lue::south_west<FlowDirectionElement>};
-auto const w{lue::west<FlowDirectionElement>};
-auto const nw{lue::north_west<FlowDirectionElement>};
-auto const p{lue::sink<FlowDirectionElement>};
-auto const nd{lue::no_data<FlowDirectionElement>};
-
-
-template<
-    typename Policies,
-    typename FlowDirectionArray,
-    typename InflowCountArray>
-void test_inflow_count(
-    Policies const& policies,
-    FlowDirectionArray const& flow_direction,
-    InflowCountArray const& inflow_count_we_want)
-{
-    using CountElement = lue::ElementT<InflowCountArray>;
-
-    InflowCount inflow_count_we_got = lue::inflow_count<Policies, CountElement>(policies, flow_direction);
-
-    lue::test::check_arrays_are_equal(inflow_count_we_got, inflow_count_we_want);
-}
+    auto const n{lue::north<FlowDirectionElement>};
+    auto const ne{lue::north_east<FlowDirectionElement>};
+    auto const e{lue::east<FlowDirectionElement>};
+    auto const se{lue::south_east<FlowDirectionElement>};
+    auto const s{lue::south<FlowDirectionElement>};
+    auto const sw{lue::south_west<FlowDirectionElement>};
+    auto const w{lue::west<FlowDirectionElement>};
+    auto const nw{lue::north_west<FlowDirectionElement>};
+    auto const p{lue::sink<FlowDirectionElement>};
+    auto const nd{lue::no_data<FlowDirectionElement>};
 
 
-template<
-    typename FlowDirectionArray,
-    typename InflowCountArray>
-void test_inflow_count(
-    FlowDirectionArray const& flow_direction,
-    InflowCountArray const& inflow_count_we_want)
-{
-    using CountElement = lue::ElementT<InflowCountArray>;
-    using FlowDirectionElement = lue::ElementT<FlowDirectionArray>;
-    using Policies = lue::policy::inflow_count::DefaultPolicies<CountElement, FlowDirectionElement>;
+    template<
+        typename Policies,
+        typename FlowDirectionArray,
+        typename InflowCountArray>
+    void test_inflow_count(
+        Policies const& policies,
+        FlowDirectionArray const& flow_direction,
+        InflowCountArray const& inflow_count_we_want)
+    {
+        using CountElement = lue::ElementT<InflowCountArray>;
 
-    test_inflow_count(Policies{}, flow_direction, inflow_count_we_want);
-}
+        InflowCount inflow_count_we_got = lue::inflow_count<Policies, CountElement>(policies, flow_direction);
+
+        lue::test::check_arrays_are_equal(inflow_count_we_got, inflow_count_we_want);
+    }
+
+
+    template<
+        typename FlowDirectionArray,
+        typename InflowCountArray>
+    void test_inflow_count(
+        FlowDirectionArray const& flow_direction,
+        InflowCountArray const& inflow_count_we_want)
+    {
+        using CountElement = lue::ElementT<InflowCountArray>;
+        using FlowDirectionElement = lue::ElementT<FlowDirectionArray>;
+        using Policies = lue::policy::inflow_count::DefaultPolicies<CountElement, FlowDirectionElement>;
+
+        test_inflow_count(Policies{}, flow_direction, inflow_count_we_want);
+    }
 
 }  // Anonymous namespace
 
@@ -458,7 +458,9 @@ BOOST_AUTO_TEST_CASE(all_no_data)
     using InflowCountPolicies =
         lue::policy::OutputPolicies<lue::policy::MarkNoDataByValue<CountElement>>;
     using FlowDirectionPolicies =
-        lue::policy::InputPolicies<lue::policy::DetectNoDataByValue<FlowDirectionElement>>;
+        lue::policy::SpatialOperationInputPolicies<
+            lue::policy::DetectNoDataByValue<FlowDirectionElement>,
+            lue::policy::FlowDirectionHalo<FlowDirectionElement>>;
     using Policies = lue::policy::Policies<
         DomainPolicy,
         lue::policy::OutputsPolicies<InflowCountPolicies>,
@@ -494,7 +496,9 @@ BOOST_AUTO_TEST_CASE(no_data)
     using InflowCountPolicies =
         lue::policy::OutputPolicies<lue::policy::MarkNoDataByValue<CountElement>>;
     using FlowDirectionPolicies =
-        lue::policy::InputPolicies<lue::policy::DetectNoDataByValue<FlowDirectionElement>>;
+        lue::policy::SpatialOperationInputPolicies<
+            lue::policy::DetectNoDataByValue<FlowDirectionElement>,
+            lue::policy::FlowDirectionHalo<FlowDirectionElement>>;
     using Policies = lue::policy::Policies<
         DomainPolicy,
         lue::policy::OutputsPolicies<InflowCountPolicies>,
@@ -546,7 +550,9 @@ BOOST_AUTO_TEST_CASE(merging_inter_partition_streams)
     using InflowCountPolicies =
         lue::policy::OutputPolicies<lue::policy::MarkNoDataByValue<CountElement>>;
     using FlowDirectionPolicies =
-        lue::policy::InputPolicies<lue::policy::DetectNoDataByValue<FlowDirectionElement>>;
+        lue::policy::SpatialOperationInputPolicies<
+            lue::policy::DetectNoDataByValue<FlowDirectionElement>,
+            lue::policy::FlowDirectionHalo<FlowDirectionElement>>;
     using Policies = lue::policy::Policies<
         DomainPolicy,
         lue::policy::OutputsPolicies<InflowCountPolicies>,

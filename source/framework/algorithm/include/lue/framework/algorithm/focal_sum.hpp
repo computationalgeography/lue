@@ -35,8 +35,8 @@ public:
 
         OutputElement sum{0};
 
-        lue_assert(window.extent(0) == kernel.size());
-        lue_assert(window.extent(1) == kernel.size());
+        lue_hpx_assert(window.extent(0) == kernel.size());
+        lue_hpx_assert(window.extent(1) == kernel.size());
 
         for(Index r = 0; r < window.extent(0); ++r) {
             for(Index c = 0; c < window.extent(1); ++c)
@@ -73,7 +73,7 @@ namespace policy::focal_sum {
     template<
         typename OutputElement,
         typename InputElement>
-    using DefaultPolicies = policy::DefaultFocalOperationPolicies<
+    using DefaultPolicies = policy::DefaultSpatialOperationPolicies<
         AllValuesWithinDomain<InputElement>,
         OutputElements<OutputElement>,
         InputElements<InputElement>>;

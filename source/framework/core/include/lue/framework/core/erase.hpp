@@ -1,7 +1,7 @@
 #pragma once
+#include "lue/framework/core/assert.hpp"
 #include "lue/framework/core/define.hpp"
 #include "lue/framework/core/shape.hpp"
-#include "lue/assert.hpp"
 #include <algorithm>
 
 
@@ -18,10 +18,10 @@ Shape<Index, rank> erase(
     Index const hyperslab_begin_idx,
     Index const hyperslab_end_idx)
 {
-    lue_assert(dimension_idx < rank);
-    lue_assert(std::size(shape) == rank);
-    lue_assert(hyperslab_begin_idx <= hyperslab_end_idx);
-    lue_assert(hyperslab_end_idx <= shape[dimension_idx]);
+    lue_hpx_assert(dimension_idx < rank);
+    lue_hpx_assert(std::size(shape) == rank);
+    lue_hpx_assert(hyperslab_begin_idx <= hyperslab_end_idx);
+    lue_hpx_assert(hyperslab_end_idx <= shape[dimension_idx]);
 
     if(hyperslab_begin_idx == hyperslab_end_idx) {
         return shape;  // Nothing to do
@@ -32,12 +32,12 @@ Shape<Index, rank> erase(
     Count const offset{
         hyperslab_begin_idx *
             std::accumulate(shape.begin() + dimension_idx + 1, shape.end(), 1, std::multiplies<Count>{})};
-    lue_assert(offset >= 0);
+    lue_hpx_assert(offset >= 0);
 
     Count const count{
         (hyperslab_end_idx - hyperslab_begin_idx) *
             std::accumulate(shape.begin() + dimension_idx + 1, shape.end(), 1, std::multiplies<Count>{})};
-    lue_assert(count > 0);
+    lue_hpx_assert(count > 0);
 
     Count const stride{
         std::accumulate(shape.begin() + dimension_idx, shape.end(), 1, std::multiplies<Count>{})};

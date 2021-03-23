@@ -102,11 +102,11 @@ Array<Element, rank<Shape>> copy_to_array(
 
         for(Count c = 0; c < windows.shape()[1]; ++c)
         {
-            lue_assert(windows(r, c).extent(1) > 0);
+            lue_hpx_assert(windows(r, c).extent(1) > 0);
             count += windows(r, c).extent(1);
         }
 
-        lue_assert(count == std::get<1>(kernel_shape));
+        lue_hpx_assert(count == std::get<1>(kernel_shape));
     }
 
     // Check number of rows in each column of partitions
@@ -116,11 +116,11 @@ Array<Element, rank<Shape>> copy_to_array(
 
         for(Count r = 0; r < windows.shape()[0]; ++r)
         {
-            lue_assert(windows(r, c).extent(0) > 0);
+            lue_hpx_assert(windows(r, c).extent(0) > 0);
             count += windows(r, c).extent(0);
         }
 
-        lue_assert(count == std::get<0>(kernel_shape));
+        lue_hpx_assert(count == std::get<0>(kernel_shape));
     }
 
     // Within a row of partitions, the number of rows per
@@ -131,7 +131,7 @@ Array<Element, rank<Shape>> copy_to_array(
 
         for(Count c = 0; c < windows.shape()[1]; ++c)
         {
-            lue_assert(windows(r, c).extent(0) == nr_rows);
+            lue_hpx_assert(windows(r, c).extent(0) == nr_rows);
         }
     }
 
@@ -141,7 +141,7 @@ Array<Element, rank<Shape>> copy_to_array(
         Count const nr_cols = windows(0, c).extent(1);
 
         for(Count r = 0; r < windows.shape()[0]; ++r) {
-            lue_assert(windows(r, c).extent(1) == nr_cols);
+            lue_hpx_assert(windows(r, c).extent(1) == nr_cols);
         }
     }
 
@@ -163,14 +163,14 @@ Array<Element, rank<Shape>> copy_to_array(
         {
             auto const& window = windows(rw, cw);
 
-            lue_assert(window.extent(0) <= std::get<0>(kernel_shape));
-            lue_assert(window.extent(1) <= std::get<1>(kernel_shape));
+            lue_hpx_assert(window.extent(0) <= std::get<0>(kernel_shape));
+            lue_hpx_assert(window.extent(1) <= std::get<1>(kernel_shape));
 
             for(Index r = 0; r < window.extent(0); ++r, ++rk) {
                 for(Index c = 0; c < window.extent(1); ++c, ++ck)
                 {
-                    lue_assert(rk < std::get<0>(kernel_shape));
-                    lue_assert(ck < std::get<1>(kernel_shape));
+                    lue_hpx_assert(rk < std::get<0>(kernel_shape));
+                    lue_hpx_assert(ck < std::get<1>(kernel_shape));
 
                     array(rk, ck) = window(r, c);
                 }
@@ -318,7 +318,7 @@ class WrappedArrayPartitions
 
         {
             read_data();
-            lue_assert(all_are_valid(_data));
+            lue_hpx_assert(all_are_valid(_data));
         }
 
         InputPartitions const& partitions() const
@@ -345,11 +345,11 @@ class WrappedArrayPartitions
 
             // We are called from a function that waits on all partitions to
             // become ready
-            lue_assert(all_are_ready(_partitions));
+            lue_hpx_assert(all_are_ready(_partitions));
 
             Radius const kernel_radius = _kernel_radius;
 
-            lue_assert(_partitions.nr_elements() == nr_neighbors<InputPartition>() + 1);
+            lue_hpx_assert(_partitions.nr_elements() == nr_neighbors<InputPartition>() + 1);
 
             static_assert(rank<InputPartition> == 2);
 
@@ -553,7 +553,7 @@ class WrappedArrayPartitions
 
                 ));
 
-            lue_assert(all_are_valid(data));
+            lue_hpx_assert(all_are_valid(data));
 
             return data;
         }
@@ -666,7 +666,7 @@ Array<ArrayPartitionData<Element, rank>, rank>  partition_data(
 
     PartitionData partition_data{partition_data_futures.shape()};
 
-    lue_assert(all_are_valid(partition_data_futures));
+    lue_hpx_assert(all_are_valid(partition_data_futures));
 
     std::transform(
             partition_data_futures.begin(), partition_data_futures.end(),
@@ -689,7 +689,7 @@ template<
 hpx::future<Array<InputData<InputPartitions>, rank<InputData<InputPartitions>>>> get_partition_data(
     WrappedArrayPartitions<InputPartitions> const& input_partitions)
 {
-    lue_assert(all_are_valid(input_partitions.data()));
+    lue_hpx_assert(all_are_valid(input_partitions.data()));
 
     Rank const rank = lue::rank<InputData<InputPartitions>>;
 
@@ -721,7 +721,7 @@ hpx::future<Array<InputData<InputPartitions>, rank<InputData<InputPartitions>>>>
 
                     std::copy(partition_data_futures.begin(), partition_data_futures.end(), result.begin());
 
-                    lue_assert(all_are_ready(result));
+                    lue_hpx_assert(all_are_ready(result));
 
                     return partition_data(result);
                 }
@@ -885,9 +885,6 @@ OutputPartition focal_operation_partition(
     using OutputData = DataT<OutputPartition>;
     using Offset = OffsetT<OutputPartition>;
 
-//return OutputPartition{hpx::find_here(), Offset{0, 0}, ShapeT<OutputPartition>{10, 10}};
-       //  OutputData{first_focal_input_partition.shape().get()}};
-
     // For each set of input partitions, the center partition
     std::tuple<PartitionT<InputPartitions>...> focal_input_partitions{
         meh::input_partition(input_partitions, 1, 1)...};
@@ -1046,31 +1043,31 @@ OutputPartition focal_operation_partition(
                                 {
                                     // NW partition view
                                     slices(0, 0) = {Slice{rnwb, rnwe}, Slice{cnwb, cnwe}};
-                                    lue_assert(extent(slices(0, 0)[0]) > 0);
-                                    lue_assert(extent(slices(0, 0)[1]) > 0);
-                                    lue_assert(extent(slices(0, 0)[0]) <= kernel.radius());
-                                    lue_assert(extent(slices(0, 0)[1]) <= kernel.radius());
+                                    lue_hpx_assert(extent(slices(0, 0)[0]) > 0);
+                                    lue_hpx_assert(extent(slices(0, 0)[1]) > 0);
+                                    lue_hpx_assert(extent(slices(0, 0)[0]) <= kernel.radius());
+                                    lue_hpx_assert(extent(slices(0, 0)[1]) <= kernel.radius());
 
                                     // NE partition view
                                     slices(0, 1) = {Slice{rneb, rnee}, Slice{cneb, cnee}};
-                                    lue_assert(extent(slices(0, 1)[0]) > 0);
-                                    lue_assert(extent(slices(0, 1)[1]) > 0);
-                                    lue_assert(extent(slices(0, 1)[0]) <= kernel.radius());
-                                    lue_assert(extent(slices(0, 1)[1]) < kernel.size());
+                                    lue_hpx_assert(extent(slices(0, 1)[0]) > 0);
+                                    lue_hpx_assert(extent(slices(0, 1)[1]) > 0);
+                                    lue_hpx_assert(extent(slices(0, 1)[0]) <= kernel.radius());
+                                    lue_hpx_assert(extent(slices(0, 1)[1]) < kernel.size());
 
                                     // SW partition view
                                     slices(1, 0) = {Slice{rswb, rswe}, Slice{cswb, cswe}};
-                                    lue_assert(extent(slices(1, 0)[0]) > 0);
-                                    lue_assert(extent(slices(1, 0)[1]) > 0);
-                                    lue_assert(extent(slices(1, 0)[0]) < kernel.size());
-                                    lue_assert(extent(slices(1, 0)[1]) <= kernel.radius());
+                                    lue_hpx_assert(extent(slices(1, 0)[0]) > 0);
+                                    lue_hpx_assert(extent(slices(1, 0)[1]) > 0);
+                                    lue_hpx_assert(extent(slices(1, 0)[0]) < kernel.size());
+                                    lue_hpx_assert(extent(slices(1, 0)[1]) <= kernel.radius());
 
                                     // SE partition view
                                     slices(1, 1) = {Slice{rseb, rsee}, Slice{cseb, csee}};
-                                    lue_assert(extent(slices(1, 1)[0]) > 0);
-                                    lue_assert(extent(slices(1, 1)[1]) > 0);
-                                    lue_assert(extent(slices(1, 1)[0]) < kernel.size());
-                                    lue_assert(extent(slices(1, 1)[1]) < kernel.size());
+                                    lue_hpx_assert(extent(slices(1, 1)[0]) > 0);
+                                    lue_hpx_assert(extent(slices(1, 1)[1]) > 0);
+                                    lue_hpx_assert(extent(slices(1, 1)[0]) < kernel.size());
+                                    lue_hpx_assert(extent(slices(1, 1)[1]) < kernel.size());
 
                                     output_partition_data(rf, cf) = detail::border(
                                         functor, kernel,
@@ -1114,31 +1111,31 @@ OutputPartition focal_operation_partition(
                                 {
                                     // NW partition view
                                     slices(0, 0) = {Slice{rnwb, rnwe}, Slice{cnwb, cnwe}};
-                                    lue_assert(extent(slices(0, 0)[0]) > 0);
-                                    lue_assert(extent(slices(0, 0)[1]) > 0);
-                                    lue_assert(extent(slices(0, 0)[0]) <= kernel.radius());
-                                    lue_assert(extent(slices(0, 0)[1]) < kernel.size());
+                                    lue_hpx_assert(extent(slices(0, 0)[0]) > 0);
+                                    lue_hpx_assert(extent(slices(0, 0)[1]) > 0);
+                                    lue_hpx_assert(extent(slices(0, 0)[0]) <= kernel.radius());
+                                    lue_hpx_assert(extent(slices(0, 0)[1]) < kernel.size());
 
                                     // NE partition view
                                     slices(0, 1) = {Slice{rneb, rnee}, Slice{cneb, cnee}};
-                                    lue_assert(extent(slices(0, 1)[0]) > 0);
-                                    lue_assert(extent(slices(0, 1)[1]) > 0);
-                                    lue_assert(extent(slices(0, 1)[0]) <= kernel.radius());
-                                    lue_assert(extent(slices(0, 1)[1]) <= kernel.radius());
+                                    lue_hpx_assert(extent(slices(0, 1)[0]) > 0);
+                                    lue_hpx_assert(extent(slices(0, 1)[1]) > 0);
+                                    lue_hpx_assert(extent(slices(0, 1)[0]) <= kernel.radius());
+                                    lue_hpx_assert(extent(slices(0, 1)[1]) <= kernel.radius());
 
                                     // SW partition view
                                     slices(1, 0) = {Slice{rswb, rswe}, Slice{cswb, cswe}};
-                                    lue_assert(extent(slices(1, 0)[0]) > 0);
-                                    lue_assert(extent(slices(1, 0)[1]) > 0);
-                                    lue_assert(extent(slices(1, 0)[0]) < kernel.size());
-                                    lue_assert(extent(slices(1, 0)[1]) < kernel.size());
+                                    lue_hpx_assert(extent(slices(1, 0)[0]) > 0);
+                                    lue_hpx_assert(extent(slices(1, 0)[1]) > 0);
+                                    lue_hpx_assert(extent(slices(1, 0)[0]) < kernel.size());
+                                    lue_hpx_assert(extent(slices(1, 0)[1]) < kernel.size());
 
                                     // SE partition view
                                     slices(1, 1) = {Slice{rseb, rsee}, Slice{cseb, csee}};
-                                    lue_assert(extent(slices(1, 1)[0]) > 0);
-                                    lue_assert(extent(slices(1, 1)[1]) > 0);
-                                    lue_assert(extent(slices(1, 1)[0]) < kernel.size());
-                                    lue_assert(extent(slices(1, 1)[1]) <= kernel.radius());
+                                    lue_hpx_assert(extent(slices(1, 1)[0]) > 0);
+                                    lue_hpx_assert(extent(slices(1, 1)[1]) > 0);
+                                    lue_hpx_assert(extent(slices(1, 1)[0]) < kernel.size());
+                                    lue_hpx_assert(extent(slices(1, 1)[1]) <= kernel.radius());
 
                                     output_partition_data(rf, cf) = detail::border(
                                         functor, kernel,
@@ -1184,30 +1181,30 @@ OutputPartition focal_operation_partition(
 
                                    // NW partition view
                                    slices(0, 0) = {Slice{rnwb, rnwe}, Slice{cnwb, cnwe}};
-                                   lue_assert(extent(slices(0, 0)[0]) > 0);
-                                   lue_assert(extent(slices(0, 0)[1]) > 0);
-                                   lue_assert(extent(slices(0, 0)[0]) < kernel.size());
-                                   lue_assert(extent(slices(0, 0)[1]) <= kernel.radius());
+                                   lue_hpx_assert(extent(slices(0, 0)[0]) > 0);
+                                   lue_hpx_assert(extent(slices(0, 0)[1]) > 0);
+                                   lue_hpx_assert(extent(slices(0, 0)[0]) < kernel.size());
+                                   lue_hpx_assert(extent(slices(0, 0)[1]) <= kernel.radius());
 
                                    // NE partition view
                                    slices(0, 1) = {Slice{rneb, rnee}, Slice{cneb, cnee}};
-                                   lue_assert(extent(slices(0, 1)[0]) > 0);
-                                   lue_assert(extent(slices(0, 1)[1]) > 0);
-                                   lue_assert(extent(slices(0, 1)[0]) < kernel.size());
-                                   lue_assert(extent(slices(0, 1)[1]) < kernel.size());
+                                   lue_hpx_assert(extent(slices(0, 1)[0]) > 0);
+                                   lue_hpx_assert(extent(slices(0, 1)[1]) > 0);
+                                   lue_hpx_assert(extent(slices(0, 1)[0]) < kernel.size());
+                                   lue_hpx_assert(extent(slices(0, 1)[1]) < kernel.size());
 
                                    // SW partition view
                                    slices(1, 0) = {Slice{rswb, rswe}, Slice{cswb, cswe}};
-                                   lue_assert(extent(slices(1, 0)[0]) > 0);
-                                   lue_assert(extent(slices(1, 0)[1]) > 0);
-                                   lue_assert(extent(slices(1, 0)[0]) <= kernel.radius());
-                                   lue_assert(extent(slices(1, 0)[1]) <= kernel.radius());
+                                   lue_hpx_assert(extent(slices(1, 0)[0]) > 0);
+                                   lue_hpx_assert(extent(slices(1, 0)[1]) > 0);
+                                   lue_hpx_assert(extent(slices(1, 0)[0]) <= kernel.radius());
+                                   lue_hpx_assert(extent(slices(1, 0)[1]) <= kernel.radius());
 
                                    slices(1, 1) = {Slice{rseb, rsee}, Slice{cseb, csee}};
-                                   lue_assert(extent(slices(1, 1)[0]) > 0);
-                                   lue_assert(extent(slices(1, 1)[1]) > 0);
-                                   lue_assert(extent(slices(1, 1)[0]) <= kernel.radius());
-                                   lue_assert(extent(slices(1, 1)[1]) < kernel.size());
+                                   lue_hpx_assert(extent(slices(1, 1)[0]) > 0);
+                                   lue_hpx_assert(extent(slices(1, 1)[1]) > 0);
+                                   lue_hpx_assert(extent(slices(1, 1)[0]) <= kernel.radius());
+                                   lue_hpx_assert(extent(slices(1, 1)[1]) < kernel.size());
 
                                    output_partition_data(rf, cf) = detail::border(
                                        functor, kernel,
@@ -1252,31 +1249,31 @@ OutputPartition focal_operation_partition(
                                 {
                                     // NW partition view
                                     slices(0, 0) = {Slice{rnwb, rnwe}, Slice{cnwb, cnwe}};
-                                    lue_assert(extent(slices(0, 0)[0]) > 0);
-                                    lue_assert(extent(slices(0, 0)[1]) > 0);
-                                    lue_assert(extent(slices(0, 0)[0]) < kernel.size());
-                                    lue_assert(extent(slices(0, 0)[1]) < kernel.size());
+                                    lue_hpx_assert(extent(slices(0, 0)[0]) > 0);
+                                    lue_hpx_assert(extent(slices(0, 0)[1]) > 0);
+                                    lue_hpx_assert(extent(slices(0, 0)[0]) < kernel.size());
+                                    lue_hpx_assert(extent(slices(0, 0)[1]) < kernel.size());
 
                                     // NE partition view
                                     slices(0, 1) = {Slice{rneb, rnee}, Slice{cneb, cnee}};
-                                    lue_assert(extent(slices(0, 1)[0]) > 0);
-                                    lue_assert(extent(slices(0, 1)[1]) > 0);
-                                    lue_assert(extent(slices(0, 1)[0]) < kernel.size());
-                                    lue_assert(extent(slices(0, 1)[1]) <= kernel.radius());
+                                    lue_hpx_assert(extent(slices(0, 1)[0]) > 0);
+                                    lue_hpx_assert(extent(slices(0, 1)[1]) > 0);
+                                    lue_hpx_assert(extent(slices(0, 1)[0]) < kernel.size());
+                                    lue_hpx_assert(extent(slices(0, 1)[1]) <= kernel.radius());
 
                                     // SW partition view
                                     slices(1, 0) = {Slice{rswb, rswe}, Slice{cswb, cswe}};
-                                    lue_assert(extent(slices(1, 0)[0]) > 0);
-                                    lue_assert(extent(slices(1, 0)[1]) > 0);
-                                    lue_assert(extent(slices(1, 0)[0]) <= kernel.radius());
-                                    lue_assert(extent(slices(1, 0)[1]) < kernel.size());
+                                    lue_hpx_assert(extent(slices(1, 0)[0]) > 0);
+                                    lue_hpx_assert(extent(slices(1, 0)[1]) > 0);
+                                    lue_hpx_assert(extent(slices(1, 0)[0]) <= kernel.radius());
+                                    lue_hpx_assert(extent(slices(1, 0)[1]) < kernel.size());
 
                                     // SE partition view
                                     slices(1, 1) = {Slice{rseb, rsee}, Slice{cseb, csee}};
-                                    lue_assert(extent(slices(1, 1)[0]) > 0);
-                                    lue_assert(extent(slices(1, 1)[1]) > 0);
-                                    lue_assert(extent(slices(1, 1)[0]) <= kernel.radius());
-                                    lue_assert(extent(slices(1, 1)[1]) <= kernel.radius());
+                                    lue_hpx_assert(extent(slices(1, 1)[0]) > 0);
+                                    lue_hpx_assert(extent(slices(1, 1)[1]) > 0);
+                                    lue_hpx_assert(extent(slices(1, 1)[0]) <= kernel.radius());
+                                    lue_hpx_assert(extent(slices(1, 1)[1]) <= kernel.radius());
 
                                     output_partition_data(rf, cf) = detail::border(
                                         functor, kernel,
@@ -1309,17 +1306,17 @@ OutputPartition focal_operation_partition(
                                 {
                                     // N partition view
                                     slices(0, 0) = {Slice{rnb, rne}, Slice{cb, cb + kernel.size()}};
-                                    lue_assert(extent(slices(0, 0)[0]) > 0);
-                                    lue_assert(extent(slices(0, 0)[1]) > 0);
-                                    lue_assert(extent(slices(0, 0)[0]) <= kernel.radius());
-                                    lue_assert(extent(slices(0, 0)[1]) == kernel.size());
+                                    lue_hpx_assert(extent(slices(0, 0)[0]) > 0);
+                                    lue_hpx_assert(extent(slices(0, 0)[1]) > 0);
+                                    lue_hpx_assert(extent(slices(0, 0)[0]) <= kernel.radius());
+                                    lue_hpx_assert(extent(slices(0, 0)[1]) == kernel.size());
 
                                     // S partition view
                                     slices(1, 0) = {Slice{rsb, rse}, Slice{cb, cb + kernel.size()}};
-                                    lue_assert(extent(slices(1, 0)[0]) > 0);
-                                    lue_assert(extent(slices(1, 0)[1]) > 0);
-                                    lue_assert(extent(slices(1, 0)[0]) < kernel.size());
-                                    lue_assert(extent(slices(1, 0)[1]) == kernel.size());
+                                    lue_hpx_assert(extent(slices(1, 0)[0]) > 0);
+                                    lue_hpx_assert(extent(slices(1, 0)[1]) > 0);
+                                    lue_hpx_assert(extent(slices(1, 0)[0]) < kernel.size());
+                                    lue_hpx_assert(extent(slices(1, 0)[1]) == kernel.size());
 
                                     output_partition_data(rf, cf) = detail::border(
                                         functor, kernel,
@@ -1348,17 +1345,17 @@ OutputPartition focal_operation_partition(
                                 {
                                     // W partition view
                                     slices(0, 0) = {Slice{rb, rb + kernel.size()}, Slice{cwb, cwe}};
-                                    lue_assert(extent(slices(0, 0)[0]) > 0);
-                                    lue_assert(extent(slices(0, 0)[1]) > 0);
-                                    lue_assert(extent(slices(0, 0)[0]) == kernel.size());
-                                    lue_assert(extent(slices(0, 0)[1]) <= kernel.radius());
+                                    lue_hpx_assert(extent(slices(0, 0)[0]) > 0);
+                                    lue_hpx_assert(extent(slices(0, 0)[1]) > 0);
+                                    lue_hpx_assert(extent(slices(0, 0)[0]) == kernel.size());
+                                    lue_hpx_assert(extent(slices(0, 0)[1]) <= kernel.radius());
 
                                     // E partition view
                                     slices(0, 1) = {Slice{rb, rb + kernel.size()}, Slice{ceb, cee}};
-                                    lue_assert(extent(slices(0, 1)[0]) > 0);
-                                    lue_assert(extent(slices(0, 1)[1]) > 0);
-                                    lue_assert(extent(slices(0, 1)[0]) == kernel.size());
-                                    lue_assert(extent(slices(0, 1)[1]) < kernel.size());
+                                    lue_hpx_assert(extent(slices(0, 1)[0]) > 0);
+                                    lue_hpx_assert(extent(slices(0, 1)[1]) > 0);
+                                    lue_hpx_assert(extent(slices(0, 1)[0]) == kernel.size());
+                                    lue_hpx_assert(extent(slices(0, 1)[1]) < kernel.size());
 
                                     output_partition_data(rf, cf) = detail::border(
                                         functor, kernel,
@@ -1388,17 +1385,17 @@ OutputPartition focal_operation_partition(
                                 {
                                     // W partition view
                                     slices(0, 0) = {Slice{rb, rb + kernel.size()}, Slice{cwb, cwe}};
-                                    lue_assert(extent(slices(0, 0)[0]) > 0);
-                                    lue_assert(extent(slices(0, 0)[1]) > 0);
-                                    lue_assert(extent(slices(0, 0)[0]) == kernel.size());
-                                    lue_assert(extent(slices(0, 0)[1]) < kernel.size());
+                                    lue_hpx_assert(extent(slices(0, 0)[0]) > 0);
+                                    lue_hpx_assert(extent(slices(0, 0)[1]) > 0);
+                                    lue_hpx_assert(extent(slices(0, 0)[0]) == kernel.size());
+                                    lue_hpx_assert(extent(slices(0, 0)[1]) < kernel.size());
 
                                     // E partition view
                                     slices(0, 1) = {Slice{rb, rb + kernel.size()}, Slice{ceb, cee}};
-                                    lue_assert(extent(slices(0, 1)[0]) > 0);
-                                    lue_assert(extent(slices(0, 1)[1]) > 0);
-                                    lue_assert(extent(slices(0, 1)[0]) == kernel.size());
-                                    lue_assert(extent(slices(0, 1)[1]) <= kernel.radius());
+                                    lue_hpx_assert(extent(slices(0, 1)[0]) > 0);
+                                    lue_hpx_assert(extent(slices(0, 1)[1]) > 0);
+                                    lue_hpx_assert(extent(slices(0, 1)[0]) == kernel.size());
+                                    lue_hpx_assert(extent(slices(0, 1)[1]) <= kernel.radius());
 
                                     output_partition_data(rf, cf) = detail::border(
                                         functor, kernel,
@@ -1428,17 +1425,17 @@ OutputPartition focal_operation_partition(
                                 {
                                     // N partition view
                                     slices(0, 0) = {Slice{rnb, rne}, Slice{cb, cb + kernel.size()}};
-                                    lue_assert(extent(slices(0, 0)[0]) > 0);
-                                    lue_assert(extent(slices(0, 0)[1]) > 0);
-                                    lue_assert(extent(slices(0, 0)[0]) < kernel.size());
-                                    lue_assert(extent(slices(0, 0)[1]) == kernel.size());
+                                    lue_hpx_assert(extent(slices(0, 0)[0]) > 0);
+                                    lue_hpx_assert(extent(slices(0, 0)[1]) > 0);
+                                    lue_hpx_assert(extent(slices(0, 0)[0]) < kernel.size());
+                                    lue_hpx_assert(extent(slices(0, 0)[1]) == kernel.size());
 
                                     // S partition view
                                     slices(1, 0) = {Slice{rsb, rse}, Slice{cb, cb + kernel.size()}};
-                                    lue_assert(extent(slices(1, 0)[0]) > 0);
-                                    lue_assert(extent(slices(1, 0)[1]) > 0);
-                                    lue_assert(extent(slices(1, 0)[0]) <= kernel.radius());
-                                    lue_assert(extent(slices(1, 0)[1]) == kernel.size());
+                                    lue_hpx_assert(extent(slices(1, 0)[0]) > 0);
+                                    lue_hpx_assert(extent(slices(1, 0)[1]) > 0);
+                                    lue_hpx_assert(extent(slices(1, 0)[0]) <= kernel.radius());
+                                    lue_hpx_assert(extent(slices(1, 0)[1]) == kernel.size());
 
                                     output_partition_data(rf, cf) = detail::border(
                                         functor, kernel,
@@ -1615,9 +1612,7 @@ class WrappedPartitionedArray
             _input_policies{input_policies},
             _array{array},
             _kernel_radius{kernel_radius},
-            _halo_corner_partitions{},
-            _halo_longitudinal_side_partitions{},
-            _halo_latitudinal_sides_partitions{}
+            _halo_partitions{}
 
         {
             create_halo_partitions();
@@ -1630,58 +1625,46 @@ class WrappedPartitionedArray
 
         InputPartitions north_west_corner_input_partitions() const
         {
-            return detail::north_west_corner_input_partitions(
-                _array.partitions(), _halo_corner_partitions,
-                _halo_longitudinal_side_partitions, _halo_latitudinal_sides_partitions);
+            return detail::north_west_corner_input_partitions(_array.partitions(), _halo_partitions);
         }
 
         InputPartitions north_east_corner_input_partitions() const
         {
-            return detail::north_east_corner_input_partitions(
-                _array.partitions(), _halo_corner_partitions,
-                _halo_longitudinal_side_partitions, _halo_latitudinal_sides_partitions);
+            return detail::north_east_corner_input_partitions(_array.partitions(), _halo_partitions);
         }
 
         InputPartitions south_west_corner_input_partitions() const
         {
-            return detail::south_west_corner_input_partitions(
-                _array.partitions(), _halo_corner_partitions,
-                _halo_longitudinal_side_partitions, _halo_latitudinal_sides_partitions);
+            return detail::south_west_corner_input_partitions(_array.partitions(), _halo_partitions);
         }
 
         InputPartitions south_east_corner_input_partitions() const
         {
-            return detail::south_east_corner_input_partitions(
-                _array.partitions(), _halo_corner_partitions,
-                _halo_longitudinal_side_partitions, _halo_latitudinal_sides_partitions);
+            return detail::south_east_corner_input_partitions(_array.partitions(), _halo_partitions);
         }
 
         InputPartitions north_side_input_partitions(
             Index const c) const
         {
-            return detail::north_side_input_partitions(
-                c, _array.partitions(), _halo_longitudinal_side_partitions);
+            return detail::north_side_input_partitions(c, _array.partitions(), _halo_partitions);
         }
 
         InputPartitions south_side_input_partitions(
             Index const c) const
         {
-            return detail::south_side_input_partitions(
-                c, _array.partitions(), _halo_longitudinal_side_partitions);
+            return detail::south_side_input_partitions(c, _array.partitions(), _halo_partitions);
         }
 
         InputPartitions west_side_input_partitions(
             Index const r) const
         {
-            return detail::west_side_input_partitions(
-                r, _array.partitions(), _halo_latitudinal_sides_partitions);
+            return detail::west_side_input_partitions(r, _array.partitions(), _halo_partitions);
         }
 
         InputPartitions east_side_input_partitions(
             Index const r) const
         {
-            return detail::east_side_input_partitions(
-                r, _array.partitions(), _halo_latitudinal_sides_partitions);
+            return detail::east_side_input_partitions(r, _array.partitions(), _halo_partitions);
         }
 
         InputPartitions inner_input_partitions(
@@ -1698,140 +1681,14 @@ class WrappedPartitionedArray
             static_assert(lue::rank<InputArray> == 2);
             Rank const rank{2};
 
-            using Offset = OffsetT<InputArray>;
-
             InputPartitions const& input_partitions{_array.partitions()};
             Localities<rank> const& localities{_array.localities()};
 
-            lue_assert(all_are_valid(input_partitions));  // But possibly not ready yet!
+            Shape min_shape{};
+            std::fill(min_shape.begin(), min_shape.end(), _kernel_radius);
 
-            auto const [nr_partitions0, nr_partitions1] = lue::shape_in_partitions(_array);
-            Radius const kernel_radius{_kernel_radius};
-            // TODO(KDJ)
-            InputElement const fill_value{_input_policies.halo_value_policy().fill_value()};
-
-            // Create a halo of temporary partitions that are used in the
-            // convolution of the partitions along the borders of the
-            // array. We create three collections of partitions:
-            // - 2x2 partitions for the corners of the halo
-            // - 2xc partitions for the longitudinal sides of the halo
-            // - rx2 partitions for the latitudinal sides of the halo
-            //
-            // The size of these partitions is as small as possible. They
-            // contain the minimum amount of elements needed for the
-            // calculations.
-            //
-            // The halo partitions are located on the same locality as the
-            // nearest border partition in the array.
-
-            // Corner halo partitions
-            //     +----+----+
-            //     | NW | NE |
-            //     +----+----+
-            //     | SW | SE |
-            //     +----+----+
-
-            _halo_corner_partitions.reshape(Shape{{2, 2}});
-
-            // North-west corner halo partition
-            _halo_corner_partitions(0, 0) = spawn_create_halo_corner_partition<InputElement, rank>(
-                localities(0, 0), kernel_radius, fill_value);
-
-            // North-east corner halo partition
-            _halo_corner_partitions(0, 1) = spawn_create_halo_corner_partition<InputElement, rank>(
-                localities(0, nr_partitions1 - 1), kernel_radius, fill_value);
-
-            // South-west corner halo partition
-            _halo_corner_partitions(1, 0) = spawn_create_halo_corner_partition<InputElement, rank>(
-                localities(nr_partitions0 - 1, 0), kernel_radius, fill_value);
-
-            // South-east corner halo partition
-            _halo_corner_partitions(1, 1) = spawn_create_halo_corner_partition<InputElement, rank>(
-                localities(nr_partitions0 - 1, nr_partitions1 - 1), kernel_radius, fill_value);
-
-            // Longitudinal side halo partitions
-            //     +---+---+---+
-            //     | N | N | N |
-            //     +---+---+---+
-            //     | S | S | S |
-            //     +---+---+---+
-            _halo_longitudinal_side_partitions.reshape(Shape{{2, nr_partitions1}});
-
-            for(auto const [rh, rp]: {
-                std::array<Index, 2>{{0, 0}},
-                std::array<Index, 2>{{1, nr_partitions0 - 1}}})
-            {
-                for(Index cp = 0; cp < nr_partitions1; ++cp)
-                {
-                    InputPartition input_partition{input_partitions(rp, cp)};
-
-                    _halo_longitudinal_side_partitions(rh, cp) = input_partition.then(
-
-                            [locality_id=localities(rp, cp), kernel_radius, fill_value](
-                                InputPartition&& input_partition)
-                            {
-                                return input_partition.shape().then(
-
-                                        [locality_id, kernel_radius, fill_value](
-                                            hpx::future<Shape>&& partition_shape_f)
-                                        {
-                                            return InputPartition{
-                                                locality_id, Offset{},
-                                                Shape{{kernel_radius, partition_shape_f.get()[1]}},
-                                                fill_value};
-                                        }
-
-                                    );
-                            }
-
-                        );
-                }
-            }
-
-            // Latitudinal sides halo partitions
-            //     +---+---+
-            //     | W | E |
-            //     +---+---+
-            //     | W | E |
-            //     +---+---+
-            //     | W | E |
-            //     +---+---+
-            _halo_latitudinal_sides_partitions.reshape(Shape{{nr_partitions0, 2}});
-
-            for(Index rp = 0; rp < nr_partitions0; ++rp) {
-
-                for(auto const [ch, cp]: {
-                    std::array<Index, 2>{{0, 0}},
-                    std::array<Index, 2>{{1, nr_partitions1 - 1}}})
-                {
-                    InputPartition input_partition{input_partitions(rp, cp)};
-
-                    _halo_latitudinal_sides_partitions(rp, ch) = input_partition.then(
-
-                            [locality_id=localities(rp, cp), kernel_radius, fill_value](
-                                InputPartition&& input_partition)
-                            {
-                                return input_partition.shape().then(
-
-                                        [locality_id, kernel_radius, fill_value](
-                                            hpx::future<Shape>&& partition_shape_f)
-                                        {
-                                            return InputPartition{
-                                                locality_id, Offset{},
-                                                Shape{{partition_shape_f.get()[0], kernel_radius}},
-                                                fill_value};
-                                        }
-
-                                    );
-                            }
-
-                        );
-                }
-            }
-
-            lue_assert(all_are_valid(_halo_corner_partitions));
-            lue_assert(all_are_valid(_halo_longitudinal_side_partitions));
-            lue_assert(all_are_valid(_halo_latitudinal_sides_partitions));
+            _halo_partitions = detail::halo_partitions(
+                _input_policies, localities, min_shape, input_partitions);
         }
 
         InputPolicies _input_policies;
@@ -1840,11 +1697,7 @@ class WrappedPartitionedArray
 
         Radius const _kernel_radius;
 
-        InputPartitions _halo_corner_partitions;
-
-        InputPartitions _halo_longitudinal_side_partitions;
-
-        InputPartitions _halo_latitudinal_sides_partitions;
+        std::array<InputPartitions, 3> _halo_partitions;
 
 };
 
@@ -1975,8 +1828,8 @@ PartitionedArray<OutputElementT<Functor>, rank<Kernel>> focal_operation_2d(
     Localities<rank> const& localities{first_input_array.localities()};
 
     auto const [nr_partitions0, nr_partitions1] = lue::shape_in_partitions(first_input_array);
-    lue_assert(nr_partitions0 > 0);
-    lue_assert(nr_partitions1 > 0);
+    lue_hpx_assert(nr_partitions0 > 0);
+    lue_hpx_assert(nr_partitions1 > 0);
 
     output_partitions(0, 0) = spawn_focal_operation_partition(
        localities(0, 0),
@@ -2047,7 +1900,7 @@ PartitionedArray<OutputElementT<Functor>, rank<Kernel>> focal_operation_2d(
         }
     }
 
-    lue_assert(all_are_valid(output_partitions));
+    lue_hpx_assert(all_are_valid(output_partitions));
 
     return OutputArray{shape(first_input_array), localities, std::move(output_partitions)};
 }

@@ -1,7 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/policy/policies.hpp"
 #include "lue/framework/algorithm/policy/mark_no_data_by_value.hpp"
-// #include "lue/framework/algorithm/policy/fill_halo_with_constant_value.hpp"
 #include "lue/framework/algorithm/policy/input_policies.hpp"
 #include "lue/framework/algorithm/policy/output_policies.hpp"
 #include "lue/framework/algorithm/policy/detect_no_data_by_value.hpp"
