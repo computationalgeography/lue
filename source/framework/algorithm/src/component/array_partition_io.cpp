@@ -15,6 +15,7 @@ LUE_REGISTER_ARRAY_PARTITION_IO_ACTION_DECLARATIONS(lue_Index, 2, lue_InterParti
 LUE_REGISTER_ARRAY_PARTITION_IO_ACTIONS(lue_Index, 2, Value)
 
 LUE_REGISTER(/* std:: */ uint64_t)
+LUE_REGISTER(float)
 LUE_REGISTER(double)
 LUE_REGISTER(lue_InterPartitionStreamMaterial)
 

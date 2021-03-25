@@ -50,9 +50,6 @@ namespace lue::detail {
                 // Add external input material for the current cell to
                 // the material already present.
                 // This can happen unconditionally.
-
-                // TODO Take input / output no-data into account
-
                 _cell_accumulator.accumulate_input(
                     _input_material_data(idx0, idx1), _output_material_data(idx0, idx1));
             }
@@ -91,6 +88,12 @@ namespace lue::detail {
                 _partition_io_data.add_output_cell(
                     {idx0, idx1}, {static_cast<O>(offset0), static_cast<O>(offset1)},
                     OutputMaterialElement{_output_material_data(idx0, idx1)});
+            }
+
+
+            CellAccumulator const& cell_accumulator() const
+            {
+                return _cell_accumulator;
             }
 
 
@@ -142,13 +145,6 @@ namespace lue::detail {
             is_within_partition = downstream_cell(
                 flow_direction_data, nr_elements0, nr_elements1, idx0, idx1, offset0, offset1);
 
-            if(!is_within_partition)
-            {
-                // Current cell is partition output cell → notify accumulator and stop
-                accumulator.leave_partition(idx0, idx1, offset0, offset1);
-                break;
-            }
-
             if(offset0 == 0 && offset1 == 0)
             {
                 // Current cell is a sink → stop
@@ -156,6 +152,14 @@ namespace lue::detail {
             }
 
             // Downstream cell is pointed to by idx0 + offset0 and idx1 + offset1
+            if(!is_within_partition)
+            {
+                // Current cell is partition output cell → notify accumulator and stop
+                accumulator.leave_partition(idx0, idx1, offset0, offset1);
+                break;
+            }
+
+            // All is well. Continuing within this partition. Go downstream.
 
             // Move material to the downstream cell
             accumulator.accumulate_downstream(idx0, idx1, idx0 + offset0, idx1 + offset1);

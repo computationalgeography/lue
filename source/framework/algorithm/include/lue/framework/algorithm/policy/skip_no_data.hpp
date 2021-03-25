@@ -20,10 +20,8 @@ class SkipNoData
 
     public:
 
-        template<
-            typename Data>
         static constexpr bool is_no_data(
-            Data const& /* data */)
+            Element const& /* element */)
         {
             return false;
         }
@@ -34,6 +32,8 @@ class SkipNoData
             Data const& /* data */,
             Index /* idx */ ...)
         {
+            static_assert(std::is_same_v<lue::ElementT<Data>, Element>);
+
             return false;
         }
 

@@ -150,6 +150,7 @@ HPX_REGISTER_ACTION_DECLARATION(                                             \
 using lue_Index = lue::Index;
 
 LUE_REGISTER_ARRAY_PARTITION_IO_ACTION_DECLARATIONS(lue_Index, 2, /* std:: */ uint64_t)
+LUE_REGISTER_ARRAY_PARTITION_IO_ACTION_DECLARATIONS(lue_Index, 2, float)
 LUE_REGISTER_ARRAY_PARTITION_IO_ACTION_DECLARATIONS(lue_Index, 2, double)
 
 

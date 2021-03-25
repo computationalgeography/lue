@@ -1,7 +1,6 @@
 #define BOOST_TEST_MODULE lue framework algorithm accu
 #include "lue/framework/algorithm/accu.hpp"
-// #include "lue/framework/algorithm/policy.hpp"
-// #include "stream.hpp"
+#include "flow_accumulation.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/compare.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
@@ -9,29 +8,13 @@
 
 namespace {
 
+    // Grab symbols from flow_accumulation header
+    using namespace lue::test;
+
     std::size_t const rank = 2;
 
-    using FlowDirectionElement = std::uint8_t;
-    using FlowDirection = lue::PartitionedArray<FlowDirectionElement, rank>;
-
     using MaterialElement = std::uint64_t;
-    using Material = lue::PartitionedArray<MaterialElement, rank>;
-
-    auto const n{lue::north<FlowDirectionElement>};
-    auto const ne{lue::north_east<FlowDirectionElement>};
-    auto const e{lue::east<FlowDirectionElement>};
-    auto const se{lue::south_east<FlowDirectionElement>};
-    auto const s{lue::south<FlowDirectionElement>};
-    auto const sw{lue::south_west<FlowDirectionElement>};
-    auto const w{lue::west<FlowDirectionElement>};
-    auto const nw{lue::north_west<FlowDirectionElement>};
-    auto const p{lue::sink<FlowDirectionElement>};
-    auto const nd{lue::no_data<FlowDirectionElement>};
-
-    using Shape = lue::ShapeT<FlowDirection>;
-    Shape const array_shape{{9, 9}};
-    Shape const partition_shape{{3, 3}};
-
+    using MaterialArray = lue::PartitionedArray<MaterialElement, rank>;
 
     template<
         typename Policies,
@@ -73,7 +56,7 @@ namespace {
 BOOST_AUTO_TEST_CASE(parallel_east)
 {
     test_accu(
-        lue::test::create_partitioned_array<FlowDirection>(array_shape, partition_shape,
+        lue::test::create_partitioned_array<FlowDirectionArray>(array_shape, partition_shape,
             {
                 { e, e, e,
                   e, e, e,
@@ -103,7 +86,7 @@ BOOST_AUTO_TEST_CASE(parallel_east)
                   e, e, e,
                   e, e, e, },
             }),
-        lue::test::create_partitioned_array<Material>(array_shape, partition_shape,
+        lue::test::create_partitioned_array<MaterialArray>(array_shape, partition_shape,
             {
                 { 1, 1, 1,
                   1, 1, 1,
@@ -133,7 +116,7 @@ BOOST_AUTO_TEST_CASE(parallel_east)
                   1, 1, 1,
                   1, 1, 1, },
             }),
-        lue::test::create_partitioned_array<Material>(array_shape, partition_shape,
+        lue::test::create_partitioned_array<MaterialArray>(array_shape, partition_shape,
             {
                 { 1, 2, 3,
                   1, 2, 3,
@@ -169,7 +152,7 @@ BOOST_AUTO_TEST_CASE(parallel_east)
 BOOST_AUTO_TEST_CASE(parallel_south_east)
 {
     test_accu(
-        lue::test::create_partitioned_array<FlowDirection>(array_shape, partition_shape,
+        lue::test::create_partitioned_array<FlowDirectionArray>(array_shape, partition_shape,
             {
                 { se, se, se,
                   se, se, se,
@@ -199,7 +182,7 @@ BOOST_AUTO_TEST_CASE(parallel_south_east)
                   se, se, se,
                   se, se, se, },
             }),
-        lue::test::create_partitioned_array<Material>(array_shape, partition_shape,
+        lue::test::create_partitioned_array<MaterialArray>(array_shape, partition_shape,
             {
                 { 1, 1, 1,
                   1, 1, 1,
@@ -229,7 +212,7 @@ BOOST_AUTO_TEST_CASE(parallel_south_east)
                   1, 1, 1,
                   1, 1, 1, },
             }),
-        lue::test::create_partitioned_array<Material>(array_shape, partition_shape,
+        lue::test::create_partitioned_array<MaterialArray>(array_shape, partition_shape,
             {
                 { 1, 1, 1,
                   1, 2, 2,
@@ -265,7 +248,7 @@ BOOST_AUTO_TEST_CASE(parallel_south_east)
 BOOST_AUTO_TEST_CASE(parallel_south)
 {
     test_accu(
-        lue::test::create_partitioned_array<FlowDirection>(array_shape, partition_shape,
+        lue::test::create_partitioned_array<FlowDirectionArray>(array_shape, partition_shape,
             {
                 { s, s, s,
                   s, s, s,
@@ -295,7 +278,7 @@ BOOST_AUTO_TEST_CASE(parallel_south)
                   s, s, s,
                   s, s, s, },
             }),
-        lue::test::create_partitioned_array<Material>(array_shape, partition_shape,
+        lue::test::create_partitioned_array<MaterialArray>(array_shape, partition_shape,
             {
                 { 1, 1, 1,
                   1, 1, 1,
@@ -325,7 +308,7 @@ BOOST_AUTO_TEST_CASE(parallel_south)
                   1, 1, 1,
                   1, 1, 1, },
             }),
-        lue::test::create_partitioned_array<Material>(array_shape, partition_shape,
+        lue::test::create_partitioned_array<MaterialArray>(array_shape, partition_shape,
             {
                 { 1, 1, 1,
                   2, 2, 2,
@@ -361,7 +344,7 @@ BOOST_AUTO_TEST_CASE(parallel_south)
 BOOST_AUTO_TEST_CASE(parallel_south_west)
 {
     test_accu(
-        lue::test::create_partitioned_array<FlowDirection>(array_shape, partition_shape,
+        lue::test::create_partitioned_array<FlowDirectionArray>(array_shape, partition_shape,
             {
                 { sw, sw, sw,
                   sw, sw, sw,
@@ -391,7 +374,7 @@ BOOST_AUTO_TEST_CASE(parallel_south_west)
                   sw, sw, sw,
                   sw, sw, sw, },
             }),
-        lue::test::create_partitioned_array<Material>(array_shape, partition_shape,
+        lue::test::create_partitioned_array<MaterialArray>(array_shape, partition_shape,
             {
                 { 1, 1, 1,
                   1, 1, 1,
@@ -421,7 +404,7 @@ BOOST_AUTO_TEST_CASE(parallel_south_west)
                   1, 1, 1,
                   1, 1, 1, },
             }),
-        lue::test::create_partitioned_array<Material>(array_shape, partition_shape,
+        lue::test::create_partitioned_array<MaterialArray>(array_shape, partition_shape,
             {
                 { 1, 1, 1,
                   2, 2, 2,
@@ -457,7 +440,7 @@ BOOST_AUTO_TEST_CASE(parallel_south_west)
 BOOST_AUTO_TEST_CASE(parallel_west)
 {
     test_accu(
-        lue::test::create_partitioned_array<FlowDirection>(array_shape, partition_shape,
+        lue::test::create_partitioned_array<FlowDirectionArray>(array_shape, partition_shape,
             {
                 { w, w, w,
                   w, w, w,
@@ -487,7 +470,7 @@ BOOST_AUTO_TEST_CASE(parallel_west)
                   w, w, w,
                   w, w, w, },
             }),
-        lue::test::create_partitioned_array<Material>(array_shape, partition_shape,
+        lue::test::create_partitioned_array<MaterialArray>(array_shape, partition_shape,
             {
                 { 1, 1, 1,
                   1, 1, 1,
@@ -517,7 +500,7 @@ BOOST_AUTO_TEST_CASE(parallel_west)
                   1, 1, 1,
                   1, 1, 1, },
             }),
-        lue::test::create_partitioned_array<Material>(array_shape, partition_shape,
+        lue::test::create_partitioned_array<MaterialArray>(array_shape, partition_shape,
             {
                 { 9, 8, 7,
                   9, 8, 7,
@@ -553,7 +536,7 @@ BOOST_AUTO_TEST_CASE(parallel_west)
 BOOST_AUTO_TEST_CASE(parallel_north_west)
 {
     test_accu(
-        lue::test::create_partitioned_array<FlowDirection>(array_shape, partition_shape,
+        lue::test::create_partitioned_array<FlowDirectionArray>(array_shape, partition_shape,
             {
                 { nw, nw, nw,
                   nw, nw, nw,
@@ -583,7 +566,7 @@ BOOST_AUTO_TEST_CASE(parallel_north_west)
                   nw, nw, nw,
                   nw, nw, nw, },
             }),
-        lue::test::create_partitioned_array<Material>(array_shape, partition_shape,
+        lue::test::create_partitioned_array<MaterialArray>(array_shape, partition_shape,
             {
                 { 1, 1, 1,
                   1, 1, 1,
@@ -613,7 +596,7 @@ BOOST_AUTO_TEST_CASE(parallel_north_west)
                   1, 1, 1,
                   1, 1, 1, },
             }),
-        lue::test::create_partitioned_array<Material>(array_shape, partition_shape,
+        lue::test::create_partitioned_array<MaterialArray>(array_shape, partition_shape,
             {
                 { 9, 8, 7,
                   8, 8, 7,
@@ -649,7 +632,7 @@ BOOST_AUTO_TEST_CASE(parallel_north_west)
 BOOST_AUTO_TEST_CASE(parallel_north)
 {
     test_accu(
-        lue::test::create_partitioned_array<FlowDirection>(array_shape, partition_shape,
+        lue::test::create_partitioned_array<FlowDirectionArray>(array_shape, partition_shape,
             {
                 { n, n, n,
                   n, n, n,
@@ -679,7 +662,7 @@ BOOST_AUTO_TEST_CASE(parallel_north)
                   n, n, n,
                   n, n, n, },
             }),
-        lue::test::create_partitioned_array<Material>(array_shape, partition_shape,
+        lue::test::create_partitioned_array<MaterialArray>(array_shape, partition_shape,
             {
                 { 1, 1, 1,
                   1, 1, 1,
@@ -709,7 +692,7 @@ BOOST_AUTO_TEST_CASE(parallel_north)
                   1, 1, 1,
                   1, 1, 1, },
             }),
-        lue::test::create_partitioned_array<Material>(array_shape, partition_shape,
+        lue::test::create_partitioned_array<MaterialArray>(array_shape, partition_shape,
             {
                 { 9, 9, 9,
                   8, 8, 8,
@@ -745,7 +728,7 @@ BOOST_AUTO_TEST_CASE(parallel_north)
 BOOST_AUTO_TEST_CASE(parallel_north_east)
 {
     test_accu(
-        lue::test::create_partitioned_array<FlowDirection>(array_shape, partition_shape,
+        lue::test::create_partitioned_array<FlowDirectionArray>(array_shape, partition_shape,
             {
                 { ne, ne, ne,
                   ne, ne, ne,
@@ -775,7 +758,7 @@ BOOST_AUTO_TEST_CASE(parallel_north_east)
                   ne, ne, ne,
                   ne, ne, ne, },
             }),
-        lue::test::create_partitioned_array<Material>(array_shape, partition_shape,
+        lue::test::create_partitioned_array<MaterialArray>(array_shape, partition_shape,
             {
                 { 1, 1, 1,
                   1, 1, 1,
@@ -805,7 +788,7 @@ BOOST_AUTO_TEST_CASE(parallel_north_east)
                   1, 1, 1,
                   1, 1, 1, },
             }),
-        lue::test::create_partitioned_array<Material>(array_shape, partition_shape,
+        lue::test::create_partitioned_array<MaterialArray>(array_shape, partition_shape,
             {
                 { 1, 2, 3,
                   1, 2, 3,
@@ -841,7 +824,7 @@ BOOST_AUTO_TEST_CASE(parallel_north_east)
 BOOST_AUTO_TEST_CASE(converge)
 {
     test_accu(
-        lue::test::create_partitioned_array<FlowDirection>(array_shape, partition_shape,
+        lue::test::create_partitioned_array<FlowDirectionArray>(array_shape, partition_shape,
             {
                 { se, se, se,
                   se, se, se,
@@ -871,7 +854,7 @@ BOOST_AUTO_TEST_CASE(converge)
                   nw, nw, nw,
                   nw, nw, nw, },
             }),
-        lue::test::create_partitioned_array<Material>(array_shape, partition_shape,
+        lue::test::create_partitioned_array<MaterialArray>(array_shape, partition_shape,
             {
                 { 1, 1, 1,
                   1, 1, 1,
@@ -901,7 +884,7 @@ BOOST_AUTO_TEST_CASE(converge)
                   1, 1, 1,
                   1, 1, 1, },
             }),
-        lue::test::create_partitioned_array<Material>(array_shape, partition_shape,
+        lue::test::create_partitioned_array<MaterialArray>(array_shape, partition_shape,
             {
                 {  1,  1,  1,
                    1,  2,  2,
@@ -937,7 +920,7 @@ BOOST_AUTO_TEST_CASE(converge)
 BOOST_AUTO_TEST_CASE(diverge)
 {
     test_accu(
-        lue::test::create_partitioned_array<FlowDirection>(array_shape, partition_shape,
+        lue::test::create_partitioned_array<FlowDirectionArray>(array_shape, partition_shape,
             {
                 { nw, nw, nw,
                   nw, nw, nw,
@@ -967,7 +950,7 @@ BOOST_AUTO_TEST_CASE(diverge)
                   se, se, se,
                   se, se, se, },
             }),
-        lue::test::create_partitioned_array<Material>(array_shape, partition_shape,
+        lue::test::create_partitioned_array<MaterialArray>(array_shape, partition_shape,
             {
                 { 1, 1, 1,
                   1, 1, 1,
@@ -997,7 +980,7 @@ BOOST_AUTO_TEST_CASE(diverge)
                   1, 1, 1,
                   1, 1, 1, },
             }),
-        lue::test::create_partitioned_array<Material>(array_shape, partition_shape,
+        lue::test::create_partitioned_array<MaterialArray>(array_shape, partition_shape,
             {
                 {  4,  2,  1,
                    2,  3,  1,
@@ -1033,7 +1016,7 @@ BOOST_AUTO_TEST_CASE(diverge)
 BOOST_AUTO_TEST_CASE(spiral_in)
 {
     test_accu(
-        lue::test::create_partitioned_array<FlowDirection>(array_shape, partition_shape,
+        lue::test::create_partitioned_array<FlowDirectionArray>(array_shape, partition_shape,
             {
                 {  e,  e,  e,
                    e,  e,  e,
@@ -1063,7 +1046,7 @@ BOOST_AUTO_TEST_CASE(spiral_in)
                    w,  w,  s,
                    w,  w,  w, },
             }),
-        lue::test::create_partitioned_array<Material>(array_shape, partition_shape,
+        lue::test::create_partitioned_array<MaterialArray>(array_shape, partition_shape,
             {
                 { 1, 1, 1,
                   1, 1, 1,
@@ -1093,7 +1076,7 @@ BOOST_AUTO_TEST_CASE(spiral_in)
                   1, 1, 1,
                   1, 1, 1, },
             }),
-        lue::test::create_partitioned_array<Material>(array_shape, partition_shape,
+        lue::test::create_partitioned_array<MaterialArray>(array_shape, partition_shape,
             {
                 {  1,  2,  3,
                   32, 33, 34,
@@ -1129,7 +1112,7 @@ BOOST_AUTO_TEST_CASE(spiral_in)
 BOOST_AUTO_TEST_CASE(spiral_out)
 {
     test_accu(
-        lue::test::create_partitioned_array<FlowDirection>(array_shape, partition_shape,
+        lue::test::create_partitioned_array<FlowDirectionArray>(array_shape, partition_shape,
             {
                 {  w,  w,  w,
                    s,  w,  w,
@@ -1159,7 +1142,7 @@ BOOST_AUTO_TEST_CASE(spiral_out)
                    e,  n,  n,
                    e,  e,  n, },
             }),
-        lue::test::create_partitioned_array<Material>(array_shape, partition_shape,
+        lue::test::create_partitioned_array<MaterialArray>(array_shape, partition_shape,
             {
                 { 1, 1, 1,
                   1, 1, 1,
@@ -1189,7 +1172,7 @@ BOOST_AUTO_TEST_CASE(spiral_out)
                   1, 1, 1,
                   1, 1, 1, },
             }),
-        lue::test::create_partitioned_array<Material>(array_shape, partition_shape,
+        lue::test::create_partitioned_array<MaterialArray>(array_shape, partition_shape,
             {
                 { 81, 80, 79,
                   50, 49, 48,
@@ -1222,10 +1205,146 @@ BOOST_AUTO_TEST_CASE(spiral_out)
 }
 
 
+BOOST_AUTO_TEST_CASE(all_no_data_flow_direction)
+{
+    using Policies = lue::policy::accu::DefaultValuePolicies<FlowDirectionElement, MaterialElement>;
+    Policies policies{};
+
+    auto flow_direction = lue::test::no_data<FlowDirectionElement>();
+    auto material = lue::test::ones<MaterialElement>();
+    auto result_we_want = lue::test::filled(lue::policy::no_data_value<MaterialElement>);
+
+    test_accu(policies, flow_direction, material, result_we_want);
+}
 
 
-// TODO
-// - no-data
-// - converging on a corner cell (race condition!)
-// - junction at border (inflow count > 1)
-// - Marc's example with unsolved partitions at the start
+BOOST_AUTO_TEST_CASE(all_no_data_material)
+{
+    using Policies = lue::policy::accu::DefaultValuePolicies<FlowDirectionElement, MaterialElement>;
+    Policies policies{};
+
+    auto flow_direction = lue::test::filled(e);
+    auto material = lue::test::no_data<MaterialElement>();
+    auto result_we_want = lue::test::filled(lue::policy::no_data_value<MaterialElement>);
+
+    test_accu(policies, flow_direction, material, result_we_want);
+}
+
+
+BOOST_AUTO_TEST_CASE(merging_streams_case_01)
+{
+    // No-data material in ridge cell. From there on, it must propage
+    // down to all downstream cells, in all downstream partitions.
+
+    using Policies = lue::policy::accu::DefaultValuePolicies<FlowDirectionElement, MaterialElement>;
+    Policies policies{};
+
+    auto flow_direction = lue::test::merging_streams();
+
+    auto const x{lue::policy::no_data_value<MaterialElement>};
+
+    auto material = create_partitioned_array<lue::PartitionedArray<MaterialElement, 2>>(
+        array_shape, partition_shape,
+        {
+            { // 0, 0
+                1, 1, 1,
+                1, 1, 1,
+                1, 1, 1,
+            },
+            { // 0, 1
+                1, 1, 1,
+                1, 1, 1,
+                1, 1, 1,
+            },
+            { // 0, 2
+                1, x, 1,
+                1, 1, 1,
+                1, 1, 1,
+            },
+            { // 1, 0
+                1, 1, 1,
+                1, 1, 1,
+                1, 1, 1,
+            },
+            { // 1, 1
+                1, 1, 1,
+                1, 1, 1,
+                1, 1, 1,
+            },
+            { // 1, 2
+                1, 1, 1,
+                1, 1, 1,
+                1, 1, 1,
+            },
+            { // 2, 0
+                1, 1, 1,
+                1, 1, 1,
+                1, 1, 1,
+            },
+            { // 2, 1
+                1, 1, 1,
+                1, 1, 1,
+                1, 1, 1,
+            },
+            { // 2, 2
+                1, 1, 1,
+                1, 1, 1,
+                1, 1, 1,
+            },
+        });
+
+    auto result_we_want = create_partitioned_array<lue::PartitionedArray<MaterialElement, 2>>(
+        array_shape, partition_shape,
+        {
+            { // 0, 0
+                x, x, x,
+                x, x, x,
+                x, x, 1,
+            },
+            { // 0, 1
+                x, 1, 1,
+                x, 1, 1,
+                x, 2, x,
+            },
+            { // 0, 2
+                x, x, 1,
+                3, x, 1,
+                x, x, 1,
+            },
+            { // 1, 0
+                x, x, 1,
+                x, x, 1,
+                x, x, 1,
+            },
+            { // 1, 1
+                4, x, x,
+                x, x, 2,
+                2, x, 3,
+            },
+            { // 1, 2
+                x, x, x,
+                1, x, x,
+                1, x, x,
+            },
+            { // 2, 0
+                x, x, x,
+                x, x, x,
+                x, x, x,
+            },
+            { // 2, 1
+                x, x, x,
+                x, x, 2,
+                4, 3, 2,
+            },
+            { // 2, 2
+                1, x, x,
+                1, x, x,
+                1, x, x,
+            },
+        });
+
+    test_accu(policies, flow_direction, material, result_we_want);
+}
+
+
+// TODO Out of domain values: negative material is out of domain!

@@ -54,6 +54,8 @@ namespace lue {
         namespace accu {
 
             template<
+                typename InputNoDataPolicy,
+                typename OutputNoDataPolicy,
                 typename InputMaterialElement,
                 typename OutputMaterialElement>
             class CellAccumulator
@@ -61,19 +63,58 @@ namespace lue {
 
                 public:
 
-                    static void accumulate_input(
-                        InputMaterialElement const& input_material_element,
-                        OutputMaterialElement& output_material_element)
+                    CellAccumulator(
+                        InputNoDataPolicy const& indp,
+                        OutputNoDataPolicy const& ondp):
+
+                        _indp{indp},
+                        _ondp{ondp}
+
                     {
-                        output_material_element += input_material_element;
                     }
 
-                    static void accumulate_downstream(
-                        OutputMaterialElement const& upstream_material_element,
-                        OutputMaterialElement& downstream_material_element)
+
+                    void accumulate_input(
+                        InputMaterialElement const& input_material_element,
+                        OutputMaterialElement& output_material_element) const
                     {
-                        downstream_material_element += upstream_material_element;
+                        if(!_ondp.is_no_data(output_material_element))
+                        {
+                            if(_indp.is_no_data(input_material_element))
+                            {
+                                _ondp.mark_no_data(output_material_element);
+                            }
+                            else
+                            {
+                                output_material_element += input_material_element;
+                            }
+                        }
                     }
+
+
+                    void accumulate_downstream(
+                        OutputMaterialElement const& upstream_material_element,
+                        OutputMaterialElement& downstream_material_element) const
+                    {
+                        if(!_ondp.is_no_data(downstream_material_element))
+                        {
+                            if(_ondp.is_no_data(upstream_material_element))
+                            {
+                                _ondp.mark_no_data(downstream_material_element);
+                            }
+                            else
+                            {
+                                downstream_material_element += upstream_material_element;
+                            }
+                        }
+                    }
+
+
+                private:
+
+                    InputNoDataPolicy const& _indp;
+
+                    OutputNoDataPolicy const& _ondp;
 
             };
 
@@ -128,8 +169,12 @@ namespace lue {
                         {
                             // -------------------------------------------------
                             // Determine inflow_count
+                            // As long as we only use flow_direction
+                            // and material to detect no-data in input,
+                            // there is no need to mark no-data in output
+                            // of inflow_count
                             using InflowCountOutputPolicies =
-                                policy::OutputPoliciesT<Policies, 0, InflowCountElement>;
+                                policy::OutputPolicies<policy::DontMarkNoData<InflowCountElement>>;
                             InflowCountOutputPolicies inflow_count_output_policies{};
 
                             using FlowDirectionInputPolicies = policy::InputPoliciesT<Policies, 0>;
@@ -157,14 +202,6 @@ namespace lue {
                             // Determine PartitionIO and calculate flow
                             // accumulation for intra-partition cells
 
-                            using AccumulateDomainPolicy =
-                                policy::AllValuesWithinDomain<
-                                    FlowDirectionElement, MaterialElement, InflowCountElement>;
-
-                            using InflowCountInputPolicies = policy::InputPolicies<
-                                typename policy::detail::TypeTraits<InflowCountOutputPolicies>::InputNoDataPolicy>;
-                            InflowCountInputPolicies inflow_count_input_policies{};
-
                             using MaterialInputPolicies = policy::InputPoliciesT<Policies, 1>;
                             MaterialInputPolicies material_input_policies{
                                 std::get<1>(policies.inputs_policies())};
@@ -173,26 +210,15 @@ namespace lue {
                             MaterialOutputPolicies material_output_policies{
                                 std::get<0>(policies.outputs_policies())};
 
-                            using AccumulatePolicies =
-                                policy::Policies<
-                                    AccumulateDomainPolicy,
-                                    policy::OutputsPolicies<
-                                        InflowCountOutputPolicies,
-                                        MaterialOutputPolicies>,
-                                    policy::InputsPolicies<
-                                        FlowDirectionInputPolicies,
-                                        InflowCountInputPolicies,
-                                        MaterialInputPolicies>>;
+                            auto const& indp_flow_direction =
+                                flow_direction_input_policies.input_no_data_policy();
+                            auto const& indp_material = material_input_policies.input_no_data_policy();
+                            auto const& ondp_output_material =
+                                material_output_policies.output_no_data_policy();
 
-                            AccumulatePolicies accumulate_policies{
-                                AccumulateDomainPolicy{},
-                                inflow_count_output_policies,
-                                material_output_policies,
-                                flow_direction_input_policies,
-                                inflow_count_input_policies,
-                                material_input_policies};
-
-                            using CellAccumulator = accu::CellAccumulator<MaterialElement, MaterialElement>;
+                            using CellAccumulator = accu::CellAccumulator<
+                                decltype(indp_material), decltype(ondp_output_material),
+                                MaterialElement, MaterialElement>;
                             using Accumulator =
                                 detail::Accumulator<PartitionIOData, MaterialData, CellAccumulator>;
 
@@ -203,13 +229,8 @@ namespace lue {
                             MaterialData output_material_data{partition_shape, 0};
 
                             Accumulator accumulator{
-                                partition_io_data, input_material_data(1, 1), CellAccumulator{},
-                                output_material_data};
-
-                            auto const& indp_inflow_count =
-                                std::get<1>(accumulate_policies.inputs_policies()).input_no_data_policy();
-                            auto const& ondp_output_material =
-                                std::get<1>(accumulate_policies.outputs_policies()).output_no_data_policy();
+                                partition_io_data, input_material_data(1, 1),
+                                CellAccumulator{indp_material, ondp_output_material}, output_material_data};
 
                             auto const [nr_elements0, nr_elements1] = partition_shape;
 
@@ -218,16 +239,13 @@ namespace lue {
                             for(Index idx0 = 0; idx0 < nr_elements0; ++idx0) {
                                 for(Index idx1 = 0; idx1 < nr_elements1; ++idx1)
                                 {
-                                    // Ridge cells are cells that don't receive
-                                    // input from other cells
-                                    if(indp_inflow_count.is_no_data(inflow_count_data, idx0, idx1))
+                                    if(indp_flow_direction.is_no_data(flow_direction_data(1, 1), idx0, idx1))
                                     {
+                                        // Skip cells for which we don't have a flow-direction
                                         ondp_output_material.mark_no_data(output_material_data, idx0, idx1);
                                     }
                                     else if(inflow_count_data(idx0, idx1) == 0)
                                     {
-                                        // Push material downstream until a cell is
-                                        // reached with inflow count > 1.
                                         detail::accumulate(
                                             accumulator, idx0, idx1, flow_direction_data(1, 1),
                                             inflow_count_data_copy);
@@ -282,7 +300,7 @@ namespace lue {
             typename InflowCountPartition,
             typename MaterialPartition>
         void accumulate_inter_partition_stream_cells(
-            [[maybe_unused]] Policies const& policies,
+            Policies const& policies,
             FlowDirectionPartition const& flow_direction_partition,
             InflowCountPartition const& inflow_count_partition,
             Array<PartitionIOComponent, 2> io_components,
@@ -356,12 +374,19 @@ namespace lue {
             auto& partition_io_server{*partition_io_ptr};
             auto& partition_io_data{partition_io_server.data()};
 
+            auto const& ondp_output_material =
+                std::get<0>(policies.outputs_policies()).output_no_data_policy();
+            auto const& indp_material =
+                std::get<1>(policies.inputs_policies()).input_no_data_policy();
+
             using PartitionIOData = typename PartitionIOComponent::Data;
 
-            using CellAccumulator = accu::CellAccumulator<MaterialElement, MaterialElement>;
+            using CellAccumulator = accu::CellAccumulator<
+                decltype(indp_material), decltype(ondp_output_material), MaterialElement, MaterialElement>;
             using Accumulator = detail::Accumulator<PartitionIOData, MaterialData, CellAccumulator>;
 
-            Accumulator accumulator{partition_io_data, material_data, CellAccumulator{}, flux_data};
+            Accumulator accumulator{partition_io_data, material_data,
+                CellAccumulator{indp_material, ondp_output_material}, flux_data};
 
             for(auto const& input_cells: input_cells_)
             {
@@ -372,10 +397,15 @@ namespace lue {
                     // Insert material at input cell and
                     // propagate as far as we can
 
+                    // In case the material is no-data, propagate this
+                    // in downstream direction
+
                     auto const [idx0, idx1] = input_cell_idxs;
 
                     lue_hpx_assert(inflow_count_data(idx0, idx1) >= 1);
-                    flux_data(idx0, idx1) += material;
+
+                    accumulator.cell_accumulator().accumulate_downstream(material, flux_data(idx0, idx1));
+
                     --inflow_count_data(idx0, idx1);
                     partition_io_data.remove_input_cell(input_cell_idxs);
 
@@ -717,6 +747,19 @@ namespace lue {
                 // that the global result is ready.
                 if(accu_futures.empty())
                 {
+
+                    // // ----------------------------------
+                    // // Useful for testing only.
+                    // for(Index p = 0; p < nr_partitions; ++p)
+                    // {
+                    //     if(!ready_partitions[p])
+                    //     {
+                    //         flux_promises[p].set_value(flux_partitions[p].get_id());
+                    //         ready_partitions[p] = true;
+                    //     }
+                    // }
+                    // // ----------------------------------
+
                     lue_hpx_assert(std::all_of(ready_partitions.begin(), ready_partitions.end(),
                         [](bool const set) { return set; }));
                     break;
@@ -860,6 +903,7 @@ namespace lue {
             typename FlowDirectionElement,
             typename MaterialElement>
         using DefaultValuePoliciesBase = Policies<
+            // TODO Only accept non-negative material values!!!
             AllValuesWithinDomain<FlowDirectionElement, MaterialElement>,
             OutputsPolicies<
                 OutputPolicies<MarkNoDataByValue<MaterialElement>>>,
@@ -943,8 +987,7 @@ namespace lue {
         using InflowCountPartitions = PartitionsT<InflowCountArray>;
         using InflowCountPartition =  PartitionT<InflowCountArray>;
 
-        using CountElement = std::uint64_t;
-        using PartitionIOArray = ComponentArray<ArrayPartitionIO<lue::Index, rank, CountElement>, rank>;
+        using PartitionIOArray = ComponentArray<ArrayPartitionIO<lue::Index, rank, MaterialElement>, rank>;
         using PartitionIOComponents = ElementsT<PartitionIOArray>;
         using PartitionIOComponent = ElementT<PartitionIOArray>;
 

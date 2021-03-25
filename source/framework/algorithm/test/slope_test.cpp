@@ -28,8 +28,6 @@ BOOST_AUTO_TEST_CASE(use_case_1)
     lue::Rank const rank{2};
 
     using Array = lue::PartitionedArray<Element, rank>;
-    using Partition = lue::PartitionT<Array>;
-    using PartitionData = lue::DataT<Partition>;
     using Shape = lue::ShapeT<Array>;
 
     Shape shape{nr_rows, nr_cols};

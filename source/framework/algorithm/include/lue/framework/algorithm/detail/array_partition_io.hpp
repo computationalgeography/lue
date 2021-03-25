@@ -180,6 +180,17 @@ namespace lue::detail {
             }
 
 
+            bool contains_input_cell(
+                Indices const& input_cell_idxs)
+            {
+                std::scoped_lock lock{_input_cells_idxs_mutex};
+
+                return
+                    std::find(_input_cells_idxs.begin(), _input_cells_idxs.end(), input_cell_idxs) !=
+                    _input_cells_idxs.end();
+            }
+
+
             void remove_input_cell(
                 Indices const& input_cell_idxs)
             {

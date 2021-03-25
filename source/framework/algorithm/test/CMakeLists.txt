@@ -1,5 +1,15 @@
+add_library(lue_framework_algorithm_test
+    flow_accumulation.cpp
+)
+target_link_libraries(lue_framework_algorithm_test
+    PUBLIC
+        lue::framework_algorithm
+        lue::framework_test
+)
+
 set(names
     accu_test.cpp
+    accu_fraction_test.cpp
     add_test.cpp
     all_test.cpp
     any_test.cpp
@@ -61,6 +71,7 @@ add_unit_tests(
     NAMES
         kernel_test.cpp
     LINK_LIBRARIES
+        lue_framework_algorithm_test
         lue::framework_algorithm
         lue::framework_test
 )
@@ -69,6 +80,7 @@ add_hpx_unit_tests(
     SCOPE lue_framework_algorithm
     NAMES ${names}
     LINK_LIBRARIES
+        lue_framework_algorithm_test
         lue::framework_algorithm
         lue::framework_test
 )

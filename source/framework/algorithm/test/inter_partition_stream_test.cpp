@@ -1,6 +1,7 @@
 #define BOOST_TEST_MODULE lue framework algorithm inter_partition_stream
 #include "lue/framework/algorithm/inter_partition_stream.hpp"
 #include "lue/framework/algorithm/policy.hpp"
+#include "flow_accumulation.hpp"
 #include "stream.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
@@ -122,21 +123,10 @@ namespace lue::test {
 
 namespace {
 
-    std::size_t const rank = 2;
+    // Grab symbols from flow_accumulation header
+    using namespace lue::test;
 
-    using FlowDirectionElement = std::uint32_t;
-    using FlowDirection = lue::PartitionedArray<FlowDirectionElement, rank>;
-    auto const n{lue::north<FlowDirectionElement>};
-    auto const ne{lue::north_east<FlowDirectionElement>};
-    auto const e{lue::east<FlowDirectionElement>};
-    auto const se{lue::south_east<FlowDirectionElement>};
-    auto const s{lue::south<FlowDirectionElement>};
-    auto const sw{lue::south_west<FlowDirectionElement>};
-    auto const w{lue::west<FlowDirectionElement>};
-    auto const nw{lue::north_west<FlowDirectionElement>};
-    auto const p{lue::sink<FlowDirectionElement>};
-    auto const nd{lue::no_data<FlowDirectionElement>};
-
+    std::size_t const rank = 2; 
 
     using CountElement = std::uint64_t;
     using InflowCount = lue::PartitionedArray<CountElement, rank>;
@@ -151,11 +141,6 @@ namespace {
     using StreamCells = lue::PartitionedArray<StreamClass, rank>;
     StreamClass const t{lue::inter_partition_stream_cell};
     StreamClass const f{lue::intra_partition_stream_cell};
-
-    using Shape = lue::ShapeT<FlowDirection>;
-    Shape const array_shape{{9, 9}};
-    Shape const partition_shape{{3, 3}};
-
 
     template<
         typename Policies,
@@ -251,7 +236,7 @@ BOOST_AUTO_TEST_CASE(parallel_east)
     io8.add_output_cell({2, 2}, offset, MaterialElement{{{2, 0}}, t, 3});
 
     auto flow_direction_array =
-        lue::test::create_partitioned_array<FlowDirection>(array_shape, partition_shape,
+        lue::test::create_partitioned_array<FlowDirectionArray>(array_shape, partition_shape,
             {
                 {
                     e, e, e,
@@ -430,7 +415,7 @@ BOOST_AUTO_TEST_CASE(parallel_south_east)
     io8.add_output_cell({2, 2}, offset, MaterialElement{{{0, 0}}, t, 3});
 
     auto flow_direction_array =
-        lue::test::create_partitioned_array<FlowDirection>(array_shape, partition_shape,
+        lue::test::create_partitioned_array<FlowDirectionArray>(array_shape, partition_shape,
             {
                 {
                     se, se, se,
@@ -591,7 +576,7 @@ BOOST_AUTO_TEST_CASE(parallel_south)
     io8.add_output_cell({2, 2}, offset, MaterialElement{{{0, 2}}, t, 3});
 
     auto flow_direction_array =
-        lue::test::create_partitioned_array<FlowDirection>(array_shape, partition_shape,
+        lue::test::create_partitioned_array<FlowDirectionArray>(array_shape, partition_shape,
             {
                 {
                     s, s, s,
@@ -770,7 +755,7 @@ BOOST_AUTO_TEST_CASE(parallel_south_west)
     io8.add_output_cell({2, 2}, offset, MaterialElement{{      }, f, 1});
 
     auto flow_direction_array =
-        lue::test::create_partitioned_array<FlowDirection>(array_shape, partition_shape,
+        lue::test::create_partitioned_array<FlowDirectionArray>(array_shape, partition_shape,
             {
                 {
                     sw, sw, sw,
@@ -931,7 +916,7 @@ BOOST_AUTO_TEST_CASE(parallel_west)
     io8.add_output_cell({2, 0}, offset, MaterialElement{{      }, f, 3});
 
     auto flow_direction_array =
-        lue::test::create_partitioned_array<FlowDirection>(array_shape, partition_shape,
+        lue::test::create_partitioned_array<FlowDirectionArray>(array_shape, partition_shape,
             {
                 {
                     w, w, w,
@@ -1111,7 +1096,7 @@ BOOST_AUTO_TEST_CASE(parallel_north_west)
 
 
     auto flow_direction_array =
-        lue::test::create_partitioned_array<FlowDirection>(array_shape, partition_shape,
+        lue::test::create_partitioned_array<FlowDirectionArray>(array_shape, partition_shape,
             {
                 {
                     nw, nw, nw,
@@ -1272,7 +1257,7 @@ BOOST_AUTO_TEST_CASE(parallel_north)
     io8.add_output_cell({0, 2}, offset, MaterialElement{{      }, f, 3});
 
     auto flow_direction_array =
-        lue::test::create_partitioned_array<FlowDirection>(array_shape, partition_shape,
+        lue::test::create_partitioned_array<FlowDirectionArray>(array_shape, partition_shape,
             {
                 {
                     n, n, n,
@@ -1451,7 +1436,7 @@ BOOST_AUTO_TEST_CASE(parallel_north_east)
     io8.add_output_cell({2, 2}, offset, MaterialElement{{      }, f, 1});
 
     auto flow_direction_array =
-        lue::test::create_partitioned_array<FlowDirection>(array_shape, partition_shape,
+        lue::test::create_partitioned_array<FlowDirectionArray>(array_shape, partition_shape,
             {
                 {
                     ne, ne, ne,
@@ -1576,7 +1561,7 @@ BOOST_AUTO_TEST_CASE(pit)
     // No partition output cells...
 
     auto flow_direction_array =
-        lue::test::create_partitioned_array<FlowDirection>(partition_shape, partition_shape,
+        lue::test::create_partitioned_array<FlowDirectionArray>(partition_shape, partition_shape,
             {{
                 se,  s, sw,
                  e,  p,  w,
@@ -1622,7 +1607,7 @@ BOOST_AUTO_TEST_CASE(diverge)
     io0.add_output_cell({2, 2}, Offset{ 1,  1}, MaterialElement{{      }, f, 1});
 
     auto flow_direction_array =
-        lue::test::create_partitioned_array<FlowDirection>(partition_shape, partition_shape,
+        lue::test::create_partitioned_array<FlowDirectionArray>(partition_shape, partition_shape,
             {{
                 nw,  n, ne,
                  w,  s,  e,
@@ -1662,7 +1647,7 @@ BOOST_AUTO_TEST_CASE(converge)
     io0.add_output_cell({2, 1}, Offset{1, 0}, MaterialElement{{      }, f, 9});
 
     auto flow_direction_array =
-        lue::test::create_partitioned_array<FlowDirection>(partition_shape, partition_shape,
+        lue::test::create_partitioned_array<FlowDirectionArray>(partition_shape, partition_shape,
             {{
                 se,  s, sw,
                  e,  s,  w,
@@ -1687,7 +1672,7 @@ BOOST_AUTO_TEST_CASE(converge)
 }
 
 
-BOOST_AUTO_TEST_CASE(all_no_data)
+BOOST_AUTO_TEST_CASE(all_no_data_case)
 {
     // +---+---+---+
     // | X | X | X |
@@ -1725,7 +1710,7 @@ BOOST_AUTO_TEST_CASE(all_no_data)
     PartitionIO io0{partition_shape, {}};
 
     auto flow_direction_array =
-        lue::test::create_partitioned_array<FlowDirection>(partition_shape, partition_shape,
+        lue::test::create_partitioned_array<FlowDirectionArray>(partition_shape, partition_shape,
             {{
                 nd, nd, nd,
                 nd, nd, nd,
@@ -1751,7 +1736,7 @@ BOOST_AUTO_TEST_CASE(all_no_data)
 }
 
 
-BOOST_AUTO_TEST_CASE(no_data)
+BOOST_AUTO_TEST_CASE(no_data_case)
 {
     using DomainPolicy = lue::policy::AllValuesWithinDomain<FlowDirectionElement>;
 
@@ -1787,7 +1772,7 @@ BOOST_AUTO_TEST_CASE(no_data)
     io1.add_output_cell({2, 2}, Offset{0, 1}, MaterialElement{{      }, f, 3});
 
     auto flow_direction_array =
-        lue::test::create_partitioned_array<FlowDirection>({3, 6}, partition_shape,
+        lue::test::create_partitioned_array<FlowDirectionArray>({3, 6}, partition_shape,
             {
                 {
                      e,  s, nd,
@@ -1827,7 +1812,7 @@ BOOST_AUTO_TEST_CASE(no_data)
 }
 
 
-BOOST_AUTO_TEST_CASE(merging_inter_partition_streams)
+BOOST_AUTO_TEST_CASE(merging_streams_case)
 {
     using DomainPolicy = lue::policy::AllValuesWithinDomain<FlowDirectionElement>;
 
@@ -1891,55 +1876,55 @@ BOOST_AUTO_TEST_CASE(merging_inter_partition_streams)
     io8.add_output_cell({1, 0}, Offset{ 0, -1}, MaterialElement{{      }, f, 1});
     io8.add_output_cell({2, 0}, Offset{ 0, -1}, MaterialElement{{      }, f, 1});
 
-    auto flow_direction_array =
-        lue::test::create_partitioned_array<FlowDirection>(array_shape, partition_shape,
-            {
-                { // 0, 0
-                    nd, nd, nd,
-                    nd, nd, nd,
-                    nd, nd, se,
-                },
-                { // 0, 1
-                    nd, nw, se,
-                    nd,  s,  e,
-                    nd,  s, nd,
-                },
-                { // 0, 2
-                    nd,  s, sw,
-                    se,  s,  w,
-                    nd,  s, sw,
-                },
-                { // 1, 0
-                    nd, nd,  e,
-                    nd, nd, ne,
-                    nd, nd,  e,
-                },
-                { // 1, 1
-                     e,  s,  w,
-                    nd,  s,  w,
-                     e,  s,  w,
-                },
-                { // 1, 2
-                     w,  w, nd,
-                     w, nd, nd,
-                     w, nd, nd,
-                },
-                { // 2, 0
-                    nd, nd, nd,
-                    nd, nd, nd,
-                    nd, nd,  s,
-                },
-                { // 2, 1
-                    nd,  s, nd,
-                    sw,  w,  w,
-                     w,  w,  w,
-                },
-                { // 2, 2
-                    nw, nd, nd,
-                     w, nd, nd,
-                     w, nd, nd,
-                },
-            });
+    auto flow_direction_array = lue::test::merging_streams();
+    //     lue::test::create_partitioned_array<FlowDirectionArray>(array_shape, partition_shape,
+    //         {
+    //             { // 0, 0
+    //                 nd, nd, nd,
+    //                 nd, nd, nd,
+    //                 nd, nd, se,
+    //             },
+    //             { // 0, 1
+    //                 nd, nw, se,
+    //                 nd,  s,  e,
+    //                 nd,  s, nd,
+    //             },
+    //             { // 0, 2
+    //                 nd,  s, sw,
+    //                 se,  s,  w,
+    //                 nd,  s, sw,
+    //             },
+    //             { // 1, 0
+    //                 nd, nd,  e,
+    //                 nd, nd, ne,
+    //                 nd, nd,  e,
+    //             },
+    //             { // 1, 1
+    //                  e,  s,  w,
+    //                 nd,  s,  w,
+    //                  e,  s,  w,
+    //             },
+    //             { // 1, 2
+    //                  w,  w, nd,
+    //                  w, nd, nd,
+    //                  w, nd, nd,
+    //             },
+    //             { // 2, 0
+    //                 nd, nd, nd,
+    //                 nd, nd, nd,
+    //                 nd, nd,  s,
+    //             },
+    //             { // 2, 1
+    //                 nd,  s, nd,
+    //                 sw,  w,  w,
+    //                  w,  w,  w,
+    //             },
+    //             { // 2, 2
+    //                 nw, nd, nd,
+    //                  w, nd, nd,
+    //                  w, nd, nd,
+    //             },
+    //         });
 
     auto stream_cells_array =
         lue::test::create_partitioned_array<StreamCells>(array_shape, partition_shape,
