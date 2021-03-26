@@ -114,7 +114,7 @@ struct UnaryAggregateOperationPartitionAction:
                 Policies, InputPartition, OutputElement, Functor>,
             UnaryAggregateOperationPartitionAction<
                 Policies, InputPartition, OutputElement, Functor>
-        >
+        >::type
 {};
 
 }  // namespace detail

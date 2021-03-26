@@ -3,7 +3,7 @@
 add_hpx_executable(lue_hello_world
     ESSENTIAL
     SOURCES
-        hello_world
+        hello_world.cpp
     COMPONENT_DEPENDENCIES
         iostreams
 )

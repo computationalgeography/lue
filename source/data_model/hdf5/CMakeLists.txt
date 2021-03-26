@@ -6,28 +6,28 @@ configure_file(
 )
 
 add_library(lue_hdf5 STATIC
-    src/attribute
-    src/attributes
-    src/chunk
-    src/dataset
-    src/dataspace
-    src/datatype
-    src/error_stack
-    src/file
-    src/group
-    src/hard_link
-    src/hyperslab
-    src/identifier
-    src/issue
-    src/issues
-    src/link
-    src/object_info
-    src/primary_data_object
-    src/property_list
-    src/shape
-    src/soft_link
-    src/validate
-    src/vlen_memory
+    src/attribute.cpp
+    src/attributes.cpp
+    src/chunk.cpp
+    src/dataset.cpp
+    src/dataspace.cpp
+    src/datatype.cpp
+    src/error_stack.cpp
+    src/file.cpp
+    src/group.cpp
+    src/hard_link.cpp
+    src/hyperslab.cpp
+    src/identifier.cpp
+    src/issue.cpp
+    src/issues.cpp
+    src/link.cpp
+    src/object_info.cpp
+    src/primary_data_object.cpp
+    src/property_list.cpp
+    src/shape.cpp
+    src/soft_link.cpp
+    src/validate.cpp
+    src/vlen_memory.cpp
 )
 
 add_library(lue::hdf5 ALIAS lue_hdf5)

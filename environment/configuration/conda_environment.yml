@@ -3,16 +3,16 @@ channels:
 - conda-forge
 - defaults
 dependencies:
-- breathe
+# - breathe
 - conan
 - docopt
-- doxygen
-- matplotlib
+# - doxygen
+# - matplotlib
 - ipython
 - numpy
-- rasterio
-- scipy
-- setuptools
-- sphinx
-- sphinx_rtd_theme
-- tqdm
+# - rasterio
+# - scipy
+# - setuptools
+# - sphinx
+# - sphinx_rtd_theme
+# - tqdm

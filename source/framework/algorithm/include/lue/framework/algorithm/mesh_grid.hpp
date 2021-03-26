@@ -89,7 +89,7 @@ struct MeshGridPartitionAction:
     hpx::actions::make_action<
         decltype(&mesh_grid_partition<InputElement, OutputElement, rank>),
         &mesh_grid_partition<InputElement, OutputElement, rank>,
-        MeshGridPartitionAction<InputElement, OutputElement, rank>>
+        MeshGridPartitionAction<InputElement, OutputElement, rank>>::type
 {};
 
 }  // namespace detail

@@ -2,45 +2,45 @@
 add_test_conditionally(test)
 
 pybind11_add_module(lue_py_framework SHARED SYSTEM THIN_LTO
-    src/algorithm/add
-    src/algorithm/all
-    src/algorithm/divide
-    src/algorithm/equal_to
-    src/algorithm/greater_than
-    src/algorithm/greater_than_equal_to
-    src/algorithm/less_than
-    src/algorithm/less_than_equal_to
-    src/algorithm/local_operation
-    src/algorithm/log
-    src/algorithm/maximum
-    src/algorithm/minimum
-    src/algorithm/multiply
-    src/algorithm/not_equal_to
-    src/algorithm/pow
-    src/algorithm/sqrt
-    src/algorithm/subtract
-    src/algorithm/uniform
-    src/algorithm/where
-    src/core/create_partitioned_array
-    src/core/partitioned_array
-    src/core/partitioned_array_uint8
-    src/core/partitioned_array_uint32
-    src/core/partitioned_array_uint64
-    src/core/partitioned_array_int32
-    src/core/partitioned_array_int64
-    src/core/partitioned_array_float
-    src/core/partitioned_array_double
-    src/io/read_array
-    src/command_line
-    src/hpx
-    src/hpx_runtime
-    src/python_extension
-    src/submodule
+    src/algorithm/add.cpp
+    src/algorithm/all.cpp
+    src/algorithm/divide.cpp
+    src/algorithm/equal_to.cpp
+    src/algorithm/greater_than.cpp
+    src/algorithm/greater_than_equal_to.cpp
+    src/algorithm/less_than.cpp
+    src/algorithm/less_than_equal_to.cpp
+    src/algorithm/local_operation.cpp
+    src/algorithm/log.cpp
+    src/algorithm/maximum.cpp
+    src/algorithm/minimum.cpp
+    src/algorithm/multiply.cpp
+    src/algorithm/not_equal_to.cpp
+    src/algorithm/pow.cpp
+    src/algorithm/sqrt.cpp
+    src/algorithm/subtract.cpp
+    src/algorithm/uniform.cpp
+    src/algorithm/where.cpp
+    src/core/create_partitioned_array.cpp
+    src/core/partitioned_array.cpp
+    src/core/partitioned_array_uint8.cpp
+    src/core/partitioned_array_uint32.cpp
+    src/core/partitioned_array_uint64.cpp
+    src/core/partitioned_array_int32.cpp
+    src/core/partitioned_array_int64.cpp
+    src/core/partitioned_array_float.cpp
+    src/core/partitioned_array_double.cpp
+    src/io/read_array.cpp
+    src/command_line.cpp
+    src/hpx.cpp
+    src/hpx_runtime.cpp
+    src/python_extension.cpp
+    src/submodule.cpp
 )
 
 # if(LUE_FRAMEWORK_WITH_DASHBOARD)
 #     list(APPEND sources
-#        src/dashboard/dashboard)
+#        src/dashboard/dashboard.cpp)
 # endif()
 
 add_library(lue::py_framework ALIAS lue_py_framework)

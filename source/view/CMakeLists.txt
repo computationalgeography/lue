@@ -1,9 +1,9 @@
 add_executable(lue_view
-    src/application
-    src/cache
-    src/configuration
-    src/dataset
-    src/main
+    src/application.cpp
+    src/cache.cpp
+    src/configuration.cpp
+    src/dataset.cpp
+    src/main.cpp
 )
 
 target_compile_options(lue_view

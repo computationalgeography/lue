@@ -75,7 +75,7 @@ struct UniqueIDPartitionAction:
     hpx::actions::make_action<
         decltype(&detail::unique_id_partition<Partition>),
         &detail::unique_id_partition<Partition>,
-        UniqueIDPartitionAction<Partition>>
+        UniqueIDPartitionAction<Partition>>::type
 {};
 
 

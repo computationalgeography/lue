@@ -1,5 +1,5 @@
 add_library(lue_validate_lib STATIC
-    src/validate
+    src/validate.cpp
 )
 
 add_library(lue::validate ALIAS lue_validate_lib)
@@ -16,7 +16,7 @@ target_link_libraries(lue_validate_lib
 )
 
 add_executable(lue_validate
-    src/main
+    src/main.cpp
 )
 
 target_link_libraries(lue_validate

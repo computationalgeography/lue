@@ -1,13 +1,13 @@
 add_test_conditionally(test)
 
 add_library(lue_utility
-    src/application
-    src/command
-    src/environment
-    src/metadata
-    src/print_message
-    src/progress_indicator
-    src/stopwatch
+    src/application.cpp
+    src/command.cpp
+    src/environment.cpp
+    src/metadata.cpp
+    src/print_message.cpp
+    src/progress_indicator.cpp
+    src/stopwatch.cpp
 )
 
 add_library(lue::utility ALIAS lue_utility)
@@ -16,8 +16,6 @@ target_include_directories(lue_utility
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>
-    # PRIVATE
-    #     fmt::fmt
 )
 
 target_link_libraries(lue_utility
@@ -25,6 +23,4 @@ target_link_libraries(lue_utility
         lue::data_model
         docopt::docopt
         nlohmann_json::nlohmann_json
-    # PRIVATE
-    #     fmt::fmt
 )

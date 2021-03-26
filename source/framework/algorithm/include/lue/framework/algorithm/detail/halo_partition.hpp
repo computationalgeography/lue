@@ -87,7 +87,7 @@ struct CornerHaloPartitionAction:
     hpx::actions::make_action<
         decltype(&corner_halo_partition<Element>),
         &corner_halo_partition<Element>,
-        CornerHaloPartitionAction<Element>>
+        CornerHaloPartitionAction<Element>>::type
 {};
 
 
@@ -97,7 +97,7 @@ struct LongitudinalSideHaloPartitionAction:
     hpx::actions::make_action<
         decltype(&longitudinal_side_halo_partition<Element>),
         &longitudinal_side_halo_partition<Element>,
-        LongitudinalSideHaloPartitionAction<Element>>
+        LongitudinalSideHaloPartitionAction<Element>>::type
 {};
 
 
@@ -107,7 +107,7 @@ struct LatitudinalSideHaloPartitionAction:
     hpx::actions::make_action<
         decltype(&latitudinal_side_halo_partition<Element>),
         &latitudinal_side_halo_partition<Element>,
-        LatitudinalSideHaloPartitionAction<Element>>
+        LatitudinalSideHaloPartitionAction<Element>>::type
 {};
 
 

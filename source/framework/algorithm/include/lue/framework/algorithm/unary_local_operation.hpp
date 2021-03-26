@@ -80,7 +80,7 @@ struct UnaryLocalOperationPartitionAction:
             decltype(&unary_local_operation_partition<Policies, InputPartition, OutputPartition, Functor>),
             &unary_local_operation_partition<Policies, InputPartition, OutputPartition, Functor>,
             UnaryLocalOperationPartitionAction<Policies, InputPartition, OutputPartition, Functor>
-        >
+        >::type
 {};
 
 }  // namespace detail

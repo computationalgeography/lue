@@ -79,7 +79,7 @@ struct RangePartitionAction:
     hpx::actions::make_action<
         decltype(&detail::range_partition<Partition>),
         &detail::range_partition<Partition>,
-        RangePartitionAction<Partition>>
+        RangePartitionAction<Partition>>::type
 {};
 
 
@@ -141,7 +141,9 @@ template<
                 auto const nr_partitions = lue::nr_partitions(partitions);
                 auto const [nr_partitions0, nr_partitions1] = partitions.shape();
 
-                auto partition_shapes_futures = hpx::util::get<0>(data).get();
+                auto [data1_f, data2_f] = std::move(data);
+
+                auto partition_shapes_futures = data1_f.get();
                 std::vector<Shape> partition_shapes(nr_partitions);
                 std::transform(
                     partition_shapes_futures.begin(),
@@ -158,7 +160,7 @@ template<
                     partition_shapes.data(),
                     nr_partitions0, nr_partitions1);
 
-                Element start_value = hpx::util::get<1>(data).get();
+                Element start_value{data2_f.get()};
 
                 Count const stride = std::get<1>(array_shape);
 

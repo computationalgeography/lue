@@ -117,7 +117,7 @@ struct NumberPartitionsPerLocalityAction:
             decltype(&number_partition_per_locality</* Policies, */ Partition>),
             &number_partition_per_locality</* Policies, */ Partition>,
             NumberPartitionsPerLocalityAction</* Policies, */ Partition>
-        >
+        >::type
 {};
 
 

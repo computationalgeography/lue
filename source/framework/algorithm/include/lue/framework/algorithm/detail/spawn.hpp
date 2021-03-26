@@ -68,7 +68,7 @@ template<
     typename InputPartitions,
     typename Policies,
     typename Action>
-hpx::util::tuple<OutputPartition1, OutputPartition2> spawn_partition(
+hpx::tuple<OutputPartition1, OutputPartition2> spawn_partition(
     hpx::id_type const locality_id,
     Action const& action,
     Policies const& policies,
@@ -254,7 +254,7 @@ std::tuple<OutputPartitions1, OutputPartitions2> spawn_partitions(
     // North-west partition
     idx0 = 0;
     idx1 = 0;
-    hpx::util::tie(output_partitions1(idx0, idx1), output_partitions2(idx0, idx1)) =
+    hpx::tie(output_partitions1(idx0, idx1), output_partitions2(idx0, idx1)) =
         spawn_partition<OutputPartition1, OutputPartition2>(localities(idx0, idx1),
             action, policies, Offset{idx0, idx1},
             north_west_corner_input_partitions(
@@ -266,7 +266,7 @@ std::tuple<OutputPartitions1, OutputPartitions2> spawn_partitions(
         // North-east partition
         idx0 = 0;
         idx1 = nr_partitions1 - 1;
-        hpx::util::tie(output_partitions1(idx0, idx1), output_partitions2(idx0, idx1)) =
+        hpx::tie(output_partitions1(idx0, idx1), output_partitions2(idx0, idx1)) =
             spawn_partition<OutputPartition1, OutputPartition2>(localities(idx0, idx1),
                 action, policies, Offset{idx0, idx1},
                 north_east_corner_input_partitions(
@@ -279,7 +279,7 @@ std::tuple<OutputPartitions1, OutputPartitions2> spawn_partitions(
         // South-west partition
         idx0 = nr_partitions0 - 1;
         idx1 = 0;
-        hpx::util::tie(output_partitions1(idx0, idx1), output_partitions2(idx0, idx1)) =
+        hpx::tie(output_partitions1(idx0, idx1), output_partitions2(idx0, idx1)) =
             spawn_partition<OutputPartition1, OutputPartition2>(localities(idx0, idx1),
                 action, policies, Offset{idx0, idx1},
                 south_west_corner_input_partitions(
@@ -292,7 +292,7 @@ std::tuple<OutputPartitions1, OutputPartitions2> spawn_partitions(
         // South-east partition
         idx0 = nr_partitions0 - 1;
         idx1 = nr_partitions1 - 1;
-        hpx::util::tie(output_partitions1(idx0, idx1), output_partitions2(idx0, idx1)) =
+        hpx::tie(output_partitions1(idx0, idx1), output_partitions2(idx0, idx1)) =
             spawn_partition<OutputPartition1, OutputPartition2>(localities(idx0, idx1),
                 action, policies, Offset{idx0, idx1},
                 south_east_corner_input_partitions(
@@ -303,7 +303,7 @@ std::tuple<OutputPartitions1, OutputPartitions2> spawn_partitions(
     for(idx0 = 0, idx1 = 1; idx1 < nr_partitions1 - 1; ++idx1)
     {
         // North-side partitions
-        hpx::util::tie(output_partitions1(idx0, idx1), output_partitions2(idx0, idx1)) =
+        hpx::tie(output_partitions1(idx0, idx1), output_partitions2(idx0, idx1)) =
             spawn_partition<OutputPartition1, OutputPartition2>(localities(idx0, idx1),
                 action, policies, Offset{idx0, idx1},
                 north_side_input_partitions(idx1, input_partitions, halo_longitudinal_side_partitions));
@@ -314,7 +314,7 @@ std::tuple<OutputPartitions1, OutputPartitions2> spawn_partitions(
         // South-side partitions
         for(idx0 = nr_partitions0 - 1, idx1 = 1; idx1 < nr_partitions1 - 1; ++idx1)
         {
-            hpx::util::tie(output_partitions1(idx0, idx1), output_partitions2(idx0, idx1)) =
+            hpx::tie(output_partitions1(idx0, idx1), output_partitions2(idx0, idx1)) =
                 spawn_partition<OutputPartition1, OutputPartition2>(localities(idx0, idx1),
                     action, policies, Offset{idx0, idx1},
                     south_side_input_partitions(idx1, input_partitions, halo_longitudinal_side_partitions));
@@ -324,7 +324,7 @@ std::tuple<OutputPartitions1, OutputPartitions2> spawn_partitions(
     // West-side partitions
     for(idx0 = 1, idx1 = 0; idx0 < nr_partitions0 - 1; ++idx0)
     {
-        hpx::util::tie(output_partitions1(idx0, idx1), output_partitions2(idx0, idx1)) =
+        hpx::tie(output_partitions1(idx0, idx1), output_partitions2(idx0, idx1)) =
             spawn_partition<OutputPartition1, OutputPartition2>(localities(idx0, idx1),
                 action, policies, Offset{idx0, idx1},
                 west_side_input_partitions(idx0, input_partitions, halo_latitudinal_side_partitions));
@@ -335,7 +335,7 @@ std::tuple<OutputPartitions1, OutputPartitions2> spawn_partitions(
         // East-side partitions
         for(idx0 = 1, idx1 = nr_partitions1 - 1; idx0 < nr_partitions0 - 1; ++idx0)
         {
-            hpx::util::tie(output_partitions1(idx0, idx1), output_partitions2(idx0, idx1)) =
+            hpx::tie(output_partitions1(idx0, idx1), output_partitions2(idx0, idx1)) =
                 spawn_partition<OutputPartition1, OutputPartition2>(localities(idx0, idx1),
                     action, policies, Offset{idx0, idx1},
                     east_side_input_partitions(idx0, input_partitions, halo_latitudinal_side_partitions));
@@ -347,7 +347,7 @@ std::tuple<OutputPartitions1, OutputPartitions2> spawn_partitions(
         for(idx1 = 1; idx1 < nr_partitions1 - 1; ++idx1)
         {
             // Center partitions
-            hpx::util::tie(output_partitions1(idx0, idx1), output_partitions2(idx0, idx1)) =
+            hpx::tie(output_partitions1(idx0, idx1), output_partitions2(idx0, idx1)) =
                 spawn_partition<OutputPartition1, OutputPartition2>(localities(idx0, idx1),
                     action, policies, Offset{idx0, idx1},
                     inner_input_partitions(idx0, idx1, input_partitions));

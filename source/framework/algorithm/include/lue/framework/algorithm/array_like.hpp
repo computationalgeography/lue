@@ -103,7 +103,7 @@ struct ArrayLikePartitionAction:
     hpx::actions::make_action<
         decltype(&detail::array_like_partition<Policies, InputElement, OutputElement, rank>),
         &detail::array_like_partition<Policies, InputElement, OutputElement, rank>,
-        ArrayLikePartitionAction<Policies, InputElement, OutputElement, rank>>
+        ArrayLikePartitionAction<Policies, InputElement, OutputElement, rank>>::type
 {};
 
 

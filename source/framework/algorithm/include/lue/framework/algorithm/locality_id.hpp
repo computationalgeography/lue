@@ -30,7 +30,7 @@ struct LocalityIDPartitionAction:
     hpx::actions::make_action<
         decltype(&detail::locality_id_partition<InputElement, rank>),
         &detail::locality_id_partition<InputElement, rank>,
-        LocalityIDPartitionAction<InputElement, rank>>
+        LocalityIDPartitionAction<InputElement, rank>>::type
 {};
 
 

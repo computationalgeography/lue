@@ -2,76 +2,76 @@ add_test_conditionally(test)
 
 pybind11_add_module(lue_py_data_model SHARED SYSTEM THIN_LTO
 
-    src/submodule
+    src/submodule.cpp
 
-    src/hdf5/dataset
-    src/hdf5/file
-    src/hdf5/group
-    src/hdf5/identifier
-    src/hdf5/shape
-    src/hdf5/submodule
-    src/hdf5/validate
+    src/hdf5/dataset.cpp
+    src/hdf5/file.cpp
+    src/hdf5/group.cpp
+    src/hdf5/identifier.cpp
+    src/hdf5/shape.cpp
+    src/hdf5/submodule.cpp
+    src/hdf5/validate.cpp
 
-    src/property_group
-    src/value_group
-    src/different_shape/submodule
-    src/different_shape/properties
-    src/different_shape/property
-    src/different_shape/value
-    src/different_shape/constant_shape/submodule
-    src/different_shape/constant_shape/properties
-    src/different_shape/constant_shape/property
-    src/different_shape/constant_shape/value
-    src/different_shape/variable_shape/submodule
-    src/different_shape/variable_shape/properties
-    src/different_shape/variable_shape/property
-    src/different_shape/variable_shape/value
-    src/same_shape/submodule
-    src/same_shape/properties
-    src/same_shape/property
-    src/same_shape/value
-    src/same_shape/constant_shape/submodule
-    src/same_shape/constant_shape/properties
-    src/same_shape/constant_shape/property
-    src/same_shape/constant_shape/value
-    src/same_shape/variable_shape/submodule
-    src/same_shape/variable_shape/properties
-    src/same_shape/variable_shape/property
-    src/same_shape/variable_shape/value
+    src/property_group.cpp
+    src/value_group.cpp
+    src/different_shape/submodule.cpp
+    src/different_shape/properties.cpp
+    src/different_shape/property.cpp
+    src/different_shape/value.cpp
+    src/different_shape/constant_shape/submodule.cpp
+    src/different_shape/constant_shape/properties.cpp
+    src/different_shape/constant_shape/property.cpp
+    src/different_shape/constant_shape/value.cpp
+    src/different_shape/variable_shape/submodule.cpp
+    src/different_shape/variable_shape/properties.cpp
+    src/different_shape/variable_shape/property.cpp
+    src/different_shape/variable_shape/value.cpp
+    src/same_shape/submodule.cpp
+    src/same_shape/properties.cpp
+    src/same_shape/property.cpp
+    src/same_shape/value.cpp
+    src/same_shape/constant_shape/submodule.cpp
+    src/same_shape/constant_shape/properties.cpp
+    src/same_shape/constant_shape/property.cpp
+    src/same_shape/constant_shape/value.cpp
+    src/same_shape/variable_shape/submodule.cpp
+    src/same_shape/variable_shape/properties.cpp
+    src/same_shape/variable_shape/property.cpp
+    src/same_shape/variable_shape/value.cpp
 
-    src/core/array
-    src/core/clock
-    src/core/time/epoch
-    src/conversion
-    src/dataset
+    src/core/array.cpp
+    src/core/clock.cpp
+    src/core/time/epoch.cpp
+    src/conversion.cpp
+    src/dataset.cpp
 
-    src/identity/active_object_id
-    src/identity/active_object_index
-    src/identity/active_set_index
-    src/identity/object_id
-    src/identity/object_tracker
+    src/identity/active_object_id.cpp
+    src/identity/active_object_index.cpp
+    src/identity/active_set_index.cpp
+    src/identity/object_id.cpp
+    src/identity/object_tracker.cpp
 
-    src/location_in_time
-    src/mobile_space_box
-    src/mobile_space_point
-    src/object/phenomenon
-    src/object/property_set
-    src/python_extension
-    src/object/space_domain
-    src/object/time_domain
-    src/object/universe
-    src/stationary_space_box
-    src/stationary_space_point
-    src/time_box
-    src/time_cell
-    src/time_point
-    src/validate
+    src/location_in_time.cpp
+    src/mobile_space_box.cpp
+    src/mobile_space_point.cpp
+    src/object/phenomenon.cpp
+    src/object/property_set.cpp
+    src/python_extension.cpp
+    src/object/space_domain.cpp
+    src/object/time_domain.cpp
+    src/object/universe.cpp
+    src/stationary_space_box.cpp
+    src/stationary_space_point.cpp
+    src/time_box.cpp
+    src/time_cell.cpp
+    src/time_point.cpp
+    src/validate.cpp
 
-    src/hl/dataset_view
-    src/hl/raster_view
-    src/hl/submodule
+    src/hl/dataset_view.cpp
+    src/hl/raster_view.cpp
+    src/hl/submodule.cpp
 
-    $<$<TARGET_EXISTS:lue::data_model_test>:src/test/submodule>
+    $<$<TARGET_EXISTS:lue::data_model_test>:src/test/submodule.cpp>
 )
 
 add_library(lue::py_data_model ALIAS lue_py_data_model)

@@ -1,7 +1,7 @@
 add_hpx_executable(lue_main_at_each_locality
     ESSENTIAL
     SOURCES
-        main
+        main.cpp
     COMPONENT_DEPENDENCIES
         iostreams
 )

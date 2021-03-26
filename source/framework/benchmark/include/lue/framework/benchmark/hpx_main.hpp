@@ -135,9 +135,8 @@ int main(                                                                      \
     int argc,                                                                  \
     char* argv[])                                                              \
 {                                                                              \
-    std::vector<std::string> cfg = {                                           \
-        configuration                                                          \
-    };                                                                         \
+    hpx::init_params params{};                                                 \
+    params.cfg = { configuration };                                            \
                                                                                \
-    return hpx::init(argc, argv, cfg);                                         \
+    return hpx::init(argc, argv, params);                                      \
 }

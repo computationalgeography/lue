@@ -108,7 +108,7 @@ template<
     typename InterPartitionStreamPartition,
     typename PartitionIOPartition,
     typename FlowDirectionPartitions>
-hpx::util::tuple<InterPartitionStreamPartition, PartitionIOPartition> inter_partition_stream_partition(
+hpx::tuple<InterPartitionStreamPartition, PartitionIOPartition> inter_partition_stream_partition(
     Policies const& policies,
     OffsetT<PartitionIOPartition> const& partition_offset,
     FlowDirectionPartitions const& flow_direction_partitions)
@@ -310,7 +310,7 @@ hpx::util::tuple<InterPartitionStreamPartition, PartitionIOPartition> inter_part
                     }
                     */
 
-                    return hpx::util::make_tuple(
+                    return hpx::make_tuple(
                         InterPartitionStreamPartition{
                             hpx::find_here(), offset, std::move(inter_partition_stream_data)},
                         PartitionIOPartition{
@@ -335,7 +335,7 @@ struct InterPartitionStreamPartitionAction:
         &inter_partition_stream_partition<
             Policies, InterPartitionStreamPartition, PartitionIOPartition, FlowDirectionPartitions>,
         InterPartitionStreamPartitionAction<
-            Policies, InterPartitionStreamPartition, PartitionIOPartition, FlowDirectionPartitions>>
+            Policies, InterPartitionStreamPartition, PartitionIOPartition, FlowDirectionPartitions>>::type
 {};
 
 }  // namespace detail
