@@ -1,7 +1,7 @@
 add_test_conditionally(test)
 
 add_library(lue_framework_model
-    src/model
+    src/model.cpp
 )
 
 add_library(lue::framework_model ALIAS lue_framework_model)

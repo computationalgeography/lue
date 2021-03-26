@@ -81,7 +81,7 @@ class OverloadPicker
             hpx::actions::make_action<
                 decltype(&zonal_operation_partition),
                 &zonal_operation_partition,
-                Action>
+                Action>::type
         {};
 
 };
@@ -169,7 +169,7 @@ class OverloadPicker<
             hpx::actions::make_action<
                 decltype(&zonal_operation_partition),
                 &zonal_operation_partition,
-                Action>
+                Action>::type
         {};
 
 };
@@ -261,7 +261,7 @@ struct ZonalOperationPartitionAction2:
                 Policies, ZonesPartition, OutputPartition, Functor>,
             ZonalOperationPartitionAction2<
                 Policies, ZonesPartition, OutputPartition, Functor>
-        >
+        >::type
 {};
 
 }  // namespace detail

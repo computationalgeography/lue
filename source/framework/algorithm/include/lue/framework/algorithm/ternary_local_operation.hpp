@@ -127,7 +127,7 @@ public:
         hpx::actions::make_action<
             decltype(&ternary_local_operation_partition),
             &ternary_local_operation_partition,
-            Action>
+            Action>::type
     {};
 
 };
@@ -240,7 +240,7 @@ public:
         hpx::actions::make_action<
             decltype(&ternary_local_operation_partition),
             &ternary_local_operation_partition,
-            Action>
+            Action>::type
     {};
 
 };
@@ -353,7 +353,7 @@ public:
         hpx::actions::make_action<
             decltype(&ternary_local_operation_partition),
             &ternary_local_operation_partition,
-            Action>
+            Action>::type
     {};
 
 };
@@ -458,7 +458,7 @@ public:
         hpx::actions::make_action<
             decltype(&ternary_local_operation_partition),
             &ternary_local_operation_partition,
-            Action>
+            Action>::type
     {};
 
 };

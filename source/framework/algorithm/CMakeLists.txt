@@ -7,7 +7,7 @@ endif()
 add_subdirectory(hpx)
 
 add_library(lue_framework_algorithm
-    src/component/array_partition
+    src/component/array_partition.cpp
 )
 
 add_library(lue::framework_algorithm ALIAS lue_framework_algorithm)

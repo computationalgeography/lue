@@ -13,7 +13,7 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     # It seems that clang doesn't set flag this by default yet
     set_property(
         SOURCE
-            python_test
+            python_test.cpp
         PROPERTY
             COMPILE_OPTIONS
                 -fsized-deallocation
@@ -23,7 +23,7 @@ endif()
 add_unit_tests(
     SCOPE lue_py_data_model
     NAMES
-        python_test
+        python_test.cpp
     INCLUDE_DIRS
         ${PYTHON_INCLUDE_DIRS}
     # OBJECT_LIBRARIES

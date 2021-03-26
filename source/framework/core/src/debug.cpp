@@ -61,8 +61,8 @@ std::vector<hpx::future<std::string>> all_locality_names()
     auto const locality_ids = hpx::find_all_localities();
     std::vector<hpx::future<std::string>> locality_names(locality_ids.size());
 
-    hpx::parallel::transform(
-        hpx::parallel::execution::par,
+    hpx::transform(
+        hpx::execution::par,
         locality_ids.begin(), locality_ids.end(), locality_names.begin(),
         [](auto const locality_id)
         {

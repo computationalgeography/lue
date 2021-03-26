@@ -18,8 +18,11 @@ HPXRuntime::HPXRuntime(
     hpx::util::function_nonser<int(int, char**)> start_function =
         hpx::util::bind_front(&HPXRuntime::hpx_main, this);
 
-    if(!hpx::start(start_function, _command_line.argc(), _command_line.argv(), _configuration,
-            hpx::runtime_mode::console))
+    hpx::init_params params{};
+    params.cfg = { _configuration };
+    params.mode = hpx::runtime_mode::console;
+
+    if(!hpx::start(start_function, _command_line.argc(), _command_line.argv(), params))
     {
         // Something went wrong while initializing the runtime.
         // This early we can't generate any output, just bail out.

@@ -12,7 +12,7 @@ configure_file(
 )
 
 pybind11_add_module(lue_py MODULE SYSTEM THIN_LTO
-    src/python_extension
+    src/python_extension.cpp
 )
 
 add_library(lue::py ALIAS lue_py)

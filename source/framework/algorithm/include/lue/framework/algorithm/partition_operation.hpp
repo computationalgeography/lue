@@ -102,7 +102,7 @@ struct PartitionAggregateOperationPartitionAction:
                 Policies, InputPartition, OutputPartition, Functor>,
             PartitionAggregateOperationPartitionAction<
                 Policies, InputPartition, OutputPartition, Functor>
-        >
+        >::type
 {};
 
 }  // namespace detail

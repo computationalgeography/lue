@@ -98,7 +98,7 @@ struct CopyPartitionAction:
     hpx::actions::make_action<
         decltype(&detail::copy_partition<Policies, Partition>),
         &detail::copy_partition<Policies, Partition>,
-        CopyPartitionAction<Policies, Partition>>
+        CopyPartitionAction<Policies, Partition>>::type
 {};
 
 

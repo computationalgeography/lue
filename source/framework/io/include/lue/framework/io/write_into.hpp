@@ -88,7 +88,7 @@ struct WriteIntoPartitionsAction:
             decltype(&write_into_partitions<Policies, Partitions>),
             &write_into_partitions<Policies, Partitions>,
             WriteIntoPartitionsAction<Policies, Partitions>
-        >
+        >::type
 {};
 
 }  // namespace detail

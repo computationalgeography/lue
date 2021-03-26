@@ -105,7 +105,7 @@ struct UniformPartitionAction:
     hpx::actions::make_action<
         decltype(&uniform_partition<Policies, InputPartition, OutputElement>),
         &uniform_partition<Policies, InputPartition, OutputElement>,
-        UniformPartitionAction<Policies, InputPartition, OutputElement>>
+        UniformPartitionAction<Policies, InputPartition, OutputElement>>::type
 {};
 
 }  // namespace uniform

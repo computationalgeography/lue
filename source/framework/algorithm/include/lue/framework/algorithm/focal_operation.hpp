@@ -1486,7 +1486,7 @@ struct FocalOperationPartitionAction:
     hpx::actions::make_action<
         decltype(&focal_operation_partition<OutputPartition, Kernel, Functor, InputPartitions...>),
         &focal_operation_partition<OutputPartition, Kernel, Functor, InputPartitions...>,
-        FocalOperationPartitionAction<OutputPartition, Kernel, Functor, InputPartitions...>>
+        FocalOperationPartitionAction<OutputPartition, Kernel, Functor, InputPartitions...>>::type
 {};
 
 

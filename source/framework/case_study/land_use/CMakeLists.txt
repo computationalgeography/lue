@@ -1,9 +1,9 @@
 add_subdirectory(doc)
 
 add_library(lue_land_use_change
-    src/change_land_use
-    src/land_use_change_model
-    src/land_use_change_model_base
+    src/change_land_use.cpp
+    src/land_use_change_model.cpp
+    src/land_use_change_model_base.cpp
 )
 
 add_library(lue::land_use_change ALIAS lue_land_use_change)
@@ -34,7 +34,7 @@ endif()
 add_hpx_executable(lue_change_land_use
     ESSENTIAL
     SOURCES
-        src/main
+        src/main.cpp
 )
 
 target_link_libraries(lue_change_land_use

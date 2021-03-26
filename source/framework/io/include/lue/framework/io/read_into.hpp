@@ -175,7 +175,7 @@ struct ReadIntoPartitionsAction:
             decltype(&read_into_partitions<Policies, Partitions>),
             &read_into_partitions<Policies, Partitions>,
             ReadIntoPartitionsAction<Policies, Partitions>
-        >
+        >::type
 {};
 
 
@@ -187,7 +187,7 @@ struct ReadIntoPartitionsAction2:
             decltype(&read_into_partitions2<Policies, Partitions>),
             &read_into_partitions2<Policies, Partitions>,
             ReadIntoPartitionsAction2<Policies, Partitions>
-        >
+        >::type
 {};
 
 }  // namespace detail

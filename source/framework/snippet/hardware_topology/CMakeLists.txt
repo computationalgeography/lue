@@ -1,7 +1,7 @@
 add_hpx_executable(lue_hardware_topology
     ESSENTIAL
     SOURCES
-        main
+        main.cpp
     COMPONENT_DEPENDENCIES
         iostreams
 )

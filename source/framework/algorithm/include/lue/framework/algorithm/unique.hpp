@@ -78,7 +78,7 @@ struct UniquePartitionAction:
     hpx::actions::make_action<
         decltype(&detail::unique_partition<Policies, Partition>),
         &detail::unique_partition<Policies, Partition>,
-        UniquePartitionAction<Policies, Partition>>
+        UniquePartitionAction<Policies, Partition>>::type
 {};
 
 

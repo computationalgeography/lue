@@ -1,0 +1,13 @@
+diff --git a/libs/core/threading_base/include/hpx/threading_base/annotated_function.hpp b/libs/core/threading_base/include/hpx/threading_base/annotated_function.hpp
+index 10949b9f4c2..84429153252 100644
+--- a/libs/core/threading_base/include/hpx/threading_base/annotated_function.hpp
++++ b/libs/core/threading_base/include/hpx/threading_base/annotated_function.hpp
+@@ -68,7 +68,7 @@ namespace hpx { namespace util {
+         hpx::util::itt::task task_;
+     };
+ #else
+-    struct HPX_NODISCARD annotate_function
++    struct annotate_function
+     {
+         HPX_NON_COPYABLE(annotate_function);
+ 

@@ -238,6 +238,9 @@ endif()
 # so packages using them will find them
 
 if(LUE_BOOST_REQUIRED)
+    # Disable search for boost-cmake stuff
+    set(Boost_NO_BOOST_CMAKE TRUE)
+
     if(NOT LUE_HAVE_BOOST)
         set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} boost/1.75.0)
         set(LUE_CONAN_OPTIONS ${LUE_CONAN_OPTIONS} boost:shared=True)
@@ -434,7 +437,7 @@ if(LUE_HPX_REQUIRED)
         else()
             # Obtain HPX from archive. This has the advantage of being
             # able to patch the source files.
-            set(hpx_version 1.5.1)
+            set(hpx_version 1.6.0)
 
             if(LUE_REPOSITORY_CACHE AND EXISTS ${LUE_REPOSITORY_CACHE})
                 # Use local archive
@@ -457,6 +460,8 @@ if(LUE_HPX_REQUIRED)
                 PATCH_COMMAND ${hpx_patch_command}
             )
         endif()
+
+        add_definitions(-DHPX_HAVE_DEPRECATION_WARNINGS_V1_6=0)
 
         FetchContent_MakeAvailable(hpx)
     endif()

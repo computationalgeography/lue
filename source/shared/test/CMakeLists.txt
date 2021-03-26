@@ -1,5 +1,5 @@
 set(names
-    no_data_test
+    no_data_test.cpp
 )
 
 add_unit_tests(

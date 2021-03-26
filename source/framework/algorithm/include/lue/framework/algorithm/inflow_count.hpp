@@ -886,7 +886,7 @@ struct InflowCountPartitionAction:
     hpx::actions::make_action<
         decltype(&inflow_count_partition<Policies, InflowCountPartition, FlowDirectionPartitions>),
         &inflow_count_partition<Policies, InflowCountPartition, FlowDirectionPartitions>,
-        InflowCountPartitionAction<Policies, InflowCountPartition, FlowDirectionPartitions>>
+        InflowCountPartitionAction<Policies, InflowCountPartition, FlowDirectionPartitions>>::type
 {};
 
 }  // namespace inflow_count

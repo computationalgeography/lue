@@ -3,7 +3,7 @@ if(LUE_FRAMEWORK_WITH_BENCHMARKS)
 endif()
 
 add_library(lue_airpolution
-    src/polute_air
+    src/polute_air.cpp
 )
 
 add_library(lue::airpolution ALIAS lue_airpolution)
@@ -28,7 +28,7 @@ target_link_libraries(lue_airpolution
 add_hpx_executable(lue_polute_air
     ESSENTIAL
     SOURCES
-        src/main
+        src/main.cpp
 )
 
 target_link_libraries(lue_polute_air

@@ -112,7 +112,7 @@ public:
         hpx::actions::make_action<
             decltype(&binary_local_operation_partition),
             &binary_local_operation_partition,
-            Action>
+            Action>::type
     {};
 
 };
@@ -209,7 +209,7 @@ public:
         hpx::actions::make_action<
             decltype(&binary_local_operation_partition),
             &binary_local_operation_partition,
-            Action>
+            Action>::type
     {};
 
 };
@@ -306,7 +306,7 @@ public:
         hpx::actions::make_action<
             decltype(&binary_local_operation_partition),
             &binary_local_operation_partition,
-            Action>
+            Action>::type
     {};
 
 };

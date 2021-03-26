@@ -1,12 +1,12 @@
 add_library(lue_benchmark
-    src/algorithm_benchmark_result
-    src/benchmark_model
-    src/environment
-    src/format
-    src/runtime_environment
-    src/stopwatch
-    src/task
-    src/time_interval
+    src/algorithm_benchmark_result.cpp
+    src/benchmark_model.cpp
+    src/environment.cpp
+    src/format.cpp
+    src/runtime_environment.cpp
+    src/stopwatch.cpp
+    src/task.cpp
+    src/time_interval.cpp
 )
 
 add_library(lue::benchmark ALIAS lue_benchmark)
@@ -28,7 +28,7 @@ hpx_setup_target(lue_benchmark
 )
 
 add_executable(lue_dummy_benchmark
-    src/dummy_benchmark
+    src/dummy_benchmark.cpp
 )
 
 target_link_libraries(lue_dummy_benchmark
@@ -38,7 +38,7 @@ target_link_libraries(lue_dummy_benchmark
 
 add_hpx_executable(lue_dummy_hpx_benchmark
     SOURCES
-        src/dummy_hpx_benchmark
+        src/dummy_hpx_benchmark.cpp
 )
 
 target_link_libraries(lue_dummy_hpx_benchmark

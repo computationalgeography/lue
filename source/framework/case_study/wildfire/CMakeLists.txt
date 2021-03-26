@@ -1,7 +1,7 @@
 add_library(lue_wildfire
-    src/burn_wilderness
-    src/wildfire_model
-    src/wildfire_model_base
+    src/burn_wilderness.cpp
+    src/wildfire_model.cpp
+    src/wildfire_model_base.cpp
 )
 
 add_library(lue::wildfire ALIAS lue_wildfire)
@@ -30,7 +30,7 @@ add_subdirectory(benchmark)
 add_hpx_executable(lue_burn_wilderness
     ESSENTIAL
     SOURCES
-        src/main
+        src/main.cpp
 )
 
 target_link_libraries(lue_burn_wilderness

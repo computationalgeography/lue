@@ -1,8 +1,8 @@
 add_test_conditionally(test)
 
 add_library(lue_framework_io
-    src/read
-    src/write
+    src/read.cpp
+    src/write.cpp
 )
 
 add_library(lue::framework_io ALIAS lue_framework_io)

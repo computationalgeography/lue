@@ -4,7 +4,7 @@
 # ctest command to run unit tests.
 #
 # SCOPE: Some prefix. Often the lib name of the lib being tested
-# NAME : Name of test module, without extension
+# NAME : Name of test module, with extension
 # UTF_ARGUMENTS_SEPARATOR: String to put between the command and the
 #     UTF arguments.
 #     TODO: This is how it could work:
@@ -41,7 +41,8 @@ macro(add_unit_test)
     endif()
 
     set(TEST_MODULE_NAME ${ADD_UNIT_TEST_NAME})
-    set(TEST_EXE_NAME ${ADD_UNIT_TEST_SCOPE}_${TEST_MODULE_NAME})
+    cmake_path(REMOVE_EXTENSION TEST_MODULE_NAME OUTPUT_VARIABLE TEST_MODULE_NAME_STEM)
+    set(TEST_EXE_NAME ${ADD_UNIT_TEST_SCOPE}_${TEST_MODULE_NAME_STEM})
     string(REPLACE "/" "_" TEST_EXE_NAME ${TEST_EXE_NAME})
 
     add_executable(${TEST_EXE_NAME} ${TEST_MODULE_NAME}
@@ -122,11 +123,9 @@ function(add_unit_tests)
             INCLUDE_DIRS ${ADD_UNIT_TESTS_INCLUDE_DIRS}
             OBJECT_LIBRARIES ${ADD_UNIT_TESTS_OBJECT_LIBRARIES}
             LINK_LIBRARIES ${ADD_UNIT_TESTS_LINK_LIBRARIES}
-            ENVIRONMENT ${ADD_UNIT_TESTS_ENVIRONMENT})
-        set(target_name ${ADD_UNIT_TESTS_SCOPE}_${NAME})
-        if(ADD_UNIT_TESTS_DEPENDENCIES)
-            add_dependencies(${target_name} ${ADD_UNIT_TESTS_DEPENDENCIES})
-        endif()
+            DEPENDENCIES ${ADD_UNIT_TESTS_DEPENDENCIES}
+            ENVIRONMENT ${ADD_UNIT_TESTS_ENVIRONMENT}
+        )
     endforeach()
 endfunction()
 
@@ -296,7 +295,7 @@ function(lue_add_benchmark)
 
     add_hpx_executable(lue_${category}_${name}_benchmark
         SOURCES
-            ${name}_benchmark
+            ${name}_benchmark.cpp
         COMPONENT_DEPENDENCIES
             iostreams
     )
@@ -314,7 +313,10 @@ function(add_hpx_unit_test)
     set(OPTIONS "")
     set(ONE_VALUE_ARGUMENTS SCOPE NAME)
     set(MULTI_VALUE_ARGUMENTS
-        LINK_LIBRARIES)
+        LINK_LIBRARIES
+        DEPENDENCIES
+        ENVIRONMENT
+    )
 
     cmake_parse_arguments(ADD_HPX_UNIT_TEST "${OPTIONS}" "${ONE_VALUE_ARGUMENTS}"
         "${MULTI_VALUE_ARGUMENTS}" ${ARGN})
@@ -326,7 +328,8 @@ function(add_hpx_unit_test)
     endif()
 
     set(TEST_MODULE_NAME ${ADD_HPX_UNIT_TEST_NAME})
-    set(TEST_EXE_NAME ${ADD_HPX_UNIT_TEST_SCOPE}_${TEST_MODULE_NAME})
+    cmake_path(REMOVE_EXTENSION TEST_MODULE_NAME OUTPUT_VARIABLE TEST_MODULE_NAME_STEM)
+    set(TEST_EXE_NAME ${ADD_HPX_UNIT_TEST_SCOPE}_${TEST_MODULE_NAME_STEM})
     string(REPLACE "/" "_" TEST_EXE_NAME ${TEST_EXE_NAME})
 
     add_executable(${TEST_EXE_NAME} ${TEST_MODULE_NAME})
@@ -366,7 +369,9 @@ function(add_hpx_unit_test)
 
     set_tests_properties(${TEST_EXE_NAME}
         PROPERTIES
-            ENVIRONMENT "PATH=${PATH_STRING}")
+            ENVIRONMENT
+                "PATH=${PATH_STRING};${ADD_HPX_UNIT_TEST_ENVIRONMENT}"
+    )
 
     hpx_setup_target(${TEST_EXE_NAME})
 endfunction()
@@ -378,6 +383,8 @@ function(add_hpx_unit_tests)
     set(MULTI_VALUE_ARGUMENTS
         NAMES
         LINK_LIBRARIES
+        DEPENDENCIES
+        ENVIRONMENT
     )
 
     cmake_parse_arguments(ADD_HPX_UNIT_TESTS "${OPTIONS}" "${ONE_VALUE_ARGUMENTS}"
@@ -393,6 +400,9 @@ function(add_hpx_unit_tests)
         add_hpx_unit_test(
             SCOPE ${ADD_HPX_UNIT_TESTS_SCOPE}
             NAME ${name}
-            LINK_LIBRARIES ${ADD_HPX_UNIT_TESTS_LINK_LIBRARIES})
+            LINK_LIBRARIES ${ADD_HPX_UNIT_TESTS_LINK_LIBRARIES}
+            DEPENDENCIES ${ADD_HPX_UNIT_TESTS_DEPENDENCIES}
+            ENVIRONMENT ${ADD_HPX_UNIT_TESTS_ENVIRONMENT}
+        )
     endforeach()
 endfunction()
