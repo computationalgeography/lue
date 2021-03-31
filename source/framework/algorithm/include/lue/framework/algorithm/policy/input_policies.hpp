@@ -3,113 +3,167 @@
 #include <hpx/serialization.hpp>
 
 
-namespace lue {
-namespace policy {
+namespace lue::policy {
 
-template<
-    typename InputNoDataPolicy>
-class InputPolicies
-{
+    template<
+        typename InputNoDataPolicy>
+    class InputPolicies
+    {
 
-    public:
+        public:
 
-        InputPolicies():
+            InputPolicies():
 
-            _indp{}
+                _indp{}
 
-        {
-        }
+            {
+            }
 
-        InputPolicies(
-            InputNoDataPolicy const& indp):
+            InputPolicies(
+                InputNoDataPolicy const& indp):
 
-            _indp{indp}
+                _indp{indp}
 
-        {
-        }
+            {
+            }
 
-        InputNoDataPolicy const& input_no_data_policy() const
-        {
-            return _indp;
-        }
+            virtual ~InputPolicies()=default;
 
-    private:
+            InputNoDataPolicy const& input_no_data_policy() const
+            {
+                return _indp;
+            }
 
-        friend class hpx::serialization::access;
+        protected:
 
-        template<typename Archive>
-        void serialize(
-            Archive& archive,
-            [[maybe_unused]] unsigned int const version)
-        {
-            archive & _indp;
-        }
+            friend class hpx::serialization::access;
 
-        InputNoDataPolicy _indp;
+            template<typename Archive>
+            void serialize(
+                Archive& archive,
+                [[maybe_unused]] unsigned int const version)
+            {
+                archive & _indp;
+            }
 
-};
+        private:
+
+            InputNoDataPolicy _indp;
+
+    };
 
 
-namespace detail {
-
-template<
-    typename InputNoDataPolicy>
-class TypeTraits<
-    InputPolicies<InputNoDataPolicy>>
-{
-
-    public:
-
-        using Element = ElementT<InputNoDataPolicy>;
+    namespace detail {
 
         template<
-            typename Element>
-        using Policies = InputPolicies<
-            InputNoDataPolicyT<InputNoDataPolicy, Element>>;
-
-};
-
-}  // namespace detail
-
-
-template<
-    typename InputNoDataPolicy,
-    typename HaloValuePolicy>
-class FocalOperationInputPolicies:
-    InputPolicies<InputNoDataPolicy>
-{
-
-    public:
-
-        FocalOperationInputPolicies(
-            HaloValuePolicy const& hvp):
-
-            InputPolicies<InputNoDataPolicy>{},
-            _hvp{hvp}
-
+            typename InputNoDataPolicy>
+        class TypeTraits<
+            InputPolicies<InputNoDataPolicy>>
         {
-        }
 
-        FocalOperationInputPolicies(
-            InputNoDataPolicy const& indp,
-            HaloValuePolicy const& hvp):
+            public:
 
-            InputPolicies<InputNoDataPolicy>{indp},
-            _hvp{hvp}
+                using Element = ElementT<InputNoDataPolicy>;
 
+                template<
+                    typename Element>
+                using Policies = InputPolicies<
+                    InputNoDataPolicyT<InputNoDataPolicy, Element>>;
+
+        };
+
+    }  // namespace detail
+
+
+    template<
+        typename InputNoDataPolicy,
+        typename HaloPolicy>
+    class SpatialOperationInputPolicies:
+        public InputPolicies<InputNoDataPolicy>
+    {
+
+        public:
+
+            SpatialOperationInputPolicies():
+
+                InputPolicies<InputNoDataPolicy>{},
+                _hp{}
+
+            {
+            }
+
+            SpatialOperationInputPolicies(
+                InputNoDataPolicy const& indp):
+
+                InputPolicies<InputNoDataPolicy>{indp},
+                _hp{}
+
+            {
+            }
+
+            SpatialOperationInputPolicies(
+                HaloPolicy const& hp):
+
+                InputPolicies<InputNoDataPolicy>{},
+                _hp{hp}
+
+            {
+            }
+
+            SpatialOperationInputPolicies(
+                InputNoDataPolicy const& indp,
+                HaloPolicy const& hp):
+
+                InputPolicies<InputNoDataPolicy>{indp},
+                _hp{hp}
+
+            {
+            }
+
+            HaloPolicy const& halo_policy() const
+            {
+                return _hp;
+            }
+
+        private:
+
+            friend class hpx::serialization::access;
+
+            template<typename Archive>
+            void serialize(
+                Archive& archive,
+                [[maybe_unused]] unsigned int const version)
+            {
+                InputPolicies<InputNoDataPolicy>::serialize(archive, version);
+                archive & _hp;
+            }
+
+            HaloPolicy _hp;
+
+    };
+
+
+    namespace detail {
+
+        template<
+            typename InputNoDataPolicy,
+            typename HaloPolicy>
+        class TypeTraits<
+            SpatialOperationInputPolicies<InputNoDataPolicy, HaloPolicy>>
         {
-        }
 
-        HaloValuePolicy const& halo_value_policy() const
-        {
-            return _hvp;
-        }
+            public:
 
-    private:
+                using Element = ElementT<InputNoDataPolicy>;
 
-        HaloValuePolicy _hvp;
+                template<
+                    typename Element>
+                using Policies = SpatialOperationInputPolicies<
+                    InputNoDataPolicyT<InputNoDataPolicy, Element>,
+                    HaloPolicyT<HaloPolicy, Element>>;
 
-};
+        };
 
-}  // namespace policy
-}  // namespace lue
+    }  // namespace detail
+
+}  // namespace lue::policy

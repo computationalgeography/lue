@@ -129,9 +129,9 @@ public:
         return _span(idxs...);
     }
 
-    Element const  operator[]          (std::size_t idx) const;
+    Element const& operator[]          (std::size_t idx) const;
 
-    Element        operator[]          (std::size_t idx);
+    Element&       operator[]          (std::size_t idx);
 
     Span const& span() const
     {
@@ -220,7 +220,7 @@ Array<Element, rank>::Array(
     _span{_elements.data(), _shape}
 
 {
-    lue_assert(
+    lue_hpx_assert(
         std::distance(values.begin(), values.end()) ==
         lue::nr_elements(_shape));
 
@@ -261,7 +261,7 @@ Array<Element, rank>::Array(
     other._span = Span{other._elements.data(), other._shape};
 
     other.assert_invariants();
-    lue_assert(other.empty());
+    lue_hpx_assert(other.empty());
 
     assert_invariants();
 }
@@ -305,7 +305,7 @@ Array<Element, rank>& Array<Element, rank>::operator=(
     }
 
     other.assert_invariants();
-    lue_assert(other.empty());
+    lue_hpx_assert(other.empty());
     assert_invariants();
 
     return *this;
@@ -420,7 +420,7 @@ void Array<Element, rank>::erase(
 template<
     typename Element,
     Rank rank>
-Element const Array<Element, rank>::operator[](
+Element const& Array<Element, rank>::operator[](
     std::size_t const idx) const
 {
     return this->data()[idx];
@@ -430,7 +430,7 @@ Element const Array<Element, rank>::operator[](
 template<
     typename Element,
     Rank rank>
-Element Array<Element, rank>::operator[](
+Element& Array<Element, rank>::operator[](
     std::size_t const idx)
 {
     return this->data()[idx];
@@ -442,11 +442,11 @@ template<
     Rank rank>
 void Array<Element, rank>::assert_invariants() const
 {
-    // lue_assert(
+    // lue_hpx_assert(
     //     static_cast<Size>(_elements.size()) == lue::nr_elements(_shape));
-    lue_assert(lue::nr_elements(_shape) == static_cast<Size>(_elements.size()));
-    lue_assert(_span.size() == static_cast<Size>(_elements.size()));
-    lue_assert(_span.data() == _elements.data());
+    lue_hpx_assert(lue::nr_elements(_shape) == static_cast<Size>(_elements.size()));
+    lue_hpx_assert(_span.size() == static_cast<Size>(_elements.size()));
+    lue_hpx_assert(_span.data() == _elements.data());
 }
 
 
@@ -487,21 +487,21 @@ void Array<Element, rank>::assert_invariants() const
 
 namespace detail {
 
-template<
-    typename E,
-    Rank r>
-class ArrayTraits<lue::Array<E, r>>
-{
+    template<
+        typename E,
+        Rank r>
+    class ArrayTraits<lue::Array<E, r>>
+    {
 
-public:
+        public:
 
-    using Element = E;
+            using Element = E;
 
-    constexpr static Rank rank = r;
+            constexpr static Rank rank = r;
 
-    using Shape = typename lue::Array<E, r>::Shape;
+            using Shape = typename lue::Array<E, r>::Shape;
 
-};
+    };
 
 }  // namespace detail
 

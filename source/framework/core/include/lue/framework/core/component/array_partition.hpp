@@ -328,7 +328,7 @@ ArrayPartition<Element, rank>::ArrayPartition(
 // {
 //     return hpx::get_colocation_id(this->get_id());
 // 
-//     // lue_assert(_locality_id || this->get_id());
+//     // lue_hpx_assert(_locality_id || this->get_id());
 // 
 //     // return _locality_id
 //     //     ? hpx::make_ready_future<hpx::id_type>(_locality_id)
@@ -345,8 +345,8 @@ template<
     Rank rank>
 hpx::future<typename ArrayPartition<Element, rank>::Data> ArrayPartition<Element, rank>::data() const
 {
-    lue_assert(this->is_ready());
-    lue_assert(this->get_id());
+    lue_hpx_assert(this->is_ready());
+    lue_hpx_assert(this->get_id());
 
     typename Server::DataAction action;
 
@@ -362,8 +362,8 @@ hpx::future<typename ArrayPartition<Element, rank>::Data>
     ArrayPartition<Element, rank>::slice(
         Slices const& slices) const
 {
-    lue_assert(this->is_ready());
-    lue_assert(this->get_id());
+    lue_hpx_assert(this->is_ready());
+    lue_hpx_assert(this->get_id());
 
     typename Server::SliceAction action;
 
@@ -377,8 +377,8 @@ template<
     Rank rank>
 hpx::future<Count> ArrayPartition<Element, rank>::nr_elements() const
 {
-    lue_assert(this->is_ready());
-    lue_assert(this->get_id());
+    lue_hpx_assert(this->is_ready());
+    lue_hpx_assert(this->get_id());
 
     typename Server::NrElementsAction action;
 
@@ -393,8 +393,8 @@ template<
 hpx::future<typename ArrayPartition<Element, rank>::Offset>
     ArrayPartition<Element, rank>::offset() const
 {
-    lue_assert(this->is_ready());
-    lue_assert(this->get_id());
+    lue_hpx_assert(this->is_ready());
+    lue_hpx_assert(this->get_id());
 
     typename Server::OffsetAction action;
 
@@ -409,8 +409,8 @@ template<
 hpx::future<typename ArrayPartition<Element, rank>::Shape>
     ArrayPartition<Element, rank>::shape() const
 {
-    lue_assert(this->is_ready());
-    lue_assert(this->get_id());
+    lue_hpx_assert(this->is_ready());
+    lue_hpx_assert(this->get_id());
 
     typename Server::ShapeAction action;
 
@@ -428,8 +428,8 @@ template<
 hpx::future<void> ArrayPartition<Element, rank>::fill(
     Element const value)
 {
-    lue_assert(this->is_ready());
-    lue_assert(this->get_id());
+    lue_hpx_assert(this->is_ready());
+    lue_hpx_assert(this->get_id());
 
     typename Server::FillAction action;
 
@@ -447,10 +447,10 @@ template<
 hpx::future<void> ArrayPartition<Element, rank>::set_data(
     Data const& data)
 {
-    lue_assert(this->is_ready());
-    lue_assert(this->get_id());
+    lue_hpx_assert(this->is_ready());
+    lue_hpx_assert(this->get_id());
 
-    // lue_assert(
+    // lue_hpx_assert(
     //     // In case copy mode is share, we and the server instance must be
     //     // located on the same locality
     //     (mode == CopyMode::share &&
@@ -486,8 +486,8 @@ template<
 hpx::future<void> ArrayPartition<Element, rank>::reshape(
     Shape const& shape)
 {
-    lue_assert(this->is_ready());
-    lue_assert(this->get_id());
+    lue_hpx_assert(this->is_ready());
+    lue_hpx_assert(this->get_id());
 
     typename Server::ReshapeAction action;
 

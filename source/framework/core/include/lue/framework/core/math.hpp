@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/assert.hpp"
+#include "lue/framework/core/assert.hpp"
 #include <cmath>
 
 
@@ -12,8 +12,8 @@ namespace lue {
 //     Input const from_range,
 //     Output const to_range)
 // {
-//     lue_assert(from_range > 0);
-//     lue_assert(to_range >= 0);
+//     lue_hpx_assert(from_range > 0);
+//     lue_hpx_assert(to_range >= 0);
 // 
 //     return static_cast<double>(to_range) / (from_range);
 // }
@@ -45,13 +45,13 @@ namespace lue {
 //     Input const from_value)
 // {
 //     // This code possibly only handles the cases from the unit tests
-//     lue_assert(from_value >= from_min);
+//     lue_hpx_assert(from_value >= from_min);
 // 
 //     Output const to_value =
 //         static_cast<Output>(
 //             to_min + std::round(slope * (from_value - from_min)));
 // 
-//     lue_assert(to_value >= to_min);
+//     lue_hpx_assert(to_value >= to_min);
 // 
 //     return to_value;
 // }
@@ -71,8 +71,8 @@ namespace lue {
 //     Input const from_value)
 // {
 //     // This code possibly only handles the cases from the unit tests
-//     lue_assert(from_value >= from_min);
-//     lue_assert(from_value <= from_max);
+//     lue_hpx_assert(from_value >= from_min);
+//     lue_hpx_assert(from_value <= from_max);
 // 
 //     Output to_value = to_min;
 // 
@@ -81,8 +81,8 @@ namespace lue {
 //         to_value = map_to_range(from_min, to_min, slope, from_value);
 //     }
 // 
-//     lue_assert(to_value >= to_min);
-//     lue_assert(to_value <= to_max);
+//     lue_hpx_assert(to_value >= to_min);
+//     lue_hpx_assert(to_value <= to_max);
 // 
 //     return to_value;
 // }
@@ -102,20 +102,20 @@ Output map_to_range(
     Input const from_value)
 {
     // This code possibly only handles the cases from the unit tests
-    lue_assert(from_min <= from_max);
-    lue_assert(to_min <= to_max);
-    lue_assert(from_value >= from_min);
-    lue_assert(from_value <= from_max);
+    lue_hpx_assert(from_min <= from_max);
+    lue_hpx_assert(to_min <= to_max);
+    lue_hpx_assert(from_value >= from_min);
+    lue_hpx_assert(from_value <= from_max);
 
     Output result = to_min;
 
     if(from_min < from_max) {
 
         double const input_range = (from_max - from_min) + 1;
-        lue_assert(input_range >= 0);
+        lue_hpx_assert(input_range >= 0);
 
         double const output_range = (to_max - to_min) + 1;
-        lue_assert(output_range >= 0);
+        lue_hpx_assert(output_range >= 0);
 
         double const factor = output_range / input_range;
 
@@ -123,8 +123,8 @@ Output map_to_range(
 
     }
 
-    lue_assert(result >= to_min);
-    lue_assert(result <= to_max);
+    lue_hpx_assert(result >= to_min);
+    lue_hpx_assert(result <= to_max);
 
     return result;
 }

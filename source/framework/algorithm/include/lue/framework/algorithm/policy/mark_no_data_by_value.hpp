@@ -76,6 +76,8 @@ class TypeTraits<
             typename E_>
         using Policy = MarkNoDataByValue<E_>;
 
+        using InputNoDataPolicy = DetectNoDataByValue<Element>;
+
 };
 
 }  // namespace detail

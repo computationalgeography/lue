@@ -5,6 +5,8 @@
 //     modules, or rename this module.
 namespace lue::framework {
 
+    void bind_accu(pybind11::module& module);
+    void bind_accu_fraction(pybind11::module& module);
     void bind_add(pybind11::module& module);
     void bind_all(pybind11::module& module);
     void bind_divide(pybind11::module& module);
@@ -28,6 +30,8 @@ namespace lue::framework {
     void bind_local_operations(
         pybind11::module& module)
     {
+        bind_accu(module);
+        bind_accu_fraction(module);
         bind_add(module);
         bind_all(module);
         bind_divide(module);

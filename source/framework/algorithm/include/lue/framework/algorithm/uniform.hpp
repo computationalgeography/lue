@@ -30,7 +30,7 @@ PartitionT<InputPartition, OutputElement> uniform_partition(
 
     static_assert(std::is_floating_point_v<OutputElement> || std::is_integral_v<OutputElement>);
 
-    lue_assert(input_partition.is_ready());
+    lue_hpx_assert(input_partition.is_ready());
 
     return hpx::dataflow(
         hpx::launch::async,
@@ -166,9 +166,9 @@ PartitionedArray<OutputElement, rank> uniform(
 
     static_assert(std::is_floating_point_v<OutputElement> || std::is_integral_v<OutputElement>);
 
-    lue_assert(all_are_valid(input_array.partitions()));
-    lue_assert(min_value.valid());
-    lue_assert(max_value.valid());
+    lue_hpx_assert(all_are_valid(input_array.partitions()));
+    lue_hpx_assert(min_value.valid());
+    lue_hpx_assert(max_value.valid());
 
     detail::uniform::UniformPartitionAction<Policies, InputPartition, OutputElement> action;
 

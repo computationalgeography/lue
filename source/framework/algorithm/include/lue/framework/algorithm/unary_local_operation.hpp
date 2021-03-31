@@ -22,7 +22,7 @@ OutputPartition unary_local_operation_partition(
     using InputData = DataT<InputPartition>;
     using OutputData = DataT<OutputPartition>;
 
-    lue_assert(input_partition.is_ready());
+    lue_hpx_assert(input_partition.is_ready());
 
     return hpx::dataflow(
         hpx::launch::async,
@@ -104,7 +104,7 @@ PartitionedArray<OutputElementT<Functor>, rank> unary_local_operation(
     using OutputPartitions = PartitionsT<OutputArray>;
     using OutputPartition = PartitionT<OutputArray>;
 
-    lue_assert(all_are_valid(input_array.partitions()));
+    lue_hpx_assert(all_are_valid(input_array.partitions()));
 
     detail::UnaryLocalOperationPartitionAction<
         Policies, InputPartition, OutputPartition, Functor> action;

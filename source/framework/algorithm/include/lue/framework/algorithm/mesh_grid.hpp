@@ -23,7 +23,7 @@ ArrayPartition<OutputElement, rank> mesh_grid_partition(
     using OutputPartition = ArrayPartition<OutputElement, rank>;
     using OutputData = DataT<OutputPartition>;
 
-    lue_assert(input_partition.is_ready());
+    lue_hpx_assert(input_partition.is_ready());
 
     return hpx::dataflow(
         hpx::launch::async,
@@ -41,7 +41,7 @@ ArrayPartition<OutputElement, rank> mesh_grid_partition(
 
                     if constexpr(rank == 1)
                     {
-                        lue_assert(dimension == 0);
+                        lue_hpx_assert(dimension == 0);
 
                         for(Index i = 0; i < shape[0]; ++i)
                         {
@@ -50,7 +50,7 @@ ArrayPartition<OutputElement, rank> mesh_grid_partition(
                     }
                     else if constexpr(rank == 2)
                     {
-                        lue_assert(dimension == 0 || dimension == 1);
+                        lue_hpx_assert(dimension == 0 || dimension == 1);
 
                         if(dimension == 0)
                         {

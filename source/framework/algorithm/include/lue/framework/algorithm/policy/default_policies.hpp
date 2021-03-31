@@ -61,13 +61,18 @@ template<
     typename DomainPolicy,
     typename OutputElements,
     typename InputElements>
-class DefaultFocalOperationPolicies
+class DefaultSpatialOperationPolicies
 {
 };
 
 
 /*!
-    @brief      Default policies to use by focal operations
+    @brief      Default policies to use by spatial operations
+
+    In this context, spatial operations are operations with dependencies
+    between elements from multiple partitions. Such operations use a
+    halo of partitions around the input partitioned array(s). This class
+    has input policies that have a policy for filling such a halo.
 
     Defaults:
     - Outputs:
@@ -80,7 +85,7 @@ template<
     typename DomainPolicy,
     typename... OutputElements,
     typename... InputElements>
-class DefaultFocalOperationPolicies<
+class DefaultSpatialOperationPolicies<
         DomainPolicy,
         detail::TypeList<OutputElements...>,
         detail::TypeList<InputElements...>>:
@@ -89,7 +94,7 @@ class DefaultFocalOperationPolicies<
         DomainPolicy,
         OutputsPolicies<OutputPolicies<DontMarkNoData<OutputElements>>...>,
         InputsPolicies<
-            FocalOperationInputPolicies<
+            SpatialOperationInputPolicies<
                 SkipNoData<InputElements>, FillHaloWithConstantValue<InputElements>>...>>
 
 {
@@ -102,13 +107,13 @@ class DefaultFocalOperationPolicies<
                 OutputPolicies<
                     DontMarkNoData<OutputElements>>...>,
             InputsPolicies<
-                FocalOperationInputPolicies<
+                SpatialOperationInputPolicies<
                     SkipNoData<InputElements>,
                     FillHaloWithConstantValue<InputElements>>...>>;
 
     public:
 
-        DefaultFocalOperationPolicies(
+        DefaultSpatialOperationPolicies(
             InputElements const... fill_values):
 
             Base{
@@ -116,7 +121,7 @@ class DefaultFocalOperationPolicies<
                     OutputPolicies<
                             DontMarkNoData<OutputElements>
                         >{}...,
-                    FocalOperationInputPolicies<
+                    SpatialOperationInputPolicies<
                             SkipNoData<InputElements>,
                             FillHaloWithConstantValue<InputElements>
                         >{FillHaloWithConstantValue<InputElements>{fill_values}}...

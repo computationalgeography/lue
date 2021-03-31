@@ -18,7 +18,7 @@ Offset offset_in_partitions(
 
     for(std::size_t i = 0; i < rank; ++i)
     {
-        lue_assert(result[i] % partition_shape[i] == 0);
+        lue_hpx_assert(result[i] % partition_shape[i] == 0);
         result[i] /= partition_shape[i];
     }
 

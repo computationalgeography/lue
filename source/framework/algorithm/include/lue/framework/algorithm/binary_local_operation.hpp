@@ -53,8 +53,8 @@ public:
 
         using OutputData = DataT<OutputPartition>;
 
-        lue_assert(input_partition1.is_ready());
-        lue_assert(input_partition2.is_ready());
+        lue_hpx_assert(input_partition1.is_ready());
+        lue_hpx_assert(input_partition2.is_ready());
 
         return hpx::dataflow(
             hpx::launch::async,
@@ -78,7 +78,7 @@ public:
                         auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
 
                         Count const nr_elements{lue::nr_elements(input_partition_data1)};
-                        lue_assert(lue::nr_elements(input_partition_data2) == nr_elements);
+                        lue_hpx_assert(lue::nr_elements(input_partition_data2) == nr_elements);
 
                         for(Index i = 0; i < nr_elements; ++i)
                         {
@@ -147,7 +147,7 @@ public:
         using InputData = DataT<InputPartition>;
         using OutputData = DataT<OutputPartition>;
 
-        lue_assert(input_partition.is_ready());
+        lue_hpx_assert(input_partition.is_ready());
 
         return hpx::dataflow(
             hpx::launch::async,
@@ -244,7 +244,7 @@ public:
         using InputData = DataT<InputPartition>;
         using OutputData = DataT<OutputPartition>;
 
-        lue_assert(input_partition.is_ready());
+        lue_hpx_assert(input_partition.is_ready());
 
         return hpx::dataflow(
             hpx::launch::async,
@@ -343,8 +343,8 @@ ArrayPartition<OutputElementT<Functor>, rank> binary_local_operation(
     using InputPartition = ArrayPartition<InputElement1, rank>;
     using OutputPartition = ArrayPartition<OutputElementT<Functor>, rank>;
 
-    lue_assert(input_partition.valid());
-    lue_assert(input_scalar.valid());
+    lue_hpx_assert(input_partition.valid());
+    lue_hpx_assert(input_scalar.valid());
 
     detail::BinaryLocalOperationPartitionAction<
         Policies, InputPartition, InputElement2, OutputPartition, Functor> action;
@@ -394,11 +394,11 @@ PartitionedArray<OutputElementT<Functor>, rank> binary_local_operation(
 
     using Shape = ShapeT<OutputArray>;
 
-    lue_assert(all_are_valid(input_array1.partitions()));
-    lue_assert(all_are_valid(input_array2.partitions()));
-    lue_assert(nr_partitions(input_array1) == nr_partitions(input_array2));
-    lue_assert(input_array1.shape() == input_array2.shape());
-    lue_assert(shape_in_partitions(input_array1) == shape_in_partitions(input_array2));
+    lue_hpx_assert(all_are_valid(input_array1.partitions()));
+    lue_hpx_assert(all_are_valid(input_array2.partitions()));
+    lue_hpx_assert(nr_partitions(input_array1) == nr_partitions(input_array2));
+    lue_hpx_assert(input_array1.shape() == input_array2.shape());
+    lue_hpx_assert(shape_in_partitions(input_array1) == shape_in_partitions(input_array2));
 
     detail::BinaryLocalOperationPartitionAction<
         Policies, InputPartition1, InputPartition2, OutputPartition, Functor> action;
@@ -458,8 +458,8 @@ PartitionedArray<OutputElementT<Functor>, rank> binary_local_operation(
 
     using Shape = ShapeT<OutputArray>;
 
-    lue_assert(all_are_valid(input_array.partitions()));
-    lue_assert(input_scalar.valid());
+    lue_hpx_assert(all_are_valid(input_array.partitions()));
+    lue_hpx_assert(input_scalar.valid());
 
     detail::BinaryLocalOperationPartitionAction<
         Policies, InputPartition, InputElement2, OutputPartition, Functor> action;
@@ -518,8 +518,8 @@ PartitionedArray<OutputElementT<Functor>, rank> binary_local_operation(
 
     using Shape = ShapeT<OutputArray>;
 
-    lue_assert(input_scalar.valid());
-    lue_assert(all_are_valid(input_array.partitions()));
+    lue_hpx_assert(input_scalar.valid());
+    lue_hpx_assert(all_are_valid(input_array.partitions()));
 
     detail::BinaryLocalOperationPartitionAction<
         Policies, InputElement1, InputPartition, OutputPartition, Functor> action;

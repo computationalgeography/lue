@@ -145,7 +145,7 @@ template<
 
                 for(Index p = 0; p < nr_partitions; ++p)
                 {
-                    lue_assert(input_partitions[p].is_ready());
+                    lue_hpx_assert(input_partitions[p].is_ready());
 
                     unique_id_partitions[p] = hpx::async(
                         action, localities[p], input_partitions[p], start_value);

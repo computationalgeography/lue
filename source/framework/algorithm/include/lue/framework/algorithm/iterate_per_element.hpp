@@ -24,7 +24,7 @@ public:
         // The use of volatile prevends the optimizing compiler
         // to remove this iteration
         volatile InputElement nr_iterations = input_element;
-        lue_assert(nr_iterations >= InputElement{0});
+        lue_hpx_assert(nr_iterations >= InputElement{0});
 
         while(nr_iterations > InputElement{0}) {
             --nr_iterations;

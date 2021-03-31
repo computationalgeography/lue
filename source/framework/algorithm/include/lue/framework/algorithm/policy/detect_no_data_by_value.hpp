@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/policy/policy_traits.hpp"
+#include "lue/framework/core/assert.hpp"
 #include <hpx/serialization.hpp>
 #include <type_traits>
 
@@ -22,11 +23,19 @@ class DetectNoDataByValue
         }
 
         DetectNoDataByValue(
-                Element const value):
+            Element const value):
 
             _value{value}
 
         {
+            if constexpr (std::is_floating_point_v<Element>)
+            {
+                // This class compares the layered value with values
+                // passed in. This will not work when the layered value is
+                // a NaN. Use another policy if you want to compare
+                // with NaN.
+                lue_hpx_assert(!std::isnan(value));
+            }
         }
 
         bool is_no_data(

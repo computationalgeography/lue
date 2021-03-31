@@ -5,6 +5,7 @@
 #include "lue/framework/algorithm/policy/all_values_within_domain.hpp"
 #include "lue/framework/algorithm/policy/default_policies.hpp"
 #include "lue/framework/algorithm/policy/default_value_policies.hpp"
+#include "lue/framework/core/component.hpp"
 #include "lue/data_model/hl/raster_view.hpp"
 #include "lue/data_model.hpp"
 // #ifdef HDF5_IS_PARALLEL
@@ -48,10 +49,10 @@ void read_into_partitions(
     auto const& property_set{phenomenon.property_sets()[property_set_name]};
 
     // Open property
-    lue_assert(property_set.properties().contains(property_name));
-    lue_assert(property_set.properties().shape_per_object(property_name) ==
+    lue_hpx_assert(property_set.properties().contains(property_name));
+    lue_hpx_assert(property_set.properties().shape_per_object(property_name) ==
         data_model::ShapePerObject::different);
-    lue_assert(property_set.properties().value_variability(property_name) ==
+    lue_hpx_assert(property_set.properties().value_variability(property_name) ==
         data_model::ValueVariability::constant);
     using Properties = data_model::different_shape::Properties;
     auto const& property{property_set.properties().collection<Properties>()[property_name]};
@@ -122,12 +123,12 @@ void read_into_partitions2(
     auto const& property_set{phenomenon.property_sets()[property_set_name]};
 
     // Open property
-    lue_assert(property_set.properties().contains(property_name));
-    lue_assert(property_set.properties().shape_per_object(property_name) ==
+    lue_hpx_assert(property_set.properties().contains(property_name));
+    lue_hpx_assert(property_set.properties().shape_per_object(property_name) ==
         data_model::ShapePerObject::different);
-    lue_assert(property_set.properties().value_variability(property_name) ==
+    lue_hpx_assert(property_set.properties().value_variability(property_name) ==
         data_model::ValueVariability::variable);
-    lue_assert(property_set.properties().shape_variability(property_name) ==
+    lue_hpx_assert(property_set.properties().shape_variability(property_name) ==
         data_model::ShapeVariability::constant);
     using Properties = data_model::different_shape::constant_shape::Properties;
     auto const& property{property_set.properties().collection<Properties>()[property_name]};
@@ -330,7 +331,7 @@ namespace detail {
 
         using Shape = lue::Shape<Count, rank>;
 
-        lue_assert(rank == 2);  // TODO(KDJ)
+        lue_hpx_assert(rank == 2);  // TODO(KDJ)
 
         return Shape{{
             static_cast<typename Shape::value_type>(grid_shape[0]),
@@ -365,7 +366,7 @@ namespace detail {
 
         using Shape = lue::Shape<Count, rank>;
 
-        lue_assert(rank == 2);  // TODO(KDJ)
+        lue_hpx_assert(rank == 2);  // TODO(KDJ)
 
         return Shape{{
             static_cast<typename Shape::value_type>(grid_shape[0]),

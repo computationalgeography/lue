@@ -46,7 +46,7 @@ namespace lue {
                     hpx::serialization::input_archive& archive,
                     [[maybe_unused]] unsigned int const version)
                 {
-                    lue_assert(_values.empty());
+                    lue_hpx_assert(_values.empty());
                     archive & _values;
                 }
 
@@ -54,7 +54,7 @@ namespace lue {
                     hpx::serialization::output_archive& archive,
                     [[maybe_unused]] unsigned int const version) const
                 {
-                    lue_assert(_values.empty());
+                    lue_hpx_assert(_values.empty());
                     archive & _values;
                 }
 

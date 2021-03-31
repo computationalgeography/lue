@@ -1,4 +1,5 @@
 #define BOOST_TEST_MODULE lue framework core shared_buffer
+#include <hpx/config.hpp>
 #include <boost/test/unit_test.hpp>
 #include "lue/framework/core/shared_buffer.hpp"
 #include <numeric>

@@ -276,7 +276,7 @@ ArrayPartitionData<Element, rank>::ArrayPartitionData(
     ArrayPartitionData{shape}
 
 {
-    lue_assert(std::distance(begin, end) == _elements.size());
+    lue_hpx_assert(std::distance(begin, end) == _elements.size());
 
     std::move(begin, end, _elements.begin());
 
@@ -294,6 +294,7 @@ ArrayPartitionData<Element, rank>::ArrayPartitionData(
     ArrayPartitionData{shape}
 
 {
+    lue_hpx_assert(static_cast<Count>(elements.size()) == lue::nr_elements(shape));
     std::copy(elements.begin(), elements.end(), _elements.begin());
 
     assert_invariants();
@@ -314,12 +315,14 @@ ArrayPartitionData<Element, rank>::ArrayPartitionData(
     _span{_elements.data(), _shape}
 
 {
+    lue_hpx_assert(this != &other);
+
     other._shape.fill(0);
-    other._elements.clear();
+    // other._elements.clear();
     other._span = Span{other._elements.data(), other._shape};
 
     other.assert_invariants();
-    lue_assert(other.empty());
+    lue_hpx_assert(other.empty());
     assert_invariants();
 }
 
@@ -339,13 +342,13 @@ ArrayPartitionData<Element, rank>& ArrayPartitionData<Element, rank>::operator=(
         other._shape.fill(0);
 
         _elements = std::move(other._elements);
-        other._elements.clear();
+        // other._elements.clear();
 
         _span = Span{_elements.data(), _shape};
         other._span = Span{other._elements.data(), other._shape};
 
         other.assert_invariants();
-        lue_assert(other.empty());
+        lue_hpx_assert(other.empty());
     }
 
     assert_invariants();
@@ -405,7 +408,7 @@ void ArrayPartitionData<Element, rank>::reshape(
     // If this fires, move the span and shape into the
     // SharedBuffer(?). Still there might be an issue with multiple threads
     // using the data at the same time, while it is reshaped...
-    lue_assert(_elements.use_count() == 1);
+    lue_hpx_assert(_elements.use_count() == 1);
 
     if(_shape != shape)
     {
@@ -507,7 +510,7 @@ template<
 Element& ArrayPartitionData<Element, rank>::operator[](
     Index const idx)
 {
-    lue_assert(idx < _elements.size());
+    lue_hpx_assert(idx < _elements.size());
 
     return _elements[idx];
 }
@@ -519,7 +522,7 @@ template<
 Element const& ArrayPartitionData<Element, rank>::operator[](
     Index const idx) const
 {
-    lue_assert(idx < _elements.size());
+    lue_hpx_assert(idx < _elements.size());
 
     return _elements[idx];
 }
@@ -553,8 +556,8 @@ ArrayPartitionData<Element, rank> ArrayPartitionData<Element, rank>::slice(
         auto const& slice = slices[0];
         auto const begin = std::get<0>(slice);
         auto const end = std::get<1>(slice);
-        lue_assert(end >= begin);
-        lue_assert(end <= nr_elements);
+        lue_hpx_assert(end >= begin);
+        lue_hpx_assert(end <= nr_elements);
         auto const nr_elements_slice = end - begin;
 
         ArrayPartitionData sliced_data{Shape{{nr_elements_slice}}};
@@ -577,14 +580,14 @@ ArrayPartitionData<Element, rank> ArrayPartitionData<Element, rank>::slice(
 
         auto const begin0 = std::get<0>(slice0);
         auto const end0 = std::get<1>(slice0);
-        lue_assert(end0 >= begin0);
-        lue_assert(end0 <= nr_elements0);
+        lue_hpx_assert(end0 >= begin0);
+        lue_hpx_assert(end0 <= nr_elements0);
         auto const nr_elements0_slice = end0 - begin0;
 
         auto const begin1 = std::get<0>(slice1);
         auto const end1 = std::get<1>(slice1);
-        lue_assert(end1 >= begin1);
-        lue_assert(end1 <= nr_elements1);
+        lue_hpx_assert(end1 >= begin1);
+        lue_hpx_assert(end1 <= nr_elements1);
         auto const nr_elements1_slice = end1 - begin1;
 
         ArrayPartitionData sliced_data{Shape{{nr_elements0_slice, nr_elements1_slice}}};
@@ -612,9 +615,9 @@ template<
     Rank rank>
 void ArrayPartitionData<Element, rank>::assert_invariants() const
 {
-    lue_assert(lue::nr_elements(_shape) == _elements.size());
-    lue_assert(_span.size() == _elements.size());
-    lue_assert(_span.data() == _elements.data());
+    lue_hpx_assert(lue::nr_elements(_shape) == _elements.size());
+    lue_hpx_assert(_span.size() == _elements.size());
+    lue_hpx_assert(_span.data() == _elements.data());
 }
 
 
@@ -711,7 +714,7 @@ ArrayPartitionData<Element, 0>::ArrayPartitionData():
 
 {
     _shape.fill(0);
-    lue_assert(_elements.size() == 1);
+    lue_hpx_assert(_elements.size() == 1);
 }
 
 
@@ -735,7 +738,7 @@ ArrayPartitionData<Element, 0>::ArrayPartitionData(
     ArrayPartitionData{}
 
 {
-    lue_assert(shape.empty());
+    lue_hpx_assert(shape.empty());
 }
 
 
@@ -748,7 +751,7 @@ ArrayPartitionData<Element, 0>::ArrayPartitionData(
     ArrayPartitionData{value}
 
 {
-    lue_assert(shape.empty());
+    lue_hpx_assert(shape.empty());
 }
 
 
@@ -757,7 +760,7 @@ template<
 bool ArrayPartitionData<Element, 0>::operator==(
     ArrayPartitionData const& other) const
 {
-    lue_assert(_shape == other._shape);
+    lue_hpx_assert(_shape == other._shape);
 
     return _elements[0] == other._elements[0];
 }
@@ -785,8 +788,8 @@ template<
     typename Element>
 typename ArrayPartitionData<Element, 0>::Count ArrayPartitionData<Element, 0>::nr_elements() const
 {
-    lue_assert(lue::nr_elements(_shape) == 0);
-    lue_assert(_elements.size() == 1);
+    lue_hpx_assert(lue::nr_elements(_shape) == 0);
+    lue_hpx_assert(_elements.size() == 1);
 
     return 1;
 }
@@ -837,7 +840,7 @@ template<
 Element& ArrayPartitionData<Element, 0>::operator[](
     [[maybe_unused]] Index const idx)
 {
-    lue_assert(idx == 0);
+    lue_hpx_assert(idx == 0);
 
     return _elements[0];
 }
@@ -848,7 +851,7 @@ template<
 Element const& ArrayPartitionData<Element, 0>::operator[](
     [[maybe_unused]] Index const idx) const
 {
-    lue_assert(idx == 0);
+    lue_hpx_assert(idx == 0);
 
     return _elements[0];
 }

@@ -29,7 +29,7 @@ protected:
 
     PartitionT<Partitions>& partition()
     {
-        lue_assert(this->cursor().linear_idx() < _partitions.nr_elements());
+        lue_hpx_assert(this->cursor().linear_idx() < _partitions.nr_elements());
 
         return _partitions[this->cursor().linear_idx()];
     }
@@ -67,7 +67,7 @@ protected:
 
     PartitionT<Partitions> const& partition() const
     {
-        lue_assert(this->cursor().linear_idx() < _partitions.nr_elements());
+        lue_hpx_assert(this->cursor().linear_idx() < _partitions.nr_elements());
 
         return _partitions[this->cursor().linear_idx()];
     }

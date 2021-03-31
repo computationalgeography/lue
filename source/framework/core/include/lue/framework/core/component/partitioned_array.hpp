@@ -95,72 +95,87 @@ private:
 
 namespace detail {
 
-// Specialization for PartitionedArray::Partitions
-template<
-    typename E,
-    Rank r>
-class ArrayTraits<ArrayPartitionData<ArrayPartition<E, r>, r>>
-{
-
-public:
-
-    using Element = E;
-
-    constexpr static Rank rank = r;
-
-    using Shape = typename ArrayPartitionData<ArrayPartition<E, r>, r>::Shape;
-
+    // Specialization for PartitionedArray
     template<
-        typename E_,
-        Rank r_>
-    using Partition = ArrayPartition<E_, r_>;
+        typename E,
+        Rank r>
+    class ArrayTraits<PartitionedArray<E, r>>
+    {
 
+        public:
+
+            using Element = E;
+
+            constexpr static Rank rank = r;
+
+            using Offset = typename PartitionedArray<E, r>::Offset;
+
+            using Shape = typename PartitionedArray<E, r>::Shape;
+
+            template<
+                typename E_,
+                Rank r_>
+            using Partition = typename PartitionedArray<E_, r_>::Partition;
+
+            template<
+                typename E_,
+                Rank r_>
+            using Partitions = typename PartitionedArray<E_, r_>::Partitions;
+
+            template<
+                typename E_,
+                Rank r_>
+            using PartitionedArray = PartitionedArray<E_, r_>;
+
+            template<
+                typename E_,
+                Rank r_>
+            using Data = typename Partition<E_, r_>::Data;
+
+            template<
+                typename E_,
+                Rank r_>
+            using Component = typename PartitionedArray<E_, r_>::Partition;
+
+            template<
+                typename E_,
+                Rank r_>
+            using Components = typename PartitionedArray<E_, r_>::Partitions;
+
+    };
+
+
+    // Specialization for PartitionedArray::Partitions
     template<
-        typename E_,
-        Rank r_>
-    using Partitions = ArrayPartitionData<ArrayPartition<E_, r_>, r_>;
+        typename E,
+        Rank r>
+    class ArrayTraits<ArrayPartitionData<ArrayPartition<E, r>, r>>
+    {
 
-};
+        public:
 
+            using Element = E;
 
-// Specialization for PartitionedArray
-template<
-    typename E,
-    Rank r>
-class ArrayTraits<PartitionedArray<E, r>>
-{
+            constexpr static Rank rank = r;
 
-public:
+            using Shape = typename ArrayPartitionData<ArrayPartition<E, r>, r>::Shape;
 
-    using Element = E;
+            template<
+                typename E_,
+                Rank r_>
+            using Partition = ArrayPartition<E_, r_>;
 
-    constexpr static Rank rank = r;
+            template<
+                typename E_,
+                Rank r_>
+            using Partitions = ArrayPartitionData<ArrayPartition<E_, r_>, r_>;
 
-    using Offset = typename PartitionedArray<E, r>::Offset;
+            template<
+                typename E_,
+                Rank r_>
+            using Component = ArrayPartition<E_, r_>;
 
-    using Shape = typename PartitionedArray<E, r>::Shape;
-
-    template<
-        typename E_,
-        Rank r_>
-    using Partition = typename PartitionedArray<E_, r_>::Partition;
-
-    template<
-        typename E_,
-        Rank r_>
-    using Partitions = typename PartitionedArray<E_, r_>::Partitions;
-
-    template<
-        typename E_,
-        Rank r_>
-    using PartitionedArray = PartitionedArray<E_, r_>;
-
-    template<
-        typename E_,
-        Rank r_>
-    using Data = typename Partition<E_, r_>::Data;
-
-};
+    };
 
 }  // namespace detail
 
@@ -213,10 +228,10 @@ template<
     Rank rank>
 void PartitionedArray<Element, rank>::assert_invariants() const
 {
-    lue_assert(_partitions.shape() == _localities.shape());
+    lue_hpx_assert(_partitions.shape() == _localities.shape());
 
     // The array is either empty, or all localities are valid / known
-    lue_assert(
+    lue_hpx_assert(
         _localities.empty() ||
         std::all_of(_localities.begin(), _localities.end(),
             [](hpx::id_type const locality_id)

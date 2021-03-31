@@ -40,8 +40,8 @@ class LocalityIdxByPartitionIdx
             _nr_localities{nr_localities}
 
         {
-            lue_assert(_nr_partitions > 0);
-            lue_assert(_nr_localities > 0);
+            lue_hpx_assert(_nr_partitions > 0);
+            lue_hpx_assert(_nr_localities > 0);
         }
 
         Index operator()(
@@ -94,12 +94,12 @@ class InstantiatePartitionsBase
             _localities_vector{std::forward<std::vector<hpx::id_type>>(localities)}
 
         {
-            lue_assert(std::none_of(_localities.begin(), _localities.end(),
+            lue_hpx_assert(std::none_of(_localities.begin(), _localities.end(),
                 [](hpx::id_type const locality_id)
                 {
                     return bool{locality_id};
                 }));
-            lue_assert(std::all_of(_localities_vector.begin(), _localities_vector.end(),
+            lue_hpx_assert(std::all_of(_localities_vector.begin(), _localities_vector.end(),
                 [](hpx::id_type const locality_id)
                 {
                     return bool{locality_id};
@@ -110,7 +110,8 @@ class InstantiatePartitionsBase
         Localities localities()
         {
             // Sink return. Call this method only once...
-            lue_assert(std::all_of(_localities.begin(), _localities.end(),
+            lue_hpx_assert(!_localities.empty());
+            lue_hpx_assert(std::all_of(_localities.begin(), _localities.end(),
                 [](hpx::id_type const locality_id)
                 {
                     return bool{locality_id};
@@ -122,15 +123,16 @@ class InstantiatePartitionsBase
         Partitions partitions()
         {
             // Sink return. Call this method only once...
+            lue_hpx_assert(!_partitions.empty());
             return std::move(_partitions);
         }
 
 #ifndef NDEBUG
         void assert_invariants() const
         {
-            lue_assert(_partitions.shape() == _localities.shape());
+            lue_hpx_assert(_partitions.shape() == _localities.shape());
 
-            lue_assert(std::all_of(_localities.begin(), _localities.end(),
+            lue_hpx_assert(std::all_of(_localities.begin(), _localities.end(),
                 [](hpx::id_type const locality_id)
                 {
                     return bool{locality_id};
@@ -262,9 +264,9 @@ class InstantiatePartitions:
             _idxs{}
 
         {
-            lue_assert(!_current_locality_id);
-            lue_assert(_offsets.empty());
-            lue_assert(_idxs.empty());
+            lue_hpx_assert(!_current_locality_id);
+            lue_hpx_assert(_offsets.empty());
+            lue_hpx_assert(_idxs.empty());
         }
 
 
@@ -312,7 +314,7 @@ class InstantiatePartitions:
         void prepare_for_new_locality(
             hpx::id_type const locality_id)
         {
-            lue_assert(locality_id);
+            lue_hpx_assert(locality_id);
             _current_locality_id = locality_id;
             _offsets.clear();
             _idxs.clear();
@@ -324,7 +326,7 @@ class InstantiatePartitions:
             typename Base::Offset const& offset,
             Idxs const... partition_idxs)
         {
-            // lue_assert(locality_id == _current_locality_id);
+            // lue_hpx_assert(locality_id == _current_locality_id);
             _offsets.push_back(offset);
             _idxs.push_back(std::array<Index, rank>{partition_idxs...});
         }
@@ -350,7 +352,7 @@ class InstantiatePartitions:
             // Assign the partitions to their correct location in the array
             {
                 std::vector<Partition> partitions{partitions_f.get()};
-                lue_assert(partitions.size() == _idxs.size());
+                lue_hpx_assert(partitions.size() == _idxs.size());
 
                 for(std::size_t i = 0; i < partitions.size(); ++i)
                 {
@@ -448,12 +450,12 @@ std::tuple<
 
     Partitions partitions{shape_in_partitions};
     Count const nr_partitions = lue::nr_elements(shape_in_partitions);
-    lue_assert(partitions.nr_elements() == nr_partitions);
+    lue_hpx_assert(partitions.nr_elements() == nr_partitions);
 
     std::vector<hpx::id_type> localities = hpx::find_all_localities();
 
     [[maybe_unused]] Count const nr_localities = localities.size();
-    lue_assert(nr_localities > 0);
+    lue_hpx_assert(nr_localities > 0);
 
     if(!BuildOptions::build_test)
     {
@@ -470,8 +472,8 @@ std::tuple<
         }
     }
 
-    lue_assert(hpx::find_here() == hpx::find_root_locality());
-    lue_assert(localities[0] == hpx::find_root_locality());
+    lue_hpx_assert(hpx::find_here() == hpx::find_root_locality());
+    lue_hpx_assert(localities[0] == hpx::find_root_locality());
 
     if constexpr (Functor::instantiate_per_locality)
     {

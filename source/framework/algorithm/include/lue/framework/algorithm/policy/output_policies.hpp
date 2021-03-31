@@ -67,6 +67,8 @@ class TypeTraits<
         using Policies = OutputPolicies<
             OutputNoDataPolicyT<OutputNoDataPolicy, Element>>;
 
+        using InputNoDataPolicy = typename TypeTraits<OutputNoDataPolicy>::InputNoDataPolicy;
+
 };
 
 }  // namespace detail
