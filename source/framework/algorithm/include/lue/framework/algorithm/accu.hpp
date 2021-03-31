@@ -1,10 +1,10 @@
 #pragma once
 #include "lue/framework/algorithm/detail/accumulate.hpp"
+#include "lue/framework/algorithm/detail/promise.hpp"
 #include "lue/framework/algorithm/component/array_partition_io.hpp"
 #include "lue/framework/algorithm/inflow_count.hpp"
-#include "lue/framework/algorithm/policy/detect_no_data_by_value.hpp"
-#include "lue/framework/algorithm/policy/flow_direction_halo.hpp"
-#include "lue/framework/algorithm/policy/mark_no_data_by_value.hpp"
+#include "lue/framework/algorithm/policy.hpp"
+#include "lue/framework/algorithm/type_traits.hpp"
 #include "lue/framework/core/assert.hpp"
 #include "lue/framework/core/component/component_array.hpp"
 #include "lue/framework/core/serialize/array.hpp"
@@ -12,45 +12,6 @@
 
 namespace lue {
     namespace detail {
-
-        template<
-            typename Index,
-             Rank rank>
-        Offset<Index, rank> invert(
-            Offset<Index, rank> const& offset)
-            {
-                Offset<Index, rank> result{offset};
-
-                result[0] *= -1;
-                result[1] *= -1;
-
-                return result;
-            };
-
-
-        template<
-            typename Index,
-            Rank r,
-            typename V>
-        class ArrayTraits<lue::Array<lue::ArrayPartitionIO<Index, r, V>, r>>
-        {
-
-            public:
-
-                using Element = V;
-
-                constexpr static Rank rank = r;
-
-                using Shape = typename lue::Array<lue::ArrayPartitionIO<Index, r, V>, r>::Shape;
-
-                template<
-                    typename V_,
-                    Rank r_>
-                using Component = lue::ArrayPartitionIO<Index, r_, V_>;
-
-        };
-
-
         namespace accu {
 
             template<
@@ -441,198 +402,13 @@ namespace lue {
 
 
         template<
-            typename PartitionIOComponents>
-        Array<hpx::future<bool>, rank<PartitionIOComponents>> solved_partitions(
-            PartitionIOComponents& partition_io_partitions,
-            Array<bool, 2> const& ready_partitions)
-        {
-            // For each partition that is not yet ready, request whether
-            // it is solved. If a partition is solved, then it is potentially
-            // drainable from its output cells, to a downstream partition.
-            // In theory, a solved partition is not drainable. In that
-            // case it contains sinks that receive all material.
-            using PartitionIOComponent = ComponentT<PartitionIOComponents>;
-            using Shape = ShapeT<PartitionIOComponents>;
-
-            Rank const rank{lue::rank<PartitionIOComponents>};
-            Shape const& shape_in_partitions{partition_io_partitions.shape()};
-            Count const nr_partitions{nr_elements(shape_in_partitions)};
-
-            // Only ask partitions that are not already ready, whether
-            // they are solved.
-            Array<hpx::future<bool>, rank> is_solved{shape_in_partitions};
-
-            for(Index p = 0; p < nr_partitions; ++p)
-            {
-                if(ready_partitions[p])
-                {
-                    is_solved[p] = hpx::make_ready_future<bool>(true);
-                }
-                else
-                {
-                    is_solved[p] = partition_io_partitions[p].then(
-
-                            [](PartitionIOComponent const& partition_io_partition)
-                            {
-                                return partition_io_partition.is_solved();
-                            }
-
-                        );
-                }
-            }
-
-            return is_solved;
-        }
-
-
-        template<
-            typename PartitionIOComponents>
-        hpx::future<Array<
-                typename ComponentT<PartitionIOComponents>::PartitionOffsets,
-                rank<PartitionIOComponents>>>
-            upstream_partition_offsets(
-                PartitionIOComponents& partition_io_partitions,
-                Array<bool, rank<PartitionIOComponents>> const& ready_partitions,
-                [[maybe_unused]] Array<bool, rank<PartitionIOComponents>> const& solved_partitions)
-        {
-            using PartitionIOComponent = ComponentT<PartitionIOComponents>;
-            using PartitionOffsets = typename PartitionIOComponent::PartitionOffsets;
-            using Shape = ShapeT<PartitionIOComponents>;
-
-            Rank const rank{lue::rank<PartitionIOComponents>};
-            Shape const& shape_in_partitions{partition_io_partitions.shape()};
-            Count const nr_partitions{nr_elements(shape_in_partitions)};
-
-            Array<hpx::future<PartitionOffsets>, rank> downstream_partition_offsets{shape_in_partitions};
-
-            for(Index p = 0; p < nr_partitions; ++p)
-            {
-                if(!ready_partitions[p] /* && solved_partitions[p] */)
-                {
-                    downstream_partition_offsets[p] = partition_io_partitions[p].partition_offsets();
-                }
-                else
-                {
-                    downstream_partition_offsets[p] = hpx::make_ready_future<PartitionOffsets>();
-                }
-            }
-
-            // Attach a continuation to each collection of futures to
-            // offsets and create an array with per partition a set
-            // of offsets to partitions that have material ready for us.
-
-            // Halo partitions are not relevant anymore. Halo partitions
-            // will never produce material for non-halo partitions.
-
-            // Non-halo partitions can produce material for
-            // halo-partitions, but that is irrelevant. Skip'm.
-
-            return when_all_get(std::move(downstream_partition_offsets)).then(
-                    [](
-                        hpx::future<Array<PartitionOffsets, rank>>&& downstream_partition_offsets_f)
-                    {
-                        // For each partition,
-                        // downstream_partition_offsets contains the
-                        // offsets *to* the downstream partition it
-                        // can provide material for. We need to convert
-                        // this to an array with for each partition the
-                        // offsets to the upstream partitions material
-                        // can be provided *from*.
-
-                        using Offset = typename PartitionIOComponent::Offset;
-
-                        Array<PartitionOffsets, rank> downstream_partition_offsets{
-                            downstream_partition_offsets_f.get()};
-                        Shape const& shape_in_partitions{downstream_partition_offsets.shape()};
-                        Array<PartitionOffsets, rank> upstream_partition_offsets{shape_in_partitions};
-
-                        auto const [extent0, extent1] = shape_in_partitions;
-
-                        auto flows_towards_halo_partition =
-                            [extent0, extent1](
-                                Index const idx0,
-                                Index const idx1,
-                                Offset const& offset) -> bool
-                            {
-                                return
-                                    (idx0 == 0 && offset[0] == -1) ||
-                                    (idx0 == extent0 - 1 && offset[0] == 1) ||
-                                    (idx1 == 0 && offset[1] == -1) ||
-                                    (idx1 == extent1 - 1 && offset[1] == 1);
-                            };
-
-                        for(Index idx0 = 0; idx0 < extent0; ++idx0)
-                        {
-                            for(Index idx1 = 0; idx1 < extent1; ++idx1)
-                            {
-                                for(auto const& offset: downstream_partition_offsets(idx0, idx1))
-                                {
-                                    if(!flows_towards_halo_partition(idx0, idx1, offset))
-                                    {
-                                        upstream_partition_offsets(idx0 + offset[0], idx1 + offset[1]).insert(invert(offset));
-                                    }
-                                }
-                            }
-                        }
-
-                        return upstream_partition_offsets;
-                    }
-
-                );
-        }
-
-
-        template<
-            typename PartitionIOComponents>
-        std::tuple<
-                    Array<bool, 2>,
-                    Array<std::set<Offset<std::int8_t, 2>>, 2>
-                >
-            flow_accumulation_front(
-                PartitionIOComponents& partition_io_partitions,
-                Array<bool, 2> const& ready_partitions)
-        {
-            Rank const rank{lue::rank<PartitionIOComponents>};
-
-            // For each partition that is not ready yet, determine
-            // whether it is fully solved.
-            Array<bool, rank> solved_partitions_{partition_io_partitions.shape()};
-            {
-                Array<hpx::future<bool>, rank> solved_partitions_f{
-                    solved_partitions(partition_io_partitions, ready_partitions)};
-                hpx::wait_all(solved_partitions_f.begin(), solved_partitions_f.end());
-                std::transform(solved_partitions_f.begin(), solved_partitions_f.end(),
-                    solved_partitions_.begin(), [](auto& f) { return f.get(); });
-            }
-
-            // For each partition that is not ready yet, determine the
-            // offsets to upstream solved partitions.
-            using PartitionIOComponent = ComponentT<PartitionIOComponents>;
-            using PartitionOffsets = typename PartitionIOComponent::PartitionOffsets;
-
-            hpx::future<Array<PartitionOffsets, rank>> upstream_partition_offsets_f{
-                upstream_partition_offsets(partition_io_partitions, ready_partitions, solved_partitions_)};
-            upstream_partition_offsets_f.wait();
-
-            return std::make_tuple(std::move(solved_partitions_), upstream_partition_offsets_f.get());
-        }
-
-
-        using IDPromise = hpx::lcos::local::promise<hpx::id_type>;
-
-        template<
-            Rank rank>
-        using IDPromiseArray = Array<IDPromise, rank>;
-
-
-        template<
             typename Policies,
             typename Localities,
             typename FlowDirectionPartitions,
             typename PartitionIOComponents,
             typename InflowCountPartitions,
             typename MaterialPartitions>
-        void solve_array(
+        void solve_accu_array(
             Policies const& policies,
             Localities const& localities,
             FlowDirectionPartitions const& flow_direction_partitions,
@@ -834,7 +610,7 @@ namespace lue {
             // partition server instance IDs will be fulfilled, as soon
             // as possible. Fire and forget.
             hpx::apply(
-                solve_array<Policies, Localities,
+                solve_accu_array<Policies, Localities,
                     FlowDirectionPartitions, PartitionIOComponents, InflowCountPartitions,
                     MaterialPartitions>,
                 policies,
@@ -906,13 +682,13 @@ namespace lue {
             // TODO Only accept non-negative material values!!!
             AllValuesWithinDomain<FlowDirectionElement, MaterialElement>,
             OutputsPolicies<
-                OutputPolicies<MarkNoDataByValue<MaterialElement>>>,
+                OutputPolicies<DefaultOutputNoDataPolicy<MaterialElement>>>,
             InputsPolicies<
                 SpatialOperationInputPolicies<
                     DetectNoDataByValue<FlowDirectionElement>,
                     FlowDirectionHalo<FlowDirectionElement>>,
                 SpatialOperationInputPolicies<
-                    DetectNoDataByValue<MaterialElement>,
+                    DefaultInputNoDataPolicy<MaterialElement>,
                     FillHaloWithConstantValue<MaterialElement>>>>;
 
 

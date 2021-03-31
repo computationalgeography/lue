@@ -71,9 +71,25 @@ void check_array_partition_data_is_equal(
     BOOST_REQUIRE_EQUAL(partition_data1.shape(), partition_data2.shape());
     BOOST_REQUIRE_EQUAL(partition_data1.span(), partition_data2.span());
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(
-        partition_data1.begin(), partition_data1.end(),
-        partition_data2.begin(), partition_data2.end());
+    if constexpr(std::is_floating_point_v<ElementT<PartitionData>>)
+    {
+        for(int i = 0; i < partition_data1.nr_elements(); ++i)
+        {
+            BOOST_TEST_CONTEXT("index " << i)
+            {
+                BOOST_CHECK_MESSAGE(
+                    (std::isnan(partition_data1[i]) && std::isnan(partition_data2[i])) ||
+                    (partition_data1[i] == partition_data2[i]),
+                    fmt::format("{} != {}", partition_data1[i], partition_data2[i]));
+            }
+        }
+    }
+    else
+    {
+        BOOST_CHECK_EQUAL_COLLECTIONS(
+            partition_data1.begin(), partition_data1.end(),
+            partition_data2.begin(), partition_data2.end());
+    }
 }
 
 

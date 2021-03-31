@@ -110,6 +110,41 @@ namespace lue::test {
     }
 
 
+    FlowDirectionArray spiral_in()
+    {
+        return create_partitioned_array<FlowDirectionArray>(array_shape, partition_shape,
+            {
+                {  e,  e,  e,
+                   e,  e,  e,
+                   n,  e,  e, },
+                {  e,  e,  e,
+                   e,  e,  e,
+                   e,  e,  e, },
+                {  e,  e,  s,
+                   e,  s,  s,
+                   s,  s,  s, },
+                {  n,  n,  e,
+                   n,  n,  n,
+                   n,  n,  n, },
+                {  e,  e,  s,
+                   e,  p,  s,
+                   n,  w,  w, },
+                {  s,  s,  s,
+                   s,  s,  s,
+                   s,  s,  s, },
+                {  n,  n,  n,
+                   n,  n,  w,
+                   n,  w,  w, },
+                {  w,  w,  w,
+                   w,  w,  w,
+                   w,  w,  w, },
+                {  w,  s,  s,
+                   w,  w,  s,
+                   w,  w,  w, },
+            });
+    }
+
+
     template<
         typename MaterialElement>
     PartitionedArray<MaterialElement, 2> filled(
@@ -169,5 +204,6 @@ namespace lue::test {
     template PartitionedArray<std::uint8_t, 2> filled(std::uint8_t);
     template PartitionedArray<std::uint32_t, 2> filled(std::uint32_t);
     template PartitionedArray<std::uint64_t, 2> filled(std::uint64_t);
+    template PartitionedArray<float, 2> filled(float);
 
 }  // namespace lue::test

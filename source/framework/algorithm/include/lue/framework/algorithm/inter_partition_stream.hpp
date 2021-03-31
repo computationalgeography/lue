@@ -1,10 +1,10 @@
 #pragma once
 #include "lue/framework/algorithm/component/array_partition_io.hpp"
-#include "lue/framework/algorithm/component/array_partition_io.hpp"
 #include "lue/framework/algorithm/inflow_count.hpp"
 #include "lue/framework/algorithm/detail/accumulate.hpp"
 #include "lue/framework/algorithm/policy/flow_direction_halo.hpp"
 #include "lue/framework/algorithm/policy/mark_no_data_by_value.hpp"
+#include "lue/framework/algorithm/type_traits.hpp"
 #include "lue/framework/core/component/component_array.hpp"
 
 
@@ -113,31 +113,6 @@ namespace lue {
 
 
     namespace detail {
-
-        // TODO refactor with accu
-        template<
-            typename Index,
-            Rank r,
-            typename V>
-        class ArrayTraits<lue::Array<lue::ArrayPartitionIO<Index, r, V>, r>>
-        {
-
-            public:
-
-                using Element = V;
-
-                constexpr static Rank rank = r;
-
-                using Shape = typename lue::Array<lue::ArrayPartitionIO<Index, r, V>, r>::Shape;
-
-                template<
-                    typename V_,
-                    Rank r_>
-                using Component = lue::ArrayPartitionIO<Index, r_, V_>;
-
-        };
-
-
         namespace inter_partition_stream {
 
             template<
@@ -260,11 +235,11 @@ namespace lue {
 
                 private:
 
-                    CellsIdxsArray _cells_idxs;
+                    CellsIdxsArray& _cells_idxs;
 
-                    StreamClassArray _stream_class;
+                    StreamClassArray& _stream_class;
 
-                    CountArray _count;
+                    CountArray& _count;
 
             };
 

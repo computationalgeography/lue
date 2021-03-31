@@ -27,6 +27,8 @@ namespace lue::test {
 
     FlowDirectionArray all_no_data();
 
+    FlowDirectionArray spiral_in();
+
     FlowDirectionArray merging_streams();
 
     template<
@@ -39,6 +41,14 @@ namespace lue::test {
     PartitionedArray<Element, 2> ones()
     {
         return filled(Element{1});
+    }
+
+
+    template<
+        typename Element>
+    PartitionedArray<Element, 2> zeros()
+    {
+        return filled(Element{0});
     }
 
 
