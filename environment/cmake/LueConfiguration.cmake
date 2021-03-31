@@ -363,7 +363,7 @@ if(LUE_HPX_REQUIRED)
 
                 FetchContent_Declare(otf2
                     URL https://www.vi-hps.org/cms/upload/packages/otf2/otf2-2.2.tar.gz
-                    URL_HASH MD5=cfedf583bf000e98ce0c86e663e5ded0 
+                    URL_HASH MD5=cfedf583bf000e98ce0c86e663e5ded0
                 )
 
                 FetchContent_GetProperties(otf2)
