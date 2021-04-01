@@ -2,6 +2,7 @@ add_test_conditionally(test)
 
 add_library(lue_framework_io
     src/read.cpp
+    src/util.cpp
     src/write.cpp
 )
 

@@ -27,12 +27,14 @@ lue.framework reference
     multiply
     not_equal_to
     pow
+    read_array
     slope
     sqrt
     subtract
     uniform
     valid
     where
+    write_array
 .. autofunction:: accu
 .. autofunction:: accu_fraction
 .. autofunction:: add
@@ -48,9 +50,11 @@ lue.framework reference
 .. autofunction:: minimum
 .. autofunction:: multiply
 .. autofunction:: not_equal_to
+.. autofunction:: ready_array
 .. autofunction:: slope
 .. autofunction:: sqrt
 .. autofunction:: subtract
 .. autofunction:: uniform
 .. autofunction:: valid
 .. autofunction:: where
+.. autofunction:: write_array
