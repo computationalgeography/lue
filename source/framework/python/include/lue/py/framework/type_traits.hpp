@@ -12,6 +12,17 @@ namespace lue::framework {
     {};
 
 
+    template<>
+    class TypeTraits<void>
+    {
+
+        public:
+
+            inline static std::string const name{"void"};
+
+    };
+
+
 #define TYPE_TRAITS(Element, name_)  \
     template<>                                            \
     class TypeTraits<Element>                             \

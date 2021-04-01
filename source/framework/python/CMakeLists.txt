@@ -35,6 +35,7 @@ pybind11_add_module(lue_py_framework SHARED SYSTEM THIN_LTO
     src/core/partitioned_array_float.cpp
     src/core/partitioned_array_double.cpp
     src/io/read_array.cpp
+    src/io/write_array.cpp
     src/command_line.cpp
     src/hpx.cpp
     src/hpx_runtime.cpp

@@ -27,17 +27,23 @@ namespace lue::framework {
         }
 
 
-        // template<
-        //     typename Element>
-        // void bind_future(
-        //     pybind11::module& module)
-        // {
-        //     pybind11::class_<hpx::future<Element>>(
-        //         module,
-        //         fmt::format("future<{}>", as_string<Element>()).c_str())
+        template<
+            typename Element>
+        void bind_future(
+            pybind11::module& module)
+        {
+            pybind11::class_<hpx::future<Element>>(
+                module,
+                fmt::format("future<{}>", as_string<Element>()).c_str())
 
-        //         ;
-        // }
+                .def(
+                    "get",
+                    [](hpx::future<Element>& future) {
+                        return future.get();
+                    })
+
+                ;
+        }
 
 
         template<
@@ -79,6 +85,8 @@ namespace lue::framework {
     void bind_hpx(
         pybind11::module& module)
     {
+        bind_future<void>(module);
+
         // bind_future<std::uint8_t>(module);
         // bind_future<std::uint32_t>(module);
         // bind_future<std::uint64_t>(module);
@@ -94,6 +102,7 @@ namespace lue::framework {
         bind_shared_future<std::int64_t>(module);
         bind_shared_future<float>(module);
         bind_shared_future<double>(module);
+
     }
 
 }  // namespace lue::framework
