@@ -34,56 +34,6 @@ namespace lue::policy {
         };
 
 
-        // template<
-        //     typename T,
-        //     typename Enable=void>
-        // class TypeTraits
-        // {
-        // };
-
-
-        // template<
-        //     typename T>
-        // class TypeTraits<
-        //     T,
-        //     typename std::enable_if_t<std::is_floating_point_v<T>>>
-        // {
-
-        //     public:
-
-        //         static constexpr T no_data_value = std::numeric_limits<T>::quiet_NaN();
-
-        // };
-
-
-        // template<
-        //     typename T>
-        // class TypeTraits<
-        //     T,
-        //     typename std::enable_if_t<std::is_integral_v<T> && std::is_signed_v<T>>>
-        // {
-
-        //     public:
-
-        //         static T const no_data_value = std::numeric_limits<T>::min();
-
-        // };
-
-
-        // template<
-        //     typename T>
-        // class TypeTraits<
-        //     T,
-        //     typename std::enable_if_t<std::is_integral_v<T> && std::is_unsigned_v<T>>>
-        // {
-
-        //     public:
-
-        //         static T const no_data_value = std::numeric_limits<T>::max();
-
-        // };
-
-
         template<
             typename Policies>
         class PoliciesTraits
@@ -142,13 +92,13 @@ namespace lue::policy {
     template<
         // All policies related to an operation
         typename Policies,
-        // Idx of policies related to a specific output
+        // Idx of policies related to a specific input
         std::size_t idx,
-        // Element for which to return an output policies type
+        // Element for which to return an input policies type
         typename Element=ElementT<PoliciesT<typename Policies::InputsPolicies, idx>>>
     using InputPoliciesT =
         typename detail::TypeTraits<
-                // Policies related to a specific output
+                // Policies related to a specific input
                 PoliciesT<typename Policies::InputsPolicies, idx>
             >::template Policies<Element>;
 

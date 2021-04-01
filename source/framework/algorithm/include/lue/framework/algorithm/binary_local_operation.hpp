@@ -693,7 +693,7 @@ auto name(                                                                      
 }                                                                               \
                                                                                 \
                                                                                 \
-/* f<OutputElement, InputElement(policies, scalar_f, array) */                  \
+/* f<OutputElement, InputElement>(policies, scalar_f, array) */                 \
 template<                                                                       \
     typename Policies,                                                          \
     typename OutputElement,                                                     \

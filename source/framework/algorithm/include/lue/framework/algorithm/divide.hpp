@@ -18,20 +18,13 @@ namespace lue {
 
                 static_assert(std::is_floating_point_v<InputElement>);
 
-                static_assert(std::numeric_limits<InputElement>::has_quiet_NaN);
-
                 using OutputElement = OutputElement_;
 
                 constexpr OutputElement operator()(
                     InputElement const& input_element1,
                     InputElement const& input_element2) const noexcept
                 {
-                    // TODO(KDJ) Move this test to a domain policy used by the binary
-                    //     local operation
-                    return input_element2 == 0
-                        ? std::numeric_limits<OutputElement>::quiet_NaN()
-                        : input_element1 / input_element2
-                        ;
+                    return input_element1 / input_element2;
                 }
 
         };

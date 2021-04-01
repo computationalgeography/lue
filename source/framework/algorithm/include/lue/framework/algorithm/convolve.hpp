@@ -101,10 +101,10 @@ namespace policy::convolve {
 
 
 template<
+    typename OutputElement,
     typename ConvolvePolicies,
     typename Array,
-    typename Kernel,
-    typename OutputElement=double>
+    typename Kernel>
 PartitionedArrayT<Array, OutputElement> convolve(
     ConvolvePolicies const& policies,
     Array const& array,
@@ -117,9 +117,9 @@ PartitionedArrayT<Array, OutputElement> convolve(
 
 
 template<
+    typename OutputElement,
     typename Array,
-    typename Kernel,
-    typename OutputElement=double>
+    typename Kernel>
 PartitionedArrayT<Array, OutputElement> convolve(
     Array const& array,
     Kernel const& kernel)
@@ -129,7 +129,7 @@ PartitionedArrayT<Array, OutputElement> convolve(
 
     InputElement const fill_value{0};
 
-    return convolve(Policies{fill_value}, array, kernel);
+    return convolve<OutputElement>(Policies{fill_value}, array, kernel);
 }
 
 }  // namespace lue

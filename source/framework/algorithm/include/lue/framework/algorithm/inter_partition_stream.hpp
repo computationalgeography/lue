@@ -60,7 +60,6 @@ namespace lue {
                 lue_hpx_assert(
                     _stream_class == intra_partition_stream_cell ||
                     _stream_class == inter_partition_stream_cell);
-                lue_hpx_assert(_count >= 0);
             }
 
 

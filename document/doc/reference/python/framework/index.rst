@@ -27,6 +27,7 @@ lue.framework reference
     multiply
     not_equal_to
     pow
+    slope
     sqrt
     subtract
     uniform
@@ -47,6 +48,7 @@ lue.framework reference
 .. autofunction:: minimum
 .. autofunction:: multiply
 .. autofunction:: not_equal_to
+.. autofunction:: slope
 .. autofunction:: sqrt
 .. autofunction:: subtract
 .. autofunction:: uniform
