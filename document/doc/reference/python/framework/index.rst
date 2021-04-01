@@ -11,6 +11,8 @@ lue.framework reference
 
 
 .. autosummary::
+    accu
+    accu_fraction
     add
     all
     divide
@@ -28,7 +30,10 @@ lue.framework reference
     sqrt
     subtract
     uniform
+    valid
     where
+.. autofunction:: accu
+.. autofunction:: accu_fraction
 .. autofunction:: add
 .. autofunction:: all
 .. autofunction:: divide
@@ -38,10 +43,12 @@ lue.framework reference
 .. autofunction:: less_than
 .. autofunction:: less_than_equal_to
 .. autofunction:: log
-.. autofunction:: minimum
 .. autofunction:: maximum
+.. autofunction:: minimum
 .. autofunction:: multiply
 .. autofunction:: not_equal_to
 .. autofunction:: sqrt
 .. autofunction:: subtract
 .. autofunction:: uniform
+.. autofunction:: valid
+.. autofunction:: where
