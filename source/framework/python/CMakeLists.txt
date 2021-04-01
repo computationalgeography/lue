@@ -22,6 +22,7 @@ pybind11_add_module(lue_py_framework SHARED SYSTEM THIN_LTO
     src/algorithm/sqrt.cpp
     src/algorithm/subtract.cpp
     src/algorithm/uniform.cpp
+    src/algorithm/valid.cpp
     src/algorithm/where.cpp
     src/core/create_partitioned_array.cpp
     src/core/partitioned_array.cpp
