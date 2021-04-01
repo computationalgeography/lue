@@ -39,7 +39,7 @@
 //     // | 2 | 3 | 3 | 3 | 3 | 3 | 3 | 2 |
 //     // +---+---+---+---+---+---+---+---+
 //     // |           |           |       |
-//     auto convolve = lue::convolve(array, kernel);
+//     auto convolve = lue::convolve<double>(array, kernel);
 // 
 //     static_assert(std::is_same_v<lue::ElementT<decltype(convolve)>, double>);
 // 
@@ -127,7 +127,7 @@ BOOST_AUTO_TEST_CASE(window_total_2d)
     // [6. 9. 9. | 9. 9. 9. | 9. 9. 6.]
     // [6. 9. 9. | 9. 9. 9. | 9. 9. 6.]
     // [4. 6. 6. | 6. 6. 6. | 6. 6. 4.]
-    auto convolve = lue::convolve(array, kernel);
+    auto convolve = lue::convolve<double>(array, kernel);
 
     OutputArray array_we_want =
             lue::test::create_partitioned_array<OutputArray>(
@@ -172,7 +172,7 @@ BOOST_AUTO_TEST_CASE(window_total_2d_single_partition)
     // [4. 6. 4.]
     // [6. 9. 6.]
     // [4. 6. 4.]
-    auto convolve = lue::convolve(array, kernel);
+    auto convolve = lue::convolve<double>(array, kernel);
 
     OutputArray array_we_want =
             lue::test::create_partitioned_array<OutputArray>(
@@ -209,7 +209,7 @@ BOOST_AUTO_TEST_CASE(window_total_2d_single_row_of_partitions)
     // [4. 6. 6. | 6. 6. 6. | 6. 6. 4.]
     // [6. 9. 9. | 9. 9. 9. | 9. 9. 6.]
     // [4. 6. 6. | 6. 6. 6. | 6. 6. 4.]
-    auto convolve = lue::convolve(array, kernel);
+    auto convolve = lue::convolve<double>(array, kernel);
 
     OutputArray array_we_want =
             lue::test::create_partitioned_array<OutputArray>(
@@ -264,7 +264,7 @@ BOOST_AUTO_TEST_CASE(window_total_2d_single_col_of_partitions)
     // [6. 9. 6.]
     // [6. 9. 6.]
     // [4. 6. 4.]
-    auto convolve = lue::convolve(array, kernel);
+    auto convolve = lue::convolve<double>(array, kernel);
 
     OutputArray array_we_want =
             lue::test::create_partitioned_array<OutputArray>(

@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE(use_case_1)
 
     Element cell_size = 50.0;
 
-    auto slope_we_got = lue::slope(elevation, cell_size);
+    auto slope_we_got = lue::slope(lue::policy::slope::DefaultValuePolicies<Element>{}, elevation, cell_size);
     LUE_UNUSED(slope_we_got);
 
     auto slope_we_want = lue::test::create_partitioned_array<Array>(shape, shape,
@@ -56,13 +56,21 @@ BOOST_AUTO_TEST_CASE(use_case_1)
             3.73  , 3.54 , 2.58 , 3.02, 2.36,
             2.76  , 3.07 , 2.59 , 2.66, 1.65,
         }});
+    LUE_UNUSED(slope_we_want);
 
-    // Array slope_we_want{lue::create_partitioned_array<Element>(shape, shape)};
-    // slope_we_want.partitions()(0, 0).wait();
-    // slope_we_want.partitions()(0, 0).set_data(std::move(data));
 
-    BOOST_WARN_MESSAGE(false, "Update slope to use policies");
+    // TODO Handle NaNs, or better(?)...
+    // lue::test::check_arrays_are_close(slope_we_got, slope_we_want, 1e-3);
 
-    // FIXME Update focal_operation to use policies that are needed by slope
-    // lue::test::check_arrays_are_close(slope_we_got, slope_we_want);
+    // TODO ... make this work
+    // BOOST_CHECK(
+    //     lue::all<BooleanElement>(lue::policy::all::DefaultValuePolicies{},
+    //         lue::less_than<Element>(
+    //             lue::policy::less_than::DefaultValuePolicies{},
+    //                 lue::subtract(lue::policy::subtract::DefaultValuePolicies<Element>{},
+    //                        slope_we_got, slope_we_want
+    //                     ),
+    //                 1e-3
+    //             )
+    //        ).get());
 }

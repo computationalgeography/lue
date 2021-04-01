@@ -33,10 +33,15 @@ public:
 namespace policy::add {
 
     template<
+        typename InputElement>
+    using DomainPolicy = AllValuesWithinDomain<InputElement, InputElement>;
+
+
+    template<
         typename OutputElement,
         typename InputElement>
     using DefaultPolicies = policy::DefaultPolicies<
-        AllValuesWithinDomain<InputElement, InputElement>,
+        DomainPolicy<InputElement>,
         OutputElements<OutputElement>,
         InputElements<InputElement, InputElement>>;
 
@@ -45,7 +50,7 @@ namespace policy::add {
         typename OutputElement,
         typename InputElement>
     using DefaultValuePolicies = policy::DefaultValuePolicies<
-        AllValuesWithinDomain<InputElement, InputElement>,
+        DomainPolicy<InputElement>,
         OutputElements<OutputElement>,
         InputElements<InputElement, InputElement>>;
 

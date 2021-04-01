@@ -97,7 +97,8 @@ template<
     typename PartitionData>
 void check_array_partition_data_is_close(
     PartitionData const& partition_data1,
-    PartitionData const& partition_data2)
+    PartitionData const& partition_data2,
+    ElementT<PartitionData> const tolerance=1e-6)
 {
     BOOST_REQUIRE_EQUAL(partition_data1.shape(), partition_data2.shape());
     BOOST_REQUIRE_EQUAL(partition_data1.span(), partition_data2.span());
@@ -107,7 +108,7 @@ void check_array_partition_data_is_close(
         BOOST_TEST_CONTEXT("index " << i)
         {
             BOOST_TEST(
-                partition_data1[i] == partition_data2[i], tt::tolerance(1e-6));
+                partition_data1[i] == partition_data2[i], tt::tolerance(tolerance));
         }
     }
 }
@@ -148,7 +149,8 @@ template<
     typename Partition>
 void check_partition_is_close(
     Partition const& partition1,
-    Partition const& partition2)
+    Partition const& partition2,
+    ElementT<Partition> const tolerance=1e-6)
 {
     bool both_partitions_valid = partition1.valid() && partition2.valid();
     bool both_partitions_invalid =
@@ -170,7 +172,8 @@ void check_partition_is_close(
 
         check_array_partition_data_is_close(
             partition1.data().get(),
-            partition2.data().get());
+            partition2.data().get(),
+            tolerance);
     }
 }
 
@@ -194,13 +197,14 @@ template<
     typename Partitions>
 void check_partitions_are_close(
     Partitions const& partitions1,
-    Partitions const& partitions2)
+    Partitions const& partitions2,
+    ElementT<Partitions> const tolerance=1e-6)
 {
     BOOST_REQUIRE_EQUAL(partitions1.shape(), partitions2.shape());
 
     for(Index p = 0; p < partitions1.nr_elements(); ++p) {
         BOOST_TEST_CONTEXT(fmt::format("Partition index: {}", p))
-        check_partition_is_close(partitions1[p], partitions2[p]);
+        check_partition_is_close(partitions1[p], partitions2[p], tolerance);
     }
 }
 
@@ -226,14 +230,15 @@ template<
     Rank rank>
 void check_arrays_are_close(
     PartitionedArray<Element, rank> const& array1,
-    PartitionedArray<Element, rank> const& array2)
+    PartitionedArray<Element, rank> const& array2,
+    Element const tolerance=1e-6)
 {
     BOOST_REQUIRE_EQUAL(
         shape_in_partitions(array1),
         shape_in_partitions(array2));
     BOOST_REQUIRE_EQUAL(array1.shape(), array2.shape());
 
-    check_partitions_are_close(array1.partitions(), array2.partitions());
+    check_partitions_are_close(array1.partitions(), array2.partitions(), tolerance);
 }
 
 
