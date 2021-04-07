@@ -42,7 +42,7 @@ namespace {
     {
         using CountElement = lue::ElementT<InflowCountArray>;
 
-        InflowCount inflow_count_we_got = lue::inflow_count<Policies, CountElement>(policies, flow_direction);
+        InflowCount inflow_count_we_got = lue::inflow_count<CountElement>(policies, flow_direction);
 
         lue::test::check_arrays_are_equal(inflow_count_we_got, inflow_count_we_want);
     }

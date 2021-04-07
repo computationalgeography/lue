@@ -1,7 +1,5 @@
 #pragma once
-#include "lue/framework/algorithm/policy/all_values_within_domain.hpp"
-#include "lue/framework/algorithm/policy/default_policies.hpp"
-#include "lue/framework/algorithm/policy/flow_direction_halo.hpp"
+#include "lue/framework/algorithm/policy.hpp"
 #include "lue/framework/algorithm/detail/flow_direction.hpp"
 #include "lue/framework/algorithm/detail/halo_partition.hpp"
 #include "lue/framework/algorithm/detail/partition.hpp"
@@ -916,12 +914,24 @@ namespace lue {
                     SkipNoData<FlowDirectionElement>,
                     FlowDirectionHalo<FlowDirectionElement>>>>;
 
+        template<
+            typename CountElement,
+            typename FlowDirectionElement>
+        using DefaultValuePolicies = Policies<
+            AllValuesWithinDomain<FlowDirectionElement>,
+            OutputsPolicies<
+                OutputPolicies<DefaultOutputNoDataPolicy<CountElement>>>,
+            InputsPolicies<
+                SpatialOperationInputPolicies<
+                    DetectNoDataByValue<FlowDirectionElement>,
+                    FlowDirectionHalo<FlowDirectionElement>>>>;
+
     }  // namespace policy::inflow_count
 
 
     template<
-        typename Policies,
         typename CountElement,
+        typename Policies,
         typename FlowDirectionElement,
         Rank rank>
     PartitionedArray<CountElement, rank> inflow_count(
@@ -929,7 +939,7 @@ namespace lue {
         PartitionedArray<FlowDirectionElement, rank> const& flow_direction)
     {
         // The result of this function must be equal to
-        // upstream(flow_direction, material=1), but is should be faster
+        // upstream(flow_direction, material=1), but it should be faster
         // (less memory accesses)
 
         using FlowDirectionArray = PartitionedArray<FlowDirectionElement, rank>;
@@ -978,7 +988,7 @@ namespace lue {
     {
         using Policies = policy::inflow_count::DefaultPolicies<CountElement, FlowDirectionElement>;
 
-        return inflow_count<Policies, CountElement, FlowDirectionElement>(Policies{}, flow_direction);
+        return inflow_count<CountElement>(Policies{}, flow_direction);
     }
 
 }  // namespace lue
