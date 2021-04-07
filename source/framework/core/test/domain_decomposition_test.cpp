@@ -2,6 +2,7 @@
 #include <hpx/config.hpp>
 #include <boost/test/unit_test.hpp>
 #include "lue/framework/core/domain_decomposition.hpp"
+#include "lue/framework/test/compare.hpp"
 #include "lue/framework/test/stream.hpp"
 
 
@@ -462,5 +463,138 @@ BOOST_AUTO_TEST_CASE(max_partition_shape_2d)
         Shape const shape_we_want = Shape{1, 1};
 
         BOOST_CHECK_EQUAL(shape_we_got, shape_we_want);
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE(partition_shapes_1d)
+{
+    lue::Rank const rank{1};
+    using Shape = lue::Shape<lue::Index, rank>;
+    using Array = lue::Array<Shape, rank>;
+
+    {
+        // 30 / 10 → 3
+        Shape const array_shape{30};
+        Shape const partition_shape{10};
+        Array partition_shapes = lue::partition_shapes(array_shape, partition_shape);
+
+        BOOST_REQUIRE_EQUAL(partition_shapes.shape(), (Shape{3}));
+        BOOST_CHECK_EQUAL(partition_shapes(0), partition_shape);
+        BOOST_CHECK_EQUAL(partition_shapes(1), partition_shape);
+        BOOST_CHECK_EQUAL(partition_shapes(2), partition_shape);
+    }
+
+
+    {
+        // 30 / 8 → 3
+        Shape const array_shape{30};
+        Shape const partition_shape{8};
+        Array partition_shapes = lue::partition_shapes(array_shape, partition_shape);
+
+        BOOST_REQUIRE_EQUAL(partition_shapes.shape(), (Shape{3}));
+        BOOST_CHECK_EQUAL(partition_shapes(0), partition_shape);
+        BOOST_CHECK_EQUAL(partition_shapes(1), partition_shape);
+        BOOST_CHECK_EQUAL(partition_shapes(2), Shape{14});
+    }
+
+    {
+        // 30 / 0 → exception
+        Shape const array_shape{30};
+        Shape const partition_shape{0};
+
+        BOOST_CHECK_THROW(lue::partition_shapes(array_shape, partition_shape), std::runtime_error);
+    }
+
+    {
+        // 0 / 8 → exception
+        Shape const array_shape{0};
+        Shape const partition_shape{8};
+
+        BOOST_CHECK_THROW(lue::partition_shapes(array_shape, partition_shape), std::runtime_error);
+    }
+
+    {
+        // 8 / 30 → exception
+        Shape const array_shape{8};
+        Shape const partition_shape{30};
+
+        BOOST_CHECK_THROW(lue::partition_shapes(array_shape, partition_shape), std::runtime_error);
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE(partition_shapes_2d)
+{
+    lue::Rank const rank{2};
+    using Shape = lue::Shape<lue::Index, rank>;
+    using Array = lue::Array<Shape, rank>;
+
+    {
+        // 30 x 20 / 10 x 5 → 3 x 4
+        Shape const array_shape{30, 20};
+        Shape const partition_shape{10, 5};
+        Array partition_shapes = lue::partition_shapes(array_shape, partition_shape);
+
+        BOOST_REQUIRE_EQUAL(partition_shapes.shape(), (Shape{3, 4}));
+        BOOST_CHECK_EQUAL(partition_shapes(0, 0), partition_shape);
+        BOOST_CHECK_EQUAL(partition_shapes(0, 1), partition_shape);
+        BOOST_CHECK_EQUAL(partition_shapes(0, 2), partition_shape);
+        BOOST_CHECK_EQUAL(partition_shapes(0, 3), partition_shape);
+
+        BOOST_CHECK_EQUAL(partition_shapes(1, 0), partition_shape);
+        BOOST_CHECK_EQUAL(partition_shapes(1, 1), partition_shape);
+        BOOST_CHECK_EQUAL(partition_shapes(1, 2), partition_shape);
+        BOOST_CHECK_EQUAL(partition_shapes(1, 3), partition_shape);
+
+        BOOST_CHECK_EQUAL(partition_shapes(2, 0), partition_shape);
+        BOOST_CHECK_EQUAL(partition_shapes(2, 1), partition_shape);
+        BOOST_CHECK_EQUAL(partition_shapes(2, 2), partition_shape);
+        BOOST_CHECK_EQUAL(partition_shapes(2, 3), partition_shape);
+    }
+
+    {
+        // 30 x 20 / 8 x 6 → 3 x 3
+        Shape const array_shape{30, 20};
+        Shape const partition_shape{8, 6};
+        Array partition_shapes = lue::partition_shapes(array_shape, partition_shape);
+
+        BOOST_REQUIRE_EQUAL(partition_shapes.shape(), (Shape{3, 3}));
+
+        BOOST_CHECK_EQUAL(partition_shapes(0, 0), partition_shape);
+        BOOST_CHECK_EQUAL(partition_shapes(0, 1), partition_shape);
+        BOOST_CHECK_EQUAL(partition_shapes(0, 2), (Shape{8, 8}));
+
+        BOOST_CHECK_EQUAL(partition_shapes(1, 0), partition_shape);
+        BOOST_CHECK_EQUAL(partition_shapes(1, 1), partition_shape);
+        BOOST_CHECK_EQUAL(partition_shapes(1, 2), (Shape{8, 8}));
+
+        BOOST_CHECK_EQUAL(partition_shapes(2, 0), (Shape{14, 6}));
+        BOOST_CHECK_EQUAL(partition_shapes(2, 1), (Shape{14, 6}));
+        BOOST_CHECK_EQUAL(partition_shapes(2, 2), (Shape{14, 8}));
+    }
+
+    {
+        // 30 x 20 / 0 x 0 → exception
+        Shape const array_shape{30, 20};
+        Shape const partition_shape{0, 0};
+
+        BOOST_CHECK_THROW(lue::partition_shapes(array_shape, partition_shape), std::runtime_error);
+    }
+
+    {
+        // 0 x 0 / 8 x 6 → exception
+        Shape const array_shape{0, 0};
+        Shape const partition_shape{8, 6};
+
+        BOOST_CHECK_THROW(lue::partition_shapes(array_shape, partition_shape), std::runtime_error);
+    }
+
+    {
+        // 8 x 6 / 30 x 20 → exception
+        Shape const array_shape{8, 6};
+        Shape const partition_shape{30, 20};
+
+        BOOST_CHECK_THROW(lue::partition_shapes(array_shape, partition_shape), std::runtime_error);
     }
 }
