@@ -18,7 +18,7 @@ lue.framework reference
     divide
     equal_to
     greater_than
-    greater_than_equal_to
+    inflow_count
     less_than
     less_than_equal_to
     log
@@ -43,6 +43,7 @@ lue.framework reference
 .. autofunction:: equal_to
 .. autofunction:: greater_than
 .. autofunction:: greater_than_equal_to
+.. autofunction:: inflow_count
 .. autofunction:: less_than
 .. autofunction:: less_than_equal_to
 .. autofunction:: log
