@@ -18,7 +18,7 @@ class WhereTest(lue_test.TestCase):
     def setUpClass(cls):
         cls.value = 5.5
         cls.array = lfr.create_array(
-            array_shape=(600, 400), partition_shape=(10, 10),
+            array_shape=(60, 40), partition_shape=(10, 10),
             dtype=np.dtype(np.float32), fill_value=cls.value)
         cls.value_f = lfr.maximum(cls.array)
 

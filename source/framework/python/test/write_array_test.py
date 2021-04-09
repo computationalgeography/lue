@@ -20,7 +20,7 @@ class WriteArrayTest(lue_test.TestCase):
         # Create an array, write it to a dataset, read it back in,
         # and verify the array read is equal to the array written.
 
-        array_shape = (600, 400)
+        array_shape = (60, 40)
         partition_shape = (10, 10)
         dtype = np.dtype(np.int32)
         fill_value = 0
@@ -56,7 +56,7 @@ class WriteArrayTest(lue_test.TestCase):
         # Create t arrays, write them to a dataset, ready them back in,
         # and verify the arrays read are equal to the arrays written.
 
-        array_shape = (600, 400)
+        array_shape = (60, 40)
         partition_shape = (10, 10)
         dtype = np.dtype(np.int32)
         fill_value = 0

@@ -23,7 +23,7 @@ class ReadArrayTest(lue_test.TestCase):
         property_set_name = "continent"
         layer_name = "elevation"
         dtype = np.dtype(np.int32)
-        array_shape = (600, 400)
+        array_shape = (60, 40)
         space_box = [0, 0, 6000, 4000]
         fill_value = 5
 
@@ -53,7 +53,7 @@ class ReadArrayTest(lue_test.TestCase):
         property_set_name = "continent"
         layer_name = "elevation"
         dtype = np.dtype(np.int32)
-        array_shape = (600, 400)
+        array_shape = (60, 40)
         space_box = [0, 0, 6000, 4000]
         fill_value = 5
 
