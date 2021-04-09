@@ -23,9 +23,13 @@ public:
 
     template<
         typename Kernel,
+        typename OutputPolicies,
+        typename InputPolicies,
         typename Subspan>
     OutputElement operator()(
         Kernel const& kernel,
+        [[maybe_unused]] OutputPolicies const& output_policies,
+        [[maybe_unused]] InputPolicies const& input_policies,
         Subspan const& window) const
     {
         static_assert(rank<Kernel> == 2);

@@ -23,10 +23,14 @@ class Functor
 
         template<
             typename Kernel,
+            typename OutputPolicies,
+            typename InputPolicies,
             typename Subspan1>
         OutputElement operator()(
-            [[maybe_unused]] Kernel const& kernel,
-            [[maybe_unused]] Subspan1 const& window1) const
+            Kernel const& kernel,
+            [[maybe_unused]] OutputPolicies const& output_policies,
+            [[maybe_unused]] InputPolicies const& input_policies,
+            Subspan1 const& window1) const
         {
             // Just return the center value in window1
             lue::Radius const radius{kernel.radius()};
@@ -36,12 +40,18 @@ class Functor
 
         template<
             typename Kernel,
+            typename OutputPolicies,
+            typename InputPolicies1,
+            typename InputPolicies2,
             typename Subspan1,
             typename Subspan2>
         OutputElement operator()(
-            [[maybe_unused]] Kernel const& kernel,
+            Kernel const& kernel,
+            [[maybe_unused]] OutputPolicies const& output_policies,
+            [[maybe_unused]] InputPolicies1 const& input_policies1,
+            [[maybe_unused]] InputPolicies2 const& input_policies2,
             [[maybe_unused]] Subspan1 const& window1,
-            [[maybe_unused]] Subspan2 const& window2) const
+            Subspan2 const& window2) const
         {
             // Just return the center value in window2
             lue::Radius const radius{kernel.radius()};

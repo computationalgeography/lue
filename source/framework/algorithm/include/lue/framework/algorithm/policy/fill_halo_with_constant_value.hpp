@@ -15,6 +15,14 @@ namespace lue::policy {
 
         public:
 
+            FillHaloWithConstantValue():
+
+                _fill_value{}
+
+            {
+            }
+
+
             FillHaloWithConstantValue(
                 Element const fill_value):
 

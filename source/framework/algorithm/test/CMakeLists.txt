@@ -61,6 +61,7 @@ set(names
     uniform_test.cpp
     unique_id_test.cpp
     unique_test.cpp
+    upstream_test.cpp
     valid_test.cpp
     where_test.cpp
     zonal_sum_test.cpp
