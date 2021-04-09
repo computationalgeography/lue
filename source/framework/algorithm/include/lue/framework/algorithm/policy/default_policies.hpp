@@ -113,6 +113,23 @@ class DefaultSpatialOperationPolicies<
 
     public:
 
+        DefaultSpatialOperationPolicies():
+
+            Base{
+                    DomainPolicy{},
+                    OutputPolicies<
+                            DontMarkNoData<OutputElements>
+                        >{}...,
+                    SpatialOperationInputPolicies<
+                            SkipNoData<InputElements>,
+                            FillHaloWithConstantValue<InputElements>
+                        >{FillHaloWithConstantValue<InputElements>{}}...
+                }
+
+        {
+        }
+
+
         DefaultSpatialOperationPolicies(
             InputElements const... fill_values):
 

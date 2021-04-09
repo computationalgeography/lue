@@ -24,9 +24,13 @@ namespace lue {
 
             template<
                 typename Kernel,
+                typename OutputPolicies,
+                typename InputPolicies,
                 typename Subspan>
             FlowDirectionElement operator()(
                 Kernel const& kernel,
+                [[maybe_unused]] OutputPolicies const& output_policies,
+                [[maybe_unused]] InputPolicies const& input_policies,
                 Subspan const& window) const
             {
                 using Weight = ElementT<Kernel>;

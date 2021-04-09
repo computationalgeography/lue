@@ -33,6 +33,7 @@ lue.framework reference
     sqrt
     subtract
     uniform
+    upstream
     valid
     where
     write_array
@@ -58,6 +59,7 @@ lue.framework reference
 .. autofunction:: sqrt
 .. autofunction:: subtract
 .. autofunction:: uniform
+.. autofunction:: upstream
 .. autofunction:: valid
 .. autofunction:: where
 .. autofunction:: write_array
