@@ -16,7 +16,7 @@ class AccuTest(lue_test.TestCase):
 
     def test_overloads(self):
 
-        array_shape = (600, 400)
+        array_shape = (60, 40)
         partition_shape = (10, 10)
 
         direction = 4

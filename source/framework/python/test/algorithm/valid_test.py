@@ -16,7 +16,7 @@ class ValidTest(lue_test.TestCase):
 
     def test_all_valid(self):
 
-        array_shape = (600, 400)
+        array_shape = (60, 40)
         partition_shape = (10, 10)
         dtype = np.dtype(np.int32)
         fill_value = 5  # Valid value
@@ -29,7 +29,7 @@ class ValidTest(lue_test.TestCase):
 
     def test_all_invalid(self):
 
-        array_shape = (600, 400)
+        array_shape = (60, 40)
         partition_shape = (10, 10)
         dtype = np.dtype(np.int32)
         fill_value = 5  # Valid value

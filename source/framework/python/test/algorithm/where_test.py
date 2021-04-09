@@ -18,7 +18,7 @@ class WhereTest(lue_test.TestCase):
         # Silly computations. We're only verifying the overloads are
         # available.
 
-        array_shape = (600, 400)
+        array_shape = (60, 40)
         partition_shape = (10, 10)
         dtype = np.dtype(np.int32)
         fill_value = 5
@@ -43,7 +43,7 @@ class WhereTest(lue_test.TestCase):
         # Silly computations. We're only verifying the overloads are
         # available.
 
-        array_shape = (600, 400)
+        array_shape = (60, 40)
         partition_shape = (10, 10)
         dtype = np.dtype(np.int32)
         fill_value1 = 5

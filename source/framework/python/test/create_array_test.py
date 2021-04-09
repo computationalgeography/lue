@@ -16,7 +16,7 @@ class CreateArrayTest(lue_test.TestCase):
 
     def test_create_array(self):
 
-        array_shape = (600, 400)
+        array_shape = (60, 40)
         partition_shape = (10, 10)
         dtype = np.dtype(np.int32)
         fill_value = 5
