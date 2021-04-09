@@ -11,6 +11,7 @@ pybind11_add_module(lue_py_framework SHARED SYSTEM THIN_LTO
     src/algorithm/greater_than.cpp
     src/algorithm/greater_than_equal_to.cpp
     src/algorithm/inflow_count.cpp
+    src/algorithm/inter_partition_stream.cpp
     src/algorithm/less_than.cpp
     src/algorithm/less_than_equal_to.cpp
     src/algorithm/local_operation.cpp

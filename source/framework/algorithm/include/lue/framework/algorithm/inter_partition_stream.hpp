@@ -11,8 +11,8 @@
 namespace lue {
 
     using StreamClass = std::uint8_t;
-    static constexpr StreamClass intra_partition_stream_cell = 3;
-    static constexpr StreamClass inter_partition_stream_cell = 4;
+    static constexpr StreamClass intra_partition_stream_cell = 0;
+    static constexpr StreamClass inter_partition_stream_cell = 1;
 
 
     template<

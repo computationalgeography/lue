@@ -19,6 +19,7 @@ lue.framework reference
     equal_to
     greater_than
     inflow_count
+    inter_partition_stream
     less_than
     less_than_equal_to
     log
@@ -44,6 +45,7 @@ lue.framework reference
 .. autofunction:: greater_than
 .. autofunction:: greater_than_equal_to
 .. autofunction:: inflow_count
+.. autofunction:: inter_partition_stream
 .. autofunction:: less_than
 .. autofunction:: less_than_equal_to
 .. autofunction:: log
