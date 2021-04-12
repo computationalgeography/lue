@@ -26,6 +26,7 @@ set(names
     create_partitioned_array_test.cpp
     d8_network_test.cpp
     divide_test.cpp
+    downstream_test.cpp
     equal_to_test.cpp
     fill_test.cpp
     focal_max_test.cpp
