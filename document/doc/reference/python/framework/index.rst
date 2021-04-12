@@ -16,6 +16,7 @@ lue.framework reference
     add
     all
     divide
+    downstream
     equal_to
     greater_than
     inflow_count
