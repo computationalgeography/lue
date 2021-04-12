@@ -8,6 +8,7 @@ pybind11_add_module(lue_py_framework SHARED SYSTEM THIN_LTO
     src/algorithm/all.cpp
     src/algorithm/divide.cpp
     src/algorithm/downstream.cpp
+    src/algorithm/downstream_distance.cpp
     src/algorithm/equal_to.cpp
     src/algorithm/greater_than.cpp
     src/algorithm/greater_than_equal_to.cpp

@@ -17,6 +17,7 @@ lue.framework reference
     all
     divide
     downstream
+    downstream_distance
     equal_to
     greater_than
     inflow_count
