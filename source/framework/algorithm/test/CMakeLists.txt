@@ -27,6 +27,7 @@ set(names
     d8_network_test.cpp
     divide_test.cpp
     downstream_test.cpp
+    downstream_distance_test.cpp
     equal_to_test.cpp
     fill_test.cpp
     focal_max_test.cpp
