@@ -31,6 +31,8 @@ namespace lue::test {
 
     FlowDirectionArray merging_streams();
 
+    FlowDirectionArray pcraster_example_flow_direction();
+
     template<
         typename Element>
     PartitionedArray<Element, 2> filled(Element const fill_value);

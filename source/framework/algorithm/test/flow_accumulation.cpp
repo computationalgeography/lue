@@ -57,6 +57,26 @@ namespace lue::test {
     }
 
 
+    FlowDirectionArray pcraster_example_flow_direction()
+    {
+        using Shape = ShapeT<FlowDirectionArray>;
+
+        Shape array_shape{{5, 5}};
+        Shape partition_shape{{5, 5}};
+
+        return create_partitioned_array<FlowDirectionArray>(array_shape, partition_shape,
+            {
+                {
+                     s,  s,  s, sw, sw,
+                     s,  s, sw, sw, sw,
+                    se,  s, sw,  w, sw,
+                    se,  s, sw,  w,  w,
+                     e,  p,  w,  w,  w,
+                },
+            });
+    }
+
+
     FlowDirectionArray all_no_data()
     {
         return create_partitioned_array<FlowDirectionArray>(array_shape, partition_shape,
