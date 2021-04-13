@@ -36,6 +36,7 @@ jobs:
         - shell: bash -l {0}
           run: |
               conda install breathe conan docopt numpy psutil sphinx
+              conan profile update settings.compiler.libcxx=libstdc++11 default
 
         - name: configure lue
           shell: bash -l {0}
