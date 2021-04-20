@@ -1,9 +1,6 @@
 #pragma once
-#include "lue/framework/algorithm/policy/all_values_within_domain.hpp"
-#include "lue/framework/algorithm/policy/default_policies.hpp"
-#include "lue/framework/algorithm/policy/default_value_policies.hpp"
+#include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/core/annotate.hpp"
-#include "lue/framework/core/component/partitioned_array.hpp"
 #include "lue/framework/core/component.hpp"
 #include <algorithm>
 #include <random>
@@ -251,5 +248,144 @@ PartitionedArray<OutputElement, rank> uniform(
         hpx::make_ready_future<OutputElement>(min_value).share(),
         hpx::make_ready_future<OutputElement>(max_value).share());
 }
+
+
+    template<
+        typename Element,
+        lue::Rank rank>
+    class InstantiateUniform
+    {
+
+        public:
+
+            using OutputElement = Element;
+            using Partition = lue::ArrayPartition<OutputElement, rank>;
+            using Offset = lue::OffsetT<Partition>;
+            using Shape = lue::ShapeT<Partition>;
+
+            static constexpr bool instantiate_per_locality{false};
+
+
+            InstantiateUniform(
+                Element const min_value,
+                Element const max_value):
+
+                _min_value{min_value},
+                _max_value{max_value}
+
+            {
+            }
+
+
+            template<
+                typename Policies>
+            Partition instantiate(
+                hpx::id_type const locality_id,
+                [[maybe_unused]] Policies const& policies,
+                [[maybe_unused]] lue::Index const partition_idx,
+                Offset const& offset,
+                Shape const& partition_shape)
+            {
+                return hpx::async(
+
+                            [locality_id, offset, partition_shape, min_value=_min_value, max_value=_max_value]()
+                            {
+                                AnnotateFunction annotation{"uniform_partition"};
+
+                                DataT<Partition> partition_data{partition_shape};
+
+                                // Will be used to obtain a seed for the random number engine
+                                std::random_device random_device;
+
+                                // Standard mersenne_twister_engine seeded with the random_device
+                                std::mt19937 random_number_engine(random_device());
+
+                                auto distribution =
+                                    [min_value, max_value]()
+                                    {
+                                        if constexpr(std::is_floating_point_v<OutputElement>)
+                                        {
+                                            // [min, max)
+                                            return std::uniform_real_distribution<OutputElement>{
+                                                min_value, max_value};
+                                        }
+                                        else if constexpr(std::is_integral_v<OutputElement>)
+                                        {
+                                            // [min, max]
+                                            return std::uniform_int_distribution<OutputElement>{
+                                                min_value, max_value};
+                                        }
+                                    }();
+
+                                std::generate(partition_data.begin(), partition_data.end(),
+
+                                        [&distribution, &random_number_engine]()
+                                        {
+                                            return distribution(random_number_engine);
+                                        }
+
+                                    );
+
+                            return Partition{hpx::find_here(), offset, std::move(partition_data)};
+                        }
+
+                    );
+            }
+
+
+        private:
+
+            Element const _min_value;
+
+            Element const _max_value;
+
+    };
+
+
+    template<
+        typename Element,
+        lue::Rank rank>
+    class FunctorTraits<
+        InstantiateUniform<Element, rank>>
+    {
+
+        public:
+
+            static constexpr bool const is_functor{true};
+
+    };
+
+
+    template<
+        typename Policies,
+        typename Element,
+        typename Shape>
+    PartitionedArray<Element, rank<Shape>> uniform(
+        Policies const& policies,
+        Shape const& array_shape,
+        Shape const& partition_shape,
+        Element const min_value,
+        Element const max_value)
+    {
+        using Functor = InstantiateUniform<Element, rank<Shape>>;
+
+        return create_partitioned_array(
+            policies, array_shape, partition_shape, Functor{min_value, max_value});
+    }
+
+
+    template<
+        typename Element,
+        typename Shape>
+    PartitionedArray<Element, rank<Shape>> uniform(
+        Shape const& array_shape,
+        Shape const& partition_shape,
+        Element const min_value,
+        Element const max_value)
+    {
+        using Policies = policy::uniform::DefaultPolicies<Element>;
+
+        return uniform(Policies{}, array_shape, partition_shape, min_value, max_value);
+    }
 
 }  // namespace lue
