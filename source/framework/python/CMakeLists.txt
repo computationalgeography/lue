@@ -7,6 +7,7 @@ pybind11_add_module(lue_py_framework SHARED SYSTEM THIN_LTO
     src/algorithm/accu_threshold.cpp
     src/algorithm/add.cpp
     src/algorithm/all.cpp
+    src/algorithm/array_partition_id.cpp
     src/algorithm/divide.cpp
     src/algorithm/downstream.cpp
     src/algorithm/downstream_distance.cpp

@@ -15,6 +15,7 @@ lue.framework reference
     accu_fraction
     add
     all
+    array_partition_id
     divide
     downstream
     downstream_distance
@@ -43,6 +44,7 @@ lue.framework reference
 .. autofunction:: accu_fraction
 .. autofunction:: add
 .. autofunction:: all
+.. autofunction:: array_partition_id
 .. autofunction:: divide
 .. autofunction:: equal_to
 .. autofunction:: greater_than
