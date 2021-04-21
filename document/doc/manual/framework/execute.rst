@@ -46,59 +46,120 @@ cluster node).
 
 Single-node execution
 ---------------------
+TODO
 
 
 Distributed execution
 ---------------------
 
+
 SLURM
 ^^^^^
+See also `How to use HPX applications with SLURM`_.
+
+.. _How to use HPX applications with SLURM: https://hpx-docs.stellar-group.org/latest/html/manual/running_on_batch_systems.html#how-to-use-hpx-applications-with-slurm
+
 
 Synchronous
 """""""""""
+The example script shows how to start a synchronous SLURM job. This
+is handy for quick runs, when you are still developing the model,
+for example.
 
-- salloc
-
-
-hpx::init: command line warning: --hpx:localities used when running with SLURM, requesting a different number of localities (8) than have been assigned by SLURM (1), the application might not run properly.
-
-
-Asynchronous
-""""""""""""
-
-- sbatch
-
-
-
-Example script for starting a LUE framework script with SLURM. This
-will execute the model using 96 CPU cores, distributed over 16 processes,
-distributed over two nodes in a cluster partition.
+The ``UCX_LOG_LEVEL`` environment variable and the ``--mca
+btl_openib_allow_ib true`` argument of mpirun are necessary on the
+cluster on which this was tested. These are unrelated to LUE or HPX,
+and may or may not be necessary on other clusters.
 
 .. code-block:: bash
 
     # Fixed. Depends on platform.
+    partition="my_partition"
     nr_numa_domains_per_node=8
     nr_cores_per_socket=6
     nr_cpus_per_task=12
     cpu_binding="thread:0-5=core:0-5.pu:0"
 
+    # Depends on size of job.
+    nr_nodes=1
+
+    # Fixed.
+    nr_localities=$(expr $nr_nodes \* $nr_numa_domains_per_node)
+
+    export UCX_LOG_LEVEL=error
+
+    salloc \
+        --partition=$partition \
+        --nodes=$nr_nodes \
+        --ntasks=$nr_localities \
+        --cpus-per-task=$nr_cpus_per_task \
+        --cores-per-socket=$nr_cores_per_socket \
+        mpirun \
+            --mca btl_openib_allow_ib true \
+            python my_model.py \
+                my_argument1 my_argument2 \
+                --hpx:ini="hpx.os_threads=$nr_cores_per_socket" \
+                --hpx:bind=$cpu_binding \
+                --hpx:print-bind
+
+.. note::
+
+    In case you see this warning::
+
+        hpx::init: command line warning: --hpx:localities used when
+        running with SLURM, requesting a different number of localities
+        (8) than have been assigned by SLURM (1), the application might
+        not run properly.
+
+    but the printed CPU bindings seem fine, then you can safely ignore it.
+
+
+Asynchronous
+""""""""""""
+The example script shows how to start an asynchronous SLURM job. This
+is handy for long running runs, after you have finished developing
+the model, for example.
+
+.. code-block:: bash
+
+    # Fixed. Depends on platform.
+    partition="my_partition"
+    nr_numa_domains_per_node=8
+    nr_cores_per_socket=6
+    nr_cpus_per_task=12
+    cpu_binding="thread:0-5=core:0-5.pu:0"
+
+    # Depends on size of job.
+    nr_nodes=1
+
+    # Fixed.
+    nr_localities=$(expr $nr_nodes \* $nr_numa_domains_per_node)
+
     # Depends on size of job
-    nr_nodes=2
+    nr_nodes=12
 
     # Fixed
     nr_tasks=$(expr $nr_nodes \* $nr_numa_domains_per_node)
 
+    sbatch --job-name my_job_name << END_OF_SLURM_SCRIPT
+    #!/usr/bin/env bash
+    #SBATCH --nodes=$nr_nodes
+    #SBATCH --ntasks=$nr_localities
+    #SBATCH --cpus-per-task=$nr_cpus_per_task
+    #SBATCH --cores-per-socket=$nr_cores_per_socket
+    #SBATCH --partition=$partition
 
-    srun \
-        --ntasks $nr_tasks \
-        --cpus-per-task=$nr_cpus_per_task \
-        --cores-per-socket=$nr_cores_per_socket \
-        --kill-on-bad-exit \
+    set -e
+
+    module purge
+    module load my_required_model
+
+    mpirun \
+        --mca btl_openib_allow_ib true \
         python my_model.py \
-            --hpx:ini="hpx.parcel.mpi.enable=1" \
+            my_argument1 my_argument2 \
             --hpx:ini="hpx.os_threads=$nr_cores_per_socket" \
             --hpx:bind=$cpu_binding \
             --hpx:print-bind
 
-
-See also: https://hpx-docs.stellar-group.org/latest/html/manual/running_on_batch_systems.html#how-to-use-hpx-applications-with-slurm
+    END_OF_SLURM_SCRIPT
