@@ -19,7 +19,7 @@ namespace lue {
                 using OutputElement = InputElement;
 
                 constexpr OutputElement operator()(
-                    ConditionElement const condition,
+                    [[maybe_unused]] ConditionElement const condition,
                     InputElement const true_value) const noexcept
                 {
                     // False conditions are assumed to be out of domain. They must

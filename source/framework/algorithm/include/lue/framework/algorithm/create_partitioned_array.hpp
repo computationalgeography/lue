@@ -726,8 +726,6 @@ namespace lue {
         // Given the shape of the array and the shape of the array partitions,
         // determine the shape of the array in partitions
 
-        // Shape const shape_in_partitions = lue::shape_in_partitions(array_shape, partition_shape);
-
         auto [localities, partitions] = detail::instantiate_partitions(
             policies, array_shape, partition_shape, partition_creator);
 
