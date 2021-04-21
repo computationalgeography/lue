@@ -1,3 +1,5 @@
+.. _lue_framework_python_api:
+
 Python
 ======
 .. toctree::
@@ -63,35 +65,5 @@ or more localities.
         simulate()
 
 
-Example script for starting a LUE framework script with SLURM. This
-will execute the model using 96 CPU cores, distributed over 16 processes,
-distributed over two nodes in a cluster partition.
-
-.. code-block:: bash
-
-    # Fixed. Depends on platform.
-    nr_numa_domains_per_node=8
-    nr_cores_per_socket=6
-    nr_cpus_per_task=12
-    cpu_binding="thread:0-5=core:0-5.pu:0"
-
-    # Depends on size of job
-    nr_nodes=2
-
-    # Fixed
-    nr_tasks=$(expr $nr_nodes \* $nr_numa_domains_per_node)
-
-
-    srun \
-        --ntasks $nr_tasks \
-        --cpus-per-task=$nr_cpus_per_task \
-        --cores-per-socket=$nr_cores_per_socket \
-        --kill-on-bad-exit \
-        python my_model.py \
-            --hpx:ini="hpx.parcel.mpi.enable=1" \
-            --hpx:ini="hpx.os_threads=$nr_cores_per_socket" \
-            --hpx:bind=$cpu_binding \
-            --hpx:print-bind
-
-
-See also: https://hpx-docs.stellar-group.org/latest/html/manual/running_on_batch_systems.html#how-to-use-hpx-applications-with-slurm
+See :ref:`execute_lue_framework_programs` for information about how to
+execute this script.
