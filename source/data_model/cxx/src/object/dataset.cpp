@@ -192,13 +192,12 @@ Dataset open_dataset(
 */
 Dataset create_dataset(
     std::string const& name,
-    std::string const& description)
+    std::string const& description,
+    hdf5::File::AccessPropertyList access_property_list)
 {
-    hdf5::File::AccessPropertyList access_property_list{};
-
     access_property_list.set_library_version_bounds(::H5F_LIBVER_LATEST, ::H5F_LIBVER_LATEST);
 
-    hdf5::File file{hdf5::create_file(name, access_property_list)};
+    hdf5::File file{hdf5::create_file(name, std::move(access_property_list))};
 
     return create_dataset(std::move(file), description);
 }

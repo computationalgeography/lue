@@ -84,7 +84,9 @@ Dataset            open_dataset        (std::string const& name,
                                             access_property_list=hdf5::File::AccessPropertyList{});
 
 Dataset            create_dataset      (std::string const& name,
-                                        std::string const& description="");
+                                        std::string const& description="",
+                                        hdf5::File::AccessPropertyList
+                                            access_property_list=hdf5::File::AccessPropertyList{});
 
 Dataset            create_in_memory_dataset(
                                         std::string const& name,

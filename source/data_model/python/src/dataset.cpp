@@ -199,7 +199,12 @@ void init_dataset(
 
     module.def(
         "create_dataset",
-        &create_dataset,
+        [](
+            std::string const& name,
+            std::string const& description)
+        {
+            return create_dataset(name, description);
+        },
         R"(
     Create new LUE dataset
 
