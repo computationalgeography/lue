@@ -1,3 +1,4 @@
+lue_add_benchmark(CATEGORY algorithm NAME accu_threshold)
 lue_add_benchmark(CATEGORY algorithm NAME copy)
 lue_add_benchmark(CATEGORY algorithm NAME empty)
 lue_add_benchmark(CATEGORY algorithm NAME focal_mean)
