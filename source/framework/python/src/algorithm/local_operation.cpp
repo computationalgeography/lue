@@ -9,7 +9,9 @@ namespace lue::framework {
     void bind_accu_fraction(pybind11::module& module);
     void bind_accu_threshold(pybind11::module& module);
     void bind_add(pybind11::module& module);
+    void bind_array_partition_id(pybind11::module& module);
     void bind_all(pybind11::module& module);
+    void bind_array_partition_id(pybind11::module& module);
     void bind_divide(pybind11::module& module);
     void bind_downstream(pybind11::module& module);
     void bind_downstream_distance(pybind11::module& module);
@@ -43,6 +45,7 @@ namespace lue::framework {
         bind_accu_threshold(module);
         bind_add(module);
         bind_all(module);
+        bind_array_partition_id(module);
         bind_divide(module);
         bind_downstream(module);
         bind_downstream_distance(module);
