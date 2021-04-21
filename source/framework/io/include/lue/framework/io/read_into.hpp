@@ -6,10 +6,10 @@
 #include "lue/framework/core/component.hpp"
 #include "lue/data_model/hl/raster_view.hpp"
 #include "lue/data_model.hpp"
-// #ifdef HDF5_IS_PARALLEL
+#ifdef HDF5_IS_PARALLEL
 // Only available in case MPI is used in HPX
-// #include <hpx/mpi_base/mpi_environment.hpp>
-// #endif
+#include <hpx/mpi_base/mpi_environment.hpp>
+#endif
 
 
 namespace lue {
@@ -30,12 +30,15 @@ namespace lue {
             // Open dataset. Configure for use of parallel I/O if necessary.
             hdf5::File::AccessPropertyList access_property_list{};
 
-            if(hdf5::BuildOptions::hdf5_is_parallel)
+#ifdef HDF5_IS_PARALLEL
+            if(hpx::util::mpi_environment::enabled())
             {
-                // TODO
-                // ::MPI_Comm communictor{hpx::util::mpi_environment::communicator()};
+                // // ::MPI_Comm communicator{hpx::util::mpi_environment::communicator()};
+                // ::MPI_Comm communicator{MPI_COMM_WORLD};
+                // ::MPI_Info info{MPI_INFO_NULL};
                 // access_property_list.use_mpi_communicator(communicator, info);
             }
+#endif
 
             auto const dataset{data_model::open_dataset(dataset_pathname, H5F_ACC_RDONLY, access_property_list)};
 
@@ -57,12 +60,13 @@ namespace lue {
             // Open value. Configure for use of parallel I/O if necessary.
             hdf5::Dataset::TransferPropertyList transfer_property_list{};
 
-            if(hdf5::BuildOptions::hdf5_is_parallel)
-            {
-                // TODO
-                // Use collective I/O
-                // transfer_property_list.set_transfer_mode(::H5FD_mpio_xfer_t xfer_mode);
-            }
+#ifdef HDF5_IS_PARALLEL
+            // if(hpx::util::mpi_environment::enabled())
+            // {
+            //     // Use collective I/O
+            //     transfer_property_list.set_transfer_mode(::H5FD_MPIO_COLLECTIVE);
+            // }
+#endif
 
             auto const& value{property.value()};
             auto const array{value[object_id]};
@@ -104,12 +108,15 @@ namespace lue {
             // Open dataset. Configure for use of parallel I/O if necessary.
             hdf5::File::AccessPropertyList access_property_list{};
 
-            if(hdf5::BuildOptions::hdf5_is_parallel)
-            {
-                // TODO
-                // ::MPI_Comm communictor{hpx::util::mpi_environment::communicator()};
-                // access_property_list.use_mpi_communicator(communicator, info);
-            }
+#ifdef HDF5_IS_PARALLEL
+            // if(hpx::util::mpi_environment::enabled())
+            // {
+            //     // ::MPI_Comm communicator{hpx::util::mpi_environment::communicator()};
+            //     ::MPI_Comm communicator{MPI_COMM_WORLD};
+            //     ::MPI_Info info{MPI_INFO_NULL};
+            //     access_property_list.use_mpi_communicator(communicator, info);
+            // }
+#endif
 
             auto const dataset{data_model::open_dataset(dataset_pathname, H5F_ACC_RDONLY, access_property_list)};
 
@@ -133,12 +140,13 @@ namespace lue {
             // Open value. Configure for use of parallel I/O if necessary.
             hdf5::Dataset::TransferPropertyList transfer_property_list{};
 
-            if(hdf5::BuildOptions::hdf5_is_parallel)
-            {
-                // TODO
-                // Use collective I/O
-                // transfer_property_list.set_transfer_mode(::H5FD_mpio_xfer_t xfer_mode);
-            }
+#ifdef HDF5_IS_PARALLEL
+            // if(hpx::util::mpi_environment::enabled())
+            // {
+            //     // Use collective I/O
+            //     transfer_property_list.set_transfer_mode(::H5FD_MPIO_COLLECTIVE);
+            // }
+#endif
 
             auto const& value{property.value()};
             auto const array{value[object_id]};
@@ -210,37 +218,67 @@ namespace lue {
         using Partition = PartitionT<Array>;
 
         auto partitions_by_locality{detail::partitions_by_locality(array)};
+        lue_hpx_assert(partitions_by_locality.size() <= hpx::find_all_localities().size());
 
         // -------------------------------------------------------------------------
         // Iterate over each locality and attach a continuation to all its
         // partitions to read into.
-        std::vector<hpx::future<void>> reads_per_locality;
+
+        // Wait for each locality to have finished reading before telling
+        // the next one to start reading. All this must work with a
+        // non-threadsafe HDF5 library.
         {
             using Action = detail::ReadIntoPartitionsAction<Policies, std::vector<Partition>>;
             Action action{};
 
-            reads_per_locality.reserve(std::size(partitions_by_locality));
-
             for(auto& [locality, partitions]: partitions_by_locality)
             {
-                reads_per_locality.push_back(
-                    hpx::dataflow(
-                        hpx::launch::async,
-                        hpx::util::unwrapping(
+                hpx::dataflow(
+                    hpx::launch::async,
+                    hpx::util::unwrapping(
 
-                                [locality, action, policies, array_pathname, object_id](
-                                    std::vector<Partition> const& partitions)
-                                {
-                                    return action(locality, policies, array_pathname, object_id, partitions);
-                                }
+                            [locality, action, policies, array_pathname, object_id](
+                                std::vector<Partition> const& partitions)
+                            {
+                                return action(locality, policies, array_pathname, object_id, partitions);
+                            }
 
-                            ),
+                        ),
 
-                        hpx::when_all(partitions.begin(), partitions.end())));
+                    hpx::when_all(partitions.begin(), partitions.end())).get();
             }
         }
 
-        return detail::when_all_get(std::move(reads_per_locality));
+        return hpx::make_ready_future<void>();
+
+
+        // std::vector<hpx::future<void>> reads_per_locality;
+        // {
+        //     using Action = detail::ReadIntoPartitionsAction<Policies, std::vector<Partition>>;
+        //     Action action{};
+
+        //     reads_per_locality.reserve(std::size(partitions_by_locality));
+
+        //     for(auto& [locality, partitions]: partitions_by_locality)
+        //     {
+        //         reads_per_locality.push_back(
+        //             hpx::dataflow(
+        //                 hpx::launch::async,
+        //                 hpx::util::unwrapping(
+
+        //                         [locality, action, policies, array_pathname, object_id](
+        //                             std::vector<Partition> const& partitions)
+        //                         {
+        //                             return action(locality, policies, array_pathname, object_id, partitions);
+        //                         }
+
+        //                     ),
+
+        //                 hpx::when_all(partitions.begin(), partitions.end())));
+        //     }
+        // }
+
+        // return detail::when_all_get(std::move(reads_per_locality));
     }
 
 
@@ -268,34 +306,61 @@ namespace lue {
         // -------------------------------------------------------------------------
         // Iterate over each locality and attach a continuation to all its
         // partitions to read into.
-        std::vector<hpx::future<void>> reads_per_locality;
+
         {
             using Action = detail::ReadIntoPartitionsAction2<Policies, std::vector<Partition>>;
             Action action{};
 
-            reads_per_locality.reserve(std::size(partitions_by_locality));
-
             for(auto& [locality, partitions]: partitions_by_locality)
             {
-                reads_per_locality.push_back(
-                    hpx::dataflow(
-                        hpx::launch::async,
-                        hpx::util::unwrapping(
+                hpx::dataflow(
+                    hpx::launch::async,
+                    hpx::util::unwrapping(
 
-                                [locality, action, policies, array_pathname, object_id, time_step_idx](
-                                    std::vector<Partition> const& partitions)
-                                {
-                                    return action(
-                                        locality, policies, array_pathname, object_id, time_step_idx, partitions);
-                                }
+                            [locality, action, policies, array_pathname, object_id, time_step_idx](
+                                std::vector<Partition> const& partitions)
+                            {
+                                return action(
+                                    locality, policies, array_pathname, object_id, time_step_idx, partitions);
+                            }
 
-                            ),
+                        ),
 
-                        hpx::when_all(partitions.begin(), partitions.end())));
+                    hpx::when_all(partitions.begin(), partitions.end())).get();
             }
         }
 
-        return detail::when_all_get(std::move(reads_per_locality));
+        return hpx::make_ready_future<void>();
+
+
+        // std::vector<hpx::future<void>> reads_per_locality;
+        // {
+        //     using Action = detail::ReadIntoPartitionsAction2<Policies, std::vector<Partition>>;
+        //     Action action{};
+
+        //     reads_per_locality.reserve(std::size(partitions_by_locality));
+
+        //     for(auto& [locality, partitions]: partitions_by_locality)
+        //     {
+        //         reads_per_locality.push_back(
+        //             hpx::dataflow(
+        //                 hpx::launch::async,
+        //                 hpx::util::unwrapping(
+
+        //                         [locality, action, policies, array_pathname, object_id, time_step_idx](
+        //                             std::vector<Partition> const& partitions)
+        //                         {
+        //                             return action(
+        //                                 locality, policies, array_pathname, object_id, time_step_idx, partitions);
+        //                         }
+
+        //                     ),
+
+        //                 hpx::when_all(partitions.begin(), partitions.end())));
+        //     }
+        // }
+
+        // return detail::when_all_get(std::move(reads_per_locality));
     }
 
 
