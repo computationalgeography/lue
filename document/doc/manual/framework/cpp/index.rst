@@ -1,3 +1,5 @@
+.. _lue_framework_cpp_api:
+
 C++
 ===
 .. toctree::
