@@ -43,6 +43,9 @@ class WriteArrayTest(lue_test.TestCase):
             dataset, phenomenon_name, property_set_name, array_shape, space_box)
         raster_view.add_layer(layer_name, dtype)
 
+        del raster_view
+        del dataset
+
         written = lfr.write_array(array, array_pathname)
         written.get()
 
@@ -90,6 +93,10 @@ class WriteArrayTest(lue_test.TestCase):
             dataset, phenomenon_name, property_set_name,
             clock, nr_time_steps, time_box, array_shape, space_box)
         raster_view.add_layer(layer_name, dtype)
+
+        # Let go of the dataset
+        del raster_view
+        del dataset
 
         written = []
 

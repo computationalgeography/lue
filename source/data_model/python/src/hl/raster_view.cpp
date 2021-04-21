@@ -47,7 +47,7 @@ void bind_raster_view(
         "create_raster_view",
         [](
             Dataset& dataset,
-            std::string phenomenon_name,
+            std::string const& phenomenon_name,
             std::string const& property_set_name,
             pybind11::tuple const& grid_shape,
             typename RasterViewBase::SpaceBox const& space_box)
@@ -88,7 +88,7 @@ void bind_raster_view(
         "create_raster_view",
         [](
             Dataset& dataset,
-            std::string phenomenon_name,
+            std::string const& phenomenon_name,
             std::string const& property_set_name,
             Clock const& clock,
             Count nr_time_steps,

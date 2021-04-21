@@ -136,7 +136,9 @@ if(LUE_BUILD_DATA_MODEL)
     list(APPEND LUE_REQUIRED_BOOST_COMPONENTS
         filesystem system)
 
-    set(HDF5_PREFER_PARALLEL TRUE)
+    if(LUE_BUILD_FRAMEWORK)
+        set(HDF5_PREFER_PARALLEL TRUE)
+    endif()
 
     if(LUE_DATA_MODEL_WITH_UTILITIES)
         set(LUE_DOCOPT_REQUIRED TRUE)
@@ -584,16 +586,6 @@ endif()
 
 if(LUE_HDF5_REQUIRED)
     find_package(HDF5 REQUIRED COMPONENTS C)
-
-    if(LUE_BUILD_FRAMEWORK)
-        # When using HDF5 icw HPX, it must be threadsafe
-        set(CMAKE_REQUIRED_INCLUDES ${HDF5_INCLUDE_DIRS})
-        check_cxx_symbol_exists(H5_HAVE_THREADSAFE "hdf5.h" have_h5_have_threadsafe)
-
-        if(NOT have_h5_have_threadsafe)
-            message(SEND_ERROR "HDF5 is not built with support for thread safety")
-        endif()
-    endif()
 
     if(NOT LUE_HAVE_HDF5)
         # Conan find module uses uppercase target names...

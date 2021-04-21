@@ -16,7 +16,7 @@ namespace lue::framework {
             if(runtime == nullptr)
             {
                 pybind11::gil_scoped_release release;
-                runtime = new HPXRuntime(configuration);
+                runtime = new HPXRuntime{configuration};
             }
         }
 
@@ -47,6 +47,7 @@ namespace lue::framework {
     void bind_create_array(pybind11::module& module);
     void bind_local_operations(pybind11::module& module);
     void bind_partitioned_array(pybind11::module& module);
+
     void bind_read_array(pybind11::module& module);
     void bind_write_array(pybind11::module& module);
 

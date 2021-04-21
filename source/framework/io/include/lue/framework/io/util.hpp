@@ -117,23 +117,22 @@ namespace lue::detail {
             Partitions const& partitions{array.partitions()};
             auto const nr_partitions{lue::nr_partitions(array)};
 
-            {
-                // Try to prevent reallocations while adding partitions to the
-                // collections. Assume the partitions are evenly distributed
-                // over all localities.
-                Count const nr_partitions_per_locality{
-                    (nr_partitions / Count(hpx::find_all_localities().size())) + 1};
-
-                for(auto& [locality, partitions]: result)
-                {
-                    partitions.reserve(nr_partitions_per_locality);
-                }
-            }
+            // Try to prevent reallocations while adding partitions to the
+            // collections. Assume the partitions are evenly distributed
+            // over all localities.
+            Count const max_nr_partitions_per_locality{
+                (nr_partitions / Count(hpx::find_all_localities().size())) + 1};
 
             for(Index p = 0; p < nr_partitions; ++p)
             {
-                // TODO
-                // lue_hpx_assert(result[localities[p]].capacity() > result[localities[p]].size());
+                if(result.find(localities[p]) == result.end())
+                {
+                    std::vector<Partition> empty_partition_collection{};
+                    empty_partition_collection.reserve(max_nr_partitions_per_locality);
+                    result[localities[p]] = std::move(empty_partition_collection);
+                }
+
+                lue_hpx_assert(result[localities[p]].capacity() > result[localities[p]].size());
                 result[localities[p]].push_back(partitions[p]);
             }
         }

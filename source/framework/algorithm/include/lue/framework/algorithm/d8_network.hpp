@@ -28,7 +28,7 @@ namespace lue {
                 typename InputPolicies,
                 typename Subspan>
             FlowDirectionElement operator()(
-                Kernel const& kernel,
+                [[maybe_unused]] Kernel const& kernel,
                 [[maybe_unused]] OutputPolicies const& output_policies,
                 [[maybe_unused]] InputPolicies const& input_policies,
                 Subspan const& window) const

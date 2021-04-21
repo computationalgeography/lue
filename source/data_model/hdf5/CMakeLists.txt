@@ -58,17 +58,6 @@ target_link_libraries(lue_hdf5
         fmt::fmt
 )
 
-if(HDF5_IS_PARALLEL)
-    target_include_directories(lue_hdf5 SYSTEM
-        PUBLIC
-            ${MPI_CXX_INCLUDE_PATH}
-    )
-    target_link_libraries(lue_hdf5
-        PUBLIC
-            MPI::MPI_CXX
-    )
-endif()
-
 install(
     TARGETS
         lue_hdf5

@@ -5,34 +5,34 @@
 
 namespace lue {
 
-// This class initializes a console instance of HPX (locality 0).
-class HPXRuntime
-{
+    // This class initializes a console instance of HPX (locality 0).
+    class HPXRuntime
+    {
 
-    public:
+        public:
 
-        HPXRuntime(std::vector<std::string> const& configuration);
+            HPXRuntime(std::vector<std::string> const& configuration);
 
-        ~HPXRuntime();
+            ~HPXRuntime();
 
-    protected:
+        protected:
 
-        int hpx_main(int argc, char* argv[]);
+            int hpx_main(int argc, char* argv[]);
 
-    private:
+        private:
 
-        hpx::lcos::local::spinlock _mutex;
-        hpx::lcos::local::condition_variable_any _condition_variable;
+            hpx::lcos::local::spinlock _mutex;
+            hpx::lcos::local::condition_variable_any _condition_variable;
 
-        std::mutex _startup_mutex;
-        std::condition_variable _startup_condition_variable;
-        bool _running;
+            std::mutex _startup_mutex;
+            std::condition_variable _startup_condition_variable;
+            bool _running;
 
-        lue::CommandLine _command_line;
+            lue::CommandLine _command_line;
 
-        hpx::runtime* _runtime;
-        std::vector<std::string> const _configuration;
+            hpx::runtime* _runtime;
+            std::vector<std::string> const _configuration;
 
-};
+    };
 
 }  // namespace lue

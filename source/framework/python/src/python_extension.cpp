@@ -3,9 +3,6 @@
 #include <pybind11/pybind11.h>
 
 
-namespace py = pybind11;
-
-
 namespace lue::framework {
 
     PYBIND11_MODULE(lue_py_framework, module)
@@ -15,9 +12,9 @@ namespace lue::framework {
     :mod:`lue_py_framework` --- Environmental Modelling Framework
     =============================================================
 )";
-        module.attr("__version__") = py::str(BuildOptions::version);
-        module.attr("lue_version") = py::str(BuildOptions::version);
-        module.attr("git_short_sha1") = py::str(BuildOptions::git_short_sha1);
+        module.attr("__version__") = pybind11::str(BuildOptions::version);
+        module.attr("lue_version") = pybind11::str(BuildOptions::version);
+        module.attr("git_short_sha1") = pybind11::str(BuildOptions::git_short_sha1);
 
         init_submodule(module);
     }
