@@ -459,7 +459,7 @@ namespace lue {
 
                         ),
 
-                    hpx::when_all(partitions.begin(), partitions.end()));
+                    hpx::when_all(partitions.begin(), partitions.end())).get();
             }
         }
 
