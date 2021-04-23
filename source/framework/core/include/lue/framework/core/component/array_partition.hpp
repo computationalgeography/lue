@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/core/component/server/array_partition.hpp"
+#include "lue/framework/core/annotate.hpp"
 
 
 namespace lue {
@@ -84,8 +85,6 @@ public:
     hpx::future<Offset> offset         () const;
 
     hpx::future<Shape> shape           () const;
-
-    hpx::future<void> reshape          (Shape const& shape);
 
     hpx::future<Count> nr_elements     () const;
 
@@ -345,6 +344,8 @@ template<
     Rank rank>
 hpx::future<typename ArrayPartition<Element, rank>::Data> ArrayPartition<Element, rank>::data() const
 {
+    AnnotateFunction annotation{"ArrayPartition::data"};
+
     lue_hpx_assert(this->is_ready());
     lue_hpx_assert(this->get_id());
 
@@ -362,6 +363,7 @@ hpx::future<typename ArrayPartition<Element, rank>::Data>
     ArrayPartition<Element, rank>::slice(
         Slices const& slices) const
 {
+    AnnotateFunction annotation{"ArrayPartition::slice"};
     lue_hpx_assert(this->is_ready());
     lue_hpx_assert(this->get_id());
 
@@ -377,6 +379,8 @@ template<
     Rank rank>
 hpx::future<Count> ArrayPartition<Element, rank>::nr_elements() const
 {
+    AnnotateFunction annotation{"ArrayPartition::nr_elements"};
+
     lue_hpx_assert(this->is_ready());
     lue_hpx_assert(this->get_id());
 
@@ -393,6 +397,8 @@ template<
 hpx::future<typename ArrayPartition<Element, rank>::Offset>
     ArrayPartition<Element, rank>::offset() const
 {
+    AnnotateFunction annotation{"ArrayPartition::offset"};
+
     lue_hpx_assert(this->is_ready());
     lue_hpx_assert(this->get_id());
 
@@ -409,6 +415,8 @@ template<
 hpx::future<typename ArrayPartition<Element, rank>::Shape>
     ArrayPartition<Element, rank>::shape() const
 {
+    AnnotateFunction annotation{"ArrayPartition::shape"};
+
     lue_hpx_assert(this->is_ready());
     lue_hpx_assert(this->get_id());
 
@@ -428,6 +436,8 @@ template<
 hpx::future<void> ArrayPartition<Element, rank>::fill(
     Element const value)
 {
+    AnnotateFunction annotation{"ArrayPartition::fill"};
+
     lue_hpx_assert(this->is_ready());
     lue_hpx_assert(this->get_id());
 
@@ -447,6 +457,8 @@ template<
 hpx::future<void> ArrayPartition<Element, rank>::set_data(
     Data const& data)
 {
+    AnnotateFunction annotation{"ArrayPartition::set_data"};
+
     lue_hpx_assert(this->is_ready());
     lue_hpx_assert(this->get_id());
 
@@ -475,25 +487,6 @@ hpx::future<void> ArrayPartition<Element, rank>::set_data(
 // {
 //     return set_data(data);
 // }
-
-
-/*!
-    @brief      Asynchronously reshape the partition with @a shape
-*/
-template<
-    typename Element,
-    Rank rank>
-hpx::future<void> ArrayPartition<Element, rank>::reshape(
-    Shape const& shape)
-{
-    lue_hpx_assert(this->is_ready());
-    lue_hpx_assert(this->get_id());
-
-    typename Server::ReshapeAction action;
-
-    // this->get_id() identifies the server instance
-    return hpx::async(action, this->get_id(), shape);
-}
 
 
 namespace detail {
@@ -582,10 +575,6 @@ HPX_REGISTER_ACTION(                                                   \
 HPX_REGISTER_ACTION(                                                   \
     lue::detail::ArrayPartition_##Element##_##rank::ShapeAction,       \
     ArrayPartition_##Element##_##rank##_ShapeAction)                   \
-                                                                       \
-HPX_REGISTER_ACTION(                                                   \
-    lue::detail::ArrayPartition_##Element##_##rank::ReshapeAction,     \
-    ArrayPartition_##Element##_##rank##_ReshapeAction)                 \
                                                                        \
 HPX_REGISTER_ACTION(                                                   \
     lue::detail::ArrayPartition_##Element##_##rank::NrElementsAction,  \

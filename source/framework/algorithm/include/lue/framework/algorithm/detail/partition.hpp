@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/framework/core/annotate.hpp"
 #include "lue/framework/core/component/partitioned_array.hpp"
 // #include "lue/framework/core/type_traits.hpp"
 
@@ -54,6 +55,8 @@ Array<hpx::shared_future<DataT<PartitionT<Partitions>>>, rank<Partitions>> parti
             [input_partition=partitions(0, 0)](
                 Shape const& partition_shape)
             {
+                AnnotateFunction annotation{"partition_data"};
+
                 auto const [nr_elements0, nr_elements1] = partition_shape;
 
                 return input_partition.slice(
@@ -71,6 +74,8 @@ Array<hpx::shared_future<DataT<PartitionT<Partitions>>>, rank<Partitions>> parti
             [input_partition=partitions(0, 1)](
                 Shape const& partition_shape)
             {
+                AnnotateFunction annotation{"partition_data"};
+
                 auto const [nr_elements0, nr_elements1] = partition_shape;
 
                 return input_partition.slice(
@@ -88,6 +93,8 @@ Array<hpx::shared_future<DataT<PartitionT<Partitions>>>, rank<Partitions>> parti
             [input_partition=partitions(0, 2)](
                 Shape const& partition_shape)
             {
+                AnnotateFunction annotation{"partition_data"};
+
                 auto const [nr_elements0, nr_elements1] = partition_shape;
 
                 return input_partition.slice(
@@ -105,6 +112,8 @@ Array<hpx::shared_future<DataT<PartitionT<Partitions>>>, rank<Partitions>> parti
             [input_partition=partitions(1, 0)](
                 Shape const& partition_shape)
             {
+                AnnotateFunction annotation{"partition_data"};
+
                 auto const [nr_elements0, nr_elements1] = partition_shape;
 
                 return input_partition.slice(
@@ -125,6 +134,8 @@ Array<hpx::shared_future<DataT<PartitionT<Partitions>>>, rank<Partitions>> parti
             [input_partition=partitions(1, 2)](
                 Shape const& partition_shape)
             {
+                AnnotateFunction annotation{"partition_data"};
+
                 auto const [nr_elements0, nr_elements1] = partition_shape;
 
                 return input_partition.slice(
@@ -142,6 +153,8 @@ Array<hpx::shared_future<DataT<PartitionT<Partitions>>>, rank<Partitions>> parti
             [input_partition=partitions(2, 0)](
                 Shape const& partition_shape)
             {
+                AnnotateFunction annotation{"partition_data"};
+
                 auto const [nr_elements0, nr_elements1] = partition_shape;
 
                 return input_partition.slice(
@@ -159,6 +172,8 @@ Array<hpx::shared_future<DataT<PartitionT<Partitions>>>, rank<Partitions>> parti
             [input_partition=partitions(2, 1)](
                 Shape const& partition_shape)
             {
+                AnnotateFunction annotation{"partition_data"};
+
                 auto const [nr_elements0, nr_elements1] = partition_shape;
 
                 return input_partition.slice(

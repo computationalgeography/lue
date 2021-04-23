@@ -6,6 +6,7 @@
 #include "lue/framework/algorithm/detail/spawn.hpp"
 #include "lue/framework/algorithm/detail/when_all_get.hpp"
 #include "lue/framework/algorithm/flow_direction.hpp"
+#include "lue/framework/core/annotate.hpp"
 #include "lue/framework/core/component.hpp"
 
 
@@ -866,6 +867,8 @@ namespace lue {
                             Offset offset,
                             lue::Array<FlowDirectionData, rank> const& flow_direction_data)
                         {
+                            AnnotateFunction annotation{"inflow_count"};
+
                             return InflowCountPartition{hpx::find_here(), offset,
                                 std::get<0>(detail::inflow_count_data<InflowCountData>(
                                     policies, flow_direction_data))};

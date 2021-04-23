@@ -5,6 +5,7 @@
 #include "lue/framework/algorithm/policy/flow_direction_halo.hpp"
 #include "lue/framework/algorithm/policy/mark_no_data_by_value.hpp"
 #include "lue/framework/algorithm/type_traits.hpp"
+#include "lue/framework/core/annotate.hpp"
 #include "lue/framework/core/component/component_array.hpp"
 
 
@@ -406,6 +407,8 @@ namespace lue {
                             Offset offset,
                             lue::Array<FlowDirectionData, rank> const& flow_direction_data)
                         {
+                            AnnotateFunction annotation{"inter_partition_stream"};
+
                             // Calculate inflow_count
 
                             // Output policy type for CountElement. Base it

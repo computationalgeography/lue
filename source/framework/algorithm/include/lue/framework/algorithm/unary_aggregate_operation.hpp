@@ -17,6 +17,8 @@ hpx::future<OutputElement> unary_aggregate_operation_partition(
     InputPartition const& input_partition,
     Functor functor)
 {
+    AnnotateFunction annotation{"unary_aggregate_operation"};
+
     using InputData = DataT<InputPartition>;
 
     return hpx::dataflow(
@@ -26,7 +28,7 @@ hpx::future<OutputElement> unary_aggregate_operation_partition(
                 [input_partition, policies, functor](
                     InputData const& input_partition_data)
                 {
-                    AnnotateFunction annotation{"unary_aggregate_operation_partition"};
+                    AnnotateFunction annotation{"unary_aggregate_operation"};
 
                     // Aggregate nD array partition to nD array partition
                     // containing a single value
@@ -131,6 +133,8 @@ hpx::future<OutputElementT<Functor>> unary_aggregate_operation(
     ArrayPartition<InputElement, rank> const& input_partition,
     Functor const& functor)
 {
+    AnnotateFunction annotation{"unary_aggregate_operation"};
+
     using InputPartition = ArrayPartition<InputElement, rank>;
     using OutputElement = OutputElementT<Functor>;
 
@@ -143,8 +147,6 @@ hpx::future<OutputElementT<Functor>> unary_aggregate_operation(
         [locality_id, action, policies, functor](
             InputPartition const& input_partition)
         {
-            AnnotateFunction annotation{"unary_aggregate_operation"};
-
             return action(locality_id, policies, input_partition, functor);
         },
 
@@ -162,6 +164,8 @@ hpx::future<OutputElementT<Functor>> unary_aggregate_operation(
     PartitionedArray<InputElement, rank> const& input_array,
     Functor const& functor)
 {
+    AnnotateFunction annotation{"unary_aggregate_operation"};
+
     using InputArray = PartitionedArray<InputElement, rank>;
     using InputPartitions = PartitionsT<InputArray>;
     using InputPartition = PartitionT<InputArray>;
@@ -184,8 +188,6 @@ hpx::future<OutputElementT<Functor>> unary_aggregate_operation(
             [locality_id=localities[p], action, policies, functor](
                 InputPartition const& input_partition)
             {
-                AnnotateFunction annotation{"unary_aggregate_operation"};
-
                 return action(locality_id, policies, input_partition, functor);
             },
 

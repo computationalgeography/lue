@@ -69,8 +69,6 @@ public:
 
     Shape          shape               () const;
 
-    void           reshape             (Shape const& shape);
-
     Count          nr_elements         () const;
 
 private:
@@ -89,7 +87,6 @@ public:
     HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, set_data, SetDataAction);
     HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, offset, OffsetAction);
     HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, shape, ShapeAction);
-    HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, reshape, ReshapeAction);
     HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, nr_elements, NrElementsAction);
 
 };
@@ -134,10 +131,6 @@ HPX_REGISTER_ACTION_DECLARATION(                                       \
 HPX_REGISTER_ACTION_DECLARATION(                                       \
     lue::detail::ArrayPartition_##Element##_##rank::ShapeAction,       \
     ArrayPartition_##Element##_##rank##_ShapeAction)                   \
-                                                                       \
-HPX_REGISTER_ACTION_DECLARATION(                                       \
-    lue::detail::ArrayPartition_##Element##_##rank::ReshapeAction,     \
-    ArrayPartition_##Element##_##rank##_ReshapeAction)                 \
                                                                        \
 HPX_REGISTER_ACTION_DECLARATION(                                       \
     lue::detail::ArrayPartition_##Element##_##rank::NrElementsAction,  \
@@ -189,7 +182,6 @@ LUE_DEFINE_ARRAY_PARTITION_COMPONENT_ACTION_TEMPLATE(Fill)
 LUE_DEFINE_ARRAY_PARTITION_COMPONENT_ACTION_TEMPLATE(SetData)
 LUE_DEFINE_ARRAY_PARTITION_COMPONENT_ACTION_TEMPLATE(Offset)
 LUE_DEFINE_ARRAY_PARTITION_COMPONENT_ACTION_TEMPLATE(Shape)
-LUE_DEFINE_ARRAY_PARTITION_COMPONENT_ACTION_TEMPLATE(Reshape)
 LUE_DEFINE_ARRAY_PARTITION_COMPONENT_ACTION_TEMPLATE(NrElements)
 
 #undef LUE_DEFINE_ARRAY_PARTITION_COMPONENT_ACTION_TEMPLATE
@@ -418,16 +410,6 @@ typename ArrayPartition<Element, rank>::Shape
     ArrayPartition<Element, rank>::shape() const
 {
     return _data.shape();
-}
-
-
-template<
-    typename Element,
-    Rank rank>
-void ArrayPartition<Element, rank>::reshape(
-    Shape const& shape)
-{
-    _data.reshape(shape);
 }
 
 

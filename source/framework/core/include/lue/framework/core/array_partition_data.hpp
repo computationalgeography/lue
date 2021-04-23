@@ -573,7 +573,7 @@ namespace lue {
             return sliced_data;
         }
         else {
-            auto const [nr_elements0, nr_elements1] = _shape;
+            [[maybe_unused]] auto const [nr_elements0, nr_elements1] = _shape;
 
             auto const& slice0 = slices[0];
             auto const& slice1 = slices[1];

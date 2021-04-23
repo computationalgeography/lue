@@ -6,6 +6,7 @@
 #include "lue/framework/algorithm/inflow_count.hpp"
 #include "lue/framework/algorithm/policy.hpp"
 #include "lue/framework/algorithm/type_traits.hpp"
+#include "lue/framework/core/annotate.hpp"
 #include "lue/framework/core/assert.hpp"
 #include "lue/framework/core/component/partitioned_array.hpp"
 #include "lue/framework/core/component/component_array.hpp"
@@ -332,6 +333,8 @@ namespace lue {
                             lue::Array<MaterialData, rank<MaterialData>> const& input_material_data,
                             lue::Array<FractionData, rank<FractionData>> const& fraction_data)
                         {
+                            AnnotateFunction annotation{"accu_fraction"};
+
                             // -------------------------------------------------
                             // Determine inflow_count
                             // As long as we only use flow_direction

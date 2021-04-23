@@ -5,6 +5,7 @@
 #include "lue/framework/algorithm/flow_accumulation.hpp"
 #include "lue/framework/algorithm/inflow_count.hpp"
 #include "lue/framework/algorithm/type_traits.hpp"
+#include "lue/framework/core/annotate.hpp"
 #include "lue/framework/core/assert.hpp"
 #include "lue/framework/core/component/component_array.hpp"
 #include "lue/framework/core/serialize/array.hpp"
@@ -128,6 +129,8 @@ namespace lue {
                             lue::Array<FlowDirectionData, rank<FlowDirectionData>> const& flow_direction_data,
                             lue::Array<MaterialData, rank<MaterialData>> const& input_material_data)
                         {
+                            AnnotateFunction annotation{"accu-intra"};
+
                             // -------------------------------------------------
                             // Determine inflow_count
                             // As long as we only use flow_direction
@@ -269,6 +272,8 @@ namespace lue {
             MaterialPartition const& material_partition,
             MaterialPartition const& flux_partition)
         {
+            AnnotateFunction annotation{"accu-inter"};
+
             using MaterialData = DataT<MaterialPartition>;
             using Offset = typename PartitionIOComponent::Offset;
             using Shape = ShapeT<InflowCountPartition>;
@@ -418,6 +423,8 @@ namespace lue {
             MaterialPartitions&& flux_partitions,
             IDPromiseArray<rank<MaterialPartitions>>&& flux_promises)
         {
+            AnnotateFunction annotation{"accu-solve"};
+
             // Perform as many iterations as needed to calculate a global
             // flow accumulation solution
 
