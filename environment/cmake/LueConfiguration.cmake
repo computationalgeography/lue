@@ -262,20 +262,20 @@ endif()
 
 if(LUE_GDAL_REQUIRED)
     if(NOT LUE_HAVE_GDAL)
-        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} gdal/3.1.4)
+        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} gdal/3.2.1)
     endif()
 endif()
 
 
 if(LUE_GLEW_REQUIRED)
     if(NOT LUE_HAVE_GLEW)
-        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} glew/2.1.0)
+        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} glew/2.2.0)
     endif()
 endif()
 
 
 if(LUE_GLFW_REQUIRED)
-    set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} glfw/3.3.3)
+    set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} glfw/3.3.4)
 endif()
 
 
