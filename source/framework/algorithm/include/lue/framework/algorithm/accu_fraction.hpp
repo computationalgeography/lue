@@ -333,7 +333,7 @@ namespace lue {
                             lue::Array<MaterialData, rank<MaterialData>> const& input_material_data,
                             lue::Array<FractionData, rank<FractionData>> const& fraction_data)
                         {
-                            AnnotateFunction annotation{"accu_fraction"};
+                            AnnotateFunction annotation{"accu_fraction-intra"};
 
                             // -------------------------------------------------
                             // Determine inflow_count
@@ -489,6 +489,8 @@ namespace lue {
             MaterialPartition const& flux_partition,
             MaterialPartition const& state_partition)
         {
+            AnnotateFunction annotation{"accu_fraction-inter"};
+
             using MaterialData = DataT<MaterialPartition>;
             using FractionData = DataT<FractionPartition>;
             using Offset = typename PartitionIOComponent::Offset;
@@ -669,6 +671,8 @@ namespace lue {
             IDPromiseArray<rank<MaterialPartitions>>&& flux_promises,
             IDPromiseArray<rank<MaterialPartitions>>&& state_promises)
         {
+            AnnotateFunction annotation{"accu_fraction-solve"};
+
             // Perform as many iterations as needed to calculate a global
             // flow accumulation solution
 

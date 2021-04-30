@@ -1,5 +1,4 @@
 #pragma once
-#include "lue/framework/core/annotate.hpp"
 #include "lue/framework/core/array.hpp"
 #include "lue/framework/core/component/array_partition.hpp"
 
@@ -19,8 +18,6 @@ namespace lue::detail {
             [shape=array_of_futures.shape()](
                 hpx::future<std::vector<hpx::future<Element>>>&& f)
             {
-                AnnotateFunction annotation{"when_all_get"};
-
                 std::vector<hpx::future<Element>> vector_of_ready_futures{f.get()};
                 Array<Element, rank> array_of_elements{{shape}};
 
@@ -53,8 +50,6 @@ namespace lue::detail {
             [shape=array_of_futures.shape()](
                 hpx::future<std::vector<hpx::shared_future<Element>>>&& f)
             {
-                AnnotateFunction annotation{"when_all_get"};
-
                 std::vector<hpx::shared_future<Element>> vector_of_ready_futures{f.get()};
                 Array<Element, rank> array_of_elements{{shape}};
 
@@ -89,8 +84,6 @@ namespace lue::detail {
                 [shape=partitions.shape()](
                     std::vector<InputPartition>&& vector_of_ready_partitions)
                 {
-                    AnnotateFunction annotation{"when_all_get"};
-
                     ArrayPartitionData<InputPartition, rank> array_of_partitions{{shape}};
 
                     std::move(

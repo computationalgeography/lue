@@ -683,7 +683,7 @@ namespace lue {
             using Shape = ShapeT<MaterialPartitions>;
 
             Shape const& shape_in_partitions{flux_partitions.shape()};
-            Count const nr_partitions{nr_elements(shape_in_partitions)};
+            [[maybe_unused]] Count const nr_partitions{nr_elements(shape_in_partitions)};
             auto const [ extent0, extent1 ] = shape_in_partitions;
 
             Count nr_iterations{0};
@@ -695,7 +695,7 @@ namespace lue {
                 MaterialPartition>;
 
             Array<bool, 2> ready_partitions{shape_in_partitions, false};
-            Count nr_ready_partitions{0};
+            [[maybe_unused]] Count nr_ready_partitions{0};
             Action action;
 
             while(true)
@@ -767,7 +767,7 @@ namespace lue {
                     }
                 }
 
-                Count nr_ready_partitions_new =
+                [[maybe_unused]] Count nr_ready_partitions_new =
                     std::count(ready_partitions.begin(), ready_partitions.end(), true);
                 lue_hpx_assert(nr_ready_partitions_new >= nr_ready_partitions || nr_iterations == 0);
 

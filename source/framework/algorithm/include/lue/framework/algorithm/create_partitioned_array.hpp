@@ -717,8 +717,7 @@ namespace lue {
         Functor const& partition_creator)
     {
         // Create the array partitions that, together make up the partitioned
-        // array. Note that the extent of this array might be too large,
-        // given that we use a certain partition shape for all partitions.
+        // array.
 
         using Element = OutputElementT<Functor>;
         using OutputArray = PartitionedArray<Element, rank<Shape>>;

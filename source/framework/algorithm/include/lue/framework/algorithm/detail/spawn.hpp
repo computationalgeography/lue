@@ -1,7 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/detail/halo_partition.hpp"
 #include "lue/framework/core/array_partition_data.hpp"
-#include "lue/framework/core/annotate.hpp"
 
 
 namespace lue::detail {
@@ -56,7 +55,6 @@ namespace lue::detail {
                     [locality_id, action, policies, component_offset](
                         InputComponents&&... input_components)
                     {
-                        AnnotateFunction annotation{"spawn_component"};
                         return action(
                             locality_id, policies, component_offset, std::move(input_components)...);
                     }

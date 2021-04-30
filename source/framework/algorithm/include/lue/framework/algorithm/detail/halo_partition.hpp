@@ -1,6 +1,5 @@
 #pragma once
 #include "lue/framework/algorithm/flow_direction.hpp"
-#include "lue/framework/core/annotate.hpp"
 #include "lue/framework/core/component/partitioned_array.hpp"
 
 
@@ -52,7 +51,6 @@ namespace lue::detail {
                     [extent0=std::get<0>(min_shape), fill_value](
                         Shape const& shape)
                     {
-                        AnnotateFunction annotation{"halo_partition"};
                         return Partition{hpx::find_here(), Offset{}, Shape{{extent0, shape[1]}}, fill_value};
                     }
 
@@ -85,7 +83,6 @@ namespace lue::detail {
                     [extent1=std::get<1>(min_shape), fill_value](
                         Shape const& shape)
                     {
-                        AnnotateFunction annotation{"halo_partition"};
                         return Partition{hpx::find_here(), Offset{}, Shape{{shape[0], extent1}}, fill_value};
                     }
 
