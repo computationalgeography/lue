@@ -30,5 +30,6 @@ target_include_directories(lue_framework_algorithm
 
 target_link_libraries(lue_framework_algorithm
     PUBLIC
+        lue::framework_partitioned_array
         lue::framework_core
 )
