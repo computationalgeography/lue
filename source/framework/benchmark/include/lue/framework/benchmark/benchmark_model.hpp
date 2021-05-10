@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/framework/core/component/partitioned_array.hpp"
+#include "lue/framework/partitioned_array.hpp"
 #include "lue/framework/benchmark/algorithm_benchmark_result.hpp"
 #include "lue/framework/benchmark/format.hpp"
 #include "lue/framework/benchmark/task.hpp"

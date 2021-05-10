@@ -1,4 +1,4 @@
-#include "lue/framework/core/component/array_partition_impl.hpp"
+#include "lue/framework/partitioned_array/array_partition_impl.hpp"
 
 
 namespace lue {

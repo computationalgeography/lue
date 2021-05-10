@@ -6,9 +6,9 @@
 #include "lue/framework/algorithm/inflow_count.hpp"
 #include "lue/framework/algorithm/policy.hpp"
 #include "lue/framework/algorithm/type_traits.hpp"
+#include "lue/framework/partitioned_array.hpp"
 #include "lue/framework/core/annotate.hpp"
 #include "lue/framework/core/assert.hpp"
-#include "lue/framework/core/component/partitioned_array.hpp"
 #include "lue/framework/core/component/component_array.hpp"
 #include "lue/framework/core/serialize/array.hpp"
 

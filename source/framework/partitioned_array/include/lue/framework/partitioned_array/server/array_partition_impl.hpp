@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/framework/core/component/server/array_partition.hpp"
+#include "lue/framework/partitioned_array/server/array_partition.hpp"
 
 
 namespace lue::server {

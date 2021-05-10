@@ -1,10 +1,10 @@
-#include "lue/framework/core/component/array_partition_impl.hpp"
+#include "lue/framework/partitioned_array/server/array_partition_impl.hpp"
 
 
-namespace lue {
+namespace lue::server {
 
     template class ArrayPartition<std::uint32_t, 0>;
     template class ArrayPartition<std::uint32_t, 1>;
     template class ArrayPartition<std::uint32_t, 2>;
 
-}  // namespace lue
+}  // namespace lue::server

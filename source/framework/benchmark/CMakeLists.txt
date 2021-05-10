@@ -21,7 +21,6 @@ hpx_setup_target(lue_benchmark
         iostreams
     DEPENDENCIES
         lue::framework_algorithm
-        # lue::framework_core
         lue::framework_model
         docopt::docopt
         nlohmann_json::nlohmann_json

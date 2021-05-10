@@ -1,8 +1,5 @@
 #pragma once
-// #include "lue/framework/core/array_partition_data.hpp"
-// #include "lue/framework/core/array_partition_definition.hpp"
-// #include <boost/multi_array.hpp>
-#include "lue/framework/core/component/partitioned_array.hpp"
+#include "lue/framework/partitioned_array.hpp"
 #include <boost/range/irange.hpp>
 #include <experimental/iterator>
 #include <array>
