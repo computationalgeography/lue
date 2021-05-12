@@ -1,7 +1,7 @@
 # TODO No command line arguments end up in HPX runtime...
 add_test_conditionally(test)
 
-pybind11_add_module(lue_py_framework SHARED SYSTEM THIN_LTO
+pybind11_add_module(lue_py_framework SHARED THIN_LTO
     src/algorithm/accu.cpp
     src/algorithm/accu_fraction.cpp
     src/algorithm/accu_threshold.cpp
@@ -85,6 +85,7 @@ target_include_directories(lue_py_framework
 
 target_link_libraries(lue_py_framework
     PRIVATE
+        lue::framework_local_operation
         lue::framework_algorithm
         lue::framework_io
         pybind11::pybind11

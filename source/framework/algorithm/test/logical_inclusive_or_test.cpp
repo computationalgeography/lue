@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE lue framework algorithm logical_inclusive_or
 #include "lue/framework/algorithm/all.hpp"
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
-#include "lue/framework/algorithm/logical.hpp"
+#include "lue/framework/algorithm/definition/logical_inclusive_or.hpp"
 #include "lue/framework/algorithm/none.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
@@ -57,7 +57,7 @@ BOOST_AUTO_TEST_CASE(array_##rank##d_##Element)  \
     detail::test_array<Element, rank>();         \
 }
 
-TEST_CASE(1, bool)
-TEST_CASE(2, bool)
+TEST_CASE(1, uint8_t)
+TEST_CASE(2, uint8_t)
 
 #undef TEST_CASE

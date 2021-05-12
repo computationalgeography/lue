@@ -1,6 +1,6 @@
 add_test_conditionally(test)
 
-pybind11_add_module(lue_py_data_model SHARED SYSTEM THIN_LTO
+pybind11_add_module(lue_py_data_model SHARED THIN_LTO
 
     src/submodule.cpp
 

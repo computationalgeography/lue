@@ -1,8 +1,8 @@
 #define BOOST_TEST_MODULE lue framework algorithm uniform
 #include "lue/framework/algorithm/all.hpp"
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
-#include "lue/framework/algorithm/comparison.hpp"
-#include "lue/framework/algorithm/logical.hpp"
+#include "lue/framework/algorithm/definition/comparison.hpp"
+#include "lue/framework/algorithm/definition/logical.hpp"
 #include "lue/framework/algorithm/uniform.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"

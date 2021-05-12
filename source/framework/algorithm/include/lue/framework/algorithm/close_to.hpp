@@ -17,47 +17,52 @@ namespace lue {
         class CloseTo
         {
 
-        public:
+            public:
 
-            static_assert(std::is_floating_point_v<InputElement>);
+                static_assert(std::is_floating_point_v<InputElement>);
 
-            using OutputElement = OutputElement_;
+                using OutputElement = OutputElement_;
 
-            CloseTo(
-                InputElement const relative_difference=1e-5,
-                InputElement const absolute_difference=1e-8):
 
-                _relative_difference{relative_difference},
-                _absolute_difference{absolute_difference}
+                CloseTo(
+                    InputElement const relative_difference=1e-5,
+                    InputElement const absolute_difference=1e-8):
 
-            {
-            }
+                    _relative_difference{relative_difference},
+                    _absolute_difference{absolute_difference}
 
-            constexpr OutputElement operator()(
-                InputElement const& input_element1,
-                InputElement const& input_element2) const noexcept
-            {
-                return
-                    std::abs(input_element1 - input_element2) <=
-                        (_absolute_difference + _relative_difference * std::abs(input_element2));
-            }
+                {
+                }
 
-            friend class hpx::serialization::access;
 
-            template<
-                typename Archive>
-            void serialize(
-                Archive& archive,
-                unsigned int const /* version */)
-            {
-                archive & _relative_difference & _absolute_difference;
-            }
+                constexpr OutputElement operator()(
+                    InputElement const& input_element1,
+                    InputElement const& input_element2) const noexcept
+                {
+                    return
+                        std::abs(input_element1 - input_element2) <=
+                            (_absolute_difference + _relative_difference * std::abs(input_element2));
+                }
 
-        private:
 
-            InputElement _relative_difference;
+                friend class hpx::serialization::access;
 
-            InputElement _absolute_difference;
+
+                template<
+                    typename Archive>
+                void serialize(
+                    Archive& archive,
+                    unsigned int const /* version */)
+                {
+                    archive & _relative_difference & _absolute_difference;
+                }
+
+
+            private:
+
+                InputElement _relative_difference;
+
+                InputElement _absolute_difference;
 
         };
 

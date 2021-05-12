@@ -15,18 +15,19 @@ namespace lue {
         class NotEqualTo
         {
 
-        public:
+            public:
 
-            using OutputElement = OutputElement_;
+                using OutputElement = OutputElement_;
 
-            constexpr OutputElement operator()(
-                InputElement const& input_element1,
-                InputElement const& input_element2) const noexcept
-            {
-                return input_element1 != input_element2;
-            }
 
-        };
+                constexpr OutputElement operator()(
+                    InputElement const& input_element1,
+                    InputElement const& input_element2) const noexcept
+                {
+                    return input_element1 != input_element2;
+                }
+
+            };
 
     }  // namespace detail
 

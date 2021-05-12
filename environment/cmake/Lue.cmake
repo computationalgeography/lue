@@ -8,6 +8,7 @@ enable_sanitizers(lue_compile_options)
 include(StaticAnalyzers)
 
 include(FetchContent)
+include(GenerateExportHeader)
 
 include(LueConfiguration)
 include(LueMacro)

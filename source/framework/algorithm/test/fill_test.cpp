@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE lue framework algorithm fill
 #include "lue/framework/algorithm/all.hpp"
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
-#include "lue/framework/algorithm/equal_to.hpp"
+#include "lue/framework/algorithm/definition/equal_to.hpp"
 #include "lue/framework/algorithm/fill.hpp"
 #include "lue/framework/algorithm/sum.hpp"
 #include "lue/framework/test/array.hpp"

@@ -1,9 +1,10 @@
 #define BOOST_TEST_MODULE lue framework algorithm valid
 #include "lue/framework/algorithm/all.hpp"
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
-#include "lue/framework/algorithm/comparison.hpp"
+#include "lue/framework/algorithm/definition/equal_to.hpp"
+#include "lue/framework/algorithm/definition/not_equal_to.hpp"
 #include "lue/framework/algorithm/valid.hpp"
-#include "lue/framework/algorithm/where.hpp"
+#include "lue/framework/algorithm/definition/where.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 

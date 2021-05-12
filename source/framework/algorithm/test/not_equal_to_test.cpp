@@ -1,5 +1,5 @@
 #define BOOST_TEST_MODULE lue framework algorithm not_equal_to
-#include "lue/framework/algorithm/comparison.hpp"
+#include "lue/framework/algorithm/definition/not_equal_to.hpp"
 #include "lue/framework/algorithm/all.hpp"
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/none.hpp"

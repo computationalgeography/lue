@@ -7,61 +7,61 @@
 
 
 namespace lue {
-namespace detail {
+    namespace detail {
 
-template<
-    typename InputElement>
-class ATan2
-{
+        template<
+            typename InputElement>
+        class ATan2
+        {
 
-public:
+            public:
 
-    static_assert(std::is_floating_point_v<InputElement>);
+                static_assert(std::is_floating_point_v<InputElement>);
 
-    using OutputElement = InputElement;
+                using OutputElement = InputElement;
 
-    OutputElement operator()(
-        InputElement const input_element1,
-        InputElement const input_element2) const noexcept
+                OutputElement operator()(
+                    InputElement const input_element1,
+                    InputElement const input_element2) const noexcept
+                {
+                    return std::atan2(input_element1, input_element2);
+                }
+
+        };
+
+    }  // namespace detail
+
+
+    namespace policy::atan2 {
+
+        template<
+            typename Element>
+        using DefaultPolicies = policy::DefaultPolicies<
+            AllValuesWithinDomain<Element, Element>,
+            OutputElements<Element>,
+            InputElements<Element, Element>>;
+
+        template<
+            typename Element>
+        using DefaultValuePolicies = policy::DefaultValuePolicies<
+            AllValuesWithinDomain<Element, Element>,
+            OutputElements<Element>,
+            InputElements<Element, Element>>;
+
+    }  // namespace policy::atan2
+
+
+    template<
+        typename Element,
+        Rank rank>
+    PartitionedArray<Element, rank> atan2(
+        PartitionedArray<Element, rank> const& array1,
+        PartitionedArray<Element, rank> const& array2)
     {
-        return std::atan2(input_element1, input_element2);
+        using Functor = detail::ATan2<Element>;
+        using Policies = policy::atan2::DefaultPolicies<Element>;
+
+        return binary_local_operation(Policies{}, array1, array2, Functor{});
     }
-
-};
-
-}  // namespace detail
-
-
-namespace policy::atan2 {
-
-    template<
-        typename Element>
-    using DefaultPolicies = policy::DefaultPolicies<
-        AllValuesWithinDomain<Element, Element>,
-        OutputElements<Element>,
-        InputElements<Element, Element>>;
-
-    template<
-        typename Element>
-    using DefaultValuePolicies = policy::DefaultValuePolicies<
-        AllValuesWithinDomain<Element, Element>,
-        OutputElements<Element>,
-        InputElements<Element, Element>>;
-
-}  // namespace policy::atan2
-
-
-template<
-    typename Element,
-    Rank rank>
-PartitionedArray<Element, rank> atan2(
-    PartitionedArray<Element, rank> const& array1,
-    PartitionedArray<Element, rank> const& array2)
-{
-    using Functor = detail::ATan2<Element>;
-    using Policies = policy::atan2::DefaultPolicies<Element>;
-
-    return binary_local_operation(Policies{}, array1, array2, Functor{});
-}
 
 }  // namespace lue

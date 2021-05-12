@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/unary_local_operation.hpp"
+#include "lue/framework/algorithm/operator.hpp"
 #include "lue/framework/algorithm/policy/all_values_within_domain.hpp"
 #include "lue/framework/algorithm/policy/default_policies.hpp"
 #include "lue/framework/algorithm/policy/default_value_policies.hpp"
@@ -13,15 +14,17 @@ namespace lue {
         class LogicalNot
         {
 
-        public:
+            public:
 
-            using OutputElement = std::uint8_t;
+                static_assert(std::is_integral_v<InputElement>);
 
-            constexpr OutputElement operator()(
-                InputElement const& input_element) const noexcept
-            {
-                return !input_element;
-            }
+                using OutputElement = std::uint8_t;
+
+                constexpr OutputElement operator()(
+                    InputElement const& input_element) const noexcept
+                {
+                    return !input_element;
+                }
 
         };
 
@@ -61,5 +64,7 @@ namespace lue {
 
         return unary_local_operation(Policies{}, array, Functor{});
     }
+
+    LUE_UNARY_LOGICAL_OPERATOR(!, logical_not)
 
 }  // namespace lue

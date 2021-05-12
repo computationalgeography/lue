@@ -1,3 +1,5 @@
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY RULE_LAUNCH_COMPILE "${CMAKE_COMMAND} -E time")
+
 list(APPEND doxygen_input ${CMAKE_CURRENT_SOURCE_DIR}/doc)
 
 add_subdirectory(core)

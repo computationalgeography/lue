@@ -1,6 +1,6 @@
 #include "lue/framework/algorithm/copy.hpp"
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
-#include "lue/framework/algorithm/arithmetic.hpp"
+#include "lue/framework/algorithm/definition/arithmetic.hpp"
 #include "lue/framework/algorithm/uniform.hpp"
 #include "lue/framework/benchmark/algorithm_benchmark_result.hpp"
 #include "lue/framework/benchmark/benchmark.hpp"
