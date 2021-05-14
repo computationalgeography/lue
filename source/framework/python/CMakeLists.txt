@@ -85,6 +85,7 @@ target_include_directories(lue_py_framework
 
 target_link_libraries(lue_py_framework
     PRIVATE
+        lue::framework_focal_operation
         lue::framework_local_operation
         lue::framework_algorithm
         lue::framework_io

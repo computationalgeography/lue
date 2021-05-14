@@ -3,6 +3,7 @@
 #include "lue/framework/algorithm/export.hpp"
 #include "lue/framework/core/annotate.hpp"
 #include "lue/framework/core/component.hpp"
+#include "lue/macro.hpp"
 
 
 namespace lue {
@@ -553,28 +554,6 @@ namespace lue {
 
         return OutputArray{shape(input_array), localities, std::move(output_partitions)};
     }
-
-
-    namespace detail {
-
-        template<
-            typename T>
-        struct ArgumentType;
-
-        template<
-            typename T,
-            typename U>
-        struct ArgumentType<T(U)>
-        {
-            using Argument = U;
-        };
-
-    }  // namespace detail
-
-
-    template<
-        typename T>
-    using ArgumentType = typename detail::ArgumentType<T>::Argument;
 
 }  // namespace lue
 

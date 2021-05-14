@@ -67,6 +67,60 @@ target_link_libraries(lue_framework_local_operation
         lue::framework_algorithm
 )
 
-# TODO lue_framework_focal
-# TODO lue_framework_zonal
-# TODO lue_framework_global
+
+add_library(lue_framework_focal_operation SHARED
+    src/focal_operation/convolve.cpp
+    src/focal_operation/d8_network.cpp
+    src/focal_operation/downstream.cpp
+    src/focal_operation/focal_max.cpp
+    src/focal_operation/focal_mean.cpp
+    src/focal_operation/focal_sum.cpp
+    src/focal_operation/slope.cpp
+    src/focal_operation/upstream.cpp
+)
+
+add_library(lue::framework_focal_operation ALIAS lue_framework_focal_operation)
+
+target_link_libraries(lue_framework_focal_operation
+    PUBLIC
+        lue::framework_algorithm
+)
+
+
+# TODO
+# add_library(lue_framework_zonal_operation SHARED
+#     src/zonal_operation/zonal_mean.cpp
+# )
+# 
+# add_library(lue::framework_zonal_operation ALIAS lue_framework_zonal_operation)
+# 
+# target_link_libraries(lue_framework_zonal_operation
+#     PUBLIC
+#         lue::framework_algorithm
+# )
+
+
+# TODO
+# add_library(lue_framework_global_operation SHARED
+#     src/global_operation/global_mean.cpp
+# )
+# 
+# add_library(lue::framework_global_operation ALIAS lue_framework_global_operation)
+# 
+# target_link_libraries(lue_framework_global_operation
+#     PUBLIC
+#         lue::framework_algorithm
+# )
+
+
+# TODO
+# add_library(lue_framework_flow_direction_operation SHARED
+#     src/flow_direction_operation/accu.cpp
+# )
+# 
+# add_library(lue::framework_flow_direction_operation ALIAS lue_framework_flow_direction_operation)
+# 
+# target_link_libraries(lue_framework_flow_direction_operation
+#     PUBLIC
+#         lue::framework_algorithm
+# )

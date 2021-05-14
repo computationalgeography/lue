@@ -1,24 +1,26 @@
 #pragma once
 #include "lue/framework/algorithm/detail/halo_partition.hpp"
 #include "lue/framework/algorithm/detail/when_all_get.hpp"
+#include "lue/framework/algorithm/export.hpp"
 #include "lue/framework/algorithm/policy.hpp"
 #include "lue/framework/core/annotate.hpp"
 #include "lue/framework/core/array.hpp"
 #include "lue/framework/core/component.hpp"
+#include "lue/macro.hpp"
 #include <fmt/format.h>
 #include <stdexcept>
 
 
 namespace lue {
 
-    // If this is needed elsewhere, put it in algorithm/functor_traits.hpp
-    // Refactor with unary_local_operation.hpp, binary_local_operation.hpp
-    template<
-        typename Functor>
-    using OutputElementT = typename Functor::OutputElement;
-
-
     namespace detail {
+
+        // If this is needed elsewhere, put it in algorithm/functor_traits.hpp
+        // Refactor with unary_local_operation.hpp, binary_local_operation.hpp
+        template<
+            typename Functor>
+        using OutputElementT = typename Functor::OutputElement;
+
 
         template<
             typename OutputPolicies,
@@ -1973,7 +1975,7 @@ namespace lue {
         Rank rank,
         typename Kernel,
         typename Functor>
-    PartitionedArray<OutputElementT<Functor>, rank> focal_operation(
+    PartitionedArray<detail::OutputElementT<Functor>, rank> focal_operation(
         Policies const& policies,
         Kernel const& kernel,
         Functor functor,
@@ -1992,7 +1994,7 @@ namespace lue {
         Rank rank,
         typename Kernel,
         typename Functor>
-    PartitionedArray<OutputElementT<Functor>, rank> focal_operation(
+    PartitionedArray<detail::OutputElementT<Functor>, rank> focal_operation(
         Policies const& policies,
         PartitionedArray<InputElement, rank> const& array,
         Kernel const& kernel,
@@ -2009,7 +2011,7 @@ namespace lue {
         Rank rank,
         typename Kernel,
         typename Functor>
-    PartitionedArray<OutputElementT<Functor>, rank> focal_operation(
+    PartitionedArray<detail::OutputElementT<Functor>, rank> focal_operation(
         Policies const& policies,
         PartitionedArray<InputElement1, rank> const& array1,
         PartitionedArray<InputElement2, rank> const& array2,

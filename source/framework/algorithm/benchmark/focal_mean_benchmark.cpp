@@ -1,4 +1,4 @@
-#include "lue/framework/algorithm/focal_mean.hpp"
+#include "lue/framework/algorithm/definition/focal_mean.hpp"
 #include "lue/framework/algorithm/kernel.hpp"
 #include "lue/framework/algorithm/uniform.hpp"
 #include "lue/framework/algorithm/serialize/kernel.hpp"
