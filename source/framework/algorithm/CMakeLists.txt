@@ -43,20 +43,29 @@ target_link_libraries(lue_framework_algorithm
 # - Common policies
 add_library(lue_framework_local_operation SHARED
     src/local_operation/add.cpp
+    src/local_operation/atan.cpp
     src/local_operation/atan2.cpp
+    src/local_operation/cast.cpp
     src/local_operation/close_to.cpp
+    src/local_operation/cos.cpp
     src/local_operation/divide.cpp
+    src/local_operation/downstream_distance.cpp
     src/local_operation/equal_to.cpp
     src/local_operation/greater_than.cpp
     src/local_operation/greater_than_equal_to.cpp
     src/local_operation/less_than.cpp
     src/local_operation/less_than_equal_to.cpp
+    src/local_operation/log.cpp
     src/local_operation/logical_and.cpp
+    src/local_operation/logical_not.cpp
     src/local_operation/logical_inclusive_or.cpp
     src/local_operation/multiply.cpp
     src/local_operation/not_equal_to.cpp
     src/local_operation/pow.cpp
+    src/local_operation/sin.cpp
+    src/local_operation/sqrt.cpp
     src/local_operation/subtract.cpp
+    src/local_operation/valid.cpp
     src/local_operation/where.cpp
 )
 

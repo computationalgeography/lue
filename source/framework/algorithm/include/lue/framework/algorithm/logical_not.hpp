@@ -1,36 +1,12 @@
 #pragma once
-#include "lue/framework/algorithm/unary_local_operation.hpp"
 #include "lue/framework/algorithm/operator.hpp"
 #include "lue/framework/algorithm/policy/all_values_within_domain.hpp"
 #include "lue/framework/algorithm/policy/default_policies.hpp"
 #include "lue/framework/algorithm/policy/default_value_policies.hpp"
+#include "lue/framework/partitioned_array.hpp"
 
 
 namespace lue {
-    namespace detail {
-
-        template<
-            typename InputElement>
-        class LogicalNot
-        {
-
-            public:
-
-                static_assert(std::is_integral_v<InputElement>);
-
-                using OutputElement = std::uint8_t;
-
-                constexpr OutputElement operator()(
-                    InputElement const& input_element) const noexcept
-                {
-                    return !input_element;
-                }
-
-        };
-
-    }  // namespace detail
-
-
     namespace policy::logical_not {
 
         template<
@@ -56,14 +32,8 @@ namespace lue {
         typename InputElement,
         Rank rank>
     PartitionedArray<std::uint8_t, rank> logical_not(
-        PartitionedArray<InputElement, rank> const& array)
-    {
-        using Functor = detail::LogicalNot<InputElement>;
-        using OutputElement = OutputElementT<Functor>;
-        using Policies = policy::logical_not::DefaultPolicies<OutputElement, InputElement>;
+        PartitionedArray<InputElement, rank> const& array);
 
-        return unary_local_operation(Policies{}, array, Functor{});
-    }
 
     LUE_UNARY_LOGICAL_OPERATOR(!, logical_not)
 

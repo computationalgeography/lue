@@ -1,34 +1,11 @@
 #pragma once
-#include "lue/framework/algorithm/unary_local_operation.hpp"
 #include "lue/framework/algorithm/policy/all_values_within_domain.hpp"
 #include "lue/framework/algorithm/policy/default_policies.hpp"
 #include "lue/framework/algorithm/policy/default_value_policies.hpp"
+#include "lue/framework/partitioned_array.hpp"
 
 
 namespace lue {
-    namespace detail {
-
-        template<
-            typename InputElement,
-            typename OutputElement_=std::uint8_t>
-        class Valid
-        {
-
-            public:
-
-                using OutputElement = OutputElement_;
-
-                constexpr OutputElement operator()(
-                    [[maybe_unused]] InputElement const& input_element) const noexcept
-                {
-                    return 1;
-                }
-
-        };
-
-    }  // namespace detail
-
-
     namespace policy::valid {
 
         // If the input no-data policy returns true, the output no-data
@@ -90,10 +67,7 @@ namespace lue {
         Rank rank>
     PartitionedArray<BooleanElement, rank> valid(
         Policies const& policies,
-        PartitionedArray<ExpressionElement, rank> const& array)
-    {
-        return unary_local_operation(policies, array, detail::Valid<ExpressionElement>{});
-    }
+        PartitionedArray<ExpressionElement, rank> const& array);
 
 
     template<

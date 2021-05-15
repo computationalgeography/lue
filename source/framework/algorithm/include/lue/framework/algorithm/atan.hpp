@@ -1,65 +1,48 @@
 #pragma once
-#include "lue/framework/algorithm/unary_local_operation.hpp"
 #include "lue/framework/algorithm/policy/all_values_within_domain.hpp"
 #include "lue/framework/algorithm/policy/default_policies.hpp"
 #include "lue/framework/algorithm/policy/default_value_policies.hpp"
-#include <cmath>
+#include "lue/framework/partitioned_array.hpp"
 
 
 namespace lue {
-namespace detail {
+    namespace policy::atan {
 
-template<
-    typename InputElement>
-class ATan
-{
+        template<
+            typename Element>
+        using DefaultPolicies = policy::DefaultPolicies<
+            AllValuesWithinDomain<Element>,
+            OutputElements<Element>,
+            InputElements<Element>>;
 
-public:
+        template<
+            typename Element>
+        using DefaultValuePolicies = policy::DefaultValuePolicies<
+            AllValuesWithinDomain<Element>,
+            OutputElements<Element>,
+            InputElements<Element>>;
 
-    static_assert(std::is_floating_point_v<InputElement>);
+    }  // namespace policy::atan
 
-    using OutputElement = InputElement;
 
-    OutputElement operator()(
-        InputElement const& input_element) const noexcept
+    template<
+        typename Policies,
+        typename Element,
+        Rank rank>
+    PartitionedArray<Element, rank> atan(
+        Policies const& policies,
+        PartitionedArray<Element, rank> const& array);
+
+
+    template<
+        typename Element,
+        Rank rank>
+    PartitionedArray<Element, rank> atan(
+        PartitionedArray<Element, rank> const& array)
     {
-        return std::atan(input_element);
+        using Policies = policy::atan::DefaultPolicies<Element>;
+
+        return atan(Policies{}, array);
     }
-
-};
-
-}  // namespace detail
-
-
-namespace policy::atan {
-
-    template<
-        typename Element>
-    using DefaultPolicies = policy::DefaultPolicies<
-        AllValuesWithinDomain<Element>,
-        OutputElements<Element>,
-        InputElements<Element>>;
-
-    template<
-        typename Element>
-    using DefaultValuePolicies = policy::DefaultValuePolicies<
-        AllValuesWithinDomain<Element>,
-        OutputElements<Element>,
-        InputElements<Element>>;
-
-}  // namespace policy::atan
-
-
-template<
-    typename Element,
-    Rank rank>
-PartitionedArray<Element, rank> atan(
-    PartitionedArray<Element, rank> const& array)
-{
-    using Functor = detail::ATan<Element>;
-    using Policies = policy::atan::DefaultPolicies<Element>;
-
-    return unary_local_operation(Policies{}, array, Functor{});
-}
 
 }  // namespace lue

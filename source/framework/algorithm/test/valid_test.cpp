@@ -3,7 +3,7 @@
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/definition/equal_to.hpp"
 #include "lue/framework/algorithm/definition/not_equal_to.hpp"
-#include "lue/framework/algorithm/valid.hpp"
+#include "lue/framework/algorithm/definition/valid.hpp"
 #include "lue/framework/algorithm/definition/where.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"

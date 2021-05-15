@@ -6,7 +6,7 @@
 #include "lue/framework/algorithm/kernel.hpp"
 #include "lue/framework/algorithm/serialize/kernel.hpp"
 #include "lue/framework/algorithm/definition/pow.hpp"
-#include "lue/framework/algorithm/sqrt.hpp"
+#include "lue/framework/algorithm/definition/sqrt.hpp"
 
 
 namespace lue {

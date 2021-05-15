@@ -1,35 +1,10 @@
 #pragma once
-#include "lue/framework/algorithm/unary_local_operation.hpp"
 #include "lue/framework/algorithm/policy/default_policies.hpp"
 #include "lue/framework/algorithm/policy/default_value_policies.hpp"
-#include <cmath>
+#include "lue/framework/partitioned_array.hpp"
 
 
 namespace lue {
-    namespace detail {
-
-        template<
-            typename InputElement>
-        class Sqrt
-        {
-
-            public:
-
-                static_assert(std::is_floating_point_v<InputElement>);
-
-                using OutputElement = InputElement;
-
-                OutputElement operator()(
-                    InputElement const& input_element) const noexcept
-                {
-                    return std::sqrt(input_element);
-                }
-
-        };
-
-    }  // namespace detail
-
-
     namespace policy::sqrt {
 
         template<
@@ -72,10 +47,7 @@ namespace lue {
         Rank rank>
     PartitionedArray<Element, rank> sqrt(
         Policies const& policies,
-        PartitionedArray<Element, rank> const& array)
-    {
-        return unary_local_operation(policies, array, detail::Sqrt<Element>{});
-    }
+        PartitionedArray<Element, rank> const& array);
 
 
     template<

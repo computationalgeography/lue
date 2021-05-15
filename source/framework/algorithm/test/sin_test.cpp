@@ -2,7 +2,7 @@
 #include "lue/framework/algorithm/all.hpp"
 #include "lue/framework/algorithm/definition/equal_to.hpp"
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
-#include "lue/framework/algorithm/sin.hpp"
+#include "lue/framework/algorithm/definition/sin.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
