@@ -1,7 +1,7 @@
 #pragma once
 #include "lue/framework/algorithm/policy.hpp"
 #include "lue/framework/algorithm/functor_traits.hpp"
-#include "lue/framework/core/component/partitioned_array.hpp"
+#include "lue/framework/partitioned_array.hpp"
 #include "lue/framework/core/domain_decomposition.hpp"
 #include "lue/framework/core/hilbert_curve.hpp"
 #include "lue/framework/core/linear_curve.hpp"

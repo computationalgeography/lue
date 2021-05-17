@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/binary_local_operation.hpp"
+#include "lue/framework/algorithm/operator.hpp"
 #include "lue/framework/algorithm/policy/all_values_within_domain.hpp"
 #include "lue/framework/algorithm/policy/default_policies.hpp"
 #include "lue/framework/algorithm/policy/default_value_policies.hpp"
@@ -19,6 +20,7 @@ namespace lue {
                 static_assert(std::is_floating_point_v<InputElement>);
 
                 using OutputElement = OutputElement_;
+
 
                 constexpr OutputElement operator()(
                     InputElement const& input_element1,
@@ -72,5 +74,6 @@ namespace lue {
 
 
     LUE_BINARY_LOCAL_OPERATION_OVERLOADS(divide, detail::Divide)
+    LUE_BINARY_ARITHMETIC_OPERATOR(/, divide)
 
 }  // namespace lue

@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE lue framework algorithm create_partitioned_array
 #include "lue/framework/algorithm/all.hpp"
-#include "lue/framework/algorithm/comparison.hpp"
+#include "lue/framework/algorithm/definition/equal_to.hpp"
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/partition_count_unique.hpp"
 #include "lue/framework/algorithm/policy.hpp"
@@ -8,6 +8,7 @@
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/compare.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework/core/component.hpp"
 
 
 namespace {

@@ -22,5 +22,5 @@ target_include_directories(lue_framework_test
 
 target_link_libraries(lue_framework_test
     INTERFACE
-        lue::framework_core
+        lue::framework_partitioned_array
 )

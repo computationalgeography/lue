@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE lue framework algorithm less_than
 #include "lue/framework/algorithm/all.hpp"
-#include "lue/framework/algorithm/comparison.hpp"
+#include "lue/framework/algorithm/definition/less_than.hpp"
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/none.hpp"
 #include "lue/framework/test/array.hpp"

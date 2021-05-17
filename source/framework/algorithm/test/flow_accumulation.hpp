@@ -1,7 +1,7 @@
 #pragma once
 #include "lue/framework/algorithm/flow_direction.hpp"
 #include "lue/framework/algorithm/policy/policy_traits.hpp"
-#include "lue/framework/core/component/partitioned_array.hpp"
+#include "lue/framework/partitioned_array.hpp"
 
 
 namespace lue::test {

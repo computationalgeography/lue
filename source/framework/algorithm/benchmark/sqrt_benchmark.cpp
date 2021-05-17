@@ -1,5 +1,5 @@
-#include "lue/framework/algorithm/pow.hpp"
-#include "lue/framework/algorithm/sqrt.hpp"
+#include "lue/framework/algorithm/definition/pow.hpp"
+#include "lue/framework/algorithm/definition/sqrt.hpp"
 #include "lue/framework/algorithm/uniform.hpp"
 #include "lue/framework/benchmark/benchmark_model.hpp"
 #include "lue/framework/benchmark/hpx_main.hpp"

@@ -1,5 +1,5 @@
 #define BOOST_TEST_MODULE lue framework algorithm close_to
-#include "lue/framework/algorithm/comparison.hpp"
+#include "lue/framework/algorithm/definition/close_to.hpp"
 #include "lue/framework/algorithm/all.hpp"
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/none.hpp"

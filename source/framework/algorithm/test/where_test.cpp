@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE lue framework algorithm where
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
-#include "lue/framework/algorithm/where.hpp"
+#include "lue/framework/algorithm/definition/where.hpp"
 #include "lue/framework/test/compare.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 

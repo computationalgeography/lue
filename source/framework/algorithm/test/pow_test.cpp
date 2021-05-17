@@ -1,8 +1,8 @@
 #define BOOST_TEST_MODULE lue framework algorithm pow
 #include "lue/framework/algorithm/all.hpp"
-#include "lue/framework/algorithm/comparison.hpp"
+#include "lue/framework/algorithm/definition/equal_to.hpp"
+#include "lue/framework/algorithm/definition/pow.hpp"
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
-#include "lue/framework/algorithm/pow.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 

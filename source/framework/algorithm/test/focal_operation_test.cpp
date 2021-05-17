@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE lue framework algorithm focal_operation
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/kernel.hpp"
-#include "lue/framework/algorithm/focal_operation.hpp"
+#include "lue/framework/algorithm/definition/focal_operation.hpp"
 #include "lue/framework/algorithm/policy/default_policies.hpp"
 #include "lue/framework/algorithm/serialize/kernel.hpp"
 #include "lue/framework/test/array.hpp"

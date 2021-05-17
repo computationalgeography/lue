@@ -1,6 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/functor_traits.hpp"
-#include "lue/framework/core/component/partitioned_array.hpp"
+#include "lue/framework/partitioned_array.hpp"
 #include "lue/framework/core/annotate.hpp"
 
 

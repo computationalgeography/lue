@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE lue framework algorithm focal_max
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/kernel.hpp"
-#include "lue/framework/algorithm/focal_max.hpp"
+#include "lue/framework/algorithm/definition/focal_max.hpp"
 #include "lue/framework/algorithm/range.hpp"
 #include "lue/framework/algorithm/serialize/kernel.hpp"
 #include "lue/framework/test/array.hpp"

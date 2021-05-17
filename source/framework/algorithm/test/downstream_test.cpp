@@ -1,5 +1,5 @@
 #define BOOST_TEST_MODULE lue framework algorithm downstream
-#include "lue/framework/algorithm/downstream.hpp"
+#include "lue/framework/algorithm/definition/downstream.hpp"
 #include "flow_accumulation.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/compare.hpp"

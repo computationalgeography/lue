@@ -2,6 +2,7 @@ add_unit_tests(
     SCOPE lue_framework_core
     NAMES
         array_test.cpp
+        array_partition_data_test.cpp
         array_partition_definition_test.cpp
         array_visitor_test.cpp
         configuration_entry_test.cpp
@@ -12,17 +13,6 @@ add_unit_tests(
         shared_buffer_test.cpp
         shape_test.cpp
         span_test.cpp
-    LINK_LIBRARIES
-        lue::framework_core
-        lue::framework_test
-)
-
-add_hpx_unit_tests(
-    SCOPE lue_framework_core
-    NAMES
-        array_partition_data_test.cpp
-        array_partition_test.cpp
-        partitioned_array_test.cpp
     LINK_LIBRARIES
         lue::framework_core
         lue::framework_test

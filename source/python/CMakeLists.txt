@@ -11,7 +11,7 @@ configure_file(
     include/lue/py/configure.hpp
 )
 
-pybind11_add_module(lue_py MODULE SYSTEM THIN_LTO
+pybind11_add_module(lue_py MODULE THIN_LTO
     src/python_extension.cpp
 )
 

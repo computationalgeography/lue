@@ -1,7 +1,7 @@
 add_test_conditionally(test)
 
+
 add_library(lue_framework_core
-    src/component/array_partition.cpp
     src/configuration_entry.cpp
     src/debug.cpp
     src/numa_domain.cpp
@@ -9,16 +9,8 @@ add_library(lue_framework_core
 
 add_library(lue::framework_core ALIAS lue_framework_core)
 
-hpx_setup_target(lue_framework_core
-    TYPE LIBRARY
-    # COMPONENT_DEPENDENCIES
-    #     iostreams
-)
-
 target_include_directories(lue_framework_core SYSTEM
     PUBLIC
-        ${HPX_INCLUDE_DIRS}
-        ${Boost_INCLUDE_DIRS}
         ${MDSpan_SOURCE_DIR}/include
 )
 
@@ -32,5 +24,6 @@ target_link_libraries(lue_framework_core
         Boost::filesystem
     PUBLIC
         lue::shared
+        HPX::hpx
         std::mdspan
 )

@@ -2,8 +2,8 @@
 #include "lue/framework/algorithm/policy/all_values_within_domain.hpp"
 #include "lue/framework/algorithm/policy/default_policies.hpp"
 #include "lue/framework/algorithm/policy/default_value_policies.hpp"
+#include "lue/framework/partitioned_array.hpp"
 #include "lue/framework/core/annotate.hpp"
-#include "lue/framework/core/component/partitioned_array.hpp"
 #include "lue/framework/core/type_traits.hpp"
 #include <hpx/include/lcos.hpp>
 

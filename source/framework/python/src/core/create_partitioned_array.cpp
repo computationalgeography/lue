@@ -1,5 +1,4 @@
 #include "shape.hpp"
-#include "lue/framework/core/component/partitioned_array.hpp"
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include <pybind11/numpy.h>
 

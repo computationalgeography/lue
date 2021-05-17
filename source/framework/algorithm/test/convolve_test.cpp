@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE lue framework algorithm convolve
 #include "lue/framework/algorithm/kernel.hpp"
-#include "lue/framework/algorithm/convolve.hpp"
+#include "lue/framework/algorithm/definition/convolve.hpp"
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/serialize/kernel.hpp"
 #include "lue/framework/test/array.hpp"

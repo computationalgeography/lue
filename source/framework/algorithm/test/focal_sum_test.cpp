@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE lue framework algorithm focal_sum
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/kernel.hpp"
-#include "lue/framework/algorithm/focal_sum.hpp"
+#include "lue/framework/algorithm/definition/focal_sum.hpp"
 #include "lue/framework/algorithm/range.hpp"
 #include "lue/framework/algorithm/serialize/kernel.hpp"
 #include "lue/framework/test/array.hpp"

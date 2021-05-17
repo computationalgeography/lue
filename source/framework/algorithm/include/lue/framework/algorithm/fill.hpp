@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/framework/core/component/partitioned_array.hpp"
+#include "lue/framework/partitioned_array.hpp"
 
 
 namespace lue {
@@ -25,7 +25,7 @@ template<
 {
     std::vector<hpx::future<void>> fill_partitions(nr_partitions(array));
 
-    typename ArrayPartitionFillAction<Element, rank>::Type action;
+    typename server::ArrayPartition<Element, rank>::FillAction action;
 
     for(Index p = 0; p < nr_partitions(array); ++p)
     {

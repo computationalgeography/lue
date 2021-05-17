@@ -313,10 +313,10 @@ namespace lue::framework {
             Rank rank,
             typename... Expression>
         PartitionedArray<
-            OutputElementT<Where<PartitionedArray<ConditionElement, rank>, rank, Expression...>>, rank>
+            typename Where<PartitionedArray<ConditionElement, rank>, rank, Expression...>::OutputElement, rank>
                 where(
-            PartitionedArray<ConditionElement, rank> const& condition_array,
-            Expression const&... expression)
+                    PartitionedArray<ConditionElement, rank> const& condition_array,
+                    Expression const&... expression)
         {
             using ConditionArray = PartitionedArray<ConditionElement, rank>;
 
