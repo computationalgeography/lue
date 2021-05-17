@@ -1,5 +1,5 @@
 #include "lue/framework/benchmark/time_interval.hpp"
-#include "lue/assert.hpp"
+#include "lue/framework/core/assert.hpp"
 
 
 namespace lue {
@@ -17,7 +17,7 @@ TimeInterval::TimeInterval(
     _start{start},
     _stop{stop}
 {
-    lue_assert(_start <= _stop);
+    lue_hpx_assert(_start <= _stop);
 }
 
 
@@ -26,7 +26,7 @@ void TimeInterval::set_stop(
 {
     _stop = time_point;
 
-    lue_assert(_start <= _stop);
+    lue_hpx_assert(_start <= _stop);
 }
 
 

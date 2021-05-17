@@ -1,0 +1,23 @@
+{
+    "nr_time_steps": 1,
+    "array": {
+        "shape": [10000, 10000]
+    },
+    "partition": {
+        "shape": [150, 150],
+        "range": {
+            "max_nr_elements": 400000,
+            "multiplier": 2.0,
+            # "multiplier": 1.5,
+            "method": "linear"
+        }
+    },
+    "arguments": {
+        "positionals": [
+            "$LUE_BENCHMARK_DATA/flow_accumulation/flow_accumulation.lue/area/raster/ldd_108680"
+        ],
+        "options": {
+            "center": "400, 600"
+        }
+    }
+}

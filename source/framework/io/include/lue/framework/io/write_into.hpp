@@ -3,6 +3,7 @@
 #include "lue/framework/algorithm/policy.hpp"
 #include "lue/framework/core/component.hpp"
 #include "lue/data_model.hpp"
+#include "lue/data_model/hl/util.hpp"
 #ifdef HDF5_IS_PARALLEL
 // Only available in case MPI is used in HPX
 #include <hpx/mpi_base/mpi_environment.hpp>

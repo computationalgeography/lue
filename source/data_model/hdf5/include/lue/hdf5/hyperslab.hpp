@@ -20,6 +20,8 @@ class Hyperslab
 
 public:
 
+                   Hyperslab           ()=default;
+
                    Hyperslab           (Offset const& start,
                                         Stride const& stride,
                                         Count const& count);

@@ -163,7 +163,7 @@ namespace lue::framework {
             DynamicShape const& partition_shape)
         {
             auto const [dataset_pathname, phenomenon_name, property_set_name, layer_name] =
-                detail::parse_array_pathname(array_pathname);
+                parse_array_pathname(array_pathname);
             auto const [object_id, datatype] = ldm::constant::probe_raster(
                 dataset_pathname, phenomenon_name, property_set_name, layer_name);
 
@@ -193,7 +193,7 @@ namespace lue::framework {
             Index const time_step_idx)
         {
             auto const [dataset_pathname, phenomenon_name, property_set_name, layer_name] =
-                detail::parse_array_pathname(array_pathname);
+                parse_array_pathname(array_pathname);
             auto const [object_id, datatype] = ldm::variable::probe_raster(
                 dataset_pathname, phenomenon_name, property_set_name, layer_name);
 

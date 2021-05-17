@@ -5,6 +5,7 @@
 #include "lue/framework/algorithm/policy.hpp"
 #include "lue/framework/core/component.hpp"
 #include "lue/data_model/hl/raster_view.hpp"
+#include "lue/data_model/hl/util.hpp"
 #include "lue/data_model.hpp"
 #ifdef HDF5_IS_PARALLEL
 // Only available in case MPI is used in HPX

@@ -490,6 +490,7 @@ namespace lue {
             MaterialPartition const& flux_partition,
             MaterialPartition const& state_partition)
         {
+lue_hpx_assert(material_partition.is_ready());
             using MaterialData = DataT<MaterialPartition>;
             using Offset = typename PartitionIOComponent::Offset;
             using Shape = ShapeT<InflowCountPartition>;
@@ -667,6 +668,8 @@ namespace lue {
             IDPromiseArray<rank<MaterialPartitions>>&& flux_promises,
             IDPromiseArray<rank<MaterialPartitions>>&& state_promises)
         {
+lue_hpx_assert(all_are_ready(material_partitions));
+lue_hpx_assert(material_partitions(0, 0).is_ready());
             // Perform as many iterations as needed to calculate a global
             // flow accumulation solution
 
@@ -700,15 +703,20 @@ namespace lue {
 
             while(true)
             {
+lue_hpx_assert(material_partitions(0, 0).is_ready());
                 // Determine which partitions are part of the accumulation front
                 auto [ solved_partitions, upstream_partition_offsets ] =
                     flow_accumulation_front(partition_io_partitions, ready_partitions);
+                lue_hpx_assert(solved_partitions.shape() == material_partitions.shape());
+                lue_hpx_assert(upstream_partition_offsets.shape() == upstream_partition_offsets.shape());
+lue_hpx_assert(material_partitions(0, 0).is_ready());
 
                 accu_futures.clear();
 
                 for(Index idx0 = 0; idx0 < extent0; ++idx0) {
                     for(Index idx1 = 0; idx1 < extent1; ++idx1)
                     {
+lue_hpx_assert(material_partitions(idx0, idx1).is_ready());
                         bool const partition_promise_is_ready{ready_partitions(idx0, idx1)};
 
                         if(!partition_promise_is_ready)
@@ -754,6 +762,7 @@ namespace lue {
                                 // from surrounding partitions. This action
                                 // updates the current inflow count and flux.
 
+lue_hpx_assert(material_partitions(idx0, idx1).is_ready());
                                 accu_futures.push_back(hpx::async(action, localities(idx0, idx1),
                                     policies,
                                     flow_direction_partitions(idx0, idx1), inflow_count_partitions(idx0, idx1),
@@ -868,6 +877,7 @@ namespace lue {
             // During the calculations, the promises of the individual
             // partition server instance IDs will be fulfilled, as soon
             // as possible. Fire and forget.
+lue_hpx_assert(all_are_ready(material_partitions));
             hpx::apply(
                 solve_accu_threshold_array<Policies, Localities,
                     FlowDirectionPartitions, PartitionIOComponents, InflowCountPartitions,
