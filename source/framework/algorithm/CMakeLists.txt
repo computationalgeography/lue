@@ -49,7 +49,6 @@ add_library(lue_framework_local_operation SHARED
     src/local_operation/close_to.cpp
     src/local_operation/cos.cpp
     src/local_operation/divide.cpp
-    src/local_operation/downstream_distance.cpp
     src/local_operation/equal_to.cpp
     src/local_operation/greater_than.cpp
     src/local_operation/greater_than_equal_to.cpp
@@ -79,13 +78,10 @@ target_link_libraries(lue_framework_local_operation
 
 add_library(lue_framework_focal_operation SHARED
     src/focal_operation/convolve.cpp
-    src/focal_operation/d8_network.cpp
-    src/focal_operation/downstream.cpp
     src/focal_operation/focal_max.cpp
     src/focal_operation/focal_mean.cpp
     src/focal_operation/focal_sum.cpp
     src/focal_operation/slope.cpp
-    src/focal_operation/upstream.cpp
 )
 
 add_library(lue::framework_focal_operation ALIAS lue_framework_focal_operation)
@@ -122,14 +118,16 @@ target_link_libraries(lue_framework_focal_operation
 # )
 
 
-# TODO
-# add_library(lue_framework_flow_direction_operation SHARED
-#     src/flow_direction_operation/accu.cpp
-# )
-# 
-# add_library(lue::framework_flow_direction_operation ALIAS lue_framework_flow_direction_operation)
-# 
-# target_link_libraries(lue_framework_flow_direction_operation
-#     PUBLIC
-#         lue::framework_algorithm
-# )
+add_library(lue_framework_flow_direction_operation SHARED
+    src/flow_direction_operation/d8_network.cpp
+    src/flow_direction_operation/downstream.cpp
+    src/flow_direction_operation/downstream_distance.cpp
+    src/flow_direction_operation/upstream.cpp
+)
+
+add_library(lue::framework_flow_direction_operation ALIAS lue_framework_flow_direction_operation)
+
+target_link_libraries(lue_framework_flow_direction_operation
+    PUBLIC
+        lue::framework_algorithm
+)

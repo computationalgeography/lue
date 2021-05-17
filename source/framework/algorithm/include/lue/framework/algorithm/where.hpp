@@ -1,47 +1,10 @@
 #pragma once
-#include "lue/framework/algorithm/binary_local_operation.hpp"
-#include "lue/framework/algorithm/ternary_local_operation.hpp"
 #include "lue/framework/algorithm/policy/default_policies.hpp"
 #include "lue/framework/algorithm/policy/default_value_policies.hpp"
+#include "lue/framework/partitioned_array.hpp"
 
 
 namespace lue {
-    namespace detail {
-
-        template<
-            typename ConditionElement,
-            typename InputElement>
-        class Where
-        {
-
-            public:
-
-                using OutputElement = InputElement;
-
-                constexpr OutputElement operator()(
-                    [[maybe_unused]] ConditionElement const condition,
-                    InputElement const true_value) const noexcept
-                {
-                    // False conditions are assumed to be out of domain. They must
-                    // have been already handled by the caller.
-                    lue_hpx_assert(condition);
-
-                    return true_value;
-                }
-
-                constexpr OutputElement operator()(
-                    ConditionElement const condition,
-                    InputElement const true_value,
-                    InputElement const false_value) const noexcept
-                {
-                    return condition ? true_value : false_value;
-                }
-
-        };
-
-    }  // namespace detail
-
-
     namespace policy::where {
 
         template<
@@ -105,13 +68,7 @@ namespace lue {
         Policies const& policies,
         PartitionedArray<ConditionElement, rank> const& condition,
         PartitionedArray<Element, rank> const& true_array,
-        PartitionedArray<Element, rank> const& false_array)
-    {
-        // where(policies, condition_array, true_array, false_array)
-        using Functor = detail::Where<ConditionElement, Element>;
-
-        return ternary_local_operation(policies, condition, true_array, false_array, Functor{});
-    }
+        PartitionedArray<Element, rank> const& false_array);
 
 
     template<
@@ -139,13 +96,7 @@ namespace lue {
         Policies const& policies,
         PartitionedArray<ConditionElement, rank> const& condition,
         PartitionedArray<Element, rank> const& true_array,
-        hpx::shared_future<Element> const false_value)
-    {
-        // where(policies, condition_array, true_array, false_value_f)
-        using Functor = detail::Where<ConditionElement, Element>;
-
-        return ternary_local_operation(policies, condition, true_array, false_value, Functor{});
-    }
+        hpx::shared_future<Element> const false_value);
 
 
     /*!
@@ -182,13 +133,7 @@ namespace lue {
         Policies const& policies,
         PartitionedArray<ConditionElement, rank> const& condition,
         hpx::shared_future<Element> const true_value,
-        PartitionedArray<Element, rank> const& false_array)
-    {
-        // where(policies, condition_array, true_value_f, false_array)
-        using Functor = detail::Where<ConditionElement, Element>;
-
-        return ternary_local_operation(policies, condition, true_value, false_array, Functor{});
-    }
+        PartitionedArray<Element, rank> const& false_array);
 
 
     /*!
@@ -219,13 +164,7 @@ namespace lue {
         Policies const& policies,
         PartitionedArray<ConditionElement, rank> const& condition,
         hpx::shared_future<Element> const true_value,
-        hpx::shared_future<Element> const false_value)
-    {
-        // where(policies, condition_array, true_value_f, false_value_f)
-        using Functor = detail::Where<ConditionElement, Element>;
-
-        return ternary_local_operation(policies, condition, true_value, false_value, Functor{});
-    }
+        hpx::shared_future<Element> const false_value);
 
 
     /*!
@@ -371,13 +310,7 @@ namespace lue {
     PartitionedArray<Element, rank> where(
         Policies const& policies,
         PartitionedArray<ConditionElement, rank> const& condition,
-        PartitionedArray<Element, rank> const& true_array)
-    {
-        // where(policies, condition_array, true_array)
-        using Functor = detail::Where<ConditionElement, Element>;
-
-        return binary_local_operation(policies, condition, true_array, Functor{});
-    }
+        PartitionedArray<Element, rank> const& true_array);
 
 
     template<
@@ -403,13 +336,7 @@ namespace lue {
     PartitionedArray<Element, rank> where(
         Policies const& policies,
         PartitionedArray<ConditionElement, rank> const& condition,
-        hpx::shared_future<Element> const true_value)
-    {
-        // where(policies, condition_array, true_value_f)
-        using Functor = detail::Where<ConditionElement, Element>;
-
-        return binary_local_operation(policies, condition, true_value, Functor{});
-    }
+        hpx::shared_future<Element> const true_value);
 
 
     template<
