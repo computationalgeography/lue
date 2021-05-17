@@ -1,6 +1,7 @@
 #pragma once
 #include "lue/framework/benchmark/algorithm_benchmark_result.hpp"
 #include "lue/framework/benchmark/benchmark.hpp"
+#include "lue/framework/core/assert.hpp"
 #include <nlohmann/json.hpp>
 #include <array>
 
@@ -25,7 +26,7 @@ inline std::string to_iso_string(
 
     auto nr_bytes_written =
         std::strftime(buffer.data(), max_nr_characters, "%FT%T%z", time);
-    lue_assert(nr_bytes_written <= max_nr_characters);
+    lue_hpx_assert(nr_bytes_written <= max_nr_characters);
 
     return std::string(buffer.begin(), buffer.begin() + nr_bytes_written);
 }

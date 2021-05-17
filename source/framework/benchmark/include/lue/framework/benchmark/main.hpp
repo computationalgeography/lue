@@ -56,7 +56,7 @@ Environment create_environment(
 Task create_task(
     std::map<std::string, docopt::value> const& /* arguments */)
 {
-    lue_assert(false);
+    lue_hpx_assert(false);
 
     // TODO
     std::uint64_t const nr_time_steps{0};

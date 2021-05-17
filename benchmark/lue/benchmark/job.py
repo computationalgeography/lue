@@ -60,7 +60,10 @@ def program_configuration(
     #   '--hpx:debug-hpx-log '
     configuration = \
         '--hpx:print-bind ' \
+        '--hpx:ini="hpx.commandline.allow_unknown!=1 ' \
+        '--hpx:ini="hpx.commandline.aliasing!=0 ' \
         '--hpx:ini="hpx.agas.max_pending_refcnt_requests!=50" ' \
+        '--hpx:ini="hpx.diagnostics_on_terminate!=0" ' \
         '--hpx:ini="application.{program_name}.benchmark.cluster_name!={cluster_name}" ' \
         '--hpx:ini="application.{program_name}.benchmark.count!={count}" ' \
         '--hpx:ini="application.{program_name}.benchmark.nr_workers!={nr_workers}" ' \
@@ -123,6 +126,8 @@ def program_configuration(
                 else:
                     for item in value:
                         arguments.append('--hpx:{}="{}"'.format(key, item))
+
+    arguments += experiment.argument_list
 
     configuration += " {}".format(" ".join(arguments))
 

@@ -8,8 +8,6 @@ namespace lue::detail {
 
     hpx::future<void> when_all_get(std::vector<hpx::future<void>>&& futures);
 
-    std::array<std::string, 4> parse_array_pathname(std::string const& array_pathname);
-
 
     template<
         typename Shape>

@@ -176,6 +176,8 @@ namespace lue::detail {
                 PartitionIOComponents& partition_io_partitions,
                 Array<bool, 2> const& ready_partitions)
     {
+        lue_hpx_assert(partition_io_partitions.shape() == ready_partitions.shape());
+
         Rank const rank{lue::rank<PartitionIOComponents>};
 
         // For each partition that is not ready yet, determine
@@ -184,6 +186,7 @@ namespace lue::detail {
         {
             Array<hpx::future<bool>, rank> solved_partitions_f{
                 solved_partitions(partition_io_partitions, ready_partitions)};
+            lue_hpx_assert(solved_partitions_f.shape() == solved_partitions_.shape());
             hpx::wait_all(solved_partitions_f.begin(), solved_partitions_f.end());
             std::transform(solved_partitions_f.begin(), solved_partitions_f.end(),
                 solved_partitions_.begin(), [](auto& f) { return f.get(); });

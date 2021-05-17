@@ -179,8 +179,7 @@ def generate_script(
     experiment = PartitionShapeExperiment(experiment_settings_json)
 
     lue_dataset = job.create_raw_lue_dataset(cluster, benchmark, experiment)
-    dataset.write_benchmark_settings(
-        lue_dataset, cluster, benchmark, experiment)
+    dataset.write_benchmark_settings(lue_dataset, cluster, benchmark, experiment)
 
     if cluster.scheduler.kind == "slurm":
         generate_script_slurm(cluster, benchmark, experiment, script_pathname)

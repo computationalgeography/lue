@@ -81,14 +81,14 @@ protected:
 
     Array& state()
     {
-        lue_assert(_state_ptr);
+        lue_hpx_assert(_state_ptr);
 
         return *_state_ptr;
     }
 
     ArrayPtr state_ptr()
     {
-        lue_assert(_state_ptr);
+        lue_hpx_assert(_state_ptr);
 
         return _state_ptr;
     }
@@ -107,6 +107,7 @@ private:
 
 
 extern template class BenchmarkModel<std::int32_t, 2>;
+extern template class BenchmarkModel<float, 2>;
 extern template class BenchmarkModel<double, 2>;
 
 }  // namespace benchmark

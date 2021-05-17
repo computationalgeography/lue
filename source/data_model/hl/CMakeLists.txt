@@ -3,6 +3,7 @@ add_test_conditionally(test)
 add_library(lue_data_model_hl
     src/dataset_view.cpp
     src/raster_view.cpp
+    src/util.cpp
 )
 
 add_library(lue::data_model_hl ALIAS lue_data_model_hl)

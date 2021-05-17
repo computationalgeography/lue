@@ -112,8 +112,8 @@ public:
         _timings{}
 
     {
-        // lue_assert(!_array_shape.empty());
-        // lue_assert(std::size(_array_shape) == std::size(_partition_shape));
+        // lue_hpx_assert(!_array_shape.empty());
+        // lue_hpx_assert(std::size(_array_shape) == std::size(_partition_shape));
     }
 
     BenchmarkBase(BenchmarkBase const&)=delete;
