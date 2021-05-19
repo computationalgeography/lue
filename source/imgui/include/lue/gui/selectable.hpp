@@ -1,37 +1,36 @@
 #pragma once
 
 
-namespace lue {
-namespace gui {
+namespace lue::gui {
 
-class Selectable
-{
+    class Selectable
+    {
+        // TODO Rename to Visible
 
-public:
+        public:
 
-    explicit       Selectable          (bool selected);
+            explicit Selectable(bool selected);
 
-                   Selectable          (Selectable const&)=default;
+            Selectable(Selectable const&)=default;
 
-                   Selectable          (Selectable&&)=default;
+            Selectable(Selectable&&)=default;
 
-    virtual        ~Selectable         ()=default;
+            virtual ~Selectable()=default;
 
-    Selectable&    operator=           (Selectable const&)=default;
+            Selectable& operator=(Selectable const&)=default;
 
-    Selectable&    operator=           (Selectable&&)=default;
+            Selectable& operator=(Selectable&&)=default;
 
-    explicit       operator bool       () const;
+            explicit operator bool() const;
 
-protected:
+        protected:
 
-    bool           was_selected        () const;
+            bool was_selected() const;
 
-private:
+        private:
 
-    bool           _was_selected;
+            bool _was_selected;
 
-};
+    };
 
-}  // namespace gui
-}  // namespace lue
+}  // namespace lue::gui

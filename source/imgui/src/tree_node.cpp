@@ -1,25 +1,24 @@
 #include "lue/gui/tree_node.hpp"
 
 
-namespace lue {
-namespace gui {
+namespace lue::gui {
 
-TreeNode::TreeNode(
-    std::string const& name,
-    ImGuiTreeNodeFlags const flags):
+    TreeNode::TreeNode(
+        std::string const& name,
+        ImGuiTreeNodeFlags const flags):
 
-    Selectable{ImGui::TreeNodeEx(name.c_str(), flags)}
+        Selectable{ImGui::TreeNodeEx(name.c_str(), flags)}
 
-{
-}
-
-
-TreeNode::~TreeNode()
-{
-    if(was_selected()) {
-        ImGui::TreePop();
+    {
     }
-}
 
-}  // namespace gui
-}  // namespace lue
+
+    TreeNode::~TreeNode()
+    {
+        if(was_selected())
+        {
+            ImGui::TreePop();
+        }
+    }
+
+}  // namespace lue::gui

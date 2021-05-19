@@ -4,6 +4,7 @@ add_executable(lue_view
     src/configuration.cpp
     src/dataset.cpp
     src/main.cpp
+    src/show_dataset.cpp
 )
 
 target_compile_options(lue_view

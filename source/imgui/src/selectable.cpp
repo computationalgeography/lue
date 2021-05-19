@@ -1,28 +1,26 @@
 #include "lue/gui/selectable.hpp"
 
 
-namespace lue {
-namespace gui {
+namespace lue::gui {
 
-Selectable::Selectable(
-    bool const selected):
+    Selectable::Selectable(
+        bool const selected):
 
-    _was_selected{selected}
+        _was_selected{selected}
 
-{
-}
-
-
-Selectable::operator bool() const
-{
-    return _was_selected;
-}
+    {
+    }
 
 
-bool Selectable::was_selected() const
-{
-    return _was_selected;
-}
+    Selectable::operator bool() const
+    {
+        return _was_selected;
+    }
 
-}  // namespace gui
-}  // namespace lue
+
+    bool Selectable::was_selected() const
+    {
+        return _was_selected;
+    }
+
+}  // namespace lue::gui

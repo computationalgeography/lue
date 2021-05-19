@@ -1,17 +1,21 @@
 #pragma once
+#include "lue/gui/selectable.hpp"
+#include <imgui.h>
 #include <string>
 
 
-namespace glfw::imgui {
+namespace lue::gui {
 
-    class Window
+    class Window:
+        public Selectable
     {
 
         public:
 
             explicit Window(
                 std::string const& title,
-                bool* open=nullptr);
+                bool* open=nullptr,
+                ImGuiWindowFlags flags=0);
 
             Window(Window const&)=default;
 
@@ -25,4 +29,4 @@ namespace glfw::imgui {
 
     };
 
-}  // namespace glfw::imgui
+}  // namespace lue::gui

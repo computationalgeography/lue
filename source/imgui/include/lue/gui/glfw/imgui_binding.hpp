@@ -1,7 +1,7 @@
 #pragma once
 #include "lue/gui/glfw/api.hpp"
 #include "lue/gui/glfw/window.hpp"
-#include "imgui.h"
+#include <imgui.h>
 
 
 namespace glfw {

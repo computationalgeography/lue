@@ -3,28 +3,26 @@
 #include <string>
 
 
-namespace lue {
-namespace gui {
+namespace lue::gui {
 
-class TabBar:
-    public Selectable
-{
+    class TabBar:
+        public Selectable
+    {
 
-public:
+        public:
 
-    explicit       TabBar              (std::string const& name);
+            explicit TabBar(std::string const& name);
 
-                   TabBar              (TabBar const&)=default;
+            TabBar(TabBar const&)=default;
 
-                   TabBar              (TabBar&&)=default;
+            TabBar(TabBar&&)=default;
 
-                   ~TabBar             () override;
+            ~TabBar() override;
 
-    TabBar&        operator=           (TabBar const&)=default;
+            TabBar& operator=(TabBar const&)=default;
 
-    TabBar&        operator=           (TabBar&&)=default;
+            TabBar& operator=(TabBar&&)=default;
 
-};
+    };
 
-}  // namespace gui
-}  // namespace lue
+}  // namespace lue::gui

@@ -43,7 +43,7 @@ namespace glfw {
 
     API::~API()
     {
-        // SDL_Quit();
+        glfwTerminate();
     }
 
 

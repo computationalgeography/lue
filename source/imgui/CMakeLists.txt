@@ -1,14 +1,15 @@
 # Our higher level API on top of imgui + glfw
 add_library(lue_imgui STATIC
+    src/menu.cpp
     src/selectable.cpp
     src/tab_bar.cpp
     src/tab_item.cpp
     src/tree_node.cpp
+    src/window.cpp
 
     src/glfw/api.cpp
     src/glfw/imgui_binding.cpp
     src/glfw/imgui/frame.cpp
-    src/glfw/imgui/window.cpp
     src/glfw/window.cpp
 )
 

@@ -2,24 +2,23 @@
 #include <imgui.h>
 
 
-namespace lue {
-namespace gui {
+namespace lue::gui {
 
-TabItem::TabItem(
-    std::string const& name):
+    TabItem::TabItem(
+        std::string const& name):
 
-    Selectable{ImGui::BeginTabItem(name.c_str())}
+        Selectable{ImGui::BeginTabItem(name.c_str())}
 
-{
-}
-
-
-TabItem::~TabItem()
-{
-    if(was_selected()) {
-        ImGui::EndTabItem();
+    {
     }
-}
 
-}  // namespace gui
-}  // namespace lue
+
+    TabItem::~TabItem()
+    {
+        if(was_selected())
+        {
+            ImGui::EndTabItem();
+        }
+    }
+
+}  // namespace lue::gui

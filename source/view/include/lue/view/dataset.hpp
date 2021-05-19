@@ -4,6 +4,7 @@
 #include <boost/filesystem.hpp>
 #include <memory>
 #include <optional>
+#include <vector>
 
 
 namespace lue {
@@ -58,6 +59,11 @@ private:
     // CachePtr       _cache;
 
 };
+
+
+// Or just use a optional<lue::Dataset> ?
+using Datasets = std::vector<Dataset>;
+
 
 }  // namespace view
 }  // namespace lue

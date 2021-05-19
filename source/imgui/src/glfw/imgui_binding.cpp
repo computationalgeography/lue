@@ -3,8 +3,8 @@
 #include "lue/gui/font/fa-solid-900.hpp"
 #include "lue/gui/font/IconsFontAwesome5.h"
 #include "lue/gui/font/roboto-medium.hpp"
-#include "imgui_impl_opengl3.h"
-#include "imgui_impl_glfw.h"
+#include <imgui_impl_opengl3.h>
+#include <imgui_impl_glfw.h>
 #include <array>
 #include <stdexcept>
 
