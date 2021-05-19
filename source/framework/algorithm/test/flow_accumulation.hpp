@@ -6,7 +6,7 @@
 
 namespace lue::test {
 
-    using FlowDirectionElement = std::uint32_t;
+    using FlowDirectionElement = std::uint8_t;
     using FlowDirectionArray = lue::PartitionedArray<FlowDirectionElement, 2>;
 
     ShapeT<FlowDirectionArray> const array_shape{{9, 9}};
