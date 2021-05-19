@@ -88,3 +88,7 @@ add_hpx_unit_tests(
         lue::framework_algorithm
         lue::framework_test
 )
+
+target_link_libraries(lue_framework_algorithm_accu_threshold_test
+    PRIVATE
+        lue::framework_flow_direction_operation)

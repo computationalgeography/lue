@@ -1,5 +1,5 @@
 #define BOOST_TEST_MODULE lue framework algorithm accu_fraction
-#include "lue/framework/algorithm/accu_fraction.hpp"
+#include "lue/framework/algorithm/definition/accu_fraction.hpp"
 #include "flow_accumulation.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/compare.hpp"
@@ -53,7 +53,7 @@ namespace {
         lue::PartitionedArray<MaterialElement, rank> const& state_we_want)
     {
         using Policies = lue::policy::accu_fraction::DefaultPolicies<
-            FlowDirectionElement, FractionElement>;
+            FlowDirectionElement, MaterialElement, FractionElement>;
 
         test_accu_fraction(Policies{}, flow_direction, material, fraction, flux_we_want, state_we_want);
     }
@@ -111,7 +111,8 @@ BOOST_AUTO_TEST_CASE(merging_streams_case_01)
     // down to all downstream cells, in all downstream partitions.
     // Similar for a no-data fraction in ridge cell.
 
-    using Policies = lue::policy::accu_fraction::DefaultValuePolicies<FlowDirectionElement, FractionElement>;
+    using Policies =
+        lue::policy::accu_fraction::DefaultValuePolicies<FlowDirectionElement, MaterialElement, FractionElement>;
     Policies policies{};
 
     auto flow_direction = lue::test::merging_streams();

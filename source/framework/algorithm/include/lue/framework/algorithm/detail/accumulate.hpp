@@ -83,6 +83,8 @@ namespace lue::detail {
         using PartitionOffsets = typename PartitionIOComponent::PartitionOffsets;
         using Shape = ShapeT<PartitionIOComponents>;
 
+        lue_hpx_assert(all_are_ready(partition_io_partitions));
+
         Rank const rank{lue::rank<PartitionIOComponents>};
         Shape const& shape_in_partitions{partition_io_partitions.shape()};
         Count const nr_partitions{nr_elements(shape_in_partitions)};
@@ -187,10 +189,14 @@ namespace lue::detail {
             Array<hpx::future<bool>, rank> solved_partitions_f{
                 solved_partitions(partition_io_partitions, ready_partitions)};
             lue_hpx_assert(solved_partitions_f.shape() == solved_partitions_.shape());
+
             hpx::wait_all(solved_partitions_f.begin(), solved_partitions_f.end());
             std::transform(solved_partitions_f.begin(), solved_partitions_f.end(),
                 solved_partitions_.begin(), [](auto& f) { return f.get(); });
         }
+
+        // Because of the wait_all, all of these are ready now.
+        lue_hpx_assert(all_are_ready(partition_io_partitions));
 
         // For each partition that is not ready yet, determine the
         // offsets to upstream solved partitions.

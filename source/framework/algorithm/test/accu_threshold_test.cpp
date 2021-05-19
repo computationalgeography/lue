@@ -35,24 +35,6 @@ namespace {
         lue::test::check_arrays_are_equal(state_we_got, state_we_want);
     }
 
-
-    template<
-        typename FlowDirectionElement,
-        typename MaterialElement,
-        lue::Rank rank>
-    void test_accu_threshold(
-        lue::PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
-        lue::PartitionedArray<MaterialElement, rank> const& material,
-        lue::PartitionedArray<MaterialElement, rank> const& threshold,
-        lue::PartitionedArray<MaterialElement, rank> const& flux_we_want,
-        lue::PartitionedArray<MaterialElement, rank> const& state_we_want)
-    {
-        using Policies = lue::policy::accu_threshold::DefaultPolicies<
-            FlowDirectionElement, MaterialElement>;
-
-        test_accu_threshold(Policies{}, flow_direction, material, threshold, flux_we_want, state_we_want);
-    }
-
 }  // Anonymous namespace
 
 

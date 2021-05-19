@@ -3,11 +3,6 @@
 
 
 namespace lue {
-    namespace detail {
-
-    }  // namespace detail
-
-
     namespace policy::flow_accumulation {
 
         template<
