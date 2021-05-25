@@ -852,11 +852,6 @@ namespace lue {
             [[maybe_unused]] Count nr_ready_partitions{0};
             Action action;
 
-
-            // TODO Wait for all partition_io_partitions? And then assume
-            //     they are ready in the next iteration. Same for material?
-
-
             while(true)
             {
                 // Determine which partitions are part of the accumulation front
@@ -1020,10 +1015,8 @@ namespace lue {
             [[maybe_unused]] Count nr_ready_partitions{0};
             Action action;
 
-
-            // TODO Wait for all partition_io_partitions? And then assume
-            //     they are ready in the next iteration. Same for material?
-
+            // lue::wait_all(partition_io_partitions);
+            // lue::wait_all(material_partitions);
 
             while(true)
             {
@@ -1427,64 +1420,3 @@ namespace lue {
     }
 
 }  // namespace lue
-
-
-
-
-/*
-lue::detail::FlowAccumulationMaterial
-- Material that is stored in the PartitionIO instances
-    - accu_threshold: Class containing FluxElement, StateElement
-    - accu: MaterialElement itself
-
-lue::detail::accu_threshold::InputMaterial<MaterialCells>
-    - For keeping track of information that is needed to insert external
-        material into a cell (the material and threshold arguments of
-        the operation)
-    - accu_threshold: class template with MaterialT<MaterialPartitions>
-        passed as argument
-        - InputMaterial(material, threshold)
-        - operator() returning a tuple
-    - accu: MaterialElement itself
-        InputMaterial(material)
-
-lue::detail::accu_threshold::OutputMaterial<MaterialCells>
-    - For keeping track of information required to calculate accumulated
-        material to downstream cells
-    - accu_threshold: class template with MaterialT<MaterialPartitions>
-        passed as argument
-        - OutputMaterial{material, threshold}
-        - operator() returning a tuple
-    - accu: MaterialElement itself
-        OutputMaterial{material}
-
-
-
-Accumulator
-- Can we just pass an accumulator and be done with it? It should contain
-    everything that is operation specific
-    See how far we can get
-
-
-
-template<
-    typename Accumulator,
-    typename Policies,
-    typename FlowDirectionElement,
-    typename MaterialElement,
-    typename... Meh,
-    Rank rank>
-auto accumulate_flow(policies, flow_direction, material, meh...)
-{
-    // If meh is empty, then only return flux. Otherwise, return a tuple(flux, state)
-}
-
-
-flux accu_flux(policies, flow_direction, material)
-
-flux, state accu_threshold(policies, flow_direction, material, threshold)
-flux, state accu_trigger(policies, flow_direction, material, threshold)
-flux, state accu_fraction(policies, flow_direction, material, fraction)
-
-*/
-

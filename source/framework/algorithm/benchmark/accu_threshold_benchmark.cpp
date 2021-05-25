@@ -99,17 +99,12 @@ namespace lue::benchmark {
                 //     _array_pathname, _hyperslab, this->partition_shape, _object_id);
 
                 _flow_direction = create_partitioned_array<FlowDirectionElement>(
-                    array_shape, partition_shape, 1);
+                    array_shape, partition_shape, 2);
                 _material = create_partitioned_array<MaterialElement>(array_shape, partition_shape, 1);
                 _threshold = uniform<MaterialElement>(array_shape, partition_shape, 5, 50);
 
-                // this->state() = uniform<MaterialElement>(array_shape, partition_shape, 10, 100);
-                // Material
-                // this->state() = create_partitioned_array<MaterialElement>(array_shape, partition_shape, 1);
-
-                // State is waited for by the caller. We need to wait
-                // for all other stuff that needs to be ready before the
-                // calculations that need to be measured start.
+                // We need to wait for all stuff that needs to be ready
+                // before the calculations that need to be measured start.
                 hpx::wait_all_n(_flow_direction.partitions().begin(), _flow_direction.nr_partitions());
                 hpx::wait_all_n(_material.partitions().begin(), _material.nr_partitions());
                 hpx::wait_all_n(_threshold.partitions().begin(), _threshold.nr_partitions());
@@ -126,9 +121,11 @@ namespace lue::benchmark {
                 lue_hpx_assert(all_are_ready(this->state()));
                 lue_hpx_assert(all_are_ready(_threshold));
 
+                using Policies =
+                    policy::accu_threshold::DefaultValuePolicies<FlowDirectionElement, MaterialElement>;
+
                 std::tie(std::ignore, this->state()) = accu_threshold(
-                    _flow_direction, _material, _threshold);
-                    // _flow_direction, this->state(), _threshold);
+                    Policies{}, _flow_direction, _material, _threshold);
             }
 
 
@@ -208,7 +205,6 @@ auto setup_benchmark(
 
 
 LUE_CONFIGURE_HPX_BENCHMARK()
-
 
 
 
