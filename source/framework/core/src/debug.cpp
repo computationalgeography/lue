@@ -1,8 +1,13 @@
 #include "lue/framework/core/debug.hpp"
+#include "lue/framework/configure.hpp"
 #include <hpx/include/compute.hpp>
+#ifdef LUE_HPX_WITH_MPI
+#include <hpx/mpi_base/mpi_environment.hpp>
+#endif
 #include <hpx/include/lcos.hpp>
 #include <hpx/parallel/algorithms/transform.hpp>
 #include <algorithm>
+#include <sstream>
 
 
 namespace lue {
@@ -72,7 +77,33 @@ std::vector<hpx::future<std::string>> all_locality_names()
     return locality_names;
 }
 
+
+#ifdef LUE_HPX_WITH_MPI
+std::string locality_rank_mapping()
+{
+    std::ostringstream stream;
+    // stream << hpx::find_here();
+    stream << hpx::get_locality_id();
+
+    return fmt::format(
+            "locality: {} -- rank(HPX): {}",  // -- rank(env): {}",
+            stream.str(),
+            hpx::util::mpi_environment::rank()
+            // , std::getenv("OMPI_COMM_WORLD_RANK")
+        );
+}
+#endif
+
 }  // Anonymous namespace
+}  // namespace lue
+
+
+#ifdef LUE_HPX_WITH_MPI
+HPX_PLAIN_ACTION(lue::locality_rank_mapping, LocalityRankMapping)
+#endif
+
+
+namespace lue {
 
 
 hpx::future<std::string> system_description()
@@ -105,6 +136,24 @@ hpx::future<std::string> system_description()
     // auto all_locality_names = lue::all_locality_names();
     auto all_locality_names = join(lue::all_locality_names(), ", ");
 
+
+#ifdef LUE_HPX_WITH_MPI
+        auto const locality_ids = hpx::find_all_localities();
+        std::vector<hpx::future<std::string>> locality_rank_mappings(locality_ids.size());
+        LocalityRankMapping action{};
+
+        hpx::transform(
+            hpx::execution::par,
+            locality_ids.begin(), locality_ids.end(), locality_rank_mappings.begin(),
+            [action](auto const locality_id)
+            {
+                return hpx::async(action, locality_id);
+            });
+
+        auto all_locality_rank_mappings = join(std::move(locality_rank_mappings), ", ");
+#endif
+
+
     auto format_message = [
             this_locality_nr,
             initial_nr_localities,
@@ -116,8 +165,8 @@ hpx::future<std::string> system_description()
         std::string const& this_locality_name,
         std::string const& root_locality_name,
         auto const current_nr_localities,
-        std::string const& all_locality_names
-        )
+        std::string const& all_locality_names,
+        std::string const& all_locality_rank_mappings)
     {
         return fmt::format(
                     "this_locality_nr     : {}\n"
@@ -127,6 +176,7 @@ hpx::future<std::string> system_description()
                     "initial_nr_localities: {}\n"
                     "current_nr_localities: {}\n"
                     "all_locality_names   : {}\n"
+                    "all_locality_rank_mappings: {}\n"
                     "nr_numa_domains      : {}\n"
                     "----------------------\n"
                     "nr_os_threads        : {}\n"
@@ -139,6 +189,11 @@ hpx::future<std::string> system_description()
                 initial_nr_localities,
                 current_nr_localities,
                 all_locality_names,
+#ifdef LUE_HPX_WITH_MPI
+                all_locality_rank_mappings,
+#else
+                "",
+#endif
                 numa_domains.size(),
                 nr_os_threads,
                 thread_name,
@@ -150,7 +205,11 @@ hpx::future<std::string> system_description()
         hpx::dataflow(
             hpx::util::unwrapping(format_message),
             this_locality_name, root_locality_name,
-            current_nr_localities, all_locality_names);
+            current_nr_localities, all_locality_names,
+#ifdef LUE_HPX_WITH_MPI
+            all_locality_rank_mappings
+#endif
+            );
 
     return description;
 }

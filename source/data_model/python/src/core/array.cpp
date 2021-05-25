@@ -385,8 +385,8 @@ static py::object read_hyperslab_from_array(
 template<
     typename T>
 void verify_write(
-    Array const& /* array */,
-    hdf5::Hyperslab const& /* hyperslab */)
+    Array const& array,
+    [[maybe_unused]] hdf5::Hyperslab const& hyperslab)
 {
     // TODO Verify hyperslab makes sense with array.
 
@@ -419,14 +419,15 @@ void verify_write(
     // // }
 
 
+    // hdf5::Datatype const from_datatype{hdf5::NativeDatatypeTraits<T>::type_id()};
 
-
-    // if(hdf5::NativeDatatypeTraits<T>::type_id() != array.datatype()) {
-    //     throw std::runtime_error(boost::str(boost::format(
-    //         "Value type of value(s) to assign from (%1%) must equal "
-    //         "the value type of the array to assign to (%2%)")
-    //             % hdf5::NativeDatatypeTraits<T>::name()
-    //             % hdf5::native_datatype_as_string(array.datatype())
+    // if(from_datatype != array.datatype())
+    // {
+    //     throw std::runtime_error(fmt::format(
+    //             "Value type of value(s) to assign from ({}) must equal "
+    //             "the value type of the array to assign to ({})",
+    //             hdf5::native_datatype_as_string(from_datatype),
+    //             hdf5::native_datatype_as_string(array.datatype())
     //         ));
     // }
 }
@@ -441,12 +442,11 @@ void write_to_array(
 {
     verify_write<T>(array, hyperslab);
 
-    // Write value into hyperslab target array
-    // hdf5::Datatype memory_datatype{hdf5::NativeDatatypeTraits<T>::type_id()};
+    // Write value into hyperslab target array. The input values will
+    // be casted to the data type in the dataset.
     hdf5::Datatype memory_datatype{hdf5::native_datatype<T>()};
 
-    dynamic_cast<hdf5::Dataset&>(array).fill(
-        memory_datatype, hyperslab, &value);
+    dynamic_cast<hdf5::Dataset&>(array).fill(memory_datatype, hyperslab, &value);
 }
 
 
@@ -594,7 +594,7 @@ template<
 void set_item(
     Array& array,
     std::int64_t const index,
-    py::array_t<T, py::array::c_style>& values)
+    py::array_t<T, py::array::c_style /* | py::array::forcecast */>& values)
 {
     set_item(array, index, static_cast<T const*>(values.request().ptr));
 }
@@ -639,7 +639,7 @@ template<
 void set_item(
     Array& array,
     py::slice const& slice,
-    py::array_t<T, py::array::c_style>& values)
+    py::array_t<T, py::array::c_style /* | py::array::forcecast */>& values)
 {
     hdf5::Shape const sizes(values.shape(), values.shape() + values.ndim());
     auto const memory_dataspace = hdf5::create_dataspace(sizes);
@@ -655,7 +655,7 @@ template<
 void set_item(
     Array& /* array */,
     std::vector<py::object> const& /* indices */,
-    py::array_t<T, py::array::c_style>& /* values */)
+    py::array_t<T, py::array::c_style /* | py::array::forcecast */>& /* values */)
 {
     assert(false);
 
@@ -864,7 +864,7 @@ void init_array(
         .def("__setitem__", [](                                \
                 Array& array,                                  \
                 std::int64_t const index,                      \
-                py::array_t<T, py::array::c_style>& values) {  \
+                py::array_t<T, py::array::c_style /* | py::array::forcecast */>& values) {  \
             set_item<T>(array, index, values);                 \
         })
 
@@ -874,7 +874,7 @@ void init_array(
         .def("__setitem__", [](                                \
                 Array& array,                                  \
                 py::slice const& slice,                        \
-                py::array_t<T, py::array::c_style>& values) {  \
+                py::array_t<T, py::array::c_style /* | py::array::forcecast */>& values) {  \
             set_item<T>(array, slice, values);                 \
         })
 
@@ -884,7 +884,7 @@ void init_array(
         .def("__setitem__", []( \
                 Array& array, \
                 std::vector<py::object> const& indices, \
-                py::array_t<T, py::array::c_style>& values) { \
+                py::array_t<T, py::array::c_style /* | py::array::forcecast */>& values) { \
             set_item<T>(array, indices, values); \
 })
 
