@@ -24,8 +24,9 @@ class NUMANode(object):
         self.from_json(json)
 
     def __str__(self):
-        return "NUMANode(nr_cores={}, core={})" \
+        return "NUMANode(memory={}, nr_cores={}, core={})" \
             .format(
+                self.memory,
                 self.nr_cores,
                 self.core,
             )
@@ -35,11 +36,13 @@ class NUMANode(object):
         return self.nr_cores * self.core.nr_threads
 
     def from_json(self, json):
+        self.memory = json["memory"]
         self.nr_cores = json["nr_cores"]
         self.core = Core(json["core"])
 
     def to_json(self):
         return {
+                "memory": self.memory,
                 "nr_cores": self.nr_cores,
                 "core": self.core.to_json(),
             }
@@ -60,6 +63,10 @@ class Package(object):
     @property
     def nr_numa_nodes(self):
         return self._nr_numa_nodes
+
+    @property
+    def memory(self):
+        return self._nr_numa_nodes * self.numa_node.memory
 
     @property
     def nr_cores(self):
@@ -95,6 +102,10 @@ class ClusterNode(object):
     @property
     def nr_numa_nodes(self):
         return self.nr_packages * self.package.nr_numa_nodes
+
+    @property
+    def memory(self):
+        return self.nr_packages * self.package.memory
 
     @property
     def nr_cores(self):
