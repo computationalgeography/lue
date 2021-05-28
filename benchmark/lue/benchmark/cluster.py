@@ -147,6 +147,8 @@ class SlurmSettings(object):
         self.partition_name = json["partition"]
         self.sbatch_options = \
             json["sbatch_options"] if "sbatch_options" in json else ""
+        self.mpirun_options = \
+            json["mpirun_options"] if "mpirun_options" in json else ""
         self.srun_options = \
             json["srun_options"] if "srun_options" in json else ""
 
@@ -157,6 +159,9 @@ class SlurmSettings(object):
 
         if self.sbatch_options:
             result["sbatch_options"] = self.sbatch_options
+
+        if self.mpirun_options:
+            result["mpirun_options"] = self.mpirun_options
 
         if self.srun_options:
             result["srun_options"] = self.srun_options
@@ -181,6 +186,30 @@ class SlurmScheduler(Scheduler):
         return result
 
 
+class SoftwareEnvironment(object):
+
+    def __init__(self, json):
+        self.from_json(json)
+
+
+    def from_json(self, json):
+        self.module_names = json["modules"]
+
+
+    def to_json(self):
+        return {
+                "modules": self.module_names,
+            }
+
+
+    @property
+    def configuration(self):
+        commands = ["module purge"]
+        commands += ["module load {}".format(name) for name in self.module_names]
+
+        return "\n".join(commands)
+
+
 class Cluster(object):
 
     def __init__(self, json):
@@ -200,13 +229,23 @@ class Cluster(object):
         self.nr_cluster_nodes = json["nr_cluster_nodes"]
         self.cluster_node = ClusterNode(json["cluster_node"])
 
+        self.software_environment = \
+            SoftwareEnvironment(json["software_environment"]) if "software_environment" in json else None
+
+
     def to_json(self):
-        return {
+        result = {
                 "name": self.name,
                 "scheduler": self.scheduler.to_json(),
                 "nr_cluster_nodes": self.nr_cluster_nodes,
                 "cluster_node": self.cluster_node.to_json(),
             }
+
+        if self.software_environment:
+            result["software_environment"] = self.software_environment.to_json()
+
+        return result
+
 
     def nr_localities_to_reserve(self,
             worker,
