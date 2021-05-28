@@ -385,7 +385,7 @@ static py::object read_hyperslab_from_array(
 template<
     typename T>
 void verify_write(
-    Array const& array,
+    Array const& /* array */,
     [[maybe_unused]] hdf5::Hyperslab const& hyperslab)
 {
     // TODO Verify hyperslab makes sense with array.
