@@ -82,7 +82,6 @@ std::vector<hpx::future<std::string>> all_locality_names()
 std::string locality_rank_mapping()
 {
     std::ostringstream stream;
-    // stream << hpx::find_here();
     stream << hpx::get_locality_id();
 
     return fmt::format(
@@ -166,7 +165,7 @@ hpx::future<std::string> system_description()
         std::string const& root_locality_name,
         auto const current_nr_localities,
         std::string const& all_locality_names,
-        std::string const& all_locality_rank_mappings)
+        [[maybe_unused]] std::string const& all_locality_rank_mappings)
     {
         return fmt::format(
                     "this_locality_nr     : {}\n"
@@ -189,11 +188,7 @@ hpx::future<std::string> system_description()
                 initial_nr_localities,
                 current_nr_localities,
                 all_locality_names,
-#ifdef LUE_HPX_WITH_MPI
                 all_locality_rank_mappings,
-#else
-                "",
-#endif
                 numa_domains.size(),
                 nr_os_threads,
                 thread_name,
@@ -208,6 +203,8 @@ hpx::future<std::string> system_description()
             current_nr_localities, all_locality_names,
 #ifdef LUE_HPX_WITH_MPI
             all_locality_rank_mappings
+#else
+            "-"
 #endif
             );
 
