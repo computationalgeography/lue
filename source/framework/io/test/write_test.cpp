@@ -1,114 +1,147 @@
 #define BOOST_TEST_MODULE lue framework io write
 #include <hpx/config.hpp>
 #include "lue/data_model/hl/raster_view.hpp"
-#include "lue/framework/io/write.hpp"
+#include "lue/framework/io/read_into.hpp"
+#include "lue/framework/io/write_into.hpp"
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/uniform.hpp"
-// #include "lue/framework/test/array.hpp"
+#include "lue/framework/test/compare.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
-// #include <boost/filesystem.hpp>
 
 
 BOOST_AUTO_TEST_CASE(use_case_1)
 {
+    // Write a stack of floating point rasters and read them back
+    // in. Compare the rasters read with the range of the rasters written.
     namespace ldm = lue::data_model;
-    namespace lh5 = lue::hdf5;
 
-    // Create a dataset
     std::string const dataset_pathname{"use_case_1.lue"};
     std::string const phenomenon_name{"area"};
     std::string const property_set_name{"area"};
+    std::string const layer_name{"elevation"};
+    std::string const array_pathname{
+        fmt::format("{}/{}/{}/{}", dataset_pathname, phenomenon_name, property_set_name, layer_name)};
 
-    ldm::Clock const clock{ldm::time::Unit::day, 1};
-    ldm::Count nr_time_steps{50};
-    ldm::Count nr_rows{60};
-    ldm::Count nr_cols{40};
-    lh5::Shape raster_shape{nr_rows, nr_cols};
+    ldm::Count const nr_time_steps{50};
+    ldm::Count const nr_rows{60};
+    ldm::Count const nr_cols{40};
 
-    using DatasetPtr = std::shared_ptr<ldm::Dataset>;
-    using RasterView = ldm::variable::RasterView<DatasetPtr>;
-    using RasterLayer = RasterView::Layer;
-
-    DatasetPtr dataset_ptr = std::make_shared<ldm::Dataset>(
-        ldm::create_in_memory_dataset(dataset_pathname));
-
-    // Add raster layer
-    RasterView view =
-        ldm::variable::create_raster_view(
-            dataset_ptr,
-            phenomenon_name, property_set_name,
-            // Also store initial state
-            clock, nr_time_steps + 1, {0, nr_time_steps + 1},
-            raster_shape, {0, 0, 400, 600});
+    ldm::ID object_id{};
 
     using Element = double;
 
-    RasterLayer layer{view.add_layer<Element>("elevation")};
+    {
+        // Prepare a dataset for storing the rasters in
+        ldm::Clock const clock{ldm::time::Unit::day, 1};
+        lue::hdf5::Shape raster_shape{nr_rows, nr_cols};
+
+        using DatasetPtr = std::shared_ptr<ldm::Dataset>;
+        using RasterView = ldm::variable::RasterView<DatasetPtr>;
+
+        DatasetPtr dataset_ptr = std::make_shared<ldm::Dataset>(ldm::create_dataset(dataset_pathname));
+
+        RasterView view =
+            ldm::variable::create_raster_view(
+                dataset_ptr,
+                phenomenon_name, property_set_name,
+                // Also store initial state: nr_time_steps + 1
+                clock, nr_time_steps + 1, {0, nr_time_steps + 1},
+                raster_shape, {0, 0, 400, 600});
+        object_id = view.object_id();
+
+        view.add_layer<Element>(layer_name);
+    }
 
     // Create partitioned array
     ldm::Rank const rank{2};
     using Array = lue::PartitionedArray<Element, rank>;
     using Shape = lue::ShapeT<Array>;
 
-    Shape grid_shape;
-    {
-        // FIXME Make this easier
-        auto const grid_shape1{view.grid_shape()};
-        std::copy(grid_shape1.begin(), grid_shape1.end(), grid_shape.begin());
-    }
+    Shape const grid_shape{nr_rows, nr_cols};
 
-    ldm::Index time_step{0};
-    lue::Count nr_rows_partition{6};
-    lue::Count nr_cols_partition{4};
-    Shape partition_shape{nr_rows_partition, nr_cols_partition};
+    lue::Count const nr_rows_partition{6};
+    lue::Count const nr_cols_partition{4};
+    Shape const partition_shape{nr_rows_partition, nr_cols_partition};
 
     // elevation_t will contain values from the closed interval:
     // [lowest_value + t, highest_value + t]
-    Element lowest_value{0};
-    Element highest_value{10};
+    Element const lowest_value{-5000};
+    Element const highest_value{std::nextafter(-1000, std::numeric_limits<Element>::max())};
 
-    if constexpr(std::is_floating_point_v<Element>) {
-        highest_value = std::nextafter(
-            highest_value, std::numeric_limits<Element>::max());
+    for(ldm::Count time_step = 0; time_step <= nr_time_steps; ++time_step)
+    {
+        Array elevation_written = lue::uniform(
+            grid_shape, partition_shape,
+            Element{lowest_value + time_step}, Element{highest_value + time_step});
+        write(elevation_written, array_pathname, object_id, time_step).get();
+
+        Array elevation_read = lue::read<Element, rank>(
+            array_pathname, partition_shape, object_id, time_step);
+
+        lue::test::check_arrays_are_equal(elevation_read, elevation_written);
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE(use_case_2)
+{
+    // Write a raster with integers and read it back in. Compare raster
+    // written with raster read.
+    namespace ldm = lue::data_model;
+
+    std::string const dataset_pathname{"use_case_2.lue"};
+    std::string const phenomenon_name{"area"};
+    std::string const property_set_name{"area"};
+    std::string const layer_name{"elevation"};
+    std::string const array_pathname{
+        fmt::format("{}/{}/{}/{}", dataset_pathname, phenomenon_name, property_set_name, layer_name)};
+
+    ldm::Count const nr_rows{60};
+    ldm::Count const nr_cols{40};
+
+    using Element = std::int32_t;
+
+    ldm::ID object_id{};
+
+    {
+        // Prepare a dataset for storing the rasters in
+        lue::hdf5::Shape raster_shape{nr_rows, nr_cols};
+
+        using DatasetPtr = std::shared_ptr<ldm::Dataset>;
+        using RasterView = ldm::constant::RasterView<DatasetPtr>;
+
+        DatasetPtr dataset_ptr = std::make_shared<ldm::Dataset>(ldm::create_dataset(dataset_pathname));
+
+        RasterView view =
+            ldm::constant::create_raster_view(
+                dataset_ptr,
+                phenomenon_name, property_set_name,
+                raster_shape, {0, 0, 400, 600});
+        object_id = view.object_id();
+
+        view.add_layer<Element>(layer_name);
     }
 
-    Array elevation{lue::create_partitioned_array<Element>(grid_shape, partition_shape)};
-    elevation = lue::uniform(
-        elevation,
-        Element{lowest_value + time_step},
-        Element{highest_value + time_step});
+    // Create partitioned array
+    ldm::Rank const rank{2};
+    using Array = lue::PartitionedArray<Element, rank>;
+    using Shape = lue::ShapeT<Array>;
 
-    // Write initial state
-    std::vector<hpx::future<void>> written(nr_time_steps + 1);
-    written[time_step] = write(elevation, layer, time_step);
+    Shape const grid_shape{nr_rows, nr_cols};
+    lue::Count const nr_rows_partition{6};
+    lue::Count const nr_cols_partition{4};
+    Shape const partition_shape{nr_rows_partition, nr_cols_partition};
 
-    // Iterate through time and write temporal state
-    for(++time_step; time_step <= nr_time_steps; ++time_step) {
+    Element const min_value{5};
+    Element const max_value{5555};
 
-        elevation = lue::uniform(
-            elevation,
-            Element{lowest_value + time_step},
-            Element{highest_value + time_step});
+    Array elevation_written = lue::uniform<Element>(grid_shape, partition_shape, min_value, max_value);
 
-        written[time_step] = write(elevation, layer, time_step);
-    }
+    write(elevation_written, array_pathname, object_id).get();
 
-    hpx::wait_all(written);
+    Array elevation_read = lue::read<Element, rank>(array_pathname, partition_shape, object_id);
 
-    // Test contents of resulting dataset --------------------------------------
-    for(time_step = 0; time_step <= nr_time_steps; ++time_step) {
-
-        // TODO Figure out how to implement read
-        // elevation = read(elevation, layer, time_step);
-
-        // BOOST_CHECK(
-        //     lue::all(
-        //         lue::greater_equal(elevation, lowest_value + time_step)).get());
-        // BOOST_CHECK(
-        //     lue::all(
-        //         lue::less_equal(elevation, highest_value + time_step)).get());
-
-    }
+    lue::test::check_arrays_are_equal(elevation_read, elevation_written);
 }
 
 
