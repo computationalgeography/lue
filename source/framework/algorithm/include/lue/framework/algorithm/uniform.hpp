@@ -263,6 +263,7 @@ PartitionedArray<OutputElement, rank> uniform(
             using Offset = lue::OffsetT<Partition>;
             using Shape = lue::ShapeT<Partition>;
 
+
             static constexpr bool instantiate_per_locality{false};
 
 
@@ -288,45 +289,45 @@ PartitionedArray<OutputElement, rank> uniform(
             {
                 return hpx::async(
 
-                            [locality_id, offset, partition_shape, min_value=_min_value, max_value=_max_value]()
-                            {
-                                AnnotateFunction annotation{"uniform_partition"};
+                        [locality_id, offset, partition_shape, min_value=_min_value, max_value=_max_value]()
+                        {
+                            AnnotateFunction annotation{"uniform_partition"};
 
-                                DataT<Partition> partition_data{partition_shape};
+                            DataT<Partition> partition_data{partition_shape};
 
-                                // Will be used to obtain a seed for the random number engine
-                                std::random_device random_device;
+                            // Will be used to obtain a seed for the random number engine
+                            std::random_device random_device;
 
-                                // Standard mersenne_twister_engine seeded with the random_device
-                                std::mt19937 random_number_engine(random_device());
+                            // Standard mersenne_twister_engine seeded with the random_device
+                            std::mt19937 random_number_engine(random_device());
 
-                                auto distribution =
-                                    [min_value, max_value]()
+                            auto distribution =
+                                [min_value, max_value]()
+                                {
+                                    if constexpr(std::is_floating_point_v<OutputElement>)
                                     {
-                                        if constexpr(std::is_floating_point_v<OutputElement>)
-                                        {
-                                            // [min, max)
-                                            return std::uniform_real_distribution<OutputElement>{
-                                                min_value, max_value};
-                                        }
-                                        else if constexpr(std::is_integral_v<OutputElement>)
-                                        {
-                                            // [min, max]
-                                            return std::uniform_int_distribution<OutputElement>{
-                                                min_value, max_value};
-                                        }
-                                    }();
+                                        // [min, max)
+                                        return std::uniform_real_distribution<OutputElement>{
+                                            min_value, max_value};
+                                    }
+                                    else if constexpr(std::is_integral_v<OutputElement>)
+                                    {
+                                        // [min, max]
+                                        return std::uniform_int_distribution<OutputElement>{
+                                            min_value, max_value};
+                                    }
+                                }();
 
-                                std::generate(partition_data.begin(), partition_data.end(),
+                            std::generate(partition_data.begin(), partition_data.end(),
 
-                                        [&distribution, &random_number_engine]()
-                                        {
-                                            return distribution(random_number_engine);
-                                        }
+                                    [&distribution, &random_number_engine]()
+                                    {
+                                        return distribution(random_number_engine);
+                                    }
 
-                                    );
+                                );
 
-                            return Partition{hpx::find_here(), offset, std::move(partition_data)};
+                            return Partition{locality_id, offset, std::move(partition_data)};
                         }
 
                     );

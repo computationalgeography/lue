@@ -73,7 +73,7 @@ namespace lue::framework {
         {
             using Policies = policy::read_into::DefaultValuePolicies<Element>;
 
-            return lue::read<Policies, Element, rank>(
+            return lue::read<Element, Policies, rank>(
                 Policies{}, array_pathname, partition_shape, object_id);
         }
 
@@ -89,7 +89,7 @@ namespace lue::framework {
         {
             using Policies = policy::read_into::DefaultValuePolicies<Element>;
 
-            return lue::read<Policies, Element, rank>(
+            return lue::read<Element, Policies, rank>(
                 Policies{}, array_pathname, partition_shape, object_id, time_step_idx);
         }
 

@@ -4,6 +4,7 @@
 #include "lue/framework/benchmark/benchmark_model.hpp"
 #include "lue/framework/benchmark/hpx_main.hpp"
 #include "lue/framework/benchmark/model_benchmark.hpp"
+#include "lue/framework/io/read_into.hpp"
 #include "lue/data_model/hl.hpp"
 #include <docopt/docopt.h>
 
@@ -94,12 +95,8 @@ namespace lue::benchmark {
                 auto const& array_shape{this->array_shape()};
                 auto const& partition_shape{this->partition_shape()};
 
-                // TODO
-                // _flow_direction = hl::read<FlowDirectionElement>(
-                //     _array_pathname, _hyperslab, this->partition_shape, _object_id);
-
-                _flow_direction = create_partitioned_array<FlowDirectionElement>(
-                    array_shape, partition_shape, 2);
+                _flow_direction = read<FlowDirectionElement, 2>(
+                    _array_pathname, _hyperslab, partition_shape, _object_id);
                 _material = create_partitioned_array<MaterialElement>(array_shape, partition_shape, 1);
                 _threshold = uniform<MaterialElement>(array_shape, partition_shape, 5, 50);
 
@@ -116,9 +113,10 @@ namespace lue::benchmark {
             {
                 // We are assuming a single time step is requested,
                 // so feedback is not required
-                lue_hpx_assert(time_step == 0);
+                /// lue_hpx_assert(time_step == 0);
                 lue_hpx_assert(all_are_ready(_flow_direction));
-                lue_hpx_assert(all_are_ready(this->state()));
+                /// lue_hpx_assert(all_are_ready(this->state()));
+                lue_hpx_assert(all_are_ready(_material));
                 lue_hpx_assert(all_are_ready(_threshold));
 
                 using Policies =

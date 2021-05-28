@@ -46,6 +46,7 @@
         "package": {
             "nr_numa_nodes": 4,
             "numa_node": {
+                "memory": 32,
                 "nr_cores": 6,
                 "core": {
                     "nr_threads": 2

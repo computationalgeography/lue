@@ -45,10 +45,101 @@ namespace lue {
 
 
 
+///         template<
+///             typename Policies,
+///             typename Partitions>
+///         void write_partitions_on_os_thread(
+///             Policies const& /* policies */,
+///             Partitions const& partitions,
+///             std::string const& array_pathname,
+///             data_model::ID const object_id)
+///         {
+///             auto const [dataset_pathname, phenomenon_name, property_set_name, property_name] =
+///                 parse_array_pathname(array_pathname);
+/// 
+///             // Open dataset. Configure for use of parallel I/O if necessary.
+///             hdf5::File::AccessPropertyList access_property_list{};
+/// 
+/// #ifdef HDF5_IS_PARALLEL
+///             if(hpx::util::mpi_environment::enabled())
+///             {
+///                 // // ::MPI_Comm communicator{hpx::util::mpi_environment::communicator()};
+///                 // ::MPI_Comm communicator{MPI_COMM_WORLD};
+///                 // ::MPI_Info info{MPI_INFO_NULL};
+///                 // access_property_list.use_mpi_communicator(communicator, info);
+///             }
+/// #endif
+/// 
+///             auto dataset{data_model::open_dataset(dataset_pathname, H5F_ACC_RDWR, access_property_list)};
+/// 
+///             // Open phenomenon
+///             auto& phenomenon{dataset.phenomena()[phenomenon_name]};
+/// 
+///             // Open property-set
+///             auto& property_set{phenomenon.property_sets()[property_set_name]};
+/// 
+///             // Open property
+///             lue_hpx_assert(property_set.properties().contains(property_name));
+///             lue_hpx_assert(property_set.properties().shape_per_object(property_name) ==
+///                 data_model::ShapePerObject::different);
+///             lue_hpx_assert(property_set.properties().value_variability(property_name) ==
+///                 data_model::ValueVariability::constant);
+///             using Properties = data_model::different_shape::Properties;
+///             auto& property{property_set.properties().collection<Properties>()[property_name]};
+/// 
+///             // Open value. Configure for use of parallel I/O if necessary.
+///             hdf5::Dataset::TransferPropertyList transfer_property_list{};
+/// 
+/// #ifdef HDF5_IS_PARALLEL
+///             if(hpx::util::mpi_environment::enabled())
+///             {
+///                 // // Use collective I/O
+///                 // transfer_property_list.set_transfer_mode(::H5FD_MPIO_COLLECTIVE);
+///             }
+/// #endif
+/// 
+///             auto& value{property.value()};
+///             auto array{value[object_id]};
+/// 
+///             // Iterate over partitions and write each partition's piece to the dataset
+///             using Partition = typename Partitions::value_type;
+///             using PartitionServer = typename Partition::Server;
+///             using Element = ElementT<Partition>;
+/// 
+///             for(Partition const& partition: partitions)
+///             {
+///                 auto partition_ptr{detail::ready_component_ptr(partition)};
+///                 PartitionServer const& partition_server{*partition_ptr};
+///                 Element const* buffer{partition_server.data().data()};
+/// 
+///                 array.write(hyperslab(partition_server), transfer_property_list, buffer);
+///             }
+///         }
+/// 
+/// 
+///         template<
+///             typename Policies,
+///             typename Partitions>
+///         void write_partitions(
+///             Policies const& policies,
+///             Partitions const& partitions,
+///             std::string const& array_pathname,
+///             data_model::ID const object_id)
+///         {
+///             // Get a reference to one of the IO specific HPX io_service objects ...
+///             hpx::parallel::execution::io_pool_executor executor;
+/// 
+///             // ... and schedule the handler to run on one of its OS-threads.
+///             hpx::async(
+///                 executor, &write_partitions_on_os_thread<Policies, Partitions>,
+///                 policies, partitions, array_pathname, object_id).get();
+///         }
+
+
         template<
             typename Policies,
             typename Partitions>
-        void write_partitions_on_os_thread(
+        void write_partitions(
             Policies const& /* policies */,
             Partitions const& partitions,
             std::string const& array_pathname,
@@ -120,99 +211,6 @@ namespace lue {
         template<
             typename Policies,
             typename Partitions>
-        void write_partitions(
-            Policies const& policies,
-            Partitions const& partitions,
-            std::string const& array_pathname,
-            data_model::ID const object_id)
-        {
-            // Get a reference to one of the IO specific HPX io_service objects ...
-            hpx::parallel::execution::io_pool_executor executor;
-
-            // ... and schedule the handler to run on one of its OS-threads.
-            hpx::async(
-                executor, &write_partitions_on_os_thread<Policies, Partitions>,
-                policies, partitions, array_pathname, object_id).get();
-        }
-
-
-
-
-//         template<
-//             typename Policies,
-//             typename Partitions>
-//         void write_partitions(
-//             Policies const& /* policies */,
-//             Partitions const& partitions,
-//             std::string const& array_pathname,
-//             data_model::ID const object_id)
-//         {
-//             auto const [dataset_pathname, phenomenon_name, property_set_name, property_name] =
-//                 parse_array_pathname(array_pathname);
-// 
-//             // Open dataset. Configure for use of parallel I/O if necessary.
-//             hdf5::File::AccessPropertyList access_property_list{};
-// 
-// #ifdef HDF5_IS_PARALLEL
-//             if(hpx::util::mpi_environment::enabled())
-//             {
-//                 // // ::MPI_Comm communicator{hpx::util::mpi_environment::communicator()};
-//                 // ::MPI_Comm communicator{MPI_COMM_WORLD};
-//                 // ::MPI_Info info{MPI_INFO_NULL};
-//                 // access_property_list.use_mpi_communicator(communicator, info);
-//             }
-// #endif
-// 
-//             auto dataset{data_model::open_dataset(dataset_pathname, H5F_ACC_RDWR, access_property_list)};
-// 
-//             // Open phenomenon
-//             auto& phenomenon{dataset.phenomena()[phenomenon_name]};
-// 
-//             // Open property-set
-//             auto& property_set{phenomenon.property_sets()[property_set_name]};
-// 
-//             // Open property
-//             lue_hpx_assert(property_set.properties().contains(property_name));
-//             lue_hpx_assert(property_set.properties().shape_per_object(property_name) ==
-//                 data_model::ShapePerObject::different);
-//             lue_hpx_assert(property_set.properties().value_variability(property_name) ==
-//                 data_model::ValueVariability::constant);
-//             using Properties = data_model::different_shape::Properties;
-//             auto& property{property_set.properties().collection<Properties>()[property_name]};
-// 
-//             // Open value. Configure for use of parallel I/O if necessary.
-//             hdf5::Dataset::TransferPropertyList transfer_property_list{};
-// 
-// #ifdef HDF5_IS_PARALLEL
-//             if(hpx::util::mpi_environment::enabled())
-//             {
-//                 // // Use collective I/O
-//                 // transfer_property_list.set_transfer_mode(::H5FD_MPIO_COLLECTIVE);
-//             }
-// #endif
-// 
-//             auto& value{property.value()};
-//             auto array{value[object_id]};
-// 
-//             // Iterate over partitions and write each partition's piece to the dataset
-//             using Partition = typename Partitions::value_type;
-//             using PartitionServer = typename Partition::Server;
-//             using Element = ElementT<Partition>;
-// 
-//             for(Partition const& partition: partitions)
-//             {
-//                 auto partition_ptr{detail::ready_component_ptr(partition)};
-//                 PartitionServer const& partition_server{*partition_ptr};
-//                 Element const* buffer{partition_server.data().data()};
-// 
-//                 array.write(hyperslab(partition_server), transfer_property_list, buffer);
-//             }
-//         }
-
-
-        template<
-            typename Policies,
-            typename Partitions>
         void write_partitions2(
             Policies const& /* policies */,
             Partitions const& partitions,
@@ -274,8 +272,10 @@ namespace lue {
             using PartitionServer = typename Partition::Server;
             using Element = ElementT<Partition>;
 
+
             for(Partition const& partition: partitions)
             {
+                lue_hpx_assert(partition.is_ready());
                 auto partition_ptr{detail::ready_component_ptr(partition)};
                 PartitionServer const& partition_server{*partition_ptr};
                 Element const* buffer{partition_server.data().data()};
@@ -347,6 +347,7 @@ namespace lue {
         using Partition = PartitionT<Array>;
 
         auto partitions_by_locality{detail::partitions_by_locality(array)};
+        lue_hpx_assert(partitions_by_locality.size() <= hpx::find_all_localities().size());
 
         // -------------------------------------------------------------------------
         // Iterate over each locality and attach a continuation to all its
@@ -363,9 +364,10 @@ namespace lue {
                     hpx::util::unwrapping(
 
                             [locality, action, policies, array_pathname, object_id](
-                                std::vector<Partition> const& partitions)
+                                std::vector<Partition>&& partitions)
                             {
-                                return action(locality, policies, partitions, array_pathname, object_id);
+                                return action(locality, policies,
+                                    std::move(partitions), array_pathname, object_id);
                             }
 
                         ),
@@ -436,6 +438,7 @@ namespace lue {
         using Partition = PartitionT<Array>;
 
         auto partitions_by_locality{detail::partitions_by_locality(array)};
+        lue_hpx_assert(partitions_by_locality.size() <= hpx::find_all_localities().size());
 
         // -------------------------------------------------------------------------
         // Iterate over each locality and attach a continuation to all its
@@ -452,10 +455,10 @@ namespace lue {
                     hpx::util::unwrapping(
 
                             [locality, action, policies, array_pathname, object_id, time_step_idx](
-                                std::vector<Partition> const& partitions)
+                                std::vector<Partition>&& partitions)
                             {
                                 return action(locality, policies,
-                                    partitions, array_pathname, object_id, time_step_idx);
+                                    std::move(partitions), array_pathname, object_id, time_step_idx);
                             }
 
                         ),

@@ -223,7 +223,7 @@ namespace lue {
                             auto const& ondp_flux =
                                 std::get<0>(policies.outputs_policies()).output_no_data_policy();
 
-                            using CellAccumulator = typename Accumulator::CellAccumulator<
+                            using CellAccumulator = typename Accumulator::template CellAccumulator<
                                 decltype(indp_material), decltype(ondp_flux)>;
 
                             using Shape = ShapeT<InflowCountData>;
@@ -232,8 +232,8 @@ namespace lue {
                             PartitionIOData partition_io_data{partition_shape, std::move(input_cell_idxs)};
                             MaterialData flux_data{partition_shape, 0};
 
-                            using InputMaterial = typename Accumulator::InputMaterial<MaterialData>;
-                            using OutputMaterial = typename Accumulator::OutputMaterial<MaterialData>;
+                            using InputMaterial = typename Accumulator::template InputMaterial<MaterialData>;
+                            using OutputMaterial = typename Accumulator::template OutputMaterial<MaterialData>;
                             using Accumulator2 = detail::Accumulator<
                                 PartitionIOData, InputMaterial, CellAccumulator, OutputMaterial>;
 
@@ -389,7 +389,7 @@ namespace lue {
                             auto const& ondp_state =
                                 std::get<1>(policies.outputs_policies()).output_no_data_policy();
 
-                            using CellAccumulator = typename Accumulator::CellAccumulator<
+                            using CellAccumulator = typename Accumulator::template CellAccumulator<
                                 decltype(indp_material), decltype(indp_criterion),
                                 decltype(ondp_flux), decltype(ondp_state)>;
 
@@ -401,8 +401,8 @@ namespace lue {
                             MaterialData state_data{partition_shape, 0};
 
                             using InputMaterial =
-                                typename Accumulator::InputMaterial<MaterialData, CriterionData>;
-                            using OutputMaterial = typename Accumulator::OutputMaterial<MaterialData>;
+                                typename Accumulator::template InputMaterial<MaterialData, CriterionData>;
+                            using OutputMaterial = typename Accumulator::template OutputMaterial<MaterialData>;
                             using Accumulator2 = detail::Accumulator<
                                 PartitionIOData, InputMaterial, CellAccumulator, OutputMaterial>;
 
@@ -573,11 +573,11 @@ namespace lue {
 
             using PartitionIOData = typename PartitionIOComponent::Data;
 
-            using CellAccumulator = typename Accumulator::CellAccumulator<
+            using CellAccumulator = typename Accumulator::template CellAccumulator<
                 decltype(indp_material), decltype(ondp_flux)>;
 
-            using InputMaterial = typename Accumulator::InputMaterial<MaterialData>;
-            using OutputMaterial = typename Accumulator::OutputMaterial<MaterialData>;
+            using InputMaterial = typename Accumulator::template InputMaterial<MaterialData>;
+            using OutputMaterial = typename Accumulator::template OutputMaterial<MaterialData>;
             using Accumulator2 = detail::Accumulator<
                 PartitionIOData, InputMaterial, CellAccumulator, OutputMaterial>;
 
@@ -730,12 +730,12 @@ namespace lue {
 
             using PartitionIOData = typename PartitionIOComponent::Data;
 
-            using CellAccumulator = typename Accumulator::CellAccumulator<
+            using CellAccumulator = typename Accumulator::template CellAccumulator<
                 decltype(indp_material), decltype(indp_criterion),
                 decltype(ondp_flux), decltype(ondp_state)>;
 
-            using InputMaterial = typename Accumulator::InputMaterial<MaterialData, CriterionData>;
-            using OutputMaterial = typename Accumulator::OutputMaterial<MaterialData>;
+            using InputMaterial = typename Accumulator::template InputMaterial<MaterialData, CriterionData>;
+            using OutputMaterial = typename Accumulator::template OutputMaterial<MaterialData>;
             using Accumulator2 = detail::Accumulator<
                 PartitionIOData, InputMaterial, CellAccumulator, OutputMaterial>;
 
