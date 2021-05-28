@@ -582,9 +582,9 @@ def import_results(
     lue_dataset = job.open_raw_lue_dataset(results_prefix, "r")
     raw_results_already_imported = dataset.raw_results_already_imported(lue_dataset)
 
+    cluster, benchmark, experiment = dataset.read_benchmark_settings(lue_dataset, StrongScalingExperiment)
+
     if not raw_results_already_imported:
-        cluster, benchmark, experiment = dataset.read_benchmark_settings(
-            lue_dataset, StrongScalingExperiment)
         lue_dataset_pathname = lue_dataset.pathname
         del lue_dataset
         import_raw_results(lue_dataset_pathname, cluster, benchmark, experiment)

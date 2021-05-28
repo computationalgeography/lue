@@ -643,8 +643,7 @@ def post_process_results(
     by the generate_script function
     """
     lue_dataset = job.open_scaling_lue_dataset(results_prefix, "r")
-    cluster, benchmark, experiment = dataset.read_benchmark_settings(
-        lue_dataset, StrongScalingExperiment)
+    cluster, benchmark, experiment = dataset.read_benchmark_settings(lue_dataset, StrongScalingExperiment)
 
     performance_counters_available = \
         "performance_counter_1" in lue_dataset.benchmark.property_sets.names
