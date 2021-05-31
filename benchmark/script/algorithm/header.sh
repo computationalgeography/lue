@@ -10,16 +10,19 @@ case_study_names="
     wildfire
 "
 scenarios="
+    thread_cluster_node
     thread_numa_node
     numa_node
     cluster_node
 "
 
 # algorithm_names="
-# "
-# scenarios="
+#     accu_threshold
 # "
 # case_study_names="
+# "
+# scenarios="
+#     thread_cluster_node
 # "
 
 output_prefix=${LUE_DATA:-.}
