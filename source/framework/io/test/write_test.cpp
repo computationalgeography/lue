@@ -96,8 +96,8 @@ BOOST_AUTO_TEST_CASE(use_case_2)
     std::string const array_pathname{
         fmt::format("{}/{}/{}/{}", dataset_pathname, phenomenon_name, property_set_name, layer_name)};
 
-    ldm::Count const nr_rows{60};
-    ldm::Count const nr_cols{40};
+    ldm::Count const nr_rows{62};
+    ldm::Count const nr_cols{42};
 
     using Element = std::int32_t;
 
