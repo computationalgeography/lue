@@ -16,14 +16,12 @@ scenarios="
     cluster_node
 "
 
-# algorithm_names="
-#     accu_threshold
-# "
-# case_study_names="
-# "
-# scenarios="
-#     thread_cluster_node
-# "
+algorithm_names="
+"
+case_study_names="
+"
+scenarios="
+"
 
 output_prefix=${LUE_DATA:-.}
 
