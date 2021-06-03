@@ -244,6 +244,7 @@ namespace lue {
 
             using Partition = typename Partitions::value_type;
             using Shape = ShapeT<Partition>;
+            using Offset = OffsetT<Partition>;
             using Element = ElementT<Partition>;
             Rank const rank{lue::rank<Partition>};
 
