@@ -499,6 +499,24 @@ namespace lue {
             lue_hpx_assert(hpx::find_here() == hpx::find_root_locality());
             lue_hpx_assert(localities[0] == hpx::find_root_locality());
 
+            // for(auto const locality: localities)
+            // {
+            //     std::cout << locality << ", ";
+            // }
+            // std::cout << std::endl;
+
+            // auto const& partitioner{hpx::resource::get_partitioner()};
+            // lue_hpx_assert(partitioner.is_valid());
+
+            // std::cout << "numa domains:" << std::endl;
+            // for(auto const& numa_domain: partitioner.numa_domains())
+            // {
+            //     std::cout << "  " << numa_domain.id() << std::endl;
+            // }
+
+            // auto const& topology{hpx::threads::create_topology()};
+            // topology.print_hwloc(std::cout);
+
             if constexpr (Functor::instantiate_per_locality)
             {
                 // Per locality, instantiate all partitions in one go
