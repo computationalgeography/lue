@@ -243,6 +243,7 @@ namespace lue {
             auto array{value[object_id]};
 
             using Partition = typename Partitions::value_type;
+            using Shape = ShapeT<Partition>;
             using Element = ElementT<Partition>;
             Rank const rank{lue::rank<Partition>};
 
@@ -256,15 +257,6 @@ namespace lue {
             {
                 auto [partition_tuples, _, block_shape] =
                     detail::partition_tuples(partitions, compare_by_partition_offset);
-
-
-                // Block block{read_block<Element, rank>(
-                //     array, transfer_property_list,
-                //     block_hyperslab(array_hyperslab_start, block_offset, block_shape), block_shape)};
-                // copy_partition_elements<Partition>(block, block_offset, partition_tuples);
-
-
-
 
 
                 // The block we need for storing the partition data for
