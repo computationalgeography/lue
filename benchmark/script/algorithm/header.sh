@@ -1,22 +1,27 @@
 algorithm_names="
-    sqrt
-    multiply
+    accu_threshold
     focal_mean
     iterate_per_element
+    multiply
+    sqrt
     zonal_sum
 "
 case_study_names="
     wildfire
 "
 scenarios="
+    thread_cluster_node
     thread_numa_node
     numa_node
     cluster_node
 "
-#   thread_cluster_node
 
-algorithm_names=""
-case_study_names=""
+algorithm_names="
+"
+case_study_names="
+"
+scenarios="
+"
 
 output_prefix=${LUE_DATA:-.}
 

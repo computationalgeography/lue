@@ -1,5 +1,5 @@
 #define BOOST_TEST_MODULE lue framework algorithm accu
-#include "lue/framework/algorithm/accu.hpp"
+#include "lue/framework/algorithm/definition/accu.hpp"
 #include "flow_accumulation.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/compare.hpp"
@@ -13,7 +13,7 @@ namespace {
 
     std::size_t const rank = 2;
 
-    using MaterialElement = std::uint64_t;
+    using MaterialElement = float;
     using MaterialArray = lue::PartitionedArray<MaterialElement, rank>;
 
     template<

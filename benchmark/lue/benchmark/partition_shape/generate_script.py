@@ -54,14 +54,16 @@ def generate_script_slurm(
                     .format(os.path.dirname(result_pathname)),
 
                 # Run the benchmark, resulting in a json file
-                "srun --ntasks {nr_tasks} {srun_configuration} {command_pathname} "
-                        '--hpx:ini="hpx.parcel.mpi.enable=1" '
+                # "srun --ntasks {nr_tasks} {srun_configuration} {command_pathname} "
+                "mpirun --n {nr_tasks} {mpirun_configuration} {command_pathname} "
+                        # '--hpx:ini="hpx.parcel.mpi.enable=1" '
                         '--hpx:ini="hpx.os_threads={nr_threads}" '
                         '--hpx:bind="{thread_binding}" '
                         '{program_configuration}'
                     .format(
                         nr_tasks=nr_localities,
-                        srun_configuration=job.srun_configuration(cluster),
+                        mpirun_configuration=job.mpirun_configuration(cluster),
+                        # srun_configuration=job.srun_configuration(cluster),
                         command_pathname=experiment.command_pathname,
                         nr_threads=nr_threads,
                         thread_binding=util.thread_binding(nr_threads),
@@ -75,6 +77,8 @@ def generate_script_slurm(
             ]
 
     slurm_script = job.create_slurm_script(
+        cluster,
+
         nr_cluster_nodes=benchmark.worker.nr_cluster_nodes,
         nr_tasks=cluster.nr_localities_to_reserve(benchmark.worker, benchmark.locality_per),
         nr_cores_per_socket=cluster.cluster_node.package.numa_node.nr_cores,
@@ -179,8 +183,7 @@ def generate_script(
     experiment = PartitionShapeExperiment(experiment_settings_json)
 
     lue_dataset = job.create_raw_lue_dataset(cluster, benchmark, experiment)
-    dataset.write_benchmark_settings(
-        lue_dataset, cluster, benchmark, experiment)
+    dataset.write_benchmark_settings(lue_dataset, cluster, benchmark, experiment)
 
     if cluster.scheduler.kind == "slurm":
         generate_script_slurm(cluster, benchmark, experiment, script_pathname)

@@ -19,7 +19,7 @@ namespace lue::framework {
             [[maybe_unused]] std::string const& array_pathname)
         {
             auto const [dataset_pathname, phenomenon_name, property_set_name, layer_name] =
-                detail::parse_array_pathname(array_pathname);
+                parse_array_pathname(array_pathname);
             auto const [object_id, file_datatype] = ldm::constant::probe_raster(
                 dataset_pathname, phenomenon_name, property_set_name, layer_name);
 
@@ -44,7 +44,7 @@ namespace lue::framework {
             [[maybe_unused]] std::string const& array_pathname)
         {
             auto const [dataset_pathname, phenomenon_name, property_set_name, layer_name] =
-                detail::parse_array_pathname(array_pathname);
+                parse_array_pathname(array_pathname);
             auto const [object_id, file_datatype] = ldm::variable::probe_raster(
                 dataset_pathname, phenomenon_name, property_set_name, layer_name);
 

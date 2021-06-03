@@ -8,6 +8,13 @@
                 "--qos=swdev"
                 # "--qos=priority"
             ],
+            "mpirun_options": [
+                # "--mca btl_openib_allow_ib true",
+                "--display-map",
+                "--display-allocation"
+                # "--rank-by numa"
+                # "--map-by numa"
+            ],
             "srun_options": [
                 "--kill-on-bad-exit"
                 # The mpi switch is needed because support for mpich is
@@ -22,12 +29,24 @@
             ]
         }
     },
+    "software_environment": {
+        "modules": [
+            "opt/all",
+            "userspace/all",
+            "libraries/zstd/1.3.7",
+            "gcc/10.3.0",
+            "openmpi/gcc-10.3.0/4.0.5",
+            # "libraries/papi/6.0.0.1",
+            # "perftools/2.9.1"
+        ]
+    },
     "nr_cluster_nodes": 96,
     "cluster_node": {
         "nr_packages": 2,
         "package": {
             "nr_numa_nodes": 4,
             "numa_node": {
+                "memory": 32,
                 "nr_cores": 6,
                 "core": {
                     "nr_threads": 2

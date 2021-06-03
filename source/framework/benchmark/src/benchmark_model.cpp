@@ -1,7 +1,6 @@
 #include "lue/framework/benchmark/benchmark_model.hpp"
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/core/component.hpp"
-#include "lue/assert.hpp"
 #include <hpx/iostream.hpp>
 #include <algorithm>
 
@@ -25,7 +24,7 @@ BenchmarkModel<Element, rank>::BenchmarkModel(
     _partition_shape{}
 
 {
-    lue_assert(_state_ptr);
+    lue_hpx_assert(_state_ptr);
 
     std::copy(
         task.array_shape().begin(), task.array_shape().end(),
@@ -63,7 +62,7 @@ template<
 void BenchmarkModel<Element, rank>::set_result(
     Result const& result)
 {
-    lue_assert(result.shape_in_partitions().size() == rank);
+    lue_hpx_assert(result.shape_in_partitions().size() == rank);
 
     _result = result;
 }
@@ -75,7 +74,7 @@ template<
 typename BenchmarkModel<Element, rank>::Result const&
     BenchmarkModel<Element, rank>::result() const
 {
-    lue_assert(_result.shape_in_partitions().size() == rank);
+    lue_hpx_assert(_result.shape_in_partitions().size() == rank);
 
     return _result;
 }
@@ -91,10 +90,11 @@ void BenchmarkModel<Element, rank>::preprocess()
     do_preprocess();
 
     // Time spent calculating state at t0 is not part of the
-    // benchmark. Compare this to reading form a dataset. Leave I/O out.
+    // benchmark. Compare this to reading from a dataset. Leave I/O out.
     hpx::wait_all_n(state().partitions().begin(), state().nr_partitions());
 
-    if(_count == 0) {
+    if(_count == 0)
+    {
         hpx::cout << describe(state()) << hpx::endl;
     }
 }
@@ -155,8 +155,8 @@ void BenchmarkModel<Element, rank>::terminate()
 
     hpx::wait_all_n(state().partitions().begin(), state().nr_partitions());
 
-    lue_assert(all_are_ready(state().partitions()));
-    lue_assert(none_have_exception(state().partitions()));
+    lue_hpx_assert(all_are_ready(state().partitions()));
+    lue_hpx_assert(none_have_exception(state().partitions()));
 
     hpx::cout << "]\n" << hpx::flush;
 }
@@ -217,6 +217,7 @@ void BenchmarkModel<Element, rank>::do_postprocess()
 
 
 template class BenchmarkModel<std::int32_t, 2>;
+template class BenchmarkModel<float, 2>;
 template class BenchmarkModel<double, 2>;
 
 }  // namespace benchmark

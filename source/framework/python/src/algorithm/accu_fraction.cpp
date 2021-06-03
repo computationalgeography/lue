@@ -9,15 +9,17 @@ namespace lue::framework {
         using FlowDirectionElement = std::uint8_t;
 
         template<
+            typename MaterialElement,
             typename FractionElement>
-        std::tuple<PartitionedArray<FractionElement, rank>, PartitionedArray<FractionElement, rank>>
+        std::tuple<PartitionedArray<MaterialElement, rank>, PartitionedArray<MaterialElement, rank>>
             accu_fraction(
                 PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
-                PartitionedArray<FractionElement, rank> const& material,
+                PartitionedArray<MaterialElement, rank> const& material,
                 PartitionedArray<FractionElement, rank> const& fraction)
         {
             using Policies =
-                policy::accu_fraction::DefaultValuePolicies<FlowDirectionElement, FractionElement>;
+                policy::accu_fraction::DefaultValuePolicies<
+                    FlowDirectionElement, MaterialElement, FractionElement>;
 
             return accu_fraction(Policies{}, flow_direction, material, fraction);
         }
@@ -28,8 +30,8 @@ namespace lue::framework {
     void bind_accu_fraction(
         pybind11::module& module)
     {
-        module.def("accu_fraction", accu_fraction<float>);
-        module.def("accu_fraction", accu_fraction<double>);
+        module.def("accu_fraction", accu_fraction<float, float>);
+        module.def("accu_fraction", accu_fraction<double, double>);
     }
 
 }  // namespace lue::framework

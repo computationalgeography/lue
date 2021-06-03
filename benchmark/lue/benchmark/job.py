@@ -20,6 +20,16 @@ import shutil
 ###     # return result
 
 
+def mpirun_configuration(
+        cluster):
+    """
+    Return common arguments to the mpirun command used to start the program
+    being benchmarked
+    """
+    assert cluster.scheduler.kind == "slurm"
+    return " ".join(cluster.scheduler.settings.mpirun_options)
+
+
 def srun_configuration(
         cluster):
     """
@@ -60,7 +70,10 @@ def program_configuration(
     #   '--hpx:debug-hpx-log '
     configuration = \
         '--hpx:print-bind ' \
+        '--hpx:ini="hpx.commandline.allow_unknown!=1 ' \
+        '--hpx:ini="hpx.commandline.aliasing!=0 ' \
         '--hpx:ini="hpx.agas.max_pending_refcnt_requests!=50" ' \
+        '--hpx:ini="hpx.diagnostics_on_terminate!=0" ' \
         '--hpx:ini="application.{program_name}.benchmark.cluster_name!={cluster_name}" ' \
         '--hpx:ini="application.{program_name}.benchmark.count!={count}" ' \
         '--hpx:ini="application.{program_name}.benchmark.nr_workers!={nr_workers}" ' \
@@ -124,6 +137,8 @@ def program_configuration(
                     for item in value:
                         arguments.append('--hpx:{}="{}"'.format(key, item))
 
+    arguments += experiment.argument_list
+
     configuration += " {}".format(" ".join(arguments))
 
     return configuration
@@ -145,6 +160,7 @@ set -e
 
 
 def create_slurm_script(
+        cluster,
         nr_cluster_nodes,  # How many nodes to reserve
         nr_tasks,  # How many tasks to reserve for
         nr_cores_per_socket,  # Number of physical cores per socket
@@ -192,7 +208,6 @@ def create_slurm_script(
 #SBATCH --ntasks={nr_tasks}
 #SBATCH --cpus-per-task={cpus_per_task}
 #SBATCH --output={output_filename}
-#SBATCH --cores-per-socket={cores_per_socket}
 #SBATCH --partition={partition_name}
 {sbatch_options}
 {max_duration}
@@ -220,15 +235,7 @@ def create_slurm_script(
 # 
 # trap 'work_around_hang ${{$?}} ${{LINENO}}' ERR
 
-
-module purge
-module load opt/all
-module load userspace/all
-module load libraries/zstd/1.3.7
-module load gcc/10.2.0
-module load openmpi/gcc-10.2.0/4.0.4
-module load libraries/papi/5.7.0
-module load perftools/2.7
+{software_environment}
 
 {job_steps}""".format(
         nr_cluster_nodes=nr_cluster_nodes,  # Ask for this nr_cluster_nodes
@@ -241,6 +248,7 @@ module load perftools/2.7
         sbatch_options="\n".join(["#SBATCH {}".format(option) for option in sbatch_options]),
         max_duration="#SBATCH --time={}".format(max_duration)
             if max_duration is not None else "",
+        software_environment=cluster.software_environment.configuration,
         job_steps="\n".join(job_steps))
         # job_steps="\nsleep 2s\n".join(job_steps))
 
