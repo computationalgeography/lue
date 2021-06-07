@@ -1,5 +1,6 @@
-#include <hpx/future.hpp>
 #include "lue/py/framework/stream.hpp"
+#include "lue/framework/partitioned_array.hpp"
+#include <hpx/future.hpp>
 #include <pybind11/pybind11.h>
 #include <fmt/format.h>
 
@@ -102,7 +103,7 @@ namespace lue::framework {
         bind_shared_future<std::int64_t>(module);
         bind_shared_future<float>(module);
         bind_shared_future<double>(module);
-
+        bind_shared_future<std::vector<PartitionedArray<std::uint8_t, 2>>>(module);
     }
 
 }  // namespace lue::framework

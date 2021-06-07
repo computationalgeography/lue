@@ -355,12 +355,20 @@ namespace lue::detail {
     };
 
 
+    enum class AccumulationExitCellClass: std::uint8_t
+    {
+        sink,
+        partition_output,
+        junction,
+    };
+
+
     template<
         typename Accumulator,
         typename Index,
         typename FlowDirectionData,
         typename InflowCountData>
-    void accumulate(
+    std::tuple<std::array<Index, 2>, AccumulationExitCellClass> accumulate(
         Accumulator& accumulator,
         Index idx0,
         Index idx1,
@@ -370,6 +378,7 @@ namespace lue::detail {
         auto const [nr_elements0, nr_elements1] = flow_direction_data.shape();
         Index offset0, offset1;
         bool is_within_partition;
+        AccumulationExitCellClass cell_class;
 
         while(true)
         {
@@ -390,6 +399,7 @@ namespace lue::detail {
                 // Current cell is a sink. This is the end of this
                 // stream.
                 accumulator.leave_at_sink(idx0, idx1);
+                cell_class = AccumulationExitCellClass::sink;
                 break;
             }
 
@@ -400,6 +410,7 @@ namespace lue::detail {
                 // end of this stream in the current partition. Finish
                 // calculations an exit.
                 accumulator.leave_at_output_cell(idx0, idx1, offset0, offset1);
+                cell_class = AccumulationExitCellClass::partition_output;
                 break;
             }
 
@@ -419,9 +430,12 @@ namespace lue::detail {
             if(inflow_count_data(idx0, idx1) > 0)
             {
                 // There are other streams flowing into the new cell → stop
+                cell_class = AccumulationExitCellClass::junction;
                 break;
             }
         }
+
+        return std::make_tuple(std::array<Index, 2>{idx0, idx1}, cell_class);
     }
 
 }  // namespace lue::detail

@@ -1284,6 +1284,7 @@ namespace lue {
     }  // namespace detail
 
 
+    // Flow accumulation without criterion: accu
     template<
         typename Policies,
         typename FlowDirectionElement,
@@ -1349,6 +1350,7 @@ namespace lue {
     }
 
 
+    // Flow accumulation with criterion: accu_threshold, accu_fraction, ...
     template<
         typename Policies,
         typename FlowDirectionElement,

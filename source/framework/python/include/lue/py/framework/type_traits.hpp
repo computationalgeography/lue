@@ -9,7 +9,13 @@ namespace lue::framework {
     template<
         typename Element>
     class TypeTraits
-    {};
+    {
+
+        public:
+
+            inline static std::string const name{"TODO"};
+
+    };
 
 
     template<>
