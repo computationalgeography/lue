@@ -1,5 +1,5 @@
 #include "lue/framework/algorithm/accu_info.hpp"
-#include <pybind11/stl.h>
+#include <pybind11/pybind11.h>
 
 
 namespace lue::framework {
@@ -11,7 +11,9 @@ namespace lue::framework {
 
         std::tuple<
                 PartitionedArray<CellClass, rank>,
-                hpx::shared_future<std::vector<PartitionedArray<PartitionClass, rank>>>
+                hpx::shared_future<std::vector<PartitionedArray<PartitionClass, rank>>>,
+                hpx::shared_future<std::vector<PartitionedArray<double, rank>>>,
+                hpx::shared_future<std::vector<PartitionedArray<std::uint32_t, rank>>>
             >
             accu_info(
                 PartitionedArray<FlowDirectionElement, rank> const& flow_direction)

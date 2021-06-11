@@ -22,4 +22,4 @@ class AccuInfoTest(lue_test.TestCase):
         direction = 4
         flow_direction = lfr.create_array(array_shape, partition_shape, np.dtype(np.uint8), direction)
 
-        stream_class, partition_class = lfr.accu_info(flow_direction)
+        stream_class, partition_class, solvable_fraction, nr_cells_to_solve = lfr.accu_info(flow_direction)

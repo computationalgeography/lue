@@ -26,6 +26,7 @@ namespace lue {
             using Shape = typename Data::Shape;
             using Offset = typename Server::Offset;
             using PartitionOffsets = typename Server::PartitionOffsets;
+            using PartitionOffsetCounts = typename Server::PartitionOffsetCounts;
 
 
             ArrayPartitionIO()=default;
@@ -101,6 +102,17 @@ namespace lue {
             }
 
 
+            hpx::future<Count> nr_input_cells() const
+            {
+                lue_hpx_assert(this->is_ready());
+                lue_hpx_assert(this->get_id());
+
+                typename Server::NrInputCellsAction action;
+
+                return hpx::async(action, this->get_id());
+            }
+
+
             hpx::future<PartitionOffsets> partition_offsets() const
             {
                 lue_hpx_assert(this->is_ready());
@@ -110,6 +122,18 @@ namespace lue {
 
                 return hpx::async(action, this->get_id());
             }
+
+
+            hpx::future<PartitionOffsetCounts> partition_offset_counts() const
+            {
+                lue_hpx_assert(this->is_ready());
+                lue_hpx_assert(this->get_id());
+
+                typename Server::PartitionOffsetCountsAction action;
+
+                return hpx::async(action, this->get_id());
+            }
+
 
             hpx::future<std::vector<std::tuple<Indices, Value>>> drain(
                 Offset const& partition_offset,
@@ -186,4 +210,8 @@ HPX_REGISTER_ACTION(                                                            
                                                                                   \
 HPX_REGISTER_ACTION(                                                              \
     lue::detail::ArrayPartitionIO_##Index##_##rank##_##Value::PartitionOffsetsAction,  \
-    ArrayPartitionIO_##Index##_##rank##_##Value##_PartitionOffsetsAction)
+    ArrayPartitionIO_##Index##_##rank##_##Value##_PartitionOffsetsAction)         \
+                                                                                  \
+HPX_REGISTER_ACTION(                                                              \
+    lue::detail::ArrayPartitionIO_##Index##_##rank##_##Value::PartitionOffsetCountsAction,  \
+    ArrayPartitionIO_##Index##_##rank##_##Value##_PartitionOffsetCountsAction)

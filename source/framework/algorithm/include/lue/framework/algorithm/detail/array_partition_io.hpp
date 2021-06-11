@@ -61,6 +61,7 @@ namespace lue::detail {
             using Shape = lue::Shape<Count, rank>;
             using Offset = lue::Offset<std::int8_t, rank>;
             using PartitionOffsets = std::set<Offset>;
+            using PartitionOffsetCounts = std::vector<std::tuple<Offset, Count>>;
             using OffsetMap = std::map<Indices, Offset>;
             using Value = Value_;
             using ValueMap = std::map<Indices, Value>;
@@ -228,6 +229,14 @@ namespace lue::detail {
             }
 
 
+            Count nr_input_cells() const
+            {
+                std::scoped_lock lock{_input_cells_idxs_mutex};
+
+                return _input_cells_idxs.size();
+            }
+
+
             /*!
                 @brief      Return whether all output cells have been
                             drained (and are removed)
@@ -287,6 +296,44 @@ namespace lue::detail {
                 }
 
                 return result;
+            }
+
+
+            PartitionOffsetCounts partition_offset_counts() const
+            {
+                std::vector<Offset> offsets{};
+                std::vector<Count> counts{};
+
+                {
+                    Offset offset;
+                    std::scoped_lock lock{_offsets_mutex};
+
+                    for(auto const& [output_cell_idxs, cell_offset]: _offsets)
+                    {
+                        offset = partition_offset(output_cell_idxs, cell_offset);
+
+                        auto it = std::find(offsets.begin(), offsets.end(), offset);
+
+                        if(it == offsets.end())
+                        {
+                            offsets.push_back(std::move(offset));
+                            counts.push_back(1);
+                        }
+                        else
+                        {
+                            ++counts[std::distance(offsets.begin(), it)];
+                        }
+                    }
+                }
+
+                PartitionOffsetCounts offset_counts(offsets.size());
+
+                for(std::size_t i = 0; i < offsets.size(); ++i)
+                {
+                    offset_counts[i] = std::make_tuple(offsets[i], counts[i]);
+                }
+
+                return offset_counts;
             }
 
 

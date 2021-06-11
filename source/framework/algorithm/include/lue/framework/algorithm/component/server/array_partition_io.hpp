@@ -35,6 +35,7 @@ namespace lue::server {
             using Shape = typename Data::Shape;
             using Offset = typename Data::Offset;
             using PartitionOffsets = typename Data::PartitionOffsets;
+            using PartitionOffsetCounts = typename Data::PartitionOffsetCounts;
 
 
             ArrayPartitionIO():
@@ -66,9 +67,21 @@ namespace lue::server {
             }
 
 
+            Count nr_input_cells() const
+            {
+                return _io.nr_input_cells();
+            }
+
+
             PartitionOffsets partition_offsets() const
             {
                 return _io.partition_offsets();
+            }
+
+
+            PartitionOffsetCounts partition_offset_counts() const
+            {
+                return _io.partition_offset_counts();
             }
 
 
@@ -111,7 +124,9 @@ namespace lue::server {
 
             HPX_DEFINE_COMPONENT_ACTION(ArrayPartitionIO, is_drained, IsDrainedAction);
             HPX_DEFINE_COMPONENT_ACTION(ArrayPartitionIO, is_solved, IsSolvedAction);
+            HPX_DEFINE_COMPONENT_ACTION(ArrayPartitionIO, nr_input_cells, NrInputCellsAction);
             HPX_DEFINE_COMPONENT_ACTION(ArrayPartitionIO, partition_offsets, PartitionOffsetsAction);
+            HPX_DEFINE_COMPONENT_ACTION(ArrayPartitionIO, partition_offset_counts, PartitionOffsetCountsAction);
             HPX_DEFINE_COMPONENT_ACTION(ArrayPartitionIO, drain, DrainAction);
 
     };
@@ -140,12 +155,20 @@ HPX_REGISTER_ACTION_DECLARATION(                                             \
     ArrayPartitionIO_##Index##_##rank##_##Value##_IsSolvedAction)              \
                                                                              \
 HPX_REGISTER_ACTION_DECLARATION(                                             \
+    lue::detail::ArrayPartitionIO_##Index##_##rank##_##Value::NrInputCellsAction,  \
+    ArrayPartitionIO_##Index##_##rank##_##Value##_NrInputCellsAction)        \
+                                                                             \
+HPX_REGISTER_ACTION_DECLARATION(                                             \
     lue::detail::ArrayPartitionIO_##Index##_##rank##_##Value::DrainAction,   \
     ArrayPartitionIO_##Index##_##rank##_##Value##_DrainAction)               \
                                                                              \
 HPX_REGISTER_ACTION_DECLARATION(                                             \
     lue::detail::ArrayPartitionIO_##Index##_##rank##_##Value::PartitionOffsetsAction,  \
-    ArrayPartitionIO_##Index##_##rank##_##Value##_PartitionOffsetsAction)
+    ArrayPartitionIO_##Index##_##rank##_##Value##_PartitionOffsetsAction)    \
+                                                                             \
+HPX_REGISTER_ACTION_DECLARATION(                                             \
+    lue::detail::ArrayPartitionIO_##Index##_##rank##_##Value::PartitionOffsetCountsAction,  \
+    ArrayPartitionIO_##Index##_##rank##_##Value##_PartitionOffsetCountsAction)
 
 using lue_Index = lue::Index;
 
@@ -181,6 +204,8 @@ namespace lue {                                                   \
 LUE_DEFINE_ARRAY_PARTITION_IO_COMPONENT_ACTION_TEMPLATE(Drain)
 LUE_DEFINE_ARRAY_PARTITION_IO_COMPONENT_ACTION_TEMPLATE(IsDrained)
 LUE_DEFINE_ARRAY_PARTITION_IO_COMPONENT_ACTION_TEMPLATE(IsSolved)
+LUE_DEFINE_ARRAY_PARTITION_IO_COMPONENT_ACTION_TEMPLATE(NrInputCells)
 LUE_DEFINE_ARRAY_PARTITION_IO_COMPONENT_ACTION_TEMPLATE(PartitionOffsets)
+LUE_DEFINE_ARRAY_PARTITION_IO_COMPONENT_ACTION_TEMPLATE(PartitionOffsetCounts)
 
 #undef LUE_DEFINE_ARRAY_PARTITION_IO_COMPONENT_ACTION_TEMPLATE

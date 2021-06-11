@@ -9,13 +9,7 @@ namespace lue::framework {
     template<
         typename Element>
     class TypeTraits
-    {
-
-        public:
-
-            inline static std::string const name{"TODO"};
-
-    };
+    {};
 
 
     template<>
@@ -51,6 +45,7 @@ TYPE_TRAITS(std::int32_t, "int32")
 TYPE_TRAITS(std::int64_t, "int64")
 TYPE_TRAITS(float, "float32")
 TYPE_TRAITS(double, "float64")
+
 
 #undef TYPE_TRAITS
 
