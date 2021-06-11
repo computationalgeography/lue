@@ -81,6 +81,19 @@ namespace lue::framework {
             "shape docstring..."
         )
 
+        .def_property_readonly(
+            "shape_in_partitions",
+            [](Array const& self)
+            {
+                static_assert(rank == 2);
+
+                auto shape{self.partitions().shape()};
+
+                return std::make_tuple(shape[0], shape[1]);
+            },
+            "shape_in_partitions docstring..."
+        )
+
         .def(
             "__repr__",
             [](Array const& array) {

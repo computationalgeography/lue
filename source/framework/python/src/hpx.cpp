@@ -1,10 +1,67 @@
-#include <hpx/future.hpp>
 #include "lue/py/framework/stream.hpp"
-#include <pybind11/pybind11.h>
+#include "lue/framework/partitioned_array.hpp"
+#include <hpx/future.hpp>
+#include <pybind11/stl.h>
 #include <fmt/format.h>
 
 
 namespace lue::framework {
+
+    template<>
+    class TypeTraits<std::vector<PartitionedArray<std::uint8_t, 2>>>
+    {
+
+        public:
+
+            inline static std::string const name{"std::vector<lue::PartitionedArray<std::uint8_t, 2>"};
+
+    };
+
+
+    template<>
+    class TypeTraits<std::vector<PartitionedArray<std::uint32_t, 2>>>
+    {
+
+        public:
+
+            inline static std::string const name{"std::vector<lue::PartitionedArray<std::uint32_t, 2>"};
+
+    };
+
+
+    template<>
+    class TypeTraits<std::vector<PartitionedArray<std::int32_t, 2>>>
+    {
+
+        public:
+
+            inline static std::string const name{"std::vector<lue::PartitionedArray<std::int32_t, 2>"};
+
+    };
+
+
+    template<>
+    class TypeTraits<std::vector<PartitionedArray<std::int64_t, 2>>>
+    {
+
+        public:
+
+            inline static std::string const name{"std::vector<lue::PartitionedArray<std::int64_t, 2>"};
+
+    };
+
+
+    template<>
+    class TypeTraits<std::vector<PartitionedArray<double, 2>>>
+    {
+
+        public:
+
+            inline static std::string const name{"std::vector<lue::PartitionedArray<double, 2>"};
+
+    };
+
+
     namespace {
 
         template<
@@ -73,7 +130,7 @@ namespace lue::framework {
                     "get",
                     pybind11::overload_cast<>(&hpx::shared_future<Element>::get, pybind11::const_),
                     // Copy to keep things simple. Use const reference in case Element can be big.
-                    pybind11::return_value_policy::copy)
+                    pybind11::return_value_policy::move)
 
                 ;
 
@@ -102,7 +159,11 @@ namespace lue::framework {
         bind_shared_future<std::int64_t>(module);
         bind_shared_future<float>(module);
         bind_shared_future<double>(module);
-
+        bind_shared_future<std::vector<PartitionedArray<std::uint8_t, 2>>>(module);
+        bind_shared_future<std::vector<PartitionedArray<std::uint32_t, 2>>>(module);
+        bind_shared_future<std::vector<PartitionedArray<std::int32_t, 2>>>(module);
+        bind_shared_future<std::vector<PartitionedArray<std::int64_t, 2>>>(module);
+        bind_shared_future<std::vector<PartitionedArray<double, 2>>>(module);
     }
 
 }  // namespace lue::framework

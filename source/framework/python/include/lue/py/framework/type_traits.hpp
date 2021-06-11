@@ -46,6 +46,7 @@ TYPE_TRAITS(std::int64_t, "int64")
 TYPE_TRAITS(float, "float32")
 TYPE_TRAITS(double, "float64")
 
+
 #undef TYPE_TRAITS
 
     template<

@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/component/array_partition_io.hpp"
+#include "lue/framework/algorithm/accu_info.hpp"
 #include "lue/framework/algorithm/inflow_count.hpp"
 #include "lue/framework/algorithm/detail/accumulate.hpp"
 #include "lue/framework/algorithm/policy/flow_direction_halo.hpp"
@@ -11,9 +12,9 @@
 
 namespace lue {
 
-    using StreamClass = std::uint8_t;
-    static constexpr StreamClass intra_partition_stream_cell = 0;
-    static constexpr StreamClass inter_partition_stream_cell = 1;
+    using StreamClass = CellClass;
+    // static constexpr StreamClass intra_partition_stream_cell = 0;
+    // static constexpr StreamClass inter_partition_stream_cell = 1;
 
 
     template<
