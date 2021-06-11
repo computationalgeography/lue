@@ -83,11 +83,11 @@ macro(add_unit_test)
         string(REPLACE ";" ":" PATH_STRING "${PATH_STRING}")
     endif()
 
-    set_target_properties(${TEST_EXE_NAME}
-        PROPERTIES
-            EXCLUDE_FROM_ALL 1
-            EXCLUDE_FROM_DEFAULT_BUILD 1
-    )
+    # set_target_properties(${TEST_EXE_NAME}
+    #     PROPERTIES
+    #         EXCLUDE_FROM_ALL 1
+    #         EXCLUDE_FROM_DEFAULT_BUILD 1
+    # )
     set_tests_properties(${TEST_EXE_NAME}
         PROPERTIES
             ENVIRONMENT
@@ -372,11 +372,11 @@ function(add_hpx_unit_test)
         string(REPLACE ";" ":" PATH_STRING "${PATH_STRING}")
     endif()
 
-    set_target_properties(${TEST_EXE_NAME}
-        PROPERTIES
-            EXCLUDE_FROM_ALL 1
-            EXCLUDE_FROM_DEFAULT_BUILD 1
-    )
+    # set_target_properties(${TEST_EXE_NAME}
+    #     PROPERTIES
+    #         EXCLUDE_FROM_ALL 1
+    #         EXCLUDE_FROM_DEFAULT_BUILD 1
+    # )
     set_tests_properties(${TEST_EXE_NAME}
         PROPERTIES
             ENVIRONMENT
