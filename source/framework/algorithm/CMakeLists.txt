@@ -9,8 +9,6 @@ add_subdirectory(hpx)
 
 add_library(lue_framework_algorithm SHARED
     src/component/array_partition_io.cpp
-    src/component/flow_accumulation.cpp
-    src/component/server/flow_accumulation.cpp
 )
 
 add_library(lue::framework_algorithm ALIAS lue_framework_algorithm)
