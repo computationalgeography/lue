@@ -14,6 +14,355 @@ namespace lue {
     namespace detail {
 
         template<
+            typename CountElement,
+            typename Policies,
+            typename FlowDirectionElement,
+            Rank rank>
+        ArrayPartitionData<CountElement, rank> inflow_count_partition_data(
+            Policies const& policies,
+            ArrayPartitionData<FlowDirectionElement, rank> const& flow_direction_data)
+        {
+            // Only(!) handle the cells whose downstream cells are
+            // contained within this partition.
+            auto const& partition_shape{flow_direction_data.shape()};
+            auto const [nr_elements0, nr_elements1] = partition_shape;
+
+            ArrayPartitionData<CountElement, rank> inflow_count_data{partition_shape, 0};
+
+            auto const& indp{std::get<0>(policies.inputs_policies()).input_no_data_policy()};
+            auto const& ondp{std::get<0>(policies.outputs_policies()).output_no_data_policy()};
+
+            for(Index idx0 = 1; idx0 < nr_elements0 - 1; ++idx0) {
+                for(Index idx1 = 1; idx1 < nr_elements1 - 1; ++idx1)
+                {
+                    if(indp.is_no_data(flow_direction_data, idx0, idx1))
+                    {
+                        ondp.mark_no_data(inflow_count_data, idx0, idx1);
+                    }
+                    else
+                    {
+                        auto const [rd, cd] = downstream_cell(flow_direction_data, idx0, idx1);
+
+                        if(rd != idx0 || cd != idx1)
+                        {
+                            // Current cell is not a sink. In
+                            // a valid flow direction network,
+                            // the destination cell cannot contain
+                            // no-data.
+                            lue_hpx_assert(!indp.is_no_data(flow_direction_data(rd, cd)));
+                            inflow_count_data(rd, cd) += 1;
+                        }
+                    }
+                }
+            }
+
+            // North-west cell
+            {
+                Index const idx0{0};
+                Index const idx1{0};
+
+                if(indp.is_no_data(flow_direction_data, idx0, idx1))
+                {
+                    ondp.mark_no_data(inflow_count_data, idx0, idx1);
+                }
+                else
+                {
+                    auto const flow_direction{flow_direction_data(idx0, idx1)};
+
+                    if(flow_direction == east<FlowDirectionElement>)
+                    {
+                        lue_hpx_assert(!indp.is_no_data(flow_direction_data(idx0, idx1 + 1)));
+                        inflow_count_data(idx0, idx1 + 1) += 1;
+                    }
+                    else if(flow_direction == south_east<FlowDirectionElement>)
+                    {
+                        lue_hpx_assert(!indp.is_no_data(flow_direction_data(idx0 + 1, idx1 + 1)));
+                        inflow_count_data(idx0 + 1, idx1 + 1) += 1;
+                    }
+                    else if(flow_direction == south<FlowDirectionElement>)
+                    {
+                        lue_hpx_assert(!indp.is_no_data(flow_direction_data(idx0 + 1, idx1)));
+                        inflow_count_data(idx0 + 1, idx1) += 1;
+                    }
+                }
+            }
+
+            // North-east cell
+            {
+                Index const idx0{0};
+                Index const idx1{nr_elements1 - 1};
+
+                if(indp.is_no_data(flow_direction_data, idx0, idx1))
+                {
+                    ondp.mark_no_data(inflow_count_data, idx0, idx1);
+                }
+                else
+                {
+                    auto const flow_direction{flow_direction_data(idx0, idx1)};
+
+                    if(flow_direction == west<FlowDirectionElement>)
+                    {
+                        lue_hpx_assert(!indp.is_no_data(flow_direction_data(idx0, idx1 - 1)));
+                        inflow_count_data(idx0, idx1 - 1) += 1;
+                    }
+                    else if(flow_direction == south_west<FlowDirectionElement>)
+                    {
+                        lue_hpx_assert(!indp.is_no_data(flow_direction_data(idx0 + 1, idx1 - 1)));
+                        inflow_count_data(idx0 + 1, idx1 - 1) += 1;
+                    }
+                    else if(flow_direction == south<FlowDirectionElement>)
+                    {
+                        lue_hpx_assert(!indp.is_no_data(flow_direction_data(idx0 + 1, idx1)));
+                        inflow_count_data(idx0 + 1, idx1) += 1;
+                    }
+                }
+            }
+
+            // South-west cell
+            {
+                Index const idx0{nr_elements0 - 1};
+                Index const idx1{0};
+
+                if(indp.is_no_data(flow_direction_data, idx0, idx1))
+                {
+                    ondp.mark_no_data(inflow_count_data, idx0, idx1);
+                }
+                else
+                {
+                    auto const flow_direction{flow_direction_data(idx0, idx1)};
+
+                    if(flow_direction == north<FlowDirectionElement>)
+                    {
+                        lue_hpx_assert(!indp.is_no_data(flow_direction_data(idx0 - 1, idx1)));
+                        inflow_count_data(idx0 - 1, idx1) += 1;
+                    }
+                    else if(flow_direction == north_east<FlowDirectionElement>)
+                    {
+                        lue_hpx_assert(!indp.is_no_data(flow_direction_data(idx0 - 1, idx1 + 1)));
+                        inflow_count_data(idx0 - 1, idx1 + 1) += 1;
+                    }
+                    else if(flow_direction == east<FlowDirectionElement>)
+                    {
+                        lue_hpx_assert(!indp.is_no_data(flow_direction_data(idx0, idx1 + 1)));
+                        inflow_count_data(idx0, idx1 + 1) += 1;
+                    }
+                }
+            }
+
+            // South-east cell
+            {
+                Index const idx0{nr_elements0 - 1};
+                Index const idx1{nr_elements1 - 1};
+
+                if(indp.is_no_data(flow_direction_data, idx0, idx1))
+                {
+                    ondp.mark_no_data(inflow_count_data, idx0, idx1);
+                }
+                else
+                {
+                    auto const flow_direction{flow_direction_data(idx0, idx1)};
+
+                    if(flow_direction == west<FlowDirectionElement>)
+                    {
+                        lue_hpx_assert(!indp.is_no_data(flow_direction_data(idx0, idx1 - 1)));
+                        inflow_count_data(idx0, idx1 - 1) += 1;
+                    }
+                    else if(flow_direction == north_west<FlowDirectionElement>)
+                    {
+                        lue_hpx_assert(!indp.is_no_data(flow_direction_data(idx0 - 1, idx1 - 1)));
+                        inflow_count_data(idx0 - 1, idx1 - 1) += 1;
+                    }
+                    else if(flow_direction == north<FlowDirectionElement>)
+                    {
+                        lue_hpx_assert(!indp.is_no_data(flow_direction_data(idx0 - 1, idx1)));
+                        inflow_count_data(idx0 - 1, idx1) += 1;
+                    }
+                }
+            }
+
+            if(nr_elements1 > 2)
+            {
+                // North cells
+                {
+                    Index const idx0 = 0;
+
+                    for(Index idx1 = 1; idx1 < nr_elements1 - 1; ++idx1)
+                    {
+                        if(indp.is_no_data(flow_direction_data, idx0, idx1))
+                        {
+                            ondp.mark_no_data(inflow_count_data, idx0, idx1);
+                        }
+                        else
+                        {
+                            auto const flow_direction{flow_direction_data(idx0, idx1)};
+
+                            if(flow_direction == west<FlowDirectionElement>)
+                            {
+                                lue_hpx_assert(!indp.is_no_data(flow_direction_data(idx0, idx1 - 1)));
+                                inflow_count_data(idx0, idx1 - 1) += 1;
+                            }
+                            else if(flow_direction == south_west<FlowDirectionElement>)
+                            {
+                                lue_hpx_assert(!indp.is_no_data(flow_direction_data(idx0 + 1, idx1 - 1)));
+                                inflow_count_data(idx0 + 1, idx1 - 1) += 1;
+                            }
+                            else if(flow_direction == south<FlowDirectionElement>)
+                            {
+                                lue_hpx_assert(!indp.is_no_data(flow_direction_data(idx0 + 1, idx1)));
+                                inflow_count_data(idx0 + 1, idx1) += 1;
+                            }
+                            else if(flow_direction == south_east<FlowDirectionElement>)
+                            {
+                                lue_hpx_assert(!indp.is_no_data(flow_direction_data(idx0 + 1, idx1 + 1)));
+                                inflow_count_data(idx0 + 1, idx1 + 1) += 1;
+                            }
+                            else if(flow_direction == east<FlowDirectionElement>)
+                            {
+                                lue_hpx_assert(!indp.is_no_data(flow_direction_data(idx0, idx1 + 1)));
+                                inflow_count_data(idx0, idx1 + 1) += 1;
+                            }
+                        }
+                    }
+                }
+
+                // South cells
+                {
+                    Index const idx0 = nr_elements0 - 1;
+
+                    for(Index idx1 = 1; idx1 < nr_elements1 - 1; ++idx1)
+                    {
+                        if(indp.is_no_data(flow_direction_data, idx0, idx1))
+                        {
+                            ondp.mark_no_data(inflow_count_data, idx0, idx1);
+                        }
+                        else
+                        {
+                            auto const flow_direction{flow_direction_data(idx0, idx1)};
+
+                            if(flow_direction == west<FlowDirectionElement>)
+                            {
+                                lue_hpx_assert(!indp.is_no_data(flow_direction_data(idx0, idx1 - 1)));
+                                inflow_count_data(idx0, idx1 - 1) += 1;
+                            }
+                            else if(flow_direction == north_west<FlowDirectionElement>)
+                            {
+                                lue_hpx_assert(!indp.is_no_data(flow_direction_data(idx0 - 1, idx1 - 1)));
+                                inflow_count_data(idx0 - 1, idx1 - 1) += 1;
+                            }
+                            else if(flow_direction == north<FlowDirectionElement>)
+                            {
+                                lue_hpx_assert(!indp.is_no_data(flow_direction_data(idx0 - 1, idx1)));
+                                inflow_count_data(idx0 - 1, idx1) += 1;
+                            }
+                            else if(flow_direction == north_east<FlowDirectionElement>)
+                            {
+                                lue_hpx_assert(!indp.is_no_data(flow_direction_data(idx0 - 1, idx1 + 1)));
+                                inflow_count_data(idx0 - 1, idx1 + 1) += 1;
+                            }
+                            else if(flow_direction == east<FlowDirectionElement>)
+                            {
+                                lue_hpx_assert(!indp.is_no_data(flow_direction_data(idx0, idx1 + 1)));
+                                inflow_count_data(idx0, idx1 + 1) += 1;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if(nr_elements0 > 2)
+            {
+                // West cells
+                {
+                    Index const idx1 = 0;
+
+                    for(Index idx0 = 1; idx0 < nr_elements0 - 1; ++idx0)
+                    {
+                        if(indp.is_no_data(flow_direction_data, idx0, idx1))
+                        {
+                            ondp.mark_no_data(inflow_count_data, idx0, idx1);
+                        }
+                        else
+                        {
+                            auto const flow_direction{flow_direction_data(idx0, idx1)};
+
+                            if(flow_direction == north<FlowDirectionElement>)
+                            {
+                                lue_hpx_assert(!indp.is_no_data(flow_direction_data(idx0 - 1, idx1)));
+                                inflow_count_data(idx0 - 1, idx1) += 1;
+                            }
+                            else if(flow_direction == north_east<FlowDirectionElement>)
+                            {
+                                lue_hpx_assert(!indp.is_no_data(flow_direction_data(idx0 - 1, idx1 + 1)));
+                                inflow_count_data(idx0 - 1, idx1 + 1) += 1;
+                            }
+                            else if(flow_direction == east<FlowDirectionElement>)
+                            {
+                                lue_hpx_assert(!indp.is_no_data(flow_direction_data(idx0, idx1 + 1)));
+                                inflow_count_data(idx0, idx1 + 1) += 1;
+                            }
+                            else if(flow_direction == south_east<FlowDirectionElement>)
+                            {
+                                lue_hpx_assert(!indp.is_no_data(flow_direction_data(idx0 + 1, idx1 + 1)));
+                                inflow_count_data(idx0 + 1, idx1 + 1) += 1;
+                            }
+                            else if(flow_direction == south<FlowDirectionElement>)
+                            {
+                                lue_hpx_assert(!indp.is_no_data(flow_direction_data(idx0 + 1, idx1)));
+                                inflow_count_data(idx0 + 1, idx1) += 1;
+                            }
+                        }
+                    }
+                }
+
+                // East cells
+                {
+                    Index const idx1 = nr_elements1 - 1;
+
+                    for(Index idx0 = 1; idx0 < nr_elements0 - 1; ++idx0)
+                    {
+                        if(indp.is_no_data(flow_direction_data, idx0, idx1))
+                        {
+                            ondp.mark_no_data(inflow_count_data, idx0, idx1);
+                        }
+                        else
+                        {
+                            auto const flow_direction{flow_direction_data(idx0, idx1)};
+
+                            if(flow_direction == north<FlowDirectionElement>)
+                            {
+                                lue_hpx_assert(!indp.is_no_data(flow_direction_data(idx0 - 1, idx1)));
+                                inflow_count_data(idx0 - 1, idx1) += 1;
+                            }
+                            else if(flow_direction == north_west<FlowDirectionElement>)
+                            {
+                                lue_hpx_assert(!indp.is_no_data(flow_direction_data(idx0 - 1, idx1 - 1)));
+                                inflow_count_data(idx0 - 1, idx1 - 1) += 1;
+                            }
+                            else if(flow_direction == west<FlowDirectionElement>)
+                            {
+                                lue_hpx_assert(!indp.is_no_data(flow_direction_data(idx0, idx1 - 1)));
+                                inflow_count_data(idx0, idx1 - 1) += 1;
+                            }
+                            else if(flow_direction == south_west<FlowDirectionElement>)
+                            {
+                                lue_hpx_assert(!indp.is_no_data(flow_direction_data(idx0 + 1, idx1 - 1)));
+                                inflow_count_data(idx0 + 1, idx1 - 1) += 1;
+                            }
+                            else if(flow_direction == south<FlowDirectionElement>)
+                            {
+                                lue_hpx_assert(!indp.is_no_data(flow_direction_data(idx0 + 1, idx1)));
+                                inflow_count_data(idx0 + 1, idx1) += 1;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return inflow_count_data;
+        }
+
+
+        template<
             typename InflowCountData,
             typename Policies,
             typename FlowDirectionData>
@@ -31,339 +380,11 @@ namespace lue {
 
             Shape const& partition_shape{flow_direction_data(1, 1).shape()};
             auto const [nr_elements0, nr_elements1] = partition_shape;
-            InflowCountData inflow_count_data{partition_shape, 0};
 
-            // Handle all cells whose downstream cells are contained within
-            // this partition
-            {
-                auto const& data{flow_direction_data(1, 1)};
+            using CountElement = ElementT<InflowCountData>;
 
-                for(Index idx0 = 1; idx0 < nr_elements0 - 1; ++idx0) {
-                    for(Index idx1 = 1; idx1 < nr_elements1 - 1; ++idx1)
-                    {
-                        if(indp.is_no_data(data, idx0, idx1))
-                        {
-                            ondp.mark_no_data(inflow_count_data, idx0, idx1);
-                        }
-                        else
-                        {
-                            auto const [rd, cd] = downstream_cell(data, idx0, idx1);
-
-                            if(rd != idx0 || cd != idx1)
-                            {
-                                // Current cell is no a sink. In
-                                // a valid flow direction network,
-                                // the destination cell cannot contain
-                                // no-data.
-                                lue_hpx_assert(!indp.is_no_data(data(rd, cd)));
-                                inflow_count_data(rd, cd) += 1;
-                            }
-                        }
-                    }
-                }
-
-                // North-west cell
-                {
-                    Index const idx0{0};
-                    Index const idx1{0};
-
-                    if(indp.is_no_data(data, idx0, idx1))
-                    {
-                        ondp.mark_no_data(inflow_count_data, idx0, idx1);
-                    }
-                    else
-                    {
-                        auto const flow_direction{data(idx0, idx1)};
-
-                        if(flow_direction == east<FlowDirectionElement>)
-                        {
-                            lue_hpx_assert(!indp.is_no_data(data(idx0, idx1 + 1)));
-                            inflow_count_data(idx0, idx1 + 1) += 1;
-                        }
-                        else if(flow_direction == south_east<FlowDirectionElement>)
-                        {
-                            lue_hpx_assert(!indp.is_no_data(data(idx0 + 1, idx1 + 1)));
-                            inflow_count_data(idx0 + 1, idx1 + 1) += 1;
-                        }
-                        else if(flow_direction == south<FlowDirectionElement>)
-                        {
-                            lue_hpx_assert(!indp.is_no_data(data(idx0 + 1, idx1)));
-                            inflow_count_data(idx0 + 1, idx1) += 1;
-                        }
-                    }
-                }
-
-                // North-east cell
-                {
-                    Index const idx0{0};
-                    Index const idx1{nr_elements1 - 1};
-
-                    if(indp.is_no_data(data, idx0, idx1))
-                    {
-                        ondp.mark_no_data(inflow_count_data, idx0, idx1);
-                    }
-                    else
-                    {
-                        auto const flow_direction{data(idx0, idx1)};
-
-                        if(flow_direction == west<FlowDirectionElement>)
-                        {
-                            lue_hpx_assert(!indp.is_no_data(data(idx0, idx1 - 1)));
-                            inflow_count_data(idx0, idx1 - 1) += 1;
-                        }
-                        else if(flow_direction == south_west<FlowDirectionElement>)
-                        {
-                            lue_hpx_assert(!indp.is_no_data(data(idx0 + 1, idx1 - 1)));
-                            inflow_count_data(idx0 + 1, idx1 - 1) += 1;
-                        }
-                        else if(flow_direction == south<FlowDirectionElement>)
-                        {
-                            lue_hpx_assert(!indp.is_no_data(data(idx0 + 1, idx1)));
-                            inflow_count_data(idx0 + 1, idx1) += 1;
-                        }
-                    }
-                }
-
-                // South-west cell
-                {
-                    Index const idx0{nr_elements0 - 1};
-                    Index const idx1{0};
-
-                    if(indp.is_no_data(data, idx0, idx1))
-                    {
-                        ondp.mark_no_data(inflow_count_data, idx0, idx1);
-                    }
-                    else
-                    {
-                        auto const flow_direction{data(idx0, idx1)};
-
-                        if(flow_direction == north<FlowDirectionElement>)
-                        {
-                            lue_hpx_assert(!indp.is_no_data(data(idx0 - 1, idx1)));
-                            inflow_count_data(idx0 - 1, idx1) += 1;
-                        }
-                        else if(flow_direction == north_east<FlowDirectionElement>)
-                        {
-                            lue_hpx_assert(!indp.is_no_data(data(idx0 - 1, idx1 + 1)));
-                            inflow_count_data(idx0 - 1, idx1 + 1) += 1;
-                        }
-                        else if(flow_direction == east<FlowDirectionElement>)
-                        {
-                            lue_hpx_assert(!indp.is_no_data(data(idx0, idx1 + 1)));
-                            inflow_count_data(idx0, idx1 + 1) += 1;
-                        }
-                    }
-                }
-
-                // South-east cell
-                {
-                    Index const idx0{nr_elements0 - 1};
-                    Index const idx1{nr_elements1 - 1};
-
-                    if(indp.is_no_data(data, idx0, idx1))
-                    {
-                        ondp.mark_no_data(inflow_count_data, idx0, idx1);
-                    }
-                    else
-                    {
-                        auto const flow_direction{data(idx0, idx1)};
-
-                        if(flow_direction == west<FlowDirectionElement>)
-                        {
-                            lue_hpx_assert(!indp.is_no_data(data(idx0, idx1 - 1)));
-                            inflow_count_data(idx0, idx1 - 1) += 1;
-                        }
-                        else if(flow_direction == north_west<FlowDirectionElement>)
-                        {
-                            lue_hpx_assert(!indp.is_no_data(data(idx0 - 1, idx1 - 1)));
-                            inflow_count_data(idx0 - 1, idx1 - 1) += 1;
-                        }
-                        else if(flow_direction == north<FlowDirectionElement>)
-                        {
-                            lue_hpx_assert(!indp.is_no_data(data(idx0 - 1, idx1)));
-                            inflow_count_data(idx0 - 1, idx1) += 1;
-                        }
-                    }
-                }
-
-                if(nr_elements1 > 2)
-                {
-                    // North cells
-                    {
-                        Index const idx0 = 0;
-
-                        for(Index idx1 = 1; idx1 < nr_elements1 - 1; ++idx1)
-                        {
-                            if(indp.is_no_data(data, idx0, idx1))
-                            {
-                                ondp.mark_no_data(inflow_count_data, idx0, idx1);
-                            }
-                            else
-                            {
-                                auto const flow_direction{data(idx0, idx1)};
-
-                                if(flow_direction == west<FlowDirectionElement>)
-                                {
-                                    lue_hpx_assert(!indp.is_no_data(data(idx0, idx1 - 1)));
-                                    inflow_count_data(idx0, idx1 - 1) += 1;
-                                }
-                                else if(flow_direction == south_west<FlowDirectionElement>)
-                                {
-                                    lue_hpx_assert(!indp.is_no_data(data(idx0 + 1, idx1 - 1)));
-                                    inflow_count_data(idx0 + 1, idx1 - 1) += 1;
-                                }
-                                else if(flow_direction == south<FlowDirectionElement>)
-                                {
-                                    lue_hpx_assert(!indp.is_no_data(data(idx0 + 1, idx1)));
-                                    inflow_count_data(idx0 + 1, idx1) += 1;
-                                }
-                                else if(flow_direction == south_east<FlowDirectionElement>)
-                                {
-                                    lue_hpx_assert(!indp.is_no_data(data(idx0 + 1, idx1 + 1)));
-                                    inflow_count_data(idx0 + 1, idx1 + 1) += 1;
-                                }
-                                else if(flow_direction == east<FlowDirectionElement>)
-                                {
-                                    lue_hpx_assert(!indp.is_no_data(data(idx0, idx1 + 1)));
-                                    inflow_count_data(idx0, idx1 + 1) += 1;
-                                }
-                            }
-                        }
-                    }
-
-                    // South cells
-                    {
-                        Index const idx0 = nr_elements0 - 1;
-
-                        for(Index idx1 = 1; idx1 < nr_elements1 - 1; ++idx1)
-                        {
-                            if(indp.is_no_data(data, idx0, idx1))
-                            {
-                                ondp.mark_no_data(inflow_count_data, idx0, idx1);
-                            }
-                            else
-                            {
-                                auto const flow_direction{data(idx0, idx1)};
-
-                                if(flow_direction == west<FlowDirectionElement>)
-                                {
-                                    lue_hpx_assert(!indp.is_no_data(data(idx0, idx1 - 1)));
-                                    inflow_count_data(idx0, idx1 - 1) += 1;
-                                }
-                                else if(flow_direction == north_west<FlowDirectionElement>)
-                                {
-                                    lue_hpx_assert(!indp.is_no_data(data(idx0 - 1, idx1 - 1)));
-                                    inflow_count_data(idx0 - 1, idx1 - 1) += 1;
-                                }
-                                else if(flow_direction == north<FlowDirectionElement>)
-                                {
-                                    lue_hpx_assert(!indp.is_no_data(data(idx0 - 1, idx1)));
-                                    inflow_count_data(idx0 - 1, idx1) += 1;
-                                }
-                                else if(flow_direction == north_east<FlowDirectionElement>)
-                                {
-                                    lue_hpx_assert(!indp.is_no_data(data(idx0 - 1, idx1 + 1)));
-                                    inflow_count_data(idx0 - 1, idx1 + 1) += 1;
-                                }
-                                else if(flow_direction == east<FlowDirectionElement>)
-                                {
-                                    lue_hpx_assert(!indp.is_no_data(data(idx0, idx1 + 1)));
-                                    inflow_count_data(idx0, idx1 + 1) += 1;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if(nr_elements0 > 2)
-                {
-                    // West cells
-                    {
-                        Index const idx1 = 0;
-
-                        for(Index idx0 = 1; idx0 < nr_elements0 - 1; ++idx0)
-                        {
-                            if(indp.is_no_data(data, idx0, idx1))
-                            {
-                                ondp.mark_no_data(inflow_count_data, idx0, idx1);
-                            }
-                            else
-                            {
-                                auto const flow_direction{data(idx0, idx1)};
-
-                                if(flow_direction == north<FlowDirectionElement>)
-                                {
-                                    lue_hpx_assert(!indp.is_no_data(data(idx0 - 1, idx1)));
-                                    inflow_count_data(idx0 - 1, idx1) += 1;
-                                }
-                                else if(flow_direction == north_east<FlowDirectionElement>)
-                                {
-                                    lue_hpx_assert(!indp.is_no_data(data(idx0 - 1, idx1 + 1)));
-                                    inflow_count_data(idx0 - 1, idx1 + 1) += 1;
-                                }
-                                else if(flow_direction == east<FlowDirectionElement>)
-                                {
-                                    lue_hpx_assert(!indp.is_no_data(data(idx0, idx1 + 1)));
-                                    inflow_count_data(idx0, idx1 + 1) += 1;
-                                }
-                                else if(flow_direction == south_east<FlowDirectionElement>)
-                                {
-                                    lue_hpx_assert(!indp.is_no_data(data(idx0 + 1, idx1 + 1)));
-                                    inflow_count_data(idx0 + 1, idx1 + 1) += 1;
-                                }
-                                else if(flow_direction == south<FlowDirectionElement>)
-                                {
-                                    lue_hpx_assert(!indp.is_no_data(data(idx0 + 1, idx1)));
-                                    inflow_count_data(idx0 + 1, idx1) += 1;
-                                }
-                            }
-                        }
-                    }
-
-                    // East cells
-                    {
-                        Index const idx1 = nr_elements1 - 1;
-
-                        for(Index idx0 = 1; idx0 < nr_elements0 - 1; ++idx0)
-                        {
-                            if(indp.is_no_data(data, idx0, idx1))
-                            {
-                                ondp.mark_no_data(inflow_count_data, idx0, idx1);
-                            }
-                            else
-                            {
-                                auto const flow_direction{data(idx0, idx1)};
-
-                                if(flow_direction == north<FlowDirectionElement>)
-                                {
-                                    lue_hpx_assert(!indp.is_no_data(data(idx0 - 1, idx1)));
-                                    inflow_count_data(idx0 - 1, idx1) += 1;
-                                }
-                                else if(flow_direction == north_west<FlowDirectionElement>)
-                                {
-                                    lue_hpx_assert(!indp.is_no_data(data(idx0 - 1, idx1 - 1)));
-                                    inflow_count_data(idx0 - 1, idx1 - 1) += 1;
-                                }
-                                else if(flow_direction == west<FlowDirectionElement>)
-                                {
-                                    lue_hpx_assert(!indp.is_no_data(data(idx0, idx1 - 1)));
-                                    inflow_count_data(idx0, idx1 - 1) += 1;
-                                }
-                                else if(flow_direction == south_west<FlowDirectionElement>)
-                                {
-                                    lue_hpx_assert(!indp.is_no_data(data(idx0 + 1, idx1 - 1)));
-                                    inflow_count_data(idx0 + 1, idx1 - 1) += 1;
-                                }
-                                else if(flow_direction == south<FlowDirectionElement>)
-                                {
-                                    lue_hpx_assert(!indp.is_no_data(data(idx0 + 1, idx1)));
-                                    inflow_count_data(idx0 + 1, idx1) += 1;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            InflowCountData inflow_count_data{
+                inflow_count_partition_data<CountElement>(policies, flow_direction_data(1, 1))};
 
             // Handle all cells at the side of the center partition, whose
             // upper stream cells are located in neighbouring partitions. Besides

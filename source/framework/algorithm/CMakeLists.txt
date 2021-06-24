@@ -9,6 +9,8 @@ add_subdirectory(hpx)
 
 add_library(lue_framework_algorithm SHARED
     src/component/array_partition_io.cpp
+    src/component/flow_accumulation.cpp
+    src/component/server/flow_accumulation.cpp
 )
 
 add_library(lue::framework_algorithm ALIAS lue_framework_algorithm)
@@ -32,6 +34,7 @@ target_link_libraries(lue_framework_algorithm
     PUBLIC
         lue::framework_partitioned_array
         lue::framework_core
+        # HPX::iostreams_component
         HPX::hpx
 )
 
@@ -123,9 +126,11 @@ add_library(lue_framework_flow_direction_operation SHARED
     src/flow_direction_operation/accu_fraction.cpp
     src/flow_direction_operation/accu_info.cpp
     src/flow_direction_operation/accu_threshold.cpp
+    src/flow_direction_operation/accu_threshold3.cpp
     src/flow_direction_operation/d8_network.cpp
     src/flow_direction_operation/downstream.cpp
     src/flow_direction_operation/downstream_distance.cpp
+    src/flow_direction_operation/inflow_count3.cpp
     src/flow_direction_operation/upstream.cpp
 )
 

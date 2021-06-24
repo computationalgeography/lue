@@ -1,5 +1,6 @@
 #define BOOST_TEST_MODULE lue framework algorithm inflow_count
 #include "lue/framework/algorithm/inflow_count.hpp"
+#include "lue/framework/algorithm/definition/inflow_count3.hpp"
 #include "lue/framework/algorithm/policy.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/compare.hpp"
@@ -49,6 +50,23 @@ namespace {
 
 
     template<
+        typename Policies,
+        typename FlowDirectionArray,
+        typename InflowCountArray>
+    void test_inflow_count3(
+        Policies const& policies,
+        FlowDirectionArray const& flow_direction,
+        InflowCountArray const& inflow_count_we_want)
+    {
+        using CountElement = lue::ElementT<InflowCountArray>;
+
+        InflowCount inflow_count_we_got = lue::inflow_count3<CountElement>(policies, flow_direction);
+
+        lue::test::check_arrays_are_equal(inflow_count_we_got, inflow_count_we_want);
+    }
+
+
+    template<
         typename FlowDirectionArray,
         typename InflowCountArray>
     void test_inflow_count(
@@ -57,9 +75,18 @@ namespace {
     {
         using CountElement = lue::ElementT<InflowCountArray>;
         using FlowDirectionElement = lue::ElementT<FlowDirectionArray>;
-        using Policies = lue::policy::inflow_count::DefaultPolicies<CountElement, FlowDirectionElement>;
 
-        test_inflow_count(Policies{}, flow_direction, inflow_count_we_want);
+        {
+            using Policies = lue::policy::inflow_count::DefaultPolicies<CountElement, FlowDirectionElement>;
+
+            test_inflow_count(Policies{}, flow_direction, inflow_count_we_want);
+        }
+
+        {
+            using Policies = lue::policy::inflow_count3::DefaultPolicies<CountElement, FlowDirectionElement>;
+
+            test_inflow_count3(Policies{}, flow_direction, inflow_count_we_want);
+        }
     }
 
 }  // Anonymous namespace
@@ -149,19 +176,105 @@ BOOST_AUTO_TEST_CASE(parallel_south)
     // +---+---+---+   +---+---+---+
     // | 🡣 | 🡣 | 🡣 |   | 1 | 1 | 1 |
     // +---+---+---+   +---+---+---+
+
+    Shape const array_shape{{9, 9}};
     test_inflow_count(
         lue::test::create_partitioned_array<FlowDirection>(array_shape, partition_shape,
-            {{
-                s, s, s,
-                s, s, s,
-                s, s, s,
-            }}),
+            {
+                {
+                    s, s, s,
+                    s, s, s,
+                    s, s, s,
+                },
+                {
+                    s, s, s,
+                    s, s, s,
+                    s, s, s,
+                },
+                {
+                    s, s, s,
+                    s, s, s,
+                    s, s, s,
+                },
+                {
+                    s, s, s,
+                    s, s, s,
+                    s, s, s,
+                },
+                {
+                    s, s, s,
+                    s, s, s,
+                    s, s, s,
+                },
+                {
+                    s, s, s,
+                    s, s, s,
+                    s, s, s,
+                },
+                {
+                    s, s, s,
+                    s, s, s,
+                    s, s, s,
+                },
+                {
+                    s, s, s,
+                    s, s, s,
+                    s, s, s,
+                },
+                {
+                    s, s, s,
+                    s, s, s,
+                    s, s, s,
+                },
+            }),
         lue::test::create_partitioned_array<InflowCount>(array_shape, partition_shape,
-            {{
-                0, 0, 0,
-                1, 1, 1,
-                1, 1, 1,
-            }}));
+            {
+                {
+                    0, 0, 0,
+                    1, 1, 1,
+                    1, 1, 1,
+                },
+                {
+                    0, 0, 0,
+                    1, 1, 1,
+                    1, 1, 1,
+                },
+                {
+                    0, 0, 0,
+                    1, 1, 1,
+                    1, 1, 1,
+                },
+                {
+                    1, 1, 1,
+                    1, 1, 1,
+                    1, 1, 1,
+                },
+                {
+                    1, 1, 1,
+                    1, 1, 1,
+                    1, 1, 1,
+                },
+                {
+                    1, 1, 1,
+                    1, 1, 1,
+                    1, 1, 1,
+                },
+                {
+                    1, 1, 1,
+                    1, 1, 1,
+                    1, 1, 1,
+                },
+                {
+                    1, 1, 1,
+                    1, 1, 1,
+                    1, 1, 1,
+                },
+                {
+                    1, 1, 1,
+                    1, 1, 1,
+                    1, 1, 1,
+                },
+            }));
 }
 
 
@@ -174,19 +287,105 @@ BOOST_AUTO_TEST_CASE(parallel_south_west)
     // +---+---+---+   +---+---+---+
     // | 🡧 | 🡧 | 🡧 |   | 1 | 1 | 0 |
     // +---+---+---+   +---+---+---+
+
+    Shape const array_shape{{9, 9}};
     test_inflow_count(
         lue::test::create_partitioned_array<FlowDirection>(array_shape, partition_shape,
-            {{
-                sw, sw, sw,
-                sw, sw, sw,
-                sw, sw, sw,
-            }}),
+            {
+                {
+                    sw, sw, sw,
+                    sw, sw, sw,
+                    sw, sw, sw,
+                },
+                {
+                    sw, sw, sw,
+                    sw, sw, sw,
+                    sw, sw, sw,
+                },
+                {
+                    sw, sw, sw,
+                    sw, sw, sw,
+                    sw, sw, sw,
+                },
+                {
+                    sw, sw, sw,
+                    sw, sw, sw,
+                    sw, sw, sw,
+                },
+                {
+                    sw, sw, sw,
+                    sw, sw, sw,
+                    sw, sw, sw,
+                },
+                {
+                    sw, sw, sw,
+                    sw, sw, sw,
+                    sw, sw, sw,
+                },
+                {
+                    sw, sw, sw,
+                    sw, sw, sw,
+                    sw, sw, sw,
+                },
+                {
+                    sw, sw, sw,
+                    sw, sw, sw,
+                    sw, sw, sw,
+                },
+                {
+                    sw, sw, sw,
+                    sw, sw, sw,
+                    sw, sw, sw,
+                },
+            }),
         lue::test::create_partitioned_array<InflowCount>(array_shape, partition_shape,
-            {{
-                0, 0, 0,
-                1, 1, 0,
-                1, 1, 0,
-            }}));
+            {
+                {
+                    0, 0, 0,
+                    1, 1, 1,
+                    1, 1, 1,
+                },
+                {
+                    0, 0, 0,
+                    1, 1, 1,
+                    1, 1, 1,
+                },
+                {
+                    0, 0, 0,
+                    1, 1, 0,
+                    1, 1, 0,
+                },
+                {
+                    1, 1, 1,
+                    1, 1, 1,
+                    1, 1, 1,
+                },
+                {
+                    1, 1, 1,
+                    1, 1, 1,
+                    1, 1, 1,
+                },
+                {
+                    1, 1, 0,
+                    1, 1, 0,
+                    1, 1, 0,
+                },
+                {
+                    1, 1, 1,
+                    1, 1, 1,
+                    1, 1, 1,
+                },
+                {
+                    1, 1, 1,
+                    1, 1, 1,
+                    1, 1, 1,
+                },
+                {
+                    1, 1, 0,
+                    1, 1, 0,
+                    1, 1, 0,
+                },
+            }));
 }
 
 
@@ -199,19 +398,105 @@ BOOST_AUTO_TEST_CASE(parallel_west)
     // +---+---+---+   +---+---+---+
     // | 🡠 | 🡠 | 🡠 |   | 1 | 1 | 0 |
     // +---+---+---+   +---+---+---+
+
+    Shape const array_shape{{9, 9}};
     test_inflow_count(
         lue::test::create_partitioned_array<FlowDirection>(array_shape, partition_shape,
-            {{
-                w, w, w,
-                w, w, w,
-                w, w, w,
-            }}),
+            {
+                {
+                    w, w, w,
+                    w, w, w,
+                    w, w, w,
+                },
+                {
+                    w, w, w,
+                    w, w, w,
+                    w, w, w,
+                },
+                {
+                    w, w, w,
+                    w, w, w,
+                    w, w, w,
+                },
+                {
+                    w, w, w,
+                    w, w, w,
+                    w, w, w,
+                },
+                {
+                    w, w, w,
+                    w, w, w,
+                    w, w, w,
+                },
+                {
+                    w, w, w,
+                    w, w, w,
+                    w, w, w,
+                },
+                {
+                    w, w, w,
+                    w, w, w,
+                    w, w, w,
+                },
+                {
+                    w, w, w,
+                    w, w, w,
+                    w, w, w,
+                },
+                {
+                    w, w, w,
+                    w, w, w,
+                    w, w, w,
+                },
+            }),
         lue::test::create_partitioned_array<InflowCount>(array_shape, partition_shape,
-            {{
-                1, 1, 0,
-                1, 1, 0,
-                1, 1, 0,
-            }}));
+            {
+                {
+                    1, 1, 1,
+                    1, 1, 1,
+                    1, 1, 1,
+                },
+                {
+                    1, 1, 1,
+                    1, 1, 1,
+                    1, 1, 1,
+                },
+                {
+                    1, 1, 0,
+                    1, 1, 0,
+                    1, 1, 0,
+                },
+                {
+                    1, 1, 1,
+                    1, 1, 1,
+                    1, 1, 1,
+                },
+                {
+                    1, 1, 1,
+                    1, 1, 1,
+                    1, 1, 1,
+                },
+                {
+                    1, 1, 0,
+                    1, 1, 0,
+                    1, 1, 0,
+                },
+                {
+                    1, 1, 1,
+                    1, 1, 1,
+                    1, 1, 1,
+                },
+                {
+                    1, 1, 1,
+                    1, 1, 1,
+                    1, 1, 1,
+                },
+                {
+                    1, 1, 0,
+                    1, 1, 0,
+                    1, 1, 0,
+                },
+            }));
 }
 
 
@@ -224,19 +509,105 @@ BOOST_AUTO_TEST_CASE(parallel_north_west)
     // +---+---+---+   +---+---+---+
     // | 🡤 | 🡤 | 🡤 |   | 0 | 0 | 0 |
     // +---+---+---+   +---+---+---+
+
+    Shape const array_shape{{9, 9}};
     test_inflow_count(
         lue::test::create_partitioned_array<FlowDirection>(array_shape, partition_shape,
-            {{
-                nw, nw, nw,
-                nw, nw, nw,
-                nw, nw, nw,
-            }}),
+            {
+                {
+                    nw, nw, nw,
+                    nw, nw, nw,
+                    nw, nw, nw,
+                },
+                {
+                    nw, nw, nw,
+                    nw, nw, nw,
+                    nw, nw, nw,
+                },
+                {
+                    nw, nw, nw,
+                    nw, nw, nw,
+                    nw, nw, nw,
+                },
+                {
+                    nw, nw, nw,
+                    nw, nw, nw,
+                    nw, nw, nw,
+                },
+                {
+                    nw, nw, nw,
+                    nw, nw, nw,
+                    nw, nw, nw,
+                },
+                {
+                    nw, nw, nw,
+                    nw, nw, nw,
+                    nw, nw, nw,
+                },
+                {
+                    nw, nw, nw,
+                    nw, nw, nw,
+                    nw, nw, nw,
+                },
+                {
+                    nw, nw, nw,
+                    nw, nw, nw,
+                    nw, nw, nw,
+                },
+                {
+                    nw, nw, nw,
+                    nw, nw, nw,
+                    nw, nw, nw,
+                },
+            }),
         lue::test::create_partitioned_array<InflowCount>(array_shape, partition_shape,
-            {{
-                1, 1, 0,
-                1, 1, 0,
-                0, 0, 0,
-            }}));
+            {
+                {
+                    1, 1, 1,
+                    1, 1, 1,
+                    1, 1, 1,
+                },
+                {
+                    1, 1, 1,
+                    1, 1, 1,
+                    1, 1, 1,
+                },
+                {
+                    1, 1, 0,
+                    1, 1, 0,
+                    1, 1, 0,
+                },
+                {
+                    1, 1, 1,
+                    1, 1, 1,
+                    1, 1, 1,
+                },
+                {
+                    1, 1, 1,
+                    1, 1, 1,
+                    1, 1, 1,
+                },
+                {
+                    1, 1, 0,
+                    1, 1, 0,
+                    1, 1, 0,
+                },
+                {
+                    1, 1, 1,
+                    1, 1, 1,
+                    0, 0, 0,
+                },
+                {
+                    1, 1, 1,
+                    1, 1, 1,
+                    0, 0, 0,
+                },
+                {
+                    1, 1, 0,
+                    1, 1, 0,
+                    0, 0, 0,
+                },
+            }));
 }
 
 
@@ -249,19 +620,105 @@ BOOST_AUTO_TEST_CASE(parallel_north)
     // +---+---+---+   +---+---+---+
     // | 🡡 | 🡡 | 🡡 |   | 0 | 0 | 0 |
     // +---+---+---+   +---+---+---+
+
+    Shape const array_shape{{9, 9}};
     test_inflow_count(
         lue::test::create_partitioned_array<FlowDirection>(array_shape, partition_shape,
-            {{
-                n, n, n,
-                n, n, n,
-                n, n, n,
-            }}),
+            {
+                {
+                    n, n, n,
+                    n, n, n,
+                    n, n, n,
+                },
+                {
+                    n, n, n,
+                    n, n, n,
+                    n, n, n,
+                },
+                {
+                    n, n, n,
+                    n, n, n,
+                    n, n, n,
+                },
+                {
+                    n, n, n,
+                    n, n, n,
+                    n, n, n,
+                },
+                {
+                    n, n, n,
+                    n, n, n,
+                    n, n, n,
+                },
+                {
+                    n, n, n,
+                    n, n, n,
+                    n, n, n,
+                },
+                {
+                    n, n, n,
+                    n, n, n,
+                    n, n, n,
+                },
+                {
+                    n, n, n,
+                    n, n, n,
+                    n, n, n,
+                },
+                {
+                    n, n, n,
+                    n, n, n,
+                    n, n, n,
+                },
+            }),
         lue::test::create_partitioned_array<InflowCount>(array_shape, partition_shape,
-            {{
-                1, 1, 1,
-                1, 1, 1,
-                0, 0, 0,
-            }}));
+            {
+                {
+                    1, 1, 1,
+                    1, 1, 1,
+                    1, 1, 1,
+                },
+                {
+                    1, 1, 1,
+                    1, 1, 1,
+                    1, 1, 1,
+                },
+                {
+                    1, 1, 1,
+                    1, 1, 1,
+                    1, 1, 1,
+                },
+                {
+                    1, 1, 1,
+                    1, 1, 1,
+                    1, 1, 1,
+                },
+                {
+                    1, 1, 1,
+                    1, 1, 1,
+                    1, 1, 1,
+                },
+                {
+                    1, 1, 1,
+                    1, 1, 1,
+                    1, 1, 1,
+                },
+                {
+                    1, 1, 1,
+                    1, 1, 1,
+                    0, 0, 0,
+                },
+                {
+                    1, 1, 1,
+                    1, 1, 1,
+                    0, 0, 0,
+                },
+                {
+                    1, 1, 1,
+                    1, 1, 1,
+                    0, 0, 0,
+                },
+            }));
 }
 
 
@@ -274,19 +731,105 @@ BOOST_AUTO_TEST_CASE(parallel_north_east)
     // +---+---+---+   +---+---+---+
     // | 🡥 | 🡥 | 🡥 |   | 0 | 0 | 0 |
     // +---+---+---+   +---+---+---+
+
+    Shape const array_shape{{9, 9}};
     test_inflow_count(
         lue::test::create_partitioned_array<FlowDirection>(array_shape, partition_shape,
-            {{
-                ne, ne, ne,
-                ne, ne, ne,
-                ne, ne, ne,
-            }}),
+            {
+                {
+                    ne, ne, ne,
+                    ne, ne, ne,
+                    ne, ne, ne,
+                },
+                {
+                    ne, ne, ne,
+                    ne, ne, ne,
+                    ne, ne, ne,
+                },
+                {
+                    ne, ne, ne,
+                    ne, ne, ne,
+                    ne, ne, ne,
+                },
+                {
+                    ne, ne, ne,
+                    ne, ne, ne,
+                    ne, ne, ne,
+                },
+                {
+                    ne, ne, ne,
+                    ne, ne, ne,
+                    ne, ne, ne,
+                },
+                {
+                    ne, ne, ne,
+                    ne, ne, ne,
+                    ne, ne, ne,
+                },
+                {
+                    ne, ne, ne,
+                    ne, ne, ne,
+                    ne, ne, ne,
+                },
+                {
+                    ne, ne, ne,
+                    ne, ne, ne,
+                    ne, ne, ne,
+                },
+                {
+                    ne, ne, ne,
+                    ne, ne, ne,
+                    ne, ne, ne,
+                },
+            }),
         lue::test::create_partitioned_array<InflowCount>(array_shape, partition_shape,
-            {{
-                0, 1, 1,
-                0, 1, 1,
-                0, 0, 0,
-            }}));
+            {
+                {
+                    0, 1, 1,
+                    0, 1, 1,
+                    0, 1, 1,
+                },
+                {
+                    1, 1, 1,
+                    1, 1, 1,
+                    1, 1, 1,
+                },
+                {
+                    1, 1, 1,
+                    1, 1, 1,
+                    1, 1, 1,
+                },
+                {
+                    0, 1, 1,
+                    0, 1, 1,
+                    0, 1, 1,
+                },
+                {
+                    1, 1, 1,
+                    1, 1, 1,
+                    1, 1, 1,
+                },
+                {
+                    1, 1, 1,
+                    1, 1, 1,
+                    1, 1, 1,
+                },
+                {
+                    0, 1, 1,
+                    0, 1, 1,
+                    0, 0, 0,
+                },
+                {
+                    1, 1, 1,
+                    1, 1, 1,
+                    0, 0, 0,
+                },
+                {
+                    1, 1, 1,
+                    1, 1, 1,
+                    0, 0, 0,
+                },
+            }));
 }
 
 
@@ -299,19 +842,105 @@ BOOST_AUTO_TEST_CASE(parallel_east)
     // +---+---+---+   +---+---+---+
     // | 🡢 | 🡢 | 🡢 |   | 0 | 1 | 1 |
     // +---+---+---+   +---+---+---+
+
+    Shape const array_shape{{9, 9}};
     test_inflow_count(
         lue::test::create_partitioned_array<FlowDirection>(array_shape, partition_shape,
-            {{
-                e, e, e,
-                e, e, e,
-                e, e, e,
-            }}),
+            {
+                {
+                    e, e, e,
+                    e, e, e,
+                    e, e, e,
+                },
+                {
+                    e, e, e,
+                    e, e, e,
+                    e, e, e,
+                },
+                {
+                    e, e, e,
+                    e, e, e,
+                    e, e, e,
+                },
+                {
+                    e, e, e,
+                    e, e, e,
+                    e, e, e,
+                },
+                {
+                    e, e, e,
+                    e, e, e,
+                    e, e, e,
+                },
+                {
+                    e, e, e,
+                    e, e, e,
+                    e, e, e,
+                },
+                {
+                    e, e, e,
+                    e, e, e,
+                    e, e, e,
+                },
+                {
+                    e, e, e,
+                    e, e, e,
+                    e, e, e,
+                },
+                {
+                    e, e, e,
+                    e, e, e,
+                    e, e, e,
+                },
+            }),
         lue::test::create_partitioned_array<InflowCount>(array_shape, partition_shape,
-            {{
-                0, 1, 1,
-                0, 1, 1,
-                0, 1, 1,
-            }}));
+            {
+                {
+                    0, 1, 1,
+                    0, 1, 1,
+                    0, 1, 1,
+                },
+                {
+                    1, 1, 1,
+                    1, 1, 1,
+                    1, 1, 1,
+                },
+                {
+                    1, 1, 1,
+                    1, 1, 1,
+                    1, 1, 1,
+                },
+                {
+                    0, 1, 1,
+                    0, 1, 1,
+                    0, 1, 1,
+                },
+                {
+                    1, 1, 1,
+                    1, 1, 1,
+                    1, 1, 1,
+                },
+                {
+                    1, 1, 1,
+                    1, 1, 1,
+                    1, 1, 1,
+                },
+                {
+                    0, 1, 1,
+                    0, 1, 1,
+                    0, 1, 1,
+                },
+                {
+                    1, 1, 1,
+                    1, 1, 1,
+                    1, 1, 1,
+                },
+                {
+                    1, 1, 1,
+                    1, 1, 1,
+                    1, 1, 1,
+                },
+            }));
 }
 
 
@@ -324,19 +953,105 @@ BOOST_AUTO_TEST_CASE(parallel_south_east)
     // +---+---+---+   +---+---+---+
     // | 🡦 | 🡦 | 🡦 |   | 0 | 1 | 1 |
     // +---+---+---+   +---+---+---+
+
+    Shape const array_shape{{9, 9}};
     test_inflow_count(
         lue::test::create_partitioned_array<FlowDirection>(array_shape, partition_shape,
-            {{
-                se, se, se,
-                se, se, se,
-                se, se, se,
-            }}),
+            {
+                {
+                    se, se, se,
+                    se, se, se,
+                    se, se, se,
+                },
+                {
+                    se, se, se,
+                    se, se, se,
+                    se, se, se,
+                },
+                {
+                    se, se, se,
+                    se, se, se,
+                    se, se, se,
+                },
+                {
+                    se, se, se,
+                    se, se, se,
+                    se, se, se,
+                },
+                {
+                    se, se, se,
+                    se, se, se,
+                    se, se, se,
+                },
+                {
+                    se, se, se,
+                    se, se, se,
+                    se, se, se,
+                },
+                {
+                    se, se, se,
+                    se, se, se,
+                    se, se, se,
+                },
+                {
+                    se, se, se,
+                    se, se, se,
+                    se, se, se,
+                },
+                {
+                    se, se, se,
+                    se, se, se,
+                    se, se, se,
+                },
+            }),
         lue::test::create_partitioned_array<InflowCount>(array_shape, partition_shape,
-            {{
-                0, 0, 0,
-                0, 1, 1,
-                0, 1, 1,
-            }}));
+            {
+                {
+                    0, 0, 0,
+                    0, 1, 1,
+                    0, 1, 1,
+                },
+                {
+                    0, 0, 0,
+                    1, 1, 1,
+                    1, 1, 1,
+                },
+                {
+                    0, 0, 0,
+                    1, 1, 1,
+                    1, 1, 1,
+                },
+                {
+                    0, 1, 1,
+                    0, 1, 1,
+                    0, 1, 1,
+                },
+                {
+                    1, 1, 1,
+                    1, 1, 1,
+                    1, 1, 1,
+                },
+                {
+                    1, 1, 1,
+                    1, 1, 1,
+                    1, 1, 1,
+                },
+                {
+                    0, 1, 1,
+                    0, 1, 1,
+                    0, 1, 1,
+                },
+                {
+                    1, 1, 1,
+                    1, 1, 1,
+                    1, 1, 1,
+                },
+                {
+                    1, 1, 1,
+                    1, 1, 1,
+                    1, 1, 1,
+                },
+            }));
 }
 
 
