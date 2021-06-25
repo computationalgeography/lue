@@ -373,7 +373,7 @@ namespace lue {
             static_assert(rank<InflowCountData> == 2);
 
             auto const& indp{std::get<0>(policies.inputs_policies()).input_no_data_policy()};
-            auto const& ondp{std::get<0>(policies.outputs_policies()).output_no_data_policy()};
+            [[maybe_unused]] auto const& ondp{std::get<0>(policies.outputs_policies()).output_no_data_policy()};
 
             using FlowDirectionElement = ElementT<ElementT<FlowDirectionData>>;
             using Shape = ShapeT<FlowDirectionData>;

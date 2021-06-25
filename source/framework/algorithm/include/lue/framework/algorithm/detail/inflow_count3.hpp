@@ -7,7 +7,7 @@
 
 namespace lue::detail {
 
-    inline std::tuple<accu::Direction, std::array<Index, 2>> destination_cell(
+    inline std::tuple<accu::Direction, Index> destination_cell(
         Count const extent0,
         Count const extent1,
         Index const idx0,
@@ -24,8 +24,10 @@ namespace lue::detail {
         // Which neighbouring partition to send a message to
         accu::Direction direction;
 
-        // Idxs of cell in the neighbouring partition
-        std::array<Index, 2> idxs;
+        // Idx of cell in the neighbouring partition
+        Index idx{-1};
+
+        bool initialized{false};  // TODO remove
 
         if(idx0 == 0)
         {
@@ -37,20 +39,23 @@ namespace lue::detail {
                 {
                     lue_hpx_assert(offset1 == -1);
                     direction = accu::Direction::west;
-                    idxs = {idx0 + offset0, extent1 - 1};
+                    idx = idx0 + offset0;
+                    initialized = true;
                 }
                 else if(offset1 >= 0)
                 {
                     lue_hpx_assert(offset0 == -1);
                     direction = accu::Direction::north;
-                    idxs = {extent0 - 1, idx1 + offset1};
+                    idx = idx1 + offset1;
+                    initialized = true;
                 }
                 else
                 {
                     lue_hpx_assert(offset0 == -1);
                     lue_hpx_assert(offset1 == -1);
                     direction = accu::Direction::north_west;
-                    idxs = {extent0 - 1, extent1 - 1};
+                    idx = -1;  // Whatever
+                    initialized = true;
                 }
             }
             else if(idx1 == extent1 - 1)
@@ -60,20 +65,23 @@ namespace lue::detail {
                 {
                     lue_hpx_assert(offset1 == 1);
                     direction = accu::Direction::east;
-                    idxs = {idx0 + offset0, 0};
+                    idx = idx0 + offset0;
+                    initialized = true;
                 }
                 else if(offset1 <= 0)
                 {
                     lue_hpx_assert(offset0 == -1);
                     direction = accu::Direction::north;
-                    idxs = {extent0 - 1, idx1 + offset1};
+                    idx = idx1 + offset1;
+                    initialized = true;
                 }
                 else
                 {
                     lue_hpx_assert(offset0 == -1);
                     lue_hpx_assert(offset1 == 1);
                     direction = accu::Direction::north_east;
-                    idxs = {extent0 - 1, 0};
+                    idx = 0;  // Whatever
+                    initialized = true;
                 }
             }
             else
@@ -81,7 +89,8 @@ namespace lue::detail {
                 // north source cell → determine destination
                 lue_hpx_assert(offset0 == -1);
                 direction = accu::Direction::north;
-                idxs = {extent0 - 1, idx1 + offset1};
+                idx = idx1 + offset1;
+                initialized = true;
             }
         }
         else if(idx0 == extent0 - 1)
@@ -94,20 +103,23 @@ namespace lue::detail {
                 {
                     lue_hpx_assert(offset1 == -1);
                     direction = accu::Direction::west;
-                    idxs = {idx0 + offset0, extent1 - 1};
+                    idx = idx0 + offset0;
+                    initialized = true;
                 }
                 else if(offset1 >= 0)
                 {
                     lue_hpx_assert(offset0 == 1);
                     direction = accu::Direction::south;
-                    idxs = {0, idx1 + offset1};
+                    idx = idx1 + offset1;
+                    initialized = true;
                 }
                 else
                 {
                     lue_hpx_assert(offset0 == 1);
                     lue_hpx_assert(offset1 == -1);
                     direction = accu::Direction::south_west;
-                    idxs = {0, extent1 - 1};
+                    idx = -1;  // Whatever
+                    initialized = true;
                 }
             }
             else if(idx1 == extent1 - 1)
@@ -117,20 +129,23 @@ namespace lue::detail {
                 {
                     lue_hpx_assert(offset1 == 1);
                     direction = accu::Direction::east;
-                    idxs = {idx0 + offset0, 0};
+                    idx = idx0 + offset0;
+                    initialized = true;
                 }
                 else if(offset1 <= 0)
                 {
                     lue_hpx_assert(offset0 == 1);
                     direction = accu::Direction::south;
-                    idxs = {0, idx1 + offset1};
+                    idx = idx1 + offset1;
+                    initialized = true;
                 }
                 else
                 {
                     lue_hpx_assert(offset0 == 1);
                     lue_hpx_assert(offset1 == 1);
                     direction = accu::Direction::south_east;
-                    idxs = {0, 0};
+                    idx = -1;  // Whatever
+                    initialized = true;
                 }
             }
             else
@@ -138,7 +153,8 @@ namespace lue::detail {
                 // south source cell → determine destination
                 lue_hpx_assert(offset0 == 1);
                 direction = accu::Direction::south;
-                idxs = {0, idx1 + offset1};
+                idx = idx1 + offset1;
+                initialized = true;
             }
         }
         else if(idx1 == 0)
@@ -146,7 +162,8 @@ namespace lue::detail {
             // west source cell → determine destination
             lue_hpx_assert(offset1 == -1);
             direction = accu::Direction::west;
-            idxs = {idx0 + offset0, extent1 - 1};
+            idx = idx0 + offset0;
+            initialized = true;
 
         }
         else if(idx1 == extent1 - 1)
@@ -154,10 +171,13 @@ namespace lue::detail {
             // east source cell → determine destination
             lue_hpx_assert(offset1 == 1);
             direction = accu::Direction::east;
-            idxs = {idx0 + offset0, 0};
+            idx = idx0 + offset0;
+            initialized = true;
         }
 
-        return std::make_tuple(direction, idxs);
+        lue_hpx_assert(initialized);
+
+        return std::make_tuple(direction, idx);
     }
 
 

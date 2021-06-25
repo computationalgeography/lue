@@ -10,32 +10,29 @@ namespace lue {
 
         template<
             typename MaterialElement,
-            Rank rank>
+            Rank rank>  // Remove parameter
         class ChannelMaterial
         {
 
             public:
 
-                using CellIdxs = std::array<Index, rank>;
-
-
                 ChannelMaterial()=default;
 
 
                 ChannelMaterial(
-                    CellIdxs const& idxs,
+                    Index const& idx,
                     MaterialElement const& value):
 
-                    _cell_idxs{idxs},
+                    _cell_idx{idx},
                     _value{value}
 
                 {
                 }
 
 
-                CellIdxs const& cell_idxs() const
+                Index const& cell_idx() const
                 {
-                    return _cell_idxs;
+                    return _cell_idx;
                 }
 
 
@@ -55,11 +52,11 @@ namespace lue {
                     Archive& archive,
                     [[maybe_unused]] unsigned int const version)
                 {
-                    archive & _cell_idxs & _value;
+                    archive & _cell_idx & _value;
                 }
 
 
-                CellIdxs _cell_idxs;
+                Index _cell_idx;
 
                 MaterialElement _value;
 
@@ -411,14 +408,14 @@ namespace lue {
                     Index const offset1)
                 {
                     // Send material to cell in neighbouring partition
-                    auto [direction, idxs] = destination_cell(extent0, extent1, idx0, idx1, offset0, offset1);
+                    auto [direction, idx] = destination_cell(extent0, extent1, idx0, idx1, offset0, offset1);
 
                     if(_communicator.has_neighbour(direction))
                     {
                         // We are not at the border of the array
                         using Value = typename Communicator::Value;
 
-                        _communicator.send(direction, Value{idxs, _cell_accumulator.outflow(idx0, idx1)});
+                        _communicator.send(direction, Value{idx, _cell_accumulator.outflow(idx0, idx1)});
                     }
                 }
 
@@ -518,27 +515,30 @@ namespace lue {
 
         template<
             typename MaterialElement,
+            typename IdxConverter,
             typename Accumulate,
             Rank rank>
         void monitor_material_inputs(
             std::vector<std::array<Index, rank>>&& input_cells_idxs,
-            MaterialCommunicator<MaterialElement, rank> communicator,
-            accu::Direction const direction,
-            Accumulate* accumulate)
+            typename MaterialCommunicator<MaterialElement, rank>::Channel&& channel,
+            IdxConverter&& idx_to_idxs,
+            Accumulate accumulate)
         {
+            lue_hpx_assert(channel);
+
             // Whenever material arrives in the channel, call the
             // accumulator to accumulate it through the partition
-            auto const& receive_channel{communicator.receive_channel(direction)};
-            lue_hpx_assert(receive_channel);
 
             // The number of times material should arrive in the channel
             // is equal to the number of input cells at the specific side
             // of the partition.
 
-            for(auto const& material: receive_channel)
+            for(auto const& material: channel)
             {
+                auto const cell_idxs{idx_to_idxs(material.cell_idx())};
+
                 auto it = std::find_if(input_cells_idxs.begin(), input_cells_idxs.end(),
-                        [cell_idxs1=material.cell_idxs()](std::array<Index, rank> const& cell_idxs2)
+                        [cell_idxs1=cell_idxs](std::array<Index, rank> const& cell_idxs2)
                         {
                             return cell_idxs1 == cell_idxs2;
                         }
@@ -546,7 +546,7 @@ namespace lue {
                 lue_hpx_assert(it != input_cells_idxs.end());
                 input_cells_idxs.erase(it);
 
-                (*accumulate)(material);
+                accumulate(cell_idxs, material.value());
 
                 if(input_cells_idxs.empty())
                 {
@@ -782,6 +782,7 @@ namespace lue {
                                     ready_component_ptr(flow_direction_partition)};
                                 FlowDirectionData const& flow_direction_data{
                                     flow_direction_partition_ptr->data()};
+                                auto const& partition_shape{flow_direction_data.shape()};
 
                                 auto const external_inflow_partition_ptr{
                                     ready_component_ptr(external_inflow_partition)};
@@ -826,21 +827,33 @@ namespace lue {
                                         &flow_direction_data,
                                         &inflow_count_data
                                     ](
-                                        typename Communicator::Value const& material) mutable
+                                        std::array<Index, rank> const& cell_idxs,
+                                        MaterialElement const value) mutable
                                     {
-                                        auto [idx0, idx1] = material.cell_idxs();
+                                        auto [idx0, idx1] = cell_idxs;
 
+                                        // Prevent multiple threads
+                                        // from touching this data at the
+                                        // same time
                                         std::scoped_lock lock{accu_mutex};
 
                                         lue_hpx_assert(inflow_count_data(idx0, idx1) >= 1);
 
-                                        accumulator.enter_at_partition_input(material.value(), idx0, idx1);
+                                        accumulator.enter_at_partition_input(value, idx0, idx1);
 
                                         --inflow_count_data(idx0, idx1);
 
-                                        detail::accumulate(
-                                            accumulator, idx0, idx1, flow_direction_data,
-                                            inflow_count_data);
+                                        // Note that multiple streams
+                                        // from other partitions can join
+                                        // in a single partition input cell. Only
+                                        // start an accumulation if this is
+                                        // the last one.
+                                        if(inflow_count_data(idx0, idx1) == 0)
+                                        {
+                                            detail::accumulate(
+                                                accumulator, idx0, idx1, flow_direction_data,
+                                                inflow_count_data);
+                                        }
                                     };
                                 using Accumulate = decltype(accumulate);
 
@@ -850,17 +863,133 @@ namespace lue {
                                 std::vector<hpx::future<void>> results{};
                                 results.reserve(nr_neighbours<rank>());
 
-                                for(accu::Direction const direction: directions)
+                                auto const [extent0, extent1] = partition_shape;
+
                                 {
-                                    CellsIdxs cells_idxs{input_cells_idxs[direction]};
+                                    CellsIdxs cells_idxs{input_cells_idxs[accu::Direction::north]};
 
                                     if(!cells_idxs.empty())
                                     {
-                                        lue_hpx_assert(material_communicator.has_neighbour(direction));
+                                        RowIdxConverter north_idx_converter{};
                                         results.push_back(hpx::async(
-                                            monitor_material_inputs<MaterialElement, Accumulate, rank>,
+                                            monitor_material_inputs<
+                                                MaterialElement, decltype(north_idx_converter),
+                                                Accumulate, rank>,
                                             std::move(cells_idxs),
-                                            material_communicator, direction, &accumulate));
+                                            material_communicator.receive_channel(accu::Direction::north),
+                                            north_idx_converter, accumulate));
+                                    }
+                                }
+
+                                {
+                                    CellsIdxs cells_idxs{input_cells_idxs[accu::Direction::south]};
+
+                                    if(!cells_idxs.empty())
+                                    {
+                                        RowIdxConverter south_idx_converter{extent0 - 1};
+                                        results.push_back(hpx::async(
+                                            monitor_material_inputs<
+                                                MaterialElement, decltype(south_idx_converter),
+                                                Accumulate, rank>,
+                                            std::move(cells_idxs),
+                                            material_communicator.receive_channel(accu::Direction::south),
+                                            south_idx_converter, accumulate));
+                                    }
+                                }
+
+                                {
+                                    CellsIdxs cells_idxs{input_cells_idxs[accu::Direction::west]};
+
+                                    if(!cells_idxs.empty())
+                                    {
+                                        ColIdxConverter west_idx_converter{};
+                                        results.push_back(hpx::async(
+                                            monitor_material_inputs<
+                                                MaterialElement, decltype(west_idx_converter),
+                                                Accumulate, rank>,
+                                            std::move(cells_idxs),
+                                            material_communicator.receive_channel(accu::Direction::west),
+                                            west_idx_converter, accumulate));
+                                    }
+                                }
+
+                                {
+                                    CellsIdxs cells_idxs{input_cells_idxs[accu::Direction::east]};
+
+                                    if(!cells_idxs.empty())
+                                    {
+                                        ColIdxConverter east_idx_converter{extent1 - 1};
+                                        results.push_back(hpx::async(
+                                            monitor_material_inputs<
+                                                MaterialElement, decltype(east_idx_converter),
+                                                Accumulate, rank>,
+                                            std::move(cells_idxs),
+                                            material_communicator.receive_channel(accu::Direction::east),
+                                            east_idx_converter, accumulate));
+                                    }
+                                }
+
+                                {
+                                    CellsIdxs cells_idxs{input_cells_idxs[accu::Direction::north_west]};
+
+                                    if(!cells_idxs.empty())
+                                    {
+                                        CornerIdxConverter north_west_idx_converter{};
+                                        results.push_back(hpx::async(
+                                            monitor_material_inputs<
+                                                MaterialElement, decltype(north_west_idx_converter),
+                                                Accumulate, rank>,
+                                            std::move(cells_idxs),
+                                            material_communicator.receive_channel(accu::Direction::north_west),
+                                            north_west_idx_converter, accumulate));
+                                    }
+                                }
+
+                                {
+                                    CellsIdxs cells_idxs{input_cells_idxs[accu::Direction::north_east]};
+
+                                    if(!cells_idxs.empty())
+                                    {
+                                        CornerIdxConverter north_east_idx_converter{0, extent1 - 1};
+                                        results.push_back(hpx::async(
+                                            monitor_material_inputs<
+                                                MaterialElement, decltype(north_east_idx_converter),
+                                                Accumulate, rank>,
+                                            std::move(cells_idxs),
+                                            material_communicator.receive_channel(accu::Direction::north_east),
+                                            north_east_idx_converter, accumulate));
+                                    }
+                                }
+
+                                {
+                                    CellsIdxs cells_idxs{input_cells_idxs[accu::Direction::south_east]};
+
+                                    if(!cells_idxs.empty())
+                                    {
+                                        CornerIdxConverter south_east_idx_converter{extent0 - 1, extent1 - 1};
+                                        results.push_back(hpx::async(
+                                            monitor_material_inputs<
+                                                MaterialElement, decltype(south_east_idx_converter),
+                                                Accumulate, rank>,
+                                            std::move(cells_idxs),
+                                            material_communicator.receive_channel(accu::Direction::south_east),
+                                            south_east_idx_converter, accumulate));
+                                    }
+                                }
+
+                                {
+                                    CellsIdxs cells_idxs{input_cells_idxs[accu::Direction::south_west]};
+
+                                    if(!cells_idxs.empty())
+                                    {
+                                        CornerIdxConverter south_west_idx_converter{extent0 - 1, 0};
+                                        results.push_back(hpx::async(
+                                            monitor_material_inputs<
+                                                MaterialElement, decltype(south_west_idx_converter),
+                                                Accumulate, rank>,
+                                            std::move(cells_idxs),
+                                            material_communicator.receive_channel(accu::Direction::south_west),
+                                            south_west_idx_converter, accumulate));
                                     }
                                 }
 
@@ -973,12 +1102,12 @@ namespace lue {
         using MaterialCommunicator = detail::MaterialCommunicator<MaterialElement, rank>;
         using MaterialCommunicatorArray = detail::CommunicatorArray<MaterialCommunicator, rank>;
 
-        static std::size_t call_id{0};
+        static std::size_t invocation_id{0};
         InflowCountCommunicatorArray inflow_count_communicators{
-            "accu_threshold3/inflow_count/" + std::to_string(call_id), localities};
+            "accu_threshold3/inflow_count/" + std::to_string(invocation_id), localities};
         MaterialCommunicatorArray material_communicators{
-            "accu_threshold3/" + std::to_string(call_id), localities};
-        ++call_id;
+            "accu_threshold3/" + std::to_string(invocation_id), localities};
+        ++invocation_id;
 
         // For each partition, spawn a task that will solve the
         // flow accumulation for the partition.

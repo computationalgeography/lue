@@ -10,13 +10,184 @@
 namespace lue {
     namespace detail {
 
+        // Rules to convert 1D indices received on the various
+        // channels, to 2D cell indices:
+
+        // north
+        // - row = 0
+        // - get col from channel
+        // RowIdxConverter{0};
+
+        // south
+        // - row = extent0 - 1
+        // - get col from channel
+        // RowIdxConverter{extent0 - 1};
+
+        // The row is fixed, get the column from the channels
+        inline std::array<Index, 2> row_idx_converter(Index const row, Index const idx)
+        {
+            return std::array<Index, 2>{row, idx};
+        };
+
+        // west
+        // - col = 0
+        // - get row from channel
+        // ColIdxConverter{0};
+
+        // east
+        // - col = extent1 - 1
+        // - get row from channel
+        // ColIdxConverter{extent1 - 1};
+
+        // The col is fixed, get the row from the channels
+        inline std::array<Index, 2> col_idx_converter(Index const idx, Index const col)
+        {
+            return std::array<Index, 2>{idx, col};
+        };
+
+        // north west
+        // - row = 0
+        // - col = 0
+        // - get at most one 'sentinel' idx from channel
+        // CornerIdxConverter{0, 0};
+
+        // north east
+        // - row = 0
+        // - col = extent1 - 1
+        // - get at most one 'sentinel' idx from channel
+        // CornerIdxConverter{0, extent1 - 1};
+
+        // south east
+        // - row = extent0 - 1
+        // - col = extent1 - 1
+        // - get at most one 'sentinel' idx from channel
+        // CornerIdxConverter{extent0 - 1, extent1 - 1};
+
+        // south west
+        // - row = extent0 - 1
+        // - col = 0
+        // - get at most one 'sentinel' idx from channel
+        // CornerIdxConverter{extent0 - 1, 0};
+
+        // The row and col are fixed, discard the value from the channel
+        inline std::array<Index, 2> corner_idx_converter(Index const row, Index const col)
+        {
+            return std::array<Index, 2>{row, col};
+        };
+
+
+        class RowIdxConverter
+        {
+
+            public:
+
+                RowIdxConverter():
+
+                    RowIdxConverter{0}
+
+                {
+                }
+
+
+                RowIdxConverter(Index const row):
+
+                    _row{row}
+
+                {
+                }
+
+
+                std::array<Index, 2> operator()(Index const idx)
+                {
+                    return row_idx_converter(_row, idx);
+                }
+
+
+            private:
+
+                Index _row;
+
+        };
+
+
+        class ColIdxConverter
+        {
+
+            public:
+
+                ColIdxConverter():
+
+                    ColIdxConverter{0}
+
+                {
+                }
+
+
+                ColIdxConverter(Index const col):
+
+                    _col{col}
+
+                {
+                }
+
+
+                std::array<Index, 2> operator()(Index const idx)
+                {
+                    return row_idx_converter(idx, _col);
+                }
+
+
+            private:
+
+                Index _col;
+
+        };
+
+
+        class CornerIdxConverter
+        {
+
+            public:
+
+                CornerIdxConverter():
+
+                    CornerIdxConverter{0, 0}
+
+                {
+                }
+
+
+                CornerIdxConverter(Index const row, Index const col):
+
+                    _row{row}, _col{col}
+
+                {
+                }
+
+
+                std::array<Index, 2> operator()([[maybe_unused]] Index const idx)
+                {
+                    return row_idx_converter(_row, _col);
+                }
+
+
+            private:
+
+                Index _row;
+
+                Index _col;
+
+        };
+
+
         template<
             typename T,
             typename IdxConverter,
             Rank rank>
         std::vector<std::array<Index, rank>> monitor_channel_inputs(
             hpx::lcos::channel<T>&& channel,
-            IdxConverter&& idx_to_idxs)
+            IdxConverter&& idx_to_idxs,
+            [[maybe_unused]] Shape<Index, rank> const& partition_shape)  // TODO remove
         {
             std::vector<std::array<Index, rank>> cells_idxs{};
 
@@ -35,6 +206,23 @@ namespace lue {
                     std::transform(idxs.begin(), idxs.end(), std::back_inserter(cells_idxs), idx_to_idxs);
                 }
             }
+
+#ifndef NDEBUG
+            auto const [extent0, extent1] = partition_shape;
+
+            for(auto const& cell_idxs: cells_idxs)
+            {
+                auto const [idx0, idx1] = cell_idxs;
+
+                lue_hpx_assert(idx0 >= 0);
+                lue_hpx_assert(idx0 < extent0);
+                lue_hpx_assert(idx1 >= 0);
+                lue_hpx_assert(idx1 < extent1);
+                lue_hpx_assert(
+                    (idx0 == 0 || idx0 == extent0 - 1) ||
+                    (idx1 == 0 || idx1 == extent1 - 1));
+            }
+#endif
 
             return cells_idxs;
         }
@@ -62,13 +250,13 @@ namespace lue {
             FlowDirectionData const flow_direction_data{flow_direction_partition_ptr->data()};
             auto const [extent0, extent1] = flow_direction_data.shape();
 
-            // - For each partition border
-            //     - For each cell that flows into a neighbouring partition
-            //         - Determine the neighbouring partition (n, ne, e, ...)
-            //         - Determine the cell idx in the neighbouring partition
-            //         - Store relation in collection, ordered by
-            //           neighbouring partition
-            //     - Send idxs of receiving cells
+            // For each partition border:
+            // - For each cell that flows into a neighbouring partition
+            //     - Determine the neighbouring partition (n, ne, e, ...)
+            //     - Determine 1D input cell index in neighbouring partition
+            //     - Store indices of output cell
+            // - Send 1D idxs of receiving cells to task managing
+            //     neighbouring partition, if any
             CellsIdxs output_cells_idxs{};
             {
                 auto const& indp{std::get<0>(policies.inputs_policies()).input_no_data_policy()};
@@ -344,7 +532,7 @@ namespace lue {
                 // South-east corner
                 {
                     input_cell_idxs.clear();
-                    idx0 = extent1 - 1;
+                    idx0 = extent0 - 1;
                     idx1 = extent1 - 1;
 
                     if(!indp.is_no_data(flow_direction_data, idx0, idx1))
@@ -407,7 +595,7 @@ namespace lue {
                 // South-west corner
                 {
                     input_cell_idxs.clear();
-                    idx0 = extent1 - 1;
+                    idx0 = extent0 - 1;
                     idx1 = 0;
 
                     if(!indp.is_no_data(flow_direction_data, idx0, idx1))
@@ -472,8 +660,8 @@ namespace lue {
                 communicator.send({});
             }
 
-            // - For each partition border
-            //     - Receive idxs of receiving cells
+            // For each partition border:
+            // - Receive 1D idxs of receiving cells
             Count const nr_neighbours{detail::nr_neighbours<rank>()};
             hpx::future<std::array<CellsIdxs, nr_neighbours>> input_cells_idxs_f{};
             {
@@ -483,119 +671,49 @@ namespace lue {
                 // cell indices. Aggregate the collections returned by all tasks.
                 std::array<hpx::future<CellsIdxs>, nr_neighbours> received_cells_idxs{};
 
-                // Rules to convert indices received on the various
-                // channels, to cells indices:
-
-                // north
-                // - row = 0
-                // - get col from channel
-                // RowIdxConverter{0};
-
-                // south
-                // - row = extent0 - 1
-                // - get col from channel
-                // RowIdxConverter{extent0 - 1};
-
-                // The row is fixed, get the column from the channels
-                auto row_idx_converter =
-                    [](Index const row, Index const idx)
-                    { return std::array<Index, 2>{row, idx}; };
-                auto north_idx_converter =
-                    [row_idx_converter](Index const idx)
-                    { return row_idx_converter(0, idx); };
-                auto south_idx_converter =
-                    [row_idx_converter, extent0](Index const idx)
-                    { return row_idx_converter(extent0 - 1, idx); };
-
-                // west
-                // - col = 0
-                // - get row from channel
-                // ColIdxConverter{0};
-
-                // east
-                // - col = extent1 - 1
-                // - get row from channel
-                // ColIdxConverter{extent1 - 1};
-
-                // The col is fixed, get the row from the channels
-                auto col_idx_converter =
-                    [](Index const idx, Index const col)
-                    { return std::array<Index, 2>{idx, col}; };
-                auto west_idx_converter =
-                    [col_idx_converter](Index const idx)
-                    { return col_idx_converter(idx, 0); };
-                auto east_idx_converter =
-                    [col_idx_converter, extent1](Index const idx)
-                    { return col_idx_converter(idx, extent1 - 1); };
-
-                // north west
-                // - row = 0
-                // - col = 0
-                // - get at most one 'sentinel' idx from channel
-                // CornerIdxConverter{0, 0};
-
-                // north east
-                // - row = 0
-                // - col = extent1 - 1
-                // - get at most one 'sentinel' idx from channel
-                // CornerIdxConverter{0, extent1 - 1};
-
-                // south east
-                // - row = extent0 - 1
-                // - col = extent1 - 1
-                // - get at most one 'sentinel' idx from channel
-                // CornerIdxConverter{extent0 - 1, extent1 - 1};
-
-                // south west
-                // - row = extent0 - 1
-                // - col = 0
-                // - get at most one 'sentinel' idx from channel
-                // CornerIdxConverter{extent0 - 1, 0};
-
-                // The row and col are fixed, get whatever value from the channel
-                auto corner_idx_converter =
-                    [](Index const row, Index const col)
-                    { return std::array<Index, 2>{row, col}; };
-                auto north_west_idx_converter =
-                    [corner_idx_converter]([[maybe_unused]] Index const idx)
-                    { return corner_idx_converter(0, 0); };
-                auto north_east_idx_converter =
-                    [corner_idx_converter, extent1]([[maybe_unused]] Index const idx)
-                    { return corner_idx_converter(0, extent1 - 1); };
-                auto south_east_idx_converter =
-                    [corner_idx_converter, extent0, extent1]([[maybe_unused]] Index const idx)
-                    { return corner_idx_converter(extent0 - 1, extent1 - 1); };
-                auto south_west_idx_converter =
-                    [corner_idx_converter, extent0]([[maybe_unused]] Index const idx)
-                    { return corner_idx_converter(extent0 - 1, 0); };
-
+                RowIdxConverter north_idx_converter{};
+                RowIdxConverter south_idx_converter{extent0 - 1};
+                ColIdxConverter west_idx_converter{};
+                ColIdxConverter east_idx_converter{extent1 - 1};
+                CornerIdxConverter north_west_idx_converter{};
+                CornerIdxConverter north_east_idx_converter{0, extent1 - 1};
+                CornerIdxConverter south_east_idx_converter{extent0 - 1, extent1 - 1};
+                CornerIdxConverter south_west_idx_converter{extent0 - 1, 0};
 
                 received_cells_idxs[accu::Direction::north] = hpx::async(
                     monitor_channel_inputs<std::vector<Index>, decltype(north_idx_converter), rank>,
-                    communicator.receive_channel(accu::Direction::north), north_idx_converter);
+                    communicator.receive_channel(accu::Direction::north), north_idx_converter,
+                    flow_direction_data.shape());
                 received_cells_idxs[accu::Direction::south] = hpx::async(
                     monitor_channel_inputs<std::vector<Index>, decltype(south_idx_converter), rank>,
-                    communicator.receive_channel(accu::Direction::south), south_idx_converter);
+                    communicator.receive_channel(accu::Direction::south), south_idx_converter,
+                    flow_direction_data.shape());
 
                 received_cells_idxs[accu::Direction::west] = hpx::async(
                     monitor_channel_inputs<std::vector<Index>, decltype(west_idx_converter), rank>,
-                    communicator.receive_channel(accu::Direction::west), west_idx_converter);
+                    communicator.receive_channel(accu::Direction::west), west_idx_converter,
+                    flow_direction_data.shape());
                 received_cells_idxs[accu::Direction::east] = hpx::async(
                     monitor_channel_inputs<std::vector<Index>, decltype(east_idx_converter), rank>,
-                    communicator.receive_channel(accu::Direction::east), east_idx_converter);
+                    communicator.receive_channel(accu::Direction::east), east_idx_converter,
+                    flow_direction_data.shape());
 
                 received_cells_idxs[accu::Direction::north_west] = hpx::async(
                     monitor_channel_inputs<std::vector<Index>, decltype(north_west_idx_converter), rank>,
-                    communicator.receive_channel(accu::Direction::north_west), north_west_idx_converter);
+                    communicator.receive_channel(accu::Direction::north_west), north_west_idx_converter,
+                    flow_direction_data.shape());
                 received_cells_idxs[accu::Direction::north_east] = hpx::async(
                     monitor_channel_inputs<std::vector<Index>, decltype(north_east_idx_converter), rank>,
-                    communicator.receive_channel(accu::Direction::north_east), north_east_idx_converter);
+                    communicator.receive_channel(accu::Direction::north_east), north_east_idx_converter,
+                    flow_direction_data.shape());
                 received_cells_idxs[accu::Direction::south_east] = hpx::async(
                     monitor_channel_inputs<std::vector<Index>, decltype(south_east_idx_converter), rank>,
-                    communicator.receive_channel(accu::Direction::south_east), south_east_idx_converter);
+                    communicator.receive_channel(accu::Direction::south_east), south_east_idx_converter,
+                    flow_direction_data.shape());
                 received_cells_idxs[accu::Direction::south_west] = hpx::async(
                     monitor_channel_inputs<std::vector<Index>, decltype(south_west_idx_converter), rank>,
-                    communicator.receive_channel(accu::Direction::south_west), south_west_idx_converter);
+                    communicator.receive_channel(accu::Direction::south_west), south_west_idx_converter,
+                    flow_direction_data.shape());
 
                 input_cells_idxs_f = hpx::when_all(received_cells_idxs).then(
                         hpx::util::unwrapping(
@@ -634,13 +752,8 @@ namespace lue {
                     InflowCountCommunicator<rank>&& communicator)
         {
             using FlowDirectionPartition = ArrayPartition<FlowDirectionElement, rank>;
-            using CellsIdxs = std::vector<std::array<Index, rank>>;
 
-            hpx::future<std::array<CellsIdxs, nr_neighbours<rank>()>> input_cells_idxs_f{};
-            hpx::future<CellsIdxs> output_cells_idxs_f{};
-
-            hpx::tie(input_cells_idxs_f, output_cells_idxs_f) =
-                hpx::split_future(hpx::dataflow(
+            return hpx::split_future(hpx::dataflow(
                         hpx::launch::async,
 
                         [policies, communicator=std::move(communicator)](
@@ -651,8 +764,6 @@ namespace lue {
                         },
 
                     flow_direction_partition));
-
-            return hpx::make_tuple(std::move(input_cells_idxs_f), std::move(output_cells_idxs_f));
         }
 
 
@@ -728,6 +839,16 @@ namespace lue {
             using FlowDirectionPartition = ArrayPartition<FlowDirectionElement, rank>;
             using CellsIdxs = std::vector<std::array<Index, rank>>;
 
+            // Once both the flow direction partition and the input
+            // cells idxs are available, forward to the function that
+            // determines the inflow count. That function does two things:
+            // determine inflow counts based on flow directions, and merge
+            // the information about input cells. This could be split
+            // into to tasks, but experiments show that the result scales
+            // worse. Apparantly, the resulting tasks become too small.
+            // Guideline: sometimes it is better to wait on more
+            // information in order to be able to do more within a single
+            // task.
             return hpx::dataflow(
                     hpx::launch::async,
 
@@ -805,25 +926,31 @@ namespace lue {
         // upstream(flow_direction, material=1), but it should be faster
         // (less memory accesses)
 
+        using InflowCountArray = PartitionedArray<CountElement, rank>;
         Localities<rank> const& localities{flow_direction.localities()};
-        auto const& shape_in_partitions{flow_direction.partitions().shape()};
 
-        using InflowCountCommunicator = detail::InflowCountCommunicator<rank>;
-        using InflowCountCommunicatorArray = detail::CommunicatorArray<InflowCountCommunicator, rank>;
+        // ---------------------------------------------------------------------
+        // Create an array of communicators which will be used to communicate
+        // inflow counts between tasks managing neighbouring partitions.
+        using InflowCountCommunicatorArray =
+            detail::CommunicatorArray<detail::InflowCountCommunicator<rank>, rank>;
 
-        static std::size_t call_id{0};
+        // Each invocation of this operation uses a unique set of
+        // communicators
+        static std::size_t invocation_id{0};
         InflowCountCommunicatorArray inflow_count_communicators{
-            "inflow_count/" + std::to_string(call_id), localities};
-        ++call_id;
+            "inflow_count/" + std::to_string(invocation_id), localities};
+        ++invocation_id;
 
+
+        // ---------------------------------------------------------------------
         // For each partition, spawn a task that will solve the
         // calculation for the partition.
-        using InflowCountArray = PartitionedArray<CountElement, rank>;
         using InflowCountPartitions = PartitionsT<InflowCountArray>;
-        InflowCountPartitions inflow_count_partitions{shape_in_partitions};
+        InflowCountPartitions inflow_count_partitions{flow_direction.partitions().shape()};
         {
             detail::InflowCountAction3<CountElement, Policies, FlowDirectionElement, rank> action{};
-            Count const nr_partitions{nr_elements(shape_in_partitions)};
+            Count const nr_partitions{nr_elements(inflow_count_partitions.shape())};
 
             for(Index p = 0; p < nr_partitions; ++p)
             {
@@ -833,17 +960,16 @@ namespace lue {
             }
         }
 
-        // The communicators used by the tasks calculating the flow
-        // accumulation result must be kept alive until these results
-        // are ready. We do this by attaching a continuation,
-        // passing in the communicators. Once the results are ready,
-        // these communicators go out of scope. Note that component
-        // clients are reference-counted.
+
+        // ---------------------------------------------------------------------
+        // Keep channel components layered in communicators alive until
+        // the results are ready.
         hpx::when_all(inflow_count_partitions.begin(), inflow_count_partitions.end(),
-            [communicators1=std::move(inflow_count_communicators)]([[maybe_unused]] auto&& partitions)
+            [communicators=std::move(inflow_count_communicators)]([[maybe_unused]] auto&& partitions)
             {
-                HPX_UNUSED(communicators1);
+                HPX_UNUSED(communicators);
             });
+
 
         return InflowCountArray{flow_direction.shape(), localities, std::move(inflow_count_partitions)};
     }
