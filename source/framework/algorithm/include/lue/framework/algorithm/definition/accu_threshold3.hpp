@@ -2,6 +2,7 @@
 #include "lue/framework/algorithm/accu_threshold3.hpp"
 #include "lue/framework/algorithm/definition/inflow_count3.hpp"
 #include "lue/framework/algorithm/export.hpp"
+#include "lue/framework/core/annotate.hpp"
 #include "lue/macro.hpp"
 
 
@@ -524,6 +525,7 @@ namespace lue {
             IdxConverter&& idx_to_idxs,
             Accumulate accumulate)
         {
+            AnnotateFunction annotation{"inter_partition_stream"};
             lue_hpx_assert(channel);
 
             // Whenever material arrives in the channel, call the
@@ -615,18 +617,6 @@ namespace lue {
                         std::move(inflow_count_communicator));
             }
 
-            hpx::future<Offset> partition_offset_f = hpx::dataflow(
-                    hpx::launch::async,
-
-                    [](FlowDirectionPartition const& flow_direction_partition)
-                    {
-                        return flow_direction_partition.offset();
-                    },
-
-                    flow_direction_partition
-                );
-
-
             // Solve intra-partition stream cells
             hpx::future<MaterialData> outflow_data_f;
             hpx::future<MaterialData> remainder_data_f;
@@ -648,6 +638,7 @@ namespace lue {
                                     MaterialPartition const& threshold_partition,
                                     InflowCountPartition const& inflow_count_partition) mutable
                                 {
+                                    AnnotateFunction annotation{"intra_partition_stream"};
                                     auto const flow_direction_partition_ptr{
                                         ready_component_ptr(flow_direction_partition)};
                                     FlowDirectionData const& flow_direction_data{
@@ -754,6 +745,8 @@ namespace lue {
                                 hpx::future<MaterialData>&& outflow_data_f,
                                 hpx::future<MaterialData>&& remainder_data_f) mutable
                             {
+                                AnnotateFunction annotation{"inter_partition_stream"};
+
                                 std::vector<accu::Direction> const directions{
                                     accu::Direction::north,
                                     accu::Direction::north_east,
@@ -1020,27 +1013,28 @@ namespace lue {
             // return the result partitions.
             auto [outflow_partition_f, remainder_partition_f] = hpx::split_future(hpx::dataflow(
                     hpx::launch::async,
-                    hpx::util::unwrapping(
 
                             [](
-                                Offset&& partition_offset,
-                                MaterialData&& outflow_data,
-                                MaterialData&& remainder_data)
+                                FlowDirectionPartition const& flow_direction_partition,
+                                hpx::future<MaterialData>&& outflow_data_f,
+                                hpx::future<MaterialData>&& remainder_data_f)
                             {
+                                AnnotateFunction annotation{"create_result_partitions"};
                                 using Server = typename MaterialPartition::Server;
+
+                                Offset const partition_offset{
+                                    ready_component_ptr(flow_direction_partition)->offset()};
 
                                 return hpx::make_tuple(
                                     MaterialPartition{
                                         hpx::new_<Server>(hpx::find_here(),
-                                            partition_offset, std::move(outflow_data))},
+                                            partition_offset, outflow_data_f.get())},
                                     MaterialPartition{
                                         hpx::new_<Server>(hpx::find_here(),
-                                            partition_offset, std::move(remainder_data))});
-                            }
+                                            partition_offset, remainder_data_f.get())});
+                            },
 
-                        ),
-
-                    std::move(partition_offset_f),
+                    flow_direction_partition,
                     std::move(outflow_data_f),
                     std::move(remainder_data_f)
                 ));
@@ -1083,6 +1077,8 @@ namespace lue {
                 PartitionedArray<MaterialElement, rank> const& external_inflow,
                 PartitionedArray<MaterialElement, rank> const& threshold)
     {
+        AnnotateFunction annotation{"accu_threshold_meh"};
+
         // This function must:
         // - Return as soon as possible
         // - Create a task per partition, returning partitions per output
@@ -1119,7 +1115,7 @@ namespace lue {
         for(Index p = 0; p < nr_partitions; ++p)
         {
             hpx::tie(outflow_partitions[p], remainder_partitions[p]) = hpx::split_future(hpx::async(
-                action, localities[p], policies,
+                hpx::util::annotated_function(action, "accu_threshold"), localities[p], policies,
                 flow_direction.partitions()[p],
                 external_inflow.partitions()[p], threshold.partitions()[p],
                 inflow_count_communicators[p], material_communicators[p]));
