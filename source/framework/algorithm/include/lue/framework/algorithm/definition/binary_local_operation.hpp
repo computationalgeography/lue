@@ -59,7 +59,7 @@ namespace lue {
 
                         return hpx::dataflow(
                             hpx::launch::async,
-                            hpx::util::unwrapping(
+                            hpx::unwrapping(
 
                                     [policies, input_partition1, input_partition2, functor](
                                         Offset const& offset,
@@ -152,7 +152,7 @@ namespace lue {
 
                         return hpx::dataflow(
                             hpx::launch::async,
-                            hpx::util::unwrapping(
+                            hpx::unwrapping(
 
                                     [policies, input_partition, functor, input_scalar](
                                         Offset const& offset,
@@ -249,7 +249,7 @@ namespace lue {
 
                         return hpx::dataflow(
                             hpx::launch::async,
-                            hpx::util::unwrapping(
+                            hpx::unwrapping(
 
                                     [policies, input_partition, functor, input_scalar](
                                         Offset const& offset,

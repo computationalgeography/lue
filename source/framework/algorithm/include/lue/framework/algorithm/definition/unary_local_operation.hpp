@@ -26,7 +26,7 @@ OutputPartition unary_local_operation_partition(
 
     return hpx::dataflow(
         hpx::launch::async,
-        hpx::util::unwrapping(
+        hpx::unwrapping(
 
                 [input_partition, policies, functor](
                     Offset const& offset,

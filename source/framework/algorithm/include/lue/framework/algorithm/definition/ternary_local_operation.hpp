@@ -65,7 +65,7 @@ public:
 
         return hpx::dataflow(
             hpx::launch::async,
-            hpx::util::unwrapping(
+            hpx::unwrapping(
 
                     [policies, input_partition1, input_partition2, input_partition3, functor](
                         Offset const& offset,
@@ -175,7 +175,7 @@ public:
 
         return hpx::dataflow(
             hpx::launch::async,
-            hpx::util::unwrapping(
+            hpx::unwrapping(
 
                     [policies, input_partition1, input_partition2, functor, input_scalar](
                         Offset const& offset,
@@ -288,7 +288,7 @@ public:
 
         return hpx::dataflow(
             hpx::launch::async,
-            hpx::util::unwrapping(
+            hpx::unwrapping(
 
                     [policies, input_partition1, input_partition2, functor, input_scalar](
                         Offset const& offset,
@@ -398,7 +398,7 @@ public:
 
         return hpx::dataflow(
             hpx::launch::async,
-            hpx::util::unwrapping(
+            hpx::unwrapping(
 
                     [policies, input_partition, functor, input_scalar1, input_scalar2](
                         Offset const& offset,

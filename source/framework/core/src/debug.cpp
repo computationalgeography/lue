@@ -198,7 +198,7 @@ hpx::future<std::string> system_description()
 
     hpx::future<std::string> description =
         hpx::dataflow(
-            hpx::util::unwrapping(format_message),
+            hpx::unwrapping(format_message),
             this_locality_name, root_locality_name,
             current_nr_localities, all_locality_names,
 #ifdef LUE_HPX_WITH_MPI

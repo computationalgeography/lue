@@ -23,7 +23,7 @@ hpx::future<OutputElement> unary_aggregate_operation_partition(
 
     return hpx::dataflow(
         hpx::launch::async,
-        hpx::util::unwrapping(
+        hpx::unwrapping(
 
                 [input_partition, policies, functor](
                     InputData const& input_partition_data)
@@ -200,7 +200,7 @@ hpx::future<OutputElementT<Functor>> unary_aggregate_operation(
     // our locality.
     return hpx::when_all(
                 partition_results.begin(), partition_results.end()).then(
-                    hpx::util::unwrapping(
+                    hpx::unwrapping(
 
             [policies, functor](
                 auto&& partition_results)

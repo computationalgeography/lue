@@ -30,7 +30,7 @@ namespace lue {
 
             return hpx::dataflow(
                 hpx::launch::async,
-                hpx::util::unwrapping(
+                hpx::unwrapping(
 
                         [policies, input_partition, fill_value](
                             Offset const& offset,

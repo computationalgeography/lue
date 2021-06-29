@@ -53,6 +53,7 @@ jobs:
                   -DLUE_BUILD_VIEW=FALSE \
                   -DHPX_USE_CMAKE_CXX_STANDARD=TRUE \
                   -DHPX_WITH_MALLOC="system" \
+                  -DHPX_WITH_FETCH_ASIO=TRUE \
                   -DHWLOC_ROOT="$CONDA_PREFIX/Library" \
                   -DHPX_WITH_EXAMPLES=FALSE \
                   -DHPX_WITH_TESTS=FALSE

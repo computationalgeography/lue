@@ -31,7 +31,7 @@ template<
             // Given the partition's shape, we can create a new
             // collection for partition elements
             return input_partition.shape().then(
-                hpx::util::unwrapping(
+                hpx::unwrapping(
 
                         [input_partition, start_value](
                             Shape const& shape) mutable
@@ -132,7 +132,7 @@ template<
 
     UniqueIDPartitionAction<InputPartition> action{};
 
-    return hpx::when_all(partition_sizes).then(hpx::util::unwrapping(
+    return hpx::when_all(partition_sizes).then(hpx::unwrapping(
 
             [localities=input_array.localities(), input_partitions, action](
                 std::vector<hpx::future<Count>>&& partition_sizes)
