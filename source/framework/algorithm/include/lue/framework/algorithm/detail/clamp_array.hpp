@@ -45,7 +45,7 @@ namespace lue::detail {
                         // Once the current shape is obtained we can
                         // reshape the partition
                         return partition.shape().then(
-                            hpx::util::unwrapping(
+                            hpx::unwrapping(
                                 [new_shape, partition](
                                     Shape current_shape) mutable
                                 {
@@ -224,7 +224,7 @@ namespace lue::detail {
                         // Once the current shape is obtained we can
                         // reshape the partition
                         return partition.shape().then(
-                            hpx::util::unwrapping(
+                            hpx::unwrapping(
                                 [dimension_idx, new_size, partition](
                                     Shape current_shape) mutable
                                 {

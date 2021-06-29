@@ -47,7 +47,7 @@ namespace lue::detail {
 
         return hpx::dataflow(
             hpx::launch::async,
-            hpx::util::unwrapping(
+            hpx::unwrapping(
 
                     [extent0=std::get<0>(min_shape), fill_value](
                         Shape const& shape)
@@ -79,7 +79,7 @@ namespace lue::detail {
 
         return hpx::dataflow(
             hpx::launch::async,
-            hpx::util::unwrapping(
+            hpx::unwrapping(
 
                     [extent1=std::get<1>(min_shape), fill_value](
                         Shape const& shape)

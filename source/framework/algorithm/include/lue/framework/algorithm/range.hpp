@@ -31,7 +31,7 @@ template<
     // Given the partition's shape, we can create a new collection for
     // partition elements
     return input_partition.shape().then(
-            hpx::util::unwrapping(
+            hpx::unwrapping(
                 [input_partition, start_value, stride](
                     Shape const& shape) mutable
                 {
@@ -130,7 +130,7 @@ template<
             hpx::when_all_n(
                 partition_shapes.begin(), partition_shapes.size()),
             start_value).then(
-        hpx::util::unwrapping(
+        hpx::unwrapping(
 
             // Copy partitions. This is similar to copying shared pointers.
             [localities, partitions, array_shape=input_array.shape()](

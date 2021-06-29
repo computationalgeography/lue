@@ -80,7 +80,7 @@ namespace lue::detail {
 
         using InputPartition = ArrayPartition<Element, rank>;
 
-        return hpx::when_all(partitions.begin(), partitions.end()).then(hpx::util::unwrapping(
+        return hpx::when_all(partitions.begin(), partitions.end()).then(hpx::unwrapping(
                 [shape=partitions.shape()](
                     std::vector<InputPartition>&& vector_of_ready_partitions)
                 {

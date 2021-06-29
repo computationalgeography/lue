@@ -328,7 +328,7 @@ namespace lue {
             typename StreamClassPartition,
             typename PartitionIOComponent,
             typename FlowDirectionPartitions>
-        hpx::util::tuple<StreamClassPartition, PartitionIOComponent> inter_partition_stream_partition(
+        hpx::tuple<StreamClassPartition, PartitionIOComponent> inter_partition_stream_partition(
             Policies const& policies,
             OffsetT<PartitionT<FlowDirectionPartitions>> const& partition_offset,
             FlowDirectionPartitions const& flow_direction_partitions)
@@ -402,7 +402,7 @@ namespace lue {
             // Once the data from all partitions have arrived...
             return hpx::split_future(hpx::dataflow(
                 hpx::launch::async,
-                hpx::util::unwrapping(
+                hpx::unwrapping(
 
                         [policies, partition_offset](
                             Offset offset,
@@ -543,7 +543,7 @@ namespace lue {
                             }
                             */
 
-                            return hpx::util::make_tuple(
+                            return hpx::make_tuple(
                                 StreamClassPartition{
                                     hpx::find_here(), offset, std::move(stream_class_array)},
                                 PartitionIOComponent{hpx::find_here(), std::move(partition_io_data)});

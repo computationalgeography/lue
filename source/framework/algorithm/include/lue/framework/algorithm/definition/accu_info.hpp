@@ -197,7 +197,7 @@ namespace lue {
             typename InflowCountPartition,
             typename FlowDirectionPartitions,
             typename Accumulator>
-        hpx::util::tuple<
+        hpx::tuple<
             CellClassPartition,
             PartitionIOComponent,
             InflowCountPartition>
@@ -230,7 +230,7 @@ namespace lue {
             // Once all input data has arrived...
             return hpx::split_future(hpx::dataflow(
                 hpx::launch::async,
-                hpx::util::unwrapping(
+                hpx::unwrapping(
 
 
                         [policies, partition_offset](
@@ -328,7 +328,7 @@ namespace lue {
 
                             // -------------------------------------------------
                             // Return all results
-                            return hpx::util::make_tuple(
+                            return hpx::make_tuple(
                                     CellClassPartition{
                                         hpx::find_here(), offset, std::move(cell_class_data)},
                                     PartitionIOComponent{

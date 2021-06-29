@@ -32,7 +32,7 @@ Partition copy_partition(
 
     return hpx::dataflow(
         hpx::launch::async,
-        hpx::util::unwrapping(
+        hpx::unwrapping(
 
                 [policies, input_partition](
                     Offset const& offset,

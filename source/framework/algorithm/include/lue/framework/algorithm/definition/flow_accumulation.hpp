@@ -140,7 +140,7 @@ namespace lue {
             typename FlowDirectionPartitions,
             typename MaterialPartitions,
             typename Accumulator>
-        hpx::util::tuple<
+        hpx::tuple<
             PartitionIOComponent,
             InflowCountPartition,
             PartitionT<MaterialPartitions>>
@@ -175,7 +175,7 @@ namespace lue {
             // Once all input data has arrived...
             return hpx::split_future(hpx::dataflow(
                 hpx::launch::async,
-                hpx::util::unwrapping(
+                hpx::unwrapping(
 
                         [policies, partition_offset](
                             Offset offset,
@@ -270,7 +270,7 @@ namespace lue {
 
                             // -------------------------------------------------
                             // Return all results
-                            return hpx::util::make_tuple(
+                            return hpx::make_tuple(
                                     PartitionIOComponent{
                                         hpx::find_here(), std::move(partition_io_data)},
                                     InflowCountPartition{
@@ -295,7 +295,7 @@ namespace lue {
             typename MaterialPartitions,
             typename Accumulator,
             typename CriterionPartitions>
-        hpx::util::tuple<
+        hpx::tuple<
             PartitionIOComponent,
             InflowCountPartition,
             PartitionT<MaterialPartitions>,
@@ -336,7 +336,7 @@ namespace lue {
             // Once all input data has arrived...
             return hpx::split_future(hpx::dataflow(
                 hpx::launch::async,
-                hpx::util::unwrapping(
+                hpx::unwrapping(
 
                         [policies, partition_offset](
                             Offset offset,
@@ -440,7 +440,7 @@ namespace lue {
 
                             // -------------------------------------------------
                             // Return all results
-                            return hpx::util::make_tuple(
+                            return hpx::make_tuple(
                                     PartitionIOComponent{
                                         hpx::find_here(), std::move(partition_io_data)},
                                     InflowCountPartition{
