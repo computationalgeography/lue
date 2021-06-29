@@ -11,6 +11,7 @@ set(names
     accu_test.cpp
     accu_fraction_test.cpp
     accu_threshold_test.cpp
+    accu_threshold3_test.cpp
     add_test.cpp
     all_test.cpp
     any_test.cpp
@@ -90,5 +91,11 @@ add_hpx_unit_tests(
 )
 
 target_link_libraries(lue_framework_algorithm_accu_threshold_test
+    PRIVATE
+        lue::framework_flow_direction_operation)
+target_link_libraries(lue_framework_algorithm_accu_threshold3_test
+    PRIVATE
+        lue::framework_flow_direction_operation)
+target_link_libraries(lue_framework_algorithm_inflow_count_test
     PRIVATE
         lue::framework_flow_direction_operation)

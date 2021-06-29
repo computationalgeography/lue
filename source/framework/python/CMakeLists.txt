@@ -6,6 +6,7 @@ pybind11_add_module(lue_py_framework SHARED THIN_LTO
     src/algorithm/accu_fraction.cpp
     src/algorithm/accu_info.cpp
     src/algorithm/accu_threshold.cpp
+    src/algorithm/accu_threshold3.cpp
     src/algorithm/add.cpp
     src/algorithm/all.cpp
     src/algorithm/array_partition_id.cpp
@@ -16,6 +17,7 @@ pybind11_add_module(lue_py_framework SHARED THIN_LTO
     src/algorithm/greater_than.cpp
     src/algorithm/greater_than_equal_to.cpp
     src/algorithm/inflow_count.cpp
+    src/algorithm/inflow_count3.cpp
     src/algorithm/inter_partition_stream.cpp
     src/algorithm/less_than.cpp
     src/algorithm/less_than_equal_to.cpp
@@ -42,6 +44,7 @@ pybind11_add_module(lue_py_framework SHARED THIN_LTO
     src/core/partitioned_array_int64.cpp
     src/core/partitioned_array_float.cpp
     src/core/partitioned_array_double.cpp
+    src/core/wait.cpp
     src/io/read_array.cpp
     src/io/write_array.cpp
     src/command_line.cpp

@@ -12,7 +12,7 @@ def tearDownModule():
     # lue_test.stop_hpx_runtime()
 
 
-class InflowCountTest(lue_test.TestCase):
+class AccuThreshold3Test(lue_test.TestCase):
 
     def test_overloads(self):
 
@@ -21,5 +21,7 @@ class InflowCountTest(lue_test.TestCase):
 
         for direction in [1, 2, 3, 4, 5, 6, 7, 8, 9]:
             flow_direction = lfr.create_array(array_shape, partition_shape, np.dtype(np.uint8), direction)
+            external_inflow = lfr.create_array(array_shape, partition_shape, np.dtype(np.float64), 1)
+            threshold = lfr.create_array(array_shape, partition_shape, np.dtype(np.float64), 5)
 
-            count = lfr.inflow_count(flow_direction)
+            outflow, remainder = lfr.accu_threshold3(flow_direction, external_inflow, threshold)

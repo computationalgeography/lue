@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/core/assert.hpp"
+#include <hpx/modules/async_combinators.hpp>
 #include <algorithm>
 
 
@@ -10,14 +11,7 @@ namespace lue {
     void wait_all(
         Collection const& components)
     {
-        std::for_each(components.begin(), components.end(),
-
-                [](auto const& component)
-                {
-                    component.wait();
-                }
-
-            );
+        hpx::wait_all(components.begin(), components.end());
     }
 
 

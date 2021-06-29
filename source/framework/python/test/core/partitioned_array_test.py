@@ -12,7 +12,7 @@ def tearDownModule():
     # lue_test.stop_hpx_runtime()
 
 
-class WhereTest(lue_test.TestCase):
+class CreatePartitionedArrayTest(lue_test.TestCase):
 
     @classmethod
     def setUpClass(cls):
