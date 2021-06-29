@@ -1,9 +1,10 @@
 #pragma once
-#include "lue/framework/algorithm/d8_network.hpp"
+#include "lue/framework/algorithm/d8_flow_direction.hpp"
 #include "lue/framework/algorithm/flow_direction.hpp"
 #include "lue/framework/algorithm/definition/focal_operation.hpp"
-#include "lue/framework/algorithm/kernel.hpp"
-#include <type_traits>
+#include "lue/framework/algorithm/serialize/kernel.hpp"
+#include "lue/framework/algorithm/export.hpp"
+#include "lue/macro.hpp"
 
 
 namespace lue {
@@ -12,7 +13,7 @@ namespace lue {
         template<
             typename FlowDirectionElement,
             typename ElevationElement>
-        class D8Network
+        class D8FlowDirection
         {
 
             public:
@@ -20,7 +21,7 @@ namespace lue {
                 using OutputElement = FlowDirectionElement;
 
 
-                D8Network()=default;
+                D8FlowDirection()=default;
 
 
                 template<
@@ -129,19 +130,29 @@ namespace lue {
 
     template<
         typename FlowDirectionElement,
+        typename Policies,
         typename ElevationElement,
         Rank rank>
-    PartitionedArray<FlowDirectionElement, rank> d8_network(
+    PartitionedArray<FlowDirectionElement, rank> d8_flow_direction(
+        Policies const& policies,
         PartitionedArray<ElevationElement, rank> const& elevation)
     {
         using Weight = bool;
-        using Functor = detail::D8Network<FlowDirectionElement, ElevationElement>;
-        using Policies = policy::d8::DefaultPolicies<FlowDirectionElement, ElevationElement>;
+        using Functor = detail::D8FlowDirection<FlowDirectionElement, ElevationElement>;
 
-        ElevationElement const fill_value{std::numeric_limits<ElevationElement>::min()};
         Kernel<Weight, rank> kernel{box_kernel<Weight, rank>(1, true)};
 
-        return focal_operation(Policies{fill_value}, elevation, kernel, Functor{});
+        return focal_operation(policies, elevation, kernel, Functor{});
     }
 
 }  // namespace lue
+
+
+#define LUE_INSTANTIATE_D8_FLOW_DIRECTION(                                             \
+    Policies, FlowDirectionElement, ElevationElement)                                  \
+                                                                                       \
+    template LUE_FA_EXPORT                                                             \
+    PartitionedArray<FlowDirectionElement, 2> d8_flow_direction<                       \
+            FlowDirectionElement, ArgumentType<void(Policies)>, ElevationElement, 2>(  \
+        ArgumentType<void(Policies)> const&,                                           \
+        PartitionedArray<ElevationElement, 2> const&);
