@@ -1,5 +1,6 @@
 algorithm_names="
     accu_threshold
+    accu_threshold3
     focal_mean
     iterate_per_element
     multiply
@@ -17,10 +18,12 @@ scenarios="
 "
 
 algorithm_names="
+    accu_threshold3
 "
 case_study_names="
 "
 scenarios="
+    thread_numa_node
 "
 
 output_prefix=${LUE_DATA:-.}

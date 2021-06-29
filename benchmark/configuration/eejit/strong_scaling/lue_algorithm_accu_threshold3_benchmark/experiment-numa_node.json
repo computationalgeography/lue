@@ -1,0 +1,17 @@
+{
+    "nr_time_steps": 1,
+    "array": {
+        "shape": [16000, 16000]
+    },
+    "partition": {
+        "shape": [2500, 2500]
+    },
+    "arguments": {
+        "positionals": [
+            "$LUE_BENCHMARK_DATA/flow_accumulation/africa.lue/area/raster/ldd"
+        ],
+        "options": {
+            "center": "28740, 48672"
+        }
+    }
+}
