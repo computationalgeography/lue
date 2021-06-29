@@ -1,5 +1,5 @@
-#define BOOST_TEST_MODULE lue framework algorithm d8_network
-#include "lue/framework/algorithm/definition/d8_network.hpp"
+#define BOOST_TEST_MODULE lue framework algorithm d8_flow_direction
+#include "lue/framework/algorithm/definition/d8_flow_direction.hpp"
 #include "lue/framework/algorithm/serialize/kernel.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/compare.hpp"
@@ -47,7 +47,7 @@ BOOST_AUTO_TEST_CASE(use_case_01)
             },
         });
 
-    D8 d8_we_got = lue::d8_network<FlowDirection>(dem);
+    D8 d8_we_got = lue::d8_flow_direction<FlowDirection>(dem);
 
     lue::test::check_arrays_are_equal(d8_we_got, d8_we_want);
 }
@@ -94,7 +94,7 @@ BOOST_AUTO_TEST_CASE(use_case_02)
             },
         });
 
-    D8 d8_we_got = lue::d8_network<FlowDirection>(dem);
+    D8 d8_we_got = lue::d8_flow_direction<FlowDirection>(dem);
 
     lue::test::check_arrays_are_equal(d8_we_got, d8_we_want);
 }
@@ -141,7 +141,7 @@ BOOST_AUTO_TEST_CASE(use_case_03)
             },
         });
 
-    D8 d8_we_got = lue::d8_network<FlowDirection>(dem);
+    D8 d8_we_got = lue::d8_flow_direction<FlowDirection>(dem);
 
     lue::test::check_arrays_are_equal(d8_we_got, d8_we_want);
 }
@@ -188,7 +188,7 @@ BOOST_AUTO_TEST_CASE(use_case_04)
             },
         });
 
-    D8 d8_we_got = lue::d8_network<FlowDirection>(dem);
+    D8 d8_we_got = lue::d8_flow_direction<FlowDirection>(dem);
 
     lue::test::check_arrays_are_equal(d8_we_got, d8_we_want);
 }
@@ -390,7 +390,7 @@ BOOST_AUTO_TEST_CASE(barnes_2017)
             },
         });
 
-    D8 d8_we_got = lue::d8_network<FlowDirection>(dem);
+    D8 d8_we_got = lue::d8_flow_direction<FlowDirection>(dem);
 
     // TOO bad, the DEM from the paper contains flat areas. Our operation
     // assumes this is not the case. The results are therefore not the
