@@ -25,7 +25,7 @@ set(names
     copy_test.cpp
     cos_test.cpp
     create_partitioned_array_test.cpp
-    d8_network_test.cpp
+    d8_flow_direction_test.cpp
     divide_test.cpp
     downstream_test.cpp
     downstream_distance_test.cpp
