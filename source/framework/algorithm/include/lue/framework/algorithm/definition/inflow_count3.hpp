@@ -718,7 +718,7 @@ namespace lue {
                     flow_direction_data.shape());
 
                 input_cells_idxs_f = hpx::when_all(received_cells_idxs).then(
-                        hpx::util::unwrapping(
+                        hpx::unwrapping(
 
                                 [](std::array<hpx::future<CellsIdxs>, nr_neighbours>&& idxs_fs)
                                 {

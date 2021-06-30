@@ -22,12 +22,10 @@ namespace lue::detail {
         lue_hpx_assert(offset1 >= -1 && offset1 <= 1);
 
         // Which neighbouring partition to send a message to
-        accu::Direction direction;
+        accu::Direction direction{};
 
         // Idx of cell in the neighbouring partition
         Index idx{-1};
-
-        bool initialized{false};  // TODO remove
 
         if(idx0 == 0)
         {
@@ -40,14 +38,12 @@ namespace lue::detail {
                     lue_hpx_assert(offset1 == -1);
                     direction = accu::Direction::west;
                     idx = idx0 + offset0;
-                    initialized = true;
                 }
                 else if(offset1 >= 0)
                 {
                     lue_hpx_assert(offset0 == -1);
                     direction = accu::Direction::north;
                     idx = idx1 + offset1;
-                    initialized = true;
                 }
                 else
                 {
@@ -55,7 +51,6 @@ namespace lue::detail {
                     lue_hpx_assert(offset1 == -1);
                     direction = accu::Direction::north_west;
                     idx = -1;  // Whatever
-                    initialized = true;
                 }
             }
             else if(idx1 == extent1 - 1)
@@ -66,14 +61,12 @@ namespace lue::detail {
                     lue_hpx_assert(offset1 == 1);
                     direction = accu::Direction::east;
                     idx = idx0 + offset0;
-                    initialized = true;
                 }
                 else if(offset1 <= 0)
                 {
                     lue_hpx_assert(offset0 == -1);
                     direction = accu::Direction::north;
                     idx = idx1 + offset1;
-                    initialized = true;
                 }
                 else
                 {
@@ -81,7 +74,6 @@ namespace lue::detail {
                     lue_hpx_assert(offset1 == 1);
                     direction = accu::Direction::north_east;
                     idx = 0;  // Whatever
-                    initialized = true;
                 }
             }
             else
@@ -90,7 +82,6 @@ namespace lue::detail {
                 lue_hpx_assert(offset0 == -1);
                 direction = accu::Direction::north;
                 idx = idx1 + offset1;
-                initialized = true;
             }
         }
         else if(idx0 == extent0 - 1)
@@ -104,14 +95,12 @@ namespace lue::detail {
                     lue_hpx_assert(offset1 == -1);
                     direction = accu::Direction::west;
                     idx = idx0 + offset0;
-                    initialized = true;
                 }
                 else if(offset1 >= 0)
                 {
                     lue_hpx_assert(offset0 == 1);
                     direction = accu::Direction::south;
                     idx = idx1 + offset1;
-                    initialized = true;
                 }
                 else
                 {
@@ -119,7 +108,6 @@ namespace lue::detail {
                     lue_hpx_assert(offset1 == -1);
                     direction = accu::Direction::south_west;
                     idx = -1;  // Whatever
-                    initialized = true;
                 }
             }
             else if(idx1 == extent1 - 1)
@@ -130,14 +118,12 @@ namespace lue::detail {
                     lue_hpx_assert(offset1 == 1);
                     direction = accu::Direction::east;
                     idx = idx0 + offset0;
-                    initialized = true;
                 }
                 else if(offset1 <= 0)
                 {
                     lue_hpx_assert(offset0 == 1);
                     direction = accu::Direction::south;
                     idx = idx1 + offset1;
-                    initialized = true;
                 }
                 else
                 {
@@ -145,7 +131,6 @@ namespace lue::detail {
                     lue_hpx_assert(offset1 == 1);
                     direction = accu::Direction::south_east;
                     idx = -1;  // Whatever
-                    initialized = true;
                 }
             }
             else
@@ -154,7 +139,6 @@ namespace lue::detail {
                 lue_hpx_assert(offset0 == 1);
                 direction = accu::Direction::south;
                 idx = idx1 + offset1;
-                initialized = true;
             }
         }
         else if(idx1 == 0)
@@ -163,8 +147,6 @@ namespace lue::detail {
             lue_hpx_assert(offset1 == -1);
             direction = accu::Direction::west;
             idx = idx0 + offset0;
-            initialized = true;
-
         }
         else if(idx1 == extent1 - 1)
         {
@@ -172,10 +154,7 @@ namespace lue::detail {
             lue_hpx_assert(offset1 == 1);
             direction = accu::Direction::east;
             idx = idx0 + offset0;
-            initialized = true;
         }
-
-        lue_hpx_assert(initialized);
 
         return std::make_tuple(direction, idx);
     }

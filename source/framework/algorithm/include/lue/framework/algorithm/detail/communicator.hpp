@@ -91,14 +91,14 @@ namespace lue::detail {
                 _receive_channels{}
 
             {
-                auto nr_valid_channels =
+                [[maybe_unused]] auto nr_valid_channels =
                     [](Channels const& channels)
                     {
                         return std::count_if(channels.begin(), channels.end(),
                             [](Channel const& channel) { return bool(channel); });
                     };
 
-                auto same_channels_are_valid =
+                [[maybe_unused]] auto same_channels_are_valid =
                     [](Channels const& channels1, Channels const& channels2)
                     {
                         return std::equal(channels1.begin(), channels1.end(), channels2.begin(),

@@ -443,14 +443,6 @@ BOOST_AUTO_TEST_CASE(no_data)
     Shape const array_shape{{3, 3}};
     Shape const partition_shape{{3, 3}};
 
-    auto const n{lue::north<FlowDirectionElement>};
-    auto const ne{lue::north_east<FlowDirectionElement>};
-    auto const e{lue::east<FlowDirectionElement>};
-    auto const se{lue::south_east<FlowDirectionElement>};
-    auto const s{lue::south<FlowDirectionElement>};
-    auto const sw{lue::south_west<FlowDirectionElement>};
-    auto const w{lue::west<FlowDirectionElement>};
-    auto const nw{lue::north_west<FlowDirectionElement>};
     auto const y{lue::sink<FlowDirectionElement>};
 
     Policies policies{};

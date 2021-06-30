@@ -209,7 +209,7 @@ namespace lue {
                     // The results for the upstream cell are ready. Use
                     // its outflow as inflow for the downstream cell.
                     MaterialElement const& outflow{_outflow(idx0_from, idx1_from)};
-                    MaterialElement const& upstream_remainder{_remainder(idx0_from, idx1_from)};
+                    [[maybe_unused]] MaterialElement const& upstream_remainder{_remainder(idx0_from, idx1_from)};
 
                     MaterialElement& inflow{_outflow(idx0_to, idx1_to)};
                     MaterialElement& remainder{_remainder(idx0_to, idx1_to)};
