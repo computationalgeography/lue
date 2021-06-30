@@ -17,6 +17,7 @@ lue.framework reference
     all
     array_partition_id
     divide
+    d8_flow_direction
     downstream
     downstream_distance
     equal_to
