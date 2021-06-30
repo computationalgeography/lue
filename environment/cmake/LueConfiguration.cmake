@@ -70,19 +70,41 @@ option(LUE_VALIDATE_IDXS
     FALSE)
 
 
-# Options related to the availability of external packages
+# Options related to the availability of external packages.
+# TODO Make the defaults dependent on the result of a search by CMake.
 if(WIN32)
     set(LUE_HAVE_BOOST_INIT FALSE)
+    set(LUE_HAVE_DOCOPT_INIT FALSE)
     set(LUE_HAVE_DOXYGEN_INIT FALSE)
     set(LUE_HAVE_GDAL_INIT FALSE)
     set(LUE_HAVE_GLEW_INIT FALSE)
+    set(LUE_HAVE_FMT_INIT FALSE)
     set(LUE_HAVE_HDF5_INIT FALSE)
-else()
+    set(LUE_HAVE_NLOHMANN_JSON_INIT FALSE)
+    set(LUE_HAVE_PYBIND11_INIT FALSE)
+elseif(APPLE)
     set(LUE_HAVE_BOOST_INIT TRUE)
+    # Change default to TRUE once Brew contains a version.
+    set(LUE_HAVE_DOCOPT_INIT FALSE)
     set(LUE_HAVE_DOXYGEN_INIT TRUE)
     set(LUE_HAVE_GDAL_INIT TRUE)
     set(LUE_HAVE_GLEW_INIT TRUE)
+    set(LUE_HAVE_FMT_INIT TRUE)
     set(LUE_HAVE_HDF5_INIT TRUE)
+    set(LUE_HAVE_NLOHMANN_JSON_INIT TRUE)
+    set(LUE_HAVE_PYBIND11_INIT TRUE)
+else()
+    set(LUE_HAVE_BOOST_INIT TRUE)
+    set(LUE_HAVE_DOCOPT_INIT TRUE)
+    set(LUE_HAVE_DOXYGEN_INIT TRUE)
+    set(LUE_HAVE_GDAL_INIT TRUE)
+    set(LUE_HAVE_GLEW_INIT TRUE)
+    set(LUE_HAVE_FMT_INIT TRUE)
+    set(LUE_HAVE_HDF5_INIT TRUE)
+    # Change default to TRUE once Ubuntu LTS contains a recent enough version.
+    set(LUE_HAVE_NLOHMANN_JSON_INIT FALSE)
+    # Change default to TRUE once Ubuntu LTS contains a recent enough version.
+    set(LUE_HAVE_PYBIND11_INIT FALSE)
 endif()
 
 function(lue_have_option name)
@@ -253,11 +275,15 @@ if(LUE_BOOST_REQUIRED)
 endif()
 
 if(LUE_DOCOPT_REQUIRED)
-    set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} docopt.cpp/0.6.3)
+    if(NOT LUE_HAVE_DOCOPT)
+        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} docopt.cpp/0.6.3)
+    endif()
 endif()
 
 if(LUE_FMT_REQUIRED)
-    set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} fmt/7.1.3)
+    if(NOT LUE_HAVE_FMT)
+        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} fmt/8.0.0)
+    endif()
 endif()
 
 if(LUE_GDAL_REQUIRED)
@@ -331,15 +357,19 @@ if(LUE_KOKKOS_MDSPAN_REQUIRED)
 endif()
 
 if(LUE_NLOHMANN_JSON_REQUIRED)
-    set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} nlohmann_json/3.9.1)
+    if(NOT LUE_HAVE_NLOHMANN_JSON)
+        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} nlohmann_json/3.9.1)
+    endif()
 endif()
 
 if(LUE_PYBIND11_REQUIRED)
-    FetchContent_Declare(pybind11
-        GIT_REPOSITORY https://github.com/pybind/pybind11
-        GIT_TAG "v2.6.2"
-    )
-    FetchContent_MakeAvailable(pybind11)
+    if(NOT LUE_HAVE_PYBIND11)
+        FetchContent_Declare(pybind11
+            GIT_REPOSITORY https://github.com/pybind/pybind11
+            GIT_TAG "v2.6.2"
+        )
+        FetchContent_MakeAvailable(pybind11)
+    endif()
 endif()
 
 
