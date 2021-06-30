@@ -39,7 +39,7 @@ class OverloadPicker
 
             return hpx::dataflow(
                 hpx::launch::async,
-                hpx::util::unwrapping(
+                hpx::unwrapping(
 
                         [policies, input_element, zones_partition](
                             ZonesData const& zones_partition_data)
@@ -124,7 +124,7 @@ class OverloadPicker<
 
             return hpx::dataflow(
                 hpx::launch::async,
-                hpx::util::unwrapping(
+                hpx::unwrapping(
 
                         [policies, input_partition, zones_partition](
                             InputData const& input_partition_data,
@@ -202,7 +202,7 @@ OutputPartition zonal_operation_partition2(
 
     return hpx::dataflow(
         hpx::launch::async,
-        hpx::util::unwrapping(
+        hpx::unwrapping(
 
                 [policies, zones_partition, aggregator](
                     Offset const& offset,

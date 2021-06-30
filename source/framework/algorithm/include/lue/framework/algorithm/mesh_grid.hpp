@@ -27,7 +27,7 @@ ArrayPartition<OutputElement, rank> mesh_grid_partition(
 
     return hpx::dataflow(
         hpx::launch::async,
-        hpx::util::unwrapping(
+        hpx::unwrapping(
 
                 [input_partition, first_value, step, dimension](
                     Offset const& offset,

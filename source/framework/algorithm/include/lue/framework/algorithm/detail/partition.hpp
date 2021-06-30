@@ -50,7 +50,7 @@ Array<hpx::shared_future<DataT<PartitionT<Partitions>>>, rank<Partitions>> parti
     using Slices = SlicesT<Partition>;
 
     // North-west corner partition: get south-east corner element
-    data(0, 0) = partition_shapes(0, 0).then(hpx::util::unwrapping(
+    data(0, 0) = partition_shapes(0, 0).then(hpx::unwrapping(
 
             [input_partition=partitions(0, 0)](
                 Shape const& partition_shape)
@@ -69,7 +69,7 @@ Array<hpx::shared_future<DataT<PartitionT<Partitions>>>, rank<Partitions>> parti
         ));
 
     // North partition: get south side elements
-    data(0, 1) = partition_shapes(0, 1).then(hpx::util::unwrapping(
+    data(0, 1) = partition_shapes(0, 1).then(hpx::unwrapping(
 
             [input_partition=partitions(0, 1)](
                 Shape const& partition_shape)
@@ -88,7 +88,7 @@ Array<hpx::shared_future<DataT<PartitionT<Partitions>>>, rank<Partitions>> parti
         ));
 
     // North-east partition: get south-west corner elements
-    data(0, 2) = partition_shapes(0, 2).then(hpx::util::unwrapping(
+    data(0, 2) = partition_shapes(0, 2).then(hpx::unwrapping(
 
             [input_partition=partitions(0, 2)](
                 Shape const& partition_shape)
@@ -107,7 +107,7 @@ Array<hpx::shared_future<DataT<PartitionT<Partitions>>>, rank<Partitions>> parti
         ));
 
     // West partition: get east side elements
-    data(1, 0) = partition_shapes(1, 0).then(hpx::util::unwrapping(
+    data(1, 0) = partition_shapes(1, 0).then(hpx::unwrapping(
 
             [input_partition=partitions(1, 0)](
                 Shape const& partition_shape)
@@ -129,7 +129,7 @@ Array<hpx::shared_future<DataT<PartitionT<Partitions>>>, rank<Partitions>> parti
     data(1, 1) = partitions(1, 1).data();
 
     // East partition: get west side elements
-    data(1, 2) = partition_shapes(1, 2).then(hpx::util::unwrapping(
+    data(1, 2) = partition_shapes(1, 2).then(hpx::unwrapping(
 
             [input_partition=partitions(1, 2)](
                 Shape const& partition_shape)
@@ -148,7 +148,7 @@ Array<hpx::shared_future<DataT<PartitionT<Partitions>>>, rank<Partitions>> parti
         ));
 
     // South-west partition: get north-east corner elements
-    data(2, 0) = partition_shapes(2, 0).then(hpx::util::unwrapping(
+    data(2, 0) = partition_shapes(2, 0).then(hpx::unwrapping(
 
             [input_partition=partitions(2, 0)](
                 Shape const& partition_shape)
@@ -167,7 +167,7 @@ Array<hpx::shared_future<DataT<PartitionT<Partitions>>>, rank<Partitions>> parti
         ));
 
     // South partition: get north side elements
-    data(2, 1) = partition_shapes(2, 1).then(hpx::util::unwrapping(
+    data(2, 1) = partition_shapes(2, 1).then(hpx::unwrapping(
 
             [input_partition=partitions(2, 1)](
                 Shape const& partition_shape)

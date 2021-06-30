@@ -402,7 +402,7 @@ namespace lue {
                     // -----------------------------------------------------------------
 
                     // North-west corner partition: get south-east corner elements
-                    data(0, 0) = partition_shapes(0, 0).then(hpx::util::unwrapping(
+                    data(0, 0) = partition_shapes(0, 0).then(hpx::unwrapping(
 
                             [kernel_radius, input_partition=_partitions(0, 0)](
                                 Shape const& partition_shape)
@@ -421,7 +421,7 @@ namespace lue {
                         ));
 
                     // North partition: get south side elements
-                    data(0, 1) = partition_shapes(0, 1).then(hpx::util::unwrapping(
+                    data(0, 1) = partition_shapes(0, 1).then(hpx::unwrapping(
 
                             [kernel_radius, input_partition=_partitions(0, 1)](
                                 Shape const& partition_shape)
@@ -440,7 +440,7 @@ namespace lue {
                         ));
 
                     // North-east partition: get south-west corner elements
-                    data(0, 2) = partition_shapes(0, 2).then(hpx::util::unwrapping(
+                    data(0, 2) = partition_shapes(0, 2).then(hpx::unwrapping(
 
                             [kernel_radius, input_partition=_partitions(0, 2)](
                                 Shape const& partition_shape)
@@ -459,7 +459,7 @@ namespace lue {
                         ));
 
                     // West partition: get east side elements
-                    data(1, 0) = partition_shapes(1, 0).then(hpx::util::unwrapping(
+                    data(1, 0) = partition_shapes(1, 0).then(hpx::unwrapping(
 
                             [kernel_radius, input_partition=_partitions(1, 0)](
                                 Shape const& partition_shape)
@@ -481,7 +481,7 @@ namespace lue {
                     data(1, 1) = _partitions(1, 1).data();
 
                     // East partition: get west side elements
-                    data(1, 2) = partition_shapes(1, 2).then(hpx::util::unwrapping(
+                    data(1, 2) = partition_shapes(1, 2).then(hpx::unwrapping(
 
                             [kernel_radius, input_partition=_partitions(1, 2)](
                                 Shape const& partition_shape)
@@ -500,7 +500,7 @@ namespace lue {
                         ));
 
                     // South-west partition: get north-east corner elements
-                    data(2, 0) = partition_shapes(2, 0).then(hpx::util::unwrapping(
+                    data(2, 0) = partition_shapes(2, 0).then(hpx::unwrapping(
 
                             [kernel_radius, input_partition=_partitions(2, 0)](
                                 Shape const& partition_shape)
@@ -519,7 +519,7 @@ namespace lue {
                         ));
 
                     // South partition: get north side elements
-                    data(2, 1) = partition_shapes(2, 1).then(hpx::util::unwrapping(
+                    data(2, 1) = partition_shapes(2, 1).then(hpx::unwrapping(
 
                             [kernel_radius, input_partition=_partitions(2, 1)](
                                 Shape const& partition_shape)
@@ -538,7 +538,7 @@ namespace lue {
                         ));
 
                     // South-east partition: get north-west corner elements
-                    data(2, 2) = partition_shapes(2, 2).then(hpx::util::unwrapping(
+                    data(2, 2) = partition_shapes(2, 2).then(hpx::unwrapping(
 
                             [kernel_radius, input_partition=_partitions(2, 2)](
                                 Shape const& partition_shape)
@@ -701,7 +701,7 @@ namespace lue {
 
                 // return hpx::dataflow(
                 //     hpx::launch::async,
-                //     hpx::util::unwrapping(
+                //     hpx::unwrapping(
 
                 //             [](
                 //                 lue::Array<hpx::lcos::shared_future<InputData<InputPartitions>>, rank> const&
@@ -716,7 +716,7 @@ namespace lue {
 
                 return hpx::dataflow(
                     hpx::launch::async,
-                    hpx::util::unwrapping(
+                    hpx::unwrapping(
 
                             [shape=input_partitions.data().shape()](
                                 std::vector<hpx::lcos::shared_future<InputData<InputPartitions>>> const&
@@ -910,7 +910,7 @@ namespace lue {
                 // contained within this partition
                 hpx::future<OutputData> output_data_future = hpx::dataflow(
                     hpx::launch::async,
-                    hpx::util::unwrapping(
+                    hpx::unwrapping(
 
                             [policies, input_partitions=focal_input_partitions, kernel, functor](
                                 meh::InputData<InputPartitions> const&... partition_data)
@@ -962,7 +962,7 @@ namespace lue {
 
                 return hpx::dataflow(
                     hpx::launch::async,
-                    hpx::util::unwrapping(
+                    hpx::unwrapping(
 
                             [policies, input_partitions=std::move(input_partitions_tuple), kernel, functor](
                                 Offset offset,
@@ -1553,7 +1553,7 @@ namespace lue {
         template<
             typename... T>
         std::tuple<T...> get_futures(
-            hpx::util::tuple<hpx::future<T>...>&& futures)
+            hpx::tuple<hpx::future<T>...>&& futures)
         {
             // Given an hpx::tuple of ready(!) futures to values of various types,
             // return an std::tuple of the values themselves
@@ -1577,9 +1577,9 @@ namespace lue {
         {
             static_assert(rank<Kernel> == 2);
 
-            return hpx::when_all(detail::when_all_get(std::move(input_partitions))...).then(hpx::util::unwrapping(
+            return hpx::when_all(detail::when_all_get(std::move(input_partitions))...).then(hpx::unwrapping(
                     [locality_id, action, policies, kernel, functor](
-                        hpx::util::tuple<hpx::lcos::future<InputPartitions>...>&& input_partitions)
+                        hpx::tuple<hpx::lcos::future<InputPartitions>...>&& input_partitions)
                     {
                         AnnotateFunction annotation{"focal_operation"};
 

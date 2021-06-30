@@ -26,7 +26,7 @@ PartitionT<InputPartition, ElementT<InputPartition>, 1> unique_partition(
 
     return hpx::dataflow(
         hpx::launch::async,
-        hpx::util::unwrapping(
+        hpx::unwrapping(
 
                 [input_partition, policies](
                     InputData const& input_partition_data)
@@ -171,7 +171,7 @@ hpx::future<PartitionedArray<Element, 1>> unique(
     // data is transported from remote localities to us.
     return hpx::when_all(
         output_partitions.begin(), output_partitions.end()).then(
-                hpx::util::unwrapping(
+                hpx::unwrapping(
 
             [](auto const& partitions)
             {

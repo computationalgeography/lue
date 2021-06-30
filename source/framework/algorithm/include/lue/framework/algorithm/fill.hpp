@@ -31,7 +31,7 @@ template<
     {
         fill_partitions[p] = hpx::dataflow(
             hpx::launch::async,
-            hpx::util::unwrapping(action),
+            hpx::unwrapping(action),
             array.partitions()[p],
             fill_value);
     }

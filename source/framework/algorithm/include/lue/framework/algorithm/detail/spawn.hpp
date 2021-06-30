@@ -36,7 +36,7 @@ namespace lue::detail {
         typename Policies,
         typename Action,
         typename... InputComponents>
-    hpx::util::tuple<OutputComponent...> spawn_component(
+    hpx::tuple<OutputComponent...> spawn_component(
         hpx::id_type const locality_id,
         Action const& action,
         Policies const& policies,
@@ -50,7 +50,7 @@ namespace lue::detail {
 
         auto result = hpx::dataflow(
             hpx::launch::async,
-            hpx::util::unwrapping(
+            hpx::unwrapping(
 
                     [locality_id, action, policies, component_offset](
                         InputComponents&&... input_components)
@@ -66,7 +66,7 @@ namespace lue::detail {
         {
             // result is future<component>
             // Turn this into tuple<component...>
-            return hpx::util::make_tuple(std::move(result));
+            return hpx::make_tuple(std::move(result));
         }
         else
         {
@@ -82,7 +82,7 @@ namespace lue::detail {
         typename Policies,
         typename Action,
         typename... InputComponents>
-    hpx::util::tuple<OutputComponent...> spawn_component(
+    hpx::tuple<OutputComponent...> spawn_component(
         hpx::id_type const locality_id,
         Action const& action,
         Policies const& policies,
@@ -118,7 +118,7 @@ namespace lue::detail {
         typename... ComponentCollections,
         std::size_t... collection_idxs,
         typename... Index>
-    hpx::util::tuple<ComponentT<ComponentCollections>&...> component_refs(
+    hpx::tuple<ComponentT<ComponentCollections>&...> component_refs(
         std::tuple<ComponentCollections...>& components,
         std::index_sequence<collection_idxs...>,
         Index const... component_idxs)
@@ -127,7 +127,7 @@ namespace lue::detail {
         // return a tuple with for each of the component collections a
         // reference to the component pointed to by those component indices
 
-        return hpx::util::tuple<ComponentT<ComponentCollections>&...>{
+        return hpx::tuple<ComponentT<ComponentCollections>&...>{
             component_ref(std::get<collection_idxs>(components), component_idxs...)...};
     }
 
@@ -135,7 +135,7 @@ namespace lue::detail {
     template<
         typename... ComponentCollections,
         typename... Index>
-    hpx::util::tuple<ComponentT<ComponentCollections>&...> component_refs(
+    hpx::tuple<ComponentT<ComponentCollections>&...> component_refs(
         std::tuple<ComponentCollections...>& components,
         Index const... component_idxs)
     {

@@ -442,7 +442,7 @@ if(LUE_HPX_REQUIRED)
         else()
             # Obtain HPX from archive. This has the advantage of being
             # able to patch the source files.
-            set(hpx_version 1.6.0)
+            set(hpx_version 1.7.0-rc2)
 
             if(LUE_REPOSITORY_CACHE AND EXISTS ${LUE_REPOSITORY_CACHE})
                 # Use local archive
@@ -452,12 +452,12 @@ if(LUE_HPX_REQUIRED)
                 set(hpx_url "https://github.com/STEllAR-GROUP/hpx/archive/${hpx_version}.tar.gz")
             endif()
 
-            set(hpx_path_file ${CMAKE_CURRENT_SOURCE_DIR}/environment/cmake/hpx-${hpx_version}.patch)
-            if(EXISTS ${hpx_path_file})
+            set(hpx_patch_file ${CMAKE_CURRENT_SOURCE_DIR}/environment/cmake/hpx-${hpx_version}.patch)
+
+            if(EXISTS ${hpx_patch_file})
                 # Get rid of the final warnings in HPX sources
                 set(hpx_patch_command
-                    git apply --reject --ignore-space-change --ignore-whitespace
-                        ${CMAKE_CURRENT_SOURCE_DIR}/environment/cmake/hpx-${hpx_version}.patch)
+                    git apply --reject --ignore-space-change --ignore-whitespace ${hpx_patch_file})
             endif()
 
             FetchContent_Declare(hpx
@@ -465,8 +465,6 @@ if(LUE_HPX_REQUIRED)
                 PATCH_COMMAND ${hpx_patch_command}
             )
         endif()
-
-        add_definitions(-DHPX_HAVE_DEPRECATION_WARNINGS_V1_6=0)
 
         FetchContent_MakeAvailable(hpx)
     endif()
