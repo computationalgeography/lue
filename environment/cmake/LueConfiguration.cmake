@@ -78,6 +78,7 @@ if(WIN32)
     set(LUE_HAVE_DOXYGEN_INIT FALSE)
     set(LUE_HAVE_GDAL_INIT FALSE)
     set(LUE_HAVE_GLEW_INIT FALSE)
+    set(LUE_HAVE_GLFW_INIT FALSE)
     set(LUE_HAVE_FMT_INIT FALSE)
     set(LUE_HAVE_HDF5_INIT FALSE)
     set(LUE_HAVE_NLOHMANN_JSON_INIT FALSE)
@@ -85,20 +86,26 @@ if(WIN32)
 elseif(APPLE)
     set(LUE_HAVE_BOOST_INIT TRUE)
     # Change default to TRUE once Brew contains a version.
+    # Change default to TRUE once package integrates well.
     set(LUE_HAVE_DOCOPT_INIT FALSE)
     set(LUE_HAVE_DOXYGEN_INIT TRUE)
     set(LUE_HAVE_GDAL_INIT TRUE)
     set(LUE_HAVE_GLEW_INIT TRUE)
+    # Change default to TRUE once package integrates well.
+    set(LUE_HAVE_GLFW_INIT FALSE)
     set(LUE_HAVE_FMT_INIT TRUE)
     set(LUE_HAVE_HDF5_INIT TRUE)
     set(LUE_HAVE_NLOHMANN_JSON_INIT TRUE)
     set(LUE_HAVE_PYBIND11_INIT TRUE)
 else()
     set(LUE_HAVE_BOOST_INIT TRUE)
-    set(LUE_HAVE_DOCOPT_INIT TRUE)
+    # Change default to TRUE once package integrates well.
+    set(LUE_HAVE_DOCOPT_INIT FALSE)
     set(LUE_HAVE_DOXYGEN_INIT TRUE)
     set(LUE_HAVE_GDAL_INIT TRUE)
     set(LUE_HAVE_GLEW_INIT TRUE)
+    # Change default to TRUE once package integrates well.
+    set(LUE_HAVE_GLFW_INIT FALSE)
     set(LUE_HAVE_FMT_INIT TRUE)
     set(LUE_HAVE_HDF5_INIT TRUE)
     # Change default to TRUE once Ubuntu LTS contains a recent enough version.
@@ -114,10 +121,15 @@ function(lue_have_option name)
 endfunction()
 
 lue_have_option(BOOST)
+lue_have_option(DOCOPT)
 lue_have_option(DOXYGEN)
 lue_have_option(GDAL)
 lue_have_option(GLEW)
+lue_have_option(GLFW)
+lue_have_option(FMT)
 lue_have_option(HDF5)
+lue_have_option(NLOHMANN_JSON)
+lue_have_option(PYBIND11)
 
 
 # Handle internal dependencies -------------------------------------------------
@@ -301,7 +313,9 @@ endif()
 
 
 if(LUE_GLFW_REQUIRED)
-    set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} glfw/3.3.4)
+    if(NOT LUE_HAVE_GLFW)
+        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} glfw/3.3.4)
+    endif()
 endif()
 
 
