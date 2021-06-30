@@ -1,9 +1,43 @@
 #define BOOST_TEST_MODULE lue framework algorithm d8_flow_direction
 #include "lue/framework/algorithm/definition/d8_flow_direction.hpp"
-#include "lue/framework/algorithm/serialize/kernel.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/compare.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+
+
+namespace {
+
+    template<
+        typename Policies,
+        typename FlowDirectionElement,
+        typename ElevationElement,
+        lue::Rank rank>
+    void test_d8_flow_direction(
+        Policies const& policies,
+        lue::PartitionedArray<ElevationElement, rank> const& elevation,
+        lue::PartitionedArray<FlowDirectionElement, rank> const& flow_direction_we_want)
+    {
+        lue::PartitionedArray<FlowDirectionElement, rank> flow_direction_we_got =
+            lue::d8_flow_direction<FlowDirectionElement>(policies, elevation);
+
+        lue::test::check_arrays_are_equal(flow_direction_we_got, flow_direction_we_want);
+    }
+
+
+    template<
+        typename FlowDirectionElement,
+        typename ElevationElement,
+        lue::Rank rank>
+    void test_d8_flow_direction(
+        lue::PartitionedArray<ElevationElement, rank> const& elevation,
+        lue::PartitionedArray<FlowDirectionElement, rank> const& flow_direction_we_want)
+    {
+        using Policies = lue::policy::d8_flow_direction::DefaultPolicies<FlowDirectionElement, ElevationElement>;
+
+        test_d8_flow_direction(Policies{}, elevation, flow_direction_we_want);
+    }
+
+}  // Anonymous namespace
 
 
 BOOST_AUTO_TEST_CASE(use_case_01)
@@ -36,7 +70,7 @@ BOOST_AUTO_TEST_CASE(use_case_01)
             },
         });
 
-    D8 d8_we_want = lue::test::create_partitioned_array<D8>(
+    D8 flow_direction_we_want = lue::test::create_partitioned_array<D8>(
         array_shape, partition_shape, {
             {
                 n, n, n, n, n,
@@ -47,9 +81,7 @@ BOOST_AUTO_TEST_CASE(use_case_01)
             },
         });
 
-    D8 d8_we_got = lue::d8_flow_direction<FlowDirection>(dem);
-
-    lue::test::check_arrays_are_equal(d8_we_got, d8_we_want);
+    test_d8_flow_direction(dem, flow_direction_we_want);
 }
 
 
@@ -83,7 +115,7 @@ BOOST_AUTO_TEST_CASE(use_case_02)
             },
         });
 
-    D8 d8_we_want = lue::test::create_partitioned_array<D8>(
+    D8 flow_direction_we_want = lue::test::create_partitioned_array<D8>(
         array_shape, partition_shape, {
             {
                 n, n, n, n, n,
@@ -94,9 +126,7 @@ BOOST_AUTO_TEST_CASE(use_case_02)
             },
         });
 
-    D8 d8_we_got = lue::d8_flow_direction<FlowDirection>(dem);
-
-    lue::test::check_arrays_are_equal(d8_we_got, d8_we_want);
+    test_d8_flow_direction(dem, flow_direction_we_want);
 }
 
 
@@ -130,7 +160,7 @@ BOOST_AUTO_TEST_CASE(use_case_03)
             },
         });
 
-    D8 d8_we_want = lue::test::create_partitioned_array<D8>(
+    D8 flow_direction_we_want = lue::test::create_partitioned_array<D8>(
         array_shape, partition_shape, {
             {
                 n, n, n, n, n,
@@ -141,9 +171,7 @@ BOOST_AUTO_TEST_CASE(use_case_03)
             },
         });
 
-    D8 d8_we_got = lue::d8_flow_direction<FlowDirection>(dem);
-
-    lue::test::check_arrays_are_equal(d8_we_got, d8_we_want);
+    test_d8_flow_direction(dem, flow_direction_we_want);
 }
 
 
@@ -177,7 +205,7 @@ BOOST_AUTO_TEST_CASE(use_case_04)
             },
         });
 
-    D8 d8_we_want = lue::test::create_partitioned_array<D8>(
+    D8 flow_direction_we_want = lue::test::create_partitioned_array<D8>(
         array_shape, partition_shape, {
             {
                 n, n, n, n, n,
@@ -188,9 +216,7 @@ BOOST_AUTO_TEST_CASE(use_case_04)
             },
         });
 
-    D8 d8_we_got = lue::d8_flow_direction<FlowDirection>(dem);
-
-    lue::test::check_arrays_are_equal(d8_we_got, d8_we_want);
+    test_d8_flow_direction(dem, flow_direction_we_want);
 }
 
 
@@ -305,7 +331,7 @@ BOOST_AUTO_TEST_CASE(barnes_2017)
             },
         });
 
-    D8 d8_we_want = lue::test::create_partitioned_array<D8>(
+    D8 flow_direction_we_want = lue::test::create_partitioned_array<D8>(
         array_shape, partition_shape, {
             {
                 nw, n, n, n, n, n, n,
@@ -398,5 +424,64 @@ BOOST_AUTO_TEST_CASE(barnes_2017)
     // flat areas.
 
     BOOST_WARN(false);
-    // lue::test::check_arrays_are_equal(d8_we_got, d8_we_want);
+    // lue::test::check_arrays_are_equal(d8_we_got, flow_direction_we_want);
+}
+
+
+BOOST_AUTO_TEST_CASE(no_data)
+{
+    using ElevationElement = double;
+    using FlowDirectionElement = std::uint8_t;
+    using Policies =
+        lue::policy::d8_flow_direction::DefaultValuePolicies<FlowDirectionElement, ElevationElement>;
+    std::size_t const rank = 2;
+
+    using DEM = lue::PartitionedArray<ElevationElement, rank>;
+    using D8 = lue::PartitionedArray<FlowDirectionElement, rank>;
+    using Shape = lue::ShapeT<DEM>;
+
+    Shape const array_shape{{3, 3}};
+    Shape const partition_shape{{3, 3}};
+
+    auto const n{lue::north<FlowDirectionElement>};
+    auto const ne{lue::north_east<FlowDirectionElement>};
+    auto const e{lue::east<FlowDirectionElement>};
+    auto const se{lue::south_east<FlowDirectionElement>};
+    auto const s{lue::south<FlowDirectionElement>};
+    auto const sw{lue::south_west<FlowDirectionElement>};
+    auto const w{lue::west<FlowDirectionElement>};
+    auto const nw{lue::north_west<FlowDirectionElement>};
+    auto const y{lue::sink<FlowDirectionElement>};
+
+    Policies policies{};
+    auto const x{lue::policy::no_data_value<ElevationElement>};
+    auto const u{lue::policy::no_data_value<FlowDirectionElement>};
+
+    test_d8_flow_direction(policies,
+        lue::test::create_partitioned_array<DEM>(array_shape, partition_shape,
+            {{
+                x, x, x,
+                x, x, x,
+                x, x, x,
+            }}),
+        lue::test::create_partitioned_array<D8>(array_shape, partition_shape,
+            {{
+                u, u, u,
+                u, u, u,
+                u, u, u,
+            }}));
+
+    test_d8_flow_direction(policies,
+        lue::test::create_partitioned_array<DEM>(array_shape, partition_shape,
+            {{
+                x, x, x,
+                x, 5, x,
+                x, x, x,
+            }}),
+        lue::test::create_partitioned_array<D8>(array_shape, partition_shape,
+            {{
+                u, u, u,
+                u, y, u,
+                u, u, u,
+            }}));
 }

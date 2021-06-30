@@ -31,8 +31,8 @@ namespace lue {
                     typename Subspan>
                 FlowDirectionElement operator()(
                     [[maybe_unused]] Kernel const& kernel,
-                    [[maybe_unused]] OutputPolicies const& output_policies,
-                    [[maybe_unused]] InputPolicies const& input_policies,
+                    OutputPolicies const& output_policies,
+                    InputPolicies const& input_policies,
                     Subspan const& window) const
                 {
                     using Weight = ElementT<Kernel>;
@@ -49,75 +49,111 @@ namespace lue {
                     lue_hpx_assert(window.extent(0) == kernel.size());
                     lue_hpx_assert(window.extent(1) == kernel.size());
 
-                    ElevationElement drop{0};
-                    FlowDirectionElement direction{sink<FlowDirectionElement>};
+                    auto const& indp{input_policies.input_no_data_policy()};
+                    auto const& ondp{output_policies.output_no_data_policy()};
 
-                    ElevationElement other_drop;
+                    FlowDirectionElement direction;
 
-                    // First try the nearest cells -----------------------------------------
-                    // North
-                    other_drop = window(1, 1) - window(0, 1);
-                    if(other_drop > drop)
+                    if(indp.is_no_data(window(1, 1)))
                     {
-                        drop = other_drop;
-                        direction = north<FlowDirectionElement>;
+                        ondp.mark_no_data(direction);
                     }
-
-                    // West
-                    other_drop = window(1, 1) - window(1, 0);
-                    if(other_drop > drop)
+                    else
                     {
-                        drop = other_drop;
-                        direction = west<FlowDirectionElement>;
-                    }
+                        direction = sink<FlowDirectionElement>;
 
-                    // East
-                    other_drop = window(1, 1) - window(1, 2);
-                    if(other_drop > drop)
-                    {
-                        drop = other_drop;
-                        direction = east<FlowDirectionElement>;
-                    }
+                        ElevationElement drop{0};
+                        ElevationElement other_drop;
 
-                    // South
-                    other_drop = window(1, 1) - window(2, 1);
-                    if(other_drop > drop)
-                    {
-                        drop = other_drop;
-                        direction = south<FlowDirectionElement>;
-                    }
+                        // First try the nearest cells -----------------------------------------
+                        // North
+                        if(!indp.is_no_data(window(0, 1)))
+                        {
+                            other_drop = window(1, 1) - window(0, 1);
+                            if(other_drop > drop)
+                            {
+                                drop = other_drop;
+                                direction = north<FlowDirectionElement>;
+                            }
+                        }
 
-                    // Move on the diagonal cells ------------------------------------------
-                    // North-west
-                    other_drop = window(1, 1) - window(0, 0);
-                    if(other_drop > drop)
-                    {
-                        drop = other_drop;
-                        direction = north_west<FlowDirectionElement>;
-                    }
+                        // West
+                        if(!indp.is_no_data(window(1, 0)))
+                        {
+                            other_drop = window(1, 1) - window(1, 0);
+                            if(other_drop > drop)
+                            {
+                                drop = other_drop;
+                                direction = west<FlowDirectionElement>;
+                            }
+                        }
 
-                    // North-east
-                    other_drop = window(1, 1) - window(0, 2);
-                    if(other_drop > drop)
-                    {
-                        drop = other_drop;
-                        direction = north_east<FlowDirectionElement>;
-                    }
+                        // East
+                        if(!indp.is_no_data(window(1, 2)))
+                        {
+                            other_drop = window(1, 1) - window(1, 2);
+                            if(other_drop > drop)
+                            {
+                                drop = other_drop;
+                                direction = east<FlowDirectionElement>;
+                            }
+                        }
 
-                    // South-west
-                    other_drop = window(1, 1) - window(2, 0);
-                    if(other_drop > drop)
-                    {
-                        drop = other_drop;
-                        direction = south_west<FlowDirectionElement>;
-                    }
+                        // South
+                        if(!indp.is_no_data(window(2, 1)))
+                        {
+                            other_drop = window(1, 1) - window(2, 1);
+                            if(other_drop > drop)
+                            {
+                                drop = other_drop;
+                                direction = south<FlowDirectionElement>;
+                            }
+                        }
 
-                    // South-east
-                    other_drop = window(1, 1) - window(2, 2);
-                    if(other_drop > drop)
-                    {
-                        drop = other_drop;
-                        direction = south_east<FlowDirectionElement>;
+                        // Move on the diagonal cells ------------------------------------------
+                        // North-west
+                        if(!indp.is_no_data(window(0, 0)))
+                        {
+                            other_drop = window(1, 1) - window(0, 0);
+                            if(other_drop > drop)
+                            {
+                                drop = other_drop;
+                                direction = north_west<FlowDirectionElement>;
+                            }
+                        }
+
+                        // North-east
+                        if(!indp.is_no_data(window(0, 2)))
+                        {
+                            other_drop = window(1, 1) - window(0, 2);
+                            if(other_drop > drop)
+                            {
+                                drop = other_drop;
+                                direction = north_east<FlowDirectionElement>;
+                            }
+                        }
+
+                        // South-west
+                        if(!indp.is_no_data(window(2, 0)))
+                        {
+                            other_drop = window(1, 1) - window(2, 0);
+                            if(other_drop > drop)
+                            {
+                                drop = other_drop;
+                                direction = south_west<FlowDirectionElement>;
+                            }
+                        }
+
+                        // South-east
+                        if(!indp.is_no_data(window(2, 2)))
+                        {
+                            other_drop = window(1, 1) - window(2, 2);
+                            if(other_drop > drop)
+                            {
+                                drop = other_drop;
+                                direction = south_east<FlowDirectionElement>;
+                            }
+                        }
                     }
 
                     return direction;
