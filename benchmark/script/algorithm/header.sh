@@ -23,7 +23,7 @@ algorithm_names="
 case_study_names="
 "
 scenarios="
-    thread_numa_node
+    numa_node
 "
 
 output_prefix=${LUE_DATA:-.}
