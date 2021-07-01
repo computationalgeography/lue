@@ -130,6 +130,15 @@ namespace lue::utility {
         assert(nr_rows >= 0);
         assert(nr_cols >= 0);
 
+        // TODO Enlarge given some heuristics:
+        // - A whole number of times the actual block size (in each dimension)
+        // - Number of cells below some sensible value (1GB?)
+        block_size_x *= 10;
+        block_size_y *= 10;
+
+        block_size_x = std::min(block_size_x, nr_cols);
+        block_size_y = std::min(block_size_y, nr_rows);
+
         return GDALBlock{
             static_cast<std::size_t>(nr_cols),
             static_cast<std::size_t>(nr_rows),
