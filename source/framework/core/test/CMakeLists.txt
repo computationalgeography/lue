@@ -8,6 +8,7 @@ add_unit_tests(
         configuration_entry_test.cpp
         domain_decomposition_test.cpp
         hilbert_curve_test.cpp
+        index_util_test.cpp
         linear_curve_test.cpp
         math_test.cpp
         shared_buffer_test.cpp

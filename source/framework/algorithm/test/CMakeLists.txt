@@ -62,6 +62,7 @@ set(names
     sqrt_test.cpp
     subtract_test.cpp
     sum_test.cpp
+    timestamp_test.cpp
     uniform_test.cpp
     unique_id_test.cpp
     unique_test.cpp
