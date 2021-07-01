@@ -59,6 +59,9 @@ option(LUE_BUILD_HPX
 option(LUE_BUILD_OTF2
     "If OTF2 is required, build it instead of relying on the environment"
     FALSE)
+option(LUE_OTF2_WITH_PYTHON
+    "If OTF2 is built, include the Python bindings"
+    FALSE)
 
 
 # Options tweaking the behaviour of the software
@@ -96,7 +99,8 @@ elseif(APPLE)
     set(LUE_HAVE_FMT_INIT TRUE)
     set(LUE_HAVE_HDF5_INIT TRUE)
     set(LUE_HAVE_NLOHMANN_JSON_INIT TRUE)
-    set(LUE_HAVE_PYBIND11_INIT TRUE)
+    # Change default to TRUE once Ubuntu LTS contains a recent enough version.
+    set(LUE_HAVE_PYBIND11_INIT FALSE)
 else()
     set(LUE_HAVE_BOOST_INIT TRUE)
     # Change default to TRUE once package integrates well.
@@ -193,6 +197,10 @@ if(LUE_BUILD_FRAMEWORK)
     set(LUE_FMT_REQUIRED TRUE)
     set(LUE_HPX_REQUIRED TRUE)
     set(LUE_KOKKOS_MDSPAN_REQUIRED TRUE)
+
+    if(LUE_BUILD_HPX and LUE_BUILD_OTF2 and LUE_OTF2_WITH_PYTHON)
+        set(LUE_PYTHON_REQUIRED TRUE)
+    endif()
 
     if(LUE_FRAMEWORK_WITH_OPENCL)
         set(LUE_OPENCL_REQUIRED TRUE)
@@ -402,7 +410,66 @@ list(APPEND CMAKE_MODULE_PATH
     ${CMAKE_CURRENT_BINARY_DIR})
 
 
-# Build (not find) external packages -------------------------------------------
+# ------------------------------------------------------------------------------
+if(LUE_PYBIND11_REQUIRED)
+
+    # For some reason, PYTHON_EXECUTABLE is set (FetchContent?).
+    set(LUE_PYTHON_EXECUTABLE ${PYTHON_EXECUTABLE})
+
+    # Ask Python for some properties we can use.
+    # Given Python found, figure out where the NumPy headers are. We don't
+    # want to pick up headers from another prefix than the prefix of the
+    # Python interpreter.
+    execute_process(COMMAND "${LUE_PYTHON_EXECUTABLE}" -c "
+from distutils import sysconfig
+import numpy as np
+import sys
+print(\"{};{};{};{};{};{}\".format(
+        sys.version_info[0], sys.version_info[1], sys.version_info[2],
+        sysconfig.get_python_lib(plat_specific=True),
+        np.__version__, np.get_include(),
+    ))"
+        RESULT_VARIABLE python_result
+        OUTPUT_VARIABLE python_output
+        ERROR_VARIABLE python_error
+        OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+    if(NOT python_result MATCHES 0)
+        message(FATAL_ERROR
+            "${LUE_PYTHON_EXECUTABLE} is unable to determine interpreter properties:\n${python_error}")
+    else()
+        list(GET python_output 0 PYTHON_VERSION_MAJOR)
+        list(GET python_output 1 PYTHON_VERSION_MINOR)
+        list(GET python_output 2 PYTHON_VERSION_PATCH)
+        list(GET python_output 3 python_site_packages)
+        list(GET python_output 4 numpy_version)
+        list(GET python_output 5 NUMPY_INCLUDE_DIRS)
+        set(PYTHON_VERSION "${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}.${PYTHON_VERSION_PATCH}")
+
+        message(STATUS "Found Python ${PYTHON_VERSION}")
+        message(STATUS "Found NumPy ${numpy_version} headers in ${NUMPY_INCLUDE_DIRS}")
+    endif()
+
+    if(NOT LUE_PYTHON_API_INSTALL_DIR)
+        # Most Python packages install in a subdirectory of Python's site
+        # packages. But we currently ship only Python packages implemented
+        # as shared libraries. Therefore, we install in the root of the
+        # site packages directory. We may have to change things in
+        # the future if this is unconventional.
+        set(LUE_PYTHON_API_INSTALL_DIR "${python_site_packages}")  # /lue")
+    endif()
+endif()
+
+if(LUE_PYTHON_REQUIRED AND NOT LUE_PYBIND11_REQUIRED)
+    find_package(Python COMPONENTS Interpreter)
+
+    if(NOT Python_FOUND)
+        message(FATAL_ERROR "Python not found")
+    endif()
+
+    set(LUE_PYTHON_EXECUTABLE ${Python_EXECUTABLE})
+endif()
+
 if(LUE_HPX_REQUIRED)
     if(HPX_WITH_APEX)
         if(APEX_WITH_OTF2)
@@ -430,6 +497,9 @@ if(LUE_HPX_REQUIRED)
                     message(STATUS "  OTF2_ROOT      : ${OTF2_ROOT}")
                     message(STATUS "  system-type    : ${otf2_system_type}")
 
+                    # TODO Use LUE_OTF2_WITH_PYTHON to turn on/off the
+                    #   build of the Python bindings.
+                    # PYTHON=${LUE_PYTHON_EXECUTABLE} PYTHON_FOR_GENERATOR=:
                     execute_process(
                         COMMAND
                             ${otf2_SOURCE_DIR}/configure
@@ -645,64 +715,6 @@ endif()
 
 if(LUE_OPENCL_REQUIRED)
     find_package(OpenCL REQUIRED)
-endif()
-
-if(LUE_PYBIND11_REQUIRED)
-
-    set(LUE_PYTHON_EXECUTABLE ${PYTHON_EXECUTABLE})
-
-    # Ask Python for some properties we can use.
-    # Given Python found, figure out where the NumPy headers are. We don't
-    # want to pick up headers from another prefix than the prefix of the
-    # Python interpreter.
-    execute_process(COMMAND "${LUE_PYTHON_EXECUTABLE}" -c "
-from distutils import sysconfig
-import numpy as np
-import sys
-print(\"{};{};{};{};{};{}\".format(
-        sys.version_info[0], sys.version_info[1], sys.version_info[2],
-        sysconfig.get_python_lib(plat_specific=True),
-        np.__version__, np.get_include(),
-    ))"
-        RESULT_VARIABLE python_result
-        OUTPUT_VARIABLE python_output
-        ERROR_VARIABLE python_error
-        OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-    if(NOT python_result MATCHES 0)
-        message(FATAL_ERROR
-            "${LUE_PYTHON_EXECUTABLE} is unable to determine interpreter properties:\n${python_error}")
-    else()
-        list(GET python_output 0 PYTHON_VERSION_MAJOR)
-        list(GET python_output 1 PYTHON_VERSION_MINOR)
-        list(GET python_output 2 PYTHON_VERSION_PATCH)
-        list(GET python_output 3 python_site_packages)
-        list(GET python_output 4 numpy_version)
-        list(GET python_output 5 NUMPY_INCLUDE_DIRS)
-        set(PYTHON_VERSION "${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}.${PYTHON_VERSION_PATCH}")
-
-        message(STATUS "Found Python ${PYTHON_VERSION}")
-        message(STATUS "Found NumPy ${numpy_version} headers in ${NUMPY_INCLUDE_DIRS}")
-    endif()
-
-    if(NOT LUE_PYTHON_API_INSTALL_DIR)
-        # Most Python packages install in a subdirectory of Python's site
-        # packages. But we currently ship only Python packages implemented
-        # as shared libraries. Therefore, we install in the root of the
-        # site packages directory. We may have to change things in
-        # the future if this is unconventional.
-        set(LUE_PYTHON_API_INSTALL_DIR "${python_site_packages}")  # /lue")
-    endif()
-endif()
-
-if(LUE_PYTHON_REQUIRED AND NOT LUE_PYBIND11_REQUIRED)
-    find_package(Python COMPONENTS Interpreter)
-
-    if(NOT Python_FOUND)
-        message(FATAL_ERROR "Python not found")
-    endif()
-
-    set(LUE_PYTHON_EXECUTABLE ${Python_EXECUTABLE})
 endif()
 
 if(LUE_SPHINX_REQUIRED)
