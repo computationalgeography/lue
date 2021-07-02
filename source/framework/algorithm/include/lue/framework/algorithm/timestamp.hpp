@@ -55,7 +55,7 @@ namespace lue {
     template<
         typename InputElement,
         Rank rank>
-    PartitionedArray<ClockTick, 2> timestamp(
+    PartitionedArray<ClockTick, rank> timestamp(
         PartitionedArray<InputElement, rank> const& input_array)
     {
         using InputArray = PartitionedArray<InputElement, rank>;

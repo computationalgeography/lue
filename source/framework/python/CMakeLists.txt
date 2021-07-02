@@ -32,6 +32,7 @@ pybind11_add_module(lue_py_framework SHARED THIN_LTO
     src/algorithm/slope.cpp
     src/algorithm/sqrt.cpp
     src/algorithm/subtract.cpp
+    src/algorithm/timestamp.cpp
     src/algorithm/uniform.cpp
     src/algorithm/upstream.cpp
     src/algorithm/valid.cpp
