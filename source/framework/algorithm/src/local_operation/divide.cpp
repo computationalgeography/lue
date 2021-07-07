@@ -1,7 +1,17 @@
+#include "lue/framework/algorithm/default_policies/divide.hpp"
+#include "lue/framework/algorithm/value_policies/divide.hpp"
 #include "lue/framework/algorithm/definition/divide.hpp"
 
 
 #define LUE_INSTANTIATE(Element, rank)                             \
+                                                                   \
+    LUE_INSTANTIATE_BINARY_LOCAL_OPERATION(                        \
+        (policy::divide::DefaultPolicies<Element, Element>),       \
+        Element,                                                   \
+        Element,                                                   \
+        Element,                                                   \
+        rank,                                                      \
+        (detail::Divide<Element, Element>));                       \
                                                                    \
     LUE_INSTANTIATE_BINARY_LOCAL_OPERATION(                        \
         (policy::divide::DefaultValuePolicies<Element, Element>),  \

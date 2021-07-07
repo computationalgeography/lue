@@ -92,15 +92,47 @@ add_hpx_unit_tests(
         lue::framework_test
 )
 
-target_link_libraries(lue_framework_algorithm_accu_test
-    PRIVATE
-        lue::framework_flow_direction_operation)
-target_link_libraries(lue_framework_algorithm_accu_threshold_test
-    PRIVATE
-        lue::framework_flow_direction_operation)
-target_link_libraries(lue_framework_algorithm_accu_threshold3_test
-    PRIVATE
-        lue::framework_flow_direction_operation)
-target_link_libraries(lue_framework_algorithm_inflow_count_test
-    PRIVATE
-        lue::framework_flow_direction_operation)
+foreach(name
+        add
+        array_like
+        array_partition_id
+        atan
+        atan2
+        cast
+        close_to
+        copy
+        cos
+        create_partitioned_array
+        divide
+        equal_to
+        fill
+        greater_than
+        greater_than_equal_to
+        iterate_per_element
+        less_than
+        less_than_equal_to
+        log
+        multiply
+        not_equal_to
+        pow
+        sin
+        sqrt
+        subtract
+        valid
+        where
+    )
+    target_link_libraries(lue_framework_algorithm_${name}_test
+        PRIVATE
+            lue::framework_local_operation)
+endforeach()
+
+foreach(name
+        accu
+        accu_threshold
+        accu_threshold3
+        inflow_count
+    )
+    target_link_libraries(lue_framework_algorithm_${name}_test
+        PRIVATE
+            lue::framework_flow_direction_operation)
+endforeach()

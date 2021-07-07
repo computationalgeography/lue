@@ -558,6 +558,18 @@ namespace lue {
 }  // namespace lue
 
 
+#define LUE_INSTANTIATE_BINARY_LOCAL_OPERATION_PARTITION(                                    \
+    Policies, OutputElement, InputElement1, InputElement2, rank, Functor)                    \
+                                                                                             \
+    template LUE_FA_EXPORT ArrayPartition<OutputElement, rank> binary_local_operation<       \
+            ArgumentType<void(Policies)>, InputElement1, InputElement2, rank,                \
+            ArgumentType<void(Functor)>>(                                                    \
+        hpx::id_type const locality_id,                                                      \
+        ArgumentType<void(Policies)> const&,                                                 \
+        ArrayPartition<InputElement1, rank> const&,                                          \
+        hpx::shared_future<InputElement2> const& input_scalar,                               \
+        ArgumentType<void(Functor)> const&);
+
 #define LUE_INSTANTIATE_BINARY_LOCAL_OPERATION(                                              \
     Policies, OutputElement, InputElement1, InputElement2, rank, Functor)                    \
                                                                                              \

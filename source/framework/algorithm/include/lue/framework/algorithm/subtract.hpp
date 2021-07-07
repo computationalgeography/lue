@@ -1,9 +1,7 @@
 #pragma once
 #include "lue/framework/algorithm/binary_local_operation.hpp"
 #include "lue/framework/algorithm/operator.hpp"
-#include "lue/framework/algorithm/policy/all_values_within_domain.hpp"
-#include "lue/framework/algorithm/policy/default_policies.hpp"
-#include "lue/framework/algorithm/policy/default_value_policies.hpp"
+#include "lue/framework/algorithm/policy.hpp"
 
 
 namespace lue {
@@ -32,29 +30,6 @@ namespace lue {
     }  // namespace detail
 
 
-    namespace policy::subtract {
-
-        template<
-            typename OutputElement,
-            typename InputElement>
-        using DefaultPolicies = policy::DefaultPolicies<
-            AllValuesWithinDomain<InputElement, InputElement>,
-            OutputElements<OutputElement>,
-            InputElements<InputElement, InputElement>>;
-
-
-        template<
-            typename OutputElement,
-            typename InputElement>
-        using DefaultValuePolicies = policy::DefaultValuePolicies<
-            AllValuesWithinDomain<InputElement, InputElement>,
-            OutputElements<OutputElement>,
-            InputElements<InputElement, InputElement>>;
-
-    }  // namespace policy::subtract
-
-
-    LUE_BINARY_LOCAL_OPERATION_OVERLOADS(subtract, detail::Subtract)
-    LUE_BINARY_ARITHMETIC_OPERATOR(-, subtract)
+    LUE_BINARY_LOCAL_OPERATION_OVERLOADS3(subtract, detail::Subtract)
 
 }  // namespace lue

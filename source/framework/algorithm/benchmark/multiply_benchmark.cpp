@@ -1,7 +1,7 @@
 #include "lue/framework/algorithm/copy.hpp"
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
-#include "lue/framework/algorithm/definition/arithmetic.hpp"
-#include "lue/framework/algorithm/uniform.hpp"
+#include "lue/framework/algorithm/default_policies/arithmetic.hpp"
+#include "lue/framework/algorithm/default_policies/uniform.hpp"
 #include "lue/framework/benchmark/algorithm_benchmark_result.hpp"
 #include "lue/framework/benchmark/benchmark.hpp"
 #include "lue/framework/benchmark/format.hpp"
@@ -20,6 +20,8 @@ AlgorithmBenchmarkResult multiply(
     Task const& task,
     std::size_t const max_tree_depth)
 {
+    using namespace default_policies;
+
     lue_assert(max_tree_depth > 0);
 
     using Array = PartitionedArray<Element, rank>;

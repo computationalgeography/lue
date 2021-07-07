@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE lue framework algorithm maximum
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
-#include "lue/framework/algorithm/maximum.hpp"
+#include "lue/framework/algorithm/default_policies/maximum.hpp"
 #include "lue/framework/algorithm/unique_id.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
@@ -13,6 +13,8 @@ namespace detail {
         std::size_t rank>
     void test_array()
     {
+        using namespace lue::default_policies;
+
         using Array = lue::PartitionedArray<Element, rank>;
 
         auto const array_shape{lue::Test<Array>::shape()};
@@ -22,7 +24,7 @@ namespace detail {
 
         lue::unique_id(array).get();
 
-        BOOST_CHECK_EQUAL(lue::maximum(array).get(), lue::nr_elements(array_shape) - 1);
+        BOOST_CHECK_EQUAL(maximum(array).get(), lue::nr_elements(array_shape) - 1);
     }
 
 }  // namespace detail

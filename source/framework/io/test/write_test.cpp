@@ -4,7 +4,7 @@
 #include "lue/framework/io/read_into.hpp"
 #include "lue/framework/io/write_into.hpp"
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
-#include "lue/framework/algorithm/uniform.hpp"
+#include "lue/framework/algorithm/default_policies/uniform.hpp"
 #include "lue/framework/test/compare.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
@@ -70,7 +70,7 @@ BOOST_AUTO_TEST_CASE(use_case_1)
 
     for(ldm::Count time_step = 0; time_step <= nr_time_steps; ++time_step)
     {
-        Array elevation_written = lue::uniform(
+        Array elevation_written = lue::default_policies::uniform(
             grid_shape, partition_shape,
             Element{lowest_value + time_step}, Element{highest_value + time_step});
         write(elevation_written, array_pathname, object_id, time_step).get();
@@ -135,7 +135,7 @@ BOOST_AUTO_TEST_CASE(use_case_2)
     Element const min_value{5};
     Element const max_value{5555};
 
-    Array elevation_written = lue::uniform<Element>(grid_shape, partition_shape, min_value, max_value);
+    Array elevation_written = lue::default_policies::uniform<Element>(grid_shape, partition_shape, min_value, max_value);
 
     write(elevation_written, array_pathname, object_id).get();
 
@@ -154,7 +154,7 @@ BOOST_AUTO_TEST_CASE(use_case_2)
 //     auto const shape{lue::Test<Array>::shape()};
 // 
 //     Array array{shape};
-//     array = lue::uniform(array, 0, 10);
+//     array = lue::default_policies::uniform(array, 0, 10);
 // 
 //     std::string const pathname{"land_use.tif"};
 //     lue::write(array, pathname);

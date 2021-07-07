@@ -1,4 +1,4 @@
-#include "lue/framework/algorithm/uniform.hpp"
+#include "lue/framework/algorithm/default_policies/uniform.hpp"
 #include "lue/framework/algorithm/zonal_sum.hpp"
 #include "lue/framework/benchmark/benchmark_model.hpp"
 #include "lue/framework/benchmark/hpx_main.hpp"
@@ -68,7 +68,7 @@ void ZonalSumBenchmark<Element, rank>::do_preprocess()
 {
     static_assert(std::is_floating_point_v<Element>);
 
-    this->state() = uniform(this->state(), Element{-1e6}, Element{1e6});
+    this->state() = default_policies::uniform(this->state(), Element{-1e6}, Element{1e6});
 }
 
 
@@ -79,7 +79,7 @@ void ZonalSumBenchmark<Element, rank>::do_simulate(
     Count const /* time_step */)
 {
     // Distribute zones
-    Zones zones = uniform(this->state(), Zone{0}, _max_zone);
+    Zones zones = default_policies::uniform(this->state(), Zone{0}, _max_zone);
 
     // Aggregate per currently distributed zones
     this->state() = zonal_sum(this->state(), zones);

@@ -1,7 +1,17 @@
+#include "lue/framework/algorithm/default_policies/greater_than.hpp"
 #include "lue/framework/algorithm/definition/greater_than.hpp"
+#include "lue/framework/algorithm/value_policies/greater_than.hpp"
 
 
 #define LUE_INSTANTIATE(OutputElement, InputElement, rank)                          \
+                                                                                    \
+    LUE_INSTANTIATE_BINARY_LOCAL_OPERATION(                                         \
+        (policy::greater_than::DefaultPolicies<OutputElement, InputElement>),       \
+        OutputElement,                                                              \
+        InputElement,                                                               \
+        InputElement,                                                               \
+        rank,                                                                       \
+        (detail::GreaterThan<InputElement, OutputElement>));                        \
                                                                                     \
     LUE_INSTANTIATE_BINARY_LOCAL_OPERATION(                                         \
         (policy::greater_than::DefaultValuePolicies<OutputElement, InputElement>),  \

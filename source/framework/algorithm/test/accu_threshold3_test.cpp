@@ -1,5 +1,6 @@
 #define BOOST_TEST_MODULE lue framework algorithm accu_threshold3
-#include "lue/framework/algorithm/definition/accu_threshold3.hpp"
+#include "lue/framework/algorithm/default_policies/accu_threshold3.hpp"
+#include "lue/framework/algorithm/value_policies/accu_threshold3.hpp"
 #include "flow_accumulation.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/compare.hpp"

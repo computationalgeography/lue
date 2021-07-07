@@ -1,4 +1,4 @@
-#include "lue/framework/algorithm/maximum.hpp"
+#include "lue/framework/algorithm/value_policies/maximum.hpp"
 #include <pybind11/pybind11.h>
 
 
@@ -11,9 +11,7 @@ namespace lue::framework {
         hpx::shared_future<Element> maximum(
             PartitionedArray<Element, rank> const& array)
         {
-            using Policies = policy::maximum::DefaultValuePolicies<Element>;
-
-            return maximum(Policies{}, array).share();
+            return value_policies::maximum(array).share();
         }
 
     }  // Anonymous namespace

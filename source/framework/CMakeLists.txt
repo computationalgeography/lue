@@ -13,7 +13,7 @@ list(APPEND doxygen_input ${CMAKE_CURRENT_SOURCE_DIR}/partitioned_array)
 add_subdirectory(algorithm)
 list(APPEND doxygen_input ${CMAKE_CURRENT_SOURCE_DIR}/algorithm)
 
-# add_subdirectory(case_study)
+add_subdirectory(case_study)
 
 add_subdirectory(io)
 list(APPEND doxygen_input ${CMAKE_CURRENT_SOURCE_DIR}/io)

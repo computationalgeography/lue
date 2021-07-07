@@ -1,7 +1,23 @@
+#include "lue/framework/algorithm/default_policies/where.hpp"
 #include "lue/framework/algorithm/definition/where.hpp"
+#include "lue/framework/algorithm/value_policies/where.hpp"
 
 
 #define LUE_INSTANTIATE(ConditionElement, ExpressionElement, rank)                        \
+                                                                                          \
+    LUE_INSTANTIATE_WHERE2(                                                               \
+        (policy::where::DefaultPolicies<                                                  \
+            ExpressionElement, ConditionElement, ExpressionElement>),                     \
+        ConditionElement,                                                                 \
+        ExpressionElement,                                                                \
+        rank);                                                                            \
+                                                                                          \
+    LUE_INSTANTIATE_WHERE3(                                                               \
+        (policy::where::DefaultPolicies<                                                  \
+            ExpressionElement, ConditionElement, ExpressionElement, ExpressionElement>),  \
+        ConditionElement,                                                                 \
+        ExpressionElement,                                                                \
+        rank);                                                                            \
                                                                                           \
     LUE_INSTANTIATE_WHERE2(                                                               \
         (policy::where::DefaultValuePolicies<                                             \

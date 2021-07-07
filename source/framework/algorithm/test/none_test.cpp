@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE lue framework algorithm none
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
-#include "lue/framework/algorithm/none.hpp"
+#include "lue/framework/algorithm/default_policies/none.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
@@ -14,6 +14,8 @@ namespace detail {
         std::size_t rank>
     void test_array()
     {
+        using namespace lue::default_policies;
+
         using Array = lue::PartitionedArray<Element, rank>;
 
         auto const array_shape{lue::Test<Array>::shape()};
@@ -25,8 +27,8 @@ namespace detail {
         Array array1{lue::create_partitioned_array(array_shape, partition_shape, fill_value1)};
         Array array2{lue::create_partitioned_array(array_shape, partition_shape, fill_value2)};
 
-        BOOST_CHECK_EQUAL(lue::none(array1).get(), false);
-        BOOST_CHECK_EQUAL(lue::none(array2).get(), true);
+        BOOST_CHECK_EQUAL(none(array1).get(), false);
+        BOOST_CHECK_EQUAL(none(array2).get(), true);
     }
 
 }  // namespace detail
