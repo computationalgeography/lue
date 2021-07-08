@@ -1,10 +1,10 @@
 {
     "nr_time_steps": 1,
     "array": {
-        "shape": [16000, 16000]
+        "shape": [34000, 34000]
     },
     "partition": {
-        "shape": [2500, 2500]
+        "shape": [2100, 2100]
     },
     "arguments": {
         "positionals": [
