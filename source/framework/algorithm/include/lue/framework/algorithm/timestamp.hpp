@@ -16,7 +16,7 @@ namespace lue {
             typename InputElement,
             Rank rank>
         ArrayPartition<ClockTick, 2> timestamp_action(
-            ArrayPartition<InputElement, rank>&& input_partition,
+            ArrayPartition<InputElement, rank> input_partition,
             Index const partition_idx,
             ShapeT<ArrayPartition<InputElement, rank>> const& shape_in_partitions)
         {
