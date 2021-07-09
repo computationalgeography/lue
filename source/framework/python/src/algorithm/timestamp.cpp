@@ -24,7 +24,6 @@ namespace lue::framework {
         module.def("timestamp", timestamp<std::uint8_t>);
         module.def("timestamp", timestamp<std::uint32_t>);
         module.def("timestamp", timestamp<std::uint64_t>);
-        module.def("timestamp", timestamp<std::int8_t>);
         module.def("timestamp", timestamp<std::int32_t>);
         module.def("timestamp", timestamp<std::int64_t>);
         module.def("timestamp", timestamp<float>);

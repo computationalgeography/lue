@@ -94,7 +94,6 @@ target_link_libraries(lue_py_framework
         lue::framework_flow_direction_operation
         lue::framework_focal_operation
         lue::framework_local_operation
-        lue::framework_algorithm
         lue::framework_io
         pybind11::pybind11
 )
