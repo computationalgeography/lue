@@ -1,0 +1,22 @@
+{
+    "nr_time_steps": 1,
+    "array": {
+        "shape": [96000, 96000]
+    },
+    "partition": {
+        "shape": [700, 700],
+        "range": {
+            "max_nr_elements": 6000000,
+            "multiplier": 2.0,
+            "method": "linear"
+        }
+    },
+    "arguments": {
+        "positionals": [
+            "$LUE_BENCHMARK_DATA/flow_accumulation/africa-2-scaling.lue/area/raster/flow_direction"
+        ],
+        "options": {
+            "center": "57480, 97344"
+        }
+    }
+}
