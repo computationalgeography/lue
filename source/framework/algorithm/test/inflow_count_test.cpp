@@ -1,6 +1,7 @@
 #define BOOST_TEST_MODULE lue framework algorithm inflow_count
 #include "lue/framework/algorithm/inflow_count.hpp"
 #include "lue/framework/algorithm/definition/inflow_count3.hpp"
+#include "flow_accumulation.hpp"
 #include "lue/framework/algorithm/policy.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/compare.hpp"
@@ -1169,67 +1170,43 @@ BOOST_AUTO_TEST_CASE(all_no_data)
     // | X | X | X |   | X | X | X |
     // +---+---+---+   +---+---+---+
 
-    using DomainPolicy = lue::policy::AllValuesWithinDomain<FlowDirectionElement>;
-    using InflowCountPolicies =
-        lue::policy::OutputPolicies<lue::policy::MarkNoDataByValue<CountElement>>;
-    using FlowDirectionPolicies =
-        lue::policy::SpatialOperationInputPolicies<
-            lue::policy::DetectNoDataByValue<FlowDirectionElement>,
-            lue::policy::FlowDirectionHalo<FlowDirectionElement>>;
-    using Policies = lue::policy::Policies<
-        DomainPolicy,
-        lue::policy::OutputsPolicies<InflowCountPolicies>,
-        lue::policy::InputsPolicies<FlowDirectionPolicies>>;
-
-    InflowCountPolicies inflow_count_policies{
-        lue::policy::MarkNoDataByValue<CountElement>{99}};
-    FlowDirectionPolicies flow_direction_policies{
-        lue::policy::DetectNoDataByValue<FlowDirectionElement>{nd}};
-
-    Policies policies{DomainPolicy{}, inflow_count_policies, flow_direction_policies};
-
-    test_inflow_count(
-        policies,
+    auto const flow_direction =
         lue::test::create_partitioned_array<FlowDirection>(array_shape, partition_shape,
             {{
                 nd, nd, nd,
                 nd, nd, nd,
                 nd, nd, nd,
-            }}),
+            }});
+    auto const x{lue::policy::no_data_value<CountElement>};
+    auto const inflow_count_we_want =
         lue::test::create_partitioned_array<InflowCount>(array_shape, partition_shape,
             {{
-                99, 99, 99,
-                99, 99, 99,
-                99, 99, 99,
-            }}));
+                x, x, x,
+                x, x, x,
+                x, x, x,
+            }});
+
+    {
+        test_inflow_count(
+            lue::policy::inflow_count::DefaultValuePolicies<CountElement, FlowDirectionElement>{},
+            flow_direction,
+            inflow_count_we_want);
+    }
+
+    {
+        test_inflow_count3(
+            lue::policy::inflow_count3::DefaultValuePolicies<CountElement, FlowDirectionElement>{},
+            flow_direction,
+            inflow_count_we_want);
+    }
 }
 
 
 BOOST_AUTO_TEST_CASE(no_data)
 {
-    using DomainPolicy = lue::policy::AllValuesWithinDomain<FlowDirectionElement>;
-    using InflowCountPolicies =
-        lue::policy::OutputPolicies<lue::policy::MarkNoDataByValue<CountElement>>;
-    using FlowDirectionPolicies =
-        lue::policy::SpatialOperationInputPolicies<
-            lue::policy::DetectNoDataByValue<FlowDirectionElement>,
-            lue::policy::FlowDirectionHalo<FlowDirectionElement>>;
-    using Policies = lue::policy::Policies<
-        DomainPolicy,
-        lue::policy::OutputsPolicies<InflowCountPolicies>,
-        lue::policy::InputsPolicies<FlowDirectionPolicies>>;
-
-    InflowCountPolicies inflow_count_policies{
-        lue::policy::MarkNoDataByValue<CountElement>{99}};
-    FlowDirectionPolicies flow_direction_policies{
-        lue::policy::DetectNoDataByValue<FlowDirectionElement>{nd}};
-
-    Policies policies{DomainPolicy{}, inflow_count_policies, flow_direction_policies};
-
     Shape const array_shape{{3, 6}};
 
-    test_inflow_count(
-        policies,
+    auto const flow_direction =
         lue::test::create_partitioned_array<FlowDirection>(array_shape, partition_shape,
             {
                 {
@@ -1242,48 +1219,44 @@ BOOST_AUTO_TEST_CASE(no_data)
                      e,  e,  e,
                      e,  e,  e,
                 },
-            }),
+            });
+    auto const x{lue::policy::no_data_value<CountElement>};
+    auto const inflow_count_we_want =
         lue::test::create_partitioned_array<InflowCount>(array_shape, partition_shape,
             {
                 {
-                    0, 1, 99,
-                    0, 2, 99,
-                    0, 2, 99,
+                    0, 1, x,
+                    0, 2, x,
+                    0, 2, x,
                 },
                 {
                     0, 1, 1,
                     0, 1, 1,
                     0, 1, 1,
                 },
-            }));
+            });
+
+    {
+        test_inflow_count(
+            lue::policy::inflow_count::DefaultValuePolicies<CountElement, FlowDirectionElement>{},
+            flow_direction,
+            inflow_count_we_want);
+    }
+
+    {
+        test_inflow_count3(
+            lue::policy::inflow_count3::DefaultValuePolicies<CountElement, FlowDirectionElement>{},
+            flow_direction,
+            inflow_count_we_want);
+    }
 }
 
 
 BOOST_AUTO_TEST_CASE(merging_inter_partition_streams)
 {
-    using DomainPolicy = lue::policy::AllValuesWithinDomain<FlowDirectionElement>;
-    using InflowCountPolicies =
-        lue::policy::OutputPolicies<lue::policy::MarkNoDataByValue<CountElement>>;
-    using FlowDirectionPolicies =
-        lue::policy::SpatialOperationInputPolicies<
-            lue::policy::DetectNoDataByValue<FlowDirectionElement>,
-            lue::policy::FlowDirectionHalo<FlowDirectionElement>>;
-    using Policies = lue::policy::Policies<
-        DomainPolicy,
-        lue::policy::OutputsPolicies<InflowCountPolicies>,
-        lue::policy::InputsPolicies<FlowDirectionPolicies>>;
-
-    InflowCountPolicies inflow_count_policies{
-        lue::policy::MarkNoDataByValue<CountElement>{99}};
-    FlowDirectionPolicies flow_direction_policies{
-        lue::policy::DetectNoDataByValue<FlowDirectionElement>{nd}};
-
-    Policies policies{DomainPolicy{}, inflow_count_policies, flow_direction_policies};
-
     Shape const array_shape{{9, 9}};
 
-    test_inflow_count(
-        policies,
+    auto const flow_direction =
         lue::test::create_partitioned_array<FlowDirection>(array_shape, partition_shape,
             {
                 { // 0, 0
@@ -1331,53 +1304,110 @@ BOOST_AUTO_TEST_CASE(merging_inter_partition_streams)
                      w, nd, nd,
                      w, nd, nd,
                 },
-            }),
+            });
+
+    auto const x{lue::policy::no_data_value<CountElement>};
+    auto const inflow_count_we_want =
         lue::test::create_partitioned_array<InflowCount>(array_shape, partition_shape,
             {
                 {
-                    99, 99, 99,
-                    99, 99, 99,
-                    99, 99,  0,
+                    x, x, x,
+                    x, x, x,
+                    x, x, 0,
                 },
                 {
-                    99,  0,  0,
-                    99,  0,  0,
-                    99,  1, 99,
+                    x, 0, 0,
+                    x, 0, 0,
+                    x, 1, x,
                 },
                 {
-                    99,  0,  0,
-                     2,  3,  0,
-                    99,  2,  0,
+                    x, 0, 0,
+                    2, 3, 0,
+                    x, 2, 0,
                 },
                 {
-                    99, 99,  0,
-                    99, 99,  0,
-                    99, 99,  0,
+                    x, x, 0,
+                    x, x, 0,
+                    x, x, 0,
                 },
                 {
-                     3,  3,  1,
-                    99,  2,  1,
-                     1,  3,  2,
+                    3, 3, 1,
+                    x, 2, 1,
+                    1, 3, 2,
                 },
                 {
-                     1,  2, 99,
-                     0, 99, 99,
-                     0, 99, 99,
+                    1, 2, x,
+                    0, x, x,
+                    0, x, x,
                 },
                 {
-                    99, 99, 99,
-                    99, 99, 99,
-                    99, 99,  2,
+                    x, x, x,
+                    x, x, x,
+                    x, x, 2,
                 },
                 {
-                    99,  1, 99,
-                     1,  2,  1,
-                     1,  1,  1,
+                    x, 1, x,
+                    1, 2, 1,
+                    1, 1, 1,
                 },
                 {
-                     0, 99, 99,
-                     0, 99, 99,
-                     0, 99, 99,
+                    0, x, x,
+                    0, x, x,
+                    0, x, x,
                 },
+            });
+
+    {
+        test_inflow_count(
+            lue::policy::inflow_count::DefaultValuePolicies<CountElement, FlowDirectionElement>{},
+            flow_direction,
+            inflow_count_we_want);
+    }
+
+    {
+        test_inflow_count3(
+            lue::policy::inflow_count3::DefaultValuePolicies<CountElement, FlowDirectionElement>{},
+            flow_direction,
+            inflow_count_we_want);
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE(spiral_in_case)
+{
+    Shape const array_shape{{9, 9}};
+    Shape const partition_shape{{3, 3}};
+
+    test_inflow_count(
+        lue::test::spiral_in(),
+        lue::test::create_partitioned_array<InflowCount>(array_shape, partition_shape,
+            {
+                { 0, 1, 1,
+                  1, 1, 1,
+                  1, 1, 1, },
+                { 1, 1, 1,
+                  1, 1, 1,
+                  1, 1, 1, },
+                { 1, 1, 1,
+                  1, 1, 1,
+                  1, 1, 1, },
+                { 1, 1, 1,
+                  1, 1, 1,
+                  1, 1, 1, },
+                { 1, 1, 1,
+                  1, 1, 1,
+                  1, 1, 1, },
+                { 1, 1, 1,
+                  1, 1, 1,
+                  1, 1, 1, },
+                { 1, 1, 1,
+                  1, 1, 1,
+                  1, 1, 1, },
+                { 1, 1, 1,
+                  1, 1, 1,
+                  1, 1, 1, },
+                { 1, 1, 1,
+                  1, 1, 1,
+                  1, 1, 1, },
             }));
 }

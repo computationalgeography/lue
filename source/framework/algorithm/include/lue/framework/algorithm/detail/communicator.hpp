@@ -80,7 +80,7 @@ namespace lue::detail {
 
             Communicator(
                 hpx::naming::id_type const locality_id,
-                std::string const& name,
+                std::string const& basename,
                 Shape const& shape,
                 Indices const& idxs):
 
@@ -126,42 +126,42 @@ namespace lue::detail {
 
                     if(idx0 > 0)
                     {
-                        setup_channels(locality_id, name, accu::Direction::north);
+                        setup_channels(locality_id, basename, accu::Direction::north);
 
                         if(idx1 > 0)
                         {
-                            setup_channels(locality_id, name, accu::Direction::north_west);
+                            setup_channels(locality_id, basename, accu::Direction::north_west);
                         }
 
                         if(idx1 < extent1 - 1)
                         {
-                            setup_channels(locality_id, name, accu::Direction::north_east);
+                            setup_channels(locality_id, basename, accu::Direction::north_east);
                         }
                     }
 
                     if(idx0 < extent0 - 1)
                     {
-                        setup_channels(locality_id, name, accu::Direction::south);
+                        setup_channels(locality_id, basename, accu::Direction::south);
 
                         if(idx1 > 0)
                         {
-                            setup_channels(locality_id, name, accu::Direction::south_west);
+                            setup_channels(locality_id, basename, accu::Direction::south_west);
                         }
 
                         if(idx1 < extent1 - 1)
                         {
-                            setup_channels(locality_id, name, accu::Direction::south_east);
+                            setup_channels(locality_id, basename, accu::Direction::south_east);
                         }
                     }
 
                     if(idx1 > 0)
                     {
-                        setup_channels(locality_id, name, accu::Direction::west);
+                        setup_channels(locality_id, basename, accu::Direction::west);
                     }
 
                     if(idx1 < extent1 - 1)
                     {
-                        setup_channels(locality_id, name, accu::Direction::east);
+                        setup_channels(locality_id, basename, accu::Direction::east);
                     }
                 }
 
@@ -192,39 +192,23 @@ namespace lue::detail {
             void send(
                 T const& value)
             {
-                for(auto& send_channel: _send_channels)
+                for(auto& channel: _send_channels)
                 {
-                    if(send_channel)
+                    if(channel)
                     {
-                        send_channel.set(value);
+                        channel.set(value);
                     }
                 }
             }
 
 
-            void done_sending()
+            hpx::future<T> get(
+                accu::Direction const direction)
             {
-                for(auto& send_channel: _send_channels)
-                {
-                    if(send_channel)
-                    {
-                        send_channel.close();
-                    }
-                }
-            }
+                auto& channel{receive_channel(direction)};
+                lue_hpx_assert(channel);
 
-
-            void done_sending(
-                T const& sentinel_value)
-            {
-                for(auto& send_channel: _send_channels)
-                {
-                    if(send_channel)
-                    {
-                        send_channel.set(sentinel_value);
-                        send_channel.close();
-                    }
-                }
+                return channel.get();
             }
 
 
@@ -238,6 +222,61 @@ namespace lue::detail {
                 accu::Direction const direction)
             {
                 return _receive_channels[direction];
+            }
+
+
+            hpx::future<hpx::id_type> unregister(
+                std::string const& basename,
+                accu::Direction const direction)
+            {
+                lue_hpx_assert(send_channel(direction));
+
+                [[maybe_unused]] hpx::future<hpx::id_type> result{
+                    hpx::unregister_with_basename(channel_name(basename, direction), _idx)};
+
+#ifndef NDEBUG
+                result.then(
+                    [](hpx::future<hpx::id_type>&& result)
+                    {
+                        lue_hpx_assert(!result.has_exception());
+                    });
+#endif
+
+                send_channel(direction) = Channel{};
+
+                lue_hpx_assert(!send_channel(direction));
+
+                return result;
+            }
+
+
+            hpx::future<void> unregister(
+                std::string const& basename)
+            {
+                static std::array<accu::Direction, nr_neighbours<rank>()> directions{
+                        accu::Direction::north,
+                        accu::Direction::north_east,
+                        accu::Direction::east,
+                        accu::Direction::south_east,
+                        accu::Direction::south,
+                        accu::Direction::south_west,
+                        accu::Direction::west,
+                        accu::Direction::north_west,
+                    };
+
+                std::vector<hpx::future<hpx::id_type>> fs;
+                fs.reserve(directions.size());
+
+                for(accu::Direction const direction: directions)
+                {
+                    if(has_neighbour(direction))
+                    {
+                        fs.push_back(unregister(basename, direction));
+                    }
+                }
+
+                return hpx::when_all(fs).then(
+                    []([[maybe_unused]] auto&& fs) { return hpx::make_ready_future(); });
             }
 
 
@@ -269,10 +308,10 @@ namespace lue::detail {
 
 
             static std::string channel_name(
-                std::string const& communicator_name,
+                std::string const& basename,
                 accu::Direction const direction)
             {
-                return communicator_name + "/" + std::to_string(direction) + "/";
+                return basename + "/" + std::to_string(direction) + "/";
             }
 
 
@@ -313,7 +352,7 @@ namespace lue::detail {
 
             void setup_send_channel(
                 hpx::naming::id_type const locality_id,
-                std::string const& communicator_name,
+                std::string const& basename,
                 accu::Direction const direction)
             {
                 lue_hpx_assert(!send_channel(direction));
@@ -323,12 +362,13 @@ namespace lue::detail {
 
                 [[maybe_unused]] hpx::future<bool> result{
                     hpx::register_with_basename(
-                        channel_name(communicator_name, direction), send_channel(direction), _idx)};
-                // lue_hpx_assert(result.get());
+                        channel_name(basename, direction), send_channel(direction), _idx)};
+
 #ifndef NDEBUG
                 result.then(
                     [](hpx::future<bool>&& result)
                     {
+                        // Is the channel registered with a unique basename?
                         lue_hpx_assert(result.get());
                     });
 #endif
@@ -336,7 +376,7 @@ namespace lue::detail {
 
 
             void setup_receive_channel(
-                std::string const& communicator_name,
+                std::string const& basename,
                 accu::Direction const direction)
             {
                 lue_hpx_assert(!receive_channel(direction));
@@ -355,18 +395,18 @@ namespace lue::detail {
 
                 receive_channel(direction) =
                     hpx::find_from_basename<Channel>(
-                        channel_name(communicator_name, sender_direction[direction]), neighbour_idx(direction));
+                        channel_name(basename, sender_direction[direction]), neighbour_idx(direction));
                 lue_hpx_assert(receive_channel(direction));
             }
 
 
             void setup_channels(
                 hpx::naming::id_type const locality_id,
-                std::string const& communicator_name,
+                std::string const& basename,
                 accu::Direction const direction)
             {
-                setup_send_channel(locality_id, communicator_name, direction);
-                setup_receive_channel(communicator_name, direction);
+                setup_send_channel(locality_id, basename, direction);
+                setup_receive_channel(basename, direction);
             }
 
 

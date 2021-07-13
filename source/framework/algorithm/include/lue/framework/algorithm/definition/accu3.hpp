@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/framework/algorithm/accu_threshold3.hpp"
+#include "lue/framework/algorithm/accu3.hpp"
 #include "lue/framework/algorithm/definition/flow_accumulation3.hpp"
 #include "lue/framework/algorithm/export.hpp"
 #include "lue/macro.hpp"
@@ -10,41 +10,29 @@ namespace lue {
 
         template<
             typename InflowNoDataPolicy,
-            typename ThresholdNoDataPolicy,
             typename OutflowNoDataPolicy,
-            typename RemainderNoDataPolicy,
             Rank rank>
-        class AccuThresholdCellAccumulator
+        class AccuCellAccumulator
         {
 
             public:
 
                 using MaterialElement = policy::ElementT<InflowNoDataPolicy>;
                 static_assert(std::is_same_v<policy::ElementT<InflowNoDataPolicy>, MaterialElement>);
-                static_assert(std::is_same_v<policy::ElementT<ThresholdNoDataPolicy>, MaterialElement>);
                 static_assert(std::is_same_v<policy::ElementT<OutflowNoDataPolicy>, MaterialElement>);
-                static_assert(std::is_same_v<policy::ElementT<RemainderNoDataPolicy>, MaterialElement>);
 
                 using MaterialData = DataT<PartitionedArray<MaterialElement, rank>>;
 
-                AccuThresholdCellAccumulator(
+                AccuCellAccumulator(
                     InflowNoDataPolicy const& indp_inflow,
-                    ThresholdNoDataPolicy const& indp_threshold,
                     OutflowNoDataPolicy const& ondp_outflow,
-                    RemainderNoDataPolicy const& ondp_remainder,
                     MaterialData const& inflow,
-                    MaterialData const& threshold,
-                    MaterialData& outflow,
-                    MaterialData& remainder):
+                    MaterialData& outflow):
 
                     _indp_inflow{indp_inflow},
-                    _indp_threshold{indp_threshold},
                     _ondp_outflow{ondp_outflow},
-                    _ondp_remainder{ondp_remainder},
                     _inflow{inflow},
-                    _threshold{threshold},
-                    _outflow{outflow},
-                    _remainder{remainder}
+                    _outflow{outflow}
 
                 {
                 }
@@ -55,47 +43,22 @@ namespace lue {
                     Index const idx1)
                 {
                     MaterialElement const& inflow{_inflow(idx0, idx1)};
-                    MaterialElement const& threshold{_threshold(idx0, idx1)};
 
                     MaterialElement& outflow{_outflow(idx0, idx1)};
-                    MaterialElement& remainder{_remainder(idx0, idx1)};
-
-                    lue_hpx_assert(
-                        (_ondp_outflow.is_no_data(outflow) && _ondp_remainder.is_no_data(remainder)) ||
-                        (!_ondp_outflow.is_no_data(outflow) && !_ondp_remainder.is_no_data(remainder)));
 
                     if(!_ondp_outflow.is_no_data(outflow))
                     {
-                        if(_indp_inflow.is_no_data(inflow) ||
-                            _indp_threshold.is_no_data(threshold))
+                        if(_indp_inflow.is_no_data(inflow))
                         {
                             _ondp_outflow.mark_no_data(outflow);
-                            _ondp_remainder.mark_no_data(remainder);
                         }
                         else
                         {
                             // TODO Domain check
-                            lue_hpx_assert(threshold >= 0);
 
                             // Now we know the final, total amount
                             // of inflow that enters this cell
                             outflow += inflow;
-
-                            // Split this amount into outflow and remainder,
-                            // based on the threshold passed in
-
-                            MaterialElement mobile_material{outflow - threshold};
-
-                            if(mobile_material > 0)
-                            {
-                                remainder = threshold;
-                                outflow = mobile_material;
-                            }
-                            else
-                            {
-                                remainder = outflow;
-                                outflow = 0;
-                            }
                         }
                     }
                 }
@@ -110,21 +73,14 @@ namespace lue {
                     // The results for the upstream cell are ready. Use
                     // its outflow as inflow for the downstream cell.
                     MaterialElement const& outflow{_outflow(idx0_from, idx1_from)};
-                    [[maybe_unused]] MaterialElement const& upstream_remainder{_remainder(idx0_from, idx1_from)};
 
                     MaterialElement& inflow{_outflow(idx0_to, idx1_to)};
-                    MaterialElement& remainder{_remainder(idx0_to, idx1_to)};
 
                     if(!_ondp_outflow.is_no_data(inflow))
                     {
-                        lue_hpx_assert(!_ondp_remainder.is_no_data(remainder));
-
                         if(_ondp_outflow.is_no_data(outflow))
                         {
-                            lue_hpx_assert(_ondp_remainder.is_no_data(upstream_remainder));
-
                             _ondp_outflow.mark_no_data(inflow);
-                            _ondp_remainder.mark_no_data(remainder);
                         }
                         else
                         {
@@ -143,16 +99,12 @@ namespace lue {
                 {
                     // The results for the upstream cell are ready
                     MaterialElement& inflow{_outflow(idx0_to, idx1_to)};
-                    MaterialElement& remainder{_remainder(idx0_to, idx1_to)};
 
                     if(!_ondp_outflow.is_no_data(inflow))
                     {
-                        lue_hpx_assert(!_ondp_remainder.is_no_data(remainder));
-
                         if(_ondp_outflow.is_no_data(outflow))
                         {
                             _ondp_outflow.mark_no_data(inflow);
-                            _ondp_remainder.mark_no_data(remainder);
                         }
                         else
                         {
@@ -176,19 +128,11 @@ namespace lue {
 
                 InflowNoDataPolicy _indp_inflow;
 
-                ThresholdNoDataPolicy _indp_threshold;
-
                 OutflowNoDataPolicy _ondp_outflow;
-
-                RemainderNoDataPolicy _ondp_remainder;
 
                 MaterialData const& _inflow;  // External inflow
 
-                MaterialData const& _threshold;
-
                 MaterialData& _outflow;  // Upstream inflow, outflow
-
-                MaterialData& _remainder;
 
         };
 
@@ -198,14 +142,12 @@ namespace lue {
             typename FlowDirectionElement,
             typename MaterialElement,
             Rank rank>
-        hpx::tuple<ArrayPartition<MaterialElement, rank>, ArrayPartition<MaterialElement, rank>>
-            accu_threshold3_partition(
-                Policies const& policies,
-                ArrayPartition<FlowDirectionElement, rank> const& flow_direction_partition,
-                ArrayPartition<MaterialElement, rank> const& external_inflow_partition,
-                ArrayPartition<MaterialElement, rank> const& threshold_partition,
-                InflowCountCommunicator<rank> inflow_count_communicator,
-                MaterialCommunicator<MaterialElement, rank> material_communicator)
+        ArrayPartition<MaterialElement, rank> accu3_partition(
+            Policies const& policies,
+            ArrayPartition<FlowDirectionElement, rank> const& flow_direction_partition,
+            ArrayPartition<MaterialElement, rank> const& external_inflow_partition,
+            InflowCountCommunicator<rank> inflow_count_communicator,
+            MaterialCommunicator<MaterialElement, rank> material_communicator)
         {
             using FlowDirectionPartition = ArrayPartition<FlowDirectionElement, rank>;
             using FlowDirectionData = DataT<FlowDirectionPartition>;
@@ -254,7 +196,6 @@ namespace lue {
 
             // Solve intra-partition stream cells
             hpx::future<MaterialData> outflow_data_f;
-            hpx::future<MaterialData> remainder_data_f;
             hpx::future<InflowCountData> inflow_count_data_f;
             {
                 // Once the input partitions and inflow_count_data
@@ -263,14 +204,13 @@ namespace lue {
                 // cells. Whenever material reaches the border of the
                 // partition, it is sent to the corresponding task
                 // managing the neighbouring partition.
-                hpx::tie(outflow_data_f, remainder_data_f, inflow_count_data_f) =
+                hpx::tie(outflow_data_f, inflow_count_data_f) =
                     hpx::split_future(hpx::dataflow(
                             hpx::launch::async,
 
                                 [policies, material_communicator](
                                     FlowDirectionPartition const& flow_direction_partition,
                                     MaterialPartition const& external_inflow_partition,
-                                    MaterialPartition const& threshold_partition,
                                     InflowCountPartition const& inflow_count_partition) mutable
                                 {
                                     AnnotateFunction annotation{"intra_partition_stream"};
@@ -284,11 +224,6 @@ namespace lue {
                                     MaterialData const& external_inflow_data{
                                         external_inflow_partition_ptr->data()};
 
-                                    auto const threshold_partition_ptr{
-                                        ready_component_ptr(threshold_partition)};
-                                    MaterialData const& threshold_data{
-                                        threshold_partition_ptr->data()};
-
                                     auto const inflow_count_partition_ptr{
                                         ready_component_ptr(inflow_count_partition)};
                                     InflowCountData const& inflow_count_data{
@@ -297,7 +232,6 @@ namespace lue {
                                     auto const& partition_shape{inflow_count_data.shape()};
 
                                     DataT<MaterialPartition> outflow_data{partition_shape, 0};
-                                    DataT<MaterialPartition> remainder_data{partition_shape, 0};
 
                                     auto const [nr_elements0, nr_elements1] = partition_shape;
 
@@ -305,26 +239,20 @@ namespace lue {
                                         std::get<0>(policies.inputs_policies()).input_no_data_policy();
                                     auto const& indp_inflow =
                                         std::get<1>(policies.inputs_policies()).input_no_data_policy();
-                                    auto const& indp_threshold =
-                                        std::get<2>(policies.inputs_policies()).input_no_data_policy();
                                     auto const& ondp_outflow =
                                         std::get<0>(policies.outputs_policies()).output_no_data_policy();
-                                    auto const& ondp_remainder =
-                                        std::get<1>(policies.outputs_policies()).output_no_data_policy();
 
                                     // We need to copy inflow counts:
                                     // - inflow counts are used to select ridge cells
                                     // - downstream accumulation updates inflow counts
                                     InflowCountData inflow_count_data_copy{deep_copy(inflow_count_data)};
 
-                                    using CellAccumulator = AccuThresholdCellAccumulator<
-                                        decltype(indp_inflow), decltype(indp_threshold),
-                                        decltype(ondp_outflow), decltype(ondp_remainder), rank>;
+                                    using CellAccumulator = AccuCellAccumulator<
+                                        decltype(indp_inflow), decltype(ondp_outflow), rank>;
                                     using Communicator = MaterialCommunicator<MaterialElement, rank>;
 
                                     CellAccumulator cell_accumulator{
-                                        indp_inflow, indp_threshold, ondp_outflow, ondp_remainder,
-                                        external_inflow_data, threshold_data, outflow_data, remainder_data};
+                                        indp_inflow, ondp_outflow, external_inflow_data, outflow_data};
                                     Accumulator3<CellAccumulator, Communicator> accumulator{
                                         std::move(cell_accumulator), material_communicator};
 
@@ -335,7 +263,6 @@ namespace lue {
                                             {
                                                 // Skip cells for which we don't have a flow-direction
                                                 ondp_outflow.mark_no_data(outflow_data, idx0, idx1);
-                                                ondp_remainder.mark_no_data(remainder_data, idx0, idx1);
                                             }
                                             else if(inflow_count_data(idx0, idx1) == 0)
                                             {
@@ -347,13 +274,11 @@ namespace lue {
                                     }
 
                                     return hpx::make_tuple(
-                                        std::move(outflow_data), std::move(remainder_data),
-                                        std::move(inflow_count_data_copy));
+                                        std::move(outflow_data), std::move(inflow_count_data_copy));
                                 },
 
                             flow_direction_partition,
                             external_inflow_partition,
-                            threshold_partition,
                             inflow_count_partition
                         ));
             }
@@ -368,17 +293,15 @@ namespace lue {
                 // do. Each of these tasks must stop once all relevant
                 // partition input cells (given the direction of the
                 // neighbour), have been received.
-                hpx::tie(outflow_data_f, remainder_data_f) = hpx::split_future(hpx::dataflow(
+                outflow_data_f = hpx::dataflow(
                         hpx::launch::async,
 
                             [policies, material_communicator=std::move(material_communicator)](
                                 FlowDirectionPartition const& flow_direction_partition,
                                 MaterialPartition const& external_inflow_partition,
-                                MaterialPartition const& threshold_partition,
                                 hpx::future<InflowCountData>&& inflow_count_data_f,
                                 hpx::shared_future<std::array<CellsIdxs, nr_neighbours<rank>()>> const& input_cells_idxs_f,
-                                hpx::future<MaterialData>&& outflow_data_f,
-                                hpx::future<MaterialData>&& remainder_data_f) mutable
+                                hpx::future<MaterialData>&& outflow_data_f) mutable
                             {
                                 AnnotateFunction annotation{"inter_partition_stream"};
 
@@ -417,32 +340,20 @@ namespace lue {
                                 MaterialData const& external_inflow_data{
                                     external_inflow_partition_ptr->data()};
 
-                                auto const threshold_partition_ptr{
-                                    ready_component_ptr(threshold_partition)};
-                                MaterialData const& threshold_data{
-                                    threshold_partition_ptr->data()};
-
                                 InflowCountData inflow_count_data{inflow_count_data_f.get()};
                                 MaterialData outflow_data{outflow_data_f.get()};
-                                MaterialData remainder_data{remainder_data_f.get()};
 
                                 auto const& indp_inflow =
                                     std::get<1>(policies.inputs_policies()).input_no_data_policy();
-                                auto const& indp_threshold =
-                                    std::get<2>(policies.inputs_policies()).input_no_data_policy();
                                 auto const& ondp_outflow =
                                     std::get<0>(policies.outputs_policies()).output_no_data_policy();
-                                auto const& ondp_remainder =
-                                    std::get<1>(policies.outputs_policies()).output_no_data_policy();
 
-                                using CellAccumulator = AccuThresholdCellAccumulator<
-                                    decltype(indp_inflow), decltype(indp_threshold),
-                                    decltype(ondp_outflow), decltype(ondp_remainder), rank>;
+                                using CellAccumulator = AccuCellAccumulator<
+                                    decltype(indp_inflow), decltype(ondp_outflow), rank>;
                                 using Communicator = MaterialCommunicator<MaterialElement, rank>;
 
                                 CellAccumulator cell_accumulator{
-                                    indp_inflow, indp_threshold, ondp_outflow, ondp_remainder,
-                                    external_inflow_data, threshold_data, outflow_data, remainder_data};
+                                    indp_inflow, ondp_outflow, external_inflow_data, outflow_data};
                                 Accumulator3<CellAccumulator, Communicator> accumulator{
                                     std::move(cell_accumulator), material_communicator};
 
@@ -629,30 +540,27 @@ namespace lue {
                                 lue_hpx_assert(all_are_valid(results));
                                 lue_hpx_assert(all_are_ready(results));
 
-                                return hpx::make_tuple(std::move(outflow_data), std::move(remainder_data));
+                                return outflow_data;
                             },
 
 
                         flow_direction_partition,
                         external_inflow_partition,
-                        threshold_partition,
                         inflow_count_data_f,
                         input_cells_idxs_f,
-                        outflow_data_f,
-                        remainder_data_f
-                    ));
+                        outflow_data_f
+                    );
             }
 
             // Once the futures of the results of the
             // inter-partition stream calculations have become ready,
             // return the result partitions.
-            auto [outflow_partition_f, remainder_partition_f] = hpx::split_future(hpx::dataflow(
+            hpx::future<MaterialPartition> outflow_partition_f = hpx::dataflow(
                     hpx::launch::async,
 
                             [](
                                 FlowDirectionPartition const& flow_direction_partition,
-                                hpx::future<MaterialData>&& outflow_data_f,
-                                hpx::future<MaterialData>&& remainder_data_f)
+                                hpx::future<MaterialData>&& outflow_data_f)
                             {
                                 AnnotateFunction annotation{"create_result_partitions"};
                                 using Server = typename MaterialPartition::Server;
@@ -660,23 +568,16 @@ namespace lue {
                                 Offset const partition_offset{
                                     ready_component_ptr(flow_direction_partition)->offset()};
 
-                                return hpx::make_tuple(
-                                    MaterialPartition{
-                                        hpx::new_<Server>(hpx::find_here(),
-                                            partition_offset, outflow_data_f.get())},
-                                    MaterialPartition{
-                                        hpx::new_<Server>(hpx::find_here(),
-                                            partition_offset, remainder_data_f.get())});
+                                return MaterialPartition{
+                                    hpx::new_<Server>(
+                                        hpx::find_here(), partition_offset, outflow_data_f.get())};
                             },
 
                     flow_direction_partition,
-                    std::move(outflow_data_f),
-                    std::move(remainder_data_f)
-                ));
+                    std::move(outflow_data_f)
+                );
 
-            return hpx::make_tuple(
-                MaterialPartition{std::move(outflow_partition_f)},
-                MaterialPartition{std::move(remainder_partition_f)});
+            return MaterialPartition{std::move(outflow_partition_f)};
         }
 
 
@@ -685,13 +586,13 @@ namespace lue {
             typename FlowDirectionElement,
             typename MaterialElement,
             Rank rank>
-        struct AccuThresholdAction3:
+        struct AccuAction3:
             hpx::actions::make_action<
-                decltype(&accu_threshold3_partition<
+                decltype(&accu3_partition<
                     Policies, FlowDirectionElement, MaterialElement, rank>),
-                &accu_threshold3_partition<
+                &accu3_partition<
                     Policies, FlowDirectionElement, MaterialElement, rank>,
-                AccuThresholdAction3<
+                AccuAction3<
                     Policies, FlowDirectionElement, MaterialElement, rank>>::type
         {};
 
@@ -703,23 +604,12 @@ namespace lue {
         typename FlowDirectionElement,
         typename MaterialElement,
         Rank rank>
-    std::tuple<
-        PartitionedArray<MaterialElement, rank>,
-        PartitionedArray<MaterialElement, rank>>
-            accu_threshold3(
-                Policies const& policies,
-                PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
-                PartitionedArray<MaterialElement, rank> const& external_inflow,
-                PartitionedArray<MaterialElement, rank> const& threshold)
+    PartitionedArray<MaterialElement, rank> accu3(
+        Policies const& policies,
+        PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
+        PartitionedArray<MaterialElement, rank> const& external_inflow)
     {
-        AnnotateFunction annotation{"accu_threshold_meh"};
-
-        // This function must:
-        // - Return as soon as possible
-        // - Create a task per partition, returning partitions per output
-        // - Create communicators for use by the tasks
-        // - Create a scope for the communicators, keeping them
-        //   alive for as long as there are tasks using them
+        AnnotateFunction annotation{"accu_meh"};
 
         using MaterialArray = PartitionedArray<MaterialElement, rank>;
         using MaterialPartitions = PartitionsT<MaterialArray>;
@@ -734,25 +624,23 @@ namespace lue {
         using MaterialCommunicator = detail::MaterialCommunicator<MaterialElement, rank>;
         using MaterialCommunicatorArray = detail::CommunicatorArray<MaterialCommunicator, rank>;
 
-        InflowCountCommunicatorArray inflow_count_communicators{
-            "/lue/accu_threshold3/inflow_count/", localities};
-        MaterialCommunicatorArray material_communicators{"/lue/accu_threshold3/", localities};
+        InflowCountCommunicatorArray inflow_count_communicators{"/lue/accu3/inflow_count/", localities};
+        MaterialCommunicatorArray material_communicators{"/lue/accu3/", localities};
 
 
         // For each partition, spawn a task that will solve the
         // flow accumulation for the partition.
         MaterialPartitions outflow_partitions{shape_in_partitions};
-        MaterialPartitions remainder_partitions{shape_in_partitions};
-        detail::AccuThresholdAction3<Policies, FlowDirectionElement, MaterialElement, rank> action{};
+        detail::AccuAction3<Policies, FlowDirectionElement, MaterialElement, rank> action{};
         Count const nr_partitions{nr_elements(shape_in_partitions)};
 
         for(Index p = 0; p < nr_partitions; ++p)
         {
-            hpx::tie(outflow_partitions[p], remainder_partitions[p]) = hpx::split_future(hpx::async(
-                hpx::util::annotated_function(action, "accu_threshold"), localities[p], policies,
+            outflow_partitions[p] = hpx::async(
+                hpx::util::annotated_function(action, "accu"), localities[p], policies,
                 flow_direction.partitions()[p],
-                external_inflow.partitions()[p], threshold.partitions()[p],
-                inflow_count_communicators[p], material_communicators[p]));
+                external_inflow.partitions()[p],
+                inflow_count_communicators[p], material_communicators[p]);
         }
 
 
@@ -767,30 +655,25 @@ namespace lue {
             [
                 inflow_count_communicators=std::move(inflow_count_communicators),
                 material_communicators=std::move(material_communicators)
-            ]([[maybe_unused]] auto&& partitions) mutable
+            ]([[maybe_unused]] auto&& partitions)
             {
                 HPX_UNUSED(inflow_count_communicators);
                 HPX_UNUSED(material_communicators);
             });
 
 
-        return std::make_tuple(
-            MaterialArray{flow_direction.shape(), localities, std::move(outflow_partitions)},
-            MaterialArray{flow_direction.shape(), localities, std::move(remainder_partitions)});
+        return MaterialArray{flow_direction.shape(), localities, std::move(outflow_partitions)};
     }
 
 }  // namespace lue
 
 
-#define LUE_INSTANTIATE_ACCU_THRESHOLD3(                                              \
+#define LUE_INSTANTIATE_ACCU3(                                                        \
     Policies, FlowDirectionElement, MaterialElement)                                  \
                                                                                       \
     template LUE_FA_EXPORT                                                            \
-    std::tuple<                                                                       \
-        PartitionedArray<MaterialElement, 2>,                                         \
-        PartitionedArray<MaterialElement, 2>> accu_threshold3<                        \
+    PartitionedArray<MaterialElement, 2> accu3<                                       \
             ArgumentType<void(Policies)>, FlowDirectionElement, MaterialElement, 2>(  \
         ArgumentType<void(Policies)> const&,                                          \
         PartitionedArray<FlowDirectionElement, 2> const&,                             \
-        PartitionedArray<MaterialElement, 2> const&,                                  \
         PartitionedArray<MaterialElement, 2> const&);

@@ -6,6 +6,7 @@
 namespace lue::framework {
 
     void bind_accu(pybind11::module& module);
+    void bind_accu3(pybind11::module& module);
     void bind_accu_fraction(pybind11::module& module);
     void bind_accu_info(pybind11::module& module);
     void bind_accu_threshold(pybind11::module& module);
@@ -46,6 +47,7 @@ namespace lue::framework {
         pybind11::module& module)
     {
         bind_accu(module);
+        bind_accu3(module);
         bind_accu_fraction(module);
         bind_accu_info(module);
         bind_accu_threshold(module);

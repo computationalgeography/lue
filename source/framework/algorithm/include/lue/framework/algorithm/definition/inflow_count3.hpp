@@ -185,7 +185,7 @@ namespace lue {
             typename IdxConverter,
             Rank rank>
         std::vector<std::array<Index, rank>> monitor_cell_idx_inputs(
-            hpx::lcos::channel<T>&& channel,
+            hpx::lcos::channel<T> const& channel,
             IdxConverter&& idx_to_idxs,
             [[maybe_unused]] Shape<Index, rank> const& partition_shape)  // TODO remove
         {
@@ -296,7 +296,7 @@ namespace lue {
                         }
                     }
 
-                    if(communicator.has_neighbour(accu::Direction::north))
+                    if(!input_cell_idxs.empty() && communicator.has_neighbour(accu::Direction::north))
                     {
                         communicator.send(accu::Direction::north, input_cell_idxs);
                     }
@@ -330,7 +330,7 @@ namespace lue {
 
                     }
 
-                    if(communicator.has_neighbour(accu::Direction::south))
+                    if(!input_cell_idxs.empty() && communicator.has_neighbour(accu::Direction::south))
                     {
                         communicator.send(accu::Direction::south, input_cell_idxs);
                     }
@@ -366,7 +366,7 @@ namespace lue {
                         }
                     }
 
-                    if(communicator.has_neighbour(accu::Direction::west))
+                    if(!input_cell_idxs.empty() && communicator.has_neighbour(accu::Direction::west))
                     {
                         communicator.send(accu::Direction::west, input_cell_idxs);
                     }
@@ -399,7 +399,7 @@ namespace lue {
                         }
                     }
 
-                    if(communicator.has_neighbour(accu::Direction::east))
+                    if(!input_cell_idxs.empty() && communicator.has_neighbour(accu::Direction::east))
                     {
                         communicator.send(accu::Direction::east, input_cell_idxs);
                     }
@@ -673,49 +673,40 @@ namespace lue {
                 // cell indices. Aggregate the collections returned by all tasks.
                 std::array<hpx::future<CellsIdxs>, nr_neighbours> received_cells_idxs{};
 
-                RowIdxConverter north_idx_converter{};
-                RowIdxConverter south_idx_converter{extent0 - 1};
-                ColIdxConverter west_idx_converter{};
-                ColIdxConverter east_idx_converter{extent1 - 1};
-                CornerIdxConverter north_west_idx_converter{};
-                CornerIdxConverter north_east_idx_converter{0, extent1 - 1};
-                CornerIdxConverter south_east_idx_converter{extent0 - 1, extent1 - 1};
-                CornerIdxConverter south_west_idx_converter{extent0 - 1, 0};
-
                 received_cells_idxs[accu::Direction::north] = hpx::async(
-                    monitor_cell_idx_inputs<std::vector<Index>, decltype(north_idx_converter), rank>,
-                    communicator.receive_channel(accu::Direction::north), north_idx_converter,
-                    flow_direction_data.shape());
+                    monitor_cell_idx_inputs<std::vector<Index>, RowIdxConverter, rank>,
+                    communicator.receive_channel(accu::Direction::north),
+                    RowIdxConverter{}, flow_direction_data.shape());
                 received_cells_idxs[accu::Direction::south] = hpx::async(
-                    monitor_cell_idx_inputs<std::vector<Index>, decltype(south_idx_converter), rank>,
-                    communicator.receive_channel(accu::Direction::south), south_idx_converter,
-                    flow_direction_data.shape());
+                    monitor_cell_idx_inputs<std::vector<Index>, RowIdxConverter, rank>,
+                    communicator.receive_channel(accu::Direction::south),
+                    RowIdxConverter{extent0 - 1}, flow_direction_data.shape());
 
                 received_cells_idxs[accu::Direction::west] = hpx::async(
-                    monitor_cell_idx_inputs<std::vector<Index>, decltype(west_idx_converter), rank>,
-                    communicator.receive_channel(accu::Direction::west), west_idx_converter,
-                    flow_direction_data.shape());
+                    monitor_cell_idx_inputs<std::vector<Index>, ColIdxConverter, rank>,
+                    communicator.receive_channel(accu::Direction::west),
+                    ColIdxConverter{}, flow_direction_data.shape());
                 received_cells_idxs[accu::Direction::east] = hpx::async(
-                    monitor_cell_idx_inputs<std::vector<Index>, decltype(east_idx_converter), rank>,
-                    communicator.receive_channel(accu::Direction::east), east_idx_converter,
-                    flow_direction_data.shape());
+                    monitor_cell_idx_inputs<std::vector<Index>, ColIdxConverter, rank>,
+                    communicator.receive_channel(accu::Direction::east),
+                    ColIdxConverter{extent1 - 1}, flow_direction_data.shape());
 
                 received_cells_idxs[accu::Direction::north_west] = hpx::async(
-                    monitor_cell_idx_inputs<std::vector<Index>, decltype(north_west_idx_converter), rank>,
-                    communicator.receive_channel(accu::Direction::north_west), north_west_idx_converter,
-                    flow_direction_data.shape());
+                    monitor_cell_idx_inputs<std::vector<Index>, CornerIdxConverter, rank>,
+                    communicator.receive_channel(accu::Direction::north_west),
+                    CornerIdxConverter{}, flow_direction_data.shape());
                 received_cells_idxs[accu::Direction::north_east] = hpx::async(
-                    monitor_cell_idx_inputs<std::vector<Index>, decltype(north_east_idx_converter), rank>,
-                    communicator.receive_channel(accu::Direction::north_east), north_east_idx_converter,
-                    flow_direction_data.shape());
+                    monitor_cell_idx_inputs<std::vector<Index>, CornerIdxConverter, rank>,
+                    communicator.receive_channel(accu::Direction::north_east),
+                    CornerIdxConverter{0, extent1 - 1}, flow_direction_data.shape());
                 received_cells_idxs[accu::Direction::south_east] = hpx::async(
-                    monitor_cell_idx_inputs<std::vector<Index>, decltype(south_east_idx_converter), rank>,
-                    communicator.receive_channel(accu::Direction::south_east), south_east_idx_converter,
-                    flow_direction_data.shape());
+                    monitor_cell_idx_inputs<std::vector<Index>, CornerIdxConverter, rank>,
+                    communicator.receive_channel(accu::Direction::south_east),
+                    CornerIdxConverter{extent0 - 1, extent1 - 1}, flow_direction_data.shape());
                 received_cells_idxs[accu::Direction::south_west] = hpx::async(
-                    monitor_cell_idx_inputs<std::vector<Index>, decltype(south_west_idx_converter), rank>,
-                    communicator.receive_channel(accu::Direction::south_west), south_west_idx_converter,
-                    flow_direction_data.shape());
+                    monitor_cell_idx_inputs<std::vector<Index>, CornerIdxConverter, rank>,
+                    communicator.receive_channel(accu::Direction::south_west),
+                    CornerIdxConverter{extent0 - 1, 0}, flow_direction_data.shape());
 
                 input_cells_idxs_f = hpx::when_all(received_cells_idxs).then(
                         hpx::unwrapping(
@@ -941,12 +932,7 @@ namespace lue {
         using InflowCountCommunicatorArray =
             detail::CommunicatorArray<detail::InflowCountCommunicator<rank>, rank>;
 
-        // Each invocation of this operation uses a unique set of
-        // communicators
-        static std::size_t invocation_id{0};
-        InflowCountCommunicatorArray inflow_count_communicators{
-            "inflow_count/" + std::to_string(invocation_id), localities};
-        ++invocation_id;
+        InflowCountCommunicatorArray inflow_count_communicators{"/lue/inflow_count3/", localities};
 
 
         // ---------------------------------------------------------------------
@@ -969,11 +955,13 @@ namespace lue {
 
         // ---------------------------------------------------------------------
         // Keep channel components layered in communicators alive until
-        // the results are ready.
+        // the results are ready. Once they are, free up AGAS resources.
         hpx::when_all(inflow_count_partitions.begin(), inflow_count_partitions.end(),
-            [communicators=std::move(inflow_count_communicators)]([[maybe_unused]] auto&& partitions)
+            [
+                inflow_count_communicators=std::move(inflow_count_communicators)
+            ]([[maybe_unused]] auto&& partitions) mutable
             {
-                HPX_UNUSED(communicators);
+                HPX_UNUSED(inflow_count_communicators);
             });
 
 

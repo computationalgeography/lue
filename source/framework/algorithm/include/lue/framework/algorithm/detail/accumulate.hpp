@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/component/array_partition_io.hpp"
+#include "lue/framework/algorithm/detail/accumulation_exit_cell_class.hpp"
 #include "lue/framework/algorithm/detail/flow_direction.hpp"
 #include "lue/framework/algorithm/detail/when_all_get.hpp"
 #include "lue/framework/core/array.hpp"
@@ -542,14 +543,6 @@ namespace lue::detail {
 
             OutputMaterialData& _output_material_data;
 
-    };
-
-
-    enum class AccumulationExitCellClass: std::uint8_t
-    {
-        sink,
-        partition_output,
-        junction,
     };
 
 

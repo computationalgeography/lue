@@ -22,6 +22,7 @@ set(names
     atan2_test.cpp
     cast_test.cpp
     close_to_test.cpp
+    communicator_array_test.cpp
     convolve_test.cpp
     copy_test.cpp
     cos_test.cpp
@@ -91,6 +92,9 @@ add_hpx_unit_tests(
         lue::framework_test
 )
 
+target_link_libraries(lue_framework_algorithm_accu_test
+    PRIVATE
+        lue::framework_flow_direction_operation)
 target_link_libraries(lue_framework_algorithm_accu_threshold_test
     PRIVATE
         lue::framework_flow_direction_operation)
