@@ -1,13 +1,6 @@
 #include "lue/framework/algorithm/definition/accu_threshold3.hpp"
 
 
-using ChannelMaterial_float = lue::detail::ChannelMaterial<float, 2>;
-using ChannelMaterial_double = lue::detail::ChannelMaterial<double, 2>;
-
-HPX_REGISTER_CHANNEL(ChannelMaterial_float);
-HPX_REGISTER_CHANNEL(ChannelMaterial_double);
-
-
 #define LUE_INSTANTIATE(FlowDirectionElement, MaterialElement)                                   \
                                                                                                  \
     LUE_INSTANTIATE_ACCU_THRESHOLD3(                                                             \

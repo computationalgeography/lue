@@ -121,6 +121,7 @@ target_link_libraries(lue_framework_focal_operation
 
 add_library(lue_framework_flow_direction_operation SHARED
     src/flow_direction_operation/accu.cpp
+    src/flow_direction_operation/accu3.cpp
     src/flow_direction_operation/accu_fraction.cpp
     src/flow_direction_operation/accu_info.cpp
     src/flow_direction_operation/accu_threshold.cpp
@@ -128,6 +129,7 @@ add_library(lue_framework_flow_direction_operation SHARED
     src/flow_direction_operation/d8_flow_direction.cpp
     src/flow_direction_operation/downstream.cpp
     src/flow_direction_operation/downstream_distance.cpp
+    src/flow_direction_operation/flow_accumulation3.cpp
     src/flow_direction_operation/inflow_count3.cpp
     src/flow_direction_operation/upstream.cpp
 )

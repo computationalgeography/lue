@@ -3,6 +3,7 @@ add_test_conditionally(test)
 
 pybind11_add_module(lue_py_framework SHARED THIN_LTO
     src/algorithm/accu.cpp
+    src/algorithm/accu3.cpp
     src/algorithm/accu_fraction.cpp
     src/algorithm/accu_info.cpp
     src/algorithm/accu_threshold.cpp
