@@ -6,43 +6,6 @@
 
 
 namespace lue::benchmark {
-    namespace detail {
-
-        /// class Model:
-        ///     public RoutingModelBase
-        /// {
-
-        ///     public:
-
-        ///         explicit Model(ScalarRasterPtr const& state_ptr):
-
-        ///             RoutingModelBase{state_ptr}
-
-        ///         {
-        ///         }
-
-        ///         Model(Model const&)=default;
-
-        ///         Model(Model&&)=default;
-
-        ///         ~Model()=default;
-
-        ///         Model& operator=(Model const&)=default;
-
-        ///         Model& operator=(Model&&)=default;
-
-
-        ///     private:
-
-        ///         // BooleanRaster initial_fire() const final
-        ///         // {
-        ///         //     return uniform(state(), ScalarElement{0.0}, ScalarElement{1.0}) < ScalarElement{1e-5};
-        ///         // }
-
-        /// };
-
-    }  // namespace detail
-
 
     RoutingBenchmarkModel::RoutingBenchmarkModel(
         Environment const& /* environment */,
@@ -52,7 +15,6 @@ namespace lue::benchmark {
         std::vector<Index> center_cell):
 
         BenchmarkModel<float, 2>{task, max_tree_depth},
-        // _model{std::make_unique<detail::Model>(state_ptr())},
         _array_pathname{array_pathname},
         _object_id{},
         _hyperslab{}
@@ -62,79 +24,87 @@ namespace lue::benchmark {
     }
 
 
-    RoutingBenchmarkModel::~RoutingBenchmarkModel()
-    {
-        // Not =default because then the forward declared detail::Model icw
-        // std::unique_ptr won't compile.
-    }
-
-
     void RoutingBenchmarkModel::do_preprocess()
     {
-        // namespace op = lue::value_policies;
         using namespace lue::value_policies;
-
-        auto const& array_shape{this->array_shape()};
         auto const& partition_shape{this->partition_shape()};
 
+        // Time step duration: 1 h → 1 * 60 * 60 s
+        time_step_duration = 1 * 60 * 60;
+
         // Read (subset) from array whose pathname is passed in
-        flow_direction = read<FlowDirectionElement, 2>(
-            _array_pathname, _hyperslab, partition_shape, _object_id);
-
-        // Interception rate: ~2 mm/h → 2 / 1000 m/s
-        interception_rate =
-            (2.0f + uniform<ScalarElement>(array_shape, partition_shape, -0.5, 0.5)) / 1000.0f;
-        interception_storage =
-            create_partitioned_array<ScalarElement>(array_shape, partition_shape, 0);
-
-        // Infiltration rate: ~5 mm/h → 5 / 1000 m/s
-        infiltration_rate =
-            (5.0f + uniform<ScalarElement>(array_shape, partition_shape, -2, 2)) / 1000.0f;
-
-        auto& infiltration_storage = state();
-        infiltration_storage =
-            create_partitioned_array<ScalarElement>(array_shape, partition_shape, 0);
+        // 1 byte / cell
+        flow_direction =
+            read<FlowDirectionElement, 2>(_array_pathname, _hyperslab, partition_shape, _object_id);
 
         // We need to wait for all stuff that needs to be ready
-        // before the calculations that need to be measured start.
-        // state() is waited for automatically.
+        // before the calculations that need to be measured start
         lue::wait_all(flow_direction);
-        lue::wait_all(interception_rate);
-        lue::wait_all(interception_storage);
-        lue::wait_all(infiltration_rate);
-        // lue::wait_all(infiltration_storage);
+
+        // state() is waited for automatically
+
+        // Initial state:
+        // - Memory usage: 1 * 1 bytes / cell
+        // - local operation: 0
+        // - flow direction operations: 0
     }
 
 
     void RoutingBenchmarkModel::do_initialize()
     {
-        // Call functions of the specialization to initialize the modelled
-        // state. Different specializations do this differently.
+        using namespace lue::value_policies;
+        auto const& array_shape{this->array_shape()};
+        auto const& partition_shape{this->partition_shape()};
+
+        // Interception rate: ~2 mm/h → 2 / 1000 m/s
+        // - 3 * 4 b/c
+        // - 3 local operations
+        interception_rate = (2.0f + uniform<ScalarElement>(array_shape, partition_shape, -0.5, 0.5)) / 1000.0f;
+
+        // How much can be potentially intercepted
+        // - 1 * 4 b/c
+        // - 1 local operation
+        interception_capacity = time_step_duration * interception_rate;
+
+        // How much is actually intercepted
+        // - 1 * 4 b/c
+        // - 1 local operation
+        interception_storage = create_partitioned_array<ScalarElement>(array_shape, partition_shape, 0);
+
+        // Infiltration rate: ~5 mm/h → 5 / 1000 m/s
+        // - 3 * 4 b/c
+        // - 3 local operation
+        infiltration_rate = (5.0f + uniform<ScalarElement>(array_shape, partition_shape, -2, 2)) / 1000.0f;
+
+        // How much can potentially infiltrate
+        // - 1 * 4 b/c
+        // - 1 local operation
+        infiltration_capacity = time_step_duration * infiltration_rate;
+
+        // - 1 * 4 b/c
+        // - 1 local operation
+        auto& infiltration_storage = state();
+        infiltration_storage = create_partitioned_array<ScalarElement>(array_shape, partition_shape, 0);
+
+        // Initial state:
+        // - Memory usage: 10 * 4 bytes / cell
+        // - local operation: 10
+        // - flow direction operations: 0
     }
 
 
     void RoutingBenchmarkModel::do_simulate(
         [[maybe_unused]] Count const time_step)
     {
-        // Call a mix of modelling operations that is similar to the
-        // mix found in the PyCatch model
-
-        using ScalarRaster = PartitionedArray<ScalarElement, 2>;
-
+        using namespace lue::value_policies;
         auto const& array_shape{this->array_shape()};
         auto const& partition_shape{this->partition_shape()};
-
-        // Pull operations and operators that use the default value
-        // policies from their namespace
-        using namespace lue::value_policies;
-
-
-        // Time step duration: 1 h → 1 * 60 * 60 s
-        float const duration = 1 * 60 * 60;  // TODO initial
 
 
         // ---------------------------------------------------------------------
         // 'Read' precipitation: ~10 mm/h → 10 / 1000 m/s
+        // - 3 * 4 b/c
+        // - 3 local operations
         ScalarRaster precipitation =
             (10.0f + uniform<ScalarElement>(array_shape, partition_shape, -3, 3)) / 1000.0f;
 
@@ -144,15 +114,25 @@ namespace lue::benchmark {
 
         // ---------------------------------------------------------------------
         // Update state of interception component
-        ScalarRaster interception_capacity = duration * interception_rate; // TODO initial
+        // How much water can be stored in the interception storage,
+        // given that there might already be water present
+        // - 1 * 4 b/c
+        // - 1 local operation
         ScalarRaster actual_interception_capacity = interception_capacity - interception_storage;
 
         // TODO add more operations to update actual_interception_capacity
 
-        // Fill interception storage with as much water as possible.
+        // Fill interception storage with as much water as possible
+        // - 1 * 1 b/c
+        // - 1 * 4 b/c
+        // - 2 local operations
         ScalarRaster intercepted_precipitation =
             where(actual_interception_capacity < precipitation, actual_interception_capacity, precipitation);
+        // - 1 * 4 b/c
+        // - 1 local operation
         interception_storage = interception_storage + intercepted_precipitation;
+        // - 1 * 4 b/c
+        // - 1 local operation
         precipitation = precipitation - intercepted_precipitation;
 
         all(interception_storage >= 0.0f).then(
@@ -163,8 +143,9 @@ namespace lue::benchmark {
 
         // ---------------------------------------------------------------------
         // Update state of infiltration component
+        // - 1 * 4 b/c
+        // - 1 local operation
         auto& infiltration_storage = state();
-        ScalarRaster infiltration_capacity = duration * infiltration_rate;  // TODO initial
         ScalarRaster actual_infiltration_capacity = infiltration_capacity - infiltration_storage;
 
         // TODO add more operations to update actual_infiltration_capacity
@@ -173,9 +154,14 @@ namespace lue::benchmark {
         // Redistribute the water that reaches the soil laterally,
         // taking the infiltration capacity into account.
 
+        // - 2 * 1 b/c (inflow counts)
+        // - 2 * 4 b/c
+        // - 1 flow direction operation
         auto [runoff, infiltrated_precipitation] =
             accu_threshold3(flow_direction, precipitation, actual_infiltration_capacity);
 
+        // - 1 * 4 b/c
+        // - 1 local operation
         infiltration_storage = infiltration_storage + infiltrated_precipitation;
 
         // TODO add more operations to update infiltration_storage
@@ -186,6 +172,28 @@ namespace lue::benchmark {
         all(infiltration_storage < infiltration_capacity).then(
             []([[maybe_unused]] auto&& f) { lue_hpx_assert(f.get()); });
 
+
+        // Per time step:
+        // - memory usage: 2 * 1 byte / cell + 11 * 4 bytes / cell
+        // - local operation: 10
+        // - flow direction operations: 1
+
+
+        // Overall:
+        // initial:
+        // - Memory usage: 1 bytes / cell + 40 bytes / cell -> 41 bytes / cell
+        // - local operation: 10
+        // simulate:
+        // - memory usage: 2 byte / cell + 44 bytes / cell → 46 bytes / cell
+        // - local operation: 10
+        // - flow direction operations: 1
+
+
+        // Memory usage (lower limit):
+        // nr_rows * nr_cols * (41 + nr_time_steps_in_flight * 46)
+
+        // Move to some doc in paper repo:
+        // python $LUE/../paper_2021_routing/source/benchmark/array_shapes.py eejit 41 46 5
 
 
 

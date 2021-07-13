@@ -1,17 +1,9 @@
 #pragma once
-// #include "routing_model_base.hpp"
 #include "lue/framework/benchmark/benchmark_model.hpp"
 #include "lue/data_model.hpp"
-// #include <memory>
 
 
 namespace lue::benchmark {
-    // namespace detail {
-
-    //     class Model;
-
-    // }  // namespace detail
-
 
     class RoutingBenchmarkModel:
         public BenchmarkModel<float, 2>
@@ -30,7 +22,7 @@ namespace lue::benchmark {
 
             RoutingBenchmarkModel(RoutingBenchmarkModel&&)=default;
 
-            ~RoutingBenchmarkModel();
+            ~RoutingBenchmarkModel()=default;
 
             RoutingBenchmarkModel& operator=(RoutingBenchmarkModel const&)=default;
 
@@ -43,6 +35,9 @@ namespace lue::benchmark {
 
             using ScalarElement = float;
 
+            using ScalarRaster = PartitionedArray<ScalarElement, 2>;
+
+
             void do_preprocess() override;
 
             void do_initialize() override;
@@ -51,23 +46,26 @@ namespace lue::benchmark {
 
             void do_terminate() override;
 
-            // std::unique_ptr<detail::Model> _model;
-
             std::string _array_pathname;
 
             data_model::ID _object_id;
 
             hdf5::Hyperslab _hyperslab;
 
+
+            float time_step_duration;
+
             PartitionedArray<FlowDirectionElement, 2> flow_direction;
 
             PartitionedArray<ScalarElement, 2> interception_rate;
+
+            ScalarRaster interception_capacity;
 
             PartitionedArray<ScalarElement, 2> interception_storage;
 
             PartitionedArray<ScalarElement, 2> infiltration_rate;
 
-            // PartitionedArray<ScalarElement, 2> infiltration_storage;
+            ScalarRaster infiltration_capacity;
 
     };
 
