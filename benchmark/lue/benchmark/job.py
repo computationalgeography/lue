@@ -73,6 +73,7 @@ def program_configuration(
         '--hpx:ini="hpx.commandline.allow_unknown!=1 ' \
         '--hpx:ini="hpx.commandline.aliasing!=0 ' \
         '--hpx:ini="hpx.agas.max_pending_refcnt_requests!=50" ' \
+        '--hpx:ini="hpx.stacks.use_guard_pages=0" ' \
         '--hpx:ini="hpx.diagnostics_on_terminate!=0" ' \
         '--hpx:ini="application.{program_name}.benchmark.cluster_name!={cluster_name}" ' \
         '--hpx:ini="application.{program_name}.benchmark.count!={count}" ' \
