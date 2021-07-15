@@ -2,10 +2,10 @@
 #include <cstdint>
 
 
-#cmakedefine PYTHON_VERSION "${Python_VERSION}"
-#cmakedefine PYTHON_VERSION_MAJOR ${Python_VERSION_MAJOR}
-#cmakedefine PYTHON_VERSION_MINOR ${Python_VERSION_MINOR}
-#cmakedefine PYTHON_VERSION_PATCH ${Python_VERSION_PATCH}
+#cmakedefine Python_VERSION "${Python_VERSION}"
+#cmakedefine Python_VERSION_MAJOR ${Python_VERSION_MAJOR}
+#cmakedefine Python_VERSION_MINOR ${Python_VERSION_MINOR}
+#cmakedefine Python_VERSION_PATCH ${Python_VERSION_PATCH}
 
 
 namespace lue::py {
@@ -16,7 +16,7 @@ namespace lue::py {
         public:
 
             static constexpr std::int32_t python_version{
-                10000 * PYTHON_VERSION_MAJOR + 100 * PYTHON_VERSION_MINOR + PYTHON_VERSION_PATCH};
+                10000 * Python_VERSION_MAJOR + 100 * Python_VERSION_MINOR + Python_VERSION_PATCH};
 
     };
 
