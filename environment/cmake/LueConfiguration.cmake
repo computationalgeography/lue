@@ -187,6 +187,7 @@ if(LUE_BUILD_DATA_MODEL)
     if(LUE_DATA_MODEL_WITH_PYTHON_API)
         set(LUE_GUIDELINE_SUPPORT_LIBRARY_REQUIRED TRUE)
         set(LUE_PYBIND11_REQUIRED TRUE)
+        set(LUE_PYTHON_REQUIRED TRUE)
     endif()
 endif()
 
@@ -216,6 +217,7 @@ if(LUE_BUILD_FRAMEWORK)
 
     if(LUE_FRAMEWORK_WITH_PYTHON_API)
         set(LUE_PYBIND11_REQUIRED TRUE)
+        set(LUE_PYTHON_REQUIRED TRUE)
     endif()
 endif()
 
@@ -384,16 +386,6 @@ if(LUE_NLOHMANN_JSON_REQUIRED)
     endif()
 endif()
 
-if(LUE_PYBIND11_REQUIRED)
-    if(NOT LUE_HAVE_PYBIND11)
-        FetchContent_Declare(pybind11
-            GIT_REPOSITORY https://github.com/pybind/pybind11
-            GIT_TAG "v2.6.2"
-        )
-        FetchContent_MakeAvailable(pybind11)
-    endif()
-endif()
-
 
 include(conan-0.16.1)
 conan_cmake_configure(
@@ -411,43 +403,22 @@ list(APPEND CMAKE_MODULE_PATH
 
 
 # ------------------------------------------------------------------------------
+if(LUE_PYTHON_REQUIRED)
+    # Order matters: Pybind11 must be searched for after Python has been found.
+    find_package(Python REQUIRED COMPONENTS Interpreter Development NumPy)
+endif()
+
+
 if(LUE_PYBIND11_REQUIRED)
+    # Order matters: Pybind11 must be searched for after Python has been found.
+    if(NOT LUE_HAVE_PYBIND11)
+        FetchContent_Declare(pybind11
+            GIT_REPOSITORY https://github.com/pybind/pybind11
+            GIT_TAG "v2.6.2"
+        )
 
-    # For some reason, PYTHON_EXECUTABLE is set (FetchContent?).
-    set(LUE_PYTHON_EXECUTABLE ${PYTHON_EXECUTABLE})
-
-    # Ask Python for some properties we can use.
-    # Given Python found, figure out where the NumPy headers are. We don't
-    # want to pick up headers from another prefix than the prefix of the
-    # Python interpreter.
-    execute_process(COMMAND "${LUE_PYTHON_EXECUTABLE}" -c "
-from distutils import sysconfig
-import numpy as np
-import sys
-print(\"{};{};{};{};{};{}\".format(
-        sys.version_info[0], sys.version_info[1], sys.version_info[2],
-        sysconfig.get_python_lib(plat_specific=True),
-        np.__version__, np.get_include(),
-    ))"
-        RESULT_VARIABLE python_result
-        OUTPUT_VARIABLE python_output
-        ERROR_VARIABLE python_error
-        OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-    if(NOT python_result MATCHES 0)
-        message(FATAL_ERROR
-            "${LUE_PYTHON_EXECUTABLE} is unable to determine interpreter properties:\n${python_error}")
-    else()
-        list(GET python_output 0 PYTHON_VERSION_MAJOR)
-        list(GET python_output 1 PYTHON_VERSION_MINOR)
-        list(GET python_output 2 PYTHON_VERSION_PATCH)
-        list(GET python_output 3 python_site_packages)
-        list(GET python_output 4 numpy_version)
-        list(GET python_output 5 NUMPY_INCLUDE_DIRS)
-        set(PYTHON_VERSION "${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}.${PYTHON_VERSION_PATCH}")
-
-        message(STATUS "Found Python ${PYTHON_VERSION}")
-        message(STATUS "Found NumPy ${numpy_version} headers in ${NUMPY_INCLUDE_DIRS}")
+        # This should pick up the Python found above
+        FetchContent_MakeAvailable(pybind11)
     endif()
 
     if(NOT LUE_PYTHON_API_INSTALL_DIR)
@@ -456,19 +427,25 @@ print(\"{};{};{};{};{};{}\".format(
         # as shared libraries. Therefore, we install in the root of the
         # site packages directory. We may have to change things in
         # the future if this is unconventional.
-        set(LUE_PYTHON_API_INSTALL_DIR "${python_site_packages}")  # /lue")
+        set(LUE_PYTHON_API_INSTALL_DIR "${Python_SITEARCH}")  # /lue")
     endif()
 endif()
 
-if(LUE_PYTHON_REQUIRED AND NOT LUE_PYBIND11_REQUIRED)
-    find_package(Python COMPONENTS Interpreter)
 
-    if(NOT Python_FOUND)
-        message(FATAL_ERROR "Python not found")
+if(LUE_BOOST_REQUIRED)
+    if(LUE_HPX_REQUIRED AND LUE_BUILD_HPX)
+        # HPX inspect tool requires Boost.Regex
+        list(APPEND LUE_REQUIRED_BOOST_COMPONENTS regex)
     endif()
 
-    set(LUE_PYTHON_EXECUTABLE ${Python_EXECUTABLE})
+    find_package(Boost REQUIRED COMPONENTS ${LUE_REQUIRED_BOOST_COMPONENTS})
+
+    add_definitions(
+            -DBOOST_ALL_NO_LIB
+            -DBOOST_ALL_DYN_LINK
+        )
 endif()
+
 
 if(LUE_HPX_REQUIRED)
     if(HPX_WITH_APEX)
@@ -499,7 +476,7 @@ if(LUE_HPX_REQUIRED)
 
                     # TODO Use LUE_OTF2_WITH_PYTHON to turn on/off the
                     #   build of the Python bindings.
-                    # PYTHON=${LUE_PYTHON_EXECUTABLE} PYTHON_FOR_GENERATOR=:
+                    # PYTHON=${Python_EXECUTABLE} PYTHON_FOR_GENERATOR=:
                     execute_process(
                         COMMAND
                             ${otf2_SOURCE_DIR}/configure
@@ -658,16 +635,6 @@ if(LUE_SPHINX_LUE_THEME_REQUIRED)
     )
 
     FetchContent_MakeAvailable(sphinx_lue_theme)
-endif()
-
-
-if(LUE_BOOST_REQUIRED)
-    find_package(Boost REQUIRED COMPONENTS ${LUE_REQUIRED_BOOST_COMPONENTS})
-
-    add_definitions(
-            -DBOOST_ALL_NO_LIB
-            -DBOOST_ALL_DYN_LINK
-        )
 endif()
 
 

@@ -78,7 +78,7 @@ set_target_properties(lue_py_framework
 # the wrong header might be picked up, resulting in runtime errors.
 target_include_directories(lue_py_framework SYSTEM
     PRIVATE
-        ${NUMPY_INCLUDE_DIRS}
+        ${Python_NumPy_INCLUDE_DIRS}
 )
 
 target_include_directories(lue_py_framework
@@ -96,7 +96,6 @@ target_link_libraries(lue_py_framework
         lue::framework_focal_operation
         lue::framework_local_operation
         lue::framework_io
-        pybind11::pybind11
 )
 
 install(

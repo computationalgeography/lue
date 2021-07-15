@@ -91,7 +91,7 @@ set_target_properties(lue_py_data_model
 # the wrong header might be picked up, resulting in runtime errors.
 target_include_directories(lue_py_data_model SYSTEM
     PRIVATE
-        ${NUMPY_INCLUDE_DIRS}
+        ${Python_NumPy_INCLUDE_DIRS}
 )
 
 target_include_directories(lue_py_data_model
@@ -105,7 +105,6 @@ target_link_libraries(lue_py_data_model
         $<$<TARGET_EXISTS:lue::data_model_test>:lue::data_model_test>
         lue::data_model_hl
         Microsoft.GSL::Microsoft.GSL
-        pybind11::pybind11
 )
 
 install(
