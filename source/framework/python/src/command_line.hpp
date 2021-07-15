@@ -20,7 +20,7 @@ namespace lue {
 
         private:
 
-#if 0 && PYTHON_VERSION_MAJOR > 2 && PYTHON_VERSION_MINOR > 8
+#if 0 && Python_VERSION_MAJOR > 2 && Python_VERSION_MINOR > 8
 
             using ArgumentPointer = std::unique_ptr<char, std::function<void(char*)>>;
 

@@ -11,7 +11,7 @@ namespace lue {
         // The goal here is (only) to set _argc/_argv for the
         // HPX runtime to use
 
-#if 0 && PYTHON_VERSION_MAJOR > 2 && PYTHON_VERSION_MINOR > 8
+#if 0 && Python_VERSION_MAJOR > 2 && Python_VERSION_MINOR > 8
         // In Python >= 3.9 a C-API function is exported (again) which allows
         // us access to the original argc/argv passed to the script
         // TODO(KDJ) This doesn't work correctly when the Python script is

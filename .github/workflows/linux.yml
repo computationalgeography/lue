@@ -62,6 +62,7 @@ jobs:
                   -DHPX_USE_CMAKE_CXX_STANDARD=TRUE \
                   -DHPX_WITH_MALLOC="tcmalloc" \
                   -DHPX_WITH_FETCH_ASIO=TRUE \
+                  -DHPX_WITH_PKGCONFIG=FALSE \
                   -DHPX_WITH_EXAMPLES=FALSE \
                   -DHPX_WITH_TESTS=FALSE
 

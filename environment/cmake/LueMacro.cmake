@@ -349,7 +349,7 @@ function(add_hpx_unit_test)
 
     add_test(NAME ${TEST_EXE_NAME}
         COMMAND
-            ${LUE_PYTHON_EXECUTABLE} ${HPXRUN}
+            ${Python_EXECUTABLE} ${HPXRUN}
                 "--runwrapper" ${LUE_TEST_HPX_RUNWRAPPER}
                 "--parcelport" ${LUE_TEST_HPX_PARCELPORT}
                 "--localities" ${LUE_TEST_NR_LOCALITIES_PER_TEST}

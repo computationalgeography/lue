@@ -8,8 +8,8 @@ add_unit_tests(
     NAMES
         python_test.cpp
     LINK_LIBRARIES
-        pybind11::pybind11
-        ${PYTHON_LIBRARIES}
+        pybind11::headers
+        Python::Python
     DEPENDENCIES
         lue_py_framework_test_modules
         lue::py
