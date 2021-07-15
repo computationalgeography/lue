@@ -6,11 +6,26 @@ namespace lue {
     namespace policy::accu3 {
 
         template<
+            typename MaterialElement>
+        class DomainPolicy
+        {
+
+            public:
+
+                static constexpr bool within_domain(
+                    MaterialElement const inflow) noexcept
+                {
+                    return inflow >= 0;
+                }
+
+        };
+
+
+        template<
             typename FlowDirectionElement,
             typename MaterialElement>
         using DefaultValuePoliciesBase = Policies<
-            // TODO Only accept non-negative inflow values!!!
-            AllValuesWithinDomain<FlowDirectionElement, MaterialElement>,
+            DomainPolicy<MaterialElement>,
             OutputsPolicies<
                 OutputPolicies<MarkNoDataByNaN<MaterialElement>>>,
             InputsPolicies<

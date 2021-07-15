@@ -56,12 +56,14 @@ namespace lue::policy {
     namespace detail {
 
         template<
-            typename InputNoDataPolicy>
+            typename InputNoDataPolicy_>
         class TypeTraits<
-            InputPolicies<InputNoDataPolicy>>
+            InputPolicies<InputNoDataPolicy_>>
         {
 
             public:
+
+                using InputNoDataPolicy = InputNoDataPolicy_;
 
                 using Element = ElementT<InputNoDataPolicy>;
 
@@ -146,13 +148,15 @@ namespace lue::policy {
     namespace detail {
 
         template<
-            typename InputNoDataPolicy,
+            typename InputNoDataPolicy_,
             typename HaloPolicy>
         class TypeTraits<
-            SpatialOperationInputPolicies<InputNoDataPolicy, HaloPolicy>>
+            SpatialOperationInputPolicies<InputNoDataPolicy_, HaloPolicy>>
         {
 
             public:
+
+                using InputNoDataPolicy = InputNoDataPolicy_;
 
                 using Element = ElementT<InputNoDataPolicy>;
 

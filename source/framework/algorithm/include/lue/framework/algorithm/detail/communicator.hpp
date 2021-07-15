@@ -229,6 +229,8 @@ namespace lue::detail {
                 std::string const& basename,
                 accu::Direction const direction)
             {
+                // Free up AGAS resources
+
                 lue_hpx_assert(send_channel(direction));
 
                 [[maybe_unused]] hpx::future<hpx::id_type> result{
@@ -280,6 +282,30 @@ namespace lue::detail {
             }
 
 
+            void close(
+                accu::Direction const direction)
+            {
+                lue_hpx_assert(has_neighbour(direction));
+
+                [[maybe_unused]] std::size_t nr_pending_requests = send_channel(direction).close();
+
+                lue_hpx_assert(nr_pending_requests == 0);
+                lue_hpx_assert(has_neighbour(direction));
+            }
+
+
+            // void close_channels()
+            // {
+            //     for(auto& channel: _send_channels)
+            //     {
+            //         if(channel)
+            //         {
+            //             channel.close();
+            //         }
+            //     }
+            // }
+
+
         protected:
 
             friend class hpx::serialization::access;
@@ -315,7 +341,7 @@ namespace lue::detail {
             }
 
 
-            Channel const & send_channel(
+            Channel const& send_channel(
                 accu::Direction const direction) const
             {
                 return _send_channels[direction];

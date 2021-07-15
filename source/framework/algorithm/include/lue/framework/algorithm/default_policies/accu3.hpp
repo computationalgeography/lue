@@ -9,7 +9,7 @@ namespace lue {
             typename FlowDirectionElement,
             typename MaterialElement>
         using DefaultPoliciesBase = Policies<
-            AllValuesWithinDomain<FlowDirectionElement, MaterialElement>,
+            AllValuesWithinDomain<MaterialElement>,
             OutputsPolicies<
                 OutputPolicies<DontMarkNoData<MaterialElement>>>,
             InputsPolicies<

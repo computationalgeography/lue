@@ -100,7 +100,6 @@ namespace lue::benchmark {
         auto const& array_shape{this->array_shape()};
         auto const& partition_shape{this->partition_shape()};
 
-
         // ---------------------------------------------------------------------
         // 'Read' precipitation: ~10 mm/h → 10 / 1000 m/s
         // - 3 * 4 b/c
@@ -128,6 +127,7 @@ namespace lue::benchmark {
         // - 2 local operations
         ScalarRaster intercepted_precipitation =
             where(actual_interception_capacity < precipitation, actual_interception_capacity, precipitation);
+
         // - 1 * 4 b/c
         // - 1 local operation
         interception_storage = interception_storage + intercepted_precipitation;

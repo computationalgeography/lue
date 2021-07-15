@@ -6,6 +6,7 @@
 #include "lue/framework/algorithm/policy/mark_no_data_by_value.hpp"
 #include "lue/framework/algorithm/policy/input_policies.hpp"
 #include "lue/framework/algorithm/policy/output_policies.hpp"
+#include "lue/framework/algorithm/policy/policy_traits.hpp"
 #include <hpx/serialization.hpp>
 #include <array>
 
@@ -75,4 +76,22 @@ namespace lue::policy {
     {
     };
 
+
+    // namespace detail {
+
+    //     template<
+    //         typename DomainPolicy_,
+    //         typename... OutputElements,
+    //         typename... InputElements>
+    //     class PoliciesTraits<
+    //         DefaultValuePolicies<DomainPolicy_, OutputElements..., InputElements...>>
+    //     {
+
+    //         public:
+
+    //             using DomainPolicy = DomainPolicy_;
+
+    //     };
+
+    // }  // namespace detail
 }  // namespace lue::policy

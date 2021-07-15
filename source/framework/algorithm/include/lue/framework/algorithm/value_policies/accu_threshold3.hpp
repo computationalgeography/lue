@@ -6,11 +6,27 @@ namespace lue {
     namespace policy::accu_threshold3 {
 
         template<
+            typename MaterialElement>
+        class DomainPolicy
+        {
+
+            public:
+
+                static constexpr bool within_domain(
+                    MaterialElement const inflow,
+                    [[maybe_unused]] MaterialElement const threshold) noexcept
+                {
+                    return inflow >= 0;
+                }
+
+        };
+
+
+        template<
             typename FlowDirectionElement,
             typename MaterialElement>
         using DefaultValuePoliciesBase = Policies<
-            // TODO Only accept non-negative inflow values!!!
-            AllValuesWithinDomain<FlowDirectionElement, MaterialElement, MaterialElement>,
+            DomainPolicy<MaterialElement>,
             OutputsPolicies<
                 OutputPolicies<MarkNoDataByNaN<MaterialElement>>,
                 OutputPolicies<MarkNoDataByNaN<MaterialElement>>>,
