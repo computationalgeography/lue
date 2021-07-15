@@ -54,6 +54,7 @@ jobs:
                   -DHPX_USE_CMAKE_CXX_STANDARD=TRUE \
                   -DHPX_WITH_MALLOC="system" \
                   -DHPX_WITH_FETCH_ASIO=TRUE \
+                  -DHPX_WITH_PKGCONFIG=FALSE \
                   -DHWLOC_ROOT="$CONDA_PREFIX/Library" \
                   -DHPX_WITH_EXAMPLES=FALSE \
                   -DHPX_WITH_TESTS=FALSE
