@@ -3,6 +3,7 @@ add_library(lue_benchmark
     src/benchmark_model.cpp
     src/environment.cpp
     src/format.cpp
+    src/regex.cpp
     src/runtime_environment.cpp
     src/stopwatch.cpp
     src/task.cpp
@@ -22,6 +23,7 @@ hpx_setup_target(lue_benchmark
     DEPENDENCIES
         lue::framework_algorithm
         lue::framework_model
+        lue::data_model_hl
         docopt::docopt
         nlohmann_json::nlohmann_json
 )

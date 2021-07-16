@@ -8,6 +8,7 @@ algorithm_names="
     zonal_sum
 "
 case_study_names="
+    routing
     wildfire
 "
 scenarios="
@@ -18,12 +19,10 @@ scenarios="
 "
 
 algorithm_names="
-    accu_threshold3
 "
 case_study_names="
 "
 scenarios="
-    numa_node
 "
 
 output_prefix=${LUE_DATA:-.}

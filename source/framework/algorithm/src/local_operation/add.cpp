@@ -1,7 +1,17 @@
+#include "lue/framework/algorithm/default_policies/add.hpp"
+#include "lue/framework/algorithm/value_policies/add.hpp"
 #include "lue/framework/algorithm/definition/add.hpp"
 
 
 #define LUE_INSTANTIATE(Element, rank)                          \
+                                                                \
+    LUE_INSTANTIATE_BINARY_LOCAL_OPERATION(                     \
+        (policy::add::DefaultPolicies<Element, Element>),       \
+        Element,                                                \
+        Element,                                                \
+        Element,                                                \
+        rank,                                                   \
+        (detail::Add<Element, Element>));                       \
                                                                 \
     LUE_INSTANTIATE_BINARY_LOCAL_OPERATION(                     \
         (policy::add::DefaultValuePolicies<Element, Element>),  \

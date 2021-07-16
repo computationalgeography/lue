@@ -1,4 +1,5 @@
 #include "lue/framework/algorithm/definition/where.hpp"
+#include "lue/framework/algorithm/value_policies/where.hpp"
 
 
 #define LUE_INSTANTIATE(ConditionElement, ExpressionElement, rank)                        \

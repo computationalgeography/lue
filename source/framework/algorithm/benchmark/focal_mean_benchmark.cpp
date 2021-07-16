@@ -1,6 +1,6 @@
 #include "lue/framework/algorithm/definition/focal_mean.hpp"
 #include "lue/framework/algorithm/kernel.hpp"
-#include "lue/framework/algorithm/uniform.hpp"
+#include "lue/framework/algorithm/default_policies/uniform.hpp"
 #include "lue/framework/algorithm/serialize/kernel.hpp"
 #include "lue/framework/benchmark/benchmark_model.hpp"
 #include "lue/framework/benchmark/hpx_main.hpp"
@@ -69,7 +69,7 @@ template<
     std::size_t rank>
 void FocalMeanBenchmarkModel<Element, rank>::do_preprocess()
 {
-    this->state() = uniform(this->state(), Element{0}, std::numeric_limits<Element>::max());
+    this->state() = default_policies::uniform(this->state(), Element{0}, std::numeric_limits<Element>::max());
     _kernel = lue::box_kernel<bool, rank>(1, true);
 }
 

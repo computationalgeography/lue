@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/framework/algorithm/add.hpp"
+#include "lue/framework/algorithm/value_policies/add.hpp"
 
 
 namespace lue::framework {
@@ -13,9 +13,7 @@ namespace lue::framework {
         Argument1 const& argument1,
         Argument2 const& argument2)
     {
-        using Policies = policy::add::DefaultValuePolicies<Element, Element>;
-
-        return add(Policies{}, argument1, argument2);
+        return value_policies::add(argument1, argument2);
     }
 
 }  // namespace lue::framework

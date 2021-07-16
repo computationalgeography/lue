@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE lue framework algorithm create_partitioned_array
-#include "lue/framework/algorithm/all.hpp"
-#include "lue/framework/algorithm/definition/equal_to.hpp"
+#include "lue/framework/algorithm/default_policies/all.hpp"
+#include "lue/framework/algorithm/default_policies/equal_to.hpp"
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/partition_count_unique.hpp"
 #include "lue/framework/algorithm/policy.hpp"
@@ -215,6 +215,7 @@ BOOST_AUTO_TEST_CASE(instantiate_partitions_individually)
     // have a unique value per partition. Each partition contains
     // different numbers. The elements within each partition have the
     // same number.
+    using namespace lue::default_policies;
 
     using Functor = NumberPartitionsIndividually<Element, rank>;
 
@@ -223,7 +224,7 @@ BOOST_AUTO_TEST_CASE(instantiate_partitions_individually)
     // The number of unique values per partition is 1
     // Per partition a single count >= 0
     lue::PartitionedArray<lue::Count, 2> counts = lue::partition_count_unique(array);
-    BOOST_CHECK(lue::all(lue::equal_to(counts, lue::Count{1})).get());
+    BOOST_CHECK(all(equal_to(counts, lue::Count{1})).get());
 
     // The number of unique values in the array equals the number of partitions
     lue::PartitionedArray<lue::Count, 1> unique_values = lue::unique(array).get();
@@ -238,13 +239,15 @@ BOOST_AUTO_TEST_CASE(instantiate_partitions_per_locality)
     // instantiated within the same locality contain the same numbers. The
     // elements within each partition have the same number.
 
+    using namespace lue::default_policies;
+
     using Functor = NumberPartitionsPerLocality<Element, rank>;
 
     Array array = lue::create_partitioned_array(array_shape, partition_shape, Functor{});
 
     // The number of unique values per partition is 1
     lue::PartitionedArray<lue::Count, rank> counts = lue::partition_count_unique(array);
-    BOOST_CHECK(lue::all(lue::equal_to(counts, lue::Count{1})).get());
+    BOOST_CHECK(all(equal_to(counts, lue::Count{1})).get());
 
     // The number of unique values in the array equals the number of localities
     lue::PartitionedArray<lue::Count, 1> unique_values = lue::unique(array).get();
@@ -295,6 +298,8 @@ BOOST_AUTO_TEST_CASE(use_case_1)
     // all cells contain this fill value. Even cells in partitions at the
     // border of the array.
 
+    using namespace lue::default_policies;
+
     lue::Count const nr_rows = 300;
     lue::Count const nr_cols = 400;
     Shape const array_shape{{nr_rows, nr_cols}};
@@ -307,5 +312,5 @@ BOOST_AUTO_TEST_CASE(use_case_1)
 
     Array array = lue::create_partitioned_array(array_shape, partition_shape, fill_value);
 
-    BOOST_CHECK(lue::all(lue::equal_to(array, fill_value)).get());
+    BOOST_CHECK(all(equal_to(array, fill_value)).get());
 }

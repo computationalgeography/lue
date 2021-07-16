@@ -1,4 +1,4 @@
-#include "lue/framework/algorithm/where.hpp"
+#include "lue/framework/algorithm/value_policies/where.hpp"
 #include <pybind11/pybind11.h>
 
 
@@ -33,10 +33,7 @@ namespace lue::framework {
                     PartitionedArray<ConditionElement, rank> const& condition_array,
                     PartitionedArray<ExpressionElement, rank> const& true_array)
                 {
-                    using Policies = policy::where::DefaultValuePolicies<
-                        ExpressionElement, ConditionElement, ExpressionElement>;
-
-                    return lue::where(Policies{}, condition_array, true_array);
+                    return lue::value_policies::where(condition_array, true_array);
                 }
 
         };
@@ -61,10 +58,7 @@ namespace lue::framework {
                     PartitionedArray<ConditionElement, rank> const& condition_array,
                     hpx::shared_future<ExpressionElement> const& true_value_f)
                 {
-                    using Policies = policy::where::DefaultValuePolicies<
-                        ExpressionElement, ConditionElement, ExpressionElement>;
-
-                    return lue::where(Policies{}, condition_array, true_value_f);
+                    return lue::value_policies::where(condition_array, true_value_f);
                 }
 
         };
@@ -89,10 +83,7 @@ namespace lue::framework {
                     PartitionedArray<ConditionElement, rank> const& condition_array,
                     ExpressionElement const& true_value)
                 {
-                    using Policies = policy::where::DefaultValuePolicies<
-                        ExpressionElement, ConditionElement, ExpressionElement>;
-
-                    return lue::where(Policies{}, condition_array, true_value);
+                    return lue::value_policies::where(condition_array, true_value);
                 }
 
         };
@@ -119,10 +110,7 @@ namespace lue::framework {
                     PartitionedArray<ExpressionElement, rank> const& true_array,
                     PartitionedArray<ExpressionElement, rank> const& false_array)
                 {
-                    using Policies = policy::where::DefaultValuePolicies<
-                        ExpressionElement, ConditionElement, ExpressionElement, ExpressionElement>;
-
-                    return lue::where(Policies{}, condition_array, true_array, false_array);
+                    return lue::value_policies::where(condition_array, true_array, false_array);
                 }
 
         };
@@ -149,10 +137,7 @@ namespace lue::framework {
                     PartitionedArray<ExpressionElement, rank> const& true_array,
                     hpx::shared_future<ExpressionElement> const& false_value_f)
                 {
-                    using Policies = policy::where::DefaultValuePolicies<
-                        ExpressionElement, ConditionElement, ExpressionElement, ExpressionElement>;
-
-                    return lue::where(Policies{}, condition_array, true_array, false_value_f);
+                    return lue::value_policies::where(condition_array, true_array, false_value_f);
                 }
 
         };
@@ -179,10 +164,7 @@ namespace lue::framework {
                     PartitionedArray<ExpressionElement, rank> const& true_array,
                     ExpressionElement const& false_value)
                 {
-                    using Policies = policy::where::DefaultValuePolicies<
-                        ExpressionElement, ConditionElement, ExpressionElement, ExpressionElement>;
-
-                    return lue::where(Policies{}, condition_array, true_array, false_value);
+                    return lue::value_policies::where(condition_array, true_array, false_value);
                 }
 
         };
@@ -209,10 +191,7 @@ namespace lue::framework {
                     hpx::shared_future<ExpressionElement> const& true_value_f,
                     PartitionedArray<ExpressionElement, rank> const& false_array)
                 {
-                    using Policies = policy::where::DefaultValuePolicies<
-                        ExpressionElement, ConditionElement, ExpressionElement, ExpressionElement>;
-
-                    return lue::where(Policies{}, condition_array, true_value_f, false_array);
+                    return lue::value_policies::where(condition_array, true_value_f, false_array);
                 }
 
         };
@@ -239,10 +218,7 @@ namespace lue::framework {
                     ExpressionElement const& true_value,
                     PartitionedArray<ExpressionElement, rank> const& false_array)
                 {
-                    using Policies = policy::where::DefaultValuePolicies<
-                        ExpressionElement, ConditionElement, ExpressionElement, ExpressionElement>;
-
-                    return lue::where(Policies{}, condition_array, true_value, false_array);
+                    return lue::value_policies::where(condition_array, true_value, false_array);
                 }
 
         };
@@ -269,10 +245,7 @@ namespace lue::framework {
                     hpx::shared_future<ExpressionElement> const& true_value_f,
                     hpx::shared_future<ExpressionElement> const& false_value_f)
                 {
-                    using Policies = policy::where::DefaultValuePolicies<
-                        ExpressionElement, ConditionElement, ExpressionElement, ExpressionElement>;
-
-                    return lue::where(Policies{}, condition_array, true_value_f, false_value_f);
+                    return lue::value_policies::where(condition_array, true_value_f, false_value_f);
                 }
 
         };
@@ -299,10 +272,7 @@ namespace lue::framework {
                     ExpressionElement const& true_value,
                     ExpressionElement const& false_value)
                 {
-                    using Policies = policy::where::DefaultValuePolicies<
-                        ExpressionElement, ConditionElement, ExpressionElement, ExpressionElement>;
-
-                    return lue::where(Policies{}, condition_array, true_value, false_value);
+                    return lue::value_policies::where(condition_array, true_value, false_value);
                 }
 
         };

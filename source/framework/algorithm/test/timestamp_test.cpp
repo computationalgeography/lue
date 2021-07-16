@@ -1,5 +1,5 @@
 #define BOOST_TEST_MODULE lue framework algorithm timestamp
-#include "lue/framework/algorithm/uniform.hpp"
+#include "lue/framework/algorithm/default_policies/uniform.hpp"
 #include "lue/framework/algorithm/timestamp.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/compare.hpp"
@@ -26,7 +26,7 @@ namespace {
 BOOST_AUTO_TEST_CASE(overloads)
 {
     {
-        auto array{lue::uniform<std::int32_t>(array_shape, partition_shape, 0, 100)};
+        auto array{lue::default_policies::uniform<std::int32_t>(array_shape, partition_shape, 0, 100)};
 
         auto result = lue::timestamp(array);
     }

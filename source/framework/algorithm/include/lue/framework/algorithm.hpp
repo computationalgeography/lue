@@ -32,4 +32,5 @@
 #include "lue/framework/algorithm/unique_id.hpp"
 #include "lue/framework/algorithm/where.hpp"
 
-#include "lue/framework/algorithm/d8_network.hpp"
+#include "lue/framework/algorithm/accu_threshold3.hpp"
+#include "lue/framework/algorithm/d8_flow_direction.hpp"

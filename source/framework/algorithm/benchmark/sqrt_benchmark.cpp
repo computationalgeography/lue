@@ -1,6 +1,6 @@
 #include "lue/framework/algorithm/definition/pow.hpp"
 #include "lue/framework/algorithm/definition/sqrt.hpp"
-#include "lue/framework/algorithm/uniform.hpp"
+#include "lue/framework/algorithm/default_policies/uniform.hpp"
 #include "lue/framework/benchmark/benchmark_model.hpp"
 #include "lue/framework/benchmark/hpx_main.hpp"
 #include "lue/framework/benchmark/model_benchmark.hpp"
@@ -60,7 +60,7 @@ template<
     std::size_t rank>
 void SqrtBenchmarkModel<Element, rank>::do_preprocess()
 {
-    this->state() = uniform(this->state(), Element{0}, std::numeric_limits<Element>::max());
+    this->state() = default_policies::uniform(this->state(), Element{0}, std::numeric_limits<Element>::max());
 }
 
 

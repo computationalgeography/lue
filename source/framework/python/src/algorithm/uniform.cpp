@@ -1,4 +1,4 @@
-#include "lue/framework/algorithm/uniform.hpp"
+#include "lue/framework/algorithm/value_policies/uniform.hpp"
 #include <pybind11/pybind11.h>
 
 
@@ -13,9 +13,7 @@ namespace lue::framework {
             Element const min,
             Element const max)
         {
-            using Policies = policy::uniform::DefaultValuePolicies<Element>;
-
-            return uniform(Policies{}, array, min, max);
+            return value_policies::uniform(array, min, max);
         }
 
     }  // Anonymous namespace

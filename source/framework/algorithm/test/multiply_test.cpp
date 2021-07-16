@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE lue framework algorithm multiply
-#include "lue/framework/algorithm/all.hpp"
-#include "lue/framework/algorithm/definition/multiply.hpp"
-#include "lue/framework/algorithm/definition/equal_to.hpp"
+#include "lue/framework/algorithm/default_policies/all.hpp"
+#include "lue/framework/algorithm/default_policies/multiply.hpp"
+#include "lue/framework/algorithm/default_policies/equal_to.hpp"
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
@@ -14,6 +14,8 @@ namespace detail {
         std::size_t rank>
     void test_array()
     {
+        using namespace lue::default_policies;
+
         using Array = lue::PartitionedArray<Element, rank>;
 
         auto const array_shape{lue::Test<Array>::shape()};
@@ -30,7 +32,7 @@ namespace detail {
             auto multiply = array1 * array2;
             auto equal_to = multiply == fill_value1 * fill_value2;
 
-            BOOST_CHECK(lue::all(equal_to).get());
+            BOOST_CHECK(all(equal_to).get());
         }
 
         // Multiply scalar with array
@@ -39,7 +41,7 @@ namespace detail {
             auto multiply = array1 * fill_value1;
             auto equal_to = multiply == fill_value1 * fill_value1;
 
-            BOOST_CHECK(lue::all(equal_to).get());
+            BOOST_CHECK(all(equal_to).get());
         }
 
         // Multiply scalar with array
@@ -48,7 +50,7 @@ namespace detail {
             auto multiply = fill_value1 * array1;
             auto equal_to = multiply == fill_value1 * fill_value1;
 
-            BOOST_CHECK(lue::all(equal_to).get());
+            BOOST_CHECK(all(equal_to).get());
         }
     }
 
@@ -64,13 +66,13 @@ BOOST_AUTO_TEST_CASE(array_##rank##d_##Element)  \
     detail::test_array<Element, rank>();         \
 }
 
-TEST_CASE(1, int32_t)
+// TEST_CASE(1, int32_t)
 TEST_CASE(2, int32_t)
 // TEST_CASE(1, int64_t)
 // TEST_CASE(2, int64_t)
 // TEST_CASE(1, float)
 // TEST_CASE(2, float)
-TEST_CASE(1, double)
+// TEST_CASE(1, double)
 TEST_CASE(2, double)
 
 #undef TEST_CASE

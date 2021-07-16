@@ -1,4 +1,4 @@
-#include "lue/framework/algorithm/minimum.hpp"
+#include "lue/framework/algorithm/value_policies/minimum.hpp"
 #include <pybind11/pybind11.h>
 
 
@@ -11,9 +11,7 @@ namespace lue::framework {
         hpx::shared_future<Element> minimum(
             PartitionedArray<Element, rank> const& array)
         {
-            using Policies = policy::minimum::DefaultValuePolicies<Element>;
-
-            return minimum(Policies{}, array).share();
+            return value_policies::minimum(array).share();
         }
 
     }  // Anonymous namespace

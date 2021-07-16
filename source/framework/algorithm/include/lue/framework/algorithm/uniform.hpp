@@ -115,28 +115,6 @@ struct UniformPartitionAction:
 /// using UniformAction = typename detail::uniform::OverloadPicker<Policies, T>::Action;
 
 
-namespace policy::uniform {
-
-    // The min/max values are the input arguments whose values are
-    // relevant. These have the same element type as the output element.
-    template<
-        typename OutputElement>
-    using DefaultPolicies = policy::DefaultPolicies<
-        AllValuesWithinDomain<OutputElement, OutputElement>,
-        OutputElements<OutputElement>,
-        InputElements<OutputElement, OutputElement>>;
-
-
-    template<
-        typename OutputElement>
-    using DefaultValuePolicies = policy::DefaultValuePolicies<
-        AllValuesWithinDomain<OutputElement, OutputElement>,
-        OutputElements<OutputElement>,
-        InputElements<OutputElement, OutputElement>>;
-
-}  // namespace policy::uniform
-
-
 template<
     typename Policies,
     typename InputElement,
@@ -208,43 +186,6 @@ PartitionedArray<OutputElement, rank> uniform(
     OutputElement const max_value)
 {
     return uniform(policies, input_array,
-        hpx::make_ready_future<OutputElement>(min_value).share(),
-        hpx::make_ready_future<OutputElement>(max_value).share());
-}
-
-
-/*!
-    @overload
-*/
-template<
-    typename InputElement,
-    typename OutputElement,
-    Rank rank>
-PartitionedArray<OutputElement, rank> uniform(
-    PartitionedArray<InputElement, rank> const& input_array,
-    hpx::shared_future<OutputElement> const& min_value,
-    hpx::shared_future<OutputElement> const& max_value)
-{
-    using Policies = policy::uniform::DefaultPolicies<OutputElement>;
-
-    return uniform(Policies{}, input_array, min_value, max_value);
-}
-
-
-/*!
-    @overload
-*/
-template<
-    typename InputElement,
-    typename OutputElement,
-    Rank rank>
-PartitionedArray<OutputElement, rank> uniform(
-    PartitionedArray<InputElement, rank> const& input_array,
-    OutputElement const min_value,
-    OutputElement const max_value)
-{
-    return uniform(
-        input_array,
         hpx::make_ready_future<OutputElement>(min_value).share(),
         hpx::make_ready_future<OutputElement>(max_value).share());
 }
@@ -358,8 +299,8 @@ PartitionedArray<OutputElement, rank> uniform(
 
 
     template<
-        typename Policies,
         typename Element,
+        typename Policies,
         typename Shape>
     PartitionedArray<Element, rank<Shape>> uniform(
         Policies const& policies,
@@ -372,21 +313,6 @@ PartitionedArray<OutputElement, rank> uniform(
 
         return create_partitioned_array(
             policies, array_shape, partition_shape, Functor{min_value, max_value});
-    }
-
-
-    template<
-        typename Element,
-        typename Shape>
-    PartitionedArray<Element, rank<Shape>> uniform(
-        Shape const& array_shape,
-        Shape const& partition_shape,
-        Element const min_value,
-        Element const max_value)
-    {
-        using Policies = policy::uniform::DefaultPolicies<Element>;
-
-        return uniform(Policies{}, array_shape, partition_shape, min_value, max_value);
     }
 
 }  // namespace lue

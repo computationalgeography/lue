@@ -1,4 +1,4 @@
-#include "lue/framework/algorithm/accu3.hpp"
+#include "lue/framework/algorithm/value_policies/accu3.hpp"
 #include <pybind11/pybind11.h>
 
 
@@ -14,9 +14,7 @@ namespace lue::framework {
             PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
             PartitionedArray<MaterialElement, rank> const& material)
         {
-            using Policies = policy::accu3::DefaultValuePolicies<FlowDirectionElement, MaterialElement>;
-
-            return accu3(Policies{}, flow_direction, material);
+            return value_policies::accu3(flow_direction, material);
         }
 
     }  // Anonymous namespace

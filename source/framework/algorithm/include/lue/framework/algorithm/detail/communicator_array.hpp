@@ -41,13 +41,12 @@ namespace lue::detail {
             }
 
 
-            ~CommunicatorArray()
-            {
-                unregister().wait();
-            }
+            // ~CommunicatorArray()
+            // {
+            //     // Free up AGAS resources
+            //     unregister().wait();
+            // }
 
-
-        private:
 
             hpx::future<void> unregister()
             {
@@ -66,6 +65,8 @@ namespace lue::detail {
                 return hpx::when_all(fs).then([]([[maybe_unused]] auto&& fs) { return; });
             }
 
+
+        private:
 
             inline static std::size_t invocation_id = 0;
 

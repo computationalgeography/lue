@@ -1,6 +1,7 @@
 #define BOOST_TEST_MODULE lue framework algorithm accu
 #include "lue/framework/algorithm/definition/accu.hpp"
-#include "lue/framework/algorithm/definition/accu3.hpp"
+#include "lue/framework/algorithm/default_policies/accu3.hpp"
+#include "lue/framework/algorithm/value_policies/accu3.hpp"
 #include "flow_accumulation.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/compare.hpp"
@@ -1337,6 +1338,45 @@ BOOST_AUTO_TEST_CASE(merging_streams_case_01)
 
         test_accu3(Policies{}, flow_direction, material, result_we_want);
     }
+}
+
+
+BOOST_AUTO_TEST_CASE(back_and_forth)
+{
+    // Stream which runs from one partition to another and back and back
+    // and back ...
+
+    lue::ShapeT<lue::test::FlowDirectionArray> const array_shape{{6, 5}};
+    lue::ShapeT<lue::test::FlowDirectionArray> const partition_shape{{3, 5}};
+
+    test_accu(
+        lue::test::create_partitioned_array<FlowDirectionArray>(array_shape, partition_shape,
+            {
+                {  s,  e,  s,  e,  s,
+                   s,  n,  s,  n,  s,
+                   s,  n,  s,  n,  s, },
+                {  s,  n,  s,  n,  s,
+                   s,  n,  s,  n,  s,
+                   e,  n,  e,  n,  p, },
+            }),
+        lue::test::create_partitioned_array<MaterialArray>(array_shape, partition_shape,
+            {
+                { 1, 1, 1, 1, 1,
+                  1, 1, 1, 1, 1,
+                  1, 1, 1, 1, 1, },
+                { 1, 1, 1, 1, 1,
+                  1, 1, 1, 1, 1,
+                  1, 1, 1, 1, 1, },
+            }),
+        lue::test::create_partitioned_array<MaterialArray>(array_shape, partition_shape,
+            {
+                {  1, 12, 13, 24, 25,
+                   2, 11, 14, 23, 26,
+                   3, 10, 15, 22, 27, },
+                {  4,  9, 16, 21, 28,
+                   5,  8, 17, 20, 29,
+                   6,  7, 18, 19, 30, },
+            }));
 }
 
 

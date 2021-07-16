@@ -121,10 +121,12 @@ namespace lue::detail {
 
             Accumulator3(
                 CellAccumulator&& cell_accumulator,
-                Communicator& communicator):
+                Communicator& communicator,
+                std::array<std::vector<std::array<Index, 2>>, 8>& output_cells_idxs):
 
                 _cell_accumulator{std::forward<CellAccumulator>(cell_accumulator)},
-                _communicator{communicator}
+                _communicator{communicator},
+                _output_cells_idxs{output_cells_idxs}
 
             {
             }
@@ -223,15 +225,36 @@ namespace lue::detail {
                 Index const offset0,
                 Index const offset1)
             {
-                // Send material to cell in neighbouring partition
                 auto [direction, idx] = destination_cell(extent0, extent1, idx0, idx1, offset0, offset1);
 
+
+                // Remove the partition output cell from the collection. Once all output cells
+                // are solved / handled, the sending channel can be closed. This will end
+                // the reading for loop on the other side of the channel.
+                auto& output_cells_idxs{_output_cells_idxs[direction]};
+                auto it = std::find_if(output_cells_idxs.begin(), output_cells_idxs.end(),
+                        [idx0, idx1](std::array<Index, 2> const& cell_idxs2)
+                        {
+                            return idx0 == cell_idxs2[0] && idx1 == cell_idxs2[1];
+                        }
+                    );
+                lue_hpx_assert(it != output_cells_idxs.end());
+                output_cells_idxs.erase(it);
+
+
+                // Send material to cell in neighbouring partition
                 if(_communicator.has_neighbour(direction))
                 {
                     // We are not at the border of the array
                     using Value = typename Communicator::Value;
 
                     _communicator.send(direction, Value{idx, _cell_accumulator.outflow(idx0, idx1)});
+
+                    // The sending channel can be closed
+                    if(output_cells_idxs.empty())
+                    {
+                        _communicator.close(direction);
+                    }
                 }
             }
 
@@ -241,6 +264,8 @@ namespace lue::detail {
             CellAccumulator _cell_accumulator;
 
             Communicator& _communicator;
+
+            std::array<std::vector<std::array<Index, 2>>, 8>& _output_cells_idxs;
 
     };
 
@@ -345,6 +370,8 @@ namespace lue::detail {
 
         for(auto const& material: channel)
         {
+            lue_hpx_assert(!input_cells_idxs.empty());
+
             auto const cell_idxs{idx_to_idxs(material.cell_idx())};
 
             auto it = std::find_if(input_cells_idxs.begin(), input_cells_idxs.end(),
@@ -360,6 +387,8 @@ namespace lue::detail {
 
             if(input_cells_idxs.empty())
             {
+                // No material should be sent trough this channel
+                // again. We don't need it. It would be a bug.
                 break;
             }
         }

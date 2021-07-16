@@ -1,7 +1,17 @@
+#include "lue/framework/algorithm/default_policies/less_than.hpp"
 #include "lue/framework/algorithm/definition/less_than.hpp"
+#include "lue/framework/algorithm/value_policies/less_than.hpp"
 
 
 #define LUE_INSTANTIATE(OutputElement, InputElement, rank)                       \
+                                                                                 \
+    LUE_INSTANTIATE_BINARY_LOCAL_OPERATION(                                      \
+        (policy::less_than::DefaultPolicies<OutputElement, InputElement>),       \
+        OutputElement,                                                           \
+        InputElement,                                                            \
+        InputElement,                                                            \
+        rank,                                                                    \
+        (detail::LessThan<InputElement, OutputElement>));                        \
                                                                                  \
     LUE_INSTANTIATE_BINARY_LOCAL_OPERATION(                                      \
         (policy::less_than::DefaultValuePolicies<OutputElement, InputElement>),  \

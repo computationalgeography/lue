@@ -1,8 +1,8 @@
 #define BOOST_TEST_MODULE lue framework algorithm logical_not
-#include "lue/framework/algorithm/all.hpp"
+#include "lue/framework/algorithm/default_policies/all.hpp"
+#include "lue/framework/algorithm/default_policies/none.hpp"
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/definition/logical_not.hpp"
-#include "lue/framework/algorithm/none.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
@@ -14,6 +14,8 @@ namespace detail {
         std::size_t rank>
     void test_array()
     {
+        using namespace lue::default_policies;
+
         using Array = lue::PartitionedArray<Element, rank>;
 
         auto const array_shape{lue::Test<Array>::shape()};
@@ -27,8 +29,8 @@ namespace detail {
 
         // !array
         {
-            BOOST_CHECK(lue::none(!array1).get());  // !true
-            BOOST_CHECK(lue::all(!array2).get());  // !false
+            BOOST_CHECK(none(!array1).get());  // !true
+            BOOST_CHECK(all(!array2).get());  // !false
         }
     }
 

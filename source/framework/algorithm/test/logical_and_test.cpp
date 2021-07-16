@@ -1,8 +1,8 @@
 #define BOOST_TEST_MODULE lue framework algorithm logical_and
-#include "lue/framework/algorithm/all.hpp"
+#include "lue/framework/algorithm/default_policies/all.hpp"
+#include "lue/framework/algorithm/default_policies/none.hpp"
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/definition/logical_and.hpp"
-#include "lue/framework/algorithm/none.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
@@ -14,6 +14,8 @@ namespace detail {
         std::size_t rank>
     void test_array()
     {
+        using namespace lue::default_policies;
+
         using Array = lue::PartitionedArray<Element, rank>;
 
         auto const array_shape{lue::Test<Array>::shape()};
@@ -27,21 +29,21 @@ namespace detail {
 
         // array && array
         {
-            BOOST_CHECK(lue::none(array1 && array2).get());  // true && false
-            BOOST_CHECK(lue::all(array1 && array1).get());  // true && true
-            BOOST_CHECK(lue::none(array2 && array2).get());  // false && false
+            BOOST_CHECK(none(array1 && array2).get());  // true && false
+            BOOST_CHECK(all(array1 && array1).get());  // true && true
+            BOOST_CHECK(none(array2 && array2).get());  // false && false
         }
 
         // array && scalar
         {
-            BOOST_CHECK(lue::all(array1 && fill_value1).get());
-            BOOST_CHECK(lue::none(array1 && fill_value2).get());
+            BOOST_CHECK(all(array1 && fill_value1).get());
+            BOOST_CHECK(none(array1 && fill_value2).get());
         }
 
         // scalar && array
         {
-            BOOST_CHECK(lue::all(fill_value1 && array1).get());
-            BOOST_CHECK(lue::none(fill_value2 && array1).get());
+            BOOST_CHECK(all(fill_value1 && array1).get());
+            BOOST_CHECK(none(fill_value2 && array1).get());
         }
     }
 

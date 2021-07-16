@@ -41,7 +41,7 @@ namespace lue {
 
                 public:
 
-                    static OutputPartition binary_local_operation_partition(
+                    static OutputPartition binary_local_operation_partition_ready(
                         Policies const& policies,
                         InputPartition1 const& input_partition1,
                         InputPartition2 const& input_partition2,
@@ -109,6 +109,31 @@ namespace lue {
                             input_partition2.data());
                     }
 
+
+                    static OutputPartition binary_local_operation_partition(
+                        Policies const& policies,
+                        InputPartition1 const& input_partition1,
+                        InputPartition2 const& input_partition2,
+                        Functor const& functor)
+                    {
+                        return hpx::dataflow(
+                                hpx::launch::async,
+
+                                [policies, functor](
+                                    InputPartition1 const& input_partition1,
+                                    InputPartition2 const& input_partition2)
+                                {
+                                    return binary_local_operation_partition_ready(
+                                        policies, input_partition1, input_partition2, functor);
+                                },
+
+                                input_partition1,
+                                input_partition2
+                            );
+
+                    }
+
+
                     struct Action:
                         hpx::actions::make_action<
                             decltype(&binary_local_operation_partition),
@@ -138,7 +163,7 @@ namespace lue {
 
                 public:
 
-                    static OutputPartition binary_local_operation_partition(
+                    static OutputPartition binary_local_operation_partition_ready(
                         Policies const& policies,
                         InputPartition const& input_partition,
                         InputElement const input_scalar,
@@ -206,6 +231,30 @@ namespace lue {
                             input_partition.data());
                     }
 
+
+                    static OutputPartition binary_local_operation_partition(
+                        Policies const& policies,
+                        InputPartition const& input_partition,
+                        hpx::shared_future<InputElement> const& input_scalar,
+                        Functor const& functor)
+                    {
+                        return hpx::dataflow(
+                                hpx::launch::async,
+
+                                [policies, functor](
+                                    InputPartition const& input_partition,
+                                    hpx::shared_future<InputElement> const& input_scalar)
+                                {
+                                    return binary_local_operation_partition_ready(
+                                        policies, input_partition, input_scalar.get(), functor);
+                                },
+
+                                input_partition,
+                                input_scalar
+                            );
+                    }
+
+
                     struct Action:
                         hpx::actions::make_action<
                             decltype(&binary_local_operation_partition),
@@ -235,7 +284,7 @@ namespace lue {
 
                 public:
 
-                    static OutputPartition binary_local_operation_partition(
+                    static OutputPartition binary_local_operation_partition_ready(
                         Policies const& policies,
                         InputElement const input_scalar,
                         InputPartition const& input_partition,
@@ -303,6 +352,30 @@ namespace lue {
                             input_partition.data());
                     }
 
+
+                    static OutputPartition binary_local_operation_partition(
+                        Policies const& policies,
+                        hpx::shared_future<InputElement> const& input_scalar,
+                        InputPartition const& input_partition,
+                        Functor const& functor)
+                    {
+                        return hpx::dataflow(
+                                hpx::launch::async,
+
+                                [policies, functor](
+                                    hpx::shared_future<InputElement> const& input_scalar,
+                                    InputPartition const& input_partition)
+                                {
+                                    return binary_local_operation_partition_ready(
+                                        policies, input_scalar.get(), input_partition, functor);
+                                },
+
+                                input_scalar,
+                                input_partition
+                            );
+                    }
+
+
                     struct Action:
                         hpx::actions::make_action<
                             decltype(&binary_local_operation_partition),
@@ -350,20 +423,10 @@ namespace lue {
         detail::BinaryLocalOperationPartitionAction<
             Policies, InputPartition, InputElement2, OutputPartition, Functor> action;
 
-        return hpx::dataflow(
-            hpx::launch::async,
-
-            [locality_id, action, policies, functor](
-                InputPartition const& input_partition,
-                hpx::shared_future<InputElement2> const& input_scalar)
-            {
-                AnnotateFunction annotation{"binary_local_operation"};
-
-                return action(locality_id, policies, input_partition, input_scalar.get(), functor);
-            },
-
-            input_partition,
-            input_scalar);
+        return hpx::async(
+            hpx::util::annotated_function(action, "binary_local_operation"),
+            locality_id, policies,
+            input_partition, input_scalar, functor);
     }
 
 
@@ -415,21 +478,10 @@ namespace lue {
 
         for(Index p = 0; p < nr_partitions; ++p)
         {
-            output_partitions[p] = hpx::dataflow(
-                hpx::launch::async,
-
-                    [locality_id=localities[p], action, policies, functor](
-                        InputPartition1 const& input_partition1,
-                        InputPartition2 const& input_partition2)
-                    {
-                        AnnotateFunction annotation{"binary_local_operation"};
-
-                        return action(locality_id, policies, input_partition1, input_partition2, functor);
-                    },
-
-                    input_partitions1[p],
-                    input_partitions2[p]
-                );
+            output_partitions[p] = hpx::async(
+                hpx::util::annotated_function(action, "binary_local_operation"),
+                localities[p], policies,
+                input_partitions1[p], input_partitions2[p], functor);
         }
 
         return OutputArray{shape(input_array1), localities, std::move(output_partitions)};
@@ -475,21 +527,10 @@ namespace lue {
 
         for(Index p = 0; p < nr_partitions; ++p)
         {
-            output_partitions[p] = hpx::dataflow(
-                hpx::launch::async,
-
-                    [locality_id=localities[p], action, policies, functor](
-                        InputPartition const& input_partition,
-                        hpx::shared_future<InputElement2> const& input_scalar)
-                    {
-                        AnnotateFunction annotation{"binary_local_operation"};
-
-                        return action(locality_id, policies, input_partition, input_scalar.get(), functor);
-                    },
-
-                    input_partitions[p],
-                    input_scalar
-                );
+            output_partitions[p] = hpx::async(
+                hpx::util::annotated_function(action, "binary_local_operation"),
+                localities[p], policies,
+                input_partitions[p], input_scalar, functor);
         }
 
         return OutputArray{shape(input_array), localities, std::move(output_partitions)};
@@ -535,21 +576,10 @@ namespace lue {
 
         for(Index p = 0; p < nr_partitions; ++p)
         {
-            output_partitions[p] = hpx::dataflow(
-                hpx::launch::async,
-
-                    [locality_id=localities[p], action, policies, functor](
-                        hpx::shared_future<InputElement1> const& input_scalar,
-                        InputPartition const& input_partition)
-                    {
-                        AnnotateFunction annotation{"binary_local_operation"};
-
-                        return action(locality_id, policies, input_scalar.get(), input_partition, functor);
-                    },
-
-                    input_scalar,
-                    input_partitions[p]
-                );
+            output_partitions[p] = hpx::async(
+                hpx::util::annotated_function(action, "binary_local_operation"),
+                localities[p], policies,
+                input_scalar, input_partitions[p], functor);
         }
 
         return OutputArray{shape(input_array), localities, std::move(output_partitions)};
@@ -557,6 +587,18 @@ namespace lue {
 
 }  // namespace lue
 
+
+#define LUE_INSTANTIATE_BINARY_LOCAL_OPERATION_PARTITION(                                    \
+    Policies, OutputElement, InputElement1, InputElement2, rank, Functor)                    \
+                                                                                             \
+    template LUE_FA_EXPORT ArrayPartition<OutputElement, rank> binary_local_operation<       \
+            ArgumentType<void(Policies)>, InputElement1, InputElement2, rank,                \
+            ArgumentType<void(Functor)>>(                                                    \
+        hpx::id_type const locality_id,                                                      \
+        ArgumentType<void(Policies)> const&,                                                 \
+        ArrayPartition<InputElement1, rank> const&,                                          \
+        hpx::shared_future<InputElement2> const& input_scalar,                               \
+        ArgumentType<void(Functor)> const&);
 
 #define LUE_INSTANTIATE_BINARY_LOCAL_OPERATION(                                              \
     Policies, OutputElement, InputElement1, InputElement2, rank, Functor)                    \

@@ -1,4 +1,4 @@
-#include "lue/framework/algorithm/accu_threshold3.hpp"
+#include "lue/framework/algorithm/value_policies/accu_threshold3.hpp"
 #include <pybind11/pybind11.h>
 
 
@@ -16,10 +16,7 @@ namespace lue::framework {
                 PartitionedArray<MaterialElement, rank> const& material,
                 PartitionedArray<MaterialElement, rank> const& threshold)
         {
-            using Policies =
-                policy::accu_threshold3::DefaultValuePolicies<FlowDirectionElement, MaterialElement>;
-
-            return accu_threshold3(Policies{}, flow_direction, material, threshold);
+            return value_policies::accu_threshold3(flow_direction, material, threshold);
         }
 
     }  // Anonymous namespace

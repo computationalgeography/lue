@@ -17,11 +17,20 @@ namespace lue::policy {
 
 
     template<
-        typename DomainPolicy,
-        typename OutputsPolicies,
-        typename InputsPolicies>
+        typename DomainPolicy_,
+        typename OutputsPolicies_,
+        typename InputsPolicies_>
     class Policies
     {
+
+        public:
+
+            using DomainPolicy = DomainPolicy_;
+
+            using OutputsPolicies = OutputsPolicies_;
+
+            using InputsPolicies = InputsPolicies_;
+
     };
 
 
@@ -37,11 +46,11 @@ namespace lue::policy {
 
 
     template<
-        typename DomainPolicy,
+        typename DomainPolicy_,
         typename... OutputPolicy,
         typename... InputPolicy>
     class Policies<
-        DomainPolicy,
+        DomainPolicy_,
         detail::TypeList<OutputPolicy...>,
         detail::TypeList<InputPolicy...>>
     {
@@ -51,6 +60,7 @@ namespace lue::policy {
             constexpr static std::size_t nr_outputs{sizeof...(OutputPolicy)};
             constexpr static std::size_t nr_inputs{sizeof...(InputPolicy)};
 
+            using DomainPolicy = DomainPolicy_;
             using OutputsPolicies = std::tuple<OutputPolicy...>;
             using InputsPolicies = std::tuple<InputPolicy...>;
 
@@ -123,26 +133,6 @@ namespace lue::policy {
                 template<
                     std::size_t idx>
                 using Policies = typename std::tuple_element<idx, std::tuple<P...>>::type;
-
-        };
-
-
-        template<
-            typename DomainPolicy_,
-            typename OutputsPolicies_,
-            typename InputsPolicies_>
-        class PoliciesTraits<
-            Policies<
-                DomainPolicy_,
-                OutputsPolicies_,
-                InputsPolicies_>>
-        {
-
-            public:
-
-                using DomainPolicy = DomainPolicy_;
-                using OutputsPolicies = OutputsPolicies_;
-                using InputsPolicies = InputsPolicies_;
 
         };
 

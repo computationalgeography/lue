@@ -1,32 +1,16 @@
-#include "lue/framework/algorithm/definition/accu_threshold3.hpp"
+#include "lue/framework/algorithm/value_policies/accu_threshold3.hpp"
 #include "lue/framework/algorithm/copy.hpp"
-#include "lue/framework/algorithm/uniform.hpp"
+#include "lue/framework/algorithm/default_policies/uniform.hpp"
 #include "lue/framework/benchmark/benchmark_model.hpp"
+#include "lue/framework/benchmark/data_model.hpp"
 #include "lue/framework/benchmark/hpx_main.hpp"
 #include "lue/framework/benchmark/model_benchmark.hpp"
+#include "lue/framework/benchmark/regex.hpp"
 #include "lue/framework/io/read_into.hpp"
-#include "lue/data_model/hl.hpp"
 #include <docopt/docopt.h>
 
 
 namespace lue::benchmark {
-
-    template<
-        typename Count,
-        Rank rank>
-    hdf5::Shape shape_to_shape(
-        lue::Shape<Count, rank> const& from_shape)
-    {
-        hdf5::Shape to_shape(rank);
-
-        for(std::size_t i = 0; i < rank; ++i)
-        {
-            to_shape[i] = from_shape[i];
-        }
-
-        return to_shape;
-    }
-
 
     template<
         typename MaterialElement>
@@ -48,44 +32,11 @@ namespace lue::benchmark {
 
                 BenchmarkModel<MaterialElement, 2>{task, max_tree_depth},
                 _array_pathname{array_pathname},
-                _hyperslab{},
-                _object_id{}
+                _object_id{},
+                _hyperslab{}
 
             {
-                using Dataset = data_model::Dataset;
-                using RasterView = data_model::constant::RasterView<Dataset*>;
-
-                auto const [dataset_pathname, phenomenon_name, property_set_name, layer_name] =
-                    parse_array_pathname(array_pathname);
-
-                Dataset dataset{dataset_pathname};
-                RasterView raster_view{&dataset, phenomenon_name, property_set_name};
-
-                if(center_cell.empty())
-                {
-                    // Default center cell is the center cell of the array
-                    hdf5::Shape const& grid_shape{raster_view.grid_shape()};
-
-                    center_cell.push_back(grid_shape[0] / 2);
-                    center_cell.push_back(grid_shape[1] / 2);
-                }
-
-                lue_hpx_assert(center_cell.size() == 2);
-
-                hdf5::Shape const array_shape{shape_to_shape(this->array_shape())};
-
-                hdf5::Offset start{
-                        center_cell[0] - (array_shape[0] / 2),
-                        center_cell[1] - (array_shape[1] / 2)
-                    };
-                hdf5::Count count{array_shape[0], array_shape[1]};
-
-                _hyperslab = hdf5::Hyperslab{start, count};
-                _object_id = raster_view.object_id();
-
-                lue_hpx_assert(_hyperslab.nr_dimensions() == 2);
-                lue_hpx_assert(static_cast<Count>(_hyperslab.count()[0]) == this->array_shape()[0]);
-                lue_hpx_assert(static_cast<Count>(_hyperslab.count()[1]) == this->array_shape()[1]);
+                std::tie(_object_id, _hyperslab) = array_info(array_pathname, center_cell, this->array_shape());
             }
 
 
@@ -98,7 +49,7 @@ namespace lue::benchmark {
                 _flow_direction = read<FlowDirectionElement, 2>(
                     _array_pathname, _hyperslab, partition_shape, _object_id);
                 _material = create_partitioned_array<MaterialElement>(array_shape, partition_shape, 1);
-                _threshold = uniform<MaterialElement>(array_shape, partition_shape, 5, 50);
+                _threshold = default_policies::uniform<MaterialElement>(array_shape, partition_shape, 5, 50);
 
                 // We need to wait for all stuff that needs to be ready
                 // before the calculations that need to be measured start.
@@ -119,11 +70,8 @@ namespace lue::benchmark {
                 lue_hpx_assert(all_are_ready(_material));
                 lue_hpx_assert(all_are_ready(_threshold));
 
-                using Policies =
-                    policy::accu_threshold3::DefaultValuePolicies<FlowDirectionElement, MaterialElement>;
-
-                std::tie(std::ignore, this->state()) = accu_threshold3(
-                    Policies{}, _flow_direction, _material, _threshold);
+                std::tie(std::ignore, this->state()) =
+                    value_policies::accu_threshold3(_flow_direction, _material, _threshold);
             }
 
 
@@ -131,9 +79,9 @@ namespace lue::benchmark {
 
             std::string _array_pathname;
 
-            hdf5::Hyperslab _hyperslab;
-
             data_model::ID _object_id;
+
+            hdf5::Hyperslab _hyperslab;
 
             PartitionedArray<FlowDirectionElement, 2> _flow_direction;
 
@@ -179,11 +127,9 @@ auto setup_benchmark(
 
     if(arguments.find("--center") != arguments.end())
     {
-        std::string center_as_string{arguments.at("--center").asString()};
-
-        // TODO Parse center_as_string: "row, col"
-        // Can use regex
+        center_cell = lue::benchmark::parse_idxs(arguments.at("--center").asString());
     }
+
 
     auto callable = [array_pathname, center_cell](
         lue::benchmark::Environment const& environment,

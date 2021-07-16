@@ -3,74 +3,79 @@
 #include <hpx/serialization.hpp>
 
 
-namespace lue {
-namespace policy {
+namespace lue::policy {
 
-template<
-    typename OutputNoDataPolicy>
-class OutputPolicies
-{
+    template<
+        typename OutputNoDataPolicy>
+    class OutputPolicies
+    {
 
-    public:
+        public:
 
-        OutputPolicies():
+            OutputPolicies():
 
-            _ondp{}
+                _ondp{}
 
-        {
-        }
-
-        OutputPolicies(
-            OutputNoDataPolicy const& ondp):
-
-            _ondp{ondp}
-
-        {
-        }
-
-        OutputNoDataPolicy const& output_no_data_policy() const
-        {
-            return _ondp;
-        }
-
-    private:
-
-        friend class hpx::serialization::access;
-
-        template<typename Archive>
-        void serialize(
-            Archive& archive,
-            [[maybe_unused]] unsigned int const version)
-        {
-            archive & _ondp;
-        }
-
-        OutputNoDataPolicy _ondp;
-
-};
+            {
+            }
 
 
-namespace detail {
+            OutputPolicies(
+                OutputNoDataPolicy const& ondp):
 
-template<
-    typename OutputNoDataPolicy>
-class TypeTraits<
-    OutputPolicies<OutputNoDataPolicy>>
-{
+                _ondp{ondp}
 
-    public:
+            {
+            }
 
-        using Element = ElementT<OutputNoDataPolicy>;
+
+            OutputNoDataPolicy const& output_no_data_policy() const
+            {
+                return _ondp;
+            }
+
+
+        private:
+
+            friend class hpx::serialization::access;
+
+
+            template<typename Archive>
+            void serialize(
+                Archive& archive,
+                [[maybe_unused]] unsigned int const version)
+            {
+                archive & _ondp;
+            }
+
+
+            OutputNoDataPolicy _ondp;
+
+    };
+
+
+    namespace detail {
 
         template<
-            typename Element>
-        using Policies = OutputPolicies<
-            OutputNoDataPolicyT<OutputNoDataPolicy, Element>>;
+            typename OutputNoDataPolicy_>
+        class TypeTraits<
+            OutputPolicies<OutputNoDataPolicy_>>
+        {
 
-        using InputNoDataPolicy = typename TypeTraits<OutputNoDataPolicy>::InputNoDataPolicy;
+            public:
 
-};
+                using OutputNoDataPolicy = OutputNoDataPolicy_;
 
-}  // namespace detail
-}  // namespace policy
-}  // namespace lue
+                using Element = ElementT<OutputNoDataPolicy>;
+
+                template<
+                    typename Element>
+                using Policies = OutputPolicies<
+                    OutputNoDataPolicyT<OutputNoDataPolicy, Element>>;
+
+                using InputNoDataPolicy = typename TypeTraits<OutputNoDataPolicy>::InputNoDataPolicy;
+
+        };
+
+    }  // namespace detail
+}  // namespace lue::policy

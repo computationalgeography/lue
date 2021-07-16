@@ -1,6 +1,6 @@
 #include "lue/framework/algorithm/accu_threshold.hpp"
 #include "lue/framework/algorithm/copy.hpp"
-#include "lue/framework/algorithm/uniform.hpp"
+#include "lue/framework/algorithm/default_policies/uniform.hpp"
 #include "lue/framework/benchmark/benchmark_model.hpp"
 #include "lue/framework/benchmark/hpx_main.hpp"
 #include "lue/framework/benchmark/model_benchmark.hpp"
@@ -98,7 +98,7 @@ namespace lue::benchmark {
                 _flow_direction = read<FlowDirectionElement, 2>(
                     _array_pathname, _hyperslab, partition_shape, _object_id);
                 _material = create_partitioned_array<MaterialElement>(array_shape, partition_shape, 1);
-                _threshold = uniform<MaterialElement>(array_shape, partition_shape, 5, 50);
+                _threshold = default_policies::uniform<MaterialElement>(array_shape, partition_shape, 5, 50);
 
                 // We need to wait for all stuff that needs to be ready
                 // before the calculations that need to be measured start.

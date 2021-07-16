@@ -38,6 +38,15 @@ namespace lue::policy {
             typename Policies>
         class PoliciesTraits
         {
+
+            public:
+
+                using DomainPolicy = typename Policies::DomainPolicy;
+
+                using OutputsPolicies = typename Policies::OutputsPolicies;
+
+                using InputsPolicies = typename Policies::InputsPolicies;
+
         };
 
     }    // namespace detail
@@ -104,12 +113,28 @@ namespace lue::policy {
 
 
     template<
+        typename OutputPolicies>
+    using OutputNoDataPolicy2T =
+        typename detail::TypeTraits<
+                lue::detail::remove_cvref_t<OutputPolicies>
+            >::OutputNoDataPolicy;
+
+
+    template<
         typename OutputNoDataPolicy,
         typename Element>
     using OutputNoDataPolicyT =
         typename detail::TypeTraits<
                 lue::detail::remove_cvref_t<OutputNoDataPolicy>
             >::template Policy<Element>;
+
+
+    template<
+        typename InputPolicies>
+    using InputNoDataPolicy2T =
+        typename detail::TypeTraits<
+                lue::detail::remove_cvref_t<InputPolicies>
+            >::InputNoDataPolicy;
 
 
     template<

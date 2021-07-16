@@ -68,6 +68,7 @@ def program_configuration(
     #   '--hpx:use-process-mask '
     #   '--hpx:bind="{thread_binding}" '
     #   '--hpx:debug-hpx-log '
+    #   '--hpx:ini="hpx.stacks.use_guard_pages=0" '
     configuration = \
         '--hpx:print-bind ' \
         '--hpx:ini="hpx.commandline.allow_unknown!=1 ' \

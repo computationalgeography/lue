@@ -1,5 +1,6 @@
 #define BOOST_TEST_MODULE lue framework algorithm where
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
+#include "lue/framework/algorithm/default_policies/where.hpp"
 #include "lue/framework/algorithm/definition/where.hpp"
 #include "lue/framework/test/compare.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
@@ -69,7 +70,7 @@ BOOST_AUTO_TEST_CASE(use_case_1)
 
     Element const false_value{9};
 
-    auto result_we_got = lue::where(condition, true_array, false_value);
+    auto result_we_got = lue::default_policies::where(condition, true_array, false_value);
 
     PartitionData<Element, rank> result_we_want_data{
             shape,

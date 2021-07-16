@@ -1,9 +1,9 @@
 #define BOOST_TEST_MODULE lue framework algorithm uniform
-#include "lue/framework/algorithm/all.hpp"
+#include "lue/framework/algorithm/default_policies/all.hpp"
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
-#include "lue/framework/algorithm/definition/comparison.hpp"
+#include "lue/framework/algorithm/default_policies/comparison.hpp"
 #include "lue/framework/algorithm/definition/logical.hpp"
-#include "lue/framework/algorithm/uniform.hpp"
+#include "lue/framework/algorithm/default_policies/uniform.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
@@ -15,6 +15,8 @@ namespace detail {
         std::size_t rank>
     void test_array()
     {
+        using namespace lue::default_policies;
+
         using Array = lue::PartitionedArray<Element, rank>;
 
         auto const array_shape{lue::Test<Array>::shape()};
@@ -33,44 +35,44 @@ namespace detail {
         // (- All cells in these arrays are different)
 
         {
-            array1 = lue::uniform(array1, min_value, max_value);
+            array1 = uniform(array1, min_value, max_value);
 
             // min_value <= array1 < max_value
-            BOOST_CHECK(lue::all(array1 >= min_value).get());
+            BOOST_CHECK(all(array1 >= min_value).get());
 
             if constexpr(std::is_floating_point_v<Element>) {
-                BOOST_CHECK(lue::all(array1 < max_value).get());
+                BOOST_CHECK(all(array1 < max_value).get());
             }
             else if constexpr(std::is_integral_v<Element>) {
-                BOOST_CHECK(lue::all(array1 <= max_value).get());
+                BOOST_CHECK(all(array1 <= max_value).get());
             }
         }
 
         {
-            array2 = lue::uniform(array2, min_value, max_value);
+            array2 = uniform(array2, min_value, max_value);
 
             // min_value <= array2 < max_value
-            BOOST_CHECK(lue::all(array2 >= min_value).get());
+            BOOST_CHECK(all(array2 >= min_value).get());
 
             if constexpr(std::is_floating_point_v<Element>) {
-                BOOST_CHECK(lue::all(array2 < max_value).get());
+                BOOST_CHECK(all(array2 < max_value).get());
             }
             else if constexpr(std::is_integral_v<Element>) {
-                BOOST_CHECK(lue::all(array2 <= max_value).get());
+                BOOST_CHECK(all(array2 <= max_value).get());
             }
         }
 
         {
-            auto result = lue::uniform(array1, min_value, max_value);
+            auto result = uniform(array1, min_value, max_value);
 
             // min_value <= result < max_value
-            BOOST_CHECK(lue::all(result >= min_value).get());
+            BOOST_CHECK(all(result >= min_value).get());
 
             if constexpr(std::is_floating_point_v<Element>) {
-                BOOST_CHECK(lue::all(result < max_value).get());
+                BOOST_CHECK(all(result < max_value).get());
             }
             else if constexpr(std::is_integral_v<Element>) {
-                BOOST_CHECK(lue::all(result <= max_value).get());
+                BOOST_CHECK(all(result <= max_value).get());
             }
         }
     }
@@ -115,6 +117,8 @@ BOOST_AUTO_TEST_CASE(use_case_1)
     // Create a partitioned array filled with random values between two
     // bounds, and verify that all cells contain correct values
 
+    using namespace lue::default_policies;
+
     lue::Count const nr_rows = 300;
     lue::Count const nr_cols = 400;
     Shape const array_shape{{nr_rows, nr_cols}};
@@ -126,12 +130,12 @@ BOOST_AUTO_TEST_CASE(use_case_1)
     Element const min_value{33};
     Element const max_value{55};
 
-    Array array = lue::uniform(array_shape, partition_shape, min_value, max_value);
+    Array array = uniform(array_shape, partition_shape, min_value, max_value);
 
     BOOST_CHECK(
-        lue::all(
+        all(
                 lue::logical_and(
-                    lue::greater_than_equal_to(array, min_value),
-                    lue::less_than_equal_to(array, max_value))
+                    greater_than_equal_to(array, min_value),
+                    less_than_equal_to(array, max_value))
             ).get());
 }
