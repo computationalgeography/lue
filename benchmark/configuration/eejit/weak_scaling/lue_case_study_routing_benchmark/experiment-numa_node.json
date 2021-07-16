@@ -1,11 +1,11 @@
 {
     "nr_time_steps": 24,
-    "max_tree_depth": 5,
+    "max_tree_depth": 2,
     "array": {
         "shape": [10000, 10000]
     },
     "partition": {
-        "shape": [1700, 1700]
+        "shape": [2400, 2400]
     },
     "arguments": {
         "positionals": [
