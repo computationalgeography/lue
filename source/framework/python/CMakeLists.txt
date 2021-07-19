@@ -6,6 +6,7 @@ pybind11_add_module(lue_py_framework SHARED THIN_LTO
     src/algorithm/accu3.cpp
     src/algorithm/accu_fraction.cpp
     src/algorithm/accu_info.cpp
+    src/algorithm/accu_info3.cpp
     src/algorithm/accu_threshold.cpp
     src/algorithm/accu_threshold3.cpp
     src/algorithm/add.cpp

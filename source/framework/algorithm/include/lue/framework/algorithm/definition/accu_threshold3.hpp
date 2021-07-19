@@ -225,39 +225,10 @@ namespace lue {
             using InflowCountData = DataT<InflowCountPartition>;
             using CellsIdxs = std::vector<std::array<Index, rank>>;
 
-            // Determine inflow count
-            InflowCountPartition inflow_count_partition{};
-            hpx::shared_future<std::array<CellsIdxs, nr_neighbours<rank>()>> input_cells_idxs_f{};
-            hpx::future<std::array<CellsIdxs, nr_neighbours<rank>()>> output_cells_idxs_f{};
-            {
-                // As long as we only use flow direction, external inflow
-                // and threshold to detect no-data in input, there is no
-                // need to mark no-data in the output of inflow_count. We
-                // won't be reading these cells anyway.
-                using InflowCountOutputPolicies =
-                    policy::OutputPolicies<policy::DontMarkNoData<CountElement>>;
-                InflowCountOutputPolicies inflow_count_output_policies{};
 
-                using FlowDirectionInputPolicies = policy::InputPoliciesT<Policies, 0>;
-                FlowDirectionInputPolicies flow_direction_input_policies{
-                    std::get<0>(policies.inputs_policies())};
+            auto [inflow_count_partition, input_cells_idxs_f, output_cells_idxs_f] =
+                inflow_count3<Policies>(policies, flow_direction_partition, std::move(inflow_count_communicator));
 
-                using InflowCountPolicies =
-                    policy::Policies<
-                        policy::AllValuesWithinDomain<FlowDirectionElement>,
-                        policy::OutputsPolicies<InflowCountOutputPolicies>,
-                        policy::InputsPolicies<FlowDirectionInputPolicies>>;
-
-                InflowCountPolicies inflow_count_policies{
-                    policy::AllValuesWithinDomain<FlowDirectionElement>{},
-                    inflow_count_output_policies,
-                    flow_direction_input_policies};
-
-                hpx::tie(inflow_count_partition, input_cells_idxs_f, output_cells_idxs_f) =
-                    inflow_count3_action<CountElement>(
-                        inflow_count_policies, flow_direction_partition,
-                        std::move(inflow_count_communicator));
-            }
 
             // Solve intra-partition stream cells
             hpx::future<MaterialData> outflow_data_f;
@@ -769,9 +740,6 @@ namespace lue {
                 material_communicators=std::move(material_communicators)
             ]([[maybe_unused]] auto&& partitions) mutable
             {
-                HPX_UNUSED(inflow_count_communicators);
-                HPX_UNUSED(material_communicators);
-
                 auto f1{inflow_count_communicators.unregister()};
                 auto f2{material_communicators.unregister()};
 
