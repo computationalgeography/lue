@@ -1,6 +1,7 @@
 algorithm_names="
     accu_threshold
     accu_threshold3
+    accu3
     focal_mean
     iterate_per_element
     multiply
