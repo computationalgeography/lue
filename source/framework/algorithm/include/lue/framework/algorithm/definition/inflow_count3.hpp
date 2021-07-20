@@ -262,11 +262,17 @@ namespace lue {
             // - Send 1D idxs of receiving cells to task managing
             //     neighbouring partition, if any
             std::array<CellsIdxs, nr_neighbours> output_cells_idxs{};
+            for(auto cells_idxs: output_cells_idxs)
+            {
+                cells_idxs.reserve(20);  // Prevent first few reallocations
+            }
+
             {
                 auto const& indp{std::get<0>(policies.inputs_policies()).input_no_data_policy()};
                 Index idx0, idx1;
                 FlowDirectionElement flow_direction;
                 std::vector<Index> input_cell_idxs;
+                input_cell_idxs.reserve(20);  // Prevent first few reallocations
 
                 if(extent1 > 2)
                 {

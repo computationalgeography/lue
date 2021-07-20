@@ -125,6 +125,7 @@ add_library(lue_framework_flow_direction_operation SHARED
     src/flow_direction_operation/accu3.cpp
     src/flow_direction_operation/accu_fraction.cpp
     src/flow_direction_operation/accu_info.cpp
+    src/flow_direction_operation/accu_info3.cpp
     src/flow_direction_operation/accu_threshold.cpp
     src/flow_direction_operation/accu_threshold3.cpp
     src/flow_direction_operation/d8_flow_direction.cpp
