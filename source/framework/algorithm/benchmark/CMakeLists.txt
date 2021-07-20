@@ -9,6 +9,12 @@ lue_add_benchmark(CATEGORY algorithm NAME accu_threshold3
         lue::framework_flow_direction_operation
         lue::framework_io
 )
+lue_add_benchmark(CATEGORY algorithm NAME accu3
+    LINK_LIBRARIES
+        lue::framework_flow_direction_operation
+        lue::framework_io
+)
+
 
 lue_add_benchmark(CATEGORY algorithm NAME copy)
 lue_add_benchmark(CATEGORY algorithm NAME empty)
