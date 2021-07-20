@@ -8,48 +8,10 @@ namespace lue {
         template<
             typename FlowDirectionElement,
             typename MaterialElement>
-        using DefaultPoliciesBase = Policies<
+        using DefaultPolicies = policy::DefaultPolicies<
             AllValuesWithinDomain<MaterialElement>,
-            OutputsPolicies<
-                OutputPolicies<DontMarkNoData<MaterialElement>>>,
-            InputsPolicies<
-                SpatialOperationInputPolicies<
-                    SkipNoData<FlowDirectionElement>,
-                    FlowDirectionHalo<FlowDirectionElement>>,
-                SpatialOperationInputPolicies<
-                    SkipNoData<MaterialElement>,
-                    FillHaloWithConstantValue<MaterialElement>>>>;
-
-
-        template<
-            typename FlowDirectionElement,
-            typename MaterialElement>
-        class DefaultPolicies:
-            public DefaultPoliciesBase<FlowDirectionElement, MaterialElement>
-        {
-
-            public:
-
-                using PoliciesBase = DefaultPoliciesBase<FlowDirectionElement, MaterialElement>;
-                using FluxOutputPolicies = OutputPoliciesT<PoliciesBase, 0>;
-                using FlowDirectionInputPolicies = InputPoliciesT<PoliciesBase, 0>;
-                using MaterialInputPolicies = InputPoliciesT<PoliciesBase, 1>;
-
-                DefaultPolicies():
-
-                    PoliciesBase{
-                            DomainPolicyT<PoliciesBase>{},
-                            FluxOutputPolicies{},
-                            FlowDirectionInputPolicies{},
-                            MaterialInputPolicies{FillHaloWithConstantValue<MaterialElement>{0}}
-                        }
-
-                {
-                }
-
-        };
-
-
+            OutputElements<MaterialElement>,
+            InputElements<FlowDirectionElement, MaterialElement>>;
 
     }  // namespace policy::accu3
 
