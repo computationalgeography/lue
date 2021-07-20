@@ -25,55 +25,10 @@ namespace lue {
         template<
             typename FlowDirectionElement,
             typename MaterialElement>
-        using DefaultValuePoliciesBase = Policies<
+        using DefaultValuePolicies = policy::DefaultValuePolicies<
             DomainPolicy<MaterialElement>,
-            OutputsPolicies<
-                OutputPolicies<MarkNoDataByNaN<MaterialElement>>,
-                OutputPolicies<MarkNoDataByNaN<MaterialElement>>>,
-            InputsPolicies<
-                SpatialOperationInputPolicies<
-                    DetectNoDataByValue<FlowDirectionElement>,
-                    FlowDirectionHalo<FlowDirectionElement>>,
-                SpatialOperationInputPolicies<
-                    DetectNoDataByNaN<MaterialElement>,
-                    FillHaloWithConstantValue<MaterialElement>>,
-                SpatialOperationInputPolicies<
-                    DetectNoDataByNaN<MaterialElement>,
-                    FillHaloWithConstantValue<MaterialElement>>>>;
-
-
-        template<
-            typename FlowDirectionElement,
-            typename MaterialElement>
-        class DefaultValuePolicies:
-            public DefaultValuePoliciesBase<FlowDirectionElement, MaterialElement>
-        {
-
-            public:
-
-                using PoliciesBase = DefaultValuePoliciesBase<FlowDirectionElement, MaterialElement>;
-                using FluxOutputPolicies = OutputPoliciesT<PoliciesBase, 0>;
-                using StateOutputPolicies = OutputPoliciesT<PoliciesBase, 1>;
-                using FlowDirectionInputPolicies = InputPoliciesT<PoliciesBase, 0>;
-                using MaterialInputPolicies = InputPoliciesT<PoliciesBase, 1>;
-                using ThresholdInputPolicies = InputPoliciesT<PoliciesBase, 2>;
-
-
-                DefaultValuePolicies():
-
-                    PoliciesBase{
-                            DomainPolicyT<PoliciesBase>{},
-                            FluxOutputPolicies{},
-                            StateOutputPolicies{},
-                            FlowDirectionInputPolicies{},
-                            MaterialInputPolicies{FillHaloWithConstantValue<MaterialElement>{0}},
-                            ThresholdInputPolicies{FillHaloWithConstantValue<MaterialElement>{0}}
-                        }
-
-                {
-                }
-
-        };
+            OutputElements<MaterialElement, MaterialElement>,
+            InputElements<FlowDirectionElement, MaterialElement, MaterialElement>>;
 
     }  // namespace policy::accu_threshold3
 

@@ -11,7 +11,6 @@ set(names
     accu_test.cpp
     accu_fraction_test.cpp
     accu_threshold_test.cpp
-    accu_threshold3_test.cpp
     add_test.cpp
     all_test.cpp
     any_test.cpp
@@ -129,7 +128,6 @@ endforeach()
 foreach(name
         accu
         accu_threshold
-        accu_threshold3
         inflow_count
     )
     target_link_libraries(lue_framework_algorithm_${name}_test
