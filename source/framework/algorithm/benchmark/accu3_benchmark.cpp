@@ -62,9 +62,7 @@ namespace lue::benchmark {
             {
                 // We are assuming a single time step is requested,
                 // so feedback is not required
-                /// lue_hpx_assert(time_step == 0);
                 lue_hpx_assert(all_are_ready(_flow_direction));
-                /// lue_hpx_assert(all_are_ready(this->state()));
                 lue_hpx_assert(all_are_ready(_material));
 
                 // 4 bytes / cell

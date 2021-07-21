@@ -46,9 +46,12 @@ namespace lue::benchmark {
                 auto const& array_shape{this->array_shape()};
                 auto const& partition_shape{this->partition_shape()};
 
+                // 1 byte / cell
                 _flow_direction = read<FlowDirectionElement, 2>(
                     _array_pathname, _hyperslab, partition_shape, _object_id);
+                // 4 bytes / cell
                 _material = create_partitioned_array<MaterialElement>(array_shape, partition_shape, 1);
+                // 4 bytes / cell
                 _threshold = default_policies::uniform<MaterialElement>(array_shape, partition_shape, 5, 50);
 
                 // We need to wait for all stuff that needs to be ready
@@ -64,12 +67,11 @@ namespace lue::benchmark {
             {
                 // We are assuming a single time step is requested,
                 // so feedback is not required
-                /// lue_hpx_assert(time_step == 0);
                 lue_hpx_assert(all_are_ready(_flow_direction));
-                /// lue_hpx_assert(all_are_ready(this->state()));
                 lue_hpx_assert(all_are_ready(_material));
                 lue_hpx_assert(all_are_ready(_threshold));
 
+                // 2 * 4 bytes / cell
                 std::tie(std::ignore, this->state()) =
                     value_policies::accu_threshold3(_flow_direction, _material, _threshold);
             }
