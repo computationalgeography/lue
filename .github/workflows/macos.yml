@@ -23,7 +23,7 @@ jobs:
           run: |
               # brew update
               # brew upgrade
-              brew install cmake boost doxygen fmt gdal glew graphviz gperftools hdf5 hwloc ninja nlohmann-json pybind11 tree
+              brew install cmake boost doxygen fmt gdal glew glfw graphviz gperftools hdf5 hwloc ninja nlohmann-json pybind11 tree
 
         - uses: conda-incubator/setup-miniconda@v2
           with:
