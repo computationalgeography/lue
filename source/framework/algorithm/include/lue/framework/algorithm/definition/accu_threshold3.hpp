@@ -86,13 +86,10 @@ namespace lue {
 
                             // Split this amount into outflow and remainder,
                             // based on the threshold passed in
-
-                            MaterialElement const mobile_material{outflow - threshold};
-
-                            if(mobile_material > 0)
+                            if(outflow > threshold)
                             {
                                 remainder = threshold;
-                                outflow = mobile_material;
+                                outflow -= threshold;
                             }
                             else
                             {
