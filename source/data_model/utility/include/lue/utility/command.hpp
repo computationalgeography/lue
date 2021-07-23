@@ -1,5 +1,5 @@
 #pragma once
-#include <docopt/docopt.h>
+#include "lue/docopt.hpp"
 #include <functional>
 #include <map>
 #include <memory>
