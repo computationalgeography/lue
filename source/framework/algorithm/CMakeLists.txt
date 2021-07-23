@@ -142,3 +142,16 @@ target_link_libraries(lue_framework_flow_direction_operation
     PUBLIC
         lue::framework_algorithm
 )
+
+install(
+    TARGETS
+        lue_framework_algorithm
+        lue_framework_local_operation
+        lue_framework_flow_direction_operation
+        lue_framework_focal_operation
+        # lue_framework_global_operation
+        # lue_framework_zonal_operation
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)

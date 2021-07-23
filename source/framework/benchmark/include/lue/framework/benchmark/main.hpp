@@ -1,7 +1,7 @@
 #pragma once
 #include "lue/framework/benchmark/environment.hpp"
 #include "lue/framework/benchmark/format.hpp"
-#include <docopt/docopt.h>
+#include "lue/docopt.hpp"
 // #include <boost/asio/ip/host_name.hpp>
 #include <fmt/format.h>
 #include <fstream>
