@@ -44,7 +44,6 @@ namespace lue::benchmark {
 
             void do_simulate(Count time_step) override;
 
-            void do_terminate() override;
 
             std::string _array_pathname;
 
@@ -60,16 +59,6 @@ namespace lue::benchmark {
             PartitionedArray<ScalarElement, 2> more_or_less_one;
 
             PartitionedArray<ScalarElement, 2> infiltration_capacity;
-
-            /// PartitionedArray<ScalarElement, 2> interception_rate;
-
-            /// ScalarRaster interception_capacity;
-
-            /// PartitionedArray<ScalarElement, 2> interception_storage;
-
-            /// PartitionedArray<ScalarElement, 2> infiltration_rate;
-
-            /// ScalarRaster infiltration_capacity;
 
     };
 
