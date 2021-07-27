@@ -8,7 +8,7 @@
     },
     "arguments": {
         "positionals": [
-            "$LUE_BENCHMARK_DATA/flow_accumulation/africa.lue/area/raster/ldd"
+            "$LUE_BENCHMARK_DATA/flow_accumulation/africa-1-scaling.lue/area/raster/flow_direction"
         ],
         "options": {
             "center": "30000, 49200"

@@ -1,11 +1,11 @@
 {
     "scenario": "cluster_node",
-    "count": 3,
+    "count": 1,
     "locality_per": "numa_node",
     "worker": {
         "type": "cluster_node",
         "pool": {
-            "size": 6
+            "size": 4
         }
     }
 }

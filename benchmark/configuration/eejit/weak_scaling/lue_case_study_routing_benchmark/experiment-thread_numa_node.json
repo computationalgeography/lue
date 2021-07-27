@@ -2,17 +2,17 @@
     "nr_time_steps": 24,
     "max_tree_depth": 2,
     "array": {
-        "shape": [5000, 5000]
+        "shape": [4000, 4000]
     },
     "partition": {
-        "shape": [1700, 1700]
+        "shape": [1475, 1475]
     },
     "arguments": {
         "positionals": [
-            "$LUE_BENCHMARK_DATA/flow_accumulation/africa.lue/area/raster/ldd"
+            "$LUE_BENCHMARK_DATA/flow_accumulation/africa-1-scaling.lue/area/raster/flow_direction"
         ],
         "options": {
-            "center": "28740, 48672"
+            "center": "30000, 49200"
         }
     }
 }

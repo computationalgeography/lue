@@ -13,7 +13,7 @@
     },
     "arguments": {
         "positionals": [
-            "$LUE_BENCHMARK_DATA/flow_accumulation/africa.lue/area/raster/ldd"
+            "$LUE_BENCHMARK_DATA/routing/africa/africa-1.lue/area/raster/flow_direction"
         ],
         "options": {
             "center": "30000, 49200"

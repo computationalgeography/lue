@@ -6,7 +6,7 @@
         "type": "cluster_node",
         "pool": {
             "min_size": 1,
-            "max_size": 12,
+            "max_size": 4,
             "incrementor": 1
         }
     }
