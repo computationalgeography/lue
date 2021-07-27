@@ -43,6 +43,21 @@ that latencies to memory within a NUMA node are smaller than between
 them is to assign a LUE framework program to each NUMA node (8 /
 cluster node).
 
+.. note::
+
+   In case you experience crashes when running LUE framework programs, these may be related to the
+   custom memory allocator being loaded later than the program starts allocating memory. Memory
+   allocations and deallocations must be handled by the same allocation library. Depending on
+   how the HPX library LUE depends upon is built, a non-standard allocation library containing
+   faster memory allocation and deallocation functions may be used. In case of Python scripts
+   using LUE, this allocation library will only be loaded once the script has already started. We
+   have noticed that in case HPX is built with support for the tcmalloc memory allocation library,
+   starting LUE Python scripts like this solved the crashes:
+
+   .. code-block:: bash
+
+      LD_PRELOAD=<prefix>/lib/libtcmalloc_minimal.so.4 python ./my_lue_script.py
+
 
 Single-node execution
 ---------------------
