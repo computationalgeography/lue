@@ -1,6 +1,5 @@
 #pragma once
-#include "lue/framework/algorithm/policy/default_policies.hpp"
-#include "lue/framework/algorithm/policy/default_value_policies.hpp"
+#include "lue/framework/algorithm/policy.hpp"
 #include "lue/framework/partitioned_array.hpp"
 
 
@@ -22,22 +21,6 @@ namespace lue {
 
         };
 
-
-        template<
-            typename Element>
-        using DefaultPolicies = policy::DefaultPolicies<
-            DomainPolicy<Element>,
-            OutputElements<Element>,
-            InputElements<Element>>;
-
-
-        template<
-            typename Element>
-        using DefaultValuePolicies = policy::DefaultValuePolicies<
-            DomainPolicy<Element>,
-            OutputElements<Element>,
-            InputElements<Element>>;
-
     }  // namespace policy::sqrt
 
 
@@ -48,17 +31,5 @@ namespace lue {
     PartitionedArray<Element, rank> sqrt(
         Policies const& policies,
         PartitionedArray<Element, rank> const& array);
-
-
-    template<
-        typename Element,
-        Rank rank>
-    PartitionedArray<Element, rank> sqrt(
-        PartitionedArray<Element, rank> const& array)
-    {
-        using Policies = policy::sqrt::DefaultPolicies<Element>;
-
-        return sqrt(Policies{}, array);
-    }
 
 }  // namespace lue

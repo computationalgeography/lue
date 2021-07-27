@@ -50,6 +50,18 @@ namespace lue::detail {
             north_west = 7,
         };
 
+
+        inline constexpr std::array<Direction, nr_neighbours<2>()> directions{
+                accu::Direction::north,
+                accu::Direction::north_east,
+                accu::Direction::east,
+                accu::Direction::south_east,
+                accu::Direction::south,
+                accu::Direction::south_west,
+                accu::Direction::west,
+                accu::Direction::north_west,
+            };
+
     }
 
 
@@ -255,21 +267,10 @@ namespace lue::detail {
             hpx::future<void> unregister(
                 std::string const& basename)
             {
-                static std::array<accu::Direction, nr_neighbours<rank>()> directions{
-                        accu::Direction::north,
-                        accu::Direction::north_east,
-                        accu::Direction::east,
-                        accu::Direction::south_east,
-                        accu::Direction::south,
-                        accu::Direction::south_west,
-                        accu::Direction::west,
-                        accu::Direction::north_west,
-                    };
-
                 std::vector<hpx::future<hpx::id_type>> fs;
-                fs.reserve(directions.size());
+                fs.reserve(accu::directions.size());
 
-                for(accu::Direction const direction: directions)
+                for(accu::Direction const direction: accu::directions)
                 {
                     if(has_neighbour(direction))
                     {
@@ -294,16 +295,18 @@ namespace lue::detail {
             }
 
 
-            // void close_channels()
-            // {
-            //     for(auto& channel: _send_channels)
-            //     {
-            //         if(channel)
-            //         {
-            //             channel.close();
-            //         }
-            //     }
-            // }
+            void close()
+            {
+                for(auto& channel: _send_channels)
+                {
+                    if(channel)
+                    {
+                        [[maybe_unused]] std::size_t nr_pending_requests = channel.close();
+
+                        lue_hpx_assert(nr_pending_requests == 0);
+                    }
+                }
+            }
 
 
         protected:

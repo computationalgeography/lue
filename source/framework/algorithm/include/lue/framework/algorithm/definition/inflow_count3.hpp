@@ -195,10 +195,11 @@ namespace lue {
 
             if(channel)
             {
-                for(auto const& idxs: channel)
+                for(std::vector<Index> const& idxs: channel)
                 {
                     if(idxs.empty())
                     {
+                        // This was the last one
                         break;
                     }
 
@@ -261,8 +262,15 @@ namespace lue {
             //     - Store indices of output cell
             // - Send 1D idxs of receiving cells to task managing
             //     neighbouring partition, if any
+
+            std::array<std::vector<Index>, nr_neighbours> input_cell_idxs{};
+            for(auto& cell_idxs: input_cell_idxs)
+            {
+                cell_idxs.reserve(20);  // Prevent first few reallocations
+            }
+
             std::array<CellsIdxs, nr_neighbours> output_cells_idxs{};
-            for(auto cells_idxs: output_cells_idxs)
+            for(auto& cells_idxs: output_cells_idxs)
             {
                 cells_idxs.reserve(20);  // Prevent first few reallocations
             }
@@ -271,13 +279,10 @@ namespace lue {
                 auto const& indp{std::get<0>(policies.inputs_policies()).input_no_data_policy()};
                 Index idx0, idx1;
                 FlowDirectionElement flow_direction;
-                std::vector<Index> input_cell_idxs;
-                input_cell_idxs.reserve(20);  // Prevent first few reallocations
 
                 if(extent1 > 2)
                 {
                     // North side, excluding north-west and north-east corners
-                    input_cell_idxs.clear();
                     idx0 = 0;
 
                     for(idx1 = 1; idx1 < extent1 - 1; ++idx1)
@@ -289,28 +294,22 @@ namespace lue {
                             if(flow_direction == north_west<FlowDirectionElement>)
                             {
                                 output_cells_idxs[accu::Direction::north].push_back({idx0, idx1});
-                                input_cell_idxs.push_back(idx1 - 1);
+                                input_cell_idxs[accu::Direction::north].push_back(idx1 - 1);
                             }
                             else if(flow_direction == north<FlowDirectionElement>)
                             {
                                 output_cells_idxs[accu::Direction::north].push_back({idx0, idx1});
-                                input_cell_idxs.push_back(idx1);
+                                input_cell_idxs[accu::Direction::north].push_back(idx1);
                             }
                             else if(flow_direction == north_east<FlowDirectionElement>)
                             {
                                 output_cells_idxs[accu::Direction::north].push_back({idx0, idx1});
-                                input_cell_idxs.push_back(idx1 + 1);
+                                input_cell_idxs[accu::Direction::north].push_back(idx1 + 1);
                             }
                         }
                     }
 
-                    if(!input_cell_idxs.empty() && communicator.has_neighbour(accu::Direction::north))
-                    {
-                        communicator.send(accu::Direction::north, input_cell_idxs);
-                    }
-
                     // South side, excluding south-west and south-east corners
-                    input_cell_idxs.clear();
                     idx0 = extent0 - 1;
 
                     for(idx1 = 1; idx1 < extent1 - 1; ++idx1)
@@ -322,32 +321,26 @@ namespace lue {
                             if(flow_direction == south_west<FlowDirectionElement>)
                             {
                                 output_cells_idxs[accu::Direction::south].push_back({idx0, idx1});
-                                input_cell_idxs.push_back(idx1 - 1);
+                                input_cell_idxs[accu::Direction::south].push_back(idx1 - 1);
                             }
                             else if(flow_direction == south<FlowDirectionElement>)
                             {
                                 output_cells_idxs[accu::Direction::south].push_back({idx0, idx1});
-                                input_cell_idxs.push_back(idx1);
+                                input_cell_idxs[accu::Direction::south].push_back(idx1);
                             }
                             else if(flow_direction == south_east<FlowDirectionElement>)
                             {
                                 output_cells_idxs[accu::Direction::south].push_back({idx0, idx1});
-                                input_cell_idxs.push_back(idx1 + 1);
+                                input_cell_idxs[accu::Direction::south].push_back(idx1 + 1);
                             }
                         }
 
-                    }
-
-                    if(!input_cell_idxs.empty() && communicator.has_neighbour(accu::Direction::south))
-                    {
-                        communicator.send(accu::Direction::south, input_cell_idxs);
                     }
                 }
 
                 if(extent0 > 2)
                 {
                     // West side, excluding north-west and south-west corners
-                    input_cell_idxs.clear();
                     idx1 = 0;
 
                     for(idx0 = 1; idx0 < extent0 - 1; ++idx0)
@@ -359,28 +352,22 @@ namespace lue {
                             if(flow_direction == north_west<FlowDirectionElement>)
                             {
                                 output_cells_idxs[accu::Direction::west].push_back({idx0, idx1});
-                                input_cell_idxs.push_back(idx0 - 1);
+                                input_cell_idxs[accu::Direction::west].push_back(idx0 - 1);
                             }
                             else if(flow_direction == west<FlowDirectionElement>)
                             {
                                 output_cells_idxs[accu::Direction::west].push_back({idx0, idx1});
-                                input_cell_idxs.push_back(idx0);
+                                input_cell_idxs[accu::Direction::west].push_back(idx0);
                             }
                             else if(flow_direction == south_west<FlowDirectionElement>)
                             {
                                 output_cells_idxs[accu::Direction::west].push_back({idx0, idx1});
-                                input_cell_idxs.push_back(idx0 + 1);
+                                input_cell_idxs[accu::Direction::west].push_back(idx0 + 1);
                             }
                         }
                     }
 
-                    if(!input_cell_idxs.empty() && communicator.has_neighbour(accu::Direction::west))
-                    {
-                        communicator.send(accu::Direction::west, input_cell_idxs);
-                    }
-
                     // East side, excluding north-east and south-east corners
-                    input_cell_idxs.clear();
                     idx1 = extent1 - 1;
 
                     for(idx0 = 1; idx0 < extent0 - 1; ++idx0)
@@ -392,30 +379,24 @@ namespace lue {
                             if(flow_direction == north_east<FlowDirectionElement>)
                             {
                                 output_cells_idxs[accu::Direction::east].push_back({idx0, idx1});
-                                input_cell_idxs.push_back(idx0 - 1);
+                                input_cell_idxs[accu::Direction::east].push_back(idx0 - 1);
                             }
                             else if(flow_direction == east<FlowDirectionElement>)
                             {
                                 output_cells_idxs[accu::Direction::east].push_back({idx0, idx1});
-                                input_cell_idxs.push_back(idx0);
+                                input_cell_idxs[accu::Direction::east].push_back(idx0);
                             }
                             else if(flow_direction == south_east<FlowDirectionElement>)
                             {
                                 output_cells_idxs[accu::Direction::east].push_back({idx0, idx1});
-                                input_cell_idxs.push_back(idx0 + 1);
+                                input_cell_idxs[accu::Direction::east].push_back(idx0 + 1);
                             }
                         }
-                    }
-
-                    if(!input_cell_idxs.empty() && communicator.has_neighbour(accu::Direction::east))
-                    {
-                        communicator.send(accu::Direction::east, input_cell_idxs);
                     }
                 }
 
                 // North-west corner
                 {
-                    input_cell_idxs.clear();
                     idx0 = 0;
                     idx1 = 0;
 
@@ -426,59 +407,33 @@ namespace lue {
                         if(flow_direction == south_west<FlowDirectionElement>)
                         {
                             output_cells_idxs[accu::Direction::west].push_back({idx0, idx1});
-
-                            if(communicator.has_neighbour(accu::Direction::west))
-                            {
-                                input_cell_idxs.push_back(idx0 + 1);
-                                communicator.send(accu::Direction::west, input_cell_idxs);
-                            }
+                            input_cell_idxs[accu::Direction::west].push_back(idx0 + 1);
                         }
                         else if(flow_direction == west<FlowDirectionElement>)
                         {
                             output_cells_idxs[accu::Direction::west].push_back({idx0, idx1});
-
-                            if(communicator.has_neighbour(accu::Direction::west))
-                            {
-                                input_cell_idxs.push_back(idx0);
-                                communicator.send(accu::Direction::west, input_cell_idxs);
-                            }
+                            input_cell_idxs[accu::Direction::west].push_back(idx0);
                         }
                         else if(flow_direction == north_west<FlowDirectionElement>)
                         {
                             output_cells_idxs[accu::Direction::north_west].push_back({idx0, idx1});
-
-                            if(communicator.has_neighbour(accu::Direction::north_west))
-                            {
-                                input_cell_idxs.push_back(std::size_t(-1));
-                                communicator.send(accu::Direction::north_west, input_cell_idxs);
-                            }
+                            input_cell_idxs[accu::Direction::north_west].push_back(std::size_t(-1));
                         }
                         else if(flow_direction == north<FlowDirectionElement>)
                         {
                             output_cells_idxs[accu::Direction::north].push_back({idx0, idx1});
-
-                            if(communicator.has_neighbour(accu::Direction::north))
-                            {
-                                input_cell_idxs.push_back(idx1);
-                                communicator.send(accu::Direction::north, input_cell_idxs);
-                            }
+                            input_cell_idxs[accu::Direction::north].push_back(idx1);
                         }
                         else if(flow_direction == north_east<FlowDirectionElement>)
                         {
                             output_cells_idxs[accu::Direction::north].push_back({idx0, idx1});
-
-                            if(communicator.has_neighbour(accu::Direction::north))
-                            {
-                                input_cell_idxs.push_back(idx1 + 1);
-                                communicator.send(accu::Direction::north, input_cell_idxs);
-                            }
+                            input_cell_idxs[accu::Direction::north].push_back(idx1 + 1);
                         }
                     }
                 }
 
                 // North-east corner
                 {
-                    input_cell_idxs.clear();
                     idx0 = 0;
                     idx1 = extent1 - 1;
 
@@ -489,59 +444,33 @@ namespace lue {
                         if(flow_direction == north_west<FlowDirectionElement>)
                         {
                             output_cells_idxs[accu::Direction::north].push_back({idx0, idx1});
-
-                            if(communicator.has_neighbour(accu::Direction::north))
-                            {
-                                input_cell_idxs.push_back(idx1 - 1);
-                                communicator.send(accu::Direction::north, input_cell_idxs);
-                            }
+                            input_cell_idxs[accu::Direction::north].push_back(idx1 - 1);
                         }
                         else if(flow_direction == north<FlowDirectionElement>)
                         {
                             output_cells_idxs[accu::Direction::north].push_back({idx0, idx1});
-
-                            if(communicator.has_neighbour(accu::Direction::north))
-                            {
-                                input_cell_idxs.push_back(idx1);
-                                communicator.send(accu::Direction::north, input_cell_idxs);
-                            }
+                            input_cell_idxs[accu::Direction::north].push_back(idx1);
                         }
                         else if(flow_direction == north_east<FlowDirectionElement>)
                         {
                             output_cells_idxs[accu::Direction::north_east].push_back({idx0, idx1});
-
-                            if(communicator.has_neighbour(accu::Direction::north_east))
-                            {
-                                input_cell_idxs.push_back(std::size_t(-1));
-                                communicator.send(accu::Direction::north_east, input_cell_idxs);
-                            }
+                            input_cell_idxs[accu::Direction::north_east].push_back(std::size_t(-1));
                         }
                         else if(flow_direction == east<FlowDirectionElement>)
                         {
                             output_cells_idxs[accu::Direction::east].push_back({idx0, idx1});
-
-                            if(communicator.has_neighbour(accu::Direction::east))
-                            {
-                                input_cell_idxs.push_back(idx0);
-                                communicator.send(accu::Direction::east, input_cell_idxs);
-                            }
+                            input_cell_idxs[accu::Direction::east].push_back(idx0);
                         }
                         else if(flow_direction == south_east<FlowDirectionElement>)
                         {
                             output_cells_idxs[accu::Direction::east].push_back({idx0, idx1});
-
-                            if(communicator.has_neighbour(accu::Direction::east))
-                            {
-                                input_cell_idxs.push_back(idx0 + 1);
-                                communicator.send(accu::Direction::east, input_cell_idxs);
-                            }
+                            input_cell_idxs[accu::Direction::east].push_back(idx0 + 1);
                         }
                     }
                 }
 
                 // South-east corner
                 {
-                    input_cell_idxs.clear();
                     idx0 = extent0 - 1;
                     idx1 = extent1 - 1;
 
@@ -552,59 +481,33 @@ namespace lue {
                         if(flow_direction == north_east<FlowDirectionElement>)
                         {
                             output_cells_idxs[accu::Direction::east].push_back({idx0, idx1});
-
-                            if(communicator.has_neighbour(accu::Direction::east))
-                            {
-                                input_cell_idxs.push_back(idx0 - 1);
-                                communicator.send(accu::Direction::east, input_cell_idxs);
-                            }
+                            input_cell_idxs[accu::Direction::east].push_back(idx0 - 1);
                         }
                         else if(flow_direction == east<FlowDirectionElement>)
                         {
                             output_cells_idxs[accu::Direction::east].push_back({idx0, idx1});
-
-                            if(communicator.has_neighbour(accu::Direction::east))
-                            {
-                                input_cell_idxs.push_back(idx0);
-                                communicator.send(accu::Direction::east, input_cell_idxs);
-                            }
+                            input_cell_idxs[accu::Direction::east].push_back(idx0);
                         }
                         else if(flow_direction == south_east<FlowDirectionElement>)
                         {
                             output_cells_idxs[accu::Direction::south_east].push_back({idx0, idx1});
-
-                            if(communicator.has_neighbour(accu::Direction::south_east))
-                            {
-                                input_cell_idxs.push_back(std::size_t(-1));
-                                communicator.send(accu::Direction::south_east, input_cell_idxs);
-                            }
+                            input_cell_idxs[accu::Direction::south_east].push_back(std::size_t(-1));
                         }
                         else if(flow_direction == south<FlowDirectionElement>)
                         {
                             output_cells_idxs[accu::Direction::south].push_back({idx0, idx1});
-
-                            if(communicator.has_neighbour(accu::Direction::south))
-                            {
-                                input_cell_idxs.push_back(idx1);
-                                communicator.send(accu::Direction::south, input_cell_idxs);
-                            }
+                            input_cell_idxs[accu::Direction::south].push_back(idx1);
                         }
                         else if(flow_direction == south_west<FlowDirectionElement>)
                         {
                             output_cells_idxs[accu::Direction::south].push_back({idx0, idx1});
-
-                            if(communicator.has_neighbour(accu::Direction::south))
-                            {
-                                input_cell_idxs.push_back(idx1 - 1);
-                                communicator.send(accu::Direction::south, input_cell_idxs);
-                            }
+                            input_cell_idxs[accu::Direction::south].push_back(idx1 - 1);
                         }
                     }
                 }
 
                 // South-west corner
                 {
-                    input_cell_idxs.clear();
                     idx0 = extent0 - 1;
                     idx1 = 0;
 
@@ -615,59 +518,45 @@ namespace lue {
                         if(flow_direction == north_west<FlowDirectionElement>)
                         {
                             output_cells_idxs[accu::Direction::west].push_back({idx0, idx1});
-
-                            if(communicator.has_neighbour(accu::Direction::west))
-                            {
-                                input_cell_idxs.push_back(idx0 - 1);
-                                communicator.send(accu::Direction::west, input_cell_idxs);
-                            }
+                            input_cell_idxs[accu::Direction::west].push_back(idx0 - 1);
                         }
                         else if(flow_direction == west<FlowDirectionElement>)
                         {
                             output_cells_idxs[accu::Direction::west].push_back({idx0, idx1});
-
-                            if(communicator.has_neighbour(accu::Direction::west))
-                            {
-                                input_cell_idxs.push_back(idx0);
-                                communicator.send(accu::Direction::west, input_cell_idxs);
-                            }
+                            input_cell_idxs[accu::Direction::west].push_back(idx0);
                         }
                         else if(flow_direction == south_west<FlowDirectionElement>)
                         {
                             output_cells_idxs[accu::Direction::south_west].push_back({idx0, idx1});
-
-                            if(communicator.has_neighbour(accu::Direction::south_west))
-                            {
-                                input_cell_idxs.push_back(std::size_t(-1));
-                                communicator.send(accu::Direction::south_west, input_cell_idxs);
-                            }
+                            input_cell_idxs[accu::Direction::south_west].push_back(std::size_t(-1));
                         }
                         else if(flow_direction == south<FlowDirectionElement>)
                         {
                             output_cells_idxs[accu::Direction::south].push_back({idx0, idx1});
-
-                            if(communicator.has_neighbour(accu::Direction::south))
-                            {
-                                input_cell_idxs.push_back(idx1);
-                                communicator.send(accu::Direction::south, input_cell_idxs);
-                            }
+                            input_cell_idxs[accu::Direction::south].push_back(idx1);
                         }
                         else if(flow_direction == south_east<FlowDirectionElement>)
                         {
                             output_cells_idxs[accu::Direction::south].push_back({idx0, idx1});
-
-                            if(communicator.has_neighbour(accu::Direction::south))
-                            {
-                                input_cell_idxs.push_back(idx1 + 1);
-                                communicator.send(accu::Direction::south, input_cell_idxs);
-                            }
+                            input_cell_idxs[accu::Direction::south].push_back(idx1 + 1);
                         }
+                    }
+                }
+
+                for(accu::Direction const direction: accu::directions)
+                {
+                    if(communicator.has_neighbour(direction) && !input_cell_idxs[direction].empty())
+                    {
+                        communicator.send(direction, input_cell_idxs[direction]);
                     }
                 }
 
                 // Send empty collection as a sentinel value. The receiver
                 // can assume this is the last value sent.
                 communicator.send({});
+
+                // Done sending
+                communicator.close();
             }
 
             // For each partition border:
@@ -885,15 +774,21 @@ namespace lue {
                     InflowCountCommunicator<rank> inflow_count_communicator)
         {
             AnnotateFunction annotation{"inflow_count"};
+
+
             // Determine connectivity between this partition and the neighbouring partitions
             using CellsIdxs = std::vector<std::array<Index, rank>>;
+
             hpx::shared_future<std::array<CellsIdxs, nr_neighbours<rank>()>> input_cells_idxs_f{};
             hpx::future<std::array<CellsIdxs, nr_neighbours<rank>()>> output_cells_idxs_f{};
+
             hpx::tie(input_cells_idxs_f, output_cells_idxs_f) = connectivity(
                 policies, flow_direction_partition, std::move(inflow_count_communicator));
 
+
             // Calculate inflow count of each cell
             using CountPartition = ArrayPartition<CountElement, rank>;
+
             CountPartition count_partition = inflow_count3<CountElement>(
                 policies, flow_direction_partition, input_cells_idxs_f);
 

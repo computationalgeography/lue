@@ -595,6 +595,7 @@ namespace lue {
                                     [](auto const& idxs) { return idxs.empty(); }));
 
                                 // TODO Assert all inflow counts are zero
+                                // TODO Assert all sender channels are closed
 
                                 return hpx::make_tuple(std::move(outflow_data), std::move(remainder_data));
                             },

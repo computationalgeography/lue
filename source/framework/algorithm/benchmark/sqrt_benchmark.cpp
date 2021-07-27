@@ -1,5 +1,5 @@
 #include "lue/framework/algorithm/definition/pow.hpp"
-#include "lue/framework/algorithm/definition/sqrt.hpp"
+#include "lue/framework/algorithm/default_policies/sqrt.hpp"
 #include "lue/framework/algorithm/default_policies/uniform.hpp"
 #include "lue/framework/benchmark/benchmark_model.hpp"
 #include "lue/framework/benchmark/hpx_main.hpp"
@@ -70,7 +70,7 @@ template<
 void SqrtBenchmarkModel<Element, rank>::do_simulate(
     Count const /* time_step */)
 {
-    this->state() = pow(sqrt(this->state()), Element{2});
+    this->state() = pow(default_policies::sqrt(this->state()), Element{2});
 }
 
 }  // namespace benchmark

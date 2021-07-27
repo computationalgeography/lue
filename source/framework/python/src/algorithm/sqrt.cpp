@@ -1,4 +1,4 @@
-#include "lue/framework/algorithm/sqrt.hpp"
+#include "lue/framework/algorithm/value_policies/sqrt.hpp"
 #include <pybind11/pybind11.h>
 
 
@@ -11,9 +11,7 @@ namespace lue::framework {
         PartitionedArray<Element, rank> sqrt(
             PartitionedArray<Element, rank> const& array)
         {
-            using Policies = policy::sqrt::DefaultValuePolicies<Element>;
-
-            return sqrt(Policies{}, array);
+            return value_policies::sqrt(array);
         }
 
     }  // Anonymous namespace

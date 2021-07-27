@@ -7,108 +7,109 @@
 #include <hpx/synchronization/sliding_semaphore.hpp>
 
 
-namespace lue {
-namespace benchmark {
+namespace lue::benchmark {
 
-template<
-    typename Element,
-    Rank rank>
-class BenchmarkModel:
-    public Model
-{
-
-public:
-
-    using Array = PartitionedArray<Element, rank>;
-
-    using ArrayPtr = std::shared_ptr<Array>;
-
-    using Shape = lue::Shape<Count, rank>;
-
-    using Result = AlgorithmBenchmarkResult;
-
-                   BenchmarkModel      (Task const& task,
-                                        std::size_t max_tree_depth);
-
-                   BenchmarkModel      (BenchmarkModel const&)=default;
-
-                   BenchmarkModel      (BenchmarkModel&&)=default;
-
-                   ~BenchmarkModel     ()=default;
-
-    BenchmarkModel& operator=          (BenchmarkModel const&)=default;
-
-    BenchmarkModel& operator=          (BenchmarkModel&&)=default;
-
-    Shape const&   array_shape         () const;
-
-    Shape const&   partition_shape     () const;
-
-    void           set_result          (Result const& result);
-
-    Result const&  result              () const;
-
-    void           preprocess          () override;
-
-    void           initialize          () override;
-
-    void           simulate            (Count time_step) override;
-
-    void           terminate           () override;
-
-    void           postprocess         () override;
-
-private:
-
-    virtual void   do_preprocess       ();
-
-    virtual void   do_initialize       ();
-
-    virtual void   do_simulate         (Count time_step);
-
-    virtual void   do_terminate        ();
-
-    virtual void   do_postprocess      ();
-
-    //! Number of runs performed
-    Count _count;
-
-    std::size_t    _max_tree_depth;
-
-    hpx::lcos::local::sliding_semaphore _semaphore;
-
-protected:
-
-    Array& state()
+    template<
+        typename Element,
+        Rank rank>
+    class BenchmarkModel:
+        public Model
     {
-        lue_hpx_assert(_state_ptr);
 
-        return *_state_ptr;
-    }
+        public:
 
-    ArrayPtr state_ptr()
-    {
-        lue_hpx_assert(_state_ptr);
+            using Array = PartitionedArray<Element, rank>;
 
-        return _state_ptr;
-    }
+            using ArrayPtr = std::shared_ptr<Array>;
 
-private:
+            using Shape = lue::Shape<Count, rank>;
 
-    ArrayPtr       _state_ptr;
+            using Result = AlgorithmBenchmarkResult;
 
-    Shape _array_shape;
+                           BenchmarkModel      (Task const& task,
+                                                std::size_t max_tree_depth);
 
-    Shape _partition_shape;
+                           BenchmarkModel      (BenchmarkModel const&)=default;
 
-    Result _result;
+                           BenchmarkModel      (BenchmarkModel&&)=default;
 
-};
+                           ~BenchmarkModel     ()=default;
+
+            BenchmarkModel& operator=          (BenchmarkModel const&)=default;
+
+            BenchmarkModel& operator=          (BenchmarkModel&&)=default;
+
+            Shape const&   array_shape         () const;
+
+            Shape const&   partition_shape     () const;
+
+            void           set_result          (Result const& result);
+
+            Result const&  result              () const;
+
+            void           preprocess          () override;
+
+            void           initialize          () override;
+
+            void           simulate            (Count time_step) override;
+
+            void           terminate           () override;
+
+            void           postprocess         () override;
 
 
-extern template class BenchmarkModel<std::int32_t, 2>;
-extern template class BenchmarkModel<float, 2>;
-extern template class BenchmarkModel<double, 2>;
+        private:
 
-}  // namespace benchmark
-}  // namespace lue
+            virtual void   do_preprocess       ();
+
+            virtual void   do_initialize       ();
+
+            virtual void   do_simulate         (Count time_step);
+
+            virtual void   do_terminate        ();
+
+            virtual void   do_postprocess      ();
+
+            //! Number of runs performed
+            Count _count;
+
+            std::size_t    _max_tree_depth;
+
+            hpx::lcos::local::sliding_semaphore _semaphore;
+
+
+        protected:
+
+            Array& state()
+            {
+                lue_hpx_assert(_state_ptr);
+
+                return *_state_ptr;
+            }
+
+            ArrayPtr state_ptr()
+            {
+                lue_hpx_assert(_state_ptr);
+
+                return _state_ptr;
+            }
+
+
+        private:
+
+            ArrayPtr _state_ptr;
+
+            Shape _array_shape;
+
+            Shape _partition_shape;
+
+            Result _result;
+
+    };
+
+
+    extern template class BenchmarkModel<std::int32_t, 2>;
+    extern template class BenchmarkModel<float, 2>;
+    extern template class BenchmarkModel<double, 2>;
+
+}  // namespace lue::benchmark

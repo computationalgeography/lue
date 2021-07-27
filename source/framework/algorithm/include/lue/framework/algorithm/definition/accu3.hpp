@@ -519,6 +519,7 @@ namespace lue {
                                     [](auto const& idxs) { return idxs.empty(); }));
 
                                 // TODO Assert all inflow counts are zero
+                                // TODO Assert all sender channels are closed
 
                                 return outflow_data;
                             },

@@ -53,19 +53,23 @@ namespace lue::benchmark {
             hdf5::Hyperslab _hyperslab;
 
 
-            float time_step_duration;
+            ScalarElement time_step_duration;
 
             PartitionedArray<FlowDirectionElement, 2> flow_direction;
 
-            PartitionedArray<ScalarElement, 2> interception_rate;
+            PartitionedArray<ScalarElement, 2> more_or_less_one;
 
-            ScalarRaster interception_capacity;
+            PartitionedArray<ScalarElement, 2> infiltration_capacity;
 
-            PartitionedArray<ScalarElement, 2> interception_storage;
+            /// PartitionedArray<ScalarElement, 2> interception_rate;
 
-            PartitionedArray<ScalarElement, 2> infiltration_rate;
+            /// ScalarRaster interception_capacity;
 
-            ScalarRaster infiltration_capacity;
+            /// PartitionedArray<ScalarElement, 2> interception_storage;
+
+            /// PartitionedArray<ScalarElement, 2> infiltration_rate;
+
+            /// ScalarRaster infiltration_capacity;
 
     };
 
