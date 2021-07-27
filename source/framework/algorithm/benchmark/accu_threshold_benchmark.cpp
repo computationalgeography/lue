@@ -6,7 +6,7 @@
 #include "lue/framework/benchmark/model_benchmark.hpp"
 #include "lue/framework/io/read_into.hpp"
 #include "lue/data_model/hl.hpp"
-#include <docopt/docopt.h>
+#include "lue/docopt.hpp"
 
 
 namespace lue::benchmark {

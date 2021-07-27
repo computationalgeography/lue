@@ -90,13 +90,11 @@ if(WIN32)
 elseif(APPLE)
     set(LUE_HAVE_BOOST_INIT TRUE)
     # Change default to TRUE once Brew contains a version.
-    # Change default to TRUE once package integrates well.
-    set(LUE_HAVE_DOCOPT_INIT FALSE)
+    set(LUE_HAVE_DOCOPT_INIT TRUE)
     set(LUE_HAVE_DOXYGEN_INIT TRUE)
     set(LUE_HAVE_GDAL_INIT TRUE)
     set(LUE_HAVE_GLEW_INIT TRUE)
-    # Change default to TRUE once package integrates well.
-    set(LUE_HAVE_GLFW_INIT FALSE)
+    set(LUE_HAVE_GLFW_INIT TRUE)
     set(LUE_HAVE_MS_GSL_INIT FALSE)
     set(LUE_HAVE_FMT_INIT TRUE)
     set(LUE_HAVE_HDF5_INIT TRUE)
@@ -105,13 +103,11 @@ elseif(APPLE)
     set(LUE_HAVE_PYBIND11_INIT FALSE)
 else()
     set(LUE_HAVE_BOOST_INIT TRUE)
-    # Change default to TRUE once package integrates well.
-    set(LUE_HAVE_DOCOPT_INIT FALSE)
+    set(LUE_HAVE_DOCOPT_INIT TRUE)
     set(LUE_HAVE_DOXYGEN_INIT TRUE)
     set(LUE_HAVE_GDAL_INIT TRUE)
     set(LUE_HAVE_GLEW_INIT TRUE)
-    # Change default to TRUE once package integrates well.
-    set(LUE_HAVE_GLFW_INIT FALSE)
+    set(LUE_HAVE_GLFW_INIT TRUE)
     set(LUE_HAVE_MS_GSL_INIT FALSE)
     set(LUE_HAVE_FMT_INIT TRUE)
     set(LUE_HAVE_HDF5_INIT TRUE)
@@ -573,6 +569,11 @@ if(LUE_IMGUI_REQUIRED AND LUE_BUILD_IMGUI)
     find_package(GLEW REQUIRED)
     find_package(glfw3 REQUIRED)
 
+    # if(NOT LUE_HAVE_GLFW)
+    #     # Conan find module uses glfw::glfw instead of glfw
+    #     add_library(glfw ALIAS glfw::glfw)
+    # endif()
+
     if(LUE_REPOSITORY_CACHE AND EXISTS ${LUE_REPOSITORY_CACHE}/imgui)
         set(imgui_repository ${LUE_REPOSITORY_CACHE}/imgui)
     else()
@@ -618,7 +619,7 @@ if(LUE_IMGUI_REQUIRED AND LUE_BUILD_IMGUI)
 
         target_link_libraries(imgui
             PUBLIC
-                glfw::glfw
+                glfw
                 GLEW::GLEW
                 OpenGL::GL
         )
@@ -646,15 +647,23 @@ endif()
 
 if(LUE_DOCOPT_REQUIRED)
     find_package(docopt REQUIRED)
+
+    if(NOT LUE_HAVE_DOCOPT)
+        # Conan find module uses docopt::docopt instead of docopt
+        add_library(docopt ALIAS docopt::docopt)
+    endif()
 endif()
+
 
 if(LUE_DOXYGEN_REQUIRED)
     find_package(Doxygen REQUIRED dot)
 endif()
 
+
 if(LUE_GDAL_REQUIRED)
     find_package(GDAL REQUIRED)
 endif()
+
 
 if(LUE_GRAPHVIZ_REQUIRED)
     find_package(Graphviz REQUIRED)

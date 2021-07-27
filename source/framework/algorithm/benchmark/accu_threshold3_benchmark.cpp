@@ -7,7 +7,7 @@
 #include "lue/framework/benchmark/model_benchmark.hpp"
 #include "lue/framework/benchmark/regex.hpp"
 #include "lue/framework/io/read_into.hpp"
-#include <docopt/docopt.h>
+#include "lue/docopt.hpp"
 
 
 namespace lue::benchmark {

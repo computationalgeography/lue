@@ -24,7 +24,7 @@ hpx_setup_target(lue_benchmark
         lue::framework_algorithm
         lue::framework_model
         lue::data_model_hl
-        docopt::docopt
+        docopt
         nlohmann_json::nlohmann_json
 )
 

@@ -3,7 +3,7 @@
 #include "lue/framework/benchmark/hpx_main.hpp"
 #include "lue/framework/benchmark/model_benchmark.hpp"
 #include "lue/framework/benchmark/regex.hpp"
-#include <docopt/docopt.h>
+#include "lue/docopt.hpp"
 #include <regex>
 
 
