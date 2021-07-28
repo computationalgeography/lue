@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE lue framework algorithm cast
 #include "lue/framework/algorithm/default_policies/all.hpp"
 #include "lue/framework/algorithm/array_like.hpp"
-#include "lue/framework/algorithm/definition/cast.hpp"
+#include "lue/framework/algorithm/default_policies/cast.hpp"
 #include "lue/framework/algorithm/default_policies/equal_to.hpp"
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/test/array.hpp"
@@ -28,9 +28,10 @@ namespace detail {
         InputArray array{lue::create_partitioned_array(array_shape, partition_shape, fill_value)};
 
         // Request the cast of the array
-        auto cast = lue::cast<OutputElement>(array);
+        auto array_we_got = cast<OutputElement>(array);
+        auto array_we_want = lue::array_like(array, static_cast<OutputElement>(fill_value));
 
-        BOOST_CHECK(all(cast == lue::array_like(array, static_cast<OutputElement>(fill_value))).get());
+        BOOST_CHECK(all(array_we_got == array_we_want).get());
     }
 
 }  // namespace detail
@@ -46,27 +47,25 @@ BOOST_AUTO_TEST_CASE(array_##rank##d_##InputElement##_##OutputElement)  \
     detail::test_array<InputElement, OutputElement, rank>();            \
 }
 
-// TEST_CASE(1, bool, bool)
-// TEST_CASE(2, bool, bool)
-// TEST_CASE(1, bool, int32_t)
-TEST_CASE(2, bool, int32_t)
-// TEST_CASE(1, bool, double)
-TEST_CASE(2, bool, double)
-// TEST_CASE(1, int32_t, bool)
-// TEST_CASE(2, int32_t, bool)
-// TEST_CASE(1, int32_t, int32_t)
-TEST_CASE(2, int32_t, int32_t)
-// TEST_CASE(1, int32_t, double)
-TEST_CASE(2, int32_t, double)
-// TEST_CASE(1, int64_t)
-// TEST_CASE(2, int64_t)
-// TEST_CASE(1, float)
-// TEST_CASE(2, float)
-// TEST_CASE(1, double, bool)
-// TEST_CASE(2, double, bool)
-// TEST_CASE(1, double, int32_t)
-TEST_CASE(2, double, int32_t)
-// TEST_CASE(1, double, double)
-TEST_CASE(2, double, double)
+// TEST_CASE(2, bool, int32_t)
+// TEST_CASE(2, bool, uint32_t)
+// TEST_CASE(2, bool, int64_t)
+// TEST_CASE(2, bool, uint64_t)
+// TEST_CASE(2, bool, float)
+// TEST_CASE(2, bool, double)
+
+// TEST_CASE(2, int32_t, int64_t)
+// TEST_CASE(2, int32_t, float)
+// TEST_CASE(2, int32_t, double)
+
+// TEST_CASE(2, uint32_t, uint64_t)
+// TEST_CASE(2, uint32_t, float)
+// TEST_CASE(2, uint32_t, double)
+
+TEST_CASE(2, int64_t, float)
+TEST_CASE(2, int64_t, double)
+
+TEST_CASE(2, uint64_t, float)
+TEST_CASE(2, uint64_t, double)
 
 #undef TEST_CASE
