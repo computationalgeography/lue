@@ -32,15 +32,23 @@ namespace lue {
 
     template<
         typename OutputElement,
-        typename InputArray>
-    PartitionedArrayT<InputArray, OutputElement> cast(
-        InputArray const& array)
+        typename Policies,
+        typename InputElement,
+        Rank rank>
+    PartitionedArray<OutputElement, rank> cast(
+        Policies const& policies,
+        PartitionedArray<InputElement, rank> const& array)
     {
-        using InputElement = ElementT<InputArray>;
-        using Functor = detail::Cast<InputElement, OutputElement>;
-        using Policies = policy::cast::DefaultPolicies<OutputElement, InputElement>;
-
-        return unary_local_operation(Policies{}, array, Functor{});
+        return unary_local_operation(policies, array, detail::Cast<InputElement, OutputElement>{});
     }
 
 }  // namespace lue
+
+
+#define LUE_INSTANTIATE_CAST(Policies, OutputElement, InputElement, rank)       \
+                                                                                \
+    template LUE_FA_EXPORT                                                      \
+    PartitionedArray<OutputElement, rank>                                       \
+        cast<OutputElement, ArgumentType<void(Policies)>, InputElement, rank>(  \
+            ArgumentType<void(Policies)> const&,                                \
+            PartitionedArray<InputElement, rank> const&);

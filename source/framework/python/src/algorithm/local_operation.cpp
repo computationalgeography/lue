@@ -16,6 +16,7 @@ namespace lue::framework {
     void bind_array_partition_id(pybind11::module& module);
     void bind_all(pybind11::module& module);
     void bind_array_partition_id(pybind11::module& module);
+    void bind_cast(pybind11::module& module);
     void bind_d8_flow_direction(pybind11::module& module);
     void bind_divide(pybind11::module& module);
     void bind_downstream(pybind11::module& module);
@@ -57,6 +58,7 @@ namespace lue::framework {
         bind_add(module);
         bind_all(module);
         bind_array_partition_id(module);
+        bind_cast(module);
         bind_d8_flow_direction(module);
         bind_divide(module);
         bind_downstream(module);
