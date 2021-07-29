@@ -26,6 +26,7 @@ pybind11_add_module(lue_py_framework SHARED THIN_LTO
     src/algorithm/less_than.cpp
     src/algorithm/less_than_equal_to.cpp
     src/algorithm/local_operation.cpp
+    src/algorithm/locality_id.cpp
     src/algorithm/log.cpp
     src/algorithm/maximum.cpp
     src/algorithm/minimum.cpp
