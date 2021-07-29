@@ -23,7 +23,7 @@ namespace detail {
         // Request the locality IDs of each partition
         auto locality_id = lue::locality_id(array);
 
-        BOOST_CHECK_EQUAL(locality_id.shape(), array.shape());
+        BOOST_CHECK_EQUAL(locality_id.shape(), array.partitions().shape());
     }
 
 }  // namespace detail
