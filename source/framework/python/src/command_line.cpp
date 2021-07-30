@@ -14,7 +14,7 @@ namespace lue {
         pybind11::gil_scoped_acquire acquire;
 
 #if Python_VERSION_MAJOR == 2
-        py::module::import("sys").add_object("argv", py::list{});
+        pybind11::module::import("sys").add_object("argv", pybind11::list{});
 #endif
         pybind11::object sys{pybind11::module_::import("sys")};
         pybind11::list argv_py{sys.attr("argv")};
