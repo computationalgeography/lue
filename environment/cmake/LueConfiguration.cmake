@@ -416,7 +416,7 @@ if(LUE_PYBIND11_REQUIRED)
     if(NOT LUE_HAVE_PYBIND11)
         FetchContent_Declare(pybind11
             GIT_REPOSITORY https://github.com/pybind/pybind11
-            GIT_TAG "v2.6.2"
+            GIT_TAG "v2.7.0"
         )
 
         # This should pick up the Python found above
