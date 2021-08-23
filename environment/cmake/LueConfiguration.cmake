@@ -535,7 +535,7 @@ if(LUE_HPX_REQUIRED)
         else()
             # Obtain HPX from archive. This has the advantage of being
             # able to patch the source files.
-            set(hpx_version 1.7.0)
+            set(hpx_version 1.7.1)
 
             if(LUE_REPOSITORY_CACHE AND EXISTS ${LUE_REPOSITORY_CACHE})
                 # Use local archive
