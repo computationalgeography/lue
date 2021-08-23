@@ -10,7 +10,17 @@
 #include "lue/py/framework/algorithm/pow.hpp"
 #include "lue/py/framework/algorithm/subtract.hpp"
 #include "lue/py/framework/stream.hpp"
+#include "lue/py/configure.hpp"
 #include <pybind11/stl.h>
+
+
+#if (Python_VERSION_MAJOR < 3)
+    #define LUE_PY_DIV_OP_NAME "__div__"
+    #define LUE_PY_RDIV_OP_NAME "__rdiv__"
+#else
+    #define LUE_PY_DIV_OP_NAME "__truediv__"
+    #define LUE_PY_RDIV_OP_NAME "__rtruediv__"
+#endif
 
 
 namespace lue::framework {
@@ -238,19 +248,19 @@ namespace lue::framework {
 
             // a / b, b / a, a /= b
             class_
-                .def("__truediv__", [](Array const& argument1, Array const& argument2)
+                .def(LUE_PY_DIV_OP_NAME, [](Array const& argument1, Array const& argument2)
                     { return lfr::divide<ElementT<Array>, rank>(argument1, argument2); },
                     pybind11::is_operator())
-                .def("__truediv__", [](Array const& argument1, Element const argument2)
+                .def(LUE_PY_DIV_OP_NAME, [](Array const& argument1, Element const argument2)
                     { return lfr::divide<ElementT<Array>, rank>(argument1, argument2); },
                     pybind11::is_operator())
-                .def("__truediv__", [](Array const& argument1, ElementF const& argument2)
+                .def(LUE_PY_DIV_OP_NAME, [](Array const& argument1, ElementF const& argument2)
                     { return lfr::divide<ElementT<Array>, rank>(argument1, argument2); },
                     pybind11::is_operator())
-                .def("__rtruediv__", [](Array const& argument2, Element const argument1)
+                .def(LUE_PY_RDIV_OP_NAME, [](Array const& argument2, Element const argument1)
                     { return lfr::divide<ElementT<Array>, rank>(argument1, argument2); },
                     pybind11::is_operator())
-                .def("__rtruediv__", [](Array const& argument2, ElementF const& argument1)
+                .def(LUE_PY_RDIV_OP_NAME, [](Array const& argument2, ElementF const& argument1)
                     { return lfr::divide<ElementT<Array>, rank>(argument1, argument2); },
                     pybind11::is_operator())
                 ;
