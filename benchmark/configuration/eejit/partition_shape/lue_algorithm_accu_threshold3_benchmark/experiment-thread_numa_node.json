@@ -2,11 +2,12 @@
     "nr_time_steps": 1,
     "array": {
         "shape": [30000, 30000]
+        # "shape": [21213, 21213]
     },
     "partition": {
-        "shape": [800, 800],
+        "shape": [1000, 1000],
         "range": {
-            "max_nr_elements": 15000000,
+            "max_nr_elements": 10000000,
             "multiplier": 2.0,
             "method": "linear"
         }

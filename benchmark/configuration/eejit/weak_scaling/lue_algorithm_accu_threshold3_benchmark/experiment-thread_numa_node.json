@@ -4,7 +4,7 @@
         "shape": [12000, 12000]
     },
     "partition": {
-        "shape": [3000, 3000]
+        "shape": [2500, 2500]
     },
     "arguments": {
         "positionals": [
