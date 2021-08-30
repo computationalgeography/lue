@@ -1,6 +1,6 @@
 {
     "scenario": "numa_node",
-    "count": 1,
+    "count": 5,
     "locality_per": "numa_node",
     "worker": {
         "type": "numa_node",
