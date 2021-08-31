@@ -2,10 +2,10 @@
     "nr_time_steps": 24,
     "max_tree_depth": 2,
     "array": {
-        "shape": [30000, 30000]
+        "shape": [28000, 28000]
     },
     "partition": {
-        "shape": [3000, 3000]
+        "shape": [2500, 2500]
     },
     "arguments": {
         "positionals": [
