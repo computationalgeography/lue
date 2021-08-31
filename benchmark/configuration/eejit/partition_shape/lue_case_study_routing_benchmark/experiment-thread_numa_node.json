@@ -3,11 +3,13 @@
     "max_tree_depth": 2,
     "array": {
         "shape": [10000, 10000]
+        # "shape": [7071, 7071]
     },
     "partition": {
         "shape": [800, 800],
         "range": {
             "max_nr_elements": 5000000,
+            # "max_nr_elements": 3200000,
             "multiplier": 1.8,
             "method": "linear"
         }
