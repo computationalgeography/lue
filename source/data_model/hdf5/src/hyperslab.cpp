@@ -178,5 +178,37 @@ std::size_t Hyperslab::nr_elements() const
     return result;
 }
 
+
+Hyperslab hyperslab(
+    Offset const& center,
+    Shape const& shape,
+    Shape const& array_shape)
+{
+    assert(array_shape.size() == 2);
+    assert(center.size() == array_shape.size());
+    assert(shape.size() == array_shape.size());
+
+    assert(center[0] >= shape[0] / 2 && center[1] >= shape[1] / 2);
+
+    Offset const start{
+            center[0] - (shape[0] / 2),
+            center[1] - (shape[1] / 2)
+        };
+    Count const count{shape[0], shape[1]};
+
+    Hyperslab const hyperslab{start, count};
+
+    // Assert shape of hyperslab equals shape passed in:
+    assert(hyperslab.count()[0] == shape[0]);
+    assert(hyperslab.count()[1] == shape[1]);
+
+    // Assert hyperslab is positioned within the array:
+    assert(
+        (hyperslab.start()[0] + hyperslab.count()[0] <= array_shape[0]) &&
+        (hyperslab.start()[1] + hyperslab.count()[1] <= array_shape[1]));
+
+    return hyperslab;
+}
+
 } // namespace hdf5
 } // namespace lue

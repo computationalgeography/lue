@@ -47,3 +47,58 @@ BOOST_AUTO_TEST_CASE(shape_size_3)
     BOOST_CHECK(!hyperslab.empty());
     BOOST_CHECK_EQUAL(hyperslab.nr_elements(), 6);
 }
+
+
+BOOST_AUTO_TEST_CASE(hyperslab)
+{
+    {
+        lh5::Offset const& center{1, 1};
+        lh5::Shape const& shape{3, 3};
+        lh5::Shape const& array_shape{3, 3};
+
+        lh5::Hyperslab const hyperslab{lh5::hyperslab(center, shape, array_shape)};
+
+        BOOST_CHECK_EQUAL(hyperslab.nr_dimensions(), 2);
+        BOOST_CHECK_EQUAL(hyperslab.nr_elements(), 9);
+        BOOST_CHECK_EQUAL(hyperslab.start()[0], 0);
+        BOOST_CHECK_EQUAL(hyperslab.start()[1], 0);
+        BOOST_CHECK_EQUAL(hyperslab.stride()[0], 1);
+        BOOST_CHECK_EQUAL(hyperslab.stride()[1], 1);
+        BOOST_CHECK_EQUAL(hyperslab.count()[0], 3);
+        BOOST_CHECK_EQUAL(hyperslab.count()[1], 3);
+    }
+
+    {
+        lh5::Offset const& center{1, 1};
+        lh5::Shape const& shape{1, 1};
+        lh5::Shape const& array_shape{3, 3};
+
+        lh5::Hyperslab const hyperslab{lh5::hyperslab(center, shape, array_shape)};
+
+        BOOST_CHECK_EQUAL(hyperslab.nr_dimensions(), 2);
+        BOOST_CHECK_EQUAL(hyperslab.nr_elements(), 1);
+        BOOST_CHECK_EQUAL(hyperslab.start()[0], 1);
+        BOOST_CHECK_EQUAL(hyperslab.start()[1], 1);
+        BOOST_CHECK_EQUAL(hyperslab.stride()[0], 1);
+        BOOST_CHECK_EQUAL(hyperslab.stride()[1], 1);
+        BOOST_CHECK_EQUAL(hyperslab.count()[0], 1);
+        BOOST_CHECK_EQUAL(hyperslab.count()[1], 1);
+    }
+
+    {
+        lh5::Offset const& center{1, 1};
+        lh5::Shape const& shape{2, 2};
+        lh5::Shape const& array_shape{3, 3};
+
+        lh5::Hyperslab const hyperslab{lh5::hyperslab(center, shape, array_shape)};
+
+        BOOST_CHECK_EQUAL(hyperslab.nr_dimensions(), 2);
+        BOOST_CHECK_EQUAL(hyperslab.nr_elements(), 4);
+        BOOST_CHECK_EQUAL(hyperslab.start()[0], 0);
+        BOOST_CHECK_EQUAL(hyperslab.start()[1], 0);
+        BOOST_CHECK_EQUAL(hyperslab.stride()[0], 1);
+        BOOST_CHECK_EQUAL(hyperslab.stride()[1], 1);
+        BOOST_CHECK_EQUAL(hyperslab.count()[0], 2);
+        BOOST_CHECK_EQUAL(hyperslab.count()[1], 2);
+    }
+}

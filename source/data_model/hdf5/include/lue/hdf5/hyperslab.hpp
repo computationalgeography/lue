@@ -72,5 +72,10 @@ private:
 
 };
 
+
+Hyperslab          hyperslab           (Offset const& subset_center,
+                                        Shape const& subset_shape,
+                                        Shape const& array_shape);
+
 } // namespace hdf5
 } // namespace lue
