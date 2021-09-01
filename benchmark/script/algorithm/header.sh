@@ -19,12 +19,14 @@ scenarios="
     cluster_node
 "
 
+
 algorithm_names="
 "
 case_study_names="
 "
 scenarios="
 "
+
 
 output_prefix=${LUE_DATA:-.}
 

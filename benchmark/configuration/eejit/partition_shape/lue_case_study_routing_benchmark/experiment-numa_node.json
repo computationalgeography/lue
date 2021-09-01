@@ -2,13 +2,14 @@
     "nr_time_steps": 24,
     "max_tree_depth": 2,
     "array": {
-        "shape": [30000, 30000]
+        # "shape": [28000, 28000]
+        # "shape": [19799, 19799]
     },
     "partition": {
         "shape": [800, 800],
         "range": {
-            "max_nr_elements": 10000000,
-            "multiplier": 2,
+            "max_nr_elements": 5000000,
+            "multiplier": 1.8,
             "method": "linear"
         }
     },
