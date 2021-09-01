@@ -1,9 +1,9 @@
-- breathe
-- doxygen
-- ipython
-- matplotlib
-- rasterio
-- scipy
-- setuptools
-- sphinx
-- sphinx_rtd_theme
+breathe
+doxygen
+ipython
+matplotlib
+rasterio
+scipy
+setuptools
+sphinx
+sphinx_rtd_theme
