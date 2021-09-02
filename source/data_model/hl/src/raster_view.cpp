@@ -391,7 +391,7 @@ bool contains_raster(
 }
 
 
-std::tuple<ID, hdf5::Datatype> probe_raster(
+std::tuple<ID, hdf5::Shape, hdf5::Datatype> probe_raster(
     std::string const& dataset_pathname,
     std::string const& phenomenon_name,
     std::string const& property_set_name,
@@ -401,7 +401,7 @@ std::tuple<ID, hdf5::Datatype> probe_raster(
     auto raster_view{open_raster_view(std::move(dataset_ptr), phenomenon_name, property_set_name)};
     auto layer{raster_view.layer(layer_name)};
 
-    return std::make_tuple(raster_view.object_id(), layer.file_datatype());
+    return std::make_tuple(raster_view.object_id(), raster_view.grid_shape(), layer.file_datatype());
 }
 
 
@@ -759,7 +759,7 @@ bool contains_raster(
 }
 
 
-std::tuple<ID, hdf5::Datatype> probe_raster(
+std::tuple<ID, hdf5::Shape, hdf5::Datatype> probe_raster(
     std::string const& dataset_pathname,
     std::string const& phenomenon_name,
     std::string const& property_set_name,
@@ -769,7 +769,7 @@ std::tuple<ID, hdf5::Datatype> probe_raster(
     auto raster_view{open_raster_view(std::move(dataset_ptr), phenomenon_name, property_set_name)};
     auto layer{raster_view.layer(layer_name)};
 
-    return std::make_tuple(raster_view.object_id(), layer.file_datatype());
+    return std::make_tuple(raster_view.object_id(), raster_view.grid_shape(), layer.file_datatype());
 }
 
 

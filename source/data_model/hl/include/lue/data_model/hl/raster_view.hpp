@@ -147,7 +147,7 @@ RasterView<DatasetPtr> open_raster_view(
 }
 
 
-std::tuple<ID, hdf5::Datatype> probe_raster(
+std::tuple<ID, hdf5::Shape, hdf5::Datatype> probe_raster(
                                         std::string const& dataset_pathname,
                                         std::string const& phenomenon_name,
                                         std::string const& property_set_name,
@@ -257,7 +257,7 @@ RasterView<DatasetPtr> open_raster_view(
 }
 
 
-std::tuple<ID, hdf5::Datatype> probe_raster(
+std::tuple<ID, hdf5::Shape, hdf5::Datatype> probe_raster(
                                         std::string const& dataset_pathname,
                                         std::string const& phenomenon_name,
                                         std::string const& property_set_name,

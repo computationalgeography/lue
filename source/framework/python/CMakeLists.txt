@@ -56,6 +56,7 @@ pybind11_add_module(lue_py_framework SHARED THIN_LTO
     src/command_line.cpp
     src/hpx.cpp
     src/hpx_runtime.cpp
+    src/numpy/to_numpy.cpp
     src/python_extension.cpp
     src/submodule.cpp
 )
