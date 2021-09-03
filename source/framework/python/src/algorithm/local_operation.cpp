@@ -27,6 +27,7 @@ namespace lue::framework {
     void bind_inflow_count(pybind11::module& module);
     void bind_inflow_count3(pybind11::module& module);
     void bind_inter_partition_stream(pybind11::module& module);
+    void bind_iterate_per_element(pybind11::module& module);
     void bind_less_than(pybind11::module& module);
     void bind_less_than_equal_to(pybind11::module& module);
     void bind_locality_id(pybind11::module& module);
@@ -70,6 +71,7 @@ namespace lue::framework {
         bind_inflow_count(module);
         bind_inflow_count3(module);
         bind_inter_partition_stream(module);
+        bind_iterate_per_element(module);
         bind_less_than(module);
         bind_less_than_equal_to(module);
         bind_locality_id(module);
