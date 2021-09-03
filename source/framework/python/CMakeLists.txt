@@ -23,6 +23,7 @@ pybind11_add_module(lue_py_framework SHARED THIN_LTO
     src/algorithm/inflow_count.cpp
     src/algorithm/inflow_count3.cpp
     src/algorithm/inter_partition_stream.cpp
+    src/algorithm/iterate_per_element.cpp
     src/algorithm/less_than.cpp
     src/algorithm/less_than_equal_to.cpp
     src/algorithm/local_operation.cpp

@@ -14,7 +14,7 @@ namespace lue {
 
             public:
 
-                static_assert(std::is_integral_v<InputElement>);
+                static_assert(std::is_arithmetic_v<InputElement>);
 
                 using OutputElement = InputElement;
 
@@ -24,11 +24,11 @@ namespace lue {
                 {
                     // The use of volatile prevends the optimizing compiler
                     // to remove this iteration
-                    volatile InputElement nr_iterations = input_element;
-                    lue_hpx_assert(nr_iterations >= InputElement{0});
+                    volatile InputElement nr_iterations{std::max<InputElement>(input_element, 0)};
 
-                    while(nr_iterations > InputElement{0}) {
-                        --nr_iterations;
+                    while(nr_iterations > InputElement{0})
+                    {
+                        nr_iterations -= 1;
                     }
 
                     return input_element;
@@ -51,6 +51,20 @@ namespace lue {
     }  // namespace policy::iterate_per_element
 
 
+    template<
+        typename Policies,
+        typename Element,
+        Rank rank>
+    PartitionedArray<Element, rank> iterate_per_element(
+        Policies const& policies,
+        PartitionedArray<Element, rank> const& input_array)
+    {
+        using Functor = detail::IteratePerElement<Element>;
+
+        return unary_local_operation(policies, input_array, Functor{});
+    }
+
+
     /*!
         @brief      Per cell in a partitioned array, iterate a number of
                     times before copying the cell to the result
@@ -65,10 +79,9 @@ namespace lue {
     PartitionedArray<Element, rank> iterate_per_element(
         PartitionedArray<Element, rank> const& input_array)
     {
-        using Functor = detail::IteratePerElement<Element>;
         using Policies = policy::iterate_per_element::DefaultPolicies<Element>;
 
-        return unary_local_operation(Policies{}, input_array, Functor{});
+        return iterate_per_element(Policies{}, input_array);
     }
 
 }  // namespace lue
