@@ -1,10 +1,10 @@
 #include "lue/translate/format/gdal_raster.hpp"
 #include "lue/data_model/hl.hpp"
-#include <boost/filesystem.hpp>
 #include <array>
 #include <cassert>
 #include <cmath>
 #include <cstdint>
+#include <filesystem>
 
 
 namespace lue::utility {
@@ -530,7 +530,7 @@ namespace lue::utility {
             GDALRaster const gdal_raster{gdal_dataset_name};
 
             std::string const raster_layer_name{
-                boost::filesystem::path(gdal_dataset_name).stem().string()};
+                std::filesystem::path(gdal_dataset_name).stem().string()};
 
             auto band_name =
                 [raster_layer_name, nr_bands=gdal_raster.nr_bands()](

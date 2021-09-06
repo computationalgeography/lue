@@ -7,7 +7,6 @@
 // #include "lue/hl/raster_stack.hpp"
 #include "lue/data_model/hl.hpp"
 #include <ogrsf_frmts.h>
-#include <boost/filesystem.hpp>
 #include <filesystem>
 
 
@@ -58,7 +57,7 @@ namespace utility {
 //             open_gdal_raster_dataset_for_read(gdal_dataset_name);
 // 
 //         gdal_dataset_name =
-//             boost::filesystem::path(gdal_dataset_name).stem().string();
+//             std::filesystem::path(gdal_dataset_name).stem().string();
 //         std::string phenomenon_name = gdal_dataset_name;
 //         std::string property_set_name = "area";
 // 
@@ -255,7 +254,7 @@ namespace utility {
 // // {
 // //     std::string const gdal_dataset_pathname = gdal_dataset.GetDescription();
 // //     auto const gdal_dataset_name =
-// //         boost::filesystem::path(gdal_dataset_pathname).stem().string();
+// //         std::filesystem::path(gdal_dataset_pathname).stem().string();
 // //     auto const phenomenon_name = metadata.value(
 // //         boost::str(boost::format("/%1%/phenomenon/name") % gdal_dataset_name),
 // //         gdal_dataset_name);
@@ -433,21 +432,21 @@ namespace {
 // bool has_extension(
 //     std::string const& pathname)
 // {
-//     return boost::filesystem::path(pathname).has_extension();
+//     return std::filesystem::path(pathname).has_extension();
 // }
 
 
 // std::string extension(
 //     std::string const& pathname)
 // {
-//     return boost::filesystem::path(pathname).extension().string();
+//     return std::filesystem::path(pathname).extension().string();
 // }
 
 
 // std::string stem(
 //     std::string const& pathname)
 // {
-//     return boost::filesystem::path(pathname).stem().string();
+//     return std::filesystem::path(pathname).stem().string();
 // }
 
 
@@ -1005,7 +1004,7 @@ void translate_lue_dataset_to_raster(
     // Figure out which property-sets are selected
     auto const& root_json = metadata.object();
     auto const lue_dataset_name =
-        boost::filesystem::path(dataset.pathname()).stem().string();
+        std::filesystem::path(dataset.pathname()).stem().string();
 
     // Dataset -----------------------------------------------------------------
     if(!json::has_key(root_json, lue_dataset_name)) {
@@ -1355,7 +1354,7 @@ void translate_lue_dataset_to_raster(
 //     // Figure out which property-sets are selected
 //     auto const& root_json = metadata.object();
 //     auto const lue_dataset_name =
-//         boost::filesystem::path(dataset.pathname()).stem().string();
+//         std::filesystem::path(dataset.pathname()).stem().string();
 // 
 //     if(!json::has_key(root_json, lue_dataset_name)) {
 //         throw std::runtime_error(fmt::format(

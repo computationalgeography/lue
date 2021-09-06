@@ -1,11 +1,11 @@
 #include "lue/translate/format/geo_eas.hpp"
 #include "lue/hl/time_series.hpp"
-#include <boost/filesystem.hpp>
 #include <boost/format.hpp>
 #include <boost/spirit/include/qi.hpp>
 #include <boost/spirit/include/support_istream_iterator.hpp>
 #include <boost/spirit/include/phoenix_stl.hpp>
 #include <boost/tokenizer.hpp>
+#include <filesystem>
 #include <fstream>
 
 
@@ -478,7 +478,7 @@ void translate_geo_eas_to_lue(
     // - Name of property-set is obtained from supplied meta-data
 
     std::string const geo_eas_dataset_name =
-        boost::filesystem::path(geo_eas_pathname).stem().string();
+        std::filesystem::path(geo_eas_pathname).stem().string();
     std::string phenomenon_name = geo_eas_dataset_name;
     std::string property_set_name = "point";
 

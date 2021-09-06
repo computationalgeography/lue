@@ -43,7 +43,7 @@ jobs:
                   -B build \
                   -G"Ninja" \
                   -DCMAKE_BUILD_TYPE=Release \
-                  -DLUE_BUILD_DOCUMENTATION=TRUE \
+                  -DLUE_BUILD_DOCUMENTATION=FALSE \
                   -DLUE_BUILD_TEST=TRUE \
                   -DLUE_TEST_NR_LOCALITIES_PER_TEST=1 \
                   -DLUE_TEST_NR_THREADS_PER_LOCALITY=2 \
@@ -72,12 +72,12 @@ jobs:
               cd build
               ctest --output-on-failure
 
-        - name: generate lue documentation
-          if: matrix.python-version > 3
-          shell: bash
-          run: |
-              cmake --build build --target cpp_doc py_doc
-              cmake --build build --target sphinx_doc
+        # - name: generate lue documentation
+        #   if: matrix.python-version > 3
+        #   shell: bash
+        #   run: |
+        #       cmake --build build --target cpp_doc py_doc
+        #       cmake --build build --target sphinx_doc
 
         - name: install lue
           if: matrix.python-version > 3

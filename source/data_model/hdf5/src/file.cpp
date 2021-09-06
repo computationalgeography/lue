@@ -1,7 +1,7 @@
 #include "lue/hdf5/file.hpp"
 #include <fmt/format.h>
-#include <boost/filesystem.hpp>
 #include <cassert>
+#include <filesystem>
 
 
 namespace lue {
@@ -224,9 +224,9 @@ unsigned int File::intent() const
 bool file_exists(
     std::string const& name)
 {
-    auto const status = boost::filesystem::status(name);
+    auto const status = std::filesystem::status(name);
 
-    return boost::filesystem::is_regular_file(status);
+    return std::filesystem::is_regular_file(status);
 }
 
 
@@ -283,7 +283,7 @@ File create_in_memory_file(
 void remove_file(
     std::string const& name)
 {
-    boost::filesystem::remove(name);
+    std::filesystem::remove(name);
 }
 
 } // namespace hdf5

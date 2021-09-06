@@ -1,9 +1,9 @@
 #include "lue/hdf5/group.hpp"
 #include "lue/hdf5/dataset.hpp"
 #include <fmt/format.h>
-#include <boost/filesystem.hpp>
 #include <cstring>
 #include <cstdlib>
+#include <filesystem>
 
 
 namespace lue {
@@ -116,7 +116,7 @@ Group::Group(
         ));
     }
 
-    boost::filesystem::path const path{id().pathname()};
+    std::filesystem::path const path{id().pathname()};
     assert(path.is_absolute());
 
     if(path.has_parent_path())

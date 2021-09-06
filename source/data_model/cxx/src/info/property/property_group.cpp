@@ -1,8 +1,8 @@
 #include "lue/info/property/property_group.hpp"
 #include "lue/core/aspect.hpp"
 #include <fmt/format.h>
-#include <boost/filesystem.hpp>
 #include <cassert>
+#include <filesystem>
 
 
 namespace lue {
@@ -16,7 +16,7 @@ PropertyGroup::PropertyGroup(
     _description{attributes().exists(description_tag) ? attributes().read<std::string>(description_tag) : ""}
 
 {
-    assert(this->name() == boost::filesystem::path{name}.filename());
+    assert(this->name() == std::filesystem::path{name}.filename());
 }
 
 

@@ -1,6 +1,6 @@
 #include "lue/translate/format/gdal_stack.hpp"
-#include <boost/filesystem.hpp>
 #include <boost/spirit/include/qi.hpp>
+#include <filesystem>
 
 
 namespace lue {
@@ -34,20 +34,19 @@ GDALDatasetPtr try_open_gdal_raster_stack_dataset_for_read(
     //   Otherwise return null.
 
     namespace qi = boost::spirit::qi;
-    namespace fs = boost::filesystem;
 
-    auto const dataset_path = fs::path(dataset_name);
+    auto const dataset_path = std::filesystem::path{dataset_name};
     auto const directory_path = dataset_path.parent_path();
     GDALDatasetPtr result;
     auto stack_rule = utility::stack_rule(dataset_name);
 
     // This only works with Boost >= 1.62.0
-    // for(auto const& directory_entry: fs::directory_iterator(directory_path)) {
+    // for(auto const& directory_entry: std::filesystem::directory_iterator(directory_path)) {
 
     {
-        fs::directory_iterator end;
+        std::filesystem::directory_iterator end;
 
-        for(fs::directory_iterator it{directory_path}; it != end; ++it) {
+        for(std::filesystem::directory_iterator it{directory_path}; it != end; ++it) {
             auto const& directory_entry = *it;
             auto pathname = directory_entry.path().string();
             auto first = pathname.begin();
@@ -78,22 +77,21 @@ GDALStack::Slices slices(
     std::string const& dataset_name)
 {
     namespace qi = boost::spirit::qi;
-    namespace fs = boost::filesystem;
 
     auto stack_rule = utility::stack_rule(dataset_name);
-    auto const dataset_path = fs::path(dataset_name);
+    auto const dataset_path = std::filesystem::path{dataset_name};
     auto const directory_path = dataset_path.parent_path();
     GDALStack::Slices::Indices indices;
     GDALStack::SliceIndex index;
 
 
     // This only works with Boost >= 1.62.0
-    // for(auto const& directory_entry: fs::directory_iterator(directory_path)) {
+    // for(auto const& directory_entry: std::filesystem::directory_iterator(directory_path)) {
 
     {
-        fs::directory_iterator end;
+        std::filesystem::directory_iterator end;
 
-        for(fs::directory_iterator it{directory_path}; it != end; ++it) {
+        for(std::filesystem::directory_iterator it{directory_path}; it != end; ++it) {
             auto const& directory_entry = *it;
             auto pathname = directory_entry.path().string();
             auto first = pathname.begin();
@@ -402,7 +400,7 @@ GDALStack::GDALStack(
     std::string const& dataset_name)
 
     : _dataset_name{dataset_name},
-      _name{boost::filesystem::path(_dataset_name).stem().string()},
+      _name{std::filesystem::path(_dataset_name).stem().string()},
       _naming_convention{stack_naming_convention(dataset_name)},
       _slices{},
       _nr_bands{},

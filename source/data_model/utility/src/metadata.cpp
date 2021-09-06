@@ -1,8 +1,8 @@
 #include "lue/utility/metadata.hpp"
 #include "lue/core/aspect.hpp"
-#include <boost/filesystem.hpp>
 #include <fmt/format.h>
 #include <exception>
+#include <filesystem>
 
 
 namespace lue {
@@ -180,9 +180,7 @@ Metadata::Metadata(
     : _json()
 
 {
-    namespace bfs = boost::filesystem;
-
-    if(!bfs::exists(pathname)) {
+    if(!std::filesystem::exists(pathname)) {
         throw std::runtime_error(fmt::format(
             "File containing metadata ({}) does not exist",
             pathname));
