@@ -1,7 +1,7 @@
 #pragma once
 // #include "lue/view/cache.hpp"
 #include "lue/object/dataset.hpp"
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include <memory>
 #include <optional>
 #include <vector>
@@ -26,9 +26,10 @@ public:
 
     // CachePtr       cache               ();
 
-    boost::filesystem::path const& path() const;
+    std::filesystem::path const& path() const;
 
-    std::time_t    write_time          () const;
+    std::filesystem::file_time_type
+                   write_time          () const;
 
     std::string    pathname            () const;
 
@@ -51,10 +52,10 @@ private:
     std::optional<data_model::Dataset> _dataset;
 
     //! Canonical pathname of dataset
-    boost::filesystem::path _path;
+    std::filesystem::path _path;
 
     //! Last time the dataset was updated
-    std::time_t    _write_time;
+    std::filesystem::file_time_type _write_time;
 
     // CachePtr       _cache;
 

@@ -1,8 +1,8 @@
 #include "lue/translate/command/export.hpp"
 #include "lue/translate/format.hpp"
 #include "lue/validate.hpp"
-#include <boost/filesystem.hpp>
 #include <exception>
+#include <filesystem>
 
 
 namespace lue {
@@ -49,8 +49,6 @@ Export::Export(
 
 int Export::run_implementation()
 {
-    namespace bfs = boost::filesystem;
-
     auto const input_dataset_name = argument<std::string>("<input>");
     auto const output_dataset_name = argument<std::string>("<output>");
 
@@ -87,27 +85,27 @@ int Export::run_implementation()
     // Input is a dataset that can be read by LUE.
     // We need to convert from the LUE format to some other format.
 
-    if(bfs::path(output_dataset_name).extension() == ".dot") {
+    if(std::filesystem::path(output_dataset_name).extension() == ".dot") {
         // Create a Graphviz DOT graph of the dataset.
         translate_lue_dataset_to_dot(
             *lue_dataset, output_dataset_name, metadata);
     }
-    // else if(bfs::path(output_dataset_name).extension() == ".csv") {
+    // else if(std::filesystem::path(output_dataset_name).extension() == ".csv") {
     //    // Create a CSV file of the dataset.
     //    translate_lue_dataset_to_csv(
     //        *lue_dataset, output_dataset_name, metadata);
     // }
-    else if(bfs::path(output_dataset_name).extension() == ".shp") {
+    else if(std::filesystem::path(output_dataset_name).extension() == ".shp") {
         // Write information from the dataset to one or more Shapefiles
         translate_lue_dataset_to_shapefile(
             *lue_dataset, output_dataset_name, metadata);
     }
-    else if(bfs::path(output_dataset_name).extension() == ".tif") {
+    else if(std::filesystem::path(output_dataset_name).extension() == ".tif") {
         // Write information from the dataset to one or more rasters
         translate_lue_dataset_to_raster(
             *lue_dataset, output_dataset_name, metadata);
     }
-    // else if(bfs::path(output_dataset_name).extension() == ".vtk") {
+    // else if(std::filesystem::path(output_dataset_name).extension() == ".vtk") {
     //     // Create a VTK file of the dataset.
     //     translate_lue_dataset_to_vtk(
     //         *lue_dataset, output_dataset_name, metadata);

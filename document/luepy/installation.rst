@@ -16,9 +16,7 @@ The LUE package can be installed with `conda`::
 
     During the installation a C++ compiler will be used to compile some source files. The LUE C++ sources depend on the folowing packages to be installed:
 
-    - `boost`_ C++ libraries (libraries and headers)
-        - boost_filesystem
-        - boost_system
+    - `boost`_ C++ libraries (headers)
     - `hdf5`_ C library (library and headers)
     - `numpy`_ Python extension (headers)
     - `pybind11`_ C++ library (header-only)

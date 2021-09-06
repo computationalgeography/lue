@@ -1,6 +1,6 @@
 #include "lue/translate/format/gdal_vector.hpp"
 #include "lue/translate/format/gdal.hpp"
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 
 namespace lue {
@@ -10,21 +10,21 @@ namespace {
 bool has_extension(
     std::string const& pathname)
 {
-    return boost::filesystem::path(pathname).has_extension();
+    return std::filesystem::path(pathname).has_extension();
 }
 
 
 std::string extension(
     std::string const& pathname)
 {
-    return boost::filesystem::path(pathname).extension().string();
+    return std::filesystem::path(pathname).extension().string();
 }
 
 
 std::string stem(
     std::string const& pathname)
 {
-    return boost::filesystem::path(pathname).stem().string();
+    return std::filesystem::path(pathname).stem().string();
 }
 
 
@@ -269,7 +269,7 @@ void translate_lue_dataset_to_shapefile(
     // Figure out which property-sets are selected
     auto const& root_json = metadata.object();
     auto const lue_dataset_name =
-        boost::filesystem::path(dataset.pathname()).stem().string();
+        std::filesystem::path(dataset.pathname()).stem().string();
 
     if(!json::has_key(root_json, lue_dataset_name)) {
         throw std::runtime_error(fmt::format(

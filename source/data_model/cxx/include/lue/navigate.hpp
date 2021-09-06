@@ -1,6 +1,6 @@
 #pragma once
 #include "lue/object/dataset.hpp"
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include <optional>
 
 
@@ -86,7 +86,7 @@ inline PropertyGroup property(
 {
     // If path is absolute, it is relative to the dataset
 
-    boost::filesystem::path path{pathname};
+    std::filesystem::path path{pathname};
 
     assert(path.is_absolute());
 

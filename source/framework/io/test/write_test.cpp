@@ -158,5 +158,5 @@ BOOST_AUTO_TEST_CASE(use_case_2)
 // 
 //     std::string const pathname{"land_use.tif"};
 //     lue::write(array, pathname);
-//     BOOST_CHECK(boost::filesystem::exists(pathname));
+//     BOOST_CHECK(std::filesystem::exists(pathname));
 // }

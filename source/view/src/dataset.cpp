@@ -15,8 +15,8 @@ Dataset::Dataset(
 
     _name{name},
     _dataset{std::make_optional<data_model::Dataset>(name)},
-    _path{boost::filesystem::canonical(_dataset->pathname())},
-    _write_time{boost::filesystem::last_write_time(_path)}
+    _path{std::filesystem::canonical(_dataset->pathname())},
+    _write_time{std::filesystem::last_write_time(_path)}
     // _cache{std::make_shared<Cache>()}
 
 {
@@ -52,13 +52,13 @@ data_model::Dataset const& Dataset::dataset() const
 /*!
     @brief      Return the normalized pathname
 */
-boost::filesystem::path const& Dataset::path() const
+std::filesystem::path const& Dataset::path() const
 {
     return _path;
 }
 
 
-std::time_t Dataset::write_time() const
+std::filesystem::file_time_type Dataset::write_time() const
 {
     return _write_time;
 }
@@ -95,7 +95,7 @@ bool Dataset::rescan()
             // There is a reason to reopen the dataset. Try to do so.
             try {
                 _dataset = data_model::Dataset(_name);
-                _write_time = boost::filesystem::last_write_time(_path);
+                _write_time = std::filesystem::last_write_time(_path);
             }
             catch(...) {
                 // Assume the dataset is still being updated
@@ -129,7 +129,7 @@ bool Dataset::is_open() const
 */
 bool Dataset::exists() const
 {
-    return boost::filesystem::exists(_path);
+    return std::filesystem::exists(_path);
 }
 
 
@@ -165,7 +165,7 @@ bool Dataset::changed() const
         else {
             // Assume the dataset got changed if the current write time
             // is newer than the previous one
-            std::time_t write_time{boost::filesystem::last_write_time(_path)};
+            std::filesystem::file_time_type write_time{std::filesystem::last_write_time(_path)};
 
             result = write_time > _write_time;
         }

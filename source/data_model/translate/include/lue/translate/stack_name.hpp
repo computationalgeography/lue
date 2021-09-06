@@ -1,5 +1,5 @@
 #pragma once
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 
 namespace lue {
@@ -26,11 +26,11 @@ public:
 
 private:
 
-    boost::filesystem::path _parent_path;
+    std::filesystem::path _parent_path;
 
-    boost::filesystem::path _stem;
+    std::filesystem::path _stem;
 
-    boost::filesystem::path _extension;
+    std::filesystem::path _extension;
 
 };
 

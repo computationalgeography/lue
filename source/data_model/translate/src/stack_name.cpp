@@ -8,9 +8,9 @@ namespace utility {
 StackName::StackName(
     std::string const& name):
 
-    _parent_path{boost::filesystem::path(name).parent_path()},
-    _stem{boost::filesystem::path(name).stem()},
-    _extension{boost::filesystem::path(name).extension()}
+    _parent_path{std::filesystem::path(name).parent_path()},
+    _stem{std::filesystem::path(name).stem()},
+    _extension{std::filesystem::path(name).extension()}
 
 {
 }

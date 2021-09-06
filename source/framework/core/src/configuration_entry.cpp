@@ -2,8 +2,8 @@
 #include "lue/framework/core/assert.hpp"
 #include "lue/framework/core/shape.hpp"
 #include <fmt/format.h>
-#include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
+#include <filesystem>
 #include <regex>
 
 
@@ -13,7 +13,7 @@ namespace {
 std::string application_section()
 {
     static auto const program_name =
-        boost::filesystem::path(
+        std::filesystem::path(
                 hpx::get_config_entry("hpx.program_name", "")
             ).filename().string();
     static auto const result = fmt::format("application.{}", program_name);

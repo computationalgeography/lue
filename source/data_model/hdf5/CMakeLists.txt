@@ -54,7 +54,6 @@ target_link_libraries(lue_hdf5
         lue::shared
         hdf5::hdf5
     PRIVATE
-        Boost::filesystem
         fmt::fmt
 )
 

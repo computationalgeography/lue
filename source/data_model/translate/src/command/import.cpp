@@ -1,8 +1,8 @@
 #include "lue/translate/command/import.hpp"
 #include "lue/translate/format.hpp"
 #include "lue/validate.hpp"
-#include <boost/filesystem.hpp>
 #include <exception>
+#include <filesystem>
 
 
 namespace lue {
@@ -80,8 +80,6 @@ Import::Import(
 
 int Import::run_implementation()
 {
-    namespace bfs = boost::filesystem;
-
     auto const input_dataset_names =
         argument<std::vector<std::string>>("<inputs>");
     auto const output_dataset_name = argument<std::string>("<output>");
@@ -125,7 +123,7 @@ int Import::run_implementation()
     }
 
     // Support import of various file formats into a single lue dataset
-    else if(bfs::path(first_input_dataset_name).extension() == ".json") {
+    else if(std::filesystem::path(first_input_dataset_name).extension() == ".json") {
         assert(input_dataset_names.size() == 1);
         translate_json_to_lue(
             first_input_dataset_name, output_dataset_name,

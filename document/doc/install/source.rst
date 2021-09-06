@@ -59,7 +59,7 @@ Variable                         Default Effect
 
 Dependencies
 ~~~~~~~~~~~~
-- HDF5 C, Boost (filesystem, system), fmt
+- HDF5 C, Boost, fmt
 - `LUE_DATA_MODEL_WITH_PYTHON_API`: Python, pybind11, NumPy, Guidelines Support libraries
 - `LUE_DATA_MODEL_WITH_UTILITIES`: Docopt, GDAL, Nlohmann JSON
 
