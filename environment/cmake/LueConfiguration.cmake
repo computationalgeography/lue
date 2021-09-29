@@ -452,9 +452,17 @@ if(LUE_HPX_REQUIRED)
 
                 set(OTF2_ROOT ${PROJECT_BINARY_DIR}/otf2)
 
+                set(otf2_version 2.3)
+                set(otf2_patch_file ${CMAKE_CURRENT_SOURCE_DIR}/environment/cmake/otf2-${otf2_version}.patch)
+
+                if(EXISTS ${otf2_patch_file})
+                    set(otf2_patch_command patch src/otf2_archive_int.c ${otf2_patch_file})
+                endif()
+
                 FetchContent_Declare(otf2
-                    URL https://www.vi-hps.org/cms/upload/packages/otf2/otf2-2.2.tar.gz
-                    URL_HASH MD5=cfedf583bf000e98ce0c86e663e5ded0
+                    URL http://perftools.pages.jsc.fz-juelich.de/cicd/otf2/tags/otf2-${otf2_version}/otf2-${otf2_version}.tar.gz
+                    URL_HASH MD5=b85dd4d11e67180e2d5fe66d05112c4b
+                    PATCH_COMMAND ${otf2_patch_command}
                 )
 
                 FetchContent_GetProperties(otf2)
