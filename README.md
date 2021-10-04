@@ -46,6 +46,7 @@ the related technology.
 
 
 ## Publications
+- LUE-0.3.0: [![DOI](https://zenodo.org/badge/61718900.svg)](https://zenodo.org/badge/latestdoi/61718900)
 - De Jong, K., Panja, D., Van Kreveld, M.  Karssenberg, D. (2021),
     An environmental modelling framework based on asynchronous many-tasks:
     scalability and usability, Environmental Modelling & Software,
