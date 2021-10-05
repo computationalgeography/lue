@@ -386,6 +386,11 @@ endif()
 
 
 include(conan-0.16.1)
+conan_add_remote(
+    NAME conancenter
+    INDEX 1
+    URL https://center.conan.io
+    VERIFY_SSL True)
 conan_cmake_configure(
     REQUIRES ${LUE_CONAN_REQUIRES}
     GENERATORS cmake_find_package
