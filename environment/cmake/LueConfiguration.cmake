@@ -388,8 +388,8 @@ endif()
 include(conan-0.16.1)
 conan_add_remote(
     NAME conancenter
-    URL https://conan.bintray.com)
-    # URL https://center.conan.io)
+    URL https://center.conan.io
+    VERIFY_SSL False)
 conan_cmake_configure(
     REQUIRES ${LUE_CONAN_REQUIRES}
     GENERATORS cmake_find_package
