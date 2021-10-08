@@ -8,7 +8,7 @@ jobs:
         strategy:
             matrix:
                 os: ["ubuntu-20.04"]
-                python-version: [2.7, 3.8, 3.9]
+                python-version: [3.8, 3.9]
                 compiler-version: [9, 10]
 
         runs-on: ${{ matrix.os }}
@@ -36,6 +36,8 @@ jobs:
               conda install breathe conan docopt numpy psutil sphinx
               conan profile new --detect default
               conan profile update settings.compiler.libcxx=libstdc++11 default
+              # conan remote list
+              # conan remote update conancenter https://center.conan.io
 
         - name: configure lue
           shell: bash -l {0}
