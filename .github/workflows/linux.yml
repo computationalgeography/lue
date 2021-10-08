@@ -36,7 +36,6 @@ jobs:
               conda install breathe conan docopt numpy psutil sphinx
               conan profile new --detect default
               conan profile update settings.compiler.libcxx=libstdc++11 default
-              conan remote add conancenter https://center.conan.io
 
         - name: configure lue
           shell: bash -l {0}
