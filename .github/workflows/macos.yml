@@ -21,15 +21,31 @@ jobs:
 
         - name: configure system
           run: |
-              # brew update
+              brew update  # > /dev/null || true
               # brew upgrade
-              brew install cmake boost doxygen fmt gdal glew glfw graphviz gperftools hdf5 hwloc ninja nlohmann-json pybind11 tree
+              brew install \
+                  cmake \
+                  boost \
+                  doxygen \
+                  fmt \
+                  gdal \
+                  glew \
+                  glfw \
+                  graphviz \
+                  gperftools \
+                  hdf5 \
+                  hwloc \
+                  ninja \
+                  nlohmann-json \
+                  pybind11 \
+                  tree
 
         - uses: conda-incubator/setup-miniconda@v2
           with:
               auto-update-conda: true
               python-version: ${{ matrix.python-version }}
               channels: conda-forge
+
         - shell: bash -l {0}
           run: |
               conda install breathe conan docopt numpy psutil sphinx
@@ -51,7 +67,7 @@ jobs:
                   -DLUE_BUILD_DATA_MODEL=TRUE \
                   -DLUE_DATA_MODEL_WITH_PYTHON_API=TRUE \
                   -DLUE_DATA_MODEL_WITH_UTILITIES=TRUE \
-                  -DLUE_BUILD_FRAMEWORK=FALSE \
+                  -DLUE_BUILD_FRAMEWORK=TRUE \
                   -DLUE_FRAMEWORK_WITH_PYTHON_API=TRUE \
                   -DLUE_BUILD_HPX=TRUE \
                   -DLUE_BUILD_VIEW=TRUE \
@@ -72,13 +88,6 @@ jobs:
           run: |
               cd build
               ctest --output-on-failure
-
-        # - name: generate lue documentation
-        #   if: matrix.python-version > 3
-        #   shell: bash
-        #   run: |
-        #       cmake --build build --target cpp_doc py_doc
-        #       cmake --build build --target sphinx_doc
 
         - name: install lue
           if: matrix.python-version > 3
