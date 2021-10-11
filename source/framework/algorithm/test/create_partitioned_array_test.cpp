@@ -227,7 +227,7 @@ BOOST_AUTO_TEST_CASE(instantiate_partitions_individually)
     BOOST_CHECK(all(equal_to(counts, lue::Count{1})).get());
 
     // The number of unique values in the array equals the number of partitions
-    lue::PartitionedArray<lue::Count, 1> unique_values = lue::unique(array).get();
+    lue::PartitionedArray<Element, 1> unique_values = lue::unique(array).get();
     BOOST_CHECK_EQUAL(lue::nr_elements(unique_values), lue::nr_partitions(array));
 }
 
@@ -250,7 +250,7 @@ BOOST_AUTO_TEST_CASE(instantiate_partitions_per_locality)
     BOOST_CHECK(all(equal_to(counts, lue::Count{1})).get());
 
     // The number of unique values in the array equals the number of localities
-    lue::PartitionedArray<lue::Count, 1> unique_values = lue::unique(array).get();
+    lue::PartitionedArray<Element, 1> unique_values = lue::unique(array).get();
     BOOST_CHECK_EQUAL(lue::nr_elements(unique_values), hpx::get_num_localities().get());
 }
 
