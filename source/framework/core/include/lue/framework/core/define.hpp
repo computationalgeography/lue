@@ -1,5 +1,6 @@
 #pragma once
 #include <cstddef>
+#include <cstdint>
 
 
 namespace lue {
@@ -13,7 +14,7 @@ using Index = std::ptrdiff_t;
 /*!
     @brief      Type of a number of things
 */
-using Count = std::ptrdiff_t;
+using Count = std::int64_t;
 
 
 /*!
