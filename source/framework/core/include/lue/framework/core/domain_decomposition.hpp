@@ -327,14 +327,14 @@ namespace lue {
         Shape<Index, rank> const& area_shape,
         Shape<Index, rank> const& partition_shape,
         Shape<Index, rank> const& shape_in_partitions,
-        std::size_t const idx)
+        std::uint32_t const locality_id)
     {
         typename ArrayPartitionDefinition<Index, rank>::Start start;
 
         {
             // Determine indices of cell at start of partition
             // Convert between shape_in_partitions to area_shape indices
-            auto const indices = linear_to_shape_index(shape_in_partitions, idx);
+            auto const indices = linear_to_shape_index(shape_in_partitions, Index{locality_id});
 
             std::transform(
                 indices.begin(), indices.end(), partition_shape.begin(),
@@ -419,8 +419,7 @@ namespace lue {
             // to have more localities than we need.
             if(locality_id < nr_partitions) {
                 result.emplace_back(
-                    partition(area_shape, partition_shape, shape_in_partitions_,
-                        locality_id));
+                    partition(area_shape, partition_shape, shape_in_partitions_, locality_id));
             }
         }
         else {
