@@ -29,9 +29,10 @@ hpx::future<std::string> id_to_str(
                 pointed to by the futures in @a collection
 */
 template<
-    template<typename> typename Collection>
+    template<typename, typename...> typename Collection,
+    typename... Args>
 hpx::future<std::string> join(
-    Collection<hpx::future<std::string>>&& collection,
+    Collection<hpx::future<std::string>, Args...>&& collection,
     std::string const& separator)
 {
     // Attach a continuation that grabs all strings pointed to by the
