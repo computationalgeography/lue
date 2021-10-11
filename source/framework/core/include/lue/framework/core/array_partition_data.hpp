@@ -41,7 +41,7 @@ namespace lue {
 
             using Shape = lue::Shape<Count, rank>;
 
-            using Slice = std::pair<std::ptrdiff_t, std::ptrdiff_t>;
+            using Slice = std::pair<lue::Index, lue::Index>;
 
             using Slices = std::array<Slice, rank>;
 
@@ -636,7 +636,7 @@ namespace lue {
 
             using Shape = lue::Shape<Count, 0>;
 
-            using Slice = std::pair<std::ptrdiff_t, std::ptrdiff_t>;
+            using Slice = std::pair<lue::Index, lue::Index>;
 
             using Slices = std::array<Slice, 0>;
 

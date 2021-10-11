@@ -75,8 +75,8 @@ BOOST_AUTO_TEST_CASE(dynamic_span_test)
         lue::Count const window_size = 2 * radius + 1;
         auto const window = lue::subspan(
                 raster,
-                std::pair<std::ptrdiff_t, std::ptrdiff_t>{3, 3 + window_size},
-                std::pair<std::ptrdiff_t, std::ptrdiff_t>{4, 4 + window_size}
+                std::pair<lue::Index, lue::Index>{3, 3 + window_size},
+                std::pair<lue::Index, lue::Index>{4, 4 + window_size}
             );
         BOOST_CHECK_EQUAL(window.rank(), 2);
         BOOST_REQUIRE_EQUAL(window.extent(0), window_size);

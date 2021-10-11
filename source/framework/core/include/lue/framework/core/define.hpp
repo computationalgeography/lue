@@ -8,7 +8,7 @@ namespace lue {
 /*!
     @brief      Type of an index used for array indexing
 */
-using Index = std::ptrdiff_t;
+using Index = std::int64_t;
 
 
 /*!
@@ -20,7 +20,7 @@ using Count = std::int64_t;
 /*!
     @brief      Type of the size of something
 */
-using Size = std::ptrdiff_t;
+using Size = std::int64_t;
 
 
 /*!
