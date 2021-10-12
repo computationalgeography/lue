@@ -223,8 +223,8 @@ BOOST_AUTO_TEST_CASE(instantiate_partitions_individually)
 
     // The number of unique values per partition is 1
     // Per partition a single count >= 0
-    lue::PartitionedArray<lue::Count, 2> counts = lue::partition_count_unique(array);
-    BOOST_CHECK(all(equal_to(counts, lue::Count{1})).get());
+    lue::PartitionedArray<std::int64_t, 2> counts = lue::partition_count_unique(array);
+    BOOST_CHECK(all(equal_to(counts, std::int64_t{1})).get());
 
     // The number of unique values in the array equals the number of partitions
     lue::PartitionedArray<Element, 1> unique_values = lue::unique(array).get();
@@ -246,8 +246,8 @@ BOOST_AUTO_TEST_CASE(instantiate_partitions_per_locality)
     Array array = lue::create_partitioned_array(array_shape, partition_shape, Functor{});
 
     // The number of unique values per partition is 1
-    lue::PartitionedArray<lue::Count, rank> counts = lue::partition_count_unique(array);
-    BOOST_CHECK(all(equal_to(counts, lue::Count{1})).get());
+    lue::PartitionedArray<std::int64_t, rank> counts = lue::partition_count_unique(array);
+    BOOST_CHECK(all(equal_to(counts, std::int64_t{1})).get());
 
     // The number of unique values in the array equals the number of localities
     lue::PartitionedArray<Element, 1> unique_values = lue::unique(array).get();
