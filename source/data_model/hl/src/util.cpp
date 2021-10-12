@@ -67,7 +67,7 @@ namespace lue {
                 dataset_path /= *it;
             }
 
-            dataset_pathname = dataset_path;
+            dataset_pathname = dataset_path.u8string();
 
             if(std::filesystem::path{array_pathname}.is_absolute())
             {
