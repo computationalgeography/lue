@@ -41,7 +41,7 @@ the related technology.
 | OS         | Description                                              |
 | ---------- | -------------------------------------------------------- |
 | Linux CI   | Release build of data model, framework and related tests |
-| macOS CI   | Release build of data model and related tests            |
+| macOS CI   | Release build of data model, framework and related tests |
 | Windows CI | Release build of data model, without utilities           |
 
 
