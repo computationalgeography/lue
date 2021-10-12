@@ -690,8 +690,13 @@ if(LUE_HDF5_REQUIRED)
     find_package(HDF5 REQUIRED COMPONENTS C)
 
     if(NOT LUE_HAVE_HDF5)
-        # Conan find module uses uppercase target names...
-        add_library(hdf5::hdf5 ALIAS HDF5::HDF5)
+        if(NOT TARGET hdf5::hdf5)
+            # Not needed on Windows it seems. Hence the conditional. Remove this alias when
+            # also not needed on other platforms. Maybe depends on version of Conan?
+
+            # Conan find module uses uppercase target names...
+            add_library(hdf5::hdf5 ALIAS HDF5::HDF5)
+        endif()
     endif()
 endif()
 
