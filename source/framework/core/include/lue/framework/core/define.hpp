@@ -8,13 +8,13 @@ namespace lue {
 /*!
     @brief      Type of an index used for array indexing
 */
-using Index = std::int64_t;
+using Index = std::ptrdiff_t;
 
 
 /*!
     @brief      Type of a number of things
 */
-using Count = std::int64_t;
+using Count = std::ptrdiff_t;
 
 
 /*!

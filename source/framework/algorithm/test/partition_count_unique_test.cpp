@@ -18,7 +18,7 @@ namespace {
     Shape const array_shape{{60, 40}};
     Shape const partition_shape{{10, 10}};
 
-    using Count = lue::Count;
+    using Count = std::int64_t;
     using OutputArray = lue::PartitionedArray<Count, rank>;
 
 }  // Anonymous namespace

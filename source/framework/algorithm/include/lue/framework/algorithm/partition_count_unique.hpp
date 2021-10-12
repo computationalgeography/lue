@@ -90,7 +90,7 @@ namespace lue {
     template<
         typename Policies,
         typename InputElement,
-        typename OutputElement=Count,
+        typename OutputElement=std::int64_t,
         Rank rank>
     PartitionedArray<OutputElement, rank> partition_count_unique(
         Policies const& policies,
@@ -104,7 +104,7 @@ namespace lue {
 
     template<
         typename InputElement,
-        typename OutputElement=Count,
+        typename OutputElement=std::int64_t,
         Rank rank>
     PartitionedArray<OutputElement, rank> partition_count_unique(
         PartitionedArray<InputElement, rank> const& array)
