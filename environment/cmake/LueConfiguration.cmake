@@ -407,7 +407,7 @@ list(APPEND CMAKE_MODULE_PATH
 # ------------------------------------------------------------------------------
 if(LUE_PYTHON_REQUIRED)
     # Order matters: Pybind11 must be searched for after Python has been found.
-    find_package(Python REQUIRED COMPONENTS Interpreter Development NumPy)
+    find_package(Python3 REQUIRED COMPONENTS Interpreter Development NumPy)
 endif()
 
 
