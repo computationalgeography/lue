@@ -28,7 +28,7 @@ add_unit_tests(
     # OBJECT_LIBRARIES
     LINK_LIBRARIES
         pybind11::headers
-        Python::Python
+        Python3::Python
     DEPENDENCIES
         lue_py_data_model_test_modules
         # The tests load the Python extension at runtime. Make sure it is

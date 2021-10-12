@@ -9,7 +9,7 @@ add_unit_tests(
         python_test.cpp
     LINK_LIBRARIES
         pybind11::headers
-        Python::Python
+        Python3::Python
     DEPENDENCIES
         lue_py_framework_test_modules
         lue::py
