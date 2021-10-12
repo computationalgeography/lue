@@ -186,7 +186,7 @@ namespace lue::detail {
                     auto const [extent0, extent1] = shape_in_partitions;
 
                     auto flows_towards_halo_partition =
-                        [extent0, extent1](
+                        [extent0=extent0, extent1=extent1](
                             Index const idx0,
                             Index const idx1,
                             Offset const& offset) -> bool
@@ -289,7 +289,7 @@ namespace lue::detail {
                     auto const [extent0, extent1] = shape_in_partitions;
 
                     auto flows_towards_halo_partition =
-                        [extent0, extent1](
+                        [extent0=extent0, extent1=extent1](
                             Index const idx0,
                             Index const idx1,
                             Offset const& offset) -> bool

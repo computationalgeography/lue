@@ -208,7 +208,7 @@ namespace lue::detail {
             {
                 halo_partitions(rh, cp) = InputPartition{input_partitions(rp, cp)}.then(
 
-                    [action, locality=localities(rp, cp), min_shape, fill_value](
+                    [action, locality=localities(rp, cp), min_shape, fill_value=fill_value](
                         InputPartition&& input_partition)
                     {
                         return action(locality, std::move(input_partition), min_shape, fill_value);
@@ -261,7 +261,7 @@ namespace lue::detail {
             {
                 halo_partitions(rp, ch) = InputPartition{input_partitions(rp, cp)}.then(
 
-                    [action, locality=localities(rp, cp), min_shape, fill_value](
+                    [action, locality=localities(rp, cp), min_shape, fill_value=fill_value](
                         InputPartition&& input_partition)
                     {
                         return action(locality, std::move(input_partition), min_shape, fill_value);

@@ -1,6 +1,7 @@
 #pragma once
 #include "lue/hdf5/group.hpp"
 #include <fmt/format.h>
+#include <algorithm>
 #include <cassert>
 #include <map>
 #include <stdexcept>

@@ -1,5 +1,6 @@
 #pragma once
 #include <cstddef>
+#include <cstdint>
 
 
 namespace lue {
@@ -19,7 +20,7 @@ using Count = std::ptrdiff_t;
 /*!
     @brief      Type of the size of something
 */
-using Size = std::ptrdiff_t;
+using Size = std::int64_t;
 
 
 /*!

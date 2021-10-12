@@ -24,7 +24,7 @@ namespace lue {
 
             using Subspan = DynamicSubspan<Element, rank>;
 
-            using Slice = std::pair<std::ptrdiff_t, std::ptrdiff_t>;
+            using Slice = std::pair<lue::Index, lue::Index>;
 
             using Slices = std::array<Slice, rank>;
 

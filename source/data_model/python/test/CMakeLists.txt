@@ -5,7 +5,7 @@ copy_python_unit_test_modules(
 
 
 if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
-    set(environment "DYLD_LIBRARY_PATH=${Python_RUNTIME_LIBRARY_DIRS}:$<TARGET_FILE_DIR:lue::py>")
+    set(environment "DYLD_LIBRARY_PATH=${Python3_RUNTIME_LIBRARY_DIRS}:$<TARGET_FILE_DIR:lue::py>")
 endif()
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
@@ -28,7 +28,7 @@ add_unit_tests(
     # OBJECT_LIBRARIES
     LINK_LIBRARIES
         pybind11::headers
-        Python::Python
+        Python3::Python
     DEPENDENCIES
         lue_py_data_model_test_modules
         # The tests load the Python extension at runtime. Make sure it is

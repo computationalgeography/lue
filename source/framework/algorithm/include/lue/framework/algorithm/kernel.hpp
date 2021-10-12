@@ -136,7 +136,7 @@ namespace lue {
     template<
         typename Weight,
         Rank rank>
-    Size Kernel<Weight, rank>::size() const
+    Count Kernel<Weight, rank>::size() const
     {
         return 2 * _radius + 1;
     }

@@ -287,7 +287,7 @@ if(LUE_BOOST_REQUIRED)
     set(Boost_NO_BOOST_CMAKE TRUE)
 
     if(NOT LUE_HAVE_BOOST)
-        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} boost/1.75.0)
+        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} boost/1.77.0)
         set(LUE_CONAN_OPTIONS ${LUE_CONAN_OPTIONS} boost:shared=True)
     endif()
 endif()
@@ -300,13 +300,13 @@ endif()
 
 if(LUE_FMT_REQUIRED)
     if(NOT LUE_HAVE_FMT)
-        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} fmt/8.0.0)
+        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} fmt/8.0.1)
     endif()
 endif()
 
 if(LUE_GDAL_REQUIRED)
     if(NOT LUE_HAVE_GDAL)
-        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} gdal/3.2.1)
+        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} gdal/3.3.1)
     endif()
 endif()
 
@@ -380,16 +380,16 @@ endif()
 
 if(LUE_NLOHMANN_JSON_REQUIRED)
     if(NOT LUE_HAVE_NLOHMANN_JSON)
-        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} nlohmann_json/3.9.1)
+        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} nlohmann_json/3.10.3)
     endif()
 endif()
 
 
 include(conan-0.16.1)
-# conan_add_remote(
-#     NAME conancenter
-#     URL https://center.conan.io
-#     VERIFY_SSL False)
+conan_add_remote(
+    NAME conancenter
+    URL https://center.conan.io
+    VERIFY_SSL True)
 conan_cmake_configure(
     REQUIRES ${LUE_CONAN_REQUIRES}
     GENERATORS cmake_find_package
@@ -407,7 +407,7 @@ list(APPEND CMAKE_MODULE_PATH
 # ------------------------------------------------------------------------------
 if(LUE_PYTHON_REQUIRED)
     # Order matters: Pybind11 must be searched for after Python has been found.
-    find_package(Python REQUIRED COMPONENTS Interpreter Development NumPy)
+    find_package(Python3 REQUIRED COMPONENTS Interpreter Development NumPy)
 endif()
 
 
@@ -416,7 +416,7 @@ if(LUE_PYBIND11_REQUIRED)
     if(NOT LUE_HAVE_PYBIND11)
         FetchContent_Declare(pybind11
             GIT_REPOSITORY https://github.com/pybind/pybind11
-            GIT_TAG "v2.7.0"
+            GIT_TAG "v2.7.1"
         )
 
         # This should pick up the Python found above
@@ -429,7 +429,7 @@ if(LUE_PYBIND11_REQUIRED)
         # as shared libraries. Therefore, we install in the root of the
         # site packages directory. We may have to change things in
         # the future if this is unconventional.
-        set(LUE_PYTHON_API_INSTALL_DIR "${Python_SITEARCH}")  # /lue")
+        set(LUE_PYTHON_API_INSTALL_DIR "${Python3_SITEARCH}")  # /lue")
     endif()
 endif()
 
@@ -486,7 +486,7 @@ if(LUE_HPX_REQUIRED)
 
                     # TODO Use LUE_OTF2_WITH_PYTHON to turn on/off the
                     #   build of the Python bindings.
-                    # PYTHON=${Python_EXECUTABLE} PYTHON_FOR_GENERATOR=:
+                    # PYTHON=${Python3_EXECUTABLE} PYTHON_FOR_GENERATOR=:
                     execute_process(
                         COMMAND
                             ${otf2_SOURCE_DIR}/configure
@@ -690,8 +690,13 @@ if(LUE_HDF5_REQUIRED)
     find_package(HDF5 REQUIRED COMPONENTS C)
 
     if(NOT LUE_HAVE_HDF5)
-        # Conan find module uses uppercase target names...
-        add_library(hdf5::hdf5 ALIAS HDF5::HDF5)
+        if(NOT TARGET hdf5::hdf5)
+            # Not needed on Windows it seems. Hence the conditional. Remove this alias when
+            # also not needed on other platforms. Maybe depends on version of Conan?
+
+            # Conan find module uses uppercase target names...
+            add_library(hdf5::hdf5 ALIAS HDF5::HDF5)
+        endif()
     endif()
 endif()
 

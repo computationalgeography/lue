@@ -694,7 +694,7 @@ namespace lue {
                     hpx::launch::async,
                     hpx::unwrapping(
 
-                            [locality, action, policies, array_pathname, object_id](
+                            [locality=locality, action, policies, array_pathname, object_id](
                                 std::vector<Partition>&& partitions)
                             {
                                 return action(locality, policies,
@@ -785,7 +785,7 @@ namespace lue {
                     hpx::launch::async,
                     hpx::unwrapping(
 
-                            [locality, action, policies, array_pathname, object_id, time_step_idx](
+                            [locality=locality, action, policies, array_pathname, object_id, time_step_idx](
                                 std::vector<Partition>&& partitions)
                             {
                                 return action(locality, policies,

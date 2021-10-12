@@ -83,7 +83,7 @@ set_target_properties(lue_py_framework
 # the wrong header might be picked up, resulting in runtime errors.
 target_include_directories(lue_py_framework SYSTEM
     PRIVATE
-        ${Python_NumPy_INCLUDE_DIRS}
+        ${Python3_NumPy_INCLUDE_DIRS}
 )
 
 target_include_directories(lue_py_framework
