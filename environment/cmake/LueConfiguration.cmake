@@ -287,7 +287,7 @@ if(LUE_BOOST_REQUIRED)
     set(Boost_NO_BOOST_CMAKE TRUE)
 
     if(NOT LUE_HAVE_BOOST)
-        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} boost/1.75.0)
+        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} boost/1.77.0)
         set(LUE_CONAN_OPTIONS ${LUE_CONAN_OPTIONS} boost:shared=True)
     endif()
 endif()
@@ -300,13 +300,13 @@ endif()
 
 if(LUE_FMT_REQUIRED)
     if(NOT LUE_HAVE_FMT)
-        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} fmt/8.0.0)
+        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} fmt/8.0.1)
     endif()
 endif()
 
 if(LUE_GDAL_REQUIRED)
     if(NOT LUE_HAVE_GDAL)
-        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} gdal/3.2.1)
+        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} gdal/3.3.1)
     endif()
 endif()
 
@@ -380,16 +380,16 @@ endif()
 
 if(LUE_NLOHMANN_JSON_REQUIRED)
     if(NOT LUE_HAVE_NLOHMANN_JSON)
-        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} nlohmann_json/3.9.1)
+        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} nlohmann_json/3.10.3)
     endif()
 endif()
 
 
 include(conan-0.16.1)
-# conan_add_remote(
-#     NAME conancenter
-#     URL https://center.conan.io
-#     VERIFY_SSL False)
+conan_add_remote(
+    NAME conancenter
+    URL https://center.conan.io
+    VERIFY_SSL True)
 conan_cmake_configure(
     REQUIRES ${LUE_CONAN_REQUIRES}
     GENERATORS cmake_find_package
@@ -416,7 +416,7 @@ if(LUE_PYBIND11_REQUIRED)
     if(NOT LUE_HAVE_PYBIND11)
         FetchContent_Declare(pybind11
             GIT_REPOSITORY https://github.com/pybind/pybind11
-            GIT_TAG "v2.7.0"
+            GIT_TAG "v2.7.1"
         )
 
         # This should pick up the Python found above
