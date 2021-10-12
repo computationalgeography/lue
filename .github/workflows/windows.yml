@@ -41,6 +41,7 @@ jobs:
                   -B build \
                   -G "Visual Studio 16 2019" -A x64 \
                   -DCMAKE_BUILD_TYPE=Release \
+                  -DPython_FIND_VIRTUALENV=ONLY \
                   -DLUE_HAVE_BOOST=FALSE \
                   -DLUE_HAVE_GDAL=FALSE \
                   -DLUE_HAVE_GLEW=FALSE \
