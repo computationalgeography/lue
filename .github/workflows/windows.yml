@@ -27,31 +27,33 @@ jobs:
               channels: conda-forge
         - shell: bash -l {0}
           run: |
-              conda install conan gdal glew hdf5 libhwloc numpy psutil sphinx
+              conda install conan libhwloc
+              # TODO hwloc from Conan?
+              # gdal glew hdf5 libhwloc numpy psutil sphinx
 
         - name: configure lue
           shell: bash -l {0}
           run: |
               mkdir build
+              # -DBoost_USE_STATIC_LIBS=FALSE
               cmake \
                   -S . \
                   -B build \
                   -G "Visual Studio 16 2019" -A x64 \
                   -DCMAKE_BUILD_TYPE=Release \
-                  -DLUE_HAVE_BOOST=TRUE \
-                  -DBoost_USE_STATIC_LIBS=FALSE \
-                  -DLUE_HAVE_GDAL=TRUE \
-                  -DLUE_HAVE_GLEW=TRUE \
-                  -DLUE_HAVE_HDF5=TRUE \
+                  -DLUE_HAVE_BOOST=FALSE \
+                  -DLUE_HAVE_GDAL=FALSE \
+                  -DLUE_HAVE_GLEW=FALSE \
+                  -DLUE_HAVE_HDF5=FALSE \
                   -DLUE_BUILD_DOCUMENTATION=FALSE \
-                  -DLUE_BUILD_TEST=FALSE \
-                  -DLUE_BUILD_DATA_MODEL=FALSE \
+                  -DLUE_BUILD_TEST=TRUE \
+                  -DLUE_BUILD_DATA_MODEL=TRUE \
                   -DLUE_DATA_MODEL_WITH_PYTHON_API=TRUE \
                   -DLUE_DATA_MODEL_WITH_UTILITIES=TRUE \
                   -DLUE_BUILD_FRAMEWORK=FALSE \
                   -DLUE_FRAMEWORK_WITH_PYTHON_API=TRUE \
                   -DLUE_BUILD_HPX=TRUE \
-                  -DLUE_BUILD_VIEW=FALSE \
+                  -DLUE_BUILD_VIEW=TRUE \
                   -DHPX_USE_CMAKE_CXX_STANDARD=TRUE \
                   -DHPX_WITH_MALLOC="system" \
                   -DHPX_WITH_FETCH_ASIO=TRUE \
