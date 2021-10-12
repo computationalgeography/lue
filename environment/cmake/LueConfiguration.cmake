@@ -429,7 +429,7 @@ if(LUE_PYBIND11_REQUIRED)
         # as shared libraries. Therefore, we install in the root of the
         # site packages directory. We may have to change things in
         # the future if this is unconventional.
-        set(LUE_PYTHON_API_INSTALL_DIR "${Python_SITEARCH}")  # /lue")
+        set(LUE_PYTHON_API_INSTALL_DIR "${Python3_SITEARCH}")  # /lue")
     endif()
 endif()
 
@@ -486,7 +486,7 @@ if(LUE_HPX_REQUIRED)
 
                     # TODO Use LUE_OTF2_WITH_PYTHON to turn on/off the
                     #   build of the Python bindings.
-                    # PYTHON=${Python_EXECUTABLE} PYTHON_FOR_GENERATOR=:
+                    # PYTHON=${Python3_EXECUTABLE} PYTHON_FOR_GENERATOR=:
                     execute_process(
                         COMMAND
                             ${otf2_SOURCE_DIR}/configure
