@@ -27,7 +27,7 @@ jobs:
               channels: conda-forge
         - shell: bash -l {0}
           run: |
-              conda install conan libhwloc
+              conda install conan libhwloc numpy
               # TODO hwloc from Conan?
               # gdal glew hdf5 libhwloc numpy psutil sphinx
 
@@ -36,12 +36,12 @@ jobs:
           run: |
               mkdir build
               # -DBoost_USE_STATIC_LIBS=FALSE
+              # -DPython_FIND_VIRTUALENV=ONLY
               cmake \
                   -S . \
                   -B build \
                   -G "Visual Studio 16 2019" -A x64 \
                   -DCMAKE_BUILD_TYPE=Release \
-                  -DPython_FIND_VIRTUALENV=ONLY \
                   -DLUE_HAVE_BOOST=FALSE \
                   -DLUE_HAVE_GDAL=FALSE \
                   -DLUE_HAVE_GLEW=FALSE \
