@@ -45,9 +45,9 @@ jobs:
                   -DLUE_HAVE_GLEW=FALSE \
                   -DLUE_HAVE_HDF5=FALSE \
                   -DLUE_BUILD_DOCUMENTATION=FALSE \
-                  -DLUE_BUILD_TEST=TRUE \
+                  -DLUE_BUILD_TEST=FALSE \
                   -DLUE_BUILD_DATA_MODEL=TRUE \
-                  -DLUE_DATA_MODEL_WITH_PYTHON_API=TRUE \
+                  -DLUE_DATA_MODEL_WITH_PYTHON_API=FALSE \
                   -DLUE_DATA_MODEL_WITH_UTILITIES=FALSE \
                   -DLUE_BUILD_FRAMEWORK=FALSE \
                   -DLUE_FRAMEWORK_WITH_PYTHON_API=TRUE \
