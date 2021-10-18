@@ -1,7 +1,7 @@
 cmake_minimum_required(
     VERSION 3.20)
 project(LUE
-    VERSION 0.4.0
+    VERSION 0.3.1
     LANGUAGES C CXX)
 
 set(${PROJECT_NAME}_ORGANISATION_NAME "Computational Geography")
