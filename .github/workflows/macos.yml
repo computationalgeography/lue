@@ -13,7 +13,7 @@ jobs:
 
         runs-on: ${{ matrix.os }}
 
-        name: ${{ matrix.os }} - ${{ matrix.python-version }}
+        name: ${{ matrix.os }} / python - ${{ matrix.python-version }}
 
         steps:
 
