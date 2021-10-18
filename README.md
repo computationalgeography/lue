@@ -46,8 +46,12 @@ the related technology.
 
 
 ## Publications
-- LUE-0.3.0: [![DOI](https://zenodo.org/badge/61718900.svg)](https://zenodo.org/badge/latestdoi/61718900)
-- De Jong, K., Panja, D., Van Kreveld, M.  Karssenberg, D. (2021),
+- All versions / concept: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5535685.svg)](https://doi.org/10.5281/zenodo.5535685)
+- LUE-0.3.0: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5535686.svg)](https://doi.org/10.5281/zenodo.5535686)
+- De Jong, K., Panja, D., Karssenberg, D., Van Kreveld, M.,
+    Scalability and Composability of Flow Accumulation Algorithms based
+    on Asynchronous Many-Tasks, submitted for review
+- De Jong, K., Panja, D., Van Kreveld, M., Karssenberg, D. (2021),
     An environmental modelling framework based on asynchronous many-tasks:
     scalability and usability, Environmental Modelling & Software,
     doi: [10.1016/j.envsoft.2021.104998](https://doi.org/10.1016/j.envsoft.2021.104998)
