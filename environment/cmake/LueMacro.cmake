@@ -73,7 +73,7 @@ macro(add_unit_test)
 
     # Maybe add ${EXECUTABLE_OUTPUT_PATH} in the future. If needed.
     set(PATH_LIST $ENV{PATH})
-    # list(INSERT PATH_LIST 0 ${Boost_LIBRARY_DIRS})
+    list(INSERT PATH_LIST 0 ${Boost_LIBRARY_DIRS})
     set(PATH_STRING "${PATH_LIST}")
 
     if(${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
@@ -362,7 +362,7 @@ function(add_hpx_unit_test)
 
     # Maybe add ${EXECUTABLE_OUTPUT_PATH} in the future. If needed.
     set(PATH_LIST $ENV{PATH})
-    # list(INSERT PATH_LIST 0 ${Boost_LIBRARY_DIRS})
+    list(INSERT PATH_LIST 0 ${Boost_LIBRARY_DIRS})
     set(PATH_STRING "${PATH_LIST}")
 
     if(${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
