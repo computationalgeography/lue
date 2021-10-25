@@ -1,7 +1,7 @@
 #pragma once
 #include "lue/utility/metadata.hpp"
 #include "lue/object/dataset.hpp"
-#include <ogrsf_frmts.h>
+#include <gdal_priv.h>
 
 
 namespace lue {
