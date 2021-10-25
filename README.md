@@ -47,6 +47,7 @@ the related technology.
 
 ## Publications
 - All versions / concept: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5535685.svg)](https://doi.org/10.5281/zenodo.5535685)
+- LUE-0.3.1: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5575419.svg)](https://doi.org/10.5281/zenodo.5575419)
 - LUE-0.3.0: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5535686.svg)](https://doi.org/10.5281/zenodo.5535686)
 - De Jong, K., Panja, D., Karssenberg, D., Van Kreveld, M.,
     Scalability and composability of flow accumulation algorithms based
