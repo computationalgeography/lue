@@ -8,7 +8,7 @@ jobs:
         strategy:
             matrix:
                 os: ["ubuntu-20.04"]
-                python-version: [3.8]
+                python-version: [3.7, 3.10]
 
         runs-on: ${{ matrix.os }}
 
@@ -16,16 +16,72 @@ jobs:
 
         steps:
 
-        - name: checkout lue
+        - name: Create build directory
+          run: mkdir build
+          shell: bash -l {0}
+
+        - name: Checkout LUE
           uses: actions/checkout@v2
 
-        # - name: configure system
-        #   run: |
-        #       sudo apt update
-        #       sudo apt autoremove
-        #       sudo apt upgrade
         - uses: conda-incubator/setup-miniconda@v2
           with:
-              auto-update-conda: true
+              auto-update-conda: false
               python-version: ${{ matrix.python-version }}
               channels: conda-forge
+              mamba-version: "*"
+        - shell: bash -l {0}
+          run: |
+              mamba install git conan cmake ninja numpy boost-cpp hdf5 \
+              libgdal pybind11 fmt xorg-libxfixes glew docopt.cpp \
+              nlohmann_json glfw libhwloc gperftools asio
+
+        - name: Configure LUE
+          shell: bash -l {0}
+          run: |
+              cmake $SRC_DIR -G"Ninja" \
+              -D CMAKE_BUILD_TYPE=Release \
+              -D CMAKE_INSTALL_PREFIX:PATH="package" \
+              -D CMAKE_INSTALL_LIBDIR=lib \
+              -D LUE_HAVE_BOOST:BOOL=TRUE \
+              -D LUE_HAVE_FMT:BOOL=TRUE \
+              -D LUE_HAVE_PYBIND11:BOOL=TRUE \
+              -D LUE_HAVE_HDF5:BOOL=TRUE \
+              -D LUE_HAVE_GDAL:BOOL=TRUE \
+              -D LUE_HAVE_DOCOPT:BOOL=TRUE \
+              -D LUE_HAVE_GLEW:BOOL=TRUE \
+              -D LUE_HAVE_GLFW:BOOL=TRUE \
+              -D LUE_HAVE_MS_GSL:BOOL=FALSE \
+              -D LUE_HAVE_NLOHMANN_JSON:BOOL=TRUE \
+              -D LUE_DATA_MODEL_WITH_PYTHON_API=ON \
+              -D LUE_DATA_MODEL_WITH_UTILITIES=ON \
+              -D LUE_BUILD_VIEW=ON \
+              -D LUE_BUILD_TEST=ON \
+              -D LUE_BUILD_FRAMEWORK=ON \
+              -D LUE_FRAMEWORK_WITH_PYTHON_API=ON \
+              -D LUE_BUILD_HPX=ON \
+              -D HPX_USE_CMAKE_CXX_STANDARD=ON \
+              -D HPX_WITH_MALLOC="tcmalloc" \
+              -D HPX_WITH_PKGCONFIG=OFF \
+              -D HPX_WITH_EXAMPLES=OFF \
+              -D HPX_WITH_TESTS=OFF
+
+        - name: Build iteration 1
+          shell: bash
+          run: |
+              cmake --build build --config Release --target \
+              lue_view lue_translate lue_validate core
+
+        - name: Build iteration 2
+          shell: bash
+          run: |
+              cmake --build build --config Release --target all --parallel 1
+
+        - name: Test
+          shell: bash
+          run: |
+              ctest --test-dir build --output-on-failure
+
+        - name: Install
+          shell: bash
+          run: |
+              cmake --install build --config Release
