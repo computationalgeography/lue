@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE(use_case_1)
         };
     Array<bool, rank> condition{lue::create_partitioned_array<bool>(shape, shape)};
     condition.partitions()(0, 0).wait();
-    condition.partitions()(0, 0).set_data(std::move(condition_data));
+    condition.partitions()(0, 0).set_data(std::move(condition_data)).wait();
 
     PartitionData<Element, rank> true_data{
             shape,
@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE(use_case_1)
         };
     Array<Element, rank> true_array{lue::create_partitioned_array<Element>(shape, shape)};
     true_array.partitions()(0, 0).wait();
-    true_array.partitions()(0, 0).set_data(std::move(true_data));
+    true_array.partitions()(0, 0).set_data(std::move(true_data)).wait();
 
     Element const false_value{9};
 
@@ -82,7 +82,7 @@ BOOST_AUTO_TEST_CASE(use_case_1)
         };
     Array<Element, rank> result_we_want{lue::create_partitioned_array<Element>(shape, shape)};
     result_we_want.partitions()(0, 0).wait();
-    result_we_want.partitions()(0, 0).set_data(std::move(result_we_want_data));
+    result_we_want.partitions()(0, 0).set_data(std::move(result_we_want_data)).wait();
 
     lue::test::check_arrays_are_equal(result_we_got, result_we_want);
 }
@@ -126,7 +126,7 @@ BOOST_AUTO_TEST_CASE(use_case_2)
         };
     Array<ConditionElement, rank> condition{lue::create_partitioned_array<ConditionElement>(shape, shape)};
     condition.partitions()(0, 0).wait();
-    condition.partitions()(0, 0).set_data(std::move(condition_data));
+    condition.partitions()(0, 0).set_data(std::move(condition_data)).wait();
 
     PartitionData<Element, rank> true_data{
             shape,
@@ -138,7 +138,7 @@ BOOST_AUTO_TEST_CASE(use_case_2)
         };
     Array<Element, rank> true_array{lue::create_partitioned_array<Element>(shape, shape)};
     true_array.partitions()(0, 0).wait();
-    true_array.partitions()(0, 0).set_data(std::move(true_data));
+    true_array.partitions()(0, 0).set_data(std::move(true_data)).wait();
 
     using DomainPolicy = lue::policy::where::DomainPolicy<ConditionElement, Element>;
     using OutputPolicies =
@@ -174,7 +174,7 @@ BOOST_AUTO_TEST_CASE(use_case_2)
         };
     Array<Element, rank> result_we_want{lue::create_partitioned_array<Element>(shape, shape)};
     result_we_want.partitions()(0, 0).wait();
-    result_we_want.partitions()(0, 0).set_data(std::move(result_we_want_data));
+    result_we_want.partitions()(0, 0).set_data(std::move(result_we_want_data)).wait();
 
     lue::test::check_arrays_are_equal(result_we_got, result_we_want);
 }
