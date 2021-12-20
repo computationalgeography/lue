@@ -446,6 +446,13 @@ if(LUE_BOOST_REQUIRED)
             -DBOOST_ALL_NO_LIB
             -DBOOST_ALL_DYN_LINK
         )
+
+    if(NOT LUE_HAVE_BOOST)
+        # Boost provided by Conan. Unit tests need path to dlls to be set. In the unit test
+        # macro's this variable is used to locate them.
+        cmake_path(GET Boost_INCLUDE_DIR PARENT_PATH Boost_LIBRARY_DIRS)
+        set(Boost_LIBRARY_DIRS "${Boost_LIBRARY_DIRS}/bin")
+    endif()
 endif()
 
 

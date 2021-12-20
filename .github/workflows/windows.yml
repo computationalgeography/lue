@@ -28,8 +28,7 @@ jobs:
         - shell: bash -l {0}
           run: |
               conda install conan libhwloc numpy
-              # TODO hwloc from Conan?
-              # gdal glew hdf5 libhwloc numpy psutil sphinx
+              # psutil sphinx
 
         - name: configure lue
           shell: bash -l {0}
@@ -45,10 +44,10 @@ jobs:
                   -DLUE_HAVE_GLEW=FALSE \
                   -DLUE_HAVE_HDF5=FALSE \
                   -DLUE_BUILD_DOCUMENTATION=FALSE \
-                  -DLUE_BUILD_TEST=FALSE \
+                  -DLUE_BUILD_TEST=TRUE \
                   -DLUE_BUILD_DATA_MODEL=TRUE \
-                  -DLUE_DATA_MODEL_WITH_PYTHON_API=FALSE \
-                  -DLUE_DATA_MODEL_WITH_UTILITIES=FALSE \
+                  -DLUE_DATA_MODEL_WITH_PYTHON_API=TRUE \
+                  -DLUE_DATA_MODEL_WITH_UTILITIES=TRUE \
                   -DLUE_BUILD_FRAMEWORK=FALSE \
                   -DLUE_FRAMEWORK_WITH_PYTHON_API=TRUE \
                   -DLUE_BUILD_HPX=TRUE \
@@ -65,6 +64,12 @@ jobs:
           shell: bash
           run: |
               cmake --build build --target ALL_BUILD --config Release
+
+        # - name: test lue
+        #   shell: bash
+        #   run: |
+        #       cd build
+        #       ctest --output-on-failure
 
         - name: install lue
           shell: bash
