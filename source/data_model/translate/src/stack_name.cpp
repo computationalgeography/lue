@@ -21,7 +21,7 @@ std::string StackName::operator[](
 {
     return fmt::format(
         "{}_{}{}", (
-        _parent_path / _stem).string(), idx, _extension.string());
+        _parent_path / _stem).generic_string(), idx, _extension.string());
 }
 
 }  // namespace utility

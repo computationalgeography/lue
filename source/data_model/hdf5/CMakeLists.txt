@@ -52,7 +52,7 @@ target_include_directories(lue_hdf5
 target_link_libraries(lue_hdf5
     PUBLIC
         lue::shared
-        hdf5::hdf5
+        HDF5::HDF5
     PRIVATE
         fmt::fmt
 )

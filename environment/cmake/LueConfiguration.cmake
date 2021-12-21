@@ -389,7 +389,7 @@ if(LUE_NLOHMANN_JSON_REQUIRED)
 endif()
 
 
-include(conan-0.16.1)
+include(conan-0.17.0)
 conan_add_remote(
     NAME conancenter
     URL https://center.conan.io
@@ -420,7 +420,7 @@ if(LUE_PYBIND11_REQUIRED)
     if(NOT LUE_HAVE_PYBIND11)
         FetchContent_Declare(pybind11
             GIT_REPOSITORY https://github.com/pybind/pybind11
-            GIT_TAG "v2.7.1"
+            GIT_TAG "v2.8.1"
         )
 
         # This should pick up the Python found above
@@ -701,16 +701,6 @@ endif()
 
 if(LUE_HDF5_REQUIRED)
     find_package(HDF5 REQUIRED COMPONENTS C)
-
-    if(NOT LUE_HAVE_HDF5)
-        if(NOT TARGET hdf5::hdf5)
-            # Not needed on Windows it seems. Hence the conditional. Remove this alias when
-            # also not needed on other platforms. Maybe depends on version of Conan?
-
-            # Conan find module uses uppercase target names...
-            add_library(hdf5::hdf5 ALIAS HDF5::HDF5)
-        endif()
-    endif()
 endif()
 
 if(LUE_MS_GSL_REQUIRED)
