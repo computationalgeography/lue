@@ -63,13 +63,13 @@ jobs:
         - name: build lue
           shell: bash
           run: |
-              cmake --build build --target ALL_BUILD --config Release
+              cmake --build build --config Release --target all_build
 
-        # - name: test lue
-        #   shell: bash
-        #   run: |
-        #       cd build
-        #       ctest --output-on-failure
+        - name: test lue
+          shell: bash
+          run: |
+              cd build
+              cmake --build build --config Release --target run_tests
 
         - name: install lue
           shell: bash
