@@ -1,0 +1,100 @@
+{% set version = "0.0.0" %}
+
+
+package:
+  name: lue
+  version: {{ version }}
+
+
+source:
+  url: ../../../
+
+
+build:
+  number: 0
+
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ cdt('mesa-libgl-devel') }}                # [linux]
+    - {{ cdt('mesa-dri-drivers') }}                # [linux]
+    - {{ cdt('libselinux') }}                      # [linux]
+    - {{ cdt('libxdamage') }}                      # [linux]
+    - {{ cdt('libxxf86vm') }}                      # [linux]
+    - {{ cdt('libxext') }}                         # [linux]
+    - git
+    - conan
+    - cmake
+    - ninja
+
+  host:
+    - python
+    - numpy
+    - boost-cpp
+    - hdf5
+    - libgdal
+    - pybind11
+    - fmt
+    - xorg-libxfixes                               # [linux]
+    - glew
+    - docopt.cpp
+    - nlohmann_json
+    - glfw
+    - libhwloc
+    - gperftools                                   # [not win]
+    - asio
+
+  run:
+    - python
+    - {{ pin_compatible('numpy') }}
+    - hdf5
+    - libgdal
+    - fmt
+    - docopt.cpp
+    - glfw
+    - gperftools                                   # [not win]
+
+
+test:
+    commands:
+       - lue_translate -h
+       - lue_validate -h
+       - lue_view -h
+
+
+about:
+  home: https://lue.computationalgeography.org/
+  license: MIT
+  license_file: LICENSE.txt
+  summary: LUE scientific database and environmental modelling framework.
+  description: |
+    LUE is software for storing and manipulating large amounts of information
+    for large amounts of objects. This information can optionally have a
+    reference in time and space. For example, LUE can represent collections of
+    wandering animals and their properties, some of which are changing through
+    time, or the elevation of the surface of one or multiple areas. The software
+    is useful, and currently mainly used, in the context of environmental
+    modelling of biological and physical systems, represented by agents and
+    fields, but we make sure that the software is as generic as possible,
+    allowing it to be useful in other contexts as well.
+
+    Currently, LUE contains two main parts: *LUE data model* and *LUE
+    framework*. LUE data model is an implementation of the LUE physical data
+    model, which allows users to perform I/O to the "LUE Scientific Database".
+    It allows for the storage of large amounts of objects and their location
+    in time and space, and their properties.
+
+    LUE framework is a collection of data types and algorithms that can be
+    combined to translate large amounts of information. It allows computations
+    to be performed on hardware ranging from laptops to compute clusters,
+    without the user having to know about high-performance computing and
+    the related technology.
+  doc_url: https://lue.computationalgeography.org/doc/
+  dev_url: https://github.com/computationalgeography/lue/
+
+
+extra:
+  recipe-maintainers:
+    - OliverSchmitz
+    - kordejong
