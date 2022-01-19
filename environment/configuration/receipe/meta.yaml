@@ -7,7 +7,7 @@ package:
 
 
 source:
-  url: ../../../
+  path: ../../../
 
 
 build:
