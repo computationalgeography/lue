@@ -37,4 +37,4 @@ jobs:
         - name: Build
           shell: bash -l {0}
           run: |
-              conda mambabuild environment/configuration/receipe --channel conda-forge --override-channels --numpy 1.18
+              conda mambabuild environment/configuration/receipe --channel conda-forge --override-channels --numpy 1.19
