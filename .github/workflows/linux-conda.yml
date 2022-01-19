@@ -30,6 +30,9 @@ jobs:
               python-version: ${{ matrix.python-version }}
               channels: conda-forge
               mamba-version: "*"
+        - shell: bash -l {0}
+          run: |
+              mamba install boa -c conda-forge
 
         - name: Build
           shell: bash -l {0}
