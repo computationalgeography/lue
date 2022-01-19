@@ -21,7 +21,7 @@ target_include_directories(lue_framework_core SYSTEM
 
 target_compile_definitions(lue_framework_core
     PUBLIC
-        $<${MSVC}:NOMINMAX>
+        $<${CXX_COMPILER_ID:MSVC}:NOMINMAX>
 )
 
 target_include_directories(lue_framework_core
