@@ -1,7 +1,7 @@
 #pragma once
+#include "lue/framework/algorithm/local_operation_export.hpp"
 #include "lue/framework/algorithm/log.hpp"
 #include "lue/framework/algorithm/definition/unary_local_operation.hpp"
-#include "lue/framework/algorithm/export.hpp"
 #include "lue/macro.hpp"
 #include <cmath>
 
@@ -48,7 +48,7 @@ namespace lue {
 
 #define LUE_INSTANTIATE_LOG(Policies, Element, rank)                                   \
                                                                                        \
-    template LUE_FA_EXPORT                                                             \
+    template LUE_LOCAL_OPERATION_EXPORT                                                \
     PartitionedArray<Element, rank> log<ArgumentType<void(Policies)>, Element, rank>(  \
         ArgumentType<void(Policies)> const&,                                           \
         PartitionedArray<Element, rank> const&);

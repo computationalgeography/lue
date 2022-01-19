@@ -1,18 +1,25 @@
 #pragma once
-#if (_MSC_VER == 1930)
-#include<boost/version.hpp>
-#if (BOOST_VERSION <= 107400)
-#pragma warning(push)
-// 4834: discarding return value of function with 'nodiscard' attribute
-#pragma warning(disable: 4834)
-#endif
+#include <boost/predef.h>
+#include <boost/version.hpp>
+
+#if BOOST_COMP_MSVC
+#   if (_MSC_VER == 1930)
+#       if (BOOST_VERSION <= 107400)
+#           pragma warning(push)
+            // 4834: discarding return value of function with 'nodiscard' attribute
+#           pragma warning(disable: 4834)
+#       endif
+#   endif
 #endif
 #include <boost/bimap.hpp>
-#if (_MSC_VER == 1930)
-#if (BOOST_VERSION <= 107400)
-#pragma warning(pop)
+#if BOOST_COMP_MSVC
+#   if (_MSC_VER == 1930)
+#       if (BOOST_VERSION <= 107400)
+#           pragma warning(pop)
+#       endif
+#   endif
 #endif
-#endif
+
 #include <cassert>
 #include <string>
 

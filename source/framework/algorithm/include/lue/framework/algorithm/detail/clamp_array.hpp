@@ -2,6 +2,7 @@
 #include "lue/framework/partitioned_array.hpp"
 #include "lue/framework/core/annotate.hpp"
 #include "lue/framework/core/array_partition_visitor.hpp"
+#include <boost/predef.h>
 
 
 namespace lue::detail {
@@ -36,8 +37,10 @@ namespace lue::detail {
             Partition& partition = this->partition();
 
             // Only once the partition is ready we can manipulate it
+#if BOOST_COMP_GNUC
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wattributes"
+#endif
             partition = partition.then(
                     [new_shape=this->_new_shape](
                         Partition&& partition)
@@ -69,7 +72,9 @@ namespace lue::detail {
                             ));
                     }
                 );
+#if BOOST_COMP_GNUC
 #pragma GCC diagnostic pop
+#endif
         }
 
     private:
@@ -215,8 +220,10 @@ namespace lue::detail {
             Partition& partition = this->partition();
 
             // Only once the partition is ready we can manipulate it
+#if BOOST_COMP_GNUC
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wattributes"
+#endif
             partition = partition.then(
                     [dimension_idx=this->_dimension_idx, new_size=this->_new_size](
                         Partition&& partition)
@@ -241,7 +248,9 @@ namespace lue::detail {
                             ));
                     }
                 );
+#if BOOST_COMP_GNUC
 #pragma GCC diagnostic pop
+#endif
         }
 
     private:

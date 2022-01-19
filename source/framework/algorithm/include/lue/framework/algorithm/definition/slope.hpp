@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/framework/algorithm/focal_operation_export.hpp"
 #include "lue/framework/algorithm/slope.hpp"
 #include "lue/framework/algorithm/definition/add.hpp"
 #include "lue/framework/algorithm/definition/divide.hpp"
@@ -174,7 +175,7 @@ namespace lue {
 
 #define LUE_INSTANTIATE_SLOPE(Policies, Element)                                \
                                                                                 \
-    template LUE_FA_EXPORT                                                      \
+    template LUE_FOCAL_OPERATION_EXPORT                                         \
     PartitionedArray<Element, 2> slope<ArgumentType<void(Policies)>, Element>(  \
         ArgumentType<void(Policies)> const&,                                    \
         PartitionedArray<Element, 2> const&,                                    \

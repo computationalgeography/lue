@@ -177,8 +177,8 @@ namespace lue::detail {
             InflowCountCommunicator(
                 hpx::naming::id_type const locality_id,
                 std::string const& basename,
-                Shape<Count, rank> const& shape_in_partitions,
-                Indices<Index, rank> const& partition_idxs):
+                lue::Shape<Count, rank> const& shape_in_partitions,
+                lue::Indices<Index, rank> const& partition_idxs):
 
                 Base{locality_id, basename, shape_in_partitions, partition_idxs}
 

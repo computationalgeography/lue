@@ -1,12 +1,12 @@
 #include "lue/framework/algorithm/definition/valid.hpp"
 
 
-#define LUE_INSTANTIATE(BooleanElement, ExpressionElement)                         \
-                                                                                   \
-    LUE_INSTANTIATE_VALID(                                                         \
-        (policy::valid::DefaultValuePolicies<BooleanElement, ExpressionElement>),  \
-        BooleanElement,                                                            \
-        ExpressionElement,                                                         \
+#define LUE_INSTANTIATE(BooleanElement, ExpressionElement)                            \
+                                                                                      \
+    LUE_INSTANTIATE_VALID(                                                            \
+        ESC(policy::valid::DefaultValuePolicies<BooleanElement, ExpressionElement>),  \
+        BooleanElement,                                                               \
+        ExpressionElement,                                                            \
         2);
 
 

@@ -99,12 +99,13 @@ namespace lue::policy {
 
         private:
 
+            // MSVC requires that these templates are qualified by their namespaces
             using Base = Policies<
                 DomainPolicy,
-                OutputsPolicies<
-                    OutputPolicies<
+                lue::policy::OutputsPolicies<
+                    lue::policy::OutputPolicies<
                         DontMarkNoData<OutputElements>>...>,
-                InputsPolicies<
+                lue::policy::InputsPolicies<
                     SpatialOperationInputPolicies<
                         SkipNoData<InputElements>,
                         FillHaloWithConstantValue<InputElements>>...>>;

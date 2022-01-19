@@ -1048,7 +1048,7 @@ namespace lue {
 #define LUE_INSTANTIATE_ACCU_INFO(                                             \
     Policies, FlowDirectionElement)                                            \
                                                                                \
-    template LUE_FA_EXPORT                                                     \
+    template                                                                   \
     std::tuple<                                                                \
             PartitionedArray<CellClass, 2>,                                    \
             hpx::future<std::vector<PartitionedArray<PartitionClass, 2>>>,     \

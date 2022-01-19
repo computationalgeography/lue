@@ -8,7 +8,7 @@ jobs:
         strategy:
             matrix:
                 os: ["windows-2019"]
-                python-version: [3.8, 3.9]
+                python-version: [3.9]
             fail-fast: false
 
         runs-on: ${{ matrix.os }}
@@ -27,7 +27,7 @@ jobs:
               channels: conda-forge
         - shell: bash -l {0}
           run: |
-              conda install conan libhwloc numpy
+              conda install boost-cpp conan gdal hdf5 libhwloc numpy
               # psutil sphinx
 
         - name: configure lue
@@ -39,24 +39,36 @@ jobs:
                   -B build \
                   -G "Visual Studio 16 2019" -A x64 \
                   -DCMAKE_BUILD_TYPE=Release \
-                  -DLUE_HAVE_BOOST=FALSE \
-                  -DLUE_HAVE_GDAL=FALSE \
-                  -DLUE_HAVE_GLEW=FALSE \
-                  -DLUE_HAVE_HDF5=FALSE \
-                  -DLUE_BUILD_DOCUMENTATION=FALSE \
-                  -DLUE_BUILD_TEST=TRUE \
-                  -DLUE_BUILD_DATA_MODEL=TRUE \
-                  -DLUE_DATA_MODEL_WITH_PYTHON_API=FALSE \
-                  -DLUE_DATA_MODEL_WITH_UTILITIES=TRUE \
-                  -DLUE_BUILD_FRAMEWORK=FALSE \
-                  -DLUE_FRAMEWORK_WITH_PYTHON_API=FALSE \
-                  -DLUE_BUILD_HPX=TRUE \
-                  -DLUE_BUILD_VIEW=FALSE \
+                  -DLUE_BUILD_DATA_MODEL:BOOL=TRUE \
+                  -DLUE_DATA_MODEL_WITH_PYTHON_API:BOOL=TRUE \
+                  -DLUE_DATA_MODEL_WITH_UTILITIES:BOOL=TRUE \
+                  -DLUE_BUILD_VIEW:BOOL=TRUE \
+                  -DLUE_BUILD_TEST:BOOL=TRUE \
+                  -DLUE_BUILD_DOCUMENTATION:BOOL=FALSE \
+                  -DLUE_BUILD_HPX:BOOL=TRUE \
+                  -DLUE_DATA_MODEL_WITH_PYTHON_API:BOOL=FALSE \
+                  -DLUE_DATA_MODEL_WITH_UTILITIES:BOOL=TRUE \
+                  -DLUE_BUILD_DOCUMENTATION:BOOL=FALSE \
+                  -DLUE_BUILD_FRAMEWORK:BOOL=TRUE \
+                  -DLUE_FRAMEWORK_WITH_BENCHMARKS:BOOL=FALSE \
+                  -DLUE_FRAMEWORK_WITH_PYTHON_API:BOOL=FALSE \
+                  -DLUE_TEST_NR_LOCALITIES_PER_TEST=2 \
+                  -DLUE_TEST_NR_THREADS_PER_LOCALITY=1 \
+                  -DLUE_HAVE_BOOST:BOOL=TRUE \
+                  -DLUE_HAVE_DOCOPT:BOOL=FALSE \
+                  -DLUE_HAVE_FMT:BOOL=FALSE \
+                  -DLUE_HAVE_GDAL:BOOL=TRUE \
+                  -DLUE_HAVE_GLEW:BOOL=FALSE \
+                  -DLUE_HAVE_GLFW:BOOL=FALSE \
+                  -DLUE_HAVE_HDF5:BOOL=TRUE \
+                  -DLUE_HAVE_NLOHMANN_JSON:BOOL=FALSE \
+                  -DLUE_HAVE_PYBIND11:BOOL=FALSE \
                   -DHPX_USE_CMAKE_CXX_STANDARD=TRUE \
                   -DHPX_WITH_MALLOC="system" \
                   -DHPX_WITH_FETCH_ASIO=TRUE \
                   -DHPX_WITH_PKGCONFIG=FALSE \
                   -DHWLOC_ROOT="$CONDA_PREFIX/Library" \
+                  -DHWLOC_LIBRARY="$CONDA_PREFIX/Library/lib/hwloc.dll.lib" \
                   -DHPX_WITH_EXAMPLES=FALSE \
                   -DHPX_WITH_TESTS=FALSE
 
@@ -65,12 +77,12 @@ jobs:
           run: |
               cmake --build build --config Release --target all_build
 
-        - name: test lue
-          shell: bash
-          run: |
-              cmake --build build --config Release --target run_tests
+        # - name: test lue
+        #   shell: bash
+        #   run: |
+        #       cmake --build build --config Release --target run_tests
 
-        - name: install lue
-          shell: bash
-          run: |
-              cmake --install build --prefix install
+        # - name: install lue
+        #   shell: bash
+        #   run: |
+        #       cmake --install build --prefix install

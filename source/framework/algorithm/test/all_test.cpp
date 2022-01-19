@@ -25,8 +25,8 @@ namespace detail {
         Array array1{lue::create_partitioned_array(array_shape, partition_shape, fill_value1)};
         Array array2{lue::create_partitioned_array(array_shape, partition_shape, fill_value2)};
 
-        BOOST_CHECK_EQUAL(all(array1).get(), 1);  // true
-        BOOST_CHECK_EQUAL(all(array2).get(), 0);  // false
+        BOOST_CHECK_EQUAL(all(array1).get(), Element{1});  // true
+        BOOST_CHECK_EQUAL(all(array2).get(), Element{0});  // false
     }
 
 }  // namespace detail

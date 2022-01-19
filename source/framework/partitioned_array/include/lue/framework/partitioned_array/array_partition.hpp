@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/partitioned_array/server/array_partition.hpp"
+#include "lue/framework/partitioned_array/export.hpp"
 
 
 namespace lue {
@@ -17,7 +18,7 @@ namespace lue {
     template<
         typename Element,
         Rank rank>
-    class HPX_COMPONENT_EXPORT ArrayPartition:
+    class LUE_FPA_EXPORT ArrayPartition:
         public hpx::components::client_base<
             ArrayPartition<Element, rank>,
             server::ArrayPartition<Element, rank>>

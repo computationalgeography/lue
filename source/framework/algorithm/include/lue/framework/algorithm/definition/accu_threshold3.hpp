@@ -1,7 +1,7 @@
 #pragma once
 #include "lue/framework/algorithm/accu_threshold3.hpp"
+#include "lue/framework/algorithm/flow_direction_operation_export.hpp"
 #include "lue/framework/algorithm/definition/flow_accumulation3.hpp"
-#include "lue/framework/algorithm/export.hpp"
 #include "lue/macro.hpp"
 
 
@@ -756,7 +756,7 @@ namespace lue {
 #define LUE_INSTANTIATE_ACCU_THRESHOLD3(                                              \
     Policies, FlowDirectionElement, MaterialElement)                                  \
                                                                                       \
-    template LUE_FA_EXPORT                                                            \
+    template LUE_FLOW_DIRECTION_OPERATION_EXPORT                                      \
     std::tuple<                                                                       \
         PartitionedArray<MaterialElement, 2>,                                         \
         PartitionedArray<MaterialElement, 2>> accu_threshold3<                        \

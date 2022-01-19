@@ -3,18 +3,18 @@
 #include "lue/framework/algorithm/value_policies/cast.hpp"
 
 
-#define LUE_INSTANTIATE(OutputElement, InputElement, rank)                  \
-                                                                            \
-    LUE_INSTANTIATE_CAST(                                                   \
-        (policy::cast::DefaultPolicies<OutputElement, InputElement>),       \
-        OutputElement,                                                      \
-        InputElement,                                                       \
-        rank);                                                              \
-                                                                            \
-    LUE_INSTANTIATE_CAST(                                                   \
-        (policy::cast::DefaultValuePolicies<OutputElement, InputElement>),  \
-        OutputElement,                                                      \
-        InputElement,                                                       \
+#define LUE_INSTANTIATE(OutputElement, InputElement, rank)                     \
+                                                                               \
+    LUE_INSTANTIATE_CAST(                                                      \
+        ESC(policy::cast::DefaultPolicies<OutputElement, InputElement>),       \
+        OutputElement,                                                         \
+        InputElement,                                                          \
+        rank);                                                                 \
+                                                                               \
+    LUE_INSTANTIATE_CAST(                                                      \
+        ESC(policy::cast::DefaultValuePolicies<OutputElement, InputElement>),  \
+        OutputElement,                                                         \
+        InputElement,                                                          \
         rank);
 
 

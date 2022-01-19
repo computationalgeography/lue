@@ -1,10 +1,10 @@
 #include "lue/framework/algorithm/definition/slope.hpp"
 
 
-#define LUE_INSTANTIATE(Element)                          \
-                                                          \
-    LUE_INSTANTIATE_SLOPE(                                \
-        (policy::slope::DefaultValuePolicies<Element>),   \
+#define LUE_INSTANTIATE(Element)                             \
+                                                             \
+    LUE_INSTANTIATE_SLOPE(                                   \
+        ESC(policy::slope::DefaultValuePolicies<Element>),   \
         Element);
 
 

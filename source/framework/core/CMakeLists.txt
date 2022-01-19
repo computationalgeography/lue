@@ -19,6 +19,11 @@ target_include_directories(lue_framework_core SYSTEM
         ${MDSpan_SOURCE_DIR}/include
 )
 
+target_compile_definitions(lue_framework_core
+    PUBLIC
+        $<${MSVC}:NOMINMAX>
+)
+
 target_include_directories(lue_framework_core
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>

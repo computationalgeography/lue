@@ -1,7 +1,7 @@
 #pragma once
 #include "lue/framework/algorithm/atan.hpp"
+#include "lue/framework/algorithm/local_operation_export.hpp"
 #include "lue/framework/algorithm/definition/unary_local_operation.hpp"
-#include "lue/framework/algorithm/export.hpp"
 #include "lue/macro.hpp"
 #include <cmath>
 
@@ -51,7 +51,7 @@ namespace lue {
 
 #define LUE_INSTANTIATE_ATAN(Policies, Element, rank)                                   \
                                                                                         \
-    template LUE_FA_EXPORT                                                              \
+    template LUE_LOCAL_OPERATION_EXPORT                                                 \
     PartitionedArray<Element, rank> atan<ArgumentType<void(Policies)>, Element, rank>(  \
         ArgumentType<void(Policies)> const&,                                            \
         PartitionedArray<Element, rank> const&);

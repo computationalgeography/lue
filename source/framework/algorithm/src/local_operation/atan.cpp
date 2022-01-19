@@ -1,11 +1,11 @@
 #include "lue/framework/algorithm/definition/atan.hpp"
 
 
-#define LUE_INSTANTIATE(Element)                        \
-                                                        \
-    LUE_INSTANTIATE_ATAN(                               \
-        (policy::atan::DefaultValuePolicies<Element>),  \
-        Element,                                        \
+#define LUE_INSTANTIATE(Element)                           \
+                                                           \
+    LUE_INSTANTIATE_ATAN(                                  \
+        ESC(policy::atan::DefaultValuePolicies<Element>),  \
+        Element,                                           \
         2);
 
 
