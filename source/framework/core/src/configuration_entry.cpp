@@ -247,7 +247,7 @@ template ArgumentType<void(T)>                                \
 template ArgumentType<void(T)>                                \
         optional_configuration_entry<ArgumentType<void(T)>>(  \
     std::string const&, std::string const&,                   \
-    detail::ArgumentType<void(T)> const&);                    \
+    ArgumentType<void(T)> const&);                            \
                                                               \
 template ArgumentType<void(T)>                                \
         optional_configuration_entry<ArgumentType<void(T)>>(  \

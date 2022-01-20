@@ -697,8 +697,6 @@ namespace lue {
             {
                 lue_hpx_assert(all_are_valid(input_partitions.data()));
 
-                Rank const rank = lue::rank<InputData<InputPartitions>>;
-
                 // return hpx::dataflow(
                 //     hpx::launch::async,
                 //     hpx::unwrapping(
