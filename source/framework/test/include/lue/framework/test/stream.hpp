@@ -1,8 +1,14 @@
 #pragma once
 #include "lue/framework/partitioned_array.hpp"
 #include <boost/range/irange.hpp>
-// #include <experimental/iterator>  // make_ostream_joiner  Not available in Visual Studio it seems
-#include <boost/io/ostream_joiner.hpp>  // make_ostream_joiner
+#include <boost/predef.h>
+#if BOOST_COMP_MSVC
+#   include <boost/io/ostream_joiner.hpp>
+#   define lue_make_ostream_joiner boost::io::make_ostream_joiner
+#else
+#   include <experimental/iterator>
+#   define lue_make_ostream_joiner std::experimental::make_ostream_joiner
+#endif
 #include <array>
 #include <map>
 #include <ostream>
@@ -19,7 +25,7 @@
 //     multi_array<Element, rank, Allocator> const& array)
 // {
 //     stream << '[';
-//     auto joiner = std::experimental::make_ostream_joiner(stream, ", ");
+//     auto joiner = lue_make_ostream_joiner(stream, ", ");
 // 
 //     auto const size = array.num_elements();
 //     auto const begin = array.data();
@@ -79,7 +85,7 @@ ostream& operator<<(
     stream << '[';
 
     {
-        auto joiner = boost::io::make_ostream_joiner(stream, ", ");
+        auto joiner = lue_make_ostream_joiner(stream, ", ");
 
         auto const nr_elements = vector.size();
         auto const begin = vector.begin();
@@ -138,7 +144,7 @@ std::ostream& operator<<(
     stream << '[';
     std::copy(
         std::begin(array), std::end(array),
-        boost::io::make_ostream_joiner(stream, ", "));
+        lue_make_ostream_joiner(stream, ", "));
 
         // Prints a separator after the last element...
         // std::ostream_iterator<Index>(stream, ", "));
@@ -161,7 +167,7 @@ std::ostream& stream_span(
 
     std::transform(
         std::begin(idxs), std::end(idxs),
-        boost::io::make_ostream_joiner(stream, ", "),
+        lue_make_ostream_joiner(stream, ", "),
 
         [&span](lue::Index const idx)
         {
@@ -210,7 +216,7 @@ std::ostream& operator<<(
         << ", "
         << "[\n";
 
-    auto joiner = boost::io::make_ostream_joiner(stream, ", ");
+    auto joiner = lue_make_ostream_joiner(stream, ", ");
 
     auto const nr_elements = lue::nr_elements(data.shape());
     auto const begin = data.begin();
@@ -263,7 +269,7 @@ std::ostream& operator<<(
         << ", "
         << "[\n";
 
-    auto joiner = boost::io::make_ostream_joiner(stream, ", ");
+    auto joiner = lue_make_ostream_joiner(stream, ", ");
 
     auto const nr_elements = data.nr_elements();
     auto const begin = data.begin();
