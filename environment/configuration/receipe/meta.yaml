@@ -30,7 +30,7 @@ requirements:
 
   host:
     - python
-    - numpy
+    - numpy >1.17
     - boost-cpp
     - hdf5
     - libgdal

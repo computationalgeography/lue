@@ -7,7 +7,7 @@ cd $SRC_DIR
 
 mkdir -p build && cd build
 
-cmake $SRC_DIR -G"Ninja" \
+PATH=$PREFIX/bin:$PATH cmake $SRC_DIR -G"Ninja" \
 -D CMAKE_BUILD_TYPE=Release \
 -D CMAKE_PREFIX_PATH:PATH="${PREFIX}" \
 -D CMAKE_INSTALL_PREFIX:PATH="${PREFIX}" \
