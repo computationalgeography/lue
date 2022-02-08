@@ -24,7 +24,7 @@ add_unit_tests(
     NAMES
         python_test.cpp
     INCLUDE_DIRS
-        ${PYTHON_INCLUDE_DIRS}
+        ${Python3_INCLUDE_DIRS}
     # OBJECT_LIBRARIES
     LINK_LIBRARIES
         pybind11::headers

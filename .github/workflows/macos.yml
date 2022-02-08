@@ -1,6 +1,9 @@
 name: macOS CI
 
-on: [push]
+on:
+    push:
+        branches-ignore:
+        - '**'
 
 jobs:
     build:

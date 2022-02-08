@@ -171,7 +171,11 @@ if(LUE_BUILD_DATA_MODEL)
     set(LUE_BOOST_REQUIRED TRUE)
 
     if(LUE_BUILD_FRAMEWORK)
-        set(HDF5_PREFER_PARALLEL TRUE)
+        if(DEFINED ENV{CONDA_BUILD})
+            set(HDF5_PREFER_PARALLEL FALSE)
+        else()
+            set(HDF5_PREFER_PARALLEL TRUE)
+        endif()
     endif()
 
     if(LUE_DATA_MODEL_WITH_UTILITIES)
@@ -233,7 +237,7 @@ if(LUE_BUILD_TEST)
         # find_file(HPXRUN
         #     "hpxrun.py"
         #     PATHS ${CMAKE_BINARY_DIR}/_deps/hpx-build/bin)
-        # 
+        #
         # if(NOT HPXRUN)
         #     message(FATAL_ERROR "hpxrun.py not found")
         # endif()
@@ -421,6 +425,8 @@ if(LUE_PYBIND11_REQUIRED)
 
         # This should pick up the Python found above
         FetchContent_MakeAvailable(pybind11)
+    else()
+        find_package(pybind11 REQUIRED)
     endif()
 
     if(NOT LUE_PYTHON_API_INSTALL_DIR)
