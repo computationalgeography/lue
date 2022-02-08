@@ -1,9 +1,6 @@
 name: Windows Conda package
 
-on:
-    push:
-        branches-ignore:
-        - '**'
+on: [push]
 
 jobs:
     build:

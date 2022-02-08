@@ -1,9 +1,6 @@
 name: macOS Conda package
 
-on:
-    push:
-        branches-ignore:
-        - '**'
+on: [push]
 
 jobs:
     build:
