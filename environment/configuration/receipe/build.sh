@@ -5,6 +5,12 @@ set -x
 echo $PREFIX
 echo $SP_DIR
 
+if [ $(uname) == Linux ]; then
+  PLATFORM_OPTIONS=""
+else
+  PLATFORM_OPTIONS="-D _LIBCPP_DISABLE_AVAILABILITY"
+fi
+
 
 # We need to create an out of source build
 
