@@ -5,11 +5,7 @@ set -x
 echo $PREFIX
 echo $SP_DIR
 
-if [ $(uname) == Linux ]; then
-  PLATFORM_OPTIONS=""
-else
-  PLATFORM_OPTIONS="-D _LIBCPP_DISABLE_AVAILABILITY"
-fi
+
 
 
 # We need to create an out of source build
@@ -21,7 +17,7 @@ cd $SRC_DIR
 
 mkdir -p ../build && cd ../build
 
-PATH=$PREFIX/bin:$PATH cmake $SRC_DIR -G"Ninja" \
+CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY" PATH=$PREFIX/bin:$PATH cmake $SRC_DIR -G"Ninja" \
 -D CMAKE_BUILD_TYPE=Release \
 -D CMAKE_INSTALL_PREFIX:PATH="${PREFIX}" \
 -D CMAKE_INSTALL_LIBDIR=lib \
@@ -47,8 +43,7 @@ PATH=$PREFIX/bin:$PATH cmake $SRC_DIR -G"Ninja" \
 -D HPX_WITH_MALLOC="tcmalloc" \
 -D HPX_WITH_PKGCONFIG=OFF \
 -D HPX_WITH_EXAMPLES=OFF \
--D HPX_WITH_TESTS=OFF \
-${PLATFORM_OPTIONS}
+-D HPX_WITH_TESTS=OFF
 
 # Use parallel build but not for lue.framework
 cmake --build . --target lue_view lue_translate lue_validate core
