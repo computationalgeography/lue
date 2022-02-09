@@ -47,7 +47,8 @@ PATH=$PREFIX/bin:$PATH cmake $SRC_DIR -G"Ninja" \
 -D HPX_WITH_MALLOC="tcmalloc" \
 -D HPX_WITH_PKGCONFIG=OFF \
 -D HPX_WITH_EXAMPLES=OFF \
--D HPX_WITH_TESTS=OFF
+-D HPX_WITH_TESTS=OFF \
+${PLATFORM_OPTIONS}
 
 # Use parallel build but not for lue.framework
 cmake --build . --target lue_view lue_translate lue_validate core
