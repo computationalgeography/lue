@@ -38,6 +38,7 @@ jobs:
                   -S . \
                   -B build \
                   -G "Visual Studio 16 2019" -A x64 \
+                  -DCMAKE_BUILD_TYPE=Release \
                   -DLUE_BUILD_DATA_MODEL:BOOL=TRUE \
                   -DLUE_DATA_MODEL_WITH_PYTHON_API:BOOL=TRUE \
                   -DLUE_DATA_MODEL_WITH_UTILITIES:BOOL=TRUE \

@@ -86,7 +86,7 @@ target_compile_definitions(lue_py_data_model
 set_target_properties(lue_py_data_model
     PROPERTIES
         OUTPUT_NAME lue_py_data_model
-        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+        RUNTIME_OUTPUT_DIRECTORY $<TARGET_FILE_DIR:lue::py>
         CXX_CLANG_TIDY ""  # TODO(KDJ) Get it to skip pybind11.h
 )
 
