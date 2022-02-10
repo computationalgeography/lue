@@ -1,3 +1,4 @@
+#include <hpx/config.hpp>
 #include "lue/py/framework/stream.hpp"
 #include "lue/framework/partitioned_array.hpp"
 #include <hpx/future.hpp>

@@ -1,7 +1,15 @@
 #pragma once
 #include "lue/py/framework/type_traits.hpp"
 #include "lue/framework/core/shape.hpp"
-#include <experimental/iterator>
+// TODO Refactor with similar blocks in other stream.hpp headers.
+#include <boost/predef.h>
+#if BOOST_COMP_MSVC
+#   include <boost/io/ostream_joiner.hpp>
+#   define lue_make_ostream_joiner boost::io::make_ostream_joiner
+#else
+#   include <experimental/iterator>
+#   define lue_make_ostream_joiner std::experimental::make_ostream_joiner
+#endif
 #include <sstream>
 #include <tuple>
 
@@ -42,7 +50,7 @@ namespace lue::framework {
         stream << '(';
         std::copy(
             std::begin(shape), std::end(shape),
-            std::experimental::make_ostream_joiner(stream, ", "));
+            lue_make_ostream_joiner(stream, ", "));
         stream << ')';
 
         return stream;

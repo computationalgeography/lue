@@ -71,6 +71,9 @@ namespace lue {
                                                 return std::uniform_real_distribution<OutputElement>{min_value, max_value};
                                             }
                                             else if constexpr(std::is_integral_v<OutputElement>) {
+                                                // https://stackoverflow.com/questions/31460733/why-arent-stduniform-int-distributionuint8-t-and-stduniform-int-distri
+                                                static_assert(!std::is_same_v<OutputElement, std::int8_t>);
+                                                static_assert(!std::is_same_v<OutputElement, std::uint8_t>);
                                                 return std::uniform_int_distribution<OutputElement>{min_value, max_value};
                                             }
                                         }();

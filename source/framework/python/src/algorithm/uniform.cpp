@@ -23,7 +23,8 @@ namespace lue::framework {
         pybind11::module& module)
     {
         // TODO How to document these?
-        module.def("uniform", uniform<std::uint8_t, 2>);
+        // https://stackoverflow.com/questions/31460733/why-arent-stduniform-int-distributionuint8-t-and-stduniform-int-distri
+        // module.def("uniform", uniform<std::uint8_t, 2>);
         module.def("uniform", uniform<std::uint32_t, 2>);
         module.def("uniform", uniform<std::uint64_t, 2>);
         module.def("uniform", uniform<std::int32_t, 2>);

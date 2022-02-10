@@ -1,6 +1,7 @@
 #pragma once
 #include "lue/framework/partitioned_array.hpp"
 #include <boost/range/irange.hpp>
+// TODO Refactor with similar blocks in other stream.hpp headers.
 #include <boost/predef.h>
 #if BOOST_COMP_MSVC
 #   include <boost/io/ostream_joiner.hpp>

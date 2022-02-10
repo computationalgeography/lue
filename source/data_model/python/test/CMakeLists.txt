@@ -1,45 +1,31 @@
-copy_python_unit_test_modules(
-    RECURSE
-    TARGET lue_py_data_model_test_modules
+add_test(
+    NAME lue_py_data_model_python_test
+    COMMAND ${Python3_EXECUTABLE} -munittest discover
+    --start-directory ${CMAKE_CURRENT_SOURCE_DIR} --pattern "*_test.py"
 )
 
-
-if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
-    set(environment "DYLD_LIBRARY_PATH=${Python3_RUNTIME_LIBRARY_DIRS}:$<TARGET_FILE_DIR:lue::py>")
-endif()
-
-if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-    # It seems that clang doesn't set flag this by default yet
-    set_property(
-        SOURCE
-            python_test.cpp
-        PROPERTY
-            COMPILE_OPTIONS
-                -fsized-deallocation
-    )
-endif()
-
-add_unit_tests(
-    SCOPE lue_py_data_model
-    NAMES
-        python_test.cpp
-    INCLUDE_DIRS
-        ${Python3_INCLUDE_DIRS}
-    # OBJECT_LIBRARIES
-    LINK_LIBRARIES
-        pybind11::headers
-        Python3::Python
-    DEPENDENCIES
-        lue_py_data_model_test_modules
-        # The tests load the Python extension at runtime. Make sure it is
-        # up to date.
-        lue::py
-    ENVIRONMENT
-        PYTHONPATH=$<TARGET_FILE_DIR:lue::py>
-        ${environment}
-)
-
-set_target_properties(lue_py_data_model_python_test
+set_tests_properties(
+    lue_py_data_model_python_test
     PROPERTIES
-        CXX_CLANG_TIDY ""  # TODO(KDJ) Get it to skip pybind11.h
+        ENVIRONMENT
+            "PYTHONPATH=$<TARGET_FILE_DIR:lue::py>"
+        FIXTURES_REQUIRED
+            lue_py_test_fixture
 )
+
+# set(path $ENV{PATH})
+# set(path_separator ":")
+# if(WIN32)
+#     string(REPLACE "\\" "/" path "${path}")
+#     string(REPLACE ";" "\\;" path "${path}")
+#     set(path_separator "\\;")
+# endif()
+# 
+# set_property(
+#     TEST
+#         lue_py_data_model_python_test
+#     APPEND
+#         PROPERTY
+#             ENVIRONMENT
+#             "PATH=${path}${path_separator}$<TARGET_FILE_DIR:lue::py>${path_separator}${CMAKE_RUNTIME_OUTPUT_DIRECTORY_Release}${path_separator}C:/Users/jong0137/development/objects/Release/lue/bin/Release${path_separator}C:/Users/jong0137/development/objects/Release/lue/_deps/hpx-build/Release/bin"
+# )

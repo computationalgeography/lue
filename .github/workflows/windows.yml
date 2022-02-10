@@ -38,22 +38,17 @@ jobs:
                   -S . \
                   -B build \
                   -G "Visual Studio 16 2019" -A x64 \
-                  -DCMAKE_BUILD_TYPE=Release \
                   -DLUE_BUILD_DATA_MODEL:BOOL=TRUE \
                   -DLUE_DATA_MODEL_WITH_PYTHON_API:BOOL=TRUE \
                   -DLUE_DATA_MODEL_WITH_UTILITIES:BOOL=TRUE \
-                  -DLUE_BUILD_VIEW:BOOL=TRUE \
-                  -DLUE_BUILD_TEST:BOOL=TRUE \
-                  -DLUE_BUILD_DOCUMENTATION:BOOL=FALSE \
-                  -DLUE_BUILD_HPX:BOOL=TRUE \
-                  -DLUE_DATA_MODEL_WITH_PYTHON_API:BOOL=FALSE \
-                  -DLUE_DATA_MODEL_WITH_UTILITIES:BOOL=TRUE \
-                  -DLUE_BUILD_DOCUMENTATION:BOOL=FALSE \
                   -DLUE_BUILD_FRAMEWORK:BOOL=TRUE \
                   -DLUE_FRAMEWORK_WITH_BENCHMARKS:BOOL=FALSE \
-                  -DLUE_FRAMEWORK_WITH_PYTHON_API:BOOL=FALSE \
+                  -DLUE_FRAMEWORK_WITH_PYTHON_API:BOOL=TRUE \
+                  -DLUE_BUILD_VIEW:BOOL=TRUE \
+                  -DLUE_BUILD_TEST:BOOL=TRUE \
                   -DLUE_TEST_NR_LOCALITIES_PER_TEST=2 \
                   -DLUE_TEST_NR_THREADS_PER_LOCALITY=1 \
+                  -DLUE_BUILD_DOCUMENTATION:BOOL=FALSE \
                   -DLUE_HAVE_BOOST:BOOL=TRUE \
                   -DLUE_HAVE_DOCOPT:BOOL=FALSE \
                   -DLUE_HAVE_FMT:BOOL=FALSE \
@@ -63,6 +58,7 @@ jobs:
                   -DLUE_HAVE_HDF5:BOOL=TRUE \
                   -DLUE_HAVE_NLOHMANN_JSON:BOOL=FALSE \
                   -DLUE_HAVE_PYBIND11:BOOL=FALSE \
+                  -DLUE_BUILD_HPX:BOOL=TRUE \
                   -DHPX_USE_CMAKE_CXX_STANDARD=TRUE \
                   -DHPX_WITH_MALLOC="system" \
                   -DHPX_WITH_FETCH_ASIO=TRUE \
