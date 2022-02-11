@@ -79,7 +79,7 @@ target_compile_definitions(lue_py_framework
 set_target_properties(lue_py_framework
     PROPERTIES
         OUTPUT_NAME lue_py_framework
-        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+        RUNTIME_OUTPUT_DIRECTORY $<TARGET_FILE_DIR:lue::py>
 )
 
 # Explicitly add the location of the numpy headers to the list. Otherwise
