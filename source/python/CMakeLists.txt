@@ -61,7 +61,7 @@ add_test(
     NAME
         build_lue_py
     COMMAND
-        "${CMAKE_COMMAND}" --build "${CMAKE_CURRENT_BINARY_DIR}" --config "$<CONFIG>" --target lue_py
+        "${CMAKE_COMMAND}" --build "${CMAKE_BINARY_DIR}" --config "$<CONFIG>" --target lue_py
 )
 
 # Mark test to be a setup task of fixture lue_py_test_fixture
