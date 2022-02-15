@@ -20,7 +20,9 @@ class DatasetTest(lue_test.TestCase):
         self.assertTrue(os.access(dataset_name, os.F_OK))
         self.assertTrue(os.access(dataset_name, os.R_OK))
         self.assertTrue(os.access(dataset_name, os.W_OK))
-        self.assertFalse(os.access(dataset_name, os.X_OK))
+
+        if os.name != "nt":
+            self.assertFalse(os.access(dataset_name, os.X_OK))
 
 
     def test_object_name(self):
