@@ -4,9 +4,6 @@ if(LUE_FRAMEWORK_WITH_BENCHMARKS)
     add_subdirectory(benchmark)
 endif()
 
-add_subdirectory(hpx)
-
-
 add_library(lue_framework_algorithm SHARED
     src/component/array_partition_io.cpp
 )
