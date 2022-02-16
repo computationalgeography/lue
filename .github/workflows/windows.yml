@@ -74,10 +74,11 @@ jobs:
           run: |
               cmake --build build --config Release --target all_build
 
-        # - name: test lue
-        #   shell: bash
-        #   run: |
-        #       cmake --build build --config Release --target run_tests
+        - name: test lue
+          shell: bash
+          run: |
+              ctest --build-config Release -E python_test
+              # cmake --build build --config Release --target run_tests
 
         # - name: install lue
         #   shell: bash
