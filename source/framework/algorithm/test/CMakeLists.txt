@@ -7,130 +7,163 @@ target_link_libraries(lue_framework_algorithm_test
         lue::framework_test
 )
 
+set(scope lue_framework_algorithm)
+
+set(local_operation_names
+    add
+    array_like
+    array_partition_id
+    atan
+    atan2
+    cast
+    close_to
+    copy
+    cos
+    create_partitioned_array
+    divide
+    equal_to
+    fill
+    greater_than
+    greater_than_equal_to
+    iterate_per_element
+    less_than
+    less_than_equal_to
+    log
+    multiply
+    not_equal_to
+    pow
+    sin
+    sqrt
+    subtract
+    valid
+    where
+)
+set(flow_direction_operation_names
+    accu
+    accu_threshold
+    inflow_count
+)
 set(names
-    accu_test.cpp
-    accu_fraction_test.cpp
-    accu_threshold_test.cpp
-    add_test.cpp
-    all_test.cpp
-    any_test.cpp
-    array_like_test.cpp
-    array_partition_id_test.cpp
-    array_partition_io_test.cpp
-    atan_test.cpp
-    atan2_test.cpp
-    cast_test.cpp
-    close_to_test.cpp
-    communicator_array_test.cpp
-    convolve_test.cpp
-    copy_test.cpp
-    cos_test.cpp
-    create_partitioned_array_test.cpp
-    d8_flow_direction_test.cpp
-    divide_test.cpp
-    downstream_test.cpp
-    downstream_distance_test.cpp
-    equal_to_test.cpp
-    fill_test.cpp
-    focal_max_test.cpp
-    focal_mean_test.cpp
-    focal_operation_test.cpp
-    focal_sum_test.cpp
-    greater_than_equal_to_test.cpp
-    greater_than_test.cpp
-    inflow_count_test.cpp
-    inter_partition_stream_test.cpp
-    iterate_per_element_test.cpp
-    less_than_equal_to_test.cpp
-    less_than_test.cpp
-    locality_id_test.cpp
-    log_test.cpp
-    logical_and_test.cpp
-    logical_inclusive_or_test.cpp
-    logical_not_test.cpp
-    mesh_grid_test.cpp
-    maximum_test.cpp
-    minimum_test.cpp
-    multiply_test.cpp
-    none_test.cpp
-    not_equal_to_test.cpp
-    partition_count_unique_test.cpp
-    pow_test.cpp
-    range_test.cpp
-    sin_test.cpp
-    slope_test.cpp
-    sqrt_test.cpp
-    subtract_test.cpp
-    sum_test.cpp
-    timestamp_test.cpp
-    uniform_test.cpp
-    unique_id_test.cpp
-    unique_test.cpp
-    upstream_test.cpp
-    valid_test.cpp
-    where_test.cpp
-    zonal_sum_test.cpp
+    ${local_operation_names}
+    ${flow_direction_operation_names}
+    accu_fraction
+    all
+    any
+    array_partition_io
+    communicator_array
+    convolve
+    d8_flow_direction
+    downstream
+    downstream_distance
+    focal_max
+    focal_mean
+    focal_operation
+    focal_sum
+    inter_partition_stream
+    locality_id
+    logical_and
+    logical_inclusive_or
+    logical_not
+    mesh_grid
+    maximum
+    minimum
+    none
+    partition_count_unique
+    range
+    slope
+    sum
+    timestamp
+    uniform
+    unique_id
+    unique
+    upstream
+    zonal_sum
 )
 
-add_unit_tests(
-    SCOPE lue_framework_algorithm
-    NAMES
-        kernel_test.cpp
-    LINK_LIBRARIES
-        lue_framework_algorithm_test
-        lue::framework_algorithm
-        lue::framework_test
-)
+foreach(name ${names})
 
-add_hpx_unit_tests(
-    SCOPE lue_framework_algorithm
-    NAMES ${names}
-    LINK_LIBRARIES
-        lue_framework_algorithm_test
-        lue::framework_algorithm
-        lue::framework_test
-)
+    set(module_name ${name}_test)
+    set(test_name ${scope}_${module_name})
 
-foreach(name
-        add
-        array_like
-        array_partition_id
-        atan
-        atan2
-        cast
-        close_to
-        copy
-        cos
-        create_partitioned_array
-        divide
-        equal_to
-        fill
-        greater_than
-        greater_than_equal_to
-        iterate_per_element
-        less_than
-        less_than_equal_to
-        log
-        multiply
-        not_equal_to
-        pow
-        sin
-        sqrt
-        subtract
-        valid
-        where
+    add_executable(${test_name} ${module_name}.cpp)
+
+    target_include_directories(${test_name} SYSTEM
+        PRIVATE
+            ${Boost_INCLUDE_DIRS}
     )
-    target_link_libraries(lue_framework_algorithm_${name}_test
+
+    target_link_libraries(${test_name}
+        PRIVATE
+            lue_framework_algorithm_test
+            lue::framework_algorithm
+            lue::framework_test
+            Boost::unit_test_framework
+    )
+
+    add_test(NAME ${test_name}
+        COMMAND
+            ${Python3_EXECUTABLE} ${HPXRUN}
+                "--runwrapper" ${LUE_TEST_HPX_RUNWRAPPER}
+                "--parcelport" ${LUE_TEST_HPX_PARCELPORT}
+                "--localities" ${LUE_TEST_NR_LOCALITIES_PER_TEST}
+                "--thread" ${LUE_TEST_NR_THREADS_PER_LOCALITY} --
+                    "$<TARGET_FILE:${test_name}>"
+    )
+
+    set_tests_properties(
+        ${test_name}
+        PROPERTIES
+            # On Windows, add the path to the HPX dlls. Only if HPX::hpx target is defined.
+            ENVIRONMENT_MODIFICATION
+                PATH=path_list_prepend:$<$<AND:$<PLATFORM_ID:Windows>,$<TARGET_EXISTS:HPX::hpx>>:$<TARGET_FILE_DIR:HPX::component_storage_component>>
+    )
+endforeach()
+
+foreach(name ${local_operation_names})
+    target_link_libraries(${scope}_${name}_test
         PRIVATE
             lue::framework_local_operation)
 endforeach()
 
-foreach(name
-        accu
-        accu_threshold
-        inflow_count
-    )
-    target_link_libraries(lue_framework_algorithm_${name}_test
+foreach(name ${flow_direction_operation_names})
+    target_link_libraries(${scope}_${name}_test
         PRIVATE
             lue::framework_flow_direction_operation)
+endforeach()
+
+set(names
+    kernel
+)
+
+foreach(name ${names})
+
+    set(module_name ${name}_test)
+    set(test_name ${scope}_${module_name})
+
+    add_executable(${test_name} ${module_name}.cpp)
+
+    target_include_directories(${test_name} SYSTEM
+        PRIVATE
+            ${Boost_INCLUDE_DIRS}
+    )
+
+    target_link_libraries(${test_name}
+        PRIVATE
+            lue_framework_algorithm_test
+            lue::framework_algorithm
+            lue::framework_test
+            Boost::unit_test_framework
+    )
+
+    add_test(NAME ${test_name}
+        COMMAND ${test_name}
+    )
+
+    set_tests_properties(
+        ${test_name}
+        PROPERTIES
+            # On Windows, add the path to the HPX dlls. Only if HPX::hpx target is defined.
+            ENVIRONMENT_MODIFICATION
+                PATH=path_list_prepend:$<$<AND:$<PLATFORM_ID:Windows>,$<TARGET_EXISTS:HPX::hpx>>:$<TARGET_FILE_DIR:HPX::component_storage_component>>
+    )
 endforeach()
