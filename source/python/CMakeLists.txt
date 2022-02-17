@@ -54,6 +54,16 @@ if(LUE_BUILD_FRAMEWORK AND LUE_FRAMEWORK_WITH_PYTHON_API)
             lue::py_framework)
 endif()
 
+if(WIN32)
+    # Copy all DLLs this target transitively depends on into its output directory. This includes
+    # our own DLLs.
+    add_custom_command(
+        TARGET lue_py
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:lue_py> $<TARGET_FILE_DIR:lue_py>
+        COMMAND_EXPAND_LISTS
+    )
+endif()
 
 # Add 'test' that runs CMake to build lue_py. This is used by tests that depend on this target
 # to be up to date.
