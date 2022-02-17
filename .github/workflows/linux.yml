@@ -100,13 +100,13 @@ jobs:
               cd build
               ctest --output-on-failure
 
-        - name: generate lue documentation
-          # Skip for now. Works locally, but here we get:
-          # Extension error: Config value 'graphviz_dot' already present
-          shell: bash
-          run: |
-              cmake --build build --target cpp_doc py_doc
-              cmake --build build --target sphinx_doc
+        # - name: generate lue documentation
+        #   # Skip for now. Works locally, but here we get:
+        #   # Extension error: Config value 'graphviz_dot' already present
+        #   shell: bash
+        #   run: |
+        #       cmake --build build --target cpp_doc py_doc
+        #       cmake --build build --target sphinx_doc
 
         - name: install lue
           shell: bash
