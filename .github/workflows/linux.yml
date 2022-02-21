@@ -108,11 +108,12 @@ jobs:
         #       cmake --build build --target cpp_doc py_doc
         #       cmake --build build --target sphinx_doc
 
-        - name: install lue
-          shell: bash
-          run: |
-              cmake --install build --prefix install
-              tree install
+        # - name: install lue
+        #   # Skip for now. Requires the docs, which are not built.
+        #   shell: bash
+        #   run: |
+        #       cmake --install build --prefix install
+        #       tree install
 
         - name: deploy lue documentation
           # Skip deploy for now. Still hangs upon uploading to the server...
