@@ -49,7 +49,8 @@ jobs:
 
         - shell: bash -l {0}
           run: |
-              conda install breathe conan docopt numpy psutil sphinx
+              # conda install breathe conan docopt numpy psutil sphinx
+              conda install conan docopt numpy psutil
               conan profile new --detect default
 
         - name: configure lue

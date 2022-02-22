@@ -54,7 +54,8 @@ jobs:
               channels: conda-forge
         - shell: bash -l {0}
           run: |
-              conda install breathe conan docopt numpy psutil sphinx
+              # conda install breathe conan docopt numpy psutil sphinx
+              conda install conan docopt numpy psutil
               conan profile new --detect default
               conan profile update settings.compiler.libcxx=libstdc++11 default
               # conan remote list
@@ -71,7 +72,7 @@ jobs:
                   -DCMAKE_C_COMPILER=${{ matrix.compiler.cc }} \
                   -DCMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
                   -DCMAKE_BUILD_TYPE=Release \
-                  -DLUE_BUILD_DOCUMENTATION=TRUE \
+                  -DLUE_BUILD_DOCUMENTATION=FALSE \
                   -DLUE_BUILD_TEST=TRUE \
                   -DLUE_TEST_NR_LOCALITIES_PER_TEST=1 \
                   -DLUE_TEST_NR_THREADS_PER_LOCALITY=2 \
