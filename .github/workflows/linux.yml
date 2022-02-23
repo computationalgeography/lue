@@ -54,8 +54,10 @@ jobs:
               channels: conda-forge
         - shell: bash -l {0}
           run: |
-              # conda install breathe conan docopt numpy psutil sphinx
-              conda install conan docopt numpy psutil
+              # Pin markupsafe, used by Jinja which is used by Conan, because of a breaking
+              # change in markupsafe 2.1.0
+              conda install conan docopt markupsafe<2.1.0 numpy
+              # breathe sphinx
               conan profile new --detect default
               conan profile update settings.compiler.libcxx=libstdc++11 default
               # conan remote list
