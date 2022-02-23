@@ -79,10 +79,7 @@ jobs:
           shell: bash
           run: |
               # TODO Fix execution of excluded tests
-              ctest --test-dir build --build-config Release \
-                  -E python_test \
-                  -E lue_framework_algorithm_accu_threshold_test \
-                  -E lue_framework_algorithm_inflow_count_test
+              ctest --test-dir build --build-config Release -R python_test
               # cmake --build build --config Release --target run_tests
 
         # - name: install lue
