@@ -29,7 +29,7 @@ jobs:
           run: |
               # Pin markupsafe, used by Jinja which is used by Conan, because of a breaking
               # change in markupsafe 2.1.0
-              conda install boost-cpp conan gdal hdf5 libhwloc markupsafe<2.1.0 numpy
+              conda install boost-cpp conan gdal hdf5 libhwloc "markupsafe<2.1.0" numpy
 
         - name: configure lue
           shell: bash -l {0}
