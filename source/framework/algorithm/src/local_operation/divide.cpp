@@ -3,23 +3,23 @@
 #include "lue/framework/algorithm/definition/divide.hpp"
 
 
-#define LUE_INSTANTIATE(Element, rank)                             \
-                                                                   \
-    LUE_INSTANTIATE_BINARY_LOCAL_OPERATION(                        \
-        (policy::divide::DefaultPolicies<Element, Element>),       \
-        Element,                                                   \
-        Element,                                                   \
-        Element,                                                   \
-        rank,                                                      \
-        (detail::Divide<Element, Element>));                       \
-                                                                   \
-    LUE_INSTANTIATE_BINARY_LOCAL_OPERATION(                        \
-        (policy::divide::DefaultValuePolicies<Element, Element>),  \
-        Element,                                                   \
-        Element,                                                   \
-        Element,                                                   \
-        rank,                                                      \
-        (detail::Divide<Element, Element>));
+#define LUE_INSTANTIATE(Element, rank)                                \
+                                                                      \
+    LUE_INSTANTIATE_BINARY_LOCAL_OPERATION(                           \
+        ESC(policy::divide::DefaultPolicies<Element, Element>),       \
+        Element,                                                      \
+        Element,                                                      \
+        Element,                                                      \
+        rank,                                                         \
+        ESC(detail::Divide<Element, Element>));                       \
+                                                                      \
+    LUE_INSTANTIATE_BINARY_LOCAL_OPERATION(                           \
+        ESC(policy::divide::DefaultValuePolicies<Element, Element>),  \
+        Element,                                                      \
+        Element,                                                      \
+        Element,                                                      \
+        rank,                                                         \
+        ESC(detail::Divide<Element, Element>));
 
 
 namespace lue {

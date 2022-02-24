@@ -1,7 +1,7 @@
 #pragma once
 #include "lue/framework/algorithm/cast.hpp"
+#include "lue/framework/algorithm/local_operation_export.hpp"
 #include "lue/framework/algorithm/definition/unary_local_operation.hpp"
-#include "lue/framework/algorithm/export.hpp"
 #include "lue/macro.hpp"
 
 
@@ -47,7 +47,7 @@ namespace lue {
 
 #define LUE_INSTANTIATE_CAST(Policies, OutputElement, InputElement, rank)       \
                                                                                 \
-    template LUE_FA_EXPORT                                                      \
+    template LUE_LOCAL_OPERATION_EXPORT                                         \
     PartitionedArray<OutputElement, rank>                                       \
         cast<OutputElement, ArgumentType<void(Policies)>, InputElement, rank>(  \
             ArgumentType<void(Policies)> const&,                                \

@@ -1,11 +1,11 @@
 #include "lue/framework/algorithm/definition/d8_flow_direction.hpp"
 
 
-#define LUE_INSTANTIATE(FlowDirectionElement, ElevationElement)                                     \
-                                                                                                    \
-    LUE_INSTANTIATE_D8_FLOW_DIRECTION(                                                              \
-        (policy::d8_flow_direction::DefaultValuePolicies<FlowDirectionElement, ElevationElement>),  \
-        FlowDirectionElement,                                                                       \
+#define LUE_INSTANTIATE(FlowDirectionElement, ElevationElement)                                        \
+                                                                                                       \
+    LUE_INSTANTIATE_D8_FLOW_DIRECTION(                                                                 \
+        ESC(policy::d8_flow_direction::DefaultValuePolicies<FlowDirectionElement, ElevationElement>),  \
+        FlowDirectionElement,                                                                          \
         ElevationElement);
 
 

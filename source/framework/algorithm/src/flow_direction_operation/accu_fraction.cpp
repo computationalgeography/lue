@@ -4,7 +4,7 @@
 #define LUE_INSTANTIATE(FlowDirectionElement, MaterialElement, FractionElement)  \
                                                                                  \
     LUE_INSTANTIATE_ACCU_FRACTION(                                               \
-        (policy::accu_fraction::DefaultValuePolicies<                            \
+        ESC(policy::accu_fraction::DefaultValuePolicies<                         \
             FlowDirectionElement, MaterialElement, FractionElement>),            \
         FlowDirectionElement,                                                    \
         MaterialElement,                                                         \

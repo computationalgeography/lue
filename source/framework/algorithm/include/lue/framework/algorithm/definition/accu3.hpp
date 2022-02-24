@@ -1,7 +1,7 @@
 #pragma once
 #include "lue/framework/algorithm/accu3.hpp"
+#include "lue/framework/algorithm/flow_direction_operation_export.hpp"
 #include "lue/framework/algorithm/definition/flow_accumulation3.hpp"
-#include "lue/framework/algorithm/export.hpp"
 #include "lue/macro.hpp"
 
 
@@ -655,7 +655,7 @@ namespace lue {
 #define LUE_INSTANTIATE_ACCU3(                                                        \
     Policies, FlowDirectionElement, MaterialElement)                                  \
                                                                                       \
-    template LUE_FA_EXPORT                                                            \
+    template LUE_FLOW_DIRECTION_OPERATION_EXPORT                                      \
     PartitionedArray<MaterialElement, 2> accu3<                                       \
             ArgumentType<void(Policies)>, FlowDirectionElement, MaterialElement, 2>(  \
         ArgumentType<void(Policies)> const&,                                          \

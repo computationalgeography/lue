@@ -3,23 +3,23 @@
 #include "lue/framework/algorithm/definition/subtract.hpp"
 
 
-#define LUE_INSTANTIATE(Element, rank)                               \
-                                                                     \
-    LUE_INSTANTIATE_BINARY_LOCAL_OPERATION(                          \
-        (policy::subtract::DefaultPolicies<Element, Element>),       \
-        Element,                                                     \
-        Element,                                                     \
-        Element,                                                     \
-        rank,                                                        \
-        (detail::Subtract<Element, Element>));                       \
-                                                                     \
-    LUE_INSTANTIATE_BINARY_LOCAL_OPERATION(                          \
-        (policy::subtract::DefaultValuePolicies<Element, Element>),  \
-        Element,                                                     \
-        Element,                                                     \
-        Element,                                                     \
-        rank,                                                        \
-        (detail::Subtract<Element, Element>));
+#define LUE_INSTANTIATE(Element, rank)                                  \
+                                                                        \
+    LUE_INSTANTIATE_BINARY_LOCAL_OPERATION(                             \
+        ESC(policy::subtract::DefaultPolicies<Element, Element>),       \
+        Element,                                                        \
+        Element,                                                        \
+        Element,                                                        \
+        rank,                                                           \
+        ESC(detail::Subtract<Element, Element>));                       \
+                                                                        \
+    LUE_INSTANTIATE_BINARY_LOCAL_OPERATION(                             \
+        ESC(policy::subtract::DefaultValuePolicies<Element, Element>),  \
+        Element,                                                        \
+        Element,                                                        \
+        Element,                                                        \
+        rank,                                                           \
+        ESC(detail::Subtract<Element, Element>));
 
 
 namespace lue {

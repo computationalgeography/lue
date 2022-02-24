@@ -1,6 +1,7 @@
 #pragma once
 #include "lue/framework/partitioned_array.hpp"
 #include "lue/framework/core/annotate.hpp"
+#include <boost/predef.h>
 #include <numeric>
 
 
@@ -22,8 +23,10 @@ template<
     using Data = DataT<InputPartition>;
     using Shape = ShapeT<InputPartition>;
 
+#if BOOST_COMP_GNUC
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wattributes"
+#endif
     auto task =
         [start_value](
             InputPartition input_partition)
@@ -47,7 +50,9 @@ template<
                     )
                 );
         };
+#if BOOST_COMP_GNUC
 #pragma GCC diagnostic pop
+#endif
 
     // Given the logic below, input_partition should be already ready. In
     // the general case (we might be called from some other algorithm)

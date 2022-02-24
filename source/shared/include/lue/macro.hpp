@@ -1,6 +1,11 @@
 #pragma once
 
 
+// At least with Visual Studio, passing arguments to a macro with a double set of parentheses
+// results in a syntax error. This macro removes a set of parentheses.
+#define ESC(...) __VA_ARGS__
+
+
 namespace lue {
     namespace detail {
 

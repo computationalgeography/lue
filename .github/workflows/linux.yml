@@ -8,7 +8,7 @@ jobs:
         strategy:
             matrix:
                 os: ["ubuntu-20.04"]
-                python-version: [3.8, 3.9]
+                python-version: [3.9]
                 compiler:
                     - {version:  9, cc: gcc-9   , cxx: g++-9}
                     - {version: 10, cc: gcc-10  , cxx: g++-10}
@@ -54,7 +54,10 @@ jobs:
               channels: conda-forge
         - shell: bash -l {0}
           run: |
-              conda install breathe conan docopt numpy psutil sphinx
+              # Pin markupsafe, used by Jinja which is used by Conan, because of a breaking
+              # change in markupsafe 2.1.0
+              conda install conan docopt "markupsafe<2.1.0" numpy
+              # breathe sphinx
               conan profile new --detect default
               conan profile update settings.compiler.libcxx=libstdc++11 default
               # conan remote list
@@ -71,7 +74,7 @@ jobs:
                   -DCMAKE_C_COMPILER=${{ matrix.compiler.cc }} \
                   -DCMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
                   -DCMAKE_BUILD_TYPE=Release \
-                  -DLUE_BUILD_DOCUMENTATION=TRUE \
+                  -DLUE_BUILD_DOCUMENTATION=FALSE \
                   -DLUE_BUILD_TEST=TRUE \
                   -DLUE_TEST_NR_LOCALITIES_PER_TEST=1 \
                   -DLUE_TEST_NR_THREADS_PER_LOCALITY=2 \
@@ -100,23 +103,24 @@ jobs:
               cd build
               ctest --output-on-failure
 
-        - name: generate lue documentation
-          if: matrix.python-version > 3
-          shell: bash
-          run: |
-              cmake --build build --target cpp_doc py_doc
-              cmake --build build --target sphinx_doc
+        # - name: generate lue documentation
+        #   # Skip for now. Works locally, but here we get:
+        #   # Extension error: Config value 'graphviz_dot' already present
+        #   shell: bash
+        #   run: |
+        #       cmake --build build --target cpp_doc py_doc
+        #       cmake --build build --target sphinx_doc
 
-        - name: install lue
-          if: matrix.python-version > 3
-          shell: bash
-          run: |
-              cmake --install build --prefix install
-              tree install
+        # - name: install lue
+        #   # Skip for now. Requires the docs, which are not built.
+        #   shell: bash
+        #   run: |
+        #       cmake --install build --prefix install
+        #       tree install
 
         - name: deploy lue documentation
           # Skip deploy for now. Still hangs upon uploading to the server...
-          if: 0 && github.ref == 'refs/heads/master' && matrix.compiler.cxx == 'g++-9' && matrix.python-version == 3.8
+          if: 0 && github.ref == 'refs/heads/master' && matrix.compiler.cxx == 'g++-9' && matrix.python-version == 3.9
           env:
               ftp_server: ${{ secrets.FTP_SERVER }}
               ftp_port: ${{ secrets.FTP_PORT }}

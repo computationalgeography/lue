@@ -697,8 +697,6 @@ namespace lue {
             {
                 lue_hpx_assert(all_are_valid(input_partitions.data()));
 
-                Rank const rank = lue::rank<InputData<InputPartitions>>;
-
                 // return hpx::dataflow(
                 //     hpx::launch::async,
                 //     hpx::unwrapping(
@@ -722,6 +720,7 @@ namespace lue {
                                 std::vector<hpx::lcos::shared_future<InputData<InputPartitions>>> const&
                                     partition_data_futures)
                             {
+                                Rank const rank{lue::rank<InputData<InputPartitions>>};
                                 lue::Array<hpx::lcos::shared_future<InputData<InputPartitions>>, rank> result{shape};
 
                                 std::copy(partition_data_futures.begin(), partition_data_futures.end(), result.begin());

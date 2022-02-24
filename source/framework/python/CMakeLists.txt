@@ -1,6 +1,8 @@
 # TODO No command line arguments end up in HPX runtime...
 add_test_conditionally(test)
 
+# A pybind11 SHARED library is a CMake runtime output artifact. Target properties to set/get are
+# RUNTIME_OUTPUT_DIRECTORY and RUNTIME_OUTPUT_NAME.
 pybind11_add_module(lue_py_framework SHARED THIN_LTO
     src/algorithm/accu.cpp
     src/algorithm/accu3.cpp
@@ -77,6 +79,7 @@ target_compile_definitions(lue_py_framework
 set_target_properties(lue_py_framework
     PROPERTIES
         OUTPUT_NAME lue_py_framework
+        RUNTIME_OUTPUT_DIRECTORY $<TARGET_FILE_DIR:lue::py>
 )
 
 # Explicitly add the location of the numpy headers to the list. Otherwise

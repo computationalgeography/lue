@@ -4,9 +4,6 @@ if(LUE_FRAMEWORK_WITH_BENCHMARKS)
     add_subdirectory(benchmark)
 endif()
 
-add_subdirectory(hpx)
-
-
 add_library(lue_framework_algorithm SHARED
     src/component/array_partition_io.cpp
 )
@@ -72,6 +69,16 @@ add_library(lue_framework_local_operation SHARED
 
 add_library(lue::framework_local_operation ALIAS lue_framework_local_operation)
 
+generate_export_header(lue_framework_local_operation
+    EXPORT_FILE_NAME include/lue/framework/algorithm/local_operation_export.hpp
+    EXPORT_MACRO_NAME LUE_LOCAL_OPERATION_EXPORT)
+
+target_include_directories(lue_framework_local_operation
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>  # export.hpp
+)
+
 target_link_libraries(lue_framework_local_operation
     PUBLIC
         lue::framework_algorithm
@@ -87,6 +94,16 @@ add_library(lue_framework_focal_operation SHARED
 )
 
 add_library(lue::framework_focal_operation ALIAS lue_framework_focal_operation)
+
+generate_export_header(lue_framework_focal_operation
+    EXPORT_FILE_NAME include/lue/framework/algorithm/focal_operation_export.hpp
+    EXPORT_MACRO_NAME LUE_FOCAL_OPERATION_EXPORT)
+
+target_include_directories(lue_framework_focal_operation
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>  # export.hpp
+)
 
 target_link_libraries(lue_framework_focal_operation
     PUBLIC
@@ -137,6 +154,16 @@ add_library(lue_framework_flow_direction_operation SHARED
 )
 
 add_library(lue::framework_flow_direction_operation ALIAS lue_framework_flow_direction_operation)
+
+generate_export_header(lue_framework_flow_direction_operation
+    EXPORT_FILE_NAME include/lue/framework/algorithm/flow_direction_operation_export.hpp
+    EXPORT_MACRO_NAME LUE_FLOW_DIRECTION_OPERATION_EXPORT)
+
+target_include_directories(lue_framework_flow_direction_operation
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>  # export.hpp
+)
 
 target_link_libraries(lue_framework_flow_direction_operation
     PUBLIC

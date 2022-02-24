@@ -1,6 +1,16 @@
 #pragma once
 #include "lue/framework/core/define.hpp"
+#include <boost/predef.h>
+
+#if BOOST_COMP_MSVC
+#   pragma warning(push)
+    // 4141: 'inline': used more than once
+#   pragma warning(disable: 4141)
+#endif
 #include <experimental/mdspan>
+#if BOOST_COMP_MSVC
+#   pragma warning(pop)
+#endif
 
 
 namespace lue {

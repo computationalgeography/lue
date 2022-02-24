@@ -1,8 +1,8 @@
 #pragma once
 #include "lue/framework/algorithm/where.hpp"
+#include "lue/framework/algorithm/local_operation_export.hpp"
 #include "lue/framework/algorithm/definition/binary_local_operation.hpp"
 #include "lue/framework/algorithm/definition/ternary_local_operation.hpp"
-#include "lue/framework/algorithm/export.hpp"
 #include "lue/macro.hpp"
 
 
@@ -153,14 +153,14 @@ namespace lue {
 
 #define LUE_INSTANTIATE_WHERE2(Policies, ConditionElement, Element, rank)    \
                                                                              \
-    template LUE_FA_EXPORT                                                   \
+    template LUE_LOCAL_OPERATION_EXPORT                                      \
     PartitionedArray<Element, rank> where<                                   \
             ArgumentType<void(Policies)>, ConditionElement, Element, rank>(  \
         ArgumentType<void(Policies)> const&,                                 \
         PartitionedArray<ConditionElement, rank> const&,                     \
         PartitionedArray<Element, rank> const&);                             \
                                                                              \
-    template LUE_FA_EXPORT                                                   \
+    template LUE_LOCAL_OPERATION_EXPORT                                      \
     PartitionedArray<Element, rank> where<                                   \
             ArgumentType<void(Policies)>, ConditionElement, Element, rank>(  \
         ArgumentType<void(Policies)> const&,                                 \
@@ -170,7 +170,7 @@ namespace lue {
 
 #define LUE_INSTANTIATE_WHERE3(Policies, ConditionElement, Element, rank)    \
                                                                              \
-    template LUE_FA_EXPORT                                                   \
+    template LUE_LOCAL_OPERATION_EXPORT                                      \
     PartitionedArray<Element, rank> where<                                   \
             ArgumentType<void(Policies)>, ConditionElement, Element, rank>(  \
         ArgumentType<void(Policies)> const&,                                 \
@@ -178,7 +178,7 @@ namespace lue {
         PartitionedArray<Element, rank> const&,                              \
         PartitionedArray<Element, rank> const&);                             \
                                                                              \
-    template LUE_FA_EXPORT                                                   \
+    template LUE_LOCAL_OPERATION_EXPORT                                      \
     PartitionedArray<Element, rank> where<                                   \
             ArgumentType<void(Policies)>, ConditionElement, Element, rank>(  \
         ArgumentType<void(Policies)> const&,                                 \
@@ -186,7 +186,7 @@ namespace lue {
         PartitionedArray<Element, rank> const&,                              \
         hpx::shared_future<Element> const);                                  \
                                                                              \
-    template LUE_FA_EXPORT                                                   \
+    template LUE_LOCAL_OPERATION_EXPORT                                      \
     PartitionedArray<Element, rank> where<                                   \
             ArgumentType<void(Policies)>, ConditionElement, Element, rank>(  \
         ArgumentType<void(Policies)> const&,                                 \
@@ -194,7 +194,7 @@ namespace lue {
         hpx::shared_future<Element> const,                                   \
         PartitionedArray<Element, rank> const&);                             \
                                                                              \
-    template LUE_FA_EXPORT                                                   \
+    template LUE_LOCAL_OPERATION_EXPORT                                      \
     PartitionedArray<Element, rank> where<                                   \
             ArgumentType<void(Policies)>, ConditionElement, Element, rank>(  \
         ArgumentType<void(Policies)> const&,                                 \

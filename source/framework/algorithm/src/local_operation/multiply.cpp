@@ -3,23 +3,23 @@
 #include "lue/framework/algorithm/definition/multiply.hpp"
 
 
-#define LUE_INSTANTIATE(Element, rank)                               \
-                                                                     \
-    LUE_INSTANTIATE_BINARY_LOCAL_OPERATION(                          \
-        (policy::multiply::DefaultPolicies<Element, Element>),       \
-        Element,                                                     \
-        Element,                                                     \
-        Element,                                                     \
-        rank,                                                        \
-        (detail::Multiply<Element, Element>));                       \
-                                                                     \
-    LUE_INSTANTIATE_BINARY_LOCAL_OPERATION(                          \
-        (policy::multiply::DefaultValuePolicies<Element, Element>),  \
-        Element,                                                     \
-        Element,                                                     \
-        Element,                                                     \
-        rank,                                                        \
-        (detail::Multiply<Element, Element>));
+#define LUE_INSTANTIATE(Element, rank)                                  \
+                                                                        \
+    LUE_INSTANTIATE_BINARY_LOCAL_OPERATION(                             \
+        ESC(policy::multiply::DefaultPolicies<Element, Element>),       \
+        Element,                                                        \
+        Element,                                                        \
+        Element,                                                        \
+        rank,                                                           \
+        ESC(detail::Multiply<Element, Element>));                       \
+                                                                        \
+    LUE_INSTANTIATE_BINARY_LOCAL_OPERATION(                             \
+        ESC(policy::multiply::DefaultValuePolicies<Element, Element>),  \
+        Element,                                                        \
+        Element,                                                        \
+        Element,                                                        \
+        rank,                                                           \
+        ESC(detail::Multiply<Element, Element>));
 
 
 namespace lue {

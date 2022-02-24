@@ -1,9 +1,43 @@
-add_hpx_unit_tests(
-    SCOPE lue_framework_core
-    NAMES
-        array_partition_test.cpp
-        partitioned_array_test.cpp
-    LINK_LIBRARIES
-        lue::framework_partitioned_array
-        lue::framework_test
+set(scope lue_framework_partitioned_array)
+set(names
+    array_partition
+    partitioned_array
 )
+
+foreach(name ${names})
+
+    set(module_name ${name}_test)
+    set(test_name ${scope}_${module_name})
+
+    add_executable(${test_name} ${module_name}.cpp)
+
+    target_include_directories(${test_name} SYSTEM
+        PRIVATE
+            ${Boost_INCLUDE_DIRS}
+    )
+
+    target_link_libraries(${test_name}
+        PRIVATE
+            lue::framework_partitioned_array
+            lue::framework_test
+            Boost::unit_test_framework
+    )
+
+    add_test(NAME ${test_name}
+        COMMAND
+            ${Python3_EXECUTABLE} ${HPXRUN}
+                "--runwrapper" ${LUE_TEST_HPX_RUNWRAPPER}
+                "--parcelport" ${LUE_TEST_HPX_PARCELPORT}
+                "--localities" ${LUE_TEST_NR_LOCALITIES_PER_TEST}
+                "--thread" ${LUE_TEST_NR_THREADS_PER_LOCALITY} --
+                    "$<TARGET_FILE:${test_name}>"
+    )
+
+    set_tests_properties(
+        ${test_name}
+        PROPERTIES
+            # On Windows, add the path to the HPX dlls. Only if HPX::hpx target is defined.
+            ENVIRONMENT_MODIFICATION
+                PATH=path_list_prepend:$<$<AND:$<PLATFORM_ID:Windows>,$<TARGET_EXISTS:HPX::hpx>>:$<TARGET_FILE_DIR:HPX::component_storage_component>>
+    )
+endforeach()

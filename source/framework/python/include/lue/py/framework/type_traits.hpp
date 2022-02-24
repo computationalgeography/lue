@@ -32,8 +32,10 @@ namespace lue::framework {
                                                           \
             inline static std::string const name{name_};  \
                                                           \
-            inline static pybind11::dtype const dtype{    \
-                pybind11::dtype::of<Element>()};          \
+            inline static pybind11::dtype dtype()         \
+            {                                             \
+                return pybind11::dtype::of<Element>();    \
+            }                                             \
                                                           \
     };
 
@@ -61,7 +63,7 @@ TYPE_TRAITS(double, "float64")
         typename Element>
     pybind11::dtype dtype()
     {
-        return TypeTraits<Element>::dtype;
+        return TypeTraits<Element>::dtype();
     }
 
 }  // namespace lue::framework

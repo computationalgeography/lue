@@ -178,6 +178,8 @@ namespace lue::detail {
 
                     using Offset = typename PartitionIOComponent::Offset;
 
+                    Rank const rank{lue::rank<Offset>};
+
                     Array<PartitionOffsets, rank> downstream_partition_offsets{
                         downstream_partition_offsets_f.get()};
                     Shape const& shape_in_partitions{downstream_partition_offsets.shape()};
@@ -280,6 +282,8 @@ namespace lue::detail {
                     // can be provided *from*.
 
                     using Offset = typename PartitionIOComponent::Offset;
+
+                    Rank const rank{lue::rank<PartitionIOComponents>};
 
                     Array<PartitionOffsetCounts, rank> downstream_partition_offset_counts{
                         downstream_partition_offsets_f.get()};
@@ -417,7 +421,8 @@ namespace lue::detail {
             using OutputMaterialData = OutputMaterialData_;
             using OutputMaterialElement = ElementT<OutputMaterialData>;
 
-            static constexpr Rank rank{lue::rank<InputMaterialData>};
+            // TODO constexpr rank stuff all the way down to the underlying class templates
+            static constexpr Rank rank{2};  // lue::rank<InputMaterialData>};
 
 
             Accumulator(

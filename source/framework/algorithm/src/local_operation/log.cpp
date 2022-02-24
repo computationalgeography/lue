@@ -1,12 +1,12 @@
 #include "lue/framework/algorithm/definition/log.hpp"
 
 
-#define LUE_INSTANTIATE(Element, rank)                  \
-                                                        \
-    LUE_INSTANTIATE_LOG(                                \
-        (policy::log::DefaultValuePolicies<Element>),  \
-        Element,                                        \
-        rank);                                          \
+#define LUE_INSTANTIATE(Element, rank)                    \
+                                                          \
+    LUE_INSTANTIATE_LOG(                                  \
+        ESC(policy::log::DefaultValuePolicies<Element>),  \
+        Element,                                          \
+        rank);                                            \
 
 
 namespace lue {

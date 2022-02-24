@@ -33,16 +33,16 @@ the related technology.
 
 
 ## CI builds
-[![Linux build status](https://github.com/computationalgeography/lue/workflows/Linux%20CI/badge.svg)](https://github.com/computationalgeography/lue/actions)
-[![macOS build status](https://github.com/computationalgeography/lue/workflows/macOS%20CI/badge.svg)](https://github.com/computationalgeography/lue/actions)
-[![Windows build status](https://github.com/computationalgeography/lue/workflows/Windows%20CI/badge.svg)](https://github.com/computationalgeography/lue/actions)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/2c02fc1c5b13424abfc414b82104801d)](https://www.codacy.com/gh/computationalgeography/lue/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=computationalgeography/lue&amp;utm_campaign=Badge_Grade)
+[![Linux build status](https://github.com/computationalgeography/lue/workflows/Linux%20CI/badge.svg)](https://github.com/computationalgeography/lue/actions/workflows/linux.yml)
+[![Linux Conda package](https://github.com/computationalgeography/lue/actions/workflows/linux-conda.yml/badge.svg)](https://github.com/computationalgeography/lue/actions/workflows/linux-conda.yml)
 
-| OS         | Description                                              |
-| ---------- | -------------------------------------------------------- |
-| Linux CI   | Release build of data model, framework and related tests |
-| macOS CI   | Release build of data model, framework and related tests |
-| Windows CI | Release build of data model, without utilities           |
+[![macOS build status](https://github.com/computationalgeography/lue/workflows/macOS%20CI/badge.svg)](https://github.com/computationalgeography/lue/actions/workflows/macos.yml)
+[![macOS Conda package](https://github.com/computationalgeography/lue/actions/workflows/macos-conda.yml/badge.svg)](https://github.com/computationalgeography/lue/actions/workflows/macos-conda.yml)
+
+[![Windows build status](https://github.com/computationalgeography/lue/workflows/Windows%20CI/badge.svg)](https://github.com/computationalgeography/lue/actions/workflows/windows.yml)
+[![Windows Conda package](https://github.com/computationalgeography/lue/actions/workflows/windows-conda.yml/badge.svg)](https://github.com/computationalgeography/lue/actions/workflows/windows-conda.yml)
+
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/2c02fc1c5b13424abfc414b82104801d)](https://www.codacy.com/gh/computationalgeography/lue/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=computationalgeography/lue&amp;utm_campaign=Badge_Grade)
 
 
 ## Publications

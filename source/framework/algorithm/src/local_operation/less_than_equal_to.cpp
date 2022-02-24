@@ -3,23 +3,23 @@
 #include "lue/framework/algorithm/value_policies/less_than_equal_to.hpp"
 
 
-#define LUE_INSTANTIATE(OutputElement, InputElement, rank)                                \
-                                                                                          \
-    LUE_INSTANTIATE_BINARY_LOCAL_OPERATION(                                               \
-        (policy::less_than_equal_to::DefaultPolicies<OutputElement, InputElement>),       \
-        OutputElement,                                                                    \
-        InputElement,                                                                     \
-        InputElement,                                                                     \
-        rank,                                                                             \
-        (detail::LessThanEqualTo<InputElement, OutputElement>));                          \
-                                                                                          \
-    LUE_INSTANTIATE_BINARY_LOCAL_OPERATION(                                               \
-        (policy::less_than_equal_to::DefaultValuePolicies<OutputElement, InputElement>),  \
-        OutputElement,                                                                    \
-        InputElement,                                                                     \
-        InputElement,                                                                     \
-        rank,                                                                             \
-        (detail::LessThanEqualTo<InputElement, OutputElement>));
+#define LUE_INSTANTIATE(OutputElement, InputElement, rank)                                   \
+                                                                                             \
+    LUE_INSTANTIATE_BINARY_LOCAL_OPERATION(                                                  \
+        ESC(policy::less_than_equal_to::DefaultPolicies<OutputElement, InputElement>),       \
+        OutputElement,                                                                       \
+        InputElement,                                                                        \
+        InputElement,                                                                        \
+        rank,                                                                                \
+        ESC(detail::LessThanEqualTo<InputElement, OutputElement>));                          \
+                                                                                             \
+    LUE_INSTANTIATE_BINARY_LOCAL_OPERATION(                                                  \
+        ESC(policy::less_than_equal_to::DefaultValuePolicies<OutputElement, InputElement>),  \
+        OutputElement,                                                                       \
+        InputElement,                                                                        \
+        InputElement,                                                                        \
+        rank,                                                                                \
+        ESC(detail::LessThanEqualTo<InputElement, OutputElement>));
 
 
 namespace lue {

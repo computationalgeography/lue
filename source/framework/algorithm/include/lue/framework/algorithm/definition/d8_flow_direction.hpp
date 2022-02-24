@@ -1,9 +1,9 @@
 #pragma once
 #include "lue/framework/algorithm/d8_flow_direction.hpp"
 #include "lue/framework/algorithm/flow_direction.hpp"
+#include "lue/framework/algorithm/flow_direction_operation_export.hpp"
 #include "lue/framework/algorithm/definition/focal_operation.hpp"
 #include "lue/framework/algorithm/serialize/kernel.hpp"
-#include "lue/framework/algorithm/export.hpp"
 #include "lue/macro.hpp"
 
 
@@ -187,7 +187,7 @@ namespace lue {
 #define LUE_INSTANTIATE_D8_FLOW_DIRECTION(                                             \
     Policies, FlowDirectionElement, ElevationElement)                                  \
                                                                                        \
-    template LUE_FA_EXPORT                                                             \
+    template LUE_FLOW_DIRECTION_OPERATION_EXPORT                                       \
     PartitionedArray<FlowDirectionElement, 2> d8_flow_direction<                       \
             FlowDirectionElement, ArgumentType<void(Policies)>, ElevationElement, 2>(  \
         ArgumentType<void(Policies)> const&,                                           \

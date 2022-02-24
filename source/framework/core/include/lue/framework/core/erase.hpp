@@ -30,17 +30,17 @@ Shape<Index, rank> erase(
     // Number of elements to skip from the start of the 1D array to
     // reach elements to erase
     Count const offset{
-        hyperslab_begin_idx *
-            std::accumulate(shape.begin() + dimension_idx + 1, shape.end(), 1, std::multiplies<Count>{})};
+        hyperslab_begin_idx * std::accumulate(
+            shape.begin() + dimension_idx + 1, shape.end(), Count{1}, std::multiplies<Count>{})};
     lue_hpx_assert(offset >= 0);
 
     Count const count{
-        (hyperslab_end_idx - hyperslab_begin_idx) *
-            std::accumulate(shape.begin() + dimension_idx + 1, shape.end(), 1, std::multiplies<Count>{})};
+        (hyperslab_end_idx - hyperslab_begin_idx) * std::accumulate(
+            shape.begin() + dimension_idx + 1, shape.end(), Count{1}, std::multiplies<Count>{})};
     lue_hpx_assert(count > 0);
 
     Count const stride{
-        std::accumulate(shape.begin() + dimension_idx, shape.end(), 1, std::multiplies<Count>{})};
+        std::accumulate(shape.begin() + dimension_idx, shape.end(), Count{1}, std::multiplies<Count>{})};
 
     for(auto slab_begin = elements.begin() + offset; slab_begin < elements.end();
         slab_begin += (stride - count))

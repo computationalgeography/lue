@@ -1,9 +1,9 @@
 #pragma once
+#include "lue/framework/algorithm/flow_direction_operation_export.hpp"
 #include "lue/framework/algorithm/inflow_count.hpp"  // inflow_count_partition_data
 #include "lue/framework/algorithm/inflow_count3.hpp"
 #include "lue/framework/algorithm/detail/communicator_array.hpp"
 #include "lue/framework/algorithm/detail/inflow_count3.hpp"
-#include "lue/framework/algorithm/export.hpp"
 #include "lue/macro.hpp"
 
 
@@ -609,7 +609,7 @@ namespace lue {
 
                                 [](std::array<hpx::future<CellsIdxs>, nr_neighbours>&& idxs_fs)
                                 {
-                                    std::array<CellsIdxs, nr_neighbours> cells_idxs{};
+                                    std::array<CellsIdxs, detail::nr_neighbours<rank>()> cells_idxs{};
 
                                     std::transform(idxs_fs.begin(), idxs_fs.end(), cells_idxs.begin(),
                                             [](auto& idxs_f)
@@ -880,7 +880,7 @@ namespace lue {
 #define LUE_INSTANTIATE_INFLOW_COUNT3(                                             \
     Policies, CountElement, FlowDirectionElement)                                  \
                                                                                    \
-    template LUE_FA_EXPORT                                                         \
+    template LUE_FLOW_DIRECTION_OPERATION_EXPORT                                   \
     PartitionedArray<CountElement, 2> inflow_count3<                               \
             CountElement, ArgumentType<void(Policies)>, FlowDirectionElement, 2>(  \
         ArgumentType<void(Policies)> const&,                                       \
