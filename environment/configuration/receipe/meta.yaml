@@ -25,6 +25,7 @@ requirements:
     - {{ cdt('libxext') }}                         # [linux]
     - git
     - conan
+    - markupsafe <2.1.0
     - cmake
     - ninja
 
@@ -44,7 +45,6 @@ requirements:
     - libhwloc
     - gperftools                                   # [not win]
     - asio
-    - markupsafe <2.1.0
 
   run:
     - python
