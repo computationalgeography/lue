@@ -5,9 +5,6 @@ set -x
 echo $PREFIX
 echo $SP_DIR
 
-
-
-
 # We need to create an out of source build
 
 # LUE may have to patch sources of 3rd party sources it uses (OTF2, HPX, ...). This only works
@@ -17,7 +14,7 @@ cd $SRC_DIR
 
 mkdir -p ../build && cd ../build
 
-CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY" PATH=$PREFIX/bin:$PATH cmake $SRC_DIR -G"Ninja" \
+CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY" cmake $SRC_DIR -G"Ninja" \
 -D CMAKE_BUILD_TYPE=Release \
 -D CMAKE_INSTALL_PREFIX:PATH="${PREFIX}" \
 -D CMAKE_INSTALL_LIBDIR=lib \
