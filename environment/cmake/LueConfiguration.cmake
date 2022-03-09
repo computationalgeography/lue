@@ -80,8 +80,6 @@ if(WIN32)
     set(LUE_HAVE_DOCOPT_INIT FALSE)
     set(LUE_HAVE_DOXYGEN_INIT FALSE)
     set(LUE_HAVE_GDAL_INIT FALSE)
-    set(LUE_HAVE_GLEW_INIT FALSE)
-    set(LUE_HAVE_GLFW_INIT FALSE)
     set(LUE_HAVE_MS_GSL_INIT FALSE)
     set(LUE_HAVE_FMT_INIT FALSE)
     set(LUE_HAVE_HDF5_INIT FALSE)
@@ -93,8 +91,6 @@ elseif(APPLE)
     set(LUE_HAVE_DOCOPT_INIT FALSE)
     set(LUE_HAVE_DOXYGEN_INIT TRUE)
     set(LUE_HAVE_GDAL_INIT TRUE)
-    set(LUE_HAVE_GLEW_INIT TRUE)
-    set(LUE_HAVE_GLFW_INIT TRUE)
     set(LUE_HAVE_MS_GSL_INIT FALSE)
     set(LUE_HAVE_FMT_INIT TRUE)
     set(LUE_HAVE_HDF5_INIT TRUE)
@@ -105,8 +101,6 @@ else()
     set(LUE_HAVE_DOCOPT_INIT TRUE)
     set(LUE_HAVE_DOXYGEN_INIT TRUE)
     set(LUE_HAVE_GDAL_INIT TRUE)
-    set(LUE_HAVE_GLEW_INIT TRUE)
-    set(LUE_HAVE_GLFW_INIT TRUE)
     set(LUE_HAVE_MS_GSL_INIT FALSE)
     set(LUE_HAVE_FMT_INIT TRUE)
     set(LUE_HAVE_HDF5_INIT TRUE)
@@ -126,13 +120,16 @@ lue_have_option(BOOST)
 lue_have_option(DOCOPT)
 lue_have_option(DOXYGEN)
 lue_have_option(GDAL)
-lue_have_option(GLEW)
-lue_have_option(GLFW)
 lue_have_option(FMT)
-lue_have_option(MS_GSL)
 lue_have_option(HDF5)
+lue_have_option(MS_GSL)
 lue_have_option(NLOHMANN_JSON)
 lue_have_option(PYBIND11)
+
+# For now, use Conan to get glew/glfw/imgui
+set(LUE_HAVE_GLEW FALSE)
+set(LUE_HAVE_GLFW FALSE)
+set(LUE_HAVE_IMGUI FALSE)
 
 
 # Handle internal dependencies -------------------------------------------------
@@ -318,6 +315,7 @@ endif()
 if(LUE_GLEW_REQUIRED)
     if(NOT LUE_HAVE_GLEW)
         set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} glew/2.2.0)
+        set(LUE_CONAN_OPTIONS ${LUE_CONAN_OPTIONS} glew:shared=False)
     endif()
 endif()
 
@@ -325,6 +323,19 @@ endif()
 if(LUE_GLFW_REQUIRED)
     if(NOT LUE_HAVE_GLFW)
         set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} glfw/3.3.4)
+    endif()
+endif()
+
+
+if(LUE_IMGUI_REQUIRED)
+    if(NOT LUE_HAVE_IMGUI)
+        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} imgui/1.81)
+        list(APPEND LUE_CONAN_IMPORTS
+            "./res/bindings, imgui_impl_glfw.h -> ${CMAKE_BINARY_DIR}/source/imgui/src"
+            "./res/bindings, imgui_impl_glfw.cpp -> ${CMAKE_BINARY_DIR}/source/imgui/src"
+            "./res/bindings, imgui_impl_opengl3.h -> ${CMAKE_BINARY_DIR}/source/imgui/src"
+            "./res/bindings, imgui_impl_opengl3.cpp -> ${CMAKE_BINARY_DIR}/source/imgui/src"
+        )
     endif()
 endif()
 
@@ -343,10 +354,29 @@ if(LUE_HDF5_REQUIRED)
     endif()
 endif()
 
-if(LUE_IMGUI_REQUIRED AND NOT LUE_BUILD_IMGUI)
-    message(FATAL_ERROR
-        "Support for system-provided ImGUI library does not work yet\n"
-        "But we can build ImGUI for you! Just reconfigure with LUE_BUILD_IMGUI=TRUE")
+if(LUE_HPX_REQUIRED)
+    if(NOT LUE_BUILD_HPX)
+        message(FATAL_ERROR
+            "Support for system-provided HPX library does not work yet\n"
+            "But we can build HPX for you! Just reconfigure with LUE_BUILD_HPX=TRUE")
+
+        # # Use HPX from the environment
+        # find_package(HPX REQUIRED)
+
+        # if(HPX_FOUND)
+        #     message(STATUS "Found HPX")
+        #     message(STATUS "  includes : ${HPX_INCLUDE_DIRS}")
+        #     message(STATUS "  libraries: ${HPX_LIBRARIES}")
+
+        #     # Check whether we are using the same build type as HPX
+        #     if (NOT "${HPX_BUILD_TYPE}" STREQUAL "${CMAKE_BUILD_TYPE}")
+        #         message(WARNING
+        #             "CMAKE_BUILD_TYPE does not match HPX_BUILD_TYPE: "
+        #             "\"${CMAKE_BUILD_TYPE}\" != \"${HPX_BUILD_TYPE}\"\n"
+        #             "ABI compatibility is not guaranteed. Expect link errors.")
+        #     endif()
+        # endif()
+    endif()
 endif()
 
 if(LUE_KOKKOS_MDSPAN_REQUIRED)
@@ -373,6 +403,7 @@ if(LUE_CONAN_REQUIRES)
     conan_cmake_configure(
         REQUIRES ${LUE_CONAN_REQUIRES}
         GENERATORS cmake_find_package
+        IMPORTS ${LUE_CONAN_IMPORTS}
         OPTIONS ${LUE_CONAN_OPTIONS})
     conan_cmake_autodetect(settings)
     conan_cmake_install(
@@ -574,68 +605,10 @@ if(LUE_HPX_REQUIRED)
 endif()
 
 
-if(LUE_IMGUI_REQUIRED AND LUE_BUILD_IMGUI)
-    find_package(OpenGL REQUIRED)
-    find_package(GLEW REQUIRED)
+if(LUE_IMGUI_REQUIRED)
+    find_package(imgui REQUIRED)
     find_package(glfw3 REQUIRED)
-
-    # if(NOT LUE_HAVE_GLFW)
-    #     # Conan find module uses glfw::glfw instead of glfw
-    #     add_library(glfw ALIAS glfw::glfw)
-    # endif()
-
-    if(LUE_REPOSITORY_CACHE AND EXISTS ${LUE_REPOSITORY_CACHE}/imgui)
-        set(imgui_repository ${LUE_REPOSITORY_CACHE}/imgui)
-    else()
-        set(imgui_repository https://github.com/ocornut/imgui.git)
-    endif()
-
-    FetchContent_Declare(imgui
-        // MIT License, see ${imgui_SOURCE_DIR}/LICENSE.txt
-        GIT_REPOSITORY ${imgui_repository}
-        GIT_TAG v1.81
-    )
-
-    FetchContent_GetProperties(imgui)
-
-    if(NOT imgui_POPULATED)
-        FetchContent_Populate(imgui)
-
-        add_library(imgui STATIC
-            # imgui release
-            ${imgui_SOURCE_DIR}/imgui.cpp
-            ${imgui_SOURCE_DIR}/imgui_demo.cpp
-            ${imgui_SOURCE_DIR}/imgui_draw.cpp
-            ${imgui_SOURCE_DIR}/imgui_tables.cpp
-            ${imgui_SOURCE_DIR}/imgui_widgets.cpp
-
-            ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
-            ${imgui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
-        )
-
-        target_include_directories(imgui SYSTEM
-            PRIVATE
-                ${imgui_SOURCE_DIR}
-            PUBLIC
-                ${imgui_SOURCE_DIR}/backends
-                $<BUILD_INTERFACE:${imgui_SOURCE_DIR}>
-        )
-
-        target_compile_definitions(imgui
-            PUBLIC
-                IMGUI_DISABLE_OBSOLETE_FUNCTIONS
-                IMGUI_IMPL_OPENGL_LOADER_GLEW
-        )
-
-        target_link_libraries(imgui
-            PUBLIC
-                glfw
-                GLEW::GLEW
-                OpenGL::GL
-        )
-
-        add_library(imgui::imgui ALIAS imgui)
-    endif()
+    find_package(GLEW REQUIRED)
 endif()
 
 
