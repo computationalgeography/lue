@@ -31,6 +31,7 @@ void init_submodule(
 
     init_shape(submodule);
     init_identifier(submodule);
+    init_primary_data_object(submodule);
     init_group(submodule);
     init_file(submodule);
     init_dataset(submodule);

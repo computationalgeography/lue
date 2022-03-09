@@ -4,104 +4,88 @@
 #include <string>
 
 
-namespace lue {
-namespace hdf5 {
-
-/*!
-    @brief      This class represents an HDF5 identifier of an open
-                HDF5 object
-    @sa         https://portal.hdfgroup.org/display/HDF5/Identifiers
-
-    Scoping the identifier in this class ensures that the identifier is
-    closed upon exiting the scope.
-
-    Copies can be made. Only when the last copy goes out of scope will the
-    identifier be closed.
-*/
-class Identifier
-{
-
-public:
+namespace lue::hdf5 {
 
     /*!
-        @brief      Type of function to call when the identifier must
-                    be closed
+        @brief      This class represents an HDF5 identifier of an open
+                    HDF5 object
+        @sa         https://portal.hdfgroup.org/display/HDF5/Identifiers
 
-        For example, when an HDF5 group is opened, you would pass H5Gclose
-        as the close function into the constructor.
+        Scoping the identifier in this class ensures that the identifier is
+        closed upon exiting the scope.
+
+        Copies can be made. Only when the last copy goes out of scope will the
+        identifier be closed.
     */
-    using Close = std::function<herr_t (hid_t)>;
+    class Identifier
+    {
 
-                   Identifier          ();
+        public:
 
-                   Identifier          (hid_t id,
-                                        Close const& close);
+            /*!
+                @brief      Type of function to call when the identifier must
+                            be closed
 
-                   Identifier          (Identifier const& other);
+                For example, when an HDF5 group is opened, you would pass H5Gclose
+                as the close function into the constructor.
+            */
+            using Close = std::function<herr_t (hid_t)>;
 
-                   Identifier          (Identifier&& other) noexcept;
+            Identifier();
 
-                   ~Identifier         () noexcept;
+            Identifier(
+                hid_t id,
+                Close const& close);
 
-    Identifier&    operator=           (Identifier const& other);
+            Identifier(Identifier const& other);
 
-    Identifier&    operator=           (Identifier&& other) noexcept;
+            Identifier(Identifier&& other) noexcept;
 
-    bool           operator==          (Identifier const& other) const;
+            ~Identifier() noexcept;
 
-    bool           operator!=          (Identifier const& other) const;
+            Identifier& operator=(Identifier const& other);
 
-    bool           is_valid            () const;
+            Identifier& operator=(Identifier&& other) noexcept;
 
-    ::H5I_type_t   type                () const;
+            bool operator==(Identifier const& other) const;
 
-    void*          object              ();
+            bool operator!=(Identifier const& other) const;
 
-    // Allow explicit conversion to underlying hid_t. It is very
-    // convenient, in this specific case.
-    // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-                   operator hid_t      () const;
+            bool is_valid() const;
 
-    std::string    pathname            () const;
+            ::H5I_type_t type() const;
 
-    std::string    name                () const;
+            void* object();
 
-    ObjectInfo     info                () const;
+            int reference_count() const;
 
-    Identifier     file_id             () const;
+            // Allow explicit conversion to underlying hid_t. It is very
+            // convenient, in this specific case.
+            // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
+            operator hid_t() const;
 
-    // class Hash
-    // {
+            std::string pathname() const;
 
-    // public:
+            std::string name() const;
 
-    //     std::size_t operator()(
-    //         Identifier const& id) const noexcept
-    //     {
-    //         // return std::hash<::hid_t>{}(id._id);
+            ObjectInfo info() const;
 
-    //         return std::hash<::haddr_t>{}(id.info().addr());
-    //     }
+            Identifier file_id() const;
 
-    // };
+        private:
 
-private:
+            int increment_reference_count();
 
-    int            reference_count     () const;
+            void close_if_valid();
 
-    int            increment_reference_count();
+            void assert_invariant() const;
 
-    void           close_if_valid      ();
+            //! HDF5 identifier
+            hid_t _id;
 
-    void           assert_invariant    () const;
+            //! Function to call when the identifier must be closed
+            Close _close;
 
-    //! HDF5 identifier
-    hid_t          _id;
+    };
 
-    //! Function to call when the identifier must be closed
-    Close          _close;
-
-};
-
-} // namespace hdf5
-} // namespace lue
+} // namespace lue::hdf5

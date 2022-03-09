@@ -13,6 +13,9 @@ void               init_group          (pybind11::module& module);
 
 void               init_identifier     (pybind11::module& module);
 
+void               init_primary_data_object(
+                                        pybind11::module& module);
+
 void               init_shape          (pybind11::module& module);
 
 void               init_submodule      (pybind11::module& module);
