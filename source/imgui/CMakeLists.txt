@@ -11,12 +11,24 @@ add_library(lue_imgui STATIC
     src/glfw/imgui_binding.cpp
     src/glfw/imgui/frame.cpp
     src/glfw/window.cpp
+
+    # Imgui binding modules copied by Conan
+    ${CMAKE_CURRENT_BINARY_DIR}/src/imgui_impl_opengl3.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/src/imgui_impl_glfw.cpp
 )
 
 target_include_directories(lue_imgui
     PUBLIC
+        # Imgui binding headers copied by Conan
+        ${CMAKE_CURRENT_BINARY_DIR}/src
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>
+)
+
+target_compile_definitions(lue_imgui
+    PUBLIC
+        IMGUI_DISABLE_OBSOLETE_FUNCTIONS
+        IMGUI_IMPL_OPENGL_LOADER_GLEW
 )
 
 add_library(lue::imgui ALIAS lue_imgui)
@@ -25,6 +37,8 @@ target_link_libraries(lue_imgui
     PRIVATE
         fmt::fmt
     PUBLIC
+        glfw::glfw
+        GLEW::GLEW
         imgui::imgui
 )
 
