@@ -7,6 +7,7 @@ add_unit_tests(
         datatype_test.cpp
         group_test.cpp
         hyperslab_test.cpp
+        identifier_test.cpp
         shape_test.cpp
     LINK_LIBRARIES
         lue::hdf5

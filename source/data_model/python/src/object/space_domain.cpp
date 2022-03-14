@@ -159,14 +159,12 @@ void init_space_domain(
                         switch(configuration.value<SpaceDomainItemType>()) {
                             case SpaceDomainItemType::point: {
                                 using Value = StationarySpacePoint;
-                                collection = py::cast(new Value(
-                                    space_domain.value<Value>()));
+                                collection = py::cast(space_domain.value<Value>());
                                 break;
                             }
                             case SpaceDomainItemType::box: {
                                 using Value = StationarySpaceBox;
-                                collection = py::cast(new Value(
-                                    space_domain.value<Value>()));
+                                collection = py::cast(space_domain.value<Value>());
                                 break;
                             }
                         }
@@ -177,14 +175,12 @@ void init_space_domain(
                         switch(configuration.value<SpaceDomainItemType>()) {
                             case SpaceDomainItemType::point: {
                                 using Value = MobileSpacePoint;
-                                collection = py::cast(new Value(
-                                    space_domain.value<Value>()));
+                                collection = py::cast(space_domain.value<Value>());
                                 break;
                             }
                             case SpaceDomainItemType::box: {
                                 using Value = MobileSpaceBox;
-                                collection = py::cast(new Value(
-                                    space_domain.value<Value>()));
+                                collection = py::cast(space_domain.value<Value>());
                                 break;
                             }
                         }

@@ -133,20 +133,17 @@ void init_time_domain(
                 switch(configuration.value<TimeDomainItemType>()) {
                     case TimeDomainItemType::box: {
                         using Value = TimeBox;
-                        collection = py::cast(new Value(
-                            time_domain.value<Value>()));
+                        collection = py::cast(time_domain.value<Value>());
                         break;
                     }
                     case TimeDomainItemType::cell: {
                         using Value = TimeCell;
-                        collection = py::cast(new Value(
-                            time_domain.value<Value>()));
+                        collection = py::cast(time_domain.value<Value>());
                         break;
                     }
                     case TimeDomainItemType::point: {
                         using Value = TimePoint;
-                        collection = py::cast(new Value(
-                            time_domain.value<Value>()));
+                        collection = py::cast(time_domain.value<Value>());
                         break;
                     }
                 }

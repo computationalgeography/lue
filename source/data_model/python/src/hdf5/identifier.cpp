@@ -46,6 +46,15 @@ void init_identifier(
     This name can be passed into other HDF5 APIs
 )")
 
+        .def_property_readonly(
+            "reference_count",
+            &Identifier::reference_count,
+            R"(
+    Return reference count of in-memory HDF5 object
+
+    This property is mainly useful for debugging purposes.
+)")
+
         ;
 
 }

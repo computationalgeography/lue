@@ -1,4 +1,5 @@
 import os
+import numpy as np
 import lue
 import lue.data_model as ldm
 import lue_test
@@ -108,6 +109,59 @@ class DatasetTest(lue_test.TestCase):
 
         self.assertEqual(dataset.hdf5_version, ldm.hdf5.__version__)
         self.assertEqual(dataset.hdf5_version, ldm.hdf5.hdf5_version)
+
+
+    def test_release_dataset(self):
+        # gh431: A Python variable referencing a time or space domain's value instance kept
+        # the HDF5 file open, even if all related variables had gone out of scope. This was
+        # due to an error in our understanding of pybind11's return value policies. We created
+        # a dangling pointer.
+        # This issue surfaced only on Windows.
+
+        dataset_name = "dataset_release_dataset.lue"
+        lue_test.remove_file_if_existant(dataset_name)
+
+        def create_dataset():
+            dataset = self.create_dataset(dataset_name)
+
+        def update_dataset():
+            dataset = ldm.open_dataset(dataset_name, "w")
+            my_phenomenon = dataset.add_phenomenon("my_phenomenon")
+
+            # Add property set with a space domain
+            space_configuration = ldm.SpaceConfiguration(ldm.Mobility.stationary, ldm.SpaceDomainItemType.box)
+            my_property_set1 = my_phenomenon.add_property_set("my_property_set1",
+                space_configuration, np.dtype(np.float32), 2)
+            space_domain = my_property_set1.space_domain
+            value1 = space_domain.value  # <--- Used to dangle
+
+            # Add property set with a time domain
+            epoch = ldm.Epoch(ldm.Epoch.Kind.common_era, "2000-01-02T12:34:00", ldm.Calendar.gregorian)
+            clock = ldm.Clock(epoch, ldm.Unit.month, 4)
+            time_configuration = ldm.TimeConfiguration(ldm.TimeDomainItemType.box)
+
+            my_property_set2 = my_phenomenon.add_property_set("my_property_set2",
+                time_configuration, clock)
+            time_domain = my_property_set2.time_domain
+            value2 = time_domain.value  # <--- Used to dangle
+
+            # All variables will now go out of scope. The result must be that nobody is preventing
+            # the dataset from being used again.
+
+
+        # Create dataset and do not refer to it anymore
+        create_dataset()
+        self.assertTrue(os.path.exists(dataset_name))
+
+        # Update dataset and do not refer to it anymore
+        update_dataset()
+
+        # Since nobody is referring to the dataset anymore, we should be able to delete it.
+        # Before the fix:
+        # PermissionError: [WinError 32] The process cannot access the file because it is being
+        # used by another process: 'dataset_release_dataset.lue'
+        os.remove(dataset_name)
+        self.assertFalse(os.path.exists(dataset_name))
 
 
     # TODO gh178

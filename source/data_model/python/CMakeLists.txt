@@ -10,6 +10,7 @@ pybind11_add_module(lue_py_data_model SHARED THIN_LTO
     src/hdf5/file.cpp
     src/hdf5/group.cpp
     src/hdf5/identifier.cpp
+    src/hdf5/primary_data_object.cpp
     src/hdf5/shape.cpp
     src/hdf5/submodule.cpp
     src/hdf5/validate.cpp

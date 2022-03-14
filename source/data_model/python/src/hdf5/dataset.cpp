@@ -14,7 +14,7 @@ void init_dataset(
         py::module& module)
 {
 
-    py::class_<Dataset>(
+    py::class_<Dataset, PrimaryDataObject>(
         module,
         "Dataset",
         R"(
