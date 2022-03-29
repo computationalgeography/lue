@@ -1,0 +1,19 @@
+namespace lue {
+
+    /*!
+        @brief      Namespace containing C++ wrappers around the NetCDF4 C-API
+
+        This namespace contains relatively low-level code that is required
+        for the LUE library *developer* but not so much to the library *user*.
+        The code is useful in other contexts than LUE: lue::netcdf4 doesn't depend on
+        anything specific to LUE.
+
+        More information about NetCDF4 can be found online:
+        - [NetCDF4 homepage](https://www.unidata.ucar.edu/software/netcdf/)
+        - [NetCDF4 C API reference](
+            https://docs.unidata.ucar.edu/netcdf-c/current/modules.html)
+    */
+    namespace netcdf4 {
+    }
+
+}

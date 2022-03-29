@@ -24,6 +24,7 @@ jobs:
           run: |
               brew update  # > /dev/null || true
               # brew upgrade
+              # https://brew.sh/
               brew install \
                   cmake \
                   boost \
@@ -36,6 +37,7 @@ jobs:
                   gperftools \
                   hdf5 \
                   hwloc \
+                  netcdf \
                   ninja \
                   nlohmann-json \
                   pybind11 \

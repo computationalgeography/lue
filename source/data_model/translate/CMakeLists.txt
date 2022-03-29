@@ -18,6 +18,7 @@ add_library(lue_translate_lib STATIC
     # src/format/geo_eas.cpp
     src/format/json.cpp
     src/format/lue.cpp
+    src/format/netcdf4.cpp
     src/format/raster_discretization.cpp
     src/format/raster_domain.cpp
     # src/format/vtk.cpp
@@ -35,6 +36,7 @@ target_include_directories(lue_translate_lib
 target_link_libraries(lue_translate_lib
     PRIVATE
         lue::data_model_hl
+        lue::data_model::netcdf4
     PUBLIC
         lue::utility
         GDAL::GDAL
