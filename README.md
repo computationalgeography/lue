@@ -51,7 +51,8 @@ the related technology.
 - LUE-0.3.0: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5535686.svg)](https://doi.org/10.5281/zenodo.5535686)
 - De Jong, K., Panja, D., Karssenberg, D., Van Kreveld, M.,
     Scalability and composability of flow accumulation algorithms based
-    on asynchronous many-tasks, submitted for review
+    on asynchronous many-tasks, Computers & Geosciences,
+    doi: [10.1016/j.cageo.2022.105083](https://doi.org/10.1016/j.cageo.2022.105083)
 - De Jong, K., Panja, D., Van Kreveld, M., Karssenberg, D. (2021),
     An environmental modelling framework based on asynchronous many-tasks:
     scalability and usability, Environmental Modelling & Software,
