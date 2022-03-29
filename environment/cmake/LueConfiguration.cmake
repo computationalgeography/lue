@@ -343,31 +343,6 @@ if(LUE_HDF5_REQUIRED)
     endif()
 endif()
 
-if(LUE_HPX_REQUIRED)
-    if(NOT LUE_BUILD_HPX)
-        message(FATAL_ERROR
-            "Support for system-provided HPX library does not work yet\n"
-            "But we can build HPX for you! Just reconfigure with LUE_BUILD_HPX=TRUE")
-
-        # # Use HPX from the environment
-        # find_package(HPX REQUIRED)
-
-        # if(HPX_FOUND)
-        #     message(STATUS "Found HPX")
-        #     message(STATUS "  includes : ${HPX_INCLUDE_DIRS}")
-        #     message(STATUS "  libraries: ${HPX_LIBRARIES}")
-
-        #     # Check whether we are using the same build type as HPX
-        #     if (NOT "${HPX_BUILD_TYPE}" STREQUAL "${CMAKE_BUILD_TYPE}")
-        #         message(WARNING
-        #             "CMAKE_BUILD_TYPE does not match HPX_BUILD_TYPE: "
-        #             "\"${CMAKE_BUILD_TYPE}\" != \"${HPX_BUILD_TYPE}\"\n"
-        #             "ABI compatibility is not guaranteed. Expect link errors.")
-        #     endif()
-        # endif()
-    endif()
-endif()
-
 if(LUE_IMGUI_REQUIRED AND NOT LUE_BUILD_IMGUI)
     message(FATAL_ERROR
         "Support for system-provided ImGUI library does not work yet\n"
@@ -389,23 +364,25 @@ if(LUE_NLOHMANN_JSON_REQUIRED)
 endif()
 
 
-include(conan-0.17.0)
-conan_add_remote(
-    NAME conancenter
-    URL https://center.conan.io
-    VERIFY_SSL False)
-conan_cmake_configure(
-    REQUIRES ${LUE_CONAN_REQUIRES}
-    GENERATORS cmake_find_package
-    OPTIONS ${LUE_CONAN_OPTIONS})
-conan_cmake_autodetect(settings)
-conan_cmake_install(
-    PATH_OR_REFERENCE .
-    BUILD missing
-    REMOTE conancenter
-    SETTINGS ${settings})
-list(APPEND CMAKE_MODULE_PATH
-    ${CMAKE_CURRENT_BINARY_DIR})
+if(LUE_CONAN_REQUIRES)
+    include(conan-0.17.0)
+    conan_add_remote(
+        NAME conancenter
+        URL https://center.conan.io
+        VERIFY_SSL False)
+    conan_cmake_configure(
+        REQUIRES ${LUE_CONAN_REQUIRES}
+        GENERATORS cmake_find_package
+        OPTIONS ${LUE_CONAN_OPTIONS})
+    conan_cmake_autodetect(settings)
+    conan_cmake_install(
+        PATH_OR_REFERENCE .
+        BUILD missing
+        REMOTE conancenter
+        SETTINGS ${settings})
+    list(APPEND CMAKE_MODULE_PATH
+        ${CMAKE_CURRENT_BINARY_DIR})
+endif()
 
 
 # ------------------------------------------------------------------------------
@@ -463,79 +440,79 @@ endif()
 
 
 if(LUE_HPX_REQUIRED)
-    if(HPX_WITH_APEX)
-        if(APEX_WITH_OTF2)
-            if(LUE_BUILD_OTF2)
+    if(LUE_BUILD_HPX)
+        # Build HPX ourselves
 
-                set(OTF2_ROOT ${PROJECT_BINARY_DIR}/otf2)
+        if(HPX_WITH_APEX)
+            if(APEX_WITH_OTF2)
+                if(LUE_BUILD_OTF2)
 
-                set(otf2_version 2.3)
-                set(otf2_patch_file ${CMAKE_CURRENT_SOURCE_DIR}/environment/cmake/otf2-${otf2_version}.patch)
+                    set(OTF2_ROOT ${PROJECT_BINARY_DIR}/otf2)
 
-                if(EXISTS ${otf2_patch_file})
-                    set(otf2_patch_command patch src/otf2_archive_int.c ${otf2_patch_file})
-                endif()
+                    set(otf2_version 2.3)
+                    set(otf2_patch_file ${CMAKE_CURRENT_SOURCE_DIR}/environment/cmake/otf2-${otf2_version}.patch)
 
-                FetchContent_Declare(otf2
-                    URL http://perftools.pages.jsc.fz-juelich.de/cicd/otf2/tags/otf2-${otf2_version}/otf2-${otf2_version}.tar.gz
-                    URL_HASH MD5=b85dd4d11e67180e2d5fe66d05112c4b
-                    PATCH_COMMAND ${otf2_patch_command}
-                )
+                    if(EXISTS ${otf2_patch_file})
+                        set(otf2_patch_command patch src/otf2_archive_int.c ${otf2_patch_file})
+                    endif()
 
-                FetchContent_GetProperties(otf2)
-
-                if(NOT otf2_POPULATED)
-                    FetchContent_Populate(otf2)
-
-                    set(otf2_system_type
-                        "${CMAKE_HOST_SYSTEM_PROCESSOR}-pc-${CMAKE_HOST_SYSTEM_NAME}")
-                    string(TOLOWER ${otf2_system_type} otf2_system_type)
-
-                    message(STATUS "Build OTF2")
-                    message(STATUS "  otf2_SOURCE_DIR: ${otf2_SOURCE_DIR}")
-                    message(STATUS "  otf2_BINARY_DIR: ${otf2_BINARY_DIR}")
-                    message(STATUS "  OTF2_ROOT      : ${OTF2_ROOT}")
-                    message(STATUS "  system-type    : ${otf2_system_type}")
-
-                    # TODO Use LUE_OTF2_WITH_PYTHON to turn on/off the
-                    #   build of the Python bindings.
-                    # PYTHON=${Python3_EXECUTABLE} PYTHON_FOR_GENERATOR=:
-                    execute_process(
-                        COMMAND
-                            ${otf2_SOURCE_DIR}/configure
-                                --prefix ${OTF2_ROOT}
-                                --build=${otf2_system_type}
-                                --host=${otf2_system_type}
-                                --target=${otf2_system_type}
-                                CC=${CMAKE_C_COMPILER} CXX=${CMAKE_CXX_COMPILER}
-                                PYTHON=: PYTHON_FOR_GENERATOR=:
-                        WORKING_DIRECTORY
-                            ${otf2_BINARY_DIR}
+                    FetchContent_Declare(otf2
+                        URL http://perftools.pages.jsc.fz-juelich.de/cicd/otf2/tags/otf2-${otf2_version}/otf2-${otf2_version}.tar.gz
+                        URL_HASH MD5=b85dd4d11e67180e2d5fe66d05112c4b
+                        PATCH_COMMAND ${otf2_patch_command}
                     )
 
-                    include(ProcessorCount)
-                    ProcessorCount(nr_cores)
-                    math(EXPR nr_cores_to_use "${nr_cores} / 2")
+                    FetchContent_GetProperties(otf2)
 
-                    execute_process(
-                        COMMAND
-                            make -j${nr_cores_to_use}
-                        WORKING_DIRECTORY
-                            ${otf2_BINARY_DIR}
-                    )
-                    execute_process(
-                        COMMAND
-                            make install
-                        WORKING_DIRECTORY
-                            ${otf2_BINARY_DIR}
-                    )
+                    if(NOT otf2_POPULATED)
+                        FetchContent_Populate(otf2)
+
+                        set(otf2_system_type
+                            "${CMAKE_HOST_SYSTEM_PROCESSOR}-pc-${CMAKE_HOST_SYSTEM_NAME}")
+                        string(TOLOWER ${otf2_system_type} otf2_system_type)
+
+                        message(STATUS "Build OTF2")
+                        message(STATUS "  otf2_SOURCE_DIR: ${otf2_SOURCE_DIR}")
+                        message(STATUS "  otf2_BINARY_DIR: ${otf2_BINARY_DIR}")
+                        message(STATUS "  OTF2_ROOT      : ${OTF2_ROOT}")
+                        message(STATUS "  system-type    : ${otf2_system_type}")
+
+                        # TODO Use LUE_OTF2_WITH_PYTHON to turn on/off the
+                        #   build of the Python bindings.
+                        # PYTHON=${Python3_EXECUTABLE} PYTHON_FOR_GENERATOR=:
+                        execute_process(
+                            COMMAND
+                                ${otf2_SOURCE_DIR}/configure
+                                    --prefix ${OTF2_ROOT}
+                                    --build=${otf2_system_type}
+                                    --host=${otf2_system_type}
+                                    --target=${otf2_system_type}
+                                    CC=${CMAKE_C_COMPILER} CXX=${CMAKE_CXX_COMPILER}
+                                    PYTHON=: PYTHON_FOR_GENERATOR=:
+                            WORKING_DIRECTORY
+                                ${otf2_BINARY_DIR}
+                        )
+
+                        include(ProcessorCount)
+                        ProcessorCount(nr_cores)
+                        math(EXPR nr_cores_to_use "${nr_cores} / 2")
+
+                        execute_process(
+                            COMMAND
+                                make -j${nr_cores_to_use}
+                            WORKING_DIRECTORY
+                                ${otf2_BINARY_DIR}
+                        )
+                        execute_process(
+                            COMMAND
+                                make install
+                            WORKING_DIRECTORY
+                                ${otf2_BINARY_DIR}
+                        )
+                    endif()
                 endif()
             endif()
         endif()
-    endif()
-
-    if(LUE_BUILD_HPX)
-        # Build HPX ourselves
 
         if(LUE_HPX_GIT_TAG)
             # Obtain HPX from GIT repository. This is useful when we
@@ -581,6 +558,18 @@ if(LUE_HPX_REQUIRED)
         endif()
 
         FetchContent_MakeAvailable(hpx)
+    else()
+        find_package(HPX REQUIRED)
+
+        if(HPX_FOUND)
+            # Check whether we are using the same build type as HPX
+            if (NOT "${HPX_BUILD_TYPE}" STREQUAL "${CMAKE_BUILD_TYPE}")
+                message(WARNING
+                    "CMAKE_BUILD_TYPE does not match HPX_BUILD_TYPE: "
+                    "\"${CMAKE_BUILD_TYPE}\" != \"${HPX_BUILD_TYPE}\"\n"
+                    "ABI compatibility is not guaranteed. Expect link errors.")
+            endif()
+        endif()
     endif()
 endif()
 
