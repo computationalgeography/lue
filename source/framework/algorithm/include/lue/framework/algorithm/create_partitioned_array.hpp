@@ -71,10 +71,12 @@ namespace lue {
                     Policies const& policies,
                     Functor const& partition_creator,
                     std::vector<hpx::id_type>&& localities,
+                    Shape const& array_shape,
                     Shapes&& partition_shapes):
 
                     _policies{policies},
                     _localities{partition_shapes.shape()},
+                    _array_shape{array_shape},
                     _partitions{partition_shapes.shape()},
                     _partition_shape{partition_shapes[0]},
                     _partition_creator{partition_creator},
@@ -179,6 +181,8 @@ namespace lue {
 
                 Localities _localities;
 
+                Shape _array_shape;
+
                 Partitions _partitions;
 
                 //! Partition shape of (almost) all partitions
@@ -216,10 +220,12 @@ namespace lue {
                     Policies const& policies,
                     Functor const& partition_creator,
                     std::vector<hpx::id_type>&& localities,
+                    typename Base::Shape const& array_shape,
                     typename Base::Shapes&& partition_shapes):
 
                     Base{policies, partition_creator,
                         std::forward<std::vector<hpx::id_type>>(localities),
+                        array_shape,
                         std::move(partition_shapes)}
 
                 {
@@ -236,7 +242,8 @@ namespace lue {
                     this->_localities(partition_idxs...) = locality_id;
                     this->_partitions(partition_idxs...) =
                         this->_partition_creator.instantiate(
-                            locality_id, this->_policies, partition_idx, this->offset(partition_idxs...),
+                            locality_id, this->_policies, this->_array_shape,
+                            partition_idx, this->offset(partition_idxs...),
                             this->partition_shape(partition_idxs...));
                 }
 
@@ -263,11 +270,12 @@ namespace lue {
                     Policies const& policies,
                     Functor const& partition_creator,
                     std::vector<hpx::id_type>&& localities,
+                    typename Base::Shape const& array_shape,
                     typename Base::Shapes&& partition_shapes):
 
                     Base{policies, partition_creator,
                         std::forward<std::vector<hpx::id_type>>(localities),
-                        std::move(partition_shapes)},
+                        array_shape, std::move(partition_shapes)},
                     _current_locality_id{},
                     _offsets{},
                     _partition_shapes{},
@@ -309,7 +317,6 @@ namespace lue {
                         instantiate_partitions<Idxs...>();
                         prepare_for_new_locality(locality_id);
                         cache_partition_information(offset, partition_shape, partition_idxs...);
-
                     }
 
                     if(last_partition)
@@ -362,7 +369,8 @@ namespace lue {
 
                     hpx::future<std::vector<Partition>> partitions_f{
                         this->_partition_creator.instantiate(
-                            _current_locality_id, this->_policies, _offsets, _partition_shapes)};
+                            _current_locality_id, this->_policies, this->_array_shape,
+                            _offsets, _partition_shapes)};
 
                     // The collection of partitions is ready. This does not
                     // imply that the partitions themselves are ready. This
@@ -521,7 +529,8 @@ namespace lue {
             {
                 // Per locality, instantiate all partitions in one go
                 InstantiatePartitions<Policies, rank<Shape>, Functor> instantiator{
-                    policies, partition_creator, std::move(localities), std::move(partition_shapes)};
+                    policies, partition_creator, std::move(localities), array_shape,
+                    std::move(partition_shapes)};
                 return instantiate_partitions2(
                     policies, shape_in_partitions, partition_shape, std::move(instantiator));
             }
@@ -529,7 +538,8 @@ namespace lue {
             {
                 // Instantiate each partition individually
                 InstantiatePartition<Policies, rank<Shape>, Functor> instantiator{
-                    policies, partition_creator, std::move(localities), std::move(partition_shapes)};
+                    policies, partition_creator, std::move(localities), array_shape,
+                    std::move(partition_shapes)};
                 return instantiate_partitions2(
                     policies, shape_in_partitions, partition_shape, std::move(instantiator));
             }
@@ -560,6 +570,7 @@ namespace lue {
             Partition instantiate(
                 hpx::id_type const locality_id,
                 [[maybe_unused]] Policies const& policies,
+                [[maybe_unused]] Shape const& array_shape,
                 [[maybe_unused]] lue::Index const partition_idx,
                 Offset const& offset,
                 Shape const& partition_shape)
@@ -610,6 +621,7 @@ namespace lue {
             Partition instantiate(
                 hpx::id_type const locality_id,
                 [[maybe_unused]] Policies const& policies,
+                [[maybe_unused]] Shape const& array_shape,
                 [[maybe_unused]] lue::Index const partition_idx,
                 Offset const& offset,
                 Shape const& partition_shape)
@@ -628,6 +640,110 @@ namespace lue {
         private:
 
             Element const _fill_value;
+
+    };
+
+
+    /*!
+        @brief      Functor to use when creating a partitioned array given an existing buffer
+                    containing values to copy into the array partitions
+        @tparam     BufferHandle Type of handle of the buffer. Instances must manage a reference
+                    count for the buffer. This count must be increased upon copying, and
+                    decreased upon destruction.
+        @tparam     Rank Rank of array to return
+    */
+    template<
+        typename BufferHandle,
+        Rank rank>
+    class InstantiateFromBuffer
+    {
+
+        public:
+
+            using Element = ElementT<BufferHandle>;
+
+            using OutputElement = Element;
+            using Partition = lue::ArrayPartition<OutputElement, rank>;
+            using Offset = lue::OffsetT<Partition>;
+            using Shape = lue::ShapeT<Partition>;
+
+            static constexpr bool instantiate_per_locality{false};
+
+            // Type of function that returns a pointer to the buffer
+            using GrabBuffer = std::function<Element*(BufferHandle)>;
+
+            InstantiateFromBuffer(
+                BufferHandle buffer_handle,
+                GrabBuffer grab_buffer):
+
+                _buffer_handle{std::move(buffer_handle)},
+                _grab_buffer{std::move(grab_buffer)}
+
+            {
+            }
+
+
+            template<
+                typename Policies>
+            Partition instantiate(
+                hpx::id_type const locality_id,
+                [[maybe_unused]] Policies const& policies,
+                Shape const& array_shape,
+                [[maybe_unused]] lue::Index const partition_idx,
+                Offset const& offset,
+                Shape const& partition_shape)
+            {
+                using Data = lue::ArrayPartitionData<OutputElement, rank>;
+
+                // A single instance of this class are used to instantiate all new partitions. This
+                // happens asynchronously. A partition client (a future to the server instance)
+                // is returned immediately, but the server instance itself is not created yet.
+                // To be able to create the server instance later on, when the
+                // InstantiateFromBuffer instance is already gone, we still need to be able to
+                // access to the buffer. Because of that, we pass a copy of the BufferHandle
+                // instance and the GrabBuffer function to the lambda. Copying the BufferHandle
+                // instance increases the reference count and keeps the underlying buffer alive.
+                return hpx::async(
+
+                        [locality_id, array_shape, offset, partition_shape,
+                            buffer_handle=_buffer_handle, grab_buffer=_grab_buffer]()
+                        {
+                            // Create a partition instance and copy the relevant cells from
+                            // the input buffer to the partition instance
+
+                            // A 1D array of elements to copy
+                            Element const* buffer = grab_buffer(buffer_handle);
+                            static_assert(rank == 2);  // For now
+
+                            Data data{partition_shape};
+                            Index buffer_offset{(offset[0] * array_shape[1]) + offset[1]};
+
+                            // Iterate over all rows in the partition
+                            for(Index idx0 = 0; idx0 < partition_shape[0]; ++idx0)
+                            {
+                                // Copy a single row from the buffer into the partition
+                                std::copy_n(
+                                    buffer + buffer_offset,
+                                    partition_shape[1],
+                                    &data(idx0, 0));
+
+                                buffer_offset += array_shape[1];
+                            }
+
+                            return Partition{locality_id, offset, std::move(data)};
+                        }
+
+                    );
+            }
+
+
+        private:
+
+            //! Reference counted handle to underlying buffer
+            BufferHandle _buffer_handle;
+
+            //! Functor providing access to the buffer
+            GrabBuffer _grab_buffer;
 
     };
 
@@ -651,6 +767,20 @@ namespace lue {
         lue::Rank rank>
     class FunctorTraits<
         InstantiateDefaultInitialized<Element, rank>>
+    {
+
+        public:
+
+            static constexpr bool const is_functor{true};
+
+    };
+
+
+    template<
+        typename BufferHandle,
+        Rank rank>
+    class FunctorTraits<
+        InstantiateFromBuffer<BufferHandle, rank>>
     {
 
         public:

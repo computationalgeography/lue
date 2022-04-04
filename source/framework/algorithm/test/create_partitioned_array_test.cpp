@@ -46,6 +46,7 @@ namespace {
             Partition instantiate(
                 hpx::id_type const locality_id,
                 [[maybe_unused]] Policies const& policies,
+                [[maybe_unused]] Shape const& array_shape,
                 lue::Index const partition_idx,
                 Offset const& offset,
                 Shape const& partition_shape)
@@ -145,6 +146,7 @@ namespace {
             hpx::future<std::vector<Partition>> instantiate(
                 hpx::id_type const locality_id,
                 [[maybe_unused]] Policies const& policies,
+                [[maybe_unused]] Shape const& array_shape,
                 std::vector<Offset> offsets,
                 std::vector<Shape> partition_shapes)
             {
@@ -313,4 +315,100 @@ BOOST_AUTO_TEST_CASE(use_case_1)
     Array array = lue::create_partitioned_array(array_shape, partition_shape, fill_value);
 
     BOOST_CHECK(all(equal_to(array, fill_value)).get());
+}
+
+
+namespace lue::detail {
+
+    template<
+        typename T>
+    class ArrayTraits<
+        std::shared_ptr<std::vector<T>>>
+    {
+
+        public:
+
+            using Element = T;
+
+    };
+
+}  // namespace lue::detail
+
+
+BOOST_AUTO_TEST_CASE(use_case_2)
+{
+    // Create a partitioned array given an existing buffer containing values to copy into
+    // the array
+
+    // Create an object, pointed to by a reference counted object. Complicate things a bit so
+    // we can mimic an actual use-case with some foreign data structure.
+    std::size_t const nr_rows{60};
+    std::size_t const nr_cols{40};
+    std::size_t const nr_values{nr_rows * nr_cols};
+
+    using Buffer = std::vector<Element>;
+    using BufferHandle = std::shared_ptr<Buffer>;
+
+    BufferHandle buffer_handle = std::make_shared<Buffer>(nr_values);
+    std::iota(buffer_handle->begin(), buffer_handle->end(), 0);
+
+    // Create a partitioned array, passing in the buffer
+    Shape const array_shape{{nr_rows, nr_cols}};
+    Shape const partition_shape{{10, 10}};
+
+    using Functor = lue::InstantiateFromBuffer<BufferHandle, rank>;
+
+    Functor functor{
+            buffer_handle,  // Copy: increments reference count
+            [](BufferHandle const& handle) -> Element*
+            {
+                return handle->data();
+            }
+
+        };
+
+    Array array = lue::create_partitioned_array(array_shape, partition_shape, functor);
+    BOOST_CHECK_GE(buffer_handle.use_count(), 2);
+    BOOST_CHECK_LE(buffer_handle.use_count(), 2 + 6 * 4);
+
+    BOOST_CHECK_EQUAL(array.nr_elements(), nr_rows * nr_cols);
+    BOOST_CHECK_EQUAL(array.shape(), array_shape);
+    BOOST_REQUIRE_EQUAL(array.nr_partitions(), 6 * 4);
+
+    auto const& partitions = array.partitions();
+    lue::wait_all(partitions);
+
+    // buffer_handle and the functor containing a copy of buffer_handle
+    BOOST_CHECK_EQUAL(buffer_handle.use_count(), 2);
+
+    auto const [nr_partitions0, nr_partitions1] = array.partitions().shape();
+
+    for(lue::Index partition0 = 0; partition0 < nr_partitions0; ++partition0)
+    {
+        for(lue::Index partition1 = 0; partition1 < nr_partitions1; ++partition1)
+        {
+            BOOST_TEST_CONTEXT(fmt::format("Partition {}, {}", partition0, partition1))
+            {
+                auto const& partition{partitions(partition0, partition1)};
+                auto const data{partition.data().get()};
+                auto const [nr_cells0, nr_cells1] = data.shape();
+
+                for(lue::Index cell0 = 0; cell0 < nr_cells0; ++cell0)
+                {
+                    for(lue::Index cell1 = 0; cell1 < nr_cells1; ++cell1)
+                    {
+                        BOOST_TEST_CONTEXT(fmt::format("Cell {}, {}", cell0, cell1))
+                        {
+                            BOOST_CHECK_EQUAL(
+                                data(cell0, cell1),
+                                // previous rows:
+                                ((partition0 * partition_shape[0]) + cell0) * array_shape[1] +
+                                // previous cols:
+                                (partition1 * partition_shape[1]) + cell1);
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
