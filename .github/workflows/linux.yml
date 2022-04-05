@@ -40,8 +40,7 @@ jobs:
                   libdocopt-dev \
                   libfmt-dev \
                   libgdal-dev \
-                  libglew-dev \
-                  libglfw3-dev \
+                  libglu1-mesa-dev \
                   libgoogle-perftools-dev \
                   libhdf5-dev \
                   ${{ matrix.compiler.cc }} \
@@ -119,8 +118,7 @@ jobs:
         #       tree install
 
         - name: deploy lue documentation
-          # Skip deploy for now. Still hangs upon uploading to the server...
-          if: 0 && github.ref == 'refs/heads/master' && matrix.compiler.cxx == 'g++-9' && matrix.python-version == 3.9
+          if: github.ref == 'refs/heads/master' && matrix.compiler.cxx == 'g++-9' && matrix.python-version == 3.9
           env:
               ftp_server: ${{ secrets.FTP_SERVER }}
               ftp_port: ${{ secrets.FTP_PORT }}
@@ -131,5 +129,6 @@ jobs:
           run: |
               cd build/document/doc
               mkdir -p $HOME/.ssh
-              ssh-keyscan $ftp_server >> $HOME/.ssh/known_hosts || true
-              lftp -c "open --user $ftp_username --password $ftp_password -p $ftp_port sftp://$ftp_server; set sftp:auto-confirm yes; mirror --verbose --reverse --delete --continue --parallel=2 $local_dir $remote_dir/doc"
+              type ssh-keyscan  # If not present, install openssh-client above first
+              # ssh-keyscan $ftp_server >> $HOME/.ssh/known_hosts || true
+              # lftp -c "open --user $ftp_username --password $ftp_password -p $ftp_port sftp://$ftp_server; set sftp:auto-confirm yes; mirror --verbose --reverse --delete --continue --parallel=2 $local_dir $remote_dir/doc"
