@@ -61,6 +61,7 @@ jobs:
               conan profile update settings.compiler.libcxx=libstdc++11 default
               # conan remote list
               # conan remote update conancenter https://center.conan.io
+              CONAN_SYSREQUIRES_MODE=enabled sudo conan install xorg/system@
 
         - name: configure lue
           shell: bash -l {0}
