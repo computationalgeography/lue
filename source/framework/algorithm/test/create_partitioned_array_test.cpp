@@ -2,13 +2,17 @@
 #include "lue/framework/algorithm/default_policies/all.hpp"
 #include "lue/framework/algorithm/default_policies/equal_to.hpp"
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
+#include "lue/framework/algorithm/definition/logical_not.hpp"
 #include "lue/framework/algorithm/partition_count_unique.hpp"
 #include "lue/framework/algorithm/policy.hpp"
+#include "lue/framework/algorithm/sum.hpp"
 #include "lue/framework/algorithm/unique.hpp"
+#include "lue/framework/algorithm/valid.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/compare.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 #include "lue/framework/core/component.hpp"
+#include "boost/smart_ptr/make_shared.hpp"
 
 
 namespace {
@@ -332,6 +336,19 @@ namespace lue::detail {
 
     };
 
+
+    template<
+        typename T>
+    class ArrayTraits<
+        boost::shared_ptr<T[]>>
+    {
+
+        public:
+
+            using Element = T;
+
+    };
+
 }  // namespace lue::detail
 
 
@@ -408,6 +425,80 @@ BOOST_AUTO_TEST_CASE(use_case_2)
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE(use_case_3)
+{
+    // Create a partitioned array given an existing buffer containing values to copy into
+    // the array. Mark specific values from the buffer as no-data in the array.
+
+    // Create an object, pointed to by a reference counted object
+    std::size_t const nr_rows{60};
+    std::size_t const nr_cols{40};
+    std::size_t const nr_values{nr_rows * nr_cols};
+
+    using Buffer = Element[];
+    using BufferHandle = boost::shared_ptr<Buffer>;
+
+    BufferHandle buffer_handle = boost::make_shared<Buffer>(nr_values);
+    std::fill_n(buffer_handle.get(), nr_values, 5);
+
+    // Put a special no-data value in the first cell of each partition
+    for(lue::Index i0 = 0; i0 < 6; ++i0)
+    {
+        for(lue::Index i1 = 0; i1 < 4; ++i1)
+        {
+            buffer_handle.get()[i0 * 10 * nr_cols + i1 * 10] = 999;
+        }
+    }
+
+    // Create a partitioned array, passing in the buffer
+    Shape const array_shape{{nr_rows, nr_cols}};
+    Shape const partition_shape{{10, 10}};
+
+    using Functor = lue::InstantiateFromBuffer<BufferHandle, rank>;
+
+    Functor functor{
+            buffer_handle,  // Copy: increments reference count
+            [](BufferHandle const& handle) -> Element*
+            {
+                return handle.get();
+            },
+            999
+        };
+
+    using CreatePartitionedArrayPolicies =
+        lue::policy::create_partitioned_array::DefaultValuePolicies<Element>;
+    Array array = lue::create_partitioned_array(
+        CreatePartitionedArrayPolicies{}, array_shape, partition_shape, functor);
+
+    // In each partition we put a no-data value, so the number of no-data values must be equal
+    // to the number of partitions.
+    using ValidPolicies = lue::policy::valid::DefaultValuePolicies<std::uint8_t, Element>;
+    BOOST_CHECK_EQUAL(
+        lue::sum(!lue::valid<std::uint8_t>(ValidPolicies{}, array)).get(),
+        array.nr_partitions());
+
+    // Now test these explicitly. All other values must then be valid, by definition.
+    auto const [nr_partitions0, nr_partitions1] = array.partitions().shape();
+
+    lue::policy::DefaultOutputNoDataPolicy<Element> ondp{};
+
+    for(lue::Index partition0 = 0; partition0 < nr_partitions0; ++partition0)
+    {
+        for(lue::Index partition1 = 0; partition1 < nr_partitions1; ++partition1)
+        {
+            BOOST_TEST_CONTEXT(fmt::format("Partition {}, {}", partition0, partition1))
+            {
+                auto const& partition{array.partitions()(partition0, partition1)};
+                auto const data{partition.data().get()};
+
+                BOOST_CHECK(ondp.is_no_data(data, 0, 0));
+                BOOST_CHECK(!ondp.is_no_data(data, 0, 1));
             }
         }
     }

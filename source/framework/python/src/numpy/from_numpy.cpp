@@ -1,7 +1,11 @@
 #include "shape.hpp"
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include <pybind11/numpy.h>
+#include <pybind11/stl.h>  // std::optional
 #include <fmt/format.h>
+
+
+using namespace pybind11::literals;
 
 
 namespace lue::framework {
@@ -65,7 +69,8 @@ namespace lue::framework {
             Rank rank>
         PartitionedArray<Element, rank> from_numpy3(
             pybind11::array_t<Element> const& array,
-            StaticShape<rank> const& partition_shape)
+            StaticShape<rank> const& partition_shape,
+            std::optional<Element> const& no_data_value)
         {
             // The goal is to create a partitioned array, given a Numpy array. We want to do
             // this asynchronously. So, even though the function returns an array immediately,
@@ -94,8 +99,6 @@ namespace lue::framework {
             StaticShape<rank> array_shape{};
             std::copy_n(array.shape(), rank, array_shape.begin());
 
-            // TODO How to handle no-data?
-
             ReferenceCountedObject<Element> object{
                     std::make_shared<Object<Element>>(
                         std::make_tuple(array, array.request()))
@@ -107,7 +110,8 @@ namespace lue::framework {
                             [](ReferenceCountedObject<Element> const& object) -> Element*
                             {
                                 return static_cast<Element*>(std::get<1>(*object).ptr);
-                            }
+                            },
+                            no_data_value
                         }
                 );
         }
@@ -117,7 +121,8 @@ namespace lue::framework {
             typename Element>
         pybind11::object from_numpy2(
             pybind11::array_t<Element> const& array,
-            DynamicShape const& partition_shape)
+            DynamicShape const& partition_shape,
+            std::optional<Element> const& no_data_value)
         {
             if(DynamicShape::size_type(array.ndim()) != partition_shape.size())
             {
@@ -136,7 +141,7 @@ namespace lue::framework {
             if(rank == 2)
             {
                 result = pybind11::cast(from_numpy3<Element, 2>(
-                    array, dynamic_shape_to_static_shape<2>(partition_shape)));
+                    array, dynamic_shape_to_static_shape<2>(partition_shape), no_data_value));
             }
             else
             {
@@ -153,9 +158,10 @@ namespace lue::framework {
             typename Element>
         pybind11::object from_numpy(
             pybind11::array_t<Element> const& array,
-            pybind11::tuple const& partition_shape)
+            pybind11::tuple const& partition_shape,
+            std::optional<Element> const& no_data_value)
         {
-            return from_numpy2(array, tuple_to_shape(partition_shape));
+            return from_numpy2(array, tuple_to_shape(partition_shape), no_data_value);
         }
 
     }  // Anonymous namespace
@@ -164,13 +170,20 @@ namespace lue::framework {
     void bind_from_numpy(
         pybind11::module& module)
     {
-        module.def("from_numpy", from_numpy<uint8_t>);
-        module.def("from_numpy", from_numpy<uint32_t>);
-        module.def("from_numpy", from_numpy<uint64_t>);
-        module.def("from_numpy", from_numpy<int32_t>);
-        module.def("from_numpy", from_numpy<int64_t>);
-        module.def("from_numpy", from_numpy<float>);
-        module.def("from_numpy", from_numpy<double>);
+        module.def("from_numpy", from_numpy<uint8_t>,
+            "array"_a, "partition_shape"_a, "no_data_value"_a=std::optional<uint8_t>{});
+        module.def("from_numpy", from_numpy<uint32_t>,
+            "array"_a, "partition_shape"_a, "no_data_value"_a=std::optional<uint32_t>{});
+        module.def("from_numpy", from_numpy<uint64_t>,
+            "array"_a, "partition_shape"_a, "no_data_value"_a=std::optional<uint64_t>{});
+        module.def("from_numpy", from_numpy<int32_t>,
+            "array"_a, "partition_shape"_a, "no_data_value"_a=std::optional<int32_t>{});
+        module.def("from_numpy", from_numpy<int64_t>,
+            "array"_a, "partition_shape"_a, "no_data_value"_a=std::optional<int64_t>{});
+        module.def("from_numpy", from_numpy<float>,
+            "array"_a, "partition_shape"_a, "no_data_value"_a=std::optional<float>{});
+        module.def("from_numpy", from_numpy<double>,
+            "array"_a, "partition_shape"_a, "no_data_value"_a=std::optional<double>{});
     }
 
 }  // namespace lue::framework

@@ -677,7 +677,36 @@ namespace lue {
                 GrabBuffer grab_buffer):
 
                 _buffer_handle{std::move(buffer_handle)},
-                _grab_buffer{std::move(grab_buffer)}
+                _grab_buffer{std::move(grab_buffer)},
+                _no_data_value{}
+
+            {
+                assert(!_no_data_value);
+            }
+
+
+            InstantiateFromBuffer(
+                BufferHandle buffer_handle,
+                GrabBuffer grab_buffer,
+                Element const& no_data_value):
+
+                _buffer_handle{std::move(buffer_handle)},
+                _grab_buffer{std::move(grab_buffer)},
+                _no_data_value{std::make_optional<Element>(no_data_value)}
+
+            {
+                assert(_no_data_value);
+            }
+
+
+            InstantiateFromBuffer(
+                BufferHandle buffer_handle,
+                GrabBuffer grab_buffer,
+                std::optional<Element> const& no_data_value):
+
+                _buffer_handle{std::move(buffer_handle)},
+                _grab_buffer{std::move(grab_buffer)},
+                _no_data_value{no_data_value}
 
             {
             }
@@ -687,13 +716,15 @@ namespace lue {
                 typename Policies>
             Partition instantiate(
                 hpx::id_type const locality_id,
-                [[maybe_unused]] Policies const& policies,
+                Policies const& policies,
                 Shape const& array_shape,
                 [[maybe_unused]] lue::Index const partition_idx,
                 Offset const& offset,
                 Shape const& partition_shape)
             {
                 using Data = lue::ArrayPartitionData<OutputElement, rank>;
+
+                auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
 
                 // A single instance of this class are used to instantiate all new partitions. This
                 // happens asynchronously. A partition client (a future to the server instance)
@@ -705,8 +736,9 @@ namespace lue {
                 // instance increases the reference count and keeps the underlying buffer alive.
                 return hpx::async(
 
-                        [locality_id, array_shape, offset, partition_shape,
-                            buffer_handle=_buffer_handle, grab_buffer=_grab_buffer]()
+                        [locality_id, ondp, array_shape, offset, partition_shape,
+                            buffer_handle=_buffer_handle, grab_buffer=_grab_buffer,
+                            no_data_value=_no_data_value]()
                         {
                             // Create a partition instance and copy the relevant cells from
                             // the input buffer to the partition instance
@@ -716,18 +748,32 @@ namespace lue {
                             static_assert(rank == 2);  // For now
 
                             Data data{partition_shape};
-                            Index buffer_offset{(offset[0] * array_shape[1]) + offset[1]};
+                            Element const* source = buffer + (offset[0] * array_shape[1]) + offset[1];
 
                             // Iterate over all rows in the partition
                             for(Index idx0 = 0; idx0 < partition_shape[0]; ++idx0)
                             {
+                                Element* destination = &data(idx0, 0);
+
                                 // Copy a single row from the buffer into the partition
                                 std::copy_n(
-                                    buffer + buffer_offset,
+                                    source,
                                     partition_shape[1],
-                                    &data(idx0, 0));
+                                    destination);
 
-                                buffer_offset += array_shape[1];
+                                if(no_data_value)
+                                {
+                                    // Mark occurences of no_data_value in the input as no-data
+                                    for(Index i = 0; i < partition_shape[1]; ++i)
+                                    {
+                                        if(destination[i] == *no_data_value)
+                                        {
+                                            ondp.mark_no_data(destination, i);
+                                        }
+                                    }
+                                }
+
+                                source += array_shape[1];
                             }
 
                             return Partition{locality_id, offset, std::move(data)};
@@ -744,6 +790,9 @@ namespace lue {
 
             //! Functor providing access to the buffer
             GrabBuffer _grab_buffer;
+
+            //! Value in buffer having no-data semantics
+            std::optional<Element> _no_data_value;
 
     };
 
