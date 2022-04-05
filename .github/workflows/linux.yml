@@ -40,9 +40,10 @@ jobs:
                   libdocopt-dev \
                   libfmt-dev \
                   libgdal-dev \
-                  libglu1-mesa-dev \
+                  libgl-dev \
                   libgoogle-perftools-dev \
                   libhdf5-dev \
+                  libx11-dev \
                   ${{ matrix.compiler.cc }} \
                   ninja-build \
                   tree
