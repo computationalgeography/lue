@@ -52,6 +52,7 @@ namespace lue::framework {
     void bind_read_array(pybind11::module& module);
     void bind_write_array(pybind11::module& module);
 
+    void bind_from_numpy(pybind11::module& module);
     void bind_to_numpy(pybind11::module& module);
 
     void init_submodule(
@@ -89,6 +90,7 @@ namespace lue::framework {
         bind_local_operations(submodule);
         bind_read_array(submodule);
         bind_write_array(submodule);
+        bind_from_numpy(submodule);
         bind_to_numpy(submodule);
 
         // Unless the user calls stop_hpx_runtime explicitly, we will do it

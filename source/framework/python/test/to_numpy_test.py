@@ -8,8 +8,7 @@ def setUpModule():
 
 
 def tearDownModule():
-    pass
-    # lue_test.stop_hpx_runtime()
+    lue_test.stop_hpx_runtime()
 
 
 class ToNumPyTest(lue_test.TestCase):
@@ -27,17 +26,28 @@ class ToNumPyTest(lue_test.TestCase):
         np.testing.assert_array_equal(numpy_array, np.full(array_shape, fill_value, dtype=dtype))
 
 
-    def test_empty_array(self):
+    def test_mark_no_data(self):
 
-        # TODO Crashes...
-        pass
+        array_shape = (60, 40)
+        partition_shape = (10, 10)
+        dtype = np.dtype(np.int32)
 
-        # array_shape = (1, 1)
-        # partition_shape = (1, 1)
-        # dtype = np.dtype(np.int32)
-        # fill_value = 5
-        # array = lfr.create_array(array_shape, partition_shape, dtype, fill_value)
-        # numpy_array = lfr.to_numpy(array)
+        # Create array containing only no-data elements
+        array = lfr.where(lfr.create_array(array_shape, partition_shape, dtype, 5) != 5, 7)
 
-        # self.assertEqual(numpy_array.dtype, dtype)
-        # np.testing.assert_array_equal(numpy_array, np.full(array_shape, fill_value, dtype=dtype))
+        numpy_array = lfr.to_numpy(array, 9)
+
+        np.testing.assert_array_equal(numpy_array, np.full(array_shape, 9, dtype=dtype))
+
+
+    def test_small_array(self):
+
+        array_shape = (1, 1)
+        partition_shape = (1, 1)
+        dtype = np.dtype(np.int32)
+        fill_value = 5
+        array = lfr.create_array(array_shape, partition_shape, dtype, fill_value)
+        numpy_array = lfr.to_numpy(array)
+
+        self.assertEqual(numpy_array.dtype, dtype)
+        np.testing.assert_array_equal(numpy_array, np.full(array_shape, fill_value, dtype=dtype))

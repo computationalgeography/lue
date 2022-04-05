@@ -42,6 +42,19 @@ public:
 };
 
 
+template<
+    typename T>
+class ArrayTraits<
+    T*>
+{
+
+    public:
+
+        using Element = T;
+
+};
+
+
 template<class T>
 class IsArrayPartition:
     public std::false_type
