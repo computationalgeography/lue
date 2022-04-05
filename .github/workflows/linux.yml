@@ -59,7 +59,8 @@ jobs:
               conan profile update settings.compiler.libcxx=libstdc++11 default
               # conan remote list
               # conan remote update conancenter https://center.conan.io
-              CONAN_SYSREQUIRES_MODE=enabled conan install opengl/system@ xorg/system@
+              CONAN_SYSREQUIRES_MODE=enabled conan install xorg/system@
+              CONAN_SYSREQUIRES_MODE=enabled conan install opengl/system@
 
         - name: configure lue
           shell: bash -l {0}
