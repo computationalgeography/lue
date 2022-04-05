@@ -40,10 +40,8 @@ jobs:
                   libdocopt-dev \
                   libfmt-dev \
                   libgdal-dev \
-                  libgl-dev \
                   libgoogle-perftools-dev \
                   libhdf5-dev \
-                  libx11-dev libx11-xcb-dev libxaw7-dev libxcomposite-dev libxcursor-dev libxdamage-dev libxext-dev libxfixes-dev libxft-dev libxi-dev libxinerama-dev libxkbfile-dev libxmu-dev libxmuu-dev libxpm-dev libxrandr-dev libxrender-dev libxres-dev libxss-dev libxt-dev libxtst-dev libxv-dev libxvmc-dev libxxf86vm-dev \
                   ${{ matrix.compiler.cc }} \
                   ninja-build
         - uses: conda-incubator/setup-miniconda@v2
@@ -61,7 +59,7 @@ jobs:
               conan profile update settings.compiler.libcxx=libstdc++11 default
               # conan remote list
               # conan remote update conancenter https://center.conan.io
-              CONAN_SYSREQUIRES_MODE=enabled conan install xorg/system@
+              CONAN_SYSREQUIRES_MODE=enabled conan install opengl/system xorg/system
 
         - name: configure lue
           shell: bash -l {0}
