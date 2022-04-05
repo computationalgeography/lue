@@ -43,10 +43,9 @@ jobs:
                   libgl-dev \
                   libgoogle-perftools-dev \
                   libhdf5-dev \
-                  libx11-dev \
+                  libx11-dev libx11-xcb-dev libxaw7-dev libxcomposite-dev libxcursor-dev libxdamage-dev libxext-dev libxfixes-dev libxft-dev libxi-dev libxinerama-dev libxkbfile-dev libxmu-dev libxmuu-dev libxpm-dev libxrandr-dev libxrender-dev libxres-dev libxss-dev libxt-dev libxtst-dev libxv-dev libxvmc-dev libxxf86vm-dev \
                   ${{ matrix.compiler.cc }} \
-                  ninja-build \
-                  tree
+                  ninja-build
         - uses: conda-incubator/setup-miniconda@v2
           with:
               auto-update-conda: true
