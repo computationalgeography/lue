@@ -61,6 +61,7 @@ jobs:
               # conan remote update conancenter https://center.conan.io
               CONAN_SYSREQUIRES_MODE=enabled conan install xorg/system@
               CONAN_SYSREQUIRES_MODE=enabled conan install opengl/system@
+              CONAN_SYSREQUIRES_MODE=enabled conan install glu/system@
 
         - name: configure lue
           shell: bash -l {0}
