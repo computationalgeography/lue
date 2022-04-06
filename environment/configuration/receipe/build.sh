@@ -45,4 +45,8 @@ cmake --build . --target all --parallel 1
 
 ctest --extra-verbose --output-on-failure
 
+# This only installs the HPX stuff
 cmake --install .
+
+# This install the LUE runtime stuff
+cmake --install . --component lue_runtime

@@ -111,12 +111,18 @@ jobs:
         #       cmake --build build --target cpp_doc py_doc
         #       cmake --build build --target sphinx_doc
 
-        # - name: install lue
-        #   # Skip for now. Requires the docs, which are not built.
-        #   shell: bash
-        #   run: |
-        #       cmake --install build --prefix install
-        #       tree install
+        - name: install lue_runtime component
+          shell: bash
+          run: |
+              # This installs the HPX stuff
+              cmake --install build --prefix install
+              # Installs the LUE runtime stuff
+              cmake --install build --component lue_runtime --prefix install
+              tree install
+              install/bin/lue_translate --version
+              install/bin/lue_validate --version
+              install/bin/lue_view --version
+              LD_LIBRARY_PATH="`pwd`/install/lib:$LD_LIBRARY_PATH" PYTHONPATH=`pwd`/install/lib/python${{ matrix.python-version }}/lue python -c "import lue; print(lue.__version__)"
 
         - name: deploy lue documentation
           if: github.ref == 'refs/heads/master' && matrix.compiler.cxx == 'g++-9' && matrix.python-version == 3.9

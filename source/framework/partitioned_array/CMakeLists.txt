@@ -38,10 +38,4 @@ target_link_libraries(lue_framework_partitioned_array
     PUBLIC
         lue::framework_core)
 
-install(
-    TARGETS
-        lue_framework_partitioned_array
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-)
+lue_install_libraries(lue_framework_partitioned_array)

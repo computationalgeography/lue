@@ -37,16 +37,10 @@ target_compile_definitions(lue_hdf5
         H5_USE_110_API
 )
 
-target_include_directories(lue_hdf5 SYSTEM
-    PUBLIC
-        ${Boost_INCLUDE_DIRS}
-)
-
 target_include_directories(lue_hdf5
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
-        $<INSTALL_INTERFACE:include>
 )
 
 target_link_libraries(lue_hdf5
@@ -57,19 +51,4 @@ target_link_libraries(lue_hdf5
         fmt::fmt
 )
 
-install(
-    TARGETS
-        lue_hdf5
-    EXPORT
-        lue_targets
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-)
-
-install(
-    DIRECTORY
-        include
-        ${CMAKE_CURRENT_BINARY_DIR}/include
-    DESTINATION .
-)
+lue_install_libraries(lue_hdf5)

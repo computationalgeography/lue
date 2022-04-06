@@ -1,6 +1,15 @@
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
-include(StandardProjectSettings)
+if(UNIX AND (CMAKE_CXX_COMPILER_ID STREQUAL "GNU"))
+    set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+    set(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
+endif()
+
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 
 include(Sanitizers)
 enable_sanitizers(lue_compile_options)
@@ -29,11 +38,22 @@ endif()
 
 include(GNUInstallDirs)
 
-# When building a Conda package, we want all libs to be installed in
-# the lib dir, not in some OS/arch specific variant thereof (e.g. lib64),
-# which is sometimes used by GNUInstallDirs
-if(DEFINED ENV{CONDA_BUILD})
-    set(CMAKE_INSTALL_LIBDIR "lib")
+# If this project in included by another project also including GNUInstallDirs, then
+# CMAKE_INSTALL_DOCDIR points to this other project's doc dir. Override this default
+# behaviour by using a directory containing our PROJECT_NAME.
+set(CMAKE_INSTALL_DOCDIR ${CMAKE_INSTALL_DATAROOTDIR}/doc/${LUE_LOWER_PROJECT_NAME})
+
+# It is common practice to install headers into a project-specific subdirectory
+set(CMAKE_INSTALL_INCLUDEDIR ${CMAKE_INSTALL_INCLUDEDIR}/${LUE_LOWER_PROJECT_NAME})
+
+# In this project we need to be able to install the Python package in a certain directory. For
+# that, we create a variable similar to the ones set by GNUInstallDirs. It can be overridden by
+# the user.
+if(Python3_FOUND)
+    if(NOT CMAKE_INSTALL_PYTHONDIR)
+        set(CMAKE_INSTALL_PYTHONDIR
+            "${CMAKE_INSTALL_LIBDIR}/python${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}/${LUE_LOWER_PROJECT_NAME}")
+    endif()
 endif()
 
 
@@ -46,14 +66,21 @@ message(STATUS "+ python api              : ${LUE_DATA_MODEL_WITH_PYTHON_API}")
 message(STATUS "+ utilities               : ${LUE_DATA_MODEL_WITH_UTILITIES}")
 message(STATUS "Build framework           : ${LUE_BUILD_FRAMEWORK}")
 message(STATUS "+ benchmarks              : ${LUE_FRAMEWORK_WITH_BENCHMARKS}")
-message(STATUS "+ dashboard               : ${LUE_FRAMEWORK_WITH_DASHBOARD}")
-message(STATUS "+ opencl                  : ${LUE_FRAMEWORK_WITH_OPENCL}")
 message(STATUS "+ python api              : ${LUE_FRAMEWORK_WITH_PYTHON_API}")
 message(STATUS "Build view                : ${LUE_BUILD_VIEW}")
 message(STATUS "+ value inspection        : ${LUE_BUILD_FRAMEWORK}")
-# message(STATUS "Support MPI               : ${LUE_API_WITH_MPI}")
 message(STATUS "Build documentation       : ${LUE_BUILD_DOCUMENTATION}")
 message(STATUS "Build tests               : ${LUE_BUILD_TEST}")
+message(STATUS "")
+message(STATUS "CMAKE_INSTALL_PREFIX      : ${CMAKE_INSTALL_PREFIX}")
+message(STATUS "CMAKE_INSTALL_BINDIR      : ${CMAKE_INSTALL_BINDIR}")
+message(STATUS "CMAKE_INSTALL_LIBDIR      : ${CMAKE_INSTALL_LIBDIR}")
+message(STATUS "CMAKE_INSTALL_LIBEXECDIR  : ${CMAKE_INSTALL_LIBEXECDIR}")
+message(STATUS "CMAKE_INSTALL_INCLUDEDIR  : ${CMAKE_INSTALL_INCLUDEDIR}")
+message(STATUS "CMAKE_INSTALL_DOCDIR      : ${CMAKE_INSTALL_DOCDIR}")
+if(Python3_FOUND)
+    message(STATUS "CMAKE_INSTALL_PYTHONDIR   : ${CMAKE_INSTALL_PYTHONDIR}")
+endif()
 message(STATUS "")
 
 if((LUE_BUILD_DATA_MODEL AND LUE_DATA_MODEL_WITH_PYTHON_API) OR
@@ -61,7 +88,6 @@ if((LUE_BUILD_DATA_MODEL AND LUE_DATA_MODEL_WITH_PYTHON_API) OR
     message(STATUS "LUE_PYTHON_API_INSTALL_DIR: ${LUE_PYTHON_API_INSTALL_DIR}")
 endif()
 
-message(STATUS "HDF5_IS_PARALLEL          : ${HDF5_IS_PARALLEL}")
 message(STATUS "--------------------------------------------------------------")
 
 

@@ -22,7 +22,6 @@ target_include_directories(lue_imgui
         # Imgui binding headers copied by Conan
         ${CMAKE_CURRENT_BINARY_DIR}/src
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:include>
 )
 
 target_compile_definitions(lue_imgui
@@ -39,6 +38,7 @@ target_link_libraries(lue_imgui
     PUBLIC
         glfw::glfw
         GLEW::GLEW
+        OpenGL::GL
         imgui::imgui
 )
 

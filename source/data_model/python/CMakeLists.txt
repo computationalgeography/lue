@@ -91,17 +91,9 @@ set_target_properties(lue_py_data_model
         CXX_CLANG_TIDY ""  # TODO(KDJ) Get it to skip pybind11.h
 )
 
-# Explicitly add the location of the numpy headers to the list. Otherwise
-# the wrong header might be picked up, resulting in runtime errors.
-target_include_directories(lue_py_data_model SYSTEM
-    PRIVATE
-        ${Python3_NumPy_INCLUDE_DIRS}
-)
-
 target_include_directories(lue_py_data_model
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        ### $<INSTALL_INTERFACE:include>
 )
 
 target_link_libraries(lue_py_data_model
@@ -109,11 +101,7 @@ target_link_libraries(lue_py_data_model
         $<$<TARGET_EXISTS:lue::data_model_test>:lue::data_model_test>
         lue::data_model_hl
         Microsoft.GSL::Microsoft.GSL
+        Python3::NumPy
 )
 
-install(
-    TARGETS
-        lue_py_data_model
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-)
+lue_install_libraries(lue_py_data_model)
