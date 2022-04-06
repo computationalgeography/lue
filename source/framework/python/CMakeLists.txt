@@ -84,13 +84,6 @@ set_target_properties(lue_py_framework
         RUNTIME_OUTPUT_DIRECTORY $<TARGET_FILE_DIR:lue::py>
 )
 
-# Explicitly add the location of the numpy headers to the list. Otherwise
-# the wrong header might be picked up, resulting in runtime errors.
-target_include_directories(lue_py_framework SYSTEM
-    PRIVATE
-        ${Python3_NumPy_INCLUDE_DIRS}
-)
-
 target_include_directories(lue_py_framework
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/../../data_model/python/include
@@ -106,11 +99,7 @@ target_link_libraries(lue_py_framework
         lue::framework_focal_operation
         lue::framework_local_operation
         lue::framework_io
+        Python3::NumPy
 )
 
-install(
-    TARGETS
-        lue_py_framework
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-)
+lue_install_libraries(lue_py_framework)

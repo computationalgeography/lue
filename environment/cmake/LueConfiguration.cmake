@@ -80,6 +80,8 @@ if(WIN32)
     set(LUE_HAVE_DOCOPT_INIT FALSE)
     set(LUE_HAVE_DOXYGEN_INIT FALSE)
     set(LUE_HAVE_GDAL_INIT FALSE)
+    set(LUE_HAVE_GLEW_INIT FALSE)
+    set(LUE_HAVE_GLFW_INIT FALSE)
     set(LUE_HAVE_MS_GSL_INIT FALSE)
     set(LUE_HAVE_FMT_INIT FALSE)
     set(LUE_HAVE_HDF5_INIT FALSE)
@@ -91,6 +93,8 @@ elseif(APPLE)
     set(LUE_HAVE_DOCOPT_INIT FALSE)
     set(LUE_HAVE_DOXYGEN_INIT TRUE)
     set(LUE_HAVE_GDAL_INIT TRUE)
+    set(LUE_HAVE_GLEW_INIT TRUE)
+    set(LUE_HAVE_GLFW_INIT TRUE)
     set(LUE_HAVE_MS_GSL_INIT FALSE)
     set(LUE_HAVE_FMT_INIT TRUE)
     set(LUE_HAVE_HDF5_INIT TRUE)
@@ -101,6 +105,8 @@ else()
     set(LUE_HAVE_DOCOPT_INIT TRUE)
     set(LUE_HAVE_DOXYGEN_INIT TRUE)
     set(LUE_HAVE_GDAL_INIT TRUE)
+    set(LUE_HAVE_GLEW_INIT TRUE)
+    set(LUE_HAVE_GLFW_INIT TRUE)
     set(LUE_HAVE_MS_GSL_INIT FALSE)
     set(LUE_HAVE_FMT_INIT TRUE)
     set(LUE_HAVE_HDF5_INIT TRUE)
@@ -121,14 +127,15 @@ lue_have_option(DOCOPT)
 lue_have_option(DOXYGEN)
 lue_have_option(GDAL)
 lue_have_option(FMT)
+lue_have_option(GLEW)
+lue_have_option(GLFW)
 lue_have_option(HDF5)
 lue_have_option(MS_GSL)
 lue_have_option(NLOHMANN_JSON)
 lue_have_option(PYBIND11)
 
-# For now, use Conan to get glew/glfw/imgui
-set(LUE_HAVE_GLEW FALSE)
-set(LUE_HAVE_GLFW FALSE)
+# For now, use Conan to get ImGui. If this must be changed, be sure to also update our imgui
+# target. It assumes the Conan package of ImGui is being used.
 set(LUE_HAVE_IMGUI FALSE)
 
 
@@ -385,6 +392,14 @@ if(LUE_KOKKOS_MDSPAN_REQUIRED)
         GIT_TAG a7990884f090365787a90cdc12e689822d642c65  # 20191010
     )
     FetchContent_MakeAvailable(kokkos_mdspan)
+
+    # Turn off warning messages by marking the headers as system headers
+    set_property(
+        TARGET mdspan
+        APPEND
+            PROPERTY
+                INTERFACE_SYSTEM_INCLUDE_DIRECTORIES ${MDSpan_SOURCE_DIR}/include
+    )
 endif()
 
 if(LUE_NLOHMANN_JSON_REQUIRED)
@@ -420,6 +435,15 @@ endif()
 if(LUE_PYTHON_REQUIRED)
     # Order matters: Pybind11 must be searched for after Python has been found.
     find_package(Python3 REQUIRED COMPONENTS Interpreter Development NumPy)
+
+    message(STATUS "Found Python3:")
+    message(STATUS "    Interpreter ID        : ${Python3_INTERPRETER_ID}")
+    message(STATUS "        version           : ${Python3_VERSION}")
+    message(STATUS "        executable        : ${Python3_EXECUTABLE}")
+    message(STATUS "        site-lib          : ${Python3_SITELIB}")
+    message(STATUS "    NumPy:")
+    message(STATUS "        version           : ${Python3_NumPy_VERSION}")
+    message(STATUS "        include           : ${Python3_NumPy_INCLUDE_DIRS}")
 endif()
 
 
@@ -428,7 +452,7 @@ if(LUE_PYBIND11_REQUIRED)
     if(NOT LUE_HAVE_PYBIND11)
         FetchContent_Declare(pybind11
             GIT_REPOSITORY https://github.com/pybind/pybind11
-            GIT_TAG "v2.8.1"
+            GIT_TAG "v2.9.1"
         )
 
         # This should pick up the Python found above
@@ -608,7 +632,14 @@ endif()
 if(LUE_IMGUI_REQUIRED)
     find_package(imgui REQUIRED)
     find_package(glfw3 REQUIRED)
+
+    if(LUE_HAVE_GLFW)
+        # Conan find module uses glfw::glfw instead of glfw
+        add_library(glfw::glfw ALIAS glfw)
+    endif()
+
     find_package(GLEW REQUIRED)
+    find_package(OpenGL REQUIRED)
 endif()
 
 
@@ -663,6 +694,7 @@ endif()
 
 if(LUE_HDF5_REQUIRED)
     find_package(HDF5 REQUIRED COMPONENTS C)
+    message(STATUS "HDF5_IS_PARALLEL          : ${HDF5_IS_PARALLEL}")
 endif()
 
 if(LUE_MS_GSL_REQUIRED)

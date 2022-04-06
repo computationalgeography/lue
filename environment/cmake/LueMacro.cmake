@@ -48,9 +48,6 @@ macro(add_unit_test)
     add_executable(${TEST_EXE_NAME} ${TEST_MODULE_NAME}
         ${ADD_UNIT_TEST_SUPPORT_NAMES}
         ${ADD_UNIT_TEST_OBJECT_LIBRARIES})
-    target_include_directories(${TEST_EXE_NAME} SYSTEM
-        PRIVATE
-            ${Boost_INCLUDE_DIRS})
     target_include_directories(${TEST_EXE_NAME}
         PRIVATE
             ${ADD_UNIT_TEST_INCLUDE_DIRS})
@@ -339,9 +336,6 @@ function(add_hpx_unit_test)
 
     add_executable(${TEST_EXE_NAME} ${TEST_MODULE_NAME})
 
-    target_include_directories(${TEST_EXE_NAME} SYSTEM
-        PRIVATE
-            ${Boost_INCLUDE_DIRS})
     target_link_libraries(${TEST_EXE_NAME}
         PRIVATE
             ${ADD_HPX_UNIT_TEST_LINK_LIBRARIES}
@@ -415,4 +409,57 @@ function(add_hpx_unit_tests)
             ENVIRONMENT ${ADD_HPX_UNIT_TESTS_ENVIRONMENT}
         )
     endforeach()
+endfunction()
+
+
+function(lue_install_executables
+        TARGETS)
+    install(
+        TARGETS
+            ${TARGETS} ${ARGN}
+        RUNTIME
+            DESTINATION ${CMAKE_INSTALL_BINDIR}
+            COMPONENT lue_runtime
+    )
+endfunction()
+
+
+function(lue_install_libraries
+        TARGETS)
+    install(
+        TARGETS
+            ${TARGETS} ${ARGN}
+        EXPORT
+            lue_targets
+        RUNTIME
+            DESTINATION ${CMAKE_INSTALL_BINDIR}
+            COMPONENT lue_runtime
+        LIBRARY
+            DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            COMPONENT lue_runtime
+            NAMELINK_COMPONENT lue_development
+        ARCHIVE
+            DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            COMPONENT lue_development
+        PUBLIC_HEADER
+            DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+            COMPONENT lue_development
+        INCLUDES
+            DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    )
+endfunction()
+
+
+function(lue_install_python_modules
+        TARGETS)
+    install(
+        TARGETS
+            ${TARGETS} ${ARGN}
+        LIBRARY
+            DESTINATION ${CMAKE_INSTALL_PYTHONDIR}
+            COMPONENT lue_runtime
+        RUNTIME
+            DESTINATION ${CMAKE_INSTALL_PYTHONDIR}
+            COMPONENT lue_runtime
+    )
 endfunction()

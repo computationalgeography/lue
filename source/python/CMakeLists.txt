@@ -33,7 +33,6 @@ set_target_properties(lue_py
 #     PUBLIC
 #         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 #         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
-#         $<INSTALL_INTERFACE:include>
 # )
 
 target_link_libraries(lue_py
@@ -82,9 +81,4 @@ set_tests_properties(
             lue_py_test_fixture
 )
 
-install(
-    TARGETS
-        lue_py
-    LIBRARY DESTINATION ${LUE_PYTHON_API_INSTALL_DIR}
-    RUNTIME DESTINATION ${LUE_PYTHON_API_INSTALL_DIR}
-)
+lue_install_python_modules(lue_py)

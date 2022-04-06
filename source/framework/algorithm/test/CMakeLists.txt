@@ -91,11 +91,6 @@ foreach(name ${names})
 
     add_executable(${test_name} ${module_name}.cpp)
 
-    target_include_directories(${test_name} SYSTEM
-        PRIVATE
-            ${Boost_INCLUDE_DIRS}
-    )
-
     target_link_libraries(${test_name}
         PRIVATE
             lue_framework_algorithm_test
@@ -151,11 +146,6 @@ foreach(name ${names})
     set(test_name ${scope}_${module_name})
 
     add_executable(${test_name} ${module_name}.cpp)
-
-    target_include_directories(${test_name} SYSTEM
-        PRIVATE
-            ${Boost_INCLUDE_DIRS}
-    )
 
     target_link_libraries(${test_name}
         PRIVATE

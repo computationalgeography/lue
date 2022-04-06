@@ -57,6 +57,10 @@ add_custom_command(
 
 add_custom_target(sphinx_doc DEPENDS ${SPHINX_INDEX_FILE})
 
-install(
-    DIRECTORY ${SPHINX_BUILD_DIR}
-    DESTINATION ${CMAKE_INSTALL_DOCDIR})
+# TODO Make this depend on the generation of the docs. They must be ready to copy.
+# install(
+#     DIRECTORY
+#         ${SPHINX_BUILD_DIR}
+#     DESTINATION ${CMAKE_INSTALL_DOCDIR}
+#     COMPONENT lue_development
+# )

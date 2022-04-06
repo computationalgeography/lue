@@ -70,7 +70,6 @@ add_library(lue::data_model ALIAS lue_data_model)
 target_include_directories(lue_data_model
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:include>
 )
 
 target_link_libraries(lue_data_model
@@ -79,17 +78,4 @@ target_link_libraries(lue_data_model
         fmt::fmt
 )
 
-install(
-    TARGETS
-        lue_data_model
-    EXPORT
-        lue_targets
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-)
-
-install(
-    DIRECTORY include
-    DESTINATION .
-)
+lue_install_libraries(lue_data_model)
