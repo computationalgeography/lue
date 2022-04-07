@@ -18,7 +18,15 @@ string(TOLOWER ${PROJECT_NAME} LUE_LOWER_PROJECT_NAME)
 string(TOUPPER ${PROJECT_NAME} LUE_UPPER_PROJECT_NAME)
 
 if(NOT WIN32 AND CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
-    set(CMAKE_INSTALL_PREFIX "/opt/computationalgeography.org/${LUE_LOWER_PROJECT_NAME}")
+    # On the current platform, the default value of CMAKE_INSTALL_PREFIX is not a good default
+    # value. /usr/local on Linux for example.
+
+    if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+        # The CMAKE_INSTALL_PREFIX has just been initialized to its default value. This means that
+        # the user did not provide a custom value. So, it is fine to override the default.
+
+        set(CMAKE_INSTALL_PREFIX "/opt/computationalgeography.org/${LUE_LOWER_PROJECT_NAME}")
+    endif()
 endif()
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/environment/cmake")
