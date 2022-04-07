@@ -89,7 +89,6 @@ jobs:
               cmake --install build --prefix install
               # Installs the LUE runtime stuff
               cmake --install build --component lue_runtime --prefix install
-              tree install
               # TODO Fix once we can test these ourselves
               # install/bin/lue_translate --version
               # install/bin/lue_validate --version
