@@ -32,4 +32,4 @@ target_link_libraries(lue_framework_core
         std::mdspan
 )
 
-lue_install_libraries(lue_framework_core)
+lue_install_libraries(TARGETS lue_framework_core)

@@ -25,4 +25,4 @@ target_link_libraries(lue_view
         lue::shared
 )
 
-lue_install_executables(lue_view)
+lue_install_executables(TARGETS lue_view)

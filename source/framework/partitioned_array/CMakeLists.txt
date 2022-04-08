@@ -38,4 +38,4 @@ target_link_libraries(lue_framework_partitioned_array
     PUBLIC
         lue::framework_core)
 
-lue_install_libraries(lue_framework_partitioned_array)
+lue_install_libraries(TARGETS lue_framework_partitioned_array)

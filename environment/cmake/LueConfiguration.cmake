@@ -353,6 +353,7 @@ if(LUE_MS_GSL_REQUIRED)
     endif()
 endif()
 
+
 if(LUE_HDF5_REQUIRED)
     if(NOT LUE_HAVE_HDF5)
         set(HDF5_VERSION 1.12.1)
@@ -361,30 +362,6 @@ if(LUE_HDF5_REQUIRED)
     endif()
 endif()
 
-if(LUE_HPX_REQUIRED)
-    if(NOT LUE_BUILD_HPX)
-        message(FATAL_ERROR
-            "Support for system-provided HPX library does not work yet\n"
-            "But we can build HPX for you! Just reconfigure with LUE_BUILD_HPX=TRUE")
-
-        # # Use HPX from the environment
-        # find_package(HPX REQUIRED)
-
-        # if(HPX_FOUND)
-        #     message(STATUS "Found HPX")
-        #     message(STATUS "  includes : ${HPX_INCLUDE_DIRS}")
-        #     message(STATUS "  libraries: ${HPX_LIBRARIES}")
-
-        #     # Check whether we are using the same build type as HPX
-        #     if (NOT "${HPX_BUILD_TYPE}" STREQUAL "${CMAKE_BUILD_TYPE}")
-        #         message(WARNING
-        #             "CMAKE_BUILD_TYPE does not match HPX_BUILD_TYPE: "
-        #             "\"${CMAKE_BUILD_TYPE}\" != \"${HPX_BUILD_TYPE}\"\n"
-        #             "ABI compatibility is not guaranteed. Expect link errors.")
-        #     endif()
-        # endif()
-    endif()
-endif()
 
 if(LUE_KOKKOS_MDSPAN_REQUIRED)
     FetchContent_Declare(kokkos_mdspan
@@ -401,6 +378,7 @@ if(LUE_KOKKOS_MDSPAN_REQUIRED)
                 INTERFACE_SYSTEM_INCLUDE_DIRECTORIES ${MDSpan_SOURCE_DIR}/include
     )
 endif()
+
 
 if(LUE_NLOHMANN_JSON_REQUIRED)
     if(NOT LUE_HAVE_NLOHMANN_JSON)
@@ -497,6 +475,13 @@ endif()
 if(LUE_HPX_REQUIRED)
     if(LUE_BUILD_HPX)
         # Build HPX ourselves
+
+        # When not specifying an install component, by default we get all files necessary for
+        # HPX runtime and development. We want to be able to only install the runtime files. For
+        # that we rename the default component name. For some reason, this prevents the
+        # development files from being installed. Below we set the default component name back
+        # to its default value.
+        set(CMAKE_INSTALL_DEFAULT_COMPONENT_NAME "hpx_runtime")
 
         if(HPX_WITH_APEX)
             if(APEX_WITH_OTF2)
@@ -613,6 +598,7 @@ if(LUE_HPX_REQUIRED)
         endif()
 
         FetchContent_MakeAvailable(hpx)
+        set(CMAKE_INSTALL_DEFAULT_COMPONENT_NAME "Unspecified")
     else()
         find_package(HPX REQUIRED)
 

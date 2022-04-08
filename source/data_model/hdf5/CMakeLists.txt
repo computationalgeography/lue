@@ -51,4 +51,4 @@ target_link_libraries(lue_hdf5
         fmt::fmt
 )
 
-lue_install_libraries(lue_hdf5)
+lue_install_libraries(TARGETS lue_hdf5)

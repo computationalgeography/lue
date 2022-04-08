@@ -15,8 +15,12 @@ set_tests_properties(
         # On Windows, add the path to the HPX dlls. Only if HPX::hpx target is defined.
         # Add the path to our Python modules to PYTHONPATH.
         # TODO Add Release/lib dir to PATH as well?
-        ENVIRONMENT_MODIFICATION
-        "PATH=path_list_prepend:$<TARGET_FILE_DIR:lue::framework_partitioned_array>;PATH=path_list_prepend:$<TARGET_FILE_DIR:lue::py>;PATH=path_list_prepend:$<$<AND:$<PLATFORM_ID:Windows>,$<TARGET_EXISTS:HPX::hpx>>:$<TARGET_FILE_DIR:HPX::component_storage_component>>;PYTHONPATH=path_list_prepend:$<TARGET_FILE_DIR:lue::py>"
+        ENVIRONMENT_MODIFICATION "\
+PATH=path_list_prepend:$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:lue::framework_partitioned_array>;\
+PATH=path_list_prepend:$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:lue::py>;\
+PATH=path_list_prepend:$<$<AND:$<PLATFORM_ID:Windows>,$<TARGET_EXISTS:HPX::hpx>>:$<TARGET_FILE_DIR:HPX::component_storage_component>>;\
+PYTHONPATH=path_list_prepend:$<TARGET_FILE_DIR:lue::py>/..;\
+"
         FIXTURES_REQUIRED
             lue_py_test_fixture
 )

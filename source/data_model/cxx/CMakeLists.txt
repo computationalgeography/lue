@@ -78,4 +78,4 @@ target_link_libraries(lue_data_model
         fmt::fmt
 )
 
-lue_install_libraries(lue_data_model)
+lue_install_libraries(TARGETS lue_data_model)

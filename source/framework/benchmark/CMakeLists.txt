@@ -17,10 +17,8 @@ target_include_directories(lue_benchmark
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
 
-hpx_setup_target(lue_benchmark
-    COMPONENT_DEPENDENCIES
-        iostreams
-    DEPENDENCIES
+target_link_libraries(lue_benchmark
+    PUBLIC
         lue::framework_algorithm
         lue::framework_model
         lue::data_model_hl
@@ -37,9 +35,8 @@ target_link_libraries(lue_dummy_benchmark
         lue::benchmark
 )
 
-add_hpx_executable(lue_dummy_hpx_benchmark
-    SOURCES
-        src/dummy_hpx_benchmark.cpp
+add_executable(lue_dummy_hpx_benchmark
+    src/dummy_hpx_benchmark.cpp
 )
 
 target_link_libraries(lue_dummy_hpx_benchmark

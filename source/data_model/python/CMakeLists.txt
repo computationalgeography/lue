@@ -1,5 +1,14 @@
 add_test_conditionally(test)
 
+configure_file(
+    data_model.py.in
+    ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_PYTHONDIR}/data_model/__init__.py
+)
+configure_file(
+    hdf5.py.in
+    ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_PYTHONDIR}/data_model/hdf5/__init__.py
+)
+
 # A pybind11 SHARED library is a CMake runtime output artifact. Target properties to set/get are
 # RUNTIME_OUTPUT_DIRECTORY and RUNTIME_OUTPUT_NAME.
 pybind11_add_module(lue_py_data_model SHARED THIN_LTO
@@ -104,4 +113,11 @@ target_link_libraries(lue_py_data_model
         Python3::NumPy
 )
 
-lue_install_libraries(lue_py_data_model)
+lue_install_libraries(TARGETS lue_py_data_model)
+
+install(
+    DIRECTORY
+        ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_PYTHONDIR}/data_model
+    DESTINATION ${CMAKE_INSTALL_PYTHONDIR}
+    COMPONENT lue_runtime
+)
