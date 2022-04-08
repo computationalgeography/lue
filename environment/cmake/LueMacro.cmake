@@ -295,11 +295,8 @@ function(lue_add_benchmark)
     set(category ${ADD_BENCHMARK_CATEGORY})
     set(name ${ADD_BENCHMARK_NAME})
 
-    add_hpx_executable(lue_${category}_${name}_benchmark
-        SOURCES
-            ${name}_benchmark.cpp
-        COMPONENT_DEPENDENCIES
-            iostreams
+    add_executable(lue_${category}_${name}_benchmark
+        ${name}_benchmark.cpp
     )
 
     target_link_libraries(lue_${category}_${name}_benchmark
@@ -412,54 +409,115 @@ function(add_hpx_unit_tests)
 endfunction()
 
 
-function(lue_install_executables
-        TARGETS)
+function(lue_install_executables)
+    set(options
+    )
+    set(one_value_arguments
+        # RUNTIME_COMPONENT
+    )
+    set(multi_value_arguments
+        TARGETS
+    )
+    set(name "lue_install_executables")
+    cmake_parse_arguments(
+        ${name} "${options}" "${one_value_arguments}" "${multi_value_arguments}" ${ARGN}
+    )
+
+    set(${name}_RUNTIME_COMPONENT lue_runtime)
+
+    # if(NOT ${name}_RUNTIME_COMPONENT)
+    #     set(${name}_RUNTIME_COMPONENT ${CMAKE_INSTALL_DEFAULT_COMPONENT_NAME})
+    # endif()
+
     install(
         TARGETS
-            ${TARGETS} ${ARGN}
+            ${${name}_TARGETS}
         RUNTIME
             DESTINATION ${CMAKE_INSTALL_BINDIR}
-            COMPONENT lue_runtime
+            COMPONENT ${${name}_RUNTIME_COMPONENT}
     )
 endfunction()
 
 
-function(lue_install_libraries
-        TARGETS)
+function(lue_install_libraries)
+    set(options
+    )
+    set(one_value_arguments
+        EXPORT
+        # DEVELOPMENT_COMPONENT
+        # RUNTIME_COMPONENT
+    )
+    set(multi_value_arguments
+        TARGETS
+    )
+    set(name "lue_install_libraries")
+    cmake_parse_arguments(
+        ${name} "${options}" "${one_value_arguments}" "${multi_value_arguments}" ${ARGN}
+    )
+
+    set(${name}_DEVELOPMENT_COMPONENT lue_development)
+    set(${name}_RUNTIME_COMPONENT lue_runtime)
+
+    # if(NOT ${name}_DEVELOPMENT_COMPONENT)
+    #     set(${name}_DEVELOPMENT_COMPONENT ${CMAKE_INSTALL_DEFAULT_COMPONENT_NAME})
+    # endif()
+
+    # if(NOT ${name}_RUNTIME_COMPONENT)
+    #     set(${name}_RUNTIME_COMPONENT ${CMAKE_INSTALL_DEFAULT_COMPONENT_NAME})
+    # endif()
+
     install(
         TARGETS
-            ${TARGETS} ${ARGN}
+            ${${name}_TARGETS}
         EXPORT
-            lue_targets
+            ${${name}_EXPORT}
         RUNTIME
             DESTINATION ${CMAKE_INSTALL_BINDIR}
-            COMPONENT lue_runtime
+            COMPONENT ${${name}_RUNTIME_COMPONENT}
         LIBRARY
             DESTINATION ${CMAKE_INSTALL_LIBDIR}
-            COMPONENT lue_runtime
-            NAMELINK_COMPONENT lue_development
+            COMPONENT ${${name}_RUNTIME_COMPONENT}
+            NAMELINK_COMPONENT ${${name}_DEVELOPMENT_COMPONENT}
         ARCHIVE
             DESTINATION ${CMAKE_INSTALL_LIBDIR}
-            COMPONENT lue_development
+            COMPONENT ${${name}_DEVELOPMENT_COMPONENT}
         PUBLIC_HEADER
             DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-            COMPONENT lue_development
+            COMPONENT ${${name}_DEVELOPMENT_COMPONENT}
         INCLUDES
             DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     )
 endfunction()
 
 
-function(lue_install_python_modules
-        TARGETS)
+function(lue_install_python_modules)
+    set(options
+    )
+    set(one_value_arguments
+        # RUNTIME_COMPONENT
+    )
+    set(multi_value_arguments
+        TARGETS
+    )
+    set(name "lue_install_python_modules")
+    cmake_parse_arguments(
+        ${name} "${options}" "${one_value_arguments}" "${multi_value_arguments}" ${ARGN}
+    )
+
+    set(${name}_RUNTIME_COMPONENT lue_runtime)
+
+    # if(NOT ${name}_RUNTIME_COMPONENT)
+    #     set(${name}_RUNTIME_COMPONENT ${CMAKE_INSTALL_DEFAULT_COMPONENT_NAME})
+    # endif()
+
     install(
         TARGETS
-            ${TARGETS} ${ARGN}
-        LIBRARY
-            DESTINATION ${CMAKE_INSTALL_PYTHONDIR}
-            COMPONENT lue_runtime
+            ${${name}_TARGETS}
         RUNTIME
             DESTINATION ${CMAKE_INSTALL_PYTHONDIR}
-            COMPONENT lue_runtime
+            COMPONENT ${${name}_RUNTIME_COMPONENT}
+        LIBRARY
+            DESTINATION ${CMAKE_INSTALL_PYTHONDIR}
+            COMPONENT ${${name}_RUNTIME_COMPONENT}
     )
 endfunction()

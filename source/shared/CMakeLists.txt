@@ -20,4 +20,4 @@ target_link_libraries(lue_shared
         lue::compile_options
 )
 
-lue_install_libraries(lue_shared)
+lue_install_libraries(TARGETS lue_shared)

@@ -1,6 +1,11 @@
 # TODO No command line arguments end up in HPX runtime...
 add_test_conditionally(test)
 
+configure_file(
+    framework.py.in
+    ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_PYTHONDIR}/framework/__init__.py
+)
+
 # A pybind11 SHARED library is a CMake runtime output artifact. Target properties to set/get are
 # RUNTIME_OUTPUT_DIRECTORY and RUNTIME_OUTPUT_NAME.
 pybind11_add_module(lue_py_framework SHARED THIN_LTO
@@ -102,4 +107,11 @@ target_link_libraries(lue_py_framework
         Python3::NumPy
 )
 
-lue_install_libraries(lue_py_framework)
+lue_install_libraries(TARGETS lue_py_framework)
+
+install(
+    DIRECTORY
+        ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_PYTHONDIR}/framework
+    DESTINATION ${CMAKE_INSTALL_PYTHONDIR}
+    COMPONENT lue_runtime
+)

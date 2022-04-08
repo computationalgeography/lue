@@ -11,6 +11,11 @@ configure_file(
     include/lue/py/configure.hpp
 )
 
+configure_file(
+    lue.py.in
+    ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_PYTHONDIR}/__init__.py
+)
+
 # A pybind11 MODULE library is a CMake library output artifact. Target properties to set/get are
 # LIBRARY_OUTPUT_DIRECTORY and LIBRARY_OUTPUT_NAME.
 pybind11_add_module(lue_py MODULE THIN_LTO
@@ -19,21 +24,11 @@ pybind11_add_module(lue_py MODULE THIN_LTO
 
 add_library(lue::py ALIAS lue_py)
 
-# target_compile_definitions(lue_py
-#     PRIVATE
-#         NPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION
-# )
-
 set_target_properties(lue_py
     PROPERTIES
-        OUTPUT_NAME lue
+        OUTPUT_NAME _lue
+        LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_PYTHONDIR}
 )
-
-# target_include_directories(lue_py
-#     PUBLIC
-#         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-#         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
-# )
 
 target_link_libraries(lue_py
     PRIVATE
@@ -81,4 +76,11 @@ set_tests_properties(
             lue_py_test_fixture
 )
 
-lue_install_python_modules(lue_py)
+lue_install_python_modules(TARGETS lue_py)
+
+install(
+    FILES
+        ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_PYTHONDIR}/__init__.py
+    DESTINATION ${CMAKE_INSTALL_PYTHONDIR}
+    COMPONENT lue_runtime
+)

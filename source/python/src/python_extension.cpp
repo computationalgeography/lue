@@ -18,7 +18,7 @@ namespace py = pybind11;
 
 namespace lue {
 
-PYBIND11_MODULE(lue, module)
+PYBIND11_MODULE(_lue, module)
 {
     std::vector<std::string> automodules;
 

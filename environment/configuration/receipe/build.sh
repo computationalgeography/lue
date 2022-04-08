@@ -38,15 +38,9 @@ PATH=$PREFIX/bin:$PATH cmake $SRC_DIR -G"Ninja" \
 
 # Use parallel build but not for lue.framework
 cmake --build . --target lue_view lue_translate lue_validate core
-
 cmake --build . --target all --parallel 1
-
-# export LD_PRELOAD=${PREFIX}/lib/libtcmalloc_minimal.so.4
 
 ctest --extra-verbose --output-on-failure
 
-# This only installs the HPX stuff
-cmake --install .
-
-# This install the LUE runtime stuff
+cmake --install . --component hpx_runtime
 cmake --install . --component lue_runtime
