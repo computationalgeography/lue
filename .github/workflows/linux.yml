@@ -122,9 +122,7 @@ jobs:
               install/bin/lue_translate --version
               install/bin/lue_validate --version
               install/bin/lue_view --version
-              echo "`pwd`/install/lib/python${{ matrix.python-version }}/lue:$PYTHONPATH"
-              ls -l "`pwd`/install/lib/python${{ matrix.python-version }}/lue"
-              LD_LIBRARY_PATH="`pwd`/install/lib:$LD_LIBRARY_PATH" PYTHONPATH="`pwd`/install/lib/python${{ matrix.python-version }}/lue:$PYTHONPATH" python -c "import lue; print(lue.__version__)"
+              PYTHONPATH="`pwd`/install/lib/python${{ matrix.python-version }}:$PYTHONPATH" python -c "import lue; print(lue.__version__)"
 
         - name: deploy lue documentation
           if: github.ref == 'refs/heads/master' && matrix.compiler.cxx == 'g++-9' && matrix.python-version == 3.9

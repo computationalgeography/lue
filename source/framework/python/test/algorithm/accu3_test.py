@@ -8,8 +8,7 @@ def setUpModule():
 
 
 def tearDownModule():
-    pass
-    # lue_test.stop_hpx_runtime()
+    lue_test.stop_hpx_runtime()
 
 
 class Accu3Test(lue_test.TestCase):

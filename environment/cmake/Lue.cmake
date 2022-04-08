@@ -56,6 +56,18 @@ if(Python3_FOUND)
     endif()
 endif()
 
+if(APPLE)
+    set(LUE_ORIGIN @loader_path)
+else()
+    set(LUE_ORIGIN @ORIGIN)
+endif()
+
+file(RELATIVE_PATH bin_to_lib_dir
+    ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}
+    ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}
+)
+set(CMAKE_INSTALL_RPATH $LUE_ORIGIN $LUE_ORIGIN/${bin_to_lib_dir})
+
 
 message(STATUS "--------------------------------------------------------------")
 message(STATUS "LUE_VERSION               : ${LUE_VERSION}")
@@ -82,11 +94,7 @@ if(Python3_FOUND)
     message(STATUS "CMAKE_INSTALL_PYTHONDIR   : ${CMAKE_INSTALL_PYTHONDIR}")
 endif()
 message(STATUS "")
-
-if((LUE_BUILD_DATA_MODEL AND LUE_DATA_MODEL_WITH_PYTHON_API) OR
-    (LUE_BUILD_FRAMEWORK AND LUE_FRAMEWORK_WITH_PYTHON_API))
-    message(STATUS "LUE_PYTHON_API_INSTALL_DIR: ${LUE_PYTHON_API_INSTALL_DIR}")
-endif()
+message(STATUS "CMAKE_INSTALL_RPATH       : ${CMAKE_INSTALL_RPATH}")
 
 message(STATUS "--------------------------------------------------------------")
 

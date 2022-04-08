@@ -418,6 +418,7 @@ if(LUE_PYTHON_REQUIRED)
     message(STATUS "    Interpreter ID        : ${Python3_INTERPRETER_ID}")
     message(STATUS "        version           : ${Python3_VERSION}")
     message(STATUS "        executable        : ${Python3_EXECUTABLE}")
+    message(STATUS "        site-arch         : ${Python3_SITEARCH}")
     message(STATUS "        site-lib          : ${Python3_SITELIB}")
     message(STATUS "    NumPy:")
     message(STATUS "        version           : ${Python3_NumPy_VERSION}")
@@ -437,15 +438,6 @@ if(LUE_PYBIND11_REQUIRED)
         FetchContent_MakeAvailable(pybind11)
     else()
         find_package(pybind11 REQUIRED)
-    endif()
-
-    if(NOT LUE_PYTHON_API_INSTALL_DIR)
-        # Most Python packages install in a subdirectory of Python's site
-        # packages. But we currently ship only Python packages implemented
-        # as shared libraries. Therefore, we install in the root of the
-        # site packages directory. We may have to change things in
-        # the future if this is unconventional.
-        set(LUE_PYTHON_API_INSTALL_DIR "${Python3_SITEARCH}")  # /lue")
     endif()
 endif()
 
