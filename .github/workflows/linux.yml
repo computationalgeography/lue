@@ -105,13 +105,11 @@ jobs:
               cd build
               ctest --output-on-failure
 
-        # - name: generate lue documentation
-        #   # Skip for now. Works locally, but here we get:
-        #   # Extension error: Config value 'graphviz_dot' already present
-        #   shell: bash
-        #   run: |
-        #       cmake --build build --target cpp_doc py_doc
-        #       cmake --build build --target sphinx_doc
+        - name: generate lue documentation
+          shell: bash
+          run: |
+              cmake --build build --target cpp_doc py_doc
+              cmake --build build --target sphinx_doc
 
         - name: install lue_runtime component
           shell: bash
@@ -122,7 +120,9 @@ jobs:
               install/bin/lue_translate --version
               install/bin/lue_validate --version
               install/bin/lue_view --version
-              PYTHONPATH="`pwd`/install/lib/python${{ matrix.python-version }}:$PYTHONPATH" python -c "import lue; print(lue.__version__)"
+              python --version
+              python${{ matrix.python-version }} --version
+              PYTHONPATH="install/lib/python${{ matrix.python-version }}:$PYTHONPATH" python${{ matrix.python-version }} -c "import lue; print(lue.__version__)"
 
         - name: deploy lue documentation
           if: github.ref == 'refs/heads/master' && matrix.compiler.cxx == 'g++-9' && matrix.python-version == 3.9
@@ -136,6 +136,7 @@ jobs:
           run: |
               cd build/document/doc
               mkdir -p $HOME/.ssh
+              # TODO
               type ssh-keyscan  # If not present, install openssh-client above first
               # ssh-keyscan $ftp_server >> $HOME/.ssh/known_hosts || true
               # lftp -c "open --user $ftp_username --password $ftp_password -p $ftp_port sftp://$ftp_server; set sftp:auto-confirm yes; mirror --verbose --reverse --delete --continue --parallel=2 $local_dir $remote_dir/doc"

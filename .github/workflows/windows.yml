@@ -75,12 +75,12 @@ jobs:
           run: |
               cmake --build build --config Release --target all_build
 
-        - name: test lue
-          shell: bash
-          run: |
-              # TODO Fix execution of excluded tests
-              ctest --test-dir build --build-config Release -R python_test
-              # cmake --build build --config Release --target run_tests
+        # - name: test lue
+        #   shell: bash
+        #   run: |
+        #       # TODO Fix execution of excluded tests
+        #       ctest --test-dir build --build-config Release -R python_test
+        #       # cmake --build build --config Release --target run_tests
 
         - name: install lue lue_runtime component
           shell: bash

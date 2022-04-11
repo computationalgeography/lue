@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 set -e
+set -x
+
+echo $PREFIX
+echo $SP_DIR
 
 
 # We need to create an out of source build
@@ -12,7 +16,7 @@ PATH=$PREFIX/bin:$PATH cmake $SRC_DIR -G"Ninja" \
 -D CMAKE_PREFIX_PATH:PATH="${PREFIX}" \
 -D CMAKE_INSTALL_PREFIX:PATH="${PREFIX}" \
 -D CMAKE_INSTALL_LIBDIR=lib \
--D LUE_INSTALL_PYTHON_PACKAGE_DIR="${SP_DIR}/lue"
+-D LUE_INSTALL_PYTHON_PACKAGE_DIR="${SP_DIR}/lue" \
 -D Python3_EXECUTABLE="${PYTHON}" \
 -D LUE_HAVE_BOOST:BOOL=TRUE \
 -D LUE_HAVE_FMT:BOOL=TRUE \
