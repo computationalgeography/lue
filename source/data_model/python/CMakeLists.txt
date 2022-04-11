@@ -2,11 +2,11 @@ add_test_conditionally(test)
 
 configure_file(
     data_model.py.in
-    ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_PYTHONDIR}/data_model/__init__.py
+    ${CMAKE_BINARY_DIR}/${LUE_BUILD_PYTHON_PACKAGE_DIR}/data_model/__init__.py
 )
 configure_file(
     hdf5.py.in
-    ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_PYTHONDIR}/data_model/hdf5/__init__.py
+    ${CMAKE_BINARY_DIR}/${LUE_BUILD_PYTHON_PACKAGE_DIR}/data_model/hdf5/__init__.py
 )
 
 # A pybind11 SHARED library is a CMake runtime output artifact. Target properties to set/get are
@@ -115,9 +115,21 @@ target_link_libraries(lue_py_data_model
 
 lue_install_libraries(TARGETS lue_py_data_model)
 
+if(LUE_PYTHON_FROM_CONDA AND NOT DEFINED ENV{CONDA_BUILD})
+    # If we are using a Python interpreter from a Conda environment then we must expand RPATH
+    # to include the location of the Python libraries. But if we are building a Conda package,
+    # we assume Conda takes care of RPATH handling.
+    set_property(
+        TARGET lue_py_data_model
+        APPEND
+        PROPERTY INSTALL_RPATH
+            ${Python3_LIBRARY_DIRS}
+    )
+endif()
+
 install(
-    DIRECTORY
-        ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_PYTHONDIR}/data_model
-    DESTINATION ${CMAKE_INSTALL_PYTHONDIR}
+    DIRECTORY ${CMAKE_BINARY_DIR}/${LUE_BUILD_PYTHON_PACKAGE_DIR}/data_model
+    DESTINATION ${LUE_INSTALL_PYTHON_PACKAGE_DIR}
     COMPONENT lue_runtime
 )
+

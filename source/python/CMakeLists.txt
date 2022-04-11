@@ -13,7 +13,7 @@ configure_file(
 
 configure_file(
     lue.py.in
-    ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_PYTHONDIR}/__init__.py
+    ${CMAKE_BINARY_DIR}/${LUE_BUILD_PYTHON_PACKAGE_DIR}/__init__.py
 )
 
 # A pybind11 MODULE library is a CMake library output artifact. Target properties to set/get are
@@ -24,19 +24,11 @@ pybind11_add_module(lue_py MODULE THIN_LTO
 
 add_library(lue::py ALIAS lue_py)
 
-# The default RPATH setting assumes that executables are being installed. This shared library
-# gets installed in its own directory and needs to be told where our shared libraries are
-# installed.
-file(RELATIVE_PATH py_to_lib_dir
-    ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_PYTHONDIR}
-    ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}
-)
-
 set_target_properties(lue_py
     PROPERTIES
         OUTPUT_NAME _lue
-        LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_PYTHONDIR}
-        INSTALL_RPATH "$LUE_ORIGIN $LUE_ORIGIN/${py_to_lib_dir}"
+        LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${LUE_BUILD_PYTHON_PACKAGE_DIR}
+        # INSTALL_RPATH "${LUE_ORIGIN} ${LUE_ORIGIN}/${py_to_lib_dir}"
 )
 
 target_link_libraries(lue_py
@@ -88,8 +80,7 @@ set_tests_properties(
 lue_install_python_modules(TARGETS lue_py)
 
 install(
-    FILES
-        ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_PYTHONDIR}/__init__.py
-    DESTINATION ${CMAKE_INSTALL_PYTHONDIR}
+    FILES ${CMAKE_BINARY_DIR}/${LUE_BUILD_PYTHON_PACKAGE_DIR}/__init__.py
+    DESTINATION ${LUE_INSTALL_PYTHON_PACKAGE_DIR}
     COMPONENT lue_runtime
 )

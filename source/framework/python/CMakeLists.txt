@@ -3,7 +3,7 @@ add_test_conditionally(test)
 
 configure_file(
     framework.py.in
-    ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_PYTHONDIR}/framework/__init__.py
+    ${CMAKE_BINARY_DIR}/${LUE_BUILD_PYTHON_PACKAGE_DIR}/framework/__init__.py
 )
 
 # A pybind11 SHARED library is a CMake runtime output artifact. Target properties to set/get are
@@ -109,9 +109,20 @@ target_link_libraries(lue_py_framework
 
 lue_install_libraries(TARGETS lue_py_framework)
 
+if(LUE_PYTHON_FROM_CONDA AND NOT DEFINED ENV{CONDA_BUILD})
+    # If we are using a Python interpreter from a Conda environment then we must expand RPATH
+    # to include the location of the Python libraries. But if we are building a Conda package,
+    # we assume Conda takes care of RPATH handling.
+    set_property(
+        TARGET lue_py_framework
+        APPEND
+        PROPERTY INSTALL_RPATH
+            ${Python3_LIBRARY_DIRS}
+    )
+endif()
+
 install(
-    DIRECTORY
-        ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_PYTHONDIR}/framework
-    DESTINATION ${CMAKE_INSTALL_PYTHONDIR}
+    DIRECTORY ${CMAKE_BINARY_DIR}/${LUE_BUILD_PYTHON_PACKAGE_DIR}/framework
+    DESTINATION ${LUE_INSTALL_PYTHON_PACKAGE_DIR}
     COMPONENT lue_runtime
 )

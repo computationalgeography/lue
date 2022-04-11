@@ -36,6 +36,12 @@ if(LUE_BUILD_TEST)
     enable_testing()
 endif()
 
+if(APPLE)
+    set(LUE_ORIGIN @loader_path)
+else()
+    set(LUE_ORIGIN $ORIGIN)
+endif()
+
 include(GNUInstallDirs)
 
 # If this project in included by another project also including GNUInstallDirs, then
@@ -46,55 +52,59 @@ set(CMAKE_INSTALL_DOCDIR ${CMAKE_INSTALL_DATAROOTDIR}/doc/${LUE_LOWER_PROJECT_NA
 # It is common practice to install headers into a project-specific subdirectory
 set(CMAKE_INSTALL_INCLUDEDIR ${CMAKE_INSTALL_INCLUDEDIR}/${LUE_LOWER_PROJECT_NAME})
 
+file(RELATIVE_PATH LUE_BIN_TO_LIB_DIR
+    ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}
+    ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}
+)
+
 # In this project we need to be able to install the Python package in a certain directory. For
 # that, we create a variable similar to the ones set by GNUInstallDirs. It can be overridden by
 # the user.
 if(Python3_FOUND)
-    if(NOT CMAKE_INSTALL_PYTHONDIR)
-        set(CMAKE_INSTALL_PYTHONDIR
+    set(LUE_BUILD_PYTHON_PACKAGE_DIR
             "${CMAKE_INSTALL_LIBDIR}/python${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}/${LUE_LOWER_PROJECT_NAME}")
+
+    if(NOT LUE_INSTALL_PYTHON_PACKAGE_DIR)
+        set(LUE_INSTALL_PYTHON_PACKAGE_DIR ${LUE_BUILD_PYTHON_PACKAGE_DIR})
     endif()
-endif()
 
-if(APPLE)
-    set(LUE_ORIGIN @loader_path)
-else()
-    set(LUE_ORIGIN @ORIGIN)
-endif()
+    if(IS_ABSOLUTE ${LUE_INSTALL_PYTHON_PACKAGE_DIR})
+        message(SEND_ERROR "LUE_INSTALL_PYTHON_PACKAGE_DIR must be relative to the install prefix")
+    endif()
 
-file(RELATIVE_PATH bin_to_lib_dir
-    ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}
-    ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}
-)
-set(CMAKE_INSTALL_RPATH $LUE_ORIGIN $LUE_ORIGIN/${bin_to_lib_dir})
+    file(RELATIVE_PATH LUE_PYTHON_PACKAGE_TO_LIB_DIR
+        ${CMAKE_BINARY_DIR}/${LUE_INSTALL_PYTHON_PACKAGE_DIR}
+        ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}
+    )
+endif()
 
 
 message(STATUS "--------------------------------------------------------------")
-message(STATUS "LUE_VERSION               : ${LUE_VERSION}")
-message(STATUS "LUE_GIT_REFSPEC           : ${LUE_GIT_REFSPEC}")
-message(STATUS "LUE_GIT_SHORT_SHA1        : ${LUE_GIT_SHORT_SHA1}")
-message(STATUS "Build data model          : ${LUE_BUILD_DATA_MODEL}")
-message(STATUS "+ python api              : ${LUE_DATA_MODEL_WITH_PYTHON_API}")
-message(STATUS "+ utilities               : ${LUE_DATA_MODEL_WITH_UTILITIES}")
-message(STATUS "Build framework           : ${LUE_BUILD_FRAMEWORK}")
-message(STATUS "+ benchmarks              : ${LUE_FRAMEWORK_WITH_BENCHMARKS}")
-message(STATUS "+ python api              : ${LUE_FRAMEWORK_WITH_PYTHON_API}")
-message(STATUS "Build view                : ${LUE_BUILD_VIEW}")
-message(STATUS "+ value inspection        : ${LUE_BUILD_FRAMEWORK}")
-message(STATUS "Build documentation       : ${LUE_BUILD_DOCUMENTATION}")
-message(STATUS "Build tests               : ${LUE_BUILD_TEST}")
+message(STATUS "LUE_VERSION                   : ${LUE_VERSION}")
+message(STATUS "LUE_GIT_REFSPEC               : ${LUE_GIT_REFSPEC}")
+message(STATUS "LUE_GIT_SHORT_SHA1            : ${LUE_GIT_SHORT_SHA1}")
+message(STATUS "Build data model              : ${LUE_BUILD_DATA_MODEL}")
+message(STATUS "+ python api                  : ${LUE_DATA_MODEL_WITH_PYTHON_API}")
+message(STATUS "+ utilities                   : ${LUE_DATA_MODEL_WITH_UTILITIES}")
+message(STATUS "Build framework               : ${LUE_BUILD_FRAMEWORK}")
+message(STATUS "+ benchmarks                  : ${LUE_FRAMEWORK_WITH_BENCHMARKS}")
+message(STATUS "+ python api                  : ${LUE_FRAMEWORK_WITH_PYTHON_API}")
+message(STATUS "Build view                    : ${LUE_BUILD_VIEW}")
+message(STATUS "+ value inspection            : ${LUE_BUILD_FRAMEWORK}")
+message(STATUS "Build documentation           : ${LUE_BUILD_DOCUMENTATION}")
+message(STATUS "Build tests                   : ${LUE_BUILD_TEST}")
 message(STATUS "")
-message(STATUS "CMAKE_INSTALL_PREFIX      : ${CMAKE_INSTALL_PREFIX}")
-message(STATUS "CMAKE_INSTALL_BINDIR      : ${CMAKE_INSTALL_BINDIR}")
-message(STATUS "CMAKE_INSTALL_LIBDIR      : ${CMAKE_INSTALL_LIBDIR}")
-message(STATUS "CMAKE_INSTALL_LIBEXECDIR  : ${CMAKE_INSTALL_LIBEXECDIR}")
-message(STATUS "CMAKE_INSTALL_INCLUDEDIR  : ${CMAKE_INSTALL_INCLUDEDIR}")
-message(STATUS "CMAKE_INSTALL_DOCDIR      : ${CMAKE_INSTALL_DOCDIR}")
+message(STATUS "CMAKE_INSTALL_PREFIX          : ${CMAKE_INSTALL_PREFIX}")
+message(STATUS "CMAKE_INSTALL_BINDIR          : ${CMAKE_INSTALL_BINDIR}")
+message(STATUS "CMAKE_INSTALL_LIBDIR          : ${CMAKE_INSTALL_LIBDIR}")
+message(STATUS "CMAKE_INSTALL_LIBEXECDIR      : ${CMAKE_INSTALL_LIBEXECDIR}")
+message(STATUS "CMAKE_INSTALL_INCLUDEDIR      : ${CMAKE_INSTALL_INCLUDEDIR}")
+message(STATUS "CMAKE_INSTALL_DOCDIR          : ${CMAKE_INSTALL_DOCDIR}")
 if(Python3_FOUND)
-    message(STATUS "CMAKE_INSTALL_PYTHONDIR   : ${CMAKE_INSTALL_PYTHONDIR}")
+    message(STATUS "LUE_INSTALL_PYTHON_PACKAGE_DIR: ${LUE_INSTALL_PYTHON_PACKAGE_DIR}")
 endif()
-message(STATUS "")
-message(STATUS "CMAKE_INSTALL_RPATH       : ${CMAKE_INSTALL_RPATH}")
+# message(STATUS "")
+# message(STATUS "CMAKE_INSTALL_RPATH       : ${CMAKE_INSTALL_RPATH}")
 
 message(STATUS "--------------------------------------------------------------")
 

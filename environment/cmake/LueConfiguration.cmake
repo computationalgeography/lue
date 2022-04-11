@@ -414,6 +414,10 @@ if(LUE_PYTHON_REQUIRED)
     # Order matters: Pybind11 must be searched for after Python has been found.
     find_package(Python3 REQUIRED COMPONENTS Interpreter Development NumPy)
 
+    if((Python3_INTERPRETER_ID STREQUAL "Anaconda") OR (Python3_EXECUTABLE MATCHES "^.*conda.*$"))
+        SET(LUE_PYTHON_FROM_CONDA TRUE)
+    endif()
+
     message(STATUS "Found Python3:")
     message(STATUS "    Interpreter ID        : ${Python3_INTERPRETER_ID}")
     message(STATUS "        version           : ${Python3_VERSION}")
@@ -423,6 +427,7 @@ if(LUE_PYTHON_REQUIRED)
     message(STATUS "    NumPy:")
     message(STATUS "        version           : ${Python3_NumPy_VERSION}")
     message(STATUS "        include           : ${Python3_NumPy_INCLUDE_DIRS}")
+    message(STATUS "    LUE_PYTHON_FROM_CONDA : ${LUE_PYTHON_FROM_CONDA}")
 endif()
 
 
