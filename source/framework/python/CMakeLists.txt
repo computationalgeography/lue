@@ -6,6 +6,11 @@ configure_file(
     ${CMAKE_BINARY_DIR}/${LUE_BUILD_PYTHON_PACKAGE_DIR}/framework/__init__.py
 )
 
+configure_file(
+    pcraster.py.in
+    ${CMAKE_BINARY_DIR}/${LUE_BUILD_PYTHON_PACKAGE_DIR}/pcraster/__init__.py
+)
+
 # A pybind11 SHARED library is a CMake runtime output artifact. Target properties to set/get are
 # RUNTIME_OUTPUT_DIRECTORY and RUNTIME_OUTPUT_NAME.
 pybind11_add_module(lue_py_framework SHARED THIN_LTO
