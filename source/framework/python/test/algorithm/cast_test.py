@@ -8,8 +8,7 @@ def setUpModule():
 
 
 def tearDownModule():
-    pass
-    # lue_test.stop_hpx_runtime()
+    lue_test.stop_hpx_runtime()
 
 
 class CastTest(lue_test.TestCase):

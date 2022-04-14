@@ -11,14 +11,14 @@ def tearDownModule():
     lue_test.stop_hpx_runtime()
 
 
-class InflowCountTest(lue_test.TestCase):
+class AspectTest(lue_test.TestCase):
 
     def test_overloads(self):
 
         array_shape = (60, 40)
         partition_shape = (10, 10)
 
-        for direction in [1, 2, 3, 4, 5, 6, 7, 8, 9]:
-            flow_direction = lfr.create_array(array_shape, partition_shape, np.dtype(np.uint8), direction)
+        fill_value = 5
+        elevation = lfr.create_array(array_shape, partition_shape, np.dtype(np.float32), fill_value)
 
-            count = lfr.inflow_count(flow_direction)
+        aspect = lfr.aspect(elevation)

@@ -429,6 +429,15 @@ function(lue_install_executables)
     #     set(${name}_RUNTIME_COMPONENT ${CMAKE_INSTALL_DEFAULT_COMPONENT_NAME})
     # endif()
 
+    foreach(target ${${name}_TARGETS})
+        set_property(
+            TARGET ${target}
+                PROPERTY INSTALL_RPATH
+                    ${LUE_ORIGIN}
+                    ${LUE_ORIGIN}/${LUE_BIN_TO_LIB_DIR}
+        )
+    endforeach()
+
     install(
         TARGETS
             ${${name}_TARGETS}
@@ -465,6 +474,14 @@ function(lue_install_libraries)
     # if(NOT ${name}_RUNTIME_COMPONENT)
     #     set(${name}_RUNTIME_COMPONENT ${CMAKE_INSTALL_DEFAULT_COMPONENT_NAME})
     # endif()
+
+    foreach(target ${${name}_TARGETS})
+        set_property(
+            TARGET ${target}
+                PROPERTY INSTALL_RPATH
+                    ${LUE_ORIGIN}
+        )
+    endforeach()
 
     install(
         TARGETS
@@ -510,14 +527,23 @@ function(lue_install_python_modules)
     #     set(${name}_RUNTIME_COMPONENT ${CMAKE_INSTALL_DEFAULT_COMPONENT_NAME})
     # endif()
 
+    foreach(target ${${name}_TARGETS})
+        set_property(
+            TARGET ${target}
+                PROPERTY INSTALL_RPATH
+                    ${LUE_ORIGIN}
+                    ${LUE_ORIGIN}/${LUE_PYTHON_PACKAGE_TO_LIB_DIR}
+        )
+    endforeach()
+
     install(
         TARGETS
             ${${name}_TARGETS}
         RUNTIME
-            DESTINATION ${CMAKE_INSTALL_PYTHONDIR}
+            DESTINATION ${LUE_INSTALL_PYTHON_PACKAGE_DIR}
             COMPONENT ${${name}_RUNTIME_COMPONENT}
         LIBRARY
-            DESTINATION ${CMAKE_INSTALL_PYTHONDIR}
+            DESTINATION ${LUE_INSTALL_PYTHON_PACKAGE_DIR}
             COMPONENT ${${name}_RUNTIME_COMPONENT}
     )
 endfunction()

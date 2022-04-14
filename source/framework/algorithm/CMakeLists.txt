@@ -86,6 +86,7 @@ target_link_libraries(lue_framework_local_operation
 
 
 add_library(lue_framework_focal_operation SHARED
+    src/focal_operation/aspect.cpp
     src/focal_operation/convolve.cpp
     src/focal_operation/focal_max.cpp
     src/focal_operation/focal_mean.cpp
