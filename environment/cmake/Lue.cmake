@@ -64,19 +64,18 @@ if(Python3_FOUND)
     set(LUE_BUILD_PYTHON_PACKAGE_DIR
             "${CMAKE_INSTALL_LIBDIR}/python${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}/${LUE_LOWER_PROJECT_NAME}")
 
-    if(NOT LUE_INSTALL_PYTHON_PACKAGE_DIR)
-        set(LUE_INSTALL_PYTHON_PACKAGE_DIR ${LUE_BUILD_PYTHON_PACKAGE_DIR})
-    endif()
+    set(LUE_INSTALL_PYTHON_PACKAGE_DIR ${LUE_BUILD_PYTHON_PACKAGE_DIR} CACHE PATH
+        "Relative (to install prefix) pathname of directory to install Python package in")
 
     if(IS_ABSOLUTE ${LUE_INSTALL_PYTHON_PACKAGE_DIR})
         # Conda build procedure passes in an absolute path. We want this path to be relative
         # so we can perform RPATH calculations (see install logic).
-        cmake_path(IS_PREFIX CMAKE_INSTALL_PREFIX LUE_INSTALL_PYTHON_PACKAGE_DIR is_prefix)
+        cmake_path(IS_PREFIX CMAKE_INSTALL_PREFIX ${LUE_INSTALL_PYTHON_PACKAGE_DIR} is_prefix)
 
         if(is_prefix)
             # Remove installation prefix from LUE_INSTALL_PYTHON_PACKAGE_DIR
             string(REGEX REPLACE "^${CMAKE_INSTALL_PREFIX}/?" "" LUE_INSTALL_PYTHON_PACKAGE_DIR
-                LUE_INSTALL_PYTHON_PACKAGE_DIR)
+                ${LUE_INSTALL_PYTHON_PACKAGE_DIR})
         endif()
     endif()
 
