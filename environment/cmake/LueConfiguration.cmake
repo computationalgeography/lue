@@ -468,6 +468,15 @@ if(LUE_BOOST_REQUIRED)
         # macro's this variable is used to locate them.
         cmake_path(GET Boost_INCLUDE_DIR PARENT_PATH Boost_LIBRARY_DIRS)
         set(Boost_LIBRARY_DIRS "${Boost_LIBRARY_DIRS}/bin")
+
+
+        # Turn off warning messages by marking the headers as system headers
+        set_property(
+            TARGET Boost::boost
+            APPEND
+                PROPERTY
+                    INTERFACE_SYSTEM_INCLUDE_DIRECTORIES ${Boost_INCLUDE_DIRS}
+        )
     endif()
 endif()
 
