@@ -38,6 +38,9 @@ set(local_operation_names
     valid
     where
 )
+set(focal_operation_names
+    aspect
+)
 set(flow_direction_operation_names
     accu
     accu_threshold
@@ -45,6 +48,7 @@ set(flow_direction_operation_names
 )
 set(names
     ${local_operation_names}
+    ${focal_operation_names}
     ${flow_direction_operation_names}
     accu_fraction
     all
@@ -123,6 +127,12 @@ foreach(name ${local_operation_names})
     target_link_libraries(${scope}_${name}_test
         PRIVATE
             lue::framework_local_operation)
+endforeach()
+
+foreach(name ${focal_operation_names})
+    target_link_libraries(${scope}_${name}_test
+        PRIVATE
+            lue::framework_focal_operation)
 endforeach()
 
 foreach(name ${flow_direction_operation_names})

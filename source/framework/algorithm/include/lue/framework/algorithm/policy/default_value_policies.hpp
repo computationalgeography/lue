@@ -2,6 +2,7 @@
 #include "lue/framework/algorithm/policy/policies.hpp"
 #include "lue/framework/algorithm/policy/detect_no_data_by_nan.hpp"
 #include "lue/framework/algorithm/policy/detect_no_data_by_value.hpp"
+#include "lue/framework/algorithm/policy/fill_halo_with_constant_value.hpp"
 #include "lue/framework/algorithm/policy/mark_no_data_by_nan.hpp"
 #include "lue/framework/algorithm/policy/mark_no_data_by_value.hpp"
 #include "lue/framework/algorithm/policy/input_policies.hpp"
@@ -94,4 +95,84 @@ namespace lue::policy {
     //     };
 
     // }  // namespace detail
+
+
+    template<
+        typename DomainPolicy,
+        typename OutputElements,
+        typename InputElements>
+    class DefaultSpatialOperationValuePolicies
+    {
+    };
+
+
+    template<
+        typename DomainPolicy,
+        typename... OutputElements,
+        typename... InputElements>
+    class DefaultSpatialOperationValuePolicies<
+            DomainPolicy,
+            detail::TypeList<OutputElements...>,
+            detail::TypeList<InputElements...>>:
+
+        public Policies<
+            DomainPolicy,
+            OutputsPolicies<OutputPolicies<DefaultOutputNoDataPolicy<OutputElements>>...>,
+            InputsPolicies<
+                SpatialOperationInputPolicies<
+                    DefaultInputNoDataPolicy<InputElements>, FillHaloWithConstantValue<InputElements>>...>>
+
+    {
+
+        private:
+
+            // MSVC requires that these templates are qualified by their namespaces
+            using Base = Policies<
+                DomainPolicy,
+                lue::policy::OutputsPolicies<
+                    lue::policy::OutputPolicies<
+                        DefaultOutputNoDataPolicy<OutputElements>>...>,
+                lue::policy::InputsPolicies<
+                    SpatialOperationInputPolicies<
+                        DefaultInputNoDataPolicy<InputElements>,
+                        FillHaloWithConstantValue<InputElements>>...>>;
+
+        public:
+
+            DefaultSpatialOperationValuePolicies():
+
+                Base{
+                        DomainPolicy{},
+                        OutputPolicies<
+                                DefaultOutputNoDataPolicy<OutputElements>
+                            >{}...,
+                        SpatialOperationInputPolicies<
+                                DefaultInputNoDataPolicy<InputElements>,
+                                FillHaloWithConstantValue<InputElements>
+                            >{FillHaloWithConstantValue<InputElements>{}}...
+                    }
+
+            {
+            }
+
+
+            DefaultSpatialOperationValuePolicies(
+                InputElements const... fill_values):
+
+                Base{
+                        DomainPolicy{},
+                        OutputPolicies<
+                                DefaultOutputNoDataPolicy<OutputElements>
+                            >{}...,
+                        SpatialOperationInputPolicies<
+                                DefaultInputNoDataPolicy<InputElements>,
+                                FillHaloWithConstantValue<InputElements>
+                            >{FillHaloWithConstantValue<InputElements>{fill_values}}...
+                    }
+
+            {
+            }
+
+    };
+
 }  // namespace lue::policy

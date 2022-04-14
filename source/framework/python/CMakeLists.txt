@@ -14,6 +14,7 @@ pybind11_add_module(lue_py_framework SHARED THIN_LTO
     src/algorithm/add.cpp
     src/algorithm/all.cpp
     src/algorithm/array_partition_id.cpp
+    src/algorithm/aspect.cpp
     src/algorithm/cast.cpp
     src/algorithm/d8_flow_direction.cpp
     src/algorithm/divide.cpp
