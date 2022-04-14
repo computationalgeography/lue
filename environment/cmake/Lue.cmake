@@ -69,6 +69,18 @@ if(Python3_FOUND)
     endif()
 
     if(IS_ABSOLUTE ${LUE_INSTALL_PYTHON_PACKAGE_DIR})
+        # Conda build procedure passes in an absolute path. We want this path to be relative
+        # so we can perform RPATH calculations (see install logic).
+        cmake_path(IS_PREFIX CMAKE_INSTALL_PREFIX LUE_INSTALL_PYTHON_PACKAGE_DIR is_prefix)
+
+        if(is_prefix)
+            # Remove installation prefix from LUE_INSTALL_PYTHON_PACKAGE_DIR
+            string(REGEX REPLACE "^${CMAKE_INSTALL_PREFIX}/?" "" LUE_INSTALL_PYTHON_PACKAGE_DIR
+                LUE_INSTALL_PYTHON_PACKAGE_DIR)
+        endif()
+    endif()
+
+    if(IS_ABSOLUTE ${LUE_INSTALL_PYTHON_PACKAGE_DIR})
         message(SEND_ERROR "LUE_INSTALL_PYTHON_PACKAGE_DIR must be relative to the install prefix")
     endif()
 
