@@ -95,12 +95,12 @@ jobs:
                   -DHPX_WITH_TESTS=FALSE
 
         - name: build lue
-          shell: bash
+          shell: bash -l {0}
           run: |
               cmake --build build --target all
 
         - name: test lue
-          shell: bash
+          shell: bash -l {0}
           run: |
               cd build
               ctest --output-on-failure
@@ -112,7 +112,7 @@ jobs:
         #       cmake --build build --target sphinx_doc
 
         - name: install lue_runtime component
-          shell: bash
+          shell: bash -l {0}
           run: |
               cmake --install build --prefix install --component hpx_runtime
               cmake --install build --prefix install --component lue_runtime
@@ -123,6 +123,7 @@ jobs:
               python --version
               python${{ matrix.python-version }} --version
               PYTHONPATH="install/lib/python${{ matrix.python-version }}:$PYTHONPATH" python${{ matrix.python-version }} -c "import lue; print(lue.__version__)"
+              PYTHONPATH="install/lib/python${{ matrix.python-version }}:$PYTHONPATH" python -c "import lue; print(lue.__version__)"
 
         - name: deploy lue documentation
           if: github.ref == 'refs/heads/master' && matrix.compiler.cxx == 'g++-9' && matrix.python-version == 3.9
