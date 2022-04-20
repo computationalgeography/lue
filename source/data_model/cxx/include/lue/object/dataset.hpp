@@ -9,9 +9,6 @@ namespace data_model {
 
 /*!
     @brief      This class is for managing LUE datasets.
-    @sa         dataset_exists(std::string const&),
-                create_dataset(std::string const&),
-                remove_dataset(std::string const&)
 
     A dataset represents everything that a LUE file contains. Datasets
     contain collections of:

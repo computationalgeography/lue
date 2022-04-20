@@ -286,9 +286,7 @@ void Dataset::write(
 
 
 /*!
-    @brief      .
     @param      hyperslab Selection of file dataspace to write to
-    @exception  .
 */
 void Dataset::write(
     Datatype const& datatype,
