@@ -7,7 +7,7 @@ namespace data_model {
 
 /*!
     @brief      Construct instance based on parent group
-    @parent     parent Parent group of group representing the space domain
+    @param      parent Parent group of group representing the space domain
 */
 SpaceDomain::SpaceDomain(
     hdf5::Group const& parent):

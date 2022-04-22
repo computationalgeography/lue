@@ -118,11 +118,6 @@ std::string standard_datatype_as_string(
 
 
 /*!
-    @brief      .
-    @param      .
-    @return     .
-    @exception  .
-
     The data type is not closed upon destruction
 */
 Datatype::Datatype(
