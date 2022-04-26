@@ -1,12 +1,13 @@
 add_test_conditionally(test)
 
-configure_file(
-    data_model.py.in
-    ${CMAKE_BINARY_DIR}/${LUE_BUILD_PYTHON_PACKAGE_DIR}/data_model/__init__.py
+file(GENERATE
+    OUTPUT ${CMAKE_BINARY_DIR}/${LUE_BUILD_PYTHON_PACKAGE_DIR}/data_model/__init__.py
+    INPUT data_model.py.in
 )
-configure_file(
-    hdf5.py.in
-    ${CMAKE_BINARY_DIR}/${LUE_BUILD_PYTHON_PACKAGE_DIR}/data_model/hdf5/__init__.py
+
+file(GENERATE
+    OUTPUT ${CMAKE_BINARY_DIR}/${LUE_BUILD_PYTHON_PACKAGE_DIR}/data_model/hdf5/__init__.py
+    INPUT hdf5.py.in
 )
 
 # A pybind11 SHARED library is a CMake runtime output artifact. Target properties to set/get are
@@ -132,4 +133,3 @@ install(
     DESTINATION ${LUE_INSTALL_PYTHON_PACKAGE_DIR}
     COMPONENT lue_runtime
 )
-

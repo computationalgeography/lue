@@ -75,20 +75,20 @@ jobs:
           run: |
               cmake --build build --config Release --target all_build
 
-        # - name: test lue
-        #   shell: bash
-        #   run: |
-        #       # TODO Fix execution of excluded tests
-        #       ctest --test-dir build --build-config Release -R python_test
-        #       # cmake --build build --config Release --target run_tests
+        - name: test lue
+          shell: bash
+          run: |
+              # TODO Fix and add exection of framework tests
+              ctest --test-dir build/source/data_model --build-config Release
+              # cmake --build build --config Release --target run_tests
 
         - name: install lue lue_runtime component
           shell: bash
           run: |
               cmake --install build --prefix install --component hpx_runtime
               cmake --install build --prefix install --component lue_runtime
+              install/bin/lue_translate --version
+              install/bin/lue_validate --version
+              install/bin/lue_view --version
               # TODO Fix once we can test these ourselves
-              # install/bin/lue_translate --version
-              # install/bin/lue_validate --version
-              # install/bin/lue_view --version
               # LD_LIBRARY_PATH="`pwd`/install/lib:$LD_LIBRARY_PATH" PYTHONPATH=`pwd`/install/lib/python${{ matrix.python-version }}/lue python -c "import lue; print(lue.__version__)"

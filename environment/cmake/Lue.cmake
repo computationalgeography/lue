@@ -61,10 +61,15 @@ file(RELATIVE_PATH LUE_BIN_TO_LIB_DIR
 # that, we create a variable similar to the ones set by GNUInstallDirs. It can be overridden by
 # the user.
 if(Python3_FOUND)
-    set(LUE_BUILD_PYTHON_PACKAGE_DIR
+    if(GENERATOR_IS_MULTI_CONFIG)
+        set(LUE_BUILD_PYTHON_PACKAGE_DIR
+            "${CMAKE_INSTALL_LIBDIR}/$<CONFIG>/python${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}/${LUE_LOWER_PROJECT_NAME}")
+    else()
+        set(LUE_BUILD_PYTHON_PACKAGE_DIR
             "${CMAKE_INSTALL_LIBDIR}/python${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}/${LUE_LOWER_PROJECT_NAME}")
+    endif()
 
-    set(LUE_INSTALL_PYTHON_PACKAGE_DIR ${LUE_BUILD_PYTHON_PACKAGE_DIR} CACHE PATH
+    set(LUE_INSTALL_PYTHON_PACKAGE_DIR "${LUE_BUILD_PYTHON_PACKAGE_DIR}" CACHE PATH
         "Relative (to install prefix) pathname of directory to install Python package in")
 
     if(IS_ABSOLUTE ${LUE_INSTALL_PYTHON_PACKAGE_DIR})

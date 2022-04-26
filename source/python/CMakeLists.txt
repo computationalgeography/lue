@@ -11,9 +11,9 @@ configure_file(
     include/lue/py/configure.hpp
 )
 
-configure_file(
-    lue.py.in
-    ${CMAKE_BINARY_DIR}/${LUE_BUILD_PYTHON_PACKAGE_DIR}/__init__.py
+file(GENERATE
+    OUTPUT ${CMAKE_BINARY_DIR}/${LUE_BUILD_PYTHON_PACKAGE_DIR}/__init__.py
+    INPUT lue.py.in
 )
 
 # A pybind11 MODULE library is a CMake library output artifact. Target properties to set/get are
