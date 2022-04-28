@@ -1,4 +1,4 @@
-# Add a test target.
+
 # Also configures the environment to point to the location of shared libs.
 # The idea of this is to keep the dev's shell as clean as possible. Use
 # ctest command to run unit tests.

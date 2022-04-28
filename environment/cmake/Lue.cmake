@@ -36,6 +36,8 @@ if(LUE_BUILD_TEST)
     enable_testing()
 endif()
 
+get_property(LUE_GENERATOR_IS_MULTI_CONFIG GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
+
 if(APPLE)
     set(LUE_ORIGIN @loader_path)
 else()
@@ -57,17 +59,13 @@ file(RELATIVE_PATH LUE_BIN_TO_LIB_DIR
     ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}
 )
 
+
 # In this project we need to be able to install the Python package in a certain directory. For
 # that, we create a variable similar to the ones set by GNUInstallDirs. It can be overridden by
 # the user.
 if(Python3_FOUND)
-    if(GENERATOR_IS_MULTI_CONFIG)
-        set(LUE_BUILD_PYTHON_PACKAGE_DIR
-            "${CMAKE_INSTALL_LIBDIR}/$<CONFIG>/python${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}/${LUE_LOWER_PROJECT_NAME}")
-    else()
-        set(LUE_BUILD_PYTHON_PACKAGE_DIR
-            "${CMAKE_INSTALL_LIBDIR}/python${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}/${LUE_LOWER_PROJECT_NAME}")
-    endif()
+    set(LUE_BUILD_PYTHON_PACKAGE_DIR
+        "${CMAKE_INSTALL_LIBDIR}/python${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}/${LUE_LOWER_PROJECT_NAME}")
 
     set(LUE_INSTALL_PYTHON_PACKAGE_DIR "${LUE_BUILD_PYTHON_PACKAGE_DIR}" CACHE PATH
         "Relative (to install prefix) pathname of directory to install Python package in")

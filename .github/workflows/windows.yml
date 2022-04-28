@@ -29,7 +29,7 @@ jobs:
           run: |
               # Pin markupsafe, used by Jinja which is used by Conan, because of a breaking
               # change in markupsafe 2.1.0
-              conda install boost-cpp conan gdal hdf5 libhwloc "markupsafe<2.1.0" numpy
+              conda install conda-build boost-cpp conan gdal hdf5 libhwloc "markupsafe<2.1.0" numpy
 
         - name: configure lue
           shell: bash -l {0}
@@ -71,24 +71,31 @@ jobs:
                   -DHPX_WITH_TESTS=FALSE
 
         - name: build lue
-          shell: bash
+          shell: bash -l {0}
           run: |
               cmake --build build --config Release --target all_build
 
         - name: test lue
-          shell: bash
+          shell: bash -l {0}
           run: |
-              # TODO Fix and add exection of framework tests
+              # TODO Fix and add execution of framework tests (gh445)
+              ctest --build-config Release -R package_link
               ctest --test-dir build/source/data_model --build-config Release
+
               # cmake --build build --config Release --target run_tests
 
         - name: install lue lue_runtime component
-          shell: bash
+          shell: bash -l {0}
           run: |
-              cmake --install build --prefix install --component hpx_runtime
+              cmake --install build --prefix install --component core
+              cmake --install build --prefix install --component parallelism
+              cmake --install build --prefix install --component runtime
               cmake --install build --prefix install --component lue_runtime
+
+              export PATH="`pwd`/install/bin:$PATH"
               install/bin/lue_translate --version
               install/bin/lue_validate --version
               install/bin/lue_view --version
-              # TODO Fix once we can test these ourselves
-              # LD_LIBRARY_PATH="`pwd`/install/lib:$LD_LIBRARY_PATH" PYTHONPATH=`pwd`/install/lib/python${{ matrix.python-version }}/lue python -c "import lue; print(lue.__version__)"
+
+              conda-develop install/lib/python${{ matrix.python-version }}
+              python -c "import lue; print(lue.__version__)"

@@ -12,7 +12,7 @@ configure_file(
 )
 
 file(GENERATE
-    OUTPUT ${CMAKE_BINARY_DIR}/${LUE_BUILD_PYTHON_PACKAGE_DIR}/__init__.py
+    OUTPUT ${CMAKE_BINARY_DIR}/${LUE_BUILD_PYTHON_PACKAGE_DIR}/$<CONFIG>/__init__.py
     INPUT lue.py.in
 )
 
@@ -50,8 +50,11 @@ if(LUE_BUILD_FRAMEWORK AND LUE_FRAMEWORK_WITH_PYTHON_API)
 endif()
 
 if(WIN32)
-    # Copy all DLLs this target transitively depends on into its output directory. This includes
-    # our own DLLs.
+    # On Windows, finding DLLs that are used by a Python extension is a pain in the neck. Here, we
+    # copy all DLLs this target transitively depends on into its output directory. This includes
+    # our own DLLs. After that, using the Python package works fine. We only do this in our own
+    # build directory. To use the installed Python package, we use another approach. See
+    # lue.py.in in this source directory.
     add_custom_command(
         TARGET lue_py
         POST_BUILD
@@ -77,10 +80,32 @@ set_tests_properties(
             lue_py_test_fixture
 )
 
+if(LUE_GENERATOR_IS_MULTI_CONFIG)
+    # In case of a multi-config generator, the Python package will be stored in .../lue/$<CONFIG>.
+    # Because of this, a plain "import lue" won't work anymore. Because of this, unit tests
+    # will fail. Here we temporarily write a symbolic link in .../lue/$<CONFIG> pointing to the
+    # Python package for the current build configuration tested: e.g. lue -> Release
+    add_test(
+        NAME
+            package_link
+        COMMAND
+            "${CMAKE_COMMAND}" -E create_symlink "$<CONFIG>" lue
+        WORKING_DIRECTORY
+            "${CMAKE_BINARY_DIR}/${LUE_BUILD_PYTHON_PACKAGE_DIR}"
+    )
+
+    set_tests_properties(
+        package_link
+        PROPERTIES
+            FIXTURES_SETUP
+                lue_py_test_fixture
+    )
+endif()
+
 lue_install_python_modules(TARGETS lue_py)
 
 install(
-    FILES ${CMAKE_BINARY_DIR}/${LUE_BUILD_PYTHON_PACKAGE_DIR}/__init__.py
+    FILES ${CMAKE_BINARY_DIR}/${LUE_BUILD_PYTHON_PACKAGE_DIR}/$<CONFIG>/__init__.py
     DESTINATION ${LUE_INSTALL_PYTHON_PACKAGE_DIR}
     COMPONENT lue_runtime
 )
