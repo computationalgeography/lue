@@ -12,7 +12,7 @@ configure_file(
 )
 
 file(GENERATE
-    OUTPUT ${CMAKE_BINARY_DIR}/${LUE_BUILD_PYTHON_PACKAGE_DIR}/$<CONFIG>/__init__.py
+    OUTPUT ${CMAKE_BINARY_DIR}/${LUE_BUILD_PYTHON_PACKAGE_DIR}/$<$<BOOL:${LUE_MULTI_CONFIG_GENERATOR}>:$<CONFIG>>/__init__.py
     INPUT lue.py.in
 )
 
@@ -105,7 +105,7 @@ endif()
 lue_install_python_modules(TARGETS lue_py)
 
 install(
-    FILES ${CMAKE_BINARY_DIR}/${LUE_BUILD_PYTHON_PACKAGE_DIR}/$<CONFIG>/__init__.py
+    FILES ${CMAKE_BINARY_DIR}/${LUE_BUILD_PYTHON_PACKAGE_DIR}/$<$<BOOL:${LUE_MULTI_CONFIG_GENERATOR}>:$<CONFIG>>/__init__.py
     DESTINATION ${LUE_INSTALL_PYTHON_PACKAGE_DIR}
     COMPONENT lue_runtime
 )
