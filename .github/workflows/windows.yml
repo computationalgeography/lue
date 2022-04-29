@@ -39,36 +39,36 @@ jobs:
                   -S . \
                   -B build \
                   -G "Visual Studio 16 2019" -A x64 \
-                  -DCMAKE_BUILD_TYPE=Release \
-                  -DLUE_BUILD_DATA_MODEL:BOOL=TRUE \
-                  -DLUE_DATA_MODEL_WITH_PYTHON_API:BOOL=TRUE \
-                  -DLUE_DATA_MODEL_WITH_UTILITIES:BOOL=TRUE \
-                  -DLUE_BUILD_FRAMEWORK:BOOL=TRUE \
-                  -DLUE_FRAMEWORK_WITH_BENCHMARKS:BOOL=FALSE \
-                  -DLUE_FRAMEWORK_WITH_PYTHON_API:BOOL=TRUE \
-                  -DLUE_BUILD_VIEW:BOOL=TRUE \
-                  -DLUE_BUILD_TEST:BOOL=TRUE \
-                  -DLUE_TEST_NR_LOCALITIES_PER_TEST=2 \
-                  -DLUE_TEST_NR_THREADS_PER_LOCALITY=1 \
-                  -DLUE_BUILD_DOCUMENTATION:BOOL=FALSE \
-                  -DLUE_HAVE_BOOST:BOOL=TRUE \
-                  -DLUE_HAVE_DOCOPT:BOOL=FALSE \
-                  -DLUE_HAVE_FMT:BOOL=FALSE \
-                  -DLUE_HAVE_GDAL:BOOL=TRUE \
-                  -DLUE_HAVE_GLEW:BOOL=FALSE \
-                  -DLUE_HAVE_GLFW:BOOL=FALSE \
-                  -DLUE_HAVE_HDF5:BOOL=TRUE \
-                  -DLUE_HAVE_NLOHMANN_JSON:BOOL=FALSE \
-                  -DLUE_HAVE_PYBIND11:BOOL=FALSE \
-                  -DLUE_BUILD_HPX:BOOL=TRUE \
-                  -DHPX_USE_CMAKE_CXX_STANDARD=TRUE \
-                  -DHPX_WITH_MALLOC="system" \
-                  -DHPX_WITH_FETCH_ASIO=TRUE \
-                  -DHPX_WITH_PKGCONFIG=FALSE \
-                  -DHWLOC_ROOT="$CONDA_PREFIX/Library" \
-                  -DHWLOC_LIBRARY="$CONDA_PREFIX/Library/lib/hwloc.dll.lib" \
-                  -DHPX_WITH_EXAMPLES=FALSE \
-                  -DHPX_WITH_TESTS=FALSE
+                  -D CMAKE_BUILD_TYPE=Release \
+                  -D LUE_BUILD_DATA_MODEL:BOOL=TRUE \
+                  -D LUE_DATA_MODEL_WITH_PYTHON_API:BOOL=TRUE \
+                  -D LUE_DATA_MODEL_WITH_UTILITIES:BOOL=TRUE \
+                  -D LUE_BUILD_FRAMEWORK:BOOL=TRUE \
+                  -D LUE_FRAMEWORK_WITH_BENCHMARKS:BOOL=FALSE \
+                  -D LUE_FRAMEWORK_WITH_PYTHON_API:BOOL=TRUE \
+                  -D LUE_BUILD_VIEW:BOOL=TRUE \
+                  -D LUE_BUILD_TEST:BOOL=TRUE \
+                  -D LUE_TEST_NR_LOCALITIES_PER_TEST=2 \
+                  -D LUE_TEST_NR_THREADS_PER_LOCALITY=1 \
+                  -D LUE_BUILD_DOCUMENTATION:BOOL=FALSE \
+                  -D LUE_HAVE_BOOST:BOOL=TRUE \
+                  -D LUE_HAVE_DOCOPT:BOOL=FALSE \
+                  -D LUE_HAVE_FMT:BOOL=FALSE \
+                  -D LUE_HAVE_GDAL:BOOL=TRUE \
+                  -D LUE_HAVE_GLEW:BOOL=FALSE \
+                  -D LUE_HAVE_GLFW:BOOL=FALSE \
+                  -D LUE_HAVE_HDF5:BOOL=TRUE \
+                  -D LUE_HAVE_NLOHMANN_JSON:BOOL=FALSE \
+                  -D LUE_HAVE_PYBIND11:BOOL=FALSE \
+                  -D LUE_BUILD_HPX:BOOL=TRUE \
+                  -D HPX_USE_CMAKE_CXX_STANDARD=TRUE \
+                  -D HPX_WITH_MALLOC="system" \
+                  -D HPX_WITH_FETCH_ASIO=TRUE \
+                  -D HPX_WITH_PKGCONFIG=FALSE \
+                  -D HWLOC_ROOT="$CONDA_PREFIX/Library" \
+                  -D HWLOC_LIBRARY="$CONDA_PREFIX/Library/lib/hwloc.dll.lib" \
+                  -D HPX_WITH_EXAMPLES=FALSE \
+                  -D HPX_WITH_TESTS=FALSE
 
         - name: build lue
           shell: bash -l {0}
@@ -79,10 +79,11 @@ jobs:
           shell: bash -l {0}
           run: |
               # TODO Fix and add execution of framework tests (gh445)
+              cd build
               ctest --build-config Release -R package_link
-              ctest --test-dir build/source/data_model --build-config Release
+              ctest --test-dir source/data_model --build-config Release
 
-              # cmake --build build --config Release --target run_tests
+              # cmake --config Release --target run_tests
 
         - name: install lue lue_runtime component
           shell: bash -l {0}
@@ -97,5 +98,7 @@ jobs:
               install/bin/lue_validate --version
               install/bin/lue_view --version
 
+              # Add our package to the set of Conda packages
               conda-develop install/lib/python${{ matrix.python-version }}
+
               python -c "import lue; print(lue.__version__)"
