@@ -13,7 +13,7 @@ file(GENERATE
 
 # A pybind11 SHARED library is a CMake runtime output artifact. Target properties to set/get are
 # RUNTIME_OUTPUT_DIRECTORY and RUNTIME_OUTPUT_NAME.
-pybind11_add_module(lue_py_framework SHARED THIN_LTO
+add_library(lue_py_framework SHARED
     src/algorithm/accu.cpp
     src/algorithm/accu3.cpp
     src/algorithm/accu_fraction.cpp
@@ -109,8 +109,14 @@ target_link_libraries(lue_py_framework
         lue::framework_focal_operation
         lue::framework_local_operation
         lue::framework_io
-        Python3::NumPy
+        pybind11::embed
+        pybind11::thin_lto
+        pybind11::opt_size
+        pybind11::windows_extras
 )
+
+pybind11_extension(lue_py_framework)
+pybind11_strip(lue_py_framework)
 
 lue_install_libraries(TARGETS lue_py_framework)
 

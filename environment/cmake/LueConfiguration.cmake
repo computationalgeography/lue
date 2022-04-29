@@ -442,7 +442,7 @@ if(LUE_PYBIND11_REQUIRED)
         # This should pick up the Python found above
         FetchContent_MakeAvailable(pybind11)
     else()
-        find_package(pybind11 REQUIRED)
+        find_package(pybind11 CONFIG REQUIRED)
     endif()
 endif()
 

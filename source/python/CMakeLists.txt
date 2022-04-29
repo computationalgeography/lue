@@ -18,7 +18,7 @@ file(GENERATE
 
 # A pybind11 MODULE library is a CMake library output artifact. Target properties to set/get are
 # LIBRARY_OUTPUT_DIRECTORY and LIBRARY_OUTPUT_NAME.
-pybind11_add_module(lue_py MODULE THIN_LTO
+add_library(lue_py MODULE
     src/python_extension.cpp
 )
 
@@ -34,8 +34,15 @@ set_target_properties(lue_py
 target_link_libraries(lue_py
     PRIVATE
         lue::shared
+        pybind11::module
+        pybind11::thin_lto
+        pybind11::opt_size
+        pybind11::windows_extras
         Boost::headers
 )
+
+pybind11_extension(lue_py)
+pybind11_strip(lue_py)
 
 if(LUE_BUILD_DATA_MODEL AND LUE_DATA_MODEL_WITH_PYTHON_API)
     target_link_libraries(lue_py
