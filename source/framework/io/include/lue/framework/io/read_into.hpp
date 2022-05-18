@@ -1,11 +1,12 @@
 #pragma once
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
+#include "lue/framework/io/configure.hpp"
 #include "lue/framework/io/util.hpp"
 #include "lue/framework/algorithm/policy.hpp"
 #include "lue/data_model/hl/raster_view.hpp"
 #include "lue/data_model/hl/util.hpp"
 #include "lue/data_model.hpp"
-#ifdef HDF5_IS_PARALLEL
+#ifdef LUE_USE_PARALLEL_IO
 // Only available in case MPI is used in HPX
 #include <hpx/mpi_base/mpi_environment.hpp>
 #endif
@@ -92,7 +93,7 @@ namespace lue {
             // Open dataset. Configure for use of parallel I/O if necessary.
             hdf5::File::AccessPropertyList access_property_list{};
 
-#ifdef HDF5_IS_PARALLEL
+#ifdef LUE_USE_PARALLEL_IO
             if(hpx::util::mpi_environment::enabled())
             {
                 // // ::MPI_Comm communicator{hpx::util::mpi_environment::communicator()};
@@ -123,7 +124,7 @@ namespace lue {
             // Open value. Configure for use of parallel I/O if necessary.
             hdf5::Dataset::TransferPropertyList transfer_property_list{};
 
-#ifdef HDF5_IS_PARALLEL
+#ifdef LUE_USE_PARALLEL_IO
             // if(hpx::util::mpi_environment::enabled())
             // {
             //     // Use collective I/O
@@ -190,7 +191,7 @@ namespace lue {
             // Open dataset. Configure for use of parallel I/O if necessary.
             hdf5::File::AccessPropertyList access_property_list{};
 
-#ifdef HDF5_IS_PARALLEL
+#ifdef LUE_USE_PARALLEL_IO
             // if(hpx::util::mpi_environment::enabled())
             // {
             //     // ::MPI_Comm communicator{hpx::util::mpi_environment::communicator()};
@@ -223,7 +224,7 @@ namespace lue {
             // Open value. Configure for use of parallel I/O if necessary.
             hdf5::Dataset::TransferPropertyList transfer_property_list{};
 
-#ifdef HDF5_IS_PARALLEL
+#ifdef LUE_USE_PARALLEL_IO
             // if(hpx::util::mpi_environment::enabled())
             // {
             //     // Use collective I/O
