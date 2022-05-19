@@ -46,24 +46,8 @@ the related technology.
 
 
 ## Publications
-- All versions / concept: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5535685.svg)](https://doi.org/10.5281/zenodo.5535685)
-- LUE-0.3.1: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5575419.svg)](https://doi.org/10.5281/zenodo.5575419)
-- LUE-0.3.0: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5535686.svg)](https://doi.org/10.5281/zenodo.5535686)
-- De Jong, K., Panja, D., Karssenberg, D., Van Kreveld, M.,
-    Scalability and composability of flow accumulation algorithms based
-    on asynchronous many-tasks, Computers & Geosciences,
-    doi: [10.1016/j.cageo.2022.105083](https://doi.org/10.1016/j.cageo.2022.105083)
-- De Jong, K., Panja, D., Van Kreveld, M., Karssenberg, D. (2021),
-    An environmental modelling framework based on asynchronous many-tasks:
-    scalability and usability, Environmental Modelling & Software,
-    doi: [10.1016/j.envsoft.2021.104998](https://doi.org/10.1016/j.envsoft.2021.104998)
-- De Jong, K., Karssenberg, D. (2019), A physical data model for
-    spatio-temporal objects, Environmental Modelling & Software,
-    doi: [10.1016/j.envsoft.2019.104553](https://doi.org/10.1016/j.envsoft.2019.104553)
-- De Bakker, M. P., De Jong, K., Schmitz, O., Karssenberg,
-    D. (2017), Design and demonstration of a data model to integrate
-    agent-based and field-based modelling, Environmental Modelling
-    & Software, doi: [10.1016/j.envsoft.2016.11.016](https://doi.org/10.1016/j.envsoft.2016.11.016)
+We maintain a list of publications on the
+[Publications page](https://lue.computationalgeography.org/publication/) of the LUE website.
 
 
 ## Installation
