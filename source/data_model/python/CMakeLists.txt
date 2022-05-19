@@ -1,8 +1,18 @@
 add_test_conditionally(test)
 
+file(GENERATE
+    OUTPUT ${CMAKE_BINARY_DIR}/${LUE_BUILD_PYTHON_PACKAGE_DIR}/$<$<BOOL:${LUE_GENERATOR_IS_MULTI_CONFIG}>:$<CONFIG>>/data_model/__init__.py
+    INPUT data_model.py.in
+)
+
+file(GENERATE
+    OUTPUT ${CMAKE_BINARY_DIR}/${LUE_BUILD_PYTHON_PACKAGE_DIR}/$<$<BOOL:${LUE_GENERATOR_IS_MULTI_CONFIG}>:$<CONFIG>>/data_model/hdf5/__init__.py
+    INPUT hdf5.py.in
+)
+
 # A pybind11 SHARED library is a CMake runtime output artifact. Target properties to set/get are
 # RUNTIME_OUTPUT_DIRECTORY and RUNTIME_OUTPUT_NAME.
-pybind11_add_module(lue_py_data_model SHARED THIN_LTO
+add_library(lue_py_data_model SHARED
 
     src/submodule.cpp
 
@@ -91,29 +101,42 @@ set_target_properties(lue_py_data_model
         CXX_CLANG_TIDY ""  # TODO(KDJ) Get it to skip pybind11.h
 )
 
-# Explicitly add the location of the numpy headers to the list. Otherwise
-# the wrong header might be picked up, resulting in runtime errors.
-target_include_directories(lue_py_data_model SYSTEM
-    PRIVATE
-        ${Python3_NumPy_INCLUDE_DIRS}
-)
-
 target_include_directories(lue_py_data_model
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        ### $<INSTALL_INTERFACE:include>
 )
 
 target_link_libraries(lue_py_data_model
     PRIVATE
         $<$<TARGET_EXISTS:lue::data_model_test>:lue::data_model_test>
         lue::data_model_hl
+        pybind11::embed
+        pybind11::thin_lto
+        pybind11::opt_size
+        pybind11::windows_extras
         Microsoft.GSL::Microsoft.GSL
+        Python3::NumPy
 )
 
+pybind11_extension(lue_py_data_model)
+pybind11_strip(lue_py_data_model)
+
+lue_install_libraries(TARGETS lue_py_data_model)
+
+if(LUE_PYTHON_FROM_CONDA AND NOT DEFINED ENV{CONDA_BUILD})
+    # If we are using a Python interpreter from a Conda environment then we must expand RPATH
+    # to include the location of the Python libraries. But if we are building a Conda package,
+    # we assume Conda takes care of RPATH handling.
+    set_property(
+        TARGET lue_py_data_model
+        APPEND
+        PROPERTY INSTALL_RPATH
+            ${Python3_LIBRARY_DIRS}
+    )
+endif()
+
 install(
-    TARGETS
-        lue_py_data_model
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    DIRECTORY ${CMAKE_BINARY_DIR}/${LUE_BUILD_PYTHON_PACKAGE_DIR}/$<$<BOOL:${LUE_GENERATOR_IS_MULTI_CONFIG}>:$<CONFIG>>/data_model
+    DESTINATION ${LUE_INSTALL_PYTHON_PACKAGE_DIR}
+    COMPONENT lue_runtime
 )

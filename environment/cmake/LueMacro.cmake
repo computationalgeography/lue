@@ -1,4 +1,4 @@
-# Add a test target.
+
 # Also configures the environment to point to the location of shared libs.
 # The idea of this is to keep the dev's shell as clean as possible. Use
 # ctest command to run unit tests.
@@ -48,9 +48,6 @@ macro(add_unit_test)
     add_executable(${TEST_EXE_NAME} ${TEST_MODULE_NAME}
         ${ADD_UNIT_TEST_SUPPORT_NAMES}
         ${ADD_UNIT_TEST_OBJECT_LIBRARIES})
-    target_include_directories(${TEST_EXE_NAME} SYSTEM
-        PRIVATE
-            ${Boost_INCLUDE_DIRS})
     target_include_directories(${TEST_EXE_NAME}
         PRIVATE
             ${ADD_UNIT_TEST_INCLUDE_DIRS})
@@ -298,11 +295,8 @@ function(lue_add_benchmark)
     set(category ${ADD_BENCHMARK_CATEGORY})
     set(name ${ADD_BENCHMARK_NAME})
 
-    add_hpx_executable(lue_${category}_${name}_benchmark
-        SOURCES
-            ${name}_benchmark.cpp
-        COMPONENT_DEPENDENCIES
-            iostreams
+    add_executable(lue_${category}_${name}_benchmark
+        ${name}_benchmark.cpp
     )
 
     target_link_libraries(lue_${category}_${name}_benchmark
@@ -339,9 +333,6 @@ function(add_hpx_unit_test)
 
     add_executable(${TEST_EXE_NAME} ${TEST_MODULE_NAME})
 
-    target_include_directories(${TEST_EXE_NAME} SYSTEM
-        PRIVATE
-            ${Boost_INCLUDE_DIRS})
     target_link_libraries(${TEST_EXE_NAME}
         PRIVATE
             ${ADD_HPX_UNIT_TEST_LINK_LIBRARIES}
@@ -415,4 +406,144 @@ function(add_hpx_unit_tests)
             ENVIRONMENT ${ADD_HPX_UNIT_TESTS_ENVIRONMENT}
         )
     endforeach()
+endfunction()
+
+
+function(lue_install_executables)
+    set(options
+    )
+    set(one_value_arguments
+        # RUNTIME_COMPONENT
+    )
+    set(multi_value_arguments
+        TARGETS
+    )
+    set(name "lue_install_executables")
+    cmake_parse_arguments(
+        ${name} "${options}" "${one_value_arguments}" "${multi_value_arguments}" ${ARGN}
+    )
+
+    set(${name}_RUNTIME_COMPONENT lue_runtime)
+
+    # if(NOT ${name}_RUNTIME_COMPONENT)
+    #     set(${name}_RUNTIME_COMPONENT ${CMAKE_INSTALL_DEFAULT_COMPONENT_NAME})
+    # endif()
+
+    foreach(target ${${name}_TARGETS})
+        set_property(
+            TARGET ${target}
+                PROPERTY INSTALL_RPATH
+                    ${LUE_ORIGIN}
+                    ${LUE_ORIGIN}/${LUE_BIN_TO_LIB_DIR}
+        )
+    endforeach()
+
+    install(
+        TARGETS
+            ${${name}_TARGETS}
+        RUNTIME
+            DESTINATION ${CMAKE_INSTALL_BINDIR}
+            COMPONENT ${${name}_RUNTIME_COMPONENT}
+    )
+endfunction()
+
+
+function(lue_install_libraries)
+    set(options
+    )
+    set(one_value_arguments
+        EXPORT
+        # DEVELOPMENT_COMPONENT
+        # RUNTIME_COMPONENT
+    )
+    set(multi_value_arguments
+        TARGETS
+    )
+    set(name "lue_install_libraries")
+    cmake_parse_arguments(
+        ${name} "${options}" "${one_value_arguments}" "${multi_value_arguments}" ${ARGN}
+    )
+
+    set(${name}_DEVELOPMENT_COMPONENT lue_development)
+    set(${name}_RUNTIME_COMPONENT lue_runtime)
+
+    # if(NOT ${name}_DEVELOPMENT_COMPONENT)
+    #     set(${name}_DEVELOPMENT_COMPONENT ${CMAKE_INSTALL_DEFAULT_COMPONENT_NAME})
+    # endif()
+
+    # if(NOT ${name}_RUNTIME_COMPONENT)
+    #     set(${name}_RUNTIME_COMPONENT ${CMAKE_INSTALL_DEFAULT_COMPONENT_NAME})
+    # endif()
+
+    foreach(target ${${name}_TARGETS})
+        set_property(
+            TARGET ${target}
+                PROPERTY INSTALL_RPATH
+                    ${LUE_ORIGIN}
+        )
+    endforeach()
+
+    install(
+        TARGETS
+            ${${name}_TARGETS}
+        EXPORT
+            ${${name}_EXPORT}
+        RUNTIME
+            DESTINATION ${CMAKE_INSTALL_BINDIR}
+            COMPONENT ${${name}_RUNTIME_COMPONENT}
+        LIBRARY
+            DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            COMPONENT ${${name}_RUNTIME_COMPONENT}
+            NAMELINK_COMPONENT ${${name}_DEVELOPMENT_COMPONENT}
+        ARCHIVE
+            DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            COMPONENT ${${name}_DEVELOPMENT_COMPONENT}
+        PUBLIC_HEADER
+            DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+            COMPONENT ${${name}_DEVELOPMENT_COMPONENT}
+        INCLUDES
+            DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    )
+endfunction()
+
+
+function(lue_install_python_modules)
+    set(options
+    )
+    set(one_value_arguments
+        # RUNTIME_COMPONENT
+    )
+    set(multi_value_arguments
+        TARGETS
+    )
+    set(name "lue_install_python_modules")
+    cmake_parse_arguments(
+        ${name} "${options}" "${one_value_arguments}" "${multi_value_arguments}" ${ARGN}
+    )
+
+    set(${name}_RUNTIME_COMPONENT lue_runtime)
+
+    # if(NOT ${name}_RUNTIME_COMPONENT)
+    #     set(${name}_RUNTIME_COMPONENT ${CMAKE_INSTALL_DEFAULT_COMPONENT_NAME})
+    # endif()
+
+    foreach(target ${${name}_TARGETS})
+        set_property(
+            TARGET ${target}
+                PROPERTY INSTALL_RPATH
+                    ${LUE_ORIGIN}
+                    ${LUE_ORIGIN}/${LUE_PYTHON_PACKAGE_TO_LIB_DIR}
+        )
+    endforeach()
+
+    install(
+        TARGETS
+            ${${name}_TARGETS}
+        RUNTIME
+            DESTINATION ${LUE_INSTALL_PYTHON_PACKAGE_DIR}
+            COMPONENT ${${name}_RUNTIME_COMPONENT}
+        LIBRARY
+            DESTINATION ${LUE_INSTALL_PYTHON_PACKAGE_DIR}
+            COMPONENT ${${name}_RUNTIME_COMPONENT}
+    )
 endfunction()

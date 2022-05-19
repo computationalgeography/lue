@@ -3,6 +3,10 @@ Publications
 
 Journal publications
 --------------------
+- De Jong, K., Panja, D., Karssenberg, D., Van Kreveld, M. (2022),
+  *Scalability and composability of flow accumulation algorithms based on asynchronous many-tasks*,
+  Computers & Geosciences, doi:
+  `10.1016/j.cageo.2022.105083 <https://doi.org/10.1016/j.cageo.2022.105083>`_
 - De Jong, K., Panja, D., Van Kreveld, M.  Karssenberg, D. (2021),
   *An environmental modelling framework based on asynchronous many-tasks:
   scalability and usability*, Environmental Modelling & Software, doi:

@@ -20,18 +20,4 @@ target_link_libraries(lue_shared
         lue::compile_options
 )
 
-install(
-    TARGETS
-        lue_shared
-    EXPORT
-        lue_targets
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-)
-
-install(
-    DIRECTORY
-        ${CMAKE_CURRENT_BINARY_DIR}/include
-    DESTINATION .
-)
+lue_install_libraries(TARGETS lue_shared)

@@ -7,8 +7,8 @@ jobs:
 
         strategy:
             matrix:
-                os: ["windows-latest"]
-                python-version: [3.8]
+                os: ["windows-2019"]
+                python-version: [3.9]
 
         runs-on: ${{ matrix.os }}
 

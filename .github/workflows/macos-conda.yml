@@ -7,8 +7,8 @@ jobs:
 
         strategy:
             matrix:
-                os: ["macos-latest"]
-                python-version: [3.8]
+                os: ["macos-11"]
+                python-version: [3.9]
 
         runs-on: ${{ matrix.os }}
 

@@ -1,0 +1,25 @@
+import os
+import sys
+
+
+if sys.platform == "win32":
+    # We are about to import the _lue Python extension. Iff this version of LUE is installed,
+    # we can help Python to find LUE DLLs the LUE Python package depends on. In all other cases
+    # we should do nothing.
+    package_directory_pathname = os.path.dirname(os.path.dirname(__file__))
+
+    if os.path.basename(package_directory_pathname) != "site_packages":
+        # LUE is installed outside of a Python installation. We need to tell Python where our
+        # DLLs are located.
+        # Normally, assumes the package is installed in a location like lib/python<x>.<y>/lue. In
+        # that case, the DLLs are located in bin.
+        install_prefix = os.path.dirname(os.path.dirname(package_directory_pathname))
+        bin_directory_pathname = os.path.join(install_prefix, "bin")
+
+        if os.path.isdir(bin_directory_pathname):
+            # All seems to be as expected. LUE DLLs should be stored here.
+            os.add_dll_directory(bin_directory_pathname)
+
+
+from ._lue import *
+from ._lue import __version__

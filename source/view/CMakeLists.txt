@@ -25,7 +25,4 @@ target_link_libraries(lue_view
         lue::shared
 )
 
-install(
-    TARGETS lue_view
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-)
+lue_install_executables(TARGETS lue_view)

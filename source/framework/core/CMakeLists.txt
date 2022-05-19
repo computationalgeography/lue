@@ -14,11 +14,6 @@ add_library(lue_framework_core
 
 add_library(lue::framework_core ALIAS lue_framework_core)
 
-target_include_directories(lue_framework_core SYSTEM
-    PUBLIC
-        ${MDSpan_SOURCE_DIR}/include
-)
-
 target_compile_definitions(lue_framework_core
     PUBLIC
         $<$<CXX_COMPILER_ID:MSVC>:NOMINMAX>
@@ -36,3 +31,5 @@ target_link_libraries(lue_framework_core
         HPX::hpx
         std::mdspan
 )
+
+lue_install_libraries(TARGETS lue_framework_core)

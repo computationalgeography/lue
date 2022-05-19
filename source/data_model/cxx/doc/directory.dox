@@ -1,5 +1,5 @@
 /*!
-    @dir    lue_cxx/include/lue/array
+    @dir    include/lue/array
     @brief  Code related to storing object arrays
 
     ## Design
@@ -23,7 +23,7 @@
 
 
 /*!
-    @dir    lue_cxx/include/lue/info
+    @dir    include/lue/info
     @brief  Code related to spatio-temporal object information
 
     # Identity
@@ -59,7 +59,7 @@
 
 
 /*!
-    @dir    lue_cxx/include/lue/object
+    @dir    include/lue/object
     @brief  Code related to spatio-temporal objects
 
     In this directory, code is stored for handling spatio-temporal

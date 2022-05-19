@@ -37,10 +37,6 @@ installing them in `$HOME/lue_install`:
 Also, you can check the scripts behind the `LUE Github workflows`_
 to see how LUE can be built on various platforms.
 
-If one of the Python API's is built, the installation directory can
-be set manually by setting `LUE_PYTHON_API_INSTALL_DIR`. By default,
-it will be set to the pathname of the current Python's site packages.
-
 
 Targets
 +++++++

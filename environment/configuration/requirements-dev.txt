@@ -1,5 +1,6 @@
 breathe
 doxygen
+graphviz
 ipython
 matplotlib
 rasterio

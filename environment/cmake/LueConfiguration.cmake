@@ -126,13 +126,17 @@ lue_have_option(BOOST)
 lue_have_option(DOCOPT)
 lue_have_option(DOXYGEN)
 lue_have_option(GDAL)
+lue_have_option(FMT)
 lue_have_option(GLEW)
 lue_have_option(GLFW)
-lue_have_option(FMT)
-lue_have_option(MS_GSL)
 lue_have_option(HDF5)
+lue_have_option(MS_GSL)
 lue_have_option(NLOHMANN_JSON)
 lue_have_option(PYBIND11)
+
+# For now, use Conan to get ImGui. If this must be changed, be sure to also update our imgui
+# target. It assumes the Conan package of ImGui is being used.
+set(LUE_HAVE_IMGUI FALSE)
 
 
 # Handle internal dependencies -------------------------------------------------
@@ -318,6 +322,7 @@ endif()
 if(LUE_GLEW_REQUIRED)
     if(NOT LUE_HAVE_GLEW)
         set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} glew/2.2.0)
+        set(LUE_CONAN_OPTIONS ${LUE_CONAN_OPTIONS} glew:shared=False)
     endif()
 endif()
 
@@ -329,11 +334,25 @@ if(LUE_GLFW_REQUIRED)
 endif()
 
 
+if(LUE_IMGUI_REQUIRED)
+    if(NOT LUE_HAVE_IMGUI)
+        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} imgui/1.81)
+        list(APPEND LUE_CONAN_IMPORTS
+            "./res/bindings, imgui_impl_glfw.h -> ${CMAKE_BINARY_DIR}/source/imgui/src"
+            "./res/bindings, imgui_impl_glfw.cpp -> ${CMAKE_BINARY_DIR}/source/imgui/src"
+            "./res/bindings, imgui_impl_opengl3.h -> ${CMAKE_BINARY_DIR}/source/imgui/src"
+            "./res/bindings, imgui_impl_opengl3.cpp -> ${CMAKE_BINARY_DIR}/source/imgui/src"
+        )
+    endif()
+endif()
+
+
 if(LUE_MS_GSL_REQUIRED)
     if(NOT LUE_HAVE_MS_GSL)
         set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} ms-gsl/4.0.0)
     endif()
 endif()
+
 
 if(LUE_HDF5_REQUIRED)
     if(NOT LUE_HAVE_HDF5)
@@ -343,11 +362,6 @@ if(LUE_HDF5_REQUIRED)
     endif()
 endif()
 
-if(LUE_IMGUI_REQUIRED AND NOT LUE_BUILD_IMGUI)
-    message(FATAL_ERROR
-        "Support for system-provided ImGUI library does not work yet\n"
-        "But we can build ImGUI for you! Just reconfigure with LUE_BUILD_IMGUI=TRUE")
-endif()
 
 if(LUE_KOKKOS_MDSPAN_REQUIRED)
     FetchContent_Declare(kokkos_mdspan
@@ -355,7 +369,16 @@ if(LUE_KOKKOS_MDSPAN_REQUIRED)
         GIT_TAG a7990884f090365787a90cdc12e689822d642c65  # 20191010
     )
     FetchContent_MakeAvailable(kokkos_mdspan)
+
+    # Turn off warning messages by marking the headers as system headers
+    set_property(
+        TARGET mdspan
+        APPEND
+            PROPERTY
+                INTERFACE_SYSTEM_INCLUDE_DIRECTORIES ${MDSpan_SOURCE_DIR}/include
+    )
 endif()
+
 
 if(LUE_NLOHMANN_JSON_REQUIRED)
     if(NOT LUE_HAVE_NLOHMANN_JSON)
@@ -373,6 +396,7 @@ if(LUE_CONAN_REQUIRES)
     conan_cmake_configure(
         REQUIRES ${LUE_CONAN_REQUIRES}
         GENERATORS cmake_find_package
+        IMPORTS ${LUE_CONAN_IMPORTS}
         OPTIONS ${LUE_CONAN_OPTIONS})
     conan_cmake_autodetect(settings)
     conan_cmake_install(
@@ -389,6 +413,21 @@ endif()
 if(LUE_PYTHON_REQUIRED)
     # Order matters: Pybind11 must be searched for after Python has been found.
     find_package(Python3 REQUIRED COMPONENTS Interpreter Development NumPy)
+
+    if((Python3_INTERPRETER_ID STREQUAL "Anaconda") OR (Python3_EXECUTABLE MATCHES "^.*conda.*$"))
+        SET(LUE_PYTHON_FROM_CONDA TRUE)
+    endif()
+
+    message(STATUS "Found Python3:")
+    message(STATUS "    Interpreter ID        : ${Python3_INTERPRETER_ID}")
+    message(STATUS "        version           : ${Python3_VERSION}")
+    message(STATUS "        executable        : ${Python3_EXECUTABLE}")
+    message(STATUS "        site-arch         : ${Python3_SITEARCH}")
+    message(STATUS "        site-lib          : ${Python3_SITELIB}")
+    message(STATUS "    NumPy:")
+    message(STATUS "        version           : ${Python3_NumPy_VERSION}")
+    message(STATUS "        include           : ${Python3_NumPy_INCLUDE_DIRS}")
+    message(STATUS "    LUE_PYTHON_FROM_CONDA : ${LUE_PYTHON_FROM_CONDA}")
 endif()
 
 
@@ -397,22 +436,13 @@ if(LUE_PYBIND11_REQUIRED)
     if(NOT LUE_HAVE_PYBIND11)
         FetchContent_Declare(pybind11
             GIT_REPOSITORY https://github.com/pybind/pybind11
-            GIT_TAG "v2.8.1"
+            GIT_TAG "v2.9.1"
         )
 
         # This should pick up the Python found above
         FetchContent_MakeAvailable(pybind11)
     else()
-        find_package(pybind11 REQUIRED)
-    endif()
-
-    if(NOT LUE_PYTHON_API_INSTALL_DIR)
-        # Most Python packages install in a subdirectory of Python's site
-        # packages. But we currently ship only Python packages implemented
-        # as shared libraries. Therefore, we install in the root of the
-        # site packages directory. We may have to change things in
-        # the future if this is unconventional.
-        set(LUE_PYTHON_API_INSTALL_DIR "${Python3_SITEARCH}")  # /lue")
+        find_package(pybind11 CONFIG REQUIRED)
     endif()
 endif()
 
@@ -442,6 +472,13 @@ endif()
 if(LUE_HPX_REQUIRED)
     if(LUE_BUILD_HPX)
         # Build HPX ourselves
+
+        # When not specifying an install component, by default we get all files necessary for
+        # HPX runtime and development. We want to be able to only install the runtime files. For
+        # that we rename the default component name. For some reason, this prevents the
+        # development files from being installed. Below we set the default component name back
+        # to its default value.
+        set(CMAKE_INSTALL_DEFAULT_COMPONENT_NAME "hpx_runtime")
 
         if(HPX_WITH_APEX)
             if(APEX_WITH_OTF2)
@@ -558,6 +595,7 @@ if(LUE_HPX_REQUIRED)
         endif()
 
         FetchContent_MakeAvailable(hpx)
+        set(CMAKE_INSTALL_DEFAULT_COMPONENT_NAME "Unspecified")
     else()
         find_package(HPX REQUIRED)
 
@@ -574,68 +612,17 @@ if(LUE_HPX_REQUIRED)
 endif()
 
 
-if(LUE_IMGUI_REQUIRED AND LUE_BUILD_IMGUI)
-    find_package(OpenGL REQUIRED)
-    find_package(GLEW REQUIRED)
+if(LUE_IMGUI_REQUIRED)
+    find_package(imgui REQUIRED)
     find_package(glfw3 REQUIRED)
 
-    # if(NOT LUE_HAVE_GLFW)
-    #     # Conan find module uses glfw::glfw instead of glfw
-    #     add_library(glfw ALIAS glfw::glfw)
-    # endif()
-
-    if(LUE_REPOSITORY_CACHE AND EXISTS ${LUE_REPOSITORY_CACHE}/imgui)
-        set(imgui_repository ${LUE_REPOSITORY_CACHE}/imgui)
-    else()
-        set(imgui_repository https://github.com/ocornut/imgui.git)
+    if(LUE_HAVE_GLFW)
+        # Conan find module uses glfw::glfw instead of glfw
+        add_library(glfw::glfw ALIAS glfw)
     endif()
 
-    FetchContent_Declare(imgui
-        // MIT License, see ${imgui_SOURCE_DIR}/LICENSE.txt
-        GIT_REPOSITORY ${imgui_repository}
-        GIT_TAG v1.81
-    )
-
-    FetchContent_GetProperties(imgui)
-
-    if(NOT imgui_POPULATED)
-        FetchContent_Populate(imgui)
-
-        add_library(imgui STATIC
-            # imgui release
-            ${imgui_SOURCE_DIR}/imgui.cpp
-            ${imgui_SOURCE_DIR}/imgui_demo.cpp
-            ${imgui_SOURCE_DIR}/imgui_draw.cpp
-            ${imgui_SOURCE_DIR}/imgui_tables.cpp
-            ${imgui_SOURCE_DIR}/imgui_widgets.cpp
-
-            ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
-            ${imgui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
-        )
-
-        target_include_directories(imgui SYSTEM
-            PRIVATE
-                ${imgui_SOURCE_DIR}
-            PUBLIC
-                ${imgui_SOURCE_DIR}/backends
-                $<BUILD_INTERFACE:${imgui_SOURCE_DIR}>
-        )
-
-        target_compile_definitions(imgui
-            PUBLIC
-                IMGUI_DISABLE_OBSOLETE_FUNCTIONS
-                IMGUI_IMPL_OPENGL_LOADER_GLEW
-        )
-
-        target_link_libraries(imgui
-            PUBLIC
-                glfw
-                GLEW::GLEW
-                OpenGL::GL
-        )
-
-        add_library(imgui::imgui ALIAS imgui)
-    endif()
+    find_package(GLEW REQUIRED)
+    find_package(OpenGL REQUIRED)
 endif()
 
 
@@ -690,6 +677,7 @@ endif()
 
 if(LUE_HDF5_REQUIRED)
     find_package(HDF5 REQUIRED COMPONENTS C)
+    message(STATUS "HDF5_IS_PARALLEL          : ${HDF5_IS_PARALLEL}")
 endif()
 
 if(LUE_MS_GSL_REQUIRED)

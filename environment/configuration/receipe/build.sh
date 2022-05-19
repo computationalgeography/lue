@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 set -e
+set -x
+
+echo $PREFIX
+echo $SP_DIR
 
 
 # We need to create an out of source build
@@ -12,6 +16,7 @@ PATH=$PREFIX/bin:$PATH cmake $SRC_DIR -G"Ninja" \
 -D CMAKE_PREFIX_PATH:PATH="${PREFIX}" \
 -D CMAKE_INSTALL_PREFIX:PATH="${PREFIX}" \
 -D CMAKE_INSTALL_LIBDIR=lib \
+-D LUE_INSTALL_PYTHON_PACKAGE_DIR="${SP_DIR}/lue" \
 -D Python3_EXECUTABLE="${PYTHON}" \
 -D LUE_HAVE_BOOST:BOOL=TRUE \
 -D LUE_HAVE_FMT:BOOL=TRUE \
@@ -38,11 +43,9 @@ PATH=$PREFIX/bin:$PATH cmake $SRC_DIR -G"Ninja" \
 
 # Use parallel build but not for lue.framework
 cmake --build . --target lue_view lue_translate lue_validate core
-
 cmake --build . --target all --parallel 1
-
-# export LD_PRELOAD=${PREFIX}/lib/libtcmalloc_minimal.so.4
 
 ctest --extra-verbose --output-on-failure
 
-cmake --install .
+cmake --install . --component hpx_runtime
+cmake --install . --component lue_runtime

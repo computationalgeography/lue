@@ -24,6 +24,7 @@ endif()
 set(DOXYGEN_GENERATE_HTML YES)
 set(DOXYGEN_GENERATE_XML YES)
 set(DOXYGEN_OUTPUT_DIRECTORY doxygen)
+set(DOXYGEN_WARN_IF_UNDOCUMENTED NO)
 
 doxygen_add_docs(
         doxygen_doc
@@ -44,7 +45,8 @@ configure_file(conf.py.in conf.py @ONLY)
 add_custom_command(
     OUTPUT ${SPHINX_INDEX_FILE}
     COMMAND
-        ${CMAKE_COMMAND} -E env "PYTHONPATH=${PROJECT_BINARY_DIR}/lib:$ENV{PYTHONPATH}"
+        ${CMAKE_COMMAND}
+            -E env "PYTHONPATH=${PROJECT_BINARY_DIR}/${LUE_INSTALL_PYTHON_PACKAGE_DIR}/..:$ENV{PYTHONPATH}"
             ${SPHINX_BUILD_EXECUTABLE} -b html
                 -c ${CMAKE_CURRENT_BINARY_DIR}
                 -Dbreathe_projects.LUE=${DOXYGEN_OUTPUT_DIR}/xml
@@ -57,6 +59,10 @@ add_custom_command(
 
 add_custom_target(sphinx_doc DEPENDS ${SPHINX_INDEX_FILE})
 
-install(
-    DIRECTORY ${SPHINX_BUILD_DIR}
-    DESTINATION ${CMAKE_INSTALL_DOCDIR})
+# TODO Make this depend on the generation of the docs. They must be ready to copy.
+# install(
+#     DIRECTORY
+#         ${SPHINX_BUILD_DIR}
+#     DESTINATION ${CMAKE_INSTALL_DOCDIR}
+#     COMPONENT lue_development
+# )
