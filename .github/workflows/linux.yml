@@ -134,7 +134,7 @@ jobs:
               remote_dir: ${{ secrets.FTP_REMOTE_DIR }}
               local_dir: "sphinx/"
           run: |
-              cd build/document/doc
+              # TODO cd build/document/doc
               mkdir -p $HOME/.ssh
               # TODO
               type ssh-keyscan  # If not present, install openssh-client above first
