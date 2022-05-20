@@ -9,9 +9,8 @@ namespace lue {
         typename Policies,
         typename Element,
         Rank rank>
-    PartitionedArray<Element, rank> atan2(
+    PartitionedArray<Element, rank> tan(
         Policies const& policies,
-        PartitionedArray<Element, rank> const& array1,
-        PartitionedArray<Element, rank> const& array2);
+        PartitionedArray<Element, rank> const& array);
 
 }  // namespace lue

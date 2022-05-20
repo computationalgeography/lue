@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/framework/algorithm/local_operation_export.hpp"
 #include "lue/framework/algorithm/cos.hpp"
 #include "lue/framework/algorithm/definition/unary_local_operation.hpp"
 #include "lue/macro.hpp"
@@ -32,15 +33,22 @@ namespace lue {
 
 
     template<
+        typename Policies,
         typename Element,
         Rank rank>
     PartitionedArray<Element, rank> cos(
+        Policies const& policies,
         PartitionedArray<Element, rank> const& array)
     {
-        using Functor = detail::Cos<Element>;
-        using Policies = policy::cos::DefaultPolicies<Element>;
-
-        return unary_local_operation(Policies{}, array, Functor{});
+        return unary_local_operation(policies, array, detail::Cos<Element>{});
     }
 
 }  // namespace lue
+
+
+#define LUE_INSTANTIATE_COS(Policies, Element, rank)                                   \
+                                                                                       \
+    template LUE_LOCAL_OPERATION_EXPORT                                                \
+    PartitionedArray<Element, rank> cos<ArgumentType<void(Policies)>, Element, rank>(  \
+        ArgumentType<void(Policies)> const&,                                           \
+        PartitionedArray<Element, rank> const&);
