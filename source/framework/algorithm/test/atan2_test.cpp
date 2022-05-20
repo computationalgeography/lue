@@ -1,8 +1,8 @@
 #define BOOST_TEST_MODULE lue framework algorithm atan2
-#include "lue/framework/algorithm/default_policies/all.hpp"
-#include "lue/framework/algorithm/default_policies/equal_to.hpp"
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
-#include "lue/framework/algorithm/definition/atan2.hpp"
+#include "lue/framework/algorithm/default_policies/all.hpp"
+#include "lue/framework/algorithm/default_policies/atan2.hpp"
+#include "lue/framework/algorithm/default_policies/equal_to.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
@@ -27,7 +27,7 @@ namespace detail {
         Array array1{lue::create_partitioned_array(array_shape, partition_shape, fill_value1)};
         Array array2{lue::create_partitioned_array(array_shape, partition_shape, fill_value2)};
 
-        BOOST_CHECK(all(lue::atan2(array1, array2) == std::atan2(fill_value1, fill_value2)).get());
+        BOOST_CHECK(all(atan2(array1, array2) == std::atan2(fill_value1, fill_value2)).get());
     }
 
 }  // namespace detail

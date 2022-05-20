@@ -35,6 +35,7 @@ set(local_operation_names
     sin
     sqrt
     subtract
+    tan
     valid
     where
 )

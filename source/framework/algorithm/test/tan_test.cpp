@@ -1,8 +1,8 @@
-#define BOOST_TEST_MODULE lue framework algorithm sqrt
+#define BOOST_TEST_MODULE lue framework algorithm tan
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/default_policies/all.hpp"
 #include "lue/framework/algorithm/default_policies/equal_to.hpp"
-#include "lue/framework/algorithm/default_policies/sqrt.hpp"
+#include "lue/framework/algorithm/default_policies/tan.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
@@ -21,11 +21,11 @@ namespace detail {
         auto const array_shape{lue::Test<Array>::shape()};
         auto const partition_shape{lue::Test<Array>::partition_shape()};
 
-        Array array{lue::create_partitioned_array(array_shape, partition_shape, Element{25})};
+        Element const fill_value{0.5};
 
-        // FIXME Test by taking a diff from known values and asserting that
-        //     the difference is small enough
-        BOOST_CHECK(all(sqrt(array) == Element{5}).get());
+        Array array{lue::create_partitioned_array(array_shape, partition_shape, fill_value)};
+
+        BOOST_CHECK(all(tan(array) == std::tan(fill_value)).get());
     }
 
 }  // namespace detail

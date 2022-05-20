@@ -1,17 +1,17 @@
-#include "lue/framework/algorithm/default_policies/cos.hpp"
-#include "lue/framework/algorithm/definition/cos.hpp"
-#include "lue/framework/algorithm/value_policies/cos.hpp"
+#include "lue/framework/algorithm/default_policies/tan.hpp"
+#include "lue/framework/algorithm/definition/tan.hpp"
+#include "lue/framework/algorithm/value_policies/tan.hpp"
 
 
 #define LUE_INSTANTIATE(Element, rank)                    \
                                                           \
-    LUE_INSTANTIATE_COS(                                  \
-        ESC(policy::cos::DefaultPolicies<Element>),       \
+    LUE_INSTANTIATE_TAN(                                  \
+        ESC(policy::tan::DefaultPolicies<Element>),       \
         Element,                                          \
         rank);                                            \
                                                           \
-    LUE_INSTANTIATE_COS(                                  \
-        ESC(policy::cos::DefaultValuePolicies<Element>),  \
+    LUE_INSTANTIATE_TAN(                                  \
+        ESC(policy::tan::DefaultValuePolicies<Element>),  \
         Element,                                          \
         rank);
 

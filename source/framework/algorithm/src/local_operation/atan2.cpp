@@ -1,15 +1,19 @@
+#include "lue/framework/algorithm/default_policies/atan2.hpp"
+#include "lue/framework/algorithm/value_policies/atan2.hpp"
 #include "lue/framework/algorithm/definition/atan2.hpp"
 
 
 #define LUE_INSTANTIATE(Element, rank)                      \
                                                             \
-    LUE_INSTANTIATE_BINARY_LOCAL_OPERATION(                 \
+    LUE_INSTANTIATE_ATAN2(                                  \
+        ESC(policy::atan2::DefaultPolicies<Element>),       \
+        Element,                                            \
+        rank);                                              \
+                                                            \
+    LUE_INSTANTIATE_ATAN2(                                  \
         ESC(policy::atan2::DefaultValuePolicies<Element>),  \
         Element,                                            \
-        Element,                                            \
-        Element,                                            \
-        rank,                                               \
-        ESC(detail::ATan2<Element>));
+        rank);
 
 
 namespace lue {

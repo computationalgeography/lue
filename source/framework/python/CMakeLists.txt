@@ -25,7 +25,10 @@ add_library(lue_py_framework SHARED
     src/algorithm/all.cpp
     src/algorithm/array_partition_id.cpp
     src/algorithm/aspect.cpp
+    src/algorithm/atan.cpp
+    src/algorithm/atan2.cpp
     src/algorithm/cast.cpp
+    src/algorithm/cos.cpp
     src/algorithm/d8_flow_direction.cpp
     src/algorithm/divide.cpp
     src/algorithm/downstream.cpp
@@ -47,9 +50,11 @@ add_library(lue_py_framework SHARED
     src/algorithm/multiply.cpp
     src/algorithm/not_equal_to.cpp
     src/algorithm/pow.cpp
+    src/algorithm/sin.cpp
     src/algorithm/slope.cpp
     src/algorithm/sqrt.cpp
     src/algorithm/subtract.cpp
+    src/algorithm/tan.cpp
     src/algorithm/timestamp.cpp
     src/algorithm/uniform.cpp
     src/algorithm/upstream.cpp

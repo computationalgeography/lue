@@ -17,7 +17,10 @@ namespace lue::framework {
     void bind_all(pybind11::module& module);
     void bind_array_partition_id(pybind11::module& module);
     void bind_aspect(pybind11::module& module);
+    void bind_atan(pybind11::module& module);
+    void bind_atan2(pybind11::module& module);
     void bind_cast(pybind11::module& module);
+    void bind_cos(pybind11::module& module);
     void bind_d8_flow_direction(pybind11::module& module);
     void bind_divide(pybind11::module& module);
     void bind_downstream(pybind11::module& module);
@@ -38,9 +41,11 @@ namespace lue::framework {
     void bind_multiply(pybind11::module& module);
     void bind_not_equal_to(pybind11::module& module);
     void bind_pow(pybind11::module& module);
+    void bind_sin(pybind11::module& module);
     void bind_slope(pybind11::module& module);
     void bind_sqrt(pybind11::module& module);
     void bind_subtract(pybind11::module& module);
+    void bind_tan(pybind11::module& module);
     void bind_timestamp(pybind11::module& module);
     void bind_uniform(pybind11::module& module);
     void bind_upstream(pybind11::module& module);
@@ -62,7 +67,10 @@ namespace lue::framework {
         bind_all(module);
         bind_array_partition_id(module);
         bind_aspect(module);
+        bind_atan(module);
+        bind_atan2(module);
         bind_cast(module);
+        bind_cos(module);
         bind_d8_flow_direction(module);
         bind_divide(module);
         bind_downstream(module);
@@ -83,9 +91,11 @@ namespace lue::framework {
         bind_multiply(module);
         bind_not_equal_to(module);
         bind_pow(module);
+        bind_sin(module);
         bind_slope(module);
         bind_sqrt(module);
         bind_subtract(module);
+        bind_tan(module);
         bind_timestamp(module);
         bind_uniform(module);
         bind_upstream(module);
