@@ -2,6 +2,19 @@
 
 Install using Conda
 ===================
+The LUE Conda package is a great way to get LUE installed quickly on your laptop or desktop
+computer. For maximum portability, it is built using general sane settings. This version is
+fine for demo's, testing models, and in education, for example. But,
+
+.. warning::
+
+   In case you want the best possible performance, you must build LUE yourself, from the sources
+   and using settings that match your specific platform.
+
+Building LUE yourself is also required if you want to perform distributed calculations, using
+multiple cooroperating processes. For more information about building LUE, see
+:ref:`install_source`.
+
 Installing LUE using Conda is as easy as:
 
 .. code-block:: bash
@@ -40,4 +53,4 @@ once you are done (adjust versions / names when needed):
 
    # Clean-up
    conda deactivate test_lue
-   conda remove --name test_lue --all
+   conda env remove --name test_lue

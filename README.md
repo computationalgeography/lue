@@ -23,13 +23,12 @@ to be performed on hardware ranging from laptops to compute clusters,
 without the user having to know about high-performance computing and
 the related technology.
 
-
-## Links:
-|               |                                              |
-| --------------|----------------------------------------------|
-| Homepage      | <https://lue.computationalgeography.org>     |
-| Documentation | <https://lue.computationalgeography.org/doc> |
-| R&D team      | <https://www.computationalgeography.org>     |
+- [Homepage](https://lue.computationalgeography.org)
+    - [Documentation](https://lue.computationalgeography.org/doc)
+    - [Publications](https://lue.computationalgeography.org/publication)
+- [R&D team](https://www.computationalgeography.org)
+- [![Chat with us on Matrix](https://img.shields.io/badge/chat-on%20Matrix-%230098D4)](https://matrix.to/#/#lue:matrix.org) (users)
+- [![Chat with us on Matrix](https://img.shields.io/badge/chat-on%20Matrix-%230098D4)](https://matrix.to/#/#lue-dev:matrix.org) (developers)
 
 
 ## CI builds
@@ -45,9 +44,6 @@ the related technology.
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/2c02fc1c5b13424abfc414b82104801d)](https://www.codacy.com/gh/computationalgeography/lue/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=computationalgeography/lue&amp;utm_campaign=Badge_Grade)
 
 
-## Publications
-We maintain a list of publications on the
-[Publications page](https://lue.computationalgeography.org/publication/) of the LUE website.
 
 
 ## Installation

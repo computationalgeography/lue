@@ -16,7 +16,6 @@ namespace lue::framework {
     void bind_greater_than(
         pybind11::module& module)
     {
-        // TODO How to document these?
         LUE_GREATER_THAN_OVERLOADS(std::uint8_t, 2)
         LUE_GREATER_THAN_OVERLOADS(std::uint32_t, 2)
         LUE_GREATER_THAN_OVERLOADS(std::uint64_t, 2)

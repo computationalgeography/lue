@@ -16,7 +16,6 @@ namespace lue::framework {
     void bind_equal_to(
         pybind11::module& module)
     {
-        // TODO How to document these?
         LUE_EQUAL_TO_OVERLOADS(std::uint8_t, 2)
         LUE_EQUAL_TO_OVERLOADS(std::uint32_t, 2)
         LUE_EQUAL_TO_OVERLOADS(std::uint64_t, 2)
