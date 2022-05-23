@@ -4,8 +4,18 @@ import numpy as np
 # import datetime
 
 
+def setUpModule():
+    lue_test.start_hpx_runtime()
+
+
+def tearDownModule():
+    return
+    lue_test.stop_hpx_runtime()
+
+
 class LocalOperationTest(lue_test.TestCase):
 
+    @lue_test.framework_test_case
     def test_sqrt(self):
 
         partitions = (100,)

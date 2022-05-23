@@ -8,11 +8,13 @@ def setUpModule():
 
 
 def tearDownModule():
+    return
     lue_test.stop_hpx_runtime()
 
 
 class UniformTest(lue_test.TestCase):
 
+    @lue_test.framework_test_case
     def test_overload(self):
 
         # TODO(KDJ) Support this overload

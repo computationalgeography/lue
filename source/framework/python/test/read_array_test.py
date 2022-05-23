@@ -9,11 +9,13 @@ def setUpModule():
 
 
 def tearDownModule():
+    return
     lue_test.stop_hpx_runtime()
 
 
 class ReadArrayTest(lue_test.TestCase):
 
+    @lue_test.framework_test_case
     def test_read_constant_array(self):
 
         # Create a dataset containing a constant raster
@@ -32,6 +34,8 @@ class ReadArrayTest(lue_test.TestCase):
         layer = raster_view.add_layer(layer_name, dtype)
         layer[:] = np.full(array_shape, fill_value, dtype)
 
+        del layer, raster_view, dataset
+
         array_pathname = "{}/{}/{}/{}".format(
             dataset_pathname, phenomenon_name, property_set_name, layer_name)
 
@@ -44,6 +48,7 @@ class ReadArrayTest(lue_test.TestCase):
         self.assertTrue(lfr.all(array == fill_value).get())
 
 
+    @lue_test.framework_test_case
     def test_read_variable_array(self):
 
         # Create an in-memory dataset containing a variable raster
@@ -75,6 +80,8 @@ class ReadArrayTest(lue_test.TestCase):
         # for t in range(nr_time_steps):
         #     layer[0:t:] = np.full(array_shape, t * fill_value, dtype)
 
+        del layer, raster_view, dataset
+
         array_pathname = "{}/{}/{}/{}".format(
             dataset_pathname, phenomenon_name, property_set_name, layer_name)
 
@@ -87,6 +94,7 @@ class ReadArrayTest(lue_test.TestCase):
         self.assertTrue(lfr.all(array == fill_value).get())
 
 
+    @lue_test.framework_test_case
     def test_read_array_subset(self):
 
         # Create a dataset containing a constant raster
@@ -104,6 +112,8 @@ class ReadArrayTest(lue_test.TestCase):
         layer = raster_view.add_layer(layer_name, dtype)
         array_written = np.arange(60 * 40, dtype=dtype).reshape(array_shape)
         layer[:] = array_written
+
+        del layer, raster_view, dataset
 
         array_pathname = "{}/{}/{}/{}".format(
             dataset_pathname, phenomenon_name, property_set_name, layer_name)

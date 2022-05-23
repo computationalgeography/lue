@@ -8,12 +8,14 @@ def setUpModule():
 
 
 def tearDownModule():
+    return
     lue_test.stop_hpx_runtime()
 
 
 class CreatePartitionedArrayTest(lue_test.TestCase):
 
     @classmethod
+    @lue_test.framework_test_case
     def setUpClass(cls):
         cls.value = 5.5
         cls.array = lfr.create_array(
@@ -22,6 +24,7 @@ class CreatePartitionedArrayTest(lue_test.TestCase):
         cls.value_f = lfr.maximum(cls.array)
 
 
+    @lue_test.framework_test_case
     def test_operator_add_overloads(self):
         array, value, value_f = self.array, self.value, self.value_f
         tmp = array + array
@@ -31,6 +34,7 @@ class CreatePartitionedArrayTest(lue_test.TestCase):
         tmp = value_f + array
 
 
+    @lue_test.framework_test_case
     def test_operator_sub_overloads(self):
         array, value, value_f = self.array, self.value, self.value_f
         tmp = array - array
@@ -40,6 +44,7 @@ class CreatePartitionedArrayTest(lue_test.TestCase):
         tmp = value_f - array
 
 
+    @lue_test.framework_test_case
     def test_operator_mul_overloads(self):
         array, value, value_f = self.array, self.value, self.value_f
         tmp = array * array
@@ -49,6 +54,7 @@ class CreatePartitionedArrayTest(lue_test.TestCase):
         tmp = value_f * array
 
 
+    @lue_test.framework_test_case
     def test_operator_div_overloads(self):
         array, value, value_f = self.array, self.value, self.value_f
         tmp = array / array
@@ -58,6 +64,7 @@ class CreatePartitionedArrayTest(lue_test.TestCase):
         tmp = value_f / array
 
 
+    @lue_test.framework_test_case
     def test_operator_gt_overloads(self):
         array, value, value_f = self.array, self.value, self.value_f
         tmp = array > array
@@ -67,6 +74,7 @@ class CreatePartitionedArrayTest(lue_test.TestCase):
         tmp = value_f > array
 
 
+    @lue_test.framework_test_case
     def test_operator_ge_overloads(self):
         array, value, value_f = self.array, self.value, self.value_f
         tmp = array >= array
@@ -76,6 +84,7 @@ class CreatePartitionedArrayTest(lue_test.TestCase):
         tmp = value_f >= array
 
 
+    @lue_test.framework_test_case
     def test_operator_eq_overloads(self):
         array, value, value_f = self.array, self.value, self.value_f
         tmp = array == array
@@ -85,6 +94,7 @@ class CreatePartitionedArrayTest(lue_test.TestCase):
         tmp = value_f == array
 
 
+    @lue_test.framework_test_case
     def test_operator_ne_overloads(self):
         array, value, value_f = self.array, self.value, self.value_f
         tmp = array != array
@@ -94,6 +104,7 @@ class CreatePartitionedArrayTest(lue_test.TestCase):
         tmp = value_f != array
 
 
+    @lue_test.framework_test_case
     def test_operator_lt_overloads(self):
         array, value, value_f = self.array, self.value, self.value_f
         tmp = array < array
@@ -103,6 +114,7 @@ class CreatePartitionedArrayTest(lue_test.TestCase):
         tmp = value_f < array
 
 
+    @lue_test.framework_test_case
     def test_operator_le_overloads(self):
         array, value, value_f = self.array, self.value, self.value_f
         tmp = array <= array
@@ -112,6 +124,7 @@ class CreatePartitionedArrayTest(lue_test.TestCase):
         tmp = value_f <= array
 
 
+    @lue_test.framework_test_case
     def test_operator_pow_overloads(self):
         array, value, value_f = self.array, self.value, self.value_f
         tmp = array ** array

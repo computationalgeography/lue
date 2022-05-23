@@ -8,11 +8,13 @@ def setUpModule():
 
 
 def tearDownModule():
+    return
     lue_test.stop_hpx_runtime()
 
 
 class D8FlowDirectionTest(lue_test.TestCase):
 
+    @lue_test.framework_test_case
     def test_overloads(self):
 
         array_shape = (60, 40)
@@ -24,6 +26,7 @@ class D8FlowDirectionTest(lue_test.TestCase):
             flow_direction = lfr.d8_flow_direction(elevation)
 
 
+    @lue_test.framework_test_case
     def test_directions(self):
 
         array_shape = (60, 40)
