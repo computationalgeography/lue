@@ -8,11 +8,13 @@ def setUpModule():
 
 
 def tearDownModule():
+    return
     lue_test.stop_hpx_runtime()
 
 
 class ValidTest(lue_test.TestCase):
 
+    @lue_test.framework_test_case
     def test_all_valid(self):
 
         array_shape = (60, 40)
@@ -26,6 +28,7 @@ class ValidTest(lue_test.TestCase):
         self.assertTrue(lfr.all(result == 1).get())
 
 
+    @lue_test.framework_test_case
     def test_all_invalid(self):
 
         array_shape = (60, 40)

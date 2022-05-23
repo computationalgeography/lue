@@ -41,6 +41,8 @@ target_link_libraries(lue_framework_algorithm
 # - Common policies
 add_library(lue_framework_local_operation SHARED
     src/local_operation/add.cpp
+    src/local_operation/acos.cpp
+    src/local_operation/asin.cpp
     src/local_operation/atan.cpp
     src/local_operation/atan2.cpp
     src/local_operation/cast.cpp
@@ -48,6 +50,7 @@ add_library(lue_framework_local_operation SHARED
     src/local_operation/cos.cpp
     src/local_operation/divide.cpp
     src/local_operation/equal_to.cpp
+    src/local_operation/exp.cpp
     src/local_operation/greater_than.cpp
     src/local_operation/greater_than_equal_to.cpp
     src/local_operation/less_than.cpp

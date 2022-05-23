@@ -4,11 +4,33 @@
 Trigonometry
 ============
 .. autosummary::
+    acos
+    asin
     atan
     atan2
     cos
     sin
     tan
+
+
+.. py:function:: acos(cosine)
+
+   Compute the principal value of the arc cosine
+
+   :parm cosine: Datastructure containing cosines
+   :return: New instance of the same datastructure as passed in
+
+   This function is overloaded for arrays containing float32 and float64 elements.
+
+
+.. py:function:: asin(sine)
+
+   Compute the principal value of the arc sine
+
+   :parm sine: Datastructure containing sines
+   :return: New instance of the same datastructure as passed in
+
+   This function is overloaded for arrays containing float32 and float64 elements.
 
 
 .. py:function:: atan(tangent)

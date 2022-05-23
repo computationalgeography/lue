@@ -12,11 +12,13 @@ namespace lue::framework {
     void bind_accu_info3(pybind11::module& module);
     void bind_accu_threshold(pybind11::module& module);
     void bind_accu_threshold3(pybind11::module& module);
+    void bind_acos(pybind11::module& module);
     void bind_add(pybind11::module& module);
     void bind_array_partition_id(pybind11::module& module);
     void bind_all(pybind11::module& module);
     void bind_array_partition_id(pybind11::module& module);
     void bind_aspect(pybind11::module& module);
+    void bind_asin(pybind11::module& module);
     void bind_atan(pybind11::module& module);
     void bind_atan2(pybind11::module& module);
     void bind_cast(pybind11::module& module);
@@ -26,6 +28,7 @@ namespace lue::framework {
     void bind_downstream(pybind11::module& module);
     void bind_downstream_distance(pybind11::module& module);
     void bind_equal_to(pybind11::module& module);
+    void bind_exp(pybind11::module& module);
     void bind_greater_than(pybind11::module& module);
     void bind_greater_than_equal_to(pybind11::module& module);
     void bind_inflow_count(pybind11::module& module);
@@ -63,10 +66,12 @@ namespace lue::framework {
         bind_accu_info3(module);
         bind_accu_threshold(module);
         bind_accu_threshold3(module);
+        bind_acos(module);
         bind_add(module);
         bind_all(module);
         bind_array_partition_id(module);
         bind_aspect(module);
+        bind_asin(module);
         bind_atan(module);
         bind_atan2(module);
         bind_cast(module);
@@ -76,6 +81,7 @@ namespace lue::framework {
         bind_downstream(module);
         bind_downstream_distance(module);
         bind_equal_to(module);
+        bind_exp(module);
         bind_greater_than(module);
         bind_greater_than_equal_to(module);
         bind_inflow_count(module);

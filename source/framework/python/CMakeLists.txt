@@ -21,10 +21,12 @@ add_library(lue_py_framework SHARED
     src/algorithm/accu_info3.cpp
     src/algorithm/accu_threshold.cpp
     src/algorithm/accu_threshold3.cpp
+    src/algorithm/acos.cpp
     src/algorithm/add.cpp
     src/algorithm/all.cpp
     src/algorithm/array_partition_id.cpp
     src/algorithm/aspect.cpp
+    src/algorithm/asin.cpp
     src/algorithm/atan.cpp
     src/algorithm/atan2.cpp
     src/algorithm/cast.cpp
@@ -34,6 +36,7 @@ add_library(lue_py_framework SHARED
     src/algorithm/downstream.cpp
     src/algorithm/downstream_distance.cpp
     src/algorithm/equal_to.cpp
+    src/algorithm/exp.cpp
     src/algorithm/greater_than.cpp
     src/algorithm/greater_than_equal_to.cpp
     src/algorithm/inflow_count.cpp

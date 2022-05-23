@@ -10,9 +10,11 @@ target_link_libraries(lue_framework_algorithm_test
 set(scope lue_framework_algorithm)
 
 set(local_operation_names
+    acos
     add
     array_like
     array_partition_id
+    asin
     atan
     atan2
     cast
@@ -22,6 +24,7 @@ set(local_operation_names
     create_partitioned_array
     divide
     equal_to
+    exp
     fill
     greater_than
     greater_than_equal_to

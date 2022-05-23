@@ -8,11 +8,13 @@ def setUpModule():
 
 
 def tearDownModule():
+    return
     lue_test.stop_hpx_runtime()
 
 
 class WhereTest(lue_test.TestCase):
 
+    @lue_test.framework_test_case
     def test_binary_where_overloads(self):
         # Silly computations. We're only verifying the overloads are
         # available.
@@ -38,6 +40,7 @@ class WhereTest(lue_test.TestCase):
         self.assertTrue(lfr.all(result == 4).get())
 
 
+    @lue_test.framework_test_case
     def test_ternary_where_overloads(self):
         # Silly computations. We're only verifying the overloads are
         # available.

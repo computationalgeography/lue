@@ -8,11 +8,13 @@ def setUpModule():
 
 
 def tearDownModule():
+    return
     lue_test.stop_hpx_runtime()
 
 
 class FromNumPyTest(lue_test.TestCase):
 
+    @lue_test.framework_test_case
     def test_array(self):
 
         array_shape = (60, 40)
@@ -28,6 +30,7 @@ class FromNumPyTest(lue_test.TestCase):
         self.assertEqual(lfr.maximum(lue_array).get(), nr_cells - 1)
 
 
+    @lue_test.framework_test_case
     def test_mark_no_data(self):
 
         array_shape = (60, 40)
@@ -45,6 +48,7 @@ class FromNumPyTest(lue_test.TestCase):
         # TODO Verify that the array contains three no-data elements
 
 
+    @lue_test.framework_test_case
     def test_small_array(self):
 
         array_shape = (1, 1)
