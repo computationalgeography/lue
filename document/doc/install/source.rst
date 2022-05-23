@@ -83,7 +83,7 @@ View
 
 Dependencies
 ~~~~~~~~~~~~
-- Dear ImGUI, OpenGL, GLEW, SDL2
+- Dear ImGUI, OpenGL, GLEW, GLFW
 
 
 Documentation
@@ -129,20 +129,28 @@ There are three options for installing prerequisite libraries and tools:
    scripts
 3. Build by the LUE build scripts
 
-These variables determine what should happen:
+The next variables determine what happens in each case by default.
 
-- `LUE_HAVE_BOOST`
-    - TRUE: Search for Boost in standard locations
-    - FALSE: Install Boost using Conan
-    - Default: WIN32: FALSE, All other platforms: TRUE
-- `LUE_HAVE_GDAL`
-    - TRUE: Search for GDAL in standard locations
-    - FALSE: Install GDAL using Conan
-    - Default: WIN32: FALSE, All other platforms: TRUE
-- `LUE_HAVE_HDF5`
-    - TRUE: Search for HDF5 in standard locations
-    - FALSE: Install HDF5 using Conan
-    - Default: WIN32: FALSE, All other platforms: TRUE
+`LUE_HAVE_FOO`:
+
+- TRUE: Search for Foo in standard locations
+- FALSE: Install Foo using Conan
+
+======================= ===== ===== =====
+Variable                WIN32 APPLE Other
+======================= ===== ===== =====
+`LUE_HAVE_BOOST         FALSE TRUE  TRUE
+`LUE_HAVE_DOCOPT        FALSE FALSE TRUE
+`LUE_HAVE_DOXYGEN       FALSE TRUE  TRUE
+`LUE_HAVE_GDAL          FALSE TRUE  TRUE
+`LUE_HAVE_FMT           FALSE TRUE  TRUE
+`LUE_HAVE_GLEW          FALSE TRUE  TRUE
+`LUE_HAVE_GLFW          FALSE TRUE  TRUE
+`LUE_HAVE_HDF5          FALSE TRUE  TRUE
+`LUE_HAVE_MS_GSL        FALSE FALSE FALSE
+`LUE_HAVE_NLOHMANN_JSON FALSE TRUE  FALSE
+`LUE_HAVE_PYBIND11      FALSE FALSE FALSE
+======================= ===== ===== =====
 
 Some prerequisite libraries can optionally be built by the LUE project
 itself. The following variables are used to decide whether or not that
