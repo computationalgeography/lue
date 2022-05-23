@@ -6,6 +6,7 @@ Numeric
 .. autosummary::
     add
     divide
+    exp
     log
     multiply
     pow
@@ -14,6 +15,7 @@ Numeric
 
 .. autofunction:: add
 .. autofunction:: divide
+.. autofunction:: exp
 .. autofunction:: log
 .. autofunction:: multiply
 .. autofunction:: pow
