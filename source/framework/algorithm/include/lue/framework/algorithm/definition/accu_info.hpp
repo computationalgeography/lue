@@ -244,7 +244,10 @@ namespace lue {
                             // there is no need to mark no-data in output
                             // of inflow_count
                             using InflowCountOutputPolicies =
-                                policy::OutputPolicies<policy::DontMarkNoData<InflowCountElement>>;
+                                policy::OutputPolicies<
+                                        policy::DontMarkNoData<InflowCountElement>,
+                                        policy::AllValuesWithinRange<InflowCountElement, FlowDirectionElement>
+                                    >;
                             InflowCountOutputPolicies inflow_count_output_policies{};
 
                             using FlowDirectionInputPolicies = policy::InputPoliciesT<Policies, 0>;

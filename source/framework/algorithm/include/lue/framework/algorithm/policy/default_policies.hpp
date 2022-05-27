@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/policy/policies.hpp"
+#include "lue/framework/algorithm/policy/all_values_within_range.hpp"
 #include "lue/framework/algorithm/policy/dont_mark_no_data.hpp"
 #include "lue/framework/algorithm/policy/fill_halo_with_constant_value.hpp"
 #include "lue/framework/algorithm/policy/input_policies.hpp"
@@ -47,9 +48,19 @@ namespace lue::policy {
         detail::TypeList<InputElements...>>:
 
         public Policies<
-            DomainPolicy,
-            OutputsPolicies<OutputPolicies<DontMarkNoData<OutputElements>>...>,
-            InputsPolicies<InputPolicies<SkipNoData<InputElements>>...>>
+                DomainPolicy,
+                OutputsPolicies<
+                        OutputPolicies<
+                                DontMarkNoData<OutputElements>,
+                                AllValuesWithinRange<OutputElements, InputElements...>
+                            >...
+                    >,
+                InputsPolicies<
+                        InputPolicies<
+                                SkipNoData<InputElements>
+                            >...
+                    >
+            >
 
     {
     };
@@ -89,11 +100,20 @@ namespace lue::policy {
             detail::TypeList<InputElements...>>:
 
         public Policies<
-            DomainPolicy,
-            OutputsPolicies<OutputPolicies<DontMarkNoData<OutputElements>>...>,
-            InputsPolicies<
-                SpatialOperationInputPolicies<
-                    SkipNoData<InputElements>, FillHaloWithConstantValue<InputElements>>...>>
+                DomainPolicy,
+                OutputsPolicies<
+                        OutputPolicies<
+                                DontMarkNoData<OutputElements>,
+                                AllValuesWithinRange<OutputElements, InputElements...>
+                            >...
+                    >,
+                InputsPolicies<
+                        SpatialOperationInputPolicies<
+                                SkipNoData<InputElements>,
+                                FillHaloWithConstantValue<InputElements>
+                            >...
+                    >
+            >
 
     {
 
@@ -104,7 +124,9 @@ namespace lue::policy {
                 DomainPolicy,
                 lue::policy::OutputsPolicies<
                     lue::policy::OutputPolicies<
-                        DontMarkNoData<OutputElements>>...>,
+                            DontMarkNoData<OutputElements>,
+                            AllValuesWithinRange<OutputElements, InputElements...>
+                        >...>,
                 lue::policy::InputsPolicies<
                     SpatialOperationInputPolicies<
                         SkipNoData<InputElements>,
@@ -117,7 +139,8 @@ namespace lue::policy {
                 Base{
                         DomainPolicy{},
                         OutputPolicies<
-                                DontMarkNoData<OutputElements>
+                                DontMarkNoData<OutputElements>,
+                                AllValuesWithinRange<OutputElements, InputElements...>
                             >{}...,
                         SpatialOperationInputPolicies<
                                 SkipNoData<InputElements>,
@@ -135,7 +158,8 @@ namespace lue::policy {
                 Base{
                         DomainPolicy{},
                         OutputPolicies<
-                                DontMarkNoData<OutputElements>
+                                DontMarkNoData<OutputElements>,
+                                AllValuesWithinRange<OutputElements, InputElements...>
                             >{}...,
                         SpatialOperationInputPolicies<
                                 SkipNoData<InputElements>,

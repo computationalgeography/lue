@@ -147,8 +147,12 @@ namespace lue {
         using SqrtPolicies = policy::Policies<
                 policy::sqrt::DomainPolicy<Element>,
                 policy::OutputsPolicies<
-                        policy::OutputPoliciesT<AddPolicies, 0, Element>
-                    >,
+                        policy::OutputPolicies<
+                                // policy::OutputPoliciesT<AddPolicies, 0, Element>
+                                policy::OutputNoDataPolicy3T<AddPolicies, 0, Element>,
+                                policy::AllValuesWithinRange<Element, Element>
+                            >
+                        >,
                 policy::InputsPolicies<
                         policy::InputPoliciesT<AddPolicies, 0, Element>
                     >

@@ -130,6 +130,30 @@ namespace lue::policy {
 
 
     template<
+        // All policies related to an operation
+        typename Policies,
+        // Idx of policies related to a specific output
+        std::size_t idx,
+        // Element for which to return an output no-data policies type
+        typename Element=ElementT<PoliciesT<typename Policies::OutputsPolicies, idx>>>
+    using OutputNoDataPolicy3T =
+        OutputNoDataPolicy2T<
+            typename detail::TypeTraits<
+                    // Policies related to a specific output
+                    PoliciesT<typename Policies::OutputsPolicies, idx>
+                >::template Policies<Element>>;
+
+
+    // template<
+    //     typename RangePolicy,
+    //     typename Element>
+    // using RangePolicyT =
+    //     typename detail::TypeTraits<
+    //             lue::detail::remove_cvref_t<RangePolicy>
+    //         >::template Policy<Element>;
+
+
+    template<
         typename InputPolicies>
     using InputNoDataPolicy2T =
         typename detail::TypeTraits<

@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/policy/policies.hpp"
+#include "lue/framework/algorithm/policy/all_values_within_range.hpp"
 #include "lue/framework/algorithm/policy/detect_no_data_by_nan.hpp"
 #include "lue/framework/algorithm/policy/detect_no_data_by_value.hpp"
 #include "lue/framework/algorithm/policy/fill_halo_with_constant_value.hpp"
@@ -71,7 +72,12 @@ namespace lue::policy {
 
         public Policies<
             DomainPolicy,
-            OutputsPolicies<OutputPolicies<DefaultOutputNoDataPolicy<OutputElements>>...>,
+            OutputsPolicies<
+                    OutputPolicies<
+                            DefaultOutputNoDataPolicy<OutputElements>,
+                            AllValuesWithinRange<OutputElements, InputElements...>
+                        >...
+                >,
             InputsPolicies<InputPolicies<DefaultInputNoDataPolicy<InputElements>>...>>
 
     {
@@ -116,11 +122,20 @@ namespace lue::policy {
             detail::TypeList<InputElements...>>:
 
         public Policies<
-            DomainPolicy,
-            OutputsPolicies<OutputPolicies<DefaultOutputNoDataPolicy<OutputElements>>...>,
-            InputsPolicies<
-                SpatialOperationInputPolicies<
-                    DefaultInputNoDataPolicy<InputElements>, FillHaloWithConstantValue<InputElements>>...>>
+                DomainPolicy,
+                OutputsPolicies<
+                        OutputPolicies<
+                                DefaultOutputNoDataPolicy<OutputElements>,
+                                AllValuesWithinRange<OutputElements, InputElements...>
+                            >...
+                    >,
+                InputsPolicies<
+                        SpatialOperationInputPolicies<
+                                DefaultInputNoDataPolicy<InputElements>,
+                                FillHaloWithConstantValue<InputElements>
+                            >...
+                    >
+            >
 
     {
 
@@ -128,14 +143,20 @@ namespace lue::policy {
 
             // MSVC requires that these templates are qualified by their namespaces
             using Base = Policies<
-                DomainPolicy,
-                lue::policy::OutputsPolicies<
-                    lue::policy::OutputPolicies<
-                        DefaultOutputNoDataPolicy<OutputElements>>...>,
-                lue::policy::InputsPolicies<
-                    SpatialOperationInputPolicies<
-                        DefaultInputNoDataPolicy<InputElements>,
-                        FillHaloWithConstantValue<InputElements>>...>>;
+                    DomainPolicy,
+                    lue::policy::OutputsPolicies<
+                            lue::policy::OutputPolicies<
+                                    DefaultOutputNoDataPolicy<OutputElements>,
+                                    AllValuesWithinRange<OutputElements, InputElements...>
+                                >...
+                        >,
+                    lue::policy::InputsPolicies<
+                            SpatialOperationInputPolicies<
+                                    DefaultInputNoDataPolicy<InputElements>,
+                                    FillHaloWithConstantValue<InputElements>
+                                >...
+                        >
+                >;
 
         public:
 
@@ -144,7 +165,8 @@ namespace lue::policy {
                 Base{
                         DomainPolicy{},
                         OutputPolicies<
-                                DefaultOutputNoDataPolicy<OutputElements>
+                                DefaultOutputNoDataPolicy<OutputElements>,
+                                AllValuesWithinRange<OutputElements, InputElements...>
                             >{}...,
                         SpatialOperationInputPolicies<
                                 DefaultInputNoDataPolicy<InputElements>,
@@ -162,7 +184,8 @@ namespace lue::policy {
                 Base{
                         DomainPolicy{},
                         OutputPolicies<
-                                DefaultOutputNoDataPolicy<OutputElements>
+                                DefaultOutputNoDataPolicy<OutputElements>,
+                                AllValuesWithinRange<OutputElements, InputElements...>
                             >{}...,
                         SpatialOperationInputPolicies<
                                 DefaultInputNoDataPolicy<InputElements>,

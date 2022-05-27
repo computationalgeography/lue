@@ -27,10 +27,22 @@ namespace lue {
         using DefaultPoliciesBase = Policies<
             AllValuesWithinDomain<FlowDirectionElement>,
             OutputsPolicies<
-                    OutputPolicies<DontMarkNoData<CellClass>>,
-                    OutputPolicies<DontMarkNoData<PartitionClass>>,
-                    OutputPolicies<DontMarkNoData<double>>,
-                    OutputPolicies<DontMarkNoData<std::uint32_t>>
+                    OutputPolicies<
+                            DontMarkNoData<CellClass>,
+                            AllValuesWithinRange<CellClass>
+                        >,
+                    OutputPolicies<
+                            DontMarkNoData<PartitionClass>,
+                            AllValuesWithinRange<PartitionClass>
+                        >,
+                    OutputPolicies<
+                            DontMarkNoData<double>,
+                            AllValuesWithinRange<double>
+                        >,
+                    OutputPolicies<
+                            DontMarkNoData<std::uint32_t>,
+                            AllValuesWithinRange<std::uint32_t>
+                        >
                 >,
             InputsPolicies<
                 SpatialOperationInputPolicies<
@@ -76,10 +88,22 @@ namespace lue {
         using DefaultValuePoliciesBase = Policies<
             AllValuesWithinDomain<FlowDirectionElement>,
             OutputsPolicies<
-                    OutputPolicies<DefaultOutputNoDataPolicy<CellClass>>,
-                    OutputPolicies<DefaultOutputNoDataPolicy<PartitionClass>>,
-                    OutputPolicies<DefaultOutputNoDataPolicy<double>>,
-                    OutputPolicies<DefaultOutputNoDataPolicy<std::uint32_t>>
+                    OutputPolicies<
+                            DefaultOutputNoDataPolicy<CellClass>,
+                            AllValuesWithinRange<CellClass>
+                        >,
+                    OutputPolicies<
+                            DefaultOutputNoDataPolicy<PartitionClass>,
+                            AllValuesWithinRange<PartitionClass>
+                        >,
+                    OutputPolicies<
+                            DefaultOutputNoDataPolicy<double>,
+                            AllValuesWithinRange<double>
+                        >,
+                    OutputPolicies<
+                            DefaultOutputNoDataPolicy<std::uint32_t>,
+                            AllValuesWithinRange<std::uint32_t>
+                        >
                 >,
             InputsPolicies<
                 SpatialOperationInputPolicies<

@@ -1,4 +1,4 @@
-#include "lue/framework/algorithm/valid.hpp"
+#include "lue/framework/algorithm/value_policies/valid.hpp"
 #include <pybind11/pybind11.h>
 
 
@@ -15,9 +15,8 @@ namespace lue::framework {
             PartitionedArray<Element, rank> const& array)
         {
             using BooleanElement = std::uint8_t;
-            using Policies = policy::valid::DefaultValuePolicies<BooleanElement, Element>;
 
-            return valid<BooleanElement>(Policies{}, array);
+            return value_policies::valid<BooleanElement>(array);
         }
 
     }  // Anonymous namespace

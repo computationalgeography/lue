@@ -41,6 +41,7 @@ OutputPartition unary_local_operation_partition(
                     auto const& dp = policies.domain_policy();
                     auto const& indp = std::get<0>(policies.inputs_policies()).input_no_data_policy();
                     auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
+                    auto const& rp = std::get<0>(policies.outputs_policies()).range_policy();
 
                     Count const nr_elements{lue::nr_elements(input_partition_data)};
 
@@ -57,6 +58,11 @@ OutputPartition unary_local_operation_partition(
                         else
                         {
                             output_partition_data[i] = functor(input_partition_data[i]);
+
+                            if(!rp.within_range(input_partition_data[i], output_partition_data[i]))
+                            {
+                                ondp.mark_no_data(output_partition_data, i);
+                            }
                         }
                     }
 

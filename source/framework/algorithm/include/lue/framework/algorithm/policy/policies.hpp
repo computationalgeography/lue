@@ -17,6 +17,11 @@ namespace lue::policy {
 
 
     template<
+        typename... Element>
+    using Elements = detail::TypeList<Element...>;
+
+
+    template<
         typename DomainPolicy_,
         typename OutputsPolicies_,
         typename InputsPolicies_>
@@ -35,9 +40,6 @@ namespace lue::policy {
 
 
     // TODO(KDJ)
-    // - output policies:
-    //     - OutOfRangePolicy
-    //
     // - focal operation
     //     - input policies:
     //         - OutOfImagePolicy

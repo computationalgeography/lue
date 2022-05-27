@@ -3,11 +3,12 @@
 #include "lue/framework/algorithm/default_policies/all.hpp"
 #include "lue/framework/algorithm/default_policies/equal_to.hpp"
 #include "lue/framework/algorithm/default_policies/not_equal_to.hpp"
+#include "lue/framework/algorithm/default_policies/valid.hpp"
 #include "lue/framework/algorithm/default_policies/where.hpp"
-#include "lue/framework/algorithm/definition/valid.hpp"
 #include "lue/framework/algorithm/value_policies/all.hpp"
 #include "lue/framework/algorithm/value_policies/equal_to.hpp"
 #include "lue/framework/algorithm/value_policies/not_equal_to.hpp"
+#include "lue/framework/algorithm/value_policies/valid.hpp"
 #include "lue/framework/algorithm/value_policies/where.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
@@ -37,21 +38,21 @@ BOOST_AUTO_TEST_CASE(default_policies)
     {
         Element const fill_value{0};
         Array array{lue::create_partitioned_array(array_shape, partition_shape, fill_value)};
-        BooleanArray result = lue::valid<BooleanElement>(array);
+        BooleanArray result = valid<BooleanElement>(array);
         BOOST_CHECK(all(result == BooleanElement{1}).get());
     }
 
     {
         Element const fill_value{-1};
         Array array{lue::create_partitioned_array(array_shape, partition_shape, fill_value)};
-        BooleanArray result = lue::valid<BooleanElement>(array);
+        BooleanArray result = valid<BooleanElement>(array);
         BOOST_CHECK(all(result == BooleanElement{1}).get());
     }
 
     {
         Element const fill_value{1};
         Array array{lue::create_partitioned_array(array_shape, partition_shape, fill_value)};
-        BooleanArray result = lue::valid<BooleanElement>(array);
+        BooleanArray result = valid<BooleanElement>(array);
         BOOST_CHECK(all(result == BooleanElement{1}).get());
     }
 }
@@ -63,7 +64,7 @@ BOOST_AUTO_TEST_CASE(default_value_policies)
 
     using namespace lue::value_policies;
 
-    using ValidPolicies = lue::policy::valid::DefaultValuePolicies<BooleanElement, Element>;
+    // using ValidPolicies = lue::policy::valid::DefaultValuePolicies<BooleanElement, Element>;
     using WherePolicies = lue::policy::where::DefaultValuePolicies<Element, BooleanElement, Element>;
 
     {
@@ -71,7 +72,7 @@ BOOST_AUTO_TEST_CASE(default_value_policies)
         Element const fill_value{1};
         Array array{lue::create_partitioned_array(array_shape, partition_shape, fill_value)};
         array = lue::where<WherePolicies, BooleanElement>(WherePolicies{}, array == fill_value, array);
-        BooleanArray result = lue::valid<BooleanElement>(ValidPolicies{}, array);
+        BooleanArray result = valid<BooleanElement>(array);
         BOOST_CHECK(all(result == BooleanElement{1}).get());
     }
 
@@ -80,7 +81,7 @@ BOOST_AUTO_TEST_CASE(default_value_policies)
         Element const fill_value{1};
         Array array{lue::create_partitioned_array(array_shape, partition_shape, fill_value)};
         array = lue::where<WherePolicies, BooleanElement>(WherePolicies{}, array != fill_value, array);
-        BooleanArray result = lue::valid<BooleanElement>(ValidPolicies{}, array);
+        BooleanArray result = valid<BooleanElement>(array);
         BOOST_CHECK(all(result == BooleanElement{0}).get());
     }
 }

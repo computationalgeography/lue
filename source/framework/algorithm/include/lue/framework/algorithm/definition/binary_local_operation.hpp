@@ -77,6 +77,7 @@ namespace lue {
                                         auto const& indp1 = std::get<0>(policies.inputs_policies()).input_no_data_policy();
                                         auto const& indp2 = std::get<1>(policies.inputs_policies()).input_no_data_policy();
                                         auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
+                                        auto const& rp = std::get<0>(policies.outputs_policies()).range_policy();
 
                                         Count const nr_elements{lue::nr_elements(input_partition_data1)};
                                         lue_hpx_assert(lue::nr_elements(input_partition_data2) == nr_elements);
@@ -97,6 +98,13 @@ namespace lue {
                                             {
                                                 output_partition_data[i] =
                                                     functor(input_partition_data1[i], input_partition_data2[i]);
+
+                                                if(!rp.within_range(
+                                                    input_partition_data1[i], input_partition_data2[i],
+                                                    output_partition_data[i]))
+                                                {
+                                                    ondp.mark_no_data(output_partition_data, i);
+                                                }
                                             }
                                         }
 
@@ -193,6 +201,7 @@ namespace lue {
                                         auto const& indp1 = std::get<0>(policies.inputs_policies()).input_no_data_policy();
                                         auto const& indp2 = std::get<1>(policies.inputs_policies()).input_no_data_policy();
                                         auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
+                                        auto const& rp = std::get<0>(policies.outputs_policies()).range_policy();
 
                                         Count const nr_elements{lue::nr_elements(input_partition_data)};
 
@@ -219,6 +228,13 @@ namespace lue {
                                                 {
                                                     output_partition_data[i] =
                                                         functor(input_partition_data[i], input_scalar);
+
+                                                    if(!rp.within_range(
+                                                        input_partition_data[i], input_scalar,
+                                                        output_partition_data[i]))
+                                                    {
+                                                        ondp.mark_no_data(output_partition_data, i);
+                                                    }
                                                 }
                                             }
                                         }
@@ -314,6 +330,7 @@ namespace lue {
                                         auto const& indp1 = std::get<0>(policies.inputs_policies()).input_no_data_policy();
                                         auto const& indp2 = std::get<1>(policies.inputs_policies()).input_no_data_policy();
                                         auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
+                                        auto const& rp = std::get<0>(policies.outputs_policies()).range_policy();
 
                                         Count const nr_elements{lue::nr_elements(input_partition_data)};
 
@@ -340,6 +357,13 @@ namespace lue {
                                                 {
                                                     output_partition_data[i] =
                                                         functor(input_scalar, input_partition_data[i]);
+
+                                                    if(!rp.within_range(
+                                                        input_scalar, input_partition_data[i],
+                                                        output_partition_data[i]))
+                                                    {
+                                                        ondp.mark_no_data(output_partition_data, i);
+                                                    }
                                                 }
                                             }
                                         }

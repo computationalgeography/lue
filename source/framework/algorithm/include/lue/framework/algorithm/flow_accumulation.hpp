@@ -11,7 +11,11 @@ namespace lue {
         using DefaultPoliciesBase = Policies<
             AllValuesWithinDomain<FlowDirectionElement, MaterialElement>,
             OutputsPolicies<
-                OutputPolicies<DontMarkNoData<MaterialElement>>>,
+                    OutputPolicies<
+                            DontMarkNoData<MaterialElement>,
+                            AllValuesWithinRange<MaterialElement, FlowDirectionElement>
+                        >
+                >,
             InputsPolicies<
                 SpatialOperationInputPolicies<
                     SkipNoData<FlowDirectionElement>,
@@ -57,7 +61,11 @@ namespace lue {
             // TODO Only accept non-negative material values!!!
             AllValuesWithinDomain<FlowDirectionElement, MaterialElement>,
             OutputsPolicies<
-                OutputPolicies<DefaultOutputNoDataPolicy<MaterialElement>>>,
+                    OutputPolicies<
+                            DefaultOutputNoDataPolicy<MaterialElement>,
+                            AllValuesWithinRange<MaterialElement, FlowDirectionElement>
+                        >
+                >,
             InputsPolicies<
                 SpatialOperationInputPolicies<
                     DetectNoDataByValue<FlowDirectionElement>,

@@ -86,9 +86,6 @@ namespace lue {
         hpx::shared_future<Element> const false_value);
 
 
-    /*!
-        @overload
-    */
     template<
         typename Policies,
         typename ConditionElement,

@@ -7,7 +7,7 @@
 #include "lue/framework/algorithm/policy.hpp"
 #include "lue/framework/algorithm/sum.hpp"
 #include "lue/framework/algorithm/unique.hpp"
-#include "lue/framework/algorithm/valid.hpp"
+#include "lue/framework/algorithm/value_policies/valid.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/compare.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
@@ -478,9 +478,8 @@ BOOST_AUTO_TEST_CASE(use_case_3)
 
     // In each partition we put a no-data value, so the number of no-data values must be equal
     // to the number of partitions.
-    using ValidPolicies = lue::policy::valid::DefaultValuePolicies<std::uint8_t, Element>;
     BOOST_CHECK_EQUAL(
-        lue::sum(!lue::valid<std::uint8_t>(ValidPolicies{}, array)).get(),
+        lue::sum(!lue::value_policies::valid<std::uint8_t>(array)).get(),
         array.nr_partitions());
 
     // Now test these explicitly. All other values must then be valid, by definition.
