@@ -9,6 +9,7 @@ namespace lue {
             typename Element>
         class RangePolicy
         {
+
             public:
 
                 constexpr static bool within_range(
