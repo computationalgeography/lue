@@ -932,7 +932,9 @@ namespace lue {
         using DefaultPolicies = Policies<
             AllValuesWithinDomain<FlowDirectionElement>,
             OutputsPolicies<
-                OutputPolicies<DontMarkNoData<CountElement>>>,
+                OutputPolicies<
+                    DontMarkNoData<CountElement>,
+                    AllValuesWithinRange<CountElement, FlowDirectionElement>>>,
             InputsPolicies<
                 SpatialOperationInputPolicies<
                     SkipNoData<FlowDirectionElement>,
@@ -944,7 +946,9 @@ namespace lue {
         using DefaultValuePolicies = Policies<
             AllValuesWithinDomain<FlowDirectionElement>,
             OutputsPolicies<
-                OutputPolicies<DefaultOutputNoDataPolicy<CountElement>>>,
+                OutputPolicies<
+                    DefaultOutputNoDataPolicy<CountElement>,
+                    AllValuesWithinRange<CountElement, FlowDirectionElement>>>,
             InputsPolicies<
                 SpatialOperationInputPolicies<
                     DetectNoDataByValue<FlowDirectionElement>,

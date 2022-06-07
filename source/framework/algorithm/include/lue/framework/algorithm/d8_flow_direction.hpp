@@ -13,7 +13,11 @@ namespace lue {
         using DefaultPoliciesBase = Policies<
             AllValuesWithinDomain<ElevationElement>,
             OutputsPolicies<
-                OutputPolicies<DontMarkNoData<FlowDirectionElement>>>,
+                    OutputPolicies<
+                            DontMarkNoData<FlowDirectionElement>,
+                            AllValuesWithinRange<FlowDirectionElement>
+                        >
+                >,
             InputsPolicies<
                 SpatialOperationInputPolicies<
                     SkipNoData<ElevationElement>,
@@ -55,7 +59,11 @@ namespace lue {
         using DefaultValuePoliciesBase = Policies<
             AllValuesWithinDomain<ElevationElement>,
             OutputsPolicies<
-                OutputPolicies<DefaultOutputNoDataPolicy<FlowDirectionElement>>>,
+                    OutputPolicies<
+                            DefaultOutputNoDataPolicy<FlowDirectionElement>,
+                            AllValuesWithinRange<FlowDirectionElement>
+                        >
+                >,
             InputsPolicies<
                 SpatialOperationInputPolicies<
                     DefaultInputNoDataPolicy<ElevationElement>,

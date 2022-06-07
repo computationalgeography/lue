@@ -142,6 +142,7 @@ endforeach()
 
 set(names
     kernel
+    out_of_range
 )
 
 foreach(name ${names})

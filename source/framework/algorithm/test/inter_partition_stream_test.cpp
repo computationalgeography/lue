@@ -1686,7 +1686,10 @@ BOOST_AUTO_TEST_CASE(all_no_data_case)
 
     // Outputs
     using StreamPolicies =
-        lue::policy::OutputPolicies<lue::policy::MarkNoDataByValue<StreamClass>>;
+        lue::policy::OutputPolicies<
+                lue::policy::MarkNoDataByValue<StreamClass>,
+                lue::policy::AllValuesWithinRange<StreamClass, FlowDirectionElement>
+            >;
 
     // Inputs
     using FlowDirectionPolicies =
@@ -1742,7 +1745,10 @@ BOOST_AUTO_TEST_CASE(no_data_case)
 
     // Outputs
     using StreamPolicies =
-        lue::policy::OutputPolicies<lue::policy::MarkNoDataByValue<StreamClass>>;
+        lue::policy::OutputPolicies<
+                lue::policy::MarkNoDataByValue<StreamClass>,
+                lue::policy::AllValuesWithinRange<StreamClass, FlowDirectionElement>
+            >;
 
     // Inputs
     using FlowDirectionPolicies =
@@ -1818,7 +1824,10 @@ BOOST_AUTO_TEST_CASE(merging_streams_case)
 
     // Outputs
     using StreamPolicies =
-        lue::policy::OutputPolicies<lue::policy::MarkNoDataByValue<StreamClass>>;
+        lue::policy::OutputPolicies<
+                lue::policy::MarkNoDataByValue<StreamClass>,
+                lue::policy::AllValuesWithinRange<StreamClass, FlowDirectionElement>
+            >;
 
     // Inputs
     using FlowDirectionPolicies =

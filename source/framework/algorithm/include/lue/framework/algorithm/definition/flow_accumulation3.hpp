@@ -28,7 +28,11 @@ namespace lue::detail {
         // won't be reading these cells anyway.
 
         using CountElement = std::uint8_t;
-        using InflowCountOutputPolicies = policy::OutputPolicies<policy::DontMarkNoData<CountElement>>;
+        using InflowCountOutputPolicies =
+            policy::OutputPolicies<
+                    policy::DontMarkNoData<CountElement>,
+                    policy::AllValuesWithinRange<CountElement>
+                >;
         InflowCountOutputPolicies inflow_count_output_policies{};
 
         using FlowDirectionInputPolicies = policy::InputPoliciesT<Policies, 0>;

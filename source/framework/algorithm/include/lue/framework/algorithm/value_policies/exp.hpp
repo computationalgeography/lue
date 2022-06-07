@@ -7,10 +7,38 @@ namespace lue {
 
         template<
             typename Element>
-        using DefaultValuePolicies = policy::DefaultValuePolicies<
-            AllValuesWithinDomain<Element>,
-            OutputElements<Element>,
-            InputElements<Element>>;
+        class RangePolicy
+        {
+
+            public:
+
+                constexpr static bool within_range(
+                    [[maybe_unused]] Element const& argument,
+                    Element const& result)
+                {
+                    return !std::isinf(result);
+                }
+
+        };
+
+
+        template<
+            typename Element>
+        using DefaultValuePolicies =
+            policy::Policies<
+                    AllValuesWithinDomain<Element>,
+                    OutputsPolicies<
+                            OutputPolicies<
+                                    DefaultOutputNoDataPolicy<Element>,
+                                    RangePolicy<Element>
+                                >
+                        >,
+                    InputsPolicies<
+                            InputPolicies<
+                                    DefaultInputNoDataPolicy<Element>
+                                >
+                        >
+                >;
 
     }  // namespace policy::exp
 

@@ -45,10 +45,10 @@ namespace lue {
 }  // namespace lue
 
 
-#define LUE_INSTANTIATE_VALID(Policies, BooleanElement, ExpressionElement, rank)         \
-                                                                                         \
-    template LUE_LOCAL_OPERATION_EXPORT                                                  \
-    PartitionedArray<BooleanElement, rank> valid<                                        \
-            BooleanElement, ArgumentType<void(Policies)>, ExpressionElement, rank>(      \
-        ArgumentType<void(Policies)> const&,                                             \
+#define LUE_INSTANTIATE_VALID(Policies, BooleanElement, ExpressionElement, rank)     \
+                                                                                     \
+    template LUE_LOCAL_OPERATION_EXPORT                                              \
+    PartitionedArray<BooleanElement, rank> valid<                                    \
+            BooleanElement, ArgumentType<void(Policies)>, ExpressionElement, rank>(  \
+        ArgumentType<void(Policies)> const&,                                         \
         PartitionedArray<ExpressionElement, rank> const&);

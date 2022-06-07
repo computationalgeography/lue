@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE lue framework algorithm where
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/default_policies/where.hpp"
-#include "lue/framework/algorithm/definition/where.hpp"
+#include "lue/framework/algorithm/value_policies/where.hpp"
 #include "lue/framework/test/compare.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
@@ -24,7 +24,7 @@ using PartitionData = lue::DataT<Partition<Element, rank>>;
 
 BOOST_AUTO_TEST_CASE(use_case_1)
 {
-    // Array<Element> = where(Array<bool>, Array<Element>, Element)
+    // Array<Element> = where(Array<std::uint8_t>, Array<Element>, Element)
 
     // Condition:     True array:     False value:
     // +-----+-----+  +-----+-----+
@@ -44,15 +44,15 @@ BOOST_AUTO_TEST_CASE(use_case_1)
 
     Shape shape{nr_rows, nr_cols};
 
-    PartitionData<bool, rank> condition_data{
+    PartitionData<std::uint8_t, rank> condition_data{
             shape,
-            std::initializer_list<bool>{
-                true, false,
-                false, true,
-                true, false,
+            std::initializer_list<std::uint8_t>{
+                1, 0,
+                0, 1,
+                1, 0,
             }
         };
-    Array<bool, rank> condition{lue::create_partitioned_array<bool>(shape, shape)};
+    Array<std::uint8_t, rank> condition{lue::create_partitioned_array<std::uint8_t>(shape, shape)};
     condition.partitions()(0, 0).wait();
     condition.partitions()(0, 0).set_data(std::move(condition_data)).wait();
 
@@ -90,7 +90,7 @@ BOOST_AUTO_TEST_CASE(use_case_1)
 
 BOOST_AUTO_TEST_CASE(use_case_2)
 {
-    // Array<Element> = where(Array<bool>, Array<Element>)
+    // Array<Element> = where(Array<std::uint8_t>, Array<Element>)
 
     // Condition:     True array:
     // +-----+-----+  +-----+-----+
@@ -108,9 +108,20 @@ BOOST_AUTO_TEST_CASE(use_case_2)
     using Element = std::int32_t;
     lue::Rank const rank{2};
 
-    ConditionElement const ind1{66};
-    Element const ind2{77};
-    Element const ond{99};
+    ConditionElement ind1;
+    Element ind2;
+    Element ond;
+
+    {
+        using ONDP1 = lue::policy::DefaultOutputNoDataPolicy<ConditionElement>;
+        using ONDP2 = lue::policy::DefaultOutputNoDataPolicy<Element>;
+        ONDP1 ondp1{};
+        ONDP2 ondp2{};
+
+        ondp1.mark_no_data(ind1);
+        ondp2.mark_no_data(ind2);
+        ondp2.mark_no_data(ond);
+    }
 
     using Shape = lue::ShapeT<Array<Element, rank>>;
 
@@ -140,29 +151,7 @@ BOOST_AUTO_TEST_CASE(use_case_2)
     true_array.partitions()(0, 0).wait();
     true_array.partitions()(0, 0).set_data(std::move(true_data)).wait();
 
-    using DomainPolicy = lue::policy::where::DomainPolicy<ConditionElement, Element>;
-    using OutputPolicies =
-        lue::policy::OutputPolicies<lue::policy::MarkNoDataByValue<Element>>;
-    using InputExpressionPolicies =
-        lue::policy::InputPolicies<lue::policy::DetectNoDataByValue<Element>>;
-    using InputConditionPolicies =
-        lue::policy::InputPolicies<lue::policy::DetectNoDataByValue<ConditionElement>>;
-
-    using Policies = lue::policy::Policies<
-        DomainPolicy,
-        lue::policy::OutputsPolicies<OutputPolicies>,
-        lue::policy::InputsPolicies<InputConditionPolicies, InputExpressionPolicies>>;
-
-    OutputPolicies output_policies{
-        lue::policy::MarkNoDataByValue<Element>{ond}};
-    InputConditionPolicies condition_policies{
-        lue::policy::DetectNoDataByValue<ConditionElement>{ind1}};
-    InputExpressionPolicies expression_policies{
-        lue::policy::DetectNoDataByValue<Element>{ind2}};
-
-    Policies policies{DomainPolicy{}, output_policies, condition_policies, expression_policies};
-
-    auto result_we_got = lue::where(policies, condition, true_array);
+    auto result_we_got = lue::value_policies::where(condition, true_array);
 
     PartitionData<Element, rank> result_we_want_data{
             shape,

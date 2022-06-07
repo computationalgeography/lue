@@ -3,6 +3,9 @@
 #include "lue/framework/algorithm/default_policies/all.hpp"
 #include "lue/framework/algorithm/default_policies/equal_to.hpp"
 #include "lue/framework/algorithm/default_policies/exp.hpp"
+#include "lue/framework/algorithm/value_policies/exp.hpp"
+#include "lue/framework/algorithm/value_policies/none.hpp"
+#include "lue/framework/algorithm/value_policies/valid.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
@@ -44,3 +47,22 @@ BOOST_AUTO_TEST_CASE(array_##rank##d_##Element)  \
 TEST_CASE(2, double)
 
 #undef TEST_CASE
+
+
+BOOST_AUTO_TEST_CASE(out_of_range)
+{
+    using namespace lue::value_policies;
+
+    using Element = float;
+    lue::Rank const rank{2};
+    using Array = lue::PartitionedArray<Element, rank>;
+
+    auto const array_shape{lue::Test<Array>::shape()};
+    auto const partition_shape{lue::Test<Array>::partition_shape()};
+
+    Element const fill_value{710};
+
+    Array array{lue::create_partitioned_array(array_shape, partition_shape, fill_value)};
+
+    BOOST_CHECK(none(valid<std::uint8_t>(exp(array))).get());
+}
