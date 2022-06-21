@@ -55,3 +55,57 @@ class ToNumPyTest(lue_test.TestCase):
 
         self.assertEqual(numpy_array.dtype, dtype)
         np.testing.assert_array_equal(numpy_array, np.full(array_shape, fill_value, dtype=dtype))
+
+
+    @lue_test.framework_test_case
+    def test_result_of_multiple_operations(self):
+
+        array_shape = (60, 40)
+        partition_shape = (10, 10)
+        dtype = np.dtype(np.int32)
+        fill_value = 5
+        array = lfr.create_array(array_shape, partition_shape, dtype, fill_value) + 5
+        numpy_array = lfr.to_numpy(array)
+
+        self.assertEqual(numpy_array.dtype, dtype)
+        np.testing.assert_array_equal(numpy_array, np.full(array_shape, fill_value + 5, dtype=dtype))
+
+
+    @lue_test.framework_test_case
+    def test_numpy_roundtrip(self):
+
+        array_shape = (60, 40)
+        nr_cells = 60 * 40
+        partition_shape = (10, 10)
+
+        for type_ in [np.int32, np.float32]:
+            dtype = np.dtype(type_)
+            numpy_array = np.arange(nr_cells, dtype=dtype).reshape(array_shape)
+
+            lue_array = lfr.from_numpy(numpy_array, partition_shape)
+            numpy_array = lfr.to_numpy(lue_array)
+
+            self.assertEqual(numpy_array.dtype, dtype)
+            np.testing.assert_array_equal(
+                numpy_array, np.arange(nr_cells, dtype=dtype).reshape(array_shape),
+                err_msg="Error in case type is {}".format(dtype), verbose=True)
+
+
+    @lue_test.framework_test_case
+    def test_numpy_roundtrip_result_of_multiple_operations(self):
+
+        array_shape = (60, 40)
+        nr_cells = 60 * 40
+        partition_shape = (10, 10)
+
+        for type_ in [np.int32, np.float32]:
+            dtype = np.dtype(type_)
+            numpy_array = np.arange(nr_cells, dtype=dtype).reshape(array_shape)
+
+            lue_array = lfr.from_numpy(numpy_array, partition_shape) + 5
+            numpy_array = lfr.to_numpy(lue_array)
+
+            self.assertEqual(numpy_array.dtype, dtype)
+            np.testing.assert_array_equal(
+                numpy_array, np.arange(nr_cells, dtype=dtype).reshape(array_shape) + 5,
+                err_msg="Error in case type is {}".format(dtype), verbose=True)
