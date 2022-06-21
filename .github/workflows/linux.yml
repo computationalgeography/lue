@@ -94,9 +94,10 @@ jobs:
                   -D CMAKE_BUILD_TYPE=Release \
                   -D FETCHCONTENT_QUIET=FALSE \
                   -D LUE_BUILD_DOCUMENTATION=TRUE \
-                  -D LUE_BUILD_TEST=TEST \
-                  -D LUE_TEST_NR_LOCALITIES_PER_TEST=1 \
-                  -D LUE_TEST_NR_THREADS_PER_LOCALITY=2 \
+                  -D LUE_BUILD_QA=TRUE \
+                  -D LUE_QA_WITH_PYTHON_API=TRUE \
+                  -D LUE_QA_TEST_NR_LOCALITIES_PER_TEST=1 \
+                  -D LUE_QA_TEST_NR_THREADS_PER_LOCALITY=2 \
                   -D LUE_BUILD_DATA_MODEL=TRUE \
                   -D LUE_DATA_MODEL_WITH_PYTHON_API=TRUE \
                   -D LUE_DATA_MODEL_WITH_UTILITIES=TRUE \

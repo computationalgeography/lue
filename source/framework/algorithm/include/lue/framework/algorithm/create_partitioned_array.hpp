@@ -491,7 +491,7 @@ namespace lue {
             [[maybe_unused]] Count const nr_localities = localities.size();
             lue_hpx_assert(nr_localities > 0);
 
-            if(!BuildOptions::build_test)
+            if(!(BuildOptions::build_qa && BuildOptions::qa_with_tests))
             {
                 // In general, the number of localities should be smaller than
                 // the number of partitions. Otherwise more hardware is used than

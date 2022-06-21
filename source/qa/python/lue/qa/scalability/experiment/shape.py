@@ -23,8 +23,7 @@ def partition_shape_multipliers(
 
     shape_multipliers = [shape[r] // partition_shape[r] for r in range(rank)]
 
-    assert all(
-        [isinstance(multiplier, int) for multiplier in shape_multipliers])
+    assert all([isinstance(multiplier, int) for multiplier in shape_multipliers])
 
     return shape_multipliers
 
@@ -36,16 +35,13 @@ def ranges_of_partition_shape_multipliers(
     """
     Return for each dimension a range of multipliers
     """
-    min_partition_shape_multipliers = partition_shape_multipliers(
-        shape, min_partition_shape)
-    max_partition_shape_multipliers = partition_shape_multipliers(
-        shape, max_partition_shape)
+    min_partition_shape_multipliers = partition_shape_multipliers(shape, min_partition_shape)
+    max_partition_shape_multipliers = partition_shape_multipliers(shape, max_partition_shape)
 
     rank = len(shape)
 
     assert all([
-        min_partition_shape_multipliers[r] >=
-        max_partition_shape_multipliers[r] for r in range(rank)])
+        min_partition_shape_multipliers[r] >= max_partition_shape_multipliers[r] for r in range(rank)])
 
     multiplier_ranges = [
             range(
@@ -122,7 +118,7 @@ def range_of_shapes(
 
     if method == "linear":
 
-        # Increase the number of cells linearly, by 
+        # Increase the number of cells linearly, by
         # i * (multiplier - 1) * sizes[0]
         new_size = lambda i: sizes[0] + i * (multiplier - 1) * sizes[0]
         i = 1
@@ -150,13 +146,15 @@ def range_of_shapes(
 class Range(object):
 
     def __init__(self,
-            json):
-        self.from_json(json)
+            data):
 
-    def from_json(self, json):
-        self.max_nr_elements = json["max_nr_elements"]
-        self.multiplier = json["multiplier"]
-        self.method = json["method"]
+        self.from_json(data)
+
+    def from_json(self, data):
+
+        self.max_nr_elements = data["max_nr_elements"]
+        self.multiplier = data["multiplier"]
+        self.method = data["method"]
 
         assert self.method in ["linear", "exponential"]
 
@@ -164,6 +162,7 @@ class Range(object):
             assert self.multiplier > 1
 
     def to_json(self):
+
         return {
                 "max_nr_elements": self.max_nr_elements,
                 "multiplier": self.multiplier,
@@ -174,14 +173,17 @@ class Range(object):
 class Shape(object):
 
     def __init__(self,
-            json):
-        self.from_json(json)
+            data):
 
-    def from_json(self, json):
-        self._shape = tuple(json["shape"])
-        self._range = Range(json["range"]) if "range" in json else None
+        self.from_json(data)
+
+    def from_json(self, data):
+
+        self._shape = tuple(data["shape"])
+        self._range = Range(data["range"]) if "range" in data else None
 
     def to_json(self):
+
         result = {
                 "shape": self._shape
             }
@@ -197,6 +199,7 @@ class Shape(object):
 
     @property
     def shapes(self):
+
         if self.is_fixed():
             result = [self._shape]
         else:

@@ -12,6 +12,7 @@ class Arguments(object):
 
     @property
     def to_list(self):
+
         result = []
 
         for positional in self.positionals:
@@ -26,28 +27,28 @@ class Arguments(object):
 class Experiment(object):
 
     def __init__(self,
-            json,
-            name,
-            description):
+        data,
+        name,
+        description):
 
         # Name (kind) of the experiment
         self.name = name
 
         self.description = description
-        self.command_pathname = json["command_pathname"]
-        self.arguments = Arguments(json["arguments"]) if "arguments" in json else Arguments({})
+        self.command_pathname = data["command_pathname"]
+        self.arguments = Arguments(data["arguments"]) if "arguments" in data else Arguments({})
 
-        self.max_duration = json["max_duration"] if "max_duration" in json else None
-        self.max_tree_depth = json["max_tree_depth"] if "max_tree_depth" in json else None
-        self.nr_time_steps = json["nr_time_steps"]
+        self.max_duration = data["max_duration"] if "max_duration" in data else None
+        self.max_tree_depth = data["max_tree_depth"] if "max_tree_depth" in data else None
+        # self.nr_time_steps = data["nr_time_steps"]
 
         self.program_name = os.path.basename(self.command_pathname)
 
-
     def to_json(self):
+
         result = {
                 "command_pathname": self.command_pathname,
-                "nr_time_steps": self.nr_time_steps,
+                # "nr_time_steps": self.nr_time_steps,
             }
 
         if self.max_duration:
@@ -63,8 +64,8 @@ class Experiment(object):
     def argument_list(self):
         return self.arguments.to_list
 
-
     def workspace_pathname(self,
+            result_prefix,
             cluster_name,
             scenario_name):
         """
@@ -72,18 +73,19 @@ class Experiment(object):
         experiment results must be stored
         """
         return os.path.join(
-            os.path.abspath(cluster_name),
+            os.path.abspath(result_prefix),
+            cluster_name,
             self.program_name,
             scenario_name,
             self.name)
 
-
     def result_pathname(self,
+            result_prefix,
             cluster_name,
             scenario_name,
             basename,
             extension):
 
         return os.path.join(
-            self.workspace_pathname(cluster_name, scenario_name),
+            self.workspace_pathname(result_prefix, cluster_name, scenario_name),
             "{}.{}".format(basename, extension))

@@ -24,9 +24,9 @@ option(LUE_FRAMEWORK_WITH_OPENCL
 option(LUE_FRAMEWORK_WITH_DASHBOARD
     "Include dashboard for simulation framework"
     FALSE)
-option(LUE_FRAMEWORK_WITH_BENCHMARKS
-    "Include benchmarks"
-    FALSE)
+# option(LUE_FRAMEWORK_WITH_BENCHMARKS
+#     "Include benchmarks"
+#     FALSE)
 option(LUE_FRAMEWORK_WITH_PYTHON_API
     "Include Python API for modelling framework"
     FALSE)
@@ -39,18 +39,27 @@ option(LUE_BUILD_DOCUMENTATION
     "Build documentation"
     FALSE)
 
-option(LUE_BUILD_TEST
-    "Build tests"
-    FALSE)
-set(LUE_TEST_NR_LOCALITIES_PER_TEST
-    1 CACHE STRING "Number of localities to use")
-set(LUE_TEST_NR_THREADS_PER_LOCALITY
-    1 CACHE STRING "Number of threads to use")
-set(LUE_TEST_HPX_RUNWRAPPER
-    none CACHE STRING "Which runwrapper to use (see hpxrun.py)")
-set(LUE_TEST_HPX_PARCELPORT
-    tcp CACHE STRING "Which parcelport to use (see hpxrun.py)")
+# option(LUE_BUILD_TEST
+#     "Build tests"
+#     FALSE)
 
+option(LUE_BUILD_QA
+    "Include support for QA"
+    FALSE)
+option(LUE_QA_WITH_PYTHON_API
+    "Include Python API for QA"
+    FALSE)
+option(LUE_QA_WITH_TESTS
+    "Include tests"
+    TRUE)
+set(LUE_QA_TEST_NR_LOCALITIES_PER_TEST
+    1 CACHE STRING "Number of localities to use")
+set(LUE_QA_TEST_NR_THREADS_PER_LOCALITY
+    1 CACHE STRING "Number of threads to use")
+set(LUE_QA_TEST_HPX_RUNWRAPPER
+    none CACHE STRING "Which runwrapper to use (see hpxrun.py)")
+set(LUE_QA_TEST_HPX_PARCELPORT
+    tcp CACHE STRING "Which parcelport to use (see hpxrun.py)")
 
 # Options related to external software used by the project
 option(LUE_BUILD_HPX
@@ -155,7 +164,9 @@ if(LUE_BUILD_FRAMEWORK)
 endif()
 
 
-if(LUE_BUILD_TEST)
+if(LUE_BUILD_QA)
+    if(LUE_QA_WITH_TESTS)
+    endif()
 endif()
 
 
@@ -212,9 +223,9 @@ if(LUE_BUILD_FRAMEWORK)
         set(LUE_IMGUI_REQUIRED TRUE)
     endif()
 
-    if(LUE_FRAMEWORK_WITH_BENCHMARKS)
-        set(LUE_NLOHMANN_JSON_REQUIRED TRUE)
-    endif()
+    # if(LUE_FRAMEWORK_WITH_BENCHMARKS)
+    #     set(LUE_NLOHMANN_JSON_REQUIRED TRUE)
+    # endif()
 
     if(LUE_FRAMEWORK_WITH_PYTHON_API)
         set(LUE_PYBIND11_REQUIRED TRUE)
@@ -223,25 +234,34 @@ if(LUE_BUILD_FRAMEWORK)
 endif()
 
 
-if(LUE_BUILD_TEST)
-    set(LUE_BOOST_REQUIRED TRUE)
-    list(APPEND LUE_REQUIRED_BOOST_COMPONENTS
-        filesystem system unit_test_framework)
+if(LUE_BUILD_QA)
+    set(LUE_NLOHMANN_JSON_REQUIRED TRUE)
 
-    if(LUE_BUILD_FRAMEWORK)
-        set(HPXRUN "${CMAKE_BINARY_DIR}/_deps/hpx-build/bin/hpxrun.py")
+    if(LUE_QA_WITH_TESTS)
+        set(LUE_BOOST_REQUIRED TRUE)
+        list(APPEND LUE_REQUIRED_BOOST_COMPONENTS
+            filesystem system unit_test_framework)
 
-        # Needed to be able to run hpxrun.py
+        if(LUE_BUILD_FRAMEWORK)
+            set(HPXRUN "${CMAKE_BINARY_DIR}/_deps/hpx-build/bin/hpxrun.py")
+
+            # Needed to be able to run hpxrun.py
+            set(LUE_PYTHON_REQUIRED TRUE)
+
+            # Does not work when HPX is built as part of LUE build
+            # find_file(HPXRUN
+            #     "hpxrun.py"
+            #     PATHS ${CMAKE_BINARY_DIR}/_deps/hpx-build/bin)
+            #
+            # if(NOT HPXRUN)
+            #     message(FATAL_ERROR "hpxrun.py not found")
+            # endif()
+        endif()
+    endif()
+
+    if(LUE_QA_WITH_PYTHON_API)
+        set(LUE_PYBIND11_REQUIRED TRUE)
         set(LUE_PYTHON_REQUIRED TRUE)
-
-        # Does not work when HPX is built as part of LUE build
-        # find_file(HPXRUN
-        #     "hpxrun.py"
-        #     PATHS ${CMAKE_BINARY_DIR}/_deps/hpx-build/bin)
-        #
-        # if(NOT HPXRUN)
-        #     message(FATAL_ERROR "hpxrun.py not found")
-        # endif()
     endif()
 endif()
 

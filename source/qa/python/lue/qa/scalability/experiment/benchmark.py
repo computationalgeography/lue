@@ -1,15 +1,18 @@
 from . import worker
-from . import util
+from lue.qa.scalability.core import json_to_data
 
 
 class HPX(object):
 
-    def __init__(self, json):
-        self.from_json(json)
+    def __init__(self,
+            data):
 
-    def from_json(self, json):
-        self.performance_counters = json["performance_counters"] \
-            if "performance_counters" in json else None
+        self.from_json(data)
+
+    def from_json(self,
+            data):
+
+        self.performance_counters = data["performance_counters"] if "performance_counters" in data else None
 
         if self.performance_counters:
             self.counter_interval = None
@@ -33,17 +36,19 @@ class HPX(object):
 
 class Benchmark(object):
 
-    def __init__(self, json, cluster):
+    def __init__(self,
+            data,
+            cluster):
         """
         Class for storing information about the configuration of the
-        scaling experiment benchmarks
+        scalability experiment benchmarks
 
         count: How many times a benchmark needs to be repeated
         locality_per: Whether to launch a process per cluster node or
             NUMA node
         worker: Information about the workers to be used
         """
-        self.from_json(json, cluster)
+        self.from_json(data, cluster)
 
         if self.worker.type == "thread":
             if self.locality_per == "numa_node":
@@ -115,23 +120,25 @@ class Benchmark(object):
                 self.worker
             )
 
-    def from_json(self, json, cluster):
-        self.scenario_name = json["scenario"] \
-            if "scenario" in json else "default"
-        self.count = json["count"]
+    def from_json(self,
+            data,
+            cluster):
 
-        self.locality_per = json["locality_per"]
+        self.scenario_name = data["scenario"] if "scenario" in data else "default"
+        self.count = data["count"]
+
+        self.locality_per = data["locality_per"]
         assert self.locality_per in ["cluster_node", "numa_node"]
 
-        self.worker = worker.Worker(json["worker"], cluster, self.locality_per)
+        self.worker = worker.Worker(data["worker"], cluster, self.locality_per)
 
         self.hpx = None
 
-        if "hpx" in json:
-            hpx_json = json["hpx"]
+        if "hpx" in data:
+            hpx_json = data["hpx"]
 
             if isinstance(hpx_json, str):
-                hpx_json = util.json_to_data(hpx_json)
+                hpx_json = json_to_data(hpx_json)
 
             self.hpx = HPX(hpx_json)
 

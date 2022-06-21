@@ -41,20 +41,36 @@ def srun_configuration(
 
 
 def program_configuration(
-        cluster,
-        benchmark,
-        experiment,
-        array_shape,
-        partition_shape,
-        result_pathname=None,
-        nr_workers=None):
+    result_prefix,
+    cluster,
+    benchmark,
+    experiment,
+    array_shape,
+    partition_shape,
+    result_pathname=None,
+    nr_workers=None):
 
     assert nr_workers is not None
 
     if result_pathname is None:
         assert not nr_workers is None
         result_pathname = experiment.benchmark_result_pathname(
-            cluster.name, benchmark.scenario_name, nr_workers, "json")
+            result_prefix, cluster.name, benchmark.scenario_name, nr_workers, "json")
+
+    configuration = \
+        '--hpx:print-bind ' \
+        '--lue:count="{count}" ' \
+        '--lue:nr_workers="{nr_workers}" ' \
+        '--lue:array_shape="{array_shape}" ' \
+        '--lue:partition_shape="{partition_shape}" ' \
+        '--lue:result="{result_pathname}" ' \
+            .format(
+                count=benchmark.count,
+                nr_workers=nr_workers,
+                array_shape=list(array_shape),
+                partition_shape=list(partition_shape),
+                result_pathname=result_pathname,
+            )
 
     #   '--hpx:attach-debugger=exception '
     #   '--hpx:queuing=shared-priority '
@@ -68,79 +84,80 @@ def program_configuration(
     #   '--hpx:use-process-mask '
     #   '--hpx:bind="{thread_binding}" '
     #   '--hpx:debug-hpx-log '
-    configuration = \
-        '--hpx:print-bind ' \
-        '--hpx:ini="hpx.commandline.allow_unknown!=1 ' \
-        '--hpx:ini="hpx.commandline.aliasing!=0 ' \
-        '--hpx:ini="hpx.agas.max_pending_refcnt_requests!=50" ' \
-        '--hpx:ini="hpx.stacks.use_guard_pages=0" ' \
-        '--hpx:ini="hpx.diagnostics_on_terminate!=0" ' \
-        '--hpx:ini="application.{program_name}.benchmark.cluster_name!={cluster_name}" ' \
-        '--hpx:ini="application.{program_name}.benchmark.count!={count}" ' \
-        '--hpx:ini="application.{program_name}.benchmark.nr_workers!={nr_workers}" ' \
-        '--hpx:ini="application.{program_name}.benchmark.output!={result_pathname}" ' \
-        '--hpx:ini="application.{program_name}.nr_time_steps!={nr_time_steps}" ' \
-        '--hpx:ini="application.{program_name}.array_shape!={array_shape}" ' \
-        '--hpx:ini="application.{program_name}.partition_shape!={partition_shape}" ' \
-            .format(
-                # thread_binding=benchmark.thread_binding,
-                program_name=experiment.program_name,
-                cluster_name=cluster.name,
-                count=benchmark.count,
-                nr_workers=nr_workers,
-                nr_time_steps=experiment.nr_time_steps,
-                array_shape=list(array_shape),
-                partition_shape=list(partition_shape),
-                result_pathname=result_pathname,
-            )
 
-    arguments = []
+    # configuration = \
+    #     '--hpx:print-bind ' \
+    #     '--hpx:ini="hpx.commandline.allow_unknown!=1 ' \
+    #     '--hpx:ini="hpx.commandline.aliasing!=0 ' \
+    #     '--hpx:ini="hpx.agas.max_pending_refcnt_requests!=50" ' \
+    #     '--hpx:ini="hpx.stacks.use_guard_pages=0" ' \
+    #     '--hpx:ini="hpx.diagnostics_on_terminate!=0" ' \
+    #     '--hpx:ini="application.{program_name}.benchmark.cluster_name!={cluster_name}" ' \
+    #     '--hpx:ini="application.{program_name}.benchmark.count!={count}" ' \
+    #     '--hpx:ini="application.{program_name}.benchmark.nr_workers!={nr_workers}" ' \
+    #     '--hpx:ini="application.{program_name}.benchmark.output!={result_pathname}" ' \
+    #     '--hpx:ini="application.{program_name}.nr_time_steps!={nr_time_steps}" ' \
+    #     '--hpx:ini="application.{program_name}.array_shape!={array_shape}" ' \
+    #     '--hpx:ini="application.{program_name}.partition_shape!={partition_shape}" ' \
+    #         .format(
+    #             # thread_binding=benchmark.thread_binding,
+    #             program_name=experiment.program_name,
+    #             cluster_name=cluster.name,
+    #             count=benchmark.count,
+    #             nr_workers=nr_workers,
+    #             nr_time_steps=experiment.nr_time_steps,
+    #             array_shape=list(array_shape),
+    #             partition_shape=list(partition_shape),
+    #             result_pathname=result_pathname,
+    #         )
 
-    if experiment.max_tree_depth is not None:
-        arguments.append(
-            '--hpx:ini="application.{program_name}.benchmark.max_tree_depth!={max_tree_depth}"'
-                .format(
-                    program_name=experiment.program_name,
-                    max_tree_depth=experiment.max_tree_depth))
+    # arguments = []
 
-    if not benchmark.hpx is None:
+    # if experiment.max_tree_depth is not None:
+    #     arguments.append(
+    #         '--hpx:ini="application.{program_name}.benchmark.max_tree_depth!={max_tree_depth}"'
+    #             .format(
+    #                 program_name=experiment.program_name,
+    #                 max_tree_depth=experiment.max_tree_depth))
 
-        performance_counters = benchmark.hpx.performance_counters
+    # if not benchmark.hpx is None:
 
-        if performance_counters is not None:
+    #     performance_counters = benchmark.hpx.performance_counters
 
-            assert not nr_workers is None
-            counter_pathname = experiment.benchmark_result_pathname(
-                cluster.name, benchmark.scenario_name,
-                "counter-{}".format(nr_workers), "csv")
+    #     if performance_counters is not None:
 
-            # Format arguments for tracking performance counters
-            arguments += [
-                '--hpx:print-counter-format=csv',
-                '--hpx:print-counter-destination="{destination}"'.format(
-                    destination=counter_pathname),
-            ]
+    #         assert not nr_workers is None
+    #         counter_pathname = experiment.benchmark_result_pathname(
+    #             result_prefix, cluster.name, benchmark.scenario_name,
+    #             "counter-{}".format(nr_workers), "csv")
 
-            for argument in performance_counters:
-                # Each argument is a dict with a single item. Each dict
-                # maps a key (the argument name) to a value. Value can
-                # be a single value or a list of values.
-                assert len(argument) == 1, argument
-                items = list(argument.items())
-                assert len(items) == 1
-                assert len(items[0]) == 2
-                # assert len(argument.items()[0]) == 2, argument.items()
-                key, value = items[0]
+    #         # Format arguments for tracking performance counters
+    #         arguments += [
+    #             '--hpx:print-counter-format=csv',
+    #             '--hpx:print-counter-destination="{destination}"'.format(
+    #                 destination=counter_pathname),
+    #         ]
 
-                if not isinstance(value, list):
-                    arguments.append('--hpx:{}="{}"'.format(key, value))
-                else:
-                    for item in value:
-                        arguments.append('--hpx:{}="{}"'.format(key, item))
+    #         for argument in performance_counters:
+    #             # Each argument is a dict with a single item. Each dict
+    #             # maps a key (the argument name) to a value. Value can
+    #             # be a single value or a list of values.
+    #             assert len(argument) == 1, argument
+    #             items = list(argument.items())
+    #             assert len(items) == 1
+    #             assert len(items[0]) == 2
+    #             # assert len(argument.items()[0]) == 2, argument.items()
+    #             key, value = items[0]
 
-    arguments += experiment.argument_list
+    #             if not isinstance(value, list):
+    #                 arguments.append('--hpx:{}="{}"'.format(key, value))
+    #             else:
+    #                 for item in value:
+    #                     arguments.append('--hpx:{}="{}"'.format(key, item))
 
-    configuration += " {}".format(" ".join(arguments))
+    # arguments += experiment.argument_list
+
+    # configuration += " {}".format(" ".join(arguments))
 
     return configuration
 
@@ -258,36 +275,39 @@ def lue_raw_dataset_basename():
     return "raw"
 
 
-def lue_scaling_dataset_basename():
-    return "scaling"
+def lue_scalability_dataset_basename():
+    return "scalability"
 
 
 def lue_raw_dataset_pathname(
+        result_prefix,
         cluster,
         benchmark,
         experiment):
 
     return experiment.result_pathname(
-        cluster.name, benchmark.scenario_name, lue_raw_dataset_basename(),
+        result_prefix, cluster.name, benchmark.scenario_name, lue_raw_dataset_basename(),
         "lue")
 
 
-def lue_scaling_dataset_pathname(
+def lue_scalability_dataset_pathname(
+        result_prefix,
         cluster,
         benchmark,
         experiment):
 
     return experiment.result_pathname(
-        cluster.name, benchmark.scenario_name, lue_scaling_dataset_basename(),
+        result_prefix, cluster.name, benchmark.scenario_name, lue_scalability_dataset_basename(),
         "lue")
 
 
 def create_raw_lue_dataset(
+        result_prefix,
         cluster,
         benchmark,
         experiment):
 
-    dataset_pathname = lue_raw_dataset_pathname(cluster, benchmark, experiment)
+    dataset_pathname = lue_raw_dataset_pathname(result_prefix, cluster, benchmark, experiment)
     directory_pathname = os.path.split(dataset_pathname)[0]
 
     if os.path.exists(directory_pathname):
@@ -303,43 +323,50 @@ def create_raw_lue_dataset(
 
 
 def open_raw_lue_dataset(
-        results_prefix,
+        result_prefix,
+        cluster,
+        benchmark,
+        experiment,
         open_mode):
 
-    dataset_pathname = os.path.join(
-        results_prefix, lue_raw_dataset_basename() + ".lue")
+    dataset_pathname = lue_raw_dataset_pathname(result_prefix, cluster, benchmark, experiment)
     assert os.path.exists(dataset_pathname), dataset_pathname
     dataset = ldm.open_dataset(dataset_pathname, open_mode)
 
     return dataset
 
 
-def open_scaling_lue_dataset(
-        results_prefix,
+def open_scalability_lue_dataset(
+        result_prefix,
+        cluster,
+        benchmark,
+        experiment,
         open_mode):
 
-    dataset_pathname = os.path.join(
-        results_prefix, lue_scaling_dataset_basename() + ".lue")
+    dataset_pathname = lue_scalability_dataset_pathname(result_prefix, cluster, benchmark, experiment)
     assert os.path.exists(dataset_pathname), dataset_pathname
     dataset = ldm.open_dataset(dataset_pathname, open_mode)
 
     return dataset
 
 
-def scaling_lue_dataset_exists(
-        results_prefix):
+def scalability_lue_dataset_exists(
+        result_prefix,
+        cluster,
+        benchmark,
+        experiment):
 
-    dataset_pathname = os.path.join(
-        results_prefix, lue_scaling_dataset_basename() + ".lue")
+    dataset_pathname = lue_scalability_dataset_pathname(result_prefix, cluster, benchmark, experiment)
     return os.path.exists(dataset_pathname)
 
 
-def copy_raw_to_scaling_lue_dataset(
-        results_prefix):
+def copy_raw_to_scalability_lue_dataset(
+        result_prefix,
+        cluster,
+        benchmark,
+        experiment):
 
-    raw_dataset_pathname = os.path.join(
-        results_prefix, lue_raw_dataset_basename() + ".lue")
-    scaling_dataset_pathname = os.path.join(
-        results_prefix, lue_scaling_dataset_basename() + ".lue")
+    raw_dataset_pathname = lue_raw_dataset_pathname(result_prefix, cluster, benchmark, experiment)
+    scalability_dataset_pathname = lue_scalability_dataset_pathname(result_prefix, cluster, benchmark, experiment)
 
-    shutil.copyfile(raw_dataset_pathname, scaling_dataset_pathname)
+    shutil.copyfile(raw_dataset_pathname, scalability_dataset_pathname)

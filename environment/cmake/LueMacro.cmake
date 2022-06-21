@@ -133,12 +133,12 @@ endfunction()
 
 
 # Tests can be added conditionally. When the build is configured, the
-# LUE_BUILD_TEST variable can be set to TRUE or FALSE. Depending on
-# its setting tests are build or not.
+# LUE_BUILD_QA and LUE_QA_WITH_TESTS options can be set to TRUE or FALSE. Depending on
+# these settings tests are build or not.
 # DIRECTORY_NAME: Name of subdirectory containing the target.
 function(add_test_conditionally
         DIRECTORY_NAME)
-    if(LUE_BUILD_TEST)
+    if(LUE_BUILD_QA AND LUE_QA_WITH_TESTS)
         add_subdirectory(${DIRECTORY_NAME})
     endif()
 endfunction()
@@ -341,10 +341,10 @@ function(add_hpx_unit_test)
     add_test(NAME ${TEST_EXE_NAME}
         COMMAND
             ${Python3_EXECUTABLE} ${HPXRUN}
-                "--runwrapper" ${LUE_TEST_HPX_RUNWRAPPER}
-                "--parcelport" ${LUE_TEST_HPX_PARCELPORT}
-                "--localities" ${LUE_TEST_NR_LOCALITIES_PER_TEST}
-                "--thread" ${LUE_TEST_NR_THREADS_PER_LOCALITY} --
+                "--runwrapper" ${LUE_QA_TEST_HPX_RUNWRAPPER}
+                "--parcelport" ${LUE_QA_TEST_HPX_PARCELPORT}
+                "--localities" ${LUE_QA_TEST_NR_LOCALITIES_PER_TEST}
+                "--thread" ${LUE_QA_TEST_NR_THREADS_PER_LOCALITY} --
                     "$<TARGET_FILE:${TEST_EXE_NAME}>")
 
     if(ADD_HPX_UNIT_TEST_DEPENDENCIES)

@@ -14,7 +14,9 @@
 
 #cmakedefine01 LUE_VALIDATE_IDXS
 #cmakedefine01 LUE_ASSERT_CONDITIONS
-#cmakedefine LUE_BUILD_TEST
+#cmakedefine LUE_BUILD_QA
+#cmakedefine LUE_QA_WITH_PYTHON_API
+#cmakedefine LUE_QA_WITH_TESTS
 
 
 namespace lue {
@@ -44,8 +46,16 @@ namespace lue {
 
             static constexpr bool assert_conditions{LUE_ASSERT_CONDITIONS};
 
-            static constexpr bool build_test{
-#ifdef LUE_BUILD_TEST
+            static constexpr bool build_qa{
+#ifdef LUE_BUILD_QA
+                    true
+#else
+                    false
+#endif
+                };
+
+            static constexpr bool qa_with_tests{
+#ifdef LUE_QA_WITH_TESTS
                     true
 #else
                     false
