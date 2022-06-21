@@ -69,13 +69,22 @@ BOOST_AUTO_TEST_CASE(safe_add_signed_integer)
 
 BOOST_AUTO_TEST_CASE(safe_add_floating_point)
 {
-    // using Element = float;
+    using Element = float;
 
-    // auto const smallest{std::numeric_limits<Element>::min()};
-    // auto const lowest{std::numeric_limits<Element>::lowest()};
-    // auto const highest{std::numeric_limits<Element>::max()};
+    auto const smallest{std::numeric_limits<Element>::min()};
+    auto const lowest{std::numeric_limits<Element>::lowest()};
+    auto const highest{std::numeric_limits<Element>::max()};
     // auto const epsilon{std::numeric_limits<Element>::epsilon()};
 
+    // In
+    BOOST_CHECK(safe_add<Element>(smallest, 0));
+    BOOST_CHECK(safe_add<Element>(0, smallest));
+    BOOST_CHECK(safe_add<Element>(lowest, 0));
+    BOOST_CHECK(safe_add<Element>(0, lowest));
+    BOOST_CHECK(safe_add<Element>(highest, 0));
+    BOOST_CHECK(safe_add<Element>(0, highest));
+
+    // Out
     // TODO
 }
 
@@ -125,8 +134,22 @@ BOOST_AUTO_TEST_CASE(safe_multiply_signed_integer)
 
 BOOST_AUTO_TEST_CASE(safe_multiply_floating_point)
 {
-    // using Element = float;
+    using Element = float;
 
+    auto const smallest{std::numeric_limits<Element>::min()};
+    auto const lowest{std::numeric_limits<Element>::lowest()};
+    auto const highest{std::numeric_limits<Element>::max()};
+    // auto const epsilon{std::numeric_limits<Element>::epsilon()};
+
+    // In
+    BOOST_CHECK(safe_multiply<Element>(smallest, 1));
+    BOOST_CHECK(safe_multiply<Element>(1, smallest));
+    BOOST_CHECK(safe_multiply<Element>(lowest, 1));
+    BOOST_CHECK(safe_multiply<Element>(1, lowest));
+    BOOST_CHECK(safe_multiply<Element>(highest, 1));
+    BOOST_CHECK(safe_multiply<Element>(1, highest));
+
+    // Out
     // TODO
 }
 
@@ -215,13 +238,22 @@ BOOST_AUTO_TEST_CASE(add_signed_integer)
 
 BOOST_AUTO_TEST_CASE(add_floating_point)
 {
-    // using Element = float;
+    using Element = float;
 
-    // auto const smallest{std::numeric_limits<Element>::min()};
-    // auto const lowest{std::numeric_limits<Element>::lowest()};
-    // auto const highest{std::numeric_limits<Element>::max()};
+    auto const smallest{std::numeric_limits<Element>::min()};
+    auto const lowest{std::numeric_limits<Element>::lowest()};
+    auto const highest{std::numeric_limits<Element>::max()};
     // auto const epsilon{std::numeric_limits<Element>::epsilon()};
 
+    // In
+    BOOST_CHECK(add_within_range<Element>(smallest, 0));
+    BOOST_CHECK(add_within_range<Element>(0, smallest));
+    BOOST_CHECK(add_within_range<Element>(lowest, 0));
+    BOOST_CHECK(add_within_range<Element>(0, lowest));
+    BOOST_CHECK(add_within_range<Element>(highest, 0));
+    BOOST_CHECK(add_within_range<Element>(0, highest));
+
+    // Out
     // TODO
 }
 
@@ -271,7 +303,21 @@ BOOST_AUTO_TEST_CASE(multiply_signed_integer)
 
 BOOST_AUTO_TEST_CASE(multiply_floating_point)
 {
-    // using Element = float;
+    using Element = float;
 
+    auto const smallest{std::numeric_limits<Element>::min()};
+    auto const lowest{std::numeric_limits<Element>::lowest()};
+    auto const highest{std::numeric_limits<Element>::max()};
+    // auto const epsilon{std::numeric_limits<Element>::epsilon()};
+
+    // In
+    BOOST_CHECK(multiply_within_range<Element>(smallest, 1));
+    BOOST_CHECK(multiply_within_range<Element>(1, smallest));
+    BOOST_CHECK(multiply_within_range<Element>(lowest, 1));
+    BOOST_CHECK(multiply_within_range<Element>(1, lowest));
+    BOOST_CHECK(multiply_within_range<Element>(highest, 1));
+    BOOST_CHECK(multiply_within_range<Element>(1, highest));
+
+    // Out
     // TODO
 }

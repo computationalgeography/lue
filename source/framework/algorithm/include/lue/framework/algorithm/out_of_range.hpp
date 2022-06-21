@@ -45,7 +45,7 @@ namespace lue {
             // Floating point
             result = argument1 + argument2;
 
-            return std::isinf(result);
+            return !std::isinf(result);
         }
     }
 
@@ -111,7 +111,7 @@ namespace lue {
             // Floating point
             result = argument1 - argument2;
 
-            return std::isinf(result);
+            return !std::isinf(result);
         }
     }
 
@@ -177,7 +177,7 @@ namespace lue {
             // Floating point
             result = argument1 * argument2;
 
-            return std::isinf(result);
+            return !std::isinf(result);
         }
     }
 
@@ -224,7 +224,7 @@ namespace lue {
         }
         else
         {
-            return std::isinf(result);
+            return !std::isinf(result);
         }
     }
 
