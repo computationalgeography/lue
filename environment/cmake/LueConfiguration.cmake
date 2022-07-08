@@ -552,31 +552,61 @@ if(LUE_HPX_REQUIRED)
         endif()
 
         if(LUE_HPX_GIT_TAG)
+            # Below we use GIT_SHALLOW option of FetchContent_Declare, which speeds things up
+            # a lot. In case the GIT_TAG is a Git hash, this option cannot be used. It can be
+            # used with branch names and tag names.
+            string(LENGTH ${LUE_HPX_GIT_TAG} hpx_git_tag_length)
+
+            # TODO Improve this naive test
+            if(hpx_git_tag_length EQUAL 11 OR hpx_git_tag_length EQUAL 40)
+                set(hpx_git_tag_is_hash TRUE)
+            else()
+                set(hpx_git_tag_is_hash FALSE)
+            endif()
+
+            if(hpx_git_tag_is_hash)
+                set(hpx_git_shallow OFF)
+            else()
+                set(hpx_git_shallow ON)
+            endif()
+
             # Obtain HPX from GIT repository. This is useful when we
             # need to use a specific HPX commit.
             if(LUE_REPOSITORY_CACHE AND EXISTS "${LUE_REPOSITORY_CACHE}/hpx")
                 # Use local repository
-                set(hpx_repository "${LUE_REPOSITORY_CACHE}/hpx")
+                set(hpx_repository "file://${LUE_REPOSITORY_CACHE}/hpx")
             else()
                 # Use remote repository
                 set(hpx_repository "https://github.com/STEllAR-GROUP/hpx")
             endif()
 
+            message(STATUS "Using HPX ${LUE_HPX_GIT_TAG} from repository at ${hpx_repository}")
+
             FetchContent_Declare(hpx
                 GIT_REPOSITORY ${hpx_repository}
                 GIT_TAG ${LUE_HPX_GIT_TAG}
-                GIT_SHALLOW ON  # This implies that a commit hash is not allowed
+                GIT_SHALLOW ${hpx_git_shallow}
             )
         else()
             # Obtain HPX from archive. This has the advantage of being
             # able to patch the source files.
-            set(hpx_version 1.7.1)
+            list(APPEND hpx_versions 1.8.0 1.7.1)
 
+            # First see if an HPX archive is available in a local cache
             if(LUE_REPOSITORY_CACHE AND EXISTS ${LUE_REPOSITORY_CACHE})
-                # Use local archive
-                set(hpx_url "file://${LUE_REPOSITORY_CACHE}/${hpx_version}.tar.gz")
-            else()
+                foreach(hpx_version_ ${hpx_versions})
+                    if(EXISTS "${LUE_REPOSITORY_CACHE}/${hpx_version_}.tar.gz")
+                        # Use local archive
+                        set(hpx_version ${hpx_version_})  # Loop veriables are not available outside the loop
+                        set(hpx_url "file://${LUE_REPOSITORY_CACHE}/${hpx_version}.tar.gz")
+                        break()
+                    endif()
+                endforeach()
+            endif()
+
+            if(NOT hpx_url)
                 # Use remote archive
+                list(GET hpx_versions 0 hpx_version)
                 set(hpx_url "https://github.com/STEllAR-GROUP/hpx/archive/${hpx_version}.tar.gz")
             endif()
 
@@ -587,6 +617,8 @@ if(LUE_HPX_REQUIRED)
                 set(hpx_patch_command
                     git apply --reject --ignore-space-change --ignore-whitespace ${hpx_patch_file})
             endif()
+
+            message(STATUS "Using HPX version ${hpx_version} from archive at ${hpx_url}")
 
             FetchContent_Declare(hpx
                 URL ${hpx_url}
@@ -600,6 +632,8 @@ if(LUE_HPX_REQUIRED)
         find_package(HPX REQUIRED)
 
         if(HPX_FOUND)
+            message(STATUS "Using HPX ${HPX_VERSION} found in ${HPX_PREFIX}")
+
             # Check whether we are using the same build type as HPX
             if (NOT "${HPX_BUILD_TYPE}" STREQUAL "${CMAKE_BUILD_TYPE}")
                 message(WARNING
