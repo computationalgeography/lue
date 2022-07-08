@@ -225,12 +225,12 @@ void polute_air(
         // // like shared pointers.
         // array = add7;
 
-        hpx::cout << '.' << hpx::flush;
+        hpx::cout << '.' << std::flush;
     }
 
-    hpx::cout << " waiting..." << hpx::flush;
+    hpx::cout << " waiting..." << std::flush;
     hpx::wait_all_n(array.begin(), array.nr_partitions());
-    hpx::cout << hpx::endl;
+    hpx::cout << std::endl;
 
     {
         Element result = fill_value.get();
@@ -247,7 +247,7 @@ void polute_air(
         hpx::cout
             << "Result we got : "
             << array.partitions()[0].data().get()[0] << '\n'
-            << "Result we want: " << result << hpx::endl;
+            << "Result we want: " << result << std::endl;
     }
 
 

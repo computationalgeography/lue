@@ -448,7 +448,7 @@ namespace lue {
             Policies, InputPartition, InputElement2, OutputPartition, Functor> action;
 
         return hpx::async(
-            hpx::util::annotated_function(action, "binary_local_operation"),
+            hpx::annotated_function(action, "binary_local_operation"),
             locality_id, policies,
             input_partition, input_scalar, functor);
     }
@@ -503,7 +503,7 @@ namespace lue {
         for(Index p = 0; p < nr_partitions; ++p)
         {
             output_partitions[p] = hpx::async(
-                hpx::util::annotated_function(action, "binary_local_operation"),
+                hpx::annotated_function(action, "binary_local_operation"),
                 localities[p], policies,
                 input_partitions1[p], input_partitions2[p], functor);
         }
@@ -552,7 +552,7 @@ namespace lue {
         for(Index p = 0; p < nr_partitions; ++p)
         {
             output_partitions[p] = hpx::async(
-                hpx::util::annotated_function(action, "binary_local_operation"),
+                hpx::annotated_function(action, "binary_local_operation"),
                 localities[p], policies,
                 input_partitions[p], input_scalar, functor);
         }
@@ -601,7 +601,7 @@ namespace lue {
         for(Index p = 0; p < nr_partitions; ++p)
         {
             output_partitions[p] = hpx::async(
-                hpx::util::annotated_function(action, "binary_local_operation"),
+                hpx::annotated_function(action, "binary_local_operation"),
                 localities[p], policies,
                 input_scalar, input_partitions[p], functor);
         }

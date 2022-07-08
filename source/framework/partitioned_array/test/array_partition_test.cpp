@@ -150,7 +150,7 @@ BOOST_AUTO_TEST_CASE(emulate_promise_future)
 
     {
         // Create a promise to a component ID
-        hpx::lcos::local::promise<hpx::id_type> component_id_p;
+        hpx::promise<hpx::id_type> component_id_p;
 
         // Create a client instance for which the server instance will be
         // created later. Pass in a future to the ID of the component that
@@ -182,7 +182,7 @@ BOOST_AUTO_TEST_CASE(emulate_promise_future)
     {
         // Verify that adding a continuation before setting the value
         // on the promise works
-        hpx::lcos::local::promise<hpx::id_type> component_id_p;
+        hpx::promise<hpx::id_type> component_id_p;
         PartitionClient partition1{component_id_p.get_future()};
         BOOST_CHECK(partition1.valid());
         BOOST_CHECK(!partition1.is_ready());

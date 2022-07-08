@@ -16,7 +16,7 @@ void empty(
     // There is no state to manipulate
     hpx::future<void> state = hpx::make_ready_future<void>();
 
-    hpx::lcos::local::sliding_semaphore semaphore{
+    hpx::sliding_semaphore semaphore{
         static_cast<std::int64_t>(max_tree_depth)};
 
     for(std::size_t i = 0; i < task.nr_time_steps(); ++i) {

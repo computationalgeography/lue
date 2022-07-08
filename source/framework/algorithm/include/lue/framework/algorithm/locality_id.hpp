@@ -71,7 +71,7 @@ namespace lue {
         for(Index p = 0; p < nr_partitions(input_array); ++p)
         {
             output_partitions[p] = hpx::async(
-                hpx::util::annotated_function(action, "locality_id"), localities[p],
+                hpx::annotated_function(action, "locality_id"), localities[p],
                 input_partitions[p], p, output_partitions.shape());
         }
 

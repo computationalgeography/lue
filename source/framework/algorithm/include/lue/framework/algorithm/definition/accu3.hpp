@@ -331,7 +331,7 @@ namespace lue {
                                 Accumulator3<CellAccumulator, Communicator> accumulator{
                                     std::move(cell_accumulator), material_communicator, output_cells_idxs};
 
-                                hpx::lcos::local::mutex accu_mutex;
+                                hpx::mutex accu_mutex;
 
                                 auto accumulate =
                                     [
@@ -619,7 +619,7 @@ namespace lue {
         for(Index p = 0; p < nr_partitions; ++p)
         {
             outflow_partitions[p] = hpx::async(
-                hpx::util::annotated_function(action, "accu"), localities[p], policies,
+                hpx::annotated_function(action, "accu"), localities[p], policies,
                 flow_direction.partitions()[p],
                 external_inflow.partitions()[p],
                 inflow_count_communicators[p], material_communicators[p]);

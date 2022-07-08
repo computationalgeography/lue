@@ -533,9 +533,9 @@ namespace lue {
             InflowCountPartitions&& inflow_count_partitions,
             CellClassPartitions&& cell_class_partitions,
             IDPromiseArray<rank<CellClassPartitions>>&& cell_class_promises,
-            hpx::lcos::local::promise<std::vector<PartitionedArray<PartitionClass, 2>>>&& partition_class_arrays_promise,
-            hpx::lcos::local::promise<std::vector<PartitionedArray<double, 2>>>&& solvable_fraction_arrays_promise,
-            hpx::lcos::local::promise<std::vector<PartitionedArray<std::uint32_t, 2>>>&& nr_cells_to_solve_arrays_promise)
+            hpx::promise<std::vector<PartitionedArray<PartitionClass, 2>>>&& partition_class_arrays_promise,
+            hpx::promise<std::vector<PartitionedArray<double, 2>>>&& solvable_fraction_arrays_promise,
+            hpx::promise<std::vector<PartitionedArray<std::uint32_t, 2>>>&& nr_cells_to_solve_arrays_promise)
         {
             // Perform as many iterations as needed to calculate a global
             // flow accumulation solution
@@ -872,7 +872,7 @@ namespace lue {
             // A promise of a vector of partition class arrays
             using PartitionClassArray = PartitionedArray<PartitionClass, 2>;
             using PartitionClassArrays = std::vector<PartitionClassArray>;
-            using PartitionClassArraysPromise = hpx::lcos::local::promise<PartitionClassArrays>;
+            using PartitionClassArraysPromise = hpx::promise<PartitionClassArrays>;
             using PartitionClassArraysFuture = hpx::future<PartitionClassArrays>;
 
             PartitionClassArraysPromise partition_class_arrays_promise;
@@ -882,7 +882,7 @@ namespace lue {
             using SolvableFraction = double;
             using SolvableFractionArray = PartitionedArray<SolvableFraction, 2>;
             using SolvableFractionArrays = std::vector<SolvableFractionArray>;
-            using SolvableFractionArraysPromise = hpx::lcos::local::promise<SolvableFractionArrays>;
+            using SolvableFractionArraysPromise = hpx::promise<SolvableFractionArrays>;
             using SolvableFractionArraysFuture = hpx::future<SolvableFractionArrays>;
 
             SolvableFractionArraysPromise solvable_fraction_arrays_promise;
@@ -891,7 +891,7 @@ namespace lue {
 
             using CountArray = PartitionedArray<std::uint32_t, 2>;
             using CountArrays = std::vector<CountArray>;
-            using CountArraysPromise = hpx::lcos::local::promise<CountArrays>;
+            using CountArraysPromise = hpx::promise<CountArrays>;
             using CountArraysFuture = hpx::future<CountArrays>;
 
             CountArraysPromise nr_cells_to_solve_arrays_promise;

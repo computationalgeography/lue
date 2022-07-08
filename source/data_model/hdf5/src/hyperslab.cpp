@@ -182,7 +182,7 @@ std::size_t Hyperslab::nr_elements() const
 Hyperslab hyperslab(
     Offset const& center,
     Shape const& shape,
-    Shape const& array_shape)
+    [[maybe_unused]] Shape const& array_shape)
 {
     assert(array_shape.size() == 2);
     assert(center.size() == array_shape.size());

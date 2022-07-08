@@ -660,9 +660,9 @@ namespace lue::detail {
             //! Map of value instances per output cell index
             ValueMap _values;
 
-            mutable hpx::lcos::local::mutex _input_cells_idxs_mutex;
-            mutable hpx::lcos::local::mutex _offsets_mutex;
-            mutable hpx::lcos::local::mutex _values_mutex;
+            mutable hpx::mutex _input_cells_idxs_mutex;
+            mutable hpx::mutex _offsets_mutex;
+            mutable hpx::mutex _values_mutex;
 
     };
 

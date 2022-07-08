@@ -91,7 +91,7 @@ namespace lue::detail {
 
 
             Communicator(
-                hpx::naming::id_type const locality_id,
+                hpx::id_type const locality_id,
                 std::string const& basename,
                 Shape const& shape,
                 Indices const& idxs):
@@ -380,7 +380,7 @@ namespace lue::detail {
 
 
             void setup_send_channel(
-                hpx::naming::id_type const locality_id,
+                hpx::id_type const locality_id,
                 std::string const& basename,
                 accu::Direction const direction)
             {
@@ -430,7 +430,7 @@ namespace lue::detail {
 
 
             void setup_channels(
-                hpx::naming::id_type const locality_id,
+                hpx::id_type const locality_id,
                 std::string const& basename,
                 accu::Direction const direction)
             {

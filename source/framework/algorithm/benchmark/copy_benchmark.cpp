@@ -35,11 +35,11 @@ void copy(
 
     // → Create initial array
     Array state{create_partitioned_array<Element>(shape, partition_shape)};
-    hpx::cout << describe(state) << hpx::endl;
+    hpx::cout << describe(state) << std::endl;
 
     lue_assert(state.shape() == shape);
 
-    hpx::lcos::local::sliding_semaphore semaphore{
+    hpx::sliding_semaphore semaphore{
         static_cast<std::int64_t>(max_tree_depth)};
 
     for(std::size_t i = 0; i < task.nr_time_steps(); ++i) {
@@ -50,7 +50,7 @@ void copy(
         // state...
         state = copy(state);
 
-        hpx::cout << '.' << hpx::flush;
+        hpx::cout << '.' << std::flush;
 
         hpx::when_all_n(state.begin(), state.nr_partitions()).then(
             hpx::launch::sync,
@@ -61,11 +61,11 @@ void copy(
             });
     }
 
-    hpx::cout << "!" << hpx::flush;
+    hpx::cout << "!" << std::flush;
 
     hpx::wait_all_n(state.begin(), state.nr_partitions());
 
-    hpx::cout << hpx::endl;
+    hpx::cout << std::endl;
 }
 
 }  // namespace detail

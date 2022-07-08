@@ -55,6 +55,30 @@ namespace lue::server {
             }
 
 
+            // Components which should be migrated using hpx::migrate<> need to
+            // be Serializable and CopyConstructable. Components can be
+            // MoveConstructable in which case the serialized data is moved into the
+            // component's constructor.
+            ArrayPartitionIO(
+                ArrayPartitionIO const& other):
+
+                Base{other},
+                _io{other._io}
+
+            {
+            }
+
+
+            ArrayPartitionIO(
+                ArrayPartitionIO&& other):
+
+                Base{std::move(other)},
+                _io{std::move(other._io)}
+
+            {
+            }
+
+
             bool is_drained() const
             {
                 return _io.is_drained();

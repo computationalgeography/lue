@@ -72,13 +72,13 @@ namespace lue::server {
             Count          nr_elements         () const;
 
 
-            HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, data, DataAction);
-            HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, slice, SliceAction);
-            HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, fill, FillAction);
-            HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, set_data, SetDataAction);
-            HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, offset, OffsetAction);
-            HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, shape, ShapeAction);
-            HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, nr_elements, NrElementsAction);
+            HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, data, DataAction)
+            HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, slice, SliceAction)
+            HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, fill, FillAction)
+            HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, set_data, SetDataAction)
+            HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, offset, OffsetAction)
+            HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, shape, ShapeAction)
+            HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, nr_elements, NrElementsAction)
 
 
         private:
