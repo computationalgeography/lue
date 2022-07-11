@@ -612,13 +612,14 @@ if(LUE_HPX_REQUIRED)
 
             set(hpx_patch_file ${CMAKE_CURRENT_SOURCE_DIR}/environment/cmake/hpx-${hpx_version}.patch)
 
+            message(STATUS "Using HPX version ${hpx_version} from archive at ${hpx_url}")
+
             if(EXISTS ${hpx_patch_file})
                 # Get rid of the final warnings in HPX sources
                 set(hpx_patch_command
-                    git apply --reject --ignore-space-change --ignore-whitespace ${hpx_patch_file})
+                    git apply --reject --ignore-space-change --ignore-whitespace "${hpx_patch_file}")
+                message(STATUS "    Applying patch from ${hpx_patch_file}")
             endif()
-
-            message(STATUS "Using HPX version ${hpx_version} from archive at ${hpx_url}")
 
             FetchContent_Declare(hpx
                 URL ${hpx_url}
