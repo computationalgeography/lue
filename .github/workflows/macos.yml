@@ -64,6 +64,7 @@ jobs:
                   -B build \
                   -G "Ninja" \
                   -D CMAKE_BUILD_TYPE=Release \
+                  -D FETCHCONTENT_QUIET=FALSE \
                   -D LUE_BUILD_DOCUMENTATION=FALSE \
                   -D LUE_BUILD_TEST=TRUE \
                   -D LUE_TEST_NR_LOCALITIES_PER_TEST=1 \

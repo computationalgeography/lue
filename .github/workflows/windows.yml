@@ -40,6 +40,7 @@ jobs:
                   -B build \
                   -G "Visual Studio 16 2019" -A x64 \
                   -D CMAKE_BUILD_TYPE=Release \
+                  -D FETCHCONTENT_QUIET=FALSE \
                   -D LUE_BUILD_DATA_MODEL:BOOL=TRUE \
                   -D LUE_DATA_MODEL_WITH_PYTHON_API:BOOL=TRUE \
                   -D LUE_DATA_MODEL_WITH_UTILITIES:BOOL=TRUE \
