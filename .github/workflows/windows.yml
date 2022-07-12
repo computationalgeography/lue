@@ -34,10 +34,10 @@ jobs:
         - name: configure lue
           shell: bash -l {0}
           run: |
-              mkdir build
+              mkdir $GITHUB_WORKSPACE/../build
               cmake \
                   -S . \
-                  -B build \
+                  -B $GITHUB_WORKSPACE/../build \
                   -G "Visual Studio 16 2019" -A x64 \
                   -D CMAKE_BUILD_TYPE=Release \
                   -D FETCHCONTENT_QUIET=FALSE \
@@ -74,13 +74,13 @@ jobs:
         - name: build lue
           shell: bash -l {0}
           run: |
-              cmake --build build --config Release --target all_build
+              cmake --build $GITHUB_WORKSPACE/../build --config Release --target all_build
 
         - name: test lue
           shell: bash -l {0}
           run: |
               # TODO Fix and add execution of framework tests (gh445)
-              cd build
+              cd $GITHUB_WORKSPACE/../build
               ctest --build-config Release -R package_link
               ctest --test-dir source/data_model --build-config Release
 
@@ -89,10 +89,10 @@ jobs:
         - name: install lue lue_runtime component
           shell: bash -l {0}
           run: |
-              cmake --install build --prefix install --component core
-              cmake --install build --prefix install --component parallelism
-              cmake --install build --prefix install --component runtime
-              cmake --install build --prefix install --component lue_runtime
+              cmake --install $GITHUB_WORKSPACE/../build --prefix install --component core
+              cmake --install $GITHUB_WORKSPACE/../build --prefix install --component parallelism
+              cmake --install $GITHUB_WORKSPACE/../build --prefix install --component runtime
+              cmake --install $GITHUB_WORKSPACE/../build --prefix install --component lue_runtime
 
               export PATH="`pwd`/install/bin:$PATH"
               install/bin/lue_translate --version

@@ -7,9 +7,13 @@ echo $SP_DIR
 
 
 # We need to create an out of source build
+
+# LUE may have to patch sources of 3rd party sources it uses (OTF2, HPX, ...). This only works
+# when the build directory is not a ѕubdirectory of the source directory.
+
 cd $SRC_DIR
 
-mkdir -p build && cd build
+mkdir -p ../build && cd ../build
 
 PATH=$PREFIX/bin:$PATH cmake $SRC_DIR -G"Ninja" \
 -D CMAKE_BUILD_TYPE=Release \

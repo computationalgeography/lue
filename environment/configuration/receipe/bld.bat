@@ -1,11 +1,11 @@
 @echo on
 
 rem We need to create an out of source build
-mkdir build
+mkdir ../build
 
 if errorlevel 1 exit 1
 
-cd build
+cd ../build
 
 if errorlevel 1 exit 1
 
