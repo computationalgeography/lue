@@ -616,14 +616,7 @@ if(LUE_HPX_REQUIRED)
 
             if(EXISTS ${hpx_patch_file})
                 # Get rid of the final warnings in HPX sources
-                set(hpx_patch_command
-                    git apply
-                        --ignore-space-change
-                        --ignore-whitespace
-                        --unsafe-paths
-                        --verbose
-                        "${hpx_patch_file}"
-                )
+                set(hpx_patch_command git apply --ignore-space-change --ignore-whitespace "${hpx_patch_file}")
                 message(STATUS "    Applying patch from ${hpx_patch_file}")
             endif()
 
