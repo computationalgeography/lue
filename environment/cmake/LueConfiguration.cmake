@@ -590,11 +590,17 @@ if(LUE_HPX_REQUIRED)
         else()
             # Obtain HPX from archive. This has the advantage of being
             # able to patch the source files.
-            list(APPEND hpx_versions 1.8.0 1.7.1)
+            if(LUE_HPX_VERSION)
+                # A specific version is requested
+                list(APPEND hpx_versions_to_try ${LUE_HPX_VERSION})
+            else()
+                # Try these versions in turn
+                list(APPEND hpx_versions_to_try 1.8.0)
+            endif()
 
             # First see if an HPX archive is available in a local cache
             if(LUE_REPOSITORY_CACHE AND EXISTS ${LUE_REPOSITORY_CACHE})
-                foreach(hpx_version_ ${hpx_versions})
+                foreach(hpx_version_ ${hpx_versions_to_try})
                     if(EXISTS "${LUE_REPOSITORY_CACHE}/${hpx_version_}.tar.gz")
                         # Use local archive
                         set(hpx_version ${hpx_version_})  # Loop veriables are not available outside the loop
@@ -606,7 +612,7 @@ if(LUE_HPX_REQUIRED)
 
             if(NOT hpx_url)
                 # Use remote archive
-                list(GET hpx_versions 0 hpx_version)
+                list(GET hpx_versions_to_try 0 hpx_version)
                 set(hpx_url "https://github.com/STEllAR-GROUP/hpx/archive/${hpx_version}.tar.gz")
             endif()
 
