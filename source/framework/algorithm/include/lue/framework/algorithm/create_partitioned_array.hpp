@@ -6,6 +6,8 @@
 #include "lue/framework/core/hilbert_curve.hpp"
 #include "lue/framework/core/linear_curve.hpp"
 #include "lue/framework/core/math.hpp"
+#include "hpx/runtime_distributed/find_localities.hpp"
+#include <optional>
 
 
 namespace lue {

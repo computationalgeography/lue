@@ -6,7 +6,7 @@ namespace lue::server {
 }  // namespace lue::server
 
 
-HPX_REGISTER_COMPONENT_MODULE();
+HPX_REGISTER_COMPONENT_MODULE()
 
 
 #define LUE_REGISTER_ARRAY_PARTITION_ACTIONS(                         \

@@ -94,7 +94,7 @@ namespace lue::benchmark {
 
         if(_count == 0)
         {
-            hpx::cout << describe(state()) << hpx::endl;
+            hpx::cout << describe(state()) << std::endl;
         }
     }
 
@@ -104,7 +104,7 @@ namespace lue::benchmark {
         Rank rank>
     void BenchmarkModel<Element, rank>::initialize()
     {
-        hpx::cout << '[' << hpx::flush;
+        hpx::cout << '[' << std::flush;
 
         do_initialize();
     }
@@ -118,7 +118,7 @@ namespace lue::benchmark {
     {
         do_simulate(time_step);
 
-        hpx::cout << '.' << hpx::flush;
+        hpx::cout << '.' << std::flush;
 
         // Every _max_tree_depth time steps, attach additional continuation
         // which will trigger the semaphore once computation has reached
@@ -160,7 +160,7 @@ namespace lue::benchmark {
         lue_hpx_assert(all_are_ready(state().partitions()));
         lue_hpx_assert(none_have_exception(state().partitions()));
 
-        hpx::cout << "]\n" << hpx::flush;
+        hpx::cout << "]\n" << std::flush;
     }
 
 

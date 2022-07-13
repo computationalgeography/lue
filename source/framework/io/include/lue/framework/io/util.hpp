@@ -2,6 +2,7 @@
 #include "lue/framework/partitioned_array.hpp"
 #include "lue/framework/core/component.hpp"
 #include "lue/hdf5/hyperslab.hpp"
+#include <hpx/runtime_distributed/find_localities.hpp>
 #include <map>
 
 

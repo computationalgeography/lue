@@ -14,7 +14,7 @@ bool has_extension(
 }
 
 
-std::string extension(
+[[maybe_unused]] std::string extension(
     std::string const& pathname)
 {
     return std::filesystem::path(pathname).extension().string();

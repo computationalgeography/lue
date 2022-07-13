@@ -263,7 +263,7 @@ namespace lue {
                                 Accumulator3<CellAccumulator, Communicator> accumulator{
                                     std::move(cell_accumulator), cell_class_communicator, output_cells_idxs};
 
-                                hpx::lcos::local::mutex accu_mutex;
+                                hpx::mutex accu_mutex;
 
                                 auto accumulate =
                                     [

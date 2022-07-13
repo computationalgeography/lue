@@ -36,29 +36,29 @@ void simulate_process(
     Model& model,
     Count const nr_time_steps)
 {
-    hpx::cout << "[preprocess... " << hpx::flush;
+    hpx::cout << "[preprocess... " << std::flush;
     preprocess(model);
-    hpx::cout << ']' << hpx::endl;
+    hpx::cout << ']' << std::endl;
 
-    hpx::cout << "[initialize... " << hpx::flush;
+    hpx::cout << "[initialize... " << std::flush;
     initialize(model);
-    hpx::cout << ']' << hpx::endl;
+    hpx::cout << ']' << std::endl;
 
-    hpx::cout << "[simulate" << hpx::flush;
+    hpx::cout << "[simulate" << std::flush;
     for(Count t = 0; t < nr_time_steps; ++t)
     {
         simulate(model, t);
-        hpx::cout << '.' << hpx::flush;
+        hpx::cout << '.' << std::flush;
     }
-    hpx::cout << ']' << hpx::endl;
+    hpx::cout << ']' << std::endl;
 
-    hpx::cout << "[terminate... " << hpx::flush;
+    hpx::cout << "[terminate... " << std::flush;
     terminate(model);
-    hpx::cout << ']' << hpx::endl;
+    hpx::cout << ']' << std::endl;
 
-    hpx::cout << "[postprocess..." << hpx::flush;
+    hpx::cout << "[postprocess..." << std::flush;
     postprocess(model);
-    hpx::cout << ']' << hpx::endl;
+    hpx::cout << ']' << std::endl;
 }
 
 }  // namespace lue

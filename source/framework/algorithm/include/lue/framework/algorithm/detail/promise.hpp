@@ -5,7 +5,7 @@
 
 namespace lue::detail {
 
-    using IDPromise = hpx::lcos::local::promise<hpx::id_type>;
+    using IDPromise = hpx::promise<hpx::id_type>;
 
     template<
         Rank rank>

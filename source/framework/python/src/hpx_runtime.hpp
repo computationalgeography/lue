@@ -21,8 +21,8 @@ namespace lue {
 
         private:
 
-            hpx::lcos::local::spinlock _mutex;
-            hpx::lcos::local::condition_variable_any _condition_variable;
+            hpx::spinlock _mutex;
+            hpx::condition_variable_any _condition_variable;
 
             std::mutex _startup_mutex;
             std::condition_variable _startup_condition_variable;

@@ -665,7 +665,7 @@ namespace lue {
                 typename Element,
                 Rank rank>
             Array<ArrayPartitionData<Element, rank>, rank>  partition_data(
-                Array<hpx::lcos::shared_future<ArrayPartitionData<Element, rank>>, rank> const& partition_data_futures)
+                Array<hpx::shared_future<ArrayPartitionData<Element, rank>>, rank> const& partition_data_futures)
             {
                 using PartitionData = Array<ArrayPartitionData<Element, rank>, rank>;
 
@@ -702,7 +702,7 @@ namespace lue {
                 //     hpx::unwrapping(
 
                 //             [](
-                //                 lue::Array<hpx::lcos::shared_future<InputData<InputPartitions>>, rank> const&
+                //                 lue::Array<hpx::shared_future<InputData<InputPartitions>>, rank> const&
                 //                     partition_data_futures)
                 //             {
                 //                 return partition_data(partition_data_futures);
@@ -717,11 +717,11 @@ namespace lue {
                     hpx::unwrapping(
 
                             [shape=input_partitions.data().shape()](
-                                std::vector<hpx::lcos::shared_future<InputData<InputPartitions>>> const&
+                                std::vector<hpx::shared_future<InputData<InputPartitions>>> const&
                                     partition_data_futures)
                             {
                                 Rank const rank{lue::rank<InputData<InputPartitions>>};
-                                lue::Array<hpx::lcos::shared_future<InputData<InputPartitions>>, rank> result{shape};
+                                lue::Array<hpx::shared_future<InputData<InputPartitions>>, rank> result{shape};
 
                                 std::copy(partition_data_futures.begin(), partition_data_futures.end(), result.begin());
 
@@ -1578,7 +1578,7 @@ namespace lue {
 
             return hpx::when_all(detail::when_all_get(std::move(input_partitions))...).then(hpx::unwrapping(
                     [locality_id, action, policies, kernel, functor](
-                        hpx::tuple<hpx::lcos::future<InputPartitions>...>&& input_partitions)
+                        hpx::tuple<hpx::future<InputPartitions>...>&& input_partitions)
                     {
                         AnnotateFunction annotation{"focal_operation"};
 

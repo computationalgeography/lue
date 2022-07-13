@@ -75,7 +75,7 @@ namespace lue::benchmark {
 
             std::size_t    _max_tree_depth;
 
-            hpx::lcos::local::sliding_semaphore _semaphore;
+            hpx::sliding_semaphore _semaphore;
 
 
         protected:

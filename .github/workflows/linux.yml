@@ -68,14 +68,15 @@ jobs:
         - name: configure lue
           shell: bash -l {0}
           run: |
-              mkdir build
+              mkdir $GITHUB_WORKSPACE/../build
               cmake \
                   -S . \
-                  -B build \
+                  -B $GITHUB_WORKSPACE/../build \
                   -G "Ninja" \
                   -D CMAKE_C_COMPILER=${{ matrix.compiler.cc }} \
                   -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
                   -D CMAKE_BUILD_TYPE=Release \
+                  -D FETCHCONTENT_QUIET=FALSE \
                   -D LUE_BUILD_DOCUMENTATION=FALSE \
                   -D LUE_BUILD_TEST=TRUE \
                   -D LUE_TEST_NR_LOCALITIES_PER_TEST=1 \
@@ -97,25 +98,25 @@ jobs:
         - name: build lue
           shell: bash -l {0}
           run: |
-              cmake --build build --target all
+              cmake --build $GITHUB_WORKSPACE/../build --target all
 
         - name: test lue
           shell: bash -l {0}
           run: |
-              cd build
+              cd $GITHUB_WORKSPACE/../build
               ctest --output-on-failure
 
         # - name: generate lue documentation
         #   shell: bash
         #   run: |
-        #       cmake --build build --target cpp_doc py_doc
-        #       cmake --build build --target sphinx_doc
+        #       cmake --build $GITHUB_WORKSPACE/../build --target cpp_doc py_doc
+        #       cmake --build $GITHUB_WORKSPACE/../build --target sphinx_doc
 
         - name: install lue_runtime component
           shell: bash -l {0}
           run: |
-              cmake --install build --prefix install --component hpx_runtime
-              cmake --install build --prefix install --component lue_runtime
+              cmake --install $GITHUB_WORKSPACE/../build --prefix install --component hpx_runtime
+              cmake --install $GITHUB_WORKSPACE/../build --prefix install --component lue_runtime
 
               install/bin/lue_translate --version
               install/bin/lue_validate --version
@@ -134,7 +135,7 @@ jobs:
               remote_dir: ${{ secrets.FTP_REMOTE_DIR }}
               local_dir: "sphinx/"
           run: |
-              # TODO cd build/document/doc
+              # TODO cd $GITHUB_WORKSPACE/../build/document/doc
               mkdir -p $HOME/.ssh
               # TODO
               type ssh-keyscan  # If not present, install openssh-client above first

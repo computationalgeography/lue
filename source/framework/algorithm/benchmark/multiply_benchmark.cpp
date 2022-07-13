@@ -39,7 +39,7 @@ AlgorithmBenchmarkResult multiply(
 
     // → Create initial array
     Array state{create_partitioned_array<Element>(shape, partition_shape)};
-    hpx::cout << describe(state) << hpx::endl;
+    hpx::cout << describe(state) << std::endl;
 
     AlgorithmBenchmarkResult result{state.partitions().shape()};
 
@@ -50,7 +50,7 @@ AlgorithmBenchmarkResult multiply(
     Array state1 = copy(state);
     Array state2 = copy(state);
 
-    hpx::lcos::local::sliding_semaphore semaphore{
+    hpx::sliding_semaphore semaphore{
         static_cast<std::int64_t>(max_tree_depth)};
 
     for(std::size_t i = 0; i < task.nr_time_steps(); ++i) {
@@ -60,7 +60,7 @@ AlgorithmBenchmarkResult multiply(
 
         state = (state * state1) / state2;
 
-        hpx::cout << '.' << hpx::flush;
+        hpx::cout << '.' << std::flush;
 
         // Attach a continuation to the state at the current time
         // step. Once it is finished, signal the semaphore so it knowns
@@ -74,11 +74,11 @@ AlgorithmBenchmarkResult multiply(
             });
     }
 
-    hpx::cout << "!" << hpx::flush;
+    hpx::cout << "!" << std::flush;
 
     hpx::wait_all_n(state.begin(), state.nr_partitions());
 
-    hpx::cout << hpx::endl;
+    hpx::cout << std::endl;
 
     return result;
 }

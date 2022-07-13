@@ -849,7 +849,7 @@ namespace lue {
             for(Index p = 0; p < nr_partitions; ++p)
             {
                 inflow_count_partitions[p] = hpx::get<0>(hpx::split_future(hpx::async(
-                    hpx::util::annotated_function(action, "inflow_count"), localities[p], policies,
+                    hpx::annotated_function(action, "inflow_count"), localities[p], policies,
                     flow_direction.partitions()[p], inflow_count_communicators[p])));
             }
         }

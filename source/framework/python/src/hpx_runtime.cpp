@@ -15,8 +15,7 @@ namespace lue {
         _configuration{configuration}
 
     {
-        hpx::util::function_nonser<int(int, char**)> start_function =
-            hpx::util::bind_front(&HPXRuntime::hpx_main, this);
+        hpx::function<int(int, char**)> start_function = hpx::bind_front(&HPXRuntime::hpx_main, this);
 
         hpx::init_params params{};
         params.cfg = _configuration;
@@ -45,7 +44,7 @@ namespace lue {
     {
         // Notify hpx_main to tear down the runtime
         {
-            std::lock_guard<hpx::lcos::local::spinlock> lock(_mutex);
+            std::lock_guard<hpx::spinlock> lock(_mutex);
             _runtime = nullptr;  // Reset pointer
         }
 
@@ -82,7 +81,7 @@ namespace lue {
 
         // Now, wait for destructor to be called.
         {
-            std::unique_lock<hpx::lcos::local::spinlock> lock(_mutex);
+            std::unique_lock<hpx::spinlock> lock(_mutex);
             if(_runtime != nullptr)
             {
                 _condition_variable.wait(lock);

@@ -6,7 +6,7 @@
 namespace lue {
 namespace {
 
-using Mutex = hpx::lcos::local::mutex;
+using Mutex = hpx::mutex;
 using Lock = std::lock_guard<Mutex>;
 
 Targets _targets{};

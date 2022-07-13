@@ -40,7 +40,7 @@ void change_land_use(
     IntegerRaster land_use{raster_shape, partition_shape};
     FloatRaster elevation{raster_shape, partition_shape};
 
-    hpx::cout << describe(land_use) << hpx::endl;
+    hpx::cout << describe(land_use) << std::endl;
 
     lue_assert(land_use.shape() == raster_shape);
     lue_assert(elevation.shape() == raster_shape);
@@ -107,7 +107,7 @@ void change_land_use(
     written.push_back(write(elevation, elevation_layer));
     written.push_back(write(land_use, land_use_layer, time_step));
 
-    hpx::lcos::local::sliding_semaphore semaphore{
+    hpx::sliding_semaphore semaphore{
         static_cast<std::int64_t>(max_tree_depth)};
 
     for(++time_step; time_step <= Count(task.nr_time_steps()); ++time_step) {
@@ -124,7 +124,7 @@ void change_land_use(
 
         written.push_back(write(land_use, land_use_layer, time_step));
 
-        hpx::cout << '.' << hpx::flush;
+        hpx::cout << '.' << std::flush;
 
 
         // Attach a continuation to the state at the current time
@@ -140,12 +140,12 @@ void change_land_use(
     }
 
 
-    hpx::cout << "!" << hpx::flush;
+    hpx::cout << "!" << std::flush;
 
     hpx::wait_all_n(land_use.begin(), land_use.nr_partitions());
     hpx::wait_all_n(written.begin(), written.size());
 
-    hpx::cout << hpx::endl;
+    hpx::cout << std::endl;
 }
 
 }  // namespace benchmark

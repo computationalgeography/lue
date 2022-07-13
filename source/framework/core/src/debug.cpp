@@ -6,6 +6,8 @@
 #endif
 #include <hpx/include/lcos.hpp>
 #include <hpx/parallel/algorithms/transform.hpp>
+#include "hpx/runtime_distributed/find_localities.hpp"
+#include "hpx/runtime_distributed/get_locality_name.hpp"
 #include <algorithm>
 #include <sstream>
 
@@ -15,10 +17,10 @@ namespace {
 
 /*!
     @brief      Return a future to a string representing an
-                hpx::naming::id_type instance
+                hpx::id_type instance
 */
 hpx::future<std::string> id_to_str(
-    hpx::naming::id_type const id)
+    hpx::id_type const id)
 {
     return hpx::get_locality_name(id);
 }
@@ -109,11 +111,11 @@ namespace lue {
 hpx::future<std::string> system_description()
 {
     // Locality where this function is called on
-    hpx::naming::id_type const this_locality_id = hpx::find_here();
+    hpx::id_type const this_locality_id = hpx::find_here();
     hpx::future<std::string> this_locality_name = id_to_str(this_locality_id);
 
     // The root locality is the locality where the main AGAS service is hosted
-    hpx::naming::id_type const root_locality_id = hpx::find_root_locality();
+    hpx::id_type const root_locality_id = hpx::find_root_locality();
     hpx::future<std::string> root_locality_name = id_to_str(root_locality_id);
 
     auto const this_locality_nr = hpx::get_locality_id();

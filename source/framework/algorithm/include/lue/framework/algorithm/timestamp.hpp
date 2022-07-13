@@ -74,7 +74,7 @@ namespace lue {
         for(Index p = 0; p < nr_partitions; ++p)
         {
             timestamp_partitions[p] = hpx::async(
-                hpx::util::annotated_function(action, "timestamp"), localities[p],
+                hpx::annotated_function(action, "timestamp"), localities[p],
                 input_partitions[p], p, timestamp_partitions.shape());
         }
 
