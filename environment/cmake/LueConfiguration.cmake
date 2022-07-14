@@ -388,11 +388,7 @@ endif()
 
 
 if(LUE_CONAN_REQUIRES)
-    include(conan-0.17.0)
-    conan_add_remote(
-        NAME conancenter
-        URL https://center.conan.io
-        VERIFY_SSL False)
+    include(conan-0.18.1)
     conan_cmake_configure(
         REQUIRES ${LUE_CONAN_REQUIRES}
         GENERATORS cmake_find_package
@@ -415,7 +411,13 @@ if(LUE_PYTHON_REQUIRED)
     find_package(Python3 REQUIRED COMPONENTS Interpreter Development NumPy)
 
     if((Python3_INTERPRETER_ID STREQUAL "Anaconda") OR (Python3_EXECUTABLE MATCHES "^.*conda.*$"))
-        SET(LUE_PYTHON_FROM_CONDA TRUE)
+        set(LUE_PYTHON_FROM_CONDA TRUE)
+
+        # If we use a Conda build environment, then packages should be searched for in the current
+        # Conda environment.
+        cmake_path(GET Python3_EXECUTABLE PARENT_PATH LUE_CONDA_PREFIX)
+        cmake_path(GET LUE_CONDA_PREFIX PARENT_PATH LUE_CONDA_PREFIX)
+        list(APPEND CMAKE_PREFIX_PATH "${LUE_CONDA_PREFIX}")
     endif()
 
     message(STATUS "Found Python3:")
@@ -428,6 +430,10 @@ if(LUE_PYTHON_REQUIRED)
     message(STATUS "        version           : ${Python3_NumPy_VERSION}")
     message(STATUS "        include           : ${Python3_NumPy_INCLUDE_DIRS}")
     message(STATUS "    LUE_PYTHON_FROM_CONDA : ${LUE_PYTHON_FROM_CONDA}")
+
+    if(LUE_PYTHON_FROM_CONDA)
+        message(STATUS "        prefix            : ${LUE_CONDA_PREFIX}")
+    endif()
 endif()
 
 

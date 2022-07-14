@@ -17,7 +17,6 @@ mkdir -p ../build && cd ../build
 
 PATH=$PREFIX/bin:$PATH cmake $SRC_DIR -G"Ninja" \
 -D CMAKE_BUILD_TYPE=Release \
--D CMAKE_PREFIX_PATH:PATH="${PREFIX}" \
 -D CMAKE_INSTALL_PREFIX:PATH="${PREFIX}" \
 -D CMAKE_INSTALL_LIBDIR=lib \
 -D LUE_INSTALL_PYTHON_PACKAGE_DIR="${SP_DIR}/lue" \

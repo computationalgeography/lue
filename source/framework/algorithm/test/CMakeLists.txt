@@ -1,6 +1,7 @@
 add_library(lue_framework_algorithm_test
     flow_accumulation.cpp
 )
+
 target_link_libraries(lue_framework_algorithm_test
     PUBLIC
         lue::framework_algorithm
@@ -42,19 +43,27 @@ set(local_operation_names
     valid
     where
 )
+
 set(focal_operation_names
     aspect
 )
+
 set(flow_direction_operation_names
     accu
-    accu_threshold
-    inflow_count
 )
+
+if(NOT CMAKE_HOST_SYSTEM_NAME STREQUAL Darwin)
+    # TODO Port these to macOS/M1
+    list(APPEND flow_direction_operation_names
+        accu_threshold
+        inflow_count
+    )
+endif()
+
 set(names
     ${local_operation_names}
     ${focal_operation_names}
     ${flow_direction_operation_names}
-    accu_fraction
     all
     any
     array_partition_io
@@ -87,6 +96,13 @@ set(names
     upstream
     zonal_sum
 )
+
+if(NOT CMAKE_HOST_SYSTEM_NAME STREQUAL Darwin)
+    # TODO Port these to macOS/M1
+    list(APPEND names
+        accu_fraction
+    )
+endif()
 
 foreach(name ${names})
 

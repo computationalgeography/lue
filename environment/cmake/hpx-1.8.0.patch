@@ -1,3 +1,40 @@
+diff --git a/libs/core/coroutines/include/hpx/coroutines/detail/context_generic_context.hpp b/libs/core/coroutines/include/hpx/coroutines/detail/context_generic_context.hpp
+index 4829430c7b..896655a6b8 100644
+--- a/libs/core/coroutines/include/hpx/coroutines/detail/context_generic_context.hpp
++++ b/libs/core/coroutines/include/hpx/coroutines/detail/context_generic_context.hpp
+@@ -90,7 +90,8 @@ namespace hpx { namespace threads { namespace coroutines {
+ 
+             void* allocate(std::size_t size) const
+             {
+-#if defined(_POSIX_VERSION)
++#if defined(_POSIX_VERSION) && \
++    !(defined(__ARM64_ARCH_8__) && defined(__APPLE__))
+                 void* limit = posix::alloc_stack(size);
+                 posix::watermark_stack(limit, size);
+ #else
+@@ -105,7 +106,8 @@ namespace hpx { namespace threads { namespace coroutines {
+             {
+                 HPX_ASSERT(vp);
+                 void* limit = static_cast<char*>(vp) - size;
+-#if defined(_POSIX_VERSION)
++#if defined(_POSIX_VERSION) && \
++    !(defined(__ARM64_ARCH_8__) && defined(__APPLE__))
+                 posix::free_stack(limit, size);
+ #else
+                 std::free(limit);
+diff --git a/libs/core/datastructures/include/hpx/datastructures/detail/optional.hpp b/libs/core/datastructures/include/hpx/datastructures/detail/optional.hpp
+index 68afa3c80a..928a434143 100644
+--- a/libs/core/datastructures/include/hpx/datastructures/detail/optional.hpp
++++ b/libs/core/datastructures/include/hpx/datastructures/detail/optional.hpp
+@@ -62,7 +62,7 @@ namespace hpx::optional_ns {
+         {
+         }
+ 
+-        explicit constexpr optional(nullopt_t) noexcept
++        constexpr optional(nullopt_t) noexcept
+           : empty_(true)
+         {
+         }
 diff --git a/libs/full/components/include/hpx/components/get_ptr.hpp b/libs/full/components/include/hpx/components/get_ptr.hpp
 index 5d5d95bb03..7362c55539 100644
 --- a/libs/full/components/include/hpx/components/get_ptr.hpp
