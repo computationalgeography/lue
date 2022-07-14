@@ -1,7 +1,14 @@
 set(scope lue_framework_io)
+
 set(names
-    write
 )
+
+if(NOT CMAKE_HOST_SYSTEM_NAME STREQUAL Darwin)
+    # TODO Port these to macOS/M1
+    list(APPEND names
+        write
+    )
+endif()
 
 foreach(name ${names})
 
