@@ -84,16 +84,15 @@ jobs:
                   -D HPX_WITH_TESTS=FALSE
 
         - name: build lue
-          shell: bash
+          shell: bash -l {0}
           run: |
               cmake --build $GITHUB_WORKSPACE/../build --target all
 
         - name: test lue
-          shell: bash
+          shell: bash -l {0}
           run: |
               cd $GITHUB_WORKSPACE/../build
-              # TODO Fix execution of excluded tests
-              ctest --output-on-failure -E python_test
+              ctest --output-on-failure
 
         - name: install lue lue_runtime component
           shell: bash -l {0}
@@ -101,10 +100,10 @@ jobs:
               cmake --install $GITHUB_WORKSPACE/../build --prefix install --component hpx_runtime
               cmake --install $GITHUB_WORKSPACE/../build --prefix install --component lue_runtime
 
-              # TODO Fix once we can test these ourselves
-              # install/bin/lue_translate --version
-              # install/bin/lue_validate --version
-              # install/bin/lue_view --version
+              install/bin/lue_translate --version
+              install/bin/lue_validate --version
+              install/bin/lue_view --version
 
+              # TODO https://github.com/computationalgeography/lue/issues/473
               # export PYTHONPATH="`pwd`/install/lib/python${{ matrix.python-version }}:$PYTHONPATH"
               # python -c "import lue; print(lue.__version__)"
