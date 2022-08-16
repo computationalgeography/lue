@@ -39,7 +39,6 @@ jobs:
                   libboost-all-dev \
                   libdocopt-dev \
                   libfmt-dev \
-                  libglew-dev \
                   libglfw3-dev \
                   libgdal-dev \
                   libgoogle-perftools-dev \
@@ -55,12 +54,18 @@ jobs:
           run: |
               # Pin markupsafe, used by Jinja which is used by Conan, because of a breaking
               # change in markupsafe 2.1.0
-              conda install conan docopt "markupsafe<2.1.0" numpy
+              conda install docopt "markupsafe<2.1.0" numpy pip
               # breathe sphinx
+
+              # Use conan from pypi to get the latest version
+              pip install conan
+
               conan profile new --detect default
               conan profile update settings.compiler.libcxx=libstdc++11 default
-              # conan remote list
-              # conan remote update conancenter https://center.conan.io
+
+              # Install packages, allowing any required system packages to be installed as well
+              conan profile update conf.tools.system.package_manager:mode=install default
+              conan profile update conf.tools.system.package_manager:sudo=True default
               CONAN_SYSREQUIRES_MODE=enabled conan install xorg/system@
               CONAN_SYSREQUIRES_MODE=enabled conan install opengl/system@
               CONAN_SYSREQUIRES_MODE=enabled conan install glu/system@

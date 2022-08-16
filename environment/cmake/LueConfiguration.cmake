@@ -80,7 +80,6 @@ if(WIN32)
     set(LUE_HAVE_DOCOPT_INIT FALSE)
     set(LUE_HAVE_DOXYGEN_INIT FALSE)
     set(LUE_HAVE_GDAL_INIT FALSE)
-    set(LUE_HAVE_GLEW_INIT FALSE)
     set(LUE_HAVE_GLFW_INIT FALSE)
     set(LUE_HAVE_MS_GSL_INIT FALSE)
     set(LUE_HAVE_FMT_INIT FALSE)
@@ -93,7 +92,6 @@ elseif(APPLE)
     set(LUE_HAVE_DOCOPT_INIT FALSE)
     set(LUE_HAVE_DOXYGEN_INIT TRUE)
     set(LUE_HAVE_GDAL_INIT TRUE)
-    set(LUE_HAVE_GLEW_INIT TRUE)
     set(LUE_HAVE_GLFW_INIT TRUE)
     set(LUE_HAVE_MS_GSL_INIT FALSE)
     set(LUE_HAVE_FMT_INIT TRUE)
@@ -105,7 +103,6 @@ else()
     set(LUE_HAVE_DOCOPT_INIT TRUE)
     set(LUE_HAVE_DOXYGEN_INIT TRUE)
     set(LUE_HAVE_GDAL_INIT TRUE)
-    set(LUE_HAVE_GLEW_INIT TRUE)
     set(LUE_HAVE_GLFW_INIT TRUE)
     set(LUE_HAVE_MS_GSL_INIT FALSE)
     set(LUE_HAVE_FMT_INIT TRUE)
@@ -127,7 +124,6 @@ lue_have_option(DOCOPT)
 lue_have_option(DOXYGEN)
 lue_have_option(GDAL)
 lue_have_option(FMT)
-lue_have_option(GLEW)
 lue_have_option(GLFW)
 lue_have_option(HDF5)
 lue_have_option(MS_GSL)
@@ -252,7 +248,6 @@ endif()
 if(LUE_BUILD_VIEW)
     set(LUE_DOCOPT_REQUIRED TRUE)
     set(LUE_FMT_REQUIRED TRUE)
-    set(LUE_GLEW_REQUIRED TRUE)
     set(LUE_GLFW_REQUIRED TRUE)
     set(LUE_IMGUI_REQUIRED TRUE)
     set(LUE_NLOHMANN_JSON_REQUIRED TRUE)
@@ -308,40 +303,33 @@ endif()
 
 if(LUE_FMT_REQUIRED)
     if(NOT LUE_HAVE_FMT)
-        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} fmt/8.1.1)
+        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} fmt/9.0.0)
     endif()
 endif()
 
 if(LUE_GDAL_REQUIRED)
     if(NOT LUE_HAVE_GDAL)
-        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} gdal/3.4.1)
-    endif()
-endif()
-
-
-if(LUE_GLEW_REQUIRED)
-    if(NOT LUE_HAVE_GLEW)
-        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} glew/2.2.0)
-        set(LUE_CONAN_OPTIONS ${LUE_CONAN_OPTIONS} glew:shared=False)
+        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} gdal/3.4.3)
     endif()
 endif()
 
 
 if(LUE_GLFW_REQUIRED)
     if(NOT LUE_HAVE_GLFW)
-        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} glfw/3.3.4)
+        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} glfw/3.3.7)
     endif()
 endif()
 
 
 if(LUE_IMGUI_REQUIRED)
     if(NOT LUE_HAVE_IMGUI)
-        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} imgui/1.81)
+        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} imgui/1.88)
         list(APPEND LUE_CONAN_IMPORTS
             "./res/bindings, imgui_impl_glfw.h -> ${CMAKE_BINARY_DIR}/source/imgui/src"
             "./res/bindings, imgui_impl_glfw.cpp -> ${CMAKE_BINARY_DIR}/source/imgui/src"
             "./res/bindings, imgui_impl_opengl3.h -> ${CMAKE_BINARY_DIR}/source/imgui/src"
             "./res/bindings, imgui_impl_opengl3.cpp -> ${CMAKE_BINARY_DIR}/source/imgui/src"
+            "./res/bindings, imgui_impl_opengl3_loader.h -> ${CMAKE_BINARY_DIR}/source/imgui/src"
         )
     endif()
 endif()
@@ -356,7 +344,7 @@ endif()
 
 if(LUE_HDF5_REQUIRED)
     if(NOT LUE_HAVE_HDF5)
-        set(HDF5_VERSION 1.12.1)
+        set(HDF5_VERSION 1.13.1)
         set(HDF5_IS_PARALLEL FALSE)
         set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} hdf5/${HDF5_VERSION})
     endif()
@@ -442,7 +430,7 @@ if(LUE_PYBIND11_REQUIRED)
     if(NOT LUE_HAVE_PYBIND11)
         FetchContent_Declare(pybind11
             GIT_REPOSITORY https://github.com/pybind/pybind11
-            GIT_TAG "v2.9.1"
+            GIT_TAG "v2.9.2"
         )
 
         # This should pick up the Python found above
@@ -667,7 +655,6 @@ if(LUE_IMGUI_REQUIRED)
         add_library(glfw::glfw ALIAS glfw)
     endif()
 
-    find_package(GLEW REQUIRED)
     find_package(OpenGL REQUIRED)
 endif()
 

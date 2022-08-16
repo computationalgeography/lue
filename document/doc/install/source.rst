@@ -83,7 +83,7 @@ View
 
 Dependencies
 ~~~~~~~~~~~~
-- Dear ImGUI, OpenGL, GLEW, GLFW
+- Dear ImGUI, OpenGL, GLFW
 
 
 Documentation
@@ -144,7 +144,6 @@ Variable                WIN32 APPLE Other
 `LUE_HAVE_DOXYGEN       FALSE TRUE  TRUE
 `LUE_HAVE_GDAL          FALSE TRUE  TRUE
 `LUE_HAVE_FMT           FALSE TRUE  TRUE
-`LUE_HAVE_GLEW          FALSE TRUE  TRUE
 `LUE_HAVE_GLFW          FALSE TRUE  TRUE
 `LUE_HAVE_HDF5          FALSE TRUE  TRUE
 `LUE_HAVE_MS_GSL        FALSE FALSE FALSE
