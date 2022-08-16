@@ -56,7 +56,6 @@ jobs:
                   -D LUE_HAVE_DOCOPT:BOOL=FALSE \
                   -D LUE_HAVE_FMT:BOOL=FALSE \
                   -D LUE_HAVE_GDAL:BOOL=TRUE \
-                  -D LUE_HAVE_GLEW:BOOL=FALSE \
                   -D LUE_HAVE_GLFW:BOOL=FALSE \
                   -D LUE_HAVE_HDF5:BOOL=TRUE \
                   -D LUE_HAVE_NLOHMANN_JSON:BOOL=FALSE \

@@ -27,7 +27,6 @@ target_include_directories(lue_imgui
 target_compile_definitions(lue_imgui
     PUBLIC
         IMGUI_DISABLE_OBSOLETE_FUNCTIONS
-        IMGUI_IMPL_OPENGL_LOADER_GLEW
 )
 
 add_library(lue::imgui ALIAS lue_imgui)
@@ -37,9 +36,9 @@ target_link_libraries(lue_imgui
         fmt::fmt
     PUBLIC
         glfw::glfw
-        GLEW::GLEW
         OpenGL::GL
         imgui::imgui
+        ${CMAKE_DL_LIBS}  # dl API used in imgui_impl_opengl3_loader.h
 )
 
 

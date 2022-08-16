@@ -1,4 +1,3 @@
-#include <GL/glew.h>    // Initialize with glewInit()
 #include "lue/gui/glfw/imgui_binding.hpp"
 #include "lue/gui/font/fa-solid-900.hpp"
 #include "lue/gui/font/IconsFontAwesome5.h"
@@ -15,10 +14,6 @@ namespace glfw {
         API const& api,
         Window& window)
     {
-        if(glewInit() != GLEW_OK) {
-            throw std::runtime_error("Failed to initialize OpenGL loader!");
-        }
-
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
         ImGuiIO& io = ImGui::GetIO();  // (void)io;
