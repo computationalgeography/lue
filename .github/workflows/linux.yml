@@ -55,15 +55,20 @@ jobs:
               # Pin markupsafe, used by Jinja which is used by Conan, because of a breaking
               # change in markupsafe 2.1.0
               conda install docopt "markupsafe<2.1.0" numpy pip
-              pip install conan
               # breathe sphinx
+
+              # Use conan from pypi to get the latest version
+              pip install conan
+
               conan profile new --detect default
               conan profile update settings.compiler.libcxx=libstdc++11 default
+
+              # Install packages, allowing any required system packages to be installed as well
               conan profile update conf.tools.system.package_manager:mode=install default
               conan profile update conf.tools.system.package_manager:sudo=True default
-              conan install xorg/system@
-              conan install opengl/system@
-              conan install glu/system@
+              CONAN_SYSREQUIRES_MODE=enabled conan install xorg/system@
+              CONAN_SYSREQUIRES_MODE=enabled conan install opengl/system@
+              CONAN_SYSREQUIRES_MODE=enabled conan install glu/system@
 
         - name: configure lue
           shell: bash -l {0}
