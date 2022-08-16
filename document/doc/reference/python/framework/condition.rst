@@ -1,8 +1,8 @@
 .. currentmodule:: lue.framework
 
 
-Numeric
-=======
+Condition
+=========
 .. autosummary::
     where
 
