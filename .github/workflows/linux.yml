@@ -59,7 +59,7 @@ jobs:
               conan profile new --detect default
               conan profile update settings.compiler.libcxx=libstdc++11 default
               conan profile update conf.tools.system.package_manager:mode=install default
-              conan profile update const.tools.system.package_manager:sudo=True default
+              conan profile update conf.tools.system.package_manager:sudo=True default
               conan install xorg/system@
               conan install opengl/system@
               conan install glu/system@
