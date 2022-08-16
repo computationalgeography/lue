@@ -9,6 +9,7 @@ LUE documentation
    Examples <example/index>
    Manual <manual/index>
    Reference <reference/index>
+   PCRaster <pcraster/index>
    Releases <release/index>
    Contributing <contribute/index>
    Publications <publication/index>
