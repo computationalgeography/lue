@@ -1,0 +1,13 @@
+diff --git a/libs/full/parcelset_base/include/hpx/parcelset_base/parcelset_base_fwd.hpp b/libs/full/parcelset_base/include/hpx/parcelset_base/parcelset_base_fwd.hpp
+index 4d86b68e..8d41f6f8 100644
+--- a/libs/full/parcelset_base/include/hpx/parcelset_base/parcelset_base_fwd.hpp
++++ b/libs/full/parcelset_base/include/hpx/parcelset_base/parcelset_base_fwd.hpp
+@@ -14,7 +14,7 @@
+ namespace hpx::parcelset {
+ 
+     class HPX_EXPORT parcelport;
+-    class HPX_EXPORT locality;
++    class /* HPX_EXPORT */ locality;
+     class HPX_EXPORT parcel;
+ 
+     /// The type of a function that can be registered as a parcel write handler

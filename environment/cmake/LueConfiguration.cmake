@@ -589,7 +589,7 @@ if(LUE_HPX_REQUIRED)
                 list(APPEND hpx_versions_to_try ${LUE_HPX_VERSION})
             else()
                 # Try these versions in turn
-                list(APPEND hpx_versions_to_try 1.8.0)
+                list(APPEND hpx_versions_to_try 1.8.1 1.8.0)
             endif()
 
             # First see if an HPX archive is available in a local cache
@@ -597,7 +597,7 @@ if(LUE_HPX_REQUIRED)
                 foreach(hpx_version_ ${hpx_versions_to_try})
                     if(EXISTS "${LUE_REPOSITORY_CACHE}/${hpx_version_}.tar.gz")
                         # Use local archive
-                        set(hpx_version ${hpx_version_})  # Loop veriables are not available outside the loop
+                        set(hpx_version ${hpx_version_})  # Loop veriables are not available outside a loop
                         set(hpx_url "file://${LUE_REPOSITORY_CACHE}/${hpx_version}.tar.gz")
                         break()
                     endif()
