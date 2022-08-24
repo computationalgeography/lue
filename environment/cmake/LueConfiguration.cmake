@@ -491,6 +491,7 @@ if(LUE_HPX_REQUIRED)
                         URL http://perftools.pages.jsc.fz-juelich.de/cicd/otf2/tags/otf2-${otf2_version}/otf2-${otf2_version}.tar.gz
                         URL_HASH MD5=b85dd4d11e67180e2d5fe66d05112c4b
                         PATCH_COMMAND ${otf2_patch_command}
+                        DOWNLOAD_EXTRACT_TIMESTAMP TRUE
                     )
 
                     FetchContent_GetProperties(otf2)
@@ -623,6 +624,7 @@ if(LUE_HPX_REQUIRED)
             FetchContent_Declare(hpx
                 URL ${hpx_url}
                 PATCH_COMMAND ${hpx_patch_command}
+                DOWNLOAD_EXTRACT_TIMESTAMP TRUE
             )
         endif()
 
