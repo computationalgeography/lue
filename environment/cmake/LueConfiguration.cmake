@@ -491,6 +491,7 @@ if(LUE_HPX_REQUIRED)
                         URL http://perftools.pages.jsc.fz-juelich.de/cicd/otf2/tags/otf2-${otf2_version}/otf2-${otf2_version}.tar.gz
                         URL_HASH MD5=b85dd4d11e67180e2d5fe66d05112c4b
                         PATCH_COMMAND ${otf2_patch_command}
+                        DOWNLOAD_EXTRACT_TIMESTAMP TRUE
                     )
 
                     FetchContent_GetProperties(otf2)
@@ -589,7 +590,7 @@ if(LUE_HPX_REQUIRED)
                 list(APPEND hpx_versions_to_try ${LUE_HPX_VERSION})
             else()
                 # Try these versions in turn
-                list(APPEND hpx_versions_to_try 1.8.0)
+                list(APPEND hpx_versions_to_try 1.8.1 1.8.0)
             endif()
 
             # First see if an HPX archive is available in a local cache
@@ -597,7 +598,7 @@ if(LUE_HPX_REQUIRED)
                 foreach(hpx_version_ ${hpx_versions_to_try})
                     if(EXISTS "${LUE_REPOSITORY_CACHE}/${hpx_version_}.tar.gz")
                         # Use local archive
-                        set(hpx_version ${hpx_version_})  # Loop veriables are not available outside the loop
+                        set(hpx_version ${hpx_version_})  # Loop veriables are not available outside a loop
                         set(hpx_url "file://${LUE_REPOSITORY_CACHE}/${hpx_version}.tar.gz")
                         break()
                     endif()
@@ -623,6 +624,7 @@ if(LUE_HPX_REQUIRED)
             FetchContent_Declare(hpx
                 URL ${hpx_url}
                 PATCH_COMMAND ${hpx_patch_command}
+                DOWNLOAD_EXTRACT_TIMESTAMP TRUE
             )
         endif()
 

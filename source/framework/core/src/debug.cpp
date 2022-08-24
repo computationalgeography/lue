@@ -69,13 +69,15 @@ std::vector<hpx::future<std::string>> all_locality_names()
     auto const locality_ids = hpx::find_all_localities();
     std::vector<hpx::future<std::string>> locality_names(locality_ids.size());
 
-    hpx::transform(
-        hpx::execution::par,
-        locality_ids.begin(), locality_ids.end(), locality_names.begin(),
-        [](auto const locality_id)
-        {
-            return id_to_str(locality_id);
-        });
+    // TODO(KDJ) For some reason this triggers a compiler error on Github CI build on Windows...
+    //      Commented for now.
+    // hpx::transform(
+    //     hpx::execution::par,
+    //     locality_ids.begin(), locality_ids.end(), locality_names.begin(),
+    //     [](auto const locality_id) -> hpx::future<std::string>
+    //     {
+    //         return id_to_str(locality_id);
+    //     });
 
     return locality_names;
 }
