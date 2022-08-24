@@ -103,6 +103,7 @@ jobs:
         - name: build lue
           shell: bash -l {0}
           run: |
+              # For now, don't use both cores. One of the CI builds runs out of memory.
               cmake --build $GITHUB_WORKSPACE/../build --target all --parallel 1
 
         - name: test lue
