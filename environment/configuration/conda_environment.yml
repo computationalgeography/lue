@@ -3,6 +3,7 @@ channels:
 - conda-forge
 - defaults
 dependencies:
-- conan
 - docopt
 - numpy
+- pip:
+  - conan

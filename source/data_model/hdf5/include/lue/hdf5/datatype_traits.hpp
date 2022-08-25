@@ -171,14 +171,13 @@ struct StandardDatatypeTraits<
     T,
     typename std::enable_if<(
         std::is_same<T, ::hsize_t>::value &&
-        !std::is_same<::hsize_t, uint64_t>::value)>::type
+        !std::is_same<::hsize_t, std::uint64_t>::value)>::type
 >
     : public StandardDatatypeTraits<std::uint64_t>
 {
     // hsize_t is not defined as being uint64_t
     // Here we assume that hsize_t
     // - is of a type for which we haven't overloaded the template yet
-    // - is typedef-ed as unsigned long long int
     // - is treated by the compiler the same as uint64_t
     //
     // If this is not the case, we want to know about it.
@@ -187,9 +186,6 @@ struct StandardDatatypeTraits<
         "expecting size of hsize_t to be 8 bytes");
     static_assert(std::is_unsigned<::hsize_t>::value,
         "expecting hsize_t to be unsigned");
-    // NOLINTNEXTLINE(google-runtime-int)
-    static_assert(std::is_same<::hsize_t, unsigned long long int>::value,
-        "expecting hsize_t to be unsigned long long int");
 };
 
 /// @endcond
