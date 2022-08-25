@@ -48,6 +48,7 @@ target_link_libraries(lue_hdf5
         lue::shared
         HDF5::HDF5
     PRIVATE
+        Boost::headers
         fmt::fmt
 )
 

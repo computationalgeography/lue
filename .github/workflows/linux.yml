@@ -10,6 +10,7 @@ jobs:
                 os: ["ubuntu-20.04"]
                 python-version: [3.9]
                 compiler:
+                    # TODO Bump gcc to 11 (or later). We may have to switch to ubuntu-22.04 for that.
                     - {version:  9, cc: gcc-9   , cxx: g++-9}
                     - {version: 10, cc: gcc-10  , cxx: g++-10}
                     - {version: 11, cc: clang-11, cxx: clang++-11}
@@ -28,8 +29,6 @@ jobs:
         - name: configure system
           run: |
               sudo apt update
-              # sudo apt autoremove
-              # sudo apt upgrade
               sudo apt install \
                   cmake \
                   doxygen \

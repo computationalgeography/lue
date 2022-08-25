@@ -8,7 +8,8 @@ if(NOT CMAKE_HOST_SYSTEM_NAME STREQUAL Darwin)
                 "--parcelport" ${LUE_TEST_HPX_PARCELPORT}
                 "--localities" ${LUE_TEST_NR_LOCALITIES_PER_TEST}
                 "--thread" ${LUE_TEST_NR_THREADS_PER_LOCALITY} --
-                    ${Python3_EXECUTABLE} -m lue_unit_test discover
+                    ${Python3_EXECUTABLE}
+                        -m lue_unit_test discover
                         --start-directory ${CMAKE_CURRENT_SOURCE_DIR}
                         --pattern "*_test.py"
     )
