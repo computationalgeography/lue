@@ -7,7 +7,7 @@ jobs:
 
         strategy:
             matrix:
-                os: ["ubuntu-22.04"]
+                os: ["ubuntu-20.04"]
                 python-version: [3.9]
                 compiler:
                     - {version:  9, cc: gcc-9   , cxx: g++-9}
@@ -28,8 +28,6 @@ jobs:
         - name: configure system
           run: |
               sudo apt update
-              # sudo apt autoremove
-              sudo apt full-upgrade
               sudo apt install \
                   cmake \
                   doxygen \
