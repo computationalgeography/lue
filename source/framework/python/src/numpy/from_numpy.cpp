@@ -171,19 +171,19 @@ namespace lue::framework {
         pybind11::module& module)
     {
         module.def("from_numpy", from_numpy<uint8_t>,
-            "array"_a, "partition_shape"_a, "no_data_value"_a=std::optional<uint8_t>{});
+            "array"_a.noconvert(), "partition_shape"_a, "no_data_value"_a=std::optional<uint8_t>{});
         module.def("from_numpy", from_numpy<uint32_t>,
-            "array"_a, "partition_shape"_a, "no_data_value"_a=std::optional<uint32_t>{});
+            "array"_a.noconvert(), "partition_shape"_a, "no_data_value"_a=std::optional<uint32_t>{});
         module.def("from_numpy", from_numpy<uint64_t>,
-            "array"_a, "partition_shape"_a, "no_data_value"_a=std::optional<uint64_t>{});
+            "array"_a.noconvert(), "partition_shape"_a, "no_data_value"_a=std::optional<uint64_t>{});
         module.def("from_numpy", from_numpy<int32_t>,
-            "array"_a, "partition_shape"_a, "no_data_value"_a=std::optional<int32_t>{});
+            "array"_a.noconvert(), "partition_shape"_a, "no_data_value"_a=std::optional<int32_t>{});
         module.def("from_numpy", from_numpy<int64_t>,
-            "array"_a, "partition_shape"_a, "no_data_value"_a=std::optional<int64_t>{});
+            "array"_a.noconvert(), "partition_shape"_a, "no_data_value"_a=std::optional<int64_t>{});
         module.def("from_numpy", from_numpy<float>,
-            "array"_a, "partition_shape"_a, "no_data_value"_a=std::optional<float>{});
+            "array"_a.noconvert(), "partition_shape"_a, "no_data_value"_a=std::optional<float>{});
         module.def("from_numpy", from_numpy<double>,
-            "array"_a, "partition_shape"_a, "no_data_value"_a=std::optional<double>{});
+            "array"_a.noconvert(), "partition_shape"_a, "no_data_value"_a=std::optional<double>{});
     }
 
 }  // namespace lue::framework

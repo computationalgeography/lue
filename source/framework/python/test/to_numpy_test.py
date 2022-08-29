@@ -58,6 +58,69 @@ class ToNumPyTest(lue_test.TestCase):
 
 
     @lue_test.framework_test_case
+    def test_dtype(self):
+        """
+        The element type of the LUE array determines the element type of the numpy array. The
+        element type of the no-data value must be convertable to the element type of the LUE array.
+        """
+        array_shape = (60, 40)
+        partition_shape = (10, 10)
+
+        for input_type in [
+                    np.uint8, np.uint32, np.uint64,
+                ]:
+
+            input_dtype = np.dtype(input_type)
+            lue_array = lfr.create_array(array_shape, partition_shape, input_dtype, input_type(5))
+
+            numpy_array = lfr.to_numpy(lue_array)
+            self.assertEqual(numpy_array.dtype, input_dtype)
+
+            numpy_array = lfr.to_numpy(lue_array, 9)
+            self.assertEqual(numpy_array.dtype, input_dtype)
+
+            self.assertRaises(TypeError, lfr.to_numpy, lue_array, -9)
+            self.assertRaises(TypeError, lfr.to_numpy, lue_array, 9.9)
+
+        for input_type in [
+                    np.int32, np.int64,
+                ]:
+
+            input_dtype = np.dtype(input_type)
+            lue_array = lfr.create_array(array_shape, partition_shape, input_dtype, input_type(5))
+
+            numpy_array = lfr.to_numpy(lue_array)
+            self.assertEqual(numpy_array.dtype, input_dtype)
+
+            numpy_array = lfr.to_numpy(lue_array, 9)
+            self.assertEqual(numpy_array.dtype, input_dtype)
+
+            numpy_array = lfr.to_numpy(lue_array, -9)
+            self.assertEqual(numpy_array.dtype, input_dtype)
+
+            self.assertRaises(TypeError, lfr.to_numpy, lue_array, 9.9)
+
+        for input_type in [
+                    np.float32, np.float64,
+                ]:
+
+            input_dtype = np.dtype(input_type)
+            lue_array = lfr.create_array(array_shape, partition_shape, input_dtype, input_type(5))
+
+            numpy_array = lfr.to_numpy(lue_array)
+            self.assertEqual(numpy_array.dtype, input_dtype)
+
+            numpy_array = lfr.to_numpy(lue_array, 9)
+            self.assertEqual(numpy_array.dtype, input_dtype)
+
+            numpy_array = lfr.to_numpy(lue_array, -9)
+            self.assertEqual(numpy_array.dtype, input_dtype)
+
+            numpy_array = lfr.to_numpy(lue_array, 9.9)
+            self.assertEqual(numpy_array.dtype, input_dtype)
+
+
+    @lue_test.framework_test_case
     def test_result_of_multiple_operations(self):
 
         array_shape = (60, 40)
