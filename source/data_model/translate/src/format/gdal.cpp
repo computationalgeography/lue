@@ -467,13 +467,17 @@ GDALDataType memory_datatype_to_gdal_datatype(
     else if(datatype == hdf5::native_uint32) {
         result = GDT_UInt32;
     }
-    else if(datatype == hdf5::native_uint64) {
-        std::cout << "Warning: cast from uint64 (LUE) to uint32 (GDAL)\n";
-        result = GDT_UInt32;
-    }
     else if(datatype == hdf5::native_int32) {
         result = GDT_Int32;
     }
+ #if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3, 5, 0)
+    else if(datatype == hdf5::native_uint64) {
+        result = GDT_UInt64;
+    }
+    else if(datatype == hdf5::native_int64) {
+        result = GDT_Int64;
+    }
+ #endif
     else if(datatype == hdf5::native_float32) {
         result = GDT_Float32;
     }
@@ -514,6 +518,16 @@ hdf5::Datatype gdal_datatype_to_memory_datatype(
             result = hdf5::native_datatype<std::int32_t>();
             break;
         }
+#if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3, 5, 0)
+        case GDT_UInt64: {
+            result = hdf5::native_datatype<std::uint64_t>();
+            break;
+        }
+        case GDT_Int64: {
+            result = hdf5::native_datatype<std::int64_t>();
+            break;
+        }
+#endif
         case GDT_Float32: {
             result = hdf5::native_datatype<float>();
             break;

@@ -381,6 +381,16 @@ void GDALStack::Band::write(
             write<int32_t>(raster_stack_band, progress_indicator);
             break;
         }
+#if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3, 5, 0)
+        case GDT_UInt64: {
+            write<uint64_t>(raster_stack_band, progress_indicator);
+            break;
+        }
+        case GDT_Int64: {
+            write<int64_t>(raster_stack_band, progress_indicator);
+            break;
+        }
+#endif
         case GDT_Float32: {
             write<float>(raster_stack_band, progress_indicator);
             break;
