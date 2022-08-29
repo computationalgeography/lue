@@ -408,7 +408,7 @@ namespace lue::utility {
                 break;
             }
      #if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3, 5, 0)
-            case GDT_Uint64: {
+            case GDT_UInt64: {
                 write<RasterView, uint64_t>(gdal_raster_band, lue_raster_layer);
                 break;
             }
