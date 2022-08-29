@@ -73,6 +73,16 @@ namespace lue::utility {
                 type_id = H5T_NATIVE_INT32;
                 break;
             }
+     #if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3, 5, 0)
+            case GDT_UInt64: {
+                type_id = H5T_NATIVE_UINT64;
+                break;
+            }
+            case GDT_Int64: {
+                type_id = H5T_NATIVE_INT64;
+                break;
+            }
+     #endif
             case GDT_Float32: {
                 type_id = H5T_NATIVE_FLOAT;
                 break;
@@ -397,6 +407,16 @@ namespace lue::utility {
                 write<RasterView, int32_t>(gdal_raster_band, lue_raster_layer);
                 break;
             }
+     #if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3, 5, 0)
+            case GDT_UInt64: {
+                write<RasterView, uint64_t>(gdal_raster_band, lue_raster_layer);
+                break;
+            }
+            case GDT_Int64: {
+                write<RasterView, int64_t>(gdal_raster_band, lue_raster_layer);
+                break;
+            }
+     #endif
             case GDT_Float32: {
                 write<RasterView, float>(gdal_raster_band, lue_raster_layer);
                 break;
