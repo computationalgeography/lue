@@ -61,3 +61,69 @@ class FromNumPyTest(lue_test.TestCase):
         self.assertEqual(lue_array.shape, array_shape)
         self.assertEqual(lfr.minimum(lue_array).get(), 0)
         self.assertEqual(lfr.maximum(lue_array).get(), 0)
+
+
+    @lue_test.framework_test_case
+    def test_dtype(self):
+        """
+        The element type of the numpy array determines the element type of the LUE array. The
+        element type of the no-data value must be convertable to the element type of the
+        numpy array.
+        """
+        array_shape = (60, 40)
+        partition_shape = (10, 10)
+
+        for input_type in [
+                    np.uint8, np.uint32, np.uint64,
+                ]:
+
+            input_dtype = np.dtype(input_type)
+            numpy_array = np.full(array_shape, 5, dtype=input_dtype)
+
+            lue_array = lfr.from_numpy(numpy_array, partition_shape)
+            self.assertEqual(lue_array.dtype, input_dtype)
+
+            lue_array = lfr.from_numpy(numpy_array, partition_shape, 9)
+            self.assertEqual(lue_array.dtype, input_dtype)
+
+            self.assertRaises(TypeError, lfr.from_numpy, numpy_array, partition_shape, -9)
+            self.assertRaises(TypeError, lfr.from_numpy, numpy_array, partition_shape, 9.9)
+
+
+        for input_type in [
+                    np.int32, np.int64,
+                ]:
+
+            input_dtype = np.dtype(input_type)
+            numpy_array = np.full(array_shape, 5, dtype=input_dtype)
+
+            lue_array = lfr.from_numpy(numpy_array, partition_shape)
+            self.assertEqual(lue_array.dtype, input_dtype)
+
+            lue_array = lfr.from_numpy(numpy_array, partition_shape, 9)
+            self.assertEqual(lue_array.dtype, input_dtype)
+
+            lue_array = lfr.from_numpy(numpy_array, partition_shape, -9)
+            self.assertEqual(lue_array.dtype, input_dtype)
+
+            self.assertRaises(TypeError, lfr.from_numpy, numpy_array, partition_shape, 9.9)
+
+
+        for input_type in [
+                    np.float32, np.float64,
+                ]:
+
+            input_dtype = np.dtype(input_type)
+            numpy_array = np.full(array_shape, 5, dtype=input_dtype)
+
+            lue_array = lfr.from_numpy(numpy_array, partition_shape)
+            self.assertEqual(lue_array.dtype, input_dtype)
+
+            lue_array = lfr.from_numpy(numpy_array, partition_shape, 9)
+            self.assertEqual(lue_array.dtype, input_dtype)
+
+            lue_array = lfr.from_numpy(numpy_array, partition_shape, -9)
+            self.assertEqual(lue_array.dtype, input_dtype)
+
+            lue_array = lfr.from_numpy(numpy_array, partition_shape, 9.9)
+            self.assertEqual(lue_array.dtype, input_dtype)
