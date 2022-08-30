@@ -1,16 +1,71 @@
 #pragma once
 #include "lue/framework/algorithm/focal_operation_export.hpp"
+#include "lue/framework/algorithm/gradients.hpp"
 #include "lue/framework/algorithm/slope.hpp"
 #include "lue/framework/algorithm/definition/add.hpp"
-#include "lue/framework/algorithm/definition/divide.hpp"
-#include "lue/framework/algorithm/definition/convolve.hpp"
-#include "lue/framework/algorithm/kernel.hpp"
-#include "lue/framework/algorithm/serialize/kernel.hpp"
 #include "lue/framework/algorithm/definition/pow.hpp"
 #include "lue/framework/algorithm/definition/sqrt.hpp"
 
 
 namespace lue {
+
+    template<
+        typename Policies,
+        typename Element>
+    PartitionedArray<Element, 2> slope(
+        [[maybe_unused]] Policies const& policies,
+        Gradients<Element> const& gradients)
+    {
+        auto const& [dz_dx, dz_dy] = gradients;
+
+        using PowPolicies = policy::Policies<
+                policy::pow::DomainPolicy<Element>,
+                policy::OutputsPolicies<
+                        policy::OutputPoliciesT<Policies, 0, Element>
+                    >,
+                policy::InputsPolicies<
+                        policy::InputPoliciesT<Policies, 0, Element>,
+                        policy::InputPolicies<policy::SkipNoData<Element>>
+                    >
+            >;
+        using AddPolicies = policy::Policies<
+                policy::add::DomainPolicy<Element>,
+                policy::OutputsPolicies<
+                        policy::OutputPoliciesT<Policies, 0, Element>
+                    >,
+                policy::InputsPolicies<
+                        policy::InputPoliciesT<Policies, 0, Element>,
+                        policy::InputPoliciesT<Policies, 0, Element>
+                    >
+            >;
+        using SqrtPolicies = policy::Policies<
+                policy::sqrt::DomainPolicy<Element>,
+                policy::OutputsPolicies<
+                        policy::OutputPolicies<
+                                // policy::OutputPoliciesT<Policies, 0, Element>
+                                policy::OutputNoDataPolicy3T<Policies, 0, Element>,
+                                policy::AllValuesWithinRange<Element, Element>
+                            >
+                        >,
+                policy::InputsPolicies<
+                        policy::InputPoliciesT<Policies, 0, Element>
+                    >
+            >;
+
+        PowPolicies pow_policies{};
+        AddPolicies add_policies{};
+        SqrtPolicies sqrt_policies{};
+
+        // TODO Already use atan to get slope angle in radians? All angles (aspect, slope,
+        //      ...) in radians seems to make sense.
+
+        return sqrt(sqrt_policies,
+                add(add_policies,
+                        pow(pow_policies, dz_dx, Element{2}),
+                        pow(pow_policies, dz_dy, Element{2})
+                    )
+            );
+    }
 
     /*!
         @brief      Return slope of elevation surface
@@ -72,106 +127,11 @@ namespace lue {
         typename Policies,
         typename Element>
     PartitionedArray<Element, 2> slope(
-        [[maybe_unused]] Policies const& policies,  // Only the type is used atm
+        Policies const& policies,
         PartitionedArray<Element, 2> const& elevation,
         Element const cell_size)
     {
-        static_assert(std::is_floating_point_v<Element>);
-
-        using Array = PartitionedArray<Element, 2>;
-
-        using Kernel = lue::Kernel<Element, 2>;
-        using KernelShape = ShapeT<Kernel>;
-
-        KernelShape kernel_shape{3, 3};
-
-        Kernel dz_dx_kernel{kernel_shape, {
-                 1.0,  0.0, -1.0,
-                 2.0,  0.0, -2.0,
-                 1.0,  0.0, -1.0,
-            }};
-
-        Kernel dz_dy_kernel{kernel_shape, {
-                -1.0, -2.0, -1.0,
-                 0.0,  0.0,  0.0,
-                 1.0,  2.0,  1.0,
-            }};
-
-        // TODO(KDJ) Make dependent on Policies
-        // Currently, halo is filled with no-data...
-        auto convolve_policies = policy::convolve::DefaultPolicies<Element, Element>{
-            lue::policy::no_data_value<Element>};
-
-        using DividePolicies = policy::Policies<
-                policy::divide::DomainPolicy<Element>,
-                policy::OutputsPolicies<
-                        policy::OutputPoliciesT<Policies, 0, Element>
-                    >,
-                policy::InputsPolicies<
-                        policy::InputPoliciesT<Policies, 0, Element>,
-                        policy::InputPoliciesT<Policies, 0, Element>
-                    >
-            >;
-
-        DividePolicies divide_policies{};
-
-        Array dz_dx =
-            divide(divide_policies,
-                convolve<Element>(convolve_policies, elevation, dz_dx_kernel),
-                Element{8} * cell_size);
-        Array dz_dy =
-            divide(divide_policies,
-                convolve<Element>(convolve_policies, elevation, dz_dy_kernel),
-                Element{8} * cell_size);
-
-        using PowPolicies = policy::Policies<
-                policy::pow::DomainPolicy<Element>,
-                policy::OutputsPolicies<
-                        policy::OutputPoliciesT<DividePolicies, 0, Element>
-                    >,
-                policy::InputsPolicies<
-                        policy::InputPoliciesT<DividePolicies, 0, Element>,
-                        policy::InputPolicies<policy::SkipNoData<Element>>
-                    >
-            >;
-        using AddPolicies = policy::Policies<
-                policy::add::DomainPolicy<Element>,
-                policy::OutputsPolicies<
-                        policy::OutputPoliciesT<PowPolicies, 0, Element>
-                    >,
-                policy::InputsPolicies<
-                        policy::InputPoliciesT<PowPolicies, 0, Element>,
-                        policy::InputPoliciesT<PowPolicies, 0, Element>
-                    >
-            >;
-        using SqrtPolicies = policy::Policies<
-                policy::sqrt::DomainPolicy<Element>,
-                policy::OutputsPolicies<
-                        policy::OutputPolicies<
-                                // policy::OutputPoliciesT<AddPolicies, 0, Element>
-                                policy::OutputNoDataPolicy3T<AddPolicies, 0, Element>,
-                                policy::AllValuesWithinRange<Element, Element>
-                            >
-                        >,
-                policy::InputsPolicies<
-                        policy::InputPoliciesT<AddPolicies, 0, Element>
-                    >
-            >;
-
-        // auto sqrt_policies = policy::sqrt::DefaultValuePolicies<Element>{};
-        // auto add_policies = policy::add::DefaultValuePolicies<Element, Element>{};
-        // auto pow_policies = policy::pow::DefaultValuePolicies<Element, Element>{};
-
-        PowPolicies pow_policies{};
-        AddPolicies add_policies{};
-        SqrtPolicies sqrt_policies{};
-
-        return sqrt(sqrt_policies,
-                add(add_policies,
-                            pow(pow_policies, dz_dx, Element{2}),
-                            pow(pow_policies, dz_dy, Element{2})
-                    )
-            );
+        return slope(policies, gradients(policies, elevation, cell_size));
     }
 
 }  // namespace lue

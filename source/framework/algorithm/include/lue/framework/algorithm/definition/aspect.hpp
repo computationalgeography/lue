@@ -1,184 +1,67 @@
 #pragma once
 #include "lue/framework/algorithm/aspect.hpp"
 #include "lue/framework/algorithm/focal_operation_export.hpp"
-#include "lue/framework/algorithm/definition/focal_operation.hpp"
-#include "lue/framework/algorithm/serialize/kernel.hpp"
-#include "lue/macro.hpp"
-#include <boost/math/constants/constants.hpp>
+#include "lue/framework/algorithm/gradients.hpp"
+#include "lue/framework/algorithm/definition/binary_local_operation.hpp"
+#include "lue/framework/core/math.hpp"
 
 
 namespace lue {
     namespace detail {
 
         template<
-            typename T>
-        T radians_to_compass_direction(
-            T angle)
-        {
-#ifndef NDEBUG
-            static T const pi = boost::math::constants::pi<T>();
-#endif
-            static T const half_pi = boost::math::constants::half_pi<T>();
-            static T const two_pi = boost::math::constants::two_pi<T>();
-
-            assert(angle >= -pi && angle <= pi);
-
-            // Input angle, in radians:
-            // east :  0.0 pi
-            // north:  0.5 pi
-            // west :  1.0 pi
-            // south: -0.5 pi
-
-            // Output angle, in radians:
-            // north: 0.0 pi
-            // east : 0.5 pi
-            // south: 1.0 pi
-            // west : 1.5 pi
-
-            if(angle < T{0})
-            {
-                angle = half_pi - angle;
-            }
-            else if(angle > half_pi)
-            {
-                angle = two_pi - angle + half_pi;
-            }
-            else
-            {
-                angle = half_pi - angle;
-            }
-
-            assert(angle >= T{0} && angle < T{2} * pi);
-
-            return angle;
-        }
-
-
-        template<
-            typename Element>
+            typename InputElement>
         class Aspect
         {
 
             public:
 
-                using OutputElement = Element;
+                static_assert(std::is_floating_point_v<InputElement>);
 
+                using OutputElement = InputElement;
 
-                template<
-                    typename Kernel,
-                    typename OutputPolicies,
-                    typename InputPolicies,
-                    typename Subspan>
                 OutputElement operator()(
-                    [[maybe_unused]] Kernel const& kernel,
-                    OutputPolicies const& output_policies,
-                    InputPolicies const& input_policies,
-                    Subspan const& elevation_window) const
+                    InputElement const gradient_x,
+                    InputElement const gradient_y) const noexcept
                 {
-                    static_assert(rank<Kernel> == 2);
-                    lue_hpx_assert(kernel.radius() == 1);
+                    OutputElement result;
 
-                    auto const& indp{input_policies.input_no_data_policy()};
-                    auto const& ondp{output_policies.output_no_data_policy()};
-
-                    Element aspect;
-
-                    if(indp.is_no_data(elevation_window(1, 1)))
+                    if(gradient_x == 0)
                     {
-                        ondp.mark_no_data(aspect);
+                        if(gradient_y < 0)
+                        {
+                            // Dip to the north
+                            result = 0;
+                        }
+                        else if(gradient_y > 0)
+                        {
+                            // Dip to the south
+                            result = pi<OutputElement>;
+                        }
+                    }
+                    else if(gradient_y == 0)
+                    {
+                        if(gradient_x < 0)
+                        {
+                            // Dip to the west
+                            result = pi<OutputElement> + half_pi<OutputElement>;
+                        }
+                        else if(gradient_x > 0)
+                        {
+                            // Dip to the east
+                            result = half_pi<OutputElement>;
+                        }
                     }
                     else
                     {
-                        // TODO: all surrounding cells must have a valid value!!!
-                        //       Once done, no-data tests can be removed here. Temp variables
-                        //       can be remove too.
-
-                        // west - east
-                        // dz_dx = (w[0, 0] + 2 * w[1, 0] + w[2, 0]) - (w[0, 2] + 2 * w[1, 2] + w[2, 2])
-                        //       = tmp1 - tmp2
-
-                        // south - north
-                        // dz_dy = (w[2, 0] + 2 * w[2, 1] + w[2, 2]) - (w[0, 0] + 2 * w[0, 1] + w[0, 2])
-                        //       = tmp3 - tmp4
-
-                        Element tmp1{0};
-
-                        if(!indp.is_no_data(elevation_window(0, 0)))
-                        {
-                            tmp1 += elevation_window(0, 0);
-                        }
-
-                        if(!indp.is_no_data(elevation_window(1, 0)))
-                        {
-                            tmp1 += 2 * elevation_window(1, 0);
-                        }
-
-                        if(!indp.is_no_data(elevation_window(2, 0)))
-                        {
-                            tmp1 += elevation_window(2, 0);
-                        }
-
-                        Element tmp2{0};
-
-                        if(!indp.is_no_data(elevation_window(0, 2)))
-                        {
-                            tmp2 += elevation_window(0, 2);
-                        }
-
-                        if(!indp.is_no_data(elevation_window(1, 2)))
-                        {
-                            tmp2 += 2 * elevation_window(1, 2);
-                        }
-
-                        if(!indp.is_no_data(elevation_window(2, 2)))
-                        {
-                            tmp2 += elevation_window(2, 2);
-                        }
-
-                        Element tmp3{0};
-
-                        if(!indp.is_no_data(elevation_window(2, 0)))
-                        {
-                            tmp3 += elevation_window(2, 0);
-                        }
-
-                        if(!indp.is_no_data(elevation_window(2, 1)))
-                        {
-                            tmp3 += 2 * elevation_window(2, 1);
-                        }
-
-                        if(!indp.is_no_data(elevation_window(2, 2)))
-                        {
-                            tmp3 += elevation_window(2, 2);
-                        }
-
-                        Element tmp4{0};
-
-                        if(!indp.is_no_data(elevation_window(0, 0)))
-                        {
-                            tmp4 += elevation_window(0, 0);
-                        }
-
-                        if(!indp.is_no_data(elevation_window(0, 1)))
-                        {
-                            tmp4 += 2 * elevation_window(0, 1);
-                        }
-
-                        if(!indp.is_no_data(elevation_window(0, 2)))
-                        {
-                            tmp4 += elevation_window(0, 2);
-                        }
-
-                        Element const dz_dx = tmp1 - tmp2;
-                        Element const dz_dy = tmp3 - tmp4;
-
-                        aspect = (dz_dx == Element{0} && dz_dy == Element{0})
-                            ? -1  // Flat cell, pointing upwards
-                            : radians_to_compass_direction(std::atan2(dz_dy, dz_dx))
-                            ;
+                        result =
+                            std::atan(gradient_x / gradient_y) +
+                            (gradient_x < 0 ? pi<OutputElement> + half_pi<OutputElement> : half_pi<OutputElement>);
                     }
 
-                    return aspect;
+                    HPX_ASSERT(std::isnan(result) || (result >= 0 && result <= two_pi<OutputElement>));
+
+                    return result;
                 }
 
         };
@@ -188,18 +71,49 @@ namespace lue {
 
     template<
         typename Policies,
+        typename Element>
+    PartitionedArray<Element, 2> aspect(
+        [[maybe_unused]] Policies const& policies,
+        Gradients<Element> const& gradients)
+    {
+        auto const& [dz_dx, dz_dy] = gradients;
+
+        using AspectPolicies = policy::Policies<
+                policy::AllValuesWithinDomain<Element, Element>,
+                policy::OutputsPolicies<
+                        policy::OutputPolicies<
+                                policy::OutputNoDataPolicy3T<Policies, 0>,
+                                policy::AllValuesWithinRange<Element, Element, Element>
+                            >
+                    >,
+                policy::InputsPolicies<
+                        policy::InputPoliciesT<Policies, 0, Element>,
+                        policy::InputPoliciesT<Policies, 0, Element>
+                    >
+            >;
+
+        return binary_local_operation(AspectPolicies{}, dz_dx, dz_dy, detail::Aspect<Element>{});
+    }
+
+
+    template<
+        typename Policies,
         typename Element,
         Rank rank>
     PartitionedArray<Element, rank> aspect(
-        Policies const& policies,
+        [[maybe_unused]] Policies const& policies,
         PartitionedArray<Element, rank> const& elevation)
     {
-        using Functor = detail::Aspect<Element>;
+        // TODO Somehow deduce this type from the policy passed in. This must result in one of
+        //      the policy types for which we instantiate the gradient operation. For now,
+        //      we just use the same policy as used in policy::gradients::DefaultValuePolicies.
+        using GradientsPolicies = policy::DefaultSpatialOperationPolicies<
+            policy::AllValuesWithinDomain<Element, Element>,
+            policy::OutputElements<Element>,
+            policy::InputElements<Element, Element>>;
 
-        // Only used for its radius. Weights are not used.
-        auto kernel{box_kernel<bool, 2>(1, true)};
-
-        return focal_operation(policies, elevation, std::move(kernel), Functor{});
+        // TODO We are making cell_size up here. For aspect this is OK, right?
+        return aspect(policies, gradients(GradientsPolicies{}, elevation, Element{1}));
     }
 
 }  // namespace lue

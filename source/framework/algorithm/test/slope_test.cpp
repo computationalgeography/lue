@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE lue framework algorithm slope
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
-#include "lue/framework/algorithm/definition/slope.hpp"
+#include "lue/framework/algorithm/value_policies/slope.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/compare.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE(use_case_1)
 
     Element cell_size = 50.0;
 
-    auto slope_we_got = lue::slope(lue::policy::slope::DefaultValuePolicies<Element>{}, elevation, cell_size);
+    auto slope_we_got = lue::value_policies::slope(elevation, cell_size);
     LUE_UNUSED(slope_we_got);
 
     auto slope_we_want = lue::test::create_partitioned_array<Array>(shape, shape,

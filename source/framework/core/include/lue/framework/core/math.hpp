@@ -1,9 +1,48 @@
 #pragma once
 #include "lue/framework/core/assert.hpp"
+#include <boost/math/constants/constants.hpp>
 #include <cmath>
 
 
 namespace lue {
+
+    template<
+        typename T>
+    constexpr T pi{boost::math::constants::pi<T>()};
+
+
+    template<
+        typename T>
+    constexpr T half_pi{boost::math::constants::half_pi<T>()};
+
+
+    template<
+        typename T>
+    constexpr T two_pi{boost::math::constants::two_pi<T>()};
+
+
+    template<
+        typename T>
+    constexpr T nan{std::numeric_limits<T>::quiet_NaN()};
+
+
+    template<
+        typename T>
+    T degrees_to_pi_radians(
+        T const degree)
+    {
+        return (degree * pi<T>) / 180.0;
+    }
+
+
+    template<
+        typename T>
+    T pi_radians_to_degrees(
+        T const radians)
+    {
+        return (radians * 180.0) / pi<T>;
+    }
+
 
 // template<
 //     typename Input,
