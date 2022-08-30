@@ -199,7 +199,7 @@ namespace lue::detail {
 
         Action action{};
 
-        for(auto const [rh, rp, fill_value]: {
+        for(auto const& [rh, rp, fill_value]: {
                 std::tuple<Index, Index, Element>{0, 0, hp.north_side()},
                 std::tuple<Index, Index, Element>{1, nr_partitions0 - 1, hp.south_side()}
             })
@@ -254,7 +254,7 @@ namespace lue::detail {
 
         for(Index rp = 0; rp < nr_partitions0; ++rp) {
 
-            for(auto const [ch, cp, fill_value]: {
+            for(auto const& [ch, cp, fill_value]: {
                     std::tuple<Index, Index, Element>{0, 0, hp.west_side()},
                     std::tuple<Index, Index, Element>{1, nr_partitions1 - 1, hp.east_side()}
                 })
