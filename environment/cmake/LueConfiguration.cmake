@@ -376,6 +376,9 @@ endif()
 
 
 if(LUE_CONAN_REQUIRES)
+    # Although compiler information is passed to Conan, its check to see whether the Conan info
+    # and CMake detected info match fails...
+    set(CONAN_DISABLE_CHECK_COMPILER True)
     include(conan-0.18.1)
     conan_cmake_configure(
         REQUIRES ${LUE_CONAN_REQUIRES}
