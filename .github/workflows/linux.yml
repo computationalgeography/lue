@@ -11,10 +11,13 @@ jobs:
                 python-version: [3.9]
                 compiler:
                     # TODO Bump gcc to 11 (or later). We may have to switch to ubuntu-22.04 for that.
-                    - {name: gcc, version:  9, cc: gcc-9   , cxx: g++-9}
-                    - {name: gcc, version: 10, cc: gcc-10  , cxx: g++-10}
-                    - {name: clang, version: 11, cc: clang-11, cxx: clang++-11}
-                    - {name: clang, version: 12, cc: clang-12, cxx: clang++-12}
+                    # To be recognized by Conan, name must be one of:
+                    #     'Visual Studio', 'apple-clang', 'clang', 'gcc', 'intel', 'intel-cc', 'mcst-lcc',
+                    #     'msvc', 'qcc', 'sun-cc'
+                    - { name: gcc  , version:  9, cc: gcc-9   , cxx: g++-9      }
+                    - { name: gcc  , version: 10, cc: gcc-10  , cxx: g++-10     }
+                    - { name: clang, version: 11, cc: clang-11, cxx: clang++-11 }
+                    - { name: clang, version: 12, cc: clang-12, cxx: clang++-12 }
             fail-fast: false
 
         runs-on: ${{ matrix.os }}
@@ -60,8 +63,8 @@ jobs:
               pip install conan
 
               conan profile new --detect default
-              conan profile update settings.compiler=${{ matrix.name }} default
-              conan profile update settings.compiler.version=${{ matrix.name }} default
+              conan profile update settings.compiler=${{ matrix.compiler.name }} default
+              conan profile update settings.compiler.version=${{ matrix.compiler.name }} default
               conan profile update settings.compiler.libcxx=libstdc++11 default
 
               # Install packages, allowing any required system packages to be installed as well
