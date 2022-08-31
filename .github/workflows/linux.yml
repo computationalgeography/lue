@@ -64,7 +64,7 @@ jobs:
 
               conan profile new --detect default
               conan profile update settings.compiler=${{ matrix.compiler.name }} default
-              conan profile update settings.compiler.version=${{ matrix.compiler.name }} default
+              conan profile update settings.compiler.version=${{ matrix.compiler.version }} default
               conan profile update settings.compiler.libcxx=libstdc++11 default
 
               # Install packages, allowing any required system packages to be installed as well
