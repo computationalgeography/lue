@@ -46,6 +46,7 @@ set(local_operation_names
 
 set(focal_operation_names
     aspect
+    slope
 )
 
 set(flow_direction_operation_names
@@ -87,7 +88,6 @@ set(names
     none
     partition_count_unique
     range
-    slope
     sum
     timestamp
     uniform

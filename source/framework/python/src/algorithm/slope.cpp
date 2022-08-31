@@ -1,4 +1,4 @@
-#include "lue/framework/algorithm/slope.hpp"
+#include "lue/framework/algorithm/value_policies/slope.hpp"
 #include <pybind11/pybind11.h>
 
 
@@ -12,9 +12,7 @@ namespace lue::framework {
             PartitionedArray<Element, rank> const& elevation,
             Element const& cell_size)
         {
-            using Policies = policy::slope::DefaultValuePolicies<Element>;
-
-            return slope(Policies{}, elevation, cell_size);
+            return value_policies::slope(elevation, cell_size);
         }
 
     }  // Anonymous namespace

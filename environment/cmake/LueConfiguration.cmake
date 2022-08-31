@@ -375,6 +375,7 @@ if(LUE_NLOHMANN_JSON_REQUIRED)
 endif()
 
 
+# TODO https://github.com/conan-io/cmake-conan#using-conan_cmake_autodetect-and-conan_cmake_install-with-multi-configuration-generators
 if(LUE_CONAN_REQUIRES)
     include(conan-0.18.1)
     conan_cmake_configure(
@@ -387,7 +388,10 @@ if(LUE_CONAN_REQUIRES)
         PATH_OR_REFERENCE .
         BUILD missing
         REMOTE conancenter
-        SETTINGS ${settings})
+        SETTINGS ${settings}
+        ENV CC=${CMAKE_C_COMPILER}
+        ENV CXX=${CMAKE_CXX_COMPILER}
+    )
     list(APPEND CMAKE_MODULE_PATH
         ${CMAKE_CURRENT_BINARY_DIR})
 endif()

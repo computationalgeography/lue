@@ -6,9 +6,14 @@
 namespace lue {
 
     template<
+        typename Element>
+    using Gradients = std::tuple<PartitionedArray<Element, 2>, PartitionedArray<Element, 2>>;
+
+
+    template<
         typename Policies,
         typename Element>
-    PartitionedArray<Element, 2> slope(
+    Gradients<Element> gradients(
         Policies const& policies,
         PartitionedArray<Element, 2> const& elevation,
         Element const cell_size);

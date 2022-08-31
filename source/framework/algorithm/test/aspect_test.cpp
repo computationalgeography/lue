@@ -53,7 +53,7 @@ BOOST_AUTO_TEST_CASE(use_case_1)
             6.28 , 0.497, 0.1 , 5.65, 5.83,
         }});
 
-    // TODO Pass in policies to take no-data into account
-    // TODO Update algorithm to fill no-data around focal cell
+    // TODO Aspect is in radians, clockwise from the north. Update unit tests.
+    // TODO Support some way to get a good halo. Update unit tests.
     // lue::test::check_arrays_are_close(aspect_we_got, aspect_we_want, 1e-3);
 }

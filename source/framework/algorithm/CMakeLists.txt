@@ -95,6 +95,7 @@ add_library(lue_framework_focal_operation SHARED
     src/focal_operation/focal_max.cpp
     src/focal_operation/focal_mean.cpp
     src/focal_operation/focal_sum.cpp
+    src/focal_operation/gradients.cpp
     src/focal_operation/slope.cpp
 )
 
