@@ -10,6 +10,7 @@ if(NOT CMAKE_HOST_SYSTEM_NAME STREQUAL Darwin)
                 "--thread" ${LUE_TEST_NR_THREADS_PER_LOCALITY} --
                     ${Python3_EXECUTABLE}
                         -m lue_unit_test discover
+                        --verbose
                         --start-directory ${CMAKE_CURRENT_SOURCE_DIR}
                         --pattern "*_test.py"
     )

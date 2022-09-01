@@ -44,7 +44,7 @@ PATH=$PREFIX/bin:$PATH CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY" \
         -D HPX_WITH_TESTS=OFF
 
 # Use parallel build for as many targets as possible, but not for framework/algorithm
-cmake --build . --target source/view/all source/framework/partitioned_array/all
+cmake --build . --target source/{data_model,view}/all source/framework/{core,partitioned_array}/all
 
 # Build remaining targets with fewer cores. Compiling these modules requires more memory.
 cmake --build . --target all --parallel 2

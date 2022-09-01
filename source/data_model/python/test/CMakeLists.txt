@@ -4,6 +4,7 @@ if(NOT CMAKE_HOST_SYSTEM_NAME STREQUAL Darwin)
         NAME lue_py_data_model_python_test
         COMMAND ${Python3_EXECUTABLE}
             -m unittest discover
+            --verbose
             --start-directory ${CMAKE_CURRENT_SOURCE_DIR}
             --pattern "*_test.py"
     )
