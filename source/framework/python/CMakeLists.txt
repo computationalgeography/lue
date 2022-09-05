@@ -98,7 +98,6 @@ target_compile_definitions(lue_py_framework
 
 set_target_properties(lue_py_framework
     PROPERTIES
-        OUTPUT_NAME lue_py_framework
         RUNTIME_OUTPUT_DIRECTORY $<TARGET_FILE_DIR:lue::py>
 )
 
@@ -117,14 +116,19 @@ target_link_libraries(lue_py_framework
         lue::framework_focal_operation
         lue::framework_local_operation
         lue::framework_io
-        pybind11::embed
+        pybind11::module
         pybind11::thin_lto
         pybind11::opt_size
         pybind11::windows_extras
 )
 
 pybind11_extension(lue_py_framework)
-pybind11_strip(lue_py_framework)
+
+# TODO pybind11_strip does not work on macOS, when building using Conda packages
+#      The resulting binary can't be imported. Results in "killed: 9".
+if(NOT MSVC AND NOT APPLE AND NOT ${CMAKE_BUILD_TYPE} MATCHES Debug|RelWithDebInfo)
+    pybind11_strip(lue_py_framework)
+endif()
 
 lue_install_libraries(TARGETS lue_py_framework)
 

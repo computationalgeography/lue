@@ -24,3 +24,16 @@ index 2b2950c5..70e0b759 100644
                  // if Transparent Huge Pages (THP) are enabled, this prevents
                  // pages from being merged into a single numa bound block
                  int ret = madvise(result, n * sizeof(T), MADV_NOHUGEPAGE);
+diff --git a/libs/core/datastructures/include/hpx/datastructures/detail/optional.hpp b/libs/core/datastructures/include/hpx/datastructures/detail/optional.hpp
+index 68afa3c80a..928a434143 100644
+--- a/libs/core/datastructures/include/hpx/datastructures/detail/optional.hpp
++++ b/libs/core/datastructures/include/hpx/datastructures/detail/optional.hpp
+@@ -62,7 +62,7 @@ namespace hpx::optional_ns {
+         {
+         }
+ 
+-        explicit constexpr optional(nullopt_t) noexcept
++        constexpr optional(nullopt_t) noexcept
+           : empty_(true)
+         {
+         }
