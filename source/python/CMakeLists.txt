@@ -26,7 +26,6 @@ add_library(lue::py ALIAS lue_py)
 
 set_target_properties(lue_py
     PROPERTIES
-        OUTPUT_NAME _lue
         LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${LUE_BUILD_PYTHON_PACKAGE_DIR}
         # INSTALL_RPATH "${LUE_ORIGIN} ${LUE_ORIGIN}/${py_to_lib_dir}"
 )
@@ -42,7 +41,12 @@ target_link_libraries(lue_py
 )
 
 pybind11_extension(lue_py)
-pybind11_strip(lue_py)
+
+# TODO pybind11_strip does not work on macOS, when building using Conda packages
+#      The resulting binary can't be imported. Results in "killed: 9".
+if(NOT MSVC AND NOT APPLE AND NOT ${CMAKE_BUILD_TYPE} MATCHES Debug|RelWithDebInfo)
+    pybind11_strip(lue_py)
+endif()
 
 if(LUE_BUILD_DATA_MODEL AND LUE_DATA_MODEL_WITH_PYTHON_API)
     target_link_libraries(lue_py

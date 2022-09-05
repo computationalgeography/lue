@@ -1,1 +1,1 @@
-from .._lue.data_model import *
+from ..lue_py.data_model import *

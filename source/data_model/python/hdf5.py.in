@@ -1,2 +1,2 @@
-from ..._lue.data_model.hdf5 import *
-from ..._lue.data_model.hdf5 import __version__
+from ...lue_py.data_model.hdf5 import *
+from ...lue_py.data_model.hdf5 import __version__

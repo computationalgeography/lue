@@ -8,7 +8,6 @@ def setUpModule():
 
 
 def tearDownModule():
-    return
     lue_test.stop_hpx_runtime()
 
 

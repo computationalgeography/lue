@@ -3,7 +3,7 @@ import sys
 
 
 if sys.platform == "win32":
-    # We are about to import the _lue Python extension. Iff this version of LUE is installed,
+    # We are about to import the lue_py Python extension. Iff this version of LUE is installed,
     # we can help Python to find LUE DLLs the LUE Python package depends on. In all other cases
     # we should do nothing.
     package_directory_pathname = os.path.dirname(os.path.dirname(__file__))
@@ -21,5 +21,5 @@ if sys.platform == "win32":
             os.add_dll_directory(bin_directory_pathname)
 
 
-from ._lue import *
-from ._lue import __version__
+from .lue_py import *
+from .lue_py import __version__

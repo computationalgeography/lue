@@ -3,12 +3,10 @@ import unittest
 
 
 def start_hpx_runtime():
-    # import os
-    # import sys
     # print(os.environ["LUE_HPX_RUNTIME_CONFIGURATION"])
     # print(lfr.default_hpx_runtime_configuration)
-    # print(sys.argv)
     lfr.start_hpx_runtime(lfr.default_hpx_runtime_configuration)
+    # time.sleep(1)
 
 
 def stop_hpx_runtime():

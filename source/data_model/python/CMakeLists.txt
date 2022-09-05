@@ -96,7 +96,6 @@ target_compile_definitions(lue_py_data_model
 
 set_target_properties(lue_py_data_model
     PROPERTIES
-        OUTPUT_NAME lue_py_data_model
         RUNTIME_OUTPUT_DIRECTORY $<TARGET_FILE_DIR:lue::py>
         CXX_CLANG_TIDY ""  # TODO(KDJ) Get it to skip pybind11.h
 )
@@ -110,7 +109,7 @@ target_link_libraries(lue_py_data_model
     PRIVATE
         $<$<TARGET_EXISTS:lue::data_model_test>:lue::data_model_test>
         lue::data_model_hl
-        pybind11::embed
+        pybind11::module
         pybind11::thin_lto
         pybind11::opt_size
         pybind11::windows_extras
@@ -119,7 +118,12 @@ target_link_libraries(lue_py_data_model
 )
 
 pybind11_extension(lue_py_data_model)
-pybind11_strip(lue_py_data_model)
+
+# TODO pybind11_strip does not work on macOS, when building using Conda packages
+#      The resulting binary can't be imported. Results in "killed: 9".
+if(NOT MSVC AND NOT APPLE AND NOT ${CMAKE_BUILD_TYPE} MATCHES Debug|RelWithDebInfo)
+    pybind11_strip(lue_py_data_model)
+endif()
 
 lue_install_libraries(TARGETS lue_py_data_model)
 
