@@ -78,12 +78,8 @@ jobs:
         - name: test lue
           shell: bash -l {0}
           run: |
-            # TODO https://github.com/computationalgeography/lue/issues/445
               cd $GITHUB_WORKSPACE/../build
-              ctest --build-config Release -R package_link
-              ctest --test-dir source/data_model --build-config Release
-
-              # cmake --config Release --target run_tests
+              cmake --build $GITHUB_WORKSPACE/../build --config Release --target run_tests
 
         - name: install lue lue_runtime component
           shell: bash -l {0}

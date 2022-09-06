@@ -1,13 +1,16 @@
 @echo on
 
 rem We need to create an out of source build
+
+if %errorlevel% neq 0 exit /b %errorlevel%
+
 mkdir ../build
 
-if errorlevel 1 exit 1
+if %errorlevel% neq 0 exit /b %errorlevel%
 
 cd ../build
 
-if errorlevel 1 exit 1
+if %errorlevel% neq 0 exit /b %errorlevel%
 
 rem Ensure desired Boost version is selected by CMake
 set "BOOST_ROOT=%PREFIX%"
@@ -33,13 +36,25 @@ cmake %SRC_DIR% -G"Ninja" ^
     -D Python_ROOT_DIR="%PREFIX%/bin" ^
     -D Python3_ROOT_DIR="%PREFIX%/bin"
 
+if %errorlevel% neq 0 exit /b %errorlevel%
 
-if errorlevel 1 exit 1
+# Use parallel build for as many targets as possible, but not for framework/algorithm
+cmake --build . --config Release --target source/{data_model,view}/all source/framework/{core,partitioned_array}/all
 
-cmake --build . --target all
+if %errorlevel% neq 0 exit /b %errorlevel%
 
-if errorlevel 1 exit 1
+# Build remaining targets with fewer cores. Compiling these modules requires more memory.
+cmake --build . --config Release --target all --parallel 2
 
-cmake --build . --target install
+if %errorlevel% neq 0 exit /b %errorlevel%
 
-if errorlevel 1 exit 1
+cmake --build . --config Release --target run_tests
+
+if %errorlevel% neq 0 exit /b %errorlevel%
+
+cmake --install . --component core
+cmake --install . --component parallelism
+cmake --install . --component runtime
+cmake --install . --component lue_runtime
+
+if %errorlevel% neq 0 exit /b %errorlevel%
