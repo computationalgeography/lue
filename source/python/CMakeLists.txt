@@ -69,7 +69,7 @@ if(WIN32)
     add_custom_command(
         TARGET lue_py
         POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:lue_py> $<TARGET_FILE_DIR:lue_py>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_RUNTIME_DLLS:lue_py> $<TARGET_FILE_DIR:lue_py>
         COMMAND_EXPAND_LISTS
     )
 endif()

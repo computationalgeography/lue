@@ -48,7 +48,7 @@ cmake --build . --config Release --target all --parallel 2
 
 if %errorlevel% neq 0 exit /b %errorlevel%
 
-cmake --build . --config Release --target run_tests
+ctest --extra-verbose --output-on-failure --build-config Release
 
 if %errorlevel% neq 0 exit /b %errorlevel%
 
