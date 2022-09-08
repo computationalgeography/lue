@@ -4,14 +4,15 @@ rem We need to create an out of source build
 
 if %errorlevel% neq 0 exit /b %errorlevel%
 
-md %TMPDIR%/build
+md %TMPDIR%\build
 
+rem if %errorlevel% neq 0 exit /b %errorlevel%
 dir %TMPDIR%
-dir %TMPDIR%/build
+dir %TMPDIR%\build
 
 if %errorlevel% neq 0 exit /b %errorlevel%
 
-cd %TMPDIR%/build
+cd %TMPDIR%\build
 
 if %errorlevel% neq 0 exit /b %errorlevel%
 
