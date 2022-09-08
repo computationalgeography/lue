@@ -2,13 +2,7 @@
 
 rem We need to create an out of source build
 
-if %errorlevel% neq 0 exit /b %errorlevel%
-
 md %TMPDIR%\build
-
-rem if %errorlevel% neq 0 exit /b %errorlevel%
-dir %TMPDIR%
-dir %TMPDIR%\build
 
 if %errorlevel% neq 0 exit /b %errorlevel%
 
@@ -21,7 +15,7 @@ set "BOOST_ROOT=%PREFIX%"
 set "BOOST_NO_SYSTEM_PATHS=ON"
 
 
-cmake %SRC_DIR% -G"Ninja" ^
+cmake %SRC_DIR% ^
     -D CMAKE_BUILD_TYPE=Release ^
     -D CMAKE_PREFIX_PATH:PATH="%LIBRARY_PREFIX%" ^
     -D CMAKE_INSTALL_PREFIX:PATH="%LIBRARY_PREFIX%" ^
