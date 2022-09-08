@@ -15,7 +15,7 @@ set "BOOST_ROOT=%PREFIX%"
 set "BOOST_NO_SYSTEM_PATHS=ON"
 
 cmake %SRC_DIR% ^
-    -G "Visual Studio 16 2019" -A x64 \
+    -G "Visual Studio 16 2019" -A x64 ^
     -D FETCHCONTENT_QUIET=FALSE ^
     -D CMAKE_BUILD_TYPE=Release ^
     -D CMAKE_PREFIX_PATH:PATH="%LIBRARY_PREFIX%" ^
