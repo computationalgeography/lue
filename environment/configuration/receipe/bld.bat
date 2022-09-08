@@ -55,12 +55,7 @@ cmake %SRC_DIR% ^
 if %errorlevel% neq 0 exit /b %errorlevel%
 
 # Use parallel build for as many targets as possible, but not for framework/algorithm
-cmake --build . --config Release --target source/{data_model,view}/all source/framework/{core,partitioned_array}/all
-
-if %errorlevel% neq 0 exit /b %errorlevel%
-
-# Build remaining targets with fewer cores. Compiling these modules requires more memory.
-cmake --build . --config Release --target all --parallel 2
+cmake --build . --config Release --target all_build
 
 if %errorlevel% neq 0 exit /b %errorlevel%
 
