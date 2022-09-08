@@ -79,7 +79,7 @@ jobs:
           shell: bash -l {0}
           run: |
               cd $GITHUB_WORKSPACE/../build
-              ctest --output-on-failure --build-config Release
+              ctest --extra-verbose --output-on-failure --build-config Release
 
         - name: install lue lue_runtime component
           shell: bash -l {0}

@@ -1,6 +1,6 @@
 name: macOS Conda package
 
-on: [push]
+# on: [push]
 
 jobs:
     build:

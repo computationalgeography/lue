@@ -1,6 +1,6 @@
 name: Linux CI
 
-on: [push]
+# on: [push]
 
 jobs:
     build:

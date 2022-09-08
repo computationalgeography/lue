@@ -4,11 +4,11 @@ rem We need to create an out of source build
 
 if %errorlevel% neq 0 exit /b %errorlevel%
 
-mkdir ../build
+mkdir %TMPDIR%/build
 
 if %errorlevel% neq 0 exit /b %errorlevel%
 
-cd ../build
+cd %TMPDIR%/build
 
 if %errorlevel% neq 0 exit /b %errorlevel%
 
