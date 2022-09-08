@@ -6,6 +6,9 @@ if %errorlevel% neq 0 exit /b %errorlevel%
 
 mkdir %TMPDIR%/build
 
+dir %TMPDIR%
+dir %TMPDIR%/build
+
 if %errorlevel% neq 0 exit /b %errorlevel%
 
 cd %TMPDIR%/build

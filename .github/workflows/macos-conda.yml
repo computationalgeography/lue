@@ -1,6 +1,11 @@
 name: macOS Conda package
 
-# on: [push]
+on:
+  push:
+    branches-ignore:
+      - gh247
+    paths-ignore:
+      - README.md
 
 jobs:
     build:
