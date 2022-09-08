@@ -4,7 +4,7 @@ rem We need to create an out of source build
 
 if %errorlevel% neq 0 exit /b %errorlevel%
 
-mkdir %TMPDIR%/build
+md %TMPDIR%/build
 
 dir %TMPDIR%
 dir %TMPDIR%/build
