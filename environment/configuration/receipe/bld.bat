@@ -49,7 +49,7 @@ cmake %SRC_DIR% ^
     -D Boost_USE_STATIC_LIBS=FALSE ^
     -D HDF5_USE_STATIC_LIBRARIES=FALSE ^
     -D HWLOC_ROOT=%BUILD_PREFIX%/Library ^
-    -D HWLOC_LIBRARY=%LIBRARY_PREFIX%/hwloc.dll.lib ^
+    -D HWLOC_LIBRARY=%PREFIX%/Library/hwloc.dll.lib ^
     -D Python3_EXECUTABLE="%PYTHON%"
 
 
