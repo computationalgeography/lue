@@ -48,10 +48,10 @@ cmake %SRC_DIR% ^
     -D LUE_HAVE_PYBIND11=FALSE ^
     -D Boost_USE_STATIC_LIBS=FALSE ^
     -D HDF5_USE_STATIC_LIBRARIES=FALSE ^
-    -D HWLOC_ROOT="%CONDA_PREFIX%/Library" ^
+    -D HWLOC_ROOT=%CONDA_PREFIX%/Library ^
+    -D HWLOC_LIBRARY=%CONDA_PREFIX%/Library/lib/hwloc.dll.lib ^
     -D Python3_EXECUTABLE="%PYTHON%"
 
-rem -D HWLOC_LIBRARY="%CONDA_PREFIX%/Library/lib/hwloc.dll.lib"
 
 if %errorlevel% neq 0 exit /b %errorlevel%
 
