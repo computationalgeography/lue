@@ -129,13 +129,21 @@ foreach(name ${names})
                     "$<TARGET_FILE:${test_name}>"
     )
 
-    set_tests_properties(
-        ${test_name}
-        PROPERTIES
-            # On Windows, add the path to the HPX dlls. Only if HPX::hpx target is defined.
-            ENVIRONMENT_MODIFICATION
-                PATH=path_list_prepend:$<$<AND:$<PLATFORM_ID:Windows>,$<TARGET_EXISTS:HPX::hpx>>:$<TARGET_FILE_DIR:HPX::component_storage_component>>
-    )
+    if(WIN32)
+        # Ensure required DLLs can be found at runtime
+        set_property(
+            TEST
+                ${test_name}
+            APPEND
+            PROPERTY
+                ENVIRONMENT_MODIFICATION
+                    PATH=path_list_prepend:$<TARGET_FILE_DIR:HPX::component_storage_component>
+                    PATH=path_list_prepend:$<TARGET_FILE_DIR:lue::framework_partitioned_array>
+                    PATH=path_list_prepend:$<TARGET_FILE_DIR:lue::framework_local_operation>
+                    PATH=path_list_prepend:$<TARGET_FILE_DIR:lue::framework_focal_operation>
+                    PATH=path_list_prepend:$<TARGET_FILE_DIR:lue::framework_flow_direction_operation>
+        )
+    endif()
 endforeach()
 
 foreach(name ${local_operation_names})
@@ -180,11 +188,15 @@ foreach(name ${names})
         COMMAND ${test_name}
     )
 
-    set_tests_properties(
-        ${test_name}
-        PROPERTIES
-            # On Windows, add the path to the HPX dlls. Only if HPX::hpx target is defined.
-            ENVIRONMENT_MODIFICATION
-                PATH=path_list_prepend:$<$<AND:$<PLATFORM_ID:Windows>,$<TARGET_EXISTS:HPX::hpx>>:$<TARGET_FILE_DIR:HPX::component_storage_component>>
-    )
+    if(WIN32)
+        # Ensure required DLLs can be found at runtime
+        set_property(
+            TEST
+                ${test_name}
+            APPEND
+            PROPERTY
+                ENVIRONMENT_MODIFICATION
+                    PATH=path_list_prepend:$<TARGET_FILE_DIR:HPX::component_storage_component>
+        )
+    endif()
 endforeach()
