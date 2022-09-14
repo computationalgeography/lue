@@ -20,7 +20,6 @@ PATH=$PREFIX/bin:$PATH CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY" \
         -D CMAKE_INSTALL_PREFIX:PATH="${PREFIX}" \
         -D CMAKE_INSTALL_LIBDIR=lib \
         -D LUE_INSTALL_PYTHON_PACKAGE_DIR="${SP_DIR}/lue" \
-        -D Python3_EXECUTABLE="${PYTHON}" \
         -D LUE_HAVE_BOOST:BOOL=TRUE \
         -D LUE_HAVE_FMT:BOOL=TRUE \
         -D LUE_HAVE_PYBIND11:BOOL=TRUE \
@@ -43,7 +42,8 @@ PATH=$PREFIX/bin:$PATH CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY" \
         -D HPX_WITH_MALLOC="tcmalloc" \
         -D HPX_WITH_PKGCONFIG=OFF \
         -D HPX_WITH_EXAMPLES=OFF \
-        -D HPX_WITH_TESTS=OFF
+        -D HPX_WITH_TESTS=OFF \
+        -D Python3_EXECUTABLE="${PYTHON}"
 
 # Use parallel build for as many targets as possible, but not for framework/algorithm
 cmake --build . --target source/{data_model,view}/all source/framework/{core,partitioned_array}/all
