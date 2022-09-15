@@ -6,6 +6,8 @@ on:
     #   - gh247
     paths-ignore:
       - README.md
+      - document/**
+      - environment/**
 
 jobs:
     build:
