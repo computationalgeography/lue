@@ -1,6 +1,13 @@
 name: Windows Conda package
 
-on: [push]
+on:
+  push:
+    # branches-ignore:
+    #   - gh247
+    paths-ignore:
+      - README.md
+      - document/**
+      - environment/**
 
 jobs:
     build:
@@ -9,6 +16,7 @@ jobs:
             matrix:
                 os: ["windows-2019"]
                 python-version: [3.9]
+            fail-fast: false
 
         runs-on: ${{ matrix.os }}
 
@@ -16,5 +24,20 @@ jobs:
 
         steps:
 
-        - name: checkout lue
+        - name: checkout LUE
           uses: actions/checkout@v2
+
+        - uses: conda-incubator/setup-miniconda@v2
+          with:
+              auto-update-conda: false
+              python-version: ${{ matrix.python-version }}
+              channels: conda-forge
+              mamba-version: "*"
+        - shell: bash -l {0}
+          run: |
+              mamba install boa -c conda-forge
+
+        - name: Build
+          shell: bash -l {0}
+          run: |
+              conda mambabuild environment/configuration/receipe --channel conda-forge --override-channels
