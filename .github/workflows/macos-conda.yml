@@ -8,8 +8,6 @@ on:
       - README.md
       - document/**
       - environment/**
-    tags-ignore:
-      - "**"
 
 jobs:
     build:
