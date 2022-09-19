@@ -5,5 +5,6 @@ channels:
 dependencies:
 - docopt
 - numpy
+- pip
 - pip:
   - conan
