@@ -73,7 +73,7 @@ jobs:
                   -D HPX_WITH_FETCH_ASIO=TRUE \
                   -D HPX_WITH_PKGCONFIG=FALSE \
                   -D HWLOC_ROOT="$CONDA_PREFIX/Library" \
-                  -D HWLOC_LIBRARY="$CONDA_PREFIX/Library/lib/hwloc.dll.lib" \
+                  -D HWLOC_LIBRARY="$CONDA_PREFIX/Library/lib/hwloc.lib" \
                   -D HPX_WITH_EXAMPLES=FALSE \
                   -D HPX_WITH_TESTS=FALSE
 

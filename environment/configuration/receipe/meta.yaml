@@ -13,7 +13,7 @@ source:
 build:
   number: 0
   script_env:
-    - TMPDIR
+    - TMPDIR                                       # [win]
 
 
 requirements:
@@ -25,7 +25,7 @@ requirements:
     - {{ cdt('libxdamage') }}                      # [linux]
     - {{ cdt('libxxf86vm') }}                      # [linux]
     - {{ cdt('libxext') }}                         # [linux]
-    - make
+    - make                                         # [unix]
     - git
     - conan
     - markupsafe <2.1.0
