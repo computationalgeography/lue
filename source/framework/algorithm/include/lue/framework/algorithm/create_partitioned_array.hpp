@@ -672,7 +672,7 @@ namespace lue {
             static constexpr bool instantiate_per_locality{false};
 
             // Type of function that returns a pointer to the buffer
-            using GrabBuffer = std::function<Element*(BufferHandle)>;
+            using GrabBuffer = std::function<Element const*(BufferHandle)>;
 
             InstantiateFromBuffer(
                 BufferHandle buffer_handle,

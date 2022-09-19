@@ -18,8 +18,7 @@ namespace lue::framework {
     inline DynamicShape tuple_to_shape(
         pybind11::tuple const& tuple)
     {
-        Rank rank{tuple.size()};
-        DynamicShape shape(rank);
+        DynamicShape shape(tuple.size());
 
         for(std::size_t d = 0; d < tuple.size(); ++d)
         {
@@ -33,12 +32,15 @@ namespace lue::framework {
     template<
         Rank rank,
         typename Count>
-    std::array<Count, rank> dynamic_shape_to_static_shape(
+    StaticShape<rank> dynamic_shape_to_static_shape(
         std::vector<Count> const& shape)
     {
         lue_hpx_assert(shape.size() == rank);
-        std::array<Count, rank> result{};
+
+        StaticShape<rank> result{};
+
         std::copy(shape.begin(), shape.end(), result.begin());
+
         return result;
     }
 

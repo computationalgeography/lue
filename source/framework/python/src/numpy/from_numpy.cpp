@@ -18,7 +18,7 @@ namespace lue::framework {
 
         template<
             typename T>
-        using Object = std::tuple<Array<T>, pybind11::buffer_info>;
+        using Object = Array<T>;
 
         template<
             typename T>
@@ -30,18 +30,6 @@ namespace lue::framework {
 
 
 namespace lue::detail {
-
-    // template<
-    //     typename T>
-    // class ArrayTraits<
-    //     pybind11::array_t<T>>
-    // {
-
-    //     public:
-
-    //         using Element = T;
-
-    // };
 
     template<
         typename T>
@@ -84,14 +72,10 @@ namespace lue::framework {
             //   created. This is prevented by copying array instances around. This increases
             //   the reference count of the underlying pybind11 object.
 
-            // The reference counted object is a shared pointer of:
-            // - The array passed in
-            // - The pybind11::buffer_info instance of the array
-            // This second thing provides us with a pointer to the buffer array elements. Obtaining
-            // it should only be done once, for all partitions. Therefore we do that here and glue
-            // it to the array. A shared pointer to this tuple is passed around in the create_array
-            // function. We don't use the reference counting of the array itself, apart from
-            // the one copy we make when we create the tuple.
+            // The reference counted object is a shared pointer to a shallow copy of the array
+            // passed in (to keep it alive) The shared pointer to the array is passed around
+            // in the create_array function. We don't use the reference counting of the array
+            // itself, apart from the one copy we make when we create the shared pointer.
 
             using Policies = lue::policy::create_partitioned_array::DefaultValuePolicies<Element>;
             using Functor = lue::InstantiateFromBuffer<ReferenceCountedObject<Element>, rank>;
@@ -101,15 +85,19 @@ namespace lue::framework {
 
             ReferenceCountedObject<Element> object{
                     std::make_shared<Object<Element>>(
-                        std::make_tuple(array, array.request()))
+                            array  // Shallow copy, increments reference count of the array, once
+                        )
                 };
+
+            // Confirm that the array is shallow copied. Both objects are using the same buffer.
+            assert(array.data() == (*object).data());
 
             return lue::create_partitioned_array(
                     Policies{}, array_shape, partition_shape,
-                    Functor{object,  // Copy: increments reference count
-                            [](ReferenceCountedObject<Element> const& object) -> Element*
+                    Functor{object,  // Copy: increments reference count of the shared pointer
+                            [](ReferenceCountedObject<Element> const& object) -> Element const*
                             {
-                                return static_cast<Element*>(std::get<1>(*object).ptr);
+                                return static_cast<Element const*>((*object).data());
                             },
                             no_data_value
                         }
@@ -124,6 +112,9 @@ namespace lue::framework {
             DynamicShape const& partition_shape,
             std::optional<Element> const& no_data_value)
         {
+            // TODO https://github.com/computationalgeography/lue/issues/484
+            //      In some cases, although a 2D array is passed in, in the code here, array.ndim
+            //      returns 1. Throwing the exceptions fails. Segmentation fault, meh.
             if(DynamicShape::size_type(array.ndim()) != partition_shape.size())
             {
                 throw std::runtime_error(fmt::format(

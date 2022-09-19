@@ -133,7 +133,8 @@ hdf5::Shape tuple_to_shape(
 {
     hdf5::Shape shape(tuple.size());
 
-    for(size_t i = 0; i < tuple.size(); ++i) {
+    for(size_t i = 0; i < tuple.size(); ++i)
+    {
         shape[i] = py::int_(tuple[i]);
     }
 
