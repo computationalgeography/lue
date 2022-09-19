@@ -10,11 +10,9 @@ echo $SP_DIR
 # LUE may have to patch sources of 3rd party sources it uses (OTF2, HPX, ...). This only works
 # when the build directory is not a ѕubdirectory of the source directory.
 
-cd $SRC_DIR
+mkdir $TMPDIR/build && cd $TMPDIR/build
 
-mkdir -p ../build && cd ../build
-
-PATH=$PREFIX/bin:$PATH CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY" \
+PATH=$PREFIX/bin:$PATH CXXFLAGS="${CXXFLAGS} -DTARGET_OS_OSX -D_LIBCPP_DISABLE_AVAILABILITY" \
     cmake $SRC_DIR -G"Ninja" \
         -D CMAKE_BUILD_TYPE=Release \
         -D CMAKE_INSTALL_PREFIX:PATH="${PREFIX}" \
