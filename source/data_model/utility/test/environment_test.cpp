@@ -5,7 +5,9 @@
 
 BOOST_AUTO_TEST_CASE(expand_environment_variables)
 {
-    auto expand = [](std::string const& string) {
+    auto expand =
+        [](std::string const& string)
+        {
             return lue::expand_environment_variables(string);
         };
 
@@ -16,16 +18,22 @@ BOOST_AUTO_TEST_CASE(expand_environment_variables)
     std::string unexisting_variable_name;
 
     {
-        // FIXME Use some other var on platforms that don't have HOME
-        existing_variable_name = "HOME";
-        char const* const existing_variable_value_ptr{
-            std::getenv(existing_variable_name.c_str())};
-        BOOST_REQUIRE(existing_variable_value_ptr != nullptr);
-        existing_variable_value = std::string{existing_variable_value_ptr};
+        for(std::string variable_name: {"HOME", "SHELL", "TMP", "TEMP"})
+        {
+            char const* const variable_value_ptr{std::getenv(variable_name.c_str())};
+
+            if(variable_value_ptr != nullptr)
+            {
+                existing_variable_name = variable_name;
+                existing_variable_value = std::string{variable_value_ptr};
+                break;
+            }
+        }
+
+        BOOST_REQUIRE(!existing_variable_name.empty());
 
         unexisting_variable_name = "MEH";
-        char const* const unexisting_variable_ptr{
-            std::getenv(unexisting_variable_name.c_str())};
+        char const* const unexisting_variable_ptr{std::getenv(unexisting_variable_name.c_str())};
         BOOST_REQUIRE(unexisting_variable_ptr == nullptr);
     }
 
