@@ -5,6 +5,7 @@ on:
     # branches-ignore:
     #   - gh247
     paths:
+      - ".github/workflows/windows-conda.yml"
       - "source/**"
       - "environment/configuration/receipe/**"
 

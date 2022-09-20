@@ -5,6 +5,7 @@ on:
     # branches-ignore:
     #   - gh247
     paths:
+      - ".github/workflows/linux-conda.yml"
       - "source/**"
       - "environment/configuration/receipe/**"
 
