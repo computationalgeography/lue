@@ -1,9 +1,9 @@
 #pragma once
+#include "lue/framework/partitioned_array/serialize/shared_buffer.hpp"
 #include "lue/framework/core/debug.hpp"
 #include "lue/framework/core/define.hpp"
 #include "lue/framework/core/erase.hpp"
 #include "lue/framework/core/shape.hpp"
-#include "lue/framework/core/serialize/shared_buffer.hpp"
 #include "lue/framework/core/span.hpp"
 #include "lue/framework/core/type_traits.hpp"
 #include "lue/configure.hpp"
