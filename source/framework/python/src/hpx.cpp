@@ -100,6 +100,12 @@ namespace lue::framework {
                         return future.get();
                     })
 
+                .def(
+                    "wait",
+                    [](hpx::future<Element>& future) {
+                        return future.wait();
+                    })
+
                 ;
         }
 

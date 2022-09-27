@@ -10,177 +10,8 @@
 #include <memory>
 
 
-/// #include "pcc/io.hpp"
-/// #include "pcc/annotate.hpp"
-/// #include "pcc/configuration.hpp"
-/// #include "pcc/wait_if.hpp"
-/// #include <hpx/iostream.hpp>
-/// #include <hpx/shared_mutex.hpp>
-
-
 namespace lue {
     namespace {
-
-///         template<
-///             typename Instantiator>
-///         Partitions read_partitions(
-///             Shape const& shape,
-///             Shape const& partition_shape,
-///             Instantiator&& instantiator)
-///         {
-///             // Each next partition is only created once the previous one has been created. It
-///             // does not make sense to read partitions in parallel.
-/// 
-///             if(partition_shape > shape)
-///             {
-///                 throw std::runtime_error(
-///                         "Partition shape must be smaller than array shape: " +
-///                         shape_to_string(partition_shape) + " < " + shape_to_string(shape)
-///                     );
-///             }
-/// 
-///             Partitions result{};
-/// 
-///             if(nr_elements(shape) > 0 && nr_elements(partition_shape) > 0)
-///             {
-///                 Shape const shape_in_partitions{
-///                         shape[0] / partition_shape[0],
-///                         shape[1] / partition_shape[1]
-///                     };
-///                 Count const nr_partitions{nr_elements(shape_in_partitions)};
-///                 Partitions::Collection collection(nr_partitions);
-/// 
-///                 if(shape_in_partitions[0] < 2 || shape_in_partitions[1] < 2)
-///                 {
-///                     throw std::runtime_error("Shape in partitions must be larger or equal to (2, 2)");
-///                 }
-/// 
-///                 auto instantiate =
-///                     [instantiator](
-///                         Offset const& offset,
-///                         Shape const& shape) mutable
-///                 {
-///                     Annotation{"read"};
-/// 
-///                     return instantiator.instantiate(offset, shape);
-///                 };
-/// 
-///                 {
-///                     Index p{0};
-///                     Index cell_idx0{0};
-///                     Index cell_idx1{0};
-///                     Shape new_partition_shape{};
-/// 
-///                     // Partitions in all rows, except for the last one
-///                     for(Index partition_idx0 = 0; partition_idx0 < shape_in_partitions[0] - 1; ++partition_idx0)
-///                     {
-///                         // Partitions in all columns, except for the last one
-///                         for(Index partition_idx1 = 0; partition_idx1 < shape_in_partitions[1] - 1; ++partition_idx1)
-///                         {
-///                             if(p == 0)
-///                             {
-///                                 // First partition
-///                                 HPX_ASSERT(p < Count(std::size(collection)));
-///                                 HPX_ASSERT(!collection[p].valid());
-///                                 collection[p] = hpx::async(
-///                                     instantiate, Offset{cell_idx0, cell_idx1}, partition_shape);
-///                             }
-///                             else
-///                             {
-///                                 HPX_ASSERT(p > 0 && p < Count(std::size(collection)));
-///                                 HPX_ASSERT(collection[p - 1].valid());
-///                                 HPX_ASSERT(!collection[p].valid());
-///                                 collection[p] = collection[p - 1].then(
-///                                     [instantiate, cell_idx0, cell_idx1, partition_shape](
-///                                         [[maybe_unused]] hpx::shared_future<Partition> const& partition_ftr) mutable
-///                                     {
-///                                         return instantiate(Offset{cell_idx0, cell_idx1}, partition_shape);
-///                                     });
-///                             }
-/// 
-///                             ++p;
-///                             cell_idx1 += partition_shape[1];
-///                         }
-/// 
-///                         // Partition in last column of current row
-///                         new_partition_shape = Shape{partition_shape[0], shape[1] - cell_idx1};
-/// 
-///                         HPX_ASSERT(new_partition_shape[0] >= partition_shape[0]);
-///                         HPX_ASSERT(new_partition_shape[1] >= partition_shape[1]);
-/// 
-///                         collection[p] = collection[p - 1].then(
-///                             [instantiate, cell_idx0, cell_idx1, new_partition_shape](
-///                                 [[maybe_unused]] hpx::shared_future<Partition> const& partition_ftr) mutable
-///                             {
-///                                 return instantiate(Offset{cell_idx0, cell_idx1}, new_partition_shape);
-///                             });
-///                         ++p;
-///                         cell_idx0 += partition_shape[0];
-///                         cell_idx1 = 0;
-///                     }
-/// 
-///                     // Partitions in last row, except for last column
-///                     for(Index partition_idx1 = 0; partition_idx1 < shape_in_partitions[1] - 1; ++partition_idx1)
-///                     {
-///                         new_partition_shape = Shape{shape[0] - cell_idx0, partition_shape[1]};
-/// 
-///                         HPX_ASSERT(new_partition_shape[0] >= partition_shape[0]);
-///                         HPX_ASSERT(new_partition_shape[1] >= partition_shape[1]);
-/// 
-///                         HPX_ASSERT(p > 0 && p < Count(std::size(collection)));
-///                         HPX_ASSERT(collection[p - 1].valid());
-///                         HPX_ASSERT(!collection[p].valid());
-/// 
-///                         collection[p] = collection[p - 1].then(
-///                             [instantiate, cell_idx0, cell_idx1, new_partition_shape](
-///                                 [[maybe_unused]] hpx::shared_future<Partition> const& partition_ftr) mutable
-///                             {
-///                                 return instantiate(Offset{cell_idx0, cell_idx1}, new_partition_shape);
-///                             });
-///                         ++p;
-///                         cell_idx1 += partition_shape[1];
-///                     }
-/// 
-///                     // Partition in last row and last column
-///                     new_partition_shape = Shape{shape[0] - cell_idx0, shape[1] - cell_idx1};
-/// 
-///                     HPX_ASSERT(new_partition_shape[0] >= partition_shape[0]);
-///                     HPX_ASSERT(new_partition_shape[1] >= partition_shape[1]);
-/// 
-///                     HPX_ASSERT(p > 0 && p < Count(std::size(collection)));
-///                     HPX_ASSERT(collection[p - 1].valid());
-///                     HPX_ASSERT(!collection[p].valid());
-/// 
-///                     collection[p] = collection[p - 1].then(
-///                         [instantiate, cell_idx0, cell_idx1, new_partition_shape](
-///                             [[maybe_unused]] hpx::shared_future<Partition> const& partition_ftr) mutable
-///                         {
-///                             return instantiate(Offset{cell_idx0, cell_idx1}, new_partition_shape);
-///                         });
-///                     ++p;
-/// 
-///                     HPX_ASSERT(p == nr_partitions);
-///                     HPX_ASSERT(cell_idx0 + new_partition_shape[0] == shape[0]);
-///                     HPX_ASSERT(cell_idx1 + new_partition_shape[1] == shape[1]);
-///                 }
-/// 
-///                 result = Partitions{std::move(collection), shape_in_partitions};
-///             }
-/// 
-///             return result;
-///         }
-
-
-
-        /// // This pointer is shared and the object pointed to must be closed once the last
-        /// // pointer instance goes out of scope
-        /// using GDALDatasetPtr = std::shared_ptr<::GDALDataset>;
-
-        /// // The object pointed to is owned by the dataset and must not be deleted
-        /// using GDALBandPtr = ::GDALRasterBand*;
-
-        /// using GDALDriverPtr = ::GDALDriver*;
-
 
         class Band
         {
@@ -215,25 +46,12 @@ namespace lue {
                 template<
                     typename Element>
                 void read_partition(
-                    // server::ArrayPartition<Element, 2>& partition)
                     Offset<Index, 2> const& offset,
                     ArrayPartitionData<Element, 2>& data)
                 {
                     // Blocks if someone else is writing to the band. Otherwise this does
                     // not block.
                     ReadLock read_lock{_mutex};
-
-                    // CPLErr const status{
-                    //         _band_ptr->RasterIO(
-                    //                 GF_Read,
-                    //                 partition.offset()[1], partition.offset()[0],
-                    //                 partition.shape()[1], partition.shape()[0],
-                    //                 partition.data().data(),
-                    //                 partition.shape()[1], partition.shape()[0],
-                    //                 GDALTypeTraits<Element>::type_id,
-                    //                 0, 0, nullptr
-                    //             )
-                    //     };
 
                     CPLErr const status{
                             _band_ptr->RasterIO(
@@ -254,32 +72,6 @@ namespace lue {
                 }
 
 
-                // void write_partition(
-                //     Partition const& partition)
-                // {
-                //     // Blocks if someone else is writing to the band.
-                //     WriteLock write_lock{_mutex};
-
-                //     Annotation{"write"};
-
-                //     CPLErr const status{
-                //             _band_ptr->RasterIO(
-                //                     GF_Write,
-                //                     partition.offset()[1], partition.offset()[0],
-                //                     partition.shape()[1], partition.shape()[0],
-                //                     const_cast<Partition&>(partition).data(),
-                //                     partition.shape()[1], partition.shape()[0], GDT_Float64,
-                //                     0, 0, nullptr
-                //                 )
-                //         };
-
-                //     if(status != CE_None)
-                //     {
-                //         throw std::runtime_error("Cannot write partition data");
-                //     }
-                // }
-
-
             private:
 
                 Mutex _mutex;
@@ -295,41 +87,11 @@ namespace lue {
         template<
             typename Element>
         Element no_data_value(
-            ::GDALRasterBand& band,
-            int* success)
-        {
-            return band.GetNoDataValue(success);
-        }
-
-
- #if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3, 5, 0)
-        template<>
-        std::int64_t no_data_value(
-            ::GDALRasterBand& band,
-            int* success)
-        {
-            return band.GetNoDataValueAsInt64(success);
-        }
-
-
-        template<>
-        std::uint64_t no_data_value(
-            ::GDALRasterBand& band,
-            int* success)
-        {
-            return band.GetNoDataValueAsUInt64(success);
-        }
-#endif
-
-
-        template<
-            typename Element>
-        Element no_data_value(
             ::GDALRasterBand& band)
         {
             int success;
 
-            Element value = no_data_value<Element>(band, &success);
+            Element value = detail::no_data_value<Element>(band, &success);
 
             if(success == 0)
             {
@@ -383,12 +145,6 @@ namespace lue {
                     Offset const& offset,
                     Shape const& shape)
                 {
-                    // Server server{offset, shape};
-
-                    // _band_ptr->read_partition(server);
-
-                    // return Partition{server.get_id()};
-
                     Data data{shape};
 
                     _band_ptr->read_partition(offset, data);
@@ -403,32 +159,6 @@ namespace lue {
                 BandPtr _band_ptr;
 
         };
-
-
-///         hpx::future<void> write_partitions(
-///             Partitions const& partitions,
-///             GDALDatasetPtr&& dataset_ptr,
-///             BandPtr&& band_ptr)
-///         {
-///             // Attach a continuation to each partition, which will write out the partition's
-///             // data once it is ready. Use a mutex to prevent multiple partitions from being written
-///             // at the same time.
-/// 
-///             std::vector<hpx::future<void>> written(partitions.nr_partitions());
-/// 
-///             for(Index p = 0; p < partitions.nr_partitions(); ++p)
-///             {
-///                 written[p] = partitions(p).then(
-///                         [dataset_ptr, band_ptr](
-///                             hpx::shared_future<Partition> const& partition)
-///                         {
-///                             band_ptr->write_partition(partition.get());
-///                         }
-///                     );
-///             }
-/// 
-///             return hpx::when_all(written);
-///         }
 
 
         template<
@@ -475,28 +205,6 @@ namespace lue {
 
         {
         };
-
-
-        /// template<
-        ///     typename Partition,
-        ///     typename Policies>
-        /// Partition read_partition(
-        ///     Policies const& policies,
-        ///     GDALBandPtr const& band_ptr,
-        ///     OffsetT<Partition> const& offset,
-        ///     ShapeT<Partition> const& partition_shape)
-        /// {
-        ///     using Server = typename Partition::Server;
-        ///     using Data = typename Partition::Data;
-
-        ///     Data data{partition_shape};
-
-        ///     // Element*       data()
-
-        ///     Server server{offset, std::move(data)};
-
-        ///     return Partition{server.get_id()};
-        /// }
 
 
         template<
@@ -616,20 +324,6 @@ namespace lue {
         };
 
 
-        // template<
-        //     typename Element,
-        //     Rank rank>
-        // class FunctorTraits<
-        //     NumberPartitionsPerLocality<Element, rank>>
-        // {
-
-        //     public:
-
-        //         static constexpr bool const is_functor{true};
-
-        // };
-
-
         template<
             typename Policies,
             typename Partition>
@@ -743,6 +437,7 @@ namespace lue {
         std::string const& name,
         std::string const& clone_name)
     {
+        using Policies = WritePolicies<Element>;
         using Array = PartitionedArray<Element, 2>;
         using Partition = PartitionT<Array>;
 
@@ -758,36 +453,47 @@ namespace lue {
         // On the / this root locality:
         // - Create the dataset to write a band in
 
+        Policies policies{};
+        auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
+        Element no_data_value;
+        ondp.mark_no_data(no_data_value);
+
         {
             register_gdal_drivers();  // On root locality
 
-            GDALDatasetPtr clone_dataset_ptr{open_dataset(clone_name, ::GA_ReadOnly)};
-
-            Shape<Count, 2> const shape{
-                clone_dataset_ptr->GetRasterYSize(), clone_dataset_ptr->GetRasterXSize()};
-
-            if(shape != array.shape())
-            {
-                throw std::runtime_error("Shapes of clone raster and raster to write differ");
-            }
-
             Count const nr_bands{1};
             GDALDataType const data_type{GDALTypeTraits<Element>::type_id};
-            GDALDatasetPtr dataset_ptr{create(name, shape, nr_bands, data_type)};
+            GDALDatasetPtr dataset_ptr{create(name, array.shape(), nr_bands, data_type)};
+            GDALBandPtr band_ptr{get_raster_band(*dataset_ptr)};
 
-            double geo_transform[6];
+            set_no_data_value(*band_ptr, no_data_value);
 
-            if(clone_dataset_ptr->GetGeoTransform(geo_transform) == CE_None)
+            if(!clone_name.empty())
             {
-                dataset_ptr->SetGeoTransform(geo_transform);
-            }
+                // Copy stuff from clone dataset
 
-            if(OGRSpatialReference const* spatial_reference = clone_dataset_ptr->GetSpatialRef())
-            {
-                dataset_ptr->SetSpatialRef(spatial_reference);
-            }
+                GDALDatasetPtr clone_dataset_ptr{open_dataset(clone_name, ::GA_ReadOnly)};
 
-            // TODO Configure no-data value
+                Shape<Count, 2> const shape{
+                    clone_dataset_ptr->GetRasterYSize(), clone_dataset_ptr->GetRasterXSize()};
+
+                if(shape != array.shape())
+                {
+                    throw std::runtime_error("Shapes of clone raster and raster to write differ");
+                }
+
+                double geo_transform[6];
+
+                if(clone_dataset_ptr->GetGeoTransform(geo_transform) == CE_None)
+                {
+                    dataset_ptr->SetGeoTransform(geo_transform);
+                }
+
+                if(OGRSpatialReference const* spatial_reference = clone_dataset_ptr->GetSpatialRef())
+                {
+                    dataset_ptr->SetSpatialRef(spatial_reference);
+                }
+            }
         }
 
         // Asynchronously spawn a task that will write each ready partition to the dataset,
@@ -798,7 +504,6 @@ namespace lue {
         hpx::future<void> result = hpx::async(
                 [name, partitions=std::move(partitions)]() mutable
                 {
-                    using Policies = WritePolicies<Element>;
                     using Action = WritePartitionAction<Policies, Partition>;
 
                     std::size_t nr_partitions_to_write{partitions.size()};
@@ -832,15 +537,6 @@ namespace lue {
             );
 
         return result;
-
-
-///         GDALBandPtr band_ptr{get_raster_band(*dataset_ptr)};
-/// 
-///         hpx::future<void> result{write_partitions(
-///                 raster.partitions(),
-///                 std::move(dataset_ptr),
-///                 std::make_shared<Band>(std::move(band_ptr))
-///             )};
     }
 
 }  // namespace lue

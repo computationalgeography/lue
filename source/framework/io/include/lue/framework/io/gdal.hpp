@@ -46,4 +46,80 @@ namespace lue {
 
     GDALDataType data_type(std::string const& name);
 
+
+    namespace detail {
+
+        template<
+            typename Element>
+        Element no_data_value(
+            ::GDALRasterBand& band,
+            int* success)
+        {
+            return band.GetNoDataValue(success);
+        }
+
+
+ #if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3, 5, 0)
+        template<>
+        std::int64_t no_data_value(
+            ::GDALRasterBand& band,
+            int* success)
+        {
+            return band.GetNoDataValueAsInt64(success);
+        }
+
+
+        template<>
+        std::uint64_t no_data_value(
+            ::GDALRasterBand& band,
+            int* success)
+        {
+            return band.GetNoDataValueAsUInt64(success);
+        }
+#endif
+
+
+        template<
+            typename Element>
+        CPLErr set_no_data_value(
+            ::GDALRasterBand& band,
+            Element const value)
+        {
+            return band.SetNoDataValue(double{value});
+        }
+
+
+ #if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3, 5, 0)
+        template<>
+        CPLErr set_no_data_value(
+            ::GDALRasterBand& band,
+            std::int64_t const value)
+        {
+            return band.SetNoDataValueInt64(value);
+        }
+
+
+        template<>
+        CPLErr set_no_data_value(
+            ::GDALRasterBand& band,
+            std::uint64_t const value)
+        {
+            return band.SetNoDataValueUint64(value);
+        }
+#endif
+
+    }  // namespace detail
+
+
+    template<
+        typename Element>
+    bool set_no_data_value(
+        ::GDALRasterBand& band,
+        Element const value)
+    {
+        // Return true if set, and false if not. If not set, it may be that the driver does
+        // not support setting a no-data value. Depending on the context, this may not be an error.
+        return detail::set_no_data_value(band, value) == CE_None;
+    }
+
 }  // namespace lue
