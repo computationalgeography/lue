@@ -95,7 +95,7 @@ namespace lue {
             ::GDALRasterBand& band,
             std::int64_t const value)
         {
-            return band.SetNoDataValueInt64(value);
+            return band.SetNoDataValueAsInt64(value);
         }
 
 
@@ -104,7 +104,7 @@ namespace lue {
             ::GDALRasterBand& band,
             std::uint64_t const value)
         {
-            return band.SetNoDataValueUint64(value);
+            return band.SetNoDataValueAsUInt64(value);
         }
 #endif
 
