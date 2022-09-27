@@ -1,6 +1,7 @@
 set(scope lue_framework_io)
 
 set(names
+    raster
 )
 
 if(NOT CMAKE_HOST_SYSTEM_NAME STREQUAL Darwin)
