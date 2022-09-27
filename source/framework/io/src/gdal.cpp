@@ -1,4 +1,5 @@
 #include "lue/framework/io/gdal.hpp"
+#include <stdexcept>
 
 
 namespace lue {
@@ -69,9 +70,11 @@ namespace lue {
             throw std::runtime_error("Raster " + name + " cannot be created");
         }
 
+#if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3, 2, 0)
         // The statistics of the clone raster are written to the new raster, which is
         // very inconvenient
         dataset_ptr->ClearStatistics();
+#endif
 
         return dataset_ptr;
     }
