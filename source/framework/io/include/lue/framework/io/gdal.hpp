@@ -60,8 +60,11 @@ namespace lue {
 
 
  #if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3, 5, 0)
+        // "An explicit specialization of a function template is inline only if it is declared
+        // with the inline specifier (or defined as deleted), it doesn't matter if the primary
+        // template is inline."
         template<>
-        std::int64_t no_data_value(
+        inline std::int64_t no_data_value(
             ::GDALRasterBand& band,
             int* success)
         {
@@ -70,7 +73,7 @@ namespace lue {
 
 
         template<>
-        std::uint64_t no_data_value(
+        inline std::uint64_t no_data_value(
             ::GDALRasterBand& band,
             int* success)
         {
@@ -90,8 +93,11 @@ namespace lue {
 
 
  #if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3, 5, 0)
+        // "An explicit specialization of a function template is inline only if it is declared
+        // with the inline specifier (or defined as deleted), it doesn't matter if the primary
+        // template is inline."
         template<>
-        CPLErr set_no_data_value(
+        inline CPLErr set_no_data_value(
             ::GDALRasterBand& band,
             std::int64_t const value)
         {
@@ -100,7 +106,7 @@ namespace lue {
 
 
         template<>
-        CPLErr set_no_data_value(
+        inline CPLErr set_no_data_value(
             ::GDALRasterBand& band,
             std::uint64_t const value)
         {
