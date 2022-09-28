@@ -85,7 +85,7 @@ namespace lue {
             ::GDALRasterBand& band,
             Element const value)
         {
-            return band.SetNoDataValue(double{value});
+            return band.SetNoDataValue(static_cast<double>(value));
         }
 
 
