@@ -2,8 +2,9 @@
 #include "lue/framework/core/assert.hpp"
 #include "lue/framework/io/gdal.hpp"
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
-#include "lue/framework/algorithm/policy/all_values_within_domain.hpp"
-#include "lue/framework/algorithm/policy/default_value_policies.hpp"
+#include "lue/framework/algorithm/policy.hpp"
+// #include "lue/framework/algorithm/policy/all_values_within_domain.hpp"
+// #include "lue/framework/algorithm/policy/default_value_policies.hpp"
 #include <hpx/async_colocated/get_colocation_id.hpp>
 #include <hpx/async_combinators/when_any.hpp>
 #include <hpx/components/get_ptr.hpp>
@@ -11,6 +12,94 @@
 
 
 namespace lue {
+    namespace policy::read {
+
+        template<
+            typename Element>
+        using DefaultPolicies = policy::DefaultPolicies<
+                AllValuesWithinDomain<Element>,
+                OutputElements<Element>,
+                InputElements<Element>
+            >;
+
+
+        template<
+            typename Element>
+        using ValuePolicies = policy::DefaultValuePolicies<
+                AllValuesWithinDomain<Element>,
+                OutputElements<Element>,
+                InputElements<Element>
+            >;
+
+
+        template<
+            typename Element>
+        class SpecialValuePolicy:
+
+            public policy::Policies<
+                    policy::AllValuesWithinDomain<Element>,
+                    policy::OutputsPolicies<
+                            policy::OutputPolicies<
+                                    policy::DefaultOutputNoDataPolicy<Element>,
+                                    policy::AllValuesWithinRange<Element, Element>
+                                >
+                        >,
+                    policy::InputsPolicies<
+                            policy::InputPolicies<
+                                    policy::DetectNoDataByValue<Element>
+                                >
+                        >
+                >
+
+        {
+
+            private:
+
+                // MSVC requires that these templates are qualified by their namespaces
+                using Base = policy::Policies<
+                        policy::AllValuesWithinDomain<Element>,
+                        policy::OutputsPolicies<
+                                policy::OutputPolicies<
+                                    policy::DefaultOutputNoDataPolicy<Element>,
+                                    policy::AllValuesWithinRange<Element, Element>
+                                >
+                            >,
+                        policy::InputsPolicies<
+                                policy::InputPolicies<
+                                        policy::DetectNoDataByValue<Element>
+                                    >
+                            >
+                    >;
+
+            public:
+
+                SpecialValuePolicy()=default;
+
+
+                SpecialValuePolicy(Element const no_data_value):
+
+                    Base{
+                            policy::AllValuesWithinDomain<Element>{},
+                            policy::OutputPolicies<
+                                    policy::DefaultOutputNoDataPolicy<Element>,
+                                    policy::AllValuesWithinRange<Element, Element>
+                                >{},
+                            policy::InputPolicies<
+                                    policy::DetectNoDataByValue<Element>
+                                >{policy::DetectNoDataByValue<Element>{no_data_value}}
+                        }
+
+                {
+                }
+
+        };
+
+
+
+    }  // namespace policy::read
+
+
+
     namespace {
 
         class Band
@@ -86,19 +175,14 @@ namespace lue {
 
         template<
             typename Element>
-        Element no_data_value(
+        std::tuple<Element, bool> no_data_value(
             ::GDALRasterBand& band)
         {
             int success;
 
             Element value = detail::no_data_value<Element>(band, &success);
 
-            if(success == 0)
-            {
-                value = lue::policy::no_data_value<Element>;
-            }
-
-            return value;
+            return std::make_tuple(value, success != 0);
         }
 
 
@@ -141,13 +225,30 @@ namespace lue {
                 using Data = DataT<Partition>;
 
 
+                template<
+                    typename InputNoDataPolicy,
+                    typename OutputNoDataPolicy>
                 Partition instantiate(
+                    InputNoDataPolicy const indp,
+                    OutputNoDataPolicy const ondp,
                     Offset const& offset,
                     Shape const& shape)
                 {
                     Data data{shape};
 
                     _band_ptr->read_partition(offset, data);
+
+                    std::transform(data.begin(), data.end(), data.begin(),
+                            [indp, ondp](Element value)
+                            {
+                                if(indp.is_no_data(value))
+                                {
+                                    ondp.mark_no_data(value);
+                                }
+
+                                return value;
+                            }
+                        );
 
                     return Partition{hpx::find_here(), offset, std::move(data)};
                 }
@@ -158,29 +259,6 @@ namespace lue {
 
                 BandPtr _band_ptr;
 
-        };
-
-
-        template<
-            typename Element>
-        class ReadPolicies:
-
-            public policy::Policies<
-                    policy::AllValuesWithinDomain<Element>,
-                    policy::OutputsPolicies<
-                            policy::OutputPolicies<
-                                    policy::DefaultOutputNoDataPolicy<Element>,
-                                    policy::AllValuesWithinRange<Element, Element>
-                                >
-                        >,
-                    policy::InputsPolicies<
-                            policy::InputPolicies<
-                                    policy::DefaultInputNoDataPolicy<Element>
-                                >
-                        >
-                >
-
-        {
         };
 
 
@@ -216,8 +294,6 @@ namespace lue {
             std::vector<lue::OffsetT<Partition>> const& offsets,
             std::vector<lue::ShapeT<Partition>> const& partition_shapes)
         {
-            register_gdal_drivers();  // On all localities
-
             GDALDatasetPtr dataset_ptr{open_dataset(name, ::GA_ReadOnly)};
             GDALBandPtr band_ptr{get_raster_band(*dataset_ptr)};
 
@@ -226,6 +302,9 @@ namespace lue {
             std::size_t const nr_partitions{std::size(offsets)};
             std::vector<Partition> partitions(nr_partitions);
 
+            auto indp{std::get<0>(policies.inputs_policies()).input_no_data_policy()};
+            auto ondp{std::get<0>(policies.outputs_policies()).output_no_data_policy()};
+
             ReadPartition<Element> partition_reader{
                     std::move(dataset_ptr),
                     std::make_shared<Band>(std::move(band_ptr))
@@ -233,9 +312,9 @@ namespace lue {
 
             partitions[0] = hpx::async(
 
-                    [policies, partition_reader, offset=offsets[0], partition_shape=partition_shapes[0]]() mutable
+                    [indp, ondp, partition_reader, offset=offsets[0], partition_shape=partition_shapes[0]]() mutable
                     {
-                        return partition_reader.instantiate(offset, partition_shape);
+                        return partition_reader.instantiate(indp, ondp, offset, partition_shape);
                     }
                 );
 
@@ -243,10 +322,10 @@ namespace lue {
             {
                 partitions[idx] = partitions[idx-1].then(
 
-                        [policies, partition_reader, offset=offsets[idx], partition_shape=partition_shapes[idx]](
+                        [indp, ondp, partition_reader, offset=offsets[idx], partition_shape=partition_shapes[idx]](
                             auto const& /* previous_partition */) mutable
                         {
-                            return partition_reader.instantiate(offset, partition_shape);
+                            return partition_reader.instantiate(indp, ondp, offset, partition_shape);
                         }
 
                     );
@@ -334,8 +413,6 @@ namespace lue {
         {
             using Element = ElementT<Partition>;
 
-            register_gdal_drivers();  // On all localities
-
             lue_hpx_assert(partition.is_ready());
 
             // Open dataset
@@ -403,11 +480,10 @@ namespace lue {
         // Only then can we call the logic that creates a partitioned array asynchronously.
 
         Shape<Count, 2> array_shape;
+        bool no_data_value_is_valid;
         Element no_data_value;
 
         {
-            register_gdal_drivers();  // On root locality
-
             GDALDatasetPtr dataset_ptr{open_dataset(name, ::GA_ReadOnly)};
 
             array_shape[0] = dataset_ptr->GetRasterYSize();
@@ -415,18 +491,40 @@ namespace lue {
 
             GDALBandPtr band_ptr{get_raster_band(*dataset_ptr)};
 
-            no_data_value = lue::no_data_value<Element>(*band_ptr);
+            std::tie(no_data_value, no_data_value_is_valid) = lue::no_data_value<Element>(*band_ptr);
         }
 
-        // TODO Iff Element is floating point, assume input no-data policy is
-        //      DetectNoDataByNaN<Element>, else DetectNoDataByValue<Element> and pass correct value.
-        //      If (later) Element is floating point, and input no-data turns out to be not
-        //      NaN in some cases, create a new policy that works in case input no-data is NaN
-        //      or some value.
-        using Policies = ReadPolicies<Element>;
         using Functor = ReadPartitionsPerLocality<Element>;
 
-        return create_partitioned_array(Policies{}, array_shape, partition_shape, Functor{name});
+        if(!no_data_value_is_valid)
+        {
+            // No no-data value is set in the band. Don't bother with no-data.
+
+            using Policies = policy::read::DefaultPolicies<Element>;
+            Policies policies{};
+            return create_partitioned_array(policies, array_shape, partition_shape, Functor{name});
+        }
+        else
+        {
+            // A no-data value is set in the band. Let's be nice and use it. Upon reading,
+            // it will be converted to our own conventions for handling no-data.
+
+            if(std::is_floating_point_v<Element> && std::isnan(no_data_value))
+            {
+                // No-data value is a NaN. This is what LUE uses as no-data for floating point
+                // by default.
+                using Policies = policy::read::ValuePolicies<Element>;
+                Policies policies{};
+                return create_partitioned_array(policies, array_shape, partition_shape, Functor{name});
+            }
+            else
+            {
+                // No-data value is not NaN. Use a special no-data policy for this special value.
+                using Policies = policy::read::SpecialValuePolicy<Element>;
+                Policies policies{no_data_value};
+                return create_partitioned_array(policies, array_shape, partition_shape, Functor{name});
+            }
+        }
     }
 
 
@@ -459,8 +557,6 @@ namespace lue {
         ondp.mark_no_data(no_data_value);
 
         {
-            register_gdal_drivers();  // On root locality
-
             Count const nr_bands{1};
             GDALDataType const data_type{GDALTypeTraits<Element>::type_id};
             GDALDatasetPtr dataset_ptr{create(name, array.shape(), nr_bands, data_type)};

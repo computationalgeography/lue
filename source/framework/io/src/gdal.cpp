@@ -20,11 +20,17 @@ namespace lue {
         std::string const& name,
         GDALAccess const open_mode)
     {
+        register_gdal_drivers();
+
+#ifndef NDEBUG
         CPLPushErrorHandler(CPLQuietErrorHandler);
+#endif
 
         GDALDatasetPtr dataset_ptr{(GDALDataset *)::GDALOpen(name.c_str(), open_mode), gdal_close};
 
+#ifndef NDEBUG
         CPLPopErrorHandler();
+#endif
 
         if(!dataset_ptr)
         {
@@ -53,7 +59,11 @@ namespace lue {
         std::string const& name,
         GDALDatasetPtr& clone_dataset)
     {
+        register_gdal_drivers();
+
+#ifndef NDEBUG
         CPLPushErrorHandler(CPLQuietErrorHandler);
+#endif
 
         // TODO let GDAL pick the driver and/or use extension(?)
         GDALDriverPtr driver{lue::driver("GTiff")};
@@ -63,7 +73,9 @@ namespace lue {
                 gdal_close
             };
 
+#ifndef NDEBUG
         CPLPopErrorHandler();
+#endif
 
         if(!dataset_ptr)
         {
@@ -86,7 +98,11 @@ namespace lue {
         Count const nr_bands,
         GDALDataType const data_type)
     {
+        register_gdal_drivers();
+
+#ifndef NDEBUG
         CPLPushErrorHandler(CPLQuietErrorHandler);
+#endif
 
         // TODO let GDAL pick the driver and/or use extension(?)
         GDALDriverPtr driver{lue::driver("GTiff")};
@@ -96,7 +112,9 @@ namespace lue {
                 gdal_close
             };
 
+#ifndef NDEBUG
         CPLPopErrorHandler();
+#endif
 
         if(!dataset_ptr)
         {

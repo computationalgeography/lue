@@ -26,11 +26,7 @@ namespace lue {
 
     using GDALDriverPtr = ::GDALDriver*;
 
-    void register_gdal_drivers();
-
     GDALDatasetPtr open_dataset(std::string const& name, GDALAccess const open_mode);
-
-    GDALDriverPtr driver(std::string const& name);
 
     GDALDatasetPtr create_copy(
         std::string const& name, GDALDatasetPtr& clone_dataset);
