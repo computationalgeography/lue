@@ -74,7 +74,8 @@ rem cmake --build . --target all --parallel 2
 rem 
 rem if %errorlevel% neq 0 exit /b %errorlevel%
 
-ctest --extra-verbose --output-on-failure --build-config Release
+rem See https://github.com/computationalgeography/lue/issues/493
+rem ctest --extra-verbose --output-on-failure --build-config Release
 
 if %errorlevel% neq 0 exit /b %errorlevel%
 
