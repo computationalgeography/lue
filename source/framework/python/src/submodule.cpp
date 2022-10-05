@@ -55,6 +55,9 @@ namespace lue::framework {
     void bind_from_numpy(pybind11::module& module);
     void bind_to_numpy(pybind11::module& module);
 
+    void bind_from_gdal(pybind11::module& module);
+    void bind_to_gdal(pybind11::module& module);
+
     void init_submodule(
         pybind11::module& module)
     {
@@ -92,6 +95,8 @@ namespace lue::framework {
         bind_write_array(submodule);
         bind_from_numpy(submodule);
         bind_to_numpy(submodule);
+        bind_from_gdal(submodule);
+        bind_to_gdal(submodule);
 
         // Unless the user calls stop_hpx_runtime explicitly, we will do it
         // automatically upon module unload

@@ -76,6 +76,8 @@ add_library(lue_py_framework SHARED
     src/io/read_array.cpp
     src/io/write_array.cpp
     src/command_line.cpp
+    src/gdal/from_gdal.cpp
+    src/gdal/to_gdal.cpp
     src/hpx.cpp
     src/hpx_runtime.cpp
     src/numpy/from_numpy.cpp
