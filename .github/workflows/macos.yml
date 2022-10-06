@@ -3,7 +3,7 @@ name: macOS CI
 on:
   push:
     branches-ignore:
-      - gh242
+      - gh424
     paths:
       - ".github/workflows/macos.yml"
       - "source/**"

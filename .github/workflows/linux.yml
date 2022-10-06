@@ -3,7 +3,7 @@ name: Linux CI
 on:
   push:
     branches-ignore:
-      - gh242
+      - gh424
     paths:
       - ".github/workflows/linux.yml"
       - "source/**"
