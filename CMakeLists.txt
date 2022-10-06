@@ -63,3 +63,6 @@ install(TARGETS lue_compile_options EXPORT lue_targets)
 #             -P "${CMAKE_BINARY_DIR}/cmake_install.cmake"
 #     )
 # endif()
+
+
+include(packaging)
