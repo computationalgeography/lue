@@ -2,8 +2,8 @@ name: Linux Conda package
 
 on:
   push:
-    # branches-ignore:
-    #   - gh247
+    branches-ignore:
+      - gh242
     paths:
       - ".github/workflows/linux-conda.yml"
       - "source/**"

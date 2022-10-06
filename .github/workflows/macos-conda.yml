@@ -2,8 +2,8 @@ name: macOS Conda package
 
 on:
   push:
-    # branches-ignore:
-    #   - gh247
+    branches-ignore:
+      - gh242
     paths:
       - ".github/workflows/macos-conda.yml"
       - "source/**"
