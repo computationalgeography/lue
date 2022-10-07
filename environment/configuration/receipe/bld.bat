@@ -28,9 +28,6 @@ cmake %SRC_DIR% ^
     -D LUE_BUILD_FRAMEWORK=TRUE ^
     -D LUE_FRAMEWORK_WITH_PYTHON_API=TRUE ^
     -D LUE_BUILD_VIEW=TRUE ^
-    -D LUE_BUILD_TEST=TRUE ^
-    -D LUE_TEST_NR_LOCALITIES_PER_TEST=1 ^
-    -D LUE_TEST_NR_THREADS_PER_LOCALITY=2 ^
     -D LUE_BUILD_QA=TRUE ^
     -D LUE_QA_WITH_PYTHON_API=TRUE ^
     -D LUE_BUILD_HPX=TRUE ^
@@ -73,9 +70,6 @@ rem rem Build remaining targets with fewer cores. Compiling these modules requir
 rem cmake --build . --target all --parallel 2
 rem 
 rem if %errorlevel% neq 0 exit /b %errorlevel%
-
-rem See https://github.com/computationalgeography/lue/issues/493
-rem ctest --extra-verbose --output-on-failure --build-config Release
 
 if %errorlevel% neq 0 exit /b %errorlevel%
 

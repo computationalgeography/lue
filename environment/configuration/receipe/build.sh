@@ -30,9 +30,6 @@ PATH=$PREFIX/bin:$PATH CXXFLAGS="${CXXFLAGS} -DTARGET_OS_OSX -D_LIBCPP_DISABLE_A
         -D LUE_DATA_MODEL_WITH_PYTHON_API=ON \
         -D LUE_DATA_MODEL_WITH_UTILITIES=ON \
         -D LUE_BUILD_VIEW=ON \
-        -D LUE_BUILD_TEST=ON \
-        -D LUE_TEST_NR_LOCALITIES_PER_TEST=1 \
-        -D LUE_TEST_NR_THREADS_PER_LOCALITY=2 \
         -D LUE_BUILD_FRAMEWORK=ON \
         -D LUE_FRAMEWORK_WITH_PYTHON_API=ON \
         -D LUE_BUILD_HPX=ON \
@@ -48,8 +45,6 @@ cmake --build . --target source/{data_model,view}/all source/framework/{core,par
 
 # Build remaining targets with fewer cores. Compiling these modules requires more memory.
 cmake --build . --target all --parallel 2
-
-ctest --extra-verbose --output-on-failure
 
 cmake --install . --component hpx_runtime
 cmake --install . --component lue_runtime
