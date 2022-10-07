@@ -2,8 +2,8 @@ name: Linux CI
 
 on:
   push:
-    # branches-ignore:
-    #   - gh247
+    branches-ignore:
+      - ghxyz
     paths:
       - ".github/workflows/linux.yml"
       - "source/**"
@@ -60,10 +60,7 @@ jobs:
               channels: conda-forge
         - shell: bash -l {0}
           run: |
-              # Pin markupsafe, used by Jinja which is used by Conan, because of a breaking
-              # change in markupsafe 2.1.0
-              conda install docopt "markupsafe<2.1.0" numpy pip
-              # breathe sphinx
+              conda install docopt breathe markupsafe numpy pip sphinx
 
               # Use conan from pypi to get the latest version
               pip install conan
@@ -92,7 +89,7 @@ jobs:
                   -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
                   -D CMAKE_BUILD_TYPE=Release \
                   -D FETCHCONTENT_QUIET=FALSE \
-                  -D LUE_BUILD_DOCUMENTATION=FALSE \
+                  -D LUE_BUILD_DOCUMENTATION=TRUE \
                   -D LUE_BUILD_TEST=TRUE \
                   -D LUE_TEST_NR_LOCALITIES_PER_TEST=1 \
                   -D LUE_TEST_NR_THREADS_PER_LOCALITY=2 \
@@ -122,11 +119,11 @@ jobs:
               cd $GITHUB_WORKSPACE/../build
               ctest --output-on-failure
 
-        # - name: generate lue documentation
-        #   shell: bash
-        #   run: |
-        #       cmake --build $GITHUB_WORKSPACE/../build --target cpp_doc py_doc
-        #       cmake --build $GITHUB_WORKSPACE/../build --target sphinx_doc
+        - name: generate lue documentation
+          shell: bash
+          run: |
+              cmake --build $GITHUB_WORKSPACE/../build --target cpp_doc py_doc
+              cmake --build $GITHUB_WORKSPACE/../build --target sphinx_doc
 
         - name: install lue_runtime component
           shell: bash -l {0}
@@ -142,7 +139,7 @@ jobs:
               python -c "import lue; print(lue.__version__)"
 
         - name: deploy lue documentation
-          if: github.ref == 'refs/heads/master' && matrix.compiler.cxx == 'g++-9' && matrix.python-version == 3.9
+          if: (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/gh494') && matrix.compiler.cxx == 'g++-10' && matrix.python-version == 3.9
           env:
               ftp_server: ${{ secrets.FTP_SERVER }}
               ftp_port: ${{ secrets.FTP_PORT }}
@@ -151,9 +148,9 @@ jobs:
               remote_dir: ${{ secrets.FTP_REMOTE_DIR }}
               local_dir: "sphinx/"
           run: |
-              # TODO cd $GITHUB_WORKSPACE/../build/document/doc
               mkdir -p $HOME/.ssh
-              # TODO
-              type ssh-keyscan  # If not present, install openssh-client above first
-              # ssh-keyscan $ftp_server >> $HOME/.ssh/known_hosts || true
-              # lftp -c "open --user $ftp_username --password $ftp_password -p $ftp_port sftp://$ftp_server; set sftp:auto-confirm yes; mirror --verbose --reverse --delete --continue --parallel=2 $local_dir $remote_dir/doc"
+              ssh-keyscan $ftp_server >> $HOME/.ssh/known_hosts
+              echo "HostKeyAlgorithms ssh-rsa" >> $HOME/.ssh/config
+              echo "PubkeyAcceptedKeyTypes ssh-rsa" >> $HOME/.ssh/config
+              cd $GITHUB_WORKSPACE/../build/document/doc
+              lftp -e "set cmd:trace yes;set sftp:auto-confirm yes; mirror --verbose --reverse --delete --continue --parallel=2 --exclude doc $local_dir $remote_dir; quit" -u $ftp_username,$ftp_password sftp://$ftp_server -p $ftp_port
