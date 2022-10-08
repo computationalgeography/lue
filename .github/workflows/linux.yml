@@ -13,7 +13,7 @@ jobs:
 
         strategy:
             matrix:
-                os: ["ubuntu-20.04"]
+                os: ["ubuntu-22.04"]
                 python-version: [3.9]
                 compiler:
                     # TODO Bump gcc to 11 (or later). We may have to switch to ubuntu-22.04 for that.
@@ -149,9 +149,10 @@ jobs:
               remote_dir: ${{ secrets.FTP_REMOTE_DIR }}
               local_dir: "sphinx/"
           run: |
+              # See also: https://tisgoud.nl/2020/03/deploy-to-sftp-from-gitlab-ci/
               mkdir -p $HOME/.ssh
               ssh-keyscan $ftp_server >> $HOME/.ssh/known_hosts
               echo "HostKeyAlgorithms ssh-rsa" >> $HOME/.ssh/config
               echo "PubkeyAcceptedKeyTypes ssh-rsa" >> $HOME/.ssh/config
               cd $GITHUB_WORKSPACE/../build/document/doc
-              lftp -e "set cmd:trace yes;set sftp:auto-confirm yes; mirror --verbose --reverse --delete --continue --parallel=2 --exclude doc $local_dir $remote_dir; quit" -u $ftp_username,$ftp_password sftp://$ftp_server -p $ftp_port
+              lftp -d -e "set cmd:trace yes;set sftp:auto-confirm yes; mirror --verbose --reverse --delete --continue --parallel=2 --exclude doc $local_dir $remote_dir; quit" -u $ftp_username,$ftp_password sftp://$ftp_server -p $ftp_port
