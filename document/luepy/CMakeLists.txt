@@ -16,7 +16,7 @@ add_custom_target(
     #         -o ${CMAKE_CURRENT_BINARY_DIR}/_build/api
     #         --separate
     #         ${PROJECT_SOURCE_DIR}/source
-    COMMAND ${CMAKE_COMMAND} -E env PYTHONPATH=$<TARGET_FILE_DIR:lue::py>
+    COMMAND ${CMAKE_COMMAND} -E env PYTHONPATH=$<TARGET_FILE_DIR:lue::py>/..
         ${SPHINX_BUILD_EXECUTABLE}
             -q -b html
             -c ${CMAKE_CURRENT_BINARY_DIR}/_build

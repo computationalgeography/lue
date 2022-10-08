@@ -120,6 +120,7 @@ jobs:
               ctest --output-on-failure
 
         - name: generate lue documentation
+          if: (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/gh494') && matrix.compiler.cxx == 'g++-10' && matrix.python-version == 3.9
           shell: bash
           run: |
               cmake --build $GITHUB_WORKSPACE/../build --target cpp_doc py_doc
