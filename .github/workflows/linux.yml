@@ -37,7 +37,9 @@ jobs:
 
         - name: configure system
           run: |
-              sudo apt install -y \
+              sudo apt update
+              sudo apt full-upgrade
+              sudo apt install \
                   cmake \
                   doxygen \
                   graphviz \
