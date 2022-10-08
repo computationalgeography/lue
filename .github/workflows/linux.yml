@@ -37,8 +37,7 @@ jobs:
 
         - name: configure system
           run: |
-              sudo apt update
-              sudo apt install \
+              sudo apt install -y \
                   cmake \
                   doxygen \
                   graphviz \
@@ -53,11 +52,13 @@ jobs:
                   libhdf5-dev \
                   ${{ matrix.compiler.cc }} \
                   ninja-build
+
         - uses: conda-incubator/setup-miniconda@v2
           with:
               auto-update-conda: true
               python-version: ${{ matrix.python-version }}
               channels: conda-forge
+
         - shell: bash -l {0}
           run: |
               conda install docopt breathe markupsafe numpy pip sphinx
@@ -90,7 +91,7 @@ jobs:
                   -D CMAKE_BUILD_TYPE=Release \
                   -D FETCHCONTENT_QUIET=FALSE \
                   -D LUE_BUILD_DOCUMENTATION=TRUE \
-                  -D LUE_BUILD_TEST=TRUE \
+                  -D LUE_BUILD_TEST=FALSE \
                   -D LUE_TEST_NR_LOCALITIES_PER_TEST=1 \
                   -D LUE_TEST_NR_THREADS_PER_LOCALITY=2 \
                   -D LUE_BUILD_DATA_MODEL=TRUE \
@@ -113,11 +114,12 @@ jobs:
               # For now, don't use both cores. One of the CI builds runs out of memory.
               cmake --build $GITHUB_WORKSPACE/../build --target all --parallel 1
 
-        - name: test lue
-          shell: bash -l {0}
-          run: |
-              cd $GITHUB_WORKSPACE/../build
-              ctest --output-on-failure
+        # TODO Uncomment and turn on build of tests
+        # - name: test lue
+        #   shell: bash -l {0}
+        #   run: |
+        #       cd $GITHUB_WORKSPACE/../build
+        #       ctest --output-on-failure
 
         - name: generate lue documentation
           if: (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/gh494') && matrix.compiler.cxx == 'g++-10' && matrix.python-version == 3.9
