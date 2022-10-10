@@ -40,8 +40,8 @@ jobs:
               sudo apt-get upgrade
               # sudo apt-get install --fix-broken
               # sudo apt-get install --fix-missing
+              sudo apt-get remove libunwind-14-dev
               sudo apt install \
-                  libunwind-14-dev \
                   cmake \
                   doxygen \
                   graphviz \
