@@ -19,9 +19,12 @@ jobs:
                     # To be recognized by Conan, name must be one of:
                     #     'Visual Studio', 'apple-clang', 'clang', 'gcc', 'intel', 'intel-cc', 'mcst-lcc',
                     #     'msvc', 'qcc', 'sun-cc'
+                    # TODO
                     # - { name: gcc  , version: 11, cc: gcc-11  , cxx: g++-11     }
-                    - { name: gcc  , version: 12, cc: gcc-12  , cxx: g++-12     }
+                  - { name: gcc  , version: 12, cc: gcc-12  , cxx: g++-12, package: g++-12     }
+                    # TODO
                     # - { name: clang, version: 11, cc: clang-11, cxx: clang++-11 }
+                    # TODO
                     # - { name: clang, version: 12, cc: clang-12, cxx: clang++-12 }
             fail-fast: false
 
@@ -38,8 +41,6 @@ jobs:
           run: |
               sudo apt-get update
               sudo apt-get upgrade
-              # sudo apt-get install --fix-broken
-              # sudo apt-get install --fix-missing
               sudo apt-get remove libunwind-14-dev
               sudo apt install \
                   cmake \
@@ -54,7 +55,7 @@ jobs:
                   libgdal-dev \
                   libgoogle-perftools-dev \
                   libhdf5-dev \
-                  ${{ matrix.compiler.cc }} \
+                  ${{ matrix.compiler.package }} \
                   ninja-build
 
         - uses: conda-incubator/setup-miniconda@v2
