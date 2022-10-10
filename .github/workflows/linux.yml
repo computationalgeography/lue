@@ -36,6 +36,7 @@ jobs:
 
         - name: configure system
           run: |
+              sudo apt install --fix-broken
               sudo apt install \
                   cmake \
                   doxygen \
