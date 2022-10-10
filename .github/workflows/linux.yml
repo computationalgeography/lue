@@ -36,7 +36,12 @@ jobs:
 
         - name: configure system
           run: |
+              sudo apt-get update
+              sudo apt-get upgrade
+              # sudo apt-get install --fix-broken
+              # sudo apt-get install --fix-missing
               sudo apt install \
+                  libunwind-14-dev \
                   cmake \
                   doxygen \
                   graphviz \
