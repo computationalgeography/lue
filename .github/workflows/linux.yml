@@ -19,13 +19,10 @@ jobs:
                     # To be recognized by Conan, name must be one of:
                     #     'Visual Studio', 'apple-clang', 'clang', 'gcc', 'intel', 'intel-cc', 'mcst-lcc',
                     #     'msvc', 'qcc', 'sun-cc'
-                    # TODO
-                    # - { name: gcc  , version: 11, cc: gcc-11  , cxx: g++-11     }
-                  - { name: gcc  , version: 12, cc: gcc-12  , cxx: g++-12, package: g++-12     }
-                    # TODO
-                    # - { name: clang, version: 11, cc: clang-11, cxx: clang++-11 }
-                    # TODO
-                    # - { name: clang, version: 12, cc: clang-12, cxx: clang++-12 }
+                    - { name: gcc  , version:  9, cc: gcc-9   , cxx: g++-9     , package: g++-9    }
+                    - { name: gcc  , version: 12, cc: gcc-12  , cxx: g++-12    , package: g++-12   }
+                    - { name: clang, version: 11, cc: clang-11, cxx: clang++-11, package: clang-11 }
+                    - { name: clang, version: 14, cc: clang-14, cxx: clang++-14, package: clang-14 }
             fail-fast: false
 
         runs-on: ${{ matrix.os }}
@@ -96,7 +93,7 @@ jobs:
                   -D CMAKE_BUILD_TYPE=Release \
                   -D FETCHCONTENT_QUIET=FALSE \
                   -D LUE_BUILD_DOCUMENTATION=TRUE \
-                  -D LUE_BUILD_TEST=FALSE \
+                  -D LUE_BUILD_TEST=TEST \
                   -D LUE_TEST_NR_LOCALITIES_PER_TEST=1 \
                   -D LUE_TEST_NR_THREADS_PER_LOCALITY=2 \
                   -D LUE_BUILD_DATA_MODEL=TRUE \
@@ -119,14 +116,14 @@ jobs:
               # For now, don't use both cores. One of the CI builds runs out of memory.
               cmake --build $GITHUB_WORKSPACE/../build --target all --parallel 1
 
-        # TODO Uncomment and turn on build of tests
-        # - name: test lue
-        #   shell: bash -l {0}
-        #   run: |
-        #       cd $GITHUB_WORKSPACE/../build
-        #       ctest --output-on-failure
+        - name: test lue
+          shell: bash -l {0}
+          run: |
+              cd $GITHUB_WORKSPACE/../build
+              ctest --output-on-failure
 
         - name: generate lue documentation
+          # TODO remove branch name
           if: (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/gh494') && matrix.compiler.cxx == 'g++-12' && matrix.python-version == 3.9
           shell: bash
           run: |
@@ -147,6 +144,7 @@ jobs:
               python -c "import lue; print(lue.__version__)"
 
         - name: deploy lue documentation
+          # TODO remove branch name
           if: (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/gh494') && matrix.compiler.cxx == 'g++-12' && matrix.python-version == 3.9
           env:
               ftp_server: ${{ secrets.FTP_SERVER }}
@@ -162,4 +160,4 @@ jobs:
               echo "HostKeyAlgorithms ssh-rsa" >> $HOME/.ssh/config
               echo "PubkeyAcceptedKeyTypes ssh-rsa" >> $HOME/.ssh/config
               cd $GITHUB_WORKSPACE/../build/document/doc
-              lftp -d -e "set cmd:trace yes;set sftp:auto-confirm yes; mirror --verbose --reverse --delete --continue --parallel=2 --exclude doc $local_dir $remote_dir; quit" -u $ftp_username,$ftp_password sftp://$ftp_server -p $ftp_port
+              lftp -e "set cmd:trace yes;set sftp:auto-confirm yes; mirror --verbose --reverse --delete --continue --parallel=2 --exclude doc $local_dir $remote_dir; quit" -u $ftp_username,$ftp_password sftp://$ftp_server -p $ftp_port
