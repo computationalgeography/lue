@@ -2,8 +2,8 @@ name: Windows CI
 
 on:
   push:
-    # branches-ignore:
-    #   - gh247
+    branches-ignore:
+      - ghxyz
     paths:
       - ".github/workflows/windows.yml"
       - "source/**"

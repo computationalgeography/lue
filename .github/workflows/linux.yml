@@ -2,8 +2,8 @@ name: Linux CI
 
 on:
   push:
-    # branches-ignore:
-    #   - gh247
+    branches-ignore:
+      - ghxyz
     paths:
       - ".github/workflows/linux.yml"
       - "source/**"
@@ -13,17 +13,16 @@ jobs:
 
         strategy:
             matrix:
-                os: ["ubuntu-20.04"]
+                os: ["ubuntu-22.04"]
                 python-version: [3.9]
                 compiler:
-                    # TODO Bump gcc to 11 (or later). We may have to switch to ubuntu-22.04 for that.
                     # To be recognized by Conan, name must be one of:
                     #     'Visual Studio', 'apple-clang', 'clang', 'gcc', 'intel', 'intel-cc', 'mcst-lcc',
                     #     'msvc', 'qcc', 'sun-cc'
-                    - { name: gcc  , version:  9, cc: gcc-9   , cxx: g++-9      }
-                    - { name: gcc  , version: 10, cc: gcc-10  , cxx: g++-10     }
-                    - { name: clang, version: 11, cc: clang-11, cxx: clang++-11 }
-                    - { name: clang, version: 12, cc: clang-12, cxx: clang++-12 }
+                    - { name: gcc  , version:  9, cc: gcc-9   , cxx: g++-9     , package: g++-9    }
+                    - { name: gcc  , version: 12, cc: gcc-12  , cxx: g++-12    , package: g++-12   }
+                    - { name: clang, version: 11, cc: clang-11, cxx: clang++-11, package: clang-11 }
+                    - { name: clang, version: 14, cc: clang-14, cxx: clang++-14, package: clang-14 }
             fail-fast: false
 
         runs-on: ${{ matrix.os }}
@@ -37,7 +36,9 @@ jobs:
 
         - name: configure system
           run: |
-              sudo apt update
+              sudo apt-get update
+              sudo apt-get upgrade
+              sudo apt-get remove libunwind-14-dev
               sudo apt install \
                   cmake \
                   doxygen \
@@ -51,19 +52,18 @@ jobs:
                   libgdal-dev \
                   libgoogle-perftools-dev \
                   libhdf5-dev \
-                  ${{ matrix.compiler.cc }} \
+                  ${{ matrix.compiler.package }} \
                   ninja-build
+
         - uses: conda-incubator/setup-miniconda@v2
           with:
               auto-update-conda: true
               python-version: ${{ matrix.python-version }}
               channels: conda-forge
+
         - shell: bash -l {0}
           run: |
-              # Pin markupsafe, used by Jinja which is used by Conan, because of a breaking
-              # change in markupsafe 2.1.0
-              conda install docopt "markupsafe<2.1.0" numpy pip
-              # breathe sphinx
+              conda install docopt breathe markupsafe numpy pip sphinx
 
               # Use conan from pypi to get the latest version
               pip install conan
@@ -92,8 +92,8 @@ jobs:
                   -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
                   -D CMAKE_BUILD_TYPE=Release \
                   -D FETCHCONTENT_QUIET=FALSE \
-                  -D LUE_BUILD_DOCUMENTATION=FALSE \
-                  -D LUE_BUILD_TEST=TRUE \
+                  -D LUE_BUILD_DOCUMENTATION=TRUE \
+                  -D LUE_BUILD_TEST=TEST \
                   -D LUE_TEST_NR_LOCALITIES_PER_TEST=1 \
                   -D LUE_TEST_NR_THREADS_PER_LOCALITY=2 \
                   -D LUE_BUILD_DATA_MODEL=TRUE \
@@ -122,11 +122,12 @@ jobs:
               cd $GITHUB_WORKSPACE/../build
               ctest --output-on-failure
 
-        # - name: generate lue documentation
-        #   shell: bash
-        #   run: |
-        #       cmake --build $GITHUB_WORKSPACE/../build --target cpp_doc py_doc
-        #       cmake --build $GITHUB_WORKSPACE/../build --target sphinx_doc
+        - name: generate lue documentation
+          if: github.ref == 'refs/heads/master' && matrix.compiler.cxx == 'g++-12' && matrix.python-version == 3.9
+          shell: bash
+          run: |
+              cmake --build $GITHUB_WORKSPACE/../build --target cpp_doc py_doc
+              cmake --build $GITHUB_WORKSPACE/../build --target sphinx_doc
 
         - name: install lue_runtime component
           shell: bash -l {0}
@@ -142,7 +143,7 @@ jobs:
               python -c "import lue; print(lue.__version__)"
 
         - name: deploy lue documentation
-          if: github.ref == 'refs/heads/master' && matrix.compiler.cxx == 'g++-9' && matrix.python-version == 3.9
+          if: github.ref == 'refs/heads/master' && matrix.compiler.cxx == 'g++-12' && matrix.python-version == 3.9
           env:
               ftp_server: ${{ secrets.FTP_SERVER }}
               ftp_port: ${{ secrets.FTP_PORT }}
@@ -151,9 +152,12 @@ jobs:
               remote_dir: ${{ secrets.FTP_REMOTE_DIR }}
               local_dir: "sphinx/"
           run: |
-              # TODO cd $GITHUB_WORKSPACE/../build/document/doc
               mkdir -p $HOME/.ssh
-              # TODO
-              type ssh-keyscan  # If not present, install openssh-client above first
-              # ssh-keyscan $ftp_server >> $HOME/.ssh/known_hosts || true
-              # lftp -c "open --user $ftp_username --password $ftp_password -p $ftp_port sftp://$ftp_server; set sftp:auto-confirm yes; mirror --verbose --reverse --delete --continue --parallel=2 $local_dir $remote_dir/doc"
+              chmod 700 $HOME/.ssh
+              touch $HOME/.ssh/known_hosts
+              chmod 600 $HOME/.ssh/known_hosts
+              ssh-keyscan -H $ftp_server >> $HOME/.ssh/known_hosts
+              echo "HostKeyAlgorithms ssh-rsa" >> $HOME/.ssh/config
+              echo "PubkeyAcceptedKeyTypes ssh-rsa" >> $HOME/.ssh/config
+              cd $GITHUB_WORKSPACE/../build/document/doc
+              lftp -e "mirror --reverse --delete --transfer-all --parallel=2 $local_dir $remote_dir/doc; quit" -u $ftp_username,$ftp_password sftp://$ftp_server -p $ftp_port || true

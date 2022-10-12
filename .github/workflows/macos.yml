@@ -2,8 +2,8 @@ name: macOS CI
 
 on:
   push:
-    # branches-ignore:
-    #   - gh247
+    branches-ignore:
+      - ghxyz
     paths:
       - ".github/workflows/macos.yml"
       - "source/**"
