@@ -154,10 +154,12 @@ jobs:
               remote_dir: ${{ secrets.FTP_REMOTE_DIR }}
               local_dir: "sphinx/"
           run: |
-              # See also: https://tisgoud.nl/2020/03/deploy-to-sftp-from-gitlab-ci/
               mkdir -p $HOME/.ssh
-              ssh-keyscan $ftp_server >> $HOME/.ssh/known_hosts
+              chmod 700 $HOME/.ssh
+              touch $HOME/.ssh/known_hosts
+              chmod 600 $HOME/.ssh/known_hosts
+              ssh-keyscan -H $ftp_server >> $HOME/.ssh/known_hosts
               echo "HostKeyAlgorithms ssh-rsa" >> $HOME/.ssh/config
               echo "PubkeyAcceptedKeyTypes ssh-rsa" >> $HOME/.ssh/config
               cd $GITHUB_WORKSPACE/../build/document/doc
-              lftp -e "set cmd:trace yes;set sftp:auto-confirm yes; mirror --verbose --reverse --delete --continue --parallel=2 --exclude doc $local_dir $remote_dir; quit" -u $ftp_username,$ftp_password sftp://$ftp_server -p $ftp_port
+              lftp -e "mirror --reverse --delete --transfer-all --parallel=2 $local_dir $remote_dir/doc; quit" -u $ftp_username,$ftp_password sftp://$ftp_server -p $ftp_port || true
