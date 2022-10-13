@@ -40,6 +40,7 @@ target_link_libraries(lue_framework_algorithm
 # - Common element types
 # - Common policies
 add_library(lue_framework_local_operation SHARED
+    src/local_operation/abs.cpp
     src/local_operation/add.cpp
     src/local_operation/acos.cpp
     src/local_operation/asin.cpp

@@ -70,8 +70,8 @@ added to the LUE framework. The number of model developers requesting one is one
      - ✅
      -
    * - abs
-     - ❌
-     - 1
+     - ✅
+     -
    * - | accucapacityflux
        | accucapacitystate
      - ❌

@@ -1,3 +1,4 @@
+#include "lue/py/framework/algorithm/abs.hpp"
 #include "lue/py/framework/algorithm/add.hpp"
 #include "lue/py/framework/algorithm/divide.hpp"
 #include "lue/py/framework/algorithm/equal_to.hpp"
@@ -215,6 +216,16 @@ namespace lue::framework {
                 { return lfr::subtract<ElementT<Array>, rank>(argument1, argument2); },
                 pybind11::is_operator())
             ;
+
+        if constexpr (std::is_signed_v<Element> || std::is_floating_point_v<Element>)
+        {
+            // abs(a)
+            class_
+                .def("__abs__", [](Array const& argument)
+                    { return lfr::abs<ElementT<Array>, rank>(argument); },
+                    pybind11::is_operator())
+                ;
+        }
 
         if constexpr (std::is_floating_point_v<Element>)
         {
