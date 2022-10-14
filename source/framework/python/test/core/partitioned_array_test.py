@@ -124,6 +124,12 @@ class CreatePartitionedArrayTest(lue_test.TestCase):
 
 
     @lue_test.framework_test_case
+    def test_operator_abs_overloads(self):
+        array = self.array
+        tmp = abs(array)
+
+
+    @lue_test.framework_test_case
     def test_operator_pow_overloads(self):
         array, value, value_f = self.array, self.value, self.value_f
         tmp = array ** array
