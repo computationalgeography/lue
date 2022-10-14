@@ -153,11 +153,8 @@ jobs:
               local_dir: "sphinx/"
           run: |
               mkdir -p $HOME/.ssh
-              chmod 700 $HOME/.ssh
-              touch $HOME/.ssh/known_hosts
-              chmod 600 $HOME/.ssh/known_hosts
-              ssh-keyscan -H $ftp_server >> $HOME/.ssh/known_hosts
               echo "HostKeyAlgorithms ssh-rsa" >> $HOME/.ssh/config
               echo "PubkeyAcceptedKeyTypes ssh-rsa" >> $HOME/.ssh/config
+              echo "StrictHostKeyChecking no" >> $HOME/.ssh/config
               cd $GITHUB_WORKSPACE/../build/document/doc
-              lftp -e "mirror --reverse --delete --transfer-all --parallel=2 $local_dir $remote_dir/doc; quit" -u $ftp_username,$ftp_password sftp://$ftp_server -p $ftp_port || true
+              lftp -e "mirror --reverse --delete --transfer-all --parallel=2 $local_dir $remote_dir/doc; quit" -u $ftp_username,$ftp_password sftp://$ftp_server -p $ftp_port
