@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/focal_sum.hpp"
+#include "lue/framework/algorithm/focal_operation_export.hpp"
 #include "lue/framework/algorithm/definition/focal_operation.hpp"
 
 
@@ -14,9 +15,6 @@ namespace lue {
             public:
 
                 using OutputElement = InputElement;
-
-
-                FocalSum()=default;
 
 
                 template<
@@ -34,14 +32,15 @@ namespace lue {
 
                     using Weight = ElementT<Kernel>;
 
-                    // TODO Add traits to grab typename of elements in Subspan
-                    // static_assert(std::is_same_v<ElementT<Subspan>, InputElement>);
-                    static_assert(std::is_same_v<Weight, bool> || std::is_floating_point_v<Weight>);
-
-                    OutputElement sum{0};
+                    static_assert(std::is_integral_v<Weight>);
 
                     lue_hpx_assert(window.extent(0) == kernel.size());
                     lue_hpx_assert(window.extent(1) == kernel.size());
+
+                    auto indp = input_policies.input_no_data_policy();
+                    auto ondp = output_policies.output_no_data_policy();
+
+                    OutputElement sum{0};
 
                     for(Index r = 0; r < window.extent(0); ++r) {
                         for(Index c = 0; c < window.extent(1); ++c)
@@ -49,18 +48,21 @@ namespace lue {
                             Weight const weight{kernel(r, c)};
                             InputElement const value{window(r, c)};
 
-                            if constexpr(std::is_same_v<Weight, bool>)
+                            if(indp.is_no_data(value))
                             {
-                                // TODO Handle no-data
-                                if(weight)
-                                {
-                                    sum += value;
-                                }
+                                // In case one of the cells within the window contains a no-data
+                                // value, the result is marked as no-data
+                                ondp.mark_no_data(sum);
+                                r = window.extent(0);
+                                c = window.extent(1);
                             }
                             else
                             {
-                                // TODO Handle no-data
-                                sum += weight * value;
+                                if(weight)
+                                {
+                                    // weight is true or not equal to zero
+                                    sum += value;
+                                }
                             }
                         }
                     }
@@ -74,21 +76,29 @@ namespace lue {
 
 
     template<
+        typename Policies,
         typename Element,
         Rank rank,
         typename Kernel>
     PartitionedArray<Element, rank> focal_sum(
+        Policies const& policies,
         PartitionedArray<Element, rank> const& array,
         Kernel const& kernel)
     {
         using Functor = detail::FocalSum<Element>;
-        using OutputElement = detail::OutputElementT<Functor>;
-        using InputElement = Element;
-        using Policies = policy::focal_sum::DefaultPolicies<OutputElement, InputElement>;
 
-        InputElement const fill_value{0};
-
-        return focal_operation(Policies{fill_value}, array, kernel, Functor{});
+        return focal_operation(policies, array, kernel, Functor{});
     }
 
 }  // namespace lue
+
+
+#define LUE_INSTANTIATE_FOCAL_SUM(                              \
+    Policies, Element, Kernel)                                  \
+                                                                \
+    template LUE_FOCAL_OPERATION_EXPORT                         \
+    PartitionedArray<Element, 2> focal_sum<                     \
+            ArgumentType<void(Policies)>, Element, 2, Kernel>(  \
+        ArgumentType<void(Policies)> const&,                    \
+        PartitionedArray<Element, 2> const&,                    \
+        Kernel const&);

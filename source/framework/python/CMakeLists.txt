@@ -38,6 +38,7 @@ add_library(lue_py_framework SHARED
     src/algorithm/downstream_distance.cpp
     src/algorithm/equal_to.cpp
     src/algorithm/exp.cpp
+    src/algorithm/focal_operation.cpp
     src/algorithm/greater_than.cpp
     src/algorithm/greater_than_equal_to.cpp
     src/algorithm/inflow_count.cpp
@@ -64,6 +65,7 @@ add_library(lue_py_framework SHARED
     src/algorithm/upstream.cpp
     src/algorithm/valid.cpp
     src/algorithm/where.cpp
+    src/algorithm/focal_operation/focal_sum.cpp
     src/core/create_partitioned_array.cpp
     src/core/partitioned_array.cpp
     src/core/partitioned_array_uint8.cpp

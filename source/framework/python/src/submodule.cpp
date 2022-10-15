@@ -46,6 +46,7 @@ namespace lue::framework {
     void bind_hpx(pybind11::module& module);
     void bind_create_array(pybind11::module& module);
     void bind_wait(pybind11::module& module);
+    void bind_focal_operations(pybind11::module& module);
     void bind_local_operations(pybind11::module& module);
     void bind_partitioned_array(pybind11::module& module);
 
@@ -90,6 +91,7 @@ namespace lue::framework {
         // Wrap high-level algorithms
         bind_create_array(submodule);
         bind_wait(submodule);
+        bind_focal_operations(submodule);
         bind_local_operations(submodule);
         bind_read_array(submodule);
         bind_write_array(submodule);
