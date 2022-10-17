@@ -1,12 +1,13 @@
 #define BOOST_TEST_MODULE lue framework algorithm create_partitioned_array
+#include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/default_policies/all.hpp"
 #include "lue/framework/algorithm/default_policies/equal_to.hpp"
-#include "lue/framework/algorithm/create_partitioned_array.hpp"
-#include "lue/framework/algorithm/definition/logical_not.hpp"
+#include "lue/framework/algorithm/default_policies/logical_not.hpp"
 #include "lue/framework/algorithm/partition_count_unique.hpp"
 #include "lue/framework/algorithm/policy.hpp"
 #include "lue/framework/algorithm/sum.hpp"
 #include "lue/framework/algorithm/unique.hpp"
+#include "lue/framework/algorithm/value_policies/logical_not.hpp"
 #include "lue/framework/algorithm/value_policies/valid.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/compare.hpp"
@@ -437,6 +438,8 @@ BOOST_AUTO_TEST_CASE(use_case_3)
     // Create a partitioned array given an existing buffer containing values to copy into
     // the array. Mark specific values from the buffer as no-data in the array.
 
+    using namespace lue::value_policies;
+
     // Create an object, pointed to by a reference counted object
     std::size_t const nr_rows{60};
     std::size_t const nr_cols{40};
@@ -479,9 +482,7 @@ BOOST_AUTO_TEST_CASE(use_case_3)
 
     // In each partition we put a no-data value, so the number of no-data values must be equal
     // to the number of partitions.
-    BOOST_CHECK_EQUAL(
-        lue::sum(!lue::value_policies::valid<std::uint8_t>(array)).get(),
-        array.nr_partitions());
+    BOOST_CHECK_EQUAL(lue::sum(!valid<std::uint8_t>(array)).get(), array.nr_partitions());
 
     // Now test these explicitly. All other values must then be valid, by definition.
     auto const [nr_partitions0, nr_partitions1] = array.partitions().shape();

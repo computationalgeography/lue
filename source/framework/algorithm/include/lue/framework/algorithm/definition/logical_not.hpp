@@ -1,7 +1,7 @@
 #pragma once
 #include "lue/framework/algorithm/logical_not.hpp"
 #include "lue/framework/algorithm/definition/unary_local_operation.hpp"
-#include "lue/framework/algorithm/export.hpp"
+#include "lue/framework/algorithm/local_operation_export.hpp"
 #include "lue/macro.hpp"
 
 
@@ -32,16 +32,23 @@ namespace lue {
 
 
     template<
+        typename Policies,
         typename InputElement,
         Rank rank>
     PartitionedArray<std::uint8_t, rank> logical_not(
+        Policies const& policies,
         PartitionedArray<InputElement, rank> const& array)
     {
-        using Functor = detail::LogicalNot<InputElement>;
-        using OutputElement = OutputElementT<Functor>;
-        using Policies = policy::logical_not::DefaultPolicies<OutputElement, InputElement>;
-
-        return unary_local_operation(Policies{}, array, Functor{});
+        return unary_local_operation(policies, array, detail::LogicalNot<InputElement>{});
     }
 
 }  // namespace lue
+
+
+#define LUE_INSTANTIATE_LOGICAL_NOT(Policies, Element, rank)  \
+                                                              \
+    template LUE_LOCAL_OPERATION_EXPORT                       \
+    PartitionedArray<std::uint8_t, rank> logical_not<         \
+            ArgumentType<void(Policies)>, Element, rank>(     \
+        ArgumentType<void(Policies)> const&,                  \
+        PartitionedArray<Element, rank> const&);

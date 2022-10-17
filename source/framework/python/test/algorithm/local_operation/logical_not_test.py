@@ -11,7 +11,7 @@ def tearDownModule():
     lue_test.stop_hpx_runtime()
 
 
-class FocalSumTest(lue_test.TestCase):
+class LogicalNotTest(lue_test.TestCase):
 
     @lue_test.framework_test_case
     def test_overloads(self):
@@ -19,8 +19,8 @@ class FocalSumTest(lue_test.TestCase):
         array_shape = (60, 40)
         partition_shape = (10, 10)
         fill_value = 5
-        kernel = np.full((3, 3), 1, dtype=np.uint8)
 
-        for dtype in [np.uint8, np.int32, np.uint32, np.int64, np.uint64, np.float32, np.float64]:
+        for dtype in [np.uint8, np.int32, np.uint32, np.int64, np.uint64]:
             array = lfr.create_array(array_shape, partition_shape, np.dtype(dtype), fill_value)
-            lfr.focal_sum(array, kernel)
+            tmp = lfr.logical_not(array)
+            tmp = ~array
