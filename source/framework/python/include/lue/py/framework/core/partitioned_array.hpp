@@ -6,6 +6,8 @@
 #include "lue/py/framework/algorithm/greater_than_equal_to.hpp"
 #include "lue/py/framework/algorithm/less_than.hpp"
 #include "lue/py/framework/algorithm/less_than_equal_to.hpp"
+#include "lue/py/framework/algorithm/logical_inclusive_or.hpp"
+#include "lue/py/framework/algorithm/logical_not.hpp"
 #include "lue/py/framework/algorithm/multiply.hpp"
 #include "lue/py/framework/algorithm/not_equal_to.hpp"
 #include "lue/py/framework/algorithm/pow.hpp"
@@ -232,6 +234,38 @@ namespace lue::framework {
                     { return lfr::abs<ElementT<Array>, rank>(argument); },
                     pybind11::is_operator())
                 ;
+        }
+
+        if constexpr (std::is_integral_v<Element>)
+        {
+            // a | b
+            class_
+                .def("__or__", [](Array const& argument1, Array const& argument2)
+                    { return lfr::logical_inclusive_or<ElementT<Array>, rank>(argument1, argument2); },
+                    pybind11::is_operator())
+                ;
+
+            // // a ^ b
+            // class_
+            //     .def("__xor__", [](Array const& argument1, Array const& argument2)
+            //         { return lfr::logical_exclusive_or<ElementT<Array>, rank>(argument1, argument2); },
+            //         pybind11::is_operator())
+            //     ;
+
+            // // a & b
+            // class_
+            //     .def("__and__", [](Array const& argument1, Array const& argument2)
+            //         { return lfr::logical_and<ElementT<Array>, rank>(argument1, argument2); },
+            //         pybind11::is_operator())
+            //     ;
+
+            // ~a
+            class_
+                .def("__invert__", [](Array const& argument)
+                    { return lfr::logical_not<ElementT<Array>, rank>(argument); },
+                    pybind11::is_operator())
+                ;
+
         }
 
         if constexpr (std::is_floating_point_v<Element>)

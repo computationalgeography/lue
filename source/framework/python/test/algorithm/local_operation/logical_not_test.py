@@ -22,4 +22,5 @@ class LogicalNotTest(lue_test.TestCase):
 
         for dtype in [np.uint8, np.int32, np.uint32, np.int64, np.uint64]:
             array = lfr.create_array(array_shape, partition_shape, np.dtype(dtype), fill_value)
-            lfr.logical_not(array)
+            tmp = lfr.logical_not(array)
+            tmp = ~array
