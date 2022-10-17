@@ -1,9 +1,9 @@
 #define BOOST_TEST_MODULE lue framework algorithm focal_sum
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/kernel.hpp"
-#include "lue/framework/algorithm/definition/focal_sum.hpp"
 #include "lue/framework/algorithm/range.hpp"
-#include "lue/framework/algorithm/serialize/kernel.hpp"
+#include "lue/framework/algorithm/default_policies/focal_sum.hpp"
+#include "lue/framework/algorithm/value_policies/focal_sum.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/compare.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
@@ -35,8 +35,8 @@ BOOST_AUTO_TEST_CASE(focal_sum_2d_int32)
     // [true true true]
     // [true true true]
     // [true true true]
-    auto const kernel = lue::box_kernel<bool, rank>(1, true);
-    auto focal_sum = lue::focal_sum(array, kernel);
+    auto const kernel = lue::box_kernel<std::uint8_t, rank>(1, 1);
+    auto focal_sum = lue::default_policies::focal_sum(array, kernel);
 
     Array array_we_want = lue::test::create_partitioned_array<Array>(
         array_shape, partition_shape, {
