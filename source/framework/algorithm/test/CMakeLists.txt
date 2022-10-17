@@ -34,6 +34,7 @@ set(local_operation_names
     less_than
     less_than_equal_to
     log
+    logical_not
     multiply
     not_equal_to
     pow
@@ -82,7 +83,6 @@ set(names
     locality_id
     logical_and
     logical_inclusive_or
-    logical_not
     mesh_grid
     maximum
     minimum

@@ -137,3 +137,10 @@ class CreatePartitionedArrayTest(lue_test.TestCase):
         tmp = array ** value_f
         tmp = value ** array
         tmp = value_f ** array
+
+
+    @lue_test.framework_test_case
+    def test_operator_bool(self):
+        array = self.array
+        with self.assertRaises(ValueError):
+            tmp = bool(array)

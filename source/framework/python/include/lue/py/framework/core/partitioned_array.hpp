@@ -110,6 +110,13 @@ namespace lue::framework {
             }
         )
 
+        // bool(a), not a, if a, while a, ...
+        .def("__bool__", []([[maybe_unused]] Array const& argument)
+            {
+                // ValueError
+                throw std::invalid_argument("The truth value of an array is ambiguous");
+            })
+
         // a < b
         .def("__lt__", [](Array const& argument1, Array const& argument2)
             { return lfr::less_than<ElementT<Array>, std::uint8_t, rank>(argument1, argument2); },
