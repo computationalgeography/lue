@@ -2,7 +2,7 @@
 #include "lue/framework/algorithm/default_policies/all.hpp"
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/default_policies/comparison.hpp"
-#include "lue/framework/algorithm/definition/logical.hpp"
+#include "lue/framework/algorithm/default_policies/logical_and.hpp"
 #include "lue/framework/algorithm/default_policies/uniform.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
@@ -89,10 +89,10 @@ BOOST_AUTO_TEST_CASE(array_##rank##d_##Element)  \
     detail::test_array<Element, rank>();         \
 }
 
-TEST_CASE(1, int32_t)
+// TEST_CASE(1, int32_t)
 TEST_CASE(2, int32_t)
 
-TEST_CASE(1, double)
+// TEST_CASE(1, double)
 TEST_CASE(2, double)
 
 #undef TEST_CASE
@@ -134,7 +134,7 @@ BOOST_AUTO_TEST_CASE(use_case_1)
 
     BOOST_CHECK(
         all(
-                lue::logical_and(
+                logical_and(
                     greater_than_equal_to(array, min_value),
                     less_than_equal_to(array, max_value))
             ).get());

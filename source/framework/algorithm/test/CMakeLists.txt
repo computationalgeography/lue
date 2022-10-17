@@ -34,6 +34,7 @@ set(local_operation_names
     less_than
     less_than_equal_to
     log
+    logical_and
     logical_inclusive_or
     logical_not
     multiply
@@ -43,6 +44,7 @@ set(local_operation_names
     sqrt
     subtract
     tan
+    uniform
     valid
     where
 )
@@ -82,7 +84,6 @@ set(names
     focal_operation
     inter_partition_stream
     locality_id
-    logical_and
     mesh_grid
     maximum
     minimum
@@ -91,7 +92,6 @@ set(names
     range
     sum
     timestamp
-    uniform
     unique_id
     unique
     upstream
