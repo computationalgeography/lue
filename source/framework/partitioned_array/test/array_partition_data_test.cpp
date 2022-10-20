@@ -1,5 +1,5 @@
-#define BOOST_TEST_MODULE lue framework core array_partition_data
-#include "lue/framework/core/array_partition_data.hpp"
+#define BOOST_TEST_MODULE lue framework partitioned_array array_partition_data
+#include "lue/framework/partitioned_array/array_partition_data.hpp"
 #include "lue/framework/test/stream.hpp"
 #include <boost/test/unit_test.hpp>
 #include <algorithm>
@@ -7,23 +7,23 @@
 
 namespace {
 
-using Value = std::int32_t;
+    using Value = std::int32_t;
 
-template<
-    lue::Rank rank>
-using Data = lue::ArrayPartitionData<Value, rank>;
+    template<
+        lue::Rank rank>
+    using Data = lue::ArrayPartitionData<Value, rank>;
 
-template<
-    lue::Rank rank>
-using Shape = lue::ShapeT<Data<rank>>;
+    template<
+        lue::Rank rank>
+    using Shape = lue::ShapeT<Data<rank>>;
 
-template<
-    lue::Rank rank>
-using Slice = lue::SliceT<Data<rank>>;
+    template<
+        lue::Rank rank>
+    using Slice = lue::SliceT<Data<rank>>;
 
-template<
-    lue::Rank rank>
-using Slices = lue::SlicesT<Data<rank>>;
+    template<
+        lue::Rank rank>
+    using Slices = lue::SlicesT<Data<rank>>;
 
 }  // Anonymous namespace
 

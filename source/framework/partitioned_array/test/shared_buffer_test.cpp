@@ -1,15 +1,15 @@
-#define BOOST_TEST_MODULE lue framework core shared_buffer
+#define BOOST_TEST_MODULE lue framework partitioned_array shared_buffer
 #include <hpx/config.hpp>
 #include <boost/test/unit_test.hpp>
-#include "lue/framework/core/shared_buffer.hpp"
+#include "lue/framework/partitioned_array/shared_buffer.hpp"
 #include <numeric>
 
 
 namespace {
 
-using Element = double;
-using SharedBuffer = lue::SharedBuffer<Element>;
-std::size_t const size = 10;
+    using Element = double;
+    using SharedBuffer = lue::SharedBuffer<Element>;
+    std::size_t const size = 10;
 
 }  // Anonymous namespace
 

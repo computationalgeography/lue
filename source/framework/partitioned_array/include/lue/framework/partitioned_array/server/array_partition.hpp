@@ -1,6 +1,6 @@
 #pragma once
 #include <hpx/config.hpp>
-#include "lue/framework/core/array_partition_data.hpp"
+#include "lue/framework/partitioned_array/array_partition_data.hpp"
 #include "lue/framework/core/offset.hpp"
 #include <hpx/include/components.hpp>
 

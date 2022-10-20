@@ -1,7 +1,6 @@
 #pragma once
 #include "lue/framework/partitioned_array/array_partition.hpp"
 #include "lue/framework/core/array.hpp"
-#include "lue/framework/core/array_partition_data.hpp"
 #include "lue/framework/core/debug.hpp"  // describe
 
 

@@ -7,19 +7,19 @@
 
 namespace {
 
-using Value = std::int32_t;
-static lue::Rank const rank = 2;
-using PartitionedArray = lue::PartitionedArray<Value, rank>;
-using Data = typename PartitionedArray::Partition::Data;
+    using Value = std::int32_t;
+    static lue::Rank const rank = 2;
+    using PartitionedArray = lue::PartitionedArray<Value, rank>;
+    using Data = typename PartitionedArray::Partition::Data;
 
-// using PartitionClient = lue::client::Partition<Index, Value, rank>;
-// using PartitionServer = typename PartitionClient::Server;
-// using Data = typename PartitionClient::Data;
+    // using PartitionClient = lue::client::Partition<Index, Value, rank>;
+    // using PartitionServer = typename PartitionClient::Server;
+    // using Data = typename PartitionClient::Data;
 
-// using Definition = typename PartitionedArray::Definition;
-using Count = typename Data::Count;
-using Offset = typename PartitionedArray::Offset;
-using Shape = typename Data::Shape;
+    // using Definition = typename PartitionedArray::Definition;
+    using Count = typename Data::Count;
+    using Offset = typename PartitionedArray::Offset;
+    using Shape = typename Data::Shape;
 
 }  // Anonymous namespace
 
