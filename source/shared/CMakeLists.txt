@@ -5,6 +5,11 @@ configure_file(
     include/lue/configure.hpp
 )
 
+configure_file(
+    include/lue/git.hpp.in
+    include/lue/git.hpp
+)
+
 add_library(lue_shared INTERFACE)
 add_library(lue::shared ALIAS lue_shared)
 

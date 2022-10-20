@@ -4,9 +4,6 @@
 
 #cmakedefine LUE_VERSION "${LUE_VERSION}"
 // #cmakedefine LUE_VERSION_TWEAK "${LUE_VERSION_TWEAK}"
-// #cmakedefine LUE_GIT_REFSPEC "${LUE_GIT_REFSPEC}"
-#cmakedefine LUE_GIT_SHA1 "${LUE_GIT_SHA1}"
-#cmakedefine LUE_GIT_SHORT_SHA1 "${LUE_GIT_SHORT_SHA1}"
 
 #cmakedefine LUE_BUILD_DATA_MODEL
 #cmakedefine LUE_DATA_MODEL_WITH_PYTHON_API
@@ -22,50 +19,42 @@
 
 namespace lue {
 
-class BuildOptions
-{
+    class BuildOptions
+    {
 
-public:
+        public:
 
-    // C++20
-    // static constexpr std::string version{LUE_VERSION};
+            // C++20
+            // static constexpr std::string version{LUE_VERSION};
 
-    // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays, modernize-avoid-c-arrays)
-    static constexpr char const* version{LUE_VERSION};
+            // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays, modernize-avoid-c-arrays)
+            static constexpr char const* version{LUE_VERSION};
 
-    // static constexpr char const* version_tweak{LUE_VERSION_TWEAK};
+            // static constexpr char const* version_tweak{LUE_VERSION_TWEAK};
 
-    // static constexpr char const* git_refspec{LUE_GIT_REFSPEC};
-
-    // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays, modernize-avoid-c-arrays)
-    static constexpr char const* git_sha1{LUE_GIT_SHA1};
-
-    // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays, modernize-avoid-c-arrays)
-    static constexpr char const* git_short_sha1{LUE_GIT_SHORT_SHA1};
-
-    static constexpr bool build_framework{
+            static constexpr bool build_framework{
 #ifdef LUE_BUILD_FRAMEWORK
-            true
+                    true
 #else
-            false
+                    false
 #endif
-        };
+                };
 
-    static constexpr bool validate_idxs{LUE_VALIDATE_IDXS};
+            static constexpr bool validate_idxs{LUE_VALIDATE_IDXS};
 
-    static constexpr bool assert_conditions{LUE_ASSERT_CONDITIONS};
+            static constexpr bool assert_conditions{LUE_ASSERT_CONDITIONS};
 
-    static constexpr bool build_test{
+            static constexpr bool build_test{
 #ifdef LUE_BUILD_TEST
-            true
+                    true
 #else
-            false
+                    false
 #endif
-        };
+                };
 
-};
+    };
 
 
-// inline constexpr BuildOptions build_options;
+    // inline constexpr BuildOptions build_options;
 
 }  // namespace lue

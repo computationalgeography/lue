@@ -1,4 +1,5 @@
 #include "lue/configure.hpp"
+#include "lue/git.hpp"
 #ifdef LUE_BUILD_DATA_MODEL
 #ifdef LUE_DATA_MODEL_WITH_PYTHON_API
 #include "lue/py/data_model/submodule.hpp"
@@ -51,7 +52,7 @@ PYBIND11_MODULE(lue_py, module)
 
     module.attr("__version__") = py::str(BuildOptions::version);
     module.attr("lue_version") = py::str(BuildOptions::version);
-    module.attr("git_short_sha1") = py::str(BuildOptions::git_short_sha1);
+    module.attr("git_short_sha1") = py::str(Git::short_sha1);
 
 #ifdef LUE_BUILD_DATA_MODEL
 #ifdef LUE_DATA_MODEL_WITH_PYTHON_API
