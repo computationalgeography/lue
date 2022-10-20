@@ -2,6 +2,7 @@
 #include "lue/view/configuration.hpp"
 #include "lue/view/dataset.hpp"
 #include "lue/configure.hpp"
+#include "lue/git.hpp"
 #include "lue/gui.hpp"
 #include <fmt/format.h>
 
@@ -31,7 +32,7 @@ options:
             if(ImGui::BeginPopupModal(
                     "About...", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
                 ImGui::Text("LUE version %s (build %s)",
-                    BuildOptions::version, BuildOptions::git_short_sha1);
+                    BuildOptions::version, Git::short_sha1);
                 ImGui::Separator();
                 ImGui::Text("By the Computational Geography research and development team");
                 ImGui::Text("LUE is licensed under the MIT License");

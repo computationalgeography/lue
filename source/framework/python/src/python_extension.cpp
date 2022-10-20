@@ -1,4 +1,5 @@
 #include "lue/configure.hpp"
+#include "lue/git.hpp"
 #include "lue/py/framework/submodule.hpp"
 #include <pybind11/pybind11.h>
 
@@ -14,7 +15,7 @@ namespace lue::framework {
 )";
         module.attr("__version__") = pybind11::str(BuildOptions::version);
         module.attr("lue_version") = pybind11::str(BuildOptions::version);
-        module.attr("git_short_sha1") = pybind11::str(BuildOptions::git_short_sha1);
+        module.attr("git_short_sha1") = pybind11::str(Git::short_sha1);
 
         init_submodule(module);
     }
