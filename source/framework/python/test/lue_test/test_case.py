@@ -10,7 +10,10 @@ def start_hpx_runtime():
 
 
 def stop_hpx_runtime():
-    lfr.stop_hpx_runtime()
+    pass
+    # TODO This only works in case a single process is used. Figure out why and fix.
+    #      Not a big problem, but just weird. We should be able to control this.
+    # lfr.stop_hpx_runtime()
 
 
 def framework_test_case(

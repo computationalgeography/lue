@@ -41,6 +41,7 @@ namespace lue::framework {
     void bind_locality_id(pybind11::module& module);
     void bind_log(pybind11::module& module);
     void bind_logical_and(pybind11::module& module);
+    void bind_logical_exclusive_or(pybind11::module& module);
     void bind_logical_inclusive_or(pybind11::module& module);
     void bind_logical_not(pybind11::module& module);
     void bind_maximum(pybind11::module& module);
@@ -98,6 +99,7 @@ namespace lue::framework {
         bind_locality_id(module);
         bind_log(module);
         bind_logical_and(module);
+        bind_logical_exclusive_or(module);
         bind_logical_inclusive_or(module);
         bind_logical_not(module);
         bind_maximum(module);

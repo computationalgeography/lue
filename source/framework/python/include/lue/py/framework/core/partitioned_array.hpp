@@ -7,6 +7,7 @@
 #include "lue/py/framework/algorithm/less_than.hpp"
 #include "lue/py/framework/algorithm/less_than_equal_to.hpp"
 #include "lue/py/framework/algorithm/logical_and.hpp"
+#include "lue/py/framework/algorithm/logical_exclusive_or.hpp"
 #include "lue/py/framework/algorithm/logical_inclusive_or.hpp"
 #include "lue/py/framework/algorithm/logical_not.hpp"
 #include "lue/py/framework/algorithm/multiply.hpp"
@@ -246,12 +247,12 @@ namespace lue::framework {
                     pybind11::is_operator())
                 ;
 
-            // // a ^ b
-            // class_
-            //     .def("__xor__", [](Array const& argument1, Array const& argument2)
-            //         { return lfr::logical_exclusive_or<ElementT<Array>, rank>(argument1, argument2); },
-            //         pybind11::is_operator())
-            //     ;
+            // a ^ b
+            class_
+                .def("__xor__", [](Array const& argument1, Array const& argument2)
+                    { return lfr::logical_exclusive_or<ElementT<Array>, rank>(argument1, argument2); },
+                    pybind11::is_operator())
+                ;
 
             // a & b
             class_
