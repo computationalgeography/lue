@@ -1,8 +1,8 @@
 #define BOOST_TEST_MODULE lue framework algorithm logical_inclusive_or
 #include "lue/framework/algorithm/default_policies/all.hpp"
+#include "lue/framework/algorithm/default_policies/logical_inclusive_or.hpp"
 #include "lue/framework/algorithm/default_policies/none.hpp"
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
-#include "lue/framework/algorithm/default_policies/logical_inclusive_or.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 

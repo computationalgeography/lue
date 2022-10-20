@@ -1,8 +1,8 @@
 #define BOOST_TEST_MODULE lue framework algorithm logical_and
 #include "lue/framework/algorithm/default_policies/all.hpp"
+#include "lue/framework/algorithm/default_policies/logical_and.hpp"
 #include "lue/framework/algorithm/default_policies/none.hpp"
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
-#include "lue/framework/algorithm/definition/logical_and.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_CASE(array_##rank##d_##Element)  \
     detail::test_array<Element, rank>();         \
 }
 
-TEST_CASE(1, uint8_t)
+// TEST_CASE(1, uint8_t)
 TEST_CASE(2, uint8_t)
 
 #undef TEST_CASE
