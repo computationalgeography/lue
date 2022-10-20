@@ -58,8 +58,9 @@ add_library(lue_framework_local_operation SHARED
     src/local_operation/less_than_equal_to.cpp
     src/local_operation/log.cpp
     src/local_operation/logical_and.cpp
-    src/local_operation/logical_not.cpp
+    src/local_operation/logical_exclusive_or.cpp
     src/local_operation/logical_inclusive_or.cpp
+    src/local_operation/logical_not.cpp
     src/local_operation/multiply.cpp
     src/local_operation/not_equal_to.cpp
     src/local_operation/pow.cpp

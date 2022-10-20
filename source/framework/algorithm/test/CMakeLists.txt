@@ -35,6 +35,7 @@ set(local_operation_names
     less_than_equal_to
     log
     logical_and
+    logical_exclusive_or
     logical_inclusive_or
     logical_not
     multiply

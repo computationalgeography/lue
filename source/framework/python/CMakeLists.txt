@@ -67,6 +67,7 @@ add_library(lue_py_framework SHARED
     src/algorithm/where.cpp
     src/algorithm/focal_operation/focal_sum.cpp
     src/algorithm/local_operation/logical_and.cpp
+    src/algorithm/local_operation/logical_exclusive_or.cpp
     src/algorithm/local_operation/logical_inclusive_or.cpp
     src/algorithm/local_operation/logical_not.cpp
     src/core/create_partitioned_array.cpp

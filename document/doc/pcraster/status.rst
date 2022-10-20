@@ -490,8 +490,8 @@ added to the LUE framework. The number of model developers requesting one is one
    * - | xor
        | ``^``
        | pcrxor
-     - ❌
-     - 1
+     - ✅
+     -
    * - ycoordinate
      - 🗑
      - Not sure why this is useful...
