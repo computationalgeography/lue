@@ -1,9 +1,9 @@
 #pragma once
-#include "lue/framework/algorithm/focal_sum.hpp"
+#include "lue/framework/algorithm/focal_mean.hpp"
 
 
 namespace lue {
-    namespace policy::focal_sum {
+    namespace policy::focal_mean {
 
         template<
             typename Element>
@@ -12,7 +12,7 @@ namespace lue {
             OutputElements<Element>,
             InputElements<Element>>;
 
-    }  // namespace policy::focal_sum
+    }  // namespace policy::focal_mean
 
 
     namespace default_policies {
@@ -21,13 +21,13 @@ namespace lue {
             typename Element,
             Rank rank,
             typename Kernel>
-        PartitionedArray<Element, rank> focal_sum(
+        PartitionedArray<Element, rank> focal_mean(
             PartitionedArray<Element, rank> const& array,
             Kernel const& kernel)
         {
-            using Policies = policy::focal_sum::DefaultPolicies<Element>;
+            using Policies = policy::focal_mean::DefaultPolicies<Element>;
 
-            return focal_sum(Policies{}, array, kernel);
+            return focal_mean(Policies{}, array, kernel);
         }
 
     }  // namespace default_policies

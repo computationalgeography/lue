@@ -1,7 +1,6 @@
 #include "lue/framework/algorithm/default_policies/focal_sum.hpp"
 #include "lue/framework/algorithm/definition/focal_sum.hpp"
 #include "lue/framework/algorithm/value_policies/focal_sum.hpp"
-// #include "lue/framework/algorithm/kernel.hpp"
 #include "lue/framework/algorithm/serialize/kernel.hpp"
 
 

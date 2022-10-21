@@ -52,6 +52,7 @@ set(local_operation_names
 
 set(focal_operation_names
     aspect
+    focal_mean
     focal_sum
     slope
 )
@@ -81,7 +82,6 @@ set(names
     downstream
     downstream_distance
     focal_max
-    focal_mean
     focal_operation
     inter_partition_stream
     locality_id

@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE lue framework algorithm focal_mean
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/kernel.hpp"
-#include "lue/framework/algorithm/definition/focal_mean.hpp"
+#include "lue/framework/algorithm/default_policies/focal_mean.hpp"
 #include "lue/framework/algorithm/range.hpp"
 #include "lue/framework/algorithm/serialize/kernel.hpp"
 #include "lue/framework/test/array.hpp"
@@ -35,8 +35,8 @@ BOOST_AUTO_TEST_CASE(focal_mean_2d_float64)
     // [true true true]
     // [true true true]
     // [true true true]
-    auto const kernel = lue::box_kernel<bool, rank>(1, true);
-    auto focal_mean = lue::focal_mean(array, kernel);
+    auto const kernel = lue::box_kernel<std::uint8_t, rank>(1, 1);
+    auto focal_mean = lue::default_policies::focal_mean(array, kernel);
 
     Array array_we_want = lue::test::create_partitioned_array<Array>(
         array_shape, partition_shape, {
