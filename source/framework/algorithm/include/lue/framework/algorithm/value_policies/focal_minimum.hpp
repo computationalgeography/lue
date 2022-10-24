@@ -1,10 +1,10 @@
 #pragma once
-#include "lue/framework/algorithm/focal_max.hpp"
+#include "lue/framework/algorithm/focal_minimum.hpp"
 #include <limits>
 
 
 namespace lue {
-    namespace policy::focal_max {
+    namespace policy::focal_minimum {
 
         template<
             typename Element>
@@ -13,7 +13,7 @@ namespace lue {
             OutputElements<Element>,
             InputElements<Element>>;
 
-    }  // namespace policy::focal_max
+    }  // namespace policy::focal_minimum
 
 
     namespace value_policies {
@@ -22,15 +22,15 @@ namespace lue {
             typename Element,
             Rank rank,
             typename Kernel>
-        PartitionedArray<Element, rank> focal_max(
+        PartitionedArray<Element, rank> focal_minimum(
             PartitionedArray<Element, rank> const& array,
             Kernel const& kernel)
         {
-            using Policies = policy::focal_max::DefaultValuePolicies<Element>;
+            using Policies = policy::focal_minimum::DefaultValuePolicies<Element>;
 
-            Element const fill_value{std::numeric_limits<Element>::min()};
+            Element const fill_value{std::numeric_limits<Element>::max()};
 
-            return focal_max(Policies{fill_value}, array, kernel);
+            return focal_minimum(Policies{fill_value}, array, kernel);
         }
 
     }  // namespace value_policies

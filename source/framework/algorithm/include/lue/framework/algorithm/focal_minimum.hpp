@@ -10,7 +10,7 @@ namespace lue {
         typename Element,
         Rank rank,
         typename Kernel>
-    PartitionedArray<Element, rank> focal_max(
+    PartitionedArray<Element, rank> focal_minimum(
         Policies const& policies,
         PartitionedArray<Element, rank> const& array,
         Kernel const& kernel);

@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/framework/algorithm/focal_max.hpp"
+#include "lue/framework/algorithm/focal_maximum.hpp"
 #include "lue/framework/algorithm/focal_operation_export.hpp"
 #include "lue/framework/algorithm/definition/focal_operation.hpp"
 
@@ -9,7 +9,7 @@ namespace lue {
 
         template<
             typename InputElement>
-        class FocalMax
+        class FocalMaximum
         {
 
             public:
@@ -93,12 +93,12 @@ namespace lue {
         typename Element,
         Rank rank,
         typename Kernel>
-    PartitionedArray<Element, rank> focal_max(
+    PartitionedArray<Element, rank> focal_maximum(
         Policies const& policies,
         PartitionedArray<Element, rank> const& array,
         Kernel const& kernel)
     {
-        using Functor = detail::FocalMax<Element>;
+        using Functor = detail::FocalMaximum<Element>;
 
         return focal_operation(policies, array, kernel, Functor{});
     }
@@ -106,11 +106,11 @@ namespace lue {
 }  // namespace lue
 
 
-#define LUE_INSTANTIATE_FOCAL_MAX(                              \
+#define LUE_INSTANTIATE_FOCAL_MAXIMUM(                          \
     Policies, Element, Kernel)                                  \
                                                                 \
     template LUE_FOCAL_OPERATION_EXPORT                         \
-    PartitionedArray<Element, 2> focal_max<                     \
+    PartitionedArray<Element, 2> focal_maximum<                 \
             ArgumentType<void(Policies)>, Element, 2, Kernel>(  \
         ArgumentType<void(Policies)> const&,                    \
         PartitionedArray<Element, 2> const&,                    \

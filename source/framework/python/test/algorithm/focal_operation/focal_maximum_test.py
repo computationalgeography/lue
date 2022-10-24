@@ -11,7 +11,7 @@ def tearDownModule():
     lue_test.stop_hpx_runtime()
 
 
-class FocalMaxTest(lue_test.TestCase):
+class FocalMaximumTest(lue_test.TestCase):
 
     @lue_test.framework_test_case
     def test_overloads(self):
@@ -23,4 +23,4 @@ class FocalMaxTest(lue_test.TestCase):
 
         for dtype in [np.uint8, np.int32, np.uint32, np.int64, np.uint64, np.float32, np.float64]:
             array = lfr.create_array(array_shape, partition_shape, np.dtype(dtype), fill_value)
-            lfr.focal_max(array, kernel)
+            lfr.focal_maximum(array, kernel)
