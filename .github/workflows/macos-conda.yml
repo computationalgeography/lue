@@ -15,7 +15,7 @@ jobs:
         strategy:
             matrix:
                 os: ["macos-11"]
-                python-version: [3.9]
+                python-version: ["3.9"]
             fail-fast: false
 
         runs-on: ${{ matrix.os }}
@@ -25,7 +25,7 @@ jobs:
         steps:
 
         - name: Checkout LUE
-          uses: actions/checkout@v2
+          uses: actions/checkout@v3
 
         - uses: conda-incubator/setup-miniconda@v2
           with:
