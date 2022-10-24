@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE lue framework algorithm focal_max
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/kernel.hpp"
-#include "lue/framework/algorithm/definition/focal_max.hpp"
+#include "lue/framework/algorithm/default_policies/focal_max.hpp"
 #include "lue/framework/algorithm/range.hpp"
 #include "lue/framework/algorithm/serialize/kernel.hpp"
 #include "lue/framework/test/array.hpp"
@@ -35,8 +35,8 @@ BOOST_AUTO_TEST_CASE(focal_max_2d_int32)
     // [true true true]
     // [true true true]
     // [true true true]
-    auto const kernel = lue::box_kernel<bool, rank>(1, true);
-    auto focal_max = lue::focal_max(array, kernel);
+    auto const kernel = lue::box_kernel<std::uint8_t, rank>(1, 1);
+    auto focal_max = lue::default_policies::focal_max(array, kernel);
 
     Array array_we_want = lue::test::create_partitioned_array<Array>(
         array_shape, partition_shape, {

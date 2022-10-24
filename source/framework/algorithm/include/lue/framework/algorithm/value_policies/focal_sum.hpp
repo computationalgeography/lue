@@ -12,7 +12,7 @@ namespace lue {
             OutputElements<Element>,
             InputElements<Element>>;
 
-    }  // namespace focal_sum::policy
+    }  // namespace policy::focal_sum
 
 
     namespace value_policies {

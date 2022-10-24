@@ -461,11 +461,11 @@ added to the LUE framework. The number of model developers requesting one is one
      - ❌
      - 3
    * - window4total
-     - ❌
-     - 1
+     - 🗑
+     - Not needed, LUE's focal_mean accepts a custom kernel
    * - windowaverage
-     - ❌
-     - 1
+     - ✅
+     -
    * - windowdiversity
      - ❌
      - 1

@@ -65,6 +65,7 @@ add_library(lue_py_framework SHARED
     src/algorithm/upstream.cpp
     src/algorithm/valid.cpp
     src/algorithm/where.cpp
+    src/algorithm/focal_operation/focal_max.cpp
     src/algorithm/focal_operation/focal_mean.cpp
     src/algorithm/focal_operation/focal_sum.cpp
     src/algorithm/local_operation/logical_and.cpp

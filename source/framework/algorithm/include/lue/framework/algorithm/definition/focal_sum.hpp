@@ -60,6 +60,8 @@ namespace lue {
                             {
                                 if(weight)
                                 {
+                                    // TODO Use out-of-range policy to see whether this succeeds.
+                                    //      Same policy as used by addition.
                                     sum += value;
                                 }
                             }

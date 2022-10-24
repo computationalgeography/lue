@@ -1,9 +1,10 @@
 #pragma once
-#include "lue/framework/algorithm/focal_mean.hpp"
+#include "lue/framework/algorithm/focal_max.hpp"
+#include <limits>
 
 
 namespace lue {
-    namespace policy::focal_mean {
+    namespace policy::focal_max {
 
         template<
             typename Element>
@@ -12,7 +13,7 @@ namespace lue {
             OutputElements<Element>,
             InputElements<Element>>;
 
-    }  // namespace policy::focal_mean
+    }  // namespace policy::focal_max
 
 
     namespace value_policies {
@@ -21,16 +22,15 @@ namespace lue {
             typename Element,
             Rank rank,
             typename Kernel>
-        PartitionedArray<Element, rank> focal_mean(
+        PartitionedArray<Element, rank> focal_max(
             PartitionedArray<Element, rank> const& array,
             Kernel const& kernel)
         {
-            using Policies = policy::focal_mean::DefaultValuePolicies<Element>;
+            using Policies = policy::focal_max::DefaultValuePolicies<Element>;
 
-            // TODO This one should be policy-based
-            Element const fill_value{policy::no_data_value<Element>};
+            Element const fill_value{std::numeric_limits<Element>::min()};
 
-            return focal_mean(Policies{fill_value}, array, kernel);
+            return focal_max(Policies{fill_value}, array, kernel);
         }
 
     }  // namespace value_policies
