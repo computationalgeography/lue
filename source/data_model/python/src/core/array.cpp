@@ -1008,53 +1008,56 @@ void init_array(
             else {
                 // Unicode strings
 
-                // Length in bytes of each individual string
-                std::size_t const nr_bytes_unicode = info.itemsize;
+                // TODO Fix as part of GH #447
+                throw std::runtime_error("Encoding of Unicode string is not supported yet");
 
-                // Number of bytes used to represent a code point
-                std::size_t const nr_bytes_per_code_point = 4;
-                assert(nr_bytes_unicode % nr_bytes_per_code_point == 0);
+                /// // Length in bytes of each individual string
+                /// std::size_t const nr_bytes_unicode = info.itemsize;
 
-                // Length in code points of each individual string
-                std::size_t const nr_code_points =
-                    nr_bytes_unicode / nr_bytes_per_code_point;
-                assert(nr_code_points == std::stoul(info.format));
+                /// // Number of bytes used to represent a code point
+                /// std::size_t const nr_bytes_per_code_point = 4;
+                /// assert(nr_bytes_unicode % nr_bytes_per_code_point == 0);
 
-                // assert(nr_bytes_unicode % sizeof(Py_UNICODE) == 0);
-                // auto const max_nr_ordinals_string =
-                //     nr_bytes_unicode / sizeof(Py_UNICODE);
+                /// // Length in code points of each individual string
+                /// std::size_t const nr_code_points =
+                ///     nr_bytes_unicode / nr_bytes_per_code_point;
+                /// assert(nr_code_points == std::stoul(info.format));
 
-                // Buffer is a 1-D array with all strings back to back. The
-                // maximum length of each string is the same:
-                // nr_code_points. Shorter strings are padded with nulls.
-                Py_UNICODE const* py_buffer =
-                    static_cast<Py_UNICODE const*>(info.ptr);
+                /// // assert(nr_bytes_unicode % sizeof(Py_UNICODE) == 0);
+                /// // auto const max_nr_ordinals_string =
+                /// //     nr_bytes_unicode / sizeof(Py_UNICODE);
 
-                for(std::size_t i = 0; i < nr_strings; ++i) {
-                    // Point it at start of Python Unicode string in buffer
-                    auto const it = py_buffer + i * nr_code_points;
+                /// // Buffer is a 1-D array with all strings back to back. The
+                /// // maximum length of each string is the same:
+                /// // nr_code_points. Shorter strings are padded with nulls.
+                /// Py_UNICODE const* py_buffer =
+                ///     static_cast<Py_UNICODE const*>(info.ptr);
 
-                    // Encode string in UTF8, which is how strings are stored
-                    // in LUE. Remove any trailing null characters.
-                    py::str py_utf8_string =
-                        py::reinterpret_steal<py::str>(
-                            ::PyUnicode_EncodeUTF8(
-                                it, nr_code_points, nullptr));
-                    std::string utf8_string =
-                        py_utf8_string.cast<std::string>();
-                    boost::algorithm::trim_right_if(utf8_string, [](char c)
-                        {
-                            return c == '\0';
-                        });
+                /// for(std::size_t i = 0; i < nr_strings; ++i) {
+                ///     // Point it at start of Python Unicode string in buffer
+                ///     auto const it = py_buffer + i * nr_code_points;
 
-                    // Make space for the UTF8 encoded string + null
-                    // character. Copy the string and append with a null.
-                    hdf5_buffer.get()[i] = new char[utf8_string.size() + 1];
-                    auto hdf5_string = hdf5_buffer.get()[i];
-                    std::copy(
-                        utf8_string.begin(), utf8_string.end(), hdf5_string);
-                    hdf5_string[utf8_string.size()] = '\0';
-                }
+                ///     // Encode string in UTF8, which is how strings are stored
+                ///     // in LUE. Remove any trailing null characters.
+                ///     py::str py_utf8_string =
+                ///         py::reinterpret_steal<py::str>(
+                ///             ::PyUnicode_EncodeUTF8(
+                ///                 it, nr_code_points, nullptr));
+                ///     std::string utf8_string =
+                ///         py_utf8_string.cast<std::string>();
+                ///     boost::algorithm::trim_right_if(utf8_string, [](char c)
+                ///         {
+                ///             return c == '\0';
+                ///         });
+
+                ///     // Make space for the UTF8 encoded string + null
+                ///     // character. Copy the string and append with a null.
+                ///     hdf5_buffer.get()[i] = new char[utf8_string.size() + 1];
+                ///     auto hdf5_string = hdf5_buffer.get()[i];
+                ///     std::copy(
+                ///         utf8_string.begin(), utf8_string.end(), hdf5_string);
+                ///     hdf5_string[utf8_string.size()] = '\0';
+                /// }
             }
 
             array.write(hdf5_buffer.get());
