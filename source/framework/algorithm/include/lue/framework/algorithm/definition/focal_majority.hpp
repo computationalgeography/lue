@@ -40,8 +40,8 @@ namespace lue {
                     lue_hpx_assert(window.extent(0) == kernel.size());
                     lue_hpx_assert(window.extent(1) == kernel.size());
 
-                    auto indp = input_policies.input_no_data_policy();
-                    auto ondp = output_policies.output_no_data_policy();
+                    auto const& indp = input_policies.input_no_data_policy();
+                    auto const& ondp = output_policies.output_no_data_policy();
 
                     std::unordered_map<InputElement, Count> frequencies;
 

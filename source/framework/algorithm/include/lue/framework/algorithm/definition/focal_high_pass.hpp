@@ -42,8 +42,8 @@ namespace lue {
                     lue_hpx_assert(window.extent(0) == kernel.size());
                     lue_hpx_assert(window.extent(1) == kernel.size());
 
-                    auto const indp = input_policies.input_no_data_policy();
-                    auto const ondp = output_policies.output_no_data_policy();
+                    auto const& indp = input_policies.input_no_data_policy();
+                    auto const& ondp = output_policies.output_no_data_policy();
 
                     OutputElement focal_value;
                     OutputElement sum_of_neighbours{0};

@@ -44,8 +44,8 @@ namespace lue {
                     lue_hpx_assert(window.extent(0) == kernel.size());
                     lue_hpx_assert(window.extent(1) == kernel.size());
 
-                    auto indp = input_policies.input_no_data_policy();
-                    auto ondp = output_policies.output_no_data_policy();
+                    auto const& indp = input_policies.input_no_data_policy();
+                    auto const& ondp = output_policies.output_no_data_policy();
 
                     // NOTE: For each cell, this will allocate memory on the heap, which is slow.
                     //     The caller is iterating over all cells within a partition. For these calls,
@@ -80,15 +80,18 @@ namespace lue {
 
                     Count count;
 
-                    if(values.empty())
                     {
-                        // No valid values found
-                        ondp.mark_no_data(count);
-                    }
-                    else
-                    {
-                        std::sort(values.begin(), values.end());
-                        count = static_cast<Count>(std::unique(values.begin(), values.end()) - values.begin());
+                        if(values.empty())
+                        {
+                            // No valid values found
+                            ondp.mark_no_data(count);
+                        }
+                        else
+                        {
+                            std::sort(values.begin(), values.end());
+                            count = static_cast<Count>(
+                                std::unique(values.begin(), values.end()) - values.begin());
+                        }
                     }
 
                     return count;
