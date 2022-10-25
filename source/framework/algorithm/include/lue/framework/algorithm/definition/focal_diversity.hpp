@@ -45,6 +45,10 @@ namespace lue {
                     auto indp = input_policies.input_no_data_policy();
                     auto ondp = output_policies.output_no_data_policy();
 
+                    // NOTE: For each cell, this will allocate memory on the heap, which is slow.
+                    //     The caller is iterating over all cells within a partition. For these calls,
+                    //     a single allocated buffer could be reused. But multiple callers might
+                    //     be calling us at the same time, so we can't just use a static variable.
                     std::vector<InputElement> values{};
                     values.reserve(nr_elements(kernel));
 
@@ -82,7 +86,7 @@ namespace lue {
                     else
                     {
                         std::sort(values.begin(), values.end());
-                        count = static_cast<Count>(std::unique(values.begin(), values.end()) - values.end());
+                        count = static_cast<Count>(std::unique(values.begin(), values.end()) - values.begin());
                     }
 
                     return count;
