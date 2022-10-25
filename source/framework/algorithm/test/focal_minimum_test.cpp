@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE lue framework algorithm focal_minimum
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/kernel.hpp"
-#include "lue/framework/algorithm/default_policies/focal_minimum.hpp"
+#include "lue/framework/algorithm/value_policies/focal_minimum.hpp"
 #include "lue/framework/algorithm/range.hpp"
 #include "lue/framework/algorithm/serialize/kernel.hpp"
 #include "lue/framework/test/array.hpp"
@@ -36,19 +36,23 @@ BOOST_AUTO_TEST_CASE(focal_minimum_2d_int32)
     // [true true true]
     // [true true true]
     auto const kernel = lue::box_kernel<std::uint8_t, rank>(1, 1);
-    auto focal_minimum = lue::default_policies::focal_minimum(array, kernel);
+    auto focal_minimum = lue::value_policies::focal_minimum(array, kernel);
+
+    Element const nd{lue::policy::no_data_value<Element>};
 
     Array array_we_want = lue::test::create_partitioned_array<Array>(
         array_shape, partition_shape, {
-            {  1,  1,  2,  1,  1,  2, 10, 10, 11 },
-            {  3,  4,  5,  3,  4,  5, 12, 13, 14 },
-            {  6,  7,  8,  6,  7,  8, 15, 16, 17 },
-            { 19, 19, 20, 28, 28, 29, 37, 37, 38 },
+            { nd, nd, nd, nd,  1,  2, nd, 10, 11 },
+            { nd, nd, nd,  3,  4,  5, 12, 13, 14 },
+            { nd, nd, nd,  6,  7, nd, 15, 16, nd },
+
+            { nd, 19, 20, nd, 28, 29, nd, 37, 38 },
             { 21, 22, 23, 30, 31, 32, 39, 40, 41 },
-            { 24, 25, 26, 33, 34, 35, 42, 43, 44 },
-            { 46, 46, 47, 55, 55, 56, 64, 64, 65 },
-            { 48, 49, 50, 57, 58, 59, 66, 67, 68 },
-            { 51, 52, 53, 60, 61, 62, 69, 70, 71 },
+            { 24, 25, nd, 33, 34, nd, 42, 43, nd },
+
+            { nd, 46, 47, nd, 55, 56, nd, nd, nd },
+            { 48, 49, 50, 57, 58, 59, nd, nd, nd },
+            { 51, 52, nd, 60, 61, nd, nd, nd, nd },
         });
 
     lue::test::check_arrays_are_equal(focal_minimum, array_we_want);

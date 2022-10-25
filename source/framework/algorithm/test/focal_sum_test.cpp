@@ -2,7 +2,7 @@
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/kernel.hpp"
 #include "lue/framework/algorithm/range.hpp"
-#include "lue/framework/algorithm/default_policies/focal_sum.hpp"
+#include "lue/framework/algorithm/value_policies/focal_sum.hpp"
 #include "lue/framework/algorithm/value_policies/focal_sum.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/compare.hpp"
@@ -36,19 +36,23 @@ BOOST_AUTO_TEST_CASE(focal_sum_2d_int32)
     // [true true true]
     // [true true true]
     auto const kernel = lue::box_kernel<std::uint8_t, rank>(1, 1);
-    auto focal_sum = lue::default_policies::focal_sum(array, kernel);
+    auto focal_sum = lue::value_policies::focal_sum(array, kernel);
+
+    Element const nd{lue::policy::no_data_value<Element>};
 
     Array array_we_want = lue::test::create_partitioned_array<Array>(
         array_shape, partition_shape, {
-            {  24,  39,  45,  63,  99, 108, 117, 180, 189 },
-            {  51,  57,  63, 117, 126, 135, 198, 207, 216 },
-            {  69,  75,  52, 144, 153, 105, 225, 234, 159 },
-            { 171, 261, 270, 225, 342, 351, 279, 423, 432 },
+            {  nd,  nd,  nd,  nd,  99, 108,  nd, 180, 189 },
+            {  nd,  nd,  nd, 117, 126, 135, 198, 207, 216 },
+            {  nd,  nd,  nd, 144, 153,  nd, 225, 234,  nd },
+
+            {  nd, 261, 270,  nd, 342, 351,  nd, 423, 432 },
             { 279, 288, 297, 360, 369, 378, 441, 450, 459 },
-            { 306, 315, 213, 387, 396, 267, 468, 477, 321 },
-            { 333, 504, 513, 387, 585, 594, 276, 417, 423 },
-            { 522, 531, 540, 603, 612, 621, 429, 435, 441 },
-            { 549, 558, 375, 630, 639, 429, 447, 453, 304 },
+            { 306, 315,  nd, 387, 396,  nd, 468, 477,  nd },
+
+            {  nd, 504, 513,  nd, 585, 594,  nd,  nd,  nd },
+            { 522, 531, 540, 603, 612, 621,  nd,  nd,  nd },
+            { 549, 558,  nd, 630, 639,  nd,  nd,  nd,  nd },
         });
 
     lue::test::check_arrays_are_equal(focal_sum, array_we_want);

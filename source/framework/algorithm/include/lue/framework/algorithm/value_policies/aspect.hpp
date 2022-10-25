@@ -12,7 +12,7 @@ namespace lue {
             OutputElements<Element>,
             InputElements<Element>>;
 
-    }  // namespace aspect::policy
+    }  // namespace policy::aspect
 
 
     namespace value_policies {
@@ -25,7 +25,10 @@ namespace lue {
         {
             using Policies = policy::aspect::DefaultValuePolicies<Element>;
 
-            return aspect(Policies{}, elevation);
+            // TODO This one should be policy-based
+            Element const fill_value{policy::no_data_value<Element>};
+
+            return aspect(Policies{fill_value}, elevation);
         }
 
     }  // namespace value_policies
