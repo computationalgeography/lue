@@ -53,6 +53,7 @@ set(local_operation_names
 set(focal_operation_names
     aspect
     focal_diversity
+    focal_high_pass
     focal_maximum
     focal_mean
     focal_minimum

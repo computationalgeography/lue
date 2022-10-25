@@ -465,25 +465,25 @@ added to the LUE framework. The number of model developers requesting one is one
      - Not needed, LUE's focal_mean accepts a custom kernel
    * - windowaverage
      - ✅
-     -
+     - focal_mean
    * - windowdiversity
-     - ❌
-     - 1
+     - ✅
+     - focal_diversity
    * - windowhighpass
-     - ❌
-     - 1
+     - ✅
+     - focal_high_pass
    * - windowmajority
-     - ❌
-     - 1
+     - ✅
+     - focal_majority
    * - windowmaximum
      - ✅
-     -
+     - focal_maximum
    * - windowminimum
      - ✅
-     -
+     - focal_minimum
    * - windowtotal
      - ✅
-     -
+     - focal_sum
    * - xcoordinate
      - 🗑
      - Not sure why this is useful...

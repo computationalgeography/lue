@@ -2,6 +2,8 @@
 #include "lue/framework/algorithm/focal_diversity.hpp"
 #include "lue/framework/algorithm/focal_operation_export.hpp"
 #include "lue/framework/algorithm/definition/focal_operation.hpp"
+#include <algorithm>
+#include <set>
 
 
 namespace lue {

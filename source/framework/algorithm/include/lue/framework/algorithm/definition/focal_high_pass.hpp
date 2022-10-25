@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/framework/algorithm/focal_mean.hpp"
+#include "lue/framework/algorithm/focal_high_pass.hpp"
 #include "lue/framework/algorithm/focal_operation_export.hpp"
 #include "lue/framework/algorithm/definition/focal_operation.hpp"
 
@@ -9,7 +9,7 @@ namespace lue {
 
         template<
             typename InputElement>
-        class FocalMean
+        class FocalHighPass
         {
 
             public:
@@ -35,53 +35,68 @@ namespace lue {
 
                     using Weight = ElementT<Kernel>;
 
+                    Radius const radius{kernel.radius()};
+
                     static_assert(std::is_integral_v<Weight>);
 
                     lue_hpx_assert(window.extent(0) == kernel.size());
                     lue_hpx_assert(window.extent(1) == kernel.size());
 
-                    auto indp = input_policies.input_no_data_policy();
-                    auto ondp = output_policies.output_no_data_policy();
+                    auto const indp = input_policies.input_no_data_policy();
+                    auto const ondp = output_policies.output_no_data_policy();
 
-                    OutputElement sum{0};
-                    Count sum_of_weights{0};
+                    OutputElement focal_value;
+                    OutputElement sum_of_neighbours{0};
+                    Count nr_neighbours{0};
 
                     for(Index r = 0; r < window.extent(0); ++r) {
                         for(Index c = 0; c < window.extent(1); ++c)
                         {
                             InputElement const value{window(r, c)};
 
-                            if(indp.is_no_data(value))
+                            if(r == radius && c == radius)
                             {
-                                // In case one of the cells within the window contains a no-data
-                                // value, the result is marked as no-data
-                                sum_of_weights = 0;
-                                r = window.extent(0);
-                                c = window.extent(1);
+                                // Remember the focal value. Its kernel weight is irrelevant.
+                                focal_value = value;
                             }
                             else
                             {
-                                Weight const weight{kernel(r, c)};
-
-                                if(weight)
+                                if(indp.is_no_data(value))
                                 {
-                                    sum += value;
-                                    ++sum_of_weights;
+                                    // In case one of the cells within the window contains a no-data
+                                    // value, the result is marked as no-data
+                                    nr_neighbours = 0;
+                                    r = window.extent(0);
+                                    c = window.extent(1);
+                                }
+                                else
+                                {
+                                    Weight const weight{kernel(r, c)};
+
+                                    if(weight)
+                                    {
+                                        sum_of_neighbours += value;
+                                        ++nr_neighbours;
+                                    }
                                 }
                             }
                         }
                     }
 
-                    if(sum_of_weights == 0)
+                    OutputElement high_pass;
+
                     {
-                        ondp.mark_no_data(sum);
-                    }
-                    else
-                    {
-                        sum /= sum_of_weights;
+                        if(nr_neighbours == 0)
+                        {
+                            ondp.mark_no_data(high_pass);
+                        }
+                        else
+                        {
+                            high_pass = 2 * focal_value * nr_neighbours - sum_of_neighbours;
+                        }
                     }
 
-                    return sum;
+                    return high_pass;
                 }
 
         };
@@ -94,12 +109,12 @@ namespace lue {
         typename Element,
         Rank rank,
         typename Kernel>
-    PartitionedArray<Element, rank> focal_mean(
+    PartitionedArray<Element, rank> focal_high_pass(
         Policies const& policies,
         PartitionedArray<Element, rank> const& array,
         Kernel const& kernel)
     {
-        using Functor = detail::FocalMean<Element>;
+        using Functor = detail::FocalHighPass<Element>;
 
         return focal_operation(policies, array, kernel, Functor{});
     }
@@ -107,11 +122,11 @@ namespace lue {
 }  // namespace lue
 
 
-#define LUE_INSTANTIATE_FOCAL_MEAN(                             \
+#define LUE_INSTANTIATE_FOCAL_HIGH_PASS(                        \
     Policies, Element, Kernel)                                  \
                                                                 \
     template LUE_FOCAL_OPERATION_EXPORT                         \
-    PartitionedArray<Element, 2> focal_mean<                    \
+    PartitionedArray<Element, 2> focal_high_pass<               \
             ArgumentType<void(Policies)>, Element, 2, Kernel>(  \
         ArgumentType<void(Policies)> const&,                    \
         PartitionedArray<Element, 2> const&,                    \

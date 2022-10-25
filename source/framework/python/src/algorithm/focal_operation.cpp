@@ -4,6 +4,7 @@
 namespace lue::framework {
 
     void bind_focal_diversity(pybind11::module& module);
+    void bind_focal_high_pass(pybind11::module& module);
     void bind_focal_maximum(pybind11::module& module);
     void bind_focal_mean(pybind11::module& module);
     void bind_focal_minimum(pybind11::module& module);
@@ -14,6 +15,7 @@ namespace lue::framework {
         pybind11::module& module)
     {
         bind_focal_diversity(module);
+        bind_focal_high_pass(module);
         bind_focal_maximum(module);
         bind_focal_mean(module);
         bind_focal_minimum(module);
