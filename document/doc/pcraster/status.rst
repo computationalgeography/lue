@@ -474,7 +474,10 @@ added to the LUE framework. The number of model developers requesting one is one
      - focal_high_pass
    * - windowmajority
      - ✅
-     - focal_majority
+     - | focal_majority
+       | Note that, unlike in PCRaster, the kernel window is not enlarged
+       | when no unique most frequent value is encountered within the
+       | focal window. In that case, no-data is output.
    * - windowmaximum
      - ✅
      - focal_maximum

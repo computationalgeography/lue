@@ -54,6 +54,7 @@ set(focal_operation_names
     aspect
     focal_diversity
     focal_high_pass
+    focal_majority
     focal_maximum
     focal_mean
     focal_minimum
