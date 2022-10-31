@@ -44,12 +44,10 @@ the related technology.
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/2c02fc1c5b13424abfc414b82104801d)](https://www.codacy.com/gh/computationalgeography/lue/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=computationalgeography/lue&amp;utm_campaign=Badge_Grade)
 
 
-
-
 ## Installation
 [![Anaconda-Server Badge](https://anaconda.org/conda-forge/lue/badges/version.svg)](https://anaconda.org/conda-forge/lue)
 [![Anaconda-Server Badge](https://anaconda.org/conda-forge/lue/badges/platforms.svg)](https://anaconda.org/conda-forge/lue)
-[![Anaconda-Server Badge](https://anaconda.org/conda-forge/lue/badges/installer/conda.svg)](https://conda.anaconda.org/conda-forge)
+[![Anaconda-Server Badge](https://anaconda.org/conda-forge/lue/badges/downloads.svg)](https://anaconda.org/conda-forge/lue)
 
 The easiest way to install LUE is using Conda:
 ```bash
