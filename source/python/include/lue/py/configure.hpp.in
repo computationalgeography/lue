@@ -2,10 +2,10 @@
 #include <cstdint>
 
 
-#cmakedefine Python3_VERSION "${Python3_VERSION}"
-#cmakedefine Python3_VERSION_MAJOR ${Python3_VERSION_MAJOR}
-#cmakedefine Python3_VERSION_MINOR ${Python3_VERSION_MINOR}
-#cmakedefine Python3_VERSION_PATCH ${Python3_VERSION_PATCH}
+#define Python3_VERSION "${Python3_VERSION}"
+#define Python3_VERSION_MAJOR ${Python3_VERSION_MAJOR}
+#define Python3_VERSION_MINOR ${Python3_VERSION_MINOR}
+#define Python3_VERSION_PATCH ${Python3_VERSION_PATCH}
 
 
 namespace lue::py {
