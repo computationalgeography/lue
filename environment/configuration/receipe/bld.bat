@@ -23,6 +23,7 @@ cmake %SRC_DIR% ^
     -D LUE_HAVE_HDF5=TRUE ^
     -D LUE_HAVE_NLOHMANN_JSON=TRUE ^
     -D LUE_HAVE_PYBIND11=TRUE ^
+    -D HPX_IGNORE_COMPILER_COMPATIBILITY=TRUE ^
     -D Python3_EXECUTABLE="%PYTHON%"
 if %errorlevel% neq 0 exit /b %errorlevel%
 
