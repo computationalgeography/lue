@@ -1,6 +1,5 @@
 breathe
 conan
-doxygen
 graphviz
 ipython
 matplotlib
@@ -9,3 +8,4 @@ scipy
 setuptools
 sphinx
 sphinx_rtd_theme
+tmuxp
