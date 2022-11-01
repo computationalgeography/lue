@@ -107,7 +107,7 @@ namespace lue {
         // TODO Somehow deduce this type from the policy passed in. This must result in one of
         //      the policy types for which we instantiate the gradient operation. For now,
         //      we just use the same policy as used in policy::gradients::DefaultValuePolicies.
-        using GradientsPolicies = policy::DefaultSpatialOperationPolicies<
+        using GradientsPolicies = policy::DefaultSpatialOperationValuePolicies<
             policy::AllValuesWithinDomain<Element, Element>,
             policy::OutputElements<Element>,
             policy::InputElements<Element, Element>>;

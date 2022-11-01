@@ -12,7 +12,7 @@ namespace lue {
             OutputElements<Element>,
             InputElements<Element>>;
 
-    }  // namespace focal_sum::policy
+    }  // namespace policy::focal_sum
 
 
     namespace value_policies {
@@ -27,7 +27,10 @@ namespace lue {
         {
             using Policies = policy::focal_sum::DefaultValuePolicies<Element>;
 
-            return focal_sum(Policies{}, array, kernel);
+            // TODO This one should be policy-based
+            Element const fill_value{policy::no_data_value<Element>};
+
+            return focal_sum(Policies{fill_value}, array, kernel);
         }
 
     }  // namespace value_policies

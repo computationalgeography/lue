@@ -52,6 +52,12 @@ set(local_operation_names
 
 set(focal_operation_names
     aspect
+    focal_diversity
+    focal_high_pass
+    focal_majority
+    focal_maximum
+    focal_mean
+    focal_minimum
     focal_sum
     slope
 )
@@ -80,8 +86,6 @@ set(names
     d8_flow_direction
     downstream
     downstream_distance
-    focal_max
-    focal_mean
     focal_operation
     inter_partition_stream
     locality_id

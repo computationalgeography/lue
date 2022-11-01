@@ -461,29 +461,32 @@ added to the LUE framework. The number of model developers requesting one is one
      - ❌
      - 3
    * - window4total
-     - ❌
-     - 1
+     - 🗑
+     - Not needed, LUE's focal_mean accepts a custom kernel
    * - windowaverage
-     - ❌
-     - 1
+     - ✅
+     - focal_mean
    * - windowdiversity
-     - ❌
-     - 1
+     - ✅
+     - focal_diversity
    * - windowhighpass
-     - ❌
-     - 1
+     - ✅
+     - focal_high_pass
    * - windowmajority
-     - ❌
-     - 1
+     - ✅
+     - | focal_majority
+       | Note that, unlike in PCRaster, the kernel window is not enlarged
+       | when no unique most frequent value is encountered within the
+       | focal window. In that case, no-data is output.
    * - windowmaximum
      - ✅
-     -
+     - focal_maximum
    * - windowminimum
      - ✅
-     -
+     - focal_minimum
    * - windowtotal
      - ✅
-     -
+     - focal_sum
    * - xcoordinate
      - 🗑
      - Not sure why this is useful...

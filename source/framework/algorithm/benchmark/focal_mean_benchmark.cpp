@@ -1,6 +1,5 @@
-#include "lue/framework/algorithm/definition/focal_mean.hpp"
-#include "lue/framework/algorithm/kernel.hpp"
-#include "lue/framework/algorithm/default_policies/uniform.hpp"
+#include "lue/framework/algorithm/value_policies/focal_mean.hpp"
+#include "lue/framework/algorithm/value_policies/uniform.hpp"
 #include "lue/framework/algorithm/serialize/kernel.hpp"
 #include "lue/framework/benchmark/benchmark_model.hpp"
 #include "lue/framework/benchmark/hpx_main.hpp"
@@ -19,7 +18,7 @@ class FocalMeanBenchmarkModel final:
 
 public:
 
-    using Kernel = lue::Kernel<bool, rank>;
+    using Kernel = lue::Kernel<std::uint8_t, rank>;
 
                    FocalMeanBenchmarkModel(
                                         Task const& task,
@@ -69,8 +68,8 @@ template<
     std::size_t rank>
 void FocalMeanBenchmarkModel<Element, rank>::do_preprocess()
 {
-    this->state() = default_policies::uniform(this->state(), Element{0}, std::numeric_limits<Element>::max());
-    _kernel = lue::box_kernel<bool, rank>(1, true);
+    this->state() = value_policies::uniform(this->state(), Element{0}, std::numeric_limits<Element>::max());
+    _kernel = lue::box_kernel<std::uint8_t, rank>(1, true);
 }
 
 
@@ -80,7 +79,7 @@ template<
 void FocalMeanBenchmarkModel<Element, rank>::do_simulate(
     Count const /* time_step */)
 {
-    this->state() = focal_mean(this->state(), _kernel);
+    this->state() = value_policies::focal_mean(this->state(), _kernel);
 }
 
 }  // namespace benchmark

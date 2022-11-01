@@ -24,8 +24,8 @@ namespace lue {
                     typename Subspan>
                 OutputElement operator()(
                     Kernel const& kernel,
-                    [[maybe_unused]] OutputPolicies const& output_policies,
-                    [[maybe_unused]] InputPolicies const& input_policies,
+                    OutputPolicies const& output_policies,
+                    InputPolicies const& input_policies,
                     Subspan const& window) const
                 {
                     static_assert(rank<Kernel> == 2);
@@ -37,8 +37,8 @@ namespace lue {
                     lue_hpx_assert(window.extent(0) == kernel.size());
                     lue_hpx_assert(window.extent(1) == kernel.size());
 
-                    auto indp = input_policies.input_no_data_policy();
-                    auto ondp = output_policies.output_no_data_policy();
+                    auto const& indp = input_policies.input_no_data_policy();
+                    auto const& ondp = output_policies.output_no_data_policy();
 
                     OutputElement sum{0};
 
@@ -60,7 +60,8 @@ namespace lue {
                             {
                                 if(weight)
                                 {
-                                    // weight is true or not equal to zero
+                                    // TODO Use out-of-range policy to see whether this succeeds.
+                                    //      Same policy as used by addition.
                                     sum += value;
                                 }
                             }
