@@ -6,6 +6,7 @@ on:
       - ghxyz
     paths:
       - ".github/workflows/windows.yml"
+      - "environment/cmake/**"
       - "source/**"
 
 jobs:

@@ -3,7 +3,7 @@ cd build
 if %errorlevel% neq 0 exit /b %errorlevel%
 
 cmake %SRC_DIR% ^
-    -G "NMake Makefiles" ^
+    -G "Visual Studio 16 2019" -A x64 ^
     -D CMAKE_BUILD_TYPE=Release ^
     -D CMAKE_INSTALL_PREFIX:PATH="%LIBRARY_PREFIX%" ^
     -D CMAKE_INSTALL_LIBDIR=lib ^

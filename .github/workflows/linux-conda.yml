@@ -7,7 +7,10 @@ on:
     paths:
       - ".github/workflows/linux-conda.yml"
       - "source/**"
-      - "environment/configuration/receipe/**"
+      - "environment/cmake/**"
+      - "environment/configuration/receipe/build.sh"
+      - "environment/configuration/receipe/meta.yaml"
+      - "environment/configuration/receipe/run_test.py"
 
 jobs:
     build:
