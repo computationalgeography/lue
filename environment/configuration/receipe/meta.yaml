@@ -58,9 +58,8 @@ requirements:
 
 test:
     commands:
-       - lue_translate -h                          # [not win]
-       - lue_validate -h                           # [not win]
-       - lue_view -h                               # [not win]
+       - lue_translate -h
+       - lue_validate -h
 
 
 about:
