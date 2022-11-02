@@ -1,50 +1,42 @@
 #!/usr/bin/env bash
 set -e
-set -x
 
-echo $PREFIX
-echo $SP_DIR
+mkdir build
+cd build
 
-# We need to create an out of source build
+if [[ "$target_platform" == "osx-64" ]]; then
+    export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
+fi
 
-# LUE may have to patch sources of 3rd party sources it uses (OTF2, HPX, ...). This only works
-# when the build directory is not a ѕubdirectory of the source directory.
+if [[ "$target_platform" == "osx-64" || "$target_platform" == "osx-arm64" ]]; then
+    export CXXFLAGS="${CXXFLAGS} -DTARGET_OS_OSX"
+fi
 
-mkdir ../build && cd ../build
-
-PATH=$PREFIX/bin:$PATH CXXFLAGS="${CXXFLAGS} -DTARGET_OS_OSX -D_LIBCPP_DISABLE_AVAILABILITY" \
-    cmake $SRC_DIR -G"Ninja" \
-        -D CMAKE_BUILD_TYPE=Release \
-        -D CMAKE_INSTALL_PREFIX:PATH="${PREFIX}" \
-        -D CMAKE_INSTALL_LIBDIR=lib \
-        -D LUE_INSTALL_PYTHON_PACKAGE_DIR="${SP_DIR}/lue" \
-        -D LUE_HAVE_BOOST:BOOL=TRUE \
-        -D LUE_HAVE_FMT:BOOL=TRUE \
-        -D LUE_HAVE_PYBIND11:BOOL=TRUE \
-        -D LUE_HAVE_HDF5:BOOL=TRUE \
-        -D LUE_HAVE_GDAL:BOOL=TRUE \
-        -D LUE_HAVE_DOCOPT:BOOL=TRUE \
-        -D LUE_HAVE_GLFW:BOOL=TRUE \
-        -D LUE_HAVE_MS_GSL:BOOL=FALSE \
-        -D LUE_HAVE_NLOHMANN_JSON:BOOL=TRUE \
-        -D LUE_DATA_MODEL_WITH_PYTHON_API=ON \
-        -D LUE_DATA_MODEL_WITH_UTILITIES=ON \
-        -D LUE_BUILD_VIEW=ON \
-        -D LUE_BUILD_FRAMEWORK=ON \
-        -D LUE_FRAMEWORK_WITH_PYTHON_API=ON \
-        -D LUE_BUILD_HPX=ON \
-        -D HPX_USE_CMAKE_CXX_STANDARD=ON \
-        -D HPX_WITH_MALLOC="tcmalloc" \
-        -D HPX_WITH_PKGCONFIG=OFF \
-        -D HPX_WITH_EXAMPLES=OFF \
-        -D HPX_WITH_TESTS=OFF \
-        -D Python3_EXECUTABLE="${PYTHON}"
+cmake $SRC_DIR \
+    -G"Ninja" \
+    ${CMAKE_ARGS} \
+    -D CMAKE_BUILD_TYPE="Release" \
+    -D LUE_INSTALL_PYTHON_PACKAGE_DIR="${SP_DIR}/lue" \
+    -D LUE_HAVE_BOOST:BOOL=TRUE \
+    -D LUE_HAVE_FMT:BOOL=TRUE \
+    -D LUE_HAVE_PYBIND11:BOOL=TRUE \
+    -D LUE_HAVE_HDF5:BOOL=TRUE \
+    -D LUE_HAVE_GDAL:BOOL=TRUE \
+    -D LUE_HAVE_DOCOPT:BOOL=TRUE \
+    -D LUE_HAVE_MS_GSL:BOOL=FALSE \
+    -D LUE_HAVE_NLOHMANN_JSON:BOOL=TRUE \
+    -D LUE_DATA_MODEL_WITH_PYTHON_API=TRUE \
+    -D LUE_DATA_MODEL_WITH_UTILITIES=TRUE \
+    -D LUE_BUILD_VIEW=FALSE \
+    -D LUE_BUILD_FRAMEWORK=TRUE \
+    -D LUE_FRAMEWORK_WITH_PYTHON_API=TRUE \
+    -D HPX_IGNORE_COMPILER_COMPATIBILITY=TRUE \
+    -D Python3_EXECUTABLE="${PYTHON}"
 
 # Use parallel build for as many targets as possible, but not for framework/algorithm
-cmake --build . --target source/{data_model,view}/all source/framework/{core,partitioned_array}/all
+cmake --build . --target source/data_model/all source/framework/{core,partitioned_array}/all
 
 # Build remaining targets with fewer cores. Compiling these modules requires more memory.
 cmake --build . --target all --parallel 2
 
-cmake --install . --component hpx_runtime
 cmake --install . --component lue_runtime

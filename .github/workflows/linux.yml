@@ -6,6 +6,7 @@ on:
       - ghxyz
     paths:
       - ".github/workflows/linux.yml"
+      - "environment/cmake/**"
       - "source/**"
 
 jobs:

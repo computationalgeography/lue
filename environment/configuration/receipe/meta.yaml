@@ -12,57 +12,54 @@ source:
 
 build:
   number: 0
-  script_env:
-    - TMPDIR                                       # [win]
 
 
 requirements:
   build:
+    # Section for the native build platform. Think "build-tools", that run on the native platform,
+    # but output results for the target platform.
+    # Dependencies required during the build phase not needed on the host.
+    - python                                     # [build_platform != target_platform]
+    - cross-python_{{ target_platform }}         # [build_platform != target_platform]
+    - numpy >1.17                                # [build_platform != target_platform]
+    - pybind11                                   # [build_platform != target_platform]
     - {{ compiler('cxx') }}
-    - {{ cdt('mesa-libgl-devel') }}                # [linux]
-    - {{ cdt('mesa-dri-drivers') }}                # [linux]
-    - {{ cdt('libselinux') }}                      # [linux]
-    - {{ cdt('libxdamage') }}                      # [linux]
-    - {{ cdt('libxxf86vm') }}                      # [linux]
-    - {{ cdt('libxext') }}                         # [linux]
-    - make                                         # [unix]
+    - make                                       # [unix]
     - git
     - conan
     - cmake
-    - ninja
+    - ninja                                      # [not win]
 
   host:
+    # Section for the target platform. Might not be the same as the build platform!
+    # Dependencies required during build phase needed on the host.
     - python
     - numpy >1.17
     - boost-cpp
     - hdf5
+    - hpx
     - libgdal
     - pybind11
     - fmt
-    - xorg-libxfixes                               # [linux]
     - docopt.cpp
     - nlohmann_json
-    - glfw
-    - libhwloc
-    - gperftools                                   # [not win]
-    - asio
 
   run:
+    # Dependencies required for using the software.
+    # Stuff required when using LUE.
     - python
     - {{ pin_compatible('numpy') }}
     - hdf5
+    - hpx
     - libgdal
     - fmt
     - docopt.cpp
-    - glfw
-    - gperftools                                   # [not win]
 
 
 test:
     commands:
-       - lue_translate -h                          # [not win]
-       - lue_validate -h                           # [not win]
-       - lue_view -h                               # [not win]
+       - lue_translate -h
+       - lue_validate -h
 
 
 about:

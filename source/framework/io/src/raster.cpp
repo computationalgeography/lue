@@ -8,6 +8,7 @@
 #include <hpx/async_colocated/get_colocation_id.hpp>
 #include <hpx/async_combinators/when_any.hpp>
 #include <hpx/components/get_ptr.hpp>
+#include <hpx/shared_mutex.hpp>
 #include <memory>
 
 
