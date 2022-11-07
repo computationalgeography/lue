@@ -5,6 +5,11 @@ Releases are automatically archived on Zenodo. After making a release, a DOI is 
 by Zenodo which can be used in publications.
 
 - https://guides.github.com/activities/citable-code/
+
+
+Checklist:
+
+- Make sure the version number in the main CMakeLists.txt is correct
 - Draft a release on Github. Currently we do not use the letter v to prefix version numbers.
 
 
