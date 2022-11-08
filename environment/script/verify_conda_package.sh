@@ -25,8 +25,15 @@ conda install --yes --channel conda-forge lue
 # Perform some hello world test
 if [[ "$OSTYPE" == "linux-gnu"* ]];
 then
-    TCMALLOC=$(find /usr/lib -name libtcmalloc_minimal.so.4)
+    TCMALLOC=$(find $CONDA_PREFIX -name libtcmalloc_minimal.so.4)
+    echo "Preloading $TCMALLOC"
     export LD_PRELOAD=$TCMALLOC
+elif [[ "$OSTYPE" == "darwin"* ]];
+then
+    TCMALLOC=$(find $CONDA_PREFIX -name libtcmalloc_minimal.dylib)
+    echo "Not preloading $TCMALLOC"
+    # Uncomment and test, once needed
+    # export DYLD_INSERT_LIBRARIES=$TCMALLOC
 fi
 
 python <<EOF
