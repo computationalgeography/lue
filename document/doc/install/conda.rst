@@ -52,5 +52,5 @@ once you are done (adjust versions / names when needed):
    # ...
 
    # Clean-up
-   conda deactivate test_lue
+   conda deactivate
    conda env remove --name test_lue
