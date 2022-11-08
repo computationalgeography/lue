@@ -2,6 +2,11 @@
 set -e
 
 
+# For some reason, on Windows / msys / bash, the conda function is not available anymore in a
+# subshell. To make it work, before calling it, do:
+# export -f conda __conda_exe __conda_activate __conda_reactivate __add_sys_prefix_to_path
+
+
 # Assume Conda is installed. Do the minimal amount of work to verify the latest LUE package
 # works fine. Nothing else.
 
@@ -18,8 +23,11 @@ conda activate test_lue
 conda install --yes --channel conda-forge lue
 
 # Perform some hello world test
-TCMALLOC=$(find /usr/lib -name libtcmalloc_minimal.so.4)
-export LD_PRELOAD=$TCMALLOC
+if [[ "$OSTYPE" == "linux-gnu"* ]];
+then
+    TCMALLOC=$(find /usr/lib -name libtcmalloc_minimal.so.4)
+    export LD_PRELOAD=$TCMALLOC
+fi
 
 python <<EOF
 import lue
