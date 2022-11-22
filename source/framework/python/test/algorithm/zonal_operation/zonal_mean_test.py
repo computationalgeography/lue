@@ -11,7 +11,7 @@ def tearDownModule():
     lue_test.stop_hpx_runtime()
 
 
-class ZonalSumTest(lue_test.TestCase):
+class ZonalMeanTest(lue_test.TestCase):
 
     @lue_test.framework_test_case
     def test_overloads(self):
@@ -22,26 +22,6 @@ class ZonalSumTest(lue_test.TestCase):
         fill_zone = 3
 
         for value_dtype, zone_dtype in [
-                    (np.uint8, np.uint8),
-                    (np.uint8, np.uint32),
-                    (np.uint8, np.uint64),
-
-                    (np.int32, np.uint8),
-                    (np.int32, np.uint32),
-                    (np.int32, np.uint64),
-
-                    (np.uint32, np.uint8),
-                    (np.uint32, np.uint32),
-                    (np.uint32, np.uint64),
-
-                    (np.int64, np.uint8),
-                    (np.int64, np.uint32),
-                    (np.int64, np.uint64),
-
-                    (np.uint64, np.uint8),
-                    (np.uint64, np.uint32),
-                    (np.uint64, np.uint64),
-
                     (np.float32, np.uint8),
                     (np.float32, np.uint32),
                     (np.float32, np.uint64),
@@ -52,4 +32,4 @@ class ZonalSumTest(lue_test.TestCase):
                 ]:
             array = lfr.create_array(array_shape, partition_shape, np.dtype(value_dtype), fill_value)
             zones = lfr.create_array(array_shape, partition_shape, np.dtype(zone_dtype), fill_zone)
-            lfr.zonal_sum(array, zones)
+            lfr.zonal_mean(array, zones)
