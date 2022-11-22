@@ -80,7 +80,7 @@ jobs:
         - name: build lue
           shell: bash -l {0}
           run: |
-              cmake --build $GITHUB_WORKSPACE/../build --config Release --target all_build
+              cmake --build $GITHUB_WORKSPACE/../build --config Release --target all_build --parallel 1
 
         - name: test lue
           shell: bash -l {0}
