@@ -21,69 +21,71 @@ namespace lue {
 
                     using InputElement = Input;
 
-                    /// /*!
-                    ///     @brief      For this partition, calculate some statistic per zone
-                    ///     @param      input_element Input element to aggregate
-                    ///     @param      zones_partition Input zones
-                    ///     @return     Future to collection of statistic per zone
-                    /// */
-                    /// static hpx::future<AggregatorT<Functor>> zonal_operation_partition(
-                    ///     Policies const& policies,
-                    ///     InputElement const input_element,
-                    ///     ZonesPartition const& zones_partition,
-                    ///     Functor /* functor */)
-                    /// {
-                    ///     using ZonesData = DataT<ZonesPartition>;
-                    ///     using Aggregator = AggregatorT<Functor>;
 
-                    ///     lue_hpx_assert(zones_partition.is_ready());
+                    /*!
+                        @brief      For this partition, calculate some statistic per zone
+                        @param      input_element Input element to aggregate
+                        @param      zones_partition Input zones
+                        @return     Future to collection of statistic per zone
+                    */
+                    static hpx::future<AggregatorT<Functor>> zonal_operation_partition(
+                        Policies const& policies,
+                        InputElement const input_element,
+                        ZonesPartition const& zones_partition,
+                        Functor /* functor */)
+                    {
+                        using ZonesData = DataT<ZonesPartition>;
+                        using Aggregator = AggregatorT<Functor>;
 
-                    ///     return hpx::dataflow(
-                    ///         hpx::launch::async,
-                    ///         hpx::unwrapping(
+                        lue_hpx_assert(zones_partition.is_ready());
 
-                    ///                 [policies, input_element, zones_partition](
-                    ///                     ZonesData const& zones_partition_data)
-                    ///                 {
-                    ///                     AnnotateFunction annotation{"zonal_operation_partition"};
+                        return hpx::dataflow(
+                            hpx::launch::async,
+                            hpx::unwrapping(
 
-                    ///                     HPX_UNUSED(zones_partition);
+                                    [policies, input_element, zones_partition](
+                                        ZonesData const& zones_partition_data)
+                                    {
+                                        AnnotateFunction annotation{"zonal_operation_partition"};
 
-                    ///                     auto const& dp = policies.domain_policy();
-                    ///                     auto const& indp1 = std::get<0>(policies.inputs_policies()).input_no_data_policy();
-                    ///                     auto const& indp2 = std::get<1>(policies.inputs_policies()).input_no_data_policy();
+                                        HPX_UNUSED(zones_partition);
 
-                    ///                     Aggregator result{};
+                                        auto const& dp = policies.domain_policy();
+                                        auto const& indp1 = std::get<0>(policies.inputs_policies()).input_no_data_policy();
+                                        auto const& indp2 = std::get<1>(policies.inputs_policies()).input_no_data_policy();
 
-                    ///                     if(!indp1.is_no_data(input_element))
-                    ///                     {
-                    ///                         Count const nr_elements{lue::nr_elements(zones_partition_data)};
+                                        Aggregator result{};
 
-                    ///                         for(Index i = 0; i < nr_elements; ++i)
-                    ///                         {
-                    ///                             if(!indp2.is_no_data(zones_partition_data, i))
-                    ///                             {
-                    ///                                 if(dp.within_domain(zones_partition_data[i], input_element))
-                    ///                                 {
-                    ///                                     result.add(zones_partition_data[i], input_element);
-                    ///                                 }
-                    ///                             }
-                    ///                         }
-                    ///                     }
+                                        if(!indp1.is_no_data(input_element))
+                                        {
+                                            Count const nr_elements{lue::nr_elements(zones_partition_data)};
 
-                    ///                     return result;
-                    ///                 }
+                                            for(Index i = 0; i < nr_elements; ++i)
+                                            {
+                                                if(!indp2.is_no_data(zones_partition_data, i))
+                                                {
+                                                    if(dp.within_domain(zones_partition_data[i], input_element))
+                                                    {
+                                                        result.add(zones_partition_data[i], input_element);
+                                                    }
+                                                }
+                                            }
+                                        }
 
-                    ///             ),
-                    ///         zones_partition.data());
-                    /// }
+                                        return result;
+                                    }
 
-                    /// struct Action:
-                    ///     hpx::actions::make_action<
-                    ///         decltype(&zonal_operation_partition),
-                    ///         &zonal_operation_partition,
-                    ///         Action>::type
-                    /// {};
+                                ),
+                            zones_partition.data());
+                    }
+
+
+                    struct Action:
+                        hpx::actions::make_action<
+                            decltype(&zonal_operation_partition),
+                            &zonal_operation_partition,
+                            Action>::type
+                    {};
 
             };
 
@@ -166,6 +168,7 @@ namespace lue {
                             input_partition.data(),
                             zones_partition.data());
                     }
+
 
                     struct Action:
                         hpx::actions::make_action<
@@ -269,131 +272,131 @@ namespace lue {
     }  // namespace detail
 
 
-    /// template<
-    ///     typename Policies,
-    ///     typename InputElement,
-    ///     typename Zone,
-    ///     Rank rank,
-    ///     typename Functor>
-    /// PartitionedArray<OutputElementT<Functor>, rank> zonal_operation(
-    ///     Policies const& policies,
-    ///     hpx::shared_future<InputElement> const input_element,
-    ///     PartitionedArray<Zone, rank> const& zones_array,
-    ///     Functor const& functor)
-    /// {
-    ///     using ZonesArray = PartitionedArray<Zone, rank>;
-    ///     using ZonesPartitions = PartitionsT<ZonesArray>;
-    ///     using ZonesPartition = PartitionT<ZonesArray>;
+    template<
+        typename Policies,
+        typename InputElement,
+        typename Zone,
+        Rank rank,
+        typename Functor>
+    PartitionedArray<OutputElementT<Functor>, rank> zonal_operation(
+        Policies const& policies,
+        hpx::shared_future<InputElement> const input_element,
+        PartitionedArray<Zone, rank> const& zones_array,
+        Functor const& functor)
+    {
+        using ZonesArray = PartitionedArray<Zone, rank>;
+        using ZonesPartitions = PartitionsT<ZonesArray>;
+        using ZonesPartition = PartitionT<ZonesArray>;
 
-    ///     using OutputArray = PartitionedArray<OutputElementT<Functor>, rank>;
-    ///     using OutputPartitions = PartitionsT<OutputArray>;
-    ///     using OutputPartition = PartitionT<OutputArray>;
+        using OutputArray = PartitionedArray<OutputElementT<Functor>, rank>;
+        using OutputPartitions = PartitionsT<OutputArray>;
+        using OutputPartition = PartitionT<OutputArray>;
 
-    ///     using Aggregator = AggregatorT<Functor>;
-    ///     using Aggregators = std::vector<hpx::future<Aggregator>>;
+        using Aggregator = AggregatorT<Functor>;
+        using Aggregators = std::vector<hpx::future<Aggregator>>;
 
-    ///     Count const nr_partitions{lue::nr_partitions(zones_array)};
+        Count const nr_partitions{lue::nr_partitions(zones_array)};
 
-    ///     Localities<rank> const& localities{zones_array.localities()};
-    ///     ZonesPartitions const& zones_partitions{zones_array.partitions()};
+        Localities<rank> const& localities{zones_array.localities()};
+        ZonesPartitions const& zones_partitions{zones_array.partitions()};
 
-    ///     // -------------------------------------------------------------------------
-    ///     // 1. Per partition, calculate a statistic per zone. This
-    ///     //     results in some operation-specific object that contains this
-    ///     //     information. Example: sum per zone
-    ///     Aggregators aggregators{static_cast<std::size_t>(nr_partitions)};
+        // -------------------------------------------------------------------------
+        // 1. Per partition, calculate a statistic per zone. This
+        //     results in some operation-specific object that contains this
+        //     information. Example: sum per zone
+        Aggregators aggregators{static_cast<std::size_t>(nr_partitions)};
 
-    ///     {
-    ///         detail::ZonalOperationPartitionAction1<
-    ///             Policies, InputElement, ZonesPartition, Functor> action;
+        {
+            detail::ZonalOperationPartitionAction1<
+                Policies, InputElement, ZonesPartition, Functor> action;
 
-    ///         for(Index p = 0; p < nr_partitions; ++p)
-    ///         {
-    ///             aggregators[p] = hpx::dataflow(
-    ///                 hpx::launch::async,
+            for(Index p = 0; p < nr_partitions; ++p)
+            {
+                aggregators[p] = hpx::dataflow(
+                    hpx::launch::async,
 
-    ///                 [locality_id=localities[p], action, policies, functor](
-    ///                     hpx::shared_future<InputElement> const& input_element,
-    ///                     ZonesPartition const& zones_partition)
-    ///                 {
-    ///                     AnnotateFunction annotation{"zonal_operation"};
+                    [locality_id=localities[p], action, policies, functor](
+                        hpx::shared_future<InputElement> const& input_element,
+                        ZonesPartition const& zones_partition)
+                    {
+                        AnnotateFunction annotation{"zonal_operation"};
 
-    ///                     return action(locality_id, policies, input_element.get(), zones_partition, functor);
-    ///                 },
+                        return action(locality_id, policies, input_element.get(), zones_partition, functor);
+                    },
 
-    ///                 input_element,
-    ///                 zones_partitions[p]);
-    ///         }
-    ///     }
+                    input_element,
+                    zones_partitions[p]);
+            }
+        }
 
-    ///     // -------------------------------------------------------------------------
-    ///     // 2. Merge the zonal statistics of all partitions. This
-    ///     //     results in the same operation-specific object, but now
-    ///     //     containing information for the whole array.
+        // -------------------------------------------------------------------------
+        // 2. Merge the zonal statistics of all partitions. This
+        //     results in the same operation-specific object, but now
+        //     containing information for the whole array.
 
-    ///     hpx::shared_future<Aggregator> aggregator = hpx::when_all(std::move(aggregators)).then(
-    ///         [](
-    ///             hpx::future<Aggregators>&& aggregators)
-    ///         {
-    ///             AnnotateFunction annotation{"zonal_operation"};
+        hpx::shared_future<Aggregator> aggregator = hpx::when_all(std::move(aggregators)).then(
+            [](
+                hpx::future<Aggregators>&& aggregators)
+            {
+                AnnotateFunction annotation{"zonal_operation"};
 
-    ///             Aggregator result{};
+                Aggregator result{};
 
-    ///             for(hpx::future<Aggregator>& aggregator: aggregators.get())
-    ///             {
-    ///                 result.merge(aggregator.get());
-    ///             }
+                for(hpx::future<Aggregator>& aggregator: aggregators.get())
+                {
+                    result.merge(aggregator.get());
+                }
 
-    ///             return result;
-    ///         });
+                return result;
+            });
 
-    ///     // -------------------------------------------------------------------------
-    ///     // 3. Per input partition, translate input zone to output statistic.
+        // -------------------------------------------------------------------------
+        // 3. Per input partition, translate input zone to output statistic.
 
-    ///     OutputPartitions output_partitions{shape_in_partitions(zones_array)};
+        OutputPartitions output_partitions{shape_in_partitions(zones_array)};
 
-    ///     {
-    ///         detail::ZonalOperationPartitionAction2<
-    ///             Policies, ZonesPartition, OutputPartition, Functor> action;
+        {
+            detail::ZonalOperationPartitionAction2<
+                Policies, ZonesPartition, OutputPartition, Functor> action;
 
-    ///         for(Index p = 0; p < nr_partitions; ++p)
-    ///         {
-    ///             output_partitions[p] = hpx::dataflow(
-    ///                 hpx::launch::async,
+            for(Index p = 0; p < nr_partitions; ++p)
+            {
+                output_partitions[p] = hpx::dataflow(
+                    hpx::launch::async,
 
-    ///                 [locality_id=localities[p], action, policies, zones_partition=zones_partitions[p]](
-    ///                     hpx::shared_future<Aggregator>const& aggregator)
-    ///                 {
-    ///                     AnnotateFunction annotation{"zonal_operation"};
+                    [locality_id=localities[p], action, policies, zones_partition=zones_partitions[p]](
+                        hpx::shared_future<Aggregator>const& aggregator)
+                    {
+                        AnnotateFunction annotation{"zonal_operation"};
 
-    ///                     return action(locality_id, policies, zones_partition, aggregator.get());
-    ///                 },
+                        return action(locality_id, policies, zones_partition, aggregator.get());
+                    },
 
-    ///                 aggregator);
-    ///         }
-    ///     }
+                    aggregator);
+            }
+        }
 
-    ///     return OutputArray{shape(zones_array), localities, std::move(output_partitions)};
-    /// }
+        return OutputArray{shape(zones_array), localities, std::move(output_partitions)};
+    }
 
 
-    /// template<
-    ///     typename Policies,
-    ///     typename InputElement,
-    ///     typename Zone,
-    ///     Rank rank,
-    ///     typename Functor>
-    /// PartitionedArray<OutputElementT<Functor>, rank> zonal_operation(
-    ///     Policies const& policies,
-    ///     InputElement const input_element,
-    ///     PartitionedArray<Zone, rank> const& zones_array,
-    ///     Functor const& functor)
-    /// {
-    ///     return zonal_operation(
-    ///         policies,
-    ///         hpx::make_ready_future<InputElement>(input_element).share(), zones_array,
-    ///         functor);
-    /// }
+    template<
+        typename Policies,
+        typename InputElement,
+        typename Zone,
+        Rank rank,
+        typename Functor>
+    PartitionedArray<OutputElementT<Functor>, rank> zonal_operation(
+        Policies const& policies,
+        InputElement const input_element,
+        PartitionedArray<Zone, rank> const& zones_array,
+        Functor const& functor)
+    {
+        return zonal_operation(
+            policies,
+            hpx::make_ready_future<InputElement>(input_element).share(), zones_array,
+            functor);
+    }
 
 
     template<

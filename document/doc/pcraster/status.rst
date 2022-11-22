@@ -120,8 +120,9 @@ added to the LUE framework. The number of model developers requesting one is one
      - ❌
      - ?
    * - areaarea
-     - ❌
-     - 1
+     - ✅
+     - | zonal_area
+       | Returns the number of cells per class
    * - areaaverage
      - ❌
      - 1

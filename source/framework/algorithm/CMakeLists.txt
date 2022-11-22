@@ -124,6 +124,7 @@ target_link_libraries(lue_framework_focal_operation
 
 
 add_library(lue_framework_zonal_operation SHARED
+    src/zonal_operation/zonal_area.cpp
     src/zonal_operation/zonal_maximum.cpp
     src/zonal_operation/zonal_minimum.cpp
     src/zonal_operation/zonal_sum.cpp

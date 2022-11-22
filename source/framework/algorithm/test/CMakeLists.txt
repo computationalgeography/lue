@@ -63,6 +63,7 @@ set(focal_operation_names
 )
 
 set(zonal_operation_names
+    zonal_area
     zonal_maximum
     zonal_minimum
     zonal_sum

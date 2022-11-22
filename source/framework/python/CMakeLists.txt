@@ -38,7 +38,6 @@ add_library(lue_py_framework SHARED
     src/algorithm/downstream_distance.cpp
     src/algorithm/equal_to.cpp
     src/algorithm/exp.cpp
-    src/algorithm/focal_operation.cpp
     src/algorithm/greater_than.cpp
     src/algorithm/greater_than_equal_to.cpp
     src/algorithm/inflow_count.cpp
@@ -47,7 +46,6 @@ add_library(lue_py_framework SHARED
     src/algorithm/iterate_per_element.cpp
     src/algorithm/less_than.cpp
     src/algorithm/less_than_equal_to.cpp
-    src/algorithm/local_operation.cpp
     src/algorithm/locality_id.cpp
     src/algorithm/log.cpp
     src/algorithm/maximum.cpp
@@ -65,7 +63,8 @@ add_library(lue_py_framework SHARED
     src/algorithm/upstream.cpp
     src/algorithm/valid.cpp
     src/algorithm/where.cpp
-    src/algorithm/zonal_operation.cpp
+
+    src/algorithm/focal_operation.cpp
     src/algorithm/focal_operation/focal_diversity.cpp
     src/algorithm/focal_operation/focal_high_pass.cpp
     src/algorithm/focal_operation/focal_majority.cpp
@@ -73,13 +72,19 @@ add_library(lue_py_framework SHARED
     src/algorithm/focal_operation/focal_mean.cpp
     src/algorithm/focal_operation/focal_minimum.cpp
     src/algorithm/focal_operation/focal_sum.cpp
+
+    src/algorithm/local_operation.cpp
     src/algorithm/local_operation/logical_and.cpp
     src/algorithm/local_operation/logical_exclusive_or.cpp
     src/algorithm/local_operation/logical_inclusive_or.cpp
     src/algorithm/local_operation/logical_not.cpp
+
+    src/algorithm/zonal_operation.cpp
+    src/algorithm/zonal_operation/zonal_area.cpp
     src/algorithm/zonal_operation/zonal_maximum.cpp
     src/algorithm/zonal_operation/zonal_minimum.cpp
     src/algorithm/zonal_operation/zonal_sum.cpp
+
     src/core/create_partitioned_array.cpp
     src/core/partitioned_array.cpp
     src/core/partitioned_array_uint8.cpp
@@ -90,15 +95,21 @@ add_library(lue_py_framework SHARED
     src/core/partitioned_array_float.cpp
     src/core/partitioned_array_double.cpp
     src/core/wait.cpp
+
     src/io/read_array.cpp
     src/io/write_array.cpp
+
     src/command_line.cpp
+
     src/gdal/from_gdal.cpp
     src/gdal/to_gdal.cpp
+
     src/hpx.cpp
     src/hpx_runtime.cpp
+
     src/numpy/from_numpy.cpp
     src/numpy/to_numpy.cpp
+
     src/python_extension.cpp
     src/submodule.cpp
 )
