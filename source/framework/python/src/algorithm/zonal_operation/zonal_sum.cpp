@@ -1,5 +1,5 @@
 #include "lue/framework/algorithm/value_policies/zonal_sum.hpp"
-#include <pybind11/numpy.h>
+#include <pybind11/pybind11.h>
 
 
 using namespace pybind11::literals;

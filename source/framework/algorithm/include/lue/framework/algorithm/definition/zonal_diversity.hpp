@@ -1,29 +1,27 @@
 #pragma once
-#include "lue/framework/algorithm/zonal_mean.hpp"
+#include "lue/framework/algorithm/zonal_diversity.hpp"
 #include "lue/framework/algorithm/zonal_operation_export.hpp"
 #include "lue/framework/algorithm/definition/zonal_operation.hpp"
-#include <hpx/serialization/unordered_map.hpp>
+#include <hpx/serialization/set.hpp>
 
 
 namespace lue {
     namespace detail {
 
         template<
+            typename Count,
             typename InputElement,
             typename Zone>
-        class ZonalMean
+        class ZonalDiversity
         {
 
             public:
 
-                static_assert(std::is_arithmetic_v<InputElement>);
-
+                static_assert(std::is_integral_v<Count>);
+                static_assert(std::is_integral_v<InputElement>);
                 static_assert(std::is_integral_v<Zone>);
 
-                using OutputElement = InputElement;
-
-                using Sum = InputElement;
-                using Count = std::uint64_t;
+                using OutputElement = Count;
 
 
                 class Aggregator
@@ -31,37 +29,16 @@ namespace lue {
 
                     public:
 
-                        using Statistic = std::tuple<Sum, Count>;
+                        using Statistic = std::set<InputElement>;
 
                         using Map = std::unordered_map<Zone, Statistic>;
 
 
                         void add(
                             Zone const zone,
-                            Statistic const& statistic)
-                        {
-                            auto it{_statistic_by_zone.find(zone)};
-
-                            if(it == _statistic_by_zone.end())
-                            {
-                                _statistic_by_zone[zone] = statistic;
-                            }
-                            else
-                            {
-                                auto& [this_sum, this_count] = (*it).second;
-                                auto const [other_sum, other_count] = statistic;
-
-                                this_sum += other_sum;
-                                this_count += other_count;
-                            }
-                        }
-
-
-                        void add(
-                            Zone const zone,
                             InputElement const value)
                         {
-                            add(zone, Statistic{value, 1});
+                            _statistic_by_zone[zone].insert(value);
                         }
 
 
@@ -70,7 +47,14 @@ namespace lue {
                         {
                             for(auto const& [zone, value]: other._statistic_by_zone)
                             {
-                                add(zone, value);
+                                if(!contains(zone))
+                                {
+                                    _statistic_by_zone[zone] = value;
+                                }
+                                else
+                                {
+                                    _statistic_by_zone[zone].insert(value.begin(), value.end());
+                                }
                             }
                         }
 
@@ -89,9 +73,7 @@ namespace lue {
 
                             lue_hpx_assert(it != _statistic_by_zone.end());
 
-                            auto [sum, count] = (*it).second;
-
-                            return sum / count;
+                            return (*it).second.size();
                         }
 
 
@@ -120,16 +102,17 @@ namespace lue {
 
 
     template<
+        typename Count,
         typename Policies,
         typename Element,
         typename Zone,
         Rank rank>
-    PartitionedArray<Element, rank> zonal_mean(
+    PartitionedArray<Count, rank> zonal_diversity(
         Policies const& policies,
         PartitionedArray<Element, rank> const& array,
         PartitionedArray<Zone, rank> const& zones)
     {
-        using Functor = detail::ZonalMean<Element, Zone>;
+        using Functor = detail::ZonalDiversity<Count, Element, Zone>;
 
         return zonal_operation(policies, array, zones, Functor{});
     }
@@ -137,12 +120,12 @@ namespace lue {
 }  // namespace lue
 
 
-#define LUE_INSTANTIATE_ZONAL_MEAN(                           \
-    Policies, Element, Zone)                                  \
-                                                              \
-    template LUE_ZONAL_OPERATION_EXPORT                       \
-    PartitionedArray<Element, 2> zonal_mean<                  \
-            ArgumentType<void(Policies)>, Element, Zone, 2>(  \
-        ArgumentType<void(Policies)> const&,                  \
-        PartitionedArray<Element, 2> const&,                  \
+#define LUE_INSTANTIATE_ZONAL_DIVERSITY(                             \
+    Policies, Count, Element, Zone)                                  \
+                                                                     \
+    template LUE_ZONAL_OPERATION_EXPORT                              \
+    PartitionedArray<Count, 2> zonal_diversity<                      \
+            Count, ArgumentType<void(Policies)>, Element, Zone, 2>(  \
+        ArgumentType<void(Policies)> const&,                         \
+        PartitionedArray<Element, 2> const&,                         \
         PartitionedArray<Zone, 2> const&);

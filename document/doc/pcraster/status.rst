@@ -127,8 +127,8 @@ added to the LUE framework. The number of model developers requesting one is one
      - ✅
      - zonal_mean
    * - areadiversity
-     - ❌
-     - 1
+     - ✅
+     - zonal_diversity
    * - areamajority
      - ❌
      - 1

@@ -63,7 +63,7 @@ namespace lue {
                         }
 
 
-                        InputElement operator[](
+                        OutputElement operator[](
                             Zone const zone) const
                         {
                             auto it{_sum_by_zone.find(zone)};
