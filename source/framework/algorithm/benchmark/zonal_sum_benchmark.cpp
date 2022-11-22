@@ -1,5 +1,5 @@
 #include "lue/framework/algorithm/default_policies/uniform.hpp"
-#include "lue/framework/algorithm/zonal_sum.hpp"
+#include "lue/framework/algorithm/value_policies/zonal_sum.hpp"
 #include "lue/framework/benchmark/benchmark_model.hpp"
 #include "lue/framework/benchmark/hpx_main.hpp"
 #include "lue/framework/benchmark/model_benchmark.hpp"
@@ -17,7 +17,7 @@ class ZonalSumBenchmark:
 
 public:
 
-    using Zone = std::int32_t;
+    using Zone = std::uint32_t;
 
     using Zones = PartitionedArray<Zone, rank>;
 
@@ -82,7 +82,7 @@ void ZonalSumBenchmark<Element, rank>::do_simulate(
     Zones zones = default_policies::uniform(this->state(), Zone{0}, _max_zone);
 
     // Aggregate per currently distributed zones
-    this->state() = zonal_sum(this->state(), zones);
+    this->state() = value_policies::zonal_sum(this->state(), zones);
 }
 
 }  // namespace benchmark

@@ -22,4 +22,4 @@ lue_add_benchmark(CATEGORY algorithm NAME focal_mean LINK_LIBRARIES lue::framewo
 lue_add_benchmark(CATEGORY algorithm NAME iterate_per_element)
 lue_add_benchmark(CATEGORY algorithm NAME multiply LINK_LIBRARIES lue::framework_local_operation)
 lue_add_benchmark(CATEGORY algorithm NAME sqrt LINK_LIBRARIES lue::framework_local_operation)
-lue_add_benchmark(CATEGORY algorithm NAME zonal_sum)
+lue_add_benchmark(CATEGORY algorithm NAME zonal_sum LINK_LIBRARIES lue::framework_zonal_operation)

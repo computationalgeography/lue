@@ -132,8 +132,8 @@ added to the LUE framework. The number of model developers requesting one is one
      - ❌
      - 1
    * - areamaximum
-     - ❌
-     - 1
+     - ✅
+     - zonal_maximum
    * - areaminimum
      - ❌
      - 1
@@ -145,7 +145,7 @@ added to the LUE framework. The number of model developers requesting one is one
      - 1
    * - areatotal
      - ✅
-     -
+     - zonal_sum
    * - areauniform
      - ❌
      - 1

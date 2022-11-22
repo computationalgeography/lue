@@ -65,6 +65,7 @@ add_library(lue_py_framework SHARED
     src/algorithm/upstream.cpp
     src/algorithm/valid.cpp
     src/algorithm/where.cpp
+    src/algorithm/zonal_operation.cpp
     src/algorithm/focal_operation/focal_diversity.cpp
     src/algorithm/focal_operation/focal_high_pass.cpp
     src/algorithm/focal_operation/focal_majority.cpp
@@ -76,6 +77,8 @@ add_library(lue_py_framework SHARED
     src/algorithm/local_operation/logical_exclusive_or.cpp
     src/algorithm/local_operation/logical_inclusive_or.cpp
     src/algorithm/local_operation/logical_not.cpp
+    src/algorithm/zonal_operation/zonal_maximum.cpp
+    src/algorithm/zonal_operation/zonal_sum.cpp
     src/core/create_partitioned_array.cpp
     src/core/partitioned_array.cpp
     src/core/partitioned_array_uint8.cpp
@@ -130,6 +133,7 @@ target_link_libraries(lue_py_framework
         lue::framework_flow_direction_operation
         lue::framework_focal_operation
         lue::framework_local_operation
+        lue::framework_zonal_operation
         lue::framework_io
         pybind11::module
         pybind11::thin_lto

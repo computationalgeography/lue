@@ -123,29 +123,32 @@ target_link_libraries(lue_framework_focal_operation
 )
 
 
-# TODO
-# add_library(lue_framework_zonal_operation SHARED
-#     src/zonal_operation/zonal_mean.cpp
-# )
-# 
-# add_library(lue::framework_zonal_operation ALIAS lue_framework_zonal_operation)
-# 
-# target_link_libraries(lue_framework_zonal_operation
-#     PUBLIC
-#         lue::framework_algorithm
-# )
+add_library(lue_framework_zonal_operation SHARED
+    src/zonal_operation/zonal_maximum.cpp
+    src/zonal_operation/zonal_sum.cpp
+)
+
+add_library(lue::framework_zonal_operation ALIAS lue_framework_zonal_operation)
+
+generate_export_header(lue_framework_zonal_operation
+    EXPORT_FILE_NAME include/lue/framework/algorithm/zonal_operation_export.hpp
+    EXPORT_MACRO_NAME LUE_ZONAL_OPERATION_EXPORT)
+
+target_include_directories(lue_framework_zonal_operation
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>  # export.hpp
+)
+
+target_link_libraries(lue_framework_zonal_operation
+    PUBLIC
+        lue::framework_algorithm
+)
 
 
 # TODO
 # add_library(lue_framework_global_operation SHARED
-#     src/global_operation/global_mean.cpp
-# )
-# 
-# add_library(lue::framework_global_operation ALIAS lue_framework_global_operation)
-# 
-# target_link_libraries(lue_framework_global_operation
-#     PUBLIC
-#         lue::framework_algorithm
+#     src/global_operation/...
 # )
 
 
@@ -189,5 +192,5 @@ lue_install_libraries(
         lue_framework_flow_direction_operation
         lue_framework_focal_operation
         # lue_framework_global_operation
-        # lue_framework_zonal_operation
+        lue_framework_zonal_operation
 )

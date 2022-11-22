@@ -10,7 +10,7 @@ namespace lue {
         typename Element,
         typename Zone,
         Rank rank>
-    PartitionedArray<Element, rank> zonal_sum(
+    PartitionedArray<Element, rank> zonal_maximum(
         Policies const& policies,
         PartitionedArray<Element, rank> const& array,
         PartitionedArray<Zone, rank> const& zones);
