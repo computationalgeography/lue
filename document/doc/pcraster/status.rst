@@ -135,8 +135,8 @@ added to the LUE framework. The number of model developers requesting one is one
      - ✅
      - zonal_maximum
    * - areaminimum
-     - ❌
-     - 1
+     - ✅
+     - zonal_minimum
    * - areanormal
      - ❌
      - 1

@@ -4,6 +4,7 @@
 namespace lue::framework {
 
     void bind_zonal_maximum(pybind11::module& module);
+    void bind_zonal_minimum(pybind11::module& module);
     void bind_zonal_sum(pybind11::module& module);
 
 
@@ -11,6 +12,7 @@ namespace lue::framework {
         pybind11::module& module)
     {
         bind_zonal_maximum(module);
+        bind_zonal_minimum(module);
         bind_zonal_sum(module);
     }
 
