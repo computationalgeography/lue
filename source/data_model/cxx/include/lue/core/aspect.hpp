@@ -30,25 +30,23 @@ struct AspectMap
 template<>                                        \
 struct Tag<EnumType>                              \
 {                                                 \
-    static std::string const& value() {           \
+    inline static std::string const& value()      \
+    {                                             \
         static std::string const tag = tag_name;  \
         return tag;                               \
     }                                             \
 };
 
 
-#define MAP(EnumType, enum_pairs)                            \
-template<>                                                   \
-struct AspectMap<EnumType>                                   \
-{                                                            \
-    static detail::EnumStringBimap<EnumType> const& value()  \
-    {                                                        \
-        static detail::EnumStringBimap<EnumType> const map   \
-            enum_pairs                                       \
-        ;                                                    \
-                                                             \
-        return map;                                          \
-    }                                                        \
+#define MAP(EnumType, enum_pairs)                                       \
+template<>                                                              \
+struct AspectMap<EnumType>                                              \
+{                                                                       \
+    inline static detail::EnumStringBimap<EnumType> const& value()      \
+    {                                                                   \
+        static detail::EnumStringBimap<EnumType> const map enum_pairs;  \
+        return map;                                                     \
+    }                                                                   \
 };
 
 

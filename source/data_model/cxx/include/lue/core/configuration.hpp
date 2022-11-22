@@ -137,7 +137,7 @@ inline void Configuration<Ts...>::save(
 
 template<
     typename... Ts>
-std::tuple<Aspect<Ts>...> Configuration<Ts...>::aspects() const
+inline std::tuple<Aspect<Ts>...> Configuration<Ts...>::aspects() const
 {
     return _aspects;
 }

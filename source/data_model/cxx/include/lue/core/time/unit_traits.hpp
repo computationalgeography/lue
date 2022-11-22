@@ -17,15 +17,15 @@ struct UnitTraits
 };
 
 
-#define UNIT_TRAITS(                              \
-    unit,                                         \
-    name_)                                        \
-template<>                                        \
-struct UnitTraits<unit>                           \
-{                                                 \
-                                                  \
-    static std::string name() { return #name_; }  \
-                                                  \
+#define UNIT_TRAITS(                                     \
+    unit,                                                \
+    name_)                                               \
+template<>                                               \
+struct UnitTraits<unit>                                  \
+{                                                        \
+                                                         \
+    inline static std::string name() { return #name_; }  \
+                                                         \
 };
 
 UNIT_TRAITS(Unit::nanosecond, nanosecond)

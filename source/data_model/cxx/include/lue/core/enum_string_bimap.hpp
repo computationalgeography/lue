@@ -69,7 +69,7 @@ private:
 
 template<
     typename T>
-EnumStringBimap<T>::EnumStringBimap(
+inline EnumStringBimap<T>::EnumStringBimap(
     std::initializer_list<value_type> const& values):
 
     _map(values.begin(), values.end())
@@ -80,7 +80,7 @@ EnumStringBimap<T>::EnumStringBimap(
 
 template<
     typename T>
-bool EnumStringBimap<T>::contains(
+inline bool EnumStringBimap<T>::contains(
     std::string const& string) const
 {
     return _map.right.find(string) != _map.right.end();
@@ -89,7 +89,7 @@ bool EnumStringBimap<T>::contains(
 
 template<
     typename T>
-T EnumStringBimap<T>::as_value(
+inline T EnumStringBimap<T>::as_value(
     std::string const& string) const
 {
     assert(contains(string));
@@ -100,7 +100,7 @@ T EnumStringBimap<T>::as_value(
 
 template<
     typename T>
-std::string EnumStringBimap<T>::as_string(
+inline std::string EnumStringBimap<T>::as_string(
     T const value) const
 {
     assert(_map.left.find(value) != _map.left.end());
