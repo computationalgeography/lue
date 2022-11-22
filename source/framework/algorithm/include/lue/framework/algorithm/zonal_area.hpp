@@ -6,13 +6,12 @@
 namespace lue {
 
     template<
+        typename Count,
         typename Policies,
-        typename Element,
         typename Zone,
         Rank rank>
-    PartitionedArray<Element, rank> zonal_sum(
+    PartitionedArray<Count, rank> zonal_area(
         Policies const& policies,
-        PartitionedArray<Element, rank> const& array,
         PartitionedArray<Zone, rank> const& zones);
 
 }  // namespace lue

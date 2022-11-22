@@ -120,23 +120,24 @@ added to the LUE framework. The number of model developers requesting one is one
      - ❌
      - ?
    * - areaarea
-     - ❌
-     - 1
+     - ✅
+     - | zonal_area
+       | Returns the number of cells per class
    * - areaaverage
-     - ❌
-     - 1
+     - ✅
+     - zonal_mean
    * - areadiversity
-     - ❌
-     - 1
+     - ✅
+     - zonal_diversity
    * - areamajority
      - ❌
      - 1
    * - areamaximum
-     - ❌
-     - 1
+     - ✅
+     - zonal_maximum
    * - areaminimum
-     - ❌
-     - 1
+     - ✅
+     - zonal_minimum
    * - areanormal
      - ❌
      - 1
@@ -145,7 +146,7 @@ added to the LUE framework. The number of model developers requesting one is one
      - 1
    * - areatotal
      - ✅
-     -
+     - zonal_sum
    * - areauniform
      - ❌
      - 1

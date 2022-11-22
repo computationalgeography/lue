@@ -62,6 +62,15 @@ set(focal_operation_names
     slope
 )
 
+set(zonal_operation_names
+    zonal_area
+    zonal_diversity
+    zonal_maximum
+    zonal_mean
+    zonal_minimum
+    zonal_sum
+)
+
 set(flow_direction_operation_names
     accu
 )
@@ -77,6 +86,7 @@ endif()
 set(names
     ${local_operation_names}
     ${focal_operation_names}
+    ${zonal_operation_names}
     ${flow_direction_operation_names}
     all
     any
@@ -100,7 +110,6 @@ set(names
     unique_id
     unique
     upstream
-    zonal_sum
 )
 
 if(NOT CMAKE_HOST_SYSTEM_NAME STREQUAL Darwin)
@@ -147,6 +156,7 @@ foreach(name ${names})
                     PATH=path_list_prepend:$<TARGET_FILE_DIR:lue::framework_partitioned_array>
                     PATH=path_list_prepend:$<TARGET_FILE_DIR:lue::framework_local_operation>
                     PATH=path_list_prepend:$<TARGET_FILE_DIR:lue::framework_focal_operation>
+                    PATH=path_list_prepend:$<TARGET_FILE_DIR:lue::framework_zonal_operation>
                     PATH=path_list_prepend:$<TARGET_FILE_DIR:lue::framework_flow_direction_operation>
         )
     endif()
@@ -162,6 +172,12 @@ foreach(name ${focal_operation_names})
     target_link_libraries(${scope}_${name}_test
         PRIVATE
             lue::framework_focal_operation)
+endforeach()
+
+foreach(name ${zonal_operation_names})
+    target_link_libraries(${scope}_${name}_test
+        PRIVATE
+            lue::framework_zonal_operation)
 endforeach()
 
 foreach(name ${flow_direction_operation_names})
