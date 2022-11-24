@@ -35,7 +35,7 @@ namespace lue {
                             Zone const zone,
                             InputElement const value)
                         {
-                            auto [it, _] = _minimum_by_zone.try_emplace(zone, value);
+                            auto [it, inserted] = _minimum_by_zone.try_emplace(zone, value);
 
                             (*it).second = std::min((*it).second, value);
                         }

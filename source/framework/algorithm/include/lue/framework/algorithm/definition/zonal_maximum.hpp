@@ -35,7 +35,7 @@ namespace lue {
                             Zone const zone,
                             InputElement const value)
                         {
-                            auto [it, _] = _maximum_by_zone.try_emplace(zone, value);
+                            auto [it, inserted] = _maximum_by_zone.try_emplace(zone, value);
 
                             (*it).second = std::max((*it).second, value);
                         }

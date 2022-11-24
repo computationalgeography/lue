@@ -65,6 +65,7 @@ set(focal_operation_names
 set(zonal_operation_names
     zonal_area
     zonal_diversity
+    zonal_majority
     zonal_maximum
     zonal_mean
     zonal_minimum

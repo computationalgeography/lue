@@ -130,8 +130,8 @@ added to the LUE framework. The number of model developers requesting one is one
      - ✅
      - zonal_diversity
    * - areamajority
-     - ❌
-     - 1
+     - ✅
+     - zonal_majority
    * - areamaximum
      - ✅
      - zonal_maximum
