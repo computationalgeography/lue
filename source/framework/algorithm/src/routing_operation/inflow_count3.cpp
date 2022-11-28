@@ -1,9 +1,9 @@
 #include "lue/framework/algorithm/definition/inflow_count3.hpp"
 
 
-using lue_CellsIdxs = std::vector<lue::Index>;
-
-HPX_REGISTER_CHANNEL_DECLARATION(lue_CellsIdxs);
+/// using lue_CellsIdxs = std::vector<lue::Index>;
+/// 
+/// HPX_REGISTER_CHANNEL_DECLARATION(lue_CellsIdxs);
 
 
 #define LUE_INSTANTIATE(CountElement, FlowDirectionElement)                                    \

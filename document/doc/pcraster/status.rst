@@ -241,8 +241,9 @@ added to the LUE framework. The number of model developers requesting one is one
      - ❌
      - 2
    * - kinematic
-     - ❌
-     - ?
+     - ✅
+     - | kinematic_wave
+       | The nrTimeSlices argument is removed.
    * - | kinwavestate
        | kinwaveflux
      - ❌

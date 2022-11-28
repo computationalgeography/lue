@@ -79,6 +79,9 @@ add_library(lue_py_framework SHARED
     src/algorithm/local_operation/logical_inclusive_or.cpp
     src/algorithm/local_operation/logical_not.cpp
 
+    src/algorithm/routing_operation.cpp
+    src/algorithm/routing_operation/kinematic_wave.cpp
+
     src/algorithm/zonal_operation.cpp
     src/algorithm/zonal_operation/zonal_area.cpp
     src/algorithm/zonal_operation/zonal_diversity.cpp
@@ -144,9 +147,9 @@ target_include_directories(lue_py_framework
 
 target_link_libraries(lue_py_framework
     PRIVATE
-        lue::framework_flow_direction_operation
         lue::framework_focal_operation
         lue::framework_local_operation
+        lue::framework_routing_operation
         lue::framework_zonal_operation
         lue::framework_io
         pybind11::module
