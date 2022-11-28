@@ -89,7 +89,9 @@ add_library(lue_py_framework SHARED
     src/algorithm/zonal_operation/zonal_maximum.cpp
     src/algorithm/zonal_operation/zonal_mean.cpp
     src/algorithm/zonal_operation/zonal_minimum.cpp
+    src/algorithm/zonal_operation/zonal_normal.cpp
     src/algorithm/zonal_operation/zonal_sum.cpp
+    src/algorithm/zonal_operation/zonal_uniform.cpp
 
     src/core/create_partitioned_array.cpp
     src/core/partitioned_array.cpp

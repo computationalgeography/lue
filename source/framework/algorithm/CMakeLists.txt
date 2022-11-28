@@ -130,7 +130,9 @@ add_library(lue_framework_zonal_operation SHARED
     src/zonal_operation/zonal_maximum.cpp
     src/zonal_operation/zonal_mean.cpp
     src/zonal_operation/zonal_minimum.cpp
+    src/zonal_operation/zonal_normal.cpp
     src/zonal_operation/zonal_sum.cpp
+    src/zonal_operation/zonal_uniform.cpp
 )
 
 add_library(lue::framework_zonal_operation ALIAS lue_framework_zonal_operation)

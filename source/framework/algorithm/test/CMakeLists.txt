@@ -69,7 +69,9 @@ set(zonal_operation_names
     zonal_maximum
     zonal_mean
     zonal_minimum
+    zonal_normal
     zonal_sum
+    zonal_uniform
 )
 
 set(routing_operation_names

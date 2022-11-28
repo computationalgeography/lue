@@ -9,7 +9,9 @@ namespace lue::framework {
     void bind_zonal_maximum(pybind11::module& module);
     void bind_zonal_mean(pybind11::module& module);
     void bind_zonal_minimum(pybind11::module& module);
+    void bind_zonal_normal(pybind11::module& module);
     void bind_zonal_sum(pybind11::module& module);
+    void bind_zonal_uniform(pybind11::module& module);
 
 
     void bind_zonal_operations(
@@ -21,7 +23,9 @@ namespace lue::framework {
         bind_zonal_maximum(module);
         bind_zonal_mean(module);
         bind_zonal_minimum(module);
+        bind_zonal_normal(module);
         bind_zonal_sum(module);
+        bind_zonal_uniform(module);
     }
 
 }  // namespace lue::framework

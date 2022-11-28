@@ -139,8 +139,8 @@ added to the LUE framework. The number of model developers requesting one is one
      - ✅
      - zonal_minimum
    * - areanormal
-     - ❌
-     - 1
+     - ✅
+     - zonal_uniform
    * - areaorder
      - ❌
      - 1
@@ -148,8 +148,8 @@ added to the LUE framework. The number of model developers requesting one is one
      - ✅
      - zonal_sum
    * - areauniform
-     - ❌
-     - 1
+     - ✅
+     - zonal_uniform
    * - asin
      - ✅
      -

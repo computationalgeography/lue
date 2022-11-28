@@ -2,7 +2,7 @@
 #include "lue/framework/algorithm/zonal_minimum.hpp"
 #include "lue/framework/algorithm/zonal_operation_export.hpp"
 #include "lue/framework/algorithm/definition/zonal_operation.hpp"
-#include <hpx/serialization/unordered_map.hpp>
+#include <unordered_map>
 
 
 namespace lue {
