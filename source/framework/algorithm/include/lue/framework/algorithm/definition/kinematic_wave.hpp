@@ -3,11 +3,120 @@
 #include "lue/framework/algorithm/routing_operation_export.hpp"
 #include "lue/framework/algorithm/definition/flow_accumulation3.hpp"
 #include "lue/macro.hpp"
+#include <boost/math/tools/roots.hpp>
 #include <cmath>
 
 
 namespace lue {
     namespace detail {
+
+
+        template<
+            typename Float>
+        class NonLinearKinematicWave
+        {
+
+            public:
+
+                NonLinearKinematicWave(
+                        Float const upstream_discharge,
+                        Float const current_discharge,
+                        Float const inflow,
+                        Float const alpha,
+                        Float const beta,
+                        Float const time_step_duration,
+                        Float const channel_length):
+
+                    _upstream_discharge{upstream_discharge},
+                    _current_discharge{current_discharge},
+                    _inflow{inflow},
+                    _alpha{alpha},
+                    _beta{beta},
+                    _time_step_duration{time_step_duration}
+                    // _channel_length{channel_length}
+
+                {
+                    // Known terms, independent of new discharge
+                    _time_step_duration_over_channel_length = _time_step_duration / channel_length;
+                    _known_terms =
+                        _time_step_duration_over_channel_length * _upstream_discharge +
+                        _alpha * std::pow(_current_discharge, _beta) +
+                        _time_step_duration * _inflow;
+                }
+
+
+                Float guess()
+                {
+                    Float const a_b_pq =
+                        _alpha * _beta * std::pow((_current_discharge + _upstream_discharge) / 2, _beta - 1);
+
+                    Float discharge =
+                        (
+                            _time_step_duration_over_channel_length * _upstream_discharge +
+                            a_b_pq * _current_discharge + _time_step_duration * _inflow
+                        ) /
+                        (
+                            _time_step_duration_over_channel_length + a_b_pq
+                        );
+
+                    lue_hpx_assert(discharge > Float{0});
+
+                    // Otherwise: return std::max(discharge, Float{1e-30});
+                    // CW:
+                    //     There's a problem with the first guess of Qkx. fQkx is only defined
+                    //     for Qkx's > 0. Sometimes the first guess results in a Qkx+1 which is
+                    //     negative or 0. In that case we change Qkx+1 to 1e-30. This keeps the
+                    //     convergence loop healthy.
+
+                    return discharge;
+                }
+
+
+                std::pair<Float, Float> operator()(Float const new_discharge)
+                {
+                    return std::make_pair(fq(new_discharge), dfq(new_discharge));
+                }
+
+
+                Float fq(Float const new_discharge)
+                {
+                    return
+                        _time_step_duration_over_channel_length * new_discharge +
+                        _alpha * std::pow(new_discharge, _beta) -
+                        _known_terms;
+                }
+
+
+                Float dfq(Float const new_discharge)
+                {
+                    return
+                        _time_step_duration_over_channel_length +
+                        _alpha * _beta * std::pow(new_discharge, _beta - 1);
+                }
+
+
+            private:
+
+                Float _upstream_discharge;
+
+                Float _current_discharge;
+
+                Float _inflow;
+
+                Float _alpha;
+
+                Float _beta;
+
+                Float _time_step_duration;
+
+                // Float _channel_length;
+
+                Float _time_step_duration_over_channel_length;
+
+                Float _known_terms;
+
+        };
+
 
         template<
             typename Float>
@@ -18,61 +127,28 @@ namespace lue {
             Float const alpha,
             Float const beta,
             Float const time_step_duration,
-            Float const channel_length,
-            Float const epsilon)
+            Float const channel_length)
         {
-            static std::size_t const max_nr_iterations{3000};
+            NonLinearKinematicWave<Float> kinematic_wave{
+                upstream_discharge, current_discharge, inflow,
+                alpha, beta,
+                time_step_duration, channel_length};
 
-            Float new_discharge{0};  // Q at loop k+1 for i+1, j+1
+            Float const discharge_guess{kinematic_wave.guess()};
+            lue_hpx_assert(discharge_guess > Float{0});
+            Float const min_discharge{0};
+            Float const max_discharge{1000 * discharge_guess};
 
-            if((upstream_discharge + current_discharge + inflow) > 0)
-            {
-                // Using Newton-Raphson Method
-                std::size_t nr_iterations{0};
+            int const digits = static_cast<int>(std::numeric_limits<Float>::digits * 0.6);
 
-                // Common terms
-                Float const a_b_pq = alpha * beta * std::pow((current_discharge + upstream_discharge) / 2, beta - 1);
-                Float const delta_t_x = time_step_duration / channel_length;
-                Float const c =
-                    delta_t_x * upstream_discharge +
-                    alpha * std::pow(current_discharge, beta) +
-                    time_step_duration * inflow;
+            std::uintmax_t const max_nr_iterations{20};
+            std::uintmax_t nr_iterations{max_nr_iterations};
 
-                // 1. Initial guess new_discharge
-                // 2. Evaluate function f at Qkx
-                // 3. Evaluate derivative df at Qkx
-                // 4. Check convergence
+            Float new_discharge = boost::math::tools::newton_raphson_iterate(
+                kinematic_wave, discharge_guess, min_discharge, max_discharge, digits, nr_iterations);
 
-                // There's a problem with the first guess of Qkx. fQkx is only defined
-                // for Qkx's > 0. Sometimes the first guess results in a Qkx+1 which is
-                // negative or 0. In that case we change Qkx+1 to 1e-30. This keeps the
-                // convergence loop healthy.
-
-                new_discharge =
-                    (delta_t_x * upstream_discharge + current_discharge * a_b_pq + time_step_duration * inflow) /
-                    (delta_t_x + a_b_pq);
-                new_discharge = std::max(new_discharge, Float{1e-30});
-
-
-                Float fQkx  = delta_t_x * new_discharge + alpha * std::pow(new_discharge, beta) - c;  // Current k
-                Float dfQkx = delta_t_x + alpha * beta * std::pow(new_discharge, beta - 1);  // Current k
-
-                new_discharge -= fQkx / dfQkx;                                // Next k
-                new_discharge = std::max(new_discharge, Float{1e-30});
-
-                do {
-                    fQkx  = delta_t_x * new_discharge + alpha * std::pow(new_discharge, beta) - c;  // Current k
-                    dfQkx = delta_t_x + alpha * beta * std::pow(new_discharge, beta - 1);  // Current k
-
-                    new_discharge -= fQkx / dfQkx;                                // Next k
-                    new_discharge = std::max(new_discharge, Float{1e-30});
-
-                    nr_iterations++;
-                } while(std::abs(fQkx) > epsilon && nr_iterations < max_nr_iterations);
-
-                lue_assert(nr_iterations < max_nr_iterations);
-                lue_assert(new_discharge >= Float{0});
-            }
+            lue_hpx_assert(nr_iterations < max_nr_iterations);
+            lue_hpx_assert(new_discharge >= Float{0});
 
             return new_discharge;
         }
@@ -154,16 +230,10 @@ namespace lue {
                         {
                             // All information is available now to calculate the new discharge
                             // for the current cell
-
                             new_discharge = iterate_to_new_discharge(
-                                new_discharge,        // double Qin, /* summed Q new in for all sub-cachments */
-                                current_discharge,    // double Qold,  /* current discharge */
-                                inflow,               // double q,
-                                _alpha,               // double alpha,
-                                _beta,                // double beta,
-                                _time_step_duration,  // double deltaT,
-                                channel_length,       // double deltaX,
-                                _epsilon);            // double epsilon)
+                                new_discharge, current_discharge, inflow,
+                                _alpha, _beta,
+                                _time_step_duration, channel_length);
                         }
                     }
                 }
@@ -249,8 +319,6 @@ namespace lue {
                 Float _time_step_duration;
 
                 MaterialData const& _channel_length;
-
-                static constexpr Float _epsilon{1e-12};  // iteration epsilon
 
                 MaterialData& _new_discharge;
 
