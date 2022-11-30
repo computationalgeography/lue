@@ -4,12 +4,12 @@
 #include "lue/framework/algorithm/definition/flow_accumulation3.hpp"
 #include "lue/macro.hpp"
 #include <boost/math/tools/roots.hpp>
+#include <fmt/format.h>
 #include <cmath>
 
 
 namespace lue {
     namespace detail {
-
 
         template<
             typename Float>
@@ -33,11 +33,13 @@ namespace lue {
                     _alpha{alpha},
                     _beta{beta},
                     _time_step_duration{time_step_duration}
-                    // _channel_length{channel_length}
 
                 {
                     // Known terms, independent of new discharge
                     _time_step_duration_over_channel_length = _time_step_duration / channel_length;
+
+                    lue_hpx_assert(_time_step_duration_over_channel_length > Float{0});
+
                     _known_terms =
                         _time_step_duration_over_channel_length * _upstream_discharge +
                         _alpha * std::pow(_current_discharge, _beta) +
@@ -45,40 +47,50 @@ namespace lue {
                 }
 
 
-                Float guess()
+                /*!
+                    @brief      Return a valid initial guess for the new discharge
+                */
+                Float guess() const
                 {
-                    Float const a_b_pq =
-                        _alpha * _beta * std::pow((_current_discharge + _upstream_discharge) / 2, _beta - 1);
+                    // Small, but not zero!
+                    Float discharge_guess{1e-30};
 
-                    Float discharge =
-                        (
-                            _time_step_duration_over_channel_length * _upstream_discharge +
-                            a_b_pq * _current_discharge + _time_step_duration * _inflow
-                        ) /
-                        (
-                            _time_step_duration_over_channel_length + a_b_pq
-                        );
+                    // pow(0, -) is not defined
+                    if(_current_discharge + _upstream_discharge > Float{0})
+                    {
+                        Float const a_b_pq =
+                            _alpha * _beta * std::pow(
+                                    (_current_discharge + _upstream_discharge) / Float{2},
+                                    _beta - Float{1}
+                                );
 
-                    lue_hpx_assert(discharge > Float{0});
+                        lue_hpx_assert(!std::isnan(a_b_pq));
 
-                    // Otherwise: return std::max(discharge, Float{1e-30});
-                    // CW:
-                    //     There's a problem with the first guess of Qkx. fQkx is only defined
-                    //     for Qkx's > 0. Sometimes the first guess results in a Qkx+1 which is
-                    //     negative or 0. In that case we change Qkx+1 to 1e-30. This keeps the
-                    //     convergence loop healthy.
+                        discharge_guess =
+                            (
+                                _time_step_duration_over_channel_length * _upstream_discharge +
+                                a_b_pq * _current_discharge + _time_step_duration * _inflow
+                            ) /
+                            (
+                                _time_step_duration_over_channel_length + a_b_pq
+                            );
 
-                    return discharge;
+                        lue_hpx_assert(!std::isnan(discharge_guess));
+                    }
+
+                    lue_hpx_assert(discharge_guess > Float{0});
+
+                    return discharge_guess;
                 }
 
 
-                std::pair<Float, Float> operator()(Float const new_discharge)
+                std::pair<Float, Float> operator()(Float const new_discharge) const
                 {
                     return std::make_pair(fq(new_discharge), dfq(new_discharge));
                 }
 
 
-                Float fq(Float const new_discharge)
+                Float fq(Float const new_discharge) const
                 {
                     return
                         _time_step_duration_over_channel_length * new_discharge +
@@ -87,11 +99,13 @@ namespace lue {
                 }
 
 
-                Float dfq(Float const new_discharge)
+                Float dfq(Float const new_discharge) const
                 {
+                    lue_hpx_assert(new_discharge > Float{0});  // pow(0, -) is not defined
+
                     return
                         _time_step_duration_over_channel_length +
-                        _alpha * _beta * std::pow(new_discharge, _beta - 1);
+                        _alpha * _beta * std::pow(new_discharge, _beta - Float{1});
                 }
 
 
@@ -108,8 +122,6 @@ namespace lue {
                 Float _beta;
 
                 Float _time_step_duration;
-
-                // Float _channel_length;
 
                 Float _time_step_duration_over_channel_length;
 
@@ -129,15 +141,22 @@ namespace lue {
             Float const time_step_duration,
             Float const channel_length)
         {
+            if(upstream_discharge + current_discharge + inflow == 0)
+            {
+                // It's a dry place. No need to do anything fancy.
+                return Float{0};
+            }
+
             NonLinearKinematicWave<Float> kinematic_wave{
                 upstream_discharge, current_discharge, inflow,
                 alpha, beta,
                 time_step_duration, channel_length};
 
             Float const discharge_guess{kinematic_wave.guess()};
-            lue_hpx_assert(discharge_guess > Float{0});
-            Float const min_discharge{0};
-            Float const max_discharge{1000 * discharge_guess};
+
+            // These brackets are crucial for obtaining a good performance
+            Float const min_discharge{discharge_guess < Float{1} ? Float{0} : discharge_guess / Float{1000}};
+            Float const max_discharge{discharge_guess < Float{1} ? Float{1000} : Float{1000} * discharge_guess};
 
             int const digits = static_cast<int>(std::numeric_limits<Float>::digits * 0.6);
 
@@ -146,6 +165,13 @@ namespace lue {
 
             Float new_discharge = boost::math::tools::newton_raphson_iterate(
                 kinematic_wave, discharge_guess, min_discharge, max_discharge, digits, nr_iterations);
+
+            if(nr_iterations == max_nr_iterations)
+            {
+                throw std::runtime_error(fmt::format(
+                    "Iterating to a solution took more iterations than expected (initial guess: {}, brackets: [{}, {}])",
+                    discharge_guess, min_discharge, max_discharge));
+            }
 
             lue_hpx_assert(nr_iterations < max_nr_iterations);
             lue_hpx_assert(new_discharge >= Float{0});
@@ -212,17 +238,19 @@ namespace lue {
                     Index const idx0,
                     Index const idx1)
                 {
-                    MaterialElement const& inflow{_inflow(idx0, idx1)};
-
-                    MaterialElement& new_discharge{_new_discharge(idx0, idx1)};
                     MaterialElement const current_discharge{_current_discharge(idx0, idx1)};
+                    MaterialElement const inflow{_inflow(idx0, idx1)};
                     MaterialElement const channel_length{_channel_length(idx0, idx1)};
 
-                    // TODO no-data // domain checks given all input values
+                    MaterialElement& new_discharge{_new_discharge(idx0, idx1)};
 
                     if(!_ondp_new_discharge.is_no_data(new_discharge))
                     {
-                        if(_indp_inflow.is_no_data(inflow) || inflow < 0)  // !_dp.within_domain(inflow))
+                        if(
+                            _indp_current_discharge.is_no_data(current_discharge) ||
+                            _indp_inflow.is_no_data(inflow) ||
+                            _indp_channel_length.is_no_data(channel_length) ||
+                            !_dp.within_domain(current_discharge, inflow, channel_length))
                         {
                             _ondp_new_discharge.mark_no_data(new_discharge);
                         }
@@ -248,6 +276,7 @@ namespace lue {
                     // The discharge for an upstream cell is ready. Accumulate it in the new discharge
                     // of the downstream cell.
                     MaterialElement const new_discharge_from{_new_discharge(idx0_from, idx1_from)};
+
                     MaterialElement& new_discharge_to{_new_discharge(idx0_to, idx1_to)};
 
                     if(!_ondp_new_discharge.is_no_data(new_discharge_to))
@@ -271,7 +300,7 @@ namespace lue {
                     Index const idx0_to,
                     Index const idx1_to)
                 {
-                    // The results for the upstream cell are ready
+                    // The result for the upstream cell is ready
                     MaterialElement& new_discharge_to{_new_discharge(idx0_to, idx1_to)};
 
                     if(!_ondp_new_discharge.is_no_data(new_discharge_to))
@@ -344,10 +373,13 @@ namespace lue {
         {
             using FlowDirectionPartition = ArrayPartition<FlowDirectionElement, rank>;
             using FlowDirectionData = DataT<FlowDirectionPartition>;
+
             using Offset = OffsetT<FlowDirectionPartition>;
-            using DischargeElement = Element;
-            using DischargePartition = ArrayPartition<DischargeElement, rank>;
-            using DischargeData = DataT<DischargePartition>;
+
+            using MaterialElement = Element;
+            using MaterialPartition = ArrayPartition<MaterialElement, rank>;
+            using MaterialData = DataT<MaterialPartition>;
+
             using LengthElement = Element;
             using LengthPartition = ArrayPartition<LengthElement, rank>;
             using LengthData = DataT<LengthPartition>;
@@ -355,6 +387,7 @@ namespace lue {
             using CountElement = std::uint8_t;
             using InflowCountPartition = ArrayPartition<CountElement, rank>;
             using InflowCountData = DataT<InflowCountPartition>;
+
             using CellsIdxs = std::vector<std::array<Index, rank>>;
 
 
@@ -363,7 +396,7 @@ namespace lue {
 
 
             // Solve intra-partition stream cells
-            hpx::future<DischargeData> new_discharge_data_f;
+            hpx::future<MaterialData> new_discharge_data_f;
             hpx::future<InflowCountData> inflow_count_data_f;
             {
                 // Once the input partitions and inflow_count_data are ready, spawn a task
@@ -376,8 +409,8 @@ namespace lue {
 
                                 [policies, alpha, beta, time_step_duration, discharge_communicator](
                                     FlowDirectionPartition const& flow_direction_partition,
-                                    DischargePartition const& discharge_partition,
-                                    DischargePartition const& inflow_partition,
+                                    MaterialPartition const& discharge_partition,
+                                    MaterialPartition const& inflow_partition,
                                     LengthPartition const& channel_length_partition,
                                     InflowCountPartition const& inflow_count_partition,
                                     hpx::future<std::array<CellsIdxs, nr_neighbours<rank>()>>&& output_cells_idxs_f) mutable
@@ -388,10 +421,10 @@ namespace lue {
                                     FlowDirectionData const& flow_direction_data{flow_direction_partition_ptr->data()};
 
                                     auto const discharge_partition_ptr{ready_component_ptr(discharge_partition)};
-                                    DischargeData const& current_discharge_data{discharge_partition_ptr->data()};
+                                    MaterialData const& current_discharge_data{discharge_partition_ptr->data()};
 
                                     auto const inflow_partition_ptr{ready_component_ptr(inflow_partition)};
-                                    DischargeData const& inflow_data{inflow_partition_ptr->data()};
+                                    MaterialData const& inflow_data{inflow_partition_ptr->data()};
 
                                     auto const channel_length_partition_ptr{ready_component_ptr(channel_length_partition)};
                                     LengthData const& channel_length_data{channel_length_partition_ptr->data()};
@@ -401,7 +434,7 @@ namespace lue {
 
                                     auto const& partition_shape{inflow_count_data.shape()};
 
-                                    DataT<DischargePartition> new_discharge_data{partition_shape, 0};
+                                    DataT<MaterialPartition> new_discharge_data{partition_shape, 0};
 
                                     auto const [nr_elements0, nr_elements1] = partition_shape;
 
@@ -416,7 +449,7 @@ namespace lue {
                                     InflowCountData inflow_count_data_copy{deep_copy(inflow_count_data)};
 
                                     using CellAccumulator = KinematicWaveCellAccumulator<Policies, rank>;
-                                    using Communicator = MaterialCommunicator<DischargeElement, rank>;
+                                    using Communicator = MaterialCommunicator<MaterialElement, rank>;
 
                                     CellAccumulator cell_accumulator{
                                         policies, current_discharge_data, inflow_data,
@@ -470,13 +503,13 @@ namespace lue {
 
                             [policies, alpha, beta, time_step_duration, discharge_communicator=std::move(discharge_communicator)](
                                 FlowDirectionPartition const& flow_direction_partition,
-                                DischargePartition const& current_discharge_partition,
-                                DischargePartition const& inflow_partition,
+                                MaterialPartition const& current_discharge_partition,
+                                MaterialPartition const& inflow_partition,
                                 LengthPartition const& channel_length_partition,
                                 hpx::future<InflowCountData>&& inflow_count_data_f,
                                 hpx::shared_future<std::array<CellsIdxs, nr_neighbours<rank>()>> const& input_cells_idxs_f,
                                 hpx::future<std::array<CellsIdxs, nr_neighbours<rank>()>>&& output_cells_idxs_f,
-                                hpx::future<DischargeData>&& new_discharge_data_f) mutable
+                                hpx::future<MaterialData>&& new_discharge_data_f) mutable
                             {
                                 AnnotateFunction annotation{"inter_partition_stream_kinematic_wave"};
 
@@ -509,19 +542,19 @@ namespace lue {
                                 auto const& partition_shape{flow_direction_data.shape()};
 
                                 auto const current_discharge_partition_ptr{ready_component_ptr(current_discharge_partition)};
-                                DischargeData const& current_discharge_data{current_discharge_partition_ptr->data()};
+                                MaterialData const& current_discharge_data{current_discharge_partition_ptr->data()};
 
                                 auto const inflow_partition_ptr{ready_component_ptr(inflow_partition)};
-                                DischargeData const& inflow_data{inflow_partition_ptr->data()};
+                                MaterialData const& inflow_data{inflow_partition_ptr->data()};
 
                                 auto const channel_length_partition_ptr{ready_component_ptr(channel_length_partition)};
-                                DischargeData const& channel_length_data{channel_length_partition_ptr->data()};
+                                MaterialData const& channel_length_data{channel_length_partition_ptr->data()};
 
                                 InflowCountData inflow_count_data{inflow_count_data_f.get()};
-                                DischargeData new_discharge_data{new_discharge_data_f.get()};
+                                MaterialData new_discharge_data{new_discharge_data_f.get()};
 
                                 using CellAccumulator = KinematicWaveCellAccumulator<Policies, rank>;
-                                using Communicator = MaterialCommunicator<DischargeElement, rank>;
+                                using Communicator = MaterialCommunicator<MaterialElement, rank>;
 
                                 CellAccumulator cell_accumulator{
                                     policies, current_discharge_data, inflow_data,
@@ -542,7 +575,7 @@ namespace lue {
                                         &inflow_count_data
                                     ](
                                         std::array<Index, rank> const& cell_idxs,
-                                        DischargeElement const value) mutable
+                                        MaterialElement const value) mutable
                                     {
                                         auto [idx0, idx1] = cell_idxs;
 
@@ -585,7 +618,7 @@ namespace lue {
                                         RowIdxConverter north_idx_converter{};
                                         results.push_back(hpx::async(
                                             monitor_material_inputs<
-                                                DischargeElement, decltype(north_idx_converter),
+                                                MaterialElement, decltype(north_idx_converter),
                                                 Accumulate, rank>,
                                             std::move(cells_idxs),
                                             discharge_communicator.receive_channel(accu::Direction::north),
@@ -601,7 +634,7 @@ namespace lue {
                                         RowIdxConverter south_idx_converter{extent0 - 1};
                                         results.push_back(hpx::async(
                                             monitor_material_inputs<
-                                                DischargeElement, decltype(south_idx_converter),
+                                                MaterialElement, decltype(south_idx_converter),
                                                 Accumulate, rank>,
                                             std::move(cells_idxs),
                                             discharge_communicator.receive_channel(accu::Direction::south),
@@ -617,7 +650,7 @@ namespace lue {
                                         ColIdxConverter west_idx_converter{};
                                         results.push_back(hpx::async(
                                             monitor_material_inputs<
-                                                DischargeElement, decltype(west_idx_converter),
+                                                MaterialElement, decltype(west_idx_converter),
                                                 Accumulate, rank>,
                                             std::move(cells_idxs),
                                             discharge_communicator.receive_channel(accu::Direction::west),
@@ -633,7 +666,7 @@ namespace lue {
                                         ColIdxConverter east_idx_converter{extent1 - 1};
                                         results.push_back(hpx::async(
                                             monitor_material_inputs<
-                                                DischargeElement, decltype(east_idx_converter),
+                                                MaterialElement, decltype(east_idx_converter),
                                                 Accumulate, rank>,
                                             std::move(cells_idxs),
                                             discharge_communicator.receive_channel(accu::Direction::east),
@@ -649,7 +682,7 @@ namespace lue {
                                         CornerIdxConverter north_west_idx_converter{};
                                         results.push_back(hpx::async(
                                             monitor_material_inputs<
-                                                DischargeElement, decltype(north_west_idx_converter),
+                                                MaterialElement, decltype(north_west_idx_converter),
                                                 Accumulate, rank>,
                                             std::move(cells_idxs),
                                             discharge_communicator.receive_channel(accu::Direction::north_west),
@@ -665,7 +698,7 @@ namespace lue {
                                         CornerIdxConverter north_east_idx_converter{0, extent1 - 1};
                                         results.push_back(hpx::async(
                                             monitor_material_inputs<
-                                                DischargeElement, decltype(north_east_idx_converter),
+                                                MaterialElement, decltype(north_east_idx_converter),
                                                 Accumulate, rank>,
                                             std::move(cells_idxs),
                                             discharge_communicator.receive_channel(accu::Direction::north_east),
@@ -681,7 +714,7 @@ namespace lue {
                                         CornerIdxConverter south_east_idx_converter{extent0 - 1, extent1 - 1};
                                         results.push_back(hpx::async(
                                             monitor_material_inputs<
-                                                DischargeElement, decltype(south_east_idx_converter),
+                                                MaterialElement, decltype(south_east_idx_converter),
                                                 Accumulate, rank>,
                                             std::move(cells_idxs),
                                             discharge_communicator.receive_channel(accu::Direction::south_east),
@@ -697,7 +730,7 @@ namespace lue {
                                         CornerIdxConverter south_west_idx_converter{extent0 - 1, 0};
                                         results.push_back(hpx::async(
                                             monitor_material_inputs<
-                                                DischargeElement, decltype(south_west_idx_converter),
+                                                MaterialElement, decltype(south_west_idx_converter),
                                                 Accumulate, rank>,
                                             std::move(cells_idxs),
                                             discharge_communicator.receive_channel(accu::Direction::south_west),
@@ -738,19 +771,20 @@ namespace lue {
             // Once the futures of the results of the
             // inter-partition stream calculations have become ready,
             // return the result partitions.
-            hpx::future<DischargePartition> new_discharge_partition_f = hpx::dataflow(
+            hpx::future<MaterialPartition> new_discharge_partition_f = hpx::dataflow(
                     hpx::launch::async,
 
                             [](
                                 FlowDirectionPartition const& flow_direction_partition,
-                                hpx::future<DischargeData>&& new_discharge_data_f)
+                                hpx::future<MaterialData>&& new_discharge_data_f)
                             {
                                 AnnotateFunction annotation{"create_result_partitions_kinematic_wave"};
-                                using Server = typename DischargePartition::Server;
+
+                                using Server = typename MaterialPartition::Server;
 
                                 Offset const partition_offset{ready_component_ptr(flow_direction_partition)->offset()};
 
-                                return DischargePartition{
+                                return MaterialPartition{
                                     hpx::new_<Server>(
                                         hpx::find_here(), partition_offset, new_discharge_data_f.get())};
                             },
@@ -759,7 +793,7 @@ namespace lue {
                     std::move(new_discharge_data_f)
                 );
 
-            return DischargePartition{std::move(new_discharge_partition_f)};
+            return MaterialPartition{std::move(new_discharge_partition_f)};
         }
 
 
@@ -796,11 +830,9 @@ namespace lue {
         Element const time_step_duration,
         PartitionedArray<Element, rank> const& channel_length)
     {
-        AnnotateFunction annotation{"kinematic_wave"};
-
-        using Discharge = Element;
-        using DischargeArray = PartitionedArray<Discharge, rank>;
-        using DischargePartitions = PartitionsT<DischargeArray>;
+        using Material = Element;
+        using MaterialArray = PartitionedArray<Material, rank>;
+        using MaterialPartitions = PartitionsT<MaterialArray>;
 
         auto const& shape_in_partitions{flow_direction.partitions().shape()};
         Localities<rank> const& localities{flow_direction.localities()};
@@ -809,22 +841,22 @@ namespace lue {
         // Create communicators used in solving the kinematic wave
         using InflowCountCommunicator = detail::InflowCountCommunicator<rank>;
         using InflowCountCommunicatorArray = detail::CommunicatorArray<InflowCountCommunicator, rank>;
-        using DischargeCommunicator = detail::MaterialCommunicator<Discharge, rank>;
-        using DischargeCommunicatorArray = detail::CommunicatorArray<DischargeCommunicator, rank>;
+        using MaterialCommunicator = detail::MaterialCommunicator<Material, rank>;
+        using MaterialCommunicatorArray = detail::CommunicatorArray<MaterialCommunicator, rank>;
 
         InflowCountCommunicatorArray inflow_count_communicators{"/lue/kinematic_wave/inflow_count/", localities};
-        DischargeCommunicatorArray discharge_communicators{"/lue/kinematic_wave/", localities};
+        MaterialCommunicatorArray discharge_communicators{"/lue/kinematic_wave/", localities};
 
 
         // For each partition, spawn a task that will solve the kinematic wave equation for the partition
-        DischargePartitions new_discharge_partitions{shape_in_partitions};
+        MaterialPartitions new_discharge_partitions{shape_in_partitions};
         detail::KinematicWaveAction<Policies, FlowDirectionElement, Element, rank> action{};
         Count const nr_partitions{nr_elements(shape_in_partitions)};
 
         for(Index p = 0; p < nr_partitions; ++p)
         {
             new_discharge_partitions[p] = hpx::async(
-                hpx::annotated_function(action, "kinematic_wave"), localities[p], policies,
+                action, localities[p], policies,
                 flow_direction.partitions()[p],
                 current_discharge.partitions()[p],
                 inflow.partitions()[p],
@@ -853,7 +885,7 @@ namespace lue {
             });
 
 
-        return DischargeArray{flow_direction.shape(), localities, std::move(new_discharge_partitions)};
+        return MaterialArray{flow_direction.shape(), localities, std::move(new_discharge_partitions)};
     }
 
 }  // namespace lue

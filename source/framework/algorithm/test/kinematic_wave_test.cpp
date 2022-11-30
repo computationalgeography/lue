@@ -1,6 +1,7 @@
 #define BOOST_TEST_MODULE lue framework algorithm kinematic_wave
+#include "lue/framework/algorithm/value_policies/all.hpp"
+#include "lue/framework/algorithm/value_policies/greater_than.hpp"
 #include "lue/framework/algorithm/value_policies/kinematic_wave.hpp"
-/// #include "lue/framework/algorithm/definition/kinematic_wave.hpp"  // iterate_to_new_discharge
 #include "flow_accumulation.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/compare.hpp"
@@ -34,7 +35,7 @@ BOOST_AUTO_TEST_CASE(pcraster_manual_example)
 
     auto const channel_length = lue::create_partitioned_array<Element>(array_shape, partition_shape, 10);
 
-    auto discharge_we_want = lue::test::create_partitioned_array<lue::PartitionedArray<Element, 2>>(
+    auto const discharge_we_want = lue::test::create_partitioned_array<lue::PartitionedArray<Element, 2>>(
         array_shape, partition_shape,
         {{
              2.32293,  2.32293,  2.32293,  2.32293, 2.32293,
@@ -51,54 +52,86 @@ BOOST_AUTO_TEST_CASE(pcraster_manual_example)
 }
 
 
-/// //! some stuff that crashed
-/// BOOST_AUTO_TEST_CASE(iterate1)
-/// {
-///     double const discharge = lue::detail::iterate_to_new_discharge<double>(
-///         0.000201343,   // upstream_discharge
-///         0.000115866,   // current_discharge
-///         -0.000290263,  // inflow
-///         1.73684,       // alpha
-///         0.6,           // beta
-///         15,            // time_step_duration
-///         10);           // channel_length
-/// 
-/// 
-///     BOOST_CHECK_EQUAL(discharge, 5.5);
-///     // double retV = 0.000031450866300937;
-/// 
-/// 
-///     // // adapt initial estimator Qkx twice
-///     // //  Qkx   = MAX(Qkx, 1e-30);
-///     // double cmpEps(1E-12);
-///     // double v = IterateToQnew(
-///     //                  /* Qin    */ 0.000201343,
-///     //                  /* Qold   */ 0.000115866,
-///     //                  /* q      */ -0.000290263,
-///     //                  /* alpha  */ 1.73684,
-///     //                  /* beta   */ 0.6,
-///     //                  /* deltaT */ 15,
-///     //                  /* deltaX */ 10,
-///     //                  /* epsilon */ 1E-12);
-///     // // printf("\n %20.18f \n",v);
-///     // double retV = 0.000031450866300937;
-///     // BOOST_CHECK(v > (retV-cmpEps) && v < (retV+cmpEps) );
-/// }
+BOOST_AUTO_TEST_CASE(zero_discharge_and_inflow)
+{
+    auto flow_direction = lue::test::pcraster_example_flow_direction();
+
+    auto const array_shape{flow_direction.shape()};
+    auto const partition_shape{array_shape};
+
+    using Element = double;
+
+    auto const discharge = lue::create_partitioned_array<Element>(array_shape, partition_shape, 0);
+    auto const inflow = lue::create_partitioned_array<Element>(array_shape, partition_shape, 0);
+
+    Element const alpha = 1.5;
+    Element const beta = 0.6;
+    Element const time_step_duration = 15;
+
+    auto const channel_length = lue::create_partitioned_array<Element>(array_shape, partition_shape, 10);
+
+    auto const discharge_we_want = lue::create_partitioned_array<Element>(array_shape, partition_shape, 0);
+
+    auto const kinematic_wave = lue::value_policies::kinematic_wave(
+        flow_direction, discharge, inflow, alpha, beta, time_step_duration, channel_length);
+
+    lue::test::check_arrays_are_close(kinematic_wave, discharge_we_want);
+}
 
 
-/// //! more stuff that crashed
-/// BOOST_AUTO_TEST_CASE(iterate2)
-/// {
-///  // does not terminate
-///  double v = IterateToQnew(
-///               /* Qin */ 0,
-///               /* Qold */  1.11659e-07,
-///               /* q */ -1.32678e-05,
-///               /* alpha */ 1.6808,
-///               /* beta */ 0.6,
-///               /* deltaT */ 15,
-///               /* deltaX */ 10,
-///               /* epsilon */ 1E-12);
-///  
-///  BOOST_CHECK(v == 1e-30);
-/// }
+BOOST_AUTO_TEST_CASE(non_zero_discharge_and_zero_inflow)
+{
+    auto flow_direction = lue::test::pcraster_example_flow_direction();
+
+    auto const array_shape{flow_direction.shape()};
+    auto const partition_shape{array_shape};
+
+    using Element = double;
+
+    auto const discharge = lue::create_partitioned_array<Element>(array_shape, partition_shape, 1);
+    auto const inflow = lue::create_partitioned_array<Element>(array_shape, partition_shape, 0);
+
+    Element const alpha = 1.5;
+    Element const beta = 0.6;
+    Element const time_step_duration = 15;
+
+    auto const channel_length = lue::create_partitioned_array<Element>(array_shape, partition_shape, 10);
+
+    auto const kinematic_wave = lue::value_policies::kinematic_wave(
+        flow_direction, discharge, inflow, alpha, beta, time_step_duration, channel_length);
+
+    using namespace lue::value_policies;
+
+    BOOST_CHECK(lue::value_policies::all(kinematic_wave > Element{0}).get());
+}
+
+
+BOOST_AUTO_TEST_CASE(zero_discharge_and_non_zero_inflow)
+{
+    auto flow_direction = lue::test::pcraster_example_flow_direction();
+
+    auto const array_shape{flow_direction.shape()};
+    auto const partition_shape{array_shape};
+
+    using Element = double;
+
+    auto const discharge = lue::create_partitioned_array<Element>(array_shape, partition_shape, 0);
+    auto const inflow = lue::create_partitioned_array<Element>(array_shape, partition_shape, 1);
+
+    Element const alpha = 1.5;
+    Element const beta = 0.6;
+    Element const time_step_duration = 15;
+
+    auto const channel_length = lue::create_partitioned_array<Element>(array_shape, partition_shape, 10);
+
+    auto const kinematic_wave = lue::value_policies::kinematic_wave(
+        flow_direction, discharge, inflow, alpha, beta, time_step_duration, channel_length);
+
+    using namespace lue::value_policies;
+
+    BOOST_CHECK(lue::value_policies::all(kinematic_wave > Element{0}).get());
+}
+
+
+// TODO Add tests for extreme inputs:
+// - What about "wrong" values for alpha, beta, time_step_duration?

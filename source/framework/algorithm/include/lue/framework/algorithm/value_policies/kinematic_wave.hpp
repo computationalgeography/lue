@@ -14,9 +14,10 @@ namespace lue {
 
                 static constexpr bool within_domain(
                     Element const discharge,
-                    Element const inflow) noexcept
+                    Element const inflow,
+                    Element const channel_length) noexcept
                 {
-                    return discharge >= 0 && inflow >= 0;
+                    return discharge >= 0 && inflow >= 0 && channel_length > 0;
                 }
 
         };
