@@ -1,7 +1,7 @@
 #pragma once
 #include "lue/framework/algorithm/downstream_distance.hpp"
 #include "lue/framework/algorithm/flow_direction.hpp"
-#include "lue/framework/algorithm/flow_direction_operation_export.hpp"
+#include "lue/framework/algorithm/routing_operation_export.hpp"
 #include "lue/framework/algorithm/definition/unary_local_operation.hpp"
 #include "lue/macro.hpp"
 #include <hpx/serialization.hpp>
@@ -108,7 +108,7 @@ namespace lue {
 
 #define LUE_INSTANTIATE_DOWNSTREAM_DISTANCE(Policies, FlowDirectionElement, DistanceElement)  \
                                                                                               \
-    template LUE_FLOW_DIRECTION_OPERATION_EXPORT                                              \
+    template LUE_ROUTING_OPERATION_EXPORT                                                     \
     PartitionedArray<DistanceElement, 2> downstream_distance<                                 \
             ArgumentType<void(Policies)>, FlowDirectionElement, DistanceElement, 2>(          \
         ArgumentType<void(Policies)> const&,                                                  \

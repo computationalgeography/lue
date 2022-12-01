@@ -2,6 +2,7 @@
 #include "lue/py/configure.hpp"
 #include <functional>
 #include <memory>
+#include <string>
 #include <vector>
 
 

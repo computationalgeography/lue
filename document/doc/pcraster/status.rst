@@ -241,8 +241,12 @@ added to the LUE framework. The number of model developers requesting one is one
      - ❌
      - 2
    * - kinematic
-     - ❌
-     - ?
+     - ✅
+     - | kinematic_wave
+       | The nrTimeSlices argument is removed.
+       | Negative values for the the discharge, lateral
+       | inflow and channel length arguments result in
+       | no-data values in the result.
    * - | kinwavestate
        | kinwaveflux
      - ❌

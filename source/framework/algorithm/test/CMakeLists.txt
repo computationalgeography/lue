@@ -71,13 +71,14 @@ set(zonal_operation_names
     zonal_sum
 )
 
-set(flow_direction_operation_names
+set(routing_operation_names
     accu
+    kinematic_wave
 )
 
 if(NOT CMAKE_HOST_SYSTEM_NAME STREQUAL Darwin)
     # TODO Port these to macOS/M1
-    list(APPEND flow_direction_operation_names
+    list(APPEND routing_operation_names
         accu_threshold
         inflow_count
     )
@@ -87,7 +88,7 @@ set(names
     ${local_operation_names}
     ${focal_operation_names}
     ${zonal_operation_names}
-    ${flow_direction_operation_names}
+    ${routing_operation_names}
     all
     any
     array_partition_io
@@ -157,7 +158,7 @@ foreach(name ${names})
                     PATH=path_list_prepend:$<TARGET_FILE_DIR:lue::framework_local_operation>
                     PATH=path_list_prepend:$<TARGET_FILE_DIR:lue::framework_focal_operation>
                     PATH=path_list_prepend:$<TARGET_FILE_DIR:lue::framework_zonal_operation>
-                    PATH=path_list_prepend:$<TARGET_FILE_DIR:lue::framework_flow_direction_operation>
+                    PATH=path_list_prepend:$<TARGET_FILE_DIR:lue::framework_routing_operation>
         )
     endif()
 endforeach()
@@ -180,10 +181,11 @@ foreach(name ${zonal_operation_names})
             lue::framework_zonal_operation)
 endforeach()
 
-foreach(name ${flow_direction_operation_names})
+foreach(name ${routing_operation_names})
     target_link_libraries(${scope}_${name}_test
         PRIVATE
-            lue::framework_flow_direction_operation)
+            lue::framework_local_operation
+            lue::framework_routing_operation)
 endforeach()
 
 set(names

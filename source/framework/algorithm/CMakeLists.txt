@@ -156,35 +156,36 @@ target_link_libraries(lue_framework_zonal_operation
 # )
 
 
-add_library(lue_framework_flow_direction_operation SHARED
-    src/flow_direction_operation/accu.cpp
-    src/flow_direction_operation/accu3.cpp
-    src/flow_direction_operation/accu_fraction.cpp
-    src/flow_direction_operation/accu_info.cpp
-    src/flow_direction_operation/accu_info3.cpp
-    src/flow_direction_operation/accu_threshold.cpp
-    src/flow_direction_operation/accu_threshold3.cpp
-    src/flow_direction_operation/d8_flow_direction.cpp
-    src/flow_direction_operation/downstream.cpp
-    src/flow_direction_operation/downstream_distance.cpp
-    src/flow_direction_operation/flow_accumulation3.cpp
-    src/flow_direction_operation/inflow_count3.cpp
-    src/flow_direction_operation/upstream.cpp
+add_library(lue_framework_routing_operation SHARED
+    src/routing_operation/accu.cpp
+    src/routing_operation/accu3.cpp
+    src/routing_operation/accu_fraction.cpp
+    src/routing_operation/accu_info.cpp
+    src/routing_operation/accu_info3.cpp
+    src/routing_operation/accu_threshold.cpp
+    src/routing_operation/accu_threshold3.cpp
+    src/routing_operation/d8_flow_direction.cpp
+    src/routing_operation/downstream.cpp
+    src/routing_operation/downstream_distance.cpp
+    src/routing_operation/flow_accumulation3.cpp
+    src/routing_operation/inflow_count3.cpp
+    src/routing_operation/kinematic_wave.cpp
+    src/routing_operation/upstream.cpp
 )
 
-add_library(lue::framework_flow_direction_operation ALIAS lue_framework_flow_direction_operation)
+add_library(lue::framework_routing_operation ALIAS lue_framework_routing_operation)
 
-generate_export_header(lue_framework_flow_direction_operation
-    EXPORT_FILE_NAME include/lue/framework/algorithm/flow_direction_operation_export.hpp
-    EXPORT_MACRO_NAME LUE_FLOW_DIRECTION_OPERATION_EXPORT)
+generate_export_header(lue_framework_routing_operation
+    EXPORT_FILE_NAME include/lue/framework/algorithm/routing_operation_export.hpp
+    EXPORT_MACRO_NAME LUE_ROUTING_OPERATION_EXPORT)
 
-target_include_directories(lue_framework_flow_direction_operation
+target_include_directories(lue_framework_routing_operation
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>  # export.hpp
 )
 
-target_link_libraries(lue_framework_flow_direction_operation
+target_link_libraries(lue_framework_routing_operation
     PUBLIC
         lue::framework_algorithm
 )
@@ -193,7 +194,7 @@ lue_install_libraries(
     TARGETS
         lue_framework_algorithm
         lue_framework_local_operation
-        lue_framework_flow_direction_operation
+        lue_framework_routing_operation
         lue_framework_focal_operation
         # lue_framework_global_operation
         lue_framework_zonal_operation

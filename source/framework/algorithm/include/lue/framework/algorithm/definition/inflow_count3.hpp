@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/framework/algorithm/flow_direction_operation_export.hpp"
+#include "lue/framework/algorithm/routing_operation_export.hpp"
 #include "lue/framework/algorithm/inflow_count.hpp"  // inflow_count_partition_data
 #include "lue/framework/algorithm/inflow_count3.hpp"
 #include "lue/framework/algorithm/detail/communicator_array.hpp"
@@ -880,7 +880,7 @@ namespace lue {
 #define LUE_INSTANTIATE_INFLOW_COUNT3(                                             \
     Policies, CountElement, FlowDirectionElement)                                  \
                                                                                    \
-    template LUE_FLOW_DIRECTION_OPERATION_EXPORT                                   \
+    template LUE_ROUTING_OPERATION_EXPORT                                          \
     PartitionedArray<CountElement, 2> inflow_count3<                               \
             CountElement, ArgumentType<void(Policies)>, FlowDirectionElement, 2>(  \
         ArgumentType<void(Policies)> const&,                                       \
