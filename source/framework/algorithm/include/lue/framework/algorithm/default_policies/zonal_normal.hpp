@@ -9,7 +9,10 @@ namespace lue {
         template<
             typename Element,
             typename Zone>
-        using DefaultPolicies = zonal_sum::DefaultPolicies<Element, Zone>;
+        using DefaultPolicies = policy::DefaultPolicies<
+            AllValuesWithinDomain<Zone>,
+            OutputElements<Element>,
+            InputElements<Zone>>;
 
     }  // namespace policy::zonal_normal
 

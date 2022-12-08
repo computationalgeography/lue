@@ -1,5 +1,4 @@
 #pragma once
-#include "lue/framework/algorithm/value_policies/zonal_sum.hpp"
 #include "lue/framework/algorithm/zonal_normal.hpp"
 
 
@@ -9,7 +8,10 @@ namespace lue {
         template<
             typename Element,
             typename Zone>
-        using DefaultValuePolicies = zonal_sum::DefaultValuePolicies<Element, Zone>;
+        using DefaultValuePolicies = policy::DefaultValuePolicies<
+            AllValuesWithinDomain<Zone>,
+            OutputElements<Element>,
+            InputElements<Zone>>;
 
     }  // namespace policy::zonal_normal
 

@@ -74,7 +74,12 @@ namespace lue {
 
             public:
 
-                SpecialValuePolicy()=default;
+                SpecialValuePolicy():
+
+                    SpecialValuePolicy{policy::no_data_value<Element>}
+
+                {
+                }
 
 
                 SpecialValuePolicy(Element const no_data_value):

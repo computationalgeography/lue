@@ -10,6 +10,18 @@ target_link_libraries(lue_framework_algorithm_test
 
 set(scope lue_framework_algorithm)
 
+set(focal_operation_names
+    aspect
+    focal_diversity
+    focal_high_pass
+    focal_majority
+    focal_maximum
+    focal_mean
+    focal_minimum
+    focal_sum
+    slope
+)
+
 set(local_operation_names
     abs
     acos
@@ -50,16 +62,13 @@ set(local_operation_names
     where
 )
 
-set(focal_operation_names
-    aspect
-    focal_diversity
-    focal_high_pass
-    focal_majority
-    focal_maximum
-    focal_mean
-    focal_minimum
-    focal_sum
-    slope
+set(global_operation_names
+    unique
+)
+
+set(routing_operation_names
+    accu
+    kinematic_wave
 )
 
 set(zonal_operation_names
@@ -74,11 +83,6 @@ set(zonal_operation_names
     zonal_uniform
 )
 
-set(routing_operation_names
-    accu
-    kinematic_wave
-)
-
 if(NOT CMAKE_HOST_SYSTEM_NAME STREQUAL Darwin)
     # TODO Port these to macOS/M1
     list(APPEND routing_operation_names
@@ -88,10 +92,11 @@ if(NOT CMAKE_HOST_SYSTEM_NAME STREQUAL Darwin)
 endif()
 
 set(names
-    ${local_operation_names}
     ${focal_operation_names}
-    ${zonal_operation_names}
+    ${global_operation_names}
+    ${local_operation_names}
     ${routing_operation_names}
+    ${zonal_operation_names}
     all
     any
     array_partition_io
@@ -112,7 +117,6 @@ set(names
     sum
     timestamp
     unique_id
-    unique
     upstream
 )
 
@@ -134,6 +138,7 @@ foreach(name ${names})
         PRIVATE
             lue_framework_algorithm_test
             lue::framework_algorithm
+            lue::framework_global_operation  # unique
             lue::framework_test
             Boost::unit_test_framework
     )
@@ -178,9 +183,16 @@ foreach(name ${focal_operation_names})
             lue::framework_focal_operation)
 endforeach()
 
+foreach(name ${global_operation_names})
+    target_link_libraries(${scope}_${name}_test
+        PRIVATE
+            lue::framework_global_operation)
+endforeach()
+
 foreach(name ${zonal_operation_names})
     target_link_libraries(${scope}_${name}_test
         PRIVATE
+            lue::framework_local_operation
             lue::framework_zonal_operation)
 endforeach()
 

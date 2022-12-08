@@ -1,6 +1,8 @@
 #define BOOST_TEST_MODULE lue framework algorithm zonal_normal
 #include "lue/framework/algorithm/array_partition_id.hpp"
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
+#include "lue/framework/algorithm/value_policies/all.hpp"
+#include "lue/framework/algorithm/value_policies/comparison.hpp"
 #include "lue/framework/algorithm/value_policies/zonal_normal.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/compare.hpp"
@@ -25,18 +27,8 @@ BOOST_AUTO_TEST_CASE(use_case_01)
 
     auto zonal_normal = lue::value_policies::zonal_normal<Element>(class_array);
 
-    ElementArray array_we_want = lue::test::create_partitioned_array<ElementArray>(
-        array_shape, partition_shape, {
-            { 9, 9, 9, 9, 9, 9, 9, 9, 9 },
-            { 9, 9, 9, 9, 9, 9, 9, 9, 9 },
-            { 9, 9, 9, 9, 9, 9, 9, 9, 9 },
-            { 9, 9, 9, 9, 9, 9, 9, 9, 9 },
-            { 9, 9, 9, 9, 9, 9, 9, 9, 9 },
-            { 9, 9, 9, 9, 9, 9, 9, 9, 9 },
-            { 9, 9, 9, 9, 9, 9, 9, 9, 9 },
-            { 9, 9, 9, 9, 9, 9, 9, 9, 9 },
-            { 9, 9, 9, 9, 9, 9, 9, 9, 9 },
-        });
+    using namespace lue::value_policies;
 
-    lue::test::check_arrays_are_equal(zonal_normal, array_we_want);
+    BOOST_CHECK(all(zonal_normal >= Element{-3}).get());
+    BOOST_CHECK(all(zonal_normal < Element{+3}).get());
 }
