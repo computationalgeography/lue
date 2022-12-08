@@ -16,7 +16,7 @@ namespace lue {
         typename Zone,
         Rank rank>
     PartitionedArray<Element, rank> zonal_normal(
-        Policies const& policies,
+        [[maybe_unused]] Policies const& policies,
         PartitionedArray<Zone, rank> const& zones)
     {
         static_assert(std::is_floating_point_v<Element>);
