@@ -18,7 +18,7 @@ namespace lue::policy {
             static constexpr Element no_data_value{
                     []()
                     {
-                        static_assert(std::is_integral_v<Element>);
+                        static_assert(std::is_floating_point_v<Element> || std::is_integral_v<Element>);
 
                         if constexpr (std::is_signed_v<Element>)
                         {
@@ -27,6 +27,10 @@ namespace lue::policy {
                         else if constexpr (std::is_unsigned_v<Element>)
                         {
                             return std::numeric_limits<Element>::max();
+                        }
+                        else if constexpr (std::is_floating_point_v<Element>)
+                        {
+                            return std::numeric_limits<Element>::lowest();
                         }
                     }()};
 
