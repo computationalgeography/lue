@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE lue framework algorithm unique
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
-#include "lue/framework/algorithm/unique.hpp"
+#include "lue/framework/algorithm/value_policies/unique.hpp"
 #include "lue/framework/algorithm/unique_id.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
@@ -23,10 +23,10 @@ namespace detail {
             Element const fill_value{5};
             Array array{lue::create_partitioned_array(array_shape, partition_shape, fill_value)};
 
-            auto unique = lue::unique(array).get();
+            auto unique = lue::value_policies::unique(array).get();
 
-            BOOST_REQUIRE_EQUAL(unique.nr_elements(), 1);
-            BOOST_CHECK_EQUAL(unique.partitions()[0].data().get()[0], fill_value);
+            BOOST_REQUIRE_EQUAL(unique.size(), 1);
+            BOOST_CHECK_EQUAL(*unique.cbegin(), fill_value);
         }
 
         // All different values
@@ -35,9 +35,9 @@ namespace detail {
 
             lue::unique_id(array).get();
 
-            auto unique = lue::unique(array).get();
+            auto unique = lue::value_policies::unique(array).get();
 
-            BOOST_REQUIRE_EQUAL(unique.nr_elements(), lue::nr_elements(array));
+            BOOST_REQUIRE_EQUAL(unique.size(), lue::nr_elements(array));
         }
     }
 
@@ -55,13 +55,10 @@ BOOST_AUTO_TEST_CASE(array_##rank##d_##Element)  \
 
 // TEST_CASE(1, bool) Test uses unique_id, which doesn't support bool
 // TEST_CASE(2, bool)
-TEST_CASE(1, int32_t)
+// TEST_CASE(1, int32_t)
 TEST_CASE(2, int32_t)
+TEST_CASE(2, uint64_t)
 // TEST_CASE(1, int64_t)
 // TEST_CASE(2, int64_t)
-// TEST_CASE(1, float)
-// TEST_CASE(2, float)
-// TEST_CASE(1, double) // Test uses unique_id, which doesn't support float
-// TEST_CASE(2, double)
 
 #undef TEST_CASE

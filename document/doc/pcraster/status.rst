@@ -130,8 +130,8 @@ added to the LUE framework. The number of model developers requesting one is one
      - ✅
      - zonal_diversity
    * - areamajority
-     - ❌
-     - 1
+     - ✅
+     - zonal_majority
    * - areamaximum
      - ✅
      - zonal_maximum
@@ -139,8 +139,8 @@ added to the LUE framework. The number of model developers requesting one is one
      - ✅
      - zonal_minimum
    * - areanormal
-     - ❌
-     - 1
+     - ✅
+     - zonal_normal
    * - areaorder
      - ❌
      - 1
@@ -148,8 +148,9 @@ added to the LUE framework. The number of model developers requesting one is one
      - ✅
      - zonal_sum
    * - areauniform
-     - ❌
-     - 1
+     - ✅
+     - | zonal_uniform
+       | Returned values are in range [0, 1)
    * - asin
      - ✅
      -

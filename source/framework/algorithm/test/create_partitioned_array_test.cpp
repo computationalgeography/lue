@@ -3,10 +3,10 @@
 #include "lue/framework/algorithm/default_policies/all.hpp"
 #include "lue/framework/algorithm/default_policies/equal_to.hpp"
 #include "lue/framework/algorithm/default_policies/logical_not.hpp"
+#include "lue/framework/algorithm/default_policies/unique.hpp"
 #include "lue/framework/algorithm/partition_count_unique.hpp"
 #include "lue/framework/algorithm/policy.hpp"
 #include "lue/framework/algorithm/sum.hpp"
-#include "lue/framework/algorithm/unique.hpp"
 #include "lue/framework/algorithm/value_policies/logical_not.hpp"
 #include "lue/framework/algorithm/value_policies/valid.hpp"
 #include "lue/framework/test/array.hpp"
@@ -234,8 +234,8 @@ BOOST_AUTO_TEST_CASE(instantiate_partitions_individually)
     BOOST_CHECK(all(equal_to(counts, std::int64_t{1})).get());
 
     // The number of unique values in the array equals the number of partitions
-    lue::PartitionedArray<Element, 1> unique_values = lue::unique(array).get();
-    BOOST_CHECK_EQUAL(lue::nr_elements(unique_values), lue::nr_partitions(array));
+    std::set<Element> const unique_values = unique(array).get();
+    BOOST_CHECK_EQUAL(unique_values.size(), lue::nr_partitions(array));
 }
 
 
@@ -257,8 +257,8 @@ BOOST_AUTO_TEST_CASE(instantiate_partitions_per_locality)
     BOOST_CHECK(all(equal_to(counts, std::int64_t{1})).get());
 
     // The number of unique values in the array equals the number of localities
-    lue::PartitionedArray<Element, 1> unique_values = lue::unique(array).get();
-    BOOST_CHECK_EQUAL(lue::nr_elements(unique_values), hpx::get_num_localities().get());
+    std::set<Element> const unique_values = unique(array).get();
+    BOOST_CHECK_EQUAL(unique_values.size(), hpx::get_num_localities().get());
 }
 
 

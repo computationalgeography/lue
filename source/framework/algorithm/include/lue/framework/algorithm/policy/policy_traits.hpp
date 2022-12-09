@@ -1,6 +1,9 @@
 #pragma once
+#include "lue/framework/algorithm/policy/detect_no_data_by_nan.hpp"
+#include "lue/framework/algorithm/policy/detect_no_data_by_value.hpp"
+#include "lue/framework/algorithm/policy/mark_no_data_by_nan.hpp"
+#include "lue/framework/algorithm/policy/mark_no_data_by_value.hpp"
 #include "lue/framework/core/type_traits.hpp"
-#include <limits>
 #include <tuple>
 
 
@@ -17,17 +20,15 @@ namespace lue::policy {
                 static constexpr T no_data_value{
                     []()
                     {
+                        static_assert(std::is_integral_v<T> || std::is_floating_point_v<T>);
+
                         if constexpr (std::is_floating_point_v<T>)
                         {
-                            return std::numeric_limits<T>::quiet_NaN();
+                            return DetectNoDataByNaN<T>::no_data_value;
                         }
-                        else if constexpr (std::is_integral_v<T> && std::is_signed_v<T>)
+                        else if constexpr (std::is_integral_v<T>)
                         {
-                            return std::numeric_limits<T>::min();
-                        }
-                        else if constexpr (std::is_integral_v<T> && std::is_unsigned_v<T>)
-                        {
-                            return std::numeric_limits<T>::max();
+                            return DetectNoDataByValue<T>::no_data_value;
                         }
                     }()};
 
@@ -46,6 +47,98 @@ namespace lue::policy {
                 using OutputsPolicies = typename Policies::OutputsPolicies;
 
                 using InputsPolicies = typename Policies::InputsPolicies;
+
+        };
+
+
+        template<
+            typename E>
+        class TypeTraits<
+            DetectNoDataByValue<E>>
+        {
+
+            public:
+
+                using Element = E;
+
+                template<
+                    typename E_>
+                using Policy =
+                    std::conditional_t<
+                            std::is_floating_point_v<E_>,
+                            DetectNoDataByNaN<E_>,
+                            DetectNoDataByValue<E_>
+                        >;
+
+        };
+
+
+        template<
+            typename E>
+        class TypeTraits<
+            MarkNoDataByValue<E>>
+        {
+
+            public:
+
+                using Element = E;
+
+                template<
+                    typename E_>
+                using Policy =
+                    std::conditional_t<
+                            std::is_floating_point_v<E_>,
+                            MarkNoDataByNaN<E_>,
+                            MarkNoDataByValue<E_>
+                        >;
+
+                using InputNoDataPolicy = DetectNoDataByValue<Element>;
+
+        };
+
+
+        template<
+            typename E>
+        class TypeTraits<
+            DetectNoDataByNaN<E>>
+        {
+
+            public:
+
+                using Element = E;
+
+                template<
+                    typename E_>
+                using Policy =
+                    std::conditional_t<
+                        std::is_floating_point_v<E_>,
+                        DetectNoDataByNaN<E_>,
+                        DetectNoDataByValue<E_>
+                    >;
+
+        };
+
+
+        template<
+            typename E>
+        class TypeTraits<
+            MarkNoDataByNaN<E>>
+        {
+
+            public:
+
+                using Element = E;
+
+                template<
+                    typename E_>
+                using Policy =
+                    std::conditional_t<
+                            std::is_floating_point_v<E_>,
+                            MarkNoDataByNaN<E_>,
+                            MarkNoDataByValue<E_>
+                        >;
+
+                using InputNoDataPolicy = DetectNoDataByNaN<Element>;
 
         };
 

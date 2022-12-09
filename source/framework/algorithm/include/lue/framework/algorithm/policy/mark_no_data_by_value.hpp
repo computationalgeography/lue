@@ -2,84 +2,64 @@
 #include "lue/framework/algorithm/policy/detect_no_data_by_value.hpp"
 
 
-namespace lue {
-namespace policy {
+namespace lue::policy {
 
-template<
-    typename Element>
-class MarkNoDataByValue:
-    public DetectNoDataByValue<Element>
-{
+    template<
+        typename Element>
+    class MarkNoDataByValue:
+        public DetectNoDataByValue<Element>
+    {
 
-    public:
+        public:
 
-        MarkNoDataByValue():
+            MarkNoDataByValue():
 
-            MarkNoDataByValue(no_data_value<Element>)
+                MarkNoDataByValue(DetectNoDataByValue<Element>::no_data_value)
 
-        {
-        }
-
-        MarkNoDataByValue(
-                Element const value):
-
-            DetectNoDataByValue<Element>{value}
-
-        {
-        }
-
-        void mark_no_data(
-            Element& element) const
-        {
-            element = this->value();
-        }
-
-        template<
-            typename Data>
-        void mark_no_data(
-            Data& data,
-            Index const idx) const
-        {
-            static_assert(std::is_same_v<lue::ElementT<Data>, Element>);
-
-            data[idx] = this->value();
-        }
-
-        template<
-            typename Data,
-            typename... Idxs>
-        void mark_no_data(
-            Data& data,
-            Idxs const...idxs) const
-        {
-            static_assert(std::is_same_v<lue::ElementT<Data>, Element>);
-
-            data(idxs...) = this->value();
-        }
-
-};
+            {
+            }
 
 
-namespace detail {
+            MarkNoDataByValue(
+                    Element const value):
 
-template<
-    typename E>
-class TypeTraits<
-    MarkNoDataByValue<E>>
-{
+                DetectNoDataByValue<Element>{value}
 
-    public:
+            {
+            }
 
-        using Element = E;
 
-        template<
-            typename E_>
-        using Policy = MarkNoDataByValue<E_>;
+            void mark_no_data(
+                Element& element) const
+            {
+                element = this->value();
+            }
 
-        using InputNoDataPolicy = DetectNoDataByValue<Element>;
 
-};
+            template<
+                typename Data>
+            void mark_no_data(
+                Data& data,
+                Index const idx) const
+            {
+                static_assert(std::is_same_v<lue::ElementT<Data>, Element>);
 
-}  // namespace detail
-}  // namespace policy
-}  // namespace lue
+                data[idx] = this->value();
+            }
+
+
+            template<
+                typename Data,
+                typename... Idxs>
+            void mark_no_data(
+                Data& data,
+                Idxs const...idxs) const
+            {
+                static_assert(std::is_same_v<lue::ElementT<Data>, Element>);
+
+                data(idxs...) = this->value();
+            }
+
+    };
+
+}  // namespace lue::policy

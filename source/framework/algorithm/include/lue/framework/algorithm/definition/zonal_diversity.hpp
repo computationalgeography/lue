@@ -2,7 +2,7 @@
 #include "lue/framework/algorithm/zonal_diversity.hpp"
 #include "lue/framework/algorithm/zonal_operation_export.hpp"
 #include "lue/framework/algorithm/definition/zonal_operation.hpp"
-#include <hpx/serialization/set.hpp>
+#include <set>
 
 
 namespace lue {

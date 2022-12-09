@@ -1,6 +1,7 @@
 #pragma once
-#include "lue/framework/algorithm/policy/policy_traits.hpp"
-#include <hpx/serialization.hpp>
+#include "lue/framework/core/type_traits.hpp"
+#include <cmath>
+#include <limits>
 #include <type_traits>
 
 
@@ -14,6 +15,8 @@ namespace lue::policy {
         public:
 
             static_assert(std::is_floating_point_v<Element>);
+
+            static constexpr Element no_data_value{std::numeric_limits<Element>::quiet_NaN()};
 
 
             DetectNoDataByNaN()
@@ -52,39 +55,6 @@ namespace lue::policy {
                 return std::isnan(data(idxs...));
             }
 
-
-        private:
-
-            // friend class hpx::serialization::access;
-
-
-            // template<typename Archive>
-            // void serialize(
-            //     [[maybe_unused]] Archive& archive,
-            //     [[maybe_unused]] unsigned int const version)
-            // {
-            // }
-
     };
 
-
-    namespace detail {
-
-        template<
-            typename E>
-        class TypeTraits<
-            DetectNoDataByNaN<E>>
-        {
-
-            public:
-
-                using Element = E;
-
-                template<
-                    typename E_>
-                using Policy = DetectNoDataByNaN<E_>;
-
-        };
-
-    }  // namespace detail
 }  // namespace lue::policy

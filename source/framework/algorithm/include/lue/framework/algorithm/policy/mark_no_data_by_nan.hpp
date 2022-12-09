@@ -56,26 +56,4 @@ namespace lue::policy {
 
     };
 
-
-    namespace detail {
-
-        template<
-            typename E>
-        class TypeTraits<
-            MarkNoDataByNaN<E>>
-        {
-
-            public:
-
-                using Element = E;
-
-                template<
-                    typename E_>
-                using Policy = MarkNoDataByNaN<E_>;
-
-                using InputNoDataPolicy = DetectNoDataByNaN<Element>;
-
-        };
-
-    }  // namespace detail
 }  // namespace lue::policy

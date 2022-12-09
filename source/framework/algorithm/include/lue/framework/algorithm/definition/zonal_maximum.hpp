@@ -2,7 +2,7 @@
 #include "lue/framework/algorithm/zonal_maximum.hpp"
 #include "lue/framework/algorithm/zonal_operation_export.hpp"
 #include "lue/framework/algorithm/definition/zonal_operation.hpp"
-#include <hpx/serialization/unordered_map.hpp>
+#include <unordered_map>
 
 
 namespace lue {
@@ -35,7 +35,7 @@ namespace lue {
                             Zone const zone,
                             InputElement const value)
                         {
-                            auto [it, _] = _maximum_by_zone.try_emplace(zone, value);
+                            auto [it, inserted] = _maximum_by_zone.try_emplace(zone, value);
 
                             (*it).second = std::max((*it).second, value);
                         }

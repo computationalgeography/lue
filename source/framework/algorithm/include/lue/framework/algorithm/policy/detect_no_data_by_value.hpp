@@ -1,7 +1,8 @@
 #pragma once
-#include "lue/framework/algorithm/policy/policy_traits.hpp"
 #include "lue/framework/core/assert.hpp"
+#include "lue/framework/core/type_traits.hpp"
 #include <hpx/serialization.hpp>
+#include <limits>
 #include <type_traits>
 
 
@@ -14,9 +15,29 @@ namespace lue::policy {
 
         public:
 
+            static constexpr Element no_data_value{
+                    []()
+                    {
+                        static_assert(std::is_floating_point_v<Element> || std::is_integral_v<Element>);
+
+                        if constexpr (std::is_signed_v<Element>)
+                        {
+                            return std::numeric_limits<Element>::min();
+                        }
+                        else if constexpr (std::is_unsigned_v<Element>)
+                        {
+                            return std::numeric_limits<Element>::max();
+                        }
+                        else if constexpr (std::is_floating_point_v<Element>)
+                        {
+                            return std::numeric_limits<Element>::lowest();
+                        }
+                    }()};
+
+
             DetectNoDataByValue():
 
-                DetectNoDataByValue(no_data_value<Element>)
+                DetectNoDataByValue{no_data_value}
 
             {
             }
@@ -99,24 +120,4 @@ namespace lue::policy {
 
     };
 
-
-    namespace detail {
-
-        template<
-            typename E>
-        class TypeTraits<
-            DetectNoDataByValue<E>>
-        {
-
-            public:
-
-                using Element = E;
-
-                template<
-                    typename E_>
-                using Policy = DetectNoDataByValue<E_>;
-
-        };
-
-    }  // namespace detail
 }  // namespace lue::policy
