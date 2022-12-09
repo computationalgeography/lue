@@ -29,6 +29,7 @@ BOOST_AUTO_TEST_CASE(use_case_01)
 
     using namespace lue::value_policies;
 
-    BOOST_CHECK(all(zonal_normal >= Element{-3}).get());
-    BOOST_CHECK(all(zonal_normal < Element{+3}).get());
+    // Very unlikely that values outside (-10, 10) are drawn
+    BOOST_CHECK(all(zonal_normal > Element{-10}).get());
+    BOOST_CHECK(all(zonal_normal < Element{+10}).get());
 }
