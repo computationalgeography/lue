@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE lue framework algorithm minimum
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/default_policies/minimum.hpp"
-#include "lue/framework/algorithm/unique_id.hpp"
+#include "lue/framework/algorithm/range.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
@@ -22,9 +22,9 @@ namespace detail {
 
         Array array{lue::create_partitioned_array<Element>(array_shape, partition_shape)};
 
-        lue::unique_id(array).get();
+        lue::range(array, Element{5}).get();
 
-        BOOST_CHECK_EQUAL(minimum(array).get(), 0);
+        BOOST_CHECK_EQUAL(minimum(array).get(), Element{5});
     }
 
 }  // namespace detail
@@ -40,9 +40,9 @@ BOOST_AUTO_TEST_CASE(array_##rank##d_##Element)  \
 }
 
 
-TEST_CASE(1, int32_t)
+// TEST_CASE(1, int32_t)
 TEST_CASE(2, int32_t)
-TEST_CASE(1, double)
+// TEST_CASE(1, double)
 TEST_CASE(2, double)
 
 #undef TEST_CASE

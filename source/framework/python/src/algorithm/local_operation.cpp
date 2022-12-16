@@ -56,6 +56,7 @@ namespace lue::framework {
     void bind_tan(pybind11::module& module);
     void bind_timestamp(pybind11::module& module);
     void bind_uniform(pybind11::module& module);
+    void bind_unique_id(pybind11::module& module);
     void bind_upstream(pybind11::module& module);
     void bind_valid(pybind11::module& module);
     void bind_where(pybind11::module& module);
@@ -114,6 +115,7 @@ namespace lue::framework {
         bind_tan(module);
         bind_timestamp(module);
         bind_uniform(module);
+        bind_unique_id(module);
         bind_upstream(module);
         bind_valid(module);
         bind_where(module);

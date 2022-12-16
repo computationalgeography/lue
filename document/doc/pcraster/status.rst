@@ -458,8 +458,8 @@ added to the LUE framework. The number of model developers requesting one is one
      - ✅
      -
    * - uniqueid
-     - ❌
-     - 1
+     - ✅
+     - unique_id
    * - upstream
      - ✅
      -

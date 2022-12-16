@@ -68,6 +68,7 @@ add_library(lue_framework_local_operation SHARED
     src/local_operation/sqrt.cpp
     src/local_operation/subtract.cpp
     src/local_operation/tan.cpp
+    src/local_operation/unique_id.cpp
     src/local_operation/valid.cpp
     src/local_operation/default_policies/where.cpp
     src/local_operation/value_policies/where.cpp

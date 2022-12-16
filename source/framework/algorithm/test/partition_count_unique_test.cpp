@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE lue framework algorithm partition_count_unique
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/partition_count_unique.hpp"
-#include "lue/framework/algorithm/unique_id.hpp"
+#include "lue/framework/algorithm/range.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/compare.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE(different_values)
     // number of elements in each partition.
 
     Array array{lue::create_partitioned_array<Element>(array_shape, partition_shape)};
-    lue::unique_id(array).get();
+    lue::range(array, Element{0}).get();
 
     OutputArray result_we_want{
         lue::create_partitioned_array(lue::shape_in_partitions(array), {{1, 1}},
