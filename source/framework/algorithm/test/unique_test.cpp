@@ -18,13 +18,13 @@ namespace detail {
 
         auto const array_shape{lue::Test<Array>::shape()};
         auto const partition_shape{lue::Test<Array>::partition_shape()};
+        IDElement const fill_value{5};
 
         // All the same values
         {
-            IDElement const fill_value{5};
             Array array{lue::create_partitioned_array(array_shape, partition_shape, fill_value)};
 
-            auto unique = lue::value_policies::unique(array).get();
+            auto const unique = lue::value_policies::unique(array).get();
 
             BOOST_REQUIRE_EQUAL(unique.size(), 1);
             BOOST_CHECK_EQUAL(*unique.cbegin(), fill_value);
@@ -34,11 +34,13 @@ namespace detail {
         {
             using BooleanElement = std::uint8_t;
 
-            Array array{lue::create_partitioned_array<IDElement>(array_shape, partition_shape)};
+            Array array{lue::create_partitioned_array<IDElement>(array_shape, partition_shape, fill_value)};
 
-            auto unique_id = lue::value_policies::unique_id<IDElement>(
-                lue::value_policies::valid<BooleanElement>(array));
-            auto unique = lue::value_policies::unique(unique_id).get();
+            auto const unique_id =
+                lue::value_policies::unique_id<IDElement>(
+                    lue::value_policies::valid<BooleanElement>(
+                        array));
+            auto const unique = lue::value_policies::unique(unique_id).get();
 
             BOOST_REQUIRE_EQUAL(unique.size(), lue::nr_elements(array));
         }
