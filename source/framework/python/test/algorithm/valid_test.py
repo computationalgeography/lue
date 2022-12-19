@@ -18,7 +18,7 @@ class ValidTest(lue_test.TestCase):
 
         array_shape = (60, 40)
         partition_shape = (10, 10)
-        dtype = np.dtype(np.int32)
+        dtype = np.int32
         fill_value = 5  # Valid value
         array = lfr.create_array(array_shape, partition_shape, dtype, fill_value)
 

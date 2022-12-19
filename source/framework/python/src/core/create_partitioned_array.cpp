@@ -167,11 +167,12 @@ namespace lue::framework {
             [](
                 pybind11::tuple const& array_shape,
                 pybind11::tuple const& partition_shape,
-                pybind11::dtype const& dtype,
+                pybind11::object const& dtype_args,
                 pybind11::object const& fill_value)
             {
                 return create_array(
-                    tuple_to_shape(array_shape), tuple_to_shape(partition_shape), dtype, fill_value);
+                    tuple_to_shape(array_shape), tuple_to_shape(partition_shape),
+                    pybind11::dtype::from_args(dtype_args), fill_value);
             },
             R"(
     Create new array

@@ -340,12 +340,12 @@ void init_phenomenon(
                 Phenomenon& phenomenon,
                 std::string const& name,
                 SpaceConfiguration const& space_configuration,
-                py::dtype const& space_coordinate_dtype,
+                py::object const& space_coordinate_dtype_args,
                 Rank const rank) -> PropertySet&
             {
                 return add_property_set(
                     phenomenon.property_sets(), name,
-                    space_configuration, space_coordinate_dtype, rank);
+                    space_configuration, py::dtype::from_args(space_coordinate_dtype_args), rank);
             },
             "name"_a,
             "space_configuration"_a,
@@ -405,13 +405,13 @@ void init_phenomenon(
                 TimeConfiguration const& time_configuration,
                 Clock const& clock,
                 SpaceConfiguration const& space_configuration,
-                py::dtype const& space_coordinate_dtype,
+                py::object const& space_coordinate_dtype_args,
                 Rank const rank) -> PropertySet&
             {
                 return add_property_set(
                     phenomenon.property_sets(), name,
                     time_configuration, clock,
-                    space_configuration, space_coordinate_dtype, rank);
+                    space_configuration, py::dtype::from_args(space_coordinate_dtype_args), rank);
             },
             "name"_a,
             "time_configuration"_a,
@@ -572,13 +572,13 @@ void init_phenomenon(
                 std::string const& name,
                 TimeDomain& time_domain,
                 SpaceConfiguration const& space_configuration,
-                py::dtype const& space_coordinate_dtype,
+                py::object const& space_coordinate_dtype_args,
                 Rank const rank) -> PropertySet&
             {
                 return add_property_set(
                     phenomenon.property_sets(), name,
                     time_domain,
-                    space_configuration, space_coordinate_dtype, rank);
+                    space_configuration, py::dtype::from_args(space_coordinate_dtype_args), rank);
             },
             "name"_a,
             "time_domain"_a,
@@ -611,13 +611,13 @@ void init_phenomenon(
                 TimeDomain& time_domain,
                 ObjectTracker& object_tracker,
                 SpaceConfiguration const& space_configuration,
-                py::dtype const& space_coordinate_dtype,
+                py::object const& space_coordinate_dtype_args,
                 Rank const rank) -> PropertySet&
             {
                 return add_property_set(
                     phenomenon.property_sets(), name,
                     time_domain, object_tracker,
-                    space_configuration, space_coordinate_dtype, rank);
+                    space_configuration, py::dtype::from_args(space_coordinate_dtype_args), rank);
             },
             "name"_a,
             "time_domain"_a,

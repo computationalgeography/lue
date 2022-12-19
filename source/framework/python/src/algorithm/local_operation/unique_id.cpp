@@ -14,8 +14,10 @@ namespace lue::framework {
             typename ConditionElement>
         pybind11::object unique_id(
             PartitionedArray<ConditionElement, rank> const& condition,
-            pybind11::dtype const& dtype)
+            pybind11::object const& dtype_args)
         {
+            pybind11::dtype const dtype{pybind11::dtype::from_args(dtype_args)};
+
             // Switch on dtype and call a function that returns an array of the
             // right value type
             auto const kind = dtype.kind();
@@ -67,7 +69,7 @@ namespace lue::framework {
             if(!result)
             {
                 throw std::runtime_error(fmt::format(
-                    "Operation expects dtype representing uint8, uint{32,64}, or int{32,64}, "
+                    "Operation expects dtype representing uint8, uint{{32,64}}, or int{{32,64}}, "
                     "but got: kind={}, itemsize={}",
                     kind, size));
             }

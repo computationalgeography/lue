@@ -21,5 +21,5 @@ class TanTest(lue_test.TestCase):
         fill_value = 5.5
 
         for dtype in [np.float32, np.float64]:
-            array = lfr.create_array(array_shape, partition_shape, np.dtype(dtype), fill_value)
+            array = lfr.create_array(array_shape, partition_shape, dtype, fill_value)
             lfr.tan(array)

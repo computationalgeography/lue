@@ -20,7 +20,7 @@ class UniformTest(lue_test.TestCase):
         pass
         # array_shape = (60, 40)
         # partition_shape = (10, 10)
-        # dtype = np.dtype(np.int32)
+        # dtype = np.int32
         # min_value = 33
         # max_value = 55
         # array = lfr.uniform(array_shape, partition_shape, dtype, min_value, max_value)

@@ -20,7 +20,7 @@ class UniqueIDTest(lue_test.TestCase):
         partition_shape = (10, 10)
         fill_value = 5
 
-        array = lfr.create_array(array_shape, partition_shape, np.dtype(np.uint8), fill_value)
+        array = lfr.create_array(array_shape, partition_shape, np.uint8, fill_value)
 
         for dtype in [np.uint8, np.int32, np.uint32, np.int64, np.uint64]:
-            lfr.unique_id(array, dtype=np.dtype(dtype))
+            lfr.unique_id(array, dtype)

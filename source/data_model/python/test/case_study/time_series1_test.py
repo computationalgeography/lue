@@ -48,7 +48,7 @@ class TimeSeriesTest(lue_test.TestCase):
                 ldm.Mobility.stationary,
                 ldm.SpaceDomainItemType.point
             )
-            space_coordinate_datatype = numpy.dtype(numpy.float64)
+            space_coordinate_datatype = numpy.float64
             rank = 2
 
             # Property set
@@ -98,7 +98,7 @@ class TimeSeriesTest(lue_test.TestCase):
             space_domain.value.expand(nr_outlets)[:] = space_points
 
             # Property
-            discharge_datatype = numpy.dtype(numpy.float32)
+            discharge_datatype = numpy.float32
             discharge = outlet_points.add_property(
                 "discharge", dtype=discharge_datatype, rank=1,
                 shape_per_object=ldm.ShapePerObject.same,

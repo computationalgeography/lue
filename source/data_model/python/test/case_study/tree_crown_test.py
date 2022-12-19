@@ -30,7 +30,7 @@ class TreeCrownTest(lue_test.TestCase):
                 ldm.Mobility.stationary,
                 ldm.SpaceDomainItemType.point
             )
-            space_coordinate_datatype = np.dtype(np.float32)
+            space_coordinate_datatype = np.float32
             stem_points = phenomenon.add_property_set(
                 "stems",
                 space_configuration, space_coordinate_datatype, rank)
@@ -46,7 +46,7 @@ class TreeCrownTest(lue_test.TestCase):
 
             # Property
             tree_kind = stem_points.add_property(
-                "kind", dtype=np.dtype(np.uint8))
+                "kind", dtype=np.uint8)
             tree_kind.value.expand(nr_trees)[:] = \
                 (10 * np.random.rand(nr_trees)).astype(np.uint8)
 
@@ -72,7 +72,7 @@ class TreeCrownTest(lue_test.TestCase):
             discretization.value.expand(nr_trees)[:] = shapes
 
             # Presence property
-            presence_datatype = np.dtype(np.uint8)
+            presence_datatype = np.uint8
             presence = property_set.add_property(
                 "presence", dtype=presence_datatype, rank=rank,
                 shape_per_object=ldm.ShapePerObject.different,
@@ -114,7 +114,7 @@ class TreeCrownTest(lue_test.TestCase):
                 ldm.Mobility.stationary,
                 ldm.SpaceDomainItemType.box
             )
-            space_coordinate_datatype = np.dtype(np.float32)
+            space_coordinate_datatype = np.float32
 
             crown_boxes = phenomenon.add_property_set(
                 "crowns",
@@ -200,7 +200,7 @@ class TreeCrownTest(lue_test.TestCase):
                 ldm.Mobility.stationary,
                 ldm.SpaceDomainItemType.box
             )
-        space_coordinate_datatype = np.dtype(np.float32)
+        space_coordinate_datatype = np.float32
         space_rank = 2
 
         count_datatype = ldm.dtype.Count
@@ -208,7 +208,7 @@ class TreeCrownTest(lue_test.TestCase):
         max_size_of_crown = int(20 / cell_size)  # 20 m in nr of cells
         nr_cells_in_crown = max_size_of_crown ** 2
 
-        biomass_datatype = np.dtype(np.float32)
+        biomass_datatype = np.float32
 
         # Trees ----------------------------------------------------------------
         trees = dataset.add_phenomenon("trees")

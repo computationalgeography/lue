@@ -20,7 +20,7 @@ class RasterTest(lue_test.TestCase):
             ldm.Mobility.stationary,
             ldm.SpaceDomainItemType.box
         )
-        coordinate_datatype = numpy.dtype(numpy.float32)
+        coordinate_datatype = numpy.float32
         rank = 2
         area_boxes = areas.add_property_set(
             "areas", space_configuration, coordinate_datatype, rank)
@@ -40,7 +40,7 @@ class RasterTest(lue_test.TestCase):
         discretization.value.expand(nr_areas)[:] = shapes
 
         # Elevation property
-        elevation_datatype = numpy.dtype(numpy.float32)
+        elevation_datatype = numpy.float32
         elevation = area_boxes.add_property(
             "elevation", dtype=elevation_datatype, rank=rank)
         grids = elevation.value.expand(ids, shapes)

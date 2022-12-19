@@ -29,5 +29,5 @@ class ZonalNormalTest(lue_test.TestCase):
                     (np.float64, np.uint32),
                     (np.float64, np.uint64),
                 ]:
-            zones = lfr.create_array(array_shape, partition_shape, np.dtype(zone_dtype), fill_zone)
-            lfr.zonal_normal(zones, np.dtype(value_dtype))
+            zones = lfr.create_array(array_shape, partition_shape, zone_dtype, fill_zone)
+            lfr.zonal_normal(zones, value_dtype)

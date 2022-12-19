@@ -21,5 +21,5 @@ class AbsTest(lue_test.TestCase):
         fill_value = 5
 
         for dtype in [np.int32, np.int64, np.float32, np.float64]:
-            array = lfr.create_array(array_shape, partition_shape, np.dtype(dtype), fill_value)
+            array = lfr.create_array(array_shape, partition_shape, dtype, fill_value)
             lfr.abs(array)

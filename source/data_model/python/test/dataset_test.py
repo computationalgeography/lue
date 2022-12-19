@@ -131,7 +131,7 @@ class DatasetTest(lue_test.TestCase):
             # Add property set with a space domain
             space_configuration = ldm.SpaceConfiguration(ldm.Mobility.stationary, ldm.SpaceDomainItemType.box)
             my_property_set1 = my_phenomenon.add_property_set("my_property_set1",
-                space_configuration, np.dtype(np.float32), 2)
+                space_configuration, np.float32, 2)
             space_domain = my_property_set1.space_domain
             value1 = space_domain.value  # <--- Used to dangle
 

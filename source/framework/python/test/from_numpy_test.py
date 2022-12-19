@@ -19,7 +19,7 @@ class FromNumPyTest(lue_test.TestCase):
         array_shape = (60, 40)
         nr_cells = 60 * 40
         partition_shape = (10, 10)
-        dtype = np.dtype(np.int32)
+        dtype = np.int32
         numpy_array = np.arange(nr_cells, dtype=dtype).reshape(array_shape)
 
         # https://github.com/computationalgeography/lue/issues/484
@@ -38,7 +38,7 @@ class FromNumPyTest(lue_test.TestCase):
 
         array_shape = (60, 40)
         partition_shape = (10, 10)
-        dtype = np.dtype(np.int32)
+        dtype = np.int32
         numpy_array = np.full(array_shape, 5, dtype=dtype)
         numpy_array[10, 10] = 999
         numpy_array[20, 20] = 999
@@ -60,7 +60,7 @@ class FromNumPyTest(lue_test.TestCase):
 
         array_shape = (1, 1)
         partition_shape = (1, 1)
-        dtype = np.dtype(np.int32)
+        dtype = np.int32
         numpy_array = np.arange(1, dtype=dtype).reshape(array_shape)
 
         # https://github.com/computationalgeography/lue/issues/484

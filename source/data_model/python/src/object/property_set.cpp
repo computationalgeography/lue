@@ -544,10 +544,10 @@ void init_property_set(
             [](
                 PropertySet& property_set,
                 std::string const& name,
-                py::dtype const& dtype,
+                py::object const& dtype_args,
                 std::string const& description) -> same_shape::Property&
             {
-                auto const datatype_ = numpy_type_to_memory_datatype(dtype);
+                auto const datatype_ = numpy_type_to_memory_datatype(py::dtype::from_args(dtype_args));
 
                 return property_set.properties().add(
                     name,
@@ -574,11 +574,11 @@ void init_property_set(
             [](
                 PropertySet& property_set,
                 std::string const& name,
-                py::dtype const& dtype,
+                py::object const& dtype_args,
                 py::tuple const& shape,
                 std::string const& description) -> same_shape::Property&
             {
-                auto const datatype_ = numpy_type_to_memory_datatype(dtype);
+                auto const datatype_ = numpy_type_to_memory_datatype(py::dtype::from_args(dtype_args));
                 auto const shape_ = tuple_to_shape(shape);
 
                 return property_set.properties().add(
@@ -609,7 +609,7 @@ void init_property_set(
             [](
                 PropertySet& property_set,
                 std::string const& name,
-                py::dtype const& dtype,
+                py::object const& dtype_args,
                 py::tuple const& shape,
                 ValueVariability const value_variability,
                 std::string const& description)
@@ -618,7 +618,7 @@ void init_property_set(
                 // - Shape is the same per object
                 // - Shape is constant through time
                 // - Value is constant or variable
-                auto const datatype_ = numpy_type_to_memory_datatype(dtype);
+                auto const datatype_ = numpy_type_to_memory_datatype(py::dtype::from_args(dtype_args));
                 auto const shape_ = tuple_to_shape(shape);
 
                 py::object property = py::none();
@@ -675,14 +675,14 @@ void init_property_set(
             [](
                 PropertySet& property_set,
                 std::string const& name,
-                py::dtype const& dtype,
+                py::object const& dtype_args,
                 Rank const rank,
                 std::string const& description) -> different_shape::Property&
             {
                 // In this overload
                 // - Value is constant
                 // - Shape differs per object
-                auto const datatype_ = numpy_type_to_memory_datatype(dtype);
+                auto const datatype_ = numpy_type_to_memory_datatype(py::dtype::from_args(dtype_args));
 
                 return property_set.properties().add(
                     name,
@@ -712,7 +712,7 @@ void init_property_set(
             [](
                 PropertySet& property_set,
                 std::string const& name,
-                py::dtype const& dtype,
+                py::object const& dtype_args,
                 Rank const rank,
                 ShapePerObject const shape_per_object,
                 ShapeVariability const shape_variability,
@@ -722,7 +722,7 @@ void init_property_set(
                 // - Value is variable, and
                 // - Shape differs per object, and/or
                 // - Shape differs through time
-                auto const datatype_ = numpy_type_to_memory_datatype(dtype);
+                auto const datatype_ = numpy_type_to_memory_datatype(py::dtype::from_args(dtype_args));
 
                 py::object property = py::none();
 

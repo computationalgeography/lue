@@ -25,7 +25,7 @@ class WriteArrayTest(lue_test.TestCase):
 
         array_shape = (60, 40)
         partition_shape = (10, 10)
-        dtype = np.dtype(np.int32)
+        dtype = np.int32
         fill_value = 0
 
         # Create an array with random values and some no-data
@@ -65,7 +65,7 @@ class WriteArrayTest(lue_test.TestCase):
 
         array_shape = (60, 40)
         partition_shape = (10, 10)
-        dtype = np.dtype(np.int32)
+        dtype = np.int32
         fill_value = 0
         nr_time_steps = 7
 

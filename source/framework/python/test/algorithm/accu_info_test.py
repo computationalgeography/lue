@@ -20,6 +20,6 @@ class AccuInfoTest(lue_test.TestCase):
         partition_shape = (10, 10)
 
         direction = 4
-        flow_direction = lfr.create_array(array_shape, partition_shape, np.dtype(np.uint8), direction)
+        flow_direction = lfr.create_array(array_shape, partition_shape, np.uint8, direction)
 
         stream_class, partition_class, solvable_fraction, nr_cells_to_solve = lfr.accu_info(flow_direction)

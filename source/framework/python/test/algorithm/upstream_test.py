@@ -20,7 +20,7 @@ class UpstreamTest(lue_test.TestCase):
         partition_shape = (10, 10)
 
         direction = 3
-        flow_direction = lfr.create_array(array_shape, partition_shape, np.dtype(np.uint8), direction)
-        material = lfr.create_array(array_shape, partition_shape, np.dtype(np.uint64), 1)
+        flow_direction = lfr.create_array(array_shape, partition_shape, np.uint8, direction)
+        material = lfr.create_array(array_shape, partition_shape, np.uint64, 1)
 
         upstream = lfr.upstream(flow_direction, material)

@@ -17,11 +17,11 @@ space_configuration = ldm.SpaceConfiguration(
 )
 constant = city.add_property_set(
     "constant", space_configuration,
-    space_coordinate_dtype=np.dtype(np.float32), rank=rank)
+    space_coordinate_dtype=np.float32, rank=rank)
 
 point = np.arange(nr_cities * rank, dtype=np.float32).reshape(nr_cities, rank)
 constant.space_domain.value.expand(nr_cities)[:] = point
 
-population = constant.add_property("population", dtype=np.dtype(np.int64))
+population = constant.add_property("population", dtype=np.int64)
 population.value.expand(nr_cities)[:] = (  # Dummy data
     np.random.rand(nr_cities) * 1e6).astype(np.int64)
