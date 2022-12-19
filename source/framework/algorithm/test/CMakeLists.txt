@@ -58,6 +58,7 @@ set(local_operation_names
     subtract
     tan
     uniform
+    unique_id
     valid
     where
 )
@@ -116,7 +117,6 @@ set(names
     range
     sum
     timestamp
-    unique_id
     upstream
 )
 
@@ -186,6 +186,7 @@ endforeach()
 foreach(name ${global_operation_names})
     target_link_libraries(${scope}_${name}_test
         PRIVATE
+            lue::framework_local_operation
             lue::framework_global_operation)
 endforeach()
 

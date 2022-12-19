@@ -458,8 +458,8 @@ added to the LUE framework. The number of model developers requesting one is one
      - ✅
      -
    * - uniqueid
-     - ❌
-     - 1
+     - ✅
+     - unique_id
    * - upstream
      - ✅
      -
@@ -548,8 +548,6 @@ added to the LUE framework. The number of model developers requesting one is one
    - range.hpp
    - timestamp.hpp
    - unique.hpp
-   - unique_id.hpp
-   - zonal_sum.hpp
 
 
 Modelling framework

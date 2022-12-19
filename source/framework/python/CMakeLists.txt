@@ -78,6 +78,7 @@ add_library(lue_py_framework SHARED
     src/algorithm/local_operation/logical_exclusive_or.cpp
     src/algorithm/local_operation/logical_inclusive_or.cpp
     src/algorithm/local_operation/logical_not.cpp
+    src/algorithm/local_operation/unique_id.cpp
 
     src/algorithm/routing_operation.cpp
     src/algorithm/routing_operation/kinematic_wave.cpp
