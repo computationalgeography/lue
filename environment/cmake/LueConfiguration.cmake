@@ -24,9 +24,6 @@ option(LUE_FRAMEWORK_WITH_OPENCL
 option(LUE_FRAMEWORK_WITH_DASHBOARD
     "Include dashboard for simulation framework"
     FALSE)
-# option(LUE_FRAMEWORK_WITH_BENCHMARKS
-#     "Include benchmarks"
-#     FALSE)
 option(LUE_FRAMEWORK_WITH_PYTHON_API
     "Include Python API for modelling framework"
     FALSE)
@@ -51,7 +48,7 @@ option(LUE_QA_WITH_PYTHON_API
     FALSE)
 option(LUE_QA_WITH_TESTS
     "Include tests"
-    TRUE)
+    FALSE)
 set(LUE_QA_TEST_NR_LOCALITIES_PER_TEST
     1 CACHE STRING "Number of localities to use")
 set(LUE_QA_TEST_NR_THREADS_PER_LOCALITY
@@ -222,10 +219,6 @@ if(LUE_BUILD_FRAMEWORK)
     if(LUE_FRAMEWORK_WITH_DASHBOARD)
         set(LUE_IMGUI_REQUIRED TRUE)
     endif()
-
-    # if(LUE_FRAMEWORK_WITH_BENCHMARKS)
-    #     set(LUE_NLOHMANN_JSON_REQUIRED TRUE)
-    # endif()
 
     if(LUE_FRAMEWORK_WITH_PYTHON_API)
         set(LUE_PYBIND11_REQUIRED TRUE)

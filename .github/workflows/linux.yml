@@ -96,6 +96,7 @@ jobs:
                   -D LUE_BUILD_DOCUMENTATION=TRUE \
                   -D LUE_BUILD_QA=TRUE \
                   -D LUE_QA_WITH_PYTHON_API=TRUE \
+                  -D LUE_QA_WITH_TESTS=TRUE \
                   -D LUE_QA_TEST_NR_LOCALITIES_PER_TEST=1 \
                   -D LUE_QA_TEST_NR_THREADS_PER_LOCALITY=2 \
                   -D LUE_BUILD_DATA_MODEL=TRUE \
@@ -137,6 +138,7 @@ jobs:
               cmake --install $GITHUB_WORKSPACE/../build --prefix install --component hpx_runtime
               cmake --install $GITHUB_WORKSPACE/../build --prefix install --component lue_runtime
 
+              install/bin/lue_scalability --version
               install/bin/lue_translate --version
               install/bin/lue_validate --version
               install/bin/lue_view --version

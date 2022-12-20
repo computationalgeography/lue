@@ -60,6 +60,7 @@ test:
     commands:
        - lue_translate -h
        - lue_validate -h
+       - lue_scalability -h
 
 
 about:

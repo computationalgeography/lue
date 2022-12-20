@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from lue import __version__ as lue_version
 from lue.qa.scalability import perform_experiment_task
 from lue.qa.scalability.core import json_to_data
 import docopt
@@ -13,15 +14,18 @@ Usage:
     {command}
         (partition_shape | weak_scalability | strong_scalability)
         (script | import | postprocess) <configuration>
+    {command} -h | --help
+    {command} --version
 
 Options:
     -h --help        Show this screen
+    --version        Show version
 """.format(
     command = os.path.basename(sys.argv[0]))
 
 
 if __name__ == "__main__":
-    arguments = docopt.docopt(usage)
+    arguments = docopt.docopt(usage, version=lue_version)
 
     if arguments["partition_shape"]:
         experiment = "partition_shape"

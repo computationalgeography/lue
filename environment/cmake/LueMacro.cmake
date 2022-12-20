@@ -409,6 +409,31 @@ function(add_hpx_unit_tests)
 endfunction()
 
 
+function(lue_install_programs)
+    set(options
+    )
+    set(one_value_arguments
+    )
+    set(multi_value_arguments
+        TARGETS
+    )
+    set(name "lue_install_programs")
+    cmake_parse_arguments(
+        ${name} "${options}" "${one_value_arguments}" "${multi_value_arguments}" ${ARGN}
+    )
+
+    set(${name}_RUNTIME_COMPONENT lue_runtime)
+
+    install(
+        PROGRAMS
+            ${${name}_TARGETS}
+        RUNTIME
+            DESTINATION ${CMAKE_INSTALL_BINDIR}
+            COMPONENT ${${name}_RUNTIME_COMPONENT}
+    )
+endfunction()
+
+
 function(lue_install_executables)
     set(options
     )

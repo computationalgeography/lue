@@ -7,7 +7,7 @@ add_custom_target(qa_link ALL
     COMMAND
         ${CMAKE_COMMAND} -E create_symlink
             ${CMAKE_CURRENT_SOURCE_DIR}/lue/qa
-            ${CMAKE_BINARY_DIR}/${LUE_BUILD_PYTHON_PACKAGE_DIR}/qa
+            ${CMAKE_BINARY_DIR}/${LUE_BUILD_PYTHON_PACKAGE_DIR}/$<$<BOOL:${LUE_GENERATOR_IS_MULTI_CONFIG}>:$<CONFIG>>/qa
 )
 
 if(LUE_QA_WITH_PYTHON_API)
@@ -23,7 +23,6 @@ if(LUE_QA_WITH_PYTHON_API)
 
     set_target_properties(lue_py_qa
         PROPERTIES
-            OUTPUT_NAME lue_py_qa
             RUNTIME_OUTPUT_DIRECTORY $<TARGET_FILE_DIR:lue::py>
     )
 
@@ -36,14 +35,19 @@ if(LUE_QA_WITH_PYTHON_API)
         PRIVATE
             lue::qa
             lue::shared
-            pybind11::embed
+            pybind11::module
             pybind11::thin_lto
             pybind11::opt_size
             pybind11::windows_extras
     )
 
     pybind11_extension(lue_py_qa)
-    pybind11_strip(lue_py_qa)
+
+    # TODO pybind11_strip does not work on macOS, when building using Conda packages
+    #      The resulting binary can't be imported. Results in "killed: 9".
+    if(NOT MSVC AND NOT APPLE AND NOT ${CMAKE_BUILD_TYPE} MATCHES Debug|RelWithDebInfo)
+        pybind11_strip(lue_py_qa)
+    endif()
 
     lue_install_libraries(TARGETS lue_py_qa)
 
@@ -60,7 +64,7 @@ if(LUE_QA_WITH_PYTHON_API)
     endif()
 
     install(
-        DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lue/qa
+        DIRECTORY ${CMAKE_BINARY_DIR}/${LUE_BUILD_PYTHON_PACKAGE_DIR}/$<$<BOOL:${LUE_GENERATOR_IS_MULTI_CONFIG}>:$<CONFIG>>/qa
         DESTINATION ${LUE_INSTALL_PYTHON_PACKAGE_DIR}
         COMPONENT lue_runtime
     )

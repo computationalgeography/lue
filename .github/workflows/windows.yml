@@ -56,6 +56,7 @@ jobs:
                   -D LUE_BUILD_VIEW:BOOL=TRUE \
                   -D LUE_BUILD_QA:BOOL=TRUE \
                   -D LUE_QA_WITH_PYTHON_API=TRUE \
+                  -D LUE_QA_WITH_TESTS=TRUE \
                   -D LUE_QA_TEST_NR_LOCALITIES_PER_TEST=1 \
                   -D LUE_QA_TEST_NR_THREADS_PER_LOCALITY=2 \
                   -D LUE_BUILD_DOCUMENTATION:BOOL=FALSE \
@@ -104,4 +105,5 @@ jobs:
               # Add our package to the set of Conda packages
               conda-develop install/lib/python${{ matrix.python-version }}
 
+              install/bin/lue_scalability --version
               python -c "import lue; print(lue.__version__)"
