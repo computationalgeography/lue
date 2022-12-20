@@ -1,14 +1,5 @@
+add_subdirectory(qa)
 add_test_conditionally(test)
-
-# Create a symbolic link to the lue.qa directory in the binary directory so any updates to
-# the Python sources can be tested immediately, without having to copy the changed files to the
-# binary directory.
-add_custom_target(qa_link ALL
-    COMMAND
-        ${CMAKE_COMMAND} -E create_symlink
-            ${CMAKE_CURRENT_SOURCE_DIR}/lue/qa
-            ${CMAKE_BINARY_DIR}/${LUE_BUILD_PYTHON_PACKAGE_DIR}/$<$<BOOL:${LUE_GENERATOR_IS_MULTI_CONFIG}>:$<CONFIG>>/qa
-)
 
 if(LUE_QA_WITH_PYTHON_API)
 

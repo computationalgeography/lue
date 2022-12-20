@@ -425,11 +425,9 @@ function(lue_install_programs)
     set(${name}_RUNTIME_COMPONENT lue_runtime)
 
     install(
-        PROGRAMS
-            ${${name}_TARGETS}
-        RUNTIME
-            DESTINATION ${CMAKE_INSTALL_BINDIR}
-            COMPONENT ${${name}_RUNTIME_COMPONENT}
+        PROGRAMS ${${name}_TARGETS}
+        DESTINATION ${CMAKE_INSTALL_BINDIR}
+        COMPONENT ${${name}_RUNTIME_COMPONENT}
     )
 endfunction()
 
