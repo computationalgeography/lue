@@ -47,13 +47,15 @@ requirements:
   run:
     # Dependencies required for using the software.
     # Stuff required when using LUE.
-    - python
-    - {{ pin_compatible('numpy') }}
+    - docopt.cpp
+    - fmt
     - hdf5
     - hpx
     - libgdal
-    - fmt
-    - docopt.cpp
+    - matplotlib  # lue.qa
+    - {{ pin_compatible('numpy') }}
+    - python
+    - python-dateutil  # lue.qa
 
 
 test:

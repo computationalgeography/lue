@@ -15,12 +15,11 @@ jobs:
         strategy:
             matrix:
                 os: ["macos-11"]
-                python-version: ["3.10"]
             fail-fast: false
 
         runs-on: ${{ matrix.os }}
 
-        name: ${{ matrix.os }} / python - ${{ matrix.python-version }}
+        name: ${{ matrix.os }}
 
         steps:
 
@@ -30,10 +29,11 @@ jobs:
         - name: configure system
           run: |
               brew update  # > /dev/null || true
-              # brew upgrade
+              brew upgrade
               brew install \
                   cmake \
                   boost \
+                  conan \
                   doxygen \
                   fmt \
                   gdal \
@@ -44,21 +44,11 @@ jobs:
                   hwloc \
                   ninja \
                   nlohmann-json \
+                  numpy \
                   pybind11 \
+                  python \
                   tree
-
-        - uses: conda-incubator/setup-miniconda@v2
-          with:
-              auto-update-conda: true
-              python-version: ${{ matrix.python-version }}
-              channels: conda-forge
-
-        - shell: bash -l {0}
-          run: |
-              # Pin markupsafe, used by Jinja which is used by Conan, because of a breaking
-              # change in markupsafe 2.1.0
-              conda install conan docopt "markupsafe<2.1.0" numpy
-              # breathe sphinx
+              pip3 install docopt
               conan profile new --detect default
 
         - name: configure lue
@@ -108,11 +98,10 @@ jobs:
               cmake --install $GITHUB_WORKSPACE/../build --prefix install --component hpx_runtime
               cmake --install $GITHUB_WORKSPACE/../build --prefix install --component lue_runtime
 
-              install/bin/lue_scalability --version
               install/bin/lue_translate --version
               install/bin/lue_validate --version
               install/bin/lue_view --version
 
-              # TODO https://github.com/computationalgeography/lue/issues/473
-              # export PYTHONPATH="`pwd`/install/lib/python${{ matrix.python-version }}:$PYTHONPATH"
-              # python -c "import lue; print(lue.__version__)"
+              export PYTHONPATH="install/lib/python${{ matrix.python-version }}:$PYTHONPATH"
+              install/bin/lue_scalability --version
+              python3 -c "import lue; print(lue.__version__)"

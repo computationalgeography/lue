@@ -104,6 +104,5 @@ jobs:
 
               # Add our package to the set of Conda packages
               conda-develop install/lib/python${{ matrix.python-version }}
-
               install/bin/lue_scalability --version
               python -c "import lue; print(lue.__version__)"

@@ -138,12 +138,12 @@ jobs:
               cmake --install $GITHUB_WORKSPACE/../build --prefix install --component hpx_runtime
               cmake --install $GITHUB_WORKSPACE/../build --prefix install --component lue_runtime
 
-              install/bin/lue_scalability --version
               install/bin/lue_translate --version
               install/bin/lue_validate --version
               install/bin/lue_view --version
 
               export PYTHONPATH="install/lib/python${{ matrix.python-version }}:$PYTHONPATH"
+              install/bin/lue_scalability --version
               python -c "import lue; print(lue.__version__)"
 
         - name: deploy lue documentation
