@@ -50,6 +50,6 @@ class ZonalMinimumTest(lue_test.TestCase):
                     (np.float64, np.uint32),
                     (np.float64, np.uint64),
                 ]:
-            array = lfr.create_array(array_shape, partition_shape, np.dtype(value_dtype), fill_value)
-            zones = lfr.create_array(array_shape, partition_shape, np.dtype(zone_dtype), fill_zone)
+            array = lfr.create_array(array_shape, partition_shape, value_dtype, fill_value)
+            zones = lfr.create_array(array_shape, partition_shape, zone_dtype, fill_zone)
             lfr.zonal_minimum(array, zones)

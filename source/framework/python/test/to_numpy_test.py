@@ -18,7 +18,7 @@ class ToNumPyTest(lue_test.TestCase):
 
         array_shape = (60, 40)
         partition_shape = (10, 10)
-        dtype = np.dtype(np.int32)
+        dtype = np.int32
         fill_value = 5
         array = lfr.create_array(array_shape, partition_shape, dtype, fill_value)
         numpy_array = lfr.to_numpy(array)
@@ -32,7 +32,7 @@ class ToNumPyTest(lue_test.TestCase):
 
         array_shape = (60, 40)
         partition_shape = (10, 10)
-        dtype = np.dtype(np.int32)
+        dtype = np.int32
 
         # Create array containing only no-data elements
         array = lfr.where(lfr.create_array(array_shape, partition_shape, dtype, 5) != 5, 7)
@@ -47,7 +47,7 @@ class ToNumPyTest(lue_test.TestCase):
 
         array_shape = (1, 1)
         partition_shape = (1, 1)
-        dtype = np.dtype(np.int32)
+        dtype = np.int32
         fill_value = 5
         array = lfr.create_array(array_shape, partition_shape, dtype, fill_value)
         numpy_array = lfr.to_numpy(array)

@@ -33,8 +33,9 @@ void bind_raster_view(
                     [](
                         ConstantRasterView& self,
                         std::string const& name,
-                        pybind11::dtype const& dtype)
+                        pybind11::object const& dtype_args)
                     {
+                        pybind11::dtype const dtype{pybind11::dtype::from_args(dtype_args)};
                         hdf5::Datatype const datatype = numpy_type_to_memory_datatype(dtype);
 
                         return self.add_layer(name, datatype);
@@ -74,8 +75,9 @@ void bind_raster_view(
                     [](
                         VariableRasterView& self,
                         std::string const& name,
-                        pybind11::dtype const& dtype)
+                        pybind11::object const& dtype_args)
                     {
+                        pybind11::dtype const dtype{pybind11::dtype::from_args(dtype_args)};
                         hdf5::Datatype const datatype = numpy_type_to_memory_datatype(dtype);
 
                         return self.add_layer(name, datatype);

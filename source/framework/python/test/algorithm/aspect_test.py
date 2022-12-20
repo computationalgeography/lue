@@ -20,6 +20,6 @@ class AspectTest(lue_test.TestCase):
         partition_shape = (10, 10)
 
         fill_value = 5
-        elevation = lfr.create_array(array_shape, partition_shape, np.dtype(np.float32), fill_value)
+        elevation = lfr.create_array(array_shape, partition_shape, np.float32, fill_value)
 
         aspect = lfr.aspect(elevation)

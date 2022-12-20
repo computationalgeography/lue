@@ -21,5 +21,5 @@ class IteratePerElementTest(lue_test.TestCase):
         fill_value = 5
 
         for type_ in [np.uint8, np.uint32, np.uint64, np.int32, np.int64, np.float32, np.float64]:
-            array = lfr.create_array(array_shape, partition_shape, np.dtype(type_), fill_value)
+            array = lfr.create_array(array_shape, partition_shape, type_, fill_value)
             array = lfr.iterate_per_element(array)

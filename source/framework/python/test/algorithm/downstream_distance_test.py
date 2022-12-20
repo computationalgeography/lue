@@ -20,7 +20,7 @@ class DownstreamDistanceTest(lue_test.TestCase):
         partition_shape = (10, 10)
 
         direction = 1
-        flow_direction = lfr.create_array(array_shape, partition_shape, np.dtype(np.uint8), direction)
+        flow_direction = lfr.create_array(array_shape, partition_shape, np.uint8, direction)
         cell_size = 10
 
-        downstream_distance = lfr.downstream_distance(flow_direction, cell_size, np.dtype(np.float32))
+        downstream_distance = lfr.downstream_distance(flow_direction, cell_size, np.float32)

@@ -17,14 +17,14 @@ space_configuration = ldm.SpaceConfiguration(
 )
 constant = area.add_property_set(
     "constant", space_configuration,
-    space_coordinate_dtype=np.dtype(np.float32), rank=rank)
+    space_coordinate_dtype=np.float32, rank=rank)
 
 box = np.arange(nr_areas * rank * 2, dtype=np.float32).reshape(
     nr_areas, rank * 2)
 constant.space_domain.value.expand(nr_areas)[:] = box
 
 # Property with differently shaped 2D object arrays
-elevation_datatype = np.dtype(np.float32)
+elevation_datatype = np.float32
 elevation = constant.add_property(
     "elevation", dtype=elevation_datatype, rank=rank)
 count_datatype = ldm.dtype.Count

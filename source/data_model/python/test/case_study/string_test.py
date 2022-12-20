@@ -16,7 +16,7 @@ class StringTest(lue_test.TestCase):
 
         constants = planets.add_property_set("constants")
         gravity = constants.add_property(
-            "gravity", dtype=numpy.dtype(numpy.float32))
+            "gravity", dtype=numpy.float32)
         gravity.value.expand(nr_planets)[:] = \
             numpy.array([1.5, 2.5, 3.5], dtype=numpy.float32)
 

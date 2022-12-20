@@ -19,7 +19,7 @@ class CreatePartitionedArrayTest(lue_test.TestCase):
         cls.value = 5.5
         cls.array = lfr.create_array(
             array_shape=(60, 40), partition_shape=(10, 10),
-            dtype=np.dtype(np.float32), fill_value=cls.value)
+            dtype=np.float32, fill_value=cls.value)
         cls.value_f = lfr.maximum(cls.array)
 
 

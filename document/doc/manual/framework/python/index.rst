@@ -21,7 +21,7 @@ or more localities.
     def create_array_2d():
         array_shape = (1000, 1000)
         partition_shape = (100, 100)
-        dtype = np.dtype(np.float64)
+        dtype = np.float64
         fill_value = 5.5
 
         return lfr.create_array(array_shape, partition_shape, dtype, fill_value)

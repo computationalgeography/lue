@@ -50,8 +50,10 @@ namespace lue::framework {
             [](
                 PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
                 pybind11::object const& cell_size,
-                pybind11::dtype const& dtype)
+                pybind11::object const& dtype_args)
             {
+                pybind11::dtype const dtype{pybind11::dtype::from_args(dtype_args)};
+
                 auto const kind = dtype.kind();
                 auto const size = dtype.itemsize();  // bytes
 

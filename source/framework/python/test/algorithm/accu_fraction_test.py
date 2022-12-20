@@ -20,8 +20,8 @@ class AccuFractionTest(lue_test.TestCase):
         partition_shape = (10, 10)
 
         direction = 2
-        flow_direction = lfr.create_array(array_shape, partition_shape, np.dtype(np.uint8), direction)
-        material = lfr.create_array(array_shape, partition_shape, np.dtype(np.float64), 1)
-        fraction = lfr.create_array(array_shape, partition_shape, np.dtype(np.float64), 0.8)
+        flow_direction = lfr.create_array(array_shape, partition_shape, np.uint8, direction)
+        material = lfr.create_array(array_shape, partition_shape, np.float64, 1)
+        fraction = lfr.create_array(array_shape, partition_shape, np.float64, 0.8)
 
         flux, state = lfr.accu_fraction(flow_direction, material, fraction)

@@ -23,7 +23,7 @@ variable = area.add_property_set(
     "variable",
     time_configuration, clock,
     space_configuration,
-    space_coordinate_dtype=np.dtype(np.float32), rank=rank)
+    space_coordinate_dtype=np.float32, rank=rank)
 
 object_tracker = variable.object_tracker
 

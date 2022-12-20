@@ -21,8 +21,10 @@ namespace lue::framework {
             Rank rank>
         pybind11::object cast(
             PartitionedArray<InputElement, rank> const& array,
-            pybind11::dtype const& dtype)
+            pybind11::object const& dtype_args)
         {
+            pybind11::dtype const dtype{pybind11::dtype::from_args(dtype_args)};
+
             // Switch on dtype and call a function that returns an array of the
             // right value type
             auto const kind = dtype.kind();

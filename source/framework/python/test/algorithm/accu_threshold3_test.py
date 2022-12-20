@@ -20,8 +20,8 @@ class AccuThreshold3Test(lue_test.TestCase):
         partition_shape = (10, 10)
 
         for direction in [1, 2, 3, 4, 5, 6, 7, 8, 9]:
-            flow_direction = lfr.create_array(array_shape, partition_shape, np.dtype(np.uint8), direction)
-            external_inflow = lfr.create_array(array_shape, partition_shape, np.dtype(np.float64), 1)
-            threshold = lfr.create_array(array_shape, partition_shape, np.dtype(np.float64), 5)
+            flow_direction = lfr.create_array(array_shape, partition_shape, np.uint8, direction)
+            external_inflow = lfr.create_array(array_shape, partition_shape, np.float64, 1)
+            threshold = lfr.create_array(array_shape, partition_shape, np.float64, 5)
 
             outflow, remainder = lfr.accu_threshold3(flow_direction, external_inflow, threshold)
