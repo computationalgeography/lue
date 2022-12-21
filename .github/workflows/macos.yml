@@ -48,7 +48,10 @@ jobs:
                   pybind11 \
                   python \
                   tree
-              pip3 install docopt
+
+              # Needed by lue_scalability test below
+              pip3 install docopt matplotlib
+
               conan profile new --detect default
 
         - name: configure lue

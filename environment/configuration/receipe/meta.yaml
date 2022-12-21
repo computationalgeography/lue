@@ -47,6 +47,7 @@ requirements:
   run:
     # Dependencies required for using the software.
     # Stuff required when using LUE.
+    - docopt  # lue.qa
     - docopt.cpp
     - fmt
     - hdf5
@@ -62,7 +63,7 @@ test:
     commands:
        - lue_translate -h
        - lue_validate -h
-       - lue_scalability -h
+       - lue_scalability -h                      # [not win]
 
 
 about:

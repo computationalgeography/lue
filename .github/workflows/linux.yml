@@ -66,6 +66,9 @@ jobs:
           run: |
               conda install docopt breathe markupsafe numpy pip sphinx
 
+              # Needed by lue_scalability test below
+              conda install docopt matplotlib
+
               # Use conan from pypi to get the latest version
               pip install conan
 
