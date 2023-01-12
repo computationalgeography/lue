@@ -14,6 +14,15 @@ Usage:
     {command}
         (partition_shape | weak_scalability | strong_scalability)
         (script | import | postprocess) <configuration>
+    {command}
+        (partition_shape | weak_scalability | strong_scalability)
+        script <command> <result_prefix> <cluster> <worker> <experiment> <script>
+    {command}
+        (partition_shape | weak_scalability | strong_scalability)
+        import <command> <result_prefix> <cluster> <worker> <experiment> <script>
+    {command}
+        (partition_shape | weak_scalability | strong_scalability)
+        postprocess <command> <result_prefix> <cluster> <worker> <experiment> <script>
     {command} -h | --help
     {command} --version
 
@@ -34,14 +43,46 @@ if __name__ == "__main__":
     elif arguments["strong_scalability"]:
         experiment = "strong_scalability"
 
+    configuration_pathname = arguments["<configuration>"]
+
     if arguments["script"]:
         task = "script"
+        if configuration_pathname is not None:
+            configuration_data = json_to_data(configuration_pathname)
+        else:
+            configuration_data = {
+                    "command_pathname": "{}".format(arguments["<command>"]),
+                    "script_pathname": "{}".format(arguments["<script>"]),
+                    "result_prefix": "{}".format(arguments["<result_prefix>"]),
+                    "cluster": "{}".format(arguments["<cluster>"]),
+                    "benchmark": "{}".format(arguments["<worker>"]),
+                    "experiment": "{}".format(arguments["<experiment>"]),
+                }
     elif arguments["import"]:
         task = "import"
+        if configuration_pathname is not None:
+            configuration_data = json_to_data(configuration_pathname)
+        else:
+            configuration_data = {
+                    "command_pathname": "{}".format(arguments["<command>"]),
+                    "script_pathname": "{}".format(arguments["<script>"]),
+                    "result_prefix": "{}".format(arguments["<result_prefix>"]),
+                    "cluster": "{}".format(arguments["<cluster>"]),
+                    "benchmark": "{}".format(arguments["<worker>"]),
+                    "experiment": "{}".format(arguments["<experiment>"]),
+                }
     elif arguments["postprocess"]:
         task = "postprocess"
-
-    configuration_pathname = arguments["<configuration>"]
-    configuration_data = json_to_data(configuration_pathname)
+        if configuration_pathname is not None:
+            configuration_data = json_to_data(configuration_pathname)
+        else:
+            configuration_data = {
+                    "command_pathname": "{}".format(arguments["<command>"]),
+                    "script_pathname": "{}".format(arguments["<script>"]),
+                    "result_prefix": "{}".format(arguments["<result_prefix>"]),
+                    "cluster": "{}".format(arguments["<cluster>"]),
+                    "benchmark": "{}".format(arguments["<worker>"]),
+                    "experiment": "{}".format(arguments["<experiment>"]),
+                }
 
     perform_experiment_task(experiment, task, configuration_data)
