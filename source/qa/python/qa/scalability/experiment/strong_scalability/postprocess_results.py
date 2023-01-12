@@ -231,7 +231,7 @@ def post_process_raw_results(
 
     figure.suptitle(
         "{}, {}, {}\n"
-        "Strong scaling experiment on {} array and {} partitions ({})"
+        "Strong scalability experiment on {} array and {} partitions ({})"
             .format(
                 name,
                 system_name,

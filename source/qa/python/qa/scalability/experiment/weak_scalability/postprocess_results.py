@@ -203,7 +203,7 @@ def post_process_raw_results(
 
     figure.suptitle(
         "{}, {}, {}\n"
-        "Weak scaling experiment on {} array per worker and {} partitions ({})"
+        "Weak scalability experiment on {} array per worker and {} partitions ({})"
             .format(
                 name,
                 system_name,
