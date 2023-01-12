@@ -7,6 +7,7 @@ on:
     paths:
       - ".github/workflows/macos-conda.yml"
       - "source/**"
+      - "!source/qa/python/qa/**"
       - "environment/cmake/**"
       - "environment/configuration/receipe/build.sh"
       - "environment/configuration/receipe/meta.yaml"

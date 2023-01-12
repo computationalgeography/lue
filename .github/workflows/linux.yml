@@ -8,6 +8,7 @@ on:
       - ".github/workflows/linux.yml"
       - "environment/cmake/**"
       - "source/**"
+      - "!source/qa/python/qa/**"
 
 jobs:
     build:
