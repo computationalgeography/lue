@@ -44,10 +44,10 @@ jobs:
                   hwloc \
                   ninja \
                   nlohmann-json \
-                  pybind11 \
                   tree
 
-              pip3 install conan docopt matplotlib numpy
+              # docopt and matplotlib are needed by lue_scalability test below
+              pip3 install conan docopt matplotlib numpy pybind11
 
               conan profile new --detect default
 
