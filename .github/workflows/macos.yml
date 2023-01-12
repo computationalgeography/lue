@@ -29,11 +29,10 @@ jobs:
         - name: configure system
           run: |
               brew update  # > /dev/null || true
-              brew upgrade
+              # brew upgrade
               brew install \
                   cmake \
                   boost \
-                  conan \
                   doxygen \
                   fmt \
                   gdal \
@@ -44,13 +43,10 @@ jobs:
                   hwloc \
                   ninja \
                   nlohmann-json \
-                  numpy \
                   pybind11 \
-                  python \
                   tree
 
-              # Needed by lue_scalability test below
-              pip3 install docopt matplotlib
+              pip3 install conan docopt matplotlib numpy
 
               conan profile new --detect default
 
