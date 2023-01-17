@@ -41,7 +41,6 @@ jobs:
                   gperftools \
                   hdf5 \
                   hwloc \
-                  ninja \
                   nlohmann-json \
                   tree
 
@@ -53,7 +52,7 @@ jobs:
 
         - shell: bash -l {0}
           run: |
-              conda install gdal numpy pip pybind11
+              conda install gdal ninja numpy pip pybind11
 
               # Needed by lue_scalability test below
               conda install docopt matplotlib
