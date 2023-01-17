@@ -29,8 +29,9 @@ jobs:
 
         - name: configure system
           run: |
-              brew update  # > /dev/null || true
+              # brew update  # > /dev/null || true
               # brew upgrade
+              # HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK
               brew install \
                   cmake \
                   boost \
