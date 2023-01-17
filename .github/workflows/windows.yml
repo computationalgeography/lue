@@ -32,14 +32,16 @@ jobs:
               auto-update-conda: true
               python-version: ${{ matrix.python-version }}
               channels: conda-forge
+
         - shell: bash -l {0}
           run: |
-              # Pin markupsafe, used by Jinja which is used by Conan, because of a breaking
-              # change in markupsafe 2.1.0
-              conda install conda-build boost-cpp conan gdal hdf5 libhwloc "markupsafe<2.1.0" numpy
+              conda install conda-build boost-cpp gdal hdf5 libhwloc numpy pip
 
               # Needed by lue_scalability test below
               conda install docopt matplotlib
+
+              # Use conan from pypi to get the latest version
+              pip install conan
 
         - name: configure lue
           shell: bash -l {0}

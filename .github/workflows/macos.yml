@@ -29,11 +29,10 @@ jobs:
         - name: configure system
           run: |
               brew update  # > /dev/null || true
-              brew upgrade
+              # brew upgrade
               brew install \
                   cmake \
                   boost \
-                  conan \
                   doxygen \
                   fmt \
                   gdal \
@@ -44,13 +43,24 @@ jobs:
                   hwloc \
                   ninja \
                   nlohmann-json \
-                  numpy \
                   pybind11 \
-                  python \
                   tree
 
+        - uses: conda-incubator/setup-miniconda@v2
+          with:
+              auto-update-conda: true
+              python-version: ${{ matrix.python-version }}
+              channels: conda-forge
+
+        - shell: bash -l {0}
+          run: |
+              conda install numpy pip
+
               # Needed by lue_scalability test below
-              pip3 install docopt matplotlib
+              conda install docopt matplotlib
+
+              # Use conan from pypi to get the latest version
+              pip install conan
 
               conan profile new --detect default
 
