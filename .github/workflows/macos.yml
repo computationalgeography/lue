@@ -8,6 +8,7 @@ on:
       - ".github/workflows/macos.yml"
       - "environment/cmake/**"
       - "source/**"
+      - "!source/qa/python/qa/**"
 
 jobs:
     build:
@@ -61,6 +62,9 @@ jobs:
 
               # Use conan from pypi to get the latest version
               pip install conan
+
+              # docopt and matplotlib are needed by lue_scalability test below
+              pip3 install conan docopt matplotlib numpy pybind11
 
               conan profile new --detect default
 

@@ -7,6 +7,7 @@ on:
     paths:
       - ".github/workflows/windows-conda.yml"
       - "source/**"
+      - "!source/qa/python/qa/**"
       - "environment/cmake/**"
       - "environment/configuration/receipe/bld.bat"
       - "environment/configuration/receipe/meta.yaml"
@@ -32,13 +33,15 @@ jobs:
 
         - uses: conda-incubator/setup-miniconda@v2
           with:
-              auto-update-conda: false
+              auto-update-conda: true
               python-version: ${{ matrix.python-version }}
               channels: conda-forge
-              mamba-version: "*"
+              # mamba-version: "*"
+
         - shell: bash -l {0}
           run: |
-              mamba install boa -c conda-forge
+              # mamba install boa -c conda-forge
+              conda install boa
 
         - name: Build
           shell: bash -l {0}
