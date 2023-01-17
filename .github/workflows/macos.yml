@@ -36,7 +36,6 @@ jobs:
                   boost \
                   doxygen \
                   fmt \
-                  gdal \
                   glfw \
                   graphviz \
                   gperftools \
@@ -44,7 +43,6 @@ jobs:
                   hwloc \
                   ninja \
                   nlohmann-json \
-                  pybind11 \
                   tree
 
         - uses: conda-incubator/setup-miniconda@v2
@@ -55,7 +53,7 @@ jobs:
 
         - shell: bash -l {0}
           run: |
-              conda install numpy pip
+              conda install gdal numpy pip pybind11
 
               # Needed by lue_scalability test below
               conda install docopt matplotlib
