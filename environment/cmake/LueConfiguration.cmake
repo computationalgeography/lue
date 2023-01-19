@@ -36,10 +36,6 @@ option(LUE_BUILD_DOCUMENTATION
     "Build documentation"
     FALSE)
 
-# option(LUE_BUILD_TEST
-#     "Build tests"
-#     FALSE)
-
 option(LUE_BUILD_QA
     "Include support for QA"
     FALSE)
@@ -465,7 +461,10 @@ if(LUE_BOOST_REQUIRED)
         list(APPEND LUE_REQUIRED_BOOST_COMPONENTS regex)
     endif()
 
-    find_package(Boost REQUIRED COMPONENTS ${LUE_REQUIRED_BOOST_COMPONENTS})
+    # This issue is present in Boost-1.75's safe_numerics library. Possibly also in some laster
+    # versions. Bump minimum version number if so.
+    # https://github.com/boostorg/safe_numerics/issues/94
+    find_package(Boost 1.76 REQUIRED COMPONENTS ${LUE_REQUIRED_BOOST_COMPONENTS})
 
     add_definitions(
             -DBOOST_ALL_NO_LIB
