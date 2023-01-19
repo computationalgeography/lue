@@ -29,22 +29,20 @@ jobs:
 
         - name: configure system
           run: |
-              brew update  # > /dev/null || true
+              # brew update  # > /dev/null || true
               # brew upgrade
+              # HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK
               brew install \
                   cmake \
                   boost \
                   doxygen \
                   fmt \
-                  gdal \
                   glfw \
                   graphviz \
                   gperftools \
                   hdf5 \
                   hwloc \
-                  ninja \
                   nlohmann-json \
-                  pybind11 \
                   tree
 
         - uses: conda-incubator/setup-miniconda@v2
@@ -55,7 +53,7 @@ jobs:
 
         - shell: bash -l {0}
           run: |
-              conda install numpy pip
+              conda install gdal ninja numpy pip pybind11
 
               # Needed by lue_scalability test below
               conda install docopt matplotlib
