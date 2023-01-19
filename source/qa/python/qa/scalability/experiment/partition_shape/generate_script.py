@@ -25,8 +25,6 @@ def generate_script_slurm(
         experiment,
         script_pathname):
 
-    assert False, "TODO"
-
     # We are not scaling workers, but testing partition sizes
     assert benchmark.worker.nr_cluster_nodes_range == 0
     assert benchmark.worker.nr_numa_nodes_range == 0
@@ -58,7 +56,8 @@ def generate_script_slurm(
                 # "srun --ntasks {nr_tasks} {srun_configuration} {command_pathname} "
                 "mpirun --n {nr_tasks} {mpirun_configuration} {command_pathname} "
                         # '--hpx:ini="hpx.parcel.mpi.enable=1" '
-                        '--hpx:ini="hpx.os_threads={nr_threads}" '
+                        # '--hpx:ini="hpx.os_threads={nr_threads}" '
+                        '--hpx:threads="{nr_threads}" '
                         # '--hpx:bind="{thread_binding}" '
                         '{program_configuration}'
                     .format(
@@ -83,9 +82,10 @@ def generate_script_slurm(
         nr_cluster_nodes=benchmark.worker.nr_cluster_nodes,
         nr_tasks=cluster.nr_localities_to_reserve(benchmark.worker, benchmark.locality_per),
         nr_cores_per_socket=cluster.cluster_node.package.numa_node.nr_cores,
+        # cpus_per_task=benchmark.nr_logical_cores_per_locality,
         cpus_per_task=benchmark.nr_logical_cores_per_locality,
         output_filename=experiment.result_pathname(
-            cluster.name, benchmark.scenario_name, "slurm", "out"),
+            result_prefix, cluster.name, benchmark.scenario_name, "slurm", "out"),
         partition_name=cluster.scheduler.settings.partition_name,
         sbatch_options=cluster.scheduler.settings.sbatch_options,
         max_duration=experiment.max_duration,
@@ -99,7 +99,7 @@ def generate_script_slurm(
     commands = [
         "# Make sure SLURM can create the output file",
         "mkdir -p {}".format(experiment.workspace_pathname(
-            cluster.name, benchmark.scenario_name)),
+            result_prefix, cluster.name, benchmark.scenario_name)),
         "",
         "# Submit job to SLURM scheduler",
         "sbatch --job-name {job_name} {sbatch_options} << {delimiter}".format(
