@@ -231,28 +231,6 @@ def create_slurm_script(
 {max_duration}
 
 
-# We are assuming that no errors occur. This is needed because some
-# runs normally hang on one or more remaining tasks(?). Therefore,
-# all runs are exited explicitly, as if there was an error.
-# set -e
-
-# work_around_hang()
-# {{
-#     echo "$1 at $2"
-#     echo $*
-#     echo $?
-#     echo $0
-# 
-#     if [ "$1" == "18" ]; then
-#         # If OK
-#         echo "Work around hang: just smile and wave"
-#     else
-#         exit $1
-#     fi
-# }}
-# 
-# trap 'work_around_hang ${{$?}} ${{LINENO}}' ERR
-
 {software_environment}
 
 {job_steps}""".format(

@@ -7,7 +7,8 @@ import os.path
 import sys
 
 
-usage = """\
+def main():
+    usage = """\
 Perform scalability experiment
 
 Usage:
@@ -16,13 +17,8 @@ Usage:
         (script | import | postprocess) <configuration>
     {command}
         (partition_shape | weak_scalability | strong_scalability)
-        script <command> <result_prefix> <cluster> <worker> <experiment> <script>
-    {command}
-        (partition_shape | weak_scalability | strong_scalability)
-        import <command> <result_prefix> <cluster> <worker> <experiment> <script>
-    {command}
-        (partition_shape | weak_scalability | strong_scalability)
-        postprocess <command> <result_prefix> <cluster> <worker> <experiment> <script>
+        (script | import | postprocess)
+        <command> <result_prefix> <cluster> <worker> <experiment> <script>
     {command} -h | --help
     {command} --version
 
@@ -30,10 +26,9 @@ Options:
     -h --help        Show this screen
     --version        Show version
 """.format(
-    command = os.path.basename(sys.argv[0]))
+        command=os.path.basename(sys.argv[0])
+    )
 
-
-if __name__ == "__main__":
     arguments = docopt.docopt(usage, version=lue_version)
 
     if arguments["partition_shape"]:
@@ -45,44 +40,27 @@ if __name__ == "__main__":
 
     configuration_pathname = arguments["<configuration>"]
 
+    if configuration_pathname is not None:
+        configuration_data = json_to_data(configuration_pathname)
+    else:
+        configuration_data = {
+            "command_pathname": "{}".format(arguments["<command>"]),
+            "script_pathname": "{}".format(arguments["<script>"]),
+            "result_prefix": "{}".format(arguments["<result_prefix>"]),
+            "cluster": "{}".format(arguments["<cluster>"]),
+            "benchmark": "{}".format(arguments["<worker>"]),
+            "experiment": "{}".format(arguments["<experiment>"]),
+        }
+
     if arguments["script"]:
         task = "script"
-        if configuration_pathname is not None:
-            configuration_data = json_to_data(configuration_pathname)
-        else:
-            configuration_data = {
-                    "command_pathname": "{}".format(arguments["<command>"]),
-                    "script_pathname": "{}".format(arguments["<script>"]),
-                    "result_prefix": "{}".format(arguments["<result_prefix>"]),
-                    "cluster": "{}".format(arguments["<cluster>"]),
-                    "benchmark": "{}".format(arguments["<worker>"]),
-                    "experiment": "{}".format(arguments["<experiment>"]),
-                }
     elif arguments["import"]:
         task = "import"
-        if configuration_pathname is not None:
-            configuration_data = json_to_data(configuration_pathname)
-        else:
-            configuration_data = {
-                    "command_pathname": "{}".format(arguments["<command>"]),
-                    "script_pathname": "{}".format(arguments["<script>"]),
-                    "result_prefix": "{}".format(arguments["<result_prefix>"]),
-                    "cluster": "{}".format(arguments["<cluster>"]),
-                    "benchmark": "{}".format(arguments["<worker>"]),
-                    "experiment": "{}".format(arguments["<experiment>"]),
-                }
     elif arguments["postprocess"]:
         task = "postprocess"
-        if configuration_pathname is not None:
-            configuration_data = json_to_data(configuration_pathname)
-        else:
-            configuration_data = {
-                    "command_pathname": "{}".format(arguments["<command>"]),
-                    "script_pathname": "{}".format(arguments["<script>"]),
-                    "result_prefix": "{}".format(arguments["<result_prefix>"]),
-                    "cluster": "{}".format(arguments["<cluster>"]),
-                    "benchmark": "{}".format(arguments["<worker>"]),
-                    "experiment": "{}".format(arguments["<experiment>"]),
-                }
 
     perform_experiment_task(experiment, task, configuration_data)
+
+
+if __name__ == "__main__":
+    sys.exit(main())

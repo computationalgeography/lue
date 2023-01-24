@@ -271,7 +271,11 @@ class SoftwareEnvironment(object):
     @property
     def configuration(self):
 
-        commands = ["module purge"]
+        commands = []
+
+        if self.module_names:
+            commands = ["module purge"]
+
         commands += ["module load {}".format(name) for name in self.module_names]
 
         return "\n".join(commands)
