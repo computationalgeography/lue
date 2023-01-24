@@ -461,10 +461,13 @@ if(LUE_BOOST_REQUIRED)
         list(APPEND LUE_REQUIRED_BOOST_COMPONENTS regex)
     endif()
 
-    # This issue is present in Boost-1.75's safe_numerics library. Possibly also in some laster
-    # versions. Bump minimum version number if so.
-    # https://github.com/boostorg/safe_numerics/issues/94
-    find_package(Boost 1.76 REQUIRED COMPONENTS ${LUE_REQUIRED_BOOST_COMPONENTS})
+    find_package(Boost REQUIRED COMPONENTS ${LUE_REQUIRED_BOOST_COMPONENTS})
+
+    if(Boost_VERSION VERSION_EQUAL "1.75")
+        message(FATAL_ERROR
+            "Boost-1.75's safe_numerics library is known to contain a bug:\n"
+            "https://github.com/boostorg/safe_numerics/issues/94")
+    endif()
 
     add_definitions(
             -DBOOST_ALL_NO_LIB
