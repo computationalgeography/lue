@@ -641,7 +641,7 @@ if(LUE_HPX_REQUIRED)
             FetchContent_Declare(hpx
                 URL ${hpx_url}
                 PATCH_COMMAND ${hpx_patch_command}
-                DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+                DOWNLOAD_EXTRACT_TIMESTAMP FALSE
             )
         endif()
 
