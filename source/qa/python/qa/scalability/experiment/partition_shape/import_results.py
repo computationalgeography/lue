@@ -12,11 +12,8 @@ import tempfile
 
 
 def benchmark_meta_to_lue_json(
-        benchmark_pathname,
-        lue_dataset_pathname,
-        cluster,
-        benchmark,
-        experiment):
+    benchmark_pathname, lue_dataset_pathname, cluster, benchmark, experiment
+):
 
     # Read benchmark JSON
     benchmark_json = json.loads(open(benchmark_pathname).read())
@@ -37,66 +34,65 @@ def benchmark_meta_to_lue_json(
                                     "shape_per_object": "same_shape",
                                     "value_variability": "constant",
                                     "datatype": "string",
-                                    "value": [experiment.program_name]
+                                    "value": [experiment.program_name],
                                 },
                                 {
                                     "name": "system_name",
                                     "shape_per_object": "same_shape",
                                     "value_variability": "constant",
                                     "datatype": "string",
-                                    "value": [cluster.name]
+                                    "value": [cluster.name],
                                 },
                                 {
                                     "name": "command",
                                     "shape_per_object": "same_shape",
                                     "value_variability": "constant",
                                     "datatype": "string",
-                                    "value": [experiment.command_pathname]
+                                    "value": [experiment.command_pathname],
                                 },
                                 {
                                     "name": "kind",
                                     "shape_per_object": "same_shape",
                                     "value_variability": "constant",
                                     "datatype": "string",
-                                    "value": [experiment.name]
+                                    "value": [experiment.name],
                                 },
                                 {
                                     "name": "scenario_name",
                                     "shape_per_object": "same_shape",
                                     "value_variability": "constant",
                                     "datatype": "string",
-                                    "value": [benchmark.scenario_name]
+                                    "value": [benchmark.scenario_name],
                                 },
                                 {
                                     "name": "description",
                                     "shape_per_object": "same_shape",
                                     "value_variability": "constant",
                                     "datatype": "string",
-                                    "value": [experiment.description]
+                                    "value": [experiment.description],
                                 },
                                 {
                                     "name": "nr_workers",
                                     "shape_per_object": "same_shape",
                                     "value_variability": "constant",
                                     "datatype": "uint64",
-                                    "value": nr_workers
+                                    "value": nr_workers,
                                 },
-                            ]
+                            ],
                         }
-                    ]
+                    ],
                 }
             ]
         }
     }
 
     # Write results
-    open(lue_dataset_pathname, "w").write(json.dumps(lue_json, sort_keys=False, indent=4))
+    open(lue_dataset_pathname, "w").write(
+        json.dumps(lue_json, sort_keys=False, indent=4)
+    )
 
 
-def benchmark_to_lue_json(
-        benchmark_pathname,
-        lue_json_pathname,
-        epoch):
+def benchmark_to_lue_json(benchmark_pathname, lue_json_pathname, epoch):
 
     # Read benchmark JSON
     benchmark_json = json.loads(open(benchmark_pathname).read())
@@ -112,7 +108,8 @@ def benchmark_to_lue_json(
     if epoch_offset < 0:
         raise RuntimeError(
             "epoch passed in is later than epoch from benchmark: "
-            "{} > {}".format(epoch, benchmark_epoch))
+            "{} > {}".format(epoch, benchmark_epoch)
+        )
 
     # Benchmarks are sorted by benchmark epochs. Keep the information
     # sorted by time as well. Use benchmark epoch instead of individual
@@ -148,23 +145,22 @@ def benchmark_to_lue_json(
                     "property_sets": [
                         {
                             "name": "measurement",
-                            "description":
-                                "Information per benchmark measurement",
+                            "description": "Information per benchmark measurement",
                             "object_tracker": {
                                 "active_set_index": active_set_idx,
-                                "active_object_id": active_object_id
+                                "active_object_id": active_object_id,
                             },
                             "time_domain": {
                                 "clock": {
                                     "epoch": {
                                         "kind": "common_era",
                                         "origin": epoch.isoformat(),
-                                        "calendar": "gregorian"
+                                        "calendar": "gregorian",
                                     },
                                     "unit": time_units,
-                                    "tick_period_count": 1
+                                    "tick_period_count": 1,
                                 },
-                                "time_point": time_points
+                                "time_point": time_points,
                             },
                             "properties": [
                                 {
@@ -175,7 +171,7 @@ def benchmark_to_lue_json(
                                     "shape_variability": "constant_shape",
                                     "datatype": "uint64",
                                     "shape": [len(durations)],
-                                    "value": durations
+                                    "value": durations,
                                 },
                                 {
                                     "name": "array_shape",
@@ -184,7 +180,7 @@ def benchmark_to_lue_json(
                                     "shape_variability": "constant_shape",
                                     "datatype": "uint64",
                                     "shape": [len(array_shape)],
-                                    "value": array_shape
+                                    "value": array_shape,
                                 },
                                 {
                                     "name": "partition_shape",
@@ -193,7 +189,7 @@ def benchmark_to_lue_json(
                                     "shape_variability": "constant_shape",
                                     "datatype": "uint64",
                                     "shape": [len(partition_shape)],
-                                    "value": partition_shape
+                                    "value": partition_shape,
                                 },
                                 # {
                                 #     "name": "nr_partitions",
@@ -204,9 +200,9 @@ def benchmark_to_lue_json(
                                 #     "shape": [len(nr_partitions)],
                                 #     "value": nr_partitions
                                 # },
-                            ]
+                            ],
                         }
-                    ]
+                    ],
                 }
             ]
         }
@@ -216,11 +212,7 @@ def benchmark_to_lue_json(
     open(lue_json_pathname, "w").write(json.dumps(lue_json, sort_keys=False, indent=4))
 
 
-def determine_epoch(
-        result_prefix,
-        cluster,
-        benchmark,
-        experiment):
+def determine_epoch(result_prefix, cluster, benchmark, experiment):
 
     array_shapes = experiment.array.shapes
     partition_shapes = experiment.partition.shapes
@@ -231,9 +223,13 @@ def determine_epoch(
         for partition_shape in partition_shapes:
 
             benchmark_pathname = experiment.benchmark_result_pathname(
-                result_prefix, cluster.name, benchmark.scenario_name, array_shape,
+                result_prefix,
+                cluster.name,
+                benchmark.scenario_name,
+                array_shape,
                 "x".join([str(extent) for extent in partition_shape]),
-                "json")
+                "json",
+            )
             assert os.path.exists(benchmark_pathname), benchmark_pathname
 
             benchmark_json = json.loads(open(benchmark_pathname).read())
@@ -248,11 +244,8 @@ def determine_epoch(
 
 
 def import_raw_results(
-        lue_dataset_pathname,
-        result_prefix,
-        cluster,
-        benchmark,
-        experiment):
+    lue_dataset_pathname, result_prefix, cluster, benchmark, experiment
+):
     """
     Import all raw benchmark results into a new LUE file
 
@@ -281,16 +274,24 @@ def import_raw_results(
         for partition_shape in partition_shapes:
 
             result_pathname = experiment.benchmark_result_pathname(
-                result_prefix, cluster.name, benchmark.scenario_name, array_shape,
+                result_prefix,
+                cluster.name,
+                benchmark.scenario_name,
+                array_shape,
                 "x".join([str(extent) for extent in partition_shape]),
-                "json")
+                "json",
+            )
             assert os.path.exists(result_pathname), result_pathname
 
             if not metadata_written:
                 with tempfile.NamedTemporaryFile(suffix=".json") as lue_json_file:
                     benchmark_meta_to_lue_json(
-                        result_pathname, lue_json_file.name, cluster,
-                        benchmark, experiment)
+                        result_pathname,
+                        lue_json_file.name,
+                        cluster,
+                        benchmark,
+                        experiment,
+                    )
                     process.import_lue_json(lue_json_file.name, lue_dataset_pathname)
                 metadata_written = True
 
@@ -301,8 +302,7 @@ def import_raw_results(
     ldm.assert_is_valid(lue_dataset_pathname)
 
 
-def write_scalability_results(
-        lue_dataset):
+def write_scalability_results(lue_dataset):
 
     count = lue_dataset.benchmark.measurement.duration.value.shape[1]
 
@@ -311,20 +311,29 @@ def write_scalability_results(
     # - array
     #     - array
     #         - shape
-    array_shape = np.unique(lue_dataset.benchmark.measurement.array_shape.value[:], axis=0)
+    array_shape = np.unique(
+        lue_dataset.benchmark.measurement.array_shape.value[:], axis=0
+    )
     nr_arrays = len(array_shape)
 
-    array_phenomenon = lue_dataset.add_phenomenon("array",
+    array_phenomenon = lue_dataset.add_phenomenon(
+        "array",
         "This phenomenon stores the array shapes for which experiments "
-        "where performed.")
-    array_phenomenon.object_id.expand(nr_arrays)[:] = np.arange(nr_arrays, dtype=np.uint64)
+        "where performed.",
+    )
+    array_phenomenon.object_id.expand(nr_arrays)[:] = np.arange(
+        nr_arrays, dtype=np.uint64
+    )
 
     array_property_set = array_phenomenon.add_property_set("array")
 
     array_shape_property = array_property_set.add_property(
-        "shape", np.dtype(np.uint64), (2,),
+        "shape",
+        np.dtype(np.uint64),
+        (2,),
         "For each dimension the extent of the partitioned array used in the "
-        "experiment.")
+        "experiment.",
+    )
     array_shape_property.value.expand(nr_arrays)[:] = array_shape
 
     # Write phenomenon to dataset containing per partition shape the
@@ -341,18 +350,25 @@ def write_scalability_results(
     nr_partitions = nr_partitions // nr_arrays
     partition_shape = partition_shape[0:nr_partitions]
 
-    partition_phenomenon = lue_dataset.add_phenomenon("partition",
+    partition_phenomenon = lue_dataset.add_phenomenon(
+        "partition",
         "For each time the experiment was repeated, and for each array "
         "shape for which the experiment was performed, this phenomenon "
-        "stores durations for various partition shapes.")
-    partition_phenomenon.object_id.expand(nr_partitions)[:] = np.arange(nr_partitions, dtype=np.uint64)
+        "stores durations for various partition shapes.",
+    )
+    partition_phenomenon.object_id.expand(nr_partitions)[:] = np.arange(
+        nr_partitions, dtype=np.uint64
+    )
 
     partition_property_set = partition_phenomenon.add_property_set("partition")
 
     partition_shape_property = partition_property_set.add_property(
-        "shape", np.dtype(np.uint64), (2,),
+        "shape",
+        np.dtype(np.uint64),
+        (2,),
         "For each dimension the extent of the partition of the partitioned "
-        "array used in the experiment.")
+        "array used in the experiment.",
+    )
     partition_shape_property.value.expand(nr_partitions)[:] = partition_shape
 
     duration = lue_dataset.benchmark.measurement.duration.value[:]
@@ -361,11 +377,15 @@ def write_scalability_results(
 
     for i in range(nr_arrays):
         duration_property = partition_property_set.add_property(
-            "duration_{}".format(i), np.dtype(np.uint64), (count,),
+            "duration_{}".format(i),
+            np.dtype(np.uint64),
+            (count,),
             "For an array and for each partition, the duration(s) it "
-            "took to perform count experiments.")
-        duration_property.value.expand(nr_partitions)[:] = \
-            duration[i * nr_partitions:(i + 1) * nr_partitions]
+            "took to perform count experiments.",
+        )
+        duration_property.value.expand(nr_partitions)[:] = duration[
+            i * nr_partitions : (i + 1) * nr_partitions
+        ]
 
     # Add statistics
     if count > 1:
@@ -375,23 +395,27 @@ def write_scalability_results(
 
         for i in range(nr_arrays):
             mean_duration_property = partition_property_set.add_property(
-                "mean_duration_{}".format(i), np.dtype(np.float64),
+                "mean_duration_{}".format(i),
+                np.dtype(np.float64),
                 "For an array and for each partition, the mean duration "
-                "the {} experiments took.".format(count))
-            mean_duration_property.value.expand(nr_partitions)[:] = \
-                mean_duration[i * nr_partitions:(i + 1) * nr_partitions]
+                "the {} experiments took.".format(count),
+            )
+            mean_duration_property.value.expand(nr_partitions)[:] = mean_duration[
+                i * nr_partitions : (i + 1) * nr_partitions
+            ]
 
             std_duration_property = partition_property_set.add_property(
-                "std_duration_{}".format(i), np.dtype(np.float64),
+                "std_duration_{}".format(i),
+                np.dtype(np.float64),
                 "For an array and for each partition, the standard "
-                "deviation of the durations the {} experiments took.".format(
-                    count))
-            std_duration_property.value.expand(nr_partitions)[:] = \
-                std_duration[i * nr_partitions:(i + 1) * nr_partitions]
+                "deviation of the durations the {} experiments took.".format(count),
+            )
+            std_duration_property.value.expand(nr_partitions)[:] = std_duration[
+                i * nr_partitions : (i + 1) * nr_partitions
+            ]
 
 
-def import_results(
-        configuration_data):
+def import_results(configuration_data):
 
     configuration = Configuration(configuration_data)
     cluster = configuration.cluster
@@ -399,22 +423,33 @@ def import_results(
     result_prefix = configuration.result_prefix
     experiment = configuration.experiment
 
-    lue_dataset = job.open_raw_lue_dataset(result_prefix, cluster, benchmark, experiment, "r")
+    lue_dataset = job.open_raw_lue_dataset(
+        result_prefix, cluster, benchmark, experiment, "r"
+    )
     raw_results_already_imported = dataset.raw_results_already_imported(lue_dataset)
 
-    cluster, benchmark, experiment = dataset.read_benchmark_settings(lue_dataset, Experiment)
+    cluster, benchmark, experiment = dataset.read_benchmark_settings(
+        lue_dataset, Experiment
+    )
 
     if not raw_results_already_imported:
         lue_dataset_pathname = lue_dataset.pathname
         del lue_dataset
-        import_raw_results(lue_dataset_pathname, result_prefix, cluster, benchmark, experiment)
+        import_raw_results(
+            lue_dataset_pathname, result_prefix, cluster, benchmark, experiment
+        )
 
     if not raw_results_already_imported or not job.scalability_lue_dataset_exists(
-            result_prefix, cluster, benchmark, experiment):
+        result_prefix, cluster, benchmark, experiment
+    ):
 
         # Copy dataset and write scalability results
-        job.copy_raw_to_scalability_lue_dataset(result_prefix, cluster, benchmark, experiment)
-        lue_dataset = job.open_scalability_lue_dataset(result_prefix, cluster, benchmark, experiment, "w")
+        job.copy_raw_to_scalability_lue_dataset(
+            result_prefix, cluster, benchmark, experiment
+        )
+        lue_dataset = job.open_scalability_lue_dataset(
+            result_prefix, cluster, benchmark, experiment, "w"
+        )
         write_scalability_results(lue_dataset)
 
         ldm.assert_is_valid(lue_dataset, fail_on_warning=False)

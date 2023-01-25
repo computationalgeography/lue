@@ -1,52 +1,44 @@
 class Core(object):
-
-    def __init__(self,
-            data):
+    def __init__(self, data):
 
         self.from_json(data)
 
     def __str__(self):
 
-        return "Core(nr_threads={})" \
-            .format(
-                self.nr_threads,
-            )
+        return "Core(nr_threads={})".format(
+            self.nr_threads,
+        )
 
-    def from_json(self,
-            data):
+    def from_json(self, data):
 
         self.nr_threads = data["nr_threads"]
 
     def to_json(self):
 
         return {
-                "nr_threads": self.nr_threads,
-            }
+            "nr_threads": self.nr_threads,
+        }
 
 
 class NUMANode(object):
-
-    def __init__(self,
-            data):
+    def __init__(self, data):
 
         self.from_json(data)
 
     def __str__(self):
 
-        return "NUMANode(memory={}, nr_cores={}, core={})" \
-            .format(
-                self.memory,
-                self.nr_cores,
-                self.core,
-            )
+        return "NUMANode(memory={}, nr_cores={}, core={})".format(
+            self.memory,
+            self.nr_cores,
+            self.core,
+        )
 
     @property
     def nr_threads(self):
 
         return self.nr_cores * self.core.nr_threads
 
-    def from_json(self,
-            data):
+    def from_json(self, data):
 
         self.memory = data["memory"]
         self.nr_cores = data["nr_cores"]
@@ -55,25 +47,22 @@ class NUMANode(object):
     def to_json(self):
 
         return {
-                "memory": self.memory,
-                "nr_cores": self.nr_cores,
-                "core": self.core.to_json(),
-            }
+            "memory": self.memory,
+            "nr_cores": self.nr_cores,
+            "core": self.core.to_json(),
+        }
 
 
 class Package(object):
-
-    def __init__(self,
-            data):
+    def __init__(self, data):
 
         self.from_json(data)
 
     def __str__(self):
-        return "Package(nr_numa_nodes={}, numa_node={})" \
-            .format(
-                self._nr_numa_nodes,
-                self.numa_node.to_json(),
-            )
+        return "Package(nr_numa_nodes={}, numa_node={})".format(
+            self._nr_numa_nodes,
+            self.numa_node.to_json(),
+        )
 
     @property
     def nr_numa_nodes(self):
@@ -95,8 +84,7 @@ class Package(object):
 
         return self._nr_numa_nodes * self.numa_node.nr_threads
 
-    def from_json(self,
-            data):
+    def from_json(self, data):
 
         self._nr_numa_nodes = data["nr_numa_nodes"]
         self.numa_node = NUMANode(data["numa_node"])
@@ -104,25 +92,22 @@ class Package(object):
     def to_json(self):
 
         return {
-                "nr_numa_nodes": self.nr_numa_nodes,
-                "numa_node": self.numa_node.to_json(),
-            }
+            "nr_numa_nodes": self.nr_numa_nodes,
+            "numa_node": self.numa_node.to_json(),
+        }
 
 
 class ClusterNode(object):
-
-    def __init__(self,
-            data):
+    def __init__(self, data):
 
         self.from_json(data)
 
     def __str__(self):
 
-        return "ClusterNode(nr_packages={}, package={})" \
-            .format(
-                self.nr_packages,
-                self.package,
-            )
+        return "ClusterNode(nr_packages={}, package={})".format(
+            self.nr_packages,
+            self.package,
+        )
 
     @property
     def nr_numa_nodes(self):
@@ -144,8 +129,7 @@ class ClusterNode(object):
 
         return self.nr_packages * self.package.nr_threads
 
-    def from_json(self,
-            data):
+    def from_json(self, data):
 
         self.nr_packages = data["nr_packages"]
         self.package = Package(data["package"])
@@ -153,34 +137,27 @@ class ClusterNode(object):
     def to_json(self):
 
         return {
-                "nr_packages": self.nr_packages,
-                "package": self.package.to_json(),
-            }
+            "nr_packages": self.nr_packages,
+            "package": self.package.to_json(),
+        }
 
 
 class Scheduler(object):
-
-    def __init__(self,
-            data):
+    def __init__(self, data):
 
         self._from_json(data)
 
-    def _from_json(self,
-            data):
+    def _from_json(self, data):
 
         self.kind = data["kind"]
 
     def to_json(self):
 
-        return {
-                "kind": self.kind
-            }
+        return {"kind": self.kind}
 
 
 class ShellScheduler(Scheduler):
-
-    def __init__(self,
-            data):
+    def __init__(self, data):
 
         super(ShellScheduler, self).__init__(data)
 
@@ -190,28 +167,22 @@ class ShellScheduler(Scheduler):
 
 
 class SlurmSettings(object):
-
-    def __init__(self,
-            data):
+    def __init__(self, data):
 
         self.from_json(data)
 
-    def from_json(self,
-            data):
+    def from_json(self, data):
 
         self.partition_name = data["partition"]
-        self.sbatch_options = \
-            data["sbatch_options"] if "sbatch_options" in data else ""
-        self.mpirun_options = \
-            data["mpirun_options"] if "mpirun_options" in data else ""
-        self.srun_options = \
-            data["srun_options"] if "srun_options" in data else ""
+        self.sbatch_options = data["sbatch_options"] if "sbatch_options" in data else ""
+        self.mpirun_options = data["mpirun_options"] if "mpirun_options" in data else ""
+        self.srun_options = data["srun_options"] if "srun_options" in data else ""
 
     def to_json(self):
 
         result = {
-                "partition": self.partition_name,
-            }
+            "partition": self.partition_name,
+        }
 
         if self.sbatch_options:
             result["sbatch_options"] = self.sbatch_options
@@ -226,15 +197,12 @@ class SlurmSettings(object):
 
 
 class SlurmScheduler(Scheduler):
-
-    def __init__(self,
-            data):
+    def __init__(self, data):
 
         super(SlurmScheduler, self).__init__(data)
         self.from_json(data)
 
-    def from_json(self,
-            data):
+    def from_json(self, data):
 
         self.settings = SlurmSettings(data["settings"])
 
@@ -248,25 +216,19 @@ class SlurmScheduler(Scheduler):
 
 
 class SoftwareEnvironment(object):
-
-    def __init__(self,
-            data):
+    def __init__(self, data):
 
         self.from_json(data)
 
-
-    def from_json(self,
-            data):
+    def from_json(self, data):
 
         self.module_names = data["modules"]
-
 
     def to_json(self):
 
         return {
-                "modules": self.module_names,
-            }
-
+            "modules": self.module_names,
+        }
 
     @property
     def configuration(self):
@@ -282,14 +244,11 @@ class SoftwareEnvironment(object):
 
 
 class Cluster(object):
-
-    def __init__(self,
-            data):
+    def __init__(self, data):
 
         self.from_json(data)
 
-    def from_json(self,
-            data):
+    def from_json(self, data):
 
         self.name = data["name"]
         scheduler_json = data["scheduler"]
@@ -303,28 +262,27 @@ class Cluster(object):
         self.nr_cluster_nodes = data["nr_cluster_nodes"]
         self.cluster_node = ClusterNode(data["cluster_node"])
 
-        self.software_environment = \
-            SoftwareEnvironment(data["software_environment"]) if "software_environment" in data else None
-
+        self.software_environment = (
+            SoftwareEnvironment(data["software_environment"])
+            if "software_environment" in data
+            else None
+        )
 
     def to_json(self):
 
         result = {
-                "name": self.name,
-                "scheduler": self.scheduler.to_json(),
-                "nr_cluster_nodes": self.nr_cluster_nodes,
-                "cluster_node": self.cluster_node.to_json(),
-            }
+            "name": self.name,
+            "scheduler": self.scheduler.to_json(),
+            "nr_cluster_nodes": self.nr_cluster_nodes,
+            "cluster_node": self.cluster_node.to_json(),
+        }
 
         if self.software_environment:
             result["software_environment"] = self.software_environment.to_json()
 
         return result
 
-
-    def nr_localities_to_reserve(self,
-            worker,
-            locality_per):
+    def nr_localities_to_reserve(self, worker, locality_per):
         """
         When scheduling jobs, the number of localities we need to ask
         for from the scheduler

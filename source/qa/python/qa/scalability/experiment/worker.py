@@ -2,11 +2,7 @@ from . import pool
 
 
 class Worker(object):
-
-    def __init__(self,
-            data,
-            cluster,
-            locality_per):
+    def __init__(self, data, cluster, locality_per):
         """
         Class for storing information about the workers to be used
         in scalability experiments
@@ -60,14 +56,12 @@ class Worker(object):
 
     def __str__(self):
 
-        return "Worker(type={}, pool={})" \
-            .format(
-                self.type,
-                self.pool,
-            )
+        return "Worker(type={}, pool={})".format(
+            self.type,
+            self.pool,
+        )
 
-    def from_json(self,
-            data):
+    def from_json(self, data):
 
         self.type = data["type"]
         assert self.type in ["thread", "numa_node", "cluster_node"], self.type
@@ -77,9 +71,9 @@ class Worker(object):
     def to_json(self):
 
         return {
-                "type": self.type,
-                "pool": self.pool.to_json(),
-            }
+            "type": self.type,
+            "pool": self.pool.to_json(),
+        }
 
     @property
     def nr_cluster_nodes_range(self):
@@ -88,14 +82,12 @@ class Worker(object):
         """
         return self.max_nr_cluster_nodes - self.min_nr_cluster_nodes
 
-
     @property
     def nr_numa_nodes_range(self):
         """
         Return range in number of numa nodes to use
         """
         return self.max_nr_numa_nodes - self.min_nr_numa_nodes
-
 
     @property
     def nr_threads_range(self):
@@ -104,7 +96,6 @@ class Worker(object):
         """
         return self.max_nr_threads - self.min_nr_threads
 
-
     @property
     def nr_benchmarks(self):
         """
@@ -112,14 +103,11 @@ class Worker(object):
         """
         return self.pool.nr_permutations
 
-
-    def nr_workers(self,
-            benchmark_idx):
+    def nr_workers(self, benchmark_idx):
         """
         Return number of workers to use in benchmark with the index passed in
         """
         return self.pool.permutation_size(benchmark_idx)
-
 
     @property
     def nr_cluster_nodes(self):
@@ -131,7 +119,6 @@ class Worker(object):
         assert self.nr_cluster_nodes_range == 0
 
         return self.min_nr_cluster_nodes
-
 
     @property
     def nr_localities(self):
@@ -158,7 +145,6 @@ class Worker(object):
 
         return result
 
-
     @property
     def nr_numa_nodes(self):
         """
@@ -169,7 +155,6 @@ class Worker(object):
         assert self.nr_numa_nodes_range == 0, self
 
         return self.min_nr_numa_nodes
-
 
     @property
     def nr_threads(self):

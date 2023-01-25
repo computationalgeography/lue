@@ -2,13 +2,12 @@ import json
 import os.path
 
 
-__all__  = [
+__all__ = [
     "json_to_data",
 ]
 
 
-def json_to_data(
-        pathname):
+def json_to_data(pathname):
 
     pathname = os.path.expandvars(pathname)
 

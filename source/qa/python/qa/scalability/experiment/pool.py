@@ -1,14 +1,11 @@
 class WorkerRange(object):
-
-    def __init__(self,
-            data):
+    def __init__(self, data):
 
         self._from_json(data)
 
         self.max_size = self.permutation_size(self.nr_permutations - 1)
 
-    def _from_json(self,
-            data):
+    def _from_json(self, data):
 
         self.min_size = data["min_size"]
         self.max_size = data["max_size"]
@@ -19,30 +16,26 @@ class WorkerRange(object):
     def to_json(self):
 
         return {
-                "min_size": self.min_size,
-                "max_size": self.max_size,
-            }
+            "min_size": self.min_size,
+            "max_size": self.max_size,
+        }
 
 
 class MultipliedWorkerRange(WorkerRange):
-
-    def __init__(self,
-            data):
+    def __init__(self, data):
 
         self.from_json(data)
         super(MultipliedWorkerRange, self).__init__(data)
 
     def __str__(self):
 
-        return "MultipliedWorkerRange(min_size={}, max_size={}, multiplier={})" \
-            .format(
-                self.min_size,
-                self.max_size,
-                self.multiplier,
-            )
+        return "MultipliedWorkerRange(min_size={}, max_size={}, multiplier={})".format(
+            self.min_size,
+            self.max_size,
+            self.multiplier,
+        )
 
-    def from_json(self,
-            data):
+    def from_json(self, data):
 
         self.multiplier = data["multiplier"]
         assert self.multiplier > 1
@@ -66,8 +59,7 @@ class MultipliedWorkerRange(WorkerRange):
 
         return nr
 
-    def permutation_size(self,
-            idx):
+    def permutation_size(self, idx):
 
         assert idx in range(self.nr_permutations), idx
 
@@ -82,24 +74,22 @@ class MultipliedWorkerRange(WorkerRange):
 
 
 class IncrementedWorkerRange(WorkerRange):
-
-    def __init__(self,
-            data):
+    def __init__(self, data):
 
         self.from_json(data)
         super(IncrementedWorkerRange, self).__init__(data)
 
     def __str__(self):
 
-        return "IncrementedWorkerRange(min_size={}, max_size={}, incrementor={})" \
-            .format(
+        return (
+            "IncrementedWorkerRange(min_size={}, max_size={}, incrementor={})".format(
                 self.min_size,
                 self.max_size,
                 self.incrementor,
             )
+        )
 
-    def from_json(self,
-            data):
+    def from_json(self, data):
 
         self.incrementor = data["incrementor"]
         assert self.incrementor >= 1
@@ -125,8 +115,7 @@ class IncrementedWorkerRange(WorkerRange):
 
         return nr
 
-    def permutation_size(self,
-            idx):
+    def permutation_size(self, idx):
 
         assert idx in range(self.nr_permutations), idx
 
@@ -146,22 +135,19 @@ class EmptyWorkerRange(WorkerRange):
     certain size
     """
 
-    def __init__(self,
-            data):
+    def __init__(self, data):
 
         self.from_json(data)
 
         super(EmptyWorkerRange, self).__init__(
-            {"min_size": self.size, "max_size": self.size})
+            {"min_size": self.size, "max_size": self.size}
+        )
         assert self.min_size == self.max_size == self.size
 
     def __str__(self):
-        return "EmptyWorkerRange(size={})" \
-            .format(
-                self.size)
+        return "EmptyWorkerRange(size={})".format(self.size)
 
-    def from_json(self,
-            data):
+    def from_json(self, data):
 
         self.size = data["size"]
         assert self.size >= 1
@@ -169,25 +155,22 @@ class EmptyWorkerRange(WorkerRange):
     def to_json(self):
 
         return {
-                "size": self.size,
-            }
+            "size": self.size,
+        }
 
     @property
     def nr_permutations(self):
 
         return 1
 
-    def permutation_size(self,
-            idx):
+    def permutation_size(self, idx):
 
         assert idx == 0
         return self.size
 
 
 class Pool(object):
-
-    def __init__(self,
-            data):
+    def __init__(self, data):
 
         if "multiplier" in data:
             self.range = MultipliedWorkerRange(data)
@@ -215,7 +198,6 @@ class Pool(object):
 
         return self.range.nr_permutations
 
-    def permutation_size(self,
-            idx):
+    def permutation_size(self, idx):
 
         return self.range.permutation_size(idx)

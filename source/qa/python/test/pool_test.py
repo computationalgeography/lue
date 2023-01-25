@@ -1,19 +1,13 @@
 import os.path
 import sys
-sys.path = [
-    os.path.join(os.path.split(__file__)[0], "..")
-] + sys.path
+
+sys.path = [os.path.join(os.path.split(__file__)[0], "..")] + sys.path
 from lue.benchmark.pool import *
 import unittest
 
 
 class PoolTest(unittest.TestCase):
-
-    def _test_case_multiplier(self,
-            min_size,
-            max_size,
-            multiplier,
-            permutation_sizes):
+    def _test_case_multiplier(self, min_size, max_size, multiplier, permutation_sizes):
 
         data = {
             "min_size": min_size,
@@ -48,12 +42,9 @@ class PoolTest(unittest.TestCase):
     def test_case_4_37_3_multiplier(self):
         self._test_case_multiplier(4, 37, 3, [4, 12, 36])
 
-
-    def _test_case_incrementor(self,
-            min_size,
-            max_size,
-            incrementor,
-            permutation_sizes):
+    def _test_case_incrementor(
+        self, min_size, max_size, incrementor, permutation_sizes
+    ):
 
         data = {
             "min_size": min_size,

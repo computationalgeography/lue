@@ -16,7 +16,7 @@ import numpy as np
 # from .. import job
 # from .. import plot
 # from .. import util
-# 
+#
 # import lue.data_model as ldm
 # import dateutil.parser
 # import matplotlib
@@ -24,10 +24,7 @@ import numpy as np
 # import numpy as np
 
 
-def post_process_raw_results(
-        lue_dataset,
-        result_prefix,
-        plot_pathname):
+def post_process_raw_results(lue_dataset, result_prefix, plot_pathname):
     """
     Create plots and tables from raw benchmark results
     """
@@ -65,84 +62,107 @@ def post_process_raw_results(
 
     lue_scaling = lue_dataset.benchmark.scaling
 
-
-    def annotate_plot(
-            axis,
-            y_label):
-        axis.set_xlabel(u"workers ({})".format(worker_type))
+    def annotate_plot(axis, y_label):
+        axis.set_xlabel("workers ({})".format(worker_type))
         axis.set_xticks(nr_workers)
         axis.set_ylabel(y_label)
         axis.grid()
 
-
-    def plot_duration(
-            axis):
+    def plot_duration(axis):
 
         if count == 1:
             duration = lue_measurement.duration.value[:][sort_idxs]
-            y_label = u"duration ({})".format(time_point_units)
+            y_label = "duration ({})".format(time_point_units)
             plot_actual = lambda data: axis.plot(
-                nr_workers, data,
+                nr_workers,
+                data,
                 linewidth=plot.default_linewidth,
-                color=plot.actual_color, marker="o")
+                color=plot.actual_color,
+                marker="o",
+            )
         else:
             duration = lue_scaling.mean_duration.value[:][sort_idxs]
             error = lue_scaling.std_duration.value[:][sort_idxs]
-            y_label= u"duration ({}) ± stddev (count={})".format(
-                time_point_units, count)
+            y_label = "duration ({}) ± stddev (count={})".format(
+                time_point_units, count
+            )
             plot_actual = lambda data: axis.errorbar(
-                x=nr_workers, y=data, yerr=error,
+                x=nr_workers,
+                y=data,
+                yerr=error,
                 linewidth=plot.default_linewidth,
-                color=plot.actual_color, marker="o")
+                color=plot.actual_color,
+                marker="o",
+            )
 
         serial_duration = duration[0] * nr_workers
         axis.plot(
-            nr_workers, serial_duration, linewidth=plot.default_linewidth,
-            color=plot.serial_color)
+            nr_workers,
+            serial_duration,
+            linewidth=plot.default_linewidth,
+            color=plot.serial_color,
+        )
 
         linear_duration = np.array([duration[0] for n in range(len(nr_workers))])
         axis.plot(
-            nr_workers, linear_duration, linewidth=plot.default_linewidth,
-            color=plot.linear_color)
+            nr_workers,
+            linear_duration,
+            linewidth=plot.default_linewidth,
+            color=plot.linear_color,
+        )
 
         plot_actual(duration)
 
         annotate_plot(axis, y_label)
 
-
-    def plot_relative_efficiency(
-            axis):
+    def plot_relative_efficiency(axis):
 
         if count == 1:
             relative_efficiency = lue_scaling.relative_efficiency.value[:][sort_idxs]
             plot_actual = lambda data: axis.plot(
-                nr_workers, data, linewidth=plot.default_linewidth,
-                color=plot.actual_color, marker="o")
+                nr_workers,
+                data,
+                linewidth=plot.default_linewidth,
+                color=plot.actual_color,
+                marker="o",
+            )
         else:
-            relative_efficiency = lue_scaling.mean_relative_efficiency.value[:][sort_idxs]
+            relative_efficiency = lue_scaling.mean_relative_efficiency.value[:][
+                sort_idxs
+            ]
             error = lue_scaling.std_relative_efficiency.value[:][sort_idxs]
             plot_actual = lambda data: axis.errorbar(
-                x=nr_workers, y=data, yerr=error,
+                x=nr_workers,
+                y=data,
+                yerr=error,
                 linewidth=plot.default_linewidth,
-                color=plot.actual_color, marker="o")
+                color=plot.actual_color,
+                marker="o",
+            )
 
         serial_relative_efficiency = relative_efficiency[0] / nr_workers
         axis.plot(
-            nr_workers, serial_relative_efficiency, linewidth=plot.default_linewidth,
-            color=plot.serial_color)
+            nr_workers,
+            serial_relative_efficiency,
+            linewidth=plot.default_linewidth,
+            color=plot.serial_color,
+        )
 
-        linear_relative_efficiency = \
-            np.array([relative_efficiency[0] for n in range(len(nr_workers))])
+        linear_relative_efficiency = np.array(
+            [relative_efficiency[0] for n in range(len(nr_workers))]
+        )
         axis.plot(
-            nr_workers, linear_relative_efficiency, linewidth=plot.default_linewidth,
-            color=plot.linear_color)
+            nr_workers,
+            linear_relative_efficiency,
+            linewidth=plot.default_linewidth,
+            color=plot.linear_color,
+        )
 
         plot_actual(relative_efficiency)
 
-        y_label= u"relative efficiency (%)"
+        y_label = "relative efficiency (%)"
 
         annotate_plot(axis, y_label)
-
 
     # def plot_lups(
     #         axis):
@@ -176,17 +196,17 @@ def post_process_raw_results(
 
     #     annotate_plot(axis, y_label)
 
-
     nr_plot_rows = 1
     nr_plot_cols = 2
     plot_width = 8  # Inches...
     plot_height = 6  # Inches...
     figure, axes = plt.subplots(
-            nrows=nr_plot_rows, ncols=nr_plot_cols,
-            figsize=(nr_plot_cols * plot_width, nr_plot_rows * plot_height),
-            squeeze=False, sharex=False,
-        )  # Inches...
-
+        nrows=nr_plot_rows,
+        ncols=nr_plot_cols,
+        figsize=(nr_plot_cols * plot_width, nr_plot_rows * plot_height),
+        squeeze=False,
+        sharex=False,
+    )  # Inches...
 
     plot_duration(axes[0][0])
     plot_relative_efficiency(axes[0][1])
@@ -203,22 +223,20 @@ def post_process_raw_results(
 
     figure.suptitle(
         "{}, {}, {}\n"
-        "Weak scalability experiment on {} array per worker and {} partitions ({})"
-            .format(
-                name,
-                system_name,
-                time_point,
-                "x".join([str(extent) for extent in array_shape_per_worker]),
-                "x".join([str(extent) for extent in partition_shape]),
-                scenario_name,
-            )
+        "Weak scalability experiment on {} array per worker and {} partitions ({})".format(
+            name,
+            system_name,
+            time_point,
+            "x".join([str(extent) for extent in array_shape_per_worker]),
+            "x".join([str(extent) for extent in partition_shape]),
+            scenario_name,
         )
+    )
 
     plt.savefig(plot_pathname, bbox_inches="tight")
 
 
-def postprocess_results(
-        configuration_data):
+def postprocess_results(configuration_data):
     """
     Post-process the results of executing the benchmark script generated
     by the generate_script function.
@@ -230,14 +248,22 @@ def postprocess_results(
     result_prefix = configuration.result_prefix
     experiment = configuration.experiment
 
-    lue_dataset = job.open_scalability_lue_dataset(result_prefix, cluster, benchmark, experiment, "r")
-    cluster, benchmark, experiment = dataset.read_benchmark_settings(lue_dataset, Experiment)
+    lue_dataset = job.open_scalability_lue_dataset(
+        result_prefix, cluster, benchmark, experiment, "r"
+    )
+    cluster, benchmark, experiment = dataset.read_benchmark_settings(
+        lue_dataset, Experiment
+    )
 
     process.create_dot_graph(
         lue_dataset.pathname,
-        experiment.result_pathname(result_prefix, cluster.name, benchmark.scenario_name, "graph", "pdf"))
+        experiment.result_pathname(
+            result_prefix, cluster.name, benchmark.scenario_name, "graph", "pdf"
+        ),
+    )
 
     plot_pathname = experiment.result_pathname(
-        result_prefix, cluster.name, benchmark.scenario_name, "plot", "pdf")
+        result_prefix, cluster.name, benchmark.scenario_name, "plot", "pdf"
+    )
 
     post_process_raw_results(lue_dataset, result_prefix, plot_pathname)

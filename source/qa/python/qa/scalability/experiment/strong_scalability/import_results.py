@@ -13,11 +13,8 @@ import tempfile
 
 
 def benchmark_meta_to_lue_json(
-        benchmark_pathname,
-        lue_dataset_pathname,
-        cluster,
-        benchmark,
-        experiment):
+    benchmark_pathname, lue_dataset_pathname, cluster, benchmark, experiment
+):
 
     array_shape = experiment.array.shape
     partition_shape = experiment.partition.shape
@@ -36,42 +33,42 @@ def benchmark_meta_to_lue_json(
                                     "shape_per_object": "same_shape",
                                     "value_variability": "constant",
                                     "datatype": "string",
-                                    "value": [experiment.program_name]
+                                    "value": [experiment.program_name],
                                 },
                                 {
                                     "name": "system_name",
                                     "shape_per_object": "same_shape",
                                     "value_variability": "constant",
                                     "datatype": "string",
-                                    "value": [cluster.name]
+                                    "value": [cluster.name],
                                 },
                                 {
                                     "name": "command",
                                     "shape_per_object": "same_shape",
                                     "value_variability": "constant",
                                     "datatype": "string",
-                                    "value": [experiment.command_pathname]
+                                    "value": [experiment.command_pathname],
                                 },
                                 {
                                     "name": "kind",
                                     "shape_per_object": "same_shape",
                                     "value_variability": "constant",
                                     "datatype": "string",
-                                    "value": [experiment.name]
+                                    "value": [experiment.name],
                                 },
                                 {
                                     "name": "scenario_name",
                                     "shape_per_object": "same_shape",
                                     "value_variability": "constant",
                                     "datatype": "string",
-                                    "value": [benchmark.scenario_name]
+                                    "value": [benchmark.scenario_name],
                                 },
                                 {
                                     "name": "description",
                                     "shape_per_object": "same_shape",
                                     "value_variability": "constant",
                                     "datatype": "string",
-                                    "value": [experiment.description]
+                                    "value": [experiment.description],
                                 },
                                 # {
                                 #     "name": "nr_time_steps",
@@ -86,7 +83,7 @@ def benchmark_meta_to_lue_json(
                                     "value_variability": "constant",
                                     "datatype": "uint64",
                                     "shape": [len(array_shape)],
-                                    "value": array_shape
+                                    "value": array_shape,
                                 },
                                 {
                                     "name": "partition_shape",
@@ -94,31 +91,30 @@ def benchmark_meta_to_lue_json(
                                     "value_variability": "constant",
                                     "datatype": "uint64",
                                     "shape": [len(partition_shape)],
-                                    "value": partition_shape
+                                    "value": partition_shape,
                                 },
                                 {
                                     "name": "worker_type",
                                     "shape_per_object": "same_shape",
                                     "value_variability": "constant",
                                     "datatype": "string",
-                                    "value": [benchmark.worker.type]
+                                    "value": [benchmark.worker.type],
                                 },
-                            ]
+                            ],
                         }
-                    ]
+                    ],
                 }
             ]
         }
     }
 
     # Write results
-    open(lue_dataset_pathname, "w").write(json.dumps(lue_json, sort_keys=False, indent=4))
+    open(lue_dataset_pathname, "w").write(
+        json.dumps(lue_json, sort_keys=False, indent=4)
+    )
 
 
-def benchmark_to_lue_json(
-        benchmark_pathname,
-        lue_json_pathname,
-        epoch):
+def benchmark_to_lue_json(benchmark_pathname, lue_json_pathname, epoch):
 
     # Read benchmark JSON
     benchmark_json = json.loads(open(benchmark_pathname).read())
@@ -134,7 +130,8 @@ def benchmark_to_lue_json(
     if epoch_offset < 0:
         raise RuntimeError(
             "epoch passed in is later than epoch from benchmark: "
-            "{} > {}".format(epoch, benchmark_epoch))
+            "{} > {}".format(epoch, benchmark_epoch)
+        )
 
     # Benchmarks are sorted by benchmark epochs. Keep the information
     # sorted by time as well. Use benchmark epoch instead of individual
@@ -162,23 +159,22 @@ def benchmark_to_lue_json(
                     "property_sets": [
                         {
                             "name": "measurement",
-                            "description":
-                                "Information per benchmark measurement",
+                            "description": "Information per benchmark measurement",
                             "object_tracker": {
                                 "active_set_index": active_set_idx,
-                                "active_object_id": active_object_id
+                                "active_object_id": active_object_id,
                             },
                             "time_domain": {
                                 "clock": {
                                     "epoch": {
                                         "kind": "common_era",
                                         "origin": epoch.isoformat(),
-                                        "calendar": "gregorian"
+                                        "calendar": "gregorian",
                                     },
                                     "unit": time_units,
-                                    "tick_period_count": 1
+                                    "tick_period_count": 1,
                                 },
-                                "time_point": time_points
+                                "time_point": time_points,
                             },
                             "properties": [
                                 {
@@ -189,7 +185,7 @@ def benchmark_to_lue_json(
                                     "shape_variability": "constant_shape",
                                     "datatype": "uint64",
                                     "shape": [len(durations)],
-                                    "value": durations
+                                    "value": durations,
                                 },
                                 {
                                     "name": "nr_workers",
@@ -197,11 +193,11 @@ def benchmark_to_lue_json(
                                     "value_variability": "variable",
                                     "shape_variability": "constant_shape",
                                     "datatype": "uint64",
-                                    "value": [nr_workers]
+                                    "value": [nr_workers],
                                 },
-                            ]
+                            ],
                         }
-                    ]
+                    ],
                 }
             ]
         }
@@ -212,11 +208,8 @@ def benchmark_to_lue_json(
 
 
 def import_raw_results(
-        lue_dataset_pathname,
-        result_prefix,
-        cluster,
-        benchmark,
-        experiment):
+    lue_dataset_pathname, result_prefix, cluster, benchmark, experiment
+):
     """
     Import all raw benchmark results into a new LUE file
 
@@ -244,7 +237,9 @@ def import_raw_results(
     # must be taken care of later, during post-processing.
     # -> Results are sorted by time, not by the number of workers!!!
 
-    benchmark_idxs, epoch = util.sort_benchmarks_by_time(result_prefix, cluster, benchmark, experiment)
+    benchmark_idxs, epoch = util.sort_benchmarks_by_time(
+        result_prefix, cluster, benchmark, experiment
+    )
 
     metadata_written = False
 
@@ -253,13 +248,15 @@ def import_raw_results(
         nr_workers = benchmark.worker.nr_workers(benchmark_idx)
 
         result_pathname = experiment.benchmark_result_pathname(
-            result_prefix, cluster.name, benchmark.scenario_name, nr_workers, "json")
+            result_prefix, cluster.name, benchmark.scenario_name, nr_workers, "json"
+        )
         assert os.path.exists(result_pathname), result_pathname
 
         if not metadata_written:
             with tempfile.NamedTemporaryFile(suffix=".json") as lue_json_file:
                 benchmark_meta_to_lue_json(
-                    result_pathname, lue_json_file.name, cluster, benchmark, experiment)
+                    result_pathname, lue_json_file.name, cluster, benchmark, experiment
+                )
                 process.import_lue_json(lue_json_file.name, lue_dataset_pathname)
             metadata_written = True
 
@@ -270,8 +267,7 @@ def import_raw_results(
     ldm.assert_is_valid(lue_dataset_pathname)
 
 
-def write_scalability_results(
-        lue_dataset):
+def write_scalability_results(lue_dataset):
 
     count = lue_dataset.benchmark.measurement.duration.value.shape[1]
 
@@ -287,7 +283,8 @@ def write_scalability_results(
     #         - efficiency (+ mean, std)
     #         - LUPS (+ mean, std)
     scaling_property_set = lue_dataset.benchmark.add_property_set(
-        "scaling", lue_measurement.time_domain, lue_measurement.object_tracker)
+        "scaling", lue_measurement.time_domain, lue_measurement.object_tracker
+    )
 
     duration = lue_measurement.duration.value[:]
     nr_durations = len(duration)
@@ -308,22 +305,25 @@ def write_scalability_results(
     relative_speed_up = t1 / duration
 
     relative_speed_up_property = scaling_property_set.add_property(
-        "relative_speed_up", np.dtype(np.float64), shape=(count,),
+        "relative_speed_up",
+        np.dtype(np.float64),
+        shape=(count,),
         value_variability=ldm.ValueVariability.variable,
-        description="Relative speed-up: t1 / duration")
-    relative_speed_up_property.value.expand(nr_durations)[:] = \
-        relative_speed_up
+        description="Relative speed-up: t1 / duration",
+    )
+    relative_speed_up_property.value.expand(nr_durations)[:] = relative_speed_up
 
     # efficiency = 100% * speed_up / nr_workers
     relative_efficiency = 100 * relative_speed_up / nr_workers
 
     relative_efficiency_property = scaling_property_set.add_property(
-        "relative_efficiency", np.dtype(np.float64), shape=(count,),
+        "relative_efficiency",
+        np.dtype(np.float64),
+        shape=(count,),
         value_variability=ldm.ValueVariability.variable,
-        description="Relative efficiency: 100% * relative_speed_up / "
-        "nr_workers")
-    relative_efficiency_property.value.expand(nr_durations)[:] = \
-        relative_efficiency
+        description="Relative efficiency: 100% * relative_speed_up / " "nr_workers",
+    )
+    relative_efficiency_property.value.expand(nr_durations)[:] = relative_efficiency
 
     # # lups = nr_time_steps * nr_elements / duration
     # # In the case of strong scaling, the nr_elements is
@@ -355,62 +355,72 @@ def write_scalability_results(
         # std_lups = np.std(lups, axis=1)
 
         mean_duration_property = scaling_property_set.add_property(
-            "mean_duration", np.dtype(np.float64), shape=(),
+            "mean_duration",
+            np.dtype(np.float64),
+            shape=(),
             value_variability=ldm.ValueVariability.variable,
-            description=
-                "For a number of workers, the mean duration of the {} "
-                "experiments took."
-                    .format(count))
+            description="For a number of workers, the mean duration of the {} "
+            "experiments took.".format(count),
+        )
         mean_duration_property.value.expand(nr_durations)[:] = mean_duration
 
         std_duration_property = scaling_property_set.add_property(
-            "std_duration", np.dtype(np.float64), shape=(),
+            "std_duration",
+            np.dtype(np.float64),
+            shape=(),
             value_variability=ldm.ValueVariability.variable,
-            description=
-                "For a number of workers, the standard deviation of the "
-                "durations the {} experiments took."
-                    .format(count))
+            description="For a number of workers, the standard deviation of the "
+            "durations the {} experiments took.".format(count),
+        )
         std_duration_property.value.expand(nr_durations)[:] = std_duration
 
         mean_relative_speed_up_property = scaling_property_set.add_property(
-            "mean_relative_speed_up", np.dtype(np.float64), shape=(),
+            "mean_relative_speed_up",
+            np.dtype(np.float64),
+            shape=(),
             value_variability=ldm.ValueVariability.variable,
-            description=
-                "For a number of workers, the mean of the relative "
-                "speed-up of the {} experiments."
-                    .format(count))
-        mean_relative_speed_up_property.value.expand(nr_durations)[:] = \
-            mean_relative_speed_up
+            description="For a number of workers, the mean of the relative "
+            "speed-up of the {} experiments.".format(count),
+        )
+        mean_relative_speed_up_property.value.expand(nr_durations)[
+            :
+        ] = mean_relative_speed_up
 
         std_relative_speed_up_property = scaling_property_set.add_property(
-            "std_relative_speed_up", np.dtype(np.float64), shape=(),
+            "std_relative_speed_up",
+            np.dtype(np.float64),
+            shape=(),
             value_variability=ldm.ValueVariability.variable,
-            description=
-                "For a number of workers, the standard deviation of the "
-                "relative speed-ups of the {} experiments."
-                    .format(count))
-        std_relative_speed_up_property.value.expand(nr_durations)[:] = \
-            std_relative_speed_up
+            description="For a number of workers, the standard deviation of the "
+            "relative speed-ups of the {} experiments.".format(count),
+        )
+        std_relative_speed_up_property.value.expand(nr_durations)[
+            :
+        ] = std_relative_speed_up
 
         mean_relative_efficiency_property = scaling_property_set.add_property(
-            "mean_relative_efficiency", np.dtype(np.float64), shape=(),
+            "mean_relative_efficiency",
+            np.dtype(np.float64),
+            shape=(),
             value_variability=ldm.ValueVariability.variable,
-            description=
-                "For a number of workers, the mean of the relative "
-                "efficiency of the {} experiments."
-                    .format(count))
-        mean_relative_efficiency_property.value.expand(nr_durations)[:] = \
-            mean_relative_efficiency
+            description="For a number of workers, the mean of the relative "
+            "efficiency of the {} experiments.".format(count),
+        )
+        mean_relative_efficiency_property.value.expand(nr_durations)[
+            :
+        ] = mean_relative_efficiency
 
         std_relative_efficiency_property = scaling_property_set.add_property(
-            "std_relative_efficiency", np.dtype(np.float64), shape=(),
+            "std_relative_efficiency",
+            np.dtype(np.float64),
+            shape=(),
             value_variability=ldm.ValueVariability.variable,
-            description=
-                "For a number of workers, the standard deviation of the "
-                "relative efficiency of the {} experiments."
-                    .format(count))
-        std_relative_efficiency_property.value.expand(nr_durations)[:] = \
-            std_relative_efficiency
+            description="For a number of workers, the standard deviation of the "
+            "relative efficiency of the {} experiments.".format(count),
+        )
+        std_relative_efficiency_property.value.expand(nr_durations)[
+            :
+        ] = std_relative_efficiency
 
         # mean_lups_property = scaling_property_set.add_property(
         #     "mean_lups", np.dtype(np.float64), shape=(),
@@ -435,101 +445,101 @@ def write_scalability_results(
 
 # def read_performance_counters(
 #         counter_pathname):
-# 
+#
 #     with open(counter_pathname, "r") as csv_file:
 #         reader = csv.reader(csv_file)
 #         field_names = next(reader)
-# 
+#
 #     # HPX appends to CSVs... If this fails, remove CSVs and run experiment
 #     # again. Or remove earlier stuff from CSVs.
 #     array = np.loadtxt(counter_pathname, dtype=np.float64, unpack=True,
 #         delimiter=',', skiprows=1)
-# 
+#
 #     if len(field_names) == 1:
 #         array = array.reshape(1, len(array))
-# 
+#
 #     assert len(array) == len(field_names), "{}: {} != {}".format(
 #         counter_pathname, len(array), len(field_names))
-# 
+#
 #     # # We are assuming uint64 values here
 #     # assert np.all(array >= 0)
 #     # assert np.all(array % 1 == 0)
 #     # array = array.astype(np.uint64)
-# 
+#
 #     # Idle-rates are reported as 0.01%. Convert them to percentages.
 #     for i in range(len(field_names)):
 #         if "idle-rate" in field_names[i]:
 #             array[i] /= 100.
-# 
+#
 #     return field_names, array
-# 
-# 
+#
+#
 # def import_performance_counter_file(
 #         lue_dataset,
 #         hpx,
 #         nr_workers,
 #         counter_pathname):
-# 
+#
 #     # --------------------------------------------------------------------------
 #     # Read CSV into list of field names and 2D array of arrays with
 #     # counter values, shaped (nr_time_steps, nr_fields)
 #     with open(counter_pathname, "r") as csv_file:
 #         reader = csv.reader(csv_file)
 #         field_names = next(reader)
-# 
+#
 #     # HPX appends to CSVs... If this fails, remove CSVs and run experiment
 #     # again. Or remove earlier stuff from CSVs.
 #     counter_values = np.loadtxt(
 #         counter_pathname, dtype=np.float64, delimiter=',', skiprows=1, ndmin=1)
 #     assert len(counter_values.shape) == 2
 #     nr_time_steps = counter_values.shape[0]
-# 
+#
 #     # ndmin should render this unnecessary
 #     # if len(field_names) == 1:
 #     #     counter_values = counter_values.reshape(1, len(counter_values))
-# 
+#
 #     # assert len(counter_values) == len(field_names), "{}: {} != {}".format(
 #     #     counter_pathname, len(counter_values), len(field_names))
 #     assert counter_values.shape[1] == len(field_names), "{}: {} != {}".format(
 #         counter_pathname, counter_values.shape[1], len(field_names))
-# 
+#
 #     # # We are assuming uint64 values here
 #     # assert np.all(counter_values >= 0)
 #     # assert np.all(counter_values % 1 == 0)
 #     # counter_values = counter_values.astype(np.uint64)
-# 
+#
 #     # Idle-rates are reported as 0.01%. Convert them to percentages.
 #     for i in range(len(field_names)):
 #         if "idle-rate" in field_names[i]:
 #             counter_values[:, i] /= 100.
-# 
+#
 #     # --------------------------------------------------------------------------
 #     # Create property-set for storing the counter values. Each performance
 #     # counter becomes a property in the set. The time domain is a time
 #     # box which is discretized in time steps. Each time step has the
 #     # size of the resolution used while measuring the performance counters.
-# 
+#
 #     lue_benchmark = lue_dataset.benchmark
-# 
+#
 #     time_configuration = ldm.TimeConfiguration(
 #         ldm.TimeDomainItemType.box
 #     )
 #     clock = ldm.Clock(ldm.Unit.millisecond, hpx.counter_interval)
-# 
+#
 #     lue_performance_counter = lue_benchmark.add_property_set(
 #         "performance_counter_{}".format(nr_workers),
 #         time_configuration, clock)
-# 
+#
 #     # The one active object
 #     lue_performance_counter.object_tracker.active_set_index.expand(1)[:] = \
 #         np.array([0])
 #     lue_performance_counter.object_tracker.active_object_id.expand(1)[:] = \
 #         np.array([5])
-# 
+#
 #     # The one time box
 #     lue_performance_counter.time_domain.value.expand(1)[:] = \
 #         np.array([0, nr_time_steps * hpx.counter_interval]).reshape(1, 2)
-# 
+#
 #     # Add properties to property-set
 #     for i in range(len(field_names)):
 #         property_name = \
@@ -538,44 +548,43 @@ def write_scalability_results(
 #             property_name, dtype=np.dtype(np.float64),
 #             rank=1, shape_per_object=ldm.ShapePerObject.different,
 #             shape_variability=ldm.ShapeVariability.variable)
-# 
+#
 #         # Skip for now... We know what it is.
-#         # discretization_property = 
-# 
+#         # discretization_property =
+#
 #         # For the one and only timebox (idx == 0) and this benchmark (ID == 5)
 #         value_property.value.expand(0, 5, (nr_time_steps,))[5][:] = counter_values[:, i]
-# 
-# 
+#
+#
 # def import_performance_counters(
 #         lue_dataset,
 #         hpx,
 #         experiment):
-# 
+#
 #     # Iterate over all files containing performance counter information
 #     # and import data into the properties of a new property-set
-# 
+#
 #     lue_benchmark = lue_dataset.benchmark
 #     lue_meta_information = \
 #         lue_benchmark.collection_property_sets["meta_information"]
 #     system_name = lue_meta_information.properties["system_name"].value[:][0]
 #     scenario_name = lue_meta_information.properties["scenario_name"].value[:][0]
-# 
+#
 #     lue_measurement = lue_benchmark.property_sets["measurement"]
 #     nr_workers = lue_measurement.properties["nr_workers"].value[:]
-# 
+#
 #     for i in trange(len(nr_workers), desc="import performance counters"):
 #         counter_pathname = experiment.benchmark_result_pathname(
 #             result_prefix, system_name, scenario_name, "counter-{}".format(nr_workers[i]), "csv")
 #         assert os.path.exists(counter_pathname), counter_pathname
-# 
+#
 #         import_performance_counter_file(
 #             lue_dataset, hpx, nr_workers[i], counter_pathname)
-# 
+#
 #     ldm.assert_is_valid(lue_dataset, fail_on_warning=False)
 
 
-def import_results(
-        configuration_data):
+def import_results(configuration_data):
 
     configuration = Configuration(configuration_data)
     cluster = configuration.cluster
@@ -583,22 +592,33 @@ def import_results(
     result_prefix = configuration.result_prefix
     experiment = configuration.experiment
 
-    lue_dataset = job.open_raw_lue_dataset(result_prefix, cluster, benchmark, experiment, "r")
+    lue_dataset = job.open_raw_lue_dataset(
+        result_prefix, cluster, benchmark, experiment, "r"
+    )
     raw_results_already_imported = dataset.raw_results_already_imported(lue_dataset)
 
-    cluster, benchmark, experiment = dataset.read_benchmark_settings(lue_dataset, Experiment)
+    cluster, benchmark, experiment = dataset.read_benchmark_settings(
+        lue_dataset, Experiment
+    )
 
     if not raw_results_already_imported:
         lue_dataset_pathname = lue_dataset.pathname
         del lue_dataset
-        import_raw_results(lue_dataset_pathname, result_prefix, cluster, benchmark, experiment)
+        import_raw_results(
+            lue_dataset_pathname, result_prefix, cluster, benchmark, experiment
+        )
 
     if not raw_results_already_imported or not job.scalability_lue_dataset_exists(
-            result_prefix, cluster, benchmark, experiment):
+        result_prefix, cluster, benchmark, experiment
+    ):
 
         # Copy dataset and write scalability results
-        job.copy_raw_to_scalability_lue_dataset(result_prefix, cluster, benchmark, experiment)
-        lue_dataset = job.open_scalability_lue_dataset(result_prefix, cluster, benchmark, experiment, "w")
+        job.copy_raw_to_scalability_lue_dataset(
+            result_prefix, cluster, benchmark, experiment
+        )
+        lue_dataset = job.open_scalability_lue_dataset(
+            result_prefix, cluster, benchmark, experiment, "w"
+        )
         write_scalability_results(lue_dataset)
 
         # TODO revamp

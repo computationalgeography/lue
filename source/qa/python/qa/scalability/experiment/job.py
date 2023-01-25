@@ -5,23 +5,22 @@ import shutil
 
 ### def output_pathname(
 ###         job_script_pathname):
-### 
+###
 ###     return "{}.out".format(job_script_pathname)
 
 ###     # template = "{}-{{}}.out".format(job_script_pathname)
-### 
+###
 ###     # i = 0
 ###     # result = template.format(i)
-### 
+###
 ###     # while os.path.exists(result):
 ###     #     i += 1
 ###     #     result = template.format(i)
-### 
+###
 ###     # return result
 
 
-def mpirun_configuration(
-        cluster):
+def mpirun_configuration(cluster):
     """
     Return common arguments to the mpirun command used to start the program
     being benchmarked
@@ -30,8 +29,7 @@ def mpirun_configuration(
     return " ".join(cluster.scheduler.settings.mpirun_options)
 
 
-def srun_configuration(
-        cluster):
+def srun_configuration(cluster):
     """
     Return common arguments to the srun command used to start the program
     being benchmarked
@@ -48,29 +46,31 @@ def program_configuration(
     array_shape,
     partition_shape,
     result_pathname=None,
-    nr_workers=None):
+    nr_workers=None,
+):
 
     assert nr_workers is not None
 
     if result_pathname is None:
         assert not nr_workers is None
         result_pathname = experiment.benchmark_result_pathname(
-            result_prefix, cluster.name, benchmark.scenario_name, nr_workers, "json")
+            result_prefix, cluster.name, benchmark.scenario_name, nr_workers, "json"
+        )
 
-    configuration = \
-        '--hpx:print-bind ' \
-        '--lue:count="{count}" ' \
-        '--lue:nr_workers="{nr_workers}" ' \
-        '--lue:array_shape="{array_shape}" ' \
-        '--lue:partition_shape="{partition_shape}" ' \
-        '--lue:result="{result_pathname}" ' \
-            .format(
-                count=benchmark.count,
-                nr_workers=nr_workers,
-                array_shape=list(array_shape),
-                partition_shape=list(partition_shape),
-                result_pathname=result_pathname,
-            )
+    configuration = (
+        "--hpx:print-bind "
+        '--lue:count="{count}" '
+        '--lue:nr_workers="{nr_workers}" '
+        '--lue:array_shape="{array_shape}" '
+        '--lue:partition_shape="{partition_shape}" '
+        '--lue:result="{result_pathname}" '.format(
+            count=benchmark.count,
+            nr_workers=nr_workers,
+            array_shape=list(array_shape),
+            partition_shape=list(partition_shape),
+            result_pathname=result_pathname,
+        )
+    )
 
     #   '--hpx:attach-debugger=exception '
     #   '--hpx:queuing=shared-priority '
@@ -162,34 +162,35 @@ def program_configuration(
     return configuration
 
 
-def write_script(
-        commands,
-        script_pathname):
+def write_script(commands, script_pathname):
 
     with open(script_pathname, "w") as script:
-        script.write("""\
+        script.write(
+            """\
 #!/usr/bin/env bash
 set -e
 
 {commands}
 """.format(
-            commands="\n".join(commands)
-        ))
+                commands="\n".join(commands)
+            )
+        )
 
 
 def create_slurm_script(
-        cluster,
-        nr_cluster_nodes,  # How many nodes to reserve
-        nr_tasks,  # How many tasks to reserve for
-        nr_cores_per_socket,  # Number of physical cores per socket
-        # nr_cores_per_numa_node,
-        # nr_threads,  # Total nr of threads, including HT threads
-        cpus_per_task,
-        output_filename,
-        partition_name,
-        sbatch_options,
-        max_duration,
-        job_steps):
+    cluster,
+    nr_cluster_nodes,  # How many nodes to reserve
+    nr_tasks,  # How many tasks to reserve for
+    nr_cores_per_socket,  # Number of physical cores per socket
+    # nr_cores_per_numa_node,
+    # nr_threads,  # Total nr of threads, including HT threads
+    cpus_per_task,
+    output_filename,
+    partition_name,
+    sbatch_options,
+    max_duration,
+    job_steps,
+):
 
     # HPX doc:
     # You can change the number of localities started per node
@@ -215,9 +216,9 @@ def create_slurm_script(
 
     # In SLURM, a CPU is either a core or a thread, depending on the
     # system configuration
-    #SBATCH --sockets-per-node=2
+    # SBATCH --sockets-per-node=2
 
-    #SBATCH --threads-per-core=1
+    # SBATCH --threads-per-core=1
     ### #SBATCH --cores-per-socket={cores_per_socket}
 
     return """\
@@ -241,12 +242,16 @@ def create_slurm_script(
         cpus_per_task=cpus_per_task,
         output_filename=output_filename,
         partition_name=partition_name,
-        sbatch_options="\n".join(["#SBATCH {}".format(option) for option in sbatch_options]),
+        sbatch_options="\n".join(
+            ["#SBATCH {}".format(option) for option in sbatch_options]
+        ),
         max_duration="#SBATCH --time={}".format(max_duration)
-            if max_duration is not None else "",
+        if max_duration is not None
+        else "",
         software_environment=cluster.software_environment.configuration,
-        job_steps="\n".join(job_steps))
-        # job_steps="\nsleep 2s\n".join(job_steps))
+        job_steps="\n".join(job_steps),
+    )
+    # job_steps="\nsleep 2s\n".join(job_steps))
 
 
 def lue_raw_dataset_basename():
@@ -257,35 +262,33 @@ def lue_scalability_dataset_basename():
     return "scalability"
 
 
-def lue_raw_dataset_pathname(
-        result_prefix,
-        cluster,
-        benchmark,
-        experiment):
+def lue_raw_dataset_pathname(result_prefix, cluster, benchmark, experiment):
 
     return experiment.result_pathname(
-        result_prefix, cluster.name, benchmark.scenario_name, lue_raw_dataset_basename(),
-        "lue")
-
-
-def lue_scalability_dataset_pathname(
         result_prefix,
-        cluster,
-        benchmark,
-        experiment):
+        cluster.name,
+        benchmark.scenario_name,
+        lue_raw_dataset_basename(),
+        "lue",
+    )
+
+
+def lue_scalability_dataset_pathname(result_prefix, cluster, benchmark, experiment):
 
     return experiment.result_pathname(
-        result_prefix, cluster.name, benchmark.scenario_name, lue_scalability_dataset_basename(),
-        "lue")
-
-
-def create_raw_lue_dataset(
         result_prefix,
-        cluster,
-        benchmark,
-        experiment):
+        cluster.name,
+        benchmark.scenario_name,
+        lue_scalability_dataset_basename(),
+        "lue",
+    )
 
-    dataset_pathname = lue_raw_dataset_pathname(result_prefix, cluster, benchmark, experiment)
+
+def create_raw_lue_dataset(result_prefix, cluster, benchmark, experiment):
+
+    dataset_pathname = lue_raw_dataset_pathname(
+        result_prefix, cluster, benchmark, experiment
+    )
     directory_pathname = os.path.split(dataset_pathname)[0]
 
     if os.path.exists(directory_pathname):
@@ -300,14 +303,11 @@ def create_raw_lue_dataset(
     return dataset
 
 
-def open_raw_lue_dataset(
-        result_prefix,
-        cluster,
-        benchmark,
-        experiment,
-        open_mode):
+def open_raw_lue_dataset(result_prefix, cluster, benchmark, experiment, open_mode):
 
-    dataset_pathname = lue_raw_dataset_pathname(result_prefix, cluster, benchmark, experiment)
+    dataset_pathname = lue_raw_dataset_pathname(
+        result_prefix, cluster, benchmark, experiment
+    )
     assert os.path.exists(dataset_pathname), dataset_pathname
     dataset = ldm.open_dataset(dataset_pathname, open_mode)
 
@@ -315,36 +315,33 @@ def open_raw_lue_dataset(
 
 
 def open_scalability_lue_dataset(
-        result_prefix,
-        cluster,
-        benchmark,
-        experiment,
-        open_mode):
+    result_prefix, cluster, benchmark, experiment, open_mode
+):
 
-    dataset_pathname = lue_scalability_dataset_pathname(result_prefix, cluster, benchmark, experiment)
+    dataset_pathname = lue_scalability_dataset_pathname(
+        result_prefix, cluster, benchmark, experiment
+    )
     assert os.path.exists(dataset_pathname), dataset_pathname
     dataset = ldm.open_dataset(dataset_pathname, open_mode)
 
     return dataset
 
 
-def scalability_lue_dataset_exists(
-        result_prefix,
-        cluster,
-        benchmark,
-        experiment):
+def scalability_lue_dataset_exists(result_prefix, cluster, benchmark, experiment):
 
-    dataset_pathname = lue_scalability_dataset_pathname(result_prefix, cluster, benchmark, experiment)
+    dataset_pathname = lue_scalability_dataset_pathname(
+        result_prefix, cluster, benchmark, experiment
+    )
     return os.path.exists(dataset_pathname)
 
 
-def copy_raw_to_scalability_lue_dataset(
-        result_prefix,
-        cluster,
-        benchmark,
-        experiment):
+def copy_raw_to_scalability_lue_dataset(result_prefix, cluster, benchmark, experiment):
 
-    raw_dataset_pathname = lue_raw_dataset_pathname(result_prefix, cluster, benchmark, experiment)
-    scalability_dataset_pathname = lue_scalability_dataset_pathname(result_prefix, cluster, benchmark, experiment)
+    raw_dataset_pathname = lue_raw_dataset_pathname(
+        result_prefix, cluster, benchmark, experiment
+    )
+    scalability_dataset_pathname = lue_scalability_dataset_pathname(
+        result_prefix, cluster, benchmark, experiment
+    )
 
     shutil.copyfile(raw_dataset_pathname, scalability_dataset_pathname)

@@ -1,8 +1,7 @@
 import numpy as np
 
 
-def is_monotonically_increasing(
-        array):
+def is_monotonically_increasing(array):
 
     # np.diff returns the difference between consecutive elements
 

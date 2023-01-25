@@ -3,11 +3,7 @@ import dateutil.parser
 import os.path
 
 
-def sort_benchmarks_by_time(
-        result_prefix,
-        cluster,
-        benchmark,
-        experiment):
+def sort_benchmarks_by_time(result_prefix, cluster, benchmark, experiment):
 
     items = []
 
@@ -15,7 +11,8 @@ def sort_benchmarks_by_time(
 
         nr_workers = benchmark.worker.nr_workers(benchmark_idx)
         benchmark_pathname = experiment.benchmark_result_pathname(
-            result_prefix, cluster.name, benchmark.scenario_name, nr_workers, "json")
+            result_prefix, cluster.name, benchmark.scenario_name, nr_workers, "json"
+        )
         assert os.path.exists(benchmark_pathname), benchmark_pathname
         benchmark_json = json.json_to_data(benchmark_pathname)
         benchmark_start = dateutil.parser.isoparse(benchmark_json["start"])
