@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import os.path
 import sys
+
 sys.path = [
     os.path.join(os.path.split(__file__)[0], "..", "..", "benchmark", "lue")
 ] + sys.path
@@ -19,7 +20,8 @@ Options:
     csv_file   Pathname of CSV file to write output to
     -h --help  Show this screen
 """.format(
-    command = os.path.basename(sys.argv[0]))
+    command=os.path.basename(sys.argv[0])
+)
 
 
 if __name__ == "__main__":

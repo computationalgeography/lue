@@ -29,12 +29,11 @@ Use the --meta option to only write the meta information to a LUE
 JSON file. This information does not change between benchmark runs,
 so it should be generated and translated only once.
 """.format(
-    command = os.path.basename(sys.argv[0]))
+    command=os.path.basename(sys.argv[0])
+)
 
 
-def benchmark_meta_to_lue_json(
-        benchmark_pathname,
-        lue_pathname):
+def benchmark_meta_to_lue_json(benchmark_pathname, lue_pathname):
 
     # Read benchmark JSON
     benchmark_json = json.loads(open(benchmark_pathname).read())
@@ -53,34 +52,30 @@ def benchmark_meta_to_lue_json(
                                     "shape_per_object": "same_shape",
                                     "value_variability": "constant",
                                     "datatype": "string",
-                                    "value": ["{}".format(
-                                        benchmark_json["name"])]
+                                    "value": ["{}".format(benchmark_json["name"])],
                                 },
                                 {
                                     "name": "system_name",
                                     "shape_per_object": "same_shape",
                                     "value_variability": "constant",
                                     "datatype": "string",
-                                    "value": ["{}".format(
-                                        benchmark_json["system_name"])]
+                                    "value": [
+                                        "{}".format(benchmark_json["system_name"])
+                                    ],
                                 },
-                            ]
+                            ],
                         }
-                    ]
+                    ],
                 }
             ]
         }
     }
 
     # Write results
-    open(lue_pathname, "w").write(
-        json.dumps(lue_json, sort_keys=False, indent=4))
+    open(lue_pathname, "w").write(json.dumps(lue_json, sort_keys=False, indent=4))
 
 
-def benchmark_to_lue_json(
-        benchmark_pathname,
-        lue_pathname,
-        epoch=None):
+def benchmark_to_lue_json(benchmark_pathname, lue_pathname, epoch=None):
 
     # Read benchmark JSON
     benchmark_json = json.loads(open(benchmark_pathname).read())
@@ -93,15 +88,17 @@ def benchmark_to_lue_json(
     if epoch_offset < 0:
         raise RuntimeError(
             "epoch passed in is later than epoch from benchmark: "
-            "{} > {}".format(epoch, benchmark_epoch))
+            "{} > {}".format(epoch, benchmark_epoch)
+        )
 
     # Calculate number of seconds sinds the epoch
     time_points = [
-        dateutil.parser.parse(timing["start"])
-            for timing in benchmark_json["timings"]]
+        dateutil.parser.parse(timing["start"]) for timing in benchmark_json["timings"]
+    ]
     time_points = [
         epoch_offset + int((time_point - benchmark_epoch).total_seconds())
-            for time_point in time_points]
+        for time_point in time_points
+    ]
     time_points = [time_points[0]]
 
     property_description = "Amount of time a measurement took"
@@ -143,20 +140,19 @@ def benchmark_to_lue_json(
                     "property_sets": [
                         {
                             "name": "measurement",
-                            "description":
-                                "Information per benchmark measurement",
+                            "description": "Information per benchmark measurement",
                             "object_tracker": {
                                 "active_set_index": active_set_idx,
-                                "active_object_id": active_object_id
+                                "active_object_id": active_object_id,
                             },
                             "time_domain": {
                                 # "item_type": "time_point",
                                 "clock": {
                                     "unit": time_units,
                                     "tick_period_count": 1,
-                                    "epoch": epoch.isoformat()
+                                    "epoch": epoch.isoformat(),
                                 },
-                                "time_point": time_points
+                                "time_point": time_points,
                             },
                             "properties": [
                                 {
@@ -165,7 +161,7 @@ def benchmark_to_lue_json(
                                     "value_variability": "variable",
                                     "shape_variability": "constant_shape",
                                     "datatype": "uint64",
-                                    "value": nr_localities
+                                    "value": nr_localities,
                                 },
                                 {
                                     "name": "nr_threads",
@@ -173,7 +169,7 @@ def benchmark_to_lue_json(
                                     "value_variability": "variable",
                                     "shape_variability": "constant_shape",
                                     "datatype": "uint64",
-                                    "value": nr_threads
+                                    "value": nr_threads,
                                 },
                                 {
                                     "name": "work_size",
@@ -181,7 +177,7 @@ def benchmark_to_lue_json(
                                     "value_variability": "variable",
                                     "shape_variability": "constant_shape",
                                     "datatype": "uint64",
-                                    "value": work_size
+                                    "value": work_size,
                                 },
                                 {
                                     "name": "duration",
@@ -191,19 +187,18 @@ def benchmark_to_lue_json(
                                     "shape_variability": "constant_shape",
                                     "datatype": "uint64",
                                     "shape": [len(durations)],
-                                    "value": durations
-                                }
-                            ]
+                                    "value": durations,
+                                },
+                            ],
                         }
-                    ]
+                    ],
                 }
             ]
         }
     }
 
     # Write results
-    open(lue_pathname, "w").write(
-        json.dumps(lue_json, sort_keys=False, indent=4))
+    open(lue_pathname, "w").write(json.dumps(lue_json, sort_keys=False, indent=4))
 
 
 if __name__ == "__main__":
