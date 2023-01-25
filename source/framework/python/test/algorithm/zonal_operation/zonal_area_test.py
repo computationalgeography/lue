@@ -12,7 +12,6 @@ def tearDownModule():
 
 
 class ZonalAreaTest(lue_test.TestCase):
-
     @lue_test.framework_test_case
     def test_overloads(self):
 
@@ -21,5 +20,7 @@ class ZonalAreaTest(lue_test.TestCase):
         fill_zone = 3
 
         for zone_dtype in [np.uint8, np.uint32, np.uint64]:
-            zones = lfr.create_array(array_shape, partition_shape, zone_dtype, fill_zone)
+            zones = lfr.create_array(
+                array_shape, partition_shape, zone_dtype, fill_zone
+            )
             lfr.zonal_area(zones)

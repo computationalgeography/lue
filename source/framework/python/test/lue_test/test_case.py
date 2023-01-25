@@ -16,9 +16,7 @@ def stop_hpx_runtime():
     # lfr.stop_hpx_runtime()
 
 
-def framework_test_case(
-        test_case):
-
+def framework_test_case(test_case):
     def wrapper(self):
         if lfr.on_root_locality():
             test_case(self)
@@ -27,7 +25,6 @@ def framework_test_case(
 
 
 class TestCase(unittest.TestCase):
-
     def setUp(self):
         pass
 

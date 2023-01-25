@@ -30,6 +30,8 @@ the related technology.
 - [![Chat with us on Matrix](https://img.shields.io/badge/chat-on%20Matrix-%230098D4)](https://matrix.to/#/#lue:matrix.org) (users)
 - [![Chat with us on Matrix](https://img.shields.io/badge/chat-on%20Matrix-%230098D4)](https://matrix.to/#/#lue-dev:matrix.org) (developers)
 
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
 
 ## CI builds
 [![Linux build status](https://github.com/computationalgeography/lue/workflows/Linux%20CI/badge.svg)](https://github.com/computationalgeography/lue/actions/workflows/linux.yml)

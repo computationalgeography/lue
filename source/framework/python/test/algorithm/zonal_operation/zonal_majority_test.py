@@ -12,7 +12,6 @@ def tearDownModule():
 
 
 class ZonalMajorityTest(lue_test.TestCase):
-
     @lue_test.framework_test_case
     def test_overloads(self):
 
@@ -22,26 +21,26 @@ class ZonalMajorityTest(lue_test.TestCase):
         fill_zone = 3
 
         for value_dtype, zone_dtype in [
-                    (np.uint8, np.uint8),
-                    (np.uint8, np.uint32),
-                    (np.uint8, np.uint64),
-
-                    (np.int32, np.uint8),
-                    (np.int32, np.uint32),
-                    (np.int32, np.uint64),
-
-                    (np.uint32, np.uint8),
-                    (np.uint32, np.uint32),
-                    (np.uint32, np.uint64),
-
-                    (np.int64, np.uint8),
-                    (np.int64, np.uint32),
-                    (np.int64, np.uint64),
-
-                    (np.uint64, np.uint8),
-                    (np.uint64, np.uint32),
-                    (np.uint64, np.uint64),
-                ]:
-            array = lfr.create_array(array_shape, partition_shape, value_dtype, fill_value)
-            zones = lfr.create_array(array_shape, partition_shape, zone_dtype, fill_zone)
+            (np.uint8, np.uint8),
+            (np.uint8, np.uint32),
+            (np.uint8, np.uint64),
+            (np.int32, np.uint8),
+            (np.int32, np.uint32),
+            (np.int32, np.uint64),
+            (np.uint32, np.uint8),
+            (np.uint32, np.uint32),
+            (np.uint32, np.uint64),
+            (np.int64, np.uint8),
+            (np.int64, np.uint32),
+            (np.int64, np.uint64),
+            (np.uint64, np.uint8),
+            (np.uint64, np.uint32),
+            (np.uint64, np.uint64),
+        ]:
+            array = lfr.create_array(
+                array_shape, partition_shape, value_dtype, fill_value
+            )
+            zones = lfr.create_array(
+                array_shape, partition_shape, zone_dtype, fill_zone
+            )
             lfr.zonal_majority(array, zones)

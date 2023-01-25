@@ -13,7 +13,6 @@ def tearDownModule():
 
 
 class WriteArrayTest(lue_test.TestCase):
-
     @lue_test.framework_test_case
     def test_write_constant_array(self):
 
@@ -39,11 +38,13 @@ class WriteArrayTest(lue_test.TestCase):
         layer_name = "elevation"
         space_box = [0, 0, 6000, 4000]
         array_pathname = "{}/{}/{}/{}".format(
-            dataset_pathname, phenomenon_name, property_set_name, layer_name)
+            dataset_pathname, phenomenon_name, property_set_name, layer_name
+        )
 
         dataset = ldm.create_dataset(dataset_pathname)
         raster_view = ldm.hl.create_raster_view(
-            dataset, phenomenon_name, property_set_name, array_shape, space_box)
+            dataset, phenomenon_name, property_set_name, array_shape, space_box
+        )
         raster_view.add_layer(layer_name, dtype)
 
         del raster_view
@@ -55,7 +56,6 @@ class WriteArrayTest(lue_test.TestCase):
         array_read = lfr.read_array(array_pathname, partition_shape)
 
         self.assertTrue(lfr.all(array_read == array).get())
-
 
     @lue_test.framework_test_case
     def test_write_variable_array(self):
@@ -85,17 +85,26 @@ class WriteArrayTest(lue_test.TestCase):
         layer_name = "elevation"
         space_box = [0, 0, 6000, 4000]
         array_pathname = "{}/{}/{}/{}".format(
-            dataset_pathname, phenomenon_name, property_set_name, layer_name)
+            dataset_pathname, phenomenon_name, property_set_name, layer_name
+        )
 
         epoch = ldm.Epoch(
-            ldm.Epoch.Kind.common_era, "2021-04-01", ldm.Calendar.gregorian)
+            ldm.Epoch.Kind.common_era, "2021-04-01", ldm.Calendar.gregorian
+        )
         clock = ldm.Clock(epoch, ldm.Unit.day, 1)
         time_box = [0, 8]
 
         dataset = ldm.create_dataset(dataset_pathname)
         raster_view = ldm.hl.create_raster_view(
-            dataset, phenomenon_name, property_set_name,
-            clock, nr_time_steps, time_box, array_shape, space_box)
+            dataset,
+            phenomenon_name,
+            property_set_name,
+            clock,
+            nr_time_steps,
+            time_box,
+            array_shape,
+            space_box,
+        )
         raster_view.add_layer(layer_name, dtype)
 
         # Let go of the dataset

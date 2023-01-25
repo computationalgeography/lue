@@ -12,7 +12,6 @@ def tearDownModule():
 
 
 class UniformTest(lue_test.TestCase):
-
     @lue_test.framework_test_case
     def test_overload1(self):
 
@@ -29,7 +28,6 @@ class UniformTest(lue_test.TestCase):
         # TODO Support dtype argument
         #     lfr.uniform(array, min_value, np.dtype(type_), max_value)
 
-
     @lue_test.framework_test_case
     def test_overload2(self):
 
@@ -39,4 +37,6 @@ class UniformTest(lue_test.TestCase):
         max_value = 55
 
         for type_ in [np.uint32, np.uint64, np.int32, np.int64, np.float32, np.float64]:
-            lfr.uniform(array_shape, partition_shape, np.dtype(type_), min_value, max_value)
+            lfr.uniform(
+                array_shape, partition_shape, np.dtype(type_), min_value, max_value
+            )

@@ -6,8 +6,6 @@ import lue_test
 
 
 class DatasetTest(lue_test.TestCase):
-
-
     def test_create(self):
 
         dataset_name = "dataset_create.lue"
@@ -25,7 +23,6 @@ class DatasetTest(lue_test.TestCase):
         if os.name != "nt":
             self.assertFalse(os.access(dataset_name, os.X_OK))
 
-
     def test_object_name(self):
 
         dataset_name = "dataset_object_name.lue"
@@ -33,7 +30,6 @@ class DatasetTest(lue_test.TestCase):
 
         self.assertDatasetIsValid(dataset)
         self.assertEqual(dataset.id.name, "")
-
 
     def test_object_pathname(self):
 
@@ -43,7 +39,6 @@ class DatasetTest(lue_test.TestCase):
         self.assertDatasetIsValid(dataset)
         self.assertEqual(dataset.id.pathname, "/")
 
-
     def test_pathname(self):
 
         dataset_name = "dataset_pathname.lue"
@@ -52,13 +47,11 @@ class DatasetTest(lue_test.TestCase):
         self.assertDatasetIsValid(dataset)
         self.assertEqual(dataset.pathname, dataset_name)
 
-
     def test_open_existing_readable(self):
 
         dataset_name = "dataset_open_existing_readable.lue"
         dataset = self.create_dataset(dataset_name)
         existing_dataset = ldm.open_dataset(dataset_name, "r")
-
 
     def test_add_universe(self):
 
@@ -69,16 +62,13 @@ class DatasetTest(lue_test.TestCase):
         dataset.add_universe("my_universe")
         self.assertTrue("my_universe" in dataset.universes)
 
-
     def test_add_universe_twice(self):
 
         dataset_name = "dataset_add_universe_twice.lue"
         dataset = self.create_dataset(dataset_name)
 
         dataset.add_universe("my_universe")
-        self.assertRaises(RuntimeError, dataset.add_universe,
-            "my_universe")
-
+        self.assertRaises(RuntimeError, dataset.add_universe, "my_universe")
 
     def test_add_phenomenon(self):
 
@@ -89,16 +79,13 @@ class DatasetTest(lue_test.TestCase):
         dataset.add_phenomenon("my_phenomenon")
         self.assertTrue("my_phenomenon" in dataset.phenomena)
 
-
     def test_add_phenomenon_twice(self):
 
         dataset_name = "dataset_add_phenomenon_twice.lue"
         dataset = self.create_dataset(dataset_name)
 
         dataset.add_phenomenon("my_phenomenon")
-        self.assertRaises(RuntimeError, dataset.add_phenomenon,
-            "my_phenomenon")
-
+        self.assertRaises(RuntimeError, dataset.add_phenomenon, "my_phenomenon")
 
     def test_query_version(self):
         dataset_name = "dataset_query_version.lue"
@@ -109,7 +96,6 @@ class DatasetTest(lue_test.TestCase):
 
         self.assertEqual(dataset.hdf5_version, ldm.hdf5.__version__)
         self.assertEqual(dataset.hdf5_version, ldm.hdf5.hdf5_version)
-
 
     def test_release_dataset(self):
         # gh431: A Python variable referencing a time or space domain's value instance kept
@@ -129,25 +115,30 @@ class DatasetTest(lue_test.TestCase):
             my_phenomenon = dataset.add_phenomenon("my_phenomenon")
 
             # Add property set with a space domain
-            space_configuration = ldm.SpaceConfiguration(ldm.Mobility.stationary, ldm.SpaceDomainItemType.box)
-            my_property_set1 = my_phenomenon.add_property_set("my_property_set1",
-                space_configuration, np.float32, 2)
+            space_configuration = ldm.SpaceConfiguration(
+                ldm.Mobility.stationary, ldm.SpaceDomainItemType.box
+            )
+            my_property_set1 = my_phenomenon.add_property_set(
+                "my_property_set1", space_configuration, np.float32, 2
+            )
             space_domain = my_property_set1.space_domain
             value1 = space_domain.value  # <--- Used to dangle
 
             # Add property set with a time domain
-            epoch = ldm.Epoch(ldm.Epoch.Kind.common_era, "2000-01-02T12:34:00", ldm.Calendar.gregorian)
+            epoch = ldm.Epoch(
+                ldm.Epoch.Kind.common_era, "2000-01-02T12:34:00", ldm.Calendar.gregorian
+            )
             clock = ldm.Clock(epoch, ldm.Unit.month, 4)
             time_configuration = ldm.TimeConfiguration(ldm.TimeDomainItemType.box)
 
-            my_property_set2 = my_phenomenon.add_property_set("my_property_set2",
-                time_configuration, clock)
+            my_property_set2 = my_phenomenon.add_property_set(
+                "my_property_set2", time_configuration, clock
+            )
             time_domain = my_property_set2.time_domain
             value2 = time_domain.value  # <--- Used to dangle
 
             # All variables will now go out of scope. The result must be that nobody is preventing
             # the dataset from being used again.
-
 
         # Create dataset and do not refer to it anymore
         create_dataset()
@@ -163,11 +154,9 @@ class DatasetTest(lue_test.TestCase):
         os.remove(dataset_name)
         self.assertFalse(os.path.exists(dataset_name))
 
-
     # TODO gh178
     # def test_add_log_message(self):
     #     dataset_name = "dataset_add_log_message.lue"
     #     dataset = self.create_dataset(dataset_name)
 
     #     self.assertEqual(dataset.log, [])
-

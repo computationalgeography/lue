@@ -12,7 +12,6 @@ def tearDownModule():
 
 
 class ToNumPyTest(lue_test.TestCase):
-
     @lue_test.framework_test_case
     def test_round_trip(self):
 
@@ -20,7 +19,9 @@ class ToNumPyTest(lue_test.TestCase):
         partition_shape = (10, 10)
         dtype = np.int32
         fill_value = 5
-        array_written = lfr.create_array(array_shape, partition_shape, dtype, fill_value)
+        array_written = lfr.create_array(
+            array_shape, partition_shape, dtype, fill_value
+        )
 
         name = "to_gdal_round_trip.tif"
 

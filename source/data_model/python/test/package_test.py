@@ -3,8 +3,6 @@ import lue_test
 
 
 class PackageTest(lue_test.TestCase):
-
-
     def test_version(self):
 
         self.assertTrue(hasattr(lue, "__version__"))

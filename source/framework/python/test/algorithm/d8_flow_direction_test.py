@@ -12,7 +12,6 @@ def tearDownModule():
 
 
 class D8FlowDirectionTest(lue_test.TestCase):
-
     @lue_test.framework_test_case
     def test_overloads(self):
 
@@ -24,7 +23,6 @@ class D8FlowDirectionTest(lue_test.TestCase):
             elevation = lfr.create_array(array_shape, partition_shape, type_, direction)
             flow_direction = lfr.d8_flow_direction(elevation)
 
-
     @lue_test.framework_test_case
     def test_directions(self):
 
@@ -32,5 +30,7 @@ class D8FlowDirectionTest(lue_test.TestCase):
         partition_shape = (10, 10)
 
         for direction in [1, 2, 3, 4, 5, 6, 7, 8, 9]:
-            elevation = lfr.create_array(array_shape, partition_shape, np.float32, direction)
+            elevation = lfr.create_array(
+                array_shape, partition_shape, np.float32, direction
+            )
             flow_direction = lfr.d8_flow_direction(elevation)

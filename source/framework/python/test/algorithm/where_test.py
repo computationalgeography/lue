@@ -12,7 +12,6 @@ def tearDownModule():
 
 
 class WhereTest(lue_test.TestCase):
-
     @lue_test.framework_test_case
     def test_binary_where_overloads(self):
         # Silly computations. We're only verifying the overloads are
@@ -22,7 +21,9 @@ class WhereTest(lue_test.TestCase):
         partition_shape = (10, 10)
         dtype = np.int32
         fill_value = 5
-        expression_array = lfr.create_array(array_shape, partition_shape, dtype, fill_value)
+        expression_array = lfr.create_array(
+            array_shape, partition_shape, dtype, fill_value
+        )
 
         condition_array = expression_array == 5
 
@@ -38,7 +39,6 @@ class WhereTest(lue_test.TestCase):
         result = lfr.where(condition_array, 4)
         self.assertTrue(lfr.all(result == 4).get())
 
-
     @lue_test.framework_test_case
     def test_ternary_where_overloads(self):
         # Silly computations. We're only verifying the overloads are
@@ -49,8 +49,12 @@ class WhereTest(lue_test.TestCase):
         dtype = np.int32
         fill_value1 = 5
         fill_value2 = 6
-        expression_array1 = lfr.create_array(array_shape, partition_shape, dtype, fill_value1)
-        expression_array2 = lfr.create_array(array_shape, partition_shape, dtype, fill_value2)
+        expression_array1 = lfr.create_array(
+            array_shape, partition_shape, dtype, fill_value1
+        )
+        expression_array2 = lfr.create_array(
+            array_shape, partition_shape, dtype, fill_value2
+        )
 
         condition_array = expression_array1 == 5
 
@@ -58,27 +62,32 @@ class WhereTest(lue_test.TestCase):
         result = lfr.where(condition_array, expression_array1 - 1, expression_array2)
         self.assertTrue(lfr.all(result == 4).get())
 
-
         # where(array, true_array, false_value_f)
-        result = lfr.where(condition_array, expression_array1 - 1, lfr.maximum(expression_array2))
+        result = lfr.where(
+            condition_array, expression_array1 - 1, lfr.maximum(expression_array2)
+        )
         self.assertTrue(lfr.all(result == 4).get())
 
         # where(array, true_array, false_value)
         result = lfr.where(condition_array, expression_array1 - 1, fill_value2)
         self.assertTrue(lfr.all(result == 4).get())
 
-
         # where(array, true_value_f, false_array)
-        result = lfr.where(condition_array, lfr.maximum(expression_array1 - 1), expression_array2)
+        result = lfr.where(
+            condition_array, lfr.maximum(expression_array1 - 1), expression_array2
+        )
         self.assertTrue(lfr.all(result == 4).get())
 
         # where(array, true_value, false_array)
         result = lfr.where(condition_array, 4, expression_array2)
         self.assertTrue(lfr.all(result == 4).get())
 
-
         # where(array, true_value_f, false_value_f)
-        result = lfr.where(condition_array, lfr.maximum(expression_array1 - 1), lfr.maximum(expression_array2))
+        result = lfr.where(
+            condition_array,
+            lfr.maximum(expression_array1 - 1),
+            lfr.maximum(expression_array2),
+        )
         self.assertTrue(lfr.all(result == 4).get())
 
         # where(array, true_value, false_value)

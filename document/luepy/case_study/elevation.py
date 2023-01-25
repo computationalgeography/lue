@@ -11,22 +11,21 @@ area = dataset.add_phenomenon("area")
 # area.object_id.expand(nr_areas)[:] = id
 
 
-time_configuration = ldm.TimeConfiguration(
-    ldm.TimeDomainItemType.box
-)
+time_configuration = ldm.TimeConfiguration(ldm.TimeDomainItemType.box)
 clock = ldm.Clock(ldm.Unit.day, 1)
 space_configuration = ldm.SpaceConfiguration(
-    ldm.Mobility.stationary,
-    ldm.SpaceDomainItemType.box
+    ldm.Mobility.stationary, ldm.SpaceDomainItemType.box
 )
 variable = area.add_property_set(
     "variable",
-    time_configuration, clock,
+    time_configuration,
+    clock,
     space_configuration,
-    space_coordinate_dtype=np.float32, rank=rank)
+    space_coordinate_dtype=np.float32,
+    rank=rank,
+)
 
 object_tracker = variable.object_tracker
-
 
 
 ### # Time domain contains 1D boxes, with a resolution of 1 day
