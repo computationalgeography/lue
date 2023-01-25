@@ -2,6 +2,7 @@
 #include <boost/algorithm/string/split.hpp>
 #include <fmt/format.h>
 #include <filesystem>
+#include <vector>
 
 
 namespace lue {

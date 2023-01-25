@@ -37,7 +37,7 @@ BOOST_AUTO_TEST_CASE(use_case_1)
                 std::initializer_list<Element>{
                         1.0, 1.5, 2.0, 2.5, 3.0,
                     }
-            });
+            }).wait();
 
     lue::test::check_arrays_are_close(result_we_got, result_we_want);
 }
@@ -77,7 +77,7 @@ BOOST_AUTO_TEST_CASE(use_case_2)
                         1.5, 1.5, 1.5, 1.5, 1.5,
                         2.0, 2.0, 2.0, 2.0, 2.0,
                     }
-            });
+            }).wait();
 
     lue::test::check_arrays_are_close(result_we_got1, result_we_want);
 
@@ -89,7 +89,7 @@ BOOST_AUTO_TEST_CASE(use_case_2)
                         1.0, 1.5, 2.0, 2.5, 3.0,
                         1.0, 1.5, 2.0, 2.5, 3.0,
                     }
-            });
+            }).wait();
 
     lue::test::check_arrays_are_close(result_we_got2, result_we_want);
 }
