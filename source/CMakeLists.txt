@@ -90,3 +90,7 @@ if(LUE_BUILD_DATA_MODEL)
             lib/cmake/lue
     )
 endif()
+
+if(LUE_BUILD_QA)
+    add_subdirectory(qa)
+endif()

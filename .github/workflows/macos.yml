@@ -8,6 +8,7 @@ on:
       - ".github/workflows/macos.yml"
       - "environment/cmake/**"
       - "source/**"
+      - "!source/qa/python/qa/**"
 
 jobs:
     build:
@@ -15,12 +16,11 @@ jobs:
         strategy:
             matrix:
                 os: ["macos-11"]
-                python-version: ["3.9"]
             fail-fast: false
 
         runs-on: ${{ matrix.os }}
 
-        name: ${{ matrix.os }} / python - ${{ matrix.python-version }}
+        name: ${{ matrix.os }}
 
         steps:
 
@@ -31,8 +31,8 @@ jobs:
           run: |
               brew update  # > /dev/null || true
               # brew upgrade
+              # HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK
               brew install \
-                  cmake \
                   boost \
                   doxygen \
                   fmt \
@@ -44,22 +44,19 @@ jobs:
                   hwloc \
                   ninja \
                   nlohmann-json \
+                  numpy \
                   pybind11 \
                   tree
 
-        - uses: conda-incubator/setup-miniconda@v2
-          with:
-              auto-update-conda: true
-              python-version: ${{ matrix.python-version }}
-              channels: conda-forge
 
         - shell: bash -l {0}
           run: |
-              # Pin markupsafe, used by Jinja which is used by Conan, because of a breaking
-              # change in markupsafe 2.1.0
-              conda install conan docopt "markupsafe<2.1.0" numpy
-              # breathe sphinx
-              conan profile new --detect default
+              # Use conan from pypi to get the latest version
+              pip3 install conan
+
+              # Needed by lue_scalability test below
+              pip3 install docopt matplotlib
+
 
         - name: configure lue
           shell: bash -l {0}
@@ -72,9 +69,11 @@ jobs:
                   -D CMAKE_BUILD_TYPE=Release \
                   -D FETCHCONTENT_QUIET=FALSE \
                   -D LUE_BUILD_DOCUMENTATION=FALSE \
-                  -D LUE_BUILD_TEST=TRUE \
-                  -D LUE_TEST_NR_LOCALITIES_PER_TEST=1 \
-                  -D LUE_TEST_NR_THREADS_PER_LOCALITY=2 \
+                  -D LUE_BUILD_QA=TRUE \
+                  -D LUE_QA_WITH_PYTHON_API=TRUE \
+                  -D LUE_QA_WITH_TESTS=TRUE \
+                  -D LUE_QA_TEST_NR_LOCALITIES_PER_TEST=1 \
+                  -D LUE_QA_TEST_NR_THREADS_PER_LOCALITY=2 \
                   -D LUE_BUILD_DATA_MODEL=TRUE \
                   -D LUE_DATA_MODEL_WITH_PYTHON_API=TRUE \
                   -D LUE_DATA_MODEL_WITH_UTILITIES=TRUE \
@@ -110,6 +109,6 @@ jobs:
               install/bin/lue_validate --version
               install/bin/lue_view --version
 
-              # TODO https://github.com/computationalgeography/lue/issues/473
-              # export PYTHONPATH="`pwd`/install/lib/python${{ matrix.python-version }}:$PYTHONPATH"
-              # python -c "import lue; print(lue.__version__)"
+              export PYTHONPATH="$(echo install/lib/python3.*):$PYTHONPATH"
+              install/bin/lue_scalability --version
+              python3 -c "import lue; print(lue.__version__)"

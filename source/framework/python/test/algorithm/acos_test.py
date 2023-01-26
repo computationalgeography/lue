@@ -12,7 +12,6 @@ def tearDownModule():
 
 
 class ACosTest(lue_test.TestCase):
-
     @lue_test.framework_test_case
     def test_overloads(self):
 

@@ -60,6 +60,12 @@ if(LUE_BUILD_FRAMEWORK AND LUE_FRAMEWORK_WITH_PYTHON_API)
             lue::py_framework)
 endif()
 
+if(LUE_BUILD_QA AND LUE_QA_WITH_PYTHON_API)
+    target_link_libraries(lue_py
+        PRIVATE
+            lue::py_qa)
+endif()
+
 if(WIN32)
     # On Windows, finding DLLs that are used by a Python extension is a pain in the neck. Here, we
     # copy all DLLs this target transitively depends on into its output directory. This includes

@@ -19,5 +19,4 @@ constant = planet.add_property_set("constant")
 gravity = constant.add_property("gravity", dtype=np.float32)
 
 # Write the actual gravity values to the dataset
-gravity.value.expand(nr_planets)[:] = \
-    np.array([ 1.5, 2.5, 3.5 ], dtype=np.float32)
+gravity.value.expand(nr_planets)[:] = np.array([1.5, 2.5, 3.5], dtype=np.float32)

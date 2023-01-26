@@ -64,10 +64,7 @@ html_theme_path = ["@sphinx_lue_theme_SOURCE_DIR@"]
 # html_static_path = ["@CMAKE_CURRENT_SOURCE_DIR@/_static"]
 
 breathe_default_project = "LUE"
-breathe_default_members = (
-        "members",
-        "undoc-members"
-    )
+breathe_default_members = ("members", "undoc-members")
 
 # Doesn't seem to work
 # add_module_names = False
@@ -77,10 +74,10 @@ html_show_sourcelink = False
 graphviz_output_format = "svg"
 
 autodoc_default_options = {
-        "members": None,
-    }
+    "members": None,
+}
 
 intersphinx_mapping = {
-        "python": ("https://docs.python.org/3", None),
-        "numpy": ("https://numpy.org/doc/stable", None),
-    }
+    "python": ("https://docs.python.org/3", None),
+    "numpy": ("https://numpy.org/doc/stable", None),
+}

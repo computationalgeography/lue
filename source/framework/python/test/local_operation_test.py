@@ -1,6 +1,7 @@
 # import lue.framework as lfr
 import lue_test
 import numpy as np
+
 # import datetime
 
 
@@ -13,7 +14,6 @@ def tearDownModule():
 
 
 class LocalOperationTest(lue_test.TestCase):
-
     @lue_test.framework_test_case
     def test_sqrt(self):
 
@@ -35,4 +35,3 @@ class LocalOperationTest(lue_test.TestCase):
         # result_we_got = lfr.sqrt(partitioned_array)
         # result_we_want = np.sqrt(values)
         # np.testing.assert_equal(result_we_got, result_we_want)
-

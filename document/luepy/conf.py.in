@@ -13,17 +13,17 @@ extensions = [
     "ext.generated_image",
 ]
 
-templates_path = ['_templates']
-source_suffix = '.rst'
-master_doc = 'index'
-project = u'LUE'
-copyright = u'2015-now Kor de Jong'
-author = u'Kor de Jong'
-version = u'@LUE_VERSION_MAJOR@.@LUE_VERSION_MINOR@'
-release = u'@LUE_VERSION@'
+templates_path = ["_templates"]
+source_suffix = ".rst"
+master_doc = "index"
+project = "LUE"
+copyright = "2015-now Kor de Jong"
+author = "Kor de Jong"
+version = "@LUE_VERSION_MAJOR@.@LUE_VERSION_MINOR@"
+release = "@LUE_VERSION@"
 language = None
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
-pygments_style = 'sphinx'
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+pygments_style = "sphinx"
 todo_include_todos = False
 modindex_common_prefix = ["lue."]
 
@@ -32,15 +32,15 @@ generated_image_root = "../../../case_study"
 on_rtd = os.environ.get("READTHEDOCS") == "True"
 
 if on_rtd:
-    html_theme = 'default'
+    html_theme = "default"
 else:
-    html_theme = 'alabaster'
-html_theme = 'default'
+    html_theme = "alabaster"
+html_theme = "default"
 
 
 # html_static_path = ['_static']
 
-htmlhelp_basename = 'LUEdoc'
+htmlhelp_basename = "LUEdoc"
 
 
 autodoc_default_options = {
@@ -71,8 +71,6 @@ def setup(app):
     ### app.connect("autodoc-skip-member", skip)
 
 
-intersphinx_mapping = {
-    "python": ("https://docs.python.org/3.8", None)
-}
+intersphinx_mapping = {"python": ("https://docs.python.org/3.8", None)}
 
 breathe_default_project = "LUE"

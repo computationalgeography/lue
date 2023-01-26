@@ -2,6 +2,7 @@
 # -*- encoding: utf8 -*-
 import os.path
 import sys
+
 # sys.path = [
 #     os.path.join(os.path.split(__file__)[0], "..", "..", "benchmark", "lue")
 # ] + sys.path
@@ -28,7 +29,8 @@ Wikipedia:
     In the context of computer memory, gigabyte and GB are customarily
     used to mean 1024³ (2³⁰) bytes.
 """.format(
-    command = os.path.basename(sys.argv[0]))
+    command=os.path.basename(sys.argv[0])
+)
 
 
 if __name__ == "__main__":
@@ -47,7 +49,8 @@ if __name__ == "__main__":
 
     assert math.fmod(nr_bytes, 1) == 0.0, nr_bytes
 
-    print("""\
+    print(
+        """\
 memory used (total):
     {:.2E} bytes
     {:.2E} Gigabyte (GB)
@@ -55,11 +58,12 @@ memory used (total):
 memory used (node):
     {:.2E} bytes
     {:.2E} Gigabyte (GB)
-    {:.2E} Gibibyte (GiB)"""
-        .format(
-            nr_bytes, nr_gigabytes, nr_gibibytes,
-            nr_bytes / nr_nodes, nr_gigabytes / nr_nodes,
-                nr_gibibytes / nr_nodes
+    {:.2E} Gibibyte (GiB)""".format(
+            nr_bytes,
+            nr_gigabytes,
+            nr_gibibytes,
+            nr_bytes / nr_nodes,
+            nr_gigabytes / nr_nodes,
+            nr_gibibytes / nr_nodes,
         )
     )
-

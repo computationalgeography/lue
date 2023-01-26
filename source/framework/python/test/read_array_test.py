@@ -13,7 +13,6 @@ def tearDownModule():
 
 
 class ReadArrayTest(lue_test.TestCase):
-
     @lue_test.framework_test_case
     def test_read_constant_array(self):
 
@@ -29,14 +28,16 @@ class ReadArrayTest(lue_test.TestCase):
 
         dataset = ldm.create_dataset(dataset_pathname)
         raster_view = ldm.hl.create_raster_view(
-            dataset, phenomenon_name, property_set_name, array_shape, space_box)
+            dataset, phenomenon_name, property_set_name, array_shape, space_box
+        )
         layer = raster_view.add_layer(layer_name, dtype)
         layer[:] = np.full(array_shape, fill_value, dtype)
 
         del layer, raster_view, dataset
 
         array_pathname = "{}/{}/{}/{}".format(
-            dataset_pathname, phenomenon_name, property_set_name, layer_name)
+            dataset_pathname, phenomenon_name, property_set_name, layer_name
+        )
 
         # Read and verify the array
         partition_shape = (10, 10)
@@ -45,7 +46,6 @@ class ReadArrayTest(lue_test.TestCase):
         self.assertEqual(array.dtype, dtype)
         self.assertEqual(array.shape, array_shape)
         self.assertTrue(lfr.all(array == fill_value).get())
-
 
     @lue_test.framework_test_case
     def test_read_variable_array(self):
@@ -61,15 +61,23 @@ class ReadArrayTest(lue_test.TestCase):
         fill_value = 5
 
         epoch = ldm.Epoch(
-            ldm.Epoch.Kind.common_era, "2021-02-09", ldm.Calendar.gregorian)
+            ldm.Epoch.Kind.common_era, "2021-02-09", ldm.Calendar.gregorian
+        )
         clock = ldm.Clock(epoch, ldm.Unit.day, 1)
         nr_time_steps = 7
         time_box = [0, 8]
 
         dataset = ldm.create_dataset(dataset_pathname)
         raster_view = ldm.hl.create_raster_view(
-            dataset, phenomenon_name, property_set_name,
-            clock, nr_time_steps, time_box, array_shape, space_box)
+            dataset,
+            phenomenon_name,
+            property_set_name,
+            clock,
+            nr_time_steps,
+            time_box,
+            array_shape,
+            space_box,
+        )
         layer = raster_view.add_layer(layer_name, dtype)
 
         # Write a 3D array with rasters for all time steps
@@ -82,7 +90,8 @@ class ReadArrayTest(lue_test.TestCase):
         del layer, raster_view, dataset
 
         array_pathname = "{}/{}/{}/{}".format(
-            dataset_pathname, phenomenon_name, property_set_name, layer_name)
+            dataset_pathname, phenomenon_name, property_set_name, layer_name
+        )
 
         # Read and verify the array
         partition_shape = (10, 10)
@@ -91,7 +100,6 @@ class ReadArrayTest(lue_test.TestCase):
         self.assertEqual(array.dtype, dtype)
         self.assertEqual(array.shape, array_shape)
         self.assertTrue(lfr.all(array == fill_value).get())
-
 
     @lue_test.framework_test_case
     def test_read_array_subset(self):
@@ -107,7 +115,8 @@ class ReadArrayTest(lue_test.TestCase):
 
         dataset = ldm.create_dataset(dataset_pathname)
         raster_view = ldm.hl.create_raster_view(
-            dataset, phenomenon_name, property_set_name, array_shape, space_box)
+            dataset, phenomenon_name, property_set_name, array_shape, space_box
+        )
         layer = raster_view.add_layer(layer_name, dtype)
         array_written = np.arange(60 * 40, dtype=dtype).reshape(array_shape)
         layer[:] = array_written
@@ -115,14 +124,18 @@ class ReadArrayTest(lue_test.TestCase):
         del layer, raster_view, dataset
 
         array_pathname = "{}/{}/{}/{}".format(
-            dataset_pathname, phenomenon_name, property_set_name, layer_name)
+            dataset_pathname, phenomenon_name, property_set_name, layer_name
+        )
 
         # Read a subset and verify the array
         subset_center = (30, 20)
         subset_shape = (25, 25)
         partition_shape = (10, 10)
         array_read = lfr.to_numpy(
-            lfr.read_array(array_pathname, subset_center, subset_shape, partition_shape))
+            lfr.read_array(array_pathname, subset_center, subset_shape, partition_shape)
+        )
 
         self.assertEqual(array_read.dtype, dtype)
-        np.testing.assert_array_equal(array_read, array_written[18:18+25, 8:8+25])
+        np.testing.assert_array_equal(
+            array_read, array_written[18 : 18 + 25, 8 : 8 + 25]
+        )

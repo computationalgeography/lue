@@ -24,9 +24,6 @@ option(LUE_FRAMEWORK_WITH_OPENCL
 option(LUE_FRAMEWORK_WITH_DASHBOARD
     "Include dashboard for simulation framework"
     FALSE)
-option(LUE_FRAMEWORK_WITH_BENCHMARKS
-    "Include benchmarks"
-    FALSE)
 option(LUE_FRAMEWORK_WITH_PYTHON_API
     "Include Python API for modelling framework"
     FALSE)
@@ -39,18 +36,23 @@ option(LUE_BUILD_DOCUMENTATION
     "Build documentation"
     FALSE)
 
-option(LUE_BUILD_TEST
-    "Build tests"
+option(LUE_BUILD_QA
+    "Include support for QA"
     FALSE)
-set(LUE_TEST_NR_LOCALITIES_PER_TEST
+option(LUE_QA_WITH_PYTHON_API
+    "Include Python API for QA"
+    FALSE)
+option(LUE_QA_WITH_TESTS
+    "Include tests"
+    FALSE)
+set(LUE_QA_TEST_NR_LOCALITIES_PER_TEST
     1 CACHE STRING "Number of localities to use")
-set(LUE_TEST_NR_THREADS_PER_LOCALITY
+set(LUE_QA_TEST_NR_THREADS_PER_LOCALITY
     1 CACHE STRING "Number of threads to use")
-set(LUE_TEST_HPX_RUNWRAPPER
+set(LUE_QA_TEST_HPX_RUNWRAPPER
     none CACHE STRING "Which runwrapper to use (see hpxrun.py)")
-set(LUE_TEST_HPX_PARCELPORT
+set(LUE_QA_TEST_HPX_PARCELPORT
     tcp CACHE STRING "Which parcelport to use (see hpxrun.py)")
-
 
 # Options related to external software used by the project
 option(LUE_BUILD_HPX
@@ -87,30 +89,31 @@ if(WIN32)
     set(LUE_HAVE_NLOHMANN_JSON_INIT FALSE)
     set(LUE_HAVE_PYBIND11_INIT FALSE)
 elseif(APPLE)
+    # Most packages can be installed using Homebrew
     set(LUE_HAVE_BOOST_INIT TRUE)
-    # Change default to TRUE once Brew contains a version.
+    # Change default to TRUE once Homebrew contains a version.
     set(LUE_HAVE_DOCOPT_INIT FALSE)
     set(LUE_HAVE_DOXYGEN_INIT TRUE)
     set(LUE_HAVE_GDAL_INIT TRUE)
     set(LUE_HAVE_GLFW_INIT TRUE)
+    # Change default to TRUE once Homebrew contains a version.
     set(LUE_HAVE_MS_GSL_INIT FALSE)
     set(LUE_HAVE_FMT_INIT TRUE)
     set(LUE_HAVE_HDF5_INIT TRUE)
     set(LUE_HAVE_NLOHMANN_JSON_INIT TRUE)
-    set(LUE_HAVE_PYBIND11_INIT FALSE)
+    set(LUE_HAVE_PYBIND11_INIT TRUE)
 else()
     set(LUE_HAVE_BOOST_INIT TRUE)
     set(LUE_HAVE_DOCOPT_INIT TRUE)
     set(LUE_HAVE_DOXYGEN_INIT TRUE)
     set(LUE_HAVE_GDAL_INIT TRUE)
     set(LUE_HAVE_GLFW_INIT TRUE)
+    # Change default to TRUE once Linux package managers contain a version
     set(LUE_HAVE_MS_GSL_INIT FALSE)
     set(LUE_HAVE_FMT_INIT TRUE)
     set(LUE_HAVE_HDF5_INIT TRUE)
-    # Change default to TRUE once Ubuntu LTS contains a recent enough version.
-    set(LUE_HAVE_NLOHMANN_JSON_INIT FALSE)
-    # Change default to TRUE once Ubuntu LTS contains a recent enough version.
-    set(LUE_HAVE_PYBIND11_INIT FALSE)
+    set(LUE_HAVE_NLOHMANN_JSON_INIT TRUE)
+    set(LUE_HAVE_PYBIND11_INIT TRUE)
 endif()
 
 function(lue_have_option name)
@@ -155,7 +158,9 @@ if(LUE_BUILD_FRAMEWORK)
 endif()
 
 
-if(LUE_BUILD_TEST)
+if(LUE_BUILD_QA)
+    if(LUE_QA_WITH_TESTS)
+    endif()
 endif()
 
 
@@ -212,10 +217,6 @@ if(LUE_BUILD_FRAMEWORK)
         set(LUE_IMGUI_REQUIRED TRUE)
     endif()
 
-    if(LUE_FRAMEWORK_WITH_BENCHMARKS)
-        set(LUE_NLOHMANN_JSON_REQUIRED TRUE)
-    endif()
-
     if(LUE_FRAMEWORK_WITH_PYTHON_API)
         set(LUE_PYBIND11_REQUIRED TRUE)
         set(LUE_PYTHON_REQUIRED TRUE)
@@ -223,25 +224,34 @@ if(LUE_BUILD_FRAMEWORK)
 endif()
 
 
-if(LUE_BUILD_TEST)
-    set(LUE_BOOST_REQUIRED TRUE)
-    list(APPEND LUE_REQUIRED_BOOST_COMPONENTS
-        filesystem system unit_test_framework)
+if(LUE_BUILD_QA)
+    set(LUE_NLOHMANN_JSON_REQUIRED TRUE)
 
-    if(LUE_BUILD_FRAMEWORK)
-        set(HPXRUN "${CMAKE_BINARY_DIR}/_deps/hpx-build/bin/hpxrun.py")
+    if(LUE_QA_WITH_TESTS)
+        set(LUE_BOOST_REQUIRED TRUE)
+        list(APPEND LUE_REQUIRED_BOOST_COMPONENTS
+            filesystem system unit_test_framework)
 
-        # Needed to be able to run hpxrun.py
+        if(LUE_BUILD_FRAMEWORK)
+            set(HPXRUN "${CMAKE_BINARY_DIR}/_deps/hpx-build/bin/hpxrun.py")
+
+            # Needed to be able to run hpxrun.py
+            set(LUE_PYTHON_REQUIRED TRUE)
+
+            # Does not work when HPX is built as part of LUE build
+            # find_file(HPXRUN
+            #     "hpxrun.py"
+            #     PATHS ${CMAKE_BINARY_DIR}/_deps/hpx-build/bin)
+            #
+            # if(NOT HPXRUN)
+            #     message(FATAL_ERROR "hpxrun.py not found")
+            # endif()
+        endif()
+    endif()
+
+    if(LUE_QA_WITH_PYTHON_API)
+        set(LUE_PYBIND11_REQUIRED TRUE)
         set(LUE_PYTHON_REQUIRED TRUE)
-
-        # Does not work when HPX is built as part of LUE build
-        # find_file(HPXRUN
-        #     "hpxrun.py"
-        #     PATHS ${CMAKE_BINARY_DIR}/_deps/hpx-build/bin)
-        #
-        # if(NOT HPXRUN)
-        #     message(FATAL_ERROR "hpxrun.py not found")
-        # endif()
     endif()
 endif()
 
@@ -454,6 +464,12 @@ if(LUE_BOOST_REQUIRED)
 
     find_package(Boost REQUIRED COMPONENTS ${LUE_REQUIRED_BOOST_COMPONENTS})
 
+    if(Boost_VERSION VERSION_EQUAL "1.75")
+        message(FATAL_ERROR
+            "Boost-1.75's safe_numerics library is known to contain a bug:\n"
+            "https://github.com/boostorg/safe_numerics/issues/94")
+    endif()
+
     add_definitions(
             -DBOOST_ALL_NO_LIB
             -DBOOST_ALL_DYN_LINK
@@ -629,7 +645,7 @@ if(LUE_HPX_REQUIRED)
             FetchContent_Declare(hpx
                 URL ${hpx_url}
                 PATCH_COMMAND ${hpx_patch_command}
-                DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+                DOWNLOAD_EXTRACT_TIMESTAMP FALSE
             )
         endif()
 

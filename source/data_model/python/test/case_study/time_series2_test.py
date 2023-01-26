@@ -5,7 +5,6 @@ import random
 
 
 class TimeSeriesTest(lue_test.TestCase):
-
     def test_case_study(self):
 
         # Time series as implemented here:
@@ -39,18 +38,16 @@ class TimeSeriesTest(lue_test.TestCase):
         # Property values are located in space at stationary space points.
 
         # Time domain
-        time_configuration = ldm.TimeConfiguration(
-            ldm.TimeDomainItemType.cell
-        )
+        time_configuration = ldm.TimeConfiguration(ldm.TimeDomainItemType.cell)
         epoch = ldm.Epoch(
-            ldm.Epoch.Kind.common_era, "2019-01-01", ldm.Calendar.gregorian)
+            ldm.Epoch.Kind.common_era, "2019-01-01", ldm.Calendar.gregorian
+        )
         clock = ldm.Clock(epoch, ldm.Unit.day, 1)
         time_coordinate_datatype = ldm.dtype.TickPeriodCount
 
         # Space domain
         space_configuration = ldm.SpaceConfiguration(
-            ldm.Mobility.stationary,
-            ldm.SpaceDomainItemType.point
+            ldm.Mobility.stationary, ldm.SpaceDomainItemType.point
         )
         space_coordinate_datatype = numpy.float32
         rank = 2
@@ -58,8 +55,12 @@ class TimeSeriesTest(lue_test.TestCase):
         # Property set
         outlet_points = phenomenon.add_property_set(
             "outlets",
-            time_configuration, clock,
-            space_configuration, space_coordinate_datatype, rank)
+            time_configuration,
+            clock,
+            space_configuration,
+            space_coordinate_datatype,
+            rank,
+        )
         time_domain = outlet_points.time_domain
         space_domain = outlet_points.space_domain
         active_set_index = outlet_points.object_tracker.active_set_index
@@ -68,8 +69,11 @@ class TimeSeriesTest(lue_test.TestCase):
         # Property
         discharge_datatype = numpy.float32
         discharge = outlet_points.add_property(
-            "discharge", dtype=discharge_datatype, shape=(1,),
-            value_variability=ldm.ValueVariability.variable)
+            "discharge",
+            dtype=discharge_datatype,
+            shape=(1,),
+            value_variability=ldm.ValueVariability.variable,
+        )
 
         nr_time_boxes = 5
         max_nr_objects = 100
@@ -92,14 +96,12 @@ class TimeSeriesTest(lue_test.TestCase):
                 nr_objects = int(random.random() * max_nr_objects)
 
                 object_id = numpy.empty(nr_objects, dtype=ldm.dtype.ID)
-                ldm.test.select_random_ids(object_id, max_nr_objects);
+                ldm.test.select_random_ids(object_id, max_nr_objects)
                 active_object_id.expand(nr_objects)[object_index:] = object_id
 
                 # Store property values of active objects
-                discharge_values = \
-                    numpy.arange(nr_objects, dtype=discharge_datatype)
-                discharge.value.expand(nr_objects)[object_index:] = \
-                    discharge_values
+                discharge_values = numpy.arange(nr_objects, dtype=discharge_datatype)
+                discharge.value.expand(nr_objects)[object_index:] = discharge_values
 
         ldm.assert_is_valid(dataset)
 

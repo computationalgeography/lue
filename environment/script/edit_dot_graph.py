@@ -7,12 +7,9 @@ import traceback
 import docopt
 
 
-def checked_call(
-        function):
+def checked_call(function):
     @functools.wraps(function)
-    def wrapper(
-            *args,
-            **kwargs):
+    def wrapper(*args, **kwargs):
         result = 0
         try:
             result = function(*args, **kwargs)
@@ -20,6 +17,7 @@ def checked_call(
             traceback.print_exc(file=sys.stderr)
             result = 1
         return 0 if result is None else result
+
     return wrapper
 
 
@@ -39,37 +37,30 @@ Options:
     attribute_name   Name of attribute
     attribute_value  Value of attribute
 """.format(
-    command=os.path.basename(sys.argv[0]))
+    command=os.path.basename(sys.argv[0])
+)
 
 
 @checked_call
-def add_attribute(
-        graph_name,
-        output_name,
-        node_name,
-        attribute_name,
-        attribute_value):
+def add_attribute(graph_name, output_name, node_name, attribute_name, attribute_value):
 
     graph = open(graph_name, "r").read()
     snippet = "{attribute}={value}".format(
-        attribute=attribute_name,
-        value=attribute_value)
+        attribute=attribute_name, value=attribute_value
+    )
     pattern = r"^\s*{node}\s*\[".format(node=node_name)
 
-    def update_node(
-            match_object):
+    def update_node(match_object):
         return "{match}\n{indent}{attribute}".format(
-            match=match_object.group(0),
-            indent=8 * " ",
-            attribute=snippet)
+            match=match_object.group(0), indent=8 * " ", attribute=snippet
+        )
 
     graph, nr_subs = re.subn(pattern, update_node, graph, flags=re.MULTILINE)
 
     if nr_subs == 0:
         raise RuntimeError("node '{}' was not found".format(node_name))
     elif nr_subs > 1:
-        raise RuntimeError("node '{}' was found multiple times".format(
-            node_name))
+        raise RuntimeError("node '{}' was found multiple times".format(node_name))
 
     stream = sys.stdout if output_name is None else open(output_name, "w")
 
@@ -89,8 +80,11 @@ if __name__ == "__main__":
             attribute_value = arguments["<attribute_value>"]
             function = add_attribute
             arguments = (
-                graph_name, output_name, node_name, attribute_name,
-                attribute_value
+                graph_name,
+                output_name,
+                node_name,
+                attribute_name,
+                attribute_value,
             )
 
     sys.exit(function(*arguments))

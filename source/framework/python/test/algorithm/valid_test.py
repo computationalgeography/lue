@@ -12,7 +12,6 @@ def tearDownModule():
 
 
 class ValidTest(lue_test.TestCase):
-
     @lue_test.framework_test_case
     def test_all_valid(self):
 
@@ -25,7 +24,6 @@ class ValidTest(lue_test.TestCase):
         result = lfr.valid(array)
 
         self.assertTrue(lfr.all(result == 1).get())
-
 
     @lue_test.framework_test_case
     def test_all_invalid(self):

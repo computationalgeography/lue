@@ -10,6 +10,11 @@
 #include "lue/py/framework/submodule.hpp"
 #endif
 #endif
+#ifdef LUE_BUILD_QA
+#ifdef LUE_QA_WITH_PYTHON_API
+#include "lue/py/qa/submodule.hpp"
+#endif
+#endif
 #include <boost/algorithm/string/join.hpp>
 #include <fmt/format.h>
 
@@ -19,29 +24,33 @@ namespace py = pybind11;
 
 namespace lue {
 
-PYBIND11_MODULE(lue_py, module)
-{
-    std::vector<std::string> automodules;
+    PYBIND11_MODULE(lue_py, module)
+    {
+        std::vector<std::string> automodules;
 
 #ifdef LUE_BUILD_DATA_MODEL
 #ifdef LUE_DATA_MODEL_WITH_PYTHON_API
-    automodules.push_back("data_model");
+        automodules.push_back("data_model");
 #endif
 #endif
 
 #ifdef LUE_BUILD_FRAMEWORK
 #ifdef LUE_FRAMEWORK_WITH_PYTHON_API
-    automodules.push_back("framework");
+        automodules.push_back("framework");
 #endif
 #endif
 
-    for(std::string& item: automodules)
-    {
-        item = fmt::format(".. automodule:: lue.{}", item);
-    }
+#ifdef LUE_QA_WITH_PYTHON_API
+        automodules.push_back("qa");
+#endif
 
-    module.doc() =
-        fmt::format(R"(
+        for(std::string& item: automodules)
+        {
+            item = fmt::format(".. automodule:: lue.{}", item);
+        }
+
+        module.doc() =
+            fmt::format(R"(
     :mod:`lue` --- Scientific Database and Environmental Modelling Framework
     ========================================================================
 
@@ -50,21 +59,27 @@ PYBIND11_MODULE(lue_py, module)
     {}
 )", boost::algorithm::join(automodules, "\n    "));
 
-    module.attr("__version__") = py::str(BuildOptions::version);
-    module.attr("lue_version") = py::str(BuildOptions::version);
-    module.attr("git_short_sha1") = py::str(Git::short_sha1);
+        module.attr("__version__") = py::str(BuildOptions::version);
+        module.attr("lue_version") = py::str(BuildOptions::version);
+        module.attr("git_short_sha1") = py::str(Git::short_sha1);
 
 #ifdef LUE_BUILD_DATA_MODEL
 #ifdef LUE_DATA_MODEL_WITH_PYTHON_API
-    data_model::init_submodule(module);
+        data_model::init_submodule(module);
 #endif
 #endif
 
 #ifdef LUE_BUILD_FRAMEWORK
 #ifdef LUE_FRAMEWORK_WITH_PYTHON_API
-    framework::init_submodule(module);
+        framework::init_submodule(module);
 #endif
 #endif
-}
+
+#ifdef LUE_BUILD_QA
+#ifdef LUE_QA_WITH_PYTHON_API
+        qa::init_submodule(module);
+#endif
+#endif
+    }
 
 }  // namespace lue

@@ -12,19 +12,31 @@ def tearDownModule():
 
 
 class UniformTest(lue_test.TestCase):
+    @lue_test.framework_test_case
+    def test_overload1(self):
+
+        array_shape = (60, 40)
+        partition_shape = (10, 10)
+        min_value = 33
+        max_value = 55
+        dtype = np.dtype(np.float32)
+        fill_value = 5.5
+
+        # array = lfr.create_array(array_shape, partition_shape, dtype, fill_value)
+
+        # for type_ in [np.uint32, np.uint64, np.int32, np.int64, np.float32, np.float64]:
+        # TODO Support dtype argument
+        #     lfr.uniform(array, min_value, np.dtype(type_), max_value)
 
     @lue_test.framework_test_case
-    def test_overload(self):
+    def test_overload2(self):
 
-        # TODO(KDJ) Support this overload
-        pass
-        # array_shape = (60, 40)
-        # partition_shape = (10, 10)
-        # dtype = np.int32
-        # min_value = 33
-        # max_value = 55
-        # array = lfr.uniform(array_shape, partition_shape, dtype, min_value, max_value)
+        array_shape = (60, 40)
+        partition_shape = (10, 10)
+        min_value = 33
+        max_value = 55
 
-        # self.assertEqual(array.dtype, dtype)
-        # self.assertEqual(array.shape, array_shape)
-        # self.assertTrue(lfr.all(min_value >= array <= max_value).get())
+        for type_ in [np.uint32, np.uint64, np.int32, np.int64, np.float32, np.float64]:
+            lfr.uniform(
+                array_shape, partition_shape, np.dtype(type_), min_value, max_value
+            )

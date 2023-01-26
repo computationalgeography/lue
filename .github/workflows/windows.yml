@@ -8,6 +8,7 @@ on:
       - ".github/workflows/windows.yml"
       - "environment/cmake/**"
       - "source/**"
+      - "!source/qa/python/qa/**"
 
 jobs:
     build:
@@ -32,11 +33,16 @@ jobs:
               auto-update-conda: true
               python-version: ${{ matrix.python-version }}
               channels: conda-forge
+
         - shell: bash -l {0}
           run: |
-              # Pin markupsafe, used by Jinja which is used by Conan, because of a breaking
-              # change in markupsafe 2.1.0
-              conda install conda-build boost-cpp conan gdal hdf5 libhwloc "markupsafe<2.1.0" numpy
+              conda install conda-build boost-cpp gdal hdf5 libhwloc numpy pip
+
+              # Needed by lue_scalability test below
+              conda install docopt matplotlib
+
+              # Use conan from pypi to get the latest version
+              pip install conan
 
         - name: configure lue
           shell: bash -l {0}
@@ -52,12 +58,13 @@ jobs:
                   -D LUE_DATA_MODEL_WITH_PYTHON_API:BOOL=TRUE \
                   -D LUE_DATA_MODEL_WITH_UTILITIES:BOOL=TRUE \
                   -D LUE_BUILD_FRAMEWORK:BOOL=TRUE \
-                  -D LUE_FRAMEWORK_WITH_BENCHMARKS:BOOL=FALSE \
                   -D LUE_FRAMEWORK_WITH_PYTHON_API:BOOL=TRUE \
                   -D LUE_BUILD_VIEW:BOOL=TRUE \
-                  -D LUE_BUILD_TEST:BOOL=TRUE \
-                  -D LUE_TEST_NR_LOCALITIES_PER_TEST=1 \
-                  -D LUE_TEST_NR_THREADS_PER_LOCALITY=2 \
+                  -D LUE_BUILD_QA:BOOL=TRUE \
+                  -D LUE_QA_WITH_PYTHON_API=TRUE \
+                  -D LUE_QA_WITH_TESTS=TRUE \
+                  -D LUE_QA_TEST_NR_LOCALITIES_PER_TEST=1 \
+                  -D LUE_QA_TEST_NR_THREADS_PER_LOCALITY=2 \
                   -D LUE_BUILD_DOCUMENTATION:BOOL=FALSE \
                   -D LUE_HAVE_BOOST:BOOL=TRUE \
                   -D LUE_HAVE_DOCOPT:BOOL=FALSE \
@@ -103,5 +110,5 @@ jobs:
 
               # Add our package to the set of Conda packages
               conda-develop install/lib/python${{ matrix.python-version }}
-
+              install/bin/lue_scalability --version
               python -c "import lue; print(lue.__version__)"

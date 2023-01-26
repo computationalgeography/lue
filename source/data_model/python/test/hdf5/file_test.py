@@ -5,7 +5,6 @@ import lue_test
 
 
 class FileTest(lue_test.TestCase):
-
     def test_create_remove(self):
 
         file_pathname = "file_create.h5"
@@ -54,7 +53,7 @@ class FileTest(lue_test.TestCase):
         del file
 
         # Unicode
-        file_pathname = u"ﬁlæ_¶åthnæmæ.h5"
+        file_pathname = "ﬁlæ_¶åthnæmæ.h5"
         lue_test.remove_file_if_existant(file_pathname)
         file = lh5.create_file(file_pathname)
         self.assertEqual(file.pathname, file_pathname)

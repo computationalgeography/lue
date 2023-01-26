@@ -18,7 +18,7 @@ Variable                         Default Effect
 `LUE_BUILD_FRAMEWORK`            `FALSE` Build modelling framework
 `LUE_BUILD_VIEW`                 `FALSE` Build data model viewer
 `LUE_BUILD_DOCUMENTATION`        `FALSE` Build API documentation
-`LUE_BUILD_TEST`                 `FALSE` Build test targets
+`LUE_BUILD_QA`                   `FALSE` Build QA targets
 ================================ ======= ===========================
 
 Here is an example session of building the default LUE targets and
@@ -95,29 +95,30 @@ Dependencies
 - Breathe, Doxygen, Graphviz, Sphinx
 
 
-Test
-----
+QA
+--
 
 Optional features:
 
-================================== ======= ====================================
-Variable                           Default Effect
-================================== ======= ====================================
-`LUE_TEST_NR_LOCALITIES_PER_TEST`  `1`     Number of localities used when testing the framework
-`LUE_TEST_NR_THREADS_PER_LOCALITY` `1`     Number of threads per locality used when testing the framework
-================================== ======= ====================================
+===================================== ======= ====================================
+Variable                              Default Effect
+===================================== ======= ====================================
+`LUE_QA_WITH_TESTS`                   `TRUE`  Build test targets
+`LUE_QA_TEST_NR_LOCALITIES_PER_TEST`  `1`     Number of localities used when testing the framework
+`LUE_QA_TEST_NR_THREADS_PER_LOCALITY` `1`     Number of threads per locality used when testing the framework
+===================================== ======= ====================================
 
 .. note::
 
-   Changing `LUE_TEST_NR_LOCALITIES_PER_TEST` and
-   `LUE_TEST_NR_THREADS_PER_LOCALITY` is only relevant for tests that
+   Changing `LUE_QA_TEST_NR_LOCALITIES_PER_TEST` and
+   `LUE_QA_TEST_NR_THREADS_PER_LOCALITY` is only relevant for tests that
    depend on the HPX library. Using multiple localities
-   (`LUE_TEST_NR_LOCALITIES_PER_TEST` > 1), requires that HPX is
+   (`LUE_QA_TEST_NR_LOCALITIES_PER_TEST` > 1), requires that HPX is
    built with support for networking.
 
 Dependencies
 ~~~~~~~~~~~~
-- Boost unit-test framework library
+- `LUE_QA_WITH_TESTS`: Boost unit-test framework library
 
 
 Dependencies

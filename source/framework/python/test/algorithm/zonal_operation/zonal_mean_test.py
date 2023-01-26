@@ -12,7 +12,6 @@ def tearDownModule():
 
 
 class ZonalMeanTest(lue_test.TestCase):
-
     @lue_test.framework_test_case
     def test_overloads(self):
 
@@ -22,14 +21,17 @@ class ZonalMeanTest(lue_test.TestCase):
         fill_zone = 3
 
         for value_dtype, zone_dtype in [
-                    (np.float32, np.uint8),
-                    (np.float32, np.uint32),
-                    (np.float32, np.uint64),
-
-                    (np.float64, np.uint8),
-                    (np.float64, np.uint32),
-                    (np.float64, np.uint64),
-                ]:
-            array = lfr.create_array(array_shape, partition_shape, value_dtype, fill_value)
-            zones = lfr.create_array(array_shape, partition_shape, zone_dtype, fill_zone)
+            (np.float32, np.uint8),
+            (np.float32, np.uint32),
+            (np.float32, np.uint64),
+            (np.float64, np.uint8),
+            (np.float64, np.uint32),
+            (np.float64, np.uint64),
+        ]:
+            array = lfr.create_array(
+                array_shape, partition_shape, value_dtype, fill_value
+            )
+            zones = lfr.create_array(
+                array_shape, partition_shape, zone_dtype, fill_zone
+            )
             lfr.zonal_mean(array, zones)

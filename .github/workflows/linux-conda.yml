@@ -7,6 +7,7 @@ on:
     paths:
       - ".github/workflows/linux-conda.yml"
       - "source/**"
+      - "!source/qa/python/qa/**"
       - "environment/cmake/**"
       - "environment/configuration/receipe/build.sh"
       - "environment/configuration/receipe/meta.yaml"
@@ -29,6 +30,7 @@ jobs:
 
         - name: Configure system
           run: |
+              sudo apt-get update
               sudo apt install mesa-common-dev libglu1-mesa-dev libgl1-mesa-glx
 
         - name: Checkout LUE
@@ -36,13 +38,15 @@ jobs:
 
         - uses: conda-incubator/setup-miniconda@v2
           with:
-              auto-update-conda: false
+              auto-update-conda: true
               python-version: ${{ matrix.python-version }}
               channels: conda-forge
-              mamba-version: "*"
+              # mamba-version: "*"
+
         - shell: bash -l {0}
           run: |
-              mamba install boa -c conda-forge
+              # mamba install boa -c conda-forge
+              conda install boa
 
         - name: Build
           shell: bash -l {0}

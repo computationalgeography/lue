@@ -9,8 +9,8 @@ from docutils.parsers.rst import Directive
 def setup(app):
     app.add_config_value("generated_image_root", None, "html")
 
-    app.add_node(GeneratedImage,
-        html=(visit_generated_image_node, depart_generated_image_node)
+    app.add_node(
+        GeneratedImage, html=(visit_generated_image_node, depart_generated_image_node)
     )
 
     app.add_directive("generated_image", GeneratedImageDirective)

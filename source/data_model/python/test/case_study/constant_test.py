@@ -5,15 +5,13 @@ import numpy as np
 
 
 class ConstantTest(lue_test.TestCase):
-
     def test_case_study(self):
 
         dataset = ldm.create_dataset("planets.lue")
         planets = dataset.add_phenomenon("planets")
 
         nr_planets = 3
-        planets.object_id.expand(nr_planets)[:] = \
-            np.arange(nr_planets)
+        planets.object_id.expand(nr_planets)[:] = np.arange(nr_planets)
 
         constants = planets.add_property_set("constants")
 

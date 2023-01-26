@@ -12,7 +12,6 @@ def tearDownModule():
 
 
 class SlopeTest(lue_test.TestCase):
-
     @lue_test.framework_test_case
     def test_overloads(self):
 
@@ -20,7 +19,9 @@ class SlopeTest(lue_test.TestCase):
         partition_shape = (10, 10)
 
         fill_value = 5
-        elevation = lfr.create_array(array_shape, partition_shape, np.float32, fill_value)
+        elevation = lfr.create_array(
+            array_shape, partition_shape, np.float32, fill_value
+        )
         cell_size = 25
 
         slope = lfr.slope(elevation, cell_size)

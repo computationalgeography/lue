@@ -12,7 +12,6 @@ def tearDownModule():
 
 
 class ToNumPyTest(lue_test.TestCase):
-
     @lue_test.framework_test_case
     def test_array(self):
 
@@ -24,8 +23,9 @@ class ToNumPyTest(lue_test.TestCase):
         numpy_array = lfr.to_numpy(array)
 
         self.assertEqual(numpy_array.dtype, dtype)
-        np.testing.assert_array_equal(numpy_array, np.full(array_shape, fill_value, dtype=dtype))
-
+        np.testing.assert_array_equal(
+            numpy_array, np.full(array_shape, fill_value, dtype=dtype)
+        )
 
     @lue_test.framework_test_case
     def test_mark_no_data(self):
@@ -35,12 +35,13 @@ class ToNumPyTest(lue_test.TestCase):
         dtype = np.int32
 
         # Create array containing only no-data elements
-        array = lfr.where(lfr.create_array(array_shape, partition_shape, dtype, 5) != 5, 7)
+        array = lfr.where(
+            lfr.create_array(array_shape, partition_shape, dtype, 5) != 5, 7
+        )
 
         numpy_array = lfr.to_numpy(array, 9)
 
         np.testing.assert_array_equal(numpy_array, np.full(array_shape, 9, dtype=dtype))
-
 
     @lue_test.framework_test_case
     def test_small_array(self):
@@ -53,8 +54,9 @@ class ToNumPyTest(lue_test.TestCase):
         numpy_array = lfr.to_numpy(array)
 
         self.assertEqual(numpy_array.dtype, dtype)
-        np.testing.assert_array_equal(numpy_array, np.full(array_shape, fill_value, dtype=dtype))
-
+        np.testing.assert_array_equal(
+            numpy_array, np.full(array_shape, fill_value, dtype=dtype)
+        )
 
     @lue_test.framework_test_case
     def test_dtype(self):
@@ -66,11 +68,15 @@ class ToNumPyTest(lue_test.TestCase):
         partition_shape = (10, 10)
 
         for input_type in [
-                    np.uint8, np.uint32, np.uint64,
-                ]:
+            np.uint8,
+            np.uint32,
+            np.uint64,
+        ]:
 
             input_dtype = np.dtype(input_type)
-            lue_array = lfr.create_array(array_shape, partition_shape, input_dtype, input_type(5))
+            lue_array = lfr.create_array(
+                array_shape, partition_shape, input_dtype, input_type(5)
+            )
 
             numpy_array = lfr.to_numpy(lue_array)
             self.assertEqual(numpy_array.dtype, input_dtype)
@@ -82,11 +88,14 @@ class ToNumPyTest(lue_test.TestCase):
             self.assertRaises(TypeError, lfr.to_numpy, lue_array, 9.9)
 
         for input_type in [
-                    np.int32, np.int64,
-                ]:
+            np.int32,
+            np.int64,
+        ]:
 
             input_dtype = np.dtype(input_type)
-            lue_array = lfr.create_array(array_shape, partition_shape, input_dtype, input_type(5))
+            lue_array = lfr.create_array(
+                array_shape, partition_shape, input_dtype, input_type(5)
+            )
 
             numpy_array = lfr.to_numpy(lue_array)
             self.assertEqual(numpy_array.dtype, input_dtype)
@@ -100,11 +109,14 @@ class ToNumPyTest(lue_test.TestCase):
             self.assertRaises(TypeError, lfr.to_numpy, lue_array, 9.9)
 
         for input_type in [
-                    np.float32, np.float64,
-                ]:
+            np.float32,
+            np.float64,
+        ]:
 
             input_dtype = np.dtype(input_type)
-            lue_array = lfr.create_array(array_shape, partition_shape, input_dtype, input_type(5))
+            lue_array = lfr.create_array(
+                array_shape, partition_shape, input_dtype, input_type(5)
+            )
 
             numpy_array = lfr.to_numpy(lue_array)
             self.assertEqual(numpy_array.dtype, input_dtype)
@@ -118,7 +130,6 @@ class ToNumPyTest(lue_test.TestCase):
             numpy_array = lfr.to_numpy(lue_array, 9.9)
             self.assertEqual(numpy_array.dtype, input_dtype)
 
-
     @lue_test.framework_test_case
     def test_result_of_multiple_operations(self):
 
@@ -130,8 +141,9 @@ class ToNumPyTest(lue_test.TestCase):
         numpy_array = lfr.to_numpy(array)
 
         self.assertEqual(numpy_array.dtype, dtype)
-        np.testing.assert_array_equal(numpy_array, np.full(array_shape, fill_value + 5, dtype=dtype))
-
+        np.testing.assert_array_equal(
+            numpy_array, np.full(array_shape, fill_value + 5, dtype=dtype)
+        )
 
     @lue_test.framework_test_case
     def test_numpy_roundtrip(self):
@@ -149,9 +161,11 @@ class ToNumPyTest(lue_test.TestCase):
 
             self.assertEqual(numpy_array.dtype, dtype)
             np.testing.assert_array_equal(
-                numpy_array, np.arange(nr_cells, dtype=dtype).reshape(array_shape),
-                err_msg="Error in case type is {}".format(dtype), verbose=True)
-
+                numpy_array,
+                np.arange(nr_cells, dtype=dtype).reshape(array_shape),
+                err_msg="Error in case type is {}".format(dtype),
+                verbose=True,
+            )
 
     @lue_test.framework_test_case
     def test_numpy_roundtrip_result_of_multiple_operations(self):
@@ -169,5 +183,8 @@ class ToNumPyTest(lue_test.TestCase):
 
             self.assertEqual(numpy_array.dtype, dtype)
             np.testing.assert_array_equal(
-                numpy_array, np.arange(nr_cells, dtype=dtype).reshape(array_shape) + 5,
-                err_msg="Error in case type is {}".format(dtype), verbose=True)
+                numpy_array,
+                np.arange(nr_cells, dtype=dtype).reshape(array_shape) + 5,
+                err_msg="Error in case type is {}".format(dtype),
+                verbose=True,
+            )

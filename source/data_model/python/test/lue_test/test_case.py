@@ -6,28 +6,19 @@ import lue_test
 
 
 class TestCase(unittest.TestCase):
-
     @classmethod
-    def dataset_name(self,
-            module_name,
-            filename):
-        return "{}.lue".format(
-            os.path.join(os.path.dirname(module_name), filename))
+    def dataset_name(self, module_name, filename):
+        return "{}.lue".format(os.path.join(os.path.dirname(module_name), filename))
 
-
-    def assertArraysEqual(self,
-            lhs,
-            rhs):
+    def assertArraysEqual(self, lhs, rhs):
         self.assertEqual(lhs.dtype, rhs.dtype)
         try:
             numpy.testing.assert_equal(lhs, rhs)
         except AssertionError as exception:
             self.fail(str(exception))
 
-
     @classmethod
-    def add_method(cls,
-            method):
+    def add_method(cls, method):
         """
         Binds the `method` passed in to the class.
 
@@ -36,10 +27,8 @@ class TestCase(unittest.TestCase):
         """
         setattr(cls, method.__name__, method)
 
-
     @classmethod
-    def create_dataset(cls,
-            name):
+    def create_dataset(cls, name):
         """
         Create dataset, removing an existing dataset first
         """
@@ -47,22 +36,17 @@ class TestCase(unittest.TestCase):
 
         return ldm.create_dataset(name)
 
-
     @classmethod
-    def relative_pathname(cls,
-            directory_pathname,
-            filename):
+    def relative_pathname(cls, directory_pathname, filename):
         """
         Return a relative pathname to *filename*, given that the test module
         is located in *directory_pathname*
         """
         return os.path.join(
-            lue_test.relative_pathname(__file__, directory_pathname),
-            filename)
+            lue_test.relative_pathname(__file__, directory_pathname), filename
+        )
 
-
-    def assertDatasetIsValid(self,
-            dataset):
+    def assertDatasetIsValid(self, dataset):
         """
         Validate *dataset*
         """
@@ -74,5 +58,4 @@ class TestCase(unittest.TestCase):
         try:
             ldm.assert_is_valid(dataset, fail_on_warning=True)
         except RuntimeError as exception:
-            self.fail("dataset {} is not valid\n{}".format(
-                dataset.pathname, exception))
+            self.fail("dataset {} is not valid\n{}".format(dataset.pathname, exception))

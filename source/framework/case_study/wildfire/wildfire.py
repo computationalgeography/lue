@@ -21,12 +21,10 @@ from pcraster.framework import *
 
 
 class ForestFireModel(DynamicModel):
-
     def __init__(self):
 
         DynamicModel.__init__(self)
         setclone("clone.map")
-
 
     def initial(self):
 
@@ -58,46 +56,43 @@ class ForestFireModel(DynamicModel):
         self.report(self.ignite_probability, "ignite_probability")
         self.report(self.spot_ignite_probability, "spot_ignite_probability")
 
-
     def dynamic(self):
 
         # Find pixels where at least one neighbour is burning and that
         # are not yet burning or burnt down. This should be window4total
         # (NOT a Moore neighbourhood)
-        cells_not_burning_surrounded_by_fire = \
-            (window4total(scalar(self.burning)) > scalar(0)) & \
-            (~self.fire)
+        cells_not_burning_surrounded_by_fire = (
+            window4total(scalar(self.burning)) > scalar(0)
+        ) & (~self.fire)
 
         # Select cells that catch new fire from direct neighbours
-        new_fire = \
-            cells_not_burning_surrounded_by_fire & \
-            (uniform(1) < self.ignite_probability)
+        new_fire = cells_not_burning_surrounded_by_fire & (
+            uniform(1) < self.ignite_probability
+        )
 
         # Find pixels that have not burned down or at fire and that have
         # fire pixels over a distance (jump dispersal). This should be
         # a round window preferable, diameter I do not know
-        jump_cells = \
-            (windowtotal(scalar(self.burning), 5 * celllength()) > 0.5) & \
-            (~self.fire)
+        jump_cells = (windowtotal(scalar(self.burning), 5 * celllength()) > 0.5) & (
+            ~self.fire
+        )
 
         # Select cells that catch new fire by jumping fire
-        new_fire_jump = \
-            jump_cells & (uniform(1) < self.spot_ignite_probability)
+        new_fire_jump = jump_cells & (uniform(1) < self.spot_ignite_probability)
 
         # Update fire
         self.fire = (self.fire | new_fire) | new_fire_jump
 
         # Age of fire (in timesteps)
-        self.fire_age = \
-            ifthenelse(self.fire, self.fire_age + 1.0, self.fire_age)
+        self.fire_age = ifthenelse(self.fire, self.fire_age + 1.0, self.fire_age)
 
         # Burning cells
         self.burning = self.fire & (self.fire_age < 30.0)
 
         # State
-        state = \
-            ifthenelse(
-                self.burning, nominal(1), ifthenelse(self.fire, nominal(2), 3))
+        state = ifthenelse(
+            self.burning, nominal(1), ifthenelse(self.fire, nominal(2), 3)
+        )
 
         self.report(self.fire, "fire")
         self.report(self.burning, "burning")

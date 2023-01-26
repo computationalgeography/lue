@@ -1,9 +1,0 @@
-{
-    "nr_time_steps": 500,
-    "array": {
-        "shape": [96000, 96000]
-    },
-    "partition": {
-        "shape": [1900, 1900]
-    }
-}

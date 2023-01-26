@@ -12,7 +12,6 @@ def tearDownModule():
 
 
 class CreateArrayTest(lue_test.TestCase):
-
     @lue_test.framework_test_case
     def test_create_array(self):
 
