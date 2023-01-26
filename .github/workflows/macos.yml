@@ -47,28 +47,21 @@ jobs:
                   \
                   gdal \
                   ninja \
+                  numpy \
                   pybind11
 
 
         - shell: bash -l {0}
           run: |
-              python --version
-              python3 --version
-              type python
-              type python3
-              type pip
-              type pip3
-
               # Use conan from pypi to get the latest version
-              pip install conan docopt
+              pip3 install conan
 
-              # TODO install from brew in case this fails
-              python -c "import numpy"
+              python3 -c "import numpy"  # TODO remove
 
               # Needed by lue_scalability test below
-              # TODO install from brew in case this fails
-              python -c "import matplotlib"
-              python -c "import docopt"
+              pip3 install docopt matplotlib
+              python3 -c "import matplotlib"  # TODO remove
+              python3 -c "import docopt"  # TODO remove
 
 
         # - uses: conda-incubator/setup-miniconda@v2
