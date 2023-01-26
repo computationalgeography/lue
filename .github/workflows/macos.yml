@@ -16,11 +16,12 @@ jobs:
         strategy:
             matrix:
                 os: ["macos-11"]
+                # python-version: ["3.9"]
             fail-fast: false
 
         runs-on: ${{ matrix.os }}
 
-        name: ${{ matrix.os }}
+        name: ${{ matrix.os }}  # / python - ${{ matrix.python-version }}
 
         steps:
 
@@ -29,11 +30,10 @@ jobs:
 
         - name: configure system
           run: |
-              # brew update  # > /dev/null || true
+              brew update  # > /dev/null || true
               # brew upgrade
               # HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK
               brew install \
-                  cmake \
                   boost \
                   doxygen \
                   fmt \
@@ -43,25 +43,29 @@ jobs:
                   hdf5 \
                   hwloc \
                   nlohmann-json \
-                  tree
+                  tree \
+                  \
+                  gdal \
+                  ninja \
+                  pybind11
 
-        - uses: conda-incubator/setup-miniconda@v2
-          with:
-              auto-update-conda: true
-              python-version: ${{ matrix.python-version }}
-              channels: conda-forge
+        # - uses: conda-incubator/setup-miniconda@v2
+        #   with:
+        #       auto-update-conda: true
+        #       python-version: ${{ matrix.python-version }}
+        #       channels: conda-forge
 
-        - shell: bash -l {0}
-          run: |
-              conda install gdal ninja numpy pip pybind11
+        # - shell: bash -l {0}
+        #   run: |
+        #       conda install gdal ninja numpy pip pybind11
 
-              # Needed by lue_scalability test below
-              conda install docopt matplotlib
+        #       # Needed by lue_scalability test below
+        #       conda install docopt matplotlib
 
-              # Use conan from pypi to get the latest version
-              pip install conan
+        #       # Use conan from pypi to get the latest version
+        #       pip install conan
 
-              conan profile new --detect default
+        #       conan profile new --detect default
 
         - name: configure lue
           shell: bash -l {0}
