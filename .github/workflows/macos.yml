@@ -16,12 +16,11 @@ jobs:
         strategy:
             matrix:
                 os: ["macos-11"]
-                # python-version: ["3.9"]
             fail-fast: false
 
         runs-on: ${{ matrix.os }}
 
-        name: ${{ matrix.os }}  # / python - ${{ matrix.python-version }}
+        name: ${{ matrix.os }}
 
         steps:
 
@@ -37,18 +36,17 @@ jobs:
                   boost \
                   doxygen \
                   fmt \
+                  gdal \
                   glfw \
                   graphviz \
                   gperftools \
                   hdf5 \
                   hwloc \
-                  nlohmann-json \
-                  tree \
-                  \
-                  gdal \
                   ninja \
+                  nlohmann-json \
                   numpy \
-                  pybind11
+                  pybind11 \
+                  tree
 
 
         - shell: bash -l {0}
@@ -56,31 +54,9 @@ jobs:
               # Use conan from pypi to get the latest version
               pip3 install conan
 
-              python3 -c "import numpy"  # TODO remove
-
               # Needed by lue_scalability test below
               pip3 install docopt matplotlib
-              python3 -c "import matplotlib"  # TODO remove
-              python3 -c "import docopt"  # TODO remove
 
-
-        # - uses: conda-incubator/setup-miniconda@v2
-        #   with:
-        #       auto-update-conda: true
-        #       python-version: ${{ matrix.python-version }}
-        #       channels: conda-forge
-
-        # - shell: bash -l {0}
-        #   run: |
-        #       conda install gdal ninja numpy pip pybind11
-
-        #       # Needed by lue_scalability test below
-        #       conda install docopt matplotlib
-
-        #       # Use conan from pypi to get the latest version
-        #       pip install conan
-
-        #       conan profile new --detect default
 
         - name: configure lue
           shell: bash -l {0}
@@ -133,6 +109,6 @@ jobs:
               install/bin/lue_validate --version
               install/bin/lue_view --version
 
-              export PYTHONPATH="install/lib/python${{ matrix.python-version }}:$PYTHONPATH"
+              export PYTHONPATH="$(echo install/lib/python3.*):$PYTHONPATH"
               install/bin/lue_scalability --version
               python3 -c "import lue; print(lue.__version__)"

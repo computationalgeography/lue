@@ -89,30 +89,31 @@ if(WIN32)
     set(LUE_HAVE_NLOHMANN_JSON_INIT FALSE)
     set(LUE_HAVE_PYBIND11_INIT FALSE)
 elseif(APPLE)
+    # Most packages can be installed using Homebrew
     set(LUE_HAVE_BOOST_INIT TRUE)
-    # Change default to TRUE once Brew contains a version.
+    # Change default to TRUE once Homebrew contains a version.
     set(LUE_HAVE_DOCOPT_INIT FALSE)
     set(LUE_HAVE_DOXYGEN_INIT TRUE)
     set(LUE_HAVE_GDAL_INIT TRUE)
     set(LUE_HAVE_GLFW_INIT TRUE)
+    # Change default to TRUE once Homebrew contains a version.
     set(LUE_HAVE_MS_GSL_INIT FALSE)
     set(LUE_HAVE_FMT_INIT TRUE)
     set(LUE_HAVE_HDF5_INIT TRUE)
     set(LUE_HAVE_NLOHMANN_JSON_INIT TRUE)
-    set(LUE_HAVE_PYBIND11_INIT FALSE)
+    set(LUE_HAVE_PYBIND11_INIT TRUE)
 else()
     set(LUE_HAVE_BOOST_INIT TRUE)
     set(LUE_HAVE_DOCOPT_INIT TRUE)
     set(LUE_HAVE_DOXYGEN_INIT TRUE)
     set(LUE_HAVE_GDAL_INIT TRUE)
     set(LUE_HAVE_GLFW_INIT TRUE)
+    # Change default to TRUE once Linux package managers contain a version
     set(LUE_HAVE_MS_GSL_INIT FALSE)
     set(LUE_HAVE_FMT_INIT TRUE)
     set(LUE_HAVE_HDF5_INIT TRUE)
-    # Change default to TRUE once Ubuntu LTS contains a recent enough version.
-    set(LUE_HAVE_NLOHMANN_JSON_INIT FALSE)
-    # Change default to TRUE once Ubuntu LTS contains a recent enough version.
-    set(LUE_HAVE_PYBIND11_INIT FALSE)
+    set(LUE_HAVE_NLOHMANN_JSON_INIT TRUE)
+    set(LUE_HAVE_PYBIND11_INIT TRUE)
 endif()
 
 function(lue_have_option name)

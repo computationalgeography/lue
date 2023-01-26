@@ -55,7 +55,9 @@ jobs:
                   libgoogle-perftools-dev \
                   libhdf5-dev \
                   ${{ matrix.compiler.package }} \
-                  ninja-build
+                  ninja-build \
+                  nlohmann-json3-dev \
+                  pybind11-dev
 
         - uses: conda-incubator/setup-miniconda@v2
           with:
