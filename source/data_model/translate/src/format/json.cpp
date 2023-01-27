@@ -366,46 +366,46 @@ void add_different_shape_property(
 //     same_shape::Properties& properties)
 // {
 //     std::string const name = property_json.at("name");
-// 
+//
 //     hdf5::Shape shape;
-// 
+//
 //     if(contains(property_json, "shape")) {
 //         shape = property_json.at("shape");
 //     }
-// 
+//
 //     auto const nr_elements_in_object_array = size_of_shape(shape, 1);
-// 
+//
 //     using Datatype = std::uint32_t;
-// 
+//
 //     auto const datatype = hdf5::Datatype{
 //         hdf5::NativeDatatypeTraits<Datatype>::type_id()};
-// 
+//
 //     std::vector<Datatype> const values = property_json.at("value");
-// 
+//
 //     if(values.size() % nr_elements_in_object_array != 0) {
 //         throw std::runtime_error(fmt::format(
 //             "Number of values is not a multiple of the number of elements "
 //             "in an object array ({} % {} != 0)",
 //             values.size(), nr_elements_in_object_array));
 //     }
-// 
+//
 //     auto& property = properties.contains(name)
 //         ? properties[name]
 //         : properties.add(name, datatype, shape)
 //         ;
-// 
+//
 //     Index const begin = property.value().nr_arrays();
 //     auto const nr_object_arrays =
 //         values.size() / nr_elements_in_object_array;
 //     IndexRange const index_range{begin, begin + nr_object_arrays};
 //     property.value().expand(nr_object_arrays);
 //     property.value().write(index_range, values.data());
-// 
-// 
+//
+//
 //     // TODO(KDJ)
 //     // datatype, shape must match, etc
 //     // branch on contains()
-// 
+//
 // }
 
 
@@ -465,47 +465,47 @@ void add_same_shape_constant_shape_property(
 //     same_shape::constant_shape::Properties& properties)
 // {
 //     std::string const name = property_json.at("name");
-// 
+//
 //     std::string const shape_variability_json =
 //         property_json.at("shape_variability");
 //     auto const shape_variability =
 //         string_to_aspect<ShapeVariability>(shape_variability_json);
 //     assert(shape_variability == ShapeVariability::constant);
-// 
+//
 //     std::string const datatype_json = property_json.at("datatype");
 //     assert(datatype_json == "uint64");
 //     using Datatype = std::uint64_t;
 //     auto const datatype = hdf5::Datatype{
 //         hdf5::NativeDatatypeTraits<Datatype>::type_id()};
-// 
+//
 //     hdf5::Shape shape;
 //     if(contains(property_json, "shape")) {
 //         shape = property_json.at("shape");
 //     }
 //     auto const nr_elements_in_object_array = size_of_shape(shape, 1);
-// 
+//
 //     auto& property = properties.contains(name)
 //         ? properties[name]
 //         : properties.add(name, datatype, shape)
 //         ;
-// 
+//
 //     // TODO(KDJ)
 //     // datatype, shape must match, etc
 //     // branch on contains()
-// 
+//
 //     std::vector<Datatype> const values = property_json.at("value");
 //     // Index const begin = property.value().nr_arrays();
 //     // IndexRange const index_range{begin, begin + values.size()};
 //     // property.value().expand(values.size());
 //     // property.value().write(index_range, values.data());
-// 
+//
 //     if(values.size() % nr_elements_in_object_array != 0) {
 //         throw std::runtime_error(fmt::format(
 //             "Number of values is not a multiple of the number of elements "
 //             "in an object array ({} % {} != 0)",
 //             values.size(), nr_elements_in_object_array));
 //     }
-// 
+//
 //     auto const nr_object_arrays = values.size() / nr_elements_in_object_array;
 //     Index const begin = property.value().nr_arrays();
 //     IndexRange const index_range{begin, begin + nr_object_arrays};

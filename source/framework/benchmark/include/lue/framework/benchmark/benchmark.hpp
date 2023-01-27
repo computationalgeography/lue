@@ -56,19 +56,19 @@ HPXBenchmark
 //     typename Callable>
 // class CallableTraits
 // {
-// 
+//
 // public:
-// 
+//
 //     using ResultT = void;
-// 
+//
 // //     using ResultT = decltype(
 // //         Callable{}(
 // //             Environment{0, 0, std::optional<std::size_t>{0}},
 // //             Task{0, Task::Shape{}, Task::Shape{}}));
-// 
+//
 // };
-// 
-// 
+//
+//
 // template<
 //     typename Callable>
 // using ResultT = typename CallableTraits<Callable>::ResultT;

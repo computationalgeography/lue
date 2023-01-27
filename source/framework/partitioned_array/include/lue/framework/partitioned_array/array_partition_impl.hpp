@@ -162,9 +162,9 @@ namespace lue {
     // ArrayPartition<Element, rank>::ArrayPartition(
     //     hpx::id_type component_id,
     //     Data const& data):
-    // 
+    //
     //     Base{hpx::new_<Server>(hpx::colocated(component_id), data)}
-    // 
+    //
     // {
     // }
 
@@ -174,9 +174,9 @@ namespace lue {
     //     Rank rank>
     // ArrayPartition<Element, rank>::ArrayPartition(
     //     ArrayPartition const& other):
-    // 
+    //
     //     Base{other}
-    // 
+    //
     // {
     // }
 
@@ -186,9 +186,9 @@ namespace lue {
     //     typename Data>
     // ArrayPartition<Value, Data>::ArrayPartition(
     //     ArrayPartition&& other):
-    // 
+    //
     //     Base{std::move(other)}
-    // 
+    //
     // {
     // }
 
@@ -200,7 +200,7 @@ namespace lue {
     //     ArrayPartition const& other)
     // {
     //     Base::operator=(other);
-    // 
+    //
     //     return *this;
     // }
 
@@ -212,7 +212,7 @@ namespace lue {
     //     ArrayPartition&& other)
     // {
     //     Base::operator=(std::move(other));
-    // 
+    //
     //     return *this;
     // }
 
@@ -237,9 +237,9 @@ namespace lue {
     // hpx::future<hpx::id_type> ArrayPartition<Element, rank>::locality_id() const
     // {
     //     return hpx::get_colocation_id(this->get_id());
-    // 
+    //
     //     // lue_hpx_assert(_locality_id || this->get_id());
-    // 
+    //
     //     // return _locality_id
     //     //     ? hpx::make_ready_future<hpx::id_type>(_locality_id)
     //     //     : hpx::async(typename Server::LocalityIDAction{}, this->get_id())

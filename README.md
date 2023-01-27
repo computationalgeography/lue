@@ -30,10 +30,8 @@ the related technology.
 - [![Chat with us on Matrix](https://img.shields.io/badge/chat-on%20Matrix-%230098D4)](https://matrix.to/#/#lue:matrix.org) (users)
 - [![Chat with us on Matrix](https://img.shields.io/badge/chat-on%20Matrix-%230098D4)](https://matrix.to/#/#lue-dev:matrix.org) (developers)
 
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-
-## CI builds
+## Source code
 [![Linux build status](https://github.com/computationalgeography/lue/workflows/Linux%20CI/badge.svg)](https://github.com/computationalgeography/lue/actions/workflows/linux.yml)
 [![Linux Conda package](https://github.com/computationalgeography/lue/actions/workflows/linux-conda.yml/badge.svg)](https://github.com/computationalgeography/lue/actions/workflows/linux-conda.yml)
 
@@ -44,6 +42,8 @@ the related technology.
 [![Windows Conda package](https://github.com/computationalgeography/lue/actions/workflows/windows-conda.yml/badge.svg)](https://github.com/computationalgeography/lue/actions/workflows/windows-conda.yml)
 
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/2c02fc1c5b13424abfc414b82104801d)](https://www.codacy.com/gh/computationalgeography/lue/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=computationalgeography/lue&amp;utm_campaign=Badge_Grade)
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://github.com/pre-commit/pre-commit)
+[![black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 
 ## Installation

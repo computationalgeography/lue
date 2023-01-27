@@ -41,10 +41,3 @@ Regular grid
 
 Variation through time and space
 --------------------------------
-
-
-
-
-
-
-

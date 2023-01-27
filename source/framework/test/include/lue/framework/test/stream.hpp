@@ -16,7 +16,7 @@
 
 
 // namespace boost {
-// 
+//
 // template<
 //     typename Element,
 //     Rank rank,
@@ -27,14 +27,14 @@
 // {
 //     stream << '[';
 //     auto joiner = lue_make_ostream_joiner(stream, ", ");
-// 
+//
 //     auto const size = array.num_elements();
 //     auto const begin = array.data();
 //     auto const end = array.data() + size;
-// 
+//
 //     // Max number of values to print at start and end
 //     std::size_t const halo = 5;
-// 
+//
 //     if(size <= 2 * halo) {
 //         // Print all values
 //         std::copy(begin, end, joiner);
@@ -46,10 +46,10 @@
 //         std::copy(end - halo, end, joiner);
 //     }
 //     stream << ']';
-// 
+//
 //     return stream;
 // }
-// 
+//
 // }  // namespace boost
 
 
@@ -253,7 +253,7 @@ std::ostream& operator<<(
 ///     stream <<
 ///         "start: " << definition.start() << ", "
 ///         "shape: " << definition.shape();
-/// 
+///
 ///     return stream;
 /// }
 

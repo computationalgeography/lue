@@ -19,8 +19,8 @@ namespace serialization {
 //         archive & ranges[d];
 //     }
 // }
-// 
-// 
+//
+//
 // template<
 //     typename Index,
 //     std::size_t rank>
@@ -43,7 +43,7 @@ namespace serialization {
 //                                     lue::ArrayPartitionDefinition<Index, rank>&
 //                                         definition,
 //                                     unsigned int const version);
-// 
+//
 // template<
 //     typename Index,
 //     std::size_t rank>
@@ -62,16 +62,16 @@ namespace serialization {
 //     unsigned int const /* version */)
 // {
 //     using Definition = lue::ArrayPartitionDefinition<Index, rank>;
-// 
+//
 //     typename Definition::Start start;
 //     typename Definition::Shape shape;
-// 
+//
 //     archive & start & shape;
-// 
+//
 //     definition = Definition{start, shape};
 // }
-// 
-// 
+//
+//
 // template<
 //     typename Index,
 //     std::size_t rank>

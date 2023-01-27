@@ -22,9 +22,9 @@ namespace {
 //     PartitionClient partition_client{hpx::find_here()};
 //     std::shared_ptr<PartitionServer> partition_server =
 //         partition_client.component();
-// 
+//
 //     BOOST_REQUIRE(partition_server);
-// 
+//
 //     Data data{};
 //     BOOST_CHECK_EQUAL(partition_server->data(), data);
 // }

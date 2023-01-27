@@ -331,7 +331,7 @@ added to the LUE framework. The number of model developers requesting one is one
      - 1
    * - nominal
      - ✅
-     - 
+     -
    * - normal
      - ❌
      - 1

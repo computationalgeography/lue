@@ -57,10 +57,10 @@ namespace lue {
 ///         {
 ///             auto const [dataset_pathname, phenomenon_name, property_set_name, property_name] =
 ///                 parse_array_pathname(array_pathname);
-/// 
+///
 ///             // Open dataset. Configure for use of parallel I/O if necessary.
 ///             hdf5::File::AccessPropertyList access_property_list{};
-/// 
+///
 /// #ifdef LUE_USE_PARALLEL_IO
 ///             if(hpx::util::mpi_environment::enabled())
 ///             {
@@ -70,15 +70,15 @@ namespace lue {
 ///                 // access_property_list.use_mpi_communicator(communicator, info);
 ///             }
 /// #endif
-/// 
+///
 ///             auto dataset{data_model::open_dataset(dataset_pathname, H5F_ACC_RDWR, access_property_list)};
-/// 
+///
 ///             // Open phenomenon
 ///             auto& phenomenon{dataset.phenomena()[phenomenon_name]};
-/// 
+///
 ///             // Open property-set
 ///             auto& property_set{phenomenon.property_sets()[property_set_name]};
-/// 
+///
 ///             // Open property
 ///             lue_hpx_assert(property_set.properties().contains(property_name));
 ///             lue_hpx_assert(property_set.properties().shape_per_object(property_name) ==
@@ -87,10 +87,10 @@ namespace lue {
 ///                 data_model::ValueVariability::constant);
 ///             using Properties = data_model::different_shape::Properties;
 ///             auto& property{property_set.properties().collection<Properties>()[property_name]};
-/// 
+///
 ///             // Open value. Configure for use of parallel I/O if necessary.
 ///             hdf5::Dataset::TransferPropertyList transfer_property_list{};
-/// 
+///
 /// #ifdef LUE_USE_PARALLEL_IO
 ///             if(hpx::util::mpi_environment::enabled())
 ///             {
@@ -98,26 +98,26 @@ namespace lue {
 ///                 // transfer_property_list.set_transfer_mode(::H5FD_MPIO_COLLECTIVE);
 ///             }
 /// #endif
-/// 
+///
 ///             auto& value{property.value()};
 ///             auto array{value[object_id]};
-/// 
+///
 ///             // Iterate over partitions and write each partition's piece to the dataset
 ///             using Partition = typename Partitions::value_type;
 ///             using PartitionServer = typename Partition::Server;
 ///             using Element = ElementT<Partition>;
-/// 
+///
 ///             for(Partition const& partition: partitions)
 ///             {
 ///                 auto partition_ptr{detail::ready_component_ptr(partition)};
 ///                 PartitionServer const& partition_server{*partition_ptr};
 ///                 Element const* buffer{partition_server.data().data()};
-/// 
+///
 ///                 array.write(hyperslab(partition_server), transfer_property_list, buffer);
 ///             }
 ///         }
-/// 
-/// 
+///
+///
 ///         template<
 ///             typename Policies,
 ///             typename Partitions>
@@ -129,7 +129,7 @@ namespace lue {
 ///         {
 ///             // Get a reference to one of the IO specific HPX io_service objects ...
 ///             hpx::parallel::execution::io_pool_executor executor;
-/// 
+///
 ///             // ... and schedule the handler to run on one of its OS-threads.
 ///             hpx::async(
 ///                 executor, &write_partitions_on_os_thread<Policies, Partitions>,

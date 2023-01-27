@@ -150,12 +150,12 @@ BOOST_AUTO_TEST_CASE(use_case_2)
 //     using Element = std::int32_t;
 //     lue::Rank const rank{2};
 //     using Array = lue::PartitionedArray<Element, rank>;
-// 
+//
 //     auto const shape{lue::Test<Array>::shape()};
-// 
+//
 //     Array array{shape};
 //     array = lue::default_policies::uniform(array, 0, 10);
-// 
+//
 //     std::string const pathname{"land_use.tif"};
 //     lue::write(array, pathname);
 //     BOOST_CHECK(std::filesystem::exists(pathname));

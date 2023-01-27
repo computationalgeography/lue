@@ -56,7 +56,7 @@ install(TARGETS lue_compile_options EXPORT lue_targets)
 #         RENAME README.rst
 #         COMPONENT python EXCLUDE_FROM_ALL
 #     )
-# 
+#
 #     add_custom_target(install_lue_py_sources
 #         COMMAND
 #             "${CMAKE_COMMAND}" -DCMAKE_INSTALL_COMPONENT=python

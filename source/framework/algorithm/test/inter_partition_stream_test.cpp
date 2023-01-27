@@ -126,7 +126,7 @@ namespace {
     // Grab symbols from flow_accumulation header
     using namespace lue::test;
 
-    std::size_t const rank = 2; 
+    std::size_t const rank = 2;
 
     using CountElement = std::uint64_t;
     using InflowCount = lue::PartitionedArray<CountElement, rank>;

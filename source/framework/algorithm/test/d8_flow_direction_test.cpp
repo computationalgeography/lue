@@ -340,7 +340,7 @@ BOOST_AUTO_TEST_CASE(barnes_2017)
                 w, w, w, w, sw, ne, n,
                 w, nw, nw, w, w, n, nw,
                 w, n, n, nw, w, w, n,
-                w, ne, n, n, nw, w, w 
+                w, ne, n, n, nw, w, w
             },
             {
                 n, n, n, n, n, n, n,

@@ -342,8 +342,8 @@ namespace lue {
 ///     return name<OutputElement, InputElement, rank>(                             \
 ///         hpx::make_ready_future<InputElement>(scalar).share(), array);           \
 /// }
-/// 
-/// 
+///
+///
 /// // All overloads *without* a Policies template parameter
 /// #define LUE_BINARY_LOCAL_OPERATION_OVERLOADS2(name, Functor, Policies)          \
 ///                                                                                 \

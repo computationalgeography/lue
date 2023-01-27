@@ -200,29 +200,29 @@ namespace lue::utility {
     //     size_t nr_valid_cells_x;
     //     size_t nr_valid_cells_y;
     //     size_t current_block = 0;
-    // 
+    //
     //     for(size_t block_y = 0; block_y < blocks.nr_blocks_y();
     //             ++block_y) {
     //         for(size_t block_x = 0; block_x < blocks.nr_blocks_x();
     //                 ++block_x) {
-    // 
+    //
     //             read_block(block_x, block_y, values.data());
-    // 
+    //
     //             std::tie(nr_valid_cells_x, nr_valid_cells_y) =
     //                 blocks.nr_valid_cells(block_x, block_y);
-    // 
+    //
     //             hdf5::Shape const shape = { nr_valid_cells_x * nr_valid_cells_y };
     //             auto const memory_dataspace = hdf5::create_dataspace(shape);
-    // 
+    //
     //             hdf5::Offset offset = {
     //                 block_y * blocks.block_size_y(),
     //                 block_x * blocks.block_size_x()
     //             };
     //             hdf5::Count count = { nr_valid_cells_y, nr_valid_cells_x };
-    // 
+    //
     //             raster_band.write(
     //                 memory_dataspace, hdf5::Hyperslab(offset, count), values.data());
-    // 
+    //
     //             progress_indicator.update_progress(++current_block);
     //         }
     //     }
@@ -233,7 +233,7 @@ namespace lue::utility {
     //     ProgressIndicator& progress_indicator)
     // {
     //     auto datatype = _band->GetRasterDataType();
-    // 
+    //
     //     switch(datatype) {
     //         case GDT_Byte: {
     //             write<uint8_t>(raster_band, progress_indicator);

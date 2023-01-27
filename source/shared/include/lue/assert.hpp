@@ -83,4 +83,3 @@ void _lue_assert(
 #define lue_assert(condition, ...)  \
 _lue_assert(                   \
     __FILE__, __LINE__, condition, #condition, ##__VA_ARGS__);
-
