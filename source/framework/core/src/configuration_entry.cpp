@@ -119,7 +119,7 @@ template<>
 std::vector<std::uint64_t> cast<std::vector<std::uint64_t>>(
     std::string const& value)
 {
-    return cast_list<std::uint64_t>(value, 
+    return cast_list<std::uint64_t>(value,
         std::regex(R"([[:space:]]*([[:digit:]]+)[[:space:]]*(?:$|,))"));
 }
 
@@ -129,7 +129,7 @@ std::vector<std::int64_t> cast<std::vector<std::int64_t>>(
     std::string const& value)
 {
     // FIXME: Doesn't support negative integers yet
-    return cast_list<std::int64_t>(value, 
+    return cast_list<std::int64_t>(value,
         std::regex(R"([[:space:]]*([[:digit:]]+)[[:space:]]*(?:$|,))"));
 }
 

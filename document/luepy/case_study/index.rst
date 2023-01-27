@@ -11,7 +11,7 @@ modelled using the LUE conceptual data model.
    point
    raster
 
-.. 
+..
    raster_stack
    polygon
    road_network

@@ -497,8 +497,8 @@ void write_to_array(
 //         std::equal(collection1.begin(), collection1.end(),
 //             collection2.begin());
 // }
-// 
-// 
+//
+//
 // template<
 //     typename Collection1,
 //     typename Collection2>
@@ -508,8 +508,8 @@ void write_to_array(
 // {
 //     return !(collection1 == collection2);
 // }
-// 
-// 
+//
+//
 // template<
 //     typename Collection>
 // std::string shape_as_string(
@@ -517,7 +517,7 @@ void write_to_array(
 // {
 //     std::stringstream stream;
 //     stream << "(";
-// 
+//
 //     // Prevent seperator at end of string.
 //     // C++17: ostream_joiner
 //     if(!collection.empty()) {
@@ -527,7 +527,7 @@ void write_to_array(
 //         stream << collection.back();
 //     }
 //     stream << ")";
-// 
+//
 //     return stream.str();
 // }
 
@@ -629,7 +629,7 @@ void set_item(
 /// {
 ///     hdf5::Shape const sizes{1};
 ///     auto const memory_dataspace = hdf5::create_dataspace(sizes);
-/// 
+///
 ///     set_item(array, memory_dataspace, slice, &value);
 /// }
 

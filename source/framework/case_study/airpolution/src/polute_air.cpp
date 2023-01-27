@@ -101,9 +101,9 @@ namespace {
 //     // static auto const nr_localities = hpx::get_num_localities().get();
 //     // static std::string const basename =
 //     //     fmt::format("/{}/polute_air/gather/", nr_localities);
-// 
+//
 //     static std::string const basename = "/polute_air/gather/";
-// 
+//
 //     return basename.c_str();
 // }
 
@@ -116,15 +116,15 @@ namespace {
 //     std::uint64_t const /* nr_cols_grain */)
 // {
 //     // TODO Perform some real HPX work
-// 
+//
 //     using namespace std::chrono_literals;
-// 
+//
 //     // auto const nr_localities = hpx::get_num_localities().get();
-// 
+//
 //     // std::this_thread::sleep_for(10s / nr_localities);
-// 
+//
 //     std::this_thread::sleep_for(10s);
-// 
+//
 //     return hpx::make_ready_future<double>(5.0);
 // }
 
@@ -287,7 +287,7 @@ void polute_air(
     // // // index with raster partitions. This will make it possible to
     // // // perform spatial queries.
 
-    // // 
+    // //
 
 
 

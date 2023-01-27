@@ -204,15 +204,15 @@ namespace lue {
             // {
             //     // Key used by the cache
             //     hdf5::Identifier const& id{data_model_object.id()};
-            // 
+            //
             //     // If no object is stored for this key, use the retriever to obtain
             //     // one and store it in the cache
             //     if(!cache.contains(id)) {
             //         cache.insert<Object>(id, retriever(data_model_object));
             //     }
-            // 
+            //
             //     assert(cache.contains(id));
-            // 
+            //
             //     // Return object stored in the cache
             //     return cache.retrieve<Object>(id);
             // }

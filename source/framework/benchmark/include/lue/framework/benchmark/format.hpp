@@ -41,17 +41,17 @@ inline std::string to_iso_string(
 //     Benchmark const& benchmark)
 // {
 //     using Units = std::chrono::microseconds;
-// 
+//
 //     auto const& time_interval = benchmark.time_interval();
-// 
+//
 //     // auto meh = time_interval.duration<Units>();
-// 
+//
 //     std::cout
 //         << "Start at : " << to_iso_string(time_interval.start()) << "\n"
 //         << "Finish at: " << to_iso_string(time_interval.stop()) << "\n"
 //         << "Duration : " << time_interval.duration().count() << "\n"
 //         ;
-// 
+//
 //     for(auto const& timing: benchmark.timings()) {
 //         std::cout
 //             << to_iso_string(timing.time_interval().start()) << ": "

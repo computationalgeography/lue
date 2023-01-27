@@ -54,8 +54,8 @@ END_OF_SLURM_SCRIPT
 #     array_partition_id
 #     locality_id
 # "
-# 
-# 
+#
+#
 # for raster_layer_name in $raster_layer_names; do
 #     $bin_prefix/lue_translate export \
 #         --meta $source_prefix/export_${raster_layer_name}.json \

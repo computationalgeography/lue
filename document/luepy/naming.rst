@@ -60,4 +60,3 @@ If there are multiple items in a phenomenon, we think it makes more sense to use
 Naming properties
 -----------------
 Properties are the easiest to name. Just use whatever the property represents, e.g.: ``color``, ``name``, ``height``.
-

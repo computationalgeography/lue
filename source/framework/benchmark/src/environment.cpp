@@ -10,13 +10,13 @@ namespace benchmark {
 //     std::size_t const nr_threads,
 //     std::optional<std::size_t> const& max_tree_depth):
 //     // std::size_t const work_size):
-// 
+//
 //     Environment{/* system_name, */ count, 1, nr_threads, max_tree_depth} // , work_size}
-// 
+//
 // {
 // }
-// 
-// 
+//
+//
 // Environment::Environment(
 //     // std::string const& system_name,
 //     std::size_t const count,
@@ -24,14 +24,14 @@ namespace benchmark {
 //     std::size_t const nr_threads,
 //     std::optional<std::size_t> const& max_tree_depth):
 //     // std::size_t const work_size):
-// 
+//
 //     // _system_name{system_name},
 //     _count{count},
 //     _nr_localities{nr_localities},
 //     _nr_threads{nr_threads},
 //     _max_tree_depth{max_tree_depth}  // ,
 //     // _work_size{work_size}
-// 
+//
 // {
 // }
 
@@ -71,8 +71,8 @@ std::size_t Environment::nr_workers() const
 // {
 //     return _nr_localities;
 // }
-// 
-// 
+//
+//
 // std::size_t Environment::nr_threads() const
 // {
 //     return _nr_threads;

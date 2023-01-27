@@ -13,19 +13,19 @@
 ///     using Value = std::int32_t;
 ///     using Class = std::uint64_t;
 ///     std::size_t const rank = 2;
-/// 
+///
 ///     using ValueArray = lue::PartitionedArray<Value, rank>;
 ///     using ClassArray = lue::PartitionedArray<Class, rank>;
 ///     using Shape = lue::ShapeT<ValueArray>;
-/// 
+///
 ///     Shape const array_shape{{9, 9}};
 ///     Shape const partition_shape{{3, 3}};
-/// 
+///
 ///     ClassArray class_array{
 ///         lue::array_partition_id(lue::create_partitioned_array<Class>(array_shape, partition_shape))};
-/// 
+///
 ///     auto zonal_sum = lue::value_policies::zonal_sum<Value>(1, class_array);
-/// 
+///
 ///     ValueArray array_we_want = lue::test::create_partitioned_array<ValueArray>(
 ///         array_shape, partition_shape, {
 ///             { 9, 9, 9, 9, 9, 9, 9, 9, 9 },
@@ -38,7 +38,7 @@
 ///             { 9, 9, 9, 9, 9, 9, 9, 9, 9 },
 ///             { 9, 9, 9, 9, 9, 9, 9, 9, 9 },
 ///         });
-/// 
+///
 ///     lue::test::check_arrays_are_equal(zonal_sum, array_we_want);
 /// }
 

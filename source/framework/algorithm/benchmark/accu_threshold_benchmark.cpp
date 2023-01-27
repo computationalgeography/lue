@@ -234,4 +234,3 @@ LUE_CONFIGURE_HPX_BENCHMARK()
 
                 // // TODO Verify the caller waits for the state to be ready
                 // this->state() = copy(_material);
-

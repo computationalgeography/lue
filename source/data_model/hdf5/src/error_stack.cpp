@@ -13,7 +13,7 @@ namespace {
 // {
 //     // auto* error_stack = static_cast<ErrorStack*>(client_data);
 //     // error_stack->add_message("meh");
-// 
+//
 //     return 0;
 // }
 

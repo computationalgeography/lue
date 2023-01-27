@@ -16,7 +16,7 @@ namespace utility {
 //             ::GDALClose(dataset);
 //         }
 //     };
-// 
+//
 // using GDALDatasetDeleter = decltype(gdal_dataset_deleter);
 
 struct GDALDatasetDeleter

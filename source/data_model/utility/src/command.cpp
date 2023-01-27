@@ -125,7 +125,7 @@ void Command::print_error_message(
 // void Command::print_arguments()
 // {
 //     print_info_message("commandline arguments:");
-// 
+//
 //     for(auto const& pair: _arguments) {
 //         print_info_message((boost::format("    %1%: %2%")
 //             % pair.first

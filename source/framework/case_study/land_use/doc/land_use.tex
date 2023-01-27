@@ -231,7 +231,7 @@ for t in range(nr_time_steps):
 % - jaar tijdstap, 30 jaar, groooot gebied
 % - keep track of how long each cell has the same land-use kind
 % - 100x100m
-% 
+%
 % - Given
 %     - Current distribution of land-use kinds
 %     - Trend in development of {urban, cropland}
@@ -251,21 +251,19 @@ for t in range(nr_time_steps):
 %     - average_suitability = nr_cells_to_change / nr_cells_available_to_change
 %     - average_suitability = map_total(a_urban) / map_total(defined(a_urban))
 %     - urban = cover(urban, a_urban > uniform(1))
-% 
+%
 % Notes:
 % - input: externe demand
 % - suitabilities integreren in een suitability voor een land use type
 % - gebruik demand om cellen te selecteren
-% - order nodig om beste n cellen te selecteren 
-% 
+% - order nodig om beste n cellen te selecteren
+%
 % Makkelijker:
 % - suitability 0-1, kans dat ie switcht
 % - random generator gebruiken
-% 
+%
 % - Suitability op basis van kansen
 % - Daaruit n cellen trekker (a > uniform)
-% 
+%
 % - Preserve correctness of area!!! e.g.: Albers Equal Area projection
 % --------------------------------------------------------------------------------
-
-

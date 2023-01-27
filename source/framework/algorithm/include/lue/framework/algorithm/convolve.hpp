@@ -26,17 +26,17 @@ namespace lue {
     //     public OutOfImagePolicy_,
     //     public NoDataFocusElementPolicy_
     // {
-    // 
+    //
     // public:
-    // 
+    //
     //     using OutOfImagePolicy = OutOfImagePolicy_;
-    // 
+    //
     //     using NoDataFocusElementPolicy = NoDataFocusElementPolicy_;
-    // 
+    //
     //     ConvolvePolicies() {};
-    // 
+    //
     // private:
-    // 
+    //
     // };
 
 

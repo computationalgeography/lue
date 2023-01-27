@@ -30,24 +30,24 @@ options:
 
 // std::string const usage = R"(
 // Translate data into the LUE dataset format
-// 
+//
 // usage:
 //     import [-m <name>] <input> <output>
 //     import --start=<time_point> --cell=<duration> <input> <output>
 //     import (-h | --help)
-// 
+//
 // arguments:
 //     <input>                Input dataset
 //     <output>               Output dataset
-// 
+//
 // options:
 //     -h --help              Show this screen
 //     -m <name> --meta=<name>  File containing metadata to use during import
 //     --start=<time_point>   Time point of first slice
 //     --cell=<duration>      Duration of time step
-// 
+//
 // Time points must be formatted according to the ISO-8601 standard.
-// 
+//
 // Durations must be formatted according to the ISO-8601 standard. A duration
 // determines the resolution of the discretization, and the associated
 // time point must 'match' this resolution: it makes no sense to provide

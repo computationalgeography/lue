@@ -344,7 +344,7 @@ inline void generate_random_strictly_increasing_values(
 //     typename Collection::value_type const max)
 // {
 //     using ValueType = typename Collection::value_type;
-// 
+//
 //     if constexpr(std::is_integral<ValueType>()) {
 //         generate_random_integral_values(values, min, max);
 //     }

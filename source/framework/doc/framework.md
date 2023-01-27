@@ -123,5 +123,3 @@ lue::scale | Return the result of scaling values in a partitioned array to a ran
 
 
 # Data structures  {#lue_framework_data_structures}
-
-
