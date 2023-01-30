@@ -1,5 +1,14 @@
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
+exclude: |
+  # Skip the files that must be kept as they are
+  (?x)^(
+    environment/cmake/.*\.patch|
+    environment/cmake/UseLATEX\.cmake|
+    environment/cmake/conan-.*\.cmake|
+    # environment/configuration/receipe/meta\.yaml|
+    source/imgui/include/lue/gui/font/.*
+  )$
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v3.2.0
@@ -12,12 +21,14 @@ repos:
   rev: 22.12.0
   hooks:
   - id: black
-exclude: |
-      # Skip the files that must be kept as they are
-      (?x)^(
-        environment/cmake/.*\.patch|
-        environment/cmake/UseLATEX\.cmake|
-        environment/cmake/conan-.*\.cmake|
-        # environment/configuration/receipe/meta\.yaml|
-        source/imgui/include/lue/gui/font/.*
-      )$
+### - repo: https://github.com/pocc/pre-commit-hooks
+###   rev: v1.3.5
+###   hooks:
+###   # - id: clang-format
+###   #   args: [--style=Google]
+###   # - id: clang-tidy
+###   # - id: oclint
+###   # - id: uncrustify
+###   # - id: cppcheck
+###   # - id: cpplint
+###   - id: include-what-you-use

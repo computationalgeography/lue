@@ -22,7 +22,6 @@ target_include_directories(lue_shared
 target_link_libraries(lue_shared
     INTERFACE
         fmt::fmt
-        lue::compile_options
 )
 
 lue_install_libraries(TARGETS lue_shared)

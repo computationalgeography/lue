@@ -70,26 +70,27 @@ if(LUE_BUILD_DOCUMENTATION)
     ### )
 endif()
 
-# Framework doesn't install anything yet
-if(LUE_BUILD_DATA_MODEL)
-    install(EXPORT lue_targets
-        FILE lue_targets.cmake
-        NAMESPACE lue::
-        DESTINATION lib/cmake/lue
-    )
-    include(CMakePackageConfigHelpers)
-    write_basic_package_version_file("lue_config_version.cmake"
-        VERSION ${LUE_VERSION}
-        COMPATIBILITY SameMajorVersion
-    )
-    install(
-        FILES
-            "lue-config.cmake"
-            "${CMAKE_CURRENT_BINARY_DIR}/lue_config_version.cmake"
-        DESTINATION
-            lib/cmake/lue
-    )
-endif()
+# TODO Revamp this again, when supporting lue-dev package
+# # Framework doesn't install anything yet
+# if(LUE_BUILD_DATA_MODEL)
+#     install(EXPORT lue_targets
+#         FILE lue_targets.cmake
+#         NAMESPACE lue::
+#         DESTINATION lib/cmake/lue
+#     )
+#     include(CMakePackageConfigHelpers)
+#     write_basic_package_version_file("lue_config_version.cmake"
+#         VERSION ${LUE_VERSION}
+#         COMPATIBILITY SameMajorVersion
+#     )
+#     install(
+#         FILES
+#             "lue-config.cmake"
+#             "${CMAKE_CURRENT_BINARY_DIR}/lue_config_version.cmake"
+#         DESTINATION
+#             lib/cmake/lue
+#     )
+# endif()
 
 if(LUE_BUILD_QA)
     add_subdirectory(qa)

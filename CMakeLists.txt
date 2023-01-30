@@ -35,10 +35,6 @@ include(GetGitRevisionDescription)
 get_git_head_revision(LUE_GIT_REFSPEC LUE_GIT_SHA1)
 string(SUBSTRING ${LUE_GIT_SHA1} 0 7 LUE_GIT_SHORT_SHA1)
 
-# 'library' for the requested compile options
-add_library(lue_compile_options INTERFACE)
-add_library(lue::compile_options ALIAS lue_compile_options)
-
 include(Lue)
 
 if(LUE_BUILD_DOCUMENTATION)
@@ -46,8 +42,6 @@ if(LUE_BUILD_DOCUMENTATION)
 endif()
 add_subdirectory(source)
 
-
-install(TARGETS lue_compile_options EXPORT lue_targets)
 
 # if(LUE_BUILD_DATA_MODEL AND LUE_DATA_MODEL_WITH_PYTHON_API)
 #     install(
