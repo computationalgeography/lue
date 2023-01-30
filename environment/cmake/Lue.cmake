@@ -10,12 +10,6 @@ endif()
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-
-include(Sanitizers)
-enable_sanitizers(lue_compile_options)
-
-include(StaticAnalyzers)
-
 include(FetchContent)
 include(GenerateExportHeader)
 
