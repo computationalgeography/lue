@@ -11,3 +11,55 @@ def div(expression1, expression2):
 
 def abs(expression):
     return lfr.abs(expression)
+
+
+def accucapacityflux(ldd, material, transportcapacity):
+    raise NotImplementedError("accucapacityflux")
+
+
+def accucapacitystate(ldd, material, transportcapacity):
+    raise NotImplementedError("accucapacitystate")
+
+
+def accuflux(ldd, material):
+    return lfr.accuflux(ldd, material)
+
+
+def accufractionflux(ldd, material, transportcapacity):
+    return lfr.accu_fraction(ldd, material, transportcapacity)[0]
+
+
+def accufractionstate(ldd, material, transportcapacity):
+    return lfr.accu_fraction(ldd, material, transportcapacity)[1]
+
+
+def accuthresholdflux(ldd, material, transportcapacity):
+    return lfr.accu_threshold3(ldd, material, transportcapacity)[0]
+
+
+def accuthresholdstate(ldd, material, transportcapacity):
+    return lfr.accu_threshold3(ldd, material, transportcapacity)[1]
+
+
+def accutriggerflux(ldd, material, transporttrigger):
+    raise NotImplementedError("accutriggerflux")
+
+
+def accutriggerstate(ldd, material, transporttrigger):
+    raise NotImplementedError("accutriggerstate")
+
+
+def accutraveltimeflux(ldd, material, transporttraveltime):
+    raise NotImplementedError("accutraveltimeflux")
+
+
+def accutraveltimestate(ldd, material, transporttraveltime):
+    raise NotImplementedError("accutraveltimestate")
+
+
+def accutraveltimefractionflux(ldd, material, transporttraveltime):
+    raise NotImplementedError("accutraveltimefractionflux")
+
+
+def accutraveltimefractionstate(ldd, material, transporttraveltime):
+    raise NotImplementedError("accutraveltimefractionstate")
