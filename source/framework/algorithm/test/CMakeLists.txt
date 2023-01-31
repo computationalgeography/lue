@@ -69,6 +69,9 @@ set(global_operation_names
 
 set(routing_operation_names
     accu
+    accu_fraction
+    accu_threshold
+    inflow_count
     kinematic_wave
 )
 
@@ -83,14 +86,6 @@ set(zonal_operation_names
     zonal_sum
     zonal_uniform
 )
-
-if(NOT CMAKE_HOST_SYSTEM_NAME STREQUAL Darwin)
-    # TODO Port these to macOS/M1
-    list(APPEND routing_operation_names
-        accu_threshold
-        inflow_count
-    )
-endif()
 
 set(names
     ${focal_operation_names}
@@ -119,13 +114,6 @@ set(names
     timestamp
     upstream
 )
-
-if(NOT CMAKE_HOST_SYSTEM_NAME STREQUAL Darwin)
-    # TODO Port these to macOS/M1
-    list(APPEND names
-        accu_fraction
-    )
-endif()
 
 foreach(name ${names})
 
