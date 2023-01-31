@@ -1,7 +1,3 @@
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
-
 if(UNIX AND (CMAKE_CXX_COMPILER_ID STREQUAL "GNU"))
     set(CMAKE_CXX_VISIBILITY_PRESET hidden)
     set(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
@@ -13,7 +9,14 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 include(FetchContent)
 include(GenerateExportHeader)
 
+# Handle configuration and 3rd party libraries and tools, and ...
 include(LueConfiguration)
+
+# ... only now set language settings relevant for (only) our own targets
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 include(LueMacro)
 
 if(LUE_BUILD_DATA_MODEL)
@@ -51,7 +54,6 @@ file(RELATIVE_PATH LUE_BIN_TO_LIB_DIR
     ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}
     ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}
 )
-
 
 # In this project we need to be able to install the Python package in a certain directory. For
 # that, we create a variable similar to the ones set by GNUInstallDirs. It can be overridden by
