@@ -168,7 +168,7 @@ namespace lue {
 
         // Sort partitions according to the row index first and
         // the column index after that
-        auto compare_by_partition_offset =
+        inline auto compare_by_partition_offset =
             [](
                 auto const& partition_tuple1,
                 auto const& partition_tuple2)
@@ -177,7 +177,8 @@ namespace lue {
                 auto const& offset2{std::get<0>(partition_tuple2)};
 
                 // Every partition is an individual (except for Brian)
-                lue_hpx_assert(offset1 != offset2);
+                // Don't assert this. Depending on the sort algorithm, the same offset may be passed in.
+                // lue_hpx_assert(offset1 != offset2);
 
                 // Sort by row. In case the rows are equal, sort by column.
                 return std::get<0>(offset1) != std::get<0>(offset2)

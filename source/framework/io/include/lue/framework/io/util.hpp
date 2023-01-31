@@ -263,7 +263,7 @@ namespace lue::detail {
     std::tuple<
         PartitionTuples<OffsetT<Partition>, ShapeT<Partition>, ElementT<Partition>>,
         OffsetT<Partition>, ShapeT<Partition>> partition_tuples(
-            std::vector<Partition>& partitions)
+            std::vector<Partition> const& partitions)
     {
         using Offset = OffsetT<Partition>;
         using Shape = ShapeT<Partition>;
