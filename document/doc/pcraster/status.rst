@@ -62,7 +62,7 @@ added to the LUE framework. The number of model developers requesting one is one
      -
    * - ``/`` or div
      - ✅
-     -
+     - div is only part of `lue.pcraster`
    * - ``*``
      - ✅
      -
@@ -71,7 +71,7 @@ added to the LUE framework. The number of model developers requesting one is one
      -
    * - abs
      - ✅
-     -
+     - abs(non-spatial) is not available
    * - | accucapacityflux
        | accucapacitystate
      - ❌
