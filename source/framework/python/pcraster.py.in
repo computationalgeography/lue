@@ -2,3 +2,12 @@
 The code in this module makes it easier to port models that use the PCRaster Python package to
 use the LUE Python package.
 """
+import lue.framework as lfr
+
+
+def div(expression1, expression2):
+    return expression1 / expression2
+
+
+def abs(expression):
+    return lfr.abs(expression)
