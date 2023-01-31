@@ -14,12 +14,100 @@ namespace lue::framework {
         template<
             typename Element,
             Rank rank>
-        PartitionedArray<Element, rank> uniform1(
+        pybind11::object uniform1(
             PartitionedArray<Element, rank> const& array,
-            Element const min_value,
-            Element const max_value)
+            pybind11::object const& dtype_args,
+            pybind11::object const& min_value,
+            pybind11::object const& max_value)
         {
-            return value_policies::uniform(array, min_value, max_value);
+            pybind11::dtype const dtype{pybind11::dtype::from_args(dtype_args)};
+
+            // Switch on dtype and call a function that returns an array of the
+            // right value type
+            auto const kind = dtype.kind();
+            auto const size = dtype.itemsize();  // bytes
+            pybind11::object result;
+
+            switch(kind)
+            {
+                case 'i':
+                {
+                    // Signed integer
+                    switch(size)
+                    {
+                        case 4: {
+                            result = pybind11::cast(value_policies::uniform(
+                                array,
+                                pybind11::cast<std::int32_t>(min_value),
+                                pybind11::cast<std::int32_t>(max_value)));
+                            break;
+                        }
+                        case 8: {
+                            result = pybind11::cast(value_policies::uniform(
+                                array,
+                                pybind11::cast<std::int64_t>(min_value),
+                                pybind11::cast<std::int64_t>(max_value)));
+                            break;
+                        }
+                    }
+
+                    break;
+                }
+                case 'u':
+                {
+                    // Unsigned integer
+                    switch(size)
+                    {
+                        case 4: {
+                            result = pybind11::cast(value_policies::uniform(
+                                array,
+                                pybind11::cast<std::uint32_t>(min_value),
+                                pybind11::cast<std::uint32_t>(max_value)));
+                            break;
+                        }
+                        case 8: {
+                            result = pybind11::cast(value_policies::uniform(
+                                array,
+                                pybind11::cast<std::uint64_t>(min_value),
+                                pybind11::cast<std::uint64_t>(max_value)));
+                            break;
+                        }
+                    }
+
+                    break;
+                }
+                case 'f':
+                {
+                    // Floating-point
+                    switch(size)
+                    {
+                        case 4: {
+                            result = pybind11::cast(value_policies::uniform(
+                                array,
+                                pybind11::cast<float>(min_value),
+                                pybind11::cast<float>(max_value)));
+                            break;
+                        }
+                        case 8: {
+                            result = pybind11::cast(value_policies::uniform(
+                                array,
+                                pybind11::cast<double>(min_value),
+                                pybind11::cast<double>(max_value)));
+                            break;
+                        }
+                    }
+
+                    break;
+                }
+            }
+
+            if(!result)
+            {
+                throw std::runtime_error(
+                    fmt::format("Unsupported dtype (kind={}, itemsize={})", kind, size));
+            }
+
+            return result;
         }
 
 
@@ -129,10 +217,12 @@ namespace lue::framework {
         pybind11::object uniform2(
             DynamicShape const& array_shape,
             DynamicShape const& partition_shape,
-            pybind11::dtype const& dtype,
+            pybind11::object const& dtype_args,
             pybind11::object const& min_value,
             pybind11::object const& max_value)
         {
+            pybind11::dtype const dtype{pybind11::dtype::from_args(dtype_args)};
+
             if(array_shape.size() != partition_shape.size())
             {
                 throw std::runtime_error(fmt::format(
