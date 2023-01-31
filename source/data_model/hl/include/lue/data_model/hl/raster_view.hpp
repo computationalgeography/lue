@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/data_model/hl/dataset_view.hpp"
+#include <array>
 
 
 namespace lue {
