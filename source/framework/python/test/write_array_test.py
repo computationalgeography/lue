@@ -28,8 +28,7 @@ class WriteArrayTest(lue_test.TestCase):
         fill_value = 0
 
         # Create an array with random values and some no-data
-        clone = lfr.create_array(array_shape, partition_shape, dtype, fill_value)
-        array = lfr.uniform(clone, 1, 10)
+        array = lfr.uniform(array_shape, partition_shape, dtype, 1, 10)
         array = lfr.where(array < 8, array)
 
         dataset_pathname = "write_constant_array.lue"
@@ -70,12 +69,10 @@ class WriteArrayTest(lue_test.TestCase):
         nr_time_steps = 7
 
         # Create t arrays with random values and some no-data
-        clone = lfr.create_array(array_shape, partition_shape, dtype, fill_value)
-
         arrays = []
 
         for t in range(nr_time_steps):
-            array = lfr.uniform(clone, 1, 10)
+            array = lfr.uniform(array_shape, partition_shape, dtype, 1, 10)
             array = lfr.where(array < 8, array)
             arrays.append(array)
 
