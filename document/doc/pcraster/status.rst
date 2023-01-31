@@ -71,22 +71,22 @@ added to the LUE framework. The number of model developers requesting one is one
      -
    * - abs
      - ✅
-     - abs(non-spatial) is not available
+     - abs with non-spatial expression is not available
    * - | accucapacityflux
        | accucapacitystate
      - ❌
      - 1
    * - accuflux
      - ✅
-     -
+     - accuflux with non-spatial material is not available
    * - | accufractionflux
        | accufractionstate
-     - ❌
-     - 1
+     - ✅
+     - accu_fraction
    * - | accuthresholdflux
        | accuthresholdstate
      - ✅
-     -
+     - accu_threshold3
    * - | accutriggerflux
        | accutriggerstate
      - ❌
