@@ -202,7 +202,22 @@ class ArrayTest(lue_test.TestCase):
         # Update value
         new_numpy_values = self.numpy_numeric_values + 5000
 
-        # TODO Test assign
+        # First row of first item
+        self.lue_numeric_values[0:1, 0:1] = new_numpy_values[0:1, 0:1]
+
+        self.assertArraysEqual(
+            self.lue_numeric_values[0:1, 0:1], new_numpy_values[0:1, 0:1]
+        )
+
+        # Last row of last item
+        self.lue_numeric_values[
+            nr_objects - 1 : nr_objects, nr_rows - 1 : nr_rows
+        ] = new_numpy_values[nr_objects - 1 : nr_objects, nr_rows - 1 : nr_rows]
+
+        self.assertArraysEqual(
+            self.lue_numeric_values[nr_objects - 1 : nr_objects, nr_rows - 1 : nr_rows],
+            new_numpy_values[nr_objects - 1 : nr_objects, nr_rows - 1 : nr_rows],
+        )
 
     def test_two_integer_indices(self):
 
@@ -226,7 +241,29 @@ class ArrayTest(lue_test.TestCase):
         )
 
         # Update value
-        # TODO Test assign
+        new_numpy_values = self.numpy_numeric_values + 5000
+
+        # First row of first item
+        self.lue_numeric_values[0, 0] = new_numpy_values[0, 0]
+
+        self.assertArraysEqual(self.lue_numeric_values[0, 0], new_numpy_values[0, 0])
+
+        # Last row of last item
+        self.lue_numeric_values[nr_objects - 1, nr_rows - 1] = new_numpy_values[
+            nr_objects - 1, nr_rows - 1
+        ]
+
+        self.assertArraysEqual(
+            self.lue_numeric_values[nr_objects - 1, nr_rows - 1],
+            new_numpy_values[nr_objects - 1, nr_rows - 1],
+        )
+
+        # Last row of last item
+        self.lue_numeric_values[-1, -1] = new_numpy_values[-1, -1] + 9
+
+        self.assertArraysEqual(
+            self.lue_numeric_values[-1, -1], new_numpy_values[-1, -1] + 9
+        )
 
     def test_three_slice_indices(self):
 
@@ -261,7 +298,42 @@ class ArrayTest(lue_test.TestCase):
         )
 
         # Update value
-        # TODO Test assign
+        new_numpy_values = self.numpy_numeric_values + 5000
+
+        # First cell of first item
+        self.lue_numeric_values[0:1, 0:1, 0:1] = new_numpy_values[0:1, 0:1, 0:1]
+
+        self.assertArraysEqual(
+            self.lue_numeric_values[0:1, 0:1, 0:1], new_numpy_values[0:1, 0:1, 0:1]
+        )
+
+        # Last cell of last item
+        self.lue_numeric_values[
+            nr_objects - 1 : nr_objects, nr_rows - 1 : nr_rows, nr_cols - 1 : nr_cols
+        ] = new_numpy_values[
+            nr_objects - 1 : nr_objects, nr_rows - 1 : nr_rows, nr_cols - 1 : nr_cols
+        ]
+
+        self.assertArraysEqual(
+            self.lue_numeric_values[
+                nr_objects - 1 : nr_objects,
+                nr_rows - 1 : nr_rows,
+                nr_cols - 1 : nr_cols,
+            ],
+            new_numpy_values[
+                nr_objects - 1 : nr_objects,
+                nr_rows - 1 : nr_rows,
+                nr_cols - 1 : nr_cols,
+            ],
+        )
+
+        # Last cell of last item
+        self.lue_numeric_values[-1:, -1:, -1:] = new_numpy_values[-1:, -1:, -1:] + 9
+
+        self.assertArraysEqual(
+            self.lue_numeric_values[-1:, -1:, -1:],
+            new_numpy_values[-1:, -1:, -1:] + 9,
+        )
 
     def test_three_integer_indices(self):
 
@@ -286,7 +358,34 @@ class ArrayTest(lue_test.TestCase):
         )
 
         # Update value
-        # TODO Test assign
+        new_numpy_values = self.numpy_numeric_values + 5000
+
+        # First cell of first item
+        self.lue_numeric_values[0, 0, 0] = new_numpy_values[0, 0, 0]
+
+        # TODO More than two indices doesn't work. Bug in set_item. gh536
+        # self.assertArraysEqual(
+        #     self.lue_numeric_values[0, 0, 0], new_numpy_values[0, 0, 0]
+        # )
+
+        # Last cell of last item
+        self.lue_numeric_values[
+            nr_objects - 1, nr_rows - 1, nr_cols - 1
+        ] = new_numpy_values[nr_objects - 1, nr_rows - 1, nr_cols - 1]
+
+        # TODO More than two indices doesn't work. Bug in set_item. gh536
+        # self.assertArraysEqual(
+        #     self.lue_numeric_values[nr_objects - 1, nr_rows - 1, nr_cols - 1],
+        #     new_numpy_values[nr_objects - 1, nr_rows - 1, nr_cols - 1],
+        # )
+
+        # Last cell of last item
+        self.lue_numeric_values[-1, -1, -1] = new_numpy_values[-1, -1, -1] + 9
+
+        # TODO More than two indices doesn't work. Bug in set_item. gh536
+        # self.assertArraysEqual(
+        #     self.lue_numeric_values[-1, -1, -1], new_numpy_values[-1, -1, -1]
+        # )
 
     def test_too_many_indices(self):
 
