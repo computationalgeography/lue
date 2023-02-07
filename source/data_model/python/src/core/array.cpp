@@ -128,10 +128,10 @@ static void update_hyperslab_by_index(
         index = array_shape[dimension_idx] + index;
     }
 
-    if(static_cast<hdf5::Shape::value_type>(index) >= array_shape[0]) {
+    if(static_cast<hdf5::Shape::value_type>(index) >= array_shape[dimension_idx]) {
         throw pybind11::index_error(fmt::format(
                 "index {} outside of range of valid indices [0, {})",
-                index, array_shape[0]
+                index, array_shape[dimension_idx]
             ));
     }
 
@@ -650,17 +650,94 @@ void set_item(
 }
 
 
+
+static std::tuple<hdf5::Hyperslab, hdf5::Shape> create_hyperslab(
+    hdf5::Shape const shape,
+    std::vector<py::object> const& indices)
+{
+    // With each index, a selection is made along the corresponding
+    // dimension. The number of indices cannot be larger than
+    // the rank of the array. It can be smaller, in which case
+    // all values along the missing dimensions are selected.
+    // Indices can be:
+    // - a slice: selects a set of values
+    // - an integer: selects a single value
+    //
+    // When an integer is used to select values along a dimension,
+    // this dimension is removed from the result array.
+
+    if(indices.size() > shape.size()) {
+        throw pybind11::index_error("too many indices for array");
+    }
+
+    // Hyperslab in LUE array
+    hdf5::Hyperslab hyperslab{shape};
+
+    // Shape of Numpy array
+    hdf5::Shape slice_shape{shape};
+    size_t nr_erased_dimensions = 0;
+
+
+    for(size_t i = 0; i < indices.size(); ++i) {
+        auto const& index = indices[i];
+
+        // Strings are implicitly converted into a py::slice.
+        // The characters are used for start:count:step. To filter
+        // out strings, we test them first.
+        try {
+            std::string string = py::cast<std::string>(index);
+            throw pybind11::index_error(
+                "only integers and slices (`:`) are valid indices");
+        }
+        catch(py::cast_error const&) {
+        }
+
+
+        try {
+            long index_ = py::cast<long>(index);
+
+            update_hyperslab_by_index(
+                i, index_, shape, hyperslab, slice_shape,
+                nr_erased_dimensions);
+
+            continue;
+        }
+        catch(py::cast_error const&) {
+        }
+
+        try {
+            py::slice slice = index;
+
+            update_hyperslab_by_slice(
+                i, slice, shape, hyperslab, slice_shape,
+                nr_erased_dimensions);
+
+            continue;
+        }
+        catch(py::cast_error const&) {
+        }
+
+        throw pybind11::index_error(
+            "only integers and slices (`:`) are valid indices");
+    }
+
+    return {hyperslab, slice_shape};
+}
+
+
 template<
     typename T>
 void set_item(
-    Array& /* array */,
-    std::vector<py::object> const& /* indices */,
-    py::array_t<T, py::array::c_style /* | py::array::forcecast */>& /* values */)
+    Array& array,
+    std::vector<py::object> const& indices,
+    py::array_t<T, py::array::c_style /* | py::array::forcecast */>& values)
 {
-    assert(false);
+    hdf5::Shape const sizes(values.shape(), values.shape() + values.ndim());
+    auto const memory_dataspace = hdf5::create_dataspace(sizes);
 
-    throw std::invalid_argument(
-        "this type of indexing is not supported yet");
+    auto const& [hyperslab, slice_shape] = create_hyperslab(array.shape(), indices);
+
+    write_to_array(array, memory_dataspace, hyperslab, static_cast<T const*>(values.request().ptr));
 }
 
 
@@ -741,73 +818,7 @@ void init_array(
                 Array const& array,
                 std::vector<py::object> const& indices) -> py::object {
 
-            // With each index, a selection is made along the corresponding
-            // dimension. The number of indices cannot be larger than
-            // the rank of the array. It can be smaller, in which case
-            // all values along the missing dimensions are selected.
-            // Indices can be:
-            // - a slice: selects a set of values
-            // - an integer: selects a single value
-            //
-            // When an integer is used to select values along a dimension,
-            // this dimension is removed from the result array.
-
-            hdf5::Shape const shape{array.shape()};
-
-            if(indices.size() > shape.size()) {
-                throw pybind11::index_error("too many indices for array");
-            }
-
-            // Hyperslab in source array
-            hdf5::Hyperslab hyperslab{shape};
-
-            // Shape of target array
-            hdf5::Shape slice_shape{shape};
-            size_t nr_erased_dimensions = 0;
-
-
-            for(size_t i = 0; i < indices.size(); ++i) {
-                auto const& index = indices[i];
-
-                // Strings are implicitly converted into a py::slice.
-                // The characters are used for start:count:step. To filter
-                // out strings, we test them first.
-                try {
-                    std::string string = py::cast<std::string>(index);
-                    throw pybind11::index_error(
-                        "only integers and slices (`:`) are valid indices");
-                }
-                catch(py::cast_error const&) {
-                }
-
-
-                try {
-                    long index_ = py::cast<long>(index);
-
-                    update_hyperslab_by_index(
-                        i, index_, shape, hyperslab, slice_shape,
-                        nr_erased_dimensions);
-
-                    continue;
-                }
-                catch(py::cast_error const&) {
-                }
-
-                try {
-                    py::slice slice = index;
-
-                    update_hyperslab_by_slice(
-                        i, slice, shape, hyperslab, slice_shape,
-                        nr_erased_dimensions);
-
-                    continue;
-                }
-                catch(py::cast_error const&) {
-                }
-
-                throw pybind11::index_error(
-                    "only integers and slices (`:`) are valid indices");
-            }
+            auto [hyperslab, slice_shape] = create_hyperslab(array.shape(), indices);
 
             return read_hyperslab_from_array(array, hyperslab, slice_shape);
         })
