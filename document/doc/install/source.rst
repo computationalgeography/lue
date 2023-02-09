@@ -15,7 +15,7 @@ The following CMake variables are used to determine which targets to build:
 Variable                         Default Effect
 ================================ ======= ===========================
 `LUE_BUILD_DATA_MODEL`           `TRUE`  Build data model C++ API
-`LUE_BUILD_FRAMEWORK`            `FALSE` Build modelling framework
+`LUE_BUILD_FRAMEWORK`            `TRUE`  Build modelling framework
 `LUE_BUILD_VIEW`                 `FALSE` Build data model viewer
 `LUE_BUILD_DOCUMENTATION`        `FALSE` Build API documentation
 `LUE_BUILD_QA`                   `FALSE` Build QA targets
@@ -34,7 +34,7 @@ installing them in `$HOME/lue_install`:
    cmake -DCMAKE_INSTALL_PREFIX=$HOME/lue_install ..
    cmake --build . --target install
 
-Also, you can check the scripts behind the `LUE Github workflows`_
+Also, you can check the `LUE Github workflow scripts`_ behind the `LUE Github C/I actions`_
 to see how LUE can be built on various platforms.
 
 
@@ -45,12 +45,12 @@ Data model
 ----------
 Optional features:
 
-================================ ======= ===========================
+================================ ======= ============================
 Variable                         Default Effect
-================================ ======= ===========================
+================================ ======= ============================
 `LUE_DATA_MODEL_WITH_PYTHON_API` `FALSE` Build data model Python API
-`LUE_DATA_MODEL_WITH_UTILITIES`  `FALSE` Build commandline utilities
-================================ ======= ===========================
+`LUE_DATA_MODEL_WITH_UTILITIES`  `FALSE` Build command line utilities
+================================ ======= ============================
 
 
 Dependencies
@@ -73,7 +73,7 @@ Variable                         Default Effect
 
 Dependencies
 ~~~~~~~~~~~~
-- Boost, Docopt, fmt, HPX, Kokkos mdspan
+- Boost, Docopt, fmt, GDAL, HPX, LUE data model, Kokkos mdspan
 - `LUE_FRAMEWORK_WITH_PYTHON_API`: Python, pybind11, NumPy
 
 
@@ -83,7 +83,7 @@ View
 
 Dependencies
 ~~~~~~~~~~~~
-- Dear ImGUI, OpenGL, GLFW
+- Dear ImGUI, Docopt, fmt, GLFW, Nlohmann JSON, OpenGL
 
 
 Documentation
@@ -103,9 +103,12 @@ Optional features:
 ===================================== ======= ====================================
 Variable                              Default Effect
 ===================================== ======= ====================================
-`LUE_QA_WITH_TESTS`                   `TRUE`  Build test targets
+`LUE_QA_WITH_PYTHON_API`              `FALSE` Build QA Python API
+`LUE_QA_WITH_TESTS`                   `FALSE` Build test targets
 `LUE_QA_TEST_NR_LOCALITIES_PER_TEST`  `1`     Number of localities used when testing the framework
 `LUE_QA_TEST_NR_THREADS_PER_LOCALITY` `1`     Number of threads per locality used when testing the framework
+`LUE_QA_TEST_HPX_RUNWRAPPER`          `none`  Runwrapper to use (see ``hpxrun.py``)
+`LUE_QA_TEST_HPX_PARCELPORT`          `tcp`   Parcelport to use (see ``hpxrun.py``)
 ===================================== ======= ====================================
 
 .. note::
@@ -118,12 +121,14 @@ Variable                              Default Effect
 
 Dependencies
 ~~~~~~~~~~~~
-- `LUE_QA_WITH_TESTS`: Boost unit-test framework library
+- Nlohmann JSON
+- `LUE_QA_WITH_TESTS`: Boost filesytem, sytem, unit-test framework libraries
+- `LUE_QA_WITH_PYTHON_API`: pybind11, Python
 
 
 Dependencies
 ++++++++++++
-There are three options for installing prerequisite libraries and tools:
+There are at least three options for installing prerequisite libraries and tools:
 
 1. Install using platform specific package manager
 2. Install using Conan, either before building LUE or by the LUE build
@@ -137,20 +142,20 @@ The next variables determine what happens in each case by default.
 - TRUE: Search for Foo in standard locations
 - FALSE: Install Foo using Conan
 
-======================= ===== ===== =====
-Variable                WIN32 APPLE Other
-======================= ===== ===== =====
-`LUE_HAVE_BOOST         FALSE TRUE  TRUE
-`LUE_HAVE_DOCOPT        FALSE FALSE TRUE
-`LUE_HAVE_DOXYGEN       FALSE TRUE  TRUE
-`LUE_HAVE_GDAL          FALSE TRUE  TRUE
-`LUE_HAVE_FMT           FALSE TRUE  TRUE
-`LUE_HAVE_GLFW          FALSE TRUE  TRUE
-`LUE_HAVE_HDF5          FALSE TRUE  TRUE
-`LUE_HAVE_MS_GSL        FALSE FALSE FALSE
-`LUE_HAVE_NLOHMANN_JSON FALSE TRUE  FALSE
-`LUE_HAVE_PYBIND11      FALSE FALSE FALSE
-======================= ===== ===== =====
+======================== ===== ===== =====
+Variable                 WIN32 APPLE Other
+======================== ===== ===== =====
+`LUE_HAVE_BOOST`         FALSE TRUE  TRUE
+`LUE_HAVE_DOCOPT`        FALSE FALSE TRUE
+`LUE_HAVE_DOXYGEN`       FALSE TRUE  TRUE
+`LUE_HAVE_GDAL`          FALSE TRUE  TRUE
+`LUE_HAVE_FMT`           FALSE TRUE  TRUE
+`LUE_HAVE_GLFW`          FALSE TRUE  TRUE
+`LUE_HAVE_HDF5`          FALSE TRUE  TRUE
+`LUE_HAVE_MS_GSL`        FALSE FALSE FALSE
+`LUE_HAVE_NLOHMANN_JSON` FALSE TRUE  FALSE
+`LUE_HAVE_PYBIND11`      FALSE FALSE FALSE
+======================== ===== ===== =====
 
 Some prerequisite libraries can optionally be built by the LUE project
 itself. The following variables are used to decide whether or not that
@@ -164,4 +169,5 @@ Variable         Effect when set
 ================ ===================================================
 
 .. _LUE Github project page: https://github.com/computationalgeography/lue
-.. _LUE Github workflows: https://github.com/computationalgeography/lue/actions
+.. _LUE Github workflow scripts: https://github.com/computationalgeography/lue/tree/master/.github/workflows
+.. _LUE Github C/I actions: https://github.com/computationalgeography/lue/actions

@@ -19,8 +19,8 @@
 # -- Project information -----------------------------------------------------
 
 project = "LUE"
-copyright = "2020-now, Kor de Jong"
-author = "Kor de Jong"
+copyright = "2016-now, LUE R&D team"
+author = "LUE developers"
 
 
 # -- General configuration ---------------------------------------------------
