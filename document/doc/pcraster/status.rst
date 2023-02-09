@@ -78,15 +78,20 @@ added to the LUE framework. The number of model developers requesting one is one
      - 1
    * - accuflux
      - ✅
-     - accuflux with non-spatial material is not available
+     - | not yet in Python package
+       | accuflux with non-spatial material is not available
    * - | accufractionflux
        | accufractionstate
      - ✅
-     - accu_fraction
+     - | accu_fraction
+       | accu_fraction with non-spatial material and non-spatial
+       | transport fraction is not available
    * - | accuthresholdflux
        | accuthresholdstate
      - ✅
-     - accu_threshold3
+     - | accu_threshold3
+       | accu_threshold with non-spatial material and non-spatial
+       | threshold is not available
    * - | accutriggerflux
        | accutriggerstate
      - ❌
