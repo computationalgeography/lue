@@ -14,16 +14,16 @@ option(LUE_DATA_MODEL_WITH_UTILITIES
 
 option(LUE_BUILD_FRAMEWORK
     "Build LUE simulation framework"
-    FALSE)
-option(LUE_FRAMEWORK_WITH_OPENCL
-    "Include support for OpenCL"
-    FALSE)
+    TRUE)
+# option(LUE_FRAMEWORK_WITH_OPENCL
+#     "Include support for OpenCL"
+#     FALSE)
 # option(LUE_FRAMEWORK_WITH_MPI
 #     "Include support for MPI"
 #     FALSE)
-option(LUE_FRAMEWORK_WITH_DASHBOARD
-    "Include dashboard for simulation framework"
-    FALSE)
+# option(LUE_FRAMEWORK_WITH_DASHBOARD
+#     "Include dashboard for simulation framework"
+#     FALSE)
 option(LUE_FRAMEWORK_WITH_PYTHON_API
     "Include Python API for modelling framework"
     FALSE)
@@ -139,6 +139,14 @@ set(LUE_HAVE_IMGUI FALSE)
 
 
 # Handle internal dependencies -------------------------------------------------
+if(LUE_BUILD_FRAMEWORK)
+    set(LUE_BUILD_DATA_MODEL TRUE)
+    # if(LUE_FRAMEWORK_WITH_DASHBOARD)
+    #     set(LUE_BUILD_IMGUI TRUE)
+    # endif()
+endif()
+
+
 if(LUE_BUILD_VIEW)
     set(LUE_BUILD_DATA_MODEL TRUE)
     set(LUE_BUILD_IMGUI TRUE)
@@ -147,13 +155,6 @@ endif()
 
 if(LUE_BUILD_DATA_MODEL)
     if(LUE_DATA_MODEL_WITH_PYTHON_API)
-    endif()
-endif()
-
-
-if(LUE_BUILD_FRAMEWORK)
-    if(LUE_FRAMEWORK_WITH_DASHBOARD)
-        set(LUE_BUILD_IMGUI TRUE)
     endif()
 endif()
 
@@ -209,13 +210,13 @@ if(LUE_BUILD_FRAMEWORK)
         set(LUE_PYTHON_REQUIRED TRUE)
     endif()
 
-    if(LUE_FRAMEWORK_WITH_OPENCL)
-        set(LUE_OPENCL_REQUIRED TRUE)
-    endif()
+    # if(LUE_FRAMEWORK_WITH_OPENCL)
+    #     set(LUE_OPENCL_REQUIRED TRUE)
+    # endif()
 
-    if(LUE_FRAMEWORK_WITH_DASHBOARD)
-        set(LUE_IMGUI_REQUIRED TRUE)
-    endif()
+    # if(LUE_FRAMEWORK_WITH_DASHBOARD)
+    #     set(LUE_IMGUI_REQUIRED TRUE)
+    # endif()
 
     if(LUE_FRAMEWORK_WITH_PYTHON_API)
         set(LUE_PYBIND11_REQUIRED TRUE)
@@ -281,14 +282,14 @@ if(LUE_BUILD_DOCUMENTATION)
         message(FATAL_ERROR "edit_dot_graph.py not found")
     endif()
 
-    find_package(LATEX)
+    # find_package(LATEX)
 
-    if(NOT LATEX_FOUND)
-        message(WARNING
-            "LaTeX could not be found. Latex documents will not be generated")
-    else()
-        include(UseLATEX)
-    endif()
+    # if(NOT LATEX_FOUND)
+    #     message(WARNING
+    #         "LaTeX could not be found. Latex documents will not be generated")
+    # else()
+    #     include(UseLATEX)
+    # endif()
 endif()
 
 
@@ -733,7 +734,7 @@ endif()
 
 if(LUE_HDF5_REQUIRED)
     find_package(HDF5 REQUIRED COMPONENTS C)
-    message(STATUS "HDF5_IS_PARALLEL          : ${HDF5_IS_PARALLEL}")
+    message(STATUS "HDF5_IS_PARALLEL              : ${HDF5_IS_PARALLEL}")
 endif()
 
 if(LUE_MS_GSL_REQUIRED)

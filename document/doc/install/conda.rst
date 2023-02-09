@@ -36,17 +36,14 @@ once you are done (adjust versions / names when needed):
 .. code-block:: bash
 
    # Keep Conda up to date
-   conda update -n base conda
+   conda update -n base -c defaults conda
 
    # Create new Conda environment
-   conda create --name test_lue python=3.9
+   conda create --name test_lue python=3.10
    conda activate test_lue
 
-   # Install LUE from the standard location, or ...
+   # Install LUE
    conda install -c conda-forge lue
-
-   # ... install LUE from a special location
-   conda install -c url_to_special_channel -c conda-forge lue
 
    # Test
    # ...
@@ -54,3 +51,7 @@ once you are done (adjust versions / names when needed):
    # Clean-up
    conda deactivate
    conda env remove --name test_lue
+
+For inspiration for testing LUE you can have a look at the `lue_tutorial`_ repository.
+
+.. _lue_tutorial: https://github.com/computationalgeography/lue_tutorial

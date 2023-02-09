@@ -54,10 +54,8 @@ jobs:
                   -B $GITHUB_WORKSPACE/../build \
                   -G "Visual Studio 17 2022" -A x64 \
                   -D CMAKE_BUILD_TYPE=Release \
-                  -D LUE_BUILD_DATA_MODEL:BOOL=TRUE \
                   -D LUE_DATA_MODEL_WITH_PYTHON_API:BOOL=TRUE \
                   -D LUE_DATA_MODEL_WITH_UTILITIES:BOOL=TRUE \
-                  -D LUE_BUILD_FRAMEWORK:BOOL=TRUE \
                   -D LUE_FRAMEWORK_WITH_PYTHON_API:BOOL=TRUE \
                   -D LUE_BUILD_VIEW:BOOL=TRUE \
                   -D LUE_BUILD_QA:BOOL=TRUE \
@@ -65,7 +63,6 @@ jobs:
                   -D LUE_QA_WITH_TESTS=TRUE \
                   -D LUE_QA_TEST_NR_LOCALITIES_PER_TEST=1 \
                   -D LUE_QA_TEST_NR_THREADS_PER_LOCALITY=2 \
-                  -D LUE_BUILD_DOCUMENTATION:BOOL=FALSE \
                   -D LUE_HAVE_BOOST:BOOL=TRUE \
                   -D LUE_HAVE_DOCOPT:BOOL=FALSE \
                   -D LUE_HAVE_FMT:BOOL=FALSE \
