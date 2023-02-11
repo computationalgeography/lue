@@ -10,11 +10,16 @@ lue.framework reference
    array
    compare
    condition
+   flow_direction
+   focal
    logic
    io
    no_data
+   miscellaneous
    numeric
+   numpy
+   random
    statistic
    terrain
    trigonometry
-   flow_direction
+   zonal

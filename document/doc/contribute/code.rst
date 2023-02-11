@@ -11,7 +11,7 @@ Documentation
 Theme
 ~~~~~
 The LUE documentation is generated using Sphinx. The configuration is
-stored in `document/doc/config.py.in`.
+stored in `document/doc/conf.py.in`_.
 
 The theme we use is an updated version of the `Read the Docs Sphinx
 Theme`_. We forked that project and based our theme on release 0.5.0.
@@ -57,25 +57,25 @@ of the theme is to use less colours and hover effects than the original
 one.
 
 The LUE-specific overrides of the underlying theme are located
-in `src/sass/_lue_theme_*.sass`. These SASS files are included from
-`src/sass/theme.sass`.
+in ``src/sass/_lue_theme_*.sass``. These SASS files are included from
+``src/sass/theme.sass``.
 
-When committing, skip `package-lock.json`. It doesn't seem to be necessary
+When committing, skip ``package-lock.json``. It doesn't seem to be necessary
 to commit.
 
 .. important::
 
     Don't forget to generate and commit the theme's CSS
-    (`sphinx_rtd_theme/static/css/theme.css`). Otherwise, the changes
+    (``sphinx_rtd_theme/static/css/theme.css``). Otherwise, the changes
     to the theme will not be visible to users.
 
 Updating LUE to pick up the updated Sphinx theme involves these steps:
 
-#. Note the commit hash in the updated `lue_theme` branch
-#. Update commit hash in `environment/cmake/LueConfiguration.cmake`
-   (search for `LUE_SPHINX_LUE_THEME_REQUIRED`)
+#. Note the commit hash in the updated ``lue_theme`` branch
+#. Update commit hash in ``environment/cmake/LueConfiguration.cmake``
+   (search for ``LUE_SPHINX_LUE_THEME_REQUIRED``)
 #. If you use a local repository cache, pull in updates in the
-   `LUE_REPOSITORY_CACHE/sphinx_rtd_theme` directory
+   ``LUE_REPOSITORY_CACHE/sphinx_rtd_theme`` directory
 #. Remove current theme sources from build directory:
 
    .. code-block:: bash
@@ -91,6 +91,6 @@ Updating LUE to pick up the updated Sphinx theme involves these steps:
       rm -r document/doc/sphinx/
       make sphinx_doc
 
-
+.. _document/doc/conf.py.in: https://github.com/computationalgeography/lue/blob/master/document/doc/conf.py.in
 .. _Read the Docs Sphinx Theme: https://sphinx-rtd-theme.readthedocs.io
 .. _Nord theme: https://www.nordtheme.com

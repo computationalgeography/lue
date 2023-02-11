@@ -4,6 +4,7 @@
 Numeric
 =======
 .. autosummary::
+    abs
     add
     divide
     exp
@@ -13,6 +14,7 @@ Numeric
     sqrt
     subtract
 
+.. autofunction:: abs
 .. autofunction:: add
 .. autofunction:: divide
 .. autofunction:: exp
