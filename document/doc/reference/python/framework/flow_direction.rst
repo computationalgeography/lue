@@ -13,6 +13,7 @@ Flow direction
     downstream_distance
     inflow_count
     inter_partition_stream
+    kinematic_wave
     upstream
 
 .. autofunction:: accu
@@ -24,4 +25,5 @@ Flow direction
 .. autofunction:: downstream_distance
 .. autofunction:: inflow_count
 .. autofunction:: inter_partition_stream
+.. autofunction:: kinematic_wave
 .. autofunction:: upstream
