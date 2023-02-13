@@ -19,7 +19,7 @@ class ZonalAreaTest(lue_test.TestCase):
         partition_shape = (10, 10)
         fill_zone = 3
 
-        for zone_dtype in [np.uint8, np.uint32, np.uint64]:
+        for zone_dtype in [np.uint8, np.uint32, np.uint64, np.int32, np.int64]:
             zones = lfr.create_array(
                 array_shape, partition_shape, zone_dtype, fill_zone
             )

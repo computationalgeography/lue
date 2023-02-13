@@ -64,6 +64,8 @@ namespace lue::framework {
         module.def("zonal_normal", zonal_normal<std::uint8_t, 2>, "zones"_a, "dtype"_a);
         module.def("zonal_normal", zonal_normal<std::uint32_t, 2>, "zones"_a, "dtype"_a);
         module.def("zonal_normal", zonal_normal<std::uint64_t, 2>, "zones"_a, "dtype"_a);
+        module.def("zonal_normal", zonal_normal<std::int32_t, 2>, "zones"_a, "dtype"_a);
+        module.def("zonal_normal", zonal_normal<std::int64_t, 2>, "zones"_a, "dtype"_a);
     }
 
 }  // namespace lue::framework

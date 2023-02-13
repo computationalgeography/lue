@@ -1,6 +1,7 @@
 import lue.framework as lfr
 import lue_test
 import numpy as np
+import itertools
 
 
 def setUpModule():
@@ -20,23 +21,10 @@ class ZonalDiversityTest(lue_test.TestCase):
         fill_value = 5
         fill_zone = 3
 
-        for value_dtype, zone_dtype in [
-            (np.uint8, np.uint8),
-            (np.uint8, np.uint32),
-            (np.uint8, np.uint64),
-            (np.int32, np.uint8),
-            (np.int32, np.uint32),
-            (np.int32, np.uint64),
-            (np.uint32, np.uint8),
-            (np.uint32, np.uint32),
-            (np.uint32, np.uint64),
-            (np.int64, np.uint8),
-            (np.int64, np.uint32),
-            (np.int64, np.uint64),
-            (np.uint64, np.uint8),
-            (np.uint64, np.uint32),
-            (np.uint64, np.uint64),
-        ]:
+        for value_dtype, zone_dtype in itertools.product(
+            (np.uint8, np.int32, np.uint32, np.int64, np.uint64),
+            (np.uint8, np.int32, np.uint32, np.int64, np.uint64),
+        ):
             array = lfr.create_array(
                 array_shape, partition_shape, value_dtype, fill_value
             )

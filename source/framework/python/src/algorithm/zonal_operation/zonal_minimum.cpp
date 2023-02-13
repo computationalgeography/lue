@@ -28,30 +28,44 @@ namespace lue::framework {
         module.def("zonal_minimum", zonal_minimum<std::uint8_t, std::uint8_t, 2>, "array"_a, "zones"_a);
         module.def("zonal_minimum", zonal_minimum<std::uint8_t, std::uint32_t, 2>, "array"_a, "zones"_a);
         module.def("zonal_minimum", zonal_minimum<std::uint8_t, std::uint64_t, 2>, "array"_a, "zones"_a);
+        module.def("zonal_minimum", zonal_minimum<std::uint8_t, std::int32_t, 2>, "array"_a, "zones"_a);
+        module.def("zonal_minimum", zonal_minimum<std::uint8_t, std::int64_t, 2>, "array"_a, "zones"_a);
 
         module.def("zonal_minimum", zonal_minimum<std::int32_t, std::uint8_t, 2>, "array"_a, "zones"_a);
         module.def("zonal_minimum", zonal_minimum<std::int32_t, std::uint32_t, 2>, "array"_a, "zones"_a);
         module.def("zonal_minimum", zonal_minimum<std::int32_t, std::uint64_t, 2>, "array"_a, "zones"_a);
+        module.def("zonal_minimum", zonal_minimum<std::int32_t, std::int32_t, 2>, "array"_a, "zones"_a);
+        module.def("zonal_minimum", zonal_minimum<std::int32_t, std::int64_t, 2>, "array"_a, "zones"_a);
 
         module.def("zonal_minimum", zonal_minimum<std::uint32_t, std::uint8_t, 2>, "array"_a, "zones"_a);
         module.def("zonal_minimum", zonal_minimum<std::uint32_t, std::uint32_t, 2>, "array"_a, "zones"_a);
         module.def("zonal_minimum", zonal_minimum<std::uint32_t, std::uint64_t, 2>, "array"_a, "zones"_a);
+        module.def("zonal_minimum", zonal_minimum<std::uint32_t, std::int32_t, 2>, "array"_a, "zones"_a);
+        module.def("zonal_minimum", zonal_minimum<std::uint32_t, std::int64_t, 2>, "array"_a, "zones"_a);
 
         module.def("zonal_minimum", zonal_minimum<std::int64_t, std::uint8_t, 2>, "array"_a, "zones"_a);
         module.def("zonal_minimum", zonal_minimum<std::int64_t, std::uint32_t, 2>, "array"_a, "zones"_a);
         module.def("zonal_minimum", zonal_minimum<std::int64_t, std::uint64_t, 2>, "array"_a, "zones"_a);
+        module.def("zonal_minimum", zonal_minimum<std::int64_t, std::int32_t, 2>, "array"_a, "zones"_a);
+        module.def("zonal_minimum", zonal_minimum<std::int64_t, std::int64_t, 2>, "array"_a, "zones"_a);
 
         module.def("zonal_minimum", zonal_minimum<std::uint64_t, std::uint8_t, 2>, "array"_a, "zones"_a);
         module.def("zonal_minimum", zonal_minimum<std::uint64_t, std::uint32_t, 2>, "array"_a, "zones"_a);
         module.def("zonal_minimum", zonal_minimum<std::uint64_t, std::uint64_t, 2>, "array"_a, "zones"_a);
+        module.def("zonal_minimum", zonal_minimum<std::uint64_t, std::int32_t, 2>, "array"_a, "zones"_a);
+        module.def("zonal_minimum", zonal_minimum<std::uint64_t, std::int64_t, 2>, "array"_a, "zones"_a);
 
         module.def("zonal_minimum", zonal_minimum<float, std::uint8_t, 2>, "array"_a, "zones"_a);
         module.def("zonal_minimum", zonal_minimum<float, std::uint32_t, 2>, "array"_a, "zones"_a);
         module.def("zonal_minimum", zonal_minimum<float, std::uint64_t, 2>, "array"_a, "zones"_a);
+        module.def("zonal_minimum", zonal_minimum<float, std::int32_t, 2>, "array"_a, "zones"_a);
+        module.def("zonal_minimum", zonal_minimum<float, std::int64_t, 2>, "array"_a, "zones"_a);
 
         module.def("zonal_minimum", zonal_minimum<double, std::uint8_t, 2>, "array"_a, "zones"_a);
         module.def("zonal_minimum", zonal_minimum<double, std::uint32_t, 2>, "array"_a, "zones"_a);
         module.def("zonal_minimum", zonal_minimum<double, std::uint64_t, 2>, "array"_a, "zones"_a);
+        module.def("zonal_minimum", zonal_minimum<double, std::int32_t, 2>, "array"_a, "zones"_a);
+        module.def("zonal_minimum", zonal_minimum<double, std::int64_t, 2>, "array"_a, "zones"_a);
     }
 
 }  // namespace lue::framework
