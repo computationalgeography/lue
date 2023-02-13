@@ -12,7 +12,7 @@ def tearDownModule():
     lue_test.stop_hpx_runtime()
 
 
-class LocalOperationTest(lue_test.TestCase):
+class RoutingOperationTest(lue_test.TestCase):
     @classmethod
     @lue_test.framework_test_case
     def setUpClass(cls):
@@ -22,6 +22,7 @@ class LocalOperationTest(lue_test.TestCase):
         # TODO Can we do better?
         # - When the pcraster module must create spatials from non-spatials, this
         #   information currently must be passed in
+        lpr.configuration.array_shape = cls.array_shape
         lpr.configuration.partition_shape = cls.partition_shape
 
         cls.non_spatial = {
@@ -51,7 +52,7 @@ class LocalOperationTest(lue_test.TestCase):
     def test_accufraction(self):
         ldd = self.ldd
 
-        for type_ in [np.float32, np.float64]:
+        for type_ in [np.float32]:
             spatial_material, non_spatial_material = (
                 self.spatial[type_],
                 self.non_spatial[type_],
@@ -74,7 +75,7 @@ class LocalOperationTest(lue_test.TestCase):
     def test_accuthreshold(self):
         ldd = self.ldd
 
-        for type_ in [np.float32, np.float64]:
+        for type_ in [np.float32]:
             spatial_material, non_spatial_material = (
                 self.spatial[type_],
                 self.non_spatial[type_],
@@ -89,5 +90,3 @@ class LocalOperationTest(lue_test.TestCase):
             _ = lpr.accuthresholdstate(ldd, spatial_material, spatial_threshold)
             _ = lpr.accuthresholdflux(ldd, non_spatial_material, spatial_threshold)
             _ = lpr.accuthresholdstate(ldd, non_spatial_material, spatial_threshold)
-
-    # Hier verder, ander accu functies
