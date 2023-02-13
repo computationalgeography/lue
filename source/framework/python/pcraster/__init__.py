@@ -7,7 +7,6 @@ import lue.framework as lfr
 
 
 class Configuration(object):
-
     def __init__(self, partition_shape=None):
         self.partition_shape = partition_shape
 
@@ -16,32 +15,39 @@ configuration = Configuration()
 
 
 def is_spatial(argument):
-    return isinstance(argument, (
-        lfr.PartitionedArray_int32_2,
-        lfr.PartitionedArray_int64_2,
-        lfr.PartitionedArray_uint8_2,
-        lfr.PartitionedArray_uint32_2,
-        lfr.PartitionedArray_uint64_2,
-        lfr.PartitionedArray_float32_2,
-        lfr.PartitionedArray_float64_2,
-    ))
+    return isinstance(
+        argument,
+        (
+            lfr.PartitionedArray_int32_2,
+            lfr.PartitionedArray_int64_2,
+            lfr.PartitionedArray_uint8_2,
+            lfr.PartitionedArray_uint32_2,
+            lfr.PartitionedArray_uint64_2,
+            lfr.PartitionedArray_float32_2,
+            lfr.PartitionedArray_float64_2,
+        ),
+    )
 
 
 def is_non_spatial(argument):
-    return isinstance(argument, (
-        np.int32,
-        np.int64,
-        np.uint8,
-        np.uint32,
-        np.uint64,
-        np.float32,
-        np.float64,
-    ))
+    return isinstance(
+        argument,
+        (
+            np.int32,
+            np.int64,
+            np.uint8,
+            np.uint32,
+            np.uint64,
+            np.float32,
+            np.float64,
+        ),
+    )
 
 
 def non_spatial_to_spatial(template, fill_value):
     return lfr.create_array(
-        template.shape, configuration.partition_shape, np.dtype(fill_value), fill_value)
+        template.shape, configuration.partition_shape, np.dtype(fill_value), fill_value
+    )
 
 
 def div(expression1, expression2):
@@ -71,7 +77,9 @@ def accufraction(ldd, material, transportcapacity):
         material = non_spatial_to_spatial(template=ldd, fill_value=material)
 
     if is_non_spatial(transportcapacity):
-        transportcapacity = non_spatial_to_spatial(template=ldd, fill_value=transportcapacity)
+        transportcapacity = non_spatial_to_spatial(
+            template=ldd, fill_value=transportcapacity
+        )
 
     return lfr.accu_fraction(ldd, material, transportcapacity)
 

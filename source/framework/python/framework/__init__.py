@@ -1,5 +1,11 @@
 from ..lue_py.framework import *
 from ..lue_py import framework as lfr
+from .support import (
+    DynamicModel,
+    DynamicModelRunner,
+    StaticModel,
+    StaticModelRunner,
+)
 
 
 default_hpx_runtime_configuration = [
