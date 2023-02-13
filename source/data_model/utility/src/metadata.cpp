@@ -44,7 +44,7 @@ void assert_has_key(
     if(!has_key(object, pointer)) {
         throw std::runtime_error(fmt::format(
             "JSON object does not contain key {}",
-            std::string(pointer)));
+            pointer.to_string()));
     }
 }
 
@@ -91,7 +91,7 @@ JSON object(
     if(object_json_it == list_json.end()) {
         throw std::runtime_error(fmt::format(
             "No object whose key {} equals {} exists at {}",
-            key, value, std::string(pointer)));
+            key, value, pointer.to_string()));
 
     }
 
