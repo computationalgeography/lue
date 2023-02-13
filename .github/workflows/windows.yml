@@ -108,4 +108,4 @@ jobs:
               # Add our package to the set of Conda packages
               conda-develop install/lib/python${{ matrix.python-version }}
               install/bin/lue_scalability --version
-              python -c "import lue, lue_data_model, lue.framework, lue.pcraster, lue.qa.scalability; print(lue.__version__)"
+              python -c "import lue, lue.data_model, lue.framework, lue.pcraster, lue.qa.scalability; print(lue.__version__)"
