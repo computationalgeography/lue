@@ -37,6 +37,6 @@ cmake $SRC_DIR \
 cmake --build . --target source/data_model/all source/framework/{core,partitioned_array}/all
 
 # Build remaining targets with fewer cores. Compiling these modules requires more memory.
-cmake --build . --target all --parallel 2
+cmake --build . --target all --parallel 1
 
 cmake --install . --component lue_runtime
