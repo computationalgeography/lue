@@ -1,14 +1,26 @@
 # TODO No command line arguments end up in HPX runtime...
 add_test_conditionally(test)
 
-file(GENERATE
-    OUTPUT ${CMAKE_BINARY_DIR}/${LUE_BUILD_PYTHON_PACKAGE_DIR}/$<$<BOOL:${LUE_GENERATOR_IS_MULTI_CONFIG}>:$<CONFIG>>/framework/__init__.py
-    INPUT framework.py.in
-)
 
+# framework/*
+foreach(module_name __init__.py support.py)
+    message(DEBUG ${module_name})
+    file(GENERATE
+        OUTPUT ${CMAKE_BINARY_DIR}/${LUE_BUILD_PYTHON_PACKAGE_DIR}/$<$<BOOL:${LUE_GENERATOR_IS_MULTI_CONFIG}>:$<CONFIG>>/framework/${module_name}
+        INPUT framework/${module_name}
+    )
+endforeach()
+
+# pcraster/*
 file(GENERATE
     OUTPUT ${CMAKE_BINARY_DIR}/${LUE_BUILD_PYTHON_PACKAGE_DIR}/$<$<BOOL:${LUE_GENERATOR_IS_MULTI_CONFIG}>:$<CONFIG>>/pcraster/__init__.py
-    INPUT pcraster.py.in
+    INPUT pcraster/__init__.py
+)
+
+# pcraster/framework/*
+file(GENERATE
+    OUTPUT ${CMAKE_BINARY_DIR}/${LUE_BUILD_PYTHON_PACKAGE_DIR}/$<$<BOOL:${LUE_GENERATOR_IS_MULTI_CONFIG}>:$<CONFIG>>/pcraster/framework/__init__.py
+    INPUT pcraster/framework/__init__.py
 )
 
 # A pybind11 SHARED library is a CMake runtime output artifact. Target properties to set/get are
