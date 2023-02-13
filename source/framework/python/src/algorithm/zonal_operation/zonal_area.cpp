@@ -27,6 +27,8 @@ namespace lue::framework {
         module.def("zonal_area", zonal_area<std::uint64_t, std::uint8_t, 2>, "zones"_a);
         module.def("zonal_area", zonal_area<std::uint64_t, std::uint32_t, 2>, "zones"_a);
         module.def("zonal_area", zonal_area<std::uint64_t, std::uint64_t, 2>, "zones"_a);
+        module.def("zonal_area", zonal_area<std::uint64_t, std::int32_t, 2>, "zones"_a);
+        module.def("zonal_area", zonal_area<std::uint64_t, std::int64_t, 2>, "zones"_a);
     }
 
 }  // namespace lue::framework

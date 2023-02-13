@@ -28,30 +28,44 @@ namespace lue::framework {
         module.def("zonal_sum", zonal_sum<std::uint8_t, std::uint8_t, 2>, "array"_a, "zones"_a);
         module.def("zonal_sum", zonal_sum<std::uint8_t, std::uint32_t, 2>, "array"_a, "zones"_a);
         module.def("zonal_sum", zonal_sum<std::uint8_t, std::uint64_t, 2>, "array"_a, "zones"_a);
+        module.def("zonal_sum", zonal_sum<std::uint8_t, std::int32_t, 2>, "array"_a, "zones"_a);
+        module.def("zonal_sum", zonal_sum<std::uint8_t, std::int64_t, 2>, "array"_a, "zones"_a);
 
         module.def("zonal_sum", zonal_sum<std::int32_t, std::uint8_t, 2>, "array"_a, "zones"_a);
         module.def("zonal_sum", zonal_sum<std::int32_t, std::uint32_t, 2>, "array"_a, "zones"_a);
         module.def("zonal_sum", zonal_sum<std::int32_t, std::uint64_t, 2>, "array"_a, "zones"_a);
+        module.def("zonal_sum", zonal_sum<std::int32_t, std::int32_t, 2>, "array"_a, "zones"_a);
+        module.def("zonal_sum", zonal_sum<std::int32_t, std::int64_t, 2>, "array"_a, "zones"_a);
 
         module.def("zonal_sum", zonal_sum<std::uint32_t, std::uint8_t, 2>, "array"_a, "zones"_a);
         module.def("zonal_sum", zonal_sum<std::uint32_t, std::uint32_t, 2>, "array"_a, "zones"_a);
         module.def("zonal_sum", zonal_sum<std::uint32_t, std::uint64_t, 2>, "array"_a, "zones"_a);
+        module.def("zonal_sum", zonal_sum<std::uint32_t, std::int32_t, 2>, "array"_a, "zones"_a);
+        module.def("zonal_sum", zonal_sum<std::uint32_t, std::int64_t, 2>, "array"_a, "zones"_a);
 
         module.def("zonal_sum", zonal_sum<std::int64_t, std::uint8_t, 2>, "array"_a, "zones"_a);
         module.def("zonal_sum", zonal_sum<std::int64_t, std::uint32_t, 2>, "array"_a, "zones"_a);
         module.def("zonal_sum", zonal_sum<std::int64_t, std::uint64_t, 2>, "array"_a, "zones"_a);
+        module.def("zonal_sum", zonal_sum<std::int64_t, std::int32_t, 2>, "array"_a, "zones"_a);
+        module.def("zonal_sum", zonal_sum<std::int64_t, std::int64_t, 2>, "array"_a, "zones"_a);
 
         module.def("zonal_sum", zonal_sum<std::uint64_t, std::uint8_t, 2>, "array"_a, "zones"_a);
         module.def("zonal_sum", zonal_sum<std::uint64_t, std::uint32_t, 2>, "array"_a, "zones"_a);
         module.def("zonal_sum", zonal_sum<std::uint64_t, std::uint64_t, 2>, "array"_a, "zones"_a);
+        module.def("zonal_sum", zonal_sum<std::uint64_t, std::int32_t, 2>, "array"_a, "zones"_a);
+        module.def("zonal_sum", zonal_sum<std::uint64_t, std::int64_t, 2>, "array"_a, "zones"_a);
 
         module.def("zonal_sum", zonal_sum<float, std::uint8_t, 2>, "array"_a, "zones"_a);
         module.def("zonal_sum", zonal_sum<float, std::uint32_t, 2>, "array"_a, "zones"_a);
         module.def("zonal_sum", zonal_sum<float, std::uint64_t, 2>, "array"_a, "zones"_a);
+        module.def("zonal_sum", zonal_sum<float, std::int32_t, 2>, "array"_a, "zones"_a);
+        module.def("zonal_sum", zonal_sum<float, std::int64_t, 2>, "array"_a, "zones"_a);
 
         module.def("zonal_sum", zonal_sum<double, std::uint8_t, 2>, "array"_a, "zones"_a);
         module.def("zonal_sum", zonal_sum<double, std::uint32_t, 2>, "array"_a, "zones"_a);
         module.def("zonal_sum", zonal_sum<double, std::uint64_t, 2>, "array"_a, "zones"_a);
+        module.def("zonal_sum", zonal_sum<double, std::int32_t, 2>, "array"_a, "zones"_a);
+        module.def("zonal_sum", zonal_sum<double, std::int64_t, 2>, "array"_a, "zones"_a);
     }
 
 }  // namespace lue::framework
