@@ -348,60 +348,209 @@ def influencesimplegauss(*args):
     raise NotImplementedError("influencesimplegauss")
 
 
-# def inversedistance(*args):
+def inversedistance(*args):
+    raise NotImplementedError("inversedistance")
+
+
 # def kinematic(*args):
 # def kinwavestate, kinwaveflux(*args):
-# def ldd(*args):
+
+
+def ldd(*args):
+    raise NotImplementedError("ldd")
+
+
 # def lddcreate(*args):
-# def lddcreatedem(*args):
-# def ldddist(*args):
-# def lddmask(*args):
-# def lddrepair(*args):
+
+
+def lddcreatedem(*args):
+    raise NotImplementedError("lddcreatedem")
+
+
+def ldddist(*args):
+    raise NotImplementedError("lddcreatedist")
+
+
+def lddmask(*args):
+    raise NotImplementedError("lddmask")
+
+
+def lddrepair(*args):
+    raise NotImplementedError("lddrepair")
+
+
 # def le or <=(*args):
+
+
 # def ln(*args):
+
+
 # def log10(*args):
-# def lookup(*args):
-# def lookuplinear(*args):
-# def lookupmapstack(*args):
+
+
+def lookup(*args):
+    raise NotImplementedError("lookup")
+
+
+def lookuplinear(*args):
+    raise NotImplementedError("lookuplinear")
+
+
+def lookupmapstack(*args):
+    raise NotImplementedError("lookupmapstack")
+
+
 # def lt or <(*args):
-# def maparea(*args):
+
+
+def maparea(*args):
+    raise NotImplementedError("maparea")
+
+
 # def mapmaximum(*args):
+
+
 # def mapminimum(*args):
-# def mapnormal(*args):
+
+
+def mapnormal(*args):
+    raise NotImplementedError("mapnormal")
+
+
 # def maptotal(*args):
-# def mapuniform(*args):
-# def markwhilesumle,markwhilesumge(*args):
-# def max(*args):
-# def min(*args):
-# def mod, %(*args):
+
+
+def mapuniform(*args):
+    raise NotImplementedError("mapuniform")
+
+
+def markwhilesumle(*args):
+    raise NotImplementedError("markwhilesumle")
+
+
+def markwhilesumge(*args):
+    raise NotImplementedError("markwhilesumge")
+
+
+def max(*args):
+    raise NotImplementedError("max")
+
+
+def min(*args):
+    raise NotImplementedError("min")
+
+
+def mod(*args):
+    raise NotImplementedError("mod")
+
+
 # def ne or !=(*args):
-# def nodirection(*args):
+
+
+def nodirection(*args):
+    raise NotImplementedError("nodirection")
+
+
 # def nominal(*args):
-# def normal(*args):
+
+
+def normal(*args):
+    raise NotImplementedError("normal")
+
+
 # def not, ~, pcrnot(*args):
+
+
 # def or, |, pcror(*args):
-# def order(*args):
+
+
+def order(*args):
+    raise NotImplementedError("order")
+
+
 # def ordinal(*args):
-# def path(*args):
-# def pit(*args):
-# def plancurv(*args):
-# def pred(*args):
-# def profcurv(*args):
-# def rounddown(*args):
-# def roundoff(*args):
-# def roundup(*args):
+
+
+def path(*args):
+    raise NotImplementedError("path")
+
+
+def pit(*args):
+    raise NotImplementedError("pit")
+
+
+def plancurv(*args):
+    raise NotImplementedError("plancurv")
+
+
+def pred(*args):
+    raise NotImplementedError("pred")
+
+
+def profcurv(*args):
+    raise NotImplementedError("profcurv")
+
+
+def rounddown(*args):
+    raise NotImplementedError("rounddown")
+
+
+def roundoff(*args):
+    raise NotImplementedError("roundoff")
+
+
+def roundup(*args):
+    raise NotImplementedError("roundup")
+
+
 # def scalar(*args):
-# def shift,shift0(*args):
+
+
+def shift(*args):
+    raise NotImplementedError("shift")
+
+
+def shift0(*args):
+    raise NotImplementedError("shift0")
+
+
 # def sin(*args):
+
+
 # def slope(*args):
-# def slopelength(*args):
+
+
+def slopelength(*args):
+    raise NotImplementedError("slopelenght")
+
+
 # def spatial(*args):
-# def spread(*args):
-# def spreadldd(*args):
-# def spreadlddzone(*args):
-# def spreadmax(*args):
-# def spreadmaxzone(*args):
-# def spreadzone(*args):
+
+
+def spread(*args):
+    raise NotImplementedError("spread")
+
+
+def spreadldd(*args):
+    raise NotImplementedError("spreadldd")
+
+
+def spreadlddzone(*args):
+    raise NotImplementedError("spreadlddzone")
+
+
+def spreadmax(*args):
+    raise NotImplementedError("spreadmax")
+
+
+def spreadmaxzone(*args):
+    raise NotImplementedError("spreadmaxzone")
+
+
+def spreadzone(*args):
+    raise NotImplementedError("spreadzone")
+
+
 # def sqr(*args):
 # def sqrt(*args):
 # def streamorder(*args):
