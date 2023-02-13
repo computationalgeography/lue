@@ -167,7 +167,8 @@ added to the LUE framework. The number of model developers requesting one is one
      -
    * - boolean
      - ✅
-     -
+     - | boolean with non-spatial argument
+       | is not available
    * - catchment
      - ❌
      - 2
