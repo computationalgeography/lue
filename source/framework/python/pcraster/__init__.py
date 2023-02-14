@@ -1,17 +1,50 @@
 """
-The code in this module makes it easier to port models that use the PCRaster Python package to
-use the LUE Python package.
+This module contains wrappers around LUE operations that behave as PCRaster operations as much
+as possible. This makes it easier to port models that use the PCRaster Python package to use
+the LUE Python package.
+
+Currently, it is not possible to provide wrappers for all PCRaster operations. In some cases,
+we can work around missing functionality in LUE by doing things slightly different. This may
+involve a performance penalty. Over time these workarounds will be removed.
+
+In case a PCRaster operation supports passing in a non-spatial value, but the LUE operation
+does not, the wrappers will convert the non-spatial values into a spatial value automatically.
+
+In case PCRaster contains an operation which LUE does not, then we try to work around it by using
+other operations that produce the same results. If no work-around can be used, a
+NotImplementedError exception is raised.
+
+LUE does not support value scales. The wrappers in this module assume the cell representations
+used are the PCRaster ones:
+
+- uint8 for LDD and boolean values
+- int32 for nominal and ordinal values
+- float32 for scalar and directional values
+
+LUE itself supports additional cell represenations (uint32, int64, uint64, float64).
 """
 import numpy as np
 import lue.framework as lfr
 
 
 class Configuration(object):
-    def __init__(self, array_shape=None, partition_shape=None):
+    """
+    Class for storing information that is required for LUE to be able to mimic PCRaster
+
+    PCRaster makes use of a clone raster. This raster contains information about the shape of
+    the underlying array and the size of the raster cells. This class fulfills the same role.
+    """
+
+    def __init__(self, array_shape=None, partition_shape=None, cell_size=None):
         self.array_shape = array_shape
         self.partition_shape = partition_shape
+        self.cell_size = cell_size
 
 
+"""
+Global variable that contains information required by some of the LUE operations used in the
+wrappers
+"""
 configuration = Configuration()
 
 
@@ -19,21 +52,43 @@ def is_spatial(argument):
     return isinstance(
         argument,
         (
-            lfr.PartitionedArray_int32_2,
-            lfr.PartitionedArray_int64_2,
-            lfr.PartitionedArray_uint8_2,
-            lfr.PartitionedArray_uint32_2,
-            lfr.PartitionedArray_uint64_2,
-            lfr.PartitionedArray_float32_2,
-            lfr.PartitionedArray_float64_2,
+            lfr.PartitionedArray_uint8_2,  # Boolean, LDD
+            lfr.PartitionedArray_int32_2,  # Nominal, ordinal
+            lfr.PartitionedArray_float32_2,  # Scalar, directional
         ),
     )
+
+
+def is_boolean(expression):
+    return isinstance(expression, (lfr.PartitionedArray_uint8_2))
+
+
+def is_ldd(expression):
+    return isinstance(expression, (lfr.PartitionedArray_uint8_2))
+
+
+def is_nominal(expression):
+    return isinstance(expression, (lfr.PartitionedArray_int32_2))
+
+
+def is_ordinal(expression):
+    return isinstance(expression, (lfr.PartitionedArray_int32_2))
+
+
+def is_scalar(expression):
+    return isinstance(expression, (lfr.PartitionedArray_float32_2))
+
+
+def is_directional(expression):
+    return isinstance(expression, (lfr.PartitionedArray_float32_2))
 
 
 def is_non_spatial(argument):
     return isinstance(
         argument,
         (
+            int,
+            float,
             np.int32,
             np.int64,
             np.uint8,
@@ -59,13 +114,21 @@ def non_spatial_to_spatial(fill_value, template=None):
     )
 
 
+def readmap(pathname):
+    return lfr.from_gdal(pathname, configuration.partition_shape)
+
+
+def report(array, pathname):
+    lfr.to_gdal(array, pathname)
+
+
 def div(expression1, expression2):
     return expression1 / expression2
 
 
 def abs(expression):
     if is_non_spatial(expression):
-        expression = non_spatial_to_spatial(fill_value=expression)
+        expression = non_spatial_to_spatial(fill_value=np.float32(expression))
 
     return lfr.abs(expression)
 
@@ -86,11 +149,11 @@ def accufraction(ldd, material, transportcapacity):
     assert is_spatial(ldd), type(ldd)
 
     if is_non_spatial(material):
-        material = non_spatial_to_spatial(fill_value=material, template=ldd)
+        material = non_spatial_to_spatial(fill_value=np.float32(material), template=ldd)
 
     if is_non_spatial(transportcapacity):
         transportcapacity = non_spatial_to_spatial(
-            fill_value=transportcapacity, template=ldd
+            fill_value=np.float32(transportcapacity), template=ldd
         )
 
     return lfr.accu_fraction(ldd, material, transportcapacity)
@@ -108,10 +171,12 @@ def accuthreshold(ldd, material, threshold):
     assert is_spatial(ldd), type(ldd)
 
     if is_non_spatial(material):
-        material = non_spatial_to_spatial(fill_value=material, template=ldd)
+        material = non_spatial_to_spatial(fill_value=np.float32(material), template=ldd)
 
     if is_non_spatial(threshold):
-        threshold = non_spatial_to_spatial(fill_value=threshold, template=ldd)
+        threshold = non_spatial_to_spatial(
+            fill_value=np.float32(threshold), template=ldd
+        )
 
     return lfr.accu_threshold3(ldd, material, threshold)
 
@@ -150,7 +215,7 @@ def accutraveltimefractionstate(ldd, material, transporttraveltime):
 
 def acos(expression):
     if is_non_spatial(expression):
-        expression = non_spatial_to_spatial(fill_value=expression)
+        expression = non_spatial_to_spatial(fill_value=np.float32(expression))
 
     return lfr.acos(expression)
 
@@ -225,7 +290,7 @@ def areauniform(areaclass):
 
 def asin(expression):
     if is_non_spatial(expression):
-        expression = non_spatial_to_spatial(fill_value=expression)
+        expression = non_spatial_to_spatial(fill_value=np.float32(expression))
 
     return lfr.asin(expression)
 
@@ -236,15 +301,18 @@ def aspect(dem):
 
 def atan(expression):
     if is_non_spatial(expression):
-        expression = non_spatial_to_spatial(fill_value=expression)
+        expression = non_spatial_to_spatial(fill_value=np.float32(expression))
 
     return lfr.atan(expression)
 
 
 def boolean(expression):
+    if is_spatial(expression) and is_boolean(expression):
+        return expression
+
     raise NotImplementedError("boolean")
 
-    # TODO Result in an int32 array, not uint8 array
+    # TODO Results in an int32 array, not uint8 array
     # if is_non_spatial(expression):
     #     expression = non_spatial_to_spatial(fill_value=expression)
 
@@ -271,24 +339,45 @@ def clump(*args):
     raise NotImplementedError("clump")
 
 
-# def cos(*args):
+def cos(expression):
+    if is_non_spatial(expression):
+        expression = non_spatial_to_spatial(fill_value=np.float32(expression))
+
+    return lfr.cos(expression)
 
 
-def cover(*args):
-    raise NotImplementedError("cover")
+def cover(expression1, expression2, *expressions):
+    if not is_spatial(expression1):
+        expression1 = non_spatial_to_spatial(fill_value=expression1)
+
+    result = lfr.where(lfr.valid(expression1), expression1, expression2)
+
+    for expression in expressions:
+        result = lfr.where(lfr.valid(result), result, expression)
+
+    return result
 
 
-# def defined(*args):
+def defined(expression):
+    if not is_spatial(expression):
+        return non_spatial_to_spatial(fill_value=np.uint8(1))
+
+    return lfr.valid(expression)
 
 
-def directional(*args):
+def directional(expression):
+    if is_spatial(expression) and is_directional(expression):
+        return expression
+
     raise NotImplementedError("directional")
 
 
-# def downstream(*args):
+def downstream(ldd, expression):
+    return lfr.downstream(ldd, expression)
 
 
-# def downstreamdist(*args):
+def downstreamdist(ldd):
+    return lfr.downstream_distance(ldd, configuration.cell_size, np.float32)
 
 
 def dynwavestate(*args):
@@ -311,10 +400,15 @@ def dynamicwave(*args):
     raise NotImplementedError("dynamicwave")
 
 
-# def eq(*args):
+def eq(expression1, expression2):
+    return expression1 == expression2
 
 
-# def exp(*args):
+def exp(power):
+    if is_non_spatial(power):
+        power = non_spatial_to_spatial(fill_value=power)
+
+    return lfr.exp(power)
 
 
 def extentofview(*args):
@@ -325,23 +419,36 @@ def fac(*args):
     raise NotImplementedError("fac")
 
 
-# def ge(*args):
+def ge(expression1, expression2):
+    return expression1 >= expression2
 
 
-# def gt(*args):
+def gt(expression1, expression2):
+    return expression1 > expression2
 
 
 def horizontan(*args):
     raise NotImplementedError("horizontan")
 
 
-# ? def idiv(*args):
+def idiv(*args):
+    raise NotImplementedError("idiv")
 
 
-# def if then(*args):
+def ifthen(condition, expression):
+    if is_non_spatial(condition):
+        assert condition < np.iinfo(np.uint8).max, condition
+        condition = non_spatial_to_spatial(fill_value=np.uint8(condition))
+
+    return lfr.where(condition, expression)
 
 
-# def if then else(*args):
+def ifthenelse(condition, expression1, expression2):
+    if is_non_spatial(condition):
+        assert condition < np.iinfo(np.uint8).max, condition
+        condition = non_spatial_to_spatial(fill_value=np.uint8(condition))
+
+    return lfr.where(condition, expression1, expression2)
 
 
 def influencesimplegauss(*args):
@@ -356,7 +463,10 @@ def inversedistance(*args):
 # def kinwavestate, kinwaveflux(*args):
 
 
-def ldd(*args):
+def ldd(expression):
+    if is_spatial(expression) and is_ldd(expression):
+        return expression
+
     raise NotImplementedError("ldd")
 
 
@@ -451,7 +561,11 @@ def nodirection(*args):
     raise NotImplementedError("nodirection")
 
 
-# def nominal(*args):
+def nominal(expression):
+    if is_spatial(expression) and is_nominal(expression):
+        return expression
+
+    raise NotImplementedError("nominal")
 
 
 def normal(*args):
@@ -468,7 +582,11 @@ def order(*args):
     raise NotImplementedError("order")
 
 
-# def ordinal(*args):
+def ordinal(expression):
+    if is_spatial(expression) and is_ordinal(expression):
+        return expression
+
+    raise NotImplementedError("ordinal")
 
 
 def path(*args):
@@ -503,7 +621,11 @@ def roundup(*args):
     raise NotImplementedError("roundup")
 
 
-# def scalar(*args):
+def scalar(expression):
+    if is_spatial(expression) and is_scalar(expression):
+        return expression
+
+    raise NotImplementedError("scalar")
 
 
 def shift(*args):
@@ -551,51 +673,135 @@ def spreadzone(*args):
     raise NotImplementedError("spreadzone")
 
 
-# def sqr(*args):
+def sqr(expression):
+    if is_non_spatial(expression):
+        expression = non_spatial_to_spatial(fill_value=expression)
+
+    return expression * expression
+
+
 # def sqrt(*args):
-# def streamorder(*args):
-# def subcatchment(*args):
-# def succ(*args):
+
+
+def streamorder(*args):
+    raise NotImplementedError("streamorder")
+
+
+def subcatchment(*args):
+    raise NotImplementedError("subcatchment")
+
+
+def succ(*args):
+    raise NotImplementedError("succ")
+
+
 # def tan(*args):
-# def time(*args):
-# def timeinput…(*args):
-# def timeinput(*args):
-# def timeinputmodulo(*args):
-# def timeinputsparse(*args):
-# def timeoutput(*args):
-# def timeslice(*args):
-# def transient(*args):
+
+
+def time(*args):
+    raise NotImplementedError("time")
+
+
+def timeinputboolean(*args):
+    raise NotImplementedError("timeinputboolean")
+
+
+def timeinputnominal(*args):
+    raise NotImplementedError("timeinputnominal")
+
+
+def timeinputordinal(*args):
+    raise NotImplementedError("timeinputordinal")
+
+
+def timeinputscalar(*args):
+    raise NotImplementedError("timeinputscalar")
+
+
+def timeinputdirectional(*args):
+    raise NotImplementedError("timeinputdirectional")
+
+
+def timeinputldd(*args):
+    raise NotImplementedError("timeinputldd")
+
+
+def timeinput(*args):
+    raise NotImplementedError("timeinput")
+
+
+def timeinputmodulo(*args):
+    raise NotImplementedError("timeinputmodulo")
+
+
+def timeinputsparse(*args):
+    raise NotImplementedError("timeinputsparse")
+
+
+def timeoutput(*args):
+    raise NotImplementedError("timeoutput")
+
+
+def timeslice(*args):
+    raise NotImplementedError("timeslice")
+
+
+def transient(*args):
+    raise NotImplementedError("transient")
+
+
 # def uniform(*args):
+
+
 # def uniqueid(*args):
+
+
 # def upstream(*args):
-# def view(*args):
+
+
+def view(*args):
+    raise NotImplementedError("view")
+
+
 # def window4total(*args):
+
+
 # def windowaverage(*args):
+
+
 # def windowdiversity(*args):
+
+
 # def windowhighpass(*args):
+
+
 # def windowmajority(*args):
+
+
 # def windowmaximum(*args):
+
+
 # def windowminimum(*args):
+
+
 # def windowtotal(*args):
-# def xcoordinate(*args):
+
+
+def xcoordinate(*args):
+    raise NotImplementedError("xcoordinate")
+
+
 # def xor, ^, pcrxor(*args):
-# def ycoordinate(*args):
 
 
-### def setclone(*args):
-###     pcr.setclone(*args)
-###
-###
-### def readmap(filename):
-###     return lfr.from_gdal(filename, partition_shape)
-###
-###
-### def report(array, filename):
-###     lfr.to_gdal(array, filename)
-###
-###
-###
-###
+def ycoordinate(*args):
+    raise NotImplementedError("ycoordinate")
+
+
+def setclone(*args):
+    pass
+
+
 ### def nominal(arg):
 ###     if type(arg) == int:
 ###         return arg
@@ -614,10 +820,6 @@ def spreadzone(*args):
 ###         return readmap(arg)
 ###     else:
 ###         raise NotImplementedError(arg)
-###
-###
-### def cover(arg1, arg2):
-###     return lfr.where(lfr.valid(arg1), arg1, arg2)
 ###
 ###
 ### def load(

@@ -1,7 +1,19 @@
+"""
+This module contains classes that mimic the behaviour of the PCRaster Python Framework.
+
+See the `PCRaster Python Modelling Framework documentation`_ for more information.
+
+.. _PCRaster Python Modelling Framework documentation:
+   https://pcraster.geo.uu.nl/pcraster/latest/documentation/python_modelling_framework/index.html
+"""
 import lue.framework as lfr
 
 
 class StaticModel(lfr.StaticModel):
+    """
+    Base class for static models
+    """
+
     def __init__(self):
         pass
 
@@ -19,6 +31,10 @@ class StaticModel(lfr.StaticModel):
 
 
 class StaticFramework(lfr.StaticModelRunner):
+    """
+    Class for running static models
+    """
+
     def __init__(self, userModel):
         pass
 
@@ -27,6 +43,10 @@ class StaticFramework(lfr.StaticModelRunner):
 
 
 class DynamicModel(lfr.DynamicModel):
+    """
+    Base class for dynamic models
+    """
+
     def __init__(self):
         pass
 
@@ -62,6 +82,10 @@ class DynamicModel(lfr.DynamicModel):
 
 
 class DynamicFramework(lfr.DynamicModelRunner):
+    """
+    Class for running dynamic models
+    """
+
     def __init__(self, userModel, lastTimeStep=0, firstTimeStep=1):
         pass
 

@@ -2,89 +2,16 @@ import lue.framework as lfr
 import lue.pcraster as lpr
 import lue_test
 import numpy as np
+from .operation_test import OperationTest, setUpModule, tearDownModule
 
 
-def setUpModule():
-    lue_test.start_hpx_runtime()
-
-
-def tearDownModule():
-    lue_test.stop_hpx_runtime()
-
-
-class LocalOperationTest(lue_test.TestCase):
-    @classmethod
-    @lue_test.framework_test_case
-    def setUpClass(cls):
-        cls.array_shape = (60, 40)
-        cls.partition_shape = (10, 10)
-
-        # TODO Can we do better?
-        # - When the pcraster module must create spatials from non-spatials, this
-        #   information currently must be passed in
-        lpr.configuration.array_shape = cls.array_shape
-        lpr.configuration.partition_shape = cls.partition_shape
-
-        cls.non_spatial = {
-            np.uint8: np.uint8(1),
-            np.uint32: np.uint32(32),
-            np.uint64: np.uint32(64),
-            np.int32: np.int32(-32),
-            np.int64: np.int32(-64),
-            np.float32: np.float32(3.2),
-            np.float64: np.float64(6.4),
-        }
-        cls.spatial = {
-            np.uint8: lfr.create_array(
-                cls.array_shape,
-                cls.partition_shape,
-                np.uint8,
-                fill_value=cls.non_spatial[np.uint8],
-            ),
-            np.uint32: lfr.create_array(
-                cls.array_shape,
-                cls.partition_shape,
-                np.uint32,
-                fill_value=cls.non_spatial[np.uint32],
-            ),
-            np.uint64: lfr.create_array(
-                cls.array_shape,
-                cls.partition_shape,
-                np.uint64,
-                fill_value=cls.non_spatial[np.uint64],
-            ),
-            np.int32: lfr.create_array(
-                cls.array_shape,
-                cls.partition_shape,
-                np.int32,
-                fill_value=cls.non_spatial[np.int32],
-            ),
-            np.int64: lfr.create_array(
-                cls.array_shape,
-                cls.partition_shape,
-                np.int64,
-                fill_value=cls.non_spatial[np.int64],
-            ),
-            np.float32: lfr.create_array(
-                cls.array_shape,
-                cls.partition_shape,
-                np.float32,
-                fill_value=cls.non_spatial[np.float32],
-            ),
-            np.float64: lfr.create_array(
-                cls.array_shape,
-                cls.partition_shape,
-                np.float64,
-                fill_value=cls.non_spatial[np.float64],
-            ),
-        }
-
+class LocalOperationTest(OperationTest):
     @lue_test.framework_test_case
     def test_add(self):
         for expression_type in [np.float32]:
             spatial, non_spatial = (
                 self.spatial[expression_type],
-                self.non_spatial[expression_type],
+                self.non_spatial[expression_type].item(),
             )
 
             _ = spatial + spatial
@@ -97,7 +24,7 @@ class LocalOperationTest(lue_test.TestCase):
         for expression_type in [np.float32]:
             spatial, non_spatial = (
                 self.spatial[expression_type],
-                self.non_spatial[expression_type],
+                self.non_spatial[expression_type].item(),
             )
 
             _ = spatial - spatial
@@ -110,7 +37,7 @@ class LocalOperationTest(lue_test.TestCase):
         for expression_type in [np.float32]:
             spatial, non_spatial = (
                 self.spatial[expression_type],
-                self.non_spatial[expression_type],
+                self.non_spatial[expression_type].item(),
             )
 
             _ = spatial / spatial
@@ -128,7 +55,7 @@ class LocalOperationTest(lue_test.TestCase):
         for expression_type in [np.float32]:
             spatial, non_spatial = (
                 self.spatial[expression_type],
-                self.non_spatial[expression_type],
+                self.non_spatial[expression_type].item(),
             )
 
             _ = spatial * spatial
@@ -141,7 +68,7 @@ class LocalOperationTest(lue_test.TestCase):
         for expression_type in [np.float32]:
             spatial, non_spatial = (
                 self.spatial[expression_type],
-                self.non_spatial[expression_type],
+                self.non_spatial[expression_type].item(),
             )
 
             _ = spatial**spatial
@@ -154,7 +81,7 @@ class LocalOperationTest(lue_test.TestCase):
         for expression_type in [np.float32]:
             spatial, non_spatial = (
                 self.spatial[expression_type],
-                self.non_spatial[expression_type],
+                self.non_spatial[expression_type].item(),
             )
 
             _ = lpr.abs(spatial)
@@ -165,7 +92,7 @@ class LocalOperationTest(lue_test.TestCase):
         for expression_type in [np.float32]:
             spatial, non_spatial = (
                 self.spatial[expression_type],
-                self.non_spatial[expression_type],
+                self.non_spatial[expression_type].item(),
             )
 
             _ = lpr.acos(spatial)
@@ -176,7 +103,7 @@ class LocalOperationTest(lue_test.TestCase):
         for expression_type in [np.uint8]:
             spatial, non_spatial = (
                 self.spatial[expression_type],
-                self.non_spatial[expression_type],
+                self.non_spatial[expression_type].item(),
             )
 
             _ = lpr.pcrand(spatial, spatial)
@@ -194,13 +121,13 @@ class LocalOperationTest(lue_test.TestCase):
         for expression_type in [np.float32]:
             spatial, non_spatial = (
                 self.spatial[expression_type],
-                self.non_spatial[expression_type],
+                self.non_spatial[expression_type].item(),
             )
 
             _ = lpr.asin(spatial)
             _ = lpr.asin(non_spatial)
 
-    # TODO Result in an int32 array, not uint8 array
+    # TODO Results in an int32 array, not uint8 array
     # @lue_test.framework_test_case
     # def test_boolean(self):
     #     for expression_type in [np.uint8, np.int32, np.float32]:
@@ -208,3 +135,159 @@ class LocalOperationTest(lue_test.TestCase):
 
     #         _ = lpr.boolean(spatial)
     #         _ = lpr.boolean(non_spatial)
+
+    @lue_test.framework_test_case
+    def test_cos(self):
+        for expression_type in [np.float32]:
+            spatial, non_spatial = (
+                self.spatial[expression_type],
+                self.non_spatial[expression_type].item(),
+            )
+
+            _ = lpr.cos(spatial)
+            _ = lpr.cos(non_spatial)
+
+    @lue_test.framework_test_case
+    def test_cover(self):
+        for expression_type in [np.uint8, np.int32, np.float32]:
+            spatial, non_spatial = (
+                self.spatial[expression_type],
+                self.non_spatial[expression_type],
+            )
+
+            _ = lpr.cover(spatial, spatial)
+            _ = lpr.cover(spatial, non_spatial)
+            _ = lpr.cover(non_spatial, non_spatial)
+            _ = lpr.cover(non_spatial, spatial)
+
+    @lue_test.framework_test_case
+    def test_defined(self):
+        for expression_type in [np.uint8, np.int32, np.float32]:
+            spatial, non_spatial = (
+                self.spatial[expression_type],
+                self.non_spatial[expression_type].item(),
+            )
+
+            _ = lpr.defined(spatial)
+            _ = lpr.defined(non_spatial)
+
+    @lue_test.framework_test_case
+    def test_eq(self):
+        for expression_type in [np.uint8, np.int32, np.float32]:
+            spatial, non_spatial = (
+                self.spatial[expression_type],
+                self.non_spatial[expression_type].item(),
+            )
+
+            _ = spatial == spatial
+            _ = spatial == non_spatial
+            _ = non_spatial == spatial
+            _ = non_spatial == non_spatial
+
+            _ = lpr.eq(spatial, spatial)
+            _ = lpr.eq(spatial, non_spatial)
+            _ = lpr.eq(non_spatial, spatial)
+            _ = lpr.eq(non_spatial, non_spatial)
+
+    @lue_test.framework_test_case
+    def test_exp(self):
+        for expression_type in [np.float32]:
+            spatial, non_spatial = (
+                self.spatial[expression_type],
+                self.non_spatial[expression_type],
+            )
+
+            _ = lpr.exp(spatial)
+            _ = lpr.exp(non_spatial)
+
+    @lue_test.framework_test_case
+    def test_ge(self):
+        for expression_type in [np.float32]:
+            spatial, non_spatial = (
+                self.spatial[expression_type],
+                self.non_spatial[expression_type].item(),
+            )
+
+            _ = spatial >= spatial
+            _ = spatial >= non_spatial
+            _ = non_spatial >= spatial
+            _ = non_spatial >= non_spatial
+
+            _ = lpr.ge(spatial, spatial)
+            _ = lpr.ge(spatial, non_spatial)
+            _ = lpr.ge(non_spatial, spatial)
+            _ = lpr.ge(non_spatial, non_spatial)
+
+    @lue_test.framework_test_case
+    def test_gt(self):
+        for expression_type in [np.float32]:
+            spatial, non_spatial = (
+                self.spatial[expression_type],
+                self.non_spatial[expression_type].item(),
+            )
+
+            _ = spatial > spatial
+            _ = spatial > non_spatial
+            _ = non_spatial > spatial
+            _ = non_spatial > non_spatial
+
+            _ = lpr.gt(spatial, spatial)
+            _ = lpr.gt(spatial, non_spatial)
+            _ = lpr.gt(non_spatial, spatial)
+            _ = lpr.gt(non_spatial, non_spatial)
+
+    @lue_test.framework_test_case
+    def test_ifthen(self):
+        spatial_condition, non_spatial_condition = (
+            self.spatial[np.uint8],
+            self.non_spatial[np.uint8].item(),
+        )
+
+        for expression_type in [np.uint8, np.int32, np.float32]:
+            spatial_expression, non_spatial_expression = (
+                self.spatial[expression_type],
+                self.non_spatial[expression_type].item(),
+            )
+
+            _ = lpr.ifthen(spatial_condition, spatial_expression)
+            _ = lpr.ifthen(spatial_condition, non_spatial_expression)
+            _ = lpr.ifthen(non_spatial_condition, spatial_expression)
+            _ = lpr.ifthen(non_spatial_condition, non_spatial_expression)
+
+    @lue_test.framework_test_case
+    def test_ifthenelse(self):
+        spatial_condition, non_spatial_condition = (
+            self.spatial[np.uint8],
+            self.non_spatial[np.uint8].item(),
+        )
+
+        for expression_type in [np.uint8, np.int32, np.float32]:
+            spatial_expression, non_spatial_expression = (
+                self.spatial[expression_type],
+                self.non_spatial[expression_type].item(),
+            )
+
+            _ = lpr.ifthenelse(
+                spatial_condition, spatial_expression, spatial_expression
+            )
+            _ = lpr.ifthenelse(
+                spatial_condition, spatial_expression, non_spatial_expression
+            )
+            _ = lpr.ifthenelse(
+                spatial_condition, non_spatial_expression, spatial_expression
+            )
+            _ = lpr.ifthenelse(
+                spatial_condition, non_spatial_expression, non_spatial_expression
+            )
+            _ = lpr.ifthenelse(
+                non_spatial_condition, spatial_expression, spatial_expression
+            )
+            _ = lpr.ifthenelse(
+                non_spatial_condition, spatial_expression, non_spatial_expression
+            )
+            _ = lpr.ifthenelse(
+                non_spatial_condition, non_spatial_expression, spatial_expression
+            )
+            _ = lpr.ifthenelse(
+                non_spatial_condition, non_spatial_expression, non_spatial_expression
+            )

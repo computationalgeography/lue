@@ -25,6 +25,10 @@ namespace lue::framework {
     void bind_downstream(
         pybind11::module& module)
     {
+        module.def("downstream", downstream<std::uint8_t>);
+        module.def("downstream", downstream<std::int32_t>);
+        module.def("downstream", downstream<std::uint32_t>);
+        module.def("downstream", downstream<std::int64_t>);
         module.def("downstream", downstream<std::uint64_t>);
         module.def("downstream", downstream<float>);
         module.def("downstream", downstream<double>);

@@ -558,4 +558,71 @@ added to the LUE framework. The number of model developers requesting one is one
 
 Modelling framework
 -------------------
-TODO
+Like PCRaster, LUE contains helper classes for implementing forward numerical simulation models
+as well. The :ref:`lue.pcraster.framework <lue_pcraster_framework_module>` sub package contains
+classes that behave like the PCRaster Python Framework classes, but are implemented in terms
+of the LUE classes. Not all PCRaster classes have been ported to LUE yet. The next table lists
+the current status.
+
+
+.. list-table:: Legend
+   :widths: auto
+
+   * - ✅
+     - | LUE supports this class.
+       | It may be that the LUE class and its member functions are named
+       | differently, that the member functions support different parameters,
+       | or that they accept parameters in a different order.
+   * - ❌
+     - This PCRaster class is not considered yet. It may be in the future.
+   * - 🗑
+     - This PCRaster class is considered, but skipped. See notes for reason.
+   * - 1, 2, 3
+     - | Guesstimate of the amount of effort required to add it:
+       | 1 little, 2 somewhat, 3 serious.
+       | This is only relevant for classes that have not been added yet.
+
+
+.. list-table:: Status of LUE model development support classes vs PCRaster Python Framework classes
+   :header-rows: 1
+   :widths: auto
+
+   * - PCRaster
+     - LUE
+     - Notes
+   * - ``StaticModel``
+     - ❌
+     - Work in progress
+   * - ``StaticFramework``
+     - ❌
+     - Work in progress
+   * - ``DynamicModel``
+     - ❌
+     - Work in progress
+   * - ``DynamicFramework``
+     - ❌
+     - Work in progress
+   * - ``MonteCarloModel``
+     - ❌
+     -
+   * - ``MonteCarloFramework``
+     - ❌
+     -
+   * - ``ParticleFilterModel``
+     - ❌
+     -
+   * - ``ParticleFilterFramework``
+     - ❌
+     -
+   * - ``ResidualResamplingFramework``
+     - ❌
+     -
+   * - ``SequentialImportanceResamplingFramework``
+     - ❌
+     -
+   * - ``EnKfModel``
+     - ❌
+     -
+   * - ``EnsKalmanFilterFramework``
+     - ❌
+     -
