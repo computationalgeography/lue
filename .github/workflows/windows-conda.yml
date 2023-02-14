@@ -9,9 +9,9 @@ on:
       - "source/**"
       - "!source/qa/python/qa/**"
       - "environment/cmake/**"
-      - "environment/configuration/recipe/bld.bat"
-      - "environment/configuration/recipe/meta.yaml"
-      - "environment/configuration/recipe/run_test.py"
+      - "environment/conda/bld.bat"
+      - "environment/conda/meta.yaml"
+      - "environment/conda/run_test.py"
 
 jobs:
     build:
@@ -46,4 +46,4 @@ jobs:
         - name: Build
           shell: bash -l {0}
           run: |
-              conda mambabuild environment/configuration/recipe --channel conda-forge --override-channels
+              conda mambabuild environment/conda --channel conda-forge --override-channels
