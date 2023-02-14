@@ -1,7 +1,8 @@
 # -*- encoding: utf-8 -*-
+import numpy as np
+
 import lue.data_model as ldm
 import lue_test
-import numpy as np
 
 
 class ConstantTest(lue_test.TestCase):

@@ -1,7 +1,9 @@
+import random
+
+import numpy
+
 import lue.data_model as ldm
 import lue_test
-import numpy
-import random
 
 
 class TimeSeriesTest(lue_test.TestCase):
