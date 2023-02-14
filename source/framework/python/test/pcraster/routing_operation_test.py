@@ -63,3 +63,40 @@ class RoutingOperationTest(OperationTest):
         ldd = self.ldd
 
         _ = lpr.downstreamdist(ldd)
+
+    @lue_test.framework_test_case
+    def test_kinematic(self):
+        ldd = self.ldd
+
+        for type_ in [np.float32]:
+            spatial, non_spatial = (
+                self.spatial[type_],
+                self.non_spatial[type_].item(),
+            )
+
+            _ = lpr.kinematic(
+                ldd,
+                spatial,
+                spatial,
+                non_spatial,
+                non_spatial,
+                non_spatial,
+                non_spatial,
+                spatial,
+            )
+
+    @lue_test.framework_test_case
+    def test_lddcreate(self):
+        for type_ in [np.float32]:
+            spatial, non_spatial = (
+                self.spatial[type_],
+                self.non_spatial[type_].item(),
+            )
+
+            _ = lpr.lddcreate(
+                spatial,
+                non_spatial,
+                non_spatial,
+                non_spatial,
+                non_spatial,
+            )
