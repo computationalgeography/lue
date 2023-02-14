@@ -4,12 +4,20 @@ Port models to LUE
 ==================
 TODO
 
+See the :ref:`status of LUE page <status_compared_with_pcraster>` to find out more about which
+PCRaster operations already have an equivalent in LUE and which PCRaster Python Framework
+classes are available in LUE as well.
+
 
 .. _lue_pcraster_module:
 
 ``lue.pcraster``
 ----------------
-- Whenever possible, the wrapper operations in this module module will convert
-  non-spatial values passed into a LUE operation that does not yet support a
-  non-spatial argument into a spatial automatically. Once LUE also support such
-  non-spatial argument values, these conversions will be removed.
+.. automodule:: lue.pcraster
+
+
+.. _lue_pcraster_framework_module:
+
+``lue.pcraster.framework``
+--------------------------
+.. automodule:: lue.pcraster.framework

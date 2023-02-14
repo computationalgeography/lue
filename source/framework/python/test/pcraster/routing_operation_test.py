@@ -2,52 +2,10 @@ import lue.framework as lfr
 import lue.pcraster as lpr
 import lue_test
 import numpy as np
+from .operation_test import OperationTest, setUpModule, tearDownModule
 
 
-def setUpModule():
-    lue_test.start_hpx_runtime()
-
-
-def tearDownModule():
-    lue_test.stop_hpx_runtime()
-
-
-class RoutingOperationTest(lue_test.TestCase):
-    @classmethod
-    @lue_test.framework_test_case
-    def setUpClass(cls):
-        cls.array_shape = (60, 40)
-        cls.partition_shape = (10, 10)
-
-        # TODO Can we do better?
-        # - When the pcraster module must create spatials from non-spatials, this
-        #   information currently must be passed in
-        lpr.configuration.array_shape = cls.array_shape
-        lpr.configuration.partition_shape = cls.partition_shape
-
-        cls.non_spatial = {
-            np.float32: np.float32(3.2),
-            np.float64: np.float64(6.4),
-        }
-        cls.spatial = {
-            np.float32: lfr.create_array(
-                cls.array_shape,
-                cls.partition_shape,
-                np.float32,
-                fill_value=cls.non_spatial[np.float32],
-            ),
-            np.float64: lfr.create_array(
-                cls.array_shape,
-                cls.partition_shape,
-                np.float64,
-                fill_value=cls.non_spatial[np.float64],
-            ),
-        }
-        direction = 3
-        cls.ldd = lfr.create_array(
-            cls.array_shape, cls.partition_shape, np.uint8, direction
-        )
-
+class RoutingOperationTest(OperationTest):
     @lue_test.framework_test_case
     def test_accufraction(self):
         ldd = self.ldd
@@ -55,7 +13,7 @@ class RoutingOperationTest(lue_test.TestCase):
         for type_ in [np.float32]:
             spatial_material, non_spatial_material = (
                 self.spatial[type_],
-                self.non_spatial[type_],
+                self.non_spatial[type_].item(),
             )
 
             # Fraction must be with [0, 1]
@@ -78,7 +36,7 @@ class RoutingOperationTest(lue_test.TestCase):
         for type_ in [np.float32]:
             spatial_material, non_spatial_material = (
                 self.spatial[type_],
-                self.non_spatial[type_],
+                self.non_spatial[type_].item(),
             )
 
             non_spatial_threshold = type_(0.5) * non_spatial_material
@@ -90,3 +48,18 @@ class RoutingOperationTest(lue_test.TestCase):
             _ = lpr.accuthresholdstate(ldd, spatial_material, spatial_threshold)
             _ = lpr.accuthresholdflux(ldd, non_spatial_material, spatial_threshold)
             _ = lpr.accuthresholdstate(ldd, non_spatial_material, spatial_threshold)
+
+    @lue_test.framework_test_case
+    def test_downstream(self):
+        ldd = self.ldd
+
+        for type_ in [np.uint8, np.int32, np.float32]:
+            spatial_expression = self.spatial[type_]
+
+            _ = lpr.downstream(ldd, spatial_expression)
+
+    @lue_test.framework_test_case
+    def test_downstreamdist(self):
+        ldd = self.ldd
+
+        _ = lpr.downstreamdist(ldd)
