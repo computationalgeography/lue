@@ -1,4 +1,3 @@
-import lue.framework as lfr
 import lue.pcraster as lpr
 import lue_test
 import numpy as np
@@ -291,3 +290,68 @@ class LocalOperationTest(OperationTest):
             _ = lpr.ifthenelse(
                 non_spatial_condition, non_spatial_expression, non_spatial_expression
             )
+
+    @lue_test.framework_test_case
+    def test_le(self):
+        for expression_type in [np.float32]:
+            spatial, non_spatial = (
+                self.spatial[expression_type],
+                self.non_spatial[expression_type].item(),
+            )
+
+            _ = spatial <= spatial
+            _ = spatial <= non_spatial
+            _ = non_spatial <= spatial
+            _ = non_spatial <= non_spatial
+
+            _ = lpr.le(spatial, spatial)
+            _ = lpr.le(spatial, non_spatial)
+            _ = lpr.le(non_spatial, spatial)
+            _ = lpr.le(non_spatial, non_spatial)
+
+    @lue_test.framework_test_case
+    def test_ln(self):
+        for expression_type in [np.float32]:
+            spatial, non_spatial = (
+                self.spatial[expression_type],
+                self.non_spatial[expression_type],
+            )
+
+            _ = lpr.ln(spatial)
+            _ = lpr.ln(non_spatial)
+
+    @lue_test.framework_test_case
+    def test_lt(self):
+        for expression_type in [np.float32]:
+            spatial, non_spatial = (
+                self.spatial[expression_type],
+                self.non_spatial[expression_type].item(),
+            )
+
+            _ = spatial < spatial
+            _ = spatial < non_spatial
+            _ = non_spatial < spatial
+            _ = non_spatial < non_spatial
+
+            _ = lpr.lt(spatial, spatial)
+            _ = lpr.lt(spatial, non_spatial)
+            _ = lpr.lt(non_spatial, spatial)
+            _ = lpr.lt(non_spatial, non_spatial)
+
+    @lue_test.framework_test_case
+    def test_ne(self):
+        for expression_type in [np.uint8, np.int32, np.float32]:
+            spatial, non_spatial = (
+                self.spatial[expression_type],
+                self.non_spatial[expression_type].item(),
+            )
+
+            _ = spatial != spatial
+            _ = spatial != non_spatial
+            _ = non_spatial != spatial
+            _ = non_spatial != non_spatial
+
+            _ = lpr.ne(spatial, spatial)
+            _ = lpr.ne(spatial, non_spatial)
+            _ = lpr.ne(non_spatial, spatial)
+            _ = lpr.ne(non_spatial, non_spatial)

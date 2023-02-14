@@ -253,7 +253,7 @@ added to the LUE framework. The number of model developers requesting one is one
        | The nrTimeSlices argument is removed.
        | Negative values for the the discharge, lateral
        | inflow and channel length arguments result in
-       | no-data values in the result.
+       | no-data values in the result (`Github issue 524`_)
    * - | kinwavestate
        | kinwaveflux
      - ❌
@@ -511,6 +511,8 @@ added to the LUE framework. The number of model developers requesting one is one
      - 🗑
      - Not sure why this is useful...
 
+
+.. _Github issue 524: https://github.com/computationalgeography/lue/issues/524
 
 ..
    In LUE, not in PCRaster:

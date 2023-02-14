@@ -459,8 +459,16 @@ def inversedistance(*args):
     raise NotImplementedError("inversedistance")
 
 
-# def kinematic(*args):
-# def kinwavestate, kinwaveflux(*args):
+def kinematic(ldd, Qold, q, alpha, beta, nrTimeSlices, dT, dX):
+    return lfr.kinematic_wave(ldd, Qold, q, alpha, beta, dT, dX)
+
+
+def kinwavestate(*args):
+    raise NotImplementedError("kinwavestate")
+
+
+def kinwaveflux(*args):
+    raise NotImplementedError("kinwaveflux")
 
 
 def ldd(expression):
@@ -470,7 +478,8 @@ def ldd(expression):
     raise NotImplementedError("ldd")
 
 
-# def lddcreate(*args):
+def lddcreate(elevation, outflowdepth, corevolume, corearea, catchmentprecipitation):
+    return lfr.d8_flow_direction(elevation)
 
 
 def lddcreatedem(*args):
@@ -489,13 +498,19 @@ def lddrepair(*args):
     raise NotImplementedError("lddrepair")
 
 
-# def le or <=(*args):
+def le(expression1, expression2):
+    return expression1 <= expression2
 
 
-# def ln(*args):
+def ln(expression):
+    if is_non_spatial(expression):
+        expression = non_spatial_to_spatial(fill_value=expression)
+
+    return lfr.log(expression)
 
 
-# def log10(*args):
+def log10(*args):
+    raise NotImplementedError("log10")
 
 
 def lookup(*args):
@@ -510,24 +525,29 @@ def lookupmapstack(*args):
     raise NotImplementedError("lookupmapstack")
 
 
-# def lt or <(*args):
+def lt(expression1, expression2):
+    return expression1 < expression2
 
 
 def maparea(*args):
     raise NotImplementedError("maparea")
 
 
-# def mapmaximum(*args):
+def mapmaximum(expression):
+    return lfr.maximum(expression)
 
 
-# def mapminimum(*args):
+def mapminimum(expression):
+    return lfr.maximum(expression)
 
 
 def mapnormal(*args):
     raise NotImplementedError("mapnormal")
 
 
-# def maptotal(*args):
+def maptotal(expression):
+    # TODO C++ side is ready, just add the Python wrapper
+    raise NotImplementedError("maptotal")
 
 
 def mapuniform(*args):
@@ -554,7 +574,8 @@ def mod(*args):
     raise NotImplementedError("mod")
 
 
-# def ne or !=(*args):
+def ne(expression1, expression2):
+    return expression1 != expression2
 
 
 def nodirection(*args):
@@ -800,44 +821,3 @@ def ycoordinate(*args):
 
 def setclone(*args):
     pass
-
-
-### def nominal(arg):
-###     if type(arg) == int:
-###         return arg
-###     elif type(arg) == str:
-###         return readmap(arg)
-###     else:
-###         raise NotImplementedError(arg)
-###
-###
-### def scalar(arg):
-###     if type(arg) == lfr.PartitionedArray_float32_2:
-###         return arg
-###     elif type(arg) == int or type(arg) == float:
-###         return float(arg)
-###     elif type(arg) == str:
-###         return readmap(arg)
-###     else:
-###         raise NotImplementedError(arg)
-###
-###
-### def load(
-###         name):
-###
-###     assert name in ["lue", "pcraster"]
-###
-###     if name == "lue":
-###         framework = lfr
-###         framework.setclone = setclone
-###         framework.boolean = boolean
-###         framework.nominal = nominal
-###         framework.scalar = scalar
-###         framework.cover = cover
-###         framework.readmap = readmap
-###         framework.report = report
-###
-###     elif name == "pcraster":
-###         framework = pcr
-###
-###     return framework
