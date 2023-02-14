@@ -32,5 +32,5 @@ class DownstreamTest(lue_test.TestCase):
             np.float32,
             np.float64,
         ]:
-            material = lfr.create_array(array_shape, partition_shape, type, 1)
+            material = lfr.create_array(array_shape, partition_shape, type_, 1)
             lfr.downstream(flow_direction, material)
