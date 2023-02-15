@@ -1,6 +1,8 @@
-from lue.qa.scalability.core import json
-import dateutil.parser
 import os.path
+
+import dateutil.parser
+
+from lue.qa.scalability.core import json
 
 
 def sort_benchmarks_by_time(result_prefix, cluster, benchmark, experiment):

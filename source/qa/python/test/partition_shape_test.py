@@ -1,9 +1,11 @@
 import os.path
 import sys
 
+
 sys.path = [os.path.join(os.path.split(__file__)[0], "..")] + sys.path
-from lue.benchmark.shape import *
 import unittest
+
+from lue.benchmark.shape import *
 
 
 class PartitionShapeTest(unittest.TestCase):

@@ -2,11 +2,13 @@
 import os.path
 import sys
 
+
 sys.path = [
     os.path.join(os.path.split(__file__)[0], "..", "..", "benchmark", "lue")
 ] + sys.path
-from benchmark import export_results
 import docopt
+
+from benchmark import export_results
 
 
 usage = """\

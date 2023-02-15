@@ -1,7 +1,7 @@
-from .configuration import Configuration
-from .. import job
-from .. import dataset
 import os.path
+
+from .. import dataset, job
+from .configuration import Configuration
 
 
 def generate_script_slurm_threads(

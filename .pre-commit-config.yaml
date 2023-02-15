@@ -40,6 +40,11 @@ repos:
   rev: 5.12.0
   hooks:
   - id: isort
+    files: |
+      (?x)^(
+        .*\.py|
+        .*\.py.in|
+      )$
     name: isort (python)
 ### - repo: https://github.com/pocc/pre-commit-hooks
 ###   rev: v1.3.5

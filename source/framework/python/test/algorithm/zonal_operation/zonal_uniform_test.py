@@ -1,7 +1,8 @@
+import itertools
+import numpy as np
+
 import lue.framework as lfr
 import lue_test
-import numpy as np
-import itertools
 
 
 def setUpModule():

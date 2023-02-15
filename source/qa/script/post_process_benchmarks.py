@@ -1,17 +1,20 @@
 #!/usr/bin/env python
 # -*- encoding: utf8 -*-
 # TODO Use the lue dataset for obtaining information, instead of the json files
-import lue
 import matplotlib
+
+import lue
+
 
 # matplotlib.use("PDF")
 matplotlib.use("Agg")
+import os.path
+import sys
+
+import docopt
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
-import docopt
-import os.path
-import sys
 
 
 usage = """\

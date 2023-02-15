@@ -1,10 +1,11 @@
 #!/usr/bin/env python
-import dateutil.relativedelta
-import dateutil.parser
-import docopt
 import json
 import os.path
 import sys
+
+import dateutil.parser
+import dateutil.relativedelta
+import docopt
 
 
 usage = """\

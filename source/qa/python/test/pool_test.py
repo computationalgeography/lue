@@ -1,9 +1,11 @@
 import os.path
 import sys
 
+
 sys.path = [os.path.join(os.path.split(__file__)[0], "..")] + sys.path
-from lue.benchmark.pool import *
 import unittest
+
+from lue.benchmark.pool import *
 
 
 class PoolTest(unittest.TestCase):

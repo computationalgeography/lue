@@ -1,7 +1,8 @@
 import os.path
+
 from docutils import nodes
-from docutils.parsers.rst import directives
-from docutils.parsers.rst import Directive
+from docutils.parsers.rst import Directive, directives
+
 
 # http://docutils.sourceforge.net/docs/ref/rst/directives.html#image
 

@@ -1,8 +1,8 @@
-from .configuration import Configuration
-from .. import job
-from .. import dataset
-from functools import reduce  # Python 3
 import os.path
+from functools import reduce  # Python 3
+
+from .. import dataset, job
+from .configuration import Configuration
 
 
 # Scaling the amount of work per number of workers can be done

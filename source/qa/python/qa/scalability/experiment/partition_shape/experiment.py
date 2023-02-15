@@ -1,6 +1,6 @@
-from .. import experiment
-from .. import shape
 import os.path
+
+from .. import experiment, shape
 
 
 class Experiment(experiment.Experiment):

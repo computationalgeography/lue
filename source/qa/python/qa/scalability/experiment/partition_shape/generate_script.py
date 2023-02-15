@@ -1,8 +1,9 @@
-from .configuration import Configuration
-from .. import job
-from .. import dataset
-from lue.qa.scalability.core import hpx
 import os.path
+
+from lue.qa.scalability.core import hpx
+
+from .. import dataset, job
+from .configuration import Configuration
 
 
 def nr_workers(worker):

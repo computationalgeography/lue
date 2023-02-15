@@ -1,6 +1,7 @@
-from . import experiment
-from .. import configuration
 from lue.qa.scalability.core import json_to_data
+
+from .. import configuration
+from . import experiment
 
 
 class Configuration(configuration.Configuration):
