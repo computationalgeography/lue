@@ -1,10 +1,12 @@
 #!/usr/bin/env python
+import os.path
+import sys
+
+import docopt
+
 from lue import __version__ as lue_version
 from lue.qa.scalability import perform_experiment_task
 from lue.qa.scalability.core import json_to_data
-import docopt
-import os.path
-import sys
 
 
 def main():

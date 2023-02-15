@@ -1,14 +1,13 @@
-from .configuration import Configuration
-from .experiment import Experiment
-from .. import dataset
-from .. import job
-from lue.qa.scalability.core import math
-from lue.qa.scalability.core import plot
-from lue.qa.scalability.core import process
-import lue.data_model as ldm
 import dateutil.parser
 import matplotlib.pyplot as plt
 import numpy as np
+
+import lue.data_model as ldm
+from lue.qa.scalability.core import math, plot, process
+
+from .. import dataset, job
+from .configuration import Configuration
+from .experiment import Experiment
 
 
 def post_process_raw_results(lue_dataset, result_prefix, plot_pathname, experiment):

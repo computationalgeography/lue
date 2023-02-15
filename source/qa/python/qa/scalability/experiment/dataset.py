@@ -1,8 +1,11 @@
+import json
+
+import numpy as np
+
+import lue.data_model as ldm
+
 from .benchmark import Benchmark
 from .cluster import Cluster
-import lue.data_model as ldm
-import numpy as np
-import json
 
 
 def write_benchmark_settings(lue_dataset, cluster, benchmark, experiment):

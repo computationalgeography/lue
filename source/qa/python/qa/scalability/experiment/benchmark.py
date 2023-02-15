@@ -1,5 +1,6 @@
-from . import worker
 from lue.qa.scalability.core import json_to_data
+
+from . import worker
 
 
 class HPX(object):

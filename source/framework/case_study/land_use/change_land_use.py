@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 # coding: utf-8
-import gdal
-import matplotlib.pyplot as plt
-import scipy.ndimage.filters as filters
-import scipy.signal as signal
-import numpy as np
 import math
 import sys
+
+import gdal
+import matplotlib.pyplot as plt
+import numpy as np
+import scipy.ndimage.filters as filters
+import scipy.signal as signal
+
 
 gdal.UseExceptions()
 

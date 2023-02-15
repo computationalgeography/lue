@@ -1,5 +1,6 @@
-import lue.framework as lfr
 import unittest
+
+import lue.framework as lfr
 
 
 def start_hpx_runtime():

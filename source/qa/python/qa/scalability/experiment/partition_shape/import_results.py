@@ -1,14 +1,16 @@
-from .configuration import Configuration
-from .experiment import Experiment
-from .. import dataset
-from .. import job
-from lue.qa.scalability.core import process
-import lue.data_model as ldm
-import dateutil.parser
-import numpy as np
 import json
 import os.path
 import tempfile
+
+import dateutil.parser
+import numpy as np
+
+import lue.data_model as ldm
+from lue.qa.scalability.core import process
+
+from .. import dataset, job
+from .configuration import Configuration
+from .experiment import Experiment
 
 
 def benchmark_meta_to_lue_json(

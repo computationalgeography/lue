@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 # -*- encoding: utf8 -*-
-import docopt
 import functools
 import math
 import os.path
 import sys
+
+import docopt
 
 
 usage = """\

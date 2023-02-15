@@ -1,7 +1,9 @@
+import os.path
+
+from lue.qa.scalability.core import json_to_data
+
 from .benchmark import Benchmark
 from .cluster import Cluster
-from lue.qa.scalability.core import json_to_data
-import os.path
 
 
 class Configuration(object):
