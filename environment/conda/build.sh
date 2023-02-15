@@ -13,6 +13,7 @@ if [[ "$target_platform" == "osx-64" || "$target_platform" == "osx-arm64" ]]; th
     export CXXFLAGS="${CXXFLAGS} -DTARGET_OS_OSX"
 fi
 
+ls -l $SRC_DIR
 cmake $SRC_DIR \
     -G"Ninja" \
     ${CMAKE_ARGS} \
