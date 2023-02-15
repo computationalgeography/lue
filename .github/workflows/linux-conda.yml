@@ -41,14 +41,12 @@ jobs:
               auto-update-conda: true
               python-version: ${{ matrix.python-version }}
               channels: conda-forge
-              # mamba-version: "*"
 
         - shell: bash -l {0}
           run: |
-              # mamba install boa -c conda-forge
               conda install boa
 
         - name: Build
           shell: bash -l {0}
           run: |
-              conda mambabuild environment/conda --channel conda-forge --override-channels
+              conda mambabuild environment/conda  # --channel conda-forge --override-channels
