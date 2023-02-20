@@ -6,7 +6,7 @@ exclude: |
     environment/cmake/.*\.patch|
     environment/cmake/UseLATEX\.cmake|
     environment/cmake/conan-.*\.cmake|
-    # environment/configuration/receipe/meta\.yaml|
+    # environment/conda/meta\.yaml|
     source/imgui/include/lue/gui/font/.*
   )$
 repos:
